@@ -1,0 +1,12 @@
+// spec: 01-06 演算子の型付け
+// spec: 01-04 String
+// spec: 01-04 型の変換
+fn main() -> Unit {
+    let integer: Int = 4
+    let decimal: Float = 2.5
+    let character: Char = 'x'
+    let _ = "n = " + integer
+    let _ = "n = " + decimal
+    let _ = "n = " + character
+    ()
+}

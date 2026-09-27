@@ -1,0 +1,4 @@
+// spec: 01-03 型パラメータとエフェクト変数の有効範囲
+// spec: 01-03 修飾しない名前の解決
+fn effectVariable[effect E](value: E) -> Unit { () }
+fn effectName(value: IO) -> Unit { () }

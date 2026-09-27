@@ -1,0 +1,8 @@
+// spec: 01-07 IO を行う組み込み関数
+// spec: 01-04 String
+fn main() -> Unit uses IO {
+  match File.readText("bom.txt") {
+    Ok(contents) => Console.println(Int.toString(String.byteLength(contents)))
+    Err(_) => Console.println("read failed")
+  }
+}

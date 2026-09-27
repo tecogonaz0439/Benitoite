@@ -1,0 +1,9 @@
+// spec: 01-06 エフェクト変数の具体化
+fn choose[effect E](unused: fn() -> Unit uses IO, E, action: fn() -> Unit uses E) -> Unit uses E {
+    action()
+}
+
+fn main() -> Unit uses IO {
+    choose(fn() { Console.println("unused") }, fn() { () })
+    Console.println("chosen")
+}

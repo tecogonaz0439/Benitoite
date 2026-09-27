@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Benitoite ベンチマーク __LABEL__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Sans+JP:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* tools/bench/report_html.py が測定記録（Markdown）から作るページのひな形。データと題名は生成のときに埋める。 */
+:root {
+  color-scheme: light;
+  --bg: #f6f6f3; --panel: #fcfcfb; --ink: #16181c; --ink-2: #4f535a; --ink-3: #7c8088;
+  --rule: #e2e2dc; --grid: #ecece6;
+  --gem: #2459c4; --gem-soft: #9fbcf0; --other: #9a9da3;
+  --win: #256abf; --lose: #c63d3c; --mid: #f0efec;
+  --warn-ink: #8a5a00; --warn-bg: #fdf1d6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #141517; --panel: #1b1c1f; --ink: #f2f2f0; --ink-2: #c3c4c7; --ink-3: #8e9197;
+    --rule: #2e3035; --grid: #26282c;
+    --gem: #5b8ef0; --gem-soft: #2e4f8f; --other: #6b6e74;
+    --win: #5598e7; --lose: #e66767; --mid: #2b2c2f;
+    --warn-ink: #f0c56a; --warn-bg: #3a2e12;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #141517; --panel: #1b1c1f; --ink: #f2f2f0; --ink-2: #c3c4c7; --ink-3: #8e9197;
+  --rule: #2e3035; --grid: #26282c;
+  --gem: #5b8ef0; --gem-soft: #2e4f8f; --other: #6b6e74;
+  --win: #5598e7; --lose: #e66767; --mid: #2b2c2f;
+  --warn-ink: #f0c56a; --warn-bg: #3a2e12;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.7 "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  padding-inline: 20px; padding-block: 32px 64px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: "Zen Kaku Gothic New", "Noto Sans JP", sans-serif; text-wrap: balance; margin: 0; }
+h1 { font-size: 30px; line-height: 1.3; }
+h2 { font-size: 21px; line-height: 1.4; }
+h3 { font-size: 15px; font-weight: 700; }
+p { margin: 0; max-width: 72ch; color: var(--ink-2); }
+.mono, .num { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+header { display: grid; gap: 12px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.08em; color: var(--ink-3); font-family: "IBM Plex Mono", monospace; }
+.env { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--ink-3); }
+.env b { color: var(--ink-2); font-weight: 500; }
+section { display: grid; gap: 14px; }
+.section-head { display: grid; gap: 6px; }
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 18px; }
+.takeaways { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.take { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; display: grid; gap: 4px; }
+.take .big { font-family: "IBM Plex Mono", monospace; font-size: 24px; font-weight: 500; }
+.take .lbl { font-size: 13px; color: var(--ink-2); }
+.scroll { overflow-x: auto; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; }
+th, td { padding: 7px 10px; text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-weight: 500; color: var(--ink-3); border-bottom: 1px solid var(--rule); font-size: 12px; }
+tbody td { border-bottom: 1px solid var(--grid); }
+.heat td.cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; border: 2px solid var(--panel); border-radius: 6px; text-align: center; min-width: 74px; }
+.heat td.rt { font-weight: 500; }
+.heat tr.self td.cell { color: var(--ink-3); }
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; font-size: 12px; color: var(--ink-2); }
+.sw { display: inline-block; width: 14px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+.grid-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; }
+.chart { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 14px 8px; display: grid; gap: 4px; min-width: 0; }
+.chart .sub { font-size: 12px; color: var(--ink-3); }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart text { font-size: 11px; fill: var(--ink-2); font-family: "Noto Sans JP", sans-serif; }
+.chart text.val { font-family: "IBM Plex Mono", "Noto Sans JP", monospace; }
+.chart text.val.gem { fill: var(--ink); font-weight: 500; }
+.chart text.axis { fill: var(--ink-3); font-family: "IBM Plex Mono", monospace; font-size: 10px; }
+.chart line.gl { stroke: var(--grid); stroke-width: 1; }
+.chart rect.hit { fill: transparent; }
+.chart g.row:hover rect.bar { opacity: .8; }
+.note { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 10px 14px; font-size: 13px; }
+details { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 16px; }
+details summary { cursor: pointer; font-weight: 500; }
+details[open] summary { margin-bottom: 10px; }
+td.gemcell { color: var(--gem); font-weight: 500; }
+#tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; padding: 6px 9px; border-radius: 6px; line-height: 1.5; z-index: 10; max-width: 280px; }
+ul.notes { margin: 0; padding-left: 1.2em; color: var(--ink-2); display: grid; gap: 6px; max-width: 80ch; }
+@media (max-width: 480px) { h1 { font-size: 24px; } .take .big { font-size: 20px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1>Benitoite ベンチマーク</h1>
+    <p>同じ処理を Benitoite と比較対象の言語で書いたベンチマークを、10 回ずつ実行した実時間の中央値で比べる。測定記録（Markdown）から <span class="mono">tools/bench/report_html.py</span> で作ったページである。</p>
+    <div class="env" id="env"></div>
+  </header>
+
+  <section><div class="takeaways" id="takeaways"></div></section>
+
+  <section>
+    <div class="section-head">
+      <h2>処理系ごとの相対の速さ</h2>
+      <p>各マスは「比較対象の時間 ÷ Benitoite の時間」である。1 より大きい（青）ほど Benitoite が速く、1 より小さい（赤）ほど比較対象が速い。数値は倍率で、色の濃さは差の桁に応じる。</p>
+    </div>
+    <div class="panel">
+      <div class="scroll"><table class="heat" id="heat"></table></div>
+      <div class="legend" style="margin-top:12px">
+        <span><span class="sw" style="background:var(--lose)"></span>比較対象が速い（Benitoite が遅い）</span>
+        <span><span class="sw" style="background:var(--mid);border:1px solid var(--rule)"></span>ほぼ同じ</span>
+        <span><span class="sw" style="background:var(--win)"></span>Benitoite が速い</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>ベンチマークごとの実行時間</h2>
+      <p>横軸は線形目盛（秒）で、棒の長さがそのまま時間に比例する。比較対象の棒の右に、Benitoite（図中の「B」）がその処理系より何倍遅いか・速いかを示す。</p>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--gem)"></span>Benitoite</span>
+      <span><span class="sw" style="background:var(--gem-soft)"></span>Benitoite（IO の要求と応答の方式）</span>
+      <span><span class="sw" style="background:var(--other)"></span>比較対象</span>
+    </div>
+    <div class="grid-charts" id="timecharts"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>最大常駐メモリ</h2>
+      <p>各ベンチマークの最大 RSS（MB、10 回の最大）。横軸は線形目盛。</p>
+    </div>
+    <div class="grid-charts" id="memcharts"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>起動と検査の時間</h2>
+      <p>何もしないプログラムを 10 回実行した中央値と、Benitoite の約 1 万行のスクリプトの check（ミリ秒）。</p>
+    </div>
+    <div class="grid-charts" id="startchart"></div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>読み方の注意</h2></div>
+    <ul class="notes">
+      <li>println の比較は条件が揃っていない。Lua・Rust・OCaml の版は一行ごとに出力を送り出していると見られ、Benitoite（64 KiB のバッファ）より大きく遅く出る。</li>
+      <li>string と lines では、分割と検索を Benitoite では Rust で書いた組み込みの関数が行い、OCaml のバイトコードでは OCaml で書いた標準ライブラリを VM が 1 文字ずつ実行する。VM の速さの比較としては読まない。string は List の要素数の上限（16,777,216）で入力が抑えられる。</li>
+      <li>Benitoite の list は連結リストで、CPython・Ruby・Lua・Rust の版は各言語の配列を使う。OCaml の版は連結リストである。</li>
+      <li>処理系の版と、飛ばした比較対象（skip）は、測定記録の「処理系」の表にある。</li>
+    </ul>
+  </section>
+
+  <details>
+    <summary>表で見る（実行時間、秒）</summary>
+    <div class="scroll"><table id="rawtable"></table></div>
+  </details>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const DATA = __DATA__;
+const BENCHES = ["fib", "loop", "list", "tree", "eval", "string", "println", "lines"].filter(b => DATA.time.some(x => x.bench === b));
+const LABEL = { "Benitoite": "Benitoite", "CPython (JIT off)": "CPython", "CPython (JIT on)": "CPython + JIT", "Ruby MRI (YJIT off)": "Ruby", "Ruby MRI (YJIT on)": "Ruby + YJIT", "Lua": "Lua", "OCaml (bytecode)": "OCaml バイトコード", "OCaml (native)": "OCaml ネイティブ", "Rust (--release)": "Rust" };
+const RUNTIMES = [...new Set(DATA.time.map(x => x.rt))].filter(rt => rt !== "Benitoite");
+const label = rt => LABEL[rt] || rt;
+const version = rt => { const v = (DATA.versions.find(x => x.rt === rt) || {}).version || ""; const m = v.match(/(\d+\.\d+(\.\d+)?)/); return m ? m[1] : ""; };
+function t(b, rt, mode) { const r = DATA.time.find(x => x.bench === b && x.rt === rt && (rt !== "Benitoite" || x.mode === (mode || "direct"))); return r ? r.sec : null; }
+function fmtSec(s) { return s >= 1 ? s.toFixed(2) + " 秒" : s >= 0.1 ? s.toFixed(3) + " 秒" : (s * 1000).toFixed(1) + " ms"; }
+function fmtRatio(r) { return r >= 10 ? r.toFixed(0) + "×" : r >= 1 ? r.toFixed(1) + "×" : r.toFixed(2) + "×"; }
+const tip = document.getElementById("tip");
+function showTip(e, html) { tip.innerHTML = html; tip.hidden = false; moveTip(e); }
+function moveTip(e) { const w = tip.offsetWidth, h = tip.offsetHeight; let x = e.clientX + 14, y = e.clientY + 14; if (x + w > innerWidth - 8) x = e.clientX - w - 14; if (y + h > innerHeight - 8) y = e.clientY - h - 14; tip.style.left = x + "px"; tip.style.top = y + "px"; }
+function hideTip() { tip.hidden = true; }
+const NS = "http://www.w3.org/2000/svg";
+function el(name, attrs, parent) { const n = document.createElementNS(NS, name); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; }
+
+document.getElementById("eyebrow").textContent = "tools/bench/results · " + DATA.meta.date + " · " + DATA.meta.revision;
+document.getElementById("env").innerHTML = DATA.meta.environment.map(e => `<span><b>${e[0]}</b> ${e[1]}</span>`).join("") + `<span><b>記録</b> <span class="mono">${DATA.meta.source}</span></span>`;
+
+(function takeaways() {
+  const box = document.getElementById("takeaways");
+  const items = [];
+  const cp = RUNTIMES.find(rt => rt.startsWith("CPython"));
+  if (cp) { const f = BENCHES.filter(b => t(b, "Benitoite") < t(b, cp)); items.push({ big: f.length + " / " + BENCHES.length, lbl: label(cp) + " より速いベンチマーク" + (f.length ? "（" + f.join("、") + "）" : "") }); }
+  const ob = RUNTIMES.find(rt => rt === "OCaml (bytecode)");
+  if (ob) { const r = ["fib", "loop", "tree", "eval"].filter(b => BENCHES.includes(b)).map(b => t(b, "Benitoite") / t(b, ob)); if (r.length) items.push({ big: Math.round(Math.min(...r)) + "〜" + Math.round(Math.max(...r)) + "×", lbl: "OCaml バイトコードとの差（呼び出しと代数的データ型のベンチマーク）" }); }
+  const ratios = BENCHES.map(b => ({ b, r: t(b, "Benitoite") / Math.min(...RUNTIMES.map(rt => t(b, rt)).filter(v => v)) }));
+  const worst = ratios.reduce((a, c) => c.r > a.r ? c : a);
+  items.push({ big: worst.r.toFixed(0) + "×", lbl: "最も速い比較対象との差が最大のベンチマーク（" + worst.b + "）" });
+  const st = DATA.startup.find(x => x.rt === "Benitoite");
+  if (st) items.push({ big: fmtSec(st.sec), lbl: "起動から終了まで（何もしないプログラム）" });
+  for (const it of items) { const d = document.createElement("div"); d.className = "take"; d.innerHTML = `<div class="big">${it.big}</div><div class="lbl">${it.lbl}</div>`; box.appendChild(d); }
+})();
+
+(function heat() {
+  const tb = document.getElementById("heat");
+  let h = "<thead><tr><th>処理系</th>" + BENCHES.map(b => `<th>${b}</th>`).join("") + "</tr></thead><tbody>";
+  h += `<tr class="self"><td class="rt">Benitoite（基準）</td>` + BENCHES.map(b => `<td class="cell" style="background:var(--mid)">${fmtSec(t(b, "Benitoite"))}</td>`).join("") + "</tr>";
+  for (const rt of RUNTIMES) {
+    h += `<tr><td class="rt">${label(rt)} <span class="mono" style="color:var(--ink-3);font-weight:400">${version(rt)}</span></td>`;
+    for (const b of BENCHES) {
+      const v = t(b, rt); if (v == null) { h += "<td class=\"cell\">—</td>"; continue; }
+      const r = v / t(b, "Benitoite"), l = Math.log10(r), a = Math.min(1, Math.abs(l) / 1.3);
+      let bg = "var(--mid)", fg = "var(--ink-2)";
+      if (Math.abs(l) >= 0.04) { bg = `color-mix(in oklab, var(${l > 0 ? "--win" : "--lose"}) ${Math.round(18 + a * 70)}%, var(--panel))`; fg = a > 0.55 ? "#fff" : "var(--ink)"; }
+      h += `<td class="cell" style="background:${bg};color:${fg}" data-tip="${label(rt)} · ${b}<br>${fmtSec(v)}（Benitoite ${fmtSec(t(b, "Benitoite"))}）">${fmtRatio(r)}</td>`;
+    }
+    h += "</tr>";
+  }
+  tb.innerHTML = h + "</tbody>";
+  tb.querySelectorAll("td[data-tip]").forEach(c => { c.addEventListener("mouseenter", e => showTip(e, c.dataset.tip)); c.addEventListener("mousemove", moveTip); c.addEventListener("mouseleave", hideTip); });
+})();
+
+function niceMax(top) { const steps = [0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]; for (const s of steps) if (top / s <= 6) return { step: s, max: Math.ceil(top / s) * s }; return { step: top / 5, max: top }; }
+function barChart(parent, title, sub, rows, unitFmt, tickFmt) {
+  const card = document.createElement("div"); card.className = "chart";
+  card.innerHTML = `<h3>${title}</h3><div class="sub">${sub}</div>`; parent.appendChild(card);
+  const W = 480, labelW = 118, valW = 170, rowH = 20, gap = 5, top = 6, axisH = 22;
+  const H = top + rows.length * (rowH + gap) + axisH;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": title }, card);
+  const x0 = labelW, x1 = W - valW;
+  const { step, max } = niceMax(Math.max(...rows.map(r => r.v)));
+  const sx = v => x0 + v / max * (x1 - x0);
+  const yEnd = top + rows.length * (rowH + gap);
+  for (let v = 0; v <= max + 1e-9; v += step) { const x = sx(v); el("line", { class: "gl", x1: x, x2: x, y1: top - 2, y2: yEnd }, svg); const tx = el("text", { class: "axis", x, y: yEnd + 14, "text-anchor": "middle" }, svg); tx.textContent = tickFmt(+v.toFixed(3)); }
+  rows.forEach((r, i) => {
+    const y = top + i * (rowH + gap), g = el("g", { class: "row" }, svg);
+    const lab = el("text", { x: x0 - 8, y: y + rowH / 2 + 4, "text-anchor": "end" }, g); lab.textContent = r.label;
+    if (r.kind === "gem") lab.setAttribute("style", "fill:var(--ink);font-weight:500");
+    const w = Math.max(2, sx(r.v) - x0);
+    el("rect", { class: "bar", x: x0, y: y + 2, width: w, height: rowH - 4, rx: 3, fill: r.kind === "gem" ? "var(--gem)" : r.kind === "gem-soft" ? "var(--gem-soft)" : "var(--other)" }, g);
+    const vt = el("text", { class: "val" + (r.kind === "gem" ? " gem" : ""), x: x0 + w + 6, y: y + rowH / 2 + 4 }, g); vt.textContent = unitFmt(r.v) + (r.suffix ? "  " + r.suffix : "");
+    const hit = el("rect", { class: "hit", x: 0, y, width: W, height: rowH + gap }, g);
+    hit.addEventListener("mouseenter", e => showTip(e, `${r.label}<br>${r.tip || unitFmt(r.v)}`)); hit.addEventListener("mousemove", moveTip); hit.addEventListener("mouseleave", hideTip);
+  });
+}
+
+(function timeCharts() {
+  const box = document.getElementById("timecharts");
+  for (const b of BENCHES) {
+    const base = t(b, "Benitoite");
+    const rows = [{ label: "Benitoite", v: base, kind: "gem" }];
+    const req = t(b, "Benitoite", "request"); if (req != null) rows.push({ label: "B（要求と応答）", v: req, kind: "gem-soft" });
+    for (const rt of RUNTIMES) { const v = t(b, rt); if (v == null) continue; const q = base / v;
+      rows.push({ label: label(rt), v, kind: "other", suffix: q >= 1.05 ? "B が " + (q >= 10 ? q.toFixed(0) : q.toFixed(1)) + " 倍遅い" : q <= 0.95 ? "B が " + (1 / q).toFixed(1) + " 倍速い" : "B とほぼ同じ", tip: fmtSec(v) + "<br>Benitoite はこの " + q.toFixed(2) + " 倍の時間" }); }
+    barChart(box, b, DATA.inputs[b] ? "入力 " + DATA.inputs[b] : "", rows, fmtSec, v => v + "s");
+  }
+})();
+
+(function memCharts() {
+  const box = document.getElementById("memcharts");
+  for (const b of BENCHES) {
+    const rows = [];
+    const add = (rt, kind, lab) => { const r = DATA.mem.find(x => x.bench === b && x.rt === rt && x.mode === "direct"); if (r) rows.push({ label: lab, v: r.bytes / 1e6, kind }); };
+    add("Benitoite", "gem", "Benitoite"); for (const rt of RUNTIMES) add(rt, "other", label(rt));
+    if (rows.length) barChart(box, b, "最大 RSS", rows, v => v.toFixed(v < 10 ? 1 : 0) + " MB", v => v + "");
+  }
+})();
+
+(function startChart() {
+  const box = document.getElementById("startchart");
+  const rows = DATA.startup.map(x => ({ label: x.rt === "Benitoite" ? "Benitoite" : x.rt.includes("check") ? "B の 1 万行 check" : label(x.rt), v: x.sec * 1000, kind: x.rt === "Benitoite" ? "gem" : x.rt.includes("check") ? "gem-soft" : "other" }));
+  barChart(box, "起動と検査", "ミリ秒", rows, v => v.toFixed(1) + " ms", v => v + "ms");
+})();
+
+(function rawTable() {
+  const tb = document.getElementById("rawtable");
+  const rowsDef = [["Benitoite", "direct", "Benitoite"], ...(BENCHES.some(b => t(b, "Benitoite", "request") != null) ? [["Benitoite", "request", "Benitoite（要求と応答）"]] : []), ...RUNTIMES.map(rt => [rt, null, label(rt)])];
+  let h = "<thead><tr><th>処理系</th>" + BENCHES.map(b => `<th>${b}</th>`).join("") + "</tr></thead><tbody>";
+  for (const [rt, mode, lab] of rowsDef) h += `<tr><td>${lab}</td>` + BENCHES.map(b => { const v = t(b, rt, mode); return `<td class="num${rt === "Benitoite" ? " gemcell" : ""}">${v == null ? "—" : v.toFixed(3)}</td>`; }).join("") + "</tr>";
+  tb.innerHTML = h + "</tbody>";
+})();
+</script>
+</body>
+</html>

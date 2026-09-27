@@ -1,0 +1,45 @@
+// spec: 01-05 prelude が定める型
+fn show_option(value: Option[Int]) -> String {
+  match value {
+    Some(number) => "Some(" + Int.toString(number) + ")"
+    None => "None"
+  }
+}
+
+fn show_result(value: Result[Int, String]) -> String {
+  match value {
+    Ok(number) => "Ok(" + Int.toString(number) + ")"
+    Err(message) => "Err(" + message + ")"
+  }
+}
+
+fn main() -> Unit uses IO {
+  Console.println(show_option(Option.map(Some(2), fn(value) { value * 3 })))
+  Console.println(show_option(Option.map(None, fn(value: Int) { value * 3 })))
+  Console.println(show_option(Option.andThen(Some(2), fn(value) { Some(value + 1) })))
+  Console.println(show_option(Option.andThen(None, fn(value: Int) { Some(value + 1) })))
+  Console.println(Int.toString(Option.unwrapOr(Some(4), 9)))
+  Console.println(Int.toString(Option.unwrapOr(None, 9)))
+  Console.println(if Option.isSome(Some(1)) { "true" } else { "false" })
+  Console.println(if Option.isNone(None) { "true" } else { "false" })
+  Console.println(show_result(Option.okOr(Some(5), "missing")))
+  Console.println(show_result(Option.okOr(None, "missing")))
+  Console.println(show_result(Result.map(Ok(2), fn(value) { value + 3 })))
+  Console.println(show_result(Result.map(Err("bad"), fn(value: Int) { value + 3 })))
+  Console.println(show_result(Result.mapErr(Ok(3), fn(message: String) { message + "!" })))
+  Console.println(show_result(Result.mapErr(Err("bad"), fn(message) { message + "!" })))
+  Console.println(show_result(Result.andThen(Ok(4), fn(value) { Ok(value + 1) })))
+  Console.println(show_result(Result.andThen(Err("bad"), fn(value: Int) { Ok(value + 1) })))
+  Console.println(Int.toString(Result.unwrapOr(Ok(6), 9)))
+  Console.println(Int.toString(Result.unwrapOr(Err("bad"), 9)))
+  Console.println(if Result.isOk(Ok(1)) { "true" } else { "false" })
+  Console.println(if Result.isErr(Err("bad")) { "true" } else { "false" })
+  Console.println(match Result.ok(Ok(7)) {
+    Some(value) => Int.toString(value)
+    None => "None"
+  })
+  Console.println(match Result.ok(Err("bad")) {
+    Some(value) => Int.toString(value)
+    None => "None"
+  })
+}

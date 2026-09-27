@@ -1,0 +1,25 @@
+// spec: 01-02 例
+// spec: 01-02 パターンマッチ
+// spec: 01-02 パイプ
+type Shape {
+  Circle(Float)
+  Rect(Float, Float)
+}
+
+fn area(shape: Shape) -> Float {
+  match shape {
+    Shape.Circle(radius) => 3.14159 * radius * radius
+    Shape.Rect(width, height) => width * height
+  }
+}
+
+fn totalArea(shapes: List[Shape]) -> Float {
+  shapes
+    |> List.map(area)
+    |> List.fold(0.0, fn(acc, value) { acc + value })
+}
+
+fn main() -> Unit uses IO {
+  let shapes = [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
+  Console.println(Float.toString(totalArea(shapes)))
+}

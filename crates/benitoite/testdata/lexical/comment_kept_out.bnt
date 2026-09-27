@@ -1,0 +1,6 @@
+// spec: 01-01 コメント
+// spec: 01-01 文字列リテラル
+fn main() -> Unit uses IO {
+  // This comment does not start a string.
+  Console.println("// this is text") // This is a trailing comment.
+}

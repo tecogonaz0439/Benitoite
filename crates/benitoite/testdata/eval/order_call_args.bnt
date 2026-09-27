@@ -1,0 +1,8 @@
+// spec: 01-08 評価順序
+fn consume(_first: Unit, _second: Unit) -> Unit { () }
+
+fn nest(value: Unit) -> Unit { value }
+
+fn main() -> Unit uses IO {
+  consume(Console.println("a"), nest(Console.println("b")))
+}

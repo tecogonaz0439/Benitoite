@@ -1,0 +1,31 @@
+fn readCount() -> Result[Int, String] uses IO {
+  match List.head(Process.args()) {
+    None => Err("expected one non-negative integer argument")
+    Some(argument) => match Int.parse(argument) {
+      None => Err("expected one non-negative integer argument")
+      Some(count) => if count < 0 {
+        Err("expected one non-negative integer argument")
+      } else {
+        Ok(count)
+      }
+    }
+  }
+}
+
+fn fibonacci(n: Int) -> Int {
+  if n < 2 {
+    n
+  } else {
+    fibonacci(n - 1) + fibonacci(n - 2)
+  }
+}
+
+fn main() -> Result[Unit, String] uses IO {
+  match readCount() {
+    Err(message) => Err(message)
+    Ok(count) => {
+      Console.println(Int.toString(fibonacci(count)))
+      Ok(())
+    }
+  }
+}

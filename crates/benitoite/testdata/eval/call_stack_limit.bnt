@@ -1,0 +1,13 @@
+// spec: 01-08 資源の不足
+fn recurse(n: Int) -> Int {
+  if n == 0 {
+    0
+  } else {
+    let result = recurse(n - 1)
+    result + 1
+  }
+}
+
+fn main() -> Unit uses IO {
+  Console.println(Int.toString(recurse(10000)))
+}

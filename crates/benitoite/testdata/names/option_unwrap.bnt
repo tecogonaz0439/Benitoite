@@ -1,0 +1,6 @@
+// spec: 01-03 修飾された名前の解決
+fn main() -> Unit {
+  let _ = Option.unwrap(Some(1))
+  let _ = Result.expect(Ok(1))
+  ()
+}

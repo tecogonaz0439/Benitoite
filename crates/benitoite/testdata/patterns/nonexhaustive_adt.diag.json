@@ -1,0 +1,1 @@
+{"kind":"check","severity":"error","code":"E0601","message":"`match` does not cover every value","primary":{"file":"patterns/nonexhaustive_adt.bnt","start":{"line":8,"column":11,"offset":142},"end":{"line":8,"column":15,"offset":146},"label":"`Tree.Node(_, _, _)` is not matched"},"secondary":[],"notes":[],"helps":["add an arm for `Tree.Node(_, _, _)`, or a `_` arm"]}

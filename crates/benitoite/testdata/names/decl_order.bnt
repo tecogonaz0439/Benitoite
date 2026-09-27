@@ -1,0 +1,20 @@
+// spec: 01-03 トップレベルの名前空間
+// spec: 01-03 型パラメータとエフェクト変数の有効範囲
+fn main() -> Unit uses IO {
+  if isEven(8) {
+    Console.println("even")
+  } else {
+    Console.println("odd")
+  }
+}
+
+fn isEven(value: Int) -> Bool {
+  if value == 0 { true } else { isOdd(value - 1) }
+}
+
+fn isOdd(value: Int) -> Bool {
+  if value == 0 { false } else { isEven(value - 1) }
+}
+
+type First { Wrap(Second) }
+type Second { WrapAgain(First) }

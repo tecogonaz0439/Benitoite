@@ -1,0 +1,18 @@
+// spec: 01-02 演算子の優先順位と結合性
+fn main() -> Unit uses IO {
+  Console.println(Int.toString(1 + 2 * 3))
+  Console.println(Int.toString(-2 * 3))
+  let a = false
+  let b = true
+  let c = false
+  if !a && b {
+    Console.println("true")
+  } else {
+    Console.println("false")
+  }
+  if a || b && c {
+    Console.println("true")
+  } else {
+    Console.println("false")
+  }
+}

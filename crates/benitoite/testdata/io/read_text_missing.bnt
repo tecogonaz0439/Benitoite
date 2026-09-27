@@ -1,0 +1,8 @@
+// spec: 01-07 IO の失敗
+// spec: 01-07 IO を行う組み込み関数
+fn main() -> Unit uses IO {
+  match File.readText("missing.txt") {
+    Ok(_) => Console.println("unexpected success")
+    Err(_) => Console.println("error branch")
+  }
+}

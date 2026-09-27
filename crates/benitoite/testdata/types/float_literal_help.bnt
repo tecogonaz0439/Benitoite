@@ -1,0 +1,10 @@
+// spec: 01-06 演算子の型付け
+// spec: 01-04 Float
+fn scale(value: Float) -> Float {
+    value * 2
+}
+
+fn main() -> Unit {
+    let _ = scale(1.0)
+    ()
+}

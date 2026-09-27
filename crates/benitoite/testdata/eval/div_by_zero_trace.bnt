@@ -1,0 +1,9 @@
+// spec: 01-08 実行時エラーによる停止
+fn ratio(a: Int, b: Int) -> Int { a / b }
+
+fn main() -> Unit uses IO {
+  let values = [10, 20, 30]
+  let divisor = 0
+  let ratios = List.map(values, fn(value) { ratio(value, divisor) + 1 })
+  Console.println(Int.toString(List.length(ratios)))
+}

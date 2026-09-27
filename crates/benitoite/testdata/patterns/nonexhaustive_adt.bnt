@@ -1,0 +1,15 @@
+// spec: 01-05 網羅性の検査
+type Tree[T] {
+    Leaf
+    Node(Tree[T], T, Tree[T])
+}
+
+fn describe(tree: Tree[Int]) -> String {
+    match tree {
+        Tree.Leaf => "leaf"
+    }
+}
+
+fn main() -> Unit {
+    ()
+}

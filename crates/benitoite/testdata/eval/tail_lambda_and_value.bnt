@@ -1,0 +1,30 @@
+// spec: 01-08 末尾呼び出し
+// spec: 01-12 末尾呼び出しの保証
+fn apply(next: fn(Int) -> Int, value: Int) -> Int {
+  next(value)
+}
+
+fn through_lambda(n: Int) -> Int {
+  if n == 0 {
+    42
+  } else {
+    apply(fn(value: Int) { through_lambda(value) }, n - 1)
+  }
+}
+
+fn option_after_tail(n: Int) -> Option[Int] {
+  if n == 0 { Some(17) } else { option_after_tail(n - 1) }
+}
+
+fn string_after_tail(n: Int) -> String {
+  if n == 0 { Int.toString(23) } else { string_after_tail(n - 1) }
+}
+
+fn main() -> Unit uses IO {
+  Console.println(Int.toString(through_lambda(100000)))
+  match option_after_tail(100000) {
+    Some(value) => Console.println(Int.toString(value))
+    None => Console.println("None")
+  }
+  Console.println(string_after_tail(100000))
+}

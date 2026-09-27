@@ -1,0 +1,23 @@
+// spec: 01-02 部分適用のプレースホルダ
+fn clamp(low: Int, value: Int, high: Int) -> Int {
+  if value < low { low } else if value > high { high } else { value }
+}
+
+fn between(low: Int, value: Int, high: Int) -> Bool {
+  value >= low && value <= high
+}
+
+fn applyToNine(function: fn(Int) -> Int) -> Int { function(9) }
+fn useFunction(f: fn(fn(Int) -> Int) -> Int, g: fn(Int) -> Int) -> Int { f(g(_)) }
+
+fn main() -> Unit uses IO {
+  let clampMiddle = clamp(0, _, 100)
+  let inRange = between(_, 5, _)
+  let nested = useFunction(applyToNine, fn(value: Int) { value + 1 })
+  Console.println(Int.toString(clampMiddle(80) + nested))
+  if inRange(3, 8) {
+    Console.println("true")
+  } else {
+    Console.println("false")
+  }
+}

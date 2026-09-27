@@ -1,0 +1,31 @@
+fn readCount() -> Result[Int, String] uses IO {
+  match List.head(Process.args()) {
+    None => Err("expected one non-negative integer argument")
+    Some(argument) => match Int.parse(argument) {
+      None => Err("expected one non-negative integer argument")
+      Some(count) => if count < 0 {
+        Err("expected one non-negative integer argument")
+      } else {
+        Ok(count)
+      }
+    }
+  }
+}
+
+fn countUp(current: Int, end: Int, total: Int) -> Int {
+  if current < end {
+    countUp(current + 1, end, total + current)
+  } else {
+    total
+  }
+}
+
+fn main() -> Result[Unit, String] uses IO {
+  match readCount() {
+    Err(message) => Err(message)
+    Ok(count) => {
+      Console.println(Int.toString(countUp(0, count, 0)))
+      Ok(())
+    }
+  }
+}

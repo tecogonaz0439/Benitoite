@@ -1,0 +1,9 @@
+// spec: 01-06 型の推論と型注釈
+fn consume(value: Int) -> Unit {
+    ()
+}
+
+fn main() -> Unit {
+    let _ = consume([])
+    ()
+}

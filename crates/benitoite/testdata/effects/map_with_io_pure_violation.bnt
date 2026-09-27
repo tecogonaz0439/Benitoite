@@ -1,0 +1,11 @@
+// spec: 01-06 エフェクト変数の具体化
+fn map_and_print(values: List[Int]) -> List[Int] {
+    List.map(values, fn(value) {
+        Console.println(Int.toString(value))
+        value
+    })
+}
+
+fn main() -> Unit {
+    ()
+}

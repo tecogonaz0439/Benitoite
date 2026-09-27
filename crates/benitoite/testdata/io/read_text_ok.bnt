@@ -1,0 +1,8 @@
+// spec: 01-07 IO の失敗
+// spec: 01-07 IO を行う組み込み関数
+fn main() -> Unit uses IO {
+  match File.readText("input.txt") {
+    Ok(contents) => Console.println(Int.toString(List.length(String.lines(contents))))
+    Err(_) => Console.println("read failed")
+  }
+}

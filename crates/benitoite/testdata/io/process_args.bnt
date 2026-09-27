@@ -1,0 +1,5 @@
+// spec: 01-07 プログラムの入口
+// spec: 01-07 IO を行う組み込み関数
+fn main() -> Unit uses IO {
+  Console.println(String.join(Process.args(), "|"))
+}

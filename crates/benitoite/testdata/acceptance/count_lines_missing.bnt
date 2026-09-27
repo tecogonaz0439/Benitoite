@@ -1,0 +1,11 @@
+// spec: 01-07 プログラムの入口
+// spec: 01-07 IO を行う組み込み関数
+fn main() -> Result[Unit, String] uses IO {
+  match File.readText("missing.txt") {
+    Ok(text) => {
+      Console.println(Int.toString(List.length(String.lines(text))))
+      Ok(())
+    }
+    Err(_) => Err("could not read input.txt")
+  }
+}

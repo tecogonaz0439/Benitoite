@@ -1,0 +1,10 @@
+// spec: 01-06 エフェクトの包含
+fn accept(actions: List[fn() -> Unit uses IO]) -> Unit uses IO {
+    ()
+}
+
+fn main() -> Unit uses IO {
+    let pure: List[fn() -> Unit] = [fn() { () }]
+    accept(pure)
+    ()
+}

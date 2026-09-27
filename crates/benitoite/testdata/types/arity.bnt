@@ -1,0 +1,14 @@
+// spec: 01-05 値の構築
+type Shape {
+    Rect(Int, Int)
+}
+
+fn add(left: Int, right: Int) -> Int {
+    left + right
+}
+
+fn main() -> Unit {
+    let _ = add(1)
+    let _ = Shape.Rect(1)
+    ()
+}

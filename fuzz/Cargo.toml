@@ -1,0 +1,36 @@
+[package]
+name = "benitoite-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+license = "MIT OR Apache-2.0"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "=0.4.13"
+
+[dependencies.benitoite]
+path = "../crates/benitoite"
+
+[[bin]]
+name = "check_bytes"
+path = "fuzz_targets/check_bytes.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "check_mutated"
+path = "fuzz_targets/check_mutated.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "compile_ok"
+path = "fuzz_targets/compile_ok.rs"
+test = false
+doc = false
+bench = false

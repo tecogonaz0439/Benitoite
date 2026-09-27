@@ -1,0 +1,10 @@
+// spec: 01-03 局所の束縛の有効範囲
+type Shape {
+  Rect(Int, Int)
+}
+
+fn main() -> Unit {
+  match Shape.Rect(1, 2) {
+    Shape.Rect(width, width) => ()
+  }
+}

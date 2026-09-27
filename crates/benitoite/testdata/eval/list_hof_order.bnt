@@ -1,0 +1,36 @@
+// spec: 01-08 評価順序
+fn main() -> Unit uses IO {
+  let values = [1, 2, 3]
+  let mapped = List.map(values, fn(value) {
+    Console.println("map " + Int.toString(value))
+    value * 2
+  })
+  Console.println(String.join(List.map(mapped, fn(value) { Int.toString(value) }), ","))
+  let filtered = List.filter(values, fn(value) {
+    Console.println("filter " + Int.toString(value))
+    value != 2
+  })
+  Console.println(String.join(List.map(filtered, fn(value) { Int.toString(value) }), ","))
+  let total = List.fold(values, 0, fn(acc, value) {
+    Console.println("fold " + Int.toString(acc) + " " + Int.toString(value))
+    acc + value
+  })
+  Console.println(Int.toString(total))
+  List.forEach(values, fn(value) { Console.println("each " + Int.toString(value)) })
+  Console.println(if List.any(values, fn(value) {
+    Console.println("any " + Int.toString(value))
+    value == 2
+  }) { "true" } else { "false" })
+  Console.println(if List.all(values, fn(value) {
+    Console.println("all " + Int.toString(value))
+    value < 2
+  }) { "true" } else { "false" })
+  let found = List.find(values, fn(value) {
+    Console.println("find " + Int.toString(value))
+    value == 2
+  })
+  Console.println(match found {
+    Some(value) => Int.toString(value)
+    None => "None"
+  })
+}

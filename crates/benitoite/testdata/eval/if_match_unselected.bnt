@@ -1,0 +1,17 @@
+// spec: 01-08 評価順序
+type Choice {
+  First
+  Second
+}
+
+fn main() -> Unit uses IO {
+  if true {
+    Console.println("if-selected")
+  } else {
+    Console.println("if-unselected")
+  }
+  match Choice.First {
+    Choice.First => Console.println("match-selected")
+    Choice.Second => Console.println("match-unselected")
+  }
+}

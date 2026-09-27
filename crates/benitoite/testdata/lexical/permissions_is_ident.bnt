@@ -1,0 +1,9 @@
+// spec: 01-01 キーワード
+// spec: 01-01 識別子
+fn main() -> Unit uses IO {
+  let permissions = 1
+  let with = 2
+  let record = 3
+  let from = 4
+  Console.println(Int.toString(permissions + with + record + from))
+}

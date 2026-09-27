@@ -1,0 +1,12 @@
+// spec: 01-06 エフェクト変数の具体化
+// spec: 01-06 prelude の関数の型
+// spec: 01-07 IO エフェクトが表す操作
+fn main() -> Unit uses IO {
+    let pure_values = List.map([1, 2], fn(value) { value + 1 })
+    Console.println(Int.toString(List.length(pure_values)))
+    let _ = List.map([1, 2], fn(value) {
+        Console.println(Int.toString(value))
+        value
+    })
+    ()
+}

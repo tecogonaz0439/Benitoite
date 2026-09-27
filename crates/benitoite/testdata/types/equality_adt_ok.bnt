@@ -1,0 +1,17 @@
+// spec: 01-06 等値の型
+// spec: 01-05 prelude が定める型
+// spec: 01-04 型の一覧
+fn show_bool(value: Bool) -> String {
+    if value { "true" } else { "false" }
+}
+
+type Wrapped[T] {
+    WrappedValue(T)
+}
+
+fn main() -> Unit uses IO {
+    let value = Wrapped.WrappedValue([1, 2])
+    Console.println(show_bool(value == Wrapped.WrappedValue([1, 2])))
+    Console.println(show_bool([1, 2] == [1, 2]))
+    Console.println(show_bool(Some(0.0 / 0.0) == Some(0.0 / 0.0)))
+}

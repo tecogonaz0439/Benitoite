@@ -1,0 +1,23 @@
+// spec: 01-04 Float
+// spec: 01-04 型の変換
+fn show_truncate(value: Float) -> String {
+  match Float.truncate(value) {
+    Some(number) => "Some(" + Int.toString(number) + ")"
+    None => "None"
+  }
+}
+
+fn main() -> Unit uses IO {
+  Console.println(Float.toString(Float.floor(-0.0)))
+  Console.println(Float.toString(Float.floor(-0.5)))
+  Console.println(Float.toString(Float.ceil(-0.0)))
+  Console.println(Float.toString(Float.ceil(-0.5)))
+  Console.println(Float.toString(Float.round(0.0)))
+  Console.println(Float.toString(Float.round(-0.4)))
+  Console.println(Float.toString(Float.round(0.5)))
+  Console.println(Float.toString(Float.round(-0.5)))
+  Console.println(show_truncate(3.9))
+  Console.println(show_truncate(1.0 / 0.0))
+  Console.println(show_truncate(0.0 / 0.0))
+  Console.println(show_truncate(9223372036854775808.0))
+}

@@ -1,0 +1,20 @@
+// spec: 01-05 パターン
+// spec: 01-05 match の意味
+type Expr {
+    Lit(Int)
+    Add(Expr, Expr)
+}
+
+fn evaluate(expression: Expr) -> Int {
+    match expression {
+        Expr.Lit(0) => 0
+        Expr.Lit(value) => value
+        Expr.Add(Expr.Lit(left), Expr.Lit(right)) => left + right
+        Expr.Add(_, _) => -1
+    }
+}
+
+fn main() -> Unit uses IO {
+    let expression = Expr.Add(Expr.Lit(2), Expr.Lit(3))
+    Console.println(Int.toString(evaluate(expression)))
+}

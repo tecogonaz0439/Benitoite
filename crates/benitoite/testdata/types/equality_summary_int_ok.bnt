@@ -1,0 +1,15 @@
+// spec: 01-06 等値の型
+// spec: 01-06 型
+fn show_bool(value: Bool) -> String {
+    if value { "true" } else { "false" }
+}
+
+type Nest[T] {
+    Leaf(T)
+    Deep(Nest[List[T]])
+}
+
+fn main() -> Unit uses IO {
+    let number = Nest.Leaf(1)
+    Console.println(show_bool(number == number))
+}

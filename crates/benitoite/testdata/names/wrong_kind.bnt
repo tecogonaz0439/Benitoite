@@ -1,0 +1,11 @@
+// spec: 01-03 トップレベルの名前空間
+// spec: 01-03 修飾しない名前の解決
+type Shape {
+  Circle(Int)
+}
+
+fn main() -> Unit {
+  let _ = Shape
+  let _ = Circle(1)
+  ()
+}

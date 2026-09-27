@@ -1,0 +1,25 @@
+// spec: 01-05 網羅性の検査
+fn int_case(value: Int) -> Unit {
+    match value {
+        0 => ()
+        1 => ()
+    }
+}
+
+fn string_case(value: String) -> Unit {
+    match value {
+        "a" => ()
+        "b" => ()
+    }
+}
+
+fn char_case(value: Char) -> Unit {
+    match value {
+        'a' => ()
+        'b' => ()
+    }
+}
+
+fn main() -> Unit {
+    ()
+}

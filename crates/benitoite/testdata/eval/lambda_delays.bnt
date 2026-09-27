@@ -1,0 +1,8 @@
+// spec: 01-08 正格評価
+// spec: 01-07 IO が起きる時期と順序
+fn main() -> Unit uses IO {
+  let later = fn() { Console.println("later") }
+  Console.println("created")
+  later()
+  later()
+}

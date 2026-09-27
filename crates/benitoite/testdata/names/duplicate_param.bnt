@@ -1,0 +1,7 @@
+// spec: 01-03 局所の束縛の有効範囲
+fn duplicate(value: Int, value: Int) -> Int { value }
+
+fn main() -> Unit {
+  let _callback = fn(value: Int, value: Int) { value }
+  ()
+}

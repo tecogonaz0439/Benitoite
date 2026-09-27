@@ -1,0 +1,10 @@
+// spec: 01-01 整数リテラル
+fn main() -> Unit uses IO {
+  Console.println(Int.toString(0))
+  Console.println(Int.toString(42))
+  Console.println(Int.toString(1_000_000))
+  Console.println(Int.toString(0xff))
+  Console.println(Int.toString(0xFF_FF))
+  Console.println(Int.toString(0o755))
+  Console.println(Int.toString(0b1010_0101))
+}

@@ -1,0 +1,1 @@
+{"kind":"check","severity":"error","code":"E0406","message":"values of type `fn() -> Int` cannot be compared with `==`","primary":{"file":"types/equality_function.bnt","start":{"line":7,"column":13,"offset":89},"end":{"line":7,"column":27,"offset":103},"label":""},"secondary":[],"notes":["types that contain functions or `IoError` cannot be compared with `==` or `!=`"],"helps":[]}

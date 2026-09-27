@@ -1,0 +1,4 @@
+// spec: 01-03 型パラメータとエフェクト変数の有効範囲
+type Shape { Item }
+fn listType[List](value: Int) -> Int { value }
+fn shapeType[Shape](value: Int) -> Int { value }

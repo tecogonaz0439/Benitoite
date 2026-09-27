@@ -1,0 +1,20 @@
+// spec: 01-08 関数の呼び出し
+type Tree {
+  Leaf(Int)
+  Branch(Tree, Tree)
+}
+
+fn sum(tree: Tree) -> Int {
+  match tree {
+    Tree.Leaf(value) => value
+    Tree.Branch(left, right) => sum(left) + sum(right)
+  }
+}
+
+fn main() -> Unit uses IO {
+  let tree = Tree.Branch(
+    Tree.Branch(Tree.Leaf(1), Tree.Leaf(2)),
+    Tree.Branch(Tree.Leaf(3), Tree.Leaf(4))
+  )
+  Console.println(Int.toString(sum(tree)))
+}

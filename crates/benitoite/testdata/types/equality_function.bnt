@@ -1,0 +1,9 @@
+// spec: 01-06 等値の型
+fn value() -> Int {
+    1
+}
+
+fn main() -> Unit {
+    let _ = value == value
+    ()
+}

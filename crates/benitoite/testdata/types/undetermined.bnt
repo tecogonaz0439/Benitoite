@@ -1,0 +1,9 @@
+// spec: 01-06 演算子の型付け
+fn bad() -> Unit {
+    let add = fn(left, right) { left + right }
+    ()
+}
+
+fn main() -> Unit {
+    ()
+}

@@ -1,0 +1,14 @@
+// spec: 01-05 パターン
+type Shape {
+    Rect(Float, Float)
+}
+
+fn area(shape: Shape) -> Float {
+    match shape {
+        Shape.Rect(width) => width
+    }
+}
+
+fn main() -> Unit {
+    ()
+}

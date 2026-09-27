@@ -1,0 +1,18 @@
+// spec: 01-02 文法
+// spec: 01-01 改行による区切り
+fn main() -> Unit uses IO {
+  let price = 7
+  let quantity = 6
+  let total = price
+    * quantity
+
+  let count = [1, 2, 3]
+    |> List.filter(fn(value: Int) { value > 1 })
+    |> List.length
+
+  if true {
+    Console.println(Int.toString(total + count))
+  } else {
+    Console.println("bad")
+  }
+}

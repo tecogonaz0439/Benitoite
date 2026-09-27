@@ -1,0 +1,8 @@
+// spec: 01-07 IO を行う組み込み関数
+fn main() -> Unit uses IO {
+    Console.println(Int.toString(List.length(Process.args())))
+    match File.readText("message.txt") {
+        Ok(contents) => Console.println(contents)
+        Err(error) => Console.println(IoError.message(error))
+    }
+}

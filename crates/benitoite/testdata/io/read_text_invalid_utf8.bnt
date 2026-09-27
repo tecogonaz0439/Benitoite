@@ -1,0 +1,9 @@
+// spec: 01-07 外部から受け取る文字列
+// spec: 01-07 IO を行う組み込み関数
+// spec: 01-04 String
+fn main() -> Unit uses IO {
+  match File.readText("input.txt") {
+    Ok(_) => Console.println("unexpected success")
+    Err(_) => Console.println("invalid UTF-8 rejected")
+  }
+}

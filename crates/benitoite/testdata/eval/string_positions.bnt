@@ -1,0 +1,31 @@
+// spec: 01-04 String
+// spec: 01-04 型の一覧
+fn show_string(value: Option[String]) -> String {
+  match value {
+    Some(text) => "Some(" + text + ")"
+    None => "None"
+  }
+}
+
+fn show_char(value: Option[Char]) -> String {
+  match value {
+    Some(character) => "Some(" + Char.toString(character) + ")"
+    None => "None"
+  }
+}
+
+fn main() -> Unit uses IO {
+  let text = "Aé😀"
+  Console.println(Int.toString(String.byteLength(text)))
+  Console.println(Int.toString(String.charCount(text)))
+  Console.println(show_string(String.byteSlice(text, 1, 3)))
+  Console.println(show_string(String.byteSlice(text, 2, 4)))
+  Console.println(show_string(String.byteSlice(text, 0, 7)))
+  Console.println(show_char(String.charAt(text, 2)))
+  Console.println(show_char(String.charAt(text, -1)))
+  Console.println(show_char(String.charAt(text, 3)))
+  Console.println(show_string(String.charSlice(text, 1, 3)))
+  Console.println(show_string(String.charSlice(text, 0, 4)))
+  Console.println(show_string(String.charSlice(text, -1, 1)))
+  Console.println(show_string(String.byteSlice(text, 3, 2)))
+}

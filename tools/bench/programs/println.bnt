@@ -1,0 +1,33 @@
+fn readCount() -> Result[Int, String] uses IO {
+  match List.head(Process.args()) {
+    None => Err("expected one non-negative integer argument")
+    Some(argument) => match Int.parse(argument) {
+      None => Err("expected one non-negative integer argument")
+      Some(count) => if count < 0 {
+        Err("expected one non-negative integer argument")
+      } else {
+        Ok(count)
+      }
+    }
+  }
+}
+
+fn printLines(current: Int, end: Int) -> Unit uses IO {
+  if current < end {
+    Console.println("line " + Int.toString(current))
+    printLines(current + 1, end)
+  } else {
+    ()
+  }
+}
+
+fn main() -> Result[Unit, String] uses IO {
+  match readCount() {
+    Err(message) => Err(message)
+    Ok(count) => {
+      printLines(0, count)
+      Console.println("done " + Int.toString(count))
+      Ok(())
+    }
+  }
+}

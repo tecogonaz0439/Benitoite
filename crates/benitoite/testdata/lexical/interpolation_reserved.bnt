@@ -1,0 +1,7 @@
+// spec: 01-01 文字列リテラル
+fn main() -> Unit {
+  let _ = "a${x}"
+  let _ = "$a"
+  let _ = "a\${x}"
+  ()
+}

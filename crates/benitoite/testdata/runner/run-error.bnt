@@ -1,0 +1,5 @@
+// spec: 01-09 失敗の表し方
+fn main() -> Result[Unit, String] uses IO {
+    Console.println("before error")
+    Err("failed")
+}

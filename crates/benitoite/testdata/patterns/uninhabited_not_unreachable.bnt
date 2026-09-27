@@ -1,0 +1,14 @@
+// spec: 01-05 選ばれない分岐の検査
+type L {
+    Mk(L)
+}
+
+fn inspect(value: L) -> Unit {
+    match value {
+        L.Mk(_) => ()
+    }
+}
+
+fn main() -> Unit uses IO {
+    Console.println("ok")
+}

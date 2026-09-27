@@ -1,0 +1,15 @@
+// spec: 01-12 型付け規則
+// spec: 01-12 計算
+fn make() -> fn() -> Unit {
+    fn() { () }
+}
+
+fn widen() -> (fn() -> Unit uses IO) {
+    make()
+}
+
+fn main() -> Unit uses IO {
+    let action = widen()
+    action()
+    Console.println("widened")
+}

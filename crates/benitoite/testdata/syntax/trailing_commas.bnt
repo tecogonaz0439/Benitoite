@@ -1,0 +1,10 @@
+// spec: 01-02 文法
+// spec: 01-02 プログラムと宣言
+fn identity[T,](value: T,) -> T { value }
+fn count[T,](values: List[T,]) -> Int { List.length(values) }
+fn add(left: Int, right: Int,) -> Int { left + right }
+
+fn main() -> Unit uses IO {
+  let values = [3, 4,]
+  Console.println(Int.toString(add(identity(1,), identity(2,),) + count(values)))
+}

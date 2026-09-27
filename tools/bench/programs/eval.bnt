@@ -1,0 +1,61 @@
+type Expr {
+  Lit(Int)
+  Add(Expr, Expr)
+  Inc(Expr)
+  Scale(Expr, Int)
+}
+
+fn readCount() -> Result[Int, String] uses IO {
+  match List.head(Process.args()) {
+    None => Err("expected one non-negative integer argument")
+    Some(argument) => match Int.parse(argument) {
+      None => Err("expected one non-negative integer argument")
+      Some(count) => if count < 0 {
+        Err("expected one non-negative integer argument")
+      } else {
+        Ok(count)
+      }
+    }
+  }
+}
+
+fn buildExpression(depth: Int) -> Expr {
+  if depth == 0 {
+    Expr.Lit(1)
+  } else {
+    let smaller = buildExpression(depth - 1)
+    match Int.mod(depth, 3) {
+      0 => Expr.Add(smaller, Expr.Lit(depth))
+      1 => Expr.Inc(smaller)
+      _ => Expr.Scale(smaller, 1)
+    }
+  }
+}
+
+fn evaluate(expression: Expr) -> Int {
+  match expression {
+    Expr.Lit(value) => value
+    Expr.Add(left, right) => evaluate(left) + evaluate(right)
+    Expr.Inc(inner) => evaluate(inner) + 1
+    Expr.Scale(inner, factor) => evaluate(inner) * factor
+  }
+}
+
+// 式の深さは固定し、入力の回数だけ評価を繰り返す。深さを入力にすると、比較対象の処理系の再帰の上限に先に達するからである。
+fn repeatEvaluate(expression: Expr, count: Int, total: Int) -> Int {
+  if count == 0 {
+    total
+  } else {
+    repeatEvaluate(expression, count - 1, total + evaluate(expression))
+  }
+}
+
+fn main() -> Result[Unit, String] uses IO {
+  match readCount() {
+    Err(message) => Err(message)
+    Ok(count) => {
+      Console.println(Int.toString(repeatEvaluate(buildExpression(500), count, 0)))
+      Ok(())
+    }
+  }
+}

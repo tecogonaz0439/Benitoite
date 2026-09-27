@@ -1,0 +1,5 @@
+// spec: 01-04 Int
+// spec: 01-08 実行時エラーによる停止
+fn main() -> Unit uses IO {
+  Console.println(Int.toString(-(-9223372036854775808)))
+}

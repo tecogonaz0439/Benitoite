@@ -1,0 +1,5 @@
+// spec: 01-08 資源の不足
+// spec: 01-04 String
+fn main() -> Unit uses IO {
+  Console.println(Int.toString(String.byteLength(String.repeat("ab", 1000000000))))
+}

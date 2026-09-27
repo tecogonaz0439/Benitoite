@@ -1,0 +1,4 @@
+// spec: 01-02 文法
+fn bad(callback: fn(fn() -> Unit uses IO, List[Int]) -> Unit) -> Unit {
+  ()
+}

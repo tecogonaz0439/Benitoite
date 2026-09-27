@@ -1,0 +1,15 @@
+// spec: 01-08 評価順序
+fn read() -> List[String] uses IO {
+  Console.println("read")
+  ["", "x"]
+}
+
+fn keep_nonempty(value: String) -> Bool uses IO {
+  Console.println(value)
+  !String.isEmpty(value)
+}
+
+fn main() -> Unit uses IO {
+  let filtered = read() |> List.filter(keep_nonempty)
+  Console.println(Int.toString(List.length(filtered)))
+}

@@ -1,0 +1,8 @@
+// spec: 01-02 ドット記法
+fn increment(x: Int) -> Int { x + 1 }
+
+fn main() -> Unit {
+  let xs = [1]
+  let _ = xs.map(increment)
+  ()
+}

@@ -1,0 +1,13 @@
+// spec: 01-05 選ばれない分岐の検査
+fn classify(value: Option[Bool]) -> Unit {
+    match value {
+        Some(true) => ()
+        Some(false) => ()
+        Some(_) => ()
+        None => ()
+    }
+}
+
+fn main() -> Unit {
+    ()
+}

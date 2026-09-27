@@ -1,0 +1,4 @@
+// spec: 01-07 プログラムの入口
+fn main[effect E](action: fn() -> Unit uses E) -> Unit uses E {
+    ()
+}

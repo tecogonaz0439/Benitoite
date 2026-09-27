@@ -1,0 +1,9 @@
+// spec: 01-03 修飾しない名前の解決
+// spec: 01-03 トップレベルの名前空間
+fn mapInto(value: Int) -> Int { value + 100 }
+
+fn main() -> Unit uses IO {
+  let values = [1, 2] |> List.map(fn(value) { value + 1 })
+  let result = mapInto(1) + List.length(values)
+  Console.println(Int.toString(result))
+}

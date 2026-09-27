@@ -1,0 +1,17 @@
+// spec: 01-05 網羅性の検査
+fn float_name(value: Float) -> String {
+    match value {
+        _ => "float"
+    }
+}
+
+fn list_size(values: List[Int]) -> Int {
+    match values {
+        items => List.length(items)
+    }
+}
+
+fn main() -> Unit uses IO {
+    Console.println(float_name(1.0))
+    Console.println(Int.toString(list_size([1, 2])))
+}

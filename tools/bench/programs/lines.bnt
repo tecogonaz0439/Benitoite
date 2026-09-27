@@ -1,0 +1,12 @@
+fn main() -> Result[Unit, String] uses IO {
+  match List.head(Process.args()) {
+    None => Err("expected one file path argument")
+    Some(path) => match File.readText(path) {
+      Err(error) => Err(IoError.message(error))
+      Ok(text) => {
+        Console.println(Int.toString(List.length(String.lines(text))))
+        Ok(())
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+[workspace]
+resolver = "3"
+members = ["crates/benitoite"]
+exclude = ["fuzz"]
+
+[workspace.package]
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.98"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+wildcard_enum_match_arm = "deny"
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+indexing_slicing = "deny"
+arithmetic_side_effects = "deny"
+let_underscore_must_use = "deny"
+clone_on_ref_ptr = "deny"
+
+[profile.release]
+overflow-checks = true
+panic = "unwind"

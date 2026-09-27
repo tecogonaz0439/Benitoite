@@ -1,0 +1,12 @@
+// spec: 01-05 網羅性の検査
+// spec: 01-05 prelude が定める型
+fn describe(value: Option[Int]) -> String {
+    match value {
+        Some(1) => "one"
+        None => "none"
+    }
+}
+
+fn main() -> Unit {
+    ()
+}

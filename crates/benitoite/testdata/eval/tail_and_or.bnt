@@ -1,0 +1,9 @@
+// spec: 01-04 Bool
+// spec: 01-08 末尾呼び出し
+fn is_even(n: Int) -> Bool {
+  if n == 0 { true } else { n != 0 && is_even(n - 1) }
+}
+
+fn main() -> Unit uses IO {
+  Console.println(if is_even(1000000) { "true" } else { "false" })
+}

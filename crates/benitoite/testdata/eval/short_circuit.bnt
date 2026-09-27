@@ -1,0 +1,16 @@
+// spec: 01-04 Bool
+// spec: 01-08 評価順序
+fn log_true() -> Bool uses IO {
+  Console.println("right evaluated")
+  true
+}
+
+fn bool_text(value: Bool) -> String {
+  if value { "true" } else { "false" }
+}
+
+fn main() -> Unit uses IO {
+  let and_result = false && log_true()
+  let or_result = true || log_true()
+  Console.println(bool_text(and_result) + " " + bool_text(or_result))
+}

@@ -1,0 +1,7 @@
+// spec: 01-06 等値の型
+// spec: 01-07 IO の失敗
+// spec: 01-05 prelude が定める型
+fn main() -> Unit uses IO {
+    let _ = File.readText("left.txt") == File.readText("right.txt")
+    ()
+}

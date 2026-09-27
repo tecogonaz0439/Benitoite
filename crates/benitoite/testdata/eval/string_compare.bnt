@@ -1,0 +1,13 @@
+// spec: 01-04 String
+// spec: 01-04 型の一覧
+fn bool_text(value: Bool) -> String {
+  if value { "true" } else { "false" }
+}
+
+fn main() -> Unit uses IO {
+  let nfc = "é"
+  let nfd = "é"
+  Console.println(bool_text(nfc == nfd))
+  Console.println(bool_text(nfd < nfc))
+  Console.println(bool_text("apple" < "banana"))
+}

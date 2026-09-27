@@ -1,0 +1,6 @@
+// spec: 01-08 関数の呼び出し
+fn main() -> Unit uses IO {
+  let captured = 7
+  let add_captured = fn(value: Int) { captured + value }
+  Console.println(Int.toString(add_captured(5)))
+}

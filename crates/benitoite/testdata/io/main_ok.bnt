@@ -1,0 +1,5 @@
+// spec: 01-07 プログラムの入口
+fn main() -> Result[Unit, String] uses IO {
+  Console.println("main returned ok")
+  Ok(())
+}

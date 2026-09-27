@@ -1,0 +1,15 @@
+// spec: 01-06 型の推論と型注釈
+fn take_ints(values: List[Int]) -> Unit {
+    ()
+}
+
+fn take_strings(values: List[String]) -> Unit {
+    ()
+}
+
+fn main() -> Unit {
+    let values = [1, "wrong"]
+    take_ints(values)
+    take_strings(values)
+    ()
+}

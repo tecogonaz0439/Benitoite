@@ -1,0 +1,11 @@
+// spec: 01-08 正格評価
+// 100 万要素では二方式と参照インタプリタを走らせるゴールデン検査に 81 秒かかったため、5 万要素に抑える。64 KiB の上限で長さに比例した入れ子も検出する（設計書 03-06「関数を引数にとる関数の共通の規則」、07-03「差分テスト」）。
+fn main() -> Unit uses IO {
+  let values = List.range(0, 50000)
+  let mapped = List.map(values, fn(value) { value })
+  let filtered = List.filter(mapped, fn(value) { value < 0 })
+  let total = List.fold(mapped, 0, fn(acc, value) { acc + value })
+  Console.println(Int.toString(List.length(mapped)))
+  Console.println(Int.toString(List.length(filtered)))
+  Console.println(Int.toString(total))
+}

@@ -1,0 +1,11 @@
+// spec: 01-03 シャドーイング
+// spec: 01-03 局所の束縛の有効範囲
+fn main() -> Unit uses IO {
+  let x = 1
+  let result = {
+    let x = 2
+    let x = x + 1
+    x
+  }
+  Console.println(Int.toString(result * 10 + x))
+}

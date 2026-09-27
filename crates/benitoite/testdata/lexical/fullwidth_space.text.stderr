@@ -1,0 +1,9 @@
+error[E0103]: character U+3000 is not allowed here
+  --> lexical/fullwidth_space.bnt:4:2
+   |
+ 4 |     　()
+   |     ^ not allowed outside literals and comments
+   |
+   = note: only printable ASCII characters, spaces, tabs, and newlines may appear outside string literals, character literals, and comments
+
+error: could not check lexical/fullwidth_space.bnt due to 1 previous error

@@ -1,0 +1,14 @@
+// spec: 01-06 多相
+// spec: 01-05 prelude が定める型
+// spec: 01-06 prelude の関数の型
+fn getOr[T](value: Option[T], fallback: T) -> T {
+    match value {
+        Some(item) => item
+        None => fallback
+    }
+}
+
+fn main() -> Unit uses IO {
+    Console.println(Int.toString(getOr(Some(7), 0)))
+    Console.println(getOr(Some("ready"), "fallback"))
+}

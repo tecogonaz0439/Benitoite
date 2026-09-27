@@ -1,0 +1,12 @@
+// spec: 01-02 文法
+fn accepts(callback: fn((fn() -> Unit uses IO), Int) -> Unit) -> Unit {
+  ()
+}
+
+fn returnsCallback() -> fn() -> Unit uses IO {
+  fn() -> Unit uses IO { Console.println("callback") }
+}
+
+fn main() -> Unit {
+  ()
+}

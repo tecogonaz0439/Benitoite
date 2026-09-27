@@ -1,0 +1,15 @@
+// spec: 01-05 網羅性の検査
+type Toggle {
+  On
+  Off
+}
+
+fn is_on(value: Toggle) -> Bool {
+  match value {
+    Toggle.On => true
+  }
+}
+
+fn main() -> Unit {
+  if is_on(Toggle.On) { () } else { () }
+}

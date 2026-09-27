@@ -1,0 +1,18 @@
+// spec: 01-05 型の宣言
+// spec: 01-05 網羅性の検査
+type IntList {
+  Nil
+  Cons(Int, IntList)
+}
+
+fn sum(values: IntList) -> Int {
+  match values {
+    IntList.Nil => 0
+    IntList.Cons(value, rest) => value + sum(rest)
+  }
+}
+
+fn main() -> Unit uses IO {
+  let values = IntList.Cons(1, IntList.Cons(2, IntList.Cons(3, IntList.Nil)))
+  Console.println(Int.toString(sum(values)))
+}

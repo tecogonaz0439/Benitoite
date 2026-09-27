@@ -1,0 +1,28 @@
+// spec: 01-04 型の変換
+fn show_int(value: Option[Int]) -> String {
+  match value {
+    Some(number) => "Some(" + Int.toString(number) + ")"
+    None => "None"
+  }
+}
+
+fn show_float(value: Option[Float]) -> String {
+  match value {
+    Some(number) => "Some(" + Float.toString(number) + ")"
+    None => "None"
+  }
+}
+
+fn main() -> Unit uses IO {
+  Console.println(show_int(Int.parse("-42")))
+  Console.println(show_int(Int.parse("1_000")))
+  Console.println(show_int(Int.parse("+42")))
+  Console.println(show_int(Int.parse(" 42")))
+  Console.println(show_int(Int.parse("9223372036854775808")))
+  Console.println(show_float(Float.parse("42")))
+  Console.println(show_float(Float.parse("1.5e2")))
+  Console.println(show_float(Float.parse("NaN")))
+  Console.println(show_float(Float.parse("Infinity")))
+  Console.println(show_float(Float.parse(" 1.0")))
+  Console.println(show_float(Float.parse("-1e-9999")))
+}

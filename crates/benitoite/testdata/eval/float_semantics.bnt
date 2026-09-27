@@ -1,0 +1,22 @@
+// spec: 01-04 Float
+fn bool_text(value: Bool) -> String {
+  if value { "true" } else { "false" }
+}
+
+fn main() -> Unit uses IO {
+  let positive_infinity = 1.0 / 0.0
+  let nan = 0.0 / 0.0
+  Console.println(Float.toString(positive_infinity))
+  Console.println(Float.toString(nan))
+  Console.println(Float.toString(Float.abs(-2.5)))
+  Console.println(Float.toString(Float.sqrt(9.0)))
+  Console.println(Float.toString(Float.sqrt(-1.0)))
+  Console.println(Float.toString(1.5 + 2.5))
+  Console.println(Float.toString(5.0 - 2.0))
+  Console.println(Float.toString(2.0 * 3.0))
+  Console.println(bool_text(0.0 == -0.0))
+  Console.println(bool_text(nan == nan))
+  Console.println(bool_text(nan != nan))
+  Console.println(bool_text(nan < 0.0))
+  Console.println(bool_text(Float.isNaN(nan)))
+}

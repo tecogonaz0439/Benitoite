@@ -1,0 +1,11 @@
+// spec: 01-06 式のエフェクト
+fn invalid_lambda[effect E](action: fn() -> Unit uses E) -> Unit uses E {
+    let invalid = fn() -> Unit uses E {
+        Console.println("not allowed")
+    }
+    ()
+}
+
+fn main() -> Unit {
+    ()
+}

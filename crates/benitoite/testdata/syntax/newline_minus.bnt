@@ -1,0 +1,10 @@
+// spec: 01-02 ブロックと文
+// spec: 01-01 改行による区切り
+fn negative() -> Int {
+  let _base = 3
+  -2
+}
+
+fn main() -> Unit uses IO {
+  Console.println(Int.toString(negative()))
+}

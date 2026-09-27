@@ -1,0 +1,39 @@
+// spec: 01-04 String
+fn show_strings(values: List[String]) -> String {
+  String.join(values, "|")
+}
+
+fn main() -> Unit uses IO {
+  Console.println(show_strings(String.split("a,,b", ",")))
+  Console.println(Int.toString(List.length(String.split("", ","))))
+  Console.println(show_strings(String.split("ab", "")))
+  Console.println(Int.toString(List.length(String.split("", ""))))
+  Console.println(show_strings(String.lines("a\r\nb\n")))
+  Console.println(show_strings(String.lines("a\n\nb")))
+  Console.println(Int.toString(List.length(String.lines(""))))
+  Console.println(String.join(["a", "b"], ","))
+  Console.println(String.trim(" \t hello \r\n"))
+  Console.println(String.replace("abc", "", "x"))
+  Console.println(String.replace("aba", "a", "x"))
+  Console.println(String.repeat("ab", 0))
+  Console.println(String.repeat("ab", -2))
+  Console.println(show_strings(List.map(String.chars("aé"), fn(character) { Char.toString(character) })))
+  Console.println(String.fromChars(String.chars("aé")))
+  Console.println(if String.contains("abc", "") { "true" } else { "false" })
+  Console.println(if String.startsWith("abc", "ab") { "true" } else { "false" })
+  Console.println(if String.endsWith("abc", "bc") { "true" } else { "false" })
+  Console.println(if String.isEmpty("") { "true" } else { "false" })
+  Console.println(if String.isEmpty("x") { "true" } else { "false" })
+  Console.println(match String.byteIndexOf("aéa", "é") {
+    Some(index) => Int.toString(index)
+    None => "None"
+  })
+  Console.println(match String.byteIndexOf("abc", "") {
+    Some(index) => Int.toString(index)
+    None => "None"
+  })
+  Console.println(match String.byteIndexOf("abc", "z") {
+    Some(index) => Int.toString(index)
+    None => "None"
+  })
+}

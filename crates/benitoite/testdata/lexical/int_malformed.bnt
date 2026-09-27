@@ -1,0 +1,13 @@
+// spec: 01-01 字句の種類
+// spec: 01-01 整数リテラル
+// spec: 01-01 数値リテラルの直後の文字
+fn main() -> Unit {
+  let _ = 007
+  let _ = 1__0
+  let _ = 0x
+  let _ = 0XFF
+  let _ = 12abc
+  let _ = 0xfg
+  let _ = 1_
+  ()
+}

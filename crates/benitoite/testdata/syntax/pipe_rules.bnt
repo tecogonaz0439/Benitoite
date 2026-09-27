@@ -1,0 +1,26 @@
+// spec: 01-02 パイプ
+fn nonEmpty(value: String) -> Bool { value != "" }
+
+fn clamp(low: Int, value: Int, high: Int) -> Int {
+  if value < low { low } else if value > high { high } else { value }
+}
+
+fn makeOffset(offset: Int) -> fn(Int) -> Int {
+  fn(value: Int) { value + offset }
+}
+
+fn makeAdder(seed: Int) -> fn(Int, Int, Int, Int) -> Int {
+  fn(a: Int, b: Int, c: Int, d: Int) { seed + a + b + c + d }
+}
+
+fn main() -> Unit uses IO {
+  let lines = ["", "x", "y"]
+  let filtered = lines |> List.filter(nonEmpty)
+  let count = lines |> List.length
+  let middle = 7 |> clamp(0, _, 100)
+  let doubled = 3 |> fn(value: Int) { value * 2 }
+  let parenthesized = 3 |> (makeOffset(4))
+  let nested = 1 |> makeAdder(2)(3, 4, 5)
+  let total = List.length(filtered) + count + middle + doubled + parenthesized + nested
+  Console.println(Int.toString(total))
+}

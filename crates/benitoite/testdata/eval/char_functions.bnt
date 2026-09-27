@@ -1,0 +1,27 @@
+// spec: 01-04 Char
+fn show_char(value: Option[Char]) -> String {
+  match value {
+    Some(character) => "Some(" + Char.toString(character) + ")"
+    None => "None"
+  }
+}
+
+fn bool_text(value: Bool) -> String {
+  if value { "true" } else { "false" }
+}
+
+fn main() -> Unit uses IO {
+  Console.println(Int.toString(Char.toInt('A')))
+  Console.println(show_char(Char.fromInt(1114111)))
+  Console.println(show_char(Char.fromInt(55296)))
+  Console.println(show_char(Char.fromInt(1114112)))
+  Console.println(show_char(Char.fromInt(-1)))
+  Console.println(Char.toString('é'))
+  Console.println(bool_text(Char.isAsciiDigit('7')))
+  Console.println(bool_text(Char.isAsciiDigit('é')))
+  Console.println(bool_text(Char.isAsciiWhitespace(' ')))
+  Console.println(bool_text(Char.isAsciiWhitespace('\t')))
+  Console.println(bool_text(Char.isAsciiWhitespace('\n')))
+  Console.println(bool_text(Char.isAsciiWhitespace('\r')))
+  Console.println(bool_text(Char.isAsciiWhitespace('\u{b}')))
+}

@@ -1,0 +1,9 @@
+// spec: 01-08 末尾呼び出し
+// 最小実行版はデバッグビルドで動かすため、所要時間を抑えて 100 万回にする。
+fn count_down(n: Int, count: Int) -> Int {
+  if n == 0 { count } else { count_down(n - 1, count + 1) }
+}
+
+fn main() -> Unit uses IO {
+  Console.println(Int.toString(count_down(1000000, 0)))
+}

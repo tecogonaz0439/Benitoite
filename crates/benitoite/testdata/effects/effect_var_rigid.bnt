@@ -1,0 +1,9 @@
+// spec: 01-06 関数の型とエフェクト
+fn use_effect[effect E](action: fn() -> Unit uses E, io_action: fn() -> Unit uses IO) -> Unit uses E {
+    let widened: fn() -> Unit uses E = io_action
+    action()
+}
+
+fn main() -> Unit {
+    ()
+}

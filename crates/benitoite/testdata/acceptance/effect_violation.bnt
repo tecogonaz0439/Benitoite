@@ -1,0 +1,12 @@
+// spec: 01-07 エフェクトの型と権限制御の区別
+fn write_message() -> Unit uses IO {
+  Console.println("not allowed here")
+}
+
+fn pure_caller() -> Unit {
+  write_message()
+}
+
+fn main() -> Unit {
+  pure_caller()
+}

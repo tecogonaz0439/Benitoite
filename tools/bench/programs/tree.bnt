@@ -1,0 +1,43 @@
+type Tree {
+  Leaf(Int)
+  Branch(Tree, Tree)
+}
+
+fn readCount() -> Result[Int, String] uses IO {
+  match List.head(Process.args()) {
+    None => Err("expected one non-negative integer argument")
+    Some(argument) => match Int.parse(argument) {
+      None => Err("expected one non-negative integer argument")
+      Some(count) => if count < 0 {
+        Err("expected one non-negative integer argument")
+      } else {
+        Ok(count)
+      }
+    }
+  }
+}
+
+fn buildTree(depth: Int) -> Tree {
+  if depth == 0 {
+    Tree.Leaf(1)
+  } else {
+    Tree.Branch(buildTree(depth - 1), buildTree(depth - 1))
+  }
+}
+
+fn sumLeaves(tree: Tree) -> Int {
+  match tree {
+    Tree.Leaf(value) => value
+    Tree.Branch(left, right) => sumLeaves(left) + sumLeaves(right)
+  }
+}
+
+fn main() -> Result[Unit, String] uses IO {
+  match readCount() {
+    Err(message) => Err(message)
+    Ok(depth) => {
+      Console.println(Int.toString(sumLeaves(buildTree(depth))))
+      Ok(())
+    }
+  }
+}

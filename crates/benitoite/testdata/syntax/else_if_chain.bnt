@@ -1,0 +1,13 @@
+// spec: 01-02 条件分岐
+fn main() -> Unit uses IO {
+  let value = 2
+  if value == 1 {
+    Console.println("one")
+  } else if value == 2 {
+    Console.println("two")
+  } else if value == 3 {
+    Console.println("three")
+  } else {
+    Console.println("other")
+  }
+}
