@@ -1,13 +1,13 @@
 # 0071. スクリプトに権限を宣言し、宣言にない操作を実行時に拒否する
 
-- 状態: 採択
+- 状態: 採択（書き方を [0108](0108-keyword-blocks-closed-by-end.md) で改めた。パスの基準を示す `script` を [0131](0131-script-directory-and-permission-base.md) で加えた。決定 1 と 3 を [0147](0147-remove-permission-declaration-syntax.md) で廃止した。決定 2 は【方針】として残した。許可の与え方は [0183](0183-single-policy-for-all-permission-layers.md) と [0187](0187-standalone-reads-user-policy-file.md) で決めた）
 - 日付: 2026-09-26
 - 関連章: [エフェクト](../01-spec/01-07-effects.md), [セキュリティモデル](../07-quality/07-01-security-model.md), [構文](../01-spec/01-02-syntax.md), [字句構造](../01-spec/01-01-lexical.md), [先行事例索引](../08-appendix/08-02-prior-art.md)
 - 関連する未決事項: [OPEN-015](../open-issues.md#open-015), [OPEN-018](../open-issues.md#open-018)
 
 ## 背景
 
-v1 では、利用者が許可した範囲の外の操作を、実行時に拒否する（[ロードマップ](../00-overview/00-03-roadmap.md)）。同じ「ファイルの読み取り」でも、読む対象は実行時まで確定しないことがある。利用者には、実行前に確認できる操作の範囲と、実行時まで確定しない事項とを分けて示す（[目的と設計原則](../00-overview/00-01-goals.md)）。設計原則 2 は、契約と権限の変更を見落とさせないことを求める。
+初回リリース版では、利用者が許可した範囲の外の操作を、実行時に拒否する（[ロードマップ](../00-overview/00-03-roadmap.md)）。同じ「ファイルの読み取り」でも、読む対象は実行時まで確定しないことがある。利用者には、実行前に確認できる操作の範囲と、実行時まで確定しない事項とを分けて示す（[目的と設計原則](../00-overview/00-01-goals.md)）。設計原則 2 は、契約と権限の変更を見落とさせないことを求める。
 
 ## 決定
 

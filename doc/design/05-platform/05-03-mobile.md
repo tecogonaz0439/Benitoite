@@ -1,20 +1,33 @@
 # モバイル・Android系
 
-- 状態: 未着手
-- 関連ADR: [0076](../decisions/0076-initial-implementation-in-rust.md)
-- 未決事項: [OPEN-010](../open-issues.md#open-010)
+- 状態: 草稿
+- 関連ADR: [0076](../decisions/0076-initial-implementation-in-rust.md), [0174](../decisions/0174-mobile-as-dedicated-app-after-first-release.md)
+- 未決事項: なし
 - 移行元: [設計メモ](../sources/fp-language-design.md) 22
 
 ## 目的と範囲
 
-iOS/Android のプロファイル定義、cgo の例外。初期の対象とするかは[配布形態](05-01-distribution.md)の対応表で示し、この章は環境ごとの差を扱う。
+iOS と Android で Benitoite のスクリプトを実行する形と、その検討の時期を定める。
 
-範囲の記述の「cgo の例外」は Go を前提にしている。処理系を Rust で実装することにした（[ADR 0076](../decisions/0076-initial-implementation-in-rust.md)）ので、本章を書くときに見直す。
+現在の版は、初回リリース版で扱わないことと、検討の方向と時期だけを定める。具体的な設計は、検討を始めるときに本章に書く。設計メモ 22 の「cgo の例外」は、Go で実装する前提の論点であり、処理系を Rust で実装することにした（[ADR 0076](../decisions/0076-initial-implementation-in-rust.md)）ので扱わない。
 
 ## 前提
 
+iOS はアプリの中から別のプロセスを起動できず、Android 10 以降はアプリが書き込んだ実行可能ファイルを実行できない（設計メモ 22 の記述であり、検討を始めるときに一次資料で確かめる）。どちらも、外部コマンドの起動（[IO のモジュール](../03-interop/03-07-io-modules.md)の `Process.Run`）と、コマンドラインの処理系の配布に影響する。
+
 ## 仕様
+
+【決定】初回リリース版では、モバイル（iOS・Android）を対象にしない。初回リリース版の言語仕様・処理系の設計・実装は、モバイルでの実行を前提にしない（[ADR 0174](../decisions/0174-mobile-as-dedicated-app-after-first-release.md)）。
+
+【方針】モバイルでは、端末でコマンドラインの処理系を動かす形ではなく、処理系を組み込んだ専用のアプリとして提供する方向で検討する。
+
+【決定】検討は初回リリース版の後に始め、実装は正式リリース版（`1.0.0`。[ロードマップ](../00-overview/00-03-roadmap.md)の「バージョンとコードネーム」）の時点か、それより後とする。検討を始めるときに、次の点を決める。
+
+- アプリの形（スクリプトの受け取り方、権限の確認と実行結果の示し方）と配布の形
+- 処理系をアプリに組み込む API（[スクリプト実行と埋め込み](../02-impl/02-11-embedding.md)）
+- 外部コマンドを起動できない環境での `Process.Run` の扱い
+- プラットフォームの権限の仕組みと、実行時の権限制御の関係
 
 ## 未決事項
 
-- [OPEN-010](../open-issues.md#open-010): モバイルでのサブプロセス実行可否と配布形態
+なし。検討を始めるときに、決める点を未決事項として登録する。

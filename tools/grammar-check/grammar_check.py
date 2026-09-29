@@ -1,22 +1,27 @@
 # -*- coding: utf-8 -*-
-# 設計書の 01-spec の例が、01-02 の「v1 の文法の全体」で読めるかを確かめる。
+# 設計書の 01-spec の例が、01-02 の「初回リリース版の文法の全体」で読めるかを確かめる。
 # 使い方は README.md を参照。
 import re, sys, glob, os
 sys.setrecursionlimit(100000)
 D = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'doc', 'design', '01-spec') + os.sep
 
-KW = set('effect else false fn if let match true type uses permissions lazy with trait impl record import pub'.split())
-RESERVED = set('as break class continue derive for handle instance loop module mut resume return var where while'.split())
-SYMS = ['..', '|>', '->', '=>', '==', '!=', '<=', '>=', '&&', '||',
-        '+', '-', '*', '/', '%', '<', '>', '!', '=', ':', ',', '.', '(', ')', '[', ']', '{', '}', '_', '?']
-RULE2 = set('+ - * / % == != < <= > >= && || |> ! = -> => : , . ( [ {'.split()) | set('else fn if let match type uses impl import lazy permissions pub record trait with'.split())
-RULE3 = set('+ * / % == != < <= > >= && || |> . -> => else'.split())
+KW = set('and case div do effect else end false function if lambda let not of or return then true try type uses when lazy with trait implement record import public mod handle resume const'.split())
+RESERVED = set()
+SYMS = ['..', '|>', '->', '<>', '<=', '>=',
+        '+', '-', '*', '/', '<', '>', '=', ':', ',', '.', '(', ')', '[', ']', '{', '}', '_', '&', '@']
+RULE2 = set('+ - * / = <> < <= > >= |> -> : , . ( [ &'.split()) | set('and or not div mod case else function if lambda let of return then type uses when do implement import lazy public record trait try with handle'.split())
+RULE3 = set('+ * / = <> < <= > >= and or div mod |> . -> else then of do'.split())
+BLOCKKW = set('lambda if case with lazy handle'.split())
 
 class LexError(Exception): pass
 
 def lex(src):
     toks = []  # (kind, text, nl_before)
     i = 0; n = len(src); nl = False
+    # シェバンの行（設計書 01-01「シェバンの行（初回リリース版）」）: 先頭の #! から行末までを読み飛ばす
+    if src.startswith('\ufeff'): i = 1
+    if src.startswith('#!', i):
+        while i < n and src[i] != '\n': i += 1
     modes = []  # stack for interpolation: brace depth
     def push(kind, text):
         nonlocal nl
@@ -47,6 +52,17 @@ def lex(src):
             if modes: raise LexError('comment in interpolation')
             while i < n and src[i] != '\n': i += 1
             continue
+        # 初回リリース版の複数行の文字列と raw 文字列。文法の照合では一つの文字列リテラルとして扱う
+        if src.startswith('r"""', i) or src.startswith('"""', i):
+            start = i + (4 if src[i] == 'r' else 3)
+            m = re.search(r'\n[ \t]*"""', src[start:])
+            if not m: raise LexError('unterminated multi-line string')
+            push('StringLit', src[start:start + m.start()])
+            i = start + m.end(); continue
+        if src.startswith('r"', i):
+            j = src.find('"', i + 2)
+            if j < 0 or '\n' in src[i + 2:j]: raise LexError('unterminated raw string')
+            push('StringLit', src[i + 2:j]); i = j + 1; continue
         if c == '"':
             i = scan_string(i + 1, 'start'); continue
         if c == "'":
@@ -56,6 +72,9 @@ def lex(src):
         m = re.match(r'0x[0-9a-fA-F_]+|\d[\d_]*(\.\d[\d_]*)?([eE][+-]?\d+)?', src[i:])
         if m and c.isdigit():
             t = m.group(0)
+            # 初回リリース版の Decimal のリテラル（10 進の数に接尾辞 m。指数部は持たない）
+            if src.startswith('m', i + len(t)) and not t.startswith('0x') and 'e' not in t.lower():
+                push('DecimalLit', t + 'm'); i += len(t) + 1; continue
             push('FloatLit' if ('.' in t or 'e' in t.lower() and not t.startswith('0x')) else 'IntLit', t)
             i += len(t); continue
         m = re.match(r'[A-Za-z_][A-Za-z0-9_]*', src[i:])
@@ -73,15 +92,19 @@ def lex(src):
                     if modes[-1] == 0:
                         modes.pop(); i = scan_string(i + 1, 'mid'); break
                     modes[-1] -= 1
+                if s in '{}' and not modes:
+                    raise LexError('brace outside interpolation')
                 push('sym', s); i += len(s); break
         else:
             raise LexError('bad char %r at %d' % (c, i))
     # newline insertion
     out = []; stack = []
+    guard_depth = None  # when の後、同じ深さの : までの間（ガードの if はブロックを開かない）
     for k, (kind, text, nlb) in enumerate(toks):
         if nlb and out:
             prev = out[-1]
-            ws = (stack and stack[-1] in '([') or (prev[1] in RULE2 and prev[0] in ('sym', 'kw')) \
+            after_end = len(out) >= 2 and out[-2] == ('kw', 'end')
+            ws = (stack and stack[-1] in '([') or (prev[1] in RULE2 and prev[0] in ('sym', 'kw') and not after_end) \
                  or (text in RULE3 and kind in ('sym', 'kw'))
             if not ws and out[-1][0] != 'NL':
                 out.append(('NL', '\n'))
@@ -90,6 +113,18 @@ def lex(src):
         out.append((kind, text))
         if kind == 'sym' and text in '([{': stack.append(text)
         if kind == 'sym' and text in ')]}' and stack: stack.pop()
+        if kind == 'kw' and text == 'when' and stack and stack[-1] in ('case', 'handle'):
+            guard_depth = len(stack)
+        if kind == 'sym' and text == ':' and guard_depth == len(stack):
+            guard_depth = None
+        if kind == 'kw' and text in BLOCKKW:
+            prevtok = out[-2] if len(out) >= 2 else None
+            if prevtok == ('kw', 'end'):
+                if stack and stack[-1] == text: stack.pop()
+            elif text == 'if' and guard_depth == len(stack):
+                pass
+            elif not (text == 'if' and prevtok == ('kw', 'else')):
+                stack.append(text)
         if kind in ('StrStart',): stack.append('{')
         if kind in ('StrEnd',) and stack: stack.pop()
     return out
@@ -135,7 +170,7 @@ def parse_grammar(text):
         rules[name] = (params, body)
     return rules
 
-TERMS = {'LowerIdent', 'UpperIdent', 'IntLit', 'FloatLit', 'StringLit', 'CharLit', 'NL', 'StrStart', 'StrMid', 'StrEnd'}
+TERMS = {'LowerIdent', 'UpperIdent', 'IntLit', 'FloatLit', 'DecimalLit', 'StringLit', 'CharLit', 'NL', 'StrStart', 'StrMid', 'StrEnd'}
 
 class Matcher:
     def __init__(self, rules, toks):
@@ -193,7 +228,7 @@ def blocks(path):
 
 syn = open(D + '01-02-syntax.md', encoding='utf-8').read()
 helpers = re.search(r'```text\n(CommaList.*?)```', syn, re.S).group(1)
-full = re.search(r'### v1 の文法の全体.*?```text\n(.*?)```', syn, re.S).group(1)
+full = re.search(r'### 初回リリース版の文法の全体.*?```text\n(.*?)```', syn, re.S).group(1)
 rules = parse_grammar(helpers + '\n' + full)
 rules['Stmts'] = (None, ('call', 'LineList', 'Stmt'))
 
@@ -210,14 +245,14 @@ def check(src):
 # 文法で読めなくて正しい例（字句の一覧、誤りの例、本体を省略したシグネチャなど）。
 # 例の先頭の行で指定する。
 EXPECTED = {
-    ('01-01-lexical.md', 'effect  else  false  fn  if  let  match  true  type  uses'): '字句の一覧',
-    ('01-01-lexical.md', 'as  break  class  continue  derive  for  handle  impl'): '予約語の一覧',
-    ('01-01-lexical.md', '+   -   *   /   %'): '記号の一覧',
-    ('01-01-lexical.md', '..  ?'): '記号の一覧',
-    ('01-01-lexical.md', 'fn double(x: Int) -> Int'): '誤りの例（{ を次の行に書く）',
-    ('01-02-syntax.md', 'fn((fn() -> Unit uses IO), Int) -> Unit        // fn(fn() -> Unit uses IO, Int) -> Unit は誤り'): '型と、本体を省略した宣言',
-    ('01-06-type-system.md', 'fn map[T, U, effect E](xs: List[T], f: fn(T) -> U uses E) -> List[U] uses E   // 本体は省略'): '本体を省略した宣言',
-    ('01-06-type-system.md', 'fn runAll(actions: List[fn() -> Unit uses IO]) -> Unit uses IO   // 本体は省略'): '本体を省略した宣言',
+    ('01-01-lexical.md', 'and  case  div  effect  else  end  false  function  if  lambda  let  mod  not'): '字句の一覧',
+    ('01-01-lexical.md', 'handle  implement  import  lazy  public  resume  trait'): '予約語の一覧',
+    ('01-01-lexical.md', '+   -   *   /'): '記号の一覧',
+    ('01-01-lexical.md', '..  &'): '記号の一覧',
+    ('01-01-lexical.md', 'function double(x: Integer)'): '誤りの例（戻り値の型を次の行に書く）',
+    ('01-02-syntax.md', 'function((function() -> Unit uses Console.Write), Integer) -> Unit        // function(function() -> Unit uses Console.Write, Integer) -> Unit は誤り'): '型と、本体を省略した宣言',
+    ('01-06-type-system.md', 'function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E): List[U] uses E   // 本体は省略'): '本体を省略した宣言',
+    ('01-06-type-system.md', 'function runAll(actions: List[function() -> Unit uses Console.Write]): Unit uses Console.Write   // 本体は省略'): '本体を省略した宣言',
 }
 
 def is_source(b):

@@ -395,7 +395,7 @@ impl Lexer<'_> {
             match self.byte(j) {
                 Some(b'"') => break,
                 Some(b'$') if self.byte(add(j, 1)) == Some(b'{') => {
-                    // `${` は v1 の文字列補間のために予約する（01-01「文字列リテラル」）
+                    // `${` は初回リリース版の文字列補間のために予約する（01-01「文字列リテラル」）
                     let span = self.span(j, add(j, 2));
                     self.report(
                         DiagBuilder::new(DiagCode::E0111)
@@ -1084,7 +1084,7 @@ mod tests {
                     K::Eof,
                 ],
             ),
-            // v1 で初めてキーワードになる語で、最小実行版で予約していないもの
+            // 初回リリース版で初めてキーワードになる語で、最小実行版で予約していないもの
             (
                 "permissions with record from",
                 &[

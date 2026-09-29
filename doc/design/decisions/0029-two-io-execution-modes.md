@@ -1,6 +1,6 @@
 # 0029. IO の実行方式として、ハンドラを直接呼ぶ方式と、要求を返して止まる方式の二つを同じ VM に入れる
 
-- 状態: 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた。どちらを残すかは [0088](0088-keep-both-io-execution-modes.md) で両方を残すと決めた）
+- 状態: 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた。どちらを残すかは [0088](0088-keep-both-io-execution-modes.md) で両方を残すと決めた。並行処理では、進められるタスクがなくなったときに要求の並びを返すことを [0162](0162-event-loop-and-worker-threads-for-io.md) と[仮想機械](../02-impl/02-08-vm.md)で定めた）
 - 日付: 2026-09-26
 - 関連章: [仮想機械](../02-impl/02-08-vm.md), [ランタイム](../02-impl/02-09-runtime.md), [性能](../07-quality/07-02-performance.md), [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)
 - 関連する未決事項: [OPEN-009](../open-issues.md#open-009)

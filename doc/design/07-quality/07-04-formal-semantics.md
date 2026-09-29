@@ -1,7 +1,7 @@
 # 形式意味論と検証
 
 - 状態: 未着手
-- 関連ADR: [0014](../decisions/0014-fine-grain-cbv-core.md)
+- 関連ADR: [0014](../decisions/0014-fine-grain-cbv-core.md), [0018](../decisions/0018-reference-interpreter.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0213](../decisions/0213-formal-verification-stage-1-in-first-release.md)
 - 未決事項: なし
 - 移行元: [設計メモ](../sources/fp-language-design.md) 25.1, 25.3, 0.2
 

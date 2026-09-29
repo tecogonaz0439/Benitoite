@@ -105,7 +105,7 @@ fn is_binary_operator(kind: TokenKind) -> bool {
     )
 }
 
-/// 規則 2 の一覧。v1 のキーワードは最小実行版の字句にないので含めない。
+/// 規則 2 の一覧。初回リリース版のキーワードは最小実行版の字句にないので含めない。
 fn continues_after(kind: TokenKind) -> bool {
     use TokenKind as K;
     is_binary_operator(kind)

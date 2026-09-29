@@ -57,7 +57,7 @@ def load_specification(spec_directory: Path) -> Specification:
             key = (chapter, match.group(2).strip())
             all_headings.add(key)
             heading = key[1]
-            if "（v1）" in heading or heading.startswith("v1 の"):
+            if "（初回リリース版）" in heading or heading.startswith("初回リリース版の"):
                 continue
             if key in NON_RULE_SECTIONS:
                 continue

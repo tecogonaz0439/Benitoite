@@ -1,6 +1,6 @@
 # 0028. VM の値を、種類の印と即値の欄と参照の欄を持つ構造体で表す
 
-- 状態: 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた）
+- 状態: 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた。値の表現は [0240](0240-runtime-redesign-in-first-release-plan.md) の作り直しで改める）
 - 日付: 2026-09-26
 - 関連章: [仮想機械](../02-impl/02-08-vm.md), [ランタイム](../02-impl/02-09-runtime.md)
 - 関連する未決事項: [OPEN-009](../open-issues.md#open-009)

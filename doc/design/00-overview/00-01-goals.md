@@ -1,8 +1,8 @@
 # 目的と設計原則
 
-- 状態: 草稿
-- 関連ADR: [0001](../decisions/0001-lazy-impatient-hubris-concept.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0004](../decisions/0004-surface-syntax-skeleton.md)
-- 未決事項: [OPEN-011](../open-issues.md#open-011), [OPEN-012](../open-issues.md#open-012), [OPEN-013](../open-issues.md#open-013), [OPEN-015](../open-issues.md#open-015)
+- 状態: 確定
+- 関連ADR: [0001](../decisions/0001-lazy-impatient-hubris-concept.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0004](../decisions/0004-surface-syntax-skeleton.md), [0132](../decisions/0132-language-name-benitoite.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0241](../decisions/0241-command-name-and-extension.md), [0245](../decisions/0245-perl-virtues-source-and-fact-check-timing.md)
+- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-015](../open-issues.md#open-015), [OPEN-055](../open-issues.md#open-055)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 0.1
 
 ## 目的と範囲
@@ -11,7 +11,7 @@
 
 ## 前提
 
-言語の名称は仮称を `Benitoite`（ベニトアイト）とする（[OPEN-011](../open-issues.md#open-011)）。本章でいう「利用者」は Benitoite のスクリプトを使う人を、「設計者」は Benitoite を設計・実装する人を指す。
+言語の名称は `Benitoite`（ベニトアイト）とする（[ADR 0132](../decisions/0132-language-name-benitoite.md)）。CLI のコマンドの名前は `benitoite`、スクリプトのファイルの拡張子は `.bnt` とする（[ADR 0241](../decisions/0241-command-name-and-extension.md)）。本章でいう「利用者」は Benitoite のスクリプトを使う人を、「設計者」は Benitoite を設計・実装する人を指す。
 
 ## 仕様
 
@@ -20,7 +20,7 @@
 > 怠惰・短気・傲慢を再び
 > （Laziness, Impatience, and Hubris — Again）
 
-上はこの方向を一言で示す標語である。三つの美徳の英語表記は、Larry Wall らの『Programming Perl』での呼び方に合わせる。この呼び方の出典は【要検証】である（[OPEN-013](../open-issues.md#open-013)）。
+上はこの方向を一言で示す標語である。三つの美徳の英語表記は、Larry Wall らの『Programming Perl』での呼び方に合わせる。Perl の文書 `perlglossary` は、同書の第 4 版の用語集に基づき、laziness・impatience・hubris をプログラマの三つの美徳と定義している（[ADR 0245](../decisions/0245-perl-virtues-source-and-fact-check-timing.md)）。
 
 【方針】Benitoite は、利用者が「怠惰・短気・傲慢」（Larry Wall のいうプログラマの三大美徳）のままで、言語の詳細を学ばずに、LLM によるスクリプトの作成・修正を通じて作業を自動化できることを目指す。利用者は、行いたい作業と、スクリプトに許可する操作を決める。言語処理系（以下、処理系）は、スクリプトが型とエフェクトの規則に適合しているかを検査する。LLM は、コードの作成・修正と、診断の説明を担う。
 
@@ -39,6 +39,8 @@
 【方針】静的検査で確認するのは、言語仕様が定める型とエフェクトの規則にスクリプトが適合していることである。検査を通ったことだけを根拠に、処理結果が利用者の意図に合うこと、外部との通信やファイル操作が成功すること、処理が終了することは保証しない。例えば、集計の条件を「以上」から「超える」へ変えても、型とエフェクトは変わらないことがある。
 
 【方針】エフェクトの静的な追跡と、実行時に許可する操作の制御（権限）は、別の機構として区別する（[設計メモ](../sources/fp-language-design.md) 3.2）。同じ「ファイルの読み取り」というエフェクトでも、読む対象は実行時まで確定しないことがある。利用者には、実行前に確認できる操作の範囲と、実行時まで確定しない事項とを分けて示す。
+
+【決定】実行時の権限制御と、それを OS のサンドボックスでも強制する仕組みは、処理系をサーバとして動かす形（サーバモード）とあわせて、初回リリース版の後に提供する（[ADR 0177](../decisions/0177-server-mode-after-first-release.md)、[OPEN-055](../open-issues.md#open-055)）。それまでの版が提供する保証は静的検査だけであり、スクリプトは処理系を起動した利用者の OS の権限で行える操作をすべて行える。スクリプトが触れる範囲の制限は、処理系を起動する側（Agent Skills を実行するハーネスのサンドボックス、コンテナ、OS の権限）に委ねる。実行時の権限制御を持たない版も、宣言する保証の範囲をロードマップに示したうえで、利用者に提供してよい。
 
 各マイルストーンで提供する検査と権限制御の範囲は[ロードマップ](00-03-roadmap.md)で定める。
 
@@ -61,7 +63,7 @@
 
 【方針】想定する利用者はプログラマに限らない。利用者は LLM にスクリプトを書かせ、次の二つの接点で Benitoite に関わる。
 
-1. **主な接点**: コードを読まずに、実行前にスクリプトが行いうること（エフェクトと権限）を確認し、実行後に結果と失敗の理由を確認する。
+1. **主な接点**: コードを読まずに、実行前にスクリプトが行いうること（エフェクトと権限）を確認し、実行後に結果と失敗の理由を確認する。権限の確認は、実行時の権限制御とあわせてサーバモードで提供する（前述の「保証の範囲」）。
 2. **副次的な接点**: 出力する文字列の書式など、コードの表面の一部をときどき直接直す。
 
 コードを書くのは主に LLM である。処理系が出す情報の第一の読み手は、用途によって分ける。コードの誤りの診断は LLM を第一、人間を第二の読み手とする。権限の説明と実行結果は、利用者が判断に使うので、人間を第一の読み手とする。
@@ -106,7 +108,6 @@
 
 ## 未決事項
 
-- [OPEN-011](../open-issues.md#open-011): 言語の正式名称
 - [OPEN-012](../open-issues.md#open-012): 構文の種類ごとの LLM の生成精度
-- [OPEN-013](../open-issues.md#open-013): 標語で使う三大美徳の英語表記の出典
 - [OPEN-015](../open-issues.md#open-015): 契約の変更と権限の差分を利用者に示す方法
+- [OPEN-055](../open-issues.md#open-055): サーバモードの設計

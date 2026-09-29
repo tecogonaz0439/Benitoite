@@ -1,15 +1,15 @@
 # 字句構造
 
-- 状態: 草稿
-- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0005](../decisions/0005-direct-style-effects.md), [0008](../decisions/0008-effect-variables.md), [0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md), [0052](../decisions/0052-file-modules-and-named-import.md), [0053](../decisions/0053-private-by-default-with-pub.md), [0057](../decisions/0057-record-declaration-construction-update.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0067](../decisions/0067-with-resource-scope.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md)
-- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-029](../open-issues.md#open-029)
+- 状態: 確定
+- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0005](../decisions/0005-direct-style-effects.md), [0008](../decisions/0008-effect-variables.md), [0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md), [0053](../decisions/0053-private-by-default-with-pub.md), [0057](../decisions/0057-record-declaration-construction-update.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0067](../decisions/0067-with-resource-scope.md), [0092](../decisions/0092-unabbreviated-keywords.md), [0093](../decisions/0093-no-reserved-words-for-absent-constructs.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0098](../decisions/0098-constraints-joined-by-ampersand.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0109](../decisions/0109-lambda-keyword.md), [0110](../decisions/0110-if-then-end-if.md), [0111](../decisions/0111-case-of-when.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0121](../decisions/0121-pattern-extensions.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0123](../decisions/0123-top-level-constants.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md)
+- 未決事項: [OPEN-012](../open-issues.md#open-012)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 2.3, 23.1
 
 ## 目的と範囲
 
 ソースファイルの文字の並びを、字句（トークン）の並びに分ける規則を定める。対象は、文字集合、空白と改行、コメント、識別子、キーワード、リテラル（整数・浮動小数・文字列・文字）、演算子と区切り記号、改行による文の区切りである。
 
-現在の版は、最小実行版（[ロードマップ](../00-overview/00-03-roadmap.md)）の範囲と、v1 で加えるキーワードと文字列補間を定める。そのほかの v1 以降の字句（複数行の文字列など）は、その機能を設計するときに本章へ加える。
+現在の版は、最小実行版（[ロードマップ](../00-overview/00-03-roadmap.md)）の範囲と、初回リリース版で加えるキーワード、文字列補間、複数行の文字列、raw 文字列、ドキュメントコメントを定める。そのほかの初回リリース版以降の字句は、その機能を設計するときに本章へ加える。
 
 ## 前提
 
@@ -25,7 +25,26 @@
 
 【方針】文字列リテラル・文字リテラル・コメントの外に置ける文字は、ASCII の印字可能文字（U+0021〜U+007E）、空白（U+0020）、タブ（U+0009）、改行だけである。それ以外の文字（全角空白 U+3000、ノーブレークスペース U+00A0、制御文字など）をそれらの外に書くと、字句解析の誤りとする。見えない文字や見た目の似た文字によって、字面と意味が食い違うことを避けるためである。文字列リテラル・文字リテラル・コメントの中には、次の段落と後述の制限を除き、任意の Unicode の文字を書ける。
 
-【決定】双方向の制御文字（bidirectional control characters）である U+061C、U+200E、U+200F、U+202A〜U+202E、U+2066〜U+2069 と、ファイルの先頭以外の U+FEFF は、文字列リテラル・文字リテラル・コメントの中でも字句解析の誤りとする（[ADR 0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md)）。これらの文字を値として文字列や `Char` に含めるときは、エスケープ `\u{...}` で書く。右から左に書く文字（アラビア文字、ヘブライ文字）そのものは、文字列リテラル・文字リテラル・コメントの中に書ける。
+【決定】双方向の制御文字（bidirectional control characters）である U+061C、U+200E、U+200F、U+202A〜U+202E、U+2066〜U+2069 と、ファイルの先頭以外の U+FEFF は、文字列リテラル・文字リテラル・コメントの中でも字句解析の誤りとする（[ADR 0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md)）。これらの文字を値として文字列や `Character` に含めるときは、エスケープ `\u{...}` で書く。右から左に書く文字（アラビア文字、ヘブライ文字）そのものは、文字列リテラル・文字リテラル・コメントの中に書ける。
+
+### シェバンの行（初回リリース版）
+
+【決定】ソースファイルの先頭（先頭の U+FEFF があればその直後）が `#!` で始まるとき、`#!` から最初の改行の直前までを、シェバンの行（shebang line）として読み飛ばす（[ADR 0135](../decisions/0135-shebang-line-and-implicit-run.md)）。シェバンの行は字句にならず、プログラムの意味に影響しない。シェバンの行の改行は残し、行の番号はシェバンの行を 1 行目として数える。シェバンの行の中には、コメントと同じく任意の Unicode の文字を書ける（前節の双方向の制御文字などの制限は同じく適用する）。
+
+```text
+#!/usr/bin/env benitoite
+//! Summarize the access log.
+
+import Benitoite.IO.Console
+
+function main(): Unit uses Console.Write
+  Console.writeLine("done")
+end function
+```
+
+- シェバンの行は、どのソースファイルにも書ける。取り込むモジュールのファイルに書いても誤りとしない。
+- ファイルの先頭以外の `#` は、これまでどおり字句解析の誤りとする。
+- OS は、ファイルの 0 バイト目が `#!` でなければシェバンとして扱わない。先頭に U+FEFF を置いたファイルのシェバンの行は、字句解析では受け付けるが、OS からの起動には効かない。シェバンの行の推奨の形と、CLI での扱いは[CLI](../06-tooling/06-01-cli.md)で定める。
 
 ### 改行
 
@@ -42,6 +61,8 @@
 【方針】コメントは `//` から行末までである。コメントは字句の区切りとしてだけ働き、プログラムの意味に影響しない。複数行にわたるコメントの構文（`/* */` など）は設けない。同じ役割の構文を増やさない（原則 5）ためである。
 
 文字列リテラルの中の `//` は、コメントの始まりではない。
+
+【決定】初回リリース版では、`///` で始まるコメントと `//!` で始まるコメントを、ドキュメントコメントとする（[ADR 0125](../decisions/0125-doc-comments.md)）。`///` は直後の宣言の説明を、`//!` はそのファイルのモジュールの説明を書く。ドキュメントコメントも、字句の区切りとしてはほかのコメントと同じく働き、改行による区切りの判定（後述）でも、コメントだけの行として扱う。字句解析器は、ドキュメントコメントの中身を、構文解析器が宣言に結び付けられる形で残す。ドキュメントコメントを書ける位置は[構文](01-02-syntax.md)の「ドキュメントコメント（初回リリース版）」で定める。`/` を 4 つ以上並べて始まるコメント（`////`）は、ドキュメントコメントではなく普通のコメントである。
 
 ### 字句の種類
 
@@ -67,30 +88,43 @@
 【方針】次の語はキーワードであり、識別子として使えない。
 
 ```text
-effect  else  false  fn  if  let  match  true  type  uses
+and  case  div  effect  else  end  false  function  if  lambda  let  mod  not
+of  or  return  then  true  type  uses  when
 ```
 
-`effect` は、エフェクト変数の宣言に使う（[ADR 0008](../decisions/0008-effect-variables.md)）。
+`effect` は、エフェクト変数の宣言（[ADR 0008](../decisions/0008-effect-variables.md)）と、初回リリース版のエフェクトの宣言（[ADR 0118](../decisions/0118-effect-handlers.md)）に使う。`end` はブロックを閉じるのに（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）、`lambda` はラムダに（[ADR 0109](../decisions/0109-lambda-keyword.md)）、`then` は `if` に（[ADR 0110](../decisions/0110-if-then-end-if.md)）、`case`・`of`・`when` はパターンで分岐する式に（[ADR 0111](../decisions/0111-case-of-when.md)）、`and`・`or`・`not` は論理演算子に（[ADR 0112](../decisions/0112-pascal-style-operators.md)）、`div`・`mod` は整数の除算と剰余の演算子に（[ADR 0113](../decisions/0113-div-and-mod-operators.md)）、`return` は関数とラムダの本体から値を返すのに使う（[ADR 0096](../decisions/0096-explicit-return.md)）。
 
 【方針】次の語は、将来の構文のために予約する。識別子として使えないが、最小実行版では構文上の意味を持たない。
 
 ```text
-as  break  class  continue  derive  for  handle  impl
-import  instance  lazy  loop  module  mut  pub  resume  return
-trait  var  where  while
+handle  implement  import  lazy  public  resume  trait
 ```
 
-【決定】v1 では、`permissions` をキーワードにする（[ADR 0071](../decisions/0071-permission-declaration-and-runtime-denial.md)）。`permissions` は最小実行版では予約語ではないので、`permissions` を識別子に使ったスクリプトは v1 で誤りになる。
+これらの語は、初回リリース版でキーワードになる。`handle` と `resume` は、利用者が定義するエフェクトとハンドラの構文に使う（[ADR 0118](../decisions/0118-effect-handlers.md)）。
 
-【決定】v1 では、`lazy` と `with` をキーワードにする（[ADR 0066](../decisions/0066-explicit-laziness-pure-body.md)、[ADR 0067](../decisions/0067-with-resource-scope.md)）。`with` は最小実行版では予約語ではないので、`with` を識別子に使ったスクリプトは v1 で誤りになる。
+【方針】キーワード `function`・`public`・`implement` の省略形（`fn`・`pub`・`impl`）と `mut` は予約しない（[ADR 0092](../decisions/0092-unabbreviated-keywords.md)）。省略形を予約語に加えるかどうかは、[OPEN-012](../open-issues.md#open-012) の測定の結果で決める。
 
-【決定】v1 では、`trait` と `impl` をキーワードにする（[ADR 0060](../decisions/0060-trait-and-impl-syntax.md)）。
+【決定】初回リリース版では、`lazy`・`with`・`do` をキーワードにする（[ADR 0066](../decisions/0066-explicit-laziness-pure-body.md)、[ADR 0067](../decisions/0067-with-resource-scope.md)、[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。`do` は `with` の束縛の並びと本体を区切る。`with` は最小実行版では予約語ではないので、`with` を識別子に使ったスクリプトは初回リリース版で誤りになる。
 
-【決定】v1 では、`record` をキーワードにする（[ADR 0057](../decisions/0057-record-declaration-construction-update.md)）。`record` は最小実行版では予約語ではないので、`record` を識別子に使ったスクリプトは v1 で誤りになる。
+【決定】初回リリース版では、`trait` と `implement` をキーワードにする（[ADR 0060](../decisions/0060-trait-and-impl-syntax.md)、[ADR 0092](../decisions/0092-unabbreviated-keywords.md)）。
 
-【決定】v1 では、`import` と `pub` をキーワードにする（[ADR 0052](../decisions/0052-file-modules-and-named-import.md)、[ADR 0053](../decisions/0053-private-by-default-with-pub.md)）。`from` はキーワードにせず、import の宣言の中でだけ意味を持つ語とする。`from` は、それ以外の位置では識別子として使える。
+【決定】初回リリース版では、`try` をキーワードにする（[ADR 0097](../decisions/0097-prefix-try.md)）。`try` は最小実行版では予約語ではないので、`try` を識別子に使ったスクリプトは初回リリース版で誤りになる。
 
-予約語を識別子として使ったときは、その語が予約語であることを診断で示す。`for`・`while`・`loop`・`return` など、他の言語の制御構文に当たる語を予約するのは、LLM がそれらを書いたときに、「この言語にはその構文がない。再帰を使う」のように、誤りの原因を具体的に示す診断を出せるようにするためでもある。
+【決定】初回リリース版では、`record` をキーワードにする（[ADR 0057](../decisions/0057-record-declaration-construction-update.md)）。`record` は最小実行版では予約語ではないので、`record` を識別子に使ったスクリプトは初回リリース版で誤りになる。
+
+【決定】初回リリース版では、`const` をキーワードにする（[ADR 0123](../decisions/0123-top-level-constants.md)）。`const` は最小実行版では予約語ではないので、`const` を識別子に使ったスクリプトは初回リリース版で誤りになる。
+
+【決定】初回リリース版では、`import` と `public` をキーワードにする（[ADR 0126](../decisions/0126-import-by-module-name.md)、[ADR 0053](../decisions/0053-private-by-default-with-pub.md)、[ADR 0092](../decisions/0092-unabbreviated-keywords.md)）。
+
+【決定】`as` はキーワードにしない。`as` は import の宣言の中でだけ意味を持つ語であり（[ADR 0126](../decisions/0126-import-by-module-name.md)）、それ以外の位置では識別子として使える。`permissions` もキーワードにしない（[ADR 0147](../decisions/0147-remove-permission-declaration-syntax.md)）。
+
+予約語を識別子として使ったときは、その語が予約語であることを診断で示す。
+
+【方針】他の言語の制御構文に当たる語（`for`・`while`・`loop`・`break`・`continue`）と、`where`・`switch`・`match` は予約しない。`as` も予約しない（import の宣言の中でだけ意味を持つ）（[ADR 0093](../decisions/0093-no-reserved-words-for-absent-constructs.md)）。これらを予約語に加えて、「この言語にはその構文がない」と示す診断を出すかどうかは、[OPEN-012](../open-issues.md#open-012) の測定の結果で決める。
+
+`return` は、[ADR 0096](../decisions/0096-explicit-return.md) でキーワードにした。`switch` と `match` は、パターンで分岐する式のキーワードを `case` にしたので予約しない（[ADR 0111](../decisions/0111-case-of-when.md)）。
+
+【方針】使う予定の決まっていない構文の語（`class`・`instance`・`var`・`mutable`・`module`・`derive`）は予約しない。その語を使う構文を加えると決めたときに、キーワードにする（[ADR 0093](../decisions/0093-no-reserved-words-for-absent-constructs.md)）。
 
 ### 整数リテラル
 
@@ -121,13 +155,23 @@ trait  var  where  while
 
 浮動小数リテラルが表す値と丸めは、[基本型の意味論](01-04-types-basic.md)で定める。
 
+### Decimal リテラル（初回リリース版）
+
+【決定】初回リリース版では、`Decimal`（[基本型の意味論](01-04-types-basic.md)）のリテラルを設ける（[ADR 0114](../decisions/0114-decimal-type.md)）。`Decimal` のリテラルは、10 進の数字列か、10 進の数字列・小数点 `.`・10 進の数字列の並びに、接尾辞 `m` を続けた形をとる（`12m`、`1.25m`、`1_000.50m`）。
+
+- 小数点の前後の数字、先頭の `0`、桁の区切り `_` の規則は、浮動小数リテラルと同じである。
+- 指数部は持たない（`1e3m` は誤り）。16 進・8 進・2 進の形は設けない。
+- 接尾辞は小文字の `m` に限る（`1.5M` は誤り）。
+
 ### 数値リテラルの直後の文字
 
 【決定】整数リテラルと浮動小数リテラルの直後に、識別子に使える文字（英字、数字、`_`）が続けば、字句解析の誤りとする（[ADR 0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md)）。二つの字句に分けることはしない。`12abc` と `0xfg` は誤りである。浮動小数リテラルの直後に `.` と数字が続く場合（`1.5.2`）も誤りとする。
 
+初回リリース版では、10 進の数字列か小数点を含む 10 進の数の直後の `m` は、`Decimal` のリテラルの接尾辞として同じ字句に含める。接尾辞の直後に識別子に使える文字が続けば、同じく字句解析の誤りとする（`1.5mm` と `2mod` は誤り。`2 mod 3` のように空白で区切る）。
+
 ### 文字列リテラル
 
-【方針】文字列リテラルは、二重引用符 `"` で囲んだ文字の並びである。一つの文字列リテラルは一行に収めなければならず、リテラルの途中で改行すると誤りとする。
+【方針】文字列リテラルは、二重引用符 `"` で囲んだ文字の並びである。一つの文字列リテラルは一行に収めなければならず、リテラルの途中で改行すると誤りとする。初回リリース版の複数行の文字列と raw 文字列は、後述する。
 
 文字列リテラルの中では、次のエスケープシーケンスを使える。
 
@@ -145,12 +189,12 @@ trait  var  where  while
 
 制御文字（U+0000〜U+001F と U+007F）は、タブを除き、文字列リテラルの中に直接書けない。エスケープで書く。
 
-【方針】文字列リテラルの中の `${` は、v1 の文字列補間のために予約する。最小実行版では、`${` を含む文字列リテラルを誤りとし、`\$` でエスケープするよう診断で示す。`$` の後に `{` が続かない場合は、`$` はそのまま文字として扱う。最小実行版で書いた文字列リテラルの意味が、v1 で文字列補間を加えたときに変わらないようにするためである。
+【方針】文字列リテラルの中の `${` は、初回リリース版の文字列補間のために予約する。最小実行版では、`${` を含む文字列リテラルを誤りとし、`\$` でエスケープするよう診断で示す。`$` の後に `{` が続かない場合は、`$` はそのまま文字として扱う。最小実行版で書いた文字列リテラルの意味が、初回リリース版で文字列補間を加えたときに変わらないようにするためである。
 
-【決定】v1 では、文字列リテラルの中の `${` から、対応する `}` までを、文字列補間（string interpolation）の式とする（[ADR 0058](../decisions/0058-string-interpolation-of-base-types.md)）。
+【決定】初回リリース版では、文字列リテラルの中の `${` から、対応する `}` までを、文字列補間（string interpolation）の式とする（[ADR 0058](../decisions/0058-string-interpolation-of-base-types.md)）。
 
 - `${` と `}` の間には、式を一つ書く。空の `${}` は誤りとする。
-- 式の中には、`{` と `}` の組（ブロック、ラムダの本体など）と、ほかの文字列リテラル（その中の文字列補間を含む）を書ける。字句解析は、`${` の後を通常の字句の規則で字句に分け、字句としての `{` と `}` だけの入れ子を数える。文字リテラル・文字列リテラルの中の `{` と `}` は数えない。対応する `}` の字句で、文字列リテラルの残りに戻る。
+- 式の中には、ほかの文字列リテラル（その中の文字列補間を含む）を書ける。字句解析は、`${` の後を通常の字句の規則で字句に分け、文字リテラル・文字列リテラルの外で最初に現れる `}` で、文字列リテラルの残りに戻る。`{` と `}` は、文字列補間の区切りのほかには字句として使わない（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。
 - 文字列補間の式の中には、コメントを書けない。`//` は、`${` と `}` の間では誤りとする。
 - 文字列リテラルは一行に収める規則は、文字列補間の式にも適用する。式の途中で改行すると誤りとする。
 - `${` を文字として書くときは、最小実行版と同じく `\$` でエスケープする。
@@ -163,13 +207,44 @@ trait  var  where  while
 | 補間の中間（StrMid） | 式の後の `}` から、次の `${` まで | `}b${` |
 | 補間の終わり（StrEnd） | 最後の式の後の `}` から、閉じの `"` まで | `}c"` |
 
-各字句が表す文字列（上の例では `a`・`b`・`c`）は、エスケープを解いた後の文字の並びである。文法での扱いは[構文](01-02-syntax.md)の「文字列補間（v1）」で定める。
+各字句が表す文字列（上の例では `a`・`b`・`c`）は、エスケープを解いた後の文字の並びである。文法での扱いは[構文](01-02-syntax.md)の「文字列補間（初回リリース版）」で定める。
 
 式の型と、値を文字列にする規則は[型システム](01-06-type-system.md)と[基本型の意味論](01-04-types-basic.md)で定める。
 
+### 複数行の文字列と raw 文字列（初回リリース版）
+
+【決定】初回リリース版では、複数行の文字列 `"""…"""` と、raw 文字列 `r"…"`・`r"""…"""` を設ける（[ADR 0122](../decisions/0122-multiline-and-raw-strings.md)）。普通の文字列リテラル `"…"` は、これまでどおり一行に収める。
+
+```text
+let page = """
+    <html>
+      <p>Hello, ${name}</p>
+    </html>
+    """
+let digits = r"\d+"
+```
+
+【方針】複数行の文字列の規則は次のとおりである。
+
+- `"""` で始め、`"""` の直後で改行する。`"""` の後に、同じ行に文字を書くと誤りとする。
+- 行の先頭から空白（U+0020 とタブ）だけを置き、その後に `"""` を書いた行で閉じる。`"""` の後には、同じ行に式の続き（`)` や `,` など）を書いてよい。
+- 閉じる `"""` の前の空白の並びを、各行の先頭から除く。空白だけの行を除き、その空白の並びで始まらない行は誤りとする。空白とタブの違いも一致しなければ誤りとする。空白だけの行は、除いた後に空の行になる。
+- 開く `"""` の直後の改行は内容に含めない。閉じる `"""` の前の改行は内容に含める。上の例の `page` は、`<html>` の行から `</html>` の行までの三行で、それぞれ改行で終わる。
+- 行末の `\` は、その行の改行を内容に含めないことを表す。
+- エスケープシーケンスと文字列補間（`${…}`）は、普通の文字列リテラルと同じく使え、インデントを除いた後に解く。`"` と `""` はエスケープせずに書ける。`"""` を内容に書くときは `\"""` と書く。文字列補間の式は、普通の文字列リテラルと同じく一行に収める。
+- 改行は、ソースの改行によらず U+000A として内容に入る。
+
+【方針】raw 文字列の規則は次のとおりである。
+
+- `r"…"` は、エスケープシーケンスと文字列補間を処理しない。`\` と `$` は、そのまま文字として内容に入る。中に `"` と改行を書けない。
+- `r"""…"""` は、複数行の raw 文字列である。開き方、閉じ方、インデントを除く規則、改行の扱いは、複数行の文字列と同じである。ただし、行末の `\` も処理しない。中に `"""` を書けない。
+- `r` と `"` の間に空白を置けない。`r"` は、識別子 `r` の後に文字列リテラルが続く並びと同じ文字の並びだが、その並びを正しい式とする文法はないので、字句の段で raw 文字列の始まりとして読む。
+
+複数行の文字列と raw 文字列は、文字列補間を含まなければ、一つの文字列リテラルの字句である。複数行の文字列の中の改行には、改行による区切りの規則（後述）は働かない。
+
 ### 文字リテラル
 
-【方針】文字リテラルは、一重引用符 `'` で囲んだ、Unicode のスカラー値 1 個である（`'a'`、`'あ'`、`'\n'`）。値の型は `Char` である（[基本型の意味論](01-04-types-basic.md)）。
+【方針】文字リテラルは、一重引用符 `'` で囲んだ、Unicode のスカラー値 1 個である（`'a'`、`'あ'`、`'\n'`）。値の型は `Character` である（[基本型の意味論](01-04-types-basic.md)）。
 
 - 引用符の中には、1 個の文字か、1 個のエスケープシーケンスを書く。空の文字リテラル（`''`）と、2 個以上の文字を含む文字リテラルは誤りとする。
 - エスケープシーケンスは、文字列リテラルと同じもの（`\$` を含む）に `\'`（`'` を表す）を加えたものである。`"` は文字リテラルの中にそのまま書ける。文字列リテラルの中では、`'` をそのまま書け、`\'` は誤りである。
@@ -181,19 +256,22 @@ trait  var  where  while
 【方針】演算子と区切り記号は次のとおりである。
 
 ```text
-+   -   *   /   %
-==  !=  <   <=  >   >=
-&&  ||  !
-|>  ->  =>  =   :   ,   .
-(   )   [   ]   {   }   _
++   -   *   /
+=   <>  <   <=  >   >=
+|>  ->  :   ,   .
+(   )   [   ]   _
 ```
 
-上に挙げていない記号（`|` 単独、`&` 単独、`;`、`@`、`#`、`?`、`~`、`^`、`` ` `` など）を文字列リテラル・文字リテラル・コメントの外に書くと、字句解析の誤りとする。`;` を書いたときは、文を改行で区切ることを診断で示す。
+初回リリース版では、属性（[構文](01-02-syntax.md)の「属性（初回リリース版）」）の `@` を加える（[ADR 0119](../decisions/0119-attributes-test-and-deprecated.md)）。
 
-v1 では、次の記号を加える。`..` はレコードの構築とパターンに使う（[ADR 0057](../decisions/0057-record-declaration-construction-update.md)）。`?` は `Err` を呼び出し元へ返す構文に使う（[エラー処理](01-09-errors.md)。方針であり、[OPEN-029](../open-issues.md#open-029) で確定する）。
+`=` は、束縛（`let x = e`）と、等しいの比較演算子の両方に使う（[ADR 0112](../decisions/0112-pascal-style-operators.md)）。論理演算子は、キーワードの `and`・`or`・`not` である。整数の除算と剰余の演算子は、キーワードの `div`・`mod` である（[ADR 0113](../decisions/0113-div-and-mod-operators.md)）。
+
+上に挙げていない記号（`|` 単独、最小実行版の `&`、`%`、`;`、最小実行版の `@`、`#`、`?`、`~`、`^`、`` ` `` など）と、`{`・`}`・`==`・`!=`・`&&`・`||`・`!`・`=>` を文字列リテラル・文字リテラル・コメントの外に書くと、字句解析の誤りとする。他の言語の書き方を持ち込んだ誤りには、次の修正案を示す。`;` には文を改行で区切ること、`{`・`}` にはブロックを `end` と構文の名前で閉じること（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）、`==`・`!=` には `=`・`<>`、`&&`・`||`・`!` には `and`・`or`・`not`（[ADR 0112](../decisions/0112-pascal-style-operators.md)）、`%` には `mod`（[ADR 0113](../decisions/0113-div-and-mod-operators.md)）、`=>` には `case … of` の分岐を `when パターン:` と書くこと（[ADR 0111](../decisions/0111-case-of-when.md)）、`?` には前置の `try` を使うこと（[ADR 0097](../decisions/0097-prefix-try.md)）。
+
+初回リリース版では、次の記号を加える。`..` はレコードの構築とパターンに使う（[ADR 0057](../decisions/0057-record-declaration-construction-update.md)）。`&` は型パラメータの複数の型クラスの制約をつなぐのに使う（[ADR 0098](../decisions/0098-constraints-joined-by-ampersand.md)）。
 
 ```text
-..  ?
+..  &
 ```
 
 各演算子の優先順位と結合性は[構文](01-02-syntax.md)で、型と意味は[基本型の意味論](01-04-types-basic.md)と[型システム](01-06-type-system.md)で定める。
@@ -202,42 +280,54 @@ v1 では、次の記号を加える。`..` はレコードの構築とパター
 
 【決定】文は改行で区切り、`;` は使わない（[ADR 0004](../decisions/0004-surface-syntax-skeleton.md)）。
 
-【方針】字句解析器は、改行の位置に改行字句 NEWLINE を置くか、改行を空白として扱うかを、次の規則で判定する。判定には、改行の直前の字句、直後の字句、開いている括弧の種類だけを使う。コメントだけの行と空の行は、判定の上では存在しないものとして扱う。
+【方針】字句解析器は、改行の位置に改行字句 NEWLINE を置くか、改行を空白として扱うかを、次の規則で判定する。判定には、改行の直前の字句、直後の字句、開いている括弧とブロックの種類だけを使う。コメントだけの行と空の行は、判定の上では存在しないものとして扱う。
 
-1. 開いている括弧のうち最も内側のものが `(` または `[` であれば、改行は空白として扱う。
-2. 改行の直前の字句が、式や文の終わりになりえない字句であれば、改行は空白として扱う。該当する字句は、二項演算子（`+ - * / % == != < <= > >= && || |>`）、`!`、`=`、`->`、`=>`、`:`、`,`、`.`、開き括弧（`(`、`[`、`{`）、キーワード `else`・`fn`・`if`・`let`・`match`・`type`・`uses` である。v1 では、キーワード `impl`・`import`・`lazy`・`permissions`・`pub`・`record`・`trait`・`with` を加える。
-3. 改行の直後の字句が、式の始まりになりえない継続の字句であれば、改行は空白として扱う。該当する字句は、`-` を除く二項演算子（`+ * / % == != < <= > >= && || |>`）、`.`、`->`、`=>`、`else` である。
+開いている括弧とブロックは、次のように数える（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。
+
+- 丸括弧 `(` と角括弧 `[` は、対応する閉じ括弧で閉じる。
+- キーワード `lambda`・`if`・`case` と、初回リリース版の `with`・`lazy`・`handle` は、ブロックを開く。ブロックは、`end` とその語（`end lambda`・`end if` など）で閉じる。ただし、`else` の直後の `if` は、同じ `if` の続きなので、新しいブロックを開かない。初回リリース版の `case` の分岐の `when` の後、分岐の `:` までに現れる `if` はガード（[構文](01-02-syntax.md)の「パターンの拡張（初回リリース版）」）であり、ブロックを開かない。
+- 関数の宣言、型・レコード・型クラス・実装・エフェクトの宣言は、丸括弧の中に現れないので、開きとして数えない。
+
+1. 開いている括弧とブロックのうち最も内側のものが `(` または `[` であれば、改行は空白として扱う。最も内側のものがキーワードで開いたブロックであれば、括弧の外と同じく、以下の規則で判定する。
+2. 改行の直前の字句が、式や文の終わりになりえない字句であれば、改行は空白として扱う。該当する字句は、二項演算子（`+ - * / div mod = <> < <= > >= and or |>`）、`not`、`->`、`:`、`,`、`.`、開き括弧（`(`、`[`）、キーワード `case`・`else`・`function`・`if`・`lambda`・`let`・`of`・`return`・`then`・`type`・`uses`・`when` である。初回リリース版では、`&` と、キーワード `const`・`do`・`effect`・`handle`・`implement`・`import`・`lazy`・`public`・`record`・`trait`・`try`・`with` を加える。ただし、`end` の直後のキーワード（`end if`・`end function` などの構文の名前）は、ブロックの終わりなので、この規則の字句に含めない。
+3. 改行の直後の字句が、式の始まりになりえない継続の字句であれば、改行は空白として扱う。該当する字句は、`-` を除く二項演算子（`+ * / div mod = <> < <= > >= and or |>`）、`.`、`->`、キーワード `then`・`of`・`else` である。初回リリース版では、`do` を加える。
 4. 上のどれにも当たらなければ、改行の位置に NEWLINE を置く。連続する NEWLINE は一つにまとめる。
 
-規則 3 で `-` を除くのは、`-` が単項演算子として式の始まりになりうるからである。行頭の `-` は新しい文の始まりとして扱う。前の行の続きのつもりで行頭に `-` を書くと、多くの場合は値が Unit でない式文になり、型検査で誤りとして報告される（[構文](01-02-syntax.md)の「ブロックと文」）。ただし、その行がブロックの最後の文であれば、`-` で始まる式の値がブロックの値になり、型が合えば誤りにならない。
+規則 3 で `-` を除くのは、`-` が単項演算子として式の始まりになりうるからである。`not` も同じ理由で規則 3 に含めない。行頭の `-` は新しい文の始まりとして扱う。前の行の続きのつもりで行頭に `-` を書くと、多くの場合は値が Unit でない式文になり、型検査で誤りとして報告される（[構文](01-02-syntax.md)の「ブロックと文」）。ただし、その行がブロックの最後の文であれば、`-` で始まる式の値がブロックの値になり、型が合えば誤りにならない。
 
-この規則により、次の書き方はどれも一つの式になる。
+この規則により、次の書き方はどれも意図どおりに読める。
 
 ```text
 let total = price
   * quantity
 
 let n = lines
-  |> List.filter(fn(l) { l != "" })
+  |> List.filter(lambda(l) return l <> "" end lambda)
   |> List.length
 
-if ready {
+if ready then
   start()
-} else {
+else
   wait()
-}
+end if
+
+List.forEach(items, lambda(item)
+  let name = Item.name(item)
+  Console.writeLine(name)
+end lambda)
 ```
 
-一方、次のように開き波括弧 `{` を次の行の先頭に書く形は認めない。`Int` の後の改行が NEWLINE になり、関数の宣言が本体を欠いたまま終わるからである。この形は構文エラーとして報告し、`{` を前の行の末尾に書くよう診断で示す。
+最後の例では、`lambda` のブロックが `(` の内側で開いているので、`let` の文と `Console.writeLine` の文の間の改行が、文の区切りとして働く。
+
+一方、次のように関数の宣言の戻り値の型を次の行に書く形は認めない。`)` の後の改行が NEWLINE になり、関数の宣言が戻り値の型を欠いたまま終わるからである。この形は構文エラーとして報告し、`: 型` を前の行の末尾に書くよう診断で示す。
 
 ```text
-fn double(x: Int) -> Int
-{
-  x * 2
-}
+function double(x: Integer)
+  : Integer
+  return x * 2
+end function
 ```
 
 ## 未決事項
 
-- [OPEN-029](../open-issues.md#open-029): エラーを呼び出し元へ伝える構文（方針は `?`）
-- [OPEN-012](../open-issues.md#open-012): 構文の種類ごとの LLM の生成精度（改行による区切りを含む、本章の規則の妥当性）
+- [OPEN-012](../open-issues.md#open-012): 構文の種類ごとの LLM の生成精度（改行による区切りとキーワードの綴りを含む、本章の規則の妥当性）

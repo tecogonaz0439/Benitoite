@@ -250,7 +250,7 @@ fn is_minimal_scope(block: &TextBlock) -> bool {
     if block
         .heading
         .as_deref()
-        .is_some_and(|heading| heading.contains("（v1）"))
+        .is_some_and(|heading| heading.contains("（初回リリース版）"))
     {
         return false;
     }
@@ -376,12 +376,12 @@ fn minimal_spec_examples_are_readable() {
             && block
                 .heading
                 .as_deref()
-                .is_some_and(|heading| heading.contains("モジュールと import（v1）"))
+                .is_some_and(|heading| heading.contains("モジュールと import（初回リリース版）"))
             && first_nonempty_line(&block.source) == "import Geo from \"./geo.bnt\""
     });
     assert!(
         import_v1_example.is_some_and(|block| !is_minimal_scope(block)),
-        "01-02 の import（v1）の例を最小実行版の検査から除く"
+        "01-02 の import（初回リリース版）の例を最小実行版の検査から除く"
     );
 
     let syntax_example = blocks.iter().find(|block| {

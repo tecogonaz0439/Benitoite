@@ -1,6 +1,6 @@
 # 0072. 権限のパスは作業ディレクトリから辿り、シンボリックリンクを解決して構成要素ごとに照合する
 
-- 状態: 採択
+- 状態: 採択（宣言の構文を [0147](0147-remove-permission-declaration-syntax.md) で削除した。照合の規則は、実行時に許可したパスの照合として【方針】で残し、[OPEN-052](../open-issues.md#open-052) で見直す）
 - 日付: 2026-09-26
 - 関連章: [エフェクト](../01-spec/01-07-effects.md), [セキュリティモデル](../07-quality/07-01-security-model.md)
 - 関連する未決事項: [OPEN-032](../open-issues.md#open-032), [OPEN-015](../open-issues.md#open-015)

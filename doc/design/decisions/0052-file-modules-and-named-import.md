@@ -1,13 +1,13 @@
 # 0052. モジュールは一つのファイルとし、import で取り込む側が名前を付ける
 
-- 状態: 採択
+- 状態: 置換済み（[0126](0126-import-by-module-name.md) で置き換えた）
 - 日付: 2026-09-26
 - 関連章: [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md), [構文](../01-spec/01-02-syntax.md), [字句構造](../01-spec/01-01-lexical.md)
 - 関連する未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-011](../open-issues.md#open-011)
 
 ## 背景
 
-v1 では、利用者がプログラムを複数のファイルに分け、ほかのファイルの関数と型を使えるようにする（[ロードマップ](../00-overview/00-03-roadmap.md)）。最小実行版では、ドットの左に書けるのは prelude のモジュールと型の名前だけであり、prelude の関数はすべてモジュールの名前で修飾して使う（[ADR 0004](0004-surface-syntax-skeleton.md)、[ADR 0010](0010-shared-namespace-and-shadowing.md)）。スクリプトは、プロジェクトの設定ファイルを持たずに、ファイルを置いた場所から実行されることが多い。
+初回リリース版では、利用者がプログラムを複数のファイルに分け、ほかのファイルの関数と型を使えるようにする（[ロードマップ](../00-overview/00-03-roadmap.md)）。最小実行版では、ドットの左に書けるのは prelude のモジュールと型の名前だけであり、prelude の関数はすべてモジュールの名前で修飾して使う（[ADR 0004](0004-surface-syntax-skeleton.md)、[ADR 0010](0010-shared-namespace-and-shadowing.md)）。スクリプトは、プロジェクトの設定ファイルを持たずに、ファイルを置いた場所から実行されることが多い。
 
 ## 決定
 
@@ -28,4 +28,4 @@ v1 では、利用者がプログラムを複数のファイルに分け、ほ�
 - 設定ファイルも探索のパスも要らず、スクリプトを置いた場所からそのまま実行できる。
 - 取り込んだモジュールの名前は、型・モジュール・エフェクトの名前と一つの名前空間を共有する（[ADR 0010](0010-shared-namespace-and-shadowing.md)）。
 - 拡張子を import に書くので、拡張子を確定するとき（[OPEN-011](../open-issues.md#open-011)）は、例と既存のスクリプトの import も合わせて改める。
-- std とパッケージの取り込み方は、[3層ライブラリ構造](../03-interop/03-01-library-layers.md)と[パッケージ管理](../06-tooling/06-05-package-manager.md)で定める。
+- std とパッケージの取り込み方は、[ライブラリの構成](../03-interop/03-01-library-structure.md)と[パッケージ管理](../06-tooling/06-05-package-manager.md)で定める。

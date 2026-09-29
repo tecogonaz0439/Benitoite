@@ -1,6 +1,6 @@
 # 0059. 型クラスで高カインド型を扱い、prelude には Functor・Monad を入れない
 
-- 状態: 採択
+- 状態: 採択（標準の型クラスを import が要る `Benitoite.Trait` に置くことを [0134](0134-standard-type-classes.md) で決めた）
 - 日付: 2026-09-26
 - 関連章: [型システム](../01-spec/01-06-type-system.md), [ロードマップ](../00-overview/00-03-roadmap.md), [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)
 - 関連する未決事項: [OPEN-024](../open-issues.md#open-024)

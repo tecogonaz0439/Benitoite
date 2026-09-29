@@ -1,6 +1,6 @@
 # 0088. IO の実行方式は二つとも残し、既定を直接呼び出しとする
 
-- 状態: 採択
+- 状態: 採択（決定 4 の見直しを [0162](0162-event-loop-and-worker-threads-for-io.md) で行い、組み込みの操作の応答に「待つ」を加えた）
 - 日付: 2026-09-27
 - 関連章: [仮想機械](../02-impl/02-08-vm.md), [ランタイム](../02-impl/02-09-runtime.md), [性能](../07-quality/07-02-performance.md), [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)
 - 関連する未決事項: [OPEN-009](../open-issues.md#open-009)

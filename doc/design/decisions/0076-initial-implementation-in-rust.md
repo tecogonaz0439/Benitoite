@@ -7,11 +7,11 @@
 
 ## 背景
 
-[ADR 0002](0002-initial-implementation-in-go-by-llm.md) は、初期実装を Go で行い、最小実行版の性能を測定した後に、Go を続けるか Rust・Zig などで再実装するかを決めるとしていた。Go を選んだ主な根拠は、言語の値の回収を Go の GC に任せられることと、v1 の go.* の層で Go の標準ライブラリを自動でラップできることだった（[実装言語の比較](../08-appendix/08-01-implementation-language-comparison.md)）。
+[ADR 0002](0002-initial-implementation-in-go-by-llm.md) は、初期実装を Go で行い、最小実行版の性能を測定した後に、Go を続けるか Rust・Zig などで再実装するかを決めるとしていた。Go を選んだ主な根拠は、言語の値の回収を Go の GC に任せられることと、初回リリース版の go.* の層で Go の標準ライブラリを自動でラップできることだった（[実装言語の比較](../08-appendix/08-01-implementation-language-comparison.md)）。
 
 その後、次のことが分かった。
 
-- 最小実行版の言語では、値どうしの参照が循環しない（値は変更できず、可変のセルと明示遅延は v1 から加わり、`let` は再帰的な束縛にならない）。このため、最小実行版では参照カウントだけで使わなくなった値を回収でき、GC を Go に任せる利点は最小実行版では決め手にならない。
+- 最小実行版の言語では、値どうしの参照が循環しない（値は変更できず、可変のセルと明示遅延は初回リリース版から加わり、`let` は再帰的な束縛にならない）。このため、最小実行版では参照カウントだけで使わなくなった値を回収でき、GC を Go に任せる利点は最小実行版では決め手にならない。
 - 処理系の権限制御を OS のサンドボックスでも強制する方針を採る（[セキュリティモデル](../07-quality/07-01-security-model.md)）。OS の隔離は Go でも使える（Landlock の Go 用ライブラリは、Go のランタイムが管理する全スレッドに設定を適用する）が、ランタイムがスレッドを持たない言語の方が手当ては少ない。
 - 処理系は LLM が実装する。Go は直和型を持たず、`switch` の分岐の漏れを言語が検出しないので、構文木・値・命令の種類の扱いで漏れが残りやすい。Rust は列挙型と `match` の網羅の検査、`Option`・`Result` を持ち、これらの誤りの多くを型の検査で見つけられる。
 - 処理系を WASM で動かす可能性（[OPEN-007](../open-issues.md#open-007)）がある。Rust は `wasm32-unknown-unknown`・`wasm32-wasip1`・`wasm32-wasip2` を、標準ライブラリを含む Tier 2 の対象として扱う（[Platform Support](https://doc.rust-lang.org/rustc/platform-support.html)、2026-09-27 に確認）。WASM の実行環境の wasmtime と wasmer も Rust で書かれている。
@@ -30,7 +30,7 @@
 
 ## 帰結
 
-- 言語の値の管理を処理系が行う。最小実行版は参照カウントで行い、循環を回収する方式は v1 で決める（[ADR 0078](0078-reference-counting-in-minimal.md)、[OPEN-036](../open-issues.md#open-036)）。
+- 言語の値の管理を処理系が行う。最小実行版は参照カウントで行い、循環を回収する方式は初回リリース版で決める（[ADR 0078](0078-reference-counting-in-minimal.md)、[OPEN-036](../open-issues.md#open-036)）。
 - go.* の層とラッパー自動生成器は成り立たない（[ADR 0077](0077-abolish-go-layer.md)）。
 - 処理系の設計のうち Go のランタイムを前提にした部分（値の表現、スタック、panic 境界、メモリが尽きたときの終わり方など）を、Rust に合わせて読み替える（[ADR 0079](0079-rust-readings-of-go-based-decisions.md)）。
 - 実装を担う LLM が Rust で処理系を正しく書けるかは【要検証】であり、[OPEN-017](../open-issues.md#open-017) の試し実装で確かめる。所有権の検査を通すために `clone` を多用したり `unsafe` に頼ったりする誤りを防ぐ規則を、実装プランに入れる。

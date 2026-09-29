@@ -29,7 +29,7 @@ pub struct CheckedProgram {
     /// prelude のソースの AST（ファイルの名前の順）
     pub prelude: Vec<Program>,
     pub user: Program,
-    /// 利用者のソースのコメントの一覧（v1 のフォーマッタが使う。最小実行版では使わない）
+    /// 利用者のソースのコメントの一覧（初回リリース版のフォーマッタが使う。最小実行版では使わない）
     pub comments: Vec<Comment>,
     pub resolved: ResolveOutput,
     pub types: TypeckOutput,

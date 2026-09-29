@@ -1,6 +1,6 @@
 # 0073. `run` の権限は、名前だけのコマンドを PATH の検索に、パスを含むコマンドを絶対パスに照合する
 
-- 状態: 採択
+- 状態: 採択（宣言の構文を [0147](0147-remove-permission-declaration-syntax.md) で削除した。照合の規則は、実行時に許可したコマンドの照合として【方針】で残し、[OPEN-052](../open-issues.md#open-052) で見直す）
 - 日付: 2026-09-26
 - 関連章: [エフェクト](../01-spec/01-07-effects.md), [セキュリティモデル](../07-quality/07-01-security-model.md)
 - 関連する未決事項: [OPEN-015](../open-issues.md#open-015)

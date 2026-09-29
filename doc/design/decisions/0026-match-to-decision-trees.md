@@ -1,6 +1,6 @@
 # 0026. match を判定の木にコンパイルする
 
-- 状態: 採択
+- 状態: 採択（パターンの拡張の扱いを [0159](0159-pattern-extensions-in-decision-trees.md) で加えた）
 - 日付: 2026-09-26
 - 関連章: [中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md), [バイトコードとコード生成](../02-impl/02-07-bytecode.md), [コア計算と脱糖](../01-spec/01-12-core-calculus.md)
 - 関連する未決事項: なし

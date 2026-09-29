@@ -1,13 +1,13 @@
 # 0060. 型クラスは `trait` で宣言し、`impl` で実装し、メソッドは型クラスの名前で修飾して呼ぶ
 
-- 状態: 採択
+- 状態: 採択（キーワードの綴りを [0092](0092-unabbreviated-keywords.md) で改めた。宣言の書き方を [0108](0108-keyword-blocks-closed-by-end.md) で改めた）
 - 日付: 2026-09-26
 - 関連章: [型システム](../01-spec/01-06-type-system.md), [構文](../01-spec/01-02-syntax.md), [字句構造](../01-spec/01-01-lexical.md), [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)
 - 関連する未決事項: [OPEN-012](../open-issues.md#open-012)
 
 ## 背景
 
-v1 では、辞書渡しで実装する型クラスを加える（[ロードマップ](../00-overview/00-03-roadmap.md)）。`class`・`instance`・`trait`・`impl` は、いずれも最小実行版で予約語にしてある（[字句構造](../01-spec/01-01-lexical.md)）。`Option`・`Result` をつなぐ関数の名前は、Rust の名前に合わせた（[ADR 0043](0043-option-result-rust-names-no-unwrap.md)）。ドットは、モジュールと型名の修飾にだけ使う（[ADR 0004](0004-surface-syntax-skeleton.md)）。
+初回リリース版では、辞書渡しで実装する型クラスを加える（[ロードマップ](../00-overview/00-03-roadmap.md)）。`class`・`instance`・`trait`・`impl` は、いずれも最小実行版で予約語にしてある（[字句構造](../01-spec/01-01-lexical.md)）。`Option`・`Result` をつなぐ関数の名前は、Rust の名前に合わせた（[ADR 0043](0043-option-result-rust-names-no-unwrap.md)）。ドットは、モジュールと型名の修飾にだけ使う（[ADR 0004](0004-surface-syntax-skeleton.md)）。
 
 ## 決定
 
