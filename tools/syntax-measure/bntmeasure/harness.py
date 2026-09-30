@@ -33,7 +33,7 @@ DEFAULT_WORKSPACE_ROOT = os.path.join(os.path.expanduser('~'), '.cache', 'benito
 DEFAULT_RESULTS = os.path.join(V.ROOT, 'results')
 TASK_DIR = os.path.join(V.ROOT, 'tasks')
 # 検査器を構成するファイル。基準の文法は凍結した写し（syntax_engine.py と variants/V00/baseline-syntax.md）である。
-# 2026-09-29 より前の記録は、tools/grammar-check/syntax_engine.py と doc/design/01-spec/01-02-syntax.md を
+# 2026-09-29 より前の記録は、tools/grammar-check/syntax_engine.py と docs/design/01-spec/01-02-syntax.md を
 # 挙げた一覧で計算した（写しは、コミット c93ebf7 のそれらと同じ字句解析・照合と文法である）
 CHECKER_FILES = [
     os.path.join(V.ROOT, 'bntmeasure', 'syntax_engine.py'),

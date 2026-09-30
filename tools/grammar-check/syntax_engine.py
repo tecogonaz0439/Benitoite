@@ -31,7 +31,7 @@ BASELINE_ARM_RULES = (('case', 'match', '->'), ('case', 'handle', '->'))
 # 分岐の並びを始める語と、分岐の語（01-01「改行による区切り」）
 ARM_LIST = ('with', 'case')
 
-SPEC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'doc', 'design', '01-spec')
+SPEC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'docs', 'design', '01-spec')
 
 
 class LexConfig:

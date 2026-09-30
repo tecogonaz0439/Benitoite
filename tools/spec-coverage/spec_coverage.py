@@ -224,13 +224,13 @@ def status_code(marker_issues: list[str], index_issues: list[str]) -> int:
 
 def report_coverage(root: Path) -> int:
     testdata_directory = root / "crates/benitoite/testdata"
-    specification = load_specification(root / "doc/design/01-spec")
+    specification = load_specification(root / "docs/design/01-spec")
     paths = test_files(testdata_directory)
     markers, parse_issues = collect_markers(paths, testdata_directory)
     marker_issues = parse_issues + validate_markers(markers, specification)
     uncovered = uncovered_sections(markers, specification)
     conditions, roadmap_issues = roadmap_acceptance_conditions(
-        root / "doc/design/00-overview/00-03-roadmap.md"
+        root / "docs/design/00-overview/00-03-roadmap.md"
     )
     index_issues = roadmap_issues + read_index(
         testdata_directory / "acceptance/INDEX.md", testdata_directory, conditions
@@ -252,7 +252,7 @@ def report_coverage(root: Path) -> int:
 def self_test(root: Path) -> int:
     testdata_directory = root / "crates/benitoite/testdata"
     runner_directory = testdata_directory / "runner"
-    specification = load_specification(root / "doc/design/01-spec")
+    specification = load_specification(root / "docs/design/01-spec")
     runner_paths = test_files(runner_directory)
     markers, parse_issues = collect_markers(runner_paths, testdata_directory)
     marker_issues = parse_issues + validate_markers(markers, specification)

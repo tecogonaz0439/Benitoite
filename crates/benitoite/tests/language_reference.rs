@@ -27,7 +27,7 @@ struct CodeBlock {
 }
 
 fn reference_path() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../doc/reference/benitoite-minimal.md")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/reference/benitoite-minimal.md")
 }
 
 fn read_bnt_blocks(markdown: &str) -> Vec<CodeBlock> {

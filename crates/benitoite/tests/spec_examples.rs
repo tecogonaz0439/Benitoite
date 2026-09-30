@@ -72,7 +72,7 @@ enum ExampleRead {
 }
 
 fn spec_directory() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../doc/design/01-spec")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/design/01-spec")
 }
 
 fn spec_files() -> Vec<PathBuf> {
@@ -358,7 +358,10 @@ fn check_example(source: &str) -> ExampleRead {
     ExampleRead::Unreadable(program_diagnostic)
 }
 
+// 言語仕様の例を初回リリース版の構文に書き換えたので、最小実行版の構文解析器で読める例がもうない。
+// 初回リリース版の検査に置き換える作業（実装プランの C13）まで止める（設計書 07-03「言語仕様の例の検査」、ADR 0304）。
 #[test]
+#[ignore = "最小実行版の構文の例が仕様書にない。C13 で初回リリース版の検査に置き換える（ADR 0304）"]
 fn minimal_spec_examples_are_readable() {
     let mut blocks = Vec::new();
     for path in spec_files() {

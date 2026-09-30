@@ -1,10 +1,10 @@
 # syntax-measure
 
-構文の案ごとに、LLM のコーディングエージェントが書いたスクリプトの構文の誤りの率と、診断を読んで 1 回で直せた率を測る道具である。[OPEN-012](../../doc/design/open-issues.md#open-012) の測定のうち、[ADR 0246](../../doc/design/decisions/0246-syntax-measurement-in-two-stages.md) が定めた第一段階（初回リリース版の実装プランを作る前の、構文だけの測定）に使う。型・エフェクト・名前解決は検査しない。
+構文の案ごとに、LLM のコーディングエージェントが書いたスクリプトの構文の誤りの率と、診断を読んで 1 回で直せた率を測る道具である。[OPEN-012](../../docs/design/open-issues.md#open-012) の測定のうち、[ADR 0246](../../docs/design/decisions/0246-syntax-measurement-in-two-stages.md) が定めた第一段階（初回リリース版の実装プランを作る前の、構文だけの測定）に使う。型・エフェクト・名前解決は検査しない。
 
 Python 3（標準ライブラリだけ）で動く。字句解析器・EBNF の読み込み・照合器は、[grammar-check](../grammar-check/README.md) の `syntax_engine.py` を写した `bntmeasure/syntax_engine.py` を使う。
 
-V00 は、2026-09-29 の構文の変更より前の構文であり、コミット c93ebf7 の時点で凍結した。設計書は、この測定の途中の結果を受けて V15 の構文を採った（[ADR 0254](../../doc/design/decisions/0254-return-type-after-arrow.md)〜[ADR 0257](../../doc/design/decisions/0257-match-with-case-arms.md)）。測定を再現できるように、この道具は設計書の現在の 01-01・01-02 と grammar-check の定数を読まない。基準の文法は `variants/V00/baseline-syntax.md`（c93ebf7 の `doc/design/01-spec/01-02-syntax.md` の写し）から、字句の規則は `bntmeasure/syntax_engine.py` の `BASELINE_*` から読む。これらの写しを直さない。
+V00 は、2026-09-29 の構文の変更より前の構文であり、コミット c93ebf7 の時点で凍結した。設計書は、この測定の途中の結果を受けて V15 の構文を採った（[ADR 0254](../../docs/design/decisions/0254-return-type-after-arrow.md)〜[ADR 0257](../../docs/design/decisions/0257-match-with-case-arms.md)）。測定を再現できるように、この道具は設計書の現在の 01-01・01-02 と grammar-check の定数を読まない。基準の文法は `variants/V00/baseline-syntax.md`（c93ebf7 の `doc/design/01-spec/01-02-syntax.md` の写し）から、字句の規則は `bntmeasure/syntax_engine.py` の `BASELINE_*` から読む。これらの写しを直さない。
 
 ## 案
 
@@ -56,7 +56,7 @@ error: expected `end if`, found `end case`
 - 照合の誤りは、読めなかった位置のうち最も先の位置で、期待した字句（「式」「型」「パターン」などの規則の呼び名にまとめる）と見つけた字句を示す。`end` を期待したときは、閉じるべき構文の名前（`end function` など）を示す。
 - 専用の診断: `end` の後の構文の名前の取り違えと書き忘れ、括弧の組（V11 以外）、値の後の `.`、予約語（V03・V04）、`@test`（V14）、`bind` と `shadow` の有効範囲（V06・V15）、書けない属性の名前（01-02「属性」。`@test` と `@deprecated` だけを書ける）。
 
-診断の文は正確さより分かりやすさを優先した近似であり、実際の処理系の診断（[診断エンジン](../../doc/design/02-impl/02-10-diagnostics.md)）とは一致しない。期待した字句の一覧は四つまで示し、演算子が三つ以上並ぶときは「an operator」にまとめる。
+診断の文は正確さより分かりやすさを優先した近似であり、実際の処理系の診断（[診断エンジン](../../docs/design/02-impl/02-10-diagnostics.md)）とは一致しない。期待した字句の一覧は四つまで示し、演算子が三つ以上並ぶときは「an operator」にまとめる。
 
 記録には、1 回目の誤りの分類を残す。分類は、字句の修正案の種類（`brace-block`・`c-equality`・`c-logic`・`percent-remainder`・`fat-arrow`・`question-mark`・`semicolon`・`pipe-alternative`・`range-syntax`）、予約語（`reserved-abbrev`・`reserved-loop`・`reserved-as`・`reserved-where`・`reserved-async`）、構造（`end-mismatch`・`bare-end`・`missing-end`・`missing-then` などの `missing-<語>`、`tuple-parens`・`value-dot`・`return-type-syntax`・`type-for-data`・`test-attribute`・`unknown-attribute`）、有効範囲（`bind-rebound`・`shadow-unbound`）、他の言語のキーワードを名前として書いたもの（`foreign-keyword:<語>`。`fn`・`for`・`match`・`let` など）、そのほか（`keyword-as-name:<語>`・`unexpected-symbol:<記号>`・`unexpected-line-break` など）である。`Some(x)` のような修飾しない構成子は構文としては正しいので、この測定では検出しない。
 
@@ -140,7 +140,7 @@ opencode run -m opencode-go/longcat-2.5-preview-free --format json --auto -s {se
 - エージェント、モデルの ID、コマンドに渡した選択肢（Codex の reasoning effort など）、コマンドの型板と、置き換えた後の形、cwd、プロンプトの型板
 - 時間の上限、並行の数、実行の順（`shuffle` か `sequential`）と乱数の種、案・課題・試行の数
 - リポジトリのコミットのハッシュ（`git rev-parse HEAD`）、作業ツリーの変更の有無と `git status --porcelain` の出力
-- SHA-256: 各案の参照の文書、各課題のファイル、検査器の全体（`bntmeasure/syntax_engine.py`・`variants/V00/baseline-syntax.md`・V01 の EBNF・`variants.py`・`checker.py`・`scope.py`）とその各ファイル。凍結より前に始めた実行（`stage1-codex` と `stage1-opencode`）の記録は、`bntmeasure/syntax_engine.py` と `baseline-syntax.md` の代わりに `tools/grammar-check/syntax_engine.py` と `doc/design/01-spec/01-02-syntax.md` で検査器の SHA-256 を計算した。`stage1-opencode` の実行中にそれらのファイルを新しい構文に改めたので、その記録の途中から試行ごとの検査器の SHA-256 がメタデータの値と食い違う。検査そのものは、実行を始めたときに読み込んだ変更前の規則で行っている。案ごとの文法と字句の設定の SHA-256（`variant_grammars`）は、凍結の前後で同じである、各案の文法と字句の設定
+- SHA-256: 各案の参照の文書、各課題のファイル、検査器の全体（`bntmeasure/syntax_engine.py`・`variants/V00/baseline-syntax.md`・V01 の EBNF・`variants.py`・`checker.py`・`scope.py`）とその各ファイル。凍結より前に始めた実行（`stage1-codex` と `stage1-opencode`）の記録は、`bntmeasure/syntax_engine.py` と `baseline-syntax.md` の代わりに `tools/grammar-check/syntax_engine.py` と `docs/design/01-spec/01-02-syntax.md` で検査器の SHA-256 を計算した。`stage1-opencode` の実行中にそれらのファイルを新しい構文に改めたので、その記録の途中から試行ごとの検査器の SHA-256 がメタデータの値と食い違う。検査そのものは、実行を始めたときに読み込んだ変更前の規則で行っている。案ごとの文法と字句の設定の SHA-256（`variant_grammars`）は、凍結の前後で同じである、各案の文法と字句の設定
 
 試行ごとの記録（JSON Lines の一行）に記録する項目:
 

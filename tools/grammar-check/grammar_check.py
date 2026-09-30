@@ -4,7 +4,7 @@
 # 使い方は README.md を参照。
 import re, sys, glob, os
 sys.setrecursionlimit(100000)
-D = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'doc', 'design', '01-spec') + os.sep
+D = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'docs', 'design', '01-spec') + os.sep
 
 # 字句解析器・EBNF の読み込み・照合器は syntax_engine.py に、局所の束縛の検査は scope_check.py に置く
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

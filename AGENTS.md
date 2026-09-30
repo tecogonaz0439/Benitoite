@@ -4,15 +4,15 @@
 
 ## プロジェクトの概要
 
-Rust で実装する関数型スクリプト言語のリポジトリである。設計書、実装プラン、処理系のソースコードを、すべてこのリポジトリに置く（`doc/design/decisions/0040-single-repository.md`）。最小実行版の設計書と実装プランによる実装を終え、現在は `doc/design/` の設計書を正式版に仕上げる段階にある。処理系のソースコードは `crates/benitoite/` に置き、完了条件の共通の検査は `scripts/check.sh` で行う。言語の名称は `Benitoite`（ベニトアイト）とする（`doc/design/decisions/0132-language-name-benitoite.md`）。CLI のコマンドの名前は `benitoite`、スクリプトの拡張子は `.bnt` とする（`doc/design/decisions/0241-command-name-and-extension.md`）。リポジトリの名前の `Zozooo` は、以前の仮称である。
+Rust で実装する関数型スクリプト言語のリポジトリである。設計書、実装プラン、処理系のソースコードを、すべてこのリポジトリに置く（`docs/design/decisions/0040-single-repository.md`）。最小実行版の設計書と実装プランによる実装を終え、現在は `docs/design/` の設計書を正式版に仕上げる段階にある。処理系のソースコードは `crates/benitoite/` に置き、完了条件の共通の検査は `scripts/check.sh` で行う。言語の名称は `Benitoite`（ベニトアイト）とする（`docs/design/decisions/0132-language-name-benitoite.md`）。CLI のコマンドの名前は `benitoite`、スクリプトの拡張子は `.bnt` とする（`docs/design/decisions/0241-command-name-and-extension.md`）。リポジトリの名前の `Zozooo` は、以前の仮称である。
 
-処理系は LLM が実装する。設計書の作成から実装プランの作成までを Claude Code が担い、初期実装は LLM が実装プランに従って行う。最小実行版では、Claude Code がオーケストレータとして作業を配り、難しい作業を Claude Opus 5.5 のサブエージェントに、それ以外を Codex（GPT-6-Luna）に割り当てる。実装の確認はオーケストレータが行い、Opus が実装した作業は Codex も確かめる（`doc/design/decisions/0084-implementer-assignment-for-minimal.md`、`doc/design/decisions/0085-review-assignment-for-minimal.md`）。実装プランは、設計書と実装プランだけを読めば実装できる粒度で書く。処理系は Rust で書く。
+処理系は LLM が実装する。設計書の作成から実装プランの作成までを Claude Code が担い、初期実装は LLM が実装プランに従って行う。最小実行版では、Claude Code がオーケストレータとして作業を配り、難しい作業を Claude Opus 5.5 のサブエージェントに、それ以外を Codex（GPT-6-Luna）に割り当てる。実装の確認はオーケストレータが行い、Opus が実装した作業は Codex も確かめる（`docs/design/decisions/0084-implementer-assignment-for-minimal.md`、`docs/design/decisions/0085-review-assignment-for-minimal.md`）。実装プランは、設計書と実装プランだけを読めば実装できる粒度で書く。処理系は Rust で書く。
 
-言語の主な目的は二つある。表向きの目的は、Perl の精神を受け継ぎ、利用者が「怠惰・短気・傲慢」のままで使えるスクリプト言語を作ることである（Agent Skills から実行できることは、その手段として位置付ける）。実質的な目的は、設計者自身が、関数型プログラミング（型システム・エフェクト・永続データ構造など）と言語処理系（解析器・仮想機械・ランタイムなど）を学ぶことである。設計者は処理系を手で実装せず、LLM が書いた実装を読み、必要なときに LLM へ実装の理由を質問して学ぶ。二つが衝突したときの判断基準は `doc/design/00-overview/00-01-goals.md` に定める。
+言語の主な目的は二つある。表向きの目的は、Perl の精神を受け継ぎ、利用者が「怠惰・短気・傲慢」のままで使えるスクリプト言語を作ることである（Agent Skills から実行できることは、その手段として位置付ける）。実質的な目的は、設計者自身が、関数型プログラミング（型システム・エフェクト・永続データ構造など）と言語処理系（解析器・仮想機械・ランタイムなど）を学ぶことである。設計者は処理系を手で実装せず、LLM が書いた実装を読み、必要なときに LLM へ実装の理由を質問して学ぶ。二つが衝突したときの判断基準は `docs/design/00-overview/00-01-goals.md` に定める。
 
 ## コンセプト（判断の拠り所）
 
-言語仕様・処理系の設計を議論するとき、判断に迷ったら、次のコンセプトに立ち返って選択肢を評価する。仕様や設計の判断を伴う作業を始める前に、`doc/design/00-overview/00-01-goals.md` を読む。この節は同章の要約であり、食い違うときは同章を正とする。同章を変えたら、この節も合わせて更新する。
+言語仕様・処理系の設計を議論するとき、判断に迷ったら、次のコンセプトに立ち返って選択肢を評価する。仕様や設計の判断を伴う作業を始める前に、`docs/design/00-overview/00-01-goals.md` を読む。この節は同章の要約であり、食い違うときは同章を正とする。同章を変えたら、この節も合わせて更新する。
 
 - **標語**: 怠惰・短気・傲慢を再び（Laziness, Impatience, and Hubris — Again）
 - **方向**: 利用者は怠惰・短気・傲慢のままで、言語の詳細を学ばずに、LLM によるスクリプトの作成・修正を通じて作業を自動化できる。利用者は作業と許可する操作を決め、処理系は型とエフェクトの規則への適合を検査し、LLM はコードの作成・修正と診断の説明を担う。
@@ -35,23 +35,24 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 | パス | 内容 | 扱い |
 |---|---|---|
 | `reference/` | ユーザーが会話ごとに置く参照用ファイル。会話が終わると削除されることがある | 読み取り専用。編集しない。設計書からリンクしない |
-| `doc/design/sources/` | 設計書から参照する資料の保存先（`reference/` からのコピー） | 読み取り専用。編集しない |
-| `doc/design/sources/fp-language-design.md` | 設計メモ。論点ごとの決定・方針・未決事項の記録 | |
-| `doc/design/` | 設計書本体。最小実行版の設計書を引き継ぎ、正式版の設計書に仕上げる | 主な作業対象 |
-| `doc/design/README.md` | 設計書の目次・凡例・各章の状態 | 章を追加・改名したら更新する |
-| `doc/design/01-spec/` | 言語仕様（規範）。処理系の実装方式に依存しない | |
-| `doc/design/02-impl/` 以降 | 処理系設計、相互運用と標準ライブラリ、拡張、配布、ツール、品質、付録 | |
-| `doc/design/open-issues.md` | 未決・要検証事項の一覧（`OPEN-nnn`） | |
-| `doc/design/decisions/` | 設計判断の記録（ADR）。1判断1ファイル | |
-| `doc/implement/` | 初回リリース版の実装プラン（`00-common/`・`10-interfaces/`・`20-tasks/`・`90-after-completion.md`。`doc/design/decisions/0253-first-release-plan-location-and-units.md`） | 作成中。実装を終えたら `doc/archive/` へ移す |
-| `doc/archive/` | 過去の文書の保管場所。最小実行版の設計書の写し（`2026-09-27-design-initial/`）と、最小実行版の実装プランと実装の結果（`2026-09-27-implement-initial/`） | 読み取り専用。過去の文書や処理系の作成・改造の経緯を調べるときだけ読む。現在の作業の根拠にしない。設計書の章からリンクしない（ADR が経緯として参照するのはよい） |
-| `doc/reference/` | 最小実行版の言語リファレンス（英語） | |
+| `docs/design/sources/` | 設計書から参照する資料の保存先（`reference/` からのコピー） | 読み取り専用。編集しない |
+| `docs/design/sources/fp-language-design.md` | 設計メモ。論点ごとの決定・方針・未決事項の記録 | |
+| `docs/design/` | 設計書本体。最小実行版の設計書を引き継ぎ、正式版の設計書に仕上げる | 主な作業対象 |
+| `docs/design/README.md` | 設計書の目次・凡例・各章の状態 | 章を追加・改名したら更新する |
+| `docs/design/01-spec/` | 言語仕様（規範）。処理系の実装方式に依存しない | |
+| `docs/design/02-impl/` 以降 | 処理系設計、相互運用と標準ライブラリ、拡張、配布、ツール、品質、付録 | |
+| `docs/design/open-issues.md` | 未決・要検証事項の一覧（`OPEN-nnn`） | |
+| `docs/design/decisions/` | 設計判断の記録（ADR）。1判断1ファイル | |
+| `docs/implement/` | 初回リリース版の実装プラン（`00-common/`・`10-interfaces/`・`20-tasks/`・`90-after-completion.md`。`docs/design/decisions/0253-first-release-plan-location-and-units.md`） | 作成中。実装を終えたら `docs/archive/` へ移す |
+| `docs/archive/` | 過去の文書の保管場所。最小実行版の設計書の写し（`2026-09-27-design-initial/`）と、最小実行版の実装プランと実装の結果（`2026-09-27-implement-initial/`） | 読み取り専用。過去の文書や処理系の作成・改造の経緯を調べるときだけ読む。現在の作業の根拠にしない。設計書の章からリンクしない（ADR が経緯として参照するのはよい） |
+| `docs/reference/` | 最小実行版の言語リファレンス（英語） | |
 | `crates/benitoite/` | 処理系のクレート（lib と bin）。`src/`（ソース）、`tests/`（統合テストとゴールデンテストの実行器）、`testdata/`（ゴールデンテスト）、`examples/`（開発用の例） | モジュールの構成は実装プランの `00-common/00-01-repository-layout.md` |
 | `tools/grammar-check/` | 言語仕様の例が文法で読めるかを確かめる道具（Python。初回リリース版の構文解析器の実装で処理系の検査に置き換える） | 構文の章や例を変えたら実行する |
 | `tools/syntax-measure/` | 構文の案ごとに、LLM が書いたスクリプトの構文の誤りの率を測る道具（Python。OPEN-012・ADR 0246 の第一段階）。生の記録はリポジトリの外に置く | 使い方は `tools/syntax-measure/README.md`。LLM を呼ぶ測定は設計者の了承を得てから行う |
 | `tools/spec-coverage/` | ゴールデンテストが言語仕様のどの節を確かめているかを集計する道具（Python） | |
 | `tools/bench/` | ベンチマークと測定の道具、測定記録（`results/`） | 測定はスキル `benchmark` に従う |
 | `fuzz/` | cargo-fuzz のクレート（nightly の Rust を使うので、ワークスペースに含めない） | `scripts/fuzz-short.sh` で実行する |
+| `formal/` | 形式検証の段階 2 の Lean 4 のプロジェクト。コア計算（`docs/design/01-spec/01-12-core-calculus.md`）の形式化した規則の正と、進行と保存・エフェクトの健全性の定理（`docs/design/07-quality/07-04-formal-semantics.md`、ADR 0293〜0295、ADR 0307） | `formal/` で `lake build` を実行する。`scripts/check.sh` には含めない。形式化した規則を変えるときは、ADR を添えて Lean の定義と 01-12 の写しを同じ変更で直し、`lake build` が `sorry` なしで通ることを確かめる |
 | `scripts/` | `check.sh`（完了条件の共通の検査）、`fuzz-seed.sh`・`fuzz-short.sh`（fuzzing） | 作業を取り込む前に `check.sh` を通す |
 | `.claude/skills/` | プロジェクト固有のスキル（`git-workflow`、`test-audit`、`benchmark`） | `.agents/skills/` にシンボリックリンクを置く |
 | `.claude/agents/` | 実装を担うサブエージェントの定義（`impl-medium`、`impl-low`） | オーケストレータが起動する（実装プランの `00-common/00-03-workflow.md`） |
@@ -62,7 +63,7 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 
 - 部のディレクトリは `NN-<名前>/`、章のファイルは `NN-MM-<名前>.md` とする（例: 第1部第2章は `01-spec/01-02-syntax.md`）。`<名前>` は英小文字とハイフンで書く。
 - `decisions/` と `open-issues.md` は章ではないので、章番号を付けない。ADR のファイル名は `NNNN-<名前>.md` とする。
-- 章を追加・改名・移動したら、`doc/design/README.md` の目次と、その章を参照している全リンクを更新する。
+- 章を追加・改名・移動したら、`docs/design/README.md` の目次と、その章を参照している全リンクを更新する。
 
 ### 章ファイルの構成
 
@@ -82,7 +83,7 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 ## 未決事項
 ```
 
-状態を変えたら、`doc/design/README.md` の目次の状態欄も同じ値に変える。
+状態を変えたら、`docs/design/README.md` の目次の状態欄も同じ値に変える。
 
 ### 決定の書き方
 
@@ -97,10 +98,10 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 
 `reference/` のファイルは会話が終わるごとに削除されることがある。設計書から参照する資料は次のように扱う。
 
-- 設計書から `reference/` 内のファイルを参照する必要が生じたら、そのファイルを `doc/design/sources/` にコピーし、設計書からはコピーを相対リンクで参照する。`reference/` へのリンクを設計書に残さない。
-- コピー済みのファイルが `reference/` で更新されていたら、`doc/design/sources/` のコピーも更新する。
-- `doc/design/sources/` のファイルは資料の写しとして扱い、内容を編集しない。
-- 設計書の最終版を発行するとき（すべての未決事項が決着した時点）は、設計書から設計メモ（`doc/design/sources/fp-language-design.md`）へのリンクを外す。それまでは、各章の「移行元」などから設計メモへリンクしてよい。
+- 設計書から `reference/` 内のファイルを参照する必要が生じたら、そのファイルを `docs/design/sources/` にコピーし、設計書からはコピーを相対リンクで参照する。`reference/` へのリンクを設計書に残さない。
+- コピー済みのファイルが `reference/` で更新されていたら、`docs/design/sources/` のコピーも更新する。
+- `docs/design/sources/` のファイルは資料の写しとして扱い、内容を編集しない。
+- 設計書の最終版を発行するとき（すべての未決事項が決着した時点）は、設計書から設計メモ（`docs/design/sources/fp-language-design.md`）へのリンクを外す。それまでは、各章の「移行元」などから設計メモへリンクしてよい。
 
 ### 事実と出典
 
@@ -111,7 +112,7 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 
 設計書は日本語の常体（「である」調）で書く。文章の規範は、スキル `japanese-tech-writing` に従う。設計書を執筆・推敲・レビューするときは、先にこのスキルを読み込む。
 
-用語は `doc/design/00-overview/00-04-glossary.md` の定義に揃え、章をまたいで同じ概念に別の語を使わない。
+用語は `docs/design/00-overview/00-04-glossary.md` の定義に揃え、章をまたいで同じ概念に別の語を使わない。
 
 ## レビューの観点
 
@@ -136,7 +137,7 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 
 ## テストの運用
 
-- 処理系のテストを書く・変える・見直すときは、スキル `test-audit`（`.claude/skills/test-audit/SKILL.md`）に従う。テストの設計の原則は `doc/design/07-quality/07-03-compiler-testing.md` の「テストの設計の原則」で定める。
+- 処理系のテストを書く・変える・見直すときは、スキル `test-audit`（`.claude/skills/test-audit/SKILL.md`）に従う。テストの設計の原則は `docs/design/07-quality/07-03-compiler-testing.md` の「テストの設計の原則」で定める。
 
 ## 性能の測定
 
@@ -197,7 +198,7 @@ lint を個別に許す `#[allow(...)]` は、次の箇所だけに書き、許�
 | テストのモジュール（`#[cfg(test)] mod tests`）と `tests/` の各ファイル | `clippy::unwrap_used`・`clippy::expect_used`・`clippy::panic`・`clippy::indexing_slicing`・`clippy::arithmetic_side_effects` | テストの失敗は panic で表す（07-03 は、テストのコードでこれらを許してよいとした） |
 | `src/cli/mod.rs` と `src/runtime/real_io.rs` の `BENITOITE_DEV_PANIC` の処理 | `clippy::panic` | 処理系の不具合の報告をテストするために、意図して panic を起こす（10-09） |
 | `src/bytecode/program.rs` の `assert_shareable` | `dead_code` | 呼ばれない関数で、型の性質をコンパイルの時点で確かめる |
-| 初回リリース版の実装プランの道具（`doc/implement/tools/extract_interfaces.py place`）が `todo!()` の仮置きを置いたファイルの先頭 | `clippy::todo`・`unused_variables` | 後の作業が本体を書くまで、インターフェースを置いた直後のクレートをコンパイルでき lint を通るようにする。そのファイルの `todo!()` をすべて本体に書き換えた作業が、許可とコメントを消す（初回リリース版の実装プランの 00-02「`todo!()` の仮置き」） |
+| 初回リリース版の実装プランの道具（`docs/implement/tools/extract_interfaces.py place`）が `todo!()` の仮置きを置いたファイルの先頭 | `clippy::todo`・`unused_variables` | 後の作業が本体を書くまで、インターフェースを置いた直後のクレートをコンパイルでき lint を通るようにする。そのファイルの `todo!()` をすべて本体に書き換えた作業が、許可とコメントを消す（初回リリース版の実装プランの 00-02「`todo!()` の仮置き」） |
 
 これ以外の箇所で許す必要が生じたら、作業を止めて報告する。
 
@@ -226,6 +227,6 @@ lint を個別に許す `#[allow(...)]` は、次の箇所だけに書き、許�
 
 ## してはならないこと
 
-- `reference/` と `doc/design/sources/` 以下のファイルを編集しない。
+- `reference/` と `docs/design/sources/` 以下のファイルを編集しない。
 - 依頼されていない章の本文を書かない。
 - 確認していない外部の事実を、出典のある事実であるかのように書かない。
