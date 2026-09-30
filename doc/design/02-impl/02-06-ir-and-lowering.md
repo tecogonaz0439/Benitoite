@@ -1,7 +1,7 @@
 # 中間表現と脱糖
 
 - 状態: 確定
-- 関連ADR: [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0017](../decisions/0017-ir-in-core-calculus-form.md), [0018](../decisions/0018-reference-interpreter.md), [0022](../decisions/0022-side-tables-keyed-by-node.md), [0026](../decisions/0026-match-to-decision-trees.md), [0050](../decisions/0050-pipe-with-parenthesized-rhs.md), [0081](../decisions/0081-subsumption-on-computation-results.md), [0083](../decisions/0083-constant-descriptions-in-shared-program.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0118](../decisions/0118-effect-handlers.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0161](../decisions/0161-single-threaded-task-scheduler.md)
+- 関連ADR: [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0017](../decisions/0017-ir-in-core-calculus-form.md), [0018](../decisions/0018-reference-interpreter.md), [0022](../decisions/0022-side-tables-keyed-by-node.md), [0026](../decisions/0026-match-to-decision-trees.md), [0050](../decisions/0050-pipe-with-parenthesized-rhs.md), [0081](../decisions/0081-subsumption-on-computation-results.md), [0083](../decisions/0083-constant-descriptions-in-shared-program.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0118](../decisions/0118-effect-handlers.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0272](../decisions/0272-list-spread-in-list-literals.md), [0276](../decisions/0276-reference-interpreter-shares-builtin-bodies.md)
 - 未決事項: [OPEN-009](../open-issues.md#open-009)
 - 移行元: [設計メモ](../sources/fp-language-design.md) なし
 
@@ -38,6 +38,7 @@
 | 定義 | 関数 `fn f[ᾱ; ρ̄](x̄:Ā) : B ! ε = M`、実装 `impl I[β̄](d̄ : Dict[Cl', β̄']) : Dict[Cl, τ] = { S̄ = Ū; m̄ = D̄ }`、定数 `const k : A = M` |
 
 - 型は、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の型に、初回リリース版の拡張で加えたもの（基本型 `Byte`・`Decimal`、`Map`・`Set`・`Bytes`、`Reference`・`Lazy`、中身を見せない prelude の型 O（`IOError`・`NetworkError`・`Task[A]`・リソースの型、標準ライブラリのモジュールの中身を見せない型）、辞書の型 `Dict[Cl, τ]`、型構成子を表す型パラメータの適用 `α[Ā]`、継続の型 `Cont(B → T ! ε)`）を含む。継続の型を持つのは、`handle` の節で継続を束縛する変数だけである。型の別名は型検査で展開してあるので、コア IR に現れない。
+- 辞書と継続は、コア計算の型付けでは型 `Dict[Cl, τ]`・`Cont(B → T ! ε)` を持つ値であるが、表層で値として束縛・返却・格納できない。辞書が現れるのは制約を持つ関数の呼び出しの辞書の引数、メソッドの呼び出しの辞書、実装の定義の上位の型クラスの辞書と実装の制約の辞書、辞書の中の辞書だけであり、継続が現れるのは `handle` の節の継続の変数と `resume` だけである。そこで、処理系のコア IR は、辞書と継続を普通の値と別の分類に置き、型検査器の型の表現（表層の型）に辞書の型と継続の型を加えなくてよい。このとき、辞書の型は辞書の型クラスと対象の型の組で、継続の型は継続の変数が持つ引数の型 B と、節を持つ `handle` の型とエフェクト（T と ε）で表す。辞書の引数は、定義の値の引数と別に並べてよい。制約を持つ関数を呼ばずに値として使う箇所は、同章の表のとおり辞書を渡すラムダに移すので、`f[T̄; Ē]` の値の型を値の引数だけの関数の型としてよい。コア IR の検査器は、この表し方の上で、後述の V-Dict・V-Super・C-Meth・D-Impl・C-Handle・C-Resume と同じ条件を調べる。
 - エフェクトの集合の要素は、エフェクトの名前とエフェクト変数である。エフェクトの名前は、宣言したモジュールの同一性と名前の組で表す。`IO.All` は型検査が名前の集合に置き換えてあるので、コア IR に現れない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「エフェクトの名前と開始状態」）。
 - 各ノードは、型（値は A、計算は A ! ε）と、由来位置（[ソース管理と位置情報](02-02-source-and-spans.md)の「合成ノードの由来位置」）を持つ。型とエフェクトの求め方は、この節の後の表で定める。
 - 変数は、定義ごとに重ならない番号で表す。脱糖で作る新しい変数も、ソースの名前から移した変数も、同じ数え上げから番号を振る。したがって、コア IR の中で変数の名前が衝突することはない。ただし、`match` の同じ分岐から展開した行（後述）は、その分岐の同じ変数を束縛する。ソースの名前は、診断と読みやすさのために変数に添える。
@@ -77,7 +78,7 @@
 
 `handle M with H` の節の本体のエフェクトは、節の中の `resume` のエフェクトを除いて求める。`resume k V` の ε は、そうして求めた、k を束縛した `handle` のエフェクトとする。`resume` のエフェクトは `handle` のエフェクトそのものなので、節の本体のエフェクトに加えても `handle` のエフェクトは変わらず、この求め方は循環しない。
 
-計算のエフェクトは、子の計算から順に下から求める。下位 IR で加える計算（後述）は、`case` は各分岐のエフェクトの和集合、`join k(x̄) = M in N` は M と N のエフェクトの和集合、`jump` は空集合とする。求めたエフェクトは、型付け規則で導けるエフェクトのうち最小のもの（C-Sub を使わないもの）であり、定義の本体のエフェクトは宣言したエフェクトに含まれる。含まれないことは、型検査を通ったプログラムでは起きないので、コア IR の検査器（後述）が処理系の不具合として検出する。
+計算のエフェクトは、子の計算から順に下から求める。下位 IR で加える計算（後述）は、`case` は各分岐のエフェクトの和集合、`get`・`getback`・`slice` は空集合、`join k(x̄) = M in N` は M と N のエフェクトの和集合、`jump` は空集合とする。求めたエフェクトは、型付け規則で導けるエフェクトのうち最小のもの（C-Sub を使わないもの）であり、定義の本体のエフェクトは宣言したエフェクトに含まれる。含まれないことは、型検査を通ったプログラムでは起きないので、コア IR の検査器（後述）が処理系の不具合として検出する。
 
 ### 脱糖
 
@@ -94,16 +95,17 @@
 | モジュール | すべてのモジュールの定義を一つの Σ に、型の宣言とエフェクトの宣言をそれぞれ一つの集まりにまとめる。定義は束縛の番号で指し、実装は実装の宣言のノード番号で指す |
 | レコード | 構成子が一つの代数的データ型に移す。構築は、フィールドの式を書いた順に評価してから、宣言の順に並べて構成子に渡す。更新は `match` で分解して作り直す。フィールドを取り出す関数は、レコードの宣言ごとに Σ に定義を作る |
 | 文字列補間 | 各 `${e}` を `str_T` で文字列にし、左から `+_String` で連結する |
+| リストの展開 | 同章の「リストの展開」の規則で、要素の束縛と `concat_T` の呼び出しに移す。`concat_T` の T は、型検査が決めたリストリテラルの要素の型である（[ADR 0272](../decisions/0272-list-spread-in-list-literals.md)） |
 | 定数 | 前述の定義 `const k : A = M` と、参照 `k` に移す |
 | 型クラス | 後述の「辞書の引数」 |
 | `try` | 同章の表のとおり `match` と `escape` に移す。`Result` か `Option` かと、`escape` に渡す構成子の型引数（U と E）は、型検査の「`try` の種類」の表から読む |
 | `return` | 末尾位置にあるかどうかを判定し、末尾位置にあるものは ⟦e⟧ に、ないものは `let x ⇐ ⟦e⟧ in escape x` に移す（[ADR 0096](../decisions/0096-explicit-return.md)）。末尾位置は[評価意味論](../01-spec/01-08-evaluation.md)の「末尾呼び出し」の定め方に従い、脱糖の関数が「末尾位置か」を引数として受け渡して判定する。`with` と `lazy` のブロック、`handle` の本体と節の中は末尾位置でない |
 | `with` | 束縛を並べた順に、`let` と `use` の入れ子に移す |
 | `lazy` | `lazy ⟦B⟧` に移す |
-| エフェクトの操作 | 利用者の操作の呼び出しは `op[T̄]` の適用に、組み込みの操作の呼び出しは `b[T̄; Ē]` の適用に移す |
-| `handle` | `handle ⟦B⟧ with H` に移す。節 `when op(x̄):` は `op(x̄) k ⇒ ⟦N⟧`（k は新しい変数）に、節の中の `resume(v)` は `let x ⇐ ⟦v⟧ in resume k x` に移す。`handle` のノードに、型検査の「ハンドラの節」の表の、節ごとの末尾で再開する節かどうかと handled(H) を写す |
-| `let` のパターン | 同章の表のとおり、1 行の `match` に移す |
-| `case` | 後述の「パターンの拡張」 |
+| エフェクトの操作 | 利用者の操作の呼び出しは `op[T̄]` の適用に、組み込みの操作の呼び出しは `b[T̄; Ē]` の適用に移す。組み込みの操作の束縛から b の項目への対応は、名前解決の組み込みの操作の表から読む（[名前解決とモジュール読込](02-04-resolver.md)の「束縛と表」）。`handle` の節に書いた組み込みの操作も、同じ対応で組み込みの関数に結び付ける（[バイトコードとコード生成](02-07-bytecode.md)の「コンパイル済みプログラム」の操作の表） |
+| `handle` | `handle ⟦B⟧ with H` に移す。節 `case op(x̄) -> N` は `op(x̄) k ⇒ ⟦N⟧`（k は新しい変数）に、節の中の `resume(v)` は `let x ⇐ ⟦v⟧ in resume k x` に移す。`handle` のノードに、型検査の「ハンドラの節」の表の、節ごとの末尾で再開する節かどうかと handled(H) を写す |
+| 束縛の文 | `bind` と `shadow` を区別せず、同章の表の束縛の文の規則でコア計算の `let` に移す。左辺がパターンなら、同章の表のとおり 1 行の `match` に移す。`bind` と `shadow` のどちらで書いたかは、名前解決の検査（[名前解決とモジュール読込](02-04-resolver.md)）にだけ使う（[ADR 0255](../decisions/0255-bind-and-shadow.md)） |
+| 表層の `match` | 後述の「パターンの拡張」 |
 
 【方針】脱糖した結果は、`let` の右側が入れ子になった形（`let x ⇐ (let y ⇐ M in N) in P`）を含みうる。脱糖の段はこの形をそのまま残し、コード生成が入れ子の形を扱う（[バイトコードとコード生成](02-07-bytecode.md)）。この形を平らにする変換は、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の結合則の向き（左辺から右辺）に当たるので行ってよい（後述の「最適化」）。
 
@@ -116,7 +118,7 @@
 - 型クラスの制約を持つトップレベルの関数とメソッドの定義は、宣言した制約の順に `Dict[Cl, α]` 型の辞書の引数を、値の引数の前に持つ。組み込みの制約（`equality`・`key`）は辞書の引数を持たない（[ADR 0133](../decisions/0133-builtin-equality-and-key-constraints.md)）。
 - 実装の宣言は、実装の定義 `impl I[β̄](d̄ : …) : Dict[Cl, τ] = { S̄ = Ū; m̄ = D̄ }` に移す。d̄ は実装の型パラメータの制約ごとの辞書の引数、D̄ は各メソッドの定義、Ū は上位の型クラスの辞書である（[ADR 0134](../decisions/0134-standard-type-classes.md)）。
 - 辞書の求め方は、次のように値に移す。実装 I の求め方は、I の型パラメータに与える型 T̄ と、子の求め方を移した値 V̄ から `I[T̄](V̄)` を作る。受け取った辞書の求め方は、その制約の辞書の引数の変数に、道筋の型クラスの数だけ `↑` を重ねる（`d↑Monoid↑Semigroup`）。
-- 制約を持つ関数の呼び出しは、求めた辞書を値の引数の前に並べて渡す。メソッドの呼び出し `Cl.m(e1, …, en)` は `V.m[S̄; Ē](Ū, x1, …, xn)` に、値として使った `Cl.m` はラムダに移す（同章の表）。
+- 制約を持つ関数の呼び出しは、求めた辞書を値の引数の前に並べて渡す。メソッドの呼び出し `Cl.m(e1, …, en)` は `V.m[S̄; Ē](Ū, x1, …, xn)` に、値として使った `Cl.m` と、呼ばずに値として使った制約を持つ関数は、辞書を渡すラムダに移す（同章の表）。
 
 【方針】実行時の辞書は、実装の番号と、その実装の型パラメータの制約の辞書の並びの組で表す。型パラメータの制約を持たない実装の辞書は、定数として一度だけ作る（[ADR 0158](../decisions/0158-type-classes-by-dictionary-passing.md)、[バイトコードとコード生成](02-07-bytecode.md)）。型の引数 T̄ は、実行時の辞書に含めない。
 
@@ -131,7 +133,7 @@
 
 `match` の値は、行を順に調べ、パターンに照合し、分岐にガードがなければ、またはガードが `true` なら、その分岐の本体を実行した結果である。ガードが `false` のときは、同じ分岐の残りの行を飛ばして、次の分岐の行から調べ続ける（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)の「パターンの拡張（初回リリース版）」）。参照インタプリタは、この手順で `match` を実行する（[ADR 0159](../decisions/0159-pattern-extensions-in-decision-trees.md)）。
 
-`case` の分岐のパターンは、構成子の型名の修飾を除き、`-n` の形の整数リテラルを負の定数にし、レコードのパターンを宣言の順の構成子のパターン（書かないフィールドは `_`）にして移す。
+表層の `match` の分岐のパターンは、構成子の型名の修飾を除き、`-n` の形の整数リテラルを負の定数にし、レコードのパターンを宣言の順の構成子のパターン（書かないフィールドは `_`）にして移す。
 
 ### コア IR の検査器
 
@@ -162,8 +164,12 @@
 | `case V of { C1(x̄1) ⇒ M1 \| … \| Cn(x̄n) ⇒ Mn \| _ ⇒ M }` | V の構成子で分岐し、構成子の引数を x̄i に束縛する。`_` の分岐は、並べていない構成子のときに選ぶ。すべての構成子を並べたときは省く |
 | `case V of { c1 ⇒ M1 \| … \| cn ⇒ Mn \| _ ⇒ M }` | V が定数 ci と等しいかで分岐する。`Integer` と `Character` では、ci は区間 `a..b` でもよく、V が区間に含まれるかで分岐する。区間は互いに交わらない。`_` の分岐は、並べていない値のときに選ぶ。`Boolean` で `true` と `false` を、`Unit` で `()` を並べたときは省く |
 | `case length V of { =k1 ⇒ M1 \| … \| =kn ⇒ Mn \| ≥m ⇒ M }` | リスト V の長さで分岐する。`=k` は長さがちょうど k のとき、`≥m` は長さが m 以上のときに選ぶ |
+| `get V i`、`getback V j` | リスト V の、前から i 番目の要素、後ろから j 番目の要素を返す。V の長さは、囲む `case length` の分岐で i より（`getback` では j より）大きいと分かっている |
+| `slice V p s` | リスト V から、前の p 個の要素と後ろの s 個の要素を除いた部分のリストを返す。V の長さは、囲む `case length` の分岐で p + s 以上と分かっている |
 | `join k(x̄) = M in N` | N の中で、k を「x̄ を束縛して M へ跳ぶ先」として使えるようにする |
 | `jump k(V̄)` | k へ跳ぶ。`jump` は、k を定めた `join` の N の末尾位置にだけ書ける |
+
+`get`・`getback`・`slice` と `case length` は、組み込みの関数の表の項目を指さない下位 IR の計算とする。コード生成は、これらを処理系の内部の組み込みの関数の呼び出し（`PRIM`）などの命令に移す（[バイトコードとコード生成](02-07-bytecode.md)）。判定の木への変換が組み込みの関数の表を引かずに済むようにするためである。これらの計算のエフェクトは空集合であり、実行時エラーを起こさない。
 
 `match` 以外のコア IR の計算（`escape`、`use`、`lazy`、`handle`、`resume`、メソッドの呼び出しなど）は、下位 IR にそのまま残す。
 
@@ -182,11 +188,11 @@
    - 列 c に現れる区間の端で値の範囲を分け、互いに交わらない区間の並びを作る。各区間について、その区間を含むパターンの行とワイルドカードの行を元の順に残し、列 c を取り除いた行列を作る。どのパターンにも含まれない区間は作らない。行列が同じになる隣り合う区間は、一つの区間にまとめてよい。
    - `_` の分岐を作る。その行列は、列 c がワイルドカードの行だけを元の順に残し、列 c を取り除いたものである。
 7. 列 c の型が `List[T]` なら、長さで分岐する `case length` を作る。長さによる分け方は、型検査のパターンの検査と同じく、列 c に現れる残りのないパターンの長さの最大 a、残りのあるパターンの `..` の前の要素の数の最大 p と後の要素の数の最大 s から、m を a + 1 と p + s の大きいほうとして、ちょうど k（0 ≤ k < m）と m 以上に分ける（[型検査器](02-05-typechecker.md)の「本体の後の検査」）。
-   - ちょうど k の分岐では、新しい変数 y1, …, yk にリストの要素を先頭から順に取り出す。m 以上の分岐では、前の p 個の要素と後の s 個の要素を新しい変数に取り出す。要素は、処理系の内部の組み込みの関数（前から i 番目の要素、後ろから j 番目の要素を返すもの）で取り出す。
+   - ちょうど k の分岐では、新しい変数 y1, …, yk にリストの要素を先頭から順に取り出す。m 以上の分岐では、前の p 個の要素と後の s 個の要素を新しい変数に取り出す。要素は、下位 IR の要素の取り出し（前述の `get`・`getback`）で取り出す。
    - 各分岐の行列は、列 c がその長さを受け入れるリストのパターンの行とワイルドカードの行を元の順に残し、列 c を取り出した要素の列に置き換えたものである。リストのパターンの行では、`..` の前の要素のパターンを前から、後の要素のパターンを後ろから置き、その間をワイルドカードで埋める。`..` の後に変数を書いた行では、その変数と、列 c から前の要素の数と後の要素の数を除いた部分を取り出す指定の組を束縛の記録に加える。ワイルドカードの行では、すべての列にワイルドカードを置く。
 8. 各分岐の行列から、1 に戻って木を作る。
 
-行は、分岐するたびに束縛の記録を引き継ぐ。葉では、その行の束縛の記録にある組ごとに、パターンの変数に値を束縛する `let` を、記録の順に本体（ガードがあればガード）の前に置く。取り出し方が列の変数なら `let x ⇐ return y`、残りの部分なら、処理系の内部の組み込みの関数で部分のリストを作る計算である。3 と 7 で束縛を記録するので、列を取り除いたり構成子の引数や要素の列に置き換えたりしても、変数のパターンの束縛は失われない。
+行は、分岐するたびに束縛の記録を引き継ぐ。葉では、その行の束縛の記録にある組ごとに、パターンの変数に値を束縛する `let` を、記録の順に本体（ガードがあればガード）の前に置く。取り出し方が列の変数なら `let x ⇐ return y`、残りの部分なら、下位 IR の部分のリストの取り出し（前述の `slice`）で部分のリストを作る計算である。3 と 7 で束縛を記録するので、列を取り除いたり構成子の引数や要素の列に置き換えたりしても、変数のパターンの束縛は失われない。
 
 `String` の定数で分岐する `case` は、`String` の `=` で順に比べる。定数どうしの等しさは、`=` の意味に従う（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)）。
 
@@ -196,7 +202,7 @@
 
 【方針】下位 IR は、コード生成と仮想機械のために、次のものを持つ。
 
-- 呼び出しの種類: `b[T̄; Ē]` の適用が、外部に作用する操作か、`State` を型に持つ関数か、純粋な関数かを区別する。外部に作用する操作と `op[T̄]` の適用は、処理する `handle` をハンドラの連鎖から探し、なければ（組み込みの操作に限り）処理系がハンドラ表で行う（[ランタイム](02-09-runtime.md)の「操作の振り分け」）。`Lazy.force` と `Reference.update` の適用、演算子の項目（`⊕_T`・`eq[T]` など）の適用は、コード生成が専用の命令に移すので、組み込みの関数の表の項目がそのことを持つ（[バイトコードとコード生成](02-07-bytecode.md)の「コード生成」）。`State` を型に持つ関数と純粋な関数は、ハンドラを調べない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「ハンドラ」、[ADR 0150](../decisions/0150-resource-release-as-state.md)）。
+- 呼び出しの種類: `b[T̄; Ē]` の適用が、外部に作用する操作か、`State` を型に持つ関数か、純粋な関数かを区別する。外部に作用する操作と `op[T̄]` の適用は、処理する `handle` をハンドラの連鎖から探し、なければ（組み込みの操作に限り）処理系がハンドラ表で行う（[ランタイム](02-09-runtime.md)の「操作の振り分け」）。`Lazy.force` と `Reference.update` の適用、演算子の項目（`⊕_T`・`eq[T]` など）の適用は、コード生成が専用の命令に移すので、組み込みの関数の表の項目がそのことを持つ（[バイトコードとコード生成](02-07-bytecode.md)の「コード生成」）。`State` を型に持つ関数と純粋な関数は、ハンドラを調べない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「ハンドラ」、[ADR 0150](../decisions/0150-resource-release-as-state.md)）。 タスクを起動する関数（`Task.all`・`Task.allOk`・`Task.race`・`Task.withTimeout`）は、型に `State` を持たないが、タスクの起動を応答として返すので純粋な関数には当たらない（純粋な関数はタスクの起動を返せない。[ADR 0261](../decisions/0261-typed-builtin-interface.md) の決定 3）。そこで、呼び出しの種類としては `State` を型に持つ関数と同じく扱う。どちらもハンドラを調べないので、この扱いは実行の意味を変えない。
 - 末尾で再開する節の印: `handle` の各節が末尾で再開する節かどうか。タスクが引き継いだハンドラの節を、継続を捕まえずに呼び出しとして実行するかを決めるのに使う（[ADR 0151](../decisions/0151-inherited-handlers-tail-resume-only.md)、[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)）。
 - 末尾位置: `use` の本体、`lazy` の本体、`handle` の本体と節の本体は、その後に解放の枠、`update` の枠、`handle` の枠、`drop` の枠が残るので、中の呼び出しは、それを囲む関数の末尾呼び出しではない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「末尾呼び出しの保証の読み替え」、[ADR 0013](../decisions/0013-evaluation-order-and-tail-calls.md)）。コード生成は、`use` の本体を末尾位置でないものとして移す。`lazy` の本体、`handle` の本体と各節は別の原型に移し、その原型の中の末尾位置の呼び出しは、これらの枠を残したまま原型の呼び出しの枠だけを置き換える（[バイトコードとコード生成](02-07-bytecode.md)の「末尾呼び出し」）。
 - 別の原型に移す計算: ラムダ、`lazy` の本体、`handle` の本体と各節（`op(x̄) k ⇒ N`）は、それぞれ一つの関数の本体としてコード生成に渡す。関数の境界（コア計算の `mark`）になるのは、トップレベルの関数、実装のメソッド、ラムダであり、`lazy` の本体、`handle` の本体と節は関数の境界ではない（[バイトコードとコード生成](02-07-bytecode.md)の「関数の境界」）。
@@ -205,7 +211,7 @@
 
 ### 参照インタプリタの範囲
 
-【方針】参照インタプリタは、初回リリース版の拡張を含むコア IR を、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の実行の規則どおりに実行する。継続は枠の並びとして写して保存する（[ADR 0160](../decisions/0160-one-shot-continuations-as-stack-segments.md)）。並行処理のタスクはコア計算に含まれないので、タスクを起動する組み込みの関数を参照インタプリタは実行しない。参照インタプリタとの差分テストは、タスクを使わないプログラムに限る（[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)、[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。
+【方針】参照インタプリタは、初回リリース版の拡張を含むコア IR を、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の実行の規則どおりに実行する。継続は枠の並びとして写して保存する（[ADR 0160](../decisions/0160-one-shot-continuations-as-stack-segments.md)）。組み込みの関数の意味（δ）と組み込みのエフェクトの操作は、VM と同じ組み込みの関数の実装を、値を変換して呼ぶ（[仮想機械](02-08-vm.md)の「参照インタプリタ」、[ADR 0276](../decisions/0276-reference-interpreter-shares-builtin-bodies.md)）。並行処理のタスクはコア計算に含まれないので、タスクを起動する組み込みの関数を参照インタプリタは実行しない。参照インタプリタとの差分テストは、タスクを使わないプログラムに限る（[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)、[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。
 
 ### 最適化
 

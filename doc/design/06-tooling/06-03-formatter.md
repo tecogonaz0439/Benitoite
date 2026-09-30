@@ -1,7 +1,7 @@
 # フォーマッタ
 
 - 状態: 確定
-- 関連ADR: [0021](../decisions/0021-comments-beside-ast.md), [0125](../decisions/0125-doc-comments.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0207](../decisions/0207-fmt-command-line.md), [0224](../decisions/0224-golden-test-format-for-first-release.md), [0225](../decisions/0225-formatter-without-configuration.md), [0226](../decisions/0226-formatter-keeps-line-breaks.md), [0227](../decisions/0227-formatter-changes-only-whitespace-and-verifies-tokens.md), [0228](../decisions/0228-formatter-comments-blank-lines-and-characters.md)
+- 関連ADR: [0021](../decisions/0021-comments-beside-ast.md), [0125](../decisions/0125-doc-comments.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0207](../decisions/0207-fmt-command-line.md), [0224](../decisions/0224-golden-test-format-for-first-release.md), [0225](../decisions/0225-formatter-without-configuration.md), [0226](../decisions/0226-formatter-keeps-line-breaks.md), [0227](../decisions/0227-formatter-changes-only-whitespace-and-verifies-tokens.md), [0228](../decisions/0228-formatter-comments-blank-lines-and-characters.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md)
 - 未決事項: なし
 - 移行元: [設計メモ](../sources/fp-language-design.md) なし
 
@@ -39,7 +39,7 @@
 |---|---|
 | `(`・`[` の後と、`)`・`]` の前 | `f(x)`、`[1, 2]`、`()` |
 | `,` の前 | `f(a, b)` |
-| `:` の前 | `x: Integer`、`): Unit`、`when Option.Some(x): x` |
+| `:` の前 | `x: Integer`、`bind n: Integer <- 0` |
 | `.` の前と後 | `Console.writeLine` |
 | `..` の後と、`,` の後でない `..` の前 | `Person(..p, age: 1)`、`[first, ..rest]`、`90..100` |
 | 呼び出しの引数の並び、宣言・ラムダ・操作の引数の並び、関数の型の引数の型の並び、型引数と型パラメータの並び、構成子とレコードのパターンの括弧、属性の引数の並びを開く `(`・`[` の前 | `f(x)(y)`、`List[Integer]`、`function getOr[A](opt: Option[A], default: A)`、`lambda(x)`、`function(Integer) -> Integer`、`implement[T: Show] Show[Option[T]]`、`resume(())` |
@@ -47,7 +47,9 @@
 | `@` の後 | `@test` |
 | 補間の開始と中間の字句（StrStart・StrMid）の後と、補間の中間と終わりの字句（StrMid・StrEnd）の前 | `"total: ${total}"` |
 
-表の位置のほかは空白を一つ置くので、二項演算子（`=` と `->`・`|>`・`&`・`and`・`or`・`div`・`mod` を含む）の前後、`,` と `:` の後、キーワードの前後には、空白が一つ入る。括弧の式、リストリテラル、リストのパターン、`()` の値、括弧の型を開く `(`・`[` の前も、同じく空白を一つ置く（`return (x)`、`not (a or b)`、`when [x, ..rest]:`、`else (if b then 1 end if)`）。ただし、`(`・`[` の直後と、単項の `-` の直後では、表の規則が優先する（`f((a))`、`-(x)`）。`not` はキーワードなので、後に空白を一つ置く。
+表の位置のほかは空白を一つ置くので、二項演算子（`=` と `->`・`<-`・`|>`・`&`・`and`・`or`・`div`・`mod` を含む）の前後、`,` と `:` の後、キーワードの前後には、空白が一つ入る。括弧の式、リストリテラル、リストのパターン、`()` の値、括弧の型を開く `(`・`[` の前も、同じく空白を一つ置く（`return (x)`、`not (a or b)`、`case [x, ..rest] ->`、`else (if b then 1 end if)`）。ただし、`(`・`[` の直後と、単項の `-` の直後では、表の規則が優先する（`f((a))`、`-(x)`）。`not` はキーワードなので、後に空白を一つ置く。
+
+連続する行の束縛の文の `<-` の列は揃えない。`bind` と `shadow` の語の長さや、左辺の名前の長さが違っても、`<-` の前の空白は一つである。揃えると、一つの名前を変えただけで周りの行の空白も変わり、変更の差分が広がるからである（行末のコメントの列を揃えないのと同じ理由。[ADR 0228](../decisions/0228-formatter-comments-blank-lines-and-characters.md)）。
 
 `(`・`[` の前に空白を置くかは、その括弧が呼び出しや引数の並びを開くか、式や型をまとめるかで決まり、前の字句だけでは決まらない。フォーマッタは、これを構文解析の結果から判断する（後述の「入力表現」）。単項の `-` と二項の `-` の区別も同じである。
 
@@ -59,29 +61,29 @@
 
 | 構文 | 開きの字句 | 開きの行と同じ段に置く行 | 開きの行より一段深くする行 |
 |---|---|---|---|
-| 関数の宣言（本体を持つもの）、型の宣言（`=` を持たないもの）、レコード・型クラス・実装・エフェクトの宣言 | `function`・`type`・`record`・`trait`・`implement`・`effect` | `end` で始まる行 | 本体の文、構成子、フィールド、メソッド、操作、実装の中の関数の宣言の行 |
+| 関数の宣言（本体を持つもの）、代数的データ型・レコード・型クラス・実装・エフェクトの宣言 | `function`・`data`・`record`・`trait`・`implement`・`effect` | `end` で始まる行 | 本体の文、構成子、フィールド、メソッド、操作、実装の中の関数の宣言の行 |
 | `lambda`・`with`・`lazy` | 同じ語 | `end` で始まる行 | 本体の文の行 |
 | `if` | `if`（`else` の直後の `if` を除く） | `else` で始まる行、`end` で始まる行 | 分岐の文の行 |
-| `case` | `case` | `end` で始まる行 | `when` で始まる行（分岐の文の行は、その `when` の行より一段深くする） |
-| `handle` | `handle` | 節の `when` で始まる行、`end` で始まる行 | 本体の文の行（節の文の行は、その `when` の行より一段深くする） |
+| `match` | `match` | `end` で始まる行 | 分岐の `case` で始まる行（分岐の本体の文の行は、その `case` の行より一段深くする） |
+| `handle` | `handle` | 節の並びを始める `with` で始まる行、`end` で始まる行 | 本体の文の行、節の `case` で始まる行（節の本体の文の行は、その `case` の行より一段深くする） |
 | 丸括弧・角括弧 | `(`・`[` | 閉じ括弧で始まる行 | 括弧の中の要素の行 |
 
-関数の宣言と、型・レコード・型クラス・実装・エフェクトの宣言は、改行による区切りの規則ではブロックの開きとして数えない（[字句構造](../01-spec/01-01-lexical.md)の「改行による区切り」）が、字下げでは開きの字句として扱う。`case` の分岐のガードの `if` は、開きの字句ではない。
+関数の宣言と、代数的データ型・レコード・型クラス・実装・エフェクトの宣言は、改行による区切りの規則ではブロックの開きとして数えない（[字句構造](../01-spec/01-01-lexical.md)の「改行による区切り」）が、字下げでは開きの字句として扱う。`match` の分岐と `handle` の節の並びを始める `with` と、分岐のガードの `if` は、開きの字句ではない。`match` の `with` は `match 対象` と同じ行に書く（[構文](../01-spec/01-02-syntax.md)の「パターンマッチ」）ので、行の最初の字句にならない。
 
 行の段は、次の順に規則を当てはめて決める。
 
-1. 行の最初の字句が、閉じの字句（`end`・`)`・`]`）か、`if` の `else` か、`handle` の節の `when` であれば、その字句が属する構文の開きの行と同じ段とする。
-2. 行の最初の字句が `case` の分岐の `when` であれば、`case` の開きの行より一段深くする。
-3. 行の最初の字句が、並びの要素の最初の字句であれば、その要素を囲む構文の表の規則で段を決める。並びの要素とは、文、トップレベルの宣言とその属性と import の宣言、宣言の中の構成子・フィールド・メソッド・操作・関数の宣言、`with` の束縛、括弧の中の要素（引数、リストの要素、フィールドの引数、パターンの要素、型引数など）である。`if` の分岐の文は、その分岐を始めた `if` か `else` の行より、`case` の分岐と `handle` の節の文は、その `when` の行より、一段深くする。
+1. 行の最初の字句が、閉じの字句（`end`・`)`・`]`）か、`if` の `else` か、`handle` の節の並びを始める `with` であれば、その字句が属する構文の開きの行と同じ段とする。
+2. 行の最初の字句が `match` の分岐か `handle` の節の `case` であれば、`match` か `handle` の開きの行より一段深くする。
+3. 行の最初の字句が、並びの要素の最初の字句であれば、その要素を囲む構文の表の規則で段を決める。並びの要素とは、文、トップレベルの宣言とその属性と import の宣言、宣言の中の構成子・フィールド・メソッド・操作・関数の宣言、`with` の束縛、括弧の中の要素（引数、リストの要素、フィールドの引数、パターンの要素、型引数など）である。`if` の分岐の文は、その分岐を始めた `if` か `else` の行より、`match` の分岐と `handle` の節の本体の文は、その `case` の行より、一段深くする。
 4. 上のどれにも当たらない行を、続きの行と呼ぶ。続きの行は、その最初の字句を含む最も内側の並びの要素が始まる行より、一段深くする。一つの要素の続きの行が複数あっても、段はどれも同じである。
 
 規則 4 により、次の書き方は、どれも前の行の続きとして一段深くなる。
 
 ```text
-let total = price
+bind total <- price
   * quantity
 
-let n = lines
+bind n <- lines
   |> List.filter(lambda(l) return l <> "" end lambda)
   |> List.length
 ```
@@ -90,7 +92,7 @@ let n = lines
 
 ```text
 List.forEach(items, lambda(item)
-  let name = Item.name(item)
+  bind name <- Item.name(item)
   Console.writeLine(name)
 end lambda)
 ```
@@ -115,7 +117,7 @@ end lambda)
 - ただし、import の宣言の後に import の宣言が続くときと、定数の宣言の後に定数の宣言が続くときは、書き手の空の行を、一つまでにまとめて保つ。空の行がなければ加えない。二つの宣言の間にコメントだけの行があるときも同じである。
 - 属性の行と宣言の間、`///` の行と属性の間の空の行は除く。
 - ブロックの中と括弧の中では、書き手の空の行を一つまでにまとめて保つ。
-- 構文の中身の最初の行（開きの行の次の行。コメントだけの行を含めて数える）の前の空の行と、閉じの字句で始まる行と `else` で始まる行の前の空の行を除く。構文の中身とは、ブロック、分岐と節の本体、宣言の中身、括弧の中である。`case` の分岐と `handle` の節の `when` の前の空の行は、一つまでにまとめて保つ。
+- 構文の中身の最初の行（開きの行の次の行。コメントだけの行を含めて数える）の前の空の行と、閉じの字句で始まる行と `else` で始まる行と `handle` の節の並びを始める `with` で始まる行の前の空の行を除く。構文の中身とは、ブロック、分岐と節の本体、宣言の中身、括弧の中である。`match` の分岐と `handle` の節の `case` の前の空の行は、一つまでにまとめて保つ。
 - ファイルの先頭の空の行を除く。シェバンの行と `//!` の行の後の空の行は、一つまでにまとめて保つ。
 - ファイルの終わりの空の行を除く。
 
@@ -151,22 +153,23 @@ end lambda)
 
 ```text
 import Benitoite.IO.Console
-type Shape
+data Shape
     Circle(Float)
     Rect(Float,Float)
-end type
-function area(s: Shape):Float
-    return case s of
-    when Shape.Circle(r) : 3.14159*r*r    // circle
-    when Shape.Rect(w,h): w*h
-    end case
+end data
+function area(s: Shape)->Float
+    return match s with
+    case Shape.Circle(r)  ->  3.14159*r*r    // circle
+    case Shape.Rect(w,h)->
+    w*h
+    end match
 end function
-function main(): Unit uses Console.Write
+function main() -> Unit uses Console.Write
 
 
-    let shapes = [ Shape.Circle(1.0), Shape.Rect(2.0,3.0) ]
+    bind shapes<-[ Shape.Circle(1.0), Shape.Rect(2.0,3.0) ]
     // total area
-    let total = shapes
+    bind total <- shapes
     |> List.map(area)
     |> List.fold(0.0, lambda (acc, a) return acc+a end lambda)
     Console.writeLine("total: ${ total }")
@@ -176,29 +179,30 @@ end function
 ```text
 import Benitoite.IO.Console
 
-type Shape
+data Shape
   Circle(Float)
   Rect(Float, Float)
-end type
+end data
 
-function area(s: Shape): Float
-  return case s of
-    when Shape.Circle(r): 3.14159 * r * r // circle
-    when Shape.Rect(w, h): w * h
-  end case
+function area(s: Shape) -> Float
+  return match s with
+    case Shape.Circle(r) -> 3.14159 * r * r // circle
+    case Shape.Rect(w, h) ->
+      w * h
+  end match
 end function
 
-function main(): Unit uses Console.Write
-  let shapes = [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
+function main() -> Unit uses Console.Write
+  bind shapes <- [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
   // total area
-  let total = shapes
+  bind total <- shapes
     |> List.map(area)
     |> List.fold(0.0, lambda(acc, a) return acc + a end lambda)
   Console.writeLine("total: ${total}")
 end function
 ```
 
-整形の前後で、字句の並びと、字句の間の改行の有無は同じである。変わったのは、字句の間の空白、字下げ、宣言の間の空の行（加えた）、`main` の本体の最初の行の前の空の行（除いた）、行末のコメントの前の空白である。`|>` で始まる二つの行は `let total` の文の続きの行なので、文より一段深くなる。
+整形の前後で、字句の並びと、字句の間の改行の有無は同じである。変わったのは、字句の間の空白、字下げ、宣言の間の空の行（加えた）、`main` の本体の最初の行の前の空の行（除いた）、行末のコメントの前の空白である。`Shape.Rect(w, h)` の分岐の本体は、書き手が `->` の後で改行したので次の行に残り、`case` の行より一段深くなる。`|>` で始まる二つの行は `bind total` の文の続きの行なので、文より一段深くなる。
 
 ### 入力表現
 
@@ -210,7 +214,7 @@ end function
 | コメントの一覧（本文、種類、span） | コメントを元の行に書き戻す |
 | AST | 構文の開き・区切り・閉じの字句（前述の「字下げ」の表）、並びの要素の最初の字句、`(`・`[` が呼び出しや引数の並びを開くか、`-` が単項か二項かを知る |
 
-改行による区切りの判定は、ブロックを開く語として `lambda`・`if`・`case`・`with`・`lazy`・`handle` だけを数える（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)の「処理の流れ」）ので、関数の宣言や型の宣言の中身の段は、字句の列だけでは決まらない。`type` が型の宣言を開くか型の別名を宣言するか、`when` が `case` の分岐か `handle` の節か、`if` がガードかも、構文解析の結果で決まる。そこで、フォーマッタは AST を辿って、字句の位置（span）ごとに、字下げと空白の規則に要る役割（開き・区切り・閉じの字句か、並びの要素の最初の字句か、呼び出しの括弧か、単項の `-` か）の表を作る。
+改行による区切りの判定は、ブロックを開く語として `lambda`・`if`・`match`・`with`（分岐の並びを始めるものを除く）・`lazy`・`handle` だけを数える（[字句構造](../01-spec/01-01-lexical.md)の「改行による区切り」、[字句解析器と構文解析器](../02-impl/02-03-frontend.md)の「処理の流れ」）ので、関数の宣言や代数的データ型の宣言の中身の段は、字句の列だけでは決まらない。`case` が `match` の分岐か `handle` の節か、`if` がガードかも、構文解析の結果で決まる。そこで、フォーマッタは AST を辿って、字句の位置（span）ごとに、字下げと空白の規則に要る役割（開き・区切り・閉じの字句か、並びの要素の最初の字句か、呼び出しの括弧か、単項の `-` か）の表を作る。
 
 整形の結果は、AST を出力し直して作らない。字句と改行の印の列を先頭から辿り、字句の字面をそのまま書き出し、字句の間に、前述の規則で決めた空白・字下げ・空の行と、コメントを置いて作る。書き手の改行の位置は AST に残らず、字句と改行の印の列の span に残るからである（[ADR 0226](../decisions/0226-formatter-keeps-line-breaks.md)）。複数行の文字列の字句は、字面を行ごとに書き出し、内容の行を前節の規則で動かす。
 

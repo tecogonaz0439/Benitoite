@@ -1,7 +1,7 @@
 # IO のモジュール
 
 - 状態: 確定
-- 関連ADR: [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0067](../decisions/0067-with-resource-scope.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0107](../decisions/0107-bytes.md), [0115](../decisions/0115-structured-io-concurrency.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0144](../decisions/0144-ioerrorkind-constructors.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0150](../decisions/0150-resource-release-as-state.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0172](../decisions/0172-random-conversion-procedure.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0243](../decisions/0243-signal-exit-code-and-posix-shell.md)
+- 関連ADR: [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0067](../decisions/0067-with-resource-scope.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0107](../decisions/0107-bytes.md), [0115](../decisions/0115-structured-io-concurrency.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0144](../decisions/0144-ioerrorkind-constructors.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0150](../decisions/0150-resource-release-as-state.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0172](../decisions/0172-random-conversion-procedure.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0243](../decisions/0243-signal-exit-code-and-posix-shell.md), [0254](../decisions/0254-return-type-after-arrow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0287](../decisions/0287-stdlib-details-decided-in-u3-plan.md), [0291](../decisions/0291-file-copy-limit-and-http-server-details.md)
 - 未決事項: [OPEN-046](../open-issues.md#open-046), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 15, 16, 0.2
 
@@ -10,6 +10,8 @@
 `Benitoite.IO` の下の IO を行うモジュール（`Console`・`File`・`Process`・`Clock`・`Random`）の範囲、関数、エフェクト、要する権限を定める。外部コマンドの起動とシェルによる実行の API もここで扱う。
 
 現在の版は、各モジュールのエフェクトと権限の対応、初回リリース版で各モジュールに入れる機能の範囲（[ADR 0137](../decisions/0137-first-release-library-scope.md)）、各関数の名前と型の草稿を定める。ネットワークの操作を行うモジュールは `Benitoite.IO` の下に置かず、[ネットワークのモジュール](03-09-network.md)で定める（[ADR 0140](../decisions/0140-network-separated-from-local-io.md)）。
+
+初回リリース版では、本章のモジュールはどれも非公式のモジュールであり、`import Benitoite.Unofficial.IO.Console` の形で取り込む（[標準ライブラリ](03-06-stdlib.md)の「標準のモジュールと非公式のモジュール（初回リリース版）」、[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)）。本章は、標準に加えた後の名前（`Benitoite.IO.Console`）で書く。取り込んだ後の書き方（`Console.writeLine`、`uses Console.Write`）は、どちらの名前で取り込んでも同じである。
 
 ## 前提
 
@@ -58,7 +60,7 @@ IO を行う関数の振る舞い、IO の失敗、実行時の権限制御は[�
 - パスは `String` で表す。相対パスは、実行ごとの基準のディレクトリから辿る（[エフェクト](../01-spec/01-07-effects.md)、[ADR 0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md)）。基準のディレクトリは、CLI の `run` とテストの実行器では処理系を起動したときの作業ディレクトリであり、サーバモードの子プロセスではデーモンが子プロセスの作業ディレクトリにしたディレクトリである（[スクリプト実行と埋め込み](../02-impl/02-11-embedding.md)、[ADR 0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md)）。パスの組み立ては `Benitoite.Path` の関数で行う。
 - 外部の状態によって失敗しうる関数は `Result[T, IOError]` を返す（[ADR 0011](../decisions/0011-io-failure-and-entry-point.md)）。利用者が許可していない操作の拒否は、`IOError` ではなく実行時エラー（権限の拒否）である（[エフェクト](../01-spec/01-07-effects.md)の実行時の権限制御の節）。この拒否は、サーバモードとあわせて加える実行時の権限制御で起こり、初回リリース版では起こらない。OS が操作を拒んだときは `IOErrorKind.PermissionDenied` を返す。
 - テキストは UTF-8 で読み書きする。読んだ内容が正しい UTF-8 でなければ、`IOErrorKind.InvalidUTF8` の `Result.Error` を返す（[ADR 0012](../decisions/0012-invalid-utf8-input.md)）。
-- 行に分けるときは、LF（U+000A）で区切り、LF の直前の CR（U+000D）を取り除く。最後の LF の後に文字が残れば、それも一つの行とする。行の値は、区切りの文字を含まない。行を書く関数は、行の後に LF を一つ書く。
+- 行に分けるときは、LF（U+000A）で区切り、各行の末尾に CR（U+000D）が一つあれば取り除く。最後の LF の後に文字が残れば、それも一つの行とする。行の値は、区切りの文字を含まない。この分け方は `String.lines`（[標準ライブラリ](03-06-stdlib.md)）と同じであり、内容全体を行に分ける関数（`File.readLines`・`Console.readAllLines`）にも、一行ずつ読む関数（`Console.readLine`・`File.readLine`）にも当てはまる。一行ずつ読む関数は、行の末尾の LF と、その直前にあれば CR を一つ取り除いた値を返す。LF のないまま入力の終わりに達したときは、残りの文字（末尾に CR が一つあれば取り除く）を一つの行として返し、次の呼び出しで `Option.None` を返す。
 - 時間の長さは、ミリ秒を単位とする `Integer` で表す（`Clock.sleep`・`Task.withTimeout` と同じ。[並行処理](../01-spec/01-11-concurrency.md)）。
 - ディレクトリの中の名前を並べる関数は、名前を UTF-8 のバイト列の辞書式の順に並べる。OS が返す順に依存しないので、同じ内容のディレクトリからは、同じ結果が得られる。
 
@@ -112,17 +114,18 @@ record Info
   modified: Time.Instant
 end record
 
-type EntryKind
+data EntryKind
   RegularFile
   Directory
   SymbolicLink
   Other
-end type
+end data
 ```
 
 - `File.Info` の `size` はバイトの数、`modified` は最後に内容を変えた時刻（`Benitoite.Time` の `Time.Instant`）である。`File.Info` と `File.EntryKind` は `Benitoite.IO.File` の型であり、`File.Info.size(info)` のように使う。
 - `File.walk` は、並べる順を、相対パスを UTF-8 のバイト列として比べた辞書式の順とする。
 - `File.createDirectory` は、パスに普通のファイルがあれば `IOErrorKind.AlreadyExists` を返す。`File.remove` は、空でないディレクトリに `IOErrorKind.DirectoryNotEmpty` を返す。
+- 【方針】`File.copy` は、`File.readBytes` と `File.writeBytes` を呼ぶ標準ライブラリのソースの関数とする。内容を一度 `Bytes` の値に読むので、写せるファイルの大きさは 2^30 バイト（1 GiB）までである。これを超えるファイルでは、`File.readBytes` と同じく資源の不足として停止する（[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」、[ADR 0291](../decisions/0291-file-copy-limit-and-http-server-details.md)）。
 
 【方針】ファイルを一行ずつ、または一定の大きさずつ読み書きするために、リソースの型 `File.Reader` と `File.Writer` を置く（[リソース管理](../01-spec/01-10-resources.md)）。
 
@@ -139,10 +142,10 @@ end type
 | `File.closeWriter(writer)` | `function(File.Writer) -> Result[Unit, IOError] uses State` | 書いた内容を書き出してから閉じる | — |
 
 ```text
-type WriteMode
+data WriteMode
   Replace
   Append
-end type
+end data
 ```
 
 - 権限は、開くときに一度だけ判定する。開いた後の読み書きは、許可を改めて調べない。
@@ -153,17 +156,17 @@ end type
 ```text
 import Benitoite.IO.File
 
-function countLines(path: String): Result[Integer, IOError] uses File.Read, State
+function countLines(path: String) -> Result[Integer, IOError] uses File.Read, State
   with reader = try File.openReader(path) do
     return countFrom(reader, 0)
   end with
 end function
 
-function countFrom(reader: File.Reader, count: Integer): Result[Integer, IOError] uses File.Read
-  return case try File.readLine(reader) of
-    when Option.Some(_): countFrom(reader, count + 1)
-    when Option.None: Result.Ok(count)
-  end case
+function countFrom(reader: File.Reader, count: Integer) -> Result[Integer, IOError] uses File.Read
+  return match try File.readLine(reader) with
+    case Option.Some(_) -> countFrom(reader, count + 1)
+    case Option.None -> Result.Ok(count)
+  end match
 end function
 ```
 
@@ -223,6 +226,7 @@ end record
 | `Clock.sleep(milliseconds)` | `function(Integer) -> Unit uses Clock.Time` | 呼び出したタスクを止める（[並行処理](../01-spec/01-11-concurrency.md)） |
 
 - `Time.Instant` は `Benitoite.Time` の型である（[テキストとデータの処理](03-08-text-and-data.md)）。
+- OS から地方時の UTC からの差を得られないとき（タイムゾーンの設定を持たない最小のコンテナなど）、`Clock.localOffsetMinutes` は 0 を返す。実行時エラーにも `IOError` にもしない（[ADR 0287](../decisions/0287-stdlib-details-decided-in-u3-plan.md)）。
 - 経過時間は、`Clock.monotonicMilliseconds` の二つの値の差で計る。`Clock.now` は、OS の時計が調整されると戻ることがあるので、経過時間の計測には使わない。
 
 ### Random

@@ -1,7 +1,7 @@
 # Agent Skills 対応
 
 - 状態: 確定
-- 関連ADR: [0003](../decisions/0003-license.md), [0127](../decisions/0127-directory-run-and-root.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0179](../decisions/0179-threat-model-and-server-mode-premise.md), [0193](../decisions/0193-restricting-agents-to-server-mode-by-agent-config.md), [0229](../decisions/0229-bundled-skill-contents-and-japanese-translations.md), [0230](../decisions/0230-skill-embedded-and-installed-by-subcommand.md), [0231](../decisions/0231-skill-shows-main-effects-before-running.md), [0232](../decisions/0232-skill-evaluation-with-tasks-and-harnesses.md), [0235](../decisions/0235-third-party-licenses-generated-and-shown-by-option.md), [0236](../decisions/0236-compatibility-during-0x.md), [0241](../decisions/0241-command-name-and-extension.md), [0243](../decisions/0243-signal-exit-code-and-posix-shell.md), [0246](../decisions/0246-syntax-measurement-in-two-stages.md), [0249](../decisions/0249-skill-test-procedure-without-check.md)
+- 関連ADR: [0003](../decisions/0003-license.md), [0127](../decisions/0127-directory-run-and-root.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0179](../decisions/0179-threat-model-and-server-mode-premise.md), [0193](../decisions/0193-restricting-agents-to-server-mode-by-agent-config.md), [0229](../decisions/0229-bundled-skill-contents-and-japanese-translations.md), [0230](../decisions/0230-skill-embedded-and-installed-by-subcommand.md), [0231](../decisions/0231-skill-shows-main-effects-before-running.md), [0232](../decisions/0232-skill-evaluation-with-tasks-and-harnesses.md), [0235](../decisions/0235-third-party-licenses-generated-and-shown-by-option.md), [0236](../decisions/0236-compatibility-during-0x.md), [0241](../decisions/0241-command-name-and-extension.md), [0243](../decisions/0243-signal-exit-code-and-posix-shell.md), [0246](../decisions/0246-syntax-measurement-in-two-stages.md), [0249](../decisions/0249-skill-test-procedure-without-check.md), [0251](../decisions/0251-contract-change-display-not-in-first-release.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0288](../decisions/0288-skill-documents-generated-by-tool-and-committed.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-047](../open-issues.md#open-047), [OPEN-055](../open-issues.md#open-055), [OPEN-060](../open-issues.md#open-060)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 23.1–23.4
 
@@ -35,7 +35,7 @@ Agent Skills の仕様（[Specification](https://agentskills.io/specification)�
 |---|---|---|
 | `SKILL.md` | 作業の手順と、主な言語の規則の要約。後述の「実行の前の確認」の手順を含む | 手で書く |
 | 文法 | EBNF による文法の全体 | [構文](../01-spec/01-02-syntax.md)の「初回リリース版の文法の全体」から生成する。日本語の注釈（`(* … *)`）は除く |
-| 標準ライブラリのリファレンス | モジュールごとの関数・型・エフェクトの宣言と説明 | 標準ライブラリのソースの宣言の型とドキュメントコメントから生成する（[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)、[ADR 0125](../decisions/0125-doc-comments.md)） |
+| 標準ライブラリのリファレンス | モジュールごとの関数・型・エフェクトの宣言と説明。モジュールごとに、標準か非公式かの状態と、取り込みの名前（`import Benitoite.Unofficial.IO.Console` など）を示す（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)） | 標準ライブラリのソースの宣言の型とドキュメントコメントから生成する（[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)、[ADR 0125](../decisions/0125-doc-comments.md)） |
 | 診断コードの説明 | 診断コードごとの誤りの意味と、よくある直し方 | 処理系の中の診断の表のコードの説明から生成する（[診断エンジン](../02-impl/02-10-diagnostics.md)の「診断コード」） |
 | イディオム集 | よく行う処理（ファイルの読み書き、JSON・CSV の処理、外部コマンドの起動、HTTP、テストなど）の書き方 | 手で書く |
 | よくある誤り集 | ほかの言語の書き方を持ち込んだ誤りと、その直し方 | 手で書く |
@@ -43,7 +43,7 @@ Agent Skills の仕様（[Specification](https://agentskills.io/specification)�
 | ライセンス文 | Skill のライセンス（`MIT OR Apache-2.0`）の文 | 処理系のリポジトリのライセンス文を写す（[ADR 0003](../decisions/0003-license.md)、[ADR 0235](../decisions/0235-third-party-licenses-generated-and-shown-by-option.md)） |
 
 - 【決定】Skill は英語で書く。
-- 【決定】生成は処理系のビルドのときに行い、生成した Skill を処理系の実行ファイルに埋め込む。配る Skill は、同じ実行ファイルの処理系と同じ版になる。
+- 【決定】生成は、処理系のクレートを使う生成の道具で行い、生成物をリポジトリに置く。処理系のビルドは、置いた生成物と手で書く文書を処理系の実行ファイルに埋め込む。配る Skill は、同じ実行ファイルの処理系と同じ版になる。生成物が、いまの構文の章・標準ライブラリのソース・診断の表から生成したものと一致することを、処理系のテストで確かめる（[ADR 0288](../decisions/0288-skill-documents-generated-by-tool-and-committed.md)）。
 - 【決定】手で書くイディオム集、よくある誤り集、既知の言語との対応表に載せたコードの例は、ゴールデンテスト（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)の「ゴールデンテスト」）と同じ仕組みで検査する。期待する出力を書いた例は、実行して出力も比べる。標準ライブラリのドキュメントコメントの例は、初回リリース版では検査しない（[OPEN-047](../open-issues.md#open-047)）。
 - 【方針】`SKILL.md` の前付けは、`name: benitoite`、Skill を使う場面を書いた `description`、`license: MIT OR Apache-2.0` と、`metadata` の欄に処理系の版を持つ。
 - 【方針】参照の文書のファイルの名前と分け方（標準ライブラリのリファレンスをモジュールごとのファイルに分けるかなど）は、実装プランで定める。仕様の勧めに従い、一つのファイルを一つの主題に絞る。
@@ -53,7 +53,7 @@ Agent Skills の仕様（[Specification](https://agentskills.io/specification)�
 1. 作業の手順。スクリプトとテストで手順を分ける（[ADR 0249](../decisions/0249-skill-test-procedure-without-check.md)）。診断コードの意味が分からないときは、診断コードの説明の文書を読む。
    - スクリプト: スクリプトを書く、`benitoite check` で検査する、診断を読んで直す、を検査が通るまで繰り返し、後述の「実行の前の確認」を行ってから、`benitoite run` で実行する。
    - テスト: `check` は `main` のないファイルを誤りとする（[型検査器](../02-impl/02-05-typechecker.md)の「`main`」）ので、テストのファイルには使わない。テストを書いたら、後述の「実行の前の確認」を行ってから、`benitoite test` を呼ぶ。`test` は、検査の誤りがあるファイルのテストを実行せずに、`check` と同じく誤りを報告する（[利用者プログラムのテスト](06-04-test-runner.md)の「テストの実行」）。エージェントは、誤りを直して `test` を呼び直す。
-2. 主な言語の規則の要約。ほかの言語と違い、LLM が書き誤りやすい規則（ブロックを `end` で閉じること、`Option` と `Result` の構成子を型名で修飾すること、IO のモジュールを import すること、関数のシグネチャに `uses` でエフェクトを書くことなど）を短く並べる。
+2. 主な言語の規則の要約。ほかの言語と違い、LLM が書き誤りやすい規則（ブロックを `end` で閉じること、局所の束縛を `let` ではなく `bind x <- e` と書き、局所の名前として見えている名前を隠すときだけ `shadow x <- e` と書くこと、パターンで分岐する式を `match 対象 with` と `case パターン -> 本体` で書き、ハンドラの節も `with` と `case 操作(引数) -> 節` で書くこと、戻り値の型を `->` の後に書くこと、代数的データ型を `data … end data` で宣言すること、`Option` と `Result` の構成子を型名で修飾すること、IO のモジュールを import すること、非公式のモジュールを `Benitoite.Unofficial` の下の名前で取り込むこと（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)）、関数のシグネチャに `uses` でエフェクトを書くことなど）を短く並べる。
 3. 参照の文書の一覧と、それぞれを読む場面。
 4. 版の確認。エージェントは `benitoite --version` の版と、`SKILL.md` の前付けの版を比べる。違うときは、利用者に `benitoite skill install` を実行し直すよう伝える（[ADR 0236](../decisions/0236-compatibility-during-0x.md)）。
 

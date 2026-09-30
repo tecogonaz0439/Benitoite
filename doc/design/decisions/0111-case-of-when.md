@@ -1,6 +1,6 @@
 # 0111. パターンで分岐する式を `case 対象 of when パターン: … end case` の形で書く
 
-- 状態: 採択
+- 状態: 置換済み（[0257](0257-match-with-case-arms.md) により）
 - 日付: 2026-09-28
 - 関連章: [構文](../01-spec/01-02-syntax.md), [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)
 - 関連する未決事項: [OPEN-012](../open-issues.md#open-012)

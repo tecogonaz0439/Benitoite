@@ -1,7 +1,7 @@
 # コア計算と脱糖
 
 - 状態: 確定
-- 関連ADR: [0005](../decisions/0005-direct-style-effects.md), [0007](../decisions/0007-constructors-and-list.md), [0008](../decisions/0008-effect-variables.md), [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0014](../decisions/0014-fine-grain-cbv-core.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0055](../decisions/0055-top-level-functions-and-types-only.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0081](../decisions/0081-subsumption-on-computation-results.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0102](../decisions/0102-pair-and-triple.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0105](../decisions/0105-byte-type.md), [0107](../decisions/0107-bytes.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0109](../decisions/0109-lambda-keyword.md), [0110](../decisions/0110-if-then-end-if.md), [0111](../decisions/0111-case-of-when.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md)
+- 関連ADR: [0005](../decisions/0005-direct-style-effects.md), [0007](../decisions/0007-constructors-and-list.md), [0008](../decisions/0008-effect-variables.md), [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0014](../decisions/0014-fine-grain-cbv-core.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0055](../decisions/0055-top-level-functions-and-types-only.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0081](../decisions/0081-subsumption-on-computation-results.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0102](../decisions/0102-pair-and-triple.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0105](../decisions/0105-byte-type.md), [0107](../decisions/0107-bytes.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0109](../decisions/0109-lambda-keyword.md), [0110](../decisions/0110-if-then-end-if.md), [0111](../decisions/0111-case-of-when.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0272](../decisions/0272-list-spread-in-list-literals.md)
 - 未決事項: なし
 - 移行元: [設計メモ](../sources/fp-language-design.md) 25.2
 
@@ -163,11 +163,11 @@
 C-Sub は、計算を実行するエフェクトを広げることに加えて、計算の結果の型を `≤` で広げる。例えば、次の `widen` の本体は、脱糖すると `make` の呼び出し `make[;]()` であり、C-App による結果の型は純粋な関数の型である。C-Sub でこれを `uses Console.Write` の関数の型に広げるので、`widen` の本体に宣言した戻り値の型が付く。呼び出しを `let` の左側に移さないので、末尾呼び出しも保たれる。
 
 ```text
-function make(): function() -> Unit
+function make() -> function() -> Unit
   return lambda() () end lambda
 end function
 
-function widen(): (function() -> Unit uses Console.Write)
+function widen() -> (function() -> Unit uses Console.Write)
   return make()
 end function
 ```
@@ -312,7 +312,7 @@ let y ⇐ (let x ⇐ M in N) in P     ＝  let x ⇐ M in (let y ⇐ N in P)    
 | `e1 and e2` | `let x ⇐ ⟦e1⟧ in if x then ⟦e2⟧ else return false` |
 | `e1 or e2` | `let x ⇐ ⟦e1⟧ in if x then return true else ⟦e2⟧` |
 
-#### リスト、ラムダ、条件分岐、case
+#### リスト、ラムダ、条件分岐、match
 
 | 表層 | コア計算 |
 |---|---|
@@ -321,26 +321,26 @@ let y ⇐ (let x ⇐ M in N) in P     ＝  let x ⇐ M in (let y ⇐ N in P)    
 | `if e then B1 else B2 end if` | `let x ⇐ ⟦e⟧ in if x then ⟦B1⟧ else ⟦B2⟧` |
 | `if e then B1 else if …` | `else if` からの続きを、`end if` で閉じた一つの `if` として B2 に置き、上の規則で移す |
 | `if e then B1 end if`（`else` なし） | `let x ⇐ ⟦e⟧ in if x then ⟦B1⟧ else return ()` |
-| `case e of when p1: B1 … when pn: Bn end case` | `let x ⇐ ⟦e⟧ in match x { p1' ⇒ ⟦B1⟧ \| … \| pn' ⇒ ⟦Bn⟧ }` |
+| `match e with case p1 -> B1 … case pn -> Bn end match` | `let x ⇐ ⟦e⟧ in match x { p1' ⇒ ⟦B1⟧ \| … \| pn' ⇒ ⟦Bn⟧ }` |
 
 パターン `pi'` は、表層のパターン `pi` から構成子の型名の修飾を除き、`-n` の形の整数リテラルを負の定数にしたものである。
 
 #### ブロック
 
-ブロック（関数とラムダの本体、`if` と `case` の分岐など、文の並び）は、先頭の文から順に移す。表の `{ … }` は、文の並びを表す本章の記法であり、表層の構文ではない（表層は波括弧を使わない。[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。`s̄` は残りの文の並び、B は文の並びである。
+ブロック（関数とラムダの本体、`if` と `match` の分岐など、文の並び）は、先頭の文から順に移す。表の `{ … }` は、文の並びを表す本章の記法であり、表層の構文ではない（表層は波括弧を使わない。[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。`s̄` は残りの文の並び、B は文の並びである。
 
 | 表層 | コア計算 |
 |---|---|
 | `{ }` | `return ()` |
 | `{ e }`（最後の文が式） | `⟦e⟧` |
-| `{ let x = e }`（最後の文が `let`） | `let x ⇐ ⟦e⟧ in return ()` |
-| `{ let x = e; s̄ }`（型注釈 `let x: T = e` も同じ） | `let x ⇐ ⟦e⟧ in ⟦{ s̄ }⟧` |
-| `{ let _ = e; s̄ }` | `let z ⇐ ⟦e⟧ in ⟦{ s̄ }⟧` |
-| `{ let p = e; s̄ }`（初回リリース版。p が変数と `_` 以外の、必ず照合するパターン） | `let z ⇐ ⟦e⟧ in match z { p' ⇒ ⟦{ s̄ }⟧ }` |
-| `{ let p = e }`（同上で、最後の文） | `let z ⇐ ⟦e⟧ in match z { p' ⇒ return () }` |
+| `{ bind x <- e }`（最後の文が束縛の文） | `let x ⇐ ⟦e⟧ in return ()` |
+| `{ bind x <- e; s̄ }`（型注釈 `bind x: T <- e` も同じ） | `let x ⇐ ⟦e⟧ in ⟦{ s̄ }⟧` |
+| `{ bind _ <- e; s̄ }` | `let z ⇐ ⟦e⟧ in ⟦{ s̄ }⟧` |
+| `{ bind p <- e; s̄ }`（初回リリース版。p が変数と `_` 以外の、必ず照合するパターン） | `let z ⇐ ⟦e⟧ in match z { p' ⇒ ⟦{ s̄ }⟧ }` |
+| `{ bind p <- e }`（同上で、最後の文） | `let z ⇐ ⟦e⟧ in match z { p' ⇒ return () }` |
 | `{ e; s̄ }`（式文） | `let z ⇐ ⟦e⟧ in ⟦{ s̄ }⟧` |
 
-ここでの `;` は、文の区切り（改行）を表す。
+ここでの `;` は、文の区切り（改行）を表す。`shadow` で始まる束縛の文も、表の `bind` を `shadow` に置き換えた形として、`bind` と同じコア計算に移す。`bind` と `shadow` の違いは、左辺の変数がその位置で局所の名前として見えているかどうかの条件（[名前・スコープ・モジュール](01-03-names-modules.md)の「シャドーイング」）だけであり、この条件は脱糖の前に検査を終える（[ADR 0255](../decisions/0255-bind-and-shadow.md)）。コア計算の `let x ⇐ M in N` は N の中で外側の x を隠すので、`shadow x <- e` の後の文の x は、脱糖した後も `shadow` の束縛を指す。
 
 #### `return`
 
@@ -355,7 +355,7 @@ let y ⇐ (let x ⇐ M in N) in P     ＝  let x ⇐ M in (let y ⇐ N in P)    
 
 #### トップレベルの関数
 
-`function f[ᾱ, effect ρ̄](x1: A1, …, xn: An): B uses ε B0` を、定義 `fn f[ᾱ; ρ̄](x1:A1, …, xn:An) : B ! ε = ⟦B0⟧` に移す。`uses` を書かない関数の ε は空集合である。
+`function f[ᾱ, effect ρ̄](x1: A1, …, xn: An) -> B uses ε B0` を、定義 `fn f[ᾱ; ρ̄](x1:A1, …, xn:An) : B ! ε = ⟦B0⟧` に移す。`uses` を書かない関数の ε は空集合である。
 
 ### 初回リリース版の拡張
 
@@ -366,6 +366,7 @@ let y ⇐ (let x ⇐ M in N) in P     ＝  let x ⇐ M in (let y ⇐ N in P)    
 | モジュールと import、公開 | 脱糖だけで表す。名前解決の後、すべてのモジュールの定義を一つの Σ にまとめる |
 | レコード | 脱糖だけで表す。構成子が一つの代数的データ型にする |
 | 文字列補間 | 脱糖だけで表す |
+| リストの展開（リストリテラルの `..e`） | 脱糖だけで表す。展開の前後の要素を並べたリストと `e` の値を、`List.concatenate` に当たる組み込みの関数でつなぐ（後述の「リストの展開」、[ADR 0272](../decisions/0272-list-spread-in-list-literals.md)） |
 | パターンの拡張（ガード、選択肢、範囲、リストのパターン） | 脱糖だけで表す。選択肢は同じ本体を共有する複数の分岐に、ガードは照合した後の `if` と次の分岐への移動に、範囲は比較に、リストのパターンは長さの比較と `List` の組み込みの関数による取り出しに移す（[ADR 0121](../decisions/0121-pattern-extensions.md)） |
 | 複数行の文字列と raw 文字列 | 字句の段で文字列の定数と文字列補間に移すので、コア計算に現れない |
 | 基本型 `Byte`・`Decimal`、型 `Map`・`Set`・`Bytes` | 型、定数、値を加える（後述） |
@@ -418,6 +419,16 @@ let y ⇐ (let x ⇐ M in N) in P     ＝  let x ⇐ M in (let y ⇐ N in P)    
 - マップの鍵と集合の要素は、鍵の順序で並べ、同じ鍵（鍵の順序で等しいもの）を含まない。鍵の型は[型システム](01-06-type-system.md)の「鍵の型（初回リリース版）」で定める。マップ、集合、バイト列の値に当たる表層の構文はなく、これらの値は組み込みの関数（`Map.fromList`、`String.toUTF8` など）の δ か、IO の応答が返す。
 - 定数 c に、`O` の型の値（`IOError`・`NetworkError` の値、タスク、リソース。後述の「エフェクトの名前と開始状態」）を加える。これらの値は、外部に作用する操作を行う組み込みの関数の応答か、タスクの集まりの関数が返し、表層に対応する構文はない。
 - パターンで照合できない値（[代数的データ型とパターンマッチ](01-05-data-types.md)）が増えるので、P-Const の前提を「c は `Float`・`Byte`・`Decimal` の値でも、`O` の型の値でもない」に置き換える。マップ、集合、バイト列の値は定数ではないので、P-Const に現れない。
+
+#### リストの展開
+
+展開を含むリストリテラルは、要素と展開の式を書いた順に評価して束縛し、`concat_T`（`List.concatenate` に当たる組み込みの関数。T は要素の型）でつなぐ。
+
+| 表層 | コア計算 |
+|---|---|
+| `[e1, …, ek, ..e, ek+1, …, en]` | `let x1 ⇐ ⟦e1⟧ in … let xk ⇐ ⟦ek⟧ in let s ⇐ ⟦e⟧ in let xk+1 ⇐ ⟦ek+1⟧ in … let xn ⇐ ⟦en⟧ in let y ⇐ concat_T([x1, …, xk], s) in concat_T(y, [xk+1, …, xn])` |
+
+k が 0 のとき（展開が先頭）と k が n のとき（展開が末尾）も、同じ規則で移す。処理系は、空のリストとの `concat_T` を省いてよい。空のリストとの連結は元のリストを値とし、結果の長さも変わらないので、観測できる振る舞いが変わらないからである。
 
 #### レコード
 
@@ -500,6 +511,7 @@ D-Impl では、β̄、γ̄j、ρ̄j を、ほかの何とも等しくない型�
 | メソッドの呼び出し `Cl.m(e1, …, en)`（辞書は V、m 自身の制約の辞書は Ū） | `let x1 ⇐ ⟦e1⟧ in … let xn ⇐ ⟦en⟧ in V.m[S̄; Ē](Ū, x1, …, xn)` |
 | メソッドを値として使う `Cl.m` | `return λ(y1:A1, …, yn:An). V.m[S̄; Ē](Ū, y1, …, yn)`（`Ā` は値の引数の型） |
 | 制約を持つ関数 `f` の呼び出し | 決めた辞書を、値の引数の前に並べて渡す |
+| 制約を持つ関数 `f` を呼ばずに値として使う | `return λ(y1:A1, …, yn:An). f[T̄; Ē](Ū, y1, …, yn)`（Ū は決めた辞書、`Ā` は値の引数の型） |
 
 #### ストア：可変のセルと明示遅延
 
@@ -525,7 +537,7 @@ D-Impl では、β̄、γ̄j、ρ̄j を、ほかの何とも等しくない型�
 - ストアの遷移は IO の事象を伴わない。ストアは観測できる振る舞いに含めない。
 - `Reference.new`・`Reference.get`・`Reference.set`・`Reference.update`・`Lazy.force` の呼び出しには、E-Prim・E-Err・E-IO・E-IOErr を使わず、本節の規則だけを使う。
 - `Reference.update[A](ℓ, V)` は、`let x ⇐ Reference.get[A](ℓ) in let y ⇐ V(x) in Reference.set[A](ℓ, y)` と同じく遷移する。V は純粋な関数なので、V の呼び出しはストアを変えない。並行に進むタスクの間でこの三つが一つのまとまりとして起きることは[並行処理](01-11-concurrency.md)で定める。
-- `thunk(M)` の実行の途中で、同じ場所 ℓ を `Lazy.force` することはない。E-Lazy で ℓ を作る時点で M は ℓ を含まず、M の実行が ℓ に辿り着く経路もないからである。`lazy` の本体は純粋なので、本体の中でセルを読み書きして ℓ を取り出せない。`let` は再帰的な束縛ではなく、ラムダは自分自身を名前で参照できず、トップレベルには値を置けない（[ADR 0055](../decisions/0055-top-level-functions-and-types-only.md)）ので、ℓ を束縛した名前を M の中から参照する手段もない。
+- `thunk(M)` の実行の途中で、同じ場所 ℓ を `Lazy.force` することはない。E-Lazy で ℓ を作る時点で M は ℓ を含まず、M の実行が ℓ に辿り着く経路もないからである。`lazy` の本体は純粋なので、本体の中でセルを読み書きして ℓ を取り出せない。束縛の文は再帰的な束縛ではなく、ラムダは自分自身を名前で参照できず、トップレベルには値を置けない（[ADR 0055](../decisions/0055-top-level-functions-and-types-only.md)）ので、ℓ を束縛した名前を M の中から参照する手段もない。
 
 #### 関数の境界と `escape`：途中の `return` と `try`
 

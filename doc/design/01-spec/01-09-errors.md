@@ -1,7 +1,7 @@
 # エラー処理
 
 - 状態: 確定
-- 関連ADR: [0006](../decisions/0006-basic-types-semantics.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0065](../decisions/0065-ioerror-kind.md), [0077](../decisions/0077-abolish-go-layer.md), [0091](../decisions/0091-acronyms-in-uppercase.md), [0097](../decisions/0097-prefix-try.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0118](../decisions/0118-effect-handlers.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0144](../decisions/0144-ioerrorkind-constructors.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md)
+- 関連ADR: [0006](../decisions/0006-basic-types-semantics.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0065](../decisions/0065-ioerror-kind.md), [0077](../decisions/0077-abolish-go-layer.md), [0091](../decisions/0091-acronyms-in-uppercase.md), [0097](../decisions/0097-prefix-try.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0118](../decisions/0118-effect-handlers.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0144](../decisions/0144-ioerrorkind-constructors.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-040](../open-issues.md#open-040), [OPEN-051](../open-issues.md#open-051)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 2.5（エラー）
 
@@ -55,16 +55,16 @@ Result/Option、例外の有無、外部のライブラリの誤りとの対応�
 ```text
 import Benitoite.IO.File
 
-function loadConfig(path: String): Result[Config, String] uses File.Read
-  let text = try File.readText(path) |> Result.mapError(_, IOError.message)
-  let config = try parseConfig(text)
+function loadConfig(path: String) -> Result[Config, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+  bind config <- try parseConfig(text)
   return Result.Ok(config)
 end function
 ```
 
 構文と優先順位は次のとおりとする。
 
-- `try` は式の先頭に書き、右の式全体（パイプを含む）にかかる。どの演算子よりも弱く結び付く。`try x |> f(a)` は `try f(x, a)` である。`try f(x) + 1` は `try (f(x) + 1)` なので、`f(x)` の結果に 1 を足すときは `(try f(x)) + 1` と書くか、`let` で束縛してから足す。
+- `try` は式の先頭に書き、右の式全体（パイプを含む）にかかる。どの演算子よりも弱く結び付く。`try x |> f(a)` は `try f(x, a)` である。`try f(x) + 1` は `try (f(x) + 1)` なので、`f(x)` の結果に 1 を足すときは `(try f(x)) + 1` と書くか、`bind` で束縛してから足す。
 - 関数の引数の中に書いた `try` は、その引数の式にかかる（`g(try f(x))`）。
 - `try` の直後に `{` を書くことは誤りとする（[構文](01-02-syntax.md)の「`Result.Error` と `Option.None` を呼び出し元へ返す構文（初回リリース版）」）。LLM が例外を捕らえる構文のつもりで `try { ... } catch` と書いたときに、例外がないことを示す診断を出すためである。
 - 後置の `?` は設けない。`e?` と書いたときは、`try e` と書くよう診断で示す。
@@ -97,22 +97,22 @@ end function
 import Benitoite.IO.Console
 import Benitoite.IO.File
 
-function readOrEmpty(path: String): String uses File.Read, Console.Write
-  return case File.readText(path) of
-    when Result.Ok(text): text
-    when Result.Error(e): case IOError.kind(e) of
-      when IOErrorKind.NotFound: ""
-      when _:
+function readOrEmpty(path: String) -> String uses File.Read, Console.Write
+  return match File.readText(path) with
+    case Result.Ok(text) -> text
+    case Result.Error(e) -> match IOError.kind(e) with
+      case IOErrorKind.NotFound -> ""
+      case _ ->
         Console.writeErrorLine(IOError.message(e))
         ""
-    end case
-  end case
+    end match
+  end match
 end function
 ```
 
 `IOError` 自体は、初回リリース版でも中身を見せない型であり、等値の型ではない（[ADR 0048](../decisions/0048-ioerror-not-equality-type.md)）。
 
-【決定】どの構成子にも当たらない失敗は `IOErrorKind.Other` で表し、分類していない失敗を入れる構成子を別に設けない。`IOErrorKind` の `case` に `_` の分岐を必須にする仕組みは設けず、構成子を加えることは互換性を壊す変更として扱う（[ADR 0144](../decisions/0144-ioerrorkind-constructors.md)）。メジャーバージョンが 0 の間は、この変更をしてよい。`_` の分岐を必須にする仕組みを設けるかは、正式リリース版の前に [OPEN-040](../open-issues.md#open-040) で決める。
+【決定】どの構成子にも当たらない失敗は `IOErrorKind.Other` で表し、分類していない失敗を入れる構成子を別に設けない。`IOErrorKind` の `match` に `_` の分岐を必須にする仕組みは設けず、構成子を加えることは互換性を壊す変更として扱う（[ADR 0144](../decisions/0144-ioerrorkind-constructors.md)）。メジャーバージョンが 0 の間は、この変更をしてよい。`_` の分岐を必須にする仕組みを設けるかは、正式リリース版の前に [OPEN-040](../open-issues.md#open-040) で決める。
 
 ### ネットワークの失敗の種類（初回リリース版）
 

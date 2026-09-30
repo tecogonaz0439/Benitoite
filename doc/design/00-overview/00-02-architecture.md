@@ -143,5 +143,5 @@ VM とランタイム（IO 実行器・リソース追跡・権限の確認）
 - [OPEN-007](../open-issues.md#open-007): WASMコア化の採否
 - [OPEN-015](../open-issues.md#open-015): 契約の変更と権限の差分を利用者に示す方法
 - [OPEN-051](../open-issues.md#open-051): 外部の関数（WASM）の詳細
-- [OPEN-036](../open-issues.md#open-036): 初回リリース版で循環する値を回収する方式
+- [OPEN-036](../open-issues.md#open-036): 初回リリース版のメモリの管理の方式
 - [OPEN-055](../open-issues.md#open-055): サーバモードの設計

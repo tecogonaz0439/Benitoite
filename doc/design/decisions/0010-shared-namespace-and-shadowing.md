@@ -1,6 +1,6 @@
 # 0010. 型名とモジュール名に一つの名前空間を使い、局所の束縛のシャドーイングを許す
 
-- 状態: 採択（[0148](0148-keep-qualified-constructors-and-shared-namespace.md) で維持を確認した）
+- 状態: 採択（[0148](0148-keep-qualified-constructors-and-shared-namespace.md) で維持を確認した。決定 2 のシャドーイングの規則を [0255](0255-bind-and-shadow.md) で改めた）
 - 日付: 2026-09-26
 - 関連章: [構文](../01-spec/01-02-syntax.md), [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md), [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)
 - 関連する未決事項: [OPEN-012](../open-issues.md#open-012)

@@ -1,7 +1,7 @@
 # ソース管理と位置情報
 
 - 状態: 確定
-- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0025](../decisions/0025-columns-in-code-points.md), [0032](../decisions/0032-rust-style-text-and-json.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0126](../decisions/0126-import-by-module-name.md), [0127](../decisions/0127-directory-run-and-root.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md)
+- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0025](../decisions/0025-columns-in-code-points.md), [0032](../decisions/0032-rust-style-text-and-json.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0126](../decisions/0126-import-by-module-name.md), [0127](../decisions/0127-directory-run-and-root.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md)
 - 未決事項: なし
 - 移行元: [設計メモ](../sources/fp-language-design.md) 8.2, 8.3
 
@@ -60,6 +60,19 @@ span（ソース上の位置）は、字句解析器・構文解析器の最初�
 
 ファイルが存在しない、または読めないときは、読み込みの段の誤りとして、パスと理由を示す診断を出す。import で読み込むファイルの誤りでは、その import の宣言のモジュールの名前の span を主な位置とする。実行を始めるファイルの誤りは、ソース上の位置を持たない。
 
+### ソースの大きさの上限
+
+【方針】読み込みの段は、ソースの大きさに次の二つの上限を設ける。
+
+| 上限 | 値 |
+|---|---|
+| ファイル一つの大きさ | 256 MiB |
+| 一つの検査で読むすべてのソース（標準ライブラリのソースを含む）の大きさの和 | 512 MiB |
+
+処理系は、バイトの位置、ノード番号（[字句解析器と構文解析器](02-03-frontend.md)の「AST」）、束縛の番号（[名前解決とモジュール読込](02-04-resolver.md)の「束縛と表」）を 32 ビットの整数で持つ。ノードと束縛はソースの字句と宣言から作るので、その数はソースの大きさの和とともに増える。上限は、これらの番号が 32 ビットを超えないように抑えるためのものである。
+
+上限を超えるファイルは、前節の読めないファイルと同じく読み込みの段の誤りとし、ソースの表に加えない。大きさの和の上限は、読んだ順に大きさを足し、和が上限を超えることになるファイルで誤りとする。診断の主な位置は前節と同じく決める。
+
 ### span
 
 【方針】span は、ファイル ID、開始のバイトの位置、終了のバイトの位置の組である。位置はファイルの内容の先頭（バイト順マークとシェバンの行があればそれも含む）から数え、開始を含み終了を含まない。長さが 0 の span（開始と終了が等しい）も許す。ファイルの終わりで字句が足りないときの誤りなどに使う。
@@ -96,11 +109,11 @@ span（ソース上の位置）は、字句解析器・構文解析器の最初�
 | `with x = e do … end with` | リソースを解放する計算 | その解放に当たる束縛 `x = e` |
 | `lazy … end lazy` | `Lazy` の値を作る計算と、本体から作る関数 | `lazy` から `end lazy` まで |
 | `handle … end handle` | `handle` の枠を積む計算 | `handle` から `end handle` まで |
-| 〃 | 節から作る関数 | その節の `when` から節の本体の終わりまで |
+| 〃 | 節から作る関数 | その節の `case` から節の本体の終わりまで |
 | 型クラスの制約 | 実装の辞書を作る計算と、辞書の引数（[ADR 0158](../decisions/0158-type-classes-by-dictionary-passing.md)） | その制約を生んだ呼び出しか名前の参照 |
 | レコードの一部を変えた値 `R(..e, f: v)` | 構成子の適用と、変えないフィールドの取り出し | レコードの式全体 |
-| `case` の分岐のパターンの選択肢 | 選択肢ごとに展開した行（[ADR 0159](../decisions/0159-pattern-extensions-in-decision-trees.md)） | その選択肢のパターン |
-| `let` のパターン `let p = e` | `e` の値の `match` | `let` 文全体 |
+| `match` の分岐のパターンの選択肢 | 選択肢ごとに展開した行（[ADR 0159](../decisions/0159-pattern-extensions-in-decision-trees.md)） | その選択肢のパターン |
+| 束縛の文のパターン `bind p <- e`・`shadow p <- e` | `e` の値の `match` | 束縛の文全体 |
 | 定数の参照 | 定数の値を置く計算 | 定数の名前の参照 |
 
 由来位置は、実行時エラーの報告で使う。実行時エラーを起こした計算の由来位置が、[評価意味論](../01-spec/01-08-evaluation.md)の「実行時エラーを起こした式のソース上の位置」である。

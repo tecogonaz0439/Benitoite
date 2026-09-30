@@ -109,21 +109,21 @@
 
 【決定】位置や長さを扱う関数は、名前に単位を含める。バイト位置を扱う関数は `byte`、文字位置を扱う関数は `character` を名前に含める（単位の語も省略しない。[ADR 0101](../decisions/0101-unabbreviated-names.md)）。単位を持たない `String.length` は設けない（[ADR 0006](../decisions/0006-basic-types-semantics.md)）。この命名が LLM の誤りを減らすかは【要検証】である（[OPEN-012](../open-issues.md#open-012)）。`String.length` などの存在しない名前を使ったときは、単位を持つ関数を修正案として診断で示す。
 
-【方針】位置や長さを扱う関数は次のとおりである。範囲は半開区間（`start` を含み `end` を含まない）で指定する。
+【方針】位置や長さを扱う関数は次のとおりである。範囲は半開区間（`start` を含み `stop` を含まない）で指定する。
 
 | 関数 | 型 | 値 |
 |---|---|---|
 | `String.byteLength(s)` | `function(String) -> Integer` | `s` のバイト数 |
-| `String.byteSlice(s, start, end)` | `function(String, Integer, Integer) -> Option[String]` | バイト位置 `start` から `end` までの部分文字列 |
+| `String.byteSlice(s, start, stop)` | `function(String, Integer, Integer) -> Option[String]` | バイト位置 `start` から `stop` までの部分文字列 |
 | `String.characterCount(s)` | `function(String) -> Integer` | `s` のスカラー値の個数 |
 | `String.characterAt(s, i)` | `function(String, Integer) -> Option[Character]` | 文字位置 `i` のスカラー値 |
-| `String.characterSlice(s, start, end)` | `function(String, Integer, Integer) -> Option[String]` | 文字位置 `start` から `end` までの部分文字列 |
+| `String.characterSlice(s, start, stop)` | `function(String, Integer, Integer) -> Option[String]` | 文字位置 `start` から `stop` までの部分文字列 |
 
 【決定】位置を指定する関数は、位置が正しくないときに実行時エラーにせず `Option.None` を返す（[ADR 0006](../decisions/0006-basic-types-semantics.md)）。正しくない位置とは、次のいずれかに当たるものである。
 
 - `String.characterAt(s, i)`: `i < 0` または `i >= String.characterCount(s)`。
-- `String.byteSlice(s, start, end)`: `start < 0`、`end < start`、`end > String.byteLength(s)`、または `start` か `end` が境界の位置でない。
-- `String.characterSlice(s, start, end)`: `start < 0`、`end < start`、`end > String.characterCount(s)`。
+- `String.byteSlice(s, start, stop)`: `start < 0`、`stop < start`、`stop > String.byteLength(s)`、または `start` か `stop` が境界の位置でない。
+- `String.characterSlice(s, start, stop)`: `start < 0`、`stop < start`、`stop > String.characterCount(s)`。
 
 【決定】`String.byteLength` は、文字列の長さによらない時間で値を返さなければならない。`character` を名前に含む関数は、文字列の長さに比例する時間がかかってよい（[ADR 0006](../decisions/0006-basic-types-semantics.md)）。
 

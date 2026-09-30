@@ -1,7 +1,7 @@
 # 字句解析器と構文解析器
 
 - 状態: 確定
-- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0019](../decisions/0019-stop-after-failing-stage.md), [0020](../decisions/0020-recursive-descent-with-pratt.md), [0021](../decisions/0021-comments-beside-ast.md), [0022](../decisions/0022-side-tables-keyed-by-node.md), [0047](../decisions/0047-parenthesized-types-and-uses-binding.md), [0050](../decisions/0050-pipe-with-parenthesized-rhs.md), [0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md), [0057](../decisions/0057-record-declaration-construction-update.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0086](../decisions/0086-pattern-nodes-count-toward-nesting-limit.md), [0093](../decisions/0093-no-reserved-words-for-absent-constructs.md), [0094](../decisions/0094-return-type-after-colon.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0098](../decisions/0098-constraints-joined-by-ampersand.md), [0102](../decisions/0102-pair-and-triple.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0111](../decisions/0111-case-of-when.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0121](../decisions/0121-pattern-extensions.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0226](../decisions/0226-formatter-keeps-line-breaks.md)
+- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0019](../decisions/0019-stop-after-failing-stage.md), [0020](../decisions/0020-recursive-descent-with-pratt.md), [0021](../decisions/0021-comments-beside-ast.md), [0022](../decisions/0022-side-tables-keyed-by-node.md), [0047](../decisions/0047-parenthesized-types-and-uses-binding.md), [0050](../decisions/0050-pipe-with-parenthesized-rhs.md), [0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md), [0057](../decisions/0057-record-declaration-construction-update.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0086](../decisions/0086-pattern-nodes-count-toward-nesting-limit.md), [0093](../decisions/0093-no-reserved-words-for-absent-constructs.md), [0094](../decisions/0094-return-type-after-colon.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0098](../decisions/0098-constraints-joined-by-ampersand.md), [0102](../decisions/0102-pair-and-triple.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0111](../decisions/0111-case-of-when.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0121](../decisions/0121-pattern-extensions.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0226](../decisions/0226-formatter-keeps-line-breaks.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0272](../decisions/0272-list-spread-in-list-literals.md)
 - 未決事項: なし
 - 移行元: [設計メモ](../sources/fp-language-design.md) 8.3
 
@@ -27,9 +27,10 @@ span は、すべての字句と AST ノードの必須フィールドである�
 
 改行の判定の工程は、積み重ねを次のように扱う。
 
-- ブロックを開く語（`lambda`・`if`・`case`・`with`・`lazy`・`handle`）を積み、`end` の直後の同じ語で降ろす。
+- ブロックを開く語（`lambda`・`if`・`match`・`with`・`lazy`・`handle`）を積み、`end` の直後の同じ語で降ろす。
 - `else` の直後の `if` は積まない。
-- 積み重ねの最も内側が `case` のブロックであるとき、`when` を読んでから、同じ括弧の深さの `:` を読むまでを分岐の頭とする。分岐の頭に直接現れる `if` はガードなので積まない。分岐の頭の中の丸括弧の中の `if` は式なので積む（[構文](../01-spec/01-02-syntax.md)の「パターンの拡張（初回リリース版）」）。
+- 改行の印とコメントを除いて次の字句が `case` である `with` は、`match` と `handle` の分岐の並びの始まりなので積まない。それ以外の `with` はリソーススコープなので積む。字句を切り出し終えてから判定するので、次の字句を先に見られる。
+- 積み重ねの最も内側が `match` か `handle` のブロックであるとき、`case` を読んでから、同じ括弧の深さの `->` を読むまでを分岐の頭とする。分岐の頭に直接現れる `if` はガードなので積まない。分岐の頭の中の丸括弧の中の `if` は式なので積む（[構文](../01-spec/01-02-syntax.md)の「パターンの拡張（初回リリース版）」）。
 
 三つの工程は手書きで作る。どの工程も、パッケージ変数などの大域的な可変状態を持たない（[ADR 0015](../decisions/0015-shared-program-per-execution-state.md)）。
 
@@ -49,14 +50,14 @@ span は、すべての字句と AST ノードの必須フィールドである�
 【方針】キーワードは、[字句構造](../01-spec/01-01-lexical.md)の「キーワード」の語であり、初回リリース版では次のとおりである。最小実行版の予約語はすべてキーワードになったので、初回リリース版に予約語はない。
 
 ```text
-and  case  const  div  do  effect  else  end  false  function  handle  if
-implement  import  lambda  lazy  let  mod  not  of  or  public  record  resume
-return  then  trait  true  try  type  uses  when  with
+and  bind  case  const  data  div  do  effect  else  end  false  function
+handle  if  implement  import  lambda  lazy  match  mod  not  or  public
+record  resume  return  shadow  then  trait  true  try  type  uses  with
 ```
 
 `as`（import の宣言の中）と `equality`・`key`・`ordered`（型パラメータの制約の位置）は、キーワードにしない（[字句構造](../01-spec/01-01-lexical.md)、[構文](../01-spec/01-02-syntax.md)の「型クラス（初回リリース版）」、[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)）。字句を切り出す工程はこれらを小文字の識別子とし、構文解析器が、その位置でだけ特別な語として読む。
 
-【方針】記号の字句は、[字句構造](../01-spec/01-01-lexical.md)の「演算子と区切り記号」の記号に、初回リリース版の `@`・`..`・`&` を加えたものである。最も長く一致する字句を取り出すので、`..` は `.` 二つにしない。数値リテラルの直後の `..` は、浮動小数リテラルの小数点として読まない。浮動小数リテラルの小数点の後には数字が要るので、`1..5` は整数 `1`、`..`、整数 `5` の三つの字句である。この読み方は、数値リテラルの直後の文字の規則（[ADR 0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md)）とも矛盾しない。その規則が誤りとするのは、識別子に使える文字と、浮動小数リテラルの直後の `.` と数字の並びだけだからである。
+【方針】記号の字句は、[字句構造](../01-spec/01-01-lexical.md)の「演算子と区切り記号」の記号に、初回リリース版の `@`・`..`・`&` を加えたものである。最も長く一致する字句を取り出すので、`..` は `.` 二つにせず、`<-` は `<` と `-` に分けない（`x <-1` は `x`・`<-`・`1` の三つの字句であり、`x < -1` とは読まない。[字句構造](../01-spec/01-01-lexical.md)の「演算子と区切り記号」）。数値リテラルの直後の `..` は、浮動小数リテラルの小数点として読まない。浮動小数リテラルの小数点の後には数字が要るので、`1..5` は整数 `1`、`..`、整数 `5` の三つの字句である。この読み方は、数値リテラルの直後の文字の規則（[ADR 0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md)）とも矛盾しない。その規則が誤りとするのは、識別子に使える文字と、浮動小数リテラルの直後の `.` と数字の並びだけだからである。
 
 【方針】`r` の直後に `"` が続くときは、raw 文字列の始まりとして読む（[字句構造](../01-spec/01-01-lexical.md)の「複数行の文字列と raw 文字列（初回リリース版）」）。
 
@@ -82,7 +83,7 @@ return  then  trait  true  try  type  uses  when  with
 【方針】構文解析器は、ドキュメントコメントを宣言のノードの欄に結び付ける（[ADR 0125](../decisions/0125-doc-comments.md)）。
 
 - `///` を付けられる宣言（[構文](../01-spec/01-02-syntax.md)の「ドキュメントコメント（初回リリース版）」）を解析し始めるとき、その宣言の最初の字句（属性があれば最初の属性の `@`）の直前の行から上に続く `///` の行を集め、一つの説明として宣言のノードの欄に入れる。空の行か普通のコメントの行があれば、そこで集めるのをやめる。
-- ファイルの先頭（シェバンの行があればその直後）から続く `//!` の行を、一つの説明としてモジュールのノードの欄に入れる。
+- ファイルの先頭（シェバンの行があればその直後）から続く `//!` の行を、一つの説明としてモジュールのノードの欄に入れる。宣言を持たず `//!` の説明だけからなるファイルも、宣言のない空のモジュールとして読む（[構文](../01-spec/01-02-syntax.md)の「ドキュメントコメント（初回リリース版）」）。
 - 構文解析を終えた後、どの宣言にも結び付かなかった `///` と、ファイルの先頭の外の `//!` を、構文エラーとして報告する。診断は、普通のコメント `//` に書き換えることを修正案として示す。
 
 結び付けた説明は、宣言の型とともに MCP サーバと LSP サーバが示す（[サーバモード](../06-tooling/06-07-server.md)、[LSP サーバ](../06-tooling/06-02-lsp.md)）。ドキュメントコメントは、宣言のノードの欄に加えて、コメントの一覧にも残す。フォーマッタが、すべてのコメントを元の位置に書き戻せるようにするためである。
@@ -122,16 +123,24 @@ return  then  trait  true  try  type  uses  when  with
 
 結合しない比較演算子は、比較の右のオペランドを解析した直後に、次の字句がまた比較演算子であれば構文エラーとする。診断は、`a < b and b < c` の形に書き換えるよう示す（[構文](../01-spec/01-02-syntax.md)）。
 
-【方針】`QualUpper` の直後の `(` は、その次の字句で読み分ける。次が「小文字の識別子と `:`」か `..` であれば、レコードの構築（パターンではレコードのパターン）として読み、そうでなければ構成子の呼び出し（パターンでは構成子のパターン）として読む（[構文](../01-spec/01-02-syntax.md)の「レコード（初回リリース版）」）。`type` の宣言は、名前と型パラメータの後に `=` があれば型の別名、なければ代数的データ型の宣言として読む（同「型の別名（初回リリース版）」）。
+【方針】`QualUpper` の直後の `(` は、その次の字句で読み分ける。次が「小文字の識別子と `:`」か `..` であれば、レコードの構築（パターンではレコードのパターン）として読み、そうでなければ構成子の呼び出し（パターンでは構成子のパターン）として読む（[構文](../01-spec/01-02-syntax.md)の「レコード（初回リリース版）」）。`data` で始まる宣言は代数的データ型の宣言として、`type` で始まる宣言は型の別名として読む（同「プログラムと宣言」「型の別名（初回リリース版）」、[ADR 0256](../decisions/0256-data-keyword-for-algebraic-types.md)）。`type` の名前と型パラメータの後に `=` がない宣言は、[ADR 0256](../decisions/0256-data-keyword-for-algebraic-types.md) より前の書き方として構文エラーとする（後述の「他の言語の書き方への診断」）。
+
+【方針】束縛の文は、文の先頭の `bind` か `shadow` で見分ける。どちらで書いたかを束縛の文のノードの欄に入れ、`bind` と `shadow` を書ける条件は名前解決が検査する（[名前解決とモジュール読込](02-04-resolver.md)、[ADR 0255](../decisions/0255-bind-and-shadow.md)）。構文解析器は、`bind` か `shadow` の後に、左辺（最小実行版の文法では名前か `_`、初回リリース版ではパターン）、省略できる `:` と型、`<-`、右辺の式を読む。
+
+【方針】`match` と `handle` の分岐の並びは、次のように読む（[構文](../01-spec/01-02-syntax.md)の「パターンマッチ」「エフェクトの宣言とハンドラ（初回リリース版）」、[ADR 0257](../decisions/0257-match-with-case-arms.md)）。
+
+- `match` の後の対象の式は、Pratt 法で読む。`with` は演算子ではないので、式はその手前で終わる。次の字句が `with` でなければ構文エラーとする。
+- `handle` の本体は文の並びとして読み、文の先頭で `with` に出会い、その次の字句が `case` であれば、本体を終えて分岐の並びに移る。次の字句が `case` でない `with` は、本体の中のリソーススコープの文の始まりとして読む。改行の判定の工程は `with` の直後の改行を空白として扱う（[字句構造](../01-spec/01-01-lexical.md)の「改行による区切り」の規則 2）ので、この判定は `with` の次の字句を一つ見ればよい。
+- 分岐は `case` で始まる。`match` の分岐では、パターンの選択肢の並び、省略できる `if` のガード、`->` を読む。`handle` の節では、操作の名前、引数の名前か `_` の並び、`->` を読む。`->` の後は文の並びとして本体を読み、NEWLINE の次の字句が `case` か `end` であれば本体を終える。`case` は文の始まりになりえないので、本体の終わりは次の字句一つで決まる。
 
 ### 文脈の制限
 
-【方針】文法だけでは決まらない制限のうち、構文上の文脈だけで判定できるものは、構文解析器が判定する。構文解析器は、解析中の文脈を表す印（`handle` の節の中か、`lazy` の本体の中か、ラムダの本体の中か、`case` の分岐の頭か、ガードの中か、トップレベルの宣言を読み始めたか、標準ライブラリのソースか）を引数として持ち回る。
+【方針】文法だけでは決まらない制限のうち、構文上の文脈だけで判定できるものは、構文解析器が判定する。構文解析器は、解析中の文脈を表す印（`handle` の節の中か、`lazy` の本体の中か、ラムダの本体の中か、`match` の分岐の頭か、ガードの中か、トップレベルの宣言を読み始めたか、標準ライブラリのソースか）を引数として持ち回る。
 
 | 制限 | 判定 | 定める箇所 |
 |---|---|---|
 | `resume` の位置 | `handle` の節の中に直接書いた場合だけ受け付ける。節の中のラムダの中と `lazy` の本体の中、節の外は誤り | [構文](../01-spec/01-02-syntax.md)の「エフェクトの宣言とハンドラ（初回リリース版）」、[ADR 0155](../decisions/0155-resume-not-in-lazy.md) |
-| `return` と `try` の位置 | `lazy` の本体の中と、`case` の分岐のガードの中は、内側のラムダの中を除き誤り | [構文](../01-spec/01-02-syntax.md)の「`return`」、[エラー処理](../01-spec/01-09-errors.md)、[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)の「パターンの拡張（初回リリース版）」 |
+| `return` と `try` の位置 | `lazy` の本体の中と、`match` の分岐のガードの中は、内側のラムダの中を除き誤り | [構文](../01-spec/01-02-syntax.md)の「`return`」、[エラー処理](../01-spec/01-09-errors.md)、[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)の「パターンの拡張（初回リリース版）」 |
 | import の宣言の順序 | ほかのトップレベルの宣言を一つでも読んだ後の import の宣言は誤り | [構文](../01-spec/01-02-syntax.md)の「モジュールと import（初回リリース版）」 |
 | 属性 | 名前が `test`・`deprecated`（標準ライブラリのソースでは `builtin` も）のどれかであること、付けられる宣言の種類、一つの宣言での重複、引数が文字列補間を含まない文字列リテラルであること、`@deprecated` の引数の文字列 | [構文](../01-spec/01-02-syntax.md)の「属性（初回リリース版）」、後述の「標準ライブラリのソースの構文」 |
 | `public` | `implement` と、その中の関数の宣言には付けられない | [構文](../01-spec/01-02-syntax.md)の「型クラス（初回リリース版）」 |
@@ -142,7 +151,7 @@ return  then  trait  true  try  type  uses  when  with
 | プレースホルダ `_` | 呼び出しの直接の引数だけに書ける | [構文](../01-spec/01-02-syntax.md)の「部分適用のプレースホルダ」 |
 | ドキュメントコメント | 前述の「コメントとドキュメントコメント」 | [構文](../01-spec/01-02-syntax.md)の「ドキュメントコメント（初回リリース版）」 |
 
-一つの `handle` に同じ操作の節を二つ書く誤り、`when` に書いた名前が操作であること、`TaskGroup.open` を `with` の束縛の式としてだけ呼ぶことは、名前が何を指すかで決まる（同じ操作を修飾の有無など別の綴りで書けるので、綴りでは比べられない）。これらは構文解析器では判定せず、型検査器が判定する（[型検査器](02-05-typechecker.md)の「書く位置の検査」）。
+一つの `handle` に同じ操作の節を二つ書く誤り、`handle` の節の `case` に書いた名前が操作であること、`TaskGroup.open` を `with` の束縛の式としてだけ呼ぶことは、名前が何を指すかで決まる（同じ操作を修飾の有無など別の綴りで書けるので、綴りでは比べられない）。これらは構文解析器では判定せず、型検査器が判定する（[型検査器](02-05-typechecker.md)の「書く位置の検査」）。
 
 定数の右辺を定数式に限る制限は、構文解析器では判定しない。定数式に書ける `Map.fromList` などを、綴りではなく `Benitoite` の名前空間のどの関数かで照合する必要がある（[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)）ので、名前解決と型検査が判定する（[名前解決とモジュール読込](02-04-resolver.md)、[型検査器](02-05-typechecker.md)）。
 
@@ -151,33 +160,38 @@ return  then  trait  true  try  type  uses  when  with
 【方針】構文の規則に伴う次の診断は、構文解析器が出す。
 
 - 値に続けたドット（`xs.map(f)`、`p.name`）は構文エラーとし、`|>` を使った書き方を修正案として示す（[構文](../01-spec/01-02-syntax.md)の「ドット記法」）。ドットの右が小文字の名前であれば、フィールドを取り出す関数の書き方（`Person.name(p)`、`p |> Person.name`）も示す（同「レコード（初回リリース版）」）。どちらの修正案も、値の型は分からないので、型の名前の位置は仮の名前で示す。
-- 関数の宣言の `)` の直後に NEWLINE があり、次の行が `:` で始まる場合は、`: 戻り値の型` を前の行の末尾に書くよう示す（[字句構造](../01-spec/01-01-lexical.md)の「改行による区切り」）。
+- `match` の対象の式の後に NEWLINE があり、次の行が `with` で始まる場合は、`with` を前の行の末尾に書くよう示す（[字句構造](../01-spec/01-01-lexical.md)の「改行による区切り」）。
 - `end` の後の構文の名前が、閉じるブロックの構文と一致しない場合は、閉じるべき構文の名前と、開いた位置を示す（[構文](../01-spec/01-02-syntax.md)の「ブロックと文」）。
 - 型の宣言で、構成子の名前の後に空の括弧を書いた場合（`Leaf()`）は構文エラーとし、括弧を取り除くよう示す（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。
-- 名前を書く位置にキーワードを書いた場合は、その語がキーワードであり名前に使えないことを示す（[字句構造](../01-spec/01-01-lexical.md)の「キーワード」）。最小実行版で名前に使えた `with`・`try`・`record`・`const` などを使ったスクリプトが、この誤りになる。
-- 括弧で囲んだ式・型・パターンをコンマで並べた形（`(1, "one")`）は構文エラーとし、要素の数に応じて `Pair`・`Triple`・`record` の宣言を示す（[構文](../01-spec/01-02-syntax.md)の「組と `let` のパターン（初回リリース版）」）。
+- 名前を書く位置にキーワードを書いた場合は、その語がキーワードであり名前に使えないことを示す（[字句構造](../01-spec/01-01-lexical.md)の「キーワード」）。最小実行版で名前に使えた `bind`・`shadow`・`data`・`match`・`with`・`try`・`record`・`const` などを使ったスクリプトが、この誤りになる。
+- 括弧で囲んだ式・型・パターンをコンマで並べた形（`(1, "one")`）は構文エラーとし、要素の数に応じて `Pair`・`Triple`・`record` の宣言を示す（[構文](../01-spec/01-02-syntax.md)の「組と `bind`・`shadow` のパターン（初回リリース版）」）。
 
 ### 他の言語の書き方への診断
 
-【方針】[構文](../01-spec/01-02-syntax.md)が修正案を定めた、他の言語の書き方の誤りは、次の位置で見つけて報告する。字句に使えない記号の誤りの字句（前述の「字句の誤り」）は、構文解析器がどの位置で読んでも（誤りからの回復で読み飛ばすときも）一度ずつ報告し、文脈で修正案を選ぶ。文脈で決まらないときは、[字句構造](../01-spec/01-01-lexical.md)の「演算子と区切り記号」の修正案を示す。
+【方針】[構文](../01-spec/01-02-syntax.md)が修正案を定めた、他の言語の書き方の誤りは、次の位置で見つけて報告する。字句に使えない記号の誤りの字句（前述の「字句の誤り」）は、構文解析器がどの位置で読んでも（誤りからの回復で読み飛ばすときも）一度ずつ報告し、文脈で修正案を選ぶ。文脈で決まらないときは、[字句構造](../01-spec/01-01-lexical.md)の「演算子と区切り記号」の修正案を示す。実装した最小実行版の書き方（波括弧のブロック、`fn`、`let`、`match 対象 { パターン => 式 }`。[構文](../01-spec/01-02-syntax.md)）と、[ADR 0254](../decisions/0254-return-type-after-arrow.md)〜[ADR 0257](../decisions/0257-match-with-case-arms.md) より前の設計書の書き方も、この表で扱う。
 
 | 書き方 | 見つける位置 | 修正案 | 定める箇所 |
 |---|---|---|---|
-| `when 1 \| 2:` | `case` の分岐の頭の `\|` | コンマで選択肢を並べる | [構文](../01-spec/01-02-syntax.md)の「パターンの拡張（初回リリース版）」 |
-| `type T = A \| B` | 型の別名の右辺の `\|` | 構成子を一行に一つずつ並べる代数的データ型 | 同「型の別名（初回リリース版）」 |
+| `case 1 \| 2 ->` | `match` の分岐の頭の `\|` | コンマで選択肢を並べる | [構文](../01-spec/01-02-syntax.md)の「パターンの拡張（初回リリース版）」 |
+| `type T = A \| B` | 型の別名の右辺の `\|` | 構成子を一行に一つずつ並べる `data` の宣言 | 同「型の別名（初回リリース版）」 |
 | `try { … } catch` | `try` の直後の `{` | 例外を捕らえる構文はないことと、`Result` か `Option` を返す式に `try` を付けること | 同「`Result.Error` と `Option.None` を呼び出し元へ返す構文（初回リリース版）」 |
-| `パターン => 式`、`パターン -> 式` | `case` の分岐の頭で `:` の代わりに現れた `=>`・`->` | `when パターン:` | 同「パターンマッチ」 |
-| `switch`、`default:`、`break` | 文の先頭の名前 `switch` の直後に式が続く形、分岐を読む位置の名前 `default` と `:`、分岐の本体の、名前 `break` だけの文 | `case 対象 of`、`when _:`、`break` は要らないこと | 同「パターンマッチ」 |
-| `when p when c:`、`when p where c:` | 分岐のパターンの後の `when`・名前 `where` | `if` のガード | 同「パターンの拡張（初回リリース版）」 |
+| `パターン => 式`、`パターン -> 式` | `match` の分岐を読む位置で `case` を欠いたパターン、分岐の頭で `->` の代わりに現れた `=>` | `case パターン ->` | 同「パターンマッチ」 |
+| `switch`、`default:`、`break` | 文の先頭の名前 `switch` の直後に式が続く形、分岐を読む位置の名前 `default` と `:`、分岐の本体の、名前 `break` だけの文 | `match 対象 with`、`case _ ->`、`break` は要らないこと | 同「パターンマッチ」 |
+| `case p when c ->`、`case p where c ->` | 分岐のパターンの後の名前 `when`・`where` | `if` のガード | 同「パターンの拡張（初回リリース版）」 |
 | `1..=5`、`1..<5`、`1...5` | 範囲のパターンの `..` に空白なしで続く `=`・`<`・`.` | `1..5` の書き方 | 同上 |
 | `lambda x: x + 1` | `lambda` の直後の名前 | `lambda(x) return x + 1 end lambda` | 同「ラムダ」 |
 | `import Text from "./lib/text.bnt"`、`import "./text.bnt"` | `import` の後の文字列リテラルと名前 `from` | 名前で取り込む書き方 | 同「モジュールと import（初回リリース版）」 |
 | `implement Person … end implement` | `implement` の名前の後に `[` がない | トップレベルの関数として書くこと | 同「型クラス（初回リリース版）」 |
-| `with handler …` | `with` の後が「名前 `=`」で始まらない | `handle … when … end handle` | 同「エフェクトの宣言とハンドラ（初回リリース版）」 |
+| `with handler …` | 式を読む位置の `with` の後が「名前 `=`」でも `case` でもない | `handle … with case … -> … end handle` | 同「エフェクトの宣言とハンドラ（初回リリース版）」 |
 | `Person(..p)`、`Person(..)` | フィールドのないレコードの構築とパターン | `p` をそのまま使う書き方、ワイルドカード `_` | 同「レコード（初回リリース版）」 |
 | `#[test]`、`[<Test>]`、`@Test` | トップレベルの宣言の前の `#`・`[`、大文字で始まる属性の名前 | `@test` の書き方 | 同「属性（初回リリース版）」 |
 | `type alias`、`typealias` | `type` の直後の名前 `alias`、トップレベルの宣言の位置の名前 `typealias` | `type 名前 = 型` | 同「型の別名（初回リリース版）」 |
 | `/** … */`、`{-\| … -}`、`(** … *)`、`@doc` | トップレベルの宣言の位置の `/`・`{`・`(`、属性の名前 `doc` | `///` の書き方 | 同「ドキュメントコメント（初回リリース版）」 |
+| `let x = e` | 文の先頭の名前 `let` の直後に、名前かパターンと `=` が続く形 | `bind x <- e`。構文解析器は名前が局所の名前として見えているかを知らないので、見えていれば `shadow x <- e` と書くことも条件とともに示す | 同「ブロックと文」、[ADR 0255](../decisions/0255-bind-and-shadow.md) |
+| `case 対象 of` | 式を読む位置（分岐の並びの外）の `case` と、その後の式に続く名前 `of` | `match 対象 with` | 同「パターンマッチ」、[ADR 0257](../decisions/0257-match-with-case-arms.md) |
+| `when パターン:`、`when 操作(引数):` | `match` と `handle` の分岐を読む位置の名前 `when` | `case パターン ->`、`case 操作(引数) ->` | 同「パターンマッチ」「エフェクトの宣言とハンドラ（初回リリース版）」、[ADR 0257](../decisions/0257-match-with-case-arms.md) |
+| `type Shape` の後に構成子を並べた宣言 | `type` の名前と型パラメータの後に `=` がない | `data Shape … end data` | 同「プログラムと宣言」、[ADR 0256](../decisions/0256-data-keyword-for-algebraic-types.md) |
+| `function f(x: Integer): Integer`、`lambda(x): Integer …` | 関数の宣言（メソッドと操作の宣言を含む）とラムダの、引数の並びの `)` の直後の `:` | `:` を `->` に書き換えること | 同「プログラムと宣言」「ラムダ」、[ADR 0254](../decisions/0254-return-type-after-arrow.md) |
 
 ### 型の解析
 
@@ -190,7 +204,7 @@ return  then  trait  true  try  type  uses  when  with
 - `uses` の並びの要素は、修飾した名前（`QualUpper`。`Console.Write`、`IO.All`）である。並びは、最初の要素を読んだ後、次の字句が `,` で、その次の字句が大文字の識別子である間、`,` と次の要素を並びに加える。`,` の次が大文字の識別子でなければ、`,` を読まずに並びを終える（その `,` は外側の並びの区切りになる）。
 - 並びに読んだ名前がエフェクトの名前であるかは、構文解析器は判定しない。エフェクトでない名前は名前解決が報告する（[名前解決とモジュール読込](02-04-resolver.md)）。ただし、並びの 2 番目以降の要素の直後に `[` が来たとき（`function(function() -> Unit uses Console.Write, List[Integer]) -> Unit`）は構文エラーとし、`uses` を持つ関数の型を括弧で囲むよう示す。
 
-関数の宣言の `:` の後の戻り値の型も、この規則で読む。`function f(): function() -> Integer uses Console.Write ... end function` の `uses Console.Write` は戻り値の関数の型に付き、`f` 自身は `uses` を持たない。
+関数の宣言の `->` の後の戻り値の型も、この規則で読む。`function f() -> function() -> Integer uses Console.Write ... end function` の `uses Console.Write` は戻り値の関数の型に付き、`f` 自身は `uses` を持たない。
 
 型パラメータの宣言の `F[_]` は、`_` の数を型パラメータの宣言のノードの欄に入れる。制約の並びは `&` で区切って読む（[構文](../01-spec/01-02-syntax.md)の「型クラス（初回リリース版）」）。
 
@@ -202,7 +216,7 @@ return  then  trait  true  try  type  uses  when  with
 - プレースホルダを含む呼び出し（展開したラムダにしない）
 - 括弧で囲んだ式 `(e)`
 - `else if` の連なり
-- 文字列補間、`try`、レコードの一部を変えた値、`let` のパターン、パターンの選択肢とガード
+- 文字列補間、`try`、レコードの一部を変えた値、束縛の文のパターン、パターンの選択肢とガード
 
 これらの展開は、型検査器（型を求めるとき）と脱糖の段（中間表現を作るとき）が、[構文](../01-spec/01-02-syntax.md)と[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の規則に従って行う。パイプの右辺が括弧の式のノードであれば、中身によらず規則 2 により `(e)(x)` と展開する。規則 1 の「プレースホルダを含む」かは、右辺の呼び出しの直接の引数だけで判定する（[ADR 0050](../decisions/0050-pipe-with-parenthesized-rhs.md)）。
 
@@ -215,8 +229,8 @@ AST のノードの種類は次のとおりである。
 | モジュール | モジュール（ファイル一つ）。モジュールのドキュメントコメント、import の宣言の並び、トップレベルの宣言の並びを持つ |
 | 宣言 | import の宣言（名前の各段、`as` の名前）、関数の宣言（本体を持たないもの（`@builtin`）を含む）、定数の宣言、型の宣言、データ構成子の宣言、型の別名の宣言、レコードの宣言、フィールドの宣言、型クラスの宣言（上位の型クラスを含む）、メソッドの宣言、実装の宣言、エフェクトの宣言、操作の宣言、型パラメータの宣言（`effect` を付けたか、`F[_]` の `_` の数、制約の並び）、制約（型クラスの名前か、組み込みの制約）、引数（関数・ラムダ・メソッド・操作の引数）、属性 |
 | 型 | 名前の型（修飾した名前と型引数）、関数の型（`uses` の並びを含む）、括弧の型、`uses` の並びの中のエフェクトの名前（修飾した名前） |
-| 文 | `let` 文（パターン、型注釈）、式文 |
-| 式 | リテラル（`Decimal` を含む）、文字列補間（部分の文字列と式の並び）、名前（修飾した名前）、`()`、括弧の式、リストリテラル、呼び出し、プレースホルダ、レコードの構築（一部を変えた値の元の式と、フィールドの引数）、二項演算、単項演算、パイプ、`if`、`case`、`case` の分岐（パターンの選択肢、ガード、本体）、ラムダ、`return`、`try`、`lazy`、`with`（束縛の並びと本体）、`handle`、`handle` の節（操作の名前、引数の名前か `_`、本体）、`resume` |
+| 文 | 束縛の文（`bind` と `shadow` のどちらか、パターン、型注釈）、式文 |
+| 式 | リテラル（`Decimal` を含む）、文字列補間（部分の文字列と式の並び）、名前（修飾した名前）、`()`、括弧の式、リストリテラル（要素の式と、展開 `..e` の位置と式。[ADR 0272](../decisions/0272-list-spread-in-list-literals.md)）、呼び出し、プレースホルダ、レコードの構築（一部を変えた値の元の式と、フィールドの引数）、二項演算、単項演算、パイプ、`if`、`match`、`match` の分岐（パターンの選択肢、ガード、本体）、ラムダ、`return`、`try`、`lazy`、`with`（束縛の並びと本体）、`handle`、`handle` の節（操作の名前、引数の名前か `_`、本体）、`resume` |
 | パターン | ワイルドカード、変数、リテラル（前置の `-` を含む）、`()`、構成子（修飾した名前、括弧を書いたか、引数を含む）、レコードのパターン（フィールドのパターンと、`..` を書いたか）、範囲、リストのパターン（要素のパターンと、`..` の位置と残りを束縛する変数） |
 | 誤り | 誤りの宣言、誤りの文、誤りの式、誤りの型、誤りのパターン |
 
@@ -225,7 +239,7 @@ AST のノードの種類は次のとおりである。
 - トップレベルの宣言は、`public` を付けたか、属性の並び、ドキュメントコメントを欄に持つ。構成子、フィールド、メソッド、操作の宣言と、実装の中の関数の宣言も、ドキュメントコメントを欄に持つ。
 - 修飾した名前は、段の並び（各段の名前と span）として持つ。段の数に上限を設けない（[ADR 0126](../decisions/0126-import-by-module-name.md)）。各段が何を指すかは名前解決が決める（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)の「修飾された名前の解決」）。段ごとに span を持つので、名前解決はどの段で解決に失敗したかを示せる。
 
-名前解決と型検査の表の鍵にするため、名前を束縛する箇所と名前を使う箇所は、それぞれ独立したノードにする。構成子のパターンは、引数がなくても括弧を書いたかを欄として持つ（`Tree.Leaf()` の誤りを型検査器が報告するため。[型検査器](02-05-typechecker.md)）。`with` の束縛と、`handle` の節の引数の名前は、`let` の束縛と同じく名前を束縛する箇所として持つ。
+名前解決と型検査の表の鍵にするため、名前を束縛する箇所と名前を使う箇所は、それぞれ独立したノードにする。構成子のパターンは、引数がなくても括弧を書いたかを欄として持つ（`Tree.Leaf()` の誤りを型検査器が報告するため。[型検査器](02-05-typechecker.md)）。`with` の束縛と、`handle` の節の引数の名前は、束縛の文の左辺と同じく名前を束縛する箇所として持つ。
 
 誤りのノードは、構文エラーから回復した箇所に置く。誤りのノードを含む AST は、名前解決以降の段に渡らない（[ADR 0019](../decisions/0019-stop-after-failing-stage.md)）。
 
@@ -235,8 +249,8 @@ AST のノードの種類は次のとおりである。
 
 | 解析していた構文 | 読み飛ばす先 |
 |---|---|
-| トップレベルの宣言 | 括弧の外にある、行の先頭の `import`・`public`・`@`・`function`・`const`・`type`・`record`・`trait`・`implement`・`effect` |
-| ブロックの中の文、`case` の分岐、`handle` の節、型の宣言の構成子、レコードのフィールド、型クラスのメソッド、エフェクトの操作、実装の中の関数の宣言 | 同じブロックの中の次の NEWLINE、またはそのブロックを閉じる `end` |
+| トップレベルの宣言 | 括弧の外にある、行の先頭の `import`・`public`・`@`・`function`・`const`・`data`・`type`・`record`・`trait`・`implement`・`effect` |
+| ブロックの中の文、`match` の分岐、`handle` の節、型の宣言の構成子、レコードのフィールド、型クラスのメソッド、エフェクトの操作、実装の中の関数の宣言 | 同じブロックの中の次の NEWLINE、またはそのブロックを閉じる `end` |
 | 丸括弧・角括弧の中の要素 | 同じ括弧の中の次の `,`、またはその括弧を閉じる字句 |
 
 読み飛ばすときは、開いた括弧と閉じた括弧を数え、内側の括弧の中の字句は読み飛ばす先とみなさない。
@@ -249,9 +263,9 @@ AST のノードの種類は次のとおりである。
 
 - 式・型・パターン・ブロックの入れ子（`else if` の連なりの各 `if` を含む）。
 - 左結合の演算子の連なり（`a + b + c`、`x |> f |> g`）と呼び出しの連なり（`f(a)(b)`）の、演算子と呼び出しの一つ一つ。Pratt 法はこれらを再帰でなく繰り返しで読むが、できる木は左に深くなるので数える。
-- ブロックの中の文の一つ一つ。文はどれもブロックの子であるが、`i` 番目（0 から数える）の文の深さは、ブロックの深さに `i + 1` を加えたものとして数える。ブロックは脱糖で `let` の入れ子になる（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)）ので数える。
-- 並びの要素の一つ一つ。対象は、リストリテラルの要素、呼び出しと構成子の呼び出しの引数、レコードの構築のフィールドの引数、文字列補間の式、`with` の束縛、`case` の分岐、`handle` の節である。文と同じく、`i` 番目の要素の深さは、親のノードの深さに `i + 1` を加えたものとして数える。これらは脱糖で要素ごとの `let` の入れ子になるか、判定の木への変換で `join` の入れ子になる（同章、[中間表現と脱糖](02-06-ir-and-lowering.md)）ので数える。
-- パターンの節の一つ一つ。一つの `case` の分岐のパターンの節を、分岐の順に、各分岐では選択肢の順に、各パターンの中では行きがけ順に通して数え、`k` 番目（0 から数える）の節の深さを、`case` の深さに `k + 1` を加えたものとして数える。`let` の左辺のパターンは、その `let` 文を基準に同じく数える。判定の木は行列の列を一つずつ調べて展開するので、木の深さは、入れ子の段数ではなく、一つの `case` のパターンが調べる位置の数に比例するからである（[ADR 0086](../decisions/0086-pattern-nodes-count-toward-nesting-limit.md)）。
+- ブロックの中の文の一つ一つ。文はどれもブロックの子であるが、`i` 番目（0 から数える）の文の深さは、ブロックの深さに `i + 1` を加えたものとして数える。ブロックは脱糖でコア計算の `let` の入れ子になる（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)）ので数える。
+- 並びの要素の一つ一つ。対象は、リストリテラルの要素、呼び出しと構成子の呼び出しの引数、レコードの構築のフィールドの引数、文字列補間の式、`with` の束縛、`match` の分岐、`handle` の節である。文と同じく、`i` 番目の要素の深さは、親のノードの深さに `i + 1` を加えたものとして数える。これらは脱糖で要素ごとのコア計算の `let` の入れ子になるか、判定の木への変換で `join` の入れ子になる（同章、[中間表現と脱糖](02-06-ir-and-lowering.md)）ので数える。
+- パターンの節の一つ一つ。一つの `match` の分岐のパターンの節を、分岐の順に、各分岐では選択肢の順に、各パターンの中では行きがけ順に通して数え、`k` 番目（0 から数える）の節の深さを、`match` の深さに `k + 1` を加えたものとして数える。束縛の文の左辺のパターンは、その束縛の文を基準に同じく数える。判定の木は行列の列を一つずつ調べて展開するので、木の深さは、入れ子の段数ではなく、一つの `match` のパターンが調べる位置の数に比例するからである（[ADR 0086](../decisions/0086-pattern-nodes-count-toward-nesting-limit.md)）。
 
 上限を超えたときは、その位置で構文エラーを報告し、そのファイルの解析を打ち切る。後の段は、AST と、それから作る中間表現を再帰的に辿る。入れ子を作る脱糖と変換は、上に挙げたもの（文と並びの要素）を除けば、構文ごとに定数の段数しか入れ子を増やさない（パイプとプレースホルダの展開、`and` の `if` への変換、`try` の展開など）。したがって、後の段の再帰の深さは、ここで数えた深さの定数倍に収まる。AST と中間表現を破棄するときの処理も、同じ深さの入れ子に沿うので、この範囲に収まる。後の段に、入れ子を要素の数に比例して増やす変換を加えるときは、この節の数え方に加える。
 

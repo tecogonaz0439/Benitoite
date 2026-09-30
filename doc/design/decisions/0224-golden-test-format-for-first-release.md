@@ -1,6 +1,6 @@
 # 0224. ゴールデンテストの形式を、複数のモジュール、`test`・`fmt` の方式、CLI のオプションに広げる
 
-- 状態: 採択
+- 状態: 採択（OPEN-058 に残した形を [0252](0252-test-report-format.md) で定めた）
 - 日付: 2026-09-29
 - 関連章: [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md), [CLI](../06-tooling/06-01-cli.md), [フォーマッタ](../06-tooling/06-03-formatter.md), [利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)
 - 関連する未決事項: [OPEN-058](../open-issues.md#open-058)

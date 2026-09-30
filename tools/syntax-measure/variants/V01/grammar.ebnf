@@ -1,0 +1,120 @@
+(* program *)
+Program     = [ NL ] [ Items [ NL ] ] .
+Items       = ImportDecl [ NL Items ]
+            | Decls .
+Decls       = AttrDecl { NL AttrDecl } .
+AttrDecl    = { Attribute [ NL ] } Decl .
+Attribute   = "@" LowerIdent [ "(" CommaList(StringLit) ")" ] .
+Decl        = [ "public" ] FnDecl
+            | [ "public" ] ConstDecl
+            | [ "public" ] TypeDecl
+            | [ "public" ] AliasDecl
+            | [ "public" ] RecordDecl
+            | [ "public" ] TraitDecl
+            | [ "public" ] EffectDecl
+            | ImplDecl .
+
+(* import declaration *)
+ImportDecl  = "import" UpperIdent { "." UpperIdent } [ "as" UpperIdent ] .
+
+(* function declaration *)
+FnDecl      = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")"
+              ":" Type [ Uses ] Block .
+FnTypeParams = "[" FnTypeParam { "," FnTypeParam } [ "," ] "]" .
+FnTypeParam = "effect" UpperIdent
+            | TypeParamDecl [ ":" Constraint { "&" Constraint } ] .
+Constraint  = QualUpper | LowerIdent .
+TypeParamDecl = UpperIdent [ "[" "_" { "," "_" } "]" ] .
+Param       = LowerIdent ":" Type .
+Uses        = "uses" QualUpper { "," QualUpper } .
+Block       = "{" Body "}" .
+
+(* constant declaration *)
+ConstDecl   = "const" LowerIdent ":" Type "=" Expr .
+
+(* type, type alias, record, trait, implementation and effect declarations *)
+TypeDecl    = "type" UpperIdent [ TypeParams ] "{" LineList(Variant) "}" .
+AliasDecl   = "type" UpperIdent [ TypeParams ] "=" Type .
+TypeParams  = "[" UpperIdent { "," UpperIdent } [ "," ] "]" .
+Variant     = UpperIdent [ "(" CommaList(Type) ")" ] .
+RecordDecl  = "record" UpperIdent [ TypeParams ] "{" LineList(Field) "}" .
+Field       = LowerIdent ":" Type .
+TraitDecl   = "trait" UpperIdent "[" TypeParamDecl [ ":" QualUpper { "&" QualUpper } ] "]"
+              "{" LineList(MethodSig) "}" .
+MethodSig   = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" ":" Type [ Uses ] .
+ImplDecl    = "implement" [ FnTypeParams ] QualUpper "[" Type "]" "{" LineList(FnDecl) "}" .
+EffectDecl  = "effect" UpperIdent "{" LineList(OpSig) "}" .
+OpSig       = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" ":" Type .
+
+(* types *)
+Type        = QualUpper [ "[" Type { "," Type } [ "," ] "]" ]
+            | "function" "(" CommaList(Type) ")" "->" Type [ Uses ]
+            | "(" Type ")" .
+QualUpper   = UpperIdent { "." UpperIdent } .
+
+(* blocks and statements *)
+Body        = LineList(Stmt) .
+Stmt        = LetStmt | Expr .
+LetStmt     = "let" Pattern [ ":" Type ] "=" Expr .
+
+(* expressions *)
+Expr        = "return" Expr
+            | "try" Expr
+            | PipeExpr .
+PipeExpr    = OrExpr { "|>" OrExpr } .
+OrExpr      = AndExpr { "||" AndExpr } .
+AndExpr     = CmpExpr { "&&" CmpExpr } .
+CmpExpr     = AddExpr [ CmpOp AddExpr ] .
+CmpOp       = "==" | "!=" | "<" | "<=" | ">" | ">=" .
+AddExpr     = MulExpr { ( "+" | "-" ) MulExpr } .
+MulExpr     = UnaryExpr { ( "*" | "/" | "%" ) UnaryExpr } .
+UnaryExpr   = ( "-" | "!" ) UnaryExpr | CallExpr .
+CallExpr    = Primary { "(" CommaList(Arg) ")" } .
+Arg         = Expr | "_" .
+Primary     = Literal
+            | InterpString
+            | Name
+            | "(" ")"
+            | "(" Expr ")"
+            | "[" CommaList(Expr) "]"
+            | IfExpr
+            | SwitchExpr
+            | Lambda
+            | RecordExpr
+            | "lazy" Block
+            | WithExpr
+            | HandleExpr
+            | "resume" "(" Expr ")" .
+Literal     = IntLit | FloatLit | DecimalLit | StringLit | CharLit | "true" | "false" .
+InterpString = StrStart Expr { StrMid Expr } StrEnd .
+Name        = { UpperIdent "." } ( LowerIdent | UpperIdent ) .
+RecordExpr  = QualUpper "(" [ ".." Expr "," ] FieldArg { "," FieldArg } [ "," ] ")" .
+FieldArg    = LowerIdent ":" Expr .
+IfExpr      = "if" Expr Block { "else" "if" Expr Block } [ "else" Block ] .
+SwitchExpr  = "switch" Expr "{" [ NL ] Arm { NL Arm } [ NL ] "}" .
+Arm         = "case" Pattern { "," Pattern } [ "if" Expr ] ":" ArmBody .
+ArmBody     = Stmt { NL Stmt } .
+Lambda      = "lambda" "(" CommaList(LambdaParam) ")" [ ":" Type [ Uses ] ] Block .
+LambdaParam = LowerIdent [ ":" Type ] .
+WithExpr    = "with" WithBind { "," WithBind } Block .
+WithBind    = LowerIdent "=" Expr .
+HandleExpr  = "handle" Block "with" "{" [ NL ] HandleArm { NL HandleArm } [ NL ] "}" .
+HandleArm   = "case" OpName "(" CommaList(OpParam) ")" ":" ArmBody .
+OpName      = { UpperIdent "." } LowerIdent .
+OpParam     = LowerIdent | "_" .
+
+(* patterns *)
+Pattern     = "_"
+            | LowerIdent
+            | [ "-" ] IntLit
+            | StringLit
+            | CharLit
+            | "true" | "false"
+            | "(" ")"
+            | QualUpper [ "(" CommaList(Pattern) ")" ]
+            | QualUpper "(" FieldPat { "," FieldPat } [ "," ".." ] [ "," ] ")"
+            | RangeEnd ".." RangeEnd
+            | "[" [ ListPatElem { "," ListPatElem } [ "," ] ] "]" .
+FieldPat    = LowerIdent ":" Pattern .
+RangeEnd    = [ "-" ] IntLit | CharLit .
+ListPatElem = Pattern | ".." [ LowerIdent ] .

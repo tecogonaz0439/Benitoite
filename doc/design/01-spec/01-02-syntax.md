@@ -1,7 +1,7 @@
 # 構文
 
 - 状態: 確定
-- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0005](../decisions/0005-direct-style-effects.md), [0007](../decisions/0007-constructors-and-list.md), [0008](../decisions/0008-effect-variables.md), [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0047](../decisions/0047-parenthesized-types-and-uses-binding.md), [0050](../decisions/0050-pipe-with-parenthesized-rhs.md), [0053](../decisions/0053-private-by-default-with-pub.md), [0055](../decisions/0055-top-level-functions-and-types-only.md), [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0057](../decisions/0057-record-declaration-construction-update.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0061](../decisions/0061-trait-coherence-orphan-and-overlap.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0067](../decisions/0067-with-resource-scope.md), [0092](../decisions/0092-unabbreviated-keywords.md), [0094](../decisions/0094-return-type-after-colon.md), [0111](../decisions/0111-case-of-when.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0098](../decisions/0098-constraints-joined-by-ampersand.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0101](../decisions/0101-unabbreviated-names.md), [0102](../decisions/0102-pair-and-triple.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0109](../decisions/0109-lambda-keyword.md), [0110](../decisions/0110-if-then-end-if.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)
+- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0005](../decisions/0005-direct-style-effects.md), [0007](../decisions/0007-constructors-and-list.md), [0008](../decisions/0008-effect-variables.md), [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0047](../decisions/0047-parenthesized-types-and-uses-binding.md), [0050](../decisions/0050-pipe-with-parenthesized-rhs.md), [0053](../decisions/0053-private-by-default-with-pub.md), [0055](../decisions/0055-top-level-functions-and-types-only.md), [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0057](../decisions/0057-record-declaration-construction-update.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0061](../decisions/0061-trait-coherence-orphan-and-overlap.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0067](../decisions/0067-with-resource-scope.md), [0092](../decisions/0092-unabbreviated-keywords.md), [0094](../decisions/0094-return-type-after-colon.md), [0111](../decisions/0111-case-of-when.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0098](../decisions/0098-constraints-joined-by-ampersand.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0101](../decisions/0101-unabbreviated-names.md), [0102](../decisions/0102-pair-and-triple.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0109](../decisions/0109-lambda-keyword.md), [0110](../decisions/0110-if-then-end-if.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0272](../decisions/0272-list-spread-in-list-literals.md), [0279](../decisions/0279-no-duplicate-method-names-in-trait.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-047](../open-issues.md#open-047)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 2.3, 23.1
 
@@ -17,7 +17,7 @@
 
 字句は[字句構造](01-01-lexical.md)に従う。文法の中の `NL` は、字句構造の「改行による区切り」で置かれる改行字句 NEWLINE を表す。
 
-表層構文の骨格は [ADR 0004](../decisions/0004-surface-syntax-skeleton.md) と [ADR 0005](../decisions/0005-direct-style-effects.md) に従う。骨格の四点（ドット記法、シグネチャ、改行による区切り、括弧による適用）とエフェクトの書き方は【決定】である。ブロックを `end` と構文の名前で閉じる形、`lambda`、`if … then`、`case … of`、演算子の書き方（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)〜[ADR 0112](../decisions/0112-pascal-style-operators.md)）も【決定】である。最小実行版のそれ以外の具体的な文法は【方針】である。初回リリース版で加える構文のうち、各節に示した ADR で決めた書き方は【決定】とする。どれも、構文ごとの LLM の生成精度の測定（[OPEN-012](../open-issues.md#open-012)）の結果によって見直すことがある。
+表層構文の骨格は [ADR 0004](../decisions/0004-surface-syntax-skeleton.md) と [ADR 0005](../decisions/0005-direct-style-effects.md) に従う。骨格の四点（ドット記法、シグネチャ、改行による区切り、括弧による適用）とエフェクトの書き方は【決定】である。ブロックを `end` と構文の名前で閉じる形、`lambda`、`if … then`、演算子の書き方（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)〜[ADR 0112](../decisions/0112-pascal-style-operators.md)）と、戻り値の型の `->`、`bind` と `shadow`、`data`、`match … with`（[ADR 0254](../decisions/0254-return-type-after-arrow.md)〜[ADR 0257](../decisions/0257-match-with-case-arms.md)）も【決定】である。最小実行版のそれ以外の具体的な文法は【方針】である。初回リリース版で加える構文のうち、各節に示した ADR で決めた書き方は【決定】とする。どれも、構文ごとの LLM の生成精度の測定（[OPEN-012](../open-issues.md#open-012)）の結果によって見直すことがある。
 
 ## 仕様
 
@@ -52,13 +52,15 @@ LineList(X)  = [ NL ] [ X { NL X } [ NL ] ] .
 
 【方針】最小実行版の文法は次のとおりである。初回リリース版の文法は、この文法に初回リリース版の各節の規則を加えたものであり、全体を後述の「初回リリース版の文法の全体」に示す。
 
+実装した最小実行版は、最小実行版の設計書（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)〜[ADR 0112](../decisions/0112-pascal-style-operators.md) より前）に従い、C 系の波括弧の構文で書く。関数を `fn f(x: Integer) -> Integer { … }`、ラムダを `fn(x) { … }`、局所の束縛を `let x = e`、代数的データ型の宣言を `type 名前 { … }`、パターンで分岐する式を `match 対象 { パターン => 式 }` と書き、演算子に `==`・`!=`・`&&`・`||`・`!`・`%` を使う。初回リリース版は、構文をすべて本章の書き方に改める。ADR 0108〜0112 で決め、[ADR 0254](../decisions/0254-return-type-after-arrow.md)〜[ADR 0257](../decisions/0257-match-with-case-arms.md) で改める前の書き方（`let x = e`、`: 型`、`type … end type`、`case … of when`）は、設計書にだけあって実装していない。
+
 ```text
 Program     = LineList(TopItem) .
-TopItem     = FnDecl | TypeDecl .
+TopItem     = FnDecl | DataDecl .
 
 (* 関数の宣言 *)
 FnDecl      = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")"
-              ":" Type [ Uses ] Body "end" "function" .
+              "->" Type [ Uses ] Body "end" "function" .
 FnTypeParams = "[" FnTypeParam { "," FnTypeParam } [ "," ] "]" .
 FnTypeParam = [ "effect" ] UpperIdent .
 TypeParams  = "[" UpperIdent { "," UpperIdent } [ "," ] "]" .
@@ -66,7 +68,7 @@ Param       = LowerIdent ":" Type .
 Uses        = "uses" UpperIdent { "," UpperIdent } .
 
 (* 型の宣言 *)
-TypeDecl    = "type" UpperIdent [ TypeParams ] LineList(Variant) "end" "type" .
+DataDecl    = "data" UpperIdent [ TypeParams ] LineList(Variant) "end" "data" .
 Variant     = UpperIdent [ "(" CommaList(Type) ")" ] .
 
 (* 型 *)
@@ -76,8 +78,8 @@ Type        = UpperIdent [ "[" Type { "," Type } [ "," ] "]" ]
 
 (* 文の並びと文 *)
 Body        = LineList(Stmt) .
-Stmt        = LetStmt | Expr .
-LetStmt     = "let" ( LowerIdent | "_" ) [ ":" Type ] "=" Expr .
+Stmt        = BindStmt | Expr .
+BindStmt    = ( "bind" | "shadow" ) ( LowerIdent | "_" ) [ ":" Type ] "<-" Expr .
 
 (* 式 *)
 Expr        = "return" Expr
@@ -98,7 +100,7 @@ Primary     = Literal
             | "(" Expr ")"
             | "[" CommaList(Expr) "]"
             | IfExpr
-            | CaseExpr
+            | MatchExpr
             | Lambda .
 Literal     = IntLit | FloatLit | StringLit | CharLit | "true" | "false" .
 Name        = LowerIdent
@@ -106,10 +108,10 @@ Name        = LowerIdent
             | UpperIdent "." ( LowerIdent | UpperIdent ) .
 
 IfExpr      = "if" Expr "then" Body { "else" "if" Expr "then" Body } [ "else" Body ] "end" "if" .
-CaseExpr    = "case" Expr "of" [ NL ] Arm { NL Arm } [ NL ] "end" "case" .
-Arm         = "when" Pattern ":" ArmBody .
+MatchExpr   = "match" Expr "with" [ NL ] Arm { NL Arm } [ NL ] "end" "match" .
+Arm         = "case" Pattern "->" ArmBody .
 ArmBody     = Stmt { NL Stmt } .
-Lambda      = "lambda" "(" CommaList(LambdaParam) ")" [ ":" Type [ Uses ] ] Body "end" "lambda" .
+Lambda      = "lambda" "(" CommaList(LambdaParam) ")" [ "->" Type [ Uses ] ] Body "end" "lambda" .
 LambdaParam = LowerIdent [ ":" Type ] .
 
 (* パターン *)
@@ -129,24 +131,24 @@ Pattern     = "_"
 
 ```text
 function((function() -> Unit uses Console.Write), Integer) -> Unit        // function(function() -> Unit uses Console.Write, Integer) -> Unit は誤り
-function f(): (function() -> Integer uses Console.Write) uses Console.Write ... end function // 戻り値の型が uses を持つ関数の型のとき
+function f() -> (function() -> Integer uses Console.Write) uses Console.Write ... end function // 戻り値の型が uses を持つ関数の型のとき
 ```
 
-1 行目の括弧を外すと、`Integer` を `uses` の並びの一部として読む。2 行目の戻り値の型の括弧を外すと、`function f(): function() -> Integer uses Console.Write ... end function` の `uses Console.Write` は戻り値の型（内側の関数の型）に付き、`f` 自身は純粋な関数になる。
+1 行目の括弧を外すと、`Integer` を `uses` の並びの一部として読む。2 行目の戻り値の型の括弧を外すと、`function f() -> function() -> Integer uses Console.Write ... end function` の `uses Console.Write` は戻り値の型（内側の関数の型）に付き、`f` 自身は純粋な関数になる。
 
 ### プログラムと宣言
 
-【方針】最小実行版のプログラムは一つのソースファイルであり、トップレベルには関数の宣言と型の宣言だけを置ける。初回リリース版で複数のファイルからなるプログラムを書く構文は、後述の「モジュールと import（初回リリース版）」で定める。トップレベルに式や `let` を置くことはできない。プログラムの実行を始める関数（エントリポイント）は[評価意味論](01-08-evaluation.md)で定める。名前の有効範囲（トップレベルの宣言どうしの参照、局所束縛のシャドーイングなど）は[名前・スコープ・モジュール](01-03-names-modules.md)で定める。
+【方針】最小実行版のプログラムは一つのソースファイルであり、トップレベルには関数の宣言と型の宣言だけを置ける。初回リリース版で複数のファイルからなるプログラムを書く構文は、後述の「モジュールと import（初回リリース版）」で定める。トップレベルに式や `bind`・`shadow` を置くことはできない。プログラムの実行を始める関数（エントリポイント）は[評価意味論](01-08-evaluation.md)で定める。名前の有効範囲（トップレベルの宣言どうしの参照、局所束縛のシャドーイングなど）は[名前・スコープ・モジュール](01-03-names-modules.md)で定める。
 
-【決定】トップレベルの関数の宣言は、すべての引数の型と戻り値の型を書かなければならない（[ADR 0004](../decisions/0004-surface-syntax-skeleton.md)）。戻り値の型は、引数の並びの後の `:` に続けて書く（[ADR 0094](../decisions/0094-return-type-after-colon.md)）。戻り値がない関数も `: Unit` と書く。関数の型は、これまでどおり `->` で書く（`function(Integer) -> Integer`）。外部に作用する関数は、戻り値の型の後に `uses` とエフェクトの名前を書く。`uses` を書かない関数は純粋である（[ADR 0005](../decisions/0005-direct-style-effects.md)）。
+【決定】トップレベルの関数の宣言は、すべての引数の型と戻り値の型を書かなければならない（[ADR 0004](../decisions/0004-surface-syntax-skeleton.md)）。戻り値の型は、引数の並びの後の `->` に続けて書く（[ADR 0254](../decisions/0254-return-type-after-arrow.md)）。戻り値がない関数も `-> Unit` と書く。関数の型も、同じく `->` の後に戻り値の型を書く（`function(Integer) -> Integer`）。戻り値の型を `:` の後に書いた宣言（`function double(x: Integer): Integer`）は構文エラーとし、診断は `->` と書く修正案を示す。外部に作用する関数は、戻り値の型の後に `uses` とエフェクトの名前を書く。`uses` を書かない関数は純粋である（[ADR 0005](../decisions/0005-direct-style-effects.md)）。
 
 ```text
-function double(x: Integer): Integer
+function double(x: Integer) -> Integer
   return x * 2
 end function
 
-function greet(name: String): Unit uses IO
-  let message = "Hello, " + name
+function greet(name: String) -> Unit uses IO
+  bind message <- "Hello, " + name
   Console.writeLine(message)
 end function
 ```
@@ -158,43 +160,45 @@ end function
 型パラメータを持つ関数は、関数名の後の `[ ]` に型パラメータを並べる。型パラメータは大文字識別子で書く。エフェクト変数は、同じ並びに `effect` を付けて書く（[型システム](01-06-type-system.md)）。
 
 ```text
-function getOr[A](opt: Option[A], default: A): A
-  return case opt of
-    when Option.Some(x): x
-    when Option.None: default
-  end case
+function getOr[A](opt: Option[A], default: A) -> A
+  return match opt with
+    case Option.Some(x) -> x
+    case Option.None -> default
+  end match
 end function
 ```
 
-型の宣言は、データ構成子を一行に一つずつ並べる。データ構成子の引数は位置で区別し、名前を付けない。名前付きのフィールドは初回リリース版のレコードで扱う。
+【決定】代数的データ型の宣言（型の宣言）は、`data 名前` で始め、`end data` で閉じる（[ADR 0256](../decisions/0256-data-keyword-for-algebraic-types.md)）。`type` は型の別名（後述の「型の別名（初回リリース版）」）だけに使う。型の宣言は、データ構成子を一行に一つずつ並べる。データ構成子の引数は位置で区別し、名前を付けない。名前付きのフィールドは初回リリース版のレコードで扱う。
 
 ```text
-type Shape
+data Shape
   Circle(Float)
   Rect(Float, Float)
-end type
+end data
 
-type Tree[T]
+data Tree[T]
   Leaf
   Node(Tree[T], T, Tree[T])
-end type
+end data
 ```
 
 引数を持たない構成子は、括弧を付けずに宣言する。宣言の中で空の括弧を付けた構成子（`Leaf()`）は誤りとする（[代数的データ型とパターンマッチ](01-05-data-types.md)）。
 
 ### ブロックと文
 
-【決定】ブロックは、改行で区切った文の並びである。関数の宣言とラムダの本体、`if` と `case` の分岐、初回リリース版の `with` と `lazy` と `handle` の本体、`handle` の節がブロックである。ブロックを波括弧で囲まない。ブロックを持つ構文は、キーワードで始まり、`end` とその構文の名前（`end function`・`end lambda`・`end if`・`end case` など）で閉じる（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。文は `let` による束縛か、式である。
+【決定】ブロックは、改行で区切った文の並びである。関数の宣言とラムダの本体、`if` と `match` の分岐、初回リリース版の `with` と `lazy` と `handle` の本体、`handle` の節がブロックである。ブロックを波括弧で囲まない。ブロックを持つ構文は、キーワードで始まり、`end` とその構文の名前（`end function`・`end lambda`・`end if`・`end match` など）で閉じる（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。文は `bind` か `shadow` による束縛（束縛の文）か、式である。
 
-閉じる語が、閉じる構文と一致しないとき（`if` を `end case` で閉じたなど）は、構文エラーとし、診断は、どの構文を閉じるべきかを示す。LLM が波括弧でブロックを書いたとき（`{`・`}` は字句の誤り。[字句構造](01-01-lexical.md)）は、`end` と構文の名前で閉じる書き方を修正案として示す。
+閉じる語が、閉じる構文と一致しないとき（`if` を `end match` で閉じたなど）は、構文エラーとし、診断は、どの構文を閉じるべきかを示す。LLM が波括弧でブロックを書いたとき（`{`・`}` は字句の誤り。[字句構造](01-01-lexical.md)）は、`end` と構文の名前で閉じる書き方を修正案として示す。
 
-- ブロックの最後の文が式であれば、その式の値がブロックの値になる。最後の文が `let` であるか、ブロックが空であれば、ブロックの値は Unit である。
-- 最後の文以外の位置に置いた式（式文）は、Unit 型でなければならない。これは型検査で検査する（[型システム](01-06-type-system.md)）。値を捨てるときは `let _ = 式` と書く。
+- ブロックの最後の文が式であれば、その式の値がブロックの値になる。最後の文が束縛の文であるか、ブロックが空であれば、ブロックの値は Unit である。
+- 最後の文以外の位置に置いた式（式文）は、Unit 型でなければならない。これは型検査で検査する（[型システム](01-06-type-system.md)）。値を捨てるときは `bind _ <- 式` と書く。
 - 関数の宣言とラムダの本体のブロックは、値を `return` で返す（後述の「`return`」）。本体のブロックの最後の文も式文として扱い、`return` でない式は Unit 型でなければならない。
 
 式文を Unit 型に限るのは、計算した値を気付かずに捨てる誤りと、改行の位置の誤り（[字句構造](01-01-lexical.md)の「改行による区切り」）を、実行前に検出するためである。
 
-`let` は、名前か `_` に式の値を束縛する。型注釈は省略でき、省略すると推論する。最小実行版では、`let` の左辺にパターンは書けない。初回リリース版では、必ず照合するパターンを書ける（後述の「組と `let` のパターン（初回リリース版）」）。値によって分岐するときは `case` を使う。
+【決定】束縛の文は、名前か `_` に、`<-` の右の式の値を束縛する（[ADR 0255](../decisions/0255-bind-and-shadow.md)）。その位置で局所の名前として見えていない名前を束縛するときは `bind x <- e` と書き、見えている局所の名前を隠すときは `shadow x <- e` と書く。どちらを書けるかの規則は[名前・スコープ・モジュール](01-03-names-modules.md)の「シャドーイング」で定める。型注釈は `bind x: Integer <- e` の形で書け、省略すると推論する。最小実行版では、束縛の文の左辺にパターンは書けない。初回リリース版では、必ず照合するパターンを書ける（後述の「組と `bind`・`shadow` のパターン（初回リリース版）」）。値によって分岐するときは `match` を使う。
+
+文の頭に他の言語の束縛の書き方 `let x = e` を書いたときは、構文エラーとし、診断は `bind x <- e`（名前が局所の名前として見えていれば `shadow x <- e`）を修正案として示す。`let` はキーワードではない（[ADR 0093](../decisions/0093-no-reserved-words-for-absent-constructs.md)）。
 
 ### `return`
 
@@ -202,13 +206,13 @@ end type
 
 - `return e` は、`e` を評価し、`return` を含む最も内側の関数の宣言かラムダの呼び出しを終えて、`e` の値を返す。本体の途中にも書ける。
 - `return` の後には、必ず式を書く。`return` の直後の改行は空白として扱う（[字句構造](01-01-lexical.md)の「改行による区切り」の規則 2）ので、`return` だけの行の次の行は、`return` の式として読む。戻り値の型が Unit の関数から途中で抜けるときは `return ()` と書く。
-- `return e` は式であり、どの型の式が書ける位置にも書ける（`case` の分岐の本体など）。`return` は右の式全体にかかる。`return x |> f` は `return f(x)` である。
+- `return e` は式であり、どの型の式が書ける位置にも書ける（`match` の分岐の本体など）。`return` は右の式全体にかかる。`return x |> f` は `return f(x)` である。
 - 本体の終わりに達したときは、`()` を返す。戻り値の型が Unit でない関数とラムダは、本体のどの道筋でも `return` で抜けなければならない。抜けない道筋があれば誤りとし、診断は `return` を書き足す箇所を示す。
-- 必ず抜ける文（`return e`、両方の分岐が必ず抜ける `if`、すべての分岐が必ず抜ける `case` など。[型システム](01-06-type-system.md)で定める）の後に、同じブロックの文を続けると誤りとする。その文は実行されないからである。
+- 必ず抜ける文（`return e`、両方の分岐が必ず抜ける `if`、すべての分岐が必ず抜ける `match` など。[型システム](01-06-type-system.md)で定める）の後に、同じブロックの文を続けると誤りとする。その文は実行されないからである。
 - `lazy` のブロックの中には、内側のラムダの中を除き、`return` を書けない（後述の「明示遅延（初回リリース版）」）。
 
 ```text
-function sign(x: Integer): Integer
+function sign(x: Integer) -> Integer
   if x < 0 then
     return -1
   end if
@@ -216,7 +220,7 @@ function sign(x: Integer): Integer
 end function
 ```
 
-`if` と `case` の分岐は、これまでどおり最後の式の値を値とする。`return` を書くのは、関数の宣言とラムダの本体から抜けるときだけである。
+`if` と `match` の分岐は、最後の式の値を値とする。`return` を書くのは、関数の宣言とラムダの本体から抜けるときだけである。
 
 ### 条件分岐
 
@@ -230,29 +234,30 @@ end function
 
 ### パターンマッチ
 
-【決定】パターンで分岐する式は、`case 対象 of` で始め、`end case` で閉じる。分岐は `when パターン:` で始める（[ADR 0111](../decisions/0111-case-of-when.md)）。分岐の本体には、一つの式も、改行で区切った複数の文も書ける。本体は、次の `when` か `end case` までであり、本体の値は最後の式の値である。`:` の直後の改行は空白として扱うので、分岐の本体を次の行から書ける。
+【決定】パターンで分岐する式は、`match 対象 with` で始め、`end match` で閉じる。分岐は `case パターン ->` で始める（[ADR 0257](../decisions/0257-match-with-case-arms.md)）。分岐の本体には、一つの式も、改行で区切った複数の文も書ける。本体は、次の `case` か `end match` までであり、本体の値は最後の式の値である。`->` の直後の改行は空白として扱う（[字句構造](01-01-lexical.md)の「改行による区切り」の規則 2）ので、本体が複数の文からなるときは、`->` の後で改行し、次の行から本体を書く。`with` は `match 対象` と同じ行に書く。`with` は改行による区切りの規則 3 の字句ではないので、行頭に書いた `with` は前の行の続きにならず、構文エラーになる。
 
 ```text
-case shape of
-  when Shape.Circle(r): 3.14159 * r * r
-  when Shape.Rect(w, h):
-    let area = w * h
+match shape with
+  case Shape.Circle(r) -> 3.14159 * r * r
+  case Shape.Rect(w, h) ->
+    bind area <- w * h
     area
-end case
+end match
 ```
 
 分岐は次の分岐へ続かない（C 系の言語の `switch` のような fallthrough はない）。他の言語の書き方を持ち込んだ次の形は構文エラーとし、修正案を示す。
 
-- `switch` と書いた場合。`case 対象 of` の形を示す。
-- `default:` と書いた場合。`when _:` と書くよう示す。
+- `switch` と書いた場合。`match 対象 with` の形を示す。
+- `case 対象 of` と書いた場合（Pascal・Haskell の書き方と、ADR 0257 より前の設計書の書き方）。`match 対象 with` の形を示す。`of` と `when` はキーワードではない（[ADR 0093](../decisions/0093-no-reserved-words-for-absent-constructs.md)）。
+- `default:` と書いた場合。`case _ ->` と書くよう示す。
 - 分岐の本体の後に `break` を書いた場合。`break` は要らないことを示す。
-- `パターン => 式`（Rust・Scala）や `パターン -> 式`（Haskell・OCaml）の形で書いた場合。`when パターン:` の形を示す。
+- `パターン => 式`（Rust・Scala）や、`case` を付けない `パターン -> 式`（Haskell）の形で書いた場合。`case パターン -> 式` の形を示す。
 
 パターンの中の小文字識別子は新しい変数の束縛であり、大文字識別子はデータ構成子との照合である。データ構成子は、式の中と同じく型名で修飾して書く（[ADR 0007](../decisions/0007-constructors-and-list.md)）。浮動小数のリテラルはパターンに書けない。パターンの意味と、網羅性・到達不能の検査は[代数的データ型とパターンマッチ](01-05-data-types.md)で定める。
 
 ### ラムダ
 
-【決定】ラムダ（無名関数）は、`lambda` の後に引数の並びと本体を書き、`end lambda` で閉じる（[ADR 0109](../decisions/0109-lambda-keyword.md)）。`function` は、関数の宣言と関数の型に使う。関数の宣言と違い、引数の型と戻り値の型は省略でき、省略すると推論する。戻り値の型は、関数の宣言と同じく `:` の後に書く。`uses` は、戻り値の型を書いたときだけ、その後に書ける。`uses` を書かなければ、エフェクトを本体から推論する（[型システム](01-06-type-system.md)）。本体は、関数の宣言と同じく `return` で値を返す。
+【決定】ラムダ（無名関数）は、`lambda` の後に引数の並びと本体を書き、`end lambda` で閉じる（[ADR 0109](../decisions/0109-lambda-keyword.md)）。`function` は、関数の宣言と関数の型に使う。関数の宣言と違い、引数の型と戻り値の型は省略でき、省略すると推論する。戻り値の型は、関数の宣言と同じく `->` の後に書く（[ADR 0254](../decisions/0254-return-type-after-arrow.md)）。`uses` は、戻り値の型を書いたときだけ、その後に書ける。`uses` を書かなければ、エフェクトを本体から推論する（[型システム](01-06-type-system.md)）。本体は、関数の宣言と同じく `return` で値を返す。
 
 ラムダの引数には `_` を書けない（`lambda(_, x) return x end lambda` は構文エラー）。使わない引数には、`_unused` のように `_` で始まる名前を付ける（[字句構造](01-01-lexical.md)）。
 
@@ -260,8 +265,8 @@ end case
 
 ```text
 lambda(x) return x + 1 end lambda
-lambda(x: Integer): Integer return x + 1 end lambda
-lambda(line: String): Unit uses IO Console.writeLine(line) end lambda
+lambda(x: Integer) -> Integer return x + 1 end lambda
+lambda(line: String) -> Unit uses IO Console.writeLine(line) end lambda
 ```
 
 3 行目は最小実行版の例である。初回リリース版では、`Console` のモジュールの import が要り、`uses IO` を `uses Console.Write` と書く。
@@ -285,7 +290,7 @@ lambda(line: String): Unit uses IO Console.writeLine(line) end lambda
 
 比較演算子は結合しない。`a < b < c` は構文エラーであり、`a < b and b < c` と書くよう診断で示す。
 
-【決定】等しいを `=`、等しくないを `<>`、論理演算子を `and`・`or`・`not` と書く（[ADR 0112](../decisions/0112-pascal-style-operators.md)）。`=` は、`let` と `with` の束縛にも使う。束縛の `=` はパターンの直後にだけ現れるので、比較の `=` と一通りに読み分けられる。比較の結果を束縛するときは、比較を括弧で囲む書き方（`let ok = (a = b)`）を推奨する。書き換えのつもりで `x = 5` と書いた式文は、値が `Boolean` の式文として型検査の誤りになり、診断は変数を書き換えられないことと、`let` で新しい名前を束縛する書き方を示す。
+【決定】等しいを `=`、等しくないを `<>`、論理演算子を `and`・`or`・`not` と書く（[ADR 0112](../decisions/0112-pascal-style-operators.md)）。`=` は、初回リリース版の `with` の束縛、定数の宣言、型の別名の宣言にも使う。これらの `=` は名前（と型）の直後にだけ現れるので、比較の `=` と一通りに読み分けられる。局所の束縛の文は `<-` で書く（[ADR 0255](../decisions/0255-bind-and-shadow.md)）ので、比較の結果を束縛する文（`bind ok <- a = b`）は括弧なしで読める。書き換えのつもりで `x = 5` と書いた式文は、値が `Boolean` の式文として型検査の誤りになり、診断は変数を書き換えられないことと、`shadow x <- 5` で同じ名前を束縛し直す書き方を示す。
 
 【決定】整数の除算を `div`、剰余を `mod` と書く（[ADR 0113](../decisions/0113-div-and-mod-operators.md)）。`/` のオペランドは、最小実行版では `Float` に、初回リリース版では `Float` と `Decimal` に限る（[型システム](01-06-type-system.md)の演算子の型の表）。
 
@@ -344,7 +349,7 @@ between(_, lo, _)   // lambda(p1, p2) return between(p1, lo, p2) end lambda
 初回リリース版では、文法の次の規則を改める。ほかの規則は最小実行版と同じである。
 
 ```text
-TopItem     = ImportDecl | [ "public" ] FnDecl | [ "public" ] TypeDecl .
+TopItem     = ImportDecl | [ "public" ] FnDecl | [ "public" ] DataDecl .
 ImportDecl  = "import" UpperIdent { "." UpperIdent } [ "as" UpperIdent ] .
 
 Type        = QualUpper [ "[" Type { "," Type } [ "," ] "]" ]
@@ -365,11 +370,11 @@ Pattern     = ...
 ```text
 import Lib.Geo
 
-public function area(s: Geo.Shape): Float
-  return case s of
-    when Geo.Shape.Circle(r): Geo.pi() * r * r
-    when Geo.Shape.Rect(w, h): w * h
-  end case
+public function area(s: Geo.Shape) -> Float
+  return match s with
+    case Geo.Shape.Circle(r) -> Geo.pi() * r * r
+    case Geo.Shape.Rect(w, h) -> w * h
+  end match
 end function
 ```
 
@@ -398,15 +403,15 @@ record Person
   age: Integer
 end record
 
-function birthday(p: Person): Person
+function birthday(p: Person) -> Person
   return Person(..p, age: Person.age(p) + 1)
 end function
 
-function greeting(p: Person): String
-  return case p of
-    when Person(name: n, age: 0): "Welcome, ${n}"
-    when Person(name: n, ..): "Hello, ${n}"
-  end case
+function greeting(p: Person) -> String
+  return match p with
+    case Person(name: n, age: 0) -> "Welcome, ${n}"
+    case Person(name: n, ..) -> "Hello, ${n}"
+  end match
 end function
 ```
 
@@ -417,25 +422,25 @@ end function
 - フィールドを取り出す関数は、レコードの名前で修飾した小文字の名前で書く（`Person.age`、取り込んだモジュール `Geo` のレコード `Point` では `Geo.Point.x`）。前述の「モジュールと import（初回リリース版）」の `Name` の規則がこの形を読む。修飾した名前の各段が何を指すかは[名前・スコープ・モジュール](01-03-names-modules.md)の「修飾された名前の解決」で定める。
 - 値に続けてドットを書く形（`p.name`）は、最小実行版と同じく構文エラーとする。診断は `Person.name(p)` と `p |> Person.name` を修正案として示す（[ADR 0056](../decisions/0056-record-fields-via-accessor-functions.md)）。
 
-### 組と `let` のパターン（初回リリース版）
+### 組と `bind`・`shadow` のパターン（初回リリース版）
 
 【決定】初回リリース版では、組の型 `Pair` と `Triple` を prelude に設け、括弧のタプルは設けない（[ADR 0102](../decisions/0102-pair-and-triple.md)）。`Pair` と `Triple` はレコードではなく、構成子が一つだけの代数的データ型である。組の型と値の意味は[代数的データ型とパターンマッチ](01-05-data-types.md)で定める。
 
 ```text
-let p = Pair(1, "one")
-let Pair(n, name) = p
+bind p <- Pair(1, "one")
+bind Pair(n, name) <- p
 
-case p of
-  when Pair(0, label): label
-  when Pair(k, _): Integer.toString(k)
-end case
+match p with
+  case Pair(0, label) -> label
+  case Pair(k, _) -> Integer.toString(k)
+end match
 ```
 
 - 構成子は型名で修飾して書く（[ADR 0099](../decisions/0099-qualified-option-result-constructors.md)）が、構成子が一つだけで、その名前が型の名前と同じ型（`Pair`、`Triple`、利用者の同じ形の型）は例外とし、構成子を型の名前で修飾せずに書く（`Pair(1, "one")`。[ADR 0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md)）。文法の `Name` と `Pattern` の、段が一つの名前がこの形を読む。
-- 初回リリース版では、`let` の左辺に、必ず照合するパターンを書ける。文法の規則は次のように改める。必ず照合するかの判定は[代数的データ型とパターンマッチ](01-05-data-types.md)の「必ず照合するパターン（初回リリース版）」で定める。
+- 初回リリース版では、束縛の文の左辺に、必ず照合するパターンを書ける。文法の規則は次のように改める。必ず照合するかの判定は[代数的データ型とパターンマッチ](01-05-data-types.md)の「必ず照合するパターン（初回リリース版）」で定める。パターンの変数は、すべて新しい名前（`bind`）か、すべて見えている局所の名前（`shadow`）でなければならない（[名前・スコープ・モジュール](01-03-names-modules.md)の「シャドーイング」）。
 
 ```text
-LetStmt     = "let" Pattern [ ":" Type ] "=" Expr .
+BindStmt    = ( "bind" | "shadow" ) Pattern [ ":" Type ] "<-" Expr .
 ```
 
 - 括弧で囲んだ式・型・パターンをコンマで並べる形（`(1, "one")`、`(Integer, String)`、`(a, b)`）は、構文エラーとする。診断は、要素が 2 個なら `Pair`、3 個なら `Triple`、4 個以上なら `record` の宣言を修正案として示す。
@@ -469,7 +474,7 @@ Console.writeLine("${name} is ${age} years old")
 TopItem     = ... | [ "public" ] TraitDecl | ImplDecl .
 TraitDecl   = "trait" UpperIdent "[" TypeParamDecl [ ":" QualUpper { "&" QualUpper } ] "]"
               LineList(MethodSig) "end" "trait" .
-MethodSig   = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" ":" Type [ Uses ] .
+MethodSig   = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" "->" Type [ Uses ] .
 ImplDecl    = "implement" [ FnTypeParams ] QualUpper "[" Type "]" LineList(FnDecl) "end" "implement" .
 
 FnTypeParam = "effect" UpperIdent
@@ -481,6 +486,7 @@ TypeParamDecl = UpperIdent [ "[" "_" { "," "_" } "]" ] .
 - `F[_]` は、型構成子を表す型パラメータを宣言する。`_` の個数が、型構成子がとる引数の個数である。
 - `Constraint` の `LowerIdent` は、組み込みの制約 `equality` か `key` でなければならない。それ以外の小文字の名前を書くと構文エラーとする。`equality` と `key` はキーワードではなく、制約の位置でだけこの意味を持つ。ほかの位置では、変数などの名前に使える。型クラスの名前は大文字で始まるので、制約の位置の小文字の名前と取り違えることはない。組み込みの制約を書ける型パラメータの規則は[型システム](01-06-type-system.md)で定める。
 - `trait` の型パラメータの後の `:` に続く名前は、上位の型クラスである。上位の型クラスの位置には、組み込みの制約を書けない。
+- 一つの `trait` の中で、二つのメソッドに同じ名前を付けると誤りとする。違う型クラスのメソッドどうしは、同じ名前でもよい（[ADR 0279](../decisions/0279-no-duplicate-method-names-in-trait.md)）。
 - `implement` の中の関数の宣言には、`public` を付けない。`implement` にも `public` を付けない。
 - 【方針】実装は、プログラム全体で有効である。どのモジュールで型クラスの制約を解くときも、プログラムを構成するすべてのモジュールの実装から探す。孤立した実装と重なる実装を誤りとするので、使える実装は一つに決まる（[ADR 0061](../decisions/0061-trait-coherence-orphan-and-overlap.md)、[型システム](01-06-type-system.md)）。
 - `M.C.m`（三つ目が小文字の名前）は、取り込んだモジュール `M` の型クラス `C` のメソッド `m` を表す。
@@ -519,12 +525,14 @@ WithBind    = LowerIdent "=" Expr .
 
 `with` の並びのコンマの後では改行してよい（コンマの直後の改行は、[字句構造](01-01-lexical.md)の「改行による区切り」の規則 2 で空白として扱う）。束縛の並びの後に `do` を書き、本体を続け、`end with` で閉じる（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。`do` は、束縛の式と本体の区切りを字句で示す。
 
+`with` は、`match` と `handle` の分岐の並びの始まりにも使う（[ADR 0257](../decisions/0257-match-with-case-arms.md)）。文法の上では、`match 対象` と `handle 本体` の後の `with` は分岐の並びの始まりであり、それ以外の位置の `with` はリソーススコープである。分岐の並びの `with` の次の字句は `case`、リソーススコープの `with` の次の字句は束縛する名前なので、字句の上でも見分けられる（[字句構造](01-01-lexical.md)の「改行による区切り」）。
+
 ### パターンの拡張（初回リリース版）
 
-【決定】`case` の分岐には、コンマで区切って複数のパターン（選択肢）を並べ、パターンの後に `if 条件` のガードを書ける。パターンには、範囲とリストのパターンを書ける（[ADR 0121](../decisions/0121-pattern-extensions.md)）。意味と網羅性の規則は[代数的データ型とパターンマッチ](01-05-data-types.md)の「パターンの拡張（初回リリース版）」で定める。
+【決定】`match` の分岐には、コンマで区切って複数のパターン（選択肢）を並べ、パターンの後に `if 条件` のガードを書ける（`case 1, 2 -> …`、`case n if n > 0 -> …`）。パターンには、範囲とリストのパターンを書ける（[ADR 0121](../decisions/0121-pattern-extensions.md)、[ADR 0257](../decisions/0257-match-with-case-arms.md)）。意味と網羅性の規則は[代数的データ型とパターンマッチ](01-05-data-types.md)の「パターンの拡張（初回リリース版）」で定める。
 
 ```text
-Arm         = "when" Pattern { "," Pattern } [ "if" Expr ] ":" ArmBody .
+Arm         = "case" Pattern { "," Pattern } [ "if" Expr ] "->" ArmBody .
 Pattern     = ...
             | RangeEnd ".." RangeEnd
             | "[" [ ListPatElem { "," ListPatElem } [ "," ] ] "]" .
@@ -533,50 +541,75 @@ ListPatElem = Pattern | ".." [ LowerIdent ] .
 ```
 
 - 分岐の最も外側のコンマは、選択肢の区切りである。構成子のパターンの引数の中のコンマは、括弧の中にあるので選択肢の区切りにならない。
-- ガードの `if` は、`end if` で閉じない。`when` の後、分岐の `:` までに現れる `if` はガードであり、`if` の式として読まない。ガードの中に `if` の式を書くときは、括弧で囲む。
+- ガードの `if` は、`end if` で閉じない。`case` の後、分岐の `->` までに現れる `if` はガードであり、`if` の式として読まない。ガードの中に `if` の式を書くときは、括弧で囲む。
 - 範囲の `..` の前後には、同じ種類のリテラルを書く。
-- LLM が選択肢を `|` で書いたとき（`when 1 | 2:`）、ガードを `when` や `where` で書いたとき、範囲を `..=`・`..<`・`...` で書いたときは、Benitoite の書き方を修正案として示す。
+- LLM が選択肢を `|` で書いたとき（`case 1 | 2 ->`）、ガードを `when` や `where` で書いたとき、範囲を `..=`・`..<`・`...` で書いたときは、Benitoite の書き方を修正案として示す。
+
+### リストの展開（初回リリース版）
+
+【決定】リストリテラルの要素の一つを、展開 `..e` にできる（[ADR 0272](../decisions/0272-list-spread-in-list-literals.md)）。展開は、`e` の値のリストの要素を、その位置に並べる。展開を書ける位置と数は、リストのパターンの `..` と同じである。一つのリストリテラルに一つまで、どの位置にも書ける。型は[型システム](01-06-type-system.md)で、評価の順序と大きさの上限は[評価意味論](01-08-evaluation.md)で定める。
+
+```text
+Primary     = ... | "[" [ ListElem { "," ListElem } [ "," ] ] "]" .
+ListElem    = Expr | ".." Expr .
+```
+
+```text
+function insertByCount(pair: Pair[String, Integer], xs: List[Pair[String, Integer]]) -> List[Pair[String, Integer]]
+  match xs with
+    case [] -> return [pair]
+    case [first, ..rest] if Pair.second(first) >= Pair.second(pair) ->
+      return [first, ..insertByCount(pair, rest)]
+    case _ -> return [pair, ..xs]
+  end match
+end function
+```
+
+- 一つのリストリテラルに展開を二つ以上書いたとき（`[..xs, ..ys]`）は構文エラーとし、診断は `List.concatenate` で書く修正案を示す。
+- JavaScript の `...xs` や Python の `*xs` の形で要素を書いたときは、`..xs` を修正案として示す。
+- 展開の `..` の後には式を書く。パターンと違い、`..` だけの要素（`[x, ..]`）は書けない。
 
 ### エフェクトの宣言とハンドラ（初回リリース版）
 
-【決定】利用者が定義するエフェクトは、モジュールのトップレベルで `effect 名前 … end effect` と宣言し、操作を `function` の形で並べる。操作は、エフェクトを宣言したモジュールの関数である（[ADR 0129](../decisions/0129-effects-declared-in-modules.md)）。ハンドラは `handle 本体 when 操作(引数): 節 … end handle` と書き、節の中で `resume(値)` によって本体の続きを再開する（[ADR 0118](../decisions/0118-effect-handlers.md)）。意味は[エフェクト](01-07-effects.md)の「利用者が定義するエフェクトとハンドラ（初回リリース版）」で、型付けは[型システム](01-06-type-system.md)で定める。
+【決定】利用者が定義するエフェクトは、モジュールのトップレベルで `effect 名前 … end effect` と宣言し、操作を `function` の形で並べる。操作は、エフェクトを宣言したモジュールの関数である（[ADR 0129](../decisions/0129-effects-declared-in-modules.md)）。ハンドラは `handle 本体 with case 操作(引数) -> 節 … end handle` と書き、節の中で `resume(値)` によって本体の続きを再開する（[ADR 0118](../decisions/0118-effect-handlers.md)、[ADR 0257](../decisions/0257-match-with-case-arms.md)）。意味は[エフェクト](01-07-effects.md)の「利用者が定義するエフェクトとハンドラ（初回リリース版）」で、型付けは[型システム](01-06-type-system.md)で定める。
 
 ```text
 TopItem     = ... | [ "public" ] EffectDecl .
 EffectDecl  = "effect" UpperIdent LineList(OpSig) "end" "effect" .
-OpSig       = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" ":" Type .
+OpSig       = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" "->" Type .
 Primary     = ... | HandleExpr | "resume" "(" Expr ")" .
-HandleExpr  = "handle" Body HandleArm { NL HandleArm } [ NL ] "end" "handle" .
-HandleArm   = "when" OpName "(" CommaList(OpParam) ")" ":" ArmBody .
+HandleExpr  = "handle" Body "with" [ NL ] HandleArm { NL HandleArm } [ NL ] "end" "handle" .
+HandleArm   = "case" OpName "(" CommaList(OpParam) ")" "->" ArmBody .
 OpName      = { UpperIdent "." } LowerIdent .
 OpParam     = LowerIdent | "_" .
 Uses        = "uses" QualUpper { "," QualUpper } .
 ```
 
 - 操作の宣言には `uses` を書けない。操作の型パラメータの並びに、エフェクト変数は宣言できない。
-- `handle` の本体は、最初の `when` までである。節の本体は、`case` の分岐と同じく、次の `when` か `end handle` までであり、節の値は最後の式の値である。
-- `when` の後には、操作の名前を、式の中で操作を呼ぶときと同じ形で書く。同じモジュールで宣言したエフェクトの操作は修飾せずに（`when write(message):`）、ほかのモジュールの操作はモジュールの名前で修飾して（`when Logging.write(message):`、`when Console.writeLine(s):`）書く。続けて、引数の数だけ名前か `_` を並べる。パターンは書けない。一つの `handle` に、同じ操作の節を二つ書くと誤りとする。
+- `handle` の本体は、節の並びを始める `with` までである。節の本体は、`match` の分岐と同じく、次の `case` か `end handle` までであり、節の値は最後の式の値である。
+- `case` の後には、操作の名前を、式の中で操作を呼ぶときと同じ形で書く。同じモジュールで宣言したエフェクトの操作は修飾せずに（`case write(message) ->`）、ほかのモジュールの操作はモジュールの名前で修飾して（`case Logging.write(message) ->`、`case Console.writeLine(s) ->`）書く。続けて、引数の数だけ名前か `_` を並べる。パターンは書けない。一つの `handle` に、同じ操作の節を二つ書くと誤りとする。
 - `resume` は、`handle` の節の中に直接書く。節の中のラムダの中と `lazy` の本体の中、節の外に書くと誤りとする（[ADR 0155](../decisions/0155-resume-not-in-lazy.md)）。
 - `uses` には、ほかのモジュールのエフェクトを、モジュールの名前で修飾して書く（`Logging.Log`、`Console.Write`）。同じモジュールで宣言したエフェクトは修飾せずに書く。
 - エフェクトの名前を、宣言したモジュールと同じ名前にすると誤りとする。操作の名前が、同じモジュールのトップレベルの関数や定数の名前と同じときも誤りとする。
-- ハンドラを `with` で書いたとき（`with handler` など、他の言語の書き方）は、`handle … when … end handle` の形を修正案として示す。
+- ハンドラを他の言語の書き方（`try … with handler`、`with handler do …` など）で書いたとき、節を `when 操作(引数):` と書いたとき（[ADR 0257](../decisions/0257-match-with-case-arms.md) より前の書き方）は、`handle … with case … -> … end handle` の形を修正案として示す。
 
 ```text
 effect Log
-  function write(message: String): Unit
+  function write(message: String) -> Unit
 end effect
 
-function sumPrices(items: List[Integer]): Integer uses Log
+function sumPrices(items: List[Integer]) -> Integer uses Log
   write("items: ${List.length(items)}")
   return List.fold(items, 0, lambda(acc, x) return acc + x end lambda)
 end function
 
-function total(items: List[Integer]): Integer uses Console.Write
+function total(items: List[Integer]) -> Integer uses Console.Write
   return handle
     sumPrices(items)
-  when write(message):
-    Console.writeErrorLine(message)
-    resume(())
+  with
+    case write(message) ->
+      Console.writeErrorLine(message)
+      resume(())
   end handle
 end function
 ```
@@ -594,7 +627,7 @@ TopItem     = ImportDecl | AttrDecl .
 AttrDecl    = { Attribute [ NL ] } Decl .
 Attribute   = "@" LowerIdent [ "(" CommaList(StringLit) ")" ] .
 Decl        = [ "public" ] FnDecl
-            | [ "public" ] TypeDecl
+            | [ "public" ] DataDecl
             | [ "public" ] RecordDecl
             | [ "public" ] TraitDecl
             | [ "public" ] EffectDecl
@@ -609,13 +642,13 @@ Decl        = [ "public" ] FnDecl
 | 属性 | 付けられる宣言 | 意味 |
 |---|---|---|
 | `@test`、`@test("説明")` | 関数 | テストの関数である（[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)、[ADR 0120](../decisions/0120-test-functions-and-assert-effect.md)） |
-| `@deprecated("理由と移行先")` | 関数・定数・型・型の別名・レコード・型クラス・エフェクト | 非推奨である。文字列は必須である |
+| `@deprecated("理由と移行先")` | 関数・定数・型・型の別名・レコード・型クラス・エフェクト | 非推奨である。文字列は一つだけ書き、省略できない。空の文字列（`@deprecated("")`）は誤りとする |
 
 【方針】`@deprecated` を付けた宣言を、その宣言の外から名前で参照すると、処理系は警告を出し、属性の文字列を示す。警告は検査と実行を止めない。標準ライブラリの宣言も `@deprecated` を使う。警告の診断コードは[診断エンジン](../02-impl/02-10-diagnostics.md)で定める。
 
 ```text
 @deprecated("use String.split instead")
-public function splitWords(s: String): List[String]
+public function splitWords(s: String) -> List[String]
   return String.split(s, " ")
 end function
 ```
@@ -640,7 +673,7 @@ const statusNames: Map[Integer, String] = Map.fromList([Pair(200, "OK"), Pair(40
 ```
 
 - 型の注釈は省略できない。定数は型パラメータを持たない。
-- `=` の右辺の式は、定数式でなければならない。定数式に書けるのは、基本型（`Decimal` を含む）のリテラル、ほかの定数の名前、構成子の適用、レコードの構築、リストのリテラル、`Pair`・`Triple` の構築、基本型の演算子（算術、比較、論理、`div`・`mod`）、定数式だけを埋め込んだ文字列補間、`Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` の呼び出し（引数は定数式に限る。[ADR 0136](../decisions/0136-map-and-set-in-constants.md)）である。それら以外の関数の呼び出し、ラムダ、`if`、`case`、`lazy`、`with`、`handle`、`try` は書けない。定数式でない式を書くと誤りとし、診断は、引数のない関数として書く方法を修正案として示す。
+- `=` の右辺の式は、定数式でなければならない。定数式に書けるのは、基本型（`Decimal` を含む）のリテラル、ほかの定数の名前、構成子の適用、レコードの構築、リストのリテラル、`Pair`・`Triple` の構築、基本型の演算子（算術、比較、論理、`div`・`mod`）、定数式だけを埋め込んだ文字列補間、`Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` の呼び出し（引数は定数式に限る。[ADR 0136](../decisions/0136-map-and-set-in-constants.md)）である。それら以外の関数の呼び出し、ラムダ、`if`、`match`、`lazy`、`with`、`handle`、`try` は書けない。定数式でない式を書くと誤りとし、診断は、引数のない関数として書く方法を修正案として示す。
 - 定数式の `Map.fromList` の引数に同じ鍵の組が二つ以上あるとき、`Set.fromList` の引数に同じ要素が二つ以上あるときは誤りとする（[ADR 0136](../decisions/0136-map-and-set-in-constants.md)）。`Map` と `Set` のリテラルの構文はない（[ADR 0103](../decisions/0103-map-and-set-ordered-by-key.md)）。
 - 定数は、名前で参照する。関数として呼ぶ書き方（`maxRetries()`）は型の誤りになり、診断は括弧を外す書き方を示す。
 - 定数の値の計算、宣言の順序と循環、名前の衝突は[名前・スコープ・モジュール](01-03-names-modules.md)と[評価意味論](01-08-evaluation.md)で定める。パターンの変数と定数の名前の規則は[代数的データ型とパターンマッチ](01-05-data-types.md)で定める。
@@ -659,10 +692,10 @@ type UserId = Integer
 type Validator[T] = function(T) -> Result[T, String]
 ```
 
-- `type` の宣言は、名前（と型パラメータ）の後に `=` があれば型の別名、なければ代数的データ型の宣言である。
+- `type` は型の別名だけに使う。代数的データ型は `data` で宣言する（[ADR 0256](../decisions/0256-data-keyword-for-algebraic-types.md)）。`type 名前` の後に `=` を書かずに構成子を並べたとき（`type Shape … end type`。最小実行版の書き方）は、構文エラーとし、診断は `data` と書く修正案を示す。
 - 別名は、型を書く位置でだけ使える。別名で修飾して構成子や関数を参照すること（`UserId.toString`）はできない。
 - 別名の型付けの規則（再帰の禁止、型パラメータ、公開）は[型システム](01-06-type-system.md)の「型の別名（初回リリース版）」で定める。
-- LLM が他の言語の形（Haskell や OCaml の `type T = A | B`、Elm の `type alias`、Kotlin や Swift の `typealias`）で書いたときは、Benitoite の書き方を修正案として示す。`type T = A | B` の `|` は字句の誤りになる（[字句構造](01-01-lexical.md)）ので、診断は、代数的データ型の構成子を一行に一つずつ並べる書き方を示す。
+- LLM が他の言語の形（Haskell や OCaml の `type T = A | B`、Elm の `type alias`、Kotlin や Swift の `typealias`）で書いたときは、Benitoite の書き方を修正案として示す。`type T = A | B` の `|` は字句の誤りになる（[字句構造](01-01-lexical.md)）ので、診断は、`data` の宣言に構成子を一行に一つずつ並べる書き方を示す。
 
 ### ドキュメントコメント（初回リリース版）
 
@@ -676,8 +709,8 @@ import Benitoite.IO.File
 /// Reads the port number from the config file.
 ///
 /// Returns `Result.Error` when the file does not contain a number.
-public function readPort(path: String): Result[Integer, String] uses File.Read
-  let text = try File.readText(path) |> Result.mapError(_, IOError.message)
+public function readPort(path: String) -> Result[Integer, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
   return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
 end function
 
@@ -690,7 +723,8 @@ end record
 - 連続する `///` の行を一つの説明とし、その直後の宣言に結び付ける。説明と宣言の間には、空の行と普通のコメントの行を置けない。属性を付けた宣言では、説明、属性、宣言の順に書く。
 - `///` を付けられる宣言は、トップレベルの宣言（関数、定数、型、型の別名、レコード、型クラス、エフェクト）と、型の構成子、レコードのフィールド、型クラスのメソッド、エフェクトの操作である。`implement` の中の関数にも付けられる。
 - `//!` は、ファイルの先頭（import の宣言と、ほかのすべての宣言より前）にだけ書ける。シェバンの行（[字句構造](01-01-lexical.md)の「シェバンの行（初回リリース版）」）があるときは、その直後に書ける（[ADR 0135](../decisions/0135-shebang-line-and-implicit-run.md)）。連続する `//!` の行を一つの説明とする。
-- 上の位置以外（関数の本体の中、ファイルの最後、`//!` の後の宣言のない位置など）にドキュメントコメントを書くと、構文エラーとする。診断は、普通のコメント `//` に書き換えることを修正案として示す。
+- ファイルが `//!` の説明だけからなり、import の宣言もほかの宣言も持たないときは、誤りとせず、宣言のない空のモジュールとする。
+- 上の位置以外（関数の本体の中、ファイルの最後の `///`、ファイルの先頭の外の `//!` など）にドキュメントコメントを書くと、構文エラーとする。診断は、普通のコメント `//` に書き換えることを修正案として示す。
 - 説明の中身は Markdown として扱い、処理系は検査しない。処理系は、説明を宣言に結び付けて保持し、MCP サーバと LSP サーバ（[サーバモード](../06-tooling/06-07-server.md)、[LSP サーバ](../06-tooling/06-02-lsp.md)）が宣言の型とともに示す。
 - LLM が他の言語の書き方（`/** … */`、`{-| … -}`、`(** … *)`、`@doc`）で説明を書いたときは、`///` の書き方を修正案として示す。
 - 説明に書いた例を実行する仕組みは設けない（[OPEN-047](../open-issues.md#open-047)）。
@@ -709,7 +743,7 @@ AttrDecl    = { Attribute [ NL ] } Decl .
 Attribute   = "@" LowerIdent [ "(" CommaList(StringLit) ")" ] .
 Decl        = [ "public" ] FnDecl
             | [ "public" ] ConstDecl
-            | [ "public" ] TypeDecl
+            | [ "public" ] DataDecl
             | [ "public" ] AliasDecl
             | [ "public" ] RecordDecl
             | [ "public" ] TraitDecl
@@ -721,7 +755,7 @@ ImportDecl  = "import" UpperIdent { "." UpperIdent } [ "as" UpperIdent ] .
 
 (* 関数の宣言 *)
 FnDecl      = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")"
-              ":" Type [ Uses ] Body "end" "function" .
+              "->" Type [ Uses ] Body "end" "function" .
 FnTypeParams = "[" FnTypeParam { "," FnTypeParam } [ "," ] "]" .
 FnTypeParam = "effect" UpperIdent
             | TypeParamDecl [ ":" Constraint { "&" Constraint } ] .
@@ -734,7 +768,7 @@ Uses        = "uses" QualUpper { "," QualUpper } .
 ConstDecl   = "const" LowerIdent ":" Type "=" Expr .
 
 (* 型・型の別名・レコード・型クラスの宣言 *)
-TypeDecl    = "type" UpperIdent [ TypeParams ] LineList(Variant) "end" "type" .
+DataDecl    = "data" UpperIdent [ TypeParams ] LineList(Variant) "end" "data" .
 AliasDecl   = "type" UpperIdent [ TypeParams ] "=" Type .
 TypeParams  = "[" UpperIdent { "," UpperIdent } [ "," ] "]" .
 Variant     = UpperIdent [ "(" CommaList(Type) ")" ] .
@@ -742,10 +776,10 @@ RecordDecl  = "record" UpperIdent [ TypeParams ] LineList(Field) "end" "record" 
 Field       = LowerIdent ":" Type .
 TraitDecl   = "trait" UpperIdent "[" TypeParamDecl [ ":" QualUpper { "&" QualUpper } ] "]"
               LineList(MethodSig) "end" "trait" .
-MethodSig   = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" ":" Type [ Uses ] .
+MethodSig   = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" "->" Type [ Uses ] .
 ImplDecl    = "implement" [ FnTypeParams ] QualUpper "[" Type "]" LineList(FnDecl) "end" "implement" .
 EffectDecl  = "effect" UpperIdent LineList(OpSig) "end" "effect" .
-OpSig       = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" ":" Type .
+OpSig       = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" "->" Type .
 
 (* 型 *)
 Type        = QualUpper [ "[" Type { "," Type } [ "," ] "]" ]
@@ -755,8 +789,8 @@ QualUpper   = UpperIdent { "." UpperIdent } .
 
 (* 文の並びと文 *)
 Body        = LineList(Stmt) .
-Stmt        = LetStmt | Expr .
-LetStmt     = "let" Pattern [ ":" Type ] "=" Expr .
+Stmt        = BindStmt | Expr .
+BindStmt    = ( "bind" | "shadow" ) Pattern [ ":" Type ] "<-" Expr .
 
 (* 式 *)
 Expr        = "return" Expr
@@ -777,9 +811,9 @@ Primary     = Literal
             | Name
             | "(" ")"
             | "(" Expr ")"
-            | "[" CommaList(Expr) "]"
+            | "[" [ ListElem { "," ListElem } [ "," ] ] "]"
             | IfExpr
-            | CaseExpr
+            | MatchExpr
             | Lambda
             | RecordExpr
             | "lazy" Body "end" "lazy"
@@ -788,19 +822,20 @@ Primary     = Literal
             | "resume" "(" Expr ")" .
 Literal     = IntLit | FloatLit | DecimalLit | StringLit | CharLit | "true" | "false" .
 InterpString = StrStart Expr { StrMid Expr } StrEnd .
+ListElem    = Expr | ".." Expr .
 Name        = { UpperIdent "." } ( LowerIdent | UpperIdent ) .
 RecordExpr  = QualUpper "(" [ ".." Expr "," ] FieldArg { "," FieldArg } [ "," ] ")" .
 FieldArg    = LowerIdent ":" Expr .
 IfExpr      = "if" Expr "then" Body { "else" "if" Expr "then" Body } [ "else" Body ] "end" "if" .
-CaseExpr    = "case" Expr "of" [ NL ] Arm { NL Arm } [ NL ] "end" "case" .
-Arm         = "when" Pattern { "," Pattern } [ "if" Expr ] ":" ArmBody .
+MatchExpr   = "match" Expr "with" [ NL ] Arm { NL Arm } [ NL ] "end" "match" .
+Arm         = "case" Pattern { "," Pattern } [ "if" Expr ] "->" ArmBody .
 ArmBody     = Stmt { NL Stmt } .
-Lambda      = "lambda" "(" CommaList(LambdaParam) ")" [ ":" Type [ Uses ] ] Body "end" "lambda" .
+Lambda      = "lambda" "(" CommaList(LambdaParam) ")" [ "->" Type [ Uses ] ] Body "end" "lambda" .
 LambdaParam = LowerIdent [ ":" Type ] .
 WithExpr    = "with" WithBind { "," WithBind } "do" Body "end" "with" .
 WithBind    = LowerIdent "=" Expr .
-HandleExpr  = "handle" Body HandleArm { NL HandleArm } [ NL ] "end" "handle" .
-HandleArm   = "when" OpName "(" CommaList(OpParam) ")" ":" ArmBody .
+HandleExpr  = "handle" Body "with" [ NL ] HandleArm { NL HandleArm } [ NL ] "end" "handle" .
+HandleArm   = "case" OpName "(" CommaList(OpParam) ")" "->" ArmBody .
 OpName      = { UpperIdent "." } LowerIdent .
 OpParam     = LowerIdent | "_" .
 
@@ -829,6 +864,8 @@ ListPatElem = Pattern | ".." [ LowerIdent ] .
 | `uses` の後の並びを最長一致で読むこと | 本章の「文法」の後の【決定】（[ADR 0047](../decisions/0047-parenthesized-types-and-uses-binding.md)） |
 | `QualUpper` の直後の `(` の次の字句で、レコードの構築・パターンと、構成子の呼び出し・パターンを見分けること | 本章の「レコード（初回リリース版）」 |
 | `end` の後の構文の名前が、閉じるブロックの構文と一致すること | 本章の「ブロックと文」 |
+| `bind` と `shadow` を書ける条件、束縛が見えている局所の名前を隠さないこと | 本章の「ブロックと文」、[名前・スコープ・モジュール](01-03-names-modules.md)の「シャドーイング」 |
+| `with` の次の字句で、分岐の並びの始まりとリソーススコープを見分けること | 本章の「リソーススコープ（初回リリース版）」、[字句構造](01-01-lexical.md)の「改行による区切り」 |
 | `else` の直後の `if` を、同じ `if` の続きとして読むこと | 本章の「条件分岐」 |
 | import の名前に当たるファイル、`as` の要否、修飾した名前の各段が指すもの | 本章の「モジュールと import（初回リリース版）」、[名前・スコープ・モジュール](01-03-names-modules.md) |
 | 型クラスの名前を書かない `implement` への診断 | 本章の「型クラス（初回リリース版）」 |
@@ -846,29 +883,29 @@ ListPatElem = Pattern | ".." [ LowerIdent ] .
 
 ### 例
 
-最小実行版の構文で書いたプログラムの例を示す。ライブラリの名前は仮のものである。
+最小実行版の範囲の構文で書いたプログラムの例を示す。ライブラリの名前は仮のものである。
 
 ```text
-type Shape
+data Shape
   Circle(Float)
   Rect(Float, Float)
-end type
+end data
 
-function area(s: Shape): Float
-  return case s of
-    when Shape.Circle(r): 3.14159 * r * r
-    when Shape.Rect(w, h): w * h
-  end case
+function area(s: Shape) -> Float
+  return match s with
+    case Shape.Circle(r) -> 3.14159 * r * r
+    case Shape.Rect(w, h) -> w * h
+  end match
 end function
 
-function totalArea(shapes: List[Shape]): Float
+function totalArea(shapes: List[Shape]) -> Float
   return shapes
     |> List.map(area)
     |> List.fold(0.0, lambda(acc, a) return acc + a end lambda)
 end function
 
-function main(): Unit uses IO
-  let shapes = [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
+function main() -> Unit uses IO
+  bind shapes <- [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
   Console.writeLine(Float.toString(totalArea(shapes)))
 end function
 ```

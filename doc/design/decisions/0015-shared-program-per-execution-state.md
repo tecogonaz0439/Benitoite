@@ -1,6 +1,6 @@
 # 0015. コンパイル済みプログラムを実行の間で共有し、実行中の状態を実行ごとに分ける
 
-- 状態: 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた。中断の印を大域に置く例外を [0163](0163-interrupt-releases-resources.md) で定めた）
+- 状態: 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた。中断の印を大域に置く例外を [0163](0163-interrupt-releases-resources.md) で、ヒープの番号の計数器を大域に置く例外を [0281](0281-heap-number-in-slot-and-contract-safety.md) で定めた）
 - 日付: 2026-09-26
 - 関連章: [パイプライン](../02-impl/02-01-pipeline.md), [ランタイム](../02-impl/02-09-runtime.md), [スクリプト実行と埋め込み](../02-impl/02-11-embedding.md), [並行処理](../01-spec/01-11-concurrency.md), [全体像](../00-overview/00-02-architecture.md)
 - 関連する未決事項: [OPEN-005](../open-issues.md#open-005)

@@ -1,6 +1,6 @@
 # 0208. テストの結果の報告を標準出力に書き、`--diagnostics=json` では JSON Lines にする
 
-- 状態: 採択
+- 状態: 採択（OPEN-058 に残した形を [0252](0252-test-report-format.md) で定めた）
 - 日付: 2026-09-29
 - 関連章: [利用者プログラムのテスト](../06-tooling/06-04-test-runner.md), [診断エンジン](../02-impl/02-10-diagnostics.md), [CLI](../06-tooling/06-01-cli.md)
 - 関連する未決事項: [OPEN-058](../open-issues.md#open-058)

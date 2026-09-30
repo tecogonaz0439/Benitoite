@@ -1,7 +1,7 @@
 # 字句構造
 
 - 状態: 確定
-- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0005](../decisions/0005-direct-style-effects.md), [0008](../decisions/0008-effect-variables.md), [0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md), [0053](../decisions/0053-private-by-default-with-pub.md), [0057](../decisions/0057-record-declaration-construction-update.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0067](../decisions/0067-with-resource-scope.md), [0092](../decisions/0092-unabbreviated-keywords.md), [0093](../decisions/0093-no-reserved-words-for-absent-constructs.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0098](../decisions/0098-constraints-joined-by-ampersand.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0109](../decisions/0109-lambda-keyword.md), [0110](../decisions/0110-if-then-end-if.md), [0111](../decisions/0111-case-of-when.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0121](../decisions/0121-pattern-extensions.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0123](../decisions/0123-top-level-constants.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md)
+- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0005](../decisions/0005-direct-style-effects.md), [0008](../decisions/0008-effect-variables.md), [0051](../decisions/0051-lexical-boundaries-and-invisible-characters.md), [0053](../decisions/0053-private-by-default-with-pub.md), [0057](../decisions/0057-record-declaration-construction-update.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0067](../decisions/0067-with-resource-scope.md), [0092](../decisions/0092-unabbreviated-keywords.md), [0093](../decisions/0093-no-reserved-words-for-absent-constructs.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0098](../decisions/0098-constraints-joined-by-ampersand.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0109](../decisions/0109-lambda-keyword.md), [0110](../decisions/0110-if-then-end-if.md), [0111](../decisions/0111-case-of-when.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0121](../decisions/0121-pattern-extensions.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0123](../decisions/0123-top-level-constants.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 2.3, 23.1
 
@@ -37,7 +37,7 @@
 
 import Benitoite.IO.Console
 
-function main(): Unit uses Console.Write
+function main() -> Unit uses Console.Write
   Console.writeLine("done")
 end function
 ```
@@ -85,26 +85,23 @@ end function
 
 ### キーワード
 
-【方針】次の語はキーワードであり、識別子として使えない。
+【方針】初回リリース版では、次の 34 の語はキーワードであり、識別子として使えない。最初の 2 行は最小実行版のキーワード、最後の 1 行は初回リリース版で加えたキーワードである。初回リリース版には、キーワードでない予約語はない（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)の「字句」）。
 
 ```text
-and  case  div  effect  else  end  false  function  if  lambda  let  mod  not
-of  or  return  then  true  type  uses  when
+and  bind  case  data  div  effect  else  end  false  function  if  lambda  match
+mod  not  or  return  shadow  then  true  type  uses  with
+const  do  handle  implement  import  lazy  public  record  resume  trait  try
 ```
 
-`effect` は、エフェクト変数の宣言（[ADR 0008](../decisions/0008-effect-variables.md)）と、初回リリース版のエフェクトの宣言（[ADR 0118](../decisions/0118-effect-handlers.md)）に使う。`end` はブロックを閉じるのに（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）、`lambda` はラムダに（[ADR 0109](../decisions/0109-lambda-keyword.md)）、`then` は `if` に（[ADR 0110](../decisions/0110-if-then-end-if.md)）、`case`・`of`・`when` はパターンで分岐する式に（[ADR 0111](../decisions/0111-case-of-when.md)）、`and`・`or`・`not` は論理演算子に（[ADR 0112](../decisions/0112-pascal-style-operators.md)）、`div`・`mod` は整数の除算と剰余の演算子に（[ADR 0113](../decisions/0113-div-and-mod-operators.md)）、`return` は関数とラムダの本体から値を返すのに使う（[ADR 0096](../decisions/0096-explicit-return.md)）。
+`effect` は、エフェクト変数の宣言（[ADR 0008](../decisions/0008-effect-variables.md)）と、初回リリース版のエフェクトの宣言（[ADR 0118](../decisions/0118-effect-handlers.md)）に使う。`end` はブロックを閉じるのに（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）、`lambda` はラムダに（[ADR 0109](../decisions/0109-lambda-keyword.md)）、`then` は `if` に（[ADR 0110](../decisions/0110-if-then-end-if.md)）、`match`・`with`・`case` はパターンで分岐する式に（[ADR 0257](../decisions/0257-match-with-case-arms.md)）、`bind`・`shadow` は局所の束縛の文に（[ADR 0255](../decisions/0255-bind-and-shadow.md)）、`data` は代数的データ型の宣言に（[ADR 0256](../decisions/0256-data-keyword-for-algebraic-types.md)）、`type` は初回リリース版の型の別名の宣言に（[ADR 0124](../decisions/0124-type-aliases.md)）、`and`・`or`・`not` は論理演算子に（[ADR 0112](../decisions/0112-pascal-style-operators.md)）、`div`・`mod` は整数の除算と剰余の演算子に（[ADR 0113](../decisions/0113-div-and-mod-operators.md)）、`return` は関数とラムダの本体から値を返すのに使う（[ADR 0096](../decisions/0096-explicit-return.md)）。`with` は、初回リリース版のリソーススコープにも使う（[ADR 0067](../decisions/0067-with-resource-scope.md)）。
 
-【方針】次の語は、将来の構文のために予約する。識別子として使えないが、最小実行版では構文上の意味を持たない。
+実装した最小実行版は、最小実行版の設計書（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)〜[ADR 0112](../decisions/0112-pascal-style-operators.md) より前）に従い、C 系の波括弧の構文で書き、キーワードに `fn`・`let` を含む。関数を `fn f(x: Integer) -> Integer { … }`、ラムダを `fn(x) { … }`、局所の束縛を `let x = e`、代数的データ型の宣言を `type 名前 { … }`、パターンで分岐する式を `match 対象 { パターン => 式 }` と書き、演算子に `==`・`!=`・`&&`・`||`・`!`・`%` を使う。初回リリース版は、字句をすべて本章と[構文](01-02-syntax.md)の規則に改める。ADR 0108〜0112 で決め、ADR 0254〜0257 で改める前の書き方（`let x = e`、`: 型`、`type … end type`、`case … of when`）は、設計書にだけあって実装していない。
 
-```text
-handle  implement  import  lazy  public  resume  trait
-```
-
-これらの語は、初回リリース版でキーワードになる。`handle` と `resume` は、利用者が定義するエフェクトとハンドラの構文に使う（[ADR 0118](../decisions/0118-effect-handlers.md)）。
+最小実行版の設計書は、`handle`・`implement`・`import`・`lazy`・`public`・`resume`・`trait` を、将来の構文のための予約語（識別子として使えないが、構文上の意味を持たない語）としていた。初回リリース版では、これらはすべてキーワードである。`handle` と `resume` は、利用者が定義するエフェクトとハンドラの構文に使う（[ADR 0118](../decisions/0118-effect-handlers.md)）。
 
 【方針】キーワード `function`・`public`・`implement` の省略形（`fn`・`pub`・`impl`）と `mut` は予約しない（[ADR 0092](../decisions/0092-unabbreviated-keywords.md)）。省略形を予約語に加えるかどうかは、[OPEN-012](../open-issues.md#open-012) の測定の結果で決める。
 
-【決定】初回リリース版では、`lazy`・`with`・`do` をキーワードにする（[ADR 0066](../decisions/0066-explicit-laziness-pure-body.md)、[ADR 0067](../decisions/0067-with-resource-scope.md)、[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。`do` は `with` の束縛の並びと本体を区切る。`with` は最小実行版では予約語ではないので、`with` を識別子に使ったスクリプトは初回リリース版で誤りになる。
+【決定】初回リリース版では、`lazy`・`do` をキーワードにする（[ADR 0066](../decisions/0066-explicit-laziness-pure-body.md)、[ADR 0067](../decisions/0067-with-resource-scope.md)、[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。`do` はリソーススコープの `with` の束縛の並びと本体を区切る。
 
 【決定】初回リリース版では、`trait` と `implement` をキーワードにする（[ADR 0060](../decisions/0060-trait-and-impl-syntax.md)、[ADR 0092](../decisions/0092-unabbreviated-keywords.md)）。
 
@@ -118,11 +115,13 @@ handle  implement  import  lazy  public  resume  trait
 
 【決定】`as` はキーワードにしない。`as` は import の宣言の中でだけ意味を持つ語であり（[ADR 0126](../decisions/0126-import-by-module-name.md)）、それ以外の位置では識別子として使える。`permissions` もキーワードにしない（[ADR 0147](../decisions/0147-remove-permission-declaration-syntax.md)）。
 
-予約語を識別子として使ったときは、その語が予約語であることを診断で示す。
+キーワードを識別子として使ったときは、その語がキーワードであり名前に使えないことを診断で示す。
 
-【方針】他の言語の制御構文に当たる語（`for`・`while`・`loop`・`break`・`continue`）と、`where`・`switch`・`match` は予約しない。`as` も予約しない（import の宣言の中でだけ意味を持つ）（[ADR 0093](../decisions/0093-no-reserved-words-for-absent-constructs.md)）。これらを予約語に加えて、「この言語にはその構文がない」と示す診断を出すかどうかは、[OPEN-012](../open-issues.md#open-012) の測定の結果で決める。
+【方針】他の言語の制御構文に当たる語（`for`・`while`・`loop`・`break`・`continue`）と、`where`・`switch` は予約しない。`as` も予約しない（import の宣言の中でだけ意味を持つ）（[ADR 0093](../decisions/0093-no-reserved-words-for-absent-constructs.md)）。これらを予約語に加えて、「この言語にはその構文がない」と示す診断を出すかどうかは、[OPEN-012](../open-issues.md#open-012) の測定の結果で決める。
 
-`return` は、[ADR 0096](../decisions/0096-explicit-return.md) でキーワードにした。`switch` と `match` は、パターンで分岐する式のキーワードを `case` にしたので予約しない（[ADR 0111](../decisions/0111-case-of-when.md)）。
+`return` は、[ADR 0096](../decisions/0096-explicit-return.md) でキーワードにした。`switch` は、パターンで分岐する式のキーワードを `match` にしたので予約しない（[ADR 0257](../decisions/0257-match-with-case-arms.md)）。
+
+【決定】`let`・`of`・`when` はキーワードにせず、予約もしない（[ADR 0255](../decisions/0255-bind-and-shadow.md)、[ADR 0257](../decisions/0257-match-with-case-arms.md)）。文の頭に `let x = e` と書いたときと、`case 対象 of` と書いたときは、構文の誤りの診断で `bind`・`shadow` と `match … with` の書き方を修正案として示す（[構文](01-02-syntax.md)の「ブロックと文」「パターンマッチ」）。
 
 【方針】使う予定の決まっていない構文の語（`class`・`instance`・`var`・`mutable`・`module`・`derive`）は予約しない。その語を使う構文を加えると決めたときに、キーワードにする（[ADR 0093](../decisions/0093-no-reserved-words-for-absent-constructs.md)）。
 
@@ -216,12 +215,12 @@ handle  implement  import  lazy  public  resume  trait
 【決定】初回リリース版では、複数行の文字列 `"""…"""` と、raw 文字列 `r"…"`・`r"""…"""` を設ける（[ADR 0122](../decisions/0122-multiline-and-raw-strings.md)）。普通の文字列リテラル `"…"` は、これまでどおり一行に収める。
 
 ```text
-let page = """
+bind page <- """
     <html>
       <p>Hello, ${name}</p>
     </html>
     """
-let digits = r"\d+"
+bind digits <- r"\d+"
 ```
 
 【方針】複数行の文字列の規則は次のとおりである。
@@ -258,15 +257,15 @@ let digits = r"\d+"
 ```text
 +   -   *   /
 =   <>  <   <=  >   >=
-|>  ->  :   ,   .
+|>  ->  <-  :   ,   .
 (   )   [   ]   _
 ```
 
 初回リリース版では、属性（[構文](01-02-syntax.md)の「属性（初回リリース版）」）の `@` を加える（[ADR 0119](../decisions/0119-attributes-test-and-deprecated.md)）。
 
-`=` は、束縛（`let x = e`）と、等しいの比較演算子の両方に使う（[ADR 0112](../decisions/0112-pascal-style-operators.md)）。論理演算子は、キーワードの `and`・`or`・`not` である。整数の除算と剰余の演算子は、キーワードの `div`・`mod` である（[ADR 0113](../decisions/0113-div-and-mod-operators.md)）。
+`=` は、等しいの比較演算子と、初回リリース版の `with` の束縛・定数の宣言・型の別名の宣言に使う（[ADR 0112](../decisions/0112-pascal-style-operators.md)）。`<-` は、局所の束縛の文（`bind x <- e`、`shadow x <- e`）の矢印である（[ADR 0255](../decisions/0255-bind-and-shadow.md)）。最も長く一致する字句を取り出す規則（前述の「字句の種類」）により、`x <-1` は `x`・`<-`・`1` の並びであり、`x < -1` とは読まない。`x` と `-1` を比べるときは、`<` と `-` の間に空白を置く。`->` は、関数の型と、関数の宣言とラムダの戻り値の型の前（[ADR 0254](../decisions/0254-return-type-after-arrow.md)）と、`match` と `handle` の分岐のパターンと本体の間（[ADR 0257](../decisions/0257-match-with-case-arms.md)）に使う。論理演算子は、キーワードの `and`・`or`・`not` である。整数の除算と剰余の演算子は、キーワードの `div`・`mod` である（[ADR 0113](../decisions/0113-div-and-mod-operators.md)）。
 
-上に挙げていない記号（`|` 単独、最小実行版の `&`、`%`、`;`、最小実行版の `@`、`#`、`?`、`~`、`^`、`` ` `` など）と、`{`・`}`・`==`・`!=`・`&&`・`||`・`!`・`=>` を文字列リテラル・文字リテラル・コメントの外に書くと、字句解析の誤りとする。他の言語の書き方を持ち込んだ誤りには、次の修正案を示す。`;` には文を改行で区切ること、`{`・`}` にはブロックを `end` と構文の名前で閉じること（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）、`==`・`!=` には `=`・`<>`、`&&`・`||`・`!` には `and`・`or`・`not`（[ADR 0112](../decisions/0112-pascal-style-operators.md)）、`%` には `mod`（[ADR 0113](../decisions/0113-div-and-mod-operators.md)）、`=>` には `case … of` の分岐を `when パターン:` と書くこと（[ADR 0111](../decisions/0111-case-of-when.md)）、`?` には前置の `try` を使うこと（[ADR 0097](../decisions/0097-prefix-try.md)）。
+上に挙げていない記号（`|` 単独、最小実行版の `&`、`%`、`;`、最小実行版の `@`、`#`、`?`、`~`、`^`、`` ` `` など）と、`{`・`}`・`==`・`!=`・`&&`・`||`・`!`・`=>` を文字列リテラル・文字リテラル・コメントの外に書くと、字句解析の誤りとする。他の言語の書き方を持ち込んだ誤りには、次の修正案を示す。`;` には文を改行で区切ること、`{`・`}` にはブロックを `end` と構文の名前で閉じること（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）、`==`・`!=` には `=`・`<>`、`&&`・`||`・`!` には `and`・`or`・`not`（[ADR 0112](../decisions/0112-pascal-style-operators.md)）、`%` には `mod`（[ADR 0113](../decisions/0113-div-and-mod-operators.md)）、`=>` には `match` の分岐を `case パターン ->` と書くこと（[ADR 0257](../decisions/0257-match-with-case-arms.md)）、`?` には前置の `try` を使うこと（[ADR 0097](../decisions/0097-prefix-try.md)）。
 
 初回リリース版では、次の記号を加える。`..` はレコードの構築とパターンに使う（[ADR 0057](../decisions/0057-record-declaration-construction-update.md)）。`&` は型パラメータの複数の型クラスの制約をつなぐのに使う（[ADR 0098](../decisions/0098-constraints-joined-by-ampersand.md)）。
 
@@ -285,12 +284,14 @@ let digits = r"\d+"
 開いている括弧とブロックは、次のように数える（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)）。
 
 - 丸括弧 `(` と角括弧 `[` は、対応する閉じ括弧で閉じる。
-- キーワード `lambda`・`if`・`case` と、初回リリース版の `with`・`lazy`・`handle` は、ブロックを開く。ブロックは、`end` とその語（`end lambda`・`end if` など）で閉じる。ただし、`else` の直後の `if` は、同じ `if` の続きなので、新しいブロックを開かない。初回リリース版の `case` の分岐の `when` の後、分岐の `:` までに現れる `if` はガード（[構文](01-02-syntax.md)の「パターンの拡張（初回リリース版）」）であり、ブロックを開かない。
+- キーワード `lambda`・`if`・`match` と、初回リリース版の `with`・`lazy`・`handle` は、ブロックを開く。ブロックは、`end` とその語（`end lambda`・`end if` など）で閉じる。ただし、`else` の直後の `if` は、同じ `if` の続きなので、新しいブロックを開かない。
+- 改行とコメントを除いて次に現れる字句が `case` である `with` は、`match` と `handle` の分岐の並びの始まりであり、新しいブロックを開かない。それ以外の `with` は、初回リリース版のリソーススコープであり、ブロックを開く（[構文](01-02-syntax.md)の「リソーススコープ（初回リリース版）」）。
+- `match` と `handle` の分岐の `case` の後、分岐の `->` までに現れる `if` はガード（[構文](01-02-syntax.md)の「パターンの拡張（初回リリース版）」）であり、ブロックを開かない。
 - 関数の宣言、型・レコード・型クラス・実装・エフェクトの宣言は、丸括弧の中に現れないので、開きとして数えない。
 
 1. 開いている括弧とブロックのうち最も内側のものが `(` または `[` であれば、改行は空白として扱う。最も内側のものがキーワードで開いたブロックであれば、括弧の外と同じく、以下の規則で判定する。
-2. 改行の直前の字句が、式や文の終わりになりえない字句であれば、改行は空白として扱う。該当する字句は、二項演算子（`+ - * / div mod = <> < <= > >= and or |>`）、`not`、`->`、`:`、`,`、`.`、開き括弧（`(`、`[`）、キーワード `case`・`else`・`function`・`if`・`lambda`・`let`・`of`・`return`・`then`・`type`・`uses`・`when` である。初回リリース版では、`&` と、キーワード `const`・`do`・`effect`・`handle`・`implement`・`import`・`lazy`・`public`・`record`・`trait`・`try`・`with` を加える。ただし、`end` の直後のキーワード（`end if`・`end function` などの構文の名前）は、ブロックの終わりなので、この規則の字句に含めない。
-3. 改行の直後の字句が、式の始まりになりえない継続の字句であれば、改行は空白として扱う。該当する字句は、`-` を除く二項演算子（`+ * / div mod = <> < <= > >= and or |>`）、`.`、`->`、キーワード `then`・`of`・`else` である。初回リリース版では、`do` を加える。
+2. 改行の直前の字句が、式や文の終わりになりえない字句であれば、改行は空白として扱う。該当する字句は、二項演算子（`+ - * / div mod = <> < <= > >= and or |>`）、`not`、`->`、`<-`、`:`、`,`、`.`、開き括弧（`(`、`[`）、キーワード `bind`・`case`・`data`・`else`・`function`・`if`・`lambda`・`match`・`return`・`shadow`・`then`・`type`・`uses`・`with` である。初回リリース版では、`&` と、キーワード `const`・`do`・`effect`・`handle`・`implement`・`import`・`lazy`・`public`・`record`・`trait`・`try` を加える。ただし、`end` の直後のキーワード（`end if`・`end function` などの構文の名前）は、ブロックの終わりなので、この規則の字句に含めない。
+3. 改行の直後の字句が、式の始まりになりえない継続の字句であれば、改行は空白として扱う。該当する字句は、`-` を除く二項演算子（`+ * / div mod = <> < <= > >= and or |>`）、`.`、`->`、`<-`、キーワード `then`・`else` である。初回リリース版では、`do` を加える。`with` は、リソーススコープの始まりとして式の始まりになりうるので、この規則の字句に含めない。
 4. 上のどれにも当たらなければ、改行の位置に NEWLINE を置く。連続する NEWLINE は一つにまとめる。
 
 規則 3 で `-` を除くのは、`-` が単項演算子として式の始まりになりうるからである。`not` も同じ理由で規則 3 に含めない。行頭の `-` は新しい文の始まりとして扱う。前の行の続きのつもりで行頭に `-` を書くと、多くの場合は値が Unit でない式文になり、型検査で誤りとして報告される（[構文](01-02-syntax.md)の「ブロックと文」）。ただし、その行がブロックの最後の文であれば、`-` で始まる式の値がブロックの値になり、型が合えば誤りにならない。
@@ -298,10 +299,10 @@ let digits = r"\d+"
 この規則により、次の書き方はどれも意図どおりに読める。
 
 ```text
-let total = price
+bind total <- price
   * quantity
 
-let n = lines
+bind n <- lines
   |> List.filter(lambda(l) return l <> "" end lambda)
   |> List.length
 
@@ -311,22 +312,31 @@ else
   wait()
 end if
 
+match response with
+  case Result.Ok(body) -> body
+  case Result.Error(message) ->
+    Console.writeLine(message)
+    ""
+end match
+
 List.forEach(items, lambda(item)
-  let name = Item.name(item)
+  bind name <- Item.name(item)
   Console.writeLine(name)
 end lambda)
 ```
 
-最後の例では、`lambda` のブロックが `(` の内側で開いているので、`let` の文と `Console.writeLine` の文の間の改行が、文の区切りとして働く。
+`match` の例では、`with` と `->` の直後の改行を規則 2 で空白として扱う。分岐の本体の文どうしの間と、次の `case` の前の改行は、NEWLINE になる。最後の例では、`lambda` のブロックが `(` の内側で開いているので、`bind` の文と `Console.writeLine` の文の間の改行が、文の区切りとして働く。
 
-一方、次のように関数の宣言の戻り値の型を次の行に書く形は認めない。`)` の後の改行が NEWLINE になり、関数の宣言が戻り値の型を欠いたまま終わるからである。この形は構文エラーとして報告し、`: 型` を前の行の末尾に書くよう診断で示す。
+関数の宣言の戻り値の型は、`->` から次の行に書いてもよい。`->` は規則 3 の字句なので、`)` の後の改行を空白として扱う。
 
 ```text
 function double(x: Integer)
-  : Integer
+  -> Integer
   return x * 2
 end function
 ```
+
+一方、`match 対象` の後で改行して、次の行の頭に `with` を書く形は認めない。`with` は規則 3 の字句ではないので、改行が NEWLINE になり、`match` の式が `with` を欠いたまま終わるからである。この形は構文エラーとして報告し、`with` を前の行の末尾に書くよう診断で示す。
 
 ## 未決事項
 

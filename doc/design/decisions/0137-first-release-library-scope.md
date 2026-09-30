@@ -1,6 +1,6 @@
 # 0137. 初回リリース版の標準ライブラリの範囲と構成を定め、外部の関数の層は実装しない
 
-- 状態: 採択（決定 2 の表の `Network` の行を、[0140](0140-network-separated-from-local-io.md) と [0141](0141-http-scope-in-stdlib.md) で改めた。`Regex.Match` を [0168](0168-regex-match-and-stdlib-opaque-values.md) で中身を見せない型にした）
+- 状態: 採択（決定 2 の表の `Network` の行を、[0140](0140-network-separated-from-local-io.md) と [0141](0141-http-scope-in-stdlib.md) で改めた。`Regex.Match` を [0168](0168-regex-match-and-stdlib-opaque-values.md) で中身を見せない型にした。IO・ネットワーク・テキストとデータのモジュールを非公式のモジュールとして入れることを [0286](0286-unofficial-modules-imported-under-unofficial.md) で定めた）
 - 日付: 2026-09-28
 - 関連章: [ライブラリの構成](../03-interop/03-01-library-structure.md), [標準ライブラリ](../03-interop/03-06-stdlib.md), [IO のモジュール](../03-interop/03-07-io-modules.md), [テキストとデータの処理](../03-interop/03-08-text-and-data.md), [外部の関数](../04-extensions/04-01-external-functions.md), [ロードマップ](../00-overview/00-03-roadmap.md), [他の言語の調査記録](../08-appendix/08-03-language-surveys.md)
 - 関連する未決事項: [OPEN-035](../open-issues.md#open-035), [OPEN-018](../open-issues.md#open-018), [OPEN-045](../open-issues.md#open-045), [OPEN-051](../open-issues.md#open-051)

@@ -1,7 +1,7 @@
 # 名前・スコープ・モジュール
 
 - 状態: 確定
-- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0007](../decisions/0007-constructors-and-list.md), [0008](../decisions/0008-effect-variables.md), [0010](../decisions/0010-shared-namespace-and-shadowing.md), [0047](../decisions/0047-parenthesized-types-and-uses-binding.md), [0053](../decisions/0053-private-by-default-with-pub.md), [0054](../decisions/0054-no-import-cycles.md), [0055](../decisions/0055-top-level-functions-and-types-only.md), [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0061](../decisions/0061-trait-coherence-orphan-and-overlap.md), [0077](../decisions/0077-abolish-go-layer.md), [0092](../decisions/0092-unabbreviated-keywords.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0102](../decisions/0102-pair-and-triple.md), [0118](../decisions/0118-effect-handlers.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0126](../decisions/0126-import-by-module-name.md), [0127](../decisions/0127-directory-run-and-root.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md), [0154](../decisions/0154-public-contract-includes-effects-and-supertraits.md), [0206](../decisions/0206-test-command-line-and-exit-status.md), [0241](../decisions/0241-command-name-and-extension.md)
+- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0007](../decisions/0007-constructors-and-list.md), [0008](../decisions/0008-effect-variables.md), [0010](../decisions/0010-shared-namespace-and-shadowing.md), [0047](../decisions/0047-parenthesized-types-and-uses-binding.md), [0053](../decisions/0053-private-by-default-with-pub.md), [0054](../decisions/0054-no-import-cycles.md), [0055](../decisions/0055-top-level-functions-and-types-only.md), [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0061](../decisions/0061-trait-coherence-orphan-and-overlap.md), [0077](../decisions/0077-abolish-go-layer.md), [0092](../decisions/0092-unabbreviated-keywords.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0102](../decisions/0102-pair-and-triple.md), [0118](../decisions/0118-effect-handlers.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0126](../decisions/0126-import-by-module-name.md), [0127](../decisions/0127-directory-run-and-root.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md), [0154](../decisions/0154-public-contract-includes-effects-and-supertraits.md), [0206](../decisions/0206-test-command-line-and-exit-status.md), [0241](../decisions/0241-command-name-and-extension.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-048](../open-issues.md#open-048), [OPEN-049](../open-issues.md#open-049)
 - 移行元: [設計メモ](../sources/fp-language-design.md) なし
 
@@ -25,8 +25,8 @@
 
 | 種類 | 指すもの | 束縛する構文 |
 |---|---|---|
-| 小文字の名前 | 値（関数を含む） | トップレベルの関数の宣言、関数とラムダの引数、`let`、パターンの変数。初回リリース版では、定数の宣言 |
-| 大文字の名前 | 型、モジュール、エフェクト、データ構成子、型パラメータ、エフェクト変数、型クラス（初回リリース版） | 型の宣言、構成子の宣言、関数の型パラメータの並び、prelude。初回リリース版では、レコードの宣言、型クラスの宣言、実装の型パラメータの並び、import の宣言、エフェクトの宣言、型の別名の宣言、根のディレクトリの下のファイルとディレクトリ（モジュールの名前） |
+| 小文字の名前 | 値（関数を含む） | トップレベルの関数の宣言、関数とラムダの引数、束縛の文（`bind`・`shadow`）、パターンの変数。初回リリース版では、定数の宣言、`with` の束縛、`handle` の節の引数 |
+| 大文字の名前 | 型、モジュール、エフェクト、データ構成子、型パラメータ、エフェクト変数、型クラス（初回リリース版） | 型の宣言（`data`）、構成子の宣言、関数の型パラメータの並び、prelude。初回リリース版では、レコードの宣言、型クラスの宣言、実装の型パラメータの並び、import の宣言、エフェクトの宣言、型の別名の宣言、根のディレクトリの下のファイルとディレクトリ（モジュールの名前） |
 
 `_` は名前ではなく、何も束縛しない（[構文](01-02-syntax.md)）。
 
@@ -51,7 +51,7 @@ prelude が定める名前の一覧は[標準ライブラリ](../03-interop/03-0
 
 【方針】トップレベルの名前については、次の場合を誤りとする。
 
-- 二つの型の宣言に同じ名前を付けた場合。初回リリース版では、型・型の別名・レコード・型クラスの宣言と import の名前のどの二つに同じ名前を付けた場合も含む。
+- 二つの型の宣言に同じ名前を付けた場合。初回リリース版では、型・型の別名・レコード・型クラス・エフェクトの宣言と import の名前のどの二つに同じ名前を付けた場合も含む（エフェクトの名前も、前述のとおりこの名前空間に入る）。
 - 最小実行版で、型の名前が、prelude の型・モジュール・エフェクトの名前と同じ場合。初回リリース版では、利用者の名前が prelude の名前を隠すことを許す（後述の「標準ライブラリの名前空間と prelude（初回リリース版）」）。
 - 二つのトップレベルの関数に同じ名前を付けた場合。初回リリース版では、トップレベルの関数、定数、エフェクトの操作のどの二つに同じ名前を付けた場合も含む。
 - 初回リリース版で、トップレベルの大文字の名前（型・型の別名・レコード・型クラス・エフェクトの名前）を `Benitoite` とした場合。`Benitoite` で始まる名前が常に標準ライブラリを指すように、名前空間の根 `Benitoite` は利用者の名前で隠せない（後述の「モジュールと import（初回リリース版）」）。
@@ -88,7 +88,7 @@ prelude が定める名前の一覧は[標準ライブラリ](../03-interop/03-0
 
 `A` を局所の束縛として引くことはない。ドットの右の名前を、値の型から引くこともない（[ADR 0004](../decisions/0004-surface-syntax-skeleton.md)）。
 
-存在しない名前を引いたときの診断は、同じモジュールの中の綴りの近い名前を修正案として示す。初回リリース版で、最初の名前が、取り込んでいない標準ライブラリのモジュール（`Console` など）の名前であるときは、足りない import の宣言（`import Benitoite.IO.Console`）を修正案として示す。単位を持たない名前（`String.length` など）の修正案は[基本型の意味論](01-04-types-basic.md)で定める。
+存在しない名前を引いたときの診断は、同じモジュールの中の綴りの近い名前を修正案として示す。初回リリース版で、最初の名前が、取り込んでいない標準ライブラリのモジュール（`Console` など）の名前であるときは、足りない import の宣言（`import Benitoite.IO.Console`。非公式のモジュールでは、後述の取り込みの名前）を修正案として示す。単位を持たない名前（`String.length` など）の修正案は[基本型の意味論](01-04-types-basic.md)で定める。
 
 ### 修飾しない名前の解決
 
@@ -102,7 +102,7 @@ prelude が定める名前の一覧は[標準ライブラリ](../03-interop/03-0
 【方針】式とパターンの中には、修飾しない大文字の名前を書けない。ただし初回リリース版では、次の二つを修飾せずに書ける。
 
 - レコードの型の名前。レコードの構築とレコードのパターン（[代数的データ型とパターンマッチ](01-05-data-types.md)）の形に限る。
-- 構成子が一つだけで、その名前が型の名前と同じ型の構成子（`Pair(1, "one")`、`when Pair(a, b):`。[ADR 0102](../decisions/0102-pair-and-triple.md)）。利用者が宣言した同じ形の型も含む。
+- 構成子が一つだけで、その名前が型の名前と同じ型の構成子（`Pair(1, "one")`、`case Pair(a, b) ->`。[ADR 0102](../decisions/0102-pair-and-triple.md)）。利用者が宣言した同じ形の型も含む。
 
 型の名前やモジュールの名前をドットなしで式に書くと誤りとする。`Option` と `Result` の構成子を修飾せずに書いたとき（`Some(x)`、`Ok(x)`、`Err(e)`）は、修飾した書き方（`Option.Some(x)`、`Result.Ok(x)`、`Result.Error(e)`）を修正案として示す。
 
@@ -121,15 +121,17 @@ prelude が定める名前の一覧は[標準ライブラリ](../03-interop/03-0
 | 束縛 | 有効範囲 |
 |---|---|
 | 関数とラムダの引数 | その関数・ラムダの本体 |
-| `let x = e` | 同じブロックの、この `let` の次の文からブロックの終わりまで。`e` の中は含まない |
-| パターンの変数 | その分岐の本体（[代数的データ型とパターンマッチ](01-05-data-types.md)） |
+| 束縛の文 `bind x <- e`・`shadow x <- e` | 同じブロックの、この文の次の文からブロックの終わりまで。`e` の中は含まない。左辺にパターンを書いたとき（初回リリース版）は、パターンのすべての変数が同じ範囲で有効である |
+| `match` の分岐のパターンの変数 | その分岐のガードと本体（[代数的データ型とパターンマッチ](01-05-data-types.md)） |
+| 初回リリース版の `handle` の節の引数 | その節の本体 |
+| 初回リリース版の `with` の束縛 | その `with` の本体 |
 
-`let` の右辺 `e` の中では、束縛しようとしている名前は、外側で有効な同じ名前を指す。したがって `let` は再帰的な束縛にならない。再帰する関数は、トップレベルの関数として宣言する。
+束縛の文の右辺 `e` の中では、束縛しようとしている名前は、外側で有効な同じ名前を指す。したがって束縛の文は再帰的な束縛にならない。再帰する関数は、トップレベルの関数として宣言する。
 
 ```text
-function f(x: Integer): Integer
-  let x = x + 1     // 右辺の x は引数の x
-  return x * 2             // 左辺で束縛した x
+function f(x: Integer) -> Integer
+  shadow x <- x + 1     // 右辺の x は引数の x
+  return x * 2          // 左辺で束縛した x
 end function
 ```
 
@@ -137,23 +139,39 @@ end function
 
 ### シャドーイング
 
-【決定】局所の束縛は、その位置で見えている同じ名前（外側の局所の束縛、引数、トップレベルの関数）を隠してよい。同じブロックの中で、先の `let` と同じ名前を `let` で束縛してもよい（[ADR 0010](../decisions/0010-shared-namespace-and-shadowing.md)）。
+本節で局所の名前と呼ぶのは、関数とラムダの引数、先の束縛の文で束縛した名前、`match` の分岐のパターンの変数、初回リリース版の `handle` の節の引数と `with` の束縛のうち、その位置で有効なもの（前節）である。トップレベルの関数と定数は、局所の名前に数えない。
+
+【決定】局所の名前を隠す束縛（シャドーイング）は、束縛の文の `shadow` でだけ書ける（[ADR 0255](../decisions/0255-bind-and-shadow.md)）。規則は次のとおりである。
+
+- `bind` は、左辺の変数が、その位置で局所の名前として見えていないときにだけ書ける。見えていれば誤りとし、診断は `shadow` と書く修正案を示す。
+- `shadow` は、左辺の変数が局所の名前として見えているときにだけ書ける。見えていなければ誤りとし、診断は `bind` と書く修正案を示す。
+- 左辺にパターンを書くとき（初回リリース版）は、パターンの変数がすべて見えていない名前（`bind`）か、すべて見えている局所の名前（`shadow`）でなければならない。両方が混ざるときは誤りとし、診断は束縛を分けて書く修正案を示す。
+- トップレベルの関数と定数は局所の名前ではないので、同じ名前を `bind` で束縛して隠してよい。トップレベルに関数を一つ加えただけで、既存の `bind` が誤りにならないようにするためである。
+- キーワードを書けない束縛（関数とラムダの引数、`match` の分岐のパターンの変数、`handle` の節の引数、`with` の束縛）が、外側で見えている局所の名前を隠すことは誤りとし、診断は名前を変える修正案を示す。関数の宣言の引数は、その関数の最も外側の束縛なので、局所の名前を隠すことはない。
+
+【方針】変数を一つも束縛しない左辺（`_`、リテラルや構成子だけのパターン）には、`shadow` を書けない。`bind _ <- e` と書く。`shadow` は、隠す名前があることを字面で示すための語だからである。
 
 ```text
-function normalize(text: String): String
-  let text = String.trim(text)
-  let text = String.replace(text, "\t", " ")
-  return text
+function normalize(text: String) -> String
+  shadow text <- String.trim(text)
+  shadow text <- String.replace(text, "\t", " ")
+  bind words <- String.split(text, " ")
+  return String.join(words, " ")
 end function
 ```
 
-この例のライブラリの関数（`String.trim` と `String.replace`）は[標準ライブラリ](../03-interop/03-06-stdlib.md)で定める。
+この例のライブラリの関数（`String.trim` など）は[標準ライブラリ](../03-interop/03-06-stdlib.md)で定める。次の例は、ラムダの引数 `sum` が外側の局所の名前 `sum` を隠すので誤りである。
 
-隠された束縛の値は変わらない。隠した束縛の有効範囲の外では、隠された束縛が再び見える。
+```text
+function total(items: List[Integer]) -> Integer
+  bind sum <- 0
+  return List.fold(items, sum, lambda(sum, x) return sum + x end lambda)
+end function
+```
 
-シャドーイングは誤りにも警告にもしない。
+`shadow` で隠された束縛の値は変わらない。`shadow` の有効範囲の外では、隠された束縛が再び見える。
 
-【決定】初回リリース版のトップレベルの定数も、局所の束縛で隠してよい。ただし、`case` の分岐のパターンの変数に、見えている定数と同じ名前を付けることは誤りとする（[代数的データ型とパターンマッチ](01-05-data-types.md)の「パターン」、[ADR 0123](../decisions/0123-top-level-constants.md)）。
+【決定】初回リリース版のトップレベルの定数も、束縛の文と引数で隠してよい。ただし、`match` の分岐のパターンの変数に、見えている定数と同じ名前を付けることは誤りとする（[代数的データ型とパターンマッチ](01-05-data-types.md)の「パターン」、[ADR 0123](../decisions/0123-top-level-constants.md)）。
 
 ### モジュールと import（初回リリース版）
 
@@ -166,7 +184,7 @@ import Lib.Text
 import Lib.Geometry.Shape as GShape
 import Benitoite.IO.Console
 
-function main(): Unit uses Console.Write
+function main() -> Unit uses Console.Write
   Console.writeLine(Text.slug("Hello World"))
 end function
 ```
@@ -201,9 +219,16 @@ end function
 - 利用者のモジュールで、トップレベルの宣言の名前や import の名前が prelude の名前と同じときは、利用者の名前が優先し、prelude の名前を隠す。その名前を使った箇所の診断（型の誤りなど）には、同じ名前の prelude の名前を隠していることと、`Benitoite.X` で prelude の側を書けることを示す。
 - 処理系は、組み込みの型・モジュール・エフェクトを、綴りではなく、`Benitoite` の名前空間のどの名前かで照合する。利用者が同じ綴りの名前を宣言しても、組み込みのものとしては扱わない。
 
+【決定】標準ライブラリのモジュールは、「標準」か「非公式」のどちらかの状態を持つ。どのモジュールがどちらかは[標準ライブラリ](../03-interop/03-06-stdlib.md)で定める（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)）。
+
+- 非公式のモジュール `Benitoite.X.Y` は、`Benitoite` の後に `Unofficial` を挟んだ名前（取り込みの名前）で取り込む（`import Benitoite.Unofficial.IO.Console`）。取り込んだ後は、標準のモジュールと同じく、名前の最後の要素か `as` の名前で修飾する（`Console.writeLine`、`uses Console.Write`）。非公式のモジュールは prelude に入らない。
+- 非公式のモジュールを `Benitoite.X.Y` の名前で取り込むこと、標準のモジュールを `Benitoite.Unofficial` を挟んだ名前で取り込むことは、どちらも誤りとする。診断は、正しい取り込みの名前を修正案として示す。
+- モジュールの同一性と、処理系による組み込みの型・モジュール・エフェクトの照合は、非公式のモジュールでも `Benitoite.X.Y` の名前による。取り込みの名前は、モジュールを取り込む import の宣言にだけ現れる。
+- 本部の本文と例は、非公式のモジュールも `Benitoite.X.Y` の名前で書く。非公式の間は、例の import の宣言を取り込みの名前に読み替える。
+
 ### 公開（初回リリース版）
 
-【決定】トップレベルの関数と型は、既定では宣言したモジュールの中からだけ使える。`public` を付けた関数と型だけを、そのモジュールを取り込んだ側から使える。`public type` は、型とそのすべての構成子を公開する（[ADR 0053](../decisions/0053-private-by-default-with-pub.md)）。
+【決定】トップレベルの関数と型は、既定では宣言したモジュールの中からだけ使える。`public` を付けた関数と型だけを、そのモジュールを取り込んだ側から使える。`public data` は、型とそのすべての構成子を公開する（[ADR 0053](../decisions/0053-private-by-default-with-pub.md)、[ADR 0256](../decisions/0256-data-keyword-for-algebraic-types.md)）。
 
 【方針】初回リリース版のレコードと型クラスの公開は、次のとおりとする。
 

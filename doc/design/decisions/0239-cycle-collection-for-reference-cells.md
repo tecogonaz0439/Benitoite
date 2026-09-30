@@ -1,6 +1,6 @@
 # 0239. 参照カウントを残し、`Reference` のセルだけを対象に循環を回収する（暫定）
 
-- 状態: 採択（暫定。[0240](0240-runtime-redesign-in-first-release-plan.md) の見直しで確定するか、ほかの方式の ADR で置き換える）
+- 状態: 採択（暫定。[0259](0259-compare-mark-sweep-and-rc-in-stage-1.md) により、作り直しで参照カウントを採った場合に限り残す）
 - 日付: 2026-09-29
 - 関連章: [ランタイム](../02-impl/02-09-runtime.md), [仮想機械](../02-impl/02-08-vm.md), [性能](../07-quality/07-02-performance.md)
 - 関連する未決事項: [OPEN-036](../open-issues.md#open-036), [OPEN-039](../open-issues.md#open-039)

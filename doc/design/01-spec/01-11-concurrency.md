@@ -1,7 +1,7 @@
 # 並行処理
 
 - 状態: 確定
-- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0067](../decisions/0067-with-resource-scope.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0118](../decisions/0118-effect-handlers.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0142](../decisions/0142-http-api-shape.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0152](../decisions/0152-task-allok-list-order.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0164](../decisions/0164-taskgroup-release-while-stopping.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md)
+- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0067](../decisions/0067-with-resource-scope.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0118](../decisions/0118-effect-handlers.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0142](../decisions/0142-http-api-shape.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0152](../decisions/0152-task-allok-list-order.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0164](../decisions/0164-taskgroup-release-while-stopping.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-044](../open-issues.md#open-044), [OPEN-062](../open-issues.md#open-062)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 5.1, 5.2
 
@@ -70,7 +70,7 @@
 
 【方針】要求を受け付けるたびに処理を起動する場合のように、起動するタスクの数が前もって決まらないときは、タスクの集まり `TaskGroup` を使う。`TaskGroup` はリソースの型であり、`with` で束縛して使う（[リソース管理](01-10-resources.md)）。
 
-【決定】`TaskGroup.open()` の呼び出しは、`with` の束縛の式（`with group = TaskGroup.open() do`）としてだけ書ける（[ADR 0153](../decisions/0153-taskgroup-open-only-in-with.md)）。それ以外の位置の呼び出しと、`TaskGroup.open` を関数の値として参照すること（引数に渡す、`let` で束縛するなど）は、型検査の誤りとする。診断は、`with` で束縛する書き方を修正案として示す。`with` で束縛した `TaskGroup` を、関数の引数に渡したり、ラムダに捕捉したりするのはよい。`Task[T]` は、起動したタスクを表す、中身を見せない prelude の型である（[型システム](01-06-type-system.md)）。
+【決定】`TaskGroup.open()` の呼び出しは、`with` の束縛の式（`with group = TaskGroup.open() do`）としてだけ書ける（[ADR 0153](../decisions/0153-taskgroup-open-only-in-with.md)）。それ以外の位置の呼び出しと、`TaskGroup.open` を関数の値として参照すること（引数に渡す、`bind` で束縛するなど）は、型検査の誤りとする。診断は、`with` で束縛する書き方を修正案として示す。`with` で束縛した `TaskGroup` を、関数の引数に渡したり、ラムダに捕捉したりするのはよい。`Task[T]` は、起動したタスクを表す、中身を見せない prelude の型である（[型システム](01-06-type-system.md)）。
 
 | 関数 | 型 | 値 |
 |---|---|---|
@@ -111,8 +111,9 @@
 ```text
 handle
   Task.all([lambda() return File.readText("a.txt") end lambda])
-when File.readText(path):
-  resume(Result.Ok("text"))       // よい: 末尾で再開する節
+with
+  case File.readText(path) ->
+    resume(Result.Ok("text"))       // よい: 末尾で再開する節
 end handle
 ```
 
@@ -133,9 +134,9 @@ end handle
 次の例は、HTTP の要求を受け付けるたびに、その処理をタスクとして起動する。`Http.listen`・`Http.accept`・`Http.requestOf`・`Http.respond` は、`Benitoite.Network.Http` の関数である（[ネットワークのモジュール](../03-interop/03-09-network.md)）。`respondTo` は、要求から応答を作る利用者の関数とする。ファイルに `import Benitoite.Network.Http` が要る。
 
 ```text
-function serve(listener: Http.Listener, group: TaskGroup): Result[Unit, NetworkError] uses Http.Listen, State
-  let exchange = try Http.accept(listener)
-  let _ = TaskGroup.spawn(group, lambda()
+function serve(listener: Http.Listener, group: TaskGroup) -> Result[Unit, NetworkError] uses Http.Listen, State
+  bind exchange <- try Http.accept(listener)
+  bind _ <- TaskGroup.spawn(group, lambda()
     with current = exchange do
       return Http.respond(current, respondTo(Http.requestOf(current)))
     end with
@@ -143,7 +144,7 @@ function serve(listener: Http.Listener, group: TaskGroup): Result[Unit, NetworkE
   return serve(listener, group)
 end function
 
-function main(): Result[Unit, String] uses Http.Listen, State
+function main() -> Result[Unit, String] uses Http.Listen, State
   with listener = try Http.listen("127.0.0.1", 8080) |> Result.mapError(_, NetworkError.message),
        group = TaskGroup.open() do
     return serve(listener, group) |> Result.mapError(_, NetworkError.message)
@@ -156,7 +157,7 @@ end function
 次の例は、二つのコマンドを並行に実行し、両方の結果を待つ。`Process.run` と `Process.command` は、`Benitoite.IO.Process` の関数である（[IO のモジュール](../03-interop/03-07-io-modules.md)の「Process」）。この式のエフェクトは `Process.Run` であり、ファイルに `import Benitoite.IO.Process` が要る。
 
 ```text
-let outputs = Task.all([
+bind outputs <- Task.all([
   lambda() return Process.run(Process.command("git", ["status"])) end lambda,
   lambda() return Process.run(Process.command("git", ["log", "-1"])) end lambda
 ])

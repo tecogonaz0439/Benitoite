@@ -1,6 +1,6 @@
 # 0079. Go を前提にした処理系の判断を、Rust に合わせて読み替える
 
-- 状態: 採択（決定 2 のうち `unsafe` を使わないことを、[0240](0240-runtime-redesign-in-first-release-plan.md) で作り直しまでの規約に改めた）
+- 状態: 採択（決定 2 のうち `unsafe` を使わないことを、[0240](0240-runtime-redesign-in-first-release-plan.md) で作り直しまでの規約に改め、[0260](0260-heap-and-unsafe-boundary.md) でヒープのモジュールに限って許した）
 - 日付: 2026-09-27
 - 関連章: [パイプライン](../02-impl/02-01-pipeline.md), [仮想機械](../02-impl/02-08-vm.md), [ランタイム](../02-impl/02-09-runtime.md), [CLI](../06-tooling/06-01-cli.md), [用語集](../00-overview/00-04-glossary.md), [性能](../07-quality/07-02-performance.md)
 - 関連する未決事項: なし

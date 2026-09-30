@@ -1,6 +1,6 @@
 # 0078. 最小実行版は言語の値を参照カウントで管理し、循環を回収する方式は初回リリース版で決める
 
-- 状態: 採択
+- 状態: 採択（初回リリース版のメモリの管理の方式は、[0259](0259-compare-mark-sweep-and-rc-in-stage-1.md) で、マーク・スイープと改良した参照カウントを試作して比べて選ぶことにした）
 - 日付: 2026-09-27
 - 関連章: [ランタイム](../02-impl/02-09-runtime.md), [仮想機械](../02-impl/02-08-vm.md), [性能](../07-quality/07-02-performance.md), [全体像](../00-overview/00-02-architecture.md), [ロードマップ](../00-overview/00-03-roadmap.md), [用語集](../00-overview/00-04-glossary.md), [パイプライン](../02-impl/02-01-pipeline.md), [実装言語の比較](../08-appendix/08-01-implementation-language-comparison.md)
 - 関連する未決事項: [OPEN-036](../open-issues.md#open-036)

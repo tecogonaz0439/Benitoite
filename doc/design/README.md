@@ -125,9 +125,10 @@
 
 | 章 | 範囲 | 状態 |
 |---|---|---|
-| [実装言語の比較](08-appendix/08-01-implementation-language-comparison.md) | 処理系の実装言語に Rust を選んだ根拠となる比較 | 草稿 |
+| [実装言語の比較](08-appendix/08-01-implementation-language-comparison.md) | 処理系の実装言語に Rust を選んだ根拠となる比較（Go・Zig・Swift・Haskell） | 草稿 |
 | [先行事例索引](08-appendix/08-02-prior-art.md) | 参考にした言語・処理系と参考にした理由（精神的な影響、言語設計の参考、処理系・基盤の先行事例） | 草稿 |
 | [他の言語の調査記録](08-appendix/08-03-language-surveys.md) | 構文と意味の判断のために他の言語を調べた結果（一次資料で確かめた事実と、確かめられなかった事項） | 草稿 |
+| [関数型言語の構文の比較](08-appendix/08-04-fp-syntax-comparison.md) | Benitoite の基本の構文と、OCaml・F#・Haskell・Elm・Gleam・Rust・Flix・Scala 3・Roc の構文の対照（言語ごとのコード例つき） | 草稿 |
 
 ### 管理文書
 

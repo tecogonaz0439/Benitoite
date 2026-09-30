@@ -1,8 +1,8 @@
 # 利用者プログラムのテスト
 
 - 状態: 確定
-- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0206](../decisions/0206-test-command-line-and-exit-status.md), [0208](../decisions/0208-test-report-destination.md)
-- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-046](../open-issues.md#open-046), [OPEN-052](../open-issues.md#open-052), [OPEN-058](../open-issues.md#open-058)
+- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0206](../decisions/0206-test-command-line-and-exit-status.md), [0208](../decisions/0208-test-report-destination.md), [0252](../decisions/0252-test-report-format.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md)
+- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-046](../open-issues.md#open-046), [OPEN-052](../open-issues.md#open-052)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 24
 
 ## 目的と範囲
@@ -24,12 +24,12 @@
 【決定】テストは、`@test` を付けたトップレベルの関数である（[ADR 0120](../decisions/0120-test-functions-and-assert-effect.md)）。
 
 ```text
-function add(a: Integer, b: Integer): Integer
+function add(a: Integer, b: Integer) -> Integer
   return a + b
 end function
 
 @test("add sums two numbers")
-function addSumsTwoNumbers(): Unit uses Assert.Check
+function addSumsTwoNumbers() -> Unit uses Assert.Check
   Assert.equal(add(2, 3), 5)
   Assert.equal(add(-1, 1), 0)
 end function
@@ -68,35 +68,37 @@ end function
 import Benitoite.IO.File
 import Benitoite.IO.Process
 
-function readPort(path: String): Result[Integer, String] uses File.Read
-  let text = try File.readText(path) |> Result.mapError(_, IOError.message)
+function readPort(path: String) -> Result[Integer, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
   return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
 end function
 
 @test("readPort reads the number in the file")
-function readPortReadsNumber(): Unit uses Assert.Check, File.Read
-  let result = handle
+function readPortReadsNumber() -> Unit uses Assert.Check, File.Read
+  bind result <- handle
     readPort("app.conf")
-  when File.readText(path):
-    Assert.equal(path, "app.conf")
-    resume(Result.Ok("8080\n"))
+  with
+    case File.readText(path) ->
+      Assert.equal(path, "app.conf")
+      resume(Result.Ok("8080\n"))
   end handle
   Assert.equal(result, Result.Ok(8080))
 end function
 
-function tagRelease(tag: String): Result[Unit, String] uses Process.Run
-  let output = try Process.run(Process.command("git", ["tag", tag])) |> Result.mapError(_, IOError.message)
+function tagRelease(tag: String) -> Result[Unit, String] uses Process.Run
+  bind output <- try Process.run(Process.command("git", ["tag", tag])) |> Result.mapError(_, IOError.message)
   return if Process.Output.exitCode(output) = 0 then Result.Ok(()) else Result.Error(Process.Output.standardError(output)) end if
 end function
 
 @test
-function tagReleaseRunsGit(): Unit uses Assert.Check, State, Process.Run
-  let calls = Reference.new([])
-  let result = handle
+function tagReleaseRunsGit() -> Unit uses Assert.Check, State, Process.Run
+  bind calls <- Reference.new([])
+  bind result <- handle
     tagRelease("v1.0")
-  when Process.run(command):
-    Reference.set(calls, List.append(Reference.get(calls), Process.Command.arguments(command)))
-    resume(Result.Ok(Process.Output(exitCode: 0, standardOutput: "", standardError: "")))
+  with
+    case Process.run(command) ->
+      Reference.set(calls, List.append(Reference.get(calls), Process.Command.arguments(command)))
+      resume(Result.Ok(Process.Output(exitCode: 0, standardOutput: "", standardError: "")))
   end handle
   Assert.equal(result, Result.Ok(()))
   Assert.equal(Reference.get(calls), [["tag", "v1.0"]])
@@ -111,7 +113,7 @@ end function
 
 ```text
 @test("add handles several cases")
-function addCases(): Unit uses Assert.Check
+function addCases() -> Unit uses Assert.Check
   List.forEach([Triple(1, 2, 3), Triple(0, 0, 0), Triple(-1, 1, 0)], lambda(c)
     Assert.equal(add(Triple.first(c), Triple.second(c)), Triple.third(c))
   end lambda)
@@ -151,7 +153,31 @@ end function
 
 【決定】テストごとの結果と、最後の数の集計は、標準出力に書く。検査の誤りの診断と処理系の不具合の報告は、`check` と `run` と同じく標準エラー出力に書く。`--diagnostics=json` を指定したときは、結果も JSON Lines の形で書き、テストごとに一行を、最後に集計の一行を書く（[ADR 0208](../decisions/0208-test-report-destination.md)）。
 
-【未決】報告の文章の形の細部と、JSON の項目の名前は、[OPEN-058](../open-issues.md#open-058) で決める。初回リリース版の実装プランの前に本章へ加える。
+【決定】報告の形は次のとおりとする（[ADR 0252](../decisions/0252-test-report-format.md)）。
+
+- 文章の形は、Rust の `cargo test` の形に合わせる。テストごとに `test <ファイル>: <名前> ... ok` か `... FAILED` の一行を書く。名前は、`@test` の説明があれば引用符で囲んだ説明、なければ関数の名前とする。
+- 失敗したテストがあれば、すべてのテストの行の後に `failures:` の見出しを書き、失敗したテストごとに `---- <ファイル>: <名前> ----` の見出しと、上の表の失敗の詳細を書く。位置と呼び出しの履歴は、[診断エンジン](../02-impl/02-10-diagnostics.md)の文章の形式と同じ形で書く。テストが書いた出力があれば、`---- captured stdout ----`・`---- captured stderr ----` の見出しに続けて示す。
+- 最後に `test result: ok.` か `test result: FAILED.` に続けて、成功の数と失敗の数を書く。検査の誤りでテストを実行しなかったファイルがあれば、その数を書く。中断の要求で終えたときは、そのことを書く。
+- テストを並行に動かしても、報告は、ファイルを指定した順（ディレクトリの下ではパスの辞書順）と、ファイルの中のテストの関数の宣言の順に書く。報告を実行ごとに変えないためである。
+
+```text
+test tests/sum.bnt: "adds two numbers" ... ok
+test tests/sum.bnt: sumOfEmpty ... FAILED
+
+failures:
+
+---- tests/sum.bnt: sumOfEmpty ----
+assertion failed: Assert.equal
+  left:  3
+  right: 4
+ --> tests/sum.bnt:14:3
+
+test result: FAILED. 12 passed; 1 failed
+```
+
+- JSON Lines の形では、テストごとに `kind` が `"test"` の一行を書く。項目は、`file`、`name`（説明か関数の名前）、`function`（関数の名前）、`location`（関数の宣言の位置。診断の位置の形）、`outcome`（`"passed"` か `"failed"`）、`failure`（成功では `null`）、`stdout`・`stderr`（捕らえた内容の文字列）である。
+- `failure` は、`reason`（`"assert"`・`"error"`・`"runtime"`・`"exit"`）と `message` のほかに、理由に応じた項目を持つ。`"assert"` は失敗した確認の位置 `primary` と `trace`、`Assert.equal`・`Assert.notEqual` では値を書き出した文字列 `left`・`right` を持つ。`"error"` は `Result.Error` の文字列を `message` に持つ。`"runtime"` は、実行時エラーの報告の JSON の形式の項目（`code`・`primary`・`trace`・`traceOmitted`・`taskOrigins` など）を持つ。`"exit"` は `Process.exit` の終了状態 `exitCode` を持つ。
+- 最後に `kind` が `"testSummary"` の一行を書く。項目は、`passed`、`failed`、`filesNotRun`（検査の誤りで実行しなかったファイルの数）、`interrupted`（中断の要求で終えたか）である。
 
 ### プロパティベーステスト
 
@@ -162,4 +188,3 @@ end function
 - [OPEN-012](../open-issues.md#open-012): 構文の種類ごとの LLM の生成精度（属性とテストの書き方）
 - [OPEN-046](../open-issues.md#open-046): プロパティベーステストと、入力の生成器の導出
 - [OPEN-052](../open-issues.md#open-052): 実行時の権限制御の方式（テストの実行で許可を与える方法、テストの実行器と子プロセスでの実行の関係）
-- [OPEN-058](../open-issues.md#open-058): テストの結果の報告の形の細部

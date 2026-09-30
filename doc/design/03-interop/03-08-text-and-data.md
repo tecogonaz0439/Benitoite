@@ -1,7 +1,7 @@
 # テキストとデータの処理
 
 - 状態: 確定
-- 関連ADR: [0006](../decisions/0006-basic-types-semantics.md), [0012](../decisions/0012-invalid-utf8-input.md), [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0101](../decisions/0101-unabbreviated-names.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0107](../decisions/0107-bytes.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0173](../decisions/0173-time-format-specifiers.md), [0248](../decisions/0248-regex-byte-position-function-names.md)
+- 関連ADR: [0006](../decisions/0006-basic-types-semantics.md), [0012](../decisions/0012-invalid-utf8-input.md), [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0101](../decisions/0101-unabbreviated-names.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0107](../decisions/0107-bytes.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0173](../decisions/0173-time-format-specifiers.md), [0248](../decisions/0248-regex-byte-position-function-names.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)
 - 未決事項: [OPEN-043](../open-issues.md#open-043), [OPEN-062](../open-issues.md#open-062)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 16
 
@@ -18,6 +18,8 @@
 ## 仕様
 
 ### 各モジュールの範囲
+
+初回リリース版では、本章のモジュールはどれも非公式のモジュールであり、`import Benitoite.Unofficial.Json` の形で取り込む（[標準ライブラリ](03-06-stdlib.md)の「標準のモジュールと非公式のモジュール（初回リリース版）」、[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)）。本章は、標準に加えた後の名前（`Benitoite.Json`）で書く。
 
 【方針】初回リリース版の各モジュールには、次の機能を入れる（[ADR 0137](../decisions/0137-first-release-library-scope.md)）。
 
@@ -71,7 +73,7 @@
 【方針】`Benitoite.Json` は、JSON の値を代数的データ型 `Json.Value` で表す。
 
 ```text
-type Value
+data Value
   Null
   Boolean(Boolean)
   Integer(Integer)
@@ -79,7 +81,7 @@ type Value
   String(String)
   Array(List[Value])
   Object(Map[String, Value])
-end type
+end data
 
 record ParseError
   line: Integer
@@ -115,15 +117,15 @@ end record
 import Benitoite.IO.File
 import Benitoite.Json
 
-function totalAmount(path: String): Result[Integer, String] uses File.Read
-  let text = try File.readText(path) |> Result.mapError(_, IOError.message)
-  let value = try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
-  let items = Json.asArray(value) |> Option.unwrapOr(_, [])
+function totalAmount(path: String) -> Result[Integer, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
+  bind items <- Json.asArray(value) |> Option.unwrapOr(_, [])
   return Result.Ok(List.fold(items, 0, lambda(sum, item)
-    return case Json.get(item, "amount") of
-      when Option.Some(Json.Value.Integer(n)): sum + n
-      when _: sum
-    end case
+    return match Json.get(item, "amount") with
+      case Option.Some(Json.Value.Integer(n)) -> sum + n
+      case _ -> sum
+    end match
   end lambda))
 end function
 ```
@@ -158,8 +160,8 @@ end function
 ```text
 import Benitoite.Regex
 
-function extractDates(text: String): Result[List[String], String]
-  let pattern = try Regex.compile(r"\d{4}-\d{2}-\d{2}")
+function extractDates(text: String) -> Result[List[String], String]
+  bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
   return Result.Ok(Regex.findAll(pattern, text) |> List.map(_, Regex.matchText))
 end function
 ```
@@ -270,7 +272,7 @@ end record
 ```text
 import Benitoite.Hash
 
-function fingerprint(text: String): String
+function fingerprint(text: String) -> String
   return Hash.sha256(String.toUTF8(text)) |> Bytes.toHex(_)
 end function
 ```

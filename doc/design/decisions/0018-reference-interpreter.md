@@ -1,6 +1,6 @@
 # 0018. コア計算の抽象機械を実装した参照インタプリタを、テストのために処理系に含める
 
-- 状態: 採択
+- 状態: 採択（参照インタプリタの値を VM と共有しないことを [0268](0268-staged-runtime-rebuild.md) で定め、組み込みの関数の本体だけは共有することを [0276](0276-reference-interpreter-shares-builtin-bodies.md) で定めた）
 - 日付: 2026-09-26
 - 関連章: [パイプライン](../02-impl/02-01-pipeline.md), [中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md), [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md), [コア計算と脱糖](../01-spec/01-12-core-calculus.md)
 - 関連する未決事項: なし

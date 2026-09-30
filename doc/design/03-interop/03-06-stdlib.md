@@ -1,7 +1,7 @@
 # 標準ライブラリ
 
 - 状態: 確定
-- 関連ADR: [0006](../decisions/0006-basic-types-semantics.md), [0007](../decisions/0007-constructors-and-list.md), [0008](../decisions/0008-effect-variables.md), [0009](../decisions/0009-typing-without-type-classes.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0030](../decisions/0030-call-stack-size-limit.md), [0041](../decisions/0041-list-as-linked-list.md), [0042](../decisions/0042-minimal-prelude-scope.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0077](../decisions/0077-abolish-go-layer.md), [0091](../decisions/0091-acronyms-in-uppercase.md), [0096](../decisions/0096-explicit-return.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0101](../decisions/0101-unabbreviated-names.md), [0102](../decisions/0102-pair-and-triple.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0104](../decisions/0104-list-as-persistent-vector.md), [0105](../decisions/0105-byte-type.md), [0106](../decisions/0106-bitwise-functions.md), [0107](../decisions/0107-bytes.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0115](../decisions/0115-structured-io-concurrency.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0132](../decisions/0132-language-name-benitoite.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0137](../decisions/0137-first-release-library-scope.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0062](../decisions/0062-operators-stay-outside-traits.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0169](../decisions/0169-unicode-character-property-functions.md), [0171](../decisions/0171-map-set-higher-order-functions.md), [0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md)
+- 関連ADR: [0006](../decisions/0006-basic-types-semantics.md), [0007](../decisions/0007-constructors-and-list.md), [0008](../decisions/0008-effect-variables.md), [0009](../decisions/0009-typing-without-type-classes.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0030](../decisions/0030-call-stack-size-limit.md), [0041](../decisions/0041-list-as-linked-list.md), [0042](../decisions/0042-minimal-prelude-scope.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0077](../decisions/0077-abolish-go-layer.md), [0091](../decisions/0091-acronyms-in-uppercase.md), [0096](../decisions/0096-explicit-return.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0101](../decisions/0101-unabbreviated-names.md), [0102](../decisions/0102-pair-and-triple.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0104](../decisions/0104-list-as-persistent-vector.md), [0105](../decisions/0105-byte-type.md), [0106](../decisions/0106-bitwise-functions.md), [0107](../decisions/0107-bytes.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0115](../decisions/0115-structured-io-concurrency.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0132](../decisions/0132-language-name-benitoite.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0137](../decisions/0137-first-release-library-scope.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0062](../decisions/0062-operators-stay-outside-traits.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0169](../decisions/0169-unicode-character-property-functions.md), [0171](../decisions/0171-map-set-higher-order-functions.md), [0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-040](../open-issues.md#open-040), [OPEN-043](../open-issues.md#open-043), [OPEN-046](../open-issues.md#open-046), [OPEN-049](../open-issues.md#open-049), [OPEN-050](../open-issues.md#open-050)
 - 移行元: [設計メモ](../sources/fp-language-design.md) なし（10 の層1・層2）
 
@@ -51,16 +51,44 @@
 - import なしに完全な名前で書けるのは prelude だけである。`Benitoite.IO.Console.writeLine` を import なしに書くことはできない。
 - 利用者の宣言や取り込みが prelude と同じ名前を持つときの扱いと、根の直下の `Benitoite` を取り込めないことは、[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)で定める。
 
+初回リリース版では、表のモジュールのうち、IO・ネットワーク・テキストとデータのモジュールは非公式のモジュールであり、`Benitoite.Unofficial` の下の名前で取り込む（後述の「標準のモジュールと非公式のモジュール（初回リリース版）」）。上の表と次の例は、標準に加えた後の名前で書いている。初回リリース版では、次の例の import の行は `import Benitoite.Unofficial.IO.Console` と書く。
+
 ```text
 import Benitoite.IO.Console
 
-function main(): Unit uses Console.Write
-  let doubled = List.map([1, 2, 3], lambda(x) return x * 2 end lambda)
+function main() -> Unit uses Console.Write
+  bind doubled <- List.map([1, 2, 3], lambda(x) return x * 2 end lambda)
   Console.writeLine(Integer.toString(List.length(doubled)))
 end function
 ```
 
-最小実行版には `Benitoite` の名前空間と import がなく、`Console`・`File`・`Process` も prelude にある。最小実行版のスクリプトを初回リリース版で動かすには、`import Benitoite.IO.Console` などを加え、`uses IO` を `uses IO.All` などに改める。処理系は、足りない import と `uses IO.All` を修正案として示す。
+最小実行版には `Benitoite` の名前空間と import がなく、`Console`・`File`・`Process` も prelude にある。最小実行版のスクリプトを初回リリース版で動かすには、`import Benitoite.Unofficial.IO.Console` などを加え、`uses IO` を `uses IO.All` などに改める。処理系は、足りない import と `uses IO.All` を修正案として示す。
+
+### 標準のモジュールと非公式のモジュール（初回リリース版）
+
+【決定】標準ライブラリのモジュールは、「標準」か「非公式」のどちらかの状態を持つ。非公式のモジュールは、設計者が実装を吟味する前のモジュールであり、吟味の結果で名前・型・振る舞いを改めうる。状態はモジュールを単位に決め、一つのモジュールの関数を二つの状態に分けない（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)）。
+
+| 状態 | モジュール | 取り込み方 |
+|---|---|---|
+| 標準 | prelude のすべてのモジュール（前述の「名前空間と prelude（初回リリース版）」の表の prelude の行）と `Benitoite.Trait` | prelude は import なしで使う。`Benitoite.Trait` は `import Benitoite.Trait` で取り込む |
+| 非公式 | `Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`、`Benitoite.Network.Http`、`Benitoite.Path`・`Benitoite.Json`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash` | `Benitoite` の後に `Unofficial` を挟んだ名前で取り込む（`import Benitoite.Unofficial.IO.Console`） |
+
+- 非公式のモジュールを取り込んだ後の書き方は、標準のモジュールと同じである。名前の最後の要素（`as` を書けばその名前）で修飾する（`Console.writeLine`、`uses Console.Write`、`File.Reader`）。非公式のモジュールは prelude に入らない。
+- 非公式のモジュールを `import Benitoite.IO.Console` と書くこと、標準のモジュールを `import Benitoite.Unofficial.Trait` と書くことは、どちらも標準ライブラリにないモジュールの取り込みの誤りである。診断は、その版で正しい取り込みの名前を修正案として示す（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)の「標準ライブラリの名前空間と prelude（初回リリース版）」）。
+- 本章とほかの章（01-spec、03-01、03-07〜03-09 など）は、非公式のモジュールも標準に加えた後の名前（`Benitoite.IO.Console`）で書く。モジュールの同一性、処理系による組み込みの型とエフェクトの照合、標準ライブラリのソースの置き場所（後述の「標準ライブラリのソースの書き方」）も、この名前による。`Benitoite.Unofficial.IO.Console` は、非公式の間の取り込みの名前である。
+- 非公式のモジュールも、設計書が定める意味に従う。パッチの版で変えないことも、標準のモジュールと同じである（[配布形態](../05-platform/05-01-distribution.md)の「互換性の方針」）。
+- 【方針】設計者が吟味を終えたモジュールは、マイナーの版で標準に移す。移すと取り込みの名前が変わるので、互換性を壊す変更として、`CHANGELOG` に移行の手順（import の行の書き換え）を記す。吟味で見つかった名前・型・振る舞いの変更は、同じ版で行ってよい。
+- prelude の `Task` の関数（`Task.race`・`Task.withTimeout`）の型は、非公式のモジュール `Benitoite.IO.Clock` のエフェクト `Clock.Time` を含む（[並行処理](../01-spec/01-11-concurrency.md)）。標準のモジュールが非公式のモジュールに依存するのは、この一か所である。
+
+```text
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(String.toUppercase("done"))
+end function
+```
+
+この例の `String.toUppercase` は prelude（標準）の関数、`Console.writeLine` は非公式のモジュールの関数である。
 
 ### 関数を引数にとる関数の共通の規則
 
@@ -176,7 +204,7 @@ end function
 | `List.reverse(xs)` | `function[T](List[T]) -> List[T]` | 逆順のリスト | O(n) | 組み込み |
 | `List.take(xs, n)` | `function[T](List[T], Integer) -> List[T]` | 先頭から `n` 個。`n` が 0 以下なら `[]`、長さ以上なら `xs` | O(log n) | 組み込み |
 | `List.drop(xs, n)` | `function[T](List[T], Integer) -> List[T]` | 先頭の `n` 個を除いたリスト。`n` が 0 以下なら `xs`、長さ以上なら `[]` | O(log n) | 組み込み |
-| `List.range(start, end)` | `function(Integer, Integer) -> List[Integer]` | `start` 以上 `end` 未満の整数を昇順に並べたリスト。`end` が `start` 以下なら `[]` | O(end − start) | 組み込み |
+| `List.range(start, stop)` | `function(Integer, Integer) -> List[Integer]` | `start` 以上 `stop` 未満の整数を昇順に並べたリスト。`stop` が `start` 以下なら `[]` | O(stop − start) | 組み込み |
 | `List.contains(xs, x)` | `function[T: equality](List[T], T) -> Boolean` | `x` と `=` で等しい要素があるか | O(n) | 組み込み |
 | `List.sort(xs)` | `function[T: ordered](List[T]) -> List[T]` | 昇順に並べ替えたリスト（後述） | O(n log n) | 組み込み |
 | `List.map(xs, f)` | `function[T, U, effect E](List[T], function(T) -> U uses E) -> List[U] uses E` | 各要素に `f` を適用した値のリスト | O(n) | ソース |
@@ -286,7 +314,7 @@ end function
 | `Set.size(s)` | `function[T: key](Set[T]) -> Integer` | 要素の数 | O(1) |
 | `Set.union(a, b)`・`Set.intersection(a, b)`・`Set.difference(a, b)` | `function[T: key](Set[T], Set[T]) -> Set[T]` | 和集合・共通部分・差集合 | O(m log(n/m + 1))。m と n は小さいほうと大きいほうの要素の数 |
 
-表の型の `key` は、`K` と `T` が鍵の型であるという組み込みの制約である。利用者も関数の型に書けるので、`Map` と `Set` を使う汎用の関数（`function countBy[T, K: key](xs: List[T], f: function(T) -> K): Map[K, Integer]` など）を書ける（[型システム](../01-spec/01-06-type-system.md)、[ADR 0133](../decisions/0133-builtin-equality-and-key-constraints.md)）。
+表の型の `key` は、`K` と `T` が鍵の型であるという組み込みの制約である。利用者も関数の型に書けるので、`Map` と `Set` を使う汎用の関数（`function countBy[T, K: key](xs: List[T], f: function(T) -> K) -> Map[K, Integer]` など）を書ける（[型システム](../01-spec/01-06-type-system.md)、[ADR 0133](../decisions/0133-builtin-equality-and-key-constraints.md)）。
 
 【決定】`Map` と `Set` の関数を引数にとる関数は、次のとおりとする（[ADR 0171](../decisions/0171-map-set-higher-order-functions.md)）。どれも標準ライブラリのソースで書き、受け取った関数を鍵の順序で呼ぶ（前述の「関数を引数にとる関数の共通の規則」）。計算量は、受け取った関数の呼び出しを 1 と数えたものである。
 
@@ -330,7 +358,7 @@ end function
 | `Bytes.toBinary(b)` | `function(Bytes) -> String` | 各バイトを 2 進 8 桁で表し、区切りなしで並べた文字列 | O(n) |
 | `Bytes.length(b)` | `function(Bytes) -> Integer` | バイト数 | O(1) |
 | `Bytes.get(b, i)` | `function(Bytes, Integer) -> Option[Byte]` | 位置 `i` のバイト | O(1) |
-| `Bytes.slice(b, start, end)` | `function(Bytes, Integer, Integer) -> Option[Bytes]` | 位置 `start` から `end` の手前までのバイト列 | O(1) |
+| `Bytes.slice(b, start, stop)` | `function(Bytes, Integer, Integer) -> Option[Bytes]` | 位置 `start` から `stop` の手前までのバイト列 | O(1) |
 | `Bytes.concatenate(a, b)` | `function(Bytes, Bytes) -> Bytes` | `a` の後に `b` を続けたバイト列 | O(n) |
 | `Bytes.readUnsigned(b, offset, count, order)` | `function(Bytes, Integer, Integer, ByteOrder) -> Option[Integer]` | `offset` から `count` バイトを、符号なしの整数として `order` のバイト順で読んだ値 | O(count) |
 | `Bytes.readSigned(b, offset, count, order)` | `function(Bytes, Integer, Integer, ByteOrder) -> Option[Integer]` | 同じく、2 の補数の符号付きの整数として読んだ値 | O(count) |
@@ -356,7 +384,7 @@ end function
 ```text
 import Benitoite.Trait
 
-function pairUp[F[_]: Trait.Monad, A, B](xs: F[A], ys: F[B]): F[Pair[A, B]]
+function pairUp[F[_]: Trait.Monad, A, B](xs: F[A], ys: F[B]) -> F[Pair[A, B]]
   return Trait.Monad.flatMap(xs, lambda(x)
     return Trait.Functor.map(ys, lambda(y) return Pair(x, y) end lambda)
   end lambda)
@@ -371,15 +399,15 @@ end function
 
 | 型クラス | 上位の型クラス | メソッド |
 |---|---|---|
-| `Show[T]` | — | `function show(x: T): String` |
-| `Order[T]` | — | `function compare(x: T, y: T): Ordering` |
-| `Semigroup[T]` | — | `function combine(x: T, y: T): T` |
-| `Monoid[T]` | `Semigroup` | `function empty(): T` |
-| `Functor[F[_]]` | — | `function map[A, B, effect E](x: F[A], f: function(A) -> B uses E): F[B] uses E` |
-| `Applicative[F[_]]` | `Functor` | `function pure[A](x: A): F[A]`<br>`function apply[A, B, effect E](fs: F[function(A) -> B uses E], x: F[A]): F[B] uses E` |
-| `Monad[F[_]]` | `Applicative` | `function flatMap[A, B, effect E](x: F[A], f: function(A) -> F[B] uses E): F[B] uses E` |
-| `Foldable[F[_]]` | — | `function fold[A, B, effect E](x: F[A], initial: B, f: function(B, A) -> B uses E): B uses E` |
-| `Traversable[F[_]]` | `Functor`、`Foldable` | `function traverse[G[_]: Applicative, A, B, effect E](x: F[A], f: function(A) -> G[B] uses E): G[F[B]] uses E` |
+| `Show[T]` | — | `function show(x: T) -> String` |
+| `Order[T]` | — | `function compare(x: T, y: T) -> Ordering` |
+| `Semigroup[T]` | — | `function combine(x: T, y: T) -> T` |
+| `Monoid[T]` | `Semigroup` | `function empty() -> T` |
+| `Functor[F[_]]` | — | `function map[A, B, effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E` |
+| `Applicative[F[_]]` | `Functor` | `function pure[A](x: A) -> F[A]`<br>`function apply[A, B, effect E](fs: F[function(A) -> B uses E], x: F[A]) -> F[B] uses E` |
+| `Monad[F[_]]` | `Applicative` | `function flatMap[A, B, effect E](x: F[A], f: function(A) -> F[B] uses E) -> F[B] uses E` |
+| `Foldable[F[_]]` | — | `function fold[A, B, effect E](x: F[A], initial: B, f: function(B, A) -> B uses E) -> B uses E` |
+| `Traversable[F[_]]` | `Functor`、`Foldable` | `function traverse[G[_]: Applicative, A, B, effect E](x: F[A], f: function(A) -> G[B] uses E) -> G[F[B]] uses E` |
 
 `Monoid.empty` と `Applicative.pure` は、型クラスの引数を戻り値の型にだけ含むので、呼び出した位置で求める型から実装を選ぶ。等値の型クラスは置かない。等値は `=` と組み込みの制約 `equality` で扱う（[型システム](../01-spec/01-06-type-system.md)、[ADR 0133](../decisions/0133-builtin-equality-and-key-constraints.md)）。
 
@@ -472,25 +500,25 @@ IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各�
 
 ```text
 /// リストの各要素に f を適用したリストを返す。
-public function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E): List[U] uses E
+public function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E) -> List[U] uses E
   return mapFrom(xs, f, 0, [])
 end function
 
-function mapFrom[T, U, effect E](xs: List[T], f: function(T) -> U uses E, i: Integer, acc: List[U]): List[U] uses E
-  return case get(xs, i) of
-    when Option.None: acc
-    when Option.Some(x):
-      let y = f(x)
+function mapFrom[T, U, effect E](xs: List[T], f: function(T) -> U uses E, i: Integer, acc: List[U]) -> List[U] uses E
+  return match get(xs, i) with
+    case Option.None -> acc
+    case Option.Some(x) ->
+      bind y <- f(x)
       mapFrom(xs, f, i + 1, append(acc, y))
-  end case
+  end match
 end function
 
 /// 添字 i の要素を返す。範囲の外なら Option.None を返す。
 @builtin("List.get")
-public function get[T](xs: List[T], i: Integer): Option[T]
+public function get[T](xs: List[T], i: Integer) -> Option[T]
 
 @builtin("List.sort")
-public function sort[T: ordered](xs: List[T]): List[T]
+public function sort[T: ordered](xs: List[T]) -> List[T]
 ```
 
 上の例は `List` のモジュールのソース（`List.bnt`）の一部であり、同じモジュールの関数は修飾せずに呼ぶ。

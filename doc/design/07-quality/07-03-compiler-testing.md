@@ -1,8 +1,8 @@
 # 処理系のテスト戦略
 
 - 状態: 確定
-- 関連ADR: [0003](../decisions/0003-license.md), [0006](../decisions/0006-basic-types-semantics.md), [0018](../decisions/0018-reference-interpreter.md), [0024](../decisions/0024-continue-after-type-errors.md), [0029](../decisions/0029-two-io-execution-modes.md), [0032](../decisions/0032-rust-style-text-and-json.md), [0037](../decisions/0037-exit-status-values.md), [0039](../decisions/0039-golden-test-files.md), [0040](../decisions/0040-single-repository.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0079](../decisions/0079-rust-readings-of-go-based-decisions.md), [0080](../decisions/0080-test-design-principles-and-test-audit.md), [0085](../decisions/0085-review-assignment-for-minimal.md), [0088](../decisions/0088-keep-both-io-execution-modes.md), [0137](../decisions/0137-first-release-library-scope.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0084](../decisions/0084-implementer-assignment-for-minimal.md), [0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md), [0212](../decisions/0212-test-owner-boundaries-in-testing-chapter.md), [0213](../decisions/0213-formal-verification-stage-1-in-first-release.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0166](../decisions/0166-warnings-reported-by-run-and-deny-option.md), [0206](../decisions/0206-test-command-line-and-exit-status.md), [0207](../decisions/0207-fmt-command-line.md), [0208](../decisions/0208-test-report-destination.md), [0222](../decisions/0222-http-tests-over-loopback.md), [0223](../decisions/0223-interrupt-tests-in-separate-process.md), [0224](../decisions/0224-golden-test-format-for-first-release.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md), [0245](../decisions/0245-perl-virtues-source-and-fact-check-timing.md)
-- 未決事項: [OPEN-038](../open-issues.md#open-038), [OPEN-039](../open-issues.md#open-039), [OPEN-051](../open-issues.md#open-051), [OPEN-059](../open-issues.md#open-059), [OPEN-058](../open-issues.md#open-058), [OPEN-062](../open-issues.md#open-062)
+- 関連ADR: [0003](../decisions/0003-license.md), [0006](../decisions/0006-basic-types-semantics.md), [0018](../decisions/0018-reference-interpreter.md), [0024](../decisions/0024-continue-after-type-errors.md), [0029](../decisions/0029-two-io-execution-modes.md), [0032](../decisions/0032-rust-style-text-and-json.md), [0037](../decisions/0037-exit-status-values.md), [0039](../decisions/0039-golden-test-files.md), [0040](../decisions/0040-single-repository.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0079](../decisions/0079-rust-readings-of-go-based-decisions.md), [0080](../decisions/0080-test-design-principles-and-test-audit.md), [0085](../decisions/0085-review-assignment-for-minimal.md), [0088](../decisions/0088-keep-both-io-execution-modes.md), [0137](../decisions/0137-first-release-library-scope.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0084](../decisions/0084-implementer-assignment-for-minimal.md), [0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md), [0212](../decisions/0212-test-owner-boundaries-in-testing-chapter.md), [0213](../decisions/0213-formal-verification-stage-1-in-first-release.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0166](../decisions/0166-warnings-reported-by-run-and-deny-option.md), [0206](../decisions/0206-test-command-line-and-exit-status.md), [0207](../decisions/0207-fmt-command-line.md), [0208](../decisions/0208-test-report-destination.md), [0222](../decisions/0222-http-tests-over-loopback.md), [0223](../decisions/0223-interrupt-tests-in-separate-process.md), [0224](../decisions/0224-golden-test-format-for-first-release.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md), [0245](../decisions/0245-perl-virtues-source-and-fact-check-timing.md), [0258](../decisions/0258-sixteen-byte-value-enum.md), [0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md), [0260](../decisions/0260-heap-and-unsafe-boundary.md), [0281](../decisions/0281-heap-number-in-slot-and-contract-safety.md), [0266](../decisions/0266-task-and-resource-state-machines.md), [0268](../decisions/0268-staged-runtime-rebuild.md), [0274](../decisions/0274-deterministic-scheduler-and-virtual-time-for-tests.md), [0285](../decisions/0285-implementer-assignment-for-first-release.md), [0276](../decisions/0276-reference-interpreter-shares-builtin-bodies.md), [0284](../decisions/0284-task-builtins-tested-by-scripts.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0287](../decisions/0287-stdlib-details-decided-in-u3-plan.md)
+- 未決事項: [OPEN-038](../open-issues.md#open-038), [OPEN-051](../open-issues.md#open-051), [OPEN-062](../open-issues.md#open-062), [OPEN-064](../open-issues.md#open-064)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 14
 
 ## 目的と範囲
@@ -88,6 +88,7 @@ API を呼ぶテストの実行には、テスト用のハンドラ表を使う�
 | `<名前>.stderr` | 期待する、スクリプトが書いた標準エラー出力と `main` の `Result.Error` の文字列 | `run` で書くとき |
 | `<名前>.diag.json` | 期待する診断、実行時エラー、資源の不足の報告。JSON の形式（[ADR 0032](../decisions/0032-rust-style-text-and-json.md)）で、一行に一つ | 報告があるとき |
 | `<名前>.args` | スクリプトに渡すコマンドライン引数。一行に一つ | 任意 |
+| `<名前>.stdin` | スクリプトの標準入力に与えるバイト列。ないときは空の入力を与える | 任意 |
 | `<名前>.files/` | `File.readText` で読めるファイル。テスト用のハンドラ表に与える | 任意 |
 | `<名前>.text.stderr` | 期待する、文章の形式の診断 | 任意。文章の体裁を確かめるテストだけに置く |
 
@@ -110,7 +111,7 @@ API を呼ぶテストの実行には、テスト用のハンドラ表を使う�
 
 | 方式 | 確かめるもの |
 |---|---|
-| `test` | 終了状態（[ADR 0206](../decisions/0206-test-command-line-and-exit-status.md)）、`.stdout` のテストの結果の報告と集計（[ADR 0208](../decisions/0208-test-report-destination.md)。形の細部は [OPEN-058](../open-issues.md#open-058)）、検査の誤りの診断 |
+| `test` | 終了状態（[ADR 0206](../decisions/0206-test-command-line-and-exit-status.md)）、`.stdout` のテストの結果の報告と集計（[ADR 0208](../decisions/0208-test-report-destination.md)、形は [ADR 0252](../decisions/0252-test-report-format.md)）、検査の誤りの診断 |
 | `fmt` | 整形の結果が `.formatted` と一致すること。整形は、テストの一時ディレクトリに写したものに対して行い、元のファイルを変えない（[ADR 0207](../decisions/0207-fmt-command-line.md)） |
 | `fmt-check` | `--check` を指定したときの終了状態と標準エラー出力（[ADR 0207](../decisions/0207-fmt-command-line.md)） |
 
@@ -139,7 +140,7 @@ API を呼ぶテストの実行には、テスト用のハンドラ表を使う�
 
 ### 差分テスト
 
-【決定】同じプログラムを参照インタプリタと VM で実行し、結果を突き合わせる差分テストを行う（[ADR 0018](../decisions/0018-reference-interpreter.md)）。
+【決定】同じプログラムを参照インタプリタと VM で実行し、結果を突き合わせる差分テストを行う（[ADR 0018](../decisions/0018-reference-interpreter.md)）。参照インタプリタは、VM と値の実装を共有しない（[ADR 0268](../decisions/0268-staged-runtime-rebuild.md)）。共有すると、値の実装の不具合が両方に同じく現れ、差分テストで見つからないからである。ただし、組み込みの関数の本体は、参照インタプリタも VM と同じ実装を呼ぶ（[仮想機械](../02-impl/02-08-vm.md)の「参照インタプリタ」、[ADR 0276](../decisions/0276-reference-interpreter-shares-builtin-bodies.md)）。したがって、差分テストは評価・値の表現・ヒープ・VM の不具合を見つける手段であり、組み込みの関数の不具合は見つけない。組み込みの関数は、関数ごとの単体テストで確かめる。ただし、応答を組み立てるだけの `Task`・`TaskGroup` の七つの組み込みの関数は、スクリプトの受け入れテストで確かめ、独立した境界条件（`Task.withTimeout` の期限の正規化）だけを単体テストにする（[ADR 0284](../decisions/0284-task-builtins-tested-by-scripts.md)）。
 
 【方針】差分テストの対象は、`run` のゴールデンテストと、[性能](07-02-performance.md)のベンチマーク（入力を小さくしたもの）のうち、タスクを起動する組み込みの関数を使わないものとする。タスクはコア計算に含まれず、参照インタプリタはタスクを起動する組み込みの関数を実行しない（[中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md)の「参照インタプリタの範囲」、[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)）。
 
@@ -191,6 +192,7 @@ API を呼ぶテストの実行には、テスト用のハンドラ表を使う�
 |---|---|---|
 | 標準ライブラリのソースのすべてのモジュールが、名前解決と型検査を誤りなしに通る。`@builtin` の名前がすべて組み込みの関数の表にあり、宣言の型が Rust の実装と合う | [名前解決とモジュール読込](../02-impl/02-04-resolver.md)の「標準ライブラリのソースの持ち方」 | 段ごとの単体テスト（名前解決と型検査）。宣言の型と Rust の実装を突き合わせる方法は実装プランで定める |
 | 組み込みの関数の実装が持つ構成子のタグの定数が、標準ライブラリのソースの型の宣言の順と一致する | [バイトコードとコード生成](../02-impl/02-07-bytecode.md)の「コンパイル済みプログラム」 | 段ごとの単体テスト（コード生成） |
+| 組み込みの関数が、[標準ライブラリ](../03-interop/03-06-stdlib.md)などで定めた意味どおりに結果・実行時エラー・応答を返す。参照インタプリタは VM と同じ組み込みの関数の実装を呼ぶので、差分テストではこの確認を受け持てない | [仮想機械](../02-impl/02-08-vm.md)の「参照インタプリタ」（[ADR 0276](../decisions/0276-reference-interpreter-shares-builtin-bodies.md)） | 段ごとの単体テスト（ランタイムの組み込みの関数）。組み込みの関数ごとに書く。応答を組み立てるだけの `Task`・`TaskGroup` の七つは、スクリプトの受け入れテストで確かめる（[ADR 0284](../decisions/0284-task-builtins-tested-by-scripts.md)） |
 | タスクの切り替え、待ち、取り消しの動き | [仮想機械](../02-impl/02-08-vm.md)の「タスクの切り替え」 | 段ごとの単体テスト（VM のスケジューラ）。切り替える順序を指定できるスケジューラで、切り替えの位置ごとにテストが与えた順序でタスクを選ぶ |
 | IO の二つの方式で、タスクの待ちを含めて同じ結果になる | [ランタイム](../02-impl/02-09-runtime.md)の「IO 実行器」 | IO の方式のテスト |
 | リストの操作の列が、単純なモデル（Rust の `Vec`）と同じ要素の並びと長さを作る。どの関数も引数のリストを変更しない | [標準ライブラリ](../03-interop/03-06-stdlib.md)の「List の内部の表現」（[ADR 0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md)） | 段ごとの単体テスト（ランタイムの永続コレクション） |
@@ -206,11 +208,11 @@ API を呼ぶテストの実行には、テスト用のハンドラ表を使う�
 
 【決定】HTTP のテストの主な方法は、実際のループバックの通信とする。`network` の区分のゴールデンテストでは、一つのスクリプトが `Http.listen("127.0.0.1", 0)` で待ち受け、選ばれたポートを `Http.listenerPort` で調べ（[ネットワークのモジュール](../03-interop/03-09-network.md)の「サーバ」）、サーバをタスクで動かして、同じスクリプトからクライアントとして接続する。イベントループ、タスクの切り替え、HTTP の要求の解析と応答の生成を、外部のネットワークに出ずに一緒に確かめる（[ADR 0222](../decisions/0222-http-tests-over-loopback.md)）。
 
-【決定】テスト用のハンドラ表のネットワークの項目は、ループバックでは起こしにくい失敗（名前の解決の失敗、接続の拒否、接続のリセット、時間切れ）を、決まった結果として作るためだけに使う（[ADR 0222](../decisions/0222-http-tests-over-loopback.md)、[ランタイム](../02-impl/02-09-runtime.md)の「組み込みの操作とハンドラ表」）。失敗を指定する手段（期待値と並べたファイルに書くか、Rust のテストから与えるか）は、実装プランで定める。
+【決定】テスト用のハンドラ表のネットワークの項目は、ループバックでは起こしにくい失敗（名前の解決の失敗、接続の拒否、接続のリセット、時間切れ）を、決まった結果として作るためだけに使う（[ADR 0222](../decisions/0222-http-tests-over-loopback.md)、[ランタイム](../02-impl/02-09-runtime.md)の「組み込みの操作とハンドラ表」）。【方針】失敗は、Rust のテストから、処理系の実行に差し替えの部品として渡すテスト用のハンドラ表で与える。ゴールデンテストの形式に、失敗を指定するファイルを加えない（[ADR 0287](../decisions/0287-stdlib-details-decided-in-u3-plan.md)）。
 
 【方針】`network` の区分のテストのスクリプトは、ループバックのアドレスにだけ接続する。
 
-【決定】HTTPS のクライアントは外部に接続しなければ確かめられないので、証明書の検証を伴う接続は処理系のテストに含めない。手元で動かす TLS のサーバで TLS の組み立てを確かめるかは、初回リリース版の実装プランで決める（[ADR 0222](../decisions/0222-http-tests-over-loopback.md)）。
+【決定】HTTPS のクライアントは外部に接続しなければ確かめられないので、証明書の検証を伴う接続は処理系のテストに含めない。【方針】初回リリース版では、手元で動かす TLS のサーバで TLS の組み立てを確かめることもしない。リリースの試験に、公開の `https` の URL へ一度接続する手順を、任意の確認として置く（[ADR 0222](../decisions/0222-http-tests-over-loopback.md)、[ADR 0287](../decisions/0287-stdlib-details-decided-in-u3-plan.md)）。
 
 ### 中断の要求のテスト（初回リリース版）
 
@@ -224,6 +226,12 @@ API を呼ぶテストの実行には、テスト用のハンドラ表を使う�
 【決定】解放の途中で二度目のシグナルを送り、解放を待たずに OS の既定の振る舞いで終えることを確かめる場合を一つ置く。これらのテストは Unix に限る。初回リリース版の対象の環境は、どれも Unix 系である（[ADR 0176](../decisions/0176-first-release-targets-and-static-linux-build.md)）。
 
 【方針】`test` の実行中の中断（実行中のテストを止め、それまでの結果を報告して終了状態 130 で終える。[スクリプト実行と埋め込み](../02-impl/02-11-embedding.md)の「テストの実行」）も、同じ手順で一つ確かめる。
+
+### 順序を与えるスケジューラと仮想の時間（初回リリース版）
+
+【決定】処理系のテストのために、スケジューラの次に進めるタスクを選ぶ部品、時計とタイマー、作業用のスレッドに出す仕事の実行を、テスト用の実装に差し替えられるようにする（[ADR 0274](../decisions/0274-deterministic-scheduler-and-virtual-time-for-tests.md)）。テスト用の実装は、テストが与えた順序でタスクを選び、テストが時間を進めたときにだけタイマーを満了させ、テストが指示した時点で仕事を VM のスレッドで実行して完了を返す。差し替えは処理系のテストだけが行い、利用者が書くテスト（`benitoite test`）と CLI からは使えない。
+
+【決定】切り替えの順序に依存する振る舞いの再現テスト（[OPEN-062](../open-issues.md#open-062) の項目を含む）は、実時間の待ちやスレッドの実行の順序の偶然に頼らず、この仕組みで順序を与えて書く。
 
 ### 実装の規約と静的な検査
 
@@ -250,7 +258,7 @@ API を呼ぶテストの実行には、テスト用のハンドラ表を使う�
 
 | lint | 検出するもの | 誤りにする理由 |
 |---|---|---|
-| `unsafe_code`（rustc。`forbid` にする） | `unsafe` のブロックなど | 値の表現とランタイムを作り直すまでは、`unsafe` を使わない（[ADR 0079](../decisions/0079-rust-readings-of-go-based-decisions.md)）。`forbid` は、ソースの中の指定で緩められない（[rustc の lint の水準](https://doc.rust-lang.org/rustc/lints/levels.html)）。【方針】初回リリース版の実装プランを作るときの作り直しで `unsafe` を許す（[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)）。許す範囲は作り直しの設計で決め（[OPEN-039](../open-issues.md#open-039)）、水準を `forbid` から `deny` に改めて、指定したモジュールでだけ `#[allow(unsafe_code)]` を書く形などにする。許す箇所は `AGENTS.md` の `#[allow]` を書いてよい箇所の表に載せる |
+| `unsafe_code`（rustc。`deny` にする） | `unsafe` のブロックなど | `unsafe` は、ランタイムのヒープのモジュールでだけ使う（[ADR 0260](../decisions/0260-heap-and-unsafe-boundary.md)）。水準を `deny` にし、ヒープのモジュールでだけ `#[allow(unsafe_code)]` を書く。許す箇所は `AGENTS.md` の `#[allow]` を書いてよい箇所の表に載せる。振り分けのループで範囲の確かめを省くために `unsafe` を許すかは、[OPEN-064](../open-issues.md#open-064) で決める。作り直しの前の最小実行版の実装は、`forbid` のまま `unsafe` を使わない（[ADR 0079](../decisions/0079-rust-readings-of-go-based-decisions.md)、[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)） |
 | `wildcard_enum_match_arm` | 列挙型の `match` での `_` の分岐 | 構文木・値・命令の種類を加えたときに、処理の漏れを型の検査で見つけるため（[実装言語の比較](../08-appendix/08-01-implementation-language-comparison.md)） |
 | `unwrap_used`・`expect_used` | `Option`・`Result` の `unwrap`・`expect` | 失敗を panic にせず、`Result` で扱うため |
 | `panic`・`todo`・`unimplemented` | `panic!`・`todo!`・`unimplemented!` | panic は処理系の不具合に限る（[ランタイム](../02-impl/02-09-runtime.md)の「panic 境界」）。作りかけの箇所を残さない |
@@ -272,9 +280,22 @@ API を呼ぶテストの実行には、テスト用のハンドラ表を使う�
 - 利用者のプログラムの大きさや深さに比例して、処理系の再帰を深くしない。構文解析器の入れ子の深さの上限（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)の「入れ子の深さ」）の内側で再帰するか、明示の積み重ねを使う（[仮想機械](../02-impl/02-08-vm.md)）。
 - 依存するクレートは、実装プランに書いたものに限る。外部のコードを写さない。使う場合は出典とライセンスを記録する（[ADR 0003](../decisions/0003-license.md)）。
 
-【方針】実装を確かめるときは、道具で確かめにくい点を、決まった観点の一覧で読む。一覧には、`#[allow]` とその理由、`as` による数値の変換、誤りを文字列で表している箇所、実装プランの型から外れた箇所を含める。最小実行版では、オーケストレータの Claude Code がすべての作業を確かめ、Opus が実装した作業は Codex も確かめる（[ADR 0085](../decisions/0085-review-assignment-for-minimal.md)。実装の割り当ては [ADR 0084](../decisions/0084-implementer-assignment-for-minimal.md)）。初回リリース版の実装と確認の分担は【未決】である（[OPEN-059](../open-issues.md#open-059)）。最小実行版と同じく、初回リリース版の実装プランを作るときに、各作業の難しさを見積もってから決める。
+【方針】実装を確かめるときは、道具で確かめにくい点を、決まった観点の一覧で読む。一覧には、`#[allow]` とその理由、`as` による数値の変換、誤りを文字列で表している箇所、実装プランの型から外れた箇所を含める。最小実行版では、オーケストレータの Claude Code がすべての作業を確かめ、Opus が実装した作業は Codex も確かめる（[ADR 0085](../decisions/0085-review-assignment-for-minimal.md)。実装の割り当ては [ADR 0084](../decisions/0084-implementer-assignment-for-minimal.md)）。【決定】初回リリース版では、実装は Codex を基本とし、難易度 5 の作業だけを Claude Opus 5.5 のサブエージェントが実装して GPT-6-Astra がレビューする。Codex が実装した作業はオーケストレータが確かめる（[ADR 0285](../decisions/0285-implementer-assignment-for-first-release.md)）。
 
 【方針】命名、コメント、モジュールの分け方など、型と道具とテストで決めにくい書き方の規約は、リポジトリの AGENTS.md の「実装の規約」の節に書く。会話ごとのプロンプトに頼らず、どの LLM とハーネスも同じ規約を読むようにするためである。
+
+### ヒープとランタイムの確かめ方（初回リリース版）
+
+【決定】ヒープのモジュールの `unsafe` と、タスクとリソースの状態の扱いは、次のテストで確かめる（[ADR 0260](../decisions/0260-heap-and-unsafe-boundary.md)、[ADR 0266](../decisions/0266-task-and-resource-state-machines.md)）。完了の条件の検査（`scripts/check.sh`）に入れ、nightly の Rust が要るものや時間のかかるものは、fuzzing と同じく別のスクリプトで行う。GitHub Actions は使わない。
+
+| 確かめること | テストの種類 |
+|---|---|
+| ヒープのモジュールと小さな VM のプログラムに未定義動作がない | Miri での単体テスト【要検証：Miri で動かせる範囲】 |
+| 根の数え漏れがない | 回収の強制。安全点ごとに必ず回収する設定で、ゴールデンテストと差分テストを走らせる。作り直しの第 1 段では、二つのメモリの管理の方式（[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)）の両方で走らせる |
+| ヒープの形が壊れていない | デバッグのビルドでのヒープの検証器。解放した領域を毒で埋める。値に確保の世代を持たせ、参照を作る前に生存を確かめる |
+| 回収しない区間の外へ値を持ち出せない。別の実行のヒープの値を混ぜられない。作業用のスレッドへ値を渡せない | コンパイルの失敗のテスト。根の保存領域を通して別のヒープの値を混ぜる誤りは、保存した値のヒープの番号の比較（すべてのビルド。[ADR 0281](../decisions/0281-heap-number-in-slot-and-contract-safety.md)）の単体テスト |
+| 回収が、到達できる対象を残し、到達できない対象を除く | 確保・参照の書き換え・根の追加と削除を無作為に組み合わせ、独立に計算した到達可能性と比べるテスト |
+| タスクの状態とリソースの状態の組み合わせごとの遷移（[ランタイム](../02-impl/02-09-runtime.md)の「リソースの追跡」） | 段ごとの単体テスト（VM のスケジューラとランタイム）。取り消しと完了の順序を入れ替えて、返却と解放が一度ずつ行われることを確かめる |
 
 ### 受け入れ例と仕様の項目の対応
 
@@ -302,13 +323,13 @@ API を呼ぶテストの実行には、テスト用のハンドラ表を使う�
 - 最小実行版の構文解析器は初回リリース版の構文を読めない（[構文](../01-spec/01-02-syntax.md)の「最小実行版に含めない構文」）ので、例を最小実行版の範囲と初回リリース版の範囲に分ける。最小実行版の範囲の例は、見出しに「（初回リリース版）」を付けていない節の例のうち、初回リリース版の構文を含まないものである。初回リリース版の構文を含むのに「（初回リリース版）」の節にない例は、処理系で読む検査（次項）の側で、初回リリース版の構文に固有の字句（`import`、`trait` など）を含むかで見分け、最小実行版の範囲から除く。
 - 最小実行版の範囲の例は、処理系の字句解析器と構文解析器で読む Rust のテスト（処理系のクレートの `tests/spec_examples.rs`）でも検査する。この検査は、処理系の構文解析器が最小実行版の文法と一致しているかも確かめる。
 - 文法で読めなくて正しい例（字句の一覧、誤りの例、本体を省略した宣言など）は、Python の道具と Rust のテストの両方に、同じ一覧として登録する。
-- 初回リリース版の構文解析器を実装するときに、すべての例を処理系で読む形に移し、Python の道具を削除する。
+- 付録の[関数型言語の構文の比較](../08-appendix/08-04-fp-syntax-comparison.md)の Benitoite の例（`text` のコードブロック）も、同じ道具で確かめる。付録は、その例が初回リリース版の文法で読めることを前提に書いてあるからである。
+- 初回リリース版の構文解析器を実装するときに、言語仕様と付録のすべての例を処理系で読む形に移し、Python の道具を削除する。両方の例を処理系で読めるようになるまで、Python の道具を消さない。
+- 言語仕様の例は、非公式のモジュールも標準に加えた後の名前で import を書く（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)の「標準ライブラリの名前空間と prelude（初回リリース版）」）。処理系で例を検査するときは、非公式のモジュールの import の宣言を、取り込みの名前（`import Benitoite.Unofficial.IO.Console`）に置き換えてから検査する（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)）。
 
 ## 未決事項
 
 - [OPEN-051](../open-issues.md#open-051): 外部の関数（WASM）の詳細
 - [OPEN-038](../open-issues.md#open-038): テストの設計の原則と、Khorikov の書籍の対応の確認
-- [OPEN-039](../open-issues.md#open-039): 初回リリース版の値の表現と、その実装に `unsafe` を使うか（値の表現とランタイムの作り直しで決める。[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)）
-- [OPEN-059](../open-issues.md#open-059): 初回リリース版の実装と確認の分担
-- [OPEN-058](../open-issues.md#open-058): テストの結果の報告の形の細部（`test` の方式のゴールデンテストの期待値の形）
 - [OPEN-062](../open-issues.md#open-062): 設計書の 2 回目のレビューで指摘された実行時の振る舞いの再現（R13）
+- [OPEN-064](../open-issues.md#open-064): 検証器を通したうえでの、振り分けのループの範囲の確かめの省略（省く場合は `unsafe_code` の許す箇所を改める）

@@ -1,7 +1,7 @@
 # 型検査器
 
 - 状態: 確定
-- 関連ADR: [0009](../decisions/0009-typing-without-type-classes.md), [0015](../decisions/0015-shared-program-per-execution-state.md), [0019](../decisions/0019-stop-after-failing-stage.md), [0022](../decisions/0022-side-tables-keyed-by-node.md), [0023](../decisions/0023-constraint-based-inference.md), [0024](../decisions/0024-continue-after-type-errors.md), [0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0050](../decisions/0050-pipe-with-parenthesized-rhs.md), [0059](../decisions/0059-higher-kinded-traits-without-prelude-monad.md), [0061](../decisions/0061-trait-coherence-orphan-and-overlap.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0082](../decisions/0082-equality-type-by-declaration-summary.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0166](../decisions/0166-warnings-reported-by-run-and-deny-option.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md)
+- 関連ADR: [0009](../decisions/0009-typing-without-type-classes.md), [0015](../decisions/0015-shared-program-per-execution-state.md), [0019](../decisions/0019-stop-after-failing-stage.md), [0022](../decisions/0022-side-tables-keyed-by-node.md), [0023](../decisions/0023-constraint-based-inference.md), [0024](../decisions/0024-continue-after-type-errors.md), [0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0050](../decisions/0050-pipe-with-parenthesized-rhs.md), [0059](../decisions/0059-higher-kinded-traits-without-prelude-monad.md), [0061](../decisions/0061-trait-coherence-orphan-and-overlap.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0082](../decisions/0082-equality-type-by-declaration-summary.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0166](../decisions/0166-warnings-reported-by-run-and-deny-option.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0272](../decisions/0272-list-spread-in-list-literals.md), [0279](../decisions/0279-no-duplicate-method-names-in-trait.md)
 - 未決事項: [OPEN-062](../open-issues.md#open-062)
 - 移行元: [設計メモ](../sources/fp-language-design.md) なし
 
@@ -24,15 +24,16 @@
 - 公開の契約の誤り（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)の「公開（初回リリース版）」）
 - 定数どうしの参照の循環と、型の別名の循環
 - 上位の型クラスの関係の循環
-- 孤立した実装（[型システム](../01-spec/01-06-type-system.md)の「型クラス（初回リリース版）」、[ADR 0061](../decisions/0061-trait-coherence-orphan-and-overlap.md)）と、実装の中の関数の名前が型クラスのメソッドと一対一に対応しないこと（メソッドの欠けと、宣言にないメソッド）
-- `case` のパターンの変数に、その位置で見える定数と同じ名前を付けた誤り（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）
+- 実装の中の関数の名前が型クラスのメソッドと一対一に対応しないこと（メソッドの欠けと、宣言にないメソッド）と、一つの型クラスの中のメソッドの名前の重なり（[ADR 0279](../decisions/0279-no-duplicate-method-names-in-trait.md)）
+- `match` の分岐のパターンの変数に、その位置で見える定数と同じ名前を付けた誤り（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）
+- 束縛の文の `bind` と `shadow` の書き分けの誤りと、ラムダの引数・`match` の分岐のパターンの変数・`handle` の節の引数・`with` の束縛が局所の名前を隠す誤り（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)の「シャドーイング」、[ADR 0255](../decisions/0255-bind-and-shadow.md)）
 - `main` の位置。名前解決は、実行を始めるモジュールのトップレベルの関数 `main` だけを入口として引き、その束縛を型検査器に渡す
 - `@deprecated` を付けた宣言の参照の警告（[ADR 0119](../decisions/0119-attributes-test-and-deprecated.md)）
 
 【方針】次の誤りは、構文上の文脈だけで決まるので、構文解析器が報告する（[字句解析器と構文解析器](02-03-frontend.md)の「文脈の制限」）。型検査器はこれらを検査しない。
 
 - `resume` を `handle` の節の中に直接書いていないこと（節の中のラムダと `lazy` の本体の中を含む。[ADR 0155](../decisions/0155-resume-not-in-lazy.md)）
-- `lazy` の本体の中と、`case` の分岐のガードの中の `return` と `try`（内側のラムダの中を除く）
+- `lazy` の本体の中と、`match` の分岐のガードの中の `return` と `try`（内側のラムダの中を除く）
 - 利用者のソースの `@builtin`、本体のない関数の宣言、組み込みの制約 `ordered`（[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)）
 
 ## 仕様
@@ -57,7 +58,7 @@
 
 | 表 | 鍵 | 値 | 使う段 |
 |---|---|---|---|
-| 式の型 | 式・パターン・`let` 文・引数のノード番号 | 型 | 脱糖 |
+| 式の型 | 式・パターン・束縛の文・引数のノード番号 | 型 | 脱糖 |
 | 型の引数 | 多相な名前（トップレベルの関数、構成子、標準ライブラリの関数、エフェクトの操作、型クラスのメソッド、レコードの構築とフィールドを取り出す関数）を使う箇所のノード番号 | その使用で型パラメータとエフェクト変数を置き換えた型（型構成子を含む）とエフェクトの集合 | 脱糖（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の `[T̄; Ē]`） |
 | 演算子の型 | 二項演算と単項演算のノード番号 | オペランドの型 | 脱糖（同 `⊕_T`） |
 | 補間の型 | 文字列補間の `${e}` の e のノード番号 | e の型 | 脱糖（同 `str_T`） |
@@ -101,6 +102,7 @@
 【方針】実装の宣言について、次を検査する（[型システム](../01-spec/01-06-type-system.md)の「型クラス（初回リリース版）」）。
 
 - 対象の形: 型構成子に相異なる型パラメータを並べた形か、型パラメータを持たない型でなければならない。関数の型は対象にできない。型構成子を引数にとる型クラスの実装では、対象は型引数の個数が合う型構成子の名前でなければならない。実装の型パラメータは、すべて対象に現れなければならない。
+- 孤立した実装: 対象の形の検査で決めた対象の型構成子と、型クラスについて、`implement` を、型クラスを宣言したモジュールか、対象の型構成子を宣言したモジュールに書いていなければ誤りとする（[型システム](../01-spec/01-06-type-system.md)の「型クラス（初回リリース版）」、[ADR 0061](../decisions/0061-trait-coherence-orphan-and-overlap.md)）。モジュールは、束縛の番号が持つモジュールの ID で比べる。診断コードは型クラスの区分（`E07nn`）である。
 - 重なり: 同じ型クラスと型構成子の組に、二つ以上の実装があれば誤りとする（[ADR 0061](../decisions/0061-trait-coherence-orphan-and-overlap.md)）。対象の形が上の制限を満たすので、二つの実装が重なるのは、型クラスと対象の型構成子が同じときに限る。型検査器は、型クラスと型構成子の組から実装を引く表を作り、重なりを検査し、制約の解決に使う。
 - 上位の型クラスの制約: 型クラス C の上位の型クラス S ごとに、`S[対象]` の制約を、実装の型パラメータの制約だけを使える制約として、後述の「型クラスの制約の解決」の手順で解く。解けなければ誤りとする。解いた辞書の求め方を「辞書の解決」の表に記録する。
 - メソッド: すべてのメソッドを一度ずつ定義し、宣言にないメソッドを定義していないことは、名前解決が名前で検査済みである（[名前解決とモジュール読込](02-04-resolver.md)の「宣言の検査」）。各メソッドの型は、型クラスの宣言のメソッドの型の、型クラスの引数を対象で置き換えたものと等しくなければならない。ただし、エフェクトは宣言のエフェクトに含まれればよい（[ADR 0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md)）。
@@ -109,11 +111,11 @@
 
 【方針】定数の宣言は、次の順に検査する。
 
-1. 形の検査: `=` の右辺が、[構文](../01-spec/01-02-syntax.md)の「定数（初回リリース版）」の定数式の形でなければ誤りとし、引数のない関数として書く方法を修正案として示す。宣言の型は、型パラメータを含まない。
+1. 形の検査: `=` の右辺が、[構文](../01-spec/01-02-syntax.md)の「定数（初回リリース版）」の定数式の形でなければ誤りとし、引数のない関数として書く方法を修正案として示す。呼び出してよい関数（`Map.fromList` など）は、綴りではなく名前解決が決めた束縛で `Benitoite` の名前空間のどの関数かを照合する（[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)）。宣言の型は、型パラメータを含まない。
 2. 型の検査: 定数式を、関数の本体と同じく制約の生成と解決で検査する。エフェクトの受け先（後述）は空集合であり、定数式の型を宣言の型と等しくする（[型システム](../01-spec/01-06-type-system.md)の「定数の型（初回リリース版）」）。定数を参照する箇所の型は宣言の型なので、各定数は独立に検査できる。
 3. 評価: 型の検査を通った定数の値を、定数の評価器で求める。
 
-【方針】定数の評価器は、型の付いた AST の定数式を直接評価する、型検査の段の中の評価器である。基本型の演算、文字列補間の変換、`Map.fromList`・`Set.fromList` は、実行時と同じ組み込みの関数の実装（Rust の関数）を呼ぶので、同じ式の値は実行時の値と一致する。評価器は、次のように動く。
+【方針】定数の評価器は、型の付いた AST の定数式を直接評価する、型検査の段の中の評価器である。基本型の演算、文字列補間の変換、`Map.fromList`・`Set.fromList` は、実行時と同じ規則で計算し、同じ式の値を実行時の値と一致させる。実行時の組み込みの関数はヒープの値を受け取るので、評価器はそれを直接は呼ばない。そのかわり、値の表現によらない計算（`Decimal` の算術と文字列への変換、`Float` の文字列への変換、鍵の順序のうち基本型の値どうしの比較）を、基本のデータ（整数、浮動小数点数、`Decimal` の表現、文字列の断片）の上の Rust の関数として共有のモジュールに置き、評価器と実行時の組み込みの関数の両方がそれを呼ぶ。構成子の値やリストを辿る部分は、値の表現ごとに評価器と組み込みの関数がそれぞれ持ち、同じ規則で書く。評価器は、次のように動く。
 
 - 各定数を一度だけ評価し、値を覚える。定数の名前を評価するときは、その定数の値を先に求める。定数どうしの参照は循環しない（名前解決が検査済み）ので、評価は終わる。
 - 計算が実行時エラーの条件（`Integer` の溢れ、0 による除算など。[基本型の意味論](../01-spec/01-04-types-basic.md)）に当たれば、型検査の誤りとし、その条件と、計算が失敗した部分式の位置を示す（[ADR 0123](../decisions/0123-top-level-constants.md)）。
@@ -165,11 +167,11 @@
 | リソース(A) | 型 A はリソースの型である |
 | 含まれる(X, Y) | エフェクト X は、エフェクト Y に含まれる |
 
-【決定】流れ込む制約を生成する位置は、関数の呼び出し（メソッドの呼び出しを含む）の各引数、リストリテラルの各要素、`if` の各分岐と `case` の各分岐の本体、`let` の型注釈、ラムダの戻り値の型注釈、`return` の式と最も内側の関数かラムダの戻り値の型、関数の本体と宣言した戻り値の型である（[ADR 0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md)）。
+【決定】流れ込む制約を生成する位置は、関数の呼び出し（メソッドの呼び出しを含む）の各引数、リストリテラルの各要素、`if` の各分岐と `match` の各分岐の本体、束縛の文の型注釈、ラムダの戻り値の型注釈、`return` の式と最も内側の関数かラムダの戻り値の型、関数の本体と宣言した戻り値の型である（[ADR 0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md)）。
 
-【方針】初回リリース版では、これに、レコードの構築と更新の各フィールドの式（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)の「レコード（初回リリース版）」）、`handle` の本体と各節の本体、`resume` の引数と節の操作の戻り値の型を加える（[型システム](../01-spec/01-06-type-system.md)の「エフェクトの包含」）。ほかの位置の型の一致は、等しい制約で表す。
+【方針】初回リリース版では、これに、リストリテラルの展開の式、レコードの構築と更新の各フィールドの式（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)の「レコード（初回リリース版）」）、`handle` の本体と各節の本体、`resume` の引数と節の操作の戻り値の型を加える（[型システム](../01-spec/01-06-type-system.md)の「エフェクトの包含」）。ほかの位置の型の一致は、等しい制約で表す。
 
-各制約は理由を持つ。理由は、制約が生じた位置の span と、生じた事情の種類（「f の第 2 引数」「if の二つの分岐」「let の型注釈」など）と、関連する位置（引数の型を宣言した箇所など）からなる。理由は、制約が解けなかったときの診断に使う。
+各制約は理由を持つ。理由は、制約が生じた位置の span と、生じた事情の種類（「f の第 2 引数」「if の二つの分岐」「束縛の文の型注釈」など）と、関連する位置（引数の型を宣言した箇所など）からなる。理由は、制約が解けなかったときの診断に使う。
 
 ### 制約の生成
 
@@ -188,17 +190,17 @@
 | パイプ `x \|> e` | [構文](../01-spec/01-02-syntax.md)の規則で展開した呼び出しとして扱う。`e` が括弧の式なら規則 2 で `(e)(x)` とし、規則 1 のプレースホルダの有無は `e` の呼び出しの直接の引数だけで判定する（[ADR 0050](../decisions/0050-pipe-with-parenthesized-rhs.md)） |
 | 二項演算・単項演算 | [型システム](../01-spec/01-06-type-system.md)の「演算子の型付け」に従い、オペランドの型を `fresh` の α と等しくし、集まり(α, S) または等値(α) を加える。α を「演算子の型」の表に記録する |
 | 文字列補間 | 各 `${e}` について、集まり(e の型, 文字列補間の集まり)。e の型を「補間の型」の表に記録する。型は `String` |
-| リストリテラル | 各要素について流れ込む(要素の型, α)。型は `List[α]` |
+| リストリテラル | 各要素について流れ込む(要素の型, α)。初回リリース版の展開の要素 `..e` については流れ込む(e の型, `List[α]`)（[ADR 0272](../decisions/0272-list-spread-in-list-literals.md)）。型は `List[α]` |
 | レコードの構築 `R(g1: e1, …)` | R の型パラメータを `fresh` の ᾱ に置き換え、各フィールドについて流れ込む(式の型, フィールドの型[ᾱ])。書かないフィールド、宣言にないフィールド、二度書いたフィールドは誤りとする。型は `R[ᾱ]` |
 | レコードの更新 `R(..e, g1: e1, …)` | 等しい(e の型, `R[ᾱ]`)（ᾱ は `fresh`）。各フィールドについて流れ込む(式の型, フィールドの型[ᾱ])。型は `R[ᾱ]` |
 | `if` | 等しい(条件の型, `Boolean`)。各分岐について流れ込む(分岐の型, α)。`else` がなければ等しい(分岐の型, `Unit`) で、型は `Unit` |
-| `case` | 各分岐の各選択肢について等しい(パターンの型, 対象の型)。一つの分岐の選択肢が束縛する同じ名前の変数の型を等しくする。ガードは、E を空集合として辿り、等しい(ガードの型, `Boolean`)。各分岐の本体について流れ込む(本体の型, α) |
-| ブロック | 最後でない式文について等しい(式の型, `Unit`)。`let x: T = e` は流れ込む(e の型, T) で、x の型は T。型注釈がなければ、x の型は e の型とする。`let p = e`（p が変数と `_` 以外のパターン）は等しい(p の型, e の型)。ブロックの型は、最後の文が式ならその型、`let` 文なら `Unit`、文がなければ `Unit` |
+| `match` | 各分岐の各選択肢について等しい(パターンの型, 対象の型)。一つの分岐の選択肢が束縛する同じ名前の変数の型を等しくする。ガードは、E を空集合として辿り、等しい(ガードの型, `Boolean`)。各分岐の本体について流れ込む(本体の型, α) |
+| ブロック | 最後でない式文について等しい(式の型, `Unit`)。式文が名前と式の比較 `x = e` で、型が `Boolean` のときは、診断は変数を書き換えられないことと、`shadow x <- e` で同じ名前を束縛し直す書き方を示す（[構文](../01-spec/01-02-syntax.md)の「演算子の優先順位と結合性」）。束縛の文 `bind x: T <- e`（`shadow` も同じ）は流れ込む(e の型, T) で、x の型は T。型注釈がなければ、x の型は e の型とする。`bind p <- e`（p が変数と `_` 以外のパターン）は等しい(p の型, e の型)。ブロックの型は、最後の文が式ならその型、束縛の文なら `Unit`、文がなければ `Unit` |
 | `return e` | 流れ込む(e の型, R)。型は `fresh` |
 | `try e` | 試行(e の型, R, τ)。型は τ（`fresh`） |
 | `with x1 = e1, …, xn = en do B end with` | 各 ei についてリソース(ei の型)。xi の型は ei の型。含まれる({State}, E)。型は B のブロックの型 |
 | `lazy B end lazy` | B を、E を空集合、R をなしとして辿る。型は `Lazy[B のブロックの型]` |
-| `handle B when … end handle` | T・εM・εh は `fresh`。B を、E を εM として辿り、流れ込む(B のブロックの型, T)。含まれる(εM, handled(H) と εh からなるエフェクト)。各節は、操作の引数を操作の引数の型（操作の型パラメータは、節ごとのほかの何とも等しくない型パラメータに置き換える）に束縛し、E を εh として辿り、流れ込む(節の本体の型, T)。含まれる(εh, E)。型は T |
+| `handle B with case … end handle` | T・εM・εh は `fresh`。B を、E を εM として辿り、流れ込む(B のブロックの型, T)。含まれる(εM, handled(H) と εh からなるエフェクト)。各節は、操作の引数を操作の引数の型（操作の型パラメータは、節ごとのほかの何とも等しくない型パラメータに置き換える）に束縛し、E を εh として辿り、流れ込む(節の本体の型, T)。含まれる(εh, E)。型は T |
 | `resume(v)` | 流れ込む(v の型, 節の操作の戻り値の型)。型は、囲む `handle` の T |
 | ラムダ | 引数の型は型注釈か `fresh`。本体の E' は、`uses` を書いていればその集合、書いていなければ `fresh` のエフェクトの変数。本体の R' は、戻り値の型注釈があればその型、なければ `fresh`。等しい(本体のブロックの型, `Unit`)。本体のブロックが必ず抜けなければ（[型システム](../01-spec/01-06-type-system.md)の「必ず抜ける文」）、等しい(R', `Unit`)。型は `function(引数の型) -> R'` エフェクト E' |
 | 関数の本体 | R は宣言した戻り値の型、E は宣言した `uses` の集合。等しい(本体のブロックの型, `Unit`)。R が `Unit` でなく、本体のブロックが必ず抜けなければ誤りとする |
@@ -224,7 +226,7 @@
 【方針】制約を生成しながら、名前が何を指すかで決まる次の書く位置の規則を検査する。構文上の文脈だけで決まる `resume`・`return`・`try` の位置は、構文解析器が検査済みである（前述の「前提」）。
 
 - `TaskGroup.open` は、`with` の束縛の式として呼び出す形（`with group = TaskGroup.open() do`）でだけ書ける。それ以外の位置の呼び出しと、関数の値としての参照は誤りとし、`with` で束縛する書き方を修正案として示す。`TaskGroup.open` かどうかは、綴りではなく束縛の番号で照合する（[ADR 0153](../decisions/0153-taskgroup-open-only-in-with.md)、[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)）。
-- `handle` の `when` には、エフェクトの操作を書かなければならない。ふつうの関数と、`State` を型に持つ組み込みの関数（可変のセルとタスクの集まりの関数、`Task.await`、リソースを解放する関数）を書くと誤りとする（[エフェクト](../01-spec/01-07-effects.md)）。
+- `handle` の節の `case` には、エフェクトの操作を書かなければならない。ふつうの関数と、`State` を型に持つ組み込みの関数（可変のセルとタスクの集まりの関数、`Task.await`、リソースを解放する関数）を書くと誤りとする（[エフェクト](../01-spec/01-07-effects.md)）。
 - 一つの `handle` に同じ操作の節を二つ書くと誤りとする。同じ操作かは、書いた綴りではなく操作の束縛の番号で比べる（[エフェクト](../01-spec/01-07-effects.md)）。
 
 【方針】`handle` の各節について、末尾で再開する節かどうかを構文から判定し、「ハンドラの節」の表に記録する。末尾で再開する節とは、節の本体のどの終わり方も末尾位置の `resume(v)` であり、節の中（内側のラムダの中を除く）に `return` と `try` がない節である（[並行処理](../01-spec/01-11-concurrency.md)の「タスクとハンドラ」、[ADR 0151](../decisions/0151-inherited-handlers-tail-resume-only.md)）。末尾位置は[評価意味論](../01-spec/01-08-evaluation.md)の「末尾呼び出し」の定め方に従う。この判定は誤りを生じない。
@@ -233,7 +235,7 @@
 
 【方針】集めた制約は、次の順に解く。
 
-1. 宣言と型注釈から生じた制約を解く。対象は、関数の本体の流れ込む(本体の型, 宣言した戻り値の型)と、`let` の型注釈とラムダの戻り値の型注釈から生じた流れ込む制約である。ラムダの引数の型注釈は、制約を介さず引数の型になる。ラムダの `uses` から生じる含まれる制約は、手順 3 で解く。宣言に合わない使い方の側を誤りとして報告するために、これらを先に解く（[ADR 0023](../decisions/0023-constraint-based-inference.md)）。
+1. 宣言と型注釈から生じた制約を解く。対象は、関数の本体の流れ込む(本体の型, 宣言した戻り値の型)と、束縛の文の型注釈とラムダの戻り値の型注釈から生じた流れ込む制約である。ラムダの引数の型注釈は、制約を介さず引数の型になる。ラムダの `uses` から生じる含まれる制約は、手順 3 で解く。宣言に合わない使い方の側を誤りとして報告するために、これらを先に解く（[ADR 0023](../decisions/0023-constraint-based-inference.md)）。
 2. 残りの型の制約（等しい、流れ込む、集まり、等値、鍵、試行、リソース）を解く。
 3. エフェクトの制約（含まれる）を解く。
 4. 型クラスの制約を解く（後述の「型クラスの制約の解決」）。
@@ -271,11 +273,11 @@
 ```text
 import Benitoite.IO.Console
 
-function choose[effect E](unused: function() -> Unit uses Console.Write, E, act: function() -> Unit uses E): Unit uses E
+function choose[effect E](unused: function() -> Unit uses Console.Write, E, act: function() -> Unit uses E) -> Unit uses E
   act()
 end function
 
-function main(): Unit
+function main() -> Unit
   choose(lambda() Console.writeLine("not called") end lambda, lambda() () end lambda)
 end function
 ```
@@ -304,15 +306,15 @@ end function
 【方針】制約をすべて解いた後、次を検査する。
 
 - 制約（集まり、等値、鍵、試行、リソース）を持つ型変数が決まっていなければ誤りとし、型注釈を書くよう示す（[型システム](../01-spec/01-06-type-system.md)、[エラー処理](../01-spec/01-09-errors.md)）。
-- 各 `case` について、網羅していないことと、選ばれない分岐があることを検査する（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。
-- 変数と `_` 以外のパターンを左辺に書いた `let` について、パターンが必ず照合することを検査する。必ず照合しなければ誤りとし、`case` で分岐する書き方を修正案として示す（同「必ず照合するパターン（初回リリース版）」）。
+- 各 `match` について、網羅していないことと、選ばれない分岐があることを検査する（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。
+- 変数と `_` 以外のパターンを左辺に書いた束縛の文について、パターンが必ず照合することを検査する。必ず照合しなければ誤りとし、`match` で分岐する書き方を修正案として示す（同「必ず照合するパターン（初回リリース版）」）。
 - 警告の対象を調べる（後述の「警告」）。
 
 【方針】パターンの検査は、パターンの行列に対する有用性（usefulness）の判定で行う。パターンの並び q が、パターンの並びの行列 P に対して有用であるとは、q に照合し、P のどの行にも照合しない値の並びが存在することである。行列を作るときは、コンマで並べた選択肢をそれぞれ一つの行にし、ガードの付いた分岐の行は、後の行を覆うものに数えないので行列に加えない。
 
-- `case` の分岐 pi は、その前の行（ガードの付いた分岐の行を除く）からなる行列に対して有用でなければ、選ばれない分岐である。ガードの付いた分岐も、この判定の対象にする（同「選ばれない分岐の検査」）。コンマで並べた選択肢は、それぞれを別の行として判定し、同じ分岐の前の選択肢も前の行に数える。選ばれない選択肢が一つでもあれば誤りとし、その選択肢を示す（`when 1, 1:` の 2 番目の `1` など）。診断に示す覆っている前の分岐は、次のように選ぶ。pj 一つからなる行列に対して pi が有用でない最初の j があれば、pj だけを示す。なければ、p1 から pk までの行列に対して pi が有用でない最小の k を求め、p1 から pk のうち pi と重なる分岐をすべて示す。二つのパターンが重なるとは、両方に照合する値があることである。ワイルドカードと変数はどのパターンとも重なる。構成子のパターンどうしは、構成子が同じで対応する引数がすべて重なるときに重なる。リテラルと `()` のパターンどうしは、値が等しいときに重なる。範囲のパターンは、リテラルを両端の等しい範囲とみなし、範囲が交わるときに重なる。リストのパターンどうしは、両方が照合する長さのうち、その長さで対応する位置の要素のパターンがすべて重なるものがあるときに重なる。
-- ワイルドカード一つからなる並びが、すべての分岐からなる行列に対して有用であれば、`case` は網羅していない。判定の途中で、どの分岐にも照合しない値の形を作り、診断に示す。
-- `let p = e` の p は、p 一つからなる行列に対してワイルドカードが有用でなければ、必ず照合する。
+- `match` の分岐 pi は、その前の行（ガードの付いた分岐の行を除く）からなる行列に対して有用でなければ、選ばれない分岐である。ガードの付いた分岐も、この判定の対象にする（同「選ばれない分岐の検査」）。コンマで並べた選択肢は、それぞれを別の行として判定し、同じ分岐の前の選択肢も前の行に数える。選ばれない選択肢が一つでもあれば誤りとし、その選択肢を示す（`case 1, 1 ->` の 2 番目の `1` など）。診断に示す覆っている前の分岐は、次のように選ぶ。pj 一つからなる行列に対して pi が有用でない最初の j があれば、pj だけを示す。なければ、p1 から pk までの行列に対して pi が有用でない最小の k を求め、p1 から pk のうち pi と重なる分岐をすべて示す。二つのパターンが重なるとは、両方に照合する値があることである。ワイルドカードと変数はどのパターンとも重なる。構成子のパターンどうしは、構成子が同じで対応する引数がすべて重なるときに重なる。リテラルと `()` のパターンどうしは、値が等しいときに重なる。範囲のパターンは、リテラルを両端の等しい範囲とみなし、範囲が交わるときに重なる。リストのパターンどうしは、両方が照合する長さのうち、その長さで対応する位置の要素のパターンがすべて重なるものがあるときに重なる。
+- ワイルドカード一つからなる並びが、すべての分岐からなる行列に対して有用であれば、`match` は網羅していない。判定の途中で、どの分岐にも照合しない値の形を作り、診断に示す。
+- 束縛の文 `bind p <- e`・`shadow p <- e` の p は、p 一つからなる行列に対してワイルドカードが有用でなければ、必ず照合する。
 
 【方針】判定では、型ごとの構成子の集まりを次のように扱う。
 
@@ -338,7 +340,7 @@ end function
 
 - 誤りの型を含む制約は、診断を出さずに満たされたものとする。型クラスの制約も同じである。
 - 型が誤りの型である関数の呼び出しは、エフェクトの検査で何の要素も生じない。
-- 対象の型が誤りの型を含む `case` と `let` のパターンは、パターンの検査から外す。
+- 対象の型が誤りの型を含む `match` と束縛の文のパターンは、パターンの検査から外す。
 - 誤りの型になった型変数は、「本体の後の検査」で決まっていない型変数として扱わない。
 
 宣言の検査で誤りを報告した宣言（型の宣言、シグネチャ、実装の頭部）は、その誤りの部分を誤りの型にして、後の手順を続ける。誤りのある実装は、型クラスと型構成子の組の表に加えたうえで、その実装を引いた制約について誤りを重ねて報告しない。

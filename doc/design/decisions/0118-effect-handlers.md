@@ -1,6 +1,6 @@
 # 0118. 初回リリース版で、利用者が定義するエフェクトと、継続を一度だけ再開するハンドラを加える
 
-- 状態: 採択（決定 1 のうち操作の呼び方と、エフェクトの名前がモジュールを兼ねることを [0129](0129-effects-declared-in-modules.md) で置き換えた。決定 3 の `State` の関数にリソースを解放する関数を加えることを [0150](0150-resource-release-as-state.md) で、決定 5 の `resume` を書けない位置に `lazy` の本体を加えることを [0155](0155-resume-not-in-lazy.md) で、決定 7 の引き継いだハンドラの節の制限を [0151](0151-inherited-handlers-tail-resume-only.md) で定めた）
+- 状態: 採択（決定 1 のうち操作の呼び方と、エフェクトの名前がモジュールを兼ねることを [0129](0129-effects-declared-in-modules.md) で置き換えた。決定 3 の `State` の関数にリソースを解放する関数を加えることを [0150](0150-resource-release-as-state.md) で、決定 5 の `resume` を書けない位置に `lazy` の本体を加えることを [0155](0155-resume-not-in-lazy.md) で、決定 7 の引き継いだハンドラの節の制限を [0151](0151-inherited-handlers-tail-resume-only.md) で定めた。節の書き方を [0257](0257-match-with-case-arms.md) で `with case op(x) -> …` に改めた）
 - 日付: 2026-09-28
 - 関連章: [エフェクト](../01-spec/01-07-effects.md), [構文](../01-spec/01-02-syntax.md), [字句構造](../01-spec/01-01-lexical.md), [型システム](../01-spec/01-06-type-system.md), [評価意味論](../01-spec/01-08-evaluation.md), [リソース管理](../01-spec/01-10-resources.md), [並行処理](../01-spec/01-11-concurrency.md), [コア計算と脱糖](../01-spec/01-12-core-calculus.md), [ロードマップ](../00-overview/00-03-roadmap.md)
 - 関連する未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-033](../open-issues.md#open-033)（本 ADR と [ADR 0117](0117-capabilities-as-effects.md) で決着）

@@ -1,6 +1,6 @@
 # 0240. 初回リリース版の実装プランを作るときに、値の表現とランタイムを作り直し、`unsafe` を許す
 
-- 状態: 採択
+- 状態: 採択（背景の見立て「差の中心は値の表現」を [0269](0269-correct-adr-0240-performance-assessment.md) で改めた。決定 3 の作り直しの設計は 0258〜0271 で定めた）
 - 日付: 2026-09-29
 - 関連章: [仮想機械](../02-impl/02-08-vm.md), [ランタイム](../02-impl/02-09-runtime.md), [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md), [性能](../07-quality/07-02-performance.md)
 - 関連する未決事項: [OPEN-039](../open-issues.md#open-039), [OPEN-036](../open-issues.md#open-036)

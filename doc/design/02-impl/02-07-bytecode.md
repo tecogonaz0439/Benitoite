@@ -1,7 +1,7 @@
 # バイトコードとコード生成
 
 - 状態: 確定
-- 関連ADR: [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0015](../decisions/0015-shared-program-per-execution-state.md), [0016](../decisions/0016-calls-off-go-stack.md), [0017](../decisions/0017-ir-in-core-calculus-form.md), [0026](../decisions/0026-match-to-decision-trees.md), [0027](../decisions/0027-register-bytecode.md), [0029](../decisions/0029-two-io-execution-modes.md), [0034](../decisions/0034-call-trace-in-runtime-errors.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0067](../decisions/0067-with-resource-scope.md), [0083](../decisions/0083-constant-descriptions-in-shared-program.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0105](../decisions/0105-byte-type.md), [0107](../decisions/0107-bytes.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0123](../decisions/0123-top-level-constants.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0167](../decisions/0167-reference-update-by-version-retry.md)
+- 関連ADR: [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0015](../decisions/0015-shared-program-per-execution-state.md), [0016](../decisions/0016-calls-off-go-stack.md), [0017](../decisions/0017-ir-in-core-calculus-form.md), [0026](../decisions/0026-match-to-decision-trees.md), [0027](../decisions/0027-register-bytecode.md), [0029](../decisions/0029-two-io-execution-modes.md), [0034](../decisions/0034-call-trace-in-runtime-errors.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0067](../decisions/0067-with-resource-scope.md), [0083](../decisions/0083-constant-descriptions-in-shared-program.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0105](../decisions/0105-byte-type.md), [0107](../decisions/0107-bytes.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0123](../decisions/0123-top-level-constants.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0167](../decisions/0167-reference-update-by-version-retry.md), [0257](../decisions/0257-match-with-case-arms.md), [0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md), [0280](../decisions/0280-reuse-by-dedicated-construct-instruction.md)
 - 未決事項: [OPEN-009](../open-issues.md#open-009)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 9
 
@@ -21,9 +21,9 @@
 
 【決定】バイトコードはレジスタ型にする。各関数の呼び出しは自分のレジスタの並びを持ち、命令はオペランドとしてレジスタの番号を持つ（[ADR 0027](../decisions/0027-register-bytecode.md)）。
 
-【方針】命令は固定長の 64 ビットとし、命令の種類（8 ビット）と、三つのオペランド A・B・C（各 16 ビット）を持つ。B と C を合わせて一つの 32 ビットのオペランド（Bx、符号付きなら sBx）として使う命令もある。レジスタの番号と、関数の原型ごとの定数表の番号は 16 ビットに収める。
+【方針】命令は固定長の 64 ビットとし、命令の種類（8 ビット）と、三つのオペランド A・B・C（各 16 ビット）を持つ。B と C を合わせて一つの 32 ビットのオペランド（Bx、符号付きなら sBx）として使う命令もある。レジスタの番号と、関数の原型ごとの定数の番号の並びの位置は 16 ビットに収める。
 
-以下、`R[i]` はレジスタ i、`K[i]` は定数表の i 番目、`P[i]` は関数の原型の i 番目を表す。
+以下、`R[i]` はレジスタ i、`K[i]` は原型の定数の番号の並びの i 番目が指す定数表の記述、`P[i]` は関数の原型の i 番目を表す。
 
 ### コンパイル済みプログラム
 
@@ -31,8 +31,10 @@
 
 | 要素 | 内容 |
 |---|---|
-| 関数の原型（function prototype）の表 | 後述の「原型の名前と由来の種類」の表の由来ごとに作る。各原型は、命令列、定数表、分岐表の並び（`SWITCH` が使う）、ハンドラの記述の並び（`HANDLE` が使う）、レジスタの数、引数の数、捕捉の表（後述）、関数の境界かどうか（後述の「関数の境界」）、位置の表、名前と由来の種類を持つ |
+| 関数の原型（function prototype）の表 | 後述の「原型の名前と由来の種類」の表の由来ごとに作る。各原型は、命令列、定数の番号の並び（`LOADK` が使う。定数表の番号の並び）、分岐表の並び（`SWITCH` が使う）、ハンドラの記述の番号の並び（`HANDLE` が使う。ハンドラの記述の表の番号の並び）、レジスタの数、引数の数、捕捉の表（後述）、関数の境界かどうか（後述の「関数の境界」）、位置の表、名前と由来の種類を持つ |
 | トップレベルの関数の表 | 利用者のモジュールと標準ライブラリのソースのトップレベルの関数から、原型への対応。関数は名前ではなく、検査全体で一意な束縛の番号で引く。束縛の番号はモジュールの ID を持つので、別々のモジュールの同じ名前の関数を区別できる（[名前解決とモジュール読込](02-04-resolver.md)、[ADR 0156](../decisions/0156-module-loading-and-whole-program-checking.md)） |
+| 定数表 | 定数の記述の並び（後述の「定数表」）。プログラム全体で一つ持ち、原型は使う記述の番号の並びを持つ |
+| ハンドラの記述の表 | ハンドラの記述の並び（後述）。プログラム全体で一つ持ち、原型は使う記述の番号の並びを持つ |
 | 構成子の表 | 型の名前（型を宣言したモジュールで修飾したもの）、構成子の名前、タグ、引数の数。レコードは、構成子が一つの型として載せる |
 | 型クラスの表 | 型クラスごとに、メソッドの並び（メソッドごとの引数の数。メソッド自身の制約の辞書の引数を含む）と、上位の型クラスの並び |
 | 実装の表 | 型クラスの実装ごとに、実装する型クラス、実装の型パラメータの制約の辞書の数、メソッドごとの原型の番号、上位の型クラスごとの辞書の作り方（後述の「辞書とメソッドの呼び出し」） |
@@ -45,7 +47,7 @@
 
 分岐表は、`SWITCH` 一つにつき一つ作り、原型の分岐表の並びに入れる。一つの分岐表は、構成子のタグごとの跳ぶ先の相対位置（`SWITCH` の次の命令からの距離）と、表にないタグのときの跳ぶ先（`_` の分岐）を持つ。
 
-ハンドラの記述は、`HANDLE` 一つにつき一つ作り、原型のハンドラの記述の並びに入れる。一つのハンドラの記述は、節ごとに、処理する操作の番号（操作の表の番号）と、その節が末尾で再開する節かどうかを持つ。末尾で再開するかどうかは、型検査器が節ごとに構文から判定し（[型検査器](02-05-typechecker.md)の「ハンドラの節」の表）、脱糖が下位 IR の `handle` に写したもの（[中間表現と脱糖](02-06-ir-and-lowering.md)の「下位 IR からコード生成へ渡すもの」）を、コード生成がそのまま記録する（[並行処理](../01-spec/01-11-concurrency.md)の「タスクとハンドラ」、[ADR 0151](../decisions/0151-inherited-handlers-tail-resume-only.md)）。
+ハンドラの記述は、`HANDLE` 一つにつき一つ作り、ハンドラの記述の表に入れて、その番号を原型のハンドラの記述の番号の並びに加える。一つのハンドラの記述は、節ごとに、処理する操作の番号（操作の表の番号）と、その節が末尾で再開する節かどうかを持つ。末尾で再開するかどうかは、型検査器が節ごとに構文から判定し（[型検査器](02-05-typechecker.md)の「ハンドラの節」の表）、脱糖が下位 IR の `handle` に写したもの（[中間表現と脱糖](02-06-ir-and-lowering.md)の「下位 IR からコード生成へ渡すもの」）を、コード生成がそのまま記録する（[並行処理](../01-spec/01-11-concurrency.md)の「タスクとハンドラ」、[ADR 0151](../decisions/0151-inherited-handlers-tail-resume-only.md)）。
 
 【方針】構成子のタグは、型の宣言に書いた順に 0 から振る（[中間表現と脱糖](02-06-ir-and-lowering.md)）。組み込みの関数が作るか中身を読む代数的データ型（`Option`・`Result`・`Pair`・`Triple`・`IOErrorKind`・`NetworkErrorKind`・`RoundingMode`・`ByteOrder`・`Json.Value` など）のタグも、標準ライブラリのソースの型の宣言の順で決まる。組み込みの関数の実装は、これらのタグを定数として持つ。処理系のテストで、この定数が標準ライブラリのソースの宣言の順と一致することを確かめる（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。例えば、`Option.Some` が 0、`Option.None` が 1、`Result.Ok` が 0、`Result.Error` が 1 であり、これは[データ型](../01-spec/01-05-data-types.md)の宣言の順と一致する。
 
@@ -58,7 +60,7 @@
 | 利用者のトップレベルの関数 | 実行を始めるモジュールの関数は関数の名前（`main`、`ratio` など）。ほかのモジュールの関数は、モジュールの名前で修飾した名前（`Report.format` など） | 示す |
 | 利用者のラムダ | `<lambda>` と、ラムダを書いた位置 | 示す |
 | 利用者の実装のメソッド | 型クラスの名前、実装の型、メソッドの名前から作る名前（`Show[Person].show` など） | 示す |
-| 利用者の `handle` の本体と節 | `<handle>` か `<when 操作の名前>`（`<when Log.write>` など）と、書いた位置 | 示す |
+| 利用者の `handle` の本体と節 | `<handle>` か `<case 操作の名前>`（`<case Log.write>` など）と、書いた位置 | 示す |
 | 利用者の `lazy` の本体 | `<lazy>` と、書いた位置 | 示す |
 | 標準ライブラリの公開の関数と実装のメソッド | モジュールの名前で修飾した名前（`List.map` など）。メソッドは利用者の実装のメソッドと同じ形 | 示す |
 | 標準ライブラリの補助の関数（`public` を付けない関数と、標準ライブラリのソースの中のラムダ・`handle` の本体と節・`lazy` の本体） | 関数の名前 | 示さない |
@@ -90,7 +92,7 @@
 | 可変のセル | `UPDATE A B C` | セル `R[B]` の値を、関数 `R[C]` を適用した値に変え、`R[A]` に `()` を入れる（`Reference.update`）。書き込むときにセルの版の番号を確かめ、変わっていれば読み出しからやり直す（[仮想機械](02-08-vm.md)の「可変のセル」、[ADR 0167](../decisions/0167-reference-update-by-version-retry.md)） |
 | リソース | `USE A` | リソース `R[A]` の解放の枠を積む（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の E-Use、[ADR 0067](../decisions/0067-with-resource-scope.md)） |
 | | `RELEASE` | 実行中の関数が最後に積んだ解放の枠を降ろし、そのリソースを解放する（E-Release）。解放はどのハンドラも通さない（[ADR 0150](../decisions/0150-resource-release-as-state.md)） |
-| ハンドラ | `HANDLE A B C` | 本体の関数 `R[B]` と、節の関数 `R[B+1]` から始まる並び（数はハンドラの記述による）と、原型のハンドラの記述 C から `handle` の枠を積み、本体を呼ぶ。`handle` の式の値を `R[A]` に入れる（[ADR 0118](../decisions/0118-effect-handlers.md)、[ADR 0160](../decisions/0160-one-shot-continuations-as-stack-segments.md)） |
+| ハンドラ | `HANDLE A B C` | 本体の関数 `R[B]` と、節の関数 `R[B+1]` から始まる並び（数はハンドラの記述による）と、原型のハンドラの記述の番号の並びの C 番目が指すハンドラの記述から `handle` の枠を積み、本体を呼ぶ。`handle` の式の値を `R[A]` に入れる（[ADR 0118](../decisions/0118-effect-handlers.md)、[ADR 0160](../decisions/0160-one-shot-continuations-as-stack-segments.md)） |
 | | `PERFORM A B C` | 利用者が宣言したエフェクトの操作 B を、引数 `R[C]` から始まる並び（数は操作の表による）で呼び、結果を `R[A]` に入れる |
 | | `RESUME A B C` | 継続 `R[B]` を値 `R[C]` で再開し、`handle` の式の値を `R[A]` に入れる |
 | 演算 | `ADDI`・`SUBI`・`MULI`・`DIVI`・`MODI` | `Integer` の演算。`R[A] ← R[B] ⊕ R[C]` |
@@ -110,6 +112,7 @@
 | | `EQV A B C` | 基本型でない等値の型の構造の `=`（後述の「演算子の移し方」） |
 | | `NOT A B` | `Boolean` の否定。`R[A] ← not R[B]` |
 | データ | `CON A B C` | 構成子 B を、引数 `R[C]` から始まる並びに適用した値を `R[A]` に入れる |
+| | `CONR A B C` | `CON A B C` と同じ値を `R[A]` に入れる。参照カウントの方式では、`R[A]` の前の値の対象をほかに指す参照がなければ、その対象を書き換えて使う（後述の「その場での再利用」） |
 | | `LIST A B C` | `R[B]`…`R[B+C-1]` を要素とするリストを `R[A]` に入れる |
 | | `FIELD A B C` | 構成子を適用した値 `R[B]` の C 番目の引数を `R[A]` に入れる |
 | 分岐 | `JMP sBx` | 相対位置 sBx へ跳ぶ |
@@ -139,7 +142,7 @@
 | `if V then M else N` | 後述の「分岐と合流の並べ方」 |
 | 構成子の `case` | `SWITCH` と、分岐ごとに引数を取り出す `FIELD`。各分岐の本体は、r と同じ末尾位置の情報で移す。分岐の並べ方は `if` と同じく、末尾位置でなければ各分岐の後に `case` の終わりへの `JMP` を置く |
 | 定数の `case` | 定数ごとに、後述の表の `=` の命令で比べて `JMPF` で次の定数の比較へ跳ぶ形を並べ、最後に `_` の分岐を置く。`Unit` の定数は比べずに一致したものとする。各分岐の本体と分岐の後の `JMP` は、構成子の `case` と同じ |
-| 範囲とリストのパターンの分け方、ガード（[ADR 0159](../decisions/0159-pattern-extensions-in-decision-trees.md)） | 範囲は、後述の表の `<=` の命令で下限と上限と比べて `JMPF` で跳ぶ。リストの長さによる分け方は、長さを求める組み込みの関数の `PRIM` と `Integer` の比較と `JMPF`、要素と残りの部分の取り出しは組み込みの関数の `PRIM` で移す。ガードは、ガードの計算を移した後に、`false` なら残りの行から作った木へ `JMPF` で跳ぶ。使う組み込みの関数と下位 IR の形は[中間表現と脱糖](02-06-ir-and-lowering.md)で定める |
+| 範囲とリストのパターンの分け方、ガード（[ADR 0159](../decisions/0159-pattern-extensions-in-decision-trees.md)） | 範囲は、後述の表の `<=` の命令で下限と上限と比べて `JMPF` で跳ぶ。リストの長さによる分け方（`case length`）は、長さを求める処理系の内部の組み込みの関数の `PRIM` と `Integer` の比較と `JMPF`、要素と残りの部分の取り出し（`get`・`getback`・`slice`）は、処理系の内部の組み込みの関数の `PRIM` で移す。ガードは、ガードの計算を移した後に、`false` なら残りの行から作った木へ `JMPF` で跳ぶ。使う組み込みの関数と下位 IR の形は[中間表現と脱糖](02-06-ir-and-lowering.md)で定める |
 | `join k(x̄) = M in N` | 後述の「分岐と合流の並べ方」 |
 | `jump k(V̄)` | V̄ を k の引数のレジスタに移し、k の印へ `JMP` |
 | `lazy M` | M から引数のない原型を作り、結果を r とする `LAZY`。末尾位置なら続けて `RETURN r` |
@@ -224,7 +227,7 @@ N のうち `jump k` を通らない道筋は、N の結果を r に入れて N 
 | トップレベルの関数 | その関数の原型を指す定数を定数表に入れて `LOADK` |
 | 組み込みの関数と操作を呼ばずに値として使う | その組み込みの関数か操作を呼んで戻るだけの原型を、組み込みの関数と操作ごとに一つ作り（同じものを何度値として使っても共有する）、その原型を指す定数を定数表に入れて `LOADK`。原型の中の呼び出しは、前節の表の命令（`PRIM`・`IO`・`PERFORM`・`FORCE`・`UPDATE` など）で移す。この原型の命令は、由来位置を持たない |
 | 関数 `λ(x̄). M` | 原型を作り、`CLOSURE` |
-| 構成子を適用した値 | `CON` |
+| 構成子を適用した値 | `CON`。後述の「その場での再利用」の条件を満たせば `CONR` |
 | リスト | `LIST` |
 | 辞書 `I[T̄](V̄)` | 実装 I が制約の辞書を持たなければ、定数表に入れて `LOADK`。持てば `DICT` |
 | 上位の型クラスの辞書 `V↑S` | `SUPER`。`↑` を重ねたものは `SUPER` を重ねる |
@@ -232,9 +235,25 @@ N のうち `jump k` を通らない道筋は、N の結果を r に入れて N 
 
 型は、演算の命令を選ぶためだけに使い、命令には残さない。
 
+#### その場での再利用
+
+【決定】参照カウントの方式の、参照の数が 1 の対象のその場での再利用（[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md) の決定 1）は、`CONR` でだけ行う。ほかの命令と組み込みの関数は再利用しない（[ADR 0280](../decisions/0280-reuse-by-dedicated-construct-instruction.md)）。
+
+【決定】コード生成は、構成子を適用した値を作る位置が次の条件をすべて満たすとき、`CON` の代わりに `CONR` を置く。
+
+- 構成子の `case` で分けた値（構成子を適用した値）が、その分岐のその位置より後のどの道筋でも使われない。
+- 作る構成子の引数の数が、その分岐の構成子の引数の数と等しく、1 以上である。
+- 分けた値のレジスタが、作る値の引数のレジスタのどれとも同じでない。
+
+`CONR` の A は、分けた値を置いたレジスタとする。結果を別のレジスタに置く必要があるときは、`CONR` の後に `MOVE` で移す。一つの分けた値は、一つの道筋で一度だけ `CONR` の A にする。`CONR` は `R[A]` の前の値を読み、その値を最後に使う命令なので、生存の情報はこの読み出しを最後の使用として示す。
+
+【決定】再利用は、実行ごとのヒープの設定で無効にできる。無効にしたとき、`CONR` は `CON` と同じに振る舞う。コード生成は設定によらず同じ命令を置くので、再利用の有無を比べるときは、同じコンパイル済みプログラムを設定だけ変えて実行する（ADR 0259 の決定 3）。
+
 #### 定数表
 
 【決定】定数表には、実行中の値ではなく、値の記述を置く。`LOADK` は、記述から実行中の値を作ってレジスタに置く。定数表はコンパイル済みプログラムの一部であり、スレッドの間で共有するので、実行ごとの参照カウントで管理する値を持たない（[パイプライン](02-01-pipeline.md)、[ADR 0083](../decisions/0083-constant-descriptions-in-shared-program.md)）。
+
+【方針】定数表は、プログラム全体で一つの記述の並びである。各原型は、`LOADK` で使う記述の、定数表の番号の並びを持ち、`LOADK` の Bx はこの並びの位置である。同じ記述（同じトップレベルの定数、制約の辞書を持たない実装の辞書など）は定数表に一度だけ置き、どの原型からも同じ番号で指す。
 
 【方針】記述は、次のいずれかである。
 
@@ -248,7 +267,7 @@ N のうち `jump k` を通らない道筋は、N の結果を r に入れて N 
 
 構成子・リスト・マップ・集合の記述は、トップレベルの定数の値（[ADR 0123](../decisions/0123-top-level-constants.md)、[ADR 0136](../decisions/0136-map-and-set-in-constants.md)）から作る。定数の値は型検査の段が計算してあり、定数式の計算が実行時エラーの条件に当たらないこと、`Map.fromList` と `Set.fromList` の引数に同じ鍵がないことを確かめてある（[型システム](../01-spec/01-06-type-system.md)の「定数の型（初回リリース版）」）。したがって、記述から値を作る処理は失敗しない。コード生成は、マップと集合の記述を鍵の順序で並べて定数表に入れ、`LOADK` はそれを並べ替えずに木にする。
 
-【方針】ヒープを確保する記述（`String`・`Decimal`・構成子・リスト・マップ・集合・関数・辞書）から作った値は、実行ごとの状態の表に取っておき、同じ記述の二度目以降の `LOADK` は、取っておいた値を共有する。言語の値は変更できないので、共有しても観測できる違いはない。制約を持たない実装の辞書を一度だけ作るという決定（[ADR 0158](../decisions/0158-type-classes-by-dictionary-passing.md)）も、この表で実現する。
+【方針】ヒープを確保する記述（`String`・`Decimal`・構成子・リスト・マップ・集合・関数・辞書）から作った値は、実行ごとの状態の表に定数表の番号を鍵として取っておき、同じ番号の二度目以降の `LOADK` は、どの原型から実行したかによらず、取っておいた値を共有する。言語の値は変更できないので、共有しても観測できる違いはない。制約を持たない実装の辞書を一度だけ作るという決定（[ADR 0158](../decisions/0158-type-classes-by-dictionary-passing.md)）も、この表で実現する。
 
 ### レジスタの割り当て
 
@@ -289,7 +308,16 @@ N のうち `jump k` を通らない道筋は、N の結果を r に入れて N 
 
 ### 処理系の制限
 
-【方針】一つの原型のレジスタの数、定数表の大きさ、分岐表の数、ハンドラの記述の数が 16 ビットに収まらないときは、処理系の制限として診断を出し、実行しない。この診断は `run` でだけ出る。`check` はコード生成を行わないからである（[パイプライン](02-01-pipeline.md)）。
+【方針】命令のオペランドに 16 ビットで書く番号が収まらないときは、処理系の制限として診断を出し、実行しない。制限は次の二種類である。
+
+| 種類 | 16 ビットに収める数 |
+|---|---|
+| 原型ごとの制限 | 一つの原型のレジスタの数、定数の番号の並びの長さ、分岐表の数、ハンドラの記述の番号の並びの長さ |
+| プログラム全体の制限 | 構成子の表、組み込みの関数の参照、実装の表、操作の表の項目の数（それぞれ `CON`・`PRIM`・`IO`・`DICT`・`PERFORM` の B に書く）。一つの型クラスのメソッドの数と上位の型クラスの数、一つの実装の制約の辞書の数（それぞれ `METHOD`・`TAILMETHOD`・`SUPER` の C と `GETDICT` の B に書く） |
+
+診断のコードは、処理系の制限の区分（`L01nn`。[診断エンジン](02-10-diagnostics.md)の「診断コード」）から、制限ごとに割り当てる。原型ごとの制限の診断は、制限に当たった原型の関数ごとに一つ出し、その関数の宣言の位置を示す。プログラム全体の制限の診断は、表ごとに一つ出し、ソース上の位置を持たない。どちらの制限に当たっても、ほかの原型の生成は続け、当たったすべての制限を報告してから実行をやめる。
+
+これらの診断は `run` でだけ出る。`check` はコード生成を行わないからである（[パイプライン](02-01-pipeline.md)）。定数表、ハンドラの記述の表、原型の表の番号は 32 ビットで持つので、これらの表の大きさは 16 ビットの制限を受けない（`CLOSURE`・`LAZY` の原型の番号は 32 ビットの Bx に書く）。
 
 ## 未決事項
 

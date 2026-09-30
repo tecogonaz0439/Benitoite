@@ -1,8 +1,8 @@
 # 配布形態
 
 - 状態: 確定
-- 関連ADR: [0003](../decisions/0003-license.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0090](../decisions/0090-version-numbers-and-codenames.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0174](../decisions/0174-mobile-as-dedicated-app-after-first-release.md), [0175](../decisions/0175-script-embedded-binary-before-stable-release.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0229](../decisions/0229-bundled-skill-contents-and-japanese-translations.md), [0230](../decisions/0230-skill-embedded-and-installed-by-subcommand.md), [0232](../decisions/0232-skill-evaluation-with-tasks-and-harnesses.md), [0233](../decisions/0233-distribution-via-github-releases.md), [0234](../decisions/0234-release-tests-on-development-machine.md), [0235](../decisions/0235-third-party-licenses-generated-and-shown-by-option.md), [0236](../decisions/0236-compatibility-during-0x.md), [0242](../decisions/0242-copyright-notice-for-llm-generated-code.md)
-- 未決事項: [OPEN-009](../open-issues.md#open-009), [OPEN-021](../open-issues.md#open-021), [OPEN-040](../open-issues.md#open-040), [OPEN-060](../open-issues.md#open-060), [OPEN-061](../open-issues.md#open-061)
+- 関連ADR: [0003](../decisions/0003-license.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0090](../decisions/0090-version-numbers-and-codenames.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0174](../decisions/0174-mobile-as-dedicated-app-after-first-release.md), [0175](../decisions/0175-script-embedded-binary-before-stable-release.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0229](../decisions/0229-bundled-skill-contents-and-japanese-translations.md), [0230](../decisions/0230-skill-embedded-and-installed-by-subcommand.md), [0232](../decisions/0232-skill-evaluation-with-tasks-and-harnesses.md), [0233](../decisions/0233-distribution-via-github-releases.md), [0234](../decisions/0234-release-tests-on-development-machine.md), [0235](../decisions/0235-third-party-licenses-generated-and-shown-by-option.md), [0236](../decisions/0236-compatibility-during-0x.md), [0242](../decisions/0242-copyright-notice-for-llm-generated-code.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0288](../decisions/0288-skill-documents-generated-by-tool-and-committed.md), [0290](../decisions/0290-copyright-holder-name-and-open-021.md), [0292](../decisions/0292-release-checks-needing-network-by-orchestrator.md)
+- 未決事項: [OPEN-009](../open-issues.md#open-009), [OPEN-040](../open-issues.md#open-040), [OPEN-060](../open-issues.md#open-060), [OPEN-061](../open-issues.md#open-061)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 20
 
 ## 目的と範囲
@@ -67,7 +67,7 @@
 
 【決定】ソースからビルドして導入する手順（`cargo install`）も、利用者向けの文書に書く（[ADR 0233](../decisions/0233-distribution-via-github-releases.md)）。
 
-- 処理系のビルドは、同梱の Agent Skill の文法の文書を、設計書の[構文](../01-spec/01-02-syntax.md)の章から生成する（[ADR 0229](../decisions/0229-bundled-skill-contents-and-japanese-translations.md)）。そのため、ソースからのビルドにはリポジトリの全体が要る。【方針】手順は、リポジトリを取得して、処理系のクレートのディレクトリを `cargo install --locked --path` に指定する形とする。crates.io への公開は初回リリース版では行わない。
+- 同梱の Agent Skill の生成する文書（設計書の[構文](../01-spec/01-02-syntax.md)の章から作る文法など）は、生成の道具で作ってリポジトリに置いてある。処理系のビルドは、それを実行ファイルに埋め込むだけであり、設計書を読まない（[ADR 0229](../decisions/0229-bundled-skill-contents-and-japanese-translations.md)、[ADR 0288](../decisions/0288-skill-documents-generated-by-tool-and-committed.md)）。【方針】手順は、リポジトリを取得して、処理系のクレートのディレクトリを `cargo install --locked --path` に指定する形とする。crates.io への公開は初回リリース版では行わない。
 - ソースからのビルドは、リリースのスクリプトを通らないので、第三者のライセンスの一覧を埋め込まない（後述の「ライセンスの表示」）。
 - Linux でソースからビルドした実行ファイルは、既定のビルド先（glibc）になる。musl で静的にリンクした実行ファイルが要るときは、配布物を使う。
 
@@ -108,11 +108,11 @@
 
 【決定】処理系自身の著作権表示は、次のように書く（[ADR 0242](../decisions/0242-copyright-notice-for-llm-generated-code.md)）。
 
-- 著作権表示は `Copyright (c) 2026 <設計者の名前> and Benitoite contributors` とする。`<設計者の名前>` の書き方は、公開の前に設計者が決める（[OPEN-021](../open-issues.md#open-021)）。
+- 著作権表示は `Copyright (c) 2026 tecogonaz and Benitoite contributors` とする（[ADR 0290](../decisions/0290-copyright-holder-name-and-open-021.md)）。`LICENSE-MIT` と、リポジトリの README の著作権表示に使う。
 - リポジトリの README と、ライセンスのファイル（`LICENSE-MIT`・`LICENSE-APACHE`）の近くに、処理系のコードの大部分は LLM が生成したものであり、設計者は設計と生成したコードの確認を行ったことを書く。あわせて、ライセンスは著作権で保護される部分に適用され、保護されない部分はもともと誰でも自由に使えるので、利用者に許される範囲はどちらでも変わらないことを書く。
 - どの部分が著作権で保護されるかについて、法的な結論は書かない。公開の前に、必要であれば専門家に確認する。
 
-スクリプトを埋め込んだ実行ファイルについてランタイムの例外を設けるかは、その機能を実装するとき（正式リリース版の前。[ADR 0175](../decisions/0175-script-embedded-binary-before-stable-release.md)）に決める（[OPEN-021](../open-issues.md#open-021)）。
+【方針】スクリプトを埋め込んだ実行ファイルについてランタイムの例外を設けるかは、その実行ファイルを設計するとき（正式リリース版の前。[ADR 0175](../decisions/0175-script-embedded-binary-before-stable-release.md)）に、埋め込む形とあわせて決める（[ADR 0290](../decisions/0290-copyright-holder-name-and-open-021.md)）。
 
 ### 互換性の方針
 
@@ -126,6 +126,7 @@
 - パッチの版で直す不具合は、処理系が仕様と食い違う振る舞いである。仕様（言語・標準ライブラリ・CLI・診断コードと JSON の形）は、パッチの版では変えない。仕様と食い違う振る舞いに頼っていたスクリプトは、パッチの版で動かなくなることがある。
 - 【方針】診断の文言と修正案の中身は、互換性の約束に含めない。パッチの版でも改めてよい。ハーネスは、診断を文言ではなくコードと JSON の欄で見分ける。
 - 互換性を壊す変更は、`CHANGELOG` に、移行の手順とともに記録する。
+- 非公式のモジュール（[標準ライブラリ](../03-interop/03-06-stdlib.md)の「標準のモジュールと非公式のモジュール（初回リリース版）」）を標準に移すと、取り込みの名前が変わる。これは互換性を壊す変更であり、マイナーの版で行う。非公式のモジュールも、パッチの版では変えない（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)）。
 - 廃止した診断コードの番号は、別の意味で使い回さない（[ADR 0031](../decisions/0031-numbered-diagnostic-codes.md)）。
 - 処理系はコンパイル済みプログラム（バイトコード）を保存も配布もしない（[パイプライン](../02-impl/02-01-pipeline.md)）ので、バイトコードは 0.x の間の互換性の対象にしない。
 - 同梱の Agent Skill は、同じ版の処理系だけを対象にする。
@@ -134,7 +135,6 @@
 ## 未決事項
 
 - [OPEN-009](../open-issues.md#open-009): 実行性能（musl のメモリ確保の影響）
-- [OPEN-021](../open-issues.md#open-021): 処理系・標準ライブラリ・文書・設計書のライセンス（著作権表示の設計者の名前の書き方、スクリプトを埋め込んだ実行ファイルのランタイムの例外）
 - [OPEN-040](../open-issues.md#open-040): 正式リリース版とする条件と、互換性を壊す変更の範囲
 - [OPEN-060](../open-issues.md#open-060): 配布と Agent Skill の導入に関する事実の確認
 - [OPEN-061](../open-issues.md#open-061): リポジトリを公開する前の設計メモの扱い

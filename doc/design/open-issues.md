@@ -17,14 +17,14 @@
 | [OPEN-011](#open-011) | 言語の正式名称 | 決着（[ADR 0132](decisions/0132-language-name-benitoite.md)、[ADR 0241](decisions/0241-command-name-and-extension.md)） | [README.md](README.md), [00-overview/00-01-goals.md](00-overview/00-01-goals.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [02-impl/02-10-diagnostics.md](02-impl/02-10-diagnostics.md), [06-tooling/06-01-cli.md](06-tooling/06-01-cli.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md), [01-spec/01-02-syntax.md](01-spec/01-02-syntax.md), [01-spec/01-03-names-modules.md](01-spec/01-03-names-modules.md) |
 | [OPEN-012](#open-012) | 構文の種類ごとの LLM の生成精度 | 要検証 | [00-overview/00-01-goals.md](00-overview/00-01-goals.md), [01-spec/01-01-lexical.md](01-spec/01-01-lexical.md), [01-spec/01-02-syntax.md](01-spec/01-02-syntax.md), [01-spec/01-03-names-modules.md](01-spec/01-03-names-modules.md), [01-spec/01-05-data-types.md](01-spec/01-05-data-types.md), [01-spec/01-06-type-system.md](01-spec/01-06-type-system.md), [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md), [01-spec/01-04-types-basic.md](01-spec/01-04-types-basic.md), [01-spec/01-09-errors.md](01-spec/01-09-errors.md), [01-spec/01-10-resources.md](01-spec/01-10-resources.md), [01-spec/01-11-concurrency.md](01-spec/01-11-concurrency.md), [06-tooling/06-04-test-runner.md](06-tooling/06-04-test-runner.md), [06-tooling/06-06-agent-skills.md](06-tooling/06-06-agent-skills.md) |
 | [OPEN-013](#open-013) | 標語で使う三大美徳の英語表記の出典 | 決着（[ADR 0245](decisions/0245-perl-virtues-source-and-fact-check-timing.md)） | [00-overview/00-01-goals.md](00-overview/00-01-goals.md), [08-appendix/08-02-prior-art.md](08-appendix/08-02-prior-art.md) |
-| [OPEN-014](#open-014) | 参考にした言語に関する外部の事実の確認 | 要検証 | [08-appendix/08-02-prior-art.md](08-appendix/08-02-prior-art.md), [08-appendix/08-03-language-surveys.md](08-appendix/08-03-language-surveys.md) |
+| [OPEN-014](#open-014) | 参考にした言語に関する外部の事実の確認 | 要検証 | [08-appendix/08-02-prior-art.md](08-appendix/08-02-prior-art.md), [08-appendix/08-03-language-surveys.md](08-appendix/08-03-language-surveys.md), [08-appendix/08-04-fp-syntax-comparison.md](08-appendix/08-04-fp-syntax-comparison.md), [08-appendix/08-01-implementation-language-comparison.md](08-appendix/08-01-implementation-language-comparison.md) |
 | [OPEN-015](#open-015) | 契約の変更と権限の差分を利用者に示す方法 | 未決 | [00-overview/00-01-goals.md](00-overview/00-01-goals.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
 | [OPEN-016](#open-016) | 初期実装の後に実装言語を見直すかどうか | 決着（[ADR 0076](decisions/0076-initial-implementation-in-rust.md)） | [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [07-quality/07-02-performance.md](07-quality/07-02-performance.md), [08-appendix/08-01-implementation-language-comparison.md](08-appendix/08-01-implementation-language-comparison.md) |
 | [OPEN-017](#open-017) | 初期実装を担う LLM の選定 | 決着（[ADR 0084](decisions/0084-implementer-assignment-for-minimal.md)） | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [08-appendix/08-01-implementation-language-comparison.md](08-appendix/08-01-implementation-language-comparison.md) |
 | [OPEN-018](#open-018) | 外部に作用するすべての経路を IO 実行器に通せるか | 決着（[ADR 0137](decisions/0137-first-release-library-scope.md)。後の版の外部の関数の経路は [OPEN-051](#open-051)） | [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [08-appendix/08-02-prior-art.md](08-appendix/08-02-prior-art.md) |
 | [OPEN-019](#open-019) | 実装プランと処理系のソースコードの置き場所、実装の確認の分担 | 決着（置き場所は [ADR 0040](decisions/0040-single-repository.md)、実装の確認の分担は [ADR 0085](decisions/0085-review-assignment-for-minimal.md)） | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
 | [OPEN-020](#open-020) | 最小実行版に go.* の層を含めるか | 決着（[ADR 0036](decisions/0036-no-go-layer-in-minimal.md)。[ADR 0077](decisions/0077-abolish-go-layer.md) で置換） | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [07-quality/07-02-performance.md](07-quality/07-02-performance.md) |
-| [OPEN-021](#open-021) | 処理系・標準ライブラリ・文書・設計書のライセンス | 未決（ライセンスは [ADR 0003](decisions/0003-license.md) で、第三者のライセンスの表示の方法は [ADR 0235](decisions/0235-third-party-licenses-generated-and-shown-by-option.md) で、著作権表示は [ADR 0242](decisions/0242-copyright-notice-for-llm-generated-code.md) で決着。設計者の名前の書き方とランタイムの例外が残る） | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [05-platform/05-01-distribution.md](05-platform/05-01-distribution.md) |
+| [OPEN-021](#open-021) | 処理系・標準ライブラリ・文書・設計書のライセンス | 決着（[ADR 0003](decisions/0003-license.md)、[ADR 0235](decisions/0235-third-party-licenses-generated-and-shown-by-option.md)、[ADR 0242](decisions/0242-copyright-notice-for-llm-generated-code.md)、[ADR 0290](decisions/0290-copyright-holder-name-and-open-021.md)。ランタイムの例外は、スクリプトを埋め込んだ実行ファイルの設計で決める） | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [05-platform/05-01-distribution.md](05-platform/05-01-distribution.md) |
 | [OPEN-022](#open-022) | エフェクト多相の書き方と規則 | 決着（[ADR 0008](decisions/0008-effect-variables.md)） | [01-spec/01-02-syntax.md](01-spec/01-02-syntax.md), [01-spec/01-06-type-system.md](01-spec/01-06-type-system.md), [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md) |
 | [OPEN-023](#open-023) | レコードのフィールド参照と HM 推論の整合 | 決着（[ADR 0056](decisions/0056-record-fields-via-accessor-functions.md)） | [01-spec/01-02-syntax.md](01-spec/01-02-syntax.md), [01-spec/01-05-data-types.md](01-spec/01-05-data-types.md), [01-spec/01-06-type-system.md](01-spec/01-06-type-system.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md) |
 | [OPEN-024](#open-024) | 型クラスで高カインド型を扱うか | 決着（[ADR 0059](decisions/0059-higher-kinded-traits-without-prelude-monad.md)） | [01-spec/01-06-type-system.md](01-spec/01-06-type-system.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [01-spec/01-05-data-types.md](01-spec/01-05-data-types.md) |
@@ -39,10 +39,10 @@
 | [OPEN-033](#open-033) | テストでケーパビリティを差し替える方法 | 決着（[ADR 0117](decisions/0117-capabilities-as-effects.md)、[ADR 0118](decisions/0118-effect-handlers.md)） | [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md) |
 | [OPEN-034](#open-034) | `IOErrorKind` の構成子の一覧 | 決着（[ADR 0144](decisions/0144-ioerrorkind-constructors.md)、[ADR 0145](decisions/0145-network-error.md)） | [01-spec/01-09-errors.md](01-spec/01-09-errors.md), [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [03-interop/03-09-network.md](03-interop/03-09-network.md) |
 | [OPEN-035](#open-035) | 初回リリース版のライブラリの提供方法 | 決着（[ADR 0137](decisions/0137-first-release-library-scope.md)、[ADR 0138](decisions/0138-crates-and-licenses-for-stdlib.md)、[ADR 0139](decisions/0139-external-functions-via-wasm.md)） | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-04-glossary.md](00-overview/00-04-glossary.md), [01-spec/01-03-names-modules.md](01-spec/01-03-names-modules.md), [01-spec/01-04-types-basic.md](01-spec/01-04-types-basic.md), [01-spec/01-09-errors.md](01-spec/01-09-errors.md), [01-spec/01-10-resources.md](01-spec/01-10-resources.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [03-interop/03-01-library-structure.md](03-interop/03-01-library-structure.md), [04-extensions/04-01-external-functions.md](04-extensions/04-01-external-functions.md), [04-extensions/04-02-plugins-wasm.md](04-extensions/04-02-plugins-wasm.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
-| [OPEN-036](#open-036) | 初回リリース版で循環する値を回収する方式 | 未決 | [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [00-overview/00-04-glossary.md](00-overview/00-04-glossary.md), [08-appendix/08-01-implementation-language-comparison.md](08-appendix/08-01-implementation-language-comparison.md), [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [07-quality/07-02-performance.md](07-quality/07-02-performance.md) |
+| [OPEN-036](#open-036) | 初回リリース版のメモリの管理の方式 | 未決 | [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [00-overview/00-04-glossary.md](00-overview/00-04-glossary.md), [08-appendix/08-01-implementation-language-comparison.md](08-appendix/08-01-implementation-language-comparison.md), [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [07-quality/07-02-performance.md](07-quality/07-02-performance.md) |
 | [OPEN-037](#open-037) | 実行時の権限制御を OS のサンドボックスでも強制する方式 | 決着（[ADR 0180](decisions/0180-server-in-same-binary-with-per-run-processes.md)、[ADR 0196](decisions/0196-os-sandbox-mechanisms.md)〜[0198](decisions/0198-network-through-daemon-proxy.md)。事実の確認は [OPEN-057](#open-057)） | [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [08-appendix/08-01-implementation-language-comparison.md](08-appendix/08-01-implementation-language-comparison.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [02-impl/02-12-os-sandbox.md](02-impl/02-12-os-sandbox.md) |
 | [OPEN-038](#open-038) | テストの設計の原則と、Khorikov の書籍の対応の確認 | 要検証 | [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
-| [OPEN-039](#open-039) | 初回リリース版の値の表現と、その実装に unsafe を使うか | 未決 | [07-quality/07-02-performance.md](07-quality/07-02-performance.md), [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
+| [OPEN-039](#open-039) | 初回リリース版の値の表現と、その実装に unsafe を使うか | 決着（[ADR 0258](decisions/0258-sixteen-byte-value-enum.md)、[ADR 0260](decisions/0260-heap-and-unsafe-boundary.md)） | [07-quality/07-02-performance.md](07-quality/07-02-performance.md), [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
 | [OPEN-040](#open-040) | 正式リリース版とする条件と、互換性を壊す変更の範囲 | 未決（0.x の間の方針は [ADR 0236](decisions/0236-compatibility-during-0x.md) で決着） | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [05-platform/05-01-distribution.md](05-platform/05-01-distribution.md), [01-spec/01-09-errors.md](01-spec/01-09-errors.md), [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md) |
 | [OPEN-041](#open-041) | 大文字の名前の名前空間と、`Option`・`Result` の構成子の書き方 | 決着（[ADR 0148](decisions/0148-keep-qualified-constructors-and-shared-namespace.md)） | [01-spec/01-03-names-modules.md](01-spec/01-03-names-modules.md), [01-spec/01-05-data-types.md](01-spec/01-05-data-types.md) |
 | [OPEN-042](#open-042) | 相互運用のための幅の違う数の型 | 未決 | [01-spec/01-04-types-basic.md](01-spec/01-04-types-basic.md) |
@@ -61,11 +61,16 @@
 | [OPEN-055](#open-055) | サーバモードの設計 | 未決 | [00-overview/00-01-goals.md](00-overview/00-01-goals.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [00-overview/00-04-glossary.md](00-overview/00-04-glossary.md), [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [02-impl/02-01-pipeline.md](02-impl/02-01-pipeline.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [02-impl/02-11-embedding.md](02-impl/02-11-embedding.md), [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [03-interop/03-09-network.md](03-interop/03-09-network.md), [06-tooling/06-01-cli.md](06-tooling/06-01-cli.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [02-impl/02-12-os-sandbox.md](02-impl/02-12-os-sandbox.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
 | [OPEN-056](#open-056) | 自前のコーディングエージェントの設計 | 未決 | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
 | [OPEN-057](#open-057) | OS のサンドボックスとデーモンの常駐に関する事実の確認 | 要検証 | [02-impl/02-12-os-sandbox.md](02-impl/02-12-os-sandbox.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md) |
-| [OPEN-058](#open-058) | テストの結果の報告の形の細部 | 未決 | [06-tooling/06-04-test-runner.md](06-tooling/06-04-test-runner.md), [02-impl/02-10-diagnostics.md](02-impl/02-10-diagnostics.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
-| [OPEN-059](#open-059) | 初回リリース版の実装と確認の分担 | 未決 | [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
+| [OPEN-058](#open-058) | テストの結果の報告の形の細部 | 決着（[ADR 0252](decisions/0252-test-report-format.md)） | [06-tooling/06-04-test-runner.md](06-tooling/06-04-test-runner.md), [02-impl/02-10-diagnostics.md](02-impl/02-10-diagnostics.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
+| [OPEN-059](#open-059) | 初回リリース版の実装と確認の分担 | 決着（[ADR 0285](decisions/0285-implementer-assignment-for-first-release.md)） | [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
 | [OPEN-060](#open-060) | 配布と Agent Skill の導入に関する事実の確認 | 要検証 | [05-platform/05-01-distribution.md](05-platform/05-01-distribution.md), [06-tooling/06-06-agent-skills.md](06-tooling/06-06-agent-skills.md) |
 | [OPEN-061](#open-061) | リポジトリを公開する前の設計メモの扱い | 未決 | [05-platform/05-01-distribution.md](05-platform/05-01-distribution.md) |
 | [OPEN-062](#open-062) | 設計書の 2 回目のレビューで指摘された実行時の振る舞いの再現 | 要検証 | [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [01-spec/01-11-concurrency.md](01-spec/01-11-concurrency.md), [02-impl/02-05-typechecker.md](02-impl/02-05-typechecker.md), [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [03-interop/03-08-text-and-data.md](03-interop/03-08-text-and-data.md), [03-interop/03-09-network.md](03-interop/03-09-network.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
+| [OPEN-063](#open-063) | 窓を重ねる形と、区画の記憶域の再利用 | 要検証 | [02-impl/02-08-vm.md](02-impl/02-08-vm.md) |
+| [OPEN-064](#open-064) | 検証器を通したうえでの、振り分けのループの範囲の確かめの省略 | 要検証 | [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
+| [OPEN-065](#open-065) | 値を 8 バイトにする案 | 要検証 | [02-impl/02-08-vm.md](02-impl/02-08-vm.md) |
+| [OPEN-066](#open-066) | 非公式のライブラリと標準ライブラリの関係 | 決着（[ADR 0286](decisions/0286-unofficial-modules-imported-under-unofficial.md)） | [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md) |
+| [OPEN-067](#open-067) | 自分のタスクが評価した `handle` の、末尾で再開する節の直接の実行 | 未決 | [02-impl/02-08-vm.md](02-impl/02-08-vm.md) |
 
 <a id="open-001"></a>
 ## OPEN-001 表層構文（特にドット記法）とHM推論の整合
@@ -273,6 +278,10 @@ iOS のサブプロセス起動不可、Android 10 以降の実行可能ファ�
 
 同日に、測定を二段階で行うことにした（[ADR 0246](decisions/0246-syntax-measurement-in-two-stages.md)）。第一段階は、初回リリース版の実装プランを作る前に行う、構文だけの測定である。文法を確かめる道具（`tools/grammar-check/`）の文法を、本項に挙げた論点（省略形のキーワード、予約語、`case` の書き方など）ごとに切り替えられるようにし、同梱の Skill の文法の参照の文書を案ごとに差し替えて、LLM が書いた課題のスクリプトの構文の誤りの率と、診断を読んで 1 回で直せた率を比べる。型とエフェクトは測らない。キーワードと予約語は、この結果で決める。第二段階は、初回リリース版の検査器ができた後、初回リリース版を提供する前に、Skill の評価の仕組みで期待結果まで測る。構文を改めるのは、大きな問題が見つかったときに限り、ADR を作って改める。どちらの段階でも OpenCode をハーネスの一つとして使う。使うモデルと LLM を呼ぶ回数は、測定を計画するときに設計者と相談して決める。
 
+2026-09-29 に、設計者の判断で、戻り値の型の `->`、`bind` と `shadow`、`data`、`match … with` と `case … ->` を採った（[ADR 0254](decisions/0254-return-type-after-arrow.md)〜[ADR 0257](decisions/0257-match-with-case-arms.md)）。第一段階の測定は続け、結果は記録する。第一段階の案 V00 は変更前の構文である。
+
+2026-09-30 に、第一段階の測定を終えた（16 案、15 課題、各 3 回。[Codex の集計](../../tools/syntax-measure/results/stage1-codex.md)、[OpenCode の集計](../../tools/syntax-measure/results/stage1-opencode.md)）。Codex と GPT-6-Luna では、720 回のうち最初の構文の誤りは 1 回で、案の差は出なかった。OpenCode と LongCat 2.5 Preview Free では、最初の構文の誤りの率は案ごとに 0〜6.7% で、V00 との差はどの案も有意でなかった（McNemar の検定で p ≥ 0.5）。課題が易しく、どちらのモデルでも誤りの率が 0 に近いので、案の差を測るには課題を難しくする必要がある。一方、LongCat の誤り 21 件のうち 11 件は案によらず同じ誤り（式の中のリストに `[first, ..rest]` の形を書く）だったので、設計者の判断で、リストリテラルにリストのパターンと同じ形の展開 `..e` を一つまで書けることにした（[ADR 0272](decisions/0272-list-spread-in-list-literals.md)）。この変更が誤りを減らすかは、第二段階の測定で確かめる。
+
 <a id="open-013"></a>
 ## OPEN-013 標語で使う三大美徳の英語表記の出典
 
@@ -293,6 +302,8 @@ iOS のサブプロセス起動不可、Android 10 以降の実行可能ファ�
 
 2026-09-29 に、Perl の成り立ちの文を、Perl の文書 `perl(1)` と `perlhist` が述べる事実（1.000 の公開が 1987-12-18 であること、テキストの走査と報告の出力に最適化した言語として始まり、sed・awk・sh の機能を組み合わせたこと）に書き改めた。「業務で」と「awk を補う」は、これらの文書が述べていないので書かない。残る事実（F#、Racket、Ada など）は初回リリース版の設計と実装に影響しないので、正式リリース版の前に確かめる（[ADR 0245](decisions/0245-perl-virtues-source-and-fact-check-timing.md)、[ADR 0178](decisions/0178-resolve-all-open-issues-before-stable-release.md)）。
 
+2026-09-29 に、[実装言語の比較](08-appendix/08-01-implementation-language-comparison.md)に Haskell を加え、[関数型言語の構文の比較](08-appendix/08-04-fp-syntax-comparison.md)を加えた。両章の【要検証】の事項（Haskell の遅延評価によるメモリの使いすぎ、比較した言語の構文の細部、例を各言語の処理系で動かしていないことなど）も、本項で確かめる。
+
 <a id="open-015"></a>
 ## OPEN-015 契約の変更と権限の差分を利用者に示す方法
 
@@ -308,6 +319,8 @@ LLM がスクリプトを修正したとき、既存の契約（型・エフェ�
 2026-09-29 に、実行時の権限制御・OS のサンドボックス・MCP サーバを初回リリース版に含めず、初回リリース版の後にサーバモードとあわせて加えることにした（[ADR 0177](decisions/0177-server-mode-after-first-release.md)）。本項は、サーバモードの設計（[OPEN-055](#open-055)）とあわせて決める。
 
 2026-09-29 に、登録したスクリプトは登録のときにエフェクトを表示して利用者が承認し、再登録でエフェクトが増えたら改めて承認を求めることにした（[ADR 0185](decisions/0185-default-policies-per-run-kind.md)）。承認の記録と、増えたエフェクトの示し方が残る。
+
+2026-09-29 に、処理系が契約の変更を表示する機能を初回リリース版に含めず、同梱の Agent Skill の手順で示すことにした（[ADR 0251](decisions/0251-contract-change-display-not-in-first-release.md)）。本項は、サーバモードの設計とあわせて決める。
 
 <a id="open-016"></a>
 ## OPEN-016 初期実装の後に実装言語を見直すかどうか
@@ -387,7 +400,7 @@ LLM がスクリプトを修正したとき、既存の契約（型・エフェ�
 <a id="open-021"></a>
 ## OPEN-021 処理系・標準ライブラリ・文書・設計書のライセンス
 
-- 種別: 未決（ライセンスは [ADR 0003](decisions/0003-license.md) で、第三者のライセンスの表示の方法は [ADR 0235](decisions/0235-third-party-licenses-generated-and-shown-by-option.md) で、著作権表示は [ADR 0242](decisions/0242-copyright-notice-for-llm-generated-code.md) で決着。設計者の名前の書き方とランタイムの例外が残る）
+- 種別: 決着（[ADR 0003](decisions/0003-license.md)、[ADR 0235](decisions/0235-third-party-licenses-generated-and-shown-by-option.md)、[ADR 0242](decisions/0242-copyright-notice-for-llm-generated-code.md)、[ADR 0290](decisions/0290-copyright-holder-name-and-open-021.md)。ランタイムの例外は、スクリプトを埋め込んだ実行ファイルの設計で決める）
 - 移行元: なし
 
 処理系・標準ライブラリ・同梱の Agent Skill・言語の文書・設計書のリポジトリのライセンスを決める。2026-09-26 に、MIT と Apache-2.0 のデュアルライセンスとすることを決めた（[ADR 0003](decisions/0003-license.md)）。残るのは次の点の確認である。
@@ -401,6 +414,8 @@ LLM がスクリプトを修正したとき、既存の契約（型・エフェ�
 
 - 著作権表示の `<設計者の名前>` の書き方。公開の前に設計者が決める。
 - スクリプトを埋め込んだ実行ファイルのランタイムの例外。その機能を実装するとき（正式リリース版の前。[ADR 0175](decisions/0175-script-embedded-binary-before-stable-release.md)）に決める。初回リリース版の範囲には含まない。
+
+決着: 2026-09-30 に、設計者が著作権表示の名前の書き方を `tecogonaz` と決めた。著作権表示は `Copyright (c) 2026 tecogonaz and Benitoite contributors` となる。スクリプトを埋め込んだ実行ファイルのランタイムの例外は、本項の対象から外し、その実行ファイルを設計するとき（[ADR 0175](decisions/0175-script-embedded-binary-before-stable-release.md)）に、埋め込む形とあわせて決める（[ADR 0290](decisions/0290-copyright-holder-name-and-open-021.md)、[配布形態](05-platform/05-01-distribution.md)の「ライセンスの表示」）。
 
 <a id="open-022"></a>
 ## OPEN-022 エフェクト多相の書き方と規則
@@ -593,7 +608,7 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 決着: 初回リリース版には外部の関数の層を実装せず、標準ライブラリに IO のモジュールと、テキストとデータを処理する純粋なモジュール（Path・Json・Regex・Csv・Time・Encoding・Hash）を入れる。第 3 部を「標準ライブラリ」に改め、Go を前提にした章を削除した（[ADR 0137](decisions/0137-first-release-library-scope.md)）。実装に使うクレートと許可するライセンスは [ADR 0138](decisions/0138-crates-and-licenses-for-stdlib.md) で定めた。外部の関数は WASM のモジュールの関数とし、属性 `@external` で宣言する（[ADR 0139](decisions/0139-external-functions-via-wasm.md)）。外部の関数の層の詳細は [OPEN-051](#open-051) で扱う。
 
 <a id="open-036"></a>
-## OPEN-036 初回リリース版で循環する値を回収する方式
+## OPEN-036 初回リリース版のメモリの管理の方式
 
 - 種別: 未決
 - 移行元: [設計メモ](sources/fp-language-design.md) 7
@@ -608,6 +623,10 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 どの方式でも、判断には、最小実行版の測定の結果（[性能](07-quality/07-02-performance.md)）と、実装を担う LLM が正しく実装できるか（[OPEN-017](#open-017)）を含める。
 
 2026-09-29 に、暫定の方式として、参照カウントを残し `Reference` のセルだけを起点に、内部の参照を差し引く方法で循環を回収することにした（[ADR 0239](decisions/0239-cycle-collection-for-reference-cells.md)）。最終的な方式は、初回リリース版の実装プランを作るときの値の表現とランタイムの作り直しで決める（[ADR 0240](decisions/0240-runtime-redesign-in-first-release-plan.md)）。作り直しが別の方式を採れば、ADR 0239 を置き換える。タスクの表の項目の寿命も、あわせて決める。
+
+2026-09-30 に、作り直しの第 1 段で、回収を安全点に限る非移動のマーク・スイープと、改良した参照カウント（最後の使用での移動、参照の数が 1 の対象のその場での再利用、ADR 0239 の循環の回収）の両方を、同じ値の配置・確保器・VM の上で試作し、測定で暫定に選ぶことにした（[ADR 0259](decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)、[ADR 0268](decisions/0268-staged-runtime-rebuild.md)）。回収の閾値の係数 k もこの測定で決める。ハンドラ・タスク・IO を加えた後に、停止の時間と保持する量を測り直して確かめてから、採った方式を ADR に記録して本項を決着とする。参照カウントを採った場合に限り、ADR 0239 を残す。メモリの管理を自作することは、目的と設計原則の線引きの例外である（[ADR 0271](decisions/0271-self-made-gc-as-exception.md)）。タスクの表の項目の寿命は、[ADR 0258](decisions/0258-sixteen-byte-value-enum.md) と [ADR 0266](decisions/0266-task-and-resource-state-machines.md) で決めた（`Task` の値はタスクの対象への参照にし、タスクを指すほかの参照は所有しない番号にする）。
+
+2026-09-30 に、本項の決着は、U3 の後の map と http のワークロードの測り直しを待って行うことにした。ADR 0268 の決定 5 が、ハンドラ・タスク・HTTP を加えた後に測り直して確かめてから方式を確定するとしているからである。U3 の実装プランの作業がベンチマークを加え、測定は U3・U4 を終えた後に行う。
 
 <a id="open-037"></a>
 ## OPEN-037 実行時の権限制御を OS のサンドボックスでも強制する方式
@@ -645,7 +664,7 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 <a id="open-039"></a>
 ## OPEN-039 初回リリース版の値の表現と、その実装に unsafe を使うか
 
-- 種別: 未決
+- 種別: 決着（[ADR 0258](decisions/0258-sixteen-byte-value-enum.md)、[ADR 0260](decisions/0260-heap-and-unsafe-boundary.md)）
 - 移行元: なし
 
 最小実行版の測定（[性能](07-quality/07-02-performance.md)の「最小実行版の測定の結果」）で、関数の呼び出しと代数的データ型の処理では、OCaml のバイトコード（`ocamlrun`）が Benitoite より 1 桁速かった。差の中心は、値の表現（Rust の列挙型で値を持ち、参照を持つ値の複製と解放のたびに参照の数を増減する。[ADR 0028](decisions/0028-tagged-struct-values.md)、[ADR 0078](decisions/0078-reference-counting-in-minimal.md)）にあると見ている。初回リリース版の設計で、値の表現を見直すか（整数をボックス化しないタグ付きの語、参照の数の増減を減らす仕組みなど）を決める。
@@ -653,6 +672,8 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 値をポインタのビットに詰め込む表現は、ふつう `unsafe` を必要とする。実装プランは `unsafe` を禁じている（lint の `unsafe_code = "forbid"`）ので、見直すときは、`unsafe` を使うか、使う場合の範囲と確かめ方もあわせて決める。循環する値を回収する方式（[OPEN-036](#open-036)）とも関わる。
 
 2026-09-29 に、初回リリース版の実装プランを作るときに、既存のスクリプト言語と関数型言語の処理系の設計を参考にして、値の表現とランタイムを自作で作り直すことにした。作り直した後は `unsafe` を使ってよく、その範囲と確かめ方（Miri、fuzzing など）は作り直しの設計で決める。細部は別のコーディングエージェント（Codex と GPT-6-Astra）と議論してよい。本項と [OPEN-036](#open-036) は、この作り直しで決める。それまでは最小実行版の表現と、`unsafe` を使わない規約を保つ（[ADR 0240](decisions/0240-runtime-redesign-in-first-release-plan.md)）。
+
+2026-09-30 に決着した。値は 16 バイトの Rust の列挙型で表し、数値などを値の中に直接持ち、ほかをヒープの対象への細いポインタで指す（[ADR 0258](decisions/0258-sixteen-byte-value-enum.md)）。ヒープの対象は自前の確保器で確保し、`unsafe` はヒープのモジュールに閉じ込め、回収しない区間を Rust の寿命で表す。確かめ方は、Miri、回収の強制、ヒープの検証器、コンパイルの失敗のテストなどとする（[ADR 0260](decisions/0260-heap-and-unsafe-boundary.md)）。8 バイトの値にする案は [OPEN-065](#open-065) で、振り分けのループで範囲の確かめを省くための `unsafe` は [OPEN-064](#open-064) で扱う。OCaml との差の中心を値の表現に置いた上の見立ては、[ADR 0269](decisions/0269-correct-adr-0240-performance-assessment.md) で改めた。
 
 <a id="open-040"></a>
 ## OPEN-040 正式リリース版とする条件と、互換性を壊す変更の範囲
@@ -665,7 +686,7 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 - 正式リリース版（`1.0.0`）とする条件。スクリプトを埋め込んだ単一バイナリの実装と、すべての未決事項の決着は条件に含める（[ADR 0175](decisions/0175-script-embedded-binary-before-stable-release.md)、[ADR 0178](decisions/0178-resolve-all-open-issues-before-stable-release.md)）。たとえば、言語仕様のどの範囲を固めたら 1.0.0 とするか、将来拡張のどの機能を 1.0.0 より前に入れるか。
 - 互換性を壊す変更に当たるものの範囲。言語のソース（構文と型の規則）、標準ライブラリ、CLI のオプションと終了状態、診断のコードと JSON の形、保存したバイトコードのどれを互換性の約束に含めるか。[配布形態](05-platform/05-01-distribution.md)の互換性の方針と合わせて決める。
 
-あわせて、構成子を後から加えうる代数的データ型（`IOErrorKind`・`NetworkErrorKind` など）の `case` に、`_` の分岐を必須にする仕組み（Rust の `#[non_exhaustive]`、Swift の `@unknown default` に当たるもの）を設けるかを決める。設けないなら、正式リリース版の後は構成子を加えられない（[ADR 0144](decisions/0144-ioerrorkind-constructors.md)）。パッケージの型にも同じ仕組みが要るかを、[OPEN-049](#open-049) とあわせて検討する。
+あわせて、構成子を後から加えうる代数的データ型（`IOErrorKind`・`NetworkErrorKind` など）の `match` に、`_` の分岐を必須にする仕組み（Rust の `#[non_exhaustive]`、Swift の `@unknown default` に当たるもの）を設けるかを決める。設けないなら、正式リリース版の後は構成子を加えられない（[ADR 0144](decisions/0144-ioerrorkind-constructors.md)）。パッケージの型にも同じ仕組みが要るかを、[OPEN-049](#open-049) とあわせて検討する。
 
 2026-09-29 に、メジャーバージョンが 0 の間の方針を決めた。マイナーの版では言語・標準ライブラリ・CLI・診断の互換性を壊してよく、パッチの版は不具合の修正だけを含めて互換性を壊さない。互換性を壊す変更は `CHANGELOG` に移行の手順とともに記録し、バイトコードは保存も配布もしないので対象にしない（[ADR 0236](decisions/0236-compatibility-during-0x.md)、[配布形態](05-platform/05-01-distribution.md)の「互換性の方針」）。正式リリース版とする条件と、正式リリース版で約束する範囲は、本項で引き続き決める。
 
@@ -945,7 +966,7 @@ TUI と自前のコーディングエージェントを、サーバモードと�
 <a id="open-058"></a>
 ## OPEN-058 テストの結果の報告の形の細部
 
-- 種別: 未決
+- 種別: 決着（[ADR 0252](decisions/0252-test-report-format.md)）
 - 移行元: なし
 
 `test` は、テストごとの結果と最後の集計を標準出力に書き、`--diagnostics json` を指定したときは JSON Lines で書く（[ADR 0208](decisions/0208-test-report-destination.md)）。次の細部を、初回リリース版の実装プランの前に決め、[利用者プログラムのテスト](06-tooling/06-04-test-runner.md)に書く。
@@ -956,7 +977,7 @@ TUI と自前のコーディングエージェントを、サーバモードと�
 <a id="open-059"></a>
 ## OPEN-059 初回リリース版の実装と確認の分担
 
-- 種別: 未決
+- 種別: 決着（[ADR 0285](decisions/0285-implementer-assignment-for-first-release.md)）
 - 移行元: なし
 
 最小実行版では、実装を Claude Opus 5.5 のサブエージェントと Codex に割り当て、Claude Code がオーケストレータとして確認した（[ADR 0084](decisions/0084-implementer-assignment-for-minimal.md)、[ADR 0085](decisions/0085-review-assignment-for-minimal.md)）。初回リリース版の実装と確認の分担は、最小実行版と同じく、実装プランを作る中で作業ごとの難しさを見積もってから決める。
@@ -1008,3 +1029,53 @@ TUI と自前のコーディングエージェントを、サーバモードと�
 | R13 短い出力が出力先に届かない | 02-09、07-03 | `Console.write("Name: ")` の後の `Console.readLine` で、入力を待つ間にプロンプトが出ない。中断のテストで、準備ができたことを知らせる行が親に届かない | 転送する時点に、標準入力を読む前、進められるタスクがなくなったとき、端末への出力で改行を書いたときを加える（設計者が選んだ案） |
 | R14 HTTP のクエリとヘッダが UTF-8 でないときの扱いがない | 03-09、02-09 | `?q=%FF`、`%G0`、UTF-8 でない受信のヘッダ | クエリは `Http.pathSegments` と同じく戻せないものを受け取ったままにする。UTF-8 でないヘッダは、サーバでは状態コード 400、クライアントでは `NetworkErrorKind.InvalidHTTPData` にする |
 
+2026-09-30 に、値の表現とランタイムの作り直しの設計で、項目ごとの扱いを決めた（[ADR 0270](decisions/0270-open-062-items-in-runtime-rebuild.md)）。R02 は送り出しの列の規則（[ADR 0264](decisions/0264-single-dispatch-queue-for-builtin-operations.md)）、R03 と R05 はタスクとリソースの状態の表と完了の共通の処理（[ADR 0266](decisions/0266-task-and-resource-state-machines.md)）、R04 と R13 の大部分は書き出し用のスレッドによる転送（[ADR 0265](decisions/0265-output-transfer-by-writer-threads.md)）を共通の部品で必ず行えば起きないと見る。R01、R14 と、R13 のうちパイプに準備ができたことを知らせる行を書いた後で別のタスクが計算を続ける場合は、作り直しの仕組みでは除けない。どの項目も再現テストを書く手順は変えず、「起きない」とした項目も、テストが通らなければ設計書と ADR を改めてから直す。R08 は構文と検査の工程の範囲である。
+
+同日に、UTF-8 でない HTTP の要求（R14）に、サーバが状態コード 400 を返すことを[ネットワークのモジュール](03-interop/03-09-network.md)の「サーバの接続と要求の読み方」に【方針】として書いた（[ADR 0291](decisions/0291-file-copy-limit-and-http-server-details.md)）。ヘッダの行は修正の候補と一致する。クエリは、パーセント符号化を戻すと正しい UTF-8 にならないものも 400 とするので、修正の候補と異なり、再現する見込みである。実装プランの L33 が書く再現テストの結果を見て、クエリの扱いを改めるかを決める。
+
+<a id="open-063"></a>
+## OPEN-063 窓を重ねる形と、区画の記憶域の再利用
+
+- 種別: 要検証
+- 移行元: なし
+
+作り直しの第 1 段で、区画と枠の持ち方（[ADR 0262](decisions/0262-segment-frames-split-call-and-wrapping.md)）のうち、次の二つを測ってから決める。
+
+- 呼び出し元が関数と引数を窓の末尾に並べ、呼ばれた側の窓をその位置から始める形（窓を重ねる形）。引数を写す処理が呼び出しの前の命令に移るだけのことがあるので、引数の準備を含む総移動量、レジスタの領域の最大量、長い末尾再帰の時間で、独立した窓と比べる。末尾呼び出しで窓の先頭を進め続けないこと、区画の境目で窓を共有しないこと、重なったスロットの所有者を一つに決めることが条件になる。
+- 継続を捨てた後の区画の記憶域を使い回すか。後始末を終えた空の容量だけを、上限付きで保管する形で測る。確保の回数の減りと、大きな継続を捨てた後に残るメモリの量をあわせて見る。
+
+<a id="open-064"></a>
+## OPEN-064 検証器を通したうえでの、振り分けのループの範囲の確かめの省略
+
+- 種別: 要検証
+- 移行元: なし
+
+振り分けのループは、実行中の状態を局所変数に持つ（[ADR 0263](decisions/0263-dispatch-loop-locals-and-verifier.md) の決定 1）。そのうえで、読み込みのときにコンパイル済みプログラムを検証し、実行中の範囲の確かめを `unsafe` で省くかを、同じ命令列で局所変数に持つだけの場合と比べて決める。省く場合は、省く確かめごとに検証器が保証することを表にし、効果の大きい添字の読み書きから限って省く。検証器は、変異させた入力のテストに加え、受理した入力を範囲を確かめる実行器で動かして確かめる。
+
+省く場合は、「型検査を通ったプログラムでは起きない状態は `Stop::Internal` で返す」という実装の規約（AGENTS.md「失敗を panic で表さない」）の一部を、「検証器が拒む」に読み替える規則が要る。lint の水準（[処理系のテスト戦略](07-quality/07-03-compiler-testing.md)）も、振り分けのループに `unsafe` を許すように改める。
+
+<a id="open-065"></a>
+## OPEN-065 値を 8 バイトにする案
+
+- 種別: 要検証
+- 移行元: なし
+
+値は 16 バイトの列挙型で表す（[ADR 0258](decisions/0258-sixteen-byte-value-enum.md)）。64 ビットの `Integer` の仕様は、8 バイトの値を禁じない（小さな整数を値の中に直接持ち、大きな整数だけをヒープに置く形がある）。作り直しの第 1 段の測定で、プログラムが使う整数の値の範囲と、ヒープの対象の大きさを記録し、8 バイトの値を試す価値を判断する。試す場合は、数値の境目、`NaN`、無限大、負のゼロを検査する。
+
+<a id="open-066"></a>
+## OPEN-066 非公式のライブラリと標準ライブラリの関係
+
+- 種別: 決着（[ADR 0286](decisions/0286-unofficial-modules-imported-under-unofficial.md)）
+- 移行元: なし
+
+組み込みの関数は、型付きの形で書く（[ADR 0261](decisions/0261-typed-builtin-interface.md)）。設計者は、この形で書いた関数を、まず非公式のライブラリとして扱い、実装を吟味したものから標準ライブラリに加える方向を示した（2026-09-30）。初回リリース版の標準ライブラリの範囲（[ADR 0137](decisions/0137-first-release-library-scope.md)、[標準ライブラリ](03-interop/03-06-stdlib.md)）、非公式のライブラリの位置付け、利用者とスクリプトを書く LLM からの見え方（名前空間、文書、互換性の約束）を、U3 の実装プランを作るときに決める。
+
+決着: 標準ライブラリのモジュールごとに「標準」か「非公式」の状態を持たせる。初回リリース版では、prelude のモジュールと `Benitoite.Trait` を標準とし、IO・ネットワーク・テキストとデータのモジュール（U2 が作る IO の関数を含む）を非公式とする。非公式のモジュール `Benitoite.X.Y` は `import Benitoite.Unofficial.X.Y` で取り込み、設計者が吟味を終えたらマイナーの版で標準に移す（[ADR 0286](decisions/0286-unofficial-modules-imported-under-unofficial.md)、[標準ライブラリ](03-interop/03-06-stdlib.md)の「標準のモジュールと非公式のモジュール（初回リリース版）」）。
+
+<a id="open-067"></a>
+## OPEN-067 自分のタスクが評価した `handle` の、末尾で再開する節の直接の実行
+
+- 種別: 未決
+- 移行元: なし
+
+引き継いだハンドラの、末尾で再開する節は、継続を捕まえずに実行する（[ADR 0151](decisions/0151-inherited-handlers-tail-resume-only.md)）。同じ扱いを、`handle` を評価したタスク自身が呼んだ操作の節にも広げれば、区画の切り離しと戻しを省ける。しかし、「末尾が `resume` で `return` と `try` がない」だけでは、節の中の `with` の解放の時期、止める手順と取り消しでの継続の辿り方、節の中で呼んだ操作の探し方が、継続を捕まえる方式と一致しない。そこで、作り直しの第 1 段には入れない（[ADR 0262](decisions/0262-segment-frames-split-call-and-wrapping.md) の決定 7）。handler のベンチマークで効果が大きいと分かったら、観測できる振る舞いが一致する条件を定めて改めて検討する。

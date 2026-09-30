@@ -1,8 +1,8 @@
 # 性能
 
 - 状態: 確定
-- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0026](../decisions/0026-match-to-decision-trees.md), [0027](../decisions/0027-register-bytecode.md), [0028](../decisions/0028-tagged-struct-values.md), [0029](../decisions/0029-two-io-execution-modes.md), [0030](../decisions/0030-call-stack-size-limit.md), [0040](../decisions/0040-single-repository.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0079](../decisions/0079-rust-readings-of-go-based-decisions.md), [0089](../decisions/0089-ocaml-as-benchmark-comparator.md), [0088](../decisions/0088-keep-both-io-execution-modes.md), [0104](../decisions/0104-list-as-persistent-vector.md), [0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)
-- 未決事項: [OPEN-009](../open-issues.md#open-009), [OPEN-039](../open-issues.md#open-039), [OPEN-036](../open-issues.md#open-036)
+- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0026](../decisions/0026-match-to-decision-trees.md), [0027](../decisions/0027-register-bytecode.md), [0028](../decisions/0028-tagged-struct-values.md), [0029](../decisions/0029-two-io-execution-modes.md), [0030](../decisions/0030-call-stack-size-limit.md), [0040](../decisions/0040-single-repository.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0079](../decisions/0079-rust-readings-of-go-based-decisions.md), [0089](../decisions/0089-ocaml-as-benchmark-comparator.md), [0088](../decisions/0088-keep-both-io-execution-modes.md), [0104](../decisions/0104-list-as-persistent-vector.md), [0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md), [0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md), [0263](../decisions/0263-dispatch-loop-locals-and-verifier.md), [0268](../decisions/0268-staged-runtime-rebuild.md), [0269](../decisions/0269-correct-adr-0240-performance-assessment.md)
+- 未決事項: [OPEN-009](../open-issues.md#open-009), [OPEN-036](../open-issues.md#open-036)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 9, 3.6
 
 ## 目的と範囲
@@ -100,13 +100,13 @@ http は、ロードマップが並行処理の水準とした「スクリプト
 |---|---|
 | 要求の処理の量と待ち時間 | http で、一秒あたりに処理した要求の数と、要求ごとの応答までの時間の中央値と最大。計算を続けるタスクがある場合とない場合を分けて記録する |
 | 並行処理でのメモリ | tasks で、同時に存在するタスクの数を変えたときの最大の常駐メモリ。一つのタスクあたりのメモリを見積もる（[ADR 0015](../decisions/0015-shared-program-per-execution-state.md) の帰結） |
-| 循環する値の回収の費用 | cycle で、回収にかかる時間の合計と、一回の回収で実行が止まる時間の最大。値の表現とランタイムの作り直し（[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)）で採った方式（[OPEN-036](../open-issues.md#open-036)）について測る |
+| 回収の費用 | cycle と、値を多く作るベンチマーク（list、tree、eval）で、回収か解放にかかる時間の合計と、実行が止まる時間の p50・p95・p99・最大、最大の常駐メモリ。値の表現とランタイムの作り直しで採った方式（[OPEN-036](../open-issues.md#open-036)）について測る。作り直しの第 1 段で二つの方式を比べるときの項目は [ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md) で定める |
 | 起動と検査にかかる時間の内訳 | 前述の「測る項目」の、起動から終了までの時間と検査にかかる時間を、標準ライブラリのソースの読み込みと型検査にかかる時間と、それ以外に分けて記録する。検査のたびに、読む標準ライブラリのモジュールも名前解決から型検査までの段を通すためである（[名前解決とモジュール読込](../02-impl/02-04-resolver.md)の「標準ライブラリのソースの持ち方」） |
 
 【方針】処理系の実装の選択の影響として、次のものも記録する。
 
 - 呼び出しの回数の予算（[仮想機械](../02-impl/02-08-vm.md)の「タスクの切り替え」）: 予算の初めの値は実装プランで定め、性能の測定で調整する。tasks と http を、初めの値を変えて測り、実行時間と応答までの時間の釣り合いから値を選ぶ。
-- 切り替えの位置の処理（[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)、[ADR 0163](../decisions/0163-interrupt-releases-resources.md)）: 関数の呼び出しのたびに中断の印、取り消しの要求、予算を調べる。fib と loop の CPU プロファイルで、この処理が実行時間に占める割合を見る。
+- 切り替えの位置の処理（[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)、[ADR 0163](../decisions/0163-interrupt-releases-resources.md)、[ADR 0263](../decisions/0263-dispatch-loop-locals-and-verifier.md)）: 関数の呼び出しのたびに中断の印と予算を調べ、取り消しと回収の要求は予算を 0 にして知らせる。fib と loop の CPU プロファイルで、この処理が実行時間に占める割合を見る。
 - 中間表現の最適化（[中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md)の「最適化」）: 初回リリース版で行う最適化は、性能の測定の結果を見て決める。候補の変換（辞書が決まっているメソッドの呼び出しを直接の呼び出しにすること、`let` の入れ子を平らにすることなど）ごとに、変換の有無で各ベンチマークを測り、採るかを決める。辞書の変換は trait で効果を見る。
 - 配布する実行ファイルのメモリの確保（[ADR 0176](../decisions/0176-first-release-targets-and-static-linux-build.md)、[OPEN-009](../open-issues.md#open-009)）: Linux 向けの musl で静的にリンクしたビルドと、glibc のビルドを、同じ Linux の計算機で比べる。
 
@@ -132,15 +132,16 @@ http は、ロードマップが並行処理の水準とした「スクリプト
 測定の結果を、「測定の結果の使い方」の三つの観点で並べると次のとおりである。原因は、プロファイルと実装から見立てたものであり、直して測り直して確かめたものではない。
 
 1. **相対の位置**: 関数の呼び出しと整数の演算（fib、loop、eval）では、CPython（JIT なし）の 0.9〜1.7 倍の時間で、設計メモの見込みの層に入った。リストと文字列の操作（list、string、lines）では CPython の 2.7〜9.6 倍の時間で、見込みより遅い。JIT を持たない OCaml のバイトコードと Lua は、関数の呼び出しと代数的データ型の処理で Benitoite より 2.4〜20 倍速い。起動から終了までは 3.1 ミリ秒、約 1 万行のスクリプトの検査は 17 ミリ秒である。最大常駐メモリは、値を多く作るベンチマーク（list、tree、string、lines）で比較対象より大きい（tree で 747 MB、OCaml は 104 MB）。
-2. **原因と、設計で直せるか**: 最適化の後は、命令を取り出して振り分ける費用（原型と枠の引き直しを含む）が実行時間の 34〜61% を占め、値の複製と解放（参照の数の増減）が 5〜20%、リストのセルと文字列の確保と解放が値を多く作るベンチマークで 10〜45% を占める。前の二つは VM とコード生成の局所的な直し（振り分けのループの組み立て、コード生成が出す余分な MOVE を減らすこと）で減らせる見込みがあり、命令の形（[ADR 0027](../decisions/0027-register-bytecode.md)）と値の表現は変えずに済む。OCaml のバイトコードとの 1 桁の差の中心は、値の表現（整数をボックス化しないこと、参照の数を数えずに GC で回収すること）にあると見られ、見直すには値の表現の設計を変える必要がある（[OPEN-039](../open-issues.md#open-039)）。IO の二つの方式の差は小さく（println で約 11%、lines で約 2%）、二つとも残すと決めた（[ADR 0088](../decisions/0088-keep-both-io-execution-modes.md)）。
+2. **原因と、設計で直せるか**: 最適化の後は、命令を取り出して振り分ける費用（原型と枠の引き直しを含む）が実行時間の 34〜61% を占め、値の複製と解放（参照の数の増減）が 5〜20%、リストのセルと文字列の確保と解放が値を多く作るベンチマークで 10〜45% を占める。前の二つは VM とコード生成の局所的な直し（振り分けのループの組み立て、コード生成が出す余分な MOVE を減らすこと）で減らせる見込みがあり、命令の形（[ADR 0027](../decisions/0027-register-bytecode.md)）と値の表現は変えずに済む。関数の呼び出しが中心のプログラム（fib、loop）で OCaml のバイトコードとの差を生んでいるのは、ヒープをほとんど確保しないことから、値の表現ではなく、振り分けのループの組み立て（命令ごとに原型と枠を引き直し、レジスタの読み書きごとに範囲を確かめる）と呼び出しの手順だと見られる。値の表現とメモリの管理が主な差になるのは、値を多く作り捨てるプログラム（list、tree）と、値を多く写すプログラム（eval）である（[ADR 0269](../decisions/0269-correct-adr-0240-performance-assessment.md)）。どちらを直すにも、値の表現とランタイムの作り直しが要る。IO の二つの方式の差は小さく（println で約 11%、lines で約 2%）、二つとも残すと決めた（[ADR 0088](../decisions/0088-keep-both-io-execution-modes.md)）。
 3. **学ぶ目的への影響**: JIT を持たないインタプリタでも 1 桁速くできる余地があり、その原因が値の表現と命令の振り分けにあることは、VM の設計を学ぶ題材になる。JIT は初回リリース版の非目標のまま扱い（[ロードマップ](../00-overview/00-03-roadmap.md)）、インタプリタの範囲での改良を先に行う。
 
-【方針】初回リリース版に進む前の最適化は、命令の形と値の表現を変えずに行える局所的な直し（振り分けのループ、コード生成の余分な MOVE）に限る。値の表現の見直しは、初回リリース版の実装プランを作るときに、値の表現とランタイムの作り直しとして行う（[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)、[OPEN-039](../open-issues.md#open-039)）。
+【方針】初回リリース版に進む前の最適化は、命令の形と値の表現を変えずに行える局所的な直し（振り分けのループ、コード生成の余分な MOVE）に限る。値の表現の見直しは、初回リリース版の実装プランを作るときに、値の表現とランタイムの作り直しとして行う（[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)）。
+
+【決定】作り直しは段に分けて行い、第 1 段の終わりに fib・loop・list・tree・eval・string と、循環や大きな生きているグラフなどの負荷を測る。振り分けのループの改善の効果は、メモリの管理の方式の比較と混ざらないよう別に測る（[ADR 0268](../decisions/0268-staged-runtime-rebuild.md)）。
 
 比較の読み方には次の注意がある。println では、Lua・Rust・OCaml の版が一行ごとに出力を送り出していると見られ、比較の条件が揃っていない。string と lines では、分割と検索を Benitoite では Rust で書いた組み込みの関数が行い、OCaml のバイトコードでは OCaml で書いた標準ライブラリを VM が 1 文字ずつ実行するので、VM の速さの比較としては読まない。string の入力は List の要素数の上限（16,777,216）で抑えられ、実行時間が 1 秒に届かない。
 
 ## 未決事項
 
 - [OPEN-009](../open-issues.md#open-009): 実行性能
-- [OPEN-039](../open-issues.md#open-039): 初回リリース版の値の表現と、その実装に unsafe を使うか（値の表現とランタイムの作り直しで決める。[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)）
-- [OPEN-036](../open-issues.md#open-036): 初回リリース版で循環する値を回収する方式（同じく作り直しで決める。暫定の方式は [ADR 0239](../decisions/0239-cycle-collection-for-reference-cells.md)）
+- [OPEN-036](../open-issues.md#open-036): 初回リリース版のメモリの管理の方式（作り直しの第 1 段でマーク・スイープと改良した参照カウントを試作して比べ、測定で選ぶ。[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)）

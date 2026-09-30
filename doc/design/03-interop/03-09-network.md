@@ -1,7 +1,7 @@
 # ネットワークのモジュール
 
 - 状態: 確定
-- 関連ADR: [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0067](../decisions/0067-with-resource-scope.md), [0115](../decisions/0115-structured-io-concurrency.md), [0121](../decisions/0121-pattern-extensions.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0141](../decisions/0141-http-scope-in-stdlib.md), [0142](../decisions/0142-http-api-shape.md), [0143](../decisions/0143-http-and-tls-crates.md), [0145](../decisions/0145-network-error.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0170](../decisions/0170-http-accept-failure-classification.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md)
+- 関連ADR: [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0067](../decisions/0067-with-resource-scope.md), [0115](../decisions/0115-structured-io-concurrency.md), [0121](../decisions/0121-pattern-extensions.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0141](../decisions/0141-http-scope-in-stdlib.md), [0142](../decisions/0142-http-api-shape.md), [0143](../decisions/0143-http-and-tls-crates.md), [0145](../decisions/0145-network-error.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0170](../decisions/0170-http-accept-failure-classification.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0287](../decisions/0287-stdlib-details-decided-in-u3-plan.md), [0289](../decisions/0289-request-of-after-release-is-runtime-error.md), [0291](../decisions/0291-file-copy-limit-and-http-server-details.md)
 - 未決事項: [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-062](../open-issues.md#open-062)
 - 移行元: なし
 
@@ -27,6 +27,7 @@
 | `Http.Connect` | HTTP のサーバへの接続と、要求の送信 | `Http.Connect`（対象: 接続先。書き方は [OPEN-052](../open-issues.md#open-052) で定める） |
 
 - エフェクトの名前は、`import Benitoite.Network.Http` で取り込んだときの書き方である。
+- 初回リリース版では、`Benitoite.Network.Http` は非公式のモジュールであり、`import Benitoite.Unofficial.Network.Http` と書いて取り込む（[標準ライブラリ](03-06-stdlib.md)の「標準のモジュールと非公式のモジュール（初回リリース版）」、[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)）。取り込んだ後の書き方（`Http.get`、`uses Http.Connect`）は変わらない。本章は、標準に加えた後の名前で書く。
 - ネットワークのエフェクトは `IO.All` に含まれない。IO とネットワークの両方を使う関数は `uses IO.All, Http.Connect` のように書く。
 - ネットワークの操作も IO 実行器を通し、ハンドラで処理でき、どのハンドラも処理しなければ処理系が実際に行う（[エフェクト](../01-spec/01-07-effects.md)）。
 
@@ -70,7 +71,7 @@ end record
 - `Request` の `method` は、受け付けた要求の方法の名前（`"GET"` など）をそのまま入れる。`path` は、要求の対象のうち `?` より前の部分であり、パーセント符号化を戻さない。`query` は、`?` より後の部分を `&` と `=` で区切り、パーセント符号化を戻した組の並びである。`+` は空白に戻す。
 - 受け付けた要求と受け取った応答の `headers` は、名前を小文字にそろえ、受け取った順に並べる。同じ名前の組が複数あれば、すべて残す。
 - 本体は `Bytes` で表す。文字列との変換は `String.fromUTF8`・`String.toUTF8` で行う（[標準ライブラリ](03-06-stdlib.md)）。
-- 受け付ける要求の本体の大きさには上限を設け、上限を超える要求には、処理系が状態コード 413 の応答を返す。上限の値は実装プランで定める。
+- 受け付ける要求の本体の大きさには上限を設け、上限を超える要求には、処理系が状態コード 413 の応答を返す。【方針】上限は 16 MiB（16,777,216 バイト）とする（[ADR 0287](../decisions/0287-stdlib-details-decided-in-u3-plan.md)）。
 
 ### サーバ
 
@@ -89,7 +90,7 @@ end record
 
 - `Http.Listener` と `Http.Exchange` はリソースの型である（[リソース管理](../01-spec/01-10-resources.md)）。`with` で束縛したときの解放は、それぞれ `Http.closeListener` と `Http.closeExchange` と同じ処理である。この二つの関数は、`Http.Listen` の操作ではなく、`State` を型に持つ組み込みの関数であり、ハンドラで処理できない。解放のエフェクトは `State` である（[ADR 0150](../decisions/0150-resource-release-as-state.md)）。
 - 【決定】`Http.Exchange` の解放の失敗は、実行時エラーにせず、報告もしない（[リソース管理](../01-spec/01-10-resources.md)の「解放の失敗」の例外。[ADR 0149](../decisions/0149-http-exchange-release-failure.md)）。クライアントが接続を切っても、`with` を抜けるときの解放でサーバが止まることはない。解放の失敗を調べるときは、`Http.closeExchange` を呼んで `Result` を調べる。`Http.Listener` の解放の失敗は、ほかのリソースの型と同じく実行時エラーとする。
-- `Http.requestOf` は、解放した後の `Http.Exchange` にも使え、受け付けた要求を返す。要求は受け付けた時点で読み終えているので、この関数は外部に作用する操作を行わない。解放した後の `Http.Exchange` に対する `Http.respond` は、実行時エラー（解放したリソースの使用）とする。
+- `Http.requestOf` は、受け付けた要求を返す。要求は受け付けた時点で読み終えているので、この関数は外部に作用する操作を行わない。【方針】解放した後（解放を始めた後を含む）の `Http.Exchange` に対する `Http.requestOf` と `Http.respond` は、実行時エラー（解放したリソースの使用）とする。処理系は、受け付けた要求の内容を `Http.Exchange` の解放のときに手放す。解放の後にも要求を使うときは、解放の前に `Http.requestOf` で値を得ておく（[ADR 0289](../decisions/0289-request-of-after-release-is-runtime-error.md)）。
 - `host` は、待ち受けるアドレスか名前（`"127.0.0.1"`、`"localhost"`、`"0.0.0.0"` など）である。`port` が 0 なら、OS が空いているポートを選ぶ。選ばれたポートは `Http.listenerPort` で調べる。`port` が 0 以上 65535 以下でなければ、実行時エラーとする。
 - 一つの `Http.Exchange` に `Http.respond` を二度呼ぶと、実行時エラーとする。
 - `Http.respond` は、応答の `status` が 100 以上 599 以下でなければ実行時エラーとする。応答の `Content-Length` は、処理系が本体の大きさから付ける。
@@ -99,16 +100,16 @@ end record
 【方針】`Http.serve` は、標準ライブラリのソースで、次のように書く。受け付けを繰り返し、要求ごとに `TaskGroup.spawn` でタスクを起動する。`TaskGroup.open()` は `with` の束縛の式としてだけ書ける（[ADR 0153](../decisions/0153-taskgroup-open-only-in-with.md)）。受け付けに失敗すると `try` で `serveLoop` を終え、`with` を抜けるときに、起動したタスクがすべて終わるのを待つ。
 
 ```text
-public function serve[effect E](host: String, port: Integer, handler: function(Request) -> Response uses E): Result[Unit, NetworkError] uses Listen, State, E
+public function serve[effect E](host: String, port: Integer, handler: function(Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
   with listener = try listen(host, port),
        group = TaskGroup.open() do
     return serveLoop(listener, group, handler)
   end with
 end function
 
-function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: function(Request) -> Response uses E): Result[Unit, NetworkError] uses Listen, State, E
-  let exchange = try accept(listener)
-  let _ = TaskGroup.spawn(group, lambda()
+function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: function(Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
+  bind exchange <- try accept(listener)
+  bind _ <- TaskGroup.spawn(group, lambda()
     with current = exchange do
       return respond(current, handler(requestOf(current)))
     end with
@@ -116,6 +117,16 @@ function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: func
   return serveLoop(listener, group, handler)
 end function
 ```
+
+### サーバの接続と要求の読み方
+
+【方針】HTTP のサーバの接続と、要求の読み方は次のとおりとする（[ADR 0291](../decisions/0291-file-copy-limit-and-http-server-details.md)）。
+
+- 一つの接続では、一つの要求だけを受け付ける。応答を送った後か、`Http.Exchange` を解放するときに、接続を閉じる。
+- 要求の本体は、`content-length` と `transfer-encoding: chunked` のどちらでも読む。どちらもなければ、本体を空とする。両方があるとき、または形が正しくないときは、HTTP として正しくない要求として扱う（後述の「失敗の種類」の、状態コード 400 の応答）。
+- 要求の頭（要求の行とヘッダ）の大きさの上限を 64 KiB（65,536 バイト）、ヘッダの数の上限を 100 とする。どちらかを超えた要求には、処理系が状態コード 431 の応答を返し、`Http.accept` は失敗を返さずに次の要求を待つ。
+- 要求の対象（パスとクエリ）かヘッダの値を `Http.Request` の `String` の値にできない（正しい UTF-8 でない）要求は、HTTP として正しくない要求として扱う。クエリでは、パーセント符号化を戻した結果が正しい UTF-8 でない場合を含む。クエリのこの扱いは、[OPEN-062](../open-issues.md#open-062) の R14 が挙げた修正の候補（戻せないものを受け取ったままにする）と異なる。R14 の再現テストの結果を見て、改めるかを決める。
+- 応答の `content-length`（本体の大きさ）と `connection: close` は、処理系が付ける。応答の `headers` に同じ名前（大文字と小文字を区別しない）の組があれば、処理系の値で置き換える。
 
 ### 応答を作る関数と、要求を調べる関数
 
@@ -135,16 +146,16 @@ end function
 import Benitoite.Network.Http
 import Benitoite.Json
 
-function route(request: Http.Request): Http.Response
-  let segments = Http.pathSegments(Http.Request.path(request))
-  return case Pair(Http.Request.method(request), segments) of
-    when Pair("GET", []): Http.html(200, "<h1>Hello</h1>")
-    when Pair("GET", ["items", id]): Http.json(200, Json.Value.Object(Map.fromList([Pair("id", Json.Value.String(id))])))
-    when _: Http.text(404, "not found")
-  end case
+function route(request: Http.Request) -> Http.Response
+  bind segments <- Http.pathSegments(Http.Request.path(request))
+  return match Pair(Http.Request.method(request), segments) with
+    case Pair("GET", []) -> Http.html(200, "<h1>Hello</h1>")
+    case Pair("GET", ["items", id]) -> Http.json(200, Json.Value.Object(Map.fromList([Pair("id", Json.Value.String(id))])))
+    case _ -> Http.text(404, "not found")
+  end match
 end function
 
-function main(): Result[Unit, String] uses Http.Listen, State
+function main() -> Result[Unit, String] uses Http.Listen, State
   return Http.serve("127.0.0.1", 8080, route) |> Result.mapError(_, NetworkError.message)
 end function
 ```

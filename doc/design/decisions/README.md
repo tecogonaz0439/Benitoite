@@ -16,21 +16,21 @@
 | [0001](0001-lazy-impatient-hubris-concept.md) | 利用者が怠惰・短気・傲慢のままでいられることを目指す | 採択 |
 | [0002](0002-initial-implementation-in-go-by-llm.md) | 初期実装は Go で LLM が行い、性能を測定してから実装言語を見直す | 置換済み（[0076](0076-initial-implementation-in-rust.md) により） |
 | [0003](0003-license.md) | 処理系・標準ライブラリ・文書を MIT と Apache-2.0 のデュアルライセンスとする | 採択 |
-| [0004](0004-surface-syntax-skeleton.md) | 表層構文の骨格として、ドット記法をモジュール修飾に限り、シグネチャを必須にし、改行で文を区切り、括弧で関数を適用する | 採択（決定 1 の一部を [0007](0007-constructors-and-list.md) で改めた。ブロックの書き方を [0108](0108-keyword-blocks-closed-by-end.md) で定めた） |
+| [0004](0004-surface-syntax-skeleton.md) | 表層構文の骨格として、ドット記法をモジュール修飾に限り、シグネチャを必須にし、改行で文を区切り、括弧で関数を適用する | 採択（決定 1 の一部を [0007](0007-constructors-and-list.md) で改めた。ブロックの書き方を [0108](0108-keyword-blocks-closed-by-end.md) で定めた。代数的データ型の宣言のキーワードを [0256](0256-data-keyword-for-algebraic-types.md) で `data` に改めた） |
 | [0005](0005-direct-style-effects.md) | 外部に作用する処理を直接形式で書き、関数のシグネチャにエフェクトを注釈する | 採択 |
 | [0006](0006-basic-types-semantics.md) | 文字列の位置を扱う関数に単位を明示し、整数を 64 bit にして溢れを実行時エラーにする | 採択（名前の表記を [0101](0101-unabbreviated-names.md) で、整数の除算と剰余の演算子の書き方を [0113](0113-div-and-mod-operators.md) で改めた） |
 | [0007](0007-constructors-and-list.md) | データ構成子を型名で修飾し、prelude の List の中身を隠し、選ばれない分岐を誤りにする | 採択（決定 1 の一部を [0099](0099-qualified-option-result-constructors.md) と [0102](0102-pair-and-triple.md) で改めた） |
 | [0008](0008-effect-variables.md) | 高階関数のエフェクトを、宣言したエフェクト変数で多相にする | 採択 |
 | [0009](0009-typing-without-type-classes.md) | 型クラスのない間、演算子を閉じた制約で型付けし、等値を構造で判定し、局所の束縛を多相にしない | 採択（決定 4 のうち等値の制約を利用者が書けないことを [0133](0133-builtin-equality-and-key-constraints.md) で置き換えた） |
-| [0010](0010-shared-namespace-and-shadowing.md) | 型名とモジュール名に一つの名前空間を使い、局所の束縛のシャドーイングを許す | 採択（[0148](0148-keep-qualified-constructors-and-shared-namespace.md) で維持を確認した） |
+| [0010](0010-shared-namespace-and-shadowing.md) | 型名とモジュール名に一つの名前空間を使い、局所の束縛のシャドーイングを許す | 採択（[0148](0148-keep-qualified-constructors-and-shared-namespace.md) で維持を確認した。決定 2 のシャドーイングの規則を [0255](0255-bind-and-shadow.md) で改めた） |
 | [0011](0011-io-failure-and-entry-point.md) | 失敗しうる IO を Result で返し、main が Result を返せるようにする | 採択（名前の表記を [0091](0091-acronyms-in-uppercase.md) で改めた） |
 | [0012](0012-invalid-utf8-input.md) | 外部から受け取る正しくない UTF-8 を、ファイルでは失敗として返し、コマンドライン引数では実行前に止める | 採択 |
 | [0013](0013-evaluation-order-and-tail-calls.md) | 正格評価で書いた順に左から右へ評価し、すべての末尾呼び出しを保証する | 採択 |
 | [0014](0014-fine-grain-cbv-core.md) | 言語の意味を、値と計算を分けるコア計算への脱糖で定め、コア計算を正とする | 採択 |
-| [0015](0015-shared-program-per-execution-state.md) | コンパイル済みプログラムを実行の間で共有し、実行中の状態を実行ごとに分ける | 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた。中断の印を大域に置く例外を [0163](0163-interrupt-releases-resources.md) で定めた） |
+| [0015](0015-shared-program-per-execution-state.md) | コンパイル済みプログラムを実行の間で共有し、実行中の状態を実行ごとに分ける | 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた。中断の印を大域に置く例外を [0163](0163-interrupt-releases-resources.md) で、ヒープの番号の計数器を大域に置く例外を [0281](0281-heap-number-in-slot-and-contract-safety.md) で定めた） |
 | [0016](0016-calls-off-go-stack.md) | 言語の関数呼び出しを、Go の関数呼び出しで実現しない | 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた） |
 | [0017](0017-ir-in-core-calculus-form.md) | 処理系の中間表現を、コア計算と同じ形にする | 採択（パターンの拡張を中間表現に残す例外を [0159](0159-pattern-extensions-in-decision-trees.md) で定めた） |
-| [0018](0018-reference-interpreter.md) | コア計算の抽象機械を実装した参照インタプリタを、テストのために処理系に含める | 採択 |
+| [0018](0018-reference-interpreter.md) | コア計算の抽象機械を実装した参照インタプリタを、テストのために処理系に含める | 採択（参照インタプリタの値を VM と共有しないことを [0268](0268-staged-runtime-rebuild.md) で定め、組み込みの関数の本体だけは共有することを [0276](0276-reference-interpreter-shares-builtin-bodies.md) で定めた） |
 | [0019](0019-stop-after-failing-stage.md) | 検査の段で誤りが見つかったら、次の段に進まない | 採択 |
 | [0020](0020-recursive-descent-with-pratt.md) | 構文解析器を手書きの再帰下降で作り、式の演算子は Pratt 法で解析する | 採択 |
 | [0021](0021-comments-beside-ast.md) | コメントは AST に入れず、位置付きの一覧として解析の結果に添える | 採択（フォーマッタの入力と出力の作り方（帰結）を [0226](0226-formatter-keeps-line-breaks.md) で改めた） |
@@ -40,7 +40,7 @@
 | [0025](0025-columns-in-code-points.md) | 位置は内部ではバイトで持ち、診断で示す列は Unicode の文字で数える | 採択 |
 | [0026](0026-match-to-decision-trees.md) | match を判定の木にコンパイルする | 採択（パターンの拡張の扱いを [0159](0159-pattern-extensions-in-decision-trees.md) で加えた） |
 | [0027](0027-register-bytecode.md) | バイトコードをレジスタ型にする | 採択 |
-| [0028](0028-tagged-struct-values.md) | VM の値を、種類の印と即値の欄と参照の欄を持つ構造体で表す | 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた。値の表現は [0240](0240-runtime-redesign-in-first-release-plan.md) の作り直しで改める） |
+| [0028](0028-tagged-struct-values.md) | VM の値を、種類の印と即値の欄と参照の欄を持つ構造体で表す | 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた。値の大きさと参照の形を [0258](0258-sixteen-byte-value-enum.md) で改めた） |
 | [0029](0029-two-io-execution-modes.md) | IO の実行方式として、ハンドラを直接呼ぶ方式と、要求を返して止まる方式の二つを同じ VM に入れる | 採択（決定の一部を [0079](0079-rust-readings-of-go-based-decisions.md) で改めた。どちらを残すかは [0088](0088-keep-both-io-execution-modes.md) で両方を残すと決めた。並行処理では、進められるタスクがなくなったときに要求の並びを返すことを [0162](0162-event-loop-and-worker-threads-for-io.md) と[仮想機械](../02-impl/02-08-vm.md)で定めた） |
 | [0030](0030-call-stack-size-limit.md) | 呼び出しの入れ子の上限を、呼び出しの情報の合計の大きさで決める | 採択（上限をすべてのタスクと保存した継続の枠を合わせて数えることを [0161](0161-single-threaded-task-scheduler.md) で定めた） |
 | [0031](0031-numbered-diagnostic-codes.md) | 診断コードは、種類を表す文字と番号で表す | 採択 |
@@ -90,8 +90,8 @@
 | [0075](0075-capability-guarantee-scope-and-test-substitution.md) | ケーパビリティの保証は値に辿り着けるかで述べ、テストでの差し替えはテストの実行器に限る | 採択（決定 1 と 2 を [0117](0117-capabilities-as-effects.md) で置き換えた） |
 | [0076](0076-initial-implementation-in-rust.md) | 処理系は Rust で LLM が実装し、実装言語の見直しの段階を設けない | 採択 |
 | [0077](0077-abolish-go-layer.md) | go.* の層とラッパー自動生成器を廃止し、初回リリース版のライブラリの提供方法は改めて決める | 採択（決定 2 の未決事項は [0137](0137-first-release-library-scope.md)・[0138](0138-crates-and-licenses-for-stdlib.md)・[0139](0139-external-functions-via-wasm.md) で決めた） |
-| [0078](0078-reference-counting-in-minimal.md) | 最小実行版は言語の値を参照カウントで管理し、循環を回収する方式は初回リリース版で決める | 採択 |
-| [0079](0079-rust-readings-of-go-based-decisions.md) | Go を前提にした処理系の判断を、Rust に合わせて読み替える | 採択（決定 2 のうち `unsafe` を使わないことを、[0240](0240-runtime-redesign-in-first-release-plan.md) で作り直しまでの規約に改めた） |
+| [0078](0078-reference-counting-in-minimal.md) | 最小実行版は言語の値を参照カウントで管理し、循環を回収する方式は初回リリース版で決める | 採択（初回リリース版のメモリの管理の方式は、[0259](0259-compare-mark-sweep-and-rc-in-stage-1.md) で、マーク・スイープと改良した参照カウントを試作して比べて選ぶことにした） |
+| [0079](0079-rust-readings-of-go-based-decisions.md) | Go を前提にした処理系の判断を、Rust に合わせて読み替える | 採択（決定 2 のうち `unsafe` を使わないことを、[0240](0240-runtime-redesign-in-first-release-plan.md) で作り直しまでの規約に改め、[0260](0260-heap-and-unsafe-boundary.md) でヒープのモジュールに限って許した） |
 | [0080](0080-test-design-principles-and-test-audit.md) | テストは振る舞いを確かめる原則で書き、新しいテストは関門を通してから加える | 採択 |
 | [0081](0081-subsumption-on-computation-results.md) | コア計算で、計算の結果の型にもエフェクトの包含を働かせる | 採択 |
 | [0082](0082-equality-type-by-declaration-summary.md) | 等値の型の判定は、型の宣言ごとの要約を固定点まで求めて行う | 採択 |
@@ -106,7 +106,7 @@
 | [0091](0091-acronyms-in-uppercase.md) | 名前の中の頭字語は大文字のまま書き、小文字で始まる名前の先頭に置くときだけ小文字で書く | 採択（`FSWriteCap` の例を [0101](0101-unabbreviated-names.md) で改めた） |
 | [0092](0092-unabbreviated-keywords.md) | キーワードを省略しない英単語で書き、`function`・`public`・`implement` とする | 採択（ラムダのキーワードを [0109](0109-lambda-keyword.md) で改めた） |
 | [0093](0093-no-reserved-words-for-absent-constructs.md) | 言語にない構文と、使う予定の決まっていない構文の語を予約しない | 採択（`return` は [0096](0096-explicit-return.md) でキーワードにした） |
-| [0094](0094-return-type-after-colon.md) | 関数の宣言とラムダの戻り値の型を `:` の後に書き、関数の型は `->` で書く | 採択 |
+| [0094](0094-return-type-after-colon.md) | 関数の宣言とラムダの戻り値の型を `:` の後に書き、関数の型は `->` で書く | 置換済み（宣言とラムダの戻り値の型の記号を [0254](0254-return-type-after-arrow.md) で `->` に改めた。関数の型の書き方は維持） |
 | [0095](0095-case-arms.md) | `match` の分岐を `case パターン: 式` の形で書く | 置換済み（[0111](0111-case-of-when.md) により） |
 | [0096](0096-explicit-return.md) | 関数とラムダの本体は `return` で値を返し、途中の `return` も書けるようにする | 採択 |
 | [0097](0097-prefix-try.md) | `Err` と `None` を呼び出し元へ返す構文を、前置の `try` とする | 採択（決定 3 の波括弧の扱いを [0108](0108-keyword-blocks-closed-by-end.md) で改めた） |
@@ -120,20 +120,20 @@
 | [0105](0105-byte-type.md) | 数の型に `Byte` だけを加え、ほかの幅の整数と単精度の浮動小数は設けない | 採択 |
 | [0106](0106-bitwise-functions.md) | ビット演算を、演算子ではなく `Integer` と `Byte` の関数として設ける | 採択 |
 | [0107](0107-bytes.md) | 変更できないバイト列の型 `Bytes` を設け、リテラルは設けない | 採択 |
-| [0108](0108-keyword-blocks-closed-by-end.md) | ブロックを波括弧で囲まず、構文ごとに `end 構文の名前` で閉じる | 採択（`permissions … end permissions` を [0147](0147-remove-permission-declaration-syntax.md) で削除した） |
+| [0108](0108-keyword-blocks-closed-by-end.md) | ブロックを波括弧で囲まず、構文ごとに `end 構文の名前` で閉じる | 採択（`permissions … end permissions` を [0147](0147-remove-permission-declaration-syntax.md) で削除した。代数的データ型の宣言のキーワードを [0256](0256-data-keyword-for-algebraic-types.md) で `data` に改めた） |
 | [0109](0109-lambda-keyword.md) | ラムダを `lambda` で始め、関数の宣言と関数の型の `function` と分ける | 採択 |
 | [0110](0110-if-then-end-if.md) | `if` を `if 条件 then … else … end if` の形で書く | 採択 |
-| [0111](0111-case-of-when.md) | パターンで分岐する式を `case 対象 of when パターン: … end case` の形で書く | 採択 |
+| [0111](0111-case-of-when.md) | パターンで分岐する式を `case 対象 of when パターン: … end case` の形で書く | 置換済み（[0257](0257-match-with-case-arms.md) により） |
 | [0112](0112-pascal-style-operators.md) | 等しいを `=`、等しくないを `<>`、論理演算子を `and`・`or`・`not` と書く | 採択 |
 | [0113](0113-div-and-mod-operators.md) | 整数の除算を `div`、剰余を `mod` と書き、`/` を `Float` に限る | 採択 |
 | [0114](0114-decimal-type.md) | 10 進の小数の基本型 `Decimal` を加える | 採択 |
 | [0115](0115-structured-io-concurrency.md) | 初回リリース版で、構造化された IO の並行処理をライブラリと `with` で提供する | 採択（決定 6 の `Task.allOk` が返す `Result.Error` の選び方を [0152](0152-task-allok-list-order.md) で改めた。`TaskGroup` を `with` の束縛の外で作れないことを [0153](0153-taskgroup-open-only-in-with.md) で定めた） |
 | [0116](0116-builtin-fine-grained-effects.md) | IO を組み込みの細かいエフェクトに分け、`IO` をそれらをまとめた名前とする | 採択（決定 1 と 2 のエフェクトの名前と、`IO` をまとめた名前とすることを [0130](0130-builtin-effect-names-and-placement.md) で改めた。`Network` のエフェクトを `IO` のまとめから外すことを [0140](0140-network-separated-from-local-io.md) で改めた） |
 | [0117](0117-capabilities-as-effects.md) | ケーパビリティの値を廃止し、影響の大きい操作をエフェクトで制限する | 採択 |
-| [0118](0118-effect-handlers.md) | 初回リリース版で、利用者が定義するエフェクトと、継続を一度だけ再開するハンドラを加える | 採択（決定 1 のうち操作の呼び方と、エフェクトの名前がモジュールを兼ねることを [0129](0129-effects-declared-in-modules.md) で置き換えた。決定 3 の `State` の関数にリソースを解放する関数を加えることを [0150](0150-resource-release-as-state.md) で、決定 5 の `resume` を書けない位置に `lazy` の本体を加えることを [0155](0155-resume-not-in-lazy.md) で、決定 7 の引き継いだハンドラの節の制限を [0151](0151-inherited-handlers-tail-resume-only.md) で定めた） |
+| [0118](0118-effect-handlers.md) | 初回リリース版で、利用者が定義するエフェクトと、継続を一度だけ再開するハンドラを加える | 採択（決定 1 のうち操作の呼び方と、エフェクトの名前がモジュールを兼ねることを [0129](0129-effects-declared-in-modules.md) で置き換えた。決定 3 の `State` の関数にリソースを解放する関数を加えることを [0150](0150-resource-release-as-state.md) で、決定 5 の `resume` を書けない位置に `lazy` の本体を加えることを [0155](0155-resume-not-in-lazy.md) で、決定 7 の引き継いだハンドラの節の制限を [0151](0151-inherited-handlers-tail-resume-only.md) で定めた。節の書き方を [0257](0257-match-with-case-arms.md) で `with case op(x) -> …` に改めた） |
 | [0119](0119-attributes-test-and-deprecated.md) | 宣言に付ける属性の構文を設け、初回リリース版の属性を `@test` と `@deprecated` とする | 採択 |
 | [0120](0120-test-functions-and-assert-effect.md) | テストは `@test` を付けた関数とし、期待の確認を組み込みのエフェクト `Assert` の操作とする | 採択（エフェクトの名前を [0130](0130-builtin-effect-names-and-placement.md) で `Assert.Check` に改めた。決定 5 の権限の宣言と実行前の権限の検査についての記述を、[0147](0147-remove-permission-declaration-syntax.md) で改めた。テストに与える許可は [OPEN-052](../open-issues.md#open-052) で決める） |
-| [0121](0121-pattern-extensions.md) | 初回リリース版で、パターンにガード・コンマで並べる選択肢・範囲・リストのパターンを加える | 採択（決定 5 の例の `[_, .._]` を、文法どおりの `[_, ..]` に直した。選ばれない分岐の検査でも、ガードの付いた分岐を覆うものに数えないことを、[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)に明記した） |
+| [0121](0121-pattern-extensions.md) | 初回リリース版で、パターンにガード・コンマで並べる選択肢・範囲・リストのパターンを加える | 採択（決定 5 の例の `[_, .._]` を、文法どおりの `[_, ..]` に直した。選ばれない分岐の検査でも、ガードの付いた分岐を覆うものに数えないことを、[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)に明記した。ガードの書き方を [0257](0257-match-with-case-arms.md) で `case パターン if 条件 -> …` に改めた） |
 | [0122](0122-multiline-and-raw-strings.md) | 初回リリース版で、`"""` の複数行の文字列と、`r"…"`・`r"""…"""` の raw 文字列を加える | 採択 |
 | [0123](0123-top-level-constants.md) | 初回リリース版で、トップレベルに `const` の定数を置けるようにし、値を定数式に限る | 採択（定数式に `Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` を加えることを [0136](0136-map-and-set-in-constants.md) で決めた） |
 | [0124](0124-type-aliases.md) | 初回リリース版で、元の型と置き換えられる型の別名 `type 名前 = 型` を加える | 採択 |
@@ -149,7 +149,7 @@
 | [0134](0134-standard-type-classes.md) | 標準の型クラスを `Benitoite.Trait` に置き、上位の型クラスと戻り値の型で実装を選ぶメソッドを加える（原則 5 の例外） | 採択（派生の関数を置かないことを [0171](0171-map-set-higher-order-functions.md) で定めた） |
 | [0135](0135-shebang-line-and-implicit-run.md) | ファイルの先頭の `#!` の行を読み飛ばし、`run` を省いた `benitoite <パス>` で実行できるようにする | 採択（決定 5 の `permissions` の宣言についての記述を、[0147](0147-remove-permission-declaration-syntax.md) で改めた。決定 4 のサブコマンドの名前に、予約した名前を加えることを [0209](0209-reserved-subcommand-names.md) で定めた） |
 | [0136](0136-map-and-set-in-constants.md) | Map と Set のリテラルは設けず、定数式に `Map.fromList` などを書けるようにし、重なる鍵を報告する | 採択 |
-| [0137](0137-first-release-library-scope.md) | 初回リリース版の標準ライブラリの範囲と構成を定め、外部の関数の層は実装しない | 採択（決定 2 の表の `Network` の行を、[0140](0140-network-separated-from-local-io.md) と [0141](0141-http-scope-in-stdlib.md) で改めた。`Regex.Match` を [0168](0168-regex-match-and-stdlib-opaque-values.md) で中身を見せない型にした） |
+| [0137](0137-first-release-library-scope.md) | 初回リリース版の標準ライブラリの範囲と構成を定め、外部の関数の層は実装しない | 採択（決定 2 の表の `Network` の行を、[0140](0140-network-separated-from-local-io.md) と [0141](0141-http-scope-in-stdlib.md) で改めた。`Regex.Match` を [0168](0168-regex-match-and-stdlib-opaque-values.md) で中身を見せない型にした。IO・ネットワーク・テキストとデータのモジュールを非公式のモジュールとして入れることを [0286](0286-unofficial-modules-imported-under-unofficial.md) で定めた） |
 | [0138](0138-crates-and-licenses-for-stdlib.md) | 標準ライブラリの実装に使う Rust のクレートと、許可するライセンスを定める | 採択（決定 5 の HTTP と TLS のクレートは [0143](0143-http-and-tls-crates.md) で定めた。乱数の範囲の中の値への変換の手順を [0172](0172-random-conversion-procedure.md) で定めた） |
 | [0139](0139-external-functions-via-wasm.md) | 外部の関数は WASM のモジュールの関数とし、属性 `@external` を付けた本体のない関数で宣言する | 採択 |
 | [0140](0140-network-separated-from-local-io.md) | ネットワークの操作をローカルの IO と分け、`Benitoite.Network` の下に置き、`IO.All` に含めない | 採択 |
@@ -174,8 +174,8 @@
 | [0159](0159-pattern-extensions-in-decision-trees.md) | パターンの拡張を中間表現に残し、判定の木に変換する段で扱う | 採択 |
 | [0160](0160-one-shot-continuations-as-stack-segments.md) | ハンドラの継続を、`handle` ごとに区切った呼び出しの積み重ねの区画で実装する | 採択 |
 | [0161](0161-single-threaded-task-scheduler.md) | タスクごとに VM の積み重ねを持たせ、一つのスレッドで動く自作のスケジューラで切り替える | 採択 |
-| [0162](0162-event-loop-and-worker-threads-for-io.md) | IO を mio のイベントループと作業用のスレッドで行い、組み込みの操作の応答に「待つ」を加える | 採択 |
-| [0163](0163-interrupt-releases-resources.md) | 中断の要求（SIGINT・SIGTERM）を受けたら、リソースを解放し、出力を書き出してから終える | 採択 |
+| [0162](0162-event-loop-and-worker-threads-for-io.md) | IO を mio のイベントループと作業用のスレッドで行い、組み込みの操作の応答に「待つ」を加える | 採択（決定 5 の「書き込みは待つ操作にしない」を [0265](0265-output-transfer-by-writer-threads.md) で改め、転送していない量が上限を超える書き込みを待たせ、転送を書き出し用のスレッドで行うことにした） |
+| [0163](0163-interrupt-releases-resources.md) | 中断の要求（SIGINT・SIGTERM）を受けたら、リソースを解放し、出力を書き出してから終える | 採択（決定 1 の「既存のクレート」を、2026-09-30 に `signal-hook` と `signal-hook-mio` に定めた） |
 | [0164](0164-taskgroup-release-while-stopping.md) | 止まる途中の `TaskGroup` の解放は、子のタスクの終わりを待たない | 採択 |
 | [0165](0165-exit-and-stdio-in-embedded-runs.md) | MCP とテストの実行では、`Process.exit` はその実行だけを終え、標準入力は空、出力は捕らえる | 採択（MCP サーバの実行にかかわる部分を [0180](0180-server-in-same-binary-with-per-run-processes.md) で置き換えた。サーバモードの実行は子プロセスで行い、`Process.exit` は子プロセスを終える） |
 | [0166](0166-warnings-reported-by-run-and-deny-option.md) | 警告は `check` と `run` の両方で報告し、`--deny-warnings` で誤りとして扱えるようにする | 採択 |
@@ -220,7 +220,7 @@
 | [0205](0205-server-start-enables-linger-with-consent.md) | `server start` は、linger が無効なら、利用者の了承を得て自分自身の linger を有効にする | 採択 |
 | [0206](0206-test-command-line-and-exit-status.md) | `test` を複数のパスとディレクトリの下のすべてのファイルに対して動かし、終了状態を検査の誤り優先で決める | 採択 |
 | [0207](0207-fmt-command-line.md) | `fmt` のコマンドラインを定め、`--check` で書き換えずに差分の有無を確かめる | 採択（書き換えの失敗の扱いと、決定 7 の終了状態 2 の範囲を [0247](0247-fmt-write-failure-exit-status.md) で改めた） |
-| [0208](0208-test-report-destination.md) | テストの結果の報告を標準出力に書き、`--diagnostics=json` では JSON Lines にする | 採択 |
+| [0208](0208-test-report-destination.md) | テストの結果の報告を標準出力に書き、`--diagnostics=json` では JSON Lines にする | 採択（OPEN-058 に残した形を [0252](0252-test-report-format.md) で定めた） |
 | [0209](0209-reserved-subcommand-names.md) | 後で加えるサブコマンドの名前を初回リリース版で予約する | 採択（予約した名前とは別に、初回リリース版で実装するサブコマンド `skill` を [0230](0230-skill-embedded-and-installed-by-subcommand.md) で加えた） |
 | [0210](0210-mcp-in-server-chapter-and-explain-tool.md) | MCP の記述をサーバモードの章にまとめ、MCP の道具 `explain` を加える | 採択 |
 | [0211](0211-list-invariants-by-model-comparison-and-debug-assertions.md) | リストの不変条件は、単純なモデルとの突き合わせのテストと、デバッグビルドの debug_assert で確かめる | 採択 |
@@ -236,12 +236,12 @@
 | [0221](0221-audit-hash-chain-scope-corrected.md) | 監査の記録のハッシュの連鎖で検出できる範囲を、計算し直していない書き換えと偶然の破損に限る | 採択 |
 | [0222](0222-http-tests-over-loopback.md) | HTTP のテストは同じスクリプトの中のループバックの通信で行い、テスト用のハンドラ表は再現しにくい失敗だけを作る | 採択 |
 | [0223](0223-interrupt-tests-in-separate-process.md) | 中断の要求のテストは、CLI を別のプロセスとして起動し、実際にシグナルを送って行う | 採択 |
-| [0224](0224-golden-test-format-for-first-release.md) | ゴールデンテストの形式を、複数のモジュール、`test`・`fmt` の方式、CLI のオプションに広げる | 採択 |
+| [0224](0224-golden-test-format-for-first-release.md) | ゴールデンテストの形式を、複数のモジュール、`test`・`fmt` の方式、CLI のオプションに広げる | 採択（OPEN-058 に残した形を [0252](0252-test-report-format.md) で定めた） |
 | [0225](0225-formatter-without-configuration.md) | フォーマッタは設定を持たず、一つの正規形に整形する | 採択 |
 | [0226](0226-formatter-keeps-line-breaks.md) | フォーマッタは書き手の改行を保ち、行の中の空白と字下げを整える | 採択 |
 | [0227](0227-formatter-changes-only-whitespace-and-verifies-tokens.md) | フォーマッタは空白と字下げだけを変え、整形の前後で字句の並びが同じことを確かめる | 採択 |
 | [0228](0228-formatter-comments-blank-lines-and-characters.md) | フォーマッタの、行末のコメント、空の行、改行の文字、タブ、BOM とシェバンの行の規則を定める | 採択 |
-| [0229](0229-bundled-skill-contents-and-japanese-translations.md) | 同梱の Agent Skill を短い SKILL.md と必要なときに読む参照の文書で構成し、参照の文書は生成できるものを処理系のビルドで作り、日本語の訳を設計者向けに別に置く | 採択 |
+| [0229](0229-bundled-skill-contents-and-japanese-translations.md) | 同梱の Agent Skill を短い SKILL.md と必要なときに読む参照の文書で構成し、参照の文書は生成できるものを処理系のビルドで作り、日本語の訳を設計者向けに別に置く | 採択（決定 5 の生成の時点を [0288](0288-skill-documents-generated-by-tool-and-committed.md) で改めた） |
 | [0230](0230-skill-embedded-and-installed-by-subcommand.md) | 同梱の Agent Skill を処理系の実行ファイルに埋め込み、サブコマンド `skill` で各エージェントの置き場所に書き出す | 採択 |
 | [0231](0231-skill-shows-main-effects-before-running.md) | 同梱の Agent Skill は、実行の前に `main` のエフェクトを利用者に示させ、書き込み・外部コマンド・ネットワークは確かめてから実行させる | 採択（テストの手順と確認の対象を [0249](0249-skill-test-procedure-without-check.md) で改めた） |
 | [0232](0232-skill-evaluation-with-tasks-and-harnesses.md) | 同梱の Agent Skill を、約 10 の課題と二つ以上のハーネスで、成功率と修正の回数を記録して評価する | 採択（使うハーネスに OpenCode を加えた。[ADR 0246](0246-syntax-measurement-in-two-stages.md)） |
@@ -250,11 +250,11 @@
 | [0235](0235-third-party-licenses-generated-and-shown-by-option.md) | 第三者のライセンスの表示をリリースのときに生成してアーカイブに添え、実行ファイルにも埋め込んで `--licenses` で示す | 採択 |
 | [0236](0236-compatibility-during-0x.md) | メジャーバージョンが 0 の間は、マイナーの版で互換性を壊してよく、パッチの版では壊さない | 採択 |
 | [0237](0237-no-heap-usage-limit-in-first-release.md) | 初回リリース版の処理系は、ヒープの使用量に上限を設けない | 採択 |
-| [0238](0238-task-wait-deadlock-as-runtime-error.md) | タスクどうしが待ち合って進めなくなったら、実行時エラーにする | 採択 |
-| [0239](0239-cycle-collection-for-reference-cells.md) | 参照カウントを残し、`Reference` のセルだけを対象に循環を回収する（暫定） | 採択（暫定。[0240](0240-runtime-redesign-in-first-release-plan.md) の見直しで確定するか、ほかの方式の ADR で置き換える） |
-| [0240](0240-runtime-redesign-in-first-release-plan.md) | 初回リリース版の実装プランを作るときに、値の表現とランタイムを作り直し、`unsafe` を許す | 採択 |
+| [0238](0238-task-wait-deadlock-as-runtime-error.md) | タスクどうしが待ち合って進めなくなったら、実行時エラーにする | 採択（判定の前に要求と未処理の完了を処理すること、返却・解放・出力の完了の待ちを外部の完了の待ちとして数えることを [0266](0266-task-and-resource-state-machines.md) で補った。外部の待ちとして数えるのは、タスクを起こしうる完了だけであることを [0283](0283-deadlock-counts-only-waits-that-can-wake-tasks.md) で定めた） |
+| [0239](0239-cycle-collection-for-reference-cells.md) | 参照カウントを残し、`Reference` のセルだけを対象に循環を回収する（暫定） | 採択（暫定。[0259](0259-compare-mark-sweep-and-rc-in-stage-1.md) により、作り直しで参照カウントを採った場合に限り残す） |
+| [0240](0240-runtime-redesign-in-first-release-plan.md) | 初回リリース版の実装プランを作るときに、値の表現とランタイムを作り直し、`unsafe` を許す | 採択（背景の見立て「差の中心は値の表現」を [0269](0269-correct-adr-0240-performance-assessment.md) で改めた。決定 3 の作り直しの設計は 0258〜0271 で定めた） |
 | [0241](0241-command-name-and-extension.md) | CLI のコマンドの名前を `benitoite`、スクリプトの拡張子を `.bnt` に確定し、短い別名のコマンドを設けない | 採択 |
-| [0242](0242-copyright-notice-for-llm-generated-code.md) | 著作権表示を設計者と貢献者の名前で書き、処理系の大部分を LLM が生成したことを README とライセンスの近くに明記する | 採択 |
+| [0242](0242-copyright-notice-for-llm-generated-code.md) | 著作権表示を設計者と貢献者の名前で書き、処理系の大部分を LLM が生成したことを README とライセンスの近くに明記する | 採択（決定 1 が公開の前に決めるとした設計者の名前の書き方を [0290](0290-copyright-holder-name-and-open-021.md) で決めた） |
 | [0243](0243-signal-exit-code-and-posix-shell.md) | シグナルで終わったコマンドの `exitCode` を 128 にシグナルの番号を足した値とし、`Process.shell` の文字列を POSIX の sh の範囲で書く | 採択 |
 | [0244](0244-import-name-matching-by-directory-listing.md) | import の名前とファイルの照合を、ディレクトリの項目の一覧で行う手順に確定し、権限のパスの照合の確認をサーバモードの事実の確認に移す | 採択 |
 | [0245](0245-perl-virtues-source-and-fact-check-timing.md) | 三大美徳の英語表記の出典を `perlglossary` で確かめ、先行事例の残りの事実と Khorikov の書籍の確認を正式リリース版の前に行う | 採択 |
@@ -263,6 +263,48 @@
 | [0248](0248-regex-byte-position-function-names.md) | `Regex` の一致の位置を返す関数の名前を `matchByteStart`・`matchByteEnd` にする | 採択 |
 | [0249](0249-skill-test-procedure-without-check.md) | 同梱の Agent Skill の作業の手順を、スクリプトとテストで分ける | 採択 |
 | [0250](0250-run-directories-outside-daemon-data.md) | 実行ごとの作業用のディレクトリと一時ディレクトリを、デーモンのデータのディレクトリの外に置く | 採択 |
+| [0251](0251-contract-change-display-not-in-first-release.md) | 契約の変更を処理系が表示する機能を初回リリース版に含めず、同梱の Agent Skill の手順で示す | 採択 |
+| [0252](0252-test-report-format.md) | テストの結果の報告の文章の形を cargo test に合わせ、JSON Lines の項目を定める | 採択 |
+| [0253](0253-first-release-plan-location-and-units.md) | 初回リリース版の実装プランを doc/implement/ に置き、四つの単位に分けて進める | 採択（決定 2 の U2 と U3 の範囲を [0273](0273-u2-u3-boundary-for-runtime-builtins.md) で改めた） |
+| [0254](0254-return-type-after-arrow.md) | 関数の宣言とラムダの戻り値の型を `->` の後に書く | 採択 |
+| [0255](0255-bind-and-shadow.md) | 局所の束縛を `bind`（新しい名前）と `shadow`（見えている名前を隠す）で書き分ける | 採択 |
+| [0256](0256-data-keyword-for-algebraic-types.md) | 代数的データ型の宣言を `data … end data` と書き、`type` を型の別名に限る | 採択 |
+| [0257](0257-match-with-case-arms.md) | パターンで分岐する式を `match 対象 with case パターン -> … end match` と書き、ハンドラの節も `with case …` で書く | 採択 |
+| [0258](0258-sixteen-byte-value-enum.md) | 値を 16 バイトの列挙型で表し、ヒープの対象を細いポインタで指す | 採択 |
+| [0259](0259-compare-mark-sweep-and-rc-in-stage-1.md) | メモリの管理は、マーク・スイープと改良した参照カウントを第 1 段で試作して比べ、測定で選ぶ | 採択（決定 1 の再利用を行う箇所を [0280](0280-reuse-by-dedicated-construct-instruction.md) で定めた） |
+| [0260](0260-heap-and-unsafe-boundary.md) | 自前の確保器と生のポインタを使い、回収しない区間を寿命で表して `unsafe` をヒープのモジュールに閉じ込める | 採択（背景の参照カウントについての見立てを、[0277](0277-refcount-defers-freeing-to-safepoints.md) で改めた。決定 5 の検査と決定 2 の安全の範囲を [0281](0281-heap-number-in-slot-and-contract-safety.md) で定めた） |
+| [0261](0261-typed-builtin-interface.md) | 組み込みの関数は型付きの形で書き、権限ごとの文脈と共通の完了の処理を通す | 採択（決定 8 の【未決】を [0286](0286-unofficial-modules-imported-under-unofficial.md) で決めた） |
+| [0262](0262-segment-frames-split-call-and-wrapping.md) | 区画ごとに枠の `Vec` を持ち、呼び出しの枠とほかの枠を分けて積む | 採択 |
+| [0263](0263-dispatch-loop-locals-and-verifier.md) | 振り分けのループは実行中の状態を局所に持ち、範囲の確かめの省略は測定の後に決める | 採択 |
+| [0264](0264-single-dispatch-queue-for-builtin-operations.md) | 組み込みの操作の要求を一つの送り出しの列に置き、二つの IO の方式の違いを列の処理だけにする | 採択 |
+| [0265](0265-output-transfer-by-writer-threads.md) | 出力の転送を出力ごとの書き出し用のスレッドで行い、転送の依頼と完了の待ちを分ける | 採択 |
+| [0266](0266-task-and-resource-state-machines.md) | タスクとリソースの状態を表で定め、外部の操作の記録をタスクへの配送と分ける | 採択（決定 8 で外部の完了の待ちとして数えるものを、タスクを起こしうる完了に限ることを [0283](0283-deadlock-counts-only-waits-that-can-wake-tasks.md) で定めた） |
+| [0267](0267-lazy-and-reference-objects.md) | `Reference` はその場で書き換え、`Lazy` は三つの状態を対象に持ち、枠を降ろす処理を枠の種類ごとに一つにまとめる | 採択 |
+| [0268](0268-staged-runtime-rebuild.md) | ランタイムを段に分けて作り直し、第 1 段で値・ヒープ・VM の核を作り直して測る | 採択（決定 2 の参照インタプリタの値の分離を、組み込みの関数の本体だけは共有する形に [0276](0276-reference-interpreter-shares-builtin-bodies.md) で改めた。決定 1・3 の読み方を [0278](0278-stage-1-completes-on-new-syntax-tests.md) で定めた） |
+| [0269](0269-correct-adr-0240-performance-assessment.md) | ADR 0240 の見立てを改め、関数の呼び出しの差の中心を振り分けのループと呼び出しの手順に置く | 採択 |
+| [0270](0270-open-062-items-in-runtime-rebuild.md) | OPEN-062 の項目を、作り直しの共通の仕組みで防ぐものと、再現テストで確かめるものに分ける | 採択 |
+| [0271](0271-self-made-gc-as-exception.md) | メモリの管理（GC）を、目的と設計原則の線引きの例外として自作する | 採択 |
+| [0272](0272-list-spread-in-list-literals.md) | リストリテラルに、リストのパターンと同じ形の展開 `..e` を一つまで書ける | 採択 |
+| [0273](0273-u2-u3-boundary-for-runtime-builtins.md) | ランタイムに結び付いた組み込みの関数と、テストに要る最小限の IO の関数は U2 で作る | 採択（決定 3 が委ねた U2 の関数の属し方を [0286](0286-unofficial-modules-imported-under-unofficial.md) で決めた） |
+| [0274](0274-deterministic-scheduler-and-virtual-time-for-tests.md) | 処理系のテストでは、切り替えの順序を与えるスケジューラと仮想の時間を使えるようにする | 採択 |
+| [0275](0275-self-made-decimal-arithmetic.md) | `Decimal` の算術を、目的と設計原則の線引きの例外として自作する | 採択 |
+| [0276](0276-reference-interpreter-shares-builtin-bodies.md) | 参照インタプリタは、組み込みの関数の本体だけを VM と共有する | 採択（決定 4 の例外として、応答を組み立てるだけの `Task`・`TaskGroup` の七つの組み込みの関数をスクリプトのテストで確かめることを [0284](0284-task-builtins-tested-by-scripts.md) で定めた） |
+| [0277](0277-refcount-defers-freeing-to-safepoints.md) | 参照カウントでも、回収しない区間の中では解放せず、数は根と対象の中の参照だけで数える | 採択 |
+| [0278](0278-stage-1-completes-on-new-syntax-tests.md) | 第 1 段は新しい構文へ書き直したテストで完了とし、メモリの管理に触れない第 2 段の作業は先に進めてよい | 採択 |
+| [0279](0279-no-duplicate-method-names-in-trait.md) | 一つの型クラスの中で、メソッドの名前を重ねない | 採択 |
+| [0280](0280-reuse-by-dedicated-construct-instruction.md) | 参照カウントのその場での再利用は、`match` で分けた値を同じ大きさの構成子の構築に使う命令で行う | 採択 |
+| [0281](0281-heap-number-in-slot-and-contract-safety.md) | `Slot` にヒープの番号を持たせてすべての構成で比べ、ヒープの API の安全性は VM の契約の下のものとして述べる | 採択 |
+| [0282](0282-cancellation-timing-during-unwinding-and-requests.md) | E-DropRel の途中に届いた取り消しは辿り終えてから行い、外部の操作に移る前の要求は取り消しと全体の停止で失効させる | 採択 |
+| [0283](0283-deadlock-counts-only-waits-that-can-wake-tasks.md) | 行き詰まりの判定では、タスクを起こしうる外部の完了だけを外部の待ちに数える | 採択 |
+| [0284](0284-task-builtins-tested-by-scripts.md) | 応答を組み立てるだけの `Task`・`TaskGroup` の組み込みの関数は、単体テストの代わりにスクリプトのテストで確かめる | 採択 |
+| [0285](0285-implementer-assignment-for-first-release.md) | 初回リリース版の実装は Codex を基本とし、難易度 5 の作業だけを Claude が実装して GPT-6-Astra がレビューする | 採択（決定 5 の例外を [0292](0292-release-checks-needing-network-by-orchestrator.md) で定めた） |
+| [0286](0286-unofficial-modules-imported-under-unofficial.md) | 吟味を終えていない標準ライブラリのモジュールを `Benitoite.Unofficial` の下の名前で取り込ませ、吟味の後に標準に移す | 採択 |
+| [0287](0287-stdlib-details-decided-in-u3-plan.md) | OS の時差を得られないときの `Clock.localOffsetMinutes` を 0 とし、要求の本体の上限・ネットワークの失敗の注入・TLS の確かめ方を定める | 採択 |
+| [0288](0288-skill-documents-generated-by-tool-and-committed.md) | 同梱の Agent Skill の生成する文書は、処理系のクレートを使う道具で作ってリポジトリに置き、ビルドは埋め込むだけにする | 採択 |
+| [0289](0289-request-of-after-release-is-runtime-error.md) | 解放した後の `Http.Exchange` に `Http.requestOf` を使うと実行時エラーとし、要求の内容を解放のときに手放す | 採択 |
+| [0290](0290-copyright-holder-name-and-open-021.md) | 著作権表示の名前を `tecogonaz` とし、ランタイムの例外をスクリプトを埋め込んだ実行ファイルの設計に移して OPEN-021 を決着させる | 採択 |
+| [0291](0291-file-copy-limit-and-http-server-details.md) | `File.copy` を読み書きの関数で書いて写せる大きさを 1 GiB までとし、HTTP のサーバの接続と要求の読み方を定める | 採択 |
+| [0292](0292-release-checks-needing-network-by-orchestrator.md) | ネットワークを要する配布の確かめ（実装プランの D31・D32）は、オーケストレータが設計者と行う | 採択 |
 
 ## テンプレート
 

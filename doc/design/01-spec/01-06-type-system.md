@@ -1,7 +1,7 @@
 # 型システム
 
 - 状態: 確定
-- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0005](../decisions/0005-direct-style-effects.md), [0008](../decisions/0008-effect-variables.md), [0009](../decisions/0009-typing-without-type-classes.md), [0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0055](../decisions/0055-top-level-functions-and-types-only.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0059](../decisions/0059-higher-kinded-traits-without-prelude-monad.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0061](../decisions/0061-trait-coherence-orphan-and-overlap.md), [0062](../decisions/0062-operators-stay-outside-traits.md), [0063](../decisions/0063-ref-cells-with-io-effect.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0082](../decisions/0082-equality-type-by-declaration-summary.md), [0092](../decisions/0092-unabbreviated-keywords.md), [0094](../decisions/0094-return-type-after-colon.md), [0096](../decisions/0096-explicit-return.md), [0098](../decisions/0098-constraints-joined-by-ampersand.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0105](../decisions/0105-byte-type.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0118](../decisions/0118-effect-handlers.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0154](../decisions/0154-public-contract-includes-effects-and-supertraits.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md)
+- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0005](../decisions/0005-direct-style-effects.md), [0008](../decisions/0008-effect-variables.md), [0009](../decisions/0009-typing-without-type-classes.md), [0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0055](../decisions/0055-top-level-functions-and-types-only.md), [0058](../decisions/0058-string-interpolation-of-base-types.md), [0059](../decisions/0059-higher-kinded-traits-without-prelude-monad.md), [0060](../decisions/0060-trait-and-impl-syntax.md), [0061](../decisions/0061-trait-coherence-orphan-and-overlap.md), [0062](../decisions/0062-operators-stay-outside-traits.md), [0063](../decisions/0063-ref-cells-with-io-effect.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0082](../decisions/0082-equality-type-by-declaration-summary.md), [0092](../decisions/0092-unabbreviated-keywords.md), [0094](../decisions/0094-return-type-after-colon.md), [0096](../decisions/0096-explicit-return.md), [0098](../decisions/0098-constraints-joined-by-ampersand.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0105](../decisions/0105-byte-type.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0118](../decisions/0118-effect-handlers.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0154](../decisions/0154-public-contract-includes-effects-and-supertraits.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0272](../decisions/0272-list-spread-in-list-literals.md), [0279](../decisions/0279-no-duplicate-method-names-in-trait.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-046](../open-issues.md#open-046), [OPEN-050](../open-issues.md#open-050)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 2.1–2.4
 
@@ -59,19 +59,19 @@
 【決定】エフェクト変数は、トップレベルの関数の型パラメータの並びで、`effect` を前に付けて宣言する（[ADR 0008](../decisions/0008-effect-variables.md)）。初回リリース版では、型クラスと実装のメソッドの型パラメータの並びにも宣言できる（後述の「型クラス（初回リリース版）」）。
 
 ```text
-function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E): List[U] uses E   // 本体は省略
-function twice[effect E](act: function() -> Unit uses E): Unit uses E
+function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E) -> List[U] uses E   // 本体は省略
+function twice[effect E](act: function() -> Unit uses E) -> Unit uses E
   act()
   act()
 end function
-function logEach[T, effect E](xs: List[T], show: function(T) -> String uses E): Unit uses Console.Write, E   // 本体は省略
+function logEach[T, effect E](xs: List[T], show: function(T) -> String uses E) -> Unit uses Console.Write, E   // 本体は省略
 ```
 
 - エフェクト変数は `uses` の後にだけ書ける。型を書く位置にエフェクト変数を、`uses` の後に型パラメータを書くと誤りとする。
 - 一つの `uses` に書けるエフェクト変数は一つまでである。二つの引数の関数に同じエフェクト変数を使えば、両方のエフェクトをまとめて表せる（後述の包含の規則による）。
 - 宣言したエフェクト変数は、引数の型のどこかに現れなければならない。
 - 同じ `uses` に同じ名前を二度書くと誤りとする。
-- 型の宣言（`type`）の型パラメータにエフェクト変数は宣言できない。
+- 型の宣言（`data`）の型パラメータにエフェクト変数は宣言できない。
 
 ### 式のエフェクト
 
@@ -79,7 +79,7 @@ function logEach[T, effect E](xs: List[T], show: function(T) -> String uses E): 
 
 - 関数の呼び出し `f(a1, ..., an)` のエフェクトは、`f` と各引数の式のエフェクトに、`f` の型のエフェクトを加えた和集合である。
 - ラムダの式そのもののエフェクトは空集合である。ラムダの本体のエフェクトは、ラムダの型のエフェクトになる。
-- `if`・`case`・ブロック・演算子などの式のエフェクトは、それを構成する式（条件、対象、すべての分岐、すべての文、オペランド）のエフェクトの和集合である。
+- `if`・`match`・ブロック・演算子などの式のエフェクトは、それを構成する式（条件、対象、すべての分岐、すべての文、オペランド）のエフェクトの和集合である。
 - 名前とリテラルのエフェクトは空集合である。
 
 演算子自身はエフェクトを持たない。演算子の実行時エラー（[基本型の意味論](01-04-types-basic.md)）は、エフェクトとして扱わない（[ADR 0146](../decisions/0146-runtime-errors-not-in-types.md)）。
@@ -89,7 +89,7 @@ function logEach[T, effect E](xs: List[T], show: function(T) -> String uses E): 
 【方針】関数の本体の中では、宣言したエフェクト変数は、ほかの何とも等しくない一つの要素として扱う。
 
 ```text
-function greet(name: String): Unit
+function greet(name: String) -> Unit
   Console.writeLine("Hello, " + name)    // 誤り: greet は純粋だが、本体が Console.Write を生じる
 end function
 ```
@@ -106,8 +106,8 @@ end function
 
 - 関数の呼び出しの各引数
 - リストリテラルの各要素
-- `if` の各分岐と `case` の各分岐の本体。分岐全体の型は、各分岐の型を包含の規則で受け入れる一つの型とする。
-- `let` の型注釈
+- `if` の各分岐と `match` の各分岐の本体。分岐全体の型は、各分岐の型を包含の規則で受け入れる一つの型とする。
+- 束縛の文（`bind`・`shadow`）の型注釈
 - ラムダの戻り値の型注釈
 - `return` の式と、それを含む関数の宣言かラムダの戻り値の型
 - 初回リリース版の `handle` の本体と各節の本体。`handle` の式の型は、本体と各節の型を包含の規則で受け入れる一つの型とする
@@ -115,10 +115,10 @@ end function
 - 初回リリース版のレコードの構築と一部を変えた値の作成の、各フィールドの式
 
 ```text
-function runAll(actions: List[function() -> Unit uses Console.Write]): Unit uses Console.Write   // 本体は省略
+function runAll(actions: List[function() -> Unit uses Console.Write]) -> Unit uses Console.Write   // 本体は省略
 
 runAll([lambda() Console.writeLine("a") end lambda, lambda() () end lambda])   // 純粋なラムダも要素にできる
-let f: function() -> Unit uses Console.Write = lambda() () end lambda             // 型注釈にも包含が働く
+bind f: function() -> Unit uses Console.Write <- lambda() () end lambda             // 型注釈にも包含が働く
 ```
 
 - この規則は、式の型の最も外側の関数の型にだけ働く。引数の型、戻り値の型、型引数の中の関数の型には働かない。例えば、`List[function() -> Unit]` 型の変数を、`List[function() -> Unit uses Console.Write]` 型の引数に渡すと誤りとする。
@@ -129,8 +129,8 @@ let f: function() -> Unit uses Console.Write = lambda() () end lambda           
 【方針】エフェクト変数を持つ関数を呼び出したり値として使ったりするたびに、その関数の各エフェクト変数を、エフェクトの集合で置き換える。置き換える集合は、引数の型とエフェクトの包含の規則を満たすように推論する。
 
 ```text
-let ys = map(xs, lambda(x) return x + 1 end lambda)                 // E は空集合。この呼び出しは純粋
-let zs = map(xs, lambda(x) return File.readText(x) end lambda)      // E は {File.Read}。呼び出しはファイルを読む
+bind ys <- map(xs, lambda(x) return x + 1 end lambda)                 // E は空集合。この呼び出しは純粋
+bind zs <- map(xs, lambda(x) return File.readText(x) end lambda)      // E は {File.Read}。呼び出しはファイルを読む
 ```
 
 `uses Console.Write, E` の `E` を `{File.Read}` で置き換えた集合は `{Console.Write, File.Read}` である。置き換える集合が推論で一つに決まらない場合は、条件を満たす最小の集合をとる。
@@ -150,13 +150,13 @@ let zs = map(xs, lambda(x) return File.readText(x) end lambda)      // E は {Fi
 
 多相な名前は、使うたびに、型パラメータを型で、エフェクト変数をエフェクトの集合で置き換える。置き換える型は推論し、利用者が明示する構文はない。
 
-【決定】局所の束縛（`let`、関数とラムダの引数、パターンの変数）の型は多相にならない（[ADR 0009](../decisions/0009-typing-without-type-classes.md)）。局所の束縛の型は、その名前のすべての使用で同じである。
+【決定】局所の束縛（束縛の文（`bind`・`shadow`）、関数とラムダの引数、パターンの変数）の型は多相にならない（[ADR 0009](../decisions/0009-typing-without-type-classes.md)）。局所の束縛の型は、その名前のすべての使用で同じである。
 
 ```text
-function example(): Unit
-  let id = lambda(x) return x end lambda
-  let a = id(1)
-  let b = id("one")      // 誤り: id の型は function(Integer) -> Integer に決まっている
+function example() -> Unit
+  bind id <- lambda(x) return x end lambda
+  bind a <- id(1)
+  bind b <- id("one")      // 誤り: id の型は function(Integer) -> Integer に決まっている
 end function
 ```
 
@@ -168,9 +168,9 @@ end function
 
 【方針】型検査は、すべてのトップレベルの関数とデータ構成子の型（初回リリース版では、定数の型も）を宣言から先に決め、そのうえで各関数の本体を一つずつ検査する。ある関数の本体の検査結果は、ほかの関数の本体の検査に影響しない。関数の本体の中の型は、HM 型推論（単一化による推論）で決める。
 
-【方針】関数の本体の中では、次の型注釈を書ける。書いた型注釈は推論した型と等しくなければならず、等しくなければ誤りとする。ただし、`let` の型注釈とラムダの戻り値の型注釈には、エフェクトの包含の規則が働く（前述の「エフェクトの包含」）。
+【方針】関数の本体の中では、次の型注釈を書ける。書いた型注釈は推論した型と等しくなければならず、等しくなければ誤りとする。ただし、束縛の文の型注釈とラムダの戻り値の型注釈には、エフェクトの包含の規則が働く（前述の「エフェクトの包含」）。
 
-- `let x: T = e` の `T`
+- `bind x: T <- e` と `shadow x: T <- e` の `T`
 - ラムダの引数の型、戻り値の型、`uses`
 
 型注釈には、その関数で宣言した型パラメータとエフェクト変数を使える。型注釈で新しい型パラメータを導入することはできない。
@@ -213,14 +213,14 @@ end function
 | 文字リテラル | `Character` |
 | `true`、`false` | `Boolean` |
 | `()` | `Unit` |
-| リストリテラル `[e1, ..., en]` | `List[T]`。各要素の型は `T` と等しいか、包含の規則で `T` に受け入れられる |
+| リストリテラル `[e1, ..., en]` | `List[T]`。各要素の型は `T` と等しいか、包含の規則で `T` に受け入れられる。初回リリース版の展開の要素 `..e` は、`e` の型が `List[T]` と等しいか、包含の規則で `List[T]` に受け入れられる（[ADR 0272](../decisions/0272-list-spread-in-list-literals.md)） |
 | 関数の呼び出し | 関数の型の戻り値の型。各引数の型は、対応する引数の型と等しいか、包含の規則で受け入れられる |
 | ラムダ | 引数の型と戻り値の型からなる関数の型。戻り値の型は、本体の `return` の式の型を包含の規則で受け入れる一つの型である。本体の終わりに達しうるときは、戻り値の型は `Unit` と等しい（後述の「必ず抜ける文」） |
 | `return e` | 任意の型（その位置で求められる型）。`e` の型は、最も内側の関数の宣言かラムダの戻り値の型と等しいか、包含の規則で受け入れられる |
 | `try e`（初回リリース版） | [エラー処理](01-09-errors.md)で定める |
 | `if c then ... else ... end if` | 二つの分岐の型を、どちらも包含の規則で受け入れる一つの型。`c` は `Boolean` |
 | `else` のない `if` | `Unit`。分岐の型は `Unit` |
-| `case` | 各分岐の本体の型を包含の規則で受け入れる一つの型（[代数的データ型とパターンマッチ](01-05-data-types.md)） |
+| `match` | 各分岐の本体の型を包含の規則で受け入れる一つの型（[代数的データ型とパターンマッチ](01-05-data-types.md)） |
 | ブロック | 最後の文が式ならその型、そうでなければ `Unit` |
 | 式文（最後の文でない式） | 型は `Unit` でなければならない（[構文](01-02-syntax.md)） |
 | 関数の宣言とラムダの本体のブロック | 型は `Unit` でなければならない。最後の文が `return e` などの必ず抜ける文であれば、その文の型は任意なので、この条件を満たす |
@@ -235,9 +235,9 @@ end function
 - `return e` は、必ず抜ける。
 - ブロックは、その文のどれかが必ず抜けるとき、必ず抜ける。
 - `else` のある `if` は、すべての分岐のブロックが必ず抜けるとき、必ず抜ける。
-- `case` は、すべての分岐の本体が必ず抜けるとき、必ず抜ける。
+- `match` は、すべての分岐の本体が必ず抜けるとき、必ず抜ける。
 - 初回リリース版の `with` は、そのブロックが必ず抜けるとき、必ず抜ける。
-- ほかの式と、`let` の文は、必ず抜けるとはみなさない。関数の呼び出しは、呼んだ関数が戻らない場合（プロセスを終える関数など）でも、必ず抜けるとはみなさない。
+- ほかの式と、束縛の文は、必ず抜けるとはみなさない。関数の呼び出しは、呼んだ関数が戻らない場合（プロセスを終える関数など）でも、必ず抜けるとはみなさない。
 
 【方針】次の場合は誤りとする。
 
@@ -247,14 +247,14 @@ end function
 戻り値の型注釈のないラムダの本体のブロックが必ず抜けないときは、ラムダの戻り値の型を `Unit` と等しくする。本体の `return` の式の型が `Unit` でなければ、型の誤りになる。
 
 ```text
-function sign(x: Integer): Integer
+function sign(x: Integer) -> Integer
   if x < 0 then
     return -1
   end if
   if x = 0 then return 0 else return 1 end if   // 両方の分岐が必ず抜けるので、本体は必ず抜ける
 end function
 
-function bad(x: Integer): Integer
+function bad(x: Integer) -> Integer
   if x < 0 then
     return -1
   end if                                           // 誤り: x >= 0 のとき本体の終わりに達する
@@ -285,12 +285,12 @@ end function
 - 関数の本体の検査を終えた時点で、制約を持つ型変数が具体的な型に決まっていなければ誤りとする。診断は型注釈を書くよう示す。
 
 ```text
-function f(): Unit
-  let add = lambda(a, b) return a + b end lambda      // 誤り: add の引数の型が決まらない。型注釈を書く
+function f() -> Unit
+  bind add <- lambda(a, b) return a + b end lambda      // 誤り: add の引数の型が決まらない。型注釈を書く
 end function
 
-function g(): Integer
-  let add = lambda(a, b) return a + b end lambda
+function g() -> Integer
+  bind add <- lambda(a, b) return a + b end lambda
   return add(1, 2)                          // よい: a と b は Integer に決まる
 end function
 ```
@@ -343,9 +343,9 @@ end function
 【決定】利用者は、関数の型パラメータに、組み込みの制約 `equality`（等値の型である）と `key`（鍵の型である）を付けられる（`[T: equality]`、`[K: key]`。[ADR 0133](../decisions/0133-builtin-equality-and-key-constraints.md)）。構文は[構文](01-02-syntax.md)の「型クラス（初回リリース版）」で定める。
 
 ```text
-function countBy[T, K: key](xs: List[T], keyOf: function(T) -> K): Map[K, Integer]
+function countBy[T, K: key](xs: List[T], keyOf: function(T) -> K) -> Map[K, Integer]
   return List.fold(xs, Map.empty(), lambda(m, x)
-    let k = keyOf(x)
+    bind k <- keyOf(x)
     return Map.set(m, k, Option.unwrapOr(Map.get(m, k), 0) + 1)
   end lambda)
 end function
@@ -367,23 +367,23 @@ end function
 
 ```text
 trait Show[T]
-  function show(x: T): String
+  function show(x: T) -> String
 end trait
 
 implement Show[Person]
-  function show(x: Person): String return "Person(${Person.name(x)})" end function
+  function show(x: Person) -> String return "Person(${Person.name(x)})" end function
 end implement
 
 implement[T: Show] Show[Option[T]]
-  function show(x: Option[T]): String
-    return case x of
-      when Option.Some(v): "Some(${Show.show(v)})"
-      when Option.None: "None"
-    end case
+  function show(x: Option[T]) -> String
+    return match x with
+      case Option.Some(v) -> "Some(${Show.show(v)})"
+      case Option.None -> "None"
+    end match
   end function
 end implement
 
-function describeAll[T: Show](xs: List[T]): String
+function describeAll[T: Show](xs: List[T]) -> String
   return List.map(xs, Show.show) |> String.join(_, ", ")
 end function
 ```
@@ -394,11 +394,11 @@ end function
 
 ```text
 trait Functor[F[_]]
-  function map[A, B, effect E](x: F[A], f: function(A) -> B uses E): F[B] uses E
+  function map[A, B, effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
 end trait
 
 implement Functor[Option]
-  function map[A, B, effect E](x: Option[A], f: function(A) -> B uses E): Option[B] uses E
+  function map[A, B, effect E](x: Option[A], f: function(A) -> B uses E) -> Option[B] uses E
     return Option.map(x, f)
   end function
 end implement
@@ -415,7 +415,8 @@ end implement
 【方針】型クラスの宣言には、次の規則がある。
 
 - 型クラスは、一つの引数と、一つ以上のメソッドの宣言を持つ。メソッドの宣言は、本体のない関数の宣言である。
-- 【決定】各メソッドは、型クラスの引数を、引数の型か戻り値の型の少なくとも一つに含まなければならない。引数のないメソッド（`function empty(): T`）も書ける。型クラスの引数をどこにも含まないメソッドは誤りとする（[ADR 0134](../decisions/0134-standard-type-classes.md)）。どの実装を使うかは、メソッドを使った位置の型から決まる（[ADR 0060](../decisions/0060-trait-and-impl-syntax.md)）。型クラスの引数を戻り値の型にだけ含むメソッドでは、呼び出した位置で求める型（型注釈や、値を渡す先の引数の型）から決まる。
+- 【決定】一つの型クラスの中で、二つのメソッドに同じ名前を付けると誤りとする。メソッドの型が違っても誤りとする。違う型クラスのメソッドは、それぞれの型クラスのモジュールに入るので、同じ名前でもよい（[ADR 0279](../decisions/0279-no-duplicate-method-names-in-trait.md)）。
+- 【決定】各メソッドは、型クラスの引数を、引数の型か戻り値の型の少なくとも一つに含まなければならない。引数のないメソッド（`function empty() -> T`）も書ける。型クラスの引数をどこにも含まないメソッドは誤りとする（[ADR 0134](../decisions/0134-standard-type-classes.md)）。どの実装を使うかは、メソッドを使った位置の型から決まる（[ADR 0060](../decisions/0060-trait-and-impl-syntax.md)）。型クラスの引数を戻り値の型にだけ含むメソッドでは、呼び出した位置で求める型（型注釈や、値を渡す先の引数の型）から決まる。
 - メソッドは、自分の型パラメータ、エフェクト変数、型クラスの制約、組み込みの制約を持ってよい。
 - 初回リリース版の型クラスは、メソッドの既定の実装を持たない（[ADR 0134](../decisions/0134-standard-type-classes.md)）。
 
@@ -461,7 +462,7 @@ end implement
 ```text
 import Benitoite.Trait
 
-function combineAll[T: Trait.Monoid](xs: List[T]): T
+function combineAll[T: Trait.Monoid](xs: List[T]) -> T
   return List.fold(xs, Trait.Monoid.empty(), Trait.Semigroup.combine)
 end function
 ```
@@ -490,28 +491,29 @@ end function
 
 【決定】利用者が宣言したエフェクトの操作と、ハンドラは次のように型付けする（[ADR 0118](../decisions/0118-effect-handlers.md)）。構文は[構文](01-02-syntax.md)の「エフェクトの宣言とハンドラ（初回リリース版）」で、意味は[エフェクト](01-07-effects.md)で定める。
 
-- エフェクト `L` の操作 `function op[ᾱ](x1: A1, …, xn: An): B` は、`L` を宣言したモジュールの関数 `op` として、型 `function[ᾱ](A1, …, An) -> B uses L` を持つ（[ADR 0129](../decisions/0129-effects-declared-in-modules.md)）。組み込みのエフェクトの操作は、標準ライブラリが定める関数の型をそのまま持つ。`State` は操作を持たず、`State` を型に持つ関数はハンドラで処理できない（[エフェクト](01-07-effects.md)）。
+- エフェクト `L` の操作 `function op[ᾱ](x1: A1, …, xn: An) -> B` は、`L` を宣言したモジュールの関数 `op` として、型 `function[ᾱ](A1, …, An) -> B uses L` を持つ（[ADR 0129](../decisions/0129-effects-declared-in-modules.md)）。組み込みのエフェクトの操作は、標準ライブラリが定める関数の型をそのまま持つ。`State` は操作を持たず、`State` を型に持つ関数はハンドラで処理できない（[エフェクト](01-07-effects.md)）。
 - `handle` の式を、本体 `b` と節の並びとする。`b` の型を `T`、エフェクトを `ε` とする。節の本体は、`T` 型でなければならない。節の本体の中の `resume(v)` は、`v` が節の操作の戻り値の型を持つときに型が付き、その型は `T` である。
-- 操作が型パラメータを持つとき、節の中では、その型パラメータをほかの何とも等しくない型として扱う。したがって、`function fail[T](message: String): T` のように、T の値を引数に受け取らず、T の値を得るほかの手段もない操作の節は、`resume` に渡す値を作れず、`resume` を呼ばずに終わる。`function identity[T](value: T): T` のように T の値を引数に受け取る操作の節では、受け取った値を渡す `resume(value)` に型が付く。
+- 操作が型パラメータを持つとき、節の中では、その型パラメータをほかの何とも等しくない型として扱う。したがって、`function fail[T](message: String) -> T` のように、T の値を引数に受け取らず、T の値を得るほかの手段もない操作の節は、`resume` に渡す値を作れず、`resume` を呼ばずに終わる。`function identity[T](value: T) -> T` のように T の値を引数に受け取る操作の節では、受け取った値を渡す `resume(value)` に型が付く。
 - エフェクト `L` のすべての操作の節を持つ `handle` を、`L` を処理するハンドラと呼ぶ。`handle` の式のエフェクトは、`ε` から、処理する `L` をすべて除き、各節の本体のエフェクトを加えた集合である。一部の操作の節だけを持つエフェクトは、`ε` から除かない。
 - `ε` のエフェクト変数は除かない。エフェクト変数 `E` の中身は関数の本体の中では分からないので、`E` が表すエフェクトを処理するハンドラを書けない。
 - `resume` は、`handle` の節の中にだけ直接書ける（[構文](01-02-syntax.md)）。節の中のラムダの本体の中と `lazy` の本体の中には書けない（[ADR 0155](../decisions/0155-resume-not-in-lazy.md)）。
 
 ```text
 effect Abort
-  function fail[T](message: String): T
+  function fail[T](message: String) -> T
 end effect
 
-function parseAll(texts: List[String]): Result[List[Integer], String]
+function parseAll(texts: List[String]) -> Result[List[Integer], String]
   return handle
     Result.Ok(List.map(texts, lambda(t)
-      return case Integer.parse(t) of
-        when Option.Some(n): n
-        when Option.None: fail("bad: " + t)
-      end case
+      return match Integer.parse(t) with
+        case Option.Some(n) -> n
+        case Option.None -> fail("bad: " + t)
+      end match
     end lambda))
-  when fail(message):
-    Result.Error(message)
+  with
+    case fail(message) ->
+      Result.Error(message)
   end handle
 end function
 ```

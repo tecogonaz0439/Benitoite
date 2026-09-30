@@ -1,7 +1,7 @@
 # 外部の関数
 
 - 状態: 草稿
-- 関連ADR: [0077](../decisions/0077-abolish-go-layer.md), [0093](../decisions/0093-no-reserved-words-for-absent-constructs.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0126](../decisions/0126-import-by-module-name.md), [0137](../decisions/0137-first-release-library-scope.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)
+- 関連ADR: [0077](../decisions/0077-abolish-go-layer.md), [0093](../decisions/0093-no-reserved-words-for-absent-constructs.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0126](../decisions/0126-import-by-module-name.md), [0137](../decisions/0137-first-release-library-scope.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0254](../decisions/0254-return-type-after-arrow.md)
 - 未決事項: [OPEN-051](../open-issues.md#open-051), [OPEN-052](../open-issues.md#open-052), [OPEN-012](../open-issues.md#open-012)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 17, 0.2
 
@@ -27,7 +27,7 @@ Rust のクレートの機能は、クレートを WASM のモジュールにビ
 
 ```text
 @external("wasm", "Lib/markdown.wasm", "render")
-function renderMarkdown(source: String): String
+function renderMarkdown(source: String) -> String
 ```
 
 - 最初の引数は対象の種類であり、`"wasm"` だけを書ける。後の版で対象を加えられるように、引数として残す。

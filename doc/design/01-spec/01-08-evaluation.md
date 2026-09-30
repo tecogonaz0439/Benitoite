@@ -1,7 +1,7 @@
 # 評価意味論
 
 - 状態: 確定
-- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0005](../decisions/0005-direct-style-effects.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0014](../decisions/0014-fine-grain-cbv-core.md), [0030](../decisions/0030-call-stack-size-limit.md), [0034](../decisions/0034-call-trace-in-runtime-errors.md), [0037](../decisions/0037-exit-status-values.md), [0044](../decisions/0044-heap-exhaustion-outside-stop-procedure.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0055](../decisions/0055-top-level-functions-and-types-only.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0068](../decisions/0068-release-resources-on-stop.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0102](../decisions/0102-pair-and-triple.md), [0114](../decisions/0114-decimal-type.md), [0113](../decisions/0113-div-and-mod-operators.md), [0115](../decisions/0115-structured-io-concurrency.md), [0118](../decisions/0118-effect-handlers.md), [0123](../decisions/0123-top-level-constants.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md)
+- 関連ADR: [0004](../decisions/0004-surface-syntax-skeleton.md), [0005](../decisions/0005-direct-style-effects.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0014](../decisions/0014-fine-grain-cbv-core.md), [0030](../decisions/0030-call-stack-size-limit.md), [0034](../decisions/0034-call-trace-in-runtime-errors.md), [0037](../decisions/0037-exit-status-values.md), [0044](../decisions/0044-heap-exhaustion-outside-stop-procedure.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0055](../decisions/0055-top-level-functions-and-types-only.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0068](../decisions/0068-release-resources-on-stop.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0102](../decisions/0102-pair-and-triple.md), [0114](../decisions/0114-decimal-type.md), [0113](../decisions/0113-div-and-mod-operators.md), [0115](../decisions/0115-structured-io-concurrency.md), [0118](../decisions/0118-effect-handlers.md), [0123](../decisions/0123-top-level-constants.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0272](../decisions/0272-list-spread-in-list-literals.md)
 - 未決事項: なし
 - 移行元: [設計メモ](../sources/fp-language-design.md) 1
 
@@ -21,16 +21,16 @@
 
 ### 正格評価
 
-【決定】評価は正格である（[ADR 0013](../decisions/0013-evaluation-order-and-tail-calls.md)）。関数を呼び出す前に、すべての引数を評価して値にする。`let` の右辺は、その文に来たときに評価する。
+【決定】評価は正格である（[ADR 0013](../decisions/0013-evaluation-order-and-tail-calls.md)）。関数を呼び出す前に、すべての引数を評価して値にする。束縛の文（`bind`・`shadow`）の右辺は、その文に来たときに評価する。
 
 評価を遅らせる構文（明示遅延）は、最小実行版にはない。評価を遅らせたいときは、引数のないラムダで包み、必要になったときに呼び出す。
 
 ```text
-let later = lambda() return expensive(x) end lambda   // expensive はまだ呼ばれない
+bind later <- lambda() return expensive(x) end lambda   // expensive はまだ呼ばれない
 later()                             // ここで呼ばれる
 ```
 
-`and`・`or` の右のオペランド、`if` の選ばれない分岐、`case` の選ばれない分岐の本体は評価しない。
+`and`・`or` の右のオペランド、`if` の選ばれない分岐、`match` の選ばれない分岐の本体は評価しない。
 
 ### 明示遅延（初回リリース版）
 
@@ -41,9 +41,9 @@ later()                             // ここで呼ばれる
 - `lazy` の値は、ラムダと同じく、作ったときに有効だった局所の束縛を参照できる。
 
 ```text
-let table = lazy buildTable(data) end lazy   // buildTable はまだ呼ばれない
-Lazy.force(table)                        // ここで一度だけ呼ばれる
-Lazy.force(table)                        // 覚えた値を返す
+bind table <- lazy buildTable(rows) end lazy   // buildTable はまだ呼ばれない
+Lazy.force(table)                              // ここで一度だけ呼ばれる
+Lazy.force(table)                              // 覚えた値を返す
 ```
 
 IO を遅らせるときは、最小実行版と同じく引数のないラムダを使う。
@@ -72,16 +72,16 @@ IO を遅らせるときは、最小実行版と同じく引数のないラム�
 | 二項演算子 `e1 ⊕ e2`（`and`・`or` を除く） | `e1`、`e2` の順に評価し、その後で演算する |
 | `e1 and e2`、`e1 or e2` | `e1` を評価し、必要なときだけ `e2` を評価する（[基本型の意味論](01-04-types-basic.md)） |
 | 単項の `-e`、`not e` | `e` を評価し、その後で演算する |
-| リストリテラル `[e1, …, en]` | `e1`、…、`en` の順に評価する |
+| リストリテラル `[e1, …, en]` | `e1`、…、`en` の順に評価する。初回リリース版の展開の要素 `..e` も、書いた位置の順に評価し、`e` の値のリストの要素をその位置に並べる（[ADR 0272](../decisions/0272-list-spread-in-list-literals.md)）。展開を含むリストリテラルは、`List.concatenate` と同じく、値を作る前に結果の長さを計算し、上限を超えるときは値を作らずに停止する（後述の「資源の不足」の「作る値が大きすぎる」） |
 | パイプ `e1 \|> e2` | `e1` を評価し、その後で `e2` を展開した式（[構文](01-02-syntax.md)）を評価する。展開した式の中は、この表の規則に従う |
 | プレースホルダを含む呼び出し | ラムダを作るだけで、何も評価しない。呼び出す関数とプレースホルダでない引数は、ラムダを呼び出すたびに評価する（[構文](01-02-syntax.md)） |
 | ラムダ | 本体を評価しない。ラムダの値を作るだけである |
 | `lazy b end lazy`（初回リリース版） | `b` を評価しない。`Lazy` の値を作るだけである |
 | `with x1 = e1, …, xn = en do b end with`（初回リリース版） | `e1` を評価して `x1` に束縛し、…、`en` を評価して `xn` に束縛し、`b` を評価し、`xn`、…、`x1` の順に解放する（[リソース管理](01-10-resources.md)） |
-| `handle b when … end handle`（初回リリース版） | `b` を評価する。`b` の中で操作を呼んだときに節を評価する順序は、[エフェクト](01-07-effects.md)の「利用者が定義するエフェクトとハンドラ（初回リリース版）」で定める |
-| ブロック | 文を上から順に評価する。`let` は右辺を評価して名前に束縛する。初回リリース版の `let` のパターンは、右辺を評価してパターンに照合し、パターンの変数に束縛する |
+| `handle b with case … end handle`（初回リリース版） | `b` を評価する。`b` の中で操作を呼んだときに節を評価する順序は、[エフェクト](01-07-effects.md)の「利用者が定義するエフェクトとハンドラ（初回リリース版）」で定める |
+| ブロック | 文を上から順に評価する。束縛の文（`bind`・`shadow`）は右辺を評価して名前に束縛する。`bind` と `shadow` の評価の意味は同じである。初回リリース版の束縛の文のパターンは、右辺を評価してパターンに照合し、パターンの変数に束縛する |
 | `if` | 条件を評価し、選んだ分岐のブロックだけを評価する |
-| `case` | 対象の式を一度だけ評価し、選んだ分岐の本体だけを評価する（[代数的データ型とパターンマッチ](01-05-data-types.md)） |
+| `match` | 対象の式を一度だけ評価し、選んだ分岐の本体だけを評価する（[代数的データ型とパターンマッチ](01-05-data-types.md)） |
 | 名前、リテラル、`()` | 名前が束縛する値、またはリテラルが表す値になる |
 
 例えば、`f(Console.writeLine("a"), g(Console.writeLine("b")))` は、`a` の後に `b` を出力する。初回リリース版の可変のセル（[エフェクト](01-07-effects.md)）の読み書きも、この順序で起きる。`read() |> List.filter(nonEmpty)` は、`read()` を評価してから `List.filter` と `nonEmpty` を評価する。
@@ -98,7 +98,7 @@ IO を遅らせるときは、最小実行版と同じく引数のないラム�
 
 - トップレベルの関数は、自分自身とほかのトップレベルの関数を呼び出せる（[名前・スコープ・モジュール](01-03-names-modules.md)）。再帰と相互再帰の深さに、言語としての上限はない。資源の上限は後述する。
 - ラムダは、作ったときに有効だった局所の束縛を、本体の中で参照できる。束縛の値は変わらないので、ラムダの値は、それを作ったときの値を使う。
-- ラムダは自分自身を名前で参照できない（`let` は再帰的な束縛にならない）。再帰する処理は、トップレベルの関数として書く。
+- ラムダは自分自身を名前で参照できない（束縛の文は再帰的な束縛にならない）。再帰する処理は、トップレベルの関数として書く。
 
 ### 末尾呼び出し
 
@@ -109,31 +109,31 @@ IO を遅らせるときは、最小実行版と同じく引数のないラム�
 - トップレベルの関数とラムダの本体のブロックは、末尾位置にある。
 - 末尾位置にあるブロックの最後の文が式であれば、その式は末尾位置にある。
 - 末尾位置にある `return e` の `e` は、末尾位置にある。本体の途中の `return e`（末尾位置にない `return`）の `e` は、末尾位置にない。
-- 末尾位置にある `if` の各分岐のブロックと、末尾位置にある `case` の各分岐の本体は、末尾位置にある。
+- 末尾位置にある `if` の各分岐のブロックと、末尾位置にある `match` の各分岐の本体は、末尾位置にある。
 - 末尾位置にある `e1 and e2` と `e1 or e2` の `e2` は、末尾位置にある。
 - 末尾位置にある式が、括弧で囲んだ式 `(e)` であれば、`e` は末尾位置にある。
 - 末尾位置にあるパイプ `e1 |> e2` は、[構文](01-02-syntax.md)の規則で展開した呼び出しが末尾位置にある。
 
-これら以外の位置（呼び出しの引数、演算子のオペランド、`let` の右辺、最後でない文とその中の `return` の式、`if` の条件、`case` の対象、リストリテラルの要素、初回リリース版の `lazy` と `with` のブロックの中、`handle` の本体と節の中）にある呼び出しは、末尾呼び出しではない。
+これら以外の位置（呼び出しの引数、演算子のオペランド、束縛の文の右辺、最後でない文とその中の `return` の式、`if` の条件、`match` の対象、リストリテラルの要素、初回リリース版の `lazy` と `with` のブロックの中、`handle` の本体と節の中）にある呼び出しは、末尾呼び出しではない。
 
 ```text
-function sumTo(n: Integer, acc: Integer): Integer
+function sumTo(n: Integer, acc: Integer) -> Integer
   return if n = 0 then acc else sumTo(n - 1, acc + n) end if   // 末尾呼び出し
 end function
 
-function isEven(n: Integer): Boolean
+function isEven(n: Integer) -> Boolean
   return if n = 0 then true else isOdd(n - 1) end if           // 末尾呼び出し（相互再帰）
 end function
 
-function isOdd(n: Integer): Boolean
+function isOdd(n: Integer) -> Boolean
   return n <> 0 and isEven(n - 1)                             // 末尾呼び出し
 end function
 
-function length(n: Integer): Integer
+function length(n: Integer) -> Integer
   return if n = 0 then 0 else 1 + length(n - 1) end if          // 末尾呼び出しではない
 end function
 
-function countDown(n: Integer, acc: Integer): Integer
+function countDown(n: Integer, acc: Integer) -> Integer
   if n = 0 then
     return acc                                                // 最後でない文の中の return
   end if

@@ -1,7 +1,7 @@
 # エフェクト
 
 - 状態: 確定
-- 関連ADR: [0005](../decisions/0005-direct-style-effects.md), [0008](../decisions/0008-effect-variables.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0037](../decisions/0037-exit-status-values.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0063](../decisions/0063-ref-cells-with-io-effect.md), [0065](../decisions/0065-ioerror-kind.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0072](../decisions/0072-permission-path-matching.md), [0073](../decisions/0073-run-permission-command-matching.md), [0074](../decisions/0074-static-permission-check-by-name-reference.md), [0091](../decisions/0091-acronyms-in-uppercase.md), [0101](../decisions/0101-unabbreviated-names.md), [0107](../decisions/0107-bytes.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0186](../decisions/0186-run-time-policy-can-only-narrow.md), [0187](../decisions/0187-standalone-reads-user-policy-file.md), [0214](../decisions/0214-default-policies-allow-process-environment-with-no-names.md), [0215](../decisions/0215-shell-permission-allows-run-commands-via-shell.md), [0216](../decisions/0216-policy-deny-rules-and-standalone-defaults.md)
+- 関連ADR: [0005](../decisions/0005-direct-style-effects.md), [0008](../decisions/0008-effect-variables.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0037](../decisions/0037-exit-status-values.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0063](../decisions/0063-ref-cells-with-io-effect.md), [0065](../decisions/0065-ioerror-kind.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0072](../decisions/0072-permission-path-matching.md), [0073](../decisions/0073-run-permission-command-matching.md), [0074](../decisions/0074-static-permission-check-by-name-reference.md), [0091](../decisions/0091-acronyms-in-uppercase.md), [0101](../decisions/0101-unabbreviated-names.md), [0107](../decisions/0107-bytes.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0186](../decisions/0186-run-time-policy-can-only-narrow.md), [0187](../decisions/0187-standalone-reads-user-policy-file.md), [0214](../decisions/0214-default-policies-allow-process-environment-with-no-names.md), [0215](../decisions/0215-shell-permission-allows-run-commands-via-shell.md), [0216](../decisions/0216-policy-deny-rules-and-standalone-defaults.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-015](../open-issues.md#open-015), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-057](../open-issues.md#open-057), [OPEN-062](../open-issues.md#open-062)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 3.1–3.5
 
@@ -92,7 +92,7 @@
 
 【決定】外部の状態によって失敗しうる IO の関数は、`Result[T, IOError]` を返す（[ADR 0011](../decisions/0011-io-failure-and-entry-point.md)）。初回リリース版のネットワークの関数は、`IOError` ではなく `NetworkError` を返す（[エラー処理](01-09-errors.md)の「ネットワークの失敗の種類（初回リリース版）」、[ADR 0145](../decisions/0145-network-error.md)）。`IOError` は、構成子を公開しない prelude の型である。`IOError` の値はパターンで分解できない。
 
-【決定】`IOError` は中身を見せない prelude の型であり、基本型にも代数的データ型にも含めない（[ADR 0048](../decisions/0048-ioerror-not-equality-type.md)）。`IOError` とそれを含む型（`Result[String, IOError]` など）は等値の型ではなく、`=` と `<>` で比べられない（[型システム](01-06-type-system.md)の「等値の型」）。失敗の種類を調べるには、`IOError.message` で文字列にするか、`case` で `Result.Ok` と `Result.Error` を分ける。
+【決定】`IOError` は中身を見せない prelude の型であり、基本型にも代数的データ型にも含めない（[ADR 0048](../decisions/0048-ioerror-not-equality-type.md)）。`IOError` とそれを含む型（`Result[String, IOError]` など）は等値の型ではなく、`=` と `<>` で比べられない（[型システム](01-06-type-system.md)の「等値の型」）。失敗の種類を調べるには、`IOError.message` で文字列にするか、`match` で `Result.Ok` と `Result.Error` を分ける。
 
 【方針】`IOError` に対して、次の関数を定める。
 
@@ -106,7 +106,7 @@
 
 【決定】書き込みの失敗は、書き込みの関数を呼び出した時点ではなく、後で検出してよい（[ADR 0045](../decisions/0045-late-detection-of-output-write-failure.md)）。処理系は、失敗を検出した時点で、書き込みの失敗による実行時エラーとして停止する。この報告は、ソース上の位置を持たない。失敗を検出するまでに行った評価と IO は取り消さない。処理系は、失敗を遅くともプログラムを終える前の書き出しで検出する。書き出す時期は処理系の設計（[ランタイム](../02-impl/02-09-runtime.md)）で定める。停止の手順は[評価意味論](01-08-evaluation.md)の「実行時エラーによる停止」で定める。
 
-最小実行版の範囲では、`Result.Error` は `case` か、`Result` を扱う prelude の関数で扱う。初回リリース版では、`Result.Error` をそのまま呼び出し元へ返す前置の `try` を設ける（[エラー処理](01-09-errors.md)、[ADR 0097](../decisions/0097-prefix-try.md)）。
+最小実行版の範囲では、`Result.Error` は `match` か、`Result` を扱う prelude の関数で扱う。初回リリース版では、`Result.Error` をそのまま呼び出し元へ返す前置の `try` を設ける（[エラー処理](01-09-errors.md)、[ADR 0097](../decisions/0097-prefix-try.md)）。
 
 ### 外部から受け取る文字列
 
@@ -126,13 +126,13 @@
 次の例は最小実行版のスクリプトである。初回リリース版では、`Console` と `File` のモジュールの import が要り、`uses IO` を `uses IO.All`（または `uses File.Read, Console.Write`）と書く。
 
 ```text
-function main(): Result[Unit, String] uses IO
-  return case File.readText("input.txt") of
-    when Result.Ok(text):
+function main() -> Result[Unit, String] uses IO
+  return match File.readText("input.txt") with
+    case Result.Ok(text) ->
       Console.writeLine(Integer.toString(List.length(String.lines(text))))
       Result.Ok(())
-    when Result.Error(e): Result.Error(IOError.message(e))
-  end case
+    case Result.Error(e) -> Result.Error(IOError.message(e))
+  end match
 end function
 ```
 
@@ -207,8 +207,8 @@ end function
 - セルは、並行に進むタスクの間で共有してよい。セルの一つの操作は、ほかのタスクの操作と混ざらない。`Reference.update` の読み出しから書き込みまでの間に、ほかのタスクがそのセルを操作することはない（[並行処理](01-11-concurrency.md)、[ADR 0115](../decisions/0115-structured-io-concurrency.md)）。
 
 ```text
-function countNonEmpty(lines: List[String]): Integer uses State
-  let n = Reference.new(0)
+function countNonEmpty(lines: List[String]) -> Integer uses State
+  bind n <- Reference.new(0)
   List.forEach(lines, lambda(line)
     if String.trim(line) <> "" then Reference.set(n, Reference.get(n) + 1) end if
   end lambda)
@@ -228,12 +228,12 @@ end function
 ```text
 import Benitoite.IO.Process
 
-function tagRelease(tag: String): Result[Unit, String] uses Process.Run
-  let output = try Process.run(Process.command("git", ["tag", tag])) |> Result.mapError(_, IOError.message)
+function tagRelease(tag: String) -> Result[Unit, String] uses Process.Run
+  bind output <- try Process.run(Process.command("git", ["tag", tag])) |> Result.mapError(_, IOError.message)
   return if Process.Output.exitCode(output) = 0 then Result.Ok(()) else Result.Error(Process.Output.standardError(output)) end if
 end function
 
-function main(): Result[Unit, String] uses Process.Run
+function main() -> Result[Unit, String] uses Process.Run
   return tagRelease("v1.0")
 end function
 ```
@@ -250,26 +250,27 @@ end function
 import Benitoite.IO.Console
 
 effect Log
-  function write(message: String): Unit
+  function write(message: String) -> Unit
 end effect
 
-function process(items: List[String]): Integer uses Log
+function process(items: List[String]) -> Integer uses Log
   List.forEach(items, lambda(item) write("item: " + item) end lambda)
   return List.length(items)
 end function
 
-function main(): Unit uses Console.Write
-  let count = handle
+function main() -> Unit uses Console.Write
+  bind count <- handle
     process(["a", "b"])
-  when write(message):
-    Console.writeLine(message)
-    resume(())
+  with
+    case write(message) ->
+      Console.writeLine(message)
+      resume(())
   end handle
   Console.writeLine(Integer.toString(count))
 end function
 ```
 
-同じエフェクトを根の下の `Logging.bnt` で `public effect Log` と宣言したときは、取り込んだ側から、エフェクトを `Logging.Log`、操作を `Logging.write` と書く。ハンドラの節も `when Logging.write(message):` と書く。
+同じエフェクトを根の下の `Logging.bnt` で `public effect Log` と宣言したときは、取り込んだ側から、エフェクトを `Logging.Log`、操作を `Logging.write` と書く。ハンドラの節も `case Logging.write(message) ->` と書く。
 
 【方針】エフェクトの宣言と操作の規則は次のとおりである。
 
@@ -278,7 +279,7 @@ end function
 - 組み込みのエフェクトの操作は、そのエフェクトを宣言した標準ライブラリのモジュールの IO の関数（`Console.writeLine`、`File.readText` など）である（[ADR 0130](../decisions/0130-builtin-effect-names-and-placement.md)）。
 - エフェクトの名前は、型の名前と同じく大文字の名前であり、`uses` に書ける。宣言したモジュールの中では `Log`、ほかのモジュールからは `Logging.Log` と、モジュールの名前で修飾して書く。モジュールと同じ名前のエフェクトは宣言できない。`public` を付けたエフェクトとその操作は、ほかのモジュールから使える（[名前・スコープ・モジュール](01-03-names-modules.md)）。
 
-【方針】ハンドラ `handle 本体 when 操作(引数): 節 … end handle` の意味は次のとおりである。`when` の操作は、式で操作を呼ぶときと同じ名前で書く（`when write(message):`、`when Logging.write(message):`、`when Console.writeLine(s):`）。
+【方針】ハンドラ `handle 本体 with case 操作(引数) -> 節 … end handle` の意味は次のとおりである。`case` の後の操作は、式で操作を呼ぶときと同じ名前で書く（`case write(message) ->`、`case Logging.write(message) ->`、`case Console.writeLine(s) ->`）。
 
 - 本体を評価する。本体の評価の途中で操作を呼ぶと、その操作の節を持つ、最も内側のハンドラが処理する。節の引数には、操作の呼び出しの引数を束縛する。
 - 節の中で `resume(v)` を評価すると、操作の呼び出しの結果を `v` として、本体の続きを実行する。本体の続きの中で再び呼んだ操作も、同じハンドラが処理する（深いハンドラ）。`resume(v)` の値は、続きを実行し終えたときの `handle` の式の値である。
@@ -293,23 +294,24 @@ end function
 - 一つの節の実行の中で `resume` を二度呼ぶと、実行時エラー（継続の二度目の再開）とする。
 - 節が `resume` を呼ばずに終わったとき（値で終わるとき、`return` や `try` で関数を終えるとき、実行時エラーで止まるとき）は、本体の続きを捨てる。このとき、本体の中で開いていた `with` のリソースを、内側のスコープから順に解放する（[リソース管理](01-10-resources.md)）。本体の中で起動した、終わっていないタスクは取り消す（[並行処理](01-11-concurrency.md)）。
 
-【方針】組み込みのエフェクトの操作も、`handle` で処理できる。ただし、`State` は操作を持たないエフェクトであり、`State` を型に持つ関数（可変のセルとタスクの集まりの関数、`Task.await`、リソースを解放する関数）を `when` に書くと誤りとする。どのハンドラも処理しない組み込みの操作は、処理系が実際に行う。処理系が行う操作だけが、実行時の権限制御（後述）の対象になる。
+【方針】組み込みのエフェクトの操作も、`handle` で処理できる。ただし、`State` は操作を持たないエフェクトであり、`State` を型に持つ関数（可変のセルとタスクの集まりの関数、`Task.await`、リソースを解放する関数）を節の `case` に書くと誤りとする。どのハンドラも処理しない組み込みの操作は、処理系が実際に行う。処理系が行う操作だけが、実行時の権限制御（後述）の対象になる。
 
 【方針】ハンドラを使えば、テストで組み込みの操作を差し替えられる（[ADR 0117](../decisions/0117-capabilities-as-effects.md)）。次の例は、ファイルを読む関数を、実際のファイルを読まずに確かめる。
 
 ```text
 import Benitoite.IO.File
 
-function readPort(path: String): Result[Integer, String] uses File.Read
-  let text = try File.readText(path) |> Result.mapError(_, IOError.message)
+function readPort(path: String) -> Result[Integer, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
   return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
 end function
 
-function portIsRead(): Boolean uses File.Read
-  let result = handle
+function portIsRead() -> Boolean uses File.Read
+  bind result <- handle
     readPort("app.conf")
-  when File.readText(path):
-    resume(Result.Ok("8080"))
+  with
+    case File.readText(path) ->
+      resume(Result.Ok("8080"))
   end handle
   return result = Result.Ok(8080)
 end function

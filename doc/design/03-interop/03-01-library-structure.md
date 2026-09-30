@@ -1,7 +1,7 @@
 # ライブラリの構成
 
 - 状態: 確定
-- 関連ADR: [0003](../decisions/0003-license.md), [0077](../decisions/0077-abolish-go-layer.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0143](../decisions/0143-http-and-tls-crates.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0177](../decisions/0177-server-mode-after-first-release.md)
+- 関連ADR: [0003](../decisions/0003-license.md), [0077](../decisions/0077-abolish-go-layer.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0143](../decisions/0143-http-and-tls-crates.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)
 - 未決事項: [OPEN-049](../open-issues.md#open-049), [OPEN-051](../open-issues.md#open-051)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 10
 
@@ -35,6 +35,8 @@
 ### prelude と import を要するモジュール
 
 【決定】prelude には、基本型、コレクション、`Option`・`Result` など、ほとんどのスクリプトが使うモジュールを入れる。IO を行うモジュール（`Benitoite.IO` の下）、ネットワークの操作を行うモジュール（`Benitoite.Network` の下。[ADR 0140](../decisions/0140-network-separated-from-local-io.md)）、標準の型クラス（`Benitoite.Trait`）、テキストとデータを扱う純粋なモジュール（`Benitoite.Path`・`Benitoite.Json` など）は、import を要する（[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)、[ADR 0137](../decisions/0137-first-release-library-scope.md)）。一覧は[標準ライブラリ](03-06-stdlib.md)の「名前空間と prelude（初回リリース版）」で定める。
+
+【決定】初回リリース版では、prelude のモジュールと `Benitoite.Trait` を標準のモジュールとし、IO・ネットワーク・テキストとデータのモジュールを非公式のモジュールとする。非公式のモジュールは `Benitoite.Unofficial` の下の名前で取り込み、設計者が吟味を終えたら標準に移す（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)、[標準ライブラリ](03-06-stdlib.md)の「標準のモジュールと非公式のモジュール（初回リリース版）」）。本章は、非公式のモジュールも標準に加えた後の名前で書く。
 
 ### 外部に作用する関数の規則
 
@@ -92,7 +94,17 @@
 - 専用の命令で実装する関数: `Reference.update`・`Lazy.force`（受け取った関数を呼ぶため。[ランタイム](../02-impl/02-09-runtime.md)）。
 - 解放の失敗を実行時エラーにしないリソースの型: `Http.Exchange`（[リソース管理](../01-spec/01-10-resources.md)の「解放の失敗」、[ADR 0149](../decisions/0149-http-exchange-release-failure.md)）。
 
-処理系は、これらを綴りではなく `Benitoite` の名前空間のどの名前かで照合する（[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)）。標準ライブラリを読み込む前に処理系が必要とする情報（組み込みの関数の表）は、[名前解決とモジュール読込](../02-impl/02-04-resolver.md)で定める。
+処理系は、これらを綴りではなく `Benitoite` の名前空間のどの名前かで照合する（[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)）。非公式のモジュールの型と関数（`Http.Exchange` など）も、取り込みの名前ではなく、標準に加えた後の名前（`Benitoite.Network.Http.Exchange`）で照合する（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)）。
+
+【方針】ソースに宣言を置かない組み込みの型は、次のモジュールのトップレベルの型とする。名前解決は、組み込みの型の表のこの対応から束縛を作る（[名前解決とモジュール読込](../02-impl/02-04-resolver.md)の「標準ライブラリのソースの持ち方」）。
+
+| 型 | 属するモジュール |
+|---|---|
+| `Unit` | 同じ名前のモジュールを持たないので、`State` と同じく名前空間の根 `Benitoite` の直下の prelude の名前とする（`Benitoite.Unit`） |
+| そのほかの基本型、`List`・`Map`・`Set`・`Bytes`・`Reference`・`Lazy`・`Task`・`TaskGroup`・`IOError`・`NetworkError` | 同じ名前の prelude のモジュール（`Benitoite.Integer` の型 `Integer`、`Benitoite.IOError` の型 `IOError` など）。名前 `X` は、型を書く位置では型を、修飾の段ではモジュールを指す |
+| リソースの型と、IO・ネットワーク・テキストとデータのモジュールの中身を見せない型 | その型を定める章のモジュール（`Benitoite.IO.File` の `Reader`・`Writer`、`Benitoite.IO.Random` の `Generator`、`Benitoite.Regex` の `Pattern`・`Match`、`Benitoite.Network.Http` の `Listener`・`Exchange` など。[IO のモジュール](03-07-io-modules.md)、[テキストとデータの処理](03-08-text-and-data.md)、[ネットワークのモジュール](03-09-network.md)） |
+
+標準ライブラリを読み込む前に処理系が必要とする情報（組み込みの関数の表）は、[名前解決とモジュール読込](../02-impl/02-04-resolver.md)で定める。
 
 ## 未決事項
 

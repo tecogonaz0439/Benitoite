@@ -1,6 +1,6 @@
 # 0238. タスクどうしが待ち合って進めなくなったら、実行時エラーにする
 
-- 状態: 採択
+- 状態: 採択（判定の前に要求と未処理の完了を処理すること、返却・解放・出力の完了の待ちを外部の完了の待ちとして数えることを [0266](0266-task-and-resource-state-machines.md) で補った。外部の待ちとして数えるのは、タスクを起こしうる完了だけであることを [0283](0283-deadlock-counts-only-waits-that-can-wake-tasks.md) で定めた）
 - 日付: 2026-09-29
 - 関連章: [並行処理](../01-spec/01-11-concurrency.md), [評価意味論](../01-spec/01-08-evaluation.md), [仮想機械](../02-impl/02-08-vm.md), [ランタイム](../02-impl/02-09-runtime.md), [診断エンジン](../02-impl/02-10-diagnostics.md)
 - 関連する未決事項: [OPEN-054](../open-issues.md#open-054)

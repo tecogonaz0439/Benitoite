@@ -1,6 +1,6 @@
 # 0108. ブロックを波括弧で囲まず、構文ごとに `end 構文の名前` で閉じる
 
-- 状態: 採択（`permissions … end permissions` を [0147](0147-remove-permission-declaration-syntax.md) で削除した）
+- 状態: 採択（`permissions … end permissions` を [0147](0147-remove-permission-declaration-syntax.md) で削除した。代数的データ型の宣言のキーワードを [0256](0256-data-keyword-for-algebraic-types.md) で `data` に改めた）
 - 日付: 2026-09-28
 - 関連章: [構文](../01-spec/01-02-syntax.md), [字句構造](../01-spec/01-01-lexical.md)
 - 関連する未決事項: [OPEN-012](../open-issues.md#open-012)

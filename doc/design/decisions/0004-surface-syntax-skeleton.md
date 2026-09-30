@@ -1,6 +1,6 @@
 # 0004. 表層構文の骨格として、ドット記法をモジュール修飾に限り、シグネチャを必須にし、改行で文を区切り、括弧で関数を適用する
 
-- 状態: 採択（決定 1 の一部を [0007](0007-constructors-and-list.md) で改めた。ブロックの書き方を [0108](0108-keyword-blocks-closed-by-end.md) で定めた）
+- 状態: 採択（決定 1 の一部を [0007](0007-constructors-and-list.md) で改めた。ブロックの書き方を [0108](0108-keyword-blocks-closed-by-end.md) で定めた。代数的データ型の宣言のキーワードを [0256](0256-data-keyword-for-algebraic-types.md) で `data` に改めた）
 - 日付: 2026-09-26
 - 関連章: [字句構造](../01-spec/01-01-lexical.md), [構文](../01-spec/01-02-syntax.md), [型システム](../01-spec/01-06-type-system.md), [目的と設計原則](../00-overview/00-01-goals.md)
 - 関連する未決事項: [OPEN-001](../open-issues.md#open-001)（本 ADR で決着）, [OPEN-012](../open-issues.md#open-012), [OPEN-023](../open-issues.md#open-023)

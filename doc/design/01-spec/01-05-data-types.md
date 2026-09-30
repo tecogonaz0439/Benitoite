@@ -1,38 +1,38 @@
 # 代数的データ型とパターンマッチ
 
 - 状態: 確定
-- 関連ADR: [0007](../decisions/0007-constructors-and-list.md), [0010](../decisions/0010-shared-namespace-and-shadowing.md), [0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md), [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0057](../decisions/0057-record-declaration-construction-update.md), [0059](../decisions/0059-higher-kinded-traits-without-prelude-monad.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0111](../decisions/0111-case-of-when.md), [0102](../decisions/0102-pair-and-triple.md), [0105](../decisions/0105-byte-type.md), [0114](../decisions/0114-decimal-type.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md)
+- 関連ADR: [0007](../decisions/0007-constructors-and-list.md), [0010](../decisions/0010-shared-namespace-and-shadowing.md), [0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md), [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0057](../decisions/0057-record-declaration-construction-update.md), [0059](../decisions/0059-higher-kinded-traits-without-prelude-monad.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0111](../decisions/0111-case-of-when.md), [0102](../decisions/0102-pair-and-triple.md), [0105](../decisions/0105-byte-type.md), [0114](../decisions/0114-decimal-type.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0272](../decisions/0272-list-spread-in-list-literals.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012)
 - 移行元: [設計メモ](../sources/fp-language-design.md) なし
 
 ## 目的と範囲
 
-代数的データ型の宣言と値の構築、prelude が定める代数的データ型、パターンの種類と照合の意味、`case` の網羅性と選ばれない分岐の検査を定める。
+代数的データ型の宣言と値の構築、prelude が定める代数的データ型、パターンの種類と照合の意味、`match` の網羅性と選ばれない分岐の検査を定める。
 
-現在の版は、最小実行版（[ロードマップ](../00-overview/00-03-roadmap.md)）の範囲と、初回リリース版のレコード（後述の「レコード（初回リリース版）」）を定める。初回リリース版の組の型（`Pair`・`Triple`）と `let` のパターン（後述の「必ず照合するパターン（初回リリース版）」）も定める。初回リリース版のパターンの拡張（ガード、選択肢、範囲、リストのパターン。後述の「パターンの拡張（初回リリース版）」）も定める。括弧のタプルは設けない（[ADR 0102](../decisions/0102-pair-and-triple.md)）。
+現在の版は、最小実行版（[ロードマップ](../00-overview/00-03-roadmap.md)）の範囲と、初回リリース版のレコード（後述の「レコード（初回リリース版）」）を定める。初回リリース版の組の型（`Pair`・`Triple`）と、束縛の文（`bind`・`shadow`）の左辺のパターン（後述の「必ず照合するパターン（初回リリース版）」）も定める。初回リリース版のパターンの拡張（ガード、選択肢、範囲、リストのパターン。後述の「パターンの拡張（初回リリース版）」）も定める。括弧のタプルは設けない（[ADR 0102](../decisions/0102-pair-and-triple.md)）。
 
 ## 前提
 
-型の宣言、データ構成子の呼び出し、`case` とパターンの文法は[構文](01-02-syntax.md)で定める。型の等しさ、型パラメータの推論、代数的データ型の値どうしの `=` の型付けは[型システム](01-06-type-system.md)で、`case` の対象と分岐の本体を評価する順序は[評価意味論](01-08-evaluation.md)で定める。
+代数的データ型の宣言、データ構成子の呼び出し、`match` とパターンの文法は[構文](01-02-syntax.md)で定める。型の等しさ、型パラメータの推論、代数的データ型の値どうしの `=` の型付けは[型システム](01-06-type-system.md)で、`match` の対象と分岐の本体を評価する順序は[評価意味論](01-08-evaluation.md)で定める。
 
-本章で「分岐」と呼ぶのは、`case … of` の中の「`when` パターン `:` 本体」の一つ一つである。
+本章で「分岐」と呼ぶのは、`match … with` の中の「`case` パターン `->` 本体」の一つ一つである。
 
 ## 仕様
 
 ### 型の宣言
 
-【方針】型の宣言は、型の名前、任意の型パラメータ、一つ以上のデータ構成子（以下、構成子）からなる。構成子は、名前と、0 個以上の引数の型を持つ。
+【方針】型の宣言（代数的データ型の宣言）は、`data 名前 … end data` と書き（[ADR 0256](../decisions/0256-data-keyword-for-algebraic-types.md)）、型の名前、任意の型パラメータ、一つ以上のデータ構成子（以下、構成子）からなる。構成子は、名前と、0 個以上の引数の型を持つ。`type` は型の別名（[構文](01-02-syntax.md)の「型の別名（初回リリース版）」）にだけ使う。
 
 ```text
-type Shape
+data Shape
   Circle(Float)
   Rect(Float, Float)
-end type
+end data
 
-type Tree[T]
+data Tree[T]
   Leaf
   Node(Tree[T], T, Tree[T])
-end type
+end data
 ```
 
 - 型の宣言は、少なくとも一つの構成子を持たなければならない。構成子のない型の宣言は誤りとする。
@@ -52,10 +52,10 @@ end type
 【方針】引数を持つ構成子 `T.C` は、引数の型を引数にとり、型 `T` の値を返す関数として使える。引数を持たない構成子 `T.C` は、型 `T` の値そのものである。
 
 ```text
-let s = Shape.Circle(1.0)
-let t = Tree.Node(Tree.Leaf, 3, Tree.Leaf)
-let f = Shape.Rect(_, 2.0)          // lambda(p1) return Shape.Rect(p1, 2.0) end lambda
-let circles = List.map(radii, Shape.Circle)
+bind s <- Shape.Circle(1.0)
+bind t <- Tree.Node(Tree.Leaf, 3, Tree.Leaf)
+bind f <- Shape.Rect(_, 2.0)         // lambda(p1) return Shape.Rect(p1, 2.0) end lambda
+bind circles <- List.map(radii, Shape.Circle)
 ```
 
 - 引数を持つ構成子を呼び出すときは、宣言の引数の個数と同じ個数の引数を与えなければならない。足りない場合は、部分適用のプレースホルダを使う（[構文](01-02-syntax.md)）。
@@ -69,52 +69,52 @@ let circles = List.map(radii, Shape.Circle)
 【方針】prelude は次の代数的データ型を定める。これらの構成子も、型名で修飾して書く（`Option.Some(x)`、`Result.Error(e)`。[ADR 0099](../decisions/0099-qualified-option-result-constructors.md)、[ADR 0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md)）。
 
 ```text
-type Option[T]
+data Option[T]
   Some(T)
   None
-end type
+end data
 
-type Result[T, E]
+data Result[T, E]
   Ok(T)
   Error(E)
-end type
+end data
 ```
 
 【決定】初回リリース版では、prelude に組の型 `Pair` と `Triple` を加える（[ADR 0102](../decisions/0102-pair-and-triple.md)）。4 要素以上の組は、利用者が `record` を宣言して書く。
 
 ```text
-type Pair[A, B]
+data Pair[A, B]
   Pair(A, B)
-end type
+end data
 
-type Triple[A, B, C]
+data Triple[A, B, C]
   Triple(A, B, C)
-end type
+end data
 ```
 
-- 構成子が一つだけで、その名前が型の名前と同じなので、構成子を修飾せずに書く（`Pair(1, "one")`、`when Pair(a, b):`。[名前・スコープ・モジュール](01-03-names-modules.md)）。利用者が同じ形の型（構成子が一つで、型と同名のもの）を宣言したときも同じである。
+- 構成子が一つだけで、その名前が型の名前と同じなので、構成子を修飾せずに書く（`Pair(1, "one")`、`case Pair(a, b) ->`。[名前・スコープ・モジュール](01-03-names-modules.md)）。利用者が同じ形の型（構成子が一つで、型と同名のもの）を宣言したときも同じである。
 - 要素は、`Pair.first`・`Pair.second`・`Triple.first`・`Triple.second`・`Triple.third` で取り出すか、パターンで分解する。取り出す関数は[標準ライブラリ](../03-interop/03-06-stdlib.md)で定める。
 - 要素の型がすべて等値の型なら、`Pair` と `Triple` も等値の型である（[型システム](01-06-type-system.md)の「等値の型」）。
 
 【方針】初回リリース版では、バイト列の読み書きで使うバイト順の型 `ByteOrder` を prelude に加える（[標準ライブラリ](../03-interop/03-06-stdlib.md)）。構成子は、ほかの型と同じく修飾して書く（`ByteOrder.BigEndian`）。
 
 ```text
-type ByteOrder
+data ByteOrder
   BigEndian
   LittleEndian
-end type
+end data
 ```
 
 【方針】初回リリース版では、`Decimal` を丸める方向を表す型 `RoundingMode` を prelude に加える（[ADR 0114](../decisions/0114-decimal-type.md)、[基本型の意味論](01-04-types-basic.md)）。
 
 ```text
-type RoundingMode
+data RoundingMode
   HalfToEven
   HalfAwayFromZero
   TowardZero
   TowardNegativeInfinity
   TowardPositiveInfinity
-end type
+end data
 ```
 
 【決定】prelude の `List[T]` は、構成子を公開しない型である（[ADR 0007](../decisions/0007-constructors-and-list.md)）。`List[T]` の値は、リストリテラル（`[1, 2, 3]`、`[]`）と `List` モジュールの関数で作り、`List` モジュールの関数で調べる。`List[T]` の値はパターンで分解できない。`List` モジュールの関数と、リストの内部の表現は[標準ライブラリ](../03-interop/03-06-stdlib.md)で定める。
@@ -139,45 +139,45 @@ end type
 - 構成子のパターンは、式と同じく型名で修飾して書く。ただし初回リリース版では、構成子が一つだけで、その名前が型の名前と同じ型（`Pair`・`Triple` など）の構成子は修飾せずに書く（[名前・スコープ・モジュール](01-03-names-modules.md)の「修飾しない名前の解決」）。
 - 構成子のパターンは、宣言の引数の個数と同じ個数のパターンを持たなければならない。引数を持たない構成子のパターンに括弧を付けると誤りとする。
 - 一つのパターンの中で、同じ名前の変数を二度束縛してはならない（`Shape.Rect(x, x)` は誤り）。
-- パターンの型は、`case` の対象の式の型と一致しなければならない。構成子のパターンの中の各パターンの型は、構成子の引数の型と一致しなければならない。
+- パターンの型は、`match` の対象の式の型と一致しなければならない。構成子のパターンの中の各パターンの型は、構成子の引数の型と一致しなければならない。
 - 浮動小数のリテラルはパターンに書けない。
 
-パターンの中の変数が束縛されるのは、その分岐の本体の中だけである。
+パターンの中の変数が束縛されるのは、その分岐の本体の中（ガードがあればガードの中も）だけである。分岐のパターンの変数は、外側で見えている局所の名前を隠してはならない（[名前・スコープ・モジュール](01-03-names-modules.md)の「シャドーイング」、[ADR 0255](../decisions/0255-bind-and-shadow.md)）。
 
-【決定】初回リリース版では、`case` の分岐のパターンの変数に、その位置で見えるトップレベルの定数（[構文](01-02-syntax.md)の「定数（初回リリース版）」）と同じ名前を付けると誤りとする（[ADR 0123](../decisions/0123-top-level-constants.md)）。パターンの小文字の名前は常に新しい変数を束縛し、定数と照合しない。定数と照合するつもりで書いた分岐が、すべての値に照合してしまう誤りを防ぐためである。診断は、ガードで比べる書き方を修正案として示す。
+【決定】初回リリース版では、`match` の分岐のパターンの変数に、その位置で見えるトップレベルの定数（[構文](01-02-syntax.md)の「定数（初回リリース版）」）と同じ名前を付けると誤りとする（[ADR 0123](../decisions/0123-top-level-constants.md)）。パターンの小文字の名前は常に新しい変数を束縛し、定数と照合しない。定数と照合するつもりで書いた分岐が、すべての値に照合してしまう誤りを防ぐためである。診断は、ガードで比べる書き方を修正案として示す。
 
 ```text
 const maxRetries: Integer = 3
 
-function describe(count: Integer): String
-  return case count of
-    when 0: "none"
-    when n if n = maxRetries: "limit"      // when maxRetries: は誤り
-    when _: "some"
-  end case
+function describe(count: Integer) -> String
+  return match count with
+    case 0 -> "none"
+    case n if n = maxRetries -> "limit"      // case maxRetries -> は誤り
+    case _ -> "some"
+  end match
 end function
 ```
 
-`let` の左辺、関数とラムダの引数が定数と同じ名前を束縛することは、これまでどおりシャドーイング（[名前・スコープ・モジュール](01-03-names-modules.md)）として許す。
+束縛の文の左辺、関数とラムダの引数が定数と同じ名前を束縛することは、定数を隠す束縛として許す。定数は局所の名前ではないので、束縛の文は `bind` で書く（[名前・スコープ・モジュール](01-03-names-modules.md)の「シャドーイング」）。
 
 ### パターンの拡張（初回リリース版）
 
 【決定】初回リリース版では、分岐にガードと、コンマで並べる選択肢を書け、パターンに範囲とリストのパターンを加える（[ADR 0121](../decisions/0121-pattern-extensions.md)）。構文は[構文](01-02-syntax.md)の「パターンの拡張（初回リリース版）」で定める。
 
 ```text
-case command of
-  when ["help"], ["--help"], []: showUsage()
-  when ["add", name]: add(name)
-  when ["remove", first, ..rest]: removeAll(first, rest)
-  when _: showUsage()
-end case
+match command with
+  case ["help"], ["--help"], [] -> showUsage()
+  case ["add", name] -> add(name)
+  case ["remove", first, ..rest] -> removeAll(first, rest)
+  case _ -> showUsage()
+end match
 
-case score of
-  when n if n < 0: "invalid"
-  when 90..100: "A"
-  when 70..89: "B"
-  when _: "C"
-end case
+match score with
+  case n if n < 0 -> "invalid"
+  case 90..100 -> "A"
+  case 70..89 -> "B"
+  case _ -> "C"
+end match
 ```
 
 | パターン | 例 | 照合する値 | 束縛する変数 |
@@ -189,27 +189,27 @@ end case
 【方針】パターンの拡張の規則は次のとおりである。
 
 - 範囲の両端は、同じ型の `Integer` のリテラル（負の数を含む）か `Character` のリテラルでなければならない。両端とも省略できない。下端が上端より大きい範囲は誤りとする。Rust の `..=` や Swift の `..<`・`...` の形で書いたときは、`下端..上端` の形を修正案として示す。
-- リストのパターンの `..` は、一つのリストのパターンの中に一つまでである。`..` の後に名前を書くと、その部分のリストを束縛する。
+- リストのパターンの `..` は、一つのリストのパターンの中に一つまでである。`..` の後に名前を書くと、その部分のリストを束縛する。リストリテラルにも、同じ位置と数の規則で展開 `..e` を書け、パターンで分解できる形のリストを同じ形で組み立てられる（[構文](01-02-syntax.md)の「リストの展開（初回リリース版）」、[ADR 0272](../decisions/0272-list-spread-in-list-literals.md)）。
 - 分岐にコンマで並べたパターン（選択肢）は、値がどれかに照合すれば、その分岐を選ぶ。選択肢は左から順に調べる。すべての選択肢は、同じ名前の変数を同じ型で束縛しなければならない。束縛する値は、照合した選択肢のものである。
 - ガード `if 条件` は、パターン（選択肢を並べたときはそのどれか）が照合した後に評価する。条件は `Boolean` 型でなければならず、エフェクトを持ってはならない。`false` なら、その分岐を選ばずに次の分岐を調べる。ガードは、分岐の中の変数を使える。 ガードの中には、内側のラムダの中を除き、`return` と `try` を書けない。
-- 選択肢とガードは `case` の分岐にだけ書ける。範囲とリストのパターンは、パターンを書けるどこにでも書ける。ただし、`let` の左辺には必ず照合するパターンだけを書ける（後述の「必ず照合するパターン（初回リリース版）」）。範囲のパターンと、長さを限るリストのパターン（`[x]`、`[first, ..rest]` など）は必ず照合しないので、`let` の左辺に書けない。すべてのリストに照合する `[..rest]` と `[..]` は書ける。
+- 選択肢とガードは `match` の分岐にだけ書ける。範囲とリストのパターンは、パターンを書けるどこにでも書ける。ただし、束縛の文の左辺には必ず照合するパターンだけを書ける（後述の「必ず照合するパターン（初回リリース版）」）。範囲のパターンと、長さを限るリストのパターン（`[x]`、`[first, ..rest]` など）は必ず照合しないので、束縛の文の左辺に書けない。すべてのリストに照合する `[..rest]` と `[..]` は書ける。
 
-### case の意味
+### match の意味
 
-【方針】`case e of when p1: b1 ... when pn: bn end case` の値は次のように決まる。
+【方針】`match e with case p1 -> b1 ... case pn -> bn end match` の値は次のように決まる。
 
 1. `e` を一度だけ評価し、値 `v` を得る。
-2. `p1` から順に、`v` がパターンに照合するかを調べる。最初に照合したパターン `pi` について、`pi` が束縛する変数を束縛したうえで `bi` を評価し、その値を `case` の値とする。初回リリース版では、ガードが `false` になった分岐は照合しなかったものとして次に進む。
+2. `p1` から順に、`v` がパターンに照合するかを調べる。最初に照合したパターン `pi` について、`pi` が束縛する変数を束縛したうえで `bi` を評価し、その値を `match` の値とする。初回リリース版では、ガードが `false` になった分岐は照合しなかったものとして次に進む。
 3. 後述の網羅性の検査により、どのパターンにも照合しない `v` は存在しない。
 
-`case` の型は、すべての分岐の本体の型を受け入れる一つの型である。各分岐の本体の型は、その型と等しいか、エフェクトの包含の規則（[型システム](01-06-type-system.md)）によってその型の位置に置けるものでなければならない（[ADR 0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md)）。
+`match` の型は、すべての分岐の本体の型を受け入れる一つの型である。各分岐の本体の型は、その型と等しいか、エフェクトの包含の規則（[型システム](01-06-type-system.md)）によってその型の位置に置けるものでなければならない（[ADR 0046](../decisions/0046-effect-subsumption-at-all-flow-positions.md)）。
 
 ### 網羅性の検査
 
-【方針】`case` の対象の式の型に属するどの値についても、それに照合するパターンが少なくとも一つなければならない。この条件を満たさない `case` は型検査の誤りとし、実行しない。
+【方針】`match` の対象の式の型に属するどの値についても、それに照合するパターンが少なくとも一つなければならない。この条件を満たさない `match` は型検査の誤りとし、実行しない。
 
 - 誤りを報告するときは、どのパターンにも照合しない値の形の例（`Tree.Node(Tree.Leaf, _, _)` など）を、少なくとも一つ診断に示す。
-- `Integer`・`String`・`Character` の型の `case` は、リテラルのパターンだけでは網羅したとみなさず、ワイルドカードか変数のパターンを必要とする。`Character` の値は有限個だが、すべてを列挙しても同じである。
+- `Integer`・`String`・`Character` の型の `match` は、リテラルのパターンだけでは網羅したとみなさず、ワイルドカードか変数のパターンを必要とする。`Character` の値は有限個だが、すべてを列挙しても同じである。
 - `Boolean` は `true` と `false`、`Unit` は `()` で網羅できる。
 - `Float` と `List[T]` の値は、パターンで区別できないので、ワイルドカードか変数のパターンでしか照合できない。初回リリース版の `Byte`・`Decimal`・`Map[K, V]`・`Set[T]`・`Bytes` も同じである。ただし初回リリース版の `List[T]` は、リストのパターン（前述の「パターンの拡張（初回リリース版）」）で長さと要素によって照合できる。
 - 初回リリース版では、ガードの付いた分岐は、網羅したかどうかの判定で、覆うものに数えない。範囲のパターンは、リテラルと同じく、`Integer` と `Character` の型を網羅したとみなさない。コンマで並べた選択肢は、それぞれを別の分岐として数える。
@@ -217,38 +217,38 @@ end case
 
 ### 必ず照合するパターン（初回リリース版）
 
-【決定】初回リリース版では、`let` の左辺に、必ず照合するパターンを書ける（[ADR 0102](../decisions/0102-pair-and-triple.md)）。
+【決定】初回リリース版では、束縛の文（`bind`・`shadow`）の左辺に、必ず照合するパターンを書ける（[ADR 0102](../decisions/0102-pair-and-triple.md)、[ADR 0255](../decisions/0255-bind-and-shadow.md)）。
 
-- パターン `p` が型 `T` について必ず照合するとは、分岐が `when p:` 一つだけの `case` が、型 `T` について網羅している（前述の「網羅性の検査」）ことである。変数、ワイルドカード、`()`、構成子が一つだけの型の構成子のパターン（引数のパターンも必ず照合するもの）、レコードのパターン（各フィールドのパターンも必ず照合するもの）、`..` のほかに要素のパターンを持たないリストのパターン（`[..rest]`、`[..]`）が当たる。
-- `let p = e` は、`e` を評価し、その値を `p` に照合して、`p` が束縛する変数を束縛する。
-- 必ず照合しないパターン（`Option.Some(x)`、リテラル、構成子が二つ以上の型の構成子）を `let` の左辺に書くと、型検査の誤りとする。診断は、`case` で分岐する書き方を修正案として示す。
+- パターン `p` が型 `T` について必ず照合するとは、分岐が `case p ->` 一つだけの `match` が、型 `T` について網羅している（前述の「網羅性の検査」）ことである。変数、ワイルドカード、`()`、構成子が一つだけの型の構成子のパターン（引数のパターンも必ず照合するもの）、レコードのパターン（各フィールドのパターンも必ず照合するもの）、`..` のほかに要素のパターンを持たないリストのパターン（`[..rest]`、`[..]`）が当たる。
+- `bind p <- e` と `shadow p <- e` は、`e` を評価し、その値を `p` に照合して、`p` が束縛する変数を束縛する。`bind` と `shadow` の違いは、パターンの変数がその位置で局所の名前として見えているかどうかの条件だけであり、照合と束縛の意味は同じである。パターンの変数がすべて見えていない名前なら `bind`、すべて見えている局所の名前なら `shadow` と書き、混ざるときは誤りとする（[名前・スコープ・モジュール](01-03-names-modules.md)の「シャドーイング」）。
+- 必ず照合しないパターン（`Option.Some(x)`、リテラル、構成子が二つ以上の型の構成子）を束縛の文の左辺に書くと、型検査の誤りとする。診断は、`match` で分岐する書き方を修正案として示す。
 
 ```text
-let Pair(count, label) = Pair(3, "items")             // よい
-let Person(name: n, ..) = person                      // よい: レコードのパターン
-let Option.Some(x) = Integer.parse(text)              // 誤り: Option.None のときに照合しない
+bind Pair(count, label) <- Pair(3, "items")           // よい
+bind Person(name: n, ..) <- person                    // よい: レコードのパターン
+bind Option.Some(x) <- Integer.parse(text)            // 誤り: Option.None のときに照合しない
 ```
 
 ### 選ばれない分岐の検査
 
-【決定】前の分岐のパターンがすべて照合してしまうために、決して選ばれない分岐を含む `case` は、型検査の誤りとし、実行しない（[ADR 0007](../decisions/0007-constructors-and-list.md)）。
+【決定】前の分岐のパターンがすべて照合してしまうために、決して選ばれない分岐を含む `match` は、型検査の誤りとし、実行しない（[ADR 0007](../decisions/0007-constructors-and-list.md)）。
 
-分岐 `pi` が選ばれないとは、`pi` に照合する値のうち、`p1` から `p(i-1)` のうちガードの付いていない分岐のパターンのどれにも照合しないものが存在しないことである。初回リリース版のガードの付いた分岐は、網羅性の検査と同じく、後の分岐を覆うものに数えない。ガードの付いた分岐 `pi` 自身も、この定義で選ばれないときは誤りとする。コンマで並べた選択肢は、網羅性の検査と同じく、それぞれを別の分岐として数える。選ばれない選択肢が一つでもあれば誤りとする（`when 1, 1:` など）。
+分岐 `pi` が選ばれないとは、`pi` に照合する値のうち、`p1` から `p(i-1)` のうちガードの付いていない分岐のパターンのどれにも照合しないものが存在しないことである。初回リリース版のガードの付いた分岐は、網羅性の検査と同じく、後の分岐を覆うものに数えない。ガードの付いた分岐 `pi` 自身も、この定義で選ばれないときは誤りとする。コンマで並べた選択肢は、網羅性の検査と同じく、それぞれを別の分岐として数える。選ばれない選択肢が一つでもあれば誤りとする（`case 1, 1 ->` など）。
 
-網羅性の検査と選ばれない分岐の検査は、値を実際に作れるかどうかではなく、構成子とパターンの形で判定する。型のどの構成子についても、その構成子で作った値が存在するものとして扱う。そのため、`type L Mk(L) end type` のように値を一つも作れない型でも、`L.Mk(_)` を受ける分岐は選ばれない分岐にならない。
+網羅性の検査と選ばれない分岐の検査は、値を実際に作れるかどうかではなく、構成子とパターンの形で判定する。型のどの構成子についても、その構成子で作った値が存在するものとして扱う。そのため、`data L Mk(L) end data` のように値を一つも作れない型でも、`L.Mk(_)` を受ける分岐は選ばれない分岐にならない。
 
 ```text
-case n of
-  when _: "other"
-  when 0: "zero"       // 誤り: 前の分岐がすべての値に照合する
-end case
+match n with
+  case _ -> "other"
+  case 0 -> "zero"       // 誤り: 前の分岐がすべての値に照合する
+end match
 ```
 
 ```text
-case n of
-  when x if x > 0: "positive"
-  when _: "other"      // よい: 前の分岐はガードが付いているので、覆うものに数えない
-end case
+match n with
+  case x if x > 0 -> "positive"
+  case _ -> "other"      // よい: 前の分岐はガードが付いているので、覆うものに数えない
+end match
 ```
 
 診断は、選ばれない分岐と、それを覆っている前の分岐を示す。

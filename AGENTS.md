@@ -43,10 +43,12 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 | `doc/design/02-impl/` 以降 | 処理系設計、相互運用と標準ライブラリ、拡張、配布、ツール、品質、付録 | |
 | `doc/design/open-issues.md` | 未決・要検証事項の一覧（`OPEN-nnn`） | |
 | `doc/design/decisions/` | 設計判断の記録（ADR）。1判断1ファイル | |
+| `doc/implement/` | 初回リリース版の実装プラン（`00-common/`・`10-interfaces/`・`20-tasks/`・`90-after-completion.md`。`doc/design/decisions/0253-first-release-plan-location-and-units.md`） | 作成中。実装を終えたら `doc/archive/` へ移す |
 | `doc/archive/` | 過去の文書の保管場所。最小実行版の設計書の写し（`2026-09-27-design-initial/`）と、最小実行版の実装プランと実装の結果（`2026-09-27-implement-initial/`） | 読み取り専用。過去の文書や処理系の作成・改造の経緯を調べるときだけ読む。現在の作業の根拠にしない。設計書の章からリンクしない（ADR が経緯として参照するのはよい） |
 | `doc/reference/` | 最小実行版の言語リファレンス（英語） | |
 | `crates/benitoite/` | 処理系のクレート（lib と bin）。`src/`（ソース）、`tests/`（統合テストとゴールデンテストの実行器）、`testdata/`（ゴールデンテスト）、`examples/`（開発用の例） | モジュールの構成は実装プランの `00-common/00-01-repository-layout.md` |
 | `tools/grammar-check/` | 言語仕様の例が文法で読めるかを確かめる道具（Python。初回リリース版の構文解析器の実装で処理系の検査に置き換える） | 構文の章や例を変えたら実行する |
+| `tools/syntax-measure/` | 構文の案ごとに、LLM が書いたスクリプトの構文の誤りの率を測る道具（Python。OPEN-012・ADR 0246 の第一段階）。生の記録はリポジトリの外に置く | 使い方は `tools/syntax-measure/README.md`。LLM を呼ぶ測定は設計者の了承を得てから行う |
 | `tools/spec-coverage/` | ゴールデンテストが言語仕様のどの節を確かめているかを集計する道具（Python） | |
 | `tools/bench/` | ベンチマークと測定の道具、測定記録（`results/`） | 測定はスキル `benchmark` に従う |
 | `fuzz/` | cargo-fuzz のクレート（nightly の Rust を使うので、ワークスペースに含めない） | `scripts/fuzz-short.sh` で実行する |
@@ -156,11 +158,12 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 
 ### 大域の状態
 
-処理系のどの段も、`static mut`・`thread_local!`・`OnceLock` などの大域の可変状態を持たない（ADR 0015）。例外は次の三つだけである。
+処理系のどの段も、`static mut`・`thread_local!`・`OnceLock` などの大域の可変状態を持たない（ADR 0015）。例外は次の四つだけである。
 
 - panic hook の記録（02-09「panic 境界」がスレッドローカルな記憶域を指定した。`runtime/panic.rs`）。
 - 解放の回数の計数（07-02「確保と解放」）。機能 `alloc-stats` を有効にしたビルドでだけ、`thread_local!` の計数器で数える。既定のビルドには含めない。
 - 初回リリース版の中断の印（ADR 0163）。`SIGINT`・`SIGTERM` を受けたことを、プロセス全体で一つの原子的な真偽値で表す。印を書くのはシグナルの登録の仕組みだけ、読むのは VM の実行の区切りだけである。
+- 初回リリース版のヒープの番号の計数器（ADR 0281）。ヒープを作るときに、プロセス全体で一つの原子的な 32 ビットの計数器から番号を一つ割り当てる。値を進めるのはヒープを作る関数だけであり、実行の結果に影響しない。
 
 初期化の後に変更しない表（組み込みの表）は、`const` か関数で表す。
 
@@ -194,6 +197,7 @@ lint を個別に許す `#[allow(...)]` は、次の箇所だけに書き、許�
 | テストのモジュール（`#[cfg(test)] mod tests`）と `tests/` の各ファイル | `clippy::unwrap_used`・`clippy::expect_used`・`clippy::panic`・`clippy::indexing_slicing`・`clippy::arithmetic_side_effects` | テストの失敗は panic で表す（07-03 は、テストのコードでこれらを許してよいとした） |
 | `src/cli/mod.rs` と `src/runtime/real_io.rs` の `BENITOITE_DEV_PANIC` の処理 | `clippy::panic` | 処理系の不具合の報告をテストするために、意図して panic を起こす（10-09） |
 | `src/bytecode/program.rs` の `assert_shareable` | `dead_code` | 呼ばれない関数で、型の性質をコンパイルの時点で確かめる |
+| 初回リリース版の実装プランの道具（`doc/implement/tools/extract_interfaces.py place`）が `todo!()` の仮置きを置いたファイルの先頭 | `clippy::todo`・`unused_variables` | 後の作業が本体を書くまで、インターフェースを置いた直後のクレートをコンパイルでき lint を通るようにする。そのファイルの `todo!()` をすべて本体に書き換えた作業が、許可とコメントを消す（初回リリース版の実装プランの 00-02「`todo!()` の仮置き」） |
 
 これ以外の箇所で許す必要が生じたら、作業を止めて報告する。
 

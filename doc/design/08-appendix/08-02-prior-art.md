@@ -1,7 +1,7 @@
 # 先行事例索引
 
 - 状態: 草稿
-- 関連ADR: [0001](../decisions/0001-lazy-impatient-hubris-concept.md), [0009](../decisions/0009-typing-without-type-classes.md), [0027](../decisions/0027-register-bytecode.md), [0032](../decisions/0032-rust-style-text-and-json.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0110](../decisions/0110-if-then-end-if.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0118](../decisions/0118-effect-handlers.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0198](../decisions/0198-network-through-daemon-proxy.md), [0245](../decisions/0245-perl-virtues-source-and-fact-check-timing.md)
+- 関連ADR: [0001](../decisions/0001-lazy-impatient-hubris-concept.md), [0009](../decisions/0009-typing-without-type-classes.md), [0027](../decisions/0027-register-bytecode.md), [0032](../decisions/0032-rust-style-text-and-json.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0108](../decisions/0108-keyword-blocks-closed-by-end.md), [0110](../decisions/0110-if-then-end-if.md), [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0118](../decisions/0118-effect-handlers.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0198](../decisions/0198-network-through-daemon-proxy.md), [0245](../decisions/0245-perl-virtues-source-and-fact-check-timing.md), [0257](../decisions/0257-match-with-case-arms.md)
 - 未決事項: [OPEN-014](../open-issues.md#open-014), [OPEN-051](../open-issues.md#open-051), [OPEN-052](../open-issues.md#open-052)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 付録B
 
@@ -55,7 +55,7 @@ Perl の最初の版 1.000 は、1987-12-18 に Larry Wall が公開した（Per
 |---|---|---|
 | Python | 「やり方は一つ」、読みやすさの重視、文字列補間（f-string） | [目的と設計原則](../00-overview/00-01-goals.md) |
 | Ruby | ブロックによる高階関数の日常的な利用、プログラマの楽しさの重視 | |
-| ML / OCaml | HM 型推論、代数的データ型、パターンマッチ、非純粋・正格の実用路線 | [型システム](../01-spec/01-06-type-system.md) |
+| ML / OCaml | HM 型推論、代数的データ型、パターンマッチ（`match 対象 with` の書き方を含む）、非純粋・正格の実用路線 | [型システム](../01-spec/01-06-type-system.md)、[ADR 0257](../decisions/0257-match-with-case-arms.md) |
 | Haskell | 副作用を型で表す考え方 | [エフェクト](../01-spec/01-07-effects.md) |
 | Elm | 型クラスを持たずに演算子を型付けする閉じた制約（`number`・`comparable`）、親切なエラーメッセージ | [型システム](../01-spec/01-06-type-system.md)、[ADR 0009](../decisions/0009-typing-without-type-classes.md) |
 | Rust | エラーメッセージの形式（span、ソースの抜粋、`help:`）、`Option`・`Result` をつなぐ関数の名前 | [診断エンジン](../02-impl/02-10-diagnostics.md)、[ADR 0032](../decisions/0032-rust-style-text-and-json.md)、[ADR 0043](../decisions/0043-option-result-rust-names-no-unwrap.md) |

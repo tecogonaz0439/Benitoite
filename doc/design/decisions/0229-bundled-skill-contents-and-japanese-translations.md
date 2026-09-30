@@ -1,6 +1,6 @@
 # 0229. 同梱の Agent Skill を短い SKILL.md と必要なときに読む参照の文書で構成し、参照の文書は生成できるものを処理系のビルドで作り、日本語の訳を設計者向けに別に置く
 
-- 状態: 採択
+- 状態: 採択（決定 5 の生成の時点を [0288](0288-skill-documents-generated-by-tool-and-committed.md) で改めた）
 - 日付: 2026-09-29
 - 関連章: [Agent Skills 対応](../06-tooling/06-06-agent-skills.md), [構文](../01-spec/01-02-syntax.md), [標準ライブラリ](../03-interop/03-06-stdlib.md), [診断エンジン](../02-impl/02-10-diagnostics.md)
 - 関連する未決事項: [OPEN-011](../open-issues.md#open-011), [OPEN-047](../open-issues.md#open-047)

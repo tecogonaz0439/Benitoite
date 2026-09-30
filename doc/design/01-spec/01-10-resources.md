@@ -1,7 +1,7 @@
 # リソース管理
 
 - 状態: 確定
-- 関連ADR: [0044](../decisions/0044-heap-exhaustion-outside-stop-procedure.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0067](../decisions/0067-with-resource-scope.md), [0068](../decisions/0068-release-resources-on-stop.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0164](../decisions/0164-taskgroup-release-while-stopping.md)
+- 関連ADR: [0044](../decisions/0044-heap-exhaustion-outside-stop-procedure.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0067](../decisions/0067-with-resource-scope.md), [0068](../decisions/0068-release-resources-on-stop.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0164](../decisions/0164-taskgroup-release-while-stopping.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 4
 
@@ -38,10 +38,10 @@
 ```text
 import Benitoite.IO.File
 
-function copyHeader(src: String, dst: String): Result[Unit, String] uses File.Read, File.Write, State
+function copyHeader(src: String, dst: String) -> Result[Unit, String] uses File.Read, File.Write, State
   with input = try File.openReader(src) |> Result.mapError(_, IOError.message),
        output = try File.openWriter(dst, File.WriteMode.Replace) |> Result.mapError(_, IOError.message) do
-    let line = try File.readLine(input) |> Result.mapError(_, IOError.message)
+    bind line <- try File.readLine(input) |> Result.mapError(_, IOError.message)
     return File.writeLine(output, Option.unwrapOr(line, "")) |> Result.mapError(_, IOError.message)
   end with
 end function
@@ -52,7 +52,7 @@ end function
 【方針】`with` の規則は次のとおりである。
 
 - `with` は式であり、値はブロックの値、型はブロックの型である。`with` のエフェクトは、束縛する式と本体のエフェクトに、解放のエフェクト `State`（前述の「リソースの型」）を加えたものである。
-- `e` の型はリソースの型でなければならない。失敗しうる操作でリソースを開くときは、`try` か `case` で `Result` から取り出してから束縛する。
+- `e` の型はリソースの型でなければならない。失敗しうる操作でリソースを開くときは、`try` か `match` で `Result` から取り出してから束縛する。
 - `x` の有効範囲は、`with` のブロックと、後に並べた `e` の中である。`with a = e1, b = e2` では、`e2` の中で `a` を使える。
 - 並べた `e1`、`e2`、… は書いた順に評価し、それぞれを評価した直後に束縛する。途中の `e` の評価で `try` が関数を終えたときは、それまでに束縛したリソースだけを解放する。
 
@@ -90,7 +90,7 @@ end function
 
 【方針】リソースの値は、`with` のブロックの外へ返したり、ラムダに捕捉したりして、解放した後に使えてしまう。解放したリソースに対する操作は、実行時エラー（解放したリソースの使用）とする。これを検査で見つける仕組み（線形型など）は、初回リリース版にはない。
 
-【方針】リソースの型の値を、`with` を使わずに `let` で束縛することもできる。ただし、`TaskGroup` は `with` の束縛の外で作れない（[並行処理](01-11-concurrency.md)の「タスクの集まり」、[ADR 0153](../decisions/0153-taskgroup-open-only-in-with.md)）。この値は、スクリプトが `close` などで解放しない限り、プログラムが終わるまで解放しない。プログラムが止まるときに解放するのは、`with` で束縛したリソースだけである。
+【方針】リソースの型の値を、`with` を使わずに束縛の文（`bind`・`shadow`）で束縛することもできる。ただし、`TaskGroup` は `with` の束縛の外で作れない（[並行処理](01-11-concurrency.md)の「タスクの集まり」、[ADR 0153](../decisions/0153-taskgroup-open-only-in-with.md)）。この値は、スクリプトが `close` などで解放しない限り、プログラムが終わるまで解放しない。プログラムが止まるときに解放するのは、`with` で束縛したリソースだけである。
 
 ## 未決事項
 
