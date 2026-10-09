@@ -31,6 +31,7 @@
 - `src/runtime/heap/slot.rs`: `RootStack` の六つの関数。
 - `src/runtime/heap/trace.rs`: `Tracer::new`・`slot`・`slots`、`Discarder::new`・`slot`。
 - `src/runtime/heap/core/` の下の方式の境目（後述）と、二つの方式の仮の中身のファイル（例: `core/mark_sweep.rs`・`core/refcount.rs`）。
+- `src/runtime/heap/core.rs`（R01 が書いた内部の層の入口）: 方式の境目の子のモジュールの宣言、方式ごとの状態の初期化、確保と解放を方式へ知らせる処理、`TraceSink` の拡張（`Tracer` がヒープの番号を比べ不具合を記録するための口など）に要る範囲で改める（00-03「ブランチと並行作業」の例外の表）。
 - `Heap::epoch` の `///` のコメントに、10-08「コンパイルの失敗のテスト」の例をすべて置く（`compile_fail` と `no_run` の対）。
 - 上のファイルの中のテスト。
 

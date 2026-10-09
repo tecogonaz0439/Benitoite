@@ -1,0 +1,14 @@
+// spec: 01-05 パターンの拡張（初回リリース版）
+function grade(score: Integer) -> String
+  return match score with
+    case n if n < 0 -> "invalid"
+    case 90..100 -> "A"
+    case 70..89 -> "B"
+    case _ -> "C"
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- grade(95)
+  ()
+end function

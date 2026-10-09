@@ -1,0 +1,30 @@
+// spec: 01-10 解放の時期と順序
+// spec: 01-10 `with` の構文
+// spec: 01-10 解放したリソースの使用
+// 関門: 関数を return で抜けた Reader の解放を守り、早期戻りの解放枠の取りこぼしを捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function leave(saved: Reference[Option[File.Reader]]) -> Result[Unit, String] uses File.Read, State
+  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+    Reference.set(saved, Option.Some(reader))
+    return Result.Ok(())
+  end with
+end function
+
+function main() -> Result[Unit, String] uses File.Read, State, Console.Write
+  bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+  bind result <- leave(saved)
+  Console.writeLine(match result with
+    case Result.Ok(_) -> "returned"
+    case Result.Error(message) -> message
+  end match)
+  match Reference.get(saved) with
+    case Option.Some(reader) ->
+      bind _ <- File.readLine(reader)
+      ()
+    case Option.None -> ()
+  end match
+  return Result.Ok(())
+end function

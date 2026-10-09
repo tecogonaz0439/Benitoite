@@ -1,0 +1,24 @@
+//! Triples of three values.
+
+/// A triple of three values, written `Triple(a, b, c)`.
+public data Triple[A, B, C]
+  Triple(A, B, C)
+end data
+
+/// Returns the first value.
+public function first[A, B, C](t: Triple[A, B, C]) -> A
+  bind Triple(a, _, _) <- t
+  return a
+end function
+
+/// Returns the second value.
+public function second[A, B, C](t: Triple[A, B, C]) -> B
+  bind Triple(_, b, _) <- t
+  return b
+end function
+
+/// Returns the third value.
+public function third[A, B, C](t: Triple[A, B, C]) -> C
+  bind Triple(_, _, c) <- t
+  return c
+end function

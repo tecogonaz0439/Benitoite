@@ -1,30 +1,32 @@
 // spec: 01-08 末尾呼び出し
 // spec: 01-12 末尾呼び出しの保証
-fn apply(next: fn(Int) -> Int, value: Int) -> Int {
-  next(value)
-}
+import Benitoite.Unofficial.IO.Console
 
-fn through_lambda(n: Int) -> Int {
-  if n == 0 {
+function apply(next: function(Integer) -> Integer, value: Integer) -> Integer
+  return next(value)
+end function
+
+function through_lambda(n: Integer) -> Integer
+  return if n = 0 then
     42
-  } else {
-    apply(fn(value: Int) { through_lambda(value) }, n - 1)
-  }
-}
+  else
+    apply(lambda(value: Integer) return through_lambda(value) end lambda, n - 1)
+  end if
+end function
 
-fn option_after_tail(n: Int) -> Option[Int] {
-  if n == 0 { Some(17) } else { option_after_tail(n - 1) }
-}
+function option_after_tail(n: Integer) -> Option[Integer]
+  return if n = 0 then Option.Some(17) else option_after_tail(n - 1) end if
+end function
 
-fn string_after_tail(n: Int) -> String {
-  if n == 0 { Int.toString(23) } else { string_after_tail(n - 1) }
-}
+function string_after_tail(n: Integer) -> String
+  return if n = 0 then Integer.toString(23) else string_after_tail(n - 1) end if
+end function
 
-fn main() -> Unit uses IO {
-  Console.println(Int.toString(through_lambda(100000)))
-  match option_after_tail(100000) {
-    Some(value) => Console.println(Int.toString(value))
-    None => Console.println("None")
-  }
-  Console.println(string_after_tail(100000))
-}
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(through_lambda(100000)))
+  match option_after_tail(100000) with
+    case Option.Some(value) -> Console.writeLine(Integer.toString(value))
+    case Option.None -> Console.writeLine("None")
+  end match
+  return Console.writeLine(string_after_tail(100000))
+end function

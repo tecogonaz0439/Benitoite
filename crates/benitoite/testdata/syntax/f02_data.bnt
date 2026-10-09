@@ -1,0 +1,18 @@
+// spec: 01-02 プログラムと宣言
+// spec: 01-02 パターンマッチ
+data Tree[T]
+  Leaf
+  Node(Tree[T], T, Tree[T])
+end data
+
+function size(tree: Tree[Integer]) -> Integer
+  return match tree with
+    case Tree.Leaf -> 0
+    case Tree.Node(left, _, right) -> 1 + size(left) + size(right)
+  end match
+end function
+
+function main() -> Unit
+  bind tree <- Tree.Node(Tree.Leaf, 10, Tree.Leaf)
+  bind _ <- size(tree)
+end function

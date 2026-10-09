@@ -1,0 +1,11 @@
+// spec: 01-03 シャドーイング
+function normalize(text: String) -> String
+  shadow text <- String.trim(text)
+  shadow text <- String.replace(text, "\t", " ")
+  bind words <- String.split(text, " ")
+  return String.join(words, " ")
+end function
+
+function main() -> Unit
+  bind _ <- normalize(" hello\tworld ")
+end function

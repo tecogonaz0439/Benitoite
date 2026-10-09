@@ -1,27 +1,29 @@
-// spec: 01-04 Char
-fn show_char(value: Option[Char]) -> String {
-  match value {
-    Some(character) => "Some(" + Char.toString(character) + ")"
-    None => "None"
-  }
-}
+// spec: 01-04 Character
+import Benitoite.Unofficial.IO.Console
 
-fn bool_text(value: Bool) -> String {
-  if value { "true" } else { "false" }
-}
+function show_char(value: Option[Character]) -> String
+  return match value with
+    case Option.Some(character) -> "Some(" + Character.toString(character) + ")"
+    case Option.None -> "None"
+  end match
+end function
 
-fn main() -> Unit uses IO {
-  Console.println(Int.toString(Char.toInt('A')))
-  Console.println(show_char(Char.fromInt(1114111)))
-  Console.println(show_char(Char.fromInt(55296)))
-  Console.println(show_char(Char.fromInt(1114112)))
-  Console.println(show_char(Char.fromInt(-1)))
-  Console.println(Char.toString('é'))
-  Console.println(bool_text(Char.isAsciiDigit('7')))
-  Console.println(bool_text(Char.isAsciiDigit('é')))
-  Console.println(bool_text(Char.isAsciiWhitespace(' ')))
-  Console.println(bool_text(Char.isAsciiWhitespace('\t')))
-  Console.println(bool_text(Char.isAsciiWhitespace('\n')))
-  Console.println(bool_text(Char.isAsciiWhitespace('\r')))
-  Console.println(bool_text(Char.isAsciiWhitespace('\u{b}')))
-}
+function bool_text(value: Boolean) -> String
+  return if value then "true" else "false" end if
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(Character.toInteger('A')))
+  Console.writeLine(show_char(Character.fromInteger(1114111)))
+  Console.writeLine(show_char(Character.fromInteger(55296)))
+  Console.writeLine(show_char(Character.fromInteger(1114112)))
+  Console.writeLine(show_char(Character.fromInteger(-1)))
+  Console.writeLine(Character.toString('é'))
+  Console.writeLine(bool_text(Character.isASCIIDigit('7')))
+  Console.writeLine(bool_text(Character.isASCIIDigit('é')))
+  Console.writeLine(bool_text(Character.isASCIIWhitespace(' ')))
+  Console.writeLine(bool_text(Character.isASCIIWhitespace('\t')))
+  Console.writeLine(bool_text(Character.isASCIIWhitespace('\n')))
+  Console.writeLine(bool_text(Character.isASCIIWhitespace('\r')))
+  return Console.writeLine(bool_text(Character.isASCIIWhitespace('\u{b}')))
+end function

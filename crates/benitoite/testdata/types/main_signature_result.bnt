@@ -1,4 +1,4 @@
 // spec: 01-07 プログラムの入口
-fn main() -> Result[Int, String] {
-    Err("failed")
-}
+function main() -> Result[Integer, String]
+    return Result.Error("failed")
+end function

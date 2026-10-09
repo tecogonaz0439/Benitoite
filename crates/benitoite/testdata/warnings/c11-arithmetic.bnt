@@ -1,0 +1,5 @@
+// spec: 01-06 演算子の型付け
+function main() -> Unit
+  bind n <- 1 div 0
+  bind m <- 9223372036854775807 + 1
+end function

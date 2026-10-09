@@ -1,11 +1,15 @@
 // spec: 01-03 シャドーイング
 // spec: 01-03 局所の束縛の有効範囲
-fn main() -> Unit uses IO {
-  let x = 1
-  let result = {
-    let x = 2
-    let x = x + 1
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind x <- 1
+  bind result <- if true then
+    shadow x <- 2
+    shadow x <- x + 1
     x
-  }
-  Console.println(Int.toString(result * 10 + x))
-}
+  else
+    x
+  end if
+  return Console.writeLine(Integer.toString(result * 10 + x))
+end function

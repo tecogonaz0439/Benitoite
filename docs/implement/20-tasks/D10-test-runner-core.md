@@ -30,17 +30,18 @@
 - `src/runtime/assert.rs`: `AssertTable::build`・`op_of`、`evaluate`、`render_value` の本体。
 - `src/vm/mod.rs`: `Vm::start_test`・`take_check_failure` の本体。
 - `src/vm/state.rs`: `RunState` に欄を加える（`Assert` の表 `Option<Arc<AssertTable>>`、最初のタスクの戻り値の型、確認の失敗の記録）。
-- VM の `IO` の命令の処理（R20・R26 が書いたファイル）: 10-18「`Assert.Check` の処理」の手順 2〜5 の分岐を加える。加える場所は、ハンドラの連鎖に節がなかった後、要求を送り出しの列に置く前の一か所とする。
+- `src/vm/dispatch/tasks.rs` の `finish`（`main_outcome(program.main_kind, …)` を読む箇所）: 最初のタスクの戻り値の型を、手順 1 の型から読む。同じファイルの予算の切り替えの経路は R41 も変えるので、D10 は `finish` だけを変え、切り替えの経路に触れない。
+- VM の `IO` の命令の処理（R20・R26 が書いたファイル）: 10-18「`Assert.Check` の処理」の手順 2〜5 の分岐を加える。加える場所は、`src/vm/dispatch/handlers.rs` の `Opcode::Io` の分岐で、`io(...)` が `None` を返した後、`execute_builtin` の前の一か所とする（直接呼び出しと要求と応答の両方の方式がここを通る）。
 - 上のテスト。
 
 ## 手順の要点
 
 1. `start_test`: `start_main` と同じく最初のタスクを作り、`proto` を引数なしで呼ぶ枠を積む。`RunState` に `AssertTable` と戻り値の型を置く。最初のタスクが値で終わったときの `MainOutcome` の決め方は、`CompiledProgram::main_kind` の代わりにこの型で行う。
-2. `IO` の命令の分岐: `AssertTable` があり `op_of(BuiltinRef::id)` が操作を返したら、引数のレジスタを読み、`runtime::report::instr_span` で命令の由来位置を求めて `evaluate` を呼ぶ。`Passed` なら結果のレジスタに `Value::Unit` を入れて次の命令へ進む。`Failed` なら、`StopInfo` を作るときと同じ方法で呼び出しの枠とタスクの起動の履歴を集めて `CheckFailure` を作り、`RunState` に置いて、`StopReason::CheckFailed(op.name())` で止める手順を始める。どちらの IO の方式でも、要求を作らない。
+2. `IO` の命令の分岐: `AssertTable` があり `op_of(BuiltinRef::id)` が操作を返したら、引数のレジスタを読み、`runtime::report::instr_span` で命令の由来位置を求めて `evaluate` を呼ぶ。`Passed` なら結果のレジスタに `Value::Unit` を入れて次の命令へ進む。`Failed` なら、`StopInfo` を作るときと同じ方法で呼び出しの枠とタスクの起動の履歴を集めて `CheckFailure` を作り、`RunState` に置いて、`StopReason::CheckFailed(op.name())` で止める手順を始める。`CheckFailure` の `frames`・`spawns` は `RunState::stop_info` の結果から作る。止める手順は、`interrupt_call`（`src/vm/dispatch.rs`）と同じ形で始める（`state.stopping` が空なら枠を保存して `state.stopping = Some(StopReason::CheckFailed(..))` を置き、`Control::Reload` を返す）。どちらの IO の方式でも、要求を作らない。
 3. `evaluate`: 10-18「確認と値の書き出し」の表のとおり。`Assert.equal`・`notEqual` は `runtime::equal::values_equal` で比べ、失敗なら二つの値を `render_value` で書き出す。型は `value_types` を `site` で引く。
-4. `render_value`: 10-18 の表の書き方で、値を明示の積み重ねで辿って書く（00-02「再帰の深さ」）。代数的データ型は `Ty::Con(TyCon::Adt(b), args)` の `AdtTable` の定義から構成子の名前と引数の型（型パラメータを `args` で置き換えたもの）を引く。型が分からないときの書き方も 10-18 に従う。
-5. `AssertTable::build`: 利用者のモジュールの AST（`CheckedProgram::asts` のうち `SourceKind::User` のファイル）を辿り、10-18「確認と値の書き出し」の規則で `value_types` を作る。操作の束縛は `ResolveOutput::stdlib_names` の `Benitoite.Assert.equal`・`Benitoite.Assert.notEqual`、項目の番号は `lookup_builtin` の `Benitoite.Assert.*` で引く。
-6. `run_test`: 10-18「テストの関数の実行」の表のとおりに `TestEnd` を作る。VM の実行は `runtime::panic::catch` で囲む。`CheckFailed` のときは `take_check_failure` で記録を取り出し、止める途中の解放の失敗を `release_failures` に入れる。
+4. `render_value`: 10-18 の表の書き方で、値を明示の積み重ねで辿って書く（00-02「再帰の深さ」）。代数的データ型は `Ty::Con(TyCon::Adt(b), args)` の `AdtTable` の定義から構成子の名前と引数の型（型パラメータを `args` で置き換えたもの）を引く。型が分からないときの書き方も 10-18 に従う。`String`・`Character` のエスケープは、`src/builtins/funcs/traits.rs` の非公開の関数 `escaped` と同じ規則を、`runtime/assert.rs` の非公開の補助の関数として書き写す（traits.rs は変えない）。
+5. `AssertTable::build`: 利用者のモジュールの AST（`CheckedProgram::asts` のうち、`checked.modules` の `ModuleKind::Entry`・`ModuleKind::User` のモジュールのもの。`CheckedProgram` は `SourceTable` を持たない）を辿り、10-18「確認と値の書き出し」の規則で `value_types` を作る。操作の束縛は `ResolveOutput::stdlib_names` の `Benitoite.Assert.equal`・`Benitoite.Assert.notEqual`、項目の番号は `lookup_builtin` の `Benitoite.Assert.*` で引く。
+6. `run_test`: 10-18「テストの関数の実行」の表のとおりに `TestEnd` を作る。`IoRuntime` を作った直後に、L14 が `src/runtime/run.rs` に置く隠れた乱数の生成器の種を入れる共有の関数を呼ぶ（`benitoite test` でも `Random.Generate` の隠れた生成器に OS の乱数の種が入るようにする。L14「作るもの」）。L14 がまだ入っていなければ呼ばず、L14 が `run_test` の経路にも加える。（注記: その後の事前点検で、`run_program` と `run_test` はどちらも `run_entry` を通るので、L14 が `run_entry` で種を入れる形に改めた。L14「作るもの」）VM の実行は `runtime::panic::catch` で囲む。`CheckFailed` のときは `take_check_failure` で記録を取り出し、止める途中の解放の失敗を `release_failures` に入れる。
 7. 起動したタスクの中の `Assert` の操作も同じ分岐を通ること、利用者が `Assert.Check` を処理するハンドラを書いたときはそちらが先に処理することを、テストで確かめる。
 
 ## 受け入れテスト
@@ -54,7 +55,7 @@
 | `Assert.equal(1, 2)` | `CheckFailed`、終了状態 1、`check_failure` の `left` が `1`、`right` が `2`、`at` の由来位置が呼び出しの式 |
 | `Assert.notEqual`・`isTrue`・`fail` | それぞれ 10-18 の表の `message` と `left`・`right` |
 | 失敗の後の文 | 評価されない（失敗の後の `Console.writeLine` が捕らえた出力にない） |
-| `with` のリソース | 確認の失敗で止めたとき、開いていたリソースが内側から解放される |
+| `with` のリソース | 確認の失敗で止めたとき、開いていたリソースが内側から解放される。作業用のスレッド（または `OsResource`）を差し替えて close を失敗させ、`release_failures` に内側から外側の順で並ぶことで確かめる（既存の解放の失敗のテストと同じ形） |
 | 起動したタスクの中の確認 | `Task.all` で起動したタスクの中の失敗も `CheckFailed` になり、`check_failure` にタスクの起動の履歴がある |
 | 利用者のハンドラ | `handle … with case Assert.equal(a, b) -> resume(())` で囲んだ失敗する確認は、テストを失敗させない |
 | 値の書き出し | `Integer`・`Float`・`Decimal`・`String`（エスケープを含む）・`Character`・`Boolean`・`Unit`・`List`・`Option`・`Result`・`Pair`・`Triple`・利用者の `data`・レコード・`Map`・`Set` の値が、10-18 の表の形になる。深い入れ子のリストと長いリストでも処理系の不具合にならない |

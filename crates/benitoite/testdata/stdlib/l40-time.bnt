@@ -1,0 +1,23 @@
+// 設計書 03-08「Time」、ADR 0329。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Time
+function main() -> Result[Unit, String] uses Console.Write
+  bind t <- try Time.parseISO8601("2026-09-28T12:34:56.789+09:00")
+  Console.writeLine(Time.formatISO8601(t, 0))
+  bind dt <- Time.toDateTime(t, 540)
+  Console.writeLine(Trait.Show.show(Pair(Time.DateTime.hour(dt), Time.DateTime.nanosecond(dt))))
+  Console.writeLine(Trait.Show.show(Result.ok(Time.fromDateTime(dt)) = Option.Some(t)))
+  Console.writeLine(try Time.format(t, 540, "%Y/%m/%d %H:%M:%S %a %:z %%"))
+  Console.writeLine(Integer.toString(Time.differenceMilliseconds(Time.addMilliseconds(t, 1250), t)))
+  Console.writeLine(Trait.Show.show(Pair(Time.toUnixSeconds(Time.Instant(unixNanoseconds: -1)), Time.toUnixMilliseconds(Time.Instant(unixNanoseconds: -1)))))
+  bind basic <- try Time.parseISO8601("20260928t1234z")
+  Console.writeLine(Time.formatISO8601(basic, 0))
+  bind leap <- try Time.parseISO8601("2026-09-28T12:34:60Z[Asia/Tokyo]")
+  Console.writeLine(Time.formatISO8601(leap, 0))
+  Console.writeLine(Trait.Show.show(Result.isError(Time.parseISO8601("1600-01-01T00:00:00Z")) and Result.isError(Time.parseISO8601("2026-09-28T12:34:56"))))
+  Console.writeLine(Trait.Show.show(Time.fromUnixSeconds(-1) = Time.fromUnixMilliseconds(-1000)))
+  return Result.Ok(())
+end function

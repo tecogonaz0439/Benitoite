@@ -1,0 +1,37 @@
+// spec: 01-07 プログラムの入口
+// spec: 01-07 IO を行う組み込み関数
+// 受け入れ: 00-03「初回リリース版」の完了条件の JSON の集計（07-03「受け入れ例と仕様の項目の対応」）。
+// 03-08「Json」: orders.json の注文を分類ごとに数え、金額を合計して分類の名前の順に出力する。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Json
+
+function addOrder(totals: Map[String, Pair[Integer, Integer]], order: Json.Value) -> Result[Map[String, Pair[Integer, Integer]], String]
+  bind category <- match Option.andThen(Json.get(order, "category"), Json.asString) with
+    case Option.Some(name) -> name
+    case Option.None -> return Result.Error("an order has no category")
+  end match
+  bind amount <- match Option.andThen(Json.get(order, "amount"), Json.asInteger) with
+    case Option.Some(n) -> n
+    case Option.None -> return Result.Error("an order has no amount")
+  end match
+  bind current <- Map.get(totals, category) |> Option.unwrapOr(_, Pair(0, 0))
+  return Result.Ok(Map.set(totals, category, Pair(Pair.first(current) + 1, Pair.second(current) + amount)))
+end function
+
+function main() -> Result[Unit, String] uses File.Read, Console.Write
+  bind text <- try File.readText("orders.json") |> Result.mapError(_, IOError.message)
+  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
+  bind orders <- match Json.asArray(value) with
+    case Option.Some(items) -> items
+    case Option.None -> return Result.Error("orders.json is not an array")
+  end match
+  bind totals <- try List.fold(orders, Result.Ok(Map.empty()), lambda(acc, order)
+    return Result.andThen(acc, lambda(m) return addOrder(m, order) end lambda)
+  end lambda)
+  Map.forEach(totals, lambda(category, entry)
+    Console.writeLine("${category}: ${Pair.first(entry)} orders, ${Pair.second(entry)}")
+  end lambda)
+  Console.writeLine("total: ${List.length(orders)} orders, ${List.fold(Map.values(totals), 0, lambda(sum, entry) return sum + Pair.second(entry) end lambda)}")
+  return Result.Ok(())
+end function

@@ -1,13 +1,13 @@
 // spec: 01-05 選ばれない分岐の検査
-fn classify(value: Option[Bool]) -> Unit {
-    match value {
-        Some(true) => ()
-        Some(false) => ()
-        Some(_) => ()
-        None => ()
-    }
-}
+function classify(value: Option[Boolean]) -> Unit
+    return match value with
+        case Option.Some(true) -> ()
+        case Option.Some(false) -> ()
+        case Option.Some(_) -> ()
+        case Option.None -> ()
+    end match
+end function
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

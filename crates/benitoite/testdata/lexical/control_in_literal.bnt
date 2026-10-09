@@ -1,5 +1,5 @@
 // spec: 01-01 文字列リテラル
-fn main() -> Unit {
-  let _ = "bell: "
-  ()
-}
+function main() -> Unit
+  bind _ <- "bell: "
+  return ()
+end function

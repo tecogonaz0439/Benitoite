@@ -1,0 +1,36 @@
+import Benitoite.Unofficial.Csv
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function field(row: Map[String, String], name: String) -> Result[Integer, String]
+  return match Option.andThen(Map.get(row, name), Integer.parse) with
+    case Option.Some(n) -> Result.Ok(n)
+    case Option.None -> Result.Error("a row has no number in ${name}")
+  end match
+end function
+
+function addRow(totals: Map[String, Pair[Integer, Integer]], row: Map[String, String]) -> Result[Map[String, Pair[Integer, Integer]], String]
+  bind region <- try Option.okOr(Map.get(row, "region"), "a row has no region")
+  bind quantity <- try field(row, "quantity")
+  bind price <- try field(row, "unit_price")
+  bind current <- Map.get(totals, region) |> Option.unwrapOr(_, Pair(0, 0))
+  return Result.Ok(Map.set(totals, region, Pair(Pair.first(current) + 1, Pair.second(current) + quantity * price)))
+end function
+
+function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+  bind text <- try File.readText("sales.csv") |> Result.mapError(_, IOError.message)
+  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(_, Csv.ParseError.message)
+  bind totals <- try List.fold(rows, Result.Ok(Map.empty()), lambda(acc, row)
+    return Result.andThen(acc, lambda(m) return addRow(m, row) end lambda)
+  end lambda)
+  bind entries <- Map.toList(totals)
+  bind table <- List.map(entries, lambda(entry)
+    return [Pair.first(entry), Integer.toString(Pair.first(Pair.second(entry))), Integer.toString(Pair.second(Pair.second(entry)))]
+  end lambda)
+  bind _ <- try File.writeText("summary.csv", Csv.format(List.prepend(table, ["region", "orders", "revenue"]))) |> Result.mapError(_, IOError.message)
+  List.forEach(entries, lambda(entry)
+    Console.writeLine("${Pair.first(entry)}: ${Pair.first(Pair.second(entry))} orders, revenue ${Pair.second(Pair.second(entry))}")
+  end lambda)
+  Console.writeLine("total revenue: ${List.fold(entries, 0, lambda(sum, entry) return sum + Pair.second(Pair.second(entry)) end lambda)}")
+  return Result.Ok(())
+end function

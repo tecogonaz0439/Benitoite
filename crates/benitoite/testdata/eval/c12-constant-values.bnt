@@ -1,0 +1,19 @@
+// spec: 01-08 定数の値（初回リリース版）
+// 関門: 別の関数と遅延本体から同じ定数を参照する値を守り、定数の初期化・捕捉の退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+const offset: Integer = 40 + 2
+const greeting: String = "answer: ${offset}"
+const values: List[Integer] = [offset, offset + 1]
+
+function fromFunction() -> String
+  return greeting
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(greeting)
+  Console.writeLine(fromFunction())
+  bind delayed <- lazy greeting end lazy
+  Console.writeLine(Lazy.force(delayed))
+  Console.writeLine(Integer.toString(Option.unwrapOr(List.get(values, 0), 0) + Option.unwrapOr(List.get(values, 1), 0)))
+end function

@@ -1,0 +1,7 @@
+// spec: 01-06 鍵の型（初回リリース版）
+import Benitoite.Map
+import Benitoite.Set
+function main() -> Unit
+  bind m <- Map.fromList([Pair(1, "a"), Pair(1, "b")])
+  bind s <- Set.fromList([1, 1])
+end function

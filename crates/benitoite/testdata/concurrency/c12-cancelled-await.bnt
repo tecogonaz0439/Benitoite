@@ -1,0 +1,31 @@
+// spec: 01-11 取り消し
+// spec: 01-11 タスクとハンドラ
+// spec: 01-10 解放の時期と順序
+// 関門: 再開しない節が子を取り消し、持ち出した Task の await で R1002 を出す規則を守る。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Clock
+effect Abort
+  function abort() -> Unit
+end effect
+
+function main() -> Unit uses State, Clock.Time, Console.Write
+  bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
+  bind _ <- handle
+    with group = TaskGroup.open() do
+      bind task <- TaskGroup.spawn(group, lambda()
+        Clock.sleep(3600000)
+        return 1
+      end lambda)
+      Reference.set(saved, Option.Some(task))
+      abort()
+    end with
+  with
+    case abort() -> ()
+  end handle
+  Console.writeLine("cancelled")
+  match Reference.get(saved) with
+    case Option.Some(task) -> Console.writeLine(Integer.toString(Task.await(task)))
+    case Option.None -> Console.writeLine("missing task")
+  end match
+end function

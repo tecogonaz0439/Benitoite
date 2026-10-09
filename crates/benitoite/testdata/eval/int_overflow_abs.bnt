@@ -1,4 +1,6 @@
 // spec: 01-08 実行時エラーによる停止
-fn main() -> Unit uses IO {
-  Console.println(Int.toString(Int.abs(-9223372036854775808)))
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(Integer.toString(Integer.absolute(-9223372036854775808)))
+end function

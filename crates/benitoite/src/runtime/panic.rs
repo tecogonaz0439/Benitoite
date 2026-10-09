@@ -9,9 +9,10 @@ use std::cell::RefCell;
 use std::panic::{AssertUnwindSafe, PanicHookInfo};
 
 /// payload が文字列でないときの文言。
-const NON_STRING_PAYLOAD: &str = "<non-string panic payload>";
-/// 記録がないまま panic を捕らえたときの文言（hook を設定していないときなど）。
-const UNKNOWN_PANIC: &str = "unknown panic";
+mod text {
+    pub const NON_STRING_PAYLOAD: &str = "<non-string panic payload>";
+    pub const UNKNOWN_PANIC: &str = "unknown panic";
+}
 
 /// panic hook が記録した内容。
 #[derive(Clone, PartialEq, Debug)]
@@ -33,7 +34,7 @@ fn record(info: &PanicHookInfo<'_>) {
         .downcast_ref::<&str>()
         .map(|s| (*s).to_owned())
         .or_else(|| payload.downcast_ref::<String>().cloned())
-        .unwrap_or_else(|| String::from(NON_STRING_PAYLOAD));
+        .unwrap_or_else(|| String::from(text::NON_STRING_PAYLOAD));
     let location = info
         .location()
         .map(|l| format!("{}:{}:{}", l.file(), l.line(), l.column()));
@@ -75,7 +76,7 @@ pub fn catch<T>(f: impl FnOnce() -> T) -> Result<T, PanicReport> {
     // 捕らえた後は、壊れたかもしれない状態を使わずに報告して終える（02-09）ので AssertUnwindSafe でよい。
     std::panic::catch_unwind(AssertUnwindSafe(f)).map_err(|_| {
         take_report().unwrap_or_else(|| PanicReport {
-            message: String::from(UNKNOWN_PANIC),
+            message: String::from(text::UNKNOWN_PANIC),
             location: None,
             backtrace: None,
         })
@@ -83,6 +84,7 @@ pub fn catch<T>(f: impl FnOnce() -> T) -> Result<T, PanicReport> {
 }
 
 #[cfg(test)]
+// テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -94,8 +96,30 @@ mod tests {
     use super::{catch, install_hook, take_report};
 
     #[test]
+    #[cfg_attr(
+        miri,
+        ignore = "panic hook の競合を避ける子プロセスは Miri で起動できない"
+    )]
     fn caught_panic_carries_message_and_location() {
-        // hook はプロセス全体で一つなので、hook を設定するテストはこの一つにまとめる。
+        // panic hook はプロセス全体で共有するので、別のプロセスでこの一つだけを
+        // 走らせ、同じプロセスの別のテストと hook を取り合わない（実装プラン R09）。
+        if std::env::var_os("BENITOITE_R09_PANIC_TEST_CHILD").is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .env("BENITOITE_R09_PANIC_TEST_CHILD", "1")
+                .args([
+                    "--exact",
+                    "runtime::panic::tests::caught_panic_carries_message_and_location",
+                    "--test-threads=1",
+                ])
+                .output()
+                .unwrap();
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stdout)
+            );
+            return;
+        }
         install_hook();
         assert_eq!(catch(|| 7), Ok(7));
         let report = catch(|| panic!("boom {}", 1)).unwrap_err();

@@ -1,33 +1,35 @@
-fn readCount() -> Result[Int, String] uses IO {
-  match List.head(Process.args()) {
-    None => Err("expected one non-negative integer argument")
-    Some(argument) => match Int.parse(argument) {
-      None => Err("expected one non-negative integer argument")
-      Some(count) => if count < 0 {
-        Err("expected one non-negative integer argument")
-      } else {
-        Ok(count)
-      }
-    }
-  }
-}
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
 
-fn printLines(current: Int, end: Int) -> Unit uses IO {
-  if current < end {
-    Console.println("line " + Int.toString(current))
-    printLines(current + 1, end)
-  } else {
+function readCount() -> Result[Integer, String] uses Process.Environment
+  return match List.head(Process.arguments()) with
+    case Option.None -> Result.Error("expected one non-negative integer argument")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.None -> Result.Error("expected one non-negative integer argument")
+      case Option.Some(count) -> if count < 0 then
+        Result.Error("expected one non-negative integer argument")
+      else
+        Result.Ok(count)
+      end if
+    end match
+  end match
+end function
+
+function printLines(current: Integer, limit: Integer) -> Unit uses Console.Write
+  return if current < limit then
+    Console.writeLine("line " + Integer.toString(current))
+    printLines(current + 1, limit)
+  else
     ()
-  }
-}
+  end if
+end function
 
-fn main() -> Result[Unit, String] uses IO {
-  match readCount() {
-    Err(message) => Err(message)
-    Ok(count) => {
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match readCount() with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(count) ->
       printLines(0, count)
-      Console.println("done " + Int.toString(count))
-      Ok(())
-    }
-  }
-}
+      Console.writeLine("done " + Integer.toString(count))
+      Result.Ok(())
+  end match
+end function

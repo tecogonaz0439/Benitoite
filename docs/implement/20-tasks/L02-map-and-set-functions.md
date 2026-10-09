@@ -28,15 +28,16 @@
 
 ## 作るもの
 
-- `src/builtins/funcs/map.rs`・`set.rs` の `MORE_DECLS` の 14 項目の本体と単体テスト
+- `src/builtins/funcs/map.rs`・`set.rs` の `MORE_DECLS` の 14 項目の本体と単体テスト。新しい単体テストは `map.rs`・`set.rs` のテストのモジュールに置く（R37 の `src/runtime/map/tests.rs` は `runtime::map` のテストであり、本作業の組み込みの関数のテストを置かない）
 - R37 が作った操作の列のモデルとの比較のテストを、本作業の関数（組み込みの関数の入口）を通す形に広げたもの
-- ソースの関数と `Trait` の実装を確かめるスクリプトのテスト（`tests/` の下。ゴールデンテストの `stdlib` の区分に置くかは L40 と重ならないように、本作業は Rust の統合テストとして書く）
+- ソースの関数と `Trait` の実装を確かめるスクリプトのテスト（ゴールデンテストの `stdlib` の区分に置くかは L40 と重ならないように、本作業は Rust の統合テストとして、既存の `tests/runtime_builtins.rs` に加える）。`Trait.Show` などを使うスクリプトには `import Benitoite.Trait` が要る
 
 ## 手順の要点
 
 - どの関数も、引数のマップと集合を変えずに新しい値を返す。表現は `runtime::map` の関数だけで扱い、木のノードを直接読まない（10-08）。
 - `Map.set` と `Set.add` は、同じ鍵が既にあれば元の鍵を保ち、`Map.set` は値だけを替える（03-06）。`runtime::map::map_insert`・`set_insert` がこの規則を満たすことを確かめ、満たさなければ作業を止めて報告する（R37 の関数の不具合であり、本作業では直さない）。
 - `Map.remove`・`Set.remove` は、鍵がなければ元と等しい値を返す。
+- `runtime::map` に `map_contains` はない。`Map.contains` は `map_get` の結果が値を持つかで書く。
 - `Map.keys`・`Map.values` は `map_to_vec` の順（鍵の順）に並べたリストを `runtime::list::from_values` で作る。長さは要素の数であり、リストの長さの上限（2^24 要素）を超えたら資源の不足とする。
 - `Set.union` の計算量は 03-06 の表のとおり O(m log(n/m + 1)) を目標にするが、`runtime::map` の関数の計算量に従う。本作業は計算量を変えない。
 - ソースの関数（`Map.map` など）は L00 が置いた。本作業はソースを変えない。スクリプトのテストで、受け取った関数が鍵の順に一度ずつ呼ばれること（`Reference` で呼び出しの順を記録して確かめる）、`Map.map` が鍵を変えないこと、`Set.map` が同じ値を一つにまとめることを確かめる。ソースの誤りを見つけたら、作業を止めて報告する。
@@ -48,6 +49,7 @@
 - 操作の列のモデルとの比較（ADR 0211）: 無作為に選んだ操作（`Map.set`・`Map.remove`・`Map.get`・`Map.contains`・`Map.size`、`Set.add`・`Set.remove`・`Set.contains`・和・共通部分・差）を、組み込みの関数の入口と `BTreeMap`・`BTreeSet` に同じ順に適用し、各操作の後に内容と鍵の順が一致する。種を固定した小さな生成器で作る（R37 と同じ）。
 - 引数を変えない: 各関数を呼ぶ前後で、引数のマップと集合を `Map.toList` で読んだ並びが変わらない。
 - ソースの関数と `Trait` の実装（スクリプト）: 上の手順の要点のとおり。`Trait.Show.show(Map.fromList([Pair(2, "b"), Pair(1, "a")]))` が `Map.fromList([Pair(1, "a"), Pair(2, "b")])`、`Set` も同じ形。`Trait.Semigroup.combine` の `Map` で同じ鍵は後の値になり、`Trait.Monoid.empty` が空のマップと集合を返す。
+- スクリプトのテストで U3 の非公式のモジュールを取り込むときは、非公式の名前（`import Benitoite.Unofficial.Json` など。ADR 0286 の決定 3）で書く。03-08 などの設計書の例の `import Benitoite.Json` の形を写すと、E0321 になる。
 
 ## 完了条件
 

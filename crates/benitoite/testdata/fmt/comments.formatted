@@ -1,0 +1,21 @@
+// spec: 01-01 コメント
+// 06-03「コメント」
+import Benitoite.IO.Console
+
+/// returns one
+function one() -> Integer
+  // before the statement
+  return 1 // trailing
+end function
+
+function main() -> Unit uses Console.Write
+  if one() = 1 then
+    Console.writeLine("one")
+  // before else
+  else
+    Console.writeLine("other")
+    // before end if
+  end if
+end function
+
+// end of file

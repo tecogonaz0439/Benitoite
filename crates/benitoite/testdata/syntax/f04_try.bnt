@@ -1,0 +1,10 @@
+// spec: 01-02 `Result.Error` と `Option.None` を呼び出し元へ返す構文（初回リリース版）
+function parseAndIncrement(text: String) -> Result[Integer, String]
+  bind value <- try Integer.parse(text) |> Option.okOr(_, "invalid integer")
+  return Result.Ok(value + 1)
+end function
+
+function main() -> Unit
+  bind _ <- parseAndIncrement("41")
+  ()
+end function

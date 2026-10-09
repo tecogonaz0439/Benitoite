@@ -1,0 +1,9 @@
+// spec: 01-11 失敗と停止
+// 関門: 子の最初の段を末尾呼び出しで置き換えても位置を示さず、起動の位置は残す（ADR 0325）。
+function divide(n: Integer) -> Integer
+  return 10 div n
+end function
+
+function main() -> Unit
+  bind _ <- Task.all([lambda() return divide(0) end lambda])
+end function

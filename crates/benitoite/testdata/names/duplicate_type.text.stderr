@@ -1,12 +1,12 @@
-error[E0305]: the type `Shape` is defined more than once
-  --> names/duplicate_type.bnt:3:6
+error[E0305]: the name `Shape` is defined more than once
+  --> testdata/names/duplicate_type.bnt:5:6
    |
- 3 | type Shape { Rect }
+ 5 | data Shape
    |      ^^^^^ redefined here
    |
-  ::: names/duplicate_type.bnt:2:6
+  ::: testdata/names/duplicate_type.bnt:2:6
    |
- 2 | type Shape { Circle }
+ 2 | data Shape
    |      ----- first defined here
 
-error: could not check names/duplicate_type.bnt due to 1 previous error
+error: could not check testdata/names/duplicate_type.bnt due to 1 previous error

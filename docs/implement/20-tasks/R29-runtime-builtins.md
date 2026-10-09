@@ -11,7 +11,7 @@ U2 が作る組み込みの関数のうち、R23・R25 が書いたもの（後�
 
 ## 作業の分担
 
-10-12 は、次の 13 項目の本体を R29 に割り当てる（`Reference.new`・`Reference.get`・`Reference.set` は R23、`Task`・`TaskGroup` の七つは R25。どちらも、それぞれの作業の受け入れテストに要るので R29 より前の作業に割り当てた。10-11・10-12「作業の割り当て」）。
+10-12 は、次の 13 項目の本体を R29 に割り当てる（`Reference.new`・`Reference.get`・`Reference.set` は R23、`Task`・`TaskGroup` の七つは R25（四つ）と R39（`Task.allOk`・`Task.race`・`Task.withTimeout`）。どちらも、それぞれの作業の受け入れテストに要るので R29 より前の作業に割り当てた。10-11・10-12「作業の割り当て」）。
 
 | 部分 | 項目 | 権限 |
 |---|---|---|
@@ -46,7 +46,8 @@ U2 が作る組み込みの関数のうち、R23・R25 が書いたもの（後�
 
 ## 作るもの
 
-- `src/builtins/funcs/` の `io_error.rs`・`console.rs`・`file.rs`・`process.rs`・`clock.rs`: 上の表の項目の本体（R08 が置いた仮の本体を置き換える）と、項目ごとの単体テスト。`reference.rs`・`lazy.rs` は、`raw` が `Stop::Internal` を返すことの単体テストだけを加える。
+- `src/builtins/funcs/` の `io_error.rs`・`console.rs`・`file.rs`・`process.rs`・`clock.rs`: 上の表の項目の本体（R08 が置いた仮の本体を置き換える）と、項目ごとの単体テスト。`reference.rs`・`lazy.rs` は、`raw` が `Stop::Internal` を返すことの単体テストだけを加える。この二つの `raw` の `Stop::Internal` の説明の文字列（今は "not implemented yet"）は、恒久の状態を表す文（例 命令 `FORCE`・`UPDATE` が実行するので呼ばれないこと）に改めてよい（処理系の不具合を調べるための文字列で、診断の表と `text` には載せない）。
+- `src/builtins/funcs/mod.rs` のテスト `placeholders_and_their_wrappers_fail_without_runtime_operations`（R08 のファイル）は、本作業が本体を書く関数の仮の本体が "is not implemented yet" を返すことを期待しているので、本作業の後は必ず失敗する。このテストと、そのためだけにある `UnusedState` を消し、`Lazy.force`・`Reference.update` の `raw` の確かめは `lazy.rs`・`reference.rs` の単体テストに移す（ほかの作業のファイルだが、00-03 の「ほかの作業のファイル」として止まらない）。本作業の後、`src/` に "not implemented yet" の仮の本体は残らない。
 - `File.Reader` の `OsResource` の実装（`file.rs` の中の非公開の型）。
 - OS の誤りから `IOErrorKind` への対応（R08 が `File.readText` のために置いたもの）を、本作業の関数が要る分だけ広げる。
 - 上のファイルのテストと、`tests/` の下の統合テストのファイル。
@@ -73,7 +74,7 @@ U2 が作る組み込みの関数のうち、R23・R25 が書いたもの（後�
 | `InvalidData`（UTF-8 の誤りとして処理系が作ったもの） | `InvalidUTF8` |
 | そのほか | `Other` |
 
-`IsADirectory`・`NotADirectory`・`DirectoryNotEmpty` の各値が Rust 1.98.1 の標準ライブラリで安定しているかは、ビルドで確かめる【要検証】。使えなければ、`raw_os_error` の値で判定する形にし、その方法を完了の報告に書く。R08 がすでに同じ対応を置いていれば、それを使い、二つ目を作らない。
+`IsADirectory`・`NotADirectory`・`DirectoryNotEmpty` は、R08 の `file.rs` の対応（`IoFailure`）ですでに使っていてビルドが通る。本作業はその対応を使い（二つ目を作らない）、要る分（`InvalidData` など）を加える。
 
 ### 項目ごと
 
@@ -84,27 +85,28 @@ U2 が作る組み込みの関数のうち、R23・R25 が書いたもの（後�
 - `File.openReader(path)`: 作業用のスレッドで開き、完了の処理で `IoServices::register_resource(ResourceKind::FileReader, 資源, site)` でリソースの表に加え、リソースの値の `Result.Ok` を返す。`File.Reader` の `OsResource` は、`BufReader<File>` を持ち、`release` はファイルを閉じる（Rust の `File` は閉じるときの誤りを返さないので、`release` は常に `Ok`）。
 - `File.readLine(reader)`: `Lend::Resource(番号)` で借りて一行を読む。行の扱いは `Console.readLine` と同じ。解放したリソースなら、共通の部分（R26）が `ReleasedResourceUsed` にする。
 - `IO.File.closeReader(reader)`（`State`）: `StateServices::begin_release` で解放を始める。すぐに終われば `Result.Ok(())`、待つなら `StateReply::Wait`（VM は `WaitReason::Release` で待たせ、解放の完了の後に `PRIM` をもう一度実行する。そのときは `begin_release` が、記録した解放の失敗を取り出して扱う。R25）。解放済みのリソースに呼んだときも `Result.Ok(())` とする（01-10「解放の失敗」の最後の段落、01-12 の解放済みの `release(V)` の規則）。
-- `Process.exit(code)`: `code` が 0 以上 255 以下なら `IoReply::Exit(ExitStatus(code))`、範囲の外なら `ArgumentOutOfDomain` の実行時エラー（R0701、`index` は 1）とする（03-07「Process」）。
+- `Process.exit(code)`: `code` が 0 以上 255 以下なら `IoReply::Exit(ExitStatus(code))`、範囲の外なら `ArgumentOutOfDomain` の実行時エラー（R0701。欄 `argument` は 0 から数えるので `argument: 0`。報告の `{index}` は `argument + 1` から作られて 1 になる）とする（03-07「Process」）。
 - `Clock.sleep(ms)`: `ms` が 0 以下なら待たずに `()` を返す。そうでなければ `IoReply::Wait(IoWait::Sleep { millis })`。待ちとタイマーは R25・R26 が扱う。
 - `Clock.monotonicMilliseconds()`: `IoServices::monotonic_millis` を返す。テスト用の部品では仮想の時間になる。
 
 ## 受け入れテスト
 
-- 項目ごとの単体テスト（10-12「確かめること」）: 本体の関数を直接呼び、設計書の意味どおりの応答・値・実行時エラーを確かめる。作業用のスレッドの仕事を返す関数は、返った `WorkerWait` を `run` して完了の処理を呼ぶところまでを、一時ディレクトリ（`std::env::temp_dir` の下にテストが作る）で確かめる。
+- 項目ごとの単体テスト（10-12「確かめること」）: 本体の関数を直接呼び、設計書の意味どおりの応答・値・実行時エラーを確かめる。第 1 段の `stage1_io::TestIo::register_resource` は呼ばれると処理系の不具合を記録するので使えない。`openReader` の完了の処理と `closeReader` をつなげる単体テストは、`&mut ResourceTable` を持つテスト用の `IoServices` をテストのモジュールに書いて `Stage1StateServices` と表を共有するか、R26 の `IoView` を使う。作業用のスレッドの仕事を返す関数は、返った `WorkerWait` を `run` して完了の処理を呼ぶところまでを、一時ディレクトリ（`std::env::temp_dir` の下にテストが作る）で確かめる。
   - `readLine`: 二行の入力で二回 `Some`、三回目で `None`。行末の扱い: `"a\r\n"` で `"a"`、`"a\n"` で `"a"`、`"a"`（LF のない終わり）で `"a"` の後に `None`、`"a\r"`（LF のない終わり）で `"a"`。正しくない UTF-8 の行で `InvalidUTF8`。
   - `readAll`: `readLine` で一行読んだ後の残りだけを返す（03-07「Console」の箇条）。
   - `writeText` の後の `readText` で同じ内容、`appendText` で加わる。ない親ディレクトリで `NotFound`、ディレクトリへの書き込みで `IsDirectory`。
-  - `openReader` と `readLine` と `closeReader`: 開いて読んで閉じる。閉じた後の `readLine` が `ReleasedResourceUsed`。二度目の `closeReader` が `Result.Ok(())`。
+  - `openReader` と `readLine` と `closeReader`: 開いて読んで閉じる。二度目の `closeReader` が `Result.Ok(())`。（閉じた後の `readLine` の `ReleasedResourceUsed` は、判定が共通の部分（R26）にあるので、下の「プログラムでの確かめ」で確かめる。本体の中に判定を書かない）
   - `Process.exit`: 0・255 で `Exit`、-1・256 で `ArgumentOutOfDomain`。
   - `Clock.sleep`: 0 と負の値で待たない。
   - `IOError.kind`: 九つの種類のそれぞれ。
   - `Reference.update`・`Lazy.force` の `raw` が `Stop::Internal` を返す。
 - プログラムでの確かめ（R25 のテスト用の部品と、両方の IO の方式で実行する）:
-  - `with r = File.openReader(path) do … end with` でリソースが一度だけ解放される。`with` の中で 0 の除算を起こしても解放される。
+  - `with r = try File.openReader(path) do … end with`（`Result` を返す関数の中。`openReader` は `Result[File.Reader, IOError]` を返すので `try` で取り出す。01-10「with の規則」）でリソースが一度だけ解放される。閉じた後の `File.readLine` が `ReleasedResourceUsed` の実行時エラーになる。`with` の中で 0 の除算を起こしても解放される。
   - 読んでいるタスク（`File.readLine` の仕事をまだ実行していない）を `Task.race` で取り消し、その後に仕事を実行すると、`File.Reader` が表に戻ってから解放される（ADR 0266 の決定 4・5。OPEN-062 の R05 の形。正式な再現テストは R30）。
   - `Clock.sleep` で待つタスクがあるあいだ、ほかのタスクが進む。仮想の時間を進めるまで起きない。
   - `Console.write("Name: ")` の後の `Console.readLine()` の仕事が始まる時点で、`"Name: "` が出力先に届いている（OPEN-062 の R13 の形。正式な再現テストは R30）。
-  - `Process.exit(3)` で止まる実行が、`with` のリソースを解放し、出力を転送してから `Exited(3)` と終了状態 3 で終わる（R28 の経路）。
+  - 統合テスト（`tests/` の下）: `run_program` に `RunEnv::parts` で筋書きの部品（R25・R26 の `testing`）を渡し、`Console.write("Name: ")` の後の `Console.readLine()` が出力の完了の待ち（`AwaitFlush`）を経て読み、正常に終わることを確かめる。R27 が加えた `WorkerExec::wakeup`（`ScriptWorkers` が待てる形の `Wakeup` を返し、`run_program` がそれを出力と IO 実行器に渡す）により、部品を渡す経路でも書き出し用のスレッドの知らせを待てる。R27 では `Console.readLine` の本体がなく書けなかったので、本作業が加える。
+  - `Process.exit(3)` で止まる実行が、`with` のリソースを解放し、出力を転送してから `Exited(3)` と終了状態 3 で終わる（R21 の止める手順と `run.rs` の `EndKind::Exited`。R28 が先に入っていれば R28 の経路）。
 - 回収の強制のビルドで、上のテストがすべて通る。
 
 ## 完了条件

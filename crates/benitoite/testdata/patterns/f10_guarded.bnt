@@ -1,0 +1,10 @@
+// spec: 01-05 選ばれない分岐の検査
+function f(n: Integer) -> Unit
+  match n with
+    case x if x > 0 -> ()
+    case _ -> ()
+  end match
+end function
+function main() -> Unit
+  f(1)
+end function

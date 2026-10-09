@@ -1,0 +1,27 @@
+// spec: 01-05 パターンの拡張（初回リリース版）
+function showUsage() -> Unit
+  ()
+end function
+
+function add(name: String) -> Unit
+  bind _ <- name
+  ()
+end function
+
+function removeAll(first: String, rest: List[String]) -> Unit
+  bind _ <- Pair(first, rest)
+  ()
+end function
+
+function dispatch(command: List[String]) -> Unit
+  match command with
+    case ["help"], ["--help"], [] -> showUsage()
+    case ["add", name] -> add(name)
+    case ["remove", first, ..rest] -> removeAll(first, rest)
+    case _ -> showUsage()
+  end match
+end function
+
+function main() -> Unit
+  dispatch(["remove", "a", "b"])
+end function

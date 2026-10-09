@@ -1,0 +1,47 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function readCount() -> Result[Integer, String] uses Process.Environment
+  return match List.head(Process.arguments()) with
+    case Option.None -> Result.Error("expected one non-negative integer argument")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.None -> Result.Error("expected one non-negative integer argument")
+      case Option.Some(count) -> if count < 0 then
+        Result.Error("expected one non-negative integer argument")
+      else
+        Result.Ok(count)
+      end if
+    end match
+  end match
+end function
+
+data Small
+  Box(Integer)
+end data
+function update(value: Small) -> Small
+  return match value with
+    case Small.Box(number) -> Small.Box(number + 1)
+  end match
+end function
+function unpack(value: Small) -> Integer
+  return match value with
+    case Small.Box(number) -> number
+  end match
+end function
+function churn(count: Integer, total: Integer) -> Integer
+  return if count = 0 then total else
+    bind small <- update(Small.Box(count))
+    bind text <- String.repeat("x", 512)
+    bind values <- List.range(0, 1024)
+    churn(count - 1, total + unpack(small) + String.byteLength(text) + List.length(values))
+  end if
+end function
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match readCount() with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(count) ->
+      Console.writeLine(Integer.toString(churn(count, 0)))
+      Result.Ok(())
+  end match
+end function

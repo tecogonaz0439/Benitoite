@@ -1,955 +1,799 @@
-//! 型検査のテスト（作業 T15「受け入れテスト」）。持ち主の境界 `typecheck` を、本物の字句解析・
-//! 構文解析・名前解決に通したソースで確かめる。
+//! 言語の規則・後続の段への出力・診断の位置を、実際の読み込みから検査する（実装プラン F07）。
+// テストの失敗を panic で表し、期待値の位置と公開の表を直接確かめる。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
     clippy::panic,
     clippy::indexing_slicing,
     clippy::arithmetic_side_effects
-)] // テストの失敗は panic で表す（07-03）
+)]
+use super::{TypeckOutput, test_support::check_files};
+use crate::base::{BindingId, NodeId};
+use crate::diag::{DiagCode as C, Diagnostic};
+use crate::modules::LoadOutput;
+use crate::resolve::ResolveOutput;
+use crate::syntax::ast::*;
+use crate::types::builtin::{BuiltinEffectId, BuiltinTypeId as B};
+use crate::types::{ConstValue as V, EffectName, Ty, TyCon, TypeArg};
 
-use super::*;
-use crate::base::{FileId, IdGen, NodeId, SourceKind, Span};
-use crate::diag::DiagCode;
-use crate::resolve::resolve;
-use crate::syntax::ast::{Arg, Block, ElseBranch, Expr, IfExpr, Item, Pattern, Stmt};
-use crate::syntax::lexer::lex;
-use crate::syntax::newline::resolve_newlines;
-use crate::syntax::parser::parse;
-use crate::types::TyCon;
-
-fn parse_one(file: FileId, kind: SourceKind, src: &str, ids: &mut IdGen) -> Option<Program> {
-    let lexed = lex(file, src.as_bytes());
-    let out = parse(
-        file,
-        kind,
-        resolve_newlines(lexed.tokens),
-        lexed.comments,
-        ids,
-    );
-    (lexed.diagnostics.is_empty() && out.diagnostics.is_empty()).then_some(out.program)
+fn check(s: &str) -> (LoadOutput, ResolveOutput, TypeckOutput, Vec<Diagnostic>) {
+    check_files(&[("main.bnt", s)], false)
 }
-
-struct Checked {
-    src: String,
-    prelude: Vec<Program>,
-    user: Program,
-    out: TypeckOutput,
-    diags: Vec<Diagnostic>,
+fn clean(s: &str) -> (LoadOutput, ResolveOutput, TypeckOutput) {
+    let (l, r, t, d) = check(s);
+    assert!(d.is_empty(), "{d:#?}");
+    assert_output_nodes(&l, &t);
+    (l, r, t)
 }
-
-impl Checked {
-    fn codes(&self) -> Vec<DiagCode> {
-        self.diags.iter().filter_map(|d| d.code).collect()
-    }
-
-    fn text(&self, span: Span) -> &str {
-        assert_eq!(span.file, self.user.file, "span outside the user source");
-        &self.src[span.start.0 as usize..span.end.0 as usize]
-    }
-
-    /// 診断ごとの (コード, 主な位置の字面)。主な位置のない診断は空の字面。
-    fn summary(&self) -> Vec<(DiagCode, String)> {
-        self.diags
-            .iter()
-            .map(|d| {
-                let at = d
-                    .primary
-                    .as_ref()
-                    .map_or(String::new(), |l| self.text(l.span).to_string());
-                (d.code.unwrap(), at)
-            })
-            .collect()
-    }
-
-    fn only(&self, code: DiagCode) -> &Diagnostic {
-        assert_eq!(self.codes(), vec![code], "{:#?}", self.diags);
-        &self.diags[0]
+fn assert_output_nodes(load: &LoadOutput, out: &TypeckOutput) {
+    // 型検査の表をキーの列挙で確かめず、検査したソースの AST から必要なノードを求める。
+    for top in &load.asts[0].decls {
+        let mut check = |n: NodeId, _| assert!(out.expr_types.get(n).is_some(), "missing {n:?}");
+        match &top.item {
+            Item::Fn(f) => {
+                for p in &f.params {
+                    check(p.id, p.span);
+                }
+                if let Some(b) = &f.body {
+                    visit_block(b, &mut check);
+                }
+            }
+            Item::Const(c) => visit_expr(&c.value, &mut check),
+            Item::Data(_)
+            | Item::Alias(_)
+            | Item::Record(_)
+            | Item::Trait(_)
+            | Item::Impl(_)
+            | Item::Effect(_)
+            | Item::Error(_) => {}
+        }
     }
 }
-
-/// prelude のソースと利用者のソースを、字句解析・構文解析・名前解決に通してから型検査する。
-/// 構文と名前の誤りのないソースだけを使う。
-fn check(src: &str) -> Checked {
-    let mut ids = IdGen::new();
-    let prelude: Vec<Program> = crate::prelude::SOURCES
+fn expect(s: &str, expected: &[(C, usize, usize)]) -> Vec<Diagnostic> {
+    let (load, _, _, d) = check(s);
+    let positions = d
         .iter()
-        .enumerate()
-        .map(|(i, (_, text))| {
-            parse_one(FileId(i as u32), SourceKind::Prelude, text, &mut ids).unwrap()
+        .map(|d| {
+            let span = d.primary.as_ref().map(|p| p.span);
+            let pos = span.map(|span| load.sources.get(span.file).unwrap().line_col(span.start));
+            (
+                d.code.unwrap(),
+                pos.map_or(0, |p| p.line as usize),
+                pos.map_or(0, |p| p.column as usize),
+            )
         })
-        .collect();
-    let file = FileId(prelude.len() as u32);
-    let user = parse_one(file, SourceKind::User, src, &mut ids).expect("syntax error");
-    let resolved = resolve(&prelude, &user, &mut ids);
-    assert!(
-        resolved.diagnostics.is_empty(),
-        "{:?}",
-        resolved.diagnostics
+        .collect::<Vec<_>>();
+    assert_eq!(positions, expected, "{d:#?}");
+    d
+}
+fn id(r: &ResolveOutput, name: &str) -> BindingId {
+    r.bindings
+        .iter()
+        .find(|(_, b)| b.name == name && b.module.0 == 0)
+        .unwrap()
+        .0
+}
+fn constant<'a>(r: &ResolveOutput, t: &'a TypeckOutput, name: &str) -> &'a V {
+    t.consts.get(id(r, name)).unwrap()
+}
+fn node_at(load: &LoadOutput, start: usize) -> NodeId {
+    // ノードの検索は AST から行う。出力の表のキーを使って期待値を作らない。
+    let mut found = None;
+    for top in &load.asts[0].decls {
+        if let Item::Fn(f) = &top.item
+            && let Some(b) = &f.body
+        {
+            visit_block(b, &mut |n, span| {
+                if span.start.0 as usize == start {
+                    found = Some(n);
+                }
+            });
+        }
+    }
+    found.unwrap()
+}
+#[test]
+fn standard_library_and_entry_contracts() {
+    let (_, r, t, d) = check_files(
+        &[("main.bnt", "function main() -> Unit\nend function\n")],
+        true,
     );
-    let (out, diags) = typecheck(&prelude, &user, &resolved);
-    Checked {
-        src: src.to_string(),
-        prelude,
-        user,
-        out,
-        diags,
+    assert!(d.is_empty(), "{d:#?}");
+    for name in [
+        "Benitoite.Option.Some",
+        "Benitoite.Result.Ok",
+        "Benitoite.Pair.Pair",
+        "Benitoite.List.map",
+    ] {
+        assert!(
+            t.decl_types.get(r.stdlib(name).unwrap()).is_some(),
+            "{name}"
+        );
+    }
+    for (binding, definition) in r.bindings.iter() {
+        if matches!(
+            definition.kind,
+            crate::resolve::BindingKind::Fn
+                | crate::resolve::BindingKind::BuiltinFn(_)
+                | crate::resolve::BindingKind::Const
+                | crate::resolve::BindingKind::Ctor { .. }
+                | crate::resolve::BindingKind::Record
+                | crate::resolve::BindingKind::Field { .. }
+                | crate::resolve::BindingKind::Op { .. }
+        ) {
+            assert!(t.decl_types.get(binding).is_some(), "{}", definition.name);
+        }
+    }
+    assert!(t.main.is_some());
+    let (_, _, t, d) = check_files(
+        &[(
+            "main.bnt",
+            "function main() -> Result[Unit, String]\n return Result.Ok(())\nend function\n",
+        )],
+        true,
+    );
+    assert!(d.is_empty(), "{d:#?}");
+    assert!(t.main.unwrap().returns_result);
+
+    let (_, _, _, d) = check_files(
+        &[("main.bnt", "function f() -> Unit\nend function\n")],
+        true,
+    );
+    assert_eq!(
+        d.iter().map(|d| d.code).collect::<Vec<_>>(),
+        [Some(C::E0414)]
+    );
+    let d = expect(
+        "function main(x: Integer) -> Integer\n return x\nend function\n",
+        &[(C::E0415, 1, 10)],
+    );
+    assert_eq!(d[0].notes.len(), 2);
+    expect(
+        "@test\nfunction f(x: Integer) -> Unit\nend function\n",
+        &[(C::E0806, 2, 10)],
+    );
+}
+#[test]
+fn records_aliases_constants_and_output_tables() {
+    let s = r#"import Benitoite.Map
+data Color
+ Red
+ Green
+ Blue
+end data
+record Person
+ name: String
+ age: Integer
+end record
+record Box[T]
+ value: T
+end record
+type UserId = Integer
+type Validator[T] = function(T) -> Result[T, String]
+const maxRetries: Integer = 3
+const defaultPort: Integer = 8000 + 80
+const greeting: String = "hello, ${defaultPort}"
+const primaryColors: List[Color] = [Color.Red, Color.Green, Color.Blue]
+const statusNames: Map[Integer, String] = Map.fromList([Pair(404, "Not Found"), Pair(200, "OK")])
+function validate(v: Validator[Integer], x: UserId) -> Result[Integer, String]
+ return v(x)
+end function
+function main() -> Unit
+ bind p <- Person(name: "Ada", age: 36)
+ bind q <- Person(..p, age: 37)
+ bind personName <- Person.name(p)
+ bind Person(name: n, ..) <- q
+ bind age <- match p with
+  case Person(age: a, ..) -> a
+ end match
+ bind b <- Box(value: 4)
+ bind x <- Box.value(b)
+ bind pair <- Pair(age, n)
+ bind Pair(k, label) <- pair
+ bind f <- Integer.toString(_)
+ bind xs <- [1, ..[2, 3]]
+ bind text <- label |> Pair(f(k))
+end function
+"#;
+    let (l, r, t) = clean(s);
+    assert!(matches!(constant(&r, &t, "maxRetries"), V::Integer(3)));
+    assert!(matches!(constant(&r, &t, "primaryColors"), V::List(colors)
+        if matches!(colors.as_slice(), [V::Ctor { tag: 0, .. }, V::Ctor { tag: 1, .. }, V::Ctor { tag: 2, .. }])));
+    assert!(matches!(constant(&r, &t, "defaultPort"), V::Integer(8080)));
+    assert!(matches!(constant(&r,&t,"greeting"),V::String(s) if s=="hello, 8080"));
+    let V::Map(m) = constant(&r, &t, "statusNames") else {
+        panic!()
+    };
+    assert!(matches!(m[0].0, V::Integer(200)));
+    assert!(matches!(m[1].0, V::Integer(404)));
+    let start = s.find("Box(value:").unwrap();
+    let n = node_at(&l, start);
+    assert_eq!(
+        t.type_args.get(n).unwrap().tys,
+        vec![TypeArg::Ty(Ty::Con(TyCon::Builtin(B::INTEGER), vec![]))]
+    );
+    let start = s.find("Box.value(b)").unwrap();
+    let n = node_at(&l, start);
+    assert_eq!(t.type_args.get(n).unwrap().tys.len(), 1);
+}
+#[test]
+fn record_errors_and_alias_spelling() {
+    expect(
+        "record Person\n name: String\n age: Integer\nend record\nfunction f() -> Unit\n bind _ <- Person(name: \"Ada\")\n bind _ <- Person(name: \"Ada\", age: 4, typo: 5)\n bind _ <- Person(name: \"Ada\", age: 4, age: 5)\nend function\n",
+        &[(C::E0428, 6, 12), (C::E0429, 7, 40), (C::E0430, 8, 40)],
+    );
+    expect(
+        "record Box[T]\n value: T\nend record\nfunction f(b: Box[Integer]) -> Unit\n bind _ <- Box(..b, value: \"x\")\nend function\n",
+        &[(C::E0401, 5, 28)],
+    );
+    expect(
+        "type Unused[T] = Integer\ntype Validator[T] = function(T) -> T\nfunction f(x: Validator[Integer, String], y: Validator) -> Unit\nend function\n",
+        &[(C::E0432, 1, 6), (C::E0410, 3, 15), (C::E0410, 3, 46)],
+    );
+    let d = expect(
+        "type UserId = Integer\nfunction f() -> Unit\n bind x: UserId <- \"a\"\nend function\n",
+        &[(C::E0401, 3, 20)],
+    );
+    assert!(d[0].primary.as_ref().unwrap().text.contains("UserId"));
+    assert!(d[0].notes.iter().any(|n| n.contains("Integer")));
+}
+#[test]
+fn decimal_and_integer_literals_and_interpolation() {
+    let (_, r, t) = clean(
+        r#"const a: Decimal = 1.50m
+const b: Decimal = -79228162514264337593543950335m
+const s: String = "${1.0e21} ${0.001} ${-0.0} ${1.5m} ${true}"
+const n: Integer = -9223372036854775808
+const modMin: Integer = -9223372036854775808 mod -1
+"#,
+    );
+    assert!(matches!(constant(&r,&t,"a"),V::Decimal(d) if d.mantissa()==150&&d.scale()==2));
+    assert!(
+        matches!(constant(&r,&t,"b"),V::Decimal(d) if d.mantissa()== -crate::base::decimal::MAX_MANTISSA)
+    );
+    assert!(matches!(constant(&r,&t,"s"),V::String(s) if s=="1.0e+21 0.001 -0.0 1.5 true"));
+    assert!(matches!(constant(&r, &t, "n"), V::Integer(i64::MIN)));
+    assert!(matches!(constant(&r, &t, "modMin"), V::Integer(0)));
+    expect(
+        "const a: Decimal = 0.12345678901234567890123456789m\nconst b: Decimal = 79228162514264337593543950336m\n",
+        &[(C::E0420, 1, 20), (C::E0421, 2, 20)],
+    );
+    expect(
+        "const a: Integer = 9223372036854775808\nconst b: Float = 1e999\n",
+        &[(C::E0408, 1, 20), (C::E0409, 2, 18)],
+    );
+    expect(
+        "function f() -> Unit\n bind _ <- \"${[1]}\"\nend function\n",
+        &[(C::E0422, 2, 15)],
+    );
+}
+#[test]
+fn constant_failures_dependencies_and_duplicate_keys() {
+    expect(
+        "function f() -> Integer\n return 1\nend function\nconst a: Integer = f()\nconst b: Integer = 9223372036854775807 + 1\nconst c: Integer = b + 1\nconst d: Integer = 1 div 0\n",
+        &[(C::E0433, 4, 20), (C::E0435, 5, 20), (C::E0435, 7, 20)],
+    );
+    expect(
+        "const f: function(Integer) -> Option[Integer] = Option.Some\n",
+        &[(C::E0433, 1, 49)],
+    );
+    expect(
+        "import Benitoite.Map\nconst a: Map[Integer, String] = Map.fromList([Pair(1, \"a\"), Pair(1, \"b\")])\n",
+        &[(C::E0436, 2, 66)],
+    );
+    expect(
+        "import Benitoite.Set\nconst a: Set[Decimal] = Set.fromList([1.0m, 1.00m])\n",
+        &[(C::E0436, 2, 45)],
+    );
+    expect(
+        "import Benitoite.Set\nconst prefix: List[Integer] = [2, 1]\nconst a: Set[Integer] = Set.fromList([..prefix, 1])\n",
+        &[(C::E0436, 3, 49)],
+    );
+    expect(
+        "import Benitoite.Set\nconst a: Set[Option[Integer]] = Set.fromList([Option.Some(1), Option.Some(1)])\n",
+        &[(C::E0436, 2, 63)],
+    );
+    let s = "const maxRetries: Integer = 3\nfunction f() -> Unit\n bind _ <- maxRetries()\nend function\n";
+    let d = expect(s, &[(C::E0403, 3, 12)]);
+    let edit = &d[0].helps[0].edits[0];
+    assert_eq!(edit.replacement, "");
+    assert_eq!(
+        &s[edit.span.start.0 as usize..edit.span.end.0 as usize],
+        "()"
+    );
+}
+#[test]
+fn operators_warnings_and_fixes() {
+    expect(
+        "import Benitoite.Map\nfunction f(x: Integer) -> Unit\n bind _ <- x div 0\n bind _ <- 9223372036854775807 + 1\n bind _ <- Integer.absolute(-9223372036854775808)\n bind _ <- Map.fromList([Pair(1, \"a\"), Pair(1, \"b\")])\nend function\n",
+        &[
+            (C::W0401, 3, 18),
+            (C::W0402, 4, 12),
+            (C::W0402, 5, 12),
+            (C::W0403, 6, 45),
+        ],
+    );
+    clean(
+        "import Benitoite.Map\nfunction makePair(x: Integer) -> Pair[Integer, String]\n return Pair(x, \"a\")\nend function\nfunction f() -> Unit\n bind _ <- Map.fromList([makePair(1), makePair(1)])\nend function\n",
+    );
+    clean("function f(a: Byte, b: Byte) -> Boolean\n return a < b or a = b\nend function\n");
+    expect(
+        "function f(b: Byte) -> Unit\n bind _ <- b + b\nend function\n",
+        &[(C::E0405, 2, 12)],
+    );
+    let s = "function f() -> Unit\n bind _ <- 1 / 2\nend function\n";
+    let d = expect(s, &[(C::E0405, 2, 12)]);
+    assert_eq!(d[0].helps[0].edits[0].replacement, "div");
+    assert_eq!(
+        &s[d[0].helps[0].edits[0].span.start.0 as usize
+            ..d[0].helps[0].edits[0].span.end.0 as usize],
+        "/"
+    );
+    clean("const a: Decimal = 1.5m + 2m\n");
+    expect(
+        "function f() -> Unit\n bind _ <- 1.5m div 2m\nend function\n",
+        &[(C::E0401, 2, 17)],
+    );
+    let s = "function f(x: Integer) -> Unit\n 1 + 2\n x = 5\n ()\nend function\n";
+    let d = expect(s, &[(C::E0416, 2, 2), (C::E0416, 3, 2)]);
+    assert_eq!(d[0].helps[0].edits[0].replacement, "bind _ <- ");
+    assert_eq!(
+        d[0].helps[0].edits[0].span.start,
+        d[0].helps[0].edits[0].span.end
+    );
+    assert_eq!(d[1].helps[1].edits[0].replacement, "shadow x <- 5");
+}
+#[test]
+fn returns_monomorphism_unknown_types_and_error_recovery() {
+    clean(
+        "function sign(n: Integer) -> Integer\n if n < 0 then\n  return -1\n else\n  return 1\n end if\nend function\n",
+    );
+    expect(
+        "function bad(n: Integer) -> Integer\n if n < 0 then\n  return -1\n end if\nend function\n",
+        &[(C::E0438, 2, 2)],
+    );
+    expect(
+        "function f() -> Unit\n return ()\n bind x <- 1\nend function\n",
+        &[(C::E0439, 3, 2)],
+    );
+    expect(
+        "function f() -> Unit\n bind g <- lambda(x) return x end lambda\n bind _ <- g(1)\n bind _ <- g(\"x\")\nend function\n",
+        &[(C::E0401, 4, 14)],
+    );
+    expect(
+        "function f() -> Unit\n bind g <- lambda(x) return x + x end lambda\nend function\n",
+        &[(C::E0407, 2, 29)],
+    );
+    expect(
+        "function f() -> Unit\n bind x: Integer <- \"wrong\"\n bind _ <- x + 1\n bind _ <- x + 2\n bind _ <- x + 3\nend function\n",
+        &[(C::E0401, 2, 21)],
+    );
+}
+#[test]
+fn effect_inference_names_and_stubs() {
+    let choose = "import Benitoite.Unofficial.IO.Console\nfunction choose[effect E](unused: function() -> Unit uses Console.Write, E, act: function() -> Unit uses E) -> Unit uses E\n act()\nend function\nfunction main() -> Unit\n choose(lambda() Console.writeLine(\"unused\") end lambda, lambda() () end lambda)\nend function\n";
+    clean(choose);
+    let effectful = choose.replace(
+        "lambda() () end lambda",
+        "lambda() Console.writeLine(\"called\") end lambda",
+    );
+    expect(&effectful, &[(C::E0501, 6, 67)]);
+    let (l, r, t, d) = check(
+        "import Benitoite.Unofficial.IO.Console\nfunction f() -> Unit uses IO.All\n Console.writeLine(\"hi\")\nend function\n",
+    );
+    assert_eq!(
+        d.iter().map(|d| d.code.unwrap()).collect::<Vec<_>>(),
+        [C::W0501]
+    );
+    assert_output_nodes(&l, &t);
+    let s = t.decl_types.get(id(&r, "f")).unwrap();
+    assert!(s.wrote_io_all);
+    assert!(s.effects.names.contains(&EffectName::Builtin(
+        crate::types::builtin::find_builtin_effect(&["IO", "Console"], "Write").unwrap()
+    )));
+    assert!(
+        !s.effects
+            .names
+            .contains(&EffectName::Builtin(BuiltinEffectId::IO_ALL))
+    );
+    let (_, r, t) = clean(
+        "effect Write\n function write(s: String) -> Unit\nend effect\nfunction f() -> Unit uses Write\n write(\"hello\")\nend function\n",
+    );
+    assert_eq!(
+        t.effects.get(id(&r, "Write")).unwrap().name,
+        EffectName::User(id(&r, "Write"))
+    );
+    let d = expect(
+        "effect Write\n function write(s: String) -> Unit\nend effect\nfunction f() -> Unit\n write(\"hi\")\nend function\n",
+        &[(C::E0501, 5, 2)],
+    );
+    assert!(d[0].message.contains("Write"));
+    expect(
+        "function f[effect E, effect F](a: function() -> Unit uses E, b: function() -> Unit uses F) -> Unit uses E, F\nend function\n",
+        &[(C::E0417, 1, 100)],
+    );
+    expect(
+        "function f[effect E]() -> Unit uses E\nend function\n",
+        &[(C::E0418, 1, 19)],
+    );
+    expect(
+        "function f[F[_]](x: F) -> Unit\nend function\n",
+        &[(C::E0426, 1, 21)],
+    );
+    clean(
+        "trait Show[T]\n function show(x: T) -> String\nend trait\neffect Log\n function write(s: String) -> Unit\nend effect\nfunction f[T: Show](x: T) -> Unit\n bind _ <- lazy 1 end lazy\n bind _ <- handle write(\"hi\") with\n  case write(s) -> ()\n end handle\nend function\n",
+    );
+}
+#[test]
+fn data_without_constructors_is_reported_by_the_type_checker() {
+    // 構文解析器は空の宣言を読み、型検査だけが E0411 を報告する（01-05）。
+    expect("data Empty\nend data\n", &[(C::E0411, 1, 6)]);
+}
+#[test]
+fn zero_field_constructors_and_signed_literal_outputs() {
+    let s = "data Tree\n Leaf\nend data\nfunction f(t: Tree) -> Unit\n bind _ <- Tree.Leaf()\n bind _ <- match t with\n  case Tree.Leaf() -> ()\n end match\nend function\n";
+    let d = expect(s, &[(C::E0413, 5, 12), (C::E0413, 7, 8)]);
+    for d in d {
+        assert_eq!(d.helps[0].edits[0].replacement, "");
+        assert_eq!(
+            &s[d.helps[0].edits[0].span.start.0 as usize..d.helps[0].edits[0].span.end.0 as usize],
+            "()"
+        );
+    }
+    expect(
+        "data Box[T]\n Box(T)\nend data\nfunction f(b: Box[Integer]) -> Unit\n bind _ <- match b with\n  case Box.Box(x, y) -> x + y\n end match\nend function\n",
+        &[(C::E0412, 6, 8)],
+    );
+    let s =
+        "function f() -> Unit\n bind _ <- -9223372036854775808\n bind _ <- -1.00m\nend function\n";
+    let (l, _, t) = clean(s);
+    let n = node_at(&l, s.find("-922").unwrap());
+    assert!(matches!(t.lit_values.get(n), Some(V::Integer(i64::MIN))));
+    let n = node_at(&l, s.find("-1.00").unwrap());
+    assert!(matches!(t.lit_values.get(n),Some(V::Decimal(d)) if d.mantissa()== -100&&d.scale()==2));
+}
+fn visit_block(b: &Block, f: &mut impl FnMut(NodeId, crate::base::Span)) {
+    f(b.id, b.span);
+    for s in &b.stmts {
+        match s {
+            Stmt::Expr(e) => visit_expr(e, f),
+            Stmt::Bind(b) => {
+                f(b.id, b.span);
+                visit_pattern(&b.pattern, f);
+                visit_expr(&b.value, f);
+            }
+            Stmt::Error(e) => f(e.id, e.span),
+        }
     }
 }
-
-// ---------------- AST から確かめるノードを集める ----------------
-
-/// 表に型がなければならないノード（作業 T15「解いた後の検査と記録」の最後の段落）と、
-/// 修飾した名前ごとの NameExpr、プレースホルダ、呼び出しのノード。
-#[derive(Default)]
-struct Nodes {
-    typed: Vec<(NodeId, Span)>,
-    names: Vec<(String, NodeId)>,
-    placeholders: Vec<NodeId>,
-    calls: Vec<(NodeId, Span)>,
-    lets: Vec<NodeId>,
+fn visit_pattern(p: &Pattern, f: &mut impl FnMut(NodeId, crate::base::Span)) {
+    f(p.id(), p.span());
+    match p {
+        Pattern::Ctor(p) => {
+            for p in &p.args {
+                visit_pattern(p, f);
+            }
+        }
+        Pattern::Record(p) => {
+            for p in &p.fields {
+                visit_pattern(&p.pattern, f);
+            }
+        }
+        Pattern::Wildcard(_)
+        | Pattern::Var(_)
+        | Pattern::Lit(_)
+        | Pattern::Unit(_)
+        | Pattern::Range(_)
+        | Pattern::List(_)
+        | Pattern::Error(_) => {}
+    }
 }
-
-impl Nodes {
-    fn of(p: &Program) -> Nodes {
-        let mut n = Nodes::default();
-        for item in &p.items {
-            if let Item::Fn(f) = item {
-                for param in &f.params {
-                    n.typed.push((param.id, param.span));
-                }
-                n.block(&f.body);
+fn visit_expr(e: &Expr, f: &mut impl FnMut(NodeId, crate::base::Span)) {
+    f(e.id(), e.span());
+    match e {
+        Expr::Paren(p) => visit_expr(&p.inner, f),
+        Expr::Interp(i) => {
+            for s in &i.segments {
+                visit_expr(&s.expr, f);
             }
         }
-        n
-    }
-
-    fn block(&mut self, b: &Block) {
-        for s in &b.stmts {
-            match s {
-                Stmt::Let(l) => {
-                    self.typed.push((l.id, l.span));
-                    self.lets.push(l.id);
-                    self.expr(&l.value);
-                }
-                Stmt::Expr(e) => self.expr(e),
-                Stmt::Error(_) => panic!("error node"),
-            }
-        }
-    }
-
-    fn if_expr(&mut self, i: &IfExpr) {
-        self.expr(&i.cond);
-        self.block(&i.then_block);
-        match &i.else_branch {
-            Some(ElseBranch::Block(b)) => self.block(b),
-            Some(ElseBranch::If(inner)) => self.if_expr(inner),
-            None => {}
-        }
-    }
-
-    fn expr(&mut self, e: &Expr) {
-        self.typed.push((e.id(), e.span()));
-        match e {
-            Expr::Lit(_) | Expr::Unit(_) | Expr::Error(_) => {}
-            Expr::Name(n) => {
-                let q = n
-                    .qualifier
-                    .as_ref()
-                    .map_or(String::new(), |q| format!("{}.", q.text));
-                self.names.push((format!("{q}{}", n.name.text), n.id));
-            }
-            Expr::Paren(p) => self.expr(&p.inner),
-            Expr::List(l) => l.elems.iter().for_each(|x| self.expr(x)),
-            Expr::Call(c) => {
-                self.calls.push((c.id, c.span));
-                self.expr(&c.callee);
-                for a in &c.args {
-                    match a {
-                        Arg::Expr(x) => self.expr(x),
-                        Arg::Placeholder(p) => {
-                            self.typed.push((p.id, p.span));
-                            self.placeholders.push(p.id);
-                        }
+        Expr::List(l) => {
+            for e in &l.elems {
+                match e {
+                    ListElem::Expr(e) => visit_expr(e, f),
+                    ListElem::Spread(s) => {
+                        f(s.id, s.span);
+                        visit_expr(&s.expr, f);
                     }
                 }
             }
-            Expr::Binary(b) => {
-                self.expr(&b.lhs);
-                self.expr(&b.rhs);
-            }
-            Expr::Unary(u) => self.expr(&u.operand),
-            Expr::Pipe(p) => {
-                self.expr(&p.lhs);
-                self.expr(&p.rhs);
-            }
-            Expr::Block(b) => self.block(b),
-            Expr::If(i) => self.if_expr(i),
-            Expr::Match(m) => {
-                self.expr(&m.scrutinee);
-                for arm in &m.arms {
-                    self.pattern(&arm.pattern);
-                    self.expr(&arm.body);
+        }
+        Expr::Call(c) => {
+            visit_expr(&c.callee, f);
+            for a in &c.args {
+                match a {
+                    Arg::Expr(e) => visit_expr(e, f),
+                    Arg::Placeholder(p) => f(p.id, p.span),
                 }
             }
-            Expr::Lambda(l) => {
-                for p in &l.params {
-                    self.typed.push((p.id, p.span));
-                }
-                self.block(&l.body);
+        }
+        Expr::Record(r) => {
+            if let Some(b) = &r.base {
+                visit_expr(b, f);
+            }
+            for field in &r.fields {
+                visit_expr(&field.value, f);
             }
         }
-    }
-
-    fn pattern(&mut self, p: &Pattern) {
-        self.typed.push((p.id(), p.span()));
-        if let Pattern::Ctor(c) = p {
-            c.args.iter().for_each(|a| self.pattern(a));
+        Expr::Binary(b) => {
+            visit_expr(&b.lhs, f);
+            visit_expr(&b.rhs, f);
         }
-    }
-
-    fn name(&self, qualified: &str) -> NodeId {
-        self.names
-            .iter()
-            .find(|(n, _)| n == qualified)
-            .unwrap_or_else(|| panic!("no name {qualified}"))
-            .1
-    }
-}
-
-/// 表の網羅: すべての式・パターン・`let` 文・引数・プレースホルダが `expr_types` にある。
-/// prelude のソースの本体も脱糖するので、prelude の AST も調べる。
-fn assert_tables_cover(c: &Checked) {
-    for program in &c.prelude {
-        for (id, span) in &Nodes::of(program).typed {
-            assert!(
-                c.out.expr_types.get(*id).is_some(),
-                "no type for the prelude node at {span:?}"
-            );
+        Expr::Unary(u) => visit_expr(&u.operand, f),
+        Expr::Pipe(p) => {
+            visit_expr(&p.lhs, f);
+            visit_expr(&p.rhs, f);
         }
-    }
-    let nodes = Nodes::of(&c.user);
-    for (id, span) in &nodes.typed {
-        assert!(
-            c.out.expr_types.get(*id).is_some(),
-            "no type for `{}`",
-            c.text(*span)
-        );
-    }
-}
-
-fn ty_of(c: &Checked, id: NodeId) -> Ty {
-    c.out.expr_types.get(id).cloned().unwrap()
-}
-
-fn fn_ty(params: Vec<Ty>, ret: Ty) -> Ty {
-    Ty::func(params, ret, EffectSet::empty())
-}
-
-// ---------------- 診断のないプログラム ----------------
-
-const SHAPES: &str = "type Shape {
-  Circle(Float)
-  Rect(Float, Float)
-}
-
-fn area(s: Shape) -> Float {
-  match s {
-    Shape.Circle(r) => 3.14159 * r * r
-    Shape.Rect(w, h) => w * h
-  }
-}
-
-fn totalArea(shapes: List[Shape]) -> Float {
-  shapes
-    |> List.map(area)
-    |> List.fold(0.0, fn(acc, a) { acc + a })
-}
-
-fn main() -> Unit uses IO {
-  let shapes = [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
-  Console.println(Float.toString(totalArea(shapes)))
-}
-";
-
-const CHOOSE: &str = "fn choose[effect E](unused: fn() -> Unit uses IO, E, act: fn() -> Unit uses E) -> Unit uses E {
-  act()
-}
-
-fn main() -> Unit {
-  choose(fn() { Console.println(\"not called\") }, fn() { () })
-}
-";
-
-const PIPES: &str = "fn clamp(lo: Int, x: Int, hi: Int) -> Int {
-  if x < lo { lo } else if x > hi { hi } else { x }
-}
-
-fn make(n: Int) -> fn(Int) -> Int {
-  fn(x) { x + n }
-}
-
-fn main() -> Unit {
-  let xs = [1, 2] |> List.map(fn(x) { x + 1 })
-  let x = 5
-  let y = x |> clamp(0, _, 100)
-  let z = x |> (make(1))
-  let f = clamp(0, _, 100)
-  let w = f(5)
-  ()
-}
-";
-
-#[test]
-fn programs_without_errors() {
-    let cases = [
-        // prelude のソースに誤りがないこと（完了条件）
-        "fn main() -> Unit { () }",
-        SHAPES,
-        // 型が使い方で決まる（01-06「演算子の型付け」の g）
-        "fn g() -> Int {
-  let add = fn(a, b) { a + b }
-  add(1, 2)
-}
-fn main() -> Unit { () }",
-        CHOOSE,
-        PIPES,
-        // main は Result[Unit, String] も返せる（01-07「プログラムの入口」）
-        "fn main() -> Result[Unit, String] uses IO {
-  match File.readText(\"input.txt\") {
-    Ok(text) => {
-      Console.println(Int.toString(List.length(String.lines(text))))
-      Ok(())
-    }
-    Err(e) => Err(IoError.message(e))
-  }
-}",
-        // 相互再帰の型、引数のない構成子を値として使う、構成子の部分適用、等値の型の比較
-        "type Tree[T] {
-  Leaf
-  Node(Tree[T], T, Tree[T])
-}
-type Forest[T] {
-  Nil
-  Cons(Tree[T], Forest[T])
-}
-fn size[T](t: Tree[T]) -> Int {
-  match t {
-    Tree.Leaf => 0
-    Tree.Node(l, _, r) => size(l) + 1 + size(r)
-  }
-}
-fn main() -> Unit {
-  let t = Tree.Node(Tree.Leaf, 3, Tree.Leaf)
-  let f = Forest.Cons(t, Forest.Nil)
-  let same = f == Forest.Nil && t != Tree.Leaf
-  let leaves = List.map([1, 2], Tree.Node(Tree.Leaf, _, Tree.Leaf))
-  let big = -9223372036854775808 < 9223372036854775807
-  let s = -(1.5) * -2.0
-  ()
-}",
-    ];
-    for src in cases {
-        let c = check(src);
-        assert!(c.diags.is_empty(), "{src}\n{:#?}", c.diags);
-        assert_tables_cover(&c);
+        Expr::Return(r) => visit_expr(&r.value, f),
+        Expr::If(i) => {
+            visit_expr(&i.cond, f);
+            visit_block(&i.then_block, f);
+            if let Some(b) = &i.else_branch {
+                match b {
+                    ElseBranch::Block(b) => visit_block(b, f),
+                    ElseBranch::If(i) => visit_expr(&Expr::If(i.as_ref().clone()), f),
+                }
+            }
+        }
+        Expr::Match(m) => {
+            visit_expr(&m.scrutinee, f);
+            for a in &m.arms {
+                for p in &a.patterns {
+                    visit_pattern(p, f);
+                }
+                if let Some(g) = &a.guard {
+                    visit_expr(g, f);
+                }
+                visit_block(&a.body, f);
+            }
+        }
+        Expr::Lambda(l) => {
+            for p in &l.params {
+                f(p.id, p.span);
+            }
+            visit_block(&l.body, f);
+        }
+        Expr::Lit(_)
+        | Expr::Name(_)
+        | Expr::Unit(_)
+        | Expr::Try(_)
+        | Expr::Lazy(_)
+        | Expr::With(_)
+        | Expr::Handle(_)
+        | Expr::Resume(_)
+        | Expr::Error(_) => {}
     }
 }
 
 #[test]
-fn polymorphic_uses_record_type_args() {
-    let c = check(SHAPES);
-    let nodes = Nodes::of(&c.user);
-    let Ty::Fn(area) = ty_of(&c, nodes.name("area")) else {
-        panic!()
-    };
-    let shape = area.params[0].clone();
-    assert!(matches!(shape, Ty::Con(TyCon::Adt(_), _)));
-    // List.map の置き換えは [Shape, Float] と空のエフェクト（受け入れテスト「01-02 の例」）
-    let args = c.out.type_args.get(nodes.name("List.map")).unwrap();
-    assert_eq!(args.tys, vec![shape.clone(), Ty::float()]);
-    assert_eq!(args.effects, vec![EffectSet::empty()]);
-    // 構成子を値として使う箇所の型は、構成子の宣言の型の関数の型（01-05「値の構築」）
+fn higher_kinded_instantiation_and_equatable_declaration_summaries() {
+    let s = "function transform[F[_], A](x: F[A], f: function(F[A]) -> F[A]) -> F[A]\n return f(x)\nend function\nfunction main() -> Unit\n bind n <- transform(Option.Some(1), lambda(x) return x end lambda)\nend function\n";
+    let (l, r, t) = clean(s);
+    let call = s.rfind("transform(").unwrap();
+    let node = node_at(&l, call);
     assert_eq!(
-        ty_of(&c, nodes.name("Shape.Circle")),
-        fn_ty(vec![Ty::float()], shape)
-    );
-    let main = c.out.main.unwrap();
-    assert!(!main.returns_result);
-    assert!(c.out.decl_types.get(main.binding).is_some());
-}
-
-#[test]
-fn pipes_and_placeholders_expand_to_calls() {
-    let c = check(PIPES);
-    let nodes = Nodes::of(&c.user);
-    // main の let 文の型（clamp と make の本体には let 文がない）
-    let lets: Vec<Ty> = nodes.lets.iter().map(|id| ty_of(&c, *id)).collect();
-    let int_to_int = fn_ty(vec![Ty::int()], Ty::int());
-    assert_eq!(
-        lets,
-        vec![
-            Ty::list(Ty::int()),
-            Ty::int(),
-            Ty::int(),
-            Ty::int(),
-            int_to_int.clone(),
-            Ty::int(),
+        t.type_args.get(node).unwrap().tys,
+        [
+            TypeArg::Head(crate::types::TyHead::Con(TyCon::Adt(
+                r.stdlib("Benitoite.Option.Option").unwrap()
+            ))),
+            TypeArg::Ty(Ty::Con(TyCon::Builtin(B::INTEGER), vec![]))
         ]
     );
-    // プレースホルダの型は展開したラムダの引数の型、エフェクトは空集合
-    assert_eq!(nodes.placeholders.len(), 2);
-    for p in &nodes.placeholders {
-        assert_eq!(ty_of(&c, *p), Ty::int());
-    }
-    let placeholder_calls: Vec<NodeId> = nodes
-        .calls
-        .iter()
-        .filter(|(_, span)| c.text(*span) == "clamp(0, _, 100)")
-        .map(|(id, _)| *id)
-        .collect();
-    assert_eq!(placeholder_calls.len(), 2);
-    for id in placeholder_calls {
-        assert_eq!(ty_of(&c, id), int_to_int);
-        assert_eq!(c.out.lambda_effects.get(id), Some(&EffectSet::empty()));
-    }
-}
-
-// ---------------- 診断 ----------------
-
-/// 期待する診断: (コード, 主な位置の字面)。主な位置のない診断は空の字面。
-type Expect = &'static [(DiagCode, &'static str)];
-
-#[test]
-fn diagnostics_by_code_and_position() {
-    use DiagCode::*;
-    let main = "\nfn main() -> Unit { () }";
-    let cases: Vec<(String, Expect)> = vec![
-        // 局所の束縛は多相にしない（01-06「多相」）
-        (
-            format!(
-                "fn example() -> Unit {{
-  let id = fn(x) {{ x }}
-  let a = id(1)
-  let b = id(\"one\")
-}}{main}"
-            ),
-            &[(E0401, "\"one\"")],
-        ),
-        // 型が決まらない（01-06「演算子の型付け」の f）
-        (
-            format!("fn f() -> Unit {{\n  let add = fn(a, b) {{ a + b }}\n}}{main}"),
-            &[(E0407, "a + b")],
-        ),
-        // エフェクト変数の違反（02-05 の choose の第 2 引数を IO を行うラムダに変えたもの）。
-        // 主な位置は IO を生じた呼び出し（01-06「式のエフェクト」）
-        (
-            CHOOSE.replace("fn() { () }", "fn() { Console.println(\"x\") }"),
-            &[(E0501, "Console.println(\"x\")")],
-        ),
-        // 純粋な関数から IO（01-06「式のエフェクト」の greet）
-        (
-            format!(
-                "fn greet(name: String) -> Unit {{\n  Console.println(\"Hello, \" + name)\n}}{main}"
-            ),
-            &[(E0501, "Console.println(\"Hello, \" + name)")],
-        ),
-        // main がない
-        ("fn f() -> Unit { () }".to_string(), &[(E0414, "")]),
-        // 型引数の個数（シグネチャ、型パラメータ、本体の型注釈）
-        (
-            format!("fn f(x: List) -> Unit {{ () }}{main}"),
-            &[(E0410, "List")],
-        ),
-        (
-            format!("fn f[T](x: T[Int]) -> Unit {{ () }}{main}"),
-            &[(E0410, "T[Int]")],
-        ),
-        (
-            format!("fn f() -> Unit {{\n  let x: Option[Int, Int] = None\n}}{main}"),
-            &[(E0410, "Option[Int, Int]")],
-        ),
-        // 構成子のない型
-        (format!("type T {{}}{main}"), &[(E0411, "T")]),
-        // エフェクト変数の規則
-        (
-            format!(
-                "fn f[effect E, effect F](a: fn() -> Unit uses E, b: fn() -> Unit uses F) -> Unit uses E, F {{ () }}{main}"
-            ),
-            &[(E0417, "uses E, F")],
-        ),
-        (
-            format!("fn f() -> Unit uses IO, IO {{ () }}{main}"),
-            &[(E0419, "IO")],
-        ),
-        (
-            format!("fn f[effect E]() -> Unit uses E {{ () }}{main}"),
-            &[(E0418, "E")],
-        ),
-        // 本体の型注釈の uses にも同じ規則
-        (
-            format!("fn f() -> Unit {{\n  let g = fn() -> Unit uses IO, IO {{ () }}\n}}{main}"),
-            &[(E0419, "IO")],
-        ),
-        // 引数のない構成子に括弧（式とパターン）。派生の誤りなし
-        (
-            format!(
-                "type Tree {{\n  Leaf\n  Node(Tree, Tree)\n}}
-fn f(t: Tree) -> Int {{
-  let u = Tree.Leaf()
-  let v = None()
-  match t {{
-    Tree.Leaf() => 0
-    Tree.Node(_, _) => 1
-  }}
-}}{main}"
-            ),
-            &[
-                (E0413, "Tree.Leaf()"),
-                (E0413, "None()"),
-                (E0413, "Tree.Leaf()"),
-            ],
-        ),
-        // パターンの引数の個数
-        (
-            format!(
-                "type Shape {{\n  Circle(Float)\n  Rect(Float, Float)\n}}
-fn f(s: Shape) -> Float {{
-  match s {{
-    Shape.Rect(w) => w
-    Shape.Circle(r) => r
-  }}
-}}{main}"
-            ),
-            &[(E0412, "Shape.Rect(w)")],
-        ),
-        // パイプで展開した呼び出しの制約の主な位置は、パイプの式全体（作業 T15「本体の制約の生成」）。
-        // 規則 1（引数の型の誤り）と規則 2（呼ばれる式の引数の型の誤り）
-        (
-            format!(
-                "fn f(a: Int, h: fn(Int) -> Int) -> Int {{ h(a) }}
-fn g() -> Unit {{
-  let p = \"s\" |> f(Int.abs(_))
-  let q = \"s\" |> Int.abs
-}}{main}"
-            ),
-            &[
-                (E0401, "\"s\" |> f(Int.abs(_))"),
-                (E0401, "\"s\" |> Int.abs"),
-            ],
-        ),
-        // 整数リテラルの範囲。直接の `-` の下では 2^63 まで許す
-        (
-            format!(
-                "fn f() -> Unit {{
-  let a = 9223372036854775807
-  let b = 9223372036854775808
-  let c = -9223372036854775808
-  let d = -(9223372036854775808)
-  let e = 0x7FFF_FFFF_FFFF_FFFF
-  let g = 0x1_0000_0000_0000_0000_0000_0000_0000_0000
-}}{main}"
-            ),
-            &[
-                (E0408, "9223372036854775808"),
-                (E0408, "9223372036854775808"),
-                (E0408, "0x1_0000_0000_0000_0000_0000_0000_0000_0000"),
-            ],
-        ),
-        // パターンの整数リテラルの範囲。範囲の外を含む match は網羅性を検査しない
-        (
-            format!(
-                "fn f(n: Int) -> Int {{
-  match n {{
-    -9223372036854775808 => 1
-    9223372036854775808 => 2
-  }}
-}}{main}"
-            ),
-            &[(E0408, "9223372036854775808")],
-        ),
-        // 浮動小数リテラルの範囲
-        (
-            format!("fn f() -> Unit {{\n  let a = 1e308\n  let b = 1e309\n}}{main}"),
-            &[(E0409, "1e309")],
-        ),
-        // 式文
-        (
-            format!("fn f() -> Unit {{\n  1 + 2\n  ()\n}}{main}"),
-            &[(E0416, "1 + 2")],
-        ),
-        // 等値の型
-        (
-            format!("fn f() -> Bool {{\n  fn() {{ () }} == fn() {{ () }}\n}}{main}"),
-            &[(E0406, "fn() { () } == fn() { () }")],
-        ),
-        (
-            "fn main() -> Unit uses IO {\n  let same = File.readText(\"a\") == File.readText(\"b\")\n}"
-                .to_string(),
-            &[(E0406, "File.readText(\"a\") == File.readText(\"b\")")],
-        ),
-        // List.sort の制約
-        (
-            format!("fn f() -> List[Bool] {{\n  List.sort([true])\n}}{main}"),
-            &[(E0405, "List.sort")],
-        ),
-        // 網羅性
-        (
-            format!(
-                "type Tree[T] {{\n  Leaf\n  Node(Tree[T], T, Tree[T])\n}}
-fn f(t: Tree[Int]) -> Int {{
-  match t {{
-    Tree.Leaf => 0
-  }}
-}}{main}"
-            ),
-            &[(E0601, "t")],
-        ),
-        // 選ばれない分岐（01-05「選ばれない分岐の検査」）
-        (
-            format!(
-                "fn f(n: Int) -> String {{
-  match n {{
-    _ => \"other\"
-    0 => \"zero\"
-  }}
-}}{main}"
-            ),
-            &[(E0602, "0")],
-        ),
-        // 一つの関数の独立した三つの誤り（ADR 0024）
-        (
-            format!(
-                "fn f(x: Int) -> Unit {{
-  let a: String = x
-  let b = if x {{ 1 }} else {{ 2 }}
-  let c = x + \"s\"
-}}{main}"
-            ),
-            &[(E0401, "x"), (E0401, "x"), (E0401, "\"s\"")],
-        ),
-        // 誤りの型の変数を後で三回使っても、派生した誤りを出さない
-        (
-            format!(
-                "fn f() -> Unit {{
-  let x = Option.unwrapOr(1, 2)
-  let a = x + 1
-  let b = List.length(x)
-  let c = x == \"s\"
-}}{main}"
-            ),
-            &[(E0401, "1")],
-        ),
-        // パターンの型が合わない match は、網羅性を検査しない（派生した誤りを出さない）
-        (
-            format!(
-                "fn f(n: Int) -> Int {{\n  match n {{\n    \"a\" => 1\n  }}\n}}{main}"
-            ),
-            &[(E0401, "\"a\"")],
-        ),
-        // 宣言の誤りから派生した誤りを本体で出さない（壊れた宣言）
-        (
-            format!(
-                "type T {{\n  A(List)\n}}
-fn g(x: List) -> Int {{ 1 }}
-fn f() -> Int {{
-  let t = T.A([1])
-  g(\"s\") + g(1)
-}}{main}"
-            ),
-            &[(E0410, "List"), (E0410, "List")],
-        ),
-    ];
-    for (src, expected) in &cases {
-        let c = check(src);
-        let want: Vec<(DiagCode, String)> =
-            expected.iter().map(|(d, s)| (*d, s.to_string())).collect();
-        assert_eq!(c.summary(), want, "{src}\n{:#?}", c.diags);
-    }
-}
-
-#[test]
-fn pipe_rule_one_looks_only_at_direct_arguments_and_the_outermost_call() {
-    // `x |> f(g(_))` は f(x, g(_))、`x |> g(a)(b)` は g(a)(x, b) に展開する（01-02「パイプ」）。
-    // 取り違えると型が合わなくなるか、別の型になる。
-    let c = check(
-        "fn f(a: Int, h: fn(Int) -> Int) -> Int { h(a) }
-fn g(a: String) -> fn(Int, Int) -> String {
-  fn(x, b) { a }
-}
-fn main() -> Unit {
-  let p = 1 |> f(Int.abs(_))
-  let q = 2 |> g(\"s\")(3)
-  ()
-}",
+    clean(
+        "data A[T]\n End\n Next(B[T])\nend data\ndata B[T]\n B(T, A[T])\nend data\nfunction equalTrees(a: A[Integer], b: A[Integer]) -> Boolean\n return a = b\nend function\n",
     );
-    assert!(c.diags.is_empty(), "{:#?}", c.diags);
-    assert_tables_cover(&c);
-    let lets: Vec<Ty> = Nodes::of(&c.user)
-        .lets
-        .iter()
-        .map(|id| ty_of(&c, *id))
-        .collect();
-    assert_eq!(lets, vec![Ty::int(), Ty::string()]);
-}
-
-#[test]
-fn constructor_pattern_arity_names_the_counts() {
-    let c = check(
-        "type Shape {
-  Circle(Float)
-  Rect(Float, Float)
-}
-fn f(s: Shape) -> Float {
-  match s {
-    Shape.Rect(w) => w
-    Shape.Circle(r) => r
-  }
-}
-fn main() -> Unit { () }",
+    expect(
+        "data Box[T]\n Box(T)\nend data\nfunction f(x: Box[function() -> Unit]) -> Unit\n bind _ <- x = x\nend function\n",
+        &[(C::E0406, 5, 12)],
     );
-    let d = c.only(DiagCode::E0412);
-    assert_eq!(
-        d.message,
-        "the constructor `Shape.Rect` has 2 field(s) but the pattern has 1"
+    expect(
+        "import Benitoite.Set\nfunction f() -> Unit\n bind _ <- Set.fromList([1.0])\nend function\n",
+        &[(C::E0423, 3, 12)],
+    );
+    expect(
+        "function transform[F[_], A](x: F[A]) -> F[A]\n return x\nend function\nfunction f() -> Unit\n bind _ <- transform(Result.Ok(1))\nend function\n",
+        &[(C::E0401, 5, 22)],
     );
 }
 
 #[test]
-fn lambda_uses_reports_the_call_and_the_uses_list() {
-    let c = check(
-        "fn f[effect E](a: fn() -> Unit uses E) -> Unit uses E {
-  let g = fn() -> Unit uses E { Console.println(\"x\") }
-}
-fn main() -> Unit { () }",
-    );
-    let d = c.only(DiagCode::E0502);
-    assert_eq!(
-        c.text(d.primary.as_ref().unwrap().span),
-        "Console.println(\"x\")"
-    );
-    assert_eq!(d.secondary.len(), 1);
-    assert_eq!(c.text(d.secondary[0].span), "uses E");
-}
-
-fn extra(code: DiagCode, key: &str) -> String {
-    code.info()
-        .extras
-        .iter()
-        .find(|(k, _)| *k == key)
-        .unwrap()
-        .1
-        .to_string()
-}
-
-#[test]
-fn main_signature_notes() {
-    let c = check("fn main(x: Int) -> Int { x }");
-    let d = c.only(DiagCode::E0415);
-    assert_eq!(c.text(d.primary.as_ref().unwrap().span), "main");
-    let note = |key| extra(DiagCode::E0415, key);
-    assert_eq!(d.notes, vec![note("params"), note("ret")]);
-
-    let c = check("fn main[effect E](f: fn() -> Unit uses E) -> Unit uses E { f() }");
-    let d = c.only(DiagCode::E0415);
-    assert_eq!(
-        d.notes,
-        vec![note("params"), note("type_params"), note("effects")]
-    );
-}
-
-#[test]
-fn mismatch_notes_and_fixes() {
-    let main = "\nfn main() -> Unit { () }";
-    // `else` のない `if`
-    let c = check(&format!(
-        "fn f(c: Bool) -> Unit {{\n  if c {{ 1 }}\n}}{main}"
-    ));
-    let d = c.only(DiagCode::E0401);
-    assert_eq!(d.notes, vec![extra(DiagCode::E0401, "because_if_no_else")]);
-    // Float の位置の整数リテラル
-    let c = check(&format!("fn f(x: Float) -> Float {{\n  x * 2\n}}{main}"));
-    let d = c.only(DiagCode::E0401);
-    assert!(d.helps.iter().any(|h| h.contains("`2.0`")), "{d:#?}");
-    // 文字列の `+`
-    let c = check(&format!("fn f() -> String {{\n  \"a\" + 1\n}}{main}"));
-    assert_eq!(c.diags.len(), 1, "{:#?}", c.diags);
-    let d = &c.diags[0];
-    assert!(matches!(d.code, Some(DiagCode::E0401 | DiagCode::E0405)));
-    assert!(d.helps.iter().any(|h| h.contains("Int.toString")), "{d:#?}");
-    // 呼び出しの引数は、宣言の引数の型を補助の位置に示す
-    let c = check(&format!(
-        "fn g(n: Int) -> Int {{ n }}\nfn f() -> Int {{\n  g(\"s\")\n}}{main}"
-    ));
-    let d = c.only(DiagCode::E0401);
-    assert_eq!(c.text(d.primary.as_ref().unwrap().span), "\"s\"");
-    assert_eq!(c.text(d.secondary[0].span), "Int");
-}
-
-#[test]
-fn unreachable_arm_points_at_the_covering_arm() {
-    let c = check(
-        "fn f(n: Int) -> String {
-  match n {
-    _ => \"other\"
-    0 => \"zero\"
-  }
-}
-fn main() -> Unit { () }",
-    );
-    let d = c.only(DiagCode::E0602);
-    assert_eq!(d.secondary.len(), 1);
-    assert_eq!(c.text(d.secondary[0].span), "_");
-}
-
-#[test]
-fn non_exhaustive_match_shows_a_witness() {
-    let c = check(
-        "type Tree[T] {
-  Leaf
-  Node(Tree[T], T, Tree[T])
-}
-fn f(t: Tree[Int]) -> Int {
-  match t {
-    Tree.Leaf => 0
-  }
-}
-fn main() -> Unit { () }",
-    );
-    let d = c.only(DiagCode::E0601);
-    assert!(
-        d.primary
-            .as_ref()
-            .unwrap()
-            .text
-            .contains("Tree.Node(_, _, _)"),
-        "{d:#?}"
-    );
-}
-
-#[test]
-fn equality_summary_of_declarations() {
-    // 等値の型の要約（01-06「等値の型」、ADR 0082）。Box[T] は T に依存し、Nest は再帰の先で
-    // 型引数が変わっても展開せずに判定する。Holder は関数の型を含む。
-    let main = "\nfn main() -> Unit { () }";
-    let decls = "type Box[T] {\n  Box(T)\n}
-type Nest[T] {\n  Leaf(T)\n  Deeper(Nest[List[T]])\n}
-type Holder {\n  Holder(fn() -> Unit)\n}\n";
-    let ok = check(&format!(
-        "{decls}fn f(a: Box[Int], b: Nest[String]) -> Bool {{\n  a == a && b == b\n}}{main}"
-    ));
-    assert!(ok.diags.is_empty(), "{:#?}", ok.diags);
-    for (params, body) in [
-        ("a: Box[fn() -> Unit]", "a == a"),
-        ("a: Nest[IoError]", "a == a"),
-        ("a: Holder", "a == a"),
-        ("a: Option[Box[Holder]]", "a != a"),
+fn constant_collections_numeric_semantics_and_golden_examples() {
+    for s in [
+        include_str!("../../testdata/types/first-release-records.bnt"),
+        include_str!("../../testdata/types/first-release-constants.bnt"),
+        include_str!("../../testdata/types/first-release-aliases.bnt"),
+        include_str!("../../testdata/types/first-release-decimal.bnt"),
     ] {
-        let c = check(&format!(
-            "{decls}fn f({params}) -> Bool {{\n  {body}\n}}{main}"
-        ));
-        c.only(DiagCode::E0406);
+        let (l, _, t, d) = check_files(&[("main.bnt", s)], true);
+        assert!(d.is_empty(), "{d:#?}");
+        assert_output_nodes(&l, &t);
     }
-}
-
-// ---------------- 深い入れ子と長い並び ----------------
-
-fn user_parses(src: &str) -> bool {
-    let mut ids = IdGen::new();
-    parse_one(FileId(0), SourceKind::User, src, &mut ids).is_some()
+    let (_, r, t) = clean(
+        r#"import Benitoite.Map
+import Benitoite.Set
+const nested: Set[List[Integer]] = Set.fromList([[1, 2], [1], [0]])
+const tagged: Set[Option[Integer]] = Set.fromList([Option.None, Option.Some(3), Option.Some(1)])
+const sets: Set[Set[Integer]] = Set.fromList([Set.fromList([2]), Set.empty()])
+const maps: Set[Map[Integer, Integer]] = Set.fromList([Map.fromList([Pair(2, 5)]), Map.empty()])
+const emptyMap: Map[Integer, String] = Map.empty()
+const forward: Integer = later + 1
+const later: Integer = 3
+const ieee: String = "${0.0 / 0.0} ${1.0 / 0.0} ${-1.0 / 0.0}"
+const unordered: Boolean = [0.0 / 0.0] = [0.0 / 0.0]
+const zeroSigns: Boolean = -0.0 = 0.0
+const shortCircuit: Boolean = false and (1 div 0 = 0)
+const literal: Character = 'あ'
+const pair: Pair[Integer, String] = Pair(1, "a")
+"#,
+    );
+    assert!(matches!(constant(&r, &t, "forward"), V::Integer(4)));
+    assert!(matches!(constant(&r,&t,"ieee"),V::String(s) if s=="NaN Infinity -Infinity"));
+    assert!(matches!(constant(&r, &t, "unordered"), V::Boolean(false)));
+    assert!(matches!(constant(&r, &t, "zeroSigns"), V::Boolean(true)));
+    assert!(matches!(
+        constant(&r, &t, "shortCircuit"),
+        V::Boolean(false)
+    ));
+    let V::Set(v) = constant(&r, &t, "nested") else {
+        panic!()
+    };
+    assert!(matches!(&v[0],V::List(v) if matches!(v.as_slice(),[V::Integer(0)])));
+    assert!(matches!(&v[1],V::List(v) if matches!(v.as_slice(),[V::Integer(1)])));
+    let V::Set(v) = constant(&r, &t, "tagged") else {
+        panic!()
+    };
+    assert!(matches!(&v[0],V::Ctor { tag:0,args,.. } if matches!(args.as_slice(),[V::Integer(1)])));
+    assert!(matches!(&v[2], V::Ctor { tag: 1, .. }));
+    let V::Set(v) = constant(&r, &t, "sets") else {
+        panic!()
+    };
+    assert!(matches!(&v[0],V::Set(s) if s.is_empty()));
+    let V::Set(v) = constant(&r, &t, "maps") else {
+        panic!()
+    };
+    assert!(matches!(&v[0],V::Map(s) if s.is_empty()));
+    expect(
+        "const a: Integer = -9223372036854775808 div -1\n",
+        &[(C::E0435, 1, 20)],
+    );
+    expect("const a: Decimal = 1m / 0m\n", &[(C::E0435, 1, 20)]);
+    expect(
+        "const a: Decimal = 79228162514264337593543950335m + 1m\n",
+        &[(C::E0435, 1, 20)],
+    );
 }
 
 #[test]
-fn nesting_up_to_the_parser_limit() {
-    // 構文解析器が受け付ける最も深い入れ子（02-03「入れ子の深さ」）を、テストのスレッドの既定の
-    // スタックで型検査できることを確かめる（00-02「再帰の深さ」）。受け付ける最大の段数を二分探索で求める。
-    type Make = fn(usize) -> String;
-    let body = |e: String| {
-        format!("fn f(x: Int, a: Bool) -> Int {{\n  {e}\n}}\nfn main() -> Unit {{ () }}\n")
+fn source_diagnostics_and_constant_type_parameters() {
+    // 通常のソースでは自由な T を名前解決が拒む。凍結した表の境界に型パラメータが
+    // 渡された場合も E0434 にする契約を、同じ読み込みと名前解決から作った表で確かめる。
+    let (l, mut r, _) = clean("type Identity[T] = T\nconst a: Integer = 1\n");
+    let Item::Const(c) = &l.asts[0].decls[1].item else {
+        panic!()
     };
-    let cases: Vec<(&str, Make)> = vec![
-        ("parens", |n| format!("{}x{}", "(".repeat(n), ")".repeat(n))),
-        ("blocks", |n| {
-            format!("{}x{}", "{ ".repeat(n), " }".repeat(n))
-        }),
-        ("calls", |n| {
-            format!("{}x{}", "f(".repeat(n), ", a)".repeat(n))
-        }),
-        ("operators", |n| format!("x{}", " + x".repeat(n))),
-        ("negation", |n| format!("{}x", "-".repeat(n))),
-        ("pipes", |n| format!("x{}", " |> f(a)".repeat(n))),
-        ("placeholders", |n| {
-            format!("{}x{}", "f(_, a)(".repeat(n), ")".repeat(n))
-        }),
-        ("if", |n| {
-            format!("{}x{}", "if a { ".repeat(n), " } else { x }".repeat(n))
-        }),
-        ("else if", |n| {
-            format!("if a {{ x }}{} else {{ x }}", " else if a { x }".repeat(n))
-        }),
-        ("match", |n| {
-            format!("{}x{}", "match x { y => ".repeat(n), " }".repeat(n))
-        }),
-        ("lambda", |n| {
-            format!("let g = {}x{}\n  x", "fn(y) { ".repeat(n), " }".repeat(n))
-        }),
-        ("let", |n| {
-            format!("{}x{}", "{ let y = ".repeat(n), "\n y }".repeat(n))
-        }),
-        ("lists", |n| {
-            format!("let l = {}x{}\n  x", "[".repeat(n), "]".repeat(n))
-        }),
-        ("list elements", |n| {
-            format!("let l = [{}]\n  x", vec!["x"; n].join(", "))
-        }),
-        ("statements", |n| {
-            format!("{}x", "let y = x + 1\n  ".repeat(n))
-        }),
-        ("match arms", |n| {
-            let arms: String = (0..n).map(|i| format!("    {i} => x\n")).collect();
-            format!("match x {{\n{arms}    _ => x\n  }}")
-        }),
-        ("types", |n| {
-            format!("let l: {}Int{} = []\n  x", "List[".repeat(n), "]".repeat(n))
-        }),
-    ];
-    for (name, make) in cases {
-        let (mut lo, mut hi) = (1usize, 1100usize);
-        assert!(user_parses(&body(make(lo))), "{name}");
-        assert!(!user_parses(&body(make(hi))), "{name}");
-        while hi - lo > 1 {
-            let mid = (lo + hi) / 2;
-            if user_parses(&body(make(mid))) {
-                lo = mid;
-            } else {
-                hi = mid;
-            }
-        }
-        let c = check(&body(make(lo)));
-        assert!(c.diags.is_empty(), "{name}: {:#?}", c.diags);
-        assert_tables_cover(&c);
+    let parameter = r
+        .bindings
+        .iter()
+        .find(|(_, b)| matches!(b.kind, crate::resolve::BindingKind::TypeParam { .. }))
+        .unwrap()
+        .0;
+    r.refs.insert(c.ty.id(), parameter);
+    let (_, d) = super::typecheck(&l.modules, &l.asts, &l.sources, &r, false);
+    assert_eq!(d.len(), 1);
+    assert_eq!(d[0].code, Some(C::E0434));
+    let span = d[0].primary.as_ref().unwrap().span;
+    let p = l.sources.get(span.file).unwrap().line_col(span.start);
+    assert_eq!((p.line, p.column), (2, 10));
+    let (_, _, _, d) = check("function f() -> Unit\n bind _ <- (\nend function\n");
+    assert!(d.iter().any(Diagnostic::is_error));
+}
+
+#[test]
+fn effect_flow_direction_call_errors_and_float_fix() {
+    expect(
+        "import Benitoite.Unofficial.IO.Console\nfunction f() -> Unit\n bind x <- lambda() -> Unit uses State Console.writeLine(\"hi\") end lambda\nend function\n",
+        &[(C::E0502, 3, 40)],
+    );
+    let s = "function f(x: Float) -> Unit\nend function\nfunction g() -> Unit\n f(0x10)\nend function\n";
+    let d = expect(s, &[(C::E0401, 4, 4)]);
+    let edit = &d[0].helps[0].edits[0];
+    assert_eq!(edit.replacement, "16.0");
+    assert_eq!(
+        &s[edit.span.start.0 as usize..edit.span.end.0 as usize],
+        "0x10"
+    );
+    let d = expect(
+        "function f(x: Integer) -> Unit\nend function\nfunction g() -> Unit\n f()\nend function\n",
+        &[(C::E0402, 4, 2)],
+    );
+    assert!(d[0].message.contains("takes 1"), "{d:#?}");
+    assert!(d[0].message.contains("0 were supplied"));
+    expect(
+        "function f() -> Unit\n bind g <- lambda(x) return x(x) end lambda\nend function\n",
+        &[(C::E0404, 2, 31)],
+    );
+    clean(
+        "function f() -> Unit\n bind g <- lambda() () end lambda\n bind _ <- g()\nend function\n",
+    );
+    clean(
+        "function f() -> Boolean\n return match Byte.fromInteger(1) with\n  case Option.Some(b) -> b < b or b = b\n  case Option.None -> false\n end match\nend function\n",
+    );
+}
+// return の値が呼び出しのとき、戻り値の型の食い違いを、関数でない値の呼び出し（E0403）ではなく
+// return の理由の型の食い違い（E0401）として報告する（設計書 02-05「診断」、FE403）。
+#[test]
+fn return_call_mismatch_reports_return_reason() {
+    for (s, line, col, expected, found) in [
+        (
+            "function main() -> Unit\n return Integer.toString(1)\nend function\n",
+            2,
+            9,
+            "Unit",
+            "String",
+        ),
+        (
+            "function main() -> Unit\n return List.reverse([1])\nend function\n",
+            2,
+            9,
+            "Unit",
+            "List[Integer]",
+        ),
+        (
+            "function rev[T](xs: List[T]) -> List[T]\n return xs\nend function\nfunction f() -> String\n return rev([1])\nend function\n",
+            5,
+            9,
+            "String",
+            "List[Integer]",
+        ),
+    ] {
+        let d = expect(s, &[(C::E0401, line, col)]);
+        let text = d[0].primary.as_ref().unwrap().text.clone();
+        assert!(text.contains(expected) && text.contains(found), "{text}");
+        assert!(
+            d[0].notes
+                .iter()
+                .any(|n| n.contains("declared return type")),
+            "{:?}",
+            d[0].notes
+        );
     }
-    // 深いパターンと、それに合う深い型の対象（パターンの検査も深い型の上で行う）
-    let deep_match = |n: usize| {
-        format!(
-            "fn f(x: {}Int{}) -> Int {{\n  match x {{ {}y{} => y\n _ => 0 }}\n}}\nfn main() -> Unit {{ () }}\n",
-            "Option[".repeat(n),
-            "]".repeat(n),
-            "Some(".repeat(n),
-            ")".repeat(n)
-        )
-    };
-    let (mut lo, mut hi) = (1usize, 1100usize);
-    assert!(!user_parses(&deep_match(hi)));
-    while hi - lo > 1 {
-        let mid = (lo + hi) / 2;
-        if user_parses(&deep_match(mid)) {
-            lo = mid;
-        } else {
-            hi = mid;
-        }
-    }
-    let c = check(&deep_match(lo));
-    assert!(c.diags.is_empty(), "{:#?}", c.diags);
-    assert_tables_cover(&c);
+    expect(
+        "function f() -> Unit\n bind x <- 1\n return x()\nend function\n",
+        &[(C::E0403, 3, 9)],
+    );
+}
+// 宣言の戻り値の型で決まる総称の呼び出しは、戻り値の型をその場で比べ、引数の位置の誤りと
+// 修正案を保つ（設計書 02-05「制約の解決」の手順 1、FE403 の退行の防止）。
+#[test]
+fn return_call_keeps_argument_position_diagnostics() {
+    let id = "function id[T](x: T) -> T\n return x\nend function\n";
+    let d = expect(
+        &format!("{id}function d() -> Float\n return id(1)\nend function\n"),
+        &[(C::E0401, 5, 12)],
+    );
+    assert!(!d[0].helps.is_empty(), "{:?}", d[0]);
+    let d = expect(
+        "function e() -> Option[Float]\n return Option.Some(1)\nend function\n",
+        &[(C::E0401, 2, 21)],
+    );
+    assert!(!d[0].helps.is_empty(), "{:?}", d[0]);
+    expect(
+        "function j(xs: List[Integer]) -> List[String]\n return List.map(xs, lambda(n) return n + 1 end lambda)\nend function\n",
+        &[(C::E0401, 2, 39)],
+    );
+    expect(
+        "function g() -> Unit\n bind o: Option[String] <- Option.Some(1)\nend function\n",
+        &[(C::E0401, 2, 40)],
+    );
 }

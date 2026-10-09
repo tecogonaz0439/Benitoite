@@ -1,9 +1,12 @@
 // spec: 01-07 外部から受け取る文字列
 // spec: 01-07 IO を行う組み込み関数
 // spec: 01-04 String
-fn main() -> Unit uses IO {
-  match File.readText("input.txt") {
-    Ok(_) => Console.println("unexpected success")
-    Err(_) => Console.println("invalid UTF-8 rejected")
-  }
-}
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function main() -> Unit uses Console.Write, File.Read
+  return match File.readText("input.txt") with
+    case Result.Ok(_) -> Console.writeLine("unexpected success")
+    case Result.Error(_) -> Console.writeLine("invalid UTF-8 rejected")
+  end match
+end function

@@ -1,23 +1,25 @@
 // spec: 01-04 Float
 // spec: 01-04 型の変換
-fn show_truncate(value: Float) -> String {
-  match Float.truncate(value) {
-    Some(number) => "Some(" + Int.toString(number) + ")"
-    None => "None"
-  }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  Console.println(Float.toString(Float.floor(-0.0)))
-  Console.println(Float.toString(Float.floor(-0.5)))
-  Console.println(Float.toString(Float.ceil(-0.0)))
-  Console.println(Float.toString(Float.ceil(-0.5)))
-  Console.println(Float.toString(Float.round(0.0)))
-  Console.println(Float.toString(Float.round(-0.4)))
-  Console.println(Float.toString(Float.round(0.5)))
-  Console.println(Float.toString(Float.round(-0.5)))
-  Console.println(show_truncate(3.9))
-  Console.println(show_truncate(1.0 / 0.0))
-  Console.println(show_truncate(0.0 / 0.0))
-  Console.println(show_truncate(9223372036854775808.0))
-}
+function show_truncate(value: Float) -> String
+  return match Float.truncate(value) with
+    case Option.Some(number) -> "Some(" + Integer.toString(number) + ")"
+    case Option.None -> "None"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Float.toString(Float.floor(-0.0)))
+  Console.writeLine(Float.toString(Float.floor(-0.5)))
+  Console.writeLine(Float.toString(Float.ceiling(-0.0)))
+  Console.writeLine(Float.toString(Float.ceiling(-0.5)))
+  Console.writeLine(Float.toString(Float.round(0.0)))
+  Console.writeLine(Float.toString(Float.round(-0.4)))
+  Console.writeLine(Float.toString(Float.round(0.5)))
+  Console.writeLine(Float.toString(Float.round(-0.5)))
+  Console.writeLine(show_truncate(3.9))
+  Console.writeLine(show_truncate(1.0 / 0.0))
+  Console.writeLine(show_truncate(0.0 / 0.0))
+  return Console.writeLine(show_truncate(9223372036854775808.0))
+end function

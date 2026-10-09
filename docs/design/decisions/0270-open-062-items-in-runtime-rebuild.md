@@ -1,6 +1,6 @@
 # 0270. OPEN-062 の項目を、作り直しの共通の仕組みで防ぐものと、再現テストで確かめるものに分ける
 
-- 状態: 採択
+- 状態: 採択（決定 3 が U1 の範囲とした R08 を、[0316](0316-no-compile-time-regex-check-in-first-release.md) で初回リリース版では対処しないとした）
 - 日付: 2026-09-30
 - 関連章: [仮想機械](../02-impl/02-08-vm.md), [ランタイム](../02-impl/02-09-runtime.md), [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)
 - 関連する未決事項: [OPEN-062](../open-issues.md#open-062)

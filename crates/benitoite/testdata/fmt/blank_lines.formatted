@@ -1,0 +1,25 @@
+// 06-03「空の行」
+import Benitoite.IO.Console
+import Benitoite.IO.File
+
+import Benitoite.Text
+
+const a: Integer = 1
+const b: Integer = 2
+
+function f(x: Integer) -> Integer
+  bind y <- x + a
+
+  bind z <- y + b
+
+  return match z with
+    case 1 -> y
+
+    case _ -> z
+  end match
+end function
+
+@test
+function g() -> Unit
+  ()
+end function

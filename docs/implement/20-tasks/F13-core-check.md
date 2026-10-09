@@ -1,6 +1,6 @@
 # F13 コア IR の検査器
 
-- 依存する作業: C02, [R08](R08-builtin-table.md)（ソースに宣言のない組み込みの関数の型 `builtins::table::builtin_scheme` の中身を R08 が書く）
+- 依存する作業: C02, [F12](F12-decision-tree.md)（`Ty::subst`・`EffectSet::subst`・`AdtTable::field_types` の中身を F12 が書く）, [R08](R08-builtin-table.md)（ソースに宣言のない組み込みの関数の型 `builtins::table::builtin_scheme` の中身を R08 が書く）
 - 難易度: 4（1〜5。README の「作業一覧」）
 - 規模の見込み: 中（500〜1500 行）（テストを含む Rust の行数の目安）
 - ブランチ: impl/F13-core-check

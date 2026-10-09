@@ -1,45 +1,47 @@
 // spec: 01-05 prelude が定める型
-fn show_option(value: Option[Int]) -> String {
-  match value {
-    Some(number) => "Some(" + Int.toString(number) + ")"
-    None => "None"
-  }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn show_result(value: Result[Int, String]) -> String {
-  match value {
-    Ok(number) => "Ok(" + Int.toString(number) + ")"
-    Err(message) => "Err(" + message + ")"
-  }
-}
+function show_option(value: Option[Integer]) -> String
+  return match value with
+    case Option.Some(number) -> "Some(" + Integer.toString(number) + ")"
+    case Option.None -> "None"
+  end match
+end function
 
-fn main() -> Unit uses IO {
-  Console.println(show_option(Option.map(Some(2), fn(value) { value * 3 })))
-  Console.println(show_option(Option.map(None, fn(value: Int) { value * 3 })))
-  Console.println(show_option(Option.andThen(Some(2), fn(value) { Some(value + 1) })))
-  Console.println(show_option(Option.andThen(None, fn(value: Int) { Some(value + 1) })))
-  Console.println(Int.toString(Option.unwrapOr(Some(4), 9)))
-  Console.println(Int.toString(Option.unwrapOr(None, 9)))
-  Console.println(if Option.isSome(Some(1)) { "true" } else { "false" })
-  Console.println(if Option.isNone(None) { "true" } else { "false" })
-  Console.println(show_result(Option.okOr(Some(5), "missing")))
-  Console.println(show_result(Option.okOr(None, "missing")))
-  Console.println(show_result(Result.map(Ok(2), fn(value) { value + 3 })))
-  Console.println(show_result(Result.map(Err("bad"), fn(value: Int) { value + 3 })))
-  Console.println(show_result(Result.mapErr(Ok(3), fn(message: String) { message + "!" })))
-  Console.println(show_result(Result.mapErr(Err("bad"), fn(message) { message + "!" })))
-  Console.println(show_result(Result.andThen(Ok(4), fn(value) { Ok(value + 1) })))
-  Console.println(show_result(Result.andThen(Err("bad"), fn(value: Int) { Ok(value + 1) })))
-  Console.println(Int.toString(Result.unwrapOr(Ok(6), 9)))
-  Console.println(Int.toString(Result.unwrapOr(Err("bad"), 9)))
-  Console.println(if Result.isOk(Ok(1)) { "true" } else { "false" })
-  Console.println(if Result.isErr(Err("bad")) { "true" } else { "false" })
-  Console.println(match Result.ok(Ok(7)) {
-    Some(value) => Int.toString(value)
-    None => "None"
-  })
-  Console.println(match Result.ok(Err("bad")) {
-    Some(value) => Int.toString(value)
-    None => "None"
-  })
-}
+function show_result(value: Result[Integer, String]) -> String
+  return match value with
+    case Result.Ok(number) -> "Ok(" + Integer.toString(number) + ")"
+    case Result.Error(message) -> "Err(" + message + ")"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(show_option(Option.map(Option.Some(2), lambda(value) return value * 3 end lambda)))
+  Console.writeLine(show_option(Option.map(Option.None, lambda(value: Integer) return value * 3 end lambda)))
+  Console.writeLine(show_option(Option.andThen(Option.Some(2), lambda(value) return Option.Some(value + 1) end lambda)))
+  Console.writeLine(show_option(Option.andThen(Option.None, lambda(value: Integer) return Option.Some(value + 1) end lambda)))
+  Console.writeLine(Integer.toString(Option.unwrapOr(Option.Some(4), 9)))
+  Console.writeLine(Integer.toString(Option.unwrapOr(Option.None, 9)))
+  Console.writeLine(if Option.isSome(Option.Some(1)) then "true" else "false" end if)
+  Console.writeLine(if Option.isNone(Option.None) then "true" else "false" end if)
+  Console.writeLine(show_result(Option.okOr(Option.Some(5), "missing")))
+  Console.writeLine(show_result(Option.okOr(Option.None, "missing")))
+  Console.writeLine(show_result(Result.map(Result.Ok(2), lambda(value) return value + 3 end lambda)))
+  Console.writeLine(show_result(Result.map(Result.Error("bad"), lambda(value: Integer) return value + 3 end lambda)))
+  Console.writeLine(show_result(Result.mapError(Result.Ok(3), lambda(message: String) return message + "!" end lambda)))
+  Console.writeLine(show_result(Result.mapError(Result.Error("bad"), lambda(message) return message + "!" end lambda)))
+  Console.writeLine(show_result(Result.andThen(Result.Ok(4), lambda(value) return Result.Ok(value + 1) end lambda)))
+  Console.writeLine(show_result(Result.andThen(Result.Error("bad"), lambda(value: Integer) return Result.Ok(value + 1) end lambda)))
+  Console.writeLine(Integer.toString(Result.unwrapOr(Result.Ok(6), 9)))
+  Console.writeLine(Integer.toString(Result.unwrapOr(Result.Error("bad"), 9)))
+  Console.writeLine(if Result.isOk(Result.Ok(1)) then "true" else "false" end if)
+  Console.writeLine(if Result.isError(Result.Error("bad")) then "true" else "false" end if)
+  Console.writeLine(match Result.ok(Result.Ok(7)) with
+    case Option.Some(value) -> Integer.toString(value)
+    case Option.None -> "None"
+  end match)
+  return Console.writeLine(match Result.ok(Result.Error("bad")) with
+    case Option.Some(value) -> Integer.toString(value)
+    case Option.None -> "None"
+  end match)
+end function

@@ -1,8 +1,8 @@
 # テキストとデータの処理
 
 - 状態: 確定
-- 関連ADR: [0006](../decisions/0006-basic-types-semantics.md), [0012](../decisions/0012-invalid-utf8-input.md), [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0101](../decisions/0101-unabbreviated-names.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0107](../decisions/0107-bytes.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0173](../decisions/0173-time-format-specifiers.md), [0248](../decisions/0248-regex-byte-position-function-names.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)
-- 未決事項: [OPEN-043](../open-issues.md#open-043), [OPEN-062](../open-issues.md#open-062)
+- 関連ADR: [0006](../decisions/0006-basic-types-semantics.md), [0012](../decisions/0012-invalid-utf8-input.md), [0056](../decisions/0056-record-fields-via-accessor-functions.md), [0101](../decisions/0101-unabbreviated-names.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0107](../decisions/0107-bytes.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0173](../decisions/0173-time-format-specifiers.md), [0248](../decisions/0248-regex-byte-position-function-names.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0316](../decisions/0316-no-compile-time-regex-check-in-first-release.md), [0322](../decisions/0322-stdlib-details-from-u3-preflight.md), [0328](../decisions/0328-path-and-json-details-from-u3-preflight.md), [0329](../decisions/0329-csv-and-time-details-from-u3-preflight.md)
+- 未決事項: [OPEN-043](../open-issues.md#open-043), [OPEN-062](../open-issues.md#open-062), [OPEN-086](../open-issues.md#open-086), [OPEN-108](../open-issues.md#open-108)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 16
 
 ## 目的と範囲
@@ -54,18 +54,19 @@
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Path.join(base, child)` | `function(String, String) -> String` | `base` の後に区切りを挟んで `child` を続けたパス。`child` が絶対パスなら `child` |
+| `Path.join(base, child)` | `function(String, String) -> String` | `base` の後に区切りを挟んで `child` を続けたパス。`base` が区切りで終わるときは区切りを重ねない。`base` が空なら `child`。`child` が絶対パスなら `child` |
 | `Path.joinAll(parts)` | `function(List[String]) -> String` | `parts` を先頭から順に `Path.join` でつないだパス。空のリストなら `""` |
 | `Path.parent(p)` | `function(String) -> Option[String]` | 最後の構成要素を除いたパス。根だけのパスと空のパスなら `Option.None` |
 | `Path.fileName(p)` | `function(String) -> Option[String]` | 最後の構成要素。最後が `..` のとき、根だけのとき、空のときは `Option.None` |
 | `Path.stem(p)` | `function(String) -> Option[String]` | `Path.fileName(p)` から、最後の `.` とその後を除いた部分。`.` で始まり、ほかに `.` を含まない名前（`.bashrc`）は、名前全体 |
 | `Path.extension(p)` | `function(String) -> Option[String]` | `Path.fileName(p)` の最後の `.` より後の部分（`.` を含まない）。拡張子がなければ `Option.None` |
-| `Path.withExtension(p, extension)` | `function(String, String) -> String` | 拡張子を `extension` に替えたパス。`extension` が `""` なら拡張子を除く |
+| `Path.withExtension(p, extension)` | `function(String, String) -> String` | 拡張子を `extension` に替えたパス。`extension` が `""` なら拡張子を除く。`extension` が区切りを含むときは、実行時エラー（引数が定義域の外） |
 | `Path.isAbsolute(p)` | `function(String) -> Boolean` | 絶対パスか |
 | `Path.components(p)` | `function(String) -> List[String]` | 構成要素の並び。絶対パスでは、先頭に根（Unix では `/`）を置く。`.` の構成要素と、重なった区切りは除く |
 | `Path.normalize(p)` | `function(String) -> String` | `.` の構成要素を除き、`..` を直前の構成要素と打ち消したパス。打ち消す構成要素がない `..` は、相対パスでは残し、絶対パスでは除く。結果が空なら `"."` |
 
 - `Path.normalize` は字面だけで打ち消すので、シンボリックリンクを含むパスでは、ファイルシステムの上の同じ場所を指すとは限らない。シンボリックリンクを解決した絶対パスは `File.canonicalize`（[IO のモジュール](03-07-io-modules.md)）で得る。
+- `Path.join` は、`child` が空なら `base` の後に区切りを付けたパスを返す（`Path.join("a", "")` は `"a/"`。`base` が空か区切りで終わるときは `base` のまま）。表の `Path.join` の空の `base` と、`Path.withExtension` の区切りを含む `extension` の扱いは、[ADR 0328](../decisions/0328-path-and-json-details-from-u3-preflight.md) の決定 1・2 による。
 - 相対パスを絶対パスにするには、`Process.workingDirectory`（[IO のモジュール](03-07-io-modules.md)）と `Path.join` を組み合わせる。
 
 ### Json
@@ -90,7 +91,7 @@ record ParseError
 end record
 ```
 
-- 小数点と指数を持たない数で、`Integer` の範囲に収まるものは `Json.Value.Integer`、それ以外の数は `Json.Value.Float` とする。`Float` の範囲も超える数は、解析の誤りとする。
+- 小数点と指数を持たない数で、`Integer` の範囲に収まるものは `Json.Value.Integer`、それ以外の数は `Json.Value.Float` とする。`Float` の範囲も超える数は、解析の誤りとする。整数か浮動小数点かは数の元の字面で決めるので、`-0` は `Json.Value.Integer(0)`、`-0.0` は `Json.Value.Float(-0.0)` になる（[ADR 0322](../decisions/0322-stdlib-details-from-u3-preflight.md) の決定 1）。
 - オブジェクトは `Map` で表すので、メンバは鍵の順序で並ぶ。入力に同じ鍵が二つ以上あれば、後のメンバの値を使う（`Map.fromList` と同じ）。
 - `Json.Value` は等値の型である。`Json.Value.Float` を含むので、鍵の型ではない。
 - `line` と `column` は 1 から数える。`column` は、その行の中の文字位置に 1 を足した値である。
@@ -110,6 +111,7 @@ end record
 | `Json.asObject(value)` | `function(Json.Value) -> Option[Map[String, Json.Value]]` | `Json.Value.Object` の中身 |
 
 - `Json.stringify` と `Json.stringifyPretty` は、メンバを鍵の順序で書くので、同じ値からは同じ文字列を作る。文字列の中の制御文字、`"`、`\` はエスケープする。それ以外の文字は、エスケープせずにそのまま書く。
+- `Json.stringify` と `Json.stringifyPretty` は、有限の `Float` を、必ず小数点（`.`）か指数を含む形で書く（`1.0`、`-0.0`、`1e+300` など）。書いた文字列を読み直すと、同じ `Json.Value.Float` になる（[ADR 0328](../decisions/0328-path-and-json-details-from-u3-preflight.md) の決定 3）。
 - JSON は NaN と無限大を表せない。`Json.stringify` と `Json.stringifyPretty` は、これらの `Float` を `null` と書く。値の失敗を返さないのは、文字列化をどの値にも使えるようにするためである。
 - 入力は `String` なので、正しくない UTF-8 は `Json.parse` に届かない。ファイルの内容が正しい UTF-8 でないときは、`File.readText` が失敗する（[ADR 0012](../decisions/0012-invalid-utf8-input.md)）。
 
@@ -155,7 +157,7 @@ end function
 - `Regex.replaceFirst` と `Regex.replaceAll` の `replacement` は、書いたとおりの文字列として扱い、`$1` のようなグループの参照を展開しない。Benitoite の文字列リテラルでは `$` が文字列補間を始めるので、参照の記法を持ち込むと書き誤りを招く。グループを使って置き換えるときは、`Regex.replaceAllWith` と `Regex.group` を使う。
 - `Regex.replaceAllWith` は、受け取った関数を呼ぶので、標準ライブラリのソースで書く。`Regex.findAll` で求めた一致を左から順に `f` に渡し、`Regex.matchByteStart`・`Regex.matchByteEnd` の位置で元の文字列と置き換えた文字列をつなぐ（[標準ライブラリ](03-06-stdlib.md)の「関数を引数にとる関数の共通の規則」）。ほかの関数は組み込みで実装する。
 - 正規表現は、バックスラッシュを多く含むので、raw 文字列（`r"\d+"`。[字句構造](../01-spec/01-01-lexical.md)、[ADR 0122](../decisions/0122-multiline-and-raw-strings.md)）で書くことを勧める。
-- 【方針】`Regex.compile` の引数が文字列リテラルか定数式のときは、処理系は検査の段で正規表現を組み立て、構文の誤りを検査の誤りとして報告する。実行する前に見つけられる誤りを実行の前に報告するためである（原則 1）。この場合も、`Regex.compile` の型は変わらない。
+- 【方針】処理系は、検査の段で正規表現の構文を確かめない。`Regex.compile` の引数が文字列リテラルか定数式であっても、組み立ては実行時に行い、構文の誤りは `Regex.compile` が返す `Result.Error` で分かる。処理系の検査の段と標準ライブラリの個々の関数との結び付きを、初回リリース版ではできるだけ少なくするためであり、設計原則 1 に対する例外である（[ADR 0316](../decisions/0316-no-compile-time-regex-check-in-first-release.md)）。
 
 ```text
 import Benitoite.Regex
@@ -186,10 +188,11 @@ end record
 | `Csv.formatWith(rows, delimiter)` | `function(List[List[String]], Character) -> String` | 区切りを `delimiter` とした `Csv.format` |
 
 - 行の終わりは、LF と CR LF のどちらも受け付ける。最後の行の後の改行はあってもなくてもよい。引用符で囲んだフィールドの中の改行と、`""`（引用符一つ）を受け付ける。
-- 閉じていない引用符は、解析の誤りとする。`line` は、誤りを見つけた行の番号（1 から数える）である。
+- 閉じていない引用符は、解析の誤りとする。`line` は、誤りを含むレコードを始めた行の番号（1 から数える）である。引用符の中の改行でレコードが複数行にまたがるときも、引用符を開いたレコードを始めた行を指す。`Csv.parseWithHeader` で、複数行にまたがるレコードのフィールドの数が見出しと違うときも、そのレコードを始めた行を指す（[ADR 0329](../decisions/0329-csv-and-time-details-from-u3-preflight.md) の決定 1）。
 - `Csv.parseWithHeader` は、見出しに同じ名前が二つ以上あるとき、見出しとフィールドの数が違う行があるときを、解析の誤りとする。`Csv.parse` は、行ごとにフィールドの数が違ってもよい。
-- `Csv.format` は、区切り、引用符、CR、LF を含むフィールドを引用符で囲む。行の終わりは LF とする（RFC 4180 は CR LF とするが、スクリプトが扱うファイルとの揃いを優先する）。
+- `Csv.format` は、区切り、引用符、CR、LF を含むフィールドを引用符で囲む。行の終わりは LF とする（RFC 4180 は CR LF とするが、スクリプトが扱うファイルとの揃いを優先する）。空のフィールド一つだけの行（`[""]`）は、引用符で囲んで `""` と書く（`Csv.parse` は空の行を飛ばすので、空の行に書くと読み直したときに行が消える）。フィールドのない行（`[]`）は空の行に書く（[ADR 0329](../decisions/0329-csv-and-time-details-from-u3-preflight.md) の決定 2）。
 - `delimiter` に引用符（`"`）、CR、LF を指定すると、実行時エラー（引数が定義域の外。[評価意味論](../01-spec/01-08-evaluation.md)）とする。
+- `Csv.parseWith` の `delimiter` は ASCII の文字に限る。ASCII でない文字を指定すると、実行時エラー（引数が定義域の外）とする（[ADR 0322](../decisions/0322-stdlib-details-from-u3-preflight.md) の決定 2）。
 
 ### Time
 
@@ -225,13 +228,14 @@ end record
 | `Time.addMilliseconds(t, milliseconds)` | `function(Time.Instant, Integer) -> Time.Instant` | `t` の `milliseconds` ミリ秒後の時刻 |
 | `Time.differenceMilliseconds(a, b)` | `function(Time.Instant, Time.Instant) -> Integer` | `a` から `b` を引いた経過のミリ秒数（負の無限大の向きへ切り捨てる） |
 | `Time.toDateTime(t, offsetMinutes)` | `function(Time.Instant, Integer) -> Time.DateTime` | 時差 `offsetMinutes` 分の地域で見た `t` の日付と時刻 |
-| `Time.fromDateTime(dt)` | `function(Time.DateTime) -> Result[Time.Instant, String]` | `dt` が表す時刻。存在しない日付（2 月 30 日など）や範囲の外の値は `Result.Error` |
+| `Time.fromDateTime(dt)` | `function(Time.DateTime) -> Result[Time.Instant, String]` | `dt` が表す時刻。存在しない日付（2 月 30 日など）や範囲の外の値は `Result.Error`。ただし `offsetMinutes` の範囲の外は実行時エラー（下の箇条） |
 | `Time.formatISO8601(t, offsetMinutes)` | `function(Time.Instant, Integer) -> String` | ISO 8601 の形の文字列（`2026-09-28T12:34:56.789+09:00`）。時差が 0 なら末尾を `Z` にする。秒の端数は、0 でなければ必要な桁まで書く |
-| `Time.parseISO8601(text)` | `function(String) -> Result[Time.Instant, String]` | ISO 8601 の形の文字列が表す時刻。時差（`+09:00` など）か `Z` を必須とする |
+| `Time.parseISO8601(text)` | `function(String) -> Result[Time.Instant, String]` | ISO 8601 の形の文字列が表す時刻。時差（`+09:00` など）か `Z` を必須とする。受け付ける形は下の箇条 |
 | `Time.format(t, offsetMinutes, pattern)` | `function(Time.Instant, Integer, String) -> Result[String, String]` | `pattern` の指定に従って書いた文字列。`pattern` に知らない指定があれば `Result.Error` |
 
 - `Time.addMilliseconds` などの計算の結果が `Time.Instant` の範囲を超えたときは、実行時エラーとする（`Integer` の溢れと同じ扱い。[基本型の意味論](../01-spec/01-04-types-basic.md)）。
-- `offsetMinutes` は、-1439 以上 1439 以下でなければならない。範囲の外の値を渡すと実行時エラーとする。
+- `offsetMinutes` は、-1439 以上 1439 以下でなければならない。範囲の外の値を渡すと実行時エラーとする。`Time.fromDateTime` に渡す `Time.DateTime` の `offsetMinutes` も同じである（[ADR 0329](../decisions/0329-csv-and-time-details-from-u3-preflight.md) の決定 4）。
+- `Time.parseISO8601` は、実装に使う `jiff` の `Timestamp` の解析が受け付ける形を、そのまま受け付ける（[ADR 0329](../decisions/0329-csv-and-time-details-from-u3-preflight.md) の決定 3）。表の例の形（`2026-09-28T12:34:56.789+09:00`）のほかに、分と秒の省略、区切りを書かない基本形式、秒を含む時差（±25:59:59 まで）、`[Asia/Tokyo]` のような注記（読み飛ばし、タイムゾーンの名前は解決しない）などを受け付ける。秒の `60` は `59` として読む。解析した時刻が `Time.Instant` の範囲の外なら `Result.Error` とする。
 - 【決定】`Time.format` の `pattern` は、strftime の形の指定を使い、次の表の指定だけを受け付ける（[ADR 0173](../decisions/0173-time-format-specifiers.md)）。表にない指定を含む `pattern` には `Result.Error` を返す。`%` で始まらない文字は、そのまま書く。
 
   | 指定 | 書くもの |
@@ -277,7 +281,15 @@ function fingerprint(text: String) -> String
 end function
 ```
 
+### 少しずつ計算するハッシュ（初回リリース版の後）
+
+`Hash.sha256` は `Bytes` を受け取るので、ファイルのハッシュを求めるにはファイル全体を一つの値に読む必要があり、1 GiB を超えるファイルには使えない（[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」）。
+
+【未決】初回リリース版の後に、少しずつ計算する純粋な関数（状態を作る、データを加える、ハッシュ値を取り出す）を加え、`File.readChunk` と組み合わせて大きなファイルのハッシュを求められるようにするかは、[OPEN-086](../open-issues.md#open-086) で決める。
+
 ## 未決事項
 
 - [OPEN-043](../open-issues.md#open-043): UTF-8 以外の文字コードとの変換と、Base64 以外の符号化
 - [OPEN-062](../open-issues.md#open-062): 設計書の 2 回目のレビューで指摘された実行時の振る舞いの再現（R08）
+- [OPEN-086](../open-issues.md#open-086): 開いたリソースへ流す操作の広げ方と、`File.copy` の細部（少しずつ計算するハッシュ）
+- [OPEN-108](../open-issues.md#open-108): JSON とレコードの間の変換を作る仕組み（初回リリース版の後）

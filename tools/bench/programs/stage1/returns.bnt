@@ -1,0 +1,56 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function readCount() -> Result[Integer, String] uses Process.Environment
+  return match List.head(Process.arguments()) with
+    case Option.None -> Result.Error("expected one non-negative integer argument")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.None -> Result.Error("expected one non-negative integer argument")
+      case Option.Some(count) -> if count < 0 then
+        Result.Error("expected one non-negative integer argument")
+      else
+        Result.Ok(count)
+      end if
+    end match
+  end match
+end function
+
+function descend(depth: Integer, size: Integer) -> Integer
+  return if depth = 0 then
+    // 底で大きく確保して要求を立て、以降の戻りでは関数を呼ばない（ADR 0259 の決定 5）。
+    bind values <- List.range(0, size)
+    List.length(values)
+  else
+    descend(depth - 1, size) + 1
+  end if
+end function
+
+// 単一の深さでは List の長さの上限に先に達するため、独立した戻りを繰り返す。
+function repeatReturns(count: Integer, rounds: Integer, total: Integer) -> Integer
+  return if rounds = 0 then total else
+    bind value <- descend(count, count * 128)
+    repeatReturns(count, rounds - 1, total + value)
+  end if
+end function
+
+function readRounds() -> Result[Integer, String] uses Process.Environment
+  return match List.get(Process.arguments(), 1) with
+    case Option.None -> Result.Ok(1)
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.Some(rounds) -> if rounds >= 0 then Result.Ok(rounds) else Result.Error("expected non-negative rounds") end if
+      case Option.None -> Result.Error("expected non-negative rounds")
+    end match
+  end match
+end function
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match readCount() with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(count) -> match readRounds() with
+      case Result.Error(message) -> Result.Error(message)
+      case Result.Ok(rounds) ->
+        Console.writeLine(Integer.toString(repeatReturns(count, rounds, 0)))
+        Result.Ok(())
+    end match
+  end match
+end function

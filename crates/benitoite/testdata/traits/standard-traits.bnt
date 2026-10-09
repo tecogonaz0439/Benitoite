@@ -1,0 +1,13 @@
+// spec: 01-06 標準の型クラス（初回リリース版）
+import Benitoite.Trait
+function pairUp[F[_]: Trait.Monad, A, B](xs: F[A], ys: F[B]) -> F[Pair[A, B]]
+  return Trait.Monad.flatMap(xs, lambda(x)
+    return Trait.Functor.map(ys, lambda(y) return Pair(x, y) end lambda)
+  end lambda)
+end function
+function main() -> Unit
+  bind _ <- Trait.Show.show([Option.Some(Pair(1, "a"))])
+  bind _ <- Trait.Order.compare([1, 2], [1, 3])
+  bind _ <- pairUp([1, 2], ["a", "b"])
+  bind _ <- pairUp(Option.Some(1), Option.Some("a"))
+end function

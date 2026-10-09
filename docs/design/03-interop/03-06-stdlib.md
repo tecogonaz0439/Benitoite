@@ -2,7 +2,7 @@
 
 - 状態: 確定
 - 関連ADR: [0006](../decisions/0006-basic-types-semantics.md), [0007](../decisions/0007-constructors-and-list.md), [0008](../decisions/0008-effect-variables.md), [0009](../decisions/0009-typing-without-type-classes.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0030](../decisions/0030-call-stack-size-limit.md), [0041](../decisions/0041-list-as-linked-list.md), [0042](../decisions/0042-minimal-prelude-scope.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0077](../decisions/0077-abolish-go-layer.md), [0091](../decisions/0091-acronyms-in-uppercase.md), [0096](../decisions/0096-explicit-return.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0101](../decisions/0101-unabbreviated-names.md), [0102](../decisions/0102-pair-and-triple.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0104](../decisions/0104-list-as-persistent-vector.md), [0105](../decisions/0105-byte-type.md), [0106](../decisions/0106-bitwise-functions.md), [0107](../decisions/0107-bytes.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0115](../decisions/0115-structured-io-concurrency.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0132](../decisions/0132-language-name-benitoite.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0137](../decisions/0137-first-release-library-scope.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0062](../decisions/0062-operators-stay-outside-traits.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0169](../decisions/0169-unicode-character-property-functions.md), [0171](../decisions/0171-map-set-higher-order-functions.md), [0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)
-- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-040](../open-issues.md#open-040), [OPEN-043](../open-issues.md#open-043), [OPEN-046](../open-issues.md#open-046), [OPEN-049](../open-issues.md#open-049), [OPEN-050](../open-issues.md#open-050)
+- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-040](../open-issues.md#open-040), [OPEN-043](../open-issues.md#open-043), [OPEN-046](../open-issues.md#open-046), [OPEN-049](../open-issues.md#open-049), [OPEN-050](../open-issues.md#open-050), [OPEN-078](../open-issues.md#open-078), [OPEN-109](../open-issues.md#open-109)
 - 移行元: [設計メモ](../sources/fp-language-design.md) なし（10 の層1・層2）
 
 ## 目的と範囲
@@ -89,6 +89,10 @@ end function
 ```
 
 この例の `String.toUppercase` は prelude（標準）の関数、`Console.writeLine` は非公式のモジュールの関数である。
+
+### 公式の追加のライブラリ（初回リリース版の後）
+
+【未決】標準ライブラリに入れずに処理系と別に配る公式のライブラリ（公式の追加のライブラリ）を設けるか、吟味を終えた非公式のモジュールの行き先に標準のほかにそれを加えるか（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md) の決定 7 を改めるか）は、[OPEN-078](../open-issues.md#open-078) で決める。組み込みのエフェクトを宣言するモジュールと、`@builtin` を使うモジュールは、そのままでは移せない（OPEN-078）。
 
 ### 関数を引数にとる関数の共通の規則
 
@@ -533,3 +537,5 @@ public function sort[T: ordered](xs: List[T]) -> List[T]
 - [OPEN-046](../open-issues.md#open-046): プロパティベーステストと、入力の生成器の導出（標準の型クラスの実装の導出を含む）
 - [OPEN-049](../open-issues.md#open-049): パッケージの名前空間と取り込み方
 - [OPEN-050](../open-issues.md#open-050): 標準の型クラスと重複する既存の関数を隠すか
+- [OPEN-078](../open-issues.md#open-078): 公式の追加のライブラリの配り方と、非公式のモジュールの行き先
+- [OPEN-109](../open-issues.md#open-109): Web システムに要る標準ライブラリの部品の範囲（初回リリース版の後。暗号、Cookie、セッション、CORS、テンプレートなど）

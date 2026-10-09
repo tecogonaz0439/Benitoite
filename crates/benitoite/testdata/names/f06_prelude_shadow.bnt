@@ -1,0 +1,14 @@
+// spec: 01-03 標準ライブラリの名前空間と prelude（初回リリース版）
+data Option[T]
+  Value(T)
+end data
+
+function keep(x: Option[Integer]) -> Benitoite.Option[Integer]
+  return match x with
+    case Option.Value(n) -> Benitoite.Option.Some(n)
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- keep(Option.Value(1))
+end function

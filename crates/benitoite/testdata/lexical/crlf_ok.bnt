@@ -1,5 +1,7 @@
 // spec: 01-01 改行
 // spec: 01-01 改行による区切り
-fn main() -> Unit uses IO {
-  Console.println("CRLF")
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine("CRLF")
+end function

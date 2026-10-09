@@ -1,0 +1,8 @@
+// spec: 01-02 明示遅延（初回リリース版）
+// spec: 01-06 明示遅延の型（初回リリース版）
+function later(x: Integer) -> Lazy[Integer]
+  return lazy x + 1 end lazy
+end function
+function main() -> Unit
+  ()
+end function

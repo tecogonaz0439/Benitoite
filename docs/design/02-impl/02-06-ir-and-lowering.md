@@ -1,15 +1,15 @@
 # 中間表現と脱糖
 
 - 状態: 確定
-- 関連ADR: [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0017](../decisions/0017-ir-in-core-calculus-form.md), [0018](../decisions/0018-reference-interpreter.md), [0022](../decisions/0022-side-tables-keyed-by-node.md), [0026](../decisions/0026-match-to-decision-trees.md), [0050](../decisions/0050-pipe-with-parenthesized-rhs.md), [0081](../decisions/0081-subsumption-on-computation-results.md), [0083](../decisions/0083-constant-descriptions-in-shared-program.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0118](../decisions/0118-effect-handlers.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0272](../decisions/0272-list-spread-in-list-literals.md), [0276](../decisions/0276-reference-interpreter-shares-builtin-bodies.md)
+- 関連ADR: [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0017](../decisions/0017-ir-in-core-calculus-form.md), [0018](../decisions/0018-reference-interpreter.md), [0022](../decisions/0022-side-tables-keyed-by-node.md), [0026](../decisions/0026-match-to-decision-trees.md), [0050](../decisions/0050-pipe-with-parenthesized-rhs.md), [0081](../decisions/0081-subsumption-on-computation-results.md), [0083](../decisions/0083-constant-descriptions-in-shared-program.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0118](../decisions/0118-effect-handlers.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0272](../decisions/0272-list-spread-in-list-literals.md), [0276](../decisions/0276-reference-interpreter-shares-builtin-bodies.md), [0357](../decisions/0357-no-ir-optimization-in-first-release.md)
 - 未決事項: [OPEN-009](../open-issues.md#open-009)
 - 移行元: [設計メモ](../sources/fp-language-design.md) なし
 
 ## 目的と範囲
 
-処理系が使うコア IR のデータ構造と変換工程、脱糖（desugaring）、パターンマッチのコンパイル、初回リリース版で行う最適化。言語の意味を定義するコアは[コア計算と脱糖](../01-spec/01-12-core-calculus.md)が扱う。
+処理系が使うコア IR のデータ構造と変換工程、脱糖（desugaring）、パターンマッチのコンパイル、最適化の扱い。言語の意味を定義するコアは[コア計算と脱糖](../01-spec/01-12-core-calculus.md)が扱う。
 
-現在の版は、初回リリース版（[ロードマップ](../00-overview/00-03-roadmap.md)）の範囲を定める。対象は、コア計算の初回リリース版の拡張（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「初回リリース版の拡張」）を含むコア IR、脱糖、コア IR の検査器、パターンの拡張を含む判定の木への変換、下位 IR である。初回リリース版で行う最適化は、性能の測定の結果を見て決める（[OPEN-009](../open-issues.md#open-009)）。
+現在の版は、初回リリース版（[ロードマップ](../00-overview/00-03-roadmap.md)）の範囲を定める。対象は、コア計算の初回リリース版の拡張（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「初回リリース版の拡張」）を含むコア IR、脱糖、コア IR の検査器、パターンの拡張を含む判定の木への変換、下位 IR である。初回リリース版では中間表現の最適化を行わず、最適化の候補と、後で加えるときの規則だけを定める（[ADR 0357](../decisions/0357-no-ir-optimization-in-first-release.md)、[OPEN-009](../open-issues.md#open-009)）。
 
 ## 前提
 
@@ -215,8 +215,8 @@
 
 ### 最適化
 
-【方針】初回リリース版で行う中間表現の最適化は、性能の測定（[OPEN-009](../open-issues.md#open-009)）の結果を見て決める。候補は、辞書が呼び出しの位置で決まっているメソッドの呼び出しを直接の呼び出しに置き換えること（[ADR 0158](../decisions/0158-type-classes-by-dictionary-passing.md)）、`let` の右側の入れ子を平らにすること、`let x ⇐ return V in M` を `M[V/x]` に置き換えることである。最適化は、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「置き換えてよい等式」の向き（左辺から右辺）に従う変換と、観測できる振る舞いを変えないことを示せる変換に限る。
+【決定】初回リリース版では、中間表現の最適化を行わない（[ADR 0357](../decisions/0357-no-ir-optimization-in-first-release.md)）。初回リリース版の後に、候補を変換ごとに試作し、変換を入れた版と入れない版を性能の測定（[OPEN-009](../open-issues.md#open-009)）で比べて採否を決める。候補は、辞書が呼び出しの位置で決まっているメソッドの呼び出しを直接の呼び出しに置き換えること（[ADR 0158](../decisions/0158-type-classes-by-dictionary-passing.md)）、`let` の右側の入れ子を平らにすること、`let x ⇐ return V in M` を `M[V/x]` に置き換えることである。最適化は、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「置き換えてよい等式」の向き（左辺から右辺）に従う変換と、観測できる振る舞いを変えないことを示せる変換に限る。
 
 ## 未決事項
 
-- [OPEN-009](../open-issues.md#open-009): 実行性能（初回リリース版で行う最適化の選択）
+- [OPEN-009](../open-issues.md#open-009): 実行性能（初回リリース版の後に試作して測る最適化の採否）

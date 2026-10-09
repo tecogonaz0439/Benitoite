@@ -1,0 +1,13 @@
+// spec: 01-02 属性（初回リリース版）
+// 06-04「期待の確認」「結果の報告」: Assert.fail は常に失敗し、文字列を示す。以後の文は評価しない。
+import Benitoite.Unofficial.IO.Console
+
+function pick(n: Integer) -> String uses Assert.Check
+  return if n = 0 then "zero" else Assert.fail("unexpected value") end if
+end function
+
+@test
+function failsAlways() -> Unit uses Assert.Check, Console.Write
+  bind s <- pick(1)
+  Console.writeLine(s)
+end function

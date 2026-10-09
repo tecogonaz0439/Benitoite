@@ -1,7 +1,7 @@
 // spec: 01-05 型の宣言
-type Empty {
-}
+data Empty
+end data
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

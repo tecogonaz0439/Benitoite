@@ -1,0 +1,6 @@
+// spec: 01-02 パターンマッチ
+function main() -> Unit
+  bind n <- match 1 with
+    case _ => 0
+  end match
+end function

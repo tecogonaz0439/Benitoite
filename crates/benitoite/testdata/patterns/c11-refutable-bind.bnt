@@ -1,0 +1,7 @@
+// spec: 01-05 必ず照合するパターン（初回リリース版）
+function f(o: Option[Integer]) -> Unit
+  bind Option.Some(x) <- o
+end function
+function main() -> Unit
+  ()
+end function

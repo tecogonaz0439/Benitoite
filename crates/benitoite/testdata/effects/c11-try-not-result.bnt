@@ -1,0 +1,7 @@
+// spec: 01-09 `Result.Error` と `Option.None` を呼び出し元へ返す構文 `try`
+function bad() -> Option[Integer]
+  return Option.Some(try 1)
+end function
+function main() -> Unit
+  ()
+end function

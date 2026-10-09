@@ -1,0 +1,14 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Result[Unit, String] uses File.Read, Process.Run, Console.Write
+  bind text <- try File.readText("fruits.txt") |> Result.mapError(_, IOError.message)
+  bind command <- Process.Command(..Process.command("sort", ["-u"]), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some(text))
+  bind output <- try Process.run(command) |> Result.mapError(_, IOError.message)
+  bind lines <- String.lines(Process.Output.standardOutput(output))
+  List.forEach(lines, lambda(line) Console.writeLine(line) end lambda)
+  Console.writeLine("unique: ${List.length(lines)}")
+  Console.writeLine("sort exit code: ${Process.Output.exitCode(output)}")
+  return Result.Ok(())
+end function

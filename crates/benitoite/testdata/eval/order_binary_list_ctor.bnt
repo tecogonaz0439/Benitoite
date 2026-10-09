@@ -1,18 +1,22 @@
 // spec: 01-08 評価順序
-type Pair { Pair(Int, Int) }
+import Benitoite.Unofficial.IO.Console
 
-fn mark(label: String, value: Int) -> Int uses IO {
-  Console.println(label)
-  value
-}
+data Pair
+  Pair(Integer, Integer)
+end data
 
-fn main() -> Unit uses IO {
-  let total = mark("binary-left", 1) + mark("binary-right", 2)
-  let values = [mark("list-1", 3), mark("list-2", 4)]
-  let pair = Pair.Pair(mark("constructor-1", 5), mark("constructor-2", 6))
-  match pair {
-    Pair.Pair(left, right) => {
-      Console.println(Int.toString(total + Option.unwrapOr(List.get(values, 1), 0) + left + right))
-    }
-  }
-}
+function mark(label: String, value: Integer) -> Integer uses Console.Write
+  Console.writeLine(label)
+  return value
+end function
+
+function main() -> Unit uses Console.Write
+  bind total <- mark("binary-left", 1) + mark("binary-right", 2)
+  bind values <- [mark("list-1", 3), mark("list-2", 4)]
+  bind pair <- Pair(mark("constructor-1", 5), mark("constructor-2", 6))
+  return match pair with
+    case Pair(left, right) ->
+      Console.writeLine(Integer.toString(total + Option.unwrapOr(List.get(values, 1), 0) + left + right))
+
+  end match
+end function

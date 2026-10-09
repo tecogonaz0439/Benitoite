@@ -1,2 +1,9 @@
 // spec: 01-03 トップレベルの名前空間
-type Some { Item }
+data Some
+  Item
+end data
+
+function main() -> Unit
+  bind _ <- Some.Item
+  return ()
+end function

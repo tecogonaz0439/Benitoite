@@ -1,0 +1,35 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+  return match List.get(Process.arguments(), index) with
+    case Option.None -> Result.Error("expected non-negative integer arguments")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+      case Option.None -> Result.Error("expected non-negative integer arguments")
+    end match
+  end match
+end function
+
+trait Step[T]
+  function step(value: T) -> T
+end trait
+
+implement Step[Integer]
+  function step(value: Integer) -> Integer
+    return (value * 17 + 11) mod 65521
+  end function
+end implement
+
+function repeat[T: Step](count: Integer, value: T) -> T
+  return if count = 0 then value else repeat(count - 1, Step.step(value)) end if
+end function
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match readInteger(0) with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(count) ->
+      Console.writeLine(Integer.toString(repeat(count, 1)))
+      Result.Ok(())
+  end match
+end function

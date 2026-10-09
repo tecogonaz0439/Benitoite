@@ -1,0 +1,19 @@
+// spec: 01-10 解放の時期と順序
+// 設計書 03-09「サーバ」。
+// 関門: with の解放で生成した 500 を本物のクライアントが Result.Ok として読む。
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
+  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+    bind server <- TaskGroup.spawn(group, lambda()
+      with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+        return Result.Ok(())
+      end with
+    end lambda)
+    bind response <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/") |> Result.mapError(_, NetworkError.message)
+    bind _ <- try Task.await(server)
+    Console.writeLine(Integer.toString(Http.Response.status(response)))
+    return Result.Ok(())
+  end with
+end function

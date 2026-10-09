@@ -1,12 +1,14 @@
 // spec: 01-02 文法
-fn accepts(callback: fn((fn() -> Unit uses IO), Int) -> Unit) -> Unit {
-  ()
-}
+import Benitoite.Unofficial.IO.Console
 
-fn returnsCallback() -> fn() -> Unit uses IO {
-  fn() -> Unit uses IO { Console.println("callback") }
-}
+function accepts(callback: function((function() -> Unit uses Console.Write), Integer) -> Unit) -> Unit
+  return ()
+end function
 
-fn main() -> Unit {
-  ()
-}
+function returnsCallback() -> function() -> Unit uses Console.Write
+  return lambda() -> Unit uses Console.Write return Console.writeLine("callback") end lambda
+end function
+
+function main() -> Unit
+  return ()
+end function

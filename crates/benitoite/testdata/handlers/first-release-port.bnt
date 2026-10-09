@@ -1,0 +1,21 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+import Benitoite.Unofficial.IO.File
+
+function readPort(path: String) -> Result[Integer, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
+end function
+
+function portIsRead() -> Boolean uses File.Read
+  bind result <- handle
+    readPort("app.conf")
+  with
+    case File.readText(path) ->
+      resume(Result.Ok("8080"))
+  end handle
+  return result = Result.Ok(8080)
+end function
+
+function main() -> Unit
+  ()
+end function

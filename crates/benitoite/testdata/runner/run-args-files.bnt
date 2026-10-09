@@ -1,8 +1,12 @@
 // spec: 01-07 IO を行う組み込み関数
-fn main() -> Unit uses IO {
-    Console.println(Int.toString(List.length(Process.args())))
-    match File.readText("message.txt") {
-        Ok(contents) => Console.println(contents)
-        Err(error) => Console.println(IoError.message(error))
-    }
-}
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses Console.Write, File.Read, Process.Environment
+    Console.writeLine(Integer.toString(List.length(Process.arguments())))
+    return match File.readText("message.txt") with
+        case Result.Ok(contents) -> Console.writeLine(contents)
+        case Result.Error(error) -> Console.writeLine(IOError.message(error))
+    end match
+end function

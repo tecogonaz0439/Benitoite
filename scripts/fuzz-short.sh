@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eu
+set -euo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$repo_root"
@@ -22,7 +22,22 @@ fi
 
 ./scripts/fuzz-seed.sh
 
-for target in check_bytes check_mutated compile_ok; do
+failed_targets=()
+for target in check_bytes check_mutated compile_ok check_modules format; do
     printf 'Running %s for 60 seconds\n' "$target"
-    cargo +nightly fuzz run "$target" -- -max_total_time=60
+    if cargo +nightly fuzz run "$target" -- -max_total_time=60; then
+        printf 'Completed %s without a failure\n' "$target"
+    else
+        status=$?
+        failed_targets+=("$target")
+        printf 'FAILED: %s (exit %s); continuing with remaining targets\n' "$target" "$status" >&2
+    fi
 done
+
+if (( ${#failed_targets[@]} > 0 )); then
+    printf 'Failed fuzz targets (see fuzz/artifacts/<target>/):\n' >&2
+    printf '  %s\n' "${failed_targets[@]}" >&2
+    exit 1
+fi
+
+printf 'All five fuzz targets completed without a failure\n'

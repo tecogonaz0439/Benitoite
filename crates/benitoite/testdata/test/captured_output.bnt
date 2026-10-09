@@ -1,0 +1,21 @@
+// spec: 01-07 IO を行う組み込み関数
+// 06-04「テストの実行」「結果の報告」: 失敗したテストの捕らえた出力を報告に加え、成功したテストの出力は文章の形では示さない（JSON の形ではテストごとの stdout の欄に入る）。
+import Benitoite.Unofficial.IO.Console
+
+@test
+function noisyFailure() -> Unit uses Assert.Check, Console.Write
+  Console.writeLine("first out")
+  Console.writeErrorLine("an err line")
+  Console.write("no newline")
+  Assert.equal(1, 2)
+end function
+
+@test
+function noisySuccess() -> Unit uses Console.Write
+  Console.writeLine("hidden")
+end function
+
+@test
+function silentFailure() -> Unit uses Assert.Check
+  Assert.fail("quiet")
+end function

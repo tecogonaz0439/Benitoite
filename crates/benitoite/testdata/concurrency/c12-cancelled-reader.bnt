@@ -1,0 +1,38 @@
+// spec: 01-11 取り消し
+// spec: 01-10 解放の時期と順序
+// spec: 01-10 解放したリソースの使用
+// 関門: 敗者が開いた Reader の解放を守り、取り消しの解放漏れを捕まえる。共有セルで開いたことを確認し、切り替えの時機に依存しない。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Clock
+
+
+function waitForReader(saved: Reference[Option[File.Reader]]) -> Integer uses State
+  return match Reference.get(saved) with
+    case Option.None -> waitForReader(saved)
+    case Option.Some(_) -> 42
+  end match
+end function
+
+function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write
+  bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+  bind winner <- Task.race([
+    lambda()
+      with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+        Reference.set(saved, Option.Some(reader))
+        Clock.sleep(3600000)
+        return Result.Ok(1)
+      end with
+    end lambda,
+    lambda() return Result.Ok(waitForReader(saved)) end lambda
+  ])
+  Console.writeLine(if winner = Option.Some(Result.Ok(42)) then "cancelled reader task" else "wrong winner" end if)
+  match Reference.get(saved) with
+    case Option.Some(reader) ->
+      bind _ <- File.readLine(reader)
+      ()
+    case Option.None -> ()
+  end match
+  return Result.Ok(())
+end function

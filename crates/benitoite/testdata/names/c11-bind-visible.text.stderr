@@ -1,0 +1,17 @@
+error[E0334]: `x` is already a local name here
+  --> testdata/names/c11-bind-visible.bnt:4:3
+   |
+ 4 |   bind x <- 2
+   |   ^^^^ `bind` cannot hide a local name
+   |
+  ::: testdata/names/c11-bind-visible.bnt:3:8
+   |
+ 3 |   bind x <- 1
+   |        - `x` is bound here
+   |
+   = help: write `shadow` to bind a new value to `x`
+   |
+ 4 |   shadow x <- 2
+   |   ~~~~~~
+
+error: could not check testdata/names/c11-bind-visible.bnt due to 1 previous error

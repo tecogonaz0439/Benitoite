@@ -1,6 +1,6 @@
 # R09 VM の核の作り直し
 
-- 依存する作業: [R05](R05-liveness-and-asm.md)、[R06](R06-values-and-lists.md)、[R07](R07-typed-builtins.md)、[R08](R08-builtin-table.md)
+- 依存する作業: [R04](R04-refcount.md)、[R05](R05-liveness-and-asm.md)、[R06](R06-values-and-lists.md)、[R07](R07-typed-builtins.md)、[R08](R08-builtin-table.md)
 - 難易度: 5（1〜5。README の「作業一覧」）
 - 規模の見込み: 大（1500 行超）
 - ブランチ: impl/R09-vm-core
@@ -97,7 +97,7 @@ C01 は `sig=` の宣言を `todo!()` の仮置きとして置いている。本
 
 その場での再利用は `CONR` でだけ行う（[ADR 0280](../../design/decisions/0280-reuse-by-dedicated-construct-instruction.md)）。処理は 10-07「その場での再利用の命令」の手順 1〜5 に従う。引数のレジスタは `LastUse` が付いていても `load` で読み、`reuse_ctor` を呼んだ後に空にする。一意であることを、引数のレジスタの参照がまだ数えられている間に判定するためである（10-08「その場での再利用」）。マーク・スイープの方式と、`HeapConfig::reuse` が偽の設定では、`reuse_ctor` が `None` を返すので、`CONR` は `CON` と同じに振る舞う。
 
-本作業は R04（参照カウントの中身）に依存しないので、本作業のテストは `reuse_ctor` が `None` を返す経路で正しい値を作ることだけを確かめる。参照カウントの方式で再利用が実際に起きることは R11 が確かめ、R12 が再利用の有無で測る。
+本作業は R04 を待つ。`reuse_ctor` の本体と、参照カウントの方式で対象を解放する処理を R04 が書くからである（受け入れテストの「生存の情報と回収」「枠だけが持つ値の解放」は、二つの方式の両方で対象が解放されることを確かめる）。ただし、本作業のテストは、再利用については `reuse_ctor` が `None` を返す経路で正しい値を作ることだけを確かめる。参照カウントの方式で再利用が実際に起きることは R11 が確かめ、R12 が再利用の有無で測る。
 
 ## 受け入れテスト
 

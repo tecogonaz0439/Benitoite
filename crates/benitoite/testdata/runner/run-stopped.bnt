@@ -1,0 +1,6 @@
+// spec: 01-08 実行時エラーによる停止
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+    Console.writeLine(Integer.toString(1 div 0))
+end function

@@ -1,31 +1,33 @@
-fn readCount() -> Result[Int, String] uses IO {
-  match List.head(Process.args()) {
-    None => Err("expected one non-negative integer argument")
-    Some(argument) => match Int.parse(argument) {
-      None => Err("expected one non-negative integer argument")
-      Some(count) => if count < 0 {
-        Err("expected one non-negative integer argument")
-      } else {
-        Ok(count)
-      }
-    }
-  }
-}
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
 
-fn fibonacci(n: Int) -> Int {
-  if n < 2 {
+function readCount() -> Result[Integer, String] uses Process.Environment
+  return match List.head(Process.arguments()) with
+    case Option.None -> Result.Error("expected one non-negative integer argument")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.None -> Result.Error("expected one non-negative integer argument")
+      case Option.Some(count) -> if count < 0 then
+        Result.Error("expected one non-negative integer argument")
+      else
+        Result.Ok(count)
+      end if
+    end match
+  end match
+end function
+
+function fibonacci(n: Integer) -> Integer
+  return if n < 2 then
     n
-  } else {
+  else
     fibonacci(n - 1) + fibonacci(n - 2)
-  }
-}
+  end if
+end function
 
-fn main() -> Result[Unit, String] uses IO {
-  match readCount() {
-    Err(message) => Err(message)
-    Ok(count) => {
-      Console.println(Int.toString(fibonacci(count)))
-      Ok(())
-    }
-  }
-}
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match readCount() with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(count) ->
+      Console.writeLine(Integer.toString(fibonacci(count)))
+      Result.Ok(())
+  end match
+end function

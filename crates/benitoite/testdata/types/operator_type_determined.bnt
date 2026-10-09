@@ -1,6 +1,8 @@
 // spec: 01-06 演算子の型付け
-fn main() -> Unit uses IO {
-    let add = fn(left, right) { left + right }
-    Console.println(Int.toString(add(1, 2)))
-    Console.println(Int.toString(add(3, 4)))
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+    bind add <- lambda(left, right) return left + right end lambda
+    Console.writeLine(Integer.toString(add(1, 2)))
+    return Console.writeLine(Integer.toString(add(3, 4)))
+end function

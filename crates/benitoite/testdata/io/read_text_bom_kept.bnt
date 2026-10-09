@@ -1,8 +1,11 @@
 // spec: 01-07 IO を行う組み込み関数
 // spec: 01-04 String
-fn main() -> Unit uses IO {
-  match File.readText("bom.txt") {
-    Ok(contents) => Console.println(Int.toString(String.byteLength(contents)))
-    Err(_) => Console.println("read failed")
-  }
-}
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function main() -> Unit uses Console.Write, File.Read
+  return match File.readText("bom.txt") with
+    case Result.Ok(contents) -> Console.writeLine(Integer.toString(String.byteLength(contents)))
+    case Result.Error(_) -> Console.writeLine("read failed")
+  end match
+end function

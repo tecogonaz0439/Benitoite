@@ -2,8 +2,8 @@
 
 
 - 状態: 草稿
-- 関連ADR: [0002](../decisions/0002-initial-implementation-in-go-by-llm.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0084](../decisions/0084-implementer-assignment-for-minimal.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)
-- 未決事項: [OPEN-007](../open-issues.md#open-007), [OPEN-009](../open-issues.md#open-009), [OPEN-036](../open-issues.md#open-036), [OPEN-014](../open-issues.md#open-014)
+- 関連ADR: [0002](../decisions/0002-initial-implementation-in-go-by-llm.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0084](../decisions/0084-implementer-assignment-for-minimal.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md), [0355](../decisions/0355-mark-sweep-k1-for-first-release.md)
+- 未決事項: [OPEN-007](../open-issues.md#open-007), [OPEN-009](../open-issues.md#open-009), [OPEN-014](../open-issues.md#open-014)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 付録A、9
 
 ## 目的と範囲
@@ -26,7 +26,7 @@
 
 | 観点 | 処理系の性質 |
 |---|---|
-| メモリの回収 | 言語の値（ラムダが捕捉した環境、永続データ構造、初回リリース版の可変のセルと明示遅延の値）はヒープに置く。可変のセルを使えば、値どうしの参照が循環しうる。処理系は、循環する値の扱いを決める必要がある（[OPEN-036](../open-issues.md#open-036)） |
+| メモリの回収 | 言語の値（ラムダが捕捉した環境、永続データ構造、初回リリース版の可変のセルと明示遅延の値）はヒープに置く。可変のセルを使えば、値どうしの参照が循環しうる。処理系は、循環する値の扱いを決める必要がある（初回リリース版はマーク・スイープで回収する。[ADR 0355](../decisions/0355-mark-sweep-k1-for-first-release.md)） |
 | 型システム | 処理系は、構文木・値・命令など、種類の決まったデータを多く扱う。種類を加えたときの処理の漏れを、実装言語の検査で見つけられるかが、LLM が書く処理系の堅牢さに関わる |
 | ホストの標準ライブラリの利用 | 設計メモは、初回リリース版の go.* の層で、Go の標準ライブラリの API を型の情報から自動でラップするとしていた（設計メモ 10、11）。この層は廃止した（[ADR 0077](../decisions/0077-abolish-go-layer.md)） |
 | WASM | 処理系を WASM で動かす可能性がある（[OPEN-007](../open-issues.md#open-007)） |
@@ -91,7 +91,7 @@
 
 **Haskell（GHC）**（最新のリリースは GHC 9.14.1、2025-12-19。[GHC のページ](https://www.haskell.org/ghc/)、[配布物の一覧](https://downloads.haskell.org/~ghc/)。2026-09-29 に確認）
 
-- メモリの回収: GHC のランタイムは、既定で、すべての世代にコピー方式の世代別の GC を使う。最も古い世代には、並行に動くマーク・スイープの GC（`--nonmoving-gc`）も選べる（[GHC User's Guide: Running a compiled program](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/runtime_control.html)）。処理系は、言語の値の回収を GHC の GC に任せられ、循環する値も回収される。Go と同じ利点であり、[OPEN-036](../open-issues.md#open-036) の循環の回収を自作しなくて済む。
+- メモリの回収: GHC のランタイムは、既定で、すべての世代にコピー方式の世代別の GC を使う。最も古い世代には、並行に動くマーク・スイープの GC（`--nonmoving-gc`）も選べる（[GHC User's Guide: Running a compiled program](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/runtime_control.html)）。処理系は、言語の値の回収を GHC の GC に任せられ、循環する値も回収される。Go と同じ利点であり、循環する値を回収する仕組みを自作しなくて済む（Rust で書いた初回リリース版は、マーク・スイープを自作した。[ADR 0355](../decisions/0355-mark-sweep-k1-for-first-release.md)）。
 - 型システム: 代数的データ型とパターンマッチを持つ。パターンの網羅を確かめる警告 `-Wincomplete-patterns` は既定では有効でなく、`-W`（と `-Wall`）で有効になる（[GHC User's Guide: Warnings](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/using-warnings.html)）。警告を誤りにする指定（`-Werror`）を加えれば、Rust の網羅の検査に近い効果を得られる。ラムダとパターンの束縛には別の警告 `-Wincomplete-uni-patterns` がある（同）。
 - 並行処理: 既定のランタイムは、一つの OS のスレッドの上で動く。この既定のランタイムでも、Haskell のスレッドどうしの並行処理は使える。複数の OS のスレッドを使うには `-threaded` でリンクする（[GHC User's Guide: Options related to a particular phase](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/phases.html)）。処理系の自作のスケジューラ（[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)）を、GHC の軽量スレッドに置き換えるかは、言語処理系の主要部を自作する方針（[目的と設計原則](../00-overview/00-01-goals.md)）とあわせて判断が要る。
 - OS のサンドボックス: Landlock の `landlock_restrict_self` は、既定では呼んだスレッド（と、その後に作るスレッド）だけを制限する。ABI の版 8 から、フラグ `LANDLOCK_RESTRICT_SELF_TSYNC` で、プロセスのすべてのスレッドに掛けられる（[Linux カーネルの文書: Landlock](https://docs.kernel.org/userspace-api/landlock.html)）。GHC の既定のランタイムは OS のスレッドが一つなので、子プロセスで自分に制限を掛ける方式（[ADR 0196](../decisions/0196-os-sandbox-mechanisms.md)）と両立する。`-threaded` のランタイムが `main` の前に OS のスレッドを作るかと、それが古いカーネルで制限の漏れになるかは【要検証】である。
@@ -112,7 +112,7 @@ Haskell を比較に加えても、Rust を選んだ四つの根拠（前節）�
 
 1. **型システム**: Haskell も代数的データ型を持ち、警告を誤りにすれば網羅の漏れを検査で見つけられる。この観点では Rust とほぼ並ぶ。ただし、網羅の検査が既定で有効でない点は、LLM が指定を外すと検査が緩むので、Rust より弱い。これは、lint の水準をファイルに書いて緩められなくする方針（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)の「実装の規約と静的な検査」）と同じ手当て（cabal の設定に `-Werror` を書く）で補える【要検証】。
 2. **WASM**: GHC の WASM のバックエンドは技術プレビューで、公式の配布物にない。Rust の Tier 2 の対象と比べて、[OPEN-007](../open-issues.md#open-007) に備えにくい。
-3. **メモリの回収**: Haskell は GC に任せられるので、この観点では Rust より有利である。初回リリース版で可変のセルが循環を作る問題（[OPEN-036](../open-issues.md#open-036)）と、ランタイムの作り直し（[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)）のうちメモリの管理の部分は、GHC の GC に任せれば要らなくなる。一方、言語処理系のランタイム（値の表現と回収）を自作して学ぶ題材も失う。
+3. **メモリの回収**: Haskell は GC に任せられるので、この観点では Rust より有利である。初回リリース版で可変のセルが循環を作る問題（初回リリース版はマーク・スイープを自作して回収する。[ADR 0355](../decisions/0355-mark-sweep-k1-for-first-release.md)）と、ランタイムの作り直し（[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)）のうちメモリの管理の部分は、GHC の GC に任せれば要らなくなる。一方、言語処理系のランタイム（値の表現と回収）を自作して学ぶ題材も失う。
 4. **変える費用**: Rust で書いた最小実行版の処理系（`crates/benitoite`）がすでにあり、ベンチマークと fuzzing の仕組みも Rust で作ってある。初回リリース版では構文の変更とランタイムの作り直しで多くを書き直すが、構文解析器・型検査器・テストの仕組みは引き継げる。Haskell に変えれば、これらをすべて書き直すことになる。Rust を選んだ時点と違い、変える費用は小さくない。
 
 学ぶ目的（[目的と設計原則](../00-overview/00-01-goals.md)）の観点では、Haskell に固有の利点がある。設計者は、LLM が書いた処理系を読んで、関数型プログラミング（型クラス、モナド、代数的データ型）と言語処理系の両方を学ぶ。処理系を Haskell で書けば、処理系を読むこと自体が関数型プログラミングの実例を読むことになる。設計者がモナドを学べないことを気にしていた点（ADR 0005 の学習の場）にも、直接に役立つ。Rust で書いた処理系から学べるのは、主に言語処理系の側である。
@@ -139,7 +139,7 @@ OS のサンドボックスの掛けやすさも比べたが、決め手には�
 
 一方、Rust を選ぶことで次のものを失う。
 
-- 言語の値の回収を任せられる GC。初回リリース版で可変のセルを加えると値が循環しうるので、循環を回収する方式を決める必要がある。この方式は、初回リリース版の実装プランを作るときに、値の表現とランタイムの作り直しで、マーク・スイープと改良した参照カウントを試作して比べて選ぶ（[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)、[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)、[OPEN-036](../open-issues.md#open-036)）。
+- 言語の値の回収を任せられる GC。初回リリース版で可変のセルを加えると値が循環しうるので、循環を回収する方式を決める必要がある。この方式は、初回リリース版の実装プランを作るときに、値の表現とランタイムの作り直しで、マーク・スイープと改良した参照カウントを試作して比べ、マーク・スイープに決めた（[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)、[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)、[ADR 0355](../decisions/0355-mark-sweep-k1-for-first-release.md)）。
 - go.* の層による、Go の標準ライブラリの自動のラップ（[ADR 0077](../decisions/0077-abolish-go-layer.md)）。初回リリース版の std を手で書く範囲が広がる。
 
 実装を担う LLM が Rust で処理系を正しく書けるかは、試しの作業を設けず、最小実行版の各作業の確認で見た（[ADR 0084](../decisions/0084-implementer-assignment-for-minimal.md)）。Go の不利な点（computed goto がないことなど）が性能にどれだけ響くかを確かめる必要はなくなったが、Rust で実装した最小実行版の性能は 2026-09-27 に測定した（[性能](../07-quality/07-02-performance.md)の「最小実行版の測定の結果」、[OPEN-009](../open-issues.md#open-009)）。
@@ -148,5 +148,4 @@ OS のサンドボックスの掛けやすさも比べたが、決め手には�
 
 - [OPEN-007](../open-issues.md#open-007): WASMコア化の採否
 - [OPEN-009](../open-issues.md#open-009): 実行性能
-- [OPEN-036](../open-issues.md#open-036): 初回リリース版のメモリの管理の方式
 - [OPEN-014](../open-issues.md#open-014): 参考にした言語に関する外部の事実の確認（本章の Haskell についての【要検証】の事項）

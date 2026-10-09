@@ -1,0 +1,8 @@
+// spec: 01-02 属性（初回リリース版）
+// 06-04「期待の確認」「結果の報告」: Assert.isTrue の失敗は文字列を示す。
+
+@test("positive")
+function positive() -> Unit uses Assert.Check
+  bind n <- 0 - 3
+  Assert.isTrue(n > 0, "n must be positive")
+end function

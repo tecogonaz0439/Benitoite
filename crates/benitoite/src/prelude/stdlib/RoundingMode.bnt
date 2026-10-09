@@ -1,0 +1,15 @@
+//! Rounding directions for `Decimal.round`.
+
+/// How `Decimal.round` chooses the result.
+public data RoundingMode
+  /// The nearest value; halves go to the value whose last digit is even.
+  HalfToEven
+  /// The nearest value; halves go away from zero.
+  HalfAwayFromZero
+  /// Toward zero.
+  TowardZero
+  /// Toward negative infinity.
+  TowardNegativeInfinity
+  /// Toward positive infinity.
+  TowardPositiveInfinity
+end data

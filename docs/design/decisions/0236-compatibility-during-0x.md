@@ -1,6 +1,6 @@
 # 0236. メジャーバージョンが 0 の間は、マイナーの版で互換性を壊してよく、パッチの版では壊さない
 
-- 状態: 採択
+- 状態: 採択（`0.1.0` より前の `0.0.x` のリリースでは、パッチの版でも互換性を壊してよいことを [0358](0358-release-versions-and-published-history.md) で定めた）
 - 日付: 2026-09-29
 - 関連章: [配布形態](../05-platform/05-01-distribution.md), [ロードマップ](../00-overview/00-03-roadmap.md), [Agent Skills 対応](../06-tooling/06-06-agent-skills.md)
 - 関連する未決事項: [OPEN-040](../open-issues.md#open-040)

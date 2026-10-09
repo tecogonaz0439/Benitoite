@@ -1,0 +1,16 @@
+// spec: 01-11 タスクを起動する関数
+// 関門: race と withTimeout は Clock.Time だけでは呼べず、State の不足を診断する（ADR 0319）。
+import Benitoite.Unofficial.IO.Clock
+
+function raceOnly() -> Option[Integer] uses Clock.Time
+  return Task.race([lambda() return 1 end lambda])
+end function
+
+function timeoutOnly() -> Option[Integer] uses Clock.Time
+  return Task.withTimeout(10, lambda() return 1 end lambda)
+end function
+
+function main() -> Unit uses Clock.Time
+  bind _ <- raceOnly()
+  bind _ <- timeoutOnly()
+end function

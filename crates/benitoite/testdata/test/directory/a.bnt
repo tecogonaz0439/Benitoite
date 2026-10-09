@@ -1,0 +1,9 @@
+// spec: 01-03 モジュールと import（初回リリース版）
+// 06-04「テストの実行」: ディレクトリの下のファイルのテストをパスの辞書順に実行する。
+// 取り込まれるモジュールのテストは、そのファイル自身の行として一度だけ出る。
+import Lib.Text
+
+@test
+function usesLib() -> Unit uses Assert.Check
+  Assert.equal(Text.message(), "hello")
+end function

@@ -1,0 +1,17 @@
+// spec: 01-02 属性（初回リリース版）
+// 06-04「期待の確認」「結果の報告」: Assert.equal の失敗は両方の値と位置・呼び出しの履歴を示す。
+
+function checkSum(values: List[Integer], expected: Integer) -> Unit uses Assert.Check
+  Assert.equal(List.fold(values, 0, lambda(acc, v) return acc + v end lambda), expected)
+end function
+
+@test("sum of a list")
+function sumOfList() -> Unit uses Assert.Check
+  checkSum([1, 2, 3], 7)
+end function
+
+@test
+function strings() -> Unit uses Assert.Check
+  Assert.equal("abc", "ab\"c")
+  Assert.equal(1, 1)
+end function

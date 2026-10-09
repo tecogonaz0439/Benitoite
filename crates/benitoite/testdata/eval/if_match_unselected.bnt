@@ -1,17 +1,19 @@
 // spec: 01-08 評価順序
-type Choice {
+import Benitoite.Unofficial.IO.Console
+
+data Choice
   First
   Second
-}
+end data
 
-fn main() -> Unit uses IO {
-  if true {
-    Console.println("if-selected")
-  } else {
-    Console.println("if-unselected")
-  }
-  match Choice.First {
-    Choice.First => Console.println("match-selected")
-    Choice.Second => Console.println("match-unselected")
-  }
-}
+function main() -> Unit uses Console.Write
+  if true then
+    Console.writeLine("if-selected")
+  else
+    Console.writeLine("if-unselected")
+  end if
+  return match Choice.First with
+    case Choice.First -> Console.writeLine("match-selected")
+    case Choice.Second -> Console.writeLine("match-unselected")
+  end match
+end function

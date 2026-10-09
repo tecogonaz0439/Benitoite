@@ -11,11 +11,11 @@
 
 | 事項 | 設計者の判断 |
 |---|---|
-| 暫定に採るメモリの管理の方式 | （`gc-mark-sweep` か `gc-refcount`） |
-| 回収の閾値の係数 k（マーク・スイープを採る場合） | （50・100・200 のどれか。百分率） |
-| 参照カウントを採る場合の、遅らせた解放の条件と循環の回収の閾値 | （R04 の値のままか、改める値） |
-| 採らなかった方式の実装を残すリビジョンの名前 | （例: タグ `stage1-rc-final`） |
-| 判断を記録した測定の記録 | （`tools/bench/results/` のファイル名） |
+| 暫定に採るメモリの管理の方式 | `gc-mark-sweep`（2026-10-05、設計者の承認） |
+| 回収の閾値の係数 k（マーク・スイープを採る場合） | k = 1（`trigger_factor_percent` = 100。`DEFAULT_TRIGGER_FACTOR_PERCENT` は既定のまま変えない） |
+| 参照カウントを採る場合の、遅らせた解放の条件と循環の回収の閾値 | （マーク・スイープを採るので該当しない） |
+| 採らなかった方式の実装を残すリビジョンの名前 | タグ `stage1-rc-final`（cf72e77） |
+| 判断を記録した測定の記録 | `tools/bench/results/2026-10-05-stage1-5b300d4-summary.md` |
 
 ## 目的
 
@@ -38,6 +38,10 @@
 - `src/runtime/heap/mod.rs`: 二つの機能のどちらか一方だけを有効にすることを確かめる `compile_error!` を、採った方式の機能が有効であることを確かめる形に改める。マーク・スイープを採り、k を 1 以外にした場合は、`DEFAULT_TRIGGER_FACTOR_PERCENT` の値を改める。
 - `#[cfg(feature = ...)]` で方式に限ったコードとテストのうち、採らなかった方式の側を消し、採った方式の側の `cfg` を外す（残した `cfg` は、消した機能を指して警告になるので残さない）。
 - `scripts/check.sh`（と、方式ごとに分けていれば `scripts/check-heap.sh`）: 採らなかった方式の行を消す（00-02「完了条件の共通の検査」の最後の段落）。
+- `cfg!(feature = ...)` の式（`core/tests.rs`、`ctx.rs`、`vm/verification_tests.rs`、`heap/verification_tests.rs` など）も、`#[cfg]` と同じく整理する（消した機能を指すと unexpected_cfgs の警告になる）。
+- `ctx.rs` の `r04_tests` はモジュールごと消さない。参照カウントだけに意味のあるテスト（数の照合、遅らせた解放の閾値など）だけを消し、両方式で通るテスト（到達可能性の比較、長い連鎖、共有、循環、`reuse_ctor` の契約など）は残す。`r04_reuse_checks_contract…` は、マーク・スイープでは `reuse_ctor` が `None` を返すことを確かめる形に直して、受け入れテストに使う。
+- R12 の道具: 例 `examples/stage1_bench.rs`・`stage1_heap_bench.rs`・`stage1_support/mod.rs` は方式に依存しないので変えない。`tools/bench/stage1.py` は `CONFIGS` から RC と RC-noreuse を消し、`build()` をマーク・スイープだけにする。冒頭のコメントに「RC の構成はタグ `stage1-rc-final` で再現する」と書く。`HeapStats` の `rc_*` の項目の収集は残す（項目は残り、値は 0 になる）。
+- `stats.rs` などの公開の層の doc コメント（10-08 の `file=` と同じ文）は変えない。参照カウントに触れる文は、完了の報告の文書の改めの一覧に挙げる（オーケストレータが 10-08 と揃えて直す）。
 - `docs/implement/tools/extract_interfaces.py` など、機能の組み合わせを実装プランの表から作る道具は変えない（実装プランの側の改めはオーケストレータが行う）。
 
 `src/runtime/heap/mod.rs` は C01 が置いた凍結したファイルであり、00-03「インターフェースの凍結」の例外の一覧にない。ここでの変更は、10-08「ヒープのモジュールの構成」と 00-01 が R14 に求めた範囲（機能の確かめと既定の k）に限り、完了の報告の「判断したこと」に挙げる。公開の層の型とシグネチャは変えない。`HeapStats` の参照カウントの項目、`NoGcCtx::reuse_ctor`、`HeapConfig::reuse` と命令 `CONR` は、マーク・スイープを採った場合も残す（公開の層の型と命令の集合を変えないため。`reuse_ctor` は常に `None` を返し、`CONR` は `CON` と同じに振る舞い、項目は 0 のまま。[ADR 0280](../../design/decisions/0280-reuse-by-dedicated-construct-instruction.md) の帰結）。

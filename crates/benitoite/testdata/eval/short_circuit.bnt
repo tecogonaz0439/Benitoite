@@ -1,16 +1,18 @@
-// spec: 01-04 Bool
+// spec: 01-04 Boolean
 // spec: 01-08 評価順序
-fn log_true() -> Bool uses IO {
-  Console.println("right evaluated")
-  true
-}
+import Benitoite.Unofficial.IO.Console
 
-fn bool_text(value: Bool) -> String {
-  if value { "true" } else { "false" }
-}
+function log_true() -> Boolean uses Console.Write
+  Console.writeLine("right evaluated")
+  return true
+end function
 
-fn main() -> Unit uses IO {
-  let and_result = false && log_true()
-  let or_result = true || log_true()
-  Console.println(bool_text(and_result) + " " + bool_text(or_result))
-}
+function bool_text(value: Boolean) -> String
+  return if value then "true" else "false" end if
+end function
+
+function main() -> Unit uses Console.Write
+  bind and_result <- false and log_true()
+  bind or_result <- true or log_true()
+  return Console.writeLine(bool_text(and_result) + " " + bool_text(or_result))
+end function

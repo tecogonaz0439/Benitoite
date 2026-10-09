@@ -1,7 +1,8 @@
 // spec: 01-01 文字列リテラル
-fn main() -> Unit {
-  let _ = "a${x}"
-  let _ = "$a"
-  let _ = "a\${x}"
-  ()
-}
+function main() -> Unit
+  bind x <- 1
+  bind _ <- "a${x}"
+  bind _ <- "$a"
+  bind _ <- "a\${x}"
+  return ()
+end function

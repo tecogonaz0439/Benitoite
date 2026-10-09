@@ -1,8 +1,14 @@
 // spec: 01-08 評価順序
-fn consume(_first: Unit, _second: Unit) -> Unit { () }
+import Benitoite.Unofficial.IO.Console
 
-fn nest(value: Unit) -> Unit { value }
+function consume(_first: Unit, _second: Unit) -> Unit
+  return ()
+end function
 
-fn main() -> Unit uses IO {
-  consume(Console.println("a"), nest(Console.println("b")))
-}
+function nest(value: Unit) -> Unit
+  return value
+end function
+
+function main() -> Unit uses Console.Write
+  return consume(Console.writeLine("a"), nest(Console.writeLine("b")))
+end function

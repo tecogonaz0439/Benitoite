@@ -1,0 +1,29 @@
+// spec: 01-02 定数（初回リリース版）
+// spec: 01-02 型の別名（初回リリース版）
+type UserId = Integer
+type Validator[T] = function(T) -> Result[T, String]
+
+data Color
+  Red
+  Green
+  Blue
+end data
+
+const maxRetries: Integer = 3
+public const defaultPort: Integer = 8000 + 80
+const greeting: String = "hello, ${defaultPort}"
+const primaryColors: List[Color] = [Color.Red, Color.Green, Color.Blue]
+const statusNames: Map[Integer, String] = Map.fromList([Pair(200, "OK"), Pair(404, "Not Found")])
+
+function validate(v: Validator[UserId], id: UserId) -> Result[UserId, String]
+  return v(id)
+end function
+
+function main() -> Unit
+  bind _ <- validate(lambda(id) return Result.Ok(id) end lambda, defaultPort)
+  bind _ <- maxRetries
+  bind _ <- greeting
+  bind _ <- primaryColors
+  bind _ <- statusNames
+  ()
+end function

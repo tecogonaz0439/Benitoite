@@ -1,0 +1,13 @@
+// spec: 01-02 属性（初回リリース版）
+// 06-04「結果の報告」: 起動したタスクの中の確認の失敗。taskOrigins の最後の段はテストの関数である（ADR 0324）。
+
+function check(n: Integer) -> Integer uses Assert.Check
+  Assert.equal(n, 1)
+  return n
+end function
+
+@test
+function assertInTask() -> Unit uses Assert.Check
+  bind _ <- Task.all([lambda() return check(1) end lambda, lambda() return check(2) end lambda])
+  return ()
+end function

@@ -1,0 +1,63 @@
+//! Results of operations that may fail.
+
+/// The result of an operation: `Result.Ok(x)` on success, `Result.Error(e)` on failure.
+public data Result[T, E]
+  Ok(T)
+  Error(E)
+end data
+
+/// Applies `f` to the value inside `Result.Ok`.
+public function map[T, U, X, effect E](r: Result[T, X], f: function(T) -> U uses E) -> Result[U, X] uses E
+  return match r with
+    case Result.Ok(x) -> Result.Ok(f(x))
+    case Result.Error(e) -> Result.Error(e)
+  end match
+end function
+
+/// Applies `f` to the value inside `Result.Error`.
+public function mapError[T, X, Y, effect E](r: Result[T, X], f: function(X) -> Y uses E) -> Result[T, Y] uses E
+  return match r with
+    case Result.Ok(x) -> Result.Ok(x)
+    case Result.Error(e) -> Result.Error(f(e))
+  end match
+end function
+
+/// Applies `f` to the value inside `Result.Ok` and returns its result.
+public function andThen[T, U, X, effect E](r: Result[T, X], f: function(T) -> Result[U, X] uses E) -> Result[U, X] uses E
+  return match r with
+    case Result.Ok(x) -> f(x)
+    case Result.Error(e) -> Result.Error(e)
+  end match
+end function
+
+/// Returns the value inside `Result.Ok`, or `fallback` for `Result.Error`.
+public function unwrapOr[T, X](r: Result[T, X], fallback: T) -> T
+  return match r with
+    case Result.Ok(x) -> x
+    case Result.Error(_) -> fallback
+  end match
+end function
+
+/// Returns whether `r` is `Result.Ok`.
+public function isOk[T, X](r: Result[T, X]) -> Boolean
+  return match r with
+    case Result.Ok(_) -> true
+    case Result.Error(_) -> false
+  end match
+end function
+
+/// Returns whether `r` is `Result.Error`.
+public function isError[T, X](r: Result[T, X]) -> Boolean
+  return match r with
+    case Result.Ok(_) -> false
+    case Result.Error(_) -> true
+  end match
+end function
+
+/// Turns `Result.Ok(x)` into `Option.Some(x)` and `Result.Error` into `Option.None`.
+public function ok[T, X](r: Result[T, X]) -> Option[T]
+  return match r with
+    case Result.Ok(x) -> Option.Some(x)
+    case Result.Error(_) -> Option.None
+  end match
+end function

@@ -1,0 +1,20 @@
+// 設計書 03-08「Json」、ADR 0322・0328。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Json
+function main() -> Result[Unit, String] uses Console.Write
+  bind value <- try Json.parse(r"[-0,-0.0,1.0,1e2]") |> Result.mapError(_, Json.ParseError.message)
+  Console.writeLine(Json.stringify(value))
+  Console.writeLine(Trait.Show.show(Option.andThen(Json.at(value, 0), Json.asInteger)))
+  Console.writeLine(Trait.Show.show(Option.andThen(Json.at(value, 2), Json.asInteger)))
+  Console.writeLine(Trait.Show.show(Option.andThen(Json.at(value, 3), Json.asFloat)))
+  bind object <- try Json.parse("{\"z\":1,\"a\":true,\"z\":2}") |> Result.mapError(_, Json.ParseError.message)
+  Console.writeLine(Json.stringifyPretty(object))
+  Console.writeLine(Trait.Show.show(Option.andThen(Json.get(object, "a"), Json.asBoolean)))
+  Console.writeLine(Trait.Show.show(Json.get(object, "missing") = Option.None and Json.at(value, 4) = Option.None))
+  bind again <- try Json.parse(Json.stringify(value)) |> Result.mapError(_, Json.ParseError.message)
+  Console.writeLine(Trait.Show.show(value = again))
+  return Result.Ok(())
+end function

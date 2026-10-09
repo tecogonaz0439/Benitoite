@@ -1,25 +1,27 @@
 // spec: 01-02 例
 // spec: 01-02 パターンマッチ
 // spec: 01-02 パイプ
-type Shape {
+import Benitoite.Unofficial.IO.Console
+
+data Shape
   Circle(Float)
   Rect(Float, Float)
-}
+end data
 
-fn area(shape: Shape) -> Float {
-  match shape {
-    Shape.Circle(radius) => 3.14159 * radius * radius
-    Shape.Rect(width, height) => width * height
-  }
-}
+function area(shape: Shape) -> Float
+  return match shape with
+    case Shape.Circle(radius) -> 3.14159 * radius * radius
+    case Shape.Rect(width, height) -> width * height
+  end match
+end function
 
-fn totalArea(shapes: List[Shape]) -> Float {
-  shapes
+function totalArea(shapes: List[Shape]) -> Float
+  return shapes
     |> List.map(area)
-    |> List.fold(0.0, fn(acc, value) { acc + value })
-}
+    |> List.fold(0.0, lambda(acc, value) return acc + value end lambda)
+end function
 
-fn main() -> Unit uses IO {
-  let shapes = [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
-  Console.println(Float.toString(totalArea(shapes)))
-}
+function main() -> Unit uses Console.Write
+  bind shapes <- [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
+  return Console.writeLine(Float.toString(totalArea(shapes)))
+end function

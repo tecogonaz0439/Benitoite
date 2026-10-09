@@ -1,0 +1,61 @@
+//! Functions on `Integer`, the 64-bit signed integer type.
+
+/// Returns the decimal representation of `n`, with a leading `-` when negative.
+@builtin("Integer.toString")
+public function toString(n: Integer) -> String
+
+/// Reads a decimal integer. Returns `Option.None` when `s` is not an integer or is out of range.
+@builtin("Integer.parse")
+public function parse(s: String) -> Option[Integer]
+
+/// Returns the `Float` nearest to `n`.
+@builtin("Integer.toFloat")
+public function toFloat(n: Integer) -> Float
+
+/// Divides and rounds the quotient toward negative infinity. Stops the program when `b` is 0.
+@builtin("Integer.floorDivide")
+public function floorDivide(a: Integer, b: Integer) -> Integer
+
+/// Returns the remainder whose sign follows `b`. Stops the program when `b` is 0.
+@builtin("Integer.floorModulo")
+public function floorModulo(a: Integer, b: Integer) -> Integer
+
+/// Returns the absolute value. Stops the program when `n` is the smallest `Integer`.
+@builtin("Integer.absolute")
+public function absolute(n: Integer) -> Integer
+
+/// Returns the smaller of `a` and `b`.
+@builtin("Integer.minimum")
+public function minimum(a: Integer, b: Integer) -> Integer
+
+/// Returns the larger of `a` and `b`.
+@builtin("Integer.maximum")
+public function maximum(a: Integer, b: Integer) -> Integer
+
+/// Returns the bitwise AND.
+@builtin("Integer.bitwiseAnd")
+public function bitwiseAnd(a: Integer, b: Integer) -> Integer
+
+/// Returns the bitwise OR.
+@builtin("Integer.bitwiseOr")
+public function bitwiseOr(a: Integer, b: Integer) -> Integer
+
+/// Returns the bitwise exclusive OR.
+@builtin("Integer.bitwiseExclusiveOr")
+public function bitwiseExclusiveOr(a: Integer, b: Integer) -> Integer
+
+/// Inverts all bits.
+@builtin("Integer.bitwiseNot")
+public function bitwiseNot(a: Integer) -> Integer
+
+/// Shifts left by `n` bits, filling the low bits with 0.
+@builtin("Integer.shiftLeft")
+public function shiftLeft(a: Integer, n: Integer) -> Integer
+
+/// Shifts right by `n` bits, filling the high bits with the sign bit.
+@builtin("Integer.shiftRight")
+public function shiftRight(a: Integer, n: Integer) -> Integer
+
+/// Shifts right by `n` bits, filling the high bits with 0.
+@builtin("Integer.shiftRightUnsigned")
+public function shiftRightUnsigned(a: Integer, n: Integer) -> Integer

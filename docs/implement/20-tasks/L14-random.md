@@ -33,26 +33,29 @@
 
 - `src/builtins/funcs/random.rs` の 9 項目の本体と単体テスト
 - SplitMix64 と xoshiro256** と範囲の変換の非公開の関数（純粋な生成器と隠れた生成器で共有する）
-- `runtime::run` で隠れた生成器の種を入れる数行と、`getrandom` の依存（10-16 の表の指定）
-- `IoView::random_u64`（R26 が書いたもの）が本作業の xoshiro256** の一歩と同じになっていることの確かめ。違えば本作業の関数を呼ぶ形に改める
+- 隠れた生成器の種を入れる関数（`src/runtime/run.rs` の中の非公開の関数。名前は例えば `seed_hidden_random`）と、それを呼ぶ数行。`run_program` と `run_test` はどちらも `src/runtime/run.rs` の `run_entry` を通るので、`run_entry` の `IoRuntime::new` の直後でこの関数を一度呼ぶ。これで `run_program` と `run_test` の両方に種が入る
+- `Cargo.toml` の依存に `getrandom = "=0.4.3"` を加える（10-16 の表の指定。既定の機能のままとし、`rand_core` は入らない）
+- `IoView::random_u64`（R26 が書いたもの）は、Vigna の xoshiro256** と一致していることを事前点検で確かめたので、改める必要はない。本作業の xoshiro256** の一歩と共有の関数にまとめるかは任意とする
 
 ## 手順の要点
 
-- 変換の手順は、03-07「Random」の箇条のとおりに書く。幅 n = high − low を符号なしの 64 ビットで求め（`low`・`high` の差は `i64` では溢れうるので `wrapping_sub` を `u64` にしてから計算する）、x が 2^64 − (2^64 mod n) 未満なら low + (x mod n)、そうでなければ次の x でやり直す。浮動小数は x を 11 ビット右にずらして 2^−53 を掛ける。真偽値は最上位のビット。並べ替えは i を m − 1 から 1 まで減らし、0 以上 i + 1 未満の j と入れ替える。選択は 0 以上 m 未満の位置で、空のリストでは x を使わない。
-- 種は、64 ビットの 2 の補数として符号なしの値に読み替えて SplitMix64 に与え、続けて返す 4 個の値を xoshiro256** の状態とする。
+- 変換の手順は、03-07「Random」の箇条のとおりに書く。幅 n = high − low を符号なしの 64 ビットで求め（`low`・`high` の差は `i64` では溢れうるので `high.abs_diff(low)` で求める）、x が 2^64 − (2^64 mod n) 未満なら low + (x mod n)、そうでなければ次の x でやり直す。2^64 は `u64` に収まらないので、受け入れの判定は r = `n.wrapping_neg() % n`（2^64 mod n に等しい）を求め、`x <= u64::MAX - r` なら受け入れる形で書く。low + (x mod n) は `low.checked_add_unsigned(x % n)` で求める（結果は `high` 未満なので溢れないが、溢れたら処理系の不具合とする）。浮動小数は x を 11 ビット右にずらして 2^−53 を掛ける。真偽値は最上位のビット。並べ替えは i を m − 1 から 1 まで減らし、0 以上 i + 1 未満の j と入れ替える。選択は 0 以上 m 未満の位置で、空のリストでは x を使わない。
+- 種は、64 ビットの 2 の補数として符号なしの値に読み替えて SplitMix64 に与え、続けて返す 4 個の値を xoshiro256** の状態とする。SplitMix64 は Vigna の `splitmix64.c` の形とする。一歩ごとに、状態に `0x9e3779b97f4a7c15` を先に足し（`wrapping_add`）、足した後の値を混ぜた値を返す。
 - `Random.Generator` の値は、状態（`[u64; 4]`）を持つ `OpaqueData` である。`nextInteger` などは、引数の生成器を変えず、次の状態の新しい生成器を作り、値と組にした `Pair`（`tags::PAIR`）を返す。
-- `Random.integer`・`nextInteger` は、`high` が `low` 以下なら実行時エラー（`ArgumentOutOfDomain`。引数の位置は `high` の位置）。
+- `Random.integer`・`nextInteger` は、`high` が `low` 以下なら実行時エラー（`ArgumentOutOfDomain`。引数の位置は `high` の位置で、`Random.integer(low, high)` では 1、`Random.nextInteger(g, low, high)` では 2）。`RuntimeError::ArgumentOutOfDomain` の `function` の欄には、その項目の宣言（`DECLS`）の `name` と同じ文字列を入れる（既存の作業の書き方に倣う）。
 - 隠れた生成器の操作（`Io`）は、`IoServices::random_u64` で x を得る。操作は VM のスレッドで、すぐに完了する（02-09「組み込みの操作とハンドラ表」）。
-- 種: `runtime::run` が `IoRuntime` を作った直後に、`getrandom::u64()` の値を種として SplitMix64 で広げ、`random_state` に入れる。`getrandom` が失敗したら、処理系の不具合（`Stop::Internal`）として実行を止める（10-16）。テスト用の部品で作る実行（`RunEnv::parts` が `Some`）も同じく OS の乱数を使う。テストで値を固定するときは、スクリプトの `Random.Generate` のハンドラで固定する（01-07）。
+- 種: `run_entry` が `IoRuntime` を作った直後に、上の関数で `getrandom::u64()` の値を種として SplitMix64 で広げ、`random_state` に入れる。`getrandom::u64()` を `IoRuntime::new` の前に呼んで値を保ち、作った後に入れてもよい。`getrandom` が失敗したら、処理系の不具合として実行を終える（`src/runtime/run.rs` の `internal_end` で、イベントループを作れないときと同じく終える。10-16）。テスト用の部品で作る実行（`RunEnv::parts` が `Some`）も同じく OS の乱数を使う。テストで値を固定するときは、スクリプトの `Random.Generate` のハンドラで固定する（01-07）。
 
 ## 受け入れテスト
 
-- 決まった列（ADR 0172 が求める、版によらない列）: 種 0・1・−1・2^63 − 1 について、`fromSeed` から `nextInteger`（幅 1、幅 6、幅 2^63 を超える幅）・`nextFloat`・`shuffleWith` を続けた値の列を、03-07 の手順を別に書き下したテストの中の参照の実装（テストのモジュールの中に置く、同じ手順の素直な実装）と比べる。SplitMix64 と xoshiro256** の公開の参照の値（各アルゴリズムの作者の C の参照の実装が出す、種 0 からの最初の数個の値）とも比べる。参照の値は、出典（URL）をテストのコメントに書き、作業の中で確かめた値を使う。確かめられなければ、書き下した参照の実装との比較だけにし、完了の報告に書く。
-- やり直しの経路: 幅 n が 2 の累乗でないとき、x がやり直しの範囲に入る値を与えて（xoshiro の状態を直接作る非公開の関数をテストで使う）、次の x が使われる。
+- 決まった列（ADR 0172 が求める、版によらない列）: 種 0・1・−1・2^63 − 1 について、`fromSeed` から `nextInteger`（幅 1、幅 6、幅 2^63 を超える幅）・`nextFloat`・`shuffleWith` を続けた値の列を、03-07 の手順を別に書き下したテストの中の参照の実装（テストのモジュールの中に置く、同じ手順の素直な実装）と比べる。SplitMix64 と xoshiro256** の値は、テストの中に書き下した参照の実装（Vigna の `splitmix64.c`・`xoshiro256starstar.c` の式を素直に写したもの。式の出典の URL をテストのコメントに書く）との比較で確かめる。作者の参照の値をネットワークから取得しない。
+- やり直しの経路: 幅 n が 2 の累乗でないとき、x がやり直しの範囲に入る値を与えて（xoshiro の状態を直接作る非公開の関数をテストで使う）、次の x が使われる。n = 2^63 + 1 ではやり直しの範囲がほぼ半分になるので、この幅で、最初の x がやり直しの範囲に入る種をテストの中で探して使う形でもよい。
 - 範囲: `nextInteger(g, low, high)` の値が `low` 以上 `high` 未満、`nextFloat` の値が 0.0 以上 1.0 未満。`high = low` と `high < low` で実行時エラー。`low = Integer の最小値`、`high = Integer の最大値` で溢れない。
 - 引数を変えない: `nextInteger` の前後で、同じ生成器から同じ値が得られる（純粋な関数である）。
 - 隠れた生成器: 状態を与えた `IoView`（テスト用の部品で作ったもの）で `Random.integer` などが、同じ状態の純粋な生成器と同じ値を返す。空のリストの `choose` が `Option.None` で、状態を進めない。
 - スクリプト: `handle` で `Random.Generate` の操作を処理して値を固定できる。二回の実行で `Random.integer(0, 1000000)` の列が（ほぼ確実に）違う（種が OS の乱数である）。
+- `run_test` の経路: `run_test` で実行したテストの関数の中でも隠れた生成器に種が入っている（`Random.integer(0, 1000000)` を何回か呼んで、すべてが 0 ではない。種が入らず状態が 0 のままの xoshiro256** は 0 だけを返す）。
+- スクリプトのテストで U3 の非公式のモジュールを取り込むときは、非公式の名前（`import Benitoite.Unofficial.IO.Random` など。ADR 0286 の決定 3）で書く。03-08 などの設計書の例の `import Benitoite.Json` の形（非公式の名前を使わない形）を写すと、E0321 になる。
 
 ## 完了条件
 

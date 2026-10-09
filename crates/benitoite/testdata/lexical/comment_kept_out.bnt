@@ -1,6 +1,8 @@
 // spec: 01-01 コメント
 // spec: 01-01 文字列リテラル
-fn main() -> Unit uses IO {
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
   // This comment does not start a string.
-  Console.println("// this is text") // This is a trailing comment.
-}
+  return Console.writeLine("// this is text") // This is a trailing comment.
+end function

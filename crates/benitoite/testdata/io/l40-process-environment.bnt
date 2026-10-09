@@ -1,0 +1,18 @@
+// 設計書 03-07「Process」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Path
+function main() -> Result[Unit, String] uses Process.Environment, File.Read, Console.Write
+  bind unset <- try Process.environmentVariable("BENITOITE_GOLDEN_UNSET_L40_8F3B927A") |> Result.mapError(_, IOError.message)
+  Console.writeLine(Trait.Show.show(unset))
+  Console.writeLine(Trait.Show.show(Path.fileName(Process.scriptDirectory())))
+  bind working <- try Process.workingDirectory() |> Result.mapError(_, IOError.message)
+  bind absolute <- try File.canonicalize(Path.join(working, "marker.txt")) |> Result.mapError(_, IOError.message)
+  Console.writeLine(Trait.Show.show(Path.fileName(absolute)))
+  Console.writeLine(Trait.Show.show(Process.arguments()))
+  return Result.Ok(())
+end function

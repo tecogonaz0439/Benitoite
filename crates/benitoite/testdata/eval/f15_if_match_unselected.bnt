@@ -1,0 +1,20 @@
+// spec: 01-08 正格評価
+// spec: 01-08 評価順序
+// spec: 01-02 条件分岐
+// spec: 01-02 パターンマッチ
+import Benitoite.Unofficial.IO.Console
+data Choice
+ First
+ Second
+end data
+function main() -> Unit uses Console.Write
+ if true then
+  Console.writeLine("if-selected")
+ else
+  Console.writeLine("if-unselected")
+ end if
+ match Choice.First with
+ case Choice.First -> Console.writeLine("match-selected")
+ case Choice.Second -> Console.writeLine("match-unselected")
+ end match
+end function

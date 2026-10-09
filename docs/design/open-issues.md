@@ -39,7 +39,7 @@
 | [OPEN-033](#open-033) | テストでケーパビリティを差し替える方法 | 決着（[ADR 0117](decisions/0117-capabilities-as-effects.md)、[ADR 0118](decisions/0118-effect-handlers.md)） | [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md) |
 | [OPEN-034](#open-034) | `IOErrorKind` の構成子の一覧 | 決着（[ADR 0144](decisions/0144-ioerrorkind-constructors.md)、[ADR 0145](decisions/0145-network-error.md)） | [01-spec/01-09-errors.md](01-spec/01-09-errors.md), [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [03-interop/03-09-network.md](03-interop/03-09-network.md) |
 | [OPEN-035](#open-035) | 初回リリース版のライブラリの提供方法 | 決着（[ADR 0137](decisions/0137-first-release-library-scope.md)、[ADR 0138](decisions/0138-crates-and-licenses-for-stdlib.md)、[ADR 0139](decisions/0139-external-functions-via-wasm.md)） | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-04-glossary.md](00-overview/00-04-glossary.md), [01-spec/01-03-names-modules.md](01-spec/01-03-names-modules.md), [01-spec/01-04-types-basic.md](01-spec/01-04-types-basic.md), [01-spec/01-09-errors.md](01-spec/01-09-errors.md), [01-spec/01-10-resources.md](01-spec/01-10-resources.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [03-interop/03-01-library-structure.md](03-interop/03-01-library-structure.md), [04-extensions/04-01-external-functions.md](04-extensions/04-01-external-functions.md), [04-extensions/04-02-plugins-wasm.md](04-extensions/04-02-plugins-wasm.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
-| [OPEN-036](#open-036) | 初回リリース版のメモリの管理の方式 | 未決 | [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [00-overview/00-04-glossary.md](00-overview/00-04-glossary.md), [08-appendix/08-01-implementation-language-comparison.md](08-appendix/08-01-implementation-language-comparison.md), [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [07-quality/07-02-performance.md](07-quality/07-02-performance.md) |
+| [OPEN-036](#open-036) | 初回リリース版のメモリの管理の方式 | 決着（[ADR 0355](decisions/0355-mark-sweep-k1-for-first-release.md)） | [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [00-overview/00-04-glossary.md](00-overview/00-04-glossary.md), [08-appendix/08-01-implementation-language-comparison.md](08-appendix/08-01-implementation-language-comparison.md), [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [07-quality/07-02-performance.md](07-quality/07-02-performance.md) |
 | [OPEN-037](#open-037) | 実行時の権限制御を OS のサンドボックスでも強制する方式 | 決着（[ADR 0180](decisions/0180-server-in-same-binary-with-per-run-processes.md)、[ADR 0196](decisions/0196-os-sandbox-mechanisms.md)〜[0198](decisions/0198-network-through-daemon-proxy.md)。事実の確認は [OPEN-057](#open-057)） | [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [08-appendix/08-01-implementation-language-comparison.md](08-appendix/08-01-implementation-language-comparison.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [02-impl/02-12-os-sandbox.md](02-impl/02-12-os-sandbox.md) |
 | [OPEN-038](#open-038) | テストの設計の原則と、Khorikov の書籍の対応の確認 | 要検証 | [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
 | [OPEN-039](#open-039) | 初回リリース版の値の表現と、その実装に unsafe を使うか | 決着（[ADR 0258](decisions/0258-sixteen-byte-value-enum.md)、[ADR 0260](decisions/0260-heap-and-unsafe-boundary.md)） | [07-quality/07-02-performance.md](07-quality/07-02-performance.md), [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
@@ -51,29 +51,68 @@
 | [OPEN-045](#open-045) | ネットワークの操作の権限の宣言 | 決着（[ADR 0147](decisions/0147-remove-permission-declaration-syntax.md) で権限の宣言の構文を削除した。ネットワークの操作の権限は [OPEN-052](#open-052)。範囲・API・クレートは [ADR 0140](decisions/0140-network-separated-from-local-io.md)〜[0143](decisions/0143-http-and-tls-crates.md)） | [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [03-interop/03-09-network.md](03-interop/03-09-network.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md) |
 | [OPEN-046](#open-046) | プロパティベーステストと、入力の生成器の導出 | 未決 | [06-tooling/06-04-test-runner.md](06-tooling/06-04-test-runner.md), [01-spec/01-06-type-system.md](01-spec/01-06-type-system.md), [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md) |
 | [OPEN-047](#open-047) | ドキュメントコメントに書いた例の実行 | 未決 | [01-spec/01-02-syntax.md](01-spec/01-02-syntax.md) |
-| [OPEN-048](#open-048) | プロジェクトの設定ファイルと、根のディレクトリの指定 | 未決 | [01-spec/01-03-names-modules.md](01-spec/01-03-names-modules.md), [06-tooling/06-01-cli.md](06-tooling/06-01-cli.md), [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md) |
+| [OPEN-048](#open-048) | プロジェクトの設定ファイルと、根のディレクトリの指定 | 未決 | [01-spec/01-03-names-modules.md](01-spec/01-03-names-modules.md), [06-tooling/06-01-cli.md](06-tooling/06-01-cli.md), [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md), [06-tooling/06-08-agent-harness.md](06-tooling/06-08-agent-harness.md) |
 | [OPEN-049](#open-049) | パッケージの名前空間と取り込み方 | 未決 | [01-spec/01-03-names-modules.md](01-spec/01-03-names-modules.md), [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md), [02-impl/02-04-resolver.md](02-impl/02-04-resolver.md), [03-interop/03-01-library-structure.md](03-interop/03-01-library-structure.md), [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md) |
 | [OPEN-050](#open-050) | 標準の型クラスと重複する既存の関数を隠すか | 未決 | [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md), [01-spec/01-06-type-system.md](01-spec/01-06-type-system.md), [00-overview/00-01-goals.md](00-overview/00-01-goals.md) |
-| [OPEN-051](#open-051) | 外部の関数（WASM）の詳細 | 未決 | [04-extensions/04-01-external-functions.md](04-extensions/04-01-external-functions.md), [04-extensions/04-02-plugins-wasm.md](04-extensions/04-02-plugins-wasm.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [02-impl/02-11-embedding.md](02-impl/02-11-embedding.md), [01-spec/01-04-types-basic.md](01-spec/01-04-types-basic.md), [01-spec/01-09-errors.md](01-spec/01-09-errors.md), [03-interop/03-01-library-structure.md](03-interop/03-01-library-structure.md), [08-appendix/08-02-prior-art.md](08-appendix/08-02-prior-art.md) |
-| [OPEN-052](#open-052) | 実行時の権限制御の方式 | 未決 | [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [03-interop/03-09-network.md](03-interop/03-09-network.md), [06-tooling/06-01-cli.md](06-tooling/06-01-cli.md), [06-tooling/06-04-test-runner.md](06-tooling/06-04-test-runner.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [00-overview/00-04-glossary.md](00-overview/00-04-glossary.md), [02-impl/02-01-pipeline.md](02-impl/02-01-pipeline.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [02-impl/02-10-diagnostics.md](02-impl/02-10-diagnostics.md), [02-impl/02-11-embedding.md](02-impl/02-11-embedding.md), [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [04-extensions/04-01-external-functions.md](04-extensions/04-01-external-functions.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [02-impl/02-12-os-sandbox.md](02-impl/02-12-os-sandbox.md) |
+| [OPEN-051](#open-051) | 外部の関数（WASM）の詳細 | 未決 | [04-extensions/04-01-external-functions.md](04-extensions/04-01-external-functions.md), [04-extensions/04-02-plugins-wasm.md](04-extensions/04-02-plugins-wasm.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [02-impl/02-11-embedding.md](02-impl/02-11-embedding.md), [01-spec/01-04-types-basic.md](01-spec/01-04-types-basic.md), [01-spec/01-09-errors.md](01-spec/01-09-errors.md), [03-interop/03-01-library-structure.md](03-interop/03-01-library-structure.md), [08-appendix/08-02-prior-art.md](08-appendix/08-02-prior-art.md), [08-appendix/08-03-language-surveys.md](08-appendix/08-03-language-surveys.md), [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md) |
+| [OPEN-052](#open-052) | 実行時の権限制御の方式 | 未決 | [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [03-interop/03-09-network.md](03-interop/03-09-network.md), [06-tooling/06-01-cli.md](06-tooling/06-01-cli.md), [06-tooling/06-04-test-runner.md](06-tooling/06-04-test-runner.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [00-overview/00-04-glossary.md](00-overview/00-04-glossary.md), [02-impl/02-01-pipeline.md](02-impl/02-01-pipeline.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [02-impl/02-10-diagnostics.md](02-impl/02-10-diagnostics.md), [02-impl/02-11-embedding.md](02-impl/02-11-embedding.md), [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [04-extensions/04-01-external-functions.md](04-extensions/04-01-external-functions.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [02-impl/02-12-os-sandbox.md](02-impl/02-12-os-sandbox.md), [08-appendix/08-03-language-surveys.md](08-appendix/08-03-language-surveys.md) |
 | [OPEN-053](#open-053) | 外部コマンドの起動の細部 | 決着（[ADR 0243](decisions/0243-signal-exit-code-and-posix-shell.md)） | [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md) |
 | [OPEN-054](#open-054) | タスクどうしが待ち合って進めなくなったときの扱い | 決着（[ADR 0238](decisions/0238-task-wait-deadlock-as-runtime-error.md)） | [01-spec/01-11-concurrency.md](01-spec/01-11-concurrency.md), [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [01-spec/01-08-evaluation.md](01-spec/01-08-evaluation.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [02-impl/02-10-diagnostics.md](02-impl/02-10-diagnostics.md) |
 | [OPEN-055](#open-055) | サーバモードの設計 | 未決 | [00-overview/00-01-goals.md](00-overview/00-01-goals.md), [00-overview/00-02-architecture.md](00-overview/00-02-architecture.md), [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [00-overview/00-04-glossary.md](00-overview/00-04-glossary.md), [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [02-impl/02-01-pipeline.md](02-impl/02-01-pipeline.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [02-impl/02-11-embedding.md](02-impl/02-11-embedding.md), [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [03-interop/03-09-network.md](03-interop/03-09-network.md), [06-tooling/06-01-cli.md](06-tooling/06-01-cli.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [02-impl/02-12-os-sandbox.md](02-impl/02-12-os-sandbox.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
-| [OPEN-056](#open-056) | 自前のコーディングエージェントの設計 | 未決 | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
+| [OPEN-056](#open-056) | 自前のコーディングエージェントの設計 | 未決 | [00-overview/00-03-roadmap.md](00-overview/00-03-roadmap.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [08-appendix/08-03-language-surveys.md](08-appendix/08-03-language-surveys.md), [06-tooling/06-08-agent-harness.md](06-tooling/06-08-agent-harness.md) |
 | [OPEN-057](#open-057) | OS のサンドボックスとデーモンの常駐に関する事実の確認 | 要検証 | [02-impl/02-12-os-sandbox.md](02-impl/02-12-os-sandbox.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md) |
 | [OPEN-058](#open-058) | テストの結果の報告の形の細部 | 決着（[ADR 0252](decisions/0252-test-report-format.md)） | [06-tooling/06-04-test-runner.md](06-tooling/06-04-test-runner.md), [02-impl/02-10-diagnostics.md](02-impl/02-10-diagnostics.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
-| [OPEN-059](#open-059) | 初回リリース版の実装と確認の分担 | 決着（[ADR 0285](decisions/0285-implementer-assignment-for-first-release.md)） | [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
+| [OPEN-059](#open-059) | 初回リリース版の実装と確認の分担 | 決着（[ADR 0285](decisions/0285-implementer-assignment-for-first-release.md)、[ADR 0308](decisions/0308-implementation-by-codex-sol.md) で改めた） | [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
 | [OPEN-060](#open-060) | 配布と Agent Skill の導入に関する事実の確認 | 要検証 | [05-platform/05-01-distribution.md](05-platform/05-01-distribution.md), [06-tooling/06-06-agent-skills.md](06-tooling/06-06-agent-skills.md) |
-| [OPEN-061](#open-061) | リポジトリを公開する前の設計メモの扱い | 未決 | [05-platform/05-01-distribution.md](05-platform/05-01-distribution.md) |
+| [OPEN-061](#open-061) | リポジトリを公開する前の設計メモの扱い | 決着（[ADR 0350](decisions/0350-publish-repository-with-history.md)） | [05-platform/05-01-distribution.md](05-platform/05-01-distribution.md) |
 | [OPEN-062](#open-062) | 設計書の 2 回目のレビューで指摘された実行時の振る舞いの再現 | 要検証 | [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [01-spec/01-11-concurrency.md](01-spec/01-11-concurrency.md), [02-impl/02-05-typechecker.md](02-impl/02-05-typechecker.md), [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md), [03-interop/03-08-text-and-data.md](03-interop/03-08-text-and-data.md), [03-interop/03-09-network.md](03-interop/03-09-network.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
 | [OPEN-063](#open-063) | 窓を重ねる形と、区画の記憶域の再利用 | 要検証 | [02-impl/02-08-vm.md](02-impl/02-08-vm.md) |
-| [OPEN-064](#open-064) | 検証器を通したうえでの、振り分けのループの範囲の確かめの省略 | 要検証 | [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
+| [OPEN-064](#open-064) | 検証器を通したうえでの、振り分けのループの範囲の確かめの省略 | 決着（[ADR 0315](decisions/0315-keep-dispatch-range-checks.md)） | [02-impl/02-08-vm.md](02-impl/02-08-vm.md), [07-quality/07-03-compiler-testing.md](07-quality/07-03-compiler-testing.md) |
 | [OPEN-065](#open-065) | 値を 8 バイトにする案 | 要検証 | [02-impl/02-08-vm.md](02-impl/02-08-vm.md) |
 | [OPEN-066](#open-066) | 非公式のライブラリと標準ライブラリの関係 | 決着（[ADR 0286](decisions/0286-unofficial-modules-imported-under-unofficial.md)） | [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md) |
 | [OPEN-067](#open-067) | 自分のタスクが評価した `handle` の、末尾で再開する節の直接の実行 | 未決 | [02-impl/02-08-vm.md](02-impl/02-08-vm.md) |
 | [OPEN-068](#open-068) | 形式化した定義を 01-12 の規則の正とするか | 決着（[ADR 0307](decisions/0307-lean-definitions-normative-for-core-calculus.md)） | [07-quality/07-04-formal-semantics.md](07-quality/07-04-formal-semantics.md), [01-spec/01-12-core-calculus.md](01-spec/01-12-core-calculus.md) |
 | [OPEN-069](#open-069) | 形式化の表現の選び方 | 決着（[ADR 0306](decisions/0306-formalization-representation.md)） | [07-quality/07-04-formal-semantics.md](07-quality/07-04-formal-semantics.md) |
 | [OPEN-070](#open-070) | 組み込みの制約を付けた型パラメータの、コア計算での型付け | 決着（[ADR 0297](decisions/0297-builtin-constraints-in-core-and-op-type-substitution.md)） | [01-spec/01-12-core-calculus.md](01-spec/01-12-core-calculus.md), [01-spec/01-06-type-system.md](01-spec/01-06-type-system.md), [07-quality/07-04-formal-semantics.md](07-quality/07-04-formal-semantics.md) |
+| [OPEN-071](#open-071) | `Opaque`・`Host` の対象が持つ別の領域の容量を、確保の量に数える方法 | 未決 | [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md) |
+| [OPEN-072](#open-072) | 性質 1（脱糖の型の保存）の形式化と証明 | 未決 | [07-quality/07-04-formal-semantics.md](07-quality/07-04-formal-semantics.md), [01-spec/01-12-core-calculus.md](01-spec/01-12-core-calculus.md) |
+| [OPEN-073](#open-073) | パッケージ管理を設ける時期と、依存の記述・版の選び方 | 未決 | [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md) |
+| [OPEN-074](#open-074) | パッケージの取得元と取得の制約 | 未決 | [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
+| [OPEN-075](#open-075) | パッケージのエフェクトと権限 | 未決 | [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md) |
+| [OPEN-076](#open-076) | パッケージと WASM の署名、プロジェクトの鍵 | 未決 | [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
+| [OPEN-077](#open-077) | 依存関係地獄を言語仕様で防ぐ手段 | 未決 | [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md) |
+| [OPEN-078](#open-078) | 公式の追加のライブラリの配り方と、非公式のモジュールの行き先 | 未決 | [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md), [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md) |
+| [OPEN-079](#open-079) | コマンドを代替する機能の範囲と優先度 | 未決 | [03-interop/03-01-library-structure.md](03-interop/03-01-library-structure.md), [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [03-interop/03-08-text-and-data.md](03-interop/03-08-text-and-data.md) |
+| [OPEN-080](#open-080) | 外部コマンドを使う操作の選び方と、エージェントへの示し方 | 未決 | [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [06-tooling/06-06-agent-skills.md](06-tooling/06-06-agent-skills.md), [03-interop/03-01-library-structure.md](03-interop/03-01-library-structure.md) |
+| [OPEN-081](#open-081) | 外部のライブラリのエフェクトを、権限の表示にどう出すか | 未決 | [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [03-interop/03-01-library-structure.md](03-interop/03-01-library-structure.md), [06-tooling/06-05-package-manager.md](06-tooling/06-05-package-manager.md) |
+| [OPEN-082](#open-082) | git の提供のしかたと、エフェクトの分け方 | 未決 | [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [03-interop/03-01-library-structure.md](03-interop/03-01-library-structure.md) |
+| [OPEN-083](#open-083) | `Process.Run` の許可の対象を引数まで細かくするときの照合の規則 | 未決 | [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md) |
+| [OPEN-084](#open-084) | 裏で動かすプロセスと、取り消しのときの子プロセスの扱い | 未決 | [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md) |
+| [OPEN-085](#open-085) | サーバモードを加えた後のスタンドアロンモードの既定の書き込みの範囲と、個人用の道具 | 未決 | [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md) |
+| [OPEN-086](#open-086) | 開いたリソースへ流す操作の広げ方と、`File.copy` の細部 | 未決 | [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [03-interop/03-08-text-and-data.md](03-interop/03-08-text-and-data.md), [03-interop/03-09-network.md](03-interop/03-09-network.md), [02-impl/02-09-runtime.md](02-impl/02-09-runtime.md) |
+| [OPEN-087](#open-087) | 外部コマンドに渡す環境変数を、スクリプトの環境変数から切り離す方法 | 未決 | [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md) |
+| [OPEN-088](#open-088) | 秘密の値の型と、秘密を扱うエフェクト | 未決 | [01-spec/01-07-effects.md](01-spec/01-07-effects.md), [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md) |
+| [OPEN-089](#open-089) | 人間から秘密を受け取る経路 | 未決 | [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [03-interop/03-09-network.md](03-interop/03-09-network.md), [06-tooling/06-08-agent-harness.md](06-tooling/06-08-agent-harness.md) |
+| [OPEN-090](#open-090) | OS のキーストアと、パスワードマネージャのラッパーの作り方 | 未決 | [03-interop/03-07-io-modules.md](03-interop/03-07-io-modules.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
+| [OPEN-091](#open-091) | HTTP の認証を支える機能の範囲 | 未決 | [03-interop/03-09-network.md](03-interop/03-09-network.md) |
+| [OPEN-092](#open-092) | 処理系が WebAuthn のクライアントになる形 | 未決 | [03-interop/03-09-network.md](03-interop/03-09-network.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
+| [OPEN-093](#open-093) | 物理キーによる操作ごとの承認と、秘密をデーモンだけが持つ配置 | 未決 | [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md) |
+| [OPEN-094](#open-094) | 依存のクレートの基準を一般の方針とするか | 未決 | [03-interop/03-01-library-structure.md](03-interop/03-01-library-structure.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
+| [OPEN-095](#open-095) | エージェントハーネスの提供者を差し替える層、実装の順、使うクレート | 未決 | [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [06-tooling/06-08-agent-harness.md](06-tooling/06-08-agent-harness.md) |
+| [OPEN-096](#open-096) | LLM の提供者に関する事実の確認 | 要検証 | [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [06-tooling/06-08-agent-harness.md](06-tooling/06-08-agent-harness.md) |
+| [OPEN-097](#open-097) | Claude Code の CLI を経由して Claude の購読で使う提供者（候補 L）の採否 | 未決 | [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [06-tooling/06-08-agent-harness.md](06-tooling/06-08-agent-harness.md) |
+| [OPEN-098](#open-098) | MCP のサンプリングを採るかと、その使い道 | 未決 | [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md) |
+| [OPEN-099](#open-099) | エージェントの CLI を包むライブラリの細部 | 未決 | [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
+| [OPEN-100](#open-100) | スクリプトから LLM を直接呼ぶモジュール | 未決 | [06-tooling/06-07-server.md](06-tooling/06-07-server.md) |
+| [OPEN-101](#open-101) | LLM の提供者の認証の情報の保管と、利用者への表示 | 未決 | [06-tooling/06-07-server.md](06-tooling/06-07-server.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md), [06-tooling/06-08-agent-harness.md](06-tooling/06-08-agent-harness.md) |
+| [OPEN-102](#open-102) | エージェントハーネスの設定ファイルの細部と、プロジェクトごとの設定ファイル | 未決 | [06-tooling/06-08-agent-harness.md](06-tooling/06-08-agent-harness.md), [06-tooling/06-01-cli.md](06-tooling/06-01-cli.md) |
+| [OPEN-103](#open-103) | エージェントハーネスの操作・画面・記録の細部 | 未決 | [06-tooling/06-08-agent-harness.md](06-tooling/06-08-agent-harness.md), [07-quality/07-01-security-model.md](07-quality/07-01-security-model.md) |
+| [OPEN-104](#open-104) | HTTP のサーバの要求ごとの失敗の隔離 | 未決 | [01-spec/01-11-concurrency.md](01-spec/01-11-concurrency.md), [03-interop/03-09-network.md](03-interop/03-09-network.md) |
+| [OPEN-105](#open-105) | DB へ到達する手段（SQLite の組み込みと、TCP・TLS のクライアント） | 未決 | [03-interop/03-09-network.md](03-interop/03-09-network.md) |
+| [OPEN-106](#open-106) | 子のタスクから外側のリソースを使う規則と、接続の pool の形 | 未決 | [01-spec/01-11-concurrency.md](01-spec/01-11-concurrency.md), [01-spec/01-10-resources.md](01-spec/01-10-resources.md) |
+| [OPEN-107](#open-107) | 流しながら読み書きする HTTP の本体と、接続の再利用 | 未決 | [03-interop/03-09-network.md](03-interop/03-09-network.md) |
+| [OPEN-108](#open-108) | JSON とレコードの間の変換を作る仕組み | 未決 | [03-interop/03-08-text-and-data.md](03-interop/03-08-text-and-data.md) |
+| [OPEN-109](#open-109) | Web システムに要る標準ライブラリの部品の範囲 | 未決 | [03-interop/03-06-stdlib.md](03-interop/03-06-stdlib.md), [03-interop/03-09-network.md](03-interop/03-09-network.md) |
 
 <a id="open-001"></a>
 ## OPEN-001 表層構文（特にドット記法）とHM推論の整合
@@ -171,6 +210,8 @@ Rust で実装した処理系の実行性能を実測する。IO の内部表現
 - 実装の選択の影響: 命令の長さ（64 ビット固定。[バイトコードとコード生成](02-impl/02-07-bytecode.md)）がバイトコードの大きさと実行時間に与える影響を含める
 - 比較対象: [性能](07-quality/07-02-performance.md)の「比較対象」に従う（設計メモの gopher-lua と Go のバイナリは、Rust で実装することにしたので外した）
 - 配布する実行ファイルの影響: Linux 向けは musl で静的にリンクする（[ADR 0176](decisions/0176-first-release-targets-and-static-linux-build.md)）。musl の標準のメモリ確保が実行時間に与える影響を、glibc のビルドと比べて測る
+
+2026-10-09 に、初回リリース版の完了時の性能の測定を行った（測定の記録 `tools/bench/results/2026-10-09-first-release-4304d507f6bf.md`、メモリの管理の測り直しは `tools/bench/results/2026-10-09-memory-remeasure-4304d507f6bf.md`）。同じ計算機で測った最小実行版の 8 本と比べると、fib・tree・eval・string・lines の時間は短くなり、list は 43.5%、println は 120% 長くなった。値の表現・標準ライブラリ・検査・VM の変更を含む比較であり、メモリの管理の方式だけの効果ではない。比較対象に対しては、fib・loop・eval が CPython の約 0.6〜1.5 倍の時間で、list と map はそれぞれ約 14 倍と約 28 倍の時間だった。永続コレクションを作っては捨てる処理に大きな費用が残る。この測定を受けて、呼び出しの回数の予算の初めの値を 2,500 回にし（[ADR 0356](decisions/0356-call-budget-2500.md)）、初回リリース版では中間表現の最適化を行わないことにした（[ADR 0357](decisions/0357-no-ir-optimization-in-first-release.md)）。メモリの管理の方式は [ADR 0355](decisions/0355-mark-sweep-k1-for-first-release.md) で確定した。測定で見つかった改善の候補のうち、HTTP のリソースの表の走査は初回リリース版の前に直す。`List.range` の構築、出力の IO の受け渡し、大きなスクリプトの検査の時間は、初回リリース版の後に扱う。本項は決着とせず、性能の改善を続ける項目として残す。
 
 <a id="open-010"></a>
 ## OPEN-010 モバイルでのサブプロセス実行可否と配布形態
@@ -275,7 +316,7 @@ iOS のサブプロセス起動不可、Android 10 以降の実行可能ファ�
 
 測定では、構文を一つずつ入れ替えて比べるのに加え、C 系の構文の全体と、語で閉じる構文の全体を並べて比べる。
 
-2026-09-29 に、自前のコーディングエージェントをサーバモードとあわせて作り、この測定にも使える形を目指すことにした（[ADR 0194](decisions/0194-tui-and-own-coding-agent-with-server-mode.md)、[OPEN-056](#open-056)）。
+2026-09-29 に、自前のコーディングエージェントをサーバモードとあわせて作り、この測定にも使える形を目指すことにした（[ADR 0194](decisions/0194-tui-and-own-coding-agent-with-server-mode.md)、[OPEN-056](#open-056)）。作る時期は、2026-10-08 にサーバモードより後に改めた（[ADR 0342](decisions/0342-agent-harness-after-server-mode.md)）。
 
 同日に、同梱の Agent Skill を評価する仕組み（課題ごとの入力と期待する出力、二つ以上のハーネス、決めた回数以内の検査と修正、複数回の試行による成功率と修正の回数の記録）を定め、この測定にも同じ仕組みを使うことにした。構文の案ごとに Skill を差し替えて評価する（[ADR 0232](decisions/0232-skill-evaluation-with-tasks-and-harnesses.md)、[Agent Skills 対応](06-tooling/06-06-agent-skills.md)の「Skill の評価」）。
 
@@ -613,7 +654,7 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 <a id="open-036"></a>
 ## OPEN-036 初回リリース版のメモリの管理の方式
 
-- 種別: 未決
+- 種別: 決着（[ADR 0355](decisions/0355-mark-sweep-k1-for-first-release.md)）
 - 移行元: [設計メモ](sources/fp-language-design.md) 7
 
 最小実行版は、言語の値を参照カウントで管理する（[ADR 0078](decisions/0078-reference-counting-in-minimal.md)）。初回リリース版で可変のセル（[ADR 0063](decisions/0063-ref-cells-with-io-effect.md)）を加えると、値どうしの参照が循環しうる。循環する値を回収する方式を、可変のセルを実装する前に決める。候補は次のとおりである。
@@ -630,6 +671,10 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 2026-09-30 に、作り直しの第 1 段で、回収を安全点に限る非移動のマーク・スイープと、改良した参照カウント（最後の使用での移動、参照の数が 1 の対象のその場での再利用、ADR 0239 の循環の回収）の両方を、同じ値の配置・確保器・VM の上で試作し、測定で暫定に選ぶことにした（[ADR 0259](decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)、[ADR 0268](decisions/0268-staged-runtime-rebuild.md)）。回収の閾値の係数 k もこの測定で決める。ハンドラ・タスク・IO を加えた後に、停止の時間と保持する量を測り直して確かめてから、採った方式を ADR に記録して本項を決着とする。参照カウントを採った場合に限り、ADR 0239 を残す。メモリの管理を自作することは、目的と設計原則の線引きの例外である（[ADR 0271](decisions/0271-self-made-gc-as-exception.md)）。タスクの表の項目の寿命は、[ADR 0258](decisions/0258-sixteen-byte-value-enum.md) と [ADR 0266](decisions/0266-task-and-resource-state-machines.md) で決めた（`Task` の値はタスクの対象への参照にし、タスクを指すほかの参照は所有しない番号にする）。
 
 2026-09-30 に、本項の決着は、U3 の後の map と http のワークロードの測り直しを待って行うことにした。ADR 0268 の決定 5 が、ハンドラ・タスク・HTTP を加えた後に測り直して確かめてから方式を確定するとしているからである。U3 の実装プランの作業がベンチマークを加え、測定は U3・U4 を終えた後に行う。
+
+2026-10-05 に、第 1 段の測定（測定の記録 `tools/bench/results/2026-10-05-stage1-5b300d4-summary.md`）を受けて、マーク・スイープを k = 1 で暫定に採った。参照カウントの実装は処理系から外し、比べた構成を再現できるリビジョンとして残した（実装プランの作業 R14）。ハンドラ・タスク・永続コレクションを加えた後の測り直し（R33）と、HTTP を加えた後の測り直しを経て、本項を決着とする。参照カウントを採らなかったので、ADR 0239 は適用しない。
+
+2026-10-09 に決着した。初回リリース版の実装をすべて取り込んだ版で測り直した（測定の記録 `tools/bench/results/2026-10-09-memory-remeasure-4304d507f6bf.md`）。循環する値を作っては捨てる回数を 10 万回から 1,000 万回まで増やしても、最大ヒープは約 4.2 MB、最大 RSS は約 25.6 MB で変わらなかった。停止の最大は、ハンドラの負荷で約 4.4 ms、HTTP の負荷で約 2.6 ms だった。ハンドラやタスクを加えたことで、保持する量が繰り返しの回数に比例して増える状態は観測しなかった。この結果を受けて、初回リリース版のメモリの管理を、回収を安全点に限る、止めて行う非移動のマーク・スイープとし、k = 1 に確定した（[ADR 0355](decisions/0355-mark-sweep-k1-for-first-release.md)）。ADR 0239 と ADR 0277 は、初回リリース版の処理系に適用しない。大きな値を持つ負荷では停止が長く（最大は lines で約 195 ms）、増分の回収と若い世代は初回リリース版の後に検討する。
 
 <a id="open-037"></a>
 ## OPEN-037 実行時の権限制御を OS のサンドボックスでも強制する方式
@@ -693,6 +738,8 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 
 2026-09-29 に、メジャーバージョンが 0 の間の方針を決めた。マイナーの版では言語・標準ライブラリ・CLI・診断の互換性を壊してよく、パッチの版は不具合の修正だけを含めて互換性を壊さない。互換性を壊す変更は `CHANGELOG` に移行の手順とともに記録し、バイトコードは保存も配布もしないので対象にしない（[ADR 0236](decisions/0236-compatibility-during-0x.md)、[配布形態](05-platform/05-01-distribution.md)の「互換性の方針」）。正式リリース版とする条件と、正式リリース版で約束する範囲は、本項で引き続き決める。
 
+2026-10-09 に、初回リリースからの版の付け方を決めた。初回リリースはソースコードだけのリリースとして版を `0.0.1` とし、以後のソースだけのリリースを `0.0.2`・`0.0.3`…とする。`0.1.0` までは、どのリリースでも互換性を壊す変更をしてよい。実行ファイルを配る最初のリリースを `0.1.0` とし、その後は互換性を壊す変更を `0.x.0` のリリースに限る。正式リリースは `1.0.0` とし、さらに機能が揃い、互換性を壊す変更が要らなくなったと設計者が判断した後に行う（[ADR 0358](decisions/0358-release-versions-and-published-history.md)、[ロードマップ](00-overview/00-03-roadmap.md)の「バージョンとコードネーム」）。正式リリース版とする条件の詳細は、本項で引き続き決める。
+
 <a id="open-041"></a>
 ## OPEN-041 大文字の名前の名前空間と、`Option`・`Result` の構成子の書き方
 
@@ -737,10 +784,15 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 
 初回リリース版の並行処理は、同時に一つのタスクだけを進める（[ADR 0115](decisions/0115-structured-io-concurrency.md)）。初回リリース版の後に、複数のコアで並列に計算することを目指す。並列にしても、並行処理の意味（[並行処理](01-spec/01-11-concurrency.md)）は変えない。次の点を決める。
 
-- 言語の値を複数のスレッドで扱う方式。値をアトミックな参照カウント（Rust の `Arc`）に替えるか、スレッドごとにヒープを分けて、スレッドの間では値を写すか（Erlang のプロセスや OCaml の Domain に近い形）。値の表現の見直し（[OPEN-039](#open-039)）と、循環する値を回収する方式（[OPEN-036](#open-036)）とあわせて決める。
+- 言語の値を複数のスレッドで扱う方式。値をアトミックな参照カウント（Rust の `Arc`）に替えるか、スレッドごとにヒープを分けて、スレッドの間では値を写すか（Erlang のプロセスや OCaml の Domain に近い形）。値の表現の見直し（[OPEN-039](#open-039)）と、循環する値を回収する方式（[OPEN-036](#open-036)。初回リリース版は止めて行うマーク・スイープに決めた。[ADR 0355](decisions/0355-mark-sweep-k1-for-first-release.md)）とあわせて決める。
 - 可変のセルを複数のスレッドで共有するときに、セルの操作が混ざらないことをどう保証するか。STM を設けるかも含める。
 - どのタスクを並列に動かすか。すべてのタスクを並列に動かすか、並列に動かすことを明示する関数を設けるか。
 - ADR 0015 の「一つの実行を同時に進めるスレッドは一つだけ」を、どう改めるか。
+
+2026-10-08 に、一般的な Web システムを動かす場合を検討したメモ（[一般的な Web システムの検討メモ](sources/post-first-release/post-first-release-web-systems.md)の「6. 複数のコアの利用」）の見立てを加えた。ヒープは実行ごとに持つ（ADR 0015）ので、一つのプロセスの中にコアの数だけ実行（ヒープ）を作り、各実行が同じ待ち受けで要求を受け付ける形がとりやすい。実行の間ではメモリを共有しないので、実行をまたいで共有の状態が壊れる心配がない。共有の状態は DB（[OPEN-105](#open-105)）に置く。それまでは、プロセスを複数起動してリバースプロキシで振り分ける運用で足りる。この見立ては決定ではなく、メモの優先の順（暫定）では Web システムに要る機能のうち最後（6 番目）である。この形を採るなら、次の点も決める。
+
+- 複数の実行が一つの待ち受けを共有する方法（OS のソケットの共有か、受け付けを一つの実行に集めて振り分けるか）。
+- 上の三つめの点（どのタスクを並列に動かすか）との関係。実行を分ける形は、一つの実行の中のタスクを並列に動かす形とは別の選択肢であり、両方を設けるかを決める。
 
 <a id="open-045"></a>
 ## OPEN-045 ネットワークの操作の権限の宣言
@@ -791,6 +843,10 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 
 2026-09-29 に、サーバが書く利用者単位の方針のファイルは、プロジェクトの設定ファイルに当たらないものとして、スタンドアロンモードが読むことにした（[ADR 0187](decisions/0187-standalone-reads-user-policy-file.md)）。
 
+2026-10-08 に、パッケージ管理の検討（[OPEN-073](#open-073)）で、依存を書く場所の候補に、実行を始めるファイルとプロジェクトの設定ファイルが挙がった。依存は根ごとに一か所に書く方向なので、設定ファイルを設けるなら、依存の記述をそこに置くか、実行を始めるファイルの先頭に置くかを、あわせて決める。
+
+2026-10-08 に、自前のエージェントハーネスの検討（[自前のエージェントハーネスの検討メモ](sources/post-first-release/post-first-release-agent-harness.md)）で、エージェントハーネスだけが読むプロジェクトごとの設定ファイルを、根のディレクトリだけに置いて辿らない方向が挙がった（[OPEN-102](#open-102)）。これはエージェントハーネスの例外として扱い、本項は決着させない。本項で設定ファイルを設けるときは、エージェントハーネスの設定ファイルと一つにまとめるかを [OPEN-102](#open-102) とあわせて決める。
+
 <a id="open-049"></a>
 ## OPEN-049 パッケージの名前空間と取り込み方
 
@@ -802,6 +858,8 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 - パッケージの名前と、その下のモジュールの名前の付け方。利用者のモジュールや標準ライブラリとの衝突の扱い。
 - パッケージの取得元の指定の仕方。Roc は、アプリケーションのヘッダに、中身のハッシュを含む HTTPS の URL を書く（[他の言語の調査記録](08-appendix/08-03-language-surveys.md)）。
 - パッケージのエフェクトと、実行時の権限制御との関係。
+
+2026-10-08 に、パッケージ管理の検討の論点を分けて登録した。取得元の指定は [OPEN-073](#open-073)（依存の記述）と [OPEN-074](#open-074)（取得元の制約）で、パッケージのエフェクトと権限は [OPEN-075](#open-075) で、公式の追加のライブラリの名前は [OPEN-078](#open-078) で扱う。名前空間について検討した方向は、取り込みの名前と取得元を分けることである。依存の記述でパッケージに別名を付け、本文は `import 別名.モジュール` の形で取り込み、取得元は依存の記述の一か所にだけ現れる（[パッケージ管理の検討メモ](sources/post-first-release/post-first-release-package-management.md)の「名前と取得元を分ける」）。別名と `Benitoite`・`Benitoite.Unofficial`・利用者のモジュールの名前との衝突の扱いは、まだ検討していない。
 
 <a id="open-050"></a>
 ## OPEN-050 標準の型クラスと重複する既存の関数を隠すか
@@ -833,6 +891,26 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 - 処理系にクレートを組み込んでビルドし直す経路（埋め込み API の延長。[スクリプト実行と埋め込み](02-impl/02-11-embedding.md)）を設けるか。
 - C の ABI の共有ライブラリを呼ぶ経路が必要になった場合の、エフェクトと権限の扱い（ADR 0139 では設けないとした）。
 
+2026-10-01 に、外部の関数のエフェクトを、モジュールが取り込む関数（imports）から求める案を検討の候補に加えた。WASM のモジュールは、それ自体では外部に作用できず、ファイル・ネットワーク・時刻などの操作は、どれもホストが与える関数を取り込んで呼ぶ。モジュールが依存するライブラリは、ビルドのときに一つのモジュールに組み込まれるので、依存の先の操作も、最終的にはモジュールの取り込みを通る。したがって、取り込みの一覧から、モジュールが起こしうるエフェクトの上限を機械的に求められる（取り込みのないモジュールは純粋な計算だけを行う）。候補の形は次のとおりである。WASI と wasmtime の取り込みの扱いの調べた結果は、[他の言語の調査記録](08-appendix/08-03-language-surveys.md)の「権限の対象の範囲を型や値で表す仕組み」に記録した。
+
+- 外部の関数の宣言の `uses` に、モジュールの作者が申告したエフェクトを書く。
+- 処理系は、モジュールを読み込むときに、取り込みの一覧から求めたエフェクトが申告に含まれるかを検査し、含まれなければ誤りとする。
+- 処理系は、申告したエフェクトに当たるホストの関数だけをモジュールに与え、それ以外の取り込みは解決しない。申告がそのまま実行時の強制になる。
+
+ソースコード（Rust など）を解析してエフェクトを推論する方式は、依存するライブラリ、`unsafe`、C の関数の呼び出し、動的な呼び出し、マクロが生成するコードを漏れなく扱う必要があり、推論の正しさを保ちにくい。コンパイルした後のモジュールの取り込みで判定すれば、これらをまとめて扱える。検討するときは、次の点を決める。
+
+- ホストの関数（WASI のインターフェースの関数を含む）と組み込みのエフェクトの対応表。関数ごとに対応させるか、インターフェースごとに対応させるか。
+- 取り込んでいても呼ばない関数による広い見積もりの扱い（Rust の標準ライブラリが panic の表示のために標準エラー出力への書き込みを取り込む場合など）。利用者に示す権限が実際より広くなる。
+- 操作の対象の範囲（パス、ホスト）。取り込みから分かるのはエフェクトの種類までであり、範囲は実行時の権限制御で制限する。WASI の、許可したディレクトリだけをモジュールに渡す方式と、[OPEN-052](#open-052) の範囲の候補との関係。
+- 申告を書く場所。宣言の `uses` のほかに、モジュールのカスタムセクションに書かせ、宣言との一致も検査するか。
+
+2026-10-02 に、パッケージにビルド済みの WASM のモジュールを含める場合を検討した（[パッケージ管理の検討メモ](sources/post-first-release/post-first-release-package-management.md)の「パッケージに WASM を含める場合」、[パッケージ管理](06-tooling/06-05-package-manager.md)）。モジュールはホストの関数を通してしか外に作用できない（ADR 0139 の決定 4）ので、含めてもエフェクトの保証と、導入のときにコードを実行しない性質は保たれる。含めるかを、次の点とあわせて決める。
+
+- 中身をソースとして読めない。ハッシュで固定できるのは配られたものが変わっていないことまでで、公開されたソースからビルドしたことは保証しない。対策の候補は、元のソースを同梱させる、再現可能なビルドで照合できるようにする、公式のパッケージだけはこちらでビルドして配る、である。署名との関係は [OPEN-076](#open-076) で扱う。
+- 資源の消費。前述の実行時間とメモリの上限と中断の印の扱いを、パッケージの WASM にも適用する。実行系での手段（Wasmtime の fuel など）は【要検証】である。
+- モジュールのパスの基準。ADR 0139 の決定 3 は根のディレクトリからのパスとしているので、パッケージの中の WASM はパッケージの根からのパスとする規則が要る。
+- 処理系の大きさ。WASM の実行系を処理系に含めると、配布物が大きくなる。
+
 <a id="open-052"></a>
 ## OPEN-052 実行時の権限制御の方式
 
@@ -863,6 +941,22 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 2026-09-29 に、実行時の権限制御・OS のサンドボックス・MCP サーバを初回リリース版に含めず、初回リリース版の後にサーバモードとあわせて加えることにした（[ADR 0177](decisions/0177-server-mode-after-first-release.md)）。本項は、サーバモードの設計（[OPEN-055](#open-055)）とあわせて決める。
 
 2026-09-29 に、次の点を決めた。利用者は許可を一つの形の方針として書き、`server settings` が利用者単位のファイルに書く。スタンドアロンモードもそれを読み、実行するときに渡す方針は許可を狭める向きにだけ働く（[ADR 0183](decisions/0183-single-policy-for-all-permission-layers.md)、[ADR 0186](decisions/0186-run-time-policy-can-only-narrow.md)、[ADR 0187](decisions/0187-standalone-reads-user-policy-file.md)）。許可の単位は組み込みのエフェクトとし、シェルによる実行だけを別にする。待ち受け（`Http.Listen`）と接続（`Http.Connect`）は別の許可になる。実行の前の判定は `main` の型のエフェクトで行い、シェルは名前での参照で判定する（[ADR 0184](decisions/0184-permissions-granted-per-builtin-effect.md)）。既定の方針は [ADR 0185](decisions/0185-default-policies-per-run-kind.md) で決めた。残るのは、ネットワークの操作の対象の書き方・判定の時点・リダイレクトの扱い、相対パスの基準にスクリプトのディレクトリを選べるようにするか、テストの実行で与える許可（テストの実行器と子プロセスでの実行との関係を含む。候補は、一回の `test` の起動を一つの子プロセスで実行し、ファイルごとに同じ方針を掛けること）、拒否の報告に添える修正案である。
+
+2026-10-01 に、操作の対象の範囲を型の側で表す案を検討の候補に加えた。現在の決定では、実行の前の判定は `main` の型のエフェクトで行うが、エフェクトは対象（ホスト、ポート、パス）を持たないので、対象の範囲は方針の側にしか書けない。範囲を関数の型に書ければ、範囲を超える操作を実行の前に型の誤りとして報告でき（設計原則 1）、関数の契約の変更として範囲の変更を示せる（設計原則 2、[OPEN-015](#open-015)）。候補は次の三つである。ほかの言語と、AI エージェントの権限制御の研究の調べた結果は、[他の言語の調査記録](08-appendix/08-03-language-surveys.md)の「権限の対象の範囲を型や値で表す仕組み」と「AI エージェントの権限制御の研究」に記録した。
+
+- エフェクトに対象の範囲を表す引数を持たせる（`Net.Https["*.example.com"]`、`Net.Tcp["db.internal", 5432..5439]`、`File.Write["/data/reports/**"]` など）。エフェクトの包含は範囲の包含になる。範囲を、ホストの名前のパターン、ポートの範囲、パスのパターンのような限られた形に限れば、包含は有限の手順で判定でき、型検査の中で任意の計算を評価する依存型は要らない。
+- 範囲の検査を通った値だけが持てる中身を見せない型（`AllowedHost`・`AllowedPath` など）を設け、操作の関数はその型の値を受け取る。範囲の判定は実行時の検査の関数が行う。
+- 許可された範囲を表すケーパビリティの値（根のディレクトリのハンドルなど）を通してだけ操作する。ケーパビリティの値を設けないとした [ADR 0117](decisions/0117-capabilities-as-effects.md) の見直しになる。
+
+一つ目と二つ目は組み合わせられる（対象が定数なら型で、実行時に決まる値なら検査の関数を通して扱う）。検討するときは、次の点を決める。
+
+- 対象が実行時に決まる値（計算した文字列）のときの扱い。型の誤りにするか、検査の関数を通すことを求めるか。
+- 範囲の書き方と包含の規則。パスの範囲は、許可したパスの照合（[ADR 0072](decisions/0072-permission-path-matching.md)、[OPEN-057](#open-057)）と同じ規則で、`..` とシンボリックリンクの扱いを含めて定める。ホストの範囲は、前述のネットワークの操作の論点（サブドメインのワイルドカード、判定の時点）と合わせる。
+- 型に書いた範囲と、方針（[ADR 0183](decisions/0183-single-policy-for-all-permission-layers.md)、[ADR 0186](decisions/0186-run-time-policy-can-only-narrow.md)）との関係。型の範囲を、方針で許可を求める範囲として利用者に示し、実行時の権限制御と OS のサンドボックスはその範囲と方針の共通部分を強制する、などの形が考えられる。
+- エフェクト変数、エフェクトの宣言とハンドラ、高階関数の型との関係（範囲を持つエフェクトを、エフェクト変数で受け渡せるか）。
+- 形式化（[形式意味論と検証](07-quality/07-04-formal-semantics.md)）への影響。エフェクトの原子に引数を加え、包含を範囲の包含に置き換える拡張になる見込みである。
+
+2026-10-08 に、外部のライブラリのエフェクトを権限の表示にどう出すかを [OPEN-081](#open-081) に、`Process.Run` の許可の対象を引数まで細かくするときの照合の規則を [OPEN-083](#open-083) に登録した（[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)）。許可の単位を道具ごとの組み込みのエフェクト（`Git.Read` など）で増やすか、`Process.Run` の対象の書き方を変えるかは、本項の許可の単位と対象の書き方とあわせて決める。
 
 <a id="open-053"></a>
 ## OPEN-053 外部コマンドの起動の細部
@@ -911,7 +1005,7 @@ go.* の層とラッパー自動生成器を廃止した（[ADR 0077](decisions/
 - 利用者が実行のときに、サーバの設定より厳しい制限を指定する方法（決めた）: 両方の方針が許す操作だけを許可する（[ADR 0186](decisions/0186-run-time-policy-can-only-narrow.md)）。
 - 保管（決めた）: 登録したスクリプトは写しをハッシュで管理し、保存する秘密はパスワードのハッシュだけとする（[ADR 0191](decisions/0191-server-data-storage.md)）。正確な置き場所とファイルの構成が残る。
 - エージェントにスタンドアロンモードを使わせない方法（決めた）: エージェントの側の許可の設定で行い、処理系は推定できるときに警告だけを出す（[ADR 0193](decisions/0193-restricting-agents-to-server-mode-by-agent-config.md)）。推定の方法が残る。
-- MCP サーバの形（決めた）: デーモンへ中継する `benitoite mcp` とした（[ADR 0182](decisions/0182-mcp-server-as-stdio-relay.md)）。TUI と自前のコーディングエージェントは、サーバモードとあわせて作る（[ADR 0194](decisions/0194-tui-and-own-coding-agent-with-server-mode.md)）。エージェントの設計は [OPEN-056](#open-056) に分けた。
+- MCP サーバの形（決めた）: デーモンへ中継する `benitoite mcp` とした（[ADR 0182](decisions/0182-mcp-server-as-stdio-relay.md)）。TUI と自前のコーディングエージェントは、サーバモードとあわせて作る（[ADR 0194](decisions/0194-tui-and-own-coding-agent-with-server-mode.md)）。エージェントの設計は [OPEN-056](#open-056) に分けた。作る時期は、2026-10-08 にサーバモードより後に改め、サーバモードとあわせて作るのは MCP の中継と、TUI の部品で作る承認の画面だけとした（[ADR 0342](decisions/0342-agent-harness-after-server-mode.md)）。
 - デーモンの起動と常駐（決めた）: launchd の LaunchAgent と systemd のユーザーのサービスとして動かし、処理系は登録を補助する（[ADR 0195](decisions/0195-daemon-as-os-user-service.md)）。`loginctl enable-linger` が要る条件と、macOS の SSH だけのセッションでの振る舞いは【要検証】である。
 
 OS のサンドボックスの仕組み（macOS の Seatbelt、Linux の Landlock・bubblewrap）の選択と、使えない環境の扱いは [OPEN-037](#open-037) で決めた（[ADR 0196](decisions/0196-os-sandbox-mechanisms.md)〜[0198](decisions/0198-network-through-daemon-proxy.md)）。規則は [OS のサンドボックス](02-impl/02-12-os-sandbox.md)に書き、確かめられなかった事実は [OPEN-057](#open-057) で確かめる。
@@ -930,19 +1024,36 @@ OS のサンドボックスの仕組み（macOS の Seatbelt、Linux の Landloc
 - 監査の記録を、別の機械や追記しかできない保管先へ写す手段。正式リリース版の前に検討する（[ADR 0217](decisions/0217-audit-log-undetectable-cases-and-verification-start.md)）。
 - サーバモードの子プロセスに、OS の仕組みでメモリの上限を掛けるか（[ADR 0237](decisions/0237-no-heap-usage-limit-in-first-release.md)）。
 
+2026-10-08 に、コマンドを代替するライブラリの検討（[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)）から次の項目を登録した。サーバモードの既定の方針のもとで、コマンドを包むライブラリを生の `Process.run` と区別して許すか（[OPEN-081](#open-081)）。サーバモードを加えた後のスタンドアロンモードでは既定の書き込みの範囲の外へ書く個人用の道具が失敗するが、それで困らないか（[OPEN-085](#open-085)）。本項の残りの、許可したコマンドが必要とする読み取りの扱いは、git を包むライブラリ（[OPEN-082](#open-082)）にも関係する。
+
 <a id="open-056"></a>
 ## OPEN-056 自前のコーディングエージェントの設計
 
 - 種別: 未決
 - 移行元: なし
 
-TUI と自前のコーディングエージェントを、サーバモードとあわせて作ることにした（[ADR 0194](decisions/0194-tui-and-own-coding-agent-with-server-mode.md)）。エージェントは、LLM を使ったテスト（[OPEN-012](#open-012) の測定など）にも使える形を目指す。次の点を決める。
+処理系は、初回リリース版の後に、自前のコーディングエージェント（利用者の依頼から LLM にスクリプトを書かせ、検査と修正を繰り返す仕組み。以下、エージェントハーネス）と TUI を持つ（[ADR 0194](decisions/0194-tui-and-own-coding-agent-with-server-mode.md)）。作る時期は、2026-10-04 の設計者の決定で、サーバモードより後、正式リリース版の前までに改めた。サーバモードとあわせて作るのは MCP の中継と、TUI の部品で作る承認の画面だけである（[ADR 0342](decisions/0342-agent-harness-after-server-mode.md)）。設計は[エージェントハーネス](06-tooling/06-08-agent-harness.md)で定める。
 
-- 対応する LLM の提供元と、API のクライアントに使う既存のクレート。
-- エージェントが使う道具の範囲（スクリプトの検査・実行、ファイルの読み書き、診断の取得など）と、それぞれをサーバモードのどの操作に対応させるか。
-- サーバモードとの接続の形（デーモンの通信口を直接使うか、MCP を通すか）と、エージェントに掛ける方針とプロファイル（[ADR 0192](decisions/0192-named-profiles-for-agents.md)）。
-- テストの用途で要る機能（課題の与え方、結果の記録、同じ条件での繰り返し）。
-- TUI の画面の構成と、承認の画面（[ADR 0188](decisions/0188-authentication-by-user-presence.md)）との関係。
+2026-10-08 に、初回リリース版の後の検討（[LLM の提供者の検討メモ](sources/post-first-release/post-first-release-llm-providers.md)、[自前のエージェントハーネスの検討メモ](sources/post-first-release/post-first-release-agent-harness.md)）を反映し、次のことを決めた。
+
+- 使う LLM の提供者（[ADR 0340](decisions/0340-llm-providers-for-own-agent-harness.md)）。
+- 提供者とモデルを利用者単位の TOML の設定ファイルに書くこと（[ADR 0343](decisions/0343-agent-harness-user-config-file.md)）。
+- エージェントに許す操作の範囲と道具の一覧（[ADR 0344](decisions/0344-agent-harness-operation-scope-and-tools.md)）。操作を Benitoite のスクリプトの作成・検査・実行と、プロジェクトのディレクトリの中の読み取りに限る（メモの案 (γ)）。この案は、2026-10-01 に候補に加えた「エージェントが行える操作を Benitoite のスクリプトの検査と実行に限る案」（先例は TACIT。[他の言語の調査記録](08-appendix/08-03-language-surveys.md)の「AI エージェントの権限制御の研究」）を、読み取りの道具で補ったものである。
+- 実行の前の確認をサーバモードの承認と分けること、一時的なスクリプトの確認なしの範囲、非対話の許可（[ADR 0345](decisions/0345-agent-harness-confirmation-and-server-approval.md)）。エージェントに掛けるプロファイルは、サーバモードの名前付きのプロファイル（[ADR 0192](decisions/0192-named-profiles-for-agents.md)）を使う。
+- サーバモードとの接続の形（デーモンの通信口に直接つなぎ、道具の形を MCP の道具と揃える。[ADR 0346](decisions/0346-agent-harness-connects-to-daemon-directly.md)）。
+- ウェブの取得の道具と、その制限（[ADR 0347](decisions/0347-agent-harness-web-fetch.md)）。
+- 巻き戻しと git の操作（[ADR 0348](decisions/0348-agent-harness-rewind-and-git.md)）。
+
+本項には、次の点が残る。
+
+- TUI の画面の構成と、承認の画面（[ADR 0188](decisions/0188-authentication-by-user-presence.md)）との関係。承認の画面は、TUI の部品でサーバモードとあわせて先に作る（ADR 0342 の決定 2）ので、TUI はその見た目と操作に揃える。エージェントハーネスの実行の前の確認は、承認の画面とは別に、エージェントハーネスの画面で受ける（ADR 0345 の決定 2）。人間から秘密を受け取る画面（[OPEN-089](#open-089)）との関係もあわせて決める。
+- テストの用途で要る機能。メモの見立ては次のとおりであり、決定ではない。課題（依頼の文、入力、期待する出力）を与えて非対話で実行する。使った提供者・モデル・処理系の版、検査と修正の回数、LLM とのやり取りの全体、トークンの量、結果を、Skill の評価の記録（[Agent Skills 対応](06-tooling/06-06-agent-skills.md)の「Skill の評価」）と同じ形で記録する。温度などの生成の設定を記録し、固定できる提供者では固定する。完全な再現はできない前提で、複数回の試行の成功率で評価する。構文の案ごとの測定（[OPEN-012](#open-012)）のために、`read_reference` が返す文書を差し替えられるようにする。
+- 2026-10-01 に挙げた論点のうち、次の三つ。制限をエージェントの外で強制する方法は ADR 0344・0345 で決め、実行時の権限制御を持たない版での扱いは ADR 0342 の決定 3（サーバモードのない版で動かす経路を作らない）で対象外になった。
+  - 言語の中の抜け道。`Process.Run` とシェルでの実行を許すと、スクリプトの中からシェルを起動できるので、エージェントに掛けるプロファイルと方針で拒否するか、許すコマンドを限る。外部の関数（[OPEN-051](#open-051)）と外部のライブラリのエフェクト（[OPEN-081](#open-081)）も同じく扱う。
+  - 許したエフェクトの中の制限。`Http.Connect` や `File.Write` を許すと、どの対象にも操作できる。対象の範囲の制限は [OPEN-052](#open-052) の候補で扱う。秘密のファイルを読んで許可したホストへ送るような情報の流れは、エフェクトだけでは制限できない。
+  - 制限の代償。標準ライブラリにない操作を要する作業は、`Process.Run` かコマンドを包むライブラリを通すことになる。LLM が Benitoite に不慣れなことによる生成の成功率の低下を、言語のリファレンスや Skill でどこまで補えるか（[OPEN-012](#open-012) の測定と合わせて確かめる）。
+
+ほかの論点は、次の項目に分けた。提供者を差し替える層・実装の順・使うクレートは [OPEN-095](#open-095)、提供者に関する事実の確認は [OPEN-096](#open-096)、Claude Code の CLI を経由する提供者の採否は [OPEN-097](#open-097)、認証の情報の保管と利用者への表示は [OPEN-101](#open-101)、設定ファイルの細部とプロジェクトごとの設定ファイルは [OPEN-102](#open-102)、操作・画面・記録の細部は [OPEN-103](#open-103) で決める。エージェントハーネスとは別の機能として、MCP のサンプリング（[OPEN-098](#open-098)）と、エージェントの CLI を包むライブラリ（[ADR 0341](decisions/0341-agent-cli-wrapper-library.md)、[OPEN-099](#open-099)）を扱う。
 
 <a id="open-057"></a>
 ## OPEN-057 OS のサンドボックスとデーモンの常駐に関する事実の確認
@@ -980,7 +1091,7 @@ TUI と自前のコーディングエージェントを、サーバモードと�
 <a id="open-059"></a>
 ## OPEN-059 初回リリース版の実装と確認の分担
 
-- 種別: 決着（[ADR 0285](decisions/0285-implementer-assignment-for-first-release.md)）
+- 種別: 決着（[ADR 0285](decisions/0285-implementer-assignment-for-first-release.md)、[ADR 0308](decisions/0308-implementation-by-codex-sol.md) で改めた）
 - 移行元: なし
 
 最小実行版では、実装を Claude Opus 5.5 のサブエージェントと Codex に割り当て、Claude Code がオーケストレータとして確認した（[ADR 0084](decisions/0084-implementer-assignment-for-minimal.md)、[ADR 0085](decisions/0085-review-assignment-for-minimal.md)）。初回リリース版の実装と確認の分担は、最小実行版と同じく、実装プランを作る中で作業ごとの難しさを見積もってから決める。
@@ -998,10 +1109,21 @@ TUI と自前のコーディングエージェントを、サーバモードと�
 - **WSL2 への SSH**: 開発機から、Windows の機械の WSL2（Ubuntu 26.04 LTS）に SSH でログインする設定。WSL2 の中で SSH サーバを動かす方法と、Windows の側から接続を通す方法（WSL の networking mode の選び方、ポートの転送）。ログインしていない間も WSL2 が動き続けるか。
 - **Agent Skill の置き場所**: 2026-09-29 に、Claude Code・Codex CLI・opencode の文書で、Skill を読み込む場所を確かめた（[Agent Skills 対応](06-tooling/06-06-agent-skills.md)の「Skill の導入（初回リリース版）」）。置き場所はエージェントの版で変わりうるので、リリースのたびに確かめ直す。同じ名前の Skill が `.claude/skills` と `.agents/skills` の両方にあるときの opencode の振る舞いは確かめていない。
 
+2026-10-08 の確認の結果（D32。手順・出力の要約・道具の版は [試行の記録](../implement/studies/u4-release/open-060.md)）:
+
+- **Gatekeeper の振る舞い**: 一部を確かめた。方法は、Apple の文書（[Gatekeeper and runtime protection in macOS](https://support.apple.com/guide/security/gatekeeper-and-runtime-protection-sec5599b66df/web)、[LSFileQuarantineEnabled](https://developer.apple.com/documentation/bundleresources/information-property-list/lsfilequarantineenabled)、[Open a Mac app from an unknown developer](https://support.apple.com/en-us/102445)）と、開発機（macOS 27.0.1）での試行である。実際のブラウザでのダウンロードの代わりに、`xattr -w` で隔離の属性を付けたファイルを使った。結果: `curl` でダウンロードしたファイルには隔離の属性が付かない。旗 `0081` の隔離の属性を付けたリンカの ad-hoc 署名だけの実行ファイルは、端末から起動するとダイアログが出て止まる。初めて起動する前に `xattr -d com.apple.quarantine` で属性を外すと起動できる。残り: 実際にブラウザでダウンロードしたファイルの旗の値、一度止められた後の対処、「このまま開く」の操作。画面の操作を伴うので、設計者が手で確かめる。
+- **開発機の上のコンテナと仮想機械**: 確かめた。方法は、Apple の `container` 1.4.1 と `rust:1.98.1` の像での試行である。結果: Linux arm64 と、Rosetta で模倣した Linux x86_64 のどちらでも、musl の静的なビルドと `scripts/check.sh` の各段が動き、`FROM scratch` の像で実行ファイルが起動した。CPU 4 個とメモリ 8 GiB で足りた。開発機では通るテストのうち三つが Linux の上で失敗した（arm64 で `interrupt_process`、x86_64 で `process::external_tests` の一つと `l32_http_client` の一つ）。リリースの試験の前に直す。
+- **WSL2 への SSH**: 確かめていない。Microsoft の文書（[Accessing network applications with WSL](https://learn.microsoft.com/en-us/windows/wsl/networking)、[Advanced settings configuration in WSL](https://learn.microsoft.com/en-us/windows/wsl/wsl-config)）で設定の候補を調べ、試行の手順を記録に書いた。設計者の Windows の機械での試行を待つ。ログインしていない間に WSL2 が動き続けるかは、文書に記述がない。
+- **Agent Skill の置き場所**: 確かめた。方法は、三つのエージェントの文書の読み直しと、opencode v2.0.21 のソースの読み取りである。結果: 06-06 の表の置き場所は変わっていない。opencode は `.claude` の置き場所を先に、`.agents` の置き場所を後に読み、ディレクトリの名前が同じ Skill は後のものが先のものを置き換える。開発機の opencode を動かしての確認は、既定のモデルの接続先が使えず済んでいない。
+
+残り（Gatekeeper の実際のブラウザでのダウンロードと対処、WSL2 への SSH、Skill の置き場所の確かめ直し）は、初回リリースの後に行う（[ADR 0349](decisions/0349-d31-d32-after-first-release.md)）。
+
+2026-10-09 に、初回リリース（`0.0.1`）をソースコードだけのリリースとし、実行ファイルを配るのは `0.1.0` からと決めた（[ADR 0358](decisions/0358-release-versions-and-published-history.md)）。残りは、`0.1.0` のリリースの手順を書くときまでに確かめる。
+
 <a id="open-061"></a>
 ## OPEN-061 リポジトリを公開する前の設計メモの扱い
 
-- 種別: 未決
+- 種別: 決着（[ADR 0350](decisions/0350-publish-repository-with-history.md)）
 - 移行元: なし
 
 このリポジトリは、初回リリース版をリリースするときに GitHub で公開する（[ADR 0233](decisions/0233-distribution-via-github-releases.md)）。設計メモ（`docs/design/sources/fp-language-design.md`）を公開するかは、設計者が検討している。候補は次のとおりである。
@@ -1011,6 +1133,8 @@ TUI と自前のコーディングエージェントを、サーバモードと�
 - 非公開のリポジトリを作り、設計メモをそこへ移す。
 
 外す・移す場合は、各章の「移行元」など、設計書から設計メモへのリンクの扱いもあわせて決める。設計書の最終版では設計メモへのリンクを外す方針（AGENTS.md の「参照資料の保存」）との関係も整理する。履歴に残った設計メモを公開の対象から除くには、履歴の書き換えが要ることがある。
+
+設計者は、設計メモを公開の対象に含め、リポジトリを履歴ごと公開すると決めた（[ADR 0350](decisions/0350-publish-repository-with-history.md)）。
 
 <a id="open-062"></a>
 ## OPEN-062 設計書の 2 回目のレビューで指摘された実行時の振る舞いの再現
@@ -1022,19 +1146,23 @@ TUI と自前のコーディングエージェントを、サーバモードと�
 
 | 項目 | 関連章 | 反例（再現テストの内容） | 再現したときの修正の候補 |
 |---|---|---|---|
-| R01 純粋な `Task.allOk`・`Task.all` の結果が切り替えの順序で変わる | 01-07、01-11 | `Task.allOk` に、`Result.Error` を返すタスクと、0 で除算するタスクを渡す。切り替えの順序によって、`Result.Error` が返るか、実行時エラーで止まるかが変わる。`Task.all` に、異なる実行時エラーを起こす二つのタスクを渡す場合も同じ。`E` が `State` を含むと、逐次に呼んだときの値と一致しない | 01-07 の純粋な関数の保証を「どちらも値を返したなら同じ値」に狭め、`Task.all`・`Task.allOk` が起動したタスクの実行時エラーは切り替えに依存しうると明記する。01-11 の逐次との一致は `E` が空のときに限る（設計者が選んだ案） |
-| R01 に関連する穴: `Clock.Time` をハンドラで除いた `Task.race` | 01-07、01-11 | `Clock.Time` のすべての操作の節を持つ `handle` の中で `Task.race` を呼ぶと、純粋な関数の中で結果が切り替えに依存する | `Task.race`・`Task.withTimeout` の型に `State` を加える（設計者が選んだ案） |
+| R01 純粋な `Task.allOk`・`Task.all` の結果が切り替えの順序で変わる | 01-07、01-11 | `Task.allOk` に、`Result.Error` を返すタスクと、0 で除算するタスクを渡す。切り替えの順序によって、`Result.Error` が返るか、実行時エラーで止まるかが変わる。`Task.all` に、異なる実行時エラーを起こす二つのタスクを渡す場合も同じ。`E` が `State` を含むと、逐次に呼んだときの値と一致しない | 01-07 の純粋な関数の保証を「どちらも値を返したなら同じ値」に狭め、`Task.all`・`Task.allOk` が起動したタスクの実行時エラーは切り替えに依存しうると明記する。01-11 の逐次との一致は `E` が空のときに限る（設計者が選んだ案）。2026-10-07 に R30 の再現テストで再現し、この案で決着（[ADR 0319](decisions/0319-task-results-and-pure-guarantee-under-switching.md)） |
+| R01 に関連する穴: `Clock.Time` をハンドラで除いた `Task.race` | 01-07、01-11 | `Clock.Time` のすべての操作の節を持つ `handle` の中で `Task.race` を呼ぶと、純粋な関数の中で結果が切り替えに依存する | `Task.race`・`Task.withTimeout` の型に `State` を加える（設計者が選んだ案）。2026-10-07 に R30 の再現テストで再現し、この案で決着（[ADR 0319](decisions/0319-task-results-and-pure-guarantee-under-switching.md)） |
 | R02 要求と応答の方式で、計算を続けるタスクがあると IO が始まらない | 02-08、02-09 | タスク A が `File.readText` の後にセルを `true` にし、タスク B がそのセルを末尾再帰で読み続ける。直接呼び出しでは終わり、要求と応答では終わらない | タスクを切り替える位置で、返していない要求か受け取っていない応答があれば、進められるタスクが残っていても VM から戻る |
 | R03 引き継いだハンドラの下の子孫のタスクを `handle` が待たない | 01-11、02-08 | 外側で開いた `TaskGroup` を内側の `handle` の本体から使ってタスク A を起動し、A が同じ集まりにタスク B を起動して終わる。`handle` が B を待たずに終わるか、本体の続きを捨てるときに B を取り消さない | 起動したタスクが属する `handle` を記録し、`handle` の枠のないタスクが起動したタスクは、起動したタスクと同じ `handle` に記録する |
 | R04 出力の書き出しが VM 全体を止める | 01-11、02-09 | 読み手が読まないパイプに 64 KiB を超えて書くと、ほかのタスク、タイマー、HTTP の受け付け、中断の要求の確認が止まる | バッファへの追加と出力先への転送を分け、転送を作業用のスレッドで行う。未転送の量が上限を超えたときだけ、書いたタスクを待たせる（設計者が選んだ案） |
 | R05 取り消したタスクの操作の結果を捨てるときに、貸したリソースも戻らない | 02-09 | `File.Reader` を読んでいるタスクを取り消す。作業用のスレッドから返った完了を捨てると、Reader が表に戻らず、解放と後続の操作が進まない | 完了のうち、タスクへの結果の配送と、リソースの返却を分ける。取り消した完了でも返却は必ず行い、貸している間の解放は返るまで待たせる |
-| R08 正規表現のリテラルの検査が検査の工程にない | 03-08、02-05 | 関数の本体の `Regex.compile(r"[")` が、検査の誤りにならず、実行時の `Result.Error` になる | 名前解決で `Regex.compile` を指す名前を直接書いた呼び出しの引数が定数式なら、本体の後の検査で組み立てる。値として扱った呼び出しは検査しない |
-| R13 短い出力が出力先に届かない | 02-09、07-03 | `Console.write("Name: ")` の後の `Console.readLine` で、入力を待つ間にプロンプトが出ない。中断のテストで、準備ができたことを知らせる行が親に届かない | 転送する時点に、標準入力を読む前、進められるタスクがなくなったとき、端末への出力で改行を書いたときを加える（設計者が選んだ案） |
-| R14 HTTP のクエリとヘッダが UTF-8 でないときの扱いがない | 03-09、02-09 | `?q=%FF`、`%G0`、UTF-8 でない受信のヘッダ | クエリは `Http.pathSegments` と同じく戻せないものを受け取ったままにする。UTF-8 でないヘッダは、サーバでは状態コード 400、クライアントでは `NetworkErrorKind.InvalidHTTPData` にする |
+| R08 正規表現のリテラルの検査が検査の工程にない | 03-08、02-05 | 関数の本体の `Regex.compile(r"[")` が、検査の誤りにならず、実行時の `Result.Error` になる | 初回リリース版では対処しない（[ADR 0316](decisions/0316-no-compile-time-regex-check-in-first-release.md)）。それまでの候補は、名前解決で `Regex.compile` を指す名前を直接書いた呼び出しの引数が定数式なら、本体の後の検査で組み立て、値として扱った呼び出しは検査しない、であった |
+| R13 短い出力が出力先に届かない | 02-09、07-03 | `Console.write("Name: ")` の後の `Console.readLine` で、入力を待つ間にプロンプトが出ない。中断のテストで、準備ができたことを知らせる行が親に届かない | 転送する時点に、標準入力を読む前、進められるタスクがなくなったとき、端末への出力で改行を書いたときを加える（設計者が選んだ案）。2026-10-07 に R30 の再現テストで、パイプに書いた後で別のタスクが計算を続ける場合が残ることを確かめ、予算を使い切って切り替えるときにも転送を依頼する時点を加えて決着（[ADR 0320](decisions/0320-output-transfer-at-budget-switch.md)） |
+| R14 HTTP のクエリとヘッダが UTF-8 でないときの扱いがない | 03-09、02-09 | `?q=%FF`、`%G0`、UTF-8 でない受信のヘッダ | クエリは `Http.pathSegments` と同じく戻せないものを受け取ったままにする。UTF-8 でないヘッダは、サーバでは状態コード 400、クライアントでは `NetworkErrorKind.InvalidHTTPData` にする。2026-10-07 に、クエリは ADR 0291 のとおりサーバが状態コード 400 を返す規則で決着とし、再現テストは 400 を期待する形で書くと決めた（[ADR 0322](decisions/0322-stdlib-details-from-u3-preflight.md) の決定 4） |
 
 2026-09-30 に、値の表現とランタイムの作り直しの設計で、項目ごとの扱いを決めた（[ADR 0270](decisions/0270-open-062-items-in-runtime-rebuild.md)）。R02 は送り出しの列の規則（[ADR 0264](decisions/0264-single-dispatch-queue-for-builtin-operations.md)）、R03 と R05 はタスクとリソースの状態の表と完了の共通の処理（[ADR 0266](decisions/0266-task-and-resource-state-machines.md)）、R04 と R13 の大部分は書き出し用のスレッドによる転送（[ADR 0265](decisions/0265-output-transfer-by-writer-threads.md)）を共通の部品で必ず行えば起きないと見る。R01、R14 と、R13 のうちパイプに準備ができたことを知らせる行を書いた後で別のタスクが計算を続ける場合は、作り直しの仕組みでは除けない。どの項目も再現テストを書く手順は変えず、「起きない」とした項目も、テストが通らなければ設計書と ADR を改めてから直す。R08 は構文と検査の工程の範囲である。
 
-同日に、UTF-8 でない HTTP の要求（R14）に、サーバが状態コード 400 を返すことを[ネットワークのモジュール](03-interop/03-09-network.md)の「サーバの接続と要求の読み方」に【方針】として書いた（[ADR 0291](decisions/0291-file-copy-limit-and-http-server-details.md)）。ヘッダの行は修正の候補と一致する。クエリは、パーセント符号化を戻すと正しい UTF-8 にならないものも 400 とするので、修正の候補と異なり、再現する見込みである。実装プランの L33 が書く再現テストの結果を見て、クエリの扱いを改めるかを決める。
+同日に、UTF-8 でない HTTP の要求（R14）に、サーバが状態コード 400 を返すことを[ネットワークのモジュール](03-interop/03-09-network.md)の「サーバの接続と要求の読み方」に【方針】として書いた（[ADR 0291](decisions/0291-file-copy-limit-and-http-server-details.md)）。ヘッダの行は修正の候補と一致する。クエリは、パーセント符号化を戻すと正しい UTF-8 にならないものも 400 とするので、修正の候補と異なり、再現する見込みである。実装プランの L33 が書く再現テストの結果を見て、クエリの扱いを改めるかを決める。2026-10-07 に、再現テストの結果を待たずに、クエリも 400 とする規則で決着とした（[ADR 0322](decisions/0322-stdlib-details-from-u3-preflight.md) の決定 4）。
+
+2026-10-06 に、R08 は初回リリース版では対処しないと決めた（[ADR 0316](decisions/0316-no-compile-time-regex-check-in-first-release.md)）。処理系は検査の時点で正規表現の構文を確かめず、反例の振る舞い（実行時の `Result.Error`）を初回リリース版の振る舞いとする。処理系の検査の段と標準ライブラリの個々の関数との結び付きを少なくするためであり、設計原則 1 に対する例外として ADR に記した。再現テストは置かず、実行時に `Result.Error` を返すことは実装プランの L22 の受け入れテストで確かめる。
+
+2026-10-08 に、実装プランの L33 が R14 と、R04 のうち HTTP の受け付けの分の再現テスト（`crates/benitoite/tests/open_062_http.rs`）を書いた。どれも再現せず、回帰のテストとして残した。R14 のクエリは、サーバがパーセント符号化を戻した後に UTF-8 を確かめ、`?q=%FF` に状態コード 400 を返して同じ `Http.accept` で次の要求を受け付け続ける。`%G0` は戻さずに字面のまま `query` に入る（[ADR 0322](decisions/0322-stdlib-details-from-u3-preflight.md) の決定 4、[ADR 0330](decisions/0330-http-details-from-u3-preflight.md) の決定 1）。UTF-8 でない受信のヘッダは、サーバではヘッダを受け取るときに確かめて 400 を返し、クライアントでは言語の文字列にする前に `NetworkErrorKind.InvalidHTTPData` を返す。R04 の HTTP の受け付けは、書き出し用のスレッドによる転送（[ADR 0265](decisions/0265-output-transfer-by-writer-threads.md)）により、出力の容量を待つタスクが止まっている間も、イベントループが HTTP の要求を受け付けて応答を返した。テストは IO の二つの方式と、呼び出しの予算 1 と既定の値の組で行う。
 
 <a id="open-063"></a>
 ## OPEN-063 窓を重ねる形と、区画の記憶域の再利用
@@ -1050,12 +1178,14 @@ TUI と自前のコーディングエージェントを、サーバモードと�
 <a id="open-064"></a>
 ## OPEN-064 検証器を通したうえでの、振り分けのループの範囲の確かめの省略
 
-- 種別: 要検証
+- 種別: 決着（[ADR 0315](decisions/0315-keep-dispatch-range-checks.md)）
 - 移行元: なし
 
 振り分けのループは、実行中の状態を局所変数に持つ（[ADR 0263](decisions/0263-dispatch-loop-locals-and-verifier.md) の決定 1）。そのうえで、読み込みのときにコンパイル済みプログラムを検証し、実行中の範囲の確かめを `unsafe` で省くかを、同じ命令列で局所変数に持つだけの場合と比べて決める。省く場合は、省く確かめごとに検証器が保証することを表にし、効果の大きい添字の読み書きから限って省く。検証器は、変異させた入力のテストに加え、受理した入力を範囲を確かめる実行器で動かして確かめる。
 
 省く場合は、「型検査を通ったプログラムでは起きない状態は `Stop::Internal` で返す」という実装の規約（AGENTS.md「失敗を panic で表さない」）の一部を、「検証器が拒む」に読み替える規則が要る。lint の水準（[処理系のテスト戦略](07-quality/07-03-compiler-testing.md)）も、振り分けのループに `unsafe` を許すように改める。
+
+決着: 2026-10-06 に、範囲の確かめを省かないと決めた（[ADR 0315](decisions/0315-keep-dispatch-range-checks.md)）。R32 が、命令の読み出し、レジスタの要素、原型の中の定数の番号、定数の記述と値の表の確かめを `get_unchecked` に替えた測定のリビジョンを作って比べた（[測定の記録](../../tools/bench/results/2026-10-06-verify-2a30ba2.md)）。振り分けの関数の機械語では範囲の外への分岐が 81 箇所から 0 箇所になったが、時間は fib で 6.1% 遅く、loop で 3.8% 速く、tree で 2.7% 遅く、eval で 2.2% 速くなり、一貫した改善はなかった。この効果は、`unsafe` を `runtime::heap` の外へ広げ、「`Stop::Internal` で返す」を「検証器が拒む」に読み替える規則を加える費用（未定義動作の危険と、R20 以降の枠を作る経路ごとに VM の構成の不変条件を確かめ直す負担）に見合わない。検証器とそのテストは、コード生成の出力の性質を確かめるテストの道具として本番に残し、本番の読み込みの経路からは呼ばない。
 
 <a id="open-065"></a>
 ## OPEN-065 値を 8 バイトにする案
@@ -1082,6 +1212,8 @@ TUI と自前のコーディングエージェントを、サーバモードと�
 - 移行元: なし
 
 引き継いだハンドラの、末尾で再開する節は、継続を捕まえずに実行する（[ADR 0151](decisions/0151-inherited-handlers-tail-resume-only.md)）。同じ扱いを、`handle` を評価したタスク自身が呼んだ操作の節にも広げれば、区画の切り離しと戻しを省ける。しかし、「末尾が `resume` で `return` と `try` がない」だけでは、節の中の `with` の解放の時期、止める手順と取り消しでの継続の辿り方、節の中で呼んだ操作の探し方が、継続を捕まえる方式と一致しない。そこで、作り直しの第 1 段には入れない（[ADR 0262](decisions/0262-segment-frames-split-call-and-wrapping.md) の決定 7）。handler のベンチマークで効果が大きいと分かったら、観測できる振る舞いが一致する条件を定めて改めて検討する。
+
+2026-10-09 に、初回リリース版の完了時の性能の測定（測定の記録 `tools/bench/results/2026-10-09-first-release-4304d507f6bf.md` の「OPEN-067：handler の二つの形の差についての所見」）で、handler の二つの形を比べた。継続を保存してから再開する形（saved）は、末尾で再開する形（tail）より約 7% 長かった。ただし、この差は二つの形の差であり、継続を捕まえる実装と直接実行する実装を切り替えた比較ではない。CPU プロファイルでは、末尾で再開する形にも継続の捕捉・再開・戻りの費用が残っており、`handlers::` の関数の self の合計は、二つの形とも約 27% だった。したがって、効果が小さいとして直接の実行を見送る根拠はない。設計者は、初回リリース版の後に、観測できる振る舞いが一致する条件を定めて直接の実行を試作し、測ると決めた。本項は未決のまま残す。
 
 <a id="open-068"></a>
 ## OPEN-068 形式化した定義を 01-12 の規則の正とするか
@@ -1139,3 +1271,941 @@ TUI と自前のコーディングエージェントを、サーバモードと�
 形式検証の段階 B で型クラスを加えるときに決める。決めた規則は ADR を添えて 01-12 に加える。
 
 決着: コア計算の定義の型パラメータに組み込みの制約を持たせ、V-Prim は型付けの位置で有効な制約の並びのもとで判定し、V-Fun・V-Dict・C-Meth は型引数が制約を満たすことを前提に加える（一つ目の案。[ADR 0297](decisions/0297-builtin-constraints-in-core-and-op-type-substitution.md)）。あわせて、E-Op が節の本体に操作の型引数の置き換えを施していなかった抜けを直した。
+
+<a id="open-071"></a>
+## OPEN-071 `Opaque`・`Host` の対象が持つ別の領域の容量を、確保の量に数える方法
+
+- 種別: 未決
+- 移行元: なし
+
+回収の閾値と第 1 段の測定の確保の量には、対象が持つ別の領域の容量を含める（[ADR 0259](decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md) の決定 6、実装プランの 10-08「設定と測定の記録」）。ヒープの対象のうち `Opaque` と `Host` は任意の Rust の値を持つが、凍結したトレイト `OpaqueData`・`HostData`（10-08）には、その値が別に確保した領域（`Vec`・`String` など）の容量を返す口がない。このため、実装プランの R01 の確保器は、`size_of::<T>()` だけを数えている（2026-10-02 に R01 の独立レビューで見つかった）。
+
+正しさには影響せず、回収の時期と測定の記録だけに影響する。第 1 段の測定に使うプログラム（最小実行版の言語の範囲）では、これらの対象はほとんど現れない見込みである。`Host` の対象に入るハンドラの記録と継続の状態は第 2 段から、`Opaque` の対象に入る値の多くは U3 から現れる。
+
+設計者は、第 1 段はこのままとし、第 2 段（実装プランの R20）に入る前に扱うと決めた（2026-10-02）。案は、二つのトレイトに容量を返すメソッド（既定の実装は 0 を返す。例: `fn heap_bytes(&self) -> usize`）を加え、`Host` の対象は `NoGcCtx::host_mut` で書き換えた後に数え直す形である。決めた形は ADR を添えて 10-08 に加える。
+
+<a id="open-072"></a>
+## OPEN-072 性質 1（脱糖の型の保存）の形式化と証明
+
+- 種別: 未決
+- 移行元: なし
+
+形式検証の段階 2 は、[コア計算と脱糖](01-spec/01-12-core-calculus.md)の性質 2（進行と保存）と性質 3（エフェクトの健全性）を証明し、性質 1（型の付く表層のプログラムを脱糖した結果は、型の付くコアの項になる）を対象にしなかった（[ADR 0293](decisions/0293-formal-verification-stage-2-alongside-first-release.md) の決定 4、[形式意味論と検証](07-quality/07-04-formal-semantics.md)）。表層の構文と型付けの形式化が要り、規模が段階 A・B を大きく超えるためである。
+
+初回リリース版の実装の途中で、文法が許すのにコア計算へ写す規則がない抜け（操作の型パラメータの型クラスの制約）が見つかり、表層で禁じた（[ADR 0312](decisions/0312-no-trait-constraints-in-operations.md)）。脱糖を形式化していれば、この種の抜けを機械で見つけられた。設計者は 2026-10-04 に、脱糖の形式化と性質 1 の証明を、初回リリース版の実装とは別に後で行う方針を示した。
+
+初回リリース版の実装の後に、次を決める。決めたら ADR を作り、ADR 0293 の決定 4 を改める。
+
+- 性質 1 を形式化の対象に加えるか。加えるなら、表層の構文と型付けの形式化の範囲（初回リリース版の拡張のうち、脱糖だけで表すモジュール・レコード・文字列補間などを含めるか）と、段階に分ける順序。
+- 型推論のアルゴリズムと型クラスの解決（ADR 0293 の決定 4 のもう一つの対象外）を、同じ段階で扱うか、別にするか。
+- ADR 0293 の決定 4 のほかの対象外（並行処理のタスクと引き継いだハンドラ、置き換えてよい等式と末尾呼び出しの保証、処理系の実装の正しさ）を、あわせて見直すか。見直す材料として、項目ごとの形式化の難易度を調べる。
+
+<a id="open-073"></a>
+## OPEN-073 パッケージ管理を設ける時期と、依存の記述・版の選び方
+
+- 種別: 未決
+- 移行元: なし
+
+初回リリース版はパッケージ管理を含めない（[ADR 0137](decisions/0137-first-release-library-scope.md)、[パッケージ管理](06-tooling/06-05-package-manager.md)）。初回リリース版の後に、パッケージ管理を設けるか、どの版で設けるかと、設ける場合の依存の記述と版の選び方を決める。設計者が 2026-10-02〜06 に検討した方向は[パッケージ管理の検討メモ](sources/post-first-release/post-first-release-package-management.md)にあり、次の各項の「案」はその方向であって、決定ではない。
+
+- 設けるか、どの版で設けるか。設けない場合は、標準ライブラリを厚くし、手元のファイルを写して使う（vendoring）だけにする。Benitoite の用途（個人の道具、Agent Skill）で、これで足りる範囲を先に見積もる。
+- 中央のレジストリを持つか。案: 初めは持たず、取得元と中身のハッシュで依存を固定する。比べる軸は、運営の手間と、LLM が書いた存在しない名前や似た名前のパッケージを取得してしまう攻撃への耐性である。
+- 依存を書く場所と構文。案: 根ごとに一か所（実行を始めるファイルか、プロジェクトの設定ファイル。[OPEN-048](#open-048)）に限り、モジュールのファイルごとには書かない。ファイルごとに書けると、どのファイルを取り込むかで取得するものが変わり、全体を見渡せなくなるからである。パッケージの側にも、パッケージの根に依存の記述を一か所置く。
+- 一つの依存の記述が含むもの。案: 取り込みの別名、取得元、版（版の番号の形のタグ）、コミットの ID、中身のハッシュ。別名は `import 別名.モジュール` の形で本文から使い、取得元は本文に現れない（[OPEN-049](#open-049)）。コミットの ID と中身のハッシュは人も LLM も手で書かず、処理系の命令（`add` に当たるもの。予約したサブコマンド `package` の下に置くか。[ADR 0209](decisions/0209-reserved-subcommand-names.md)）が取得して書き込む。ハッシュのない記述は取得せずに誤りとし、診断で書き込む命令を示す。ハッシュのない依存を実行のときに黙って取得することはしない。
+- ロックファイルを設けるか。案: 設けず、版とハッシュを依存の記述に直接書く。一つのファイルのスクリプトのまま配れ、スクリプトの署名が依存の中身まで覆う（[OPEN-076](#open-076)）。
+- 版の選び方。案: 大きな版ごとに一つのパッケージとし、その中では依存が求めた版のうち最大のものを選ぶ（最小版選択）。範囲に合う最新の版を選ぶ方式より、結果を LLM と利用者が予測しやすい。修正版の違いだけで型が分かれることもない（[OPEN-077](#open-077)）。選んだ結果は、依存の依存も含めて根の記述に書き出す。残る点: 0.x の版の扱い（`v0.3` と `v0.4` を別の大きな版とするか、0.x の間は版ごとに別とするか）、根の記述の版と依存の依存が求める版が食い違ったときの規則。
+- 中身のハッシュの計算の規則。案: git のコミットの ID によらず、パッケージに含めるファイル（[OPEN-074](#open-074)）のパスと中身から SHA-256 で計算する。取得の手段によらず同じ値で確かめられ、SHA-1 の衝突の弱さに依らず、署名の一覧の SHA-256 と揃う。残る点: パスの正規化、改行の扱い、実行の属性を含めるか。
+- 取得する時点と保存の場所。案: スタンドアロンモードの `run` と `check` は、手元にない依存を取得してよい（ハッシュで確かめるので、取得するものは記述が決めたものと同じである）。ネットワークを使わない指定を設ける。サーバモードは登録のときに取得して確かめ、実行のときには取得しない。取得したものは利用者のキャッシュのディレクトリに中身のハッシュを名前にして読み取り専用で置き、共有の導入先を持たない。プロジェクトの中に写す命令を設け、Skill のディレクトリにまとめて配れるようにする。取得元が消えたときに備えるプロキシは持たず、備えは写して置くことで利用者が行う。タグが付け直されていたら、その旨を示し、記述のコミットの ID で取り直す。
+- 依存を加える・更新するときに利用者へ示すもの。案: 取得元の URL（ホストと所有者の名前を目立たせる）、版、コミットの ID、パッケージが使うエフェクトと前の版からの差分（[OPEN-075](#open-075)）、署名の有無と鍵（[OPEN-076](#open-076)）。URL の所有者が意図した相手かは利用者でなければ判断できないので、取得の後に確認を求める。
+- 【要検証】メモが比べた他の言語の方式（Cargo・npm・pip と uv・Go のモジュール・Roc・Deno・Elm・Stackage・PEP 723 などの一つのスクリプトに依存を書く方式・Unison・CPAN、LLM が書いた存在しない名前を攻撃者が登録する事例）は、一次資料で確かめていない。決めるときに確かめ、[他の言語の調査記録](08-appendix/08-03-language-surveys.md)に記録する。
+
+<a id="open-074"></a>
+## OPEN-074 パッケージの取得元と取得の制約
+
+- 種別: 未決
+- 移行元: なし
+
+パッケージを設ける場合（[OPEN-073](#open-073)）に、受け付ける取得元と、取得の制約を決める。2026-10-06 に設計者が検討した方向（[パッケージ管理の検討メモ](sources/post-first-release/post-first-release-package-management.md)の「特定の版のライブラリを読み込む仕掛けと、取得元の制約」）は次のとおりであり、決定ではない。
+
+取得元の候補は五つある。
+
+| 記号 | 取得元 | 用途 |
+|---|---|---|
+| S1 | git のリモートリポジトリ（HTTPS） | 公開のパッケージ |
+| S2 | git のリモートリポジトリ（SSH） | 非公開のリポジトリ |
+| S3 | アーカイブの URL とハッシュ | git を使わずに配るもの |
+| S4 | 手元のパス | 開発中のパッケージ、写して置いたもの |
+| S5 | 予約した短い名前 | 公式の追加のライブラリ（[OPEN-078](#open-078)） |
+
+方向: S1・S2・S4・S5 を受け付け、S3 は要望が出てから考える。git のリモートリポジトリに限れば、取得元からタグの一覧を読めるので更新のときに新しい版を示せ、処理系に含める取得の仕組みが一つで済む。S4 は開発の途中の確認と Skill のディレクトリに写して置く用途に限り、公開するパッケージの依存の記述には書けないものとする（受け取った側では辿れないため）。写して置いたものも記述のハッシュで確かめる。
+
+S1・S2 の制約の方向は次のとおりである。
+
+- プロトコルは `https://` と SSH に限り、`http://`・`git://`・`file://` を受け付けない。
+- 記述に書く版は、版の番号の形のタグに限る。タグのないコミットは、コミットの ID から作った版の番号で書く。ブランチの名前は指すコミットが変わるので書けず、命令にブランチの名前を渡したら、その時点のコミットに直して書き込む。
+- 指したコミットの木を、作業ツリーに展開せずに git のオブジェクトから直接読む。チェックアウトしないので、hooks、`.gitattributes` の filter、`core.fsmonitor` が起動しない。
+- パッケージに含めるファイルは、`.bnt` のソース、WASM のモジュール（外部の関数の層の後）、依存の記述、使用許諾の文書、説明の文書に限り、ほかのファイルは読まずハッシュの対象にも入れない。サブモジュール、根の外を指すシンボリックリンク、大文字と小文字だけが違う二つのパスは誤りとする。大きさの上限を設ける。
+- 処理系は特定のホストに限らない。利用者の方針（[サーバモード](06-tooling/06-07-server.md)の方針のファイル）で、許すホストの一覧を書けるようにする。
+- S2 は利用者の SSH の鍵（`ssh-agent`）を使う。
+
+残る点:
+
+- 一つのリポジトリに複数のパッケージを置く形（パッケージの根をリポジトリの中のディレクトリにし、タグを `sub/v1.2.0` の形にする）を設けるか。
+- HTTPS の非公開のリポジトリの認証（git の credential helper を使うか）。秘密の情報の扱い（[秘密の情報の扱いの検討メモ](sources/post-first-release/post-first-release-secrets.md)、[OPEN-088](#open-088)、[OPEN-090](#open-090)）とあわせて決める。
+- 【要検証】採る git のライブラリが、木の読み取り、指したコミットだけの浅い取得、タグの一覧に対応しているか。ホスティングが自動で生成するアーカイブのバイト列が、同じタグでも変わることがあるか（GitHub の 2023 年の事例とされるもの）。
+
+<a id="open-075"></a>
+## OPEN-075 パッケージのエフェクトと権限
+
+- 種別: 未決
+- 移行元: なし
+
+パッケージの公開の関数の契約はエフェクトを含む（[ADR 0154](decisions/0154-public-contract-includes-effects-and-supertraits.md)）ので、パッケージが行いうる外部の操作は型から分かる（[パッケージ管理](06-tooling/06-05-package-manager.md)の「パッケージ管理の設計の条件（初回リリース版の後）」）。パッケージを設ける場合（[OPEN-073](#open-073)）に、次の点を決める（[パッケージ管理の検討メモ](sources/post-first-release/post-first-release-package-management.md)の論点 5）。
+
+- 依存を加える・更新するときに、パッケージが使うエフェクトと、前の版からのエフェクトの差分を利用者に示すか。示す形は、契約の変更と権限の差分を示す方法（[OPEN-015](#open-015)）とあわせる。
+- エフェクトの増加を、大きな版を上げるべき変更として扱わせるか（[OPEN-077](#open-077) の公開の契約の差分の検査）。
+- 利用する側が、パッケージに許すエフェクトを制限できるようにするか（「このパッケージには `File.Read` だけを許す」）。コマンドを包むライブラリを、ライブラリを単位に許可する案（[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)の選択肢 Y）と同じ問いである。実行時にどのパッケージから呼んだかの判定と、パッケージそのものの信頼（[OPEN-076](#open-076)）を前提とし、実行時の権限制御の方式（[OPEN-052](#open-052)）とあわせて決める。
+
+2026-10-08 に、外部のライブラリのエフェクトを権限の表示にどう出すかを [OPEN-081](#open-081) に登録した。前述の、ライブラリを単位に許可する案は、OPEN-081 の案 Y である。利用する側がパッケージのエフェクトを制限する仕組みは、OPEN-081 の結論（組み込みのエフェクトにするか、ライブラリのエフェクトを権限の表示に出す仕組みを設けるか）に依るので、あわせて決める。
+
+<a id="open-076"></a>
+## OPEN-076 パッケージと WASM の署名、プロジェクトの鍵
+
+- 種別: 未決
+- 移行元: なし
+
+サーバモードの登録のときの署名は、根のディレクトリから import で辿るファイルの相対パスとハッシュの一覧に付ける（[ADR 0190](decisions/0190-ssh-signatures-for-scripts.md)、[ADR 0202](decisions/0202-signature-details.md)、[サーバモード](06-tooling/06-07-server.md)の「署名」）。パッケージと外部の関数を加えると、この一覧に入らないものが二つ生じる。根の外に置く取得したパッケージのファイルと、`@external` が指す WASM のモジュール（import で辿るファイルではない）である。2026-10-03 に設計者が検討した方向（[パッケージ管理の検討メモ](sources/post-first-release/post-first-release-package-management.md)の「パッケージと WASM の署名」）は次のとおりであり、決定ではない。
+
+- 完全性と出所を分ける。完全性（取得したものがスクリプトの作者が選んだものと同じか）は、依存の記述に書いた中身のハッシュで常に保つ。一覧の対象を「import で辿るファイル、`@external` が指すファイル、依存の記述」に広げれば、スクリプトの作者の署名一つで依存の中身まで固定される。採るなら ADR 0190・0202 を改める ADR が要る。
+- 出所（誰が作ったか）の署名は、依存を加えるときと更新するときに意味を持つ。新しい版のハッシュは、置き場所を乗っ取った者の版のハッシュとして書かれうるからである。
+- 公式の追加のライブラリ（[OPEN-078](#open-078)）には、プロジェクトの鍵で署名する。処理系に埋め込んだ対応表で完全性は保てるが、対応表をネットワークから取る形へ広げたときの根拠になり、有志のパッケージと検証の仕組みを一つにできる。鍵を設けるなら、処理系の配布物の `SHA256SUMS`（[ADR 0233](decisions/0233-distribution-via-github-releases.md) では署名しない）にも同じ鍵で署名するかを、[配布形態](05-platform/05-01-distribution.md)とあわせて決める。
+- 有志のパッケージは、同じ形式の署名を付けられるようにし、既定では求めない。最初に加えたときの作者の鍵を依存の記述に記録し、更新のときに同じ鍵の署名を求める（最初の使用で信頼する形）。鍵が変わったら更新を止めて示し、署名のないものは「出所を確かめられない」と示す。サーバモードの方針で、依存にも `allowed_signers` の鍵の署名を求める設定を選べるようにする。中央の鍵の登録所や透明性の記録は、中央のレジストリを持たない方向（[OPEN-073](#open-073)）と同じ理由で、初めは持たない。
+- 署名の形式はスクリプトの署名と同じとし、パッケージの全ファイルの相対パスとハッシュの一覧に SSH の署名を付ける。名前空間は `benitoite-script` と別の値（`benitoite-package` など）にする。分けないと、パッケージに付けた署名をスクリプトの登録の署名として使い回せてしまう。
+- WASM のモジュールは、ファイルの一覧に含めて同じ署名で覆い、モジュールの中に署名を埋め込む形式は採らない。署名が保証するのは誰がそのバイト列を配ったかまでで、公開されたソースからビルドしたかは保証しないので、WASM を含む有志のパッケージに署名のないものを加えるときの警告を強める（または署名を必須にする）かを、外部の関数の層（[OPEN-051](#open-051)）とあわせて決める。
+- 【要検証】WebAssembly の tool-conventions にある、カスタムセクションに署名を埋め込む形式の提案の現在の状態。
+
+<a id="open-077"></a>
+## OPEN-077 依存関係地獄を言語仕様で防ぐ手段
+
+- 種別: 未決
+- 移行元: なし
+
+依存関係の問題は、原因の違う複数の問題からなる。2026-10-02 に設計者は原因を六つに分け（版の衝突、環境の汚染、再現しないこと、ネイティブのコードのビルド、版の番号が互換性を表さないこと、処理系の版との不一致）、言語仕様で取りうる手段を検討した（[パッケージ管理の検討メモ](sources/post-first-release/post-first-release-package-management.md)の「依存関係地獄を言語仕様で防げるか」）。パッケージを設ける場合（[OPEN-073](#open-073)）に、次の手段のどれを採るかを決める。メモの見立ては、(1)・(2)・(3)・(6) が既存の規則と組み合わせやすいというものであり、決定ではない。
+
+1. 同じパッケージの互換性のない版を一つのプログラムに共存させる。モジュールの同一性を、名前ではなく、パッケージの識別とモジュールのパスで決める。版の違う型は別の型になるので、診断に版と依存の経路を示す。トップレベルに可変の状態を置けないこと（[ADR 0055](decisions/0055-top-level-functions-and-types-only.md)、[ADR 0123](decisions/0123-top-level-constants.md)）と孤立した実装の禁止（[ADR 0061](decisions/0061-trait-coherence-orphan-and-overlap.md)）により、同じモジュールが二つ読まれても複製による不具合が起きにくい。何をパッケージの識別にするかは、OPEN-073 の版の選び方と関係する。
+2. 公開の依存と非公開の依存を区別し、非公開と宣言した依存の型が公開の関数の型に現れたら誤りとする。公開の契約が型とエフェクトを含む（[ADR 0154](decisions/0154-public-contract-includes-effects-and-supertraits.md)）ので静的に検査でき、利用者が版を揃える必要があるのは公開の依存だけになる。
+3. 公開の契約の差分を検査し、互換性を壊す変更なのに大きな版を上げていなければ公開を拒む。エフェクトが増えたことも互換性を壊す変更として扱う（[OPEN-075](#open-075)）。保証するのは型とエフェクトの互換性だけで、振る舞いの互換性は保証しない。
+4. パッケージに含められるものを、ソースと WASM のモジュールに限る（[ADR 0139](decisions/0139-external-functions-via-wasm.md)）。環境ごとのネイティブのビルドが要らない。WASM の実行系が対応しない環境の有無は【要検証】である（[OPEN-051](#open-051)）。
+5. パッケージごとに言語の版を宣言する。処理系が複数の版の規則を保つ負担が生じるので、0.x の間（[ADR 0236](decisions/0236-compatibility-during-0x.md)）は対応する処理系の版の範囲だけを宣言する案もある。正式リリース版の互換性の方針（[OPEN-040](#open-040)）とあわせて決める。
+6. 共有の導入先を持たず、どのスクリプトがどの版を使うかを、そのスクリプトの依存の記述だけで決める（OPEN-073 の保存の場所）。
+
+どの手段でも防げないものとして、版の違う二つのパッケージの間での値の受け渡し（変換の関数を書くか版を揃えるしかなく、言語仕様にできるのは明確な診断まで）、意味の互換性、依存の数そのものの増加がある。
+
+<a id="open-078"></a>
+## OPEN-078 公式の追加のライブラリの配り方と、非公式のモジュールの行き先
+
+- 種別: 未決
+- 移行元: なし
+
+標準ライブラリに入れずに処理系と別に配る公式のライブラリ（公式の追加のライブラリ。例: git のラッパー）を設けるか、設けるならその名前と取得元をどうするかを決める。あわせて、吟味を終えた非公式のモジュールの行き先に、標準ライブラリのほかに公式の追加のライブラリを加えるかを決める。2026-10-02〜06 に設計者が検討した方向（[パッケージ管理の検討メモ](sources/post-first-release/post-first-release-package-management.md)の「公式のライブラリの名前と取得元」「非公式のモジュールを公式の追加のライブラリへ移せるか」）は次のとおりであり、決定ではない。
+
+ライブラリを三つの層に分ける。標準ライブラリ（名前 `Benitoite.*`。処理系に同梱し、取得元を書かない。版は処理系の版に従う）、公式の追加のライブラリ、第三者と利用者のライブラリ（依存の記述で付けた別名。取得元とハッシュ、または手元のパス。[OPEN-073](#open-073)、[OPEN-074](#open-074)）である。公式の追加のライブラリの名前と取得元の案は次の四つである。
+
+- (a) ほかのパッケージと同じく取得元とハッシュで書く。規則が一つで済み、処理系に特別扱いが要らない。URL が長く、リポジトリを移すと URL が変わり、LLM が URL を書き誤ったときに原因が分かりにくい。
+- (b) 予約した短い名前（例: `benitoite:git`）を、処理系が対応表で公式の取得元とハッシュに変える。対応表を処理系に埋め込めば、取得元を移しても処理系の更新で追従でき、ハッシュも処理系が保証する。公式のライブラリの更新が処理系のリリースに縛られる。対応表をネットワークから取る形にすると小さなレジストリになり、運営が要る。
+- (c) 自前のドメインの URL を名前にし、実際の置き場所へ転送する。名前は移転しても変わらないが、ドメインの維持が要り、失うと名前が他人に渡る。
+- (d) 公式の追加のライブラリを設けず、標準ライブラリ（非公式のモジュールを含む）に入れる。処理系の配布物が大きくなり、外部のコマンドの版に追従するものも処理系のリリースに縛られる。
+
+方向: 標準ライブラリには取得元を付けない。公式の追加のライブラリは (b) で対応表を処理系に埋め込む形が有力である（短い名前は LLM が書き誤りにくく、ハッシュの保証を処理系が持てる）。更新を処理系のリリースと切り離したくなった時点で、対応表を取得する形へ広げる。
+
+非公式のモジュールの行き先について。ADR 0286 の「標準」「非公式」は吟味の状態を表し、公式の追加のライブラリにするかは配り方の問題なので、二つは別の軸である。行き先を増やすには、吟味を終えたモジュールを標準に移すとした [ADR 0286](decisions/0286-unofficial-modules-imported-under-unofficial.md) の決定 7 を改める ADR が要る。公式の追加のライブラリは取得したソースを読む普通のパッケージなので、移せるモジュールには次の制約がある。
+
+- 組み込みのエフェクトを宣言するモジュール（`Console`・`File`・`Process`・`Clock`・`Random`・`Http`）は移せない。組み込みのエフェクトは処理系が `Benitoite` の名前空間の名前で照合し（[ADR 0128](decisions/0128-prelude-and-benitoite-namespace.md) の決定 6）、実行時の権限制御の対象になるので、パッケージに移すと権限制御の根拠がパッケージの側に移る。`Clock` は prelude の `Task.race`・`Task.withTimeout` からも使われる。
+- `@builtin` は標準ライブラリのソースにだけ書ける（[ADR 0157](decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md) の決定 3）。`@builtin` を使うモジュールを移すには、(i) Benitoite で書き直す（速さが要るものは遅くなる）、(ii) 公式の追加のライブラリにも `@builtin` を許す（実装は処理系に残るので、得られるのは名前の整理だけである）、(iii) 外部の関数の層の後に実装を WASM としてパッケージに含める、のどれかが要る。
+
+移す候補を選ぶ基準の案: 組み込みのエフェクトを宣言するもの、標準のモジュールが依存するもの、多くのスクリプトが使うもの（`Path`・`Json` など）は処理系に残す。外部の仕様やコマンドの版に追従して変わるもの、使う場面が限られるものを公式の追加のライブラリにする。この基準で移す候補になりうる非公式のモジュールは `Csv`・`Encoding`・`Hash` くらいであり、初回リリース版の実装ではどれも公開の関数をすべて `@builtin` で宣言している（2026-10-08 に `crates/benitoite/src/prelude/stdlib/` のソースで確かめた）。このため、移す時期は外部の関数の層の後か、Benitoite で書き直すと決めたときになる。git のラッパーは `Process` の上に Benitoite で書けるので、この制約にかからず、最初から公式の追加のライブラリとして作れる。
+
+2026-10-08 に、主なパスワードマネージャ（Proton Pass、KeePass 系、1Password、Bitwarden）のラッパーを公式のライブラリとして用意すると決めた（[ADR 0338](decisions/0338-password-manager-wrappers-as-official-libraries.md)）。ラッパーを標準ライブラリに入れるか、公式の追加のライブラリとして配るかは、本項で決める。
+
+<a id="open-079"></a>
+## OPEN-079 コマンドを代替する機能の範囲と優先度
+
+- 種別: 未決
+- 移行元: なし
+
+コーディングエージェントがシェルで実行するコマンドのうち、初回リリース版の標準ライブラリで代替できないものを、初回リリース版の後にどこまで、どの順で代替するかを決める。加える機能は、コマンドを代替するライブラリの方針（[ADR 0336](decisions/0336-command-substitute-library-policy.md)）に従う。設計者は 2026-10-02 に、初回リリース版の `File`・`Path`・`String`・`List`・`Regex` などでどのコマンドを代替できるかを整理した（[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)の「初回リリース版での対応」）。`mkdir -p`・`rm -r`・`cat`・`sort`・`curl` などは部品を組み合わせて書ける。足りないのは次のものである。
+
+- `mv`: ファイルシステムをまたぐ移動の扱いを定めていない。
+- `cp`: ディレクトリを写す関数がなく、実行の権限などの属性を引き継がない（1 GiB の上限は [ADR 0337](decisions/0337-file-transfer-for-large-copies.md) で後の版になくす）。
+- `ls`・`find`: glob と名前による絞り込みがなく、`File.walk` は `.git` も辿る。
+- `stat`: 権限の属性と所有者を返さない。
+- `grep`: 再帰の検索、行番号、バイナリのファイルの判定、`.gitignore` への対応を利用者が書く。
+- `sed -i`: 行の範囲を指定できず、書き換えが原子的でない。
+- 更新時刻の変更（`touch`）、権限の属性の設定（`chmod`）、シンボリックリンクの作成と読み取り、一時ファイル（`mktemp`）、コマンドの場所の探索（`which`）、差分と適用（`diff`・`patch`）、アーカイブ（tar・gzip・zip。gzip は [ADR 0137](decisions/0137-first-release-library-scope.md) で除外した）、md5・sha1 の関数がない。
+- `jq` の問い合わせの言語と `awk` に当たるものはない。`Json` の関数と一般のコードで書けるので、作らない方向である（ADR 0336 の帰結）。
+
+メモの優先度の暫定の案は次のとおりであり、決定ではない。
+
+- 高: grep に当たる検索（ファイル・行番号・一致した範囲を持つレコードのリストを返す）、glob、原子的な書き換えと置換の補助、`File.copyTree` と属性の引き継ぎ、権限の属性の取得と設定、一時ファイルと一時ディレクトリ（`with` で消えるリソースにする）
+- 中: diff、which、touch、シンボリックリンクの作成と読み取り、裏で動かすプロセスと出力をバイト列で受け取る `Process.run`（[OPEN-084](#open-084)）
+- 低: tar・gzip・zip、md5・sha1、jq 風の問い合わせ
+
+決めるときは、次の点を扱う。
+
+- 対象と優先度の根拠。メモは、実際のエージェントの記録（Claude Code のセッションのログなど）から、シェルで実行したコマンドの頻度を数えて決めることを提案している。
+- 機能ごとの難しい点。grep に当たる検索と glob では、結果の値の大きさの上限（[ADR 0049](decisions/0049-size-limit-for-built-values.md)）、バイナリのファイルの判定、`.gitignore` の扱い、結果のレコードの形。原子的な書き換えでは、一時ファイルの置き場所（同じファイルシステムに置く必要がある）と権限の属性の引き継ぎ。`mv` では、名前の変更が失敗したときに写してから消す処理と、途中で失敗したときの状態。アーカイブの展開では、`../` やシンボリックリンクを使って展開先の外へ書く抜け道への対策。権限の属性とシンボリックリンクでは、Unix と Windows で意味が違うこと。
+- 実装に使うクレート。メモの候補は、Rust の標準ライブラリのほか、`tempfile`・`which`・`ignore`・`globset`・`grep-searcher`・`similar`・`tar`・`flate2`・`zip` である。使うときはライセンスを確かめる（[ADR 0138](decisions/0138-crates-and-licenses-for-stdlib.md)）。
+- 加える関数を標準ライブラリに置くか、公式の追加のライブラリに置くか（[OPEN-078](#open-078)）。
+- 【要検証】ファイルの更新時刻の設定を、Rust の標準ライブラリだけで行えるか。
+
+<a id="open-080"></a>
+## OPEN-080 外部コマンドを使う操作の選び方と、エージェントへの示し方
+
+- 種別: 未決
+- 移行元: なし
+
+外部コマンドに当たる操作を書くとき、次の順で選ばせる案がある（[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)の「三段の順」）。
+
+1. 標準ライブラリの関数
+2. コマンドを包む外部のライブラリ
+3. `Process.run`（1 にも 2 にもないときの最後の手段）
+
+`Process.run` で起動したコマンドのエフェクトは `Process.Run` の一つになり、コマンドが中で行う操作は処理系の検査の外にある（[IO のモジュール](03-interop/03-07-io-modules.md)の「外部コマンドの起動とシェル」）。標準ライブラリの関数で書けば、エフェクトと権限の対象が型と権限の表示に現れる（[ADR 0336](decisions/0336-command-substitute-library-policy.md) の背景）。この順は、設計書のどこにも書かれていない。初回リリース版の同梱の Agent Skill は、シェルの機能が要らなければ `Process.shell` より `Process.run` を使うよう指示するが、標準ライブラリの関数を `Process.run` より先に選ぶ指示は持たない（2026-10-08 に `crates/benitoite/skill/SKILL.md` で確かめた）。次の点を決める。
+
+- この順を採るか。2 段目の、コマンドを包むライブラリを `Process.run` と区別する意味は、そのエフェクトを権限の表示にどう出すか（[OPEN-081](#open-081)）に依る。
+- 示す手段。メモの候補は次の三つであり、組み合わせられる。
+  - 同梱の Agent Skill の「主な言語の規則の要約」（[Agent Skills 対応](06-tooling/06-06-agent-skills.md)）に、「標準ライブラリにある操作を `Process.run` で行わない」を加える。
+  - `Process.command` のコマンドの名前が定数で、標準ライブラリに同じ操作があるとき（`cp`・`mv`・`rm`・`mkdir` など）、置き換え先の関数（`File.copy` など）を示して警告する。設計原則 1・3 に沿い、名前での参照による判定（[ADR 0074](decisions/0074-static-permission-check-by-name-reference.md)）と同じく、実装の費用は小さい見込みである。
+  - [IO のモジュール](03-interop/03-07-io-modules.md)の「外部コマンドの起動とシェル」に順の考え方を書く。
+- 警告にするときは、診断コード、「同じ操作がある」とみなすコマンドと関数の対応の表、引数が定数でないときの扱い、`Process.shell` の文字列も調べるか。
+
+<a id="open-081"></a>
+## OPEN-081 外部のライブラリのエフェクトを、権限の表示にどう出すか
+
+- 種別: 未決
+- 移行元: なし
+
+外部のコマンドやサービスを包むライブラリ（git のラッパーなど）が専用のエフェクトを宣言しても、そのエフェクトは `main` の型に現れず、実行の前の権限の表示にも出ない。現在の設計には、次の三つの制約がある（[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)の「エフェクトの設計」）。
+
+1. 利用者が定義するエフェクトは、`main` の型に現れない（[エフェクト](01-spec/01-07-effects.md)の「プログラムの入口」）。必ずハンドラで処理するので、ライブラリで `Git.Commit` を宣言して中で `Process.run` を呼んでも、`main` の型と権限の表示に残るのは `Process.Run` だけである。
+2. エフェクトをまとめる仕組みは、組み込みの `IO.All` だけである。利用者がエフェクトのまとめや階層を宣言する構文はない。
+3. `Process.Run` の許可は、コマンドの名前を単位とし、引数を問わない（[ADR 0073](decisions/0073-run-permission-command-matching.md)、[ADR 0184](decisions/0184-permissions-granted-per-builtin-effect.md)）。`git` を許すと、`git log` も `git push --force` も許す。
+
+メモの選択肢は次の四つである。
+
+- A. ライブラリのエフェクト（言語を変えない）: ライブラリが `Git.Read`・`Git.Write` などを宣言し、既定のハンドラが `Process.run` で git を呼ぶ。型の付いた結果と、テストでのハンドラによる差し替えは得られるが、権限の表示は `Process.Run(git)` に戻るので、設計原則 3 の改善にならない。
+- B. 組み込みのエフェクトにする: 標準ライブラリのモジュールで `Git.Read`・`Git.Write` などを宣言し、まとめた `Git.All` を `IO.All` と同じ仕組みで置く。許可の単位に加え、対象をリポジトリのパスやリモートの URL にする。組み込みのまとめは既にあるので言語の変更は小さいが、道具ごとに組み込みのエフェクトを足すと表が膨らむので、対象は少数に限る。
+- C. `Process.Run` の許可の対象を、引数の先頭まで細かくする（[OPEN-083](#open-083)）: どの道具にも使えるが、関数の型の上では `log` と `push` を区別できない。
+- D. 利用者がエフェクトのまとめや階層を宣言できるようにする（`effect Git = Git.Read | Git.Write` など。包含の規則の拡張）: 制約 1 が残る限り、権限の表示は改善せず、A を整理する手段にとどまる。
+
+サーバモードでは、もう一つの問題が生じる。既定の方針は `server exec` で `Process.Run` を許さない（[ADR 0185](decisions/0185-default-policies-per-run-kind.md)）。ラッパーのライブラリの中身は `Process.run` なので、ラッパーを使っても生の `Process.run` と同じく拒否され、権限の上で 2 段目と 3 段目（[OPEN-080](#open-080)）を区別できない。メモの案は次の三つである。
+
+| 案 | 内容 | 費用 | 注意点 |
+|---|---|---|---|
+| X | よく使う道具を標準ライブラリに上げる（前述の B）。`server exec` の既定で `Git.Read` だけを許す、といった設定ができる | 中（道具ごと） | 対象を少数に絞る |
+| Y | ライブラリを単位に許可する。ラッパーのライブラリが起動するコマンドを宣言し、承認したライブラリの中からの `Process.run` だけを許す | 大 | パッケージ管理、実行時にどのライブラリから呼んだかの判定、ライブラリそのものの信頼（署名）を前提とする |
+| Z | `Process.Run` の対象を引数の先頭まで細かくする（前述の C） | 小〜中 | 照合を厳密にしないと抜け道が残る（[OPEN-083](#open-083)） |
+
+メモの暫定の推奨は、エージェントが日常的に使う少数の道具（まず git）を X で標準ライブラリに上げ、それ以外は Z を一般の仕組みとし、Y はパッケージ管理の設計とあわせて後で検討する組み合わせである。これは決定ではなく、どの道具を組み込みのエフェクトにするかも決めていない。
+
+本項は、次の項目と関係する。決めるときに、どの項目で何を決めるかを整理する。
+
+- [OPEN-052](#open-052)（実行時の権限制御の方式）: 許可の単位と対象の書き方。B・X は許可の単位を増やし、C・Z は `Process.Run` の対象の書き方を変える。
+- [OPEN-055](#open-055)（サーバモードの設計）: 既定の方針と、許可したコマンドが必要とする読み取りの扱い。
+- [OPEN-075](#open-075)（パッケージのエフェクトと権限）: Y はパッケージを単位に許可する問いと同じである。
+- [OPEN-082](#open-082)（git の提供のしかたとエフェクトの分け方）: B・X を git に当てはめたときのエフェクトの分け方。
+
+初回リリース版の後の検討メモのうち、LLM の提供者の CLI を包むライブラリ（[LLM の提供者の検討メモ](sources/post-first-release/post-first-release-llm-providers.md)）と、秘密の情報を扱う操作（[秘密の情報の扱いの検討メモ](sources/post-first-release/post-first-release-secrets.md)）も、専用のエフェクトを権限の表示に出せるかという同じ問いを持つ。それぞれの OPEN と ADR は本項を参照し、組み込みのエフェクトにするかを本項で合わせて決める。
+
+秘密の情報を扱う操作のエフェクト（`Secret.Read`・`Secret.Reveal` の案）は [OPEN-088](#open-088) に登録した。
+
+エージェントの CLI の起動の専用のエフェクト（[ADR 0341](decisions/0341-agent-cli-wrapper-library.md)。名前と細かさは [OPEN-099](#open-099)）と、スクリプトから LLM を呼ぶモジュールのエフェクト（[OPEN-100](#open-100)）も、本項で合わせて扱う。
+
+<a id="open-082"></a>
+## OPEN-082 git の提供のしかたと、エフェクトの分け方
+
+- 種別: 未決
+- 移行元: なし
+
+git をスクリプトから型の付いた関数として使えるようにするか、使えるようにするならどう作るかを決める。メモの選択肢は次の三つである（[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)の「git の提供のしかた」）。
+
+| 案 | 内容 | 長所 | 短所 |
+|---|---|---|---|
+| 自作 | Rust で git を実装する | 外部のコマンドが要らない | 作業量が大きすぎる |
+| Rust の git のライブラリ（gitoxide など） | 処理系に組み込む | 起動の費用がない。hooks が動かない | push・rebase などへの対応の状況は【要検証】。実行ファイルが大きくなる。利用者の git の設定（認証、署名など）と挙動がずれる |
+| git の CLI を包む | `git status --porcelain=v2 -z` のような機械向けの出力を指定して呼び、結果をレコードにする | 利用者の環境と挙動が一致する。実装が軽い | git が要る。git の版による出力の違いへの対応が要る |
+
+メモは、CLI を包む案を第一の候補としている。作り方は、コマンドの引数を組み立てる薄い層にせず、操作を型の付いた関数とエフェクトとして表す（[ADR 0336](decisions/0336-command-substitute-library-policy.md)）。CLI を包む案を採るときは、次の点を決める。
+
+- 保証の範囲。git は hooks・credential helper・diff driver・ssh などの別のプログラムを起動しうる。リポジトリの `.git/config`（`core.fsmonitor` など）や、`git -c alias.x='!コマンド'` のような大域のオプションからも、別のプログラムを起動できる。そのため、git の読み取りの操作であっても「読むだけ」とは言えない。メモの案は、保証の範囲を「git を、このサブコマンドで起動すること」までとし、[セキュリティモデル](07-quality/07-01-security-model.md)の「ハーネスとの分担」と同じ形で明記することである。
+- 【要検証】読み取りの操作で、hooks や fsmonitor を無効にして起動できるか（`-c core.hooksPath=…` などで抑えられる範囲）。
+- エフェクトの分け方。メモの叩き台は次のとおりである。
+
+  | エフェクト | 操作の例 | 対象 |
+  |---|---|---|
+  | `Git.Read` | status・log・diff・show・blame・ブランチの一覧 | リポジトリ |
+  | `Git.Write` | add・commit・ブランチの作成・switch・stash・tag | リポジトリ |
+  | `Git.Rewrite` | reset --hard・rebase・commit --amend・clean・branch -D | リポジトリ |
+  | `Git.Remote` | fetch・pull・push・clone | リモートの URL |
+
+  残る点: `Git.Rewrite` を分けると取り消しにくい操作を利用者が見分けやすくなる（設計原則 3）が、分け方を誤るとエージェントが書くコードへの診断が増えること。`push --force` が `Git.Remote` と `Git.Rewrite` の両方に当たること。`Git.Remote` を、ネットワークのエフェクトと同じく `IO.All` の外に置くか。`Git.Write` で作業ツリーのファイルが変わることを、`File.Write` の許可とどう関係づけるか。
+- これらのエフェクトを組み込みのエフェクトにするか、ライブラリのエフェクトにするか（[OPEN-081](#open-081)）。
+- 配り方。標準ライブラリに入れるか、公式の追加のライブラリとして配るか（[OPEN-078](#open-078)）。
+- 対応する git の版と、版による出力の違いの扱い。
+
+<a id="open-083"></a>
+## OPEN-083 `Process.Run` の許可の対象を引数まで細かくするときの照合の規則
+
+- 種別: 未決
+- 移行元: なし
+
+`Process.Run` の許可は、コマンドの名前を単位とし、引数を問わない（[ADR 0073](decisions/0073-run-permission-command-matching.md)、[ADR 0184](decisions/0184-permissions-granted-per-builtin-effect.md)）。許可の対象を引数の先頭まで細かくする案がある（[OPEN-081](#open-081) の選択肢 C・案 Z。[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)の「エフェクトの設計」）。方針のファイルに `"Process.Run" = ["git status", "git log"]` のように書けるようにし、`Process.command` の引数が定数なら、処理系が実行の前に起動するコマンドの一覧を作って示す（`Process.shell` を名前で参照しているかを調べるのと同じ考え方。[ADR 0074](decisions/0074-static-permission-check-by-name-reference.md)）。どの道具にも使えるが、関数の型の上では `git log` と `git push` を区別できない。この案を採るかと、採るときの次の点を決める。
+
+- 照合の規則。先頭の何語までを照合するか、オプションが引数の間に入るときの扱い（`git -C dir status` など）。
+- 抜け道への対策。git では、大域のオプション（`-c alias.x='!コマンド'` など）と設定（`core.fsmonitor`、hooks）から別のプログラムを起動できるので、先頭の語の照合だけでは抜け道が残る。大域のオプションを禁じるか、設定と hooks を無効にして起動するか（[OPEN-082](#open-082)）。
+- 引数が定数でないときの、実行の前の示し方と、実行時の判定。
+- 方針のファイルの書式（[ADR 0200](decisions/0200-policy-file-toml-and-locations.md)）と、実行時の権限制御の方式（[OPEN-052](#open-052)）との関係。
+
+<a id="open-084"></a>
+## OPEN-084 裏で動かすプロセスと、取り消しのときの子プロセスの扱い
+
+- 種別: 未決
+- 移行元: なし
+
+初回リリース版の `Process.run` には、エージェントの用途で足りない点が二つある（[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)の「初回リリース版での対応」）。
+
+- 起動したコマンドが終わるまで待つ形しかなく、開発用のサーバのように裏で動かし続けて後で止める使い方ができない。
+- 出力を `String` で返すので、出力が UTF-8 でないコマンドの結果を受け取れない（`IOErrorKind.InvalidUTF8` を返す。[IO のモジュール](03-interop/03-07-io-modules.md)の「Process」）。
+
+あわせて、タスクを取り消したときの子プロセスの扱いを見直す。[ランタイム](02-impl/02-09-runtime.md)の「タスクの待ちと取り消し」は、タスクを取り消しても、作業用のスレッドで続いている操作を止めず、起動した外部コマンドも終わらせないと定めている。`Task.withTimeout` で `Process.run` を取り消しても、子プロセスは動き続ける。（メモは、この記述を見つけられず【要検証】としていた。2026-10-08 に 02-09 で確かめた。）
+
+次の点を決める。
+
+- 裏で動かすプロセスの形。起動・待つ・止めるの関数と、それをリソースとして `with` で開くか（解放のときに止める）。タスクの取り消しとリソースの状態の遷移（[ADR 0266](decisions/0266-task-and-resource-state-machines.md)）との関係。ランタイムに手を入れる。
+- タスクを取り消したときと、止める手順のときに、起動した子プロセスを終わらせるか。終わらせるなら、送るシグナルと待つ時間。
+- 出力をバイト列で受け取る `Process.run` を加えるか。集めた出力の大きさの上限（1 GiB）を避けて、出力を `Writer` に流す設定は [OPEN-086](#open-086) で扱う。
+
+<a id="open-085"></a>
+## OPEN-085 サーバモードを加えた後のスタンドアロンモードの既定の書き込みの範囲と、個人用の道具
+
+- 種別: 未決
+- 移行元: なし
+
+スタンドアロンモードの既定の方針は `Process.Run` を許し、利用者が個人用の道具を手軽に作れるようにしている。サーバモードの既定の方針は許さない（[ADR 0185](decisions/0185-default-policies-per-run-kind.md)、[サーバモード](06-tooling/06-07-server.md)の「方針のファイル」）。この点は、コマンドを代替するライブラリの検討（[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)の「既定の方針」）の方向と一致している。
+
+一方で、サーバモードを加えた後のスタンドアロンモードは、OS のサンドボックスを掛けた子プロセスで動き（[ADR 0204](decisions/0204-standalone-runs-in-sandboxed-child.md)）、既定の書き込みの範囲は基準のディレクトリ（方針のファイルの `.`）と一時ディレクトリ（`{tmp}`）の下だけである（[ADR 0185](decisions/0185-default-policies-per-run-kind.md)、[サーバモード](06-tooling/06-07-server.md)の「方針のファイル」）。`Process.Run` を許していても、起動したコマンドもこの範囲に制限される。作業ディレクトリの外へ書く個人用の道具（パッケージの導入、利用者の設定ファイルの書き換えなど）は、既定の方針のままでは失敗する。個人用の道具を手軽に作れるという目的に照らして、次の点を決める。
+
+- この既定で利用者が困らないか。困るなら、既定の書き込みの範囲を広げるか、範囲の外へ書く道具のための方針の書き方（利用者が一度許せば済む形など）を用意するか。
+- 範囲の外への書き込みで失敗したときに、利用者に示す説明と、方針の直し方の案内（[OPEN-052](#open-052) の拒否の報告に添える修正案）。
+
+<a id="open-086"></a>
+## OPEN-086 開いたリソースへ流す操作の広げ方と、`File.copy` の細部
+
+- 種別: 未決
+- 移行元: なし
+
+初回リリース版の後に、開いたリソースどうしを流す `File.transfer` を加え、`File.copy` をそれで書き直して 1 GiB の上限をなくすことにした（[ADR 0337](decisions/0337-file-transfer-for-large-copies.md)）。1 GiB の上限は、一つの操作で作る `String`・`Bytes` の値の大きさの上限から来る（[ADR 0049](decisions/0049-size-limit-for-built-values.md)）。ファイルのコピーのほかにも、内容全体を一つの値にする操作には同じ上限がかかる。メモは、同じ形をそれらに広げる案を挙げている（[コマンドを代替するライブラリの検討メモ](sources/post-first-release/post-first-release-command-libraries.md)の「1 GiB を超えるファイルの扱い」）。設計者が決めたのは `File.transfer` と `File.copy` だけであり、次の点は決めていない。
+
+- ダウンロードを `Writer` に流す操作。例: `Http.sendTo(request, writer)`（`Http.Connect` の操作。応答の本体を `writer` に書く）。現在の `Http.get`・`Http.send` は応答の本体を `Bytes` で返すので、1 GiB までである（[ネットワークのモジュール](03-interop/03-09-network.md)の「クライアント」）。
+- 外部コマンドの出力を `Writer` に流す設定。`Process.run` は標準出力を集めて返すので、1 GiB までである（`Process.runAttached` は集めない）。
+- 少しずつ計算するハッシュの関数。例: `Hash.sha256Start() -> Hash.Sha256State`、`Hash.sha256Update(state, data) -> Hash.Sha256State`、`Hash.sha256Finish(state) -> Bytes`。状態は中身を見せない値とし（[ADR 0168](decisions/0168-regex-match-and-stdlib-opaque-values.md) の前例）、純粋な関数のまま、`File.readChunk` と組み合わせて大きなファイルのハッシュを計算できる。ファイルを一度に計算する `Hash.sha256File(reader)` のような関数は、これを使った標準ライブラリのソースの関数で書ける。メモの見立ては、加えるというものである。
+- `File.copy` が途中で失敗したときに、書きかけのファイルを残さないか。同じディレクトリの一時的な名前に書いてから `File.rename` で置き換えれば、失敗しても元の `to` が壊れない。原子的な書き換え（[OPEN-079](#open-079)）とあわせて決める。
+- `File.transfer` が OS の速いコピーの機能（Linux の `copy_file_range`、macOS の APFS のクローンなど）を使えるか。【要検証】Rust の `std::fs::copy` と `std::io::copy` が、どの OS のどの機能を使うか。速さは測って確かめる。
+- 長い転送の途中で、タスクの取り消しや中断の要求を受けたときの扱い。作業用のスレッドで続いている操作は取り消しで止めない（[ランタイム](02-impl/02-09-runtime.md)の「タスクの待ちと取り消し」）ので、大きなファイルの転送では、止めるまでの時間が長くなりうる。
+
+<a id="open-087"></a>
+## OPEN-087 外部コマンドに渡す環境変数を、スクリプトの環境変数から切り離す方法
+
+- 種別: 未決
+- 移行元: なし
+
+`Process.Command` の `environment` の組は、スクリプトの環境変数に加えるか、同じ名前の変数を置き換える（[IO のモジュール](03-interop/03-07-io-modules.md)の「Process」）。スクリプトの環境変数を引き継がない手段も、特定の変数を消す手段もないので、外部コマンドはスクリプトの環境変数をすべて受け取る。スクリプトを起動した環境にほかの秘密（別のサービスのトークンなど）があれば、そのコマンドに要らなくても渡る。サーバモードの子プロセスが受け取る環境変数は `--env` で名前を指定したものなどに限られる（[サーバモード](06-tooling/06-07-server.md)の「サブコマンド」、[ADR 0199](decisions/0199-server-job-handling.md)）ので、問題はスタンドアロンモードで大きい。
+
+案は次の四つである（[秘密の情報の扱いの検討メモ](sources/post-first-release/post-first-release-secrets.md)の「1. 外部コマンドに渡す環境変数の制御」）。
+
+- (a) 引き継ぐかを選ぶ欄 `inheritEnvironment: Bool`（既定は `true`）を加える。`false` にすると、`environment` に書いた変数だけを渡す。Rust の標準ライブラリの `Command::env_clear` に当たる。
+- (b) 消す変数の名前の並び `removeEnvironment: List[String]` を加える。Rust の `Command::env_remove` に当たる。
+- (c) `environment` の値の型を `Map[String, Option[String]]` にし、`Option.None` で消す。欄は増えないが、値を渡す普通の使い方でも `Option.Some` が要る。
+- (d) 既定で引き継がない。`PATH`・`HOME`・`LANG` などがなくなり、多くのコマンドが動かなくなる。
+
+メモの暫定の見立ては (a) を採ることである。必要な変数だけを渡したいときは、`inheritEnvironment: false` にし、要る変数を `Process.environmentVariable` で読んで `environment` に入れる。読む変数は `Process.Environment` の対象として権限の確認に現れるので、どの変数を子に渡すかを利用者が確かめられる。(b) は (a) と役割が重なる（設計原則 5）ので、要望が出てから考える。この見立ては決定ではない。採るときは次の点もあわせて決める。
+
+- 【要検証】環境変数を引き継がないとき、`program` をどの `PATH` で探すか。Rust の `Command` が、親の `PATH` と子に渡す `PATH` のどちらを使うかを一次資料で確かめる。メモは、子に渡す環境の `PATH` で探すと決めるのが分かりやすいとしている。
+- レコードに欄を加えると、レコードのリテラルで `Process.Command` を作っているスクリプトが壊れる（`Process.command` とレコードの更新で作る書き方は壊れない）。0.x の間の互換性の方針（[ADR 0236](decisions/0236-compatibility-during-0x.md)）の範囲で扱えるか。
+- 秘密の型（[OPEN-088](#open-088)）を設けるなら、秘密を値に持つ環境変数の欄（`secretEnvironment: Map[String, Secret]` など）。
+
+<a id="open-088"></a>
+## OPEN-088 秘密の値の型と、秘密を扱うエフェクト
+
+- 種別: 未決
+- 移行元: なし
+
+秘密を普通の `String` で扱うと、スクリプトが（LLM が書いた誤りでも）標準出力や記録に書き出せる。コーディングエージェントの下では、エージェントが標準出力を捕らえて LLM に渡すので、秘密が LLM に渡る。サーバモードでは、標準出力はジョブの出力として保存される（[IO のモジュール](03-interop/03-07-io-modules.md)の「Console」）。メモ（[秘密の情報の扱いの検討メモ](sources/post-first-release/post-first-release-secrets.md)の「秘密の型」「エフェクトと権限」「保証しないこと」）は、次の案を挙げている。どれも決定ではない。
+
+中身を見せない型 `Secret` を設ける。標準ライブラリには、中身を見せない値の前例がある（[ADR 0168](decisions/0168-regex-match-and-stdlib-opaque-values.md)）。
+
+- `Secret` は、文字列への変換・文字列への埋め込み・表示を持たない。診断や値の表示では `<secret>` と示す。比べた結果から中身を推測させないため、等値の比較も持たない。
+- 秘密を外へ渡す受け取り口を、決まった関数に限る。候補は、外部コマンドの環境変数（[OPEN-087](#open-087) の `secretEnvironment`）と標準入力、HTTP の要求のヘッダ（[OPEN-091](#open-091)）である。
+- 文字列が要る場合のために `Secret.reveal(s)` を設け、専用のエフェクト `Secret.Reveal` を要するようにする。秘密を文字列として取り出すスクリプトであることが、権限の確認に現れる（設計原則 3）。
+- 文字列を `Secret` に包む関数は、誰でも使えるようにしてよい。パスワードマネージャのラッパー（[ADR 0338](decisions/0338-password-manager-wrappers-as-official-libraries.md)）は外部コマンドの標準出力から秘密を読むので、この関数を要する。秘密を作ることは、秘密を取り出すことと違って漏洩につながらない。
+
+エフェクトの案は次のとおりである。
+
+| エフェクト | 操作 | 権限の対象 |
+|---|---|---|
+| `Secret.Read` | `Secret.prompt(label)`（人間からの入力。[OPEN-089](#open-089)）、`Secret.fromKeystore(service, account)`（OS のキーストア。[OPEN-090](#open-090)） | 入力の説明の名前、キーストアの項目の名前 |
+| `Secret.Reveal` | `Secret.reveal(s)` | なし |
+
+- 既定の方針の案: スタンドアロンモードでは `Secret.Read` を許し、`Secret.Reveal` は許さない。サーバモードでは、どちらも許さず、登録のときの承認で項目を指定して許す（[セキュリティモデル](07-quality/07-01-security-model.md)の「既定の方針（サーバモード）」）。
+- 受け取った秘密は外へ送れる。`Secret.Read` と `Http.Connect`（または任意のコマンドの `Process.Run`）を両方使うスクリプトは、秘密を外へ送れる。権限の確認でこの組み合わせを目立つように示す案がある。どの宛先に送るかを静的に追うことは型とエフェクトの範囲を越えるので、保証は「秘密を受け取るスクリプトであることと、外部に作用しうることが権限に現れる」までになる。
+- 偽の入力欄（スクリプトが `Console` で「パスワードを入れてください」と書き、`Console.readLine` で読む）を防ぐ手段は、言語の側にはない。処理系の入力の経路が、スクリプトが変えられない見出しを示すことと、文書の案内で補う（[OPEN-089](#open-089)）。
+
+次のことは保証しない方向である。
+
+- メモリからの消去。ヒープの回収や複写によって、秘密の写しがメモリに残りうる。【要検証】ヒープの設計（[ADR 0260](decisions/0260-heap-and-unsafe-boundary.md)）の上で、使い終えた `Secret` の値をどこまで消せるか。
+- 同じ利用者の権限で動くほかのプロセスからの読み取り（デバッガなど）。【要検証】サーバモードの OS のサンドボックスがどこまで防ぐか。
+- 秘密を受け取った外部コマンドや HTTP の宛先が、秘密をどう扱うか。
+
+`Secret.Read`・`Secret.Reveal` を組み込みのエフェクトにするか、公式のライブラリのエフェクトにするかは、外部のライブラリのエフェクトを権限の表示にどう出すか（[OPEN-081](#open-081)）とあわせて決める。ライブラリのエフェクトにすると、ハンドラで処理したエフェクトは `main` の型に現れないので、`Secret.Reveal` を権限の確認に出すという前述の案が成り立たない。
+
+<a id="open-089"></a>
+## OPEN-089 人間から秘密を受け取る経路
+
+- 種別: 未決
+- 移行元: なし
+
+秘密を人間から受け取るときは、入力をどこから受け取るかと、入力した秘密がコーディングエージェント（LLM）に見えないかが問題になる。スクリプトの標準入力（`Console.readLine`）はデータの入力に使われ、パイプでつながれうる。エージェントの下では、LLM が書いた内容が入る。このため、どの実行の形でも、秘密は標準入力ではなく処理系が用意する別の経路で受け取る方向である（[秘密の情報の扱いの検討メモ](sources/post-first-release/post-first-release-secrets.md)の「2. 秘密の受け取り方」）。実行の形ごとの経路の案は次のとおりである。
+
+- A. 人間が端末でスタンドアロンモードを実行する: 処理系が、標準入力ではなく制御端末（Unix の `/dev/tty`）から、入力を表示せずに一行を読む。`ssh`・`sudo` のパスワードの入力と同じ形である。【要検証】端末の表示を止めるクレート（`rpassword` など）が C のライブラリに依存しないか（依存の基準は [OPEN-094](#open-094)）。
+- B. エージェントがスタンドアロンモードを実行する: 【要検証】各エージェントの道具がコマンドを端末なしで起動するか。端末がないと、標準入力に秘密を入れる手段はエージェントの会話に書くことしかなく、秘密が LLM とその記録に渡る。候補は次の三つである。
+  - (B1) A と同じく制御端末から読み、端末がなければ失敗にする。
+  - (B2) サーバモードの承認の画面と同じ形の、別の端末で開く入力の画面を設ける。スクリプトは待ちになり、「別の端末で `benitoite secret-input` を実行してください」と案内する。デーモンがないので、実行中の処理系が一時的な通信口（Unix ドメインソケットなど）を開く。エージェントがその画面を自分で実行して値を入れても、入るのはエージェントが知っている値であり、人間の秘密は漏れない。
+  - (B3) OS の GUI の入力欄（macOS の `osascript`、Linux の `pinentry` など）を出す。【要検証】表示を隠した入力欄を出せるか。デスクトップのセッションがない環境（SSH の先、コンテナ）では使えない。
+- C. サーバモード（エージェントが MCP やサブコマンドで実行を頼む場合を含む）: 子プロセスの標準入力は空の入力であり、端末も GUI もない。認証を要する要求を承認の画面（`benitoite server approve`）で受ける仕組み（[ADR 0188](decisions/0188-authentication-by-user-presence.md)）の待ちの列に、秘密の入力も入れる。スクリプトが秘密を求めるとジョブは待ちになり、承認の画面はスクリプトの名前・ジョブ・秘密の説明（スクリプトが付けた名前）を示す。利用者が入れた秘密を、デーモンが子プロセスへパイプで渡す（コマンドライン引数や環境変数には載せない）。監査の記録には、求めたことと応じたかだけを残し、値は残さない。待ちが 5 分で拒否に変わる規則（[ADR 0201](decisions/0201-initial-setup-approval-timeout-and-audit-format.md)）もそのまま使える。
+
+メモの暫定の見立ては、B では B1 を既定にし B2 を加えることである。サーバモードを加えた後は、デーモンが動いていれば、スタンドアロンモードからもその承認の画面を使える形が考えられる。どれも決定ではない。あわせて次の点を決める。
+
+- 処理系の入力の経路が示す、スクリプトが変えられない見出し（処理系の名前、スクリプトの名前、秘密の求めであること）と、「秘密は処理系の入力欄にだけ入れる」という文書の案内。偽の入力欄への対策である（[OPEN-088](#open-088)）。
+- ウェブの認証で人間の承認を挟む規則（[ADR 0339](decisions/0339-web-authentication-human-approval-and-browser-first.md) の決定 1）を、パスワードやトークンを渡す方式でどう満たすか。サーバモードで、秘密の求めのたびに承認の画面を通すか、登録のときの承認で済ませるかを方針で選べるようにする案がある。
+- 一度の承認で、同じジョブの同じ対象の取得をどれだけの期間許すか（物理キーによる承認の頻度。[OPEN-093](#open-093)）。
+
+2026-10-08 に、自前のエージェントハーネスの検討（[自前のエージェントハーネスの検討メモ](sources/post-first-release/post-first-release-agent-harness.md)）を反映した。サーバモードの承認の画面は、TUI の部品で作り、サーバモードとあわせて実装する（[ADR 0342](decisions/0342-agent-harness-after-server-mode.md) の決定 2）。C の経路で秘密を入れる画面は、この承認の画面である。エージェントハーネスの実行の前の確認は、承認の画面とは別に、エージェントハーネスの画面で受ける（[ADR 0345](decisions/0345-agent-harness-confirmation-and-server-approval.md) の決定 2）。エージェントハーネスの入力欄に入れた文は LLM へ送られるので、入力欄は秘密を受け取る経路に向かない。エージェントハーネスはサーバモードを通してスクリプトを実行する（[ADR 0194](decisions/0194-tui-and-own-coding-agent-with-server-mode.md) の決定 2）ので、秘密は C の経路で受け取ることになる。B2 の入力の画面を設けるなら、承認の画面と同じ TUI の部品で作り、見た目と操作を揃えるかもあわせて決める（TUI の画面の構成は [OPEN-056](#open-056)）。
+
+<a id="open-090"></a>
+## OPEN-090 OS のキーストアと、パスワードマネージャのラッパーの作り方
+
+- 種別: 未決
+- 移行元: なし
+
+秘密を置く場所として、OS のキーストアとパスワードマネージャを扱う方法を決める（[秘密の情報の扱いの検討メモ](sources/post-first-release/post-first-release-secrets.md)の「OS のキーストア」「パスワードマネージャ」「パスワードマネージャのラッパーの候補」）。
+
+OS のキーストアについて。macOS のキーチェーン、Linux の Secret Service（GNOME Keyring・KWallet など、D-Bus で使う）、Windows の資格情報マネージャを、一つの API で読む案である。Rust の `keyring` クレートなどがある。メモの見立ては次のとおりであり、決定ではない。
+
+- キーストアの錠を開けるパスワードは Benitoite が扱わず、OS に任せる。OS の入力欄は、スクリプトが偽装できない経路でもある。
+- 利用者が `benitoite` に項目の読み取りを「常に許可」すると、どのスクリプトもその項目を読めるようになる。このため、OS の許可とは別に、Benitoite の権限（`Secret.Read` の対象として項目の名前。[OPEN-088](#open-088)）でスクリプトごとに絞る。
+- サーバモードでは、子プロセスは OS のサンドボックスの中で動き、キーストアの通信先（macOS の securityd、Linux のセッションの D-Bus）に届かない見込みである。`~/Library/Keychains` は既定で秘密を置く場所に含めて拒否している（[サーバモード](06-tooling/06-07-server.md)の「既定の方針が指す場所」）。デーモン（サンドボックスの外）が方針で許された項目だけを代わりに読み、子プロセスへパイプで渡す形にする。
+
+確かめることは次のとおりである。
+
+- 【要検証】各 OS での実装の依存。Linux で C の libdbus に依存しないか、純粋な Rust の `zbus` を使う形があるか（依存の基準は [OPEN-094](#open-094)）。
+- 【要検証】macOS が項目ごとに読み取りを尋ねる仕組みの、署名のない実行ファイルや、更新で中身が変わった実行ファイルでの振る舞い。
+- 【要検証】Linux の Secret Service が、デスクトップのセッションのない環境（SSH の先のサーバ、コンテナ）で使えないこと。
+- 【要検証】サーバモードの子プロセスからキーストアに届かないこと（[OPEN-057](#open-057) とあわせて確かめる）。
+
+パスワードマネージャについて。主な製品のラッパーを公式のライブラリとして用意することは決めた（[ADR 0338](decisions/0338-password-manager-wrappers-as-official-libraries.md)）。配り方は [OPEN-078](#open-078) で決める。各製品の CLI の名前・機能・錠の開け方は【要検証】であり、作るときに各製品の文書で確かめる。メモの見込みは次のとおりである。
+
+| 製品 | 実現の形 | 錠の開け方（見込み） |
+|---|---|---|
+| Proton Pass | CLI を `Process.run` で呼ぶ | アクセス用のトークンを環境変数で渡す（設計者の確認による） |
+| KeePass 系（KeePassXC など） | (i) `keepassxc-cli` を呼ぶ、(ii) データベースのファイル（`.kdbx`）を処理系が直接読む | マスターパスワード、鍵のファイル、YubiKey のチャレンジレスポンス |
+| 1Password | CLI（`op`）を呼ぶ | デスクトップのアプリとの連携（生体認証）、サービスアカウントのトークン |
+| Bitwarden | CLI（`bw`）を呼ぶ | マスターパスワードで錠を開け、セッションのトークンを環境変数で渡す |
+
+錠の開け方について、メモの見立ては次のとおりである。
+
+- デスクトップのアプリと連携し、そちらの生体認証などで錠を開ける形を第一に勧める。Benitoite はマスターパスワードに触れずに済む。
+- CLI がマスターパスワードを求めてセッションのトークンを返す形では、マスターパスワードを人間から秘密を受け取る経路（[OPEN-089](#open-089)）で受け取り、秘密の型のまま CLI の標準入力か環境変数に渡す。返ってきたトークンも秘密の型で受け取る。
+- アクセス用のトークン（サービスアカウントなど）は、キーストアに置いて読んで渡す。スクリプトの中やリポジトリのファイルに書かない。
+- KeePass 系は、まず (i) で作り、(ii) は要望があれば検討する。(ii) は外部のコマンドに依存しないが、処理系がマスターパスワードと復号した中身を扱うことになり、`.kdbx` の形式を読む実装も要る（【要検証】Rust のクレートの有無とその依存）。
+
+<a id="open-091"></a>
+## OPEN-091 HTTP の認証を支える機能の範囲
+
+- 種別: 未決
+- 移行元: なし
+
+ウェブの認証は、人間による承認の操作を必ず挟み、ブラウザに任せる形を本命とすることにした（[ADR 0339](decisions/0339-web-authentication-human-approval-and-browser-first.md)）。その方針のもとで、HTTP のクライアントと標準ライブラリに加える機能の範囲と順を決める。メモの暫定の見立て（[秘密の情報の扱いの検討メモ](sources/post-first-release/post-first-release-secrets.md)の「3. ウェブの認証」）は次のとおりであり、決定ではない。
+
+- まず、HTTP の要求のヘッダに秘密の型の値を渡す受け取り口（[OPEN-088](#open-088)）、ホストが変わるリダイレクトでの扱い、TOTP のための HMAC、OAuth のデバイス認可（RFC 8628）の例を用意する。トークンと API を使う多くの自動化には、これで足りる見込みである。
+- ブラウザに任せる形として、OAuth の認可コードと PKCE をループバックの宛先で受ける形（RFC 8252）も支える。待ち受けの権限（`Http.Listen`）との関係を決める。
+- ログインのフォームの自動化（クッキーを保つ仕組み、HTML のフォームを読む関数）は、要望を見て決める。JavaScript で組み立てるページ、ボットの検出、CAPTCHA があれば HTTP のクライアントでは扱えない。ログインの自動化を禁じるサイトもあるので、ラッパーや文書では API とトークンの利用を先に勧める。
+
+あわせて次の点を決める。
+
+- 秘密を渡したヘッダを、ホストが変わるリダイレクトで送らない規則。初回リリース版のクライアントは、リダイレクトを最大 10 回まで辿る（[ネットワークのモジュール](03-interop/03-09-network.md)の「クライアント」）ので、認証のヘッダを含む要求を別のホストへ送り直すと秘密がそのホストに渡る。【要検証】curl が既定でこの扱いをしているか。辿った先の権限の判定は [OPEN-052](#open-052) とあわせる。
+- HMAC を `Benitoite.Hash` に加えるか（[テキストとデータの処理](03-interop/03-08-text-and-data.md)。現在の `Hash` にはない見込みである）。TOTP の種は、OS のキーストアかパスワードマネージャに置く（[OPEN-090](#open-090)）。
+- これらを標準ライブラリに入れるか、公式の追加のライブラリにするか（[OPEN-078](#open-078)）。
+
+<a id="open-092"></a>
+## OPEN-092 処理系が WebAuthn のクライアントになる形
+
+- 種別: 未決
+- 移行元: なし
+
+ウェブの認証は、ブラウザに任せる形を本命とし、処理系が WebAuthn のクライアントになる形は本命としないことにした（[ADR 0339](decisions/0339-web-authentication-human-approval-and-browser-first.md)）。それでも、物理キーなどに限って処理系が WebAuthn のクライアントになる形を後で設けるかを決める。メモ（[秘密の情報の扱いの検討メモ](sources/post-first-release/post-first-release-secrets.md)の「パスキー（WebAuthn）の仕組みと制約」。2026-10-02 に出典を確かめた範囲）の整理は次のとおりである。
+
+- macOS に保存したパスキー: Apple の文書によれば、登録と認証の要求には `webcredentials` の associated domain が要り、サイトの側がアプリを名指ししなければ成り立たない。ブラウザ向けの制限付きの権限は Apple への申請が要る。したがって、Benitoite の CLI から任意のサイトの認証には使えない。
+- Windows: `webauthn.dll` の API は呼び出し側が RP ID を渡す形であり、ブラウザ以外からも呼べる見込みである。【要検証】署名のない実行ファイルからの呼び出し、サードパーティのパスワードマネージャのパスキーに届くか、ブラウザ以外のアプリケーションが FIDO の機器に触れるには OS の API を通す必要があるか。
+- Linux: デスクトップに標準の FIDO2 の API がまだなく、Credentials for Linux の計画が進んでいる段階である。
+- パスワードマネージャの CLI: Bitwarden の CLI はパスキーでのログインに対応していない。ほかの製品は【要検証】である。
+- スマートフォンのパスキー（CTAP 2.2 の hybrid の通信）: 手元の機械に QR コードを示し、スマートフォンで読み取って Bluetooth の近接を確かめてから署名する。Rust の `libwebauthn` は USB・BLE・hybrid の認証器に対応すると書いている（Linux 向け）。【要検証】macOS での Bluetooth の利用、C のライブラリへの依存、hybrid の中継のサーバの扱い。
+- 物理キー（YubiKey など）: USB（または NFC）の上の CTAP2 で通信し、オリジンを確かめないので、処理系が CTAP2 を話せばブラウザでなくても認証できる。人間の承認はキーへの接触と PIN でキー自身が求める。
+
+この形を設けるなら、次の点を決める。
+
+- オリジンを処理系が決める規則。クライアントがオリジンを自由に決められると、スクリプトが別のサイトの署名をキーに作らせる（フィッシング）ことができる。メモの案は、WebAuthn の操作を HTTP のモジュールの中に置き、署名に入れるオリジンと RP ID を、処理系が実際に接続している宛先（TLS で確かめたホスト）から決め、RP ID がそのホストに合わなければ拒むことである。
+- ログインの手順がサイトごとに違うこと。署名を作れても、挑戦の受け取りと署名の送り先はサイトごとに違うので、任意のサイトに自動でログインする汎用の機能にはならず、サイトごとのラッパーが要る（API としてパスキーの手順を公開しているサービスは除く）。
+- FIDO2 のクレートの C のライブラリへの依存（[サーバモード](06-tooling/06-07-server.md)の「認証と承認」）と、依存の基準（[OPEN-094](#open-094)）。【要検証】`libwebauthn` が純粋な Rust で USB の HID を扱えるか。
+- サーバモードでは、子プロセスのサンドボックスから USB の機器に届かない見込みなので、デーモンが代わりに通信する形。
+- 【要検証】Windows の利用者は WSL2 の中で Linux 向けの実行ファイルを使う（[ADR 0176](decisions/0176-first-release-targets-and-static-linux-build.md)）。WSL2 の中からは既定で USB の機器が見えず、usbipd-win などで機器を渡す必要がある見込みである。
+
+<a id="open-093"></a>
+## OPEN-093 物理キーによる操作ごとの承認と、秘密をデーモンだけが持つ配置
+
+- 種別: 未決
+- 移行元: なし
+
+サーバモードの承認の画面（[ADR 0188](decisions/0188-authentication-by-user-presence.md)）には、生体認証と FIDO2 のキーを後の版で加えるとしている（[サーバモード](06-tooling/06-07-server.md)の「認証と承認」）。これを、デーモンを確かめ役にした操作ごとの承認として具体化するかを決める（[秘密の情報の扱いの検討メモ](sources/post-first-release/post-first-release-secrets.md)の「4. 物理キーによる操作ごとの承認」）。
+
+署名は、公開鍵を持つ側が確かめて初めて意味を持つ。パスワードマネージャの取得の前に署名を求めて確かめる仕組みは、メモの調べた範囲では見当たらず、ウェブの認証ではサイトが確かめ役なので Benitoite の側で用意するものはない。Benitoite の中で操作ごとの承認を作れるのは、デーモンを確かめ役にする形である。メモの案は次のとおりであり、決定ではない。
+
+1. 利用者は、承認の画面から物理キーを登録する。デーモンは公開鍵を保存する。
+2. スクリプトが承認を要する操作を求める（秘密の取得 `Secret.Read`、`Secret.Reveal`、`require_approval` のスクリプトの実行、登録、設定の変更）。
+3. デーモンは、操作の内容を書いた文書を作る。スクリプトの名前とハッシュ、ジョブの ID、エフェクトと対象（例: パスワードマネージャの項目の名前）、時刻、一度だけ使う値（nonce）を含める。
+4. 承認の画面がこの内容を示し、利用者は内容を読んでキーに触れる（必要なら PIN も入れる）。
+5. デーモンは公開鍵で署名を確かめてから操作を進め、署名を監査の記録に残す。
+
+普通の FIDO2 の認証の署名で作れる。認証の挑戦（challenge）に操作の内容のハッシュを入れれば、キーの署名が内容に結び付くので、FIDO2 に対応した既存のキーで使える。YubiKey 5.8（2026-07-21 発表）が先行して対応した WebAuthn の署名の拡張 previewSign は、依頼されたデータをそのまま署名するので、署名を Benitoite の外へ渡して確かめさせる場合に利点がある。previewSign は W3C の提案の段階であり、YubiKey 5.8 の対応は本番に使わないよう示されている（メモが Yubico の発表と二次資料で確かめた範囲）。標準化と対応が進んでから採るかを決める。
+
+この承認が守りになるのは、次の条件が成り立つときに限る。
+
+- 秘密がデーモンを通してしか手に入らないこと。エージェントが自分のシェルでパスワードマネージャの CLI を直接実行できるなら、承認を迂回できる。パスワードマネージャのアクセス用のトークンなどはデーモンだけが持ち、スクリプトとエージェントのサンドボックスから読めない場所に置く配置を、あわせて決める。
+- 画面が偽れないこと。物理キーには画面がないので、利用者が読むのは承認の画面である。承認の画面はエージェントが操作できない別の端末で開く（ADR 0188）ので、サーバモードでは成り立つ。スタンドアロンモードをエージェントが実行する場合は、別の端末の入力の画面（[OPEN-089](#open-089) の B2）が要る。
+- 利用者が内容を読むこと。キーへの接触が示すのは、人がその場にいて触れたことまでである。承認の画面は内容を短く示し、承認を求める頻度を抑える（一度の承認で同じジョブの同じ対象の取得を許す期間など）。
+
+FIDO2 のクレートの依存（[OPEN-094](#open-094)）とサーバモードの実装が前提になる。
+
+<a id="open-094"></a>
+## OPEN-094 依存のクレートの基準を一般の方針とするか
+
+- 種別: 未決
+- 移行元: なし
+
+初回リリース版の依存は、どれも C のコードを含まず、ビルドに Rust のツールチェーンだけを要する。この性質は、標準ライブラリと HTTP・TLS のクレートを選んだ決定（[ADR 0138](decisions/0138-crates-and-licenses-for-stdlib.md)、[ADR 0143](decisions/0143-http-and-tls-crates.md)）の帰結として成り立っており、Linux 向けを musl で静的にリンクする決定（[ADR 0176](decisions/0176-first-release-targets-and-static-linux-build.md)）がそれを前提にしている。一方、「C コンパイラを避ける」こと自体を一般の方針として決めた ADR はなく、ADR 0143 も C コンパイラを要する `aws-lc-rs` を代わりの案として残している。
+
+初回リリース版の後に検討している機能には、この性質を崩しうるものがある。FIDO2 のクレートは C のライブラリ（hidapi、libfido2）かシステムのライブラリに依存する（[サーバモード](06-tooling/06-07-server.md)の「認証と承認」）。OS のキーストアのクレートは、Linux で C の libdbus に依存するかを確かめる必要がある（[OPEN-090](#open-090)）。端末の表示を止めるクレートも同様である（[OPEN-089](#open-089)）。メモ（[秘密の情報の扱いの検討メモ](sources/post-first-release/post-first-release-secrets.md)の「実装の課題」）は、こうした依存を加えるときに次の二つを分けて扱うとしている。
+
+1. 調査: ビルドに C コンパイラが要るか、実行時に共有ライブラリ（Linux の libudev など）を読み込むか。後者は musl の静的な実行ファイル（ADR 0176）と両立しない。macOS の IOKit のような OS の部品のフレームワークを使うことは、C コンパイラを要しない。
+2. 判断: 依存の基準（ビルドは Rust のツールチェーンだけ、実行時は OS の部品以外の共有ライブラリを読まない）を一般の方針として ADR にし、新しい機能をその範囲で作るか、例外を認めるかを決める。
+
+この基準を一般の方針にするか、するなら基準の文言と例外の認め方を決める。
+
+<a id="open-095"></a>
+## OPEN-095 エージェントハーネスの提供者を差し替える層、実装の順、使うクレート
+
+- 種別: 未決
+- 移行元: なし
+
+エージェントハーネスが採る提供者は決めた（[ADR 0340](decisions/0340-llm-providers-for-own-agent-harness.md)）。それをどう作るかを決める。メモの「作りの見立て」（[LLM の提供者の検討メモ](sources/post-first-release/post-first-release-llm-providers.md)）は次のとおりであり、決定ではない。
+
+1. 提供者を差し替えられる層を作る。ハーネスは、会話の送信、道具の呼び出し、構造化した出力、ストリーミングを、提供者に依らない形で扱う。
+2. A（OpenAI 互換の API の Chat Completions と Responses）を作る。
+3. B（Sign in with ChatGPT）を作る。A の Responses を使い回し、OAuth を加える。
+4. D（Anthropic の Messages API）を作る。
+5. E（Gemini API の専用の実装）を作る。
+6. C（自己ホスト）は、A の手元の推論サーバで足りない理由がはっきりしてから作る。
+7. H（クラウドの基盤）は、利用者の要望を見て作る。
+
+あわせて次の点を決める。
+
+- 「OpenAI 互換」の範囲はサービスごとに違い、道具の呼び出し、構造化した出力（JSON Schema）、ストリーミングの対応と細かい形が揃っていない場合がある（【要検証】。[OPEN-096](#open-096)）。ハーネスが提供者ごとに使える機能を表で持つ形と、その表の中身。
+- 使うクレート。API のクライアントは既存の OSS を使ってよい（[ADR 0194](decisions/0194-tui-and-own-coding-agent-with-server-mode.md) の決定 4）。候補は `async-openai`・`genai` などであり、対応の範囲は【要検証】である。OpenAI 互換の口の細かい違いを吸収する層は、自分で持つ方が扱いやすい可能性がある。依存の基準は [OPEN-094](#open-094) に従う。
+- E について、Gemini API の固有の要求と応答の形、認証のヘッダ、道具の呼び出しと構造化した出力の書き方（【要検証】）と、既存のクレートを使うか要求を自分で組み立てるか。無料枠のレート制限に達したときの振る舞い（待ってからやり直す、別の提供者を案内する）。
+- C を作るときの推論のライブラリ（candle、mistral.rs、llama.cpp の Rust の束縛など）と、処理系の本体から分ける形（機能フラグか別の実行ファイル）。重みの取得・保存の場所とハッシュによる確認。配布の検討とあわせて決める。
+- H を作るときの認証（各クラウドの署名や資格情報の仕組み）を、各クラウドの SDK で実装するか自分で実装するか。各クラウドの既存の設定（資格情報のファイル、環境変数）をどこまで読むか。
+- 勧めるモデル。Skill の評価（[Agent Skills 対応](06-tooling/06-06-agent-skills.md)の「Skill の評価」）の成功率で決める。小さいモデルは、学習のデータに Benitoite がない分だけ不利である。
+
+<a id="open-096"></a>
+## OPEN-096 LLM の提供者に関する事実の確認
+
+- 種別: 要検証
+- 移行元: なし
+
+提供者の採否（[ADR 0340](decisions/0340-llm-providers-for-own-agent-harness.md)）と作り方（[OPEN-095](#open-095)）の前提のうち、メモ（[LLM の提供者の検討メモ](sources/post-first-release/post-first-release-llm-providers.md)）で一次資料を確かめていない次の事項を、実装の前に確かめる。
+
+- A: 手元の推論サーバ（Ollama、llama.cpp の server、LM Studio、vLLM）の多くが OpenAI 互換の口を持つか。互換のサービスの Responses への対応が Chat Completions より少ないか。互換のサービスの道具の呼び出し・構造化した出力・ストリーミングの違い。
+- B: OpenAI の規約とポリシー、DevKit のライセンス。DevKit を使わずに OAuth を自分で実装してよいか。サーバモードでリモートから提供する形が、承認の要る区分に移るか。使えるモデル、プランごとの使用量の上限、レート制限（記事には書かれていない）。
+- D: Anthropic の OpenAI 互換の口が機能の一部に限られるか。Claude の購読のアカウントで他社のアプリからサインインする仕組みについて、確かめたことは、Agent SDK のページが承認なしに第三者の開発者が claude.ai のログインを提供することを認めないことである（2026-10-04 に確認。[OPEN-097](#open-097)）。残る点は、承認を得る条件と、その規約が L（OPEN-097）に当てはまるかである。[ADR 0340](decisions/0340-llm-providers-for-own-agent-harness.md) の決定 5（処理系が自らサインインする形を候補にしない）は、2026-10-08 にこれらの事実に頼らない設計者の判断に改めたので、残る点を確かめた結果は決定 5 を変えない。
+- E: Gemini API を日本で使えるか。Gemini アプリの購読（無料プラン、Google AI Pro など）と API の利用の関係。
+- C: Rust の推論のライブラリが、どのモデルの形式（safetensors、GGUF）とどの加速（Metal、CUDA）に対応するか。Gemma の利用規約のもとで、重みを処理系と一緒に配ってよいか、利用者に取得させるか（Gemma は OSI の定義によるオープンソースのライセンスではなく、独自の利用規約で配られている）。
+- H: Azure OpenAI を A に近い形で呼べるか。
+- K: Private Cloud Compute を App Store の外で配る CLI から料金なしで使えるか。日本語への対応とハードウェアの条件。
+
+<a id="open-097"></a>
+## OPEN-097 Claude Code の CLI を経由して Claude の購読で使う提供者（候補 L）の採否
+
+- 種別: 未決
+- 移行元: なし
+
+公式の Claude Code の CLI（`claude`）を子プロセスとして起動し、モデルの呼び出しだけを任せる提供者の候補である。利用者が CLI でログインした Claude の購読（Pro、Max）で動くので、API キーもトークンごとの課金も要らず、処理系は認証の情報を持たない。設計者は 2026-10-04 に候補に加え、採否を決めていない（[LLM の提供者の検討メモ](sources/post-first-release/post-first-release-llm-providers.md)の「L.」）。
+
+メモが文書で確かめた先例と規約は次のとおりである（2026-10-04 に確認）。
+
+- Hermes Agent の公式のプラグイン（[Claude Subscription DirectSDK](https://hermes-agent.nousresearch.com/docs/plugins/claude-subscription-directsdk)。実験的な扱い）が、この形をとる。`claude` を専用の一時ディレクトリで起動し、CLI の stream-json の形でやり取りする。Claude Code の組み込みの道具、スキル、設定の読み込みを無効にし、Hermes の道具は MCP で Claude に見せて、CLI の側での実行は `dontAsk` の設定で拒んで Hermes が実行する。プラグインは認証の情報を持たない。毎回の要求は購読の Agent SDK の使用量から差し引かれ、対話で使うときのおよそ 1.7 倍に数えられる。
+- Anthropic のサポートの記事（[Use the Claude Agent SDK with your Claude plan](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)）は、Agent SDK、`claude -p`、Agent SDK を通して購読で認証する第三者のアプリが、今は購読の使用量から差し引かれるとしている。
+- Agent SDK のページ（[Agent SDK overview](https://code.claude.com/docs/en/agent-sdk/overview)）は、承認なしに第三者の開発者が claude.ai のログインを提供することを認めない。L は、処理系が自分でログインを提供せず、利用者が公式の CLI で済ませたログインを使う形をとる。
+
+採るかを決めるときに、次の点を確かめる。
+
+- 【要検証】規約の扱い。Hermes のプラグインを Anthropic が個別に承認したという発表は、メモの時点で見つかっていない。サポートの記事の扱いは当面のものであり、変わりうる。
+- 【要検証】CLI の版による出力の形と設定（道具の無効化、`dontAsk` など）の変化。
+- エージェントハーネスの道具を MCP で CLI に見せる形。処理系の MCP サーバ（[サーバモード](06-tooling/06-07-server.md)の「MCP の道具」）を使えるか。
+- CLI が見つからない、ログインしていない、使用量の上限に達したときの振る舞い。
+- CLI の起動、stream-json の読み取り、時間の上限と取り消しの部品を、CLI を包むライブラリ（[ADR 0341](decisions/0341-agent-cli-wrapper-library.md)、[OPEN-099](#open-099)）と共有する形。違いは、ライブラリが CLI をエージェントとして使うのに対し、L はモデルの呼び出しだけに使い、道具の実行をエージェントハーネスが持つことである。
+- 利用者への表示。購読の使用量が減ることと、CLI がログインしているアカウントを使うことを示す（[OPEN-101](#open-101)）。
+
+<a id="open-098"></a>
+## OPEN-098 MCP のサンプリングを採るかと、その使い道
+
+- 種別: 未決
+- 移行元: なし
+
+MCP には、サーバがクライアントの側の LLM に生成を頼む「サンプリング」（sampling）の機能がある。処理系の MCP サーバ（`benitoite mcp`。[サーバモード](06-tooling/06-07-server.md)の「MCP の道具」）がこれを使うと、処理系は API キーも認証も持たずに、利用者がハーネスで使っている LLM を使える。設計者は、2026-10-04 にサンプリングを採り、エージェントハーネスより先に実装すると決めた（[LLM の提供者の検討メモ](sources/post-first-release/post-first-release-llm-providers.md)の「I. MCP のサンプリング」）。
+
+ところが、MCP の仕様の 2026-07-28 の版は、サンプリングを非推奨にした（[Sampling](https://modelcontextprotocol.io/specification/2026-07-28/client/sampling)。2026-10-08 に確認）。仕様は、新しい実装はサンプリングを採るべきでなく（SHOULD NOT）、既存の実装は LLM の提供者の API を直接使う形へ移るべき（SHOULD）としている。仕様の機能の扱いの規則により、この版の公開から少なくとも 12 か月は仕様に残る。設計者の決定はこの非推奨より前の検討に基づくので、ADR にせず、本項で採否を確かめ直す。
+
+確かめ直すときに、次の点を決める。
+
+- 採るか。採らない場合は、サンプリングに振り向ける予定だった用途を、エージェントハーネスの提供者（[ADR 0340](decisions/0340-llm-providers-for-own-agent-harness.md)）か、スクリプトから LLM を呼ぶモジュール（[OPEN-100](#open-100)）の提供者で賄う。
+- 何に使うか。メモの候補は、スクリプトから LLM を呼ぶモジュールを、MCP の上で動くときにサンプリングへ振り向けることである。ハンドラを差し替えれば、同じスクリプトが、MCP の上ではサンプリングで、スタンドアロンモードではエージェントハーネスの提供者で動く。
+- サンプリングに対応しないクライアントでの振る舞い（機能を使えないと報告する）。仕様では、対応するクライアントは要求ごとに `sampling` の能力を宣言する。【要検証】主なハーネス（Claude Code、Codex CLI、OpenCode）が対応しているか。
+- 権限の確認の重ね方。仕様は、利用者がサンプリングの要求を拒否できるよう、人間の確認を挟むべき（SHOULD）としている。クライアントの承認と、処理系の側の権限の確認をどう重ねるか。
+
+<a id="open-099"></a>
+## OPEN-099 エージェントの CLI を包むライブラリの細部
+
+- 種別: 未決
+- 移行元: なし
+
+Claude Code・Codex の CLI を包む外部のライブラリを設け、エージェントの CLI の起動を専用のエフェクトで区別することにした（[ADR 0341](decisions/0341-agent-cli-wrapper-library.md)）。その細部を決める（[LLM の提供者の検討メモ](sources/post-first-release/post-first-release-llm-providers.md)の「J.」の「決めること」）。
+
+- エフェクトの名前と細かさ。CLI ごとに分ける（`ClaudeCode.Run`、`Codex.Run` など）か、`Agent.Run` のような一つにまとめて対象（CLI の名前）で区別するか。権限の確認では、どの CLI をどの作業ディレクトリで起動するかを示す。組み込みのエフェクトにするか、権限の表示にどう出すかは [OPEN-081](#open-081) で決める。
+- 保証の範囲。git の検討（[OPEN-082](#open-082)）と同じく、「この CLI を、この設定で起動すること」までとし、エージェントが中で行う操作は処理系の検査の外にあると明記する方向である（[セキュリティモデル](07-quality/07-01-security-model.md)の「エージェントの CLI を包むライブラリの保証の範囲（初回リリース版の後）」）。
+- エージェントに許す操作を CLI の設定で絞る手段（Codex のサンドボックスの指定、Claude Code の使ってよい道具の指定など。【要検証】）をライブラリの引数に出すか。出すなら、絞った設定を権限の確認に示す。
+- 結果の型。最後の応答の文だけを返すか、構造化した出力を読んで、使った道具や変更したファイルも返すか。非対話で起動したときの出力の形は CLI ごとに違い、版によって変わりうる（【要検証】）。
+- 時間の上限と取り消し。取り消しのときに子プロセスを確実に止める方法（[OPEN-084](#open-084) とあわせて決める）。
+- テストの方法。結果が決まらないので、ライブラリを使うスクリプトのテストでは、エフェクトのハンドラを差し替えて決まった応答を返す。
+- 【要検証】各 CLI の規約が、別のプログラムからの起動を許すか。購読のアカウントで非対話の起動を繰り返すことが、規約や使用量の上限に触れないか。
+
+<a id="open-100"></a>
+## OPEN-100 スクリプトから LLM を直接呼ぶモジュール
+
+- 種別: 未決
+- 移行元: なし
+
+スクリプトから LLM の生成を直接呼ぶモジュール（`Llm.Complete` などの案）を設けるかを決める（[LLM の提供者の検討メモ](sources/post-first-release/post-first-release-llm-providers.md)の「残っていること」）。設けるなら、次の点を決める。
+
+- 結果が決まらないことを専用のエフェクトで表す形。エージェントの CLI の起動（[ADR 0341](decisions/0341-agent-cli-wrapper-library.md)）と同じく、普通の外部の操作と区別する。
+- 提供者をハンドラで差し替える形。候補は、エージェントハーネスの提供者（[ADR 0340](decisions/0340-llm-providers-for-own-agent-harness.md) の A・B・D・E）と、MCP の上で動くときのサンプリング（[OPEN-098](#open-098)）である。
+- エージェントの CLI の起動のエフェクトとの関係。どちらも「LLM の生成」として一つの群にまとめるか。
+- 組み込みのエフェクトにするか、権限の表示にどう出すか（[OPEN-081](#open-081)）。
+- 送る内容と、API キーの扱い（[OPEN-101](#open-101)）。
+
+<a id="open-101"></a>
+## OPEN-101 LLM の提供者の認証の情報の保管と、利用者への表示
+
+- 種別: 未決
+- 移行元: なし
+
+エージェントハーネスが提供者を使うとき（[ADR 0340](decisions/0340-llm-providers-for-own-agent-harness.md)）の、認証の情報の保管と、利用者に示すことを決める。
+
+保管について。API キーと、B（Sign in with ChatGPT）の OAuth のリフレッシュトークンは、長く使える秘密の値である。メモ（[LLM の提供者の検討メモ](sources/post-first-release/post-first-release-llm-providers.md)の「認証の情報の保管」、[自前のエージェントハーネスの検討メモ](sources/post-first-release/post-first-release-agent-harness.md)）の見立ては次のとおりであり、決定ではない。
+
+- 秘密の情報の仕組み（OS のキーストア、パスワードマネージャ、秘密の型。[OPEN-088](#open-088)・[OPEN-090](#open-090)）で保管し、設定ファイルに平文で書かせない。設定ファイルにはキーの参照だけを書く。
+- 既存の道具との互換のために、環境変数（`OPENAI_API_KEY` など）から読むことは許す。
+- ハーネスが起動するスクリプトや外部コマンドに、これらの秘密を渡さない。外部コマンドに渡す環境変数の制御（[OPEN-087](#open-087)）と同じ問題である。
+
+利用者への表示について。ハーネスが LLM を呼ぶことはスクリプトのエフェクトではないが、メモは次のことを示すとしている。
+
+- どの提供者のどのモデルを使うか。手元で推論するか、外部へ送るか。
+- 外部へ送る場合に、何を送るか（依頼の文、スクリプト、診断、ファイルの中身）。ファイルの中身を送る前に利用者に確かめるか。
+- B と L（[OPEN-097](#open-097)）では、利用者の購読の使用量が減ること。L では、CLI がログインしているアカウントを使うことも示す。
+- E の無料枠では、送った内容が Google の製品の改善に使われること。
+
+2026-10-08 に、[自前のエージェントハーネスの検討メモ](sources/post-first-release/post-first-release-agent-harness.md)の「API キーの保管」の細部を本項に加えた。メモが 2026-10-04 に一次資料で確かめた主なハーネスの実装は次のとおりである。
+
+| ハーネス | 環境変数 | 設定ファイルからの参照 | 専用の認証ファイル | OS のキーストア | ヘルパーのコマンド |
+|---|---|---|---|---|---|
+| Claude Code | `ANTHROPIC_API_KEY` など | 設定の `env` | `~/.claude/.credentials.json`（モード 0600） | macOS は Keychain。書き込めないときはファイルに切り替える | `apiKeyHelper` |
+| Codex CLI | `OPENAI_API_KEY`。他の提供者は `env_key` で変数の名前を指定する | `env_key` | `~/.codex/auth.json` | `cli_auth_credentials_store` で選ぶ | なし |
+| OpenCode | 対応 | `{env:VAR}`・`{file:path}` | `~/.local/share/opencode/auth.json`（`/connect` で書く） | 資料に記述なし | なし |
+| Gemini CLI | `GEMINI_API_KEY` | `.env` を探して読む | OAuth の情報を手元に保存する（場所は資料に記述なし） | 資料に記述なし | なし |
+| aider | 対応 | `.env`、`.aider.conf.yml` | なし | 資料に記述なし | なし |
+
+出典: [Claude Code の認証](https://code.claude.com/docs/en/iam)、[Codex の認証](https://learn.chatgpt.com/docs/auth)、[OpenCode の提供者](https://opencode.ai/docs/providers/)、[Gemini CLI の認証](https://geminicli.com/docs/get-started/authentication/)、[aider の API キー](https://aider.chat/docs/config/api-keys.html)。Claude Code は、Keychain が書き込みを拒んだとき（SSH でロックされているときなど）に 0600 のファイルへ切り替える。Codex CLI の `cli_auth_credentials_store` は、`file`・`keyring`・`auto`（キーストアを試し、使えなければファイル）・`ephemeral`（プロセスのメモリの中だけ）から選ぶ。Gemini CLI は、今いるディレクトリから上へ探して最初に見つけた `.env` と `~/.gemini/.env` を読み、文書は、シェルの設定で環境変数に入れたキーはそのシェルから起動したどのプロセスも読めると注意している。
+
+メモの暫定の見立ては次のとおりであり、決定ではない。
+
+1. 設定ファイル（[ADR 0343](decisions/0343-agent-harness-user-config-file.md)）には、キーの参照だけを書く。提供者ごとに、キーをどこから取るか（OS のキーストアの項目、環境変数の名前、ヘルパーのコマンド）を書き、キーそのものを書く欄は設けない。
+2. 保存は OS のキーストアを第一とする。`benitoite auth login <提供者>` のようなコマンドで、キーを入力させて OS のキーストアに保存する。キーストアを使えないときだけ、利用者だけが読める 0600 のファイルに保存し、そのことを利用者に示す（Codex の `auto`、Claude Code の切り替えと同じ形）。キーストアの扱いは、秘密の情報の仕組み（[OPEN-090](#open-090)）と共有する。
+3. ヘルパーのコマンドを用意する。指定したコマンドを実行し、その出力をキーとして使う。パスワードマネージャや vault をそのままつなげる。パスワードマネージャから秘密を受け取る方法（[ADR 0338](decisions/0338-password-manager-wrappers-as-official-libraries.md)、[OPEN-090](#open-090)）と揃える。
+4. 既存の道具との互換のために、`OPENAI_API_KEY`・`ANTHROPIC_API_KEY`・`GEMINI_API_KEY` などの環境変数も読む。
+5. 複数の源があるときの優先順位を決め、どの源のキーを使っているかを表示するコマンド（Claude Code の `/status` に当たるもの）を設ける。具体的な順は決めていない。
+6. B の OAuth のリフレッシュトークンも、2 と同じくキーストアに保存する。L は認証の情報を CLI に任せるので、処理系は保存しない。
+
+メモが避けることとして挙げたのは、次の三つである。
+
+- `.env` を自動で読まない。今いるディレクトリから `.env` を探して読むと、他人のリポジトリで実行したときに、意図しないキーやベースの URL を読み込むおそれがある。[CLI](06-tooling/06-01-cli.md)の「設定ファイルを探さない」規則にも反する。
+- キーをスクリプトと外部コマンドに渡さない。エージェントハーネスが起動するスクリプトや外部コマンドの環境から、LLM のキーの環境変数を消す。消さないと、スクリプトが `Process.environmentVariable` でキーを読める。
+- キーを出力と記録に出さない。診断、ログ、LLM へ送る文脈にキーを含めない。
+
+【要検証】Rust で OS のキーストアを扱うクレート（`keyring` など）の対応の範囲（Linux の Secret Service がない環境、ヘッドレスの環境での振る舞い）。[OPEN-090](#open-090) の確かめることと重なる。
+
+<a id="open-102"></a>
+## OPEN-102 エージェントハーネスの設定ファイルの細部と、プロジェクトごとの設定ファイル
+
+- 種別: 未決
+- 移行元: なし
+
+エージェントハーネスの提供者とモデルは、利用者単位の TOML の設定ファイルに書くことにした（[ADR 0343](decisions/0343-agent-harness-user-config-file.md)）。その細部と、プロジェクトごとの設定ファイルを設けるかを決める（[自前のエージェントハーネスの検討メモ](sources/post-first-release/post-first-release-agent-harness.md)の「設定ファイル」）。
+
+利用者単位の設定ファイルについて、次の点を決める。
+
+- ファイルの名前と置き場所（メモの例は `~/.config/benitoite/` の下）。サーバモードを加えた後のスタンドアロンモードが読む利用者単位の方針のファイル（[ADR 0187](decisions/0187-standalone-reads-user-policy-file.md)）と同じ場所に置くか、別のファイルにするか。
+- 欄の名前。メモの形の例（欄の名前は仮）は次のとおりである。API キーの書き方は [OPEN-101](#open-101) で決める。
+
+```toml
+[harness]
+default_provider = "openai"
+
+[providers.openai]
+kind = "openai-responses"
+model = "gpt-..."
+api_key = { keystore = "benitoite/openai" }
+
+[providers.local]
+kind = "openai-chat"
+base_url = "http://localhost:11434/v1"
+model = "gemma..."
+```
+
+- エージェントハーネスを起動するサブコマンドの名前（メモの例は `benitoite agent`。`agent` は、後で加える候補の名前として初回リリース版で予約してある。[ADR 0209](decisions/0209-reserved-subcommand-names.md)）、提供者を切り替えるオプションの名前、モデルだけを起動のときに変えるオプションを設けるか。
+
+プロジェクトごとの設定ファイルについて、メモの方向は次のとおりであり、決定ではない。
+
+- 利用者単位の設定ファイルに加え、プロジェクトごとの設定ファイルを設ける。置き場所は根のディレクトリ（`main.bnt` のあるディレクトリ。[ADR 0127](decisions/0127-directory-run-and-root.md)）だけとし、作業ディレクトリや親のディレクトリを辿って探さない。根のディレクトリは起動したパスから決まるので、どこから起動しても同じファイルを読む。[OPEN-048](#open-048) が挙げた「親へ辿る方法は、起動した場所によって効く設定が変わる」という問題には当たらない。
+- エージェントハーネスでスクリプトを新しく作る場面では、`main.bnt` がまだないことがある。このときは、起動のときにディレクトリを指定したらそのディレクトリをプロジェクトとしてそこの設定ファイルを読み、指定がなければ利用者の設定だけを使う。
+- プロジェクトの設定で書ける欄を限る（メモの対策 (a)）。利用者の設定で定義した提供者を名前で選ぶことと、モデルを変えることだけを許し、ベースの URL とキーの参照は利用者の設定にだけ書ける。他人のリポジトリを取ってきてエージェントハーネスを起動すると、そのリポジトリの設定ファイルが効く。プロジェクトの設定でベースの URL やキーの参照まで書けると、ベースの URL を攻撃者のサーバに向けて利用者の API キーや送る文脈を盗むことや、別のサービスのキーを入れた環境変数を提供者のキーとして送らせることができるからである。
+- 初めて読むプロジェクトの設定ファイルを利用者が承認してから効かせる案（メモの対策 (b)。VS Code のワークスペースの信頼と同じ考え方）は、メモでは採らないとしている。(a) で足りない欄が出てきたら、その欄がキーや文脈を外へ送らせる問題を起こさないかを確かめ、起こすなら (b) を改めて検討する。
+
+すでに決めたことのうち、次の二つはプロジェクトの設定で変えられない。一時的なスクリプトの確認なしの範囲（[ADR 0345](decisions/0345-agent-harness-confirmation-and-server-approval.md) の決定 3）と、確認なしで取得するドメインの一覧（[ADR 0347](decisions/0347-agent-harness-web-fetch.md) の決定 3）である。
+
+プロジェクトごとの設定ファイルを設けるなら、次の点もあわせて決める。
+
+- [CLI](06-tooling/06-01-cli.md)の「処理系は、プロジェクトの設定ファイルを読まない」との関係。この規則は初回リリース版の規範である。エージェントハーネスのプロジェクトの設定ファイルは、エージェントハーネスだけが読む例外として扱い、`run`・`check` などが読むプロジェクトの設定ファイルを設けるかを問う [OPEN-048](#open-048) は、本項では決着させない。
+- 書ける欄の一覧。モデル以外のエージェントハーネスの設定のうち、どれをプロジェクトで変えられるか。
+- ファイルの名前と、利用者の設定との重ね方。
+- パッケージ管理の依存を書く場所（[OPEN-073](#open-073)）や [OPEN-048](#open-048) の設定ファイルを設けるときに、一つの設定ファイルにまとめるか。
+
+<a id="open-103"></a>
+## OPEN-103 エージェントハーネスの操作・画面・記録の細部
+
+- 種別: 未決
+- 移行元: なし
+
+エージェントハーネスの操作の範囲と道具（[ADR 0344](decisions/0344-agent-harness-operation-scope-and-tools.md)）、実行の前の確認（[ADR 0345](decisions/0345-agent-harness-confirmation-and-server-approval.md)）、ウェブの取得（[ADR 0347](decisions/0347-agent-harness-web-fetch.md)）、巻き戻しと git（[ADR 0348](decisions/0348-agent-harness-rewind-and-git.md)）の細部を決める。以下の「メモの見立て」は、[自前のエージェントハーネスの検討メモ](sources/post-first-release/post-first-release-agent-harness.md)に書かれた案であり、決定ではない。
+
+作業の流れについて、メモの見立ては次のとおりである。
+
+1. 利用者が作業を依頼する。エージェントハーネスは、必要なら質問する。
+2. エージェントが、下調べ（`list_files`・`read_file`・`read_reference`）をしてスクリプトを書く。
+3. `check` と修正を、検査が通るまで繰り返す。回数に上限を設け（Skill の評価と同じく 10 回を既定の候補とする）、上限に達したら止めて利用者に報告する。
+4. 実行の前の確認を行う。
+5. サーバモードでジョブとして実行し、結果を利用者に示す。エージェントは、結果が依頼に合うかを確かめ、合わなければ 2 に戻る。
+6. 既存のスクリプトを直すときは、`main` のエフェクトと公開の関数の型の変化を、直す前と比べて示す（設計原則 2、[OPEN-015](#open-015)）。
+
+実行の前の確認について、確認の画面に示す内容を決める。メモは、`Process.Run` を含むときに起動するコマンドの名前も示すとしている。
+
+道具と送る内容について、次の点を決める。
+
+- `read_file` が既定で読まないファイルの一覧。メモの見立ては、秘密を含みやすいファイル（`.env`、秘密鍵、`.git/` の中など）を既定で読まず、除外の一覧は利用者の設定で足せるが、プロジェクトの設定では減らせないとするものである（[OPEN-102](#open-102) の書ける欄を限る方向と揃える）。
+- `read_file` の読み取りの大きさの上限と、スクリプトの出力を LLM に返す量の上限。
+- 秘密を出力するスクリプトの扱い。TACIT の `Classified` のように、利用者の画面にだけ出して LLM には伏せる仕組みを、秘密の型（[OPEN-088](#open-088)）とあわせて検討する。
+- `create_project` の雛形の中身。
+- 文脈の管理。メモの見立ては、初めの指示に `SKILL.md` に当たる内容（作業の手順と主な言語の規則）を入れ、参照の文書は `read_reference` で必要なときに読ませる（Agent Skills の段階的な読み込みと同じ考え方）。文脈が長くなったときの要約（compaction）と、会話の保存と再開は初めは設けず、上限に近づいたら止めて利用者に知らせる。
+
+ウェブの取得について、次の点を決める。
+
+- 確認なしで取得するドメインの一覧の既定。確認したドメインを利用者の設定に書いて以後も確認を省く操作を設けるか。大きさの上限の値。
+- 【要検証】URL を知らずに探すための検索の手段。提供者の側の検索の道具（各社の API が持つウェブ検索）を使うか、検索の API を別に契約するか。
+- 【要検証】Claude Code の WebFetch がドメインごとに許可を求める形をとるか（メモが先例として挙げた点）。
+
+対話の操作について、次の点を決める。
+
+- `/` で始まるコマンドの一覧。
+- 入力の履歴。メモの見立ては、入力欄で上下のキーで前の入力を辿れるようにし、セッションをまたいで残すときは、利用者だけが読めるファイル（0600）に件数の上限を設けて保存するものである。利用者が入力欄にパスワードやトークンを貼ることがあるためである。履歴を利用者ごとに一つにするか、プロジェクトごとに分けるか。
+- キャンセル。メモの見立ては、ESC で、そのときの処理を止めるものである。LLM の応答を待っている途中や受け取っている途中なら要求を打ち切り、途中までの応答を中断したものとして示す。検査やウェブの取得の途中なら、その道具の処理を打ち切る。スクリプトの実行の途中なら、サーバモードの `job stop` で止める（[サーバモード](06-tooling/06-07-server.md)の「ジョブ」）。止める前にスクリプトが行った操作は戻らないので、そのことを示す。
+
+巻き戻しについて、次の点を決める。
+
+- 記録する時点。メモの見立ては、依頼を受けるたびと、`run`・`test`・`run_scratch` で実行する前である。
+- 記録の置き場所。プロジェクトが git のリポジトリとは限らないので、エージェントハーネスが持つ影の git リポジトリ（Gemini CLI と同じ形）か、記録用のディレクトリへの写しで行う見立てである。大きさに上限を設け、超えるファイルは記録から外して、そのことを示す。記録の大きさの上限と、記録を残す期間。
+- 戻すもの。会話とファイルの両方、会話だけ、ファイルだけから選ぶ見立てである。会話の保存と再開を初めは設けないので、巻き戻しはセッションの中で使う。
+- `create_project` を戻すとき、作ったディレクトリを消すか。作った後に中身が変わっていない場合に限る案を候補とする。
+- 実行の前の確認の記録（どのエフェクトまで確認済みか）を、巻き戻しで戻すか。戻さなくても許可が広がることはない。
+
+git の操作について、次の点を決める。
+
+- git の道具の一覧（[ADR 0348](decisions/0348-agent-harness-rewind-and-git.md) の決定 6）の、実装の前の見直し。
+- ブランチの操作。ブランチごと戻す形（`reset --hard` に当たる）もここで扱う。
+- 作業ツリーを戻した状態を、新しいコミットにするか。
+- 利用者が自分の hooks を動かしたい要望の扱い。
+- 【要検証】hooks・`core.fsmonitor`・diff driver などの別のプログラムを実行しない git のライブラリ（gitoxide、libgit2 など）。依存の基準は [OPEN-094](#open-094) に従う。
+- 【要検証】Codex CLI の `/undo` の作り。メモは、作業ツリーを参照のないコミット（ghost commit）に記録して `git restore` で戻す作りとソースの写しから読んでおり、公式の文書では確かめていない。
+
+<a id="open-104"></a>
+## OPEN-104 HTTP のサーバの要求ごとの失敗の隔離
+
+- 種別: 未決
+- 移行元: なし
+
+初回リリース版では、どれかのタスクで実行時エラーが起きたらプログラム全体を止める（[並行処理](01-spec/01-11-concurrency.md)の「失敗と停止」、[ADR 0064](decisions/0064-no-exceptions-runtime-errors-uncatchable.md)）。`Http.serve` の `handler` の中の実行時エラーも同じであり（[ネットワークのモジュール](03-interop/03-09-network.md)の「サーバ」）、一つの要求の処理で整数の溢れや 0 による除算が起きると、処理中のほかの要求も失われる。同じ要求を繰り返し送るだけでサーバを止められるので、可用性の問題であると同時に、サービス妨害の入口にもなる。メモ（[一般的な Web システムの検討メモ](sources/post-first-release/post-first-release-web-systems.md)の「1. 要求ごとの失敗の隔離」）は、初回リリース版の後に要求の単位で失敗を隔離する案を挙げている。メモの優先の順（暫定）では、Web システムに要る機能のうち 1 番目である。
+
+メモが挙げた案は次の三つである。
+
+- (a) `Http.serve` だけが、要求のタスクの実行時エラーを受け止める。そのタスクとその子のタスクを止め、`with` のリソースを解放し、報告を標準エラー出力に書き、応答を送っていなければ状態コード 500 の応答を返す。言語の表面は変わらない。
+- (b) 隔離するタスクを起動する汎用の関数を設ける。例えば `TaskGroup.spawnIsolated(group, f)` を設け、その `Task` を待つと `Result[T, Failure]` が得られる形にする。`Failure` は実行時エラーの種類と位置を持つ。HTTP 以外の常駐の処理（キューの処理など）にも使え、(a) はその上で書ける。
+- (c) 今のまま全体を止め、外部の監視（systemd の再起動など）に任せる。
+
+メモの見立ては、(b) を採り、`Http.serve` は (b) を使って (a) の振る舞いにするものであり、決定ではない。ADR 0064 は、実行時エラーを `Result` に変える関数を、失敗の経路が関数の型に現れないまま増えるという理由で退けた。一方、同じ ADR の帰結は、MCP サーバで繰り返し実行するときに一つの実行の実行時エラーがその実行だけを止めるとしており、隔離の境界でだけ止まる範囲を限る形は認めている。メモは、(b) は失敗の経路を型（`Result[T, Failure]`）に出すので ADR 0064 が退けた形には当たらないと見ている。(a) か (b) を採るなら、ADR 0064 と 01-11「失敗と停止」を改める ADR が要る。
+
+どの案を採るかとあわせて、次の点を決める。
+
+- 隔離の後に共有の状態が壊れている問題。タスクは `Reference` を共有できるので、隔離したタスクが可変のセルを途中まで書き換えた状態で、ほかのタスクが処理を続けうる。対策の候補は、(i) 隔離するタスクが書き換えうる `Reference` を型やエフェクトから推定して警告する、(ii) 「隔離は可用性のためのもので、共有の状態の整合は保証しない」と保証の範囲（[セキュリティモデル](07-quality/07-01-security-model.md)）に書く、(iii) 共有の状態を DB などの外に置くことを勧める形にとどめる、である。メモの見立ては (ii) と (iii) の組み合わせである。
+- 隔離してもプログラム全体を止める実行時エラーの種類。メモは、標準出力への書き込みの失敗、リソースの解放の失敗、タスクの待ち合いの行き詰まりは要求に閉じない状態を表すので、全体を止めるままにするのが自然だとしている。
+- `Failure` の型の中身。
+- 隔離した失敗の報告の形（[診断エンジン](02-impl/02-10-diagnostics.md)の報告と同じ形に、要求の方法とパスを添えるか）と、繰り返し起きたときにプログラムを止める閾値を設けるか。
+- 隔離したタスクを止める手順を、取り消し（[並行処理](01-spec/01-11-concurrency.md)の「取り消し」）と同じにするか。
+
+<a id="open-105"></a>
+## OPEN-105 DB へ到達する手段（SQLite の組み込みと、TCP・TLS のクライアント）
+
+- 種別: 未決
+- 移行元: なし
+
+典型的な Web システムは PostgreSQL・MySQL・Redis などの DB につなぐ。初回リリース版は TCP の接続を持たず（[ADR 0141](decisions/0141-http-scope-in-stdlib.md) の決定 4）、外部の関数も実装しない（[ADR 0139](decisions/0139-external-functions-via-wasm.md)、[OPEN-051](#open-051)）。そのため、DB のドライバを Benitoite で書くことも、既存のクライアントのライブラリを呼ぶこともできない。メモ（[一般的な Web システムの検討メモ](sources/post-first-release/post-first-release-web-systems.md)の「2. DB へ到達する手段」）は、次の三つの案を挙げている。
+
+- (a) TCP と TLS のクライアントの接続を標準ライブラリに加える。接続・読み・書き・TLS への切り替えの関数を置き（モジュールの候補は `Network.Tcp`）、エフェクトを `Tcp.Connect`（対象は接続先のホストとポート）とする。ドライバは Benitoite のパッケージとして書く。PostgreSQL は接続した後に TLS へ切り替える手順をとるので、接続した後に TLS へ切り替える関数が要る。
+- (b) よく使う DB のクライアントを処理系に組み込み、標準ライブラリか公式のモジュールとして与える。SQLite（Rust の `rusqlite` などのクレート）と PostgreSQL（Rust のクライアント）が候補である。
+- (c) 外部の関数（WASM）にソケットのホストの関数を与え、既存の Rust のドライバを WASM にビルドして使う。ホストの関数の範囲（[OPEN-051](#open-051)）と WASM の実行環境を先に決める必要がある。
+
+メモの見立ては次のとおりであり、決定ではない。SQLite を (b) で先に与える。単一のファイルで済み、サーバを立てずに DB を持つ Web システムを作れる。PostgreSQL・MySQL・Redis は (a) を加えてパッケージで書く。組み込むドライバを DB ごとに増やすと、処理系が持つ依存と保守が増えるからである。(c) は OPEN-051 の検討の中で、(a) の代わりになるかを比べる。メモの優先の順（暫定）では、SQLite の組み込みが 2 番目、(a) と PostgreSQL などのドライバのパッケージが 5 番目であり、後者はパッケージ管理（[OPEN-073](#open-073)）の後になる。
+
+あわせて次の点を決める。
+
+- (a) を採るなら、TCP の接続を初回リリース版に入れないとした ADR 0141 の決定 4 を改める ADR が要る。TCP の待ち受け、UDP、WebSocket を同時に加えるかも決める。WebSocket は、流しながら読み書きする本体（[OPEN-107](#open-107)）を前提とする。
+- (b) で組み込むクレートが、依存の基準（[OPEN-094](#open-094)）を満たすか。【要検証】`rusqlite` は SQLite の C のソースを同梱してビルドする形をとるとみられ、ビルドに C コンパイラが要るかを確かめる。
+- (b) の DB の操作のエフェクトと、権限の対象（DB のファイルのパスを `File.Read`・`File.Write` の対象とみなすか、専用のエフェクトにするか）。
+- DB の接続の文字列やパスワードの受け取り方は、秘密の値の型（[OPEN-088](#open-088)）と、人間から秘密を受け取る経路（[OPEN-089](#open-089)）に従う。
+- 接続の pool の形は [OPEN-106](#open-106) で決める。
+
+<a id="open-106"></a>
+## OPEN-106 子のタスクから外側のリソースを使う規則と、接続の pool の形
+
+- 種別: 未決
+- 移行元: なし
+
+DB の接続の pool は、サーバの起動のときに作り、すべての要求のタスクから借りて返す。メモ（[一般的な Web システムの検討メモ](sources/post-first-release/post-first-release-web-systems.md)の「3. 接続の pool を多数の要求で共有する形」）は、この形を書くのに要る規則が設計書で決まっていないとしている。
+
+リソースの値は、ラムダに捕捉して `with` のブロックの外で使える（[リソース管理](01-spec/01-10-resources.md)の「解放したリソースの使用」）。`Http.serve` の標準ライブラリのソースも、親のタスクが受け付けた `Http.Exchange` をラムダに捕捉し、`TaskGroup.spawn` で起動した子のタスクで使っている（[ネットワークのモジュール](03-interop/03-09-network.md)の「サーバ」）。一方、[リソース管理](01-spec/01-10-resources.md)と[並行処理](01-spec/01-11-concurrency.md)は、一つのリソースを複数のタスクが操作する場合の規則を定めていない。並行処理は単一のコアで進むのでデータ競合は起きないが、一つの接続の読み書きが二つのタスクで交互に進むと、DB のプロトコルが壊れる。
+
+メモは pool をリソースの型とし、`with pool = Db.openPool(...)` で `Http.serve` の呼び出しを囲む形を挙げ、借りる操作を次のどちらかにする案を示している。
+
+- (a) 関数を渡す形。`Db.use(pool, lambda(conn) ... end lambda)`。
+- (b) 借りた接続をリソースの型の値として `with` で束縛する形。`with conn = Db.take(pool) do ... end with`。解放が pool への返却になる。
+
+メモの見立ては (b) を採るものであり、決定ではない。リソースの書き方（`with`）に揃い、関数を渡す形を新たに覚えさせずに済む（設計原則 5）からである。どちらの形でも、取り消しや隔離（[OPEN-104](#open-104)）で止まったタスクが借りていた接続は、pool に戻さずに閉じる見立てである。プロトコルの途中で止まった接続は状態が分からないからである。返した後の接続の使用は、既にある実行時エラー（解放したリソースの使用）で捕まえられる。
+
+あわせて次の点を決める。
+
+- 子のタスクから外側のリソースを使う一般の規則。pool に限らない規則として 01-10・01-11 に書く。
+- pool から借りた接続を、借りたタスクだけが使えるようにする方法。メモは、借りたタスクの外での使用を実行時エラーにする案を挙げている。
+- 【要検証】外側の `with` で開いたリソースを子のタスクが使ったときの、初回リリース版の実装の振る舞い（解放の順、取り消しとの関係）。
+
+<a id="open-107"></a>
+## OPEN-107 流しながら読み書きする HTTP の本体と、接続の再利用
+
+- 種別: 未決
+- 移行元: なし
+
+初回リリース版の HTTP のサーバは、要求の本体を読み終えてから `handler` に渡し（上限 16 MiB）、応答の本体を `Bytes` 一つで返す。一つの接続では一つの要求だけを受け付ける（[ネットワークのモジュール](03-interop/03-09-network.md)の「サーバの接続と要求の読み方」、[ADR 0291](decisions/0291-file-copy-limit-and-http-server-details.md)）。この形では、大きなファイルの受け取りと配信、Server-Sent Events や少しずつ生まれる結果（LLM の応答など）を流す API、WebSocket を書けない。メモ（[一般的な Web システムの検討メモ](sources/post-first-release/post-first-release-web-systems.md)の「4. 流しながら読み書きする本体」）は、次の二つの案を挙げている。
+
+- (a) リソースに対する読み書きの関数を加える。要求の側は `Http.readBodyChunk(exchange) -> Result[Option[Bytes], NetworkError]` とする。応答の側は `Http.startResponse(exchange, status, headers)` でリソースの型 `Http.ResponseWriter` を得て、`Http.write`・`Http.flush` を繰り返し、解放で終える。SSE と WebSocket は、この上の関数として加える。
+- (b) 遅延して生まれる値の列の型を、言語か標準ライブラリに加える。合成しやすいが、取り消し・リソース・エフェクトとの関係を新たに定める必要があり、変更が大きい。
+
+メモの見立ては (a) を採るものであり、決定ではない。新しい言語機能は要らず、`with` と取り消しの既存の規則でリソースを解放できるからである。(b) は、流れを合成する用途（ファイルを読みながら変換して送る、など）が増えてから検討する。メモの優先の順（暫定）では、接続の再利用（keep-alive）とあわせて 3 番目である。
+
+(a) を採るなら、次の変更があわせて要り、ADR 0291 を改める ADR が要る。
+
+- 要求の本体を読み終えてから `handler` を呼ぶ形を、読まずに渡す形に改める。本体の上限（16 MiB）を適用する場所と、上限を超えたときの状態コード 413 の応答の扱いも改める。
+- 送る速さを相手に合わせる（相手が受け取れるまで `Http.write` が待つ）。
+- 接続が切れたときに、書き込みの失敗を `Result` で返し、`handler` が後始末できるようにする。
+
+あわせて次の点を決める。
+
+- 一つの接続で複数の要求を受け付ける形（keep-alive）を加えるか。加えるなら、`Http.Exchange` の解放と接続を閉じる時点の関係。
+- クライアントの側の、応答の本体を `File.Writer` に流す操作（[OPEN-086](#open-086)）と、関数の名前と形を揃えるか。
+
+<a id="open-108"></a>
+## OPEN-108 JSON とレコードの間の変換を作る仕組み
+
+- 種別: 未決
+- 移行元: なし
+
+初回リリース版では、`Json.Value` から利用者のレコードへの変換と、その逆の変換を、手で書くしかない（[テキストとデータの処理](03-interop/03-08-text-and-data.md)の「Json」）。REST API では、要求の本体を検証してレコードにし、レコードを JSON にして返す処理が、ほぼすべての経路に現れる。手書きの変換は量が多く、LLM が書くとフィールドの名前の綴りや `Option` の扱いを誤りやすい。メモ（[一般的な Web システムの検討メモ](sources/post-first-release/post-first-release-web-systems.md)の「5. JSON とレコードの間の変換を自動で作る仕組み」）は、次の三つの案を挙げている。
+
+- (a) 処理系が、決まった型クラスの実装を導出する。`@derive(Json.Encode, Json.Decode)` のような属性を、レコードと代数的データ型に付ける。処理系が `Json` のモジュールを知る必要がある。
+- (b) 処理系は型の構造の汎用の表現だけを導出し、変換はライブラリが書く。処理系は `Json` を知らずに済むが、型システムに型の構造を表す型（積と和の型の水準の表現）が要り、言語の中核の変更が大きい。
+- (c) 道具がコードを生成する。`benitoite` のサブコマンドか言語サーバのコードアクションで、型から変換の関数のコードを生成し、ソースに置く。言語は変わらず、生成したコードを人と LLM が読んで直せる。
+
+(c) には、型を変えた後に生成し直すのを忘れる危険がある。復号の関数はレコードを作るので、フィールドを加えると型の誤りになって気付ける（設計原則 2）。一方、符号化の関数は、加えたフィールドを黙って落とす。メモは、生成したコードに印を付け、型と食い違ったら `check` が警告する形でこの危険を減らす案を挙げている。
+
+メモの見立ては次のとおりであり、決定ではない。処理系が標準ライブラリの関数を特別扱いする結び付きを小さくする方針から、(a) は避ける。先に (c) を道具として加え、型と生成したコードの食い違いを `check` で検出する。(b) は型クラスの扱い（[ADR 0059](decisions/0059-higher-kinded-traits-without-prelude-monad.md)）とあわせて後で検討する。メモの優先の順（暫定）では 4 番目である。
+
+あわせて次の点を決める。
+
+- (c) の生成の道具の置き場所（サブコマンドか、言語サーバのコードアクションか）と、生成したコードの印の形、`check` が食い違いを調べる規則。
+- (b) を採るか。利用者の型の構造から入力の生成器や標準の型クラスの実装を導出する仕組み（[OPEN-046](#open-046)）と、同じ仕組みにするかを含める。
+- フィールドの名前と JSON のキーの対応（`snake_case` など）を指定する方法。(b) と (c) のどちらを採るかで形が変わる。
+
+<a id="open-109"></a>
+## OPEN-109 Web システムに要る標準ライブラリの部品の範囲
+
+- 種別: 未決
+- 移行元: なし
+
+初回リリース版の後に、一般的な Web システムを Benitoite で書くときに要る部品のうち、言語の機能を足さずにライブラリで用意できるものを、標準ライブラリか公式の追加のライブラリ（[OPEN-078](#open-078)）でどこまで用意するかを決める。メモ（[一般的な Web システムの検討メモ](sources/post-first-release/post-first-release-web-systems.md)の「7. ライブラリで足りるもの」）は、次のものをライブラリで足りるとしている。
+
+- 暗号。HMAC、JWT の署名と検証、パスワードのハッシュ（argon2 など）、暗号論的な乱数、定数時間の比較。初回リリース版の `Benitoite.Hash` は SHA-256 だけを持ち（[テキストとデータの処理](03-interop/03-08-text-and-data.md)の「Hash」）、`Random` の生成器（xoshiro256**）は暗号論的な乱数ではない（[IO のモジュール](03-interop/03-07-io-modules.md)の「Random」）。
+- Cookie、セッション、CORS、HTML のテンプレート。
+- ルーティングと中間層。メモは、要求を受けて応答を返す関数を包む高階関数で書け、要求ごとの文脈（認証した利用者など）はレコードで渡せるとしている。
+
+同じ節が挙げる接続の再利用（keep-alive）は [OPEN-107](#open-107) で扱う。HTTP/2 と WebSocket は、流しながら読み書きする本体を前提とする。本体の形は [OPEN-107](#open-107) で決め、その後に本項で HTTP/2 と WebSocket のライブラリの範囲を決める。
+
+決めることは次のとおりである。
+
+- 各部品を、標準ライブラリに入れるか、公式の追加のライブラリにするか、第三者のライブラリに任せるか。公式の追加のライブラリの配り方は [OPEN-078](#open-078) で決める。
+- 暗号の部品の範囲と、HTTP の認証のための HMAC と TOTP（[OPEN-091](#open-091)）との関係。HMAC を `Benitoite.Hash` に加えるかは OPEN-091 の論点と重なるので、二つの項目で同じ部品を使う前提で決める。
+- 暗号の実装に使うクレート。依存のクレートの基準（ビルドは Rust のツールチェーンだけで済み、実行時に OS の部品以外の共有ライブラリを読まない）を一般の方針とするか（[OPEN-094](#open-094)）の判断に従う。【要検証】argon2 などの Rust のクレートがこの基準を満たすか。
+- 暗号論的な乱数を、`Random.Generate` と別のエフェクトか別の関数として設けるか。
+- 定数時間の比較を、どの型（`Bytes`、`String`）について用意するか。

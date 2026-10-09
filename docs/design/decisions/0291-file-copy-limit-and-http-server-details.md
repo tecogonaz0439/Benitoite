@@ -1,6 +1,6 @@
 # 0291. `File.copy` を読み書きの関数で書いて写せる大きさを 1 GiB までとし、HTTP のサーバの接続と要求の読み方を定める
 
-- 状態: 採択
+- 状態: 採択（決定 1 を [0337](0337-file-transfer-for-large-copies.md) で改めた。初回リリース版は決定 1 のまま）
 - 日付: 2026-09-30
 - 関連章: [IO のモジュール](../03-interop/03-07-io-modules.md), [ネットワークのモジュール](../03-interop/03-09-network.md)
 - 関連する未決事項: [OPEN-062](../open-issues.md#open-062)

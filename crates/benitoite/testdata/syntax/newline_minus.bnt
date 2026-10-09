@@ -1,10 +1,12 @@
 // spec: 01-02 ブロックと文
 // spec: 01-01 改行による区切り
-fn negative() -> Int {
-  let _base = 3
-  -2
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  Console.println(Int.toString(negative()))
-}
+function negative() -> Integer
+  bind _base <- 3
+  return -2
+end function
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(Integer.toString(negative()))
+end function

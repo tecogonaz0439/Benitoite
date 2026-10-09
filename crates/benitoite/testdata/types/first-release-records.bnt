@@ -1,0 +1,21 @@
+// spec: 01-05 レコード（初回リリース版）
+record Person
+  name: String
+  age: Integer
+end record
+
+record Box[T]
+  value: T
+end record
+
+function main() -> Unit
+  bind person <- Person(name: "Ada", age: 36)
+  bind next <- Person(..person, age: 37)
+  bind Person(name: name, ..) <- next
+  bind boxed <- Box(value: Person.age(next))
+  bind _ <- Box.value(boxed)
+  bind _ <- match person with
+    case Person(name: n, age: 0) -> "Welcome, ${n}"
+    case Person(name: n, ..) -> "Hello, ${n}"
+  end match
+end function

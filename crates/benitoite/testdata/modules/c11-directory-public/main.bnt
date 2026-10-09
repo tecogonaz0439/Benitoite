@@ -1,0 +1,18 @@
+#!/usr/bin/env benitoite
+//! Entry module.
+// spec: 01-03 モジュールと import（初回リリース版）
+// spec: 01-03 公開（初回リリース版）
+// spec: 01-03 実行を始めるモジュール（初回リリース版）
+// spec: 01-02 レコード（初回リリース版）
+// spec: 01-05 レコード（初回リリース版）
+// spec: 01-01 シェバンの行（初回リリース版）
+import Lib.Data as D
+import Lib.Use
+import Benitoite.Unofficial.IO.Console
+const count: Integer = D.base + 1
+function main() -> Unit uses Console.Write
+  bind p <- D.Person(age: count, name: "Ada")
+  bind next <- D.Person(..p, age: Use.age(p) + 1)
+  bind D.Person(name: name, ..) <- next
+  Console.writeLine("${name}: ${D.Person.age(next)} / ${D.Person.age(p)}")
+end function

@@ -1,0 +1,32 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+// spec: 01-06 エフェクトの宣言とハンドラの型付け（初回リリース版）
+// spec: 01-10 解放の時期と順序
+// spec: 01-10 解放したリソースの使用
+// 関門: 再開せずに捨てた本体の Reader の解放と本体の中止を守り、継続の解放漏れを捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+effect Abort
+  function abort() -> Unit
+end effect
+
+function main() -> Result[Unit, String] uses File.Read, State, Console.Write
+  bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+  bind _ <- handle
+    with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+      Reference.set(saved, Option.Some(reader))
+      abort()
+      Console.writeLine("unreachable")
+    end with
+  with
+    case abort() -> ()
+  end handle
+  Console.writeLine("discarded")
+  match Reference.get(saved) with
+    case Option.Some(reader) ->
+      bind _ <- File.readLine(reader)
+      ()
+    case Option.None -> ()
+  end match
+  return Result.Ok(())
+end function

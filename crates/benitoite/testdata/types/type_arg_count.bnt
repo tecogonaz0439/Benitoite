@@ -1,12 +1,12 @@
 // spec: 01-05 型の宣言
-fn no_list_argument(value: List) -> Unit {
-    ()
-}
+function no_list_argument(value: List) -> Unit
+    return ()
+end function
 
-fn too_many_option_arguments(value: Option[Int, Int]) -> Unit {
-    ()
-}
+function too_many_option_arguments(value: Option[Integer, Integer]) -> Unit
+    return ()
+end function
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

@@ -1,12 +1,14 @@
 // spec: 01-06 式のエフェクト
 // spec: 01-07 IO を行う組み込み関数
 // spec: 01-07 エフェクトの型と権限制御の区別
-// spec: 01-07 IO エフェクトが表す操作
-fn greet(name: String) -> Unit {
-    Console.println("Hello, " + name)
-}
+// spec: 01-07 組み込みのエフェクト
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit {
+function greet(name: String) -> Unit
+    return Console.writeLine("Hello, " + name)
+end function
+
+function main() -> Unit
     greet("Ada")
-    ()
-}
+    return ()
+end function

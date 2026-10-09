@@ -1,0 +1,14 @@
+// spec: 01-06 ハンドラの型付け、01-12 ハンドラの節の型パラメータの範囲
+// 戻り値の型に節の型パラメータを含む閉包を、handle の外へ出せない。
+effect Swap
+  function store[T](x: T) -> T
+end effect
+
+function main() -> Unit
+  bind _ <- handle
+    bind _ <- store(42)
+    lambda() return Option.None end lambda
+  with
+    case store(x) -> lambda() return Option.Some(x) end lambda
+  end handle
+end function

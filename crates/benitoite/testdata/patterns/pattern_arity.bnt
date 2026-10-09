@@ -1,14 +1,14 @@
 // spec: 01-05 パターン
-type Shape {
+data Shape
     Rect(Float, Float)
-}
+end data
 
-fn area(shape: Shape) -> Float {
-    match shape {
-        Shape.Rect(width) => width
-    }
-}
+function area(shape: Shape) -> Float
+    return match shape with
+        case Shape.Rect(width) -> width
+    end match
+end function
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

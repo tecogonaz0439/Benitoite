@@ -1,10 +1,12 @@
 // spec: 01-01 整数リテラル
-fn main() -> Unit uses IO {
-  Console.println(Int.toString(0))
-  Console.println(Int.toString(42))
-  Console.println(Int.toString(1_000_000))
-  Console.println(Int.toString(0xff))
-  Console.println(Int.toString(0xFF_FF))
-  Console.println(Int.toString(0o755))
-  Console.println(Int.toString(0b1010_0101))
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(0))
+  Console.writeLine(Integer.toString(42))
+  Console.writeLine(Integer.toString(1_000_000))
+  Console.writeLine(Integer.toString(0xff))
+  Console.writeLine(Integer.toString(0xFF_FF))
+  Console.writeLine(Integer.toString(0o755))
+  return Console.writeLine(Integer.toString(0b1010_0101))
+end function

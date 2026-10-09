@@ -1,0 +1,48 @@
+// spec: 01-02 属性（初回リリース版）
+// 06-04「結果の報告」: 値は人間の読める形に書き出す（代数的データ型・レコード・リスト・マップ・集合）。
+
+data Shape
+  Circle(Integer)
+  Rect(Integer, Integer)
+  Empty
+end data
+
+record Person
+  name: String
+  age: Integer
+end record
+
+@test
+function standard() -> Unit uses Assert.Check
+  Assert.equal(Pair(1, Option.Some([1.5, -2.0])), Pair(1, Option.None))
+end function
+
+@test
+function strings() -> Unit uses Assert.Check
+  Assert.equal(Result.Ok("tab\tquote\"nl\n"), Result.Error('x'))
+end function
+
+@test
+function userData() -> Unit uses Assert.Check
+  Assert.equal([Shape.Circle(1), Shape.Rect(2, 3)], [Shape.Empty])
+end function
+
+@test
+function records() -> Unit uses Assert.Check
+  Assert.equal(Person(name: "Ada", age: 36), Person(name: "Bob", age: 7))
+end function
+
+@test
+function maps() -> Unit uses Assert.Check
+  Assert.equal(Map.fromList([Pair(2, "two"), Pair(1, "one")]), Map.empty())
+end function
+
+@test
+function sets() -> Unit uses Assert.Check
+  Assert.notEqual(Set.fromList([3, 1, 2]), Set.fromList([1, 2, 3]))
+end function
+
+@test
+function units() -> Unit uses Assert.Check
+  Assert.equal(Triple(true, (), 10), Triple(false, (), -10))
+end function

@@ -1,0 +1,22 @@
+// spec: 01-02 属性（初回リリース版）
+// 06-04「テストの関数」「結果の報告」: 成功するテストだけのファイルは終了状態 0 で終わる。
+
+function add(left: Integer, right: Integer) -> Integer
+  return left + right
+end function
+
+@test("add sums two numbers")
+function addSums() -> Unit uses Assert.Check
+  Assert.equal(add(1, 2), 3)
+end function
+
+@test
+function addIsCommutative() -> Unit uses Assert.Check
+  Assert.notEqual(add(1, 2), 4)
+  Assert.isTrue(add(2, 5) = add(5, 2), "add is commutative")
+end function
+
+@test
+function returnsOk() -> Result[Unit, String]
+  return Result.Ok(())
+end function

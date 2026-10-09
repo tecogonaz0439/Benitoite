@@ -1,0 +1,30 @@
+// spec: 01-02 型クラス（初回リリース版）
+record Total
+  value: Integer
+end record
+
+trait Combine[T]
+  function combine(a: T, b: T) -> T
+end trait
+
+trait Empty[T: Combine]
+  function empty() -> T
+end trait
+
+implement Combine[Total]
+  function combine(a: Total, b: Total) -> Total
+    return Total(value: Total.value(a) + Total.value(b))
+  end function
+end implement
+
+implement Empty[Total]
+  function empty() -> Total
+    return Total(value: 0)
+  end function
+end implement
+
+function main() -> Unit
+  bind initial: Total <- Empty.empty()
+  bind _ <- Combine.combine(initial, Total(value: 3))
+  ()
+end function

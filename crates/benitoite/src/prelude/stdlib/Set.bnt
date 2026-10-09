@@ -1,0 +1,61 @@
+//! Functions on `Set`, a persistent set ordered by its elements.
+
+/// Returns the empty set.
+@builtin("Set.empty")
+public function empty[T: key]() -> Set[T]
+
+/// Returns the set of the elements of `xs`.
+@builtin("Set.fromList")
+public function fromList[T: key](xs: List[T]) -> Set[T]
+
+/// Returns the elements in order.
+@builtin("Set.toList")
+public function toList[T: key](s: Set[T]) -> List[T]
+
+/// Returns whether the set has `x`.
+@builtin("Set.contains")
+public function contains[T: key](s: Set[T], x: T) -> Boolean
+
+/// Returns the set with `x` added. An existing element keeps its original form.
+@builtin("Set.add")
+public function add[T: key](s: Set[T], x: T) -> Set[T]
+
+/// Returns the set without `x`.
+@builtin("Set.remove")
+public function remove[T: key](s: Set[T], x: T) -> Set[T]
+
+/// Returns the number of elements.
+@builtin("Set.size")
+public function size[T: key](s: Set[T]) -> Integer
+
+/// Returns the elements in `a` or `b`.
+@builtin("Set.union")
+public function union[T: key](a: Set[T], b: Set[T]) -> Set[T]
+
+/// Returns the elements in both `a` and `b`.
+@builtin("Set.intersection")
+public function intersection[T: key](a: Set[T], b: Set[T]) -> Set[T]
+
+/// Returns the elements in `a` and not in `b`.
+@builtin("Set.difference")
+public function difference[T: key](a: Set[T], b: Set[T]) -> Set[T]
+
+/// Returns the set of `f` applied to each element. Equal results become one element.
+public function map[T: key, U: key, effect E](s: Set[T], f: function(T) -> U uses E) -> Set[U] uses E
+  return fromList(List.map(toList(s), f))
+end function
+
+/// Returns the elements for which `p` returns `true`.
+public function filter[T: key, effect E](s: Set[T], p: function(T) -> Boolean uses E) -> Set[T] uses E
+  return fromList(List.filter(toList(s), p))
+end function
+
+/// Combines the elements in order with `f`, starting from `initial`.
+public function fold[T: key, A, effect E](s: Set[T], initial: A, f: function(A, T) -> A uses E) -> A uses E
+  return List.fold(toList(s), initial, f)
+end function
+
+/// Calls `f` with each element in order.
+public function forEach[T: key, effect E](s: Set[T], f: function(T) -> Unit uses E) -> Unit uses E
+  return List.forEach(toList(s), f)
+end function

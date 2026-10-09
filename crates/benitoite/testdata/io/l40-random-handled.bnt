@@ -1,0 +1,28 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+// 設計書 03-07「Random」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Random
+function sample() -> Pair[Integer, Pair[Float, Boolean]] uses Random.Generate
+  return Pair(Random.integer(0, 10), Pair(Random.float(), Random.boolean()))
+end function
+function main() -> Unit uses Console.Write
+  bind fixed <- handle sample() with
+    case Random.integer(_, _) -> resume(7)
+    case Random.float() -> resume(0.5)
+    case Random.boolean() -> resume(true)
+    case Random.shuffle(xs) -> resume(xs)
+    case Random.choose(_) -> resume(Option.None)
+  end handle
+  Console.writeLine(Trait.Show.show(fixed))
+  bind lists <- handle Pair(Random.shuffle([3, 1, 2]), Random.choose([3, 1, 2])) with
+    case Random.integer(_, _) -> resume(7)
+    case Random.float() -> resume(0.5)
+    case Random.boolean() -> resume(true)
+    case Random.shuffle(xs) -> resume(List.reverse(xs))
+    case Random.choose(xs) -> resume(List.head(xs))
+  end handle
+  Console.writeLine(Trait.Show.show(lists))
+end function

@@ -1,7 +1,7 @@
 // spec: 01-01 演算子と区切り記号
 // spec: 01-01 改行による区切り
-fn main() -> Unit {
-  let x = 1; let y = 2
-  let _ = x + y
-  ()
-}
+function main() -> Unit
+  bind x <- 1; bind y <- 2
+  bind _ <- x + y
+  return ()
+end function

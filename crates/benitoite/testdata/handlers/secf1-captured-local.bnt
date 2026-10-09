@@ -1,0 +1,16 @@
+// spec: 01-06 ハンドラの型付け、01-12 ハンドラの節の型パラメータの範囲
+// 外で作った単相なラムダの引数型に、節の型パラメータを入れられない。
+effect Swap
+  function store[T](x: T) -> T
+end effect
+
+function main() -> Unit
+  bind accept <- lambda(value) end lambda
+  handle
+    bind _ <- store(42)
+  with
+    case store(x) ->
+      accept(x)
+      resume(x)
+  end handle
+end function

@@ -1,5 +1,5 @@
 // spec: 01-01 文字リテラル
-fn main() -> Unit {
-  let _ = 'é'
-  ()
-}
+function main() -> Unit
+  bind _ <- 'é'
+  return ()
+end function

@@ -1,0 +1,10 @@
+// spec: 01-05 レコード（初回リリース版）
+record Box[T]
+  value: T
+end record
+function bad(x: Box[Integer]) -> Box[Integer]
+  return Box(..x, value: "bad")
+end function
+function main() -> Unit
+  ()
+end function

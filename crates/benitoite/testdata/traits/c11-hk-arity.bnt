@@ -1,0 +1,11 @@
+// spec: 01-06 型クラス（初回リリース版）
+// spec: 01-06 高カインド型（初回リリース版）
+trait Functor[F[_]]
+  function map[A, B](x: F[A], f: function(A) -> B) -> F[B]
+end trait
+implement Functor[Result]
+  function map[A, B](x: Result[A, String], f: function(A) -> B) -> Result[B, String] return Result.map(x, f) end function
+end implement
+function main() -> Unit
+  ()
+end function

@@ -1,0 +1,7 @@
+// spec: 01-02 パターンの拡張（初回リリース版）
+function main() -> Unit
+  bind n <- match 1 with
+    case 1..<9 -> 1
+    case _ -> 0
+  end match
+end function

@@ -1,15 +1,15 @@
 // spec: 01-05 網羅性の検査
-type Toggle {
+data Toggle
   On
   Off
-}
+end data
 
-fn is_on(value: Toggle) -> Bool {
-  match value {
-    Toggle.On => true
-  }
-}
+function is_on(value: Toggle) -> Boolean
+  return match value with
+    case Toggle.On -> true
+  end match
+end function
 
-fn main() -> Unit {
-  if is_on(Toggle.On) { () } else { () }
-}
+function main() -> Unit
+  return if is_on(Toggle.On) then () else () end if
+end function

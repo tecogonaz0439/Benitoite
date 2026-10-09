@@ -1,0 +1,10 @@
+// spec: 01-02 ブロックと文
+function increment(x: Integer) -> Integer
+  shadow x <- x + 1
+  bind Pair(first, second) <- Pair(x, 2)
+  return first + second
+end function
+
+function main() -> Unit
+  bind _ <- increment(1)
+end function

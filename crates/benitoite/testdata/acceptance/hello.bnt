@@ -1,4 +1,6 @@
 // spec: 01-07 プログラムの入口
-fn main() -> Unit uses IO {
-  Console.println("Hello, world!")
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine("Hello, world!")
+end function

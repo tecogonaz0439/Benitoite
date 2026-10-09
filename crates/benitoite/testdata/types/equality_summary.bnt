@@ -1,14 +1,14 @@
 // spec: 01-06 等値の型
 // spec: 01-06 型
-type Nest[T] {
+data Nest[T]
     Leaf(T)
     Deep(Nest[List[T]])
-}
+end data
 
-fn main() -> Unit {
-    let number = Nest.Leaf(1)
-    let _ = number == number
-    let function = Nest.Leaf(fn() { () })
-    let _ = function == function
-    ()
-}
+function main() -> Unit
+    bind number <- Nest.Leaf(1)
+    bind _ <- number = number
+    bind callback <- Nest.Leaf(lambda() return () end lambda)
+    bind _ <- callback = callback
+    return ()
+end function

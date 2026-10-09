@@ -1,8 +1,8 @@
 // spec: 01-06 演算子の型付け
-// spec: 01-04 Char
-fn main() -> Unit {
-    let _ = true + false
-    let _ = 'a' * 'b'
-    let _ = [1] < [2]
-    ()
-}
+// spec: 01-04 Character
+function main() -> Unit
+    bind _ <- true + false
+    bind _ <- 'a' * 'b'
+    bind _ <- [1] < [2]
+    return ()
+end function

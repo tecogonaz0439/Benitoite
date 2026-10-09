@@ -1,6 +1,6 @@
 # 0285. 初回リリース版の実装は Codex を基本とし、難易度 5 の作業だけを Claude が実装して GPT-6-Astra がレビューする
 
-- 状態: 採択
+- 状態: 採択（決定 1〜3 を [ADR 0308](0308-implementation-by-codex-sol.md) で改めた）
 - 日付: 2026-09-30
 - 関連章: [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)
 - 関連する未決事項: [OPEN-059](../open-issues.md#open-059)

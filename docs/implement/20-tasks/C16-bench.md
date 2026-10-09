@@ -7,7 +7,7 @@
 
 ## 目的
 
-初回リリース版の完了時の測定（[性能](../../design/07-quality/07-02-performance.md)の「初回リリース版の完了時の測定」）のために、追加のベンチマークのプログラムと、追加の測る項目を取る手段を `tools/bench/` に用意する。測定そのもの（静かな計算機での本測定と所見）は、最小実行版と同じく、すべての作業を終えた後にスキル `benchmark` の手順で行う（[完了後の作業](../90-after-completion.md)）。本作業では、道具が動き、出力が比較対象と一致することを確かめる。
+初回リリース版の完了時の測定（[性能](../../design/07-quality/07-02-performance.md)の「初回リリース版の完了時の測定」）のために、追加のベンチマークのプログラムと、追加の測る項目を取る手段を `tools/bench/` に用意する。測定そのもの（静かな計算機での本測定と所見）は、最小実行版と同じく、すべての作業を終えた後にスキル `benchmark` の手順で行う（[完了後の作業](../90-after-completion.md)）。本作業では、道具が動き、出力が比較対象と一致することを確かめる。R33 の前に行う 2 回目の本測定は、`tools/bench/gate.py` による fib・loop の測定であり、本作業の道具は使わない。
 
 U1・U2 の範囲で書けないベンチマーク（`map` の挿入・検索・削除は U3 の `Map` の関数を、`http` は U3 の HTTP を要する）は、U3 の作業が加える。本作業では扱わない。
 
@@ -32,12 +32,12 @@ U1・U2 の範囲で書けないベンチマーク（`map` の挿入・検索・
 | ファイル | 内容 |
 |---|---|
 | `tools/bench/programs/trait.bnt` と比較対象の版（`python/`・`ruby/`・`lua/`・`ocaml/`・`rust/`） | 型クラスの制約を持つ多相の関数から、メソッドを繰り返し呼ぶ。比較対象では、それぞれの言語の普通の多相（Python のダックタイピング、OCaml のモジュールかレコードの関数、Rust のトレイトの動的な呼び出し）で書き、違いを README に書く |
-| `tools/bench/programs/handler.bnt` | 利用者が定義したエフェクトの操作を繰り返し呼ぶ。引数で、末尾で再開する節と、継続を保存してから再開する節を切り替える（07-02 の二つの形）。Benitoite だけ |
+| `tools/bench/programs/handler.bnt` | 利用者が定義したエフェクトの操作を繰り返し呼ぶ。引数で、末尾で再開する節と、継続を保存してから再開する節を切り替える（07-02 の二つの形）。後者は、`resume` の後に計算が続く節（末尾でない再開。VM は継続の区画を保存する）の意味であり、継続を値として持ち出して後で再開する形ではない（`resume` は節の中でだけ直接呼べ、継続は値にならない。01-07）。Benitoite だけ |
 | `tools/bench/programs/tasks.bnt` | 引数の数のタスクを `TaskGroup` の中で起動し、それぞれに計算させ、すべての終わりを待つ。Benitoite だけ |
 | `tools/bench/programs/cycle.bnt` | `Reference` のセルで循環する値を作っては捨てる。Benitoite だけ |
-| `tools/bench/programs/listget.bnt` と比較対象の版 | 長さを引数で与えた大きなリストに、`List.get` を無作為の位置（決まった種の擬似乱数）で繰り返す |
-| 各ベンチマークの `.args.small` | 差分テスト（C10 の `BENCH_DIRS`）で数十ミリ秒で終わる入力。`tasks` はタスクを起動するので差分テストから外れる（C10 が外す） |
-| `crates/benitoite/examples/bench_run.rs` | 開発用の例（下記）。R12 が同じ役割の例をすでに作っていれば、新しく作らずにそれを広げる |
+| `tools/bench/programs/listget.bnt` と比較対象の版 | 長さを引数で与えた大きなリストに、`List.get` を無作為の位置（決まった種の擬似乱数）で繰り返す。擬似乱数は、スクリプトの中の整数の演算（線形合同法など）で作る（`Random` は U3 で入るので使わない）。整数の溢れは実行時エラーになるので、各段で剰余をとって値を小さく保つ。比較対象の版も同じ式で同じ位置の並びを作る |
+| 各ベンチマークの `.args.small` | 差分テスト（C10 の `BENCH_DIRS`）で数十ミリ秒で終わる入力。`listget` は長さ・回数とも 1,000 程度に抑える（参照インタプリタは組み込みの呼び出しごとにリスト全体を写すので、大きな長さでは差分テストが遅くなる）。`tasks` は、参照インタプリタが `TaskGroup.spawn` を `Unsupported` にし、差分テストの比較が `Excluded` になるので外れる。`tests/golden.rs` は変えない |
+| `crates/benitoite/examples/bench_run.rs` | 開発用の例（下記）。新しく作る。`examples/stage1_bench.rs`・`examples/stage1_support/`・`tools/bench/gate.py` は変えない（`stage1_bench` は第 2 段の命令を拒み、`gate.py` の本測定に使っているため）。`stage1_support` を `#[path]` で読んで使うのはよい |
 | `tools/bench/run.py` | 追加のベンチマークと追加の項目（下記） |
 | `tools/bench/results/TEMPLATE.md`・`tools/bench/report_html.py` | 追加の項目の表とグラフ |
 | `tools/bench/README.md` | 追加のベンチマーク、項目、測り方、近似であるものの説明 |

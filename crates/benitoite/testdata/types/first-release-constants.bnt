@@ -1,0 +1,18 @@
+// spec: 01-02 定数（初回リリース版）
+import Benitoite.Map
+
+data Color
+  Red
+  Green
+  Blue
+end data
+
+const maxRetries: Integer = 3
+public const defaultPort: Integer = 8000 + 80
+const greeting: String = "hello, ${defaultPort}"
+const primaryColors: List[Color] = [Color.Red, Color.Green, Color.Blue]
+const statusNames: Map[Integer, String] = Map.fromList([Pair(200, "OK"), Pair(404, "Not Found")])
+
+function main() -> Unit
+  bind _ <- greeting
+end function

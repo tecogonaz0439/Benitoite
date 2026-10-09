@@ -1,0 +1,7 @@
+// spec: 01-02 属性（初回リリース版）
+@deprecated("use current instead")
+function old() -> Unit
+end function
+function main() -> Unit
+  old()
+end function

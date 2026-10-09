@@ -1,13 +1,15 @@
 // spec: 01-06 式のエフェクト
 // spec: 01-06 関数の型とエフェクト
 // spec: 01-07 IO が起きる時期と順序
-fn make_action() -> (fn() -> Unit uses IO) {
-    fn() {
-        Console.println("from lambda")
-    }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-    let action = make_action()
-    action()
-}
+function make_action() -> (function() -> Unit uses Console.Write)
+    return lambda()
+        return Console.writeLine("from lambda")
+    end lambda
+end function
+
+function main() -> Unit uses Console.Write
+    bind action <- make_action()
+    return action()
+end function

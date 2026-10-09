@@ -1,8 +1,10 @@
 // spec: 01-06 関数の型とエフェクト
-fn duplicate[effect E](action: fn() -> Unit uses E) -> Unit uses IO, IO {
-    ()
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit {
-    ()
-}
+function duplicate[effect E](action: function() -> Unit uses E) -> Unit uses Console.Write, Console.Write
+    return ()
+end function
+
+function main() -> Unit
+    return ()
+end function

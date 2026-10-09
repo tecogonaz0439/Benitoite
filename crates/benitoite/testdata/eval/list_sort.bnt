@@ -1,10 +1,12 @@
 // spec: 01-08 正格評価
 // spec: 01-04 Float
-fn show_floats(values: List[Float]) -> String {
-  String.join(List.map(values, fn(value) { Float.toString(value) }), ",")
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  Console.println(String.join(List.map(List.sort(["b", "a", "a"]), fn(value) { value }), ","))
-  Console.println(show_floats(List.sort([0.0, -0.0, -1.0, 1.0, 0.0 / 0.0, 2.0, 0.0 / 0.0])))
-}
+function show_floats(values: List[Float]) -> String
+  return String.join(List.map(values, lambda(value) return Float.toString(value) end lambda), ",")
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(String.join(List.map(List.sort(["b", "a", "a"]), lambda(value) return value end lambda), ","))
+  return Console.writeLine(show_floats(List.sort([0.0, -0.0, -1.0, 1.0, 0.0 / 0.0, 2.0, 0.0 / 0.0])))
+end function

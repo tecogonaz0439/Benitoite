@@ -1,18 +1,20 @@
 // spec: 01-02 文法
 // spec: 01-01 改行による区切り
-fn main() -> Unit uses IO {
-  let price = 7
-  let quantity = 6
-  let total = price
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind price <- 7
+  bind quantity <- 6
+  bind total <- price
     * quantity
 
-  let count = [1, 2, 3]
-    |> List.filter(fn(value: Int) { value > 1 })
+  bind count <- [1, 2, 3]
+    |> List.filter(lambda(value: Integer) return value > 1 end lambda)
     |> List.length
 
-  if true {
-    Console.println(Int.toString(total + count))
-  } else {
-    Console.println("bad")
-  }
-}
+  return if true then
+    Console.writeLine(Integer.toString(total + count))
+  else
+    Console.writeLine("bad")
+  end if
+end function

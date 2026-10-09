@@ -1,0 +1,45 @@
+// spec: 01-07 IO が起きる時期と順序
+// 設計書 03-07「File」「共通の規則」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Path
+function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+  bind names <- try File.listDirectory("input") |> Result.mapError(_, IOError.message)
+  bind paths <- try File.walk("input") |> Result.mapError(_, IOError.message)
+  Console.writeLine(Trait.Show.show(names))
+  Console.writeLine(Trait.Show.show(paths))
+  bind lines <- try File.readLines("input/z.txt") |> Result.mapError(_, IOError.message)
+  Console.writeLine(Trait.Show.show(lines))
+  bind info <- try File.info("input/z.txt") |> Result.mapError(_, IOError.message)
+  Console.writeLine(Trait.Show.show(File.Info.kind(info) = File.EntryKind.RegularFile and File.Info.size(info) = 5))
+  bind absolute <- try File.canonicalize("input/z.txt") |> Result.mapError(_, IOError.message)
+  Console.writeLine(Trait.Show.show(Path.fileName(absolute)))
+  bind _ <- try File.createDirectory("work/sub") |> Result.mapError(_, IOError.message)
+  bind _ <- try File.createDirectory("work/sub") |> Result.mapError(_, IOError.message)
+  bind directory <- try File.info("work/sub") |> Result.mapError(_, IOError.message)
+  Console.writeLine(Trait.Show.show(File.Info.kind(directory) = File.EntryKind.Directory))
+  bind _ <- try File.copy("input/z.txt", "work/copy.txt") |> Result.mapError(_, IOError.message)
+  bind _ <- try File.rename("work/copy.txt", "work/moved.txt") |> Result.mapError(_, IOError.message)
+  bind _ <- try File.writeBytes("work/bytes.bin", String.toUTF8("é")) |> Result.mapError(_, IOError.message)
+  bind _ <- try File.appendBytes("work/bytes.bin", String.toUTF8("!")) |> Result.mapError(_, IOError.message)
+  bind contents <- try File.readBytes("work/bytes.bin") |> Result.mapError(_, IOError.message)
+  Console.writeLine(Bytes.toHex(contents))
+  bind kind <- match File.remove("work") with
+    case Result.Error(e) -> IOError.kind(e) = IOErrorKind.DirectoryNotEmpty
+    case Result.Ok(_) -> false
+  end match
+  Console.writeLine(Trait.Show.show(kind))
+  bind conflict <- match File.createDirectory("work/bytes.bin") with
+    case Result.Error(e) -> IOError.kind(e) = IOErrorKind.AlreadyExists
+    case Result.Ok(_) -> false
+  end match
+  Console.writeLine(Trait.Show.show(conflict))
+  bind _ <- try File.remove("work/moved.txt") |> Result.mapError(_, IOError.message)
+  bind _ <- try File.removeTree("work") |> Result.mapError(_, IOError.message)
+  bind gone <- try File.exists("work") |> Result.mapError(_, IOError.message)
+  Console.writeLine(Trait.Show.show(gone))
+  return Result.Ok(())
+end function

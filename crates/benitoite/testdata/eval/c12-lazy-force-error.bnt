@@ -1,0 +1,10 @@
+// spec: 01-08 明示遅延（初回リリース版）
+// 関門: 初回 force での停止と本体・呼び出しの位置を守り、先行評価と履歴の退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind value <- lazy 1 div 0 end lazy
+  Console.writeLine("before force")
+  Console.writeLine(Integer.toString(Lazy.force(value)))
+end function

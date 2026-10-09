@@ -1,0 +1,14 @@
+// spec: 01-02 定数（初回リリース版）
+// spec: 01-06 定数の型（初回リリース版）
+// spec: 01-06 鍵の型（初回リリース版）
+import Benitoite.Map
+import Benitoite.Set
+import Benitoite.Unofficial.IO.Console
+const mapping: Map[Integer, String] = Map.fromList([Pair(2, "two"), Pair(1, "one")])
+const members: Set[Integer] = Set.fromList([3, 1, 2])
+const empty: Map[Integer, String] = Map.empty()
+function main() -> Unit uses Console.Write
+  Console.writeLine(String.join(List.map(Map.toList(mapping), lambda(p) return "${Pair.first(p)}=${Pair.second(p)}" end lambda), ","))
+  Console.writeLine(String.join(List.map(Set.toList(members), Integer.toString), ","))
+  Console.writeLine("${List.length(Map.toList(empty))}")
+end function

@@ -356,15 +356,22 @@ pub struct ResolveOutput {
 名前解決の関数と、標準ライブラリの名前を引く関数の中身は F06 が書く。
 
 ```rust sig=src/resolve/mod.rs needs=10-02,10-12
-use crate::base::IdGen;
+use crate::base::{IdGen, SourceTable};
 use crate::modules::ModuleTable;
 use crate::syntax::ast::Module;
 
 /// プログラム全体の名前を解決する（02-04「解決の手順」の手順 1〜6）。`asts` の添字はモジュールの ID の値。
 /// 束縛の番号は `ids` から、トップレベルの宣言にはモジュールの ID の順に、各モジュールの中では宣言の順に振る。
 /// 組み込みの型とエフェクトの束縛は、組み込みの表（10-05 の `types::builtin`）から作る。
+/// `sources` は読み込みの段のソースの表（`LoadOutput::sources`）。修正案の位置（行の先頭、行末の改行）を
+/// 字句の span から求めるために、ソースの本文を読む。
 /// 誤りがあっても出力を返す。呼び出し側は、診断に誤りが一つでもあれば型検査に進まない（ADR 0019）。
-pub fn resolve(modules: &ModuleTable, asts: &[Module], ids: &mut IdGen) -> ResolveOutput;
+pub fn resolve(
+    modules: &ModuleTable,
+    asts: &[Module],
+    sources: &SourceTable,
+    ids: &mut IdGen,
+) -> ResolveOutput;
 
 impl ResolveOutput {
     /// 標準ライブラリの名前を完全な名前（`"Benitoite.Option.Some"`）で引く。読んでいないモジュールの名前は `None`。

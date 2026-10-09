@@ -1,0 +1,37 @@
+//! Functions on `Byte`, the integers from 0 to 255.
+
+/// Returns the `Byte` equal to `n`, or `Option.None` when `n` is not between 0 and 255.
+@builtin("Byte.fromInteger")
+public function fromInteger(n: Integer) -> Option[Byte]
+
+/// Returns the value of `b` as an `Integer`.
+@builtin("Byte.toInteger")
+public function toInteger(b: Byte) -> Integer
+
+/// Returns the decimal representation of `b`.
+@builtin("Byte.toString")
+public function toString(b: Byte) -> String
+
+/// Returns the bitwise AND.
+@builtin("Byte.bitwiseAnd")
+public function bitwiseAnd(a: Byte, b: Byte) -> Byte
+
+/// Returns the bitwise OR.
+@builtin("Byte.bitwiseOr")
+public function bitwiseOr(a: Byte, b: Byte) -> Byte
+
+/// Returns the bitwise exclusive OR.
+@builtin("Byte.bitwiseExclusiveOr")
+public function bitwiseExclusiveOr(a: Byte, b: Byte) -> Byte
+
+/// Inverts all 8 bits.
+@builtin("Byte.bitwiseNot")
+public function bitwiseNot(a: Byte) -> Byte
+
+/// Shifts left by `n` bits, dropping the bits that leave the 8 bits.
+@builtin("Byte.shiftLeft")
+public function shiftLeft(a: Byte, n: Integer) -> Byte
+
+/// Shifts right by `n` bits, filling the high bits with 0.
+@builtin("Byte.shiftRight")
+public function shiftRight(a: Byte, n: Integer) -> Byte

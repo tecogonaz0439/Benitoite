@@ -1,0 +1,22 @@
+// 設計書 03-08「Json」の totalAmount の例。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Json
+function totalAmount(path: String) -> Result[Integer, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
+  bind items <- Json.asArray(value) |> Option.unwrapOr(_, [])
+  return Result.Ok(List.fold(items, 0, lambda(sum, item)
+    return match Json.get(item, "amount") with
+      case Option.Some(Json.Value.Integer(n)) -> sum + n
+      case _ -> sum
+    end match
+  end lambda))
+end function
+function main() -> Result[Unit, String] uses File.Read, Console.Write
+  bind total <- try totalAmount("amounts.json")
+  Console.writeLine(Integer.toString(total))
+  return Result.Ok(())
+end function

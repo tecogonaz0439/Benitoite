@@ -1,36 +1,41 @@
-//! 段をつなぐ公開の関数（設計書 02-01「段と段の間のデータ」「検査と実行の経路」）。
+//! 段をつなぐ公開の関数（設計書 02-01「段と段の間のデータ」「検査と実行の経路」「誤りが見つかったときの段の進め方」
+//! 「関数の呼び出しと処理系のスタック」、02-11「実行を始めるファイルとプログラムの読み込み」、ADR 0019・0087・0156・0166）。
 
-use std::io::Read;
-use std::path::Path;
+use std::path::PathBuf;
 use std::sync::Arc;
-use std::{io, panic, thread};
 
-use crate::base::source::MAX_SOURCE_BYTES;
-use crate::base::{BytePos, FileId, IdGen, Source, SourceKind, SourceTable};
-use crate::bytecode::codegen::{self, CodegenError};
-use crate::bytecode::program::CompiledProgram;
-use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
+use crate::base::{FileId, SourceTable};
+use crate::diag::Diagnostic;
 use crate::ir::InternalError;
-use crate::ir::core_ir::CoreProgram;
-use crate::ir::decision;
-use crate::ir::desugar;
-use crate::resolve::{self, ResolveOutput};
-use crate::runtime::report::internal_diagnostic;
-use crate::syntax::ast::Program;
-use crate::syntax::lexer::lex;
-use crate::syntax::newline::resolve_newlines;
-use crate::syntax::parser::{self, ParseOutput};
+use crate::modules::ModuleTable;
+use crate::resolve::ResolveOutput;
+use crate::syntax::ast::Module;
 use crate::syntax::token::Comment;
-use crate::typeck::{self, TypeckOutput};
+use crate::typeck::TypeckOutput;
+
+/// 検査・脱糖・コンパイルの段を動かすスレッドのスタックの大きさ（64 MiB。02-01、ADR 0087）。
+pub const STAGE_STACK_BYTES: usize = 64 * 1024 * 1024;
+
+/// ディレクトリを指定したときに実行を始めるファイルの名前（06-01「ディレクトリの指定」、ADR 0127）。
+pub const ENTRY_FILE_NAME: &str = "main.bnt";
+
+/// 検査の選択肢。
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct CheckOptions {
+    /// `main` の有無と形を検査する。`check`・`run` で真、`test` で偽（10-05 の `typecheck`）
+    pub require_main: bool,
+    /// `--deny-warnings`（02-01「誤りが見つかったときの段の進め方」、ADR 0166）
+    pub deny_warnings: bool,
+}
 
 /// 型検査までを誤りなく通ったプログラム。
 #[derive(Debug)]
 pub struct CheckedProgram {
-    /// prelude のソースの AST（ファイルの名前の順）
-    pub prelude: Vec<Program>,
-    pub user: Program,
-    /// 利用者のソースのコメントの一覧（初回リリース版のフォーマッタが使う。最小実行版では使わない）
-    pub comments: Vec<Comment>,
+    pub modules: ModuleTable,
+    /// モジュールごとの AST。添字はモジュールの ID の値（10-04 の `LoadOutput::asts`）
+    pub asts: Vec<Module>,
+    /// モジュールごとのコメントの一覧（フォーマッタは使わない。フォーマッタは `lex` と `parse` を直接呼ぶ）
+    pub comments: Vec<Vec<Comment>>,
     pub resolved: ResolveOutput,
     pub types: TypeckOutput,
 }
@@ -39,12 +44,24 @@ pub struct CheckedProgram {
 #[derive(Debug)]
 pub struct CheckResult {
     pub sources: Arc<SourceTable>,
-    /// 利用者のソースのファイル ID。読み込みに失敗したときは `None`
-    pub user_file: Option<FileId>,
-    /// 誤りがあった段の診断。段の中ではソース上の位置（ファイル ID、開始の位置）の順に並べる
+    /// 実行を始めるファイルのファイル ID。読めなかったときは `None`
+    pub entry: Option<FileId>,
+    /// 誤りと警告。段の順に、同じ段の中ではファイル ID の順に、同じファイルの中ではソース上の位置の順に並べる
+    /// （02-10「文章の形式」）。標準ライブラリのソースの中の警告は含めない（02-10「警告の扱い」）
     pub diagnostics: Vec<Diagnostic>,
-    /// 誤りがなければ `Some`
+    /// 誤りがなければ `Some`。`deny_warnings` のときは、警告もなければ `Some`
     pub program: Option<CheckedProgram>,
+}
+
+impl CheckResult {
+    /// 誤りの数（`--deny-warnings` で誤りにした警告を含む）。
+    pub fn error_count(&self) -> usize {
+        self.diagnostics.iter().filter(|d| d.is_error()).count()
+    }
+
+    pub fn warning_count(&self) -> usize {
+        self.diagnostics.iter().filter(|d| d.is_warning()).count()
+    }
 }
 
 /// コンパイルの失敗。
@@ -56,458 +73,514 @@ pub enum CompileError {
     Internal(InternalError),
 }
 
-/// ソース読み込みで使う表示文。
-pub mod text {
-    pub const FILE_TOO_LARGE: &str = "file is larger than 256 MiB";
+/// 実行を始めるファイルを決められない（CLI の使い方の誤り。終了状態 2。06-01「ディレクトリの指定」）。
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub enum EntryError {
+    /// 指定したディレクトリに `main.bnt` がない
+    NoMainFile { dir: PathBuf },
 }
 
-/// AST と中間表現を辿る段のために確保するスタック（ADR 0087）。
-const STACK_BYTES: usize = 64 * 1024 * 1024;
-/// ソース上限まで読み、上限を超えたか判定するための 1 バイトも読む。
-const SOURCE_READ_LIMIT: u64 = 256 * 1024 * 1024 + 1;
+use std::path::Path;
 
-/// 借用した入力を保ったまま処理段を大きなスタックで動かす（ADR 0087）。
-fn on_large_stack<T: Send>(f: impl FnOnce() -> T + Send) -> Result<T, io::Error> {
-    thread::scope(|scope| {
-        let handle = thread::Builder::new()
-            .stack_size(STACK_BYTES)
-            .spawn_scoped(scope, f)?;
-        match handle.join() {
-            Ok(value) => Ok(value),
-            Err(payload) => panic::resume_unwind(payload),
+use crate::bytecode::program::CompiledProgram;
+use crate::ir::core_ir::CoreProgram;
+use crate::modules::{EntrySpec, ModuleFs};
+
+/// コマンドラインで与えたパスから、実行を始めるファイルを決める（06-01「ディレクトリの指定」、02-02「ソースとファイル ID」の表示名）。
+/// ディレクトリなら、その下の `main.bnt` を読むファイルとし、表示名をディレクトリのパスに `main.bnt` を続けた名前にする。
+/// ディレクトリに `main.bnt` がなければ `EntryError::NoMainFile`。ファイル（と、存在しないパス）はそのまま読むファイルとし、
+/// 表示名はパスの文字列（`Path::display`）とする。存在しないパスの誤りは、読み込みの段が E0101 にする。
+/// 根のディレクトリは、読むファイルのあるディレクトリ（パスに親がなければ `.`）とする。
+pub fn entry_spec(path: &Path) -> Result<EntrySpec, EntryError> {
+    let path = if path.is_dir() {
+        let main = path.join(ENTRY_FILE_NAME);
+        if !main.is_file() {
+            return Err(EntryError::NoMainFile {
+                dir: path.to_path_buf(),
+            });
         }
+        main
+    } else {
+        path.to_path_buf()
+    };
+    let root = path
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or(Path::new("."))
+        .to_path_buf();
+    Ok(EntrySpec {
+        display_name: path.display().to_string(),
+        path,
+        root,
     })
 }
 
-/// prelude のソースをファイル名の順にソース表へ加える。
-fn add_prelude(sources: &mut SourceTable) -> Vec<FileId> {
-    crate::prelude::SOURCES
-        .iter()
-        .map(|(name, text)| {
-            sources.add(Source::new(
-                format!("{}{name}", crate::prelude::DISPLAY_PREFIX),
-                SourceKind::Prelude,
-                text.as_bytes().to_vec(),
-            ))
-        })
-        .collect()
-}
-
-/// ファイルを上限より 1 バイト多いところまで読み、過大な入力を拒む。
-fn read_user_source(path: &Path) -> Result<Vec<u8>, String> {
-    let file = std::fs::File::open(path).map_err(|error| error.to_string())?;
-    let mut bytes = Vec::new();
-    file.take(SOURCE_READ_LIMIT)
-        .read_to_end(&mut bytes)
-        .map_err(|error| error.to_string())?;
-    if bytes.len() > MAX_SOURCE_BYTES {
-        return Err(String::from(text::FILE_TOO_LARGE));
-    }
-    Ok(bytes)
-}
-
-fn read_error(path: &Path, reason: String) -> Diagnostic {
-    DiagBuilder::new(DiagCode::E0101)
-        .arg("path", path.display().to_string())
-        .arg("reason", reason)
-        .note("reason")
-        .build()
-}
-
-fn internal_check(
-    sources: Arc<SourceTable>,
-    user_file: Option<FileId>,
-    message: String,
-) -> CheckResult {
-    CheckResult {
-        sources,
-        user_file,
-        diagnostics: vec![internal_diagnostic("pipeline", &message, None)],
-        program: None,
+/// 実行を始めるファイルから、読み込み・字句解析・構文解析・名前解決・型検査（定数の評価を含む）を行う
+/// （02-01「検査と実行の経路」の `check`）。標準ライブラリのソースは 10-14 の表から読み込みの段に渡す。
+/// 段の中身は `STAGE_STACK_BYTES` のスタックを持つスレッドで行う（ADR 0087）。そのスレッドの panic は段のスレッドの
+/// 中で捕らえ、報告の種類が `Internal` の診断（段は `check`、スレッドは `Stage`）にして `diagnostics` に入れて返す。
+pub fn check(entry: &EntrySpec, fs: &(dyn ModuleFs + Sync), opts: CheckOptions) -> CheckResult {
+    match on_large_stack(|| crate::runtime::panic::catch(|| check_stages(entry, fs, opts))) {
+        Ok(Ok(result)) => result,
+        Ok(Err(panic)) => CheckResult {
+            sources: Arc::new(SourceTable::new()),
+            entry: None,
+            diagnostics: vec![crate::runtime::report::internal_diagnostic(
+                "check",
+                &panic.message,
+                Some(&panic),
+                crate::runtime::report::FaultThread::Stage,
+            )],
+            program: None,
+        },
+        Err(error) => CheckResult {
+            sources: Arc::new(SourceTable::new()),
+            entry: None,
+            diagnostics: vec![crate::runtime::report::internal_diagnostic(
+                "check",
+                &error.to_string(),
+                None,
+                crate::runtime::report::FaultThread::Stage,
+            )],
+            program: None,
+        },
     }
 }
 
-/// 利用者のソースファイルを読み、読み込みから型検査までの段を行う（02-01「検査と実行の経路」の `check`）。
-/// 読み込みの誤り（ファイルがない、読めない、MAX_SOURCE_BYTES を超える）は E0101 の診断にする。
-/// 表示名はコマンドラインで与えたパスの文字列（`Path::display`）とする。
-pub fn check_path(path: &Path) -> CheckResult {
-    let mut table = SourceTable::new();
-    let prelude_files = add_prelude(&mut table);
-    let path_name = path.display().to_string();
-    let bytes = match read_user_source(path) {
-        Ok(bytes) => bytes,
-        Err(reason) => {
-            let sources = Arc::new(table);
-            return CheckResult {
-                sources,
-                user_file: None,
-                diagnostics: vec![read_error(path, reason)],
-                program: None,
-            };
-        }
+/// `entry_spec` と本番のファイルシステム（`RealFs`）で `check` を行う。
+pub fn check_path(path: &Path, opts: CheckOptions) -> Result<CheckResult, EntryError> {
+    Ok(check(&entry_spec(path)?, &crate::modules::RealFs, opts))
+}
+
+/// ファイルシステムを使わずに検査する（テストで使う）。`files` はパスと内容の組で、最初の要素が実行を始めるファイルである。
+/// パスは仮の根のディレクトリからの相対パス（`main.bnt`、`Lib/Text.bnt`）で、表示名はそのパスとする。
+pub fn check_files(files: &[(&str, &[u8])], opts: CheckOptions) -> CheckResult {
+    let root = PathBuf::from("/root");
+    let fs = MemoryFs {
+        files: files
+            .iter()
+            .map(|(path, bytes)| (root.join(path), bytes.to_vec()))
+            .collect(),
     };
-    let user_file = table.add(Source::new(path_name, SourceKind::User, bytes));
-    let sources = Arc::new(table);
-    let thread_sources = Arc::clone(&sources);
-    match on_large_stack(move || check_sources(thread_sources, prelude_files, user_file)) {
-        Ok(result) => result,
-        Err(error) => internal_check(
-            sources,
-            Some(user_file),
-            format!("could not create the pipeline thread: {error}"),
-        ),
-    }
+    let name = files.first().map_or("main.bnt", |(name, _)| *name);
+    check(
+        &EntrySpec {
+            path: root.join(name),
+            display_name: name.to_owned(),
+            root,
+        },
+        &fs,
+        opts,
+    )
 }
 
-/// ソースの内容を与えて検査する（テストで使う）。`name` は表示名。
-pub fn check_text(name: &str, text: &[u8]) -> CheckResult {
-    let mut table = SourceTable::new();
-    let prelude_files = add_prelude(&mut table);
-    let user_file = table.add(Source::new(
-        String::from(name),
-        SourceKind::User,
-        text.to_vec(),
-    ));
-    let sources = Arc::new(table);
-    let thread_sources = Arc::clone(&sources);
-    match on_large_stack(move || check_sources(thread_sources, prelude_files, user_file)) {
-        Ok(result) => result,
-        Err(error) => internal_check(
-            sources,
-            Some(user_file),
-            format!("could not create the pipeline thread: {error}"),
-        ),
-    }
+/// 一つのファイルだけからなるプログラムを検査する（`check_files` の略記。テストで使う）。`name` は表示名。
+pub fn check_text(name: &str, text: &[u8], opts: CheckOptions) -> CheckResult {
+    check_files(&[(name, text)], opts)
 }
 
-fn check_sources(
-    sources: Arc<SourceTable>,
-    prelude_files: Vec<FileId>,
-    user_file: FileId,
-) -> CheckResult {
-    let mut ids = IdGen::new();
-    let mut prelude = Vec::with_capacity(prelude_files.len());
-    let mut diagnostics = Vec::new();
-
-    for file in prelude_files {
-        let Some(source) = sources.get(file) else {
-            return internal_check(
-                sources,
-                Some(user_file),
-                format!("prelude source {} is missing", file.0),
-            );
-        };
-        let parsed = parse_source(file, source, &mut ids);
-        prelude.push(parsed.program);
-        diagnostics.extend(parsed.diagnostics);
-    }
-    let Some(source) = sources.get(user_file) else {
-        return internal_check(
-            sources,
-            Some(user_file),
-            format!("user source {} is missing", user_file.0),
-        );
-    };
-    let user = parse_source(user_file, source, &mut ids);
-    if !user.diagnostics.is_empty() {
-        diagnostics.extend(user.diagnostics);
-    }
-    if has_errors(&diagnostics) {
-        return CheckResult {
-            sources,
-            user_file: Some(user_file),
-            diagnostics,
-            program: None,
-        };
-    }
-
-    let mut resolved = resolve::resolve(&prelude, &user.program, &mut ids);
-    sort_diagnostics(&mut resolved.diagnostics);
-    diagnostics.append(&mut resolved.diagnostics);
-    if has_errors(&diagnostics) {
-        return CheckResult {
-            sources,
-            user_file: Some(user_file),
-            diagnostics,
-            program: None,
-        };
-    }
-
-    let (types, mut type_diagnostics) = typeck::typecheck(&prelude, &user.program, &resolved);
-    sort_diagnostics(&mut type_diagnostics);
-    diagnostics.append(&mut type_diagnostics);
-    if has_errors(&diagnostics) {
-        return CheckResult {
-            sources,
-            user_file: Some(user_file),
-            diagnostics,
-            program: None,
-        };
-    }
-
-    CheckResult {
-        sources,
-        user_file: Some(user_file),
-        diagnostics,
-        program: Some(CheckedProgram {
-            prelude,
-            user: user.program,
-            comments: user.comments,
-            resolved,
-            types,
-        }),
-    }
-}
-
-fn has_errors(diagnostics: &[Diagnostic]) -> bool {
-    diagnostics.iter().any(Diagnostic::is_error)
-}
-
-fn sort_diagnostics(diagnostics: &mut [Diagnostic]) {
-    diagnostics.sort_by_key(|diagnostic| match diagnostic.primary.as_ref() {
-        Some(label) => (true, label.span.file, label.span.start),
-        None => (false, FileId(0), BytePos(0)),
-    });
-}
-
-/// 字句の切り出し（`lex(file, source.text())`）、改行の判定、構文解析を続けて行う。診断は字句の誤りを先に、構文の誤りを後に並べる。
-pub fn parse_source(file: FileId, source: &Source, ids: &mut IdGen) -> ParseOutput {
-    let lexed = lex(file, source.text());
-    let mut lexical_diagnostics = lexed.diagnostics;
-    sort_diagnostics(&mut lexical_diagnostics);
-    let parsed = parser::parse(
-        file,
-        source.kind(),
-        resolve_newlines(lexed.tokens),
-        lexed.comments,
-        ids,
-    );
-    let mut syntax_diagnostics = parsed.diagnostics;
-    sort_diagnostics(&mut syntax_diagnostics);
-    let mut diagnostics = lexical_diagnostics;
-    diagnostics.extend(syntax_diagnostics);
-    ParseOutput {
-        program: parsed.program,
-        comments: parsed.comments,
-        diagnostics,
-    }
-}
-
-/// 脱糖してコア IR を作る。
+/// 脱糖してコア IR を作る（10-06 の `desugar`）。`STAGE_STACK_BYTES` のスタックを持つスレッドで行う。
 pub fn desugar_checked(checked: &CheckedProgram) -> Result<CoreProgram, InternalError> {
-    match on_large_stack(|| {
-        desugar::desugar(
-            &checked.prelude,
-            &checked.user,
+    on_large_stack(|| {
+        crate::ir::desugar::desugar(
+            &checked.modules,
+            &checked.asts,
             &checked.resolved,
             &checked.types,
         )
-    }) {
-        Ok(result) => result,
-        Err(error) => Err(InternalError {
-            stage: "pipeline",
-            message: format!("could not create the pipeline thread: {error}"),
-        }),
-    }
+    })
+    .map_err(|error| InternalError {
+        stage: "desugar",
+        message: error.to_string(),
+    })?
 }
 
-/// 判定の木への変換とコード生成を行う。
+/// 判定の木への変換（10-06 の `lower_program`）とコード生成（10-07 の `codegen`）を行う。
+/// `STAGE_STACK_BYTES` のスタックを持つスレッドで行う。
 pub fn compile(
     core: &CoreProgram,
     sources: Arc<SourceTable>,
 ) -> Result<CompiledProgram, CompileError> {
-    let thread_sources = Arc::clone(&sources);
-    match on_large_stack(move || {
-        let lower = decision::lower_program(core).map_err(CompileError::Internal)?;
-        codegen::codegen(&lower, thread_sources).map_err(|error| match error {
-            CodegenError::Limit(diagnostics) => CompileError::Limit(diagnostics),
-            CodegenError::Internal(error) => CompileError::Internal(error),
+    on_large_stack(|| {
+        let lower = crate::ir::decision::lower_program(core).map_err(CompileError::Internal)?;
+        crate::bytecode::codegen::codegen(&lower, sources).map_err(|error| match error {
+            crate::bytecode::codegen::CodegenError::Limit(diags) => CompileError::Limit(diags),
+            crate::bytecode::codegen::CodegenError::Internal(error) => {
+                CompileError::Internal(error)
+            }
         })
-    }) {
-        Ok(result) => result,
-        Err(error) => Err(CompileError::Internal(InternalError {
-            stage: "pipeline",
-            message: format!("could not create the pipeline thread: {error}"),
-        })),
+    })
+    .map_err(|error| {
+        CompileError::Internal(InternalError {
+            stage: "codegen",
+            message: error.to_string(),
+        })
+    })?
+}
+
+// 借用したファイルシステムも段に渡せるよう scoped thread を使う（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+pub(super) fn on_large_stack<T: Send>(f: impl FnOnce() -> T + Send) -> std::io::Result<T> {
+    std::thread::scope(|scope| {
+        let handle = std::thread::Builder::new()
+            .stack_size(STAGE_STACK_BYTES)
+            .spawn_scoped(scope, f)?;
+        match handle.join() {
+            Ok(value) => Ok(value),
+            Err(payload) => std::panic::resume_unwind(payload),
+        }
+    })
+}
+
+fn check_stages(entry: &EntrySpec, fs: &dyn ModuleFs, opts: CheckOptions) -> CheckResult {
+    let mut ids = crate::base::IdGen::new();
+    let loaded = crate::modules::load_program(entry, crate::prelude::STDLIB, fs, &mut ids);
+    let sources = Arc::new(loaded.sources);
+    let entry_file = sources
+        .get(FileId(0))
+        .filter(|s| s.kind() == crate::base::SourceKind::User)
+        .map(|_| FileId(0));
+    let mut result = CheckResult {
+        sources,
+        entry: entry_file,
+        diagnostics: Vec::new(),
+        program: None,
+    };
+    append_stage(&mut result, loaded.diagnostics);
+    if !result.diagnostics.iter().any(Diagnostic::is_error) {
+        let mut resolved =
+            crate::resolve::resolve(&loaded.modules, &loaded.asts, &result.sources, &mut ids);
+        append_stage(&mut result, std::mem::take(&mut resolved.diagnostics));
+        if !result.diagnostics.iter().any(Diagnostic::is_error) {
+            let (types, diagnostics) = crate::typeck::typecheck(
+                &loaded.modules,
+                &loaded.asts,
+                &result.sources,
+                &resolved,
+                opts.require_main,
+            );
+            append_stage(&mut result, diagnostics);
+            if !result.diagnostics.iter().any(Diagnostic::is_error) {
+                result.program = Some(CheckedProgram {
+                    modules: loaded.modules,
+                    asts: loaded.asts,
+                    comments: loaded.comments,
+                    resolved,
+                    types,
+                });
+            }
+        }
+    }
+    // 標準ライブラリの警告を除いた後に deny を適用する（設計書 02-10「警告の扱い」）。
+    if opts.deny_warnings {
+        for diag in &mut result.diagnostics {
+            if diag.is_warning() {
+                diag.deny_warning();
+            }
+        }
+        if result.error_count() > 0 {
+            result.program = None;
+        }
+    }
+    result
+}
+
+fn append_stage(result: &mut CheckResult, mut diagnostics: Vec<Diagnostic>) {
+    diagnostics.retain(|diag| {
+        !diag.is_warning()
+            || !diag.primary.as_ref().is_some_and(|label| {
+                result
+                    .sources
+                    .get(label.span.file)
+                    .is_some_and(|s| s.kind() == crate::base::SourceKind::Prelude)
+            })
+    });
+    diagnostics.sort_by_key(|diag| {
+        diag.primary
+            .as_ref()
+            .map(|label| (label.span.file, label.span.start))
+            .map_or(
+                (true, FileId(0), crate::base::BytePos(0)),
+                |(file, start)| (false, file, start),
+            )
+    });
+    result.diagnostics.extend(diagnostics);
+}
+
+// 公開の check_files はテスト用モジュールに依存できないため、ファイルだけを持つ実装を置く（実装プラン F18）。
+struct MemoryFs {
+    files: std::collections::BTreeMap<PathBuf, Vec<u8>>,
+}
+impl ModuleFs for MemoryFs {
+    fn read_file(&self, path: &Path) -> std::io::Result<Vec<u8>> {
+        self.files
+            .get(path)
+            .cloned()
+            .ok_or_else(|| std::io::ErrorKind::NotFound.into())
+    }
+    fn canonicalize(&self, path: &Path) -> std::io::Result<PathBuf> {
+        Ok(path.to_path_buf())
+    }
+    fn list_dir(&self, dir: &Path) -> std::io::Result<Vec<crate::modules::DirEntryName>> {
+        let mut entries = std::collections::BTreeMap::new();
+        for path in self.files.keys() {
+            if let Ok(relative) = path.strip_prefix(dir) {
+                let mut components = relative.components();
+                if let Some(name) = components.next().and_then(|c| c.as_os_str().to_str()) {
+                    entries.insert(name.to_owned(), components.next().is_some());
+                }
+            }
+        }
+        Ok(entries
+            .into_iter()
+            .map(|(name, is_dir)| crate::modules::DirEntryName { name, is_dir })
+            .collect())
     }
 }
 
 #[cfg(test)]
-// テストの失敗は panic で表す（07-03）。
-#[allow(
-    clippy::unwrap_used,
-    clippy::expect_used,
-    clippy::panic,
-    clippy::indexing_slicing,
-    clippy::arithmetic_side_effects
-)]
 mod tests {
-    use super::{CheckResult, check_path, check_text, compile, desugar_checked, on_large_stack};
-    use crate::diag::{DiagCode, ReportKind};
-    use crate::runtime::executor::{ExecMode, ExecOptions};
-    use crate::runtime::run::run_with;
-    use crate::runtime::test_io::TestIo;
-    use crate::syntax::parser::MAX_DEPTH;
-    use std::sync::Arc;
-
-    fn codes(result: &CheckResult) -> Vec<Option<DiagCode>> {
-        result.diagnostics.iter().map(|diag| diag.code).collect()
+    // 関門: 公開の検査の入口が段の順、警告の扱い、深い入力への対応を守る。
+    // 各段の単独のテストは段の接続と deny の適用順を確かめない（設計書 07-03）。
+    // テストの失敗は panic で表す（実装プラン 00-02）。
+    #![allow(
+        clippy::unwrap_used,
+        clippy::expect_used,
+        clippy::panic,
+        clippy::indexing_slicing,
+        clippy::arithmetic_side_effects
+    )]
+    use super::*;
+    use crate::diag::DiagCode;
+    fn opts(deny_warnings: bool) -> CheckOptions {
+        CheckOptions {
+            require_main: true,
+            deny_warnings,
+        }
     }
-
-    fn checked_program(source: &str) -> (CheckResult, crate::ir::core_ir::CoreProgram) {
-        let checked = check_text("pipeline-test.bnt", source.as_bytes());
-        assert!(checked.diagnostics.is_empty(), "{:#?}", checked.diagnostics);
-        let Some(program) = checked.program.as_ref() else {
-            panic!("successful check has no program");
-        };
-        let core = desugar_checked(program).unwrap();
-        (checked, core)
-    }
-
     #[test]
-    fn check_text_runs_all_check_stages_and_stops_after_errors() {
-        let valid = check_text(
-            "hello.bnt",
-            b"fn main() -> Unit uses IO { Console.println(\"hi\") }",
-        );
-        assert!(valid.diagnostics.is_empty());
-        assert!(valid.program.is_some());
+    fn u3_sources_import_names_and_record_tags_pass_check() {
+        // 関門: 公開の検査で U3 の各モジュールを実際に読み、利用者から見える型と取り込み名を
+        // 守る。ソースと Rust の表の照合は、型検査や Clock の別名の取り込みには届かない
+        // （実装プラン L00「標準ライブラリのソースの検査」「取り込みの名前」）。
+        let main = "function main() -> Unit\nend function\n";
+        let mut source = String::new();
+        for module in crate::prelude::STDLIB.iter().filter(|m| !m.prelude) {
+            let import = format!(
+                "import Benitoite.{}{}\n",
+                if module.unofficial { "Unofficial." } else { "" },
+                module.path.join(".")
+            );
+            let alone = check_files(
+                &[("main.bnt", (import.clone() + main).as_bytes())],
+                opts(false),
+            );
+            assert_eq!(
+                alone.error_count(),
+                0,
+                "{}: {:#?}",
+                module.path.join("."),
+                alone.diagnostics
+            );
+            assert!(alone.program.is_some());
+            source.push_str(&import);
+        }
+        source.push_str(main);
+        let result = check_files(&[("main.bnt", source.as_bytes())], opts(false));
+        assert_eq!(result.error_count(), 0, "{:#?}", result.diagnostics);
+        let program = result.program.unwrap();
         assert_eq!(
-            valid
-                .sources
-                .get(valid.user_file.unwrap())
-                .map(|source| source.name()),
-            Some("hello.bnt")
+            program.modules.iter().count(),
+            crate::prelude::STDLIB.len() + 1
         );
-
-        let type_error = check_text("bad.bnt", b"fn main() -> Unit { \"wrong\" }");
-        assert_eq!(codes(&type_error), vec![Some(DiagCode::E0401)]);
-        assert!(type_error.program.is_none());
-
-        let name_error = check_text(
-            "name.bnt",
-            b"fn main() -> Unit { let value = missing\n  1 }",
-        );
-        assert!(
-            name_error
-                .diagnostics
-                .iter()
-                .any(|diag| diag.code == Some(DiagCode::E0301))
-        );
-        assert!(
-            !name_error
-                .diagnostics
-                .iter()
-                .any(|diag| diag.code == Some(DiagCode::E0401))
-        );
-        assert!(name_error.program.is_none());
+        for name in [
+            "IO.File.Info",
+            "IO.Process.Command",
+            "IO.Process.Output",
+            "Json.ParseError",
+            "Csv.ParseError",
+            "Time.Instant",
+            "Time.DateTime",
+            "Network.Http.Request",
+            "Network.Http.Response",
+            "Network.Http.ClientRequest",
+        ] {
+            let id = program
+                .resolved
+                .stdlib(&format!("Benitoite.{name}"))
+                .unwrap();
+            let record = program.types.adts.get(id).unwrap();
+            assert!(record.record.is_some(), "{name}");
+            assert_eq!(record.ctors.len(), 1, "{name}");
+            assert_eq!(
+                record.ctors[0].tag,
+                crate::builtins::table::tags::RECORD,
+                "{name}"
+            );
+        }
+        for name in [
+            "Time",
+            "IO.Random",
+            "Path",
+            "Json",
+            "Regex",
+            "Csv",
+            "Encoding",
+            "Hash",
+            "Network.Http",
+        ] {
+            let wrong = format!("import Benitoite.{name}\n{main}");
+            let result = check_files(&[("main.bnt", wrong.as_bytes())], opts(false));
+            assert_eq!(result.error_count(), 1, "{name}: {:#?}", result.diagnostics);
+            assert_eq!(result.diagnostics[0].code, Some(DiagCode::E0321));
+        }
+        let prelude = r#"
+function bytes() -> Bytes
+  return Bytes.empty()
+end function
+function order() -> ByteOrder
+  return ByteOrder.LittleEndian
+end function
+function kind(error: NetworkError) -> NetworkErrorKind
+  return NetworkError.kind(error)
+end function
+function main() -> Unit
+end function
+"#;
+        let result = check_files(&[("main.bnt", prelude.as_bytes())], opts(false));
+        assert_eq!(result.error_count(), 0, "{:#?}", result.diagnostics);
+        assert!(result.program.is_some());
+        let clock = r#"
+import Benitoite.Unofficial.IO.Clock
+import Benitoite.Unofficial.Time
+function now() -> Time.Instant uses Clock.Time
+  return Clock.now()
+end function
+function main() -> Unit
+end function
+"#;
+        let result = check_files(&[("main.bnt", clock.as_bytes())], opts(false));
+        assert_eq!(result.error_count(), 0, "{:#?}", result.diagnostics);
+        assert!(result.program.is_some());
     }
-
     #[test]
-    fn parse_source_orders_lexical_diagnostics_before_syntax_diagnostics() {
-        let result = check_text("mixed.bnt", b"fn main() -> Unit { let = 1\n @\n}");
-        let lexical = result
+    fn checking_sorts_each_stage_and_stops_before_later_errors() {
+        let result = check_files(&[
+            ("main.bnt", b"import Lib.Text\nfunction main() -> Unit\n bind _ <- missing1\n bind _ <- missing2\nend function\n"),
+            ("Lib/Text.bnt", b"public function text() -> Unit\n bind _ <- missing3\n bind _ <- missing4\nend function\n"),
+        ], opts(false));
+        assert!(result.program.is_none());
+        assert_eq!(result.diagnostics.len(), 4, "{:?}", result.diagnostics);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .all(|d| d.code == Some(DiagCode::E0301))
+        );
+        let positions: Vec<_> = result
             .diagnostics
             .iter()
-            .position(|diag| diag.code == Some(DiagCode::E0105));
-        let syntax = result.diagnostics.iter().position(|diag| {
-            diag.code
-                .is_some_and(|code| matches!(code, DiagCode::E0201))
-        });
-        assert!(lexical.is_some(), "{:#?}", result.diagnostics);
-        assert!(syntax.is_some(), "{:#?}", result.diagnostics);
-        assert!(lexical < syntax, "{:#?}", result.diagnostics);
+            .map(|d| {
+                let label = d.primary.as_ref().unwrap();
+                (label.span.file, label.span.start)
+            })
+            .collect();
+        assert!(positions.windows(2).all(|p| p[0] <= p[1]));
+        assert_eq!(positions[0].0, FileId(0));
+        assert!(positions[2].0 > positions[1].0);
+        let result = check_files(
+            &[
+                (
+                    "main.bnt",
+                    b"import Lib.Text\nfunction main() -> Unit\n bind <-\nend function\n",
+                ),
+                (
+                    "Lib/Text.bnt",
+                    b"public function text() -> Integer\n return \"bad\"\nend function\n",
+                ),
+            ],
+            opts(false),
+        );
+        assert!(result.error_count() > 0);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .all(|d| d.code != Some(DiagCode::E0401))
+        );
     }
-
     #[test]
-    fn check_path_reports_missing_file_without_a_user_file_id() {
-        let path = std::env::current_dir()
+    fn warnings_are_kept_until_the_last_reached_stage_and_prelude_warnings_are_removed() {
+        let source = b"@deprecated(\"old\")\nfunction old() -> Integer\n return 1\nend function\nfunction main() -> Unit\n bind _ <- old()\nend function\n";
+        for deny in [false, true] {
+            let result = check_text("main.bnt", source, opts(deny));
+            assert_eq!(result.diagnostics.len(), 1, "{:?}", result.diagnostics);
+            assert_eq!(result.diagnostics[0].code, Some(DiagCode::W0301));
+            assert_eq!(result.program.is_some(), !deny);
+            assert_eq!(result.error_count(), usize::from(deny));
+            assert_eq!(result.warning_count(), usize::from(!deny));
+            assert!(
+                result
+                    .diagnostics
+                    .iter()
+                    .filter(|d| d.is_warning())
+                    .all(|d| result
+                        .sources
+                        .get(d.primary.as_ref().unwrap().span.file)
+                        .unwrap()
+                        .kind()
+                        != crate::base::SourceKind::Prelude)
+            );
+        }
+        let name_error = String::from_utf8(source.to_vec())
             .unwrap()
-            .join("target")
-            .join(format!("t24-missing-{}.bnt", std::process::id()));
-        let result = check_path(&path);
-        assert_eq!(codes(&result), vec![Some(DiagCode::E0101)]);
-        assert!(result.user_file.is_none());
-        assert!(result.program.is_none());
-        assert_eq!(result.diagnostics[0].kind, ReportKind::Check);
-        assert!(result.diagnostics[0].primary.is_none());
-        assert_eq!(result.diagnostics[0].notes.len(), 1);
+            .replace("bind _ <- old()", "bind _ <- old()\n bind _ <- missing");
+        let type_error = String::from_utf8(source.to_vec())
+            .unwrap()
+            .replace("bind _ <- old()", "bind _: String <- old()");
+        for source in [name_error, type_error] {
+            let result = check_text("main.bnt", source.as_bytes(), opts(true));
+            assert!(result.program.is_none());
+            assert!(result.diagnostics.iter().all(|d| !d.is_warning()));
+            assert!(
+                result
+                    .diagnostics
+                    .iter()
+                    .any(|d| d.code == Some(DiagCode::W0301) && d.is_error())
+            );
+            assert_eq!(result.error_count(), 2, "{:?}", result.diagnostics);
+        }
     }
-
     #[test]
-    fn pipeline_compiles_and_runs_a_script() {
-        let (checked, core) =
-            checked_program("fn main() -> Unit uses IO { Console.println(\"hi\") }");
-        let compiled = compile(&core, Arc::clone(&checked.sources)).unwrap();
-        let mut io = TestIo::default();
-        let result = run_with(
-            &compiled,
-            &mut io,
-            ExecOptions {
-                mode: ExecMode::Direct,
-                max_call_stack_bytes: crate::vm::DEFAULT_MAX_CALL_STACK,
+    fn missing_entry_does_not_assign_a_prelude_id_and_main_is_optional() {
+        let result = check_files(&[], opts(false));
+        assert!(result.entry.is_none());
+        assert!(result.program.is_none());
+        assert_eq!(result.diagnostics[0].code, Some(DiagCode::E0101));
+        let result = check_text(
+            "Lib/Text.bnt",
+            b"public function value() -> Integer\n return 1\nend function",
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
             },
         );
-        assert_eq!(io.stdout, "hi\n");
-        assert_eq!(result.exit_code, 0);
-        assert!(result.reports.is_empty());
-    }
-
-    #[test]
-    fn full_pipeline_accepts_deep_ast_and_type_nesting_on_default_test_stack() {
-        let depth = usize::try_from(MAX_DEPTH).unwrap();
-        let linear_depth = depth.saturating_sub(3);
-        let paired_depth = depth.saturating_sub(3) / 2;
-        let pattern_depth = depth.saturating_sub(5);
-        let mut source = String::new();
-
-        source.push_str(&format!(
-            "fn deep_parens() -> Int {{ {}1{} }}\n",
-            "(".repeat(linear_depth),
-            ")".repeat(linear_depth)
-        ));
-        source.push_str("fn deep_blocks() -> Int {\n");
-        source.push_str(&"{\n".repeat(paired_depth));
-        source.push_str("1\n");
-        source.push_str(&"}\n".repeat(paired_depth));
-        source.push_str("}\n");
-
-        source.push_str(&format!(
-            "fn deep_matches() -> Int {{ {}1{} }}\n",
-            "match true { _ => ".repeat(paired_depth),
-            " }".repeat(paired_depth)
-        ));
-        source.push_str(&format!(
-            "fn deep_pattern(value: {}Int{}) -> Int {{\n  match value {{\n    {}item{} => item\n    _ => 0\n  }}\n}}\n",
-            "Option[".repeat(pattern_depth),
-            "]".repeat(pattern_depth),
-            "Some(".repeat(pattern_depth),
-            ")".repeat(pattern_depth)
-        ));
-        source.push_str("fn main() -> Unit { () }\n");
-
-        let (checked, core) = checked_program(&source);
-        compile(&core, Arc::clone(&checked.sources)).unwrap();
-    }
-
-    #[test]
-    fn deep_mismatched_pattern_reports_one_type_error() {
-        let layers = usize::try_from(MAX_DEPTH).unwrap().saturating_sub(5);
-        let source = format!(
-            "fn main() -> Unit {{\n  match 0 {{\n    {}_{} => ()\n    _ => ()\n  }}\n}}\n",
-            "Some(".repeat(layers),
-            ")".repeat(layers)
+        assert!(result.program.is_some(), "{:?}", result.diagnostics);
+        assert_eq!(
+            result.sources.get(result.entry.unwrap()).unwrap().name(),
+            "Lib/Text.bnt"
         );
-        let result = check_text("deep-mismatch.bnt", source.as_bytes());
-        assert_eq!(codes(&result), vec![Some(DiagCode::E0401)]);
-        assert!(result.program.is_none());
     }
-
     #[test]
-    fn worker_panic_is_resumed_on_the_calling_thread() {
-        let result = std::panic::catch_unwind(|| {
-            drop(on_large_stack(|| panic!("worker panic")));
-        });
-        assert!(result.is_err());
+    fn deep_if_and_else_if_check_on_the_default_calling_stack() {
+        // if の then の中に次の if を置き、else if の分岐も含める（実装プラン F18「大きなスタック」）。
+        // 構文解析器は if の式とその文の二段を数えるため、490 個で上限 1000 の近くになる。
+        let depth = 490;
+        let mut source = String::from("function main() -> Unit\n");
+        source.push_str(&" if true then\n".repeat(depth));
+        source.push_str(" ()\n");
+        source.push_str(&" else if false then\n ()\n else\n ()\n end if\n".repeat(depth));
+        source.push_str("end function\n");
+        let result = check_text("deep.bnt", source.as_bytes(), opts(false));
+        assert!(result.program.is_some(), "{:?}", result.diagnostics);
     }
 }

@@ -3,9 +3,12 @@
 use crate::base::{BytePos, Source, SourceTable, Span};
 
 use super::codes;
-use super::{CallTrace, Diagnostic, FrameName, Label, ReportKind, Severity, TraceFrame};
+mod excerpt;
+use super::{CallTrace, Diagnostic, Edit, FrameName, Label, ReportKind, Severity, TraceFrame};
+use excerpt::prepare_edits;
 
 const RED_BOLD: &str = "\x1b[1;31m";
+const YELLOW_BOLD: &str = "\x1b[1;33m";
 const BLUE_BOLD: &str = "\x1b[1;34m";
 const BOLD: &str = "\x1b[1m";
 const RESET: &str = "\x1b[0m";
@@ -17,59 +20,92 @@ pub struct TextOptions {
     pub color: bool,
 }
 
-/// 検査の誤りの一覧を、文章の形式にする。段の順・位置の順に並べ替えずに、渡された順に書く
-/// （並べるのは呼び出し側。10-09 の `check`）。50 件を超えた分は書かずに件数を示し、
-/// 最後に誤りの件数の行を書く。`verb` は `"run"` か `"check"`、`file` はスクリプトの表示名。
+/// 件数の行の動詞（02-10「文章の形式」）。
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Verb {
+    Run,
+    Check,
+    Test,
+}
+
+/// 検査の診断（誤りと警告）の一覧を、文章の形式にする。渡された順に書き（並べるのは呼び出し側。
+/// 10-13 の `pipeline::check`）、誤りと警告を合わせて 50 件を超えた分は書かずに件数を示し、
+/// 最後に件数の行を書く（誤りも警告もなければ書かない）。`file` は実行を始めるファイルの表示名。
 pub fn render_check_text(
     diags: &[Diagnostic],
     sources: &SourceTable,
-    verb: &str,
+    verb: Verb,
     file: &str,
     opts: TextOptions,
 ) -> String {
     if diags.is_empty() {
         return String::new();
     }
-
+    let errors = diags.iter().filter(|diag| diag.is_error()).count();
+    let warnings = diags.len().saturating_sub(errors);
+    let warning_only = errors == 0;
     let mut output = String::new();
-    let shown = diags.len().min(50);
-    for diag in diags.iter().take(shown) {
+    for diag in diags.iter().take(50) {
         output.push_str(&render_one_text(diag, sources, opts));
         output.push('\n');
     }
-
     if diags.len() > 50 {
-        let omitted = diags.len().saturating_sub(50).to_string();
-        let message = codes::fill_template(codes::text::TOO_MANY, &[("count", omitted)]);
-        append_summary_line(&mut output, &message, opts);
+        let message = codes::fill_template(
+            codes::text::TOO_MANY,
+            &[("count", diags.len().saturating_sub(50).to_string())],
+        );
+        append_summary_line(&mut output, &message, warning_only, opts);
         output.push('\n');
     }
-
-    let message = if diags.len() == 1 {
+    let verb = match verb {
+        Verb::Run => "run",
+        Verb::Check => "check",
+        Verb::Test => "test",
+    };
+    let mut message = if warning_only {
         codes::fill_template(
-            codes::text::SUMMARY_ONE,
-            &[("verb", verb.to_owned()), ("file", file.to_owned())],
+            if warnings == 1 {
+                codes::text::WARNINGS_ONLY_ONE
+            } else {
+                codes::text::WARNINGS_ONLY_MANY
+            },
+            &[("count", warnings.to_string())],
         )
     } else {
         codes::fill_template(
-            codes::text::SUMMARY_MANY,
+            if errors == 1 {
+                codes::text::SUMMARY_ONE
+            } else {
+                codes::text::SUMMARY_MANY
+            },
             &[
                 ("verb", verb.to_owned()),
                 ("file", file.to_owned()),
-                ("count", diags.len().to_string()),
+                ("count", errors.to_string()),
             ],
         )
     };
-    append_summary_line(&mut output, &message, opts);
+    if errors > 0 && warnings > 0 {
+        message.push_str(&codes::fill_template(
+            if warnings == 1 {
+                codes::text::SUMMARY_WARNINGS_ONE
+            } else {
+                codes::text::SUMMARY_WARNINGS_MANY
+            },
+            &[("count", warnings.to_string())],
+        ));
+    }
+    append_summary_line(&mut output, &message, warning_only, opts);
     output
 }
 
 /// 一件の診断・報告を文章の形式にする（末尾に空行を含めない改行で終える）。
-/// 実行時エラー、資源の不足、処理系の不具合、処理系の制限、コマンドライン引数の誤りに使う。
+/// 実行時エラー、資源の不足、解放の失敗、処理系の不具合、処理系の制限、コマンドライン引数の誤りに使う。
 pub fn render_one_text(diag: &Diagnostic, sources: &SourceTable, opts: TextOptions) -> String {
     let primary = diag
         .primary
         .as_ref()
+        .filter(|_| diag.waiting.is_empty())
         .and_then(|label| prepare_label(label, sources));
     let mut secondary = if primary.is_some() {
         diag.secondary
@@ -80,10 +116,21 @@ pub fn render_one_text(diag: &Diagnostic, sources: &SourceTable, opts: TextOptio
         Vec::new()
     };
 
+    let edited = diag
+        .helps
+        .iter()
+        .map(|help| prepare_edits(&help.edits, sources))
+        .collect::<Vec<_>>();
     let gutter_width = primary
         .iter()
         .chain(secondary.iter())
         .map(|label| label.line.to_string().len())
+        .chain(
+            edited
+                .iter()
+                .flatten()
+                .flat_map(|group| group.rows.iter().map(|row| row.number.to_string().len())),
+        )
         .max()
         .unwrap_or(2)
         .max(2);
@@ -92,8 +139,12 @@ pub fn render_one_text(diag: &Diagnostic, sources: &SourceTable, opts: TextOptio
     append_header(&mut output, diag, opts);
     output.push('\n');
 
+    let primary_opts = MarkerOptions {
+        text: opts,
+        warning: diag.is_warning(),
+    };
     if let Some(primary) = primary.as_ref() {
-        append_primary_excerpt(&mut output, primary, gutter_width, opts);
+        append_primary_excerpt(&mut output, primary, gutter_width, primary_opts);
     }
 
     let same_line_end = primary.as_ref().map(|main| (main.source, main.line));
@@ -110,13 +161,24 @@ pub fn render_one_text(diag: &Diagnostic, sources: &SourceTable, opts: TextOptio
     same_line.sort_by_key(|label| label.span.start.0);
 
     for label in &same_line {
-        append_marker_line(&mut output, label, gutter_width, false, opts);
+        append_marker_line(
+            &mut output,
+            label,
+            gutter_width,
+            false,
+            MarkerOptions {
+                text: opts,
+                warning: false,
+            },
+        );
     }
     for label in &other_lines {
         append_secondary_excerpt(&mut output, label, gutter_width, opts);
     }
 
     let has_trailing = diag.trace.is_some()
+        || !diag.task_origins.is_empty()
+        || !diag.waiting.is_empty()
         || !diag.notes.is_empty()
         || !diag.helps.is_empty()
         || diag.backtrace.is_some();
@@ -124,14 +186,59 @@ pub fn render_one_text(diag: &Diagnostic, sources: &SourceTable, opts: TextOptio
         append_vertical_line(&mut output, gutter_width, opts);
     }
 
-    if let Some(trace) = diag.trace.as_ref() {
-        append_trace(&mut output, trace, sources, gutter_width, opts);
+    if diag.waiting.is_empty() {
+        append_trace_sections(
+            &mut output,
+            diag.trace.as_ref(),
+            &diag.task_origins,
+            sources,
+            gutter_width,
+            opts,
+        );
+    } else {
+        append_waiting(&mut output, diag, sources, gutter_width, opts);
     }
     for note in &diag.notes {
         append_tagged_line(&mut output, "note", note, gutter_width, opts);
     }
-    for help in &diag.helps {
-        append_tagged_line(&mut output, "help", help, gutter_width, opts);
+    for (index, (help, groups)) in diag.helps.iter().zip(&edited).enumerate() {
+        append_tagged_line(&mut output, "help", &help.message, gutter_width, opts);
+        for group in groups {
+            append_vertical_line(&mut output, gutter_width, opts);
+            if diag
+                .primary
+                .as_ref()
+                .is_none_or(|label| label.span.file != group.file)
+            {
+                push_spaces(&mut output, gutter_width);
+                push_colored(&mut output, ":::", BLUE_BOLD, opts.color);
+                output.push(' ');
+                append_location(&mut output, &group.name, group.line, group.column);
+                output.push('\n');
+                append_vertical_line(&mut output, gutter_width, opts);
+            }
+            for row in &group.rows {
+                append_source_row(
+                    &mut output,
+                    row.number,
+                    row.text.as_bytes(),
+                    gutter_width,
+                    opts,
+                );
+                if !row.markers.is_empty() {
+                    push_spaces(&mut output, gutter_width.saturating_add(1));
+                    push_colored(&mut output, "|", BLUE_BOLD, opts.color);
+                    output.push(' ');
+                    push_colored(&mut output, &row.markers, BLUE_BOLD, opts.color);
+                    output.push('\n');
+                }
+            }
+        }
+        if !groups.is_empty()
+            && (index.saturating_add(1) < diag.helps.len() || diag.backtrace.is_some())
+        {
+            append_vertical_line(&mut output, gutter_width, opts);
+        }
     }
     if let Some(backtrace) = diag.backtrace.as_deref() {
         append_backtrace(&mut output, backtrace, gutter_width, opts);
@@ -177,26 +284,42 @@ pub fn render_json_line(diag: &Diagnostic, sources: &SourceTable) -> String {
     }
     output.push_str("],\"notes\":");
     append_json_strings(&mut output, &diag.notes);
-    output.push_str(",\"helps\":");
-    append_json_strings(&mut output, &diag.helps);
-
-    if let Some(trace) = diag.trace.as_ref() {
-        output.push_str(",\"trace\":[");
-        for (index, frame) in trace.frames.iter().enumerate() {
+    output.push_str(",\"helps\":[");
+    for (index, help) in diag.helps.iter().enumerate() {
+        if index > 0 {
+            output.push(',');
+        }
+        output.push_str("{\"message\":");
+        push_json_string(&mut output, &help.message);
+        output.push_str(",\"edits\":[");
+        for (index, edit) in help.edits.iter().enumerate() {
             if index > 0 {
                 output.push(',');
             }
-            output.push_str("{\"function\":");
-            push_json_string(&mut output, &trace_frame_name(frame, sources));
-            output.push_str(",\"location\":");
-            match frame.call_site {
-                Some(span) => append_json_span(&mut output, span, "", sources),
-                None => output.push_str("null"),
+            append_json_edit(&mut output, edit, sources);
+        }
+        output.push_str("]}");
+    }
+    output.push(']');
+    if let Some(trace) = diag.trace.as_ref() {
+        output.push(',');
+        output.push_str(&json_trace_fields(trace, &diag.task_origins, sources));
+    }
+    if !diag.waiting.is_empty() {
+        output.push_str(",\"waitingTasks\":[");
+        for (index, task) in diag.waiting.iter().enumerate() {
+            if index > 0 {
+                output.push(',');
             }
+            output.push_str("{\"task\":");
+            append_json_frame(&mut output, &task.task, sources);
+            output.push_str(",\"waitsFor\":");
+            push_json_string(&mut output, &task.waits_for);
+            output.push_str(",\"location\":");
+            append_json_optional_span(&mut output, task.location, sources);
             output.push('}');
         }
-        output.push_str("],\"traceOmitted\":");
-        output.push_str(&trace.omitted.to_string());
+        output.push(']');
     }
 
     if let Some(backtrace) = diag.backtrace.as_deref() {
@@ -342,7 +465,7 @@ fn append_header(output: &mut String, diag: &Diagnostic, opts: TextOptions) {
     let prefix = match diag.kind {
         ReportKind::Internal => "internal error".to_owned(),
         ReportKind::Runtime | ReportKind::Resource => code_prefix("runtime error", diag),
-        ReportKind::Check | ReportKind::Limit | ReportKind::Args => {
+        ReportKind::Check | ReportKind::Limit | ReportKind::Args | ReportKind::Release => {
             let severity = match diag.severity {
                 Severity::Error => "error",
                 Severity::Warning => "warning",
@@ -350,7 +473,16 @@ fn append_header(output: &mut String, diag: &Diagnostic, opts: TextOptions) {
             code_prefix(severity, diag)
         }
     };
-    push_colored(output, &prefix, RED_BOLD, opts.color);
+    push_colored(
+        output,
+        &prefix,
+        if diag.is_warning() {
+            YELLOW_BOLD
+        } else {
+            RED_BOLD
+        },
+        opts.color,
+    );
     output.push_str(": ");
     output.push_str(&diag.message);
 }
@@ -362,12 +494,19 @@ fn code_prefix(severity: &str, diag: &Diagnostic) -> String {
     }
 }
 
+#[derive(Clone, Copy)]
+struct MarkerOptions {
+    text: TextOptions,
+    warning: bool,
+}
+
 fn append_primary_excerpt(
     output: &mut String,
     label: &PreparedLabel<'_>,
     gutter_width: usize,
-    opts: TextOptions,
+    marker_opts: MarkerOptions,
 ) {
+    let opts = marker_opts.text;
     push_spaces(output, gutter_width);
     push_colored(output, "-->", BLUE_BOLD, opts.color);
     output.push(' ');
@@ -375,7 +514,7 @@ fn append_primary_excerpt(
     output.push('\n');
     append_vertical_line(output, gutter_width, opts);
     append_source_row(output, label.line, label.line_text, gutter_width, opts);
-    append_marker_line(output, label, gutter_width, true, opts);
+    append_marker_line(output, label, gutter_width, true, marker_opts);
 }
 
 fn append_secondary_excerpt(
@@ -392,7 +531,16 @@ fn append_secondary_excerpt(
     output.push('\n');
     append_vertical_line(output, gutter_width, opts);
     append_source_row(output, label.line, label.line_text, gutter_width, opts);
-    append_marker_line(output, label, gutter_width, false, opts);
+    append_marker_line(
+        output,
+        label,
+        gutter_width,
+        false,
+        MarkerOptions {
+            text: opts,
+            warning: false,
+        },
+    );
 }
 
 fn append_location(output: &mut String, file: &str, line: u32, column: u32) {
@@ -436,14 +584,21 @@ fn append_marker_line(
     label: &PreparedLabel<'_>,
     gutter_width: usize,
     primary: bool,
-    opts: TextOptions,
+    marker_opts: MarkerOptions,
 ) {
+    let opts = marker_opts.text;
     push_spaces(output, gutter_width.saturating_add(1));
     push_colored(output, "|", BLUE_BOLD, opts.color);
     output.push(' ');
     push_spaces(output, label.indent);
     let marker = if primary { "^" } else { "-" };
-    let marker_color = if primary { RED_BOLD } else { BLUE_BOLD };
+    let marker_color = if !primary {
+        BLUE_BOLD
+    } else if marker_opts.warning {
+        YELLOW_BOLD
+    } else {
+        RED_BOLD
+    };
     for _ in 0..label.marker_width {
         push_colored(output, marker, marker_color, opts.color);
     }
@@ -470,13 +625,49 @@ fn append_tagged_line(
     output.push('\n');
 }
 
+// 呼び出しの履歴とタスクの起動の履歴の節を書く。名前の欄の幅は二つの節で揃える（02-10「実行時エラーと資源の不足の報告」）。
+// `render_one_text` と `render_trace_text` の共通の部分（実装プラン D11「作るもの」）。
+fn append_trace_sections(
+    output: &mut String,
+    trace: Option<&CallTrace>,
+    task_origins: &[TraceFrame],
+    sources: &SourceTable,
+    gutter_width: usize,
+    opts: TextOptions,
+) {
+    let name_width = trace
+        .iter()
+        .flat_map(|trace| &trace.frames)
+        .chain(task_origins)
+        .map(|frame| trace_frame_name(frame, sources).chars().count())
+        .max()
+        .unwrap_or(0);
+    if let Some(trace) = trace {
+        append_trace(output, trace, sources, gutter_width, name_width, opts);
+    }
+    if !task_origins.is_empty() {
+        append_tagged_line(
+            output,
+            "note",
+            codes::text::TASK_ORIGINS_HEADER,
+            gutter_width,
+            opts,
+        );
+        append_frames(output, task_origins, 0, sources, gutter_width, name_width);
+    }
+}
+
 fn append_trace(
     output: &mut String,
     trace: &CallTrace,
     sources: &SourceTable,
     gutter_width: usize,
+    name_width: usize,
     opts: TextOptions,
 ) {
+    if trace.frames.is_empty() && trace.omitted == 0 {
+        return;
+    }
     append_tagged_line(
         output,
         "note",
@@ -484,38 +675,44 @@ fn append_trace(
         gutter_width,
         opts,
     );
-    let names = trace
-        .frames
-        .iter()
-        .map(|frame| trace_frame_name(frame, sources))
-        .collect::<Vec<_>>();
-    let name_width = names
-        .iter()
-        .map(|name| name.chars().count())
-        .max()
-        .unwrap_or(0);
-    let indent = gutter_width.saturating_add(11);
+    append_frames(
+        output,
+        &trace.frames,
+        trace.omitted,
+        sources,
+        gutter_width,
+        name_width,
+    );
+}
 
-    for (index, (frame, name)) in trace.frames.iter().zip(names.iter()).enumerate() {
-        if trace.omitted > 0 && index == 10 {
-            append_omitted_frames(output, trace.omitted, indent);
+fn append_frames(
+    output: &mut String,
+    frames: &[TraceFrame],
+    omitted: u32,
+    sources: &SourceTable,
+    gutter_width: usize,
+    name_width: usize,
+) {
+    let indent = gutter_width.saturating_add(11);
+    for (index, frame) in frames.iter().enumerate() {
+        if omitted > 0 && index == 10 {
+            append_omitted_frames(output, omitted, indent);
         }
+        let name = trace_frame_name(frame, sources);
         push_spaces(output, indent);
-        output.push_str(name);
+        output.push_str(&name);
         if let Some(location) = frame
             .call_site
             .and_then(|span| source_location(span, sources))
         {
-            let name_length = name.chars().count();
-            push_spaces(output, name_width.saturating_sub(name_length));
+            push_spaces(output, name_width.saturating_sub(name.chars().count()));
             output.push_str(" at ");
             append_location(output, location.file, location.line, location.column);
         }
         output.push('\n');
     }
-
-    if trace.omitted > 0 && trace.frames.len() <= 10 {
-        append_omitted_frames(output, trace.omitted, indent);
+    if omitted > 0 && frames.len() <= 10 {
+        append_omitted_frames(output, omitted, indent);
     }
 }
 
@@ -532,14 +729,131 @@ fn append_omitted_frames(output: &mut String, omitted: u32, indent: usize) {
 fn trace_frame_name(frame: &TraceFrame, sources: &SourceTable) -> String {
     match &frame.name {
         FrameName::Named(name) => name.clone(),
-        FrameName::Lambda(span) => match source_location(*span, sources) {
-            Some(location) => format!(
-                "<lambda {}:{}:{}>",
-                location.file, location.line, location.column
-            ),
-            None => "<lambda>".to_owned(),
-        },
+        FrameName::Lambda(span) => anonymous_name("lambda", *span, sources),
+        FrameName::Handle(span) => anonymous_name("handle", *span, sources),
+        FrameName::Lazy(span) => anonymous_name("lazy", *span, sources),
+        FrameName::Case { operation, span } => {
+            anonymous_name(&format!("case {operation}"), *span, sources)
+        }
     }
+}
+
+fn anonymous_name(name: &str, span: Span, sources: &SourceTable) -> String {
+    match source_location(span, sources) {
+        Some(location) => format!(
+            "<{name} {}:{}:{}>",
+            location.file, location.line, location.column
+        ),
+        None => format!("<{name}>"),
+    }
+}
+
+fn append_waiting(
+    output: &mut String,
+    diag: &Diagnostic,
+    sources: &SourceTable,
+    gutter_width: usize,
+    opts: TextOptions,
+) {
+    append_tagged_line(
+        output,
+        "note",
+        codes::text::WAITING_HEADER,
+        gutter_width,
+        opts,
+    );
+    let rows = diag
+        .waiting
+        .iter()
+        .map(|task| {
+            let mut name = trace_frame_name(&task.task, sources);
+            if let Some(location) = task
+                .task
+                .call_site
+                .and_then(|span| source_location(span, sources))
+            {
+                name.push_str(" at ");
+                append_location(&mut name, location.file, location.line, location.column);
+            }
+            let kind =
+                codes::fill_template(codes::text::WAITS_FOR, &[("kind", task.waits_for.clone())]);
+            (
+                name,
+                kind,
+                task.location
+                    .and_then(|span| source_location(span, sources)),
+            )
+        })
+        .collect::<Vec<_>>();
+    let task_width = rows
+        .iter()
+        .map(|(name, _, _)| name.chars().count())
+        .max()
+        .unwrap_or(0);
+    let kind_width = rows
+        .iter()
+        .map(|(_, kind, _)| kind.chars().count())
+        .max()
+        .unwrap_or(0);
+    for (name, kind, location) in rows {
+        push_spaces(output, gutter_width.saturating_add(11));
+        output.push_str(&name);
+        push_spaces(
+            output,
+            task_width
+                .saturating_sub(name.chars().count())
+                .saturating_add(1),
+        );
+        output.push_str(&kind);
+        if let Some(location) = location {
+            push_spaces(output, kind_width.saturating_sub(kind.chars().count()));
+            output.push_str(" at ");
+            append_location(output, location.file, location.line, location.column);
+        }
+        output.push('\n');
+    }
+}
+
+fn append_json_frames(output: &mut String, frames: &[TraceFrame], sources: &SourceTable) {
+    output.push('[');
+    for (index, frame) in frames.iter().enumerate() {
+        if index > 0 {
+            output.push(',');
+        }
+        append_json_frame(output, frame, sources);
+    }
+    output.push(']');
+}
+
+fn append_json_frame(output: &mut String, frame: &TraceFrame, sources: &SourceTable) {
+    output.push_str("{\"function\":");
+    push_json_string(output, &trace_frame_name(frame, sources));
+    output.push_str(",\"location\":");
+    append_json_optional_span(output, frame.call_site, sources);
+    output.push('}');
+}
+
+fn append_json_optional_span(output: &mut String, span: Option<Span>, sources: &SourceTable) {
+    match span {
+        Some(span) => append_json_span(output, span, "", sources),
+        None => output.push_str("null"),
+    }
+}
+
+fn append_json_edit(output: &mut String, edit: &Edit, sources: &SourceTable) {
+    let Some(source) = sources.get(edit.span.file) else {
+        output.push_str("null");
+        return;
+    };
+    output.push_str("{\"file\":");
+    push_json_string(output, source.name());
+    output.push_str(",\"start\":");
+    append_json_position(output, source, edit.span.start);
+    output.push_str(",\"end\":");
+    append_json_position(output, source, edit.span.end);
+    output.push_str(",\"replacement\":");
+    push_json_string(output, &edit.replacement);
+    output.push('}');
 }
 
 fn append_backtrace(output: &mut String, backtrace: &str, gutter_width: usize, opts: TextOptions) {
@@ -553,8 +867,13 @@ fn append_backtrace(output: &mut String, backtrace: &str, gutter_width: usize, o
     }
 }
 
-fn append_summary_line(output: &mut String, message: &str, opts: TextOptions) {
-    push_colored(output, "error", RED_BOLD, opts.color);
+fn append_summary_line(output: &mut String, message: &str, warning: bool, opts: TextOptions) {
+    push_colored(
+        output,
+        if warning { "warning" } else { "error" },
+        if warning { YELLOW_BOLD } else { RED_BOLD },
+        opts.color,
+    );
     output.push_str(": ");
     output.push_str(message);
     output.push('\n');
@@ -582,6 +901,7 @@ fn kind_name(kind: ReportKind) -> &'static str {
         ReportKind::Limit => "limit",
         ReportKind::Runtime => "runtime",
         ReportKind::Resource => "resource",
+        ReportKind::Release => "release",
         ReportKind::Args => "args",
         ReportKind::Internal => "internal",
     }
@@ -649,452 +969,96 @@ fn push_json_string(output: &mut String, value: &str) {
 }
 
 #[cfg(test)]
-#[allow(
-    clippy::arithmetic_side_effects,
-    clippy::expect_used,
-    clippy::indexing_slicing,
-    clippy::panic,
-    clippy::unwrap_used
-)]
-// テストの失敗は assert で表し、準備データには必要な添字と算術を使う。
-mod tests {
-    use crate::base::{BytePos, FileId, Source, SourceKind, SourceTable, Span};
+mod tests;
 
-    use super::{TextOptions, render_check_text, render_json_line, render_one_text};
-    use crate::diag::codes::DiagCode;
-    use crate::diag::{CallTrace, Diagnostic, FrameName, Label, ReportKind, Severity, TraceFrame};
+#[cfg(test)]
+mod acceptance_tests;
 
-    fn add_source(table: &mut SourceTable, bytes: &[u8]) -> FileId {
-        table.add(Source::new(
-            "count.bnt".to_owned(),
-            SourceKind::User,
-            bytes.to_vec(),
-        ))
+#[cfg(test)]
+mod help_tests;
+
+/// 位置の行（主な位置があれば ` --> ファイル:行:列`。抜粋は書かない）と、呼び出しの履歴・タスクの起動の履歴・末尾呼び出しの
+/// 注記の行を、`render_one_text` の同じ部分と同じ形で書く（02-10「実行時エラーと資源の不足の報告」）。
+pub fn render_trace_text(
+    primary: Option<crate::base::Span>,
+    trace: &super::CallTrace,
+    task_origins: &[super::TraceFrame],
+    sources: &SourceTable,
+    opts: TextOptions,
+) -> String {
+    render_trace_text_with_notes(primary, trace, task_origins, &[], sources, opts)
+}
+
+/// `render_trace_text` に、末尾呼び出しの注記の前に置く注記の並び（止める途中の解放の失敗）を加えたもの。
+/// 実行時エラーの報告と同じく、解放の注記を末尾呼び出しの注記の前に置く（実装プラン D11「作るもの」）。
+pub(crate) fn render_trace_text_with_notes(
+    primary: Option<Span>,
+    trace: &CallTrace,
+    task_origins: &[TraceFrame],
+    notes: &[String],
+    sources: &SourceTable,
+    opts: TextOptions,
+) -> String {
+    let location = primary.and_then(|span| source_location(span, sources));
+    // 溝の幅は `render_one_text` と同じく、主な位置の行番号の桁数（最小 2）。
+    let gutter_width = location
+        .map_or(2, |location| location.line.to_string().len())
+        .max(2);
+    let mut output = String::new();
+    if let Some(location) = location {
+        push_spaces(&mut output, gutter_width);
+        push_colored(&mut output, "-->", BLUE_BOLD, opts.color);
+        output.push(' ');
+        append_location(&mut output, location.file, location.line, location.column);
+        output.push('\n');
     }
-
-    fn find_bytes(haystack: &[u8], needle: &[u8]) -> usize {
-        haystack
-            .windows(needle.len())
-            .position(|window| window == needle)
-            .unwrap_or(0)
+    append_trace_sections(
+        &mut output,
+        Some(trace),
+        task_origins,
+        sources,
+        gutter_width,
+        opts,
+    );
+    for note in notes {
+        append_tagged_line(&mut output, "note", note, gutter_width, opts);
     }
+    append_tagged_line(
+        &mut output,
+        "note",
+        codes::text::TRACE_TAIL_NOTE,
+        gutter_width,
+        opts,
+    );
+    output
+}
 
-    fn span(file: FileId, start: usize, length: usize) -> Span {
-        Span {
-            file,
-            start: BytePos(u32::try_from(start).unwrap_or(u32::MAX)),
-            end: BytePos(u32::try_from(start.saturating_add(length)).unwrap_or(u32::MAX)),
-        }
-    }
+/// 位置を JSON の位置の形（`file`・`start`・`end`・`label`）のオブジェクトにする。
+pub fn json_location(span: crate::base::Span, label: &str, sources: &SourceTable) -> String {
+    let mut output = String::new();
+    append_json_span(&mut output, span, label, sources);
+    output
+}
 
-    fn check_diag(message: &str) -> Diagnostic {
-        Diagnostic {
-            kind: ReportKind::Check,
-            severity: Severity::Error,
-            code: Some(DiagCode::E0401),
-            message: message.to_owned(),
-            primary: None,
-            secondary: Vec::new(),
-            notes: Vec::new(),
-            helps: Vec::new(),
-            trace: None,
-            backtrace: None,
-        }
-    }
+/// 呼び出しの履歴を、JSON の `"trace":[…],"traceOmitted":n,"taskOrigins":[…]` の項目の並びにする（前後の `{`・`}` と
+/// 先頭の `,` を含めない）。
+pub fn json_trace_fields(
+    trace: &super::CallTrace,
+    task_origins: &[super::TraceFrame],
+    sources: &SourceTable,
+) -> String {
+    let mut output = String::from("\"trace\":");
+    append_json_frames(&mut output, &trace.frames, sources);
+    output.push_str(",\"traceOmitted\":");
+    output.push_str(&trace.omitted.to_string());
+    output.push_str(",\"taskOrigins\":");
+    append_json_frames(&mut output, task_origins, sources);
+    output
+}
 
-    fn type_diagnostic(file: FileId, source: &[u8]) -> Diagnostic {
-        let primary_start = find_bytes(source, b"\"a\"");
-        let declared_start = find_bytes(source, b"Int");
-        let mut diag = check_diag("mismatched types");
-        diag.primary = Some(Label {
-            span: span(file, primary_start, 3),
-            text: "expected `Int`, found `String`".to_owned(),
-        });
-        diag.secondary.push(Label {
-            span: span(file, declared_start, 3),
-            text: "declared here".to_owned(),
-        });
-        diag
-    }
-
-    fn line_column_offset(bytes: &[u8], line: usize, column: usize) -> usize {
-        let line_start = bytes
-            .split_inclusive(|byte| *byte == b'\n')
-            .take(line.saturating_sub(1))
-            .map(<[u8]>::len)
-            .sum::<usize>();
-        line_start.saturating_add(column.saturating_sub(1))
-    }
-
-    fn runtime_trace_diagnostic(file: FileId, bytes: &[u8]) -> Diagnostic {
-        let primary_start = line_column_offset(bytes, 10, 11);
-        let ratio_call = line_column_offset(bytes, 22, 33);
-        let lambda_start = line_column_offset(bytes, 22, 25);
-        let list_call = line_column_offset(bytes, 22, 12);
-        Diagnostic {
-            kind: ReportKind::Runtime,
-            severity: Severity::Error,
-            code: Some(DiagCode::R0101),
-            message: "division by zero".to_owned(),
-            primary: Some(Label {
-                span: span(file, primary_start, 5),
-                text: String::new(),
-            }),
-            secondary: Vec::new(),
-            notes: vec![crate::diag::codes::text::TRACE_TAIL_NOTE.to_owned()],
-            helps: Vec::new(),
-            trace: Some(CallTrace {
-                frames: vec![
-                    TraceFrame {
-                        name: FrameName::Named("ratio".to_owned()),
-                        call_site: Some(span(file, ratio_call, 0)),
-                    },
-                    TraceFrame {
-                        name: FrameName::Lambda(span(file, lambda_start, 0)),
-                        call_site: None,
-                    },
-                    TraceFrame {
-                        name: FrameName::Named("List.map".to_owned()),
-                        call_site: Some(span(file, list_call, 0)),
-                    },
-                    TraceFrame {
-                        name: FrameName::Named("main".to_owned()),
-                        call_site: None,
-                    },
-                ],
-                omitted: 0,
-            }),
-            backtrace: None,
-        }
-    }
-
-    #[test]
-    fn type_error_text_matches_the_rust_style_example() {
-        let bytes = b"fn f(x: Int) -> Int {\n  x\n}\nfn g() -> Unit {\n  let n: Int = \"a\"\n}\n";
-        let mut sources = SourceTable::new();
-        let file = add_source(&mut sources, bytes);
-        let diag = type_diagnostic(file, bytes);
-
-        let actual = render_one_text(&diag, &sources, TextOptions { color: false });
-        let expected = concat!(
-            "error[E0401]: mismatched types\n",
-            "  --> count.bnt:5:16\n",
-            "   |\n",
-            " 5 |   let n: Int = \"a\"\n",
-            "   |                ^^^ expected `Int`, found `String`\n",
-            "   |\n",
-            "  ::: count.bnt:1:9\n",
-            "   |\n",
-            " 1 | fn f(x: Int) -> Int {\n",
-            "   |         --- declared here\n",
-        );
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn runtime_error_text_includes_the_call_trace_and_tail_note() {
-        let mut lines = vec!["x".to_owned(); 22];
-        lines[9] = "  let q = a / b".to_owned();
-        lines[21] = "x".repeat(40);
-        let bytes = lines.join("\n").into_bytes();
-        let mut sources = SourceTable::new();
-        let file = add_source(&mut sources, &bytes);
-        let diag = runtime_trace_diagnostic(file, &bytes);
-
-        let actual = render_one_text(&diag, &sources, TextOptions { color: false });
-        let expected = concat!(
-            "runtime error[R0101]: division by zero\n",
-            "  --> count.bnt:10:11\n",
-            "   |\n",
-            "10 |   let q = a / b\n",
-            "   |           ^^^^^\n",
-            "   |\n",
-            "   = note: call trace (innermost first):\n",
-            "             ratio                    at count.bnt:22:33\n",
-            "             <lambda count.bnt:22:25>\n",
-            "             List.map                 at count.bnt:22:12\n",
-            "             main\n",
-            "   = note: functions left by tail calls are not shown\n",
-        );
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn positionless_runtime_error_text_shows_only_its_note() {
-        let sources = SourceTable::new();
-        let diag = Diagnostic {
-            kind: ReportKind::Runtime,
-            severity: Severity::Error,
-            code: Some(DiagCode::R0201),
-            message: "failed to write to standard output".to_owned(),
-            primary: None,
-            secondary: Vec::new(),
-            notes: vec!["broken pipe".to_owned()],
-            helps: Vec::new(),
-            trace: None,
-            backtrace: None,
-        };
-
-        assert_eq!(
-            render_one_text(&diag, &sources, TextOptions { color: false }),
-            concat!(
-                "runtime error[R0201]: failed to write to standard output\n",
-                "   = note: broken pipe\n",
-            )
-        );
-    }
-
-    #[test]
-    fn omitted_trace_frames_are_written_between_visible_groups() {
-        let sources = SourceTable::new();
-        let mut diag = check_diag("trace test");
-        diag.trace = Some(CallTrace {
-            frames: (0..25)
-                .map(|index| TraceFrame {
-                    name: FrameName::Named(format!("frame{index}")),
-                    call_site: None,
-                })
-                .collect(),
-            omitted: 5,
-        });
-
-        let output = render_one_text(&diag, &sources, TextOptions { color: false });
-        let lines = output.lines().collect::<Vec<_>>();
-        let omitted = lines
-            .iter()
-            .position(|line| line.ends_with("... 5 frames omitted ..."))
-            .unwrap_or(0);
-        assert!(
-            lines
-                .get(omitted.saturating_sub(1))
-                .is_some_and(|line| line.ends_with("frame9"))
-        );
-        assert!(
-            lines
-                .get(omitted.saturating_add(1))
-                .is_some_and(|line| line.ends_with("frame10"))
-        );
-    }
-
-    #[test]
-    fn check_text_reports_empty_single_and_multiple_error_lists() {
-        let sources = SourceTable::new();
-        let opts = TextOptions { color: false };
-
-        assert_eq!(
-            render_check_text(&[], &sources, "run", "count.bnt", opts),
-            ""
-        );
-
-        let one = vec![check_diag("one")];
-        assert!(
-            render_check_text(&one, &sources, "run", "count.bnt", opts)
-                .ends_with("error: could not run count.bnt due to 1 previous error\n")
-        );
-
-        let three = vec![check_diag("one"), check_diag("two"), check_diag("three")];
-        assert!(
-            render_check_text(&three, &sources, "run", "count.bnt", opts)
-                .ends_with("error: could not run count.bnt due to 3 previous errors\n")
-        );
-    }
-
-    #[test]
-    fn check_text_shows_at_most_fifty_diagnostics_and_reports_the_counts() {
-        let sources = SourceTable::new();
-        let diagnostics = (0..53)
-            .map(|index| check_diag(&format!("diagnostic {index}")))
-            .collect::<Vec<_>>();
-
-        let output = render_check_text(
-            &diagnostics,
-            &sources,
-            "run",
-            "count.bnt",
-            TextOptions { color: false },
-        );
-        assert_eq!(output.matches("error[E0401]").count(), 50);
-        assert!(output.contains("error: 3 more errors not shown\n\n"));
-        assert!(output.ends_with("error: could not run count.bnt due to 53 previous errors\n"));
-    }
-
-    #[test]
-    fn tab_expansion_keeps_the_marker_under_the_selected_character() {
-        let bytes = b"\tlet x = y";
-        let mut sources = SourceTable::new();
-        let file = add_source(&mut sources, bytes);
-        let start = find_bytes(bytes, b"y");
-        let mut diag = check_diag("selected value");
-        diag.primary = Some(Label {
-            span: span(file, start, 1),
-            text: String::new(),
-        });
-
-        let output = render_one_text(&diag, &sources, TextOptions { color: false });
-        assert!(output.contains(" 1 |     let x = y\n"));
-        assert!(output.contains("   |             ^\n"));
-    }
-
-    #[test]
-    fn multiline_and_empty_spans_get_visible_markers() {
-        let bytes = b"abc\ndef";
-        let mut sources = SourceTable::new();
-        let file = add_source(&mut sources, bytes);
-        let mut multiline = check_diag("multiline");
-        multiline.primary = Some(Label {
-            span: span(file, 1, 4),
-            text: String::new(),
-        });
-        let output = render_one_text(&multiline, &sources, TextOptions { color: false });
-        assert!(output.contains(" 1 | abc\n   |  ^^\n"));
-
-        let mut empty = check_diag("empty");
-        empty.primary = Some(Label {
-            span: span(file, 1, 0),
-            text: String::new(),
-        });
-        let output = render_one_text(&empty, &sources, TextOptions { color: false });
-        assert!(output.contains("   |  ^\n"));
-    }
-
-    #[test]
-    fn same_line_secondary_markers_are_ordered_by_column() {
-        let bytes = b"abcdef";
-        let mut sources = SourceTable::new();
-        let file = add_source(&mut sources, bytes);
-        let mut diag = check_diag("multiple labels");
-        diag.primary = Some(Label {
-            span: span(file, 0, 1),
-            text: "primary".to_owned(),
-        });
-        diag.secondary = vec![
-            Label {
-                span: span(file, 4, 1),
-                text: "later".to_owned(),
-            },
-            Label {
-                span: span(file, 2, 1),
-                text: "earlier".to_owned(),
-            },
-        ];
-
-        let output = render_one_text(&diag, &sources, TextOptions { color: false });
-        let primary = output.find("^ primary").unwrap_or(usize::MAX);
-        let earlier = output.find("- earlier").unwrap_or(usize::MAX);
-        let later = output.find("- later").unwrap_or(usize::MAX);
-        assert!(primary < earlier);
-        assert!(earlier < later);
-    }
-
-    #[test]
-    fn invalid_utf8_bytes_are_rendered_as_single_replacement_characters() {
-        let bytes = b"a\xFFb";
-        let mut sources = SourceTable::new();
-        let file = add_source(&mut sources, bytes);
-        let mut diag = check_diag("invalid source");
-        diag.primary = Some(Label {
-            span: span(file, 2, 1),
-            text: String::new(),
-        });
-
-        let output = render_one_text(&diag, &sources, TextOptions { color: false });
-        assert!(output.contains(" 1 | a\u{FFFD}b\n"));
-        assert!(output.contains("   |   ^\n"));
-    }
-
-    #[test]
-    fn json_line_has_stable_field_order_and_byte_offsets() {
-        let bytes = b"fn f(x: Int) -> Int {\n  x\n}\nfn g() -> Unit {\n  let n: Int = \"a\"\n}\n";
-        let mut sources = SourceTable::new();
-        let file = add_source(&mut sources, bytes);
-        let diag = type_diagnostic(file, bytes);
-        let primary = find_bytes(bytes, b"\"a\"");
-
-        let actual = render_json_line(&diag, &sources);
-        let expected = format!(
-            concat!(
-                "{{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",",
-                "\"message\":\"mismatched types\",\"primary\":{{\"file\":\"count.bnt\",",
-                "\"start\":{{\"line\":5,\"column\":16,\"offset\":{}}},",
-                "\"end\":{{\"line\":5,\"column\":19,\"offset\":{}}},",
-                "\"label\":\"expected `Int`, found `String`\"}},\"secondary\":[",
-                "{{\"file\":\"count.bnt\",\"start\":{{\"line\":1,\"column\":9,\"offset\":8}},",
-                "\"end\":{{\"line\":1,\"column\":12,\"offset\":11}},",
-                "\"label\":\"declared here\"}}],\"notes\":[],\"helps\":[]}}"
-            ),
-            primary,
-            primary.saturating_add(3),
-        );
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn runtime_json_contains_named_trace_frames_and_omitted_count() {
-        let mut lines = vec!["x".to_owned(); 22];
-        lines[9] = "  let q = a / b".to_owned();
-        lines[21] = "x".repeat(40);
-        let bytes = lines.join("\n").into_bytes();
-        let mut sources = SourceTable::new();
-        let file = add_source(&mut sources, &bytes);
-        let diag = runtime_trace_diagnostic(file, &bytes);
-
-        let output = render_json_line(&diag, &sources);
-        assert!(output.contains("\"kind\":\"runtime\""));
-        assert!(output.contains("\"function\":\"ratio\",\"location\":{\"file\":\"count.bnt\""));
-        assert!(output.contains("\"function\":\"<lambda count.bnt:22:25>\",\"location\":null"));
-        assert!(output.contains("\"traceOmitted\":0"));
-    }
-
-    #[test]
-    fn internal_reports_have_no_code_and_put_backtrace_last_in_json() {
-        let sources = SourceTable::new();
-        let diag = Diagnostic {
-            kind: ReportKind::Internal,
-            severity: Severity::Error,
-            code: None,
-            message: "compiler invariant failed".to_owned(),
-            primary: None,
-            secondary: Vec::new(),
-            notes: Vec::new(),
-            helps: Vec::new(),
-            trace: None,
-            backtrace: Some("frame one\nframe two".to_owned()),
-        };
-
-        let text = render_one_text(&diag, &sources, TextOptions { color: false });
-        assert!(text.starts_with("internal error: compiler invariant failed\n"));
-        let json = render_json_line(&diag, &sources);
-        assert!(json.contains("\"kind\":\"internal\""));
-        assert!(json.contains("\"code\":null"));
-        assert!(json.ends_with(",\"backtrace\":\"frame one\\nframe two\"}"));
-    }
-
-    #[test]
-    fn json_escapes_quotes_slashes_newlines_and_other_control_characters() {
-        let sources = SourceTable::new();
-        let mut diag = check_diag("quote \" slash \\ line\ncontrol \u{1B}");
-        diag.notes.push("note\r\t\u{1}".to_owned());
-
-        let output = render_json_line(&diag, &sources);
-        assert_eq!(
-            output,
-            concat!(
-                "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0401\",",
-                "\"message\":\"quote \\\" slash \\\\ line\\ncontrol \\u001b\",",
-                "\"primary\":null,\"secondary\":[],\"notes\":[\"note\\r\\t\\u0001\"],\"helps\":[]}"
-            )
-        );
-        assert!(!output.contains('\n'));
-    }
-
-    #[test]
-    fn color_is_applied_only_when_requested() {
-        let sources = SourceTable::new();
-        let diag = check_diag("mismatched types");
-        let colored = render_one_text(&diag, &sources, TextOptions { color: true });
-        let plain = render_one_text(&diag, &sources, TextOptions { color: false });
-
-        assert!(colored.starts_with("\x1b[1;31merror[E0401]\x1b[0m: mismatched types\n"));
-        assert!(!plain.contains('\x1b'));
-    }
+/// 文字列を JSON の文字列（引用符を含む）にする。
+pub fn json_string(text: &str) -> String {
+    let mut output = String::new();
+    push_json_string(&mut output, text);
+    output
 }

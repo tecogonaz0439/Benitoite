@@ -1,0 +1,8 @@
+// spec: 01-02 型の別名（初回リリース版）
+type UserId = Integer
+function bad() -> String
+  return UserId.toString(1)
+end function
+function main() -> Unit
+  ()
+end function

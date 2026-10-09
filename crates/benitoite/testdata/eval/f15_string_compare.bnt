@@ -1,0 +1,12 @@
+// spec: 01-04 String
+import Benitoite.Unofficial.IO.Console
+function bool_text(value: Boolean) -> String
+ return if value then "true" else "false" end if
+end function
+function main() -> Unit uses Console.Write
+ bind nfc <- "é"
+ bind nfd <- "é"
+ Console.writeLine(bool_text(nfc = nfd))
+ Console.writeLine(bool_text(nfd < nfc))
+ Console.writeLine(bool_text("apple" < "banana"))
+end function

@@ -1,0 +1,15 @@
+// spec: 01-07 可変のセル（初回リリース版）
+// spec: 01-06 可変状態（初回リリース版）
+// 関門: 共有セルの読み書きと更新を守り、値の複製や UPDATE の接続漏れを捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses State, Console.Write
+  bind cell <- Reference.new("initial")
+  bind alias <- cell
+  Console.writeLine(Reference.get(alias))
+  Reference.set(cell, "changed")
+  Console.writeLine(Reference.get(alias))
+  Reference.update(alias, lambda(value) return value + "!" end lambda)
+  Console.writeLine(Reference.get(cell))
+end function

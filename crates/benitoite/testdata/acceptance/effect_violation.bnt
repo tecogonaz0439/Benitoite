@@ -1,12 +1,14 @@
 // spec: 01-07 エフェクトの型と権限制御の区別
-fn write_message() -> Unit uses IO {
-  Console.println("not allowed here")
-}
+import Benitoite.Unofficial.IO.Console
 
-fn pure_caller() -> Unit {
-  write_message()
-}
+function write_message() -> Unit uses Console.Write
+  return Console.writeLine("not allowed here")
+end function
 
-fn main() -> Unit {
-  pure_caller()
-}
+function pure_caller() -> Unit
+  return write_message()
+end function
+
+function main() -> Unit
+  return pure_caller()
+end function

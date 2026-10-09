@@ -1,9 +1,13 @@
 // spec: 01-03 修飾しない名前の解決
 // spec: 01-03 トップレベルの名前空間
-fn mapInto(value: Int) -> Int { value + 100 }
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  let values = [1, 2] |> List.map(fn(value) { value + 1 })
-  let result = mapInto(1) + List.length(values)
-  Console.println(Int.toString(result))
-}
+function mapFrom(value: Integer) -> Integer
+  return value + 100
+end function
+
+function main() -> Unit uses Console.Write
+  bind values <- [1, 2] |> List.map(lambda(value) return value + 1 end lambda)
+  bind result <- mapFrom(1) + List.length(values)
+  return Console.writeLine(Integer.toString(result))
+end function

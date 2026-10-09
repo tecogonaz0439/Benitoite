@@ -1,0 +1,24 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+// spec: 01-06 エフェクトの宣言とハンドラの型付け（初回リリース版）
+// 関門: 内側にない操作と節から呼んだ操作を外側へ渡す規則を守り、ハンドラの探索の退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+effect Ask
+  function ask(value: Integer) -> Integer
+end effect
+effect Mark
+  function mark(value: Integer) -> Integer
+end effect
+
+function main() -> Unit uses Console.Write
+  bind value <- handle
+    handle
+      ask(1) + mark(2)
+    with
+      case mark(n) -> resume(ask(n))
+    end handle
+  with
+    case ask(n) -> resume(n + 10)
+  end handle
+  Console.writeLine(Integer.toString(value))
+end function

@@ -1,0 +1,9 @@
+//! Failures of network operations. The type `NetworkError` is built in.
+
+/// Returns the kind of the failure.
+@builtin("NetworkError.kind")
+public function kind(e: NetworkError) -> NetworkErrorKind
+
+/// Returns a human-readable description of the failure. The wording may change between versions.
+@builtin("NetworkError.message")
+public function message(e: NetworkError) -> String

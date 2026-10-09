@@ -1,0 +1,42 @@
+// spec: 01-10 解放の時期と順序
+// 設計書 03-07「File」の countLines の例とリソースの関数。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+function countLines(path: String) -> Result[Integer, IOError] uses File.Read, State
+  with reader = try File.openReader(path) do
+    return countFrom(reader, 0)
+  end with
+end function
+function countFrom(reader: File.Reader, count: Integer) -> Result[Integer, IOError] uses File.Read
+  return match try File.readLine(reader) with
+    case Option.Some(_) -> countFrom(reader, count + 1)
+    case Option.None -> Result.Ok(count)
+  end match
+end function
+function main() -> Result[Unit, String] uses File.Read, File.Write, State, Console.Write
+  bind count <- try countLines("lines.txt") |> Result.mapError(_, IOError.message)
+  Console.writeLine(Integer.toString(count))
+  with writer = try File.openWriter("output.txt", File.WriteMode.Replace) |> Result.mapError(_, IOError.message) do
+    bind _ <- try File.write(writer, "a") |> Result.mapError(_, IOError.message)
+    bind _ <- try File.writeLine(writer, "b") |> Result.mapError(_, IOError.message)
+    bind _ <- try File.writeChunk(writer, String.toUTF8("é")) |> Result.mapError(_, IOError.message)
+    bind _ <- try File.closeWriter(writer) |> Result.mapError(_, IOError.message)
+  end with
+  with writer = try File.openWriter("output.txt", File.WriteMode.Append) |> Result.mapError(_, IOError.message) do
+    bind _ <- try File.writeLine(writer, "!") |> Result.mapError(_, IOError.message)
+  end with
+  bind text <- try File.readText("output.txt") |> Result.mapError(_, IOError.message)
+  Console.write(text)
+  with reader = try File.openReader("output.txt") |> Result.mapError(_, IOError.message) do
+    bind chunk <- try File.readChunk(reader, 3) |> Result.mapError(_, IOError.message)
+    Console.writeLine(Trait.Show.show(Option.map(chunk, Bytes.toHex)))
+    bind remaining <- try File.readChunk(reader, 16) |> Result.mapError(_, IOError.message)
+    Console.writeLine(Trait.Show.show(Option.map(remaining, Bytes.toHex)))
+    bind eof <- try File.readChunk(reader, 1) |> Result.mapError(_, IOError.message)
+    Console.writeLine(Trait.Show.show(Option.isNone(eof)))
+  end with
+  return Result.Ok(())
+end function

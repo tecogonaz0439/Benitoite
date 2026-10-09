@@ -1,0 +1,17 @@
+// spec: 01-07 プログラムの入口
+// spec: 01-07 IO を行う組み込み関数
+// 受け入れ: 00-03「初回リリース版」の完了条件の Process.run（07-03「受け入れ例と仕様の項目の対応」）。
+// 03-07「Process」: 引数の配列で POSIX のコマンドを起動する。sort は LC_ALL=C を渡して並べ方を環境によらなくする。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Result[Unit, String] uses Process.Run, Console.Write
+  bind printed <- try Process.run(Process.command("printf", ["%s|%s\\n", "two words", "$HOME"])) |> Result.mapError(_, IOError.message)
+  Console.write(Process.Output.standardOutput(printed))
+  bind sortCommand <- Process.Command(..Process.command("sort", []), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some("pear\nApple\nbanana\n"))
+  bind sorted <- try Process.run(sortCommand) |> Result.mapError(_, IOError.message)
+  Console.write(Process.Output.standardOutput(sorted))
+  bind failed <- try Process.run(Process.command("sh", ["-c", "exit 3"])) |> Result.mapError(_, IOError.message)
+  Console.writeLine("exit code: ${Process.Output.exitCode(failed)}")
+  return Result.Ok(())
+end function

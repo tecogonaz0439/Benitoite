@@ -1,8 +1,10 @@
 // spec: 01-02 ドット記法
-fn increment(x: Int) -> Int { x + 1 }
+function increment(x: Integer) -> Integer
+  return x + 1
+end function
 
-fn main() -> Unit {
-  let xs = [1]
-  let _ = xs.map(increment)
-  ()
-}
+function main() -> Unit
+  bind xs <- [1]
+  bind _ <- xs.map(increment)
+  return ()
+end function

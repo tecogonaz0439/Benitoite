@@ -1,0 +1,60 @@
+// spec: 01-11 タスクの集まり
+// spec: 01-11 タスクの切り替え
+// 設計書 03-09「応答を作る関数と、要求を調べる関数」「クライアント」。
+// 関門: CLI からソースの経路・応答とクライアントをつなぎ、要求の欄の取り違えを捕まえる。
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.IO.Console
+
+function route(request: Http.Request) -> Http.Response
+  return match Pair(Http.Request.method(request), Http.pathSegments(Http.Request.path(request))) with
+    case Pair("GET", []) -> Http.html(200, "<h1>Hello</h1>")
+    case Pair("GET", ["items", id]) -> Http.json(200, Json.Value.Object(Map.fromList([Pair("id", Json.Value.String(id))])))
+    case Pair("POST", ["echo"]) ->
+      if Http.header(Http.Request.headers(request), "X-INPUT") = Option.Some("雪") then
+        Http.Response(status: 201, headers: [Pair("content-type", "application/octet-stream")], body: Http.Request.body(request))
+      else Http.text(400, "missing header") end if
+    case Pair("GET", ["fail"]) -> Http.text(503, "unavailable")
+    case _ -> Http.text(404, "not found")
+  end match
+end function
+
+function serveLoop(listener: Http.Listener, group: TaskGroup, remaining: Integer) -> Result[Unit, String] uses Http.Listen, State
+  if remaining = 0 then return Result.Ok(()) end if
+  bind exchange <- try Http.accept(listener) |> Result.mapError(_, NetworkError.message)
+  bind _ <- TaskGroup.spawn(group, lambda()
+    with current = exchange do
+      return Http.respond(current, route(Http.requestOf(current))) |> Result.mapError(_, NetworkError.message)
+    end with
+  end lambda)
+  return serveLoop(listener, group, remaining - 1)
+end function
+
+function boolText(value: Boolean) -> String
+  return if value then "true" else "false" end if
+end function
+
+function show(response: Http.Response) -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(Http.Response.status(response)))
+  Console.writeLine(Option.unwrapOr(Http.header(Http.Response.headers(response), "CONTENT-TYPE"), "missing"))
+  Console.writeLine(Option.unwrapOr(String.fromUTF8(Http.Response.body(response)), "invalid UTF-8"))
+end function
+
+function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
+  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message),
+    group = TaskGroup.open() do
+    bind base <- "http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener))
+    bind server <- TaskGroup.spawn(group, lambda() return serveLoop(listener, group, 5) end lambda)
+    bind html <- try Http.get(base + "/") |> Result.mapError(_, NetworkError.message)
+    bind json <- try Http.get(base + "/items/%E9%9B%AA") |> Result.mapError(_, NetworkError.message)
+    bind request <- Http.clientRequest("POST", base + "/echo")
+    bind post <- try Http.send(Http.ClientRequest(..request, headers: [Pair("X-Input", "雪")], body: String.toUTF8("posted 雪"))) |> Result.mapError(_, NetworkError.message)
+    bind missing <- try Http.get(base + "/missing") |> Result.mapError(_, NetworkError.message)
+    bind failed <- try Http.get(base + "/fail") |> Result.mapError(_, NetworkError.message)
+    bind _ <- try Task.await(server)
+    List.forEach([html, json, post, missing, failed], show)
+    Console.writeLine(boolText(Http.header([Pair("X-Test", "first"), Pair("x-test", "second")], "x-TEST") = Option.Some("first")))
+    Console.writeLine(boolText(Http.header([], "absent") = Option.None))
+    return Result.Ok(())
+  end with
+end function

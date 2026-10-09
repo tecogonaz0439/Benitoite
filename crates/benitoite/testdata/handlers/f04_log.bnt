@@ -1,0 +1,26 @@
+// spec: 01-02 エフェクトの宣言とハンドラ（初回リリース版）
+import Benitoite.Unofficial.IO.Console
+
+effect Log
+  function write(message: String) -> Unit
+end effect
+
+function sumPrices(items: List[Integer]) -> Integer uses Log
+  write("items: ${List.length(items)}")
+  return List.fold(items, 0, lambda(acc, x) return acc + x end lambda)
+end function
+
+function total(items: List[Integer]) -> Integer uses Console.Write
+  return handle
+    sumPrices(items)
+  with
+    case write(message) ->
+      Console.writeErrorLine(message)
+      resume(())
+  end handle
+end function
+
+function main() -> Unit uses Console.Write
+  bind _ <- total([1, 2, 3])
+  ()
+end function

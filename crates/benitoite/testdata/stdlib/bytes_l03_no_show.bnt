@@ -1,0 +1,7 @@
+// spec: 01-06 標準の型クラス（初回リリース版）
+// 設計書 03-06「標準の型クラス（初回リリース版）」。
+// 関門: Bytes は Trait.Show を持たず、型検査で E0705 を返す（L03）。
+import Benitoite.Trait
+function main() -> Unit
+  bind s <- Trait.Show.show(Bytes.empty())
+end function

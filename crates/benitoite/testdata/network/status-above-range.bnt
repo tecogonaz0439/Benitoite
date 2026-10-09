@@ -1,0 +1,18 @@
+// spec: 01-08 実行時エラーによる停止
+// spec: 01-11 失敗と停止
+// 設計書 03-09「サーバ」。
+// 関門: CLI の通信とタスクの停止を通して、respond の実行時エラーと位置を守る。
+import Benitoite.Unofficial.Network.Http
+
+function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State
+  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+    bind server <- TaskGroup.spawn(group, lambda()
+      with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+        bind _ <- Http.respond(exchange, Http.text(600, "invalid"))
+        return Result.Ok(())
+      end with
+    end lambda)
+    bind _ <- Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/")
+    return Task.await(server)
+  end with
+end function

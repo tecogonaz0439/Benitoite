@@ -1,0 +1,41 @@
+//! Joining and splitting paths as strings. Nothing here reads the file system.
+
+/// Returns `child` after `base` with a separator between, or `child` when it is absolute.
+@builtin("Path.join")
+public function join(base: String, child: String) -> String
+
+/// Joins `parts` from the first with `Path.join`. Returns "" for an empty list.
+@builtin("Path.joinAll")
+public function joinAll(parts: List[String]) -> String
+
+/// Returns the path without its last component, or `Option.None` for a root or an empty path.
+@builtin("Path.parent")
+public function parent(p: String) -> Option[String]
+
+/// Returns the last component, or `Option.None` when it is `..`, a root, or empty.
+@builtin("Path.fileName")
+public function fileName(p: String) -> Option[String]
+
+/// Returns the file name without its last extension.
+@builtin("Path.stem")
+public function stem(p: String) -> Option[String]
+
+/// Returns the extension of the file name without the dot.
+@builtin("Path.extension")
+public function extension(p: String) -> Option[String]
+
+/// Returns the path with its extension changed to `extension`. An empty `extension` removes it.
+@builtin("Path.withExtension")
+public function withExtension(p: String, extension: String) -> String
+
+/// Returns whether the path is absolute.
+@builtin("Path.isAbsolute")
+public function isAbsolute(p: String) -> Boolean
+
+/// Returns the components, with the root first for an absolute path.
+@builtin("Path.components")
+public function components(p: String) -> List[String]
+
+/// Removes `.` and cancels `..` with the component before it, without reading the file system.
+@builtin("Path.normalize")
+public function normalize(p: String) -> String

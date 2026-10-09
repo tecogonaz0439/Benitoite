@@ -1,0 +1,9 @@
+// spec: 01-02 文字列補間（初回リリース版）
+function format(name: String, count: Integer) -> String
+  return "${name}: ${count} items"
+end function
+
+function main() -> Unit
+  bind _ <- format("Benitoite", 3)
+  ()
+end function

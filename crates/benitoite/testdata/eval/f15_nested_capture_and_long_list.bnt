@@ -1,0 +1,49 @@
+// spec: 01-08 関数の呼び出し
+// spec: 01-08 正格評価
+// spec: 01-02 ラムダ
+import Benitoite.Unofficial.IO.Console
+function deep(x: Integer) -> Integer
+ return if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ if true then
+ x else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if
+end function
+function curry(x: Integer) -> function() -> function(Integer) -> Integer
+ return lambda() return lambda(y: Integer) return x + y end lambda end lambda
+end function
+function main() -> Unit uses Console.Write
+ Console.writeLine(Integer.toString(deep(7)))
+ bind outer <- curry(3)
+ bind inner <- outer()
+ Console.writeLine(Integer.toString(inner(4)))
+ Console.writeLine(Integer.toString(List.fold(List.map(List.range(0, 512), lambda(x) return x + 1 end lambda), 0, lambda(acc, x) return acc + x end lambda)))
+end function

@@ -1,6 +1,6 @@
 //! 中間表現（設計書 02-06）。
 //! core_ir.rs: コア IR、lower_ir.rs: 下位 IR、desugar.rs: 脱糖、decision.rs: 判定の木への変換、
-//! check.rs: コア IR の検査器。
+//! check.rs: コア IR の検査器。型の形は実装プラン 10-06 で定める。
 
 pub mod check;
 pub mod core_ir;

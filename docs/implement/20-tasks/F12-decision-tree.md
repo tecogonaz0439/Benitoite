@@ -24,6 +24,7 @@
 
 - `src/ir/decision.rs`: 10-06 の `sig=src/ir/decision.rs` の `lower_program` の中身と、非公開の補助の関数。行列の操作と木の組み立てを非公開の子のモジュール（例: `decision/matrix.rs`）に分けてよい。
 - 同じファイルの `#[cfg(test)] mod tests`。
+- `src/types/mod.rs`: 10-05 の `sig=` のうち `Ty::subst`・`EffectSet::subst`・`AdtTable::get`・`AdtTable::field_types` の中身と、そのテスト（`#[cfg(test)] mod tests`）。行列の列の型を求めるのに使い、F13 の検査器も使うので、F07 より先に本作業が書く。`Ty::show` は F07 が書くので `todo!()` のまま残し、ファイルの先頭の仮置きの許可とコメントも残す。
 
 これ以外のファイルは変えない。
 

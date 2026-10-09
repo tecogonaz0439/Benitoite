@@ -1,0 +1,9 @@
+// spec: 01-06 型クラス（初回リリース版）
+// spec: 01-06 組み込みの制約（初回リリース版）
+import Benitoite.Map
+function bad() -> Map[Float, Integer]
+  return Map.fromList([Pair(1.0, 2)])
+end function
+function main() -> Unit
+  ()
+end function

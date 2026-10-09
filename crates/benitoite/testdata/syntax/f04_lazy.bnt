@@ -1,0 +1,8 @@
+// spec: 01-02 明示遅延（初回リリース版）
+function main() -> Unit
+  bind value <- lazy
+    20 + 22
+  end lazy
+  bind _ <- Lazy.force(value)
+  ()
+end function

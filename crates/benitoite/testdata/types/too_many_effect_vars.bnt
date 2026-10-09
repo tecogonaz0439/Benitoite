@@ -1,8 +1,8 @@
 // spec: 01-06 関数の型とエフェクト
-fn combine[effect E, effect F](left: fn() -> Unit uses E, right: fn() -> Unit uses F) -> Unit uses E, F {
-    ()
-}
+function combine[effect E, effect F](left: function() -> Unit uses E, right: function() -> Unit uses F) -> Unit uses E, F
+    return ()
+end function
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

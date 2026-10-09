@@ -1,13 +1,15 @@
 // spec: 01-05 網羅性の検査
-// spec: 01-04 Bool
+// spec: 01-04 Boolean
 // spec: 01-04 Unit
-fn main() -> Unit uses IO {
-    let boolean = match true {
-        true => "true"
-        false => "false"
-    }
-    let unit = match () {
-        () => "unit"
-    }
-    Console.println(boolean + " " + unit)
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+    bind boolean <- match true with
+        case true -> "true"
+        case false -> "false"
+    end match
+    bind unit <- match () with
+        case () -> "unit"
+    end match
+    return Console.writeLine(boolean + " " + unit)
+end function

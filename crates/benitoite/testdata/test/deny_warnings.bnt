@@ -1,0 +1,8 @@
+// spec: 01-02 属性（初回リリース版）
+// 06-01「`test` のコマンドライン（初回リリース版）」: --deny-warnings では警告のあるファイルのテストを実行しない。
+
+@test
+function warns() -> Result[Unit, String]
+  bind _ <- 1 div 0
+  return Result.Ok(())
+end function

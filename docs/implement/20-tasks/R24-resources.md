@@ -35,9 +35,20 @@
 ## 作るもの
 
 - `src/runtime/io/resources.rs`: `ResourceTable` の関数の中身と、その単体テスト。
-- `src/vm/unwind.rs`: `unwind_release` の中身（すべての原因）。`src/vm/unwind.rs` の `todo!()` の仮置き（00-02）は、R20・R22・R23・R24 がそれぞれ受け持つ関数を書き換える。R22〜R24 は R21 の後に並行して進めるので、仮置きの許可とコメントは、四つのうち最後に `todo!()` を書き換えた作業（取り込みの時点でファイルに `todo!()` が残っていない作業）が消す。`TaskGroup` の解放の枠は、原因ごとの分かれ方の形（戻りで待つ、取り消しで取り消して待つ、全体の停止で待たない）まで本作業が書き、子のタスクを待つ・取り消す中身は R25 が書く（10-09「作業の割り当て」）。
-- `src/vm/dispatch.rs` と、`dispatch.rs` の中で宣言する非公開の子のモジュール `src/vm/dispatch/resource.rs`: `USE`・`RELEASE` の命令の処理。`dispatch.rs` には `match` の分岐だけを加える。`RETURN` の解放の枠の処理は、R20 が `unwind_release` を呼ぶ形で置いてあるので、本作業はそれが動くことを確かめる。`Popped` の後に枠を `Vec` から取り出すのは呼び出し側である（10-09「枠を降ろす原因と処理」）。`RETURN` の途中で解放を待つ（`Wait(Release)`）ときは、戻る値と段が `ReturnWork` に残り（段は `OwnReleases`。10-09「戻りの再開状態」）、待ちが解けたら同じ枠から続く。
+- `src/runtime/sched/mod.rs`: `Scheduler::new_ext_op_id` と `Scheduler::new_timer_id` の中身（欄 `next_ext_op`・`next_timer` を一つ進めて番号を返す。10-10）。`request_release` に渡す `ExtOpId` を作るために要る。ほかの `Scheduler` の関数は R25 が書くので、`sched/mod.rs` の仮置きの許可とコメントは消さない。
+- `src/vm/unwind.rs`: `unwind_release` の中身（すべての原因）。後述の「並行の作業とのぶつかりの回避」に従う。`TaskGroup` の解放の枠は、原因ごとの分かれ方の形（戻りで待つ、取り消しで取り消して待つ、全体の停止で待たない）まで本作業が書き、子のタスクを待つ・取り消す中身は R25 が書く（10-09「作業の割り当て」）。中身を R25 が書く非公開の関数は、`unwind.rs` でなく `resource.rs` に置く。
+- `src/vm/dispatch.rs` と、`dispatch.rs` の中で宣言する子のモジュール `src/vm/dispatch/resource.rs`: `USE`・`RELEASE` の命令の処理。命令の本体は `resource.rs` の冷たい関数に置き、`dispatch.rs` では `execute` の速い経路の `match` の `Opcode::Use | Opcode::Release` の分岐を、その関数の呼び出しに書き換える（後述の「性能」）。`RETURN` の解放の枠の処理は、R20 が `unwind_release` を呼ぶ形で置いてあるので、本作業はそれが動くことを確かめる。`Popped` の後に枠を `Vec` から取り出すのは呼び出し側である（10-09「枠を降ろす原因と処理」）。`RETURN` の途中で解放を待つ（`Wait(Release)`）ときは、戻る値と段が `ReturnWork` に残り（段は `OwnReleases`。10-09「戻りの再開状態」）、待ちが解けたら同じ枠から続く。
+- `src/vm/dispatch/handlers.rs`（R20 が置いた）: 冷たい関数 `dispatch` の `RETURN` の判定を絞る（後述の「`RETURN` の遅い経路の判定」）。R20・R21 が置いたこの箇所は、本作業の処理を入れる場所であり、00-03 の「ほかの作業のファイル」には当たらない。
 - 上のファイルのテスト。
+
+### 並行の作業とのぶつかりの回避
+
+R22〜R24 は R21 の後に並行して進め、同じファイル（`dispatch.rs`・`unwind.rs`）を書き換える。取り込みのときにぶつからないように、次を守る。
+
+- `dispatch.rs` の `Opcode::Lazy | Opcode::Force | Opcode::Update | Opcode::Use | Opcode::Release => Err(..)` の一つの分岐は、オーケストレータが起動の前に `Opcode::Lazy | Opcode::Force`・`Opcode::Update`・`Opcode::Use | Opcode::Release` の三つの分岐に分けておく。本作業は `Opcode::Use | Opcode::Release` の分岐だけを書き換える。
+- 子のモジュールの宣言 `mod resource;` は、`dispatch.rs` の先頭の `mod` の並びの、名前の順の位置に置く。`unwind.rs` から `resource.rs` の補助の関数を呼ぶときは、宣言を `pub(super) mod resource;` とし、その関数を `pub(in crate::vm)` にする（`dispatch` の非公開の子のモジュールは、そのままでは `unwind.rs` から見えない）。
+- `unwind.rs` は、受け持つ関数（`unwind_release`）の本体だけを書き換え、先頭の `use` の塊を変えない。補助の関数（中身を R25 が書く関数を含む）は `resource.rs` に置き、`unwind.rs` の本体からは完全なパス（`super::state::internal` など。R21 の `unwind_handle` と同じ書き方）で呼ぶ。
+- `unwind.rs` の `todo!()` の仮置きの許可とコメント（00-02）は、本作業では消さない。R22〜R24 のうち最後に取り込むときに、オーケストレータが消す。
 
 ## 手順の要点
 
@@ -65,6 +76,14 @@
 - `take_release_failure`: `release_failure` を取り出す。解放の完了を待った側（解放の枠か `begin_release` の呼び出し）が一度だけ読む。
 - `close_all_silently`: 表に残った OS の資源を閉じる。失敗は報告しない（02-09「リソースの追跡」の束縛の文のリソースの段落）。
 
+#### 凍結した戻り値で処理系の不具合を扱う方法（オーケストレータの決定、2026-10-06）
+
+`new_ext_op_id`・`new_timer_id`・`insert`・`lend`・`request_release` の戻り値は凍結しており（10-10 の `sig=`）、`Result` ではない。シグネチャは変えずに、次のように扱う。
+
+- 番号の計数（`next_ext_op`・`next_timer`・`next` の `u64`）は `wrapping_add(1)` で進める。一つの実行の中で 2^64 個の番号を使い切ることは起きない（1 ナノ秒に一つ作っても 500 年を超える）ので、番号を使い回さない規則（02-09「リソースの追跡」）は実際上守られる。この理由を、計数を進める箇所のコメントに書く。`checked_add` の失敗を `Stop` にする経路は作らない。
+- `lend` と `request_release` に、表にない番号や状態・種類・中身の食い違った項目が渡ることは、処理系の不具合である。これを `Stop::Internal` で報告するために、`ResourceTable` に非公開の補助の関数（例 `pub(crate) fn check_lend(&self, id) -> Result<(), Stop>` と `check_release`。名前は作業が決める）を加え、VM と本作業の呼び出し側は、`lend`・`request_release` を呼ぶ前にこの関数で確かめて、食い違いを `Stop::Internal` で返す。凍結した関数の中では、確かめを通った入力を前提にし、到達しないはずの分岐は `debug_assert!` で不具合を示したうえで、状態を変えない安全な値（`lend` は `Released(種類)`、種類も決められなければ `MustWait` は使わず `Released` に表の既定の種類を入れるなど、作業が決める）を返す。到達しない理由をコメントに書く。
+- 後の作業（R25・R26・R29・U3）が `lend`・`request_release` を呼ぶときも、同じ補助の関数で先に確かめる（10-10「リソースの表」の本文に書く）。
+
 ### `USE A`（E-Use）
 
 上限を確かめて（解放の枠一つ）、`OtherKind::Release { resource: R[A] のリソースの番号, at: この命令 }` の解放の枠を積む。深さは実行中の区画の呼び出しの枠の数（積んだ呼び出しの枠に属するので、その呼び出しの枠の上にある）。`R[A]` がリソースの値でなければ `Stop::Internal`。
@@ -73,12 +92,18 @@
 
 実行中の呼び出しの枠に属する最も上の解放の枠（深さが実行中の区画の呼び出しの枠の数と等しい、最も上の解放の枠）を、原因 `Return` で `unwind_release` に渡す。ない場合は `Stop::Internal`。
 
+`unwind_top`（R20）は `ReturnWork` を要る（`RETURN` の途中の処理である）ので使わず、自分で枠を `others` から取り出して `unwind_release` を呼び、結果で次のように分ける。
+
+- `Popped`: 取り出した枠を `NoGcCtx::discard` でちょうど一度手放し、`StackMeter::shrink(1, 0)` して、次の命令へ進む。
+- `Wait(理由)`: 枠を元の位置に戻し、`pc` を `RELEASE` に保ったまま待つ（命令の入口）。本作業の時点では、R21 と同じく `state.step = Some(VmStep::Requests(vec![]))` の形で止める（R25 が待たせる処理に改める）。起きたら `RELEASE` を初めから実行し直す。解放が完了していれば、`request_release` が `AlreadyReleased` を返し、手順 1 の経路で `Popped` になる。
+- `Err(Stop)`: 枠を元の位置に戻して止まる。止める手順（R21）は、同じ枠を原因 `Stop` で処理するときに `request_release` から `AlreadyReleased` を受けるので、二度解放しない。同じ解放の失敗を、止まる理由と `StopEnd::release_failures` の両方に入れて二度報告しない。
+
 ### `unwind_release`（02-08「枠を降ろす原因と処理」の解放の枠の行）
 
 1. `request_release` で解放を始める。`AlreadyReleased` なら、`take_release_failure` で記録した失敗を取り出す。失敗があれば手順 3 と同じく原因ごとに扱い、なければ `Popped`（02-08「リソースの解放の枠」。`close` で解放済みのリソースを `with` が二度解放しない）。`AlreadyReleased` を返すのは `Released` のときだけである。
 2. `Done(Ok)` なら `Popped`。
 3. `Done(Err(理由))` なら、原因で分ける。`HttpExchange` の失敗はどの原因でも捨てて `Popped`。
-   - `Return`: `Err(Stop::Runtime(RuntimeError::ReleaseFailed { .. }))` を返す（E-RelErr）。止める手順（R21）が残りの解放の枠を解放し、失敗を加える（E-ErrRel・E-ErrRelErr）。
+   - `Return`: `Err(Stop::Runtime(RuntimeError::ReleaseFailed(vec![ReleaseFailure { .. }])))` を返す（E-RelErr。組 `ReleaseFailed(Vec<ReleaseFailure>)` に、この解放の失敗一つを入れる）。止める手順（R21）が残りの解放の枠を解放し、失敗を加える（E-ErrRel・E-ErrRelErr）。
    - `Cancel`・`DropRel`: `log` に `ReleaseFailure` を加えて `Popped`。辿り終えてから実行時エラーにするのは辿りの関数（R21）である。
    - `Stop`: `log` に加えて `Popped`。
 4. `Blocking`・`AfterReturn`・`InProgress` なら、`Wait(WaitReason::Release(番号))` を返す。枠は残り、解放の完了（`ReleaseFinished`。R26）で起こされた後に同じ枠に同じ原因でもう一度呼ばれる。もう一度呼ばれたときの状態が `Lent(_, true)` か `Releasing` なら（返却は済んだが解放の完了がまだの場合を含む）、`AfterReturn`・`InProgress` の経路でもう一度待ち、`Released` になって初めて手順 1 の `AlreadyReleased` の経路で `Popped` にする。解放を繰り返さず、解放を終える前に枠を降ろさない。ブロックする解放の失敗は、完了（`Outcome::Released(Err)`）を取り込んだときに `finish_release` が `release_failure` に記録し、手順 1 で取り出して、今の原因で扱う（取り消しか全体の停止で原因が変わっていれば、変わった後の原因で扱う）。作業用のスレッドへ解放の仕事を出す処理は R26 が書く。本作業は `release_jobs` に番号を加えるところまでを書く。本作業の時点では、U2 にブロックする解放を持つリソースの型がないので、この経路は `ResourceTable` の単体テストと、`unwind_release` を直接呼ぶ単体テストで確かめる。
@@ -86,9 +111,31 @@
    - `Return`: 終わっていない子があれば `Wait(TaskEnd(TaskGroupRelease(番号)))`、なければ `Popped`。
    - `Cancel`: 終わっていない子を取り消し（取り消しの要求を既に受けた子には何もしない）、残れば `Wait(TaskEnd(TaskGroupRelease(番号)))`、なければ `Popped`。`DropRel` も同じとする。`Return` で子の終わりを待っている間にタスクが取り消されると、同じ枠が原因 `Cancel` で呼ばれ、この分岐で子を取り消す。
    - `Stop`: 待たずに `Popped`。
-   タスクの終わりを調べる処理と取り消す処理は R25 が書く（10-09「作業の割り当て」）。本作業は、中身を R25 が書く非公開の関数を呼ぶ形で分岐を置き、`TaskGroup` の経路のテストは R25 が行う。
+   タスクの終わりを調べる処理は R25、取り消す処理は R39 が書く（10-09「作業の割り当て」）。本作業は、中身を後の作業が書く非公開の関数を呼ぶ形で分岐を置き、`TaskGroup` の経路のテストは R25（原因 `Return`）と R39（原因 `Cancel`）が行う。
 
 解放の失敗の `ReleaseFailure::opened_at` には、項目の `opened_at`（リソースを開いた呼び出しの命令）を入れる。`unwind_release` の `opened_at` の引数（枠を積んだ `USE`）は、項目に開いた位置がないときに使う。
+
+### `RETURN` の遅い経路の判定
+
+`execute` の速い経路の `RETURN` は、実行中の区画の `others` が空でなければ `handlers.rs` の冷たい関数 `dispatch` へ出る。そこでは今、最も上のほかの枠の深さ `o.depth` が `calls.len() − 1` 以上なら `begin_return`（`ReturnWork` を作る経路）へ進む。この判定は、呼び出し元の解放の枠（深さ = `calls.len() − 1`）でも真になるので、`with` の中から呼んだ関数の戻りが、すべて `ReturnWork` を作る経路を通る。
+
+判定を `o.depth == calls.len() || (o.depth + 1 == calls.len() && o.kind が包む枠)` の形に絞る（`OtherKind::is_wrapping`）。前者は `RETURN` 自身の解放の枠、後者は降ろす呼び出しの枠を包む枠である。呼び出し元の解放の枠だけが最も上にあるときは、普通の戻り（`return_plain`）を通る。速い経路の `others.is_empty()` の判定は変えない。
+
+### 回収の前の整理（ADR 0314）
+
+R21 と同じく、本作業が加える状態を [ADR 0314](../../design/decisions/0314-clear-dead-registers-at-safepoints.md) の決定 5 の「命令の入口」と「結果が書かれる前の呼び出し元」のどちらかに分類する表を、完了の報告に書き、分類どおりに空にする。少なくとも次の状態を表に入れる。
+
+- `RELEASE` の待ち: 「命令の入口」。`pc` は `RELEASE` を指したままであり、起きたら `RELEASE` を実行し直す。
+- `RETURN` の途中の解放の待ち（`ReturnWork` の段が `OwnReleases` の間）: R20 の表のとおり（最も内側の枠は `RETURN` の入口。今の `clear_dead_registers` の扱い）。
+- 辿りの途中の解放の待ち（E-DropRel・取り消し・全体の停止で `UnwindWork` の区画の解放の枠が待つ間と、`ESCAPE` で降ろす途中の解放の枠が待つ間）: 保守的に残す。`UnwindWork::segments` の区画は整理しない（R21）。段が `Escaping` の間は、今の `clear_dead_registers` が窓を空にしない。
+
+分類を確かめていない状態は、空にしない。
+
+### 性能
+
+普通の経路（`CALL`・`TAILCALL`・`RETURN` の速い経路、`execute` のループの頭）に処理を足さない。`USE`・`RELEASE` の本体は `resource.rs` の冷たい関数（`#[cold]`・`#[inline(never)]`）に置き、`execute` の速い経路の `match` の `Opcode::Use | Opcode::Release` の分岐からその関数を呼ぶ。`handlers.rs` の冷たい関数 `dispatch` の `else if` の連なりには分岐を足さない（前述の `RETURN` の判定を絞る変更は、既存の分岐の条件を変えるだけである）。
+
+完了の報告に、短い測定と機械語の数を書く（ADR 0313 の帰結、2026-10-06）。作業を始めたときの `san_benito` の HEAD と本作業の版の `examples/stage1_bench`（release）を、fib(30)・loop 300 万回で交互に 5 回以上走らせ、`run_nanos` の最小値を比べる。release の振り分けのループ（`run_until_exit`）の頭の機械語の命令の数とスタックへの退避（`[sp, …]` への `str` とそこからの `ldr`）の数も、始めた版と比べる。比較の版の展開と target は作業ディレクトリの `target/` の下に置き、終えたら消す。時間の本測定はしない（R26 の後と最後に、オーケストレータが行う）。
 
 ## 受け入れテスト
 
@@ -98,7 +145,7 @@
 - 返却を待つ並びからの除去: 返却を待つ並びに入れたタスクを `remove_waiter` で除くと、後の返却で `pop_waiter` がそのタスクを返さない。
 - 返却を待つ順序: 同じリソースに三つのタスクが貸し出しを求めたとき、返却のたびに呼んだ順に一つずつ受け付ける。
 - 解放の枠と `RETURN`: `USE` の後に `RETURN` する関数の呼び出しで、偽の資源の解放がちょうど一度呼ばれる。二つの `USE` を積んだ関数で、後に積んだものから順に解放される。
-- 呼び出し元の解放の枠に進まない: 呼び出し元 A が `USE` を積んでから関数 B を呼び、B が `RETURN` しても A のリソースは解放されず、A の `RETURN` で解放される。
+- 呼び出し元の解放の枠に進まない: 呼び出し元 A が `USE` を積んでから関数 B を呼び、B が `RETURN` しても A のリソースは解放されず、A の `RETURN` で解放される。B の `RETURN` は普通の戻り（`return_plain`）を通り、`ReturnWork` を作らない（前述の「`RETURN` の遅い経路の判定」。VM の単体テストで、B の戻りの間に `RunState::returning` が作られないことなどで確かめる）。
 - `RELEASE`: `RELEASE` がそのリソースを解放し、後の `RETURN` は二度解放しない。
 - 解放の失敗（`Return`）: 失敗する偽の資源の解放で `ReleaseFailed` の実行時エラーになり、同じ関数の別の解放の枠のリソースも解放され、その失敗も止める手順の解放の失敗に加わる。
 - 解放の失敗（`Stop`）: 0 の除算で止まるプログラムの止める手順で、解放の枠のリソースが内側から順に解放され、失敗が `StopEnd::release_failures` に入り、止まる理由は `DivisionByZero` のままである。

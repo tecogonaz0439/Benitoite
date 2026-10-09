@@ -1,0 +1,24 @@
+// spec: 01-06 等値の型
+// spec: 01-06 鍵の型（初回リリース版）
+// 設計書 03-06「Bytes と ByteOrder（初回リリース版）」。
+// 関門: 型検査・構造の等しさ・Map の鍵順への接続をスクリプトで確かめる（L03）。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+  bind bytes <- Bytes.fromHex("0102") |> Option.unwrapOr(_, Bytes.empty())
+  bind binary <- Bytes.fromBinary("00000001 00000010") |> Option.unwrapOr(_, Bytes.empty())
+  bind integers <- Bytes.fromIntegers([1, 2]) |> Option.unwrapOr(_, Bytes.empty())
+  bind copied <- Bytes.fromList(Bytes.toList(bytes))
+  Console.writeLine(Trait.Show.show(bytes = binary and binary = integers and copied = bytes and bytes <> Bytes.empty()))
+  bind one <- Bytes.fromHex("01") |> Option.unwrapOr(_, Bytes.empty())
+  bind two <- Bytes.fromHex("02") |> Option.unwrapOr(_, Bytes.empty())
+  bind zero <- Bytes.fromHex("00ff") |> Option.unwrapOr(_, Bytes.empty())
+  bind high <- Bytes.fromHex("ff") |> Option.unwrapOr(_, Bytes.empty())
+  bind m <- Map.fromList([Pair(high, 9), Pair(bytes, 2), Pair(two, 3), Pair(one, 1), Pair(zero, 0), Pair(Bytes.empty(), -1), Pair(binary, 20)])
+  Console.writeLine(String.join(List.map(Map.keys(m), Bytes.toHex), ","))
+  Console.writeLine(Trait.Show.show(Map.values(m) = [-1, 0, 1, 20, 3, 9] and Map.get(m, integers) = Option.Some(20)))
+  bind encoded <- Bytes.fromSigned(-129, 2, ByteOrder.LittleEndian) |> Option.unwrapOr(_, Bytes.empty())
+  bind unsigned <- Bytes.fromUnsigned(258, 2, ByteOrder.BigEndian) |> Option.unwrapOr(_, Bytes.empty())
+  bind utf8 <- String.toUTF8("é")
+  Console.writeLine(Trait.Show.show(Bytes.readSigned(encoded, 0, 2, ByteOrder.LittleEndian) = Option.Some(-129) and Bytes.toHex(encoded) = "7fff" and Bytes.readUnsigned(unsigned, 0, 2, ByteOrder.BigEndian) = Option.Some(258) and Bytes.toBinary(one) = "00000001" and Bytes.get(bytes, 1) = Byte.fromInteger(2) and Bytes.slice(bytes, 1, 2) = Option.Some(two) and Bytes.concatenate(one, two) = bytes and Bytes.length(utf8) = 2 and String.fromUTF8(utf8) = Option.Some("é")))
+end function

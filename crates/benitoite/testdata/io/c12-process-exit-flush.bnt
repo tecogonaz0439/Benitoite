@@ -1,0 +1,17 @@
+// spec: 01-07 影響の大きい操作（初回リリース版）
+// spec: 01-10 解放の時期と順序
+// 関門: 明示 exit の終了状態と残った出力の書き出しを守り、正常終了への置換と出力落ちを捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Result[Unit, String] uses File.Read, State, Console.Write, Process.Exit
+  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+    Console.write(Option.unwrapOr(try File.readLine(reader) |> Result.mapError(_, IOError.message), "eof"))
+    Console.writeErrorLine("before exit")
+    Process.exit(7)
+    Console.writeLine("unreachable")
+  end with
+  return Result.Ok(())
+end function

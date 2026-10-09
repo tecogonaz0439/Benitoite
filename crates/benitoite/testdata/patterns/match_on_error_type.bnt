@@ -1,9 +1,9 @@
 // spec: 01-05 網羅性の検査
 // spec: 01-06 型の推論と型注釈
-fn main() -> Unit {
-    let value = Some([1, "wrong"])
-    match value {
-        Some(_) => ()
-    }
-    ()
-}
+function main() -> Unit
+    bind value <- Option.Some([1, "wrong"])
+    match value with
+        case Option.Some(_) -> ()
+    end match
+    return ()
+end function

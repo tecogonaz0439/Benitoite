@@ -1,0 +1,11 @@
+// test: 06-01 サブコマンドの振る舞い
+import Benitoite.Unofficial.IO.Console
+
+@deprecated("use a new greeting")
+function greeting() -> String
+    return "ran despite warning"
+end function
+
+function main() -> Unit uses Console.Write
+    Console.writeLine(greeting())
+end function

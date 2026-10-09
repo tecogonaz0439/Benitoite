@@ -1,6 +1,6 @@
 // spec: 01-06 型の推論と型注釈
-fn main() -> Unit {
-    let recursive = fn(f) { f(f) }
-    let _ = recursive
-    ()
-}
+function main() -> Unit
+    bind recursive <- lambda(f) return f(f) end lambda
+    bind _ <- recursive
+    return ()
+end function

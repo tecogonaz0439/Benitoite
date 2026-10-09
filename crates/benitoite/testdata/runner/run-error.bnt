@@ -1,5 +1,7 @@
 // spec: 01-09 失敗の表し方
-fn main() -> Result[Unit, String] uses IO {
-    Console.println("before error")
-    Err("failed")
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Result[Unit, String] uses Console.Write
+    Console.writeLine("before error")
+    return Result.Error("failed")
+end function

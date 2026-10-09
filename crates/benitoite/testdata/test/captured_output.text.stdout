@@ -1,0 +1,29 @@
+test testdata/test/captured_output.bnt: noisyFailure ... FAILED
+test testdata/test/captured_output.bnt: noisySuccess ... ok
+test testdata/test/captured_output.bnt: silentFailure ... FAILED
+
+failures:
+
+---- testdata/test/captured_output.bnt: noisyFailure ----
+assertion failed: Assert.equal
+  left:  1
+  right: 2
+  --> testdata/test/captured_output.bnt:10:3
+   = note: call trace (innermost first):
+             noisyFailure
+   = note: functions left by tail calls are not shown
+---- captured stdout ----
+first out
+no newline
+---- captured stderr ----
+an err line
+
+---- testdata/test/captured_output.bnt: silentFailure ----
+assertion failed: Assert.fail
+  message: quiet
+  --> testdata/test/captured_output.bnt:20:3
+   = note: call trace (innermost first):
+             silentFailure
+   = note: functions left by tail calls are not shown
+
+test result: FAILED. 1 passed; 2 failed

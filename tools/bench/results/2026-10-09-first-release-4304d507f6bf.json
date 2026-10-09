@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-09",
+  "revision": "4304d507f6bf",
+  "branch": "impl/R33-memory-remeasure",
+  "build": "release / default gc-mark-sweep / k=1 / 4 MiB threshold / no stress",
+  "iterations": 10,
+  "cpu": "Apple M4",
+  "memory_bytes": 34359738368,
+  "os": "macOS 27.0.1",
+  "rustc": "1.98.1",
+  "source_hashes": {
+    "tools/bench/remeasure.py": "b68a7fdea87f0f2162b9a28a2839f3405f767f1dff91b79a004eb9d806882e00",
+    "tools/bench/run.py": "cfc7af22a542c9eb3497b62aae2c570a52ec0387d9852239d33727c57d8a134c",
+    "tools/bench/rss.py": "29e54a6b87b7fd95473b00c8d2cd7d276ba47e418641c4e68ce4a9358e2201df",
+    "crates/benitoite/examples/bench_run.rs": "9311ec752f7d9fe35da2ad96cbd43b35e3defde190de9c45dab3ee9fcfa4f7b0",
+    "target/release/examples/bench_run": "1746a9a869da262ae9f4a011da6a3e8c896b0fd05bb8df77c8d927f16c457a9c",
+    "target/release/examples/stage1_heap_bench": "7dcaea95dedaf46c99348f69e7f8d0303ba6726df65088a4ab36c2ce277700b5",
+    "crates/benitoite/examples/stage1_heap_bench.rs": "97722b08dccadbee9122d5669aa2e8ecdbe72e8d8f9571cdd9b338cb87038a8e",
+    "crates/benitoite/examples/stage1_support/mod.rs": "13a3a23e7cba2b5d92ab8ada49630417bc4f326b7eef1ca3f83b494cb3ee9977",
+    "tools/bench/programs/eval.bnt": "47994aa85f6d67ee7124eae8f8010881abe0b46f8b7caa575774b67be542b7fb",
+    "tools/bench/programs/depth.bnt": "e541ff210d2c9dd461270d4c977017bbad17c780b1de6be0decd30c8482f07d1",
+    "tools/bench/programs/handler.bnt": "a9da6c19ddec6142fd17b44795df963119b81b241611b3d66e6088baa6807037",
+    "tools/bench/programs/lines.bnt": "995fdf9120e686cf118db453c84a1028b7fb89e84e0f1d38b792e3a9c7eb92c7",
+    "tools/bench/programs/list.bnt": "5300af350b085901c9197e76cd892c1f90e11e3743c7354b36e290a9a44f6efc",
+    "tools/bench/programs/fib.bnt": "f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c",
+    "tools/bench/programs/http.bnt": "b3af62454c296f6ef8d4330818b1fb2b840ba97636046782a4dde1e688eafda5",
+    "tools/bench/programs/tasks.bnt": "4ba42d9fa965f2db3a898c4a3b2f5930022c44139ffcfe98a19f0fd6258ee8c6",
+    "tools/bench/programs/map.bnt": "9fcb36d3aa50defa05a9778c0ef6d84c80c1bdeb6273843cc891cf2cac315ebc",
+    "tools/bench/programs/string.bnt": "2859b4dd7634a616e0d3f62f6e3de2399573a01ea3d68a7b1ff623fad6f67ec4",
+    "tools/bench/programs/tree.bnt": "332ce8521ad9bc39bbb98a4d2751756762b0605df659993b91877a5a4eaefa27",
+    "tools/bench/programs/println.bnt": "89f685191c42c49434ff72fa0e60777ad07233ed4e853b02f4c16f79cccb78bc",
+    "tools/bench/programs/trait.bnt": "bb4b80a5a2c236be01cd5265ad593511a4849a169d420d933e2312ce0669f17f",
+    "tools/bench/programs/listget.bnt": "ae399bde79ed0aeb8f8daa282fd9e185a888c4f12d13d33387eb369c36b482c3",
+    "tools/bench/programs/cycle.bnt": "307d3ca4181c1bb0376f9b7d7b033a1d9a0d72ad42ee3ce13555c671111d4db5",
+    "tools/bench/programs/loop.bnt": "64c380f6eface80d69adf358c25251041304075c53e3879806688246720ee9b3",
+    "tools/bench/programs/stage1/returns.bnt": "6f081368e38cef08dc7e96d2c52e78ab5c258a86865d89a73a6ccc51570bf30d",
+    "tools/bench/programs/stage1/shared.bnt": "788646880399e35d2ae2c31d65a1e98a8108770ab5b61cb7ee6f152acb1378a3",
+    "tools/bench/programs/stage1/mixed.bnt": "e9d3a500c26284cbf2b57966b62821fd642ab5902fbdb9b1ddd52e3af9042c17",
+    "tools/bench/programs/stage1/live.bnt": "c58f3cc06d9bc08df376365dafaba45af155c08cb5a6658c58197b1d1b097ab3",
+    "tools/bench/programs/stage1/roots.bnt": "cda520b39b6f345053aeb2a6d00fdba6086234394183b4d476518c45f2a1a88f"
+  },
+  "additional_binary_hashes": {
+    "target/release/benitoite": "806ed8e065be20234feab7a928b6097def25f9e56bd57da2df855e93bbe41608",
+    "target/alloc-stats/release/benitoite": "c35d96e704d35d6ffc6d4f3d9a47792f27ac3db1f423dd8f6661f274b00b1cb5",
+    "target/release/examples/bytecode_stats": "6e30854b0826427ebddedc6f8cfe896cd4c1bea45c2687b232afa7bd96b60141"
+  },
+  "trial_source_hashes_match": true,
+  "runtime_diff_against_head": "",
+  "measurements": {
+    "r33": {
+      "conditions": 81,
+      "samples_per_condition": 10,
+      "errors": [],
+      "raw_data": "2026-10-09-memory-remeasure-4304d507f6bf.json"
+    },
+    "first_release": {
+      "report": "2026-10-09-first-release-4304d507f6bf.md",
+      "main_cli_timings": "median of 10 wall times; stored in Markdown by run.py; raw times not emitted by this tool",
+      "http_conditions": 20
+    }
+  },
+  "cpu_profile": {
+    "status": "blocked",
+    "samply_version": "0.13.1",
+    "planned_conditions": 24,
+    "error": "Unknown(1100)",
+    "direct_samply_retry": "same error",
+    "sample_retry": "exit 255; cannot examine live child process; child itself exited 0 with 9227465",
+    "failure_index": "2026-10-09-profile-index-4304d507f6bf.json"
+  },
+  "commands": [
+    "python3 tools/bench/run.py --benitoite target/release/benitoite --bench-run target/release/examples/bench_run --verify",
+    "python3 tools/bench/remeasure.py --measure --plan tools/bench/results/2026-10-09-r33-trial-4304d507f6bf-plan.json --output tools/bench/results/2026-10-09-memory-remeasure-4304d507f6bf.md",
+    "python3 tools/bench/run.py --benitoite target/release/benitoite --benitoite-alloc target/alloc-stats/release/benitoite --bytecode-stats target/release/examples/bytecode_stats --bench-run target/release/examples/bench_run --first-release --task-memory-work 1 --http-inputs tools/bench/results/2026-10-09-r33-trial-4304d507f6bf-http-inputs.json --output tools/bench/results/2026-10-09-first-release-4304d507f6bf.md",
+    "scripts/check.sh"
+  ],
+  "verification": {
+    "check_sh": "passed; exit 0; all checks passed",
+    "checks": [
+      "format",
+      "clippy",
+      "tests",
+      "gc-stress tests",
+      "placeholder allows",
+      "spec coverage self-test",
+      "licenses"
+    ],
+    "raw_sample_consistency": "81 x 10; pause lengths and sums; HTTP response counts verified",
+    "python_syntax": "passed",
+    "git_diff_check": "passed",
+    "report_file_links": "passed",
+    "check_heap": "not run; runtime::heap unchanged",
+    "committed": false
+  },
+  "full_revision": "4304d507f6bf33f106649ece5399c5d2cfca52dd"
+}

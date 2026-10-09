@@ -1,13 +1,13 @@
 // spec: 01-01 字句の種類
 // spec: 01-01 整数リテラル
 // spec: 01-01 数値リテラルの直後の文字
-fn main() -> Unit {
-  let _ = 007
-  let _ = 1__0
-  let _ = 0x
-  let _ = 0XFF
-  let _ = 12abc
-  let _ = 0xfg
-  let _ = 1_
-  ()
-}
+function main() -> Unit
+  bind _ <- 007
+  bind _ <- 1__0
+  bind _ <- 0x
+  bind _ <- 0XFF
+  bind _ <- 12abc
+  bind _ <- 0xfg
+  bind _ <- 1_
+  return ()
+end function

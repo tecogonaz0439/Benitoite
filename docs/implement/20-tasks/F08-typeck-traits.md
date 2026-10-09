@@ -93,6 +93,10 @@
 - 集まり: `ordered` を宣言していて集まりが `TySet::ORD` を含むなら満たす。それ以外は E0405（利用者の関数の型パラメータに算術演算子と順序の比較演算子は使えない。01-06「演算子の型付け」）。
 - 型構成子を表す型パラメータの適用 `F[A]` は、等値の型でも鍵の型でもない（F07 が判定する）。
 
+### `data` の型パラメータの制約
+
+01-06「組み込みの制約（初回リリース版）」は、型の宣言の型パラメータに組み込みの制約を書けないと定める。型の宣言の型パラメータは制約を持たないので、`:` の後に書いた制約は（組み込みの制約でも型クラスでも）E0425 とする。構文解析器（`syntax/parser/types.rs` の `push_type_param`）が、`full` が偽の型パラメータの後の `:` に続く制約の並びを読み、制約ごとに E0425（主な位置は制約の名前、`{constraint}` はその綴り）を報告し、制約を AST に入れない（本プランの決定）。本作業は、この変更に限って F02 のファイル `syntax/parser/types.rs` を直してよい。`F[_]: equality` など関数の型パラメータの位置の E0425 は、型検査が報告する。
+
 ## 受け入れテスト
 
 テストは F07 の `typeck::test_support` で検査し、診断をコードと主な位置で確かめる。辞書の求め方は `dicts` と `impls` の値を直接確かめる。
@@ -101,7 +105,7 @@
 |---|---|---|
 | 標準ライブラリのソース | `import Benitoite.Trait` だけを書いた利用者のソース | 診断なし。`traits` に九つの型クラス、`impls` に 10-14 の実装が入る |
 | 01-06 の `Show` の例 | 利用者の `trait Show`、`Show[Person]`、`implement[T: Show] Show[Option[T]]`、`describeAll` | 診断なし。`describeAll` の中の `Show.show` の `dicts` が `Param { constraint: 0, supers: [] }`、`describeAll(people)` の `dicts` が `Impl { Show[Person] }`、`Option` の値に使えば `Impl { Show[Option], args: [Impl { Show[Person] }] }` |
-| 上位の型クラス | 01-06「標準の型クラス」の `combineAll` | 診断なし。`Trait.Semigroup.combine` の辞書が `Param { constraint: 0, supers: [Monoid] }` の形で上位を辿る（道筋は `TraitDef::supers` の束縛） |
+| 上位の型クラス | 01-06「標準の型クラス」の `combineAll` | 診断なし。`Trait.Semigroup.combine` の辞書が `Param { constraint: 0, supers: [Semigroup] }` の形で上位を辿る（制約 `Monoid` の辞書から `d↑Semigroup` を取り出す。`supers` は辿った先の型クラスの束縛で、道筋は `TraitDef::supers` に従う） |
 | 戻り値の型で実装を選ぶ | `Trait.Monoid.empty()` を型注釈 `String` の束縛の文で使う | 診断なし。`Impl { Monoid[String] }` |
 | 型が決まらない | `Trait.Monoid.empty()` を型の決まらない位置で使う | E0407 |
 | 型構成子を引数にとる型クラス | 01-06 の `Functor` の例と、`Trait.Functor.map` を `Option` と `List` に使う | 診断なし。`implement Functor[Integer]`・`implement Functor[Result]` は E0714・E0427 |
@@ -113,15 +117,15 @@
 | メソッドの型 | 宣言と戻り値の型が違う実装の関数。宣言よりエフェクトの少ない実装の関数 | 前者は E0711、後者は診断なし |
 | 対象の形 | `implement Show[Option[Integer]]`、`implement Show[function() -> Unit]`、`implement[T, U] Show[Option[T]]` | E0712、E0712、E0713 |
 | メソッドのない型クラス・引数を含まないメソッド | `trait Empty[T] end trait` に当たるもの（構文解析器が許すなら）、`function f() -> Integer` を持つ型クラス | E0710、E0709 |
-| 組み込みの制約の位置 | `data Box[T: equality]`、`function f[F[_]: equality]` | どちらも E0425 |
+| 組み込みの制約の位置 | `data Box[T: equality]`、`data Box[T: Show]`、`function f[F[_]: equality]` | どれも E0425（`data` の型パラメータの制約は構文解析器が報告し、AST に入れない。後述の「`data` の型パラメータの制約」） |
 | `equality` | `function same[T: equality](a: T, b: T) -> Boolean return a = b end function` と、制約なしの同じ関数 | 前者は診断なし、後者は E0406 と `: equality` の挿入 |
-| `key` | 01-06 の `countBy` と、`K` の `key` を除いたもの | 前者は診断なし、後者は E0424 |
+| `key` | `function single[K: key, V](k: K, v: V) -> Map[K, V] return Map.fromList([Pair(k, v)]) end function` と、`K` の `key` を除いたもの（01-06 の `countBy` は `Map.set`・`Map.get` を使い、それらは L00 が置くので、本作業では確かめない） | 前者は診断なし、後者は E0424 |
 | 制約の強さ | `[T: key]` の関数から `[T: equality]` の関数を呼ぶ、その逆 | 前者は診断なし、後者は E0424 |
 | `ordered` | 標準ライブラリの `List.sort` を `List[Integer]` と `List[Boolean]` に使う | 前者は診断なし、後者は E0405 |
 | 実装の中の関数の番号 | `implement[T: Show] Show[List[T]]` の中の関数が自分の制約を持つメソッドを呼ぶ | 実装の制約の辞書が `Param { constraint: 0 }`、関数自身の制約が `constraint: 1` から（10-05「型パラメータの番号」） |
 | 誤りを重ねない | 誤りのある実装を二か所で使う | 誤りは実装の一つだけ |
 
-ゴールデンテスト: 上の表の診断なしの例（01-06 の `Show` と `Functor` の例、`combineAll`、`countBy`、`Benitoite.Trait` の実装を使う例）を、`testdata-next/traits/` に `check` の方式のテスト（`.bnt`、`check` を書いた `.mode`、`0` を書いた `.exit`。`.bnt` の先頭に `// spec:` の行）として置く。期待値は C05 が確かめ、誤りの診断のゴールデンテストは C11 が書く。
+ゴールデンテスト: 上の表の診断なしの例（01-06 の `Show` と `Functor` の例、`combineAll`、`key` の `single`、`Benitoite.Trait` の実装を使う例）を、`testdata-next/traits/` に `check` の方式のテスト（`.bnt`、`check` を書いた `.mode`、`0` を書いた `.exit`。`.bnt` の先頭に `// spec:` の行）として置く。期待値は C05 が確かめ、誤りの診断のゴールデンテストは C11 が書く。
 
 ## 完了条件
 

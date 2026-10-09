@@ -1,11 +1,11 @@
 // spec: 01-01 浮動小数リテラル
 // spec: 01-01 数値リテラルの直後の文字
-fn main() -> Unit {
-  let _ = 1.
-  let _ = 00.5
-  let _ = 01e5
-  let _ = 1e
-  let _ = 1.5.2
-  let _ = 1.5x
-  ()
-}
+function main() -> Unit
+  bind _ <- 1.
+  bind _ <- 00.5
+  bind _ <- 01e5
+  bind _ <- 1e
+  bind _ <- 1.5.2
+  bind _ <- 1.5x
+  return ()
+end function

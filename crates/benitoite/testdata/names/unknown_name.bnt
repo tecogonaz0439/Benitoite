@@ -1,10 +1,18 @@
 // spec: 01-03 名前の種類
 // spec: 01-03 修飾しない名前の解決
-fn prince() -> Int { 0 }
-fn printer() -> Int { 1 }
-fn pointed() -> Int { 2 }
-fn pointer() -> Int { 3 }
-fn main() -> Unit {
-  let _ = printe()
-  ()
-}
+function prince() -> Integer
+  return 0
+end function
+function printer() -> Integer
+  return 1
+end function
+function pointed() -> Integer
+  return 2
+end function
+function pointer() -> Integer
+  return 3
+end function
+function main() -> Unit
+  bind _ <- printe()
+  return ()
+end function

@@ -1,13 +1,15 @@
 // spec: 01-02 条件分岐
-fn main() -> Unit uses IO {
-  let value = 2
-  if value == 1 {
-    Console.println("one")
-  } else if value == 2 {
-    Console.println("two")
-  } else if value == 3 {
-    Console.println("three")
-  } else {
-    Console.println("other")
-  }
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind value <- 2
+  return if value = 1 then
+    Console.writeLine("one")
+  else if value = 2 then
+    Console.writeLine("two")
+  else if value = 3 then
+    Console.writeLine("three")
+  else
+    Console.writeLine("other")
+  end if
+end function

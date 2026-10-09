@@ -1,0 +1,27 @@
+// spec: 01-10 解放の失敗
+// spec: 01-10 リソースの型
+// 関門: 明示 close と with の解放の重複を守り、二度目の close が失敗する退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function main() -> Result[Unit, String] uses File.Read, State, Console.Write
+  bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+    Reference.set(saved, Option.Some(reader))
+    bind closed <- File.closeReader(reader)
+    Console.writeLine(match closed with
+      case Result.Ok(_) -> "closed"
+      case Result.Error(_) -> "close failed"
+    end match)
+  end with
+  match Reference.get(saved) with
+    case Option.Some(reader) ->
+      Console.writeLine(match File.closeReader(reader) with
+        case Result.Ok(_) -> "closed again"
+        case Result.Error(_) -> "close failed"
+      end match)
+    case Option.None -> Console.writeLine("missing reader")
+  end match
+  return Result.Ok(())
+end function

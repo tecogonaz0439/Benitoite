@@ -1,0 +1,16 @@
+// spec: 01-06 エフェクトの宣言とハンドラの型付け（初回リリース版）
+// spec: 01-02 エフェクトの宣言とハンドラ（初回リリース版）
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+effect Log
+  function write(value: String) -> Unit
+end effect
+function handled() -> Unit
+  handle
+    write("hello")
+  with
+    case write(message) -> resume(())
+  end handle
+end function
+function main() -> Unit
+  ()
+end function

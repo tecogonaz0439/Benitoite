@@ -1,14 +1,16 @@
 // spec: 01-05 選ばれない分岐の検査
-type L {
+import Benitoite.Unofficial.IO.Console
+
+data L
     Mk(L)
-}
+end data
 
-fn inspect(value: L) -> Unit {
-    match value {
-        L.Mk(_) => ()
-    }
-}
+function inspect(value: L) -> Unit
+    return match value with
+        case L.Mk(_) -> ()
+    end match
+end function
 
-fn main() -> Unit uses IO {
-    Console.println("ok")
-}
+function main() -> Unit uses Console.Write
+    return Console.writeLine("ok")
+end function

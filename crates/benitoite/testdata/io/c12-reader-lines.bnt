@@ -1,0 +1,20 @@
+// spec: 01-10 リソースの型
+// spec: 01-10 `with` の構文
+// 関門: with の中の逐次読み取りを守り、Reader の位置と改行・末尾の接続の退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function main() -> Result[Unit, String] uses File.Read, State, Console.Write
+  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+    bind first <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
+    bind second <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
+    bind last <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
+    bind eof <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
+    Console.writeLine(Option.unwrapOr(first, "eof"))
+    Console.writeLine("[${Option.unwrapOr(second, "eof")}]")
+    Console.writeLine(Option.unwrapOr(last, "eof"))
+    Console.writeLine(if eof = Option.None then "eof" else "extra line" end if)
+  end with
+  return Result.Ok(())
+end function

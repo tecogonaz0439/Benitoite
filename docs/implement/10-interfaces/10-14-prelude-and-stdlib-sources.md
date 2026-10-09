@@ -17,7 +17,7 @@
 
 最小実行版の prelude（`src/prelude/`。`list.bnt`・`option.bnt`・`result.bnt` と、ファイルの名前と内容の表）は、C04 が `src/legacy/prelude/` へ移す。本章のファイルは、空いたパスに新しく置く。最小実行版のソースは古い構文で書いてあり、名前も初回リリース版と違う（`List.dropFirst` など）ので、写さない。
 
-本章のソースは、処理系の実装を始める前に書いたものである。F05 以降の作業が、本章のソースを読んで誤り（構文の誤り、型の誤り、03-06 の定義との食い違い）を見つけたときは、ソースを直さずに作業を止めて報告する（[作業の進め方](../00-common/00-03-workflow.md)の「型やシグネチャを変える必要が生じたとき」）。ソースは本章で凍結したインターフェースの一部であり、直すと表（10-12）の照合や、ほかの作業のテストに影響するからである。
+本章のソースは、処理系の実装を始める前に書いたものである。F05 以降の作業が、本章のソースを読んで誤り（構文の誤り、型の誤り、03-06 の定義との食い違い）を見つけたときは、ソースを直さずに作業を止めて報告する（[作業の進め方](../00-common/00-03-workflow.md)の「型やシグネチャを変える必要が生じたとき」）。ソースは本章で凍結したインターフェースの一部であり、直すと表（10-12）の照合や、ほかの作業のテストに影響するからである。ただし、正規形のテスト（D02）で、整形で変わるのが空白（字下げ・空の行・字句の間の空白）だけなら、`format_source` の結果で標準ライブラリのソースと 10-14・10-15 の写しを直してよい（字句と型は変わらない）。直したファイルを完了の報告に書く。
 
 ## 置き方
 
@@ -1028,11 +1028,11 @@ public function allOk[T, X, effect E](actions: List[function() -> Result[T, X] u
 
 /// Runs each action as a task and returns the result of the first to finish, cancelling the others.
 @builtin("Task.race")
-public function race[T, effect E](actions: List[function() -> T uses E]) -> Option[T] uses Clock.Time, E
+public function race[T, effect E](actions: List[function() -> T uses E]) -> Option[T] uses Clock.Time, State, E
 
 /// Runs `action` as a task and returns its result if it finishes within `milliseconds`; otherwise cancels it.
 @builtin("Task.withTimeout")
-public function withTimeout[T, effect E](milliseconds: Integer, action: function() -> T uses E) -> Option[T] uses Clock.Time, E
+public function withTimeout[T, effect E](milliseconds: Integer, action: function() -> T uses E) -> Option[T] uses Clock.Time, State, E
 
 /// Waits for `task` to finish and returns its result.
 @builtin("Task.await")
@@ -1545,9 +1545,9 @@ end function
 
 ## 文法の確かめ
 
-本章のソースは、[tools/grammar-check](../../../tools/grammar-check/README.md) の字句解析器と照合器で、01-02「初回リリース版の文法の全体」に、`@builtin` を付けた本体のない関数の宣言（02-03「標準ライブラリのソースの構文」）を加えた文法で読めることを確かめた（2026-09-30）。局所の束縛の規則（`scope_check.py`）も確かめた。この道具が確かめるのは文法と局所の束縛の規則だけであり、名前解決と型検査の誤りは確かめていない。名前と型の誤りは、F05〜F10 の作業が、本章のソースを処理系で読んで見つける（前述の「置く作業と既存のファイル」）。
+本章のソースは、Python の道具 `tools/grammar-check`（C13 が消した）の字句解析器と照合器で、01-02「初回リリース版の文法の全体」に、`@builtin` を付けた本体のない関数の宣言（02-03「標準ライブラリのソースの構文」）を加えた文法で読めることを確かめた（2026-09-30）。局所の束縛の規則（`scope_check.py`）も確かめた。この道具が確かめるのは文法と局所の束縛の規則だけであり、名前解決と型検査の誤りは確かめていない。名前と型の誤りは、F05〜F10 の作業が、本章のソースを処理系で読んで見つける（前述の「置く作業と既存のファイル」）。
 
-`tools/grammar-check` は、`@builtin` の宣言を含むソースの文法を扱わない。本章のソースを変えたときは、同じ確かめ方で読み直す。処理系の検査（C13）が道具を置き換えた後は、処理系で標準ライブラリのソースを検査するテスト（F06 の照合のテストを含む）で確かめる。
+本章のソースを変えたときは、処理系で標準ライブラリのソースを検査するテスト（F06 の照合のテストを含む）で確かめる。
 
 ## 作業の割り当て
 

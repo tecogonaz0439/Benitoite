@@ -1,18 +1,20 @@
 // spec: 01-05 型の宣言
 // spec: 01-05 網羅性の検査
-type IntList {
+import Benitoite.Unofficial.IO.Console
+
+data IntList
   Nil
-  Cons(Int, IntList)
-}
+  Cons(Integer, IntList)
+end data
 
-fn sum(values: IntList) -> Int {
-  match values {
-    IntList.Nil => 0
-    IntList.Cons(value, rest) => value + sum(rest)
-  }
-}
+function sum(values: IntList) -> Integer
+  return match values with
+    case IntList.Nil -> 0
+    case IntList.Cons(value, rest) -> value + sum(rest)
+  end match
+end function
 
-fn main() -> Unit uses IO {
-  let values = IntList.Cons(1, IntList.Cons(2, IntList.Cons(3, IntList.Nil)))
-  Console.println(Int.toString(sum(values)))
-}
+function main() -> Unit uses Console.Write
+  bind values <- IntList.Cons(1, IntList.Cons(2, IntList.Cons(3, IntList.Nil)))
+  return Console.writeLine(Integer.toString(sum(values)))
+end function

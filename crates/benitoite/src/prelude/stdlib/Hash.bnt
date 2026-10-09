@@ -1,0 +1,5 @@
+//! Hash values of bytes.
+
+/// Returns the SHA-256 hash of `b` (32 bytes).
+@builtin("Hash.sha256")
+public function sha256(b: Bytes) -> Bytes

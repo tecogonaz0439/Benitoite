@@ -1,22 +1,24 @@
 // spec: 01-04 Float
-fn bool_text(value: Bool) -> String {
-  if value { "true" } else { "false" }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  let positive_infinity = 1.0 / 0.0
-  let nan = 0.0 / 0.0
-  Console.println(Float.toString(positive_infinity))
-  Console.println(Float.toString(nan))
-  Console.println(Float.toString(Float.abs(-2.5)))
-  Console.println(Float.toString(Float.sqrt(9.0)))
-  Console.println(Float.toString(Float.sqrt(-1.0)))
-  Console.println(Float.toString(1.5 + 2.5))
-  Console.println(Float.toString(5.0 - 2.0))
-  Console.println(Float.toString(2.0 * 3.0))
-  Console.println(bool_text(0.0 == -0.0))
-  Console.println(bool_text(nan == nan))
-  Console.println(bool_text(nan != nan))
-  Console.println(bool_text(nan < 0.0))
-  Console.println(bool_text(Float.isNaN(nan)))
-}
+function bool_text(value: Boolean) -> String
+  return if value then "true" else "false" end if
+end function
+
+function main() -> Unit uses Console.Write
+  bind positive_infinity <- 1.0 / 0.0
+  bind nan <- 0.0 / 0.0
+  Console.writeLine(Float.toString(positive_infinity))
+  Console.writeLine(Float.toString(nan))
+  Console.writeLine(Float.toString(Float.absolute(-2.5)))
+  Console.writeLine(Float.toString(Float.squareRoot(9.0)))
+  Console.writeLine(Float.toString(Float.squareRoot(-1.0)))
+  Console.writeLine(Float.toString(1.5 + 2.5))
+  Console.writeLine(Float.toString(5.0 - 2.0))
+  Console.writeLine(Float.toString(2.0 * 3.0))
+  Console.writeLine(bool_text(0.0 = -0.0))
+  Console.writeLine(bool_text(nan = nan))
+  Console.writeLine(bool_text(nan <> nan))
+  Console.writeLine(bool_text(nan < 0.0))
+  return Console.writeLine(bool_text(Float.isNaN(nan)))
+end function

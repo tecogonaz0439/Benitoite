@@ -1,0 +1,26 @@
+// spec: 01-11 タスクを起動する関数
+// spec: 01-11 失敗と停止
+// 関門: allOk の成功と入力順で最初の失敗を守り、完了順の失敗を返す退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+
+function failAfterWork(n: Integer) -> Result[Integer, String]
+  if n = 0 then return Result.Error("first") end if
+  return failAfterWork(n - 1)
+end function
+
+function main() -> Unit uses Console.Write
+  bind empty: Result[List[Integer], String] <- Task.allOk([])
+  Console.writeLine(if empty = Result.Ok([]) then "empty" else "wrong empty" end if)
+  bind success: Result[List[Integer], String] <- Task.allOk([lambda() return Result.Ok(1) end lambda, lambda() return Result.Ok(2) end lambda])
+  Console.writeLine(if success = Result.Ok([1, 2]) then "success" else "wrong success" end if)
+  bind failure: Result[List[Integer], String] <- Task.allOk([
+    lambda() return Result.Ok(0) end lambda,
+    lambda() return failAfterWork(10000) end lambda,
+    lambda() return Result.Error("second") end lambda
+  ])
+  Console.writeLine(match failure with
+    case Result.Error(message) -> message
+    case Result.Ok(_) -> "unexpected success"
+  end match)
+end function

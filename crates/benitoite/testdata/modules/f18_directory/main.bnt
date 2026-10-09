@@ -1,0 +1,6 @@
+// test: 06-01 ディレクトリの指定（初回リリース版）
+import Benitoite.Unofficial.IO.Console
+import Lib.Text
+function main() -> Unit uses Console.Write
+ Console.writeLine(Text.message())
+end function

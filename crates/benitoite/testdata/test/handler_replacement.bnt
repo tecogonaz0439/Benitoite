@@ -1,0 +1,20 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+// 06-04「組み込みの操作の差し替え」の File.readText の例。実際のファイルに触れない（app.conf は作業ディレクトリにない）。
+import Benitoite.Unofficial.IO.File
+
+function readPort(path: String) -> Result[Integer, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
+end function
+
+@test("readPort reads the number in the file")
+function readPortReadsNumber() -> Unit uses Assert.Check, File.Read
+  bind result <- handle
+    readPort("app.conf")
+  with
+    case File.readText(path) ->
+      Assert.equal(path, "app.conf")
+      resume(Result.Ok("8080\n"))
+  end handle
+  Assert.equal(result, Result.Ok(8080))
+end function

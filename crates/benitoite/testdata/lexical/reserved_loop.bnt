@@ -1,7 +1,7 @@
 // spec: 01-01 キーワード
-fn main() -> Unit {
-  let for = 1
-  let while = 2
-  let loop = 3
-  ()
-}
+function main() -> Unit
+  bind then <- 1
+  bind case <- 2
+  bind uses <- 3
+  return ()
+end function

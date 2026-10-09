@@ -1,0 +1,658 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><title>第1段の測定</title><style>body{font:16px system-ui;margin:2rem;max-width:1200px}section{padding:1rem;border:1px solid #ddd;margin:1rem 0}.row{display:grid;grid-template-columns:100px 1fr 150px;align-items:center;margin:.5rem}i{display:block;height:18px;background:#4169a1}b{text-align:right}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}</style><h1>第1段の測定</h1><p>線形目盛。時間の空欄は未測定。VM と循環の単位測定を分けて読む。</p><section><h3>fib: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>544</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>544</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>544</b></div><div class="row"><span>RC</span><i style="width:76.47058823529412%"></i><b>416</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>544</b></div></section><section><h3>loop: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>544</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>544</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>544</b></div><div class="row"><span>RC</span><i style="width:76.47058823529412%"></i><b>416</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>544</b></div></section><section><h3>list: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:83.33299074169238%"></i><b>239,999,680</b></div><div class="row"><span>MS-k1</span><i style="width:99.99967777867283%"></i><b>287,999,872</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>288,000,800</b></div><div class="row"><span>RC</span><i style="width:67.63741211829966%"></i><b>194,796,288</b></div><div class="row"><span>RC-noreuse</span><i style="width:67.63741211829966%"></i><b>194,796,288</b></div></section><section><h3>tree: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>536,871,168</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>536,871,168</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>536,871,168</b></div><div class="row"><span>RC</span><i style="width:99.99998807907673%"></i><b>536,871,104</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>536,871,168</b></div></section><section><h3>eval: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>43,296</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>43,296</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>43,296</b></div><div class="row"><span>RC</span><i style="width:99.70436067997043%"></i><b>43,168</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>43,296</b></div></section><section><h3>string: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>1,072,001,152</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>1,072,001,152</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>1,072,001,152</b></div><div class="row"><span>RC</span><i style="width:99.99998805971433%"></i><b>1,072,001,024</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>1,072,001,152</b></div></section><section><h3>shared: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>55,008</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>55,008</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>55,008</b></div><div class="row"><span>RC</span><i style="width:99.7673065735893%"></i><b>54,880</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>55,008</b></div></section><section><h3>live: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:53.25718570492727%"></i><b>12,591,328</b></div><div class="row"><span>MS-k1</span><i style="width:70.9912185244739%"></i><b>16,784,096</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>23,642,496</b></div><div class="row"><span>RC</span><i style="width:53.25718570492727%"></i><b>12,591,328</b></div><div class="row"><span>RC-noreuse</span><i style="width:53.25718570492727%"></i><b>12,591,328</b></div></section><section><h3>roots: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:56.30414331874514%"></i><b>63,873,312</b></div><div class="row"><span>MS-k1</span><i style="width:70.63985410869354%"></i><b>80,136,224</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>113,443,360</b></div><div class="row"><span>RC</span><i style="width:46.42612842214829%"></i><b>52,667,360</b></div><div class="row"><span>RC-noreuse</span><i style="width:46.42612842214829%"></i><b>52,667,360</b></div></section><section><h3>returns: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>163,840,416</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>163,840,416</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>163,840,416</b></div><div class="row"><span>RC</span><i style="width:99.99996093759918%"></i><b>163,840,352</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>163,840,416</b></div></section><section><h3>mixed: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>4,318,304</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>4,318,304</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>4,318,304</b></div><div class="row"><span>RC</span><i style="width:99.90514794697178%"></i><b>4,314,208</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>4,318,304</b></div></section><section><h3>cycle-self: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>64</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>64</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>64</b></div><div class="row"><span>RC</span><i style="width:100.0%"></i><b>64</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>64</b></div></section><section><h3>cycle-pair: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>128</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>128</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>128</b></div><div class="row"><span>RC</span><i style="width:100.0%"></i><b>128</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>128</b></div></section><section><h3>cycle-ring: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>1,280,064</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>1,280,064</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>1,280,064</b></div><div class="row"><span>RC</span><i style="width:100.0%"></i><b>1,280,064</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>1,280,064</b></div></section><section><h3>cycle-list: 最大ヒープ bytes</h3><div class="row"><span>MS-k0.5</span><i style="width:100.0%"></i><b>6,400,064</b></div><div class="row"><span>MS-k1</span><i style="width:100.0%"></i><b>6,400,064</b></div><div class="row"><span>MS-k2</span><i style="width:100.0%"></i><b>6,400,064</b></div><div class="row"><span>RC</span><i style="width:100.0%"></i><b>6,400,064</b></div><div class="row"><span>RC-noreuse</span><i style="width:100.0%"></i><b>6,400,064</b></div></section><section><h3>fib: 最大 RSS bytes</h3>未測定</section><section><h3>loop: 最大 RSS bytes</h3>未測定</section><section><h3>list: 最大 RSS bytes</h3>未測定</section><section><h3>tree: 最大 RSS bytes</h3>未測定</section><section><h3>eval: 最大 RSS bytes</h3>未測定</section><section><h3>string: 最大 RSS bytes</h3>未測定</section><section><h3>shared: 最大 RSS bytes</h3>未測定</section><section><h3>live: 最大 RSS bytes</h3>未測定</section><section><h3>roots: 最大 RSS bytes</h3>未測定</section><section><h3>returns: 最大 RSS bytes</h3>未測定</section><section><h3>mixed: 最大 RSS bytes</h3>未測定</section><section><h3>cycle-self: 最大 RSS bytes</h3>未測定</section><section><h3>cycle-pair: 最大 RSS bytes</h3>未測定</section><section><h3>cycle-ring: 最大 RSS bytes</h3>未測定</section><section><h3>cycle-list: 最大 RSS bytes</h3>未測定</section><section><h3>fib: 実行時間 ns</h3>未測定</section><section><h3>loop: 実行時間 ns</h3>未測定</section><section><h3>list: 実行時間 ns</h3>未測定</section><section><h3>tree: 実行時間 ns</h3>未測定</section><section><h3>eval: 実行時間 ns</h3>未測定</section><section><h3>string: 実行時間 ns</h3>未測定</section><section><h3>shared: 実行時間 ns</h3>未測定</section><section><h3>live: 実行時間 ns</h3>未測定</section><section><h3>roots: 実行時間 ns</h3>未測定</section><section><h3>returns: 実行時間 ns</h3>未測定</section><section><h3>mixed: 実行時間 ns</h3>未測定</section><section><h3>cycle-self: 実行時間 ns</h3>未測定</section><section><h3>cycle-pair: 実行時間 ns</h3>未測定</section><section><h3>cycle-ring: 実行時間 ns</h3>未測定</section><section><h3>cycle-list: 実行時間 ns</h3>未測定</section><h2>記録</h2><pre># 第1段の測定 2026-10-05 / &lt;COMMIT&gt;
+
+## 環境
+
+| 項目 | 値 |
+|---|---|
+| os | macOS-27.0.1-arm64-arm-64bit |
+| cpu | Apple M4 |
+| logical_cpus | 10 |
+| memory | 34,359,738,368 bytes |
+| rustc | rustc 1.98.1 (48a229cea 2026-09-01) |
+| model | Mac16,10 |
+| hardware_query | system_profiler SPHardwareDataType -json |
+
+## ソースの識別
+
+| ファイル | SHA-256 |
+|---|---|
+| tools/bench/stage1.py | b02d465e8e2ff65d11762306313e37b1531066b14cde078cf62e3454b1f90a9a |
+| tools/bench/programs/fib.bnt | f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c |
+| tools/bench/programs/loop.bnt | 64c380f6eface80d69adf358c25251041304075c53e3879806688246720ee9b3 |
+| tools/bench/programs/list.bnt | 5300af350b085901c9197e76cd892c1f90e11e3743c7354b36e290a9a44f6efc |
+| tools/bench/programs/tree.bnt | 332ce8521ad9bc39bbb98a4d2751756762b0605df659993b91877a5a4eaefa27 |
+| tools/bench/programs/eval.bnt | 47994aa85f6d67ee7124eae8f8010881abe0b46f8b7caa575774b67be542b7fb |
+| tools/bench/programs/string.bnt | 2859b4dd7634a616e0d3f62f6e3de2399573a01ea3d68a7b1ff623fad6f67ec4 |
+| tools/bench/programs/stage1/shared.bnt | 788646880399e35d2ae2c31d65a1e98a8108770ab5b61cb7ee6f152acb1378a3 |
+| tools/bench/programs/stage1/live.bnt | c58f3cc06d9bc08df376365dafaba45af155c08cb5a6658c58197b1d1b097ab3 |
+| tools/bench/programs/stage1/roots.bnt | cda520b39b6f345053aeb2a6d00fdba6086234394183b4d476518c45f2a1a88f |
+| tools/bench/programs/stage1/returns.bnt | 501e7e5247c597054e563cad61b0dd360da12282b585aa7634c5cfabfe69bb1e |
+| tools/bench/programs/stage1/mixed.bnt | e9d3a500c26284cbf2b57966b62821fd642ab5902fbdb9b1ddd52e3af9042c17 |
+| crates/benitoite/examples/stage1_bench.rs | e302adf8c0b8863c29862b0fa78765e2917c844679a70d652a162cb471815504 |
+| crates/benitoite/examples/stage1_heap_bench.rs | 97722b08dccadbee9122d5669aa2e8ecdbe72e8d8f9571cdd9b338cb87038a8e |
+| crates/benitoite/examples/stage1_support/mod.rs | 13a3a23e7cba2b5d92ab8ada49630417bc4f326b7eef1ca3f83b494cb3ee9977 |
+| crates/benitoite/src/runtime/heap/core.rs | 9c12552a89ea1af7dd7ba4c0eac2749792d3da8f27accab4472102d43d8b926c |
+| crates/benitoite/src/runtime/heap/ctx.rs | 1db0df137dbb17d7829e6ae99b1c683477e1e107cbc40d5fb0ac8cc67da3bbfc |
+| crates/benitoite/src/runtime/heap/core/refcount.rs | 1ad3281dd88031d92868a9dcb828b2a48654f837390e71fb3b4479364e66238d |
+| crates/benitoite/src/vm/dispatch.rs | e221dba4d24a6351572f244022c324ac22479ceaa49fec4cc417dbc91d1580a8 |
+
+## 処理系と構成
+
+基準コミット: `737a9de25730`。道具・本番の測定のコミット: `&lt;COMMIT&gt;`。測定専用のコミット: `&lt;COMMIT&gt;`（`measure/R12-counts`）。コミットとファイル名はオーケストレータが埋める。
+
+CPU 型番は環境の表に示した方法で取得した。旧記録は Apple M4・32 GiB・macOS 27.0、今回は macOS 27.0.1 である。旧 VM の測り直しは今回と同じ環境で行う。
+
+| 構成 | feature | k（百分率） | reuse | trigger_min_bytes | stress（VM / 循環） |
+|---|---|---|---|---|---|
+| MS-k0.5 | gc-mark-sweep | 50 | True | 4194304 | false / true |
+| MS-k1 | gc-mark-sweep | 100 | True | 4194304 | false / true |
+| MS-k2 | gc-mark-sweep | 200 | True | 4194304 | false / true |
+| RC | gc-refcount | 100 | True | 4194304 | false / true |
+| RC-noreuse | gc-refcount | 100 | False | 4194304 | false / true |
+
+release、既定機能なし、`heap-verify`・`alloc-stats`・`gc-stress` なし。VM は Direct。全構成で同じ命令と生存情報を使う。循環は公開ヒープ API の単位測定であり、VM の Reference の統合を確かめるものではない。self は自己参照のセル、pair は2セルの相互参照、ring はセルと構成子の並びの輪、list は同じセルを各要素に持つ ListCell の連結リストをそのセルへ入れた循環である。
+
+RC は解放待ちの量が 4 MiB を超えると要求する。循環は、新しいセル数が `max(1000, 前回の生存セル数)` 以上、または生存セルがあり確保量が `max(4 MiB, k × 前回の生存量)` 以上で要求する。stress の循環では毎回回収し、この負荷では k の閾値の効果を測らない。`reuses` は `reuse_ctor` が `Some` を返した回数である。再利用率は `reuses / (reuses + allocations)` とする。
+
+## 入力の大きさ
+
+| 負荷 | 今回の入力 | 本測定の仮入力 |
+|---|---|---|
+| fib | 35 | 35 |
+| loop | 15000000 | 15000000 |
+| list | 1500000 | 1500000 |
+| tree | 22 | 22 |
+| eval | 30000 | 30000 |
+| string | 8000000 | 8000000 |
+| shared | 16 | 16 |
+| live | 16 | 16 |
+| roots | 3000 | 3000 |
+| returns | 20000 | 20000 |
+| mixed | 10000 | 10000 |
+| cycle-self | 20000 1 | 20000 1 |
+| cycle-pair | 20000 1 | 20000 1 |
+| cycle-ring | 100 10000 | 100 10000 |
+| cycle-list | 100 100000 | 100 100000 |
+
+追加の本入力は仮の値である。通常の release で1〜10秒に調整し、採った入力を JSON と記録に保存する。小入力の照合は全75組（VM 11×5、循環4×5）を実行する。
+
+## 実行時間と回収の停止時間
+
+時間の本測定はオーケストレータが計算機を静かにして行う。この記録は計数と RSS の収集であり、時間の欄は空けてある。
+
+| 負荷 | 構成 | 検査 | 脱糖・コード生成 | 実行 | 段を含む合計 | プロセス全体 | 回収合計 | p50 | p95 | p99 | 最大 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| fib | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| fib | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| fib | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| fib | RC | — | — | — | — | — | — | — | — | — | — |
+| fib | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| loop | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| loop | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| loop | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| loop | RC | — | — | — | — | — | — | — | — | — | — |
+| loop | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| list | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| list | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| list | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| list | RC | — | — | — | — | — | — | — | — | — | — |
+| list | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| tree | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| tree | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| tree | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| tree | RC | — | — | — | — | — | — | — | — | — | — |
+| tree | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| eval | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| eval | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| eval | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| eval | RC | — | — | — | — | — | — | — | — | — | — |
+| eval | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| string | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| string | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| string | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| string | RC | — | — | — | — | — | — | — | — | — | — |
+| string | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| shared | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| shared | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| shared | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| shared | RC | — | — | — | — | — | — | — | — | — | — |
+| shared | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| live | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| live | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| live | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| live | RC | — | — | — | — | — | — | — | — | — | — |
+| live | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| roots | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| roots | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| roots | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| roots | RC | — | — | — | — | — | — | — | — | — | — |
+| roots | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| returns | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| returns | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| returns | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| returns | RC | — | — | — | — | — | — | — | — | — | — |
+| returns | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| mixed | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| mixed | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| mixed | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| mixed | RC | — | — | — | — | — | — | — | — | — | — |
+| mixed | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| cycle-self | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| cycle-self | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| cycle-self | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| cycle-self | RC | — | — | — | — | — | — | — | — | — | — |
+| cycle-self | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| cycle-pair | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| cycle-pair | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| cycle-pair | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| cycle-pair | RC | — | — | — | — | — | — | — | — | — | — |
+| cycle-pair | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| cycle-ring | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| cycle-ring | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| cycle-ring | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| cycle-ring | RC | — | — | — | — | — | — | — | — | — | — |
+| cycle-ring | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+| cycle-list | MS-k0.5 | — | — | — | — | — | — | — | — | — | — |
+| cycle-list | MS-k1 | — | — | — | — | — | — | — | — | — | — |
+| cycle-list | MS-k2 | — | — | — | — | — | — | — | — | — | — |
+| cycle-list | RC | — | — | — | — | — | — | — | — | — | — |
+| cycle-list | RC-noreuse | — | — | — | — | — | — | — | — | — | — |
+
+検査・脱糖・コンパイルと run_program は例の Instant で直接区切る。実行は VM の作成・main の準備・最後の転送・VM とヒープの破棄を含む。total は入力の準備も含み、統計の書き出しを含まない。wall は起動と終了・統計の出力も含む。循環の run は構築と回収を含み、回収合計は pause_nanos の合計である。
+
+## 確保の量、生きている量、最大常駐メモリ
+
+| 負荷 | 構成 | 確保回数 | 累積確保 bytes | 最後の生存 bytes | 最大ヒープ bytes | 最大 RSS bytes | 解放数 | 残った対象 |
+|---|---|---|---|---|---|---|---|---|
+| fib | MS-k0.5 | 10 | 544 | 0 | 544 | — | 0 | — |
+| fib | MS-k1 | 10 | 544 | 0 | 544 | — | 0 | — |
+| fib | MS-k2 | 10 | 544 | 0 | 544 | — | 0 | — |
+| fib | RC | 8 | 416 | 0 | 416 | — | 0 | — |
+| fib | RC-noreuse | 10 | 544 | 0 | 544 | — | 0 | — |
+| loop | MS-k0.5 | 10 | 544 | 0 | 544 | — | 0 | — |
+| loop | MS-k1 | 10 | 544 | 0 | 544 | — | 0 | — |
+| loop | MS-k2 | 10 | 544 | 0 | 544 | — | 0 | — |
+| loop | RC | 8 | 416 | 0 | 416 | — | 0 | — |
+| loop | RC-noreuse | 10 | 544 | 0 | 544 | — | 0 | — |
+| list | MS-k0.5 | 13500019 | 864000832 | 115776 | 239999680 | — | 13494599 | — |
+| list | MS-k1 | 13500019 | 864000832 | 902848 | 287999872 | — | 13457705 | — |
+| list | MS-k2 | 13500019 | 864000832 | 38399744 | 288000800 | — | 11700038 | — |
+| list | RC | 13500017 | 864000704 | 1863168 | 194796288 | — | 13412689 | — |
+| list | RC-noreuse | 13500019 | 864000832 | 1863168 | 194796288 | — | 13412690 | — |
+| tree | MS-k0.5 | 8388618 | 536871424 | 483723360 | 536871168 | — | 4 | — |
+| tree | MS-k1 | 8388618 | 536871424 | 536858592 | 536871168 | — | 4 | — |
+| tree | MS-k2 | 8388618 | 536871424 | 339720480 | 536871168 | — | 4 | — |
+| tree | RC | 8388616 | 536871296 | 536782944 | 536871104 | — | 3 | — |
+| tree | RC-noreuse | 8388618 | 536871424 | 536782688 | 536871168 | — | 4 | — |
+| eval | MS-k0.5 | 679 | 43296 | 0 | 43296 | — | 0 | — |
+| eval | MS-k1 | 679 | 43296 | 0 | 43296 | — | 0 | — |
+| eval | MS-k2 | 679 | 43296 | 0 | 43296 | — | 0 | — |
+| eval | RC | 677 | 43168 | 0 | 43168 | — | 0 | — |
+| eval | RC-noreuse | 679 | 43296 | 0 | 43296 | — | 0 | — |
+| string | MS-k0.5 | 16000020 | 1072001152 | 0 | 1072001152 | — | 0 | — |
+| string | MS-k1 | 16000020 | 1072001152 | 0 | 1072001152 | — | 0 | — |
+| string | MS-k2 | 16000020 | 1072001152 | 0 | 1072001152 | — | 0 | — |
+| string | RC | 16000018 | 1072001024 | 0 | 1072001024 | — | 0 | — |
+| string | RC-noreuse | 16000020 | 1072001152 | 0 | 1072001152 | — | 0 | — |
+| shared | MS-k0.5 | 862 | 55008 | 0 | 55008 | — | 0 | — |
+| shared | MS-k1 | 862 | 55008 | 0 | 55008 | — | 0 | — |
+| shared | MS-k2 | 862 | 55008 | 0 | 55008 | — | 0 | — |
+| shared | RC | 860 | 54880 | 0 | 54880 | — | 0 | — |
+| shared | RC-noreuse | 862 | 55008 | 0 | 55008 | — | 0 | — |
+| live | MS-k0.5 | 389085 | 27845248 | 8388832 | 12591328 | — | 222916 | — |
+| live | MS-k1 | 389085 | 27845248 | 8388832 | 16784096 | — | 222658 | — |
+| live | MS-k2 | 389085 | 27845248 | 8388832 | 23642496 | — | 55732 | — |
+| live | RC | 389083 | 27845120 | 8388832 | 12591328 | — | 222915 | — |
+| live | RC-noreuse | 389085 | 27845248 | 8388832 | 12591328 | — | 222916 | — |
+| roots | MS-k0.5 | 2307013 | 147552640 | 1168352 | 63873312 | — | 2252181 | — |
+| roots | MS-k1 | 2307013 | 147552640 | 418912 | 80136224 | — | 2287357 | — |
+| roots | MS-k2 | 2307013 | 147552640 | 16608 | 113443360 | — | 2306240 | — |
+| roots | RC | 2307011 | 147552512 | 387552 | 52667360 | — | 2288828 | — |
+| roots | RC-noreuse | 2307013 | 147552640 | 387552 | 52667360 | — | 2288829 | — |
+| returns | MS-k0.5 | 2560010 | 163840544 | 160 | 163840416 | — | 2560004 | — |
+| returns | MS-k1 | 2560010 | 163840544 | 160 | 163840416 | — | 2560004 | — |
+| returns | MS-k2 | 2560010 | 163840544 | 160 | 163840416 | — | 2560004 | — |
+| returns | RC | 2560008 | 163840416 | 160 | 163840352 | — | 2560003 | — |
+| returns | RC-noreuse | 2560010 | 163840544 | 160 | 163840416 | — | 2560004 | — |
+| mixed | MS-k0.5 | 10270013 | 664320672 | 66656 | 4318304 | — | 10252546 | — |
+| mixed | MS-k1 | 10270013 | 664320672 | 66656 | 4318304 | — | 10252546 | — |
+| mixed | MS-k2 | 10270013 | 664320672 | 66656 | 4318304 | — | 10252546 | — |
+| mixed | RC | 10260011 | 663680544 | 66656 | 4314208 | — | 10242561 | — |
+| mixed | RC-noreuse | 10270013 | 664320672 | 66656 | 4318304 | — | 10252546 | — |
+| cycle-self | MS-k0.5 | 20000 | 1280000 | 0 | 64 | — | 20000 | 0 |
+| cycle-self | MS-k1 | 20000 | 1280000 | 0 | 64 | — | 20000 | 0 |
+| cycle-self | MS-k2 | 20000 | 1280000 | 0 | 64 | — | 20000 | 0 |
+| cycle-self | RC | 20000 | 1280000 | 0 | 64 | — | 20000 | 0 |
+| cycle-self | RC-noreuse | 20000 | 1280000 | 0 | 64 | — | 20000 | 0 |
+| cycle-pair | MS-k0.5 | 40000 | 2560000 | 0 | 128 | — | 40000 | 0 |
+| cycle-pair | MS-k1 | 40000 | 2560000 | 0 | 128 | — | 40000 | 0 |
+| cycle-pair | MS-k2 | 40000 | 2560000 | 0 | 128 | — | 40000 | 0 |
+| cycle-pair | RC | 40000 | 2560000 | 0 | 128 | — | 40000 | 0 |
+| cycle-pair | RC-noreuse | 40000 | 2560000 | 0 | 128 | — | 40000 | 0 |
+| cycle-ring | MS-k0.5 | 2000100 | 128006400 | 0 | 1280064 | — | 2000100 | 0 |
+| cycle-ring | MS-k1 | 2000100 | 128006400 | 0 | 1280064 | — | 2000100 | 0 |
+| cycle-ring | MS-k2 | 2000100 | 128006400 | 0 | 1280064 | — | 2000100 | 0 |
+| cycle-ring | RC | 2000100 | 128006400 | 0 | 1280064 | — | 2000100 | 0 |
+| cycle-ring | RC-noreuse | 2000100 | 128006400 | 0 | 1280064 | — | 2000100 | 0 |
+| cycle-list | MS-k0.5 | 10000100 | 640006400 | 0 | 6400064 | — | 10000100 | 0 |
+| cycle-list | MS-k1 | 10000100 | 640006400 | 0 | 6400064 | — | 10000100 | 0 |
+| cycle-list | MS-k2 | 10000100 | 640006400 | 0 | 6400064 | — | 10000100 | 0 |
+| cycle-list | RC | 10000100 | 640006400 | 0 | 6400064 | — | 10000100 | 0 |
+| cycle-list | RC-noreuse | 10000100 | 640006400 | 0 | 6400064 | — | 10000100 | 0 |
+
+live_bytes は最後の回収時の値であり、終了時の到達可能量ではない。frees は HeapCore の破棄前の値である。RSS は `/usr/bin/time -l`（macOS）または `-v`（Linux）で取得した最大値。対象の課金量とプロセス全体の RSS は異なる。
+
+RSS を取得できなかった組:
+
+| 負荷 | 構成 | 理由 |
+|---|---|---|
+| fib | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| fib | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| fib | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| fib | RC | time: sysctl kern.clockrate: Operation not permitted |
+| fib | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| loop | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| loop | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| loop | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| loop | RC | time: sysctl kern.clockrate: Operation not permitted |
+| loop | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| list | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| list | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| list | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| list | RC | time: sysctl kern.clockrate: Operation not permitted |
+| list | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| tree | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| tree | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| tree | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| tree | RC | time: sysctl kern.clockrate: Operation not permitted |
+| tree | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| eval | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| eval | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| eval | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| eval | RC | time: sysctl kern.clockrate: Operation not permitted |
+| eval | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| string | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| string | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| string | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| string | RC | time: sysctl kern.clockrate: Operation not permitted |
+| string | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| shared | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| shared | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| shared | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| shared | RC | time: sysctl kern.clockrate: Operation not permitted |
+| shared | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| live | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| live | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| live | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| live | RC | time: sysctl kern.clockrate: Operation not permitted |
+| live | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| roots | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| roots | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| roots | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| roots | RC | time: sysctl kern.clockrate: Operation not permitted |
+| roots | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| returns | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| returns | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| returns | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| returns | RC | time: sysctl kern.clockrate: Operation not permitted |
+| returns | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| mixed | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| mixed | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| mixed | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| mixed | RC | time: sysctl kern.clockrate: Operation not permitted |
+| mixed | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-self | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-self | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-self | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-self | RC | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-self | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-pair | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-pair | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-pair | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-pair | RC | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-pair | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-ring | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-ring | MS-k1 | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-ring | MS-k2 | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-ring | RC | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-ring | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted |
+| cycle-list | MS-k0.5 | time: sysctl kern.clockrate: Operation not permitted（同じ環境の OS 計測で確認済み） |
+| cycle-list | MS-k1 | time: sysctl kern.clockrate: Operation not permitted（同じ環境の OS 計測で確認済み） |
+| cycle-list | MS-k2 | time: sysctl kern.clockrate: Operation not permitted（同じ環境の OS 計測で確認済み） |
+| cycle-list | RC | time: sysctl kern.clockrate: Operation not permitted（同じ環境の OS 計測で確認済み） |
+| cycle-list | RC-noreuse | time: sysctl kern.clockrate: Operation not permitted（同じ環境の OS 計測で確認済み） |
+
+## 参照の増減・再利用・根・回収
+
+| 負荷 | 構成 | 増加 | 減少 | 省いた増減 | 再利用 | 再利用率 | 辿った根 | 回収 |
+|---|---|---|---|---|---|---|---|---|
+| fib | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| fib | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| fib | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| fib | RC | 59721428 | 59721424 | 0 | 2 | 20.000000% | 0 | 0 |
+| fib | RC-noreuse | 59721428 | 59721424 | 0 | 0 | 0.000000% | 0 | 0 |
+| loop | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| loop | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| loop | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| loop | RC | 30000024 | 30000020 | 0 | 2 | 20.000000% | 0 | 0 |
+| loop | RC-noreuse | 30000024 | 30000020 | 0 | 0 | 0.000000% | 0 | 0 |
+| list | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 823 | 24 |
+| list | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 423 | 13 |
+| list | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 161 | 5 |
+| list | RC | 113250058 | 113191841 | 0 | 2 | 0.000015% | 5257 | 150 |
+| list | RC-noreuse | 113250058 | 113191841 | 0 | 0 | 0.000000% | 5257 | 150 |
+| tree | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 1812 | 12 |
+| tree | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 1216 | 8 |
+| tree | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 809 | 5 |
+| tree | RC | 117440516 | 109051907 | 0 | 2 | 0.000024% | 22984 | 128 |
+| tree | RC-noreuse | 117440516 | 109051907 | 0 | 0 | 0.000000% | 23048 | 128 |
+| eval | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| eval | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| eval | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| eval | RC | 160174030 | 160173358 | 0 | 2 | 0.294551% | 0 | 0 |
+| eval | RC-noreuse | 160174030 | 160173358 | 0 | 0 | 0.000000% | 0 | 0 |
+| string | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| string | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| string | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| string | RC | 16000042 | 32 | 0 | 2 | 0.000012% | 0 | 0 |
+| string | RC-noreuse | 16000042 | 32 | 0 | 0 | 0.000000% | 0 | 0 |
+| shared | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| shared | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| shared | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 0 |
+| shared | RC | 52436576 | 52434970 | 0 | 2 | 0.232019% | 0 | 0 |
+| shared | RC-noreuse | 52436576 | 52434970 | 0 | 0 | 0.000000% | 0 | 0 |
+| live | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 262 | 6 |
+| live | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 188 | 4 |
+| live | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 98 | 2 |
+| live | RC | 2109022 | 1943402 | 0 | 2 | 0.000514% | 278 | 6 |
+| live | RC-noreuse | 2109022 | 1943402 | 0 | 0 | 0.000000% | 302 | 6 |
+| roots | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 231008 | 16 |
+| roots | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 120922 | 10 |
+| roots | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 61332 | 5 |
+| roots | RC | 20004027 | 19991969 | 0 | 2 | 0.000087% | 739436 | 35 |
+| roots | RC-noreuse | 20004027 | 19991969 | 0 | 0 | 0.000000% | 739436 | 35 |
+| returns | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 200014 | 1 |
+| returns | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 200014 | 1 |
+| returns | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 200014 | 1 |
+| returns | RC | 2600026 | 2600024 | 0 | 2 | 0.000078% | 200014 | 1 |
+| returns | RC-noreuse | 2600026 | 2600024 | 0 | 0 | 0.000000% | 200014 | 1 |
+| mixed | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 5148 | 156 |
+| mixed | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 5148 | 156 |
+| mixed | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 5148 | 156 |
+| mixed | RC | 10480027 | 10462631 | 0 | 10002 | 0.097390% | 5148 | 156 |
+| mixed | RC-noreuse | 10480027 | 10462631 | 0 | 0 | 0.000000% | 5148 | 156 |
+| cycle-self | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-self | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-self | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-self | RC | 40000 | 40000 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-self | RC-noreuse | 40000 | 40000 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-pair | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-pair | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-pair | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-pair | RC | 60000 | 60000 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-pair | RC-noreuse | 60000 | 60000 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-ring | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-ring | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-ring | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-ring | RC | 2000200 | 2000200 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-ring | RC-noreuse | 2000200 | 2000200 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-list | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-list | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-list | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-list | RC | 20000100 | 20000100 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-list | RC-noreuse | 20000100 | 20000100 | 0 | 0 | 0.000000% | 0 | 100 |
+
+## 整数の範囲・対象の大きさ・循環の内訳
+
+| 負荷 | 構成 | 測定専用の計数 |
+|---|---|---|
+| fib | MS-k0.5 | {&quot;constant_31&quot;: &quot;59721406&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;44791053&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| fib | MS-k1 | {&quot;constant_31&quot;: &quot;59721406&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;44791053&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| fib | MS-k2 | {&quot;constant_31&quot;: &quot;59721406&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;44791053&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| fib | RC | {&quot;constant_31&quot;: &quot;59721406&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;44791053&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;8&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| fib | RC-noreuse | {&quot;constant_31&quot;: &quot;59721406&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;44791053&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| loop | MS-k0.5 | {&quot;constant_31&quot;: &quot;15000003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;15046341&quot;, &quot;arithmetic_47&quot;: &quot;11816942&quot;, &quot;arithmetic_63&quot;: &quot;3136717&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| loop | MS-k1 | {&quot;constant_31&quot;: &quot;15000003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;15046341&quot;, &quot;arithmetic_47&quot;: &quot;11816942&quot;, &quot;arithmetic_63&quot;: &quot;3136717&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| loop | MS-k2 | {&quot;constant_31&quot;: &quot;15000003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;15046341&quot;, &quot;arithmetic_47&quot;: &quot;11816942&quot;, &quot;arithmetic_63&quot;: &quot;3136717&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| loop | RC | {&quot;constant_31&quot;: &quot;15000003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;15046341&quot;, &quot;arithmetic_47&quot;: &quot;11816942&quot;, &quot;arithmetic_63&quot;: &quot;3136717&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;8&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| loop | RC-noreuse | {&quot;constant_31&quot;: &quot;15000003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;15046341&quot;, &quot;arithmetic_47&quot;: &quot;11816942&quot;, &quot;arithmetic_63&quot;: &quot;3136717&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| list | MS-k0.5 | {&quot;constant_31&quot;: &quot;4500003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;1518919&quot;, &quot;arithmetic_47&quot;: &quot;731081&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;13500019&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| list | MS-k1 | {&quot;constant_31&quot;: &quot;4500003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;1518919&quot;, &quot;arithmetic_47&quot;: &quot;731081&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;13500019&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| list | MS-k2 | {&quot;constant_31&quot;: &quot;4500003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;1518919&quot;, &quot;arithmetic_47&quot;: &quot;731081&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;13500019&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| list | RC | {&quot;constant_31&quot;: &quot;4500003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;1518919&quot;, &quot;arithmetic_47&quot;: &quot;731081&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;13500017&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| list | RC-noreuse | {&quot;constant_31&quot;: &quot;4500003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;1518919&quot;, &quot;arithmetic_47&quot;: &quot;731081&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;13500019&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| tree | MS-k0.5 | {&quot;constant_31&quot;: &quot;20971518&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;12582909&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;8388618&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| tree | MS-k1 | {&quot;constant_31&quot;: &quot;20971518&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;12582909&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;8388618&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| tree | MS-k2 | {&quot;constant_31&quot;: &quot;20971518&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;12582909&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;8388618&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| tree | RC | {&quot;constant_31&quot;: &quot;20971518&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;12582909&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;8388616&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| tree | RC-noreuse | {&quot;constant_31&quot;: &quot;20971518&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;12582909&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;8388618&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| eval | MS-k0.5 | {&quot;constant_31&quot;: &quot;5072507&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;15056217&quot;, &quot;arithmetic_47&quot;: &quot;4283&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;679&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| eval | MS-k1 | {&quot;constant_31&quot;: &quot;5072507&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;15056217&quot;, &quot;arithmetic_47&quot;: &quot;4283&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;679&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| eval | MS-k2 | {&quot;constant_31&quot;: &quot;5072507&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;15056217&quot;, &quot;arithmetic_47&quot;: &quot;4283&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;679&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| eval | RC | {&quot;constant_31&quot;: &quot;5072507&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;15056217&quot;, &quot;arithmetic_47&quot;: &quot;4283&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;677&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| eval | RC-noreuse | {&quot;constant_31&quot;: &quot;5072507&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;15056217&quot;, &quot;arithmetic_47&quot;: &quot;4283&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;679&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| string | MS-k0.5 | {&quot;constant_31&quot;: &quot;1&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;16000017&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;3&quot;} |
+| string | MS-k1 | {&quot;constant_31&quot;: &quot;1&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;16000017&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;3&quot;} |
+| string | MS-k2 | {&quot;constant_31&quot;: &quot;1&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;16000017&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;3&quot;} |
+| string | RC | {&quot;constant_31&quot;: &quot;1&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;16000015&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;3&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| string | RC-noreuse | {&quot;constant_31&quot;: &quot;1&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;16000017&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;3&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| shared | MS-k0.5 | {&quot;constant_31&quot;: &quot;1804&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;3277650&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;862&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| shared | MS-k1 | {&quot;constant_31&quot;: &quot;1804&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;3277650&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;862&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| shared | MS-k2 | {&quot;constant_31&quot;: &quot;1804&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;3277650&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;862&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| shared | RC | {&quot;constant_31&quot;: &quot;1804&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;3277650&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;860&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| shared | RC-noreuse | {&quot;constant_31&quot;: &quot;1804&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;3277650&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;862&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| live | MS-k0.5 | {&quot;constant_31&quot;: &quot;337681&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;202606&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;387085&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;2000&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| live | MS-k1 | {&quot;constant_31&quot;: &quot;337681&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;202606&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;387085&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;2000&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| live | MS-k2 | {&quot;constant_31&quot;: &quot;337681&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;202606&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;387085&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;2000&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| live | RC | {&quot;constant_31&quot;: &quot;337681&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;202606&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;387083&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;2000&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| live | RC-noreuse | {&quot;constant_31&quot;: &quot;337681&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;202606&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;387085&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;2000&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| roots | MS-k0.5 | {&quot;constant_31&quot;: &quot;15003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;774000&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2307013&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| roots | MS-k1 | {&quot;constant_31&quot;: &quot;15003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;774000&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2307013&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| roots | MS-k2 | {&quot;constant_31&quot;: &quot;15003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;774000&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2307013&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| roots | RC | {&quot;constant_31&quot;: &quot;15003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;774000&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2307011&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| roots | RC-noreuse | {&quot;constant_31&quot;: &quot;15003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;774000&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2307013&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| returns | MS-k0.5 | {&quot;constant_31&quot;: &quot;60004&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;40001&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2560010&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| returns | MS-k1 | {&quot;constant_31&quot;: &quot;60004&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;40001&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2560010&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| returns | MS-k2 | {&quot;constant_31&quot;: &quot;60004&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;40001&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2560010&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| returns | RC | {&quot;constant_31&quot;: &quot;60004&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;40001&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2560008&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| returns | RC-noreuse | {&quot;constant_31&quot;: &quot;60004&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;40001&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2560010&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| mixed | MS-k0.5 | {&quot;constant_31&quot;: &quot;60003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;50000&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10260013&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;10000&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| mixed | MS-k1 | {&quot;constant_31&quot;: &quot;60003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;50000&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10260013&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;10000&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| mixed | MS-k2 | {&quot;constant_31&quot;: &quot;60003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;50000&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10260013&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;10000&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| mixed | RC | {&quot;constant_31&quot;: &quot;60003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;50000&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10250011&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;10000&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| mixed | RC-noreuse | {&quot;constant_31&quot;: &quot;60003&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;50000&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10260013&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;10000&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;0&quot;} |
+| cycle-self | MS-k0.5 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;20000&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-self | MS-k1 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;20000&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-self | MS-k2 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;20000&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-self | RC | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;20000&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;20000&quot;} |
+| cycle-self | RC-noreuse | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;20000&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;20000&quot;} |
+| cycle-pair | MS-k0.5 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;40000&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-pair | MS-k1 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;40000&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-pair | MS-k2 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;40000&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-pair | RC | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;40000&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;20000&quot;} |
+| cycle-pair | RC-noreuse | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;40000&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;20000&quot;} |
+| cycle-ring | MS-k0.5 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2000100&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-ring | MS-k1 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2000100&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-ring | MS-k2 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2000100&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-ring | RC | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2000100&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;100&quot;} |
+| cycle-ring | RC-noreuse | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;2000100&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;100&quot;} |
+| cycle-list | MS-k0.5 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10000100&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-list | MS-k1 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10000100&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-list | MS-k2 | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10000100&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;} |
+| cycle-list | RC | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10000100&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;100&quot;} |
+| cycle-list | RC-noreuse | {&quot;constant_31&quot;: &quot;0&quot;, &quot;constant_47&quot;: &quot;0&quot;, &quot;constant_63&quot;: &quot;0&quot;, &quot;constant_64&quot;: &quot;0&quot;, &quot;arithmetic_31&quot;: &quot;0&quot;, &quot;arithmetic_47&quot;: &quot;0&quot;, &quot;arithmetic_63&quot;: &quot;0&quot;, &quot;arithmetic_64&quot;: &quot;0&quot;, &quot;object_le128&quot;: &quot;10000100&quot;, &quot;object_le256&quot;: &quot;0&quot;, &quot;object_le1024&quot;: &quot;0&quot;, &quot;object_le4096&quot;: &quot;0&quot;, &quot;object_gt4096&quot;: &quot;0&quot;, &quot;cycle_collections&quot;: &quot;100&quot;} |
+
+| 循環の負荷 | 構成 | 循環回収合計 ns | 循環回収最大 ns | 循環以外の回収合計 ns |
+|---|---|---|---|---|
+| cycle-self | MS-k0.5 | — | — | — |
+| cycle-self | MS-k1 | — | — | — |
+| cycle-self | MS-k2 | — | — | — |
+| cycle-self | RC | — | — | — |
+| cycle-self | RC-noreuse | — | — | — |
+| cycle-pair | MS-k0.5 | — | — | — |
+| cycle-pair | MS-k1 | — | — | — |
+| cycle-pair | MS-k2 | — | — | — |
+| cycle-pair | RC | — | — | — |
+| cycle-pair | RC-noreuse | — | — | — |
+| cycle-ring | MS-k0.5 | — | — | — |
+| cycle-ring | MS-k1 | — | — | — |
+| cycle-ring | MS-k2 | — | — | — |
+| cycle-ring | RC | — | — | — |
+| cycle-ring | RC-noreuse | — | — | — |
+| cycle-list | MS-k0.5 | — | — | — |
+| cycle-list | MS-k1 | — | — | — |
+| cycle-list | MS-k2 | — | — | — |
+| cycle-list | RC | — | — | — |
+| cycle-list | RC-noreuse | — | — | — |
+
+整数は LOADK で読んだ定数と NegI・AddI・SubI・MulI・DivI・ModI の結果を別に数える。区間は符号付き31/47/63ビットに収まる値と、それ以上であり、累積割合は各区間を足して求める。組み込みの関数の整数結果はこの分布に含めない。対象の大きさは頭・切り上げ・別領域を含む課金量の区間別の個数である。循環の時間の内訳は測定専用のリビジョンで埋める。循環以外の回収は停止時間の合計から循環回収時間を差し引いた値で、最初の遅延解放・根の計数・要求の処理などを含む。循環を切った後の解放は循環回収時間に含まれる。
+
+整数の累積割合（命令列は同じなので MS-k1 の計数を示す）:
+
+| 負荷 | 定数 / 算術結果 | 標本数 | 31ビット | 47ビット | 63ビット |
+|---|---|---|---|---|---|
+| fib | constant | 59721406 | 100.0000% | 100.0000% | 100.0000% |
+| fib | arithmetic | 44791053 | 100.0000% | 100.0000% | 100.0000% |
+| loop | constant | 15000003 | 100.0000% | 100.0000% | 100.0000% |
+| loop | arithmetic | 30000000 | 50.1545% | 89.5443% | 100.0000% |
+| list | constant | 4500003 | 100.0000% | 100.0000% | 100.0000% |
+| list | arithmetic | 2250000 | 67.5075% | 100.0000% | 100.0000% |
+| tree | constant | 20971518 | 100.0000% | 100.0000% | 100.0000% |
+| tree | arithmetic | 12582909 | 100.0000% | 100.0000% | 100.0000% |
+| eval | constant | 5072507 | 100.0000% | 100.0000% | 100.0000% |
+| eval | arithmetic | 15060500 | 99.9716% | 100.0000% | 100.0000% |
+| string | constant | 1 | 100.0000% | 100.0000% | 100.0000% |
+| string | arithmetic | 0 | — | — | — |
+| shared | constant | 1804 | 100.0000% | 100.0000% | 100.0000% |
+| shared | arithmetic | 3277650 | 100.0000% | 100.0000% | 100.0000% |
+| live | constant | 337681 | 100.0000% | 100.0000% | 100.0000% |
+| live | arithmetic | 202606 | 100.0000% | 100.0000% | 100.0000% |
+| roots | constant | 15003 | 100.0000% | 100.0000% | 100.0000% |
+| roots | arithmetic | 774000 | 100.0000% | 100.0000% | 100.0000% |
+| returns | constant | 60004 | 100.0000% | 100.0000% | 100.0000% |
+| returns | arithmetic | 40001 | 100.0000% | 100.0000% | 100.0000% |
+| mixed | constant | 60003 | 100.0000% | 100.0000% | 100.0000% |
+| mixed | arithmetic | 50000 | 100.0000% | 100.0000% | 100.0000% |
+| cycle-self | constant | 0 | — | — | — |
+| cycle-self | arithmetic | 0 | — | — | — |
+| cycle-pair | constant | 0 | — | — | — |
+| cycle-pair | arithmetic | 0 | — | — | — |
+| cycle-ring | constant | 0 | — | — | — |
+| cycle-ring | arithmetic | 0 | — | — | — |
+| cycle-list | constant | 0 | — | — | — |
+| cycle-list | arithmetic | 0 | — | — | — |
+
+## 再現のコマンド
+
+測定専用のリビジョンで次を実行する。本番の時間測定では計数の4ファイルを戻して同じコマンドでビルドする。
+
+```sh
+cargo build --release -p benitoite --no-default-features --features gc-mark-sweep --example stage1_bench --example stage1_heap_bench --target-dir target/stage1/ms
+cargo build --release -p benitoite --no-default-features --features gc-refcount --example stage1_bench --example stage1_heap_bench --target-dir target/stage1/rc
+python3 tools/bench/stage1.py --no-build --instrumented --output &#x27;tools/bench/results/2026-10-05-stage1-&lt;COMMIT&gt;.md&#x27;
+```
+
+小入力での再現確認（測定専用のリビジョン）:
+
+```sh
+python3 tools/bench/stage1.py --no-build --smoke --instrumented --iterations 2 --output target/r12-final-smoke.md --overwrite
+```
+
+通常の本測定（計数用ソースを戻した後）:
+
+```sh
+python3 tools/bench/stage1.py --measure --iterations 10 --output &#x27;tools/bench/results/2026-10-05-stage1-&lt;COMMIT&gt;-timing.md&#x27;
+```
+
+`--inputs PATH` で VM の整数と循環の `[回数, 大きさ]` を指定した JSON を読み、入力調整を記録できる。`--render JSON` は実行せず Markdown と HTML を再生成する。既存記録は `--overwrite` を指定したときだけ上書きする。
+
+循環の内訳の本測定（測定専用のリビジョンでのみ実行）:
+
+```sh
+python3 tools/bench/stage1.py --cycle-timing --instrumented --iterations 10 --output &#x27;tools/bench/results/2026-10-05-stage1-&lt;COMMIT&gt;-cycle-timing.md&#x27;
+```
+
+この構成の整数・確保の計数は構築中にだけ行い、循環回収中の計数処理は増やさない。VM の時間測定にこのバイナリを使わない。
+
+## 振り分けのループの変化
+
+時間は未測定。C05 直前のコミット `d4668a9^` を作業ツリー内に展開し、古い構文の fib・loop を MS-k1 と同じ入力で測る。値の大きさ・確保器・コード生成も変わるため、この差を GC 単独の効果とは扱わない。
+
+```sh
+mkdir -p target/stage1-legacy
+git archive &#x27;d4668a9^&#x27; | tar -x -C target/stage1-legacy
+cargo build --release -p benitoite --manifest-path target/stage1-legacy/Cargo.toml --target-dir target/stage1-legacy-build
+python3 tools/bench/stage1.py --measure --legacy target/stage1-legacy-build/release/benitoite --legacy-programs target/stage1-legacy/tools/bench/programs --output &#x27;tools/bench/results/2026-10-05-stage1-&lt;COMMIT&gt;-dispatch.md&#x27;
+```
+
+## CPU プロファイルの所見
+
+本測定後に埋める。現時点では採取していない。samply 0.13.1 の版表示と record のヘルプで以下の選択肢を確認した。fib・loop の振り分けと呼び出し、list・tree の確保と回収、eval の値と参照の操作、組み込みの関数の self の割合を比較し、ADR 0269 の見立てを検討する。
+
+```sh
+mkdir -p &#x27;tools/bench/results/profiles/2026-10-05-stage1-&lt;COMMIT&gt;&#x27;
+samply record --save-only --unstable-presymbolicate -o &#x27;tools/bench/results/profiles/2026-10-05-stage1-&lt;COMMIT&gt;/fib-ms.json.gz&#x27; -- target/stage1/ms/release/examples/stage1_bench --factor 100 -- tools/bench/programs/fib.bnt 35
+python3 tools/bench/profile_summary.py &#x27;tools/bench/results/profiles/2026-10-05-stage1-&lt;COMMIT&gt;/fib-ms.json.gz&#x27; 10
+```
+
+各負荷・構成の実行コマンドは付属 JSON の rows.command にある。そのコマンドを samply の `--` の後に置く。
+
+## 比較対象の言語
+
+既存8本を一度だけ本測定する。bytecode-stats は渡さない。CPython は macOS に付属の版を使う。println のバッファ条件、string/lines の組み込みの実装、list の連結リストと配列の違いは benchmark スキルの注意に従って読む。
+
+```sh
+cargo build --release -p benitoite
+cargo build --release --manifest-path tools/bench/programs/rust/Cargo.toml
+python3 tools/bench/run.py --benitoite target/release/benitoite --verify
+python3 tools/bench/run.py --benitoite target/release/benitoite
+```
+
+## 固定項目から確認できたこと
+
+| 負荷 | 構成 | 最大ヒープ bytes | 回収回数 | 確保回数 | 再利用回数 |
+|---|---|---|---|---|---|
+| live | MS-k0.5 | 12591328 | 6 | 389085 | 0 |
+| live | MS-k1 | 16784096 | 4 | 389085 | 0 |
+| live | MS-k2 | 23642496 | 2 | 389085 | 0 |
+| live | RC | 12591328 | 6 | 389083 | 2 |
+| live | RC-noreuse | 12591328 | 6 | 389085 | 0 |
+| roots | MS-k0.5 | 63873312 | 16 | 2307013 | 0 |
+| roots | MS-k1 | 80136224 | 10 | 2307013 | 0 |
+| roots | MS-k2 | 113443360 | 5 | 2307013 | 0 |
+| roots | RC | 52667360 | 35 | 2307011 | 2 |
+| roots | RC-noreuse | 52667360 | 35 | 2307013 | 0 |
+| list | MS-k0.5 | 239999680 | 24 | 13500019 | 0 |
+| list | MS-k1 | 287999872 | 13 | 13500019 | 0 |
+| list | MS-k2 | 288000800 | 5 | 13500019 | 0 |
+| list | RC | 194796288 | 150 | 13500017 | 2 |
+| list | RC-noreuse | 194796288 | 150 | 13500019 | 0 |
+| mixed | MS-k0.5 | 4318304 | 156 | 10270013 | 0 |
+| mixed | MS-k1 | 4318304 | 156 | 10270013 | 0 |
+| mixed | MS-k2 | 4318304 | 156 | 10270013 | 0 |
+| mixed | RC | 4314208 | 156 | 10260011 | 10002 |
+| mixed | RC-noreuse | 4318304 | 156 | 10270013 | 0 |
+
+shared は同じ部分木を2回ずつ含む構造を深さの回数だけ作る。論理的な葉の訪問数は大きいが、物理的な対象は少ない。この入力では回収が0回なので、共有した値の読み書きと参照の増減の比較として読み、GC の停止時間の根拠にはしない。collections が0の組には pause_nanos の標本がなく、百分位も求められない。
+
+## 暫定に採る方式・k・閾値・8バイトの値の案
+
+以下は案であり、設計の決定ではない。時間と停止時間が空欄の段階では方式を選ばず、本測定までは比較の基準として MS-k1 を維持する。MS を採る場合の k の案は1である。live の最大ヒープは k=0.5/1/2 で約12.6/16.8/23.6 MB、回収は6/4/2回となり、k=1 はこの入力で保持量と回収回数の中間に位置する。回収の回数から時間の費用は決められないため、停止時間と最大 RSS を本測定で確認してから k を決める。HTTP サーバで許せる停止時間と RSS は設計者に確認してもらい、第2段の R33 で測り直す。RC の遅延解放の条件と循環の閾値の見直しも、時間と保持量が揃った後に判断する。今回の算術結果はすべて符号付き63ビットに収まった。31ビットや47ビットを超える値も loop にあるため、整数の幅を狭める設計では箱の確保を見積もる必要がある。分布は今回のベンチマークの範囲であり、Float や利用者の実際のスクリプトを代表しない。8バイト案は別の測定専用の試作として検討する価値があるが、演算時の分岐・箱の確保・数値の境界の費用を比べてから採否を決める。
+
+## 残したこと
+
+リソースの解放順は第1段では扱えず R33 に回す。呼び出し予算はタスクがないため測らない。方式ごとの勝ち負け、CPU の費用の内訳、学ぶ目的への影響は時間の本測定後に検討する。循環の大きなリストで停止時間が延びるかも本測定後に判断する。
+
+測定専用の変更は `src/runtime/heap/core.rs`・`src/runtime/heap/ctx.rs`・`src/runtime/heap/core/refcount.rs`・`src/vm/dispatch.rs` である（すべて `crates/benitoite/` の下）。この4ファイルを基準コミットから復元すれば計数を外せる。本番へ取り込むのは examples の2本と stage1_support、stage1.py、programs/stage1、結果の Markdown・HTML・JSON である。測定の分担は R12 の個別指示に従った。benchmark スキルの本測定・プロファイル・比較対象の測定はオーケストレータが行う。
+
+## 受け入れ検査と共通検査
+
+- 全75組（VM 11×5構成、循環4×5構成）の小入力を2回ずつ実行し、出力と固定の HeapStats が一致した。期待値は Python の別の式と保存した .stdout.small で照合した。
+- 今回の全75組の大入力も期待値と一致し、記録には全組の固定項目と整数・対象の分布がある。対象の大きさの区間別の個数の和は確保回数に一致した。循環の全20組で残った対象は0だった。
+- 計数を除いた基準コミットのコピーに本番用の examples だけを加え、両方式の release をビルドした。全75組の小入力を2回ずつ実行して出力と固定の統計が一致した。
+- 本測定用ドライバと旧 VM の fib・loop の小入力を各1回だけ動かし、通常の時間測定の経路を確認した。その時間はこの記録に保存していない。循環の内訳のドライバも全20組の小入力で確認した。
+- 引数の誤りを拒むこと、計数用バイナリを通常の時間測定から拒むことを確認した。整数の31/47/63ビットの正の境界と、それぞれを1つ超える値の計6個を確認し、算術の区間別の個数は1・2・2・1だった。
+- 最大 RSS は全75組で /usr/bin/time -l を試したが、サンドボックスが sysctl kern.clockrate を拒み取得できなかった。組ごとに欠測の理由を記載した。
+- scripts/check-heap.sh は両方式の Miri・対象ごとの確保・20000列の到達可能性の比較をすべて通った。その後の計測用の表示の分岐の修正は、両方式の既存のヒープ検査を表示と計数が有効な状態の Miri でも確認した。
+- 最終の scripts/check.sh は書式、両方式の全対象の lint、通常の両方式、GC 強制の両方式、仮置きの許可の残り、仕様のカバレッジの道具、ライセンスのすべてを通った。言語仕様の例と rustdoc の検査も含む。
+</pre></html>

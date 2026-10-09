@@ -1,0 +1,10 @@
+// spec: 01-05 パターンの拡張（初回リリース版）
+function f(xs: List[Integer]) -> Unit
+  match xs with
+    case [x], [y] -> ()
+    case _ -> ()
+  end match
+end function
+function main() -> Unit
+  ()
+end function

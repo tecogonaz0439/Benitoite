@@ -1,0 +1,248 @@
+--- dispatch.orig.rs	2026-10-05 16:44:03
++++ src/crates/benitoite/src/vm/dispatch.rs	2026-10-05 16:51:51
+@@ -71,6 +71,7 @@
+ 
+ #[derive(Clone, Copy)]
+ enum Control {
++    Jumped,
+     Next,
+     Reload,
+     Collect,
+@@ -101,12 +102,19 @@
+             return cleanup(state, ctx);
+         }
+     };
++    let mut hot = match Hot::load(program, state) { Ok(h) => h, Err(stop) => { state.fail(stop, None); return cleanup(state, ctx); } };
+     loop {
+         let at = InstrRef {
+             proto: locals.proto,
+             pc: locals.pc,
+         };
+-        let result = execute(program, config, state, ctx, services, mode, &mut locals);
++        let result = match fast(program, config, state, ctx, &mut locals, &mut hot) {
++            Ok(Some(Control::Next)) => { locals.pc += 1; continue; }
++            Ok(Some(Control::Jumped)) => continue,
++            Ok(Some(c)) => Ok(c),
++            Ok(None) => execute(program, config, state, ctx, services, mode, &mut locals),
++            Err(e) => Err(e),
++        };
+         // 区間の中で確保した値は、結果のレジスタまたは定数の表へ置き終えている。
+         if ctx.take_collect_signal() {
+             state.budget.interrupt();
+@@ -124,13 +132,14 @@
+                     return cleanup(state, ctx);
+                 }
+                 match state.frame().and_then(|f| LoopLocals::load(program, f)) {
+-                    Ok(next) => locals = next,
++                    Ok(next) => { locals = next; match Hot::load(program, state) { Ok(h) => hot = h, Err(stop) => { state.fail(stop, Some(at)); return cleanup(state, ctx); } } }
+                     Err(stop) => {
+                         state.fail(stop, Some(at));
+                         return cleanup(state, ctx);
+                     }
+                 }
+             }
++            Ok(Control::Jumped) => {}
+             Ok(Control::Collect) => return LoopExit::Collect,
+             Ok(Control::Return) => return LoopExit::Return,
+             Err(stop) => {
+@@ -1227,4 +1236,200 @@
+         assert!(vm.heap.object_ids().is_empty());
+         assert!(vm.heap.take_fault().is_none());
+     }
++}
++
++struct Hot<'p> { proto: &'p crate::bytecode::program::Proto, size: u32 }
++impl<'p> Hot<'p> {
++    fn load(program: &'p CompiledProgram, state: &RunState) -> Result<Hot<'p>, Stop> {
++        let f = state.frame()?;
++        Ok(Hot { proto: program.proto(f.proto).ok_or_else(|| internal("prototype missing"))?, size: f.size })
++    }
++}
++
++#[inline(always)]
++fn win<'s>(state: &'s mut RunState, base: u32, size: u32) -> Result<&'s mut [Slot], Stop> {
++    let b = base as usize;
++    let e = b + size as usize;
++    state.stack.segments.last_mut().and_then(|s| s.regs.get_mut(b..e)).ok_or_else(|| internal("window"))
+ }
++#[inline(always)]
++fn last_use(live: &[LiveItem], r: u16) -> bool {
++    live.iter().any(|item| matches!(item, LiveItem::LastUse { reg, .. } if *reg == r))
++}
++
++#[inline(always)]
++fn fast<'e, 'p>(
++    program: &'p CompiledProgram,
++    config: VmConfig,
++    state: &mut RunState,
++    ctx: &mut NoGcCtx<'e>,
++    locals: &mut LoopLocals<'p>,
++    hot: &mut Hot<'p>,
++) -> Result<Option<Control>, Stop> {
++    let instr = *locals.code.get(locals.pc as usize).ok_or_else(|| internal("pc outside code"))?;
++    let Some(opcode) = instr.opcode() else { return Ok(None) };
++    if !matches!(opcode, Opcode::Move | Opcode::LoadK | Opcode::AddI | Opcode::SubI | Opcode::LtI | Opcode::EqI | Opcode::LeI | Opcode::Jmp | Opcode::JmpF | Opcode::Call | Opcode::TailCall | Opcode::Return) {
++        return Ok(None);
++    }
++    let proto = hot.proto;
++    let live = proto.live.at(locals.pc);
++    let (a, b, c) = (instr.a(), instr.b(), instr.c());
++    let base = locals.base;
++    {
++        let w = win(state, base, hot.size)?;
++        for item in live {
++            if let LiveItem::Dead { reg } = item {
++                ctx.clear(w.get_mut(usize::from(*reg)).ok_or_else(|| internal("reg"))?);
++            }
++        }
++        match opcode {
++            Opcode::Move => {
++                let s = w.get_mut(usize::from(b)).ok_or_else(|| internal("reg"))?;
++                let v = if last_use(live, b) { ctx.take(s) } else { ctx.load(s) };
++                ctx.store(w.get_mut(usize::from(a)).ok_or_else(|| internal("reg"))?, v);
++                return Ok(Some(Control::Next));
++            }
++            Opcode::LoadK => {
++                let k = proto.constant(instr.bx()).ok_or_else(|| internal("constant index missing"))?;
++                let desc = program.constant(k).ok_or_else(|| internal("constant description missing"))?;
++                if let Some(v) = immediate_constant(program, desc)? {
++                    ctx.store(w.get_mut(usize::from(a)).ok_or_else(|| internal("reg"))?, v);
++                    return Ok(Some(Control::Next));
++                }
++                let v = constant(program, state, ctx, k)?;
++                let w = win(state, base, hot.size)?;
++                ctx.store(w.get_mut(usize::from(a)).ok_or_else(|| internal("reg"))?, v);
++                if ctx.take_collect_signal() { state.budget.interrupt(); }
++                return Ok(Some(Control::Next));
++            }
++            Opcode::AddI | Opcode::SubI | Opcode::LtI | Opcode::EqI | Opcode::LeI => {
++                let l = ctx.load(w.get(usize::from(b)).ok_or_else(|| internal("reg"))?);
++                let r = ctx.load(w.get(usize::from(c)).ok_or_else(|| internal("reg"))?);
++                for item in live {
++                    if let LiveItem::LastUse { reg, .. } = item && (*reg == b || *reg == c) {
++                        ctx.take(w.get_mut(usize::from(*reg)).ok_or_else(|| internal("reg"))?);
++                    }
++                }
++                let (Some(x), Some(y)) = (l.as_int(), r.as_int()) else { return Err(internal("int")) };
++                let ov = || Stop::Runtime(RuntimeError::IntegerOverflow);
++                let v = match opcode {
++                    Opcode::AddI => Value::Int(x.checked_add(y).ok_or_else(ov)?),
++                    Opcode::SubI => Value::Int(x.checked_sub(y).ok_or_else(ov)?),
++                    Opcode::LtI => Value::Bool(x < y),
++                    Opcode::LeI => Value::Bool(x <= y),
++                    _ => Value::Bool(x == y),
++                };
++                ctx.store(w.get_mut(usize::from(a)).ok_or_else(|| internal("reg"))?, v);
++                return Ok(Some(Control::Next));
++            }
++            Opcode::Jmp | Opcode::JmpF => {
++                let jump = if opcode == Opcode::JmpF {
++                    let s = w.get_mut(usize::from(a)).ok_or_else(|| internal("reg"))?;
++                    let v = if last_use(live, a) { ctx.take(s) } else { ctx.load(s) };
++                    !v.as_bool().ok_or_else(|| internal("JMPF requires Boolean"))?
++                } else { true };
++                if jump {
++                    locals.pc = jump_target(locals, instr.sbx())?;
++                    return Ok(Some(Control::Jumped));
++                }
++                return Ok(Some(Control::Next));
++            }
++            _ => {}
++        }
++    }
++    let at = InstrRef { proto: locals.proto, pc: locals.pc };
++    match opcode {
++        Opcode::Return => {
++            if state.frame()?.ret.is_none() { return Ok(None); }
++            let value = {
++                let w = win(state, base, hot.size)?;
++                let s = w.get_mut(usize::from(a)).ok_or_else(|| internal("reg"))?;
++                if last_use(live, a) { ctx.take(s) } else { ctx.load(s) }
++            };
++            locals.save(state.frame_mut()?);
++            let ret = state.frame()?.ret;
++            let Some(ret) = ret else { return Ok(None) }; // main: slow path (value untouched only if not taken; prototype only)
++            pop_call(state, ctx)?;
++            let slot = state.segment_mut()?.regs.get_mut(index(ret)?).ok_or_else(|| internal("return register missing"))?;
++            ctx.store(slot, value);
++            if ctx.collect_requested() { return Ok(Some(Control::Collect)); }
++            let f = state.frame()?;
++            let p = program.proto(f.proto).ok_or_else(|| internal("prototype missing"))?;
++            *locals = LoopLocals { proto: f.proto, code: &p.code, pc: f.pc, base: f.base };
++            *hot = Hot { proto: p, size: f.size };
++            Ok(Some(Control::Jumped))
++        }
++        Opcode::Call | Opcode::TailCall => {
++            let func = ctx.load(win(state, base, hot.size)?.get(usize::from(b)).ok_or_else(|| internal("reg"))?);
++            let target = ProtoIdx(require_func(ctx, func)?);
++            let called = program.proto(target).ok_or_else(|| internal("called prototype missing"))?;
++            if called.num_params != c || c > called.num_regs { return Err(internal("call argument count mismatch")); }
++            if u32::from(b) + u32::from(c) >= hot.size || u32::from(a) >= hot.size { return Err(internal("call range")); }
++            let old_size = hot.size;
++            let new_size = u32::from(called.num_regs);
++            let tail = opcode == Opcode::TailCall;
++            let added_regs = if tail { new_size.saturating_sub(old_size) } else { new_size };
++            if !state.meter.fits(u64::from(!tail), u64::from(added_regs)) {
++                return Err(Stop::Resource(ResourceError::CallStackTooDeep { frames: state.meter.frames() }));
++            }
++            if state.precall_done != Some(at) && !state.budget.tick() {
++                if ctx.collect_requested() {
++                    state.precall_done = Some(at);
++                    locals.save(state.frame_mut()?);
++                    return Ok(Some(Control::Collect));
++                }
++                match state.budget.finish_slow(config.call_budget) { SlowPathEnd::Continue | SlowPathEnd::Switch => {} }
++            }
++            state.precall_done = None;
++            let ub = base as usize;
++            let argc = usize::from(c);
++            let first = ub + usize::from(b) + 1;
++            if tail {
++                locals.save(state.frame_mut()?);
++                let segment = state.segment_mut()?;
++                // 引数の元 (b+1+i) は行き先 i より後ろにあるので、先頭から順に写せる
++                for i in 0..argc {
++                    let v = ctx.load(segment.regs.get(first + i).ok_or_else(|| internal("reg"))?);
++                    ctx.store(segment.regs.get_mut(ub + i).ok_or_else(|| internal("reg"))?, v);
++                }
++                for slot in segment.regs.iter_mut().skip(ub + argc) { ctx.clear(slot); }
++                segment.regs.resize_with(ub + new_size as usize, Slot::default);
++                let frame = segment.calls.last_mut().ok_or_else(|| internal("call frame missing"))?;
++                ctx.store(&mut frame.func, func);
++                frame.proto = target; frame.pc = 0; frame.size = new_size; frame.call_site = Some(at);
++                frame.boundary = true; frame.chain_resume = None;
++                state.meter.shrink(0, u64::from(old_size.saturating_sub(new_size)));
++                state.meter.grow(0, u64::from(added_regs));
++            } else {
++                let ret = base + u32::from(a);
++                locals.pc += 1;
++                locals.save(state.frame_mut()?);
++                let segment = state.segment_mut()?;
++                let nb = segment.regs.len();
++                segment.regs.resize_with(nb + new_size as usize, Slot::default);
++                for i in 0..argc {
++                    let v = ctx.load(segment.regs.get(first + i).ok_or_else(|| internal("reg"))?);
++                    ctx.store(segment.regs.get_mut(nb + i).ok_or_else(|| internal("reg"))?, v);
++                }
++                let lo = b; let hi = b + c;
++                for item in live {
++                    if let LiveItem::LastUse { reg, .. } = item && *reg >= lo && *reg <= hi {
++                        ctx.take(segment.regs.get_mut(ub + usize::from(*reg)).ok_or_else(|| internal("reg"))?);
++                    }
++                }
++                segment.calls.push(CallFrame {
++                    func: ctx.new_slot(func), proto: target, pc: 0, base: nb as u32, size: new_size,
++                    ret: Some(ret), call_site: Some(at), boundary: called.boundary, chain_resume: None,
++                });
++                state.meter.grow(1, u64::from(new_size));
++                *locals = LoopLocals { proto: target, code: &called.code, pc: 0, base: nb as u32 };
++                *hot = Hot { proto: called, size: new_size };
++                return Ok(Some(Control::Jumped));
++            }
++            *locals = LoopLocals { proto: target, code: &called.code, pc: 0, base };
++            *hot = Hot { proto: called, size: new_size };
++            Ok(Some(Control::Jumped))
++        }
++        _ => Ok(None),
++    }
++}

@@ -1,5 +1,5 @@
 // spec: 01-03 修飾された名前の解決
-fn main() -> Unit {
-  let _ = List.dropFirst([1])
-  ()
-}
+function main() -> Unit
+  bind _ <- List.mapFrom([1], lambda(value) return value end lambda, 0, [])
+  return ()
+end function

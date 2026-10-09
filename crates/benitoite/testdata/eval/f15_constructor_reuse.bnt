@@ -1,0 +1,35 @@
+// spec: 01-08 正格評価
+import Benitoite.Unofficial.IO.Console
+
+data MyList[T]
+ Nil
+ Cons(T, MyList[T])
+end data
+function map(xs: MyList[Integer]) -> MyList[Integer]
+ return match xs with
+ case MyList.Nil -> MyList.Nil
+ case MyList.Cons(x, rest) -> MyList.Cons(x + 1, map(rest))
+ end match
+end function
+function map_shared(xs: MyList[Integer]) -> MyList[Integer]
+ return match xs with
+ case MyList.Nil -> MyList.Nil
+ case MyList.Cons(x, rest) -> match x with
+  case 1, 2 -> MyList.Cons(x + 1, map_shared(rest))
+  case _ -> MyList.Cons(x + 1, map_shared(rest))
+ end match
+ end match
+end function
+function sum(xs: MyList[Integer]) -> Integer
+ return match xs with
+ case MyList.Nil -> 0
+ case MyList.Cons(x, rest) -> x + sum(rest)
+ end match
+end function
+
+function main() -> Unit uses Console.Write
+ bind xs <- MyList.Cons(1, MyList.Cons(2, MyList.Nil))
+ Console.writeLine(Integer.toString(sum(map(xs))))
+ Console.writeLine(Integer.toString(sum(xs)))
+ Console.writeLine(Integer.toString(sum(map_shared(xs))))
+end function

@@ -1,11 +1,15 @@
-//! 処理系の全段が共有する基本の型: 意味の違う整数の専用型、span、ソースの表、ノード番号を鍵とする表。
-//! 設計書: 02-02 ソース管理と位置情報、ADR 0015・0022・0025。
+//! 処理系の全段が共有する基本の型: 意味の違う整数の専用型、span、ソースの表、ノード番号を鍵とする表、
+//! `Decimal` の値の表現。
+//! 設計書: 02-02 ソース管理と位置情報、01-04「Decimal（初回リリース版）」、ADR 0015・0022・0025・0156。
 
+pub mod decimal;
+pub mod prim;
 pub mod source;
 
+pub use decimal::Decimal;
 pub use source::{LineCol, Source, SourceKind, SourceTable};
 
-/// 一つの検査の中でソースを区別する番号（02-02「ソースとファイル ID」）。
+/// 一つの検査の中でソースを区別する番号（02-02「ソースとファイル ID」）。読んだ順に 0 から振る。
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct FileId(pub u32);
 
@@ -13,11 +17,28 @@ pub struct FileId(pub u32);
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct BytePos(pub u32);
 
-/// AST のノード番号。一つの検査の中で重ならない（ADR 0022）。
+/// モジュールの ID。モジュールのファイルのファイル ID と同じ値を持つ（02-04「モジュールの表」）。
+/// 同じ値でも役割が違うので、ファイル ID と型を分ける。
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+pub struct ModuleId(pub u32);
+
+impl ModuleId {
+    /// ファイルのモジュールの ID。
+    pub fn of_file(file: FileId) -> ModuleId {
+        ModuleId(file.0)
+    }
+
+    /// モジュールのファイルのファイル ID。
+    pub fn file(self) -> FileId {
+        FileId(self.0)
+    }
+}
+
+/// AST のノード番号。一つの検査で解析するすべてのファイルにわたって重ならない（ADR 0022、02-03「AST」）。
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct NodeId(pub u32);
 
-/// 名前解決の束縛の番号。一つの検査の中で重ならない（02-04「束縛」）。
+/// 名前解決の束縛の番号。一つの検査の中で重ならない（02-04「束縛と表」）。
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct BindingId(pub u32);
 
@@ -40,8 +61,10 @@ impl Span {
     }
 }
 
-/// ノード番号と束縛の番号を振る数え上げの状態。検査ごとに一つ作る（02-03「AST」、ADR 0015）。
-/// ソースの大きさの上限（`source::MAX_SOURCE_BYTES`）により、番号は u32 に収まる。
+/// ノード番号と束縛の番号を振る数え上げの状態。検査ごとに一つ作り、すべてのファイルの
+/// 構文解析と名前解決で共有する（02-03「AST」、ADR 0015）。
+/// ソースの大きさの和の上限（10-04 の `modules::MAX_TOTAL_SOURCE_BYTES`）により、
+/// 番号は u32 に収まる。
 #[derive(Debug, Default)]
 pub struct IdGen {
     next_node: u32,
@@ -65,7 +88,7 @@ impl IdGen {
         id
     }
 
-    /// これまでに振ったノード番号の数。`NodeMap::with_len` に使う。
+    /// これまでに振ったノード番号の数。
     pub fn node_count(&self) -> u32 {
         self.next_node
     }

@@ -1,7 +1,7 @@
 # バイトコードとコード生成
 
 - 状態: 確定
-- 関連ADR: [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0015](../decisions/0015-shared-program-per-execution-state.md), [0016](../decisions/0016-calls-off-go-stack.md), [0017](../decisions/0017-ir-in-core-calculus-form.md), [0026](../decisions/0026-match-to-decision-trees.md), [0027](../decisions/0027-register-bytecode.md), [0029](../decisions/0029-two-io-execution-modes.md), [0034](../decisions/0034-call-trace-in-runtime-errors.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0067](../decisions/0067-with-resource-scope.md), [0083](../decisions/0083-constant-descriptions-in-shared-program.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0105](../decisions/0105-byte-type.md), [0107](../decisions/0107-bytes.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0123](../decisions/0123-top-level-constants.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0167](../decisions/0167-reference-update-by-version-retry.md), [0257](../decisions/0257-match-with-case-arms.md), [0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md), [0280](../decisions/0280-reuse-by-dedicated-construct-instruction.md)
+- 関連ADR: [0013](../decisions/0013-evaluation-order-and-tail-calls.md), [0015](../decisions/0015-shared-program-per-execution-state.md), [0016](../decisions/0016-calls-off-go-stack.md), [0017](../decisions/0017-ir-in-core-calculus-form.md), [0026](../decisions/0026-match-to-decision-trees.md), [0027](../decisions/0027-register-bytecode.md), [0029](../decisions/0029-two-io-execution-modes.md), [0034](../decisions/0034-call-trace-in-runtime-errors.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0066](../decisions/0066-explicit-laziness-pure-body.md), [0067](../decisions/0067-with-resource-scope.md), [0083](../decisions/0083-constant-descriptions-in-shared-program.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0105](../decisions/0105-byte-type.md), [0107](../decisions/0107-bytes.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0118](../decisions/0118-effect-handlers.md), [0123](../decisions/0123-top-level-constants.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0159](../decisions/0159-pattern-extensions-in-decision-trees.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0167](../decisions/0167-reference-update-by-version-retry.md), [0257](../decisions/0257-match-with-case-arms.md), [0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md), [0280](../decisions/0280-reuse-by-dedicated-construct-instruction.md), [0310](../decisions/0310-method-call-trait-in-proto.md)
 - 未決事項: [OPEN-009](../open-issues.md#open-009)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 9
 
@@ -31,14 +31,14 @@
 
 | 要素 | 内容 |
 |---|---|
-| 関数の原型（function prototype）の表 | 後述の「原型の名前と由来の種類」の表の由来ごとに作る。各原型は、命令列、定数の番号の並び（`LOADK` が使う。定数表の番号の並び）、分岐表の並び（`SWITCH` が使う）、ハンドラの記述の番号の並び（`HANDLE` が使う。ハンドラの記述の表の番号の並び）、レジスタの数、引数の数、捕捉の表（後述）、関数の境界かどうか（後述の「関数の境界」）、位置の表、名前と由来の種類を持つ |
+| 関数の原型（function prototype）の表 | 後述の「原型の名前と由来の種類」の表の由来ごとに作る。各原型は、命令列、定数の番号の並び（`LOADK` が使う。定数表の番号の並び）、分岐表の並び（`SWITCH` が使う）、ハンドラの記述の番号の並び（`HANDLE` が使う。ハンドラの記述の表の番号の並び）、レジスタの数、引数の数、捕捉の表（後述）、関数の境界かどうか（後述の「関数の境界」）、位置の表、メソッドの呼び出しの型クラスの表（後述の「辞書とメソッドの呼び出し」）、名前と由来の種類を持つ |
 | トップレベルの関数の表 | 利用者のモジュールと標準ライブラリのソースのトップレベルの関数から、原型への対応。関数は名前ではなく、検査全体で一意な束縛の番号で引く。束縛の番号はモジュールの ID を持つので、別々のモジュールの同じ名前の関数を区別できる（[名前解決とモジュール読込](02-04-resolver.md)、[ADR 0156](../decisions/0156-module-loading-and-whole-program-checking.md)） |
 | 定数表 | 定数の記述の並び（後述の「定数表」）。プログラム全体で一つ持ち、原型は使う記述の番号の並びを持つ |
 | ハンドラの記述の表 | ハンドラの記述の並び（後述）。プログラム全体で一つ持ち、原型は使う記述の番号の並びを持つ |
-| 構成子の表 | 型の名前（型を宣言したモジュールで修飾したもの）、構成子の名前、タグ、引数の数。レコードは、構成子が一つの型として載せる |
-| 型クラスの表 | 型クラスごとに、メソッドの並び（メソッドごとの引数の数。メソッド自身の制約の辞書の引数を含む）と、上位の型クラスの並び |
+| 構成子の表 | 型の名前（モジュールで修飾しない、型の宣言の名前）、構成子の名前、タグ、引数の数。レコードは、構成子が一つの型として載せる |
+| 型クラスの表 | 型クラスごとに、メソッドの並び（メソッドごとの名前と引数の数。名前は実装のメソッドの名前の最後の段（`show`）、引数の数はメソッド自身の制約の辞書の引数を含む）と、上位の型クラスの並び |
 | 実装の表 | 型クラスの実装ごとに、実装する型クラス、実装の型パラメータの制約の辞書の数、メソッドごとの原型の番号、上位の型クラスごとの辞書の作り方（後述の「辞書とメソッドの呼び出し」） |
-| 操作の表 | エフェクトの操作ごとに、操作を宣言したモジュールとエフェクトと名前、引数の数、組み込みのエフェクトの操作なら対応する組み込みの関数。組み込みのエフェクトの操作も、ハンドラで処理できるので載せる |
+| 操作の表 | エフェクトの操作ごとに、エフェクトで修飾した操作の名前（`Log.write`）と、エフェクトの名前（`Log`、組み込みのエフェクトは `Console.Write`）、引数の数、組み込みのエフェクトの操作なら対応する組み込みの関数。組み込みのエフェクトの操作も、ハンドラで処理できるので載せる |
 | 組み込みの関数の参照 | 使う組み込みの関数の、組み込みの表の項目。組み込みの表は `@builtin` の名前から実装への対応を持つ（[名前解決とモジュール読込](02-04-resolver.md)、[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)） |
 | `main` | 実行を始めるモジュールの `main` の原型の番号と、戻り値の型（`Unit` か `Result[Unit, String]`） |
 | ソースの表 | 位置の表の span が指すソース（[ソース管理と位置情報](02-02-source-and-spans.md)）。利用者のモジュールと、読んだ標準ライブラリのソースのすべてを含む |
@@ -282,6 +282,8 @@ N のうち `jump k` を通らない道筋は、N の結果を r に入れて N 
 ### 辞書とメソッドの呼び出し
 
 【決定】型クラスの制約は、実装の辞書を引数として渡して実装する。実行時の辞書は、実装の番号と、その実装の型パラメータの制約の辞書の並びの組で表す。型パラメータの制約を持たない実装の辞書は、定数として一度だけ作る（[ADR 0158](../decisions/0158-type-classes-by-dictionary-passing.md)）。
+
+【方針】原型は、`METHOD`・`TAILMETHOD` の命令ごとに、呼ぶメソッドの型クラス（型クラスの表の番号）を記録する。辞書を引数として受け取る関数では、辞書のレジスタからは型クラスが決まらず、引数の並びの長さ（型クラスの表のメソッドの引数の数）が決まらないからである。生存の情報と検証器が、この記録から命令の読むレジスタを決める（[ADR 0310](../decisions/0310-method-call-trait-in-proto.md)）。
 
 【方針】`METHOD` は、辞書の実装の番号で実装の表を引き、メソッド C の原型を呼ぶ。呼ばれたメソッドの本体は、実装の制約の辞書（コア計算の d̄）を、呼び出しに使った辞書から `GETDICT` で読む。したがって、メソッドは自由な変数を捕捉せず、辞書を受け取るための引数も持たない。
 

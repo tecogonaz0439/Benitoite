@@ -1,0 +1,18 @@
+// spec: 01-02 属性（初回リリース版）
+// 06-04「テストの関数」「結果の報告」: Result.Error を返したテストは失敗し、message を示す。
+
+function parsePort(text: String) -> Result[Integer, String]
+  return Integer.parse(text) |> Option.okOr(_, "not a number: ${text}")
+end function
+
+@test("parsePort rejects words")
+function parsesWord() -> Result[Unit, String]
+  bind port <- try parsePort("http")
+  return if port > 0 then Result.Ok(()) else Result.Error("not positive") end if
+end function
+
+@test
+function parsesNumber() -> Result[Unit, String]
+  bind _ <- try parsePort("8080")
+  return Result.Ok(())
+end function

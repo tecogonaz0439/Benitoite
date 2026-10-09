@@ -1,8 +1,8 @@
 // spec: 01-06 演算子の型付け
-fn less[T](left: T, right: T) -> Bool {
-    left < right
-}
+function less[T](left: T, right: T) -> Boolean
+    return left < right
+end function
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

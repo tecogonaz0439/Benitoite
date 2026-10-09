@@ -1,0 +1,14 @@
+// spec: 01-05 必ず照合するパターン（初回リリース版）
+record Person
+  name: String
+  age: Integer
+end record
+function main() -> Unit
+  bind Pair(count, label) <- Pair(3, "items")
+  bind person <- Person(name: "A", age: count)
+  bind Person(name: n, ..) <- person
+  bind xs <- [label, n]
+  bind [..rest] <- xs
+  bind _ <- rest
+  ()
+end function

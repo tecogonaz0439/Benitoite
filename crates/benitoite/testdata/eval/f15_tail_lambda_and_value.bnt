@@ -1,0 +1,24 @@
+// spec: 01-08 末尾呼び出し
+// spec: 01-08 関数の呼び出し
+// spec: 01-02 ラムダ
+import Benitoite.Unofficial.IO.Console
+function apply(next: function(Integer) -> Integer, value: Integer) -> Integer
+ return next(value)
+end function
+function through_lambda(n: Integer) -> Integer
+ return if n = 0 then 42 else apply(lambda(value: Integer) return through_lambda(value) end lambda, n - 1) end if
+end function
+function option_after_tail(n: Integer) -> Option[Integer]
+ return if n = 0 then Option.Some(17) else option_after_tail(n - 1) end if
+end function
+function string_after_tail(n: Integer) -> String
+ return if n = 0 then Integer.toString(23) else string_after_tail(n - 1) end if
+end function
+function main() -> Unit uses Console.Write
+ Console.writeLine(Integer.toString(through_lambda(100000)))
+ match option_after_tail(100000) with
+ case Option.Some(value) -> Console.writeLine(Integer.toString(value))
+ case Option.None -> Console.writeLine("None")
+ end match
+ Console.writeLine(string_after_tail(100000))
+end function

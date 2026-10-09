@@ -1,0 +1,22 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+import Benitoite.Unofficial.IO.Console
+
+effect Log
+  function write(message: String) -> Unit
+end effect
+
+function process(items: List[String]) -> Integer uses Log
+  List.forEach(items, lambda(item) write("item: " + item) end lambda)
+  return List.length(items)
+end function
+
+function main() -> Unit uses Console.Write
+  bind count <- handle
+    process(["a", "b"])
+  with
+    case write(message) ->
+      Console.writeLine(message)
+      resume(())
+  end handle
+  Console.writeLine(Integer.toString(count))
+end function

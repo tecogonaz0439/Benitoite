@@ -1,0 +1,11 @@
+// 設計書 03-07「Process」、ADR 0322 の決定 5、ADR 0327 の決定 2。
+// 関門: CLI から指定した子の入力・出力・終了状態と、不正 UTF-8 の置換を守る。
+// 本体の単体テストでは届かない CLI の二方式への接続を確かめ、専用の差し込み口は不要である。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+function main() -> Result[Unit, String] uses Process.Run, Console.Write
+  bind command <- Process.command("/bin/sh", ["-c", "read line; printf 'attached:%s\\n' \"\$line\"; printf '\\377\\n'; printf 'attached-error\\n' >&2; exit 3"])
+  bind code <- try Process.runAttached(Process.Command(..command, input: Option.Some("specified\n"))) |> Result.mapError(_, IOError.message)
+  Console.writeLine(Integer.toString(code))
+  return Result.Ok(())
+end function

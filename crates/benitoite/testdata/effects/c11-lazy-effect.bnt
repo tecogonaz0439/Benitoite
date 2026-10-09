@@ -1,0 +1,8 @@
+// spec: 01-06 明示遅延の型（初回リリース版）
+import Benitoite.Unofficial.IO.Console
+function bad() -> Lazy[Unit]
+  return lazy Console.writeLine("bad") end lazy
+end function
+function main() -> Unit
+  ()
+end function

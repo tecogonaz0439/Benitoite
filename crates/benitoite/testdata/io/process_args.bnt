@@ -1,5 +1,8 @@
 // spec: 01-07 プログラムの入口
 // spec: 01-07 IO を行う組み込み関数
-fn main() -> Unit uses IO {
-  Console.println(String.join(Process.args(), "|"))
-}
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses Console.Write, Process.Environment
+  return Console.writeLine(String.join(Process.arguments(), "|"))
+end function

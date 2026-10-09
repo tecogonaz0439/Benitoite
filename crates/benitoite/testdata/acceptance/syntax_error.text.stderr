@@ -1,7 +1,7 @@
-error[E0201]: expected `,` or `)`, found `}`
-  --> acceptance/syntax_error.bnt:4:1
+error[E0201]: expected `,` or `)`, found `end`
+  --> testdata/acceptance/syntax_error.bnt:6:1
    |
- 4 | }
-   | ^ unexpected `}`
+ 6 | end function
+   | ^^^ unexpected `end`
 
-error: could not check acceptance/syntax_error.bnt due to 1 previous error
+error: could not check testdata/acceptance/syntax_error.bnt due to 1 previous error

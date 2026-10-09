@@ -1,0 +1,7 @@
+error[E0318]: cannot find module `Missing`
+  --> testdata/modules/c11-missing/main.bnt:2:8
+   |
+ 2 | import Missing
+   |        ^^^^^^^ no file `Missing.bnt` under the root directory
+
+error: could not check testdata/modules/c11-missing/main.bnt due to 1 previous error

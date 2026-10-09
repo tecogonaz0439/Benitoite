@@ -1,20 +1,26 @@
 // spec: 01-03 トップレベルの名前空間
 // spec: 01-03 型パラメータとエフェクト変数の有効範囲
-fn main() -> Unit uses IO {
-  if isEven(8) {
-    Console.println("even")
-  } else {
-    Console.println("odd")
-  }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn isEven(value: Int) -> Bool {
-  if value == 0 { true } else { isOdd(value - 1) }
-}
+function main() -> Unit uses Console.Write
+  return if isEven(8) then
+    Console.writeLine("even")
+  else
+    Console.writeLine("odd")
+  end if
+end function
 
-fn isOdd(value: Int) -> Bool {
-  if value == 0 { false } else { isEven(value - 1) }
-}
+function isEven(value: Integer) -> Boolean
+  return if value = 0 then true else isOdd(value - 1) end if
+end function
 
-type First { Wrap(Second) }
-type Second { WrapAgain(First) }
+function isOdd(value: Integer) -> Boolean
+  return if value = 0 then false else isEven(value - 1) end if
+end function
+
+data First
+  Wrap(Second)
+end data
+data Second
+  WrapAgain(First)
+end data

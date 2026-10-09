@@ -1,4 +1,6 @@
 // spec: 01-02 文法
-fn bad(callback: fn(fn() -> Unit uses IO, List[Int]) -> Unit) -> Unit {
-  ()
-}
+import Benitoite.Unofficial.IO.Console
+
+function bad(callback: function(function() -> Unit uses Console.Write, List[Integer]) -> Unit) -> Unit
+  return ()
+end function

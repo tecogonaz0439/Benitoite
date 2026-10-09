@@ -1,2 +1,4 @@
 // spec: 01-03 修飾しない名前の解決
-fn invalid() -> Unit uses Int { () }
+function invalid() -> Unit uses Integer
+  return ()
+end function

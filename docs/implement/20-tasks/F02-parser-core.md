@@ -94,7 +94,7 @@ F03 と F04 が受け持つ構文は、次のフックを通して読む。本�
 | 〃 | `report_missing_body` | 本体が要る関数の宣言で、シグネチャの後に本体と `end function` がない（次の字句がトップレベルの宣言の始めかファイルの終わり）とき | E0808 | E0201 |
 | 〃 | `reject_public` | `implement` の中の関数の前の `public`（F04 が呼ぶ） | E0221 | 何もしない |
 | 〃 | `parse_record_decl`・`parse_alias_decl`・`parse_const_decl` | トップレベルの `record`・`type`（名前と型パラメータの後に `=` があるか、`type` の直後が `alias`）・`const` | それぞれの宣言。E0237・E0248 | E0201 と読み飛ばし |
-| 〃 | `try_foreign_decl_start` | トップレベルの宣言の位置で、宣言の始めでない字句に出会ったとき（F02 の診断より先） | `/**`・`{-|`・`(**`・`typealias`・`#[test]`・`[<Test>]` の診断（E0247・E0248・E0249）。扱ったら真 | 偽 |
+| 〃 | `try_foreign_decl_start` | トップレベルの宣言の位置で、宣言の始めでない字句に出会ったとき（F02 の診断より先） | `/**`・`{-|`・`(**`・`typealias`・`#[test]`・`[<Test>]` の診断（E0247・E0248・E0249）。扱ったら `Some` に解析の結果（`typealias` は型の別名の `Item`、ほかは誤りのノードの `Item`）を入れて返す。引数は `p` と深さ | `None` |
 | `records.rs`（F03） | `parse_record_expr`・`parse_record_pattern` | 式とパターンの `QualUpper (` の次が「小文字の名前 `:`」か `..` のとき（02-03「構文解析の方式」） | レコードの構築・一部を変えた値・レコードのパターン。E0224・E0225・E0204（鍵 `record`） | E0201 と閉じ括弧までの読み飛ばし |
 | `traits.rs`（F04） | `parse_trait_decl`・`parse_impl_decl` | トップレベルの `trait`・`implement` | 型クラスと実装の宣言。E0223・E0245 | E0201 と読み飛ばし |
 | 〃 | `builtin_constraint` | 型パラメータの制約の位置の小文字の名前 | 組み込みの制約（`equality`・`key`、標準ライブラリのソースの `ordered`）。E0222 | `equality`・`key`・`ordered` をそのまま受け付け、ほかは E0201 |

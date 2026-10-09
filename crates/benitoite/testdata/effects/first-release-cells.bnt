@@ -1,0 +1,12 @@
+// spec: 01-07 可変のセル（初回リリース版）
+function countNonEmpty(lines: List[String]) -> Integer uses State
+  bind n <- Reference.new(0)
+  List.forEach(lines, lambda(line)
+    if String.trim(line) <> "" then Reference.set(n, Reference.get(n) + 1) end if
+  end lambda)
+  return Reference.get(n)
+end function
+
+function main() -> Unit
+  ()
+end function

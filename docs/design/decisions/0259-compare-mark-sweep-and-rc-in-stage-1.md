@@ -1,6 +1,6 @@
 # 0259. メモリの管理は、マーク・スイープと改良した参照カウントを第 1 段で試作して比べ、測定で選ぶ
 
-- 状態: 採択（決定 1 の再利用を行う箇所を [0280](0280-reuse-by-dedicated-construct-instruction.md) で定めた）
+- 状態: 採択（決定 1 の再利用を行う箇所を [0280](0280-reuse-by-dedicated-construct-instruction.md) で定めた。決定 2 のうち、マーク・スイープで使わなくなったレジスタを根から除く時点を、命令ごとから回収の安全点へ [0314](0314-clear-dead-registers-at-safepoints.md) で改めた）
 - 日付: 2026-09-30
 - 関連章: [ランタイム](../02-impl/02-09-runtime.md), [仮想機械](../02-impl/02-08-vm.md)
 - 関連する未決事項: [OPEN-036](../open-issues.md#open-036), [OPEN-009](../open-issues.md#open-009)

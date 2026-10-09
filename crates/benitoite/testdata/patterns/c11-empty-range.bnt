@@ -1,0 +1,10 @@
+// spec: 01-05 パターンの拡張（初回リリース版）
+function f(n: Integer) -> Unit
+  match n with
+    case 9..1 -> ()
+    case _ -> ()
+  end match
+end function
+function main() -> Unit
+  ()
+end function

@@ -1,0 +1,11 @@
+// spec: 01-08 正格評価
+// spec: 01-08 評価順序
+// spec: 01-08 関数の呼び出し
+// spec: 01-02 ラムダ
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+ bind later <- lambda() Console.writeLine("later") end lambda
+ Console.writeLine("created")
+ later()
+ later()
+end function

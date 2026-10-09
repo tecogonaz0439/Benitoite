@@ -1,0 +1,9 @@
+// spec: 01-06 型クラス（初回リリース版）
+// spec: 01-06 組み込みの制約（初回リリース版）
+function same[T: equality](a: T, b: T) -> Boolean return a = b end function
+function bad[T](x: T) -> Boolean
+  return same(x, x)
+end function
+function main() -> Unit
+  ()
+end function

@@ -1,0 +1,19 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+// 06-04「期待の確認」: 利用者のハンドラが Assert.Check を処理すると、失敗する確認はテストを失敗させない。
+
+function checkPositive(n: Integer) -> Unit uses Assert.Check
+  Assert.isTrue(n > 0, "not positive")
+end function
+
+@test
+function helperReportsFailure() -> Unit uses Assert.Check, State
+  bind messages <- Reference.new([])
+  handle
+    checkPositive(0 - 1)
+  with
+    case Assert.isTrue(condition, message) ->
+      Reference.set(messages, List.append(Reference.get(messages), message))
+      resume(())
+  end handle
+  Assert.equal(Reference.get(messages), ["not positive"])
+end function

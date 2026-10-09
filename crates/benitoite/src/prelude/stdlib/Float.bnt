@@ -1,0 +1,37 @@
+//! Functions on `Float`, the IEEE 754 double-precision type.
+
+/// Returns the text representation of `x`.
+@builtin("Float.toString")
+public function toString(x: Float) -> String
+
+/// Reads a decimal number. Returns `Option.None` when `s` is not a number.
+@builtin("Float.parse")
+public function parse(s: String) -> Option[Float]
+
+/// Rounds toward zero. Returns `Option.None` for NaN, infinities, and values out of the `Integer` range.
+@builtin("Float.truncate")
+public function truncate(x: Float) -> Option[Integer]
+
+/// Returns whether `x` is NaN.
+@builtin("Float.isNaN")
+public function isNaN(x: Float) -> Boolean
+
+/// Returns `x` with a positive sign.
+@builtin("Float.absolute")
+public function absolute(x: Float) -> Float
+
+/// Returns the largest integral value not greater than `x`.
+@builtin("Float.floor")
+public function floor(x: Float) -> Float
+
+/// Returns the smallest integral value not less than `x`.
+@builtin("Float.ceiling")
+public function ceiling(x: Float) -> Float
+
+/// Returns the nearest integral value, rounding halves away from zero.
+@builtin("Float.round")
+public function round(x: Float) -> Float
+
+/// Returns the square root. Negative numbers give NaN.
+@builtin("Float.squareRoot")
+public function squareRoot(x: Float) -> Float

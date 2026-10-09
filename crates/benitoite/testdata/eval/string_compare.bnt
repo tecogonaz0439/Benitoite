@@ -1,13 +1,15 @@
 // spec: 01-04 String
 // spec: 01-04 型の一覧
-fn bool_text(value: Bool) -> String {
-  if value { "true" } else { "false" }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  let nfc = "é"
-  let nfd = "é"
-  Console.println(bool_text(nfc == nfd))
-  Console.println(bool_text(nfd < nfc))
-  Console.println(bool_text("apple" < "banana"))
-}
+function bool_text(value: Boolean) -> String
+  return if value then "true" else "false" end if
+end function
+
+function main() -> Unit uses Console.Write
+  bind nfc <- "é"
+  bind nfd <- "é"
+  Console.writeLine(bool_text(nfc = nfd))
+  Console.writeLine(bool_text(nfd < nfc))
+  return Console.writeLine(bool_text("apple" < "banana"))
+end function

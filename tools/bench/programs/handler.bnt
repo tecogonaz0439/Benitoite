@@ -1,0 +1,69 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+  return match List.get(Process.arguments(), index) with
+    case Option.None -> Result.Error("expected non-negative integer arguments")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+      case Option.None -> Result.Error("expected non-negative integer arguments")
+    end match
+  end match
+end function
+
+effect Step
+  function step(value: Integer) -> Integer
+end effect
+
+function repeat(count: Integer, value: Integer) -> Integer uses Step
+  return if count = 0 then value else repeat(count - 1, step(value)) end if
+end function
+
+function runTail(count: Integer) -> Integer
+  return handle repeat(count, 1) with
+    case step(value) -> resume((value * 17 + 11) mod 65521)
+  end handle
+end function
+
+function runSaved(count: Integer) -> Integer
+  return handle repeat(count, 1) with
+    case step(value) ->
+      // 再開の後に加算を残し、末尾でない再開の区画の保存を測る（設計書 07-02、実装プラン C16）。
+      bind result <- resume((value * 17 + 11) mod 65521)
+      result + 0
+  end handle
+end function
+
+// 深さを増やすと呼び出し情報の上限に達するため、同じ深さの処理を繰り返せるようにする。
+// 第三引数を省略した場合は、従来どおり一回だけ実行する。
+function runMany(count: Integer, mode: String, rounds: Integer, total: Integer) -> Integer
+  return if rounds = 0 then total else
+    bind value <- if mode = "tail" then runTail(count) else runSaved(count) end if
+    runMany(count, mode, rounds - 1, total + value)
+  end if
+end function
+
+function readRounds() -> Result[Integer, String] uses Process.Environment
+  return match List.get(Process.arguments(), 2) with
+    case Option.None -> Result.Ok(1)
+    case Option.Some(_) -> readInteger(2)
+  end match
+end function
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match readInteger(0) with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(count) -> match readRounds() with
+      case Result.Error(message) -> Result.Error(message)
+      case Result.Ok(rounds) -> match List.get(Process.arguments(), 1) with
+        case Option.Some("tail") ->
+          Console.writeLine(Integer.toString(runMany(count, "tail", rounds, 0)))
+          Result.Ok(())
+        case Option.Some("saved") ->
+          Console.writeLine(Integer.toString(runMany(count, "saved", rounds, 0)))
+          Result.Ok(())
+        case _ -> Result.Error("expected handler mode: tail or saved")
+      end match
+    end match
+  end match
+end function

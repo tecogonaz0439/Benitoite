@@ -26,7 +26,11 @@ D00 の後、フォーマッタ（D01〜D04）、テストの実行器（D10〜D
 - `src/builtins/funcs/assert.rs`: 10-18「組み込みの関数の表の部分」の四つの項目を `builtin!` の `io` の権限で書く。本体は `Err(Stop::Internal(String::from("Assert operation reached the handler table")))` を返し、引数は使わない（`let _ = (ctx, …);`）。引数の Rust の型は `Value<'e>` とする。これは最終の形であり、後の作業は書き換えない。ファイルの先頭の `//!` に、テストの実行器が VM の中で処理するので表の関数としては呼ばれないことと、10-18 の節を書く。
 - `src/builtins/funcs/mod.rs`: `pub mod assert;` を加え、`PARTS` の末尾に `assert::DECLS` を加える（00-03「インターフェースの凍結」の `funcs/mod.rs` の例外）。
 
-置いたファイルは手で直さない（上の二つを除く）。
+- `src/builtins/table.rs`: F06 の照合のテスト `table_names_parts_capabilities_and_schemes_are_consistent` が部分ごとの項目の数と合計を値で書いているので、`assert::DECLS` の分を加える（`lengths` の末尾に 4、`names.len()` を 168、権限ごとの数を `[137, 12, 19]`。L00 が先に取り込まれていれば、その値に 4 項目を足す）。このテストの値のほかは変えない。
+
+- `src/modules/tests.rs`: `prelude_order_kinds_and_clock_dependency` の prelude のモジュールの一覧の末尾（`"IO"` の後）に `"Assert"` を加える。
+
+置いたファイルは手で直さない（上の四つを除く）。
 
 ## 手順の要点
 
@@ -52,7 +56,7 @@ D00 の後、フォーマッタ（D01〜D04）、テストの実行器（D10〜D
 | 照合のテスト（F06） | `Benitoite.Assert.equal` など四つの操作が表にあり、引数の数と権限がソースの宣言と合う |
 | 型検査 | `uses Assert.Check` を持つ `@test` の関数と、`Assert.equal(1, 1)` を呼ぶ関数を含むプログラムが、`check_text`（`require_main` は偽）で誤りなく通る。単体テストを `src/builtins/funcs/assert.rs` のテストのモジュールに一つ置く |
 | 取り出しの再実行 | `place --task D00` をもう一度実行すると、すべてのファイルが `unchanged` になる |
-| `extract_interfaces.py check --task D00 --base crates/benitoite` | 通る |
+| 道具の再実行 | `extract_interfaces.py place crates/benitoite --task D00` をもう一度実行すると、すべてのファイルが unchanged になる（`check --task D00` は D00 と関係のない既知の理由で失敗する。C02 の重ね直しで `funcs/mod.rs` の rustfmt が失敗し、`--base` なしでは `base::source` の import で失敗する。実行しなくてよい） |
 
 ## 完了条件
 

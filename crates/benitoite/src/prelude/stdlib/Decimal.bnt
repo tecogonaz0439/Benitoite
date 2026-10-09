@@ -1,0 +1,33 @@
+//! Functions on `Decimal`, the 128-bit decimal fraction type.
+
+/// Rounds `x` to `places` digits after the decimal point in the direction `mode`.
+@builtin("Decimal.round")
+public function round(x: Decimal, places: Integer, mode: RoundingMode) -> Decimal
+
+/// Returns the absolute value, keeping the number of digits after the decimal point.
+@builtin("Decimal.absolute")
+public function absolute(x: Decimal) -> Decimal
+
+/// Returns the `Decimal` equal to `n`.
+@builtin("Decimal.fromInteger")
+public function fromInteger(n: Integer) -> Decimal
+
+/// Rounds toward zero. Returns `Option.None` when the result is out of the `Integer` range.
+@builtin("Decimal.truncate")
+public function truncate(x: Decimal) -> Option[Integer]
+
+/// Returns the `Float` nearest to `x`.
+@builtin("Decimal.toFloat")
+public function toFloat(x: Decimal) -> Float
+
+/// Reads the text of `Float.toString(x)` as a `Decimal`. Returns `Option.None` for NaN, infinities, and values out of range.
+@builtin("Decimal.fromFloat")
+public function fromFloat(x: Float) -> Option[Decimal]
+
+/// Returns the text representation of `x`.
+@builtin("Decimal.toString")
+public function toString(x: Decimal) -> String
+
+/// Reads a decimal number. Returns `Option.None` when `s` is not a valid `Decimal`.
+@builtin("Decimal.parse")
+public function parse(s: String) -> Option[Decimal]

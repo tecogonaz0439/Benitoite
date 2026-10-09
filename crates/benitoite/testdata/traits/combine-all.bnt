@@ -1,0 +1,10 @@
+// spec: 01-06 標準の型クラス（初回リリース版）
+import Benitoite.Trait
+function combineAll[T: Trait.Monoid](xs: List[T]) -> T
+  return List.fold(xs, Trait.Monoid.empty(), Trait.Semigroup.combine)
+end function
+function main() -> Unit
+  bind s: String <- Trait.Monoid.empty()
+  bind _ <- combineAll(["a", "b"])
+  bind _ <- combineAll([[1], [2]])
+end function

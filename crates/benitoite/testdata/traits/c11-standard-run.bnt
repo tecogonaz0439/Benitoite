@@ -1,0 +1,13 @@
+// spec: 01-06 標準の型クラス（初回リリース版）
+// spec: 01-06 高カインド型（初回リリース版）
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+function combine[T: Trait.Monoid](xs: List[T]) -> T
+  return List.fold(xs, Trait.Monoid.empty(), Trait.Semigroup.combine)
+end function
+function main() -> Unit uses Console.Write
+  bind result: String <- combine(["a", "b"])
+  Console.writeLine(Trait.Show.show(result))
+  bind xs: List[Integer] <- Trait.Functor.map([1, 2], lambda(n) return n + 1 end lambda)
+  Console.writeLine("${List.length(xs)}")
+end function

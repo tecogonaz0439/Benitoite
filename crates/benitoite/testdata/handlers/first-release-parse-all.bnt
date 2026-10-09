@@ -1,0 +1,22 @@
+// spec: 01-06 エフェクトの宣言とハンドラの型付け（初回リリース版）
+effect Abort
+  function fail[T](message: String) -> T
+end effect
+
+function parseAll(texts: List[String]) -> Result[List[Integer], String]
+  return handle
+    Result.Ok(List.map(texts, lambda(t)
+      return match Integer.parse(t) with
+        case Option.Some(n) -> n
+        case Option.None -> fail("bad: " + t)
+      end match
+    end lambda))
+  with
+    case fail(message) ->
+      Result.Error(message)
+  end handle
+end function
+
+function main() -> Unit
+  ()
+end function

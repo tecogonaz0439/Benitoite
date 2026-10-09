@@ -1,0 +1,15 @@
+// spec: 01-07 IO が起きる時期と順序
+// 関門: 改行のない出力から入力へ続け、readAll が残りだけを読む規則を守り、位置のリセットを捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Result[Unit, String] uses Console.Read, Console.Write
+  Console.write("prompt> ")
+  bind line <- try Console.readLine() |> Result.mapError(_, IOError.message)
+  Console.writeLine(Option.unwrapOr(line, "eof"))
+  bind rest <- try Console.readAll() |> Result.mapError(_, IOError.message)
+  Console.write(rest)
+  bind empty <- try Console.readAll() |> Result.mapError(_, IOError.message)
+  Console.writeLine(if empty = "" then "eof" else "extra input" end if)
+  return Result.Ok(())
+end function

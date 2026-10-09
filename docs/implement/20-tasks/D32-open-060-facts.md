@@ -9,7 +9,7 @@
 
 配布と Skill の導入が前提にする外部の事実（[OPEN-060](../../design/open-issues.md#open-060)）を、一次資料と試行で確かめ、結果を OPEN-060 と [配布形態](../../design/05-platform/05-01-distribution.md)（と [Agent Skills 対応](../../design/06-tooling/06-06-agent-skills.md)）に記録する。リリースのスクリプト（D31）は、この結果に従って道具と手順を決めるので、D31 より前に行う（[README](../README.md) の「U3・U4 で決めたこと」の 17）。
 
-処理系のコードは書かない。依存する作業はないので、いつ始めてもよい。ただし、x86_64 の模倣の上で処理系のテストが動くかの確かめ（下の 2）は、処理系のテストが多いほど意味がある。U2 第 2 段の後に行うのがよい。
+処理系のコードは書かない。依存する作業はない。U2・U3 は済んでいるので、x86_64 の模倣の上で処理系のテストが動くかの確かめ（下の 2）は、今の処理系のテストの全体で行える。
 
 ## 読む設計書の節
 
@@ -18,7 +18,7 @@
 - [Agent Skills 対応](../../design/06-tooling/06-06-agent-skills.md): 「Skill の導入（初回リリース版）」
 - [ADR 0176](../../design/decisions/0176-first-release-targets-and-static-linux-build.md)、[ADR 0233](../../design/decisions/0233-distribution-via-github-releases.md)、[ADR 0234](../../design/decisions/0234-release-tests-on-development-machine.md)
 - AGENTS.md の「事実と出典」（外部の事実は一次資料で確かめたものだけを断定の形で書く）
-- 開発機の Apple の `container` の使い方は、プロジェクトの環境のスキル `apple-container` を読む
+- 開発機の Apple の `container` の使い方は、プロジェクトの環境のスキル `apple-container` を読む。スキルの説明は版 1.2.0 のものであり、開発機の `container` は 1.4.1 である（2026-10-08 の事前点検）。試行の記録に使った版（`container --version`）を書き、スキルの説明と食い違う振る舞い（コマンドの選択肢の名前など）があれば、1.4.1 の `--help` か一次資料で確かめて記録に書く
 
 ## 担当と、設計者が行う手順
 
@@ -46,7 +46,7 @@ OPEN-060 のすべての項目を確かめたら、決着の ADR の案（`docs/
 
 1. Gatekeeper: Apple の一次資料（Gatekeeper と隔離の属性の説明）を読み、設計者の試行（上の表）の結果と合わせて、利用者向けの文書（D33 の導入の手順）に書く対処を決める。
 2. 開発機の上のコンテナと仮想機械: 開発機の Apple の `container` を候補として試す（[README](../README.md) の「U3・U4 で決めたこと」の 17）。次を確かめる。
-   - Linux（arm64）のコンテナで、`rust-toolchain.toml` の版の Rust を入れ、`aarch64-unknown-linux-musl` のビルドと `scripts/check.sh` が通るか。
+   - Linux（arm64）のコンテナで、`rust-toolchain.toml` の版の Rust を入れ、`aarch64-unknown-linux-musl` のビルドと `scripts/check.sh` が通るか。cargo のビルドは、既定のメモリでは足りない見込みなので、`container run` にメモリの指定（`--memory`）を与える。与えた量と、足りたかを記録する。
    - x86_64 の Linux のコンテナ（Rosetta か QEMU による模倣）で、`x86_64-unknown-linux-musl` のビルドと `scripts/check.sh` が通るか。かかる時間。
    - 実行ファイルだけを入れた最小の像（glibc も musl の共有ライブラリもないもの）を作って動かせるか。
    - `container` で足りない点があれば、ほかの道具（Docker Desktop、Lima、OrbStack、UTM など）を一次資料で調べ、候補と理由を記録する。導入は設計者に確かめてから行う。

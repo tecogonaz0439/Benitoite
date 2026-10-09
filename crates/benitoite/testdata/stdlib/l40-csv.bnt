@@ -1,0 +1,30 @@
+// 設計書 03-08「Csv」、ADR 0329。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Csv
+function main() -> Result[Unit, String] uses Console.Write
+  bind rows <- try Csv.parse("name,note\r\nAda,\"one,two\"\r\nBob,\"a\"\"b\"\n") |> Result.mapError(_, Csv.ParseError.message)
+  Console.writeLine(Trait.Show.show(rows))
+  Console.write(Csv.format(rows))
+  bind header <- try Csv.parseWithHeader("name,amount\nAda,12\nBob,3\n") |> Result.mapError(_, Csv.ParseError.message)
+  Console.writeLine(Trait.Show.show(List.map(header, lambda(row) return Map.get(row, "amount") end lambda)))
+  bind tabbed <- try Csv.parseWith("a\tb\n1\t2\n", '\t') |> Result.mapError(_, Csv.ParseError.message)
+  Console.write(Csv.formatWith(tabbed, ';'))
+  Console.writeLine(Trait.Show.show(Csv.format([[""]]) = "\"\"\n"))
+  bind single <- try Csv.parse(Csv.format([[""]])) |> Result.mapError(_, Csv.ParseError.message)
+  Console.writeLine(Trait.Show.show(single))
+  Console.writeLine(Trait.Show.show(Csv.format([[]]) = "\n"))
+  bind errorLine <- match Csv.parse("ok\n\"open\nmore") with
+    case Result.Error(e) -> Csv.ParseError.line(e)
+    case Result.Ok(_) -> 0
+  end match
+  Console.writeLine(Integer.toString(errorLine))
+  bind headerError <- match Csv.parseWithHeader("a,b\n\"one\ntwo\"\n") with
+    case Result.Error(e) -> Csv.ParseError.line(e)
+    case Result.Ok(_) -> 0
+  end match
+  Console.writeLine(Integer.toString(headerError))
+  return Result.Ok(())
+end function

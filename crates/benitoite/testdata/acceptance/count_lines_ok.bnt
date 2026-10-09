@@ -1,11 +1,14 @@
 // spec: 01-07 プログラムの入口
 // spec: 01-07 IO を行う組み込み関数
-fn main() -> Result[Unit, String] uses IO {
-  match File.readText("input.txt") {
-    Ok(text) => {
-      Console.println(Int.toString(List.length(String.lines(text))))
-      Ok(())
-    }
-    Err(error) => Err(IoError.message(error))
-  }
-}
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function main() -> Result[Unit, String] uses Console.Write, File.Read
+  return match File.readText("input.txt") with
+    case Result.Ok(text) ->
+      Console.writeLine(Integer.toString(List.length(String.lines(text))))
+      Result.Ok(())
+
+    case Result.Error(error) -> Result.Error(IOError.message(error))
+  end match
+end function

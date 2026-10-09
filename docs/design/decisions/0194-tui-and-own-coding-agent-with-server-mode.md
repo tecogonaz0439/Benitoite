@@ -1,6 +1,6 @@
 # 0194. TUI と自前のコーディングエージェントを、サーバモードとあわせて作る
 
-- 状態: 採択
+- 状態: 採択（決定 1・2 の時期を [0342](0342-agent-harness-after-server-mode.md) で改めた）
 - 日付: 2026-09-29
 - 関連章: [ロードマップ](../00-overview/00-03-roadmap.md)
 - 関連する未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-055](../open-issues.md#open-055), [OPEN-056](../open-issues.md#open-056)

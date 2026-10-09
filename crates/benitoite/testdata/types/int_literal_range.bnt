@@ -1,15 +1,15 @@
-// spec: 01-04 Int
+// spec: 01-04 Integer
 // spec: 01-05 パターン
-fn main() -> Unit {
-    let _ = 9223372036854775808
-    let _ = -9223372036854775808
-    let _ = match 0 {
-        9223372036854775808 => ()
-        _ => ()
-    }
-    let _ = match 0 {
-        -9223372036854775808 => ()
-        _ => ()
-    }
-    ()
-}
+function main() -> Unit
+    bind _ <- 9223372036854775808
+    bind _ <- -9223372036854775808
+    bind _ <- match 0 with
+        case 9223372036854775808 -> ()
+        case _ -> ()
+    end match
+    bind _ <- match 0 with
+        case -9223372036854775808 -> ()
+        case _ -> ()
+    end match
+    return ()
+end function

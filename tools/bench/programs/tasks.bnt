@@ -1,0 +1,50 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+  return match List.get(Process.arguments(), index) with
+    case Option.None -> Result.Error("expected non-negative integer arguments")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+      case Option.None -> Result.Error("expected non-negative integer arguments")
+    end match
+  end match
+end function
+
+function compute(count: Integer, value: Integer) -> Integer
+  return if count = 0 then value else compute(count - 1, (value * 17 + 11) mod 65521) end if
+end function
+
+function waitGate(open: Reference[Boolean]) -> Unit uses State
+  return if Reference.get(open) then () else waitGate(open) end if
+end function
+
+function spawnTasks(group: TaskGroup, gate: Task[Unit], count: Integer, work: Integer, tasks: List[Task[Integer]]) -> List[Task[Integer]] uses State
+  return if count = 0 then tasks else
+    bind task <- TaskGroup.spawn(group, lambda()
+      Task.await(gate)
+      return compute(work, 1)
+    end lambda)
+    spawnTasks(group, gate, count - 1, work, List.append(tasks, task))
+  end if
+end function
+
+function main() -> Result[Unit, String] uses State, Console.Write, Process.Environment
+  return match readInteger(0) with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(count) -> match readInteger(1) with
+      case Result.Error(message) -> Result.Error(message)
+      case Result.Ok(work) ->
+        bind open <- Reference.new(false)
+        bind total <- with group = TaskGroup.open() do
+          bind gate <- TaskGroup.spawn(group, lambda() return waitGate(open) end lambda)
+          bind tasks <- spawnTasks(group, gate, count, work, [])
+          // 全タスクを起動してから計算へ進め、同時に存在する数を入力と揃える（設計書 07-02）。
+          Reference.set(open, true)
+          List.fold(tasks, 0, lambda(acc, task) return acc + Task.await(task) end lambda)
+        end with
+        Console.writeLine(Integer.toString(total))
+        Result.Ok(())
+    end match
+  end match
+end function

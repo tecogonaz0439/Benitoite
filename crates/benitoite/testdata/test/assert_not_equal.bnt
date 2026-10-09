@@ -1,0 +1,7 @@
+// spec: 01-02 属性（初回リリース版）
+// 06-04「期待の確認」「結果の報告」: Assert.notEqual の失敗は両方の値を示す。
+
+@test
+function differ() -> Unit uses Assert.Check
+  Assert.notEqual([1, 2], [1, 2])
+end function

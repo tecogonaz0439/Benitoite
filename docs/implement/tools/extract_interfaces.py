@@ -86,8 +86,9 @@ L00 と D00 は互いに依存しないので、どちらを先に置いても�
           `#![allow(dead_code, unused)]` を加える。
           --lenient は最小実行版の道具と同じく clippy::all と clippy::restriction も許す。
         - 機能: 00-common/00-01 の「機能（feature）」の表から [features] を作る。
-          gc-mark-sweep と gc-refcount は同時に有効にできないので、表にあるそれぞれについて、
-          「その機能だけ」と「その機能とほかの排他でない機能のすべて」の二通りでコンパイルする。
+          回収の方式の機能（第 1 段は gc-mark-sweep と gc-refcount。同時に有効にできない）のうち表にある
+          それぞれについて、「その機能だけ」と「その機能とほかの排他でない機能のすべて」の二通りで
+          コンパイルする。R14 が gc-refcount を表から消した後は、gc-mark-sweep の二通りだけになる。
         - --base を付けると、そのクレートの src/ と Cargo.toml を写した上に重ねる
           （C04 の後の最小実行版のクレートを渡すと、C01・C02 の place と同じ結果を確かめられる）。
           付けないときは、10-interfaces のコードだけでクレートを作る。
@@ -567,7 +568,13 @@ def fill_missing_modules(tree, planned=()):
         for f in tree.rs_files():
             p = pathlib.PurePosixPath(f)
             base = p.parent if p.name in ("mod.rs", "lib.rs", "main.rs") else p.parent / p.stem
-            for name in MOD_DECL.findall(tree.read(f) or ""):
+            text = tree.read(f) or ""
+            for m in MOD_DECL.finditer(text):
+                name = m.group(1)
+                # `#[path = …]` を付けた宣言は別の場所のファイルを指すので、作らない。
+                before = text[:m.start()].rstrip().rsplit("\n", 1)[-1]
+                if before.lstrip().startswith("#[path"):
+                    continue
                 a, b = str(base / f"{name}.rs"), str(base / name / "mod.rs")
                 if tree.exists(a) or tree.exists(b):
                     continue

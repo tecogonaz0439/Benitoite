@@ -474,6 +474,12 @@ impl<'c, 'e> StateCtx<'c, 'e> {
     pub fn site(&self) -> Option<InstrRef> {
         self.site
     }
+
+    /// タスクの状態を読む。`StateServices::task_poll` はヒープと実行時のサービスを同時に要るが、
+    /// `services()` は文脈の全体を可変で借りるので、二つを分けて借りてこの関数から呼ぶ（R25 で加えた）。
+    pub fn task_poll(&mut self, task: Value<'e>) -> Result<TaskPoll<'e>, Stop> {
+        self.services.task_poll(&*self.heap, task)
+    }
 }
 
 impl<'c, 'e> Deref for StateCtx<'c, 'e> {
@@ -784,13 +790,12 @@ macro_rules! builtin {
                 args: &[$crate::runtime::heap::Value<'e>],
             ) -> ::core::result::Result<$crate::builtins::iface::Reply<'e>, $crate::runtime::Stop> {
                 let ctx = call.io_ctx()?;
-                let values = ctx.values();
                 let mismatch = || $crate::builtins::iface::arg_mismatch($qname);
                 let mut it = args.iter().copied();
                 $(
                     let $arg = it
                         .next()
-                        .and_then(|v| <$ty as $crate::builtins::iface::FromArg<'c, 'e>>::from_arg(values, v))
+                        .and_then(|v| <$ty as $crate::builtins::iface::FromArg<'c, 'e>>::from_arg(ctx.values(), v))
                         .ok_or_else(mismatch)?;
                 )*
                 if it.next().is_some() {
@@ -1059,7 +1064,7 @@ fn main() {}
 
 - `src/builtins/mod.rs`: 子のモジュールの宣言と、組み込みの関数の番号 `BuiltinId`。10-07 の `BuiltinRef`、10-04 の名前解決、10-06 の IR が使うので、C01 で凍結する。
 - `src/builtins/table.rs`: 番号から登録の項目を引く `builtin_decl` と、名前から番号を引く `lookup_builtin`（10-04 が使う）のシグネチャ。組み込みの表のほかの項目（型、専用の命令、演算子の引き方など。10-06「10-12 に求めるもの」）は、組み込みの表の章（10-12）が C02 で同じファイルに `sig=` として足す。10-12 はこのファイルに `file=` を置かない（C01 が置いたファイルを C02 は変えない。[作業の進め方](../00-common/00-03-workflow.md)の「インターフェースの凍結」）。
-- `src/builtins/funcs/`: 組み込みの関数の本体を書くモジュールの親。子のモジュール（型や prelude のモジュールごとのファイル）は、組み込みの関数を書く作業（R07・R08・R23・R25・R29・R35・R37、U3 の作業）が `funcs/mod.rs` に宣言して加える。組み込みの表は、各モジュールの `DECLS` を集める。
+- `src/builtins/funcs/`: 組み込みの関数の本体を書くモジュールの親。子のモジュール（型や prelude のモジュールごとのファイル）は、組み込みの関数を書く作業（R07・R08・R23・R25・R29・R35・R37・R39、U3 の作業）が `funcs/mod.rs` に宣言して加える。組み込みの表は、各モジュールの `DECLS` を集める。
 
 第 1 段で既存の組み込みの関数を型付きの形へ移す作業（R08）は、`src/legacy/builtins/` の関数を写して `funcs` の下に型付きの形で書き、`table.rs` の関数の中身を書く。番号は、表の中の位置とする。表には、第 1 段で本体を書く項目（最小実行版の組み込みの関数を 03-06 の名前に改めたものなど）だけでなく、10-12 の項目の一覧の U1・U2 の範囲のすべての項目を並べ、後の作業が本体を書く項目は仮の本体で宣言する（10-12「まだ書かない項目の仮の本体」）。
 
@@ -1108,6 +1113,7 @@ pub fn lookup_builtin(name: &str) -> Option<BuiltinId>;
 | R07 | 純粋な関数・文字列を作る関数・待つ関数を一つずつこの形で書いて確かめる（ADR 0261 の決定 7）、コンパイルの失敗のテストを置く、`CallCtx` を使う VM の側の呼び出しの補助 |
 | R08 | 最小実行版の組み込みの関数（`src/legacy/builtins/`）を型付きの形へ移す（`funcs` の下）。`builtin_decl`・`lookup_builtin` と、10-12 の U1・U2 の範囲のすべての項目の表（後の作業の項目は仮の本体）。第 1 段の `IoServices` の一時的な実装（本番の出力とテスト用の出力） |
 | R23 | `StateServices` の一時的な実装、`state` の関数のうち `Reference.new`・`Reference.get`・`Reference.set`（10-12） |
-| R25 | `StateServices` の実装（R23 の一時的な実装を置き換える）、`state` の関数のうち `Task` と `TaskGroup` の七つ（10-12） |
+| R25 | `StateServices` の実装（R23 の一時的な実装を置き換える）、`state` の関数のうち `Task.all`・`Task.await`・`TaskGroup.open`・`TaskGroup.spawn`（10-12） |
+| R39 | `state` の関数のうち `Task.allOk`・`Task.race`・`Task.withTimeout`（10-12） |
 | R29 | 残りの `state` の関数（`Reference.update` の `raw` の確かめ、`IO.File.closeReader`。10-12） |
 | R26 | 第 2 段の `IoServices` の実装（10-10 の実行ごとの状態） |

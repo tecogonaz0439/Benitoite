@@ -1,14 +1,39 @@
 [package]
 name = "benitoite"
-version = "0.0.0"
+version = "0.0.1"
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
+# crates.io へ公開しない（05-01「ソースからのビルド」）。cargo-about の private.ignore で一覧から自身を外す
+publish = false
 
 [lints]
 workspace = true
 
 [features]
+default = ["gc-mark-sweep"]
+gc-mark-sweep = []
+gc-stress = []
+heap-verify = []
+heap-per-object = []
 alloc-stats = []
+# リリースのスクリプトが生成した licenses/THIRD_PARTY_LICENSES を埋め込む（10-19「第三者のライセンスの表示」）
+bundled-licenses = []
 
 [dependencies]
+base64 = { version = "=0.23.1", default-features = false, features = ["std"] }
+csv-core = "=0.1.13"
+httparse = "=1.10.1"
+getrandom = "=0.4.3"
+jiff = { version = "=0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
+mio = { version = "=1.2.4", default-features = false, features = ["os-poll", "os-ext", "net"] }
+regex = "=1.13.1"
+rustix = { version = "=1.1.5", default-features = false, features = ["std", "fs"] }
+serde_json = { version = "=1.0.151", features = ["arbitrary_precision"] }
+sha2 = { version = "=0.11.0", default-features = false, features = ["alloc"] }
+signal-hook = "=0.4.5"
+signal-hook-mio = { version = "=0.3.0", features = ["support-v1_0"] }
+ureq = { version = "=3.4.2", default-features = false, features = ["rustls-no-provider", "platform-verifier"] }
+ureq-proto = { version = "=0.6.4", default-features = false, features = ["client"] }
+rustls = { version = "=0.23.45", default-features = false, features = ["std", "tls12"] }
+rustls-graviola = "=0.4.0"

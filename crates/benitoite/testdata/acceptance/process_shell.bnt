@@ -1,0 +1,16 @@
+// spec: 01-07 プログラムの入口
+// spec: 01-07 IO を行う組み込み関数
+// 受け入れ: 00-03「初回リリース版」の完了条件の Process.shell（07-03「受け入れ例と仕様の項目の対応」）。
+// 03-07「Process」: POSIX の sh の範囲の文字列（パイプ、変数、標準エラー出力への書き込み）をシェルで実行する。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Result[Unit, String] uses Process.Run, Console.Write
+  bind piped <- try Process.shell("printf 'cherry\\napple\\nbanana\\n' | LC_ALL=C sort | tr 'a-z' 'A-Z'") |> Result.mapError(_, IOError.message)
+  Console.write(Process.Output.standardOutput(piped))
+  bind mixed <- try Process.shell("name=shell; printf 'out:%s\\n' \"$name\"; printf 'err\\n' >&2; exit 4") |> Result.mapError(_, IOError.message)
+  Console.write(Process.Output.standardOutput(mixed))
+  Console.write("stderr: ${Process.Output.standardError(mixed)}")
+  Console.writeLine("exit code: ${Process.Output.exitCode(mixed)}")
+  return Result.Ok(())
+end function

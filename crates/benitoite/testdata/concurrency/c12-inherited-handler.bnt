@@ -1,0 +1,22 @@
+// spec: 01-11 タスクとハンドラ
+// 関門: 外側の集まりへ加えた子にもハンドラを引き継ぎ handle が待つ規則を守り、記録の早期破棄を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+effect Ask
+  function ask(value: Integer) -> Integer
+end effect
+
+function main() -> Unit uses State, Console.Write
+  bind saved <- Reference.new(0)
+  with group = TaskGroup.open() do
+    bind value <- handle
+      bind _ <- TaskGroup.spawn(group, lambda()
+        Reference.set(saved, ask(2))
+      end lambda)
+      7
+    with
+      case ask(n) -> resume(n + 40)
+    end handle
+    Console.writeLine("handle: ${value}, child: ${Reference.get(saved)}")
+  end with
+end function

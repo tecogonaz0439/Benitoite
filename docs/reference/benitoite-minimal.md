@@ -1,5 +1,7 @@
 # Benitoite Minimal Language Reference
 
+> This document covers the minimal implementation (`0.0.0`) only. For the first release (`0.1.0`), see the [Benitoite Language Reference](benitoite.md).
+
 This reference covers the **minimal implementation** of Benitoite. The language name `Benitoite`, command name `benitoite`, and file extension `.bnt` are provisional (OPEN-011); they may change.
 
 ## 1. Run a script

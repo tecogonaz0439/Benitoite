@@ -20,7 +20,7 @@ L00 は、本章と 10-16 のブロックを `tools/extract_interfaces.py place 
 
 `STDLIB` と `tags` と 10-14 のソースを直接書き換えず、道具で書き足すのは、C02 が置いた内容を変えずに U3 の分を重ねるためである（10-12・10-14 は項目を末尾にだけ加える）。U4 の D00 も、`STDLIB` の末尾に `Assert` の項目を加える（10-18）。L00 と D00 のどちらを先に置いても、それぞれのブロックは互いを参照しないので、置いた後のクレートはコンパイルできる。`STDLIB` の中の順は、先に置いた作業の項目が前になる。表の順が決めるのは prelude のモジュールの ID と束縛の番号だけであり、どちらもファイルに保存しないので、順が違っても振る舞いは変わらない（10-14「ファイルとモジュールの名前」）。
 
-本章のソースは、処理系の実装を始める前に書いたものである。10-14 と同じく、L00 より後の作業が本章のソースに誤り（構文の誤り、型の誤り、設計書との食い違い）を見つけたときは、ソースを直さずに作業を止めて報告する（10-14「置く作業と既存のファイル」）。
+本章のソースは、処理系の実装を始める前に書いたものである。10-14 と同じく、L00 より後の作業が本章のソースに誤り（構文の誤り、型の誤り、設計書との食い違い）を見つけたときは、ソースを直さずに作業を止めて報告する（10-14「置く作業と既存のファイル」）。ただし、正規形のテスト（D02）で、整形で変わるのが空白（字下げ・空の行・字句の間の空白）だけなら、`format_source` の結果で標準ライブラリのソースと 10-14・10-15 の写しを直してよい（字句と型は変わらない）。直したファイルを完了の報告に書く。
 
 ## 取り込みの名前と状態
 
@@ -70,6 +70,8 @@ U3 の部分は、10-12 の 21 の部分の後（`PARTS` の 22 番から）に�
 
 U3 の項目は合わせて 136 であり、表の全体は 300 項目になる。番号の欄は、L00 が D00 より先に部分を加えたときの値である。D00 が先なら、D00 の部分の数だけ後ろにずれる。番号はコードに書かない（10-12「番号の振り方」）。
 
+注記（オーケストレータ、2026-10-07）: D00 が L00 より先に入り、`assert::DECLS`（4 項目）を 22 番の部分として加えた。このため、実際の U3 の部分は 23〜46 番になり、上の表の「順」の欄の値より 1 ずつ後ろにずれる（番号の欄は 4 ずつずれる）。表の全体は 46 部分・304 項目である（L00 の作業文書）。
+
 U3 が作る 162 の関数のうち、組み込みの関数は上の 136 であり、残りの 26 は標準ライブラリのソースで書く（本章の「新しいモジュール」と「既存のモジュールへの追加」）。
 
 | 区分 | 組み込み | ソース |
@@ -89,7 +91,7 @@ U3 が作る 162 の関数のうち、組み込みの関数は上の 136 であ�
 
 | 項目 | 権限を `State` にする理由 |
 |---|---|
-| `IO.File.closeWriter`・`Network.Http.closeListener`・`Network.Http.closeExchange` | リソースを解放する関数であり、型に `State` を持つ（[ADR 0150](../../design/decisions/0150-resource-release-as-state.md)）。`IO.File.closeReader` と同じく、`StateServices::begin_release` で解放を始める |
+| `IO.File.closeWriter`・`Network.Http.closeListener`・`Network.Http.closeExchange` | リソースを解放する関数であり、型に `State` を持つ（[ADR 0150](../../design/decisions/0150-resource-release-as-state.md)）。`IO.File.closeReader` は `StateServices::begin_release` で解放を始めるが、この三つは解放の失敗を `Result.Error` で返すので、L12 が加える `StateServices::begin_close`（10-16「close の関数が解放の失敗を受け取る口」、[ADR 0321](../../design/decisions/0321-close-functions-return-release-failure.md)）で解放を始める |
 | `Network.Http.requestOf` | 型は純粋な関数（03-09）だが、受け付けた要求をリソースの表から読む。`Pure` の文脈はリソースの表に触れられないので、`Task.all` と同じく、型に `State` を書かない `State` の項目とする。読み方は 10-16「受け付けた要求の保存」で定める |
 
 `State` の項目はハンドラ表と送り出しの列を通らないので、`Http.requestOf` をハンドラで処理することはできない。これは 03-09 の「純粋な関数である」と矛盾しない。純粋な関数も、操作ではないのでハンドラで処理できないからである。
@@ -602,7 +604,7 @@ end implement
 
 ### `IO.File`
 
-`File.Info` の `modified` は `Time.Instant` なので、`Benitoite.Time` を取り込む。`File.copy` は、前述の「部分と番号」のとおりソースで書く。
+`File.Info` の `modified` は `Time.Instant` なので、`Benitoite.Unofficial.Time` を取り込む。`File.copy` は、前述の「部分と番号」のとおりソースで書く。
 
 ```text append=src/prelude/stdlib/IO/File.bnt::imports
 import Benitoite.Unofficial.Time
@@ -1132,7 +1134,7 @@ end function
 ```text file=src/prelude/stdlib/Csv.bnt
 //! Reading and writing CSV as in RFC 4180. Every field is a `String`.
 
-/// Why parsing failed. `line` is the line where the error was found, counting from 1.
+/// Why parsing failed. `line` is the line where the record with the error starts, counting from 1.
 public record ParseError
   line: Integer
   message: String
@@ -1305,7 +1307,7 @@ public record ClientRequest
   timeoutMilliseconds: Integer
 end record
 
-/// Returns the request that was accepted. It can be used after the exchange is closed.
+/// Returns the request that was accepted. Stops the program when the exchange is closed or being closed.
 @builtin("Network.Http.requestOf")
 public function requestOf(exchange: Exchange) -> Request
 
@@ -1326,7 +1328,7 @@ public function pathSegments(path: String) -> List[String]
 /// Returns `Result.Error` when listening cannot start or accepting fails.
 public function serve[effect E](host: String, port: Integer, handler: function(Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
   with listener = try listen(host, port),
-       group = TaskGroup.open() do
+    group = TaskGroup.open() do
     return serveLoop(listener, group, handler)
   end with
 end function
@@ -1378,7 +1380,7 @@ end function
 
 ## 文法の確かめ
 
-本章のソース（`text file=` と `text append=` の全文）は、10-14「文法の確かめ」と同じく、[tools/grammar-check](../../../tools/grammar-check/README.md) の字句解析器と照合器で、01-02「初回リリース版の文法の全体」に、`@builtin` を付けた本体のない関数の宣言（02-03「標準ライブラリのソースの構文」）を加えた文法で読めることを確かめた（2026-09-30）。エフェクトの宣言の中に加える操作と、先頭に加える import は、10-14 のソースに差し込んだ後のファイルの全体で確かめた。局所の束縛の規則（`scope_check.py`）も確かめた。名前解決と型検査の誤りは確かめていない。L00 が、本章のソースを処理系で読んで確かめる（後述の「確かめること」）。
+本章のソース（`text file=` と `text append=` の全文）は、10-14「文法の確かめ」と同じく、Python の道具 `tools/grammar-check`（C13 が消した）の字句解析器と照合器で、01-02「初回リリース版の文法の全体」に、`@builtin` を付けた本体のない関数の宣言（02-03「標準ライブラリのソースの構文」）を加えた文法で読めることを確かめた（2026-09-30）。エフェクトの宣言の中に加える操作と、先頭に加える import は、10-14 のソースに差し込んだ後のファイルの全体で確かめた。局所の束縛の規則（`scope_check.py`）も確かめた。名前解決と型検査の誤りは確かめていない。L00 が、本章のソースを処理系で読んで確かめる（後述の「確かめること」）。
 
 ## 確かめること
 

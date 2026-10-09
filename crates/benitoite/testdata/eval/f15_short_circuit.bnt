@@ -1,0 +1,16 @@
+// spec: 01-04 Boolean
+// spec: 01-08 正格評価
+// spec: 01-08 評価順序
+import Benitoite.Unofficial.IO.Console
+function log_true() -> Boolean uses Console.Write
+ Console.writeLine("right evaluated")
+ return true
+end function
+function bool_text(value: Boolean) -> String
+ return if value then "true" else "false" end if
+end function
+function main() -> Unit uses Console.Write
+ bind and_result <- false and log_true()
+ bind or_result <- true or log_true()
+ Console.writeLine(bool_text(and_result) + " " + bool_text(or_result))
+end function

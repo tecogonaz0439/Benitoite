@@ -1,2 +1,4 @@
 // spec: 01-03 型パラメータとエフェクト変数の有効範囲
-fn duplicate[T, T](value: T) -> T { value }
+function duplicate[T, T](value: T) -> T
+  return value
+end function

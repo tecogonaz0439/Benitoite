@@ -1,26 +1,30 @@
 // spec: 01-02 パイプ
-fn nonEmpty(value: String) -> Bool { value != "" }
+import Benitoite.Unofficial.IO.Console
 
-fn clamp(low: Int, value: Int, high: Int) -> Int {
-  if value < low { low } else if value > high { high } else { value }
-}
+function nonEmpty(value: String) -> Boolean
+  return value <> ""
+end function
 
-fn makeOffset(offset: Int) -> fn(Int) -> Int {
-  fn(value: Int) { value + offset }
-}
+function clamp(low: Integer, value: Integer, high: Integer) -> Integer
+  return if value < low then low else if value > high then high else value end if
+end function
 
-fn makeAdder(seed: Int) -> fn(Int, Int, Int, Int) -> Int {
-  fn(a: Int, b: Int, c: Int, d: Int) { seed + a + b + c + d }
-}
+function makeOffset(offset: Integer) -> function(Integer) -> Integer
+  return lambda(value: Integer) return value + offset end lambda
+end function
 
-fn main() -> Unit uses IO {
-  let lines = ["", "x", "y"]
-  let filtered = lines |> List.filter(nonEmpty)
-  let count = lines |> List.length
-  let middle = 7 |> clamp(0, _, 100)
-  let doubled = 3 |> fn(value: Int) { value * 2 }
-  let parenthesized = 3 |> (makeOffset(4))
-  let nested = 1 |> makeAdder(2)(3, 4, 5)
-  let total = List.length(filtered) + count + middle + doubled + parenthesized + nested
-  Console.println(Int.toString(total))
-}
+function makeAdder(seed: Integer) -> function(Integer, Integer, Integer, Integer) -> Integer
+  return lambda(a: Integer, b: Integer, c: Integer, d: Integer) return seed + a + b + c + d end lambda
+end function
+
+function main() -> Unit uses Console.Write
+  bind lines <- ["", "x", "y"]
+  bind filtered <- lines |> List.filter(nonEmpty)
+  bind count <- lines |> List.length
+  bind middle <- 7 |> clamp(0, _, 100)
+  bind doubled <- 3 |> lambda(value: Integer) return value * 2 end lambda
+  bind parenthesized <- 3 |> (makeOffset(4))
+  bind nested <- 1 |> makeAdder(2)(3, 4, 5)
+  bind total <- List.length(filtered) + count + middle + doubled + parenthesized + nested
+  return Console.writeLine(Integer.toString(total))
+end function

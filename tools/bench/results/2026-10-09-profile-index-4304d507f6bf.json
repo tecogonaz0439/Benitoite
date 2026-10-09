@@ -1,0 +1,613 @@
+{
+  "date": "2026-10-09",
+  "revision": "4304d507f6bf",
+  "environment": {
+    "os": "macOS-27.0.1-arm64-arm-64bit",
+    "cpu": "Apple M4",
+    "logical_cpus": "10",
+    "memory": "34,359,738,368 bytes",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "model": "Mac16,10",
+    "hardware_query": "system_profiler SPHardwareDataType -json"
+  },
+  "source_hashes": {
+    "tools/bench/remeasure.py": "b68a7fdea87f0f2162b9a28a2839f3405f767f1dff91b79a004eb9d806882e00",
+    "tools/bench/run.py": "cfc7af22a542c9eb3497b62aae2c570a52ec0387d9852239d33727c57d8a134c",
+    "tools/bench/rss.py": "29e54a6b87b7fd95473b00c8d2cd7d276ba47e418641c4e68ce4a9358e2201df",
+    "crates/benitoite/examples/bench_run.rs": "9311ec752f7d9fe35da2ad96cbd43b35e3defde190de9c45dab3ee9fcfa4f7b0",
+    "target/release/examples/bench_run": "1746a9a869da262ae9f4a011da6a3e8c896b0fd05bb8df77c8d927f16c457a9c",
+    "tools/bench/programs/eval.bnt": "47994aa85f6d67ee7124eae8f8010881abe0b46f8b7caa575774b67be542b7fb",
+    "tools/bench/programs/depth.bnt": "e541ff210d2c9dd461270d4c977017bbad17c780b1de6be0decd30c8482f07d1",
+    "tools/bench/programs/handler.bnt": "a9da6c19ddec6142fd17b44795df963119b81b241611b3d66e6088baa6807037",
+    "tools/bench/programs/lines.bnt": "995fdf9120e686cf118db453c84a1028b7fb89e84e0f1d38b792e3a9c7eb92c7",
+    "tools/bench/programs/list.bnt": "5300af350b085901c9197e76cd892c1f90e11e3743c7354b36e290a9a44f6efc",
+    "tools/bench/programs/fib.bnt": "f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c",
+    "tools/bench/programs/http.bnt": "b3af62454c296f6ef8d4330818b1fb2b840ba97636046782a4dde1e688eafda5",
+    "tools/bench/programs/tasks.bnt": "4ba42d9fa965f2db3a898c4a3b2f5930022c44139ffcfe98a19f0fd6258ee8c6",
+    "tools/bench/programs/map.bnt": "9fcb36d3aa50defa05a9778c0ef6d84c80c1bdeb6273843cc891cf2cac315ebc",
+    "tools/bench/programs/string.bnt": "2859b4dd7634a616e0d3f62f6e3de2399573a01ea3d68a7b1ff623fad6f67ec4",
+    "tools/bench/programs/tree.bnt": "332ce8521ad9bc39bbb98a4d2751756762b0605df659993b91877a5a4eaefa27",
+    "tools/bench/programs/println.bnt": "89f685191c42c49434ff72fa0e60777ad07233ed4e853b02f4c16f79cccb78bc",
+    "tools/bench/programs/trait.bnt": "bb4b80a5a2c236be01cd5265ad593511a4849a169d420d933e2312ce0669f17f",
+    "tools/bench/programs/listget.bnt": "ae399bde79ed0aeb8f8daa282fd9e185a888c4f12d13d33387eb369c36b482c3",
+    "tools/bench/programs/cycle.bnt": "307d3ca4181c1bb0376f9b7d7b033a1d9a0d72ad42ee3ce13555c671111d4db5",
+    "tools/bench/programs/loop.bnt": "64c380f6eface80d69adf358c25251041304075c53e3879806688246720ee9b3",
+    "tools/bench/programs/stage1/returns.bnt": "6f081368e38cef08dc7e96d2c52e78ab5c258a86865d89a73a6ccc51570bf30d",
+    "tools/bench/programs/stage1/shared.bnt": "788646880399e35d2ae2c31d65a1e98a8108770ab5b61cb7ee6f152acb1378a3",
+    "tools/bench/programs/stage1/mixed.bnt": "e9d3a500c26284cbf2b57966b62821fd642ab5902fbdb9b1ddd52e3af9042c17",
+    "tools/bench/programs/stage1/live.bnt": "c58f3cc06d9bc08df376365dafaba45af155c08cb5a6658c58197b1d1b097ab3",
+    "tools/bench/programs/stage1/roots.bnt": "cda520b39b6f345053aeb2a6d00fdba6086234394183b4d476518c45f2a1a88f"
+  },
+  "measure": false,
+  "iterations": 1,
+  "plan": [
+    {
+      "label": "fib",
+      "name": "fib",
+      "args": [
+        35
+      ]
+    },
+    {
+      "label": "loop",
+      "name": "loop",
+      "args": [
+        20000000
+      ]
+    },
+    {
+      "label": "list",
+      "name": "list",
+      "args": [
+        1500000
+      ]
+    },
+    {
+      "label": "tree",
+      "name": "tree",
+      "args": [
+        22
+      ]
+    },
+    {
+      "label": "eval",
+      "name": "eval",
+      "args": [
+        30000
+      ]
+    },
+    {
+      "label": "string",
+      "name": "string",
+      "args": [
+        8000000
+      ]
+    },
+    {
+      "label": "println",
+      "name": "println",
+      "args": [
+        7000000
+      ]
+    },
+    {
+      "label": "lines",
+      "name": "lines",
+      "args": [
+        "@lines:16000000"
+      ]
+    },
+    {
+      "label": "trait",
+      "name": "trait",
+      "args": [
+        20000000
+      ]
+    },
+    {
+      "label": "handler-tail",
+      "name": "handler-tail",
+      "args": [
+        100000,
+        "tail",
+        100
+      ]
+    },
+    {
+      "label": "handler-saved",
+      "name": "handler-saved",
+      "args": [
+        100000,
+        "saved",
+        100
+      ]
+    },
+    {
+      "label": "tasks",
+      "name": "tasks",
+      "args": [
+        1000,
+        30000
+      ]
+    },
+    {
+      "label": "cycle",
+      "name": "cycle",
+      "args": [
+        10000000
+      ]
+    },
+    {
+      "label": "listget",
+      "name": "listget",
+      "args": [
+        100000,
+        8000000
+      ]
+    },
+    {
+      "label": "map",
+      "name": "map",
+      "args": [
+        200000
+      ]
+    },
+    {
+      "label": "http-sized-0-1-10000",
+      "name": "http",
+      "args": [
+        20000,
+        0
+      ],
+      "clients": 1,
+      "options": [
+        "--call-budget=10000"
+      ]
+    },
+    {
+      "label": "http-sized-0-8-10000",
+      "name": "http",
+      "args": [
+        20000,
+        0
+      ],
+      "clients": 8,
+      "options": [
+        "--call-budget=10000"
+      ]
+    },
+    {
+      "label": "http-sized-1-1-10000",
+      "name": "http",
+      "args": [
+        2500,
+        1
+      ],
+      "clients": 1,
+      "options": [
+        "--call-budget=10000"
+      ]
+    },
+    {
+      "label": "http-sized-1-8-10000",
+      "name": "http",
+      "args": [
+        7500,
+        1
+      ],
+      "clients": 8,
+      "options": [
+        "--call-budget=10000"
+      ]
+    },
+    {
+      "label": "shared",
+      "name": "shared",
+      "args": [
+        18
+      ]
+    },
+    {
+      "label": "live",
+      "name": "live",
+      "args": [
+        22
+      ]
+    },
+    {
+      "label": "roots",
+      "name": "roots",
+      "args": [
+        30000
+      ]
+    },
+    {
+      "label": "returns",
+      "name": "returns",
+      "args": [
+        20000,
+        200
+      ]
+    },
+    {
+      "label": "mixed",
+      "name": "mixed",
+      "args": [
+        500000
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "label": "fib",
+      "name": "fib",
+      "args": [
+        35
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/fib",
+          "35"
+        ],
+        "wall_seconds": 0.022757165999999995
+      },
+      "output_sha256": "a46206445bb93c50ca0779bf8a18f318b0dfc4fd39a9bb75020bc2ff1d5df6f0",
+      "output": "9227465",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 7979008\n"
+    },
+    {
+      "label": "loop",
+      "name": "loop",
+      "args": [
+        20000000
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/loop",
+          "20000000"
+        ],
+        "wall_seconds": 0.006803790999999976
+      },
+      "output_sha256": "cb0abd53a8366dbcfe849fb098652e37e0de761e0ac93a6c470c07cd02e117ae",
+      "output": "199999990000000",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8011776\n"
+    },
+    {
+      "label": "list",
+      "name": "list",
+      "args": [
+        1500000
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/list",
+          "1500000"
+        ],
+        "wall_seconds": 0.004535625000000015
+      },
+      "output_sha256": "b63dfe6e2328def0acab3a302978dfb25cf91baa2bb530f3315e786081b59dd6",
+      "output": "1687497750000",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8028160\n"
+    },
+    {
+      "label": "tree",
+      "name": "tree",
+      "args": [
+        22
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/tree",
+          "22"
+        ],
+        "wall_seconds": 0.12454691699999998
+      },
+      "output_sha256": "3ea66b35931dd842ef0fd34c124f898dc005c6776ff7ccb143da1f8fd8dec3d0",
+      "output": "4194304",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8011776\n"
+    },
+    {
+      "label": "eval",
+      "name": "eval",
+      "args": [
+        30000
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/eval",
+          "30000"
+        ],
+        "wall_seconds": 0.08236233300000001
+      },
+      "output_sha256": "151c8ca662bb65a082c2cfbbb2ba93a64cb5947a5c78abc26adc7541bae30f38",
+      "output": "1252530000",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 7962624\n"
+    },
+    {
+      "label": "string",
+      "name": "string",
+      "args": [
+        8000000
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/string",
+          "8000000"
+        ],
+        "wall_seconds": 0.023296374999999925
+      },
+      "output_sha256": "00cc1534fb7a99e802e682baa1953f4213eced39fcdbc83de746143d14259a3f",
+      "output": "8000002",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 7979008\n"
+    },
+    {
+      "label": "println",
+      "name": "println",
+      "args": [
+        7000000
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/println",
+          "7000000"
+        ],
+        "wall_seconds": 2.1295352920000004
+      },
+      "output_sha256": "20ed78d50bea2ec82626d145f750fe229f274452fdb431d1fe05ef2ef5eb8cdf",
+      "output": "SHA-256 20ed78d50bea2ec82626d145f750fe229f274452fdb431d1fe05ef2ef5eb8cdf (89888903 bytes)",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 7979008\n"
+    },
+    {
+      "label": "lines",
+      "name": "lines",
+      "args": [
+        "@lines:16000000"
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/lines",
+          "target/r33-trial/tmp/lines-16000000.txt"
+        ],
+        "wall_seconds": 0.13492300000000013
+      },
+      "output_sha256": "33af8436cb9c3616da419e24e10fd5914479204137814751b047838330a403e1",
+      "output": "16000000",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 7995392\n"
+    },
+    {
+      "label": "trait",
+      "name": "trait",
+      "args": [
+        20000000
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/trait",
+          "20000000"
+        ],
+        "wall_seconds": 0.06436645899999993
+      },
+      "output_sha256": "c1e413753b12dbabc6a2e1aaeb77eb8afe465a9feb6fe2586f2f7491998f965c",
+      "output": "46135",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8011776\n"
+    },
+    {
+      "label": "handler-tail",
+      "name": "handler-tail",
+      "args": [
+        100000,
+        "tail",
+        100
+      ],
+      "samples": [],
+      "verifier": null,
+      "output_sha256": "47636ba70ff54c4199d633c2d0209182efd2ed441769bee51b41c29d006451e9",
+      "output": "3540100",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 7979008\n"
+    },
+    {
+      "label": "handler-saved",
+      "name": "handler-saved",
+      "args": [
+        100000,
+        "saved",
+        100
+      ],
+      "samples": [],
+      "verifier": null,
+      "output_sha256": "47636ba70ff54c4199d633c2d0209182efd2ed441769bee51b41c29d006451e9",
+      "output": "3540100",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 7979008\n"
+    },
+    {
+      "label": "tasks",
+      "name": "tasks",
+      "args": [
+        1000,
+        30000
+      ],
+      "samples": [],
+      "verifier": null,
+      "output_sha256": "a3e48ce381a2046682c1cd401c0229e8ee8886cae99f6eeb7b256550db99a7e8",
+      "output": "36989000",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 7979008\n"
+    },
+    {
+      "label": "cycle",
+      "name": "cycle",
+      "args": [
+        10000000
+      ],
+      "samples": [],
+      "verifier": null,
+      "output_sha256": "de6aeb89b0d91519a443ac503ea9e652f130752e5ecc78cbcffc3e0f04e4bbf0",
+      "output": "10000000",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8011776\n"
+    },
+    {
+      "label": "listget",
+      "name": "listget",
+      "args": [
+        100000,
+        8000000
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/listget",
+          "100000",
+          "8000000"
+        ],
+        "wall_seconds": 0.029335208
+      },
+      "output_sha256": "042d9cb15e6d93dde9a36a75894eac92dd86d0e9b0f1e9aed9af4ee727c688c6",
+      "output": "400161126595",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8011776\n"
+    },
+    {
+      "label": "map",
+      "name": "map",
+      "args": [
+        200000
+      ],
+      "samples": [],
+      "verifier": {
+        "command": [
+          "tools/bench/programs/rust/target/release/map",
+          "200000"
+        ],
+        "wall_seconds": 0.08061354200000004
+      },
+      "output_sha256": "94c2a242125c70d9b5ec01d563418a4f2a64dbd362f1301cb9c38052a643dc6d",
+      "output": "100000\n100000\n200000\n200000",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8011776\n"
+    },
+    {
+      "label": "http-sized-0-1-10000",
+      "name": "http",
+      "args": [
+        20000,
+        0
+      ],
+      "clients": 1,
+      "options": [
+        "--call-budget=10000"
+      ],
+      "samples": [],
+      "error": "HTTP 測定に失敗した: HTTP サーバのポートを受け取れない\nEncountered an error during profiling: Unknown(1100)\nbench-rss: 8011776"
+    },
+    {
+      "label": "http-sized-0-8-10000",
+      "name": "http",
+      "args": [
+        20000,
+        0
+      ],
+      "clients": 8,
+      "options": [
+        "--call-budget=10000"
+      ],
+      "samples": [],
+      "error": "HTTP 測定に失敗した: HTTP サーバのポートを受け取れない\nEncountered an error during profiling: Unknown(1100)\nbench-rss: 7979008"
+    },
+    {
+      "label": "http-sized-1-1-10000",
+      "name": "http",
+      "args": [
+        2500,
+        1
+      ],
+      "clients": 1,
+      "options": [
+        "--call-budget=10000"
+      ],
+      "samples": [],
+      "error": "HTTP 測定に失敗した: HTTP サーバのポートを受け取れない\nEncountered an error during profiling: Unknown(1100)\nbench-rss: 7979008"
+    },
+    {
+      "label": "http-sized-1-8-10000",
+      "name": "http",
+      "args": [
+        7500,
+        1
+      ],
+      "clients": 8,
+      "options": [
+        "--call-budget=10000"
+      ],
+      "samples": [],
+      "error": "HTTP 測定に失敗した: HTTP サーバのポートを受け取れない\nEncountered an error during profiling: Unknown(1100)\nbench-rss: 7962624"
+    },
+    {
+      "label": "shared",
+      "name": "shared",
+      "args": [
+        18
+      ],
+      "samples": [],
+      "verifier": null,
+      "output_sha256": "bff8c94f5dbdc110115175149c1aed31f177ebee3e536a3b5277617884f00dc3",
+      "output": "13107200",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8011776\n"
+    },
+    {
+      "label": "live",
+      "name": "live",
+      "args": [
+        22
+      ],
+      "samples": [],
+      "verifier": null,
+      "output_sha256": "0e6f02ceb897198f6ef671c6fa105fb1283bb31f72fb6deb3095faed841c042e",
+      "output": "6498304",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8011776\n"
+    },
+    {
+      "label": "roots",
+      "name": "roots",
+      "args": [
+        30000
+      ],
+      "samples": [],
+      "verifier": null,
+      "output_sha256": "618179d7c42b1c54a30e9ac9c1f841508556a3a941c49499b3463b731deb2a88",
+      "output": "979200000",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 7995392\n"
+    },
+    {
+      "label": "returns",
+      "name": "returns",
+      "args": [
+        20000,
+        200
+      ],
+      "samples": [],
+      "verifier": null,
+      "output_sha256": "5c3094356d1451a30f805726d63f99bbcda80bfb94f12ab86e4c4975de5fd4fa",
+      "output": "516000000",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8028160\n"
+    },
+    {
+      "label": "mixed",
+      "name": "mixed",
+      "args": [
+        500000
+      ],
+      "samples": [],
+      "verifier": null,
+      "output_sha256": "d272a4c42fbee7118b996af4a3c7419efe79c65b48e10bed5fd0f46a846ec9ec",
+      "output": "125768750000",
+      "error": "exit=1: Encountered an error during profiling: Unknown(1100)\nbench-rss: 8011776\n"
+    }
+  ],
+  "profile_directory": "tools/bench/results/profiles/2026-10-09-final-4304d507f6bf"
+}

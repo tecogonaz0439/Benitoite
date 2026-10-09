@@ -1,4 +1,17 @@
 // spec: 01-03 トップレベルの名前空間
-type List { Item }
-type Console { Output }
-type IO { Action }
+data List
+  Item
+end data
+data Console
+  Output
+end data
+data IO
+  Action
+end data
+
+function main() -> Unit
+  bind _ <- List.Item
+  bind _ <- Console.Output
+  bind _ <- IO.Action
+  return ()
+end function

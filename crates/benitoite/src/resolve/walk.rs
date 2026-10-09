@@ -1,276 +1,418 @@
-//! 宣言の型と本体を辿って名前を解決する（設計書 02-04「解決の手順」の手順 3・4）。
-//! AST を辿る再帰の深さは、構文解析器が抑える AST の深さの定数倍に収まる（00-02「再帰の深さ」）。
+//! シグネチャと本体の AST の走査（設計書 02-04「解決の手順」の手順 3・5）。
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
-use super::BindingKind;
-use super::collect::{Resolver, Src};
-use super::lookup::{Ctx, Qualified};
-use super::text;
-use crate::base::Span;
-use crate::diag::DiagCode;
-use crate::syntax::ast::{
-    Arg, Block, ElseBranch, Expr, FnDecl, IfExpr, Item, LambdaExpr, LetName, NameExpr, Param,
-    Pattern, Program, Stmt, TypeDecl, TypeExpr, TypeParam,
-};
+use crate::base::{BindingId, ModuleId, NodeId};
+use crate::diag::{DiagBuilder, DiagCode};
+use crate::syntax::ast::*;
+
+use super::collect::Resolver;
+use super::lookup::{Ctx, Position};
+use super::{BindingKind, LocalKind};
 
 impl Resolver<'_> {
-    /// 一つのソースのトップレベルの宣言を一つずつ辿る。ある宣言の誤りはほかの宣言の解決を止めない。
-    pub(super) fn walk_program(&mut self, src: Src, program: &Program) {
-        for item in &program.items {
-            match item {
-                Item::Fn(decl) => self.walk_fn(src, decl),
-                Item::Type(decl) => self.walk_type_decl(src, decl),
-                Item::Error(_) => {}
+    fn type_parameters(&mut self, ctx: &mut Ctx, owner: NodeId, params: &[TypeParamDecl]) {
+        let mut seen = BTreeMap::new();
+        let mut types = 0_u32;
+        let mut effects = 0_u32;
+        for param in params {
+            if let Some(first) = seen.get(&param.name.text).copied() {
+                self.duplicate(DiagCode::E0312, &param.name, first, "");
+            } else if let Some(top) = self.upper(ctx, &param.name.text, false) {
+                let mut d = DiagBuilder::new(DiagCode::E0313)
+                    .arg("name", param.name.text.clone())
+                    .primary(param.name.span);
+                if let Some(span) = self.out.bindings.get(top).and_then(|b| b.span) {
+                    d = d.secondary(span, "declared");
+                }
+                self.out.diagnostics.push(d.build());
             }
-        }
-    }
-
-    fn walk_fn(&mut self, src: Src, decl: &FnDecl) {
-        let mut cx = Ctx::new(src);
-        self.declare_type_params(&mut cx, &decl.type_params);
-        // 引数の段。本体のブロックはその内側に一段積む。
-        cx.scopes.push(BTreeMap::new());
-        self.declare_params(&mut cx, &decl.params, BindingKind::Param);
-        self.ty(&cx, &decl.ret);
-        self.uses(&cx, decl.uses.as_ref());
-        self.block(&mut cx, &decl.body);
-    }
-
-    fn walk_type_decl(&mut self, src: Src, decl: &TypeDecl) {
-        let mut cx = Ctx::new(src);
-        self.declare_type_params(&mut cx, &decl.type_params);
-        for variant in &decl.variants {
-            for field in &variant.fields {
-                self.ty(&cx, field);
-            }
-        }
-    }
-
-    /// 型パラメータの並びを宣言する。`index` は `effect` の有無で分けて数える（10-04 `BindingKind`）。
-    fn declare_type_params(&mut self, cx: &mut Ctx, params: &[TypeParam]) {
-        let mut first: BTreeMap<&str, Span> = BTreeMap::new();
-        let mut type_index: u32 = 0;
-        let mut effect_index: u32 = 0;
-        for p in params {
-            let kind = if p.is_effect {
-                let k = BindingKind::EffectVar {
-                    index: effect_index,
-                };
-                effect_index = effect_index.saturating_add(1);
-                k
-            } else {
-                let k = BindingKind::TypeParam { index: type_index };
-                type_index = type_index.saturating_add(1);
-                k
+            let kind = match param.kind {
+                TypeParamKind::Value | TypeParamKind::Ctor { .. } => {
+                    let index = types;
+                    types = types.saturating_add(1);
+                    BindingKind::TypeParam { owner, index }
+                }
+                TypeParamKind::Effect => {
+                    let index = effects;
+                    effects = effects.saturating_add(1);
+                    BindingKind::EffectVar { owner, index }
+                }
             };
-            let id = self.bind_node(kind, &p.name, p.id);
-            if let Some(f) = first.get(p.name.text.as_str()).copied() {
-                self.report_duplicate(DiagCode::E0312, &p.name, f);
-                continue;
-            }
-            first.insert(p.name.text.as_str(), p.name.span);
-            if self.lookup_upper(cx.src, &p.name.text).is_some() {
-                self.report(
-                    crate::diag::DiagBuilder::new(DiagCode::E0313)
-                        .arg("name", p.name.text.clone())
-                        .primary(p.name.span),
-                );
-            }
-            let entry = (p.name.text.clone(), id);
-            if p.is_effect {
-                cx.effect_vars.push(entry);
-            } else {
-                cx.type_params.push(entry);
+            let id = self.node_binding(ctx.module, param.id, &param.name, kind, false, None);
+            seen.entry(param.name.text.clone()).or_insert(id);
+            ctx.types.insert(param.name.text.clone(), id);
+        }
+        for param in params {
+            for constraint in &param.constraints {
+                if let ConstraintRef::Class(c) = constraint {
+                    self.name(ctx, c.id, &c.path, Position::Class);
+                }
             }
         }
     }
 
-    /// 関数とラムダの引数を現在の段に宣言する。型注釈を先に解決する。
-    fn declare_params(&mut self, cx: &mut Ctx, params: &[Param], kind: BindingKind) {
-        let mut first: BTreeMap<&str, Span> = BTreeMap::new();
-        for p in params {
-            if let Some(t) = &p.ty {
-                self.ty(cx, t);
-            }
-            let id = self.bind_node(kind, &p.name, p.id);
-            if let Some(f) = first.get(p.name.text.as_str()).copied() {
-                self.report_duplicate(DiagCode::E0310, &p.name, f);
-                continue;
-            }
-            first.insert(p.name.text.as_str(), p.name.span);
-            if let Some(scope) = cx.scopes.last_mut() {
-                scope.insert(p.name.text.clone(), id);
-            }
-        }
+    pub(super) fn ty(&mut self, ctx: &mut Ctx, ty: &TypeExpr) {
+        self.ty_in_list(ctx, ty, false);
     }
 
-    fn ty(&mut self, cx: &Ctx, t: &TypeExpr) {
-        match t {
-            TypeExpr::Named(n) => {
-                self.named_type(cx, n);
-                for a in &n.args {
-                    self.ty(cx, a);
+    // 括弧で囲んだ型は独立した型であり、uses のコンマを外の並びへ戻せない。
+    // 修正案は、型引数か関数の引数の型の並びにある場合だけに付ける（ADR 0047、F06「確認の観点」）。
+    fn ty_in_list(&mut self, ctx: &mut Ctx, ty: &TypeExpr, in_list: bool) {
+        match ty {
+            TypeExpr::Named(t) => {
+                self.name(ctx, t.id, &t.path, Position::Type);
+                for arg in &t.args {
+                    self.ty_in_list(ctx, arg, true);
                 }
             }
-            TypeExpr::Fn(f) => {
-                for p in &f.params {
-                    self.ty(cx, p);
+            TypeExpr::Fn(t) => {
+                for param in &t.params {
+                    self.ty_in_list(ctx, param, true);
                 }
-                self.ty(cx, &f.ret);
-                self.uses(cx, f.uses.as_ref());
+                self.ty(ctx, &t.ret);
+                if let Some(uses) = &t.uses {
+                    self.uses(ctx, uses, in_list.then_some(t.span));
+                }
             }
-            TypeExpr::Paren(p) => self.ty(cx, &p.inner),
+            TypeExpr::Paren(t) => self.ty(ctx, &t.inner),
             TypeExpr::Error(_) => {}
         }
     }
 
-    // ---------------- 本体 ----------------
+    fn signature(
+        &mut self,
+        ctx: &mut Ctx,
+        owner: NodeId,
+        type_params: &[TypeParamDecl],
+        params: &[Param],
+        ret: &TypeExpr,
+        uses: Option<&UsesList>,
+    ) {
+        self.type_parameters(ctx, owner, type_params);
+        for param in params {
+            if let Some(ty) = &param.ty {
+                self.ty(ctx, ty);
+            }
+        }
+        self.ty(ctx, ret);
+        if let Some(uses) = uses {
+            self.uses(ctx, uses, None);
+        }
+        ctx.scopes.push(BTreeMap::new());
+        self.parameters(ctx, params, LocalKind::Param);
+    }
 
-    fn block(&mut self, cx: &mut Ctx, block: &Block) {
-        cx.scopes.push(BTreeMap::new());
-        for stmt in &block.stmts {
-            match stmt {
-                Stmt::Let(s) => {
-                    if let Some(t) = &s.ty {
-                        self.ty(cx, t);
-                    }
-                    // 右辺を解決した後で名前を加える。`let` は再帰的な束縛にならない（01-03）。
-                    self.expr(cx, &s.value);
-                    if let LetName::Var(name) = &s.name {
-                        let id = self.bind_node(BindingKind::Let, name, s.id);
-                        // 同じ段の同じ名前は置き換える（ADR 0010）。
-                        if let Some(scope) = cx.scopes.last_mut() {
-                            scope.insert(name.text.clone(), id);
-                        }
+    pub(super) fn signatures(&mut self) {
+        for module in self.modules.iter() {
+            let Some(ast) = self.ast(module.id) else {
+                continue;
+            };
+            for top in &ast.decls {
+                self.decl_signature(module.id, top);
+            }
+        }
+    }
+
+    fn save_contract(&mut self, top: &TopDecl, ctx: &Ctx) {
+        if top.public.is_some()
+            && let Some(owner) = self.out.decls.get(top.item.id()).copied()
+        {
+            self.contracts
+                .extend(ctx.used.iter().map(|(used, span)| (owner, *used, *span)));
+        }
+    }
+
+    fn decl_signature(&mut self, module: ModuleId, top: &TopDecl) {
+        let mut ctx = Ctx::new(module, top.item.id());
+        match &top.item {
+            Item::Fn(d) => {
+                self.signature(
+                    &mut ctx,
+                    d.id,
+                    &d.type_params,
+                    &d.params,
+                    &d.ret,
+                    d.uses.as_ref(),
+                );
+                self.contexts.insert(d.id, ctx.clone());
+            }
+            Item::Const(d) => {
+                self.ty(&mut ctx, &d.ty);
+                self.contexts.insert(d.id, ctx.clone());
+            }
+            Item::Data(d) => {
+                self.type_parameters(&mut ctx, d.id, &d.type_params);
+                for v in &d.variants {
+                    for ty in &v.fields {
+                        self.ty(&mut ctx, ty);
                     }
                 }
-                Stmt::Expr(e) => self.expr(cx, e),
+            }
+            Item::Alias(d) => {
+                self.type_parameters(&mut ctx, d.id, &d.type_params);
+                self.ty(&mut ctx, &d.ty);
+                if let Some(id) = self.out.decls.get(d.id).copied() {
+                    self.alias_edges
+                        .insert(id, self.used_of_kind(&ctx, BindingKind::Alias));
+                }
+            }
+            Item::Record(d) => {
+                self.type_parameters(&mut ctx, d.id, &d.type_params);
+                for f in &d.fields {
+                    self.ty(&mut ctx, &f.ty);
+                }
+            }
+            Item::Trait(d) => {
+                self.type_parameters(&mut ctx, d.id, std::slice::from_ref(&d.param));
+                if let Some(id) = self.out.decls.get(d.id).copied() {
+                    self.trait_edges
+                        .insert(id, self.used_of_kind(&ctx, BindingKind::Trait));
+                }
+                for method in &d.methods {
+                    let mut method_ctx = ctx.clone();
+                    method_ctx.used.clear();
+                    self.signature(
+                        &mut method_ctx,
+                        method.id,
+                        &method.type_params,
+                        &method.params,
+                        &method.ret,
+                        method.uses.as_ref(),
+                    );
+                    ctx.used.extend(method_ctx.used);
+                }
+            }
+            Item::Effect(d) => {
+                for op in &d.ops {
+                    let mut op_ctx = Ctx::new(module, d.id);
+                    self.signature(
+                        &mut op_ctx,
+                        op.id,
+                        &op.type_params,
+                        &op.params,
+                        &op.ret,
+                        None,
+                    );
+                    ctx.used.extend(op_ctx.used);
+                }
+            }
+            Item::Impl(d) => {
+                self.type_parameters(&mut ctx, d.id, &d.type_params);
+                self.name(&mut ctx, d.class.id, &d.class.path, Position::Class);
+                self.ty(&mut ctx, &d.target);
+                for f in &d.fns {
+                    let mut fn_ctx = ctx.clone();
+                    // 非推奨の自己参照の除外は、実装全体を囲む宣言の ID を使う（10-04）。
+                    fn_ctx.used.clear();
+                    self.signature(
+                        &mut fn_ctx,
+                        f.decl.id,
+                        &f.decl.type_params,
+                        &f.decl.params,
+                        &f.decl.ret,
+                        f.decl.uses.as_ref(),
+                    );
+                    self.contexts.insert(f.decl.id, fn_ctx);
+                }
+            }
+            Item::Error(_) => {}
+        }
+        self.save_contract(top, &ctx);
+    }
+
+    pub(super) fn used_of_kind(&self, ctx: &Ctx, kind: BindingKind) -> Vec<BindingId> {
+        ctx.used
+            .iter()
+            .filter(|(id, _)| self.out.bindings.get(*id).is_some_and(|b| b.kind == kind))
+            .map(|(id, _)| *id)
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect()
+    }
+
+    pub(super) fn bodies(&mut self) {
+        for module in self.modules.iter() {
+            let Some(ast) = self.ast(module.id) else {
+                continue;
+            };
+            for top in &ast.decls {
+                match &top.item {
+                    Item::Fn(d) => self.function_body(d),
+                    Item::Impl(d) => {
+                        for f in &d.fns {
+                            self.function_body(&f.decl);
+                        }
+                    }
+                    Item::Const(d) => {
+                        let Some(mut ctx) = self.contexts.get(d.id).cloned() else {
+                            continue;
+                        };
+                        ctx.used.clear();
+                        self.expr(&mut ctx, &d.value);
+                        if let Some(id) = self.out.decls.get(d.id).copied() {
+                            self.const_edges
+                                .insert(id, self.used_of_kind(&ctx, BindingKind::Const));
+                        }
+                    }
+                    Item::Data(_)
+                    | Item::Alias(_)
+                    | Item::Record(_)
+                    | Item::Trait(_)
+                    | Item::Effect(_)
+                    | Item::Error(_) => {}
+                }
+            }
+        }
+    }
+
+    fn function_body(&mut self, decl: &FnDecl) {
+        if let Some(body) = &decl.body
+            && let Some(mut ctx) = self.contexts.get(decl.id).cloned()
+        {
+            ctx.used.clear();
+            self.block(&mut ctx, body);
+        }
+    }
+
+    pub(super) fn block(&mut self, ctx: &mut Ctx, block: &Block) {
+        ctx.scopes.push(BTreeMap::new());
+        for stmt in &block.stmts {
+            match stmt {
+                Stmt::Bind(stmt) => self.bind_statement(ctx, stmt),
+                Stmt::Expr(expr) => self.expr(ctx, expr),
                 Stmt::Error(_) => {}
             }
         }
-        cx.scopes.pop();
+        ctx.scopes.pop();
     }
 
-    fn expr(&mut self, cx: &mut Ctx, e: &Expr) {
-        match e {
-            Expr::Lit(_) | Expr::Unit(_) | Expr::Error(_) => {}
-            Expr::Name(n) => self.name_expr(cx, n),
-            Expr::Paren(p) => self.expr(cx, &p.inner),
-            Expr::List(l) => {
-                for x in &l.elems {
-                    self.expr(cx, x);
+    fn if_expr(&mut self, ctx: &mut Ctx, expr: &IfExpr) {
+        self.expr(ctx, &expr.cond);
+        self.block(ctx, &expr.then_block);
+        if let Some(branch) = &expr.else_branch {
+            match branch {
+                ElseBranch::Block(b) => self.block(ctx, b),
+                ElseBranch::If(e) => self.if_expr(ctx, e),
+            }
+        }
+    }
+
+    pub(super) fn expr(&mut self, ctx: &mut Ctx, expr: &Expr) {
+        match expr {
+            Expr::Name(e) => {
+                self.name(ctx, e.id, &e.path, Position::Value);
+            }
+            Expr::Interp(e) => {
+                for segment in &e.segments {
+                    self.expr(ctx, &segment.expr);
                 }
             }
-            Expr::Call(c) => {
-                self.expr(cx, &c.callee);
-                for a in &c.args {
-                    // プレースホルダは名前ではないので解決しない（02-04「解決の手順」）。
-                    if let Arg::Expr(x) = a {
-                        self.expr(cx, x);
+            Expr::Paren(e) => self.expr(ctx, &e.inner),
+            Expr::List(e) => {
+                for elem in &e.elems {
+                    match elem {
+                        ListElem::Expr(e) => self.expr(ctx, e),
+                        ListElem::Spread(e) => self.expr(ctx, &e.expr),
                     }
                 }
             }
-            Expr::Binary(b) => {
-                self.expr(cx, &b.lhs);
-                self.expr(cx, &b.rhs);
-            }
-            Expr::Unary(u) => self.expr(cx, &u.operand),
-            Expr::Pipe(p) => {
-                self.expr(cx, &p.lhs);
-                self.expr(cx, &p.rhs);
-            }
-            Expr::Block(b) => self.block(cx, b),
-            Expr::If(i) => self.if_expr(cx, i),
-            Expr::Match(m) => {
-                self.expr(cx, &m.scrutinee);
-                for arm in &m.arms {
-                    cx.scopes.push(BTreeMap::new());
-                    let mut bound: BTreeMap<String, Span> = BTreeMap::new();
-                    self.pattern(cx, &arm.pattern, &mut bound);
-                    self.expr(cx, &arm.body);
-                    cx.scopes.pop();
+            Expr::Call(e) => {
+                self.expr(ctx, &e.callee);
+                for arg in &e.args {
+                    match arg {
+                        Arg::Expr(e) => self.expr(ctx, e),
+                        Arg::Placeholder(_) => {}
+                    }
                 }
             }
-            Expr::Lambda(l) => self.lambda(cx, l),
-        }
-    }
-
-    fn if_expr(&mut self, cx: &mut Ctx, i: &IfExpr) {
-        self.expr(cx, &i.cond);
-        self.block(cx, &i.then_block);
-        match &i.else_branch {
-            Some(ElseBranch::Block(b)) => self.block(cx, b),
-            Some(ElseBranch::If(inner)) => self.if_expr(cx, inner),
-            None => {}
-        }
-    }
-
-    fn lambda(&mut self, cx: &mut Ctx, l: &LambdaExpr) {
-        cx.scopes.push(BTreeMap::new());
-        self.declare_params(cx, &l.params, BindingKind::LambdaParam);
-        if let Some(t) = &l.ret {
-            self.ty(cx, t);
-        }
-        // ラムダの `uses` でも、外側の関数のエフェクト変数が見える。
-        self.uses(cx, l.uses.as_ref());
-        self.block(cx, &l.body);
-        cx.scopes.pop();
-    }
-
-    fn name_expr(&mut self, cx: &Ctx, n: &NameExpr) {
-        let found = match &n.qualifier {
-            Some(q) => match self.qualified(cx.src, q, &n.name, n.span) {
-                Qualified::Found(b) => Some(b),
-                Qualified::Failed => None,
-            },
-            None if starts_upper(&n.name.text) => self.unqualified_upper(cx, &n.name),
-            None => self.unqualified_lower(cx, &n.name),
-        };
-        if let Some(b) = found {
-            self.out.refs.insert(n.id, b);
-        }
-    }
-
-    /// パターンを辿る。変数は現在の段（分岐の段）に加え、一つのパターンの中の重複を報告する。
-    fn pattern(&mut self, cx: &mut Ctx, p: &Pattern, bound: &mut BTreeMap<String, Span>) {
-        match p {
-            Pattern::Wildcard(_) | Pattern::Lit(_) | Pattern::Unit(_) | Pattern::Error(_) => {}
-            Pattern::Var(v) => {
-                let id = self.bind_node(BindingKind::PatternVar, &v.name, v.id);
-                if let Some(first) = bound.get(&v.name.text).copied() {
-                    self.report_duplicate(DiagCode::E0311, &v.name, first);
-                    return;
+            Expr::Record(e) => {
+                let record = self.name(ctx, e.id, &e.path, Position::Record);
+                if let Some(base) = &e.base {
+                    self.expr(ctx, base);
                 }
-                bound.insert(v.name.text.clone(), v.name.span);
-                if let Some(scope) = cx.scopes.last_mut() {
-                    scope.insert(v.name.text.clone(), id);
+                for field in &e.fields {
+                    if let Some(record) = record
+                        && let Some(id) = self
+                            .members
+                            .get(&record)
+                            .and_then(|m| m.get(&field.name.text))
+                            .copied()
+                    {
+                        self.record_ref(ctx, field.id, id, field.name.span);
+                    }
+                    self.expr(ctx, &field.value);
                 }
             }
-            Pattern::Ctor(c) => {
-                let found = match &c.qualifier {
-                    Some(q) => match self.qualified(cx.src, q, &c.name, c.span) {
-                        Qualified::Found(b) if self.is_ctor(b) => Some(b),
-                        Qualified::Found(_) => {
-                            // モジュールの関数を構成子のパターンに書いた場合。
-                            self.report_kind(&c.name, text::VALUE, text::CONSTRUCTOR);
-                            None
+            Expr::Binary(e) => {
+                self.expr(ctx, &e.lhs);
+                self.expr(ctx, &e.rhs);
+            }
+            Expr::Unary(e) => self.expr(ctx, &e.operand),
+            Expr::Pipe(e) => {
+                self.expr(ctx, &e.lhs);
+                self.expr(ctx, &e.rhs);
+            }
+            Expr::If(e) => self.if_expr(ctx, e),
+            Expr::Match(e) => {
+                self.expr(ctx, &e.scrutinee);
+                for arm in &e.arms {
+                    self.arm(ctx, arm);
+                }
+            }
+            Expr::Lambda(e) => {
+                for param in &e.params {
+                    if let Some(ty) = &param.ty {
+                        self.ty(ctx, ty);
+                    }
+                }
+                if let Some(ty) = &e.ret {
+                    self.ty(ctx, ty);
+                }
+                if let Some(uses) = &e.uses {
+                    self.uses(ctx, uses, None);
+                }
+                ctx.scopes.push(BTreeMap::new());
+                self.parameters(ctx, &e.params, LocalKind::LambdaParam);
+                self.block(ctx, &e.body);
+                ctx.scopes.pop();
+            }
+            Expr::Return(e) => self.expr(ctx, &e.value),
+            Expr::Try(e) => self.expr(ctx, &e.value),
+            Expr::Lazy(e) => self.block(ctx, &e.body),
+            Expr::With(e) => {
+                ctx.scopes.push(BTreeMap::new());
+                for bind in &e.binds {
+                    self.expr(ctx, &bind.value);
+                    self.implicit_shadow(ctx, &bind.name, LocalKind::WithVar);
+                    self.add_local(ctx, bind.id, &bind.name, LocalKind::WithVar);
+                }
+                self.block(ctx, &e.body);
+                ctx.scopes.pop();
+            }
+            Expr::Handle(e) => {
+                self.block(ctx, &e.body);
+                for clause in &e.clauses {
+                    self.name(ctx, clause.op.id, &clause.op.path, Position::Value);
+                    ctx.scopes.push(BTreeMap::new());
+                    let mut seen = BTreeMap::new();
+                    for param in &clause.params {
+                        if let Some(name) = &param.name {
+                            if let Some(first) = seen.get(&name.text).copied() {
+                                self.duplicate(DiagCode::E0310, name, first, "");
+                            } else {
+                                self.implicit_shadow(ctx, name, LocalKind::ClauseParam);
+                            }
+                            let id = self.add_local(ctx, param.id, name, LocalKind::ClauseParam);
+                            seen.entry(name.text.clone()).or_insert(id);
                         }
-                        Qualified::Failed => None,
-                    },
-                    None => self.unqualified_upper(cx, &c.name),
-                };
-                if let Some(b) = found {
-                    self.out.refs.insert(c.id, b);
-                }
-                for a in &c.args {
-                    self.pattern(cx, a, bound);
+                    }
+                    self.block(ctx, &clause.body);
+                    ctx.scopes.pop();
                 }
             }
+            Expr::Resume(e) => self.expr(ctx, &e.value),
+            Expr::Lit(_) | Expr::Unit(_) | Expr::Error(_) => {}
         }
     }
-}
-
-fn starts_upper(name: &str) -> bool {
-    name.chars().next().is_some_and(char::is_uppercase)
 }

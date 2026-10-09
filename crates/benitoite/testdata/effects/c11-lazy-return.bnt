@@ -1,0 +1,4 @@
+// spec: 01-02 明示遅延（初回リリース版）
+function main() -> Unit
+  bind x <- lazy return 1 end lazy
+end function

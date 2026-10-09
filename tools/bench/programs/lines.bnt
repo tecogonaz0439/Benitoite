@@ -1,12 +1,16 @@
-fn main() -> Result[Unit, String] uses IO {
-  match List.head(Process.args()) {
-    None => Err("expected one file path argument")
-    Some(path) => match File.readText(path) {
-      Err(error) => Err(IoError.message(error))
-      Ok(text) => {
-        Console.println(Int.toString(List.length(String.lines(text))))
-        Ok(())
-      }
-    }
-  }
-}
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+import Benitoite.Unofficial.IO.File
+
+function main() -> Result[Unit, String] uses Console.Write, File.Read, Process.Environment
+  return match List.head(Process.arguments()) with
+    case Option.None -> Result.Error("expected one file path argument")
+    case Option.Some(path) -> match File.readText(path) with
+      case Result.Error(error) -> Result.Error(IOError.message(error))
+      case Result.Ok(text) ->
+        Console.writeLine(Integer.toString(List.length(String.lines(text))))
+        Result.Ok(())
+    end match
+  end match
+end function

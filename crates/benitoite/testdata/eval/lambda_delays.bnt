@@ -1,8 +1,10 @@
 // spec: 01-08 正格評価
 // spec: 01-07 IO が起きる時期と順序
-fn main() -> Unit uses IO {
-  let later = fn() { Console.println("later") }
-  Console.println("created")
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind later <- lambda() return Console.writeLine("later") end lambda
+  Console.writeLine("created")
   later()
-  later()
-}
+  return later()
+end function

@@ -1,0 +1,22 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+// 設計書 03-07「Clock」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Clock
+import Benitoite.Unofficial.Time
+function readings() -> Pair[Time.Instant, Pair[Integer, Integer]] uses Clock.Time
+  Clock.sleep(1000000)
+  return Pair(Clock.now(), Pair(Clock.localOffsetMinutes(), Clock.monotonicMilliseconds()))
+end function
+function main() -> Unit uses Console.Write
+  bind fixed <- handle readings() with
+    case Clock.now() -> resume(Time.fromUnixSeconds(0))
+    case Clock.localOffsetMinutes() -> resume(540)
+    case Clock.monotonicMilliseconds() -> resume(123)
+    case Clock.sleep(_) -> resume(())
+  end handle
+  Console.writeLine(Time.formatISO8601(Pair.first(fixed), Pair.first(Pair.second(fixed))))
+  Console.writeLine(Integer.toString(Pair.second(Pair.second(fixed))))
+end function

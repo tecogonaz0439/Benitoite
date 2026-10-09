@@ -1,0 +1,28 @@
+// spec: 01-06 型クラス（初回リリース版）
+record Person
+  name: String
+end record
+trait Show[T]
+  function show(x: T) -> String
+end trait
+implement Show[Person]
+  function show(x: Person) -> String
+    return "Person(${Person.name(x)})"
+  end function
+end implement
+implement[T: Show] Show[Option[T]]
+  function show(x: Option[T]) -> String
+    return match x with
+      case Option.Some(v) -> "Some(${Show.show(v)})"
+      case Option.None -> "None"
+    end match
+  end function
+end implement
+function describeAll[T: Show](xs: List[T]) -> String
+  return List.map(xs, Show.show) |> String.join(_, ", ")
+end function
+function main() -> Unit
+  bind people <- [Person(name: "Ada")]
+  bind _ <- describeAll(people)
+  bind _ <- describeAll([Option.Some(Person(name: "Ben"))])
+end function

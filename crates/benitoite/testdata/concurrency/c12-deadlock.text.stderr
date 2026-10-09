@@ -1,0 +1,4 @@
+runtime error[R1001]: no task can proceed because tasks are waiting for each other
+   = note: waiting tasks:
+             main                                                           waits for TaskGroup release at testdata/concurrency/c12-deadlock.bnt:14:8
+             TaskGroup.spawn at testdata/concurrency/c12-deadlock.bnt:15:18 waits for Task.await        at testdata/concurrency/c12-deadlock.bnt:8:31

@@ -1,25 +1,25 @@
 // spec: 01-05 網羅性の検査
-fn int_case(value: Int) -> Unit {
-    match value {
-        0 => ()
-        1 => ()
-    }
-}
+function int_case(value: Integer) -> Unit
+    return match value with
+        case 0 -> ()
+        case 1 -> ()
+    end match
+end function
 
-fn string_case(value: String) -> Unit {
-    match value {
-        "a" => ()
-        "b" => ()
-    }
-}
+function string_case(value: String) -> Unit
+    return match value with
+        case "a" -> ()
+        case "b" -> ()
+    end match
+end function
 
-fn char_case(value: Char) -> Unit {
-    match value {
-        'a' => ()
-        'b' => ()
-    }
-}
+function char_case(value: Character) -> Unit
+    return match value with
+        case 'a' -> ()
+        case 'b' -> ()
+    end match
+end function
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

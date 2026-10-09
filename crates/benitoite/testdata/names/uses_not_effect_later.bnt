@@ -1,2 +1,6 @@
 // spec: 01-03 修飾しない名前の解決
-fn invalid() -> Unit uses IO, Int { () }
+import Benitoite.Unofficial.IO.Console
+
+function invalid() -> Unit uses Console.Write, Integer
+  return ()
+end function

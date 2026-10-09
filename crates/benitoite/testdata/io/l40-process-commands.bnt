@@ -1,0 +1,22 @@
+// 設計書 03-07「Process」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+function main() -> Result[Unit, String] uses Process.Run, Console.Write
+  bind command <- Process.command("/bin/sh", ["-c", "test -f marker.txt || exit 99; read line; printf '%s:%s\\n' \"\$L40_VALUE\" \"\$line\"; printf 'err\\n' >&2; exit 7"])
+  bind configured <- Process.Command(..command, workingDirectory: Option.Some("sub"), environment: Map.fromList([Pair("L40_VALUE", "value")]), input: Option.Some("input\n"))
+  bind output <- try Process.run(configured) |> Result.mapError(_, IOError.message)
+  Console.writeLine(Integer.toString(Process.Output.exitCode(output)))
+  Console.write(Process.Output.standardOutput(output))
+  Console.write(Process.Output.standardError(output))
+  bind shell <- try Process.shell("printf 'shell\\n'") |> Result.mapError(_, IOError.message)
+  Console.write(Process.Output.standardOutput(shell))
+  bind invalid <- match Process.run(Process.command("/bin/sh", ["-c", "printf '\\377'"])) with
+    case Result.Error(e) -> IOError.kind(e) = IOErrorKind.InvalidUTF8
+    case Result.Ok(_) -> false
+  end match
+  Console.writeLine(Trait.Show.show(invalid))
+  return Result.Ok(())
+end function

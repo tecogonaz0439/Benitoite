@@ -1,8 +1,8 @@
 # IO のモジュール
 
 - 状態: 確定
-- 関連ADR: [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0067](../decisions/0067-with-resource-scope.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0107](../decisions/0107-bytes.md), [0115](../decisions/0115-structured-io-concurrency.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0144](../decisions/0144-ioerrorkind-constructors.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0150](../decisions/0150-resource-release-as-state.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0172](../decisions/0172-random-conversion-procedure.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0243](../decisions/0243-signal-exit-code-and-posix-shell.md), [0254](../decisions/0254-return-type-after-arrow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0287](../decisions/0287-stdlib-details-decided-in-u3-plan.md), [0291](../decisions/0291-file-copy-limit-and-http-server-details.md)
-- 未決事項: [OPEN-046](../open-issues.md#open-046), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055)
+- 関連ADR: [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0067](../decisions/0067-with-resource-scope.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0107](../decisions/0107-bytes.md), [0115](../decisions/0115-structured-io-concurrency.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0144](../decisions/0144-ioerrorkind-constructors.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0150](../decisions/0150-resource-release-as-state.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0168](../decisions/0168-regex-match-and-stdlib-opaque-values.md), [0172](../decisions/0172-random-conversion-procedure.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0243](../decisions/0243-signal-exit-code-and-posix-shell.md), [0254](../decisions/0254-return-type-after-arrow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0287](../decisions/0287-stdlib-details-decided-in-u3-plan.md), [0291](../decisions/0291-file-copy-limit-and-http-server-details.md), [0322](../decisions/0322-stdlib-details-from-u3-preflight.md), [0327](../decisions/0327-fmt-symlink-and-process-attached-details.md), [0333](../decisions/0333-fmt-refusal-test-json-notes-http-method-and-process-input.md), [0336](../decisions/0336-command-substitute-library-policy.md), [0337](../decisions/0337-file-transfer-for-large-copies.md), [0338](../decisions/0338-password-manager-wrappers-as-official-libraries.md)
+- 未決事項: [OPEN-046](../open-issues.md#open-046), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-079](../open-issues.md#open-079), [OPEN-080](../open-issues.md#open-080), [OPEN-082](../open-issues.md#open-082), [OPEN-083](../open-issues.md#open-083), [OPEN-084](../open-issues.md#open-084), [OPEN-086](../open-issues.md#open-086), [OPEN-087](../open-issues.md#open-087), [OPEN-088](../open-issues.md#open-088), [OPEN-089](../open-issues.md#open-089), [OPEN-090](../open-issues.md#open-090)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 15, 16, 0.2
 
 ## 目的と範囲
@@ -94,7 +94,7 @@ IO を行う関数の振る舞い、IO の失敗、実行時の権限制御は[�
 | `File.readLines(path)` | `function(String) -> Result[List[String], IOError] uses File.Read` | ファイルの内容全体を読み、行に分ける | `File.Read`（対象: `path`） |
 | `File.exists(path)` | `function(String) -> Result[Boolean, IOError] uses File.Read` | パスが指すものがあるか。ないときだけ `false`。調べられないときは `Result.Error` | `File.Read`（対象: `path`） |
 | `File.info(path)` | `function(String) -> Result[File.Info, IOError] uses File.Read` | ファイルの情報。最後の構成要素がシンボリックリンクなら、リンクそのものの情報を返す | `File.Read`（対象: `path`） |
-| `File.listDirectory(path)` | `function(String) -> Result[List[String], IOError] uses File.Read` | ディレクトリの中の名前（パスではない）を並べたリスト。`.` と `..` を含まない | `File.Read`（対象: `path`） |
+| `File.listDirectory(path)` | `function(String) -> Result[List[String], IOError] uses File.Read` | ディレクトリの中の名前（パスではない）を並べたリスト。`.` と `..` を含まない。名前を UTF-8 のバイト列として比べた辞書式の順に並べる | `File.Read`（対象: `path`） |
 | `File.walk(path)` | `function(String) -> Result[List[String], IOError] uses File.Read` | ディレクトリの下のすべてのファイルとディレクトリを、`path` からの相対パスで並べたリスト。ディレクトリを指すシンボリックリンクの先は辿らない | `File.Read`（対象: `path`） |
 | `File.canonicalize(path)` | `function(String) -> Result[String, IOError] uses File.Read` | シンボリックリンクを解決した絶対パス | `File.Read`（対象: `path`） |
 | `File.writeText(path, text)` | `function(String, String) -> Result[Unit, IOError] uses File.Write` | ファイルを作るか置き換え、内容を `text` にする | `File.Write`（対象: `path`） |
@@ -204,15 +204,18 @@ end record
 
 - `Process.command(program, arguments)` は、`workingDirectory` を `Option.None`（基準のディレクトリを使う）、`environment` を空のマップ（スクリプトの環境変数をそのまま渡す）、`input` を `Option.None`（標準入力に何も渡さない）にする。ほかの値にするときは、レコードの更新（`Process.Command(..cmd, workingDirectory: Option.Some("./sub"))`）で変える。
 - 基準のディレクトリは、前述の「共通の規則」のとおりである。`workingDirectory` に相対パスを指定したときは、基準のディレクトリから辿る。
+- `program` が `/` を含む相対パス（`./tool` など）のときは、子の作業ディレクトリ（`workingDirectory` を解決したもの。`Option.None` なら基準のディレクトリ）から辿って絶対パスにしてから起動する。シェルで `cd dir && ./tool` と書いたときと同じ場所のファイルを起動する。`/` を含まない名前は、環境変数 `PATH` から探す（[ADR 0327](../decisions/0327-fmt-symlink-and-process-attached-details.md) の決定 4）。
 - `environment` の組は、スクリプトの環境変数に加えるか、同じ名前の変数を置き換える。
 - 起動するコマンドが見つからなければ `IOErrorKind.NotFound` を返す。コマンドが 0 以外の終了状態で終わっても、`Result.Ok` を返す。終了状態は `exitCode` で調べる。
-- 集めた出力が正しい UTF-8 でなければ、`IOErrorKind.InvalidUTF8` を返す。
+- `Process.run`・`Process.shell` で、集めた出力が正しい UTF-8 でなければ、`IOErrorKind.InvalidUTF8` を返す。
+- 【決定】`Process.run`・`Process.runAttached` で `input` に `Option.Some` を指定したとき、子が入力を読み切らずに終わり、子の標準入力への書き込みが失敗しても（読み手のいないパイプへの書き込み。Rust の `std::io::ErrorKind::BrokenPipe`）、誤りにしない。書けた分で入力を終えたものとし、子の終了状態と集めた出力を `Result.Ok` で返す（[ADR 0333](../decisions/0333-fmt-refusal-test-json-notes-http-method-and-process-input.md) の決定 4）。
 - 【決定】シグナルで終わったコマンドの `exitCode` は、Unix では 128 にシグナルの番号を足した値とする（[ADR 0243](../decisions/0243-signal-exit-code-and-posix-shell.md)）。POSIX のシェルがシグナルで終わったコマンドに与える終了状態と同じ形である。Rust の標準ライブラリはこのとき終了コードを返さない（`ExitStatus::code()` が `None`）ので、処理系はシグナルの番号（`ExitStatusExt::signal()`）から計算する。
 - 【決定】`Process.shell` は、Unix では `/bin/sh -c` で文字列を実行する（ADR 0243）。`/bin/sh` の実装は OS と設定によって違う。macOS の `/bin/sh` は、設定によって bash・dash・zsh のどれかとして動き、Debian の `/bin/sh` は dash である。そのため、`Process.shell` に渡す文字列は POSIX の sh の範囲で書く必要がある。同梱の Agent Skill は、そのように書くようエージェントに指示する（[Agent Skills 対応](../06-tooling/06-06-agent-skills.md)）。
 - 【方針】Windows で直接動く実行ファイルでは、`Process.shell` は `cmd.exe /C` を使う。Windows の項目（強制的に終わらせられたプロセスの終了状態、`cmd.exe` に渡す文字列の引用の規則）は、その実行ファイルを配ると決めるときに確かめる（[ADR 0176](../decisions/0176-first-release-targets-and-static-linux-build.md)、ADR 0243）。
 - `Process.exit` の `code` は 0 以上 255 以下でなければならず、範囲の外なら実行時エラーとする。終える前に、開いている `with` のリソースを解放し（[リソース管理](../01-spec/01-10-resources.md)）、出力を書き出す。
 - CLI の `run` では、`Process.exit` は処理系のプロセスを終える。サーバモードの子プロセスでは、子プロセスを終え、デーモンがその終了状態をジョブの結果とする（[ADR 0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md)）。テストの実行器では、処理系のプロセスを終えず、その実行だけを終え、そのテストを失敗として報告する（[スクリプト実行と埋め込み](../02-impl/02-11-embedding.md)、[ADR 0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md)）。
-- `Process.runAttached` で起動したコマンドの標準入出力は、スクリプトの標準入出力と同じつなぎ先につなぐ。テストの実行器とサーバモードの子プロセスでは、空の入力と、その実行の出力の受け取り先である。
+- `Process.runAttached` で起動したコマンドの標準入出力は、スクリプトの標準入出力と同じつなぎ先につなぐ。テストの実行器とサーバモードの子プロセスでは、空の入力と、その実行の出力の受け取り先である。ただし、`input` に `Option.Some` を指定した `Process.Command` では、指定した文字列を子の標準入力にする。標準出力と標準エラー出力は、`input` の指定にかかわらずスクリプトと同じつなぎ先につなぐ（[ADR 0322](../decisions/0322-stdlib-details-from-u3-preflight.md) の決定 5）。
+- テストの実行器とサーバモードの子プロセスの `Process.runAttached` では、処理系が子の標準出力と標準エラー出力を集め、子が終わった後に、その実行の出力の受け取り先へ書く。集めた出力が正しい UTF-8 でなければ、壊れたバイトの並びを置換文字 U+FFFD に置き換えて書き、`IOErrorKind.InvalidUTF8` は返さない。集める出力の大きさには `Process.run`・`Process.shell` と同じ上限を当て、標準出力と標準エラー出力のどちらかが 2^30 バイトを超えたら、資源の不足として停止する（[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」、[ADR 0327](../decisions/0327-fmt-symlink-and-process-attached-details.md) の決定 2・3）。
 
 ### Clock
 
@@ -280,6 +283,44 @@ end record
 
 起動したコマンドが中で行う操作は、処理系の検査の外にある（[セキュリティモデル](../07-quality/07-01-security-model.md)の「ハーネスとの分担」）。
 
+### 大きなファイルを流す操作（初回リリース版の後）
+
+初回リリース版の `File.copy` は、内容を一度 `Bytes` の値に読むので、1 GiB を超えるファイルを写せない（前述の「File」）。初回リリース版の後に、開いたリソースどうしを流す操作を加えて、この上限をなくす。
+
+【決定】次の改造は初回リリース版に入れず、初回リリース（`0.0.1`）の後の版で行う（[ADR 0337](../decisions/0337-file-transfer-for-large-copies.md)）。
+
+- `File.transfer(reader, writer)` を加える。`File.Reader` の残りをすべて `File.Writer` に書く。`File.Write` の操作であり、`File.Read` には属さない。読む権限と書く権限は、`File.openReader` と `File.openWriter` で開くときに確かめ済みなので、`File.transfer` は改めて権限を判定しない。処理系は、流す処理を IO 実行器の作業用のスレッドの中でまとめて行う。戻り値の型と流す単位の大きさは、この改造の実装プランで定める。
+- `File.copy` を、`File.openReader` と `File.openWriter` で開き、`File.transfer` で流し、閉じる標準ライブラリのソースの関数に書き直す。写せるファイルの大きさの上限はなくなる。型は、解放のエフェクト `State` が加わり、`function(String, String) -> Result[Unit, IOError] uses File.Read, File.Write, State` となる。
+- `File.copy` の型の変更は、`uses File.Read, File.Write` と細かく書いたスクリプトを型の誤りにする互換性を壊す変更なので、`CHANGELOG` に移行の手順を記録する（[ADR 0236](../decisions/0236-compatibility-during-0x.md)）。`uses IO.All` と書いたスクリプトは影響を受けない。
+- `File.Read` を処理するハンドラは、`File.transfer` が行う読みを捕らえない。
+
+【未決】同じ形を HTTP の応答の本体と外部コマンドの出力に広げるか、少しずつ計算するハッシュの関数を加えるか、`File.copy` が途中で失敗したときに書きかけのファイルを残さないか、OS の速いコピーの機能を使えるかは [OPEN-086](../open-issues.md#open-086) で決める。
+
+### コマンドを代替する機能と外部コマンドの起動の拡張（初回リリース版の後）
+
+初回リリース版の後に本章のモジュールへ加える機能は、コマンドを代替するライブラリの作り方（[ライブラリの構成](03-01-library-structure.md)の「コマンドを代替するライブラリの作り方（初回リリース版の後）」、[ADR 0336](../decisions/0336-command-substitute-library-policy.md)）に従う。
+
+【未決】次の点は未決である。
+
+- ディレクトリの複写と属性の引き継ぎ、glob、grep に当たる検索、原子的な書き換え、権限の属性の取得と設定、一時ファイル、ファイルシステムをまたぐ `File.rename` など、どの機能をどの順で加えるか（[OPEN-079](../open-issues.md#open-079)）。
+- 外部コマンドに当たる操作を、標準ライブラリの関数、コマンドを包むライブラリ、`Process.run` の順で選ばせるか。選ばせるなら、同梱の Agent Skill の指示と、標準ライブラリに同じ操作があるコマンドを `Process.command` に定数で渡したときの警告のどちらで示すか（[OPEN-080](../open-issues.md#open-080)）。
+- git を型の付いた関数として提供するか、提供するなら CLI を包むか、エフェクトをどう分けるか（[OPEN-082](../open-issues.md#open-082)）。
+- `Process.Run` の許可の対象を、コマンドの名前から引数の先頭まで細かくするか（[OPEN-083](../open-issues.md#open-083)）。
+- 裏で動かし続けて後で止めるプロセス、タスクを取り消したときに起動したコマンドを終わらせるか、出力をバイト列で受け取る `Process.run`（[OPEN-084](../open-issues.md#open-084)）。
+
+### 秘密の情報の扱い（初回リリース版の後）
+
+API キー・アクセス用のトークン・パスワードなどの秘密の情報（以下、秘密）を、スクリプトが受け取って外部コマンドや HTTP の要求に渡す場面がある（[秘密の情報の扱いの検討メモ](../sources/post-first-release/post-first-release-secrets.md)）。初回リリース版では、秘密は `Process.environmentVariable` や `Console.readLine` で読んだ `String` の値として扱うほかなく、`Process.run` で起動したコマンドはスクリプトの環境変数をすべて受け取る（前述の「Process」）。
+
+【決定】初回リリース版の後に、主なパスワードマネージャ（Proton Pass、KeePass 系、1Password、Bitwarden）のラッパーを、公式のライブラリとして用意する（[ADR 0338](../decisions/0338-password-manager-wrappers-as-official-libraries.md)）。ラッパーは、コマンドを代替するライブラリの作り方（[ADR 0336](../decisions/0336-command-substitute-library-policy.md)）に従い、取り出す操作を型の付いた関数として表す。標準ライブラリに入れるか、公式の追加のライブラリとして配るかは、[OPEN-078](../open-issues.md#open-078) で決める。
+
+【未決】次の点は未決である。
+
+- 外部コマンドに渡す環境変数を、スクリプトの環境変数から切り離す方法。`Process.Command` に引き継ぐかを選ぶ欄（`inheritEnvironment` の案）を加えるか、そのとき `program` をどの `PATH` で探すか（[OPEN-087](../open-issues.md#open-087)）。
+- 中身を見せない秘密の型と、秘密を外へ渡す受け取り口（外部コマンドの環境変数と標準入力、HTTP の要求のヘッダ）、秘密を扱うエフェクト（[OPEN-088](../open-issues.md#open-088)。[エフェクト](../01-spec/01-07-effects.md)の「秘密の値とエフェクト（初回リリース版の後）」）。
+- 人間から秘密を受け取る経路。標準入力ではなく、制御端末、サーバモードの承認の画面、スタンドアロンモードの別の端末で開く入力の画面などで受け取る案がある（[OPEN-089](../open-issues.md#open-089)）。
+- OS のキーストアから秘密を読む方法と、各パスワードマネージャのラッパーの作り方（錠の開け方、KeePass 系のデータベースのファイルを処理系が読むか）（[OPEN-090](../open-issues.md#open-090)）。
+
 ### 最小実行版との違い
 
 最小実行版では、IO を行う関数（`Console.write`・`Console.writeLine`・`Console.writeErrorLine`・`File.readText`・`Process.arguments`）は prelude にあり、エフェクトは `IO` である。
@@ -289,3 +330,13 @@ end record
 - [OPEN-046](../open-issues.md#open-046): プロパティベーステストと、入力の生成器の導出（乱数の種の固定）
 - [OPEN-052](../open-issues.md#open-052): 実行時の権限制御の方式（ネットワークの操作の対象の書き方と照合、テストの実行で与える許可）
 - [OPEN-055](../open-issues.md#open-055): サーバモードの設計
+- [OPEN-079](../open-issues.md#open-079): コマンドを代替する機能の範囲と優先度
+- [OPEN-080](../open-issues.md#open-080): 外部コマンドを使う操作の選び方と、エージェントへの示し方
+- [OPEN-082](../open-issues.md#open-082): git の提供のしかたと、エフェクトの分け方
+- [OPEN-083](../open-issues.md#open-083): `Process.Run` の許可の対象を引数まで細かくするときの照合の規則
+- [OPEN-084](../open-issues.md#open-084): 裏で動かすプロセスと、取り消しのときの子プロセスの扱い
+- [OPEN-086](../open-issues.md#open-086): 開いたリソースへ流す操作の広げ方と、`File.copy` の細部
+- [OPEN-087](../open-issues.md#open-087): 外部コマンドに渡す環境変数を、スクリプトの環境変数から切り離す方法
+- [OPEN-088](../open-issues.md#open-088): 秘密の値の型と、秘密を扱うエフェクト
+- [OPEN-089](../open-issues.md#open-089): 人間から秘密を受け取る経路
+- [OPEN-090](../open-issues.md#open-090): OS のキーストアと、パスワードマネージャのラッパーの作り方

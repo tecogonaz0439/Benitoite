@@ -1,8 +1,10 @@
 // spec: 01-07 IO が起きる時期と順序
-// spec: 01-07 IO エフェクトが表す操作
+// spec: 01-07 組み込みのエフェクト
 // spec: 01-07 IO を行う組み込み関数
-fn main() -> Unit uses IO {
-  Console.print("print")
-  Console.println("println")
-  Console.eprintln("stderr")
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  Console.write("print")
+  Console.writeLine("println")
+  return Console.writeErrorLine("stderr")
+end function

@@ -1,8 +1,8 @@
 # 性能
 
 - 状態: 確定
-- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0026](../decisions/0026-match-to-decision-trees.md), [0027](../decisions/0027-register-bytecode.md), [0028](../decisions/0028-tagged-struct-values.md), [0029](../decisions/0029-two-io-execution-modes.md), [0030](../decisions/0030-call-stack-size-limit.md), [0040](../decisions/0040-single-repository.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0079](../decisions/0079-rust-readings-of-go-based-decisions.md), [0089](../decisions/0089-ocaml-as-benchmark-comparator.md), [0088](../decisions/0088-keep-both-io-execution-modes.md), [0104](../decisions/0104-list-as-persistent-vector.md), [0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md), [0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md), [0263](../decisions/0263-dispatch-loop-locals-and-verifier.md), [0268](../decisions/0268-staged-runtime-rebuild.md), [0269](../decisions/0269-correct-adr-0240-performance-assessment.md)
-- 未決事項: [OPEN-009](../open-issues.md#open-009), [OPEN-036](../open-issues.md#open-036)
+- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0026](../decisions/0026-match-to-decision-trees.md), [0027](../decisions/0027-register-bytecode.md), [0028](../decisions/0028-tagged-struct-values.md), [0029](../decisions/0029-two-io-execution-modes.md), [0030](../decisions/0030-call-stack-size-limit.md), [0040](../decisions/0040-single-repository.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0079](../decisions/0079-rust-readings-of-go-based-decisions.md), [0089](../decisions/0089-ocaml-as-benchmark-comparator.md), [0088](../decisions/0088-keep-both-io-execution-modes.md), [0104](../decisions/0104-list-as-persistent-vector.md), [0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0158](../decisions/0158-type-classes-by-dictionary-passing.md), [0160](../decisions/0160-one-shot-continuations-as-stack-segments.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md), [0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md), [0263](../decisions/0263-dispatch-loop-locals-and-verifier.md), [0268](../decisions/0268-staged-runtime-rebuild.md), [0269](../decisions/0269-correct-adr-0240-performance-assessment.md), [0313](../decisions/0313-vm-performance-recovery-before-stage-2.md), [0332](../decisions/0332-http-latency-measured-by-bench-client.md), [0355](../decisions/0355-mark-sweep-k1-for-first-release.md), [0356](../decisions/0356-call-budget-2500.md), [0357](../decisions/0357-no-ir-optimization-in-first-release.md)
+- 未決事項: [OPEN-009](../open-issues.md#open-009)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 9, 3.6
 
 ## 目的と範囲
@@ -77,6 +77,8 @@
 2. 遅い部分の原因の内訳と、それを処理系の設計（値の表現、命令の長さ、IO の方式、値の管理など）で直せるか
 3. 言語処理系を学ぶという実質的な目的への影響（[目的と設計原則](../00-overview/00-01-goals.md)）
 
+【決定】例外として、初回リリース版のランタイムの作り直しの間は、最小実行版の VM を下限とする関門を置く（[ADR 0313](../decisions/0313-vm-performance-recovery-before-stage-2.md) の決定 5）。U2 第 2 段を始める前に、fib と loop の実行の段の時間の中央値が、同じ計算機・同じ機会に測り直した最小実行版の VM 以下でなければならない。関門を通った後は、その時点の fib と loop の時間を基準とし、VM・ランタイムのヒープ・コード生成・生存の情報を変える変更で、どちらかが基準より 5% を超えて遅くなったら、理由を記録し、設計者の合意を得る。基準と比べる本測定は、U2 第 2 段の途中（作業用のスレッドとイベントループの本物を入れる R40 の後）と、VM とランタイムを変える作業をすべて終えた後に行い、作業ごとには短い測定と振り分けのループの機械語の数で確かめる（ADR 0313 の帰結）。普通の呼び出しと戻りで Rust の動的確保が起きないことを、テストで確かめる。第 2 段の開始の関門は、loop が最小実行版の VM の 1.07 倍の値のまま、設計者の合意を得て通した（2026-10-06）。その後、R20 で fib と loop の両方が最小実行版の VM を下回った（ADR 0313 の帰結）。
+
 ### 初回リリース版の完了時の測定
 
 【方針】初回リリース版の完了時には、前述のベンチマーク集合に次のものを加えて測る。入力の大きさの決め方は、前述の「ベンチマーク集合」と同じである。
@@ -87,10 +89,10 @@
 | handler | 利用者が定義したエフェクトの操作を繰り返し呼ぶ。末尾で再開する節と、継続を保存してから再開する節の二つの形で測る | ハンドラの探索、継続の区画の保存と再開（[ADR 0160](../decisions/0160-one-shot-continuations-as-stack-segments.md)） |
 | tasks | 多数のタスクを起動し、それぞれに計算させて、すべての終わりを待つ | タスクの切り替え、呼び出しの回数の予算（[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)） |
 | map | 大きな `Map` と `Set` に、挿入・検索・削除を続けて行う | 平衡二分木の更新と探索（[ADR 0103](../decisions/0103-map-and-set-ordered-by-key.md)） |
-| cycle | 可変のセルで循環する値を作っては捨てる | 循環する値の回収（[OPEN-036](../open-issues.md#open-036)） |
+| cycle | 可変のセルで循環する値を作っては捨てる | 循環する値の回収（[ADR 0355](../decisions/0355-mark-sweep-k1-for-first-release.md)） |
 | http | スクリプトで書いた HTTP サーバに、ループバックで多数の要求を送る。計算を続けるタスクを同時に動かす場合と、動かさない場合を測る | イベントループ、待つタスクの切り替え、要求の解析と応答の生成（[ADR 0162](../decisions/0162-event-loop-and-worker-threads-for-io.md)） |
 
-http は、ロードマップが並行処理の水準とした「スクリプトで簡易な HTTP サーバ（HTML を返す、REST API を提供する）を動かせる」ことと、「一つのタスクが接続を待ち受けたり計算を続けたりしている間も、ほかのタスクを止めない」ことを、数で確かめるためのものである（[ロードマップ](../00-overview/00-03-roadmap.md)の「初回リリース版」）。要求を送る側の道具は、測定の手順を定めるときに選ぶ。
+http は、ロードマップが並行処理の水準とした「スクリプトで簡易な HTTP サーバ（HTML を返す、REST API を提供する）を動かせる」ことと、「一つのタスクが接続を待ち受けたり計算を続けたりしている間も、ほかのタスクを止めない」ことを、数で確かめるためのものである（[ロードマップ](../00-overview/00-03-roadmap.md)の「初回リリース版」）。要求を送る側の道具は、測定の手順を定めるときに選ぶ。【方針】初回リリース版の完了時の測定では、Benitoite のスクリプトはサーバだけを動かし、ベンチマークの道具（`tools/bench/run.py`）がクライアントとして要求を送り、要求ごとの応答までの時間を処理系の外で測る。言語の時計はミリ秒までしか測れず、ループバックの応答までの時間を測るには粗いからである（[ADR 0332](../decisions/0332-http-latency-measured-by-bench-client.md)）。
 
 【方針】比較対象は、前述の「比較対象」と同じとする。比較対象の言語で同じ処理を素直に書けないベンチマーク（handler、tasks、cycle、http）は、Benitoite だけで測り、処理系を変えた前後の比較に使う。http は、結果を読むのに要るときだけ、ほかの言語で書いた簡単な HTTP サーバと比べる。
 
@@ -100,14 +102,14 @@ http は、ロードマップが並行処理の水準とした「スクリプト
 |---|---|
 | 要求の処理の量と待ち時間 | http で、一秒あたりに処理した要求の数と、要求ごとの応答までの時間の中央値と最大。計算を続けるタスクがある場合とない場合を分けて記録する |
 | 並行処理でのメモリ | tasks で、同時に存在するタスクの数を変えたときの最大の常駐メモリ。一つのタスクあたりのメモリを見積もる（[ADR 0015](../decisions/0015-shared-program-per-execution-state.md) の帰結） |
-| 回収の費用 | cycle と、値を多く作るベンチマーク（list、tree、eval）で、回収か解放にかかる時間の合計と、実行が止まる時間の p50・p95・p99・最大、最大の常駐メモリ。値の表現とランタイムの作り直しで採った方式（[OPEN-036](../open-issues.md#open-036)）について測る。作り直しの第 1 段で二つの方式を比べるときの項目は [ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md) で定める |
+| 回収の費用 | cycle と、値を多く作るベンチマーク（list、tree、eval）で、回収か解放にかかる時間の合計と、実行が止まる時間の p50・p95・p99・最大、最大の常駐メモリ。値の表現とランタイムの作り直しで採った方式（止めて行う非移動のマーク・スイープ。[ADR 0355](../decisions/0355-mark-sweep-k1-for-first-release.md)）について測る。作り直しの第 1 段で二つの方式を比べるときの項目は [ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md) で定める |
 | 起動と検査にかかる時間の内訳 | 前述の「測る項目」の、起動から終了までの時間と検査にかかる時間を、標準ライブラリのソースの読み込みと型検査にかかる時間と、それ以外に分けて記録する。検査のたびに、読む標準ライブラリのモジュールも名前解決から型検査までの段を通すためである（[名前解決とモジュール読込](../02-impl/02-04-resolver.md)の「標準ライブラリのソースの持ち方」） |
 
 【方針】処理系の実装の選択の影響として、次のものも記録する。
 
-- 呼び出しの回数の予算（[仮想機械](../02-impl/02-08-vm.md)の「タスクの切り替え」）: 予算の初めの値は実装プランで定め、性能の測定で調整する。tasks と http を、初めの値を変えて測り、実行時間と応答までの時間の釣り合いから値を選ぶ。
+- 呼び出しの回数の予算（[仮想機械](../02-impl/02-08-vm.md)の「タスクの切り替え」）: 予算の初めの値は実装プランで定め、性能の測定で調整する。tasks と http を、初めの値を変えて測り、実行時間と応答までの時間の釣り合いから値を選ぶ。初回リリース版の完了時の測定で、初めの値を 2,500 回にした（[ADR 0356](../decisions/0356-call-budget-2500.md)）。
 - 切り替えの位置の処理（[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)、[ADR 0163](../decisions/0163-interrupt-releases-resources.md)、[ADR 0263](../decisions/0263-dispatch-loop-locals-and-verifier.md)）: 関数の呼び出しのたびに中断の印と予算を調べ、取り消しと回収の要求は予算を 0 にして知らせる。fib と loop の CPU プロファイルで、この処理が実行時間に占める割合を見る。
-- 中間表現の最適化（[中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md)の「最適化」）: 初回リリース版で行う最適化は、性能の測定の結果を見て決める。候補の変換（辞書が決まっているメソッドの呼び出しを直接の呼び出しにすること、`let` の入れ子を平らにすることなど）ごとに、変換の有無で各ベンチマークを測り、採るかを決める。辞書の変換は trait で効果を見る。
+- 中間表現の最適化（[中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md)の「最適化」）: 初回リリース版では、中間表現の最適化を行わない（[ADR 0357](../decisions/0357-no-ir-optimization-in-first-release.md)）。初回リリース版の後に、候補の変換（辞書が決まっているメソッドの呼び出しを直接の呼び出しにすること、`let` の入れ子を平らにすることなど）ごとに、変換の有無で各ベンチマークを測り、採るかを決める。辞書の変換は trait で効果を見る。
 - 配布する実行ファイルのメモリの確保（[ADR 0176](../decisions/0176-first-release-targets-and-static-linux-build.md)、[OPEN-009](../open-issues.md#open-009)）: Linux 向けの musl で静的にリンクしたビルドと、glibc のビルドを、同じ Linux の計算機で比べる。
 
 【方針】測定の結果は、前述の「測定の結果の使い方」の三つの観点で並べ、性能の数値の基準は置かない。最小実行版の測定の結果と同じ計算機で測れるときは、前述のベンチマークについて、最小実行版からの変化も並べる。
@@ -144,4 +146,3 @@ http は、ロードマップが並行処理の水準とした「スクリプト
 ## 未決事項
 
 - [OPEN-009](../open-issues.md#open-009): 実行性能
-- [OPEN-036](../open-issues.md#open-036): 初回リリース版のメモリの管理の方式（作り直しの第 1 段でマーク・スイープと改良した参照カウントを試作して比べ、測定で選ぶ。[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)）

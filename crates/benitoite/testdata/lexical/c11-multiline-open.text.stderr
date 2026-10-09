@@ -1,0 +1,12 @@
+error[E0121]: text after the opening `"""` of a multi-line string
+  --> testdata/lexical/c11-multiline-open.bnt:3:19
+   |
+ 3 |   bind text <- """oops
+   |                   ^^^^
+   |
+   = help: start the text on the line after `"""`
+   |
+ 3 |   bind text <- """
+ 4 | oops
+
+error: could not check testdata/lexical/c11-multiline-open.bnt due to 1 previous error

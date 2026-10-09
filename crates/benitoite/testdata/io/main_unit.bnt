@@ -1,7 +1,9 @@
 // spec: 01-07 プログラムの入口
 // spec: 01-04 Unit
 // spec: 01-08 プログラムの実行
-fn main() -> Unit uses IO {
-  Console.println("main returned unit")
-  ()
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  Console.writeLine("main returned unit")
+  return ()
+end function

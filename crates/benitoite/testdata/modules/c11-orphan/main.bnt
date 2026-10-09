@@ -1,0 +1,9 @@
+// spec: 01-06 型クラス（初回リリース版）
+import Classes
+import Types
+implement Classes.Echo[Types.Box]
+  function echo(x: Types.Box) -> Types.Box return x end function
+end implement
+function main() -> Unit
+  ()
+end function

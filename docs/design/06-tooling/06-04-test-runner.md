@@ -1,7 +1,7 @@
 # 利用者プログラムのテスト
 
 - 状態: 確定
-- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0206](../decisions/0206-test-command-line-and-exit-status.md), [0208](../decisions/0208-test-report-destination.md), [0252](../decisions/0252-test-report-format.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md)
+- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0206](../decisions/0206-test-command-line-and-exit-status.md), [0208](../decisions/0208-test-report-destination.md), [0252](../decisions/0252-test-report-format.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0324](../decisions/0324-test-task-origins-end-at-test-function.md), [0333](../decisions/0333-fmt-refusal-test-json-notes-http-method-and-process-input.md)
 - 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-046](../open-issues.md#open-046), [OPEN-052](../open-issues.md#open-052)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 24
 
@@ -156,7 +156,7 @@ end function
 【決定】報告の形は次のとおりとする（[ADR 0252](../decisions/0252-test-report-format.md)）。
 
 - 文章の形は、Rust の `cargo test` の形に合わせる。テストごとに `test <ファイル>: <名前> ... ok` か `... FAILED` の一行を書く。名前は、`@test` の説明があれば引用符で囲んだ説明、なければ関数の名前とする。
-- 失敗したテストがあれば、すべてのテストの行の後に `failures:` の見出しを書き、失敗したテストごとに `---- <ファイル>: <名前> ----` の見出しと、上の表の失敗の詳細を書く。位置と呼び出しの履歴は、[診断エンジン](../02-impl/02-10-diagnostics.md)の文章の形式と同じ形で書く。テストが書いた出力があれば、`---- captured stdout ----`・`---- captured stderr ----` の見出しに続けて示す。
+- 失敗したテストがあれば、すべてのテストの行の後に `failures:` の見出しを書き、失敗したテストごとに `---- <ファイル>: <名前> ----` の見出しと、上の表の失敗の詳細を書く。位置と呼び出しの履歴は、[診断エンジン](../02-impl/02-10-diagnostics.md)の文章の形式と同じ形で書く。テストの関数が起動したタスクの中で失敗したときは、タスクの起動の履歴の最後の段を、`main` ではなくテストの関数の名前にする。タスクの待ち合いの行き詰まりの報告で待つタスクを並べるときも、最初のタスクをテストの関数の名前で示す（テストでは最初のタスクがテストの関数であるため。[ADR 0324](../decisions/0324-test-task-origins-end-at-test-function.md)）。テストが書いた出力があれば、`---- captured stdout ----`・`---- captured stderr ----` の見出しに続けて示す。
 - 最後に `test result: ok.` か `test result: FAILED.` に続けて、成功の数と失敗の数を書く。検査の誤りでテストを実行しなかったファイルがあれば、その数を書く。中断の要求で終えたときは、そのことを書く。
 - テストを並行に動かしても、報告は、ファイルを指定した順（ディレクトリの下ではパスの辞書順）と、ファイルの中のテストの関数の宣言の順に書く。報告を実行ごとに変えないためである。
 
@@ -170,13 +170,17 @@ failures:
 assertion failed: Assert.equal
   left:  3
   right: 4
- --> tests/sum.bnt:14:3
+  --> tests/sum.bnt:14:3
+   = note: call trace (innermost first):
+             sumOfEmpty
+   = note: functions left by tail calls are not shown
 
 test result: FAILED. 12 passed; 1 failed
 ```
 
 - JSON Lines の形では、テストごとに `kind` が `"test"` の一行を書く。項目は、`file`、`name`（説明か関数の名前）、`function`（関数の名前）、`location`（関数の宣言の位置。診断の位置の形）、`outcome`（`"passed"` か `"failed"`）、`failure`（成功では `null`）、`stdout`・`stderr`（捕らえた内容の文字列）である。
 - `failure` は、`reason`（`"assert"`・`"error"`・`"runtime"`・`"exit"`）と `message` のほかに、理由に応じた項目を持つ。`"assert"` は失敗した確認の位置 `primary` と `trace`、`Assert.equal`・`Assert.notEqual` では値を書き出した文字列 `left`・`right` を持つ。`"error"` は `Result.Error` の文字列を `message` に持つ。`"runtime"` は、実行時エラーの報告の JSON の形式の項目（`code`・`primary`・`trace`・`traceOmitted`・`taskOrigins` など）を持つ。`"exit"` は `Process.exit` の終了状態 `exitCode` を持つ。
+- `"assert"` と `"exit"` は、`"runtime"` と同じく注記の文字列の配列 `notes` も持つ。`"assert"` の `notes` は、実行時エラーの報告の `notes` と同じ並びで、止める途中の解放の失敗ごとの注記（[診断エンジン](../02-impl/02-10-diagnostics.md)の「解放の失敗の報告」の、実行時エラーで止める途中の解放の注記と同じ文）を並べ、最後に末尾呼び出しの注記を置く。`"exit"` の `notes` は、止める途中の解放の失敗ごとに同じ文を一つずつ並べ、失敗がなければ空の配列とする（[ADR 0333](../decisions/0333-fmt-refusal-test-json-notes-http-method-and-process-input.md) の決定 2）。
 - 最後に `kind` が `"testSummary"` の一行を書く。項目は、`passed`、`failed`、`filesNotRun`（検査の誤りで実行しなかったファイルの数）、`interrupted`（中断の要求で終えたか）である。
 
 ### プロパティベーステスト

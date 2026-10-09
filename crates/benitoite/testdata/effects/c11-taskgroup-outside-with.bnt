@@ -1,0 +1,7 @@
+// spec: 01-11 タスクの集まり
+function f() -> Unit uses State
+bind group <- TaskGroup.open()
+end function
+function main() -> Unit
+  ()
+end function

@@ -1,0 +1,12 @@
+error[E0706]: the type parameter `T` needs the constraint `Echo`
+  --> testdata/traits/c11-constraint-missing.bnt:6:10
+   |
+ 6 |   return Echo.echo(x)
+   |          ^^^^^^^^^
+   |
+   = help: add the constraint, such as `[T: Echo]`
+   |
+ 5 | function bad[T: Echo](x: T) -> T
+   |               ~~~~~~
+
+error: could not check testdata/traits/c11-constraint-missing.bnt due to 1 previous error

@@ -1,8 +1,8 @@
 # ランタイム
 
 - 状態: 確定
-- 関連ADR: [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0015](../decisions/0015-shared-program-per-execution-state.md), [0016](../decisions/0016-calls-off-go-stack.md), [0029](../decisions/0029-two-io-execution-modes.md), [0030](../decisions/0030-call-stack-size-limit.md), [0037](../decisions/0037-exit-status-values.md), [0044](../decisions/0044-heap-exhaustion-outside-stop-procedure.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0068](../decisions/0068-release-resources-on-stop.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0072](../decisions/0072-permission-path-matching.md), [0073](../decisions/0073-run-permission-command-matching.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0079](../decisions/0079-rust-readings-of-go-based-decisions.md), [0088](../decisions/0088-keep-both-io-execution-modes.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0143](../decisions/0143-http-and-tls-crates.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0152](../decisions/0152-task-allok-list-order.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0164](../decisions/0164-taskgroup-release-while-stopping.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0167](../decisions/0167-reference-update-by-version-retry.md), [0170](../decisions/0170-http-accept-failure-classification.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0186](../decisions/0186-run-time-policy-can-only-narrow.md), [0187](../decisions/0187-standalone-reads-user-policy-file.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0214](../decisions/0214-default-policies-allow-process-environment-with-no-names.md), [0216](../decisions/0216-policy-deny-rules-and-standalone-defaults.md), [0222](../decisions/0222-http-tests-over-loopback.md), [0237](../decisions/0237-no-heap-usage-limit-in-first-release.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md), [0239](../decisions/0239-cycle-collection-for-reference-cells.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md), [0255](../decisions/0255-bind-and-shadow.md), [0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md), [0260](../decisions/0260-heap-and-unsafe-boundary.md), [0261](../decisions/0261-typed-builtin-interface.md), [0264](../decisions/0264-single-dispatch-queue-for-builtin-operations.md), [0265](../decisions/0265-output-transfer-by-writer-threads.md), [0266](../decisions/0266-task-and-resource-state-machines.md), [0268](../decisions/0268-staged-runtime-rebuild.md), [0270](../decisions/0270-open-062-items-in-runtime-rebuild.md), [0277](../decisions/0277-refcount-defers-freeing-to-safepoints.md), [0280](../decisions/0280-reuse-by-dedicated-construct-instruction.md), [0281](../decisions/0281-heap-number-in-slot-and-contract-safety.md), [0282](../decisions/0282-cancellation-timing-during-unwinding-and-requests.md), [0283](../decisions/0283-deadlock-counts-only-waits-that-can-wake-tasks.md)
-- 未決事項: [OPEN-036](../open-issues.md#open-036), [OPEN-051](../open-issues.md#open-051), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-062](../open-issues.md#open-062)
+- 関連ADR: [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0015](../decisions/0015-shared-program-per-execution-state.md), [0016](../decisions/0016-calls-off-go-stack.md), [0029](../decisions/0029-two-io-execution-modes.md), [0030](../decisions/0030-call-stack-size-limit.md), [0037](../decisions/0037-exit-status-values.md), [0044](../decisions/0044-heap-exhaustion-outside-stop-procedure.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0068](../decisions/0068-release-resources-on-stop.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0072](../decisions/0072-permission-path-matching.md), [0073](../decisions/0073-run-permission-command-matching.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0079](../decisions/0079-rust-readings-of-go-based-decisions.md), [0088](../decisions/0088-keep-both-io-execution-modes.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0143](../decisions/0143-http-and-tls-crates.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0152](../decisions/0152-task-allok-list-order.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0164](../decisions/0164-taskgroup-release-while-stopping.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0167](../decisions/0167-reference-update-by-version-retry.md), [0170](../decisions/0170-http-accept-failure-classification.md), [0176](../decisions/0176-first-release-targets-and-static-linux-build.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0186](../decisions/0186-run-time-policy-can-only-narrow.md), [0187](../decisions/0187-standalone-reads-user-policy-file.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0214](../decisions/0214-default-policies-allow-process-environment-with-no-names.md), [0216](../decisions/0216-policy-deny-rules-and-standalone-defaults.md), [0222](../decisions/0222-http-tests-over-loopback.md), [0237](../decisions/0237-no-heap-usage-limit-in-first-release.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md), [0239](../decisions/0239-cycle-collection-for-reference-cells.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md), [0255](../decisions/0255-bind-and-shadow.md), [0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md), [0260](../decisions/0260-heap-and-unsafe-boundary.md), [0261](../decisions/0261-typed-builtin-interface.md), [0264](../decisions/0264-single-dispatch-queue-for-builtin-operations.md), [0265](../decisions/0265-output-transfer-by-writer-threads.md), [0266](../decisions/0266-task-and-resource-state-machines.md), [0268](../decisions/0268-staged-runtime-rebuild.md), [0270](../decisions/0270-open-062-items-in-runtime-rebuild.md), [0277](../decisions/0277-refcount-defers-freeing-to-safepoints.md), [0280](../decisions/0280-reuse-by-dedicated-construct-instruction.md), [0281](../decisions/0281-heap-number-in-slot-and-contract-safety.md), [0282](../decisions/0282-cancellation-timing-during-unwinding-and-requests.md), [0283](../decisions/0283-deadlock-counts-only-waits-that-can-wake-tasks.md), [0321](../decisions/0321-close-functions-return-release-failure.md), [0355](../decisions/0355-mark-sweep-k1-for-first-release.md), [0358](../decisions/0358-release-versions-and-published-history.md)
+- 未決事項: [OPEN-051](../open-issues.md#open-051), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-062](../open-issues.md#open-062), [OPEN-071](../open-issues.md#open-071), [OPEN-084](../open-issues.md#open-084), [OPEN-086](../open-issues.md#open-086)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 7
 
 ## 目的と範囲
@@ -27,12 +27,14 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 
 【決定】ヒープのモジュールは、回収しない区間を Rust の寿命で表す型（`Value<'epoch>`・`NoGcCtx<'epoch>`）を外に出し、区間の中の処理には回収の機能を渡さない。安全点へ戻る前に、この先使う値を VM の根の保存領域に置く。区間の寿命を外した値を扱うのは、根の保存領域と根の列挙を管理する小さな内部の実装だけである。別の実行のヒープの値を渡す誤りは、区間の中では型の印で防ぎ、根の保存領域では、保存した値が持つヒープの番号をすべてのビルドで比べて見つける（[ADR 0260](../decisions/0260-heap-and-unsafe-boundary.md)、[ADR 0281](../decisions/0281-heap-number-in-slot-and-contract-safety.md)）。根の列挙の漏れは型で防げないので、ヒープのモジュールの API が安全と言えるのは、VM が根を漏れなく列挙し、列挙しなかった根を回収の後に読まないかぎりにおいてである（ADR 0281）。
 
-【未決】使わなくなった対象を回収する方式は、次の二つを作り直しの第 1 段で試作し、測定で暫定に選び、ハンドラ・タスク・IO を加えた後に確かめて確定する（[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)、[ADR 0268](../decisions/0268-staged-runtime-rebuild.md)、[OPEN-036](../open-issues.md#open-036)）。二つは、同じ値の配置・確保器・VM の上で入れ替えられる形で作り、生きている値の集合を揃えて比べる。
+【決定】使わなくなった対象は、次の表のマーク・スイープで回収し、回収を要求する条件の係数を k = 1 とする（[ADR 0355](../decisions/0355-mark-sweep-k1-for-first-release.md)）。作り直しの第 1 段で、表の二つの方式を同じ値の配置・確保器・VM の上で入れ替えられる形で試作し、生きている値の集合を揃えて比べ、マーク・スイープを暫定に採った（[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)、[ADR 0268](../decisions/0268-staged-runtime-rebuild.md)）。ハンドラ・タスク・IO を加えた後に、停止の時間と保持する量を測り直して確かめ、確定した（ADR 0355）。
 
 | 方式 | 概要 |
 |---|---|
-| マーク・スイープ | 止めて行う非移動のマーク・スイープ。回収は安全点（[仮想機械](02-08-vm.md)の「タスクの切り替え」）でだけ行う。前回の回収からの確保の量 A が、前回の回収で数えた生きている量 L に対して `A >= max(4 MiB, k × L)` を満たしたら回収を要求する。k は 1 から始め、第 1 段で 0.5・1・2 を比べて決める |
-| 改良した参照カウント | 対象の頭に参照の数を置く。数は、根の保存領域と対象の中にある参照だけで数え、回収しない区間の中の値の写しは数えない。区間の中で数が 0 になった対象は、区間の中では解放せず、安全点の回収で解放する（[ADR 0277](../decisions/0277-refcount-defers-freeing-to-safepoints.md)）。したがって、この方式でも前述の区間と根の規則が要る。コード生成が最後の使用を移動にし、`match` で分けた値の対象を、ほかに参照がなければ同じ大きさの構成子を適用した値にその場で再利用する（専用の命令 `CONR` で行い、実行ごとのヒープの設定で無効にできる。[ADR 0280](../decisions/0280-reuse-by-dedicated-construct-instruction.md)）。循環は、`Reference` のセルだけを起点に回収する（[ADR 0239](../decisions/0239-cycle-collection-for-reference-cells.md)。この方式を採る場合に限り残す） |
+| マーク・スイープ | 止めて行う非移動のマーク・スイープ。回収は安全点（[仮想機械](02-08-vm.md)の「タスクの切り替え」）でだけ行う。前回の回収からの確保の量 A が、前回の回収で数えた生きている量 L に対して `A >= max(4 MiB, k × L)` を満たしたら回収を要求する。k は 1 とする（第 1 段で 0.5・1・2 を比べて選んだ） |
+| 改良した参照カウント（比べた方式。初回リリース版の処理系には含めない） | 対象の頭に参照の数を置く。数は、根の保存領域と対象の中にある参照だけで数え、回収しない区間の中の値の写しは数えない。区間の中で数が 0 になった対象は、区間の中では解放せず、安全点の回収で解放する（[ADR 0277](../decisions/0277-refcount-defers-freeing-to-safepoints.md)）。したがって、この方式でも前述の区間と根の規則が要る。コード生成が最後の使用を移動にし、`match` で分けた値の対象を、ほかに参照がなければ同じ大きさの構成子を適用した値にその場で再利用する（専用の命令 `CONR` で行い、実行ごとのヒープの設定で無効にできる。[ADR 0280](../decisions/0280-reuse-by-dedicated-construct-instruction.md)）。循環は、`Reference` のセルだけを起点に回収する（[ADR 0239](../decisions/0239-cycle-collection-for-reference-cells.md)） |
+
+【決定】参照カウントの実装は処理系から外し、比べた構成を再現できるリビジョンとして残した（ADR 0259 の決定 4 と帰結。実装プランの作業 R14）。そのリビジョン（タグ `stage1-rc-final`）は、公開しない初回リリース前の開発の履歴にあり、設計者の手元のリポジトリにだけ残る（[ADR 0358](../decisions/0358-release-versions-and-published-history.md) の決定 10）。参照カウントを採らないので、ADR 0239 の循環の回収と、[ADR 0277](../decisions/0277-refcount-defers-freeing-to-safepoints.md) の解放を安全点まで遅らせる規則は、初回リリース版の処理系に適用しない。停止を短くする増分の回収と若い世代は、初回リリース版には加えず、初回リリース版の後に検討する（ADR 0355）。
 
 言語には値を解放するときに走る処理がなく、リソースはメモリの管理では解放されない（後述の「リソースの追跡」）。したがって、どちらの方式でも回収の時期は観測できない。
 
@@ -182,6 +184,12 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 2. 結果が処理系の不具合であれば、タスクがその結果を待っているかによらず、後述の「panic 境界」の処理（処理系の不具合の報告）に移る。
 3. そうでなければ、タスクがまだその操作の結果を待っているかを調べ、待っていれば結果を渡して起こし、待っていなければ結果を捨てる。
 
+### 取り消しと外部コマンド・長い転送（初回リリース版の後）
+
+前節のとおり、タスクを取り消しても、作業用のスレッドで続いている操作は止めず、起動した外部コマンドも終わらせない。`Task.withTimeout` で `Process.run` を取り消しても、子プロセスは動き続ける。
+
+【未決】初回リリース版の後に、裏で動かし続けて後で止めるプロセスを加えるか、タスクを取り消したときと止める手順のときに起動した子プロセスを終わらせるかは、[OPEN-084](../open-issues.md#open-084) で決める。後の版で加える `File.transfer`（[IO のモジュール](../03-interop/03-07-io-modules.md)の「大きなファイルを流す操作（初回リリース版の後）」）は、大きなファイルを作業用のスレッドの中で流し続けるので、取り消しと中断の要求を受けてから止まるまでの時間が長くなりうる。その扱いは [OPEN-086](../open-issues.md#open-086) で決める。
+
 ### リソースの追跡
 
 【方針】リソースの型の値（`File.Reader`・`File.Writer`・`Http.Listener`・`Http.Exchange`・`TaskGroup`）は、実行ごとの状態のリソースの表の番号として表す。番号は一つの実行の中で使い回さない。リソースの表の項目は、次のものを持つ。
@@ -193,6 +201,10 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 | 状態 | `Open`（開いている）、`Lent(操作の番号, 閉じる要求)`（作業用のスレッドに貸している）、`Releasing(操作の番号)`（解放を行っている）、`Released`（解放した）（[ADR 0266](../decisions/0266-task-and-resource-state-machines.md)） |
 | 開いた位置 | リソースを開いた呼び出しのソース上の位置。解放の失敗の報告に使う |
 
+【方針】解放済みの項目は、返却を待つタスク、未報告の解放の失敗、または終わっていない `TaskGroup` の子が残る間だけ表に保持し、不要になった時点で除く。即時の解放の失敗では、理由を受け取った側が報告に要る開いた位置を取り出すまで項目を保持する。番号の下位 3 ビットに種類を符号化し、残りを種類ごとの通し番号とする。種類ごとに発行した番号の範囲を記録し、発行済みで表にない番号を `Released` と判定する。種類の記録は実行ごとに固定量であり、解放済みのリソースの数に比例する表は持たない。実行終了時の破棄では、破棄した番号の範囲も記録し、従来どおりその範囲の番号を表にない番号として扱う。番号は破棄した後も使い回さない。
+
+【方針】タスクから、そのタスクが返却を待つリソースと属する `TaskGroup` を引く索引を持つ。取り消しと終了で待ちや所属を外すときは、関係する項目だけを調べる。VM はハンドラに属するタスクと親が起動した子の並びにも位置の索引を持ち、終了したタスクを末尾と入れ替えて除く。これらの並びは結果の順序を表さず、起動した子の結果の順序は別に保存する。IO の要求・外部の操作・タイマー・HTTP の準備の待ちも、タスク、操作、リソースの番号から関係する記録を引ける索引を持つ。リソースの解放で準備の待ちを起こすときは、準備を待つリソースのうち解放を始めたものを記録し、そのリソースの待ちだけを調べる。
+
 - リソースに対する操作は、まず状態を調べ、解放したリソースであれば、操作を行わずに実行時エラー（解放したリソースの使用）とする（[リソース管理](../01-spec/01-10-resources.md)の「解放したリソースの使用」）。番号を使い回さないので、解放したリソースの使用を取りこぼさない。
 - 作業用のスレッドで行う操作は、OS の資源を操作の間だけ作業用のスレッドに貸し、完了とともに返させる。貸している間に別のタスクが同じリソースを操作するときは、返されるまで待たせ、呼んだ順に行う。
 
@@ -202,7 +214,7 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 |---|---|
 | `Waiting(操作)` × `Lent(操作, 閉じる要求なし)` | 完了でリソースを表に戻してから、タスクに結果を渡す |
 | `Unwinding` × `Lent(操作, 閉じる要求あり)` | 返るまで待ち、返った後に解放する。新しい貸し出しは受け付けない |
-| `Waiting`・`Unwinding` × `Releasing` | 解放の完了で元の処理を再開する。取り消したタスクを通常の実行に戻さない |
+| `Waiting`・`Unwinding` × `Releasing` | 解放の完了で元の処理を再開する。取り消したタスクを通常の実行に戻さない。【方針】止める手順の `Http.Exchange` は例外とし、接続を shutdown して `Released` に改め、解放の完了の待ちを外す |
 | 操作の待ち × `Released` | 待ちを解き、解放したリソースの使用として処理する |
 | `Done` × `Lent` | 借りたタスクと解放の責任を持つタスクが別のときに起きうる。操作の記録は残す。自分の解放が終わっていないタスクは `Done` にしない |
 
@@ -219,16 +231,17 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 
 - `File.Reader` は、ファイルを閉じる。`File.Writer` は、書いた内容を書き出してから閉じる。
 - `Http.Listener` は、イベントループの登録を外し、待ち受けを閉じる。
-- `Http.Exchange` は、応答を送っていなければ状態コード 500 の応答を送ってから、接続を閉じる。失敗しても、実行時エラーにも報告にもせず、捨てる（[ADR 0149](../decisions/0149-http-exchange-release-failure.md)）。
+- `Http.Exchange` は、応答を一バイトも送っていなければ、総時間 3 秒を上限として状態コード 500 の応答を送ってから、接続を閉じる。期限を超えるか書き込みに失敗したときも接続を閉じる。応答を書きかけていれば、続きを送らず shutdown して閉じる。止める手順では、500 を送らず、既に始めた解放の完了も待たず shutdown して閉じる（[ネットワークのモジュール](../03-interop/03-09-network.md)の「サーバ」）。失敗しても、実行時エラーにも報告にもせず、捨てる（[ADR 0149](../decisions/0149-http-exchange-release-failure.md)）。
 - `TaskGroup` は、`with` を抜けるときは起動したすべてのタスクの終わりを待つ。取り消しの途中では、そのタスクを取り消し、止まるのを待つ。止める手順の途中では、子のタスクの終わりを待たない。子のタスクも同じ止める手順で止まる（[ADR 0164](../decisions/0164-taskgroup-release-while-stopping.md)）。
 
-解放でブロックする処理（`File.Writer` の書き出しなど）は、作業用のスレッドで行い、解放するタスクを待たせる。止める手順の途中でも同じであり、待つ間はほかのタスクの手順を進める（[仮想機械](02-08-vm.md)の「止める手順」）。解放を行っているリソースと、返却を待ってから解放するリソースの解放の枠は、解放の完了まで降ろさない。解放の完了で元の処理を再開するためである（[ADR 0266](../decisions/0266-task-and-resource-state-machines.md) の決定 5）。
+【方針】解放でブロックする処理（`File.Writer` の書き出しなど）は、作業用のスレッドで行い、解放するタスクを待たせる。止める手順の途中でも、`Http.Exchange` を除いて同じであり、待つ間はほかのタスクの手順を進める（[仮想機械](02-08-vm.md)の「止める手順」）。解放を行っているリソースと、返却を待ってから解放するリソースの解放の枠は、解放の完了まで降ろさない。解放の完了で元の処理を再開するためである（[ADR 0266](../decisions/0266-task-and-resource-state-machines.md) の決定 5）。止める手順の `Http.Exchange` は例外とし、接続を閉じて解放の枠を降ろす。通常の解放を既に作業用のスレッドへ渡していても、VM が同じ接続を shutdown できるように所有を共有する。リソースを解放済みにし、解放の待ちを外す。外部の操作の記録は完了まで保ち、作業用のスレッドからの完了を共通の経路で受け取る。
 
 【方針】解放の失敗は、次のようにまとめる。
 
 - `with` を抜けるとき、取り消しの途中、ハンドラが本体の続きを捨てるときは、一つが失敗しても残りのリソースの解放を続け、失敗をすべて集めてから、実行時エラー（リソースの解放の失敗）とする（[リソース管理](../01-spec/01-10-resources.md)の「解放の失敗」）。
 - 実行時エラーか資源の不足で止める途中の失敗は、先の実行時エラーを置き換えず、その報告に加える（[ADR 0068](../decisions/0068-release-resources-on-stop.md)）。テストの確認の失敗で止める途中の失敗も、同じくそのテストの失敗の報告に加える。
 - `Process.exit` と中断の要求で止める途中の失敗は、標準エラー出力に報告し、終了状態は変えない（[エフェクト](../01-spec/01-07-effects.md)の「影響の大きい操作（初回リリース版）」、[ADR 0163](../decisions/0163-interrupt-releases-resources.md)）。
+- close の関数（`File.closeWriter`・`Http.closeListener` など）が始めた解放の失敗は、実行時エラーにしない。ランタイムは失敗の理由の文字列を close の関数に返し、close の関数がそれを `Result.Error` にして返す（[リソース管理](../01-spec/01-10-resources.md)、[ADR 0321](../decisions/0321-close-functions-return-release-failure.md)）。
 - 報告には、リソースの型、開いた位置、失敗の理由を含める。形式は[診断エンジン](02-10-diagnostics.md)で定める。
 
 【方針】束縛の文で束縛して解放しなかったリソースは、止める手順でも解放しない（[リソース管理](../01-spec/01-10-resources.md)）。実行を終えて実行ごとの状態を捨てるときに、ランタイムはリソースの表に残った OS の資源を閉じる。これは言語の解放ではなく、`File.Writer` の書き出していない内容は書き出さず、失敗も報告しない。テストの実行器で繰り返し実行するときに、OS の資源が実行をまたいで残らないようにするためである。
@@ -279,6 +292,7 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 | 依頼するだけ | 書き込みの関数がバッファに追加した結果、そのバッファの中身が 64 KiB（65,536 バイト）以上になったとき | そのバッファの中身の転送を依頼し、VM は進める |
 | 依頼するだけ | 進められるタスクがなくなり、イベントループで待つ前 | 両方のバッファの中身の転送を依頼する |
 | 依頼するだけ | 出力先が端末であり、書き込みで改行を書いたとき | そのバッファの中身の転送を依頼する |
+| 依頼するだけ | タスクが一度に進める量（予算）を使い切り、ほかのタスクへ切り替えるとき（[ADR 0320](../decisions/0320-output-transfer-at-budget-switch.md)） | バッファに出力があれば、両方のバッファの中身の転送を依頼する。予算を使い切ったときの遅い経路で行い、命令ごと・呼び出しごとの経路には処理を加えない |
 | 完了を待つ | 標準入力を読む前、`Process.runAttached` がコマンドを起動する前 | 標準出力、標準エラー出力の順に、その時点までの出力の転送の完了を待ってから、読み取りか起動を始める |
 | 完了を待つ | 止める手順の終わりと、プログラムを終える前（後述の「プログラムの実行の流れ」の手順 4。panic 境界で処理系の不具合を報告する前も含む） | 標準出力、標準エラー出力の順に、最後の転送と失敗の確かめを終える |
 
@@ -381,8 +395,9 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 
 ## 未決事項
 
-- [OPEN-036](../open-issues.md#open-036): メモリの管理の方式（マーク・スイープか改良した参照カウントか。第 1 段の測定で暫定に選び、ハンドラ・タスク・IO を加えた後に確定する。[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)）
 - [OPEN-051](../open-issues.md#open-051): 外部の関数（WASM）の詳細
 - [OPEN-052](../open-issues.md#open-052): 実行時の権限制御の方式（権限の判定器の作り方、許可の単位、ネットワークの操作の権限）
 - [OPEN-055](../open-issues.md#open-055): サーバモードの設計
 - [OPEN-062](../open-issues.md#open-062): 設計書の 2 回目のレビューで指摘された実行時の振る舞いの再現（R02・R04・R05・R13・R14。扱いは [ADR 0270](../decisions/0270-open-062-items-in-runtime-rebuild.md)）
+- [OPEN-084](../open-issues.md#open-084): 裏で動かすプロセスと、取り消しのときの子プロセスの扱い
+- [OPEN-086](../open-issues.md#open-086): 開いたリソースへ流す操作の広げ方と、`File.copy` の細部（長い転送の取り消し）

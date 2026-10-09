@@ -21,7 +21,7 @@
 | ファイル | 扱い | 中身を書く作業 |
 |---|---|---|
 | `src/pipeline.rs` | 置く（`file=` と `sig=`） | F18 |
-| `src/runtime/run.rs` | 置く（`file=` と `sig=`） | F18（第 1 段の実行の関数で書く）、R26（第 2 段の IO 実行器へ移す）、R28（中断の要求） |
+| `src/runtime/run.rs` | 置く（`file=` と `sig=`） | F18（第 1 段の実行の関数で書く）、R26（第 2 段の IO 実行器へ移す）、R40（イベントループを使う `Wakeup` を作る）、R28（中断の要求） |
 | `src/runtime/report.rs` | 置く（`file=` と `sig=`） | R38 |
 | `src/cli/mod.rs` | 置く（`file=` と `sig=`） | F18 |
 | `src/cli/tools.rs` | 置く（`sig=`） | F18（仮の中身）、U4（`test`・`fmt`・`skill`・`--licenses`） |
@@ -145,8 +145,8 @@ pub fn entry_spec(path: &Path) -> Result<EntrySpec, EntryError>;
 
 /// 実行を始めるファイルから、読み込み・字句解析・構文解析・名前解決・型検査（定数の評価を含む）を行う
 /// （02-01「検査と実行の経路」の `check`）。標準ライブラリのソースは 10-14 の表から読み込みの段に渡す。
-/// 段の中身は `STAGE_STACK_BYTES` のスタックを持つスレッドで行い、そのスレッドの panic は呼び出し側のスレッドで
-/// 再び起こす（ADR 0087）。panic を処理系の不具合の報告にするのは、呼び出し側（`cli::execute`）である。
+/// 段の中身は `STAGE_STACK_BYTES` のスタックを持つスレッドで行う（ADR 0087）。そのスレッドの panic は段のスレッドの
+/// 中で捕らえ、報告の種類が `Internal` の診断（段は `check`、スレッドは `Stage`）にして `diagnostics` に入れて返す。
 pub fn check(entry: &EntrySpec, fs: &(dyn ModuleFs + Sync), opts: CheckOptions) -> CheckResult;
 
 /// `entry_spec` と本番のファイルシステム（`RealFs`）で `check` を行う。
@@ -170,11 +170,11 @@ pub fn compile(core: &CoreProgram, sources: Arc<SourceTable>) -> Result<Compiled
 `check` の手順は次のとおりである。
 
 1. 検査ごとに `IdGen` を一つ作り、10-04 の `modules::load_program` で読み込み・字句解析・構文解析を行う。どれか一つのファイルに誤りがあれば、名前解決に進まない（ADR 0156）。
-2. 10-04 の `resolve::resolve` で名前を解決する。誤りがあれば、型検査に進まない（ADR 0019）。
-3. 10-05 の `typecheck::typecheck` で型を検査する（`require_main` を渡す）。
-4. 警告は、次の段に進むことを妨げない。`deny_warnings` のときは、型検査まで進めた後、警告が一つでもあれば、すべての警告に `Diagnostic::deny_warning` を適用し、`program` を `None` にする（02-01「誤りが見つかったときの段の進め方」）。途中の段で誤りがあって止めたときも、それまでの警告に同じく適用する。
-5. 標準ライブラリのソースの中を主な位置とする警告は、一覧から除く（02-10「警告の扱い」）。
-6. 各段の診断を、段の中でファイル ID と開始の位置の順に並べ替えて（同じ位置の診断は段が出した順を保つ）、段の順につなぐ。読み込みの段の診断は、10-04 が決めた順（ファイル ID の順、ファイルの中では字句の誤りを先に）のまま使う。
+2. 10-04 の `resolve::resolve` で名前を解決する（読み込みの段のソースの表を渡す）。誤りがあれば、型検査に進まない（ADR 0019）。
+3. 10-05 の `typecheck::typecheck` で型を検査する（読み込みの段のソースの表と `require_main` を渡す）。
+4. 警告は、次の段に進むことを妨げない。`deny_warnings` のときは、型検査まで進めた後、警告が一つでもあれば、すべての警告に `Diagnostic::deny_warning` を適用し、`program` を `None` にする（02-01「誤りが見つかったときの段の進め方」）。途中の段で誤りがあって止めたときも、それまでの警告に同じく適用する。この判定と適用は、手順 5 で標準ライブラリのソースの中の警告を除いた後の一覧に対して行う（手順 5 を手順 4 より先に行う）。標準ライブラリのソースの中の警告だけで `program` を `None` にしないためである。
+5. 標準ライブラリのソースの中を主な位置とする警告は、一覧から除く（02-10「警告の扱い」）。手順 4 より先に行う。
+6. 各段の診断を、段の中でファイル ID と開始の位置の順に並べ替えて（同じ位置の診断は段が出した順を保つ）、段の順につなぐ。読み込みの段の診断も同じく並べ替える（02-10「検査の診断の順」。10-04 の `load_program` の出力の順は並べ替える前の順である）。
 
 脱糖・判定の木への変換・コード生成は、型検査を通ったプログラムだけを受け取る。これらの段の `InternalError` は処理系の不具合であり、利用者のプログラムの誤りとして報告しない（02-01）。
 
@@ -668,7 +668,7 @@ pub fn print_licenses(env: &CliEnv) -> u8;
 
 1. `pipeline::entry_spec` で実行を始めるファイルを決める。`EntryError` は使い方の誤り（`text::NO_MAIN_FILE`）として終了状態 2 で終える。
 2. `run` では、`env.interrupt` が `None` なら `runtime::run::process_interrupt` で中断の要求の読み口を作る（02-11 の手順 2）。`check` は中断の要求を扱わない。
-3. `runtime::panic::catch` で囲んで `pipeline::check` を行う（`require_main` は真）。捕らえた panic は `internal_diagnostic`（段は `check`、スレッドは `Stage`）で報告し、終了状態 3 で終える。`DevPanic::Check` のときは、誤りのない検査の結果を得た後に panic を起こす。
+3. `pipeline::check` を行う（`require_main` は真）。段のスレッドの panic は、`check` が報告の種類が `Internal` の診断にして返すので、その診断を報告し、終了状態 3 で終える。`DevPanic::Check` のときは、誤りのない検査の結果を得た後に panic を起こす。
 4. 検査の誤りのうち、主な位置が標準ライブラリのソース（`SourceKind::Prelude`）の中にあるものが一つでもあれば、処理系の不具合とする（02-04「標準ライブラリのソースの持ち方」は、標準ライブラリのソースの誤りを処理系の不具合とした）。検査の診断を書かずに、`internal_diagnostic`（段は `check`、スレッドは `Stage`、`message` は最初のその誤りの文言を `render_one_text` の文章の形式で書いたもの。色は付けない）を書き、終了状態 3 で終える（02-10「処理系の不具合と処理系の制限の報告」）。利用者のプログラムの誤りとして終了状態 2 にしないのは、利用者が直せる誤りではないからである。
 5. 検査の診断があれば、`render_check_text`（`Verb::Run` か `Verb::Check`、実行を始めるファイルの表示名）で書く。誤りがあれば終了状態 2 で終える。警告だけなら、`check` は終了状態 0 で終え、`run` は次へ進む（ADR 0166）。
 
@@ -690,8 +690,8 @@ pub fn print_licenses(env: &CliEnv) -> u8;
 | C10 の `check`・`run` の方式 | `cli::parse_args`（`.options` のオプションとスクリプトのパスから組み立てる）、`cli::execute`（`CliEnv` の出力先を `Capture`、標準入力を `Empty` か `Bytes`、`interrupt` を `NoInterrupt`、`color` を偽にする） | CLI と同じ手順で、終了状態・標準出力・標準エラー出力を得て期待値と比べる（ADR 0224） |
 | C10 の回収の強制と部品の差し替え | `CliEnv::heap`・`CliEnv::parts` | 回収を強制した実行と、順序を与えるスケジューラと仮想の時間での実行（ADR 0274） |
 | C10・C14 の差分テスト | `pipeline::check`・`desugar_checked`・`compile`、10-06 の `refinterp::run`、`runtime::run::run_program` | 同じプログラムを参照インタプリタと VM で実行して比べる |
-| F18 より後の作業（C11、R20 以降など）のテスト | `pipeline::check_files`・`check_text` | ファイルシステムを使わずに複数のモジュールを検査する。二つの関数の中身は F18 が書くので、F18 より前の作業（F05〜F17）は使えない |
-| F05〜F17 の単体テスト | 作業ごとのテスト用の補助の関数（各作業のテストのモジュールに置く。10-04 の `modules::load_program` を `ModuleFs` のメモリの実装で呼び、その作業までの段を順に呼ぶ） | ファイルシステムを使わずに、その作業の段までを検査する。後の作業の段の中身に依存しない |
+| F18 より後の作業（C11、R20 以降など）のテスト | `pipeline::check_files`・`check_text` | ファイルシステムを使わずに複数のモジュールを検査する。二つの関数の中身は F18 が書くので、F18 より前の作業（F05〜F16）は使えない |
+| F05〜F16 の単体テスト | 作業ごとのテスト用の補助の関数（各作業のテストのモジュールに置く。10-04 の `modules::load_program` を `ModuleFs` のメモリの実装で呼び、その作業までの段を順に呼ぶ） | ファイルシステムを使わずに、その作業の段までを検査する。後の作業の段の中身に依存しない |
 | U4 の `test` | `pipeline::check`（`require_main` を偽にし、`EntrySpec::root` を指定したディレクトリにする）、`desugar_checked`・`compile`、`RunEnv`・`RunEnd`（U4 が加えるテストの関数の実行の関数） | テストの関数ごとに別の実行として動かす（02-11「テストの実行」） |
 | U4 の `fmt` | 10-03 の `lex`・`parse` | 構文だけを扱う（02-01「検査と実行の経路」） |
 
@@ -703,6 +703,7 @@ pub fn print_licenses(env: &CliEnv) -> u8;
 | F18 | `pipeline` の関数、`runtime::run` の関数（第 1 段の実行の関数で書く。`process_interrupt` は `NoInterrupt` を返す仮の中身）、`cli` の関数、`cli::tools` の仮の中身 |
 | R38 | `runtime::report` の関数 |
 | R26 | `runtime::run::run_program` を第 2 段の IO 実行器（10-10）に移す。`RunEnv::parts` と `StdinSource` を使う |
+| R40 | `run_program` が `mio` を使う `Wakeup` を作る形に改める（10-10 の「イベントループ」） |
 | R27 | 出力の最後の転送と、転送の失敗の扱い（`run_program` の中の `OutputPort::finish` の呼び出し） |
 | R28 | `runtime::run::process_interrupt` の中身と、中断の要求で止める手順と解放の失敗の報告 |
 | C05 | `main.rs` を `cli::main` を呼ぶ形に改める。CLI のプロセスのテスト（`tests/cli_process.rs`）を初回リリース版の CLI に移す |

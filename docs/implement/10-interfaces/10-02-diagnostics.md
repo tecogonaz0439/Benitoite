@@ -347,6 +347,12 @@ impl DiagBuilder {
 | E0308 | `Some` などを型の名前に使った | 構成子を型の名前で修飾して書くので、同じ名前の型を宣言してよい（ADR 0099） |
 | E0317 | `Option.Some` を修飾して書いた | 修飾して書く規則に変わった（ADR 0099）。修飾しない構成子は E0331 |
 
+初回リリース版の検査に割り当てた後に使わないことにしたコードも、同じく `DiagCode` から除き、`RETIRED` に残す（欠番）。
+
+| コード | 割り当てた意味 | 使わない理由 |
+|---|---|---|
+| E0444 | 文字列リテラルか定数式を渡した `Regex.compile` の正規表現の構文の誤り | 初回リリース版では、検査の時点で正規表現の構文を確かめない（[ADR 0316](../../design/decisions/0316-no-compile-time-regex-check-in-first-release.md)）。作業 F17 を取りやめた |
+
 ### 表の項目
 
 - `message` は 1 行目の文言、`label` は主な位置のラベルの型板である。
@@ -401,7 +407,9 @@ pub struct CodeInfo {
 }
 
 /// 廃止したコード。番号を使い回さない（ADR 0031、実装プラン 10-02「番号の付け方」）。
-pub const RETIRED: &[&str] = &["E0111", "E0117", "E0205", "E0307", "E0308", "E0317"];
+pub const RETIRED: &[&str] = &[
+    "E0111", "E0117", "E0205", "E0307", "E0308", "E0317", "E0444",
+];
 
 /// 重大度はコードの頭の文字で決まる（`W` は警告）。
 fn severity_of(id: &str) -> Severity {
@@ -509,9 +517,9 @@ diag_codes! {
          leading_zero: "the integer part must not start with `0` unless it is `0`",
          underscore: "`_` must be placed between two digits",
          exponent: "the exponent needs at least one digit",
-         suffix: "a number must not be directly followed by a letter or `_`; separate words with a space",
+         suffix: "a number must not be directly followed by a letter or `_`; separate words with a space, such as `2 mod 3`",
          second_dot: "a number cannot contain a second `.` followed by digits"]
-        "Floating-point literals have digits on both sides of `.`, optionally followed by an exponent.";
+        "Floating-point literals have a decimal point or an exponent. Each part must contain digits.";
     E0118 Check "empty string interpolation" "`${}` contains no expression"
         [escape: "write `\\$` to include a literal `$` followed by `{`"]
         "An interpolation `${...}` must contain an expression.";
@@ -525,13 +533,13 @@ diag_codes! {
         [newline: "start the text on the line after `\"\"\"`"]
         fix [newline]
         "The first line of a multi-line string starts on the line after the opening `\"\"\"`.";
-    E0122 Check "this line is indented less than the closing `\"\"\"`" ""
+    E0122 Check "this line does not start with the indentation of the closing `\"\"\"`" ""
         [closing: "the closing `\"\"\"` is here",
          same_chars: "indent the line with the same spaces or tabs as the closing line"]
         "Every non-blank line of a multi-line string must start with the indentation of the closing line. The indentation is removed from every line.";
     E0123 Check "unterminated multi-line string" "this string is not closed"
-        [close: "close the string with `\"\"\"` on its own line"]
-        "A multi-line string ends with a line that contains only indentation and `\"\"\"`.";
+        [close: "close the string with `\"\"\"` at the start of a line after indentation"]
+        "A multi-line string ends with `\"\"\"` after indentation at the start of a line. The expression may continue after the closing quotes.";
     E0124 Check "malformed Decimal literal `{text}`" ""
         [exponent: "a Decimal literal cannot have an exponent",
          suffix_case: "the Decimal suffix is a lowercase `m`",
@@ -734,6 +742,11 @@ diag_codes! {
         [first: "first `..` here"]
         "A list pattern has one rest part, such as `[first, ..rest]`.";
 
+    E0251 Check "`fn` is not used for function declarations or lambdas" ""
+        [function: "write `function {signature} ... end function`",
+         lambda: "write `lambda{signature} ... end lambda`, using `return` for the result"]
+        "Declare functions with `function` and write anonymous functions with `lambda`.";
+
     // ---- E03: 名前、import、公開 ----
     E0301 Check "cannot find `{name}` in this scope" "not found"
         [similar: "a similar name exists: {candidates}"]
@@ -745,20 +758,19 @@ diag_codes! {
         "The name before `.` must be a module imported in this file, a prelude module, a type, a record, a trait, or an effect.";
     E0303 Check "`{module}` has no member `{name}`" "not found in `{module}`"
         [similar: "a similar name exists: {candidates}",
-         length: "strings have no unit-less length; use `String.byteLength` (bytes) or `String.charCount` (characters)",
-         slice: "use `String.byteSlice` (byte positions) or `String.charSlice` (character positions)",
+         length: "strings have no unit-less length; use `String.byteLength` (bytes) or `String.characterCount` (characters)",
+         slice: "use `String.byteSlice` (byte positions) or `String.characterSlice` (character positions)",
          index_of: "use `String.byteIndexOf`, which returns a byte position",
          unwrap: "there is no `{name}`; use `{module}.unwrapOr` or `match`",
          not_reexported: "names imported by `{module}` are not visible through it; import that module directly"]
         fix [similar]
         "The module, type, record, trait, or effect does not define this name.";
-    E0304 Check "`{name}` is {found_kind}, not {expected_kind}" ""
-        [qualify: "write it with its type name, such as `{suggestion}`"]
-        fix [qualify]
+    E0304 Check "`{name}` is {found_kind}, not {expected_kind}" "" []
         "Each position accepts only one kind of name.";
     E0305 Check "the name `{name}` is defined more than once" "redefined here"
         [first: "first defined here",
-         import: "give the import another name with `as`"]
+         import: "give the import another name with `as`, such as `{suggestion}`"]
+        fix [import]
         "Types, records, type aliases, traits, effects, and import names share one namespace in a module.";
     E0306 Check "`{name}` is defined more than once" "redefined here"
         [first: "first defined here"]
@@ -813,6 +825,7 @@ diag_codes! {
     E0323 Check "two imports have the name `{name}`" "second import named `{name}`"
         [first: "first import named `{name}`",
          alias: "give one of them another name with `as`, such as `import {module} as {suggestion}`"]
+        fix [alias]
         "Each import gives the module one name in the file, the last part of its name or the name after `as`.";
     E0324 Check "the module `{module}` is imported more than once" "imported again here"
         [first: "first imported here",
@@ -879,6 +892,7 @@ diag_codes! {
     // ---- E04: 型 ----
     E0401 Check "mismatched types" "expected `{expected}`, found `{found}`"
         [declared: "expected because of this",
+         expanded: "the expanded expected type is `{expanded}`",
          because_call_arg: "argument {index} must match the parameter type of the called function",
          because_if_branches: "the branches of `if` must have compatible types",
          because_if_no_else: "`if` without `else` must have type `Unit`",
@@ -959,7 +973,7 @@ diag_codes! {
     E0416 Check "the value of this expression is not used" "this has type `{found}`, not `Unit`"
         [discard: "write `bind _ <- ...` to discard the value",
          reassign: "`=` compares values and variables cannot be reassigned; to bind a new value to the name, write `shadow {name} <- ...`"]
-        fix [discard]
+        fix [discard, reassign]
         "An expression statement that is not the last in a block must have type `Unit`.";
     E0417 Check "a `uses` list can contain at most one effect variable" "" []
         "Use the same effect variable for several parameters to combine their effects.";
@@ -976,7 +990,10 @@ diag_codes! {
         [limit: "the digits of a `Decimal`, without the decimal point, must be less than 2^96"]
         "Decimal literals are not rounded, so their value must fit the `Decimal` type.";
     E0422 Check "a value of type `{ty}` cannot be interpolated into a string" ""
-        [convert: "convert the value to a `String` first, such as with `{function}`"]
+        [show: "convert the value to a `String` first with `{function}`",
+         import_show: "if this type implements `Show`, write `import Benitoite.Trait` and convert the value with `Trait.Show.show`",
+         convert: "convert the value to a `String` before interpolating it"]
+        fix [show]
         "`${...}` accepts `String`, `Integer`, `Float`, `Decimal`, `Byte`, `Character`, and `Boolean`.";
     E0423 Check "`{ty}` cannot be used as a key" ""
         [float: "`Float` has values that are not equal to themselves; use `Integer`, `Decimal`, or `String` instead"]
@@ -987,7 +1004,7 @@ diag_codes! {
         fix [add]
         "Comparing values or using them as keys requires `equality` or `key` on a type parameter.";
     E0425 Check "the constraint `{constraint}` cannot be written here" "" []
-        "Built-in constraints can be written on type parameters of functions, methods, traits, and implementations, but not on `data` declarations or type constructor parameters.";
+        "Type declarations cannot have constraints. Built-in constraints can be written on value type parameters of functions, methods, and implementations, but not on type constructor parameters or supertraits.";
     E0426 Check "`{name}` needs type arguments here" "" []
         "A type constructor such as `List` or a parameter `F[_]` is a type only with its type arguments.";
     E0427 Check "`{name}` takes {expected} type argument(s) where {found} are needed" "" []
@@ -1004,6 +1021,7 @@ diag_codes! {
         "Each field is written once in a construction, an update, or a pattern.";
     E0431 Check "the type alias `{name}` refers to itself" ""
         [member: "part of the cycle",
+         chain: "the cycle is {chain}",
          data: "declare a `data` type for a recursive type"]
         "A type alias is replaced by its definition, so it cannot refer to itself directly or through other aliases.";
     E0432 Check "the type parameter `{param}` is not used in the type alias `{name}`" "" []
@@ -1019,7 +1037,8 @@ diag_codes! {
         [first: "first given here"]
         "`Map.fromList` and `Set.fromList` in a constant must not repeat a key.";
     E0437 Check "constants refer to each other in a cycle" "this constant is part of a cycle"
-        [member: "part of the cycle"]
+        [member: "part of the cycle",
+         chain: "the cycle is {chain}"]
         "A constant can use other constants, but not itself through a chain of constants.";
     E0438 Check "the function can reach its end without `return`" "the end of the body is reachable"
         [path: "the body can reach its end through this path",
@@ -1042,8 +1061,6 @@ diag_codes! {
     E0443 Check "`{ty}` is not a resource type" ""
         [resources: "`with` binds values opened by functions such as `File.openReader` and `TaskGroup.open`"]
         "A `with` binding needs a resource, which is released when the block ends.";
-    E0444 Check "invalid regular expression: {reason}" "not a valid regular expression" []
-        "When `Regex.compile` receives a string literal or a constant expression, the regular expression is checked before the program runs.";
 
     // ---- E05: エフェクト、ハンドラ ----
     E0501 Check "this function performs `{effect}` but does not declare it" "`{effect}` happens here"
@@ -1074,9 +1091,11 @@ diag_codes! {
     E0509 Check "`resume` can only be used directly in a clause of `handle`" ""
         [lambda: "`resume` cannot be used in a lambda or a `lazy` body inside a clause"]
         "`resume` continues the computation that performed the operation, so it is written in the clause itself.";
-    E0510 Check "an operation cannot {what}" ""
+    E0510 Check "invalid effect operation declaration" ""
         [uses: "an operation declaration cannot have `uses`; the handler decides the effects",
-         effect_var: "an operation cannot have effect variables"]
+         effect_var: "an operation cannot have effect variables",
+         type_ctor: "an operation cannot have type constructor parameters such as `F[_]`",
+         trait_constraint: "a type parameter of an operation can have only `equality` or `key`, not a trait"]
         "Operations of an effect are declared with a name, parameters, and a result type.";
 
     // ---- E06: パターン ----
@@ -1093,7 +1112,11 @@ diag_codes! {
         "A lowercase name in a pattern always binds a new variable. Compare with a constant in a guard.";
     E0604 Check "the alternatives bind different variables" ""
         [missing: "`{name}` is not bound in this alternative",
-         first: "`{name}` is bound here"]
+         first: "`{name}` is bound here",
+         extra: "`{name}` is bound only in this alternative",
+         sets: "missing variables: {missing}; extra variables: {extra}",
+         missing_set: "missing variables: {missing}",
+         extra_set: "extra variables: {extra}"]
         "Every alternative in one branch must bind the same variables.";
     E0605 Check "the range `{low}..{high}` is empty" ""
         [swap: "write `{high}..{low}`"]
@@ -1117,7 +1140,8 @@ diag_codes! {
         [other: "the other implementation is here"]
         "Each type constructor has at most one implementation of a trait.";
     E0703 Check "traits are supertraits of each other in a cycle" ""
-        [member: "part of the cycle"]
+        [member: "part of the cycle",
+         chain: "the cycle is {chain}"]
         "Supertraits must not form a cycle.";
     E0704 Check "the implementation of `{trait_name}` for `{ty}` needs `{supertrait}` for `{ty}`" ""
         [constraint: "add the constraint `{constraint}` to the type parameter of the implementation"]
@@ -1198,8 +1222,9 @@ diag_codes! {
 
     // ---- W05: エフェクトの警告 ----
     W0501 Check "`uses IO.All` allows more effects than this function performs" ""
-        [narrow: "write `uses {effects}`"]
-        fix [narrow]
+        [narrow: "write `uses {effects}`",
+         remove: "remove `uses IO.All`; this function performs no effects"]
+        fix [narrow, remove]
         "Listing only the effects a function performs shows which operations it needs.";
 
     // ---- R01: 基本型の演算 ----
@@ -1260,6 +1285,8 @@ diag_codes! {
     // ---- R10: 並行処理 ----
     R1001 Runtime "no task can proceed because tasks are waiting for each other" "" []
         "Every remaining task waits for another task, so the program cannot continue.";
+    R1002 Runtime "the awaited task was cancelled, so it has no result" "" []
+        "`Task.await` cannot return a value for a task that was cancelled. A `Task` value used outside its `with` block may refer to such a task.";
 
     // ---- L01: 処理系の制限 ----
     L0101 Limit "the function `{name}` needs too many registers" ""
@@ -1275,25 +1302,25 @@ diag_codes! {
         [limit: "a function can have at most 65536 handlers; split it into smaller functions"]
         "The bytecode addresses the handler descriptions of a function with 16 bits.";
     L0105 Limit "the program has too many constructors" ""
-        [limit: "a program can have at most 65536 constructors"]
+        [limit: "a program can have at most 65535 constructors"]
         "The bytecode addresses constructors with 16 bits.";
     L0106 Limit "the program uses too many built-in functions" ""
-        [limit: "a program can use at most 65536 built-in functions"]
+        [limit: "a program can use at most 65535 built-in functions"]
         "The bytecode addresses built-in functions with 16 bits.";
     L0107 Limit "the program has too many implementations" ""
-        [limit: "a program can have at most 65536 implementations"]
+        [limit: "a program can have at most 65535 implementations"]
         "The bytecode addresses implementations with 16 bits.";
     L0108 Limit "the program has too many effect operations" ""
-        [limit: "a program can have at most 65536 effect operations"]
+        [limit: "a program can have at most 65535 effect operations"]
         "The bytecode addresses effect operations with 16 bits.";
     L0109 Limit "the trait `{name}` has too many methods" ""
-        [limit: "a trait can have at most 65536 methods"]
+        [limit: "a trait can have at most 65535 methods"]
         "The bytecode addresses the methods of a trait with 16 bits.";
     L0110 Limit "the trait `{name}` has too many supertraits" ""
-        [limit: "a trait can have at most 65536 supertraits"]
+        [limit: "a trait can have at most 65535 supertraits"]
         "The bytecode addresses the supertraits of a trait with 16 bits.";
     L0111 Limit "an implementation of `{name}` has too many constraints" ""
-        [limit: "an implementation can have at most 65536 constraint dictionaries"]
+        [limit: "an implementation can have at most 65535 constraint dictionaries"]
         "The bytecode addresses the dictionaries of an implementation with 16 bits.";
 }
 
@@ -1455,6 +1482,7 @@ pub mod text {
 | E0248 | `type alias`・`typealias` | F03 | 同上 |
 | E0249 | `/** … */`・`{-\| … -}`・`(** … *)`・`@doc` | F03 | 同上 |
 | E0250 | リストのパターンの二つ目の `..` | F04 | 01-05「パターンの拡張」 |
+| E0251 | 最小実行版の `fn` の関数宣言・ラムダ（文だけの修正案） | F20 | 01-02「プログラムと宣言」「ラムダ」、02-03「他の言語の書き方への診断」 |
 
 範囲のパターンの書き方の誤り（E0242）とリストのパターンの `..` の数（E0250）は、02-10 の区分の表では「パターン」（E06）の「範囲のパターンの誤り」に当たりうるが、構文解析器が字句の並びだけで判定する誤りなので、構文の区分に置いた。E06 には、型と値の範囲の誤り（E0605・E0606）を置く。
 
@@ -1475,7 +1503,7 @@ pub mod text {
 | E0318 | import のモジュールのファイルがない。大文字と小文字だけが違う項目しかないときは鍵 `case_only` の注記 | F05 | 02-04「モジュールの探し方」、ADR 0244 |
 | E0319 | シンボリックリンクを解決したパスが根のディレクトリの外 | F05 | 同上の手順 3 |
 | E0320 | 実行を始めるモジュールを取り込んだ | F05 | 同上の手順 4、01-03「実行を始めるモジュール」 |
-| E0321 | `Benitoite.X` が標準ライブラリのモジュールでない。根の直下に `Benitoite` のファイルかディレクトリがあれば鍵 `root_file` の注記。非公式のモジュールを `Benitoite.X` の名前で書いたときは鍵 `unofficial`、標準のモジュールを `Benitoite.Unofficial.X` の名前で書いたときは鍵 `standard` の注記と、正しい取り込みの名前への置き換え（`{suggestion}`） | F05 | 02-04「モジュールの探し方」の手順 1、03-06「標準のモジュールと非公式のモジュール（初回リリース版）」 |
+| E0321 | `Benitoite.X` が標準ライブラリのモジュールでない。根の直下に `Benitoite` のファイルかディレクトリがあれば鍵 `root_file` の注記。非公式のモジュールを `Benitoite.X` の名前で書いたときは鍵 `unofficial`、標準のモジュールを `Benitoite.Unofficial.X` の名前で書いたときは鍵 `standard` の修正案と、正しい取り込みの名前への置き換え（`{suggestion}`） | F05 | 02-04「モジュールの探し方」の手順 1、03-06「標準のモジュールと非公式のモジュール（初回リリース版）」 |
 | E0322 | import の循環。主な位置は循環を閉じる import、補助の位置はほかの import | F05 | 02-04「依存グラフと循環の検出」 |
 | E0323 | 同じ名前になる二つの import | F06 | 02-04「import の宣言の誤り」 |
 | E0324 | 同じモジュールの二度の取り込み | F06 | 同上 |
@@ -1516,7 +1544,7 @@ pub mod text {
 | E0422 | 文字列補間に書けない型 | F07 | 01-06「演算子の型付け」 |
 | E0423 | `Float` を含む型を鍵に使った | F07 | 01-06「鍵の型」 |
 | E0424 | 型パラメータに要る組み込みの制約（`equality`・`key`）がない | F08 | 01-06「組み込みの制約」 |
-| E0425 | 組み込みの制約を書けない位置（`data` の型パラメータ、`F[_]`） | F08 | 02-05「宣言の検査」 |
+| E0425 | 組み込みの制約を書けない位置（`data` の型パラメータ、`F[_]`）。`data` の型パラメータの制約は構文解析器が報告する（F08「`data` の型パラメータの制約」） | F08 | 02-05「宣言の検査」 |
 | E0426 | 型構成子を引数なしで値の型の位置に書いた | F07 | 01-06「高カインド型」、02-05「型の形」 |
 | E0427 | 型構成子の位置の引数の数の不一致 | F08 | 同上 |
 | E0428 | レコードの構築でフィールドが足りない | F07 | 01-05「レコード」 |
@@ -1535,7 +1563,7 @@ pub mod text {
 | E0441 | `try` と囲む関数の戻り値の型の不一致 | F09 | 同上 |
 | E0442 | `try` の誤りの型の不一致 | F09 | 同上 |
 | E0443 | `with` の束縛の式がリソースの型でない | F09 | 01-10 |
-| E0444 | 文字列リテラルか定数式を渡した `Regex.compile` の正規表現の構文の誤り（主な位置は引数の式。`{reason}` は組み立ての関数が返した理由の最初の行） | F17 | 03-08「Regex」、02-10「診断コード」、[OPEN-062](../../design/open-issues.md#open-062) の R08 |
+| E0444 | 欠番。使わない（「番号の付け方」の `RETIRED`） | — | [ADR 0316](../../design/decisions/0316-no-compile-time-regex-check-in-first-release.md) |
 
 ### E05 エフェクト、ハンドラ
 
@@ -1549,7 +1577,7 @@ pub mod text {
 | E0507 | `handle` の節に操作でない関数を書いた | F09 | 02-10「診断コード」 |
 | E0508 | 一つの `handle` の同じ操作の二つの節 | F09 | 同上 |
 | E0509 | `resume` を書けない位置（構文解析器が報告する） | F04 | 02-03「文脈の制限」、ADR 0155 |
-| E0510 | 操作の宣言の `uses` とエフェクト変数（構文解析器が報告する） | F04 | 01-02「エフェクトの宣言とハンドラ」 |
+| E0510 | 操作の宣言の `uses` とエフェクト変数、型構成子を表す型パラメータ、型パラメータの型クラスの制約（構文解析器が報告する。後の二つは F09 が加える。ADR 0311・0312） | F04、F09 | 01-02「エフェクトの宣言とハンドラ」 |
 
 ### E06 パターン
 
@@ -1629,6 +1657,7 @@ pub mod text {
 | R0902 | `ResourceError::ValueTooLarge`（説明に `Bytes` を加えた） | 02-09「一つの操作で作る値の大きさの上限」（最小実行版） |
 | R0903 | `ResourceError::InputTooLarge`（10-08） | 02-10「実行時エラーと資源の不足の報告」 |
 | R1001 | `RuntimeError::TaskDeadlock` | 01-11「失敗と停止」、ADR 0238 |
+| R1002 | `RuntimeError::AwaitedTaskCancelled`（R39 が加える） | 01-11「取り消し」、ADR 0317 |
 
 処理系の制限は、コード生成（F15）が 02-07「処理系の制限」に従って出す。原型ごとの制限（L0101〜L0104）は制限に当たった関数ごとに一つ出し、その関数の宣言の位置を示す。プログラム全体の制限（L0105〜L0111）は表ごとに一つ出し、位置を持たない。L0109〜L0111 の `{name}` は、型クラスの名前（L0111 は実装の型クラスの名前）である。
 
@@ -1704,7 +1733,7 @@ pub fn render_json_line(diag: &Diagnostic, sources: &SourceTable) -> String;
 | 作業 | 本章で受け持つもの |
 |---|---|
 | C02 | `diag/mod.rs`・`codes.rs` の `file=` と、`render.rs` の `sig=` の `todo!()` の仮置き（00-02）を置く |
-| F01〜F10、F15、F17、R38、D03 | 「コードの一覧」の「出す作業」の欄のコードの診断を組み立てる。型板は「型板の直し方」の範囲で直してよい |
+| F01〜F10、F15、R38、D03 | 「コードの一覧」の「出す作業」の欄のコードの診断を組み立てる。型板は「型板の直し方」の範囲で直してよい |
 | F16 | `render.rs` の中身。`DiagBuilder::help_edits` の鍵が `fixes` に含まれることと、`ALL` の番号が区分の中で重ならず `RETIRED` と重ならないことを確かめる単体テスト。F06 までに出る診断（E01〜E03、W0301）の修正案と置き換えを、02-10「修正案」の表と照らして揃える |
 
 F07〜F10 が出す診断の置き換えは、それぞれの作業が付ける。F16 は F06 の後に行うので、F07 以降の診断の置き換えを確かめるのは、それぞれの作業の受け入れテストである。

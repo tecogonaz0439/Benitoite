@@ -35,7 +35,7 @@ C01 は `sig=` の宣言を `todo!()` の仮置きとして置いている。本
 
 命令の表（10-07「命令の表」）の 68 の命令すべてについて、読むレジスタ・書くレジスタ・後に道筋がないか（`terminal`）を返す。第 1 段の VM が実行しない段が 2 の命令も含める。F15 のコード生成が同じ関数を使うからである。
 
-- 引数の並びの数を命令が持たない命令（`PRIM`・`IO`・`DICT`・`METHOD`・`TAILMETHOD`・`HANDLE`・`PERFORM`・`CON`・`CONR`）は、コンパイル済みプログラムの表（`BuiltinRef::arity`、`ImplInfo::dict_arity`、`MethodInfo::arity`、ハンドラの記述の節の数、`OpInfo::arity`、`CtorInfo::arity`）から数を読む。`METHOD`・`TAILMETHOD` のメソッドの引数の数は、辞書のレジスタからは決まらないので、10-07 の表の定め（`METHOD A B C` の引数は `R[B+1]` から始まる並び）と、C の位置のメソッドを持つ型クラスを原型の中から決める方法を確かめる。決められないときは作業を止めて報告する。
+- 引数の並びの数を命令が持たない命令（`PRIM`・`IO`・`DICT`・`METHOD`・`TAILMETHOD`・`HANDLE`・`PERFORM`・`CON`・`CONR`）は、コンパイル済みプログラムの表（`BuiltinRef::arity`、`ImplInfo::dict_arity`、`MethodInfo::arity`、ハンドラの記述の節の数、`OpInfo::arity`、`CtorInfo::arity`）から数を読む。`METHOD`・`TAILMETHOD` のメソッドの引数の数は、辞書のレジスタからは決まらないので、原型の `method_traits` のその命令の位置の型クラスを引き、`TraitInfo::methods[C].arity` を使う（ADR 0310）。`method_traits` の項目が `None` のとき、長さが `code` と違うときは `LivenessError` を返す。テスト用の組み立て（`bytecode::asm`）は、`METHOD`・`TAILMETHOD` を置くときに型クラスを指定させ、`method_traits` を埋める。
 - `CONR` の `reads` は、先頭に A（再利用の候補のレジスタ）、続けて引数の並びのレジスタとする。`write` は A である（10-07「その場での再利用の命令」）。
 - `CLOSURE` と `LAZY` は、作る原型の捕捉の表の `CaptureSource::Reg` のレジスタを読む。
 - 表を引いて項目がないとき、レジスタの番号の計算が溢れるときは、`LivenessError` を返す（処理系の不具合）。

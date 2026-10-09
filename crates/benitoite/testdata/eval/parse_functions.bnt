@@ -1,28 +1,30 @@
 // spec: 01-04 型の変換
-fn show_int(value: Option[Int]) -> String {
-  match value {
-    Some(number) => "Some(" + Int.toString(number) + ")"
-    None => "None"
-  }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn show_float(value: Option[Float]) -> String {
-  match value {
-    Some(number) => "Some(" + Float.toString(number) + ")"
-    None => "None"
-  }
-}
+function show_int(value: Option[Integer]) -> String
+  return match value with
+    case Option.Some(number) -> "Some(" + Integer.toString(number) + ")"
+    case Option.None -> "None"
+  end match
+end function
 
-fn main() -> Unit uses IO {
-  Console.println(show_int(Int.parse("-42")))
-  Console.println(show_int(Int.parse("1_000")))
-  Console.println(show_int(Int.parse("+42")))
-  Console.println(show_int(Int.parse(" 42")))
-  Console.println(show_int(Int.parse("9223372036854775808")))
-  Console.println(show_float(Float.parse("42")))
-  Console.println(show_float(Float.parse("1.5e2")))
-  Console.println(show_float(Float.parse("NaN")))
-  Console.println(show_float(Float.parse("Infinity")))
-  Console.println(show_float(Float.parse(" 1.0")))
-  Console.println(show_float(Float.parse("-1e-9999")))
-}
+function show_float(value: Option[Float]) -> String
+  return match value with
+    case Option.Some(number) -> "Some(" + Float.toString(number) + ")"
+    case Option.None -> "None"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(show_int(Integer.parse("-42")))
+  Console.writeLine(show_int(Integer.parse("1_000")))
+  Console.writeLine(show_int(Integer.parse("+42")))
+  Console.writeLine(show_int(Integer.parse(" 42")))
+  Console.writeLine(show_int(Integer.parse("9223372036854775808")))
+  Console.writeLine(show_float(Float.parse("42")))
+  Console.writeLine(show_float(Float.parse("1.5e2")))
+  Console.writeLine(show_float(Float.parse("NaN")))
+  Console.writeLine(show_float(Float.parse("Infinity")))
+  Console.writeLine(show_float(Float.parse(" 1.0")))
+  return Console.writeLine(show_float(Float.parse("-1e-9999")))
+end function

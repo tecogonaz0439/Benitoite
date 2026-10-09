@@ -30,7 +30,7 @@
 - `src/refinterp/` の下の非公開の子のモジュール（遷移のループ、継続とストア、`match` の行の照合など。分け方は実装者が決める）。
 - 各ファイルの `#[cfg(test)] mod tests`。
 
-R10 が置いた値と変換の子のモジュールは、本作業が使う関数を加える範囲で変えてよい。値の型を VM の値と共有する形に変えることはしない（ADR 0268 の決定 2）。`src/legacy/refinterp/` は読んで写してよいが、変えない。ほかのファイルは変えない。
+R10 が置いた値と変換の子のモジュール（`value.rs`・`convert.rs`）には、本作業が要る選択肢（ストアの場所の番号、リソース、辞書、操作の値、`Decimal` など）と関数を加え、既存の関数（`call`・`call_decl`・`to_heap`・`from_heap` など）を本作業に合わせて変えてよい。値の型を VM の値と共有する形に変えることはしない（ADR 0268 の決定 2）。`src/legacy/refinterp/` は読んで写してよいが、変えない。ほかのファイルは変えない。
 
 ## 手順の要点
 
@@ -50,6 +50,7 @@ R10 が置いた値と変換の子のモジュールは、本作業が使う関�
 | E-Let・E-Return | 最小実行版のとおり |
 | E-Lam・E-Fun・E-Meth | 継続の先頭が `mark` でなければ `mark` を積んでから本体に進む（01-12「関数の境界と `escape`」）。型の置き換え θ は実行に影響しないので行わない。E-Meth は、辞書の実装の定義（`ImplDef`）からメソッドの定義を引き、実装の制約の辞書 d̄ を `DictKind::ImplParam` の値として環境に持たせる |
 | E-Mark | `return V` で先頭が `mark` なら取り除く |
+| E-Super・V-Super | `DictKind::Super` の辞書は、01-12 の E-Super で上位の辞書を一段ずつ取り出す（ADR 0305） |
 | E-EscLet・E-EscMark | `escape V` は、`mark` に達するまで枠を取り除く。途中の `release`・`drop` の枠は、後述の解放の規則で処理する（E-EscRel・E-EscRelErr と、01-12「ハンドラ」の `drop` の段落） |
 | E-Prim・E-Err・E-IO・E-IOErr | 後述の「組み込みの関数の呼び出し」 |
 | E-RefNew・E-RefGet・E-RefSet | `Reference.new`・`get`・`set` の適用は、組み込みの関数の本体を呼ばず、ストアの規則で行う（01-12 は、この五つの関数に E-Prim などを使わないとする）。どの項目かは `builtin_decl(id)` の `name` で判定する |
@@ -80,7 +81,7 @@ R10 が置いた値と変換の子のモジュールは、本作業が使う関�
 01-12 の `release(V)` の事象は、リソースの表の項目を解放し、成否によらず解放したことにする（02-08「リソースの解放の枠」）。10-06 の `run` は `IoServices` だけを受け取り、`IoServices`（10-11）は開いたリソースを加える `register_resource` を持つが、解放する関数を持たない。そこで本作業は、リソースの表を参照インタプリタの中に持つ（本プランの決定。凍結した型とシグネチャは変えない）。
 
 - 組み込みの関数を呼ぶときの `CallCtx::new` には、渡された `IoServices` を包む非公開の型と、参照インタプリタの `StateServices` の実装を渡す。包む型は、`register_resource` だけを自分のリソースの表（`ResourceId` を 0 から振り、`Box<dyn OsResource>` と解放済みの印を持つ）に加え、ほかの関数は渡された `IoServices` に任せる。
-- 作業用のスレッドの仕事をその場で実行するとき、`Lend::Resource` はこの表から借りる。解放済みのリソースを借りようとしたら、VM と同じ実行時エラー（`ReleasedResourceUsed`）にする。
+- 作業用のスレッドの仕事をその場で実行するとき、`Lend::Resource` はこの表から借りる。共有の `builtins/table.rs` の `complete_worker` は `Lend::Nothing` の仕事だけを扱うので、借りる仕事では使わず、refinterp の中で `WorkerWait::lend` を見て表から借り、`WorkerWait::run(Lent::Resource(..))` と `WorkerDone::complete` を直接呼ぶ（`builtins/table.rs` は変えない）。この経路を使う組み込みの関数（`File.readLine` など）の本体は R29 が書くので、この経路の実行のテストは R29 の後の C14 に回してよい。解放済みのリソースを借りようとしたら、VM と同じ実行時エラー（`ReleasedResourceUsed`）にする。
 - `release V` の枠の解放と `StateServices::begin_release`（`File.closeReader`）は、表の項目の `OsResource::release` をその場で呼び、項目を解放済みにする。失敗はリソースの型の規則（02-09「リソースの追跡」）に従って r̄ に加えるか無視する。解放済みのリソースの解放は何もしない。
 - `StateServices` のうち `open_task_group` と `task_poll` は、タスクを使うプログラムを実行しない（`Unsupported`）ので呼ばれない。呼ばれたら `Stop::Internal` を返す。
 
@@ -113,10 +114,10 @@ R10 が置いた値と変換の子のモジュールは、本作業が使う関�
 | `main` のないプログラム | `CoreProgram::main` が `None` | `Stopped { stop: Stop::Internal(..) }` |
 | `Result` の `main` | `main` が `Result.Error("bad")` を返す | `Finished(MainOutcome::Error("bad"))` |
 | IO の順序 | `Console.writeLine("a")` の後に `Console.writeLine("b")` | 出力が `a`、`b` の順 |
-| 深い末尾再帰 | 自分を末尾で呼ぶ関数を 1,000,000 回 | 継続の長さが増えずに終わる（継続の最大の長さをテストの口で確かめる） |
+| 深い末尾再帰 | 自分を末尾で呼ぶ関数を 1,000,000 回（debug ビルドで遅すぎるなら 100,000 回に減らしてよい） | 継続の長さが増えずに終わる（継続の最大の長さをテストの口で確かめる） |
 | 末尾でない再帰 | `1 + f(n - 1)` の形を深さ 100,000 | 正しい値で終わり、Rust のスタックを使い果たさない |
 | 実行時エラー | `1 div 0` | `Stopped { stop: 0 による除算, origin: その演算の由来位置 }` |
-| 途中の `return` | ループの中の `if` から `return` する関数 | `escape` が関数の境界で止まり、呼び出し元の続きを実行する |
+| 途中の `return` | 再帰する補助の関数を呼ぶ関数の本体の、`if` の中から `return` する | `escape` が関数の境界で止まり、呼び出し元の続きを実行する |
 | `try` | `Result.Error` を返す関数に `try` を付けて呼ぶ関数 | 誤りの値がそのまま呼び出し元に返る |
 | `lazy` | 同じ `Lazy` の値を二度 `Lazy.force` し、本体で値を作る | 二度とも同じ値。本体は一度だけ実行される（本体に `Reference` を使えないので、`update` の枠の数え方で確かめる） |
 | `Reference` | `Reference.new`・`set`・`get`・`update` | 01-12 のストアの規則どおりの値 |
@@ -135,6 +136,10 @@ R10 が置いた値と変換の子のモジュールは、本作業が使う関�
 | 解放の順序 | 入れ子の `with`（リソースは、テストの補助が表に直接加えたテスト用の `OsResource`（解放の成否を与えられる）を指す値とする。`File.openReader` の本体は R29 が書くので使わない。前述の「解放」） | 内側から順に解放し、`escape`・実行時エラー・`Process.exit`・再開しない節の続きの中の解放も一度ずつ行う |
 
 `Process.exit`・`with` の `File.Reader` など、本体を R29 が書く組み込みの関数を使う場合は、R29 の取り込みの前は `Stop::Internal` になる。本作業のテストは、R08 が本体を書いた関数と、利用者の操作・ハンドラで確かめ、R29 の関数を使う場合は R29 の後に C14 の差分テストで確かめる（`Process.exit` の遷移は、応答が `Reply::Exit` の関数を差し込んだテストで確かめてよい）。
+
+組み込みの関数を差し込むテスト（`Process.exit` と、上の「解放の順序」のテスト用のリソースを返す関数）のために、refinterp の中に `#[cfg(test)]` の差し替えの表（組み込みの関数の番号から `BuiltinDecl` を引く表。`BuiltinBridge` が `builtin_decl(id)` より先に引く）を置いてよい。差し替える本体は 10-11 の `builtin!` マクロで書く（内部の共通の形を直接書かない）。リソースを返す本体は、`register_resource` でテスト用の `OsResource`（解放の成否を与えられる）を登録し、リソースの値を返す。テストのソースは、差し替えた組み込みの関数（例: `File.openReader`）を呼んでリソースを得る。マクロの制約などでこの差し替えが書けないときは、そのテストを C14 に回し、完了の報告の「残したこと」に書く（止まらない）。
+
+`ReleaseFailure::opened_at` は、参照インタプリタが命令を持たないので `None` にする。
 
 ## 完了条件
 

@@ -1,0 +1,10 @@
+// spec: 01-02 型クラス（初回リリース版）
+trait Echo[T]
+  function echo(x: T) -> T
+end trait
+public implement Echo[Integer]
+  function echo(x: Integer) -> Integer return x end function
+end implement
+function main() -> Unit
+  ()
+end function

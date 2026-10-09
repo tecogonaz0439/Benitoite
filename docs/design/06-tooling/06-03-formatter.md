@@ -1,7 +1,7 @@
 # フォーマッタ
 
 - 状態: 確定
-- 関連ADR: [0021](../decisions/0021-comments-beside-ast.md), [0125](../decisions/0125-doc-comments.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0207](../decisions/0207-fmt-command-line.md), [0224](../decisions/0224-golden-test-format-for-first-release.md), [0225](../decisions/0225-formatter-without-configuration.md), [0226](../decisions/0226-formatter-keeps-line-breaks.md), [0227](../decisions/0227-formatter-changes-only-whitespace-and-verifies-tokens.md), [0228](../decisions/0228-formatter-comments-blank-lines-and-characters.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md)
+- 関連ADR: [0021](../decisions/0021-comments-beside-ast.md), [0125](../decisions/0125-doc-comments.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0207](../decisions/0207-fmt-command-line.md), [0224](../decisions/0224-golden-test-format-for-first-release.md), [0225](../decisions/0225-formatter-without-configuration.md), [0226](../decisions/0226-formatter-keeps-line-breaks.md), [0227](../decisions/0227-formatter-changes-only-whitespace-and-verifies-tokens.md), [0228](../decisions/0228-formatter-comments-blank-lines-and-characters.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0323](../decisions/0323-with-binding-continuation-indent.md), [0326](../decisions/0326-match-arm-and-handler-clause-head-continuation.md), [0333](../decisions/0333-fmt-refusal-test-json-notes-http-method-and-process-input.md)
 - 未決事項: なし
 - 移行元: [設計メモ](../sources/fp-language-design.md) なし
 
@@ -62,7 +62,7 @@
 | 構文 | 開きの字句 | 開きの行と同じ段に置く行 | 開きの行より一段深くする行 |
 |---|---|---|---|
 | 関数の宣言（本体を持つもの）、代数的データ型・レコード・型クラス・実装・エフェクトの宣言 | `function`・`data`・`record`・`trait`・`implement`・`effect` | `end` で始まる行 | 本体の文、構成子、フィールド、メソッド、操作、実装の中の関数の宣言の行 |
-| `lambda`・`with`・`lazy` | 同じ語 | `end` で始まる行 | 本体の文の行 |
+| `lambda`・`with`・`lazy` | 同じ語 | `end` で始まる行 | 本体の文の行、`with` の 2 つ目以降の束縛の行 |
 | `if` | `if`（`else` の直後の `if` を除く） | `else` で始まる行、`end` で始まる行 | 分岐の文の行 |
 | `match` | `match` | `end` で始まる行 | 分岐の `case` で始まる行（分岐の本体の文の行は、その `case` の行より一段深くする） |
 | `handle` | `handle` | 節の並びを始める `with` で始まる行、`end` で始まる行 | 本体の文の行、節の `case` で始まる行（節の本体の文の行は、その `case` の行より一段深くする） |
@@ -75,7 +75,7 @@
 1. 行の最初の字句が、閉じの字句（`end`・`)`・`]`）か、`if` の `else` か、`handle` の節の並びを始める `with` であれば、その字句が属する構文の開きの行と同じ段とする。
 2. 行の最初の字句が `match` の分岐か `handle` の節の `case` であれば、`match` か `handle` の開きの行より一段深くする。
 3. 行の最初の字句が、並びの要素の最初の字句であれば、その要素を囲む構文の表の規則で段を決める。並びの要素とは、文、トップレベルの宣言とその属性と import の宣言、宣言の中の構成子・フィールド・メソッド・操作・関数の宣言、`with` の束縛、括弧の中の要素（引数、リストの要素、フィールドの引数、パターンの要素、型引数など）である。`if` の分岐の文は、その分岐を始めた `if` か `else` の行より、`match` の分岐と `handle` の節の本体の文は、その `case` の行より、一段深くする。
-4. 上のどれにも当たらない行を、続きの行と呼ぶ。続きの行は、その最初の字句を含む最も内側の並びの要素が始まる行より、一段深くする。一つの要素の続きの行が複数あっても、段はどれも同じである。
+4. 上のどれにも当たらない行を、続きの行と呼ぶ。続きの行は、その最初の字句を含む最も内側の並びの要素が始まる行より、一段深くする。この規則では、`match` の分岐と `handle` の節も並びの要素に数える（分岐と節の頭の続きの行は、その `case` の行より一段深くなる。[ADR 0326](../decisions/0326-match-arm-and-handler-clause-head-continuation.md)）。一つの要素の続きの行が複数あっても、段はどれも同じである。
 
 規則 4 により、次の書き方は、どれも前の行の続きとして一段深くなる。
 
@@ -222,10 +222,10 @@ end function
 
 【方針】フォーマッタは、整形の結果をファイルに書く前に、整形の結果を字句解析して、次の二つが整形の前と一致することを確かめる（[ADR 0227](../decisions/0227-formatter-changes-only-whitespace-and-verifies-tokens.md)）。
 
-- 字句の並び。改行による区切りの判定の後の列（NEWLINE を含む）で比べる。字句は、種類と、文字列の字句（文字列リテラルと、補間の開始・中間・終わり）では字句が持つ値（複数行の文字列では字下げを除いた後の文字列）、ほかの字句では字面で比べる。
+- 字句の並び。改行による区切りの判定の後の列（NEWLINE を含む）で比べる。字句は、種類と、文字列の字句（文字列リテラルと、補間の開始・中間・終わり）では字句が持つ値（複数行の文字列では字下げを除いた後の文字列）、NEWLINE と入力の終わりでは種類だけを、ほかの字句では字面で比べる（改行の字面は CR LF から LF に変わるため）。入力の終わりの直前の NEWLINE は比べない（最後の改行を加える規則で、整形の前になかった NEWLINE が後に現れるため。この NEWLINE は文を区切らない）。
 - コメントの並び。コメントの種類と、行末の空白を除いた本文を、順に比べる。
 
-【方針】あわせて、整形の結果を構文解析し、構文の誤りがないことを確かめる。ドキュメントコメントと宣言の結び付きは、字句の並びではなく、行の隣り合いで決まる（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)の「コメントとドキュメントコメント」）ので、字句とコメントの比較だけでは確かめられないからである。
+【方針】あわせて、整形の結果を構文解析し、字句の誤りと構文の誤りがないことを確かめる。ここで誤りとして扱うのは、後述の「構文の誤りがあるファイル」で整形を断る誤りと同じ範囲である。ドキュメントコメントと宣言の結び付きは、字句の並びではなく、行の隣り合いで決まる（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)の「コメントとドキュメントコメント」）ので、字句とコメントの比較だけでは確かめられないからである。
 
 【方針】一致しないか、構文の誤りがあれば、そのファイルを書き換えず、処理系の不具合として報告する。ほかのファイルの整形は続け、`fmt` は終了状態 3 で終える（[CLI](06-01-cli.md) の「`fmt` のコマンドライン（初回リリース版）」）。`--check` を指定したときも、同じ検証を行ってから、整形の結果を元のファイルと比べる。検証を通り、整形の結果が元のファイルとバイトの並びで同じであれば、ファイルを書き換えない。
 
@@ -233,7 +233,9 @@ end function
 
 ### 構文の誤りがあるファイル
 
-【方針】字句の誤りか構文の誤りがあるファイルは、整形せず、書き換えない。診断を標準エラー出力に書き、ほかのファイルの整形を続ける（[ADR 0207](../decisions/0207-fmt-command-line.md)）。構文の誤りから回復した AST（誤りのノードを含むもの）は、字下げの役割を決めるのに使えないからである。型検査の誤りがあるファイルは、構文解析を通るので整形できる。
+【方針】字句の誤り（診断コードが `E01nn` のもの）か構文の誤り（`E02nn` のもの）があるファイルは、整形せず、書き換えない。診断を標準エラー出力に書き、ほかのファイルの整形を続ける（[ADR 0207](../decisions/0207-fmt-command-line.md)）。構文の誤りから回復した AST（誤りのノードを含むもの）は、字下げの役割を決めるのに使えないからである。診断コードの区分は[診断エンジン](../02-impl/02-10-diagnostics.md)の「診断コード」で定める。
+
+【方針】構文解析器が報告するそのほかの誤り（属性の誤りの E0801・E0803・E0804、`resume` を書けない位置の E0509 など）だけがあるファイルは、型検査の誤りがあるファイルと同じく整形し、`fmt` はそれらの診断を書かない（[ADR 0333](../decisions/0333-fmt-refusal-test-json-notes-http-method-and-process-input.md) の決定 1）。
 
 ### 標準ライブラリのソース
 

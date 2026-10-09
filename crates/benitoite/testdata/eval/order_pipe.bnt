@@ -1,15 +1,17 @@
 // spec: 01-08 評価順序
-fn read() -> List[String] uses IO {
-  Console.println("read")
-  ["", "x"]
-}
+import Benitoite.Unofficial.IO.Console
 
-fn keep_nonempty(value: String) -> Bool uses IO {
-  Console.println(value)
-  !String.isEmpty(value)
-}
+function read() -> List[String] uses Console.Write
+  Console.writeLine("read")
+  return ["", "x"]
+end function
 
-fn main() -> Unit uses IO {
-  let filtered = read() |> List.filter(keep_nonempty)
-  Console.println(Int.toString(List.length(filtered)))
-}
+function keep_nonempty(value: String) -> Boolean uses Console.Write
+  Console.writeLine(value)
+  return not String.isEmpty(value)
+end function
+
+function main() -> Unit uses Console.Write
+  bind filtered <- read() |> List.filter(keep_nonempty)
+  return Console.writeLine(Integer.toString(List.length(filtered)))
+end function

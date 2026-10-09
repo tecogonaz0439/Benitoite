@@ -1,33 +1,35 @@
 // spec: 01-08 正格評価
-fn show_ints(values: List[Int]) -> String {
-  String.join(List.map(values, fn(value) { Int.toString(value) }), ",")
-}
+import Benitoite.Unofficial.IO.Console
 
-fn show_option_int(value: Option[Int]) -> String {
-  match value {
-    Some(number) => "Some(" + Int.toString(number) + ")"
-    None => "None"
-  }
-}
+function show_ints(values: List[Integer]) -> String
+  return String.join(List.map(values, lambda(value) return Integer.toString(value) end lambda), ",")
+end function
 
-fn main() -> Unit uses IO {
-  Console.println(Int.toString(List.length([])))
-  Console.println(if List.isEmpty([]) { "true" } else { "false" })
-  Console.println(show_option_int(List.head([])))
-  Console.println(show_option_int(List.head([8, 9])))
-  Console.println(show_ints(List.tail([8, 9]) |> Option.unwrapOr([])))
-  Console.println(show_option_int(List.tail([]) |> Option.map(fn(values) { List.length(values) })))
-  Console.println(show_option_int(List.get([10, 20, 30], -1)))
-  Console.println(show_option_int(List.get([10, 20, 30], 3)))
-  Console.println(show_ints(List.take([1, 2, 3], -1)))
-  Console.println(show_ints(List.take([1, 2, 3], 9)))
-  Console.println(show_ints(List.drop([1, 2, 3], -1)))
-  Console.println(show_ints(List.drop([1, 2, 3], 9)))
-  Console.println(show_ints(List.range(4, 2)))
-  Console.println(show_ints(List.range(2, 5)))
-  Console.println(if List.contains([1, 2, 3], 2) { "true" } else { "false" })
-  Console.println(show_ints(List.concat([1, 2], [3, 4])))
-  Console.println(show_ints(List.reverse([1, 2, 3])))
-  Console.println(show_ints(List.prepend([2, 3], 1)))
-  Console.println(show_ints(List.append([1, 2], 3)))
-}
+function show_option_int(value: Option[Integer]) -> String
+  return match value with
+    case Option.Some(number) -> "Some(" + Integer.toString(number) + ")"
+    case Option.None -> "None"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(List.length([])))
+  Console.writeLine(if List.isEmpty([]) then "true" else "false" end if)
+  Console.writeLine(show_option_int(List.head([])))
+  Console.writeLine(show_option_int(List.head([8, 9])))
+  Console.writeLine(show_ints(List.tail([8, 9]) |> Option.unwrapOr([])))
+  Console.writeLine(show_option_int(List.tail([]) |> Option.map(lambda(values) return List.length(values) end lambda)))
+  Console.writeLine(show_option_int(List.get([10, 20, 30], -1)))
+  Console.writeLine(show_option_int(List.get([10, 20, 30], 3)))
+  Console.writeLine(show_ints(List.take([1, 2, 3], -1)))
+  Console.writeLine(show_ints(List.take([1, 2, 3], 9)))
+  Console.writeLine(show_ints(List.drop([1, 2, 3], -1)))
+  Console.writeLine(show_ints(List.drop([1, 2, 3], 9)))
+  Console.writeLine(show_ints(List.range(4, 2)))
+  Console.writeLine(show_ints(List.range(2, 5)))
+  Console.writeLine(if List.contains([1, 2, 3], 2) then "true" else "false" end if)
+  Console.writeLine(show_ints(List.concatenate([1, 2], [3, 4])))
+  Console.writeLine(show_ints(List.reverse([1, 2, 3])))
+  Console.writeLine(show_ints(List.prepend([2, 3], 1)))
+  return Console.writeLine(show_ints(List.append([1, 2], 3)))
+end function

@@ -1,0 +1,7 @@
+// spec: 01-03 モジュールと import（初回リリース版）
+import Lib.Text
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+    Console.writeLine(Text.message())
+end function

@@ -1,0 +1,12 @@
+// spec: 01-06 型の別名（初回リリース版）
+type UserId = Integer
+type Validator[T] = function(T) -> Result[T, String]
+
+function validate(v: Validator[Integer], user: UserId) -> Result[Integer, String]
+  return v(user)
+end function
+
+function main() -> Unit
+  bind user: UserId <- 42
+  bind result <- validate(lambda(x: Integer) return Result.Ok(x) end lambda, user)
+end function

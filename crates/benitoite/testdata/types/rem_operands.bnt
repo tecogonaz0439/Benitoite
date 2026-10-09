@@ -1,5 +1,5 @@
 // spec: 01-06 演算子の型付け
-fn main() -> Unit {
-    let _ = 2 % 1.5
-    ()
-}
+function main() -> Unit
+    bind _ <- 2 mod 1.5
+    return ()
+end function

@@ -1,0 +1,17 @@
+//! Base64 encoding of bytes.
+
+/// Encodes `b` with the standard alphabet and `=` padding.
+@builtin("Encoding.base64Encode")
+public function base64Encode(b: Bytes) -> String
+
+/// Decodes standard Base64 with `=` padding. Spaces and line breaks are errors.
+@builtin("Encoding.base64Decode")
+public function base64Decode(text: String) -> Result[Bytes, String]
+
+/// Encodes `b` with the URL and file name safe alphabet, without padding.
+@builtin("Encoding.base64UrlEncode")
+public function base64UrlEncode(b: Bytes) -> String
+
+/// Decodes URL and file name safe Base64 without padding.
+@builtin("Encoding.base64UrlDecode")
+public function base64UrlDecode(text: String) -> Result[Bytes, String]

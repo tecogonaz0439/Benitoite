@@ -128,7 +128,7 @@ D00 は、`src/builtins/funcs/assert.rs` を作り、次の四つの項目を `b
 | `stdin` | `StdinSource::Empty` |
 | `stdout`・`stderr` | テストごとに新しい `OutputTarget::Capture` |
 | `interrupt` | `test` のコマンドの一回の実行で一つ作った中断の要求の読み口を、テストごとの `RunEnv` で共有する（共有の包みは D11 が非公開の型で書く） |
-| `parts` | `CliEnv::parts`（CLI は `None`） |
+| `parts` | 常に `None`（`RuntimeParts` は Clone できず、テストごとの `RunEnv` に渡せない） |
 | `mode` | `CliEnv::mode` |
 | `vm` | `max_call_stack_bytes` は `--max-call-stack` の値（06-01。一つのテストごとの上限） |
 | `heap` | `CliEnv::heap` |
@@ -305,12 +305,12 @@ impl<'p> Vm<'p> {
 
 ### ファイルごとの手順
 
-1. 与えたパスから、テストするファイルの並びを作る（`test_entries`）。ファイルは 10-13 の `pipeline::entry_spec` でそのまま扱い、ディレクトリは 10-17 の `bnt_files` で展開して、根のディレクトリを指定したディレクトリにする（ADR 0206 の決定 2）。表示名は、ディレクトリのパスに相対パスを続けたものとする。
+1. 与えたパスから、テストするファイルの並びを作る（`test_entries`）。ファイルは 10-13 の `pipeline::entry_spec` でそのまま扱い、ディレクトリは 10-17 の `bnt_files` で展開して、根のディレクトリを指定したディレクトリにする（ADR 0206 の決定 2）。表示名は、ディレクトリのパスに相対パスを続けたものとする。パスのディレクトリを読めないときは、E0101（`path` と `reason`）を `--diagnostics` の形式で `env.stderr` に書き、テストを一つも実行せずに終了状態 2 とする。
 2. `pipeline::check`（`require_main` は偽、`deny_warnings` は `--deny-warnings`）で検査する。検査の診断は、`--diagnostics` の形式で `env.stderr` に書く（文章の形式は `render_check_text`、`Verb::Test`）。誤りがあれば、そのファイルのテストを実行せず、`files_not_run` に数え、次のファイルへ進む。
 3. 標準ライブラリのソースの中の誤りは、`check` と同じく処理系の不具合とする（10-13「コマンドの実行」の手順 4）。
 4. `collect_tests` でテストの関数を集め、`AssertTable::build` で表を作り、`pipeline::desugar_checked`・`compile` を行う。処理系の制限（`CompileError::Limit`）は診断を書いて `files_not_run` に数える。処理系の不具合は報告を書いて終了状態 3 で終える。
 5. テストの関数ごとに、`run_test` を呼び、結果を `TestResult` にする。テストごとの一行（文章の形）か JSON の一行を、そのテストを終えるたびに `env.stdout` に書く。失敗の詳細（文章の形）は、すべてのテストの行の後にまとめて書くので、ファイルのソースの表が使えるうちに `report::text_failure` で文字列にして溜めておく。
-6. `run.end` が `Interrupted` なら、残りのテストとファイルを実行せず、集計に `interrupted` を立てて報告を終える。`Internal` なら、報告（`run.reports`）を `env.stderr` に書き、それまでの結果を書かずに終了状態 3 で終える（02-11「テストの実行」の「処理系の不具合が起きたときは、ほかのテストを続けず」）。
+6. `run.end` が `Interrupted` なら、残りのテストとファイルを実行せず、集計に `interrupted` を立てて報告を終える。`Internal` なら、報告（`run.reports`）を `env.stderr` に書き、終了状態 3 で終える（02-11「テストの実行」の「処理系の不具合が起きたときは、ほかのテストを続けず」）。テストごとの行（文章の形の一行か JSON の一行）はテストを終えるたびに書くので、それまでのテストの行は既に出ている。このとき書かないのは、溜めておいた失敗の詳細（`failures:` の節）と集計の行だけである。
 
 中断の要求の読み口は、コマンドラインを解釈した後、最初の検査の前に 10-13 の `process_interrupt` で一度だけ作る（`env.interrupt` があればそれを使う）。ファイルの検査の前にも読み口を調べ、要求があれば手順 6 と同じく終える。
 
@@ -326,7 +326,7 @@ failures:
 assertion failed: Assert.equal
   left:  3
   right: 4
- --> tests/sum.bnt:14:3
+  --> tests/sum.bnt:14:3
    = note: call trace (innermost first):
              sumOfEmpty
    = note: functions left by tail calls are not shown
@@ -340,19 +340,23 @@ test result: FAILED. 12 passed; 1 failed
 
 | 理由 | 詳細 |
 |---|---|
-| `"assert"` | `text::ASSERT_FAILED`、`Assert.equal`・`notEqual` では `text::LEFT`・`text::RIGHT`、`isTrue`・`fail` では `text::MESSAGE`。続けて、位置の行と呼び出しの履歴（10-02 の `render_trace_text`）。止める途中の解放の失敗は、10-13 の `add_release_failures` と同じ注記の文で続ける |
+| `"assert"` | `text::ASSERT_FAILED`、`Assert.equal`・`notEqual` では `text::LEFT`・`text::RIGHT`、`isTrue`・`fail` では `text::MESSAGE`。続けて、位置の行と呼び出しの履歴（10-02 の `render_trace_text`）。止める途中の解放の失敗は、10-13 の `add_release_failures` と同じ注記の文で示す。注記の並びは実行時エラーの報告と同じく、解放の注記を末尾呼び出しの注記の前に置く |
 | `"error"` | `text::RETURNED_ERROR` |
 | `"runtime"` | 実行時エラーの報告を `render_one_text` で書いたもの |
 | `"exit"` | `text::EXITED`。解放の失敗の報告があれば `render_one_text` で続ける |
 
-- 集計の行は `text::RESULT` で、検査の誤りで実行しなかったファイルがあれば `text::FILES_NOT_RUN` を、中断の要求で終えたときは `text::INTERRUPTED` を続ける。テストが一つもないときも集計の行を書く。
+- `"assert"` と `"runtime"` では、タスクの起動の履歴の最後の段と、行き詰まり（R1001）の報告で待つ最初のタスクを、`main` ではなくテストの関数の名前にする（[ADR 0324](../../design/decisions/0324-test-task-origins-end-at-test-function.md)）。`runtime::report` はこれらを常に `main` の段にするので、テストの実行器が `Failure` を作るときに、報告のデータ（`Diagnostic` の `task_origins`・`waiting` と `Failure::Assert` の `task_origins`）の上で書き換える。文字列にした後の置換はしない。JSON Lines の形も、書き換えた報告から書く。
+
+- 集計の行は `text::RESULT` で、`{outcome}` は、`failed` が 0、`files_not_run` が 0、中断の要求で終えていない、のすべてを満たすときだけ `text::OUTCOME_OK`、ほかは `text::OUTCOME_FAILED` とする（終了状態が 0 になるときだけ `ok`）。検査の誤りで実行しなかったファイルがあれば `text::FILES_NOT_RUN` を、中断の要求で終えたときは `text::INTERRUPTED` を続ける。テストが一つもないときも集計の行を書く。
 
 ### JSON Lines の形
 
 `--diagnostics=json` のときは、テストごとに `kind` が `"test"` の一行、最後に `kind` が `"testSummary"` の一行を `env.stdout` に書く（ADR 0252 の決定 5〜7）。項目の順は次のとおりとし、`:` と `,` の後に空白を入れない（10-02「診断の書き出し」と同じ）。
 
 - `"test"`: `kind`・`file`・`name`・`function`・`location`・`outcome`・`failure`・`stdout`・`stderr`。`name` は説明（引用符を付けない文字列）か関数の名前、`location` は関数の名前の span の位置の形（10-02 の `json_location`。ラベルは空の文字列）、`failure` は成功では `null`。
-- `failure` の項目: `"assert"` は `reason`・`message`・`primary`・`trace`・`traceOmitted`・`taskOrigins`、`Assert.equal`・`notEqual` では続けて `left`・`right`。`"error"` は `reason`・`message`。`"exit"` は `reason`・`message`（`text::EXITED` の文）・`exitCode`。`"runtime"` は `{"reason":"runtime",` の後に、実行時エラーの報告を `render_json_line` で書いた一行の先頭の `{` を除いたものを続ける（実行時エラーの報告の JSON の形式の項目を、同じ順でそのまま持つ）。
+- `failure` の項目: `"assert"` は `reason`・`message`・`primary`・`notes`・`trace`・`traceOmitted`・`taskOrigins`、`Assert.equal`・`notEqual` では続けて `left`・`right`。`"error"` は `reason`・`message`。`"exit"` は `reason`・`message`（`text::EXITED` の文）・`exitCode`・`notes`。`notes` は注記の文字列の配列で、実行時エラーの報告の JSON の `notes` と同じ形に書く（[ADR 0333](../../design/decisions/0333-fmt-refusal-test-json-notes-http-method-and-process-input.md) の決定 2、06-04「結果の報告」）。
+  - `"assert"` の `notes` は、`Failure::Assert` の `notes`（止める途中の解放の失敗の注記。10-13 の `add_release_failures` と同じ `codes::text::RELEASE_WHILE_STOPPING` の文）を順に並べ、最後に `codes::text::TRACE_TAIL_NOTE` を置く。文章の形の詳細の注記と同じ並びである。
+  - `"exit"` の `notes` は、`Failure::Exit` の `reports`（10-13 の `release_report` の報告）ごとに、`RELEASE_WHILE_STOPPING` と同じ文を一つずつ並べる。報告の `message` は R0401 の文言（``failed to release `{resource}` opened at {location}``）で、最初の注記が失敗の理由なので、文は `while stopping, ` に `message` を続け、`: ` と最初の注記を続けて作る。付ける語は `test_runner` の `text` の定数にしてよい（非公開の定数を加えることは、凍結したコードを変えることに当たらない）。`reports` が空なら空の配列とする。`"runtime"` は `{"reason":"runtime",` の後に、実行時エラーの報告を `render_json_line` で書いた一行の先頭の `{` を除いたものを続ける（実行時エラーの報告の JSON の形式の項目を、同じ順でそのまま持つ）。
 - `"testSummary"`: `kind`・`passed`・`failed`・`filesNotRun`・`interrupted`。
 
 ### 終了状態
@@ -508,22 +512,19 @@ pub fn json_summary(summary: &Summary) -> String;
 
 ## 診断の書き出しに加える関数
 
-確認の失敗の位置と呼び出しの履歴は、実行時エラーの報告と同じ形で書く（ADR 0252 の決定 2・6）。その部分だけを書く関数を 10-02 の `render.rs` に加える。中身は D11 が、F16 の書いた `render_one_text`・`render_json_line` の同じ部分と共通にして書く。
+確認の失敗の位置と呼び出しの履歴は、実行時エラーの報告と同じ形で書く（ADR 0252 の決定 2・6）。その部分だけを書く関数を 10-02 の `render.rs` に加える。中身は D11 が、F16 の書いた `render_one_text`・`render_json_line` の同じ部分と共通にして書く。`render_trace_text` の位置の行の字下げは、`render_one_text` と同じく溝の幅（主な位置の行番号の桁数、最小 2）の空白とする（本章「文章の形」の例の `  --> tests/sum.bnt:14:3`）。下のコメントの ` --> ` は行の形を示したもので、字下げの数を定めたものではない。
 
 ```rust sig=src/diag/render.rs
-use crate::base::Span;
-use super::{CallTrace, TraceFrame};
-
 /// 位置の行（主な位置があれば ` --> ファイル:行:列`。抜粋は書かない）と、呼び出しの履歴・タスクの起動の履歴・末尾呼び出しの
 /// 注記の行を、`render_one_text` の同じ部分と同じ形で書く（02-10「実行時エラーと資源の不足の報告」）。
-pub fn render_trace_text(primary: Option<Span>, trace: &CallTrace, task_origins: &[TraceFrame], sources: &SourceTable, opts: TextOptions) -> String;
+pub fn render_trace_text(primary: Option<crate::base::Span>, trace: &super::CallTrace, task_origins: &[super::TraceFrame], sources: &SourceTable, opts: TextOptions) -> String;
 
 /// 位置を JSON の位置の形（`file`・`start`・`end`・`label`）のオブジェクトにする。
-pub fn json_location(span: Span, label: &str, sources: &SourceTable) -> String;
+pub fn json_location(span: crate::base::Span, label: &str, sources: &SourceTable) -> String;
 
 /// 呼び出しの履歴を、JSON の `"trace":[…],"traceOmitted":n,"taskOrigins":[…]` の項目の並びにする（前後の `{`・`}` と
 /// 先頭の `,` を含めない）。
-pub fn json_trace_fields(trace: &CallTrace, task_origins: &[TraceFrame], sources: &SourceTable) -> String;
+pub fn json_trace_fields(trace: &super::CallTrace, task_origins: &[super::TraceFrame], sources: &SourceTable) -> String;
 
 /// 文字列を JSON の文字列（引用符を含む）にする。
 pub fn json_string(text: &str) -> String;

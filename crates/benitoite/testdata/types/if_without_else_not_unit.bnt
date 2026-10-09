@@ -1,5 +1,5 @@
 // spec: 01-06 式と文の型
-fn main() -> Unit {
-    if true { 1 }
-    ()
-}
+function main() -> Unit
+    if true then 1 end if
+    return ()
+end function

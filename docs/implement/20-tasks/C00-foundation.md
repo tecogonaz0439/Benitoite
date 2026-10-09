@@ -80,7 +80,7 @@ alloc-stats = []
 07-03「ヒープとランタイムの確かめ方（初回リリース版）」が「別のスクリプト」とした検査を行う（00-02「完了条件の共通の検査」の二つ目の表）。bash で書き、`check.sh` と同じ枠（`run_check`、最初の失敗で止まる、最後に `all heap checks passed`）にする。
 
 1. nightly の Rust と Miri の有無を `cargo +nightly miri --version` で確かめる。なければ、`rustup toolchain install nightly` と `rustup component add --toolchain nightly miri` を示して終了状態 1 で終える。黙って飛ばさない。nightly の版はスクリプトの中で固定しない（00-02「Rust の版と設定」）。
-2. Miri（両方式。第 1 段の間）: 機能 `gc-mark-sweep,heap-verify` と `gc-refcount,heap-verify` のそれぞれで、`cargo +nightly miri test -p benitoite --no-default-features --features <機能> --lib -- runtime::heap:: vm::` を実行する。テストの名前の絞り込みは、ヒープの単体テスト（`runtime::heap` の下）と、小さな VM のプログラムのテスト（`vm` の下）を対象にするためである。
+2. Miri（両方式。第 1 段の間）: 機能 `gc-mark-sweep,heap-verify` と `gc-refcount,heap-verify` のそれぞれで、`cargo +nightly miri test -p benitoite --no-default-features --features <機能> --lib -- runtime::heap:: vm:: --skip legacy::` を実行する（絞り込みは部分一致なので、`legacy` の下の最小実行版のテストを `--skip` で除く。Miri の実行には `CARGO_BUILD_WARNINGS=warn` を与える。下記の【要検証】の段落を確かめた結果）。テストの名前の絞り込みは、ヒープの単体テスト（`runtime::heap` の下）と、小さな VM のプログラムのテスト（`vm` の下）を対象にするためである。
 3. 対象ごとの確保: 機能に `heap-per-object` を加え、ヒープの単体テスト（`-- runtime::heap::`）だけを Miri で実行する（両方式）。
 4. 到達可能性の比較の長い実行: 環境変数 `BENITOITE_HEAP_RANDOM_CASES=20000` を与えて、`cargo test -p benitoite --no-default-features --features <機能>,heap-verify --lib -- runtime::heap::` を両方式で実行する（Miri を使わない普通の実行）。
 5. 各行の前に、どの作業がその検査の対象のテストを書くか（Miri と到達可能性の比較のテストは R01〜R04・R06・R11）をコメントで書く。
@@ -92,7 +92,7 @@ alloc-stats = []
 
 nightly の `rustc` は、stable の 1.98.1 にない警告を出すことがある。リポジトリの `.cargo/config.toml` は警告を誤りにするので、Miri の実行が stable で出ない警告で止まるかもしれない【要検証】。止まったときは、Miri の実行にだけ環境変数 `CARGO_BUILD_WARNINGS=warn` を与えて警告を誤りにしない形にし、その理由をコメントに書く（警告は `check.sh` の stable の検査で誤りにしているので、ここで緩めても規約は守られる）。
 
-C00 の時点では、`runtime::heap` と `vm` の下にテストがなく、Miri は 0 件のテストを実行して通る。それでも、Miri でクレート全体（`legacy` を含む）がビルドできることを、この作業で確かめる。
+C00 の時点では最小実行版のテストが `legacy` の下にまだないので、Miri の行を実行すると最小実行版の VM のテストも対象になり、終わらない。C00 では Miri のビルドが通ることだけを確かめ、Miri の行の実行は C04 の取り込みの後にオーケストレータが確かめる。それでも、Miri でクレート全体（`legacy` を含む）がビルドできることを、この作業で確かめる。
 
 ### AGENTS.md
 

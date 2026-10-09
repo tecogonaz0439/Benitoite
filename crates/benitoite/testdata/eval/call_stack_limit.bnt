@@ -1,13 +1,15 @@
 // spec: 01-08 資源の不足
-fn recurse(n: Int) -> Int {
-  if n == 0 {
-    0
-  } else {
-    let result = recurse(n - 1)
-    result + 1
-  }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  Console.println(Int.toString(recurse(10000)))
-}
+function recurse(n: Integer) -> Integer
+  return if n = 0 then
+    0
+  else
+    bind result <- recurse(n - 1)
+    result + 1
+  end if
+end function
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(Integer.toString(recurse(10000)))
+end function

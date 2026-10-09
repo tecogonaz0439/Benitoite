@@ -1,0 +1,10 @@
+// spec: 01-04 Integer
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+ Console.writeLine(Integer.toString(-7 div 2))
+ Console.writeLine(Integer.toString(-7 mod 2))
+ Console.writeLine(Integer.toString(7 mod -2))
+ Console.writeLine(Integer.toString(Integer.floorDivide(-7, 2)))
+ Console.writeLine(Integer.toString(Integer.floorModulo(-7, 2)))
+ Console.writeLine(Integer.toString(-9223372036854775808 mod -1))
+end function

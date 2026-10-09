@@ -1,20 +1,22 @@
 // spec: 01-05 パターン
 // spec: 01-05 match の意味
-type Expr {
-    Lit(Int)
+import Benitoite.Unofficial.IO.Console
+
+data Expr
+    Lit(Integer)
     Add(Expr, Expr)
-}
+end data
 
-fn evaluate(expression: Expr) -> Int {
-    match expression {
-        Expr.Lit(0) => 0
-        Expr.Lit(value) => value
-        Expr.Add(Expr.Lit(left), Expr.Lit(right)) => left + right
-        Expr.Add(_, _) => -1
-    }
-}
+function evaluate(expression: Expr) -> Integer
+    return match expression with
+        case Expr.Lit(0) -> 0
+        case Expr.Lit(value) -> value
+        case Expr.Add(Expr.Lit(left), Expr.Lit(right)) -> left + right
+        case Expr.Add(_, _) -> -1
+    end match
+end function
 
-fn main() -> Unit uses IO {
-    let expression = Expr.Add(Expr.Lit(2), Expr.Lit(3))
-    Console.println(Int.toString(evaluate(expression)))
-}
+function main() -> Unit uses Console.Write
+    bind expression <- Expr.Add(Expr.Lit(2), Expr.Lit(3))
+    return Console.writeLine(Integer.toString(evaluate(expression)))
+end function

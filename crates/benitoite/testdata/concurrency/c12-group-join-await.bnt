@@ -1,0 +1,34 @@
+// spec: 01-11 タスクの集まり
+// spec: 01-11 タスクの切り替え
+// spec: 01-11 例
+// 関門: await と with の終了での待ちを守り、終わりを待たずに main を終える退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses State, Console.Write
+  bind count <- Reference.new(0)
+  bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
+  with group = TaskGroup.open() do
+    bind first <- TaskGroup.spawn(group, lambda()
+      Console.writeLine("child")
+      return 42
+    end lambda)
+    Console.writeLine("awaited: ${Task.await(first)}")
+    Reference.set(saved, Option.Some(first))
+    bind _ <- TaskGroup.spawn(group, lambda()
+      Reference.update(count, lambda(n) return n + 1 end lambda)
+    end lambda)
+    bind _ <- TaskGroup.spawn(group, lambda()
+      with nested = TaskGroup.open() do
+        bind _ <- TaskGroup.spawn(nested, lambda()
+          Reference.update(count, lambda(n) return n + 1 end lambda)
+        end lambda)
+      end with
+    end lambda)
+  end with
+  Console.writeLine("joined: ${Reference.get(count)}")
+  match Reference.get(saved) with
+    case Option.Some(task) -> Console.writeLine("again: ${Task.await(task)}")
+    case Option.None -> Console.writeLine("missing task")
+  end match
+end function

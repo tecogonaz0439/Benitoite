@@ -1,5 +1,5 @@
 // spec: 01-03 修飾された名前の解決
-fn main() -> Unit {
-  let _ = List.mapp([1], fn(value: Int) { value })
-  ()
-}
+function main() -> Unit
+  bind _ <- List.mapp([1], lambda(value: Integer) return value end lambda)
+  return ()
+end function

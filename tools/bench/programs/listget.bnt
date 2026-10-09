@@ -1,0 +1,39 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+  return match List.get(Process.arguments(), index) with
+    case Option.None -> Result.Error("expected non-negative integer arguments")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+      case Option.None -> Result.Error("expected non-negative integer arguments")
+    end match
+  end match
+end function
+
+function lookup(values: List[Integer], length: Integer, count: Integer, seed: Integer, total: Integer) -> Integer
+  return if count = 0 then total else
+    // 種は 2147483647 未満に保ち、掛け算も Integer の範囲に収める（実装プラン C16）。
+    bind next <- (seed * 48271 + 11) mod 2147483647
+    bind value <- match List.get(values, next mod length) with
+      case Option.Some(x) -> x
+      case Option.None -> 0
+    end match
+    lookup(values, length, count - 1, next, total + value)
+  end if
+end function
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match readInteger(0) with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(length) -> if length = 0 then Result.Error("expected a positive list length") else
+      match readInteger(1) with
+        case Result.Error(message) -> Result.Error(message)
+        case Result.Ok(count) ->
+          bind values <- List.range(0, length)
+          Console.writeLine(Integer.toString(lookup(values, length, count, 1, 0)))
+          Result.Ok(())
+      end match
+    end if
+  end match
+end function

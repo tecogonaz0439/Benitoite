@@ -36,15 +36,17 @@ Unicode の文字の性質による分類と、大文字・小文字の変換の
 
 - 分類は Rust の標準ライブラリの `char` の関数で行う。`isAlphabetic` は `char::is_alphabetic`（Alphabetic）、`isNumeric` は `char::is_numeric`（一般カテゴリ Nd・Nl・No）、`isWhitespace` は `char::is_whitespace`（White_Space）、`isUppercase`・`isLowercase` は `char::is_uppercase`・`is_lowercase`（Uppercase・Lowercase）である。対応を確かめ、各関数の `///` のコメントに書く。
 - `Character.toUppercase`・`toLowercase` は `char::to_uppercase`・`to_lowercase` の文字を連結した文字列である。`String.toUppercase` は、各文字を `Character.toUppercase` で変換して連結する（03-06 の表）。`String.toLowercase` は `str::to_lowercase` を使う。語の終わりのシグマを `ς` にする規則（03-06）を、`str::to_lowercase` が満たすことを単体テストで確かめる。
-- 変換で文字列が長くなる（`'ß'` が `"SS"` になるなど）ので、結果の大きさを確かめてから確保する。`StrBuf` に積み、上限（2^30 バイト）を超えたら資源の不足で止まる（03-06「作る値の大きさの上限」）。
+- 変換で文字列が長くなる（`'ß'` が `"SS"` になるなど）ので、結果の大きさを確かめてから確保する。`StrBuf` に積み、上限（2^30 バイト）を超えたら資源の不足で止まる（03-06「作る値の大きさの上限」）。結果の長さを `u64` で数える（または `CheckedLen::bytes` に渡す長さを計算する）非公開の関数を分けて書き、上限超えのテストはこの関数に対して行う（下の受け入れテスト）。
+- `String.toLowercase` が `str::to_lowercase` で Rust の `String` を作ってから大きさを確かめるのは許す。この `String` は言語の値ではなく、上限の確かめはそれを言語の値として確保する前に行えばよい（00-02「組み込みの関数の書き方」の確保の前の確かめは、言語の値の確保についての規則である）。
 - 処理系が従う Unicode の版は、Rust 1.98.1 の標準ライブラリの版である（03-06）。`benitoite --version` の出力に版を示すのは F18 の範囲であり、本作業は変えない。
 
 ## 受け入れテスト
 
 - 項目ごとの単体テスト（10-12「確かめること」）: 分類の関数に、ASCII の文字、ASCII でない文字（`'é'`・`'Ω'`・`'中'`・`'٣'`（Arabic-Indic の 3）・`'Ⅻ'`（ローマ数字、Nl）・`'½'`（No）・U+3000（全角の空白）・U+00A0）を与え、03-06 の定義どおりの値を返す。
 - 変換: `'ß'` の大文字が `"SS"`、`'İ'`（U+0130）の小文字が 2 文字の文字列、対応のない文字（`'1'`）がその文字だけの文字列。`String.toLowercase("ΣΑΣ")` が語の終わりのシグマを `ς` にした `"σας"`、`String.toUppercase("straße")` が `"STRASSE"`。
-- 大きさの上限: 上限に近い長さの文字列を大文字にすると長さが上限を超える入力で、資源の不足（`ValueTooLarge`）になり、値を作らない。この入力は上限を小さくできないので、`StrBuf` の上限の判定を通る経路で確かめる（10-08「大きさを確かめる構築」のテストの形に合わせる）。
+- 大きさの上限: 1 GiB 規模の入力を確保するテストは書かない。結果の長さを数える非公開の関数（上の手順の要点）に、上限を超える大きな数になる入力の長さ（または文字ごとの長さの合計）を与え、上限を超えたと判定することを確かめる。上限の判定そのもの（`StrBuf`・`CheckedLen` が資源の不足 `ValueTooLarge` を返し値を作らないこと）は、10-08 の `StrBuf`・`CheckedLen` のテストに任せる。
 - 10-15 の宣言と項目の名前・権限・引数の数が一致し続ける（L00 の照合のテストが通る）。
+- スクリプトのテストで U3 の非公式のモジュールを取り込むときは、非公式の名前（`import Benitoite.Unofficial.Json` など。ADR 0286 の決定 3）で書く。03-08 などの設計書の例の `import Benitoite.Json` の形を写すと、E0321 になる。
 
 ## 完了条件
 

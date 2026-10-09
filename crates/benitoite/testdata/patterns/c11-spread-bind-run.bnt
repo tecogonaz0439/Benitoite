@@ -1,0 +1,19 @@
+// spec: 01-05 パターンの拡張（初回リリース版）
+// spec: 01-05 必ず照合するパターン（初回リリース版）
+// spec: 01-02 組と `bind`・`shadow` のパターン（初回リリース版）
+// spec: 01-02 リストの展開（初回リリース版）
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+  bind Pair(first, last) <- Pair(1, 4)
+  shadow Pair(first, last) <- Pair(first + 1, last + 1)
+  bind [..middle] <- [2, 3]
+  bind xs <- [first, ..middle, last]
+  match xs with
+    case [a, ..rest, b] if a < b -> Console.writeLine("${a} ${List.length(rest)} ${b}")
+    case _ -> Console.writeLine("unexpected")
+  end match
+  match 'c' with
+    case 'a'..'z' -> Console.writeLine("letter")
+    case _ -> Console.writeLine("other")
+  end match
+end function

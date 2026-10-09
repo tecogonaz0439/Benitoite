@@ -1,0 +1,55 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+// 受け入れ: 00-03「初回リリース版」の完了条件の、影響の大きい操作の差し替え（07-03「受け入れ例と仕様の項目の対応」）。
+// 06-04「組み込みの操作の差し替え」: Process.run・Process.exit・File.writeText をテストのハンドラで差し替え、外部に行わない。
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function deploy(target: String) -> Result[Integer, String] uses Process.Run
+  bind output <- try Process.run(Process.command("deploy-tool", ["--target", target])) |> Result.mapError(_, IOError.message)
+  return Result.Ok(Process.Output.exitCode(output))
+end function
+
+function failHard(message: String) -> Integer uses Process.Exit
+  return if message = "" then 0 else Process.exit(2) end if
+end function
+
+function saveReport(path: String, lines: List[String]) -> Result[Unit, String] uses File.Write
+  return File.writeText(path, String.join(lines, "\n")) |> Result.mapError(_, IOError.message)
+end function
+
+@test("Process.run is replaced by the handler")
+function runIsReplaced() -> Unit uses Assert.Check, Process.Run
+  bind result <- handle
+    deploy("staging")
+  with
+    case Process.run(command) ->
+      Assert.equal(Process.Command.program(command), "deploy-tool")
+      Assert.equal(Process.Command.arguments(command), ["--target", "staging"])
+      resume(Result.Ok(Process.Output(exitCode: 0, standardOutput: "done\n", standardError: "")))
+  end handle
+  Assert.equal(result, Result.Ok(0))
+end function
+
+@test("Process.exit is replaced by the handler")
+function exitIsReplaced() -> Unit uses Assert.Check
+  bind code <- handle
+    failHard("broken")
+  with
+    case Process.exit(status) -> status + 100
+  end handle
+  Assert.equal(code, 102)
+end function
+
+@test("File.writeText is replaced by the handler")
+function writeIsReplaced() -> Unit uses Assert.Check, File.Read, File.Write
+  bind result <- handle
+    saveReport("acceptance-report.txt", ["a", "b"])
+  with
+    case File.writeText(path, text) ->
+      Assert.equal(path, "acceptance-report.txt")
+      Assert.equal(text, "a\nb")
+      resume(Result.Ok(()))
+  end handle
+  Assert.equal(result, Result.Ok(()))
+  Assert.equal(File.exists("acceptance-report.txt") |> Result.mapError(_, IOError.message), Result.Ok(false))
+end function

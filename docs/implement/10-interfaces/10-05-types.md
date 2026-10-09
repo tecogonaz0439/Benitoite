@@ -14,7 +14,7 @@
 
 | ファイル | 扱い | 中身を書く作業 |
 |---|---|---|
-| `src/types/mod.rs` | 置く（`file=` と `sig=`） | F07（表示と置き換え） |
+| `src/types/mod.rs` | 置く（`file=` と `sig=`） | F12（置き換えと表の引き方）、F07（表示） |
 | `src/types/builtin.rs` | 加える（`file=`） | — |
 | `src/typeck/mod.rs` | 置く（`file=` と `sig=`） | F07 |
 | `src/typeck/infer.rs` | 置く（`file=`） | — |
@@ -323,6 +323,8 @@ pub struct EffectDef {
     /// エフェクトの宣言の束縛の番号
     pub binding: BindingId,
     pub name: EffectName,
+    /// 診断に示す名前（宣言に書いた名前。`Log`）。`Ty::show` が利用者のエフェクトを示すのに使う
+    pub display_name: String,
     /// 操作の束縛の番号（宣言の順）
     pub ops: Vec<BindingId>,
 }
@@ -413,7 +415,7 @@ impl TySet {
 }
 ```
 
-`Ty` の置き換えと表示、表の引き方の中身は F07 が書く。
+`Ty`・`EffectSet` の置き換えと、`AdtTable` の表の引き方の中身は F12 が書き（判定の木と F13 の検査器が F07 より先に使うため）、`Ty::show` の中身は F07 が書く。
 
 ```rust sig=src/types/mod.rs
 impl Ty {
@@ -718,6 +720,7 @@ pub struct TypeckOutput {
 型検査の関数の中身は F07 が書き、F08〜F10 が広げる。
 
 ```rust sig=src/typeck/mod.rs needs=10-02
+use crate::base::SourceTable;
 use crate::diag::Diagnostic;
 use crate::modules::ModuleTable;
 use crate::resolve::ResolveOutput;
@@ -726,8 +729,9 @@ use crate::syntax::ast::Module;
 /// プログラム全体の型を検査する（02-05「検査の単位と手順」の手順 1〜5）。`asts` の添字はモジュールの ID の値。
 /// `require_main` は `check` と `run` の経路で真、`test` の経路で偽（02-05「宣言の検査」の `main`）。
 /// 誤りと警告を診断として返す。誤りがあっても出力を返す。
+/// `sources` は読み込みの段のソースの表（`LoadOutput::sources`）。診断に型注釈の綴りを示すのに使う。
 /// 呼び出し側は、診断に誤りが一つでもあれば出力を使わない（ADR 0019）。
-pub fn typecheck(modules: &ModuleTable, asts: &[Module], resolved: &ResolveOutput, require_main: bool) -> (TypeckOutput, Vec<Diagnostic>);
+pub fn typecheck(modules: &ModuleTable, asts: &[Module], sources: &SourceTable, resolved: &ResolveOutput, require_main: bool) -> (TypeckOutput, Vec<Diagnostic>);
 ```
 
 ## 推論の型と制約（F07〜F10 の境界）
@@ -829,6 +833,8 @@ pub enum ReasonKind {
     MatchArms,
     MatchGuard,
     Pattern,
+    /// 一つの分岐の選択肢が同じ名前で束縛する変数の型（F10 の P2）
+    Alternatives,
     ListElement,
     /// リストリテラルの展開の要素
     ListSpread,

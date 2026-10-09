@@ -1,0 +1,11 @@
+// spec: 01-02 演算子の優先順位と結合性
+// spec: 01-01 改行による区切り
+function check(x: Integer) -> Boolean
+  return not (x <> 0)
+    or (x div 2 mod 2 = 0)
+      and (x + 1 * 2 >= 4)
+end function
+
+function main() -> Unit
+  bind _ <- check(4)
+end function

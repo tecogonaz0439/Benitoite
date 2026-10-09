@@ -1,0 +1,30 @@
+import Benitoite.Unofficial.Csv
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Json
+
+function column(row: Map[String, String], name: String) -> String
+  return Option.unwrapOr(Map.get(row, name), "")
+end function
+
+function yearOf(row: Map[String, String]) -> Integer
+  return Option.unwrapOr(Integer.parse(column(row, "joined")), 0)
+end function
+
+function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+  bind text <- try File.readText("members.csv") |> Result.mapError(_, IOError.message)
+  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(_, Csv.ParseError.message)
+  bind teams <- List.fold(rows, Map.empty(), lambda(m, row)
+    bind team <- column(row, "team")
+    return Map.set(m, team, List.append(Option.unwrapOr(Map.get(m, team), []), column(row, "name")))
+  end lambda)
+  bind json <- Json.Value.Object(Map.map(teams, lambda(_team, names)
+    return Json.Value.Array(List.map(List.sort(names), Json.Value.String))
+  end lambda))
+  bind _ <- try File.writeText("teams.json", Json.stringify(json) + "\n") |> Result.mapError(_, IOError.message)
+  Console.writeLine("teams: ${Map.size(teams)}, members: ${List.length(rows)}")
+  bind first <- try Option.okOr(List.head(rows), "members.csv has no rows")
+  bind oldest <- List.fold(rows, first, lambda(best, row) return if yearOf(row) < yearOf(best) then row else best end if end lambda)
+  Console.writeLine("oldest member: ${column(oldest, "name")} (${yearOf(oldest)})")
+  return Result.Ok(())
+end function

@@ -1,14 +1,14 @@
 error[E0401]: mismatched types
-  --> runner/check-error.bnt:3:5
+  --> testdata/runner/check-error.bnt:3:12
    |
- 3 |     1
-   |     ^ expected `Unit`, found `Int`
+ 3 |     return 1
+   |            ^ expected `Unit`, found `Integer`
    |
-  ::: runner/check-error.bnt:2:14
+  ::: testdata/runner/check-error.bnt:2:20
    |
- 2 | fn main() -> Unit {
-   |              ---- expected because of this
+ 2 | function main() -> Unit
+   |                    ---- expected because of this
    |
-   = note: the function body must match the declared return type
+   = note: the returned value must match the declared return type
 
-error: could not check runner/check-error.bnt due to 1 previous error
+error: could not check testdata/runner/check-error.bnt due to 1 previous error

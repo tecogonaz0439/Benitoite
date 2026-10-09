@@ -1,0 +1,17 @@
+// spec: 01-02 型クラス（初回リリース版）
+import Benitoite.Trait
+
+record Person
+  name: String
+end record
+
+implement Trait.Show[Person]
+  function show(person: Person) -> String
+    return Person.name(person)
+  end function
+end implement
+
+function main() -> Unit
+  bind _ <- Trait.Show.show(Person(name: "Benitoite"))
+  ()
+end function

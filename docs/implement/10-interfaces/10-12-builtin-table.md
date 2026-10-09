@@ -4,7 +4,7 @@
 
 - 置く作業: C02
 
-本章は U1 と U2 が共有する章である。U2 が表を作り（R08・R23・R25・R29・R35・R37）、U1 が表を引く（名前解決の F06、脱糖の F11、検査器の F13、コード生成の F15）。U3 は、本章の末尾に項目を足す。
+本章は U1 と U2 が共有する章である。U2 が表を作り（R08・R23・R25・R29・R35・R37・R39）、U1 が表を引く（名前解決の F06、脱糖の F11、検査器の F13、コード生成の F15）。U3 は、本章の末尾に項目を足す。
 
 コードブロックの見出しの読み方は [README](../README.md) の「インターフェースの読み方」に従う。パスは処理系のクレート `crates/benitoite/` からの相対パスである。
 
@@ -19,7 +19,7 @@
 
 R08 は、表の全体（本章の項目の一覧のすべての項目）と、C02 のブロックの関数を書く。そのため、R08 は R07 のほかに C02 にも依存する。C02 はインターフェースを置くだけの作業であり C01 の直後に行えるので、この依存は U2 第 1 段の進みを遅らせない。
 
-組み込みの関数の本体は `src/builtins/funcs/` の子のモジュールに書く（10-11「登録と第 1 段の扱い」）。子のモジュールのファイルは R08 がすべて作り、後の作業（R23・R25・R29・R35・R37）が本体を書き足す（後述の「まだ書かない項目の仮の本体」）。
+組み込みの関数の本体は `src/builtins/funcs/` の子のモジュールに書く（10-11「登録と第 1 段の扱い」）。子のモジュールのファイルは R08 がすべて作り、後の作業（R23・R25・R29・R35・R37・R39）が本体を書き足す（後述の「まだ書かない項目の仮の本体」）。
 
 ## 表の組み立て
 
@@ -306,7 +306,7 @@ U1・U2 の範囲の部分と、その順は次のとおりである。「作業
 | 12 | `io_error` | 2 | 132〜133 | R08（1）、R29（1） |
 | 13 | `reference` | 4 | 134〜137 | R23（3）、R29（1） |
 | 14 | `lazy` | 1 | 138 | R29 |
-| 15 | `task` | 5 | 139〜143 | R25 |
+| 15 | `task` | 5 | 139〜143 | R25（2）、R39（3） |
 | 16 | `task_group` | 2 | 144〜145 | R25 |
 | 17 | `traits` | 2 | 146〜147 | R08 |
 | 18 | `console` | 6 | 148〜153 | R08（4）、R29（2） |
@@ -446,9 +446,9 @@ U1・U2 の範囲の部分と、その順は次のとおりである。「作業
 | `Reference.update` | `State` | 2 | `function[T](Reference[T], function(T) -> T) -> Unit uses State` | 同上。専用の命令 `UPDATE`（`Intrinsic::Update`） | R29 |
 | `Lazy.force` | `Pure` | 1 | `function[T](Lazy[T]) -> T` | 01-08「明示遅延（初回リリース版）」。専用の命令 `FORCE`（`Intrinsic::Force`） | R29 |
 | `Task.all` | `State` | 1 | `function[T, effect E](List[function() -> T uses E]) -> List[T] uses E` | 01-11「タスクを起動する関数」 | R25 |
-| `Task.allOk` | `State` | 1 | `function[T, X, effect E](List[function() -> Result[T, X] uses E]) -> Result[List[T], X] uses E` | 同上 | R25 |
-| `Task.race` | `State` | 1 | `function[T, effect E](List[function() -> T uses E]) -> Option[T] uses Clock.Time, E` | 同上 | R25 |
-| `Task.withTimeout` | `State` | 2 | `function[T, effect E](Integer, function() -> T uses E) -> Option[T] uses Clock.Time, E` | 同上 | R25 |
+| `Task.allOk` | `State` | 1 | `function[T, X, effect E](List[function() -> Result[T, X] uses E]) -> Result[List[T], X] uses E` | 同上 | R39 |
+| `Task.race` | `State` | 1 | `function[T, effect E](List[function() -> T uses E]) -> Option[T] uses Clock.Time, State, E` | 同上 | R39 |
+| `Task.withTimeout` | `State` | 2 | `function[T, effect E](Integer, function() -> T uses E) -> Option[T] uses Clock.Time, State, E` | 同上 | R39 |
 | `Task.await` | `State` | 1 | `function[T](Task[T]) -> T uses State` | 01-11「タスクの集まり」 | R25 |
 | `TaskGroup.open` | `State` | 0 | `function() -> TaskGroup uses State` | 同上。`with` の束縛の式としてだけ書ける（型検査が確かめる） | R25 |
 | `TaskGroup.spawn` | `State` | 2 | `function[T, effect E](TaskGroup, function() -> T uses E) -> Task[T] uses State, E` | 同上 | R25 |
@@ -517,7 +517,7 @@ U1・U2 の範囲の部分と、その順は次のとおりである。「作業
 | テスト | 書く作業 | 内容 |
 |---|---|---|
 | 表の形 | R08 | 名前が重ならない。すべての項目の名前が本章の「名前の付け方」の形に合う。`builtin_decl(lookup_builtin(n))` の名前が `n` になる。権限が `Io` の項目と名前が `Benitoite.` から始まる項目が一致する。`OPERATORS`・`EQUALITY`・`INEQUALITY`・`INTERPOLATION`・`LIST_PATTERN`・`INTRINSIC_FUNCTIONS` のすべての名前が表にある。`builtin_scheme` が、ソースに宣言のない項目にだけ型を返し、その引数の数が `arity` と一致する。部分の数と各部分の項目の数が本章の「部分の一覧」と一致する |
-| 項目ごとの単体テスト | 本体を書く作業（R08・R23・R25・R29・R35・R37） | 項目ごとに、本体の関数（`builtin!` が作る名前の付いた関数）を直接呼んで、設計書の意味どおりの値と実行時エラーを確かめる。組み込みの関数の正しさは差分テストでは確かめられないので、このテストで確かめる（ADR 0276 の決定 4）。R25 の七つの項目は例外とし、スクリプトのテストで確かめる（[ADR 0284](../../design/decisions/0284-task-builtins-tested-by-scripts.md)） |
+| 項目ごとの単体テスト | 本体を書く作業（R08・R23・R25・R29・R35・R37・R39） | 項目ごとに、本体の関数（`builtin!` が作る名前の付いた関数）を直接呼んで、設計書の意味どおりの値と実行時エラーを確かめる。組み込みの関数の正しさは差分テストでは確かめられないので、このテストで確かめる（ADR 0276 の決定 4）。R25・R39 の七つの項目は例外とし、スクリプトのテストで確かめる（[ADR 0284](../../design/decisions/0284-task-builtins-tested-by-scripts.md)） |
 | ソースと表の照合 | F06 | 標準ライブラリのソース（10-14）のすべての `@builtin` の名前と組み込みのエフェクトの操作が表にあり、`@builtin` の名前が `Benitoite.`・`%` から始まらない。宣言の引数の数が `arity` と一致する。操作の項目の権限が `Io` であり、`Declared` の項目の権限が `Io` でない。権限が `Pure` の項目の宣言の `uses` が、エフェクトの名前を含まない（エフェクト変数だけか、ない）。逆に、表の `Declared`・`EffectOp` の項目は、どれもソースのちょうど一つの宣言から参照される。`tags` の定数が、ソースの構成子の宣言の順と一致する |
 
 仮の本体の項目があっても、上のテストは通る。仮の本体は名前・権限・引数の数が正しいからである。
@@ -528,8 +528,9 @@ U1・U2 の範囲の部分と、その順は次のとおりである。「作業
 |---|---|---|---|---|
 | R08（第 1 段。表の全体と、仮の本体を含む宣言も置く） | 92 | 0 | 6 | 98 |
 | R23（`Reference` のセルを作り読み書きする関数） | 0 | 3 | 0 | 3 |
-| R25（タスクを起動し待つ関数と `TaskGroup`） | 0 | 7 | 0 | 7 |
+| R25（タスクを起動し待つ関数と `TaskGroup`） | 0 | 4 | 0 | 4 |
 | R29（第 2 段。残りのランタイムに結び付いた関数と、最小限の IO） | 2 | 2 | 9 | 13 |
+| R39（取り消しを伴う、タスクを起動し待つ関数） | 0 | 3 | 0 | 3 |
 | R35（`Decimal`・`Byte`・ビット演算） | 37 | 0 | 0 | 37 |
 | R37（`Map`・`Set`） | 6 | 0 | 0 | 6 |
 | 計 | 137 | 12 | 15 | 164 |
@@ -543,7 +544,8 @@ U1・U2 の範囲の部分と、その順は次のとおりである。「作業
 | R07 | 構成子のタグ（`table::tags`）を写して置く |
 | R08 | `funcs/mod.rs` の `PARTS` と、本章の 21 の部分のすべての項目の宣言（本体を書かない項目は仮の本体）。R08 の項目の本体と単体テスト。`builtin_decl`・`lookup_builtin` と、C02 のブロックの関数と定数。表の形のテスト。依存に C02 を加える |
 | R23 | R23 の項目の本体と単体テスト（仮の本体を置き換える） |
-| R25 | R25 の項目の本体（仮の本体を置き換える）。七つは応答を組み立てるだけで、意味は応答を受けた VM の処理にあるので、項目ごとの単体テストは独立した境界条件を持つもの（`Task.withTimeout` の期限の正規化）に限り、ほかは R25 の受け入れテストのスクリプトが各項目を呼んで確かめる（[相談の第 7 回](../studies/u2-runtime/consult/07-plan-scheduler-review.md)の指摘 9、[ADR 0284](../../design/decisions/0284-task-builtins-tested-by-scripts.md)） |
+| R25 | R25 の項目の本体（仮の本体を置き換える）。四つは応答を組み立てるだけで、意味は応答を受けた VM の処理にあるので、項目ごとの単体テストは書かず、R25 の受け入れテストのスクリプトが各項目を呼んで確かめる（[相談の第 7 回](../studies/u2-runtime/consult/07-plan-scheduler-review.md)の指摘 9、[ADR 0284](../../design/decisions/0284-task-builtins-tested-by-scripts.md)） |
+| R39 | R39 の項目の本体（仮の本体を置き換える）。三つも応答を組み立てるだけなので、項目ごとの単体テストは独立した境界条件を持つもの（`Task.withTimeout` の期限の正規化）に限り、ほかは R39 の受け入れテストのスクリプトが各項目を呼んで確かめる（同上） |
 | R29 | R29 の項目の本体と単体テスト（仮の本体を置き換える） |
 | R35 | R35 の項目の本体と単体テスト |
 | R37 | R37 の項目の本体と単体テスト |

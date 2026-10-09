@@ -33,11 +33,11 @@
 
 ## 作るもの
 
-- `src/runtime/heap/` の `Decimal` の対象の関数（`alloc_decimal`・`decimal`）の中身。`Decimal` の値を対象の中に置く。ヒープの公開の層の関数なので、内部の層の確保の関数だけを呼び、`unsafe` を加えない（加える必要があれば止めて報告する）。
+- `src/runtime/heap/` の `Decimal` の対象の関数（`alloc_decimal`・`decimal`）の中身。`Decimal` の値を対象の中に置く。ヒープの公開の層の関数なので、内部の層の確保の関数だけを呼び、`unsafe` を加えない（加える必要があれば止めて報告する）。内部の層の `HeapCore::alloc_decimal` は `Result` を返すので、凍結した `alloc_decimal(&self, d) -> Value<'e>` の形にするために、`core.rs` に `new_opaque` と同じ形の `pub(super) fn new_decimal` を加えてよい（`unsafe` は要らない。`alloc_cell`・`alloc_host`・`alloc_opaque` と同じ経路）。
 - `src/runtime/equal.rs`: `values_equal` の `Decimal` の対象の比較（数として比べ、小数の桁数は比べない。後述）。10-08「作業の割り当て」の R35 の行のとおり本作業が書く。R37 もマップと集合の比較を同じファイルに加えるので、`Decimal` の分岐だけを加える。
 - `src/vm/dispatch.rs` と、`dispatch.rs` の中で宣言する非公開の子のモジュール `src/vm/dispatch/numeric.rs`: 段が 2 の算術と比較の命令と、`LOADK` の `ConstDesc::Decimal`。`dispatch.rs` には分岐の行だけを加える（R34 の「作るもの」と同じ理由）。
 - `src/builtins/funcs/` の `operators.rs`・`integer.rs`・`byte.rs`・`decimal.rs`: 本作業の 37 項目の本体（R08 の仮の本体を置き換える）と、項目ごとの単体テスト。
-- `src/bytecode/disasm.rs`: 本作業の命令の表示が F15 で入っていなければ加える。
+- `src/builtins/funcs/mod.rs` のテスト `placeholders_and_their_wrappers_fail_without_runtime_operations` から、本作業の項目の行（`operators::decimal_add`・`integer::bitwise_and`・`byte::from_integer`・`decimal::round`）を消す。仮の本体でなくなるためである。このファイルのほかの部分は変えない。
 - 上のファイルのテスト。
 
 ## 手順の要点
@@ -64,9 +64,9 @@
 本作業の項目は、10-12 の表の「作業」の欄が R35 の行である。意味は各行の「意味」の欄の設計書の箇所で定める。
 
 - 演算子の関数（`%Decimal.*`・`%Byte.*`）: 値として使う演算子と、コード生成が命令に移さない場合に使う。命令と同じ関数（`base::decimal` の関数）を呼び、同じ結果と同じ実行時エラーになるようにする。
-- `Integer` のビット演算: 01-04「ビット演算（初回リリース版）」に従う。シフトの量が範囲の外のときの扱い（実行時エラーか、決まった値か）は同節の規則に従う。実行時エラーにする場合は `ArgumentOutOfDomain`（R0701）とし、`index` は範囲の外の引数の位置（1 から数える）とする。
+- `Integer` のビット演算: 01-04「ビット演算（初回リリース版）」に従う。シフトの量が範囲の外のときの扱い（実行時エラーか、決まった値か）は同節の規則に従う。実行時エラーにする場合は `ArgumentOutOfDomain`（R0701）とし、`argument` は範囲の外の引数の位置を 0 から数えた値とする（`RuntimeError::ArgumentOutOfDomain` の欄。表示では 1 を足す。シフトの量が二つ目の引数なら 1）。`Byte` のシフトの量の範囲の外も同じ扱いにする。
 - `Byte` の関数: `Byte.fromInteger` は 0〜255 の外で `Option.None`。ビット演算とシフトは 01-04 に従う。`Byte.toString` は 10 進の表記。
-- `Decimal` の関数: `round`・`absolute`・`fromInteger`・`truncate`・`toFloat`・`fromFloat`・`toString`・`parse`。`RoundingMode` の値は、10-12「構成子のタグ」の定数で読む。変換の規則（`truncate` と `fromFloat` が `Option.None` を返す条件、`toString` の表記、`parse` が受け付ける形）は 01-04「Decimal」「型の変換」と 03-06「Decimal と RoundingMode」に従い、`base::decimal` の関数（`round`・`to_text`・`parse_literal` など）を使う。`base::decimal` に要る関数がなければ、`base::decimal` に加えずに止めて報告する（`base::decimal` は F07 の受け持ちであり、シグネチャは 10-01 で凍結している）。
+- `Decimal` の関数: `round`・`absolute`・`fromInteger`・`truncate`・`toFloat`・`fromFloat`・`toString`・`parse`。`RoundingMode` の値は、10-12「構成子のタグ」の定数で読む。変換の規則（`truncate` と `fromFloat` が `Option.None` を返す条件、`toString` の表記、`parse` が受け付ける形）は 01-04「Decimal」「型の変換」と 03-06「Decimal と RoundingMode」に従い、`base::decimal` の関数（`round`・`to_text`・`parse_literal` など）を使う。`base::decimal` にない変換（`truncate`・`toFloat`・`fromFloat`・`parse` の符号の扱いなど）は、`base::decimal` に加えず、`builtins/funcs/decimal.rs` の非公開の補助の関数として、`Decimal::new`・`mantissa`・`scale`・`round`・`parse_literal`・`to_text` と `base::prim::float_to_text`の上に書く（`toFloat` は `to_text` の表記を Rust の `f64` の読み取りに通すと最近接偶数に丸まる）。`Decimal.round` の誤りは、`DecimalError::InvalidPlaces` を `ArgumentOutOfDomain { function: "Decimal.round", argument: 1 }`、`Overflow` を `DecimalOverflow`（R0103）にする。
 - 文字列を作る関数は、大きさの上限を確かめる構築（`alloc_str` など）を使う。
 
 ## 受け入れテスト

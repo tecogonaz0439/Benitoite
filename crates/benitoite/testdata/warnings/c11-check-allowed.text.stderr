@@ -1,0 +1,14 @@
+warning[W0301]: `old` is deprecated
+  --> testdata/warnings/c11-check-allowed.bnt:6:3
+   |
+ 6 |   old()
+   |   ^^^ deprecated
+   |
+  ::: testdata/warnings/c11-check-allowed.bnt:3:10
+   |
+ 3 | function old() -> Unit
+   |          --- declared deprecated here
+   |
+   = note: use current instead
+
+warning: 1 warning emitted

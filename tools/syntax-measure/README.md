@@ -2,7 +2,7 @@
 
 構文の案ごとに、LLM のコーディングエージェントが書いたスクリプトの構文の誤りの率と、診断を読んで 1 回で直せた率を測る道具である。[OPEN-012](../../docs/design/open-issues.md#open-012) の測定のうち、[ADR 0246](../../docs/design/decisions/0246-syntax-measurement-in-two-stages.md) が定めた第一段階（初回リリース版の実装プランを作る前の、構文だけの測定）に使う。型・エフェクト・名前解決は検査しない。
 
-Python 3（標準ライブラリだけ）で動く。字句解析器・EBNF の読み込み・照合器は、[grammar-check](../grammar-check/README.md) の `syntax_engine.py` を写した `bntmeasure/syntax_engine.py` を使う。
+Python 3（標準ライブラリだけ）で動く。字句解析器・EBNF の読み込み・照合器は、`tools/grammar-check/syntax_engine.py` を写した `bntmeasure/syntax_engine.py` を使う。`tools/grammar-check/` は、言語仕様と付録の例の検査を `crates/benitoite/tests/spec_examples.rs` に移した C13 で削除した。削除前の版はコミット `1ec95436c409f689a217607bd051c681b90f660a` にある。
 
 V00 は、2026-09-29 の構文の変更より前の構文であり、コミット c93ebf7 の時点で凍結した。設計書は、この測定の途中の結果を受けて V15 の構文を採った（[ADR 0254](../../docs/design/decisions/0254-return-type-after-arrow.md)〜[ADR 0257](../../docs/design/decisions/0257-match-with-case-arms.md)）。測定を再現できるように、この道具は設計書の現在の 01-01・01-02 と grammar-check の定数を読まない。基準の文法は `variants/V00/baseline-syntax.md`（c93ebf7 の `doc/design/01-spec/01-02-syntax.md` の写し）から、字句の規則は `bntmeasure/syntax_engine.py` の `BASELINE_*` から読む。これらの写しを直さない。
 

@@ -1,6 +1,6 @@
 # 値とヒープ
 
-本章は、16 バイトの値、ヒープの対象の種類、確保器の公開の API、回収しない区間の型（`Value<'epoch>`・`NoGcCtx<'epoch>`）、根の保存領域、二つのメモリの管理が共通に持つ API、回収の要求、書き込みの障壁の位置、`Reference` のセルの対象、確かめ方の口、止まる理由の型とシグネチャを定める。設計書の対応する章は[仮想機械](../../design/02-impl/02-08-vm.md)の「値の表現」と[ランタイム](../../design/02-impl/02-09-runtime.md)の「メモリの管理」「一つの操作で作る値の大きさの上限」、[処理系のテスト戦略](../../design/07-quality/07-03-compiler-testing.md)の「ヒープとランタイムの確かめ方（初回リリース版）」であり、判断の根拠は [ADR 0258](../../design/decisions/0258-sixteen-byte-value-enum.md)〜[ADR 0260](../../design/decisions/0260-heap-and-unsafe-boundary.md)、[ADR 0267](../../design/decisions/0267-lazy-and-reference-objects.md)、[ADR 0271](../../design/decisions/0271-self-made-gc-as-exception.md) である。
+本章は、16 バイトの値、ヒープの対象の種類、確保器の公開の API、回収しない区間の型（`Value<'epoch>`・`NoGcCtx<'epoch>`）、根の保存領域、メモリの管理の方式によらない API、回収の要求、書き込みの障壁の位置、`Reference` のセルの対象、確かめ方の口、止まる理由の型とシグネチャを定める。設計書の対応する章は[仮想機械](../../design/02-impl/02-08-vm.md)の「値の表現」と[ランタイム](../../design/02-impl/02-09-runtime.md)の「メモリの管理」「一つの操作で作る値の大きさの上限」、[処理系のテスト戦略](../../design/07-quality/07-03-compiler-testing.md)の「ヒープとランタイムの確かめ方（初回リリース版）」であり、判断の根拠は [ADR 0258](../../design/decisions/0258-sixteen-byte-value-enum.md)〜[ADR 0260](../../design/decisions/0260-heap-and-unsafe-boundary.md)、[ADR 0267](../../design/decisions/0267-lazy-and-reference-objects.md)、[ADR 0271](../../design/decisions/0271-self-made-gc-as-exception.md) である。
 
 - 置く作業: C01
 
@@ -8,7 +8,7 @@
 
 ## 本章の読み方
 
-本章は、`runtime::heap` の公開の層だけを凍結する。内部の層（確保器、対象の頭の配置、根の列挙、マーク・スイープのマークと掃き出し、参照カウントの増減と解放）の型と関数は、作業が決める。ただし、内部の層が守る不変条件は本章の「不変条件」で定め、作業はそれを変えない。
+本章は、`runtime::heap` の公開の層だけを凍結する。内部の層（確保器、対象の頭の配置、根の列挙、マーク・スイープのマークと掃き出し）の型と関数は、作業が決める。ただし、内部の層が守る不変条件は本章の「不変条件」で定め、作業はそれを変えない。
 
 内部の層の型のうち、公開の層の型の欄に現れるもの（`HeapCore`・`ObjHeader`・`TraceSink`）は、名前だけを `sig=` の中で凍結する。`sig=` に中身のない本体（`{}`）で書いた構造体とトレイトは、作業が欄とメソッドを決めてよい。名前と可視性は変えない。
 
@@ -18,17 +18,17 @@
 
 | 番号 | 不変条件 | 守る側 |
 |---|---|---|
-| H1 | 区間（`Heap::epoch` の閉包の実行）の中では、どの対象も解放せず、動かさない。したがって、区間の中で得た `Value<'e>` と、`&self` の借用で得た中身への参照（`&str` など）は、区間の終わりまで正しい対象を指す | 内部の層。参照カウントでは、数が 0 になった対象を区間の中では解放せず、安全点の `Heap::collect` で解放する |
+| H1 | 区間（`Heap::epoch` の閉包の実行）の中では、どの対象も解放せず、動かさない。したがって、区間の中で得た `Value<'e>` と、`&self` の借用で得た中身への参照（`&str` など）は、区間の終わりまで正しい対象を指す | 内部の層。解放は安全点の `Heap::collect` の中でだけ行う |
 | H2 | 回収（`Heap::collect`）は区間の外でだけ起きる。`NoGcCtx` は回収の機能を持たない | 型。`Heap::collect` は `&mut Heap` を取り、区間は `&mut Heap` を借りている |
 | H3 | 区間の外で値を保つのは `Slot` だけである。`Value<'e>` は区間の外へ出せない | 型（`'e` は閉包ごとに新しい、不変の寿命）。コンパイルの失敗のテストで確かめる |
 | H4 | 回収のとき、この先使う `Slot` はすべて、`Heap::collect` に渡した根（`&dyn Trace`）か、根から辿れる対象の中にある。根に入れずに Rust の局所変数や構造体に残した `Slot` を、回収の後に読まない | VM とランタイム（安全点の手順）の契約。回収の強制、確保の世代の検査、ヒープの検証器で確かめる |
 | H5 | `Trace` の実装は、その値が持つ `Slot` と、`Trace` を実装する子をすべて訪れる | `Trace` を実装する側の契約。H4 と同じ手段で確かめる |
-| H6 | 参照カウントの数は、対象を指す参照の数（根と `Host` の対象の中の `Slot`、値の並びとセルの中の値）である。区間の中の `Value<'e>` の写しは数えない | 内部の層（`gc-refcount`） |
+| H6 | 対象を指す参照（根と `Host` の対象の中の `Slot`、値の並びとセルの中の値）の開始と終了を、内部の層は回収の方式に知らせる。区間の中の `Value<'e>` の写しは参照に数えない。この通知の境目は、書き込みの障壁を加える位置として残す（ADR 0259 の決定 7）。第 1 段の参照カウントは、この通知で数を増減した | 内部の層 |
 | H7 | 対象の中身を書き換える公開の関数は、`NoGcCtx::cell_set`・`NoGcCtx::host_mut`・`NoGcCtx::reuse_ctor` だけである。これらが書き込みの障壁を差し込む位置になる（ADR 0259 の決定 7）。`&self` で中身への参照を返す関数（`ValueCtx::str` など）の対象は、`&mut self` を取る関数のほかでは書き換えない | 公開の層（借用の規則が一部を守る） |
 | H8 | `Value<'e>` と `Slot` は `Send` でも `Sync` でもない。作業用のスレッドへ渡せない | 型（`NonNull` を含む） |
 | H9 | 一つの `Heap` の対象を指す値を、別の `Heap` の区間で使わない | 区間の中は型（別の区間の `'e` は別の寿命）。`Slot` は、ヒープの番号（`HeapNo`）を持ち、読むたびに比べる（すべての構成。[ADR 0281](../../design/decisions/0281-heap-number-in-slot-and-contract-safety.md)） |
 | H10 | `unsafe` は `runtime::heap` の内部の層のファイルにだけ書く。公開の層の関数は `unsafe fn` にしない | 規約と lint |
-| H11 | `NoGcCtx::discard` が参照カウントの数を減らすのは、捨てる値が所有していた `Slot` についてだけである | 型。`Discard` は値を消費し、`Discarder::slot` は `Slot` を値で受け取る。`Slot` は `Clone` を持たないので、借用した `Slot` を手放せない |
+| H11 | `NoGcCtx::discard` が参照の終了を方式に知らせるのは、捨てる値が所有していた `Slot` についてだけである | 型。`Discard` は値を消費し、`Discarder::slot` は `Slot` を値で受け取る。`Slot` は `Clone` を持たないので、借用した `Slot` を手放せない |
 
 ### 安全と言える範囲
 
@@ -133,6 +133,8 @@ pub enum RuntimeError {
     },
     ResponseSentTwice,
     TaskDeadlock,
+    /// 取り消したタスクを `Task.await` で待った（01-11「取り消し」、ADR 0317）
+    AwaitedTaskCancelled,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -218,28 +220,26 @@ pub fn catch<T>(f: impl FnOnce() -> T) -> Result<T, PanicReport>;
 | `src/runtime/heap/value.rs` | 公開 | `Value<'e>`、対象を指す値、即値の型 | C01 | — |
 | `src/runtime/heap/slot.rs` | 公開 | `Slot`、ヒープの番号（`HeapNo`）、`RootStack` | C01 | R02 |
 | `src/runtime/heap/trace.rs` | 公開 | `Trace`、`Tracer`、`Discard`、`Discarder` | C01 | R02 |
-| `src/runtime/heap/ctx.rs` | 公開 | `Heap`、`ValueCtx`、`NoGcCtx`、`SlotOps` | C01 | R01・R02・R03・R04・R06（関数ごとに下に示す） |
+| `src/runtime/heap/ctx.rs` | 公開 | `Heap`、`ValueCtx`、`NoGcCtx`、`SlotOps` | C01 | R01・R02・R03・R04（R14 が外した）・R06（関数ごとに下に示す） |
 | `src/runtime/heap/build.rs` | 公開 | 大きさを確かめる構築（`CheckedLen`・`StrBuf`） | C01 | — |
 | `src/runtime/heap/stats.rs` | 公開 | 設定と測定の記録 | C01 | — |
 | `src/runtime/heap/core.rs` | 内部 | 内部の層の入口（`HeapCore`・`ObjHeader`・`TraceSink`） | C01 | R01 |
-| `src/runtime/heap/` のほかのファイル | 内部 | 確保器、マーク・スイープ、参照カウント、検証器など | 作業 | R01〜R04、R11 |
+| `src/runtime/heap/` のほかのファイル | 内部 | 確保器、マーク・スイープ、検証器など | 作業 | R01〜R03、R11（第 1 段の参照カウントは R04 が書き、R14 が外した） |
 
 最小実行版の `runtime`（`heap.rs`・`value.rs` など）は、C04 が `src/legacy/runtime/` へ移すので、本章のファイルは空いたパスに新しく置く。最小実行版の VM・組み込みの関数・参照インタプリタ・パイプラインは `legacy` の中で最小実行版の値とヒープを使い続け、移行の締め（C18）まで動く（[リポジトリとクレートの配置](../00-common/00-01-repository-layout.md)の「移行の間の配置」）。
 
-内部の層のファイル名と分け方は作業が決め、`core.rs` から非公開の子のモジュールとして宣言する（[作業の進め方](../00-common/00-03-workflow.md)の「ブランチと並行作業」）。マーク・スイープの実装は `#[cfg(feature = "gc-mark-sweep")]`、参照カウントの実装は `#[cfg(feature = "gc-refcount")]` の下に置き、公開の層の関数は、どちらの機能でも同じシグネチャで同じ意味を持つ。
+内部の層のファイル名と分け方は作業が決め、`core.rs` から非公開の子のモジュールとして宣言する（[作業の進め方](../00-common/00-03-workflow.md)の「ブランチと並行作業」）。公開の層の関数のシグネチャと意味は、回収の方式によらない。第 1 段では、マーク・スイープの実装を機能 `gc-mark-sweep`、参照カウントの実装を機能 `gc-refcount` の下に置いて比べ、第 1 段の締め（R14）が `gc-refcount` と参照カウントの実装を消した（[リポジトリとクレートの配置](../00-common/00-01-repository-layout.md)の「機能（feature）」）。
 
 ```rust file=src/runtime/heap/mod.rs
 //! ヒープ（設計書 02-09「メモリの管理」、ADR 0258・0259・0260・0271）。
 //!
 //! 公開の層（value・slot・trace・ctx・build・stats）は `unsafe` を書かず、内部の層（core とその子）の
 //! 安全な関数だけを呼ぶ。不変条件 H1〜H11 は実装プランの 10-08「不変条件」で定める。
-//! 二つのメモリの管理（機能 `gc-mark-sweep`・`gc-refcount`）は、この層の同じ API の裏で切り替える
-//! （00-01「機能（feature）」）。
+//! メモリの管理はマーク・スイープ（機能 `gc-mark-sweep`）であり、この層の API の裏に置く
+//! （00-01「機能（feature）」）。第 1 段で比べた参照カウントは、第 1 段の締め（R14）が外した。
 
-#[cfg(all(feature = "gc-mark-sweep", feature = "gc-refcount"))]
-compile_error!("enable exactly one of the features `gc-mark-sweep` and `gc-refcount`");
-#[cfg(not(any(feature = "gc-mark-sweep", feature = "gc-refcount")))]
-compile_error!("enable exactly one of the features `gc-mark-sweep` and `gc-refcount`");
+#[cfg(not(feature = "gc-mark-sweep"))]
+compile_error!("enable the feature `gc-mark-sweep`");
 
 pub mod build;
 pub mod ctx;
@@ -256,13 +256,12 @@ pub use slot::{RootIdx, RootStack, Slot};
 pub use stats::{HeapConfig, HeapFault, HeapFaultKind, HeapStats};
 pub use trace::{Discard, Discarder, Trace, Tracer};
 pub use value::{
-    CtorTag, Epoch, FieldsKind, HostData, ObjId, ObjKind, ObjRef, OpaqueData,
-    ResourceId, Value,
+    CtorTag, Epoch, FieldsKind, HostData, ObjId, ObjKind, ObjRef, OpaqueData, ResourceId, Value,
 };
 
 /// マーク・スイープの回収を要求する確保の量の下限（4 MiB。ADR 0259 の決定 6）。
 pub const MIN_COLLECT_TRIGGER_BYTES: u64 = 4_194_304;
-/// 回収の閾値の係数 k の初めの値（百分率。k = 1）。第 1 段の測定で 50・100・200 を比べる（R12）。
+/// 回収の閾値の係数 k の値（百分率。k = 1）。第 1 段の測定で 50・100・200 を比べ（R12）、k = 1 を暫定に採った（R14）。
 pub const DEFAULT_TRIGGER_FACTOR_PERCENT: u32 = 100;
 /// 機能 `heap-verify` の構成で、解放した領域を埋める値（ADR 0260 の決定 7）。
 pub const POISON_BYTE: u8 = 0xDB;
@@ -493,7 +492,7 @@ pub struct ObjId(pub u64);
 
 ## 根の保存領域
 
-区間の外で値を保つ場所が `Slot` である（不変条件 H3・H4）。`Slot` は `Clone` を持たない。`Slot` の読み書きは区間の中で `NoGcCtx`（`host_mut` の中では `SlotOps`）を通して行い、`Slot` を作る・写す・消す操作を参照カウントの増減の一か所にする（不変条件 H6）。`Slot` を `NoGcCtx::clear` か `NoGcCtx::discard` を通さずに Rust の `drop` で捨てると、参照カウントでは数が戻らず、対象が回収されない（未定義動作にはならない）。ヒープの検証器は、この取りこぼしを数の食い違いとして報告する。
+区間の外で値を保つ場所が `Slot` である（不変条件 H3・H4）。`Slot` は `Clone` を持たない。`Slot` の読み書きは区間の中で `NoGcCtx`（`host_mut` の中では `SlotOps`）を通して行い、`Slot` を作る・写す・消す操作を、参照の開始と終了を方式に知らせる一か所にする（不変条件 H6）。`Slot` を `NoGcCtx::clear` か `NoGcCtx::discard` を通さずに Rust の `drop` で捨てると、参照の終了が方式に届かない（未定義動作にはならない）。マーク・スイープでは対象の回収に影響しないが、第 1 段の参照カウントでは数が戻らず、ヒープの検証器が数の食い違いとして報告した。
 
 `Slot` は、対象を指すとき、その対象を確保したヒープの番号（`HeapNo`）を持つ（[ADR 0281](../../design/decisions/0281-heap-number-in-slot-and-contract-safety.md)）。ヒープの番号は、`Heap::new` が、プロセスで一つの原子的な計数器から順に割り当てる 32 ビットの数であり、番地から作らない。`Slot` を読む・書き換える・辿る公開の層の関数（`NoGcCtx` と `SlotOps` の `Slot` の関数、`Tracer::slot`、`Discarder::slot`）は、`Slot` が対象を指すとき、その番号と操作するヒープの番号をすべての構成で比べる。食い違えば、対象を読まず、数も変えずに、`HeapFault`（`ForeignHeap`）を記録する（読み出しは `Value::Unit` を返す）。VM は安全点で `Heap::take_fault` を呼び、`Stop::Internal` で止まる。
 
@@ -738,8 +737,8 @@ impl<'t> Tracer<'t> {
 
 impl<'d> Discarder<'d> {
     pub(super) fn new(core: &'d HeapCore) -> Discarder<'d>;
-    /// `s` が対象を指していれば「指さなくなった」を方式に知らせ（参照カウントでは数を一つ減らす）、`s` を捨てる。
-    /// ヒープの番号が食い違えば数を変えずに不具合を記録する。
+    /// `s` が対象を指していれば「指さなくなった」（参照の終了）を方式に知らせ、`s` を捨てる。
+    /// ヒープの番号が食い違えば方式に知らせずに不具合を記録する。
     pub fn slot(&mut self, s: Slot);
 }
 ```
@@ -838,9 +837,9 @@ impl StrBuf {
 
 ## 設定と測定の記録
 
-`HeapConfig` は、実行ごとのヒープの設定である。`HeapStats` は、第 1 段の比較（[ADR 0259](../../design/decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md) の決定 3）で記録する項目を持つ。二つの方式に共通しない項目は、もう一方の方式では 0 のままにする。
+`HeapConfig` は、実行ごとのヒープの設定である。`HeapStats` は、第 1 段の比較（[ADR 0259](../../design/decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md) の決定 3）で記録した項目を持つ。参照カウントだけの項目（`rc_*`・`reuses`）は、第 1 段の締め（R14）が参照カウントを外した後も公開の型を変えないために残し、マーク・スイープでは 0 のままにする。
 
-回収の閾値は、前回の回収からの確保の量 A と、前回の回収で数えた生きている量 L について、`A >= max(trigger_min_bytes, k × L)` とする（k は `trigger_factor_percent` ÷ 100）。A と L には、対象の頭、配置の切り上げ、対象が持つ別の領域の容量（文字列の中身など）を含める（ADR 0259 の決定 6）。参照カウントの方式では、解放を待つ対象の量が決めた量を超えたとき、前回の循環の回収の後に作ったセルの数が閾値に達したとき、前回の循環の回収の後の確保の量が上の式の閾値に達したとき（生きているセルがあるときに限る）の、どれか一つで回収を要求する。後の二つは、解放を待つ対象の量によらず、それだけで要求を立てる（循環した対象は根を失っても数が 0 にならないので、解放を待つ対象の量に現れない）。量と閾値は R04 が決め、測定の記録に書く。
+回収の閾値は、前回の回収からの確保の量 A と、前回の回収で数えた生きている量 L について、`A >= max(trigger_min_bytes, k × L)` とする（k は `trigger_factor_percent` ÷ 100）。A と L には、対象の頭、配置の切り上げ、対象が持つ別の領域の容量（文字列の中身など）を含める（ADR 0259 の決定 6）。k は、第 1 段の測定で比べた 50・100・200 のうち、設計者が 100（k = 1）を暫定に採った（R14、[第 1 段の測定の記録](../../../tools/bench/results/2026-10-05-stage1-5b300d4-summary.md)）。第 1 段の参照カウントの回収の要求の条件（解放を待つ対象の量と、循環の回収の閾値）は、タグ `stage1-rc-final` の時点の本章と R04 の作業の文書に書いた。
 
 ```rust file=src/runtime/heap/stats.rs
 //! ヒープの設定と測定の記録（ADR 0259 の決定 3・6、設計書 07-02）。
@@ -853,11 +852,11 @@ pub struct HeapConfig {
     pub trigger_min_bytes: u64,
     /// 係数 k の百分率（既定 100）
     pub trigger_factor_percent: u32,
-    /// 回収の強制。安全点ごとに必ず回収し、参照カウントでは回収ごとに循環の回収も行う
-    /// （機能 `gc-stress` のビルドでは常に真として扱う）。二つの方式の残った対象の集合を比べるテストはこれを真にする
+    /// 回収の強制。安全点ごとに必ず回収する（機能 `gc-stress` のビルドでは常に真として扱う）
     pub stress: bool,
-    /// 参照カウントの方式で、その場での再利用を行う（既定は真）。偽なら `NoGcCtx::reuse_ctor` が
-    /// つねに `Ok(None)` を返す。再利用の有無を同じプログラムで比べるためにある（ADR 0280 の決定 4）
+    /// その場での再利用を行う（既定は真）。偽なら `NoGcCtx::reuse_ctor` がつねに `Ok(None)` を返す。
+    /// 再利用の有無を同じプログラムで比べるためにある（ADR 0280 の決定 4）。再利用は参照カウントの方式だけが
+    /// 行うので、マーク・スイープでは設定によらず再利用しない
     pub reuse: bool,
 }
 
@@ -883,16 +882,17 @@ pub struct HeapStats {
     /// これまでで最も大きい、確保している量
     pub peak_heap_bytes: u64,
     pub collections: u64,
-    /// 回収（参照カウントでは安全点での解放と循環の回収）ごとの停止の時間（ナノ秒）
+    /// 回収ごとの停止の時間（ナノ秒）
     pub pause_nanos: Vec<u64>,
     /// 回収で辿った根の `Slot` の数の合計
     pub roots_traced: u64,
-    /// 参照の数の増減の回数（参照カウント）
+    /// 参照の数の増減の回数（第 1 段で比べた参照カウントの項目。マーク・スイープでは 0 のまま）
     pub rc_increments: u64,
     pub rc_decrements: u64,
-    /// 最後の使用での移動で省いた増減の回数（参照カウント）
+    /// 最後の使用での移動で省いた増減の回数（参照カウントの項目。マーク・スイープでは 0 のまま）
     pub rc_elided: u64,
-    /// その場で再利用した対象の数（参照カウント。`NoGcCtx::reuse_ctor` が `Some` を返した回数）
+    /// その場で再利用した対象の数（`NoGcCtx::reuse_ctor` が `Some` を返した回数。参照カウントの項目で、
+    /// マーク・スイープでは 0 のまま）
     pub reuses: u64,
     /// 解放した対象の数。内部の層の解放の関数だけが数える（R01）
     pub frees: u64,
@@ -907,7 +907,7 @@ pub enum HeapFaultKind {
     ForeignHeap,
     /// 対象の頭が壊れている
     CorruptHeader,
-    /// 参照カウントの数が、辿って数えた数と食い違う
+    /// 参照カウントの数が、辿って数えた数と食い違う（参照カウントの項目。マーク・スイープでは起きない）
     CountMismatch,
     /// 根から辿れる対象が解放されている
     ReachableFreed,
@@ -975,25 +975,13 @@ pub struct SlotOps<'a, 'e> {
 }
 ```
 
-### 区間と回収（R01・R02・R03・R04）
+### 区間と回収（R01・R02・R03）
 
-`Heap::new` と `Heap::epoch` と `NoGcCtx` の `Slot` の関数の中身は R02、`Heap::collect` はマーク・スイープを R03、参照カウントを R04 が書く。
+`Heap::new` と `Heap::epoch` と `NoGcCtx` の `Slot` の関数の中身は R02、`Heap::collect` は R03 が書く（第 1 段では参照カウントの `Heap::collect` を R04 が書き、R14 が外した）。
 
-`Heap::collect` は、`gc-mark-sweep` では根から印を付けて掃き出す。`gc-refcount` では、次の順に行う。
+`Heap::collect` は、根から印を付けて掃き出す。統計の更新と回収の後の検査は、解放をすべて終えた後に行う。機能 `heap-verify` の構成では、回収の前後に `Heap::verify` を行い、見つけた不具合を `take_fault` で返せるように記録する。
 
-1. 解放の候補（区間の中で数が 0 になった対象と、数が 0 のまま確保された対象）を、明示の積み重ねで辿りながら解放する（不変条件 H1 の遅らせた解放）。
-2. 循環の回収を行う条件（R04。`HeapConfig::stress` が真なら毎回）を満たせば、ADR 0239 の循環の回収を行う。
-3. 循環を切ったことで新たに数が 0 になった対象を、1 と同じく解放し終える。
-4. `HeapStats` を更新し、機能 `heap-verify` の構成では回収の後の検査を行い、回収の要求を下ろす。
-
-どちらの方式でも、統計の更新と回収の後の検査は、解放をすべて終えた後に行う。機能 `heap-verify` の構成では、回収の前後に `Heap::verify` を行い、見つけた不具合を `take_fault` で返せるように記録する。
-
-参照カウントの解放の候補は、次の規則で扱う（ADR 0277）。
-
-- 対象は数 0 で確保されるので、確保の時点で候補に加える。一度も `Slot` に書かれなかった一時の値も、次の回収で解放される。
-- 候補は対象ごとに一つだけ登録する（対象の頭の印で重複を防ぐ）。同じ区間で数が 0 → 1 → 0 と変わっても、二つ目の項目を作らない。
-- 対象を解放するのは、その対象の候補の項目を取り出したときだけであり、解放の直前に数を確かめる。数が 1 以上に戻っていれば、印を下ろして解放しない。
-- `reuse_ctor` は候補から外さない。再利用した対象は `Slot` に書かれて数が 1 以上になり、解放の直前の確かめで残る。書かれなかった対象は解放される。
+第 1 段の参照カウントの `Heap::collect` の手順（遅らせた解放と ADR 0239 の循環の回収の順序）と解放の候補の規則（ADR 0277）は、タグ `stage1-rc-final` の時点の本章に書いた。R33 の判断で参照カウントに戻すときは、その版から戻す。
 
 ```rust sig=src/runtime/heap/ctx.rs
 use super::slot::Slot;
@@ -1012,7 +1000,7 @@ impl Heap {
     pub fn collect(&mut self, roots: &dyn Trace);
     pub fn stats(&self) -> HeapStats;
     /// ヒープの検証器（ADR 0260 の決定 7）。`heap-verify` を無効にした構成では何もせず `Ok` を返す。
-    /// すべての対象の頭と、対象と根の `Slot` が指す先を確かめる。参照カウントでは数も確かめる。
+    /// すべての対象の頭と、対象と根の `Slot` が指す先を確かめる。
     pub fn verify(&self, roots: &dyn Trace) -> Result<(), HeapFault>;
     /// 区間の中の読み出しや回収の中で記録した不具合を取り出す。VM は安全点ごとに呼ぶ。
     pub fn take_fault(&mut self) -> Option<HeapFault>;
@@ -1025,9 +1013,9 @@ impl<'e> NoGcCtx<'e> {
     /// すべての構成でヒープの番号を比べ、`heap-verify` の構成ではさらに確保の世代を確かめる。
     /// 食い違えば不具合を記録して `Value::Unit` を返す。
     pub fn load(&self, s: &Slot) -> Value<'e>;
-    /// `v` を持つ新しい `Slot` を作る（参照カウントでは数を一つ増やす）。
+    /// `v` を持つ新しい `Slot` を作る（`v` の参照の開始を方式に知らせる）。
     pub fn new_slot(&self, v: Value<'e>) -> Slot;
-    /// `dst` に `v` を書く。前の値の数を一つ減らし、`v` の数を一つ増やす。
+    /// `dst` に `v` を書く。前の値の参照の終了と、`v` の参照の開始を方式に知らせる。
     pub fn store(&self, dst: &mut Slot, v: Value<'e>);
     /// `dst` を空（`Unit`）にする。使わなくなったレジスタを根から除くときに使う（02-08「枠を降ろす原因と処理」）。
     pub fn clear(&self, dst: &mut Slot);
@@ -1102,11 +1090,11 @@ impl<'e> ValueCtx<'e> {
 
 ### セルと `Host` の対象（R02・R06）
 
-`Reference` のセルは、中身の値と版の番号を持つヒープの対象であり、その場で書き換える（[ADR 0267](../../design/decisions/0267-lazy-and-reference-objects.md) の決定 1）。`cell_set` は版の番号を一つ増やす。`UPDATE` の手順（版の番号の比較とやり直し）は VM が `cell_version` と `cell_set` で行う（[仮想機械](../../design/02-impl/02-08-vm.md)の「可変のセル」）。参照カウントの方式では、`alloc_cell` がセルを ADR 0239 の生きているセルの表に加える。
+`Reference` のセルは、中身の値と版の番号を持つヒープの対象であり、その場で書き換える（[ADR 0267](../../design/decisions/0267-lazy-and-reference-objects.md) の決定 1）。`cell_set` は版の番号を一つ増やす。`UPDATE` の手順（版の番号の比較とやり直し）は VM が `cell_version` と `cell_set` で行う（[仮想機械](../../design/02-impl/02-08-vm.md)の「可変のセル」）。第 1 段の参照カウントでは、`alloc_cell` がセルを ADR 0239 の生きているセルの表に加えた。
 
 タスク、継続、ハンドラの記録、`Lazy` の対象は、VM が型を定める `Host` の対象である（10-09）。読み出しは `host`、書き換えは `host_mut` だけで行う。`host_mut` は、タスクの結果の書き込み、継続の状態の変更、`Lazy` の結果の書き込みの障壁の位置を兼ねる（不変条件 H7、ADR 0259 の決定 7）。`host_mut` の閉包は `SlotOps` だけを受け取り、ほかの対象を読めない。ほかの対象を読むと、書き換え中の対象と別名になりうるからである。
 
-セルと `Host` の関数は R02 が書く。ただし、`alloc_cell` の生きているセルの表への登録は R04 が書く。
+セルと `Host` の関数は R02 が書く（第 1 段では、`alloc_cell` の生きているセルの表への登録を R04 が書いた）。
 
 ```rust sig=src/runtime/heap/ctx.rs
 use super::value::HostData;
@@ -1142,7 +1130,7 @@ impl<'a, 'e> SlotOps<'a, 'e> {
 
 ### その場での再利用（R04）
 
-参照カウントの方式の、どの `Slot` からも指されない対象のその場での再利用（ADR 0259 の決定 1）の口である。VM でこの口を使う命令は、10-07 の `CONR` だけである（[ADR 0280](../../design/decisions/0280-reuse-by-dedicated-construct-instruction.md)、10-07「その場での再利用の命令」）。一意であることの判定と書き換えを一つの関数 `reuse_ctor` に閉じ、判定した後に対象を別の場所へ公開してから書き換える順序を、公開の API で作れないようにする。
+参照カウントの方式の、どの `Slot` からも指されない対象のその場での再利用（ADR 0259 の決定 1）の口である。第 1 段の締め（R14）が参照カウントを外した後も、公開の型と命令の集合を変えないために残し、マーク・スイープでは手順 1 の確かめの後に常に `Ok(None)` を返す（[ADR 0280](../../design/decisions/0280-reuse-by-dedicated-construct-instruction.md) の帰結）。手順 3・4 と呼び出し側の契約は、参照カウントの方式で再利用するときの規則として残す。R16 の後の VM はこの口を使わない（[ADR 0314](../../design/decisions/0314-clear-dead-registers-at-safepoints.md)）。参照カウントの VM でこの口を使った命令は、10-07 の `CONR` だけである（[ADR 0280](../../design/decisions/0280-reuse-by-dedicated-construct-instruction.md)、10-07「その場での再利用の命令」）。一意であることの判定と書き換えを一つの関数 `reuse_ctor` に閉じ、判定した後に対象を別の場所へ公開してから書き換える順序を、公開の API で作れないようにする。
 
 `reuse_ctor(candidate, tag, args)` は、次の順に行う。
 
@@ -1153,7 +1141,7 @@ impl<'a, 'e> SlotOps<'a, 'e> {
 
 呼び出し側は、次の二つを守る。
 
-- 一意であることの判定は、候補のほかの引数の参照がまだ数えられている間に行う。VM は、候補のレジスタを `take` で空にした後、引数のレジスタを `load` で読み（移さない）、`reuse_ctor` を呼んでから、最後の使用の引数のレジスタを空にする。引数を先に移すと、別のレジスタが同じ対象を指していた場合に数が 0 になり、自分自身を指す対象を作りうる。
+- 一意であることの判定は、候補のほかの引数の参照がまだ数えられている間に行う。参照カウントの VM は、候補のレジスタを `take` で空にした後、引数のレジスタを `load` で読み（移さない）、`reuse_ctor` を呼んでから、最後の使用の引数のレジスタを空にする。引数を先に移すと、別のレジスタが同じ対象を指していた場合に数が 0 になり、自分自身を指す対象を作りうる。
 - 区間の中の `Value<'e>` の写しは数えない（不変条件 H6）ので、`candidate` の写しを、`reuse_ctor` が `Some` を返した後に書き換える前の値として読まない。VM がこの口を使えるのは、10-07 の生存の情報が「この命令でこのレジスタを最後に使い、同じ命令のほかの被演算子に同じレジスタがない」と示した値に限る。
 
 ```rust sig=src/runtime/heap/ctx.rs
@@ -1168,7 +1156,7 @@ impl<'e> NoGcCtx<'e> {
 `core.rs` は内部の層の入口であり、`unsafe` を書いてよい（[リポジトリとクレートの配置](../00-common/00-01-repository-layout.md)の「`unsafe` を書いてよいモジュール」）。下の三つの名前は公開の層の型の欄に現れるので凍結する。欄と中身、ほかの内部の型、子のモジュールは R01 が決める。
 
 ```rust file=src/runtime/heap/core.rs
-//! ヒープの内部の層の入口（ADR 0260）。確保器、対象の頭、根の列挙、二つのメモリの管理の実装を子のモジュールに置く。
+//! ヒープの内部の層の入口（ADR 0260）。確保器、対象の頭、根の列挙、マーク・スイープの実装を子のモジュールに置く。
 //! 守る不変条件: 実装プランの 10-08「不変条件」の H1〜H11。子のモジュールは、関わる項目を先頭の `//!` に挙げる。
 // 内部の層は生のポインタで対象を読み書きする（ADR 0260 の決定 1・2）。`unsafe` のブロックは操作を一つだけ含め、
 // `// SAFETY:` のコメントで不変条件の番号を引く（00-02「`unsafe` の書き方」）。
@@ -1182,11 +1170,11 @@ use super::slot::Slot;
 /// 確保するので、変わる欄は内部の可変性（`Cell` など）で持つ。欄は R01 が決める。
 pub(super) struct HeapCore {}
 
-/// 対象の頭。種類、長さ、印（マーク・スイープ）か参照の数と解放の候補の印（参照カウント）、
+/// 対象の頭。種類、長さ、印（マーク・スイープ）、
 /// `heap-verify` の構成では確保の世代を持つ。欄は R01 が決める。
 pub(super) struct ObjHeader {}
 
-/// `Tracer` が `Slot` を知らせる相手（印付け、数の減算、検証器の数え上げ）。メソッドは R01・R02 が決める。
+/// `Tracer` が `Slot` を知らせる相手（印付け、検証器の数え上げ）。メソッドは R01・R02 が決める。
 pub(super) trait TraceSink {
     fn visit(&mut self, s: &Slot);
 }
@@ -1225,7 +1213,7 @@ pub fn to_vec<'e>(ctx: &ValueCtx<'e>, list: Value<'e>) -> Result<Vec<Value<'e>>,
 
 ## マップと集合
 
-マップと集合の値は、`Value::EmptyMap`・`Value::EmptySet` か、`FieldsKind::MapNode`・`SetNode` の対象を指す値である。表現は、重みで平衡させる二分木であり、ノードは作った後に変更せず、更新は根から変わるノードまでの道筋だけを写す（[仮想機械](../../design/02-impl/02-08-vm.md)の「値の表現」、[標準ライブラリ](../../design/03-interop/03-06-stdlib.md)の「Map と Set（初回リリース版）」、ADR 0103）。平衡の条件の定数は R37 が決め、この節に書き足す。組み込みの関数（U3 の `Map`・`Set` のモジュール）と VM（`LOADK` の `ConstDesc::Map`・`Set`、`EQV`）は、表現を下の関数だけで扱う。どの関数も、Rust の再帰を使わずに辿る。
+マップと集合の値は、`Value::EmptyMap`・`Value::EmptySet` か、`FieldsKind::MapNode`・`SetNode` の対象を指す値である。表現は、重みで平衡させる二分木であり、ノードは作った後に変更せず、更新は根から変わるノードまでの道筋だけを写す（[仮想機械](../../design/02-impl/02-08-vm.md)の「値の表現」、[標準ライブラリ](../../design/03-interop/03-06-stdlib.md)の「Map と Set（初回リリース版）」、ADR 0103）。平衡の条件は、重みを「部分木の要素の数 + 1」とし、(Δ, Γ) = (3, 2) とする（R37 が決めた）。どのノードでも `Δ × weight(左) ≥ weight(右)` と `Δ × weight(右) ≥ weight(左)` が成り立ち、崩れたときは、重い側の子の内側の重みが `Γ × 外側の重み` より小さければ一重の回転、そうでなければ二重の回転にする。`MapNode` の欄は（鍵、値、左、右）、`SetNode` の欄は（要素、左、右）、`tag` は部分木の要素の数、空の子は `Value::EmptyMap`・`Value::EmptySet` である。組み込みの関数（U3 の `Map`・`Set` のモジュール）と VM（`LOADK` の `ConstDesc::Map`・`Set`、`EQV`）は、表現を下の関数だけで扱う。どの関数も、Rust の再帰を使わずに辿る。
 
 鍵の順序と鍵の等しさは、01-06「鍵の型（初回リリース版）」と 03-06 の同節のとおりとする（`Decimal` は数の等しさで比べ、同じ鍵を加えるときは元の鍵を保つ）。第 1 段はマップと集合を使わないので、本節は `task=C02` として足し、中身は R37 が書く。
 
@@ -1283,17 +1271,15 @@ pub fn values_equal<'e>(ctx: &ValueCtx<'e>, a: Value<'e>, b: Value<'e>) -> Resul
 
 ## コード生成から受け取る生存の情報
 
-二つのメモリの管理は、同じコード生成と同じ生存の情報から、値の写し・移動・最後の使用を決める（ADR 0259 の決定 2）。生存の情報の型は 10-07 の `crate::bytecode::liveness::LiveItem`（`LastUse { reg, sole }` と `Dead { reg }`）と、原型ごとに命令の位置で引く `LiveInfo`（`Proto::live.at(pc)`）であり、R05 が作る。ヒープと VM が 10-07 に求める内容と、10-07 の項目の対応は次のとおりである（10-07「生存の情報」の対応の表と同じ）。
+生存の情報の型は 10-07 の `crate::bytecode::liveness::LiveInfo` であり、R05 が作り、R16 が命令ごとの入口の生きているレジスタと呼び出しの命令の結果のレジスタを加えた（[ADR 0314](../../design/decisions/0314-clear-dead-registers-at-safepoints.md)）。ヒープと VM が 10-07 に求める内容と、10-07 の情報の対応は次のとおりである（10-07「生存の情報」）。
 
-| 求める内容 | 10-07 の項目 | VM の使い方 | ヒープの関数 |
+| 求める内容 | 10-07 の情報 | VM の使い方 | ヒープの関数 |
 |---|---|---|---|
-| 命令ごとの、最後に使う被演算子のレジスタ | `LiveItem::LastUse` | 値を写さずに移す | `NoGcCtx::take`・`NoGcCtx::move_slot` |
-| 命令ごとの、その命令の後に使わなくなるレジスタ（被演算子でないものを含む） | 被演算子は `LastUse`、被演算子でないものは次の命令か跳ぶ先の命令の `LiveItem::Dead` | 空にする | `NoGcCtx::clear` |
-| 呼び出しの命令ごとの、呼び出しをまたいで生きているレジスタ | 窓のレジスタから、その命令の `Dead` と `LastUse` を除いたもの | ほかのレジスタを呼ぶ前に空にし、呼ばれた側が回収したときに呼び出し元の死んだ値を残さない | `NoGcCtx::clear` |
-| 最後に使う被演算子が、同じ命令のほかの被演算子と同じレジスタでないこと | `LastUse::sole` | その場での再利用を許すかの判定 | `NoGcCtx::reuse_ctor` |
-| 待つ組み込みの関数の呼び出しで、引数のレジスタを完了まで生かすこと | `IO` と、権限が `Pure` でない `PRIM` の引数に `LastUse` を付けない | 完了の処理が引数を読み直す（10-11「作業用のスレッドの仕事」） | — |
+| 回収の時点で、各枠の窓のうち、再開の後に書かれる前に読まれうるレジスタ | `LiveInfo::live_in_at(pc)` と、呼び出しの途中の枠では `LiveInfo::call_write(pc − 1)` | 回収のために区間を閉じる前に、集合に含まれないレジスタを空にする（ADR 0314 の決定 2・3） | `NoGcCtx::clear` |
+| 待つ組み込みの関数の呼び出しで、引数のレジスタを完了まで生かすこと | 完了を待つ枠は命令の入口の集合を使うので、引数が含まれる。`IO` と、権限が `Pure` でない `PRIM` の引数に `LastUse` を付けない | 完了の処理が引数を読み直す（10-11「作業用のスレッドの仕事」） | — |
+| 命令ごとの、最後に使う被演算子のレジスタ・使わなくなるレジスタ・`LastUse::sole` | `LiveItem::LastUse`・`LiveItem::Dead` | R16 の後の VM は読まない。参照カウント（タグ `stage1-rc-final`）は、移す（`take`・`move_slot`）、空にする（`clear`）、再利用の判定（`reuse_ctor`）に使った | — |
 
-`CONR` の引数は、`LastUse` が付いていても移さずに `load` で読み、`reuse_ctor` の後に空にする（本章「その場での再利用」）。
+R16 の後の VM は、被演算子をすべて `NoGcCtx::load` で読む。読んだ `Value<'e>` は区間の中だけで使う（不変条件 H4）。
 
 窓を縮めたときと呼び出しの枠を降ろしたときに、窓の外になったレジスタを空にするのは、生存の情報によらず VM が行う（[仮想機械](../../design/02-impl/02-08-vm.md)の「枠を降ろす原因と処理」）。
 
@@ -1303,7 +1289,7 @@ pub fn values_equal<'e>(ctx: &ValueCtx<'e>, a: Value<'e>, b: Value<'e>) -> Resul
 
 | 確かめ方 | 本章の口 |
 |---|---|
-| 回収の強制 | `HeapConfig::stress`（機能 `gc-stress` で常に真として扱う）。`Heap::collect_requested` が常に真になり、参照カウントでは回収ごとに循環の回収も行う |
+| 回収の強制 | `HeapConfig::stress`（機能 `gc-stress` で常に真として扱う）。`Heap::collect_requested` が常に真になる |
 | ヒープの検証器 | `Heap::verify`。`heap-verify` の構成で、`Heap::collect` の前後に内部の層が呼ぶ |
 | 解放した領域の毒 | `POISON_BYTE`。`heap-verify` の構成で、解放した対象の中身を埋める |
 | ヒープの番号 | `Slot` の `HeapNo`。すべての構成で、`Slot` を読む・書き換える・辿る関数が比べ、`Heap::take_fault` で知らせる（ADR 0281） |
@@ -1529,7 +1515,7 @@ require_sync(&slot.is_immediate());
 | R01 | `core.rs` とその子（ヒープの番号の割り当て、確保器、対象の頭、根の列挙の土台、解放の関数と `frees` の計数）、`ValueCtx` の確保と頭の読み書き |
 | R02 | `Heap::new`・`Heap::epoch`、`NoGcCtx` と `SlotOps` の `Slot` の関数（ヒープの番号の比較を含む）、セルと `Host` の関数、`Tracer`・`Discarder`、`RootStack`、コンパイルの失敗のテスト |
 | R03 | `gc-mark-sweep` の `Heap::collect`・`collect_requested`・`take_collect_signal`、回収の閾値 |
-| R04 | `gc-refcount` の数の増減、解放の候補と区間の外での遅らせた解放、`Heap::collect`、ADR 0239 の循環の回収、`reuse_ctor`（`HeapConfig::reuse` を含む） |
+| R04 | `gc-refcount` の数の増減、解放の候補と区間の外での遅らせた解放、`Heap::collect`、ADR 0239 の循環の回収、`reuse_ctor`（`HeapConfig::reuse` を含む）。第 1 段の締め（R14）が `gc-refcount` とともに外し、`reuse_ctor` と `HeapConfig::reuse` の口だけが残る |
 | R06 | 種類ごとの `ValueCtx` の関数、`runtime::list`（第 1 段の連結リスト）、`runtime::equal`、値の大きさの表明を確かめるテスト |
 | R35 | `alloc_decimal`・`decimal`、`runtime::equal` の `Decimal` の比較（数として比べる。小数の桁数は比べない） |
 | R36 | `runtime::list` の表現を永続ベクタに移す |

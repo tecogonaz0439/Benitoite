@@ -1,6 +1,6 @@
 // spec: 01-01 ソースファイルと文字集合
 // spec: 01-01 文字列リテラル
-fn main() -> Unit {
-  let _ = "left‮right"
-  ()
-}
+function main() -> Unit
+  bind _ <- "left‮right"
+  return ()
+end function

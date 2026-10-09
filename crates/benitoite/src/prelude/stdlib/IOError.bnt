@@ -1,0 +1,9 @@
+//! Failures of IO operations. The type `IOError` is built in.
+
+/// Returns a human-readable description of the failure. The wording may change between versions.
+@builtin("IOError.message")
+public function message(e: IOError) -> String
+
+/// Returns the kind of the failure.
+@builtin("IOError.kind")
+public function kind(e: IOError) -> IOErrorKind

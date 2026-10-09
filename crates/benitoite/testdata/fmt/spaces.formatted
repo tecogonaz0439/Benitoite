@@ -1,0 +1,26 @@
+// spec: 01-01 演算子と区切り記号
+// 06-03「字句の間の空白」
+import Benitoite.IO.Console
+
+record Person
+  name: String
+  age: Integer
+end record
+
+function getOr[A](opt: Option[A], default: A) -> A
+  return match opt with
+    case Option.Some(x) -> x
+    case Option.None -> default
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  bind p <- Person(name: "a", age: 1)
+  bind q <- Person(..p, age: 2)
+  bind xs <- [1, 2, 3]
+  bind n: Integer <- -(1 + 1)
+  bind inc <- lambda(x: Integer) return x + 1 end lambda
+  bind ys <- xs |> List.map(inc)
+  bind ok <- not (n > 0 and n < 10)
+  Console.writeLine("n=${n} ok=${ok} ys=${ys}")
+end function

@@ -1,61 +1,63 @@
-type Expr {
-  Lit(Int)
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+data Expr
+  Lit(Integer)
   Add(Expr, Expr)
   Inc(Expr)
-  Scale(Expr, Int)
-}
+  Scale(Expr, Integer)
+end data
 
-fn readCount() -> Result[Int, String] uses IO {
-  match List.head(Process.args()) {
-    None => Err("expected one non-negative integer argument")
-    Some(argument) => match Int.parse(argument) {
-      None => Err("expected one non-negative integer argument")
-      Some(count) => if count < 0 {
-        Err("expected one non-negative integer argument")
-      } else {
-        Ok(count)
-      }
-    }
-  }
-}
+function readCount() -> Result[Integer, String] uses Process.Environment
+  return match List.head(Process.arguments()) with
+    case Option.None -> Result.Error("expected one non-negative integer argument")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.None -> Result.Error("expected one non-negative integer argument")
+      case Option.Some(count) -> if count < 0 then
+        Result.Error("expected one non-negative integer argument")
+      else
+        Result.Ok(count)
+      end if
+    end match
+  end match
+end function
 
-fn buildExpression(depth: Int) -> Expr {
-  if depth == 0 {
+function buildExpression(depth: Integer) -> Expr
+  return if depth = 0 then
     Expr.Lit(1)
-  } else {
-    let smaller = buildExpression(depth - 1)
-    match Int.mod(depth, 3) {
-      0 => Expr.Add(smaller, Expr.Lit(depth))
-      1 => Expr.Inc(smaller)
-      _ => Expr.Scale(smaller, 1)
-    }
-  }
-}
+  else
+    bind smaller <- buildExpression(depth - 1)
+    match Integer.floorModulo(depth, 3) with
+      case 0 -> Expr.Add(smaller, Expr.Lit(depth))
+      case 1 -> Expr.Inc(smaller)
+      case _ -> Expr.Scale(smaller, 1)
+    end match
+  end if
+end function
 
-fn evaluate(expression: Expr) -> Int {
-  match expression {
-    Expr.Lit(value) => value
-    Expr.Add(left, right) => evaluate(left) + evaluate(right)
-    Expr.Inc(inner) => evaluate(inner) + 1
-    Expr.Scale(inner, factor) => evaluate(inner) * factor
-  }
-}
+function evaluate(expression: Expr) -> Integer
+  return match expression with
+    case Expr.Lit(value) -> value
+    case Expr.Add(left, right) -> evaluate(left) + evaluate(right)
+    case Expr.Inc(inner) -> evaluate(inner) + 1
+    case Expr.Scale(inner, factor) -> evaluate(inner) * factor
+  end match
+end function
 
 // 式の深さは固定し、入力の回数だけ評価を繰り返す。深さを入力にすると、比較対象の処理系の再帰の上限に先に達するからである。
-fn repeatEvaluate(expression: Expr, count: Int, total: Int) -> Int {
-  if count == 0 {
+function repeatEvaluate(expression: Expr, count: Integer, total: Integer) -> Integer
+  return if count = 0 then
     total
-  } else {
+  else
     repeatEvaluate(expression, count - 1, total + evaluate(expression))
-  }
-}
+  end if
+end function
 
-fn main() -> Result[Unit, String] uses IO {
-  match readCount() {
-    Err(message) => Err(message)
-    Ok(count) => {
-      Console.println(Int.toString(repeatEvaluate(buildExpression(500), count, 0)))
-      Ok(())
-    }
-  }
-}
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match readCount() with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(count) ->
+      Console.writeLine(Integer.toString(repeatEvaluate(buildExpression(500), count, 0)))
+      Result.Ok(())
+  end match
+end function

@@ -1,0 +1,23 @@
+warning[W0301]: `old` is deprecated
+  --> testdata/warnings/c11-mixed-count.bnt:6:3
+   |
+ 6 |   old()
+   |   ^^^ deprecated
+   |
+  ::: testdata/warnings/c11-mixed-count.bnt:3:10
+   |
+ 3 | function old() -> Unit
+   |          --- declared deprecated here
+   |
+   = note: use current instead
+
+error[E0401]: mismatched types
+  --> testdata/warnings/c11-mixed-count.bnt:7:22
+   |
+ 7 |   bind n: Integer <- "bad"
+   |                      ^^^^^ expected `Integer`, found `String`
+   |           ------- expected because of this
+   |
+   = note: the value must match the type annotation
+
+error: could not check testdata/warnings/c11-mixed-count.bnt due to 1 previous error; 1 warning emitted

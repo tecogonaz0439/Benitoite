@@ -1,0 +1,18 @@
+// 設計書 03-07「Random」。種 42 の期待値は仕様の手順から独立に算出した。
+// 関門: 生成器の受け渡しと多相の戻り値を CLI から使う契約を守る。
+// 本体の単体テストはコンパイル経路を通らず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Random
+function main() -> Unit uses Console.Write
+  bind generator <- Random.fromSeed(42)
+  bind first <- Random.nextInteger(generator, -10, 10)
+  bind second <- Random.nextInteger(Pair.second(first), -10, 10)
+  bind third <- Random.nextInteger(Pair.second(second), -10, 10)
+  Console.writeLine(Trait.Show.show([Pair.first(first), Pair.first(second), Pair.first(third)]))
+  bind fraction <- Random.nextFloat(Pair.second(third))
+  Console.writeLine(Trait.Show.show(Pair.first(fraction) = 0.9246929453253876))
+  bind shuffled <- Random.shuffleWith(Pair.second(fraction), [1, 2, 3, 4])
+  Console.writeLine(Trait.Show.show(Pair.first(shuffled)))
+  Console.writeLine(Integer.toString(Pair.first(Random.nextInteger(generator, -10, 10))))
+end function

@@ -1,20 +1,20 @@
 // spec: 01-05 値の構築
 // spec: 01-05 パターン
 // spec: 01-05 prelude が定める型
-type Tree {
+data Tree
     Leaf
     Branch
-}
+end data
 
-fn bad_pattern(value: Tree) -> Unit {
-    match value {
-        Tree.Leaf() => ()
-        Tree.Branch => ()
-    }
-}
+function bad_pattern(value: Tree) -> Unit
+    return match value with
+        case Tree.Leaf() -> ()
+        case Tree.Branch -> ()
+    end match
+end function
 
-fn main() -> Unit {
-    let _ = Tree.Leaf()
-    let _ = None()
-    ()
-}
+function main() -> Unit
+    bind _ <- Tree.Leaf()
+    bind _ <- Option.None()
+    return ()
+end function

@@ -1,0 +1,119 @@
+//! HTTP/1.1 servers without TLS and clients for http and https URLs.
+//! The resource types `Listener` and `Exchange` are built in.
+//! The server has no limit on the number of connections or the time a client may take to send a request.
+//! Listen on 127.0.0.1, or put the server behind a reverse proxy; do not expose it to the internet directly.
+
+import Benitoite.Unofficial.Json
+
+/// Listening for connections, accepting requests, and responding.
+public effect Listen
+  /// Starts listening on `port` of `host`. Port 0 lets the operating system choose a free port.
+  function listen(host: String, port: Integer) -> Result[Listener, NetworkError]
+  /// Returns the port the listener listens on.
+  function listenerPort(listener: Listener) -> Integer
+  /// Waits for the next request and accepts it. Other tasks run while it waits.
+  function accept(listener: Listener) -> Result[Exchange, NetworkError]
+  /// Sends the response. Stops the program when called twice for one exchange.
+  function respond(exchange: Exchange, response: Response) -> Result[Unit, NetworkError]
+end effect
+
+/// Connecting to HTTP servers and sending requests.
+public effect Connect
+  /// Sends the request and returns the response, including 4xx and 5xx responses.
+  function send(request: ClientRequest) -> Result[Response, NetworkError]
+end effect
+
+/// A request received by a server. Header names are in lowercase, in the order received.
+public record Request
+  method: String
+  path: String
+  query: List[Pair[String, String]]
+  headers: List[Pair[String, String]]
+  body: Bytes
+end record
+
+/// A response sent by a server or received by a client.
+public record Response
+  status: Integer
+  headers: List[Pair[String, String]]
+  body: Bytes
+end record
+
+/// A request sent by a client, made with `Http.clientRequest` and changed with record update.
+public record ClientRequest
+  method: String
+  url: String
+  headers: List[Pair[String, String]]
+  body: Bytes
+  timeoutMilliseconds: Integer
+end record
+
+/// Returns the request that was accepted. Stops the program when the exchange is closed or being closed.
+@builtin("Network.Http.requestOf")
+public function requestOf(exchange: Exchange) -> Request
+
+/// Stops listening. A `with` binding closes the listener in the same way.
+@builtin("Network.Http.closeListener")
+public function closeListener(listener: Listener) -> Result[Unit, NetworkError] uses State
+
+/// Sends status 500 when no response was sent, then closes the connection.
+/// A `with` binding closes the exchange in the same way, ignoring failures.
+@builtin("Network.Http.closeExchange")
+public function closeExchange(exchange: Exchange) -> Result[Unit, NetworkError] uses State
+
+/// Splits `path` at `/`, drops empty parts, and decodes percent-encoding where the result is valid UTF-8.
+@builtin("Network.Http.pathSegments")
+public function pathSegments(path: String) -> List[String]
+
+/// Listens on `port` of `host` and runs `handler` in a new task for each request.
+/// Returns `Result.Error` when listening cannot start or accepting fails.
+public function serve[effect E](host: String, port: Integer, handler: function(Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
+  with listener = try listen(host, port),
+    group = TaskGroup.open() do
+    return serveLoop(listener, group, handler)
+  end with
+end function
+
+function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: function(Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
+  bind exchange <- try accept(listener)
+  bind _ <- TaskGroup.spawn(group, lambda()
+    with current = exchange do
+      return respond(current, handler(requestOf(current)))
+    end with
+  end lambda)
+  return serveLoop(listener, group, handler)
+end function
+
+/// Returns a response whose body is `s` as plain text.
+public function text(status: Integer, s: String) -> Response
+  return Response(status: status, headers: [Pair("content-type", "text/plain; charset=utf-8")], body: String.toUTF8(s))
+end function
+
+/// Returns a response whose body is `s` as HTML.
+public function html(status: Integer, s: String) -> Response
+  return Response(status: status, headers: [Pair("content-type", "text/html; charset=utf-8")], body: String.toUTF8(s))
+end function
+
+/// Returns a response whose body is `value` written by `Json.stringify`.
+public function json(status: Integer, value: Json.Value) -> Response
+  return Response(status: status, headers: [Pair("content-type", "application/json")], body: String.toUTF8(Json.stringify(value)))
+end function
+
+/// Returns the value of the first header whose name equals `name`, ignoring case.
+public function header(headers: List[Pair[String, String]], name: String) -> Option[String]
+  bind wanted <- String.toLowercase(name)
+  return match List.find(headers, lambda(h) return String.toLowercase(Pair.first(h)) = wanted end lambda) with
+    case Option.Some(h) -> Option.Some(Pair.second(h))
+    case Option.None -> Option.None
+  end match
+end function
+
+/// Returns a request with no headers, an empty body, and a timeout of 30000 milliseconds.
+public function clientRequest(method: String, url: String) -> ClientRequest
+  return ClientRequest(method: method, url: url, headers: [], body: Bytes.empty(), timeoutMilliseconds: 30000)
+end function
+
+/// Sends a GET request to `url`, as `Http.send(Http.clientRequest("GET", url))`.
+public function get(url: String) -> Result[Response, NetworkError] uses Connect
+  return send(clientRequest("GET", url))
+end function

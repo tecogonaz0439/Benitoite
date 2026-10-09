@@ -1,13 +1,13 @@
 # ライブラリの構成
 
 - 状態: 確定
-- 関連ADR: [0003](../decisions/0003-license.md), [0077](../decisions/0077-abolish-go-layer.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0143](../decisions/0143-http-and-tls-crates.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)
-- 未決事項: [OPEN-049](../open-issues.md#open-049), [OPEN-051](../open-issues.md#open-051)
+- 関連ADR: [0003](../decisions/0003-license.md), [0077](../decisions/0077-abolish-go-layer.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0143](../decisions/0143-http-and-tls-crates.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0162](../decisions/0162-event-loop-and-worker-threads-for-io.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0336](../decisions/0336-command-substitute-library-policy.md)
+- 未決事項: [OPEN-049](../open-issues.md#open-049), [OPEN-051](../open-issues.md#open-051), [OPEN-079](../open-issues.md#open-079), [OPEN-080](../open-issues.md#open-080), [OPEN-081](../open-issues.md#open-081), [OPEN-082](../open-issues.md#open-082), [OPEN-094](../open-issues.md#open-094)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 10
 
 ## 目的と範囲
 
-標準ライブラリをどう作るかを定める。対象は、標準ライブラリの関数の実装の方法の区分、prelude と import を要するモジュールの分担、外部に作用する関数が守る規則、実装に使う Rust のクレートとそのライセンスである。各モジュールの関数は、[標準ライブラリ](03-06-stdlib.md)、[IO のモジュール](03-07-io-modules.md)、[テキストとデータの処理](03-08-text-and-data.md)、[ネットワークのモジュール](03-09-network.md)で定める。
+標準ライブラリをどう作るかを定める。対象は、標準ライブラリの関数の実装の方法の区分、prelude と import を要するモジュールの分担、外部に作用する関数が守る規則、実装に使う Rust のクレートとそのライセンスである。あわせて、初回リリース版の後にコマンドを代替する機能を加えるときの作り方を定める。各モジュールの関数は、[標準ライブラリ](03-06-stdlib.md)、[IO のモジュール](03-07-io-modules.md)、[テキストとデータの処理](03-08-text-and-data.md)、[ネットワークのモジュール](03-09-network.md)で定める。
 
 設計メモの 3 層の構成（core・std・go.*）のうち、go.* の層は廃止した（[ADR 0077](../decisions/0077-abolish-go-layer.md)）。本章は、残る二つの層を一つの標準ライブラリとして扱う。
 
@@ -83,6 +83,12 @@
 - 依存を加えるときは、`cargo deny` のライセンスの検査で確かめ、許可の一覧のうち実際に要るものだけを `deny.toml` に加える。
 - 配布物には、依存のクレートの著作権とライセンスの表示をまとめたファイルを同梱する。ファイルの作り方は[配布形態](../05-platform/05-01-distribution.md)で定める。
 
+### C のコードを含むクレートの扱い（初回リリース版の後）
+
+初回リリース版の依存のクレート（前述の「使う Rust のクレート」）は、どれも C のコードを含まず、ビルドに Rust のツールチェーンだけを要する。この性質は [ADR 0138](../decisions/0138-crates-and-licenses-for-stdlib.md)・[ADR 0143](../decisions/0143-http-and-tls-crates.md) でクレートを選んだ結果として成り立っており、一般の方針として決めた ADR はない。初回リリース版の後に検討している機能には、C のライブラリやシステムの共有ライブラリに依存するクレートを要しうるもの（FIDO2 の物理キー、OS のキーストアなど）がある（[サーバモード](../06-tooling/06-07-server.md)の「認証と承認」）。
+
+【未決】依存の基準（ビルドは Rust のツールチェーンだけ、実行時は OS の部品以外の共有ライブラリを読まない）を一般の方針とするか、するなら例外をどう認めるかは、[OPEN-094](../open-issues.md#open-094) で決める。
+
 ### 処理系が特別に扱う型と関数
 
 【方針】処理系は、標準ライブラリの一部の型・関数・エフェクトを、言語の規則の中で特別に扱う。
@@ -106,7 +112,26 @@
 
 標準ライブラリを読み込む前に処理系が必要とする情報（組み込みの関数の表）は、[名前解決とモジュール読込](../02-impl/02-04-resolver.md)で定める。
 
+### コマンドを代替するライブラリの作り方（初回リリース版の後）
+
+コーディングエージェントがシェルで行う作業（ファイルの複写、検索、置換、git の操作など）を `Process.run` で外部コマンドに任せると、エフェクトは `Process.Run` の一つになり、コマンドが中で行う操作は処理系の検査の外にある（[IO のモジュール](03-07-io-modules.md)の「外部コマンドの起動とシェル」）。同じ操作をライブラリの関数で書けば、エフェクトと権限の対象（パスなど）が型と権限の表示に現れる。初回リリース版の後に、こうしたコマンドを代替する機能を加えるときの作り方を定める。
+
+【決定】コマンドを代替する機能は、次の方針で作る（[ADR 0336](../decisions/0336-command-substitute-library-policy.md)）。
+
+1. 既設の関数を組み合わせて書ける操作には、コマンドに当たる関数を新しく作らない。
+2. コマンドの操作をそのまま再現しない。コマンドの名前・オプション・出力の形式（`grep -rn` の出力の行、`sed` の式、`find` の述語など）をなぞる関数は作らない。加えるのは、既設の関数を組み合わせても書けない機能か、書けても安全や性能の面で処理系が持つべき機能に限る。
+3. 言語の作りに合った形で作る。結果は文字列の出力ではなく、レコードやリストなどの型の付いた値で返す。外部の資源はリソースとして `with` で開き、後始末を言語に任せる。権限の対象（パス、コマンドなど）が型と権限の確認に現れる形にする。失敗は `Result` と `IOError` で返す。
+
+外部のコマンドを包むライブラリ（git のラッパーなど）も同じ方針で作り、コマンドの引数を組み立てる薄い層にせず、操作を型の付いた関数とエフェクトとして表す。
+
+【未決】どの機能をどの順で加えるかは [OPEN-079](../open-issues.md#open-079)、標準ライブラリの関数・コマンドを包むライブラリ・`Process.run` の選び方をエージェントにどう示すかは [OPEN-080](../open-issues.md#open-080)、外部のライブラリが宣言するエフェクトを権限の表示にどう出すかは [OPEN-081](../open-issues.md#open-081)、git の提供のしかたとエフェクトの分け方は [OPEN-082](../open-issues.md#open-082) で決める。
+
 ## 未決事項
 
 - [OPEN-049](../open-issues.md#open-049): パッケージの名前空間と取り込み方
 - [OPEN-051](../open-issues.md#open-051): 外部の関数（WASM）の詳細
+- [OPEN-079](../open-issues.md#open-079): コマンドを代替する機能の範囲と優先度
+- [OPEN-080](../open-issues.md#open-080): 外部コマンドを使う操作の選び方と、エージェントへの示し方
+- [OPEN-081](../open-issues.md#open-081): 外部のライブラリのエフェクトを、権限の表示にどう出すか
+- [OPEN-082](../open-issues.md#open-082): git の提供のしかたと、エフェクトの分け方
+- [OPEN-094](../open-issues.md#open-094): 依存のクレートの基準を一般の方針とするか

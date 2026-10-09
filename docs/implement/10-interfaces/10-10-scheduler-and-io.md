@@ -18,7 +18,7 @@
 | 転送していない量の上限 B | 出力ごとに 1 MiB（1,048,576 バイト） | 転送を依頼する大きさ（64 KiB）の 16 倍とし、書き出しが遅い出力先でも VM がすぐには待たないようにする |
 | 出力先が端末かの判定 | 実行を始めるときに、出力先ごとに一度だけ Rust の `std::io::IsTerminal` で調べる。メモリに捕らえる出力先は端末でないとする | 標準ライブラリで判定でき、依存を増やさない |
 
-作業用のスレッドの数の既定は、R26 の測定で見直してよい。見直したら本表を改める。
+作業用のスレッドの数の既定は、R40 の測定で見直してよい。見直したら本表を改める。
 
 ## タスクとスケジューラ
 
@@ -66,7 +66,7 @@ pub struct Scheduler {
 }
 ```
 
-次の関数の中身は R25 が書く。
+次の関数の中身は R25 が書く。ただし、`new_ext_op_id` と `new_timer_id` の中身（欄の計数を一つ進めて番号を返す）は、ブロックする解放の操作の番号を作るために R24 が書く。
 
 ```rust sig=src/runtime/sched/mod.rs
 use self::parts::TaskPicker;
@@ -135,6 +135,9 @@ use crate::vm::TaskId;
 pub trait TaskPicker: Debug {
     /// 待ち行列の中から次に進めるタスクの位置を返す。空なら `None`。
     fn pick(&mut self, ready: &VecDeque<TaskId>) -> Option<usize>;
+    /// タスクを起動したことを知らせる（`serial` は起動の通し番号。メインのタスクは 0）。
+    /// テスト用の実装が、筋書きの起動の通し番号で選ぶ指示を引くために使う。既定は何もしない。
+    fn spawned(&mut self, _serial: u64, _task: TaskId) {}
 }
 
 /// 実際の実装: 待ち行列の先頭を選ぶ。
@@ -175,6 +178,13 @@ pub trait WorkerExec: Debug {
     fn try_recv(&mut self) -> Option<Completion>;
     /// 進められるタスクがないときに待つ。`deadline` は次のタイマーの期限（単調な時計のミリ秒）。
     fn idle(&mut self, deadline: Option<u64>) -> IdleWake;
+    /// この部品が使ってほしい起こし口。`run_program` は、`RunEnv::parts` で部品を受け取ったとき、
+    /// これが `Some` ならその `Wakeup` を出力と IO 実行器に渡し、`None` なら `mio` を使わない形を作る。
+    /// テスト用の部品が、書き出し用のスレッドの知らせを待てる形を渡すために使う。
+    /// R27 が加えた既定の本体付きの関数。本物の部品と既存の部品は既定のまま。
+    fn wakeup(&self) -> Option<Wakeup> {
+        None
+    }
 }
 
 /// 差し替える部品の組。実行ごとに一つ持つ。
@@ -186,7 +196,7 @@ pub struct RuntimeParts {
 }
 ```
 
-実際の実装の作り方と、テスト用の実装は R25（`TaskPicker`・`Clock`）と R26（`WorkerExec`）が書く。テスト用の実装の筋書きの型（どのタスクを選ぶか、いつ時間を進めるか、どの仕事をいつ実行するか）は R25 が決め、`src/runtime/sched/testing.rs` に置く。`sched/mod.rs` は `pub mod testing;` と宣言する。`#[cfg(test)]` にしないのは、統合テスト（`tests/`）と CLI のテストの補助が、テスト用の部品を公開の API として使うからである（ADR 0274）。C02 は、宣言に合わせて中身のないモジュールを置く。
+実際の実装の作り方と、テスト用の実装は R25（`TaskPicker`・`Clock`）と R26（`WorkerExec` のテスト用の実装）が書き、`WorkerExec` の実際の実装（作業用のスレッド）は R40 が書く。`TaskPicker::spawned` は 2026-10-06 に加えた（既存の関数は変えない）。VM はタスクを起動するたびに呼び、テスト用の実装は筋書きの起動の通し番号と `TaskId` の対応をこれで受け取る（R26）。引数名の頭の `_` は、既定の本体で引数を使わないことへの `unused_variables` を避けるためである。テスト用の実装の筋書きの型（どのタスクを選ぶか、いつ時間を進めるか、どの仕事をいつ実行するか）は R25 が決め、`src/runtime/sched/testing.rs` に置く。`sched/mod.rs` は `pub mod testing;` と宣言する。`#[cfg(test)]` にしないのは、統合テスト（`tests/`）と CLI のテストの補助が、テスト用の部品を公開の API として使うからである（ADR 0274）。C02 は、宣言に合わせて中身のないモジュールを置く。
 
 ```rust sig=src/runtime/sched/parts.rs
 use crate::runtime::io::event::Wakeup;
@@ -220,7 +230,7 @@ impl RuntimeParts {
 | 部品 | `on_wait_point` の結果 | VM の処理 |
 |---|---|---|
 | `DirectDispatcher` | 列の要求の番号をすべて `ServeNow` で返す（段階は `Queued` のまま） | 番号ごとに `take_for_serve` で要求を除いてハンドラ表の関数を呼び、応答を処理する（完了なら結果を入れて起こす、待つなら外部の操作の記録に登録するか、段階を改めて `live` に戻す）。途中で止める手順が始まったら、残りの番号は `expire_all` で失効しているので、`take_for_serve` が `None` を返す |
-| `RequestDispatcher` | 列の要求があれば段階を `Outstanding` にして `ReturnToExecutor` で返す。段階が `Outstanding` の要求があり、呼ばれた位置が遅い経路なら、空の `ReturnToExecutor` を返す | 実行関数から `VmStep::Requests` を返す。外側の実行器が `Vm::serve_request` を呼んでから実行を再開する |
+| `RequestDispatcher` | 列の要求があれば段階を `Outstanding` にして `ReturnToExecutor` で返す。段階が `Outstanding` の要求があり、呼ばれた位置が遅い経路か、進められるタスクがない待たせる位置なら、空の `ReturnToExecutor` を返す（進められるタスクがないまま `idle` で待つと、外側の応答が届かないので戻れない） | 実行関数から `VmStep::Requests` を返す。外側の実行器が `Vm::serve_request` を呼んでから実行を再開する |
 
 すぐに完了する操作の近道は設けない（ADR 0264 の決定 6）。近道を入れるときは、`DirectDispatcher` の中の分岐として一か所に置く。
 
@@ -499,7 +509,9 @@ pub fn accept_completion(
 
 ## リソースの表と状態
 
-リソースの表の項目は、種類、中身、状態、開いた位置を持つ（02-09「リソースの追跡」）。番号は実行の中で使い回さない。中身の OS の資源は、作業用のスレッドへ貸している間は表にない。
+リソースの表の項目は、種類、中身、状態、開いた位置を持つ（02-09「リソースの追跡」）。番号は実行の中で使い回さない。`lend`・`request_release` の戻り値は処理系の不具合を表せないので、呼び出し側（VM、R25・R26・R29・U3 の作業）は、呼ぶ前に R24 が置いた非公開の確かめの関数（`check_lend`・`check_release`）で番号と項目の状態を確かめ、食い違いを `Stop::Internal` で返す。中身の OS の資源は、作業用のスレッドへ貸している間は表にない。
+
+標準入力の読み手はリソースの表に載らない。別のタスクの仕事が読み手を借りているときの待ちは、`WaitReason::Lend` と `RequestPhase::AwaitLend` に、リソースの表に載せない予約の番号 `ResourceId(u64::MAX)`（R26 が `runtime::io` に定数として置く）を入れて表し、待つタスクの並びは `IoRuntime` に置く（R26「標準入力の貸し出しの待ち」）。
 
 リソースの状態の遷移は次のとおりである（ADR 0266 の決定 2・5）。タスクの状態との組み合わせの規則は、[ランタイム](../../design/02-impl/02-09-runtime.md)の「リソースの追跡」の表のとおりであり、組み合わせごとにテストを置く。
 
@@ -631,6 +643,7 @@ impl ResourceTable {
 | 時点 | 種類 | `OutputPort` の関数 |
 |---|---|---|
 | バッファが 64 KiB 以上になったとき、進められるタスクがなくなりイベントループで待つ前、端末への出力で改行を書いたとき | 依頼するだけ | `request_transfer` |
+| タスクが予算を使い切り、ほかのタスクへ切り替えるとき（ADR 0320。予算を使い切ったときの遅い経路で行い、命令ごと・呼び出しごとの経路には処理を加えない） | 依頼するだけ（バッファに出力があれば両方） | `request_transfer` |
 | 標準入力を読む前、`Process.runAttached` の前 | その時点までの完了を待つ（`WaitReason::Output(stream, Flush)` でタスクを待たせる） | `request_transfer` と `flush_target` |
 | 止める手順の終わり、プログラムを終える前 | 最後の転送と失敗の確かめを終える | `finish` |
 
@@ -748,9 +761,15 @@ pub struct Wakeup {
     inner: Arc<WakeupInner>,
 }
 
-/// `Wakeup` の中身。欄は R26 が決める。
+/// `Wakeup` の中身。欄は R26・R27・R40 が決める（R26 は欄を置かず、R40 が `mio` を使う形との分岐の欄を加え、
+/// R27 がその分岐にテスト用の部品が書き出し用のスレッドの知らせを待てる形を加える）。
 #[derive(Debug)]
 pub struct WakeupInner {}
+
+/// 中断のシグナルを実行ごとのイベントループに登録した印。落とすと登録を外す（`Drop`）。
+/// R28 が `InterruptSource::attach` とあわせて加えた。中身の欄は R28 が決める。
+#[derive(Debug)]
+pub struct InterruptGuard {}
 ```
 
 ```rust sig=src/runtime/io/event.rs
@@ -759,7 +778,7 @@ impl Wakeup {
 }
 ```
 
-イベントループの本体（`mio::Poll` の登録と待ち、タイマーとの組み合わせ）は R26 が `event.rs` に書く。`WorkerExec` の実際の実装の `idle` がこれを使う。
+`WakeupInner` の欄は、R26 が `mio` を使わない形（何もしない。テスト用の部品と Miri で動かすテストが使う）を、R40 が `mio::Waker` を持つ形を置く。イベントループの本体（`mio::Poll` の登録と待ち、タイマーとの組み合わせ）は R40 が `event.rs` に書く。`WorkerExec` の実際の実装の `idle` がこれを使う。
 
 ## 実行ごとの状態と VM のつなぎ目
 
@@ -774,7 +793,7 @@ VM の第 2 段の実行の関数は、`IoRuntime` を受け取る。第 1 段�
 
 use std::path::PathBuf;
 
-use super::event::Wakeup;
+use super::event::{InterruptGuard, Wakeup};
 use super::ops::{OpTable, StdinReader};
 use super::output::OutputPort;
 use super::resources::ResourceTable;
@@ -794,9 +813,23 @@ pub struct RunInput {
 pub trait InterruptSource: std::fmt::Debug {
     /// 中断の要求があるか（`Relaxed` で読む。ADR 0263 の決定 4）。
     fn requested(&self) -> bool;
+    /// 中断のシグナルで実行ごとのイベントループ（`wakeup` の `Poll`）が起きるように登録する。
+    /// 返した印を実行の終わりまで持ち、落とすと登録を外す。登録しない読み口は `Ok(None)` を返す。
+    /// R28 が加えた既定の本体付きの関数。`NoInterrupt` は既定のまま。
+    fn attach(&self, _wakeup: &Wakeup) -> std::io::Result<Option<InterruptGuard>> {
+        Ok(None)
+    }
+
+    /// 印そのものへの参照。振り分けのループが呼び出しのたびに動的な呼び出しなしで読むために使う。
+    /// 印を持たない読み口は `None` を返し、ループは呼び出しごとの印の読み出しを省く
+    /// （中断の要求が来ない読み口なので。切り替えの位置では `requested` を呼ぶ）。
+    /// R28 が加えた既定の本体付きの関数。`NoInterrupt` は既定のまま。
+    fn flag(&self) -> Option<&std::sync::atomic::AtomicBool> {
+        None
+    }
 }
 
-/// 実行ごとの状態のうちランタイムが持つもの。欄は R26 が加えてよい（下の欄は変えない）。
+/// 実行ごとの状態のうちランタイムが持つもの。欄は R26・R27 が加えてよい（下の欄は変えない）。
 /// スケジューラとリソースの表は 10-09 の `RunState` に置く。
 #[derive(Debug)]
 pub struct IoRuntime {
@@ -862,6 +895,8 @@ impl<'p> Vm<'p> {
 
 `Vm::run` と `Vm::serve_request` のファイルは `src/runtime/io/services.rs` とする。VM の内部（`RunState`）に触れるので、R26 は `vm` のモジュールに `pub(crate)` の補助の関数を置いてよい。
 
+`InterruptSource::attach` と `InterruptGuard` は 2026-10-07 に加えた（既存の関数は変えない）。`requested` だけでは、プロセス全体の中断の印から実行ごとのイベントループ（`Wakeup` の `Poll`）へシグナルを届ける口がなく、待っている VM を起こせないからである。`run_program` は、本物の部品を使う（`RunEnv::parts` が `None`）ときに `attach` を呼び、返った印を実行の終わりまで持つ。`NoInterrupt` は既定の本体のまま登録しないので、テストのプロセスにシグナルの処理は入らない。引数名の頭の `_` は、`TaskPicker::spawned` と同じく、既定の本体で引数を使わないことへの `unused_variables` を避けるためである。中身は R28 が書く。
+
 ## 完了の処理と行き詰まりの判定の順序
 
 VM が待たせる位置と遅い経路で行う順序は次のとおりである（02-08「タスクの切り替え」、ADR 0264 の決定 5、ADR 0266 の決定 8、ADR 0283）。R25・R26 は、この順を一つの関数にまとめ、どちらの方式でも同じ関数を通す。
@@ -880,8 +915,10 @@ VM が待たせる位置と遅い経路で行う順序は次のとおりであ�
 | 作業 | 本章で受け持つもの |
 |---|---|
 | C02 | 本章のすべての `file=` のコードと、`sig=` の `todo!()` の仮置き（00-02）を置く（C01 が作った中身のないモジュールを埋める） |
-| R24 | `ResourceTable` の関数（`take_release_job` を含む。仕事を出すのは R26） |
+| R24 | `ResourceTable` の関数（`take_release_job` を含む。仕事を出すのは R26）。`lend`・`request_release` の戻り値は処理系の不具合を表せないので、R24 が置く非公開の確かめの関数（`check_lend`・`check_release` の類）で、呼ぶ前に番号と項目の状態を確かめ、食い違いを `Stop::Internal` で返す（R25・R26 以降の呼び出し側も同じ。R24 の作業文書「凍結した戻り値で処理系の不具合を扱う方法」）。番号の計数は `wrapping_add` で進める |
 | R25 | `Scheduler` の関数、`TaskPicker`・`Clock` のテスト用の実装、筋書きの型と筋書きを進める境界（`sched/testing.rs`）、上の順序の関数、`StateServices` の実装 |
-| R26 | 送り出しの列と二つの部品、要求の段階と失効、`OpTable`・`accept_completion` と `Accepted` の処理、ブロックする解放の仕事の受け渡し、`WorkerExec` の実際の実装とテスト用の実装、イベントループ、`IoRuntime`・`IoView`、`Vm::run`・`serve_request`、上の順序の関数の手順 1・2。第 1 段の一時的な形（10-09 の `vm/stage1.rs`）を使う箇所（`runtime::run` と VM の単体テスト）をこれらに移してから消す |
+| R39 | 取り消しの要求で待ちを外す処理（`Scheduler::wake` と `ResourceTable::remove_waiter` を使う）、`Task.withTimeout` のタイマーの登録と、上の順序の関数の手順 3 で満了したタイマーを `SpawnWait::timer` と照らす処理 |
+| R26 | 送り出しの列と二つの部品、要求の段階と失効、`OpTable`・`accept_completion` と `Accepted` の処理、ブロックする解放の仕事の受け渡し、`WorkerExec` のテスト用の実装、`TaskPicker::spawned`、`mio` を使わない `Wakeup`、`RuntimeParts::real` の一時的な中身（仕事を VM のスレッドで実行する）、`IoRuntime`・`IoView`、`Vm::run`・`serve_request`、上の順序の関数の手順 1・2。第 1 段の一時的な形（10-09 の `vm/stage1.rs`）を使う箇所（`runtime::run` と VM の単体テスト）をこれらに移してから消す |
+| R40 | `mio` の追加、イベントループの本体と `mio` を使う `Wakeup`、`WorkerExec` の実際の実装（作業用のスレッド）と `RuntimeParts::real` |
 | R27 | `OutputPort` と書き出し用のスレッド |
 | R28 | 中断の要求の読み口と、ランタイムの止める手順 |

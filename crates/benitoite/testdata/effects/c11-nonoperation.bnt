@@ -1,0 +1,10 @@
+// spec: 01-06 エフェクトの宣言とハンドラの型付け（初回リリース版）
+// spec: 01-07 可変のセル（初回リリース版）
+function bad(r: Reference[Integer]) -> Integer uses State
+  return handle Reference.get(r) with
+    case Reference.get(x) -> resume(0)
+  end handle
+end function
+function main() -> Unit
+  ()
+end function

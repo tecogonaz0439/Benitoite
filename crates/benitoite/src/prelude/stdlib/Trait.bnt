@@ -1,0 +1,432 @@
+//! Standard type classes. Import `Benitoite.Trait` and write `Trait.Show.show(x)`.
+
+/// The result of comparing two values.
+public data Ordering
+  Less
+  Equal
+  Greater
+end data
+
+/// Values that can be shown as text close to how they are written in code.
+public trait Show[T]
+  /// Returns the text of `x`.
+  function show(x: T) -> String
+end trait
+
+/// Values with a total order.
+public trait Order[T]
+  /// Compares `x` with `y`.
+  function compare(x: T, y: T) -> Ordering
+end trait
+
+/// Values that can be combined.
+public trait Semigroup[T]
+  /// Combines `x` and `y`.
+  function combine(x: T, y: T) -> T
+end trait
+
+/// Values that can be combined and have an empty value.
+public trait Monoid[T: Semigroup]
+  /// Returns the empty value.
+  function empty() -> T
+end trait
+
+/// Containers whose values can be transformed.
+public trait Functor[F[_]]
+  /// Applies `f` to each value inside `x`.
+  function map[A, B, effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+end trait
+
+/// Functors that can wrap a value and apply wrapped functions.
+public trait Applicative[F[_]: Functor]
+  /// Wraps `x`.
+  function pure[A](x: A) -> F[A]
+  /// Applies the functions in `fs` to the values in `x`.
+  function apply[A, B, effect E](fs: F[function(A) -> B uses E], x: F[A]) -> F[B] uses E
+end trait
+
+/// Applicatives whose computations can depend on earlier values.
+public trait Monad[F[_]: Applicative]
+  /// Applies `f` to each value inside `x` and flattens the results.
+  function flatMap[A, B, effect E](x: F[A], f: function(A) -> F[B] uses E) -> F[B] uses E
+end trait
+
+/// Containers whose values can be combined in order.
+public trait Foldable[F[_]]
+  /// Combines the values from the first with `f`, starting from `initial`.
+  function fold[A, B, effect E](x: F[A], initial: B, f: function(B, A) -> B uses E) -> B uses E
+end trait
+
+/// Containers that can be walked through with an applicative effect.
+public trait Traversable[F[_]: Functor & Foldable]
+  /// Applies `f` to each value in order and collects the results inside `G`.
+  function traverse[G[_]: Applicative, A, B, effect E](x: F[A], f: function(A) -> G[B] uses E) -> G[F[B]] uses E
+end trait
+
+@builtin("Trait.showString")
+function showString(s: String) -> String
+
+@builtin("Trait.showCharacter")
+function showCharacter(c: Character) -> String
+
+// Show
+
+implement Show[Integer]
+  function show(x: Integer) -> String
+    return Integer.toString(x)
+  end function
+end implement
+
+implement Show[Float]
+  function show(x: Float) -> String
+    return Float.toString(x)
+  end function
+end implement
+
+implement Show[Decimal]
+  function show(x: Decimal) -> String
+    return Decimal.toString(x)
+  end function
+end implement
+
+implement Show[Byte]
+  function show(x: Byte) -> String
+    return Byte.toString(x)
+  end function
+end implement
+
+implement Show[Character]
+  function show(x: Character) -> String
+    return showCharacter(x)
+  end function
+end implement
+
+implement Show[String]
+  function show(x: String) -> String
+    return showString(x)
+  end function
+end implement
+
+implement Show[Boolean]
+  function show(x: Boolean) -> String
+    return if x then "true" else "false" end if
+  end function
+end implement
+
+implement Show[Unit]
+  function show(x: Unit) -> String
+    return "()"
+  end function
+end implement
+
+implement[T: Show] Show[List[T]]
+  function show(x: List[T]) -> String
+    bind items <- List.map(x, lambda(e) return Show.show(e) end lambda)
+    return "[" + String.join(items, ", ") + "]"
+  end function
+end implement
+
+implement[T: Show] Show[Option[T]]
+  function show(x: Option[T]) -> String
+    return match x with
+      case Option.Some(v) -> "Option.Some(" + Show.show(v) + ")"
+      case Option.None -> "Option.None"
+    end match
+  end function
+end implement
+
+implement[A: Show, B: Show] Show[Pair[A, B]]
+  function show(x: Pair[A, B]) -> String
+    bind Pair(a, b) <- x
+    return "Pair(" + Show.show(a) + ", " + Show.show(b) + ")"
+  end function
+end implement
+
+implement[A: Show, B: Show, C: Show] Show[Triple[A, B, C]]
+  function show(x: Triple[A, B, C]) -> String
+    bind Triple(a, b, c) <- x
+    return "Triple(" + Show.show(a) + ", " + Show.show(b) + ", " + Show.show(c) + ")"
+  end function
+end implement
+
+// Order
+
+implement Order[Integer]
+  function compare(x: Integer, y: Integer) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[Float]
+  function compare(x: Float, y: Float) -> Ordering
+    if Float.isNaN(x) then
+      return if Float.isNaN(y) then Ordering.Equal else Ordering.Greater end if
+    end if
+    if Float.isNaN(y) then
+      return Ordering.Less
+    end if
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[Decimal]
+  function compare(x: Decimal, y: Decimal) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[Byte]
+  function compare(x: Byte, y: Byte) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[Character]
+  function compare(x: Character, y: Character) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[String]
+  function compare(x: String, y: String) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[Boolean]
+  function compare(x: Boolean, y: Boolean) -> Ordering
+    return if x = y then Ordering.Equal else if y then Ordering.Less else Ordering.Greater end if
+  end function
+end implement
+
+implement Order[Unit]
+  function compare(x: Unit, y: Unit) -> Ordering
+    return Ordering.Equal
+  end function
+end implement
+
+implement[T: Order] Order[List[T]]
+  function compare(x: List[T], y: List[T]) -> Ordering
+    return compareListsFrom(x, y, 0)
+  end function
+end implement
+
+function compareListsFrom[T: Order](x: List[T], y: List[T], i: Integer) -> Ordering
+  return match Pair(List.get(x, i), List.get(y, i)) with
+    case Pair(Option.None, Option.None) -> Ordering.Equal
+    case Pair(Option.None, Option.Some(_)) -> Ordering.Less
+    case Pair(Option.Some(_), Option.None) -> Ordering.Greater
+    case Pair(Option.Some(a), Option.Some(b)) ->
+      match Order.compare(a, b) with
+        case Ordering.Equal -> compareListsFrom(x, y, i + 1)
+        case other -> other
+      end match
+  end match
+end function
+
+implement[T: Order] Order[Option[T]]
+  function compare(x: Option[T], y: Option[T]) -> Ordering
+    return match Pair(x, y) with
+      case Pair(Option.Some(a), Option.Some(b)) -> Order.compare(a, b)
+      case Pair(Option.Some(_), Option.None) -> Ordering.Less
+      case Pair(Option.None, Option.Some(_)) -> Ordering.Greater
+      case Pair(Option.None, Option.None) -> Ordering.Equal
+    end match
+  end function
+end implement
+
+implement[A: Order, B: Order] Order[Pair[A, B]]
+  function compare(x: Pair[A, B], y: Pair[A, B]) -> Ordering
+    bind Pair(a1, b1) <- x
+    bind Pair(a2, b2) <- y
+    return match Order.compare(a1, a2) with
+      case Ordering.Equal -> Order.compare(b1, b2)
+      case other -> other
+    end match
+  end function
+end implement
+
+implement[A: Order, B: Order, C: Order] Order[Triple[A, B, C]]
+  function compare(x: Triple[A, B, C], y: Triple[A, B, C]) -> Ordering
+    bind Triple(a1, b1, c1) <- x
+    bind Triple(a2, b2, c2) <- y
+    return match Order.compare(a1, a2) with
+      case Ordering.Equal ->
+        match Order.compare(b1, b2) with
+          case Ordering.Equal -> Order.compare(c1, c2)
+          case other -> other
+        end match
+      case other -> other
+    end match
+  end function
+end implement
+
+// Semigroup and Monoid
+
+implement Semigroup[String]
+  function combine(x: String, y: String) -> String
+    return x + y
+  end function
+end implement
+
+implement Monoid[String]
+  function empty() -> String
+    return ""
+  end function
+end implement
+
+implement[T] Semigroup[List[T]]
+  function combine(x: List[T], y: List[T]) -> List[T]
+    return List.concatenate(x, y)
+  end function
+end implement
+
+implement[T] Monoid[List[T]]
+  function empty() -> List[T]
+    return []
+  end function
+end implement
+
+// Functor, Applicative, Monad, Foldable, and Traversable for Option
+
+implement Functor[Option]
+  function map[A, B, effect E](x: Option[A], f: function(A) -> B uses E) -> Option[B] uses E
+    return Option.map(x, f)
+  end function
+end implement
+
+implement Applicative[Option]
+  function pure[A](x: A) -> Option[A]
+    return Option.Some(x)
+  end function
+
+  function apply[A, B, effect E](fs: Option[function(A) -> B uses E], x: Option[A]) -> Option[B] uses E
+    return match Pair(fs, x) with
+      case Pair(Option.Some(f), Option.Some(v)) -> Option.Some(f(v))
+      case _ -> Option.None
+    end match
+  end function
+end implement
+
+implement Monad[Option]
+  function flatMap[A, B, effect E](x: Option[A], f: function(A) -> Option[B] uses E) -> Option[B] uses E
+    return Option.andThen(x, f)
+  end function
+end implement
+
+implement Foldable[Option]
+  function fold[A, B, effect E](x: Option[A], initial: B, f: function(B, A) -> B uses E) -> B uses E
+    return match x with
+      case Option.Some(v) -> f(initial, v)
+      case Option.None -> initial
+    end match
+  end function
+end implement
+
+implement Traversable[Option]
+  function traverse[G[_]: Applicative, A, B, effect E](x: Option[A], f: function(A) -> G[B] uses E) -> G[Option[B]] uses E
+    return match x with
+      case Option.None -> Applicative.pure(Option.None)
+      case Option.Some(v) -> Functor.map(f(v), lambda(b) return Option.Some(b) end lambda)
+    end match
+  end function
+end implement
+
+// Functor, Applicative, Monad, Foldable, and Traversable for List
+
+implement Functor[List]
+  function map[A, B, effect E](x: List[A], f: function(A) -> B uses E) -> List[B] uses E
+    return List.map(x, f)
+  end function
+end implement
+
+implement Applicative[List]
+  function pure[A](x: A) -> List[A]
+    return [x]
+  end function
+
+  function apply[A, B, effect E](fs: List[function(A) -> B uses E], x: List[A]) -> List[B] uses E
+    return applyFrom(fs, x, 0, [])
+  end function
+end implement
+
+function applyFrom[A, B, effect E](fs: List[function(A) -> B uses E], xs: List[A], i: Integer, acc: List[B]) -> List[B] uses E
+  return match List.get(fs, i) with
+    case Option.None -> acc
+    case Option.Some(f) -> applyFrom(fs, xs, i + 1, List.concatenate(acc, List.map(xs, f)))
+  end match
+end function
+
+implement Monad[List]
+  function flatMap[A, B, effect E](x: List[A], f: function(A) -> List[B] uses E) -> List[B] uses E
+    return flatMapFrom(x, f, 0, [])
+  end function
+end implement
+
+function flatMapFrom[A, B, effect E](xs: List[A], f: function(A) -> List[B] uses E, i: Integer, acc: List[B]) -> List[B] uses E
+  return match List.get(xs, i) with
+    case Option.None -> acc
+    case Option.Some(v) -> flatMapFrom(xs, f, i + 1, List.concatenate(acc, f(v)))
+  end match
+end function
+
+implement Foldable[List]
+  function fold[A, B, effect E](x: List[A], initial: B, f: function(B, A) -> B uses E) -> B uses E
+    return List.fold(x, initial, f)
+  end function
+end implement
+
+implement Traversable[List]
+  function traverse[G[_]: Applicative, A, B, effect E](x: List[A], f: function(A) -> G[B] uses E) -> G[List[B]] uses E
+    return traverseFrom(x, f, 0, Applicative.pure([]))
+  end function
+end implement
+
+function traverseFrom[G[_]: Applicative, A, B, effect E](xs: List[A], f: function(A) -> G[B] uses E, i: Integer, acc: G[List[B]]) -> G[List[B]] uses E
+  return match List.get(xs, i) with
+    case Option.None -> acc
+    case Option.Some(v) ->
+      bind appendTo <- Functor.map(acc, lambda(bs) return lambda(b) return List.append(bs, b) end lambda end lambda)
+      traverseFrom(xs, f, i + 1, Applicative.apply(appendTo, f(v)))
+  end match
+end function
+
+// Show, Semigroup, and Monoid for Map and Set
+
+implement[K: key & Show, V: Show] Show[Map[K, V]]
+  function show(x: Map[K, V]) -> String
+    bind items <- List.map(Map.toList(x), lambda(p) return Show.show(p) end lambda)
+    return "Map.fromList([" + String.join(items, ", ") + "])"
+  end function
+end implement
+
+implement[T: key & Show] Show[Set[T]]
+  function show(x: Set[T]) -> String
+    bind items <- List.map(Set.toList(x), lambda(e) return Show.show(e) end lambda)
+    return "Set.fromList([" + String.join(items, ", ") + "])"
+  end function
+end implement
+
+implement[K: key, V] Semigroup[Map[K, V]]
+  function combine(x: Map[K, V], y: Map[K, V]) -> Map[K, V]
+    return Map.fromList(List.concatenate(Map.toList(x), Map.toList(y)))
+  end function
+end implement
+
+implement[K: key, V] Monoid[Map[K, V]]
+  function empty() -> Map[K, V]
+    return Map.empty()
+  end function
+end implement
+
+implement[T: key] Semigroup[Set[T]]
+  function combine(x: Set[T], y: Set[T]) -> Set[T]
+    return Set.union(x, y)
+  end function
+end implement
+
+implement[T: key] Monoid[Set[T]]
+  function empty() -> Set[T]
+    return Set.empty()
+  end function
+end implement

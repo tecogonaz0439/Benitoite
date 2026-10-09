@@ -1,0 +1,62 @@
+//! Points in time and calendar dates with a fixed offset from UTC. Time zone names are not used.
+
+/// A point in time, as nanoseconds since 1970-01-01T00:00:00Z.
+public record Instant
+  unixNanoseconds: Integer
+end record
+
+/// A calendar date and time seen with an offset of `offsetMinutes` from UTC.
+public record DateTime
+  year: Integer
+  month: Integer
+  day: Integer
+  hour: Integer
+  minute: Integer
+  second: Integer
+  nanosecond: Integer
+  offsetMinutes: Integer
+end record
+
+/// Returns the time `seconds` seconds after 1970-01-01T00:00:00Z.
+@builtin("Time.fromUnixSeconds")
+public function fromUnixSeconds(seconds: Integer) -> Instant
+
+/// Returns the time `milliseconds` milliseconds after 1970-01-01T00:00:00Z.
+@builtin("Time.fromUnixMilliseconds")
+public function fromUnixMilliseconds(milliseconds: Integer) -> Instant
+
+/// Returns the seconds since 1970-01-01T00:00:00Z, rounded toward negative infinity.
+@builtin("Time.toUnixSeconds")
+public function toUnixSeconds(t: Instant) -> Integer
+
+/// Returns the milliseconds since 1970-01-01T00:00:00Z, rounded toward negative infinity.
+@builtin("Time.toUnixMilliseconds")
+public function toUnixMilliseconds(t: Instant) -> Integer
+
+/// Returns the time `milliseconds` milliseconds after `t`.
+@builtin("Time.addMilliseconds")
+public function addMilliseconds(t: Instant, milliseconds: Integer) -> Instant
+
+/// Returns `a` minus `b` in milliseconds, rounded toward negative infinity.
+@builtin("Time.differenceMilliseconds")
+public function differenceMilliseconds(a: Instant, b: Instant) -> Integer
+
+/// Returns the date and time of `t` seen with an offset of `offsetMinutes` from UTC.
+@builtin("Time.toDateTime")
+public function toDateTime(t: Instant, offsetMinutes: Integer) -> DateTime
+
+/// Returns the time that `dt` stands for, or the reason when the date does not exist or is out of range.
+@builtin("Time.fromDateTime")
+public function fromDateTime(dt: DateTime) -> Result[Instant, String]
+
+/// Writes `t` in ISO 8601 form, such as 2026-09-28T12:34:56.789+09:00.
+@builtin("Time.formatISO8601")
+public function formatISO8601(t: Instant, offsetMinutes: Integer) -> String
+
+/// Reads ISO 8601 text that has an offset or `Z`.
+@builtin("Time.parseISO8601")
+public function parseISO8601(text: String) -> Result[Instant, String]
+
+/// Writes `t` by `pattern` with strftime specifiers such as %Y and %m. Unknown specifiers give `Result.Error`.
+@builtin("Time.format")
+public function format(t: Instant, offsetMinutes: Integer, pattern: String) -> Result[String, String]

@@ -1,0 +1,15 @@
+// spec: 01-06 高カインド型（初回リリース版）
+import Benitoite.Trait
+trait Functor[F[_]]
+  function map[A, B, effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+end trait
+implement Functor[Option]
+  function map[A, B, effect E](x: Option[A], f: function(A) -> B uses E) -> Option[B] uses E
+    return Option.map(x, f)
+  end function
+end implement
+function main() -> Unit
+  bind _ <- Functor.map(Option.Some(1), Integer.toString)
+  bind _ <- Trait.Functor.map(Option.Some(2), Integer.toString)
+  bind _ <- Trait.Functor.map([3], Integer.toString)
+end function

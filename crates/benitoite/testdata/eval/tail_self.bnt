@@ -1,8 +1,10 @@
 // spec: 01-08 末尾呼び出し
-fn sum_to(n: Int, acc: Int) -> Int {
-  if n == 0 { acc } else { sum_to(n - 1, acc + n) }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  Console.println(Int.toString(sum_to(1000000, 0)))
-}
+function sum_to(n: Integer, acc: Integer) -> Integer
+  return if n = 0 then acc else sum_to(n - 1, acc + n) end if
+end function
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(Integer.toString(sum_to(1000000, 0)))
+end function

@@ -1,0 +1,8 @@
+// spec: 01-03 標準ライブラリの名前空間と prelude（初回リリース版）
+// 設計書 03-06「標準のモジュールと非公式のモジュール（初回リリース版）」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Unofficial.Bytes
+function main() -> Unit
+  return ()
+end function

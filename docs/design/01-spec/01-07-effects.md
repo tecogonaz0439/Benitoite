@@ -2,7 +2,7 @@
 
 - 状態: 確定
 - 関連ADR: [0005](../decisions/0005-direct-style-effects.md), [0008](../decisions/0008-effect-variables.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0037](../decisions/0037-exit-status-values.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0048](../decisions/0048-ioerror-not-equality-type.md), [0063](../decisions/0063-ref-cells-with-io-effect.md), [0065](../decisions/0065-ioerror-kind.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0072](../decisions/0072-permission-path-matching.md), [0073](../decisions/0073-run-permission-command-matching.md), [0074](../decisions/0074-static-permission-check-by-name-reference.md), [0091](../decisions/0091-acronyms-in-uppercase.md), [0101](../decisions/0101-unabbreviated-names.md), [0107](../decisions/0107-bytes.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0186](../decisions/0186-run-time-policy-can-only-narrow.md), [0187](../decisions/0187-standalone-reads-user-policy-file.md), [0214](../decisions/0214-default-policies-allow-process-environment-with-no-names.md), [0215](../decisions/0215-shell-permission-allows-run-commands-via-shell.md), [0216](../decisions/0216-policy-deny-rules-and-standalone-defaults.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md)
-- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-015](../open-issues.md#open-015), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-057](../open-issues.md#open-057), [OPEN-062](../open-issues.md#open-062)
+- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-015](../open-issues.md#open-015), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-057](../open-issues.md#open-057), [OPEN-062](../open-issues.md#open-062), [OPEN-081](../open-issues.md#open-081), [OPEN-083](../open-issues.md#open-083), [OPEN-088](../open-issues.md#open-088)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 3.1–3.5
 
 ## 目的と範囲
@@ -72,7 +72,7 @@
 - 停止しないこと。
 - メモリなど、処理系の資源を使い果たすこと。
 
-可変のセルの操作も `State` エフェクトを持つので、純粋な関数（[型システム](01-06-type-system.md)）の結果は、初回リリース版でも引数だけで決まる。資源の不足（[評価意味論](01-08-evaluation.md)）を除けば、同じ引数で二度呼んだとき、同じ値を返すか、同じ実行時エラーを起こすか、どちらも停止しない。
+可変のセルの操作も `State` エフェクトを持つので、純粋な関数（[型システム](01-06-type-system.md)）の結果は、初回リリース版でも引数だけで決まる。資源の不足（[評価意味論](01-08-evaluation.md)）を除けば、同じ引数で二度呼んだとき、どちらも値を返したなら同じ値を返す。どちらかが実行時エラーで止まるとき、どの実行時エラーで止まるかは、関数の中で `Task.all`・`Task.allOk` が起動したタスクの切り替えの順序に依存しうる（[並行処理](01-11-concurrency.md)、[ADR 0319](../decisions/0319-task-results-and-pure-guarantee-under-switching.md)）。
 
 ### IO が起きる時期と順序
 
@@ -366,6 +366,18 @@ end function
 
 【方針】利用者が要る権限を読んで実行を承認する手順と、承認した後に権限や契約が変わったときの示し方は、[OPEN-015](../open-issues.md#open-015) で定める。
 
+### 外部のライブラリのエフェクトと権限の表示（初回リリース版の後）
+
+前節の実行の前の判定は `main` の型のエフェクトで行い、ハンドラで処理したエフェクトは `main` の型に現れない。そのため、外部のコマンドやサービスを包むライブラリ（git のラッパーなど）が専用のエフェクト（`Git.Read` など）を宣言し、既定のハンドラの中で `Process.run` を呼んでも、`main` の型と実行の前の権限の表示に残るのは `Process.Run` だけである。`Process.Run` の許可はコマンドの名前を単位とし、引数を問わない（前節の表）ので、利用者は、そのライブラリが行う操作の違い（`git log` と `git push` など）を権限の上で見分けられない。
+
+【未決】初回リリース版の後に、こうしたライブラリのエフェクトを権限の表示にどう出すかは、[OPEN-081](../open-issues.md#open-081) で決める。候補は、ライブラリのエフェクトのまま言語を変えない案、よく使う少数の道具のエフェクトを組み込みのエフェクトにする案、`Process.Run` の許可の対象を引数の先頭まで細かくする案（照合の規則は [OPEN-083](../open-issues.md#open-083)）、利用者がエフェクトのまとめを宣言できるようにする案である。どの道具のエフェクトを組み込みのエフェクトにするかは決めていない。
+
+### 秘密の値とエフェクト（初回リリース版の後）
+
+API キー・アクセス用のトークン・パスワードなどの秘密の情報（以下、秘密）を `String` の値で扱うと、スクリプトはそれを標準出力や記録に書き出せる。コーディングエージェントの下では、エージェントが標準出力を捕らえて LLM に渡すので、書き出した秘密は LLM に渡る。
+
+【未決】初回リリース版の後に、中身を見せない秘密の型（`Secret` の案）と、秘密を受け取る操作と文字列として取り出す操作のエフェクト（`Secret.Read`・`Secret.Reveal` の案）を設けるかは、[OPEN-088](../open-issues.md#open-088) で決める。これらを組み込みのエフェクトにするか、公式のライブラリのエフェクトにするかは、前節の [OPEN-081](../open-issues.md#open-081) とあわせて決める。ライブラリのエフェクトにすると `main` の型に現れないので、秘密を取り出すスクリプトであることを権限の表示に出せない。
+
 ## 未決事項
 
 - [OPEN-015](../open-issues.md#open-015): 契約の変更と権限の差分を利用者に示す方法
@@ -374,3 +386,6 @@ end function
 - [OPEN-055](../open-issues.md#open-055): サーバモードの設計
 - [OPEN-012](../open-issues.md#open-012): 構文の種類ごとの LLM の生成精度（IO の失敗の扱いと `main` の形を測定課題に含める）
 - [OPEN-062](../open-issues.md#open-062): 設計書の 2 回目のレビューで指摘された実行時の振る舞いの再現（R01）
+- [OPEN-081](../open-issues.md#open-081): 外部のライブラリのエフェクトを、権限の表示にどう出すか
+- [OPEN-083](../open-issues.md#open-083): `Process.Run` の許可の対象を引数まで細かくするときの照合の規則
+- [OPEN-088](../open-issues.md#open-088): 秘密の値の型と、秘密を扱うエフェクト

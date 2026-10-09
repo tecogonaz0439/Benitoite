@@ -1,0 +1,4 @@
+// spec: 01-03 公開（初回リリース版）
+public function slug(text: String) -> String
+  return String.replace(String.trim(text), " ", "-")
+end function

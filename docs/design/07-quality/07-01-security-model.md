@@ -1,8 +1,8 @@
 # セキュリティモデル
 
 - 状態: 確定
-- 関連ADR: [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0072](../decisions/0072-permission-path-matching.md), [0073](../decisions/0073-run-permission-command-matching.md), [0074](../decisions/0074-static-permission-check-by-name-reference.md), [0077](../decisions/0077-abolish-go-layer.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0137](../decisions/0137-first-release-library-scope.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0150](../decisions/0150-resource-release-as-state.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0179](../decisions/0179-threat-model-and-server-mode-premise.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0185](../decisions/0185-default-policies-per-run-kind.md), [0186](../decisions/0186-run-time-policy-can-only-narrow.md), [0187](../decisions/0187-standalone-reads-user-policy-file.md), [0188](../decisions/0188-authentication-by-user-presence.md), [0189](../decisions/0189-tamper-evident-audit-log.md), [0190](../decisions/0190-ssh-signatures-for-scripts.md), [0191](../decisions/0191-server-data-storage.md), [0192](../decisions/0192-named-profiles-for-agents.md), [0193](../decisions/0193-restricting-agents-to-server-mode-by-agent-config.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0197](../decisions/0197-when-os-sandbox-is-unavailable.md), [0198](../decisions/0198-network-through-daemon-proxy.md), [0199](../decisions/0199-server-job-handling.md), [0200](../decisions/0200-policy-file-toml-and-locations.md), [0201](../decisions/0201-initial-setup-approval-timeout-and-audit-format.md), [0202](../decisions/0202-signature-details.md), [0203](../decisions/0203-mcp-tools-and-agent-configuration.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0214](../decisions/0214-default-policies-allow-process-environment-with-no-names.md), [0215](../decisions/0215-shell-permission-allows-run-commands-via-shell.md), [0216](../decisions/0216-policy-deny-rules-and-standalone-defaults.md), [0217](../decisions/0217-audit-log-undetectable-cases-and-verification-start.md), [0221](../decisions/0221-audit-hash-chain-scope-corrected.md), [0220](../decisions/0220-places-referenced-by-default-policies.md)
-- 未決事項: [OPEN-015](../open-issues.md#open-015), [OPEN-051](../open-issues.md#open-051), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-057](../open-issues.md#open-057)
+- 関連ADR: [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0072](../decisions/0072-permission-path-matching.md), [0073](../decisions/0073-run-permission-command-matching.md), [0074](../decisions/0074-static-permission-check-by-name-reference.md), [0077](../decisions/0077-abolish-go-layer.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0137](../decisions/0137-first-release-library-scope.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0150](../decisions/0150-resource-release-as-state.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0179](../decisions/0179-threat-model-and-server-mode-premise.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0185](../decisions/0185-default-policies-per-run-kind.md), [0186](../decisions/0186-run-time-policy-can-only-narrow.md), [0187](../decisions/0187-standalone-reads-user-policy-file.md), [0188](../decisions/0188-authentication-by-user-presence.md), [0189](../decisions/0189-tamper-evident-audit-log.md), [0190](../decisions/0190-ssh-signatures-for-scripts.md), [0191](../decisions/0191-server-data-storage.md), [0192](../decisions/0192-named-profiles-for-agents.md), [0193](../decisions/0193-restricting-agents-to-server-mode-by-agent-config.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0197](../decisions/0197-when-os-sandbox-is-unavailable.md), [0198](../decisions/0198-network-through-daemon-proxy.md), [0199](../decisions/0199-server-job-handling.md), [0200](../decisions/0200-policy-file-toml-and-locations.md), [0201](../decisions/0201-initial-setup-approval-timeout-and-audit-format.md), [0202](../decisions/0202-signature-details.md), [0203](../decisions/0203-mcp-tools-and-agent-configuration.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0214](../decisions/0214-default-policies-allow-process-environment-with-no-names.md), [0215](../decisions/0215-shell-permission-allows-run-commands-via-shell.md), [0216](../decisions/0216-policy-deny-rules-and-standalone-defaults.md), [0217](../decisions/0217-audit-log-undetectable-cases-and-verification-start.md), [0221](../decisions/0221-audit-hash-chain-scope-corrected.md), [0220](../decisions/0220-places-referenced-by-default-policies.md), [0341](../decisions/0341-agent-cli-wrapper-library.md), [0342](../decisions/0342-agent-harness-after-server-mode.md), [0344](../decisions/0344-agent-harness-operation-scope-and-tools.md), [0345](../decisions/0345-agent-harness-confirmation-and-server-approval.md), [0347](../decisions/0347-agent-harness-web-fetch.md), [0348](../decisions/0348-agent-harness-rewind-and-git.md), [0351](../decisions/0351-vulnerability-report-contact.md)
+- 未決事項: [OPEN-015](../open-issues.md#open-015), [OPEN-051](../open-issues.md#open-051), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-057](../open-issues.md#open-057), [OPEN-081](../open-issues.md#open-081), [OPEN-082](../open-issues.md#open-082), [OPEN-083](../open-issues.md#open-083), [OPEN-088](../open-issues.md#open-088), [OPEN-093](../open-issues.md#open-093), [OPEN-098](../open-issues.md#open-098), [OPEN-099](../open-issues.md#open-099), [OPEN-101](../open-issues.md#open-101), [OPEN-103](../open-issues.md#open-103)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 3.2, 23.4
 
 ## 目的と範囲
@@ -150,6 +150,46 @@
 - 許可したコマンドが、その先で行う操作の制限。`git` の起動（`Process.Run`）を許可すると、`git` が行う操作は処理系の中の検査の外にある。サーバモードでは、OS のサンドボックスの制限は起動したコマンドにも引き継がれる（[OS のサンドボックス](../02-impl/02-12-os-sandbox.md)）が、方針が許した範囲の中でコマンドが行う操作は制限されない。
 - 権限の判定から操作までの間に、ファイルシステムを変える攻撃（シンボリックリンクの差し替えなど、検査と使用の時刻の差を突くもの）からの防御（[ADR 0072](../decisions/0072-permission-path-matching.md)）。権限のパスの照合の OS ごとの挙動は【要検証】である（[OPEN-057](../open-issues.md#open-057)）。
 
+### コマンドを包むライブラリの保証の範囲（初回リリース版の後）
+
+前節のとおり、許可したコマンドがその先で行う操作は、言語の保証の対象外である。初回リリース版の後にコマンドを包むライブラリ（git のラッパーなど）を加えても、この点は変わらない。git は、hooks・credential helper・diff driver・ssh などの別のプログラムを起動しうる。リポジトリの `.git/config`（`core.fsmonitor` など）や、`-c alias.x='!コマンド'` のような大域のオプションからも、別のプログラムを起動できる。そのため、git の読み取りの操作であっても、「読むだけ」とは言えない。
+
+【未決】ラッパーのライブラリの保証の範囲を、「そのコマンドを、そのサブコマンドで起動すること」までとして本節と同じ形で明記するか、読み取りの操作で hooks や fsmonitor を無効にして起動するかは、git の提供のしかたとあわせて [OPEN-082](../open-issues.md#open-082) で決める。ラッパーのライブラリが宣言するエフェクトを権限の表示にどう出すかは [OPEN-081](../open-issues.md#open-081)、`Process.Run` の許可の対象を引数まで細かくするときの照合の規則は [OPEN-083](../open-issues.md#open-083) で決める。
+
+### エージェントの CLI を包むライブラリの保証の範囲（初回リリース版の後）
+
+【決定】初回リリース版の後に、Claude Code・Codex の CLI を包む外部のライブラリを設け、エージェントの CLI の起動を、普通のコマンドの起動と区別する専用のエフェクトを設ける（[ADR 0341](../decisions/0341-agent-cli-wrapper-library.md)）。エージェントの CLI は、普通のコマンドと違い、同じ依頼でも結果が決まらず、自分の判断でファイルを書き換え、コマンドを実行し、ネットワークに接続し、依頼の文と読んだファイルの中身を LLM の提供者へ送る。
+
+前節までと同じく、起動したエージェントが中で行う操作は、言語の保証の対象外である。専用のエフェクトが示すのは、スクリプトがエージェントの CLI を起動しうることまでであり、そのエージェントが何をするかではない。
+
+【未決】保証の範囲を「この CLI を、この設定で起動すること」までとして明記するか、エージェントに許す操作を CLI の設定で絞る手段をライブラリに設けて権限の確認に示すかは [OPEN-099](../open-issues.md#open-099)、専用のエフェクトを権限の表示にどう出すかは [OPEN-081](../open-issues.md#open-081) で決める。
+
+エージェントハーネス（後述）が LLM を呼ぶことと、MCP の中継がクライアントの LLM に生成を頼むこと（サンプリング）は、スクリプトのエフェクトではなく、前述の各機構の保証の対象にならない。【未決】エージェントハーネスが、使う提供者とモデル、外部へ送る内容、購読の使用量が減ることを利用者にどう示すか、認証の情報をどう保管するかは [OPEN-101](../open-issues.md#open-101)、サンプリングを採るかと、クライアントの承認と処理系の権限の確認の重ね方は [OPEN-098](../open-issues.md#open-098) で決める。
+
+### エージェントハーネスの保証の範囲（初回リリース版の後）
+
+処理系は、初回リリース版の後に、サーバモードより後で、エージェントハーネス（利用者の依頼から LLM にスクリプトを書かせ、検査と修正を繰り返す仕組み）を持つ（[ADR 0342](../decisions/0342-agent-harness-after-server-mode.md)、[エージェントハーネス](../06-tooling/06-08-agent-harness.md)）。前述の「関係する者」の表のコーディングエージェントのうち、エージェントハーネスのコードは処理系の一部として信頼し、LLM の出力と、LLM が読んだファイル・ウェブのページ・実行結果に含まれる指示は信頼しない。
+
+【決定】エージェントハーネスがエージェントに許す操作は、Benitoite のスクリプトの作成・検査・実行と、エージェントハーネスのコードが行うプロジェクトのディレクトリの中の読み取りに限る。シェル、プロジェクトの外のファイルの読み書き、外部の MCP サーバへの接続は許さない（[ADR 0344](../decisions/0344-agent-harness-operation-scope-and-tools.md)）。外への操作は、検査して利用者が確認したスクリプトを通り、サーバモードのエージェント用のプロファイルの範囲でだけ実行される（[ADR 0345](../decisions/0345-agent-harness-confirmation-and-server-approval.md)）。エージェントハーネスの実行の前の確認は利用者の同意であり、操作を止める境界ではない。境界は、前述のサーバモードの境界（プロファイルと方針、OS のサンドボックス）が担う。
+
+この形でも、次のことは保証の対象外である。
+
+- 埋め込まれた指示（プロンプトインジェクション）で、エージェントが意図しないスクリプトを書くこと。防ぐのは、そのスクリプトが確認を受けていない操作や、プロファイルが許さない操作を行うことである。
+- ウェブの取得（`web_fetch`）による情報の持ち出し。ウェブの取得は、外への操作が確認済みのスクリプトを通るという性質の例外である。LLM は URL を自由に組み立てられるので、プロジェクトで読んだ内容を URL に載せて送れる。【決定】取得は利用者の設定の一覧にあるドメインと、利用者がドメインごとに確認したドメインに限り、一覧はプロジェクトの設定では広げられない。方法は GET だけとし、クッキーと認証の情報を送らない（[ADR 0347](../decisions/0347-agent-harness-web-fetch.md)）。一覧と確認したドメインへの持ち出しは防げない。
+- 読み取った内容を LLM の提供者へ送ること。送ることは保証の対象ではなく、利用者への表示で扱う（[OPEN-101](../open-issues.md#open-101)）。秘密を含みやすいファイルを既定で読まない規則と、秘密を出力するスクリプトの扱いは [OPEN-103](../open-issues.md#open-103) で決める。
+
+【決定】エージェントハーネスの git の道具は、git の CLI ではなく git のライブラリで行い、リポジトリの設定が起動させる hooks などの別のプログラムを起動しない。他人のリポジトリでコミットしたときに、仕込まれたプログラムが確認なしに動くことを避けるためである。使うのは、hooks などを実行しないことを確かめたライブラリに限る（[ADR 0348](../decisions/0348-agent-harness-rewind-and-git.md)）。【要検証】該当するライブラリは [OPEN-103](../open-issues.md#open-103) で確かめる。
+
+### 秘密の情報の保証の範囲（初回リリース版の後）
+
+初回リリース版の後に、中身を見せない秘密の型と、秘密を受け取る・取り出す操作のエフェクトを設ける案がある（[エフェクト](../01-spec/01-07-effects.md)の「秘密の値とエフェクト（初回リリース版の後）」）。この案でも、受け取った秘密を外へ送ることは止められない。秘密を受け取る操作と `Http.Connect`（または任意のコマンドの `Process.Run`）を両方使うスクリプトは秘密を外へ送れ、どの宛先に送るかを静的に追うことは型とエフェクトの範囲を越えるからである。保証できるのは、秘密を受け取るスクリプトであることと、外部に作用しうることが権限に現れるところまでになる。
+
+【未決】次の点は未決である。
+
+- 秘密の型とエフェクトを設けるか、既定の方針でそれらをどう扱うか（スタンドアロンモードでは受け取りを許して取り出しを許さず、サーバモードでは登録のときの承認で項目を指定して許す案）、秘密を受け取る操作と外部に作用する操作の組み合わせを権限の確認で目立たせるか（[OPEN-088](../open-issues.md#open-088)）。
+- 保証しないことの範囲。メモリからの消去、同じ利用者の権限で動くほかのプロセスからの読み取り、秘密を受け取った外部コマンドや HTTP の宛先での扱いを保証しない方向である。どれも決定ではなく、消去の程度とサンドボックスが防ぐ範囲は【要検証】である（[OPEN-088](../open-issues.md#open-088)）。
+- サーバモードで、物理キーによる操作ごとの承認を設けるか。その承認が守りになるのは、秘密がデーモンを通してしか手に入らず、承認の画面が偽れず、利用者が内容を読むときに限る（[OPEN-093](../open-issues.md#open-093)）。
+
 ## 未決事項
 
 - [OPEN-051](../open-issues.md#open-051): 外部の関数（WASM）の詳細
@@ -157,3 +197,12 @@
 - [OPEN-052](../open-issues.md#open-052): 実行時の権限制御の方式
 - [OPEN-055](../open-issues.md#open-055): サーバモードの設計
 - [OPEN-057](../open-issues.md#open-057): OS のサンドボックスとデーモンの常駐に関する事実の確認
+- [OPEN-081](../open-issues.md#open-081): 外部のライブラリのエフェクトを、権限の表示にどう出すか
+- [OPEN-082](../open-issues.md#open-082): git の提供のしかたと、エフェクトの分け方
+- [OPEN-083](../open-issues.md#open-083): `Process.Run` の許可の対象を引数まで細かくするときの照合の規則
+- [OPEN-088](../open-issues.md#open-088): 秘密の値の型と、秘密を扱うエフェクト
+- [OPEN-093](../open-issues.md#open-093): 物理キーによる操作ごとの承認と、秘密をデーモンだけが持つ配置
+- [OPEN-098](../open-issues.md#open-098): MCP のサンプリングを採るかと、その使い道
+- [OPEN-099](../open-issues.md#open-099): エージェントの CLI を包むライブラリの細部
+- [OPEN-101](../open-issues.md#open-101): LLM の提供者の認証の情報の保管と、利用者への表示
+- [OPEN-103](../open-issues.md#open-103): エージェントハーネスの操作・画面・記録の細部

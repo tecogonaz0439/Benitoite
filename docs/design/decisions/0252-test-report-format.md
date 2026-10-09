@@ -1,6 +1,6 @@
 # 0252. テストの結果の報告の文章の形と JSON Lines の項目を定める
 
-- 状態: 採択
+- 状態: 採択（決定 6 の `"assert"`・`"exit"` の項目を [0333](0333-fmt-refusal-test-json-notes-http-method-and-process-input.md) で改めた）
 - 日付: 2026-09-29
 - 関連章: [利用者プログラムのテスト](../06-tooling/06-04-test-runner.md), [診断エンジン](../02-impl/02-10-diagnostics.md)
 - 関連する未決事項: [OPEN-058](../open-issues.md#open-058)

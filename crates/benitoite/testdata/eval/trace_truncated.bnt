@@ -1,14 +1,16 @@
 // spec: 01-08 実行時エラーによる停止
-fn descend(n: Int) -> Int {
-  if n == 0 {
-    1 / 0
-  } else {
-    let value = descend(n - 1)
-    value + 1
-  }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  let ignored = descend(24)
-  Console.println(Int.toString(ignored))
-}
+function descend(n: Integer) -> Integer
+  return if n = 0 then
+    1 div 0
+  else
+    bind value <- descend(n - 1)
+    value + 1
+  end if
+end function
+
+function main() -> Unit uses Console.Write
+  bind ignored <- descend(24)
+  return Console.writeLine(Integer.toString(ignored))
+end function

@@ -1,11 +1,11 @@
 // spec: 01-03 トップレベルの名前空間
 // spec: 01-03 修飾しない名前の解決
-type Shape {
-  Circle(Int)
-}
+data Shape
+  Circle(Integer)
+end data
 
-fn main() -> Unit {
-  let _ = Shape
-  let _ = Circle(1)
-  ()
-}
+function main() -> Unit
+  bind _ <- Shape
+  bind _ <- Circle(1)
+  return ()
+end function

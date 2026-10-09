@@ -1,0 +1,11 @@
+// spec: 01-05 パターンの拡張（初回リリース版）
+function choose(p: Pair[Integer, Integer]) -> Integer
+  return match p with
+    case Pair(x, 0), Pair(0, x) -> x
+    case _ -> -1
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- choose(Pair(5, 0))
+end function

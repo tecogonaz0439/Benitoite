@@ -1,15 +1,17 @@
 // spec: 01-12 型付け規則
 // spec: 01-12 計算
-fn make() -> fn() -> Unit {
-    fn() { () }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn widen() -> (fn() -> Unit uses IO) {
-    make()
-}
+function make() -> function() -> Unit
+    return lambda() return () end lambda
+end function
 
-fn main() -> Unit uses IO {
-    let action = widen()
+function widen() -> (function() -> Unit uses IO.All)
+    return make()
+end function
+
+function main() -> Unit uses IO.All
+    bind action <- widen()
     action()
-    Console.println("widened")
-}
+    return Console.writeLine("widened")
+end function

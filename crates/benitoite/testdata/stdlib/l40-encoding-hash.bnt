@@ -1,0 +1,22 @@
+// 設計書 03-08「Encoding」「Hash」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Encoding
+import Benitoite.Unofficial.Hash
+function fingerprint(text: String) -> String
+  return Hash.sha256(String.toUTF8(text)) |> Bytes.toHex(_)
+end function
+function main() -> Result[Unit, String] uses Console.Write
+  bind bytes <- Bytes.fromHex("fbff") |> Option.unwrapOr(_, Bytes.empty())
+  Console.writeLine(Encoding.base64Encode(bytes))
+  Console.writeLine(Encoding.base64UrlEncode(bytes))
+  bind decoded <- try Encoding.base64Decode("+/8=")
+  bind urlDecoded <- try Encoding.base64UrlDecode("-_8")
+  Console.writeLine(Bytes.toHex(decoded) + "/" + Bytes.toHex(urlDecoded))
+  Console.writeLine(Trait.Show.show(Result.isError(Encoding.base64Decode("+/8")) and Result.isError(Encoding.base64Decode("+/8=\n"))))
+  Console.writeLine(fingerprint("abc"))
+  Console.writeLine(Integer.toString(Bytes.length(Hash.sha256(Bytes.empty()))))
+  return Result.Ok(())
+end function

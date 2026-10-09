@@ -1,0 +1,12 @@
+// spec: 01-07 影響の大きい操作（初回リリース版）
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+function save(path: String, text: String) -> Result[Unit, IOError]
+  return File.writeText(path, text)
+end function
+function finish() -> Unit
+  Process.exit(0)
+end function
+function main() -> Unit
+  ()
+end function

@@ -33,6 +33,10 @@
 - 上のファイルの `#[cfg(test)] mod tests` のテスト。
 - `testdata-next/effects/` と `testdata-next/handlers/` の誤りのない例のゴールデンテスト（後述）。
 - `src/diag/codes.rs`: 本作業が出すコードについて、10-02「型板の直し方」の範囲で直してよい。
+- `src/syntax/parser/effects.rs` の `push_op`: 操作の型パラメータの並びの、型構成子を表す型パラメータ（`TypeParamKind::Ctor`）を、エフェクト変数と同じく E0510（`help` の鍵 `type_ctor`、主な位置は型パラメータ）で報告して捨てる（[ADR 0311](../../design/decisions/0311-no-type-constructor-params-in-operations.md)）。同じく、操作の型パラメータの型クラスの制約（`ConstraintRef::Class`）を E0510（`help` の鍵 `trait_constraint`、主な位置は制約の名前）で報告して捨て、組み込みの制約（`ConstraintRef::Builtin`）は残す（[ADR 0312](../../design/decisions/0312-no-trait-constraints-in-operations.md)）。本作業は、これらの変更に限って F04 のファイル `effects.rs` を直してよい。構文解析のテストも加える。この制限により、節の中の操作の型パラメータは、いつも値の型の `ITy::Rigid` で表せ、型クラスの辞書を持たない。
+- 節の中の組み込みの制約（02-05「型とエフェクトの表現」の型パラメータの行、01-12 の Δ）: 組み込みの制約を付けた操作の型パラメータの `ITy::Rigid { clause, index }` は、等値・鍵の制約（と標準ライブラリの `ordered`）を宣言どおりに満たす。そのために、本作業は次の限られた変更に限って共有のファイルを直してよい。`context.rs` の `Body`（または `ClauseContext`）に、節のノード番号と操作の型パラメータの番号から宣言した組み込みの制約を引ける欄を加える。`solve.rs` の `Solver::bounds` の `ITy::Rigid` の分岐と、`traits/mod.rs` の `check_bound` を、その欄を引いて判定するように直す。ほかの判定と F07・F08 のテストの結果を変えない。直した箇所は完了の報告の「判断したこと」に挙げる。
+
+- F07・F08 の既存のテスト（`src/typeck/tests.rs`・`src/typeck/traits/tests.rs`）のうち、フック E1〜E7 の仮の本体の振る舞い（警告を出さないなど）を前提にした期待値は、本作業の規則どおりの結果に直してよい。期待値を直したテストは、ほかの確かめ（宣言の型など）を保ち、完了の報告の「判断したこと」に挙げる。
 
 `src/typeck/` の共有のファイル（`mod.rs`・`context.rs`・`decls.rs`・`generate.rs`・`solve.rs`・`consts.rs`・`records.rs`）と、`traits/`・`pattern_ext.rs`・`patterns.rs` は変えない。フックのシグネチャか本体の文脈の操作が足りないと分かったら、作業を止めて報告する（00-03「型やシグネチャを変える必要が生じたとき」と同じ扱い）。
 
@@ -97,6 +101,8 @@
 
 | 場合 | 入力の要点 | 期待する結果 |
 |---|---|---|
+| 操作の型パラメータの制約 | `effect Compare` の `function same[T: equality](a: T, b: T) -> Boolean` と、節 `case same(a, b) -> resume(a = b)`。`function show[T: Trait.Show](x: T) -> String` を持つ操作 | 前者は診断なし。後者は構文解析の E0510（`trait_constraint` の注記、主な位置は `Trait.Show`） |
+| 操作の型構成子の型パラメータ | `effect Make` の `function make[F[_]]() -> F[Integer]` | 構文解析の E0510（`type_ctor` の注記、主な位置は `F[_]`）。宣言の残りは読む |
 | 01-07 の `Log` の例 | `effect Log`、`process`、`main` の `handle` | 診断なし。`handlers` の節の操作が `write` の束縛、`tail_resumptive` が真、`handled` が {Log} |
 | 節の引数の型 | `case Logging.write(_) ->` と名前を書いた引数の節 | どちらの `ClauseParam` のノード番号も `expr_types` に操作の引数の型で入る |
 | 01-06 の `parseAll` の例 | `effect Abort` の `fail[T]` と、`resume` を呼ばない節 | 診断なし。`tail_resumptive` が偽。`parseAll` は純粋 |

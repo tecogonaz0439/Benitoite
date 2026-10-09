@@ -1,8 +1,8 @@
 // spec: 01-05 選ばれない分岐の検査
-fn main() -> Unit {
-    let _ = match 1 {
-        _ => "other"
-        0 => "zero"
-    }
-    ()
-}
+function main() -> Unit
+    bind _ <- match 1 with
+        case _ -> "other"
+        case 0 -> "zero"
+    end match
+    return ()
+end function

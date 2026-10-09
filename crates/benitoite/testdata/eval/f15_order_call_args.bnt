@@ -1,0 +1,13 @@
+// spec: 01-08 評価順序
+// spec: 01-08 関数の呼び出し
+// spec: 01-08 正格評価
+import Benitoite.Unofficial.IO.Console
+function consume(first: Unit, second: Unit) -> Unit
+ ()
+end function
+function nest(value: Unit) -> Unit
+ return value
+end function
+function main() -> Unit uses Console.Write
+ consume(Console.writeLine("a"), nest(Console.writeLine("b")))
+end function

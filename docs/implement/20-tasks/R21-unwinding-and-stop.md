@@ -32,16 +32,20 @@
 ## 作るもの
 
 - `src/vm/unwind.rs`: `unwind_handle` と `unwind_drop` の、原因が `Cancel`・`DropRel`・`Stop` の場合の中身（原因が `Return` の場合は R20 が書いた。10-09「枠を降ろす原因と処理」）。R20 が置いた仮の中身（`Stop::Internal` を返すもの）を書き換える。
-- `src/vm/dispatch.rs` と、`dispatch.rs` の中で宣言する非公開の子のモジュール `src/vm/dispatch/unwinding.rs`: 辿りの本体（`UnwindWork` を進める関数）、E-DropRel、全体の停止、`ESCAPE` の命令。`dispatch.rs` には `match` の分岐と、`Traverse` を受け取ったときの呼び出しだけを加える。
-- `src/vm/state.rs`: `RunState` の欄のうち、実行中のタスクの `UnwindWork` の置き場（後述）。戻りの再開状態（`ReturnWork`）の欄は R20 が置いたものを使う。
-- `src/vm/stage1.rs`: 止まる理由を受けたときに止める手順を行ってから `VmStep::Stopped(StopEnd)` を返す形への変更。
+- `dispatch.rs` の中で宣言する非公開の子のモジュール `src/vm/dispatch/unwinding.rs`: 辿りの本体（`UnwindWork` を進める関数）、E-DropRel、全体の停止、`ESCAPE` の処理の本体。
+- `src/vm/dispatch/handlers.rs`（R20 が置いた）: `unwind_top`（`Traverse` を受けたら今は区画を積み戻して `Stop::Internal` を返す）、`continue_return`（段が `Escaping` の場合と `Traverse` を今は `Stop::Internal` にしている。`handle` の枠を降ろしたときに段によらず戻り先へ書く処理を、段が `Wrapping` のときだけにする）、冷たい関数 `dispatch` の振り分け（`ESCAPE` を加える）、`resume_return`・`fail_instruction`（止める手順の呼び方の変更）。
+- `src/vm/dispatch.rs`: `execute` の `Opcode::Escape` の分岐（R20 と同じく、速い経路から冷たい関数へ出す）、止める手順の本体 `cleanup`（`unwind_*` が `&mut NoGcCtx` を要るので引数を変えてよい）、`run_until_exit` の先頭の再開（E-DropRel の途中で回収に出たときは、局所の状態を読み込む前に `UnwindWork` の辿りを再開する。既存の `returning` の判定より先に置き、一つの冷たい関数の呼び出しにまとめる）、`clear_dead_registers`（後述の「回収の前の整理」）。
+- `src/vm/state.rs`: `RunState` の欄のうち、実行中のタスクの `UnwindWork` の置き場（後述）。`RunState` の `Trace` に、この欄を加える。戻りの再開状態（`ReturnWork`）の欄は R20 が置いたものを使う。
+- `src/vm/stage1.rs`: 必要なら変える（`run_stage1` は `cleanup` が作る `Stopped` を返すだけなので、変更は要らない見込み）。
+
+R20 が置いた `handlers.rs` と `dispatch.rs` の上の箇所は、本作業の処理を入れる場所であり、00-03 の「ほかの作業のファイル」には当たらない。
 - 上のファイルのテストと、`tests/` の下の統合テストのファイル。
 
 ## 手順の要点
 
 ### 辿りの状態の置き場
 
-`UnwindWork` は、タスクの対象の `TaskState::Unwinding` に置く（10-09「枠を降ろす原因と処理」）。タスクの対象は R25 が作るので、本作業では、実行中のタスクの `UnwindWork` を `RunState` の欄に置く。R25 がタスクの対象へ移す。どちらに置いても、`UnwindWork` は根として辿られる（`Trace` の実装は C02 が置いた）。
+`UnwindWork` は、タスクの対象の `TaskState::Unwinding` に置く（10-09「枠を降ろす原因と処理」）。タスクの対象は R25 が作るので、本作業では、実行中のタスクの `UnwindWork` を `RunState` の欄に置く。R25 がタスクの対象へ移す。どちらに置いても、`UnwindWork` は根として辿られる（`UnwindWork` の `Trace` の実装は C02 が置いた。`RunState` の `Trace` には、本作業が置く欄を加える）。
 
 ### 辿り方（ADR 0262 の決定 4）
 
@@ -57,7 +61,7 @@
 `unwind_*` の結果に従う。
 
 - `Popped`: 枠を降ろし（ほかの枠の `Vec` から値で取り出して `NoGcCtx::discard` でちょうど一度手放し、`StackMeter::shrink`）、次の枠へ進む。`unwind_*` は枠を借りて読むだけで、枠の `Slot` を手放さない（10-09「枠を降ろす原因と処理」）。
-- `Wait(理由)`: 枠を残し、`UnwindWork::waiting` に理由を記録して、タスクを待たせる。待ちが解けたら、同じ枠に同じ原因でもう一度処理する。同じ枠を二度処理しないことは、各 `unwind_*` が枠の中身（解放を始めたリソースの状態など）で判断する。
+- `Wait(理由)`: 枠を残し、`UnwindWork::waiting` に理由を記録して、タスクを待たせる（タスクのない本作業の時点では、R20 と同じく `state.step = Some(VmStep::Requests(vec![]))` の形で止める。R25 が待たせる処理に改める）。待ちが解けたら、同じ枠に同じ原因でもう一度処理する。同じ枠を二度処理しないことは、各 `unwind_*` が枠の中身（解放を始めたリソースの状態など）で判断する。
 - `Traverse { segments, cause }`: `unwind_drop` が継続を「使用済み」にして区画を取り出してある。`drop` の枠を `Popped` と同じく降ろして手放し（区画は手放さない）、取り出した区画を下から上の順に `UnwindWork::segments` の末尾に積む（最後の要素が最も上の区画なので、最も上から辿ることになる）。その区画を辿り終えてから、元の区画の続きに戻る。`drop` に達したら、その位置で継続の中へ進み、外側を先に処理しない（相談の第 2 回の問い 1）。
 - `Err(Stop)`: 経路ごとに後述のとおり扱う。
 
@@ -70,10 +74,10 @@
 節が値を返して `drop` の枠に戻り、継続がまだ「捕まえた区画の並び」のとき、`unwind_drop`（原因 `Return`。R20）が `Traverse { cause: DropRel }` を返す。VM は、節の戻り値と戻り先と段を `ReturnWork`（10-09「戻りの再開状態」。R20 が置いた欄）に置いたまま、`UnwindWork { cause: DropRel, .. }` を作って継続の区画を辿る。辿る間に待っても（解放の完了、属するタスクの終わり）、`ReturnWork` と `UnwindWork` がタスクごとの状態として残るので、ほかのタスクの戻りで上書きされない（相談の第 6 回の指摘 1）。
 
 - 各枠は、「枠を降ろす原因と処理」の「取り消し、E-DropRel」の列で処理する。入れ子の `drop` の枠の継続も、同じ原因で辿る。
-- `handle` の枠は、属する終わっていないタスクを取り消し、残れば `Wait(TaskEnd(HandleEnd))` で止まり終えるのを待つ（`unwind_handle`）。タスクの取り消しの関数は R25 が書く。本作業の時点では `members` は常に空なので、取り消しの呼び出しは、中身を R25 が書く非公開の関数を呼ぶ形で置く。
+- `handle` の枠は、属する終わっていないタスクを取り消し、残れば `Wait(TaskEnd(HandleEnd))` で止まり終えるのを待つ（`unwind_handle`）。タスクの取り消しの関数は R25 が書く。本作業の時点では `members` は常に空なので、取り消しの呼び出しは、中身を R25 が書く非公開の関数を呼ぶ形で置く。この関数は `src/vm/unwind.rs` に置き、本作業では何もしない中身にする（`todo!()` を使わない）。
 - 解放の失敗は `UnwindWork::log` に集め、辿り終えてから `RuntimeError::ReleaseFailed` の実行時エラーとする（02-09「リソースの追跡」の解放の失敗のまとめ方）。報告の主な位置は `resume` を呼ばずに終えた節であり（02-10「解放の失敗の報告」）、止まった命令は `ReturnWork::at`（節の `RETURN`、または節の中の `ESCAPE`）とする。
 - 辿り終えて失敗がなく、取り消しの要求もなければ、`UnwindWork` を消し、`ReturnWork` の段に従って戻りの処理を続ける（`Wrapping` なら同じ深さの包む枠の処理を続けてから戻り先に値を入れる。戻り先は節の呼び出しの枠の `ret`、つまり元の `handle` の枠の戻り先である。`Escaping` なら後述の `ESCAPE` の降ろし方を続ける）。
-- 辿る途中に届いた取り消しの要求は、記録するだけで辿りの原因を変えない（表の「取り消し、E-DropRel」の列は同じ処理である）。辿り終えた時点で要求があれば、`ReturnWork` を手放し、通常の実行に戻らずに `UnwindWork::escalate(残りの積み重ね, Cancel)` で取り消しの手順に移る。次の切り替えの位置は待たない（10-09「既に枠を降ろしているタスクの扱い」、ADR 0266 の決定 5、[ADR 0282](../../design/decisions/0282-cancellation-timing-during-unwinding-and-requests.md) の決定 1）。要求の記録（`cancel_requested`）はタスクの対象が持つので、本作業はこの分岐を、要求を読む非公開の関数（中身は R25）を呼ぶ形で置く。
+- 辿る途中に届いた取り消しの要求は、記録するだけで辿りの原因を変えない（表の「取り消し、E-DropRel」の列は同じ処理である）。辿り終えた時点で要求があれば、`ReturnWork` を手放し、通常の実行に戻らずに `UnwindWork::escalate(残りの積み重ね, Cancel)` で取り消しの手順に移る。次の切り替えの位置は待たない（10-09「既に枠を降ろしているタスクの扱い」、ADR 0266 の決定 5、[ADR 0282](../../design/decisions/0282-cancellation-timing-during-unwinding-and-requests.md) の決定 1）。要求の記録（`cancel_requested`）はタスクの対象が持つので、本作業はこの分岐を、要求を読む非公開の関数（中身は R25）を呼ぶ形で置く。この関数も `src/vm/unwind.rs` に置き、本作業では `false` を返す。
 
 ### 取り消し（原因 `Cancel`）
 
@@ -91,13 +95,32 @@
 
 止める手順の始まりの理由は `StopReason` で受け取る形にする。`Process.exit` と中断の要求で止める経路（`StopReason::Exit`・`Interrupted`）は、同じ辿り方を使って R28 が入れる。
 
-止める途中では言語の関数を呼ばない。途中で `unwind_*` が解放の失敗以外の `Err(Stop)` を返したら、処理系の不具合として扱う（止める理由は変えず、`Stop::Internal` の説明を報告に残す方法は R38 の `internal_diagnostic` に合わせる）。
+止める途中では言語の関数を呼ばない。途中で `unwind_*` が解放の失敗以外の `Err(Stop)` を返したら、処理系の不具合として扱う（止める理由は変えず、`Stop::Internal` の説明は捨てる。今の `RunState::fail` と同じ扱いである。凍結した `StopEnd` は説明を持つ欄を持たない）。
 
 ### `ESCAPE A`（E-EscLet・E-EscRel・E-EscMark）
 
-`R[A]` を `ReturnWork::value` に移し（`stage` は `Escaping`、`dest` は `Pending`、`at` はこの `ESCAPE`）、最も上の枠から順に、関数の境界の呼び出しの枠（`CallFrame::boundary` が真）に達するまで降ろす。途中の枠は、原因 `Return` で処理する（`ESCAPE` は 02-08 の「戻り」の原因に入る）。すなわち、解放の枠は解放し、`handle` の枠は正常に終わるときと同じく降ろし（属するタスクの終わりを待つ）、`drop` の枠は E-DropRel として扱う。区画の底の `handle` の枠に達したら、その区画を降ろしてすぐ下の区画で続ける。関数の境界の呼び出しの枠が最も上になったら、その枠を降ろして戻り先を決め、段を `Wrapping` にして、`RETURN` と同じく同じ深さの包む枠を処理してから値を返す（R20 の `RETURN` の手順 3〜6）。途中の `drop` の枠が `Traverse` を返したら（節の中の `return` で、継続がまだ「捕まえた区画の並び」のとき）、継続の区画を E-DropRel として辿り終えてから、段が `Escaping` のままの `ReturnWork` に従って `ESCAPE` の降ろし方を続ける（節の値を `drop` の枠の戻り先に入れずに、関数から抜ける）。
+`RETURN` の遅い経路（R20 の `begin_return`）と同じ順序で、局所の状態を書き戻してから、`R[A]` を `ReturnWork::value` に移し（`stage` は `Escaping`、`dest` は `Pending`、`at` はこの `ESCAPE`）、最も上の枠から順に、関数の境界の呼び出しの枠（`CallFrame::boundary` が真）に達するまで降ろす。途中の枠は、原因 `Return` で処理する（`ESCAPE` は 02-08 の「戻り」の原因に入る）。すなわち、解放の枠は解放し、`handle` の枠は正常に終わるときと同じく降ろし（属するタスクの終わりを待つ）、`drop` の枠は E-DropRel として扱う。区画の底の `handle` の枠に達したら、その区画を降ろしてすぐ下の区画で続ける。関数の境界の呼び出しの枠が最も上になったら、その枠を降ろして戻り先を決め、段を `Wrapping` にして、`RETURN` と同じく同じ深さの包む枠を処理してから値を返す（R20 の `RETURN` の手順 3〜6）。途中の `drop` の枠が `Traverse` を返したら（節の中の `return` で、継続がまだ「捕まえた区画の並び」のとき）、継続の区画を E-DropRel として辿り終えてから、段が `Escaping` のままの `ReturnWork` に従って `ESCAPE` の降ろし方を続ける（節の値を `drop` の枠の戻り先に入れずに、関数から抜ける）。
 
 途中の `handle` の枠は戻り先を決めない。`ESCAPE` の値は `handle` の式の値ではなく、関数の値だからである。`unwind_handle`（原因 `Return`）は待つか `Popped` かだけを返し、値を入れない（R20 の分担）。値を入れるかは、呼び出し側が `ReturnWork` の段（`Escaping` か `Wrapping` か）で決める。
+
+### 回収の前の整理（ADR 0314）
+
+R20 と同じく、本作業が加える状態を [ADR 0314](../../design/decisions/0314-clear-dead-registers-at-safepoints.md) の決定 5 の「命令の入口」と「結果が書かれる前の呼び出し元」のどちらかに分類する表を、完了の報告に書き、分類どおりに空にする。少なくとも次の状態を表に入れる。
+
+- `ReturnWork` の段が `Escaping` の間（今の `clear_dead_registers` は `Wrapping` だけを見て、最内の枠を「命令の入口」として扱う。保持が多くなる側なので安全だが、分類を明記する）
+- `UnwindWork::segments` に移した区画（積み重ねの外にあるので整理せず、保守的に保持する）
+- 止める手順で積み重ねをすべて移した状態
+- E-DropRel の間（`ReturnWork` は `Wrapping` のままなので、既存の規則に入る）
+
+分類を確かめていない状態は、空にしない。
+
+### 止まったときの記録
+
+`StopInfo` は、止まった時点の積み重ねで作る。`ReturnWork` の段が `Wrapping` か `Escaping` のときは、降ろし済みの呼び出しの枠は含まれず、止まった命令は `ReturnWork::at` とする。
+
+### 性能
+
+普通の経路（`CALL`・`TAILCALL`・`RETURN` の速い経路、`execute` のループの頭）に処理を足さない。`ESCAPE` と辿りの処理は冷たい関数（`#[cold]`・`#[inline(never)]`）に置く（R20 の形）。完了の報告に、短い測定と機械語の数を書く（ADR 0313 の帰結、2026-10-06）。作業を始めたときの `san_benito` の HEAD と本作業の版の `examples/stage1_bench`（release）を、fib(30)・loop 300 万回で交互に 5 回以上走らせ、`run_nanos` の最小値を比べる。release の振り分けのループ（`run_until_exit`）の頭の機械語の命令の数とスタックへの退避（`[sp, …]` への `str` とそこからの `ldr`）の数も、始めた版と比べる。比較の版の展開と target は作業ディレクトリの `target/` の下に置き、終えたら消す。時間の本測定はしない（R26 の後と最後に、オーケストレータが行う）。
 
 ## 受け入れテスト
 
@@ -108,11 +131,11 @@
 - `ESCAPE`: `handle` の本体の中の `return` と `try` が、`handle` を抜けて、`handle` を書いた関数の値を返す。`handle` の節も関数の境界でない（02-07「関数の境界」）ので、`resume` を呼ぶ前の節の中の `return` は、`drop` の枠を E-DropRel として処理し（捕まえた継続を捨て）、`handle` を書いた関数から値を返す。`lazy` の本体の中には `escape` が現れない（01-12「関数の境界と `escape`」）ので確かめない。
 - 全体の停止: `handle` の本体の中、節の中、捕まえた継続を持つ `drop` の枠がある状態の、それぞれで 0 の除算を起こしたプログラムが、`StopInfo` の止まった命令と呼び出しの履歴の材料を枠を降ろす前の形で持ち、枠をすべて降ろし終えてから `VmStep::Stopped` を返す。止めた後の呼び出しの入れ子の計数が 0 に戻る（VM の単体テストで確かめる）。
 - 回収の強制のビルドで、長い継続を辿る途中に回収しても結果が変わらない。
-- 辿りの順序: 一つの区画に「呼び出しの枠 A、A に属する解放の枠を模した枠、包む枠、呼び出しの枠 B」を手で積んだ状態から、辿りの関数が上から正しい順に枠を渡すことを、VM の単体テストで確かめる（解放の枠の中身の処理は R24 が書くので、ここでは枠が渡される順序だけを確かめる。実際の解放の順序と一度だけの解放は R24 が確かめる）。
+- 辿りの順序: 一つの区画に「呼び出しの枠 A、A に属する解放の枠を模した枠、包む枠、呼び出しの枠 B」を手で積んだ状態から、辿りの関数が上から正しい順に枠を渡すことを、VM の単体テストで確かめる（解放の枠の中身の処理は R24 が書き、今の `unwind_release` は `todo!()` なので、辿る位置を返す部分だけを確かめ、`unwind_*` を呼ばない。ここでは枠が渡される順序だけを確かめる。実際の解放の順序と一度だけの解放は R24 が確かめる）。
 - 原因の付け替え: `UnwindWork::escalate` の単体テスト。原因 `DropRel` で区画を二つ持ち、`log` に失敗が一つある状態に、残りの積み重ね（区画一つ）と `Stop` を渡すと、区画が三つ（残りの積み重ねの区画が最も下）になり、すべての原因が `Stop` になり、`log` が保たれる。`waiting` が `TaskEnd` なら外して `true`、`Resource` なら残して `false` を返す。
 - E-DropRel の途中の全体の停止: 一つのタスクだけでは、E-DropRel で辿る途中に止まる理由を作れない（辿る途中では言語の関数を呼ばない）。そこで、入れ子の `drop` の枠を持つ継続を E-DropRel で辿る処理を、VM の単体テストで一歩ずつ進め、入れ子の継続の区画を辿っている間に、テスト用の非公開の補助で全体の停止を始める。残りの枠が原因 `Stop` で処理され（`unwind_handle`・`unwind_drop` に渡る原因で確かめる）、`ReturnWork` が手放され、通常の実行に戻らずに `VmStep::Stopped` になる。
-- 枠だけが持つ値の解放（相談の第 6 回の指摘 5）: 捕捉した値を持つクロージャの値を、捨てる継続の中の呼び出しの枠（`CallFrame::func`）だけが持つ状態で、E-DropRel の後と全体の停止の後に回収し、`Heap::object_ids` にクロージャと捕捉した値の対象が残らない（二つの方式の両方で）。`ESCAPE` で降ろした枠でも同じく確かめる。
-- 根の置き場ごとの回収の強制（R03「根の列挙の引き渡し」の表の、本作業の行）: `HeapConfig::stress` を真にした設定で、値が `UnwindWork::segments` の区画だけに残る状態（E-DropRel で辿る継続の区画のレジスタの値を、辿りの途中の回収の位置で回収した後に、`handle` の枠の処理が読む形）と、E-DropRel の間に `ReturnWork::value` だけに残る節の値のそれぞれで回収し、その後の結果が正しいことを確かめる（二つの方式の両方で）。待ちをまたいで回収する形は R25 が確かめる。
+- 枠だけが持つ値の解放（相談の第 6 回の指摘 5）: 捕捉した値を持つクロージャの値を、捨てる継続の中の呼び出しの枠（`CallFrame::func`）だけが持つ状態で、E-DropRel の後と全体の停止の後に回収し、`Heap::object_ids` にクロージャと捕捉した値の対象が残らない。`ESCAPE` で降ろした枠でも同じく確かめる。
+- 根の置き場ごとの回収の強制（R03「根の列挙の引き渡し」の表の、本作業の行）: `HeapConfig::stress` を真にした設定で、値が `UnwindWork::segments` の区画だけに残る状態（E-DropRel で辿る継続の区画のレジスタの値を、辿りの途中の回収の位置で回収した後に、`handle` の枠の処理が読む形）と、E-DropRel の間に `ReturnWork::value` だけに残る節の値のそれぞれで回収し、その後の結果が正しいことを確かめる。待ちをまたいで回収する形は R25 が確かめる。
 
 ## 完了条件
 
@@ -142,8 +165,8 @@
 | 上限の直前の `PERFORM` で止めたとき、捕まえるはずだった区画の中の解放の枠のリソースが、ちょうど一度解放される | R24 |
 | `ESCAPE` と E-DropRel で降ろす解放の枠の、実際の解放の順序 | R24 |
 | 実際の `Wait` を挟む一度だけの解放（E-DropRel で解放の完了を待つ間に別のタスクが値を返し、待ちが解けた後に節の値が正しい戻り先に入る） | R25 |
-| E-DropRel の途中の取り消し（辿りの原因を変えず、辿り終えてから取り消しの手順に移り、解放が一度だけ行われる） | R25 |
-| 既に辿っているタスク（取り消しと E-DropRel のそれぞれで、解放の完了か属するタスクの終わりを待っている）の全体の停止 | R25 |
+| E-DropRel の途中の取り消し（辿りの原因を変えず、辿り終えてから取り消しの手順に移り、解放が一度だけ行われる） | R39（R25 から分けた取り消しの作業） |
+| 既に辿っているタスク（取り消しと E-DropRel のそれぞれで、解放の完了か属するタスクの終わりを待っている）の全体の停止 | R25（E-DropRel で解放の完了を待つ場合）、R39（ほかの場合） |
 
 ## 難易度の理由
 

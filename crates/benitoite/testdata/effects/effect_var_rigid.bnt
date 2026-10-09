@@ -1,9 +1,9 @@
 // spec: 01-06 関数の型とエフェクト
-fn use_effect[effect E](action: fn() -> Unit uses E, io_action: fn() -> Unit uses IO) -> Unit uses E {
-    let widened: fn() -> Unit uses E = io_action
-    action()
-}
+function use_effect[effect E](action: function() -> Unit uses E, io_action: function() -> Unit uses IO.All) -> Unit uses E
+    bind widened: function() -> Unit uses E <- io_action
+    return action()
+end function
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

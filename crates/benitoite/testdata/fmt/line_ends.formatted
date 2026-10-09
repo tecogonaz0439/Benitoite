@@ -1,0 +1,8 @@
+﻿#!/usr/bin/env benitoite  
+// 06-03「行末と文字」
+import Benitoite.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind s <- "a	b"
+  Console.writeLine(s)
+end function

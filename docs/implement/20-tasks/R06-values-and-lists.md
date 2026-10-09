@@ -59,7 +59,7 @@ README の R06 の行にある「`Reference` のセルの対象（ヒープの�
 - 即値は値で比べる。`Float` は IEEE 754 の `==`（`NaN` はどの値とも等しくなく、`0.0` と `-0.0` は等しい）。`Char`・`Byte`・`Bool`・`Unit`・`Tag` は値で比べる。
 - 文字列はバイト列で比べる（スカラー値の列が等しいことと同じ。正規化しない）。`Bytes` はバイト列で比べる。
 - 値の並びは、種類と `tag` と長さが等しく、各要素が等しいとき等しい。リストは要素の並びで比べる（表現の形では比べない。10-08 のコメント）。長さを先に比べてよい。
-- 関数の値（`FieldsKind::Func`）、辞書、セル、`Host`・`Opaque` の対象、`IOError`・`NetworkError` の値に出会ったら `Stop::Internal` を返す（等値の型でないので、型検査を通ったプログラムでは起きない。[ADR 0048](../../design/decisions/0048-ioerror-not-equality-type.md)）。即値と対象、種類の違う対象の組も `Stop::Internal` である。
+- 関数の値（`FieldsKind::Func`）、辞書、セル、`Host`・`Opaque` の対象、`IOError`・`NetworkError` の値に出会ったら `Stop::Internal` を返す（等値の型でないので、型検査を通ったプログラムでは起きない。[ADR 0048](../../design/decisions/0048-ioerror-not-equality-type.md)）。即値と対象、種類の違う対象の組も `Stop::Internal` である。ただし、引数のない構成子（`Value::Tag`）と構成子の値の並びの対象（`FieldsKind::Ctor`）の組は、同じ型の違う構成子なので、等しくない（`false`）とする（例: `None` と `Some(1)`）。
 - `Decimal` の対象の比較は、`Decimal` の関数を加える R35 が書く（10-08 の `decimal` は C02 の後に置かれる）。本作業では、`Decimal` の対象に出会ったら `Stop::Internal` を返し、そのことをコメントに書く。マップと集合の比較は R37 が加える（10-08「作業の割り当て」）。
 
 ## 受け入れテスト

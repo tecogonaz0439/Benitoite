@@ -1,0 +1,24 @@
+// spec: 01-08 実行時エラーによる停止
+// 06-04「テストの実行」「結果の報告」: 実行時エラーはそのテストだけを失敗させ、続くテストは実行する。
+// 起動したタスクの中の実行時エラーの taskOrigins の最後の段はテストの関数である（ADR 0324）。
+
+function divide(n: Integer) -> Integer
+  return 10 div n
+end function
+
+@test
+function divides() -> Unit
+  bind _ <- divide(0)
+  return ()
+end function
+
+@test
+function divideInTask() -> Unit
+  bind _ <- Task.all([lambda() return divide(0) end lambda])
+  return ()
+end function
+
+@test
+function stillRuns() -> Unit uses Assert.Check
+  Assert.equal(divide(5), 2)
+end function

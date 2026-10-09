@@ -27,6 +27,7 @@
 
 - D32 の記録（OPEN-060 と 05-01 に書いたもの）を読み、使うコンテナの道具と、x86_64 の模倣の方法を確かめる。
 - コンテナの像と Rust のツールチェーンの取得、`cargo fetch` など、ネットワークが要る準備を済ませる。
+- Rust のビルド先 `aarch64-unknown-linux-musl`・`x86_64-unknown-linux-musl`（`rustup target add`）と、`publish` の段が使う `gh` を、設計者に確かめてから開発機に導入する。
 - WSL2 の段は設計者の Windows の機械を使う。設計者と日を合わせ、SSH の接続先を確かめる。日が合わなければ、`--wsl2` なしで実行し、WSL2 の段を設計者が後で行う（下の「設計者が行う手順」）。
 - 処理系の版は、初回リリース版の `0.1.0` とする（ADR 0090）。本作業の初めに `crates/benitoite/Cargo.toml` の `version` を `0.0.0` から `0.1.0` に改める（下の「作るもの」）。リリースのスクリプトは版を書き換えず、一致を確かめるだけである（10-19）。
 
@@ -40,19 +41,20 @@
 | `scripts/release/` の下の補助 | コンテナの中で実行するビルドと試験のスクリプト、WSL2 で実行する受け入れテストのスクリプトなど。段ごとに分けてよい |
 | `crates/benitoite/Cargo.toml` | `version` を `0.1.0` に改める（ADR 0090）。`--version` の出力と処理系の不具合の報告の版が変わるので、それを確かめるテストの期待値があれば合わせる |
 | `rust-toolchain.toml` | `targets` に `aarch64-apple-darwin`・`aarch64-unknown-linux-musl`・`x86_64-unknown-linux-musl` を加える |
-| `crates/benitoite/tests/acceptance_binary.rs` | `BENITOITE_RELEASE_BIN` の実行ファイルで `testdata/acceptance/` の各テストを子のプロセスとして実行し、期待値と比べる。`#[ignore]` を付け、環境変数がなければ理由を示して失敗させる（`--ignored` で呼ばれたのに実行ファイルがないのは、呼び方の誤りだからである） |
+| `crates/benitoite/tests/acceptance_binary.rs` | `BENITOITE_RELEASE_BIN` の実行ファイルで `testdata/acceptance/` の各テストを子のプロセスとして実行し、期待値と比べる。ゴールデンテストの実行器の方式（`.mode` の `run`・`check`・`test`・`fmt`、`.files/` の置き方、`.diag.json`・`.text.stderr` などの期待値）を、子のプロセスの起動で再現する。期待値の JSON には `testdata/acceptance/…` のパスとバイトの位置が入るので、配る実行ファイルは、クレートのディレクトリを作業ディレクトリにして、ゴールデンテストの実行器と同じ相対パスでスクリプトを渡して呼ぶ。`#[ignore]` を付け、環境変数がなければ理由を示して失敗させる（`--ignored` で呼ばれたのに実行ファイルがないのは、呼び方の誤りだからである） |
 | `scripts/release/README.md` | 段の一覧、使う道具と版、設計者が行う手順、試しの実行の記録の置き場所 |
 | `AGENTS.md` | 「ディレクトリ構成」の表の `scripts/` の行に `release.sh` と `release/` を加え、`dist/`（リリースの出力。リポジトリに置かない）の行を加える |
 
 ## 手順の要点
 
 1. 段は 10-19 の表の順に書き、各段の最初に前の段の出力を確かめる。失敗したら、その段の名前と記録のファイルを示して止まる。どの段も、同じ引数で実行し直せるようにする（出力のディレクトリを段の始めに作り直す）。
-2. `test-<環境>` の段は、その環境で `scripts/check.sh` を実行し、続けて `cargo test --test acceptance_binary -- --ignored` を `BENITOITE_RELEASE_BIN` にその環境の実行ファイルを与えて実行する。外部コマンドの起動（`Process.run`・`Process.shell`）は、テスト用のハンドラ表で置き換えずに実際に起動する（05-01）。`check.sh` がその環境で要る道具（Python 3、cargo-deny、Rust のツールチェーン）は、コンテナの像の準備に書く。
-3. `static-linux` の段は、実行ファイルだけを入れた最小のコンテナ（D32 が選んだ道具で、glibc も musl の共有ライブラリも持たない像）で `benitoite --version` を実行する。
-4. `https` の段は任意とし、`--https-url` があるときだけ、`Http.get` で URL を読んで状態コードを書くスクリプトを配る実行ファイルで実行する。失敗は警告として記録し、止めない（07-03、ADR 0287）。
-5. `archive` の段は、`tar -czf` でアーカイブを作り、`shasum -a 256` で `SHA256SUMS` を作る。アーカイブの中身は、実行ファイル `benitoite`、`THIRD_PARTY_LICENSES`、`LICENSE-MIT`、`LICENSE-APACHE` だけとする（05-01）。
-6. `publish` の段は、`--publish` があるときだけ行い、上げる前に確かめの入力を待つ。本作業の試しの実行では `publish` を行わない。
-7. ロードマップの完了条件の最後の行（処理系の単一バイナリを各環境で実行し、上の各条件が同じ結果になる）は、`test-<環境>` と `wsl2` の段の受け入れテストで確かめる。07-03「受け入れ例と仕様の項目の対応」の「手順は実装プランで定める」は、この段で定めたことになる。
+2. `test-<環境>` の段は、その環境で `scripts/check.sh` を実行し、続けて `cargo test --test acceptance_binary -- --ignored` を `BENITOITE_RELEASE_BIN` にその環境の実行ファイルを与えて実行する。外部コマンドの起動（`Process.run`・`Process.shell`）は、テスト用のハンドラ表で置き換えずに実際に起動する（05-01）。続けて、配る実行ファイルで次の二つを確かめる（10-19「リリースのスクリプト」の `test-<環境>` の行）。`benitoite --licenses` の出力が第三者のライセンスの表示（`THIRD_PARTY_HEADER` とその環境の `THIRD_PARTY_LICENSES`）を含むこと。一時ディレクトリで `benitoite skill install --project` を行い、埋め込んだすべてのファイル（`skill::files()` のパス）が `.claude/skills/benitoite/` と `.agents/skills/benitoite/` に書き出されること。`check.sh` がその環境で要る道具（Python 3、cargo-deny、Rust のツールチェーン）は、コンテナの像の準備に書く。
+3. `THIRD_PARTY_LICENSES` は、ビルド先ごとに中身が違う（依存のクレートがビルド先によって違う。05-01「ライセンスの表示」）。各ビルド先のビルドの直前に、`licenses` の段が作ったそのビルド先のファイルを `crates/benitoite/licenses/THIRD_PARTY_LICENSES` に写し直してから `--features bundled-licenses` でビルドする。前のビルド先のファイルが残ったままビルドしない。
+4. `static-linux` の段は、実行ファイルだけを入れた最小のコンテナ（D32 が選んだ道具で、glibc も musl の共有ライブラリも持たない像）で `benitoite --version` を実行する。
+5. `https` の段は任意とし、`--https-url` があるときだけ、`Http.get` で URL を読んで状態コードを書くスクリプトを配る実行ファイルで実行する。失敗は警告として記録し、止めない（07-03、ADR 0287）。
+6. `archive` の段は、`tar -czf` でアーカイブを作り、`shasum -a 256` で `SHA256SUMS` を作る。アーカイブの中身は、実行ファイル `benitoite`、`THIRD_PARTY_LICENSES`、`LICENSE-MIT`、`LICENSE-APACHE` だけとする（05-01）。
+7. `publish` の段は、`--publish` があるときだけ行い、上げる前に確かめの入力を待つ。本作業の試しの実行では `publish` を行わない。
+8. ロードマップの完了条件の最後の行（処理系の単一バイナリを各環境で実行し、上の各条件が同じ結果になる）は、`test-<環境>` と `wsl2` の段の受け入れテストで確かめる。07-03「受け入れ例と仕様の項目の対応」の「手順は実装プランで定める」は、この段で定めたことになる。
 
 ## 設計者が行う手順
 

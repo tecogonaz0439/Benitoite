@@ -1,0 +1,14 @@
+// spec: 01-02 リストの展開（初回リリース版）
+function insertByCount(pair: Pair[String, Integer], xs: List[Pair[String, Integer]]) -> List[Pair[String, Integer]]
+  match xs with
+    case [] -> return [pair]
+    case [first, ..rest] if Pair.second(first) >= Pair.second(pair) ->
+      return [first, ..insertByCount(pair, rest)]
+    case _ -> return [pair, ..xs]
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- insertByCount(Pair("a", 2), [Pair("b", 3)])
+  ()
+end function

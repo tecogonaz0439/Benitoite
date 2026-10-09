@@ -1,0 +1,31 @@
+// spec: 01-02 パターンマッチ
+import Benitoite.Unofficial.IO.Console
+function ends(xs: List[Integer]) -> Integer
+ bind first <- match xs with
+ case [first, ..rest] -> first + List.length(rest)
+ case [] -> 0
+ end match
+ return first + match xs with
+ case [.., last] -> last
+ case [] -> 0
+ end match
+end function
+function guarded(x: Integer, enabled: Boolean) -> Integer
+ return match x with
+ case 1, 2 if match Option.Some(enabled) with
+  case Option.Some(flag) -> flag
+  case Option.None -> false
+ end match -> 10
+ case 0..3 -> 20
+ case _ -> 30
+ end match
+end function
+function main() -> Unit uses Console.Write
+ Console.writeLine(Integer.toString(ends([4, 5, 6])))
+ Console.writeLine(Integer.toString(ends([])))
+ Console.writeLine(Integer.toString(guarded(1, true)))
+ Console.writeLine(Integer.toString(guarded(2, true)))
+ Console.writeLine(Integer.toString(guarded(1, false)))
+ Console.writeLine(Integer.toString(guarded(2, false)))
+ Console.writeLine(Integer.toString(guarded(8, true)))
+end function

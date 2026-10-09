@@ -1,0 +1,8 @@
+public function message() -> String
+  return "hello"
+end function
+
+@test
+function libTest() -> Unit uses Assert.Check
+  Assert.equal(message(), "hello")
+end function

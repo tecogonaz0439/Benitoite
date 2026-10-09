@@ -1,0 +1,155 @@
+//! Functions on `List`. Lists are made with list literals and these functions.
+
+/// Returns the number of elements.
+@builtin("List.length")
+public function length[T](xs: List[T]) -> Integer
+
+/// Returns whether the list has no elements.
+@builtin("List.isEmpty")
+public function isEmpty[T](xs: List[T]) -> Boolean
+
+/// Returns the first element, or `Option.None` when the list is empty.
+@builtin("List.head")
+public function head[T](xs: List[T]) -> Option[T]
+
+/// Returns the list without its first element, or `Option.None` when the list is empty.
+@builtin("List.tail")
+public function tail[T](xs: List[T]) -> Option[List[T]]
+
+/// Returns the element at position `i`, counting from 0, or `Option.None` when `i` is out of range.
+@builtin("List.get")
+public function get[T](xs: List[T], i: Integer) -> Option[T]
+
+/// Returns the list with `x` added at the front.
+@builtin("List.prepend")
+public function prepend[T](xs: List[T], x: T) -> List[T]
+
+/// Returns the list with `x` added at the end.
+@builtin("List.append")
+public function append[T](xs: List[T], x: T) -> List[T]
+
+/// Returns the elements of `xs` followed by the elements of `ys`.
+@builtin("List.concatenate")
+public function concatenate[T](xs: List[T], ys: List[T]) -> List[T]
+
+/// Returns the elements in reverse order.
+@builtin("List.reverse")
+public function reverse[T](xs: List[T]) -> List[T]
+
+/// Returns the first `n` elements.
+@builtin("List.take")
+public function take[T](xs: List[T], n: Integer) -> List[T]
+
+/// Returns the list without its first `n` elements.
+@builtin("List.drop")
+public function drop[T](xs: List[T], n: Integer) -> List[T]
+
+/// Returns the integers from `start` up to, but not including, `stop`.
+@builtin("List.range")
+public function range(start: Integer, stop: Integer) -> List[Integer]
+
+/// Returns whether some element is equal to `x` by `=`.
+@builtin("List.contains")
+public function contains[T: equality](xs: List[T], x: T) -> Boolean
+
+/// Returns the elements in ascending order by `<`. Equal elements keep their order. NaN goes last.
+@builtin("List.sort")
+public function sort[T: ordered](xs: List[T]) -> List[T]
+
+/// Returns the list of `f` applied to each element.
+public function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E) -> List[U] uses E
+  return mapFrom(xs, f, 0, [])
+end function
+
+function mapFrom[T, U, effect E](xs: List[T], f: function(T) -> U uses E, i: Integer, acc: List[U]) -> List[U] uses E
+  return match get(xs, i) with
+    case Option.None -> acc
+    case Option.Some(x) ->
+      bind y <- f(x)
+      mapFrom(xs, f, i + 1, append(acc, y))
+  end match
+end function
+
+/// Returns the elements for which `p` returns `true`, in order.
+public function filter[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> List[T] uses E
+  return filterFrom(xs, p, 0, [])
+end function
+
+function filterFrom[T, effect E](xs: List[T], p: function(T) -> Boolean uses E, i: Integer, acc: List[T]) -> List[T] uses E
+  return match get(xs, i) with
+    case Option.None -> acc
+    case Option.Some(x) ->
+      if p(x) then
+        filterFrom(xs, p, i + 1, append(acc, x))
+      else
+        filterFrom(xs, p, i + 1, acc)
+      end if
+  end match
+end function
+
+/// Combines the elements from the first with `f`, starting from `initial`.
+public function fold[T, A, effect E](xs: List[T], initial: A, f: function(A, T) -> A uses E) -> A uses E
+  return foldFrom(xs, initial, f, 0)
+end function
+
+function foldFrom[T, A, effect E](xs: List[T], acc: A, f: function(A, T) -> A uses E, i: Integer) -> A uses E
+  return match get(xs, i) with
+    case Option.None -> acc
+    case Option.Some(x) -> foldFrom(xs, f(acc, x), f, i + 1)
+  end match
+end function
+
+/// Calls `f` with each element in order.
+public function forEach[T, effect E](xs: List[T], f: function(T) -> Unit uses E) -> Unit uses E
+  return forEachFrom(xs, f, 0)
+end function
+
+function forEachFrom[T, effect E](xs: List[T], f: function(T) -> Unit uses E, i: Integer) -> Unit uses E
+  return match get(xs, i) with
+    case Option.None -> ()
+    case Option.Some(x) ->
+      f(x)
+      forEachFrom(xs, f, i + 1)
+  end match
+end function
+
+/// Returns whether `p` returns `true` for some element. Stops calling `p` at the first `true`.
+public function any[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> Boolean uses E
+  return anyFrom(xs, p, 0)
+end function
+
+function anyFrom[T, effect E](xs: List[T], p: function(T) -> Boolean uses E, i: Integer) -> Boolean uses E
+  return match get(xs, i) with
+    case Option.None -> false
+    case Option.Some(x) -> p(x) or anyFrom(xs, p, i + 1)
+  end match
+end function
+
+/// Returns whether `p` returns `true` for every element. Stops calling `p` at the first `false`.
+public function all[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> Boolean uses E
+  return allFrom(xs, p, 0)
+end function
+
+function allFrom[T, effect E](xs: List[T], p: function(T) -> Boolean uses E, i: Integer) -> Boolean uses E
+  return match get(xs, i) with
+    case Option.None -> true
+    case Option.Some(x) -> p(x) and allFrom(xs, p, i + 1)
+  end match
+end function
+
+/// Returns the first element for which `p` returns `true`, or `Option.None` when there is none.
+public function find[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> Option[T] uses E
+  return findFrom(xs, p, 0)
+end function
+
+function findFrom[T, effect E](xs: List[T], p: function(T) -> Boolean uses E, i: Integer) -> Option[T] uses E
+  return match get(xs, i) with
+    case Option.None -> Option.None
+    case Option.Some(x) ->
+      if p(x) then
+        Option.Some(x)
+      else
+        findFrom(xs, p, i + 1)
+      end if
+  end match
+end function

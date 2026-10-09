@@ -1,0 +1,9 @@
+// spec: 01-04 Decimal（初回リリース版）
+const quarter: Decimal = 1.00m / 4m
+const third: Decimal = 1m / 3m
+const sum: Decimal = 1.5m + 2m
+const product: Decimal = 1.20m * 2.0m
+
+function main() -> Unit
+  bind _ <- "${quarter} ${third} ${sum} ${product}"
+end function

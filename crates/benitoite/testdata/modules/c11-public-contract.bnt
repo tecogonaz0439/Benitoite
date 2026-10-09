@@ -1,0 +1,10 @@
+// spec: 01-03 公開（初回リリース版）
+data Secret
+  Value
+end data
+public function expose() -> Secret
+  return Secret.Value
+end function
+function main() -> Unit
+  ()
+end function

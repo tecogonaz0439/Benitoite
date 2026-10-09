@@ -1,0 +1,49 @@
+//! Functions on `Character`, a Unicode scalar value.
+
+/// Returns the scalar value of `c`.
+@builtin("Character.toInteger")
+public function toInteger(c: Character) -> Integer
+
+/// Returns the character with scalar value `n`, or `Option.None` when `n` is not a scalar value.
+@builtin("Character.fromInteger")
+public function fromInteger(n: Integer) -> Option[Character]
+
+/// Returns the string made of `c` alone.
+@builtin("Character.toString")
+public function toString(c: Character) -> String
+
+/// Returns whether `c` is one of '0' to '9'.
+@builtin("Character.isASCIIDigit")
+public function isASCIIDigit(c: Character) -> Boolean
+
+/// Returns whether `c` is an ASCII space, tab, line feed, or carriage return.
+@builtin("Character.isASCIIWhitespace")
+public function isASCIIWhitespace(c: Character) -> Boolean
+
+/// Returns whether `c` has the Unicode Alphabetic property.
+@builtin("Character.isAlphabetic")
+public function isAlphabetic(c: Character) -> Boolean
+
+/// Returns whether the Unicode general category of `c` is Nd, Nl, or No.
+@builtin("Character.isNumeric")
+public function isNumeric(c: Character) -> Boolean
+
+/// Returns whether `c` has the Unicode White_Space property.
+@builtin("Character.isWhitespace")
+public function isWhitespace(c: Character) -> Boolean
+
+/// Returns whether `c` has the Unicode Uppercase property.
+@builtin("Character.isUppercase")
+public function isUppercase(c: Character) -> Boolean
+
+/// Returns whether `c` has the Unicode Lowercase property.
+@builtin("Character.isLowercase")
+public function isLowercase(c: Character) -> Boolean
+
+/// Returns `c` in uppercase. One character may become several, as 'ß' becomes "SS".
+@builtin("Character.toUppercase")
+public function toUppercase(c: Character) -> String
+
+/// Returns `c` in lowercase. One character may become several.
+@builtin("Character.toLowercase")
+public function toLowercase(c: Character) -> String

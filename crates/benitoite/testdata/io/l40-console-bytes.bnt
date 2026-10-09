@@ -1,0 +1,13 @@
+// 設計書 03-07「Console」、03-06「Bytes と ByteOrder（初回リリース版）」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+function main() -> Result[Unit, String] uses Console.Read, Console.Write
+  bind bytes <- try Console.readAllBytes() |> Result.mapError(_, IOError.message)
+  Console.writeLine(Bytes.toHex(bytes))
+  Console.writeLine(Trait.Show.show(String.fromUTF8(bytes)))
+  bind eof <- try Console.readAllBytes() |> Result.mapError(_, IOError.message)
+  Console.writeLine(Integer.toString(Bytes.length(eof)))
+  return Result.Ok(())
+end function

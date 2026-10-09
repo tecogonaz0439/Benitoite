@@ -30,7 +30,7 @@ R08 に依存するのは、`builtins::lookup_builtin` と表の全体を R08 �
 
 - `src/resolve/mod.rs`: 10-04 の `sig=src/resolve/mod.rs`（`resolve`、`ResolveOutput::stdlib`・`binding_of_ref`）の中身。C02 が置いた `file=` の部分は変えない。
 - `src/resolve/` の下の非公開の子のモジュール。最小実行版の `src/legacy/resolve/` の `collect.rs`・`lookup.rs`・`walk.rs` を写して新しい AST と表に合わせて書き直し、`suggest.rs`（綴りの近い名前）と `text.rs`（種類の呼び名）は写してそのまま使ってよい（10-04「置く作業と既存のファイル」）。加える子のモジュールの例: `stdlib.rs`（組み込みの型・エフェクト、`@builtin`、組み込みの操作、標準ライブラリの名前の索引）、`imports.rs`（手順 2）、`checks.rs`（手順 4 と 6）、`shadow.rs`（束縛の書き分け）。分け方は本作業で決めてよい。
-- `src/resolve/test_support.rs`: `#[cfg(test)] pub(crate) mod test_support;`。`modules::memfs::load_files` で読み込み、`resolve` を呼ぶ補助の関数 `resolve_files(files: &[(&str, &str)]) -> (LoadOutput, ResolveOutput, IdGen)` を置く。型検査以降の作業の単体テストが使う。読み込みの段に誤りがあれば、名前解決を呼ばずにテストを失敗させる。
+- `src/resolve/test_support.rs`: `#[cfg(test)] pub(crate) mod test_support;`。`modules::memfs::load_files` で読み込み、`LoadOutput::sources` を渡して `resolve` を呼ぶ補助の関数 `resolve_files(files: &[(&str, &str)]) -> (LoadOutput, ResolveOutput, IdGen)` を置く。型検査以降の作業の単体テストが使う。読み込みの段に誤りがあれば、名前解決を呼ばずにテストを失敗させる。
 - 各ファイルの `#[cfg(test)] mod tests`。
 - `testdata-next/names/` の下の、誤りのない例（後述の「受け入れテスト」）。
 

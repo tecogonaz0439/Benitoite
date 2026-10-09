@@ -1,24 +1,25 @@
 // 末尾でない再帰で、引数の数だけ呼び出しを重ねる。
 // 呼び出しの情報の上限（設計書 07-02「測る項目」、ADR 0030）に達する段数を測るために、tools/bench/run.py が使う。
 // 比較対象の版と `.args.small` は置かない（性能の比較と差分テストの対象ではない）。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
 
-fn depth(n: Int) -> Int {
-  if n == 0 {
+function depth(n: Integer) -> Integer
+  return if n = 0 then
     0
-  } else {
+  else
     1 + depth(n - 1)
-  }
-}
+  end if
+end function
 
-fn main() -> Result[Unit, String] uses IO {
-  match List.head(Process.args()) {
-    None => Err("expected one non-negative integer argument")
-    Some(argument) => match Int.parse(argument) {
-      None => Err("expected one non-negative integer argument")
-      Some(count) => {
-        Console.println(Int.toString(depth(count)))
-        Ok(())
-      }
-    }
-  }
-}
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match List.head(Process.arguments()) with
+    case Option.None -> Result.Error("expected one non-negative integer argument")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.None -> Result.Error("expected one non-negative integer argument")
+      case Option.Some(count) ->
+        Console.writeLine(Integer.toString(depth(count)))
+        Result.Ok(())
+    end match
+  end match
+end function

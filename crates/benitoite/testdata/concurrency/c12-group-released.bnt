@@ -1,0 +1,18 @@
+// spec: 01-11 タスクの集まり
+// spec: 01-10 解放したリソースの使用
+// 関門: 解放した集まりへ spawn しない規則を守り、リソース状態の確かめ漏れを捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses State, Console.Write
+  bind saved: Reference[Option[TaskGroup]] <- Reference.new(Option.None)
+  with group = TaskGroup.open() do
+    Reference.set(saved, Option.Some(group))
+  end with
+  match Reference.get(saved) with
+    case Option.Some(group) ->
+      bind _ <- TaskGroup.spawn(group, lambda() Console.writeLine("unreachable") end lambda)
+      ()
+    case Option.None -> ()
+  end match
+end function

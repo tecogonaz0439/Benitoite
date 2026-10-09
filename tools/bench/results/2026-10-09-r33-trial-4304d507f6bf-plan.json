@@ -1,0 +1,804 @@
+[
+  {
+    "label": "fib",
+    "name": "fib",
+    "args": [
+      35
+    ]
+  },
+  {
+    "label": "loop",
+    "name": "loop",
+    "args": [
+      20000000
+    ]
+  },
+  {
+    "label": "list",
+    "name": "list",
+    "args": [
+      1500000
+    ]
+  },
+  {
+    "label": "tree",
+    "name": "tree",
+    "args": [
+      22
+    ]
+  },
+  {
+    "label": "eval",
+    "name": "eval",
+    "args": [
+      30000
+    ]
+  },
+  {
+    "label": "string",
+    "name": "string",
+    "args": [
+      8000000
+    ]
+  },
+  {
+    "label": "println",
+    "name": "println",
+    "args": [
+      7000000
+    ]
+  },
+  {
+    "label": "lines",
+    "name": "lines",
+    "args": [
+      "@lines:16000000"
+    ]
+  },
+  {
+    "label": "trait",
+    "name": "trait",
+    "args": [
+      20000000
+    ]
+  },
+  {
+    "label": "handler-tail",
+    "name": "handler-tail",
+    "args": [
+      100000,
+      "tail",
+      100
+    ]
+  },
+  {
+    "label": "handler-saved",
+    "name": "handler-saved",
+    "args": [
+      100000,
+      "saved",
+      100
+    ]
+  },
+  {
+    "label": "tasks",
+    "name": "tasks",
+    "args": [
+      1000,
+      30000
+    ]
+  },
+  {
+    "label": "cycle",
+    "name": "cycle",
+    "args": [
+      10000000
+    ]
+  },
+  {
+    "label": "listget",
+    "name": "listget",
+    "args": [
+      100000,
+      8000000
+    ]
+  },
+  {
+    "label": "map",
+    "name": "map",
+    "args": [
+      200000
+    ]
+  },
+  {
+    "label": "loop-r12-input",
+    "name": "loop",
+    "args": [
+      15000000
+    ]
+  },
+  {
+    "label": "shared",
+    "name": "shared",
+    "args": [
+      16
+    ]
+  },
+  {
+    "label": "live",
+    "name": "live",
+    "args": [
+      16
+    ]
+  },
+  {
+    "label": "roots",
+    "name": "roots",
+    "args": [
+      3000
+    ]
+  },
+  {
+    "label": "returns",
+    "name": "returns",
+    "args": [
+      20000
+    ]
+  },
+  {
+    "label": "mixed",
+    "name": "mixed",
+    "args": [
+      10000
+    ]
+  },
+  {
+    "label": "shared-sized",
+    "name": "shared",
+    "args": [
+      18
+    ]
+  },
+  {
+    "label": "live-sized",
+    "name": "live",
+    "args": [
+      22
+    ]
+  },
+  {
+    "label": "roots-sized",
+    "name": "roots",
+    "args": [
+      30000
+    ]
+  },
+  {
+    "label": "returns-sized",
+    "name": "returns",
+    "args": [
+      20000,
+      200
+    ]
+  },
+  {
+    "label": "mixed-sized",
+    "name": "mixed",
+    "args": [
+      500000
+    ]
+  },
+  {
+    "label": "tasks-memory-0",
+    "name": "tasks",
+    "args": [
+      0,
+      1
+    ]
+  },
+  {
+    "label": "tasks-memory-1000",
+    "name": "tasks",
+    "args": [
+      1000,
+      1
+    ]
+  },
+  {
+    "label": "tasks-memory-10000",
+    "name": "tasks",
+    "args": [
+      10000,
+      1
+    ]
+  },
+  {
+    "label": "tasks-memory-100000",
+    "name": "tasks",
+    "args": [
+      100000,
+      1
+    ]
+  },
+  {
+    "label": "cycle-scaling-100000",
+    "name": "cycle",
+    "args": [
+      100000
+    ]
+  },
+  {
+    "label": "cycle-scaling-1000000",
+    "name": "cycle",
+    "args": [
+      1000000
+    ]
+  },
+  {
+    "label": "tasks-budget-2500",
+    "name": "tasks",
+    "args": [
+      1000,
+      30000
+    ],
+    "options": [
+      "--call-budget=2500"
+    ]
+  },
+  {
+    "label": "http-common-0-1-2500",
+    "name": "http",
+    "args": [
+      1000,
+      0
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=2500"
+    ]
+  },
+  {
+    "label": "http-common-0-8-2500",
+    "name": "http",
+    "args": [
+      1000,
+      0
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=2500"
+    ]
+  },
+  {
+    "label": "http-common-1-1-2500",
+    "name": "http",
+    "args": [
+      1000,
+      1
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=2500"
+    ]
+  },
+  {
+    "label": "http-common-1-8-2500",
+    "name": "http",
+    "args": [
+      1000,
+      1
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=2500"
+    ]
+  },
+  {
+    "label": "tasks-budget-5000",
+    "name": "tasks",
+    "args": [
+      1000,
+      30000
+    ],
+    "options": [
+      "--call-budget=5000"
+    ]
+  },
+  {
+    "label": "http-common-0-1-5000",
+    "name": "http",
+    "args": [
+      1000,
+      0
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=5000"
+    ]
+  },
+  {
+    "label": "http-common-0-8-5000",
+    "name": "http",
+    "args": [
+      1000,
+      0
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=5000"
+    ]
+  },
+  {
+    "label": "http-common-1-1-5000",
+    "name": "http",
+    "args": [
+      1000,
+      1
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=5000"
+    ]
+  },
+  {
+    "label": "http-common-1-8-5000",
+    "name": "http",
+    "args": [
+      1000,
+      1
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=5000"
+    ]
+  },
+  {
+    "label": "tasks-budget-10000",
+    "name": "tasks",
+    "args": [
+      1000,
+      30000
+    ],
+    "options": [
+      "--call-budget=10000"
+    ]
+  },
+  {
+    "label": "http-common-0-1-10000",
+    "name": "http",
+    "args": [
+      1000,
+      0
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=10000"
+    ]
+  },
+  {
+    "label": "http-common-0-8-10000",
+    "name": "http",
+    "args": [
+      1000,
+      0
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=10000"
+    ]
+  },
+  {
+    "label": "http-common-1-1-10000",
+    "name": "http",
+    "args": [
+      1000,
+      1
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=10000"
+    ]
+  },
+  {
+    "label": "http-common-1-8-10000",
+    "name": "http",
+    "args": [
+      1000,
+      1
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=10000"
+    ]
+  },
+  {
+    "label": "tasks-budget-20000",
+    "name": "tasks",
+    "args": [
+      1000,
+      30000
+    ],
+    "options": [
+      "--call-budget=20000"
+    ]
+  },
+  {
+    "label": "http-common-0-1-20000",
+    "name": "http",
+    "args": [
+      1000,
+      0
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=20000"
+    ]
+  },
+  {
+    "label": "http-common-0-8-20000",
+    "name": "http",
+    "args": [
+      1000,
+      0
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=20000"
+    ]
+  },
+  {
+    "label": "http-common-1-1-20000",
+    "name": "http",
+    "args": [
+      1000,
+      1
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=20000"
+    ]
+  },
+  {
+    "label": "http-common-1-8-20000",
+    "name": "http",
+    "args": [
+      1000,
+      1
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=20000"
+    ]
+  },
+  {
+    "label": "tasks-budget-40000",
+    "name": "tasks",
+    "args": [
+      1000,
+      30000
+    ],
+    "options": [
+      "--call-budget=40000"
+    ]
+  },
+  {
+    "label": "http-common-0-1-40000",
+    "name": "http",
+    "args": [
+      1000,
+      0
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=40000"
+    ]
+  },
+  {
+    "label": "http-common-0-8-40000",
+    "name": "http",
+    "args": [
+      1000,
+      0
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=40000"
+    ]
+  },
+  {
+    "label": "http-common-1-1-40000",
+    "name": "http",
+    "args": [
+      1000,
+      1
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=40000"
+    ]
+  },
+  {
+    "label": "http-common-1-8-40000",
+    "name": "http",
+    "args": [
+      1000,
+      1
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=40000"
+    ]
+  },
+  {
+    "label": "cycle-self",
+    "name": "cycle-self",
+    "args": [
+      20000,
+      1
+    ]
+  },
+  {
+    "label": "cycle-pair",
+    "name": "cycle-pair",
+    "args": [
+      20000,
+      1
+    ]
+  },
+  {
+    "label": "cycle-ring",
+    "name": "cycle-ring",
+    "args": [
+      100,
+      10000
+    ]
+  },
+  {
+    "label": "cycle-list",
+    "name": "cycle-list",
+    "args": [
+      100,
+      100000
+    ]
+  },
+  {
+    "label": "http-sized-0-1-2500",
+    "name": "http",
+    "args": [
+      20000,
+      0
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=2500"
+    ]
+  },
+  {
+    "label": "http-sized-0-8-2500",
+    "name": "http",
+    "args": [
+      20000,
+      0
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=2500"
+    ]
+  },
+  {
+    "label": "http-sized-1-1-2500",
+    "name": "http",
+    "args": [
+      10000,
+      1
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=2500"
+    ]
+  },
+  {
+    "label": "http-sized-1-8-2500",
+    "name": "http",
+    "args": [
+      30000,
+      1
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=2500"
+    ]
+  },
+  {
+    "label": "http-sized-0-1-5000",
+    "name": "http",
+    "args": [
+      20000,
+      0
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=5000"
+    ]
+  },
+  {
+    "label": "http-sized-0-8-5000",
+    "name": "http",
+    "args": [
+      20000,
+      0
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=5000"
+    ]
+  },
+  {
+    "label": "http-sized-1-1-5000",
+    "name": "http",
+    "args": [
+      5000,
+      1
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=5000"
+    ]
+  },
+  {
+    "label": "http-sized-1-8-5000",
+    "name": "http",
+    "args": [
+      15000,
+      1
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=5000"
+    ]
+  },
+  {
+    "label": "http-sized-0-1-10000",
+    "name": "http",
+    "args": [
+      20000,
+      0
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=10000"
+    ]
+  },
+  {
+    "label": "http-sized-0-8-10000",
+    "name": "http",
+    "args": [
+      20000,
+      0
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=10000"
+    ]
+  },
+  {
+    "label": "http-sized-1-1-10000",
+    "name": "http",
+    "args": [
+      2500,
+      1
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=10000"
+    ]
+  },
+  {
+    "label": "http-sized-1-8-10000",
+    "name": "http",
+    "args": [
+      7500,
+      1
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=10000"
+    ]
+  },
+  {
+    "label": "http-sized-0-1-20000",
+    "name": "http",
+    "args": [
+      20000,
+      0
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=20000"
+    ]
+  },
+  {
+    "label": "http-sized-0-8-20000",
+    "name": "http",
+    "args": [
+      20000,
+      0
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=20000"
+    ]
+  },
+  {
+    "label": "http-sized-1-1-20000",
+    "name": "http",
+    "args": [
+      1250,
+      1
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=20000"
+    ]
+  },
+  {
+    "label": "http-sized-1-8-20000",
+    "name": "http",
+    "args": [
+      3750,
+      1
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=20000"
+    ]
+  },
+  {
+    "label": "http-sized-0-1-40000",
+    "name": "http",
+    "args": [
+      20000,
+      0
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=40000"
+    ]
+  },
+  {
+    "label": "http-sized-0-8-40000",
+    "name": "http",
+    "args": [
+      20000,
+      0
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=40000"
+    ]
+  },
+  {
+    "label": "http-sized-1-1-40000",
+    "name": "http",
+    "args": [
+      625,
+      1
+    ],
+    "clients": 1,
+    "options": [
+      "--call-budget=40000"
+    ]
+  },
+  {
+    "label": "http-sized-1-8-40000",
+    "name": "http",
+    "args": [
+      1875,
+      1
+    ],
+    "clients": 8,
+    "options": [
+      "--call-budget=40000"
+    ]
+  }
+]

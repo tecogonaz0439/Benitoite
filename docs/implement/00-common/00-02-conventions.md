@@ -37,36 +37,34 @@ multiple_unsafe_ops_per_block = "deny"
 
 ## 完了条件の共通の検査
 
-各作業の完了条件には、次の検査がすべて通ることを含める。C00 が `scripts/check.sh` をこの表の形に改める。最小実行版の `check.sh` は `--all-features` で lint とテストを行ったが、二つのメモリの管理の機能は同時に有効にできないので、機能の組み合わせを名指しして二度ずつ行う。
+各作業の完了条件には、次の検査がすべて通ることを含める。C00 が `scripts/check.sh` をこの表の形に改める。最小実行版の `check.sh` は `--all-features` で lint とテストを行ったが、初回リリース版では機能の組み合わせを名指しして行う（第 1 段では二つのメモリの管理の機能を同時に有効にできなかったため）。
 
 | 検査 | コマンド |
 |---|---|
 | 書式 | `cargo fmt --all --check` |
 | lint（マーク・スイープ） | `cargo clippy --workspace --all-targets --no-default-features --features gc-mark-sweep,heap-verify,alloc-stats` |
-| lint（参照カウント。第 1 段の間） | `cargo clippy --workspace --all-targets --no-default-features --features gc-refcount,heap-verify,alloc-stats` |
 | テスト（マーク・スイープ） | `cargo test --workspace --no-default-features --features gc-mark-sweep,heap-verify` |
-| テスト（参照カウント。第 1 段の間） | `cargo test --workspace --no-default-features --features gc-refcount,heap-verify` |
-| 回収の強制（両方式。第 1 段の間） | 上の二つのテストの機能に `gc-stress` を加え、ゴールデンテストと差分テストを実行する |
-| 言語仕様の例 | `python3 tools/grammar-check/grammar_check.py` と、付録の例を読む `python3 tools/grammar-check/grammar_check.py docs/design/08-appendix/08-04-fp-syntax-comparison.md`。C13 が、言語仕様（`01-spec/`）と付録（08-04）の両方の例を処理系で検査する形に置き換える（07-03「言語仕様の例の検査」）。置き換えるまで道具を消さない |
+| 回収の強制 | 上のテストの機能に `gc-stress` を加え、ゴールデンテストと差分テストを実行する |
+| 言語仕様の例 | 処理系のクレートの `tests/spec_examples.rs`（言語仕様（`01-spec/`）と付録（08-04）の両方の例を処理系で検査する。07-03「言語仕様の例の検査」）。C13 が Python の道具（`tools/grammar-check/`）を置き換えて消した |
 | 仮置きの許可の残り | `todo!()` を一つも含まないのに、`todo!()` の仮置きのための許可（後述の「`todo!()` の仮置き」）が残っている `src/` のファイルがあれば失敗にする（`grep` で確かめる） |
 | 仕様の網羅の道具の自己テスト | `python3 tools/spec-coverage/spec_coverage.py --self-test` |
 | 依存のライセンス | `cargo deny check licenses` |
 
-参照カウントの行は、第 1 段の締め（R14）で採らなかった方式の機能を消すときに、採った方式だけを残す形に改める。回収の強制の実行が遅く、`check.sh` の時間が作業の妨げになるときは、ゴールデンテストの一部だけを `check.sh` で走らせ、残りを `scripts/check-heap.sh` に移す（07-03 は、時間のかかる検査を別のスクリプトで行ってよいとした）。どの検査をどちらに置くかは C00 が決め、`check.sh` の冒頭のコメントに書く。
+第 1 段の間は、参照カウントの機能（`gc-refcount`）でも lint・テスト・回収の強制を行った。第 1 段の締め（R14）が、その機能とともにこれらの行を消した。回収の強制の実行が遅く、`check.sh` の時間が作業の妨げになるときは、ゴールデンテストの一部だけを `check.sh` で走らせ、残りを `scripts/check-heap.sh` に移す（07-03 は、時間のかかる検査を別のスクリプトで行ってよいとした）。どの検査をどちらに置くかは C00 が決め、`check.sh` の冒頭のコメントに書く。
 
-`scripts/check-heap.sh` は、nightly の Rust が要る検査と時間のかかる検査を行う。`runtime::heap` を変える作業（R01〜R04、R06、R11、第 2 段でヒープに触れる作業）の完了条件には、このスクリプトが通ることも含める。
+`scripts/check-heap.sh` は、nightly の Rust が要る検査と時間のかかる検査を行う。`runtime::heap` を変える作業（R01〜R04、R06、R11、第 2 段でヒープに触れる作業）の完了条件には、このスクリプトが通ることも含める。オーケストレータは、`vm/` を変えた作業を取り込むときにも実行する。スクリプトの全体は 10 分以内に終わるようにし、テストを加える作業は完了の報告にスクリプトの時間を書く（[ADR 0318](../../design/decisions/0318-miri-scope-and-time-budget-for-heap-checks.md)）。
 
 | 検査 | 内容 |
 |---|---|
-| Miri | `runtime::heap` の単体テストと、小さな VM のプログラムのテストを、nightly の Miri で実行する。`mio` やスレッドを含む部分を Miri で動かせるかは【要検証】であり、動かなければ IO 実行器を外して実行する（ADR 0260 の決定 7） |
+| Miri | `runtime::heap` の単体テストと、Miri のために選んだ VM のテスト（Miri 専用のモジュール `vm::miri_tests`。ヒープの `unsafe` のコードを VM の使い方で通す代表の形を、一つの形につき一件程度。ADR 0318）を、nightly の Miri で実行する。`vm::` のほかのテストは Miri で走らせない。`mio` やスレッドを含む部分を Miri で動かせるかは【要検証】であり、動かなければ IO 実行器を外して実行する（ADR 0260 の決定 7） |
 | 対象ごとの確保 | 機能 `heap-per-object` を有効にして、ヒープの単体テストを Miri で実行する |
 | 到達可能性の比較の長い実行 | 確保・参照の書き換え・根の追加と削除を無作為に組み合わせるテストを、`check.sh` より多い回数で実行する |
 
 ## 依存するクレート
 
 - 言語の中核と処理系の主要部は自作する。メモリの管理も自作し、GC のクレートは依存に加えない（[ADR 0271](../../design/decisions/0271-self-made-gc-as-exception.md)）。
-- 依存に加えてよいのは、設計書が名指ししたクレートだけである。U1・U2 の範囲では、`mio`（IO のイベントループ。[ADR 0162](../../design/decisions/0162-event-loop-and-worker-threads-for-io.md)）と、中断の要求のシグナルの登録に使う `signal-hook` 0.4.4 と `signal-hook-mio` 0.3.0（[ADR 0163](../../design/decisions/0163-interrupt-releases-resources.md)、[02-09](../../design/02-impl/02-09-runtime.md)「中断の要求」。[README](../README.md) の「決めたこと」の 14）が当たる。二つのシグナルのクレートは、ライセンスが `MIT OR Apache-2.0`、`rust-version` が 1.66 であり、R28 が加える。対応環境は macOS と Linux だけ（[ADR 0176](../../design/decisions/0176-first-release-targets-and-static-linux-build.md)）なので、Unix 系の OS でだけ使えればよい。`Decimal` の算術はクレートを使わずに自作する（[ADR 0275](../../design/decisions/0275-self-made-decimal-arithmetic.md)、[README](../README.md) の「決めたこと」の 10）。標準ライブラリのクレート（[ADR 0138](../../design/decisions/0138-crates-and-licenses-for-stdlib.md)、[ADR 0143](../../design/decisions/0143-http-and-tls-crates.md)）は U3 の作業が加える。
-- `mio` は R26 が加える。2026-09-30 に `cargo info` と crates.io の配布物の `Cargo.toml`・`src/lib.rs` で確かめた最新の版は 1.2.3 であり、ライセンスは `MIT`、`rust-version` は 1.71 である。機能は、既定の `log` を外し（`default-features = false`）、`Poll`・`Registry`・`Waker` に要る `os-poll` と、標準入出力などの記述子を登録する `mio::unix::SourceFd` に要る `os-ext` を有効にする（`os-ext` は `os-poll` を含む。ソケットの `net` は U3 の HTTP の作業が加える）。Unix 系の OS で `mio` が使う依存は `libc` 0.2（ライセンスは `MIT OR Apache-2.0`）だけである。`signal-hook-mio` 0.3.0 の機能 `support-v1_0` は `mio` 1.x を機能 `net` と `os-ext` 付きで要求するので、R28 がこのクレートを加えた後は、機能の統合により `mio` の `net` も有効になる。R26 の時点で 1.2.3 より新しい 1.x の版があれば、その版の文書で機能の名前が変わっていないことを確かめて使い、版を完了の報告に書く。
+- 依存に加えてよいのは、設計書が名指ししたクレートだけである。U1・U2 の範囲では、`mio`（IO のイベントループ。[ADR 0162](../../design/decisions/0162-event-loop-and-worker-threads-for-io.md)）と、中断の要求のシグナルの登録に使う `signal-hook` 0.4.4 と `signal-hook-mio` 0.3.0（`signal-hook` は 0.4.5 を使ってよい。[ADR 0163](../../design/decisions/0163-interrupt-releases-resources.md)、[02-09](../../design/02-impl/02-09-runtime.md)「中断の要求」。[README](../README.md) の「決めたこと」の 14）が当たる。二つのシグナルのクレートは、ライセンスが `MIT OR Apache-2.0`（`deny.toml` の `allow` の `MIT`・`Apache-2.0` で通る）、`rust-version` が 1.66 であり、R28 が加える。`signal-hook` の依存の `signal-hook-registry` は 1.4.8（ライセンスは同じ、`rust-version` は 1.26）を使う。対応環境は macOS と Linux だけ（[ADR 0176](../../design/decisions/0176-first-release-targets-and-static-linux-build.md)）なので、Unix 系の OS でだけ使えればよい。`Decimal` の算術はクレートを使わずに自作する（[ADR 0275](../../design/decisions/0275-self-made-decimal-arithmetic.md)、[README](../README.md) の「決めたこと」の 10）。標準ライブラリのクレート（[ADR 0138](../../design/decisions/0138-crates-and-licenses-for-stdlib.md)、[ADR 0143](../../design/decisions/0143-http-and-tls-crates.md)）は U3 の作業が加える。
+- `mio` は R40 が加えた（1.2.4 を `=1.2.4` で固定した。R40 の完了の報告）。2026-09-30 に `cargo info` と crates.io の配布物の `Cargo.toml`・`src/lib.rs` で確かめた最新の版は 1.2.3 であり、ライセンスは `MIT`、`rust-version` は 1.71 である。機能は、既定の `log` を外し（`default-features = false`）、`Poll`・`Registry`・`Waker` に要る `os-poll` と、標準入出力などの記述子を登録する `mio::unix::SourceFd` に要る `os-ext` を有効にする（`os-ext` は `os-poll` を含む。ソケットの `net` は U3 の HTTP の作業が加える）。Unix 系の OS で `mio` が使う依存は `libc` 0.2（ライセンスは `MIT OR Apache-2.0`）だけである。`signal-hook-mio` 0.3.0 の機能 `support-v1_0` は `mio` 1.x を機能 `net` と `os-ext` 付きで要求するので、R28 がこのクレートを加えた後は、機能の統合により `mio` の `net` も有効になる。R40 の時点で 1.2.3 より新しい 1.x の版があれば、その版の文書で機能の名前が変わっていないことを確かめて使い、版を完了の報告に書く。
 - クレートを加える作業は、作業の文書にクレートの名前と版を書く。加えるときは `cargo deny check licenses` で確かめ、ADR 0138 の決定 3 の許可の一覧のうち実際に要るものだけを `deny.toml` に加える。
 - テストのための依存（`[dev-dependencies]`）も加えない。コンパイルの失敗のテストは、rustdoc の `compile_fail` の例で書く（後述の「コンパイルの失敗のテスト」）。
 - 外部のコードを写さない。写す必要が生じたときは、作業を止めて報告する（[ADR 0003](../../design/decisions/0003-license.md)）。
@@ -91,18 +89,18 @@ C01・C02 は、`tools/extract_interfaces.py place` でインターフェース�
 - 作業は、受け持つ関数の `todo!()` を本体に書き換える。完了のときに、受け持つ関数に `todo!()` を残さない。
 - 作業を終えるときにファイルに `todo!()` が一つも残っていなければ、その作業が許可とコメントを消す。一つのファイルの関数を複数の作業が受け持つとき（10-08 の `runtime/heap/ctx.rs` など）は、最後に `todo!()` を書き換えた作業が消す。`todo!()` のないファイルに許可が残っていると、`scripts/check.sh` が失敗する（「完了条件の共通の検査」の「仮置きの許可の残り」）。
 - 仮置きの許可を、道具が置いたファイル以外に書き足さない。作業が新しく書くコードで `todo!()` を使わない。
-- U1・U2 の作業をすべて終えた時点で、`src/` に `todo!()` と仮置きの許可は残らない（[すべての作業を終えた後に行うこと](../90-after-completion.md)）。移行の締め（C18）は、その時点で残っている仮置きのファイルと、それを受け持つ未了の作業を完了の報告に挙げる。
+- U1・U2 の作業をすべて終えた時点で、`src/` に `todo!()` と仮置きの許可は残らない（[すべての作業を終えた後に行うこと](../90-after-completion.md)）。U1・U2 の完了の確認（90-after-completion）で、残っている仮置きのファイルと、それを受け持つ作業を調べる。
 
 ### 失敗を panic で表さない
 
 - 言語の規則で定めた失敗（除算の 0、IO の失敗など）は、`Stop` か `Err` の値として返す（[ランタイム](../../design/02-impl/02-09-runtime.md)の「panic 境界」）。
 - 型検査を通ったプログラムでは起きないはずの状態（表を引いて結果がない、値の種類が違う）は、脱糖とコード生成では `InternalError`、実行中は `Stop::Internal` として返す。
-- 読み込みのときの検証器を通したうえで振り分けのループの範囲の確かめを省くかは、[OPEN-064](../../design/open-issues.md#open-064) で決める（R32）。省くことにした場合に限り、省いた確かめについては「`Stop::Internal` で返す」を「検証器がプログラムを拒む」に読み替える規則を、本節と AGENTS.md に加える。それまでは、すべての確かめを実行中に行う。
+- 振り分けのループの範囲の確かめは、読み込みのときの検証器を通したプログラムでも省かず、すべて実行中に行う（[ADR 0315](../../design/decisions/0315-keep-dispatch-range-checks.md)）。検証器（`bytecode::verify`）は、テストでコード生成の出力を確かめる道具であり、本番の読み込みの経路（`pipeline`、`runtime::run`、CLI）からは呼ばない。
 - `unwrap`・`expect`・添字（`v[i]`）は lint で禁じている。`get` と `?`、`let ... else` で書く。
 
 ### `unsafe` の書き方
 
-- `unsafe` を書いてよいのは、`runtime::heap` の内部の層だけである（[リポジトリとクレートの配置](00-01-repository-layout.md)の「`unsafe` を書いてよいモジュール」）。
+- `unsafe` を書いてよいのは、`runtime::heap` の内部の層だけである（[リポジトリとクレートの配置](00-01-repository-layout.md)の「`unsafe` を書いてよいモジュール」）。処理系の本体の外の例外として、テストのバイナリ `tests/call_allocations.rs` の確保を数える確保器にだけ書いてよい（後述の「`#[allow]` を書いてよい箇所」）。
 - `unsafe` のブロックは、操作を一つだけ含め、直前に `// SAFETY:` のコメントで、その操作が前提とする不変条件と、それがなぜ成り立つかを書く（lint が形だけを確かめ、中身は確認の観点で読む）。
 - 内部の層の各ファイルの先頭の `//!` のコメントに、そのファイルが守る不変条件の一覧を書く。`// SAFETY:` のコメントは、その一覧の項目を名指しして引く。
 - `unsafe fn` を公開の層に出さない。内部の層の `unsafe fn` には、呼び出し側が守る条件を `/// # Safety` の節で書く。
@@ -133,7 +131,14 @@ C01・C02 は、`tools/extract_interfaces.py place` でインターフェース�
 
 ### 大域の状態
 
-処理系のどの段も、`static mut`・`thread_local!`・`OnceLock` などの大域の可変状態を持たない（[ADR 0015](../../design/decisions/0015-shared-program-per-execution-state.md)）。例外は、AGENTS.md の「大域の状態」の三つ（panic hook の記録、機能 `alloc-stats` の計数器、中断の印）と、ヒープの番号を割り当てる計数器（プロセスで一つの `AtomicU32`。`Heap::new` だけが増やす。[ADR 0281](../../design/decisions/0281-heap-number-in-slot-and-contract-safety.md)、10-08「根の保存領域」）だけである。ヒープは実行ごとに持ち、大域の確保器の状態を作らない。回収の要求と予算は実行ごとの状態に置く。
+処理系のどの段も、`static mut`・`thread_local!`・`OnceLock` などの大域の可変状態を持たない（[ADR 0015](../../design/decisions/0015-shared-program-per-execution-state.md)）。例外は次の四つだけである。
+
+- panic hook の記録（02-09「panic 境界」がスレッドローカルな記憶域を指定した。`runtime/panic.rs`）。
+- 解放の回数の計数（07-02「確保と解放」）。機能 `alloc-stats` を有効にしたビルドでだけ、`thread_local!` の計数器で数える。既定のビルドには含めない。
+- 初回リリース版の中断の印（ADR 0163。`crates/benitoite/src/runtime/run/interrupt.rs`）。`SIGINT`・`SIGTERM` を受けたことを、プロセス全体で一つの原子的な真偽値で表す。印を書くのはシグナルの登録の仕組みだけ、読むのは VM の実行の区切りだけである。
+- ヒープの番号を割り当てる計数器（プロセスで一つの `AtomicU32`）。`Heap::new` だけが増やす（[ADR 0281](../../design/decisions/0281-heap-number-in-slot-and-contract-safety.md)、10-08「根の保存領域」）。
+
+ヒープは実行ごとに持ち、大域の確保器の状態を作らない。回収の要求と予算は実行ごとの状態に置く。
 
 ### 再帰の深さ
 
@@ -155,14 +160,14 @@ lint を個別に許す `#[allow(...)]` は、次の箇所だけに書き、許�
 | 箇所 | 許す lint | 理由 |
 |---|---|---|
 | `src/runtime/heap/` の内部の層のファイル（10-08 がファイルを指定する） | `unsafe_code` | 確保器と生のポインタを扱う（ADR 0260）。公開の層のファイルには書かない |
-| `src/lib.rs` | `dead_code` | 作業の途中では、後の作業が使う欄が読まれない。C01 で置き、移行の締め（C18）で外す |
+| `src/lib.rs` | `dead_code` | 作業の途中では、後の作業が使う欄が読まれない。C01 で置き、U1・U2 を終えた後に外す（90-after-completion の「移行の締めの残り」） |
 | `tools/extract_interfaces.py place` が `todo!()` の仮置きを置いたファイルの先頭（道具が置く。前述の「`todo!()` の仮置き」） | `clippy::todo`・`unused_variables` | 後の作業が本体を書くまで、置いた直後のクレートをコンパイルでき lint を通るようにする。そのファイルの `todo!()` をすべて書き換えた作業が消す |
 | テストのモジュール（`#[cfg(test)] mod tests`）と `tests/` の各ファイル | `clippy::unwrap_used`・`clippy::expect_used`・`clippy::panic`・`clippy::indexing_slicing`・`clippy::arithmetic_side_effects` | テストの失敗は panic で表す |
-| `src/cli/` と IO 実行器の `BENITOITE_DEV_PANIC` の処理 | `clippy::panic` | 処理系の不具合の報告をテストするために、意図して panic を起こす |
+| `tests/call_allocations.rs`（R15 の、普通の呼び出しと戻りで確保がないことを確かめるテスト） | `unsafe_code` | 確保を数える `#[global_allocator]` は `unsafe impl GlobalAlloc` を要する。中身は `std::alloc::System` へ委ねて数えるだけとする（[ADR 0313](../../design/decisions/0313-vm-performance-recovery-before-stage-2.md) の決定 5） |
+| `src/cli/`、IO 実行器、`src/runtime/run.rs` の第 1 段の IoServices を包む型（R26 が IO 実行器へ移す）の `BENITOITE_DEV_PANIC` の処理 | `clippy::panic` | 処理系の不具合の報告をテストするために、意図して panic を起こす |
 | `src/bytecode/program.rs` の `assert_shareable` | `dead_code` | 呼ばれない関数で、型の性質をコンパイルの時点で確かめる |
-| `src/legacy/` の下の、最小実行版が許した箇所（C04 が移した `cli/mod.rs`・`runtime/real_io.rs` の `BENITOITE_DEV_PANIC` の処理、`bytecode/program.rs` の `assert_shareable`、テストのモジュール） | 最小実行版の表のとおり | 最小実行版の実装を移行の間だけ残す（[リポジトリとクレートの配置](00-01-repository-layout.md)の「移行の間の配置」）。C18 が `legacy` とともに消す |
 
-振り分けのループの `unsafe`（OPEN-064）を許すことにした場合は、その箇所を R32 がこの表と AGENTS.md に加える。これ以外の箇所で許す必要が生じたら、作業を止めて報告する。
+振り分けのループで範囲の確かめを省くための `unsafe` は許さない（[ADR 0315](../../design/decisions/0315-keep-dispatch-range-checks.md)）。表にない箇所で許す必要が生じたら、作業を止めて報告する。
 
 ### 文言
 
@@ -177,6 +182,6 @@ lint を個別に許す `#[allow(...)]` は、次の箇所だけに書き、許�
 ## テストの規約
 
 - テストを書く・変える・見直すときは、スキル `test-audit` に従う（[処理系のテスト戦略](../../design/07-quality/07-03-compiler-testing.md)の「テストの設計の原則」）。
-- VM と `runtime` のテストは、両方のメモリの管理の機能で通るように書く（第 1 段の間）。一方の方式だけに意味のあるテスト（参照カウントの循環の回収など）は、`#[cfg(feature = ...)]` でその方式に限る。
+- VM と `runtime` のテストは、既定の機能（マーク・スイープ）と回収の強制（`gc-stress`）で通るように書く。第 1 段の間は参照カウントの機能でも通るように書き、一方の方式だけに意味のあるテスト（参照カウントの循環の回収など）を `#[cfg(feature = ...)]` でその方式に限った。
 - コンパイルの失敗のテスト（区間の外への値の持ち出し、別のヒープとの混用、作業用のスレッドへの値の持ち出し、組み込みの関数の権限の誤り）は、公開の型の `///` のコメントに rustdoc の `compile_fail` の例として書く。例ごとに、どの規則を破る例かをコメントで書く。この形がワークスペースの lint と警告の設定の下で期待どおりに働くか（誤りの理由を取り違えて通らないか）は【要検証】であり、C01 で確かめる。働かなければ、作業を止めて報告する。
 - 実行のスケジュールに依存するテストは、テスト用に切り替えの順序を与えるスケジューラと、仮想の時間で書く。実時間の待ちや、スレッドの実行の順序の偶然に頼らない。この仕組みは [処理系のテスト戦略](../../design/07-quality/07-03-compiler-testing.md)の「順序を与えるスケジューラと仮想の時間（初回リリース版）」（ADR 0274）が定め、R25 が作る。

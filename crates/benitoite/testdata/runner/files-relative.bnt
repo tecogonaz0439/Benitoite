@@ -1,0 +1,10 @@
+// test: 02-11 実行の入力と結果
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function main() -> Unit uses Console.Write, File.Read
+    return match File.readText("nested/message.txt") with
+        case Result.Ok(contents) -> Console.writeLine(contents)
+        case Result.Error(error) -> Console.writeLine(IOError.message(error))
+    end match
+end function

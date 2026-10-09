@@ -1,12 +1,12 @@
 // spec: 01-05 網羅性の検査
 // spec: 01-05 prelude が定める型
-fn describe(value: Option[Int]) -> String {
-    match value {
-        Some(1) => "one"
-        None => "none"
-    }
-}
+function describe(value: Option[Integer]) -> String
+    return match value with
+        case Option.Some(1) -> "one"
+        case Option.None -> "none"
+    end match
+end function
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

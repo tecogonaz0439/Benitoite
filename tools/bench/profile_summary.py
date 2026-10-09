@@ -38,6 +38,11 @@ def symbol_for(tables, lib_name: str, address: int) -> str:
     return f"<{lib_name}+{address:#x}>"
 
 
+# 待つ間のスレッドの標本。samply は止まっているスレッドも標本にとるので、CPU の費用の割合からは除く
+IDLE_LEAVES = {"__psynch_cvwait", "__ulock_wait", "__ulock_wait2", "kevent", "kevent64", "__semwait_signal",
+               "mach_msg2_trap", "__workq_kernreturn", "__psynch_mutexwait", "__select", "poll"}
+
+
 def summarize(profile_path: Path, limit: int) -> None:
     profile = json.load(gzip.open(profile_path))
     syms_path = Path(str(profile_path).removesuffix(".gz") + ".syms.json")
@@ -46,6 +51,7 @@ def summarize(profile_path: Path, limit: int) -> None:
     self_counts: Counter[str] = Counter()
     total_counts: Counter[str] = Counter()
     sample_total = 0
+    idle_total = 0
     for thread in profile["threads"]:
         frames = thread["frameTable"]
         funcs = thread["funcTable"]
@@ -67,6 +73,9 @@ def summarize(profile_path: Path, limit: int) -> None:
             if stack is None:
                 continue
             weight = weight or 1
+            if names[stacks["frame"][stack]] in IDLE_LEAVES:
+                idle_total += weight
+                continue
             sample_total += weight
             seen: set[str] = set()
             leaf = True
@@ -79,7 +88,9 @@ def summarize(profile_path: Path, limit: int) -> None:
                     total_counts[name] += weight
                     seen.add(name)
                 stack = stacks["prefix"][stack]
-    print(f"{profile_path.name}: {sample_total} samples")
+    print(f"{profile_path.name}: {sample_total} samples (excluded {idle_total} waiting samples)")
+    if sample_total == 0:
+        return
     print(f"{'self':>6} {'total':>6}  function")
     for name, count in self_counts.most_common(limit):
         print(f"{100 * count / sample_total:5.1f}% {100 * total_counts[name] / sample_total:5.1f}%  {name[:110]}")

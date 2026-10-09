@@ -1,20 +1,22 @@
 // spec: 01-08 関数の呼び出し
-type Tree {
-  Leaf(Int)
+import Benitoite.Unofficial.IO.Console
+
+data Tree
+  Leaf(Integer)
   Branch(Tree, Tree)
-}
+end data
 
-fn sum(tree: Tree) -> Int {
-  match tree {
-    Tree.Leaf(value) => value
-    Tree.Branch(left, right) => sum(left) + sum(right)
-  }
-}
+function sum(tree: Tree) -> Integer
+  return match tree with
+    case Tree.Leaf(value) -> value
+    case Tree.Branch(left, right) -> sum(left) + sum(right)
+  end match
+end function
 
-fn main() -> Unit uses IO {
-  let tree = Tree.Branch(
+function main() -> Unit uses Console.Write
+  bind tree <- Tree.Branch(
     Tree.Branch(Tree.Leaf(1), Tree.Leaf(2)),
     Tree.Branch(Tree.Leaf(3), Tree.Leaf(4))
   )
-  Console.println(Int.toString(sum(tree)))
-}
+  return Console.writeLine(Integer.toString(sum(tree)))
+end function

@@ -1,0 +1,40 @@
+// spec: 01-07 IO が起きる時期と順序
+// 設計書 03-06「Map と Set（初回リリース版）」「標準の型クラス（初回リリース版）」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+  bind original <- Map.fromList([Pair("b", 2), Pair("a", 1), Pair("c", 3)])
+  bind changed <- Map.set(original, "b", 20) |> Map.remove(_, "c")
+  Console.writeLine(Trait.Show.show(original))
+  Console.writeLine(Trait.Show.show(Map.keys(changed)))
+  Console.writeLine(Trait.Show.show(Map.values(changed)))
+  Console.writeLine(Trait.Show.show(Map.get(changed, "b")))
+  Console.writeLine(Trait.Show.show(Map.size(changed) = 2 and not Map.contains(changed, "c")))
+  bind mapped <- Map.map(original, lambda(k, v)
+    Console.writeLine(k)
+    return v * 10
+  end lambda)
+  Console.writeLine(Trait.Show.show(Map.filter(mapped, lambda(k, v) return k <> "b" and v >= 10 end lambda)))
+  Console.writeLine(Map.fold(original, "", lambda(acc, k, v) return acc + k + Integer.toString(v) end lambda))
+  Map.forEach(changed, lambda(k, v) Console.writeLine(k + ":" + Integer.toString(v)) end lambda)
+  bind emptyMap: Map[String, Integer] <- Trait.Monoid.empty()
+  Console.writeLine(Trait.Show.show(Trait.Semigroup.combine(emptyMap, Trait.Semigroup.combine(original, changed))))
+  bind initial <- Set.fromList([3, 1, 2])
+  bind other <- Set.add(Set.remove(initial, 2), 4)
+  Console.writeLine(Trait.Show.show(initial))
+  Console.writeLine(Trait.Show.show(Set.size(other) = 3 and Set.contains(other, 4) and not Set.contains(other, 2)))
+  Console.writeLine(Trait.Show.show(Set.intersection(initial, other)))
+  Console.writeLine(Trait.Show.show(Set.difference(initial, other)))
+  bind mappedSet <- Set.map(initial, lambda(x)
+    Console.writeLine(Integer.toString(x))
+    return x mod 2
+  end lambda)
+  Console.writeLine(Trait.Show.show(mappedSet))
+  Console.writeLine(Trait.Show.show(Set.filter(initial, lambda(x) return x > 1 end lambda)))
+  Console.writeLine(Integer.toString(Set.fold(initial, 0, lambda(acc, x) return acc * 10 + x end lambda)))
+  Set.forEach(other, lambda(x) Console.writeLine(Integer.toString(x)) end lambda)
+  bind emptySet: Set[Integer] <- Trait.Monoid.empty()
+  Console.writeLine(Trait.Show.show(Trait.Semigroup.combine(emptySet, Set.union(initial, other))))
+end function

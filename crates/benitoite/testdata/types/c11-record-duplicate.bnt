@@ -1,0 +1,11 @@
+// spec: 01-05 レコード（初回リリース版）
+record Person
+  name: String
+  age: Integer
+end record
+function bad() -> Person
+  return Person(name: "Ada", age: 1, age: 2)
+end function
+function main() -> Unit
+  ()
+end function

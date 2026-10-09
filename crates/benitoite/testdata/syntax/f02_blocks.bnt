@@ -1,0 +1,14 @@
+// spec: 01-02 ブロックと文
+// spec: 01-02 条件分岐
+// spec: 01-02 ラムダ
+// spec: 01-02 パターンマッチ
+function main() -> Unit
+  bind choose <- lambda(x: Integer) -> Integer
+    return if x < 0 then 0 else if x = 0 then 1 else 2 end if
+  end lambda
+  bind n <- choose(-1)
+  match n with
+    case 0 -> ()
+    case _ -> ()
+  end match
+end function

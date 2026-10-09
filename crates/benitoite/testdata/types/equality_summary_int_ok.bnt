@@ -1,15 +1,17 @@
 // spec: 01-06 等値の型
 // spec: 01-06 型
-fn show_bool(value: Bool) -> String {
-    if value { "true" } else { "false" }
-}
+import Benitoite.Unofficial.IO.Console
 
-type Nest[T] {
+function show_bool(value: Boolean) -> String
+    return if value then "true" else "false" end if
+end function
+
+data Nest[T]
     Leaf(T)
     Deep(Nest[List[T]])
-}
+end data
 
-fn main() -> Unit uses IO {
-    let number = Nest.Leaf(1)
-    Console.println(show_bool(number == number))
-}
+function main() -> Unit uses Console.Write
+    bind number <- Nest.Leaf(1)
+    return Console.writeLine(show_bool(number = number))
+end function

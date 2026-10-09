@@ -1,0 +1,22 @@
+// spec: 01-09 ネットワークの失敗の種類（初回リリース版）
+// 設計書 03-09「失敗の種類」「サーバ」。
+// 関門: OS が選んだ使用中のポートで listen と serve の Result.Error を CLI まで返す。
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Result[Unit, String] uses Http.Listen, Console.Write, State
+  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message) do
+    bind port <- Http.listenerPort(listener)
+    Console.writeLine(match Http.listen("127.0.0.1", port) with
+      case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.AddressInUse then "true" else "false" end if
+      case Result.Ok(other) ->
+        bind _ <- Http.closeListener(other)
+        "unexpected success"
+    end match)
+    Console.writeLine(match Http.serve("127.0.0.1", port, lambda(_unused) return Http.text(200, "unused") end lambda) with
+      case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.AddressInUse then "true" else "false" end if
+      case Result.Ok(_) -> "unexpected success"
+    end match)
+    return Result.Ok(())
+  end with
+end function

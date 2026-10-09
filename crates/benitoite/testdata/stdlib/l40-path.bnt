@@ -1,0 +1,18 @@
+// 設計書 03-08「Path」、ADR 0328。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Path
+function main() -> Unit uses Console.Write
+  Console.writeLine(Trait.Show.show(List.map([Pair("a", ""), Pair("", "a"), Pair("a/", "b"), Pair("a", "/b")], lambda(p) return Path.join(Pair.first(p), Pair.second(p)) end lambda)))
+  bind path <- Path.joinAll(["data", "./tmp", "..", "report.csv"]) |> Path.normalize(_)
+  Console.writeLine(path)
+  Console.writeLine(Trait.Show.show(Pair(Path.parent(path), Path.fileName(path))))
+  Console.writeLine(Trait.Show.show(Pair(Path.stem(path), Path.extension(path))))
+  Console.writeLine(Path.withExtension(path, "json"))
+  Console.writeLine(Path.withExtension(".config", ""))
+  Console.writeLine(Trait.Show.show(Path.components("/a//./b/../c")))
+  Console.writeLine(Trait.Show.show(Path.isAbsolute(Path.normalize("/../../a"))))
+  Console.writeLine(Path.normalize("a/..") + "/" + Path.normalize("../a/../b"))
+end function

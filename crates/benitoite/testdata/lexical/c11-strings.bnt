@@ -1,0 +1,19 @@
+// spec: 01-01 複数行の文字列と raw 文字列（初回リリース版）
+// spec: 01-02 文字列補間（初回リリース版）
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+  bind name <- "Ada"
+  bind text <- """
+    Hello, ${name}
+      indented
+
+    joined\
+    line
+    """
+  Console.writeLine(text)
+  Console.writeLine(r"\n${name}")
+  Console.writeLine(r"""
+    \n${name}\
+    ""
+    """)
+end function

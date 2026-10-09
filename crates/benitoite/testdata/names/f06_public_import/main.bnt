@@ -1,0 +1,7 @@
+// spec: 01-03 公開（初回リリース版）
+// spec: 01-03 モジュールと import（初回リリース版）
+import Lib.Text
+
+function main() -> Unit
+  bind _ <- Text.slug("Hello World")
+end function

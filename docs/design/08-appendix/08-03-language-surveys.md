@@ -2,14 +2,14 @@
 
 - 状態: 草稿
 - 関連ADR: [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0121](../decisions/0121-pattern-extensions.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0127](../decisions/0127-directory-run-and-root.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0141](../decisions/0141-http-scope-in-stdlib.md), [0142](../decisions/0142-http-api-shape.md), [0143](../decisions/0143-http-and-tls-crates.md), [0144](../decisions/0144-ioerrorkind-constructors.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md)
-- 未決事項: [OPEN-014](../open-issues.md#open-014), [OPEN-052](../open-issues.md#open-052)
+- 未決事項: [OPEN-014](../open-issues.md#open-014), [OPEN-051](../open-issues.md#open-051), [OPEN-052](../open-issues.md#open-052), [OPEN-056](../open-issues.md#open-056)
 - 移行元: なし
 
 ## 目的と範囲
 
 構文と意味論を決めるために行った、他の言語の調査の結果を記録する。本章は事実だけを記録し、Benitoite としての決定は各節に挙げた ADR に書く。
 
-各節の事実は、2026-09-28 に、各言語の仕様書・公式の文書・公式のソースなどの一次資料で確かめたものである。一次資料で確かめられなかった事項には【要検証】を付け、各節の末尾にまとめる。
+各節の事実は、節に日付を記したものを除き、2026-09-28 に、各言語の仕様書・公式の文書・公式のソースなどの一次資料で確かめたものである。一次資料で確かめられなかった事項には【要検証】を付け、各節の末尾にまとめる。
 
 ## 前提
 
@@ -1789,7 +1789,136 @@ OS の扱いは次のとおりである。
 - Rust で、同じモジュールに同じ名前のモジュールと型を宣言すると誤りになること。
 - F#・Scala 3・TypeScript・C# などで、同じ場所に同じ名前の型とモジュール（またはコンパニオンオブジェクト、名前空間）を置けるか。
 
+### 権限の対象の範囲を型や値で表す仕組み
+
+[OPEN-052](../open-issues.md#open-052) の、操作の対象（パス、ホスト、ポート）の範囲を型の側で表す候補と、[OPEN-051](../open-issues.md#open-051) の、外部の関数のエフェクトを WASM のモジュールが取り込む関数から求める候補の検討に使う。本節の事実は、2026-10-01 に一次資料で確かめた。
+
+| 系 | 権限やエフェクトを表す場所 | 具体的な対象を名指せるか | 強制の時期 |
+|---|---|---|---|
+| Scala 3 の capture checking | 型（捕捉する能力の集合）と、能力の値 | 型では名指せない（型が追跡するのは、どの変数の能力を捕捉するか）。TACIT（次節）はパスやホストを実行時の値として渡す | 能力の寿命と純粋性は静的。範囲は実行時 |
+| Effekt | 型（計算が文脈から要求する能力）と、第二級の能力の受け渡し | 名指す仕組みは見当たらない | 静的 |
+| Koka | 型（エフェクトの行） | 名指せない。`net`・`fsys` などのエフェクトは引数をとらず、引数をとるのはヒープの `alloc`・`read`・`write`（ヒープの添字）だけ | 静的 |
+| Unison | 型（ability）。組み込みの `IO` は粗い一つの ability | 名指す仕組みは見当たらない | 静的 |
+| Roc | 型は純粋な `->` と作用のある `=>` の区別だけ。I/O の基本の操作はすべて platform が持つ | 型では名指せない。platform の実装で制限できる | 純粋性は静的。範囲は platform が実行時に決める |
+| Austral | 線形型の能力の値。型は種類だけ（`Path` など） | 値で名指せる（根の `Filesystem` から下位のディレクトリやファイルへ降りる。親へは上がれない） | 線形性は静的。範囲は値の作り方による |
+| Pony | 権限の証票の型（`AmbientAuth` から `NetAuth`・`TCPAuth`・`TCPConnectAuth` へ段階的に作る）と、`FilePath` の値 | `FilePath` で名指せる（base の内側だけを作れ、権限は積集合になる）。ホストを絞る型はない | 証票の有無は静的。パスの包含は実行時 |
+| E・Joe-E | オブジェクトの参照 | 値で名指せる（ファイルか上位のディレクトリへの参照を持つときだけ、ファイルを扱える） | Joe-E は検査器が、ambient authority を与える API を除いた部分集合を静的に検査する。範囲は参照の到達可能性 |
+| Capsicum（FreeBSD） | OS のファイルディスクリプタと、その権利 | ディスクリプタ単位で名指せる（`openat` 系は渡したディレクトリの下に限る） | 実行時（カーネル） |
+| WASI・Component Model | 取り込み（リンクのとき）とハンドル（値） | 実行時の設定で名指せる（wasmtime の `preopened_dir`・`socket_addr_check`） | リンクのとき（取り込みを与えなければリンクに失敗する）と実行時 |
+| Deno（型ではない参考） | 実行時のフラグ | 名指せる（`--allow-net=github.com,jsr.io`、`"*.example.com"`、ホストにポートを付けてよい、パス） | 実行時 |
+| Extism（型ではない参考） | manifest | 名指せる（`allowed_hosts`、`allowed_paths`） | 実行時 |
+
+- 調べた範囲では、エフェクトや能力の型に具体的なパス・ホスト・ポートを書き、その包含を静的に判定する言語と研究はなかった。対象の範囲は、能力の値の中に持たせる（Austral、Pony、E・Joe-E、TACIT、WASI のハンドル）か、実行時の設定で絞る（Deno、Extism、wasmtime、Roc の platform）かのどちらかである。
+- Scala 3 の capture checking は、型 `T^{c1, …}` で値が参照する能力の集合を追跡し、純粋な関数 `A -> B` と、何でも捕捉してよい関数 `A => B` を区別する。Xu・Bračevac・Pham・Odersky の "What's in the Box"（arXiv 2509.07609）は、その計算体系 System Capless の型の健全性の証明を Lean で機械化したと述べる。Pham ほかの "Classifying Capabilities"（arXiv 2607.24504）は、能力を役割で分類する木を導入する。分類の対象は能力の種類であり、資源の場所ではない。
+- Brachthäuser・Schuster・Ostermann の "Effects as Capabilities"（OOPSLA 2020）は、エフェクトの型を、計算が文脈から要求する能力として読む（要旨は "In Effekt, effect types express which _capabilities_ a computation requires from its context."）。Effekt は、コンソールへの出力などの組み込みの副作用を、エフェクトではなく第二級の資源として追跡する。
+- Koka の `io` は別名 `<exn,ioc>` である。
+- Roc の文書は、platform が I/O の基本の操作をすべて持つので、platform が保証を与えられると述べる（"There are no escape hatches..."）。例として、開いたディレクトリの外のファイルの I/O の前に利用者に確認を求めるプラグインの platform を挙げる。
+- Austral の仕様は、ファイルシステム全体の能力の下に、特定のディレクトリやファイル、特定のホストへの能力を持てると述べる。能力を何もないところから作らないという制約は、言語ではなくライブラリの作者が守る（"The fourth restriction must be implemented manually by the programmer."）。
+- Pony のコンパイラは、`--safe` で C の FFI を使えるパッケージを制限できる。
+- Miller の博士論文 "Robust Composition"（2006）は、名前で対象を指す方式（`cp foo.txt bar.txt` は文字列を受け取るので、ファイルシステム全体の権限が要る）と、鍵で指す方式（`cat < foo > bar` は開いたディスクリプタを受け取る）を対比し、参照で指す言語は、指すことと使う権限を束ねる後者に立つと述べる。
+- Joe-E（Mettler・Wagner・Close、NDSS 2010）は Java の部分集合で、可変な大域の状態を禁じ、`File(String)` のように ambient authority を与える API を除く。
+- Capsicum は `cap_enter(2)` で能力モードに入ると、大域の名前空間（ファイルシステム、PID など）を使えなくなり、元に戻せない。ディスクリプタごとの権利は `cap_rights_limit(2)` で絞る。
+- WASI の設計原則は、WASI に ambient authority がなく、実行時の大域の名前空間とリンクのときの大域の関数がないと述べる。ハンドルを取らない関数は、差し替えで機能を弱められる（attenuation）。Component Model の world は、部品が提供するもの（export）と要求するもの（import）の契約であり、取り込むインターフェースは外のコードが満たす。
+- wasmtime の `Linker` は、既定では定義されていない取り込みがあるとインスタンス化に失敗し、`UnknownImportError` を返す。`define_unknown_imports_as_traps`（呼ぶと trap する関数で埋める）などで、欠けた取り込みを埋めて続けることもできる。`WasiCtxBuilder` は、既定ではファイルシステムを与えず、`preopened_dir` で与えるディレクトリを指定し、`socket_addr_check` でソケットのアドレスごとに判定する関数を指定する。
+- モジュールの取り込みの集合から、そのモジュールの権限やエフェクトを自動で求めて示す道具や実行環境は、見つからなかった。
+
+【要検証】
+
+- Unison で、利用者が細かい ability を定義して `IO` のハンドラで解釈する書き方を公式が推奨しているか。
+- F\* と Liquid Haskell に、パスやホストで添字付けした権限の例があるか。"Controlling File Access with Types"（ENTCS 332、2017）の内容（要旨しか読めなかった）。
+- エージェント向けの言語 ETAS（arXiv 2607.17780）が、操作の対象を型の引数にとるか（要旨しか読めなかった）。
+- Extism の `allowed_hosts` のワイルドカードの書式。
+- "What's in the Box" の採録先（DOI 10.1145/3763112）。
+
+出典
+
+- https://docs.scala-lang.org/scala3/reference/experimental/cc.html
+- https://docs.scala-lang.org/scala3/reference/experimental/capture-checking/classifiers.html
+- https://arxiv.org/abs/2509.07609
+- https://arxiv.org/abs/2607.24504
+- https://pl.cs.uni-tuebingen.de/publications/brachthaeuser20effects/
+- https://effekt-lang.org/docs/concepts/effect-handlers
+- https://raw.githubusercontent.com/koka-lang/koka/master/lib/std/core/types.kk
+- https://www.unison-lang.org/docs/fundamentals/abilities/using-abilities-pt2
+- https://www.roc-lang.org/platforms
+- https://austral-lang.org/spec/spec.html
+- https://stdlib.ponylang.io/files-FilePath/
+- https://tutorial.ponylang.io/object-capabilities/trust-boundary.html
+- https://www.ndss-symposium.org/wp-content/uploads/2017/09/met.pdf
+- https://man.freebsd.org/cgi/man.cgi?query=capsicum&sektion=4
+- https://github.com/WebAssembly/WASI/blob/main/docs/DesignPrinciples.md
+- https://component-model.bytecodealliance.org/design/worlds.html
+- https://docs.wasmtime.dev/api/wasmtime/struct.Linker.html
+- https://docs.wasmtime.dev/api/wasmtime_wasi/struct.WasiCtxBuilder.html
+- https://extism.org/docs/concepts/manifest/
+- https://docs.deno.com/runtime/reference/permissions/
+
+### AI エージェントの権限制御の研究
+
+[OPEN-052](../open-issues.md#open-052) の検討に使う。LLM エージェントが行う操作を、OS のサンドボックスではなく、能力・エフェクト・情報フローのラベル・権限の方針で制御する研究を調べた。本節の事実は、2026-10-01 に各論文の原典（arXiv の本文。読んだ範囲は各項に記す）で確かめた。
+
+| 研究 | 方式 | 強制の時期 | 具体的な対象 | 人間の承認 | 形式的な結果 |
+|---|---|---|---|---|---|
+| TACIT（"Tracking Capabilities for Safer Agents"） | Scala 3 の capture checking で能力を型で追跡する。エージェントはツールを直接呼ばず、能力を安全に扱う部分集合の Scala でコードを書く | 静的（能力の寿命と純粋性）と実行時（範囲） | ディレクトリの根、コマンドの名前、ホストの名前（ポートの記述はない） | 実行環境を、エージェントを起動する前に人間が確かめるとする一文がある | 新しい定理はない。基盤の capture checking の機械化された健全性の証明に拠る |
+| PORTICO（"Lingering Authority"） | エージェントとツールの間の参照モニタ。小目標ごとに与えた権限を、信頼できる事象で閉じる | 実行時 | パス単位の許可と拒否、ホスト（ポートの記述はない） | 人間の承認は、権限の付与と閉鎖を起こせる信頼できる事象の一つ | 保証を定義し、散文で論証する。機械化はない |
+| λ_A | エージェントの構成を表す型付きのラムダ計算 | 権限の制御はしない | なし | なし | 型安全性と停止性などを Coq で機械化（エフェクトの型は将来の課題） |
+| Governed Execution | Rocq の Interaction Trees で、すべての外部の作用が統治の境界を通ることを形式化する | 能力の集合は静的、検査は実行時 | なし（能力は種類の粒度） | 記述はない | Rocq で証明。モジュールの数は要旨と本文で食い違う |
+| APPA | 情報フローのラベルの束と、ツールの契約。汚染を子の分岐に閉じ込める | 実行時（ツールを呼ぶ前の検査） | 読み手の集合（宛先）とツール単位の契約。パスやホストの記法はない | 強い制限の解除は、承認する部品の裁定を要する | 命題と定理を付録で証明する。機械化はない |
+| IntentCap | 利用者の意図などの情報源ごとに、決定する欄の所有者を一つに定めた権限の lease を作り、決定的な検査器で検査する | 実行時（MCP の gateway と、eBPF による OS の方針） | 利用者が選んだファイル、名指しの宛先 | 利用者が構造化した入力で権限の上限を与える | 定理はない |
+| CaMeL | 二つの LLM を分け、独自の Python のインタプリタがデータフローと値ごとのタグを追跡する | 実行時（ツールを実行する前） | 値の読み手の集合。方針は任意の Python の関数 | 方針に反する実行は利用者の確認を求める想定 | 形式検証は今後の課題 |
+| FIDES | エージェントの計画器が、機密性と完全性のラベルを動的に追跡する | 実行時 | 受信者の集合 | 記述はない | 非干渉などを紙の上で示す |
+| Progent | ツールの名前と引数に対する記号的な方針の言語。拡大は SMT ソルバで判定し、承認を要する | 実行時 | 引数への条件（正規表現、集合の要素）で宛先やパスを縛れる | 方針を広げる更新は承認を要する（自動の拒否・承認、人間のレビューなどを設定できる） | 承認なしに許可が増えない性質を主張する。機械化はない |
+
+- TACIT（Odersky・Zhao・Xu・Bračevac・Pham。arXiv 2603.00991、ACM CAIS 2026、DOI 10.1145/3786335.3813127）
+  - エージェントは、能力を `requestFileSystem(root){ fs => … }` のような形で受け取り、ブロックの外へ持ち出せない。純粋な関数だけを受け取る `Classified[T].map` で、機密のデータを漏らせないようにする。エージェントに見える出力では `Classified` の中身を伏せ、利用者の端末にだけ実際の内容を出す。root の外のパスは実行時に例外にする（"Paths outside root are rejected at runtime with a SecurityException."）。
+  - 実装は MCP のサーバ（Scala 3 のコンパイラ、REPL、ライブラリ）である。外部のプロセスは境界の外にあり、そこでの保証は許可の一覧の水準に下がるので、サンドボックスとの併用を勧める。
+  - 評価では、独自の安全性のベンチマーク（AgentDojo の攻撃の手法を使う）で、機密のデータを `Classified` にした設定の安全性が二つのモデルで 100% だった。
+  - 実装は、EPFL の研究室が GitHub の `lampepfl/TACIT` で Apache-2.0 のライセンスで公開している。ビルド済みの JAR と CLI（`tacit`）があり、MCP に対応したエージェント（Claude Code、OpenCode、GitHub Copilot など）から接続できるとする。リポジトリは、safe mode と capture checking が実験的な機能であり（"Safe mode is an experimental feature still under active development."、"Capture checking is experimental."）、Scala 3 の nightly 版を使うのでコンパイラの振る舞いが版ごとに変わりうると述べる。論文は、safe mode が約束を満たすことの意味論的な健全性の論証を、今後の課題とする。
+  - パスやコマンドのパターンによる許可の規則を、文脈に応じた方針を表せない粗い仕組みとして評する（"Pattern-based permission rules (allowlists or blocklists over paths or commands) are coarse-grained and cannot capture context-sensitive policies."）。サンドボックスは、許可した操作の中の情報フローを制御できないと述べる。
+- PORTICO（Santos-Grueiro。arXiv 2606.22504、2026-06）
+  - 一つの小目標のために与えた一時的な権限が、小目標を終えた後も残る問題（lingering authority）を扱う。権限の付与は世代に結び付いた不透明なハンドルとして発行し、テストの成功、小目標の完了、取り消しなどの信頼できる事象で閉じる。閉じたハンドルは計画器の次のインターフェースから消え、再利用は副作用の前に拒否する。
+  - シェルの呼び出しは、ツールの表で操作の対象と効果を取り出して検査し、分類できないコマンドは明示の承認を求めるか拒否する。
+  - 取り消しはモデルの記憶を消さず、変わるのは呼び出せる能力の一覧だけであると述べる。
+- λ_A（Liu。arXiv 2604.11767、2026-04）
+  - エージェントの構成ファイル（YAML）をラムダ計算に翻訳して検査する。エフェクトは暗黙に扱い（LLM とツールの呼び出しを IO、記憶を状態とする）、型とエフェクトの体系は将来の課題として素描する。
+- Governed Execution（McCann。arXiv 2605.01032、2026-05）
+  - 外部の作用（LLM の呼び出し、HTTP の要求、ファイルの操作など）を 14 種の指令で表し、各 I/O の前に統治の検査を挿入するハンドラの変換を定める。能力の集合が空のプログラムは、観測のための指令しか出せないことを示す。能力の集合は作用を静的に限り、統治はすべての作用が検査を通ることを動的に保証すると述べる。
+- APPA（Kravchenko ほか、Archestra AI。arXiv 2607.24625、2026-07）
+  - 動的な情報フローの追跡では、制限されたデータを一度読むと文脈のラベルが恒久的に下がり、以降のツールを使えなくなる（label creep）。APPA は、一回の呼び出しだけを許す裁定と、汚染を子の分岐に閉じ込めて検査済みの値だけを親に戻す仕組みで、これを避ける。
+  - 評価は独自のベンチマーク（14 の場面、4 つのモデル）で、攻撃の成功率は防御のない基準の 31〜50% から 0〜7% に下がった。
+- IntentCap（Zheng・Zhang・Mao。arXiv 2609.14631、2026-09。短い論文）
+  - 利用者の要求、ツールの結果、文書、Skill や MCP の指示がすべて同じ経路で計画に入ると、どの情報源も宛先などの決定する欄を埋められる、という問題を扱う。LLM を信頼しないコンパイラとして権限の lease を提案させ、決定的な検査器が欄ごとの所有者と、権限が狭まる向きにだけ変わることを検査する。
+  - 能力は実行時に複数の情報源から合成しなければならず、合成を静的に宣言するプログラマはいない、という立場をとる（"no programmer exists to declare the composition statically."）。
+- CaMeL（Debenedetti ほか。arXiv 2503.18813、2025）
+  - 信頼できる利用者の問い合わせだけを見てコードを書く LLM と、ツールを持たず構造化した出力だけを返す LLM を分ける。独自のインタプリタが値の出どころと読み手を追跡し、方針に反するツールの呼び出しを実行の前に止める。AgentDojo の課題の 77% を、証明できる安全性のもとで解いたと報告する。プロンプトインジェクションが完全に解決したわけではないと述べる。
+- FIDES（Costa ほか、Microsoft。arXiv 2505.23643、2025）
+  - 計画器が機密性と完全性のラベルを追跡し、ツールと引数ごとの方針と比べる。制限の強い結果は変数に隠して文脈を汚さない。ツールの呼び出しにだけ方針を強制するので、テキストからテキストへの攻撃は止められないと述べる。
+- Progent（Shi ほか。arXiv 2504.11703、2025〜2026）
+  - ツールの名前と引数に対する許可・禁止の規則を書く言語で、どの規則にも当たらない呼び出しは拒否する。LLM が利用者の課題から初期の方針を作り、実行中の更新は SMT ソルバで狭める向きか広げる向きかを判定し、広げる向きは承認を要する。
+
+【要検証】
+
+- TACIT の ACM 版の本文と、arXiv の v2 との差（ACM のページを読めなかった）。TACIT で、ハーネスがエージェントの要求できる対象の上限を外から縛る仕組みがあるか。
+- IntentCap と CaMeL の採録先。
+- Governed Execution の Rocq のモジュールの数（要旨は 32、本文の結論は 36）。
+
+出典
+
+- https://arxiv.org/html/2603.00991
+- https://github.com/lampepfl/TACIT
+- https://dl.acm.org/doi/10.1145/3786335.3813127
+- https://arxiv.org/html/2606.22504
+- https://arxiv.org/html/2604.11767
+- https://arxiv.org/html/2605.01032
+- https://arxiv.org/html/2607.24625v1
+- https://arxiv.org/html/2609.14631v1
+- https://arxiv.org/html/2503.18813
+- https://arxiv.org/html/2505.23643
+- https://arxiv.org/html/2504.11703
+
 ## 未決事項
 
 - [OPEN-014](../open-issues.md#open-014): 参考にした言語に関する外部の事実の確認（本章の【要検証】の事項）
-- [OPEN-052](../open-issues.md#open-052): 実行時の権限制御の方式（ネットワークの操作の対象の書き方と判定の時点）
+- [OPEN-051](../open-issues.md#open-051): 外部の関数（WASM）の詳細（取り込む関数からエフェクトを求める候補）
+- [OPEN-052](../open-issues.md#open-052): 実行時の権限制御の方式（ネットワークの操作の対象の書き方と判定の時点、対象の範囲を型の側で表す候補）
+- [OPEN-056](../open-issues.md#open-056): 自前のコーディングエージェントの設計（エージェントの操作を Benitoite のスクリプトに限る候補）

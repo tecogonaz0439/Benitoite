@@ -47,10 +47,10 @@
 - `canonicalize`: `std::fs::canonicalize`。UTF-8 でなければ `InvalidUTF8`。
 - `createDirectory`: 途中のディレクトリも作る（`create_dir_all`）。既にディレクトリがあれば何もしない。パスに普通のファイルがあれば `AlreadyExists`（03-07 の箇条）。`create_dir_all` がこの場合に返す誤りの種類を確かめ、`AlreadyExists` にならなければ、判定を加える。
 - `remove`: ファイル、シンボリックリンク、空のディレクトリを削除する。`symlink_metadata` で種類を見て、ディレクトリなら `remove_dir`、そうでなければ `remove_file`。空でないディレクトリは `DirectoryNotEmpty`。
-- `removeTree`: ディレクトリとその下を削除し、シンボリックリンクの先は削除しない。`std::fs::remove_dir_all` がシンボリックリンクを辿らないことを、Rust 1.98.1 の文書で確かめて使う。確かめられなければ、明示の積み重ねで自作する。
+- `removeTree`: ディレクトリとその下を削除し、シンボリックリンクの先は削除しない。`std::fs::remove_dir_all` は使わず、明示の積み重ね（`Vec`）で自作する（std の実装は内部で再帰し、深さごとにファイル記述子を開いたままにしうるので、受け入れテストの深い入れ子と規約 00-02「再帰の深さ」に合わない）。項目の種類は `symlink_metadata` で調べ、リンクはリンクそのものを消す。ファイル記述子を開いたまま潜らず、パスで辿る。引数がディレクトリでない場合（ファイル・リンク）の結果は 03-07 の表に従い、表が定めなければ実装担当が決めて完了の報告に書く。
 - `rename`: `std::fs::rename`。`from` がファイルで `to` がディレクトリのときは `IsDirectory`（03-07 の表）。OS がこの場合に返す誤りを確かめ、表と合わなければ判定を加える。
-- `IOErrorKind` への対応: 03-07「IOErrorKind と関数の対応」の各行を、少なくとも一つのテストで起こす。`std::io::ErrorKind` の値だけで区別できないもの（`NotDirectory` など）は、R29 の【要検証】の方針（使えなければ `raw_os_error`）に従う。
-- `File.copy` はソースの関数であり、`readBytes` の後に `writeBytes` を呼ぶ（10-15「部分と番号」）。ソースを変えない。内容を一度 `Bytes` にするので、写せるのは 2^30 バイト（1 GiB）までであり、超えるファイルでは `readBytes` と同じく資源の不足として停止する（03-07「File」、ADR 0291）。この制限をテストで確かめ、完了の報告に書く。
+- `IOErrorKind` への対応: 03-07「IOErrorKind と関数の対応」の各行を、少なくとも一つのテストで起こす。R29 の対応（`runtime` の `IoFailure::from`）を使い、`std::io::ErrorKind` の値だけでは表と合わない場合（`createDirectory` がファイルに当たる場合、`rename` がディレクトリに当たる場合など）だけ、判定を加える。
+- `File.copy` はソースの関数であり、`readBytes` の後に `writeBytes` を呼ぶ（10-15「部分と番号」）。ソースを変えない。内容を一度 `Bytes` にするので、写せるのは 2^30 バイト（1 GiB）までであり、超えるファイルでは `readBytes` と同じく資源の不足として停止する（03-07「File」、ADR 0291）。この制限をテストで確かめ、完了の報告に書く。テストで 1 GiB を超える確保をしないために、`readBytes` は読む前にメタデータの大きさを見て、上限を超えていれば読まずに同じ停止を返す（読む途中で増えたファイルに備えて、R29 の `read_all_limited` の上限はそのまま使う）。テストは `File::set_len` で作った疎なファイル（2^30 + 1 バイト）で `readBytes` と `File.copy` の両方を確かめる。
 
 ## 受け入れテスト
 
@@ -60,7 +60,9 @@
 - 順序: `listDirectory` と `walk` が、作った順によらず UTF-8 のバイト列の順に並ぶ（`"B"` が `"a"` より前、`"é"` が `"z"` より後）。
 - シンボリックリンク: `info` がリンクそのものの `SymbolicLink` を返す。`walk` がディレクトリを指すリンクの先を辿らない。`removeTree` がリンクの先を消さない。
 - 深い入れ子: 深さ 1000 以上のディレクトリを `walk` と `removeTree` で扱える（Rust の再帰を使わないことの確かめ。作れない環境ではパスの長さの上限の手前までにする）。
-- スクリプト: `File.copy` で内容が写り、`to` があれば置き換わる。`from` がディレクトリなら `IsDirectory`。`File.Info.modified` を `Time` の関数で読める。
+- 作業文書と 03-07 が定めない細部（`info.modified` が 1970 年より前のときの値、`canonicalize` のテストで macOS の一時ディレクトリが `/private` 付きに解決されることへの対処など）は、実装担当が決めて完了の報告に書く。
+- スクリプト: `File.copy` で内容が写り、`to` があれば置き換わる。`from` がディレクトリなら `IsDirectory`。`File.Info.modified` の値を、レコードの欄の関数 `Time.Instant.unixNanoseconds`（`import Benitoite.Unofficial.Time`）で読める。`Time` の組み込みの関数（L24）は使わない。
+- スクリプトのテストで U3 の非公式のモジュールを取り込むときは、非公式の名前（`import Benitoite.Unofficial.Json` など。ADR 0286 の決定 3）で書く。03-08 などの設計書の例の `import Benitoite.Json` の形を写すと、E0321 になる。
 
 ## 完了条件
 

@@ -1,0 +1,55 @@
+//! Optional values.
+
+/// A value that may be absent: `Option.Some(x)` holds `x`, and `Option.None` holds nothing.
+public data Option[T]
+  Some(T)
+  None
+end data
+
+/// Applies `f` to the value inside `Option.Some`.
+public function map[T, U, effect E](o: Option[T], f: function(T) -> U uses E) -> Option[U] uses E
+  return match o with
+    case Option.Some(x) -> Option.Some(f(x))
+    case Option.None -> Option.None
+  end match
+end function
+
+/// Applies `f` to the value inside `Option.Some` and returns its result.
+public function andThen[T, U, effect E](o: Option[T], f: function(T) -> Option[U] uses E) -> Option[U] uses E
+  return match o with
+    case Option.Some(x) -> f(x)
+    case Option.None -> Option.None
+  end match
+end function
+
+/// Returns the value inside `Option.Some`, or `fallback` for `Option.None`.
+public function unwrapOr[T](o: Option[T], fallback: T) -> T
+  return match o with
+    case Option.Some(x) -> x
+    case Option.None -> fallback
+  end match
+end function
+
+/// Returns whether `o` is `Option.Some`.
+public function isSome[T](o: Option[T]) -> Boolean
+  return match o with
+    case Option.Some(_) -> true
+    case Option.None -> false
+  end match
+end function
+
+/// Returns whether `o` is `Option.None`.
+public function isNone[T](o: Option[T]) -> Boolean
+  return match o with
+    case Option.Some(_) -> false
+    case Option.None -> true
+  end match
+end function
+
+/// Turns `Option.Some(x)` into `Result.Ok(x)` and `Option.None` into `Result.Error(error)`.
+public function okOr[T, X](o: Option[T], error: X) -> Result[T, X]
+  return match o with
+    case Option.Some(x) -> Result.Ok(x)
+    case Option.None -> Result.Error(error)
+  end match
+end function

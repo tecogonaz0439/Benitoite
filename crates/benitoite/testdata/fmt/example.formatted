@@ -1,0 +1,24 @@
+// 06-03「整形の例」
+import Benitoite.IO.Console
+
+data Shape
+  Circle(Float)
+  Rect(Float, Float)
+end data
+
+function area(s: Shape) -> Float
+  return match s with
+    case Shape.Circle(r) -> 3.14159 * r * r // circle
+    case Shape.Rect(w, h) ->
+      w * h
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  bind shapes <- [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
+  // total area
+  bind total <- shapes
+    |> List.map(area)
+    |> List.fold(0.0, lambda(acc, a) return acc + a end lambda)
+  Console.writeLine("total: ${total}")
+end function

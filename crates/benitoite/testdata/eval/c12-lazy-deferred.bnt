@@ -1,0 +1,17 @@
+// spec: 01-08 明示遅延（初回リリース版）
+// spec: 01-06 明示遅延の型（初回リリース版）
+// 関門: 未評価の本体で失敗しない規則と捕捉した値の再取得を守り、先行評価と捕捉漏れを捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+
+function ignore(value: Lazy[Integer]) -> Integer
+  return 7
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(ignore(lazy 1 div 0 end lazy)))
+  bind prefix <- "captured "
+  bind value <- lazy prefix + "value" end lazy
+  Console.writeLine(Lazy.force(value))
+  Console.writeLine(Lazy.force(value))
+end function

@@ -1,9 +1,11 @@
 // spec: 01-01 キーワード
 // spec: 01-01 識別子
-fn main() -> Unit uses IO {
-  let permissions = 1
-  let with = 2
-  let record = 3
-  let from = 4
-  Console.println(Int.toString(permissions + with + record + from))
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind permissions <- 1
+  bind scope_value <- 2
+  bind record_value <- 3
+  bind from <- 4
+  return Console.writeLine(Integer.toString(permissions + scope_value + record_value + from))
+end function

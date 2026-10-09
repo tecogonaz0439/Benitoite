@@ -1,0 +1,16 @@
+// spec: 01-11 タスク
+// spec: 01-11 タスクを起動する関数
+// 関門: 空・複数・入れ子の all の結果を守り、結果の順序と構造化された待ちの退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind empty: List[Integer] <- Task.all([])
+  Console.writeLine(Integer.toString(List.length(empty)))
+  bind results <- Task.all([
+    lambda() return 10 end lambda,
+    lambda() return List.length(Task.all([lambda() return 1 end lambda, lambda() return 2 end lambda])) end lambda,
+    lambda() return 30 end lambda
+  ])
+  List.forEach(results, lambda(value) Console.writeLine(Integer.toString(value)) end lambda)
+end function

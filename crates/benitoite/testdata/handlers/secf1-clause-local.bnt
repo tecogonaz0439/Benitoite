@@ -1,0 +1,47 @@
+// spec: 01-06 ハンドラの型付け、01-12 ハンドラの節の型パラメータの範囲
+// 節内のセル・多相な呼び出し・try・入れ子の節は、操作の値を正しく扱える。
+import Benitoite.Unofficial.IO.Console
+
+effect Swap
+  function store[T](x: T) -> T
+end effect
+
+function main() -> Unit uses Console.Write, State
+  bind number <- handle store(42) with
+    case store(x) ->
+      bind cell <- Reference.new(Option.None)
+      Reference.set(cell, Option.Some(x))
+      bind same <- lambda(value) return value end lambda
+      bind unwrap <- lambda(value)
+        bind v <- try value
+        return Option.Some(v)
+      end lambda
+      bind optional <- unwrap(Option.Some(x))
+      handle
+        bind _ <- store("inner")
+      with
+        case store(y) ->
+          bind _ <- same(x)
+          bind inner <- Reference.new(y)
+          resume(Reference.get(inner))
+      end handle
+      match optional with
+        case Option.Some(v) -> resume(same(v))
+        case Option.None -> resume(x)
+      end match
+  end handle
+  bind text <- handle store("hello") with
+    case store(x) ->
+      bind get <- lambda() return x end lambda
+      resume(get())
+  end handle
+  bind action <- handle
+    bind _ <- store(42)
+    lambda() end lambda
+  with
+    case store(x) -> lambda() bind _ <- x end lambda
+  end handle
+  action()
+  Console.writeLine(Integer.toString(number))
+  Console.writeLine(text)
+end function

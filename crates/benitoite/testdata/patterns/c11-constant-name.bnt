@@ -1,0 +1,10 @@
+// spec: 01-05 パターン
+const maximum: Integer = 3
+function f(n: Integer) -> Unit
+  match n with
+    case maximum -> ()
+  end match
+end function
+function main() -> Unit
+  ()
+end function

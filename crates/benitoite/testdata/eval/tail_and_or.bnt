@@ -1,9 +1,11 @@
-// spec: 01-04 Bool
+// spec: 01-04 Boolean
 // spec: 01-08 末尾呼び出し
-fn is_even(n: Int) -> Bool {
-  if n == 0 { true } else { n != 0 && is_even(n - 1) }
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  Console.println(if is_even(1000000) { "true" } else { "false" })
-}
+function is_even(n: Integer) -> Boolean
+  return if n = 0 then true else n <> 0 and is_even(n - 1) end if
+end function
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(if is_even(1000000) then "true" else "false" end if)
+end function

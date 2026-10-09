@@ -1,0 +1,9 @@
+// spec: 01-02 ラムダ
+// spec: 01-03 局所の束縛の有効範囲
+// spec: 01-08 関数の呼び出し
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+ bind captured <- 7
+ bind add_captured <- lambda(value: Integer) return captured + value end lambda
+ Console.writeLine(Integer.toString(add_captured(5)))
+end function

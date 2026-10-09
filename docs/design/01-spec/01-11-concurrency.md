@@ -1,8 +1,8 @@
 # 並行処理
 
 - 状態: 確定
-- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0067](../decisions/0067-with-resource-scope.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0118](../decisions/0118-effect-handlers.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0142](../decisions/0142-http-api-shape.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0152](../decisions/0152-task-allok-list-order.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0164](../decisions/0164-taskgroup-release-while-stopping.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md)
-- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-044](../open-issues.md#open-044), [OPEN-062](../open-issues.md#open-062)
+- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0067](../decisions/0067-with-resource-scope.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0118](../decisions/0118-effect-handlers.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0142](../decisions/0142-http-api-shape.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0151](../decisions/0151-inherited-handlers-tail-resume-only.md), [0152](../decisions/0152-task-allok-list-order.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0164](../decisions/0164-taskgroup-release-while-stopping.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0317](../decisions/0317-await-on-cancelled-task-is-runtime-error.md)
+- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-044](../open-issues.md#open-044), [OPEN-062](../open-issues.md#open-062), [OPEN-104](../open-issues.md#open-104), [OPEN-106](../open-issues.md#open-106)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 5.1, 5.2
 
 ## 目的と範囲
@@ -49,16 +49,16 @@
 
 ### タスクを起動する関数
 
-【方針】タスクを起動し、結果を待つ関数は次のとおりである。すべて prelude の `Task` モジュールの関数である。起動する関数のエフェクト `E` は、呼び出しのエフェクトになる。どのタスクの結果が先に得られるかは時間に依存するので、`Task.race` と `Task.withTimeout` は `Clock.Time` のエフェクトも持つ。`Task` は prelude のモジュールなので import なしで呼べるが、これらを呼ぶ関数の `uses` に `Clock.Time` を書くには、`Benitoite.IO.Clock` の import が要る（`uses IO.All` と書くときは要らない。[エフェクト](01-07-effects.md)）。表の `actions` はタスクとして起動する関数のリストであり、`action` は一つの関数である。
+【方針】タスクを起動し、結果を待つ関数は次のとおりである。すべて prelude の `Task` モジュールの関数である。起動する関数のエフェクト `E` は、呼び出しのエフェクトになる。どのタスクの結果が先に得られるかは時間と切り替えの順序に依存するので、`Task.race` と `Task.withTimeout` は `Clock.Time` と `State` のエフェクトも持つ（`State` は、`handle` で `Clock.Time` を除いても、これらを呼ぶ関数が純粋にならないようにするため。[ADR 0319](../decisions/0319-task-results-and-pure-guarantee-under-switching.md)）。`Task` は prelude のモジュールなので import なしで呼べるが、これらを呼ぶ関数の `uses` に `Clock.Time` を書くには、`Benitoite.IO.Clock` の import が要る（`uses IO.All` と書くときは要らない。[エフェクト](01-07-effects.md)）。表の `actions` はタスクとして起動する関数のリストであり、`action` は一つの関数である。
 
 | 関数 | 型 | 値 |
 |---|---|---|
 | `Task.all(actions)` | `function[T, effect E](List[function() -> T uses E]) -> List[T] uses E` | `actions` の各関数をタスクとして起動し、すべてが終わるのを待って、結果を `actions` と同じ順に並べたリスト |
 | `Task.allOk(actions)` | `function[T, X, effect E](List[function() -> Result[T, X] uses E]) -> Result[List[T], X] uses E` | すべてのタスクが `Result.Ok` を返したら、値を `actions` と同じ順に並べたリストの `Result.Ok`。どれかが `Result.Error` を返したら、`Result.Error` を返したタスクのうち `actions` の中で最も前にあるものの `Result.Error`（後述） |
-| `Task.race(actions)` | `function[T, effect E](List[function() -> T uses E]) -> Option[T] uses Clock.Time, E` | 最初に終わったタスクの結果の `Option.Some`。そのほかのタスクは取り消す。`actions` が空なら `Option.None` |
-| `Task.withTimeout(milliseconds, action)` | `function[T, effect E](Integer, function() -> T uses E) -> Option[T] uses Clock.Time, E` | `action` を起動し、`milliseconds` ミリ秒以内に終われば結果の `Option.Some`。終わらなければタスクを取り消して `Option.None`。`milliseconds` が 0 以下なら、0 として扱う |
+| `Task.race(actions)` | `function[T, effect E](List[function() -> T uses E]) -> Option[T] uses Clock.Time, State, E` | 最初に終わったタスクの結果の `Option.Some`。そのほかのタスクは取り消す。`actions` が空なら `Option.None` |
+| `Task.withTimeout(milliseconds, action)` | `function[T, effect E](Integer, function() -> T uses E) -> Option[T] uses Clock.Time, State, E` | `action` を起動し、`milliseconds` ミリ秒以内に終われば結果の `Option.Some`。終わらなければタスクを取り消して `Option.None`。`milliseconds` が 0 以下なら、0 として扱う |
 
-【決定】`Task.allOk` の結果は、タスクを切り替える位置によらない（[ADR 0152](../decisions/0152-task-allok-list-order.md)）。`actions` の i 番目のタスクが `Result.Error` を返したら、i より後ろの、終わっていないタスクを取り消し、i より前のタスクの終わりを待つ。i より前のタスクがすべて `Result.Ok` を返したら、i 番目のタスクの `Result.Error` を返す。i より前のタスクが `Result.Error` を返したら、そのタスクについて同じ規則を繰り返す。結果の値は、各関数を `actions` の順に呼び、最初の `Result.Error` で打ち切ったときの値と一致する。
+【決定】`Task.allOk` の結果は、タスクを切り替える位置によらない（[ADR 0152](../decisions/0152-task-allok-list-order.md)）。`actions` の i 番目のタスクが `Result.Error` を返したら、i より後ろの、終わっていないタスクを取り消し、i より前のタスクの終わりを待つ。i より前のタスクがすべて `Result.Ok` を返したら、i 番目のタスクの `Result.Error` を返す。i より前のタスクが `Result.Error` を返したら、そのタスクについて同じ規則を繰り返す。起動したタスクのどれも実行時エラーで止まらず、エフェクト `E` が空のとき、結果の値は、各関数を `actions` の順に呼び、最初の `Result.Error` で打ち切ったときの値と一致する。起動したタスクが実行時エラーで止まるときは、切り替えの順序によって、`Result.Error` を返すか実行時エラーで止まるかが変わりうる。`Task.all` で複数のタスクが実行時エラーで止まりうるときも、どの実行時エラーで止まるかは切り替えの順序に依存しうる（[ADR 0319](../decisions/0319-task-results-and-pure-guarantee-under-switching.md)）。
 
 【方針】呼び出したタスクを止めて時間の経過を待つ関数は、`Benitoite.IO.Clock` のエフェクト `Clock.Time` の操作であり、`Task` には置かない（[ADR 0130](../decisions/0130-builtin-effect-names-and-placement.md)）。
 
@@ -76,7 +76,7 @@
 |---|---|---|
 | `TaskGroup.open()` | `function() -> TaskGroup uses State` | 空のタスクの集まり |
 | `TaskGroup.spawn(group, action)` | `function[T, effect E](TaskGroup, function() -> T uses E) -> Task[T] uses State, E` | `action` をタスクとして起動し、`group` に加える。起動したタスクの終わりを待たずに戻る |
-| `Task.await(task)` | `function[T](Task[T]) -> T uses State` | `task` が終わるのを待ち、その結果を返す。終わっていれば、すぐに結果を返す |
+| `Task.await(task)` | `function[T](Task[T]) -> T uses State` | `task` が終わるのを待ち、その結果を返す。終わっていれば、すぐに結果を返す。`task` が取り消したタスクなら実行時エラー（後述の「取り消し」） |
 
 【方針】`TaskGroup` の解放（`with` を抜けるとき）は、その集まりで起動したすべてのタスクが終わるのを待つ。タスクを取り消しはしない。`Task.await` で待たなかったタスクの結果は捨てる。解放した `TaskGroup` に `TaskGroup.spawn` でタスクを加えると、実行時エラー（解放したリソースの使用）とする。
 
@@ -92,6 +92,8 @@
 - 止まる前に、そのタスクの中で開いている `with` のリソースを、内側のスコープから順に解放する。解放の失敗の扱いは[リソース管理](01-10-resources.md)の「解放の失敗」に従う。そのタスクが開いている `TaskGroup` で起動したタスクも、取り消す。
 - 取り消したタスクの結果はない。取り消したタスクの `return` と `try` は、呼び出し元に値を返さない。
 - 取り消したタスクが始めていた外部に作用する操作は、取り消した時点で終わっているとは限らない。取り消しは、その操作（ファイルの書き込み、コマンドの実行、HTTP の要求の送信など）が起きなかったことを保証しない。
+
+【決定】取り消したタスクを `Task.await` で待つと、待ったタスクの側で実行時エラー（取り消したタスクの結果の待ち。[評価意味論](01-08-evaluation.md)の「実行時エラーによる停止」）となる。待つ時点で既に取り消して終わっていた場合も、待っている間に取り消して終わった場合も同じである（[ADR 0317](../decisions/0317-await-on-cancelled-task-is-runtime-error.md)）。この実行時エラーは、`TaskGroup.spawn` が返した `Task` の値を `Reference` などに入れて `with` の外へ持ち出した後に、その `TaskGroup` のタスクが取り消された場合に起きる（その `TaskGroup` を開いたタスクの取り消しや、後述の「タスクとハンドラ」の `resume` を呼ばずに終わった節による取り消し）。
 
 `TaskGroup.spawn` で起動したタスクを、プログラムから取り消す関数は、初回リリース版にはない。
 
@@ -146,7 +148,7 @@ end function
 
 function main() -> Result[Unit, String] uses Http.Listen, State
   with listener = try Http.listen("127.0.0.1", 8080) |> Result.mapError(_, NetworkError.message),
-       group = TaskGroup.open() do
+    group = TaskGroup.open() do
     return serve(listener, group) |> Result.mapError(_, NetworkError.message)
   end with
 end function
@@ -166,5 +168,7 @@ bind outputs <- Task.all([
 ## 未決事項
 
 - [OPEN-012](../open-issues.md#open-012): 構文の種類ごとの LLM の生成精度（並行処理の語を予約語にして診断で書き方を示すか）
-- [OPEN-044](../open-issues.md#open-044): 複数のコアで並列に計算する方式
+- [OPEN-044](../open-issues.md#open-044): 複数のコアで並列に計算する方式（Web システムのために、コアごとに実行を作る見立てを含む）
 - [OPEN-062](../open-issues.md#open-062): 設計書の 2 回目のレビューで指摘された実行時の振る舞いの再現（R01・R03・R04）
+- [OPEN-104](../open-issues.md#open-104): HTTP のサーバの要求ごとの失敗の隔離（初回リリース版の後に、要求のタスクの実行時エラーでプログラム全体を止めない形を設けるか。「失敗と停止」を改めうる）
+- [OPEN-106](../open-issues.md#open-106): 子のタスクから外側のリソースを使う規則と、接続の pool の形（初回リリース版の後）

@@ -1,15 +1,15 @@
 // spec: 01-05 網羅性の検査
-type Tree[T] {
+data Tree[T]
     Leaf
     Node(Tree[T], T, Tree[T])
-}
+end data
 
-fn describe(tree: Tree[Int]) -> String {
-    match tree {
-        Tree.Leaf => "leaf"
-    }
-}
+function describe(tree: Tree[Integer]) -> String
+    return match tree with
+        case Tree.Leaf -> "leaf"
+    end match
+end function
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

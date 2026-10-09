@@ -1,0 +1,7 @@
+// spec: 01-06 組み込みの制約（初回リリース版）
+function single[K: key, V](k: K, v: V) -> Map[K, V]
+  return Map.fromList([Pair(k, v)])
+end function
+function main() -> Unit
+  bind _ <- single("one", 1)
+end function

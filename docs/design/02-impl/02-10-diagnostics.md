@@ -1,7 +1,7 @@
 # 診断エンジン
 
 - 状態: 確定
-- 関連ADR: [0012](../decisions/0012-invalid-utf8-input.md), [0019](../decisions/0019-stop-after-failing-stage.md), [0024](../decisions/0024-continue-after-type-errors.md), [0025](../decisions/0025-columns-in-code-points.md), [0031](../decisions/0031-numbered-diagnostic-codes.md), [0032](../decisions/0032-rust-style-text-and-json.md), [0033](../decisions/0033-english-diagnostic-messages.md), [0034](../decisions/0034-call-trace-in-runtime-errors.md), [0035](../decisions/0035-help-suggestions-without-rewriting.md), [0037](../decisions/0037-exit-status-values.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0047](../decisions/0047-parenthesized-types-and-uses-binding.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0068](../decisions/0068-release-resources-on-stop.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0093](../decisions/0093-no-reserved-words-for-absent-constructs.md), [0113](../decisions/0113-div-and-mod-operators.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0123](../decisions/0123-top-level-constants.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0154](../decisions/0154-public-contract-includes-effects-and-supertraits.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0166](../decisions/0166-warnings-reported-by-run-and-deny-option.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0208](../decisions/0208-test-report-destination.md), [0210](../decisions/0210-mcp-in-server-chapter-and-explain-tool.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md), [0252](../decisions/0252-test-report-format.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0279](../decisions/0279-no-duplicate-method-names-in-trait.md)
+- 関連ADR: [0012](../decisions/0012-invalid-utf8-input.md), [0019](../decisions/0019-stop-after-failing-stage.md), [0024](../decisions/0024-continue-after-type-errors.md), [0025](../decisions/0025-columns-in-code-points.md), [0031](../decisions/0031-numbered-diagnostic-codes.md), [0032](../decisions/0032-rust-style-text-and-json.md), [0033](../decisions/0033-english-diagnostic-messages.md), [0034](../decisions/0034-call-trace-in-runtime-errors.md), [0035](../decisions/0035-help-suggestions-without-rewriting.md), [0037](../decisions/0037-exit-status-values.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0047](../decisions/0047-parenthesized-types-and-uses-binding.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0068](../decisions/0068-release-resources-on-stop.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0093](../decisions/0093-no-reserved-words-for-absent-constructs.md), [0113](../decisions/0113-div-and-mod-operators.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0123](../decisions/0123-top-level-constants.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0154](../decisions/0154-public-contract-includes-effects-and-supertraits.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0166](../decisions/0166-warnings-reported-by-run-and-deny-option.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0208](../decisions/0208-test-report-destination.md), [0210](../decisions/0210-mcp-in-server-chapter-and-explain-tool.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md), [0252](../decisions/0252-test-report-format.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0279](../decisions/0279-no-duplicate-method-names-in-trait.md), [0317](../decisions/0317-await-on-cancelled-task-is-runtime-error.md), [0324](../decisions/0324-test-task-origins-end-at-test-function.md), [0325](../decisions/0325-outermost-frame-shows-no-call-site.md)
 - 未決事項: [OPEN-052](../open-issues.md#open-052)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 8.2, 8.3
 
@@ -97,7 +97,7 @@ CLI の文章と JSON、MCP サーバ、LSP サーバ、テストの実行器は
 | `E01nn` | 検査の誤り | 読み込みと字句 | import で辿ったファイルの読み込みの誤り（[ADR 0156](../decisions/0156-module-loading-and-whole-program-checking.md)）、すべてのソースの大きさの和の上限（[ソース管理と位置情報](02-02-source-and-spans.md)の「ソースの大きさの上限」） |
 | `E02nn` | 検査の誤り | 構文 | 初回リリース版の構文の誤り、最小実行版の書き方（`let`、`case … of` と `when`、`type` による代数的データ型の宣言、`:` の後の戻り値の型。[ADR 0254](../decisions/0254-return-type-after-arrow.md)〜[ADR 0257](../decisions/0257-match-with-case-arms.md)）、`try` の直後の `{`、属性の書き方の誤り、`lazy` の本体とガードの中の `return`・`try`、制約の位置の書けない小文字の名前（利用者のソースの `ordered` を含む。[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)）（[字句解析器と構文解析器](02-03-frontend.md)の「文脈の制限」） |
 | `E03nn` | 検査の誤り | 名前、import、公開 | 最小実行版の `uses IO`（エフェクトの位置に書いたモジュールの名前。[ADR 0130](../decisions/0130-builtin-effect-names-and-placement.md)）、見つからないモジュール、同じモジュールの二度の取り込み、import の循環、実行を始めるモジュールの取り込み、公開する契約に非公開の型・型クラス・エフェクトを使った（[ADR 0154](../decisions/0154-public-contract-includes-effects-and-supertraits.md)）、`Benitoite` の名前空間の名前の宣言、一つの型クラスの中のメソッドの名前の重なり（[ADR 0279](../decisions/0279-no-duplicate-method-names-in-trait.md)）、束縛の書き分けの誤り（`bind` と `shadow` の取り違え、見えている名前と見えていない名前の混ざった左辺、変数のない `shadow`、キーワードを書けない束縛による局所の名前の隠し。[ADR 0255](../decisions/0255-bind-and-shadow.md)） |
-| `E04nn` | 検査の誤り | 型（宣言、リテラルの範囲、`main` の条件を含む） | レコードの構築と更新のフィールドの誤り、型の別名の誤り、定数の宣言と定数式の誤り（定数式の算術の確実な誤り、定数の循環、定数式の `Map.fromList`・`Set.fromList` の重なる鍵。[ADR 0123](../decisions/0123-top-level-constants.md)、[ADR 0136](../decisions/0136-map-and-set-in-constants.md)）、文字列リテラルか定数式を渡した `Regex.compile` の正規表現の構文の誤り（[テキストとデータの処理](../03-interop/03-08-text-and-data.md)の「Regex」） |
+| `E04nn` | 検査の誤り | 型（宣言、リテラルの範囲、`main` の条件を含む） | レコードの構築と更新のフィールドの誤り、型の別名の誤り、定数の宣言と定数式の誤り（定数式の算術の確実な誤り、定数の循環、定数式の `Map.fromList`・`Set.fromList` の重なる鍵。[ADR 0123](../decisions/0123-top-level-constants.md)、[ADR 0136](../decisions/0136-map-and-set-in-constants.md)） |
 | `E05nn` | 検査の誤り | エフェクト、ハンドラ | `main` とテストの関数で処理していない利用者のエフェクト、エフェクトの宣言の誤り、`handle` の節の `case` に操作でない関数（`State` を型に持つ関数など）を書いた、一つの `handle` の同じ操作の節、`resume` を書けない位置（節の外、節の中のラムダと `lazy`。構文解析器が報告する。[ADR 0155](../decisions/0155-resume-not-in-lazy.md)）、`TaskGroup.open` の位置（[ADR 0153](../decisions/0153-taskgroup-open-only-in-with.md)） |
 | `E06nn` | 検査の誤り | パターン | 範囲のパターンの誤り、選ばれない選択肢、選択肢の束縛する名前の違い、必ず照合しない束縛の文のパターン、定数と同じ名前のパターンの変数 |
 | `E07nn` | 検査の誤り | 型クラス（初回リリース版で新設） | 孤立した実装、重なる実装、上位の型クラスの循環、上位の型クラスの制約が解けない実装、解けない制約、メソッドの欠けた実装、型クラスの引数を含まないメソッド |
@@ -114,7 +114,7 @@ CLI の文章と JSON、MCP サーバ、LSP サーバ、テストの実行器は
 | `R07nn` | 実行時エラー | 引数（初回リリース版で新設） | 引数が定義域の外 |
 | `R08nn` | 実行時エラー | ネットワーク（初回リリース版で新設） | 応答の二度目の送信 |
 | `R09nn` | 資源の不足 | 呼び出しの入れ子が深すぎる（[仮想機械](02-08-vm.md)）、一つの操作で作る値が大きすぎる（[ランタイム](02-09-runtime.md)の「一つの操作で作る値の大きさの上限」、[ADR 0049](../decisions/0049-size-limit-for-built-values.md)） | `Bytes` と、入力を読む操作の大きさの上限 |
-| `R10nn` | 実行時エラー | 並行処理（初回リリース版で新設） | タスクの待ち合いの行き詰まり（`R1001`。[ADR 0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md)） |
+| `R10nn` | 実行時エラー | 並行処理（初回リリース版で新設） | タスクの待ち合いの行き詰まり（`R1001`。[ADR 0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md)）、取り消したタスクの結果の待ち（`R1002`。[ADR 0317](../decisions/0317-await-on-cancelled-task-is-runtime-error.md)） |
 | `L01nn` | 処理系の制限 | コード生成の上限（[バイトコードとコード生成](02-07-bytecode.md)） | 原型ごとの分岐表の数とハンドラの記述の数、プログラム全体の表（構成子・組み込みの関数の参照・実装・操作）の大きさと、型クラスと実装ごとの数（同章の「処理系の制限」） |
 
 実行時エラーの種類と区分の対応は、[評価意味論](../01-spec/01-08-evaluation.md)の「実行時エラーによる停止」の表の種類ごとに一つのコードを割り当てる形とする。
@@ -173,11 +173,11 @@ error[E0401]: mismatched types
 - 注記と修正案は、`= note:` と `= help:` の行で示す。置き換えを持つ修正案は、`= help:` の行の後に、置き換えを当てた後の行を行番号付きで示し、変わった部分の下に `~` を並べる。
 
 ```text
-error[E0315]: `IO` is not an effect
+error[E0333]: `IO` is a module, not an effect
   --> report.bnt:4:30
    |
  4 | function main() -> Unit uses IO
-   |                              ^^ expected an effect name or an effect variable
+   |                              ^^ expected an effect
    |
    = help: use `IO.All` to allow every effect in `Benitoite.IO`
    |
@@ -246,7 +246,7 @@ JSON の形式では、診断の件数による打ち切りを行わず、件数
 
 【決定】報告には、残っている呼び出しの枠を内側から並べた履歴を含める。各段は関数の名前（ラムダは `<lambda>` とそれを書いた位置）と、その関数を呼び出した位置を示す。20 段を超えるときは内側の 10 段と外側の 10 段を示し、省いた段の数を示す。末尾呼び出しで通った関数が現れないことを注記する（[ADR 0034](../decisions/0034-call-trace-in-runtime-errors.md)）。
 
-【方針】履歴の段、各段の名前と呼び出した位置、主な位置は、[仮想機械](02-08-vm.md)の「実行時エラーの情報の記録」に従って作る。各段は `名前` と `at 位置` を並べた一行で示す。名前は次のとおりとする。
+【方針】履歴の段、各段の名前と呼び出した位置、主な位置は、[仮想機械](02-08-vm.md)の「実行時エラーの情報の記録」に従って作る。各段は `名前` と `at 位置` を並べた一行で示す。`at` の列は、呼び出しの履歴と後述のタスクの起動の履歴を合わせた中で最長の名前の幅に揃える。名前は次のとおりとする。
 
 - 利用者のトップレベルの関数: 関数の名前。実行を始めるモジュールでないモジュールの関数は、モジュールの名前で修飾する（`Report.format`）
 - 利用者の実装のメソッド: 型クラスの名前、実装の型、メソッドの名前から作る名前（`Show[Person].show`）
@@ -257,7 +257,7 @@ JSON の形式では、診断の件数による打ち切りを行わず、件数
 
 これらの名前は、原型の名前と由来の種類（[バイトコードとコード生成](02-07-bytecode.md)の「原型の名前と由来の種類」）から作る。
 
-呼び出した位置を持たない段（タスクの最初の段、標準ライブラリのソースの中から呼ばれた段）は、名前だけを示す。
+呼び出した位置を持たない段（タスクの最初の段、標準ライブラリのソースの中から呼ばれた段）は、名前だけを示す。`main` のタスクを含む各タスクの積み重ねの最も外側の段は、末尾呼び出しで置き換わった後も、呼び出した位置を持たない段として扱う（[ADR 0325](../decisions/0325-outermost-frame-shows-no-call-site.md)）。
 
 ```text
 runtime error[R0101]: division by zero
@@ -276,7 +276,7 @@ runtime error[R0101]: division by zero
 
 この例では、22 行目 `bind rs <- List.map(xs, lambda(x) return ratio(x, n) + 1 end lambda)` の `List.map` が、標準ライブラリのソースの中からラムダを呼び、ラムダが `ratio` を呼んでいる。ラムダの中の `ratio` の呼び出しは、結果に 1 を加える前なので末尾呼び出しではなく、ラムダの段が履歴に残る。`lambda(x) return ratio(x, n) end lambda` と書いた場合は末尾呼び出しになり、ラムダの段は現れない。
 
-【方針】実行時エラーが `main` の呼び出しでないタスク（[並行処理](../01-spec/01-11-concurrency.md)）で起きたときは、呼び出しの履歴は、実行時エラーを起こしたタスクのものだけを示す。その後に、そのタスクを起動した位置を、内側のタスクから `main` のタスクまで並べたタスクの起動の履歴を示す。各段は、タスクを起動した関数（`TaskGroup.spawn`・`Task.all` など）の名前と、その呼び出しの位置である。起動した呼び出しが標準ライブラリのソースの中にあるとき（`Http.serve` の中の `TaskGroup.spawn` など）は、呼び出しの履歴の主な位置と同じく、利用者のソースにある最も内側の呼び出しの名前と位置を示す。ほかのタスクの呼び出しの履歴は示さない。材料は[仮想機械](02-08-vm.md)がタスクごとに記録する（[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)）。
+【方針】実行時エラーが `main` の呼び出しでないタスク（[並行処理](../01-spec/01-11-concurrency.md)）で起きたときは、呼び出しの履歴は、実行時エラーを起こしたタスクのものだけを示す。その後に、そのタスクを起動した位置を、内側のタスクから `main` のタスクまで並べたタスクの起動の履歴を示す。`test` のコマンドの実行では、最初のタスクは `main` ではなくテストの関数なので、`main` の代わりにテストの関数のタスクまで並べ、最後の段をテストの関数の名前にする（[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)の「結果の報告」、[ADR 0324](../decisions/0324-test-task-origins-end-at-test-function.md)）。各段は、タスクを起動した関数（`TaskGroup.spawn`・`Task.all` など）の名前と、その呼び出しの位置である。起動した呼び出しが標準ライブラリのソースの中にあるとき（`Http.serve` の中の `TaskGroup.spawn` など）は、呼び出しの履歴の主な位置と同じく、利用者のソースにある最も内側の呼び出しの名前と位置を示す。ほかのタスクの呼び出しの履歴は示さない。材料は[仮想機械](02-08-vm.md)がタスクごとに記録する（[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)）。
 
 ```text
 runtime error[R0101]: division by zero
@@ -286,15 +286,15 @@ runtime error[R0101]: division by zero
    |             ^^^^^^^
    |
    = note: call trace (innermost first):
-             ratio                    at server.bnt:18:9
+             ratio      at server.bnt:18:9
              route
    = note: in a task started by (innermost first):
-             Http.serve               at server.bnt:25:10
+             Http.serve at server.bnt:25:10
              main
    = note: functions left by tail calls are not shown
 ```
 
-JSON の形式を指定したときは、診断と同じ項目に、呼び出しの履歴の配列 `trace` と、省いた段の数 `traceOmitted` と、タスクの起動の履歴の配列 `taskOrigins` を加えた一行を書く。`trace` と `taskOrigins` の各要素は、`function`（上の名前）と `location`（位置の形。持たない段では `null`）を持つ。`main` のタスクで起きたときは、`taskOrigins` を空の配列にする。
+JSON の形式を指定したときは、診断と同じ項目に、呼び出しの履歴の配列 `trace` と、省いた段の数 `traceOmitted` と、タスクの起動の履歴の配列 `taskOrigins` を加えた一行を書く。`trace` と `taskOrigins` の各要素は、`function`（上の名前）と `location`（位置の形。持たない段では `null`）を持つ。`main` のタスク（`test` のコマンドの実行では、テストの関数のタスク）で起きたときは、`taskOrigins` を空の配列にする。
 
 【方針】主な位置を持たない実行時エラーは、`-->` の行と抜粋を書かない。標準出力と標準エラー出力への書き込みの失敗（[ランタイム](02-09-runtime.md)の「出力のバッファ」、[ADR 0045](../decisions/0045-late-detection-of-output-write-failure.md)）は、主な位置も呼び出しの履歴も持たないので、一行目と、失敗した出力と理由を示す注記だけを書く。
 
@@ -316,20 +316,20 @@ runtime error[R0601]: permission `write` is not allowed for `out/report.txt`
 12 |   try File.writeText("out/report.txt", text)
    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    |
-   = note: operation: File.writeText
-   = note: resolved path: /home/user/work/out/report.txt
    = note: call trace (innermost first):
              main
+   = note: operation: File.writeText
+   = note: resolved path: /home/user/work/out/report.txt
 ```
 
-【方針】タスクの待ち合いの行き詰まり（`R1001`。[並行処理](../01-spec/01-11-concurrency.md)の「失敗と停止」、[ADR 0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md)）は、止まった一つの式がないので、主な位置と呼び出しの履歴を持たず、`-->` の行と抜粋を書かない。代わりに、待つタスクごとに一行を注記に並べる。各行は、タスク（`main` のタスクは `main`、ほかのタスクは起動の履歴の最も内側の段の名前と位置）、待つ種類、待つ位置を示す。待つ位置は、[仮想機械](02-08-vm.md)の「実行時エラーの情報の記録」の材料から、主な位置と同じ規則で作る。タスクの並びは、起動した順とする。
+【方針】タスクの待ち合いの行き詰まり（`R1001`。[並行処理](../01-spec/01-11-concurrency.md)の「失敗と停止」、[ADR 0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md)）は、止まった一つの式がないので、主な位置と呼び出しの履歴を持たず、`-->` の行と抜粋を書かない。代わりに、待つタスクごとに一行を注記に並べる。各行は、タスク（`main` のタスクは `main`、ほかのタスクは起動の履歴の最も内側の段の名前と位置。`test` のコマンドの実行では、最初のタスクはテストの関数の名前で示す。[ADR 0324](../decisions/0324-test-task-origins-end-at-test-function.md)）、待つ種類、待つ位置を示す。タスクの列と待つ種類の列は、それぞれの列の最長の幅に揃える。待つ位置を持たない行は、待つ位置を書かない。待つ位置は、[仮想機械](02-08-vm.md)の「実行時エラーの情報の記録」の材料から、主な位置と同じ規則で作る。タスクの並びは、起動した順とする。
 
 ```text
 runtime error[R1001]: no task can proceed because tasks are waiting for each other
    = note: waiting tasks:
-             main                                 waits for TaskGroup release   at pair.bnt:4:3
-             TaskGroup.spawn at pair.bnt:6:13      waits for Task.await          at pair.bnt:7:5
-             TaskGroup.spawn at pair.bnt:10:13     waits for Task.await          at pair.bnt:11:5
+             main                              waits for TaskGroup release at pair.bnt:4:3
+             TaskGroup.spawn at pair.bnt:6:13  waits for Task.await        at pair.bnt:7:5
+             TaskGroup.spawn at pair.bnt:10:13 waits for Task.await        at pair.bnt:11:5
 ```
 
 JSON の形式を指定したときは、`trace` と `taskOrigins` を空の配列にし、待つタスクの配列 `waitingTasks` を加える。各要素は、`task`（上のタスクの名前と位置）、`waitsFor`（待つ種類）、`location`（待つ位置。持たないときは `null`）を持つ。

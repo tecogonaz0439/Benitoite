@@ -6,11 +6,8 @@ const MAX_DISTANCE: usize = 2;
 const MAX_CANDIDATES: usize = 3;
 
 /// `name` から編集距離が 2 以下の名前を、距離の小さい順（同じ距離なら辞書式の順）に最大 3 つ選び、
-/// `` `a`, `b` `` の形につなげる。候補がなければ `None`。`name` 自身は候補にしない。
-pub(super) fn candidates<'a>(
-    name: &str,
-    pool: impl IntoIterator<Item = &'a str>,
-) -> Option<String> {
+/// 名前の並びとして返す。`name` 自身は候補にしない。
+pub(crate) fn candidates<'a>(name: &str, pool: impl IntoIterator<Item = &'a str>) -> Vec<String> {
     let mut scored: Vec<(usize, &str)> = pool
         .into_iter()
         .filter(|c| *c != name)
@@ -24,9 +21,9 @@ pub(super) fn candidates<'a>(
     let picked: Vec<String> = scored
         .iter()
         .take(MAX_CANDIDATES)
-        .map(|(_, c)| format!("`{c}`"))
+        .map(|(_, c)| (*c).to_owned())
         .collect();
-    (!picked.is_empty()).then(|| picked.join(", "))
+    picked
 }
 
 /// 文字（Unicode のスカラー値）を単位とするレーベンシュタイン距離。

@@ -1,0 +1,96 @@
+//! JSON values, parsing, and writing.
+
+/// A JSON value. Object members are kept in the order of their keys.
+public data Value
+  Null
+  Boolean(Boolean)
+  Integer(Integer)
+  Float(Float)
+  String(String)
+  Array(List[Value])
+  Object(Map[String, Value])
+end data
+
+/// Where and why parsing failed. `line` and `column` count from 1; `column` counts characters.
+public record ParseError
+  line: Integer
+  column: Integer
+  message: String
+end record
+
+/// Reads `text` as JSON. Spaces before and after the value are allowed.
+@builtin("Json.parse")
+public function parse(text: String) -> Result[Value, ParseError]
+
+/// Writes the value without spaces. Members are written in the order of their keys.
+@builtin("Json.stringify")
+public function stringify(value: Value) -> String
+
+/// Writes the value with line breaks and two spaces of indentation per level.
+@builtin("Json.stringifyPretty")
+public function stringifyPretty(value: Value) -> String
+
+/// Returns the member `k` of an object, or `Option.None` for other values and missing members.
+public function get(value: Value, k: String) -> Option[Value]
+  return match value with
+    case Value.Object(members) -> Map.get(members, k)
+    case _ -> Option.None
+  end match
+end function
+
+/// Returns the element at `index` of an array, or `Option.None` for other values and positions out of range.
+public function at(value: Value, index: Integer) -> Option[Value]
+  return match value with
+    case Value.Array(items) -> List.get(items, index)
+    case _ -> Option.None
+  end match
+end function
+
+/// Returns the content of `Value.String`.
+public function asString(value: Value) -> Option[String]
+  return match value with
+    case Value.String(s) -> Option.Some(s)
+    case _ -> Option.None
+  end match
+end function
+
+/// Returns the content of `Value.Integer`.
+public function asInteger(value: Value) -> Option[Integer]
+  return match value with
+    case Value.Integer(n) -> Option.Some(n)
+    case _ -> Option.None
+  end match
+end function
+
+/// Returns the content of `Value.Float`, or the content of `Value.Integer` converted to `Float`.
+public function asFloat(value: Value) -> Option[Float]
+  return match value with
+    case Value.Float(x) -> Option.Some(x)
+    case Value.Integer(n) -> Option.Some(Integer.toFloat(n))
+    case _ -> Option.None
+  end match
+end function
+
+/// Returns the content of `Value.Boolean`.
+public function asBoolean(value: Value) -> Option[Boolean]
+  return match value with
+    case Value.Boolean(b) -> Option.Some(b)
+    case _ -> Option.None
+  end match
+end function
+
+/// Returns the content of `Value.Array`.
+public function asArray(value: Value) -> Option[List[Value]]
+  return match value with
+    case Value.Array(items) -> Option.Some(items)
+    case _ -> Option.None
+  end match
+end function
+
+/// Returns the content of `Value.Object`.
+public function asObject(value: Value) -> Option[Map[String, Value]]
+  return match value with
+    case Value.Object(members) -> Option.Some(members)
+    case _ -> Option.None
+  end match
+end function

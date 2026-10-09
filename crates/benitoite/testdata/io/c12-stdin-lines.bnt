@@ -1,0 +1,17 @@
+// spec: 01-07 IO の失敗
+// spec: 01-07 外部から受け取る文字列
+// 関門: 標準入力の行分割・末尾と EOF を守り、stdin の渡し忘れと改行の扱いの退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Result[Unit, String] uses Console.Read, Console.Write
+  bind first <- try Console.readLine() |> Result.mapError(_, IOError.message)
+  bind second <- try Console.readLine() |> Result.mapError(_, IOError.message)
+  bind third <- try Console.readLine() |> Result.mapError(_, IOError.message)
+  bind eof <- try Console.readLine() |> Result.mapError(_, IOError.message)
+  Console.writeLine(Option.unwrapOr(first, "eof"))
+  Console.writeLine("[${Option.unwrapOr(second, "eof")}]")
+  Console.writeLine(Option.unwrapOr(third, "eof"))
+  Console.writeLine(if eof = Option.None then "eof" else "extra line" end if)
+  return Result.Ok(())
+end function

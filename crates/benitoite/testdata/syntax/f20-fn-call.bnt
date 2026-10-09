@@ -1,0 +1,8 @@
+// spec: 01-03 修飾しない名前の解決
+function fn(x: Integer) -> Integer
+  return x
+end function
+function main() -> Unit
+  bind n <- fn(1)
+  bind nested <- fn(fn(2))
+end function

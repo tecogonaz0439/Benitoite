@@ -1,0 +1,12 @@
+// 設計書 03-07「Clock」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Clock
+function main() -> Unit uses Clock.Time, Console.Write
+  bind before <- Clock.monotonicMilliseconds()
+  Clock.sleep(1)
+  bind after <- Clock.monotonicMilliseconds()
+  Console.writeLine(Trait.Show.show(after >= before))
+end function

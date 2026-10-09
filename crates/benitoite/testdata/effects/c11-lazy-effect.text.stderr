@@ -1,0 +1,9 @@
+error[E0503]: a `lazy` body cannot perform `Console.Write`
+  --> testdata/effects/c11-lazy-effect.bnt:4:15
+   |
+ 4 |   return lazy Console.writeLine("bad") end lazy
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^ `Console.Write` happens here
+   |
+   = help: use a lambda without parameters to delay an effectful computation
+
+error: could not check testdata/effects/c11-lazy-effect.bnt due to 1 previous error

@@ -1,13 +1,17 @@
 // spec: 01-08 評価順序
-fn mark(label: String, value: Int) -> Int uses IO {
-  Console.println(label)
-  value
-}
+import Benitoite.Unofficial.IO.Console
 
-fn add(left: Int, right: Int) -> Int { left + right }
+function mark(label: String, value: Integer) -> Integer uses Console.Write
+  Console.writeLine(label)
+  return value
+end function
 
-fn main() -> Unit uses IO {
-  let add_ten = add(mark("fixed", 10), _)
-  Console.println(Int.toString(add_ten(mark("argument-1", 1))))
-  Console.println(Int.toString(add_ten(mark("argument-2", 2))))
-}
+function add(left: Integer, right: Integer) -> Integer
+  return left + right
+end function
+
+function main() -> Unit uses Console.Write
+  bind add_ten <- add(mark("fixed", 10), _)
+  Console.writeLine(Integer.toString(add_ten(mark("argument-1", 1))))
+  return Console.writeLine(Integer.toString(add_ten(mark("argument-2", 2))))
+end function

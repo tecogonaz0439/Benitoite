@@ -1,0 +1,16 @@
+// spec: 01-06 型クラス（初回リリース版）
+trait Echo[T]
+  function echo(x: T) -> T
+end trait
+trait Default[T: Echo]
+  function value() -> T
+end trait
+data Box
+  Box
+end data
+implement Default[Box]
+  function value() -> Box return Box end function
+end implement
+function main() -> Unit
+  ()
+end function

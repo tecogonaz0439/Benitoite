@@ -1,0 +1,74 @@
+test testdata/test/values.bnt: standard ... FAILED
+test testdata/test/values.bnt: strings ... FAILED
+test testdata/test/values.bnt: userData ... FAILED
+test testdata/test/values.bnt: records ... FAILED
+test testdata/test/values.bnt: maps ... FAILED
+test testdata/test/values.bnt: sets ... FAILED
+test testdata/test/values.bnt: units ... FAILED
+
+failures:
+
+---- testdata/test/values.bnt: standard ----
+assertion failed: Assert.equal
+  left:  Pair(1, Option.Some([1.5, -2.0]))
+  right: Pair(1, Option.None)
+  --> testdata/test/values.bnt:17:3
+   = note: call trace (innermost first):
+             standard
+   = note: functions left by tail calls are not shown
+
+---- testdata/test/values.bnt: strings ----
+assertion failed: Assert.equal
+  left:  Result.Ok("tab\tquote\"nl\n")
+  right: Result.Error('x')
+  --> testdata/test/values.bnt:22:3
+   = note: call trace (innermost first):
+             strings
+   = note: functions left by tail calls are not shown
+
+---- testdata/test/values.bnt: userData ----
+assertion failed: Assert.equal
+  left:  [Shape.Circle(1), Shape.Rect(2, 3)]
+  right: [Shape.Empty]
+  --> testdata/test/values.bnt:27:3
+   = note: call trace (innermost first):
+             userData
+   = note: functions left by tail calls are not shown
+
+---- testdata/test/values.bnt: records ----
+assertion failed: Assert.equal
+  left:  Person(name: "Ada", age: 36)
+  right: Person(name: "Bob", age: 7)
+  --> testdata/test/values.bnt:32:3
+   = note: call trace (innermost first):
+             records
+   = note: functions left by tail calls are not shown
+
+---- testdata/test/values.bnt: maps ----
+assertion failed: Assert.equal
+  left:  Map.fromList([Pair(1, "one"), Pair(2, "two")])
+  right: Map.fromList([])
+  --> testdata/test/values.bnt:37:3
+   = note: call trace (innermost first):
+             maps
+   = note: functions left by tail calls are not shown
+
+---- testdata/test/values.bnt: sets ----
+assertion failed: Assert.notEqual
+  left:  Set.fromList([1, 2, 3])
+  right: Set.fromList([1, 2, 3])
+  --> testdata/test/values.bnt:42:3
+   = note: call trace (innermost first):
+             sets
+   = note: functions left by tail calls are not shown
+
+---- testdata/test/values.bnt: units ----
+assertion failed: Assert.equal
+  left:  Triple(true, (), 10)
+  right: Triple(false, (), -10)
+  --> testdata/test/values.bnt:47:3
+   = note: call trace (innermost first):
+             units
+   = note: functions left by tail calls are not shown
+
+test result: FAILED. 0 passed; 7 failed

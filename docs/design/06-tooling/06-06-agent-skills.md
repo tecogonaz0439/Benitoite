@@ -2,7 +2,7 @@
 
 - 状態: 確定
 - 関連ADR: [0003](../decisions/0003-license.md), [0127](../decisions/0127-directory-run-and-root.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0179](../decisions/0179-threat-model-and-server-mode-premise.md), [0193](../decisions/0193-restricting-agents-to-server-mode-by-agent-config.md), [0229](../decisions/0229-bundled-skill-contents-and-japanese-translations.md), [0230](../decisions/0230-skill-embedded-and-installed-by-subcommand.md), [0231](../decisions/0231-skill-shows-main-effects-before-running.md), [0232](../decisions/0232-skill-evaluation-with-tasks-and-harnesses.md), [0235](../decisions/0235-third-party-licenses-generated-and-shown-by-option.md), [0236](../decisions/0236-compatibility-during-0x.md), [0241](../decisions/0241-command-name-and-extension.md), [0243](../decisions/0243-signal-exit-code-and-posix-shell.md), [0246](../decisions/0246-syntax-measurement-in-two-stages.md), [0249](../decisions/0249-skill-test-procedure-without-check.md), [0251](../decisions/0251-contract-change-display-not-in-first-release.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0288](../decisions/0288-skill-documents-generated-by-tool-and-committed.md)
-- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-047](../open-issues.md#open-047), [OPEN-055](../open-issues.md#open-055), [OPEN-060](../open-issues.md#open-060)
+- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-047](../open-issues.md#open-047), [OPEN-055](../open-issues.md#open-055), [OPEN-060](../open-issues.md#open-060), [OPEN-080](../open-issues.md#open-080)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 23.1–23.4
 
 ## 目的と範囲
@@ -88,7 +88,7 @@ benitoite skill uninstall [--user | --project] [--agent <名前>]...
 | `codex` | `~/.agents/skills/benitoite/` | `./.agents/skills/benitoite/` |
 | `opencode` | `~/.agents/skills/benitoite/` | `./.agents/skills/benitoite/` |
 
-表の置き場所は、2026-09-29 に各エージェントの文書で確かめた、エージェントが Skill を読み込む場所である（Claude Code は [Extend Claude with skills](https://code.claude.com/docs/en/skills)、Codex CLI は [Build skills](https://learn.chatgpt.com/docs/build-skills)、opencode は [Agent Skills](https://opencode.ai/docs/skills/)）。opencode は `.claude/skills` と `.agents/skills` の両方を読むので、`--agent` を省くと、同じ名前の Skill を二か所から読む。そのときの opencode の振る舞いは【要検証】である。置き場所は、リリースのたびに文書で確かめ直す（[OPEN-060](../open-issues.md#open-060)）。
+表の置き場所は、2026-09-29 に各エージェントの文書で確かめた、エージェントが Skill を読み込む場所である（Claude Code は [Extend Claude with skills](https://code.claude.com/docs/en/skills)、Codex CLI は [Build skills](https://learn.chatgpt.com/docs/build-skills)、opencode は [Agent Skills](https://opencode.ai/docs/skills/)）。2026-10-08 に同じ三つの文書で確かめ直し、表の置き場所が変わっていないことを確かめた（[試行の記録](../../implement/studies/u4-release/open-060.md)の「Skill の置き場所」）。opencode は `.claude/skills` と `.agents/skills` の両方を読むので、`--agent` を省くと、同じ名前の Skill を二か所から読む。opencode v2.0.21 のソース（タグ `v2.0.21` の `packages/core/src/config/plugin/compatibility.ts`。2026-10-08 に確認）では、`.claude` の置き場所を先に、`.agents` の置き場所を後に読み、Skill のディレクトリの名前を鍵にして、後に読んだものが先のものを置き換える。したがって、二か所の `benitoite` は一つの Skill として扱われ、`.agents/skills/benitoite/` の中身が使われる。`install` は二か所に同じ中身を書き出すので、どちらが使われても結果は変わらない。opencode を実際に動かしての確認は、開発機の opencode の既定のモデルの接続先が使えず済んでいないので【要検証】のまま残す。置き場所は、リリースのたびに文書で確かめ直す（[OPEN-060](../open-issues.md#open-060)）。
 
 - 書き出す先に `benitoite/` がすでにあるとき、それが `install` の書き出したもの（`SKILL.md` の前付けの `metadata` に処理系の版の欄があるもの）なら置き換える。そうでなければ書き出さずに失敗とする。`uninstall` も、`install` が書き出したものだけを消す。
 - 置き換えは、同じ親のディレクトリの一時ディレクトリに書き出してから名前を変えて行う。途中で止まっても、半端な Skill を残さない。
@@ -135,9 +135,16 @@ benitoite skill uninstall [--user | --project] [--agent <名前>]...
 - HTTP の課題の接続先は、評価の道具が同じ機械の上に立てるサーバとする。
 - ロードマップの完了条件の JSON の集計の課題は、各ハーネスで、試行の過半数が成功したときに満たしたものとする。ほかの課題の成功率は、Skill を改めるための材料として記録し、合格の基準を設けない。
 
+### 外部コマンドを使う操作の選び方の指示（初回リリース版の後）
+
+初回リリース版の `SKILL.md` は、シェルの機能が要らなければ `Process.shell` より `Process.run` を使うよう指示するが、標準ライブラリにある操作を `Process.run` で外部コマンドに任せないよう指示することはしない。`Process.run` で起動したコマンドが中で行う操作は、エフェクトと権限の表示に現れない（[IO のモジュール](../03-interop/03-07-io-modules.md)の「外部コマンドの起動とシェル」）。
+
+【未決】初回リリース版の後に、外部コマンドに当たる操作を、標準ライブラリの関数、コマンドを包むライブラリ、`Process.run` の順で選ぶよう「主な言語の規則の要約」で指示するか、処理系の警告で示すかは、[OPEN-080](../open-issues.md#open-080) で決める。
+
 ## 未決事項
 
 - [OPEN-012](../open-issues.md#open-012): 構文の種類ごとの LLM の生成精度（Skill の評価の仕組みで測る）
 - [OPEN-047](../open-issues.md#open-047): ドキュメントコメントに書いた例の実行
 - [OPEN-055](../open-issues.md#open-055): サーバモードの設計（Skill に加えるエージェントの設定の例を含む）
 - [OPEN-060](../open-issues.md#open-060): 配布と Agent Skill の導入に関する事実の確認
+- [OPEN-080](../open-issues.md#open-080): 外部コマンドを使う操作の選び方と、エージェントへの示し方

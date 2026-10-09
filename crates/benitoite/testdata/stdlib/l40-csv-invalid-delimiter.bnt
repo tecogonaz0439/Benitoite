@@ -1,0 +1,9 @@
+// spec: 01-08 実行時エラーによる停止
+// 設計書 03-08「Csv」、ADR 0322・0328・0329 の引数の定義域。
+// 関門: CLI からの停止・診断と位置を守り、本体の単体テストが通らない接続を確かめる。
+// 専用の差し込み口は不要である。
+import Benitoite.Unofficial.Csv
+function main() -> Unit
+  bind _ <- Csv.parseWith("a,b", 'é')
+  return ()
+end function

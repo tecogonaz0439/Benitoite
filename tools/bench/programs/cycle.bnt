@@ -1,0 +1,35 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+  return match List.get(Process.arguments(), index) with
+    case Option.None -> Result.Error("expected non-negative integer arguments")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+      case Option.None -> Result.Error("expected non-negative integer arguments")
+    end match
+  end match
+end function
+
+data Node
+  Empty
+  Link(Reference[Node])
+end data
+
+function discard(count: Integer) -> Integer uses State
+  return if count = 0 then 0 else
+    bind cell <- Reference.new(Node.Empty)
+    Reference.set(cell, Node.Link(cell))
+    discard(count - 1)
+  end if
+end function
+
+function main() -> Result[Unit, String] uses State, Console.Write, Process.Environment
+  return match readInteger(0) with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(count) ->
+      bind _ <- discard(count)
+      Console.writeLine(Integer.toString(count))
+      Result.Ok(())
+  end match
+end function

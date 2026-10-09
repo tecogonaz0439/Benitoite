@@ -1,11 +1,13 @@
 // spec: 01-06 式のエフェクト
-fn invalid_lambda[effect E](action: fn() -> Unit uses E) -> Unit uses E {
-    let invalid = fn() -> Unit uses E {
-        Console.println("not allowed")
-    }
-    ()
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit {
-    ()
-}
+function invalid_lambda[effect E](action: function() -> Unit uses E) -> Unit uses E
+    bind invalid <- lambda() -> Unit uses E
+        return Console.writeLine("not allowed")
+    end lambda
+    return ()
+end function
+
+function main() -> Unit
+    return ()
+end function

@@ -1,0 +1,19 @@
+// spec: 01-09 `Result.Error` と `Option.None` を呼び出し元へ返す構文 `try`
+import Benitoite.Unofficial.IO.File
+record Config
+  port: Integer
+end record
+function parseConfig(text: String) -> Result[Config, String]
+  bind port <- try Integer.parse(text) |> Option.okOr(_, "not a number")
+  return Result.Ok(Config(port: port))
+end function
+
+function loadConfig(path: String) -> Result[Config, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+  bind config <- try parseConfig(text)
+  return Result.Ok(config)
+end function
+
+function main() -> Unit
+  ()
+end function

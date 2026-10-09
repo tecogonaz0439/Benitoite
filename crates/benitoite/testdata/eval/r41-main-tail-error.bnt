@@ -1,0 +1,9 @@
+// spec: 01-08 末尾呼び出し
+// 関門: main の最初の段を末尾呼び出しで置き換えた後も、trace の最も外側は位置を持たない（ADR 0325）。
+function divide(n: Integer) -> Unit
+  bind _ <- 10 div n
+end function
+
+function main() -> Unit
+  return divide(0)
+end function

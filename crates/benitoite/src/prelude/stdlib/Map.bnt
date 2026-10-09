@@ -1,0 +1,61 @@
+//! Functions on `Map`, a persistent map ordered by its keys.
+
+/// Returns the empty map.
+@builtin("Map.empty")
+public function empty[K: key, V]() -> Map[K, V]
+
+/// Returns the map of the pairs in `pairs`. A later pair wins when two pairs have the same key.
+@builtin("Map.fromList")
+public function fromList[K: key, V](pairs: List[Pair[K, V]]) -> Map[K, V]
+
+/// Returns the pairs in the order of their keys.
+@builtin("Map.toList")
+public function toList[K: key, V](m: Map[K, V]) -> List[Pair[K, V]]
+
+/// Returns the value for `k`, or `Option.None` when the map does not have it.
+@builtin("Map.get")
+public function get[K: key, V](m: Map[K, V], k: K) -> Option[V]
+
+/// Returns the map with the value for `k` set to `value`. An existing key keeps its original form.
+@builtin("Map.set")
+public function set[K: key, V](m: Map[K, V], k: K, value: V) -> Map[K, V]
+
+/// Returns the map without `k`.
+@builtin("Map.remove")
+public function remove[K: key, V](m: Map[K, V], k: K) -> Map[K, V]
+
+/// Returns whether the map has `k`.
+@builtin("Map.contains")
+public function contains[K: key, V](m: Map[K, V], k: K) -> Boolean
+
+/// Returns the number of pairs.
+@builtin("Map.size")
+public function size[K: key, V](m: Map[K, V]) -> Integer
+
+/// Returns the keys in order.
+@builtin("Map.keys")
+public function keys[K: key, V](m: Map[K, V]) -> List[K]
+
+/// Returns the values in the order of their keys.
+@builtin("Map.values")
+public function values[K: key, V](m: Map[K, V]) -> List[V]
+
+/// Returns the map whose values are `f` applied to each key and value. The keys stay the same.
+public function map[K: key, V, U, effect E](m: Map[K, V], f: function(K, V) -> U uses E) -> Map[K, U] uses E
+  return fromList(List.map(toList(m), lambda(pair) return Pair(Pair.first(pair), f(Pair.first(pair), Pair.second(pair))) end lambda))
+end function
+
+/// Returns the pairs for which `p` returns `true`.
+public function filter[K: key, V, effect E](m: Map[K, V], p: function(K, V) -> Boolean uses E) -> Map[K, V] uses E
+  return fromList(List.filter(toList(m), lambda(pair) return p(Pair.first(pair), Pair.second(pair)) end lambda))
+end function
+
+/// Combines the pairs in the order of their keys with `f`, starting from `initial`.
+public function fold[K: key, V, A, effect E](m: Map[K, V], initial: A, f: function(A, K, V) -> A uses E) -> A uses E
+  return List.fold(toList(m), initial, lambda(acc, pair) return f(acc, Pair.first(pair), Pair.second(pair)) end lambda)
+end function
+
+/// Calls `f` with each key and value in the order of the keys.
+public function forEach[K: key, V, effect E](m: Map[K, V], f: function(K, V) -> Unit uses E) -> Unit uses E
+  return List.forEach(toList(m), lambda(pair) return f(Pair.first(pair), Pair.second(pair)) end lambda)
+end function

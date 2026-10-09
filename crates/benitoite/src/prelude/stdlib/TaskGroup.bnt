@@ -1,0 +1,9 @@
+//! Groups of tasks started one by one. The resource type `TaskGroup` is built in.
+
+/// Returns an empty group. It can be written only as the expression of a `with` binding.
+@builtin("TaskGroup.open")
+public function open() -> TaskGroup uses State
+
+/// Runs `action` as a task in `group` and returns without waiting for it.
+@builtin("TaskGroup.spawn")
+public function spawn[T, effect E](group: TaskGroup, action: function() -> T uses E) -> Task[T] uses State, E

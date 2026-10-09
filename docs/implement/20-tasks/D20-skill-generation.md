@@ -11,6 +11,8 @@
 
 L00 に依存するのは、U3 のすべての標準ライブラリのソースとドキュメントコメントがそろってから生成するためである。診断の表（F16 が確かめたもの）は D00 の依存に含まれる。
 
+本作業は D30 より先に行う。D30 は、リポジトリの根にライセンス文を置いた後、本作業の生成の道具を実行し直して、ライセンス文を埋め込みの一覧に加える（手順 6）。
+
 ## 読む設計書の節
 
 - [Agent Skills 対応](../../design/06-tooling/06-06-agent-skills.md): 「前提」「同梱の Agent Skill の構成」「言語の文書と日本語の訳」
@@ -32,7 +34,7 @@ L00 に依存するのは、U3 のすべての標準ライブラリのソース�
 - `tests/skill_docs.rs`: 生成物が古くないことのテスト。
 - `skill/references/grammar.md`・`diagnostics.md`・`stdlib/index.md`・`stdlib/<モジュール>.md`: 生成物。
 - リポジトリの `AGENTS.md` の「ディレクトリ構成」の表: `crates/benitoite/skill/`（同梱の Agent Skill。生成物は生成の道具で作り直す）の行を加える。
-- `skill/SKILL.md`・`skill/references/idioms.md`・`common-mistakes.md`・`language-comparison.md`: D21 が中身を書くまでの仮の文書（前付けと見出しと、D21 が書くことを示す一行）。`bundle.rs` の `include_str!` がファイルを要するので、ここで置く。`SKILL.md` の前付けは 10-19 の形（`metadata` の `benitoite-version` は型板 `{{benitoite-version}}`）にする。
+- `skill/SKILL.md`・`skill/references/idioms.md`・`common-mistakes.md`・`language-comparison.md`: D21 が中身を書くまでの仮の文書（前付けと見出しと、D21 が書くことを示す一行）。`bundle.rs` の `include_str!` がファイルを要するので、ここで置く。`SKILL.md` の前付けは 10-19 の形にする。`metadata` の `benitoite-version` の値は、型板を引用符で囲んで `benitoite-version: "{{benitoite-version}}"` と書く。引用符がないと、YAML の読み手が `{{…}}` を流れの形のマップとして読むためである。
 
 ## 手順の要点
 
@@ -41,10 +43,11 @@ L00 に依存するのは、U3 のすべての標準ライブラリのソース�
 3. `stdlib/index.md` は、モジュールごとに名前・状態・取り込みの名前・説明の最初の文を表にする。
 4. 診断コードの説明: `codes::ALL` の順に、コード、報告の種類、文言の型板、説明を並べる。
 5. 生成物の本文は英語で書く（06-06）。見出しと固定の文は `generate.rs` の中の定数か、そのモジュールの `text` に置く。
-6. `bundle_source`: 手で書く文書・生成物・リポジトリの根の `LICENSE-MIT`・`LICENSE-APACHE`（D30 が置く。まだなければ、一覧から外すのではなく D30 を待つ。後述）を、`SkillFile { path, text: include_str!("…") }` の並びにした `pub const FILES: &[SkillFile]` のソースを作る。パスの並びは、`SKILL.md`、`references/` の辞書順、ライセンス文の順とする。
-7. `gen_skill`: リポジトリの `docs/design/01-spec/01-02-syntax.md` を読み、`generate_references` の結果を `skill/references/` に書き、`skill/references/stdlib/` の生成しないファイルを消し、`bundle_source` の結果を `src/cli/tools/skill/bundle.rs` に書く。書いたファイルの一覧を標準出力に書く。
+6. `bundle_source`: 手で書く文書・生成物・ライセンス文を、`SkillFile { path, text: include_str!("…") }` の並びにした `pub const FILES: &[SkillFile]` のソースを作る。パスの並びは、`SKILL.md`、`references/` の辞書順、ライセンス文の順とする。ライセンス文は、リポジトリの根に `LICENSE-MIT` と `LICENSE-APACHE` の両方があるときだけ一覧に加え、なければ加えずに生成する（`include_str!` がファイルを要するため）。この判定は生成の道具と古くないことのテストで同じにする（両方が同じ判定でパスの並びを作り、`bundle_source` に渡す）。二つのファイルは D30 が置き、D30 が生成の道具を実行し直して一覧に加える。第三者のライセンスの表示 `licenses/THIRD_PARTY_LICENSES` は一覧に入れない。Skill の中身は第三者の著作物を含まず（ADR 0235 の帰結）、このファイルはリリースのスクリプトがビルド先ごとに作り、リポジトリに置かない（10-19「第三者のライセンスの表示」）ためである。
+   - 生成する `bundle.rs` は、先頭に `//!` のコメント（生成の道具が書いたファイルであり、手で直さないこと）を置き、`use super::SkillFile;` を書く。`cargo fmt --check` と workspace の lint（00-02「完了条件の共通の検査」）を通る形にする。
+7. `gen_skill`: 処理系のクレートの `examples/` にも workspace の lint が当たるので、`unwrap`・`expect` を使わず、`main` が `Result` を返す形にして `?` で書く。リポジトリの `docs/design/01-spec/01-02-syntax.md` を読み、`generate_references` の結果を `skill/references/` に書き、`skill/references/stdlib/` の生成しないファイルを消し、`bundle_source` の結果を `src/cli/tools/skill/bundle.rs` に書く。書いたファイルの一覧を標準出力に書く。
 8. `tests/skill_docs.rs`: 同じ入力で生成したものとリポジトリのファイルを比べ、違えば `cargo run -p benitoite --example gen_skill` を実行するよう示して失敗させる。
-9. ライセンス文: D30 がまだ取り込まれていなければ、`LICENSE-MIT`・`LICENSE-APACHE` を `bundle.rs` の一覧に入れられない（`include_str!` がファイルを要する）。そのときは、一覧に入れずに生成し、完了の報告に書く。D30 が、ライセンス文を置いた後に生成の道具を実行し直して一覧に加える（D30 の作業の文書）。
+9. ライセンス文: 本作業は D30 より先に行うので、リポジトリの根に `LICENSE-MIT`・`LICENSE-APACHE` はまだない。手順 6 の判定により一覧に入れずに生成し、そのことを完了の報告に書く。
 
 ## 受け入れテスト
 
@@ -55,7 +58,7 @@ L00 に依存するのは、U3 のすべての標準ライブラリのソース�
 | モジュールごとのファイル | `STDLIB` の項目の数と `stdlib/` のファイルの数（`index.md` を除く）が同じ。非公式のモジュール（`IO.Console` など）のファイルに `import Benitoite.Unofficial.IO.Console` がある。`Trait.md` に `import Benitoite.Trait`、`List.md` に import が要らないことがある |
 | 宣言 | `@builtin` の属性と本体が写されていない。`public` でない補助の関数が含まれない |
 | 診断コード | `codes::ALL` のすべてのコードがあり、廃止したコードがない |
-| 埋め込み | `skill::files()` がすべてのファイルを持ち、`SKILL.md` の前付けに `benitoite-version` の型板がある |
+| 埋め込み | `skill::files()` がすべてのファイルを持ち、`SKILL.md` の前付けに `benitoite-version: "{{benitoite-version}}"` の行がある。`bundle.rs` が `cargo fmt --check` を通る |
 | 構文の章の読み取りの失敗 | 見出しのない Markdown を与えると `Err` |
 
 ## 完了条件

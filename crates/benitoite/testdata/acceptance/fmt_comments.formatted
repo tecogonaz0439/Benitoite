@@ -1,0 +1,20 @@
+// spec: 01-01 コメント
+// 受け入れ: 00-03「初回リリース版」の完了条件の、コメントを含むスクリプトへの fmt（07-03「受け入れ例と仕様の項目の対応」）。
+// 06-03「コメント」: 行末のコメント、コメントだけの行、ドキュメントコメントを整形の後も保つ。
+import Benitoite.Unofficial.IO.Console
+
+/// Adds the tax to a price.
+/// The rate is a percentage.
+function withTax(price: Integer, rate: Integer) -> Integer
+  // integer division rounds down
+  return price + price * rate div 100 // the tax part
+end function
+
+function main() -> Unit uses Console.Write
+  // print one line per price
+  bind prices <- [100, 250] // sample prices
+  List.forEach(prices, lambda(price)
+    Console.writeLine(Integer.toString(withTax(price, 10))) // with 10 percent
+  end lambda)
+  // the last comment
+end function

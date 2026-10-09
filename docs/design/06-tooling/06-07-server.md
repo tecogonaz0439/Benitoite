@@ -1,8 +1,8 @@
 # サーバモード
 
 - 状態: 草稿
-- 関連ADR: [0127](../decisions/0127-directory-run-and-root.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0179](../decisions/0179-threat-model-and-server-mode-premise.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0181](../decisions/0181-server-subcommands.md), [0182](../decisions/0182-mcp-server-as-stdio-relay.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0185](../decisions/0185-default-policies-per-run-kind.md), [0186](../decisions/0186-run-time-policy-can-only-narrow.md), [0187](../decisions/0187-standalone-reads-user-policy-file.md), [0188](../decisions/0188-authentication-by-user-presence.md), [0189](../decisions/0189-tamper-evident-audit-log.md), [0190](../decisions/0190-ssh-signatures-for-scripts.md), [0191](../decisions/0191-server-data-storage.md), [0192](../decisions/0192-named-profiles-for-agents.md), [0193](../decisions/0193-restricting-agents-to-server-mode-by-agent-config.md), [0194](../decisions/0194-tui-and-own-coding-agent-with-server-mode.md), [0195](../decisions/0195-daemon-as-os-user-service.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0197](../decisions/0197-when-os-sandbox-is-unavailable.md), [0198](../decisions/0198-network-through-daemon-proxy.md), [0199](../decisions/0199-server-job-handling.md), [0200](../decisions/0200-policy-file-toml-and-locations.md), [0201](../decisions/0201-initial-setup-approval-timeout-and-audit-format.md), [0202](../decisions/0202-signature-details.md), [0203](../decisions/0203-mcp-tools-and-agent-configuration.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0205](../decisions/0205-server-start-enables-linger-with-consent.md), [0210](../decisions/0210-mcp-in-server-chapter-and-explain-tool.md), [0214](../decisions/0214-default-policies-allow-process-environment-with-no-names.md), [0215](../decisions/0215-shell-permission-allows-run-commands-via-shell.md), [0216](../decisions/0216-policy-deny-rules-and-standalone-defaults.md), [0217](../decisions/0217-audit-log-undetectable-cases-and-verification-start.md), [0221](../decisions/0221-audit-hash-chain-scope-corrected.md), [0218](../decisions/0218-allowed-signers-imported-copy.md), [0219](../decisions/0219-mcp-job-start-returns-pending-for-approval.md), [0220](../decisions/0220-places-referenced-by-default-policies.md), [0237](../decisions/0237-no-heap-usage-limit-in-first-release.md), [0250](../decisions/0250-run-directories-outside-daemon-data.md)
-- 未決事項: [OPEN-015](../open-issues.md#open-015), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-056](../open-issues.md#open-056), [OPEN-057](../open-issues.md#open-057)
+- 関連ADR: [0127](../decisions/0127-directory-run-and-root.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0179](../decisions/0179-threat-model-and-server-mode-premise.md), [0180](../decisions/0180-server-in-same-binary-with-per-run-processes.md), [0181](../decisions/0181-server-subcommands.md), [0182](../decisions/0182-mcp-server-as-stdio-relay.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0185](../decisions/0185-default-policies-per-run-kind.md), [0186](../decisions/0186-run-time-policy-can-only-narrow.md), [0187](../decisions/0187-standalone-reads-user-policy-file.md), [0188](../decisions/0188-authentication-by-user-presence.md), [0189](../decisions/0189-tamper-evident-audit-log.md), [0190](../decisions/0190-ssh-signatures-for-scripts.md), [0191](../decisions/0191-server-data-storage.md), [0192](../decisions/0192-named-profiles-for-agents.md), [0193](../decisions/0193-restricting-agents-to-server-mode-by-agent-config.md), [0194](../decisions/0194-tui-and-own-coding-agent-with-server-mode.md), [0195](../decisions/0195-daemon-as-os-user-service.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0197](../decisions/0197-when-os-sandbox-is-unavailable.md), [0198](../decisions/0198-network-through-daemon-proxy.md), [0199](../decisions/0199-server-job-handling.md), [0200](../decisions/0200-policy-file-toml-and-locations.md), [0201](../decisions/0201-initial-setup-approval-timeout-and-audit-format.md), [0202](../decisions/0202-signature-details.md), [0203](../decisions/0203-mcp-tools-and-agent-configuration.md), [0204](../decisions/0204-standalone-runs-in-sandboxed-child.md), [0205](../decisions/0205-server-start-enables-linger-with-consent.md), [0210](../decisions/0210-mcp-in-server-chapter-and-explain-tool.md), [0214](../decisions/0214-default-policies-allow-process-environment-with-no-names.md), [0215](../decisions/0215-shell-permission-allows-run-commands-via-shell.md), [0216](../decisions/0216-policy-deny-rules-and-standalone-defaults.md), [0217](../decisions/0217-audit-log-undetectable-cases-and-verification-start.md), [0221](../decisions/0221-audit-hash-chain-scope-corrected.md), [0218](../decisions/0218-allowed-signers-imported-copy.md), [0219](../decisions/0219-mcp-job-start-returns-pending-for-approval.md), [0220](../decisions/0220-places-referenced-by-default-policies.md), [0237](../decisions/0237-no-heap-usage-limit-in-first-release.md), [0250](../decisions/0250-run-directories-outside-daemon-data.md), [0340](../decisions/0340-llm-providers-for-own-agent-harness.md), [0341](../decisions/0341-agent-cli-wrapper-library.md), [0342](../decisions/0342-agent-harness-after-server-mode.md), [0346](../decisions/0346-agent-harness-connects-to-daemon-directly.md)
+- 未決事項: [OPEN-015](../open-issues.md#open-015), [OPEN-052](../open-issues.md#open-052), [OPEN-055](../open-issues.md#open-055), [OPEN-056](../open-issues.md#open-056), [OPEN-057](../open-issues.md#open-057), [OPEN-074](../open-issues.md#open-074), [OPEN-076](../open-issues.md#open-076), [OPEN-081](../open-issues.md#open-081), [OPEN-083](../open-issues.md#open-083), [OPEN-085](../open-issues.md#open-085), [OPEN-089](../open-issues.md#open-089), [OPEN-090](../open-issues.md#open-090), [OPEN-092](../open-issues.md#open-092), [OPEN-093](../open-issues.md#open-093), [OPEN-094](../open-issues.md#open-094), [OPEN-095](../open-issues.md#open-095), [OPEN-096](../open-issues.md#open-096), [OPEN-097](../open-issues.md#open-097), [OPEN-098](../open-issues.md#open-098), [OPEN-099](../open-issues.md#open-099), [OPEN-100](../open-issues.md#open-100), [OPEN-101](../open-issues.md#open-101)
 - 移行元: なし
 
 ## 目的と範囲
@@ -29,8 +29,8 @@
 | 子プロセス | デーモン | 一つのスクリプトを一回実行する。OS のサンドボックスと実行時の権限制御の中で動く（[OS のサンドボックス](../02-impl/02-12-os-sandbox.md)） |
 | クライアント | 利用者、コーディングエージェント | `benitoite server …` のサブコマンド。要求をデーモンに送り、結果を示して終わる |
 | MCP の中継 | コーディングエージェントのハーネス | `benitoite mcp`。標準入出力で MCP の要求を受け、デーモンに中継する（[ADR 0182](../decisions/0182-mcp-server-as-stdio-relay.md)） |
-| 承認の画面 | 利用者 | `benitoite server approve`。認証を要する要求を示し、利用者の承認を受ける（後述の「認証と承認」） |
-| 自前のコーディングエージェント | 利用者 | サーバモードを通してスクリプトを検査・実行するエージェントと、その TUI。設計は [OPEN-056](../open-issues.md#open-056) で決める（[ADR 0194](../decisions/0194-tui-and-own-coding-agent-with-server-mode.md)） |
+| 承認の画面 | 利用者 | `benitoite server approve`。認証を要する要求を示し、利用者の承認を受ける（後述の「認証と承認」）。後で作る TUI と見た目と操作を揃えるため、TUI の部品で作り、サーバモードとあわせて実装する（[ADR 0342](../decisions/0342-agent-harness-after-server-mode.md)） |
+| エージェントハーネス | 利用者 | サーバモードを通してスクリプトを検査・実行する自前のコーディングエージェントと、その TUI。サーバモードより後に作り、サーバモードがあることを前提にする（[ADR 0342](../decisions/0342-agent-harness-after-server-mode.md)。[ADR 0194](../decisions/0194-tui-and-own-coding-agent-with-server-mode.md) の時期を改めた）。デーモンの通信口に直接つなぐ（[ADR 0346](../decisions/0346-agent-harness-connects-to-daemon-directly.md)）。使う LLM の提供者（[ADR 0340](../decisions/0340-llm-providers-for-own-agent-harness.md)）を含む設計は[エージェントハーネス](06-08-agent-harness.md)で定め、残りは [OPEN-056](../open-issues.md#open-056) で決める |
 
 ### 通信口
 
@@ -210,6 +210,16 @@ allowed_signers = "~/.ssh/allowed_signers"   # settings edit・import の時点�
 
 【未決】スクリプトが作業用のディレクトリのパスを知る方法、作業用のディレクトリに書いた結果を利用者に渡す方法、スタンドアロンモードの一時ディレクトリの場所は、[OPEN-055](../open-issues.md#open-055) で決める。
 
+### コマンドを包むライブラリと `Process.Run` の許可（初回リリース版の後）
+
+既定の方針は、スタンドアロンモードでは `Process.Run` とシェルによる実行を許し、`server exec` では許さない（前述の「方針のファイル」、[ADR 0185](../decisions/0185-default-policies-per-run-kind.md)）。コマンドを包むライブラリ（git のラッパーなど）の中身は `Process.run` であり、そのライブラリが宣言するエフェクトは `main` の型に現れない（[エフェクト](../01-spec/01-07-effects.md)の「外部のライブラリのエフェクトと権限の表示（初回リリース版の後）」）。そのため、`server exec` の既定の方針では、ラッパーのライブラリを使っても生の `Process.run` と同じく拒否される。
+
+【未決】次の点は未決である。
+
+- ラッパーのライブラリを生の `Process.run` と区別して許す方法。よく使う少数の道具を組み込みのエフェクトにして単位ごとに許す案（`server exec` の既定で `Git.Read` だけを許す、など）、ライブラリを単位に許可する案、`Process.Run` の対象を引数の先頭まで細かくする案がある（[OPEN-081](../open-issues.md#open-081)）。
+- `Process.Run` の対象を引数の先頭まで細かくするとき（`"Process.Run" = ["git status", "git log"]` など）の照合の規則と、大域のオプションや設定から別のプログラムを起動する抜け道への対策（[OPEN-083](../open-issues.md#open-083)）。
+- スタンドアロンモードの既定の書き込みの範囲（`.` と `{tmp}`）では、その外へ書く個人用の道具（パッケージの導入など）が、`Process.Run` を許していても失敗する。この既定で困らないか（[OPEN-085](../open-issues.md#open-085)）。
+
 ### 登録と承認
 
 【方針】`server register` は、次の順に進める。
@@ -233,11 +243,34 @@ allowed_signers = "~/.ssh/allowed_signers"   # settings edit・import の時点�
 - デーモンは、認証を要する要求を待ちの列に入れる。`server approve` は、待っている要求の内容を示し、利用者がパスワードを入れて承認するか、拒否する。
 - 【決定】待ちの要求は、5 分で拒否に変わる（[ADR 0201](../decisions/0201-initial-setup-approval-timeout-and-audit-format.md)）。
 - パスワードは、Argon2id で派生したハッシュだけを保存する。パラメータは、メモリ 19 MiB、繰り返し 2、並列度 1 とする。OWASP の推奨と、RustCrypto の `argon2` クレートの既定の値と同じである（[OWASP Password Storage Cheat Sheet](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Password_Storage_Cheat_Sheet.md)、[argon2](https://github.com/RustCrypto/password-hashes/tree/master/argon2)）。
-- 生体認証と FIDO2 のキーは後の版で加える。FIDO2 の Rust のクレートは、どれも C のライブラリ（hidapi、libfido2）かシステムのライブラリに依存する（[ctap-hid-fido2](https://github.com/gebogebogebo/ctap-hid-fido2)、[authenticator-rs](https://github.com/mozilla/authenticator-rs)）。C コンパイラを避ける方針（[ADR 0143](../decisions/0143-http-and-tls-crates.md)）との関係を、加えるときに決める。
+- 生体認証と FIDO2 のキーは後の版で加える。FIDO2 の Rust のクレートは、どれも C のライブラリ（hidapi、libfido2）かシステムのライブラリに依存する（[ctap-hid-fido2](https://github.com/gebogebogebo/ctap-hid-fido2)、[authenticator-rs](https://github.com/mozilla/authenticator-rs)）。今の依存がどれも C のコードを含まず、ビルドに Rust のツールチェーンだけを要すること（[ADR 0138](../decisions/0138-crates-and-licenses-for-stdlib.md)・[ADR 0143](../decisions/0143-http-and-tls-crates.md) の帰結。一般の方針として決めた ADR はない）との関係を、加えるときに決める。物理キーを操作ごとの承認に使う形は [OPEN-093](../open-issues.md#open-093)、依存の基準を一般の方針とするかは [OPEN-094](../open-issues.md#open-094) で決める。
 
 #### 初めの設定
 
 【決定】初めての `server start` は、パスワードを決めるよう求める（[ADR 0201](../decisions/0201-initial-setup-approval-timeout-and-audit-format.md)）。パスワードは、`server start` を実行した端末で入れる。この時点ではまだ承認の画面がないからである。コーディングエージェントに初めての `server start` を実行させると、エージェントがパスワードを知る。このため、初めての設定は利用者が自分で行うよう、文書で示す。
+
+### エージェントの CLI を包むライブラリ（初回リリース版の後）
+
+【決定】初回リリース版の後に、スタンドアロンモードとサーバモードで動くスクリプトから Claude Code（`claude -p`）と Codex CLI（`codex exec`）を起動する外部のライブラリを設け、エージェントの CLI の起動を、普通のコマンドの起動（`Process.Run`）と区別する専用のエフェクトを設ける（[ADR 0341](../decisions/0341-agent-cli-wrapper-library.md)）。ライブラリは認証を実装せず、利用者がログインした各 CLI に任せる。
+
+ライブラリの中身は CLI の起動なので、専用のエフェクトがライブラリのエフェクトにとどまる限り、`main` の型と権限の表示に残るのは `Process.Run` であり、`server exec` の既定の方針では前節のラッパーと同じく拒否される。
+
+【未決】次の点は未決である。
+
+- 専用のエフェクトを権限の表示とサーバモードの許可にどう出すか（[OPEN-081](../open-issues.md#open-081)）。
+- エフェクトの名前と細かさ、エージェントに許す操作を CLI の設定で絞る引数とその権限の確認への示し方、結果の型、時間の上限と取り消し（[OPEN-099](../open-issues.md#open-099)）。
+
+### 秘密の入力と物理キーによる承認（初回リリース版の後）
+
+スクリプトが秘密の情報（パスワード、アクセス用のトークンなど。以下、秘密）を要するとき、サーバモードの子プロセスは標準入力が空の入力であり、端末も GUI も持たない。エージェントに秘密を渡させると、秘密が LLM とその記録に渡る。秘密を受け取る経路と、秘密を取り出す操作の承認を、前述の承認の画面の上に設ける案がある（[秘密の情報の扱いの検討メモ](../sources/post-first-release/post-first-release-secrets.md)）。
+
+【未決】次の点は未決である。
+
+- 秘密の入力を、認証を要する要求と同じ待ちの列に入れ、承認の画面で利用者が入れた秘密をデーモンが子プロセスへパイプで渡す形。監査の記録には求めたことと応じたかだけを残し、値は残さない（[OPEN-089](../open-issues.md#open-089)）。
+- OS のキーストアの読み取り。子プロセスはサンドボックスの中からキーストアの通信先に届かない見込みなので、デーモンが方針で許された項目だけを代わりに読む形（[OPEN-090](../open-issues.md#open-090)）。
+- 物理キー（FIDO2）による操作ごとの承認。デーモンが操作の内容（スクリプトの名前とハッシュ、ジョブ、エフェクトと対象、時刻、一度だけ使う値）を作って承認の画面に示し、キーの署名を公開鍵で確かめてから操作を進める形と、パスワードマネージャのアクセス用のトークンなどをデーモンだけが持つ配置（[OPEN-093](../open-issues.md#open-093)）。
+- 処理系が WebAuthn のクライアントになるときに、子プロセスの代わりにデーモンが USB の機器と通信する形（[OPEN-092](../open-issues.md#open-092)）。
+- FIDO2 などのクレートが C のライブラリに依存するときの、依存の基準（[OPEN-094](../open-issues.md#open-094)）。
 
 ### 監査の記録
 
@@ -268,6 +301,10 @@ allowed_signers = "~/.ssh/allowed_signers"   # settings edit・import の時点�
 - `ssh-keygen -Y sign -n benitoite-script` で一覧に署名しても、同じ署名になる。
 
 【決定】デーモンが使う信頼する鍵の一覧は、利用者が認証を要する操作（`server settings edit`・`server settings import`）で方針のファイルの `allowed_signers` に指定したファイルの写しとする。デーモンは、その時点でファイルの内容をデータのディレクトリに写し、以後は写しだけを使う。元のファイルを後で変えたときは、`server settings edit` か `import` で取り込み直す。デーモンを使わない `benitoite verify` は、`--allowed-signers` で渡したファイルを使う（[ADR 0218](../decisions/0218-allowed-signers-imported-copy.md)）。
+
+### パッケージを加えた後の署名と取得（初回リリース版の後）
+
+【未決】パッケージ管理（[パッケージ管理](06-05-package-manager.md)）を加えると、根の外に置く取得したパッケージのファイルと、`@external` が指す WASM のモジュールが、前述の署名の一覧に入らない。一覧の対象を依存の記述と WASM のモジュールまで広げるか、パッケージの署名の名前空間を `benitoite-script` と分けるか、方針で依存の署名を求められるようにするかは [OPEN-076](../open-issues.md#open-076) で決める。サーバモードでは、パッケージを登録のときに取得して確かめ、実行のときには取得しない方向である。方針のファイルに、パッケージの取得を許すホストの一覧を書けるようにするかは [OPEN-074](../open-issues.md#open-074) で決める。
 
 ### 保管
 
@@ -304,6 +341,12 @@ allowed_signers = "~/.ssh/allowed_signers"   # settings edit・import の時点�
 - MCP の仕様は、エージェントが名乗る身元（`clientInfo`）を自己申告とし、セキュリティの判断に使うべきでないとしている（[MCP の仕様](https://modelcontextprotocol.io/specification/2026-07-28/basic)）。`benitoite mcp` も、身元をプロファイルを選ぶ手がかりにしか使わない。
 - 実装には、公式の Rust の SDK（`rmcp`）を使うことを検討する。`rmcp` は tokio を使う（[rust-sdk](https://github.com/modelcontextprotocol/rust-sdk)）。`benitoite mcp` は VM を動かさないので、処理系の I/O の仕組み（[ADR 0162](../decisions/0162-event-loop-and-worker-threads-for-io.md)）とは別に tokio を使ってよい。
 
+### MCP のサンプリング（初回リリース版の後）
+
+MCP には、サーバがクライアントの側の LLM に生成を頼む「サンプリング」（sampling）の機能がある。`benitoite mcp` がこれを使えば、処理系は API キーも認証も持たずに、利用者がハーネスで使っている LLM を使える。ただし、MCP の仕様の 2026-07-28 の版は、サンプリングを非推奨にし、新しい実装は採るべきでない（SHOULD NOT）としている（[Sampling](https://modelcontextprotocol.io/specification/2026-07-28/client/sampling)）。
+
+【未決】サンプリングを採るか、採るなら何に使うか（スクリプトから LLM を呼ぶモジュール（[OPEN-100](../open-issues.md#open-100)）を、MCP の上で動くときにサンプリングへ振り向ける案）、対応しないクライアントでの振る舞い、クライアントの承認と処理系の権限の確認の重ね方は、[OPEN-098](../open-issues.md#open-098) で決める。
+
 ### コーディングエージェントの設定
 
 【決定】エージェントにスタンドアロンモードを使わせない制限は、エージェントの側の許可の設定で行う（[ADR 0193](../decisions/0193-restricting-agents-to-server-mode-by-agent-config.md)）。
@@ -332,3 +375,20 @@ allowed_signers = "~/.ssh/allowed_signers"   # settings edit・import の時点�
 - [OPEN-057](../open-issues.md#open-057): OS のサンドボックスとデーモンの常駐に関する事実の確認
 - [OPEN-052](../open-issues.md#open-052): 実行時の権限制御の方式（ネットワークの操作の対象の書き方）
 - [OPEN-015](../open-issues.md#open-015): 契約の変更と権限の差分を利用者に示す方法
+- [OPEN-095](../open-issues.md#open-095): エージェントハーネスの提供者を差し替える層、実装の順、使うクレート
+- [OPEN-096](../open-issues.md#open-096): LLM の提供者に関する事実の確認
+- [OPEN-097](../open-issues.md#open-097): Claude Code の CLI を経由して Claude の購読で使う提供者（候補 L）の採否
+- [OPEN-098](../open-issues.md#open-098): MCP のサンプリングを採るかと、その使い道
+- [OPEN-099](../open-issues.md#open-099): エージェントの CLI を包むライブラリの細部
+- [OPEN-100](../open-issues.md#open-100): スクリプトから LLM を直接呼ぶモジュール
+- [OPEN-101](../open-issues.md#open-101): LLM の提供者の認証の情報の保管と、利用者への表示
+- [OPEN-074](../open-issues.md#open-074): パッケージの取得元と取得の制約（取得を許すホストの一覧）
+- [OPEN-076](../open-issues.md#open-076): パッケージと WASM の署名、プロジェクトの鍵
+- [OPEN-081](../open-issues.md#open-081): 外部のライブラリのエフェクトを、権限の表示にどう出すか
+- [OPEN-083](../open-issues.md#open-083): `Process.Run` の許可の対象を引数まで細かくするときの照合の規則
+- [OPEN-085](../open-issues.md#open-085): サーバモードを加えた後のスタンドアロンモードの既定の書き込みの範囲と、個人用の道具
+- [OPEN-089](../open-issues.md#open-089): 人間から秘密を受け取る経路（承認の画面での秘密の入力）
+- [OPEN-090](../open-issues.md#open-090): OS のキーストアと、パスワードマネージャのラッパーの作り方（デーモンによる代理の読み取り）
+- [OPEN-092](../open-issues.md#open-092): 処理系が WebAuthn のクライアントになる形
+- [OPEN-093](../open-issues.md#open-093): 物理キーによる操作ごとの承認と、秘密をデーモンだけが持つ配置
+- [OPEN-094](../open-issues.md#open-094): 依存のクレートの基準を一般の方針とするか

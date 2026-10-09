@@ -1,9 +1,13 @@
 // spec: 01-08 実行時エラーによる停止
-fn ratio(a: Int, b: Int) -> Int { a / b }
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-  let values = [10]
-  let divisor = 0
-  let ratios = List.map(values, fn(value) { ratio(value, divisor) })
-  Console.println(Int.toString(List.length(ratios)))
-}
+function ratio(a: Integer, b: Integer) -> Integer
+  return a div b
+end function
+
+function main() -> Unit uses Console.Write
+  bind values <- [10]
+  bind divisor <- 0
+  bind ratios <- List.map(values, lambda(value) return ratio(value, divisor) end lambda)
+  return Console.writeLine(Integer.toString(List.length(ratios)))
+end function

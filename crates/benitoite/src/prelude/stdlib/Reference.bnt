@@ -1,0 +1,17 @@
+//! Mutable cells. The type `Reference` is built in.
+
+/// Returns a new cell holding `value`.
+@builtin("Reference.new")
+public function new[T](value: T) -> Reference[T] uses State
+
+/// Returns the value in the cell.
+@builtin("Reference.get")
+public function get[T](reference: Reference[T]) -> T uses State
+
+/// Replaces the value in the cell with `value`.
+@builtin("Reference.set")
+public function set[T](reference: Reference[T], value: T) -> Unit uses State
+
+/// Replaces the value in the cell with `f` applied to it. No other task touches the cell in between.
+@builtin("Reference.update")
+public function update[T](reference: Reference[T], f: function(T) -> T) -> Unit uses State

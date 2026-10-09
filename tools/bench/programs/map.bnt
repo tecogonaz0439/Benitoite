@@ -1,0 +1,40 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function keys(count: Integer, seed: Integer, values: List[Integer]) -> List[Integer]
+  return if count = 0 then values else
+    bind next <- (seed * 48271 + 11) mod 2147483647
+    keys(count - 1, next, List.append(values, next))
+  end if
+end function
+
+function removeKeys(values: List[Integer], index: Integer, m: Map[Integer, Integer], s: Set[Integer]) -> Pair[Map[Integer, Integer], Set[Integer]]
+  return match List.get(values, index) with
+    case Option.None -> Pair(m, s)
+    case Option.Some(key) -> removeKeys(values, index + 2, Map.remove(m, key), Set.remove(s, key))
+  end match
+end function
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match Option.map(List.get(Process.arguments(), 0), Integer.parse) |> Option.unwrapOr(_, Option.None) with
+    case Option.None -> Result.Error("expected a non-negative key count")
+    case Option.Some(count) -> if count < 0 then Result.Error("expected a non-negative key count") else
+      bind values <- keys(count, 1, [])
+      bind m <- List.fold(values, Map.empty(), lambda(acc, key) return Map.set(acc, key, key) end lambda)
+      bind s <- List.fold(values, Set.empty(), lambda(acc, key) return Set.add(acc, key) end lambda)
+      bind mapFound <- List.fold(values, 0, lambda(acc, key)
+        return acc + match Map.get(m, key) with
+          case Option.Some(_) -> 1
+          case Option.None -> 0
+        end match
+      end lambda)
+      bind setFound <- List.fold(values, 0, lambda(acc, key) return acc + if Set.contains(s, key) then 1 else 0 end if end lambda)
+      bind remaining <- removeKeys(values, 0, m, s)
+      Console.writeLine(Integer.toString(Map.size(Pair.first(remaining))))
+      Console.writeLine(Integer.toString(Set.size(Pair.second(remaining))))
+      Console.writeLine(Integer.toString(mapFound))
+      Console.writeLine(Integer.toString(setFound))
+      Result.Ok(())
+    end if
+  end match
+end function

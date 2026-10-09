@@ -1,0 +1,12 @@
+// spec: 01-07 外部から受け取る文字列
+// spec: 01-07 IO の失敗
+// 関門: 無効な UTF-8 を値の失敗として返す規則を守り、置換文字への変換と panic を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Read, Console.Write
+  match Console.readAll() with
+    case Result.Ok(_) -> Console.writeLine("unexpected success")
+    case Result.Error(error) -> Console.writeLine(if IOError.kind(error) = IOErrorKind.InvalidUTF8 then "invalid UTF-8" else "wrong error" end if)
+  end match
+end function

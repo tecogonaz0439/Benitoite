@@ -1,10 +1,11 @@
 //! 推論の中の型と制約（設計書 02-05「型とエフェクトの表現」「制約の種類」）。
+//! 型変数と制約は本体の検査ごとに作って捨てる（02-05「検査の単位と手順」、ADR 0015）。
 
-use crate::base::Span;
+use crate::base::{BindingId, NodeId, Span};
 use crate::syntax::ast::{BinOp, UnOp};
-use crate::types::{EffectSet, TyCon, TyNames, TySet};
+use crate::types::{EffectSet, TyCon, TySet};
 
-/// 型変数。union-find の要素の番号。本体の検査ごとに作って捨てる。
+/// 型変数。union-find の要素の番号。
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct TyVar(pub u32);
 
@@ -12,13 +13,30 @@ pub struct TyVar(pub u32);
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct EffInfer(pub u32);
 
+/// 推論の中の型構成子の頭（`F[A]` の F）。
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub enum IHead {
+    /// 型構成子を表す型パラメータ
+    Param(u32),
+    /// 型構成子の変数（型構成子を表す型パラメータを置き換えた変数）
+    Var(TyVar),
+}
+
 #[derive(Clone, PartialEq, Debug)]
 pub enum ITy {
+    /// 値の型の変数
     Var(TyVar),
     Con(TyCon, Vec<ITy>),
     Fn(Box<IFnTy>),
-    /// 検査している関数の型パラメータ。ほかの何とも等しくない
+    /// 検査している定義の型パラメータ。ほかの何とも等しくない
     Param(u32),
+    /// 型構成子の適用 `F[A]`（02-05「型とエフェクトの表現」の単一化の規則）
+    App(IHead, Vec<ITy>),
+    /// `handle` の節の中の操作の型パラメータ
+    Rigid {
+        clause: NodeId,
+        index: u32,
+    },
     /// 誤りの型。どの型とも等しいものとして扱う（ADR 0024）
     Error,
 }
@@ -37,33 +55,29 @@ pub struct IEffect {
     pub var: Option<EffInfer>,
 }
 
+/// 型クラスの制約の引数（値の型、または型構成子）。
+#[derive(Clone, PartialEq, Debug)]
+pub enum IClassArg {
+    Ty(ITy),
+    /// 型構成子。`Con` の型引数は空
+    Con(TyCon),
+    Head(IHead),
+}
+
+/// 型クラスの制約を解いた結果を書く先（02-05「出力」の「辞書の解決」）。
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum DictSite {
+    /// 名前を使う箇所のノードと、その名前の宣言の型の制約の番号
+    Use { node: NodeId, constraint: u32 },
+    /// 実装の宣言のノードと、型クラスの上位の型クラスの番号（`TraitDef::supers` の位置）
+    ImplSuper { impl_decl: NodeId, index: u32 },
+}
+
 /// 演算子の名前。診断の `{op}` に使う。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum OpName {
     Bin(BinOp),
     Un(UnOp),
-}
-
-impl OpName {
-    pub fn symbol(self) -> &'static str {
-        match self {
-            OpName::Bin(BinOp::Add) => "+",
-            OpName::Bin(BinOp::Sub) => "-",
-            OpName::Bin(BinOp::Mul) => "*",
-            OpName::Bin(BinOp::Div) => "/",
-            OpName::Bin(BinOp::Rem) => "%",
-            OpName::Bin(BinOp::Eq) => "==",
-            OpName::Bin(BinOp::Ne) => "!=",
-            OpName::Bin(BinOp::Lt) => "<",
-            OpName::Bin(BinOp::Le) => "<=",
-            OpName::Bin(BinOp::Gt) => ">",
-            OpName::Bin(BinOp::Ge) => ">=",
-            OpName::Bin(BinOp::And) => "&&",
-            OpName::Bin(BinOp::Or) => "||",
-            OpName::Un(UnOp::Neg) => "-",
-            OpName::Un(UnOp::Not) => "!",
-        }
-    }
 }
 
 /// 制約が生じた事情（02-05「制約の種類」の「理由」）。
@@ -79,12 +93,20 @@ pub enum ReasonKind {
     IfBranches,
     IfNoElse,
     MatchArms,
+    MatchGuard,
     Pattern,
+    /// 一つの分岐の選択肢が同じ名前で束縛する変数の型（F10 の P2）
+    Alternatives,
     ListElement,
-    LetAnnotation,
+    /// リストリテラルの展開の要素
+    ListSpread,
+    /// 束縛の文の型注釈
+    BindAnnotation,
     LambdaReturn,
     /// ラムダの `uses`（含まれる制約）
     LambdaUses,
+    /// `return` の式と戻り値の型
+    Return,
     /// 関数の本体と宣言した戻り値の型
     FnBody,
     /// 関数の本体のエフェクトと宣言した `uses`（含まれる制約）
@@ -95,22 +117,57 @@ pub enum ReasonKind {
     Operands {
         op: OpName,
     },
-    /// `&&`・`||`・`!` のオペランドが `Bool` であること
+    /// `and`・`or`・`not` のオペランドが `Boolean` であること
     Logic {
         op: OpName,
     },
-    /// 集まりの制約と等値の制約
+    /// 演算子の集まりの制約と等値の制約
     Operator {
         op: OpName,
     },
-    /// 呼び出しのエフェクトが本体のエフェクトに含まれること（含まれる制約）。
-    /// `sup` が固定の集合（宣言した `uses`）のときに解けなければ E0501 とする
+    /// 文字列補間の集まりの制約
+    Interp,
+    /// 呼び出しのエフェクトが本体のエフェクトに含まれること
     CallEffect,
-    /// 組み込みの関数の型パラメータの制約（`List.contains` の等値、`List.sort` の集まり）。
-    /// `name` は修飾した名前で、E0405・E0406 の `{op}` に埋める
+    /// 標準ライブラリの関数の型パラメータの組み込みの制約（`equality`・`key`・`ordered`）。
+    /// `name` は修飾した名前
     BuiltinParam {
         name: String,
     },
+    /// 型パラメータの組み込みの制約を持つ利用者の関数の呼び出し
+    ParamBound {
+        name: String,
+    },
+    /// レコードの構築と更新のフィールドの式
+    RecordField {
+        field: BindingId,
+    },
+    /// レコードの更新の元の式
+    RecordBase,
+    /// 型クラスの制約（メソッドか制約を持つ関数を使った）
+    ClassUse {
+        class: BindingId,
+    },
+    /// 実装の上位の型クラスの制約
+    ImplSuper {
+        class: BindingId,
+    },
+    /// `try` の対象と戻り値の型
+    Try,
+    /// `with` の束縛の式がリソースの型であること
+    WithResource,
+    /// `with` の解放のエフェクト `State`
+    WithState,
+    /// `lazy` の本体が純粋であること
+    LazyBody,
+    /// `handle` の本体の型とエフェクト
+    HandleBody,
+    /// `handle` の節の本体
+    HandleClause,
+    /// `resume` の引数と節の操作の戻り値の型
+    Resume,
+    /// 定数式と宣言の型
+    ConstValue,
 }
 
 /// 解く順序の区分（02-05「制約の解決」の手順 1 と 2）。
@@ -130,14 +187,14 @@ pub struct Reason {
     /// 関連する位置（引数の型を宣言した箇所、`uses` を書いた箇所など）
     pub related: Option<Span>,
     pub priority: Priority,
-    /// 型を求められた式が整数リテラルのとき、その字面（E0401 の `float_literal` の修正案に使う）
+    /// 型を求められた式が整数リテラルのとき、その字面（`Float` の位置の修正案に使う）
     pub int_literal: Option<String>,
 }
 
 /// 制約（02-05「制約の種類」）。
 #[derive(Clone, PartialEq, Debug)]
 pub enum Constraint {
-    /// 等しい(A, B)。`a` が期待した型、`b` が実際の型として診断に示す
+    /// 等しい(A, B)。`expected` が期待した型、`found` が実際の型として診断に示す
     Equal {
         expected: ITy,
         found: ITy,
@@ -149,67 +206,30 @@ pub enum Constraint {
     OneOf { ty: ITy, set: TySet, reason: Reason },
     /// 等値(A)
     Equality { ty: ITy, reason: Reason },
+    /// 鍵(A)
+    Key { ty: ITy, reason: Reason },
+    /// 型クラス(C, τ)。解いた辞書の求め方を `site` に記録する
+    Class {
+        class: BindingId,
+        arg: IClassArg,
+        site: DictSite,
+        reason: Reason,
+    },
+    /// 試行(A, R, τ)。`target` が `try` の対象の型、`ret` が最も内側の関数かラムダの戻り値の型、
+    /// `result` が `try` の式の型。判定の結果を `node`（`TryExpr`）の「`try` の種類」に記録する
+    Try {
+        target: ITy,
+        ret: ITy,
+        result: ITy,
+        node: NodeId,
+        reason: Reason,
+    },
+    /// リソース(A)
+    Resource { ty: ITy, reason: Reason },
     /// 含まれる(X, Y)
     EffSub {
         sub: IEffect,
         sup: IEffect,
         reason: Reason,
     },
-}
-
-/// 型を表示するときの、まだ決まっていない型変数と誤りの型の字面（T14 で決めた。`List[_]` のように示す）。
-const HOLE: &str = "_";
-
-impl ITy {
-    /// 型を診断に示す形にする（`Ty::show` と同じ形）。まだ決まっていない型変数と誤りの型は `_` と示す。
-    /// エフェクトは確定した要素だけを示す。変数の要素まで示すときは、呼び出し側が先に変数の集合を
-    /// 確定した要素へ移しておく（`Solver` の診断はそうする）。
-    pub fn show(&self, names: &TyNames<'_>) -> String {
-        let mut out = String::new();
-        self.show_into(names, &mut out);
-        out
-    }
-
-    /// `out` に型の表示を書き足す。型の入れ子の深さだけ再帰するので、各段で `String` を作って
-    /// `format!` で継ぎ合わせずに、一つの `String` に書き足して 1 段あたりのスタックを小さく保つ
-    /// （深さ 1000 の型を既定のスタックで表示できるようにする。ADR 0087）。
-    fn show_into(&self, names: &TyNames<'_>, out: &mut String) {
-        match self {
-            ITy::Var(_) | ITy::Error => out.push_str(HOLE),
-            ITy::Con(c, args) => {
-                out.push_str(&names.con_name(*c));
-                if !args.is_empty() {
-                    out.push('[');
-                    show_list(args, names, out);
-                    out.push(']');
-                }
-            }
-            ITy::Fn(f) => show_fn(f, names, out),
-            ITy::Param(i) => out.push_str(&names.type_param_name(*i)),
-        }
-    }
-}
-
-/// 型の並びを `, ` で区切って書き足す。
-fn show_list(tys: &[ITy], names: &TyNames<'_>, out: &mut String) {
-    let mut first = true;
-    for t in tys {
-        if !first {
-            out.push_str(", ");
-        }
-        first = false;
-        t.show_into(names, out);
-    }
-}
-
-/// `fn(引数) -> 戻り値 uses エフェクト` を書き足す。
-fn show_fn(f: &IFnTy, names: &TyNames<'_>, out: &mut String) {
-    out.push_str("fn(");
-    show_list(&f.params, names, out);
-    out.push_str(") -> ");
-    f.ret.show_into(names, out);
-    if !f.effect.fixed.is_empty() {
-        out.push_str(" uses ");
-        out.push_str(&names.show_effects(&f.effect.fixed));
-    }
 }

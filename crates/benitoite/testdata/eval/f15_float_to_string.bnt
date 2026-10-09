@@ -1,0 +1,15 @@
+// spec: 01-04 Float
+// spec: 01-04 型の変換
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+ Console.writeLine(Float.toString(1.0))
+ Console.writeLine(Float.toString(0.001))
+ Console.writeLine(Float.toString(123.45))
+ Console.writeLine(Float.toString(1e21))
+ Console.writeLine(Float.toString(1.5e-7))
+ Console.writeLine(Float.toString(-0.0))
+ Console.writeLine(Float.toString(0.0 / 0.0))
+ Console.writeLine(Float.toString(1.0 / 0.0))
+ Console.writeLine(Float.toString(-1.0 / 0.0))
+ Console.writeLine(Float.toString(0.1))
+end function

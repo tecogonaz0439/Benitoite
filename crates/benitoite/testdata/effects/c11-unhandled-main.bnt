@@ -1,0 +1,7 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+effect Log
+function write(value: String) -> Unit
+end effect
+function main() -> Unit uses Log
+write("hello")
+end function

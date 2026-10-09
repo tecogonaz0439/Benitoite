@@ -1,0 +1,11 @@
+// spec: 01-02 レコード（初回リリース版）
+record Person
+  name: String
+  age: Integer
+end record
+function f(p: Person) -> Unit
+  bind Person(..) <- p
+end function
+function main() -> Unit
+  ()
+end function

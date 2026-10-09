@@ -1,0 +1,51 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+  return match List.get(Process.arguments(), index) with
+    case Option.None -> Result.Error("expected non-negative integer arguments")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+      case Option.None -> Result.Error("expected non-negative integer arguments")
+    end match
+  end match
+end function
+
+function compute(done: Reference[Boolean], value: Integer) -> Unit uses State
+  // 終了の印を読むまでは計算し続け、呼び出しの予算による切り替えを測る（設計書 07-02）。
+  return if Reference.get(done) then () else compute(done, (value * 17 + 11) mod 65521) end if
+end function
+
+function serve(listener: Http.Listener, group: TaskGroup, count: Integer, tasks: List[Task[Result[Unit, String]]]) -> Result[Unit, String] uses Http.Listen, State
+  return if count = 0 then
+    List.fold(tasks, Result.Ok(()), lambda(acc, task)
+      bind _ <- try acc
+      return Task.await(task)
+    end lambda)
+  else
+    bind exchange <- try Http.accept(listener) |> Result.mapError(_, NetworkError.message)
+    bind task <- TaskGroup.spawn(group, lambda()
+      with current = exchange do
+        return Http.respond(current, Http.text(200, "ok")) |> Result.mapError(_, NetworkError.message)
+      end with
+    end lambda)
+    serve(listener, group, count - 1, List.append(tasks, task))
+  end if
+end function
+
+function main() -> Result[Unit, String] uses Http.Listen, Console.Write, Process.Environment, State
+  bind count <- try readInteger(0)
+  bind busy <- try readInteger(1)
+  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+    bind done <- Reference.new(false)
+    bind worker <- TaskGroup.spawn(group, lambda()
+      return if busy = 0 then () else compute(done, 1) end if
+    end lambda)
+    Console.writeLine(Integer.toString(Http.listenerPort(listener)))
+    bind result <- serve(listener, group, count, [])
+    Reference.set(done, true)
+    Task.await(worker)
+    return result
+  end with
+end function

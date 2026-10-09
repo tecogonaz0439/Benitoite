@@ -6,7 +6,7 @@
 
 Rust で実装する関数型スクリプト言語のリポジトリである。設計書、実装プラン、処理系のソースコードを、すべてこのリポジトリに置く（`docs/design/decisions/0040-single-repository.md`）。最小実行版の設計書と実装プランによる実装を終え、現在は `docs/design/` の設計書を正式版に仕上げる段階にある。処理系のソースコードは `crates/benitoite/` に置き、完了条件の共通の検査は `scripts/check.sh` で行う。言語の名称は `Benitoite`（ベニトアイト）とする（`docs/design/decisions/0132-language-name-benitoite.md`）。CLI のコマンドの名前は `benitoite`、スクリプトの拡張子は `.bnt` とする（`docs/design/decisions/0241-command-name-and-extension.md`）。リポジトリの名前の `Zozooo` は、以前の仮称である。
 
-処理系は LLM が実装する。設計書の作成から実装プランの作成までを Claude Code が担い、初期実装は LLM が実装プランに従って行う。最小実行版では、Claude Code がオーケストレータとして作業を配り、難しい作業を Claude Opus 5.5 のサブエージェントに、それ以外を Codex（GPT-6-Luna）に割り当てる。実装の確認はオーケストレータが行い、Opus が実装した作業は Codex も確かめる（`docs/design/decisions/0084-implementer-assignment-for-minimal.md`、`docs/design/decisions/0085-review-assignment-for-minimal.md`）。実装プランは、設計書と実装プランだけを読めば実装できる粒度で書く。処理系は Rust で書く。
+処理系は LLM が実装する。設計書の作成から実装プランの作成までを Claude Code が担い、初期実装は LLM が実装プランに従って行う。最小実行版では、Claude Code がオーケストレータとして作業を配り、難しい作業を Claude Opus 5.5 のサブエージェントに、それ以外を Codex（GPT-6-Luna）に割り当てる。実装の確認はオーケストレータが行い、Opus が実装した作業は Codex も確かめる（`docs/design/decisions/0084-implementer-assignment-for-minimal.md`、`docs/design/decisions/0085-review-assignment-for-minimal.md`）。初回リリース版では、難易度によらず Codex（GPT-6.1-Sol）が実装し、オーケストレータがすべての作業を確かめる（`docs/design/decisions/0308-implementation-by-codex-sol.md`）。実装プランは、設計書と実装プランだけを読めば実装できる粒度で書く。処理系は Rust で書く。
 
 言語の主な目的は二つある。表向きの目的は、Perl の精神を受け継ぎ、利用者が「怠惰・短気・傲慢」のままで使えるスクリプト言語を作ることである（Agent Skills から実行できることは、その手段として位置付ける）。実質的な目的は、設計者自身が、関数型プログラミング（型システム・エフェクト・永続データ構造など）と言語処理系（解析器・仮想機械・ランタイムなど）を学ぶことである。設計者は処理系を手で実装せず、LLM が書いた実装を読み、必要なときに LLM へ実装の理由を質問して学ぶ。二つが衝突したときの判断基準は `docs/design/00-overview/00-01-goals.md` に定める。
 
@@ -45,16 +45,19 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 | `docs/design/decisions/` | 設計判断の記録（ADR）。1判断1ファイル | |
 | `docs/implement/` | 初回リリース版の実装プラン（`00-common/`・`10-interfaces/`・`20-tasks/`・`90-after-completion.md`。`docs/design/decisions/0253-first-release-plan-location-and-units.md`） | 作成中。実装を終えたら `docs/archive/` へ移す |
 | `docs/archive/` | 過去の文書の保管場所。最小実行版の設計書の写し（`2026-09-27-design-initial/`）と、最小実行版の実装プランと実装の結果（`2026-09-27-implement-initial/`） | 読み取り専用。過去の文書や処理系の作成・改造の経緯を調べるときだけ読む。現在の作業の根拠にしない。設計書の章からリンクしない（ADR が経緯として参照するのはよい） |
-| `docs/reference/` | 最小実行版の言語リファレンス（英語） | |
+| `docs/reference/` | 利用者向けの英語の文書。初回リリース版の言語リファレンス（`benitoite.md`）と導入の手順（`install.md`）、最小実行版の言語リファレンス（`benitoite-minimal.md`） | `benitoite.md` のコードの例は `crates/benitoite/tests/reference_examples.rs` が検査する |
+| `docs/ja/` | 日本語の訳。言語リファレンス・導入の手順（`reference/`）と、同梱の Agent Skill の `SKILL.md` と手で書く参照の文書（`skill/`）の訳。設計者が読むためのもので、英語の版を正とする | 英語の版を変えたら、リリースのときに訳し直す。Skill のディレクトリに含めない |
 | `crates/benitoite/` | 処理系のクレート（lib と bin）。`src/`（ソース）、`tests/`（統合テストとゴールデンテストの実行器）、`testdata/`（ゴールデンテスト）、`examples/`（開発用の例） | モジュールの構成は実装プランの `00-common/00-01-repository-layout.md` |
-| `tools/grammar-check/` | 言語仕様の例が文法で読めるかを確かめる道具（Python。初回リリース版の構文解析器の実装で処理系の検査に置き換える） | 構文の章や例を変えたら実行する |
+| `crates/benitoite/skill/` | 同梱の Agent Skill（`SKILL.md` と `references/`）。実行ファイルに埋め込む（実装プランの `10-interfaces/10-19-skill-and-distribution.md`） | `references/` の文法・診断・標準ライブラリの文書は生成物であり、手で直さず `cargo run -p benitoite --example gen_skill` で作り直す。構文の章・標準ライブラリのソース・診断の表を変えたら、同じ変更で作り直す |
 | `tools/syntax-measure/` | 構文の案ごとに、LLM が書いたスクリプトの構文の誤りの率を測る道具（Python。OPEN-012・ADR 0246 の第一段階）。生の記録はリポジトリの外に置く | 使い方は `tools/syntax-measure/README.md`。LLM を呼ぶ測定は設計者の了承を得てから行う |
+| `tools/skill-eval/` | 同梱の Agent Skill を、約 10 の課題とハーネス（Claude Code・Codex CLI・OpenCode）で評価する道具（Python。06-06「Skill の評価」、ADR 0232。OPEN-012 の第二段階にも使う）。記録は `results/`、生の記録はリポジトリの外に置く | 使い方は `tools/skill-eval/README.md`、手順はスキル `skill-eval`。LLM を呼ぶ評価は設計者の了承を得てから行う |
 | `tools/spec-coverage/` | ゴールデンテストが言語仕様のどの節を確かめているかを集計する道具（Python） | |
 | `tools/bench/` | ベンチマークと測定の道具、測定記録（`results/`） | 測定はスキル `benchmark` に従う |
+| `assets/brand/` | ロゴ・アイコン・ワードマークの画像（SVG と PNG）と、作り直す道具（`make_logos.py`）。キャラクターの案 A・B・C の画像は `mascots/`。将来の Web サイトや README に貼るためのもの（`reference/Benitoite-brand/` と `reference/benitoite-mascots/` からの写し。色と書体は `README.md`、キャラクターの案は `mascots/README-ja.txt`） | 画像を手で直さず、`make_logos.py` で作り直す |
 | `fuzz/` | cargo-fuzz のクレート（nightly の Rust を使うので、ワークスペースに含めない） | `scripts/fuzz-short.sh` で実行する |
 | `formal/` | 形式検証の段階 2 の Lean 4 のプロジェクト。コア計算（`docs/design/01-spec/01-12-core-calculus.md`）の形式化した規則の正と、進行と保存・エフェクトの健全性の定理（`docs/design/07-quality/07-04-formal-semantics.md`、ADR 0293〜0295、ADR 0307） | `formal/` で `lake build` を実行する。`scripts/check.sh` には含めない。形式化した規則を変えるときは、ADR を添えて Lean の定義と 01-12 の写しを同じ変更で直し、`lake build` が `sorry` なしで通ることを確かめる |
-| `scripts/` | `check.sh`（完了条件の共通の検査）、`fuzz-seed.sh`・`fuzz-short.sh`（fuzzing） | 作業を取り込む前に `check.sh` を通す |
-| `.claude/skills/` | プロジェクト固有のスキル（`git-workflow`、`test-audit`、`benchmark`） | `.agents/skills/` にシンボリックリンクを置く |
+| `scripts/` | `check.sh`（完了条件の共通の検査）、`check-heap.sh`（nightly の Rust が要る検査と時間のかかる検査）、`fuzz-seed.sh`・`fuzz-short.sh`（fuzzing） | 作業を取り込む前に `check.sh` を通す。`runtime::heap` を変える作業では `check-heap.sh` も実行する |
+| `.claude/skills/` | プロジェクト固有のスキル（`git-workflow`、`test-audit`、`benchmark`、`skill-eval`） | `.agents/skills/` にシンボリックリンクを置く |
 | `.claude/agents/` | 実装を担うサブエージェントの定義（`impl-medium`、`impl-low`） | オーケストレータが起動する（実装プランの `00-common/00-03-workflow.md`） |
 
 ## 設計書の規約
@@ -138,6 +141,7 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 ## テストの運用
 
 - 処理系のテストを書く・変える・見直すときは、スキル `test-audit`（`.claude/skills/test-audit/SKILL.md`）に従う。テストの設計の原則は `docs/design/07-quality/07-03-compiler-testing.md` の「テストの設計の原則」で定める。
+- 言語仕様と付録 08-04 の例の検査は、`crates/benitoite/tests/spec_examples.rs` にある。構文の章や例を変えたら、リポジトリの根で `cargo test --test spec_examples` を実行する。
 
 ## 性能の測定
 
@@ -145,77 +149,113 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 
 ## 実装の規約
 
-実装の規約は本節で定める。本節は最小実行版の実装プランの 00-02「実装の規約」から要約したものであり、lint の水準は `Cargo.toml` の `[workspace.lints]` が定める。正式版の実装プランを作るときに見直す。
+本節は初回リリース版の実装プランの [00-02「文章で守る規約」](docs/implement/00-common/00-02-conventions.md#文章で守る規約)を写したものであり、食い違ったときは 00-02 を正とする。lint の水準は `Cargo.toml` の `[workspace.lints]` が定める。
 
 ### 型とシグネチャを変えない
 
-実装プランが凍結した型とシグネチャ（最小実行版では実装プランの 10-interfaces の `file=` のコードと `sig=`）は、変えずに中身を書く。欄や引数を加える・変える・消す必要が生じたら、実装を進めずに報告する（07-03「実装の規約と静的な検査」）。非公開の補助の関数と型は、自由に加えてよい。
+`10-interfaces/` の `file=` のコードと `sig=` のシグネチャは、変えずに中身を書く。欄や引数を加える・変える・消す必要が生じたら、実装を進めずに報告する（[作業の進め方](docs/implement/00-common/00-03-workflow.md)の「型やシグネチャを変える必要が生じたとき」）。非公開の補助の関数と型は、自由に加えてよい。
+
+### `todo!()` の仮置き
+
+C01・C02 は、`docs/implement/tools/extract_interfaces.py place` でインターフェースを置く。道具は、`sig=` の関数の宣言を、本体が `todo!()` の関数（`todo!()` の仮置き）として書き、仮置きを置いたファイルの先頭（`//!` の行の後）に次の許可とコメントを置く。置いた直後のクレートがコンパイルでき、`scripts/check.sh` を通るようにするためである（C01・C02 の後も、どの取り込みの後もクレートがコンパイルできる。[作業の進め方](docs/implement/00-common/00-03-workflow.md)の「最小実行版の実装からの移行」）。10-12 の組み込みの関数の「仮の本体」（名前・権限・引数の数だけが正しく、呼ばれたら処理系の不具合を返す関数）とは別のものである。
+
+```rust
+// 仮置きのための許可: 道具が置いた `todo!()` の仮置きのために、lint の clippy::todo と、仮置きが
+// 使わない引数への unused_variables を許す。このファイルの `todo!()` をすべて本体に書き換えた
+// 作業が、このコメントと次の属性を消す（実装プラン 00-02「`#[allow]` を書いてよい箇所」）。
+#![allow(clippy::todo, unused_variables)]
+```
+
+- 作業は、受け持つ関数の `todo!()` を本体に書き換える。完了のときに、受け持つ関数に `todo!()` を残さない。
+- 作業を終えるときにファイルに `todo!()` が一つも残っていなければ、その作業が許可とコメントを消す。一つのファイルの関数を複数の作業が受け持つとき（10-08 の `runtime/heap/ctx.rs` など）は、最後に `todo!()` を書き換えた作業が消す。`todo!()` のないファイルに許可が残っていると、`scripts/check.sh` が失敗する（「完了条件の共通の検査」の「仮置きの許可の残り」）。
+- 仮置きの許可を、道具が置いたファイル以外に書き足さない。作業が新しく書くコードで `todo!()` を使わない。
+- U1・U2 の作業をすべて終えた時点で、`src/` に `todo!()` と仮置きの許可は残らない（[すべての作業を終えた後に行うこと](docs/implement/90-after-completion.md)）。U1・U2 の完了の確認（90-after-completion）で、残っている仮置きのファイルと、それを受け持つ作業を調べる。
 
 ### 失敗を panic で表さない
 
-- 言語の規則で定めた失敗（除算の 0、IO の失敗など）は、`Stop` か `Err` の値として返す（02-09「panic 境界」）。
+- 言語の規則で定めた失敗（除算の 0、IO の失敗など）は、`Stop` か `Err` の値として返す（[ランタイム](docs/design/02-impl/02-09-runtime.md)の「panic 境界」）。
 - 型検査を通ったプログラムでは起きないはずの状態（表を引いて結果がない、値の種類が違う）は、脱糖とコード生成では `InternalError`、実行中は `Stop::Internal` として返す。
+- 振り分けのループの範囲の確かめは、読み込みのときの検証器を通したプログラムでも省かず、すべて実行中に行う（[ADR 0315](docs/design/decisions/0315-keep-dispatch-range-checks.md)）。検証器（`bytecode::verify`）は、テストでコード生成の出力を確かめる道具であり、本番の読み込みの経路（`pipeline`、`runtime::run`、CLI）からは呼ばない。
 - `unwrap`・`expect`・添字（`v[i]`）は lint で禁じている。`get` と `?`、`let ... else` で書く。
 
-### 大域の状態
+### `unsafe` の書き方
 
-処理系のどの段も、`static mut`・`thread_local!`・`OnceLock` などの大域の可変状態を持たない（ADR 0015）。例外は次の四つだけである。
+- `unsafe` を書いてよいのは、`runtime::heap` の内部の層だけである（[リポジトリとクレートの配置](docs/implement/00-common/00-01-repository-layout.md)の「`unsafe` を書いてよいモジュール」）。処理系の本体の外の例外として、テストのバイナリ `tests/call_allocations.rs` の確保を数える確保器にだけ書いてよい（後述の「`#[allow]` を書いてよい箇所」）。
+- `unsafe` のブロックは、操作を一つだけ含め、直前に `// SAFETY:` のコメントで、その操作が前提とする不変条件と、それがなぜ成り立つかを書く（lint が形だけを確かめ、中身は確認の観点で読む）。
+- 内部の層の各ファイルの先頭の `//!` のコメントに、そのファイルが守る不変条件の一覧を書く。`// SAFETY:` のコメントは、その一覧の項目を名指しして引く。
+- `unsafe fn` を公開の層に出さない。内部の層の `unsafe fn` には、呼び出し側が守る条件を `/// # Safety` の節で書く。
 
-- panic hook の記録（02-09「panic 境界」がスレッドローカルな記憶域を指定した。`runtime/panic.rs`）。
-- 解放の回数の計数（07-02「確保と解放」）。機能 `alloc-stats` を有効にしたビルドでだけ、`thread_local!` の計数器で数える。既定のビルドには含めない。
-- 初回リリース版の中断の印（ADR 0163）。`SIGINT`・`SIGTERM` を受けたことを、プロセス全体で一つの原子的な真偽値で表す。印を書くのはシグナルの登録の仕組みだけ、読むのは VM の実行の区切りだけである。
-- 初回リリース版のヒープの番号の計数器（ADR 0281）。ヒープを作るときに、プロセス全体で一つの原子的な 32 ビットの計数器から番号を一つ割り当てる。値を進めるのはヒープを作る関数だけであり、実行の結果に影響しない。
+### 回収しない区間と値の扱い
 
-初期化の後に変更しない表（組み込みの表）は、`const` か関数で表す。
+言語の値は `Value<'epoch>` の形で扱う（[ADR 0260](docs/design/decisions/0260-heap-and-unsafe-boundary.md) の決定 3・4）。`'epoch` は回収しない区間の寿命であり、区間の中の処理は `NoGcCtx<'epoch>` を受け取る。
 
-### 再帰の深さ
-
-利用者のプログラムの大きさや深さに比例して、処理系の再帰を深くしない（07-03）。
-
-- AST と、AST から作る中間表現を辿る処理は、再帰で書いてよい。構文解析器が AST の深さを 1000 に抑える（02-03「入れ子の深さ」）ので、再帰の深さはその定数倍に収まる。
-- 実行時の値を辿る処理（構造の `==`、値の解放、リストの走査）は、明示の積み重ね（`Vec`）で書く（02-08、02-09）。
-- 言語の関数の呼び出しで Rust の関数を入れ子に呼ばない（ADR 0016）。VM と参照インタプリタの両方に適用する。
-
-手で組んだ AST・IR をテストの入力にするときも、入れ子の深さは構文解析器の上限（1000）程度までにする。実際のプログラムはこの上限を超えないので、それより深い入力で処理系の再帰の深さを確かめる意味はない。
-
-処理系のテストは、深い入れ子と長いリストの場合を含める。スレッドのスタックの大きさを変えてテストを通すことはしない。
+- `Value<'epoch>` を、区間より長く生きる場所（構造体の欄、`static`、作業用のスレッドへ渡す値）に置かない。型の上でも置けないように作ってあり、置こうとするとコンパイルの誤りになる。
+- 安全点を越えて使う値は、安全点へ戻る前に VM の保存領域（レジスタ、枠、根の保存領域）に置く。保存領域から読み直した値は、新しい区間の `Value<'epoch>` になる。
+- `NoGcCtx<'epoch>` は回収の機能を持たない。回収を行えるのは、VM が安全点で呼ぶ関数だけである。
+- 別の実行のヒープの値を混ぜない。混ぜられないように型の印か検査付きの参照で作ってある（ADR 0260 の決定 5）。
+- 書き込みの障壁を差し込む位置（セルの書き込み、`Lazy` の結果の書き込み、タスクの結果の書き込み、継続の状態の変更）は、公開の層の決まった関数だけで書く（[ADR 0259](docs/design/decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md) の決定 7）。対象の中身を直接書き換える関数を、公開の層に加えない。
 
 ### 言語の値を作る経路
 
-言語の値のヒープの対象は、`runtime::heap::Heap` の関数だけで作る（ADR 0078）。10-08 の専用の参照の型（`StrRef` など）は、ランタイムのモジュールの外から作れないようにしてある。
+言語の値のヒープの対象は、`runtime::heap` の公開の層の関数（`NoGcCtx` が持つ関数）だけで作る。対象を指す値は、`runtime::heap` の外から作れないようにしてある。最小実行版の「`runtime::heap::Heap` の関数だけで作る」（[ADR 0078](docs/design/decisions/0078-reference-counting-in-minimal.md)）を、この形に改める。
+
+### 組み込みの関数の書き方
+
+組み込みの関数は、型付きの形で書く（[ADR 0261](docs/design/decisions/0261-typed-builtin-interface.md)）。詳細は 10-11 で凍結する。
+
+- 実装者は、名前と型の付いた引数を受け取る関数と、その宣言だけを書く。引数の読み出しと登録の表は、`macro_rules!` による宣言のマクロが宣言から作る。内部の共通の形（`Ctx` と引数を受け取り、応答か停止を返す関数）を直接書かない。
+- 関数は、権限に合った文脈を受け取る。純粋な関数は、時計・乱数・リソースに触れず、待つ・タスクの起動・終了を返せない文脈を受け取る。
+- 値を作る関数は、確保の前に大きさを確かめる（[ADR 0049](docs/design/decisions/0049-size-limit-for-built-values.md)）。確かめた長さを受け取る確保の関数か、上限付きの構築器を使う。外部のバイト列から文字列の値を作るときは、UTF-8 を確かめる文字列の値の API を通す。
+- 作業用のスレッドに渡す仕事と結果は `Send + 'static` の型にし、言語の値を含めない。完了を言語の値に変える処理は、環境を捕えない `fn` ポインタで書く。待つ間に要る言語の値は、閉包に捕えず、枠のレジスタに残す。
+- 完了の保存、起動する関数の登録、取り消しとの競合、リソースの返却は、共通の部分が行う。個々の組み込みの関数に書かない（[ADR 0266](docs/design/decisions/0266-task-and-resource-state-machines.md)）。
+
+### 大域の状態
+
+処理系のどの段も、`static mut`・`thread_local!`・`OnceLock` などの大域の可変状態を持たない（[ADR 0015](docs/design/decisions/0015-shared-program-per-execution-state.md)）。例外は次の四つだけである。
+
+- panic hook の記録（02-09「panic 境界」がスレッドローカルな記憶域を指定した。`runtime/panic.rs`）。
+- 解放の回数の計数（07-02「確保と解放」）。機能 `alloc-stats` を有効にしたビルドでだけ、`thread_local!` の計数器で数える。既定のビルドには含めない。
+- 初回リリース版の中断の印（ADR 0163。`crates/benitoite/src/runtime/run/interrupt.rs`）。`SIGINT`・`SIGTERM` を受けたことを、プロセス全体で一つの原子的な真偽値で表す。印を書くのはシグナルの登録の仕組みだけ、読むのは VM の実行の区切りだけである。
+- ヒープの番号を割り当てる計数器（プロセスで一つの `AtomicU32`）。`Heap::new` だけが増やす（[ADR 0281](docs/design/decisions/0281-heap-number-in-slot-and-contract-safety.md)、10-08「根の保存領域」）。
+
+ヒープは実行ごとに持ち、大域の確保器の状態を作らない。回収の要求と予算は実行ごとの状態に置く。
+
+### 再帰の深さ
+
+最小実行版の規約のとおりとする。
+
+- AST と、AST から作る中間表現を辿る処理は、再帰で書いてよい。
+- 実行時の値を辿る処理（構造の `==`、マーク、参照カウントの解放の連鎖、到達可能性の計算、リストの走査）は、明示の積み重ね（`Vec`）で書く。
+- 言語の関数の呼び出しで Rust の関数を入れ子に呼ばない（[ADR 0016](docs/design/decisions/0016-calls-off-go-stack.md)）。VM と参照インタプリタの両方に適用する。
+- 処理系のテストは、深い入れ子と長いリストの場合を含める。スレッドのスタックの大きさを変えてテストを通すことはしない。
 
 ### 数値の変換
 
-`as` による数値の変換は、値が収まることが明らかな箇所（10-07 の命令の符号化など）に限る。そのほかは `u32::try_from` などを使い、失敗を処理系の不具合として扱う。
+`as` による数値の変換は、値が収まることが明らかな箇所（命令の符号化など）に限る。そのほかは `u32::try_from` などを使い、失敗を処理系の不具合として扱う。
 
 ### `#[allow]` を書いてよい箇所
 
-lint を個別に許す `#[allow(...)]` は、次の箇所だけに書き、許す理由をコメントで書く。
+lint を個別に許す `#[allow(...)]` は、次の箇所だけに書き、許す理由をコメントで書く。最小実行版の表からの変更は、`runtime::heap` の内部の層の行と `todo!()` の仮置きの行を加え、`src/lib.rs` の行を作業の途中の間だけに限ったことである。
 
 | 箇所 | 許す lint | 理由 |
 |---|---|---|
-| `src/lib.rs` | `dead_code` | 作業の途中では、後の作業が使う欄が読まれない。T24 で外す |
-| テストのモジュール（`#[cfg(test)] mod tests`）と `tests/` の各ファイル | `clippy::unwrap_used`・`clippy::expect_used`・`clippy::panic`・`clippy::indexing_slicing`・`clippy::arithmetic_side_effects` | テストの失敗は panic で表す（07-03 は、テストのコードでこれらを許してよいとした） |
-| `src/cli/mod.rs` と `src/runtime/real_io.rs` の `BENITOITE_DEV_PANIC` の処理 | `clippy::panic` | 処理系の不具合の報告をテストするために、意図して panic を起こす（10-09） |
+| `src/runtime/heap/` の内部の層のファイル（10-08 がファイルを指定する） | `unsafe_code` | 確保器と生のポインタを扱う（ADR 0260）。公開の層のファイルには書かない |
+| `src/lib.rs` | `dead_code` | 作業の途中では、後の作業が使う欄が読まれない。C01 で置き、U1・U2 を終えた後に外す（90-after-completion の「移行の締めの残り」） |
+| `docs/implement/tools/extract_interfaces.py place` が `todo!()` の仮置きを置いたファイルの先頭（道具が置く。前述の「`todo!()` の仮置き」） | `clippy::todo`・`unused_variables` | 後の作業が本体を書くまで、置いた直後のクレートをコンパイルでき lint を通るようにする。そのファイルの `todo!()` をすべて書き換えた作業が消す |
+| テストのモジュール（`#[cfg(test)] mod tests`）と `tests/` の各ファイル | `clippy::unwrap_used`・`clippy::expect_used`・`clippy::panic`・`clippy::indexing_slicing`・`clippy::arithmetic_side_effects` | テストの失敗は panic で表す |
+| `tests/call_allocations.rs`（R15 の、普通の呼び出しと戻りで確保がないことを確かめるテスト） | `unsafe_code` | 確保を数える `#[global_allocator]` は `unsafe impl GlobalAlloc` を要する。中身は `std::alloc::System` へ委ねて数えるだけとする（[ADR 0313](docs/design/decisions/0313-vm-performance-recovery-before-stage-2.md) の決定 5） |
+| `src/cli/`、IO 実行器、`src/runtime/run.rs` の第 1 段の IoServices を包む型（R26 が IO 実行器へ移す）の `BENITOITE_DEV_PANIC` の処理 | `clippy::panic` | 処理系の不具合の報告をテストするために、意図して panic を起こす |
 | `src/bytecode/program.rs` の `assert_shareable` | `dead_code` | 呼ばれない関数で、型の性質をコンパイルの時点で確かめる |
-| 初回リリース版の実装プランの道具（`docs/implement/tools/extract_interfaces.py place`）が `todo!()` の仮置きを置いたファイルの先頭 | `clippy::todo`・`unused_variables` | 後の作業が本体を書くまで、インターフェースを置いた直後のクレートをコンパイルでき lint を通るようにする。そのファイルの `todo!()` をすべて本体に書き換えた作業が、許可とコメントを消す（初回リリース版の実装プランの 00-02「`todo!()` の仮置き」） |
 
-これ以外の箇所で許す必要が生じたら、作業を止めて報告する。
+振り分けのループで範囲の確かめを省くための `unsafe` は許さない（[ADR 0315](docs/design/decisions/0315-keep-dispatch-range-checks.md)）。表にない箇所で許す必要が生じたら、作業を止めて報告する。
 
 ### 文言
 
-診断・報告の文言は英語で書き、`diag::codes` の表と `cli::text` にまとめる（ADR 0033）。処理を書く関数の中に英語の文を直接書かない。次のものは診断の表の型板ではなく、型板に埋める値やほかの報告の文なので、それぞれのモジュールの `text` という子のモジュールに定数としてまとめる。
-
-- 構文の誤り（E0201）の `{expected}` と `{found}` に埋める字句と構文の呼び名（`parser` の `text`。T11・T12）
-- 種類の合わない名前（E0304）の `{found_kind}` と `{expected_kind}` に埋める種類の呼び名（`resolve` の `text`。T13）
-- `IoError.message` の文（`builtins::io_error` の `text`。T10）
-- 読み込みの誤り（E0101）の `reason` に埋める、ファイルが大きすぎることの文（`pipeline` の `text`。T24）
-
-`Stop::Internal` と `InternalError` の説明の文字列は、処理系の不具合を調べるためのもので、診断の表にも `text` にも載せない。
+診断・報告の文言は英語で書き、`diag::codes` の表と `cli::text` にまとめる（[ADR 0033](docs/design/decisions/0033-english-diagnostic-messages.md)）。処理を書く関数の中に英語の文を直接書かない。型板に埋める値やほかの報告の文は、それぞれのモジュールの `text` という子のモジュールに定数としてまとめる（最小実行版の規約のとおり）。`Stop::Internal` と `InternalError` の説明の文字列は、処理系の不具合を調べるためのもので、診断の表にも `text` にも載せない。
 
 ### コメントと名前
 
-- 識別子は英語で書く。コメントは日本語で書く。設計者は処理系を読んで学ぶ（00-01「目的と設計原則」）ので、コメントは「何をするか」より「なぜそうするか」を書き、根拠になる設計書の章と節を `（設計書 02-08「実行の手順」）` の形で示す。
+- 識別子は英語で書く。コメントは日本語で書く。コメントは「何をするか」より「なぜそうするか」を書き、根拠になる設計書の章と節を `（設計書 02-08「実行の手順」）` の形で示す。
 - 各モジュールの先頭に `//!` のコメントを置き、そのモジュールの役割と、対応する設計書の章を書く。
 - 公開の関数と型には `///` のコメントを書く。10-interfaces のコメントはそのまま残す。
 

@@ -1,449 +1,920 @@
-//! 宣言の検査（設計書 02-05「宣言の検査」）。
-//!
-//! 型の宣言から代数的データ型の表を作り、等値の型の要約を求め（01-06「等値の型」、ADR 0082）、
-//! 関数と構成子の宣言の型（`Scheme`）を決め、`main` の形を確かめる（01-07「プログラムの入口」）。
-//! 型を書いた箇所（`TypeExpr`）から `Ty` への変換も受け持ち、本体の型注釈の変換（`generate.rs`）にも使う。
-//!
-//! 型の宣言と関数のシグネチャで誤りを報告した宣言は「壊れた宣言」として記録する。壊れた宣言を
-//! 使う箇所の型は誤りの型にし、壊れた関数の本体は検査しない。宣言の誤りから派生した誤りを
-//! 本体で報告しないためである（ADR 0024 の趣旨を宣言に広げる。作業 T15 で決めた）。
+//! 宣言の検査と型の要約（設計書 02-05「検査の単位と手順」「宣言の検査」）。
 
-use std::collections::{BTreeMap, BTreeSet, HashSet};
-
-use super::MainInfo;
-use crate::base::{BindingId, BindingMap, NodeId, Span};
+use super::limits::{MAX_TYPE_DEPTH, TypeBudget, TypeLimit};
+use super::{MainInfo, TypeckOutput};
+use crate::base::{BindingId, BindingMap, ModuleId, NodeId, SourceTable, Span};
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
+use crate::modules::{ModuleKind, ModuleTable};
 use crate::resolve::{BindingKind, ResolveOutput};
-use crate::syntax::ast::{FnDecl, FnType, Item, NamedType, Program, TypeDecl, TypeExpr, UsesList};
-use crate::types::{
-    AdtDef, AdtTable, CtorDef, EffVar, EffectSet, EqSummary, ParamConstraint, Scheme, Ty, TyCon,
-    TypeParamInfo,
+use crate::syntax::ast::*;
+use crate::types::builtin::{
+    BUILTIN_EFFECTS, BuiltinEffectId, BuiltinTypeClass, BuiltinTypeId as B, find_builtin_effect,
 };
+use crate::types::*;
+use std::collections::{BTreeMap, BTreeSet};
 
-/// 呼び出しの診断の補助の位置に使う、宣言の位置（02-05「制約の種類」の「関連する位置」）。
-#[derive(Clone, Debug)]
-pub(super) struct Site {
-    /// 関数の名前、または構成子の名前の位置
-    pub name: Span,
-    /// 引数の型を書いた位置（構成子では引数の型の位置）
-    pub params: Vec<Span>,
+/// 定義の型パラメータの番号。囲む定義の分を先に置く（実装プラン 10-05）。
+#[derive(Clone, Default)]
+pub(super) struct Scope {
+    pub params: BindingMap<(u32, ParamKind)>,
+    pub effects: BindingMap<u32>,
 }
 
-/// 宣言の検査の結果。本体の検査はこれを読むだけで、書き換えない。
-#[derive(Debug, Default)]
-pub(super) struct Decls {
-    pub decl_types: BindingMap<Scheme>,
-    pub adts: AdtTable,
-    /// 壊れた宣言（関数、型、構成子）の束縛の番号
-    pub broken: HashSet<BindingId>,
-    pub sites: BindingMap<Site>,
-    /// 利用者の型の宣言の型パラメータの数（E0410 の検査に使う）
-    pub adt_arity: BTreeMap<BindingId, usize>,
-    pub main: Option<MainInfo>,
-}
-
-/// 型を書いた箇所を `Ty` に変える文脈。名前は名前解決の参照の表で引く（作業 T15「宣言の検査」）。
-#[derive(Clone, Copy)]
-pub(super) struct TypeCx<'a> {
+/// 宣言の段の文脈。T1〜T3 が宣言を追加・検査するための共通の入口。
+pub(super) struct Decls<'a> {
+    pub modules: &'a ModuleTable,
+    pub asts: &'a [Module],
+    pub sources: &'a SourceTable,
     pub resolved: &'a ResolveOutput,
-    pub adt_arity: &'a BTreeMap<BindingId, usize>,
+    pub out: TypeckOutput,
+    pub diagnostics: Vec<Diagnostic>,
+    pub scopes: BTreeMap<NodeId, Scope>,
+    pub invalid: BTreeSet<BindingId>,
+    aliases: BindingMap<AliasDecl>,
+    alias_types: BindingMap<Ty>,
+    expanding: BTreeSet<BindingId>,
+    ty_recursion: usize,
+    type_limit: bool,
+    pub alias_spans: Vec<Span>,
 }
 
-impl TypeCx<'_> {
-    fn kind_of(&self, node: NodeId) -> Option<BindingKind> {
-        let b = self.resolved.refs.get(node)?;
-        self.resolved.bindings.get(*b).map(|b| b.kind)
+pub(super) fn unit() -> Ty {
+    Ty::Con(TyCon::Builtin(B::UNIT), vec![])
+}
+pub(super) fn basic(id: B) -> Ty {
+    Ty::Con(TyCon::Builtin(id), vec![])
+}
+pub(super) fn scheme(params: Vec<Ty>, ret: Ty) -> Scheme {
+    Scheme {
+        type_params: vec![],
+        effect_params: vec![],
+        class_constraints: vec![],
+        params,
+        ret,
+        effects: EffectSet::empty(),
+        wrote_io_all: false,
     }
+}
 
-    /// 型を変換する。誤りを報告したら `None` を返す。一つの誤りで止めず、型の全体を辿って
-    /// 独立した誤りをすべて報告する（ADR 0024）。型の入れ子は構文解析器の上限（1000）まで深くなりうる
-    /// ので、再帰の経路の関数（`convert`・`named`・`convert_all`）は、診断を作る処理などを別の関数に分け、
-    /// 一段の枠を小さく保つ（実装プラン 00-02「再帰の深さ」）。
-    pub fn convert(&self, t: &TypeExpr, diags: &mut Vec<Diagnostic>) -> Option<Ty> {
-        match t {
-            TypeExpr::Named(n) => self.named(n, diags),
-            TypeExpr::Fn(f) => self.fn_type(f, diags),
-            TypeExpr::Paren(p) => self.convert(&p.inner, diags),
-            // 構文の誤りのある AST は型検査に来ない（ADR 0019）。
-            TypeExpr::Error(_) => None,
-        }
+impl Decls<'_> {
+    pub fn binding(&self, node: NodeId) -> Option<BindingId> {
+        self.resolved.decls.get(node).copied()
     }
-
-    /// 型の並びを変換する。どれかが誤りなら `None`（残りも辿って誤りを報告する）。
-    fn convert_all(&self, ts: &[TypeExpr], diags: &mut Vec<Diagnostic>) -> Option<Vec<Ty>> {
-        let mut out = Some(Vec::with_capacity(ts.len()));
-        for t in ts {
-            match (self.convert(t, diags), out.as_mut()) {
-                (Some(ty), Some(v)) => v.push(ty),
-                _ => out = None,
-            }
-        }
-        out
+    pub fn reference(&self, node: NodeId) -> Option<BindingId> {
+        self.resolved.refs.get(node).copied()
     }
-
-    fn fn_type(&self, f: &FnType, diags: &mut Vec<Diagnostic>) -> Option<Ty> {
-        let params = self.convert_all(&f.params, diags);
-        let ret = self.convert(&f.ret, diags);
-        let effects = self.convert_uses(f.uses.as_ref(), diags);
-        Some(Ty::func(params?, ret?, effects?))
+    pub fn diagnostic(&mut self, code: DiagCode, span: Span) {
+        self.diagnostics
+            .push(DiagBuilder::new(code).primary(span).build());
     }
-
-    fn named(&self, n: &NamedType, diags: &mut Vec<Diagnostic>) -> Option<Ty> {
-        let args = self.convert_all(&n.args, diags);
-        match self.named_head(n, diags)? {
-            Ok(c) => Some(Ty::Con(c, args?)),
-            Err(index) => Some(Ty::Param(index)),
-        }
-    }
-
-    /// 名前の型の型構成子（型パラメータなら `Err(index)`）を決め、型引数の個数を検査する
-    /// （01-05「型の宣言」）。型パラメータは型引数をとらない。
-    fn named_head(&self, n: &NamedType, diags: &mut Vec<Diagnostic>) -> Option<Result<TyCon, u32>> {
-        let (expected, head) = match self.kind_of(n.id)? {
-            BindingKind::Type(c) => {
-                let arity = match (c.builtin_arity(), c) {
-                    (Some(a), _) => a,
-                    (None, TyCon::Adt(b)) => *self.adt_arity.get(&b)?,
-                    (None, _) => return None,
-                };
-                (arity, Ok(c))
-            }
-            BindingKind::TypeParam { index } => (0, Err(index)),
-            // 種類の合わない名前は名前解決が報告する（02-04）。
-            BindingKind::TopFn
-            | BindingKind::PreludeFn { .. }
-            | BindingKind::Builtin(_)
-            | BindingKind::Ctor { .. }
-            | BindingKind::Param
-            | BindingKind::Let
-            | BindingKind::LambdaParam
-            | BindingKind::PatternVar
-            | BindingKind::EffectVar { .. }
-            | BindingKind::Effect
-            | BindingKind::Module(_) => return None,
-        };
-        if n.args.len() != expected {
-            diags.push(
-                DiagBuilder::new(DiagCode::E0410)
-                    .arg("name", n.name.text.clone())
-                    .arg("expected", expected.to_string())
-                    .arg("found", n.args.len().to_string())
-                    .primary(n.span)
-                    .build(),
-            );
-            return None;
-        }
-        Some(head)
-    }
-
-    /// `uses` の並びをエフェクトの集合にする。エフェクト変数の規則のうち、並びの中で決まる
-    /// E0417（変数が二つ以上）と E0419（同じ名前が二度）を検査する（01-06「関数の型とエフェクト」）。
-    pub fn convert_uses(
-        &self,
-        uses: Option<&UsesList>,
-        diags: &mut Vec<Diagnostic>,
-    ) -> Option<EffectSet> {
-        let mut set = EffectSet::empty();
-        let Some(uses) = uses else {
-            return Some(set);
-        };
-        let mut ok = true;
-        let mut seen: Vec<BindingId> = Vec::new();
-        let mut var_count: usize = 0;
-        for r in &uses.effects {
-            let Some(b) = self.resolved.refs.get(r.id).copied() else {
-                ok = false;
+    pub fn parameters(
+        &mut self,
+        params: &[TypeParamDecl],
+        mut scope: Scope,
+        mut s: Scheme,
+        allowed: bool,
+    ) -> (Scope, Scheme) {
+        for p in params {
+            let Some(id) = self.binding(p.id) else {
                 continue;
             };
-            if seen.contains(&b) {
-                diags.push(
-                    DiagBuilder::new(DiagCode::E0419)
-                        .arg("name", r.name.text.clone())
-                        .primary(r.span)
-                        .build(),
-                );
-                ok = false;
-                continue;
-            }
-            seen.push(b);
-            match self.resolved.bindings.get(b).map(|b| b.kind) {
-                Some(BindingKind::Effect) => set.io = true,
-                Some(BindingKind::EffectVar { index }) => {
-                    var_count = var_count.saturating_add(1);
-                    set.insert_var(EffVar(index));
+            match p.kind {
+                TypeParamKind::Effect => {
+                    let i = u32::try_from(s.effect_params.len()).unwrap_or(u32::MAX);
+                    scope.effects.insert(id, i);
+                    s.effect_params.push(p.name.text.clone());
                 }
-                Some(
-                    BindingKind::TopFn
-                    | BindingKind::PreludeFn { .. }
-                    | BindingKind::Builtin(_)
-                    | BindingKind::Ctor { .. }
-                    | BindingKind::Param
-                    | BindingKind::Let
-                    | BindingKind::LambdaParam
-                    | BindingKind::PatternVar
-                    | BindingKind::Type(_)
-                    | BindingKind::TypeParam { .. }
-                    | BindingKind::Module(_),
-                )
-                | None => ok = false,
-            }
-        }
-        if var_count > 1 {
-            diags.push(DiagBuilder::new(DiagCode::E0417).primary(uses.span).build());
-            ok = false;
-        }
-        ok.then_some(set)
-    }
-}
-
-/// 宣言の検査を行う（02-05「宣言の検査」）。順序は作業 T15「宣言の検査」に従う。
-pub(super) fn check_decls(
-    prelude: &[Program],
-    user: &Program,
-    resolved: &ResolveOutput,
-    diags: &mut Vec<Diagnostic>,
-) -> Decls {
-    let mut d = Decls::default();
-    add_prelude_adts(&mut d, resolved);
-
-    // 型は宣言の順序によらず互いを参照できる（01-05「型の宣言」）ので、型引数の個数の検査のために、
-    // 先にすべての型の宣言の型パラメータの数を集める。
-    for item in &user.items {
-        if let Item::Type(td) = item
-            && let Some(b) = resolved.decls.get(td.id)
-        {
-            let arity = td.type_params.iter().filter(|p| !p.is_effect).count();
-            d.adt_arity.insert(*b, arity);
-        }
-    }
-
-    for item in &user.items {
-        if let Item::Type(td) = item {
-            check_type_decl(&mut d, resolved, td, diags);
-        }
-    }
-    compute_eq_summaries(&mut d.adts);
-    add_ctor_schemes(&mut d);
-
-    for program in prelude {
-        for item in &program.items {
-            if let Item::Fn(f) = item {
-                check_fn_sig(&mut d, resolved, f, diags);
-            }
-        }
-    }
-    for item in &user.items {
-        if let Item::Fn(f) = item {
-            check_fn_sig(&mut d, resolved, f, diags);
-        }
-    }
-    d.main = check_main(&d, user, resolved, diags);
-    d
-}
-
-/// `Option` と `Result` の代数的データ型（01-05「prelude が定める型」）。タグは 02-07 の定め。
-/// 構成子の束縛の番号は名前解決の `PreludeBindings` から取る。
-fn add_prelude_adts(d: &mut Decls, resolved: &ResolveOutput) {
-    let p = &resolved.prelude;
-    let ctor = |name: &str, binding: Option<BindingId>, tag: u32, fields: Vec<Ty>| {
-        binding.map(|binding| CtorDef {
-            name: name.to_string(),
-            binding,
-            tag,
-            fields,
-        })
-    };
-    let option_ctors = [
-        ctor("Some", p.some, 0, vec![Ty::Param(0)]),
-        ctor("None", p.none, 1, Vec::new()),
-    ];
-    let result_ctors = [
-        ctor("Ok", p.ok, 0, vec![Ty::Param(0)]),
-        ctor("Err", p.err, 1, vec![Ty::Param(1)]),
-    ];
-    d.adts.adts.push(AdtDef {
-        con: TyCon::Option,
-        name: "Option".to_string(),
-        type_params: vec!["T".to_string()],
-        ctors: option_ctors.into_iter().flatten().collect(),
-        eq_summary: EqSummary::default(),
-    });
-    d.adts.adts.push(AdtDef {
-        con: TyCon::Result,
-        name: "Result".to_string(),
-        type_params: vec!["T".to_string(), "E".to_string()],
-        ctors: result_ctors.into_iter().flatten().collect(),
-        eq_summary: EqSummary::default(),
-    });
-}
-
-/// 利用者の型の宣言を一つ検査し、代数的データ型の表に加える。
-fn check_type_decl(
-    d: &mut Decls,
-    resolved: &ResolveOutput,
-    td: &TypeDecl,
-    diags: &mut Vec<Diagnostic>,
-) {
-    let Some(b) = resolved.decls.get(td.id).copied() else {
-        return;
-    };
-    let mut broken = false;
-    if td.variants.is_empty() {
-        diags.push(
-            DiagBuilder::new(DiagCode::E0411)
-                .arg("name", td.name.text.clone())
-                .primary(td.name.span)
-                .help("add")
-                .build(),
-        );
-        broken = true;
-    }
-    let tcx = TypeCx {
-        resolved,
-        adt_arity: &d.adt_arity,
-    };
-    let mut ctors = Vec::with_capacity(td.variants.len());
-    let mut sites = Vec::with_capacity(td.variants.len());
-    for (tag, v) in td.variants.iter().enumerate() {
-        let mut fields = Vec::with_capacity(v.fields.len());
-        for f in &v.fields {
-            match tcx.convert(f, diags) {
-                Some(ty) => fields.push(ty),
-                None => {
-                    // 壊れた型の宣言の構成子は使われないので、欄の型は仮の型にしておく。
-                    broken = true;
-                    fields.push(Ty::unit());
+                TypeParamKind::Value | TypeParamKind::Ctor { .. } => {
+                    let i = u32::try_from(s.type_params.len()).unwrap_or(u32::MAX);
+                    let kind = match p.kind {
+                        TypeParamKind::Ctor { arity } => ParamKind::Ctor { arity },
+                        TypeParamKind::Value | TypeParamKind::Effect => ParamKind::Value,
+                    };
+                    let mut builtin = None;
+                    for c in &p.constraints {
+                        match c {
+                            ConstraintRef::Builtin { kind, .. } => {
+                                if builtin != Some(BuiltinConstraint::Key) {
+                                    builtin = Some(*kind);
+                                }
+                            }
+                            ConstraintRef::Class(c) => {
+                                if let Some(class) = self.reference(c.id) {
+                                    s.class_constraints
+                                        .push(ClassConstraint { param: i, class });
+                                }
+                            }
+                        }
+                    }
+                    scope.params.insert(id, (i, kind));
+                    s.type_params.push(TypeParamInfo {
+                        name: p.name.text.clone(),
+                        kind,
+                        builtin,
+                    });
                 }
             }
         }
-        let Some(cb) = resolved.decls.get(v.id).copied() else {
-            broken = true;
-            continue;
-        };
-        sites.push((
-            cb,
-            Site {
-                name: v.name.span,
-                params: v.fields.iter().map(TypeExpr::span).collect(),
-            },
-        ));
-        ctors.push(CtorDef {
-            name: v.name.text.clone(),
-            binding: cb,
-            tag: u32::try_from(tag).unwrap_or(u32::MAX),
-            fields,
-        });
+        super::traits::check_parameters(self, params, &scope, &s, allowed);
+        (scope, s)
     }
-    for (cb, site) in sites {
-        d.sites.insert(cb, site);
-        if broken {
-            d.broken.insert(cb);
+    pub fn effect_name(&self, id: BindingId) -> Option<EffectName> {
+        let binding = self.resolved.bindings.get(id)?;
+        if let BindingKind::BuiltinEffect(e) = binding.kind {
+            return Some(EffectName::Builtin(e));
         }
-    }
-    if broken {
-        d.broken.insert(b);
-    }
-    d.adts.adts.push(AdtDef {
-        con: TyCon::Adt(b),
-        name: td.name.text.clone(),
-        type_params: td
-            .type_params
-            .iter()
-            .filter(|p| !p.is_effect)
-            .map(|p| p.name.text.clone())
-            .collect(),
-        ctors,
-        eq_summary: EqSummary::default(),
-    });
-}
-
-/// 型が関数の型か中身を見せない prelude の型を含む条件（01-06「等値の型」の手順 2）。
-enum Cond {
-    /// 型引数によらず含む
-    Always,
-    /// 集合の型パラメータのどれかに与えた型引数が含むときに含む
-    On(BTreeSet<u32>),
-}
-
-impl Cond {
-    fn never() -> Cond {
-        Cond::On(BTreeSet::new())
-    }
-
-    fn join(self, other: Cond) -> Cond {
-        match (self, other) {
-            (Cond::Always, _) | (_, Cond::Always) => Cond::Always,
-            (Cond::On(mut a), Cond::On(b)) => {
-                a.extend(b);
-                Cond::On(a)
+        let module = self.modules.get(binding.module)?;
+        if matches!(module.kind, ModuleKind::Prelude | ModuleKind::Stdlib) {
+            let path: Vec<_> = module.name.0.iter().skip(1).map(String::as_str).collect();
+            if let Some(e) = find_builtin_effect(&path, &binding.name) {
+                return Some(EffectName::Builtin(e));
             }
         }
+        Some(EffectName::User(id))
     }
-}
-
-/// 構成子の引数の型 τ が含む条件を、現在の要約で求める（01-06「等値の型」の手順 2）。
-fn cond_of(ty: &Ty, adts: &AdtTable) -> Cond {
-    match ty {
-        Ty::Fn(_) => Cond::Always,
-        Ty::Param(i) => Cond::On(BTreeSet::from([*i])),
-        Ty::Con(c, args) => match c {
-            TyCon::Int | TyCon::Float | TyCon::String | TyCon::Char | TyCon::Bool | TyCon::Unit => {
-                Cond::never()
-            }
-            TyCon::IoError => Cond::Always,
-            TyCon::List => args
-                .iter()
-                .fold(Cond::never(), |acc, a| acc.join(cond_of(a, adts))),
-            TyCon::Option | TyCon::Result | TyCon::Adt(_) => {
-                let Some(def) = adts.get(*c) else {
-                    return Cond::never();
+    pub fn uses(&mut self, uses: Option<&UsesList>, scope: &Scope) -> (EffectSet, bool) {
+        let mut result = EffectSet::empty();
+        let mut all = false;
+        let mut variables = 0_u32;
+        if let Some(uses) = uses {
+            super::effects::check_uses(self, uses, scope);
+            for e in &uses.effects {
+                let Some(id) = self.reference(e.id) else {
+                    continue;
                 };
-                if def.eq_summary.always {
-                    return Cond::Always;
-                }
-                let mut acc = Cond::never();
-                for j in &def.eq_summary.depends_on {
-                    let arg = usize::try_from(*j).ok().and_then(|j| args.get(j));
-                    if let Some(arg) = arg {
-                        acc = acc.join(cond_of(arg, adts));
+                if let Some(index) = scope.effects.get(id) {
+                    variables = variables.saturating_add(1);
+                    result.insert_var(EffVar(*index));
+                } else if let Some(name) = self.effect_name(id) {
+                    if name == EffectName::Builtin(BuiltinEffectId::IO_ALL) {
+                        all = true;
+                        for (i, e) in BUILTIN_EFFECTS.iter().enumerate() {
+                            if e.in_io_all
+                                && let Ok(i) = u16::try_from(i)
+                            {
+                                result.insert_name(EffectName::Builtin(BuiltinEffectId(i)));
+                            }
+                        }
+                    } else {
+                        result.insert_name(name);
                     }
                 }
-                acc
             }
-        },
+            if variables > 1 {
+                self.diagnostic(DiagCode::E0417, uses.span);
+            }
+        }
+        (result, all)
+    }
+    pub fn ty(&mut self, expr: &TypeExpr, scope: &Scope) -> Ty {
+        if self.type_limit {
+            return unit();
+        }
+        // 型の構文を辿る再帰も制限する。別名の依存は先に繰り返しで辿り、
+        // キャッシュを作るので、宣言の数には比例しない（02-03「入れ子の深さ」）。
+        if self.ty_recursion == MAX_TYPE_DEPTH {
+            self.type_limit(TypeLimit::Depth, expr.span());
+            return unit();
+        }
+        self.ty_recursion = self.ty_recursion.saturating_add(1);
+        let ty = self.ty_inner(expr, scope);
+        self.ty_recursion = self.ty_recursion.saturating_sub(1);
+        if self.type_limit { unit() } else { ty }
+    }
+    fn type_limit(&mut self, limit: TypeLimit, span: Span) {
+        if !self.type_limit {
+            self.diagnostics.push(limit.diagnostic(span));
+            self.type_limit = true;
+        }
+    }
+    fn ty_inner(&mut self, expr: &TypeExpr, scope: &Scope) -> Ty {
+        match expr {
+            TypeExpr::Paren(t) => self.ty(&t.inner, scope),
+            TypeExpr::Error(_) => unit(),
+            TypeExpr::Fn(f) => {
+                let mut budget = TypeBudget::default();
+                if let Err(limit) = budget.enter(1) {
+                    self.type_limit(limit, f.span);
+                    return unit();
+                }
+                let mut params = Vec::new();
+                for t in &f.params {
+                    let ty = self.ty(t, scope);
+                    if self.type_limit {
+                        return unit();
+                    }
+                    if let Err(limit) = budget.substituted(&ty, &[], 2) {
+                        self.type_limit(limit, t.span());
+                        return unit();
+                    }
+                    params.push(ty);
+                }
+                let ret = self.ty(&f.ret, scope);
+                if self.type_limit {
+                    return unit();
+                }
+                if let Err(limit) = budget.substituted(&ret, &[], 2) {
+                    self.type_limit(limit, f.ret.span());
+                    return unit();
+                }
+                let (effects, _) = self.uses(f.uses.as_ref(), scope);
+                Ty::Fn(Box::new(FnTy {
+                    params,
+                    ret,
+                    effects,
+                }))
+            }
+            TypeExpr::Named(t) => self.named(t, scope),
+        }
+    }
+    fn named(&mut self, t: &NamedType, scope: &Scope) -> Ty {
+        let Some(id) = self.reference(t.id) else {
+            return unit();
+        };
+        let Some(binding) = self.resolved.bindings.get(id) else {
+            return unit();
+        };
+        let alias = matches!(binding.kind, BindingKind::Alias);
+        let mut budget = TypeBudget::default();
+        if !alias && let Err(limit) = budget.enter(1) {
+            self.type_limit(limit, t.span);
+            return unit();
+        }
+        let mut args = Vec::new();
+        for arg in &t.args {
+            let ty = self.ty(arg, scope);
+            if self.type_limit {
+                return unit();
+            }
+            if let Err(limit) = budget.substituted(&ty, &[], if alias { 1 } else { 2 }) {
+                self.type_limit(limit, arg.span());
+                return unit();
+            }
+            args.push(ty);
+        }
+        if let Some((index, kind)) = scope.params.get(id) {
+            let (index, kind) = (*index, *kind);
+            let n = match kind {
+                ParamKind::Value => 0,
+                ParamKind::Ctor { arity } => arity,
+            };
+            if !self.arity(
+                &binding.name,
+                n,
+                args.len(),
+                t.span,
+                matches!(kind, ParamKind::Ctor { .. }),
+            ) {
+                return unit();
+            }
+            return match kind {
+                ParamKind::Value => Ty::Param(index),
+                ParamKind::Ctor { .. } => Ty::App(index, args),
+            };
+        }
+        let (con, arity) = match binding.kind {
+            BindingKind::BuiltinType(b) => {
+                (TyCon::Builtin(b), b.def().map_or(0, |d| u32::from(d.arity)))
+            }
+            BindingKind::Data | BindingKind::Record => (
+                TyCon::Adt(id),
+                self.out.adts.get(id).map_or(0, |d| {
+                    u32::try_from(d.type_params.len()).unwrap_or(u32::MAX)
+                }),
+            ),
+            BindingKind::TypeParam { index, .. } => return Ty::Param(index),
+            BindingKind::Alias => {
+                self.alias_spans.push(t.span);
+                let Some(alias) = self.aliases.get(id).cloned() else {
+                    return unit();
+                };
+                if !self.arity(
+                    &binding.name,
+                    u32::try_from(alias.type_params.len()).unwrap_or(u32::MAX),
+                    args.len(),
+                    t.span,
+                    false,
+                ) {
+                    return unit();
+                }
+                if !self.expanding.insert(id) {
+                    return unit();
+                }
+                if self.alias_types.get(id).is_none() {
+                    let scope = self.scopes.get(&alias.id).cloned().unwrap_or_default();
+                    let ty = self.ty(&alias.ty, &scope);
+                    if !self.type_limit {
+                        self.alias_types.insert(id, ty);
+                    }
+                }
+                self.expanding.remove(&id);
+                let Some(ty) = self.alias_types.get(id) else {
+                    return unit();
+                };
+                // 置換で同じ引数が何度も複製される場合も、複製する前に上限を検査する。
+                if let Err(limit) = TypeBudget::default().substituted(ty, &args, 1) {
+                    self.type_limit(limit, t.span);
+                    return unit();
+                }
+                return ty.subst(&args.into_iter().map(TypeArg::Ty).collect::<Vec<_>>(), &[]);
+            }
+            BindingKind::Fn
+            | BindingKind::BuiltinFn(_)
+            | BindingKind::ImplFn { .. }
+            | BindingKind::Const
+            | BindingKind::Field { .. }
+            | BindingKind::Ctor { .. }
+            | BindingKind::Trait
+            | BindingKind::Method { .. }
+            | BindingKind::Effect
+            | BindingKind::BuiltinEffect(_)
+            | BindingKind::Op { .. }
+            | BindingKind::Module(_)
+            | BindingKind::NamespaceRoot
+            | BindingKind::EffectVar { .. }
+            | BindingKind::Local(_) => return unit(),
+        };
+        if !self.arity(&binding.name, arity, args.len(), t.span, true) {
+            return unit();
+        }
+        Ty::Con(con, args)
+    }
+    fn arity(&mut self, name: &str, expected: u32, found: usize, span: Span, ctor: bool) -> bool {
+        if usize::try_from(expected).ok() == Some(found) {
+            return true;
+        }
+        let code = if found == 0 && ctor {
+            DiagCode::E0426
+        } else {
+            DiagCode::E0410
+        };
+        self.diagnostics.push(
+            DiagBuilder::new(code)
+                .arg("name", name)
+                .arg("expected", expected.to_string())
+                .arg("found", found.to_string())
+                .primary(span)
+                .build(),
+        );
+        false
+    }
+    pub fn signature(&mut self, f: &FnDecl, scope: Scope, s: Scheme) -> Scheme {
+        let (scope, mut s) = self.parameters(&f.type_params, scope, s, true);
+        let mut budget = TypeBudget::default();
+        if let Err(limit) = budget.enter(1) {
+            self.type_limit(limit, f.name.span);
+            return s;
+        }
+        s.params.clear();
+        // 個々の引数が上限以内でも、関数型として合わせると超えることがある。
+        // 具体化で大きな関数型を作る前に、宣言の段で合計を制限する（02-03）。
+        for p in &f.params {
+            let ty = p.ty.as_ref().map_or_else(unit, |ty| self.ty(ty, &scope));
+            if !self.type_child(&mut budget, &ty, p.span) {
+                return s;
+            }
+            s.params.push(ty);
+        }
+        s.ret = self.ty(&f.ret, &scope);
+        if !self.type_child(&mut budget, &s.ret, f.ret.span()) {
+            return s;
+        }
+        let (effects, all) = self.uses(f.uses.as_ref(), &scope);
+        s.effects = effects;
+        s.wrote_io_all = all;
+        for (i, name) in s.effect_params.iter().enumerate() {
+            if !s
+                .params
+                .iter()
+                .any(|ty| has_effect(ty, u32::try_from(i).unwrap_or(u32::MAX)))
+            {
+                self.diagnostics.push(
+                    DiagBuilder::new(DiagCode::E0418)
+                        .arg("name", name)
+                        .primary(
+                            f.type_params
+                                .iter()
+                                .find(|p| p.kind == TypeParamKind::Effect && p.name.text == *name)
+                                .map_or(f.name.span, |p| p.name.span),
+                        )
+                        .build(),
+                );
+            }
+        }
+        self.scopes.insert(f.id, scope);
+        s
+    }
+    fn type_child(&mut self, budget: &mut TypeBudget, ty: &Ty, span: Span) -> bool {
+        if self.type_limit {
+            return false;
+        }
+        if let Err(limit) = budget.substituted(ty, &[], 2) {
+            self.type_limit(limit, span);
+            return false;
+        }
+        true
+    }
+    fn prepare_aliases(&mut self) {
+        // 宣言の順に依存しない。前方の別名を参照する長い連鎖でも、Rust の
+        // スタックを深くせず、依存先から上限以内の型を保存する（02-03）。
+        let ids: Vec<_> = self.aliases.iter().map(|(id, _)| id).collect();
+        for id in ids {
+            let mut pending = vec![(id, false)];
+            while let Some((id, ready)) = pending.pop() {
+                if self.alias_types.get(id).is_some() {
+                    continue;
+                }
+                let Some(alias) = self.aliases.get(id) else {
+                    continue;
+                };
+                if ready {
+                    let alias = alias.clone();
+                    let scope = self.scopes.get(&alias.id).cloned().unwrap_or_default();
+                    let ty = self.ty(&alias.ty, &scope);
+                    self.expanding.remove(&id);
+                    if self.type_limit {
+                        return;
+                    }
+                    self.alias_types.insert(id, ty);
+                    continue;
+                }
+                // 循環は名前解決が拒否するが、その前提が壊れてもここで再帰しない。
+                if !self.expanding.insert(id) {
+                    continue;
+                }
+                pending.push((id, true));
+                let mut types = vec![&alias.ty];
+                let mut dependencies = BTreeSet::new();
+                while let Some(ty) = types.pop() {
+                    match ty {
+                        TypeExpr::Named(t) => {
+                            if let Some(target) = self.reference(t.id)
+                                && self.aliases.get(target).is_some()
+                            {
+                                dependencies.insert(target);
+                            }
+                            types.extend(&t.args);
+                        }
+                        TypeExpr::Fn(f) => {
+                            types.extend(&f.params);
+                            types.push(&f.ret);
+                        }
+                        TypeExpr::Paren(t) => types.push(&t.inner),
+                        TypeExpr::Error(_) => {}
+                    }
+                }
+                pending.extend(dependencies.into_iter().map(|id| (id, false)));
+            }
+        }
     }
 }
 
-/// すべての型の宣言の等値の型の要約を、同時に、変わらなくなるまで求める（01-06「等値の型」、ADR 0082）。
-/// 要約は偽から真へ、集合は大きくなる方向にだけ変わるので、繰り返しは必ず終わる。
-fn compute_eq_summaries(adts: &mut AdtTable) {
-    loop {
-        let mut changed = false;
-        for i in 0..adts.adts.len() {
-            let Some(def) = adts.adts.get(i) else {
+fn has_effect(ty: &Ty, index: u32) -> bool {
+    match ty {
+        Ty::Fn(f) => {
+            f.effects.vars.contains(&EffVar(index))
+                || f.params.iter().any(|t| has_effect(t, index))
+                || has_effect(&f.ret, index)
+        }
+        Ty::Con(_, a) | Ty::App(_, a) => a.iter().any(|t| has_effect(t, index)),
+        Ty::Param(_) | Ty::Rigid { .. } => false,
+    }
+}
+fn has_param(ty: &Ty, index: u32) -> bool {
+    match ty {
+        Ty::Param(i) => *i == index,
+        Ty::App(i, a) => *i == index || a.iter().any(|t| has_param(t, index)),
+        Ty::Con(_, a) => a.iter().any(|t| has_param(t, index)),
+        Ty::Fn(f) => f.params.iter().any(|t| has_param(t, index)) || has_param(&f.ret, index),
+        _ => false,
+    }
+}
+
+pub(super) fn check(
+    modules: &ModuleTable,
+    asts: &[Module],
+    sources: &SourceTable,
+    resolved: &ResolveOutput,
+    require_main: bool,
+) -> (TypeckOutput, Vec<Diagnostic>) {
+    let mut d = Decls {
+        modules,
+        asts,
+        sources,
+        resolved,
+        out: TypeckOutput::default(),
+        diagnostics: vec![],
+        scopes: BTreeMap::new(),
+        invalid: BTreeSet::new(),
+        aliases: BindingMap::default(),
+        alias_types: BindingMap::default(),
+        expanding: BTreeSet::new(),
+        ty_recursion: 0,
+        type_limit: false,
+        alias_spans: Vec::new(),
+    };
+    check_declarations(&mut d, require_main);
+    if d.type_limit {
+        return (d.out, d.diagnostics);
+    }
+    super::consts::check(&mut d);
+    for ast in asts {
+        for top in &ast.decls {
+            match &top.item {
+                Item::Fn(f) => super::generate::check_function(&mut d, f),
+                Item::Impl(i) => {
+                    for f in &i.fns {
+                        super::generate::check_function(&mut d, &f.decl);
+                    }
+                }
+                Item::Const(_)
+                | Item::Data(_)
+                | Item::Alias(_)
+                | Item::Record(_)
+                | Item::Trait(_)
+                | Item::Effect(_)
+                | Item::Error(_) => {}
+            }
+        }
+    }
+    if d.diagnostics.iter().any(Diagnostic::is_error) {
+        d.out.main = None;
+    }
+    (d.out, d.diagnostics)
+}
+
+// 宣言の検査の一時的な値を、本体の再帰走査中のスタックに残さない
+// （設計書 02-03「入れ子の深さ」）。インライン展開で枠を再び合わせない。
+#[inline(never)]
+fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
+    // 相互再帰する宣言を型引数の個数で引けるよう、頭部をすべて先に置く（設計書 02-05「宣言の検査」）。
+    for (module, ast) in d.asts.iter().enumerate() {
+        for top in &ast.decls {
+            let id = top.item.id();
+            let Some(binding) = d.binding(id) else {
                 continue;
             };
-            let mut acc = Cond::never();
-            for ctor in &def.ctors {
-                for f in &ctor.fields {
-                    acc = acc.join(cond_of(f, adts));
+            let (name, params, record) = match &top.item {
+                Item::Alias(a) => {
+                    d.aliases.insert(binding, a.clone());
+                    continue;
+                }
+                Item::Data(a) => (&a.name, &a.type_params, false),
+                Item::Record(a) => (&a.name, &a.type_params, true),
+                Item::Fn(_)
+                | Item::Const(_)
+                | Item::Trait(_)
+                | Item::Effect(_)
+                | Item::Impl(_)
+                | Item::Error(_) => continue,
+            };
+            d.out.adts.adts.insert(
+                binding,
+                AdtDef {
+                    binding,
+                    name: name.text.clone(),
+                    module: ModuleId(u32::try_from(module).unwrap_or(u32::MAX)),
+                    type_params: params.iter().map(|p| p.name.text.clone()).collect(),
+                    ctors: vec![],
+                    record: record.then(Vec::new),
+                    eq_summary: TypeSummary::default(),
+                    key_summary: TypeSummary::default(),
+                },
+            );
+        }
+    }
+    // 別名を何度使っても宣言の制約を二度検査しない。全頭部の収集後に一度だけ移す（フック T2）。
+    for ast in d.asts {
+        for top in &ast.decls {
+            if let Item::Alias(a) = &top.item {
+                let (scope, _) = d.parameters(
+                    &a.type_params,
+                    Scope::default(),
+                    scheme(vec![], unit()),
+                    false,
+                );
+                d.scopes.insert(a.id, scope);
+            }
+        }
+    }
+    d.prepare_aliases();
+    if d.type_limit {
+        return;
+    }
+    for ast in d.asts {
+        for top in &ast.decls {
+            let Some(binding) = d.binding(top.item.id()) else {
+                continue;
+            };
+            let before = d.diagnostics.len();
+            match &top.item {
+                Item::Fn(f) => {
+                    let s = d.signature(f, Scope::default(), scheme(vec![], unit()));
+                    d.out.decl_types.insert(binding, s);
+                }
+                Item::Const(c) => {
+                    let ty = d.ty(&c.ty, &Scope::default());
+                    d.out.decl_types.insert(binding, scheme(vec![], ty));
+                }
+                Item::Data(data) => {
+                    let (scope, s) = d.parameters(
+                        &data.type_params,
+                        Scope::default(),
+                        scheme(vec![], unit()),
+                        false,
+                    );
+                    let ret = Ty::Con(
+                        TyCon::Adt(binding),
+                        (0..s.type_params.len())
+                            .map(|i| Ty::Param(u32::try_from(i).unwrap_or(u32::MAX)))
+                            .collect(),
+                    );
+                    let mut ctors = vec![];
+                    if data.variants.is_empty() {
+                        d.diagnostics.push(
+                            DiagBuilder::new(DiagCode::E0411)
+                                .arg("name", &data.name.text)
+                                .primary(data.name.span)
+                                .help("add")
+                                .build(),
+                        );
+                    }
+                    for (tag, v) in data.variants.iter().enumerate() {
+                        if let Some(id) = d.binding(v.id) {
+                            let mut budget = TypeBudget::default();
+                            if let Err(limit) = budget.enter(1) {
+                                d.type_limit(limit, v.span);
+                            }
+                            if !d.type_child(&mut budget, &ret, v.span) {
+                                return;
+                            }
+                            let mut fields = Vec::new();
+                            for t in &v.fields {
+                                let ty = d.ty(t, &scope);
+                                if !d.type_child(&mut budget, &ty, t.span()) {
+                                    return;
+                                }
+                                fields.push(ty);
+                            }
+                            let mut ctor = s.clone();
+                            ctor.params = fields.clone();
+                            ctor.ret = ret.clone();
+                            d.out.decl_types.insert(id, ctor);
+                            ctors.push(CtorDef {
+                                name: v.name.text.clone(),
+                                binding: id,
+                                tag: u32::try_from(tag).unwrap_or(u32::MAX),
+                                fields,
+                            });
+                        }
+                    }
+                    if let Some(mut a) = d.out.adts.get(binding).cloned() {
+                        a.ctors = ctors;
+                        d.out.adts.adts.insert(binding, a);
+                    }
+                }
+                Item::Record(record) => {
+                    let (scope, mut s) = d.parameters(
+                        &record.type_params,
+                        Scope::default(),
+                        scheme(vec![], unit()),
+                        false,
+                    );
+                    let ret = Ty::Con(
+                        TyCon::Adt(binding),
+                        (0..s.type_params.len())
+                            .map(|i| Ty::Param(u32::try_from(i).unwrap_or(u32::MAX)))
+                            .collect(),
+                    );
+                    let mut budget = TypeBudget::default();
+                    if let Err(limit) = budget.enter(1) {
+                        d.type_limit(limit, record.span);
+                    }
+                    if !d.type_child(&mut budget, &ret, record.span) {
+                        return;
+                    }
+                    let mut fields = vec![];
+                    let mut tys = vec![];
+                    for f in &record.fields {
+                        if let Some(id) = d.binding(f.id) {
+                            let ty = d.ty(&f.ty, &scope);
+                            if !d.type_child(&mut budget, &ty, f.ty.span()) {
+                                return;
+                            }
+                            let mut access = s.clone();
+                            access.params = vec![ret.clone()];
+                            access.ret = ty.clone();
+                            d.out.decl_types.insert(id, access);
+                            fields.push(FieldInfo {
+                                name: f.name.text.clone(),
+                                binding: id,
+                            });
+                            tys.push(ty);
+                        }
+                    }
+                    s.params = tys.clone();
+                    s.ret = ret;
+                    d.out.decl_types.insert(binding, s);
+                    if let Some(mut a) = d.out.adts.get(binding).cloned() {
+                        a.record = Some(fields);
+                        a.ctors = vec![CtorDef {
+                            name: record.name.text.clone(),
+                            binding,
+                            tag: 0,
+                            fields: tys,
+                        }];
+                        d.out.adts.adts.insert(binding, a);
+                    }
+                }
+                Item::Alias(a) => {
+                    let scope = d.scopes.get(&a.id).cloned().unwrap_or_default();
+                    let ty = if let Some(ty) = d.alias_types.get(binding) {
+                        ty.clone()
+                    } else {
+                        let ty = d.ty(&a.ty, &scope);
+                        d.alias_types.insert(binding, ty.clone());
+                        ty
+                    };
+                    if d.type_limit {
+                        return;
+                    }
+                    for (i, p) in a.type_params.iter().enumerate() {
+                        if !has_param(&ty, u32::try_from(i).unwrap_or(u32::MAX)) {
+                            d.diagnostics.push(
+                                DiagBuilder::new(DiagCode::E0432)
+                                    .arg("param", &p.name.text)
+                                    .arg("name", &a.name.text)
+                                    .primary(a.name.span)
+                                    .build(),
+                            );
+                        }
+                    }
+                }
+                Item::Effect(e) => {
+                    let name = d.effect_name(binding).unwrap_or(EffectName::User(binding));
+                    let mut ops = vec![];
+                    for op in &e.ops {
+                        if let Some(id) = d.binding(op.id) {
+                            let f = FnDecl {
+                                id: op.id,
+                                span: op.span,
+                                name: op.name.clone(),
+                                type_params: op.type_params.clone(),
+                                params: op.params.clone(),
+                                ret: op.ret.clone(),
+                                uses: None,
+                                body: None,
+                            };
+                            let mut s = d.signature(&f, Scope::default(), scheme(vec![], unit()));
+                            s.effects.insert_name(name);
+                            d.out.decl_types.insert(id, s);
+                            ops.push(id);
+                        }
+                    }
+                    d.out.effects.insert(
+                        binding,
+                        EffectDef {
+                            binding,
+                            name,
+                            display_name: e.name.text.clone(),
+                            ops,
+                        },
+                    );
+                }
+                Item::Trait(_) | Item::Impl(_) | Item::Error(_) => {}
+            }
+            if d.type_limit {
+                return;
+            }
+            if d.diagnostics.len() != before {
+                d.invalid.insert(binding);
+                match &top.item {
+                    Item::Data(a) => {
+                        for v in &a.variants {
+                            if let Some(id) = d.binding(v.id) {
+                                d.invalid.insert(id);
+                            }
+                        }
+                    }
+                    Item::Record(a) => {
+                        for f in &a.fields {
+                            if let Some(id) = d.binding(f.id) {
+                                d.invalid.insert(id);
+                            }
+                        }
+                    }
+                    Item::Effect(a) => {
+                        for op in &a.ops {
+                            if let Some(id) = d.binding(op.id) {
+                                d.invalid.insert(id);
+                            }
+                        }
+                    }
+                    Item::Fn(_)
+                    | Item::Const(_)
+                    | Item::Alias(_)
+                    | Item::Trait(_)
+                    | Item::Impl(_)
+                    | Item::Error(_) => {}
                 }
             }
-            let summary = match acc {
-                Cond::Always => EqSummary {
-                    always: true,
-                    depends_on: Vec::new(),
-                },
-                Cond::On(set) => EqSummary {
-                    always: false,
-                    depends_on: set.into_iter().collect(),
-                },
-            };
-            if let Some(def) = adts.adts.get_mut(i)
-                && def.eq_summary != summary
+        }
+    }
+    super::traits::collect(d);
+    summaries(&mut d.out.adts);
+    check_entry(d, require_main);
+    super::traits::check_impls(d);
+}
+
+fn returns_result(d: &Decls<'_>, ty: &Ty) -> bool {
+    match ty {
+        Ty::Con(TyCon::Adt(id), args)
+            if Some(*id) == d.resolved.stdlib("Benitoite.Result.Result") =>
+        {
+            args == &vec![unit(), basic(B::STRING)]
+        }
+        Ty::Con(..) | Ty::Fn(_) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => false,
+    }
+}
+fn check_entry(d: &mut Decls<'_>, require_main: bool) {
+    if let Some(id) = d.resolved.main {
+        if let Some(s) = d.out.decl_types.get(id).cloned() {
+            let mut diag = DiagBuilder::new(DiagCode::E0415);
+            if let Some(span) = d.resolved.bindings.get(id).and_then(|b| b.span) {
+                diag = diag.primary(span);
+            }
+            let mut bad = false;
+            if !s.params.is_empty() {
+                diag = diag.note("params");
+                bad = true;
+            }
+            if !s.type_params.is_empty() || !s.effect_params.is_empty() {
+                diag = diag.note("type_params");
+                bad = true;
+            }
+            let result = returns_result(d, &s.ret);
+            if s.ret != unit() && !result {
+                diag = diag.note("ret");
+                bad = true;
+            }
+            if bad {
+                d.diagnostics.push(diag.build());
+            } else {
+                d.out.main = Some(MainInfo {
+                    binding: id,
+                    returns_result: result,
+                });
+            }
+        }
+    } else if require_main {
+        d.diagnostics
+            .push(DiagBuilder::new(DiagCode::E0414).help("define").build());
+    }
+    for ast in d.asts {
+        for top in &ast.decls {
+            if let Item::Fn(f) = &top.item
+                && top.attrs.iter().any(|a| a.name.text == "test")
+                && let Some(id) = d.binding(f.id)
+                && let Some(s) = d.out.decl_types.get(id)
+                && (!s.params.is_empty()
+                    || !s.type_params.is_empty()
+                    || !s.effect_params.is_empty()
+                    || (s.ret != unit() && !returns_result(d, &s.ret)))
             {
-                def.eq_summary = summary;
-                changed = true;
+                d.diagnostics.push(
+                    DiagBuilder::new(DiagCode::E0806)
+                        .primary(f.name.span)
+                        .build(),
+                );
+            }
+        }
+    }
+    super::effects::check_entries(d);
+}
+fn summaries(adts: &mut AdtTable) {
+    loop {
+        let mut changed = false;
+        let updates: Vec<_> = adts
+            .adts
+            .iter()
+            .map(|(id, a)| {
+                let mut eq = TypeSummary::default();
+                let mut key = TypeSummary::default();
+                for c in &a.ctors {
+                    for t in &c.fields {
+                        merge(&mut eq, summary(t, adts, false));
+                        merge(&mut key, summary(t, adts, true));
+                    }
+                }
+                (id, eq, key)
+            })
+            .collect();
+        for (id, eq, key) in updates {
+            if let Some(mut a) = adts.get(id).cloned() {
+                changed |= a.eq_summary != eq || a.key_summary != key;
+                a.eq_summary = eq;
+                a.key_summary = key;
+                adts.adts.insert(id, a);
             }
         }
         if !changed {
@@ -451,188 +922,49 @@ fn compute_eq_summaries(adts: &mut AdtTable) {
         }
     }
 }
-
-/// 構成子の宣言の型（10-05「型検査の出力」の最後の段落）。型の宣言の型パラメータを型パラメータとし、
-/// 引数の型を引数、`D[T̄]` を戻り値の型、空集合をエフェクトとする。
-fn add_ctor_schemes(d: &mut Decls) {
-    for def in &d.adts.adts {
-        let n = u32::try_from(def.type_params.len()).unwrap_or(u32::MAX);
-        let ret = Ty::Con(def.con, (0..n).map(Ty::Param).collect());
-        for ctor in &def.ctors {
-            if d.broken.contains(&ctor.binding) {
-                continue;
-            }
-            d.decl_types.insert(
-                ctor.binding,
-                Scheme {
-                    type_params: def
-                        .type_params
-                        .iter()
-                        .map(|name| TypeParamInfo {
-                            name: name.clone(),
-                            constraint: ParamConstraint::None,
-                        })
-                        .collect(),
-                    effect_params: Vec::new(),
-                    params: ctor.fields.clone(),
-                    ret: ret.clone(),
-                    effects: EffectSet::empty(),
-                },
-            );
+fn merge(a: &mut TypeSummary, b: TypeSummary) {
+    a.always |= b.always;
+    for i in b.depends_on {
+        if let Err(p) = a.depends_on.binary_search(&i) {
+            a.depends_on.insert(p, i);
         }
     }
 }
-
-/// 型を書いた箇所の中の、`uses` の並びに書いた名前の束縛を集める（E0418 の検査）。
-fn collect_effect_refs(t: &TypeExpr, resolved: &ResolveOutput, out: &mut HashSet<BindingId>) {
-    match t {
-        TypeExpr::Named(n) => {
-            for a in &n.args {
-                collect_effect_refs(a, resolved, out);
+fn summary(ty: &Ty, adts: &AdtTable, key: bool) -> TypeSummary {
+    let mut out = TypeSummary::default();
+    match ty {
+        Ty::Param(i) => out.depends_on.push(*i),
+        Ty::Fn(_) | Ty::App(..) | Ty::Rigid { .. } => out.always = !key,
+        Ty::Con(TyCon::Builtin(b), args) => {
+            if key {
+                out.always = *b == B::FLOAT;
+            } else {
+                out.always = b.def().is_some_and(|d| {
+                    matches!(
+                        d.class,
+                        BuiltinTypeClass::Opaque | BuiltinTypeClass::Resource
+                    )
+                });
+            }
+            if b.def()
+                .is_some_and(|d| d.class == BuiltinTypeClass::Collection)
+            {
+                for a in args {
+                    merge(&mut out, summary(a, adts, key));
+                }
             }
         }
-        TypeExpr::Fn(f) => {
-            for p in &f.params {
-                collect_effect_refs(p, resolved, out);
+        Ty::Con(TyCon::Adt(id), args) => {
+            if let Some(a) = adts.get(*id) {
+                let s = if key { &a.key_summary } else { &a.eq_summary };
+                out.always = s.always;
+                for i in &s.depends_on {
+                    if let Some(arg) = usize::try_from(*i).ok().and_then(|i| args.get(i)) {
+                        merge(&mut out, summary(arg, adts, key));
+                    }
+                }
             }
-            collect_effect_refs(&f.ret, resolved, out);
-            if let Some(uses) = &f.uses {
-                out.extend(uses.effects.iter().filter_map(|r| resolved.refs.get(r.id)));
-            }
-        }
-        TypeExpr::Paren(p) => collect_effect_refs(&p.inner, resolved, out),
-        TypeExpr::Error(_) => {}
-    }
-}
-
-/// 関数のシグネチャを検査し、宣言の型を決める（02-05「宣言の検査」）。
-fn check_fn_sig(d: &mut Decls, resolved: &ResolveOutput, f: &FnDecl, diags: &mut Vec<Diagnostic>) {
-    let Some(b) = resolved.decls.get(f.id).copied() else {
-        return;
-    };
-    let tcx = TypeCx {
-        resolved,
-        adt_arity: &d.adt_arity,
-    };
-    let mut ok = true;
-    let mut params = Vec::with_capacity(f.params.len());
-    for p in &f.params {
-        match p.ty.as_ref().and_then(|t| tcx.convert(t, diags)) {
-            Some(ty) => params.push(ty),
-            None => ok = false,
         }
     }
-    let ret = tcx.convert(&f.ret, diags);
-    let effects = tcx.convert_uses(f.uses.as_ref(), diags);
-
-    // 宣言したエフェクト変数は、引数の型のどこかに現れなければならない（01-06「関数の型とエフェクト」）。
-    let mut in_params = HashSet::new();
-    for p in &f.params {
-        if let Some(t) = &p.ty {
-            collect_effect_refs(t, resolved, &mut in_params);
-        }
-    }
-    for tp in f.type_params.iter().filter(|tp| tp.is_effect) {
-        let declared = resolved.decls.get(tp.id);
-        if declared.is_some_and(|eb| !in_params.contains(eb)) {
-            diags.push(
-                DiagBuilder::new(DiagCode::E0418)
-                    .arg("name", tp.name.text.clone())
-                    .primary(tp.name.span)
-                    .build(),
-            );
-            ok = false;
-        }
-    }
-
-    d.sites.insert(
-        b,
-        Site {
-            name: f.name.span,
-            params: f
-                .params
-                .iter()
-                .map(|p| p.ty.as_ref().map_or(p.span, TypeExpr::span))
-                .collect(),
-        },
-    );
-    let (true, Some(ret), Some(effects)) = (ok, ret, effects) else {
-        d.broken.insert(b);
-        return;
-    };
-    d.decl_types.insert(
-        b,
-        Scheme {
-            type_params: f
-                .type_params
-                .iter()
-                .filter(|tp| !tp.is_effect)
-                .map(|tp| TypeParamInfo {
-                    name: tp.name.text.clone(),
-                    constraint: ParamConstraint::None,
-                })
-                .collect(),
-            effect_params: f
-                .type_params
-                .iter()
-                .filter(|tp| tp.is_effect)
-                .map(|tp| tp.name.text.clone())
-                .collect(),
-            params,
-            ret,
-            effects,
-        },
-    );
-}
-
-/// `main` の名前（01-07「プログラムの入口」）。
-const MAIN: &str = "main";
-
-/// `main` を検査する（01-07「プログラムの入口」）。満たさない条件ごとに注記を一つの診断に並べる。
-fn check_main(
-    d: &Decls,
-    user: &Program,
-    resolved: &ResolveOutput,
-    diags: &mut Vec<Diagnostic>,
-) -> Option<MainInfo> {
-    let found = user.items.iter().find_map(|item| match item {
-        Item::Fn(f) if f.name.text == MAIN => Some(f),
-        Item::Fn(_) | Item::Type(_) | Item::Error(_) => None,
-    });
-    let Some(f) = found else {
-        diags.push(DiagBuilder::new(DiagCode::E0414).help("define").build());
-        return None;
-    };
-    let b = resolved.decls.get(f.id).copied()?;
-    let mut notes: Vec<&'static str> = Vec::new();
-    if !f.params.is_empty() {
-        notes.push("params");
-    }
-    if !f.type_params.is_empty() {
-        notes.push("type_params");
-    }
-    // シグネチャが壊れていれば、その誤りを既に報告したので、戻り値の型とエフェクトは調べない。
-    let scheme = d.decl_types.get(b);
-    let returns_result = scheme.is_some_and(|s| s.ret == Ty::result(Ty::unit(), Ty::string()));
-    if let Some(s) = scheme {
-        if s.ret != Ty::unit() && !returns_result {
-            notes.push("ret");
-        }
-        if !s.effects.vars.is_empty() {
-            notes.push("effects");
-        }
-    }
-    if !notes.is_empty() {
-        let mut builder = DiagBuilder::new(DiagCode::E0415).primary(f.name.span);
-        for n in notes {
-            builder = builder.note(n);
-        }
-        diags.push(builder.build());
-        return None;
-    }
-    scheme?;
-    Some(MainInfo {
-        binding: b,
-        returns_result,
-    })
+    out
 }

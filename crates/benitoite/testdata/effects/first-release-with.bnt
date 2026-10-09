@@ -1,0 +1,12 @@
+// spec: 01-10 `with` の構文
+import Benitoite.Unofficial.IO.File
+function firstLine(path: String) -> Result[Option[String], String] uses File.Read, State
+  with reader = try File.openReader(path) |> Result.mapError(_, IOError.message) do
+    bind line <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
+    return Result.Ok(line)
+  end with
+end function
+
+function main() -> Unit
+  ()
+end function

@@ -1,0 +1,21 @@
+// spec: 01-11 タスクを起動する関数
+// spec: 01-11 取り消し
+// 関門: race の空・一件・即時対長い待ちと期限内の成功を守り、結果の包みと負けた子の停止漏れを捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Clock
+
+function main() -> Unit uses Clock.Time, State, Console.Write
+  bind empty: Option[Integer] <- Task.race([])
+  Console.writeLine(if empty = Option.None then "empty" else "wrong empty" end if)
+  bind single <- Task.race([lambda() return 7 end lambda])
+  Console.writeLine(if single = Option.Some(7) then "single" else "wrong single" end if)
+  bind winner <- Task.race([
+    lambda() Clock.sleep(3600000)
+      return 1 end lambda,
+    lambda() return 42 end lambda
+  ])
+  Console.writeLine(if winner = Option.Some(42) then "winner" else "wrong winner" end if)
+  bind timely <- Task.withTimeout(3600000, lambda() return 8 end lambda)
+  Console.writeLine(if timely = Option.Some(8) then "within timeout" else "wrong timeout" end if)
+end function

@@ -1,0 +1,12 @@
+error[E0234]: the return type is written after `->`
+  --> testdata/syntax/c11-return-colon.bnt:2:16
+   |
+ 2 | function main(): Unit
+   |                ^ expected `->`
+   |
+   = help: replace `:` with `->`
+   |
+ 2 | function main()-> Unit
+   |                ~~
+
+error: could not check testdata/syntax/c11-return-colon.bnt due to 1 previous error

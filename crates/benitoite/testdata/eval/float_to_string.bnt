@@ -1,15 +1,17 @@
 // spec: 01-04 型の変換
 // 指数が -5 以上 21 未満の有限値は固定表記、それ以外は指数表記とする。
 // 各値は読み戻しで元の binary64 値を保つ最短の有効数字を使う。
-fn main() -> Unit uses IO {
-  Console.println(Float.toString(1.0))
-  Console.println(Float.toString(0.001))
-  Console.println(Float.toString(123.45))
-  Console.println(Float.toString(1e21))
-  Console.println(Float.toString(1.5e-7))
-  Console.println(Float.toString(-0.0))
-  Console.println(Float.toString(0.0 / 0.0))
-  Console.println(Float.toString(1.0 / 0.0))
-  Console.println(Float.toString(-1.0 / 0.0))
-  Console.println(Float.toString(0.1))
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Float.toString(1.0))
+  Console.writeLine(Float.toString(0.001))
+  Console.writeLine(Float.toString(123.45))
+  Console.writeLine(Float.toString(1e21))
+  Console.writeLine(Float.toString(1.5e-7))
+  Console.writeLine(Float.toString(-0.0))
+  Console.writeLine(Float.toString(0.0 / 0.0))
+  Console.writeLine(Float.toString(1.0 / 0.0))
+  Console.writeLine(Float.toString(-1.0 / 0.0))
+  return Console.writeLine(Float.toString(0.1))
+end function

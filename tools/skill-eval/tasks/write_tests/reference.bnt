@@ -1,0 +1,48 @@
+import Benitoite.Unofficial.IO.File
+
+function parseSetting(line: String) -> Option[Pair[String, String]]
+  bind trimmed <- String.trim(line)
+  if trimmed = "" or String.startsWith(trimmed, "#") then return Option.None end if
+  return match String.split(trimmed, "=") with
+    case [key, ..rest] if String.trim(key) <> "" -> Option.Some(Pair(String.trim(key), String.trim(String.join(rest, "="))))
+    case _ -> Option.None
+  end match
+end function
+
+function loadSettings(path: String) -> Result[Map[String, String], String] uses File.Read
+  bind lines <- try File.readLines(path) |> Result.mapError(_, IOError.message)
+  return Result.Ok(List.fold(lines, Map.empty(), lambda(m, line)
+    return match parseSetting(line) with
+      case Option.Some(entry) -> Map.set(m, Pair.first(entry), Pair.second(entry))
+      case Option.None -> m
+    end match
+  end lambda))
+end function
+
+@test("parseSetting reads a key and a value")
+function parsesKeyValue() -> Unit uses Assert.Check
+  Assert.equal(parseSetting(" port = 8080 "), Option.Some(Pair("port", "8080")))
+end function
+
+@test("parseSetting keeps = in the value")
+function keepsEquals() -> Unit uses Assert.Check
+  Assert.equal(parseSetting("query=a=b"), Option.Some(Pair("query", "a=b")))
+end function
+
+@test("parseSetting skips comments and blank lines")
+function skipsComments() -> Unit uses Assert.Check
+  Assert.equal(parseSetting("# note"), Option.None)
+  Assert.equal(parseSetting("   "), Option.None)
+end function
+
+@test("loadSettings reads the file through File.readLines")
+function loadsFromFile() -> Unit uses Assert.Check, File.Read
+  bind result <- handle
+    loadSettings("app.conf")
+  with
+    case File.readLines(path) ->
+      Assert.equal(path, "app.conf")
+      resume(Result.Ok(["# server", "host = example.org", "port=80"]))
+  end handle
+  Assert.equal(result, Result.Ok(Map.fromList([Pair("host", "example.org"), Pair("port", "80")])))
+end function

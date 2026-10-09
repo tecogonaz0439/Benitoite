@@ -1,0 +1,23 @@
+// spec: 01-02 レコード（初回リリース版）
+record Person
+  name: String
+  age: Integer
+end record
+
+function birthday(p: Person) -> Person
+  return Person(..p, age: Person.age(p) + 1)
+end function
+
+function greeting(p: Person) -> String
+  return match p with
+    case Person(name: n, age: 0) -> "Welcome, ${n}"
+    case Person(name: n, ..) -> "Hello, ${n}"
+  end match
+end function
+
+function main() -> Unit
+  bind person <- Person(name: "Alice", age: 30)
+  bind next <- birthday(person)
+  bind _ <- greeting(next)
+  ()
+end function

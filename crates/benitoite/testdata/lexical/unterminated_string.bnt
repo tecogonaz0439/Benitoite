@@ -1,6 +1,6 @@
 // spec: 01-01 文字列リテラル
-fn main() -> Unit {
-  let _ = "unfinished
-  @
-  ()
-}
+function main() -> Unit
+  bind _ <- "unfinished
+  ~
+  return ()
+end function

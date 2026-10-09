@@ -1,7 +1,7 @@
 // spec: 01-03 修飾された名前の解決
-fn main() -> Unit {
-  let _ = String.length("abc")
-  let _ = String.substring("abc", 0, 1)
-  let _ = String.indexOf("abc", "b")
-  ()
-}
+function main() -> Unit
+  bind _ <- String.length("abc")
+  bind _ <- String.substring("abc", 0, 1)
+  bind _ <- String.indexOf("abc", "b")
+  return ()
+end function

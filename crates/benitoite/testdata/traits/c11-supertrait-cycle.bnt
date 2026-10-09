@@ -1,0 +1,10 @@
+// spec: 01-06 型クラス（初回リリース版）
+trait A[T: B]
+  function a(x: T) -> T
+end trait
+trait B[T: A]
+  function b(x: T) -> T
+end trait
+function main() -> Unit
+  ()
+end function

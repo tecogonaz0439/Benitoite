@@ -1,0 +1,18 @@
+// spec: 01-11 失敗と停止
+// 関門: 自己待ちの行き詰まりと起動順の注記を守り、停止の検出と待つ位置の退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+
+function awaitSaved(cell: Reference[Option[Task[Integer]]]) -> Integer uses State
+  return match Reference.get(cell) with
+    case Option.None -> awaitSaved(cell)
+    case Option.Some(task) -> Task.await(task)
+  end match
+end function
+
+function main() -> Unit uses State
+  bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
+  with group = TaskGroup.open() do
+    bind task <- TaskGroup.spawn(group, lambda() return awaitSaved(saved) end lambda)
+    Reference.set(saved, Option.Some(task))
+  end with
+end function

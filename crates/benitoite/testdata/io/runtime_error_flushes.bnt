@@ -1,7 +1,9 @@
 // spec: 01-07 IO が起きる時期と順序
 // spec: 01-08 実行時エラーによる停止
-fn main() -> Unit uses IO {
-  Console.print("output before error\n")
-  let quotient = 1 / 0
-  Console.println(Int.toString(quotient))
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  Console.write("output before error\n")
+  bind quotient <- 1 div 0
+  return Console.writeLine(Integer.toString(quotient))
+end function

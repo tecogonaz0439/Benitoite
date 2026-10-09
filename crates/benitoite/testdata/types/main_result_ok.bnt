@@ -1,4 +1,4 @@
 // spec: 01-07 プログラムの入口
-fn main() -> Result[Unit, String] {
-    Ok(())
-}
+function main() -> Result[Unit, String]
+    return Result.Ok(())
+end function

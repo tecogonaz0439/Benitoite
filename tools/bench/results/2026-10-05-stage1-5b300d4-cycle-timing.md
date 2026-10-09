@@ -1,0 +1,298 @@
+# 第1段の測定 2026-10-05 / 5b300d4
+
+## 環境
+
+| 項目 | 値 |
+|---|---|
+| os | macOS-27.0.1-arm64-arm-64bit |
+| cpu | Apple M4 |
+| logical_cpus | 10 |
+| memory | 34,359,738,368 bytes |
+| rustc | rustc 1.98.1 (48a229cea 2026-09-01) |
+| model | Mac16,10 |
+| hardware_query | system_profiler SPHardwareDataType -json |
+
+## ソースの識別
+
+| ファイル | SHA-256 |
+|---|---|
+| tools/bench/stage1.py | b02d465e8e2ff65d11762306313e37b1531066b14cde078cf62e3454b1f90a9a |
+| tools/bench/programs/fib.bnt | f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c |
+| tools/bench/programs/loop.bnt | 64c380f6eface80d69adf358c25251041304075c53e3879806688246720ee9b3 |
+| tools/bench/programs/list.bnt | 5300af350b085901c9197e76cd892c1f90e11e3743c7354b36e290a9a44f6efc |
+| tools/bench/programs/tree.bnt | 332ce8521ad9bc39bbb98a4d2751756762b0605df659993b91877a5a4eaefa27 |
+| tools/bench/programs/eval.bnt | 47994aa85f6d67ee7124eae8f8010881abe0b46f8b7caa575774b67be542b7fb |
+| tools/bench/programs/string.bnt | 2859b4dd7634a616e0d3f62f6e3de2399573a01ea3d68a7b1ff623fad6f67ec4 |
+| tools/bench/programs/stage1/shared.bnt | 788646880399e35d2ae2c31d65a1e98a8108770ab5b61cb7ee6f152acb1378a3 |
+| tools/bench/programs/stage1/live.bnt | c58f3cc06d9bc08df376365dafaba45af155c08cb5a6658c58197b1d1b097ab3 |
+| tools/bench/programs/stage1/roots.bnt | cda520b39b6f345053aeb2a6d00fdba6086234394183b4d476518c45f2a1a88f |
+| tools/bench/programs/stage1/returns.bnt | 501e7e5247c597054e563cad61b0dd360da12282b585aa7634c5cfabfe69bb1e |
+| tools/bench/programs/stage1/mixed.bnt | e9d3a500c26284cbf2b57966b62821fd642ab5902fbdb9b1ddd52e3af9042c17 |
+| crates/benitoite/examples/stage1_bench.rs | e302adf8c0b8863c29862b0fa78765e2917c844679a70d652a162cb471815504 |
+| crates/benitoite/examples/stage1_heap_bench.rs | 97722b08dccadbee9122d5669aa2e8ecdbe72e8d8f9571cdd9b338cb87038a8e |
+| crates/benitoite/examples/stage1_support/mod.rs | 13a3a23e7cba2b5d92ab8ada49630417bc4f326b7eef1ca3f83b494cb3ee9977 |
+| crates/benitoite/src/runtime/heap/core.rs | 9c12552a89ea1af7dd7ba4c0eac2749792d3da8f27accab4472102d43d8b926c |
+| crates/benitoite/src/runtime/heap/ctx.rs | 1db0df137dbb17d7829e6ae99b1c683477e1e107cbc40d5fb0ac8cc67da3bbfc |
+| crates/benitoite/src/runtime/heap/core/refcount.rs | 1ad3281dd88031d92868a9dcb828b2a48654f837390e71fb3b4479364e66238d |
+| crates/benitoite/src/vm/dispatch.rs | e221dba4d24a6351572f244022c324ac22479ceaa49fec4cc417dbc91d1580a8 |
+
+## 処理系と構成
+
+基準コミット: `5b300d456db2`。道具・本番の測定のコミット: `5b300d4`。測定専用のコミット: `5b300d4`（`measure/R12-counts`）。コミットとファイル名はオーケストレータが埋める。
+
+CPU 型番は環境の表に示した方法で取得した。旧記録は Apple M4・32 GiB・macOS 27.0、今回は macOS 27.0.1 である。旧 VM の測り直しは今回と同じ環境で行う。
+
+| 構成 | feature | k（百分率） | reuse | trigger_min_bytes | stress（VM / 循環） |
+|---|---|---|---|---|---|
+| MS-k0.5 | gc-mark-sweep | 50 | True | 4194304 | false / true |
+| MS-k1 | gc-mark-sweep | 100 | True | 4194304 | false / true |
+| MS-k2 | gc-mark-sweep | 200 | True | 4194304 | false / true |
+| RC | gc-refcount | 100 | True | 4194304 | false / true |
+| RC-noreuse | gc-refcount | 100 | False | 4194304 | false / true |
+
+release、既定機能なし、`heap-verify`・`alloc-stats`・`gc-stress` なし。VM は Direct。全構成で同じ命令と生存情報を使う。循環は公開ヒープ API の単位測定であり、VM の Reference の統合を確かめるものではない。self は自己参照のセル、pair は2セルの相互参照、ring はセルと構成子の並びの輪、list は同じセルを各要素に持つ ListCell の連結リストをそのセルへ入れた循環である。
+
+RC は解放待ちの量が 4 MiB を超えると要求する。循環は、新しいセル数が `max(1000, 前回の生存セル数)` 以上、または生存セルがあり確保量が `max(4 MiB, k × 前回の生存量)` 以上で要求する。stress の循環では毎回回収し、この負荷では k の閾値の効果を測らない。`reuses` は `reuse_ctor` が `Some` を返した回数である。再利用率は `reuses / (reuses + allocations)` とする。
+
+## 入力の大きさ
+
+| 負荷 | 今回の入力 | 本測定の仮入力 |
+|---|---|---|
+| cycle-self | 20000 1 | 20000 1 |
+| cycle-pair | 20000 1 | 20000 1 |
+| cycle-ring | 100 10000 | 100 10000 |
+| cycle-list | 100 100000 | 100 100000 |
+
+追加の本入力は仮の値である。通常の release で1〜10秒に調整し、採った入力を JSON と記録に保存する。小入力の照合は全75組（VM 11×5、循環4×5）を実行する。
+
+## 実行時間と回収の停止時間
+
+本測定。各10回の中央値、単位 ns。停止時間の百分位は全回の pause_nanos を合わせた nearest-rank。
+
+| 負荷 | 構成 | 検査 | 脱糖・コード生成 | 実行 | 段を含む合計 | プロセス全体 | 回収合計 | p50 | p95 | p99 | 最大 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| cycle-self | MS-k0.5 | 0.0 | 0.0 | 1386250.0 | 1386250.0 | 5136958.5 | 689906.0 | 42 | 42 | 42 | 5125 |
+| cycle-self | MS-k1 | 0.0 | 0.0 | 1360604.5 | 1360604.5 | 5146875.0 | 670779.0 | 42 | 42 | 42 | 3834 |
+| cycle-self | MS-k2 | 0.0 | 0.0 | 1375875.0 | 1375875.0 | 5190271.0 | 680045.5 | 42 | 42 | 42 | 1250 |
+| cycle-self | RC | 0.0 | 0.0 | 6949875.0 | 6949875.0 | 10730479.0 | 5483607.5 | 291 | 334 | 375 | 4333 |
+| cycle-self | RC-noreuse | 0.0 | 0.0 | 6971479.0 | 6971479.0 | 10734000.5 | 5495366.0 | 291 | 333 | 375 | 4750 |
+| cycle-pair | MS-k0.5 | 0.0 | 0.0 | 1845187.5 | 1845187.5 | 5790375.0 | 905991.0 | 42 | 83 | 84 | 4167 |
+| cycle-pair | MS-k1 | 0.0 | 0.0 | 1768354.0 | 1768354.0 | 5707750.5 | 824768.0 | 42 | 83 | 84 | 10041 |
+| cycle-pair | MS-k2 | 0.0 | 0.0 | 1751499.5 | 1751499.5 | 5688021.0 | 815761.5 | 42 | 83 | 84 | 10250 |
+| cycle-pair | RC | 0.0 | 0.0 | 9731979.5 | 9731979.5 | 13694916.5 | 7321347.5 | 375 | 417 | 500 | 6792 |
+| cycle-pair | RC-noreuse | 0.0 | 0.0 | 9779687.0 | 9779687.0 | 13848166.5 | 7381052.5 | 375 | 458 | 500 | 11083 |
+| cycle-ring | MS-k0.5 | 0.0 | 0.0 | 48122521.0 | 48122521.0 | 52191583.0 | 18027941.5 | 179625 | 186667 | 192584 | 215750 |
+| cycle-ring | MS-k1 | 0.0 | 0.0 | 48090229.5 | 48090229.5 | 52071000.0 | 18007771.5 | 179417 | 184917 | 189792 | 198333 |
+| cycle-ring | MS-k2 | 0.0 | 0.0 | 48089333.5 | 48089333.5 | 52091125.0 | 18039856.5 | 179625 | 186500 | 190709 | 197125 |
+| cycle-ring | RC | 0.0 | 0.0 | 364361979.0 | 364361979.0 | 368337125.0 | 270195438.5 | 2698709 | 2785708 | 2874667 | 3000541 |
+| cycle-ring | RC-noreuse | 0.0 | 0.0 | 363154312.5 | 363154312.5 | 367492396.5 | 269348413.5 | 2696458 | 2789917 | 2865375 | 3013875 |
+| cycle-list | MS-k0.5 | 0.0 | 0.0 | 231720063.0 | 231720063.0 | 236306146.0 | 89989706.5 | 897084 | 913084 | 1027125 | 1081458 |
+| cycle-list | MS-k1 | 0.0 | 0.0 | 231354041.5 | 231354041.5 | 236003625.5 | 89816851.0 | 896625 | 915000 | 1009083 | 1067541 |
+| cycle-list | MS-k2 | 0.0 | 0.0 | 231121437.5 | 231121437.5 | 236053541.5 | 89842722.5 | 898000 | 922125 | 1023708 | 1118750 |
+| cycle-list | RC | 0.0 | 0.0 | 1751486604.5 | 1751486604.5 | 1756460083.0 | 1411820731.5 | 14123291 | 14931125 | 15248125 | 15845416 |
+| cycle-list | RC-noreuse | 0.0 | 0.0 | 1754778542.0 | 1754778542.0 | 1759990479.0 | 1416087312.0 | 14152083 | 14987208 | 15210750 | 15852834 |
+
+検査・脱糖・コンパイルと run_program は例の Instant で直接区切る。実行は VM の作成・main の準備・最後の転送・VM とヒープの破棄を含む。total は入力の準備も含み、統計の書き出しを含まない。wall は起動と終了・統計の出力も含む。循環の run は構築と回収を含み、回収合計は pause_nanos の合計である。
+
+## 確保の量、生きている量、最大常駐メモリ
+
+| 負荷 | 構成 | 確保回数 | 累積確保 bytes | 最後の生存 bytes | 最大ヒープ bytes | 最大 RSS bytes | 解放数 | 残った対象 |
+|---|---|---|---|---|---|---|---|---|
+| cycle-self | MS-k0.5 | 20000 | 1280000 | 0 | 64 | 3325952 | 20000 | 0 |
+| cycle-self | MS-k1 | 20000 | 1280000 | 0 | 64 | 3325952 | 20000 | 0 |
+| cycle-self | MS-k2 | 20000 | 1280000 | 0 | 64 | 3325952 | 20000 | 0 |
+| cycle-self | RC | 20000 | 1280000 | 0 | 64 | 3555328 | 20000 | 0 |
+| cycle-self | RC-noreuse | 20000 | 1280000 | 0 | 64 | 3555328 | 20000 | 0 |
+| cycle-pair | MS-k0.5 | 40000 | 2560000 | 0 | 128 | 3325952 | 40000 | 0 |
+| cycle-pair | MS-k1 | 40000 | 2560000 | 0 | 128 | 3325952 | 40000 | 0 |
+| cycle-pair | MS-k2 | 40000 | 2560000 | 0 | 128 | 3325952 | 40000 | 0 |
+| cycle-pair | RC | 40000 | 2560000 | 0 | 128 | 3555328 | 40000 | 0 |
+| cycle-pair | RC-noreuse | 40000 | 2560000 | 0 | 128 | 3555328 | 40000 | 0 |
+| cycle-ring | MS-k0.5 | 2000100 | 128006400 | 0 | 1280064 | 5685248 | 2000100 | 0 |
+| cycle-ring | MS-k1 | 2000100 | 128006400 | 0 | 1280064 | 5685248 | 2000100 | 0 |
+| cycle-ring | MS-k2 | 2000100 | 128006400 | 0 | 1280064 | 5685248 | 2000100 | 0 |
+| cycle-ring | RC | 2000100 | 128006400 | 0 | 1280064 | 11272192 | 2000100 | 0 |
+| cycle-ring | RC-noreuse | 2000100 | 128006400 | 0 | 1280064 | 11272192 | 2000100 | 0 |
+| cycle-list | MS-k0.5 | 10000100 | 640006400 | 0 | 6400064 | 16465920 | 10000100 | 0 |
+| cycle-list | MS-k1 | 10000100 | 640006400 | 0 | 6400064 | 16465920 | 10000100 | 0 |
+| cycle-list | MS-k2 | 10000100 | 640006400 | 0 | 6400064 | 16465920 | 10000100 | 0 |
+| cycle-list | RC | 10000100 | 640006400 | 0 | 6400064 | 43024384 | 10000100 | 0 |
+| cycle-list | RC-noreuse | 10000100 | 640006400 | 0 | 6400064 | 43024384 | 10000100 | 0 |
+
+live_bytes は最後の回収時の値であり、終了時の到達可能量ではない。frees は HeapCore の破棄前の値である。RSS は `/usr/bin/time -l`（macOS）または `-v`（Linux）で取得した最大値。対象の課金量とプロセス全体の RSS は異なる。
+
+RSS を取得できなかった組:
+
+| 負荷 | 構成 | 理由 |
+|---|---|---|
+
+## 参照の増減・再利用・根・回収
+
+| 負荷 | 構成 | 増加 | 減少 | 省いた増減 | 再利用 | 再利用率 | 辿った根 | 回収 |
+|---|---|---|---|---|---|---|---|---|
+| cycle-self | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-self | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-self | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-self | RC | 40000 | 40000 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-self | RC-noreuse | 40000 | 40000 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-pair | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-pair | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-pair | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-pair | RC | 60000 | 60000 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-pair | RC-noreuse | 60000 | 60000 | 0 | 0 | 0.000000% | 0 | 20000 |
+| cycle-ring | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-ring | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-ring | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-ring | RC | 2000200 | 2000200 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-ring | RC-noreuse | 2000200 | 2000200 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-list | MS-k0.5 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-list | MS-k1 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-list | MS-k2 | 0 | 0 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-list | RC | 20000100 | 20000100 | 0 | 0 | 0.000000% | 0 | 100 |
+| cycle-list | RC-noreuse | 20000100 | 20000100 | 0 | 0 | 0.000000% | 0 | 100 |
+
+## 整数の範囲・対象の大きさ・循環の内訳
+
+| 負荷 | 構成 | 測定専用の計数 |
+|---|---|---|
+| cycle-self | MS-k0.5 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "20000", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-self | MS-k1 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "20000", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-self | MS-k2 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "20000", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-self | RC | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "20000", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0", "cycle_collections": "20000"} |
+| cycle-self | RC-noreuse | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "20000", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0", "cycle_collections": "20000"} |
+| cycle-pair | MS-k0.5 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "40000", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-pair | MS-k1 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "40000", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-pair | MS-k2 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "40000", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-pair | RC | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "40000", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0", "cycle_collections": "20000"} |
+| cycle-pair | RC-noreuse | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "40000", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0", "cycle_collections": "20000"} |
+| cycle-ring | MS-k0.5 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "2000100", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-ring | MS-k1 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "2000100", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-ring | MS-k2 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "2000100", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-ring | RC | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "2000100", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0", "cycle_collections": "100"} |
+| cycle-ring | RC-noreuse | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "2000100", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0", "cycle_collections": "100"} |
+| cycle-list | MS-k0.5 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "10000100", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-list | MS-k1 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "10000100", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-list | MS-k2 | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "10000100", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0"} |
+| cycle-list | RC | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "10000100", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0", "cycle_collections": "100"} |
+| cycle-list | RC-noreuse | {"constant_31": "0", "constant_47": "0", "constant_63": "0", "constant_64": "0", "arithmetic_31": "0", "arithmetic_47": "0", "arithmetic_63": "0", "arithmetic_64": "0", "object_le128": "10000100", "object_le256": "0", "object_le1024": "0", "object_le4096": "0", "object_gt4096": "0", "cycle_collections": "100"} |
+
+| 循環の負荷 | 構成 | 循環回収合計 ns | 循環回収最大 ns | 循環以外の回収合計 ns |
+|---|---|---|---|---|
+| cycle-self | MS-k0.5 | — | — | — |
+| cycle-self | MS-k1 | — | — | — |
+| cycle-self | MS-k2 | — | — | — |
+| cycle-self | RC | 4650873.0 | 4291 | 832734.5 |
+| cycle-self | RC-noreuse | 4660987.5 | 4750 | 834378.5 |
+| cycle-pair | MS-k0.5 | — | — | — |
+| cycle-pair | MS-k1 | — | — | — |
+| cycle-pair | MS-k2 | — | — | — |
+| cycle-pair | RC | 6462500.0 | 6708 | 858847.5 |
+| cycle-pair | RC-noreuse | 6517298.0 | 11000 | 863754.5 |
+| cycle-ring | MS-k0.5 | — | — | — |
+| cycle-ring | MS-k1 | — | — | — |
+| cycle-ring | MS-k2 | — | — | — |
+| cycle-ring | RC | 266427582.5 | 2961084 | 3767856.0 |
+| cycle-ring | RC-noreuse | 265602794.0 | 2975875 | 3745619.5 |
+| cycle-list | MS-k0.5 | — | — | — |
+| cycle-list | MS-k1 | — | — | — |
+| cycle-list | MS-k2 | — | — | — |
+| cycle-list | RC | 1392694059.0 | 15611917 | 19126672.5 |
+| cycle-list | RC-noreuse | 1396779691.5 | 15661042 | 19307620.5 |
+
+整数は LOADK で読んだ定数と NegI・AddI・SubI・MulI・DivI・ModI の結果を別に数える。区間は符号付き31/47/63ビットに収まる値と、それ以上であり、累積割合は各区間を足して求める。組み込みの関数の整数結果はこの分布に含めない。対象の大きさは頭・切り上げ・別領域を含む課金量の区間別の個数である。循環の時間の内訳は測定専用のリビジョンで埋める。循環以外の回収は停止時間の合計から循環回収時間を差し引いた値で、最初の遅延解放・根の計数・要求の処理などを含む。循環を切った後の解放は循環回収時間に含まれる。
+
+整数の累積割合（命令列は同じなので MS-k1 の計数を示す）:
+
+| 負荷 | 定数 / 算術結果 | 標本数 | 31ビット | 47ビット | 63ビット |
+|---|---|---|---|---|---|
+| cycle-self | constant | 0 | — | — | — |
+| cycle-self | arithmetic | 0 | — | — | — |
+| cycle-pair | constant | 0 | — | — | — |
+| cycle-pair | arithmetic | 0 | — | — | — |
+| cycle-ring | constant | 0 | — | — | — |
+| cycle-ring | arithmetic | 0 | — | — | — |
+| cycle-list | constant | 0 | — | — | — |
+| cycle-list | arithmetic | 0 | — | — | — |
+
+## 再現のコマンド
+
+測定専用のリビジョンで次を実行する。本番の時間測定では計数の4ファイルを戻して同じコマンドでビルドする。
+
+```sh
+cargo build --release -p benitoite --no-default-features --features gc-mark-sweep --example stage1_bench --example stage1_heap_bench --target-dir target/stage1/ms
+cargo build --release -p benitoite --no-default-features --features gc-refcount --example stage1_bench --example stage1_heap_bench --target-dir target/stage1/rc
+python3 tools/bench/stage1.py --cycle-timing --no-build --instrumented --iterations 10 --output tools/bench/results/2026-10-05-stage1-5b300d4-cycle-timing.md
+```
+
+小入力での再現確認（測定専用のリビジョン）:
+
+```sh
+python3 tools/bench/stage1.py --no-build --smoke --instrumented --iterations 2 --output target/r12-final-smoke.md --overwrite
+```
+
+通常の本測定（計数用ソースを戻した後）:
+
+```sh
+python3 tools/bench/stage1.py --measure --iterations 10 --output 'tools/bench/results/2026-10-05-stage1-5b300d4-timing.md'
+```
+
+`--inputs PATH` で VM の整数と循環の `[回数, 大きさ]` を指定した JSON を読み、入力調整を記録できる。`--render JSON` は実行せず Markdown と HTML を再生成する。既存記録は `--overwrite` を指定したときだけ上書きする。
+
+循環の内訳の本測定（測定専用のリビジョンでのみ実行）:
+
+```sh
+python3 tools/bench/stage1.py --cycle-timing --instrumented --iterations 10 --output 'tools/bench/results/2026-10-05-stage1-5b300d4-cycle-timing.md'
+```
+
+この構成の整数・確保の計数は構築中にだけ行い、循環回収中の計数処理は増やさない。VM の時間測定にこのバイナリを使わない。
+
+## 振り分けのループの変化
+
+時間は未測定。C05 直前のコミット `d4668a9^` を作業ツリー内に展開し、古い構文の fib・loop を MS-k1 と同じ入力で測る。値の大きさ・確保器・コード生成も変わるため、この差を GC 単独の効果とは扱わない。
+
+```sh
+mkdir -p target/stage1-legacy
+git archive 'd4668a9^' | tar -x -C target/stage1-legacy
+cargo build --release -p benitoite --manifest-path target/stage1-legacy/Cargo.toml --target-dir target/stage1-legacy-build
+python3 tools/bench/stage1.py --measure --legacy target/stage1-legacy-build/release/benitoite --legacy-programs target/stage1-legacy/tools/bench/programs --output 'tools/bench/results/2026-10-05-stage1-5b300d4-dispatch.md'
+```
+
+## CPU プロファイルの所見
+
+本測定後に埋める。現時点では採取していない。samply 0.13.1 の版表示と record のヘルプで以下の選択肢を確認した。fib・loop の振り分けと呼び出し、list・tree の確保と回収、eval の値と参照の操作、組み込みの関数の self の割合を比較し、ADR 0269 の見立てを検討する。
+
+```sh
+mkdir -p 'tools/bench/results/profiles/2026-10-05-stage1-5b300d4'
+samply record --save-only --unstable-presymbolicate -o 'tools/bench/results/profiles/2026-10-05-stage1-5b300d4/fib-ms.json.gz' -- target/stage1/ms/release/examples/stage1_bench --factor 100 -- tools/bench/programs/fib.bnt 35
+python3 tools/bench/profile_summary.py 'tools/bench/results/profiles/2026-10-05-stage1-5b300d4/fib-ms.json.gz' 10
+```
+
+各負荷・構成の実行コマンドは付属 JSON の rows.command にある。そのコマンドを samply の `--` の後に置く。
+
+## 比較対象の言語
+
+既存8本を一度だけ本測定する。bytecode-stats は渡さない。CPython は macOS に付属の版を使う。println のバッファ条件、string/lines の組み込みの実装、list の連結リストと配列の違いは benchmark スキルの注意に従って読む。
+
+```sh
+cargo build --release -p benitoite
+cargo build --release --manifest-path tools/bench/programs/rust/Cargo.toml
+python3 tools/bench/run.py --benitoite target/release/benitoite --verify
+python3 tools/bench/run.py --benitoite target/release/benitoite
+```
+
+## 固定項目から確認できたこと
+
+| 負荷 | 構成 | 最大ヒープ bytes | 回収回数 | 確保回数 | 再利用回数 |
+|---|---|---|---|---|---|
+
+shared は同じ部分木を2回ずつ含む構造を深さの回数だけ作る。論理的な葉の訪問数は大きいが、物理的な対象は少ない。この入力では回収が0回なので、共有した値の読み書きと参照の増減の比較として読み、GC の停止時間の根拠にはしない。collections が0の組には pause_nanos の標本がなく、百分位も求められない。
+
+## 暫定に採る方式・k・閾値・8バイトの値の案
+
+以下は案であり、設計の決定ではない。時間と停止時間が空欄の段階では方式を選ばず、本測定までは比較の基準として MS-k1 を維持する。MS を採る場合の k の案は1である。live の最大ヒープは k=0.5/1/2 で約12.6/16.8/23.6 MB、回収は6/4/2回となり、k=1 はこの入力で保持量と回収回数の中間に位置する。回収の回数から時間の費用は決められないため、停止時間と最大 RSS を本測定で確認してから k を決める。HTTP サーバで許せる停止時間と RSS は設計者に確認してもらい、第2段の R33 で測り直す。RC の遅延解放の条件と循環の閾値の見直しも、時間と保持量が揃った後に判断する。今回の算術結果はすべて符号付き63ビットに収まった。31ビットや47ビットを超える値も loop にあるため、整数の幅を狭める設計では箱の確保を見積もる必要がある。分布は今回のベンチマークの範囲であり、Float や利用者の実際のスクリプトを代表しない。8バイト案は別の測定専用の試作として検討する価値があるが、演算時の分岐・箱の確保・数値の境界の費用を比べてから採否を決める。
+
+## 残したこと
+
+リソースの解放順は第1段では扱えず R33 に回す。呼び出し予算はタスクがないため測らない。方式ごとの勝ち負け、CPU の費用の内訳、学ぶ目的への影響は時間の本測定後に検討する。循環の大きなリストで停止時間が延びるかも本測定後に判断する。
+
+測定専用の変更は `src/runtime/heap/core.rs`・`src/runtime/heap/ctx.rs`・`src/runtime/heap/core/refcount.rs`・`src/vm/dispatch.rs` である（すべて `crates/benitoite/` の下）。この4ファイルを基準コミットから復元すれば計数を外せる。本番へ取り込むのは examples の2本と stage1_support、stage1.py、programs/stage1、結果の Markdown・HTML・JSON である。測定の分担は R12 の個別指示に従った。benchmark スキルの本測定・プロファイル・比較対象の測定はオーケストレータが行う。

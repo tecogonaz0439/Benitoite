@@ -1,0 +1,12 @@
+// spec: 01-02 パイプ
+// spec: 01-02 部分適用のプレースホルダ
+function add(x: Integer, y: Integer) -> Integer
+  return x + y
+end function
+
+function main() -> Unit
+  bind result <- 1
+    |> add(_, 2)
+    |> add(_, 3)
+  bind _ <- result
+end function

@@ -1,0 +1,16 @@
+//! Reading the clock and waiting for time to pass.
+
+// The effect of this module is named Time, so the module Benitoite.Time is imported under another name.
+import Benitoite.Unofficial.Time as TimeValue
+
+/// Operations that depend on time.
+public effect Time
+  /// Stops the calling task for at least `milliseconds` while other tasks run. Returns at once for 0 or less.
+  function sleep(milliseconds: Integer) -> Unit
+  /// Returns milliseconds from an unspecified start. The value never decreases within a run.
+  function monotonicMilliseconds() -> Integer
+  /// Returns the current time.
+  function now() -> TimeValue.Instant
+  /// Returns the difference of local time from UTC in minutes, east positive. Returns 0 when it is unknown.
+  function localOffsetMinutes() -> Integer
+end effect

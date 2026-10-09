@@ -1,0 +1,18 @@
+// spec: 01-01 Decimal リテラル（初回リリース版）
+// spec: 01-04 Decimal（初回リリース版）
+// spec: 01-04 Byte（初回リリース版）
+// spec: 01-04 ビット演算（初回リリース版）
+import Benitoite.Unofficial.IO.Console
+const precise: Decimal = 1_000.50m
+function main() -> Unit uses Console.Write
+  Console.writeLine("${precise} ${1.00m / 4m} ${1m / 3m}")
+  Console.writeLine("${1.0m = 1.00m} ${-0.0m} ${1.20m * 2.0m}")
+  match Byte.fromInteger(255) with
+    case Option.Some(b) ->
+      Console.writeLine("${b} ${Byte.toInteger(Byte.shiftLeft(b, 1))} ${Byte.toInteger(Byte.bitwiseNot(b))}")
+      Console.writeLine("${b > Byte.shiftRight(b, 1)}")
+    case Option.None -> Console.writeLine("bad byte")
+  end match
+  Console.writeLine("${Byte.fromInteger(-1) = Option.None} ${Byte.fromInteger(256) = Option.None}")
+  Console.writeLine("${Integer.bitwiseAnd(6, 3)} ${Integer.shiftRight(-8, 1)} ${Integer.shiftRightUnsigned(-1, 63)}")
+end function

@@ -1,0 +1,33 @@
+// spec: 01-05 prelude が定める型
+// test: 03-06 List
+import Benitoite.Unofficial.IO.Console
+function show_ints(values: List[Integer]) -> String
+ return String.join(List.map(values, lambda(value) return Integer.toString(value) end lambda), ",")
+end function
+function show_option_int(value: Option[Integer]) -> String
+ return match value with
+ case Option.Some(number) -> "Some(" + Integer.toString(number) + ")"
+ case Option.None -> "None"
+ end match
+end function
+function main() -> Unit uses Console.Write
+ Console.writeLine(Integer.toString(List.length([])))
+ Console.writeLine(if List.isEmpty([]) then "true" else "false" end if)
+ Console.writeLine(show_option_int(List.head([])))
+ Console.writeLine(show_option_int(List.head([8, 9])))
+ Console.writeLine(show_ints(Option.unwrapOr(List.tail([8, 9]), [])))
+ Console.writeLine(show_option_int(Option.map(List.tail([]), lambda(values) return List.length(values) end lambda)))
+ Console.writeLine(show_option_int(List.get([10, 20, 30], -1)))
+ Console.writeLine(show_option_int(List.get([10, 20, 30], 3)))
+ Console.writeLine(show_ints(List.take([1, 2, 3], -1)))
+ Console.writeLine(show_ints(List.take([1, 2, 3], 9)))
+ Console.writeLine(show_ints(List.drop([1, 2, 3], -1)))
+ Console.writeLine(show_ints(List.drop([1, 2, 3], 9)))
+ Console.writeLine(show_ints(List.range(4, 2)))
+ Console.writeLine(show_ints(List.range(2, 5)))
+ Console.writeLine(if List.contains([1, 2, 3], 2) then "true" else "false" end if)
+ Console.writeLine(show_ints(List.concatenate([1, 2], [3, 4])))
+ Console.writeLine(show_ints(List.reverse([1, 2, 3])))
+ Console.writeLine(show_ints(List.prepend([2, 3], 1)))
+ Console.writeLine(show_ints(List.append([1, 2], 3)))
+end function

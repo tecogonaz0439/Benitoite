@@ -1,0 +1,14 @@
+error[E0401]: mismatched types
+  --> testdata/types/c11-record-update-type.bnt:6:26
+   |
+ 6 |   return Box(..x, value: "bad")
+   |                          ^^^^^ expected `Integer`, found `String`
+   |
+  ::: testdata/types/c11-record-update-type.bnt:3:10
+   |
+ 3 |   value: T
+   |          - expected because of this
+   |
+   = note: the value must match the type of the field `value`
+
+error: could not check testdata/types/c11-record-update-type.bnt due to 1 previous error

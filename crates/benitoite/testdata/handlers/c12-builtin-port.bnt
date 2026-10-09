@@ -1,0 +1,22 @@
+// spec: 01-07 利用者が定義するエフェクトとハンドラ（初回リリース版）
+// spec: 01-06 エフェクトの宣言とハンドラの型付け（初回リリース版）
+// 関門: 組み込み操作の差し替えを守り、ハンドラを飛ばして実ファイルを読む退行を捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function readPort(path: String) -> Result[Integer, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
+end function
+
+function main() -> Unit uses File.Read, Console.Write
+  bind result <- handle
+    readPort("missing.conf")
+  with
+    case File.readText(path) ->
+      Console.writeLine(path)
+      resume(Result.Ok("8080"))
+  end handle
+  Console.writeLine(if result = Result.Ok(8080) then "port: 8080" else "wrong port" end if)
+end function

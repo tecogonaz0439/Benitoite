@@ -1,0 +1,13 @@
+// spec: 01-06 エフェクトの宣言とハンドラの型付け（初回リリース版）
+effect Log
+  function write(value: String) -> Unit
+  function flush() -> Unit
+end effect
+function bad() -> Unit
+  handle write("x") with
+    case write(message) -> resume(())
+  end handle
+end function
+function main() -> Unit
+  ()
+end function

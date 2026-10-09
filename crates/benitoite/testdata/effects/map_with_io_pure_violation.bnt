@@ -1,11 +1,13 @@
 // spec: 01-06 エフェクト変数の具体化
-fn map_and_print(values: List[Int]) -> List[Int] {
-    List.map(values, fn(value) {
-        Console.println(Int.toString(value))
-        value
-    })
-}
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit {
-    ()
-}
+function map_and_print(values: List[Integer]) -> List[Integer]
+    return List.map(values, lambda(value)
+        Console.writeLine(Integer.toString(value))
+        return value
+    end lambda)
+end function
+
+function main() -> Unit
+    return ()
+end function

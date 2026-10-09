@@ -26,7 +26,7 @@
 
 ## 作るもの
 
-- ワークロード: 07-02「初回リリース版の完了時の測定」の handler（末尾で再開する節と、継続を保存してから再開する節の二つの形）、tasks、cycle は、C16 が `tools/bench/programs/` に置いたもの（`handler.bnt`・`tasks.bnt`・`cycle.bnt`）を使い、二つ目を作らない。入力の大きさを変える必要があれば、C16 の `BENCH_INPUTS` の値を改める。
+- ワークロード: 07-02「初回リリース版の完了時の測定」の handler（末尾で再開する節と、継続を保存してから再開する節の二つの形。後者は `resume` の後に計算が続く節、つまり末尾でない再開の意味である。C16 の作るものの表を参照）、tasks、cycle は、C16 が `tools/bench/programs/` に置いたもの（`handler.bnt`・`tasks.bnt`・`cycle.bnt`）を使い、二つ目を作らない。入力の大きさを変える必要があれば、C16 の `BENCH_INPUTS` の値を改める。
 - 測定の道具: R12 が作った道具（`HeapStats` を読む例のプログラムと、記録を作るスクリプト）を使う。足りない項目を読む変更だけを加える。
 - 測定の記録: `tools/bench/results/<日付>-memory-remeasure-<コミット>.md` と、スキル `benchmark` の手順で作る `.html`。
 

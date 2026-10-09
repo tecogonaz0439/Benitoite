@@ -27,10 +27,36 @@
 ## 作るもの
 
 - `src/ir/desugar.rs`: 10-06 の `sig=src/ir/desugar.rs` の `desugar` の中身と、非公開の補助の関数。構文の種類が多いので、`desugar.rs` の下に非公開の子のモジュールを置いてよい（例: `desugar/exprs.rs`・`desugar/dicts.rs`・`desugar/patterns.rs`・`desugar/decls.rs`）。子のモジュールの分け方は実装 LLM が決める。
-- `src/ir/desugar.rs` の中の `#[cfg(test)] pub(crate) mod test_support`: ソースの文字列の組（ファイルのパスと内容）から `CoreProgram` を作る補助の関数。F07 の `typeck::test_support`（読み込み・名前解決・型検査を行う）を呼んでから `desugar` を呼び、診断に誤りがあればテストを失敗させる。後の作業（F14・F15 のテスト）が使う。
+- `src/ir/desugar.rs` の中の `#[cfg(test)] pub(crate) mod test_support`: ソースの文字列の組（ファイルのパスと内容）から `CoreProgram` を作る補助の関数を一つ置く（後述の「テストの補助」）。後の作業（F14・F15 のテスト）が使う。
+- `src/ir/check.rs`（F13 のファイル）の、ラムダの検査の修正（後述の「F13 の検査器のラムダの検査」）。
 - 各ファイルの `#[cfg(test)] mod tests`。
 
-これ以外のファイルは変えない。`src/legacy/` は読むだけにし、`crate::legacy` を参照しない。
+これ以外のファイルは変えない。`src/ir/check.rs` は、次の「F13 の検査器のラムダの検査」の変更に限って直してよい。`src/legacy/` は読むだけにし、`crate::legacy` を参照しない。
+
+### テストの補助
+
+【本プランの決定】補助の関数は次の一つとする。
+
+```rust
+pub(crate) fn desugar_files(
+    files: &[(&str, &str)],
+    require_main: bool,
+) -> (LoadOutput, ResolveOutput, TypeckOutput, CoreProgram)
+```
+
+- 引数は F07 の `typeck::test_support::check_files` と同じである。`files` の先頭の組が実行を始めるモジュールになる（F05 の `modules::memfs::load_files`）。`require_main` は `check_files` と `typecheck` にそのまま渡す。真なら `CoreProgram::main` は `Some` になり、F14・F15 のテストはその `main` を実行できる（F15 の `start_main`、F14 の開始状態）。偽なら `main` は `None` になる（F14 の「`main` のないプログラム」の場合）。
+- 手順: `check_files` を呼び、返った診断に誤り（`Diagnostic::is_error`）が一つでもあれば、診断を並べた文でテストを失敗させる（panic）。警告だけなら続ける。続けて `desugar(&load.modules, &load.asts, &resolved, &types)` を呼び、`Err` ならテストを失敗させる。最後に `check_program` を当て、空でなければ誤りを並べた文でテストを失敗させる。後述の「受け入れテスト」の「すべてのテストで `check_program` を当てる」は、この補助を通すことで満たす。
+- 戻り値は、`check_files` の戻り値の初めの三つ（読み込みの結果、名前解決の出力、型検査の出力）と、脱糖の結果である。F15 は読み込みの結果の `sources`（`SourceTable`）を `codegen` に渡し、本作業のテストは名前解決の出力で束縛を引いて結果と比べる。
+
+### F13 の検査器のラムダの検査
+
+02-06「コア IR」の表と本文書の「型とエフェクトの付け方」は、ラムダの型のエフェクトを `lambda_effects` の値とする。F07 は、`uses` を書いたラムダでは注釈の集合をそのまま `lambda_effects` に記録するので、本体が純粋な `uses` 付きのラムダでは、ラムダの型のエフェクトが本体のエフェクトより大きくなる。02-06「コア IR の検査器」と F13 の「包含を使う位置」は、ラムダの本体を包含を使う位置に挙げており、この形を正しいとする。ところが取り込み済みの検査器は、`Checker::lambda`（`src/ir/check.rs` の 446〜461 行）でラムダの型のエフェクトを本体の `body.eff` から作り、`Checker::value`（同 409〜411 行）でその型と `val.ty` の完全な一致を求めるので、この形を誤りにする。検査器のほうが設計書より厳しすぎる。
+
+本作業は、検査器のラムダの検査を次のように直す。
+
+- `Checker::lambda` は、ラムダの値の型 `val.ty`（`Ty::Fn`）のエフェクトをラムダの型のエフェクトとし、本体の `body.eff` がそれに含まれるかを `Checker::effects` で調べる。導いた型は、引数の型と本体の型と `val.ty` のエフェクトからなる関数の型とする。`val.ty` が関数の型でなければ、従来どおり `body.eff` から作り、`Checker::value` の一致の検査に誤りを報告させる。`val.ty` を渡すために `Checker::lambda` の引数を変えてよい（非公開の関数である）。
+- F13 の既存のテストの結果を変えない。結果が変わるテストがあれば、02-06 のとおりの結果に直し、完了の報告に挙げる。
+- 本体のエフェクトがラムダの型のエフェクトより大きいラムダを誤りにすること（包含を許しても甘くしすぎていないこと）と、本体が純粋な `uses` 付きのラムダを受け入れることを、`src/ir/check.rs` のテストに加える。
 
 ## 手順の要点
 
@@ -89,7 +115,7 @@
 並びは、`Program` のコメントのとおり、モジュールの ID の順、モジュールの中では宣言の順とする。
 
 - `Item::Fn` のうち本体を持つものは `DefKind::Fn` の定義にする。`@builtin` の宣言（`body` が `None`）は定義を作らない（組み込みの関数の項目として `ValKind::Builtin` で指す）。
-- `Item::Record` は、レコードの宣言の位置に、フィールドごとの `DefKind::FieldGetter { record, index }` の定義を宣言の順に置く。本体は `match r { C_R(_, …, zi, …, _) ⇒ return zi }`（01-12「レコード」。行は一つ、分岐は一つで、分岐の変数は zi だけ）とし、引数 `r` の型と戻り値の型は `types.decl_types` のフィールドの束縛の宣言の型から写す。
+- `Item::Record` は、レコードの宣言の位置に、フィールドごとの `DefKind::FieldGetter { record, index }` の定義を宣言の順に置く。本体は `match r { C_R(_, …, zi, …, _) ⇒ return zi }`（01-12「レコード」。行は一つ、分岐は一つで、分岐の変数は zi だけ）とし、引数 `r` の型と戻り値の型は `types.decl_types` のフィールドの束縛の宣言の型から写す。`Def::span` と、本体の計算と値の由来位置は、フィールドの宣言（`FieldDecl::span`）とする。
 - `Item::Impl` は `ImplDef` にする（後述の「実装」）。`Item::Const` は `ConstDef` にする（後述の「定数」）。`Item::Data`・`Alias`・`Trait`・`Effect` は定義を作らない。
 
 関数の定義の欄は、`types.decl_types` の `Scheme` から写す。`type_params` は型パラメータの名前、`effect_params` はエフェクト変数の名前、`dict_params` は `Scheme::class_constraints` の制約ごとに新しい `VarId` を一つ振った `DictParam`（`constraint` はその制約）、`params` は引数ごとの `Var`（名前はソースの名前、型は `Scheme::params`。引数の宣言したノード `Param::id` の束縛を `VarId` に対応させる）、`ret`・`eff` は `Scheme` の値、`span` は関数の宣言の span である。
@@ -144,8 +170,8 @@
 - `If`・`Match`・`Escape`・`Handle` の型は、元の表層の式の `expr_types` の型。
 - `Use` のエフェクトは本体のエフェクトと {`State`} の和集合、`Lazy` の型は `Lazy[本体の型]`（10-05 の `BuiltinTypeId::LAZY`）でエフェクトは空集合。
 - `Handle` のエフェクトは、本体のエフェクトから `handled` を除いた集合と、各節の本体のエフェクトの和集合。節の本体のエフェクトは、節の中の `Resume` のエフェクトを除いて求める（02-06「コア IR」の表の後の段落）。
-- `Resume` の型は、節を持つ `handle` の式の `expr_types` の型。エフェクトは、その `handle` のエフェクト ε である。ε は節を辿り終えるまで決まらないので、次の順に作る。(1) 節の本体を、`Resume` のエフェクトを空集合として脱糖する。(2) `Handle` のエフェクト ε を上の規則で求める。(3) 各節の本体を辿り直し、その節の `ContVar` を指す `Resume` のエフェクトを ε に置き換え、`Resume` を含む計算のエフェクトを下から求め直す。求め直しても ε は変わらない（02-06 の同じ段落）。(3) はラムダと `lazy` の本体の中に入らない（そこには `Resume` がない。ADR 0155）が、入れ子の `handle` の本体と節の中には入る。
-- ラムダの型は `function(引数の型) -> 本体の型`、エフェクトは `lambda_effects` の値。本体の型が型検査の表の型と違っても、本体の型を使う（違いがあれば F13 の検査器が見つける）。
+- `Resume` の型は、節を持つ `handle` の式の `expr_types` の型。エフェクトは、その `handle` のエフェクト ε である。ε は節を辿り終えるまで決まらないので、次の順に作る。(1) 節の本体を、`Resume` のエフェクトを空集合として脱糖する。(2) `Handle` のエフェクト ε を上の規則で求める。(3) 各節の本体を辿り直し、その節の `ContVar` を指す `Resume` のエフェクトを ε に置き換え、`Resume` を含む計算のエフェクトを下から求め直す。求め直しても ε は変わらない（02-06 の同じ段落）。(3) はラムダと `lazy` の本体の中に入らない（そこには `Resume` がない。ADR 0155）が、入れ子の `handle` の本体と節の中には入る。外側の節の `Resume` が入れ子の `handle` の本体にあると、そのエフェクトを ε に置き換えたことで、入れ子の `handle` のエフェクトも大きくなりうる。そこで (3) は、入れ子の `handle` に出会うたびに、その本体と節を辿り直した後で、入れ子の `handle` のエフェクトを上の規則で求め直す。変わったら、入れ子の `handle` の節の `Resume`（入れ子の節の `ContVar` を指すもの）のエフェクトも新しい値に置き換え、その節の本体のエフェクトを求め直してから、入れ子の `handle` を含む計算のエフェクトを外へ向かって求め直す。こうしないと、入れ子の節の `Resume` のエフェクトが入れ子の `handle` のエフェクトと食い違い、F13 の `Checker::resume` の等しさの検査が誤りを返す。
+- ラムダの型は `function(引数の型) -> 本体の型`、エフェクトは `lambda_effects` の値。本体の型が型検査の表の型と違っても、本体の型を使う（違いがあれば F13 の検査器が見つける）。本体のエフェクトは `lambda_effects` の値に含まれればよく、等しいとは限らない（`uses` を書いたラムダ。前述の「F13 の検査器のラムダの検査」）。
 
 ### 文とブロック、`return`
 
@@ -173,11 +199,11 @@
 - メソッドの呼び出し `Cl.m(e1, …, en)`: 引数を書いた順に束縛し、`CompKind::Method`。`dict` は `dicts` の 0 番、`dicts` は 1 番から後、`method` は束縛の `Method { index }`、`targs` は `type_args` の 1 番から後の型と、エフェクトの置き換えのすべて（0 番は型クラスの引数に与えた型なので除く）。
 - 制約を持つ関数の呼び出し: `App::dicts` に、`dicts` の値を制約の番号の順に移して並べる。
 - メソッドを値として使う `Cl.m`、制約を持つ関数を呼ばずに値として使う `f`: `Return(Lambda)`。ラムダの引数は、置き換えた宣言の型の値の引数の型の新しい変数、本体は上の呼び出し。ラムダの `span` と由来位置は名前の参照の span、エフェクトは置き換えた宣言の型のエフェクト。
-- 実装 `implement … end implement`: `ImplDef` の `class`・`type_params`・`dict_params`（`types.impls` の `class_constraints`）を写し、`supers` は `types.impls` の `supers` を実装の頭部の文脈で移す。`methods` は `TraitDef::methods` の順（`types.impls` の `methods` の束縛の順）に、実装の中の関数ごとに `DefKind::Method { impl_decl, index }` の定義を作る。【本プランの決定】メソッドの定義の `type_params` は、実装の型パラメータの後に関数自身の型パラメータを並べたもの（宣言の型の番号と同じ並び）、`dict_params` は関数自身の制約（`Scheme::class_constraints` の k' 番から後）だけとする（10-06 の `Def::dict_params` のコメント）。
+- 実装 `implement … end implement`: `ImplDef` の `class`・`type_params`・`target`（`types.impls` の `target`）・`dict_params`（`types.impls` の `class_constraints`）を写し、`origin` はメソッドの定義と同じ規則（`Entry`・`User` のモジュールなら `User`、`Prelude`・`Stdlib` のモジュールなら `StdlibPublic`。前述の「定義の並びと名前」）、`span` は実装の宣言（`ImplDecl::span`）とする。`supers` は `types.impls` の `supers` を実装の頭部の文脈で移す。`methods` は `TraitDef::methods` の順（`types.impls` の `methods` の束縛の順）に、実装の中の関数ごとに `DefKind::Method { impl_decl, index }` の定義を作る。【本プランの決定】メソッドの定義の `type_params` は、実装の型パラメータの後に関数自身の型パラメータを並べたもの（宣言の型の番号と同じ並び）、`dict_params` は関数自身の制約（`Scheme::class_constraints` の k' 番から後）だけとする（10-06 の `Def::dict_params` のコメント）。
 
 ### `try`、`with`、`lazy`、エフェクトの操作と `handle`
 
-- `try e`: 01-12「関数の境界と `escape`」の表のとおり、`let x ⇐ ⟦e⟧ in Match { x; 行は成功の構成子と失敗の構成子 }`。分岐 0 は `Ok(y)`・`Some(y)` で本体 `Return(y)`、分岐 1 は `Error(z)` で本体 `Escape(Error[U, E](z))`、または `None` で本体 `Escape(None[U]())`。種類と U・E は `try_kinds` の `TryInfo`（`ret` が `Result[U, E]` か `Option[U]`）から読む。構成子の型の束縛とタグは、`resolved.stdlib("Benitoite.Result.Ok")` などで引いた束縛の `BindingKind::Ctor { data, tag }` から取る（綴りでなく名前空間の名前で照合する。ADR 0128）。`Match` と `Escape` の由来位置は `try e` 全体（02-02）。
+- `try e`: 01-12「関数の境界と `escape`」の表のとおり、`let x ⇐ ⟦e⟧ in Match { x; 行は成功の構成子と失敗の構成子 }`。分岐 0 は `Ok(y)`・`Some(y)` で本体 `Return(y)`、分岐 1 は `Error(z)` で本体 `Escape(Error[U, E](z))`、または `None` で本体 `Escape(None[U]())`。種類と U・E は `try_kinds` の `TryInfo`（`ret` が `Result[U, E]` か `Option[U]`）から読む。分岐の変数 y・z の型は、対象の式 e の型（`expr_types`。`Result[T, E1]` か `Option[T]`）の型引数から取る。y は T、z は E1 である。構成子の型の束縛とタグは、`resolved.stdlib("Benitoite.Result.Ok")` などで引いた束縛の `BindingKind::Ctor { data, tag }` から取る（綴りでなく名前空間の名前で照合する。ADR 0128）。`Match` と `Escape` の由来位置は `try e` 全体（02-02）。
 - `with x1 = e1, … do B end with`: 01-12「解放の枠と実行時エラーの継続」の表のとおり、束縛の順に `Let` と `Use` を入れ子にする。`with` の束縛の変数の型は `WithBind` の `expr_types`。`Use` の由来位置は、その解放に当たる束縛 `x = e` の span（02-02）。
 - `lazy B end lazy`: `CompKind::Lazy { id: 新しい BodyId, body: ⟦B⟧ }`。由来位置は `lazy` から `end lazy` まで。
 - エフェクトの操作の呼び出し: 前述の名前の表のとおり、利用者の操作は `ValKind::Op` の適用、組み込みのエフェクトの操作は `ValKind::Builtin` の適用にする。
@@ -188,10 +214,10 @@
 
 02-06「パターンの拡張」のとおり、表層の分岐ごとに `MatchArm` を一つ、分岐の選択肢ごとに `MatchRow` を一つ、元の順に作る。
 
-- 分岐の変数（`MatchArm::vars`）は、最初の選択肢が束縛する変数を、パターンの中で左から現れる順に並べたもの。最初の選択肢の `VarPat`（と名前のある `ListRest`）は束縛を宣言したノードであり、ほかの選択肢の同じ名前の `VarPat` は参照の表でその束縛を指す（10-04「名前解決の表」）ので、どちらも同じ `VarId` に移る。
+- 分岐の変数（`MatchArm::vars`）は、最初の選択肢が束縛する変数を、パターンの中で左から現れる順に並べたもの。最初の選択肢の `VarPat`（と名前のある `ListRest`）は束縛を宣言したノードであり、ほかの選択肢の同じ名前の `VarPat` は参照の表でその束縛を指す（10-04「名前解決の表」）ので、どちらも同じ `VarId` に移る。分岐の変数の型は、最初の選択肢の `VarPat` の `expr_types` の型、名前のある `ListRest` なら `ListRest` のノードの `expr_types` の型（`List[T]`）とする。
 - パターンは `CorePat` に移す: `WildcardPat` は `Wild`、`VarPat` は `Var`、`LitPat` は `lit_values` の値の `Const`、`UnitPat` は `Const(Unit)`、`CtorPat` は型名の修飾を除いた `Ctor { adt, tag, args }`（束縛の種類 `Ctor { data, tag }`）、`RecordPat` はフィールドを宣言の順に並べ書かないフィールドを `Wild` にした `Ctor { tag: 0 }`、`RangePat` は `range_bounds` の値の `Range`、`ListPat` は `List { before, rest, after }`（`rest` は `..` を書いたときだけ `Some`、`..rest` の変数は `ListRest::var`）。
 - ガードは、末尾位置でない計算として脱糖し、`MatchArm::guard` に入れる。本体は分岐ごとに一度だけ脱糖する。
-- 対象の式は `let x ⇐ ⟦e⟧ in Match { scrutinee: x, … }` の形にし、`scrutinee` は常に変数にする（F12 はこれを前提にする）。行の由来位置はその選択肢のパターン（02-02）であり、`CorePat` は位置を持たないので、`Match` の計算の由来位置は `match` の式全体とする。
+- 対象の式は `let x ⇐ ⟦e⟧ in Match { scrutinee: x, … }` の形にし、`scrutinee` は常に変数にする（F12 はこれを前提にする）。行（`MatchRow`）と `CorePat` は由来位置を持たない（02-02 の表の `match` の選択肢の行）。`Match` の計算の由来位置は `match` の式全体とする。
 
 ### 定数
 
@@ -208,9 +234,9 @@
 
 ## 受け入れテスト
 
-テストは `test_support` でソースから `CoreProgram` を作り、結果の形を確かめる。利用者の定義の本体を、型と由来位置を省いた短い表記の文字列にする補助の関数をテストのモジュールに置き、期待する表記と比べてよい。
+テストは `test_support::desugar_files` でソースから `CoreProgram` を作り、結果の形を確かめる。利用者の定義の本体を、型と由来位置を省いた短い表記の文字列にする補助の関数をテストのモジュールに置き、期待する表記と比べてよい。
 
-すべてのテストで、`desugar` の結果に F13 の `check_program` を当て、空の並びが返ることも確かめる（最小実行版で脱糖と検査器を組み合わせて確かめたのと同じ役割。本作業が F13 に依存するのはこのためである）。
+すべてのテストで、`desugar` の結果に F13 の `check_program` を当て、空の並びが返ることも確かめる（`desugar_files` が当てる。最小実行版で脱糖と検査器を組み合わせて確かめたのと同じ役割。本作業が F13 に依存するのはこのためである）。
 
 | 場合 | 入力の要点 | 期待する結果 |
 |---|---|---|
@@ -229,12 +255,15 @@
 | `with` | 二つの束縛を持つ `with` | `Let`・`Use`・`Let`・`Use` の入れ子。`Use` の由来位置がそれぞれの束縛 |
 | `lazy` | `lazy … end lazy` | `Lazy` の型が `Lazy[本体の型]`、エフェクトが空集合 |
 | `handle` と `resume` | 01-02「エフェクトの宣言とハンドラ」の例（節の中の `resume(())`） | `Handle` の `handled` が {`Log`}、節の `tail_resumptive` が真、`Resume` の `cont` が節の `ContVar`、`Resume` のエフェクトが `handle` のエフェクト |
+| 入れ子の `handle` の中の `resume` | 外側の `handle` の節の本体に内側の `handle` があり、外側の節の `resume(())` が内側の `handle` の本体にある形（内側の節も `resume` を呼ぶ） | 内側の `handle` のエフェクトが、外側の `Resume` のエフェクトを含めて求め直してある。内側の節の `Resume` のエフェクトが内側の `handle` のエフェクトと等しい |
 | 組み込みの操作の節 | `Console.writeLine` の節を持つ `handle` | 節の `op` が操作の束縛、`OpDef::builtin` が組み込みの関数 |
 | 辞書 | 上位の型クラスを持つ型クラス、制約を持つ関数、実装、実装のメソッドの中の実装の制約の辞書（10-14 の `Benitoite.Trait` を使う） | 呼び出しの `dicts` が `Impl`、制約を持つ関数の中の辞書が `Param`、上位の型クラスが `Super`、メソッドの本体が `ImplParam` を使う |
 | メソッドを値として使う | `List.map(xs, Show.show)` と、制約を持つ関数を値として渡す | 辞書を渡すラムダ |
 | 束縛の文のパターン | `bind Pair(a, b) <- p` と `bind Person(name: n, ..) <- q` | 1 行 1 分岐の `Match`。由来位置が束縛の文全体 |
 | `match` の拡張 | 選択肢 `case 1, 2 ->`、ガード、範囲、`[first, ..rest]` | 行が選択肢ごと、同じ分岐の番号。選択肢の変数が同じ `VarId`。`CorePat` が `Range`・`List` |
 | 変数と本体の番号 | 同じ名前を `shadow` で三度束縛する関数、ラムダを多く含むプログラム | `VarId` がすべて異なり `var_count` と一致する。`BodyId` がプログラム全体で重ならず `body_count` と一致する |
+
+表の入力で標準ライブラリの非公式のモジュールを使うときは、`import Benitoite.Unofficial.IO.Console` のように取り込みの名前で書く（[ADR 0286](../../design/decisions/0286-unofficial-modules-imported-under-unofficial.md)）。01-02 の例の `import Benitoite.IO.Console` をそのまま写すと、今の版では E0321 になる。「`handle` と `resume`」と「組み込みの操作の節」の行がこれに当たる。
 
 ## 完了条件
 

@@ -1,12 +1,12 @@
 // spec: 01-06 型の推論と型注釈
-fn first() -> Int {
-    "wrong"
-}
+function first() -> Integer
+    return "wrong"
+end function
 
-fn second() -> Bool {
-    0
-}
+function second() -> Boolean
+    return 0
+end function
 
-fn main() -> Unit {
-    ()
-}
+function main() -> Unit
+    return ()
+end function

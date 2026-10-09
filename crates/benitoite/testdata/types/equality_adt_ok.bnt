@@ -1,17 +1,19 @@
 // spec: 01-06 等値の型
 // spec: 01-05 prelude が定める型
 // spec: 01-04 型の一覧
-fn show_bool(value: Bool) -> String {
-    if value { "true" } else { "false" }
-}
+import Benitoite.Unofficial.IO.Console
 
-type Wrapped[T] {
+function show_bool(value: Boolean) -> String
+    return if value then "true" else "false" end if
+end function
+
+data Wrapped[T]
     WrappedValue(T)
-}
+end data
 
-fn main() -> Unit uses IO {
-    let value = Wrapped.WrappedValue([1, 2])
-    Console.println(show_bool(value == Wrapped.WrappedValue([1, 2])))
-    Console.println(show_bool([1, 2] == [1, 2]))
-    Console.println(show_bool(Some(0.0 / 0.0) == Some(0.0 / 0.0)))
-}
+function main() -> Unit uses Console.Write
+    bind value <- Wrapped.WrappedValue([1, 2])
+    Console.writeLine(show_bool(value = Wrapped.WrappedValue([1, 2])))
+    Console.writeLine(show_bool([1, 2] = [1, 2]))
+    return Console.writeLine(show_bool(Option.Some(0.0 / 0.0) = Option.Some(0.0 / 0.0)))
+end function

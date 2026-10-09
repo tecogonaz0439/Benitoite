@@ -1,0 +1,26 @@
+// 設計書 03-08「Regex」。
+// 関門: CLI の取り込み・型・エフェクトと関数の組み合わせから得る出力を守る。
+// 登録や呼び出しの接続漏れは本体の単体テストで届かず、専用の差し込み口は不要である。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Regex
+function extractDates(text: String) -> Result[List[String], String]
+  bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
+  return Result.Ok(Regex.findAll(pattern, text) |> List.map(_, Regex.matchText))
+end function
+function main() -> Result[Unit, String] uses Console.Write
+  bind dates <- try extractDates("日付 2026-09-28 と 2026-10-08")
+  Console.writeLine(Trait.Show.show(dates))
+  bind pattern <- try Regex.compile(r"(?P<word>[a-z]+)=(\d+)")
+  bind text <- "é a=12,b=3!"
+  bind replaced <- Regex.replaceAllWith(pattern, text, lambda(m)
+    Console.writeLine(Integer.toString(Regex.matchByteStart(m)) + ":" + Integer.toString(Regex.matchByteEnd(m)))
+    return Option.unwrapOr(Regex.namedGroup(m, "word"), "?") + ":" + Option.unwrapOr(Regex.group(m, 2), "?")
+  end lambda)
+  Console.writeLine(replaced)
+  Console.writeLine(Regex.replaceFirst(pattern, text, r"$1"))
+  Console.writeLine(Regex.replaceAll(pattern, text, "X"))
+  Console.writeLine(Trait.Show.show(Regex.split(pattern, text)))
+  Console.writeLine(Trait.Show.show(Regex.isMatch(pattern, text) and Result.isError(Regex.compile("["))))
+  return Result.Ok(())
+end function

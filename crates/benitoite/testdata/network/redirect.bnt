@@ -1,0 +1,27 @@
+// spec: 01-11 タスクの集まり
+// spec: 01-11 タスクの切り替え
+// 設計書 03-09「クライアント」。
+// 関門: CLI の実通信で相対 Location を辿った先の応答を観測する。
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+
+function server(listener: Http.Listener) -> Result[Unit, String] uses Http.Listen, State
+  with first = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+    bind _ <- try Http.respond(first, Http.Response(status: 302, headers: [Pair("Location", "/final")], body: Bytes.empty())) |> Result.mapError(_, NetworkError.message)
+  end with
+  with last = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+    bind request <- Http.requestOf(last)
+    return Http.respond(last, Http.text(200, Http.Request.path(request))) |> Result.mapError(_, NetworkError.message)
+  end with
+end function
+
+function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
+  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+    bind task <- TaskGroup.spawn(group, lambda() return server(listener) end lambda)
+    bind result <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/start") |> Result.mapError(_, NetworkError.message)
+    bind _ <- try Task.await(task)
+    Console.writeLine(Integer.toString(Http.Response.status(result)))
+    Console.writeLine(try Option.okOr(String.fromUTF8(Http.Response.body(result)), "UTF-8"))
+    return Result.Ok(())
+  end with
+end function

@@ -1,4 +1,10 @@
 // spec: 01-03 トップレベルの名前空間
-fn value() -> Int { 1 }
-	fn value() -> Int { 2 }
-fn main() -> Unit { () }
+function value() -> Integer
+  return 1
+end function
+	function value() -> Integer
+  return 2
+end function
+function main() -> Unit
+  return ()
+end function

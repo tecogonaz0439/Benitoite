@@ -1,0 +1,27 @@
+// spec: 01-02 ドキュメントコメント（初回リリース版）
+// spec: 01-02 属性（初回リリース版）
+/// A port and its documentation.
+record Server
+  /// The TCP port to listen on.
+  port: Integer
+end record
+
+/// An old helper kept for compatibility.
+@deprecated("use Server.port instead")
+function oldPort(server: Server) -> Integer
+  return Server.port(server)
+end function
+
+/// Checks a simple construction without external operations.
+@test("constructs a server")
+function constructServer() -> Unit
+  bind _ <- Server(port: 8080)
+  ()
+end function
+
+/// Entry point.
+function main() -> Unit
+  bind server <- Server(port: 8080)
+  bind _ <- Server.port(server)
+  ()
+end function

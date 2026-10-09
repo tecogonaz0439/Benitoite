@@ -1,0 +1,15 @@
+// spec: 01-05 パターンの拡張（初回リリース版）
+import Benitoite.Unofficial.IO.Console
+function cond() -> Boolean uses Console.Write
+  Console.writeLine("guard")
+  return true
+end function
+function f(n: Integer) -> Unit
+  match n with
+    case _ if cond() -> ()
+    case _ -> ()
+  end match
+end function
+function main() -> Unit
+  ()
+end function

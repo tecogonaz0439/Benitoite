@@ -1,0 +1,5 @@
+// spec: 01-02 リストの展開（初回リリース版）
+function main() -> Unit
+  bind xs <- [1]
+  bind ys <- [...xs]
+end function

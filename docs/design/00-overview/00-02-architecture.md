@@ -1,8 +1,8 @@
 # 全体像
 
 - 状態: 確定
-- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0018](../decisions/0018-reference-interpreter.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0175](../decisions/0175-script-embedded-binary-before-stable-release.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0239](../decisions/0239-cycle-collection-for-reference-cells.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)
-- 未決事項: [OPEN-007](../open-issues.md#open-007), [OPEN-015](../open-issues.md#open-015), [OPEN-036](../open-issues.md#open-036), [OPEN-051](../open-issues.md#open-051), [OPEN-055](../open-issues.md#open-055)
+- 関連ADR: [0015](../decisions/0015-shared-program-per-execution-state.md), [0018](../decisions/0018-reference-interpreter.md), [0076](../decisions/0076-initial-implementation-in-rust.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0175](../decisions/0175-script-embedded-binary-before-stable-release.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0239](../decisions/0239-cycle-collection-for-reference-cells.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md), [0355](../decisions/0355-mark-sweep-k1-for-first-release.md)
+- 未決事項: [OPEN-007](../open-issues.md#open-007), [OPEN-015](../open-issues.md#open-015), [OPEN-051](../open-issues.md#open-051), [OPEN-055](../open-issues.md#open-055)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 0.3（決定事項サマリ）, 付録A, 3.2, 6, 8.1, 10, 19.3, 20, 23.3, 23.4
 
 ## 目的と範囲
@@ -32,7 +32,7 @@ Benitoite を構成する要素（言語仕様・処理系・ライブラリ・�
 
 ### 言語仕様と処理系の境界
 
-【決定】処理系は Rust で書き、LLM が実装する。性能を測定した後に実装言語を見直す段階は設けない（[ADR 0076](../decisions/0076-initial-implementation-in-rust.md)）。【方針】実行方式の基準案は、自作のバイトコード VM（JIT なし）とする（[設計メモ](../sources/fp-language-design.md) 6）。処理系コアの WASM 化は代替案として残す。言語の値の回収は処理系が行う。【決定】最小実行版は言語の値を参照カウントで管理する（[ADR 0078](../decisions/0078-reference-counting-in-minimal.md)）。初回リリース版で循環する値を回収する方式は【未決】であり、初回リリース版の実装プランを作るときに、値の表現とランタイムの作り直しで決める（[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)、[OPEN-036](../open-issues.md#open-036)）。それまでの暫定の方式は [ADR 0239](../decisions/0239-cycle-collection-for-reference-cells.md) とする。WASM 化の採否は [OPEN-007](../open-issues.md#open-007) で扱う。
+【決定】処理系は Rust で書き、LLM が実装する。性能を測定した後に実装言語を見直す段階は設けない（[ADR 0076](../decisions/0076-initial-implementation-in-rust.md)）。【方針】実行方式の基準案は、自作のバイトコード VM（JIT なし）とする（[設計メモ](../sources/fp-language-design.md) 6）。処理系コアの WASM 化は代替案として残す。言語の値の回収は処理系が行う。【決定】最小実行版は言語の値を参照カウントで管理する（[ADR 0078](../decisions/0078-reference-counting-in-minimal.md)）。【決定】初回リリース版は、循環する値も回収できる、止めて行う非移動のマーク・スイープで言語の値を管理する。方式は、初回リリース版の実装プランを作るときの値の表現とランタイムの作り直しで、改良した参照カウントと比べて選んだ（[ADR 0240](../decisions/0240-runtime-redesign-in-first-release-plan.md)、[ADR 0355](../decisions/0355-mark-sweep-k1-for-first-release.md)、[ランタイム](../02-impl/02-09-runtime.md)の「メモリの管理」。参照カウントを採らなかったので、[ADR 0239](../decisions/0239-cycle-collection-for-reference-cells.md) は適用しない）。WASM 化の採否は [OPEN-007](../open-issues.md#open-007) で扱う。
 
 実行方式を差し替えても、処理系を別の言語で書き直しても言語仕様を変えずに済むように、`01-spec/` には VM・バイトコード・実装言語の型など実装方式に依存する記述を置かない。例えば、末尾呼び出しの保証は `01-spec/` で「深い末尾再帰でもスタックを使い果たさない」という観測可能な性質として定め、それを VM でどう実現するかは `02-impl/` で定める。
 
@@ -143,5 +143,4 @@ VM とランタイム（IO 実行器・リソース追跡・権限の確認）
 - [OPEN-007](../open-issues.md#open-007): WASMコア化の採否
 - [OPEN-015](../open-issues.md#open-015): 契約の変更と権限の差分を利用者に示す方法
 - [OPEN-051](../open-issues.md#open-051): 外部の関数（WASM）の詳細
-- [OPEN-036](../open-issues.md#open-036): 初回リリース版のメモリの管理の方式
 - [OPEN-055](../open-issues.md#open-055): サーバモードの設計

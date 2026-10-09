@@ -1,10 +1,10 @@
 // spec: 01-03 局所の束縛の有効範囲
-type Shape {
-  Rect(Int, Int)
-}
+data Shape
+  Rect(Integer, Integer)
+end data
 
-fn main() -> Unit {
-  match Shape.Rect(1, 2) {
-    Shape.Rect(width, width) => ()
-  }
-}
+function main() -> Unit
+  return match Shape.Rect(1, 2) with
+    case Shape.Rect(width, width) -> ()
+  end match
+end function

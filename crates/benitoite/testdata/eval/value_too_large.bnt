@@ -1,5 +1,7 @@
 // spec: 01-08 資源の不足
 // spec: 01-04 String
-fn main() -> Unit uses IO {
-  Console.println(Int.toString(String.byteLength(String.repeat("ab", 1000000000))))
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(Integer.toString(String.byteLength(String.repeat("ab", 1000000000))))
+end function

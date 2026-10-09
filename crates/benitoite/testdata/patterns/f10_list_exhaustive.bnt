@@ -1,0 +1,7 @@
+// spec: 01-05 網羅性の検査
+function main() -> Unit
+  match [1, 2] with
+    case [] -> ()
+    case [_, ..] -> ()
+  end match
+end function

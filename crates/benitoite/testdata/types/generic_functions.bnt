@@ -1,14 +1,16 @@
 // spec: 01-06 多相
 // spec: 01-05 prelude が定める型
-// spec: 01-06 prelude の関数の型
-fn getOr[T](value: Option[T], fallback: T) -> T {
-    match value {
-        Some(item) => item
-        None => fallback
-    }
-}
+// spec: 01-06 標準ライブラリの関数の型
+import Benitoite.Unofficial.IO.Console
 
-fn main() -> Unit uses IO {
-    Console.println(Int.toString(getOr(Some(7), 0)))
-    Console.println(getOr(Some("ready"), "fallback"))
-}
+function getOr[T](value: Option[T], fallback: T) -> T
+    return match value with
+        case Option.Some(item) -> item
+        case Option.None -> fallback
+    end match
+end function
+
+function main() -> Unit uses Console.Write
+    Console.writeLine(Integer.toString(getOr(Option.Some(7), 0)))
+    return Console.writeLine(getOr(Option.Some("ready"), "fallback"))
+end function

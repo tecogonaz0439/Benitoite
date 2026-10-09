@@ -1,6 +1,6 @@
 # 0233. 初回リリース版は GitHub Releases で環境ごとの tar.gz と SHA256SUMS を配り、導入の手順を文書に書く
 
-- 状態: 採択
+- 状態: 採択（決定 1・2・4 の配布の形を、初回リリース版ではなく実行ファイルを配る最初のリリース（`0.1.0`）から適用することを [0358](0358-release-versions-and-published-history.md) で定めた。帰結のうち公開の時期は初回リリース（`0.0.1`）のままとした）
 - 日付: 2026-09-29
 - 関連章: [配布形態](../05-platform/05-01-distribution.md), [Agent Skills 対応](../06-tooling/06-06-agent-skills.md)
 - 関連する未決事項: [OPEN-060](../open-issues.md#open-060)

@@ -1,0 +1,10 @@
+// spec: 01-06 型クラス（初回リリース版）
+trait Echo[T]
+  function echo(x: T) -> T
+end trait
+function bad[T](x: T) -> T
+  return Echo.echo(x)
+end function
+function main() -> Unit
+  ()
+end function

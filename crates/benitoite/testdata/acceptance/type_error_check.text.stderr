@@ -1,10 +1,10 @@
 error[E0401]: mismatched types
-  --> acceptance/type_error_check.bnt:3:38
+  --> testdata/acceptance/type_error_check.bnt:5:47
    |
- 3 |   Console.println("not an integer" + 1)
-   |                                      ^ expected `String`, found `Int`
+ 5 |   return Console.writeLine("not an integer" + 1)
+   |                                               ^ expected `String`, found `Integer`
    |
    = note: both operands of `+` must have the same type
-   = help: convert the value with `Int.toString` before joining it with `+`
+   = help: convert the value with `Integer.toString`, or use string interpolation such as `"${x}"`
 
-error: could not check acceptance/type_error_check.bnt due to 1 previous error
+error: could not check testdata/acceptance/type_error_check.bnt due to 1 previous error

@@ -102,7 +102,7 @@
 | [0087](0087-pipeline-stages-on-large-stack-thread.md) | 検査・脱糖・コンパイルの段は、大きなスタックを持つスレッドで行う | 採択 |
 | [0088](0088-keep-both-io-execution-modes.md) | IO の実行方式は二つとも残し、既定を直接呼び出しとする | 採択（決定 4 の見直しを [0162](0162-event-loop-and-worker-threads-for-io.md) で行い、組み込みの操作の応答に「待つ」を加えた） |
 | [0089](0089-ocaml-as-benchmark-comparator.md) | 性能の比較対象に OCaml のバイトコードとネイティブを加える | 採択 |
-| [0090](0090-version-numbers-and-codenames.md) | バージョンをメジャー・マイナー・パッチで表し、最小実行版を 0.0.0、初回リリース版を 0.1.0、正式リリース版を 1.0.0 とする | 採択 |
+| [0090](0090-version-numbers-and-codenames.md) | バージョンをメジャー・マイナー・パッチで表し、最小実行版を 0.0.0、初回リリース版を 0.1.0、正式リリース版を 1.0.0 とする | 採択（決定 3 と決定 6 のうち初回リリース版を `0.1.0` とすることを [0358](0358-release-versions-and-published-history.md) で改め、初回リリースを `0.0.1`、実行ファイルを配る最初のリリースを `0.1.0` とした） |
 | [0091](0091-acronyms-in-uppercase.md) | 名前の中の頭字語は大文字のまま書き、小文字で始まる名前の先頭に置くときだけ小文字で書く | 採択（`FSWriteCap` の例を [0101](0101-unabbreviated-names.md) で改めた） |
 | [0092](0092-unabbreviated-keywords.md) | キーワードを省略しない英単語で書き、`function`・`public`・`implement` とする | 採択（ラムダのキーワードを [0109](0109-lambda-keyword.md) で改めた） |
 | [0093](0093-no-reserved-words-for-absent-constructs.md) | 言語にない構文と、使う予定の決まっていない構文の語を予約しない | 採択（`return` は [0096](0096-explicit-return.md) でキーワードにした） |
@@ -206,7 +206,7 @@
 | [0191](0191-server-data-storage.md) | 登録したスクリプトを写しとして保管し、処理系が保存する秘密をパスワードのハッシュに限る | 採択 |
 | [0192](0192-named-profiles-for-agents.md) | エージェントごとの設定は、利用者が名前を付けたプロファイルを明示して選ぶ形にする | 採択 |
 | [0193](0193-restricting-agents-to-server-mode-by-agent-config.md) | エージェントにスタンドアロンモードを使わせない制限は、エージェントの側の設定で行う | 採択 |
-| [0194](0194-tui-and-own-coding-agent-with-server-mode.md) | TUI と自前のコーディングエージェントを、サーバモードとあわせて作る | 採択 |
+| [0194](0194-tui-and-own-coding-agent-with-server-mode.md) | TUI と自前のコーディングエージェントを、サーバモードとあわせて作る | 採択（決定 1・2 の時期を [0342](0342-agent-harness-after-server-mode.md) で改めた） |
 | [0195](0195-daemon-as-os-user-service.md) | デーモンを OS のユーザーのサービスとして動かし、処理系は登録を補助する | 採択（決定 3 を [0205](0205-server-start-enables-linger-with-consent.md) で置き換えた） |
 | [0196](0196-os-sandbox-mechanisms.md) | OS のサンドボックスは、Linux では Landlock と seccomp を既定とし、設定で bubblewrap に切り替えられるようにする。macOS では Seatbelt を使う | 採択 |
 | [0197](0197-when-os-sandbox-is-unavailable.md) | OS のサンドボックスを掛けられないとき、サーバモードでは実行を拒否し、スタンドアロンモードでは警告を出して実行する | 採択 |
@@ -245,10 +245,10 @@
 | [0230](0230-skill-embedded-and-installed-by-subcommand.md) | 同梱の Agent Skill を処理系の実行ファイルに埋め込み、サブコマンド `skill` で各エージェントの置き場所に書き出す | 採択 |
 | [0231](0231-skill-shows-main-effects-before-running.md) | 同梱の Agent Skill は、実行の前に `main` のエフェクトを利用者に示させ、書き込み・外部コマンド・ネットワークは確かめてから実行させる | 採択（テストの手順と確認の対象を [0249](0249-skill-test-procedure-without-check.md) で改めた） |
 | [0232](0232-skill-evaluation-with-tasks-and-harnesses.md) | 同梱の Agent Skill を、約 10 の課題と二つ以上のハーネスで、成功率と修正の回数を記録して評価する | 採択（使うハーネスに OpenCode を加えた。[ADR 0246](0246-syntax-measurement-in-two-stages.md)） |
-| [0233](0233-distribution-via-github-releases.md) | 初回リリース版は GitHub Releases で環境ごとの tar.gz と SHA256SUMS を配り、導入の手順を文書に書く | 採択 |
+| [0233](0233-distribution-via-github-releases.md) | 初回リリース版は GitHub Releases で環境ごとの tar.gz と SHA256SUMS を配り、導入の手順を文書に書く | 採択（決定 1・2・4 の配布の形を、初回リリース版ではなく実行ファイルを配る最初のリリース（`0.1.0`）から適用することを [0358](0358-release-versions-and-published-history.md) で定めた。帰結のうち公開の時期は初回リリース（`0.0.1`）のままとした） |
 | [0234](0234-release-tests-on-development-machine.md) | リリースの試験は、配る実行ファイルを使い、三つの環境のすべてを開発機の上で一つのスクリプトから行う | 採択 |
 | [0235](0235-third-party-licenses-generated-and-shown-by-option.md) | 第三者のライセンスの表示をリリースのときに生成してアーカイブに添え、実行ファイルにも埋め込んで `--licenses` で示す | 採択 |
-| [0236](0236-compatibility-during-0x.md) | メジャーバージョンが 0 の間は、マイナーの版で互換性を壊してよく、パッチの版では壊さない | 採択 |
+| [0236](0236-compatibility-during-0x.md) | メジャーバージョンが 0 の間は、マイナーの版で互換性を壊してよく、パッチの版では壊さない | 採択（`0.1.0` より前の `0.0.x` のリリースでは、パッチの版でも互換性を壊してよいことを [0358](0358-release-versions-and-published-history.md) で定めた） |
 | [0237](0237-no-heap-usage-limit-in-first-release.md) | 初回リリース版の処理系は、ヒープの使用量に上限を設けない | 採択 |
 | [0238](0238-task-wait-deadlock-as-runtime-error.md) | タスクどうしが待ち合って進めなくなったら、実行時エラーにする | 採択（判定の前に要求と未処理の完了を処理すること、返却・解放・出力の完了の待ちを外部の完了の待ちとして数えることを [0266](0266-task-and-resource-state-machines.md) で補った。外部の待ちとして数えるのは、タスクを起こしうる完了だけであることを [0283](0283-deadlock-counts-only-waits-that-can-wake-tasks.md) で定めた） |
 | [0239](0239-cycle-collection-for-reference-cells.md) | 参照カウントを残し、`Reference` のセルだけを対象に循環を回収する（暫定） | 採択（暫定。[0259](0259-compare-mark-sweep-and-rc-in-stage-1.md) により、作り直しで参照カウントを採った場合に限り残す） |
@@ -264,7 +264,7 @@
 | [0249](0249-skill-test-procedure-without-check.md) | 同梱の Agent Skill の作業の手順を、スクリプトとテストで分ける | 採択 |
 | [0250](0250-run-directories-outside-daemon-data.md) | 実行ごとの作業用のディレクトリと一時ディレクトリを、デーモンのデータのディレクトリの外に置く | 採択 |
 | [0251](0251-contract-change-display-not-in-first-release.md) | 契約の変更を処理系が表示する機能を初回リリース版に含めず、同梱の Agent Skill の手順で示す | 採択 |
-| [0252](0252-test-report-format.md) | テストの結果の報告の文章の形を cargo test に合わせ、JSON Lines の項目を定める | 採択 |
+| [0252](0252-test-report-format.md) | テストの結果の報告の文章の形を cargo test に合わせ、JSON Lines の項目を定める | 採択（決定 6 の一部を [0333](0333-fmt-refusal-test-json-notes-http-method-and-process-input.md) で改めた） |
 | [0253](0253-first-release-plan-location-and-units.md) | 初回リリース版の実装プランを docs/implement/ に置き、四つの単位に分けて進める | 採択（決定 2 の U2 と U3 の範囲を [0273](0273-u2-u3-boundary-for-runtime-builtins.md) で改めた） |
 | [0254](0254-return-type-after-arrow.md) | 関数の宣言とラムダの戻り値の型を `->` の後に書く | 採択 |
 | [0255](0255-bind-and-shadow.md) | 局所の束縛を `bind`（新しい名前）と `shadow`（見えている名前を隠す）で書き分ける | 採択 |
@@ -282,7 +282,7 @@
 | [0267](0267-lazy-and-reference-objects.md) | `Reference` はその場で書き換え、`Lazy` は三つの状態を対象に持ち、枠を降ろす処理を枠の種類ごとに一つにまとめる | 採択 |
 | [0268](0268-staged-runtime-rebuild.md) | ランタイムを段に分けて作り直し、第 1 段で値・ヒープ・VM の核を作り直して測る | 採択（決定 2 の参照インタプリタの値の分離を、組み込みの関数の本体だけは共有する形に [0276](0276-reference-interpreter-shares-builtin-bodies.md) で改めた。決定 1・3 の読み方を [0278](0278-stage-1-completes-on-new-syntax-tests.md) で定めた） |
 | [0269](0269-correct-adr-0240-performance-assessment.md) | ADR 0240 の見立てを改め、関数の呼び出しの差の中心を振り分けのループと呼び出しの手順に置く | 採択 |
-| [0270](0270-open-062-items-in-runtime-rebuild.md) | OPEN-062 の項目を、作り直しの共通の仕組みで防ぐものと、再現テストで確かめるものに分ける | 採択 |
+| [0270](0270-open-062-items-in-runtime-rebuild.md) | OPEN-062 の項目を、作り直しの共通の仕組みで防ぐものと、再現テストで確かめるものに分ける | 採択（決定 3 が U1 の範囲とした R08 を、[0316](0316-no-compile-time-regex-check-in-first-release.md) で初回リリース版では対処しないとした） |
 | [0271](0271-self-made-gc-as-exception.md) | メモリの管理（GC）を、目的と設計原則の線引きの例外として自作する | 採択 |
 | [0272](0272-list-spread-in-list-literals.md) | リストリテラルに、リストのパターンと同じ形の展開 `..e` を一つまで書ける | 採択 |
 | [0273](0273-u2-u3-boundary-for-runtime-builtins.md) | ランタイムに結び付いた組み込みの関数と、テストに要る最小限の IO の関数は U2 で作る | 採択（決定 3 が委ねた U2 の関数の属し方を [0286](0286-unofficial-modules-imported-under-unofficial.md) で決めた） |
@@ -297,13 +297,13 @@
 | [0282](0282-cancellation-timing-during-unwinding-and-requests.md) | E-DropRel の途中に届いた取り消しは辿り終えてから行い、外部の操作に移る前の要求は取り消しと全体の停止で失効させる | 採択 |
 | [0283](0283-deadlock-counts-only-waits-that-can-wake-tasks.md) | 行き詰まりの判定では、タスクを起こしうる外部の完了だけを外部の待ちに数える | 採択 |
 | [0284](0284-task-builtins-tested-by-scripts.md) | 応答を組み立てるだけの `Task`・`TaskGroup` の組み込みの関数は、単体テストの代わりにスクリプトのテストで確かめる | 採択 |
-| [0285](0285-implementer-assignment-for-first-release.md) | 初回リリース版の実装は Codex を基本とし、難易度 5 の作業だけを Claude が実装して GPT-6-Astra がレビューする | 採択（決定 5 の例外を [0292](0292-release-checks-needing-network-by-orchestrator.md) で定めた） |
+| [0285](0285-implementer-assignment-for-first-release.md) | 初回リリース版の実装は Codex を基本とし、難易度 5 の作業だけを Claude が実装して GPT-6-Astra がレビューする | 採択（決定 5 の例外を [0292](0292-release-checks-needing-network-by-orchestrator.md) で定めた。決定 1〜3 を [0308](0308-implementation-by-codex-sol.md) で改めた） |
 | [0286](0286-unofficial-modules-imported-under-unofficial.md) | 吟味を終えていない標準ライブラリのモジュールを `Benitoite.Unofficial` の下の名前で取り込ませ、吟味の後に標準に移す | 採択 |
 | [0287](0287-stdlib-details-decided-in-u3-plan.md) | OS の時差を得られないときの `Clock.localOffsetMinutes` を 0 とし、要求の本体の上限・ネットワークの失敗の注入・TLS の確かめ方を定める | 採択 |
 | [0288](0288-skill-documents-generated-by-tool-and-committed.md) | 同梱の Agent Skill の生成する文書は、処理系のクレートを使う道具で作ってリポジトリに置き、ビルドは埋め込むだけにする | 採択 |
 | [0289](0289-request-of-after-release-is-runtime-error.md) | 解放した後の `Http.Exchange` に `Http.requestOf` を使うと実行時エラーとし、要求の内容を解放のときに手放す | 採択 |
 | [0290](0290-copyright-holder-name-and-open-021.md) | 著作権表示の名前を `tecogonaz` とし、ランタイムの例外をスクリプトを埋め込んだ実行ファイルの設計に移して OPEN-021 を決着させる | 採択 |
-| [0291](0291-file-copy-limit-and-http-server-details.md) | `File.copy` を読み書きの関数で書いて写せる大きさを 1 GiB までとし、HTTP のサーバの接続と要求の読み方を定める | 採択 |
+| [0291](0291-file-copy-limit-and-http-server-details.md) | `File.copy` を読み書きの関数で書いて写せる大きさを 1 GiB までとし、HTTP のサーバの接続と要求の読み方を定める | 採択（決定 1 を [0337](0337-file-transfer-for-large-copies.md) で改めた。初回リリース版は決定 1 のまま） |
 | [0292](0292-release-checks-needing-network-by-orchestrator.md) | ネットワークを要する配布の確かめ（実装プランの D31・D32）は、オーケストレータが設計者と行う | 採択 |
 
 ## テンプレート
@@ -347,3 +347,54 @@
 | [0305](0305-e-super-as-transition-at-method-call.md) | E-Super を、メソッドの呼び出しの辞書から上位の型クラスの辞書を取り出す遷移として定める | 採択 |
 | [0306](0306-formalization-representation.md) | 形式化の表現を、段階 A・B で使ったものに定める | 採択 |
 | [0307](0307-lean-definitions-normative-for-core-calculus.md) | 形式化したコア計算の規則は、Lean の定義を正とし、01-12 に写しを残す | 採択 |
+| [0308](0308-implementation-by-codex-sol.md) | 初回リリース版の実装は、難易度によらず Codex（GPT-6.1-Sol、推論の度合い high）が行う | 採択 |
+| [0309](0309-heap-internal-layer-as-test-boundary.md) | ヒープの内部の層の入口を、`unsafe` の不変条件を確かめるテストの境界に加える | 採択 |
+| [0310](0310-method-call-trait-in-proto.md) | 原型に、メソッドの呼び出しの命令ごとの型クラスを記録する | 採択 |
+| [0311](0311-no-type-constructor-params-in-operations.md) | エフェクトの操作の型パラメータに、型構成子を表す型パラメータを書けなくする | 採択 |
+| [0312](0312-no-trait-constraints-in-operations.md) | エフェクトの操作の型パラメータに、型クラスの制約を書けなくする | 採択 |
+| [0313](0313-vm-performance-recovery-before-stage-2.md) | 第 2 段の前に VM の性能を回復する区切りを置き、普通の呼び出しの規約と性能の関門を定める | 採択 |
+| [0314](0314-clear-dead-registers-at-safepoints.md) | 使わなくなったレジスタを、命令ごとではなく回収の安全点で空にする | 採択 |
+| [0315](0315-keep-dispatch-range-checks.md) | 振り分けのループの範囲の確かめを省かず、検証器はテストの道具として残す | 採択（参照するタグ `r32-unchecked` とコミット 495af4b は、公開しない開発の履歴にあり、設計者の手元のリポジトリにだけ残る。[0358](0358-release-versions-and-published-history.md)） |
+| [0316](0316-no-compile-time-regex-check-in-first-release.md) | 初回リリース版では、正規表現の構文を検査の時点で確かめない | 採択 |
+| [0317](0317-await-on-cancelled-task-is-runtime-error.md) | 取り消したタスクを `Task.await` で待ったら、実行時エラーにする | 採択 |
+| [0318](0318-miri-scope-and-time-budget-for-heap-checks.md) | Miri で走らせる VM のテストを選んだものに限り、ヒープの検査に時間の上限を設ける | 採択 |
+| [0319](0319-task-results-and-pure-guarantee-under-switching.md) | 純粋な関数の保証を狭め、`Task.race`・`Task.withTimeout` に `State` を加える | 採択 |
+| [0320](0320-output-transfer-at-budget-switch.md) | タスクが予算を使い切って切り替わるときにも、出力の転送を依頼する | 採択 |
+| [0321](0321-close-functions-return-release-failure.md) | close の関数が解放の失敗を返す口を、状態のサービスに既定の本体付きで加える | 採択 |
+| [0322](0322-stdlib-details-from-u3-preflight.md) | U3 の事前点検で見つかった標準ライブラリの細目を決める（Json の `-0`、Csv の区切り、HTTP のクライアントのヘッダの順序、UTF-8 でないクエリ、`runAttached` の入力） | 採択 |
+| [0323](0323-with-binding-continuation-indent.md) | フォーマッタで、`with` の 2 つ目以降の束縛の行を `with` の開きの行より一段深くする | 採択 |
+| [0324](0324-test-task-origins-end-at-test-function.md) | `test` のコマンドの報告では、タスクの起動の履歴の最後の段をテストの関数の名前にする | 採択 |
+| [0325](0325-outermost-frame-shows-no-call-site.md) | 呼び出しの履歴で、積み重ねの最も外側の段は末尾呼び出しで置き換わった後も位置を示さない | 採択 |
+| [0326](0326-match-arm-and-handler-clause-head-continuation.md) | match の分岐と handle の節の頭の続きの行を、case の行より一段深くする | 採択 |
+| [0327](0327-fmt-symlink-and-process-attached-details.md) | `fmt` が直接与えたリンクの先を書き換えることと、`runAttached` と相対の `program` の細目を決める | 採択 |
+| [0328](0328-path-and-json-details-from-u3-preflight.md) | `Path.withExtension` の区切り、`Path.join` の空の `base`、`Json` の浮動小数点の書き方を決める | 採択 |
+| [0329](0329-csv-and-time-details-from-u3-preflight.md) | Csv の誤りの行と空のフィールドの書き方、Time の解析の形と時差の範囲を決める | 採択 |
+| [0330](0330-http-details-from-u3-preflight.md) | HTTP のクエリの壊れた符号化、クライアントのプロキシと CPU の機能、時間切れのテストを決める | 採択（決定 4 のテストのサーバの形を 0335 で改めた） |
+| [0331](0331-invalid-http-header-characters-stop.md) | HTTP のヘッダの名前と値に正しくない文字があれば実行時エラーとする | 採択（決定 1 の値の規則を [0333](0333-fmt-refusal-test-json-notes-http-method-and-process-input.md) で改めた） |
+| [0332](0332-http-latency-measured-by-bench-client.md) | HTTP のベンチマークの応答時間は測定の道具がクライアントとして外から測る | 採択 |
+| [0333](0333-fmt-refusal-test-json-notes-http-method-and-process-input.md) | `fmt` が整形を断る誤り、テストの JSON の注記、HTTP の要求の方法、外部コマンドの入力の書き込みの細目を決める | 採択 |
+| [0334](0334-third-party-license-authors-and-offline-generation.md) | 第三者のライセンスの表示で、著作権の行のないクレートに `authors` を添え、生成をネットワークなしで再現できるようにする | 採択 |
+| [0335](0335-http-timeout-test-server-does-not-accept.md) | HTTP のクライアントの時間切れのテストで、サーバは要求を受け付けない | 採択 |
+| [0336](0336-command-substitute-library-policy.md) | コマンドを代替するライブラリは、既設の関数で足りるものを作らず、コマンドの操作を再現せず、言語の作りに合わせて作る | 採択 |
+| [0337](0337-file-transfer-for-large-copies.md) | 初回リリース版の後に、開いたリソースどうしを流す `File.transfer` を加え、`File.copy` をそれで書き直して 1 GiB の上限をなくす | 採択 |
+| [0338](0338-password-manager-wrappers-as-official-libraries.md) | 初回リリース版の後に、主なパスワードマネージャのラッパーを公式のライブラリとして用意する | 採択 |
+| [0339](0339-web-authentication-human-approval-and-browser-first.md) | 初回リリース版の後のウェブの認証は、人間による承認の操作を必ず挟み、ブラウザに任せる形を本命とする | 採択 |
+| [0340](0340-llm-providers-for-own-agent-harness.md) | エージェントハーネスが使う LLM の提供者として、OpenAI 互換の API・Sign in with ChatGPT・Anthropic の Messages API・Gemini API を採る | 採択 |
+| [0341](0341-agent-cli-wrapper-library.md) | 初回リリース版の後に、Claude Code・Codex の CLI を包む外部のライブラリを設け、エージェントの CLI の起動を専用のエフェクトで区別する | 採択 |
+| [0342](0342-agent-harness-after-server-mode.md) | エージェントハーネスと TUI をサーバモードより後に作り、承認の画面だけを TUI の部品で先に作る | 採択 |
+| [0343](0343-agent-harness-user-config-file.md) | エージェントハーネスの提供者とモデルを、利用者単位の TOML の設定ファイルに書く | 採択 |
+| [0344](0344-agent-harness-operation-scope-and-tools.md) | エージェントハーネスに許す操作を、スクリプトの作成・検査・実行とプロジェクトの中の読み取りに限る | 採択 |
+| [0345](0345-agent-harness-confirmation-and-server-approval.md) | エージェントハーネスの実行の前の確認を、サーバモードの承認と分け、確認なしの範囲と非対話の許可を定める | 採択 |
+| [0346](0346-agent-harness-connects-to-daemon-directly.md) | エージェントハーネスはデーモンの通信口に直接つなぎ、LLM に見せる道具の形を MCP の道具と揃える | 採択 |
+| [0347](0347-agent-harness-web-fetch.md) | エージェントハーネスにウェブの取得の道具を加え、ドメインの一覧とドメインごとの確認で限る | 採択 |
+| [0348](0348-agent-harness-rewind-and-git.md) | エージェントハーネスの巻き戻しはプロジェクトの状態をまるごと記録し、git の操作は git のライブラリで行う道具にする | 採択 |
+| [0349](0349-d31-d32-after-first-release.md) | 実装プランの D31 と D32 の手作業の確かめを、初回リリースの後に行う | 採択 |
+| [0350](0350-publish-repository-with-history.md) | リポジトリを履歴ごと公開し、設計メモとコミットのメールアドレスも公開する | 採択（決定 1 の履歴ごとの公開を [0358](0358-release-versions-and-published-history.md) で改め、公開するブランチを `san_benito` だけとし、公開する履歴を集約した。帰結の、コミットの番号が公開の後も有効であることは成り立たなくなった） |
+| [0351](0351-vulnerability-report-contact.md) | 脆弱性の報告の窓口を設計者のメールアドレスとし、SECURITY.md に書く | 採択 |
+| [0352](0352-remove-tree-by-directory-descriptors.md) | `File.removeTree` をディレクトリの記述子を基準に辿る形で作り、`rustix` を依存に加える | 採択 |
+| [0353](0353-expanded-type-size-limits.md) | 別名の展開と推論で作る型に、深さとノード数の上限を設ける | 採択 |
+| [0354](0354-http-exchange-release-deadline.md) | `Http.Exchange` の解放に期限を付け、書きかけの応答と止める手順では待たずに閉じる | 採択 |
+| [0355](0355-mark-sweep-k1-for-first-release.md) | 初回リリース版のメモリの管理を、止めて行う非移動のマーク・スイープ（k = 1）に確定する | 採択 |
+| [0356](0356-call-budget-2500.md) | タスクを切り替える呼び出しの回数の予算の初めの値を 2,500 回にする | 採択 |
+| [0357](0357-no-ir-optimization-in-first-release.md) | 初回リリース版では中間表現の最適化を行わず、初回リリース版の後に変換ごとに試作して測る | 採択 |
+| [0358](0358-release-versions-and-published-history.md) | 初回リリースはソースだけの 0.0.1 とし、バイナリは 0.1.0 から配り、公開する履歴は集約して英語のメッセージに改める | 採択 |

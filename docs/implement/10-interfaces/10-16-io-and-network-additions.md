@@ -17,7 +17,7 @@ U2 の型は、U3 の関数を持たない段階で凍結した。U3 の関数�
 | テスト用のハンドラ表のネットワークの失敗（ADR 0287 の決定 3） | `Http.send`・`Http.get`・`Http.listen`・`Http.serve` | `RuntimeParts::network_faults` と `NetworkFaults` |
 | `Process.runAttached` の標準入出力のつなぎ先 | `Process.runAttached` | `IoRuntime::process_stdio` と `ProcessStdio` |
 | `mio` の型を持つ HTTP のサーバの接続の層の置き場所 | HTTP のサーバ | モジュール `runtime::io::http` |
-| F17 が呼ぶ正規表現の組み立ての関数（README の「U3・U4 で決めたこと」の 9） | F17 | `builtins::regex_check::check_regex_source` |
+| close の関数へ解放の失敗の理由を返す口。`StateServices::begin_release` は理由を返さない（ADR 0321） | `IO.File.closeWriter`・`Http.closeListener`・`Http.closeExchange` | `StateServices::begin_close`（既定は `begin_release` に委ねる）と `CloseStep`。L12 が書き足す |
 
 隠れた乱数の生成器の状態の型は、10-10 の `IoRuntime::random_state` を `[u64; 4]` に改めた（本章の「隠れた乱数の生成器」）。リソースの種類（`ResourceKind::FileWriter`・`HttpListener`・`HttpExchange`）と、その解放がブロックするかの分岐（R24）、`NetworkError` の対象（10-08 の `FieldsKind::NetworkError`）、`Random.Generator`・`Regex.Pattern`・`Regex.Match` の値（`ObjKind::Opaque`）、`Clock.now`・`Clock.localOffsetMinutes`・`Random.Generate` の口（`IoServices` の `now_millis`・`local_offset_minutes`・`random_u64`）は、U2 の章に既にある。
 
@@ -30,14 +30,14 @@ U3 が加えるクレートは、[ADR 0138](../../design/decisions/0138-crates-a
 | クレート | 版 | ライセンス | `rust-version` | 使い方（`Cargo.toml` の指定） | 加える作業 |
 |---|---|---|---|---|---|
 | `regex` | 1.13.1 | MIT OR Apache-2.0 | 1.65 | 既定の機能（`std`・`perf`・`unicode`）のまま | L22 |
-| `serde_json` | 1.0.151 | MIT OR Apache-2.0 | 1.71 | 既定の機能（`std`）のまま。`serde_json::Value` で読み書きし、`serde` の derive は使わない | L21 |
+| `serde_json` | 1.0.151 | MIT OR Apache-2.0 | 1.71 | 既定の機能（`std`）に、機能 `arbitrary_precision` を加える（数の元の字面から整数か浮動小数点かを決めるため。[ADR 0322](../../design/decisions/0322-stdlib-details-from-u3-preflight.md) の決定 1）。`arbitrary_precision` は依存を加えない機能であり、ライセンスも変わらないことを、2026-10-07 に配布物の `Cargo.toml` で確かめた。`serde_json::Value` で読み書きし、`serde` の derive は使わない | L21 |
 | `csv-core` | 0.1.13 | Unlicense/MIT（`cargo info` の表示。`Unlicense OR MIT` の古い書き方） | 記載なし | 既定の機能のまま | L23 |
 | `jiff` | 0.2.37 | Unlicense OR MIT | 1.70 | `default-features = false`、`features = ["std", "tz-system", "tzdb-zoneinfo"]`。タイムゾーンのデータを同梱する機能（`tzdb-bundle-platform`・`tzdb-bundle-always`）を入れない（03-01「使う Rust のクレート」） | L24（`Clock.localOffsetMinutes` のために L10 が先に加えるなら L10） |
 | `base64` | 0.23.1 | MIT OR Apache-2.0 | 1.71 | `default-features = false`、`features = ["std"]` | L25 |
 | `sha2` | 0.11.0 | MIT OR Apache-2.0 | 1.85 | `default-features = false`（既定の `oid` を使わない）、`features = ["alloc"]` | L25 |
 | `getrandom` | 0.4.3 | MIT OR Apache-2.0 | 1.85 | 既定の機能のまま。`getrandom::u64()` で種を得る | L14 |
 | `httparse` | 1.10.1 | MIT OR Apache-2.0 | 記載なし | 既定の機能（`std`）のまま | L30 |
-| `mio` | 1.2.3 | MIT | 1.71 | R26 が加えた指定に、機能 `net` を加える（00-02「依存するクレート」） | L30 |
+| `mio` | 1.2.4 | MIT | 1.71 | R40 が加えた指定（`=1.2.4`）に、機能 `net` を加える（00-02「依存するクレート」）。1.2.4 に機能 `net` があることは、2026-10-07 の事前点検で手元の配布物で確かめた | L30 |
 | `ureq` | 3.4.2 | MIT OR Apache-2.0 | 1.85 | `default-features = false`、`features = ["rustls-no-provider", "platform-verifier"]`（ADR 0143 の決定 2）。既定の `gzip` と、`ring`・`webpki-roots` を入れない | L32 |
 | `rustls` | 0.23.45 | Apache-2.0 OR ISC OR MIT | 1.71 | `default-features = false`、`features = ["std", "tls12"]`。`aws_lc_rs`・`ring` の機能を入れない。crates.io の最新は 0.24.0-dev.1 だが、開発中の版であり、`ureq` 3.4.2・`rustls-graviola` 0.4.0・`rustls-platform-verifier` 0.7.1 はどれも 0.23 の系列を要求する | L32 |
 | `rustls-graviola` | 0.4.0 | Apache-2.0 OR ISC OR MIT-0 | 1.85 | 既定の機能のまま。`rustls` 0.23.18 以上を要求する | L32 |
@@ -94,6 +94,41 @@ U3 が加えるクレートは、[ADR 0138](../../design/decisions/0138-crates-a
 - 添え物は、`Http.Exchange` の解放（`with` を抜けるときの解放、`Http.closeExchange`、止める手順と中断の要求での解放）で項目が `Released` になるときに除く。受け付けた要求の数に比例してメモリが増えることはない（ADR 0289）。実行の終わりに残った添え物は、実行ごとの状態とともに捨てる。
 - 添え物を加え、読むのは HTTP のサーバの層（L30）だけである。ほかの作業は添え物を使わない。
 
+## close の関数が解放の失敗を受け取る口
+
+close の関数（`IO.File.closeWriter`・`Http.closeListener`・`Http.closeExchange`）は、解放の失敗を `Result.Error` で返す（01-10「解放の失敗」）。10-11 の `StateServices::begin_release` は、解放の失敗をリソースの型の規則に従って `Stop` にするか捨て、理由を返さない。そこで、close の関数が解放を始める関数を、既定の本体付きで `StateServices` に加える（[ADR 0321](../../design/decisions/0321-close-functions-return-release-failure.md)）。本節のブロックは L00 が置かず、L12 が `src/builtins/iface.rs` に書き足す。そのため見出しに `append=` を付けない（`place` と `check` の対象外）。
+
+```rust
+// L12 が加える（ADR 0321）。`src/builtins/iface.rs` の `StateWait` の後に置く。
+
+/// close の関数が解放を始めた結果（実装プラン 10-16「close の関数が解放の失敗を受け取る口」）。
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub enum CloseStep {
+    /// 解放を終えた。失敗したときは理由の文字列を持つ
+    Done(Option<String>),
+    /// 待つ。待つ理由を持つ（`begin_release` が返すものと同じ）
+    Wait(StateWait),
+}
+
+// L12 が加える（ADR 0321）。`src/builtins/iface.rs` の `trait StateServices` の末尾に置く。
+
+    /// close の関数が解放を始める（ADR 0321）。すぐに終われば `CloseStep::Done`、待つなら `CloseStep::Wait` を返す。
+    /// 解放の失敗は `Stop` にも捨てもせず、理由の文字列を `CloseStep::Done(Some(..))` で返す。待った後にもう一度
+    /// 呼ばれたときは、記録した解放の失敗を一度だけ取り出して返す。既定の本体は `begin_release` に委ね、失敗の理由を
+    /// 返さない。VM の側の実装が上書きする。
+    fn begin_close(&mut self, resource: ResourceId) -> Result<CloseStep, Stop> {
+        Ok(match self.begin_release(resource)? {
+            None => CloseStep::Done(None),
+            Some(wait) => CloseStep::Wait(wait),
+        })
+    }
+```
+
+- `begin_release` のシグネチャと振る舞いは変えない。`with` を抜けるとき・取り消し・止める手順の解放は、これまでどおり解放の枠と `begin_release` が行う。
+- VM の側の実装（`src/vm/state.rs` の `Stage1StateServices`。R25）の上書きは L12 が書く。リソースの型によらず（`HttpExchange` を含む）、`request_release` の `ReleaseStart::Done(Err(reason))` と、解放済みの項目の `take_release_failure` の値を理由として返す。理由を一度取り出した項目は解放済みであり、後の `with` の解放は失敗なしで終わる（ADR 0321 の決定 2）。
+- 参照インタプリタ（`src/refinterp/resources.rs`）とテスト用の実装は、既定の本体のままでよい。差分テストに解放の失敗のケースを加えるときは、参照インタプリタも上書きする。
+- close の関数は、返った理由を `Result.Error` にする。誤りの種類は `IOErrorKind.Other`（`Http` の関数では `NetworkErrorKind.Other`）とし、理由の文字列を添える（ADR 0321 の決定 3）。
+
 ## HTTP のサーバの接続の層
 
 HTTP のサーバは、`httparse` と `mio` の上に自作する接続の層で行い、VM のスレッドのイベントループで動かす（ADR 0143 の決定 1、02-09「IO 実行器」）。層は新しいモジュール `runtime::io::http` に置く。10-10 は「`mio` の型は `runtime::io::event` の外に出さない」としたが、本章でこれを「`runtime::io::event` と `runtime::io::http` の外に出さない」と改める。組み込みの関数（`builtins::funcs::http_server`）は、`mio` の型に触れず、`runtime::io::http` の関数を呼ぶ。
@@ -117,7 +152,33 @@ pub const ACCEPT_RETRY_INITIAL_MILLIS: u64 = 5;
 pub const ACCEPT_RETRY_MAX_MILLIS: u64 = 1_000;
 ```
 
-層の中の型と関数（待ち受けと接続の OS の資源、読みかけの要求、書きかけの応答、イベントループへの登録）は L30 が決める。凍結しないのは、使うのが L30 の組み込みの関数だけだからである。L30 は、`runtime::io::event`（R26）に、この層から使う `pub(crate)` の登録の関数を加えてよい。
+層の中の型と関数（待ち受けと接続の OS の資源、読みかけの要求、書きかけの応答、イベントループへの登録）は L30 が決める。凍結しないのは、使うのが L30 の組み込みの関数だけだからである。L30 は、`runtime::io::event`（R40）に、この層から使う `pub(crate)` の登録の関数を加えてよい。
+
+### 準備の知らせを届ける経路
+
+R40 の `EventLoop::wait` は、中断のトークン（`INTERRUPT_TOKEN`）を除くイベントを `IdleWake::Progress` にまとめて捨て、`EventLoop::take` の後は `mio::Registry` に触れる口がない。L30 は、10-10 の `WorkerExec` などのトレイトを変えずに、`runtime::io::event` の中で次の経路を作る。
+
+1. `wakeup_with_poll` で、`poll.registry().try_clone()` で得た `mio::Registry` と、準備を知らせたトークンの共有の列（`Arc<Mutex<Vec<usize>>>`）を作り、`WakeBackend::WithPoll` の欄に持たせる。
+2. `EventLoop::take` は、列の `Arc` を写して `EventLoop` に持たせる。`EventLoop::wait` は、予約したトークン（`WAKE_TOKEN`・`INTERRUPT_TOKEN`）でないイベントのトークンを列に積む。中断と進行の知らせ（`IdleWake`）の返し方は変えない。
+3. `runtime::io::event` に、`pub(crate)` の関数 `register`・`reregister`・`deregister`（`&Wakeup` と `mio::event::Source` を受け取る）と `take_ready(&Wakeup) -> Vec<usize>` を置く。`runtime::io::http` はこれらで OS の資源を登録する。
+4. VM の `boundary`（`vm/dispatch/tasks/io.rs`）は、`take_ready` で積まれたトークンを取り出し、トークンに対応する操作の番号（トークンと操作の番号の対応は L30 が決める）ごとに `Completion { op, outcome: Outcome::Ready, returned: LentOwned::Nothing }` を作って、作業用のスレッドの完了と同じく `ops::accept_completion` に渡し、`Accepted::Deliver` の分岐で要求をやり直す（「準備の待ちの規則」の手順 3）。
+5. 起こし口が `WithPoll` でない（テスト用の部品で `mio::Registry` がない）ときに登録を頼まれたら、`Stop::Internal` を返す。
+
+### 本物の部品とイベントループを使うテストの口
+
+ネットワークの失敗の注入のテスト（L33）は、失敗を当てない接続を本物の部品（作業用のスレッドとイベントループ）で動かす。そのために、L30 が次の二つを加える。どちらも `place` で置くブロックではなく（L00 は置かない）、既存の型とシグネチャを変えない。
+
+- 本物の作業用のスレッドの部品（`runtime::sched::parts` の非公開の型 `ThreadWorkers`）の `WorkerExec::wakeup` を上書きし、`Some(self.wakeup.clone())` を返す（L30 が加える）。`run_program` が `RunEnv::parts` で受け取った本物の部品の起こし口を、出力と IO 実行器に渡せるようにするためである。
+- 公開の構築の関数 `RuntimeParts::real_with_poll`（L30 が加える）。`wakeup_with_poll` は `pub(crate)` なので、`tests/` の統合テストは、この関数で本物の部品を作る。
+
+```rust
+impl RuntimeParts {
+    /// イベントループを持つ起こし口（`wakeup_with_poll`）で実際の実装の組を作り、`network_faults` を入れる
+    /// （実装プラン 10-16「本物の部品とイベントループを使うテストの口」）。L30 が加える。
+    /// OS の待ちを作れなければ、その誤りを返す。
+    pub fn real_with_poll(network_faults: NetworkFaults) -> std::io::Result<RuntimeParts>;
+}
+```
 
 ### 準備の待ちの規則
 
@@ -126,7 +187,7 @@ pub const ACCEPT_RETRY_MAX_MILLIS: u64 = 1_000;
 1. HTTP のサーバの操作（`Http.accept`・`Http.respond`）は、非同期の読み書き（`WouldBlock` で止まる）を VM のスレッドで行う。進めなくなったら、そのリソースと向き（読むか書くか）で `IoWait::Readiness` を返す。
 2. VM は、`Readiness` の待ちを、種類 `OpKind::Readiness` の外部の操作の記録（10-10）にし、タスクを `WaitReason::Readiness(番号)` で待たせる。`runtime::io::http` は、そのリソースの OS の資源をイベントループに登録する。
 3. イベントループが準備を知らせたら、完了（`Outcome::Ready`）を送る。VM は、`Deliver` でタスクがまだその番号を待っていれば、結果の値を作らずに、同じ呼び出しの命令（`site`）の操作をもう一度送り出しの列に置く（要求をやり直す）。操作の関数は、もう一度呼ばれたときに、リソースに残した途中の状態（読みかけの要求、書きかけの応答）から続ける。
-4. 資源の不足で受け付けをやり直すまで待つとき（ADR 0170）も、`Http.accept` は `Readiness` を返す。`runtime::io::http` は、待ち受けがやり直しの時刻を持つ間は、イベントループの登録の代わりにタイマーの期限（単調な時計）で準備を知らせる。こうすると、待つ間もほかのタスクが進み、中断の要求を受け付ける（03-09「失敗の種類」）。
+4. 資源の不足で受け付けをやり直すまで待つとき（ADR 0170）も、`Http.accept` は `Readiness` を返す。`runtime::io::http` は、待ち受けがやり直しの時刻を持つ間は、イベントループの登録の代わりにタイマーの期限（単調な時計）で準備を知らせる。期限は VM のタイマーの期限に入れ（`WorkerExec::idle` に渡す次の期限に含める）、期限が来たら VM が `Outcome::Ready` の完了を作る。こうすると、待つ間もほかのタスクが進み、中断の要求を受け付ける（03-09「失敗の種類」）。
 5. 準備の待ちは外部の待ちであり、行き詰まりの判定に数える（10-10「完了の処理と行き詰まりの判定の順序」の手順 5）。取り消したタスクの `Readiness` の記録は、10-10 の規則のとおり配送先を外して残し、準備が来たら捨てる（やり直さない）。
 
 `Http.listenerPort` は、口（`runtime_view`）でリソースを読み、待たずに完了する（02-09「組み込みの操作とハンドラ表」の「VM のスレッドで、すぐに完了する」）。`Http.listen` は、名前の解決と待ち受けの開始を作業用のスレッドで行い（同 表の「`Http.listen` の名前の解決」）、完了の処理で `register_resource(ResourceKind::HttpListener, …)` で表に加える。
@@ -141,7 +202,8 @@ HTTP のサーバの細部を、次のとおり決める。理由の句を除く
 | 要求の本体の読み方 | `content-length` と `transfer-encoding: chunked` の両方を読む。どちらもなければ本体は空とする。両方あるか、形が正しくなければ状態コード 400 | HTTP/1.1 のサーバは chunked の本体を読めることが求められる（RFC 9112）。両方あるときの扱いを決めないと、要求の境目の解釈が食い違う |
 | 本体の上限の判定 | `content-length` の値か、chunked を読んだ累計が `MAX_REQUEST_BODY_BYTES` を超えた時点で、本体の残りを読まずに状態コード 413 を返し、接続を閉じる | 上限を超える本体をメモリに読まない |
 | 要求の頭（要求の行とヘッダ）の上限 | 64 KiB とし、超えたら状態コード 431 を返す。ヘッダの数は 100 までとし、超えたら 431 | `httparse` はヘッダの数の上限を呼び出し側が与える。頭が終わらない接続でメモリを使い続けない |
-| 文字列にできない要求 | 要求の対象（パスとクエリ）とヘッダの値が、`Http.Request` の `String` にできない（UTF-8 でない）ときは、HTTP として読めない要求として状態コード 400 を返す | 03-09 は、HTTP として正しくない要求に 400 を返すと定めるだけで、UTF-8 でない場合を定めていない（[OPEN-062](../../design/open-issues.md#open-062) の R14）。新しい規則を作らず、既にある規則に寄せた。R14 の再現テストは L33 が書く |
+| 文字列にできない要求 | 要求の対象（パスとクエリ）とヘッダの値が、`Http.Request` の `String` にできない（UTF-8 でない）ときは、HTTP として読めない要求として状態コード 400 を返す | 03-09「サーバの接続と要求の読み方」が、`String` にできない要求（クエリではパーセント符号化を戻した結果が正しい UTF-8 でないものを含む）を HTTP として正しくない要求として扱うと定める（[ADR 0322](../../design/decisions/0322-stdlib-details-from-u3-preflight.md) の決定 4。[OPEN-062](../../design/open-issues.md#open-062) の R14 のクエリの項目をこの規則で決着とした）。戻せない符号化（`?q=%G0`）は字面のまま残し、400 にしない（[ADR 0330](../../design/decisions/0330-http-details-from-u3-preflight.md) の決定 1）。R14 の再現テストは L33 が書く |
+| クエリの細部 | 符号化を戻せないもの（`%` の後が 16 進の 2 桁でないもの。`%G0`・末尾の `%`）は受け取った字面のまま残す。`=` のない項目は値が空の文字列の組。空の項目（`?a&&b` の間）は飛ばし、`=` が二つ以上ある項目（`?a=b=c`）は最初の `=` で名前と値に分ける。`?` だけか `?` がなければ `query` は空のリスト。戻した結果が UTF-8 でなければ上の行のとおり 400 | 03-09「要求と応答の型」、[ADR 0330](../../design/decisions/0330-http-details-from-u3-preflight.md) の決定 1。`Http.pathSegments` の戻せない要素の扱いと揃えた |
 | 応答に処理系が付けるヘッダ | `content-length`（本体の大きさ）と `connection: close`。利用者の `headers` に同じ名前（大文字と小文字を区別しない）があれば、処理系の値で置き換える | 03-09 は `Content-Length` を処理系が付けると定める。食い違う二つの値を送らない |
 | 状態コードの理由の句 | RFC 9110 の句。知らないコードは空の句 | 利用者が句を指定する欄はない |
 
@@ -169,6 +231,7 @@ pub struct ProcessStdio {
 
 - `runtime::run` は、`RunEnv::stdin` が `StdinSource::Process` なら `inherit_stdin` を、`RunEnv::stdout` が `OutputTarget::Stdout` なら `inherit_stdout` を、`RunEnv::stderr` が `OutputTarget::Stderr` なら `inherit_stderr` を真にする（10-13「実行の流れ」）。これを書くのは L13 である。
 - 継がせないときの出力は、子が終わった後に、標準出力、標準エラー出力の順に `IoServices::write_output` で書く。子の標準出力と標準エラー出力の間の書いた順は保たない。完了の処理は待てないので、`write_output` が容量の待ちを返しても待たずに進む。書き込みは預けられ、後の書き込みに追い越されない（ADR 0265 の決定 4）ので、出力の順は崩れない。
+- 継がせないときに集める出力は、`Process.run`・`shell` と同じく、標準出力と標準エラー出力をそれぞれ上限（2^30 バイト）より 1 バイト多い分まで集め、どちらかが上限を超えたら資源の不足（`ResourceError::InputTooLarge`）とする。集めた出力が正しい UTF-8 でなければ、壊れたバイトの並びを U+FFFD に置き換えた文字列（`String::from_utf8_lossy`）を書き、`InvalidUTF8` は返さない（03-07「Process」、[ADR 0327](../../design/decisions/0327-fmt-symlink-and-process-attached-details.md) の決定 2・3）。
 - 継がせるときも、子を起動する前に出力の転送の完了を待つ（`WorkerWait::after_output_flush`。02-09「出力のバッファ」）。処理系が標準入力を読んで持っている読みかけの内容（読み手のバッファ）は、子に渡らない。
 
 ## テスト用のハンドラ表のネットワークの失敗
@@ -213,32 +276,12 @@ impl NetworkFaults {
 `Random.Generate` の操作は、実行の始めに OS の乱数で種を決めた隠れた生成器を使う（03-07「Random」）。生成器は `Random.fromSeed` と同じ xoshiro256** であり、状態は 256 ビットなので、10-10 の `IoRuntime::random_state` を `[u64; 4]` にした。
 
 - R26 は、`IoRuntime::new` で `random_state` を 0 で埋め、`IoView::random_u64` を xoshiro256** の一歩（状態を進めて 64 ビットを返す）として書く。
-- L14 は、`runtime::run` が `IoRuntime` を作った直後に、`getrandom::u64()` の値を種とし、SplitMix64 で広げた 4 個の値を `random_state` に入れる（03-07「Random」の手順）。`getrandom` が失敗したときは、処理系の不具合（`Stop::Internal`）として実行を止める。OS の乱数が得られない環境で、予測できる種で黙って続けないためである。
-- 種を広げる手順と xoshiro256** の一歩は、`Random.fromSeed` などの純粋な関数（L14）と同じ関数を使う。
+- L14 は、`runtime::run` が `IoRuntime` を作った直後に、`getrandom::u64()` の値を種とし、SplitMix64 で広げた 4 個の値を `random_state` に入れる（03-07「Random」の手順）。`getrandom` が失敗したときは、処理系の不具合として実行を終える。OS の乱数が得られない環境で、予測できる種で黙って続けないためである。
+- 種を広げる手順と xoshiro256** の一歩は、`Random.fromSeed` などの純粋な関数（L14）と同じ手順とする。R26 が書いた `IoView::random_u64` は xoshiro256** の一歩と一致していることを L14 の事前点検で確かめたので、L14 が一つの関数にまとめるかは任意とする。
 
 ## 時計
 
 `Clock.now` と `Clock.localOffsetMinutes` は、10-10 の `Clock`（差し替えられる時計）の `now_millis`・`local_offset_minutes` を `IoServices` 越しに読む。R25 が書く実際の時計の `local_offset_minutes` は、R25 の作業の文書が中身を定めておらず、OS の時差を求める `jiff` は U3 のクレートなので、R25 の時点では OS の時差を返せない。L10 が、`jiff` の `TimeZone::try_system()` で OS の時差を求める形に書き換える。求められないときは 0 を返す（ADR 0287 の決定 1）。テスト用の時計（R25）は、テストが与えた値を返す。
-
-## 正規表現の組み立ての関数
-
-F17 は、`Regex.compile` の引数が文字列リテラルか定数式のとき、正規表現を検査の時点で組み立てる（03-08「Regex」、OPEN-062 の R08）。検査の時点と実行の時点で結果が食い違わないように、組み立ての設定を一か所に置き、`Regex.compile` の本体とこの関数の両方がそれを使う。
-
-```rust sig=src/builtins/mod.rs
-pub mod regex_check;
-```
-
-```rust sig=src/builtins/regex_check.rs
-//! 正規表現の源の検査（設計書 03-08「Regex」、OPEN-062 の R08）。L22 が書き、F17 が呼ぶ（実装プラン 10-16）。
-
-/// 正規表現の源 `source` を、実行時の `Regex.compile` と同じ設定で組み立て、成否を返す。
-/// 失敗なら、`Regex.compile` が `Result.Error` に入れるものと同じ理由の文字列（改行を含みうる）を返す。
-/// 純粋な関数であり、組み立てた正規表現は捨てる。
-pub fn check_regex_source(source: &str) -> Result<(), String>;
-```
-
-- L22 は、組み立ての設定（`regex::RegexBuilder` に与える大きさの上限など）を、`builtins::funcs::regex` と共有する非公開の関数に置き、`Regex.compile` の本体と `check_regex_source` の両方から呼ぶ。
-- シグネチャに `regex` クレートの型を含めないのは、クレートを加える L22 より前の作業（F17 の文書を書く時点、`check` の道具）で、この宣言をコンパイルできるようにするためである。
 
 ## 作業用のスレッドで行う操作
 
@@ -256,6 +299,9 @@ pub fn check_regex_source(source: &str) -> Result<(), String>;
 
 - 取り消したタスクの操作は止めない。起動した外部コマンドも終わらせない（02-09「タスクの待ちと取り消し」）。中断の要求で止めるときも、処理系は子プロセスに何も送らない。端末からの `SIGINT` は、端末が同じプロセスグループの子にも送る。
 - 大きさの上限を超えた入力は資源の不足（`ResourceError::InputTooLarge`）とする（02-09「一つの操作で作る値の大きさの上限」）。
+- `Process.run`・`runAttached` の `program` が `/` を含む相対パスのときは、子の作業ディレクトリ（`workingDirectory` を基準のディレクトリから解決したもの。`None` なら基準のディレクトリ）に繋いで絶対パスにしてから `std::process::Command::new` に渡す。`/` を含まない名前は、そのまま渡して `PATH` から探させる（03-07「Process」、[ADR 0327](../../design/decisions/0327-fmt-symlink-and-process-attached-details.md) の決定 4）。
+- `Http.send` の `ureq` の `Agent` は、`ConfigBuilder::proxy(None)` でプロキシを使わない設定にする。`ureq` 3.4.2 の `Config` の既定の値は `Proxy::try_from_env()` で環境変数（`ALL_PROXY`・`HTTPS_PROXY`・`HTTP_PROXY` と `NO_PROXY`、小文字の名前を含む）を読むので、明示して外す（03-09「クライアント」、[ADR 0330](../../design/decisions/0330-http-details-from-u3-preflight.md) の決定 2）。
+- `Http.send` は、`https` の URL では TLS を組み立てる前に、`graviola` 0.4.1 が要する CPU の機能（`x86_64` は `aes`・`pclmulqdq`・`bmi1`・`adx`・`avx`・`avx2`、`aarch64` は `neon`・`aes`・`pmull`・`sha2`。`src/low/*/cpu.rs` の `verify_cpu_features`）を `std::arch::is_x86_feature_detected!`・`std::arch::is_aarch64_feature_detected!` で確かめる。`graviola` は確かめる関数を公開していない。足りなければ、仕事を出さずに `NetworkErrorKind.Other` と理由の文字列の `Result.Error` を返す。機能が足りない計算機の `http` の URL では、TLS の接続器を含まない接続器の連なり（`Agent::with_parts` に `TcpConnector` だけ）で `Agent` を作り、リダイレクトで `https` に移ったときに `ureq` が返す `Error::TlsRequired` を同じ種類と理由にする（ADR 0330 の決定 3）。
 
 ## 置き方と既存の構築の箇所
 
@@ -264,7 +310,7 @@ L00 は、本章のブロックを 10-15 と同じく `place --task L00` で置�
 | 構造体 | 作る箇所（L00 の時点のクレートで `grep` して確かめる） |
 |---|---|
 | `IoRuntime` | `IoRuntime::new`（R26） |
-| `RuntimeParts` | `RuntimeParts::real`（R26）、`sched::testing` の部品を作る関数（R25）、それを使うテスト |
+| `RuntimeParts` | `RuntimeParts::real`（R26 が一時的な中身を、R40 が作業用のスレッドの中身を書いた）、`sched::testing` の部品を作る関数（R25）、それを使うテスト |
 | `ResourceTable` | `Default` で作る。すべての欄を書いて作る箇所があれば、同じく加える |
 
 トレイトに加えた関数の既定の実装を上書きする箇所（`IoView` の `runtime_view`、VM の側の `StateServices::resource_table`）も L00 が書く。本体は一行であり、以後の作業（L10・L13・L30・L32）がどれも使うからである。
@@ -275,9 +321,9 @@ L00 は、本章のブロックを 10-15 と同じく `place --task L00` で置�
 |---|---|
 | L00 | 本章のブロックを置く。上の既存の構築の箇所に既定の値を加える。`runtime_view`・`resource_table` の上書き、`NetworkFaults::lookup` |
 | L10 | 実際の時計の `local_offset_minutes`（`jiff`） |
+| L12 | `StateServices::begin_close` と `CloseStep` を `src/builtins/iface.rs` に書き足し、VM の側の `begin_close` の上書きを書く（本章「close の関数が解放の失敗を受け取る口」） |
 | L13 | `runtime::run` で `process_stdio` を決める。`Process.run`・`runAttached`・`shell` |
 | L14 | 隠れた生成器の種（`getrandom`）と `IoView::random_u64` の確かめ |
-| L22 | `check_regex_source` と、組み立ての設定の共有 |
-| L30 | `runtime::io::http` の層、準備の待ちの規則（R26 の `Deliver` の処理と `event.rs` を広げる）、受け付けた要求の保存、実装プランで決める値 |
+| L30 | `runtime::io::http` の層、準備の待ちの規則（R26 の `Deliver` の処理と R40 の `event.rs` を広げる）、準備の知らせを届ける経路、受け付けた要求の保存、実装プランで決める値、`ThreadWorkers` の `wakeup` の上書きと `RuntimeParts::real_with_poll` |
 | L32 | `ureq` と TLS の組み立て、ネットワークの失敗の注入（`Http.send`）、上の【要検証】の二つ |
-| L33 | ネットワークの失敗の注入のテスト（`network_faults` を入れた `RuntimeParts` を `RunEnv::parts` で渡す Rust のテスト） |
+| L33 | ネットワークの失敗の注入のテスト（`network_faults` を入れた `RuntimeParts` を `RunEnv::parts` で渡す Rust のテスト。失敗を当てる場合はテスト用の部品（`ScheduleHandle`）、当てない接続は `RuntimeParts::real_with_poll` の部品で動かす） |

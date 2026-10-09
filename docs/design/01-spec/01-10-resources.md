@@ -2,7 +2,7 @@
 
 - 状態: 確定
 - 関連ADR: [0044](../decisions/0044-heap-exhaustion-outside-stop-procedure.md), [0064](../decisions/0064-no-exceptions-runtime-errors-uncatchable.md), [0067](../decisions/0067-with-resource-scope.md), [0068](../decisions/0068-release-resources-on-stop.md), [0096](../decisions/0096-explicit-return.md), [0097](../decisions/0097-prefix-try.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0137](../decisions/0137-first-release-library-scope.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0150](../decisions/0150-resource-release-as-state.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0164](../decisions/0164-taskgroup-release-while-stopping.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md)
-- 未決事項: [OPEN-012](../open-issues.md#open-012)
+- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-106](../open-issues.md#open-106)
 - 移行元: [設計メモ](../sources/fp-language-design.md) 4
 
 ## 目的と範囲
@@ -40,7 +40,7 @@ import Benitoite.IO.File
 
 function copyHeader(src: String, dst: String) -> Result[Unit, String] uses File.Read, File.Write, State
   with input = try File.openReader(src) |> Result.mapError(_, IOError.message),
-       output = try File.openWriter(dst, File.WriteMode.Replace) |> Result.mapError(_, IOError.message) do
+    output = try File.openWriter(dst, File.WriteMode.Replace) |> Result.mapError(_, IOError.message) do
     bind line <- try File.readLine(input) |> Result.mapError(_, IOError.message)
     return File.writeLine(output, Option.unwrapOr(line, "")) |> Result.mapError(_, IOError.message)
   end with
@@ -95,3 +95,4 @@ end function
 ## 未決事項
 
 - [OPEN-012](../open-issues.md#open-012): 構文の種類ごとの LLM の生成精度（`with` の書き方の成功率）
+- [OPEN-106](../open-issues.md#open-106): 子のタスクから外側のリソースを使う規則と、接続の pool の形（初回リリース版の後。一つのリソースを複数のタスクが操作する場合の規則）

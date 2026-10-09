@@ -1,0 +1,41 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.Network.Http
+
+record Item
+  name: String
+  stock: Integer
+  price: Integer
+end record
+
+function itemOf(value: Json.Value) -> Result[Item, String]
+  bind name <- try Option.okOr(Option.andThen(Json.get(value, "name"), Json.asString), "an item has no name")
+  bind stock <- try Option.okOr(Option.andThen(Json.get(value, "stock"), Json.asInteger), "an item has no stock")
+  bind price <- try Option.okOr(Option.andThen(Json.get(value, "price"), Json.asInteger), "an item has no price")
+  return Result.Ok(Item(name: name, stock: stock, price: price))
+end function
+
+function bodyText(response: Http.Response) -> String
+  return Option.unwrapOr(String.fromUTF8(Http.Response.body(response)), "")
+end function
+
+function main() -> Result[Unit, String] uses Process.Environment, Http.Connect, Console.Write
+  bind base <- try Option.okOr(try Process.environmentVariable("SKILL_EVAL_HTTP_BASE") |> Result.mapError(_, IOError.message), "SKILL_EVAL_HTTP_BASE is not set")
+  bind status <- try Http.get(base + "/status") |> Result.mapError(_, NetworkError.message)
+  Console.writeLine("status: ${bodyText(status)}")
+  bind inventory <- try Http.get(base + "/inventory") |> Result.mapError(_, NetworkError.message)
+  bind value <- try Json.parse(bodyText(inventory)) |> Result.mapError(_, Json.ParseError.message)
+  bind array <- try Option.okOr(Json.asArray(value), "the inventory is not an array")
+  bind items <- try List.fold(array, Result.Ok([]), lambda(acc, v)
+    return Result.andThen(acc, lambda(xs) return Result.map(itemOf(v), lambda(item) return List.prepend(xs, item) end lambda) end lambda)
+  end lambda) |> Result.map(_, List.reverse)
+  bind low <- List.filter(items, lambda(item) return Item.stock(item) < 5 end lambda)
+  Console.writeLine("low stock: ${String.join(List.map(low, lambda(item) return "${Item.name(item)} (${Item.stock(item)})" end lambda), ", ")}")
+  Console.writeLine("inventory value: ${List.fold(items, 0, lambda(sum, item) return sum + Item.stock(item) * Item.price(item) end lambda)}")
+  bind names <- Json.Value.Array(List.map(low, lambda(item) return Json.Value.String(Item.name(item)) end lambda))
+  bind request <- Http.ClientRequest(..Http.clientRequest("POST", base + "/report"), body: String.toUTF8(Json.stringify(names)))
+  bind reply <- try Http.send(request) |> Result.mapError(_, NetworkError.message)
+  Console.writeLine("report: ${Http.Response.status(reply)} ${bodyText(reply)}")
+  return Result.Ok(())
+end function

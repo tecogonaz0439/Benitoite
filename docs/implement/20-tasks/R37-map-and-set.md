@@ -1,6 +1,6 @@
 # R37 `Map` と `Set` の重みで平衡させる二分木
 
-- 依存する作業: [R08](R08-builtin-table.md)、[R09](R09-vm-core.md)、[C02](C02-remaining-interfaces.md)、[R35](R35-decimal-and-byte.md)、[F07](F07-typeck-records-constants.md)（鍵の順序の葉を比べる `base::prim::cmp_key_atom` を F07 が書く。R37 は R14 の後なので、実際には満たされている）
+- 依存する作業: [R08](R08-builtin-table.md)、[R09](R09-vm-core.md)、[C02](C02-remaining-interfaces.md)、[R35](R35-decimal-and-byte.md)、[F07](F07-typeck-records-constants.md)（鍵の順序の葉を比べる `base::prim::cmp_key_atom` を F07 が書く。F07 は取り込み済み）
 - 難易度: 4（1〜5。README の「作業一覧」）
 - 規模の見込み: 大（1500 行超。テストを含む）
 - ブランチ: impl/R37-map-and-set
@@ -29,8 +29,9 @@
 ## 作るもの
 
 - `src/runtime/map.rs`: `runtime::map` の関数の中身。木の操作は、`map.rs` の中で宣言する非公開の子のモジュールに置いてよい。
-- `src/runtime/equal.rs`: `values_equal` のマップと集合の比較（R35 が `Decimal` の分岐を加えている。本作業はマップと集合の分岐だけを加える）。
-- `src/vm/dispatch.rs` と、`dispatch.rs` の中で宣言する非公開の子のモジュール `src/vm/dispatch/collections.rs`: `LOADK` の `ConstDesc::Map`・`Set` の処理。`dispatch.rs` には分岐の行だけを加える。
+- `src/runtime/equal.rs`: `values_equal` のマップと集合の比較（R35 が `Decimal` の分岐を加えている。本作業はマップと集合の分岐だけを加える）。欄の数が 4（マップ）か 3（集合）でないノードは `Stop::Internal` にする（壊れたノードを検出するため。既存のテスト `non_equality_values_and_incompatible_kinds_are_internal_errors` は欄 0 個のノードで `Stop::Internal` を求めており、この規則でそのまま通る）。
+- `src/builtins/funcs/mod.rs` のテスト `placeholders_and_their_wrappers_fail_without_runtime_operations` から、本作業の項目の行（`map::empty`・`set::empty`）を消す。仮の本体でなくなるためである。このファイルのほかの部分は変えない。
+- `src/vm/dispatch.rs` と、`dispatch.rs` の中で宣言する非公開の子のモジュール `src/vm/dispatch/collections.rs`: `LOADK` の `ConstDesc::Map`・`Set` の処理。`dispatch.rs` には分岐の行だけを加える。ただし `constant()` の子の取り出し（`children` の計算。今は借用の並び `&[ConstIdx]`）は、`Map` の組を鍵・値の順に平らに並べられる形（`Vec` など）に変えてよい。組への組み立て直しは `collections.rs` に置く。
 - `src/builtins/funcs/map.rs`・`src/builtins/funcs/set.rs`: 六つの項目の本体（R08 の仮の本体を置き換える）と単体テスト。
 - 平衡の条件の定数を 10-08「マップと集合」に書き足すことは、実装プランの文書の変更なので、本作業は完了の報告に定数を書き、オーケストレータが 10-08 に書き足す。
 - 上のファイルのテスト。
@@ -47,11 +48,11 @@
 ### 共通の規則
 
 - どの関数も Rust の再帰を使わず、明示の積み重ね（`Vec`）で辿る（AGENTS.md「再帰の深さ」、10-08「マップと集合」）。挿入と削除は、根からの道筋を積み重ねに記録してから、下から写し直して平衡を直す。集合の演算の分割統治も、作業の積み重ねで書く。
-- 鍵の順序（`compare_keys`）は、03-06「Map と Set」の鍵の順序の規則に従う。`Integer`・`Byte`・`Decimal` は数の大小（`Decimal` は小数の桁数によらない。R35 の `Decimal::cmp_num`）、`String` はスカラー値の列の辞書式、`Character` はスカラー値、`Boolean` は `false` が先、`Unit` は一つ。構成子の値は、構成子のタグ（型の宣言の順）で比べ、同じなら引数を前から辞書式に比べる。`List`・`Bytes` は辞書式で、短いほうが先。`Set` と `Map` は、要素（組）を鍵の順に並べたリストとして比べる。比べる処理も明示の積み重ねで辿る。鍵の型でない値に出会ったら `Stop::Internal`。基本型と `Bytes` の葉は、値を `base::prim::KeyAtom` に写して `base::prim::cmp_key_atom` で比べる（10-01「値の表現によらない基本型の計算」）。定数の評価器（F07）と同じ関数を使い、定数式の `Map`・`Set` と実行時の値で鍵の順序が食い違わないようにするためである。`cmp_key_atom` が `None`（型の違う葉）を返したら `Stop::Internal`。構成子・リスト・集合・マップは本作業がヒープの値の上で辿る。
+- 鍵の順序（`compare_keys`）は、03-06「Map と Set」の鍵の順序の規則に従う。`Integer`・`Byte`・`Decimal` は数の大小（`Decimal` は小数の桁数によらない。R35 の `Decimal::cmp_num`）、`String` はスカラー値の列の辞書式、`Character` はスカラー値、`Boolean` は `false` が先、`Unit` は一つ。構成子の値は、構成子のタグ（型の宣言の順）で比べ、同じなら引数を前から辞書式に比べる。引数のない構成子（`Value::Tag`）と引数のある構成子（`Fields(Ctor, tag)` の対象）は、混ぜてタグで比べる（`None` と `Some(x)` など）。`List`・`Bytes` は辞書式で、短いほうが先。`Set` と `Map` は、要素（組）を鍵の順に並べたリストとして比べる。比べる処理も明示の積み重ねで辿る。鍵の型でない値に出会ったら `Stop::Internal`。基本型と `Bytes` の葉は、値を `base::prim::KeyAtom` に写して `base::prim::cmp_key_atom` で比べる（10-01「値の表現によらない基本型の計算」）。定数の評価器（F07）と同じ関数を使い、定数式の `Map`・`Set` と実行時の値で鍵の順序が食い違わないようにするためである。`cmp_key_atom` が `None`（型の違う葉）を返したら `Stop::Internal`。構成子・リスト・集合・マップは本作業がヒープの値の上で辿る。
 - 同じ鍵を加えるときは、元の鍵を保つ（`map_insert` は値だけを替える。`set_insert` は元の要素を保つ）。`Decimal` の `1.0m` と `1.00m` は同じ鍵である。
 - `map_from_sorted`・`set_from_sorted` は、鍵の順に並び同じ鍵を含まない並びから、平衡した木を下から作る（O(n)）。定数の記述（10-07）から作るときに使い、並べ替えない。
 - 値を作る関数は、確保の前に大きさを確かめる必要がない（マップと集合には一つの操作で作る値の大きさの上限がない。02-09「一つの操作で作る値の大きさの上限」はリストと文字列と `Bytes` だけを対象にする）。`map_to_vec` などから作るリストは、`runtime::list::from_values` が上限を確かめる。
-- 平衡の条件と、`tag` の要素の数が子の要素の数の和に 1 を足したものであることを、`debug_assert!` で確かめる（03-06、ADR 0211）。
+- 平衡の条件と、`tag` の要素の数が子の要素の数の和に 1 を足したものであることを、`debug_assert!` で確かめる（03-06、ADR 0211）。確かめは、ノードを作るときにそのノードの局所の条件（子の重みと `tag`）だけを見る（操作のたびに木の全体を辿ると、100 万の要素のテストがデバッグのビルドで終わらない）。
 
 ### 構造の等しさ
 

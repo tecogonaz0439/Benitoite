@@ -1,404 +1,788 @@
-//! 名前を引く規則（設計書 01-03「修飾された名前の解決」「修飾しない名前の解決」、02-04「誤りと修正案」）。
+//! 名前の検索順と参照の記録（設計書 01-03「修飾された名前の解決」、02-04「名前の引き方」）。
 
 use std::collections::BTreeMap;
 
-use super::collect::{PRELUDE_CTORS, Resolver, Src, Upper};
-use super::{BindingKind, suggest, text};
-use crate::base::{BindingId, Span};
-use crate::builtins::table::{lookup as table_lookup, spec};
-use crate::builtins::{BuiltinId, PreludeModule};
-use crate::diag::{DiagBuilder, DiagCode};
-use crate::syntax::ast::{EffectRef, Name, NamedType, UsesList};
+use crate::base::{BindingId, ModuleId, NodeId, Span};
+use crate::diag::{DiagBuilder, DiagCode, Edit};
+use crate::modules::ModuleKind;
+use crate::syntax::ast::{Name, UsesList};
 
-/// 一つのトップレベルの宣言を辿る間の文脈。
+use super::collect::Resolver;
+use super::{BindingKind, suggest, text};
+
+#[derive(Clone)]
 pub(super) struct Ctx {
-    pub(super) src: Src,
-    /// 型パラメータ（`effect` を付けないもの）
-    pub(super) type_params: Vec<(String, BindingId)>,
-    /// エフェクト変数
-    pub(super) effect_vars: Vec<(String, BindingId)>,
-    /// 局所の束縛の有効範囲の積み重ね。内側が末尾
+    pub(super) module: ModuleId,
+    pub(super) owner: NodeId,
+    pub(super) types: BTreeMap<String, BindingId>,
     pub(super) scopes: Vec<BTreeMap<String, BindingId>>,
+    pub(super) used: Vec<(BindingId, Span)>,
 }
 
 impl Ctx {
-    pub(super) fn new(src: Src) -> Ctx {
-        Ctx {
-            src,
-            type_params: Vec::new(),
-            effect_vars: Vec::new(),
+    pub(super) fn new(module: ModuleId, owner: NodeId) -> Self {
+        Self {
+            module,
+            owner,
+            types: BTreeMap::new(),
             scopes: Vec::new(),
+            used: Vec::new(),
         }
     }
-
-    fn type_param(&self, name: &str) -> Option<BindingId> {
-        find(&self.type_params, name)
-    }
-
-    fn effect_var(&self, name: &str) -> Option<BindingId> {
-        find(&self.effect_vars, name)
-    }
-
-    fn local(&self, name: &str) -> Option<BindingId> {
-        self.scopes
-            .iter()
-            .rev()
-            .find_map(|scope| scope.get(name).copied())
+    pub(super) fn local(&self, name: &str) -> Option<BindingId> {
+        self.scopes.iter().rev().find_map(|m| m.get(name).copied())
     }
 }
 
-fn find(list: &[(String, BindingId)], name: &str) -> Option<BindingId> {
-    list.iter().find(|(n, _)| n == name).map(|(_, b)| *b)
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Position {
+    Value,
+    Type,
+    Effect,
+    Ctor,
+    Record,
+    Class,
 }
 
-/// 修飾された名前の結果。
-pub(super) enum Qualified {
-    Found(BindingId),
-    /// 誤りを報告した
-    Failed,
+impl Position {
+    fn label(self) -> &'static str {
+        match self {
+            Self::Value => text::VALUE,
+            Self::Type => text::TYPE,
+            Self::Effect => text::EFFECT,
+            Self::Ctor => text::CONSTRUCTOR,
+            Self::Record => text::RECORD,
+            Self::Class => text::TRAIT,
+        }
+    }
+    fn accepts(self, kind: BindingKind) -> bool {
+        match self {
+            Self::Value => matches!(
+                kind,
+                BindingKind::Fn
+                    | BindingKind::BuiltinFn(_)
+                    | BindingKind::ImplFn { .. }
+                    | BindingKind::Const
+                    | BindingKind::Field { .. }
+                    | BindingKind::Ctor { .. }
+                    | BindingKind::Method { .. }
+                    | BindingKind::Op { .. }
+                    | BindingKind::Local(_)
+            ),
+            Self::Type => matches!(
+                kind,
+                BindingKind::Data
+                    | BindingKind::BuiltinType(_)
+                    | BindingKind::Alias
+                    | BindingKind::Record
+                    | BindingKind::TypeParam { .. }
+            ),
+            Self::Effect => matches!(
+                kind,
+                BindingKind::Effect | BindingKind::BuiltinEffect(_) | BindingKind::EffectVar { .. }
+            ),
+            Self::Ctor => matches!(kind, BindingKind::Ctor { .. }),
+            Self::Record => kind == BindingKind::Record,
+            Self::Class => kind == BindingKind::Trait,
+        }
+    }
+}
+
+pub(super) fn kind_label(kind: BindingKind) -> &'static str {
+    match kind {
+        BindingKind::Fn
+        | BindingKind::BuiltinFn(_)
+        | BindingKind::ImplFn { .. }
+        | BindingKind::Const
+        | BindingKind::Field { .. }
+        | BindingKind::Method { .. }
+        | BindingKind::Op { .. }
+        | BindingKind::Local(_) => text::VALUE,
+        BindingKind::Data | BindingKind::BuiltinType(_) | BindingKind::Alias => text::TYPE,
+        BindingKind::Record => text::RECORD,
+        BindingKind::Ctor { .. } => text::CONSTRUCTOR,
+        BindingKind::Trait => text::TRAIT,
+        BindingKind::Effect | BindingKind::BuiltinEffect(_) => text::EFFECT,
+        BindingKind::Module(_) => text::MODULE,
+        BindingKind::NamespaceRoot => text::NAMESPACE,
+        BindingKind::TypeParam { .. } => text::TYPE_PARAMETER,
+        BindingKind::EffectVar { .. } => text::EFFECT_VARIABLE,
+    }
 }
 
 impl Resolver<'_> {
-    /// トップレベルの大文字の名前を引く。prelude のソースからは利用者の型を引かない（02-04「prelude」）。
-    pub(super) fn lookup_upper(&self, src: Src, name: &str) -> Option<Upper> {
-        if src == Src::User
-            && let Some(index) = self.user_type_names.get(name)
-        {
-            return Some(Upper::UserType(*index));
+    pub(super) fn upper(&self, ctx: &Ctx, name: &str, parameters: bool) -> Option<BindingId> {
+        if name == "Benitoite" {
+            return self.prelude.get(name).copied();
         }
-        self.prelude_upper
-            .iter()
-            .find(|(n, _)| *n == name)
-            .map(|(_, u)| *u)
-    }
-
-    /// その位置で見えるトップレベルの大文字の名前（候補を作るため）。
-    fn upper_names(&self, src: Src, only_types: bool) -> Vec<String> {
-        let mut names: Vec<String> = Vec::new();
-        if src == Src::User {
-            names.extend(self.user_type_names.keys().cloned());
+        if parameters && let Some(id) = ctx.types.get(name) {
+            return Some(*id);
         }
-        for (n, u) in &self.prelude_upper {
-            if !only_types || matches!(u, Upper::PreludeType(..)) {
-                names.push((*n).to_owned());
-            }
-        }
-        names
+        self.top
+            .get(&ctx.module)
+            .and_then(|m| m.get(name))
+            .copied()
+            .or_else(|| {
+                self.imported
+                    .get(&ctx.module)
+                    .and_then(|m| m.get(name))
+                    .copied()
+                    .flatten()
+            })
+            .or_else(|| self.prelude.get(name).copied())
     }
 
-    fn upper_binding(&self, upper: Upper) -> Option<BindingId> {
-        match upper {
-            Upper::UserType(i) => self.user_types.get(i).map(|t| t.binding),
-            Upper::PreludeType(b, _) | Upper::Module(b, _) | Upper::Effect(b) => Some(b),
-        }
-    }
-
-    fn builtin_binding(&self, id: BuiltinId) -> Option<BindingId> {
-        self.out
-            .prelude
-            .builtins
-            .iter()
-            .find(|(b, _)| *b == id)
-            .map(|(_, binding)| *binding)
-    }
-
-    /// prelude のモジュールの中の名前を引く。prelude 専用の組み込みの関数は、prelude のソースからだけ見える。
-    fn prelude_member(&self, src: Src, module: PreludeModule, name: &str) -> Option<BindingId> {
-        if let Some(id) = table_lookup(module, name)
-            && (src == Src::Prelude || !spec(id).prelude_only)
-        {
-            return self.builtin_binding(id);
-        }
-        self.prelude_fns
-            .iter()
-            .find(|(m, n, _)| *m == module && n == name)
-            .map(|(_, _, b)| *b)
-    }
-
-    /// prelude のモジュールの中の見える名前（候補を作るため）。
-    fn prelude_members(&self, src: Src, module: PreludeModule) -> Vec<String> {
-        let mut names: Vec<String> = BuiltinId::ALL
-            .into_iter()
-            .map(spec)
-            .filter(|s| s.module == Some(module) && (src == Src::Prelude || !s.prelude_only))
-            .map(|s| s.name.to_owned())
-            .collect();
-        names.extend(
-            self.prelude_fns
-                .iter()
-                .filter(|(m, _, _)| *m == module)
-                .map(|(_, n, _)| n.clone()),
-        );
-        names
-    }
-
-    // ---------------- 修飾された名前 ----------------
-
-    /// `A.b`・`A.B` を解決する（01-03「修飾された名前の解決」）。`whole` は修飾を含む名前全体の位置。
-    pub(super) fn qualified(
-        &mut self,
-        src: Src,
-        qualifier: &Name,
-        name: &Name,
-        whole: Span,
-    ) -> Qualified {
-        let Some(upper) = self.lookup_upper(src, &qualifier.text) else {
-            let pool = self.upper_names(src, false);
-            let mut d = DiagBuilder::new(DiagCode::E0302)
-                .arg("name", qualifier.text.clone())
-                .primary(qualifier.span);
-            if let Some(c) = suggest::candidates(&qualifier.text, pool.iter().map(String::as_str)) {
-                d = d.arg("candidates", c).help("similar");
-            }
-            self.report(d);
-            return Qualified::Failed;
+    // 標準ライブラリの同名の型とモジュールは、最後の段を読む位置によって選ぶ（02-04「標準ライブラリのソースの持ち方」）。
+    fn type_in_module(&self, id: BindingId) -> Option<BindingId> {
+        let b = self.out.bindings.get(id)?;
+        let BindingKind::Module(module) = b.kind else {
+            return None;
         };
-        let module = match upper {
-            Upper::Effect(_) => {
-                self.report_kind(qualifier, text::EFFECT, text::MODULE);
-                return Qualified::Failed;
-            }
-            Upper::UserType(i) => {
-                // 利用者の型のモジュールには構成子だけが入る。
-                let ctors = self.user_types.get(i).map(|t| &t.ctors);
-                let found = ctors.and_then(|c| c.iter().find(|(n, _)| *n == name.text));
-                if let Some((_, b)) = found {
-                    return Qualified::Found(*b);
-                }
-                let pool: Vec<String> = ctors
-                    .map(|c| c.iter().map(|(n, _)| n.clone()).collect())
-                    .unwrap_or_default();
-                self.report_no_member(qualifier, name, None, &pool);
-                return Qualified::Failed;
-            }
-            Upper::PreludeType(_, m) => m,
-            Upper::Module(_, m) => Some(m),
-        };
-        // prelude の型のモジュールに構成子は入らない（`Option.Some` は誤り。ADR 0007）。
-        if PRELUDE_CTORS.contains(&name.text.as_str()) {
-            self.report(
-                DiagBuilder::new(DiagCode::E0317)
-                    .arg("name", name.text.clone())
-                    .arg("module", qualifier.text.clone())
-                    .primary(whole)
-                    .help("unqualified"),
-            );
-            return Qualified::Failed;
-        }
-        if let Some(m) = module
-            && let Some(b) = self.prelude_member(src, m, &name.text)
-        {
-            return Qualified::Found(b);
-        }
-        let pool = module
-            .map(|m| self.prelude_members(src, m))
-            .unwrap_or_default();
-        self.report_no_member(qualifier, name, module, &pool);
-        Qualified::Failed
-    }
-
-    /// E0303 を報告する。単位を持たない名前などの特別な修正案があれば、綴りの近い名前は示さない
-    /// （01-04「String」、ADR 0043）。
-    fn report_no_member(
-        &mut self,
-        qualifier: &Name,
-        name: &Name,
-        module: Option<PreludeModule>,
-        pool: &[String],
-    ) {
-        let special = match (module, name.text.as_str()) {
-            (Some(PreludeModule::String), "length" | "len" | "size") => Some("length"),
-            (Some(PreludeModule::String), "slice" | "substring") => Some("slice"),
-            (Some(PreludeModule::String), "indexOf") => Some("index_of"),
-            (Some(PreludeModule::Option | PreludeModule::Result), "unwrap" | "expect") => {
-                Some("unwrap")
-            }
-            _ => None,
-        };
-        let mut d = DiagBuilder::new(DiagCode::E0303)
-            .arg("module", qualifier.text.clone())
-            .arg("name", name.text.clone())
-            .primary(name.span);
-        if let Some(key) = special {
-            d = d.help(key);
-        } else if let Some(c) = suggest::candidates(&name.text, pool.iter().map(String::as_str)) {
-            d = d.arg("candidates", c).help("similar");
-        }
-        self.report(d);
-    }
-
-    /// E0304 を報告する。
-    pub(super) fn report_kind(&mut self, name: &Name, found: &str, expected: &str) {
-        self.report(
-            DiagBuilder::new(DiagCode::E0304)
-                .arg("name", name.text.clone())
-                .arg("found_kind", found)
-                .arg("expected_kind", expected)
-                .primary(name.span),
-        );
-    }
-
-    // ---------------- 修飾しない名前 ----------------
-
-    /// 式とパターンの修飾しない大文字の名前を解決する（01-03「修飾しない名前の解決」）。
-    pub(super) fn unqualified_upper(&mut self, cx: &Ctx, name: &Name) -> Option<BindingId> {
-        let prelude = &self.out.prelude;
-        let ctor = match name.text.as_str() {
-            "Some" => prelude.some,
-            "None" => prelude.none,
-            "Ok" => prelude.ok,
-            "Err" => prelude.err,
-            _ => None,
-        };
-        if ctor.is_some() {
-            return ctor;
-        }
-        if cx.type_param(&name.text).is_some() {
-            self.report_kind(name, text::TYPE_PARAMETER, text::VALUE);
+        let info = self.modules.get(module)?;
+        if !matches!(info.kind, ModuleKind::Prelude | ModuleKind::Stdlib) {
             return None;
         }
-        if cx.effect_var(&name.text).is_some() {
-            self.report_kind(name, text::EFFECT_VARIABLE, text::VALUE);
-            return None;
+        self.top.get(&module)?.get(info.name.0.last()?).copied()
+    }
+
+    fn as_module(&self, id: BindingId) -> Option<ModuleId> {
+        let b = self.out.bindings.get(id)?;
+        if let BindingKind::Module(module) = b.kind {
+            return Some(module);
         }
-        if let Some(upper) = self.lookup_upper(cx.src, &name.text) {
-            let found = match upper {
-                Upper::UserType(_) | Upper::PreludeType(..) => text::TYPE,
-                Upper::Module(..) => text::MODULE,
-                Upper::Effect(_) => text::EFFECT,
-            };
-            self.report_kind(name, found, text::VALUE);
-            return None;
-        }
-        // 利用者の型の構成子を修飾せずに書いた場合は、型名で修飾した形を示す。
-        let owner = if cx.src == Src::User {
-            self.user_types
-                .iter()
-                .find(|t| t.ctors.iter().any(|(n, _)| *n == name.text))
-                .map(|t| t.name.clone())
+        let info = self.modules.get(b.module)?;
+        if matches!(info.kind, ModuleKind::Prelude | ModuleKind::Stdlib)
+            && info.name.0.last() == Some(&b.name)
+            && matches!(
+                b.kind,
+                BindingKind::Data
+                    | BindingKind::BuiltinType(_)
+                    | BindingKind::Record
+                    | BindingKind::Trait
+            )
+        {
+            Some(b.module)
         } else {
             None
+        }
+    }
+
+    fn children(&self, ctx: &Ctx, id: BindingId, public_only: bool) -> BTreeMap<String, BindingId> {
+        let Some(b) = self.out.bindings.get(id) else {
+            return BTreeMap::new();
         };
-        if let Some(owner) = owner {
-            self.report(
-                DiagBuilder::new(DiagCode::E0304)
-                    .arg("name", name.text.clone())
-                    .arg("found_kind", text::CONSTRUCTOR)
-                    .arg("expected_kind", text::VALUE)
-                    .arg("suggestion", format!("{owner}.{}", name.text))
-                    .primary(name.span)
-                    .help("qualify"),
-            );
-            return None;
+        if b.kind == BindingKind::NamespaceRoot {
+            return self
+                .prelude
+                .iter()
+                .filter(|(name, _)| name.as_str() != "Benitoite")
+                .map(|(n, id)| (n.clone(), *id))
+                .collect();
         }
-        self.report_not_found(name, PRELUDE_CTORS.iter().copied());
-        None
-    }
-
-    /// 式の修飾しない小文字の名前を解決する。局所の束縛、次にトップレベルの関数
-    /// （prelude のソースでは補助の関数）の順に引く。
-    pub(super) fn unqualified_lower(&mut self, cx: &Ctx, name: &Name) -> Option<BindingId> {
-        let top = match cx.src {
-            Src::User => &self.user_fns,
-            Src::Prelude => &self.helpers,
-        };
-        if let Some(b) = cx
-            .local(&name.text)
-            .or_else(|| top.get(&name.text).copied())
-        {
-            return Some(b);
-        }
-        let mut pool: Vec<String> = cx.scopes.iter().flat_map(|s| s.keys().cloned()).collect();
-        pool.extend(top.keys().cloned());
-        self.report_not_found(name, pool.iter().map(String::as_str));
-        None
-    }
-
-    /// E0301 を報告する。
-    fn report_not_found<'n>(&mut self, name: &Name, pool: impl IntoIterator<Item = &'n str>) {
-        let mut d = DiagBuilder::new(DiagCode::E0301)
-            .arg("name", name.text.clone())
-            .primary(name.span);
-        if let Some(c) = suggest::candidates(&name.text, pool) {
-            d = d.arg("candidates", c).help("similar");
-        }
-        self.report(d);
-    }
-
-    // ---------------- 型と uses ----------------
-
-    /// 名前の型の名前を解決する。型パラメータ、次にトップレベルの型の名前の順に引く（01-03）。
-    /// 型引数は呼び出し側が辿る。
-    pub(super) fn named_type(&mut self, cx: &Ctx, t: &NamedType) {
-        let name = &t.name;
-        if let Some(b) = cx.type_param(&name.text) {
-            self.out.refs.insert(t.id, b);
-            return;
-        }
-        if cx.effect_var(&name.text).is_some() {
-            self.report_effect_as_type(name);
-            return;
-        }
-        match self.lookup_upper(cx.src, &name.text) {
-            Some(Upper::Effect(_)) => self.report_effect_as_type(name),
-            Some(Upper::Module(..)) => self.report_kind(name, text::MODULE, text::TYPE),
-            Some(upper) => {
-                if let Some(b) = self.upper_binding(upper) {
-                    self.out.refs.insert(t.id, b);
+        if let Some(module) = self.as_module(id) {
+            let table = if !public_only && module == ctx.module {
+                self.top.get(&module)
+            } else {
+                self.out.exports.get(&module)
+            };
+            let mut names = table.cloned().unwrap_or_default();
+            if let Some(info) = self.modules.get(module)
+                && matches!(info.kind, ModuleKind::Prelude | ModuleKind::Stdlib)
+                && let Some(ty) = info
+                    .name
+                    .0
+                    .last()
+                    .and_then(|name| self.top.get(&module).and_then(|t| t.get(name)))
+                && let Some(children) = self.members.get(ty)
+            {
+                for (name, child) in children {
+                    if self
+                        .out
+                        .bindings
+                        .get(*child)
+                        .is_some_and(|b| b.public || (!public_only && module == ctx.module))
+                    {
+                        names.entry(name.clone()).or_insert(*child);
+                    }
                 }
             }
-            None => {
-                let mut pool: Vec<String> = cx.type_params.iter().map(|(n, _)| n.clone()).collect();
-                pool.extend(self.upper_names(cx.src, true));
-                self.report_not_found(name, pool.iter().map(String::as_str));
+            return names;
+        }
+        self.members.get(&id).cloned().unwrap_or_default()
+    }
+
+    pub(super) fn record_ref(&mut self, ctx: &mut Ctx, node: NodeId, id: BindingId, span: Span) {
+        self.out.refs.insert(node, id);
+        ctx.used.push((id, span));
+        let Some(binding) = self.out.bindings.get(id) else {
+            return;
+        };
+        if let Some(message) = &binding.deprecated
+            && self.parent.get(&id).copied() != Some(ctx.owner)
+        {
+            let mut d = DiagBuilder::new(DiagCode::W0301)
+                .arg("name", binding.name.clone())
+                .arg("message", message.clone())
+                .primary(span)
+                .note("message");
+            if let Some(span) = binding.span {
+                d = d.secondary(span, "declared");
+            }
+            self.out.diagnostics.push(d.build());
+        }
+    }
+
+    pub(super) fn name(
+        &mut self,
+        ctx: &mut Ctx,
+        node: NodeId,
+        path: &[Name],
+        position: Position,
+    ) -> Option<BindingId> {
+        let id = self.raw_name(ctx, node, path, position)?;
+        let binding = self.out.bindings.get(id)?;
+        if !position.accepts(binding.kind) {
+            let code = if position == Position::Type
+                && matches!(
+                    binding.kind,
+                    BindingKind::Effect
+                        | BindingKind::BuiltinEffect(_)
+                        | BindingKind::EffectVar { .. }
+                ) {
+                DiagCode::E0314
+            } else {
+                DiagCode::E0304
+            };
+            let span = path.first()?.span.to(path.last()?.span);
+            let mut d = DiagBuilder::new(code)
+                .arg("name", dotted(path))
+                .arg("found_kind", kind_label(binding.kind))
+                .arg("expected_kind", position.label())
+                .primary(span);
+            if code == DiagCode::E0314 {
+                d = d.note("uses_only");
+            }
+            self.out.diagnostics.push(d.build());
+            return None;
+        }
+        self.record_ref(ctx, node, id, path.first()?.span.to(path.last()?.span));
+        Some(id)
+    }
+
+    fn raw_name(
+        &mut self,
+        ctx: &Ctx,
+        node: NodeId,
+        path: &[Name],
+        position: Position,
+    ) -> Option<BindingId> {
+        let first = path.first()?;
+        let single = path.len() == 1;
+        let lower = first
+            .text
+            .starts_with(|c: char| c.is_ascii_lowercase() || c == '_');
+        if !lower
+            && self
+                .imported
+                .get(&ctx.module)
+                .and_then(|m| m.get(&first.text))
+                .is_some_and(Option::is_none)
+            && !self
+                .top
+                .get(&ctx.module)
+                .is_some_and(|m| m.contains_key(&first.text))
+        {
+            return None;
+        }
+        let parameters = matches!(
+            position,
+            Position::Type | Position::Effect | Position::Class
+        );
+        let found = if single && lower {
+            ctx.local(&first.text).or_else(|| {
+                self.top
+                    .get(&ctx.module)
+                    .and_then(|m| m.get(&first.text))
+                    .copied()
+            })
+        } else {
+            self.upper(ctx, &first.text, parameters)
+        };
+        let Some(mut id) = found else {
+            if single
+                && matches!(position, Position::Value | Position::Ctor)
+                && !lower
+                && self.unqualified_ctor(ctx, first)
+            {
+                return None;
+            }
+            if !single && self.missing_import(ctx, first) {
+                return None;
+            }
+            let code = if single {
+                DiagCode::E0301
+            } else {
+                DiagCode::E0302
+            };
+            let pool = self.visible_names(ctx, position, !single);
+            let d = DiagBuilder::new(code)
+                .arg("name", first.text.clone())
+                .primary(first.span);
+            let d = self.similar(d, &first.text, first.span, pool);
+            self.out.diagnostics.push(d.build());
+            return None;
+        };
+        if let Some(hidden) = self.prelude.get(&first.text).copied()
+            && hidden != id
+            && self
+                .modules
+                .get(ctx.module)
+                .is_some_and(|m| matches!(m.kind, ModuleKind::Entry | ModuleKind::User))
+        {
+            self.out.prelude_shadowed.insert(node, hidden);
+        }
+        for (index, next) in path.iter().enumerate().skip(1) {
+            let binding = self.out.bindings.get(id)?.clone();
+            let module = self.as_module(id);
+            if module.is_none()
+                && !matches!(
+                    binding.kind,
+                    BindingKind::NamespaceRoot
+                        | BindingKind::Data
+                        | BindingKind::Record
+                        | BindingKind::Trait
+                )
+            {
+                self.out.diagnostics.push(
+                    DiagBuilder::new(DiagCode::E0304)
+                        .arg("name", binding.name)
+                        .arg("found_kind", kind_label(binding.kind))
+                        .arg("expected_kind", text::MODULE)
+                        .primary(path.first()?.span.to(next.span))
+                        .build(),
+                );
+                return None;
+            }
+            let children = self.children(ctx, id, false);
+            if let Some(child) = children.get(&next.text) {
+                id = *child;
+                continue;
+            }
+            if let Some(module) = module
+                && module != ctx.module
+                && let Some(private) = self
+                    .top
+                    .get(&module)
+                    .and_then(|m| m.get(&next.text))
+                    .copied()
+            {
+                let mut d = DiagBuilder::new(DiagCode::E0330)
+                    .arg("name", next.text.clone())
+                    .arg("module", self.modules.get(module)?.name.dotted())
+                    .primary(next.span);
+                if let Some(span) = self.out.bindings.get(private).and_then(|b| b.span) {
+                    d = d.secondary(span, "declared");
+                }
+                // 標準ライブラリの名前を `public` にする修正案は、利用者には行えないので出さない。
+                let user_module = self
+                    .modules
+                    .get(module)
+                    .is_some_and(|m| matches!(m.kind, ModuleKind::Entry | ModuleKind::User));
+                if user_module {
+                    d = match self.insertion.get(&private) {
+                        Some(span) => d.help_edits(
+                            "make_public",
+                            vec![Edit {
+                                span: *span,
+                                replacement: "public ".into(),
+                            }],
+                        ),
+                        None => d.help("make_public"),
+                    };
+                }
+                self.out.diagnostics.push(d.build());
+                return None;
+            }
+            let module_name = module
+                .and_then(|m| self.modules.get(m))
+                .map_or(binding.name.clone(), |m| m.name.dotted());
+            let mut d = DiagBuilder::new(DiagCode::E0303)
+                .arg("module", module_name)
+                .arg("name", next.text.clone())
+                .primary(next.span);
+            if module.is_some_and(|m| {
+                self.imported
+                    .get(&m)
+                    .is_some_and(|names| names.contains_key(&next.text))
+            }) {
+                d = d.note("not_reexported");
+            }
+            if module.is_some_and(|m| {
+                self.modules
+                    .get(m)
+                    .is_some_and(|m| m.name.dotted() == "Benitoite.String")
+            }) {
+                let key = match next.text.as_str() {
+                    "length" => Some("length"),
+                    "slice" | "substring" => Some("slice"),
+                    "indexOf" => Some("index_of"),
+                    _ => None,
+                };
+                if let Some(key) = key {
+                    d = d.help(key);
+                }
+            }
+            if matches!(next.text.as_str(), "unwrap" | "expect")
+                && module.is_some_and(|m| {
+                    self.modules.get(m).is_some_and(|m| {
+                        matches!(
+                            m.name.dotted().as_str(),
+                            "Benitoite.Option" | "Benitoite.Result"
+                        )
+                    })
+                })
+            {
+                d = d.help("unwrap");
+            }
+            let pool = children
+                .into_iter()
+                .filter(|(_, bid)| {
+                    if index.saturating_add(1) != path.len() {
+                        return self.as_module(*bid).is_some()
+                            || self.out.bindings.get(*bid).is_some_and(|b| {
+                                matches!(
+                                    b.kind,
+                                    BindingKind::Data
+                                        | BindingKind::Record
+                                        | BindingKind::Trait
+                                        | BindingKind::NamespaceRoot
+                                )
+                            });
+                    }
+                    let id = self.final_name(*bid, position);
+                    self.out
+                        .bindings
+                        .get(id)
+                        .is_some_and(|b| position.accepts(b.kind))
+                })
+                .map(|(name, _)| name)
+                .collect();
+            let d = self.similar(d, &next.text, next.span, pool);
+            self.out.diagnostics.push(d.build());
+            return None;
+        }
+        Some(self.final_name(id, position))
+    }
+
+    // 最後の段は位置に合わせて、標準のモジュールの同名の型と省略できる構成子を選ぶ。
+    // 候補の検査も同じ変換を使い、実際には解決できない置き換えを付けない（01-03、ADR 0148）。
+    fn final_name(&self, mut id: BindingId, position: Position) -> BindingId {
+        if matches!(
+            position,
+            Position::Type | Position::Record | Position::Class | Position::Ctor | Position::Value
+        ) && let Some(ty) = self.type_in_module(id)
+        {
+            id = ty;
+        }
+        if matches!(position, Position::Ctor | Position::Value)
+            && self
+                .out
+                .bindings
+                .get(id)
+                .is_some_and(|b| b.kind == BindingKind::Data)
+            && let Some(b) = self.out.bindings.get(id)
+            && let Some(children) = self.members.get(&id)
+            && children.len() == 1
+            && let Some(ctor) = children.get(&b.name)
+        {
+            id = *ctor;
+        }
+        id
+    }
+
+    fn visible_names(&self, ctx: &Ctx, position: Position, qualified: bool) -> Vec<String> {
+        let mut table = self.prelude.clone();
+        if let Some(imports) = self.imported.get(&ctx.module) {
+            table.extend(
+                imports
+                    .iter()
+                    .filter_map(|(name, id)| id.map(|id| (name.clone(), id))),
+            );
+        }
+        if let Some(top) = self.top.get(&ctx.module) {
+            table.extend(top.clone());
+        }
+        if matches!(
+            position,
+            Position::Type | Position::Effect | Position::Class
+        ) {
+            table.extend(ctx.types.clone());
+        }
+        if !qualified && position == Position::Value {
+            for scope in &ctx.scopes {
+                table.extend(scope.clone());
             }
         }
+        table
+            .into_iter()
+            .filter(|(_, id)| {
+                let id = if !qualified {
+                    self.final_name(*id, position)
+                } else {
+                    *id
+                };
+                self.out.bindings.get(id).is_some_and(|b| {
+                    if qualified {
+                        self.as_module(id).is_some()
+                            || matches!(
+                                b.kind,
+                                BindingKind::Data
+                                    | BindingKind::Record
+                                    | BindingKind::Trait
+                                    | BindingKind::NamespaceRoot
+                            )
+                    } else {
+                        position.accepts(b.kind)
+                    }
+                })
+            })
+            .map(|(name, _)| name)
+            .collect()
     }
 
-    /// E0314 を報告する（01-06「関数の型とエフェクト」）。
-    fn report_effect_as_type(&mut self, name: &Name) {
-        self.report(
-            DiagBuilder::new(DiagCode::E0314)
-                .arg("name", name.text.clone())
-                .primary(name.span)
-                .help("uses_only"),
-        );
-    }
-
-    /// `uses` の並びの名前を解決する。エフェクト変数、次に `IO` の順に引く。
-    pub(super) fn uses(&mut self, cx: &Ctx, uses: Option<&UsesList>) {
-        let Some(uses) = uses else { return };
-        for (i, effect) in uses.effects.iter().enumerate() {
-            self.effect_ref(cx, effect, i == 0);
+    pub(super) fn similar(
+        &self,
+        d: DiagBuilder,
+        name: &str,
+        span: Span,
+        pool: Vec<String>,
+    ) -> DiagBuilder {
+        let candidates = suggest::candidates(name, pool.iter().map(String::as_str));
+        if candidates.is_empty() {
+            return d;
         }
-    }
-
-    fn effect_ref(&mut self, cx: &Ctx, effect: &EffectRef, first: bool) {
-        let name = &effect.name;
-        let found =
-            cx.effect_var(&name.text)
-                .or_else(|| match self.lookup_upper(cx.src, &name.text) {
-                    Some(Upper::Effect(b)) => Some(b),
-                    _ => None,
-                });
-        if let Some(b) = found {
-            self.out.refs.insert(effect.id, b);
-            return;
-        }
-        // 2 番目以降は、関数の型の後の `uses` が型の並びの次の要素を取り込んだ場合がある（ADR 0047）。
-        let d = if first {
-            DiagBuilder::new(DiagCode::E0315)
+        let listed = candidates
+            .iter()
+            .map(|n| format!("`{n}`"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let d = d.arg("candidates", listed);
+        if candidates.len() == 1 {
+            d.help_edits(
+                "similar",
+                vec![Edit {
+                    span,
+                    replacement: candidates.first().cloned().unwrap_or_default(),
+                }],
+            )
         } else {
-            DiagBuilder::new(DiagCode::E0316).help("paren")
-        };
-        self.report(d.arg("name", name.text.clone()).primary(effect.span));
+            d.help("similar")
+        }
     }
 
-    /// 束縛が構成子か（構成子のパターンの名前を確かめるため）。
-    pub(super) fn is_ctor(&self, b: BindingId) -> bool {
-        matches!(
-            self.out.bindings.get(b).map(|x| x.kind),
-            Some(BindingKind::Ctor { .. })
-        )
+    fn unqualified_ctor(&mut self, ctx: &Ctx, name: &Name) -> bool {
+        let mut routes = BTreeMap::new();
+        let mut roots = self.prelude.clone();
+        if let Some(imports) = self.imported.get(&ctx.module) {
+            roots.extend(
+                imports
+                    .iter()
+                    .filter_map(|(n, id)| id.map(|id| (n.clone(), id))),
+            );
+        }
+        if let Some(top) = self.top.get(&ctx.module) {
+            roots.extend(
+                top.iter()
+                    .filter(|(n, _)| n.starts_with(|c: char| c.is_ascii_uppercase()))
+                    .map(|(n, id)| (n.clone(), *id)),
+            );
+        }
+        for (prefix, id) in roots {
+            let children = self.children(ctx, id, false);
+            for (child_name, child) in children {
+                if self
+                    .out
+                    .bindings
+                    .get(child)
+                    .is_some_and(|b| matches!(b.kind, BindingKind::Ctor { .. }))
+                {
+                    routes.insert(format!("{prefix}.{child_name}"), (child_name, child));
+                } else if self
+                    .out
+                    .bindings
+                    .get(child)
+                    .is_some_and(|b| b.kind == BindingKind::Data)
+                {
+                    for (ctor_name, ctor) in self.children(ctx, child, false) {
+                        routes.insert(
+                            format!("{prefix}.{child_name}.{ctor_name}"),
+                            (ctor_name, ctor),
+                        );
+                    }
+                }
+            }
+        }
+        let matches: Vec<String> = routes
+            .into_iter()
+            .filter(|(_, (n, _))| *n == name.text || (name.text == "Err" && *n == "Error"))
+            .map(|(route, _)| route)
+            .collect();
+        if matches.is_empty() {
+            return false;
+        }
+        // 同じ構成子への冗長な経路は、短い修飾を優先する。
+        let canonical: Vec<&String> = matches
+            .iter()
+            .filter(|route| {
+                !matches
+                    .iter()
+                    .any(|short| route.len() > short.len() && route.ends_with(&format!(".{short}")))
+            })
+            .collect();
+        let mut d = DiagBuilder::new(DiagCode::E0331)
+            .arg("name", name.text.clone())
+            .arg(
+                "suggestion",
+                canonical
+                    .iter()
+                    .map(|s| s.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", "),
+            )
+            .primary(name.span);
+        if canonical.len() == 1 {
+            if let Some(route) = canonical.first() {
+                d = d.arg("suggestion", (*route).clone()).help_edits(
+                    "qualify",
+                    vec![Edit {
+                        span: name.span,
+                        replacement: (*route).clone(),
+                    }],
+                );
+            }
+        } else {
+            d = d.help("qualify");
+        }
+        self.out.diagnostics.push(d.build());
+        true
     }
+
+    fn missing_import(&mut self, ctx: &Ctx, name: &Name) -> bool {
+        let candidates: Vec<_> = crate::prelude::STDLIB
+            .iter()
+            .filter(|m| !m.prelude && m.path.last().copied() == Some(name.text.as_str()))
+            .collect();
+        if candidates.len() != 1 {
+            return false;
+        }
+        let Some(module) = candidates.first() else {
+            return false;
+        };
+        let full = if module.unofficial {
+            format!("Benitoite.Unofficial.{}", module.path.join("."))
+        } else {
+            format!("Benitoite.{}", module.path.join("."))
+        };
+        let mut d = DiagBuilder::new(DiagCode::E0332)
+            .arg("module", name.text.clone())
+            .arg("full", full.clone())
+            .primary(name.span);
+        let start = self
+            .ast(ctx.module)
+            .and_then(|a| {
+                a.imports.first().map(|i| i.span).or_else(|| {
+                    a.decls
+                        .first()
+                        .map(|d| d.doc.as_ref().map_or(d.span, |doc| doc.span))
+                })
+            })
+            .and_then(|s| self.line_start(s));
+        if let Some(span) = start {
+            d = d.help_edits(
+                "import",
+                vec![Edit {
+                    span,
+                    replacement: format!("import {full}\n"),
+                }],
+            );
+        } else {
+            d = d.help("import");
+        }
+        self.out.diagnostics.push(d.build());
+        true
+    }
+
+    pub(super) fn uses(&mut self, ctx: &mut Ctx, uses: &UsesList, fn_span: Option<Span>) {
+        let mut prefix_valid = true;
+        for (index, effect) in uses.effects.iter().enumerate() {
+            let Some(id) = self.raw_name(ctx, effect.id, &effect.path, Position::Effect) else {
+                prefix_valid = false;
+                continue;
+            };
+            let Some(binding) = self.out.bindings.get(id) else {
+                continue;
+            };
+            if Position::Effect.accepts(binding.kind) {
+                self.record_ref(ctx, effect.id, id, effect.span);
+                continue;
+            }
+            let io = matches!(binding.kind, BindingKind::Module(module) if self.modules.get(module).is_some_and(|m| m.name.dotted() == "Benitoite.IO"));
+            let code = if io {
+                DiagCode::E0333
+            } else if index == 0 {
+                DiagCode::E0315
+            } else {
+                DiagCode::E0316
+            };
+            let mut d = DiagBuilder::new(code)
+                .arg("name", dotted(&effect.path))
+                .primary(effect.span);
+            if io {
+                d = d.help_edits(
+                    "all",
+                    vec![Edit {
+                        span: effect.span,
+                        replacement: format!("{}.All", dotted(&effect.path)),
+                    }],
+                );
+            } else if index == 0 {
+                d = d.help("qualify");
+            } else if prefix_valid
+                && let (Some(fn_span), Some(previous)) =
+                    (fn_span, uses.effects.get(index.saturating_sub(1)))
+            {
+                // 次の型として取り込まれた名前の直前で閉じると、コンマが外側の型の並びへ戻る（ADR 0047）。
+                d = d.help_edits(
+                    "paren",
+                    vec![
+                        Edit {
+                            span: Span {
+                                end: fn_span.start,
+                                ..fn_span
+                            },
+                            replacement: "(".into(),
+                        },
+                        Edit {
+                            span: Span {
+                                start: previous.span.end,
+                                ..previous.span
+                            },
+                            replacement: ")".into(),
+                        },
+                    ],
+                );
+            } else {
+                d = d.help("paren");
+            }
+            prefix_valid = false;
+            self.out.diagnostics.push(d.build());
+        }
+    }
+}
+
+pub(super) fn dotted(path: &[Name]) -> String {
+    path.iter()
+        .map(|n| n.text.as_str())
+        .collect::<Vec<_>>()
+        .join(".")
 }

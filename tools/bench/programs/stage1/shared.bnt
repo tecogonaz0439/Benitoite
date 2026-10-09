@@ -1,0 +1,47 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function readCount() -> Result[Integer, String] uses Process.Environment
+  return match List.head(Process.arguments()) with
+    case Option.None -> Result.Error("expected one non-negative integer argument")
+    case Option.Some(argument) -> match Integer.parse(argument) with
+      case Option.None -> Result.Error("expected one non-negative integer argument")
+      case Option.Some(count) -> if count < 0 then
+        Result.Error("expected one non-negative integer argument")
+      else
+        Result.Ok(count)
+      end if
+    end match
+  end match
+end function
+
+data Tree
+  Leaf(Integer)
+  Branch(Tree, Tree)
+end data
+function sharedTree(depth: Integer) -> Tree
+  return if depth = 0 then Tree.Leaf(1) else
+    bind child <- sharedTree(depth - 1)
+    Tree.Branch(child, child)
+  end if
+end function
+function visit(tree: Tree) -> Integer
+  return match tree with
+    case Tree.Leaf(value) -> value
+    case Tree.Branch(left, right) -> visit(left) + visit(right)
+  end match
+end function
+function repeat(count: Integer, depth: Integer, total: Integer) -> Integer
+  return if count = 0 then total else
+    repeat(count - 1, depth, total + visit(sharedTree(depth)))
+  end if
+end function
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  return match readCount() with
+    case Result.Error(message) -> Result.Error(message)
+    case Result.Ok(count) ->
+      Console.writeLine(Integer.toString(repeat(50, count, 0)))
+      Result.Ok(())
+  end match
+end function

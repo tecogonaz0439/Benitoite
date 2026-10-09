@@ -1,0 +1,14 @@
+// spec: 01-07 影響の大きい操作（初回リリース版）
+// spec: 01-07 IO が起きる時期と順序
+// 関門: 書き込み・追記後に読み返した内容を守り、書き込みの順序と完了の接続漏れを捕まえる。
+// CLI への接続と診断・出力を守る。段ごとのテストではこの接続を通らず、専用の差し込み口は要らない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+  bind _ <- try File.writeText("output.txt", "first\n") |> Result.mapError(_, IOError.message)
+  bind _ <- try File.appendText("output.txt", "second\n") |> Result.mapError(_, IOError.message)
+  bind text <- try File.readText("output.txt") |> Result.mapError(_, IOError.message)
+  Console.write(text)
+  return Result.Ok(())
+end function

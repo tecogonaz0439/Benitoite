@@ -1,0 +1,13 @@
+// spec: 01-07 IO を行う組み込み関数
+// 06-04「テストの実行」: テストの中の Process.exit はそのテストだけを終え、失敗として報告する。
+import Benitoite.Unofficial.IO.Process
+
+@test
+function exits() -> Unit uses Process.Exit
+  return Process.exit(3)
+end function
+
+@test
+function after() -> Unit uses Assert.Check, Process.Environment
+  Assert.equal(Process.arguments(), [])
+end function

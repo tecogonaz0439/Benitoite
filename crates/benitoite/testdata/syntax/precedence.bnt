@@ -1,18 +1,20 @@
 // spec: 01-02 演算子の優先順位と結合性
-fn main() -> Unit uses IO {
-  Console.println(Int.toString(1 + 2 * 3))
-  Console.println(Int.toString(-2 * 3))
-  let a = false
-  let b = true
-  let c = false
-  if !a && b {
-    Console.println("true")
-  } else {
-    Console.println("false")
-  }
-  if a || b && c {
-    Console.println("true")
-  } else {
-    Console.println("false")
-  }
-}
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(1 + 2 * 3))
+  Console.writeLine(Integer.toString(-2 * 3))
+  bind a <- false
+  bind b <- true
+  bind c <- false
+  if not a and b then
+    Console.writeLine("true")
+  else
+    Console.writeLine("false")
+  end if
+  return if a or b and c then
+    Console.writeLine("true")
+  else
+    Console.writeLine("false")
+  end if
+end function
