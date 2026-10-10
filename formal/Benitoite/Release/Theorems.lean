@@ -45,7 +45,7 @@ theorem preservation (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effec
 
 /-- エフェクトの健全性。`· ⊢c M : A ! { }` が成り立ち、M がエフェクト変数を含まないとき、`⟨M, [], ∅⟩` からの
 実行は、事象を伴う遷移（IO の事象と解放の事象）をせず、どの `handle` の枠も処理しない操作を呼ばない。
-`· ⊢c M` の R は `none` とする（実行を始める計算は関数の本体の外にあるので `escape` を許さない。ADR 0299）。 -/
+`· ⊢c M` の R は `none` とする（実行を始める計算は関数の本体の外にあるので `escape` を許さない。01-12「確かめる性質」）。 -/
 theorem effect_soundness (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.EffectsOk B)
     (hb : B.Assumptions P) {m : Comp} {a : Ty} :
     HasTypeC P B StoreTy.empty [] [] none m a Eff.empty → m.ClosedNoEffVars →

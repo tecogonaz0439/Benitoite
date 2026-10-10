@@ -1,5 +1,5 @@
 //! 同梱の Agent Skill の手で書く文書に載せたコードの例の検査と、`SKILL.md` の形の確かめ
-//! （設計書 06-06「同梱の Agent Skill の構成」、ADR 0229 の決定 4、実装プラン D21）。
+//! （設計書 06-06「同梱の Agent Skill の構成」、実装プラン D21）。
 //! 例の書き方と検査の仕組みは、`tests/reference_examples.rs` と共有する `doc_examples` に置く。
 #![allow(
     clippy::unwrap_used,

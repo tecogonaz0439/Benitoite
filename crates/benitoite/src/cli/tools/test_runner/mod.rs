@@ -1,5 +1,5 @@
 //! `benitoite test`（設計書 06-04「テストの実行」「結果の報告」、06-01「`test` のコマンドライン（初回リリース版）」、
-//! 02-11「テストの実行」、ADR 0206・0208・0252）。テストは一つずつ別の実行として順に動かす。
+//! 02-11「テストの実行」）。テストは一つずつ別の実行として順に動かす。
 
 pub mod report;
 
@@ -22,7 +22,7 @@ pub struct TestFn {
     pub kind: MainKind,
 }
 
-/// 失敗の理由と詳細（06-04「結果の報告」の表、ADR 0252 の決定 6）。
+/// 失敗の理由と詳細（06-04「結果の報告」の表）。
 #[derive(Clone, PartialEq, Debug)]
 pub enum Failure {
     /// `Assert` の確認の失敗
@@ -57,7 +57,7 @@ pub struct TestResult {
     pub stderr: Vec<u8>,
 }
 
-/// 集計（ADR 0252 の決定 3・7）。
+/// 集計（06-04「結果の報告」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
 pub struct Summary {
     pub passed: u32,
@@ -68,7 +68,7 @@ pub struct Summary {
     pub interrupted: bool,
 }
 
-/// 報告の文（ADR 0033、ADR 0252）。`{名前}` は埋める値。
+/// 報告の文（02-10「文言の言語」、06-04「結果の報告」）。`{名前}` は埋める値。
 pub mod text {
     pub const TEST_LINE: &str = "test {file}: {name} ... {outcome}";
     pub const OUTCOME_OK: &str = "ok";
@@ -171,7 +171,7 @@ pub fn test_entries(paths: &[PathBuf]) -> Result<Vec<EntrySpec>, (PathBuf, std::
     let mut entries = Vec::new();
     for path in paths {
         if path.is_dir() {
-            // 根のディレクトリを指定したディレクトリにし、表示名はディレクトリのパスに相対パスを続ける（ADR 0206 の決定 2）。
+            // 根のディレクトリを指定したディレクトリにし、表示名はディレクトリのパスに相対パスを続ける（06-04「テストの実行」）。
             for file in bnt_files(path)? {
                 let relative = file.strip_prefix(path).unwrap_or(&file);
                 entries.push(EntrySpec {
@@ -503,7 +503,7 @@ impl Runner {
             }
         }
         let _result = self.env.stdout.write_bytes(output.as_bytes());
-        // 06-01「`test` のコマンドライン」の終了状態の表の、当たる行のうち最も上の行。
+        // 06-01「`test` のコマンドライン（初回リリース版）」の終了状態の表の、当たる行のうち最も上の行。
         if self.summary.interrupted {
             EXIT_INTERRUPTED
         } else if self.summary.files_not_run > 0 {
@@ -652,7 +652,7 @@ fn failure_of(
     Ok(Some(failure))
 }
 
-// タスクの起動の履歴の最後の段（`main` の段）をテストの関数の名前にする（ADR 0324）。空の並びは空のまま。
+// タスクの起動の履歴の最後の段（`main` の段）をテストの関数の名前にする（06-04「結果の報告」）。空の並びは空のまま。
 fn rename_main_task(origins: &mut [TraceFrame], function: &str) {
     if let Some(last) = origins.last_mut() {
         last.name = FrameName::Named(function.to_owned());

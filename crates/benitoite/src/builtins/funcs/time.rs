@@ -1,4 +1,4 @@
-//! 固定の時差による時刻の計算・暦変換・書式（設計書 03-08「Time」、ADR 0173・0329）。
+//! 固定の時差による時刻の計算・暦変換・書式（設計書 03-08「Time」）。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::builtins::table::tags;
@@ -108,7 +108,7 @@ builtin! {
     /// `Time.fromDateTime` の本体（実装プラン 10-15「項目の一覧」）。
     name = "Time.fromDateTime",
     pure fn from_date_time(ctx, arg0: Value<'e>) -> Value<'e> {
-        // 日付が不正でも時差の定義域の違反を先に報告する（ADR 0329 の決定 4）。
+        // 日付が不正でも時差の定義域の違反を先に報告する（設計書 03-08「Time」）。
         let minutes = field(&ctx, arg0, date_time::OFFSET_MINUTES)?;
         let offset = checked_offset(minutes, "Time.fromDateTime", 0)?;
         let fields = [
@@ -147,7 +147,7 @@ builtin! {
     name = "Time.parseISO8601",
     pure fn parse_i_s_o8601(ctx, arg0: Value<'e>) -> Value<'e> {
         let source = ctx.str(arg0).ok_or_else(|| Stop::Internal("time text is not String".into()))?;
-        // Timestamp の解析は注記を読み飛ばし、名前の解決を行わない（ADR 0329 の決定 3）。
+        // Timestamp の解析は注記を読み飛ばし、名前の解決を行わない（設計書 03-08「Time」）。
         match source.parse::<Timestamp>() {
             Ok(ts) => timestamp_result(&ctx, ts, "Time.parseISO8601"),
             Err(error) => error_value(&ctx, &error.to_string(), "Time.parseISO8601"),
@@ -171,7 +171,7 @@ builtin! {
                 writer.buf.push_char(c)?;
                 continue;
             }
-            // 字句単位の変換なら %%f を壊さず、フラグや幅を拒否できる（ADR 0173、実装プラン L24）。
+            // 字句単位の変換なら %%f を壊さず、フラグや幅を拒否できる（設計書 03-08「Time」、実装プラン L24）。
             let specifier = match chars.next() {
                 Some('Y') => "%Y", Some('m') => "%m", Some('d') => "%d",
                 Some('H') => "%H", Some('I') => "%I", Some('p') => "%p",

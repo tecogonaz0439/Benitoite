@@ -1,4 +1,4 @@
-//! 記述子を基準にした木の走査（設計書 03-07「File」、ADR 0352）。
+//! 記述子を基準にした木の走査（設計書 03-07「File」）。
 
 use rustix::fd::{BorrowedFd, OwnedFd};
 use rustix::fs::{self, AtFlags, Dir, FileType, Mode, OFlags, Stat};
@@ -9,7 +9,7 @@ use std::path::Path;
 
 // 根は再びパスから開かず、直近の祖先だけを保持する。読み出し用の Dir と、
 // 開き直す途中の記述子（最大二つ）、removeTree の根の親を含めても最大 36 個
-// （ADR 0352 の決定 1）。深さに応じて OS の記述子の上限に近付かない。
+// である。深さに応じて OS の記述子の上限に近付かない。
 pub(super) const MAX_HELD_DIRECTORY_FDS: usize = 32;
 const DIRECTORY_FLAGS: OFlags = OFlags::RDONLY
     .union(OFlags::DIRECTORY)

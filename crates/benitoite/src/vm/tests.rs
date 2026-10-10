@@ -441,7 +441,7 @@ fn heap_constants_keep_identity_when_only_the_cache_roots_them() {
             .unwrap()
             .op(Opcode::Io, 4, u16::try_from(pause.0).unwrap(), 0);
         // 第 2 段は要求を返す前にも整理する。最初の観察までは二つの値を生存させ、
-        // 観察後に明示的に消してキャッシュだけを根にする（ADR 0314）。
+        // 観察後に明示的に消してキャッシュだけを根にする（設計書 02-08「枠を降ろす原因と処理」）。
         b.code(main).unwrap().op(Opcode::Move, 4, 0, 0);
         b.code(main).unwrap().op(Opcode::Move, 4, 1, 0);
         b.loadk_ref(main, 2, constant).unwrap();
@@ -1278,7 +1278,7 @@ fn dead_large_list_is_reclaimed_after_its_last_use() {
     check_dead_list_at_safepoints(if cfg!(miri) { 12 } else { 4096 });
 }
 
-/// 代表の形を小さく再利用し、通常の大きなリストの検査も残す（ADR 0318）。
+/// 代表の形を小さく再利用し、通常の大きなリストの検査も残す（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
 pub(super) fn check_dead_list_at_safepoints(count: u16) {
     for stress in [false, true] {
         let mut b = ProgramBuilder::new();
@@ -1370,7 +1370,7 @@ pub(super) fn check_dead_list_at_safepoints(count: u16) {
 }
 
 // 関門: 新しい末尾呼び出しの窓に旧値が残る三つの場合を、実際の安全点の回収で確かめる。
-// 既存の回収の精度のテストは、呼び出し元の窓の再利用を含まない（R18、ADR 0314）。
+// 既存の回収の精度のテストは、呼び出し元の窓の再利用を含まない（R18、設計書 02-08「枠を降ろす原因と処理」）。
 #[test]
 fn tail_window_old_objects_are_cleared_at_collection() {
     for size in [4, 8, 12] {
@@ -1570,7 +1570,7 @@ fn suspended_callers_release_old_arguments_and_results_before_collection() {
         b.code(caller).unwrap().op(Opcode::Prim, 2, length, 6);
         b.loadk(caller, 0, ConstDesc::Func(callee)).unwrap();
         b.code(caller).unwrap().op(Opcode::Call, 6, 0, 1);
-        // 回収済みのリストがあったレジスタへ新しく確保した値を上書きする（ADR 0314）。
+        // 回収済みのリストがあったレジスタへ新しく確保した値を上書きする（設計書 02-08「枠を降ろす原因と処理」）。
         b.code(caller).unwrap().op(Opcode::Concat, 1, 7, 7);
         b.code(caller).unwrap().op(Opcode::Io, 2, output, 1);
         b.code(caller).unwrap().ret(6);
@@ -1691,7 +1691,7 @@ fn consecutive_calls_program() -> CompiledProgram {
 }
 
 // 関門: 直前の CALL の結果は次の CALL の入口では引数である。最内側にも結果を除く
-// 規則を当てる退行を、動的な文字列の出力で検出する（ADR 0314、実装プラン R16）。
+// 規則を当てる退行を、動的な文字列の出力で検出する（設計書 02-08「枠を降ろす原因と処理」、実装プラン R16）。
 #[test]
 fn consecutive_calls_keep_returned_heap_arguments_at_pre_call_safepoints() {
     let p = consecutive_calls_program();
@@ -1803,6 +1803,7 @@ fn deep_returns_program(depth: i64, count: i64) -> CompiledProgram {
 }
 
 #[test]
+#[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
 fn deep_returns_collect_requested_allocations_without_rust_recursion() {
     let depth = if cfg!(miri) { 8 } else { 10_000 };
     let count = if cfg!(miri) { 12 } else { 4096 };

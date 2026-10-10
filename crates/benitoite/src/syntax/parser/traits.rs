@@ -1,4 +1,4 @@
-//! 型クラス・実装・組み込みの制約の解析（設計書 01-02「型クラス」、02-03「文脈の制限」）。
+//! 型クラス・実装・組み込みの制約の解析（設計書 01-02「型クラス（初回リリース版）」、02-03「文脈の制限」）。
 use super::{Fail, PResult, Parser, Recovery, child, decls, items, text, types};
 use crate::base::SourceKind;
 use crate::diag::{DiagBuilder, DiagCode, Edit};
@@ -313,7 +313,7 @@ mod tests {
             assert_eq!(t.span.start, position(&src, "trait").unwrap());
             assert_eq!(m.span.end, position(&src, "\nend trait").unwrap());
         }
-        // メソッド名の重なりは名前解決の持ち物（ADR 0279）。
+        // メソッド名の重なりは名前解決の持ち物（02-04「宣言の検査」）。
         let out = user("trait T[A]\nfunction f() -> A\nfunction f() -> A\nend trait");
         assert!(out.diagnostics.is_empty());
     }
@@ -448,7 +448,7 @@ mod tests {
     #[test]
     fn all_standard_library_sources_parse_as_prelude() {
         let document = include_str!(
-            "../../../../../docs/implement/10-interfaces/10-14-prelude-and-stdlib-sources.md"
+            "../../../../../docs/archive/2026-10-09-implement-first-release/10-interfaces/10-14-prelude-and-stdlib-sources.md"
         );
         let mut count = 0;
         for block in document.split("```text file=src/prelude/stdlib/").skip(1) {

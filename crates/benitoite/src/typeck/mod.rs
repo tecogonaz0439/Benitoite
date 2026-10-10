@@ -71,7 +71,7 @@ pub struct TryInfo {
 pub struct ClauseInfo {
     /// 節の操作の束縛の番号（`Op` の束縛。組み込みのエフェクトの操作は、名前解決の `builtin_ops` で組み込みの関数の項目を引ける）
     pub op: BindingId,
-    /// 末尾で再開する節か（02-05「書く位置の検査」、ADR 0151）
+    /// 末尾で再開する節か（02-05「書く位置の検査」）
     pub tail_resumptive: bool,
 }
 
@@ -117,7 +117,7 @@ use crate::syntax::ast::Module;
 /// `require_main` は `check` と `run` の経路で真、`test` の経路で偽（02-05「宣言の検査」の `main`）。
 /// 誤りと警告を診断として返す。誤りがあっても出力を返す。
 /// `sources` は読み込みの段のソースの表（`LoadOutput::sources`）。診断に型注釈の綴りを示すのに使う。
-/// 呼び出し側は、診断に誤りが一つでもあれば出力を使わない（ADR 0019）。
+/// 呼び出し側は、診断に誤りが一つでもあれば出力を使わない（02-01「誤りが見つかったときの段の進め方」）。
 pub fn typecheck(
     modules: &ModuleTable,
     asts: &[Module],

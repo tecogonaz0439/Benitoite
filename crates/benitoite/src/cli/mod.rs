@@ -70,7 +70,7 @@ pub enum Command {
     Licenses,
 }
 
-/// 予約したサブコマンドの名前（06-01「予約したサブコマンドの名前」、ADR 0209）。
+/// 予約したサブコマンドの名前（06-01「予約したサブコマンドの名前（初回リリース版）」）。
 pub const RESERVED_COMMANDS: &[&str] = &[
     "server", "mcp", "sign", "verify", "repl", "lsp", "package", "agent",
 ];
@@ -102,7 +102,7 @@ pub struct CliEnv {
     pub mode: ExecMode,
     /// 中断の要求の読み口。`None` なら、`run` の実行の前に `runtime::run::process_interrupt` で作る
     pub interrupt: Option<Box<dyn InterruptSource>>,
-    /// テストで差し替える部品（ADR 0274）。`main` は `None`
+    /// テストで差し替える部品（07-03「順序を与えるスケジューラと仮想の時間（初回リリース版）」）。`main` は `None`
     pub parts: Option<RuntimeParts>,
     pub heap: HeapConfig,
     pub dev_panic: DevPanic,
@@ -110,7 +110,7 @@ pub struct CliEnv {
     pub dev_alloc_stats: bool,
 }
 
-/// 使い方の誤りの文と、`--help`・`--version` の文（ADR 0033 に従い英語で書き、ここにまとめる）。
+/// 使い方の誤りの文と、`--help`・`--version` の文（02-10「文言の言語」に従い英語で書き、ここにまとめる）。
 pub mod text {
     pub const USAGE: &str = "\
 Usage:
@@ -133,7 +133,7 @@ Options:
   --check                   (fmt) report files that would change without rewriting them
 ";
     /// `--version` の出力。`{version}` は処理系の版、`{unicode}` は文字の分類と変換が従う Unicode の版
-    /// （Rust の `char::UNICODE_VERSION`。03-06「Character」、ADR 0169）
+    /// （Rust の `char::UNICODE_VERSION`。03-06「Character」）
     pub const VERSION: &str = "benitoite {version}\nUnicode {unicode}\n";
     /// 使い方の誤りの 1 行目。`{detail}` を置き換える
     pub const USAGE_ERROR: &str = "error: {detail}";

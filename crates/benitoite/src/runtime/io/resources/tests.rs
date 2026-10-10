@@ -368,7 +368,7 @@ fn deferred_release_jobs_keep_start_order_and_failure_after_immediate_return() {
     assert!(table.take_release_failure(id).is_none());
 }
 
-// 関門: Released の全経路で要求の添え物を除く（L30、ADR 0289）。
+// 関門: Released の全経路で要求の添え物を除く（L30、設計書 03-09「サーバ」）。
 // OS 資源の Drop だけでは別の表に残った要求を検出できない。
 #[test]
 fn released_resources_remove_attachments_on_every_path() {

@@ -1,4 +1,4 @@
-//! テストの結果の報告の文章の形と JSON Lines の形（設計書 06-04「結果の報告」、ADR 0252）。
+//! テストの結果の報告の文章の形と JSON Lines の形（設計書 06-04「結果の報告」）。
 
 use super::{Failure, Summary, TestFn, TestResult, text};
 use crate::base::SourceTable;
@@ -214,7 +214,7 @@ fn push_line(output: &mut String, line: &str) {
     output.push('\n');
 }
 
-// `failure` の項目（ADR 0252 の決定 6、10-18「JSON Lines の形」）。
+// `failure` の項目（06-04「結果の報告」、10-18「JSON Lines の形」）。
 fn json_failure(failure: &Failure, sources: &SourceTable) -> String {
     match failure {
         Failure::Assert {
@@ -234,7 +234,7 @@ fn json_failure(failure: &Failure, sources: &SourceTable) -> String {
                 Some(span) => output.push_str(&render::json_location(*span, "", sources)),
                 None => output.push_str("null"),
             }
-            // 解放の注記を末尾呼び出しの注記の前に置く（文章の形と同じ並び。ADR 0333 の決定 2）。
+            // 解放の注記を末尾呼び出しの注記の前に置く（文章の形と同じ並び。06-04「結果の報告」）。
             output.push_str(",\"notes\":");
             let tail = codes::text::TRACE_TAIL_NOTE.to_owned();
             output.push_str(&json_strings(notes.iter().chain(std::iter::once(&tail))));

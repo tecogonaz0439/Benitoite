@@ -1,5 +1,5 @@
 //! `benitoite test` の CLI のテスト（設計書 06-01「`test` のコマンドライン（初回リリース版）」、06-04「テストの実行」
-//! 「結果の報告」、10-18「結果の報告」、ADR 0206・0208・0252・0324、実装プラン D11「受け入れテスト」）。
+//! 「結果の報告」、10-18「結果の報告」、02-10「実行時エラーと資源の不足の報告」、実装プラン D11「受け入れテスト」）。
 // テストの失敗は panic で表す（00-02「`#[allow]` を書いてよい箇所」）
 #![allow(
     clippy::unwrap_used,
@@ -163,7 +163,7 @@ function passesQuietly() -> Unit uses Console.Write
 end function
 "#;
 
-// 関門: 成功と失敗の混じったファイルの文章の形の全体（ADR 0252 の決定 1〜3、10-18「文章の形」）。
+// 関門: 成功と失敗の混じったファイルの文章の形の全体（06-04「結果の報告」、10-18「文章の形」）。
 // 説明の有無、理由ごとの詳細、捕らえた出力の節、成功したテストの出力を示さないこと、空の行の置き方を一度に確かめる。
 #[test]
 fn mixed_results_are_reported_in_the_text_form() {
@@ -225,7 +225,7 @@ test result: FAILED. 2 passed; 5 failed
     assert_eq!(out.stdout, expected);
 }
 
-// 関門: JSON Lines の項目と順（ADR 0252 の決定 5〜7、10-18「JSON Lines の形」）。`"runtime"` は実行時エラーの報告の
+// 関門: JSON Lines の項目と順（06-04「結果の報告」、10-18「JSON Lines の形」）。`"runtime"` は実行時エラーの報告の
 // JSON の項目をそのまま持つ。
 #[test]
 fn json_lines_have_the_fields_in_order() {
@@ -325,7 +325,7 @@ fn a_file_without_tests_writes_only_the_summary() {
     assert_eq!(out.stdout, "test result: ok. 0 passed; 0 failed\n");
 }
 
-// 関門: ディレクトリの下をパスの辞書順に扱い、根を指定したディレクトリにする（ADR 0206 の決定 2）。
+// 関門: ディレクトリの下をパスの辞書順に扱い、根を指定したディレクトリにする（設計書 06-01「ディレクトリの指定（初回リリース版）」）。
 // 下の階層のファイルが、指定したディレクトリからの名前でモジュールを取り込める。
 #[test]
 fn a_directory_is_expanded_in_path_order_with_itself_as_the_root() {
@@ -450,7 +450,7 @@ fn max_call_stack_limits_each_test() {
     );
 }
 
-// 関門: 起動したタスクの中の失敗では、起動の履歴の最後の段がテストの関数の名前になる（ADR 0324）。
+// 関門: 起動したタスクの中の失敗では、起動の履歴の最後の段がテストの関数の名前になる（設計書 02-10「実行時エラーと資源の不足の報告」）。
 // テストの関数のタスクで起きたときは空の配列。`run` の経路は `main` のまま。
 #[test]
 fn task_origins_end_at_the_test_function() {
@@ -529,7 +529,7 @@ fn task_origins_end_at_the_test_function() {
     );
 }
 
-// 関門: 行き詰まりの報告で、待つ最初のタスクをテストの関数の名前で示す（ADR 0324）。
+// 関門: 行き詰まりの報告で、待つ最初のタスクをテストの関数の名前で示す（設計書 02-10「実行時エラーと資源の不足の報告」）。
 #[test]
 fn deadlock_reports_name_the_first_task_after_the_test_function() {
     let dir = Directory::new("deadlock");

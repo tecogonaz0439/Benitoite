@@ -16,6 +16,11 @@ def StateTyE (P : Program) (B : Builtins) (Eb : Eff) : State → Prop
       StoreOk P B Ψ σ ∧ HasTypeC P B Ψ [] [] R m a ε1 ∧ Eff.Sub ε1 ε ∧
       ContTy P B Ψ R ε k a b Eb none ∧
       Comp.VarsIn 0 (fun _ => True) m ∧ Cont.Closed k ∧ Store.Closed σ
+  | .matchRun v arms next k σ => ∃ Ψ R a b ε ε1,
+      StoreOk P B Ψ σ ∧ HasTypeC P B Ψ [] [] R (.match v arms) a ε1 ∧ Eff.Sub ε1 ε ∧
+      ContTy P B Ψ R ε k a b Eb none ∧
+      Comp.VarsIn 0 (fun _ => True) (.match v arms) ∧ Cont.Closed k ∧ Store.Closed σ ∧
+      MatchPrefix v arms next
   | .error _ k σ => ∃ Ψ R a b ε,
       StoreOk P B Ψ σ ∧ ContTy P B Ψ R ε k a b Eb none ∧ Cont.Closed k ∧ Store.Closed σ
   | .exit _ _ k σ => ∃ Ψ R a b ε,
@@ -30,6 +35,13 @@ theorem stateTy_iff {s : State} : StateTy P B s ↔ ∃ Eb, BuiltinOnly P B Eb �
         exact ⟨Eb, h5, Ψ, R, a, b, ε, ε1, h1, h2, h3, h4, h6, h7, h8⟩
       · rintro ⟨Eb, h5, Ψ, R, a, b, ε, ε1, h1, h2, h3, h4, h6, h7, h8⟩
         exact ⟨Ψ, R, a, b, ε, ε1, Eb, h1, h2, h3, h4, h5, h6, h7, h8⟩
+  | matchRun v arms next k σ =>
+      simp only [StateTy, StateTyE]
+      constructor
+      · rintro ⟨Ψ, R, a, b, ε, ε1, Eb, h1, h2, h3, h4, h5, h6, h7, h8, h9⟩
+        exact ⟨Eb, h5, Ψ, R, a, b, ε, ε1, h1, h2, h3, h4, h6, h7, h8, h9⟩
+      · rintro ⟨Eb, h5, Ψ, R, a, b, ε, ε1, h1, h2, h3, h4, h6, h7, h8, h9⟩
+        exact ⟨Ψ, R, a, b, ε, ε1, Eb, h1, h2, h3, h4, h5, h6, h7, h8, h9⟩
   | error rs k σ =>
       simp only [StateTy, StateTyE]
       constructor
@@ -40,6 +52,17 @@ theorem stateTy_iff {s : State} : StateTy P B s ↔ ∃ Eb, BuiltinOnly P B Eb �
       constructor
       · rintro ⟨Ψ, R, a, b, ε, Eb, h1, h2, h3, h4, h5⟩; exact ⟨Eb, h3, Ψ, R, a, b, ε, h1, h2, h4, h5⟩
       · rintro ⟨Eb, h3, Ψ, R, a, b, ε, h1, h2, h4, h5⟩; exact ⟨Ψ, R, a, b, ε, Eb, h1, h2, h3, h4, h5⟩
+
+/-- 現在の分岐を飛ばせるなら、再開位置の不変条件を一つ延ばせる。 -/
+theorem MatchPrefix.advance {v arms next arm} (h : MatchPrefix v arms next)
+    (hi : arms[next]? = some arm)
+    (hs : arm.guard = none → firstAlt v arm.alts = none) : MatchPrefix v arms (next + 1) := by
+  intro ar har hg
+  rw [List.take_add_one, hi] at har
+  rcases List.mem_append.mp har with har | har
+  · exact h ar har hg
+  · have he : ar = arm := by simpa using har
+    subst ar; exact hs hg
 
 /-! ## 閉じた継続 -/
 
@@ -77,6 +100,7 @@ theorem ContTy.R_wf {Ψ R ε k a b ε0 Re} (h : ContTy P B Ψ R ε k a b ε0 Re)
   | K_Release _ _ _ _ ih => exact ih hRe
   | K_Handle _ _ _ _ ih => exact ih hRe
   | K_Drop _ _ _ ih => exact ih hRe
+  | K_Guard => intro x hx; cases hx
   | K_Sub _ _ ih => exact ih hRe
 
 /-! ## `markPush` -/

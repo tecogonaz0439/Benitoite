@@ -517,6 +517,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
     fn million_element_lists_and_million_deep_trees_do_not_recurse() {
         // Miri は同じ比較の経路を小さな値で調べる（R06「等しさ」）。通常構成では指定の深さを使う。
         let count = if cfg!(miri) { 24 } else { 1_000_000 };

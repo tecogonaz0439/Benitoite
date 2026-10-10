@@ -289,7 +289,7 @@ fn is_source_block(source: &str) -> bool {
 }
 
 // 仕様の import は正式な名前で書かれている。現在の取り込み名へ直して名前解決まで進める
-// （設計書 07-03「言語仕様の例の検査」、ADR 0286）。
+// （設計書 07-03「言語仕様の例の検査」）。
 fn rewrite_unofficial_imports(source: &str) -> String {
     source
         .lines()
@@ -666,7 +666,7 @@ fn local_binding_violations_are_counted_and_fragment_shadow_is_allowed() {
         // （実装プラン C13「局所の束縛の規則」）。
         ("bind x <- missing\nbind x <- 2", Some("E0334")),
         // 読み替えを誤ると、読み込みで止まり E0334 が出ない。この層で名前解決まで
-        // 進めることを確かめる（設計書 07-03「言語仕様の例の検査」、ADR 0286）。
+        // 進めることを確かめる（設計書 07-03「言語仕様の例の検査」）。
         (
             "import Benitoite.IO.Console// comment\nfunction example() -> Unit\nbind x <- 1\nbind x <- 2\nend function",
             Some("E0334"),

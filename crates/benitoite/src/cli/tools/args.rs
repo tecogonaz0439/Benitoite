@@ -1,5 +1,5 @@
 //! `test` と `fmt` のコマンドラインの解釈（設計書 06-01「`test` のコマンドライン（初回リリース版）」
-//! 「`fmt` のコマンドライン（初回リリース版）」「オプション」、ADR 0206・0207）。
+//! 「`fmt` のコマンドライン（初回リリース版）」「オプション」）。
 
 use std::path::PathBuf;
 
@@ -19,7 +19,7 @@ pub struct PathArgs {
     pub paths: Vec<PathBuf>,
 }
 
-/// 使い方の誤りの文（ADR 0033）。ほかの誤りの文は 10-13 の `cli::text` を使う。
+/// 使い方の誤りの文（設計書 02-10「文言の言語」）。ほかの誤りの文は 10-13 の `cli::text` を使う。
 pub mod text {
     /// パスが一つもない
     pub const MISSING_PATH: &str = "missing path";
@@ -105,7 +105,7 @@ pub fn parse_path_args(tool: ToolCommand, args: Vec<OsString>) -> Result<PathArg
     Ok(parsed)
 }
 
-/// ディレクトリの下のすべての `.bnt` のファイルを、パスの辞書順に並べて返す（06-01「ディレクトリの指定」）。
+/// ディレクトリの下のすべての `.bnt` のファイルを、パスの辞書順に並べて返す（06-01「ディレクトリの指定（初回リリース版）」）。
 /// シンボリックリンクは辿らず、返す並びにも含めない。読めないディレクトリがあれば、そのパスと理由を返す。
 pub fn bnt_files(dir: &Path) -> Result<Vec<PathBuf>, (PathBuf, std::io::Error)> {
     // 実行時の入れ子の深さに依らないよう、明示の積み重ねで辿る（00-02「再帰の深さ」）。
@@ -116,7 +116,7 @@ pub fn bnt_files(dir: &Path) -> Result<Vec<PathBuf>, (PathBuf, std::io::Error)> 
         for entry in entries {
             let entry = entry.map_err(|e| (current.clone(), e))?;
             let path = entry.path();
-            // シンボリックリンクは辿らず集めない（ADR 0327）。`symlink_metadata` はリンクそのものを見る。
+            // シンボリックリンクは辿らず集めない（設計書 06-01「`fmt` のコマンドライン（初回リリース版）」）。`symlink_metadata` はリンクそのものを見る。
             let metadata = std::fs::symlink_metadata(&path).map_err(|e| (path.clone(), e))?;
             let file_type = metadata.file_type();
             if file_type.is_dir() {

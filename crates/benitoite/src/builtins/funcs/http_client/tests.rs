@@ -114,7 +114,7 @@ fn invalid_urls_and_timeout_finish_before_worker_submission() {
 }
 
 // 関門: ヘッダの分割と名前の不正文字を送信前に拒む。許す文字は worker の待ちまで進む。
-// 通常の通信ではこの失敗を起こせず、L32・ADR 0331 が単体テストを指定する。
+// 通常の通信ではこの失敗を起こせず、L32 が単体テストを指定する（設計書 03-09「クライアント」）。
 #[test]
 fn request_headers_check_argument_zero_and_allow_utf8_and_tab() {
     let script = ScheduleHandle::new([], false);

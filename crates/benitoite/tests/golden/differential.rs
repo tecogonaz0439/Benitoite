@@ -97,7 +97,7 @@ fn compare_on_stage(
             vm.reports
         ));
     }
-    // 資源の上限は抽象機械の規則にない。深い再帰を参照側で走らせる前に外す（ADR 0018）。
+    // 資源の上限は抽象機械の規則にない。深い再帰を参照側で走らせる前に外す（設計書 07-03「差分テスト」）。
     if vm.reports.iter().any(|d| d.kind == ReportKind::Resource) {
         return Comparison::Excluded("resource exhaustion".into());
     }
@@ -227,7 +227,7 @@ fn user_span(span: Option<Span>, sources: &SourceTable) -> Option<Span> {
     })
 }
 
-// 外部の入力と出力だけを置き換える。値・評価・組み込みの本体は本物を使う（ADR 0276）。
+// 外部の入力と出力だけを置き換える。値・評価・組み込みの本体は本物を使う（設計書 02-08「参照インタプリタ」）。
 struct ReferenceIo {
     input: RunInput,
     stdout: Vec<u8>,

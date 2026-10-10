@@ -1,10 +1,10 @@
 //! 同梱の Agent Skill の埋め込みと、`benitoite skill install`・`uninstall`（設計書 06-06「同梱の Agent Skill の構成」
-//! 「Skill の導入（初回リリース版）」、06-01「`skill` のコマンドライン（初回リリース版）」、ADR 0229・0230・0288）。
+//! 「Skill の導入（初回リリース版）」、06-01「`skill` のコマンドライン（初回リリース版）」）。
 
 pub mod bundle;
 pub mod generate;
 
-/// Skill の名前（書き出す先のディレクトリの名前。06-06、ADR 0241）。
+/// Skill の名前（書き出す先のディレクトリの名前。06-06「同梱の Agent Skill の構成」）。
 pub const SKILL_NAME: &str = "benitoite";
 /// `SKILL.md` の前付けの `metadata` の、処理系の版の欄の名前。この欄があれば `install` が書き出したものとみなす
 pub const VERSION_KEY: &str = "benitoite-version";
@@ -34,7 +34,7 @@ pub enum Agent {
     OpenCode,
 }
 
-/// 文（ADR 0033）。`{名前}` は埋める値。
+/// 文（設計書 02-10「文言の言語」）。`{名前}` は埋める値。
 pub mod text {
     pub const INSTALLED: &str = "installed {path}";
     pub const REMOVED: &str = "removed {path}";
@@ -64,7 +64,7 @@ pub fn files() -> &'static [SkillFile] {
 /// 書き出す先の Skill のディレクトリ（`<base>/.claude/skills/benitoite` など）を、重複を除いて返す。
 /// `agents` が空なら、すべてのエージェントとする。`base` は、`User` ではホームのディレクトリ、`Project` では作業ディレクトリ。
 pub fn target_dirs(scope: Scope, agents: &[Agent], base: &Path) -> Vec<PathBuf> {
-    // 置き場所の相対パスは、ホームと作業ディレクトリのどちらを基準にしても同じである（06-06「Skill の導入」）
+    // 置き場所の相対パスは、ホームと作業ディレクトリのどちらを基準にしても同じである（06-06「Skill の導入（初回リリース版）」）
     let _ignored = scope;
     let all = [Agent::ClaudeCode, Agent::Codex, Agent::OpenCode];
     let chosen: &[Agent] = if agents.is_empty() { &all } else { agents };

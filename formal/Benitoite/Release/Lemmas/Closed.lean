@@ -153,7 +153,7 @@ mutual
           Comp.VarsIn.substTyAt es hts n h.2.2⟩
     | .match v arms, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.substTyAt, Comp.VarsIn]
-        exact ⟨Val.VarsIn.substTyAt es hts v h.1, Comp.VarsInArms.substTyAt es hts arms h.2⟩
+        exact ⟨Val.VarsIn.substTyAt es hts v h.1, Arm.VarsInList.substTyAt es hts arms h.2⟩
     | .lazyC m, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.substTyAt, Comp.VarsIn]
         exact Comp.VarsIn.substTyAt es hts m h
@@ -174,14 +174,18 @@ mutual
         exact ⟨Val.VarsIn.substTyAt es hts d h.1, Ty.VarsInList.substAt es hts tys h.2.1,
           Eff.RhosInList.true _, Val.VarsInList.substTyAt es hts args h.2.2.2⟩
 
-  theorem Comp.VarsInArms.substTyAt {c : Nat} {ts : List Ty} (es : List Eff)
+  theorem Arm.VarsInList.substTyAt {c : Nat} {ts : List Ty} (es : List Eff)
       (hts : ∀ u ∈ ts, TyOK 0 u) :
-      (arms : List (Pat × Comp)) → Comp.VarsInArms (c + ts.length) (fun _ => True) arms →
-      Comp.VarsInArms c (fun _ => True) (Comp.substTyAtArms c ts es arms)
+      (arms : List Arm) → Arm.VarsInList (c + ts.length) (fun _ => True) arms →
+      Arm.VarsInList c (fun _ => True) (Arm.substTyAtList c ts es arms)
     | [], _ => trivial
-    | (p, m) :: arms, h => by
-        simp only [Comp.VarsInArms] at h; simp only [Comp.substTyAtArms, Comp.VarsInArms]
-        exact ⟨Comp.VarsIn.substTyAt es hts m h.1, Comp.VarsInArms.substTyAt es hts arms h.2⟩
+    | .mk alts none m :: arms, h => by
+        simp only [Arm.VarsInList] at h; simp only [Arm.substTyAtList, Arm.VarsInList]
+        exact ⟨Comp.VarsIn.substTyAt es hts m h.1, Arm.VarsInList.substTyAt es hts arms h.2⟩
+    | .mk alts (some g) m :: arms, h => by
+        simp only [Arm.VarsInList] at h; simp only [Arm.substTyAtList, Arm.VarsInList]
+        exact ⟨Comp.VarsIn.substTyAt es hts g h.1,
+          Comp.VarsIn.substTyAt es hts m h.2.1, Arm.VarsInList.substTyAt es hts arms h.2.2⟩
 
   theorem Clause.VarsInList.substTyAt {c : Nat} {ts : List Ty} (es : List Eff)
       (hts : ∀ u ∈ ts, TyOK 0 u) :
@@ -242,7 +246,7 @@ mutual
         simp only [Comp.VarsIn] at h ⊢
         exact ⟨Val.VarsIn.mono hn v h.1, Comp.VarsIn.mono hn m h.2.1, Comp.VarsIn.mono hn k h.2.2⟩
     | .match v arms, h => by
-        simp only [Comp.VarsIn] at h ⊢; exact ⟨Val.VarsIn.mono hn v h.1, Comp.VarsInArms.mono hn arms h.2⟩
+        simp only [Comp.VarsIn] at h ⊢; exact ⟨Val.VarsIn.mono hn v h.1, Arm.VarsInList.mono hn arms h.2⟩
     | .lazyC m, h => by simp only [Comp.VarsIn] at h ⊢; exact Comp.VarsIn.mono hn m h
     | .escape v, h => by simp only [Comp.VarsIn] at h ⊢; exact Val.VarsIn.mono hn v h
     | .use v m, h => by
@@ -256,11 +260,14 @@ mutual
         exact ⟨Val.VarsIn.mono hn d h.1, Ty.VarsInList.mono hn (fun _ h => h) _ h.2.1, h.2.2.1,
           Val.VarsInList.mono hn args h.2.2.2⟩
 
-  theorem Comp.VarsInArms.mono {n n' : Nat} (hn : n ≤ n') : (arms : List (Pat × Comp)) →
-      Comp.VarsInArms n (fun _ => True) arms → Comp.VarsInArms n' (fun _ => True) arms
+  theorem Arm.VarsInList.mono {n n' : Nat} (hn : n ≤ n') : (arms : List Arm) →
+      Arm.VarsInList n (fun _ => True) arms → Arm.VarsInList n' (fun _ => True) arms
     | [], _ => trivial
-    | (_, m) :: arms, h => by
-        simp only [Comp.VarsInArms] at h ⊢; exact ⟨Comp.VarsIn.mono hn m h.1, Comp.VarsInArms.mono hn arms h.2⟩
+    | .mk alts none m :: arms, h => by
+        simp only [Arm.VarsInList] at h ⊢; exact ⟨Comp.VarsIn.mono hn m h.1, Arm.VarsInList.mono hn arms h.2⟩
+    | .mk alts (some g) m :: arms, h => by
+        simp only [Arm.VarsInList] at h ⊢; exact ⟨Comp.VarsIn.mono hn g h.1,
+          Comp.VarsIn.mono hn m h.2.1, Arm.VarsInList.mono hn arms h.2.2⟩
 
   theorem Clause.VarsInList.mono {n n' : Nat} (hn : n ≤ n') : (hs : List Clause) →
       Clause.VarsInList n (fun _ => True) hs → Clause.VarsInList n' (fun _ => True) hs
@@ -320,7 +327,7 @@ mutual
         exact ⟨Val.VarsIn.rename ξ v h.1, Comp.VarsIn.rename ξ m h.2.1, Comp.VarsIn.rename ξ k h.2.2⟩
     | .match v arms, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]
-        exact ⟨Val.VarsIn.rename ξ v h.1, Comp.VarsInArms.rename ξ arms h.2⟩
+        exact ⟨Val.VarsIn.rename ξ v h.1, Arm.VarsInList.rename ξ arms h.2⟩
     | .lazyC m, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]; exact Comp.VarsIn.rename ξ m h
     | .escape v, h => by
@@ -338,13 +345,17 @@ mutual
         simp only [Comp.VarsIn] at h; simp only [Comp.rename, Comp.VarsIn]
         exact ⟨Val.VarsIn.rename ξ d h.1, h.2.1, h.2.2.1, Val.VarsInList.rename ξ args h.2.2.2⟩
 
-  theorem Comp.VarsInArms.rename {n : Nat} (ξ : Nat → Nat) : (arms : List (Pat × Comp)) →
-      Comp.VarsInArms n (fun _ => True) arms →
-      Comp.VarsInArms n (fun _ => True) (Comp.renameArms ξ arms)
+  theorem Arm.VarsInList.rename {n : Nat} (ξ : Nat → Nat) : (arms : List Arm) →
+      Arm.VarsInList n (fun _ => True) arms →
+      Arm.VarsInList n (fun _ => True) (Arm.renameList ξ arms)
     | [], _ => trivial
-    | (p, m) :: arms, h => by
-        simp only [Comp.VarsInArms] at h; simp only [Comp.renameArms, Comp.VarsInArms]
-        exact ⟨Comp.VarsIn.rename _ m h.1, Comp.VarsInArms.rename ξ arms h.2⟩
+    | .mk alts none m :: arms, h => by
+        simp only [Arm.VarsInList] at h; simp only [Arm.renameList, Arm.VarsInList]
+        exact ⟨Comp.VarsIn.rename _ m h.1, Arm.VarsInList.rename ξ arms h.2⟩
+    | .mk alts (some g) m :: arms, h => by
+        simp only [Arm.VarsInList] at h; simp only [Arm.renameList, Arm.VarsInList]
+        exact ⟨Comp.VarsIn.rename _ g h.1,
+          Comp.VarsIn.rename _ m h.2.1, Arm.VarsInList.rename ξ arms h.2.2⟩
 
   theorem Clause.VarsInList.rename {n : Nat} (ξ : Nat → Nat) : (hs : List Clause) →
       Clause.VarsInList n (fun _ => True) hs →
@@ -413,7 +424,7 @@ mutual
         exact ⟨Val.VarsIn.subst hσ v h.1, Comp.VarsIn.subst hσ m h.2.1, Comp.VarsIn.subst hσ k h.2.2⟩
     | .match v arms, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]
-        exact ⟨Val.VarsIn.subst hσ v h.1, Comp.VarsInArms.subst hσ arms h.2⟩
+        exact ⟨Val.VarsIn.subst hσ v h.1, Arm.VarsInList.subst hσ arms h.2⟩
     | .lazyC m, h => by
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]; exact Comp.VarsIn.subst hσ m h
     | .escape v, h => by
@@ -431,13 +442,17 @@ mutual
         simp only [Comp.VarsIn] at h; simp only [Comp.subst, Comp.VarsIn]
         exact ⟨Val.VarsIn.subst hσ d h.1, h.2.1, h.2.2.1, Val.VarsInList.subst hσ args h.2.2.2⟩
 
-  theorem Comp.VarsInArms.subst {n : Nat} {σ} (hσ : ClosedSubst σ) : (arms : List (Pat × Comp)) →
-      Comp.VarsInArms n (fun _ => True) arms →
-      Comp.VarsInArms n (fun _ => True) (Comp.substArms σ arms)
+  theorem Arm.VarsInList.subst {n : Nat} {σ} (hσ : ClosedSubst σ) : (arms : List Arm) →
+      Arm.VarsInList n (fun _ => True) arms →
+      Arm.VarsInList n (fun _ => True) (Arm.substList σ arms)
     | [], _ => trivial
-    | (p, m) :: arms, h => by
-        simp only [Comp.VarsInArms] at h; simp only [Comp.substArms, Comp.VarsInArms]
-        exact ⟨Comp.VarsIn.subst (hσ.up _) m h.1, Comp.VarsInArms.subst hσ arms h.2⟩
+    | .mk alts none m :: arms, h => by
+        simp only [Arm.VarsInList] at h; simp only [Arm.substList, Arm.VarsInList]
+        exact ⟨Comp.VarsIn.subst (hσ.up _) m h.1, Arm.VarsInList.subst hσ arms h.2⟩
+    | .mk alts (some g) m :: arms, h => by
+        simp only [Arm.VarsInList] at h; simp only [Arm.substList, Arm.VarsInList]
+        exact ⟨Comp.VarsIn.subst (hσ.up _) g h.1,
+          Comp.VarsIn.subst (hσ.up _) m h.2.1, Arm.VarsInList.subst hσ arms h.2.2⟩
 
   theorem Clause.VarsInList.subst {n : Nat} {σ} (hσ : ClosedSubst σ) : (hs : List Clause) →
       Clause.VarsInList n (fun _ => True) hs →

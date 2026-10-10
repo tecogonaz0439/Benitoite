@@ -1,4 +1,4 @@
-//! 初回リリース版の CLI のゴールデンテスト（設計書 07-03、ADR 0039・0224）。
+//! 初回リリース版の CLI のゴールデンテスト（設計書 07-03「ゴールデンテストの形式（初回リリース版）」）。
 //! 報告の分離のため、スクリプトが `{` で始まる行を標準エラー出力へ書くケースと、
 //! 改行で終えずに標準エラー出力へ書いてから止まるケースは置かない（実装プラン C10）。
 // テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
@@ -20,6 +20,7 @@ use std::ffi::OsString;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 
 use benitoite::cli::{self, CliEnv, Command, DevPanic};
@@ -38,7 +39,9 @@ const NONDETERMINISTIC_CASES: &[&str] = &["testdata/io/l40-clock-sleep.bnt"];
 // CLI の二方式・コア IR・フォーマッタの検査は残す（設計書 02-06「参照インタプリタの範囲」）。
 const RUNTIME_VIEW_CASES: &[&str] = &["testdata/io/l40-process-attached.bnt"];
 // 参照インタプリタは組み込みの呼び出しごとにリスト全体を写すため、5 万要素では
-// 差分検査が 30 秒を超える。CLI の二方式の検査とコア IR の検査は残す（C05 の追加指示）。
+// 差分検査が二次の時間になり終わらない（2026-10-10 の全体の検査で 1 時間 49 分を超えた）。
+// CLI の二方式の検査とコア IR の検査は残す（C05 の追加指示）。参照インタプリタの費用は
+// docs/todo の TODO-181 で扱い、直すまで全体の検査でも除く。
 const EXPENSIVE_REFERENCE_CASES: &[&str] = &["testdata/eval/list_hof_long.bnt"];
 // 回収の強制（機能 `gc-stress`）は安全点ごとに生きている構造の全体を辿るので、長さに比例した
 // 生きているリストを持つケースは二次の時間になり終わらない。回収の強制のビルドでだけ除き、
@@ -82,6 +85,19 @@ struct Summary {
     format_excluded: BTreeMap<&'static str, usize>,
 }
 impl Summary {
+    fn merge(&mut self, other: Summary) {
+        self.matched += other.matched;
+        self.check_core_matched += other.check_core_matched;
+        for (reason, count) in other.excluded {
+            *self.excluded.entry(reason).or_default() += count;
+        }
+        self.warnings.extend(other.warnings);
+        self.format_checked += other.format_checked;
+        for (reason, count) in other.format_excluded {
+            *self.format_excluded.entry(reason).or_default() += count;
+        }
+    }
+
     fn record(&mut self, comparison: Comparison, name: &str, failures: &mut Vec<String>) {
         match comparison {
             Comparison::Matched => self.matched += 1,
@@ -108,6 +124,7 @@ fn golden_suite() {
     let mut summary = Summary::default();
     let mut selected = 0;
     let mut stress_excluded: Vec<String> = Vec::new();
+    let mut jobs = Vec::new();
     for root in GOLDEN_ROOTS {
         let scripts = match discover_scripts(Path::new(root)) {
             Ok(scripts) => scripts,
@@ -126,13 +143,12 @@ fn golden_suite() {
                 stress_excluded.push(name);
                 continue;
             }
-            match load_case(path)
-                .and_then(|case| run_case(&case, selected, bless, &mut summary, &mut failures))
-            {
-                Ok(()) => {}
-                Err(error) => failures.push(format!("{name}: {error}")),
-            }
+            jobs.push((selected, path));
         }
+    }
+    for (part, part_failures) in run_parallel(&jobs, bless) {
+        summary.merge(part);
+        failures.extend(part_failures);
     }
     for dir in BENCH_DIRS {
         match sorted_entries(Path::new(dir)) {
@@ -228,6 +244,44 @@ fn golden_suite() {
         failures.len(),
         failures.join("\n")
     );
+}
+
+// 各ケースは番号ごとに別の一時ディレクトリで動くので、スレッドに分けて並べて走らせる。
+// 失敗の報告の順を保つため、結果をケースの順に並べてから返す（TODO-171 の改造）。
+/// 一つのケースの集計と失敗の一覧
+type CaseResult = (Summary, Vec<String>);
+
+fn run_parallel(jobs: &[(usize, PathBuf)], bless: bool) -> Vec<CaseResult> {
+    let next = AtomicUsize::new(0);
+    let results: Vec<Mutex<Option<CaseResult>>> = jobs.iter().map(|_| Mutex::new(None)).collect();
+    let workers = std::thread::available_parallelism()
+        .map_or(1, usize::from)
+        .min(jobs.len().max(1));
+    std::thread::scope(|scope| {
+        for _ in 0..workers {
+            scope.spawn(|| {
+                loop {
+                    let position = next.fetch_add(1, Ordering::Relaxed);
+                    let Some((index, path)) = jobs.get(position) else {
+                        break;
+                    };
+                    let name = path.display().to_string();
+                    let mut summary = Summary::default();
+                    let mut failures = Vec::new();
+                    if let Err(error) = load_case(path.clone()).and_then(|case| {
+                        run_case(&case, *index, bless, &mut summary, &mut failures)
+                    }) {
+                        failures.push(format!("{name}: {error}"));
+                    }
+                    *results[position].lock().unwrap() = Some((summary, failures));
+                }
+            });
+        }
+    });
+    results
+        .into_iter()
+        .map(|slot| slot.into_inner().unwrap().expect("golden case did not run"))
+        .collect()
 }
 
 fn discover_scripts(root: &Path) -> TestResult<Vec<PathBuf>> {
@@ -445,7 +499,7 @@ fn run_case(
     // `test` の方式は fmt と同じく頭で分け、フォーマッタの性質の確かめ（対象は `check`・`run`）に数えない
     // （実装プラン D12「手順の要点」の 6）。
     if case.mode != "test" {
-        // `check`・`run` のすべてのテストで、フォーマッタの性質を確かめる（ADR 0224 の決定 4）。コマンドラインが
+        // `check`・`run` のすべてのテストで、フォーマッタの性質を確かめる（設計書 07-03「ゴールデンテストの形式（初回リリース版）」）。コマンドラインが
         // 使い方の誤りになるテストは `--deny-warnings` を決められないので除き、除いた数に含める。
         {
             let property = match command(case, false)

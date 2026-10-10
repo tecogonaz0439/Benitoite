@@ -86,7 +86,7 @@ impl<'a> Walker<'a> {
             {
                 *slot = Some(index);
             }
-            // 書き手の改行を保つので、改行の印の直後の字句は整形の後も行の最初の字句である（ADR 0226）。
+            // 書き手の改行を保つので、改行の印の直後の字句は整形の後も行の最初の字句である（設計書 06-03「整形の考え方」）。
             if at_line_start {
                 if let Some(slot) = line_first.get_mut(index) {
                     *slot = true;
@@ -849,7 +849,7 @@ impl<'a> Walker<'a> {
             return;
         };
         self.open_end(open, e.span);
-        // 2 つ目以降の束縛の行は、`with` の開きの行より一段深い（06-03「字下げ」の表、ADR 0323）。
+        // 2 つ目以降の束縛の行は、`with` の開きの行より一段深い（06-03「字下げ」の表）。
         for bind in &e.binds {
             self.element(bind.span, Place::Deeper(open));
             self.expr(&bind.value);

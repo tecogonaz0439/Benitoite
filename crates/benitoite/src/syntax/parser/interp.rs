@@ -1,4 +1,4 @@
-//! 文字列補間の解析と由来位置（設計書 01-02「文字列補間」、02-02「合成ノードの由来位置」）。
+//! 文字列補間の解析と由来位置（設計書 01-02「文字列補間（初回リリース版）」、02-02「合成ノードの由来位置」）。
 use super::{Fail, PResult, Parser, exprs, nth_child, text};
 use crate::base::{BytePos, Span};
 use crate::syntax::{

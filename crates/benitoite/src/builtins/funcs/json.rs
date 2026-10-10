@@ -18,7 +18,7 @@ mod parse_error {
 }
 
 builtin! {
-    /// `Json.parse` の本体（設計書 03-08「Json」、ADR 0322）。
+    /// `Json.parse` の本体（設計書 03-08「Json」）。
     name = "Json.parse",
     pure fn parse(ctx, arg0: Value<'e>) -> Value<'e> {
         let input = ctx.str(arg0)
@@ -309,7 +309,7 @@ fn write_json<'e>(
                             .as_float()
                             .ok_or_else(|| Stop::Internal("JSON Float payload".into()))?;
                         // 一つの数だけをクレートで書式化し、木は自前で辿る。1.0 と -0.0 の
-                        // 型と符号を往復で保つ（設計書 03-08「Json」、ADR 0328）。
+                        // 型と符号を往復で保つ（設計書 03-08「Json」）。
                         if let Some(n) = serde_json::Number::from_f64(n) {
                             buf.push_str(n.as_str())?;
                         } else {

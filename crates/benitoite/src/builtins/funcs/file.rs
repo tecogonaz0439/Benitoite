@@ -685,7 +685,7 @@ fn directory_paths(
 ) -> PathInput<Vec<PathBuf>> {
     use rustix::fs::{self, AtFlags, Mode, OFlags};
     // 根のリンクは列挙の起点として辿り、開いた後はその記述子を固定する。
-    // 子はすべて NOFOLLOW で開く（設計書 03-07「File」、ADR 0352）。
+    // 子はすべて NOFOLLOW で開く（設計書 03-07「File」）。
     let root = match fs::open(
         path,
         OFlags::RDONLY | OFlags::DIRECTORY | OFlags::CLOEXEC,

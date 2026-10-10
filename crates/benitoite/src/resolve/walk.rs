@@ -57,7 +57,7 @@ impl Resolver<'_> {
     }
 
     // 括弧で囲んだ型は独立した型であり、uses のコンマを外の並びへ戻せない。
-    // 修正案は、型引数か関数の引数の型の並びにある場合だけに付ける（ADR 0047、F06「確認の観点」）。
+    // 修正案は、型引数か関数の引数の型の並びにある場合だけに付ける（02-04「誤りと修正案」、F06「確認の観点」）。
     fn ty_in_list(&mut self, ctx: &mut Ctx, ty: &TypeExpr, in_list: bool) {
         match ty {
             TypeExpr::Named(t) => {

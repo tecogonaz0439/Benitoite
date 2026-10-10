@@ -1,4 +1,4 @@
-//! 循環の4形を公開のヒープ API で測る。VM の Reference の統合は対象外（ADR 0268、実装プラン R12）。
+//! 循環の4形を公開のヒープ API で測る。VM の Reference の統合は対象外（実装プラン R12）。
 
 #[path = "stage1_support/mod.rs"]
 mod support;

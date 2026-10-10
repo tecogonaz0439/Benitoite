@@ -1,4 +1,4 @@
-//! マップと集合の定数の組み立て（設計書 02-07「定数表」、ADR 0136）。
+//! マップと集合の定数の組み立て（設計書 02-07「定数表」）。
 
 use crate::runtime::heap::{Value, ValueCtx};
 use crate::runtime::{Stop, map};

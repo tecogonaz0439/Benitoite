@@ -1,4 +1,4 @@
-//! 出力のバッファと書き出し用のスレッド（設計書 02-09「出力のバッファ」、ADR 0045・0265）。
+//! 出力のバッファと書き出し用のスレッド（設計書 02-09「出力のバッファ」）。
 
 use std::collections::VecDeque;
 use std::io::Write;
@@ -103,7 +103,7 @@ impl OutputPort {
             thread,
         }
     }
-    /// 書き込む（ADR 0265 の決定 4 の規則）。失敗が記録されていれば、それを返す（書いたものは捨てる）。
+    /// 書き込む（設計書 02-09「出力のバッファ」の規則）。失敗が記録されていれば、それを返す（書いたものは捨てる）。
     pub fn write(&mut self, task: TaskId, text: &[u8]) -> Result<Accept, WriteFailure> {
         let state = writer_state(&self.shared);
         if let Some(failure) = state.failure.clone() {
@@ -191,7 +191,7 @@ impl OutputPort {
                 ready.push(task);
             }
         }
-        // 小さい書き込みを受け付けた後にも待ちが残る場合、容量を再び空ける（ADR 0265）。
+        // 小さい書き込みを受け付けた後にも待ちが残る場合、容量を再び空ける（設計書 02-09「出力のバッファ」）。
         if !self.deferred.is_empty() {
             self.request_transfer();
         }

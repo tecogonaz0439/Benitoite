@@ -27,7 +27,7 @@ pub(super) fn table(d: &Decls<'_>) -> ImplTable {
     }
     out
 }
-/// 辞書を持たない組み込みの制約も、実装を選ぶ際には検査する（設計書 01-06「組み込みの制約」）。
+/// 辞書を持たない組み込みの制約も、実装を選ぶ際には検査する（設計書 01-06「組み込みの制約（初回リリース版）」）。
 pub(super) struct Resolution {
     pub dict: DictExpr,
     bounds: Vec<(ITy, BuiltinConstraint)>,
@@ -154,7 +154,7 @@ pub(super) fn resolve(
             }
         }
     }
-    // 誤りのある実装は表に残し、その実装を使うたびに子の制約の誤りを繰り返さない（ADR 0024）。
+    // 誤りのある実装は表に残し、その実装を使うたびに子の制約の誤りを繰り返さない（02-05「誤りの報告と検査の継続」）。
     let invalid = super::impls::invalid(d, i);
     let mut dicts = vec![];
     let mut bounds = vec![];
@@ -242,7 +242,7 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>) {
                     check_bounds(ctx.decls, &ctx.scope, &ctx.scheme, &resolution, &reason);
                 if !diagnostics.is_empty() {
                     ctx.diagnostics.extend(diagnostics);
-                    // 子の制約が型を決められない場合も、同じ型変数の失敗を重ねない（ADR 0024）。
+                    // 子の制約が型を決められない場合も、同じ型変数の失敗を重ねない（02-05「誤りの報告と検査の継続」）。
                     if let IClassArg::Ty(ty) = &arg {
                         let _poisoned = ctx.solver.equal(ty, &ITy::Error, &reason);
                     }

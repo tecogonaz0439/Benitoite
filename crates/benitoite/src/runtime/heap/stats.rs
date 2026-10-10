@@ -1,4 +1,4 @@
-//! ヒープの設定と測定の記録（ADR 0259 の決定 3・6、設計書 07-02）。
+//! ヒープの設定と測定の記録（設計書 02-09「メモリの管理」、07-02「測る項目」）。
 
 use super::{DEFAULT_TRIGGER_FACTOR_PERCENT, MIN_COLLECT_TRIGGER_BYTES};
 
@@ -11,7 +11,7 @@ pub struct HeapConfig {
     /// 回収の強制。安全点ごとに必ず回収する（機能 `gc-stress` のビルドでは常に真として扱う）
     pub stress: bool,
     /// その場での再利用を行う（既定は真）。偽なら `NoGcCtx::reuse_ctor` がつねに `Ok(None)` を返す。
-    /// 再利用の有無を同じプログラムで比べるためにある（ADR 0280 の決定 4）。再利用は参照カウントの方式だけが
+    /// 再利用の有無を同じプログラムで比べるためにある。再利用は参照カウントの方式だけが
     /// 行うので、マーク・スイープでは設定によらず再利用しない
     pub reuse: bool,
 }
@@ -59,7 +59,7 @@ pub struct HeapStats {
 pub enum HeapFaultKind {
     /// 解放した対象を指す値を読んだ（世代の食い違い）
     StaleReference,
-    /// 別の `Heap` の番号を持つ `Slot` を読んだ・書いた・辿った（すべての構成で調べる。ADR 0281）
+    /// 別の `Heap` の番号を持つ `Slot` を読んだ・書いた・辿った（すべての構成で調べる。設計書 02-09「メモリの管理」）
     ForeignHeap,
     /// 対象の頭が壊れている
     CorruptHeader,

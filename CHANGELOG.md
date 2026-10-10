@@ -2,6 +2,17 @@
 
 All notable changes to Benitoite are recorded in this file. Versions follow the policy in [Compatibility](docs/reference/benitoite.md#20-compatibility): while the major version is 0, a minor version may contain incompatible changes, and a patch version contains only bug fixes. Until `0.1.0`, any release may contain incompatible changes. Every incompatible change is listed with how to migrate.
 
+## 0.0.2 (San Benito)
+
+A source-only release; no executables are provided. The language and the behavior of `benitoite` are the same as in `0.0.1`, except that `benitoite --version` prints `benitoite 0.0.2`. Scripts written for `0.0.1` need no changes.
+
+### Changed
+
+- The formal verification in `formal/` now covers the desugaring of the whole language of `0.0.1`: a Lean proof shows that desugaring preserves types, and differential tests compare the Lean desugaring with the implementation.
+- The coverage check of `match` is formalized and proved sound, and differential tests compare it with the implementation's check.
+- A Lean checker for the typed surface syntax is proved sound and used to check the type checker's output for the test programs.
+- The design documents in `docs/design/` now describe only what the implementation does.
+
 ## 0.0.1 (San Benito)
 
 The first release, source only; no executables are provided. It replaces the minimal implementation (`0.0.0`), which was not distributed. The language is described in the [Benitoite Language Reference](docs/reference/benitoite.md), and installation in [Installing Benitoite](docs/reference/install.md).

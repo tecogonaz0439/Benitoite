@@ -1,4 +1,4 @@
-//! コード生成が VM に渡す生存の情報（設計書 02-08「枠を降ろす原因と処理」、ADR 0259 の決定 2、
+//! コード生成が VM に渡す生存の情報（設計書 02-08「枠を降ろす原因と処理」、
 //! 実装プラン 10-07「生存の情報」）。回収の方式によらず同じ情報を使う。
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
@@ -21,7 +21,7 @@ pub enum LiveItem {
 /// 原型一つの生存の情報。命令 i の項目は `items[starts[i]..starts[i + 1]]` である。
 /// `starts` の長さは命令の数に 1 を足した数（空の原型では空でもよい）。
 /// 命令 i の入口で生きているレジスタ（昇順）は `live_in[live_in_starts[i]..live_in_starts[i + 1]]`、
-/// 命令 i が呼び出しの命令なら、その結果のレジスタは `call_writes[i]` である（ADR 0314）。
+/// 命令 i が呼び出しの命令なら、その結果のレジスタは `call_writes[i]` である（設計書 02-08「枠を降ろす原因と処理」）。
 /// `live_in_starts` の長さは命令の数に 1 を足した数（`starts` と同じく 0 から始める。空の原型では `[0]`）、`call_writes` の長さは命令の数である。
 #[derive(Clone, PartialEq, Eq, Debug, Default)]
 pub struct LiveInfo {
@@ -363,7 +363,7 @@ pub fn compute_liveness(
     live.starts.push(0);
     live.live_in_starts.push(0);
     for (current, instr) in nodes.iter().zip(&p.code) {
-        // 差分の項目とは別に入口の集合を保存し、過去に死んだ値も安全点で除く（ADR 0314）。
+        // 差分の項目とは別に入口の集合を保存し、過去に死んだ値も安全点で除く（設計書 02-08「枠を降ろす原因と処理」）。
         live.live_in.extend(&current.live_in);
         live.live_in_starts.push(
             u32::try_from(live.live_in.len())
@@ -704,7 +704,7 @@ mod tests {
             );
             assert!(covered.insert(op as u8));
             if !matches!(op, Jmp | JmpF | Switch) {
-                // 結果を書くだけの命令と、中断中の旧値を除ける命令を取り違えない（ADR 0314）。
+                // 結果を書くだけの命令と、中断中の旧値を除ける命令を取り違えない（設計書 02-08「枠を降ろす原因と処理」）。
                 let expected =
                     if [Call, Method, Handle, Force, Update, Perform, Io, Resume].contains(&op) {
                         Some(1)

@@ -3,7 +3,7 @@
 
 設計書 01-12「コア計算と脱糖」の「初回リリース版の拡張」のうち、コア計算に構成を加えるものを書き写す。
 段階 B1 は、制御の構成（ストア、`escape`、`with`、プロセスの終了、エフェクトの名前、ハンドラ）と、型パラメータの
-組み込みの制約（OPEN-070、ADR 0297）を加えた。段階 B2 は、`Map`・`Set`・`Bytes` と、型クラスの辞書
+組み込みの制約（01-12「型パラメータの組み込みの制約」）を加えた。段階 B2 は、`Map`・`Set`・`Bytes` と、型クラスの辞書
 （高カインド型を含む）を加える（設計書 07-04「進め方」）。段階 A（`Benitoite.Core`）の定義は最小実行版の
 ものとして残し、段階 B は別の名前空間に写して広げる。段階 B2 は、段階 B1 の定義を同じ名前空間で広げる。
 
@@ -11,7 +11,7 @@
 
 - 型の変数は、内側から数えた de Bruijn の番号で表す。関数の定義の本体では、定義の型パラメータが
   `0..n-1` である。`handle` の節は、操作の型パラメータを番号 `0..k-1` に束縛し、節の外側の型の変数の番号を
-  k だけずらす（01-06「エフェクトの宣言とハンドラの型付け」の「その型パラメータをほかの何とも等しくない型として
+  k だけずらす（01-06「エフェクトの宣言とハンドラの型付け（初回リリース版）」の「その型パラメータをほかの何とも等しくない型として
   扱う」）。閉じた値は、節の内側へ運んでも変わらない。
 - エフェクトの原子は、エフェクトの名前（モジュールと名前の組を一つの文字列で表す）とエフェクト変数である。
 - 組み込みの関数のうち、ストアの操作（`Reference.new` など）とプロセスの終了は、組み込みの関数の種類
@@ -109,7 +109,7 @@ inductive Ty where
   | tapp (i : Nat) (args : List Ty)
   | ctor (φ : TyCon)
 
-/-- 型パラメータに付けた組み込みの制約（01-06「組み込みの制約（初回リリース版）」、ADR 0297）。 -/
+/-- 型パラメータに付けた組み込みの制約（01-06「組み込みの制約（初回リリース版）」、01-12「型パラメータの組み込みの制約」）。 -/
 structure TParam where
   equality : Bool := false
   key : Bool := false
@@ -150,11 +150,32 @@ def Const.matches : Const → Const → Bool
   | .unit, .unit => true
   | _, _ => false
 
+/-- リストの残りの部分。`none` は残りを許さず、`some .skip` は束縛せず、
+`some .bind` は残りのリストを一つの変数に束縛する。 -/
+inductive ListRest where
+  | skip
+  | bind
+  deriving DecidableEq
+
+def ListRest.binders : ListRest → Nat
+  | .skip => 0
+  | .bind => 1
+
 inductive Pat where
   | wild
   | var
   | const (c : Const)
   | con (c : ConName) (args : List Pat)
+  /-- 両端を含む範囲。型付けが両端を Integer または Character に限る。 -/
+  | range (lo hi : Const)
+  /-- 束縛の順は、前の要素・残りの変数・後の要素である。 -/
+  | list (before : List Pat) (rest : Option ListRest) (after : List Pat)
+
+/-- 分岐の選択肢。`slots` は分岐の変数ごとに、このパターンの左から数えた束縛位置を指定する。
+最初の選択肢の対応は恒等であり、後の選択肢は同じ名前の変数に当たる位置を持つ。 -/
+structure Alt where
+  pat : Pat
+  slots : List Nat
 
 /-- 節が処理する操作。利用者が宣言したエフェクトの操作と、組み込みのエフェクトの操作
 （外部に作用する組み込みの関数）がある（01-12「ハンドラ」）。 -/
@@ -193,7 +214,8 @@ mutual
     | letIn (m : Comp) (n : Comp)
     | app (f : Val) (args : List Val)
     | ite (v : Val) (m n : Comp)
-    | «match» (v : Val) (arms : List (Pat × Comp))
+    /-- 選択肢とガードを持つ照合。Release の照合はこの構成の一種類だけである。 -/
+    | «match» (v : Val) (arms : List Arm)
     /-- `lazy M` -/
     | lazyC (m : Comp)
     /-- `escape V` -/
@@ -211,7 +233,20 @@ mutual
   番号 1 から n が x̄ を最後の引数から順に指す。操作の型パラメータは、N の中の型の変数の番号 `0..ntys-1` である。 -/
   inductive Clause where
     | mk (op : OpRef) (arity : Nat) (ntys : Nat) (body : Comp)
+
+  /-- 照合の分岐。本体とガードは分岐ごとに一つだけ持つ。 -/
+  inductive Arm where
+    | mk (alts : List Alt) (guard : Option Comp) (body : Comp)
 end
+
+def Arm.alts : Arm → List Alt
+  | .mk alts _ _ => alts
+
+def Arm.guard : Arm → Option Comp
+  | .mk _ guard _ => guard
+
+def Arm.body : Arm → Comp
+  | .mk _ _ body => body
 
 def Clause.op : Clause → OpRef
   | .mk o _ _ _ => o
@@ -226,7 +261,7 @@ def Clause.body : Clause → Comp
   | .mk _ _ _ m => m
 
 /-- トップレベルの関数の定義。`fn f[ᾱ : c̄; ρ̄](x̄:Ā) : B ! ε = M`。`tparams` は型パラメータと、その
-組み込みの制約である（ADR 0297）。 -/
+組み込みの制約である（01-12「型パラメータの組み込みの制約」）。 -/
 structure Def where
   tparams : List TParam
   neffs : Nat
@@ -243,7 +278,7 @@ structure ConDecl where
   args : List Ty
 
 /-- 利用者が宣言したエフェクトの操作 `function op[ᾱ](x̄: Ā) -> B` の宣言。型は
-`∀ᾱ. (Ā) → B ! {L}` である（01-06「エフェクトの宣言とハンドラの型付け」）。 -/
+`∀ᾱ. (Ā) → B ! {L}` である（01-06「エフェクトの宣言とハンドラの型付け（初回リリース版）」）。 -/
 structure OpDecl where
   eff : EffName
   tparams : List TParam

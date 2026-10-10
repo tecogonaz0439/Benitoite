@@ -1,4 +1,4 @@
-//! 公開のコレクション操作と独立したモデルの比較（設計書 07-03「ほかの章が求めるテスト」）。
+//! 公開のコレクション操作と独立したモデルの比較（設計書 07-03「ほかの章が求めるテスト（初回リリース版）」）。
 
 // 作成時の関門: 公開 API の順序・永続性・集合演算と、元の鍵の保存を守る。
 // 回転や分割の取り違えは既存の仮置きのテストでは検出できない。
@@ -352,6 +352,7 @@ fn key_order_is_lexicographic_for_all_key_kinds_and_rejects_invalid_values() {
 }
 
 #[test]
+#[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
 fn million_element_trees_support_updates_and_union_shares_the_large_input() {
     let count: i64 = if cfg!(miri) { 32 } else { 1_000_000 };
     let mut heap = Heap::new(HeapConfig {

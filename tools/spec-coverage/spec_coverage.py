@@ -20,17 +20,11 @@ TEST_REFERENCE = re.compile(
     r"`([^`]+)`|((?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.bnt)"
 )
 
-MILESTONES = {"最小実行版": 8, "初回リリース版": 5}
-# 各環境での実行は処理系のテストではなく配布時の確認が受け持つ（設計書 07-03）。
-NON_TEST_CONDITIONS = {
-    "初回リリース版": {
-        "処理系の単一バイナリを、配布形態で定める各環境で実行する",
-    },
-}
+MILESTONES = {"初回リリース版": 4}
 
 NON_RULE_SECTIONS = {
     ("01-02", "EBNF の表記"),
-    ("01-02", "最小実行版に含めない構文"),
+    ("01-02", "初回リリース版に含めない構文"),
     ("01-02", "例"),
     ("01-02", "初回リリース版の文法の全体"),
     ("01-12", "本章の位置付け"),
@@ -167,11 +161,7 @@ def uncovered_sections(markers: list[Marker], specification: Specification) -> l
 
 
 def normalize_condition(condition: str) -> str:
-    # 複数の ADR を並べた末尾の注記も外し、リンクは表示の文に揃える。
-    condition = re.sub(
-        r"（\s*\[ADR\s+\d+\]\([^)]+\)(?:\s*、\s*\[ADR\s+\d+\]\([^)]+\))*\s*）$",
-        "", condition,
-    )
+    # リンクは表示の文に揃える。
     return re.sub(r"\[([^]]+)\]\([^)]+\)", r"\1", condition).strip()
 
 
@@ -213,10 +203,7 @@ def roadmap_acceptance_conditions(roadmap_path: Path, milestone: str) -> tuple[l
             f"{roadmap_path}: {milestone}: expected {expected_count} completion conditions, "
             f"found {len(conditions)}"
         )
-    excluded = NON_TEST_CONDITIONS.get(milestone, set())
-    for condition in sorted(excluded - set(conditions)):
-        issues.append(f"{roadmap_path}: {milestone}: excluded condition not found: {condition}")
-    return [condition for condition in conditions if condition not in excluded], issues
+    return conditions, issues
 
 
 def read_index(
@@ -361,19 +348,12 @@ fn main() -> Unit = ()
         write("crates/benitoite/testdata/acceptance/no-main/Other.bnt",
               "// spec: 01-02 初回リリース版の規則\n")
 
-        # 二つの完了条件表を、区別と ADR の注記を含む入力で確かめる。
-        note = "（[ADR 0117](a.md)、[ADR 0118](b.md)）"
-        minimal_rows = [f"| 最小の条件 {i}{note} | 期待 |" for i in range(8)]
-        release_rows = [f"| 初回の条件 {i}{note} | 期待 |" for i in range(4)]
+        # 完了条件表を、リンクを含む入力で確かめる。
+        release_rows = [f"| 初回の[条件](distribution.md) {i} | 期待 |" for i in range(4)]
         write("docs/design/00-overview/00-03-roadmap.md",
               "### 初回リリース版\n#### 完了条件\n| 条件 | 期待 |\n|---|---|\n"
-              + "\n".join(release_rows)
-              + "\n| 処理系の単一バイナリを、[配布形態](distribution.md)で定める各環境で実行する | 期待 |\n"
-              + "### 最小実行版\n#### 完了条件\n| スクリプト | 期待 |\n|---|---|\n"
-              + "\n".join(minimal_rows) + "\n")
-        index_text = ("## 最小実行版の完了条件\n| 完了条件 | テスト |\n|---|---|\n"
-                      + "\n".join(f"| 最小の条件 {i} | `acceptance/script.bnt` |" for i in range(8))
-                      + "\n## 初回リリース版の完了条件\n| 完了条件 | テスト |\n|---|---|\n"
+              + "\n".join(release_rows) + "\n")
+        index_text = ("## 初回リリース版の完了条件\n| 完了条件 | テスト |\n|---|---|\n"
                       + "\n".join(f"| 初回の条件 {i} | |" for i in range(4)) + "\n")
         index = write("crates/benitoite/testdata/acceptance/INDEX.md", index_text)
         fixture_spec = load_specification(fixture_root / "docs/design/01-spec")
@@ -400,7 +380,7 @@ fn main() -> Unit = ()
                 return False
             return True
 
-        # 初回リリース版の表の空欄は誤りにする（実装プラン D34）。
+        # 初回リリース版の表の空欄は誤りにする。
         if not check_report(1, "no test name for acceptance condition: 初回の条件 3"):
             return 1
         filled_index = index_text.replace("| |", "| `acceptance/project/` |")
@@ -415,7 +395,7 @@ fn main() -> Unit = ()
         index.write_text(filled_index.replace("`acceptance/project/`", "`acceptance/missing/`"), encoding="utf-8")
         if not check_report(1, "test does not exist"):
             return 1
-        index.write_text(index_text.replace("`acceptance/script.bnt`", ""), encoding="utf-8")
+        index.write_text(filled_index.replace("`acceptance/project/`", "", 1), encoding="utf-8")
         if not check_report(1, "no test name"):
             return 1
         index.write_text(index_text, encoding="utf-8")

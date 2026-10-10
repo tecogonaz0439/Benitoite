@@ -17,7 +17,7 @@ end function
 
 function descend(depth: Integer, size: Integer) -> Integer
   return if depth = 0 then
-    // 底で大きく確保して要求を立て、以降の戻りでは関数を呼ばない（ADR 0259 の決定 5）。
+    // 底で大きく確保して要求を立て、以降の戻りでは関数を呼ばない（設計書 02-08「タスクの切り替え」）。
     bind values <- List.range(0, size)
     List.length(values)
   else

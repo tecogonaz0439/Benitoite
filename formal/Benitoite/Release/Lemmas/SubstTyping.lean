@@ -3,7 +3,7 @@ import Benitoite.Release.Lemmas.OuterC
 /-!
 # 値の置き換えで型付けが保たれること（段階 B）
 
-実行中の置き換え（E-Return・E-Lam・E-Fun・E-Match・E-Op の `M[W̄/x̄]`）は、閉じた値か継続の場所で
+実行中の置き換え（E-Return・E-Lam・E-Fun・E-MatchXBody・E-MatchXGuard・E-Op の `M[W̄/x̄]`）は、閉じた値か継続の場所で
 変数を置き換える。閉じた値は、どの型パラメータの並びと環境のもとでも同じ型が付くので、節や
 ラムダの内側へ運んでも型が付く。継続の場所は、`resume` の第一引数に現れ、κ を作った節の R と、
 置き換える位置の R が等しい。
@@ -46,7 +46,7 @@ mutual
     | .letIn m n => by simp only [Comp.rename, upRen_id, Comp.rename_id]
     | .app f args => by simp only [Comp.rename, Val.rename_id, Val.renameList_id]
     | .ite v m n => by simp only [Comp.rename, Val.rename_id, Comp.rename_id]
-    | .match v arms => by simp only [Comp.rename, Val.rename_id, Comp.renameArms_id]
+    | .match v arms => by simp only [Comp.rename, Val.rename_id, Arm.renameList_id]
     | .lazyC m => by simp only [Comp.rename, Comp.rename_id]
     | .escape v => by simp only [Comp.rename, Val.rename_id]
     | .use v m => by simp only [Comp.rename, Val.rename_id, Comp.rename_id]
@@ -54,9 +54,12 @@ mutual
     | .resume k v => by simp only [Comp.rename, Val.rename_id]
     | .meth d _ _ _ args => by simp only [Comp.rename, Val.rename_id, Val.renameList_id]
 
-  theorem Comp.renameArms_id : (arms : List (Pat × Comp)) → Comp.renameArms id arms = arms
+  theorem Arm.renameList_id : (arms : List Arm) → Arm.renameList id arms = arms
     | [] => rfl
-    | (p, m) :: arms => by simp only [Comp.renameArms, upRen_id, Comp.rename_id, Comp.renameArms_id]
+    | .mk alts none m :: arms => by
+        simp only [Arm.renameList, upRen_id, Comp.rename_id, Arm.renameList_id]
+    | .mk alts (some g) m :: arms => by
+        simp only [Arm.renameList, upRen_id, Comp.rename_id, Arm.renameList_id]
 
   theorem Clause.renameList_id : (h : List Clause) → Clause.renameList id h = h
     | [] => rfl
@@ -149,11 +152,13 @@ theorem SubstOk.clause {Ψ Γ Δ R σ} (c : Option Ty) (ps : List Ty) (k : Nat)
   have := (h.shiftE k).up (c :: binds ps)
   simpa [binds_length, Nat.add_comm] using this
 
-theorem Comp.substArms_fst (σ : Nat → Val) (arms : List (Pat × Comp)) :
-    (Comp.substArms σ arms).map Prod.fst = arms.map Prod.fst := by
+theorem unguardedPats_subst (σ : Nat → Val) (arms : List Arm) :
+    unguardedPats (Arm.substList σ arms) = unguardedPats arms := by
   induction arms with
-  | nil => simp [Comp.substArms]
-  | cons x xs ih => obtain ⟨p, m⟩ := x; simp [Comp.substArms, ih]
+  | nil => rfl
+  | cons arm arms ih =>
+      cases arm with
+      | mk alts guard body => cases guard <;> simp [Arm.substList, unguardedPats, ih]
 
 theorem Clause.substList_ops (σ : Nat → Val) (h : List Clause) :
     (Clause.substList σ h).map Clause.op = h.map Clause.op := by
@@ -225,7 +230,7 @@ mutual
     | .C_Match hv harms hex =>
         simp only [Comp.subst]
         refine .C_Match (HasTypeV.subst hv hσ) (HasTypeArms.subst harms hσ) ?_
-        rwa [Comp.substArms_fst]
+        rwa [unguardedPats_subst]
     | .C_Lazy hm => simp only [Comp.subst]; exact .C_Lazy (HasTypeC.subst hm (hσ.hide none))
     | .C_Escape hv hw => simp only [Comp.subst]; exact .C_Escape (HasTypeV.subst hv hσ) hw
     | .C_Use hv hr hm hs =>
@@ -247,15 +252,20 @@ mutual
         exact .C_Meth (HasTypeV.subst hv hσ) hc hmeth hts hes (HasTypeVs.subst hws hσ)
 
   theorem HasTypeArms.subst {Ψ C Γ Δ R σ arms a b ε} (h : HasTypeArms P B Ψ C Γ R arms a b ε)
-      (hσ : SubstOk P B Ψ Γ Δ R σ) : HasTypeArms P B Ψ C Δ R (Comp.substArms σ arms) a b ε := by
+      (hσ : SubstOk P B Ψ Γ Δ R σ) : HasTypeArms P B Ψ C Δ R (Arm.substList σ arms) a b ε := by
     match h with
-    | .nil hw => simp only [Comp.substArms]; exact .nil hw
-    | .cons (δ := δ) hp hm harms =>
-        simp only [Comp.substArms]
-        refine .cons hp ?_ (HasTypeArms.subst harms hσ)
-        have := hσ.up (binds δ)
-        rw [binds_length, PatTy.length_eq hp] at this
-        exact HasTypeC.subst hm this
+    | .nil hw => simp only [Arm.substList]; exact .nil hw
+    | .plain (δ := δ) hp hm ht =>
+        simp only [Arm.substList]
+        have hσ' := hσ.up (binds δ)
+        rw [binds_length, hp.2.1] at hσ'
+        exact .plain hp (HasTypeC.subst hm hσ') (HasTypeArms.subst ht hσ)
+    | .guarded (δ := δ) hp hg hm ht =>
+        simp only [Arm.substList]
+        have hσ' := hσ.up (binds δ)
+        rw [binds_length, hp.2.1] at hσ'
+        exact .guarded hp (HasTypeC.subst hg (hσ'.hide none)) (HasTypeC.subst hm hσ')
+          (HasTypeArms.subst ht hσ)
 
   theorem HasTypeClauses.subst {Ψ C Γ Δ R σ h t ε} (hc : HasTypeClauses P B Ψ C Γ R h t ε)
       (hσ : SubstOk P B Ψ Γ Δ R σ) : HasTypeClauses P B Ψ C Δ R (Clause.substList σ h) t ε := by

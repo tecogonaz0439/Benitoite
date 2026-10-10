@@ -1,4 +1,4 @@
-//! 仮想機械（設計書 02-08）。言語の関数の呼び出しで Rust の関数を入れ子に呼ばない（ADR 0016）。
+//! 仮想機械（設計書 02-08）。言語の関数の呼び出しで Rust の関数を入れ子に呼ばない（設計書 02-08「枠の積み重ね」）。
 //! 命令の型と命令ごとの処理は 10-07 が定める。本モジュールは命令の集合に依存しない部分を持つ。
 
 pub mod budget;
@@ -16,13 +16,13 @@ use crate::runtime::{ReleaseFailure, Stop};
 
 use self::state::RunState;
 
-/// 枠一つの大きさとして数える固定の定数（02-08「呼び出しの入れ子の上限」、ADR 0030）。
+/// 枠一つの大きさとして数える固定の定数（02-08「呼び出しの入れ子の上限」）。
 pub const FRAME_COST: u64 = 96;
 /// レジスタ一つの大きさとして数える固定の定数。
 pub const REG_COST: u64 = 32;
 /// 呼び出しの入れ子の上限の既定（1 GiB）。
 pub const DEFAULT_MAX_CALL_STACK: u64 = 1_073_741_824;
-/// タスクごとの呼び出しの回数の予算の初めの値（02-08「タスクの切り替え」、ADR 0356）。性能の測定（OPEN-009）で見直す。
+/// タスクごとの呼び出しの回数の予算の初めの値（02-08「タスクの切り替え」）。性能の測定で見直す（docs/todo の TODO-034）。
 pub const DEFAULT_CALL_BUDGET: u32 = 2_500;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -47,7 +47,7 @@ pub struct InstrRef {
     pub pc: u32,
 }
 
-/// 世代付きのタスクの番号（ADR 0266 の決定 10）。所有しない参照に使う。引いた世代が合わなければ、
+/// 世代付きのタスクの番号（設計書 02-08「実行ごとの状態のうち VM が使うもの」）。所有しない参照に使う。引いた世代が合わなければ、
 /// そのタスクは終わってタスクの表から除かれている。
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct TaskId {
@@ -55,11 +55,11 @@ pub struct TaskId {
     pub generation: u32,
 }
 
-/// 送り出しの列の要求の番号（ADR 0264 の決定 3）。一つの実行の中で使い回さない。
+/// 送り出しの列の要求の番号（設計書 02-09「IO 実行器」）。一つの実行の中で使い回さない。
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct RequestId(pub u64);
 
-/// IO の命令の実行の方式（ADR 0029・0088・0264）。
+/// IO の命令の実行の方式（設計書 02-08「IO の命令」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum ExecMode {
     Direct,

@@ -64,7 +64,7 @@ impl Quote {
     }
 }
 
-/// 字句を切り出す途中の状態。検査ごとに作り、大域の状態を持たない（ADR 0015）。
+/// 字句を切り出す途中の状態。検査ごとに作り、大域の状態を持たない（02-01「コンパイル済みプログラムと実行ごとの状態」）。
 struct Lexer<'a> {
     file: FileId,
     text: &'a [u8],
@@ -94,7 +94,7 @@ impl Lexer<'_> {
         self.push(TokenKind::Eof, end, end, TokenValue::None);
     }
 
-    /// 通常の字句を一つ読む。補間の式も同じ規則を使う（設計書 02-03「文字列補間」）。
+    /// 通常の字句を一つ読む。補間の式も同じ規則を使う（設計書 02-03「文字列補間と複数行の文字列の切り出し」）。
     fn step(&mut self, i: usize) -> usize {
         match self.byte(i) {
             Some(b' ' | b'\t') => add(i, 1),
@@ -206,7 +206,7 @@ impl Lexer<'_> {
         j
     }
 
-    /// 双方向の制御文字と先頭以外の U+FEFF（E0104）。場所によらず誤りにする（ADR 0051）。
+    /// 双方向の制御文字と先頭以外の U+FEFF（E0104）。場所によらず誤りにする（01-01「ソースファイルと文字集合」）。
     /// `escape_help` が真なら、値に含めるときのエスケープを修正案として示す。修正案を示すのは
     /// 文字列リテラルと文字リテラルの中だけで、コメントの中と字句の間では示さない（02-03「字句」）。
     fn report_invisible(&mut self, start: usize, len: usize, c: char, escape_help: bool) {
@@ -278,10 +278,10 @@ impl Lexer<'_> {
         }
     }
 
-    // ---- コメント（01-01「コメント」、02-03「コメント」） ----
+    // ---- コメント（01-01「コメント」、02-03「コメントとドキュメントコメント」） ----
 
     /// `//` から行末までを一つのコメントにする。本文は `//` の後から行末まで（CR LF の CR を含めない）。
-    /// コメントは字句の列に入れず、別の一覧に集める（ADR 0021）。
+    /// コメントは字句の列に入れず、別の一覧に集める（02-03「コメントとドキュメントコメント」）。
     fn comment(&mut self, start: usize) -> usize {
         let limit = self.line_end(start);
         let (kind, width) = match (self.byte(add(start, 2)), self.byte(add(start, 3))) {
@@ -327,7 +327,7 @@ impl Lexer<'_> {
 
     /// 数字で始まる「数値の塊」を切り出し、一つの字句にする。
     /// 塊を先に切り出してから形を調べるのは、`12abc` や `1.5.2` を二つの字句に分けず、
-    /// 一つの誤りとして報告するためである（ADR 0051）。
+    /// 一つの誤りとして報告するためである（01-01「数値リテラルの直後の文字」）。
     fn number(&mut self, start: usize) -> usize {
         let end = self.number_chunk_end(start);
         let chunk = self.slice(start, end);
@@ -664,7 +664,7 @@ fn decode(text: &[u8], i: usize) -> Option<(char, usize)> {
     Some((c, len))
 }
 
-/// 双方向の制御文字と U+FEFF（01-01「ソースファイルと文字集合」、ADR 0051）。
+/// 双方向の制御文字と U+FEFF（01-01「ソースファイルと文字集合」）。
 /// 先頭の BOM は `run` が先に読み飛ばすので、ここに来る U+FEFF は先頭以外にある。
 fn is_invisible(c: char) -> bool {
     matches!(

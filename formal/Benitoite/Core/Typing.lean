@@ -49,10 +49,10 @@ structure PrimSig where
 形式化では中身を定めず、`Builtins.Assumptions`（`Assumptions.lean`）の性質だけを仮定する。 -/
 structure Builtins where
   sig : PrimName → Option PrimSig
-  /-- IO を行わない組み込みの関数の値 δ(b[T̄; Ē], W̄)。型引数とエフェクト引数も受け取る（ADR 0296）。 -/
+  /-- IO を行わない組み込みの関数の値 δ(b[T̄; Ē], W̄)。型引数とエフェクト引数も受け取る（01-12「実行の規則」）。 -/
   delta : PrimName → List Ty → List Eff → List Val → Option Outcome
   /-- IO を行う組み込みの関数 `b[T̄; Ē]` に `W̄` を渡したときの応答として起こりうるもの。
-  型引数とエフェクト引数にもよってよい（ADR 0296）。 -/
+  型引数とエフェクト引数にもよってよい（01-12「実行の規則」）。 -/
   ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → Prop
 
 /-- 関数の型の、型とエフェクトの置き換えの後の形。V-Fun と V-Prim の `((Ā) → B ! ε)θ`。 -/

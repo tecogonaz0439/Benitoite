@@ -1,4 +1,4 @@
-//! ヒープの内部の層の入口（ADR 0260）。確保器、対象の頭、根の列挙、マーク・スイープの実装を子のモジュールに置く。
+//! ヒープの内部の層の入口（設計書 02-09「メモリの管理」）。確保器、対象の頭、根の列挙、マーク・スイープの実装を子のモジュールに置く。
 //! 守る不変条件: 実装プランの 10-08「不変条件」の H1〜H11。子のモジュールは、関わる項目を先頭の `//!` に挙げる。
 //!
 //! O1: 生きている対象の並びは初期化済みの対象だけを持ち、頭の列挙添字は並びの位置と一致する。
@@ -12,14 +12,14 @@
 //! 方式へ知らせる出来事: 参照の開始・終了（retain/release）、対象と量の確保（allocated）、
 //! セルの確保（cell_allocated）、解放（freed）、回収（collect）、要求と新しい要求の問い合わせ
 //! （collect_requested/take_collect_signal）、一意な構成子の書き換え（reuse_ctor）。
-//! 参照の通知の境目は、後で書き込みの障壁を加えるために残す（ADR 0259 の決定 7）。
+//! 参照の通知の境目は、後で書き込みの障壁を加えるために残す（設計書 02-09「メモリの管理」）。
 //! Slot の移動では元の対象の開始・終了を省き、移動先の前の参照だけを終了する。
 //! O8: Host の可変参照は NoGcCtx の可変借用中の閉包だけに渡す。SlotOps は対象を借用する機能を持たない。
 //! O7: 解放には、このヒープの生存中の対象から得た、確保時の provenance を持つポインタを渡す。
 //!     回収方式側がこの契約を守り、Rust に返した領域は読まない。
 //!     塊の解放済みの頭は塊を所有する間だけ残り、無効な添字により二度目の解放を拒む。
 
-// 内部の層は生のポインタで対象を読み書きする（ADR 0260 の決定 1・2）。`unsafe` のブロックは操作を一つだけ含め、
+// 内部の層は生のポインタで対象を読み書きする（設計書 02-09「メモリの管理」）。`unsafe` のブロックは操作を一つだけ含め、
 // `// SAFETY:` のコメントで不変条件の番号を引く（00-02「`unsafe` の書き方」）。
 #![allow(unsafe_code)]
 
@@ -51,7 +51,7 @@ use crate::runtime::Stop;
 use alloc::{Allocation, Allocator};
 use layout::{CellPayload, ObjectLayout};
 
-// Heap::new が呼ぶ内部の初期化だけが増やす（ADR 0281、実装プラン R01「内部の層が持つもの」）。
+// Heap::new が呼ぶ内部の初期化だけが増やす（設計書 02-09「メモリの管理」、実装プラン R01「内部の層が持つもの」）。
 static NEXT_HEAP_NO: AtomicU32 = AtomicU32::new(1);
 
 /// ヒープの状態（ヒープの番号、確保器、回収の要求、測定の記録、方式ごとの状態）。区間の中で `&HeapCore` から
@@ -246,7 +246,7 @@ impl HeapCore {
         self.header(value).map(|head| head.tag.get())
     }
 
-    /// 回収方式の印を頭の内部の可変性だけで扱う。書き込みの障壁は方式の境目に加える（ADR 0259 の決定 7）。
+    /// 回収方式の印を頭の内部の可変性だけで扱う。書き込みの障壁は方式の境目に加える（設計書 02-09「メモリの管理」）。
     pub(super) fn word(&self, value: Value<'_>) -> Option<&Cell<u64>> {
         self.header(value).map(|head| &head.word)
     }
@@ -465,7 +465,7 @@ impl HeapCore {
         data: T,
     ) -> Result<Value<'e>, Stop> {
         // T が所有する Vec などの別領域の容量は数えていない。凍結した OpaqueData に容量を返す口がないため、
-        // 現時点では Box 内の size_of::<T>() だけを加える（10-08「設定と測定の記録」、ADR 0259 決定 6 の未対応部分）。
+        // 現時点では Box 内の size_of::<T>() だけを加える（10-08「設定と測定の記録」、docs/todo の TODO-042）。
         let layout = ObjectLayout::new(ObjKind::Opaque, 1, 0)?;
         self.allocate(epoch, layout, std::mem::size_of::<T>(), |payload| {
             let data: Box<dyn OpaqueData> = Box::new(data);
@@ -479,7 +479,7 @@ impl HeapCore {
         data: T,
     ) -> Result<Value<'e>, Stop> {
         // T が所有する Vec などの別領域の容量は数えていない。凍結した HostData に容量を返す口がないため、
-        // 現時点では Box 内の size_of::<T>() だけを加える（10-08「設定と測定の記録」、ADR 0259 決定 6 の未対応部分）。
+        // 現時点では Box 内の size_of::<T>() だけを加える（10-08「設定と測定の記録」、docs/todo の TODO-042）。
         let layout = ObjectLayout::new(ObjKind::Host, 1, 0)?;
         self.allocate(epoch, layout, std::mem::size_of::<T>(), |payload| {
             let data: Box<dyn HostData> = Box::new(data);
@@ -867,7 +867,7 @@ impl HeapCore {
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub(super) fn slot_take<'e>(&self, src: &mut Slot, epoch: Epoch<'e>) -> Value<'e> {
-        // 読み出しと消去の両方に同じ比較の結果を使い、番号を二度比べない（H9、ADR 0281）。
+        // 読み出しと消去の両方に同じ比較の結果を使い、番号を二度比べない（H9、設計書 02-09「メモリの管理」）。
         let value = self.slot_load(src, epoch);
         self.release(value);
         src.set_raw(Value::Unit, self.heap_no);
@@ -998,7 +998,7 @@ impl HeapCore {
 
 #[cfg(all(test, feature = "heap-verify"))]
 mod region_verifier_tests {
-    // 内部層の入口で、頭を壊す操作だけを直接行う（R02 の個別の指示、ADR 0309）。
+    // 内部層の入口で、頭を壊す操作だけを直接行う（R02 の個別の指示、設計書 07-03「テストの設計の原則」）。
     // 作成時の関門: R01 は検証器を持たず、公開層の正常な操作では壊れた頭を作れない。
     // 中身を読む前に頭の範囲の食い違いを拒む独立した契約を守る。
     #![allow(

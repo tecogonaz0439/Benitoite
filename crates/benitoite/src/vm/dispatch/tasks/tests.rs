@@ -478,6 +478,7 @@ end function
     }
 }
 #[test]
+#[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
 fn a_million_inherited_tail_resumes_fit_a_small_stack() {
     let count = 1_000_000;
     let source = PROBE.to_owned()
@@ -657,7 +658,7 @@ fn cleanup_terminates_when_a_traversal_error_does_not_advance() {
             LoopExit::Return
         );
     });
-    // 第 2 段の切り替えは回収を先に返すことがある。実行の入口でその再開も通す（ADR 0314）。
+    // 第 2 段の切り替えは回収を先に返すことがある。実行の入口でその再開も通す（設計書 02-08「タスクの切り替え」）。
     assert_eq!(
         vm.run(runtime),
         VmStep::Stopped(StopEnd {

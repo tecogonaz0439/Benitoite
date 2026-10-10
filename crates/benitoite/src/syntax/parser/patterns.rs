@@ -1,4 +1,4 @@
-//! 基本のパターンの解析（設計書 02-03「入れ子の深さ」、ADR 0086）。
+//! 基本のパターンの解析（設計書 02-03「入れ子の深さ」）。
 use super::{
     CommaList, Fail, PResult, Parser, comma_list, literal_of, patterns_ext, records, text,
 };

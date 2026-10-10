@@ -12,6 +12,29 @@ import Benitoite.Release.Syntax
 
 namespace Benitoite.Release
 
+mutual
+  def Pat.binders : Pat → Nat
+    | .wild => 0
+    | .var => 1
+    | .const _ => 0
+    | .con _ args => Pat.bindersList args
+    | .range _ _ => 0
+    | .list before rest after =>
+        Pat.bindersList before + (rest.map ListRest.binders).getD 0 + Pat.bindersList after
+
+  def Pat.bindersList : List Pat → Nat
+    | [] => 0
+    | p :: ps => Pat.binders p + Pat.bindersList ps
+end
+
+/-- 分岐の変数の順は、最初の選択肢の左から現れる順である。 -/
+def Arm.bindersOf (alts : List Alt) : Nat :=
+  match alts with
+  | [] => 0
+  | alt :: _ => alt.pat.binders
+
+def Arm.binders (arm : Arm) : Nat := Arm.bindersOf arm.alts
+
 /-! ## 型とエフェクトの置き換え -/
 
 /-- 型構成子 φ を型引数 Ā に適用した型。型引数の個数が φ と合わないときの値は使わない（どれも置き換えと
@@ -104,7 +127,7 @@ mutual
     | .letIn m n => .letIn (Comp.substTyAt c ts es m) (Comp.substTyAt c ts es n)
     | .app f args => .app (Val.substTyAt c ts es f) (Val.substTyAtList c ts es args)
     | .ite v m n => .ite (Val.substTyAt c ts es v) (Comp.substTyAt c ts es m) (Comp.substTyAt c ts es n)
-    | .match v arms => .match (Val.substTyAt c ts es v) (Comp.substTyAtArms c ts es arms)
+    | .match v arms => .match (Val.substTyAt c ts es v) (Arm.substTyAtList c ts es arms)
     | .lazyC m => .lazyC (Comp.substTyAt c ts es m)
     | .escape v => .escape (Val.substTyAt c ts es v)
     | .use v m => .use (Val.substTyAt c ts es v) (Comp.substTyAt c ts es m)
@@ -114,10 +137,12 @@ mutual
         .meth (Val.substTyAt c ts es d) m (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substRho es))
           (Val.substTyAtList c ts es args)
 
-  def Comp.substTyAtArms (c : Nat) (ts : List Ty) (es : List Eff) :
-      List (Pat × Comp) → List (Pat × Comp)
+  def Arm.substTyAtList (c : Nat) (ts : List Ty) (es : List Eff) : List Arm → List Arm
     | [] => []
-    | (p, m) :: arms => (p, Comp.substTyAt c ts es m) :: Comp.substTyAtArms c ts es arms
+    | .mk alts none m :: arms =>
+        .mk alts none (Comp.substTyAt c ts es m) :: Arm.substTyAtList c ts es arms
+    | .mk alts (some g) m :: arms =>
+        .mk alts (some (Comp.substTyAt c ts es g)) (Comp.substTyAt c ts es m) :: Arm.substTyAtList c ts es arms
 
   /-- 節の本体では、操作の型パラメータの個数だけ、束縛された型の変数が増える。 -/
   def Clause.substTyAtList (c : Nat) (ts : List Ty) (es : List Eff) : List Clause → List Clause
@@ -131,18 +156,6 @@ def Comp.substTy (ts : List Ty) (es : List Eff) (m : Comp) : Comp := Comp.substT
 def Val.substTy (ts : List Ty) (es : List Eff) (v : Val) : Val := Val.substTyAt 0 ts es v
 
 /-! ## 値の置き換え -/
-
-mutual
-  def Pat.binders : Pat → Nat
-    | .wild => 0
-    | .var => 1
-    | .const _ => 0
-    | .con _ args => Pat.bindersList args
-
-  def Pat.bindersList : List Pat → Nat
-    | [] => 0
-    | p :: ps => Pat.binders p + Pat.bindersList ps
-end
 
 def upRen (k : Nat) (ξ : Nat → Nat) (i : Nat) : Nat :=
   if i < k then i else ξ (i - k) + k
@@ -173,7 +186,7 @@ mutual
     | .letIn m n => .letIn (Comp.rename ξ m) (Comp.rename (upRen 1 ξ) n)
     | .app f args => .app (Val.rename ξ f) (Val.renameList ξ args)
     | .ite v m n => .ite (Val.rename ξ v) (Comp.rename ξ m) (Comp.rename ξ n)
-    | .match v arms => .match (Val.rename ξ v) (Comp.renameArms ξ arms)
+    | .match v arms => .match (Val.rename ξ v) (Arm.renameList ξ arms)
     | .lazyC m => .lazyC (Comp.rename ξ m)
     | .escape v => .escape (Val.rename ξ v)
     | .use v m => .use (Val.rename ξ v) (Comp.rename ξ m)
@@ -181,9 +194,13 @@ mutual
     | .resume k v => .resume (Val.rename ξ k) (Val.rename ξ v)
     | .meth d m tys effs args => .meth (Val.rename ξ d) m tys effs (Val.renameList ξ args)
 
-  def Comp.renameArms (ξ : Nat → Nat) : List (Pat × Comp) → List (Pat × Comp)
+  def Arm.renameList (ξ : Nat → Nat) : List Arm → List Arm
     | [] => []
-    | (p, m) :: arms => (p, Comp.rename (upRen p.binders ξ) m) :: Comp.renameArms ξ arms
+    | .mk alts none m :: arms =>
+        .mk alts none (Comp.rename (upRen (Arm.bindersOf alts) ξ) m) :: Arm.renameList ξ arms
+    | .mk alts (some g) m :: arms =>
+        .mk alts (some (Comp.rename (upRen (Arm.bindersOf alts) ξ) g))
+          (Comp.rename (upRen (Arm.bindersOf alts) ξ) m) :: Arm.renameList ξ arms
 
   def Clause.renameList (ξ : Nat → Nat) : List Clause → List Clause
     | [] => []
@@ -219,7 +236,7 @@ mutual
     | .letIn m n => .letIn (Comp.subst σ m) (Comp.subst (upSubst 1 σ) n)
     | .app f args => .app (Val.subst σ f) (Val.substList σ args)
     | .ite v m n => .ite (Val.subst σ v) (Comp.subst σ m) (Comp.subst σ n)
-    | .match v arms => .match (Val.subst σ v) (Comp.substArms σ arms)
+    | .match v arms => .match (Val.subst σ v) (Arm.substList σ arms)
     | .lazyC m => .lazyC (Comp.subst σ m)
     | .escape v => .escape (Val.subst σ v)
     | .use v m => .use (Val.subst σ v) (Comp.subst σ m)
@@ -227,9 +244,13 @@ mutual
     | .resume k v => .resume (Val.subst σ k) (Val.subst σ v)
     | .meth d m tys effs args => .meth (Val.subst σ d) m tys effs (Val.substList σ args)
 
-  def Comp.substArms (σ : Nat → Val) : List (Pat × Comp) → List (Pat × Comp)
+  def Arm.substList (σ : Nat → Val) : List Arm → List Arm
     | [] => []
-    | (p, m) :: arms => (p, Comp.subst (upSubst p.binders σ) m) :: Comp.substArms σ arms
+    | .mk alts none m :: arms =>
+        .mk alts none (Comp.subst (upSubst (Arm.bindersOf alts) σ) m) :: Arm.substList σ arms
+    | .mk alts (some g) m :: arms =>
+        .mk alts (some (Comp.subst (upSubst (Arm.bindersOf alts) σ) g))
+          (Comp.subst (upSubst (Arm.bindersOf alts) σ) m) :: Arm.substList σ arms
 
   def Clause.substList (σ : Nat → Val) : List Clause → List Clause
     | [] => []
@@ -246,7 +267,13 @@ def Comp.instantiate (ws : List Val) (m : Comp) : Comp :=
 def Val.instantiate (ws : List Val) (v : Val) : Val :=
   Val.subst (instSubst ws) v
 
-/-! ## パターンの照合と分岐の選択（段階 A と同じ） -/
+/-! ## パターンの照合と分岐の選択（C7 で範囲・リスト・選択肢を加えた） -/
+
+/-- 範囲は Integer または Character の両端を含む。ほかの組合せは照合しない。 -/
+def Const.inRange : Const → Const → Const → Bool
+  | .integer lo, .integer hi, .integer n => decide (lo ≤ n ∧ n ≤ hi)
+  | .character lo, .character hi, .character c => decide (lo.toNat ≤ c.toNat ∧ c.toNat ≤ hi.toNat)
+  | _, _, _ => false
 
 mutual
   def Pat.matchVal : Pat → Val → Option (List Val)
@@ -255,6 +282,18 @@ mutual
     | .const c, .const c' => if c.matches c' then some [] else none
     | .con c ps, .con c' _ args =>
         if c = c' then Pat.matchList ps args else none
+    | .range lo hi, .const c => if Const.inRange lo hi c then some [] else none
+    | .list before rest after, .list elems => do
+        let n := before.length + after.length
+        if (if rest.isSome then n ≤ elems.length else n = elems.length) then
+          let left ← Pat.matchList before (elems.take before.length)
+          let right ← Pat.matchList after (elems.drop (elems.length - after.length))
+          let middle := elems.drop before.length |>.take (elems.length - n)
+          let bound := match rest with
+            | some .bind => [Val.list middle]
+            | _ => []
+          pure (left ++ bound ++ right)
+        else none
     | _, _ => none
 
   def Pat.matchList : List Pat → List Val → Option (List Val)
@@ -266,11 +305,55 @@ mutual
     | _, _ => none
 end
 
-def firstMatch (v : Val) : List (Pat × Comp) → Option (Comp × List Val)
+/-- 選択肢の束縛を分岐の変数の順に並べ替える。範囲外の番号は照合の失敗になる。 -/
+def selectSlots {α : Type} (xs : List α) : List Nat → Option (List α)
+  | [] => some []
+  | i :: is => do
+      let x ← xs[i]?
+      let ys ← selectSlots xs is
+      pure (x :: ys)
+
+theorem selectSlots_map {α β : Type} (f : α → β) (xs : List α) (slots : List Nat) :
+    selectSlots (xs.map f) slots = (selectSlots xs slots).map (List.map f) := by
+  induction slots with
+  | nil => rfl
+  | cons i is ih =>
+      simp only [selectSlots, List.getElem?_map]
+      cases xs[i]? <;> simp [ih]
+      cases selectSlots xs is <;> simp
+
+theorem selectSlots_mem {α : Type} {xs ys : List α} {slots : List Nat}
+    (h : selectSlots xs slots = some ys) : ∀ x ∈ ys, x ∈ xs := by
+  induction slots generalizing ys with
+  | nil => simp [selectSlots] at h; subst ys; simp
+  | cons i is ih =>
+      simp only [selectSlots] at h
+      cases hi : xs[i]? with
+      | none => simp [hi] at h
+      | some x =>
+          cases hs : selectSlots xs is with
+          | none => simp [hi, hs] at h
+          | some zs =>
+              simp [hi, hs] at h; subst ys
+              intro y hy
+              rcases List.mem_cons.mp hy with rfl | hy
+              · exact List.mem_of_getElem? hi
+              · exact ih hs y hy
+
+/-- 選択肢を左から調べ、一つ照合した時点で分岐を選ぶ。
+型の付いた選択肢では、照合すれば並べ替え（`selectSlots`）に失敗しない
+（`AltsTy` の順列の条件による）。 -/
+def firstAlt (v : Val) : List Alt → Option (List Val)
   | [] => none
-  | (p, m) :: arms =>
-      match Pat.matchVal p v with
-      | some ws => some (m, ws)
-      | none => firstMatch v arms
+  | alt :: alts =>
+      match Pat.matchVal alt.pat v with
+      | some ws => selectSlots ws alt.slots
+      | none => firstAlt v alts
+
+/-- ガードのない分岐の選択肢だけを網羅性に数える。 -/
+def unguardedPats : List Arm → List Pat
+  | [] => []
+  | .mk alts none _ :: arms => alts.map Alt.pat ++ unguardedPats arms
+  | .mk _ (some _) _ :: arms => unguardedPats arms
 
 end Benitoite.Release

@@ -74,7 +74,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
             }
         }
     }
-    // 依存先が失敗した定数は後続へ渡さない。参照の循環は名前解決が拒む（ADR 0123）。
+    // 依存先が失敗した定数は後続へ渡さない。参照の循環は名前解決が拒む（02-04「宣言の検査」）。
     let mut failed = BTreeSet::new();
     while !pending.is_empty() {
         let mut progress = false;
@@ -360,7 +360,7 @@ fn eval_call(d: &Decls<'_>, c: &CallExpr) -> EvalResult {
         }
         return Ok(V::Set(entries.into_iter().map(|(k, _, _)| k).collect()));
     }
-    // 警告だけに使う標準関数も、名前の綴りでなく束縛を照合する（ADR 0146）。
+    // 警告だけに使う標準関数も、名前の綴りでなく束縛を照合する（02-05「警告」）。
     let values = c
         .args
         .iter()
@@ -696,7 +696,7 @@ fn list_spans(d: &Decls<'_>, e: &Expr, map: bool) -> Vec<Span> {
     }
 }
 // 型の付いた Pair の構築だけは値が定数式でなくても鍵を調べる。普通の関数の第1引数を
-// 鍵とみなすと、定数式でない鍵にも警告してしまう（設計書 02-05「警告」、ADR 0136）。
+// 鍵とみなすと、定数式でない鍵にも警告してしまう（設計書 02-05「警告」）。
 fn known_key(d: &Decls<'_>, e: &Expr, map: bool) -> Option<(V, Span)> {
     if !map {
         return bad_shape(d, e)

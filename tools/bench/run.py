@@ -1122,7 +1122,7 @@ DEPTH_START = 10_000
 
 
 def bytecode_row(name: str, source: Path, tool: str | None) -> dict[str, str]:
-    """ベンチマークのバイトコードの大きさ（07-02「命令の長さ」）。1 命令は 8 バイトである。"""
+    """ベンチマークのバイトコードの大きさ（07-02「測る項目」）。1 命令は 8 バイトである。"""
     if tool is None:
         return {"benchmark": name, "user": "未計測（--bytecode-stats を指定していない）", "total": "—"}
     _, stdout, stderr, code = run_process([tool, str(source)], os.environ.copy(), capture_stdout=True)
@@ -1157,7 +1157,7 @@ def depth_reached(benitoite: str, depth: int) -> bool | None:
 
 
 def measure_call_depth_limit(benitoite: str) -> str:
-    """末尾でない再帰で、既定の呼び出しの情報の上限（1 GiB）に達する段数を 1% の精度で求める（ADR 0030）。"""
+    """末尾でない再帰で、既定の呼び出しの情報の上限（1 GiB）に達する段数を 1% の精度で求める（設計書 07-02「測る項目」）。"""
     low = 0
     high = DEPTH_START
     while True:

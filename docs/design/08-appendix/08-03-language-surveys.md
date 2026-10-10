@@ -1,15 +1,10 @@
 # 他の言語の調査記録
 
-- 状態: 草稿
-- 関連ADR: [0112](../decisions/0112-pascal-style-operators.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0121](../decisions/0121-pattern-extensions.md), [0122](../decisions/0122-multiline-and-raw-strings.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0127](../decisions/0127-directory-run-and-root.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0135](../decisions/0135-shebang-line-and-implicit-run.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0137](../decisions/0137-first-release-library-scope.md), [0138](../decisions/0138-crates-and-licenses-for-stdlib.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0141](../decisions/0141-http-scope-in-stdlib.md), [0142](../decisions/0142-http-api-shape.md), [0143](../decisions/0143-http-and-tls-crates.md), [0144](../decisions/0144-ioerrorkind-constructors.md), [0145](../decisions/0145-network-error.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md)
-- 未決事項: [OPEN-014](../open-issues.md#open-014), [OPEN-051](../open-issues.md#open-051), [OPEN-052](../open-issues.md#open-052), [OPEN-056](../open-issues.md#open-056)
-- 移行元: なし
-
 ## 目的と範囲
 
-構文と意味論を決めるために行った、他の言語の調査の結果を記録する。本章は事実だけを記録し、Benitoite としての決定は各節に挙げた ADR に書く。
+構文と意味論を決めるために行った、他の言語の調査の結果を記録する。本章は事実だけを記録する。各節の冒頭に、その調査を使って決めた Benitoite の事項を挙げ、決定の内容は言語仕様と処理系の各章に書く。
 
-各節の事実は、節に日付を記したものを除き、2026-09-28 に、各言語の仕様書・公式の文書・公式のソースなどの一次資料で確かめたものである。一次資料で確かめられなかった事項には【要検証】を付け、各節の末尾にまとめる。
+各節の事実は、節に日付を記したものを除き、2026-09-28 に、各言語の仕様書・公式の文書・公式のソースなどの一次資料で確かめたものである。表の「未確認」の欄は、一次資料で確かめられなかったことを表す。確かめられなかった事項の確認は、docs/todo の TODO-011 で扱う。
 
 ## 前提
 
@@ -19,7 +14,7 @@
 
 ### Pascal 系の言語のパイプ・ドット記法と演算子
 
-[ADR 0112](../decisions/0112-pascal-style-operators.md) と [ADR 0113](../decisions/0113-div-and-mod-operators.md) の判断に使った。
+等しくないの `<>`、論理演算子の `and`・`or`・`not`、整数の除算と剰余の `div`・`mod`、`/` を `Integer` に使わない（`Float` と `Decimal` に限る）ことを決めるときに使った。
 
 | 言語 | `\|>` に当たる演算子 | 利用者による新しい演算子の記号 | 後置の呼び出し |
 |---|---|---|---|
@@ -43,11 +38,6 @@
 - Ada の整数の除算は、`(-A)/B = -(A/B) = A/(-B)` を満たす（RM 4.5.5）。
 - Free Pascal の `div` と `mod` は、整数のオペランドだけを受け付ける。
 
-【要検証】
-
-- Delphi の演算子の多重定義の範囲と helper。公式の docwiki を読めなかった。
-- Modula-2 の演算子。
-
 出典
 
 - https://www.adaic.org/resources/add_content/standards/22rm/html/RM-4-1-3.html
@@ -67,7 +57,7 @@
 
 ### 関数型言語の実数の型と、10 進の小数の型
 
-[ADR 0114](../decisions/0114-decimal-type.md) の判断に使った。
+10 進の小数の基本型 `Decimal` を決めるときに使った。
 
 | 言語 | 2 進の浮動小数 | それ以外の実数の型 | 備考 |
 |---|---|---|---|
@@ -84,11 +74,6 @@
 - .NET の `Decimal` は、96 bit の整数と、符号と小数の桁数（scaling factor、0〜28）を持つ 128 bit の値である。値の範囲は ±79,228,162,514,264,337,593,543,950,335 である。小数の桁数は末尾の 0 を保ち、末尾の 0 は値に影響しない。
 - Rust のクレート `rust_decimal`（MIT License）は、`m / 10^e`（−2^96 < m < 2^96、0 ≤ e ≤ 28）の形の 128 bit の値を持つ。桁あふれを検出する演算を持つ。
 
-【要検証】
-
-- Roc の `Dec` の精度と、小数のリテラルの既定の型。
-- `rust_decimal` の除算の既定の丸め方。
-
 出典
 
 - https://ocaml.org/manual/latest/api/Stdlib.html
@@ -103,7 +88,7 @@
 
 ### 並行処理のモデル
 
-[ADR 0115](../decisions/0115-structured-io-concurrency.md) の判断に使った。
+構造化された IO の並行処理をライブラリと `with` で提供することを決めるときに使った。
 
 | 言語 | モデル | 構文かライブラリか | 構造化された並行処理 | 子の失敗と取り消し | 複数のコア |
 |---|---|---|---|---|---|
@@ -127,15 +112,6 @@
 - 「structured concurrency」の語は、Nathaniel J. Smith の文章（2018-04-25）が広めたが、同氏は Martin Sústrik の文章と libdill を先行として挙げている。
 - Rust の `Rc` は、アトミックでない参照カウントなので、スレッドの間で送れない（`Send` でない）。複数のスレッドで使うには `Arc` を使う。
 - OCaml のエフェクトハンドラは、静的なエフェクトの安全性を持たない。処理しないエフェクトは実行時に `Effect.Unhandled` になる。
-
-【要検証】
-
-- Swift の `withThrowingTaskGroup` で、子の誤りが自動で伝わるか。
-- Kotlin の `Dispatchers.Default` の並列度。
-- F# の `MailboxProcessor` と `Async.Parallel` の誤りの扱い。
-- Clojure の core.async の `<!`・`>!`・`alts!`・`chan` が関数か。
-- Koka の `std/async` の構成、取り消しと並列の扱い。
-- Unison の並行処理の基本の操作。
 
 出典
 
@@ -178,7 +154,7 @@
 
 ### エフェクトハンドラと、エフェクトの粒度と、権限の仕組み
 
-[ADR 0116](../decisions/0116-builtin-fine-grained-effects.md)、[ADR 0117](../decisions/0117-capabilities-as-effects.md)、[ADR 0118](../decisions/0118-effect-handlers.md) の判断に使った。
+IO を組み込みの細かいエフェクトに分けること、ケーパビリティの値を設けず影響の大きい操作をエフェクトで制限すること、利用者が定義するエフェクトと継続を一度だけ再開するハンドラを決めるときに使った。
 
 | 言語 | エフェクトの宣言 | ハンドラ | 型のエフェクト | IO の粒度 | 継続の再開 |
 |---|---|---|---|---|---|
@@ -220,13 +196,6 @@
 
 - Deno の文書は、`--allow-run` と `--allow-ffi` がサンドボックスの外に出られること、`--allow-write` と `--allow-run` の組み合わせを `--allow-all` と同じに扱うべきことを述べる。
 
-【要検証】
-
-- Koka の現在の文書に `handle` のキーワードがないこと。Koka・Effekt・Unison・Eff・Flix・Ante のうち、表で「—」とした欄。
-- Unison の継続の再開の回数。
-- Roc のテストでエフェクトを差し替える方法。
-- Deno の `--allow-sys`。
-
 出典
 
 - https://koka-lang.github.io/koka/doc/book.html
@@ -254,7 +223,7 @@
 
 ### テストの書き方
 
-[ADR 0119](../decisions/0119-attributes-test-and-deprecated.md) と [ADR 0120](../decisions/0120-test-functions-and-assert-effect.md) の判断に使った。
+テストを `@test` を付けた関数とし、期待の確認を組み込みのエフェクト `Assert` の操作とすることを決めるときに使った。
 
 | 言語・道具 | 宣言 | 同じファイル | 期待の確認 | 失敗でテストを打ち切るか | 失敗の表示 | 名前 |
 |---|---|---|---|---|---|---|
@@ -279,16 +248,6 @@
 - テストの切り離し: Rust はテストごとのスレッド、ExUnit はテストごとのプロセスで動かし、一つの panic で全体を止めない。Zig の既定の実行器は、失敗したテストの後も続ける。Go は、一つのテストの panic でテストのプログラム全体が止まる（golang/go#47525）。
 - Roc のトップレベルの `expect` は `roc test` で動かす。ブロックの中の `expect` は、`--opt=speed` のビルドでは取り除かれる。
 - Flix は、期待の確認をエフェクトにし、テストの実行器をそのハンドラとする。
-
-【要検証】
-
-- `roc test` が失敗したときに示す内容。
-- Flix の失敗の表示の内容と、確認の失敗でテストを打ち切るか。
-- D の既定の実行器が、失敗の後も続けるか。D の `unittest` から非公開の項目に届くか。
-- Zig で panic が実行全体を止めるか。
-- Deno の `assertEquals` が差分を示すか。
-- ppx_inline_test の失敗の表示。
-- Nim の `check` の出力の形と、`require` がプログラムを止めるのかテストだけを止めるのか。
 
 出典
 
@@ -320,7 +279,7 @@
 
 ### 関数型言語の属性の構文
 
-[ADR 0119](../decisions/0119-attributes-test-and-deprecated.md) の判断に使った。
+宣言に付ける属性の構文と、属性 `@test`・`@deprecated` を決めるときに使った。
 
 | 言語 | 属性の構文 | 形 | 主な用途 | キーワードで表すもの |
 |---|---|---|---|---|
@@ -344,19 +303,6 @@
 
 - 属性の主な用途は、非推奨、インライン化、外部の関数の呼び出しである。
 - 導出は、Haskell・PureScript・Lean・Scala 3 がキーワードで表す。OCaml だけが、前処理器による属性で表す。
-
-【要検証】
-
-- GHC の `deriving instance` の形と、DerivingStrategies・DeriveAnyClass。
-- Elixir の予約された属性の全体（`@deprecated`・`@impl`・`@compile`）と、ExUnit の `test` がマクロであること。
-- Erlang の `-deprecated` の構文。
-- Lean 4 の `@[inline]`・`@[extern]`・`@[specialize]`・`@[deprecated]` など、個々の属性の名前。
-- F# の `[<EntryPoint>]`・`[<Literal>]`、NUnit・xUnit の属性。
-- Elm に属性がないこと（公式の構文の頁を読めなかった）。
-- Roc の ability の導出の書き方と、ドキュメントコメント。
-- PureScript にプラグマの構文がないこと。
-- Flix の注釈の一覧のうち、`@Test`・`@Parallel`・`@Lazy` 以外（コンパイラのソースから得た）。
-- Unison の文書の構文、Racket に属性に当たる形がないこと。
 
 出典
 
@@ -387,7 +333,7 @@
 
 ### パターンの拡張
 
-[ADR 0121](../decisions/0121-pattern-extensions.md) の判断に使った。
+パターンのガード・コンマで並べる選択肢・範囲・リストのパターンを決めるときに使った。
 
 | 言語 | ガード | or パターンと、選択肢での束縛 | リストのパターン | 範囲のパターン |
 |---|---|---|---|---|
@@ -406,14 +352,6 @@
 
 - or パターンの束縛: OCaml・Rust・Python・Gleam・Swift は、すべての選択肢に同じ名前の束縛を求める。Haskell（GHC 9.12）と Scala は、束縛を禁じる。
 - ガードと or パターンを組み合わせると、ガードは分岐全体にかかる。Rust は、ガードが選択肢ごとに評価されうると文書に書く。
-
-【要検証】
-
-- Elixir に or パターンと範囲のパターンがないこと、ガードで `x in 1..5` を書けること。
-- F# の or パターンでの変数の束縛の規則。
-- Kotlin で、対象を持たない `when` にガードを書けるか。
-- ISO 7185 Pascal に `otherwise` があるか。
-- Ada の事実は learn.adacore.com によった。Ada RM の 5.4 節は読めなかった。
 
 出典
 
@@ -438,7 +376,7 @@
 
 ### 複数行の文字列と raw 文字列
 
-[ADR 0122](../decisions/0122-multiline-and-raw-strings.md) の判断に使った。
+`"""` の複数行の文字列と、`r"…"`・`r"""…"""` の raw 文字列を決めるときに使った。
 
 | 言語 | 区切り | インデントの除き方 | 最初と最後の改行 | エスケープ | 文字列補間 | raw の形 |
 |---|---|---|---|---|---|---|
@@ -456,20 +394,13 @@
 | Haskell（GHC 9.12.1 以降の `MultilineStrings`） | `"""…"""` | 最初の行と空白だけの行を除いて、共通の空白を除く | 先頭と末尾の改行を除く | 除いた後に処理する | なし | なし |
 | F# | `"""…"""`、逐語的な `@"…"` | 除かない | 書いたとおり | `"""` では処理しない | `$"""…{e}…"""`、`$$"""…{{e}}…"""`（F# 8） | `"""` は `"` を含められる |
 | Zig | 各行を `\\` で始める | インデントは `\\` の前にあり、内容に入らない | 最後の行の後の改行を含めない | 処理しない | なし | もともと raw |
-| Delphi 12 | `'''` と改行 … 単独の行の `'''` | 閉じる `'''` の位置で除く | 【要検証】 | 【要検証】 | なし | 奇数個（5・7 …）の引用符で `'''` を含める |
+| Delphi 12 | `'''` と改行 … 単独の行の `'''` | 閉じる `'''` の位置で除く | 未確認 | 未確認 | なし | 奇数個（5・7 …）の引用符で `'''` を含める |
 | Julia | `"""…"""` | 開く `"""` の次の行と空白だけの行を除いて、共通の空白を除く。閉じる行も数える | 開く側の直後の改行を除く | 処理する | `$x`、`$(e)` | `raw"…"` |
 | Nim | `"""…"""` | 除かない | `"""` の直後の改行を除く | 処理しない | なし（`fmt` はライブラリ） | `r"…"` |
 | Lua | `[[…]]`、`[==[…]==]` | 除かない | 開く括弧の直後の改行を飛ばす | 処理しない | なし | `=` の数を変える |
 
 - インデントの除き方は三通りである。閉じる区切りの位置で除く（Swift・C#・Elixir・Delphi）、共通の先頭を除く（Java・Julia・Haskell）、明示の関数や記号で除く（Kotlin・Scala・Zig）。
 - 閉じる区切りが単独の行にあるとき、最後の改行を内容に含めるのは Java・Python・Elixir、含めないのは Swift・C#・Haskell である。
-
-【要検証】
-
-- Roc の複数行の文字列の構文。
-- Delphi 12 の最初と最後の改行とエスケープの扱い。Delphi の事実は、公式の docwiki を読めなかったので、Embarcadero の公式ブログによった。
-- Free Pascal の複数行の文字列（バッククォートと `'''`）が、リリースされた版に含まれるか。
-- Rust の `\` と改行が、次の行の先頭の空白も除くか。
 
 出典
 
@@ -497,39 +428,27 @@
 
 ### トップレベルの定数
 
-[ADR 0123](../decisions/0123-top-level-constants.md) の判断に使った。
+トップレベルの `const` の定数と、その値を定数式に限ることを決めるときに使った。
 
 | 言語 | 書き方 | 初期化の式 | 計算する時点 | 多相 | 型の注釈 | 順序と循環 |
 |---|---|---|---|---|---|---|
 | ISO Pascal（ISO 7185） | `const N = 定数;` | 符号付きの数、ほかの定数の名前、文字列だけ。式は書けない（6.3） | 翻訳時 | なし | 書かない | 定義の中で自分の名前を使えない（6.3） |
 | Free Pascal | `N = 式;`、型付きの `N : T = 値;` | 普通の定数は、`+ - * / not and or div mod ord chr sizeof pi int trunc round frac odd` などを使うコンパイル時の式に限り、順序型・集合・実数・文字・文字列などの型に限る。型付きの定数は配列・レコードなども持てる | 普通の定数はコンパイル時。型付きの定数はプログラムの開始時に初期化し、`{$J+}`（既定）では実行中に書き換えられる | なし | 普通の定数は省略できる。型付きの定数は必須 | — |
-| Ada | 名前付きの数 `N : constant := 静的な式;`、定数のオブジェクト `C : constant T := 式;` | 名前付きの数は静的な式に限り、型は universal_integer か universal_real になる（RM 3.3.2）。定数のオブジェクトは任意の式（RM 3.3.1） | 名前付きの数は静的。定数のオブジェクトは elaboration の時点 | なし | 名前付きの数は書かない。オブジェクトは必須 | 【要検証】 |
+| Ada | 名前付きの数 `N : constant := 静的な式;`、定数のオブジェクト `C : constant T := 式;` | 名前付きの数は静的な式に限り、型は universal_integer か universal_real になる（RM 3.3.2）。定数のオブジェクトは任意の式（RM 3.3.1） | 名前付きの数は静的。定数のオブジェクトは elaboration の時点 | なし | 名前付きの数は書かない。オブジェクトは必須 | 未確認 |
 | OCaml | 構造の中の `let x = e` | 任意の式（作用を含む） | モジュールの初期化の時点で、構造の中に書いた順に計算する | value restriction の下で多相になる | 省略できる | 後の定義だけが前の定義を参照できる |
-| F# | `let x = e`、`[<Literal>] let X = e` | `let` は任意の式で、実行時に計算する。`[<Literal>]` はコンパイル時の定数で、関数を使えない。大文字で始めればパターンに書ける | `let` は実行時、`[<Literal>]` はコンパイル時 | 【要検証】 | 省略できる | 【要検証】 |
+| F# | `let x = e`、`[<Literal>] let X = e` | `let` は任意の式で、実行時に計算する。`[<Literal>]` はコンパイル時の定数で、関数を使えない。大文字で始めればパターンに書ける | `let` は実行時、`[<Literal>]` はコンパイル時 | 未確認 | 省略できる | 未確認 |
 | Haskell 2010 | `x = e`（`x :: T` を添えられる） | 任意の純粋な式 | 非正格（必要になったとき） | 多相になる。型の注釈のないパターン束縛には単相性制限が働く（4.5.5） | 省略できる | 順序によらない。依存の解析で相互再帰する束縛をまとめる（4.5.1） |
-| Elm | `x = e` | 任意の式（作用はない） | 【要検証】 | 【要検証】 | 省略できる | 値の再帰は、自分に戻るまでにラムダを挟まない限り誤り |
-| Gleam | `const x = …`、`pub const` | リテラルの値に限り、関数を使えない | 文書に定めがない | 【要検証】 | 【要検証】 | 【要検証】 |
-| Rust | `const N: T = e;`、`static N: T = e;` | 定数式 | コンパイル時。自由な `const` は、panic を見つけるために必ずコンパイル時に計算する。`const` は使う箇所ごとに埋め込み、`static` は一つの番地を持つ | 自由な `const` は総称にできない | 必須 | 【要検証】 |
+| Elm | `x = e` | 任意の式（作用はない） | 未確認 | 未確認 | 省略できる | 値の再帰は、自分に戻るまでにラムダを挟まない限り誤り |
+| Gleam | `const x = …`、`pub const` | リテラルの値に限り、関数を使えない | 文書に定めがない | 未確認 | 未確認 | 未確認 |
+| Rust | `const N: T = e;`、`static N: T = e;` | 定数式 | コンパイル時。自由な `const` は、panic を見つけるために必ずコンパイル時に計算する。`const` は使う箇所ごとに埋め込み、`static` は一つの番地を持つ | 自由な `const` は総称にできない | 必須 | 未確認 |
 | Go | `const X [T] = e`、`var x = e` | `const` は定数式（リテラル、定数、変換、`len`・`min`・`max` などの一部の組み込み関数）。`var` は任意の式 | `const` はコンパイル時。パッケージの `var` はパッケージの初期化の時点 | 総称の定数はない | 省略できる（型のない定数になる） | `var` は依存の順に初期化し、初期化が循環すると誤り |
-| Kotlin | `const val X = e`、`val x = e` | `const val` はトップレベルか `object` の中に置き、String と基本型の値に限り、値はコンパイル時に決まる | `const val` はコンパイル時で、使う箇所に埋め込む | なし | 省略できる | 【要検証】 |
-| Swift | グローバルな `let x[: T] = e` | 任意の式。宣言で値を与えなければならない | グローバルな定数と変数は、初めて使うときに計算する（`lazy` を付けなくてよい） | なし | 推論できれば省略できる | 【要検証】 |
+| Kotlin | `const val X = e`、`val x = e` | `const val` はトップレベルか `object` の中に置き、String と基本型の値に限り、値はコンパイル時に決まる | `const val` はコンパイル時で、使う箇所に埋め込む | なし | 省略できる | 未確認 |
+| Swift | グローバルな `let x[: T] = e` | 任意の式。宣言で値を与えなければならない | グローバルな定数と変数は、初めて使うときに計算する（`lazy` を付けなくてよい） | なし | 推論できれば省略できる | 未確認 |
 | Zig | コンテナの `const x = e;` | コンパイル時に計算できる式（名前空間の変数の初期化は暗黙にコンパイル時） | コンパイル時 | 型や値を返すコンパイル時の関数で総称にする | 省略できる | 順序によらず、使われたものだけを解析する |
-| Roc | トップレベルの `x = e` | 【要検証】 | 新しいコンパイラは、トップレベルの定数をコンパイル時に計算する | 【要検証】 | 省略できる | 【要検証】 |
+| Roc | トップレベルの `x = e` | 未確認 | 新しいコンパイラは、トップレベルの定数をコンパイル時に計算する | 未確認 | 省略できる | 未確認 |
 | Elixir | モジュールの属性 `@name 値` | 関数の呼び出しを含む任意の式。同じモジュールの関数は呼べない | コンパイル時。関数の中で読むと、その時点の値が埋め込まれる | —（動的型付け） | — | 書いた順。設定の前に読むと警告 |
 
 - 値をコンパイル時に計算できる式に限る言語（Pascal・Free Pascal の普通の定数、Rust、Go の `const`、Kotlin の `const val`、F# の `[<Literal>]`、Gleam、Zig）と、任意の式を読み込みの時点か初めて使うときに計算する言語（OCaml、Go の `var`、Ada の定数のオブジェクト、Swift、Haskell）に分かれる。
-
-【要検証】
-
-- Delphi の定数。公式の docwiki を読めなかった。検索結果の抜粋では、真の定数はプログラムを実行せずに計算できる式に限り、型付きの定数は配列・レコードを持てるが定数式には書けない。
-- Ada のライブラリの定数の elaboration の順序。
-- F# のトップレベルの `let` の多相と、モジュールの初期化の順序。
-- Elm のトップレベルの値を計算する時点。
-- Gleam の定数が、ほかの定数・レコード・リストを参照できるか。型の注釈の書き方。
-- Rust の `const` と `static` の循環の扱い。
-- Kotlin の JVM でのトップレベルの `val` の初期化の時点。
-- Swift の `main.swift` のトップレベルのコードの扱いと、循環の扱い。
-- Roc のトップレベルの定義の順序と作用。
 
 出典
 
@@ -555,33 +474,26 @@
 
 ### 型の別名
 
-[ADR 0124](../decisions/0124-type-aliases.md) の判断に使った。
+元の型と置き換えられる型の別名 `type 名前 = 型` を決めるときに使った。
 
 | 言語 | 別名の書き方 | 元の型と置き換えられるか | 型パラメータ | 再帰 | 元の型と区別する型の作り方 |
 |---|---|---|---|---|---|
 | ISO Pascal | `type T = Integer;` | 型の名前を右辺に書いた定義は、同じ型を表す（6.4.1） | なし | 右辺に自分の名前を書けない（ポインタの指す型を除く） | 新しい構造の型は、ほかのどの型とも別の型になる |
 | Ada | `subtype S is T [制約];` | subtype は新しい型を定義しない（RM 3.2.2） | — | — | `type D is new T;`（派生型。明示の変換が要る。RM 3.4） |
 | Haskell 2010 | `type T a = t` | 完全に置き換えられる | 持てる。部分適用はできない | 代数的データ型を挟まない限り禁じる（4.2.2） | `newtype N = N t`（表現を変えずに別の型を作る。4.2.3） |
-| OCaml | `type t = int` | 略記であり、型付けで置き換えられる | 持てる | 【要検証】 | 【要検証】 |
-| F# | `type A = T` | 置き換えられ、CIL には残らない | 持てる | 【要検証】 | 【要検証】 |
-| Elm | `type alias A = …` | 置き換えられる | 【要検証】 | 禁じる（展開が終わらないため。`type` を使うよう示す） | カスタムの `type`。レコードの別名は構成子の関数も作る |
-| Gleam | `type A = B`、`pub type A = B` | 新しい型を作らず、同じ型である。使いすぎないよう勧めている | 【要検証】 | 【要検証】 | カスタムの型。`pub opaque type` は構成子を隠す |
-| Rust | `type A<T> = …;` | 同じ型の別の名前 | 持てる | 【要検証】 | 構造体で包む（newtype）。タプル構造体の別名を通して構成子を呼べない |
-| Go | `type A = B` | 同じ型 | Go 1.24 から持てる。`type A[P any] = P` は書けない | 【要検証】 | `type A B`（定義型。元の型と別の型で、メソッドを引き継がない） |
-| Kotlin | `typealias A<T> = …` | 新しい型を作らず、置き換えられる。トップレベルと入れ子に書け、局所には書けない | 持てる | 【要検証】 | 【要検証】 |
-| Swift | `typealias A<T> = …` | 新しい型を作らない | 持てる。制約は元の型と一致しなければならない | 【要検証】 | 【要検証】 |
-| Scala 3 | `type A = …`、`opaque type L = Double` | `type` は置き換えられる（詳細は【要検証】） | 【要検証】 | 【要検証】 | `opaque type` は、定義した範囲の中だけで別名として扱い、外からは中身を見せない |
-| TypeScript | `type A = …` | 別名は別名にすぎず、元の型を書いたのと同じ | 【要検証】 | 【要検証】 | 名前で区別する型はない |
+| OCaml | `type t = int` | 略記であり、型付けで置き換えられる | 持てる | 未確認 | 未確認 |
+| F# | `type A = T` | 置き換えられ、CIL には残らない | 持てる | 未確認 | 未確認 |
+| Elm | `type alias A = …` | 置き換えられる | 未確認 | 禁じる（展開が終わらないため。`type` を使うよう示す） | カスタムの `type`。レコードの別名は構成子の関数も作る |
+| Gleam | `type A = B`、`pub type A = B` | 新しい型を作らず、同じ型である。使いすぎないよう勧めている | 未確認 | 未確認 | カスタムの型。`pub opaque type` は構成子を隠す |
+| Rust | `type A<T> = …;` | 同じ型の別の名前 | 持てる | 未確認 | 構造体で包む（newtype）。タプル構造体の別名を通して構成子を呼べない |
+| Go | `type A = B` | 同じ型 | Go 1.24 から持てる。`type A[P any] = P` は書けない | 未確認 | `type A B`（定義型。元の型と別の型で、メソッドを引き継がない） |
+| Kotlin | `typealias A<T> = …` | 新しい型を作らず、置き換えられる。トップレベルと入れ子に書け、局所には書けない | 持てる | 未確認 | 未確認 |
+| Swift | `typealias A<T> = …` | 新しい型を作らない | 持てる。制約は元の型と一致しなければならない | 未確認 | 未確認 |
+| Scala 3 | `type A = …`、`opaque type L = Double` | `type` は置き換えられる（詳細は未確認） | 未確認 | 未確認 | `opaque type` は、定義した範囲の中だけで別名として扱い、外からは中身を見せない |
+| TypeScript | `type A = …` | 別名は別名にすぎず、元の型を書いたのと同じ | 未確認 | 未確認 | 名前で区別する型はない |
 
 - 誤りの表示に別名を示すかを文書で定めていたのは TypeScript だけであり、別名は誤りの表示に「出ることも出ないこともある」とする。
-- Delphi は `type T = Integer;` を同じ型、`type T = type Integer;` を別の型とする（公式の docwiki の検索結果の抜粋による。【要検証】）。
-
-【要検証】
-
-- Delphi の型の別名（上記）。公式の docwiki を読めなかった。
-- OCaml・Rust・Go・Kotlin・Swift・TypeScript・F#・Gleam の別名の再帰の扱い。
-- OCaml の private 型と抽象型、F# の単一の構成子の共用体、Kotlin の value class、Swift の構造体で包む書き方を、元の型と区別する型の作り方として文書が勧めているか。
-- Elm・Gleam・Scala 3・TypeScript の別名の型パラメータ。
+- Delphi は `type T = Integer;` を同じ型、`type T = type Integer;` を別の型とする（公式の docwiki の検索結果の抜粋による。未確認）。
 
 出典
 
@@ -603,37 +515,26 @@
 
 ### ドキュメントコメント
 
-[ADR 0125](../decisions/0125-doc-comments.md) の判断に使った。
+宣言の説明を `///`、モジュールの説明を `//!` で書くドキュメントコメントを決めるときに使った。
 
 | 言語 | 書き方 | 置く位置 | 説明する宣言のない位置 | 中身の書式 | 例をテストとして実行するか | 構造化した項目 | コンパイラが読むか |
 |---|---|---|---|---|---|---|---|
 | Rust | `///`・`/** */`（外側）、`//!`・`/*! */`（内側）。`#[doc]` の属性に移す | 宣言の前。内側の形は囲む項目の説明 | 誤り（E0585 など）か、位置によって警告（`unused_doc_comments`） | Markdown | する（`cargo test --doc`） | なし（`# Examples` の見出しの慣習） | 読む（属性として）。表示は rustdoc |
-| Gleam | `///`（宣言）、`////`（モジュール） | `///` は型か関数の直前、`////` はモジュールの先頭 | 【要検証】 | 【要検証】 | 【要検証】 | 【要検証】 | 【要検証】 |
-| Elm | `{-\| … -}` | モジュールの説明は `module` の行の後、宣言の説明は宣言の前。`@docs` で項目を並べる | 【要検証】 | Markdown | 【要検証】 | `@docs` | 公開するパッケージは、説明のないモジュールを登録できない |
+| Gleam | `///`（宣言）、`////`（モジュール） | `///` は型か関数の直前、`////` はモジュールの先頭 | 未確認 | 未確認 | 未確認 | 未確認 | 未確認 |
+| Elm | `{-\| … -}` | モジュールの説明は `module` の行の後、宣言の説明は宣言の前。`@docs` で項目を並べる | 未確認 | Markdown | 未確認 | `@docs` | 公開するパッケージは、説明のないモジュールを登録できない |
 | Haskell（Haddock） | `-- \|`（前）、`-- ^`（後） | 宣言の前か後 | GHC の `-Winvalid-haddock`（9.0 から）が、`-haddock` を付けたときに、無効な位置のコメントを捨てたと警告する | Haddock の記法 | Haddock は実行しない | `@since` など | `-haddock` を付けると GHC が読む |
 | OCaml | `(** … *)` | 項目の直前か直後。前後に空行を置いたものは独立の説明 | 警告 50 | odoc の記法 | odoc は実行しない | `@param`・`@return`・`@raise`・`@since`・`@deprecated`・`@see` | 読む（構文解析で `ocaml.doc` の属性に移す） |
 | Go | 普通の `//` のコメント | パッケージ・定数・関数・型・変数の宣言の直前に、空行を挟まずに置く | 普通のコメントとして扱う | 見出し、箇条書き、字下げしたコード、`[Name]` のリンク。gofmt が整える | `_test.go` の `ExampleXxx` 関数。`// Output:` を比べ、それがなければコンパイルだけする | なし | go/doc と gofmt が読む |
-| Kotlin | `/** */`（KDoc） | 宣言の前 | 【要検証】 | Markdown、`[name]` のリンク | 【要検証】 | `@param`・`@return`・`@throws`・`@property`・`@see`・`@since` など | 別の道具（Dokka）が読む |
-| Swift | `///`・`/** */` | 宣言の前。最初の行を要約とする | 【要検証】 | Markdown | 【要検証】 | `- Parameters:`・`- Returns:`・`- Throws:` の箇条書き | 表示は DocC。コンパイラが読むかは【要検証】 |
-| Zig | `///`（ちょうど三つ）、`//!`（トップレベル） | `//!` は名前空間の先頭 | コンパイルの誤り | 【要検証】 | する（名前を付けた `test` のブロックを doctest として示し、`zig test` で確かめる） | なし | 読む（パッケージの文書を作る） |
+| Kotlin | `/** */`（KDoc） | 宣言の前 | 未確認 | Markdown、`[name]` のリンク | 未確認 | `@param`・`@return`・`@throws`・`@property`・`@see`・`@since` など | 別の道具（Dokka）が読む |
+| Swift | `///`・`/** */` | 宣言の前。最初の行を要約とする | 未確認 | Markdown | 未確認 | `- Parameters:`・`- Returns:`・`- Throws:` の箇条書き | 表示は DocC。コンパイラが読むかは未確認 |
+| Zig | `///`（ちょうど三つ）、`//!`（トップレベル） | `//!` は名前空間の先頭 | コンパイルの誤り | 未確認 | する（名前を付けた `test` のブロックを doctest として示し、`zig test` で確かめる） | なし | 読む（パッケージの文書を作る） |
 | Elixir | `@moduledoc`・`@doc`・`@typedoc` | `def` の前 | 非公開の関数の `@doc` は警告（中身は捨てる） | Markdown | する（ExUnit.DocTest が `iex>` の例を実行する） | `## Examples` の慣習 | 読む（バイトコードに保存し、`Code.fetch_docs/1` で読める） |
 | Python | 最初の文に置いた文字列リテラル（docstring） | モジュール・関数・クラス・メソッド | ほかの位置の文字列は `__doc__` にならないだけ | 慣習による | する（`doctest` のモジュールが `>>>` の対話を実行する） | 慣習による | 読む（`__doc__`） |
-| Julia | 対象の前の文字列リテラル | 空行やコメントを挟まない | 【要検証】 | Markdown | ` ```jldoctest ` のブロックを Documenter.jl（別のパッケージ）が実行する | `# Arguments`・`# Examples` の慣習 | 実行時に説明を対象に結び付ける |
+| Julia | 対象の前の文字列リテラル | 空行やコメントを挟まない | 未確認 | Markdown | ` ```jldoctest ` のブロックを Documenter.jl（別のパッケージ）が実行する | `# Arguments`・`# Examples` の慣習 | 実行時に説明を対象に結び付ける |
 | D | `///`・`/** */`・`/++ +/` | 宣言の前、または同じ行の右。`module` の前はモジュールの説明 | 宣言に結び付かない説明は無視する | Ddoc のマクロと Markdown に似た記法 | `///` を付けた `unittest` のブロックを例として文書に入れる | `Params:`・`Returns:`・`Throws:`・`Examples:` など | 読む（`dmd -D`） |
 
 - 宣言の前の `///` を説明とするのは Rust・Swift・Zig・Gleam・D である。モジュールの説明は、Rust と Zig が `//!`、Gleam が `////` で書く。
 - 説明する宣言のない位置の説明を、Zig は誤りに、Rust は位置によって誤りか警告に、OCaml と Haskell（GHC）は警告にする。Go・D は普通のコメントとして扱うか無視する。
-
-【要検証】
-
-- Delphi の XML の説明のコメント（`///` と `<summary>`・`<param>`・`<returns>`）。公式の docwiki を読めず、検索結果の抜粋では、警告 W1207・W1208 が引数の説明の過不足を示す。
-- Free Pascal の説明の書き方（fpdoc の別ファイルの XML か）。
-- Haskell の `>>>` の例を別の道具（doctest）が実行すること。
-- Gleam の置く位置を誤った説明の扱い、中身の書式、例の実行、コンパイラが読むか。
-- Elm の説明の例を実行するか。
-- Kotlin・Swift の置く位置を誤った説明の扱いと、例の実行。Kotlin の `@sample` を実行するか。
-- Julia の対象のない説明の扱い。
-- Zig の説明の中身の書式。
 
 出典
 
@@ -660,25 +561,25 @@
 
 ### ソースファイルの配置と起動
 
-[ADR 0126](../decisions/0126-import-by-module-name.md)、[ADR 0127](../decisions/0127-directory-run-and-root.md)、[ADR 0131](../decisions/0131-script-directory-and-permission-base.md) の判断に使った。
+モジュールの名前を根のディレクトリからのパスで決めること、ディレクトリを指定した実行で `main.bnt` から始めて設定ファイルを設けないこと、実行を始めるスクリプトのディレクトリを取得する関数を決めるときに使った。
 
 | 言語 | 一つのファイルの実行と入口 | 手元のファイルの取り込みの基準 | ディレクトリの実行と入口 | 設定ファイル | 一つのファイルに依存を書く仕組み |
 |---|---|---|---|---|---|
 | Python | `python f.py`。スクリプトのディレクトリを `sys.path` の先頭に置く（`-m`・`-c` では作業ディレクトリ） | `sys.path` を探す。相対の import はパッケージの中だけ | `python dir/` は `__main__.py` を実行する。`python -m pkg` は `pkg.__main__` | `pyproject.toml` | あり（PEP 723 のインラインのメタデータ。`uv run` は周りのプロジェクトの依存を使わない） |
-| Node | 入口のパスは作業ディレクトリから解決する | CJS は呼ぶ側のファイルのディレクトリから。ESM は取り込む側のモジュールから、拡張子が必須で、ディレクトリは取り込めない | `package.json` の `main`、次に `index.js`。ディレクトリをモジュールとする形は「Legacy」 | `package.json`。権限はコマンドラインのオプション | 見つからなかった（【要検証】） |
-| Deno | `deno run main.ts`（URL・`npm:` も可） | 取り込む側のモジュールから。拡張子は必須 | 【要検証】 | `deno.json`。作業ディレクトリとその親を探す。名前付きの `permissions` の組を書ける | あり（import に `npm:`・`jsr:`・URL を書く） |
+| Node | 入口のパスは作業ディレクトリから解決する | CJS は呼ぶ側のファイルのディレクトリから。ESM は取り込む側のモジュールから、拡張子が必須で、ディレクトリは取り込めない | `package.json` の `main`、次に `index.js`。ディレクトリをモジュールとする形は「Legacy」 | `package.json`。権限はコマンドラインのオプション | 見つからなかった（未確認） |
+| Deno | `deno run main.ts`（URL・`npm:` も可） | 取り込む側のモジュールから。拡張子は必須 | 未確認 | `deno.json`。作業ディレクトリとその親を探す。名前付きの `permissions` の組を書ける | あり（import に `npm:`・`jsr:`・URL を書く） |
 | Ruby | `ruby f.rb` | `require_relative` は取り込む側のファイルのディレクトリから。`./` で始まる `require` は作業ディレクトリから | なし | `Gemfile` | あり（`bundler/inline`） |
-| Perl | `perl f.pl` | `@INC` を探す。5.26 で作業ディレクトリ `.` を外した。`FindBin` でスクリプトのディレクトリを得る | なし | — | 見つからなかった（【要検証】） |
+| Perl | `perl f.pl` | `@INC` を探す。5.26 で作業ディレクトリ `.` を外した。`FindBin` でスクリプトのディレクトリを得る | なし | — | 見つからなかった（未確認） |
 | Lua | `lua script.lua` | `package.path`。既定は作業ディレクトリの `./?.lua` | なし | LuaRocks の `.rockspec` | なし |
 | Go | `go run f.go`。一つのファイルの操作は勧めない | モジュールのパスとディレクトリ。パッケージはディレクトリ | `go run .`。入口は `package main` の `func main` | `go.mod`。作業ディレクトリを含むモジュールが主モジュール | なし |
 | Rust | `cargo -Zscript f.rs` は不安定（Cargo 1.98 でも `-Zscript`） | `mod foo;` は宣言したモジュールの隣の `foo.rs` | `cargo run`。`src/main.rs`、`src/bin/*`、`default-run` | `Cargo.toml`（作業ディレクトリかその親） | 不安定な `---cargo` の前書き |
-| Julia | `julia f.jl`。1.11 から `@main` | `include` は取り込む側のファイルのディレクトリから | `julia -m Package` | `Project.toml` | 見つからなかった（【要検証】） |
+| Julia | `julia f.jl`。1.11 から `@main` | `include` は取り込む側のファイルのディレクトリから | `julia -m Package` | `Project.toml` | 見つからなかった（未確認） |
 | Elixir | `elixir f.exs` | `Code.require_file` は作業ディレクトリから | `mix run` | `mix.exs` | あり（`Mix.install`。Mix のプロジェクトの中では呼べない） |
 | Gleam | 一つのファイルは実行できない | `src/` の下のパスがモジュールの名前 | `gleam run` はパッケージと同じ名前のモジュールの `main` | `gleam.toml` | なし |
 | Kotlin | `kotlin f.main.kts` | `@file:Import` はスクリプトのディレクトリから | —（Gradle は調べていない） | — | あり（`@file:DependsOn`） |
 | Swift | `swift f.swift`（インタプリタのモード） | ファイルの import はない。同じモジュールのファイルは互いに見える | `swift run`。`main.swift` か `@main` | `Package.swift` | なし |
 | Dart | `dart run tool/debug.dart` | 相対パス、`package:`、`dart:` | パッケージの `bin/<パッケージ名>.dart` | `pubspec.yaml` | なし |
-| Racket | `racket f.rkt`。`main` の下位モジュールがあれば実行する | 取り込む側のファイルから | なし | 【要検証】 | なし |
+| Racket | `racket f.rkt`。`main` の下位モジュールがあれば実行する | 取り込む側のファイルから | なし | 未確認 | なし |
 | PowerShell | `pwsh -File f.ps1` | `using module ./x` はスクリプトから。`$PSScriptRoot` でスクリプトのディレクトリを得る | — | — | `#Requires` は導入済みのものを読むだけで、取得しない |
 | Roc | `roc main.roc`。引数がなければ `main.roc`。入口はヘッダの `app [main!]` | 基準のディレクトリから（下の注） | 同左 | 設定ファイルはない。依存はアプリケーションのヘッダに書く | あり（ヘッダが設定ファイルを兼ねる） |
 
@@ -703,15 +604,6 @@ Agent Skills の文書は、次のとおりである。
 - ディレクトリの入口は、決まった名前のファイル、設定ファイルの欄、名前の規則のどれかで決める。
 - 設定ファイルを作業ディレクトリから親へ辿って探す言語（Deno、Rust、Go）では、起動した場所によって効く設定が変わりうる。
 - 一つのファイルに依存を書く仕組みは、周りのプロジェクトの設定を使わないか、同時に使うことを禁じることが多い。
-
-【要検証】
-
-- `deno run` と `bun run` にディレクトリを渡したときの振る舞い。
-- Node・Perl・Lua・Julia・Swift・Dart・Racket に、一つのファイルに依存を書く仕組みがないこと。
-- Racket の `info.rkt`、PowerShell の `.psd1` の欄。
-- Nushell の `use` の「current directory」が作業ディレクトリかスクリプトのディレクトリか。
-- Roc の取り込みの基準のディレクトリが、取り込む側のファイルのディレクトリであること。Roc の文書は新しいコンパイラのもので、変わりうる。
-- Agent Skills で、Skill が自分の実行ファイル（処理系）を同梱して実行できるか。
 
 出典
 
@@ -753,7 +645,7 @@ Agent Skills の文書は、次のとおりである。
 
 ### import の書き方
 
-[ADR 0126](../decisions/0126-import-by-module-name.md) の判断に使った。
+`import` でモジュールの名前を書いて取り込む形を決めるときに使った。
 
 | 言語 | 取り込む対象 | 使う側の名前を決める側 | 既定の修飾 | 拡張子と基準 | ファイルが自分の名前を宣言するか |
 |---|---|---|---|---|---|
@@ -788,17 +680,6 @@ Agent Skills の文書は、次のとおりである。
 - 修飾しない取り込みで名前が重なったとき、Pascal・Delphi・F# の `open` は後の名前が黙って勝ち、Ada は見えなくなり、Racket・Julia・Nim は誤りにする。
 - Gleam・Elm・Elixir・OCaml の文書は、修飾して使うことを勧める。
 
-【要検証】
-
-- PHP の `use` がファイルを読まないこと。
-- Perl のパッケージ名とファイル名の一致が強制されないこと。
-- Free Pascal が `unit Foo;` とファイル名の一致を求めるか。Delphi の `in` の相対パスの基準。
-- Elm がパスと一致しないモジュールの名前を誤りにするか。
-- Dart の相対の URI が、取り込む側のライブラリを基準にすること。
-- Swift に取り込みの別名がないこと。
-- Roc の手元の取り込みの基準のディレクトリと、標準ライブラリの取り込み方。
-- Ada の `package X renames Y` による別名。
-
 出典
 
 - https://docs.python.org/3/reference/import.html
@@ -831,7 +712,7 @@ Agent Skills の文書は、次のとおりである。
 
 ### 組み込みのエフェクトの名前
 
-[ADR 0129](../decisions/0129-effects-declared-in-modules.md) と [ADR 0130](../decisions/0130-builtin-effect-names-and-placement.md) の判断に使った。
+エフェクトをモジュールの中で宣言してその操作をモジュールの関数とすること、組み込みのエフェクトの名前と置き場所（`Benitoite.IO` の各モジュール、`IO.All`）を決めるときに使った。
 
 | 言語 | 組み込みのエフェクトの名前の定義 | 処理系の照合の仕方 | 特別な扱い | 注釈の書き方 |
 |---|---|---|---|---|
@@ -849,12 +730,6 @@ Agent Skills の文書は、次のとおりである。
 - エフェクトの名前をキーワードや文法の規則にした言語はない。予約語は、エフェクトを宣言する語（Koka と F\* の `effect`、Flix の `eff`、OCaml の `effect`）だけである。
 - 名前は prelude や標準ライブラリで宣言し、処理系は綴りではなく、修飾名・内部の識別子・ハッシュで照合する。
 - 特別な扱いは、入口の型、ハンドラで処理できない基本のエフェクト、推論の規則に集まる。複数のエフェクトをまとめた名前は、ライブラリの普通の別名である（Koka の `io`、F\* の `ML`）。
-
-【要検証】
-
-- 利用者が同じ名前のエフェクトや型を定義したときの、GHC・Koka・Flix・F\*・Idris 2 の振る舞い（修飾名と内部の識別子での照合からの推定で、試していない）。
-- Roc の処理系が `!` の付け方を検査するか。
-- Eff・Frank・Scala 3・ZIO は調べていない。
 
 出典
 
@@ -881,40 +756,31 @@ Agent Skills の文書は、次のとおりである。
 
 ### prelude と標準ライブラリ
 
-[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md) の判断に使った。
+標準ライブラリを `Benitoite` の名前空間に置き、prelude を import なしで使える部分とすることを決めるときに使った。
 
 | 言語 | import なしで使えるもの | IO を含むか | import が要るものと範囲 | 根の名前 | prelude を外す手段 |
 |---|---|---|---|---|---|
 | Haskell | `Prelude` の修飾しない名前 | コンソールもファイルも含む | `Data.List` など。`Data.Map` は別パッケージ | `Data.`・`Control.`・`System.` | `NoImplicitPrelude` |
-| Elm | `Basics`・`List`・`Maybe`・`Result`・`String` などのモジュール | 含まない | `Dict`・`Set` など。最小限 | 平ら | 【要検証】 |
+| Elm | `Basics`・`List`・`Maybe`・`Result`・`String` などのモジュール | 含まない | `Dict`・`Set` など。最小限 | 平ら | 未確認 |
 | Gleam | 型と構成子だけ。関数はない | 含まない | すべての関数（`gleam/list` など）。標準ライブラリは別のパッケージで、版を持つ | `gleam/` | 標準ライブラリは使わなくてよい |
-| Roc | 組み込みのモジュール（例から推定） | 含まない（プラットフォームが提供） | プラットフォームとパッケージ | 平ら | 【要検証】 |
+| Roc | 組み込みのモジュール（例から推定） | 含まない（プラットフォームが提供） | プラットフォームとパッケージ | 平ら | 未確認 |
 | OCaml | `Stdlib` を自動で開く。`List.map` のように修飾して使う | コンソールもファイルも含む | 約 70 のモジュール | `Stdlib.` | `-nopervasives`・`-nostdlib` |
-| F# | `FSharp.Core` などを自動で開く | コンソール（printf）だけ | .NET のライブラリ | `FSharp.` | 【要検証】 |
+| F# | `FSharp.Core` などを自動で開く | コンソール（printf）だけ | .NET のライブラリ | `FSharp.` | 未確認 |
 | Rust | 型・トレイトなどの修飾しない名前。`std::` は完全な名前で使える | マクロだけ | `std::collections`・`std::fs` など。正規表現・JSON・HTTP は含めない | `core`・`alloc`・`std` | `no_implicit_prelude`、`no_std` |
 | PureScript | 何もない | — | prelude も別のパッケージ | `Data.`・`Control.` | — |
 | Idris 2 | `Prelude` | コンソールだけ | base・contrib | Haskell に近い | `--no-prelude` |
 | Lean 4 | `Init` | コンソールもファイルも含む | `Std`（HTTP・非同期を含む）、Batteries | `Std.` | `prelude` の語（処理系の実装用） |
-| Koka | `std/core` の名前 | コンソールだけ | `std/os/file` など | `std/` | 【要検証】 |
-| Flix | 小さな Prelude。`List.map` などは修飾して使える（明文は【要検証】） | コンソールだけ | 小さいが一通りそろう | 平ら | 標準ライブラリを差し替えられる |
+| Koka | `std/core` の名前 | コンソールだけ | `std/os/file` など | `std/` | 未確認 |
+| Flix | 小さな Prelude。`List.map` などは修飾して使える（明文は未確認） | コンソールだけ | 小さいが一通りそろう | 平ら | 標準ライブラリを差し替えられる |
 | Elixir | `Kernel`。すべてのモジュールを完全な名前で使える | `IO.puts`・`File.*`（import 不要） | 何でもそろう（1.18 から `JSON`） | `Elixir.` | `import Kernel, except:` |
 | Scala 3 | `java.lang._`・`scala._`・`Predef._` | コンソールだけ | JVM のライブラリ | `scala.` | `-Yno-imports`・`-Yno-predef` |
 | Clojure | `clojure.core` | コンソールもファイルも含む | `clojure.string` など。JSON は含めない | `clojure.` | `:refer-clojure :exclude` |
-| Unison | import の段がない。`base` をプロジェクトに入れ、名前の末尾で引く | 【要検証】 | ライブラリを導入する | `base.` | 【要検証】 |
+| Unison | import の段がない。`base` をプロジェクトに入れ、名前の末尾で引く | 未確認 | ライブラリを導入する | `base.` | 未確認 |
 
 - 小さな prelude と、import する標準ライブラリを組み合わせる言語が多い（Haskell、Rust、Idris、Koka、Gleam、Elm、Flix）。Rust は「ほとんどすべてのプログラムが使うものに限り、できるだけ小さく保つ」、Flix は「非常によく使うものだけを入れる」と書く。
 - 標準ライブラリを使う形は、修飾して使うときにも import を要する形（Haskell、Gleam、Idris、Koka、Clojure、Lean）と、import なしに完全な名前で使える形（OCaml、F#、Elixir、Scala、Rust の `std::`、Roc、Flix）に分かれる。
 - 根の名前を予約する言語が多い。OCaml は標準ライブラリを `Stdlib` の下にまとめ直し、その理由を、利用者やほかのライブラリのために大域の名前空間を空けることとしている。`Stdlib.List`、`Elixir.List`、Rust の `::std` は、名前が重なったときの抜け道になる。
 - prelude かどうかは、実装の言語ではなく、import なしで使えるかで決まる。Rust の prelude は、Rust で書いた標準ライブラリの一部である。
-
-【要検証】
-
-- Haskell の base が GHC の版に結び付くこと。
-- Elm の elm/json・elm/http が別のパッケージであること。
-- Gleam の `gleam/` の名前が利用者のモジュールに対して予約されているか。
-- Roc の組み込みを import なしで使えるという明文の規則。
-- 利用者のモジュールが標準ライブラリと同じ名前を持つときの、OCaml・Elm・Elixir・Koka・Flix の振る舞い。
-- Flix の標準ライブラリの名前空間を import なしで修飾して使えるという明文の規則。
 
 出典
 
@@ -941,7 +807,7 @@ Agent Skills の文書は、次のとおりである。
 
 ### 等値と順序の制約
 
-[ADR 0133](../decisions/0133-builtin-equality-and-key-constraints.md) の判断に使った。
+等値の型と鍵の型の制約を、組み込みの制約 `equality`・`key` として書けるようにすることを決めるときに使った。
 
 | 言語 | 等値の制約の書き方 | 順序の制約の書き方 | 制約を満たす方法 | 関数の型の扱い | 等値を独自に定められるか |
 |---|---|---|---|---|---|
@@ -953,10 +819,10 @@ Agent Skills の文書は、次のとおりである。
 | Haskell | `Eq a =>` | `Ord a =>` | 明示の `deriving`。構成要素に実装を要する | インスタンスがなく、静的に誤り | instance を手で書く |
 | Roc（現行） | メソッドの制約 `where [a.is_eq : a, a -> Bool]` | `is_lt` などのメソッドの制約 | 構造の型は自動で得る。名前の付いた型は `is_eq : _` で選ぶ。順序は導出しない | 関数は等値を持たない（検査の時点は文書に書かれていない） | メソッドの本体を書く |
 | Gleam | なし（どの型でも `==`） | なし（比べる関数を渡す） | 常に構造で比べる | 除かない | できない |
-| Flix | `with Eq[t]` | `with Order[t]` | 明示の `with Eq, Order` で導出する | 【要検証】 | instance を書く |
-| Swift | `T: Equatable` | `T: Comparable` | 準拠を宣言すると合成する（Comparable の合成は enum だけ） | 関数の型は準拠しない（【要検証】） | `==` を書く |
+| Flix | `with Eq[t]` | `with Order[t]` | 明示の `with Eq, Order` で導出する | 未確認 | instance を書く |
+| Swift | `T: Equatable` | `T: Comparable` | 準拠を宣言すると合成する（Comparable の合成は enum だけ） | 関数の型は準拠しない（未確認） | `==` を書く |
 | Rust | `T: PartialEq`・`Eq` | `T: PartialOrd`・`Ord` | 明示の `#[derive]` | 関数ポインタは `Eq`・`Ord` を実装する（比較は信頼できないと文書が注記する） | impl を書く |
-| Koka | 暗黙の引数 `?(==)` | 暗黙の引数 `?cmp` | 名前で静的に解決する | 【要検証】 | 同じ名前の関数を定義する |
+| Koka | 暗黙の引数 `?(==)` | 暗黙の引数 `?cmp` | 名前で静的に解決する | 未確認 | 同じ名前の関数を定義する |
 
 - SML'97 の初期基底で等値を許さない型は `real` と `exn` である。§G.21 は「real is no longer an equality type」と書く。datatype は「as many of these new names as possible admit equality」の規則で等値を推論する。
 - F# の `=`・`compare`・`hash` は、型クラスではなく `equality`・`comparison` の制約で型付けされる（`(=) : 'T -> 'T -> bool (requires equality)`）。`Map` と `Set` は鍵に `comparison` を求める。F# の設計者は、関数の型を「no equality」とし、`id = id` を静的な誤りにすると説明する。
@@ -967,16 +833,6 @@ Agent Skills の文書は、次のとおりである。
 - Roc の現行の文書は、abilities（`implements`）の代わりにメソッドと `where` 節を説明する。`Dict` の鍵は `is_eq` と `to_hash` を要する。導出できるのは `is_eq`・`to_hash`・`parser_for`・`encoder_for`・`map`・`map!` である。
 - Koka は型クラスを持たず、暗黙の引数を名前で解決する（v3.2.3 の「No more qualified types but we use instead implicit phantom parameters」）。
 - 傾向は四つに分かれる。構造で比べる等値を常に許す言語（OCaml、Elm の `==`、Gleam）は、関数を静的に除かない。専用の組み込みの制約を持つ言語（SML、F#、Go、Elm の comparable）は、型の構造から自動で満たし、関数を静的に除く。このうち等値を利用者が変えられるのは F# だけである。型クラスの言語（Haskell、Rust、Swift、Flix）は、明示の導出か準拠の宣言を要する。Roc の現行版は、構造の型では自動、名前の付いた型では明示である。
-
-【要検証】
-
-- Roc の旧版の abilities（`Eq`・`Hash`・`Inspect`、`where a implements Eq`）の仕様の全体。
-- Roc で関数の等値を静的に除くか。
-- Gleam の `==` に関数を渡したときの公式の説明と、Erlang の出力での振る舞い（JavaScript の出力では参照が同じときだけ等しい）。
-- Flix の導出した `Order` が宣言の順に比べるか。Flix で関数が `Eq` を持たないか。
-- Swift で関数の型が `Equatable` に準拠しないこと。
-- Rust のクロージャの型が `PartialEq` などを実装しないこと。
-- Koka に利用者の型の `==`・`cmp` を導出する仕組みがあるか。
 
 出典
 
@@ -1016,7 +872,7 @@ Agent Skills の文書は、次のとおりである。
 
 ### 標準の型クラス
 
-[ADR 0134](../decisions/0134-standard-type-classes.md) の判断に使った。表の `A ⊂ B` は、A が B の上位の型クラスであることを表す。
+標準の型クラスを `Benitoite.Trait` に置くことと、その上位の型クラスを決めるときに使った。表の `A ⊂ B` は、A が B の上位の型クラスであることを表す。
 
 | 言語 | 文字列への変換 | 等値・順序 | 連結 | map・連鎖の抽象 | 畳み込み | ハッシュ | 数 | 導出 | 戻り値の型で実装を選ぶメソッド |
 |---|---|---|---|---|---|---|---|---|---|
@@ -1033,12 +889,6 @@ Agent Skills の文書は、次のとおりである。
 - 演算子は、Haskell・Idris・PureScript では型クラスのメソッドである。Flix と Lean は、演算子を一つのメソッドの型クラスに脱糖する（Flix の `+` は `Add.add`、`<` は `Order.less`、`==` は `Eq.eq`。Lean の `+` は `HAdd.hAdd`、`==` は `BEq.beq`）。
 - Lean を除くどの言語も、`Eq` を `Ord` の上位の型クラスにする。
 - Lean 4 の核は `Semigroup`・`Monoid`・`Foldable`・`Traversable` を持たない。Scala 3 の標準ライブラリは `Functor`・`Monad`・`Semigroup`・`Monoid` を持たない。
-
-【要検証】
-
-- GHC の `{-# MINIMAL #-}` の定義（`Foldable` は `foldMap` か `foldr` など）と、`Applicative`・`Foldable`・`Traversable`・`Semigroup`・`MonadFail` が Prelude に入った base の版。
-- Lean 4 の `Semigroup`・`Monoid` が Batteries と Mathlib にあること。
-- Scala 3 の標準ライブラリが `derives Ordering` を扱わないこと。
 
 出典
 
@@ -1063,7 +913,7 @@ Agent Skills の文書は、次のとおりである。
 
 ### シェバン
 
-[ADR 0135](../decisions/0135-shebang-line-and-implicit-run.md) の判断に使った。
+ファイルの先頭の `#!` の行を読み飛ばし、`run` を省いた `benitoite <パス>` で実行できるようにすることを決めるときに使った。
 
 OS の扱いは次のとおりである。
 
@@ -1084,14 +934,14 @@ OS の扱いは次のとおりである。
 |---|---|---|---|---|
 | ECMAScript（ES2023）・Node | 専用の字句規則（Hashbang Comment） | Script と Module の先頭 | `env node` | 不要 |
 | Deno | ECMAScript と同じ | 先頭 | `env -S deno run` | `run` は省ける（`deno main.ts`） |
-| Bun | ECMAScript と同じ | 先頭 | 【要検証】 | 不要（`bun file`） |
+| Bun | ECMAScript と同じ | 先頭 | 未確認 | 不要（`bun file`） |
 | Rust | 専用の字句規則。`#!` の後に `[` が続くもの（内部属性）は除く | どのファイルでも、先頭か BOM の直後 | （rustc の範囲外） | — |
 | Python | 普通のコメント | 任意の行 | `env python3` | 不要 |
 | Ruby | コメント。主スクリプトの 1 行目の `ruby` を含む行のスイッチを解釈する | 1 行目 | `env ruby` | 不要 |
 | Perl | 行のスイッチを解釈する。`perl` を含まない行なら、書かれたプログラムを起動する | 1 行目 | `/usr/bin/perl -w` など | 不要 |
 | Lua | `#` で始まる 1 行目を読み飛ばす。BOM の後でもよい | 読み込むすべてのファイル | `env lua` | 不要 |
 | Julia・Elixir・Roc | 普通の `#` のコメント | 任意の行 | `env -S julia …`・`env elixir`・`env -S roc --` | 不要 |
-| Haskell（GHC） | `#!` で始まる行を空白として扱う | 任意の行 | 【要検証】 | — |
+| Haskell（GHC） | `#!` で始まる行を空白として扱う | 任意の行 | 未確認 | — |
 | OCaml | スクリプトモードで、`#!` で始まる 1 行目を読み飛ばす | 主スクリプトの 1 行目 | `ocamlrun …/ocaml` | 不要 |
 | Swift | 専用の字句規則 | 主ファイルの先頭だけ。ほかのファイルでは誤り | `/usr/bin/swift` | 不要 |
 | Kotlin | 文法の `shebangLine` | ファイルの先頭 | `env kotlin`（`.main.kts`） | 不要 |
@@ -1106,15 +956,6 @@ OS の扱いは次のとおりである。
 - Rust・Swift・Lua の字句解析器は、BOM の後のシェバンの行を受け付ける。
 - Deno・Bun・Dart のように `<コマンド> <ファイル>` で実行できる処理系は、`env -S` なしの一語のシェバンで起動できる。サブコマンドやオプションを書く処理系（scala-cli、uv、F#、Julia）は、`env -S` を使う形を案内する。
 - Roc は、`#!/usr/bin/env roc` ではスクリプトの引数が `roc` 自身の引数として解釈されるので、`env -S roc --` で回避している。`roc fmt` がシェバンの行を壊さないようにする修正も入っている。
-
-【要検証】
-
-- macOS の `env` に `-S` が加わった版（Julia の FAQ は macOS Sierra とするが、Apple の一次資料では確かめていない）。Julia の FAQ は、macOS のカーネルもシェバンの行を分けないと書くが、XNU のソースは分けている。本節は XNU のソースに従った。
-- Bun の公式の文書のシェバンの例。
-- Deno のシェバンの行で権限のフラグ（`--allow-env` など）を渡す例（公式の文書の本文で確かめていない）。
-- runghc をシェバンで使う書き方（慣習であり、公式の文書に記述がない）。
-- Node.js が Hashbang に対応した版。
-- F# の字句規則の中での `#!` の扱い。
 
 出典
 
@@ -1158,7 +999,7 @@ OS の扱いは次のとおりである。
 
 ### Map と Set の値の書き方
 
-[ADR 0136](../decisions/0136-map-and-set-in-constants.md) の判断に使った。
+Map と Set のリテラルを設けず、定数式に `Map.fromList` などを書けるようにすることを決めるときに使った。
 
 | 言語 | マップのリテラル | 集合のリテラル | 関数で作る形 | 同じ鍵を重ねたとき | 定数にできるか | 空の値 |
 |---|---|---|---|---|---|---|
@@ -1167,10 +1008,10 @@ OS の扱いは次のとおりである。
 | OCaml | なし | なし | `M.of_list`（5.1）・`M.of_seq` | 後の値 | トップレベルの `let` だけ | `M.empty` |
 | F# | なし | なし | `Map [...]`・`Map.ofList`・`set [...]` | 後の値（`add` による） | `[<Literal>]` は基本型と文字列だけ | `Map.empty` |
 | Gleam | なし | なし | `dict.from_list`・`set.from_list` | 後の値 | できない（`const` はリテラルに限る） | `dict.new()` |
-| Roc | なし | なし | `Dict.from_list` | 【要検証】 | 【要検証】 | `Dict.empty` |
+| Roc | なし | なし | `Dict.from_list` | 未確認 | 未確認 | `Dict.empty` |
 | Elixir | `%{k => v}`・`%{a: 1}` | なし（`MapSet.new`） | — | 後の値。コンパイラが警告する | モジュールの属性（コンパイル時の値） | `%{}` |
 | Clojure | `{:a 1}` | `#{1 2}` | `hash-map`・`hash-set` | リテラルは誤り（鍵がすべて定数ならコンパイル時）。関数は後の値 | `def` | `{}`・`#{}` |
-| Scala 3 | なし（`Map("a" -> 1)`） | なし（`Set(1, 2)`） | `Map(...)`・`Set(...)` | 【要検証】 | できない | `Map()` |
+| Scala 3 | なし（`Map("a" -> 1)`） | なし（`Set(1, 2)`） | `Map(...)`・`Set(...)` | 未確認 | できない | `Map()` |
 | Kotlin | なし | 実験中（2.4 の `[1, 2]` を `Set` の型で受ける） | `mapOf("a" to 1)`・`setOf` | 後の値。指定した順に反復する | できない（`const val` は文字列と基本型だけ） | `mapOf()` |
 | Swift | `["a": 1]` | 配列のリテラルに `Set` の型注釈 | `Dictionary(uniqueKeysWithValues:)` | 実行時に停止する。リテラルの鍵が重なるとコンパイラが警告する | 大域の `let` | `[:]`・`[]` |
 | Python | `{"a": 1}` | `{1, 2}` | `dict(...)`・`set(...)` | 後の値 | 定数の仕組みがない | `{}` は辞書、空の集合は `set()` |
@@ -1178,7 +1019,7 @@ OS の扱いは次のとおりである。
 | Rust | なし | なし | `HashMap::from([(k, v)])`・`BTreeMap::from` | 一つを残し、ほかを捨てる（どれを残すかは定めない） | 空のものだけ（`BTreeMap::new` は const fn） | `HashMap::new()` |
 | Go | `map[K]V{k: v}` | なし | — | 定数の鍵が重なると誤り | できない（package の `var`） | `map[K]V{}` |
 | Dart | `{'a': 1}` | `{1, 2}` | `Map.fromEntries` など | `const` のマップでは誤り。ほかは警告して後の値 | できる（`const {...}`） | `{}` は Map、空の集合は `<T>{}` |
-| Julia | なし（`Dict("a" => 1)`） | なし（`Set([...])`） | `Dict(pairs...)` | 【要検証】 | `const` は束縛だけ | `Dict()` |
+| Julia | なし（`Dict("a" => 1)`） | なし（`Set([...])`） | `Dict(pairs...)` | 未確認 | `const` は束縛だけ | `Dict()` |
 | Ruby | `{"a" => 1}`・`{a: 1}` | なし（`Set[1, 2]`） | `Set.new` | 後の値。警告がある | 定数は束縛だけ | `{}` |
 | Perl | リストの代入 `(a => 1)`、無名のハッシュ `{...}` | なし | — | 後の値 | — | `()` |
 | Lua | 表の構築子 `{k = v, [e] = v}` | なし | — | 定めない（構築子の代入の順序を定めない） | `<const>` は束縛だけ | `{}` |
@@ -1187,14 +1028,6 @@ OS の扱いは次のとおりである。
 - 同じ鍵を重ねたときの扱いは、静的な誤り（Go の定数の鍵、Dart の定数のマップ、Clojure のリテラル）、実行時の停止（Swift）、後の値を使う（そのほか。Elixir・Dart・Ruby・Swift は警告を出す）に分かれる。
 - マップを定数にできるのは Dart の `const` だけで、Elixir のモジュールの属性がこれに近い。Go・Kotlin・Gleam・F# の `[<Literal>]` は明示で禁じ、Rust は空のマップだけを許す。
 - 空の `{}` の曖昧さを、Python と Dart は `{}` をマップと決めて解き、Swift は `[:]`、Clojure と Elixir は別の記号（`#{}`・`%{}`）で避ける。
-
-【要検証】
-
-- Roc の `Dict.from_list` の重なる鍵の扱いと順序、定数にできるか。
-- Scala 3 の `Map(...)` の重なる鍵の扱いと、定数にできないこと。
-- Julia の `Dict` の重なる鍵の扱い。
-- PureScript（`Data.Map.fromFoldable`）と Idris 2（`Data.SortedMap.fromList`）の形。
-- Python の辞書が挿入の順に反復すること（本節の出典の節には記述がない）。
 
 出典
 
@@ -1231,7 +1064,7 @@ OS の扱いは次のとおりである。
 
 ### 標準ライブラリの範囲
 
-[ADR 0137](../decisions/0137-first-release-library-scope.md) の判断に使った。
+初回リリース版の標準ライブラリの範囲と構成を決めるときに使った。
 
 凡例: ✓ は言語か標準ライブラリにある。inst は処理系と一緒に入るが中核の外にある（Ruby の同梱の gem、GHC の同梱のパッケージ、OCaml の `str`・`unix`、Elixir から使う OTP、Kotlin から使う JDK）。pkg は別にパッケージを入れる。~ は一部だけある。基盤は Roc のプラットフォーム（basic-cli）が提供する。
 
@@ -1243,9 +1076,9 @@ OS の扱いは次のとおりである。
 | Go | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ / ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Deno（実行環境） | ✓ | ✓ | ✗ | ✗ | ✓ | ~ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Node.js | ✓ | ✓ | pkg | ✓ | ✓ | ~ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Elixir | ✓ | ✓ | pkg | ✓ | ✓ | ✓ / pkg | inst | 【要検証】 | ✓ | inst | ✓ | ✓ | ✓ | ✓ | inst |
+| Elixir | ✓ | ✓ | pkg | ✓ | ✓ | ✓ / pkg | inst | 未確認 | ✓ | inst | ✓ | ✓ | ✓ | ✓ | inst |
 | Gleam | pkg | pkg | pkg | pkg | pkg | pkg | pkg | pkg | ✓ | pkg | pkg | pkg | pkg | ✓ | pkg |
-| Roc | ✗ | 【要検証】 | ✗ | 基盤 | 基盤 | 基盤 / ✗ | 基盤 | ✗ | ~ | 【要検証】 | 基盤 | 基盤 | 基盤 | 基盤 | ✗ |
+| Roc | ✗ | 未確認 | ✗ | 基盤 | 基盤 | 基盤 / ✗ | 基盤 | ✗ | ~ | 未確認 | 基盤 | 基盤 | 基盤 | 基盤 | ✗ |
 | OCaml | inst | pkg | pkg | ✓ | ✓ | inst（書式なし） | pkg | pkg | pkg | pkg | ✓ | ✓ | ✓ | pkg | pkg |
 | Haskell（base） | pkg | pkg | pkg | inst | inst | inst / pkg | pkg | pkg | pkg | pkg | inst | ✓ | ✓ | pkg | pkg |
 | Lua | ~ | ✗ | ✗ | ✗ | ✗ | ~ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ | ✗ | ✗ |
@@ -1266,15 +1099,6 @@ OS の扱いは次のとおりである。
 - Deno の std の FAQ は、実行環境と別に版を付ける理由を、Deno 以外の実行環境でも使え、二つを独立に進められることとする。
 - Gleam は、組み込み機器やブラウザでも動くので、コマンドライン引数や環境変数の読み取りのような機能を標準ライブラリに入れないと書く。
 - Rust の標準ライブラリの文書は、自らを「minimal and battle-tested shared abstractions」と書く。
-
-【要検証】
-
-- Roc の組み込みの `Crypto`・`Encoding` の内容（要約で確かめただけで、新しいコンパイラの版では変わりやすい）。
-- Node.js と Deno の `Temporal` の安定性、`Intl` によるタイムゾーンの扱い。
-- Ruby の `tzinfo`、Perl の `DateTime`、Julia の `TimeZones.jl`、Gleam の代わりのパッケージ（`gleam_json` など）の名前。
-- Elixir から OTP の `:httpd` を使うこと。
-- Kotlin から使う JDK の `Base64`・`HexFormat`・`MessageDigest` など。
-- Rust の標準ライブラリの範囲の考え方を述べた API Guidelines やブログの文。
 
 出典
 
@@ -1309,7 +1133,7 @@ OS の扱いは次のとおりである。
 
 ### Rust のクレートのライセンス
 
-[ADR 0138](../decisions/0138-crates-and-licenses-for-stdlib.md) の判断に使った。ライセンスは crates.io に登録された Cargo.toml の値（2026-09-28 の最新の安定版）であり、推移的な依存は既定の機能で `cargo tree --target all` を使って調べた。
+標準ライブラリの実装に使う Rust のクレートと、許可するライセンスを決めるときに使った。ライセンスは crates.io に登録された Cargo.toml の値（2026-09-28 の最新の安定版）であり、推移的な依存は既定の機能で `cargo tree --target all` を使って調べた。
 
 | クレート | ライセンス | 注意の要る依存 | C・アセンブリ |
 |---|---|---|---|
@@ -1344,11 +1168,6 @@ OS の扱いは次のとおりである。
 - Unicode-3.0 は許容的なライセンスであるが、写しか付属の文書に著作権と許諾の表示を含めることを条件とする。
 - `rand` の `StdRng` のソースのコメントは、「non-portable」「any future library version may replace the algorithm」と書き、種を固定しても出力は移植できないとする。
 
-【要検証】
-
-- 各クレートの unsafe の使用は、ソースの検索による目安である。
-- 実際のワークスペースでは、機能の統合によって依存の集合がこの調査と変わりうる。
-
 出典
 
 - https://crates.io/crates/regex
@@ -1367,7 +1186,7 @@ OS の扱いは次のとおりである。
 
 ### 外部の関数の宣言
 
-[ADR 0139](../decisions/0139-external-functions-via-wasm.md) の判断に使った。
+外部の関数の宣言（属性を付けた本体のない関数として書く案）を検討するための調査である。初回リリース版は外部の関数を含めない（docs/todo の TODO-046）。
 
 | 言語・仕組み | 宣言の形 | キーワードか属性か | 対象 | 型とエフェクトの扱い | 権限との関係 |
 |---|---|---|---|---|---|
@@ -1393,13 +1212,6 @@ OS の扱いは次のとおりである。
 - Node.js の権限のモデルは、自らを「seat belt」と呼び、悪意のあるコードに対するセキュリティの保証を与えないとする。
 - Roc の文書は、プラットフォームがすべての IO の基本の操作を独占して管理し、「There are no escape hatches」と書く。
 - Wasmtime の文書は、WASM のインスタンスは明示に結び付けたインタフェースを通してしか外と関われず、システムコールに直接触れないと書く。
-
-【要検証】
-
-- PureScript・OCaml・Idris 2・Flix で、外部の関数の構文を導入した経緯。
-- Koka で `extern` を予約した時期。
-- Haskell 98 が `foreign` を予約していなかったこと。
-- Extism のマニフェストの時間の上限の指定。
 
 出典
 
@@ -1427,7 +1239,7 @@ OS の扱いは次のとおりである。
 
 ### ネットワークの操作と IO の区分
 
-[ADR 0140](../decisions/0140-network-separated-from-local-io.md) の判断に使った。
+ネットワークの操作をローカルの IO と分け、`Benitoite.Network` の下に置いて `IO.All` に含めないことを決めるときに使った。
 
 | 言語 | ネットワークの操作の型・エフェクト | ファイルの操作との関係 | 名前空間 |
 |---|---|---|---|
@@ -1466,15 +1278,9 @@ OS の扱いは次のとおりである。
 - https://github.com/roc-lang/basic-cli/tree/main/platform
 - https://github.com/elm/http/blob/master/src/Http.elm
 
-【要検証】
-
-- Flix の基本のエフェクトに `Net` があるか（検索の抜粋にはあるが、取得した文書の版には見当たらない）。
-- Koka の別名の名前（現在の `master` は `ioc-total`・`ioc`。以前の版は `io-total`・`io-noexn`）。
-- PureScript の Node の束縛のパッケージが `Effect` を使うこと（ソースで確かめていない）。
-
 ### 標準ライブラリの HTTP
 
-[ADR 0141](../decisions/0141-http-scope-in-stdlib.md) と [ADR 0142](../decisions/0142-http-api-shape.md) の判断に使った。
+標準ライブラリの HTTP の範囲（TLS のない HTTP サーバと、HTTPS を含む HTTP クライアント）と、HTTP サーバを待ち受けのリソースの層と `Http.serve` の二層で提供することを決めるときに使った。
 
 凡例: ✓ は標準ライブラリにある。pkg はパッケージに任せる。
 
@@ -1516,16 +1322,9 @@ OS の扱いは次のとおりである。
 - https://docs.julialang.org/en/v1/stdlib/Sockets/
 - https://github.com/gleam-wisp/wisp
 
-【要検証】
-
-- Deno の `Deno.listen`・`Deno.connect` による TCP。
-- Julia の `Downloads` の HTTPS。
-- Elixir の標準ライブラリ自体に HTTP がないこと。
-- Racket の `net/url` のクライアントの細部。
-
 ### ネットワークの権限
 
-[OPEN-045](../open-issues.md#open-045) の検討に使った。OPEN-045 は権限の宣言の構文を削除して決着し（[ADR 0147](../decisions/0147-remove-permission-declaration-syntax.md)）、ネットワークの操作の権限は [OPEN-052](../open-issues.md#open-052) に引き継いだ。その後、許可の単位を組み込みのエフェクトとし、待ち受け（`Http.Listen`）と接続（`Http.Connect`）を別の許可にした（[ADR 0184](../decisions/0184-permissions-granted-per-builtin-effect.md)）。対象の書き方と判定の時点は、[OPEN-052](../open-issues.md#open-052) で決める。
+ネットワークの操作の権限を検討するときに使った。初回リリース版は、ネットワークの操作を組み込みのエフェクトで静的に追跡し、待ち受け（`Http.Listen`）と接続（`Http.Connect`）を別のエフェクトとする。実行時の権限制御で対象をどう書き、いつ判定するかは、初回リリース版に含めない（docs/todo の TODO-141）。
 
 | 実行環境・仕組み | 待ち受けと接続 | 指定の単位 | 判定の時点 |
 |---|---|---|---|
@@ -1555,14 +1354,9 @@ OS の扱いは次のとおりである。
 - https://github.com/bytecodealliance/wasmtime/blob/main/crates/cli-flags/src/lib.rs
 - https://github.com/roc-lang/basic-webserver/blob/main/README.md
 
-【要検証】
-
-- Deno の CIDR と Unix ソケットの指定（ソースにはあるが、利用者向けの文書になく、対応した版が分からない）。
-- Landlock の UDP の規則（ABI 10）が入った Linux の版。
-
 ### HTTP と TLS のクレート
 
-[ADR 0143](../decisions/0143-http-and-tls-crates.md) の判断に使った。ライセンスは crates.io に登録された値（2026-09-28 の最新の版）である。
+HTTP のサーバを httparse と mio の上に自作し、クライアントに ureq と rustls を使うことを決めるときに使った。ライセンスは crates.io に登録された値（2026-09-28 の最新の版）である。
 
 | クレート | 版 | ライセンス | C・アセンブリ | 注意 |
 |---|---|---|---|---|
@@ -1603,14 +1397,9 @@ OS の扱いは次のとおりである。
 - https://github.com/rustls/rustls-platform-verifier/blob/main/rustls-platform-verifier/Cargo.toml
 - https://github.com/briansmith/ring/blob/main/BUILDING.md
 
-【要検証】
-
-- `ureq` に `rustls-graviola` の provider を与えて動くか。
-- `may_minihttp` の依存と、コルーチンの切り替えにアセンブリを使うか（採らなかったので確かめていない）。
-
 ### IO の失敗の種類
 
-[ADR 0144](../decisions/0144-ioerrorkind-constructors.md) と [ADR 0145](../decisions/0145-network-error.md) の判断に使った。
+`IOErrorKind` の 9 個の構成子と、ネットワークの失敗を表す `NetworkError`・`NetworkErrorKind` を決めるときに使った。
 
 | 言語 | 表し方 | 種類の数 | ネットワークの失敗 | 種類を加えたときの扱い |
 |---|---|---|---|---|
@@ -1648,15 +1437,9 @@ OS の扱いは次のとおりである。
 - https://github.com/swiftlang/swift-evolution/blob/main/proposals/0192-non-exhaustive-enums.md
 - https://ocaml.org/manual/api/Unix.html
 
-【要検証】
-
-- simplifile の `FileError` の構成子の正確な数と、Gleam で構成子を加えることの扱い。
-- Rust で名前解決の失敗が、どの種類になるか。
-- OCaml・Haskell・Elm に、型ごとに `_` を必須にする仕組みがないこと。
-
 ### 算術の失敗の扱い
 
-[ADR 0146](../decisions/0146-runtime-errors-not-in-types.md) の判断に使った。
+実行時エラーを起こしうることを型にもエフェクトにも表さないことを決めるときに使った。
 
 | 言語 | 整数 | 溢れ | 0 による除算 | 型・エフェクトへの表れ | 失敗を値で返す版 |
 |---|---|---|---|---|---|
@@ -1686,15 +1469,15 @@ OS の扱いは次のとおりである。
 |---|---|---|
 | GHC（Haskell） | 報告しない | 警告（`-Woverflowed-literals`） |
 | OCaml | 報告しない | 誤り |
-| Scala 3 | 報告しない（定数の畳み込みで例外が起きても黙る） | 【要検証】 |
+| Scala 3 | 報告しない（定数の畳み込みで例外が起きても黙る） | 未確認 |
 | Erlang・Elixir | 警告（定数の畳み込みの副産物。「will fail with a 'badarith' exception」） | 整数は任意精度 |
 | Elm・PureScript・Lean・Gleam・Koka | 0 で割った値を 0 と定めるので、該当しない | — |
 | Rust | 誤り（既定で拒否する lint `unconditional_panic`） | 誤り（`arithmetic_overflow`） |
 | Swift | 誤り | 誤り |
 | Go | 誤り（仕様「If the divisor is a constant, it must not be zero.」） | 誤り |
-| C# | 誤り（CS0020） | 【要検証】 |
+| C# | 誤り（CS0020） | 未確認 |
 | Kotlin | 警告 | 誤り |
-| Java（javac） | 警告（`-Xlint:divzero`） | 【要検証】 |
+| Java（javac） | 警告（`-Xlint:divzero`） | 未確認 |
 
 - Scala 3 のコンパイラのソース（`ConstFold.scala`）は、定数の畳み込みで `ArithmeticException` が起きたときの扱いに「the code will crash at runtime, but that is better than the compiler itself crashing」と書く。
 
@@ -1727,17 +1510,9 @@ OS の扱いは次のとおりである。
 - https://learn.microsoft.com/en-us/dotnet/csharp/misc/cs0020
 - https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html
 
-【要検証】
-
-- Flix の整数の溢れの扱い（JVM の上で回り込むと見込まれる）。
-- Roc の `div_trunc_by` の 0 による除算の扱い。
-- Swift の 0 による除算の trap と `addingReportingOverflow`、Zig の `@addWithOverflow`。
-- GHC の `Int` が回り込むこと。
-- Unison の整数の溢れと 0 による除算の扱い。
-
 ### 構成子の修飾と名前空間
 
-[ADR 0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md) の判断に使った。
+`Option` と `Result` の構成子も型名で修飾して書くことと、大文字の名前の一つの名前空間を決めるときに使った。
 
 | 言語 | Option・Result の書き方 | ほかの型の構成子 | 型と構成子の名前空間 | 期待される型から構成子を補うか |
 |---|---|---|---|---|
@@ -1745,14 +1520,14 @@ OS の扱いは次のとおりである。
 | Swift | `.some`・`.success`、`nil` | `.case` か `Type.case` | 構成子は型のメンバー | 補う（先頭の `.`） |
 | OCaml | `Some`・`Ok` | 修飾しない（モジュールでは修飾できる） | 分ける | 補う（型で決まらなければ最後に定義した型を選ぶ） |
 | Haskell | `Just`・`Right` | 修飾しない | 分ける | 補わない |
-| F# | `Some`・`Ok` | 修飾しない（`RequireQualifiedAccess` で修飾を必須にできる） | 分ける | 【要検証】 |
+| F# | `Some`・`Ok` | 修飾しない（`RequireQualifiedAccess` で修飾を必須にできる） | 分ける | 未確認 |
 | Elm | `Just`・`Ok`（既定の import） | 修飾しない（モジュールでは修飾できる） | 分ける | 補わない |
 | Gleam | `Ok` は組み込み、`Some` は import するか `option.Some` | 修飾しない（モジュールでは修飾できる） | 分けると見られる | 補わない |
 | Roc | `Ok`・`Err`（Option はない） | `Red` か `Color.Red` | 修飾しない名前は構造的なタグ | 補う（期待される型で名前付きの型に決まる） |
 | Scala 3 | `Some`・`Left`（パッケージ `scala`） | enum は `Color.Red`（`import Color.*` で省ける） | 分ける（型と項） | 補わない（提案は閉じられた） |
 | Lean 4 | `some`（prelude が export する）、`Except.ok` | `T.c` | 階層を持つ一つの名前空間 | 補う（先頭の `.`） |
 | Kotlin | `Result.success(..)`（関数で作る） | `Sealed.Sub` | ─ | 試験的に補う（2.2 以降。通常の解決が失敗したときだけ） |
-| Koka | `Just`・`Ok` | 修飾しない | 型は小文字、構成子は大文字 | 【要検証】 |
+| Koka | `Just`・`Ok` | 修飾しない | 型は小文字、構成子は大文字 | 未確認 |
 
 - Rust の RFC 390 は、列挙の構成子を修飾する理由を「Enums are the odd one out」と、手で名前に接頭辞を付ける慣習の解消に求めた。prelude の文書は、`Option` について「its variants are also exported」と書く。
 - OCaml のマニュアルは、型の分からない構成子を最後に定義した型から選ぶ規則について、型の定義の追加や移動、モジュールを開いたことで「may change surreptitiously」と警告する。
@@ -1782,16 +1557,9 @@ OS の扱いは次のとおりである。
 - https://raw.githubusercontent.com/koka-lang/koka/master/lib/std/core/types.kk
 - https://docs.oracle.com/javase/specs/jls/se21/html/jls-7.html
 
-【要検証】
-
-- F# と Koka で、期待される型から構成子を補う仕組みがないこと。
-- Gleam で、型と構成子の名前空間が分かれていること（import の書き方からの推定）。
-- Rust で、同じモジュールに同じ名前のモジュールと型を宣言すると誤りになること。
-- F#・Scala 3・TypeScript・C# などで、同じ場所に同じ名前の型とモジュール（またはコンパニオンオブジェクト、名前空間）を置けるか。
-
 ### 権限の対象の範囲を型や値で表す仕組み
 
-[OPEN-052](../open-issues.md#open-052) の、操作の対象（パス、ホスト、ポート）の範囲を型の側で表す候補と、[OPEN-051](../open-issues.md#open-051) の、外部の関数のエフェクトを WASM のモジュールが取り込む関数から求める候補の検討に使う。本節の事実は、2026-10-01 に一次資料で確かめた。
+実行時の権限制御で操作の対象（パス、ホスト、ポート）の範囲を型の側で表す案（docs/todo の TODO-142）と、外部の関数のエフェクトを WASM のモジュールが取り込む関数から求める案（docs/todo の TODO-048）を検討するための調査である。どちらも初回リリース版に含めない。本節の事実は、2026-10-01 に一次資料で確かめた。
 
 | 系 | 権限やエフェクトを表す場所 | 具体的な対象を名指せるか | 強制の時期 |
 |---|---|---|---|
@@ -1822,14 +1590,6 @@ OS の扱いは次のとおりである。
 - wasmtime の `Linker` は、既定では定義されていない取り込みがあるとインスタンス化に失敗し、`UnknownImportError` を返す。`define_unknown_imports_as_traps`（呼ぶと trap する関数で埋める）などで、欠けた取り込みを埋めて続けることもできる。`WasiCtxBuilder` は、既定ではファイルシステムを与えず、`preopened_dir` で与えるディレクトリを指定し、`socket_addr_check` でソケットのアドレスごとに判定する関数を指定する。
 - モジュールの取り込みの集合から、そのモジュールの権限やエフェクトを自動で求めて示す道具や実行環境は、見つからなかった。
 
-【要検証】
-
-- Unison で、利用者が細かい ability を定義して `IO` のハンドラで解釈する書き方を公式が推奨しているか。
-- F\* と Liquid Haskell に、パスやホストで添字付けした権限の例があるか。"Controlling File Access with Types"（ENTCS 332、2017）の内容（要旨しか読めなかった）。
-- エージェント向けの言語 ETAS（arXiv 2607.17780）が、操作の対象を型の引数にとるか（要旨しか読めなかった）。
-- Extism の `allowed_hosts` のワイルドカードの書式。
-- "What's in the Box" の採録先（DOI 10.1145/3763112）。
-
 出典
 
 - https://docs.scala-lang.org/scala3/reference/experimental/cc.html
@@ -1855,7 +1615,7 @@ OS の扱いは次のとおりである。
 
 ### AI エージェントの権限制御の研究
 
-[OPEN-052](../open-issues.md#open-052) の検討に使う。LLM エージェントが行う操作を、OS のサンドボックスではなく、能力・エフェクト・情報フローのラベル・権限の方針で制御する研究を調べた。本節の事実は、2026-10-01 に各論文の原典（arXiv の本文。読んだ範囲は各項に記す）で確かめた。
+実行時の権限制御（docs/todo の TODO-141）と、エージェントハーネスの制限（docs/todo の TODO-127）を検討するための調査である。LLM エージェントが行う操作を、OS のサンドボックスではなく、能力・エフェクト・情報フローのラベル・権限の方針で制御する研究を調べた。本節の事実は、2026-10-01 に各論文の原典（arXiv の本文。読んだ範囲は各項に記す）で確かめた。
 
 | 研究 | 方式 | 強制の時期 | 具体的な対象 | 人間の承認 | 形式的な結果 |
 |---|---|---|---|---|---|
@@ -1896,12 +1656,6 @@ OS の扱いは次のとおりである。
 - Progent（Shi ほか。arXiv 2504.11703、2025〜2026）
   - ツールの名前と引数に対する許可・禁止の規則を書く言語で、どの規則にも当たらない呼び出しは拒否する。LLM が利用者の課題から初期の方針を作り、実行中の更新は SMT ソルバで狭める向きか広げる向きかを判定し、広げる向きは承認を要する。
 
-【要検証】
-
-- TACIT の ACM 版の本文と、arXiv の v2 との差（ACM のページを読めなかった）。TACIT で、ハーネスがエージェントの要求できる対象の上限を外から縛る仕組みがあるか。
-- IntentCap と CaMeL の採録先。
-- Governed Execution の Rocq のモジュールの数（要旨は 32、本文の結論は 36）。
-
 出典
 
 - https://arxiv.org/html/2603.00991
@@ -1915,10 +1669,3 @@ OS の扱いは次のとおりである。
 - https://arxiv.org/html/2503.18813
 - https://arxiv.org/html/2505.23643
 - https://arxiv.org/html/2504.11703
-
-## 未決事項
-
-- [OPEN-014](../open-issues.md#open-014): 参考にした言語に関する外部の事実の確認（本章の【要検証】の事項）
-- [OPEN-051](../open-issues.md#open-051): 外部の関数（WASM）の詳細（取り込む関数からエフェクトを求める候補）
-- [OPEN-052](../open-issues.md#open-052): 実行時の権限制御の方式（ネットワークの操作の対象の書き方と判定の時点、対象の範囲を型の側で表す候補）
-- [OPEN-056](../open-issues.md#open-056): 自前のコーディングエージェントの設計（エージェントの操作を Benitoite のスクリプトに限る候補）

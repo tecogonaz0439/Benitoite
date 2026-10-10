@@ -149,6 +149,21 @@ mutual
     | .P_Wild => simp
     | .P_Var => simpa using ha
     | .P_Const _ _ _ _ => simp
+    | .P_RangeInt => simp
+    | .P_RangeChar => simp
+    | .P_List (rest := rest) hb ht _ =>
+        intro x hx
+        rcases List.mem_append.mp hx with hx | hx
+        · rcases List.mem_append.mp hx with hx | hx
+          · exact PatTys.wf hwf hb (fun y hy => by
+              have he := (List.mem_replicate.mp hy).2; subst y; exact ha) x hx
+          · cases rest with
+            | none => simp [restTys] at hx
+            | some r => cases r with
+              | skip => simp [restTys] at hx
+              | bind => simp [restTys] at hx; subst x; exact ha
+        · exact PatTys.wf hwf ht (fun y hy => by
+            have he := (List.mem_replicate.mp hy).2; subst y; exact ha) x hx
     | .P_Con (cd := cd) (ts := ts) hc hts hps =>
         simp only [Ty.WF] at ha
         refine PatTys.wf hwf hps ?_
@@ -167,6 +182,12 @@ mutual
         · exact PatTy.wf hwf hp (has _ (by simp)) x hx
         · exact PatTys.wf hwf hps' (fun y hy => has y (by simp [hy])) x hx
 end
+
+theorem AltsTy.wf {n alts a δ} (hwf : P.WellFormed) (h : AltsTy P alts a δ)
+    (ha : Ty.WF n a) : ∀ x ∈ δ, Ty.WF n x := by
+  obtain ⟨p, γ, slots, hp, hs⟩ := h.witness
+  intro x hx
+  exact PatTy.wf hwf hp ha x (selectSlots_mem hs x hx)
 
 theorem LocTy.WF.ref {Ψ : StoreTy} (hΨ : StoreTy.WF Ψ) {l a} (h : Ψ l = some (.ref a)) (n : Nat) :
     Ty.WF n a := Ty.WF.mono (Nat.zero_le _) _ (hΨ _ _ h)
@@ -284,13 +305,17 @@ mutual
 
   theorem HasTypeArms.wf (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ R arms a b ε}
       (h : HasTypeArms P B Ψ C Γ R arms a b ε) (ha : Ty.WF C.length a) (hΓ : EnvWF C.length Γ)
-      (hΨ : StoreTy.WF Ψ) (harms : Comp.VarsInArms C.length (fun _ => True) arms) :
+      (hΨ : StoreTy.WF Ψ) (harms : Arm.VarsInList C.length (fun _ => True) arms) :
       Ty.WF C.length b := by
     match h with
     | .nil hw => exact hw
-    | .cons hp hbody _ =>
-        simp only [Comp.VarsInArms] at harms
-        exact HasTypeC.wf hwf hb hbody (EnvWF.binds' (PatTy.wf hwf hp ha) hΓ) hΨ harms.1
+    | .plain hp hbody _ =>
+        simp only [Arm.VarsInList] at harms
+        exact HasTypeC.wf hwf hb hbody (EnvWF.binds' (AltsTy.wf hwf hp ha) hΓ) hΨ harms.1
+    | .guarded hp _ hbody _ =>
+        simp only [Arm.VarsInList] at harms
+        exact HasTypeC.wf hwf hb hbody (EnvWF.binds' (AltsTy.wf hwf hp ha) hΓ) hΨ harms.2.1
+
 end
 
 end Benitoite.Release

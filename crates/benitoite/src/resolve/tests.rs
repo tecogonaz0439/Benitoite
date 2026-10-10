@@ -565,7 +565,7 @@ fn name_errors_have_the_failed_segment_and_appropriate_guidance() {
 
 #[test]
 fn hidden_standard_library_name_has_no_make_public_help() {
-    // 標準ライブラリのソースは利用者が直せないので、`public` を付ける修正案を出さない（01-03「公開」）。
+    // 標準ライブラリのソースは利用者が直せないので、`public` を付ける修正案を出さない（01-03「公開（初回リリース版）」）。
     let (load, out, _) = resolve_files(&[(
         "main.bnt",
         "function main() -> Unit

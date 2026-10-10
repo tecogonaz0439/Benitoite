@@ -1,4 +1,4 @@
-//! 振り分けのループ（設計書 02-08「実行の手順」、ADR 0263）。命令ごとの処理は 10-07 の命令に従う。
+//! 振り分けのループ（設計書 02-08「実行の手順」）。命令ごとの処理は 10-07 の命令に従う。
 
 mod cell;
 mod collections;
@@ -76,20 +76,20 @@ use super::{InstrRef, MainOutcome, StopEnd, StopReason, Vm, VmConfig, VmStep};
 use crate::runtime::io::services::IoRuntime;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-// 失敗の説明の確保を、命令ごとの正常な経路へ展開しない（ADR 0313 の決定 2）。
+// 失敗の説明の確保を、命令ごとの正常な経路へ展開しない（設計書 07-02「性能の関門」）。
 #[cold]
 #[inline(never)]
 fn missing(message: &'static str) -> Stop {
     internal(message)
 }
 
-// 原型と窓の大きさは、呼び出しなどの境目でだけ読み直す（ADR 0313 の決定 2）。
+// 原型と窓の大きさは、呼び出しなどの境目でだけ読み直す（設計書 02-08「実行の手順」）。
 struct ActiveProto<'p> {
     proto: &'p Proto,
     size: u32,
 }
 
-// 凍結した LoopLocals を変えず、原型への参照と窓の大きさを一緒に切り替える（ADR 0313）。
+// 凍結した LoopLocals を変えず、原型への参照と窓の大きさを一緒に切り替える（設計書 02-08「実行の手順」）。
 struct Cursor<'p> {
     locals: LoopLocals<'p>,
     active: ActiveProto<'p>,
@@ -166,7 +166,7 @@ impl Drop for InterruptLease<'_> {
 }
 
 // 区間の外側は回収と不具合の取り出しだけを受け持つ。命令の振り分けはここ一つに置く
-// （設計書 02-08「実行の手順」、ADR 0263）。
+// （設計書 02-08「実行の手順」）。
 pub(super) fn run_epoch(
     program: &CompiledProgram,
     config: VmConfig,
@@ -217,7 +217,7 @@ pub(super) fn run_epoch(
             return exit;
         }
         // 呼び出しの前・戻りの後・停止の途中の出口をここに集め、区間を閉じる前に
-        // 回収済みの対象を指す Slot が窓に残らないようにする（ADR 0314 の決定 2・3）。
+        // 回収済みの対象を指す Slot が窓に残らないようにする（設計書 02-08「枠を降ろす原因と処理」）。
         match clear_dead_registers(program, state, ctx) {
             Ok(()) => return LoopExit::Collect,
             Err(stop) => state.fail(stop, None),
@@ -303,7 +303,7 @@ fn interrupt_call(state: &mut RunState, locals: Option<&LoopLocals<'_>>) -> Resu
     Ok(Control::Reload)
 }
 
-// 窓以外の根（枠の func、包む枠、根の保存領域）は触れない（ADR 0314 の決定 5）。
+// 窓以外の根（枠の func、包む枠、根の保存領域）は触れない（設計書 02-08「枠を降ろす原因と処理」）。
 fn clear_dead_registers(
     program: &CompiledProgram,
     state: &mut RunState,
@@ -340,9 +340,9 @@ fn clear_stack(
 ) -> Result<(), Stop> {
     let top_segment = stack.segments.len().checked_sub(1);
     // 呼び出しの枠を降ろした後は、最内の呼び出し元も ReturnWork の値をまだ待つ。
-    // RETURN 自身の解放の枠を処理中なら、最内の枠は RETURN の入口である（ADR 0314）。
+    // RETURN 自身の解放の枠を処理中なら、最内の枠は RETURN の入口である（設計書 02-08「枠を降ろす原因と処理」）。
     // Escaping の最内の枠は ESCAPE の入口か、降ろす途中の呼び出し元である。
-    // 区画を抜けた直後には結果を書く予定がなく、分類できないので窓を保つ（ADR 0314）。
+    // 区画を抜けた直後には結果を書く予定がなく、分類できないので窓を保つ（設計書 02-08「枠を降ろす原因と処理」）。
     if returning.is_some_and(|work| work.stage == super::unwind::ReturnStage::Escaping) {
         return Ok(());
     }
@@ -421,7 +421,7 @@ fn frame_live_registers<'p>(
         )
     };
     // 番号は窓の相対位置であり、ret の区画内の位置とは異なる。集合全体を先に
-    // 確かめ、異常な番号の前にあるレジスタも保存する（ADR 0314、実装プラン R16）。
+    // 確かめ、異常な番号の前にあるレジスタも保存する（設計書 02-08「枠を降ろす原因と処理」、実装プラン R16）。
     if live.iter().any(|reg| u32::from(*reg) >= frame.size)
         || live.iter().zip(live.iter().skip(1)).any(|(a, b)| a >= b)
         || dest.is_some_and(|reg| u32::from(reg) >= frame.size)
@@ -432,7 +432,7 @@ fn frame_live_registers<'p>(
 }
 
 // 検証器のあるデバッグ構成へ強制展開すると一時変数の保存領域が増えるため、
-// 強制展開は最適化した構成に限る（ADR 0313 の決定 2）。
+// 強制展開は最適化した構成に限る（設計書 07-02「性能の関門」）。
 #[cfg_attr(debug_assertions, inline)]
 #[cfg_attr(not(debug_assertions), inline(always))]
 fn execute<'p, 'e>(
@@ -466,7 +466,7 @@ fn execute<'p, 'e>(
         .ok_or_else(|| missing("window missing"))?;
     let calls = &mut segment.calls;
     // 引数は使う分岐で復号し、通常のループで state と同時に保持する値を減らす
-    // （ADR 0313 の決定 2）。命令はこの match で一度だけ判定する（R15 手順 6）。
+    // （設計書 07-02「性能の関門」）。命令はこの match で一度だけ判定する（R15 手順 6）。
     macro_rules! binary_values {
         ($decode:expr, $operation:expr) => {{
             let [left, right] = read_pair(ctx, window, instr.b(), instr.c())?;
@@ -816,7 +816,7 @@ fn execute<'p, 'e>(
     )
 }
 
-// 包む枠のない戻りは ReturnWork を作らない（ADR 0313 の決定 3）。
+// 包む枠のない戻りは ReturnWork を作らない（設計書 02-08「実行の手順」）。
 #[cfg_attr(debug_assertions, inline)]
 #[cfg_attr(not(debug_assertions), inline(always))]
 fn return_plain<'p>(
@@ -927,7 +927,7 @@ fn execute_builtin<'a>(
     Ok(BuiltinEnd::Value)
 }
 
-// 第 1 段でも invoke はループの外にあった。応答の片付けをループへ展開しない（ADR 0313）。
+// 第 1 段でも invoke はループの外にあった。応答の片付けをループへ展開しない（設計書 07-02「性能の関門」）。
 #[inline(never)]
 fn invoke_pure<'e>(
     program: &CompiledProgram,
@@ -980,7 +980,7 @@ fn finish_builtin(
 }
 
 // State の操作はタスクを切り替えうるため、窓の借用を終えた後に
-// 同じ冷たい関数へ出す。通常の PRIM の振り分けには展開しない（ADR 0313）。
+// 同じ冷たい関数へ出す。通常の PRIM の振り分けには展開しない（設計書 07-02「性能の関門」）。
 enum BuiltinSlow<'a, 'p> {
     State {
         program: &'p CompiledProgram,
@@ -1007,7 +1007,7 @@ fn builtin_slow(
 }
 
 // 構築と構造の比較はループの外で行い、数値・跳躍・呼び出しの命令の経路を
-// 小さく保つ。振り分けの match は execute の一つだけである（ADR 0313 の決定 2）。
+// 小さく保つ。振り分けの match は execute の一つだけである（設計書 07-02「性能の関門」）。
 #[inline(never)]
 fn build_closure<'e>(
     program: &CompiledProgram,
@@ -1086,7 +1086,7 @@ fn build_constructor<'e>(
             return Err(missing("invalid reuse candidate"));
         }
     }
-    // マーク・スイープでは再利用しない。候補の形だけを確かめて新しく作る（10-07、ADR 0314）。
+    // マーク・スイープでは再利用しない。候補の形だけを確かめて新しく作る（10-07、設計書 02-08「実行の手順」）。
     let value = ctx.alloc_fields(FieldsKind::Ctor, ctor.tag, &args)?;
     write(ctx, window, a, value)?;
 
@@ -1119,7 +1119,7 @@ fn cold_binary<'e, T>(
 }
 
 // 引数は窓から窓へ直接写す。末尾では写し元が写し先より後ろなので、先頭から
-// 写せば未読の引数を壊さない（ADR 0313 の決定 3、ADR 0314）。
+// 写せば未読の引数を壊さない（設計書 02-08「実行の手順」）。
 // 通常と末尾の選択は命令の分岐で確定し、手順の途中で繰り返し判定しない（実装プラン R17）。
 #[inline]
 fn call<'p, 'e, const TAIL: bool>(
@@ -1181,7 +1181,7 @@ fn call<'p, 'e, const TAIL: bool>(
     let old_base_index = index(old_base)?;
     let old_end_index = index(old_end)?;
     let ret = if TAIL {
-        // 最も上の枠の終わりが regs.len() である形を使う（ADR 0313 の決定 3）。
+        // 最も上の枠の終わりが regs.len() である形を使う（設計書 02-08「実行の手順」）。
         debug_assert_eq!(old_end_index, segment.regs.len());
         None
     } else {
@@ -1232,8 +1232,8 @@ fn call<'p, 'e, const TAIL: bool>(
     }
     if TAIL {
         // 拡張前の最上位の枠の終わりは regs.len()。拡張後は旧窓と新窓の大きい方になる
-        // （ADR 0313 の決定 3）。窓の内部の旧値は回収の前に生存集合で空にする。
-        // コード生成した原型の入口では引数だけが生きている（R18、ADR 0314 の決定 2・3）。
+        // （設計書 02-08「実行の手順」）。窓の内部の旧値は回収の前に生存集合で空にする。
+        // コード生成した原型の入口では引数だけが生きている（R18、設計書 02-08「枠を降ろす原因と処理」）。
         debug_assert_eq!(old_end_index.max(end_index), segment.regs.len());
         // 窓の外になる場所だけを必ず空にしてから縮める（10-08「コード生成から受け取る生存の情報」）。
         if new_size < old_size {
@@ -1296,7 +1296,7 @@ fn call<'p, 'e, const TAIL: bool>(
 }
 
 // 保存して回収か切り替えへ出る二つの枝をまとめ、CALL/TAILCALL の機械語に
-// 枠の保存を二度展開しない（ADR 0313、実装プラン R25「切り替えの位置の集約」）。
+// 枠の保存を二度展開しない（設計書 07-02「性能の関門」、実装プラン R25「切り替えの位置の集約」）。
 #[cold]
 #[inline(never)]
 fn call_slow_path(
@@ -1337,7 +1337,7 @@ fn shrink_tail_window(
 }
 
 // 写し元は写し先より後ろにあり、先頭から写しても未読の引数に重ならない。
-// 最後の使用の移動はせず、写し終えた後に call が窓の外になった場所だけを空にする（ADR 0313・0314）。
+// 最後の使用の移動はせず、写し終えた後に call が窓の外になった場所だけを空にする（設計書 02-08「実行の手順」「枠を降ろす原因と処理」）。
 #[cfg_attr(debug_assertions, inline)]
 #[cfg_attr(not(debug_assertions), inline(always))]
 fn copy_tail_arguments(
@@ -1369,7 +1369,7 @@ fn copy_tail_arguments(
 }
 
 // 確保の結果を保存してから通知する。opcode を振り分けの後まで保持しない
-// （10-09「呼び出しの前の安全点」、ADR 0263 の決定 4）。
+// （10-09「呼び出しの前の安全点」、設計書 02-08「タスクの切り替え」）。
 #[cfg_attr(debug_assertions, inline)]
 #[cfg_attr(not(debug_assertions), inline(always))]
 fn after_alloc(state: &mut RunState, ctx: &NoGcCtx<'_>) -> Control {
@@ -1555,7 +1555,7 @@ fn integer_overflow() -> Stop {
     Stop::Runtime(RuntimeError::IntegerOverflow)
 }
 
-// 同じレジスタを二度使う命令でも、書き込みの前に両方を読む（10-07、ADR 0314）。
+// 同じレジスタを二度使う命令でも、書き込みの前に両方を読む（10-07）。
 #[cfg_attr(debug_assertions, inline)]
 #[cfg_attr(not(debug_assertions), inline(always))]
 fn read_pair<'e>(

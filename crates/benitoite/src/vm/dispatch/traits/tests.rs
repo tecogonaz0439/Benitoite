@@ -330,6 +330,7 @@ fn superclass_recipes_select_the_correct_dictionary() {
 // 関門: 末尾メソッドの呼び出しは枠を増やさず、窓が重なり・伸縮しても引数を保つ契約。
 // CALL のテストでは func の辞書への置き換えと TAILMETHOD の予算を通らない。
 #[test]
+#[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
 fn tail_methods_repeat_a_million_times_and_resize_windows() {
     for mutual in [false, true] {
         let mut b = ProgramBuilder::new();

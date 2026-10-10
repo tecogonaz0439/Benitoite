@@ -216,7 +216,7 @@ fn missing_and_case_only_names_do_not_depend_on_fs_case_sensitivity() {
             ("Lib/text.bnt", ""),
         ]);
         fs.case_insensitive = insensitive;
-        // 区別しない設定なら実際に開ける。それでも読み込みの段は一覧で拒む（ADR 0244）。
+        // 区別しない設定なら実際に開ける。それでも読み込みの段は一覧で拒む（02-04「モジュールの探し方」）。
         assert_eq!(
             fs.read_file(Path::new("/root/Lib/Text.bnt")).is_ok(),
             insensitive

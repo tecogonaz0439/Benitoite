@@ -1,4 +1,4 @@
-//! テストで差し替える部品（ADR 0274）: 次に進めるタスクを選ぶ部品、時計、作業用のスレッドの仕事の実行。
+//! テストで差し替える部品（設計書 07-03「順序を与えるスケジューラと仮想の時間（初回リリース版）」）: 次に進めるタスクを選ぶ部品、時計、作業用のスレッドの仕事の実行。
 
 use std::collections::VecDeque;
 use std::fmt::Debug;
@@ -121,7 +121,7 @@ impl Clock for RealClock {
         }
     }
     fn local_offset_minutes(&self) -> i32 {
-        // OS のデータだけを使い、取得できなければ UTC として扱う（ADR 0287 の決定 1）。
+        // OS のデータだけを使い、取得できなければ UTC として扱う（設計書 03-07「Clock」）。
         jiff::tz::TimeZone::try_system()
             .ok()
             .and_then(|zone| {
@@ -220,7 +220,7 @@ impl WorkerExec for ThreadWorkers {
             {
                 Ok(handle) => {
                     queue.threads = queue.threads.saturating_add(1);
-                    // 実行の終わりは仕事を待たない。JoinHandle を捨てて切り離す（ADR 0266 の決定 11）。
+                    // 実行の終わりは仕事を待たない。JoinHandle を捨てて切り離す（設計書 02-09「リソースの追跡」）。
                     drop(handle);
                 }
                 Err(error) if queue.threads == 0 => {
@@ -300,7 +300,7 @@ fn worker_loop(shared: Arc<SharedWork>, sender: mpsc::Sender<Completion>, wakeup
             queue.busy = queue.busy.saturating_sub(1);
         }
         // 受け取り側がなくなったときは SendError とともに returned を破棄し、OS の資源を閉じる
-        // （設計書 02-09「リソースの追跡」、ADR 0266 の決定 11）。
+        // （設計書 02-09「リソースの追跡」）。
         drop(sender.send(completion));
         wakeup.wake();
     }
@@ -314,7 +314,7 @@ impl Drop for ThreadWorkers {
             std::mem::take(&mut queue.jobs)
         };
         self.shared.available.notify_all();
-        // 未開始の仕事も実行せず捨てる。資源の破棄は列のロックの外で行う（ADR 0266 の決定 11）。
+        // 未開始の仕事も実行せず捨てる。資源の破棄は列のロックの外で行う（設計書 02-09「リソースの追跡」）。
         drop(jobs);
     }
 }
@@ -322,7 +322,7 @@ impl Drop for ThreadWorkers {
 #[cfg(test)]
 mod tests;
 
-/// テスト用のハンドラ表が返すネットワークの失敗（実装プラン 10-16、ADR 0222・0287）。
+/// テスト用のハンドラ表が返すネットワークの失敗（実装プラン 10-16、設計書 07-03「HTTP のテスト（初回リリース版）」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum NetworkFault {
     HostNotFound,

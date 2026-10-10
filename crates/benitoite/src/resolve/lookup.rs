@@ -475,7 +475,7 @@ impl Resolver<'_> {
     }
 
     // 最後の段は位置に合わせて、標準のモジュールの同名の型と省略できる構成子を選ぶ。
-    // 候補の検査も同じ変換を使い、実際には解決できない置き換えを付けない（01-03、ADR 0148）。
+    // 候補の検査も同じ変換を使い、実際には解決できない置き換えを付けない（01-03）。
     fn final_name(&self, mut id: BindingId, position: Position) -> BindingId {
         if matches!(
             position,
@@ -751,7 +751,7 @@ impl Resolver<'_> {
                 && let (Some(fn_span), Some(previous)) =
                     (fn_span, uses.effects.get(index.saturating_sub(1)))
             {
-                // 次の型として取り込まれた名前の直前で閉じると、コンマが外側の型の並びへ戻る（ADR 0047）。
+                // 次の型として取り込まれた名前の直前で閉じると、コンマが外側の型の並びへ戻る（02-04「誤りと修正案」）。
                 d = d.help_edits(
                     "paren",
                     vec![

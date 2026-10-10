@@ -1,4 +1,4 @@
-# cargo-about の設定（設計書 05-01「ライセンスの表示」、ADR 0235・0334、実装プラン 10-19「第三者のライセンスの表示」）。
+# cargo-about の設定（設計書 05-01「ライセンスの表示」、実装プラン 10-19「第三者のライセンスの表示」）。
 # accepted は deny.toml の [licenses] の allow と同じものを同じ並びで書く。cargo-about は並びを優先の順に読むので、
 # 二重ライセンスのクレート（MIT OR Apache-2.0 など）は MIT として載る。
 accepted = ["MIT", "Apache-2.0", "ISC", "BSD-3-Clause"]

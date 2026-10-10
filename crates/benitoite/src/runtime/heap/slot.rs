@@ -1,9 +1,9 @@
-//! 根の保存領域の一つの場所（Slot）と、一時的に値を保つ積み重ね（RootStack）（ADR 0260 の決定 4、ADR 0281）。
+//! 根の保存領域の一つの場所（Slot）と、一時的に値を保つ積み重ね（RootStack）（設計書 02-09「メモリの管理」）。
 
 use super::trace::{Discard, Discarder, Trace, Tracer};
 use super::value::{CtorTag, ObjRef, ResourceId, Value};
 
-/// ヒープの番号（ADR 0281）。`Heap::new` が、プロセスで一つの原子的な計数器から割り当てる。番地から作らない。
+/// ヒープの番号（設計書 02-09「メモリの管理」）。`Heap::new` が、プロセスで一つの原子的な計数器から割り当てる。番地から作らない。
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub(super) struct HeapNo(pub(super) u32);
 

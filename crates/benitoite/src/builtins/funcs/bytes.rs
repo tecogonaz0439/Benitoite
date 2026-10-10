@@ -226,7 +226,7 @@ fn parse_digits<'e>(
         .checked_div(width_u64)
         .ok_or_else(|| Stop::Internal("zero digit width".into()))?;
     let len = CheckedLen::bytes(len, function)?;
-    // 入力と桁数を先に検査したため、確保後は失敗せず順に書ける（設計書 03-06「Bytes と ByteOrder」）。
+    // 入力と桁数を先に検査したため、確保後は失敗せず順に書ける（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     let value = ctx.alloc_bytes_with(len, |out| {
         let mut digits = s.bytes().filter_map(|b| digit(b, bits));
         for byte in out {
@@ -360,7 +360,7 @@ mod tests {
         clippy::arithmetic_side_effects
     )]
     // 関門: 各本体の返す値・None・符号とバイト順を守る。ヒープや整数のテストは
-    // この変換の配線を通らない。直接の呼び出しは ADR 0276、長さの直接検査は L03 の指示。
+    // この変換の配線を通らない。直接の呼び出しは設計書 07-03「差分テスト」、長さの直接検査は L03 の指示。
     // 似た境界は表にまとめ、本番の公開範囲や差し込み口を増やさない。
     use super::*;
     use crate::builtins::iface::CallCtx;

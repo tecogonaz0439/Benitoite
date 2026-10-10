@@ -99,7 +99,7 @@ fn result_position_returns_pass_core_check() {
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
-// 関門: R は最も内側の関数の型であり、lazy の本体にはない（設計書 01-12「関数の境界と escape」）。
+// 関門: R は最も内側の関数の型であり、lazy の本体にはない（設計書 01-12「関数の境界と `escape`：途中の `return` と `try`」）。
 // 内側のラムダ・lazy の後で R を戻し忘れた場合、外側の with の return に誤った型が付く。
 // 途中の return・try と、ハンドラ・短絡の中には結果の位置を渡さないことも同じ境界で調べる。
 #[test]

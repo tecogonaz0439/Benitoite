@@ -93,7 +93,7 @@ builtin! {
         let status = ctx.field(response, 0).and_then(Value::as_int).ok_or_else(|| internal("HTTP response status missing"))?;
         if !(100..=599).contains(&status) { return Err(domain("Benitoite.Network.Http.respond")); }
         let headers = read_pairs(&ctx, ctx.field(response, 1).ok_or_else(|| internal("HTTP response headers missing"))?)?;
-        // 応答の分割を防ぐため、置き換えるヘッダも書き込み前に検査する（ADR 0331）。
+        // 応答の分割を防ぐため、置き換えるヘッダも書き込み前に検査する（設計書 03-09「サーバの接続と要求の読み方」）。
         if headers.iter().any(|(name, value)| {
             name.is_empty() || !name.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'!' | b'#' | b'$' | b'%' | b'&' | b'\'' | b'*' | b'+' | b'-' | b'.' | b'^' | b'_' | b'`' | b'|' | b'~'))
                 || !value.bytes().all(|b| matches!(b, b'\t' | b' '..=b'~' | 0x80..=0xff))

@@ -1,5 +1,5 @@
 //! パターンの行列から判定の木を作り、コア IR を下位 IR に移す
-//! （設計書 02-06「判定の木への変換」、ADR 0026・0159）。
+//! （設計書 02-06「判定の木への変換」）。
 
 use crate::base::{BindingId, Span};
 use crate::types::builtin::BuiltinTypeId;

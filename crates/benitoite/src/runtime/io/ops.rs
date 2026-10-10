@@ -1,4 +1,4 @@
-//! 外部の操作の記録と完了（ADR 0266 の決定 3・4・9・11）。
+//! 外部の操作の記録と完了（設計書 02-09「IO 実行器」「タスクの待ちと取り消し」「リソースの追跡」）。
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::BufRead;
@@ -163,7 +163,7 @@ impl OpTable {
     }
 }
 
-/// 完了を受け取る共通の処理（ADR 0266 の決定 4）。
+/// 完了を受け取る共通の処理（設計書 02-09「タスクの待ちと取り消し」）。
 /// `stdin` は、標準入力の読み手を返す置き場。
 pub fn accept_completion(
     ops: &mut OpTable,
@@ -266,7 +266,7 @@ pub(crate) fn check_completion(
     Ok(())
 }
 
-/// 貸したものを panic 境界の外に保ち、成功でも panic でも返す（ADR 0266 の決定 9）。
+/// 貸したものを panic 境界の外に保ち、成功でも panic でも返す（設計書 02-09「IO 実行器」）。
 pub(crate) fn execute_job(mut job: WorkerJob) -> Completion {
     use crate::builtins::iface::Lent;
     let outcome = crate::runtime::panic::catch(|| match job.work {

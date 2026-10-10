@@ -1,4 +1,4 @@
-//! 同梱の Agent Skill の埋め込みの一覧（設計書 06-06「同梱の Agent Skill の構成」、ADR 0230・0288）。
+//! 同梱の Agent Skill の埋め込みの一覧（設計書 06-06「同梱の Agent Skill の構成」）。
 //! 生成の道具（`cargo run -p benitoite --example gen_skill`）が書いたファイルであり、手で直さない。
 
 use super::SkillFile;

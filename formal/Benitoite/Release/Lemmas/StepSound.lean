@@ -41,7 +41,7 @@ theorem splitHandler_some {o : OpRef} : ∀ {k k1 : Cont} {h : List Clause} {k2 
                 simp only [Option.map_some, Option.some.injEq, Prod.mk.injEq] at e
                 obtain ⟨rfl, rfl, rfl⟩ := e
                 exact rest e' (fun h3 e3 => by cases e3; simpa using hh) rfl
-      | letF n | mark | update l | release v | drop κ =>
+      | letF n | mark | update l | release v | drop κ | guardF v arms next body =>
           simp only [splitHandler] at e
           cases e' : splitHandler o k with
           | none => rw [e'] at e; simp at e
@@ -69,7 +69,7 @@ theorem splitHandler_none {o : OpRef} : ∀ {k : Cont}, splitHandler o k = none 
             rcases List.mem_cons.mp hin with e3 | hin
             · cases e3; simpa using hh
             · exact hk h3 hin
-      | letF n | mark | update l | release v | drop κ =>
+      | letF n | mark | update l | release v | drop κ | guardF v arms next body =>
           simp only [splitHandler] at e
           have hk := splitHandler_none (k := k) (by
             cases e' : splitHandler o k with
@@ -115,6 +115,17 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
           | nil => simp [step] at h
           | cons f k =>
               cases f with
+              | guardF w arms next body =>
+                  cases v with
+                  | const c =>
+                      cases c with
+                      | boolean b =>
+                          cases b <;> simp only [step, Option.some.injEq, Prod.mk.injEq] at h <;>
+                            obtain ⟨rfl, rfl⟩ := h
+                          · exact .E_GuardF
+                          · exact .E_GuardT
+                      | _ => simp [step] at h
+                  | _ => simp [step] at h
               | letF n =>
                   simp only [step, Option.some.injEq, Prod.mk.injEq] at h
                   obtain ⟨rfl, rfl⟩ := h; exact .E_Return
@@ -264,11 +275,8 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
           · exact .E_IfF
           · exact .E_IfT
       | «match» v arms =>
-          simp only [step] at h
-          split at h
-          · rename_i m' ws e; simp only [Option.some.injEq, Prod.mk.injEq] at h
-            obtain ⟨rfl, rfl⟩ := h; exact .E_Match e
-          · simp at h
+          simp only [step, Option.some.injEq, Prod.mk.injEq] at h
+          obtain ⟨rfl, rfl⟩ := h; exact .E_Match
       | lazyC m =>
           simp only [step, Option.some.injEq, Prod.mk.injEq] at h
           obtain ⟨rfl, rfl⟩ := h; exact .E_Lazy hfr
@@ -277,6 +285,7 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
           | nil => simp [step] at h
           | cons f k =>
               cases f with
+              | guardF v arms next body => simp [step] at h
               | letF n =>
                   simp only [step, Option.some.injEq, Prod.mk.injEq] at h
                   obtain ⟨rfl, rfl⟩ := h; exact .E_EscLet
@@ -317,12 +326,39 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
             · rename_i e; simp only [Option.some.injEq, Prod.mk.injEq] at h
               obtain ⟨rfl, rfl⟩ := h; exact .E_ResumeErr e
             · simp at h
+  | matchRun v arms next k σ =>
+      simp only [step] at h
+      cases hi : arms[next]? with
+      | none => simp [hi] at h
+      | some arm =>
+          cases arm with
+          | mk alts guard body =>
+              rw [hi] at h
+              cases ha : firstAlt v alts with
+              | none =>
+                  simp only [ha, Option.some.injEq, Prod.mk.injEq] at h
+                  obtain ⟨rfl, rfl⟩ := h
+                  exact .E_MatchSkip hi ha
+              | some ws =>
+                  simp only [ha] at h
+                  cases guard with
+                  | none =>
+                      simp only [Option.some.injEq, Prod.mk.injEq] at h
+                      obtain ⟨rfl, rfl⟩ := h
+                      exact .E_MatchBody hi ha
+                  | some g =>
+                      simp only [Option.some.injEq, Prod.mk.injEq] at h
+                      obtain ⟨rfl, rfl⟩ := h
+                      exact .E_MatchGuard hi ha
   | error rs k σ =>
       obtain ⟨Ψ, R, a, b, ε, hσ, hk, _, _⟩ := hs
       cases k with
       | nil => simp [step] at h
       | cons f k =>
           cases f with
+          | guardF v arms next body =>
+              simp only [step, Option.some.injEq, Prod.mk.injEq] at h
+              obtain ⟨rfl, rfl⟩ := h; exact .E_ErrPopGuard
           | letF n =>
               simp only [step, Option.some.injEq, Prod.mk.injEq] at h
               obtain ⟨rfl, rfl⟩ := h; exact .E_ErrPopLet
@@ -355,6 +391,9 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
       | nil => simp [step] at h
       | cons f k =>
           cases f with
+          | guardF v arms next body =>
+              simp only [step, Option.some.injEq, Prod.mk.injEq] at h
+              obtain ⟨rfl, rfl⟩ := h; exact .E_ExitPopGuard
           | letF n =>
               simp only [step, Option.some.injEq, Prod.mk.injEq] at h
               obtain ⟨rfl, rfl⟩ := h; exact .E_ExitPopLet

@@ -1,21 +1,14 @@
 # 用語集
 
-- 状態: 確定
-- 関連ADR: [0005](../decisions/0005-direct-style-effects.md), [0015](../decisions/0015-shared-program-per-execution-state.md), [0018](../decisions/0018-reference-interpreter.md), [0021](../decisions/0021-comments-beside-ast.md), [0026](../decisions/0026-match-to-decision-trees.md), [0027](../decisions/0027-register-bytecode.md), [0029](../decisions/0029-two-io-execution-modes.md), [0034](../decisions/0034-call-trace-in-runtime-errors.md), [0044](../decisions/0044-heap-exhaustion-outside-stop-procedure.md), [0077](../decisions/0077-abolish-go-layer.md), [0078](../decisions/0078-reference-counting-in-minimal.md), [0079](../decisions/0079-rust-readings-of-go-based-decisions.md), [0115](../decisions/0115-structured-io-concurrency.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0117](../decisions/0117-capabilities-as-effects.md), [0118](../decisions/0118-effect-handlers.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0121](../decisions/0121-pattern-extensions.md), [0123](../decisions/0123-top-level-constants.md), [0124](../decisions/0124-type-aliases.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0127](../decisions/0127-directory-run-and-root.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0137](../decisions/0137-first-release-library-scope.md), [0139](../decisions/0139-external-functions-via-wasm.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0179](../decisions/0179-threat-model-and-server-mode-premise.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0183](../decisions/0183-single-policy-for-all-permission-layers.md), [0192](../decisions/0192-named-profiles-for-agents.md), [0195](../decisions/0195-daemon-as-os-user-service.md), [0196](../decisions/0196-os-sandbox-mechanisms.md), [0240](../decisions/0240-runtime-redesign-in-first-release-plan.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md), [0262](../decisions/0262-segment-frames-split-call-and-wrapping.md), [0264](../decisions/0264-single-dispatch-queue-for-builtin-operations.md), [0265](../decisions/0265-output-transfer-by-writer-threads.md), [0271](../decisions/0271-self-made-gc-as-exception.md), [0272](../decisions/0272-list-spread-in-list-literals.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md), [0294](../decisions/0294-lean-4-for-formal-verification.md), [0342](../decisions/0342-agent-harness-after-server-mode.md), [0343](../decisions/0343-agent-harness-user-config-file.md), [0344](../decisions/0344-agent-harness-operation-scope-and-tools.md), [0345](../decisions/0345-agent-harness-confirmation-and-server-approval.md), [0346](../decisions/0346-agent-harness-connects-to-daemon-directly.md), [0347](../decisions/0347-agent-harness-web-fetch.md), [0348](../decisions/0348-agent-harness-rewind-and-git.md), [0355](../decisions/0355-mark-sweep-k1-for-first-release.md)
-- 未決事項: [OPEN-049](../open-issues.md#open-049), [OPEN-050](../open-issues.md#open-050), [OPEN-051](../open-issues.md#open-051), [OPEN-055](../open-issues.md#open-055)
-- 移行元: [設計メモ](../sources/fp-language-design.md) なし
-
 ## 目的と範囲
 
-本設計書で使う術語の定義。
+本設計書（初回リリース版）で使う術語を定義する。
 
 語を次の三つに分けて定義する。
 
 - 関数型プログラミングの語: 関数型プログラミングで広く使われる概念。一般的な意味を定義し、Benitoite での扱いを添える。
 - 言語処理系の語: 言語処理系の設計と実装で広く使われる概念。一般的な意味を定義し、Benitoite での扱いを添える。
 - Benitoite の仕様と設計の語: 本設計書が定めた語と、Benitoite に固有の意味で使う語。定義は、その語の意味を定めている章（「定める章」）の要約であり、本章と定める章が食い違うときは、定める章を正とし、本章を直す。
-
-現在の版は、草稿の章で使う語を扱う。最小実行版の範囲の語に加え、初回リリース版の言語仕様（モジュール、レコード、型クラス、可変状態、エラー処理、明示遅延、リソース管理、エフェクトとハンドラ、権限）の語を含む。
 
 ## 前提
 
@@ -25,7 +18,7 @@
 - 直訳の術語より、意味の通る平易な語を選ぶ（`match` の arm を「分岐」と呼ぶ、など）。
 - 各文書でその語が最初に現れる箇所に、原語を全角の括弧で添える（`脱糖（desugaring）`）。見出しとリンクの文字には添えない。
 - 「言語処理系」は、略して「処理系」と書く。設計書の初出（[README](../README.md) と[目的と設計原則](00-01-goals.md)）と本章では、両方を示す。
-- 日本語の訳語が定まっていない語は、原語か片仮名で書く（`span`、`fuzzing`、`fine-grain call-by-value`）。「脱糖」を含め、訳語を改めるかどうかは決めていない。
+- 日本語の訳語が定まっていない語は、原語か片仮名で書く（`span`、`fuzzing`、`fine-grain call-by-value`）。
 
 原語の欄が「—」の語は、本設計書で定めた語である。
 
@@ -42,22 +35,24 @@
 | クロージャ | closure | 関数と、その関数が参照する外側の変数の値の組。関数が作られた後も、外側の変数を参照できる | ラムダの値はクロージャである。外側の値は、作るときに写して持つ（[バイトコードとコード生成](../02-impl/02-07-bytecode.md)の平らなクロージャ） |
 | カリー化 | currying | 複数の引数をとる関数を、引数を一つずつ受け取る関数の連なりとして扱うこと | Benitoite の関数はカリー化しない（[構文](../01-spec/01-02-syntax.md)、[評価意味論](../01-spec/01-08-evaluation.md)） |
 | 部分適用 | partial application | 関数の引数の一部だけを与え、残りの引数を受け取る関数を作ること | プレースホルダ `_` で明示する（[構文](../01-spec/01-02-syntax.md)） |
-| 代数的データ型 | algebraic data type | いくつかの構成子の並びで値の形を定める型。各構成子は引数を持ちうる | `data 名前 … end data` で宣言する（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)、[ADR 0256](../decisions/0256-data-keyword-for-algebraic-types.md)） |
-| データ構成子、構成子 | data constructor | 代数的データ型の値を作る名前 | 型名で修飾して書く（`Shape.Circle`、`Option.Some`、`Result.Error`）。ただし、構成子が一つだけで、その名前が型の名前と同じ型（`Pair`・`Triple`）の構成子と、初回リリース版のレコードの構築は、修飾せずに書ける（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)、[ADR 0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md)） |
+| 代数的データ型 | algebraic data type | いくつかの構成子の並びで値の形を定める型。各構成子は引数を持ちうる | `data 名前 … end data` で宣言する（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)） |
+| データ構成子、構成子 | data constructor | 代数的データ型の値を作る名前 | 型名で修飾して書く（`Shape.Circle`、`Option.Some`、`Result.Error`）。ただし、構成子が一つだけで、その名前が型の名前と同じ型（`Pair`・`Triple`）の構成子と、レコードの構築は、修飾せずに書ける（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)） |
 | パターンマッチ | pattern matching | 値をパターンに照合し、照合したパターンに応じて処理を選ぶこと。構成子の引数を変数に束縛して取り出せる | `match` 式で、上から順に照合し、最初に照合した分岐を選ぶ（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)） |
 | ワイルドカード | wildcard | すべての値に照合し、何も束縛しないパターン | `_` と書く（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)） |
-| 網羅性の検査 | exhaustiveness checking | パターンマッチが、対象の型のどの値にも照合するパターンを持つかを、実行前に調べること | 網羅していない `match` は型検査の誤りとする（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)） |
-| 多相 | polymorphism | 一つの名前を、使うたびに異なる型で使えること | 多相な名前は、トップレベルの関数・構成子・標準ライブラリの関数と、初回リリース版のレコードのフィールドを取り出す関数・型クラスのメソッドに限る（[型システム](../01-spec/01-06-type-system.md)） |
+| 網羅性の検査 | exhaustiveness checking | パターンマッチが、対象の型のどの値にも照合するパターンを持つかを、実行前に調べること | 網羅は、対象の型の値の形をしたどの値にもガードのない分岐のパターンが照合することと定め、型検査はそれより保守的な判定の規則で判定する。網羅したと判定しない `match` は型検査の誤りとする（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)） |
+| 値の形 | — | 値を構成子とリテラルの形だけで見たもの。宣言の構成子に、引数の型の値の形をした値を与えた値は、その型の値の形をしている。パターンで区別できない型（関数の型、型パラメータなど）には、どの値も属する | 網羅性の意味の定義に使う（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「型付け規則」） |
+| 有用性 | usefulness | パターンの並び q がパターンの行列 P に対して有用であるとは、q に照合し、P のどの行にも照合しない値の並びがあること。網羅性と選ばれない分岐の検査を、有用性の判定に帰着させる | 型検査は、型ごとの構成子の規則に従う手順で判定する。手順が有用でないと答えれば、意味の定義でも有用でない（[型検査器](../02-impl/02-05-typechecker.md)の「本体の後の検査」） |
+| 多相 | polymorphism | 一つの名前を、使うたびに異なる型で使えること | 多相な名前は、トップレベルの関数・構成子・標準ライブラリの関数と、レコードのフィールドを取り出す関数・型クラスのメソッドに限る（[型システム](../01-spec/01-06-type-system.md)） |
 | 型パラメータ | type parameter | 関数や型の宣言で宣言し、使うたびに型で置き換える名前 | `function f[T](...)` の `T`（[型システム](../01-spec/01-06-type-system.md)） |
 | HM 型推論 | Hindley–Milner type inference | 型注釈のない式の型を、単一化によって決める型推論の方式 | 関数の本体の中の型を決めるのに使う（[型システム](../01-spec/01-06-type-system.md)） |
 | 単一化 | unification | 二つの型を等しくするように、型変数に型を割り当てること | [型検査器](../02-impl/02-05-typechecker.md) |
 | 型変数 | type variable | 型推論の途中で、まだ決まっていない型を表すもの | 利用者が書く型には現れない（[型システム](../01-spec/01-06-type-system.md)） |
 | 型注釈 | type annotation | プログラムに書き込んだ型 | トップレベルの関数には必須、関数の本体の中では任意（[型システム](../01-spec/01-06-type-system.md)） |
-| エフェクト | effect | 計算が、値を返すことのほかに起こしうる作用（入出力、状態の変更など）。型でそれを追跡する方式をエフェクトシステムという | 関数の型が、起こしうるエフェクトの集合を持つ。最小実行版のエフェクトの名前は `IO` だけである。初回リリース版では、エフェクトはモジュールの中で宣言し、`Console.Write`・`File.Read` などの組み込みのエフェクトと、利用者が宣言したエフェクトがある（[ADR 0129](../decisions/0129-effects-declared-in-modules.md)、[型システム](../01-spec/01-06-type-system.md)、[エフェクト](../01-spec/01-07-effects.md)） |
-| 直接形式 | direct style | 外部に作用する処理を、普通の関数の呼び出しとして書き、結果をそのまま使う書き方。作用を値として組み立ててから実行する書き方（モナドの形）と対比する | Benitoite の表層の書き方である（[ADR 0005](../decisions/0005-direct-style-effects.md)） |
-| ケーパビリティ | capability | 操作を行う権利を表す値。値を渡された箇所だけが、その操作を行える | Benitoite はケーパビリティの値を設けず、影響の大きい操作をエフェクトで制限する（[ADR 0117](../decisions/0117-capabilities-as-effects.md)） |
-| 代数的エフェクト、ハンドラ | algebraic effect, handler | 代数的エフェクトは、操作の集まりとして宣言するエフェクト。ハンドラは、計算の中で呼んだ操作を受け取り、その意味を与える構文。ハンドラは、操作の後の続き（継続）を再開して、操作の結果を返せる | 初回リリース版で加える。継続は一度だけ再開できる（[エフェクト](../01-spec/01-07-effects.md)、[ADR 0118](../decisions/0118-effect-handlers.md)） |
-| 末尾で再開する節 | tail-resumptive clause | ハンドラの節のうち、節の本体のどの終わり方も末尾位置の `resume(v)` であり、`return` と `try` を含まないもの。タスクが引き継いだハンドラで処理する操作の節は、これに限る | 初回リリース版（[並行処理](../01-spec/01-11-concurrency.md)、[ADR 0151](../decisions/0151-inherited-handlers-tail-resume-only.md)） |
+| エフェクト | effect | 計算が、値を返すことのほかに起こしうる作用（入出力、状態の変更など）。型でそれを追跡する方式をエフェクトシステムという | 関数の型が、起こしうるエフェクトの集合を持つ。エフェクトはモジュールの中で宣言し、`Console.Write`・`File.Read` などの組み込みのエフェクトと、利用者が宣言したエフェクトがある（[型システム](../01-spec/01-06-type-system.md)、[エフェクト](../01-spec/01-07-effects.md)） |
+| 直接形式 | direct style | 外部に作用する処理を、普通の関数の呼び出しとして書き、結果をそのまま使う書き方。作用を値として組み立ててから実行する書き方（モナドの形）と対比する | Benitoite の表層の書き方である（[エフェクト](../01-spec/01-07-effects.md)） |
+| ケーパビリティ | capability | 操作を行う権利を表す値。値を渡された箇所だけが、その操作を行える | Benitoite はケーパビリティの値を設けず、影響の大きい操作をエフェクトで制限する（[エフェクト](../01-spec/01-07-effects.md)） |
+| 代数的エフェクト、ハンドラ | algebraic effect, handler | 代数的エフェクトは、操作の集まりとして宣言するエフェクト。ハンドラは、計算の中で呼んだ操作を受け取り、その意味を与える構文。ハンドラは、操作の後の続き（継続）を再開して、操作の結果を返せる | 継続は一度だけ再開できる（[エフェクト](../01-spec/01-07-effects.md)） |
+| 末尾で再開する節 | tail-resumptive clause | ハンドラの節のうち、節の本体のどの終わり方も末尾位置の `resume(v)` であり、`return` と `try` を含まないもの。タスクが引き継いだハンドラで処理する操作の節は、これに限る | [並行処理](../01-spec/01-11-concurrency.md) |
 | 正格評価 | strict evaluation | 関数を呼び出す前に、すべての引数を評価する評価の方式 | Benitoite の評価の方式である（[評価意味論](../01-spec/01-08-evaluation.md)） |
 | 短絡評価 | short-circuit evaluation | 論理演算で、左のオペランドで結果が決まれば右のオペランドを評価しないこと | `and` と `or`（[基本型の意味論](../01-spec/01-04-types-basic.md)） |
 | 末尾位置 | tail position | その位置の式の値が、そのまま関数の本体の値になる位置 | 末尾位置になる構文は[評価意味論](../01-spec/01-08-evaluation.md)で定める |
@@ -68,16 +63,19 @@
 | モナド | monad | 値をそのまま結果とする計算を作る操作（単位）と、計算の結果を次の計算に渡す操作（bind）を持ち、左単位則・右単位則・結合則を満たす構造 | コア計算の `return` と `let` がこれに当たる。コア計算の `return` は、表層の `return` とは別のものである（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)） |
 | 単位、bind | unit (return), bind | モナドの二つの操作 | 同上。モナドの bind は、表層の束縛の文の `bind`（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)）とは別のものである |
 | 左単位則、右単位則、結合則 | left identity, right identity, associativity | モナドの操作が満たす三つの等式 | 処理系が左辺を右辺に置き換えてよい等式として現れる（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)） |
-| 自由モナド | free monad | 計算を、操作と「その後の続き」を表すデータの組み合わせとして表し、解釈器が一つずつ実行する形のモナド | IO の内部表現の試作の一方に当たる（[ADR 0005](../decisions/0005-direct-style-effects.md)、[ADR 0029](../decisions/0029-two-io-execution-modes.md)） |
-| Freer モナド | freer monad | 自由モナドの一種で、操作とその後の続きの組を解釈器が扱う形のもの | IO の「要求と応答」の方式が、これを実行時に実現する（[ADR 0029](../decisions/0029-two-io-execution-modes.md)） |
-| 永続データ構造 | persistent data structure | 変更の操作が元の値を変えず、新しい値を返すデータ構造。古い値も使い続けられる | 最小実行版の `List` がこれに当たる。初回リリース版で永続コレクションを加える（[標準ライブラリ](../03-interop/03-06-stdlib.md)） |
+| 自由モナド | free monad | 計算を、操作と「その後の続き」を表すデータの組み合わせとして表し、解釈器が一つずつ実行する形のモナド | Freer モナドの元になる形 |
+| Freer モナド | freer monad | 自由モナドの一種で、操作とその後の続きの組を解釈器が扱う形のもの | IO の「要求と応答」の方式が、これを実行時に実現する（[仮想機械](../02-impl/02-08-vm.md)、[ランタイム](../02-impl/02-09-runtime.md)） |
+| 永続データ構造 | persistent data structure | 変更の操作が元の値を変えず、新しい値を返すデータ構造。古い値も使い続けられる | `List`・`Map`・`Set` などの永続コレクションがこれに当たる（[標準ライブラリ](../03-interop/03-06-stdlib.md)） |
 | 構造共有 | structural sharing | 永続データ構造で、複数の値が同じ部分を写さずに共有すること | 更新したリストが、変わらない木のノードと葉を元のリストと共有する（[標準ライブラリ](../03-interop/03-06-stdlib.md)の「List の内部の表現」） |
-| 単方向の連結リスト | singly linked list | 要素と、次の要素への参照を持つセルの連なり | 最小実行版の処理系の `List[T]` の内部の表現。初回リリース版では永続ベクタに替える（[ADR 0104](../decisions/0104-list-as-persistent-vector.md)） |
-| 永続ベクタ | persistent vector | 添字での参照と末尾への追加を対数時間で行い、更新しても元の値を変えない列のデータ構造。分岐の多い木で表す | 初回リリース版の `List[T]` の内部の表現。RRB 木で表す（[標準ライブラリ](../03-interop/03-06-stdlib.md)） |
-| 組 | — | 名前を付けずに値を並べた値。`Pair`（2 要素）と `Triple`（3 要素）だけを設け、4 要素以上はレコードで書く | 初回リリース版（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)） |
-| ガード | guard | `match` の分岐のパターンの後に `if` で書く条件（`case n if n > 0 ->`）。パターンが照合しても、条件が `false` ならその分岐を選ばない | 初回リリース版（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)） |
-| 必ず照合するパターン | irrefutable pattern | 型のどの値にも照合するパターン。束縛の文の左辺に書ける | 初回リリース版（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)） |
-| 鍵の型、鍵の順序 | — | マップの鍵と集合の要素に使える型（`Float` を含まない等値の型）と、その値に定める全順序。型パラメータは、組み込みの制約 `key` を付けたときに鍵の型として扱う | 初回リリース版（[型システム](../01-spec/01-06-type-system.md)、[標準ライブラリ](../03-interop/03-06-stdlib.md)） |
+| 単方向の連結リスト | singly linked list | 要素と、次の要素への参照を持つセルの連なり | `List[T]` の内部の表現には使わず、永続ベクタを使う（[標準ライブラリ](../03-interop/03-06-stdlib.md)） |
+| 永続ベクタ | persistent vector | 添字での参照と末尾への追加を対数時間で行い、更新しても元の値を変えない列のデータ構造。分岐の多い木で表す | `List[T]` の内部の表現。RRB 木で表す（[標準ライブラリ](../03-interop/03-06-stdlib.md)） |
+| 組 | — | 名前を付けずに値を並べた値。`Pair`（2 要素）と `Triple`（3 要素）だけを設け、4 要素以上はレコードで書く | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| ガード | guard | `match` の分岐のパターンの後に `if` で書く条件（`case n if n > 0 ->`）。パターンが照合しても、条件が `false` ならその分岐を選ばない | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| 選択肢 | alternative | `match` の一つの分岐に、コンマで区切って並べたパターンの一つ（`case 1, 2 ->`）。左から順に調べ、どれかが照合すればその分岐を選ぶ。すべての選択肢は、同じ名前の変数を同じ型で束縛する | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| 範囲のパターン | range pattern | `下端..上端` の形のパターン（`1..9`、`'a'..'z'`）。両端を含む範囲の `Integer` か `Character` の値に照合する | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| リストのパターン | list pattern | `[` `]` で要素のパターンを並べたパターン（`[]`、`[first, ..rest]`）。`..` を含まなければ長さが要素の数と等しいリストに、含めば長さがそれ以上のリストに照合する。`..` の後の名前は、前と後の要素に照合しなかった部分のリストを束縛する | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| 必ず照合するパターン | irrefutable pattern | 型のどの値にも照合するパターン。束縛の文の左辺に書ける | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| 鍵の型、鍵の順序 | — | マップの鍵と集合の要素に使える型（`Float` を含まない等値の型）と、その値に定める全順序。型パラメータは、組み込みの制約 `key` を付けたときに鍵の型として扱う | [型システム](../01-spec/01-06-type-system.md)、[標準ライブラリ](../03-interop/03-06-stdlib.md) |
 | バイト順 | byte order, endianness | 複数のバイトで表した数の、バイトを並べる順序。上位のバイトが先（ビッグエンディアン）か、下位のバイトが先（リトルエンディアン）か | `ByteOrder` の型で指定する（[標準ライブラリ](../03-interop/03-06-stdlib.md)） |
 
 ### 言語処理系
@@ -91,48 +89,48 @@
 | 糖衣、糖衣構文 | syntactic sugar | ほかの構文の組み合わせで書けるものを、短く書けるようにした構文 | パイプとプレースホルダ（[構文](../01-spec/01-02-syntax.md)） |
 | 脱糖 | desugaring | 糖衣構文を、より小さな構文の組み合わせに書き換えること。広くは、表層の構文を処理系の内部の小さな言語に移すこと | 表層の構文をコア計算と処理系の中間表現に移す（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)、[中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md)） |
 | 抽象構文木、AST | abstract syntax tree | プログラムの構文の構造を、意味に関わる部分だけで表した木 | すべてのノードが span を持つ（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)） |
-| 具象構文木 | concrete syntax tree | 空白・改行・コメントを含むすべての字句を持ち、ソースを元どおりに復元できる木 | 作らない（[ADR 0021](../decisions/0021-comments-beside-ast.md)） |
-| フォーマッタ、正規形 | formatter, canonical form | フォーマッタは、ソースの書き方（空白、字下げ、空の行など）を決まった規則に揃えるプログラム。正規形は、その規則で整えた結果の書き方 | CLI の `fmt` で使う。設定を持たず、書き手の改行の位置を保ち、空白と字下げだけを変える（[フォーマッタ](../06-tooling/06-03-formatter.md)、[ADR 0225](../decisions/0225-formatter-without-configuration.md)〜[ADR 0228](../decisions/0228-formatter-comments-blank-lines-and-characters.md)） |
+| 具象構文木 | concrete syntax tree | 空白・改行・コメントを含むすべての字句を持ち、ソースを元どおりに復元できる木 | 作らない。コメントは AST の外に持つ（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)） |
+| フォーマッタ、正規形 | formatter, canonical form | フォーマッタは、ソースの書き方（空白、字下げ、空の行など）を決まった規則に揃えるプログラム。正規形は、その規則で整えた結果の書き方 | CLI の `fmt` で使う。設定を持たず、書き手の改行の位置を保ち、空白と字下げだけを変える（[フォーマッタ](../06-tooling/06-03-formatter.md)） |
 | 再帰下降 | recursive descent | 文法の規則ごとに関数を書き、関数が互いに呼び合って構文を解析する方式 | 構文解析器の方式（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)） |
 | Pratt 法 | Pratt parsing | 演算子ごとの結合の強さの表を使って、式を解析する方式 | 式の演算子の解析に使う（[字句解析器と構文解析器](../02-impl/02-03-frontend.md)） |
 | span | span | ソース上の範囲 | ファイル ID と、開始と終了のバイトの位置の組（[ソース管理と位置情報](../02-impl/02-02-source-and-spans.md)） |
 | 束縛、有効範囲 | binding, scope | 名前と、それが指すものの組を束縛と呼び、束縛した名前を参照できるプログラムの範囲を有効範囲と呼ぶ | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
-| 名前空間 | namespace | 名前が衝突するかを判定する範囲 | 一つのモジュールのトップレベルの大文字の名前は、型・エフェクトと、初回リリース版のレコード・型クラス・型の別名・取り込んだモジュールの名前で一つの名前空間を共有する。標準ライブラリは名前空間 `Benitoite` の下に置く（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)、[ADR 0148](../decisions/0148-keep-qualified-constructors-and-shared-namespace.md)） |
-| シャドーイング | shadowing | 内側の束縛が、外側の同じ名前を隠すこと | 局所の名前を隠す束縛は、束縛の文の `shadow` でだけ書ける。ラムダの引数、`match` の分岐のパターンの変数、`handle` の節の引数、`with` の束縛が局所の名前を隠すことは誤りとする。トップレベルの関数と定数は `bind` で隠してよい（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[ADR 0255](../decisions/0255-bind-and-shadow.md)） |
+| 名前空間 | namespace | 名前が衝突するかを判定する範囲 | 一つのモジュールのトップレベルの大文字の名前は、型・エフェクトと、レコード・型クラス・型の別名・取り込んだモジュールの名前で一つの名前空間を共有する。標準ライブラリは名前空間 `Benitoite` の下に置く（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)） |
+| シャドーイング | shadowing | 内側の束縛が、外側の同じ名前を隠すこと | 局所の名前を隠す束縛は、束縛の文の `shadow` でだけ書ける。ラムダの引数、`match` の分岐のパターンの変数、`handle` の節の引数、`with` の束縛が局所の名前を隠すことは誤りとする。トップレベルの関数と定数は `bind` で隠してよい（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)） |
 | 型検査 | type checking | プログラムが型の規則に適合するかを、実行前に調べること | Benitoite の型検査は、型推論とエフェクトの検査とパターンマッチの検査を含む（[型検査器](../02-impl/02-05-typechecker.md)） |
 | 型付け規則 | typing rule | 項に型が付く条件を、前提と結論の形で定める規則 | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
 | 制約 | constraint | 型推論で、型が満たすべき条件として集めるもの | 型が等しい、値が流れ込む、演算子の型の集まり、等値の型、エフェクトの包含（[型検査器](../02-impl/02-05-typechecker.md)） |
 | 出現検査 | occurs check | 型変数を、それ自身を含む型と等しくしようとしていないかを調べること | [型検査器](../02-impl/02-05-typechecker.md) |
 | 有用性 | usefulness | パターンの並びが、既にあるパターンの行列のどの行にも照合しない値に照合しうること | 網羅性と選ばれない分岐の検査に使う（[型検査器](../02-impl/02-05-typechecker.md)） |
 | 中間表現 | intermediate representation | 言語処理系が、ソースと出力（機械語やバイトコード）の間で持つプログラムの表現 | コア IR と下位 IR の二段階（[中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md)） |
-| 判定の木 | decision tree | パターンマッチを、値の一部の構成子や定数で分岐する節の入れ子に変換したもの | `match` をこれにコンパイルする（[ADR 0026](../decisions/0026-match-to-decision-trees.md)） |
+| 判定の木 | decision tree | パターンマッチを、値の一部の構成子や定数で分岐する節の入れ子に変換したもの | `match` をこれにコンパイルする（[中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md)） |
 | バイトコード | bytecode | 仮想機械が実行する命令の列 | 64 ビット固定長の命令（[バイトコードとコード生成](../02-impl/02-07-bytecode.md)） |
 | 仮想機械、VM | virtual machine | バイトコードを読んで実行するプログラム | 自作のバイトコード VM で実行する（[仮想機械](../02-impl/02-08-vm.md)） |
-| レジスタ型、スタック型 | register-based, stack-based | バイトコードの命令の形。レジスタ型は命令が操作対象のレジスタの番号を持ち、スタック型は値をスタックに積み降ろしする | レジスタ型である（[ADR 0027](../decisions/0027-register-bytecode.md)） |
+| レジスタ型、スタック型 | register-based, stack-based | バイトコードの命令の形。レジスタ型は命令が操作対象のレジスタの番号を持ち、スタック型は値をスタックに積み降ろしする | レジスタ型である（[バイトコードとコード生成](../02-impl/02-07-bytecode.md)） |
 | 関数の原型 | function prototype | 関数ごとに持つ、命令列・使う定数の番号の並び・分岐表・レジスタの数・位置の表などの組 | [バイトコードとコード生成](../02-impl/02-07-bytecode.md) |
 | 分岐表 | branch table | 値のタグから跳ぶ先の命令を引く表。`match` の分岐を一つの命令で選ぶために使う | [バイトコードとコード生成](../02-impl/02-07-bytecode.md) |
 | 平らなクロージャ | flat closure | クロージャが参照する外側の変数の値を、クロージャを作るときに写して持つ方式 | [バイトコードとコード生成](../02-impl/02-07-bytecode.md) |
 | 最長一致 | longest match | 字句や名前の並びを、規則に合う限りできるだけ長く読み取ること | 字句の区切りと、型の `uses` の後の名前の並びで使う（[字句構造](../01-spec/01-01-lexical.md)、[構文](../01-spec/01-02-syntax.md)） |
 | 呼び出しの枠 | call frame | 関数を呼び出すたびに積む、その呼び出しの実行の記録（呼び出された関数、次に実行する位置、局所の値など） | VM は呼び出しの枠をデータとして持ち、処理系のスタックを使わない（[仮想機械](../02-impl/02-08-vm.md)）。コア計算の「枠」とは別の語である |
-| ガベージコレクション、GC | garbage collection | 使われなくなったメモリを自動で回収すること | 最小実行版は参照カウントで回収する（[ADR 0078](../decisions/0078-reference-counting-in-minimal.md)）。初回リリース版は、回収を安全点に限るマーク・スイープと、改良した参照カウントを試作して比べ、マーク・スイープに決めた（[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)、[ADR 0355](../decisions/0355-mark-sweep-k1-for-first-release.md)）。GC は、目的と設計原則の線引きの例外として自作する（[ADR 0271](../decisions/0271-self-made-gc-as-exception.md)） |
-| 参照カウント | reference counting | 値ごとに、その値を指す参照の数を数え、数が 0 になった時点で値を解放する方式。参照が循環する値は解放されない | 最小実行版の値の管理に使う。最小実行版の言語では値が循環しない（[ADR 0078](../decisions/0078-reference-counting-in-minimal.md)、[ランタイム](../02-impl/02-09-runtime.md)） |
-| マーク・スイープ | mark-sweep | 根から辿れる対象に印を付け（mark）、印のない対象をまとめて解放する（sweep）GC の方式。対象を動かさない形では、対象の番地が変わらない | 初回リリース版のメモリの管理に使う。改良した参照カウントと比べて選び、対象を動かさない形で、回収を安全点に限って行う（[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)、[ADR 0355](../decisions/0355-mark-sweep-k1-for-first-release.md)） |
+| ガベージコレクション、GC | garbage collection | 使われなくなったメモリを自動で回収すること | 回収を安全点に限るマーク・スイープで回収する。GC は、目的と設計原則の線引きの例外として自作する（[ランタイム](../02-impl/02-09-runtime.md)の「メモリの管理」、[ロードマップ](00-03-roadmap.md)） |
+| 参照カウント | reference counting | 値ごとに、その値を指す参照の数を数え、数が 0 になった時点で値を解放する方式。参照が循環する値は解放されない | 言語の値の管理には使わず、マーク・スイープを使う（[ランタイム](../02-impl/02-09-runtime.md)） |
+| マーク・スイープ | mark-sweep | 根から辿れる対象に印を付け（mark）、印のない対象をまとめて解放する（sweep）GC の方式。対象を動かさない形では、対象の番地が変わらない | メモリの管理に使う。対象を動かさない形で、回収を安全点に限って行う（[ランタイム](../02-impl/02-09-runtime.md)の「メモリの管理」） |
 | 根 | root | GC が、生きている対象を辿り始める起点。VM のレジスタ、実行ごとの状態が持つ値など | [ランタイム](../02-impl/02-09-runtime.md)の「メモリの管理」 |
-| 安全点 | safepoint | この先使う値がすべて根から辿れ、対象の初期化と所有の移動が終わっている、実行の中の位置。GC はここでだけ回収する | タスクの切り替えの位置と、続けて戻る処理と後始末の途中に置く（[ADR 0259](../decisions/0259-compare-mark-sweep-and-rc-in-stage-1.md)、[仮想機械](../02-impl/02-08-vm.md)の「タスクの切り替え」） |
-| abort | abort | プロセスを、後始末や巻き戻しをせずに直ちに終わらせること。Rust の標準ライブラリは、ヒープの確保に失敗したとき、標準エラー出力にメッセージを書いて abort する | ヒープの確保に失敗したとき、最小実行版の処理系はこれで終わる。終了状態は OS が決める（[ADR 0044](../decisions/0044-heap-exhaustion-outside-stop-procedure.md)、[ADR 0079](../decisions/0079-rust-readings-of-go-based-decisions.md)） |
-| 再入可能性 | reentrancy | 処理系を、複数の実行や複数のスレッドから同時に使えること | コンパイル済みプログラムを共有し、実行中の状態を実行ごとに分ける（[ADR 0015](../decisions/0015-shared-program-per-execution-state.md)） |
+| 安全点 | safepoint | この先使う値がすべて根から辿れ、対象の初期化と所有の移動が終わっている、実行の中の位置。GC はここでだけ回収する | タスクの切り替えの位置と、続けて戻る処理と後始末の途中に置く（[仮想機械](../02-impl/02-08-vm.md)の「タスクの切り替え」） |
+| abort | abort | プロセスを、後始末や巻き戻しをせずに直ちに終わらせること。Rust の標準ライブラリは、ヒープの確保に失敗したとき、標準エラー出力にメッセージを書いて abort する | ヒープの確保に失敗したとき、処理系はこれで終わる。終了状態は OS が決める（[ランタイム](../02-impl/02-09-runtime.md)、[CLI](../06-tooling/06-01-cli.md)） |
+| 再入可能性 | reentrancy | 処理系を、複数の実行や複数のスレッドから同時に使えること | コンパイル済みプログラムを共有し、実行中の状態を実行ごとに分ける（[パイプライン](../02-impl/02-01-pipeline.md)） |
 | 抽象機械 | abstract machine | 状態と、状態のあいだの遷移の規則で、プログラムの実行を定めるもの | コア計算の抽象機械の状態は、計算と継続の組である（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)） |
 | 進行と保存 | progress and preservation | 型が付いた状態は、終わっているか遷移でき（進行）、遷移した先も型が付く（保存）という性質。型の健全性を示す標準的な二つの性質 | 形式検証の段階 1 で反例を探し、段階 2 で証明する（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)、[形式意味論と検証](../07-quality/07-04-formal-semantics.md)） |
-| 証明支援系 | proof assistant | 定義と定理を形式的な言語で書き、定理の証明が正しいことを機械で検査する道具。Lean・Rocq（旧 Coq）・Agda など | 形式検証の段階 2 に Lean 4 を使う（[ADR 0294](../decisions/0294-lean-4-for-formal-verification.md)、[形式意味論と検証](../07-quality/07-04-formal-semantics.md)） |
-| 参照インタプリタ | reference interpreter | 言語の意味の定義にそのまま従って実行する、速さを求めないインタプリタ。ほかの実装の正しさを確かめる基準に使う | コア IR を実行し、テストだけに使う（[ADR 0018](../decisions/0018-reference-interpreter.md)） |
+| 証明支援系 | proof assistant | 定義と定理を形式的な言語で書き、定理の証明が正しいことを機械で検査する道具。Lean・Rocq（旧 Coq）・Agda など | 形式検証の段階 2 に Lean 4 を使う（[形式意味論と検証](../07-quality/07-04-formal-semantics.md)） |
+| 参照インタプリタ | reference interpreter | 言語の意味の定義にそのまま従って実行する、速さを求めないインタプリタ。ほかの実装の正しさを確かめる基準に使う | コア IR を実行し、テストだけに使う（[パイプライン](../02-impl/02-01-pipeline.md)） |
 | 差分テスト | differential testing | 同じ入力を二つの実装で処理し、結果を比べるテスト | 参照インタプリタと VM を比べる。IO の二つの実行方式を比べるテストは、別の種類として扱う（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)） |
 | ゴールデンテスト | golden test | 処理の結果を、ファイルに置いた期待値と比べるテスト | [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md) |
 | fuzzing | fuzzing | 自動で作った多数の入力を与えて、不具合が起きないかを調べるテスト | [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md) |
 | 冪等性 | idempotence | 同じ操作を二度以上行っても、一度行ったときと結果が変わらない性質 | フォーマッタの整形は冪等である。正規形のソースを整形しても変わらないことを、ゴールデンテストと fuzzing で確かめる（[フォーマッタ](../06-tooling/06-03-formatter.md)、[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)） |
 | ベンチマーク | benchmark | 性能を測るために決めたプログラムと入力の組 | [性能](../07-quality/07-02-performance.md) |
 | 編集距離 | edit distance | 一方の文字列を他方にするのに要る、1 文字の挿入・削除・置換の最小の回数（レーベンシュタイン距離） | 見つからない名前の修正案を選ぶのに使う（[名前解決とモジュール読込](../02-impl/02-04-resolver.md)） |
-| 終了状態 | exit status | プロセスが終わるときに返す値 | 0 は成功、1 は実行の失敗、2 は検査と使い方の誤り、3 は処理系の不具合。初回リリース版では、`Process.exit` が指定した値と、中断の要求で終えたときの 130 もある（[CLI](../06-tooling/06-01-cli.md)） |
-| シェバン、シェバンの行 | shebang | スクリプトのファイルの 1 行目に `#!` で書く、実行に使うプログラムの指定。字句解析はファイルの先頭のシェバンの行を読み飛ばす。推奨の形は `#!/usr/bin/env benitoite` | 初回リリース版（[字句構造](../01-spec/01-01-lexical.md)、[CLI](../06-tooling/06-01-cli.md)、[ADR 0135](../decisions/0135-shebang-line-and-implicit-run.md)） |
+| 終了状態 | exit status | プロセスが終わるときに返す値 | 0 は成功、1 は実行の失敗、2 は検査と使い方の誤り、3 は処理系の不具合。ほかに、`Process.exit` が指定した値と、中断の要求で終えたときの 130 もある（[CLI](../06-tooling/06-01-cli.md)） |
+| シェバン、シェバンの行 | shebang | スクリプトのファイルの 1 行目に `#!` で書く、実行に使うプログラムの指定。字句解析はファイルの先頭のシェバンの行を読み飛ばす。推奨の形は `#!/usr/bin/env benitoite` | [字句構造](../01-spec/01-01-lexical.md)、[CLI](../06-tooling/06-01-cli.md) |
 
 ### Benitoite の仕様と設計
 
@@ -142,88 +140,82 @@
 |---|---|---|---|
 | 利用者 | user | Benitoite のスクリプトを使う人。プログラマに限らず、LLM にスクリプトを書かせ、許可する操作と実行結果を確かめる | [目的と設計原則](00-01-goals.md) |
 | 設計者 | designer | Benitoite を設計する人。処理系を手で実装せず、LLM が書いた実装を読んで学ぶ | [目的と設計原則](00-01-goals.md) |
-| 最小実行版 | — | 言語の中核の小さな部分集合を、検査から実行まで一通り動かす版。利用者には提供しない。バージョンは `0.0.0` | [ロードマップ](00-03-roadmap.md) |
-| 初回リリース版 | — | Agent Skills から実用的な作業を自動化できる、利用者に提供する最初の版。機能の範囲（マイルストーン）の名前であり、その範囲を最初にリリースする版は `0.0.1`（ソースコードだけ）、実行ファイルを配る最初の版は `0.1.0` である | [ロードマップ](00-03-roadmap.md) |
-| 正式リリース版 | — | 互換性を壊す変更を、メジャーバージョンを上げる版に限る最初の版。バージョンは `1.0.0` | [ロードマップ](00-03-roadmap.md) |
-| バージョン、コードネーム | version, codename | バージョンは処理系の版を表すメジャー・マイナー・パッチの三つの数。コードネームは、メジャーバージョンのまとまりに付ける名前（1 までは `San Benito`） | [ロードマップ](00-03-roadmap.md) |
+| 最小実行版 | — | 初回リリース版より前に、言語の中核の小さな部分集合を検査から実行まで一通り動かした版。利用者には提供していない | — |
+| 初回リリース版 | — | Agent Skills から実用的な作業を自動化できる、利用者に提供する最初の版。機能の範囲の名前であり、その範囲を最初にリリースする版は `0.0.1`（ソースコードだけ）である | [ロードマップ](00-03-roadmap.md) |
+| バージョン、コードネーム | version, codename | バージョンは処理系の版を表すメジャー・マイナー・パッチの三つの数。コードネームは、メジャーバージョンのまとまりに付ける名前（メジャーバージョンが 1 の間までは `San Benito`） | [ロードマップ](00-03-roadmap.md) |
 | 検査、実行 | check, run | 処理系の段のうち、型検査までを検査、それより後を実行と呼ぶ。実行は検査を通ったスクリプトに対してだけ行う | [全体像](00-02-architecture.md) |
 | 段 | stage | 処理系がスクリプトを順に処理する単位（字句解析、構文解析、名前解決、型検査など） | [パイプライン](../02-impl/02-01-pipeline.md) |
 | 診断 | diagnostic | 処理系が、誤りや注意をソース上の位置とともに報告するもの。検査の誤りと警告がある | [診断エンジン](../02-impl/02-10-diagnostics.md) |
 | 契約、権限 | contract, permission | 契約は、関数の型とエフェクトの注釈が表す、関数が受け取るもの・返すもの・行いうる操作の約束。権限は、利用者が実行を許可する操作の範囲 | [目的と設計原則](00-01-goals.md)、[全体像](00-02-architecture.md) |
-| 実行時の権限制御 | — | 実行の途中で、利用者が許可していない操作を処理系が拒否し、実行時エラーにすること。スクリプトは権限を宣言せず、利用者が方針として許可を与える（[ADR 0183](../decisions/0183-single-policy-for-all-permission-layers.md)、[ADR 0187](../decisions/0187-standalone-reads-user-policy-file.md)）。ネットワークの操作の対象の書き方などは未決である（[OPEN-052](../open-issues.md#open-052)）。エフェクトの静的な追跡とは別の機構である。初回リリース版には含めず、初回リリース版の後にサーバモードとあわせて加える（[ADR 0177](../decisions/0177-server-mode-after-first-release.md)） | [エフェクト](../01-spec/01-07-effects.md)、[セキュリティモデル](../07-quality/07-01-security-model.md)、[サーバモード](../06-tooling/06-07-server.md) |
-| スタンドアロンモード | standalone mode | サーバモードを使わずに、コマンド `benitoite` にスクリプトを指定して実行する形。初回リリース版の実行の形はこれだけであり、初回リリース版では実行時の権限制御を行わない。サーバモードを加えた後は、利用者単位の方針のファイルを読み、OS のサンドボックスを掛けた子プロセスでスクリプトを実行し、実行時の権限制御を行う（[ADR 0187](../decisions/0187-standalone-reads-user-policy-file.md)、[ADR 0204](../decisions/0204-standalone-runs-in-sandboxed-child.md)） | [ロードマップ](00-03-roadmap.md)、[サーバモード](../06-tooling/06-07-server.md)、[ADR 0177](../decisions/0177-server-mode-after-first-release.md) |
-| サーバモード | server mode | スクリプトを実行するデーモンを利用者の権限で動かし、スクリプトの登録、登録したスクリプトの背景での実行、コーディングエージェントが渡すスクリプトの実行を受け付ける形。実行時の権限制御、OS のサンドボックスによる強制、MCP サーバとあわせて、初回リリース版の後に加える。主な設計は[サーバモード](../06-tooling/06-07-server.md)で定め、細部が残る（[OPEN-055](../open-issues.md#open-055)） | [ロードマップ](00-03-roadmap.md)、[サーバモード](../06-tooling/06-07-server.md)、[ADR 0177](../decisions/0177-server-mode-after-first-release.md) |
-| デーモン | daemon | サーバモードで常に動かしておくプロセス。要求を受け、登録したスクリプトと方針を管理し、実行ごとの子プロセスを起動する。OS のユーザーのサービスとして動かす | [サーバモード](../06-tooling/06-07-server.md)、[ADR 0195](../decisions/0195-daemon-as-os-user-service.md) |
-| ジョブ | job | サーバモードでの一回の実行（`server exec` か `server job start`）。デーモンが ID を振り、状態と出力を保存する | [サーバモード](../06-tooling/06-07-server.md) |
-| 方針 | policy | 利用者がスクリプトに許可する操作を書いたもの。許可の単位（組み込みのエフェクトと、シェルによる実行）ごとに対象を並べる。処理系は、エフェクトによる実行前の判定、権限の判定器、OS のサンドボックスの設定をここから導く（サーバモード） | [サーバモード](../06-tooling/06-07-server.md)、[ADR 0183](../decisions/0183-single-policy-for-all-permission-layers.md) |
-| プロファイル | profile | 名前を付けた方針。実行を求める側が名前で選ぶ（サーバモード） | [サーバモード](../06-tooling/06-07-server.md)、[ADR 0192](../decisions/0192-named-profiles-for-agents.md) |
-| OS のサンドボックス | OS sandbox | カーネルが範囲の外の操作を拒否する仕組み。Linux の Landlock・seccomp・bubblewrap、macOS の Seatbelt を使う（サーバモード） | [OS のサンドボックス](../02-impl/02-12-os-sandbox.md)、[ADR 0196](../decisions/0196-os-sandbox-mechanisms.md) |
-| エージェントハーネス | agent harness | Benitoite の処理系が初回リリース版の後に備える、自前のコーディングエージェント。利用者の依頼を受けて LLM を呼び、`.bnt` のスクリプトの作成・検査・実行と、プロジェクトの中の読み取りなどの道具を使う。サーバモードより後に作り、サーバモードを通してスクリプトを実行する。ADR 0194 などの「自前のコーディングエージェント」と同じものを指す。本設計書で単に「ハーネス」と書くときは、Claude Code、Codex CLI、OpenCode などの、LLM を動かして道具を実行させる外部のプログラムを指し、エージェントハーネスとは区別する | [エージェントハーネス](../06-tooling/06-08-agent-harness.md)、[ADR 0342](../decisions/0342-agent-harness-after-server-mode.md)〜[ADR 0348](../decisions/0348-agent-harness-rewind-and-git.md) |
-| 脅威モデル | threat model | 保証の前提として、関係する者のうちどれを信頼するか、何を守るか、どこに信頼の境界を置くかを定めたもの | [セキュリティモデル](../07-quality/07-01-security-model.md)、[ADR 0179](../decisions/0179-threat-model-and-server-mode-premise.md) |
+| 実行時の権限制御 | — | 実行の途中で、利用者が許可していない操作を処理系が拒否し、実行時エラーにすること。エフェクトの静的な追跡とは別の機構である。初回リリース版には含めない | [目的と設計原則](00-01-goals.md)、[セキュリティモデル](../07-quality/07-01-security-model.md) |
+| スタンドアロンモード | standalone mode | 処理系をサーバとして動かさずに、コマンド `benitoite` にスクリプトを指定して実行する形。初回リリース版の実行の形はこれだけであり、実行時の権限制御を行わない | [ロードマップ](00-03-roadmap.md)、[CLI](../06-tooling/06-01-cli.md) |
+| サーバモード | server mode | 処理系を常に動かしておくプロセスとして動かし、スクリプトの実行を受け付ける形。実行時の権限制御、OS のサンドボックスによる強制、MCP サーバとあわせて扱う機能であり、初回リリース版には含めない | [ロードマップ](00-03-roadmap.md) |
+| OS のサンドボックス | OS sandbox | カーネルが範囲の外の操作を拒否する仕組み。初回リリース版の処理系は掛けず、スクリプトの隔離は処理系を起動する側（ハーネスのサンドボックスなど）に委ねる | [セキュリティモデル](../07-quality/07-01-security-model.md) |
+| ハーネス | harness | Claude Code、Codex CLI、OpenCode などの、LLM を動かして道具を実行させる外部のプログラム。Agent Skills を実行し、そのサンドボックスがスクリプトの隔離を担う | [セキュリティモデル](../07-quality/07-01-security-model.md)、[Agent Skills 対応](../06-tooling/06-06-agent-skills.md) |
+| 脅威モデル | threat model | 保証の前提として、関係する者のうちどれを信頼するか、何を守るか、どこに信頼の境界を置くかを定めたもの | [セキュリティモデル](../07-quality/07-01-security-model.md) |
 | 信頼の境界 | trust boundary | 信頼するものと信頼しないものの間で、操作を制限する位置。初回リリース版では、処理系を起動する側（ハーネスのサンドボックスなど）と処理系の間だけにある | [セキュリティモデル](../07-quality/07-01-security-model.md) |
 | プロンプトインジェクション | prompt injection | LLM が読んだ文書やウェブのページに埋め込まれた指示に従い、利用者でなく攻撃者の意図した操作を行うこと | [セキュリティモデル](../07-quality/07-01-security-model.md) |
-| 実装プラン、実装 LLM | implementation plan | 実装プランは、作業ごとに、読むべき設計書の節・作るもの・受け入れテストを示す文書。実装 LLM は、実装プランに従って処理系を実装する LLM | [ロードマップ](00-03-roadmap.md) |
-| core、std | — | 設計メモのライブラリの層の呼び名。core は言語独自の型と永続コレクション、std はファイル・プロセス・テキスト処理などを慣用的な API で提供するもの。本設計書では、両方を合わせて標準ライブラリと呼ぶ（[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)）。設計メモの go.* の層（Go の API へ直接届く経路）は廃止した（[ADR 0077](../decisions/0077-abolish-go-layer.md)）。初回リリース版には外部の関数を呼ぶ層を実装しない（[ADR 0137](../decisions/0137-first-release-library-scope.md)） | [全体像](00-02-architecture.md) |
-| 外部の関数 | external function | 言語の外で実装した関数。WASM のモジュールの関数に限り、本体のない関数の宣言に属性 `@external("wasm", …)` を付けて宣言する。言語の表面だけを初回リリース版で定め、実装は後の版で行う | [外部の関数](../04-extensions/04-01-external-functions.md)、[ADR 0139](../decisions/0139-external-functions-via-wasm.md) |
-| ホストの関数 | host function | 処理系が WASM のモジュールに与える関数。外部の関数が外部に作用する経路はこれに限り、IO 実行器と実行時の権限制御を通る | [外部の関数](../04-extensions/04-01-external-functions.md)、[OPEN-051](../open-issues.md#open-051) |
+| 実装プラン、実装 LLM | implementation plan | 実装プランは、作業ごとに、読むべき設計書の節・作るもの・受け入れテストを示す文書。実装 LLM は、実装プランに従って処理系を実装する LLM | [ロードマップ](00-03-roadmap.md)の「設計から実装までの分担と進め方」 |
+| core、std | — | ライブラリの層の呼び名。core は言語独自の型と永続コレクション、std はファイル・プロセス・テキスト処理などを慣用的な API で提供するもの。本設計書では、両方を合わせて標準ライブラリと呼ぶ。初回リリース版には外部の関数を呼ぶ層を実装しない | [全体像](00-02-architecture.md) |
+| 外部の関数 | external function | 言語の外で実装した関数。初回リリース版は、外部の関数を呼ぶ層を持たない | [全体像](00-02-architecture.md) |
 
 #### 構文と名前
 
 | 語 | 原語 | 定義 | 定める章 |
 |---|---|---|---|
-| 束縛の文 | — | `bind` か `shadow` で始まる文。`<-` の右の式の値を、左辺の名前（初回リリース版ではパターンの変数）に束縛する。`bind` は局所の名前として見えていない名前を束縛し、`shadow` は見えている局所の名前を隠して束縛する | [構文](../01-spec/01-02-syntax.md)、[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[ADR 0255](../decisions/0255-bind-and-shadow.md) |
-| 局所の名前 | — | 関数とラムダの引数、束縛の文で束縛した名前、`match` の分岐のパターンの変数、初回リリース版の `handle` の節の引数と `with` の束縛のうち、その位置で有効なもの。トップレベルの関数と定数は含まない | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
+| 束縛の文 | — | `bind` か `shadow` で始まる文。`<-` の右の式の値を、左辺のパターンの変数に束縛する。`bind` は局所の名前として見えていない名前を束縛し、`shadow` は見えている局所の名前を隠して束縛する | [構文](../01-spec/01-02-syntax.md)、[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
+| 局所の名前 | — | 関数とラムダの引数、束縛の文で束縛した名前、`match` の分岐のパターンの変数、`handle` の節の引数と `with` の束縛のうち、その位置で有効なもの。トップレベルの関数と定数は含まない | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
 | パイプ | pipe | `x \|> e` の形の構文。左の値を右の関数の第 1 引数（またはプレースホルダの位置）に渡す呼び出しに展開する | [構文](../01-spec/01-02-syntax.md) |
 | プレースホルダ | placeholder | 呼び出しの引数の位置に書く `_`。その呼び出しを、`_` の位置を引数とするラムダに展開する | [構文](../01-spec/01-02-syntax.md) |
-| リストの展開 | spread | リストリテラルの要素に書く `..e`。`e` の値のリストの要素をその位置に並べる。一つのリストリテラルに一つまで、どの位置にも書け、リストのパターンの `..` と同じ形になる（初回リリース版） | [構文](../01-spec/01-02-syntax.md)、[ADR 0272](../decisions/0272-list-spread-in-list-literals.md) |
-| モジュール、import | module, import | モジュールは、一つのソースファイルにある関数・型・エフェクトの集まり。名前は根のディレクトリからのパスで決まる（`Lib/Text.bnt` は `Lib.Text`）。import は、ほかのモジュールや標準ライブラリのモジュールを名前で取り込み（`import Lib.Text`）、名前の最後の要素か `as` で付けた名前で修飾して使えるようにする宣言（初回リリース版） | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[ADR 0126](../decisions/0126-import-by-module-name.md) |
-| 根のディレクトリ | root directory | 実行を始めるファイルがあるディレクトリ。モジュールの名前はここからのパスで決まり、import で取り込めるのはここより下のファイルと標準ライブラリに限る。作業ディレクトリには依存しない（初回リリース版） | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[ADR 0127](../decisions/0127-directory-run-and-root.md) |
-| 公開 | — | `public` を付けたトップレベルの関数・定数・型・型の別名・レコード・型クラスを、モジュールを取り込んだ側から使えるようにすること。付けないものは宣言したモジュールの中からだけ使える（初回リリース版） | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
-| 実行を始めるモジュール | — | 処理系に実行を指示したファイル（ディレクトリを指示したときはその `main.bnt`）のモジュール。プログラムの入口 `main` を持ち、ほかのモジュールから取り込めない（初回リリース版） | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
-| レコード | record | 名前の付いたフィールドを持つ型。`record` で宣言し、`Person(name: "A", age: 30)` の形で作る。フィールドは型のモジュールの関数（`Person.name`）で取り出す（初回リリース版） | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
-| 定数、定数式 | constant, constant expression | 定数は、トップレベルに `const 名前: 型 = 定数式` で宣言する、値の変わらない名前。定数式は、リテラル、ほかの定数、構成子とレコードの構築、リストのリテラル、`Pair`・`Triple` の構築、基本型の演算子、定数式だけを埋め込んだ文字列補間、`Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` の呼び出し（引数は定数式に限る）だけからなる式であり、値はプログラムの実行の前に定まる（初回リリース版） | [構文](../01-spec/01-02-syntax.md)、[ADR 0123](../decisions/0123-top-level-constants.md) |
-| 型の別名 | type alias | `type 名前 = 型` で宣言する、既存の型の別の名前。元の型と同じ型として扱う（初回リリース版） | [型システム](../01-spec/01-06-type-system.md)、[ADR 0124](../decisions/0124-type-aliases.md) |
-| ドキュメントコメント | documentation comment | 宣言の説明を書く `///` のコメントと、モジュールの説明を書く `//!` のコメント。処理系が宣言に結び付けて保持し、MCP サーバと LSP サーバが示す（初回リリース版） | [構文](../01-spec/01-02-syntax.md)、[ADR 0125](../decisions/0125-doc-comments.md) |
-| 文字列補間 | string interpolation | 文字列リテラルの中の `${e}` に、式 `e` の値を文字列にして埋め込むこと。書ける式の型は、`Unit` を除く基本型（`String`・`Integer`・`Float`・`Character`・`Boolean`・`Byte`・`Decimal`）に限る（初回リリース版） | [字句構造](../01-spec/01-01-lexical.md)、[型システム](../01-spec/01-06-type-system.md) |
+| リストの展開 | spread | リストリテラルの要素に書く `..e`。`e` の値のリストの要素をその位置に並べる。一つのリストリテラルに一つまで、どの位置にも書け、リストのパターンの `..` と同じ形になる | [構文](../01-spec/01-02-syntax.md) |
+| モジュール、import | module, import | モジュールは、一つのソースファイルにある関数・型・エフェクトの集まり。名前は根のディレクトリからのパスで決まる（`Lib/Text.bnt` は `Lib.Text`）。import は、ほかのモジュールや標準ライブラリのモジュールを名前で取り込み（`import Lib.Text`）、名前の最後の要素か `as` で付けた名前で修飾して使えるようにする宣言 | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
+| 根のディレクトリ | root directory | 実行を始めるファイルがあるディレクトリ。モジュールの名前はここからのパスで決まり、import で取り込めるのはここより下のファイルと標準ライブラリに限る。作業ディレクトリには依存しない | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
+| 公開 | — | `public` を付けたトップレベルの関数・定数・型・型の別名・レコード・型クラスを、モジュールを取り込んだ側から使えるようにすること。付けないものは宣言したモジュールの中からだけ使える | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
+| 実行を始めるモジュール | — | 処理系に実行を指示したファイル（ディレクトリを指示したときはその `main.bnt`）のモジュール。プログラムの入口 `main` を持ち、ほかのモジュールから取り込めない | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
+| レコード | record | 名前の付いたフィールドを持つ型。`record` で宣言し、`Person(name: "A", age: 30)` の形で作る。フィールドは型のモジュールの関数（`Person.name`）で取り出す | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| 定数、定数式 | constant, constant expression | 定数は、トップレベルに `const 名前: 型 = 定数式` で宣言する、値の変わらない名前。定数式は、リテラル、ほかの定数、構成子とレコードの構築、リストのリテラル、`Pair`・`Triple` の構築、基本型の演算子、定数式だけを埋め込んだ文字列補間、`Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` の呼び出し（引数は定数式に限る）だけからなる式であり、値はプログラムの実行の前に定まる | [構文](../01-spec/01-02-syntax.md) |
+| 型の別名 | type alias | `type 名前 = 型` で宣言する、既存の型の別の名前。元の型と同じ型として扱う | [型システム](../01-spec/01-06-type-system.md) |
+| ドキュメントコメント | documentation comment | 宣言の説明を書く `///` のコメントと、モジュールの説明を書く `//!` のコメント。処理系が宣言に結び付けて保持する | [構文](../01-spec/01-02-syntax.md) |
+| 文字列補間 | string interpolation | 文字列リテラルの中の `${e}` に、式 `e` の値を文字列にして埋め込むこと。書ける式の型は、`Unit` を除く基本型（`String`・`Integer`・`Float`・`Character`・`Boolean`・`Byte`・`Decimal`）に限る | [字句構造](../01-spec/01-01-lexical.md)、[型システム](../01-spec/01-06-type-system.md) |
 | 双方向の制御文字 | bidirectional control character | 文字の表示の順序を変える Unicode の制御文字（U+202A〜U+202E など）。ソースのどこに書いても字句の誤りとする | [字句構造](../01-spec/01-01-lexical.md) |
-| 標準ライブラリ | standard library | 処理系と一緒に配るモジュールの全体。名前空間 `Benitoite` の下に置く。IO を行うモジュールは `Benitoite.IO` の下に、ネットワークの操作を行うモジュールは `Benitoite.Network` の下に置き、import しなければ使えない（初回リリース版） | [標準ライブラリ](../03-interop/03-06-stdlib.md)、[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)、[ADR 0140](../decisions/0140-network-separated-from-local-io.md) |
+| 標準ライブラリ | standard library | 処理系と一緒に配るモジュールの全体。名前空間 `Benitoite` の下に置く。IO を行うモジュールは `Benitoite.IO` の下に、ネットワークの操作を行うモジュールは `Benitoite.Network` の下に置き、import しなければ使えない | [標準ライブラリ](../03-interop/03-06-stdlib.md) |
 | prelude | prelude | 標準ライブラリのうち、import なしで使える部分。基本型、コレクション、`Option`・`Result` などのモジュールからなる。prelude の関数と構成子は、モジュールの名前で修飾して使い（`List.map`。構成子が型と同じ名前の `Pair`・`Triple` は修飾しない）、`Benitoite.List.map` のように完全な名前でも書ける。関数を Rust で実装するか言語で書くかとは関係しない | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[標準ライブラリ](../03-interop/03-06-stdlib.md) |
-| 標準のモジュール、非公式のモジュール | — | 標準ライブラリのモジュールの状態。非公式のモジュールは、設計者が実装を吟味する前のモジュールで、`Benitoite` の後に `Unofficial` を挟んだ取り込みの名前（`import Benitoite.Unofficial.IO.Console`）で取り込む。吟味を終えたらマイナーの版で標準のモジュールに移す。初回リリース版では、prelude のモジュールと `Benitoite.Trait` が標準、IO・ネットワーク・テキストとデータのモジュールが非公式 | [標準ライブラリ](../03-interop/03-06-stdlib.md)、[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md) |
-| 組み込みの関数、標準ライブラリのソース | builtin function | 標準ライブラリの関数の実装の区分。組み込みの関数は処理系の Rust のコードで実装する関数、標準ライブラリのソースは言語で書いて処理系に埋め込む定義（最小実行版では「prelude のソース」と呼んだ） | [名前解決とモジュール読込](../02-impl/02-04-resolver.md)、[標準ライブラリ](../03-interop/03-06-stdlib.md) |
+| 標準のモジュール、非公式のモジュール | — | 標準ライブラリのモジュールの状態。非公式のモジュールは、設計者が実装を吟味する前のモジュールで、`Benitoite` の後に `Unofficial` を挟んだ取り込みの名前（`import Benitoite.Unofficial.IO.Console`）で取り込む。吟味を終えたらマイナーの版で標準のモジュールに移す。初回リリース版では、prelude のモジュールと `Benitoite.Trait` が標準、IO・ネットワーク・テキストとデータのモジュールが非公式 | [標準ライブラリ](../03-interop/03-06-stdlib.md) |
+| 組み込みの関数、標準ライブラリのソース | builtin function | 標準ライブラリの関数の実装の区分。組み込みの関数は処理系の Rust のコードで実装する関数、標準ライブラリのソースは言語で書いて処理系に埋め込む定義 | [名前解決とモジュール読込](../02-impl/02-04-resolver.md)、[標準ライブラリ](../03-interop/03-06-stdlib.md) |
 
 #### 型とエフェクト
 
 | 語 | 原語 | 定義 | 定める章 |
 |---|---|---|---|
-| 分岐 | arm | `match … with` の「`case` パターン `->` 本体」の一つ。初回リリース版の `handle` の節も同じ形で書く | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| 分岐 | arm | `match … with` の「`case` パターン `->` 本体」の一つ。`handle` の節も同じ形で書く | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
 | 選ばれない分岐 | — | 前の分岐のパターンがすべて照合してしまうために、決して選ばれない分岐。型検査の誤りとする | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
 | 等値の型 | — | `=` と `<>` を使える型。関数の型と、中身を見せない prelude の型を含まない型である。型パラメータは、組み込みの制約 `equality` を付けたときに等値の型として扱う | [型システム](../01-spec/01-06-type-system.md) |
-| 中身を見せない prelude の型 | opaque type | 構成子を公開せず、パターンで分解できない prelude の型。最小実行版では `IOError` だけである。初回リリース版では `NetworkError`・`Reference[T]`・`Lazy[T]`・`Task[T]`、リソースの型が加わる。等値の型ではない | [型システム](../01-spec/01-06-type-system.md)、[エフェクト](../01-spec/01-07-effects.md) |
-| 属性 | attribute | トップレベルの宣言の前に `@名前` の形で付け、宣言の意味を変えずに、処理系や道具による扱いを表すもの。初回リリース版では `@test` と `@deprecated` だけである | 初回リリース版（[構文](../01-spec/01-02-syntax.md)、[ADR 0119](../decisions/0119-attributes-test-and-deprecated.md)） |
-| テストの関数 | — | `@test` を付けた、引数のないトップレベルの関数。`benitoite test` が一つずつ別の実行として動かす | 初回リリース版（[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)） |
-| 組み込みのエフェクト | — | 処理系が操作を行うエフェクト。初回リリース版では、`Benitoite.IO` の下のモジュールが宣言する `Console.Write`・`Console.Read`・`File.Read`・`File.Write`・`Process.Run`・`Process.Exit`・`Process.Environment`・`Clock.Time`・`Random.Generate`、`Benitoite.Network.Http` が宣言するネットワークのエフェクト `Http.Listen`・`Http.Connect`、prelude の `State` である。テストの期待の確認を表す `Assert.Check` も組み込みのエフェクトだが、`IO.All` には含めない。ネットワークのエフェクトも `IO.All` に含めない | 初回リリース版（[エフェクト](../01-spec/01-07-effects.md)、[ADR 0116](../decisions/0116-builtin-fine-grained-effects.md)、[ADR 0130](../decisions/0130-builtin-effect-names-and-placement.md)、[ADR 0140](../decisions/0140-network-separated-from-local-io.md)） |
-| `IO.All` | — | prelude のモジュール `IO` が宣言する、`State` と `Benitoite.IO` の下のモジュールのエフェクトをまとめたエフェクト。`uses IO.All` は、それらをすべて書いたのと同じ意味である。`Assert.Check` とネットワークのエフェクトは含まない。最小実行版の `IO` に当たる | 初回リリース版（[エフェクト](../01-spec/01-07-effects.md)、[ADR 0130](../decisions/0130-builtin-effect-names-and-placement.md)、[ADR 0140](../decisions/0140-network-separated-from-local-io.md)） |
-| `NetworkError` | — | ネットワークの操作の失敗を表す、中身を見せない prelude の型。失敗の種類を `NetworkError.kind` で `NetworkErrorKind` の値として取り出せる。IO の失敗は `IOError` で表し、区別する | 初回リリース版（[エラー処理](../01-spec/01-09-errors.md)、[ADR 0145](../decisions/0145-network-error.md)） |
-| ネットワークの操作 | — | `Benitoite.Network` の下のモジュールのエフェクトの操作（HTTP の待ち受けと接続など）。本文で「IO」と書くときの `IO.All` の操作とは区別する。IO とネットワークの操作を合わせて、外部に作用する操作と呼ぶ | 初回リリース版（[エフェクト](../01-spec/01-07-effects.md)、[ネットワークのモジュール](../03-interop/03-09-network.md)、[ADR 0140](../decisions/0140-network-separated-from-local-io.md)） |
-| 操作 | operation | エフェクトの宣言が定める、そのエフェクトを生じる関数。エフェクトを宣言したモジュールの関数であり、ほかの関数と同じく `モジュール名.操作名(引数)` の形で呼ぶ。組み込みのエフェクトの操作は、`Benitoite.IO` の下のモジュールの IO の関数と、`Benitoite.Network` の下のモジュールのネットワークの関数である | 初回リリース版（[エフェクト](../01-spec/01-07-effects.md)） |
+| 中身を見せない prelude の型 | opaque type | 構成子を公開せず、パターンで分解できない prelude の型。`IOError`・`NetworkError`・`Reference[T]`・`Lazy[T]`・`Task[T]` と、リソースの型がある。等値の型ではない。標準ライブラリのモジュールが宣言する中身を見せない型（`Regex.Pattern`・`Regex.Match`・`Random.Generator`）も同じく扱う | [型システム](../01-spec/01-06-type-system.md)、[エフェクト](../01-spec/01-07-effects.md) |
+| 属性 | attribute | トップレベルの宣言の前に `@名前` の形で付け、宣言の意味を変えずに、処理系や道具による扱いを表すもの。初回リリース版では `@test` と `@deprecated` だけである | [構文](../01-spec/01-02-syntax.md) |
+| テストの関数 | — | `@test` を付けた、引数のないトップレベルの関数。`benitoite test` が一つずつ別の実行として動かす | [利用者プログラムのテスト](../06-tooling/06-04-test-runner.md) |
+| 組み込みのエフェクト | — | 処理系が操作を行うエフェクト。`Benitoite.IO` の下のモジュールが宣言する `Console.Write`・`Console.Read`・`File.Read`・`File.Write`・`Process.Run`・`Process.Exit`・`Process.Environment`・`Clock.Time`・`Random.Generate`、`Benitoite.Network.Http` が宣言するネットワークのエフェクト `Http.Listen`・`Http.Connect`、prelude の `State` である。テストの期待の確認を表す `Assert.Check` も組み込みのエフェクトだが、`IO.All` には含めない。ネットワークのエフェクトも `IO.All` に含めない | [エフェクト](../01-spec/01-07-effects.md) |
+| `IO.All` | — | prelude のモジュール `IO` が宣言する、`State` と `Benitoite.IO` の下のモジュールのエフェクトをまとめたエフェクト。`uses IO.All` は、それらをすべて書いたのと同じ意味である。`Assert.Check` とネットワークのエフェクトは含まない | [エフェクト](../01-spec/01-07-effects.md) |
+| `NetworkError` | — | ネットワークの操作の失敗を表す、中身を見せない prelude の型。失敗の種類を `NetworkError.kind` で `NetworkErrorKind` の値として取り出せる。IO の失敗は `IOError` で表し、区別する | [エラー処理](../01-spec/01-09-errors.md) |
+| ネットワークの操作 | — | `Benitoite.Network` の下のモジュールのエフェクトの操作（HTTP の待ち受けと接続など）。本文で「IO」と書くときの `IO.All` の操作とは区別する。IO とネットワークの操作を合わせて、外部に作用する操作と呼ぶ | [エフェクト](../01-spec/01-07-effects.md)、[ネットワークのモジュール](../03-interop/03-09-network.md) |
+| 操作 | operation | エフェクトの宣言が定める、そのエフェクトを生じる関数。エフェクトを宣言したモジュールの関数であり、ほかの関数と同じく `モジュール名.操作名(引数)` の形で呼ぶ。組み込みのエフェクトの操作は、`Benitoite.IO` の下のモジュールの IO の関数と、`Benitoite.Network` の下のモジュールのネットワークの関数である | [エフェクト](../01-spec/01-07-effects.md) |
 | エフェクト変数 | effect variable | 関数の宣言で `effect E` と宣言し、使うたびにエフェクトの集合で置き換える名前。高階関数が、受け取る関数のエフェクトをそのまま自分のエフェクトとするために使う | [型システム](../01-spec/01-06-type-system.md) |
 | エフェクトの包含 | — | エフェクトの集合 X の関数を、X を含む集合 Y の関数が求められる位置に使ってよいという規則。値が流れ込むすべての位置（引数、リストの要素、分岐、型注釈、関数の本体）で、型の最も外側の関数の型にだけ働く | [型システム](../01-spec/01-06-type-system.md) |
-| 型構成子 | type constructor | 型引数を与えると型になるもの。`List`・`Option`・利用者が型パラメータを付けて宣言した型など。初回リリース版の高カインド型では、`F[_]` の型パラメータに型構成子を渡せる | [型システム](../01-spec/01-06-type-system.md) |
+| 型構成子 | type constructor | 型引数を与えると型になるもの。`List`・`Option`・利用者が型パラメータを付けて宣言した型など。高カインド型では、`F[_]` の型パラメータに型構成子を渡せる | [型システム](../01-spec/01-06-type-system.md) |
 | 観察可能な振る舞い、実装の詳細 | observable behavior, implementation detail | 観察可能な振る舞いは、テストの対象の利用者が目にする結果（処理系の段の公開の関数が返す結果、診断、スクリプトの出力と終了状態）。実装の詳細は、それ以外の内部の作り（非公開の関数、中間のデータの形）。テストは観察可能な振る舞いを確かめる | [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md) |
 | テストダブル | test double | テストで、本物の依存の代わりに使う偽物の総称。処理系では、処理系の外にある依存（ファイル・プロセスなど）にだけ使い、テスト用のハンドラ表がこれに当たる | [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md) |
-| 型クラス、実装 | type class, implementation | 型クラスは、型が持つべき操作（メソッド）の組を名前にしたもの。`trait` で宣言する。実装は、ある型についてその操作を定義したもの。`implement` で書く（初回リリース版） | [型システム](../01-spec/01-06-type-system.md) |
-| 型クラスの制約 | — | 型パラメータや型が、ある型クラスを実装していなければならないという条件。`[T: Show]` と書く。同じ位置に組み込みの制約も書ける（初回リリース版） | [型システム](../01-spec/01-06-type-system.md) |
-| 組み込みの制約 | — | 型パラメータが等値の型であること（`equality`）、または鍵の型であること（`key`）を求める制約。型クラスの制約と同じ位置に `[K: key]` と書く。型の構造から自動で満たされ、`implement` は要らない。辞書を渡さない（初回リリース版） | [型システム](../01-spec/01-06-type-system.md)、[ADR 0133](../decisions/0133-builtin-equality-and-key-constraints.md) |
-| 上位の型クラス | superclass | ある型クラスを実装する型が、あらかじめ実装していなければならない別の型クラス。`trait Monoid[T: Semigroup]` の `Semigroup` がこれに当たる。型クラスの制約は、上位の型クラスの制約を含む（初回リリース版） | [型システム](../01-spec/01-06-type-system.md) |
-| 標準の型クラス | — | 標準ライブラリのモジュール `Benitoite.Trait` に置く型クラス（`Show`・`Order`・`Semigroup`・`Monoid`・`Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable`）。prelude に入らず、import して使う。学習の目的のため、既存の関数との重複を原則 5 の例外として認めた（初回リリース版） | [標準ライブラリ](../03-interop/03-06-stdlib.md)、[ADR 0134](../decisions/0134-standard-type-classes.md) |
-| 高カインド型 | higher-kinded type | 型構成子（`Option` のように、型を受け取って型を作るもの）を引数にとる型。型クラスの引数に `F[_]` と書く（初回リリース版） | [型システム](../01-spec/01-06-type-system.md) |
-| 孤立した実装 | orphan instance | 型クラスも対象の型も宣言していないモジュールに書いた実装。誤りとする（初回リリース版） | [型システム](../01-spec/01-06-type-system.md) |
+| 型クラス、実装 | type class, implementation | 型クラスは、型が持つべき操作（メソッド）の組を名前にしたもの。`trait` で宣言する。実装は、ある型についてその操作を定義したもの。`implement` で書く | [型システム](../01-spec/01-06-type-system.md) |
+| 型クラスの制約 | — | 型パラメータや型が、ある型クラスを実装していなければならないという条件。`[T: Show]` と書く。同じ位置に組み込みの制約も書ける | [型システム](../01-spec/01-06-type-system.md) |
+| 組み込みの制約 | — | 型パラメータが等値の型であること（`equality`）、または鍵の型であること（`key`）を求める制約。型クラスの制約と同じ位置に `[K: key]` と書く。型の構造から自動で満たされ、`implement` は要らない。辞書を渡さない | [型システム](../01-spec/01-06-type-system.md) |
+| 上位の型クラス | superclass | ある型クラスを実装する型が、あらかじめ実装していなければならない別の型クラス。`trait Monoid[T: Semigroup]` の `Semigroup` がこれに当たる。型クラスの制約は、上位の型クラスの制約を含む | [型システム](../01-spec/01-06-type-system.md) |
+| 標準の型クラス | — | 標準ライブラリのモジュール `Benitoite.Trait` に置く型クラス（`Show`・`Order`・`Semigroup`・`Monoid`・`Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable`）。prelude に入らず、import して使う。学習の目的のため、既存の関数との重複を原則 5 の例外として認めた | [標準ライブラリ](../03-interop/03-06-stdlib.md) |
+| 高カインド型 | higher-kinded type | 型構成子（`Option` のように、型を受け取って型を作るもの）を引数にとる型。型クラスの引数に `F[_]` と書く | [型システム](../01-spec/01-06-type-system.md) |
+| 孤立した実装 | orphan instance | 型クラスも対象の型も宣言していないモジュールに書いた実装。誤りとする | [型システム](../01-spec/01-06-type-system.md) |
 | 辞書渡し | dictionary passing | 型クラスの制約ごとに、実装のメソッドの組（辞書）を関数の隠れた引数として渡す、型クラスの実現の方式 | [型システム](../01-spec/01-06-type-system.md)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
-| ストア | store | コア計算の実行の状態の一部で、場所ごとに、可変のセルの中身と明示遅延の値（評価前の式か、評価済みの値）を持つ表（初回リリース版） | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
-| 可変のセル | mutable cell | 値を一つ入れ、後から書き換えられる入れ物。`Reference[T]` 型で、作る・読む・書き換える関数はエフェクト `State` を持つ（初回リリース版） | [型システム](../01-spec/01-06-type-system.md)、[エフェクト](../01-spec/01-07-effects.md) |
-| タスク | task | ほかのタスクと並行に進む計算。引数のない関数を渡して起動し、その戻り値が結果になる | 初回リリース版（[並行処理](../01-spec/01-11-concurrency.md)） |
-| 構造化された並行処理 | structured concurrency | タスクを起動した関数の呼び出しや `with` のスコープが終わる時点で、そこで起動したタスクがすべて終わっていることを保証する並行処理 | 初回リリース版（[並行処理](../01-spec/01-11-concurrency.md)） |
-| 小数の桁数 | scale | `Decimal` の値 `m / 10^e` の `e`。0 以上 28 以下で、`Decimal.toString` の小数点の後の桁の数になる | 初回リリース版（[基本型の意味論](../01-spec/01-04-types-basic.md)） |
+| ストア | store | コア計算の実行の状態の一部で、場所ごとに、可変のセルの中身と明示遅延の値（評価前の式か、評価済みの値）を持つ表 | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
+| 可変のセル | mutable cell | 値を一つ入れ、後から書き換えられる入れ物。`Reference[T]` 型で、作る・読む・書き換える関数はエフェクト `State` を持つ | [型システム](../01-spec/01-06-type-system.md)、[エフェクト](../01-spec/01-07-effects.md) |
+| タスク | task | ほかのタスクと並行に進む計算。引数のない関数を渡して起動し、その戻り値が結果になる | [並行処理](../01-spec/01-11-concurrency.md) |
+| 構造化された並行処理 | structured concurrency | タスクを起動した関数の呼び出しや `with` のスコープが終わる時点で、そこで起動したタスクがすべて終わっていることを保証する並行処理 | [並行処理](../01-spec/01-11-concurrency.md) |
+| 小数の桁数 | scale | `Decimal` の値 `m / 10^e` の `e`。0 以上 28 以下で、`Decimal.toString` の小数点の後の桁の数になる | [基本型の意味論](../01-spec/01-04-types-basic.md) |
 | 最近接偶数丸め | round half to even | 最も近い値に丸め、ちょうど中間なら最後の桁が偶数になるほうを選ぶ丸め方 | [基本型の意味論](../01-spec/01-04-types-basic.md) |
 | 安定な並べ替え | stable sort | 等しい要素の元の順序を保つ並べ替え。`List.sort` はこれである | [標準ライブラリ](../03-interop/03-06-stdlib.md) |
 
@@ -231,11 +223,11 @@
 
 | 語 | 原語 | 定義 | 定める章 |
 |---|---|---|---|
-| 明示遅延 | explicit laziness | 評価を遅らせることを、専用の構文で明示すること。`lazy ... end lazy` で作り、最初の `Lazy.force` で一度だけ評価して結果を覚える。本体は純粋な式に限る（初回リリース版） | [評価意味論](../01-spec/01-08-evaluation.md) |
-| `try` | — | `Result` や `Option` の値が `Result.Error`・`Option.None` なら、それを返して関数を終え、`Result.Ok`・`Option.Some` なら中身を取り出す前置の構文（初回リリース版）。例外を捕らえる構文ではない | [エラー処理](../01-spec/01-09-errors.md) |
-| 実行時エラー | runtime error | 実行の途中で、言語の規則が定める条件（0 による除算、整数の溢れなど）が起きて、プロセスが異常終了（クラッシュ）すること。捕捉できず、関数の型にもエフェクトにも表さない | [基本型の意味論](../01-spec/01-04-types-basic.md)、[評価意味論](../01-spec/01-08-evaluation.md)、[ADR 0146](../decisions/0146-runtime-errors-not-in-types.md) |
-| リソース、リソーススコープ | resource, resource scope | リソースは、ファイルなど、使い終えた時点で閉じる必要がある OS の資源。リソーススコープは `with x = e do ... end with` の形で、ブロックを抜けるときにリソースを逆の順に解放する構文（初回リリース版） | [リソース管理](../01-spec/01-10-resources.md) |
-| 解放 | release | リソースを閉じること。リソースの型ごとに一つ決まっている処理であり、エフェクトは `State` で、ハンドラで処理できない。`with` はブロックを抜けるときに逆の順に解放する（初回リリース版） | [リソース管理](../01-spec/01-10-resources.md)、[ADR 0150](../decisions/0150-resource-release-as-state.md) |
+| 明示遅延 | explicit laziness | 評価を遅らせることを、専用の構文で明示すること。`lazy ... end lazy` で作り、最初の `Lazy.force` で一度だけ評価して結果を覚える。本体は純粋な式に限る | [評価意味論](../01-spec/01-08-evaluation.md) |
+| `try` | — | `Result` や `Option` の値が `Result.Error`・`Option.None` なら、それを返して関数を終え、`Result.Ok`・`Option.Some` なら中身を取り出す前置の構文。例外を捕らえる構文ではない | [エラー処理](../01-spec/01-09-errors.md) |
+| 実行時エラー | runtime error | 実行の途中で、言語の規則が定める条件（0 による除算、整数の溢れなど）が起きて、プロセスが異常終了（クラッシュ）すること。捕捉できず、関数の型にもエフェクトにも表さない | [基本型の意味論](../01-spec/01-04-types-basic.md)、[評価意味論](../01-spec/01-08-evaluation.md) |
+| リソース、リソーススコープ | resource, resource scope | リソースは、ファイルなど、使い終えた時点で閉じる必要がある OS の資源。リソーススコープは `with x = e do ... end with` の形で、ブロックを抜けるときにリソースを逆の順に解放する構文 | [リソース管理](../01-spec/01-10-resources.md) |
+| 解放 | release | リソースを閉じること。リソースの型ごとに一つ決まっている処理であり、エフェクトは `State` で、ハンドラで処理できない。`with` はブロックを抜けるときに逆の順に解放する | [リソース管理](../01-spec/01-10-resources.md) |
 | 書き込みの失敗 | write failure | 標準出力や標準エラー出力への書き込みが失敗したときの実行時エラー。書き込みを呼び出した後で検出してよく、報告はソース上の位置を持たない | [エフェクト](../01-spec/01-07-effects.md)、[評価意味論](../01-spec/01-08-evaluation.md) |
 | 資源の不足 | — | 処理系が自ら設けた上限（末尾位置にない呼び出しの入れ子の大きさ、一つの操作で作る値の大きさ）に達して、プログラムが止まること。実行時エラーと同じ手順で止まる。処理系が上限を設けていないメモリが尽きたときは、この手順によらずに終わってよい | [評価意味論](../01-spec/01-08-evaluation.md) |
 | コア計算 | core calculus | Benitoite の意味を定めるための小さな言語。表層の構文をこれに脱糖し、抽象機械で実行した結果を言語の意味とする | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
@@ -244,6 +236,8 @@
 | 枠 | frame | 継続の一段。`let x ⇐ □ in N` の形で、「結果を x に束縛して N を続ける」ことを表す | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
 | 継続の型付け | continuation typing | 継続が受け取る値の型と、最後に結果とする値の型を定める規則。抽象機械の状態に型が付くことの定義に使う | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
 | エフェクトの健全性 | effect soundness | エフェクトが空集合の計算は、実行しても IO を起こさないという性質 | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
+| 型の情報を付けた表層の構文 | elaborated surface syntax | 名前解決と型検査を終えた表層の構文に、型検査が決めた情報（多相な名前の型引数、演算子のオペランドの型、ラムダの引数の型など）を書き込んだもの。脱糖の入力である | [コア計算と脱糖](../01-spec/01-12-core-calculus.md)、[形式意味論と検証](../07-quality/07-04-formal-semantics.md) |
+| 表層の型付け | surface typing | 型の情報を付けた表層の構文に書き込まれた情報が型の規則を満たすかを検査する判断。型推論の規則とは別の判断で、脱糖の型の保存（性質 1）の前提に使う | [コア計算と脱糖](../01-spec/01-12-core-calculus.md)、[形式意味論と検証](../07-quality/07-04-formal-semantics.md) |
 
 #### 処理系の設計
 
@@ -260,25 +254,24 @@
 | 呼び出しの情報 | — | VM が持つ呼び出しの枠とレジスタの全体。大きさの合計に上限を設ける | [仮想機械](../02-impl/02-08-vm.md) |
 | IO の実行方式 | — | IO の操作を実行する二つの方式。VM がハンドラを直接呼ぶ直接呼び出しと、VM が要求を返して止まり、IO 実行器が応答を渡して再開させる要求と応答 | [ランタイム](../02-impl/02-09-runtime.md) |
 | ハンドラ表 | handler table | 組み込みのエフェクトの操作から、それを行う Rust の関数への表。言語のハンドラ（`handle` の式）とは別物であり、どのハンドラも処理しない操作を処理系が行うときに使う。本番用と、処理系のテストだけで使うテスト用がある | [ランタイム](../02-impl/02-09-runtime.md) |
-| IO 実行器 | — | VM を動かしてプログラムを最後まで実行し、IO の要求にハンドラ表で応える、ランタイムの部分。初回リリース版では、ネットワークの操作の要求にも応え、イベントループと作業用のスレッドを使う | [ランタイム](../02-impl/02-09-runtime.md) |
-| イベントループ | event loop | VM と同じスレッドで動かす、`mio` によるソケットの待ち受けと読み書き、時間の経過の待ちの仕組み（初回リリース版） | [ランタイム](../02-impl/02-09-runtime.md)、[ADR 0162](../decisions/0162-event-loop-and-worker-threads-for-io.md) |
-| 作業用のスレッド | worker thread | ファイル・外部コマンド・標準入力・HTTP のクライアントなど、ブロックする組み込みの操作を行うスレッド。言語の値に触れない（初回リリース版） | [ランタイム](../02-impl/02-09-runtime.md)、[ADR 0162](../decisions/0162-event-loop-and-worker-threads-for-io.md) |
-| 書き出し用のスレッド | writer thread | 標準出力と標準エラー出力ごとに一つ置き、VM のスレッドがバッファに加えた出力を出力先へ転送するスレッド。言語の値に触れない（初回リリース版） | [ランタイム](../02-impl/02-09-runtime.md)の「出力のバッファ」、[ADR 0265](../decisions/0265-output-transfer-by-writer-threads.md) |
-| 送り出しの列 | dispatch queue | 言語のハンドラが処理しなかった組み込みのエフェクトの操作の要求を置く、実行ごとの列。IO の二つの方式は、この列を誰がいつ処理するかだけが違う（初回リリース版） | [ランタイム](../02-impl/02-09-runtime.md)の「IO 実行器」、[ADR 0264](../decisions/0264-single-dispatch-queue-for-builtin-operations.md) |
-| スケジューラ | scheduler | 進められるタスクを選び、VM と同じスレッドの上でタスクを切り替える、実行ごとの状態の一部（初回リリース版） | [仮想機械](../02-impl/02-08-vm.md)、[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md) |
-| ハンドラの連鎖 | — | タスクごとに持つ、評価中の `handle` の並び。起動したタスクに引き継ぐ（初回リリース版） | [仮想機械](../02-impl/02-08-vm.md)、[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md) |
-| 区画 | segment | タスクの呼び出しの積み重ねを、`handle` の枠で区切った一続きの部分。継続を捕まえるときは、区画の所有を継続の値に移す（初回リリース版） | [仮想機械](../02-impl/02-08-vm.md)、[ADR 0160](../decisions/0160-one-shot-continuations-as-stack-segments.md) |
-| 包む枠 | wrapping frame | 一つの呼び出しを包む枠（`update` の枠、セルの更新の枠、`handle` の枠、`drop` の枠）。解放の枠とともに、呼び出しの枠とは別の並びに積み、積んだ時点の呼び出しの枠の数を深さとして持つ（初回リリース版） | [仮想機械](../02-impl/02-08-vm.md)の「枠の積み重ね」、[ADR 0262](../decisions/0262-segment-frames-split-call-and-wrapping.md) |
+| IO 実行器 | — | VM を動かしてプログラムを最後まで実行し、IO の要求にハンドラ表で応える、ランタイムの部分。ネットワークの操作の要求にも応え、イベントループと作業用のスレッドを使う | [ランタイム](../02-impl/02-09-runtime.md) |
+| イベントループ | event loop | VM と同じスレッドで動かす、`mio` によるソケットの待ち受けと読み書き、時間の経過の待ちの仕組み | [ランタイム](../02-impl/02-09-runtime.md) |
+| 作業用のスレッド | worker thread | ファイル・外部コマンド・標準入力・HTTP のクライアントなど、ブロックする組み込みの操作を行うスレッド。言語の値に触れない | [ランタイム](../02-impl/02-09-runtime.md) |
+| 書き出し用のスレッド | writer thread | 標準出力と標準エラー出力ごとに一つ置き、VM のスレッドがバッファに加えた出力を出力先へ転送するスレッド。言語の値に触れない | [ランタイム](../02-impl/02-09-runtime.md)の「出力のバッファ」 |
+| 送り出しの列 | dispatch queue | 言語のハンドラが処理しなかった組み込みのエフェクトの操作の要求を置く、実行ごとの列。IO の二つの方式は、この列を誰がいつ処理するかだけが違う | [ランタイム](../02-impl/02-09-runtime.md)の「IO 実行器」 |
+| スケジューラ | scheduler | 進められるタスクを選び、VM と同じスレッドの上でタスクを切り替える、実行ごとの状態の一部 | [仮想機械](../02-impl/02-08-vm.md) |
+| ハンドラの連鎖 | — | タスクごとに持つ、評価中の `handle` の並び。起動したタスクに引き継ぐ | [仮想機械](../02-impl/02-08-vm.md) |
+| 区画 | segment | タスクの呼び出しの積み重ねを、`handle` の枠で区切った一続きの部分。継続を捕まえるときは、区画の所有を継続の値に移す | [仮想機械](../02-impl/02-08-vm.md) |
+| 包む枠 | wrapping frame | 一つの呼び出しを包む枠（`update` の枠、セルの更新の枠、`handle` の枠、`drop` の枠）。解放の枠とともに、呼び出しの枠とは別の並びに積み、積んだ時点の呼び出しの枠の数を深さとして持つ | [仮想機械](../02-impl/02-08-vm.md)の「枠の積み重ね」 |
 | 関数の境界 | — | 途中の `return` と `try` が抜ける先になる呼び出しの枠。コア計算の `mark` に当たる | [バイトコードとコード生成](../02-impl/02-07-bytecode.md)、[仮想機械](../02-impl/02-08-vm.md) |
-| リソースの表 | resource table | 実行ごとの状態の中で、リソースの値を番号で表し、開いているか解放したかと開いた位置を持つ表（初回リリース版） | [ランタイム](../02-impl/02-09-runtime.md) |
-| 権限の判定器 | — | 実行時の権限制御で、許可の単位（組み込みのエフェクトと、シェルによる実行）と操作の対象を受け取り、許可か拒否かを返すもの。処理系は一か所でこれを呼び、利用者の方針から作る（サーバモード） | [ランタイム](../02-impl/02-09-runtime.md) |
-| 基準のディレクトリ | base directory | 相対パスを解決する起点。CLI の `run` では処理系を起動したときの作業ディレクトリであり、テストの実行器（初回リリース版）では実行ごとに与え、サーバモードではデーモンが子プロセスの作業ディレクトリとして与える | [スクリプト実行と埋め込み](../02-impl/02-11-embedding.md)、[ADR 0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md) |
-| 中断の要求、中断の印 | interrupt request | 処理系の外からの実行の停止の求め（`SIGINT`・`SIGTERM`。サーバモードの実行時間の上限と停止も、デーモンが子プロセスに `SIGTERM` を送って行う）と、それを受けたことを表す印。受けたら、すべてのタスクを取り消し、リソースを解放してから終える（初回リリース版） | [スクリプト実行と埋め込み](../02-impl/02-11-embedding.md)、[ADR 0163](../decisions/0163-interrupt-releases-resources.md) |
+| リソースの表 | resource table | 実行ごとの状態の中で、リソースの値を番号で表し、開いているか解放したかと開いた位置を持つ表 | [ランタイム](../02-impl/02-09-runtime.md) |
+| 基準のディレクトリ | base directory | 相対パスを解決する起点。CLI の `run` では処理系を起動したときの作業ディレクトリであり、テストの実行器では実行ごとに与える | [スクリプト実行と埋め込み](../02-impl/02-11-embedding.md) |
+| 中断の要求、中断の印 | interrupt request | 処理系の外からの実行の停止の求め（`SIGINT`・`SIGTERM`）と、それを受けたことを表す印。受けたら、すべてのタスクを取り消し、リソースを解放してから終える | [スクリプト実行と埋め込み](../02-impl/02-11-embedding.md) |
 | 止める手順 | — | 実行時エラー・資源の不足・`Process.exit`・中断の要求でプログラムを止めるときに、すべてのタスクの枠を辿ってリソースを解放し、出力を書き出してから終える手順 | [仮想機械](../02-impl/02-08-vm.md)、[評価意味論](../01-spec/01-08-evaluation.md) |
-| 作業の一覧 | work list | 読み込みの段が、次に読むモジュールを積む一覧。import を辿って、読むモジュールを決める（初回リリース版） | [パイプライン](../02-impl/02-01-pipeline.md)、[ADR 0156](../decisions/0156-module-loading-and-whole-program-checking.md) |
-| 束縛の番号、リンク | binding id, linking | 束縛の番号は、検査全体で一意な、名前の束縛を識別する番号で、宣言したモジュールの ID を持つ。リンクは、モジュールの間の参照をこの番号で結び付けること（初回リリース版） | [名前解決とモジュール読込](../02-impl/02-04-resolver.md)、[ADR 0156](../decisions/0156-module-loading-and-whole-program-checking.md) |
-| 依存グラフ | dependency graph | モジュールを頂点、import の宣言を辺とする有向グラフ。import の循環の検出に使う（初回リリース版） | [名前解決とモジュール読込](../02-impl/02-04-resolver.md) |
-| 単相化 | monomorphization | 多相な関数を、使う型ごとに複製して型パラメータのない関数にすること。Benitoite の処理系は行わず、辞書渡しで型クラスを実現する | [型検査器](../02-impl/02-05-typechecker.md)、[ADR 0158](../decisions/0158-type-classes-by-dictionary-passing.md) |
+| 作業の一覧 | work list | 読み込みの段が、次に読むモジュールを積む一覧。import を辿って、読むモジュールを決める | [パイプライン](../02-impl/02-01-pipeline.md) |
+| 束縛の番号、リンク | binding id, linking | 束縛の番号は、検査全体で一意な、名前の束縛を識別する番号で、宣言したモジュールの ID を持つ。リンクは、モジュールの間の参照をこの番号で結び付けること | [名前解決とモジュール読込](../02-impl/02-04-resolver.md) |
+| 依存グラフ | dependency graph | モジュールを頂点、import の宣言を辺とする有向グラフ。import の循環の検出に使う | [名前解決とモジュール読込](../02-impl/02-04-resolver.md) |
+| 単相化 | monomorphization | 多相な関数を、使う型ごとに複製して型パラメータのない関数にすること。Benitoite の処理系は行わず、辞書渡しで型クラスを実現する | [型検査器](../02-impl/02-05-typechecker.md) |
 | 合流点 | join point | 下位 IR で、複数の箇所から跳んでくる計算を一度だけ定めたもの。`join` で定め、`jump` で跳ぶ | [中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md) |
 
 #### 診断
@@ -291,7 +284,3 @@
 | 処理系の制限 | implementation limit | プログラムに誤りはないが、処理系の上限（レジスタの数など）を超えるために実行できないこと | [診断エンジン](../02-impl/02-10-diagnostics.md) |
 | 呼び出しの履歴 | call trace | 実行時エラーが起きた時点で残っている呼び出しの枠を、内側から並べたもの。末尾呼び出しで通った関数は現れない | [診断エンジン](../02-impl/02-10-diagnostics.md) |
 
-## 未決事項
-
-- [OPEN-051](../open-issues.md#open-051): 外部の関数（WASM）の詳細
-- [OPEN-055](../open-issues.md#open-055): サーバモードの設計

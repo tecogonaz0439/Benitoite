@@ -412,7 +412,7 @@ fn parse_paren(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
             span: p.span_from(start),
         })));
     }
-    // ガードの中の if の式は括弧内でだけ読める（設計書 01-02「パターンの拡張」）。
+    // ガードの中の if の式は括弧内でだけ読める（設計書 01-02「パターンの拡張（初回リリース版）」）。
     let saved_head = p.ctx.in_arm_head;
     p.ctx.in_arm_head = false;
     let inner = parse_expr(p, child(depth));

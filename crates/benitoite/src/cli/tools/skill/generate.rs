@@ -1,7 +1,7 @@
-//! 同梱の Agent Skill の参照の文書の生成（設計書 06-06「同梱の Agent Skill の構成」、ADR 0229・0286・0288）。
+//! 同梱の Agent Skill の参照の文書の生成（設計書 06-06「同梱の Agent Skill の構成」）。
 //! 生成の道具（`examples/gen_skill.rs`）と、生成物が古くないことのテスト（`tests/skill_docs.rs`）が呼ぶ。
 //!
-//! 生成物は、構文の章・標準ライブラリのソース・診断の表だけから決まる。実行の日時や環境を読まない（ADR 0288）。
+//! 生成物は、構文の章・標準ライブラリのソース・診断の表だけから決まる。実行の日時や環境を読まない（設計書 06-06「同梱の Agent Skill の構成」）。
 
 use crate::base::{FileId, IdGen, SourceKind, Span};
 use crate::diag::codes::ALL;
@@ -61,7 +61,8 @@ in this directory. Unofficial modules may change; their import name changes when
     pub const DIAG_MESSAGE: &str = "- Message:";
     pub const DIAG_LABEL: &str = "- Label:";
     pub const CODE_FENCE: &str = "```benitoite";
-    pub const BUNDLE_HEADER: &str = "//! 同梱の Agent Skill の埋め込みの一覧（設計書 06-06「同梱の Agent Skill の構成」、ADR 0230・0288）。
+    pub const BUNDLE_HEADER: &str =
+        "//! 同梱の Agent Skill の埋め込みの一覧（設計書 06-06「同梱の Agent Skill の構成」）。
 //! 生成の道具（`cargo run -p benitoite --example gen_skill`）が書いたファイルであり、手で直さない。
 
 use super::SkillFile;
@@ -250,7 +251,7 @@ fn module_reference(module: &StdlibModuleSource, name: &str) -> Result<(String, 
         text::LINE_STANDARD
     };
     let mut out = format!("# Benitoite.{name}\n\n{}\n", status.replace("{name}", name));
-    // prelude の関数も修飾して使い、非公式のモジュールも名前の最後の要素で修飾する（01-03、ADR 0286 の決定 3）。
+    // prelude の関数も修飾して使い、非公式のモジュールも名前の最後の要素で修飾する（01-03）。
     let example = parsed
         .module
         .decls

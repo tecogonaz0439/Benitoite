@@ -149,7 +149,7 @@ fn pop_traversed_call(
 }
 
 // 取り出すのはこの一歩の間だけであり、回収・待ちの出口より前に必ず RunState へ戻す。
-// Rust の再帰を使わず、入れ子の継続も work.segments の末尾で先に処理する（ADR 0262）。
+// Rust の再帰を使わず、入れ子の継続も work.segments の末尾で先に処理する（設計書 02-08「枠の積み重ね」）。
 #[cold]
 #[inline(never)]
 fn advance(state: &mut RunState, ctx: &mut NoGcCtx<'_>) -> Result<bool, Stop> {
@@ -162,7 +162,7 @@ fn advance(state: &mut RunState, ctx: &mut NoGcCtx<'_>) -> Result<bool, Stop> {
     result
 }
 
-// 位置を選ぶ部分と枠の種類ごとの処理を分ける（ADR 0262 の決定 4）。
+// 位置を選ぶ部分と枠の種類ごとの処理を分ける（設計書 02-08「枠の積み重ね」）。
 fn next_frame(work: &UnwindWork) -> Option<FrameAt> {
     work.segments
         .last()

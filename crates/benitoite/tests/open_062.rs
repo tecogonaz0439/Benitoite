@@ -1,4 +1,4 @@
-//! OPEN-062 の反例を公開のパイプラインと実行器で確かめる（設計書 01-07・01-11・07-03）。
+//! 設計書のレビューで挙がった実行時の振る舞いの反例（docs/todo の TODO-025）を公開のパイプラインと実行器で確かめる（設計書 01-07・01-11・07-03）。
 // テストの失敗は panic で表す（実装プラン 00-02）。
 #![allow(
     clippy::unwrap_used,
@@ -211,7 +211,7 @@ fn prepare(
     (env, script, output, obs)
 }
 // 出力先だけを置き換える。本物の writer が書いた後に知らせ、VM の次の選択を
-// その知らせまで待たせる。到着の判定に実時間を使わない（ADR 0274、設計書 07-03）。
+// その知らせまで待たせる。到着の判定に実時間を使わない（設計書 07-03「順序を与えるスケジューラと仮想の時間（初回リリース版）」）。
 struct CaptureSink {
     bytes: Arc<Mutex<Vec<u8>>>,
     arrived: mpsc::Sender<Vec<u8>>,
@@ -425,8 +425,8 @@ fn normal(end: &RunEnd) {
     assert!(end.reports.is_empty());
     assert!(end.main_error.is_none());
 }
-// OPEN-062 R01: 切り替えの順序によって、Result.Error か実行時エラーかが変わる。
-// どちらも値を返したなら同じ値であり、止まる場合の実行時エラーは問わない（ADR 0319 決定 1・2）。
+// TODO-025 R01: 切り替えの順序によって、Result.Error か実行時エラーかが変わる。
+// どちらも値を返したなら同じ値であり、止まる場合の実行時エラーは問わない（設計書 01-07「組み込みのエフェクト」）。
 // 関門: 組み込み単体では、起動・取り消し・停止の組み合わせをこの公開の境界で確かめられない。
 #[test]
 fn open_062_r01_pure_all_values_agree_and_stops_are_runtime_errors() {
@@ -496,8 +496,8 @@ end function"#;
         }
     }
 }
-// OPEN-062 R01 の穴: Clock.Time を handle で除くと、純粋な Task.race の結果が順序に依存する。
-// Clock.Time を除いても State は残り、uses のない関数は型検査で拒否される（ADR 0319 決定 3）。
+// TODO-025 R01 の穴: Clock.Time を handle で除くと、純粋な Task.race の結果が順序に依存する。
+// Clock.Time を除いても State は残り、uses のない関数は型検査で拒否される（設計書 01-11「タスクを起動する関数」）。
 #[test]
 fn open_062_r01_handled_race_requires_state() {
     let source = r#"
@@ -555,8 +555,8 @@ end function
     );
     assert!(rejected.program.is_none());
 }
-// OPEN-062 R02: A が readText 後にセルを書き、B が末尾再帰で読み続けると要求方式だけ止まる。
-// B の二巡目の予算の境界で仕事を実行し、両方式が終わることを期待する（ADR 0264 決定 4・5）。
+// TODO-025 R02: A が readText 後にセルを書き、B が末尾再帰で読み続けると要求方式だけ止まる。
+// B の二巡目の予算の境界で仕事を実行し、両方式が終わることを期待する（設計書 02-09「IO 実行器」）。
 #[test]
 fn open_062_r02_request_mode_starts_io_while_another_task_computes() {
     // 関門: 要求方式の VM から外側の実行器への配線を含むため、送り出しの部品だけの試験では足りない。
@@ -597,8 +597,8 @@ end function
     }
 }
 
-// OPEN-062 R03: 外側の集まりで A が B を起動すると、handle が孫 B を待たないか取り消さない。
-// 正常終了は B の出力が after より前、継続の破棄は B の出力がないことを期待する（01-11「タスクとハンドラ」、ADR 0266 決定 6・7）。
+// TODO-025 R03: 外側の集まりで A が B を起動すると、handle が孫 B を待たないか取り消さない。
+// 正常終了は B の出力が after より前、継続の破棄は B の出力がないことを期待する（01-11「タスクとハンドラ」）。
 #[test]
 fn open_062_r03_handle_waits_for_or_cancels_grandchildren() {
     let source = r#"
@@ -671,8 +671,8 @@ end function
         }
     }
 }
-// OPEN-062 R05: 取り消した readLine の完了を捨てると、貸した Reader も戻らない。
-// 取り消しと実行の両順序で、with の解放が一度だけ行われ、main が進むことを期待する（ADR 0266 決定 4・5）。
+// TODO-025 R05: 取り消した readLine の完了を捨てると、貸した Reader も戻らない。
+// 取り消しと実行の両順序で、with の解放が一度だけ行われ、main が進むことを期待する（設計書 02-09「タスクの待ちと取り消し」）。
 #[test]
 fn open_062_r05_cancelled_read_returns_and_releases_the_reader_once() {
     let source = r#"
@@ -892,8 +892,8 @@ impl TaskPicker for SharedPicker {
         self.0.borrow_mut().pick(ready)
     }
 }
-// OPEN-062 R13（プロンプト）: Console.write の後の readLine を待つ間に Name: が出ない。
-// stdin の仕事を submit した時点で既に出力済みであることを期待する（ADR 0265 決定 3）。
+// TODO-025 R13（プロンプト）: Console.write の後の readLine を待つ間に Name: が出ない。
+// stdin の仕事を submit した時点で既に出力済みであることを期待する（設計書 02-09「出力のバッファ」）。
 // 関門: R29 の配線の試験とは重なるが、R30 の個別指示により項目の試験を同じファイルに置く。
 #[test]
 fn open_062_r13_prompt_arrives_before_stdin_work_starts() {
@@ -927,7 +927,7 @@ end function
         assert_eq!(output, b"Name: ");
     }
 }
-// OPEN-062 R13（準備の行）: パイプへ準備の行を書き、A が待った後に B が計算を続けると行が届かない。
+// TODO-025 R13（準備の行）: パイプへ準備の行を書き、A が待った後に B が計算を続けると行が届かない。
 // B の二巡目を選ぶ前、まだ計算が終わらない時点で ready の行が届くことを期待する（02-09「出力のバッファ」）。
 #[test]
 fn open_062_r13_ready_line_arrives_while_another_task_computes() {
@@ -978,9 +978,9 @@ end function
         failures.join("\n")
     );
 }
-// OPEN-062 R04: 出力先が詰まると、ほかのタスク・タイマー・標準エラー出力・中断の検査も止まる。
+// TODO-025 R04: 出力先が詰まると、ほかのタスク・タイマー・標準エラー出力・中断の検査も止まる。
 // 1 MiB を超える出力と容量待ちの間に、タイマー後の stderr を観測して中断し、
-// stdout を放す前の Reader の解放で停止の手順に入ったことを確かめる（ADR 0265 決定 2〜4）。
+// stdout を放す前の Reader の解放で停止の手順に入ったことを確かめる（設計書 02-09「出力のバッファ」）。
 #[test]
 fn open_062_r04_blocked_stdout_does_not_block_timers_stderr_or_interrupts() {
     let source = r#"

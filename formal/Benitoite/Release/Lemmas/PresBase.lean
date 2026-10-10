@@ -60,7 +60,7 @@ mutual
         simp only [Comp.VarsIn] at h ⊢
         exact ⟨Val.VarsIn.toTrue v h.1, Comp.VarsIn.toTrue m h.2.1, Comp.VarsIn.toTrue k h.2.2⟩
     | .match v arms, h => by
-        simp only [Comp.VarsIn] at h ⊢; exact ⟨Val.VarsIn.toTrue v h.1, Comp.VarsInArms.toTrue arms h.2⟩
+        simp only [Comp.VarsIn] at h ⊢; exact ⟨Val.VarsIn.toTrue v h.1, Arm.VarsInList.toTrue arms h.2⟩
     | .lazyC m, h => by simp only [Comp.VarsIn] at h ⊢; exact Comp.VarsIn.toTrue m h
     | .escape v, h => by simp only [Comp.VarsIn] at h ⊢; exact Val.VarsIn.toTrue v h
     | .use v m, h => by
@@ -74,12 +74,16 @@ mutual
         exact ⟨Val.VarsIn.toTrue d h.1, Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.2.1,
           Eff.RhosInList.true es, Val.VarsInList.toTrue args h.2.2.2⟩
 
-  theorem Comp.VarsInArms.toTrue {n : Nat} {pe : Nat → Prop} : (arms : List (Pat × Comp)) →
-      Comp.VarsInArms n pe arms → Comp.VarsInArms n (fun _ => True) arms
+  theorem Arm.VarsInList.toTrue {n : Nat} {pe : Nat → Prop} : (arms : List Arm) →
+      Arm.VarsInList n pe arms → Arm.VarsInList n (fun _ => True) arms
     | [], _ => trivial
-    | (_, m) :: arms, h => by
-        simp only [Comp.VarsInArms] at h ⊢
-        exact ⟨Comp.VarsIn.toTrue m h.1, Comp.VarsInArms.toTrue arms h.2⟩
+    | .mk alts none m :: arms, h => by
+        simp only [Arm.VarsInList] at h ⊢
+        exact ⟨Comp.VarsIn.toTrue m h.1, Arm.VarsInList.toTrue arms h.2⟩
+    | .mk alts (some g) m :: arms, h => by
+        simp only [Arm.VarsInList] at h ⊢
+        exact ⟨Comp.VarsIn.toTrue g h.1,
+          Comp.VarsIn.toTrue m h.2.1, Arm.VarsInList.toTrue arms h.2.2⟩
 
   theorem Clause.VarsInList.toTrue {n : Nat} {pe : Nat → Prop} : (hs : List Clause) →
       Clause.VarsInList n pe hs → Clause.VarsInList n (fun _ => True) hs
@@ -88,17 +92,6 @@ mutual
         simp only [Clause.VarsInList] at h ⊢
         exact ⟨Comp.VarsIn.toTrue m h.1, Clause.VarsInList.toTrue cs h.2⟩
 end
-
-theorem Comp.VarsInArms.mem {n pe} {arms : List (Pat × Comp)} (h : Comp.VarsInArms n pe arms) {p m}
-    (hm : (p, m) ∈ arms) : Comp.VarsIn n pe m := by
-  induction arms with
-  | nil => simp at hm
-  | cons x arms ih =>
-      obtain ⟨p', m'⟩ := x
-      simp only [Comp.VarsInArms] at h
-      rcases List.mem_cons.mp hm with e | hm
-      · cases e; exact h.1
-      · exact ih h.2 hm
 
 /-- 閉じた値の並びの型は、型の変数を含まない。 -/
 theorem HasTypeVs.wf_all (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ} (hΨ : StoreTy.WF Ψ) :

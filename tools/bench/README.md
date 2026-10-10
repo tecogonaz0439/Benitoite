@@ -71,7 +71,7 @@ python3 tools/bench/run.py --benitoite target/release/benitoite \
   --benitoite-alloc target/alloc-stats/release/benitoite
 ```
 
-`--benitoite-alloc` を指定したときだけ確保と回収の統計を取り、各ベンチマークを一回実行した値を記録する（確保の回数は実行ごとに変わらない）。あわせて、`tools/bench/programs/depth.bnt`（末尾でない再帰）で、既定の呼び出しの情報の上限（1 GiB）に達する段数を 1% の精度で探して記録する（ADR 0030）。
+`--benitoite-alloc` を指定したときだけ確保と回収の統計を取り、各ベンチマークを一回実行した値を記録する（確保の回数は実行ごとに変わらない）。あわせて、`tools/bench/programs/depth.bnt`（末尾でない再帰）で、既定の呼び出しの情報の上限（1 GiB）に達する段数を 1% の精度で探して記録する（[07-02「測る項目」](../../docs/design/07-quality/07-02-performance.md)）。
 
 `run.py` は Benitoite について `run` と `check` の時間を別に測る。`run` の中央値から `check` の中央値を引いた値を、検査とコード生成を除く実行時間の近似として記録する。この差は別々の実行の中央値から求めるため、正確な段別計測ではない。起動から終了までの時間には `main` が `()` を返すだけの Benitoite プログラムを使う。検査時間には、一万個の関数を含む一万行程度の一時ファイルを使う。
 
@@ -109,7 +109,7 @@ Ruby の通常版と YJIT 版は、`ruby` が見つかった場合に `ruby --ve
 
 プロファイルは `results/profiles/<日付>-<コミット短縮名>/` に置く。測定前後の条件を揃え、記録には実行環境とコマンドの変更を追記する。
 
-記録は、ファイル名と本文で、測ったリビジョンをコミットの番号で参照する。初回リリース（`0.0.1`）で公開する履歴は、それまでのコミットを一つに集約したものである。このため、2026-10-09 までの記録が参照するコミットの番号とタグの多くは、公開する履歴になく、設計者の手元のリポジトリの開発の履歴にだけ残る。記録は測ったときの事実のまま残し、番号を書き換えない（[ADR 0358](../../docs/design/decisions/0358-release-versions-and-published-history.md) の決定 10）。
+記録は、ファイル名と本文で、測ったリビジョンをコミットの番号で参照する。初回リリース（`0.0.1`）で公開する履歴は、それまでのコミットを一つに集約したものである。このため、2026-10-09 までの記録が参照するコミットの番号とタグの多くは、公開する履歴になく、設計者の手元のリポジトリの開発の履歴にだけ残る。記録は測ったときの事実のまま残し、番号を書き換えない（[05-01「リリースの形と公開するリポジトリ」](../../docs/design/05-platform/05-01-distribution.md)）。同じく、`results/` の記録に残る ADR・OPEN の番号は初回リリース版の設計書の写し（`docs/archive/2026-10-09-design-first-release/` の `decisions/` と `open-issues.md`）を、作業の ID は初回リリース版の実装プラン（`docs/archive/2026-10-09-implement-first-release/`）を指す。
 
 ## グラフ付きの記録
 
@@ -216,7 +216,7 @@ Benitoite と OCaml は永続の順序付き Map・Set、Rust は可変の BTree
 
 ## HTTP の測り方
 
-HTTP は Benitoite のサーバと Python 標準ライブラリのクライアントで測る。言語の時計 `Clock.monotonicMilliseconds` はミリ秒までしか測れず、ループバックの応答時間には粗い。そのため、2026-10-08 の設計者の判断に従い、run.py が処理系の外で `time.perf_counter_ns` を使う（[ADR 0332](../../docs/design/decisions/0332-http-latency-measured-by-bench-client.md)）。処理系の src は変更しない。
+HTTP は Benitoite のサーバと Python 標準ライブラリのクライアントで測る。言語の時計 `Clock.monotonicMilliseconds` はミリ秒までしか測れず、ループバックの応答時間には粗い。そのため、2026-10-08 の設計者の判断に従い、run.py が処理系の外で `time.perf_counter_ns` を使う（[07-02「初回リリース版の完了時の測定」](../../docs/design/07-quality/07-02-performance.md)）。処理系の src は変更しない。
 
 サーバは `Http.listen("127.0.0.1", 0)` で待ち受け、`Http.listenerPort` の値を標準出力の最初の一行に書く。run.py は `bench_run` でサーバを起動し、ポートを読んでから指定数の GET 要求を送る。サーバは要求ごとに応答タスクを起動し、全応答の完了を待って終了する。計算ありの場合は、終了の印を読むまで整数の更新を続ける別のタスクを動かす。計算は呼び出しの予算によってほかのタスクへ切り替わる。
 

@@ -1,4 +1,4 @@
-//! 枠を降ろす原因と処理（設計書 02-08「枠を降ろす原因と処理」「取り消し」「止める手順」、ADR 0267 の決定 4）。
+//! 枠を降ろす原因と処理（設計書 02-08「枠を降ろす原因と処理」「取り消し」「止める手順」）。
 
 use crate::runtime::ReleaseFailure;
 use crate::runtime::heap::{Discard, Discarder, Slot, Trace, Tracer};

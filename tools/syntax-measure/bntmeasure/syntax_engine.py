@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """文法の照合の共通部分（字句解析器、EBNF の読み込み、照合器）。基準の案（V00）の凍結した写し。
 
-tools/grammar-check/syntax_engine.py を、2026-09-29 の構文の変更（ADR 0254〜0257）の前の状態
+tools/grammar-check/syntax_engine.py を、2026-09-29 の構文の変更の前の状態
 （コミット c93ebf7 の時点）で写したものである。測定を再現できるように、この道具は設計書の現在の
 01-01・01-02 と grammar-check の定数に依存しない。字句の規則は変更前の 01-01「字句構造」に、
 文法は変更前の 01-02「初回リリース版の文法の全体」（variants/V00/baseline-syntax.md に写した）に従う。

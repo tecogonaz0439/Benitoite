@@ -19,7 +19,7 @@ def OutcomeTy (P : Program) (B : Builtins) (Ψ : StoreTy) : Outcome → Ty → P
 def ClosedSat (B : Builtins) (C0 C1 : List TParam) (ts : List Ty) : Prop :=
   (∀ t ∈ ts, Ty.WF 0 t) ∧ SatAll B C1 ts C0
 
-/-- 可変のセルと明示遅延の組み込みの関数の型（01-07「可変のセル（初回リリース版）」、01-06「明示遅延の型」）。 -/
+/-- 可変のセルと明示遅延の組み込みの関数の型（01-07「可変のセル（初回リリース版）」、01-06「明示遅延の型（初回リリース版）」）。 -/
 def PrimSig.StoreShape (s : PrimSig) : Prop :=
   match s.kind with
   | .refNew => s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.tvar 0] ∧ s.ret = .reference (.tvar 0) ∧

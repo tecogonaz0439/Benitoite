@@ -1,4 +1,4 @@
-//! スケジューラ（設計書 02-08「タスクの切り替え」、02-09「タスクの待ちと取り消し」、ADR 0161・0266・0274）。
+//! スケジューラ（設計書 02-08「タスクの切り替え」、02-09「タスクの待ちと取り消し」）。
 
 pub mod parts;
 pub mod testing;
@@ -74,7 +74,7 @@ impl Scheduler {
         self.next_timer = self.next_timer.wrapping_add(1);
         id
     }
-    /// 実行中のタスクを待たせる。要求を送り出しの列に公開する前に呼ぶ（ADR 0264 の決定 2）。
+    /// 実行中のタスクを待たせる。要求を送り出しの列に公開する前に呼ぶ（02-09「IO 実行器」）。
     pub fn park(&mut self, task: TaskId, reason: WaitReason) {
         if self.check_park(task).is_err() {
             // VM は check_park を先に通す（実装プラン R25）。
@@ -130,7 +130,7 @@ impl Scheduler {
         !self.timers.is_empty() || self.external_waiters != 0
     }
     /// 行き詰まりか: 待ち行列が空で、外部の待ち（`WaitReason::is_external`）で待つタスクもタイマーもなく、
-    /// 待つタスクがあるとき（02-08「タスクの切り替え」、ADR 0238・0266 の決定 8・0283）。どのタスクも待って
+    /// 待つタスクがあるとき（02-08「タスクの切り替え」、02-09「IO 実行器」）。どのタスクも待って
     /// いない外部の操作の記録と出力の転送は数えないので、ほかの状態は調べない（本章「完了の処理と行き詰まりの
     /// 判定の順序」の手順 5）。止める手順の途中では、呼び出し側が停止の理由を置き換えない。
     pub fn is_deadlocked(&self) -> bool {

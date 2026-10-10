@@ -223,7 +223,7 @@ pub struct Clause<C> {
     pub op: BindingId,
     pub params: Vec<Var>,
     pub cont: ContVar,
-    /// 末尾で再開する節か（型検査の「ハンドラの節」の表から写す。ADR 0151）
+    /// 末尾で再開する節か（型検査の「ハンドラの節」の表から写す。設計書 02-05「書く位置の検査」）
     pub tail_resumptive: bool,
     pub body: C,
     /// 節を書いた位置（原型の名前 `<case 操作の名前>` の位置）

@@ -142,19 +142,65 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       obtain ⟨a', ε', _, _, hm2, hle, hs'⟩ := hm.inv_ite rfl
       simp only [Comp.VarsIn] at hmc
       exact ⟨Ψ, R, a', b, ε, ε', hσ, hm2, hs'.trans hε, .K_Sub hk hle, hmc.2.2, hkc, hσc⟩
-  | E_Match hfm =>
+  | E_Match =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
-      obtain ⟨a', b', ε', hv, harms, _, hle, hs'⟩ := hm.inv_match rfl
-      obtain ⟨p, hmem, hmatch⟩ := firstMatch_mem hfm
-      obtain ⟨δ, hp, hm1⟩ := harms.mem hmem
+      exact ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc,
+        by intro ar har; simp at har⟩
+  | E_MatchSkip hi hskip =>
+      obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc, hp⟩ := hs
+      exact ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc,
+        hp.advance hi (by intro _; exact hskip)⟩
+  | E_MatchBody hi hmatch =>
+      obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc, _⟩ := hs
+      obtain ⟨t, c, ε', hv, harms, _, hle, hsub⟩ := hm.inv_match rfl
+      have hmem := List.mem_of_getElem? hi
+      obtain ⟨δ, ha, hbody, _⟩ := harms.mem hmem
       simp only [Comp.VarsIn] at hmc
-      have hws := hp.match_typed hv hmatch
-      have hwsc := Pat.matchVal_closed hmc.1 hmatch
-      have hm1' := hm1
-      rw [List.append_nil] at hm1'
-      exact ⟨Ψ, R, b', b, ε, ε', hσ,
-        hm1'.instantiate (InstOk.of_values hb hws (hws.wf_all hwf hb hσ.wf hwsc) hwsc),
-        hs'.trans hε, .K_Sub hk hle, Comp.VarsIn.instantiate hwsc (hmc.2.mem hmem), hkc, hσc⟩
+      obtain ⟨hbodyc, _⟩ := hmc.2.mem hmem
+      have hws := ha.firstAlt_typed hv hmatch
+      have hwsc := firstAlt_closed hmc.1 hmatch
+      simp only [Arm.body, List.append_nil] at hbody hbodyc
+      exact ⟨Ψ, R, c, b, ε, ε', hσ,
+        hbody.instantiate (InstOk.of_values hb hws (hws.wf_all hwf hb hσ.wf hwsc) hwsc),
+        hsub.trans hε, .K_Sub hk hle, Comp.VarsIn.instantiate hwsc hbodyc, hkc, hσc⟩
+  | E_MatchGuard hi hmatch =>
+      obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc, hp⟩ := hs
+      obtain ⟨t, c, ε', hv, harms, _, hle, hsub⟩ := hm.inv_match rfl
+      have hmem := List.mem_of_getElem? hi
+      obtain ⟨δ, ha, hbody, hg⟩ := harms.mem hmem
+      have hguard := hg _ rfl
+      simp only [Comp.VarsIn] at hmc
+      obtain ⟨hbodyc, hgc⟩ := hmc.2.mem hmem
+      have hguardc := hgc _ rfl
+      have hws := ha.firstAlt_typed hv hmatch
+      have hwsc := firstAlt_closed hmc.1 hmatch
+      have hiok := InstOk.of_values (R0 := R) hb hws (hws.wf_all hwf hb hσ.wf hwsc) hwsc
+      simp only [Arm.body, List.append_nil] at hbody hguard hbodyc
+      have hbody' := hbody.instantiate hiok
+      have hguard' := hguard.subst ((SubstOk.inst hiok).hide none)
+      simp only [hideConts, List.map_nil] at hguard'
+      have hbc := Comp.VarsIn.instantiate hwsc hbodyc
+      exact ⟨Ψ, none, .base .boolean, b, Eff.empty, Eff.empty, hσ, hguard', Eff.Sub.refl _,
+        .K_Guard hm hε (hp.advance hi (by intro he; cases he)) (.C_Sub hbody' hle hsub) hk,
+        Comp.VarsIn.instantiate hwsc hguardc, Cont.Closed.cons.mpr ⟨⟨hmc.1, hmc.2, hbc⟩, hkc⟩, hσc⟩
+  | E_GuardT =>
+      obtain ⟨Ψ, R, a, b, ε, ε1, hσ, _, _, hk, _, hkc, hσc⟩ := hs
+      obtain ⟨R', ε', ε2, c, _, _, _, _, hε, _, hbody, hk'⟩ := hk.inv_guard
+      have hcl := Cont.Closed.cons.mp hkc
+      exact ⟨Ψ, R', c, b, ε', ε2, hσ, hbody, hε, hk', hcl.1.2.2, hcl.2, hσc⟩
+  | E_GuardF =>
+      obtain ⟨Ψ, R, a, b, ε, ε1, hσ, _, _, hk, _, hkc, hσc⟩ := hs
+      obtain ⟨R', ε', ε2, c, _, _, _, hm, hε, hp, _, hk'⟩ := hk.inv_guard
+      have hcl := Cont.Closed.cons.mp hkc
+      exact ⟨Ψ, R', c, b, ε', ε2, hσ, hm, hε, hk', ⟨hcl.1.1, hcl.1.2.1⟩, hcl.2, hσc, hp⟩
+  | E_ErrPopGuard =>
+      obtain ⟨Ψ, R, a, b, ε, hσ, hk, hkc, hσc⟩ := hs
+      obtain ⟨_, _, _, _, _, _, _, _, _, _, _, hk'⟩ := hk.inv_guard
+      exact stE_error hσ hk' (Cont.Closed.cons.mp hkc).2 hσc
+  | E_ExitPopGuard =>
+      obtain ⟨Ψ, R, a, b, ε, hσ, hk, hkc, hσc⟩ := hs
+      obtain ⟨_, _, _, _, _, _, _, _, _, _, _, hk'⟩ := hk.inv_guard
+      exact stE_exit hσ hk' (Cont.Closed.cons.mp hkc).2 hσc
   | @E_Prim b0 ts es ws k σ s0 v hsig hkind hδ =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
       obtain ⟨s', hs', htl, hel, had, hargs, hle, _⟩ := inv_prim_app hm

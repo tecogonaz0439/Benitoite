@@ -961,19 +961,28 @@ mod tests {
         let syntax = include_str!("../../../../../docs/design/01-spec/01-02-syntax.md");
         let lexical = include_str!("../../../../../docs/design/01-spec/01-01-lexical.md");
         let mut examples = Vec::new();
+        // 区切りが `None` の節は、章の最後の節なので章の終わりまでを読む。
         for (document, from, to, program) in [
-            (syntax, "### プログラムと宣言", "### ブロックと文", true),
-            (syntax, "### ブロックと文", "### モジュールと import", false),
-            (syntax, "### 例", "## 未決事項", true),
-            (lexical, "### 改行による区切り", "## 未決事項", false),
+            (
+                syntax,
+                "### プログラムと宣言",
+                Some("### ブロックと文"),
+                true,
+            ),
+            (
+                syntax,
+                "### ブロックと文",
+                Some("### モジュールと import"),
+                false,
+            ),
+            (syntax, "### 例", None, true),
+            (lexical, "### 改行による区切り", None, false),
         ] {
-            let section = document
-                .split_once(from)
-                .unwrap()
-                .1
-                .split_once(to)
-                .unwrap()
-                .0;
+            let rest = document.split_once(from).unwrap().1;
+            let section = match to {
+                Some(to) => rest.split_once(to).unwrap().0,
+                None => rest,
+            };
             for fenced in section.split("```text\n").skip(1) {
                 let source = fenced.split_once("```").unwrap().0;
                 examples.push(if program || source.starts_with("function ") {

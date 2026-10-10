@@ -265,7 +265,7 @@ fn collect_impl(d: &mut Decls<'_>, i: &ImplDecl, module: ModuleId) {
                         .help("form")
                         .build(),
                 );
-                // 具体的な型構成子のない誤りを、本物の Unit の実装として登録しない（ADR 0024）。
+                // 具体的な型構成子のない誤りを、本物の Unit の実装として登録しない（02-05「誤りの報告と検査の継続」）。
                 TypeArg::Head(TyHead::Param(u32::MAX))
             }
         }

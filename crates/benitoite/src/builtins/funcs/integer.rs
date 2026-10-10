@@ -179,7 +179,7 @@ pub const DECLS: &[BuiltinDecl] = &[
     shift_right_unsigned::DECL,
 ];
 
-// シフトの量は値の幅で検査し、引数の位置は 0 から数える（設計書 01-04「ビット演算」）。
+// シフトの量は値の幅で検査し、引数の位置は 0 から数える（設計書 01-04「ビット演算（初回リリース版）」）。
 pub(super) fn shift_amount(n: i64, maximum: u32, function: &'static str) -> Result<u32, Stop> {
     u32::try_from(n)
         .ok()

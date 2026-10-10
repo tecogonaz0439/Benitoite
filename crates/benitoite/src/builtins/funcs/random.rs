@@ -1,4 +1,4 @@
-//! 乱数の生成器と値への変換（設計書 03-07「Random」、ADR 0172）。
+//! 乱数の生成器と値への変換（設計書 03-07「Random」）。
 
 use crate::builtins::iface::IoReply;
 use crate::builtins::iface::{BuiltinDecl, builtin};

@@ -140,7 +140,7 @@ fn update_frame_is_the_only_root_for_cell_and_original_function() {
     check_cell_update_roots();
 }
 
-/// 更新枠だけを根にした書き込みを Miri からも通す（ADR 0318）。
+/// 更新枠だけを根にした書き込みを Miri からも通す（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
 pub(crate) fn check_cell_update_roots() {
     let mut b = ProgramBuilder::new();
     let main = b.proto("main", 0, 3).unwrap();

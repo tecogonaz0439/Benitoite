@@ -186,7 +186,7 @@ pub fn render_value<'e>(
     Ok(out)
 }
 
-/// 報告の表記（ADR 0033。`Show.show` の形の記号と、型が分からない値の書き方）。
+/// 報告の表記（設計書 02-10「文言の言語」。`Show.show` の形の記号と、型が分からない値の書き方）。
 mod text {
     /// `Failed` の `message` の前置き。操作の名前を続ける（10-18「確認と値の書き出し」）
     pub const ASSERTION_FAILED: &str = "assertion failed: ";

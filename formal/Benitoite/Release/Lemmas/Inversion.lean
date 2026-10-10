@@ -254,22 +254,15 @@ theorem HasTypeC.inv_ite {C Γ R m' T ε v m n} (h : HasTypeC P B Ψ C Γ R m' T
 theorem HasTypeC.inv_match {C Γ R m T ε v arms} (h : HasTypeC P B Ψ C Γ R m T ε)
     (hm : m = .match v arms) :
     ∃ a b ε', HasTypeV P B Ψ C Γ v a ∧ HasTypeArms P B Ψ C Γ R arms a b ε' ∧
-      Exhaustive P a (arms.map Prod.fst) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by
+      Exhaustive P a (unguardedPats arms) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by
   match h with
   | .C_Match hv harms hex => cases hm; exact ⟨_, _, _, hv, harms, hex, Ty.Le.refl _, Eff.Sub.refl _⟩
   | .C_Sub h hle hs =>
       obtain ⟨a, b, ε', hv, harms, hex, hle', hs'⟩ := inv_match h hm
       exact ⟨a, b, ε', hv, harms, hex, hle'.trans hle, hs'.trans hs⟩
-  | .C_Return _ => cases hm
-  | .C_Let _ _ => cases hm
-  | .C_App _ _ => cases hm
-  | .C_If _ _ _ => cases hm
-  | .C_Lazy _ => cases hm
-  | .C_Escape _ _ => cases hm
-  | .C_Use _ _ _ _ => cases hm
-  | .C_Handle _ _ _ => cases hm
-  | .C_Resume _ _ => cases hm
-  | .C_ResumeL _ _ => cases hm
+  | .C_Return _ | .C_Let _ _ | .C_App _ _ | .C_If _ _ _ | .C_Lazy _
+  | .C_Escape _ _ | .C_Use _ _ _ _ | .C_Handle _ _ _ | .C_Resume _ _ | .C_ResumeL _ _
+  | .C_Meth _ _ _ _ _ _ => cases hm
 
 theorem HasTypeC.inv_lazy {C Γ R m' T ε m} (h : HasTypeC P B Ψ C Γ R m' T ε) (hm : m' = .lazyC m) :
     ∃ a, HasTypeC P B Ψ C (hideConts Γ) none m a Eff.empty ∧ T = .lazy a := by

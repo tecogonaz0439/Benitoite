@@ -18,6 +18,12 @@ mutual
     | .P_Var => by simp [Pat.binders]
     | .P_Const _ _ _ _ => by simp [Pat.binders]
     | .P_Con _ _ h => by simp only [Pat.binders]; exact PatTys.length_eq h
+    | .P_RangeInt => by simp [Pat.binders]
+    | .P_RangeChar => by simp [Pat.binders]
+    | .P_List (rest := rest) hb ha _ => by
+        cases rest with
+        | none => simp [restTys, Pat.binders, PatTys.length_eq hb, PatTys.length_eq ha]
+        | some r => cases r <;> simp [restTys, ListRest.binders, Pat.binders, PatTys.length_eq hb, PatTys.length_eq ha, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
 
   theorem PatTys.length_eq {ps as δ} : PatTys P ps as δ → δ.length = Pat.bindersList ps
     | .nil => by simp [Pat.bindersList]
@@ -119,11 +125,13 @@ theorem RenOk.shift (xs : List (Option Ty)) (Γ : List (Option Ty)) :
   rw [List.getElem?_append_right (by omega)]
   simpa using hi
 
-theorem Comp.renameArms_fst (ξ : Nat → Nat) (arms : List (Pat × Comp)) :
-    (Comp.renameArms ξ arms).map Prod.fst = arms.map Prod.fst := by
+theorem unguardedPats_rename (ξ : Nat → Nat) (arms : List Arm) :
+    unguardedPats (Arm.renameList ξ arms) = unguardedPats arms := by
   induction arms with
-  | nil => simp [Comp.renameArms]
-  | cons x xs ih => obtain ⟨p, m⟩ := x; simp [Comp.renameArms, ih]
+  | nil => rfl
+  | cons arm arms ih =>
+      cases arm with
+      | mk alts guard body => cases guard <;> simp [Arm.renameList, unguardedPats, ih]
 
 /-- 節の環境 `k :: x̄ ++ Γ` への持ち上げ。 -/
 theorem RenOk.clause {Γ Δ ξ} (c : Option Ty) (ps : List Ty) (k : Nat) (h : RenOk Γ Δ ξ) :
@@ -220,7 +228,7 @@ mutual
     | .C_Match hv harms hex =>
         simp only [Comp.rename]
         refine .C_Match (HasTypeV.rename hv hξ) (HasTypeArms.rename harms hξ) ?_
-        rwa [Comp.renameArms_fst]
+        rwa [unguardedPats_rename]
     | .C_Lazy hm => simp only [Comp.rename]; exact .C_Lazy (HasTypeC.rename hm hξ.hide)
     | .C_Escape hv hw => simp only [Comp.rename]; exact .C_Escape (HasTypeV.rename hv hξ) hw
     | .C_Use hv hr hm hs =>
@@ -238,15 +246,19 @@ mutual
         exact .C_Meth (HasTypeV.rename hv hξ) hc hm hts hes (HasTypeVs.rename hws hξ)
 
   theorem HasTypeArms.rename {Ψ C Γ Δ ξ R arms a b ε} (h : HasTypeArms P B Ψ C Γ R arms a b ε)
-      (hξ : RenOk Γ Δ ξ) : HasTypeArms P B Ψ C Δ R (Comp.renameArms ξ arms) a b ε := by
+      (hξ : RenOk Γ Δ ξ) : HasTypeArms P B Ψ C Δ R (Arm.renameList ξ arms) a b ε := by
     match h with
-    | .nil hw => simp only [Comp.renameArms]; exact .nil hw
-    | .cons (δ := δ) hp hm harms =>
-        simp only [Comp.renameArms]
-        refine .cons hp ?_ (HasTypeArms.rename harms hξ)
-        have := hξ.up (binds δ)
-        rw [binds_length, PatTy.length_eq hp] at this
-        exact HasTypeC.rename hm this
+    | .nil hw => simp only [Arm.renameList]; exact .nil hw
+    | .plain (δ := δ) hp hm ht =>
+        simp only [Arm.renameList]
+        have hξ' := hξ.up (binds δ)
+        rw [binds_length, hp.2.1] at hξ'
+        exact .plain hp (HasTypeC.rename hm hξ') (HasTypeArms.rename ht hξ)
+    | .guarded (δ := δ) hp hg hm ht =>
+        simp only [Arm.renameList]
+        have hξ' := hξ.up (binds δ)
+        rw [binds_length, hp.2.1] at hξ'
+        exact .guarded hp (HasTypeC.rename hg hξ'.hide) (HasTypeC.rename hm hξ') (HasTypeArms.rename ht hξ)
 
   theorem HasTypeClauses.rename {Ψ C Γ Δ ξ R h t ε} (hc : HasTypeClauses P B Ψ C Γ R h t ε)
       (hξ : RenOk Γ Δ ξ) : HasTypeClauses P B Ψ C Δ R (Clause.renameList ξ h) t ε := by
@@ -327,7 +339,9 @@ mutual
       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeArms P B Ψ' C Γ R arms a b ε := by
     match h with
     | .nil hw => exact .nil hw
-    | .cons hp hm harms => exact .cons hp (HasTypeC.store hm hΨ) (HasTypeArms.store harms hΨ)
+    | .plain hp hm ht => exact .plain hp (HasTypeC.store hm hΨ) (HasTypeArms.store ht hΨ)
+    | .guarded hp hg hm ht =>
+        exact .guarded hp (HasTypeC.store hg hΨ) (HasTypeC.store hm hΨ) (HasTypeArms.store ht hΨ)
 
   theorem HasTypeClauses.store {Ψ Ψ' C Γ R h t ε} (hc : HasTypeClauses P B Ψ C Γ R h t ε)
       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClauses P B Ψ' C Γ R h t ε := by

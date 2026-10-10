@@ -1,4 +1,4 @@
-//! 無作為に生成したソースを VM と参照インタプリタで比べる（設計書 07-03「差分テスト」、ADR 0213）。
+//! 無作為に生成したソースを VM と参照インタプリタで比べる（設計書 07-03「差分テスト」）。
 //!
 //! 再現: BENITOITE_RANDOM_PROGRAMS=1 BENITOITE_RANDOM_SEED=123 cargo test --test random_programs random_differential -- --nocapture
 //! 長い実行: BENITOITE_RANDOM_PROGRAMS=100000 cargo test --release --test random_programs random_differential -- --nocapture
@@ -19,7 +19,7 @@
 #[path = "golden/differential.rs"]
 mod differential;
 #[path = "random_programs/generator.rs"]
-mod generator;
+pub mod generator;
 #[path = "random_programs/shrink.rs"]
 mod shrink;
 

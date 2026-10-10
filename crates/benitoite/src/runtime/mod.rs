@@ -14,7 +14,7 @@ pub mod sched;
 
 use crate::vm::InstrRef;
 
-/// 一つの操作で作る文字列と `Bytes` の大きさの上限（2^30 バイト。02-09、ADR 0049）。
+/// 一つの操作で作る文字列と `Bytes` の大きさの上限（2^30 バイト。02-09「一つの操作で作る値の大きさの上限」）。
 pub const MAX_STRING_BYTES: u64 = 1_073_741_824;
 /// 一つの操作で作るリストの長さの上限（2^24 要素）。
 pub const MAX_LIST_LEN: u64 = 16_777_216;
@@ -25,7 +25,7 @@ pub enum Stream {
     Stderr,
 }
 
-/// リソースの型（01-10「リソース管理」、02-09「リソースの追跡」）。解放の失敗の報告に使う。
+/// リソースの型（01-10「リソースの型」、02-09「リソースの追跡」）。解放の失敗の報告に使う。
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum ResourceKind {
     FileReader,
@@ -62,7 +62,7 @@ pub enum RuntimeError {
         kind: ResourceKind,
     },
     ContinuationResumedTwice,
-    /// 引き継いだハンドラの節が末尾で再開する節でない（ADR 0151）。`operation` は操作の修飾した名前
+    /// 引き継いだハンドラの節が末尾で再開する節でない（02-09「操作の振り分け」）。`operation` は操作の修飾した名前
     InheritedHandlerClause {
         operation: String,
     },
@@ -73,7 +73,7 @@ pub enum RuntimeError {
     },
     ResponseSentTwice,
     TaskDeadlock,
-    /// 取り消したタスクを `Task.await` で待った（01-11「取り消し」、ADR 0317）
+    /// 取り消したタスクを `Task.await` で待った（01-11「取り消し」）
     AwaitedTaskCancelled,
 }
 

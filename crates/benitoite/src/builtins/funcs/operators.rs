@@ -467,7 +467,7 @@ pub const DECLS: &[BuiltinDecl] = &[
     ne::DECL,
 ];
 
-/// Decimal の命令と組み込みの関数で、停止理由を揃える（設計書 01-04「Decimal」）。
+/// Decimal の命令と組み込みの関数で、停止理由を揃える（設計書 01-04「Decimal（初回リリース版）」）。
 pub(crate) fn decimal_error(error: crate::base::decimal::DecimalError) -> Stop {
     match error {
         crate::base::decimal::DecimalError::Overflow => {

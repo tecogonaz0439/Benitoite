@@ -1,4 +1,4 @@
-//! レコードの式とパターン（設計書 01-02「レコード」、02-03「入れ子の深さ」）。
+//! レコードの式とパターン（設計書 01-02「レコード（初回リリース版）」、02-03「入れ子の深さ」）。
 use super::{
     CommaList, PResult, Parser, child, comma_list_tail, exprs, nth_child,
     patterns::{self, PatternCounter},

@@ -1,5 +1,5 @@
 //! 診断の内部の表現と、診断を組み立てる手段（設計書 02-10）。
-//! 文言は codes.rs の表の型板から作り、診断を出す処理に英語の文を直接書かない（ADR 0033）。
+//! 文言は codes.rs の表の型板から作り、診断を出す処理に英語の文を直接書かない（設計書 02-10「文言の言語」）。
 
 pub mod codes;
 pub mod render;
@@ -82,7 +82,7 @@ pub struct TraceFrame {
 }
 
 /// 内側から外側へ並べた呼び出しの履歴。20 段を超えるときは内側 10 段と外側 10 段だけを持ち、
-/// 省いた段の数を `omitted` に入れる（ADR 0034）。
+/// 省いた段の数を `omitted` に入れる（設計書 02-10「実行時エラーと資源の不足の報告」）。
 #[derive(Clone, PartialEq, Debug)]
 pub struct CallTrace {
     pub frames: Vec<TraceFrame>,

@@ -329,6 +329,7 @@ fn stack_limits_preserve_the_performing_frame_and_clear_the_meter() {
 // 関門: 反復ごとに区画と包む枠を降ろす形は定数の空間で走り、
 // 再開後の計算を積む形は上限に達する。深さの計数の別々の契約を同じ準備で確かめる。
 #[test]
+#[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
 fn million_completed_handlers_use_constant_space_but_pending_resumes_grow() {
     for pending in [false, true] {
         let mut b = ProgramBuilder::new();
@@ -455,7 +456,7 @@ fn check_call_results_at_handle_and_resume() {
     );
 }
 
-/// 捕捉した窓の再開と破棄を短い二つの経路で通す（ADR 0318）。
+/// 捕捉した窓の再開と破棄を短い二つの経路で通す（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
 pub(crate) fn check_small_continuations() {
     check_call_results_at_handle_and_resume();
     let mut b = ProgramBuilder::new();
@@ -998,6 +999,7 @@ fn discarded_nested_continuations_escape_and_stop() {
 
 // 関門: 捨てた継続が計数に残ると小さい上限で反復が止まる。通常の末尾再帰では検出できない（R21）。
 #[test]
+#[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
 fn dropping_one_hundred_thousand_continuations_does_not_accumulate_stack() {
     let mut b = ProgramBuilder::new();
     let main = b.proto("main", 0, 16).unwrap();

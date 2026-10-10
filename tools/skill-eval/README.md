@@ -1,17 +1,16 @@
 # Skill の評価の道具
 
-同梱の Agent Skill（`crates/benitoite/skill/`）だけを与えたコーディングエージェントが、課題のスクリプトを書き、検査と修正を繰り返して期待する出力を得られるかを測る道具である（設計書 06-06「Skill の評価」、ADR 0232）。
+同梱の Agent Skill（`crates/benitoite/skill/`）だけを与えたコーディングエージェントが、課題のスクリプトを書き、検査と修正を繰り返して期待する出力を得られるかを測る道具である（設計書 06-06「Skill の評価」）。
 
-既定の評価の対象（`--harness default`）は、設計者の決定（2026-10-08）により次の四つの組とする。OpenCode は設計者が解約したので、項目を `harnesses.json` に残すが既定の対象から外す。
+既定の評価の対象（`--harness default`）は、設計者の決定（2026-10-08）により次の三つの組とする。OpenCode は設計者が解約したので、項目を `harnesses.json` に残すが既定の対象から外す。`antigravity-gpt-oss`（Antigravity の CLI、`gpt-oss-120b-medium`、effort medium）も、項目を残すが評価の対象に含めない。
 
 | 項目の名前 | ハーネス | モデルと推論の度合い |
 |---|---|---|
 | `claude-code` | Claude Code | `claude-opus-5-5`、effort medium |
 | `codex` | Codex CLI | `gpt-6-luna`、`model_reasoning_effort` max |
 | `antigravity-gemini` | Antigravity の CLI（`agy`） | `gemini-3.8-flash-high`、effort high |
-| `antigravity-gpt-oss` | Antigravity の CLI（`agy`） | `gpt-oss-120b-medium`、effort medium |
 
-GPT-6-Luna の結果は、オープンウェイトのモデルでもうまく書けるかの目安として扱う。`antigravity-gpt-oss` はオープンウェイトのモデルで直接確かめるための組であり、短い試行で動きを見てから本番に含めるかを決める。同じ仕組みを、OPEN-012 の第二段階（構文の案ごとの評価）にも使う（ADR 0246。`--skill-dir`）。
+GPT-6-Luna の結果は、オープンウェイトのモデルでもうまく書けるかの目安として扱う。`antigravity-gpt-oss` はオープンウェイトのモデルで直接確かめるための組として用意したが、2026-10-08 の 3 回の短い試行がすべて失敗した（`results/` の 1555・1604・1641）ので、設計者の決定（2026-10-09）により評価の対象に含めない。同じ仕組みを、構文の測定の第二段階（構文の案ごとの評価。docs/todo の TODO-017）にも使う（`--skill-dir`）。
 
 評価の手順（設計者の了承、ハーネスの選び方、試行の回数、記録の書き方）は、プロジェクトのスキル `skill-eval`（`.claude/skills/skill-eval/SKILL.md`）に書く。本書は道具の使い方と、課題と記録の形を書く。
 
@@ -52,7 +51,7 @@ python3 tools/skill-eval/skill_eval.py --harness default --trials 3 --allow-unve
 | `--trials <n>` | 課題ごとの試行の回数（既定 1） |
 | `--task <課題>` | 課題を選ぶ（繰り返せる。既定はすべて） |
 | `--model <モデル>` | ハーネスに渡すモデル（既定は `harnesses.json` の値） |
-| `--skill-dir <dir>` | `benitoite skill install` の代わりに、このディレクトリを Skill として写す。構文の案ごとの Skill を差し替えて評価するときに使う（ADR 0246） |
+| `--skill-dir <dir>` | `benitoite skill install` の代わりに、このディレクトリを Skill として写す。構文の案ごとの Skill を差し替えて評価するときに使う（docs/todo の TODO-017） |
 | `--work-root <dir>` | 作業ディレクトリと生の記録の置き場所。リポジトリの中は指定できない（既定は新しい一時ディレクトリ）。同じディレクトリで再び実行すると、空いた番号の試行のディレクトリを使う |
 | `--allow-unverified` | `harnesses.json` の `verified` が `false` のハーネスを起動する。付けなければ起動を断る |
 | `--record <file>` | 記録のファイル（既定 `results/<日時>-<ハーネス>.md`） |
@@ -64,7 +63,7 @@ python3 tools/skill-eval/skill_eval.py --harness default --trials 3 --allow-unve
 3. 包みのコマンドと本物の処理系を試行のディレクトリ（`<試行>/bin/`・`<試行>/real/`。リポジトリの外）に写す。リポジトリの中のパスを見せると、エージェントが解のスクリプトや設計書に辿り着けるためである。`PATH` の先頭に `<試行>/bin/` を置き、`SKILL_EVAL_LOG`（記録のファイル。作業ディレクトリの外の `<試行>/benitoite.log`）と `SKILL_EVAL_REAL_BENITOITE`（本物の処理系の写し）を設定して、ハーネスを起動する。HTTP の課題では `http_server.py` を立て、接続先の URL を `SKILL_EVAL_HTTP_BASE` で渡す。ハーネスの標準出力と標準エラー出力は `<試行>/harness.stdout`・`harness.stderr` に置く。
 4. 判定する。ハーネスが起動できなかったとき、記録がないとき、数える起動が 0 回のときは、理由の欄に警告を書いて失敗とする（包みのコマンドを迂回した試行や、サンドボックスが記録を書けない試行を成功と記録しないため）。記録の `check`・`run`・`test` の行の数（検査と修正の回数）が課題の上限（既定 10）を超えたら失敗とする。超えなければ、書かれたスクリプトを、入力を写し直した別のディレクトリで実行して比べる（判定のための起動は包みのコマンドを通さず、回数に数えない）。
    - 実行の課題: `benitoite check` が通り、`benitoite run` の終了状態が期待（既定 0）と等しく、標準出力が `expected.stdout` と等しく、`expected.files/` の各ファイルが書かれていること。`.json` のファイルは値として比べ、ほかはバイト列で比べる。
-   - テストを書く課題: `benitoite test --diagnostics=json` の集計の行（`testSummary`）で、失敗が 0 で成功の数が `min_tests` 以上であり、スクリプトが `require_text` の文字列（`handle` など）を含むこと。テストのファイルには `check` を使わない（06-06、ADR 0249）。
+   - テストを書く課題: `benitoite test --diagnostics=json` の集計の行（`testSummary`）で、失敗が 0 で成功の数が `min_tests` 以上であり、スクリプトが `require_text` の文字列（`handle` など）を含むこと。テストのファイルには `check` を使わない（06-06「同梱の Agent Skill の構成」）。
 
 ### 包みのコマンドの記録
 
@@ -126,9 +125,9 @@ LLM を呼ぶ評価の見込みは次のとおりである（実測ではない�
 
 | 評価 | 試行の回数 | 所要時間の見込み |
 |---|---|---|
-| 最初の短い試行（`json_summary` だけ、既定の四つの組、各 1 回） | 4 | 10〜40 分 |
-| 完了条件の確かめ（`json_summary` だけ、四つの組、各 5 回） | 20 | 40 分〜3.5 時間 |
-| 全課題（11 課題、四つの組、各 3 回） | 132 | 4.5〜22 時間 |
+| 最初の短い試行（`json_summary` だけ、既定の三つの組、各 1 回） | 3 | 6〜30 分 |
+| 完了条件の確かめ（`json_summary` だけ、三つの組、各 5 回） | 15 | 30 分〜2.5 時間 |
+| 全課題（11 課題、三つの組、各 3 回） | 99 | 3.5〜16.5 時間 |
 | 構文の案ごとの評価（案 n 個、全課題、一つのハーネス、各 3 回） | 33 n | 案ごとに 1〜6 時間 |
 
 試行は順に行う（並べると、ハーネスの利用量の上限に掛かりやすく、包みのコマンドの記録も分けにくい）。

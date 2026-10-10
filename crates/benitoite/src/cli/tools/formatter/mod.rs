@@ -1,5 +1,5 @@
-//! フォーマッタと `benitoite fmt`（設計書 06-03、06-01「`fmt` のコマンドライン（初回リリース版）」、
-//! ADR 0207・0225〜0228・0247）。整形は字句と改行の印の列を辿って字句の字面を写し、その間に空白・字下げ・
+//! フォーマッタと `benitoite fmt`（設計書 06-03、06-01「`fmt` のコマンドライン（初回リリース版）」）。
+//! 整形は字句と改行の印の列を辿って字句の字面を写し、その間に空白・字下げ・
 //! 空の行・コメントを置く。AST は字句の役割を決めるためだけに使う。
 
 pub mod print;
@@ -8,7 +8,7 @@ pub mod verify;
 
 use crate::diag::Diagnostic;
 
-/// 字下げの一段の空白の数（06-03「字下げ」、ADR 0225）。
+/// 字下げの一段の空白の数（06-03「字下げ」）。
 pub const INDENT_WIDTH: usize = 2;
 
 /// 整形の結果。
@@ -28,7 +28,7 @@ pub enum FormatError {
     Verify(String),
 }
 
-/// `fmt` が書く文と、報告の型板に埋める語（ADR 0033）。
+/// `fmt` が書く文と、報告の型板に埋める語（設計書 02-10「文言の言語」）。
 pub mod text {
     /// `--check` で、整形で変わるファイル一つの行。`{path}` は表示名
     pub const WOULD_REFORMAT: &str = "would reformat {path}";
@@ -70,7 +70,7 @@ pub fn format_source(
         &mut IdGen::new(),
     );
     // 断るのは字句か構文の誤り（E01nn・E02nn）があるときだけで、そのほかの構文解析の診断は捨てる
-    // （本章「整形の流れ」の 2、ADR 0333 の決定 1）。
+    // （本章「整形の流れ」の 2、設計書 06-03「構文の誤りがあるファイル」）。
     if lexed.diagnostics.iter().any(is_syntax_error)
         || parsed.diagnostics.iter().any(is_syntax_error)
     {
@@ -119,7 +119,7 @@ fn run_fmt_with(
     for given in &args.paths {
         let resolved = env.working_directory.join(given);
         let display = given.to_string_lossy().into_owned();
-        // 直接与えたリンクは辿る（ADR 0327）ので、`metadata` で辿った先の種類を見る。
+        // 直接与えたリンクは辿る（設計書 06-01「`fmt` のコマンドライン（初回リリース版）」）ので、`metadata` で辿った先の種類を見る。
         let is_dir = std::fs::metadata(&resolved).is_ok_and(|m| m.is_dir());
         if !is_dir {
             status = status.max(fmt_file(args, env, format, &resolved, &display));
@@ -255,12 +255,12 @@ fn write_diag(env: &CliEnv, format: DiagFormat, sources: &SourceTable, diag: &Di
     let _result = env.stderr.write_bytes(message.as_bytes());
 }
 
-/// 理由の文（ADR 0033）。文は `modules::text::SOURCE_TOO_LARGE` と同じで、そちらが `pub(super)` なので写す。
+/// 理由の文（設計書 02-10「文言の言語」）。文は `modules::text::SOURCE_TOO_LARGE` と同じで、そちらが `pub(super)` なので写す。
 mod source_text {
     pub(super) const SOURCE_TOO_LARGE: &str = "the source file exceeds the size limit of 256 MiB";
 }
 
-/// 整形の結果でファイルを置き換える（06-01「`fmt` のコマンドライン」、ADR 0207・0247）。同じディレクトリの一時ファイルに書き、
+/// 整形の結果でファイルを置き換える（06-01「`fmt` のコマンドライン（初回リリース版）」）。同じディレクトリの一時ファイルに書き、
 /// 元のファイルの許可の設定を写してから、名前の変更で置き換える。失敗したら元のファイルを変えずに残し、一時ファイルを消して、
 /// E0125 の診断を返す（`display` は診断に書く表示名）。
 pub fn replace_file(path: &Path, display: &str, content: &[u8]) -> Result<(), Box<Diagnostic>> {
@@ -270,7 +270,7 @@ pub fn replace_file(path: &Path, display: &str, content: &[u8]) -> Result<(), Bo
             .arg("reason", error.to_string())
             .note("reason")
     };
-    // 直接与えたリンクは辿った先のファイルを置き換え、リンクそのものは変えない（ADR 0327 の決定 1）。
+    // 直接与えたリンクは辿った先のファイルを置き換え、リンクそのものは変えない（設計書 06-01「`fmt` のコマンドライン（初回リリース版）」）。
     let is_link = std::fs::symlink_metadata(path).is_ok_and(|m| m.file_type().is_symlink());
     let target = if is_link {
         std::fs::canonicalize(path).map_err(|e| Box::new(write_error(&e).build()))?

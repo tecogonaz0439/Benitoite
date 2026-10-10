@@ -359,7 +359,7 @@ impl State<'_> {
         )))
     }
 
-    /// 01-12「呼び出し」のパイプの行。左辺を先に一度だけ評価する（ADR 0050）。
+    /// 01-12「呼び出し」のパイプの行。左辺を先に一度だけ評価する。
     fn pipe(&mut self, p: &ast::PipeExpr) -> Result<Comp, InternalError> {
         let mut pending = vec![];
         let left = self.eval(&p.lhs, &mut pending)?;
@@ -628,7 +628,7 @@ impl State<'_> {
         }
     }
 
-    /// 01-12「return」の末尾位置と途中の二つの行。
+    /// 01-12「`return`」の末尾位置と途中の二つの行。
     fn return_expr(
         &mut self,
         e: &ast::ReturnExpr,

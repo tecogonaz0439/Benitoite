@@ -316,7 +316,7 @@ function main() -> Unit uses Console.Write
 end function
 ";
 
-/// `with` の 2 つ目以降の束縛の行（ADR 0323 の `Http.serve` の例）。
+/// `with` の 2 つ目以降の束縛の行（06-03「字下げ」）。
 const WITH_INPUT: &str = "\
 function serve() -> Unit
       with listener = try listen(host, port),
@@ -381,7 +381,7 @@ end function
 ";
 
 /// `match` の分岐と `handle` の節の頭（パターン・ガード・操作の引数）を改行したときの続きの行は、
-/// その `case` の行より一段深くする（06-03「字下げ」の規則 4、ADR 0326）。
+/// その `case` の行より一段深くする（06-03「字下げ」の規則 4）。
 const ARM_HEAD_INPUT: &str = "\
 function main() -> Unit
 match x with

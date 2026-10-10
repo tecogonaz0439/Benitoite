@@ -22,7 +22,7 @@ pub enum ReleaseCause {
     Interrupted,
 }
 
-/// 報告の型板に埋める値の語（ADR 0033）。
+/// 報告の型板に埋める値の語（02-10「文言の言語」）。
 pub mod text {
     /// `FaultThread` の呼び名（`codes::text::INTERNAL_THREAD` の `{thread}`）
     pub const THREAD_STAGE: &str = "compiler";
@@ -159,7 +159,7 @@ pub fn stop_diagnostic(program: &CompiledProgram, info: &StopInfo) -> Diagnostic
     report
 }
 
-/// 実行時エラーか資源の不足で止める途中の解放の失敗を、先の報告に注記として加える（02-10「解放の失敗の報告」、ADR 0068）。
+/// 実行時エラーか資源の不足で止める途中の解放の失敗を、先の報告に注記として加える（02-10「解放の失敗の報告」）。
 /// 注記は `codes::text::RELEASE_WHILE_STOPPING` の形で、末尾呼び出しの注記の前に置く。
 pub fn add_release_failures(
     report: &mut Diagnostic,
@@ -176,7 +176,7 @@ pub fn add_release_failures(
 }
 
 /// `Process.exit` と中断の要求で止める途中の解放の失敗一つの報告（R0401、報告の種類 `Release`）。
-/// 解放の失敗を報告しないリソースの型（`Http.Exchange`。ADR 0149）の失敗は、呼び出し側が渡さない。
+/// 解放の失敗を報告しないリソースの型（`Http.Exchange`。02-10「解放の失敗の報告」）の失敗は、呼び出し側が渡さない。
 pub fn release_report(
     program: &CompiledProgram,
     failure: &ReleaseFailure,
@@ -359,7 +359,7 @@ fn call_trace(program: &CompiledProgram, records: &[FrameRecord]) -> Result<Call
     let mut frames = Vec::new();
     // 材料は内側から並ぶ。最も外側の枠は末尾呼び出しで置き換わっても位置を示さない。
     // 補助の関数を除く前の材料で判定し、起動の履歴の位置は保つ
-    // （設計書 02-08「実行時エラーの情報の記録」、ADR 0325）。
+    // （設計書 02-08「実行時エラーの情報の記録」）。
     let outermost = records.len().saturating_sub(1);
     for (index, record) in records.iter().enumerate() {
         if let Some(name) = trace_name(program, record.proto)? {

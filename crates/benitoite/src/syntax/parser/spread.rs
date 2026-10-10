@@ -1,4 +1,4 @@
-//! リスト展開の解析と診断（設計書 01-02「リストの展開」、ADR 0272）。
+//! リスト展開の解析と診断（設計書 01-02「リストの展開（初回リリース版）」）。
 use super::{PResult, Parser, child, exprs};
 use crate::diag::{DiagBuilder, DiagCode, Edit};
 use crate::syntax::{
@@ -53,7 +53,7 @@ pub(super) fn check_list_spreads(p: &mut Parser, list: &ListExpr) {
         if let ListElem::Spread(spread) = elem {
             if let Some(first) = first {
                 // リストを読み終わってから検査するため、個々の展開の独立した違反を報告する。
-                // （設計書 02-03「誤りからの回復」、01-02「リストの展開」）。
+                // （設計書 02-03「誤りからの回復」、01-02「リストの展開（初回リリース版）」）。
                 p.suppressed = false;
                 p.report(
                     DiagBuilder::new(DiagCode::E0226)

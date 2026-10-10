@@ -1,4 +1,4 @@
-//! タスクの起動・待ち・切り替えの冷たい経路（設計書 02-08「タスクの切り替え」、ADR 0266）。
+//! タスクの起動・待ち・切り替えの冷たい経路（設計書 02-08「タスクの切り替え」）。
 use super::*;
 
 pub(in crate::vm) mod cancel;
@@ -190,7 +190,7 @@ fn switch_inner(
     if let Some(switch) = switch {
         if matches!(switch, Switch::Yield) {
             // ほかのタスクが計算を続けても短い出力を届ける。空の転送はポートが省く
-            // （設計書 02-09「出力のバッファ」、ADR 0320）。
+            // （設計書 02-09「出力のバッファ」）。
             rt.stdout.request_transfer();
             rt.stderr.request_transfer();
         }

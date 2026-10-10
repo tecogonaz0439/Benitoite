@@ -39,7 +39,7 @@ builtin! {
         if request.uri().scheme_str() == Some("https") && let Some(failure) = tls_failure(&missing) {
             return Ok(IoReply::Done(complete(&ctx, Err(failure))?));
         }
-        // スレッドに渡す要求・応答は Rust の所有する値だけにする（ADR 0261）。
+        // スレッドに渡す要求・応答は Rust の所有する値だけにする（設計書 02-09「IO 実行器」）。
         Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
             Lend::Nothing, move |_| execute(request, timeout, missing), send_done,
         ))))
@@ -49,7 +49,7 @@ builtin! {
 /// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
 pub const DECLS: &[BuiltinDecl] = &[send::DECL];
 
-// provider を大域に登録せず、Agent ごとに渡す（ADR 0015・0143）。
+// provider を大域に登録せず、Agent ごとに渡す（設計書 02-01「コンパイル済みプログラムと実行ごとの状態」、03-09「実装に使うクレート」）。
 fn make_agent(timeout: std::time::Duration, tls_available: bool) -> ureq::Agent {
     let config = ureq::Agent::config_builder()
         .proxy(None)
@@ -70,7 +70,7 @@ fn make_agent(timeout: std::time::Duration, tls_available: bool) -> ureq::Agent 
             NetworkResolver(DefaultResolver::default()),
         )
     } else {
-        // HTTP から HTTPS へのリダイレクトも暗号の入口に到達させない（ADR 0330）。
+        // HTTP から HTTPS へのリダイレクトも暗号の入口に到達させない（設計書 03-09「クライアント」）。
         ureq::Agent::with_parts(
             config.build(),
             redirect_body::CheckedConnector(ureq::unversioned::transport::TcpConnector::default()),

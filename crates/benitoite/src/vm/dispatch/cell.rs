@@ -1,4 +1,4 @@
-//! セルの更新の呼び出しと、版が変わったときの呼び直し（設計書 02-08「可変のセル」、ADR 0167）。
+//! セルの更新の呼び出しと、版が変わったときの呼び直し（設計書 02-08「可変のセル」）。
 
 use super::*;
 use crate::vm::frame::{CellUpdate, OtherFrame, OtherKind};
@@ -139,7 +139,7 @@ pub(super) fn update(
         .ok_or_else(|| missing("update result overflow"))?;
     let depth = u32::try_from(state.segment()?.calls.len())
         .map_err(|_| missing("update depth overflow"))?;
-    // 回収時に call_write(pc - 1) が UPDATE の結果を指すよう、枠を積む前に保存する（ADR 0314）。
+    // 回収時に call_write(pc - 1) が UPDATE の結果を指すよう、枠を積む前に保存する（設計書 02-08「枠を降ろす原因と処理」）。
     state.frame_mut()?.pc = cursor
         .locals
         .pc

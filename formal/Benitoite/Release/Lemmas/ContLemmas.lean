@@ -21,6 +21,7 @@ theorem ContTy.store {Ψ Ψ' R ε k a b ε0 Re} (h : ContTy P B Ψ R ε k a b ε
   | K_Release hv hr hs _ ih => exact .K_Release (hv.store hΨ) hr hs ih
   | K_Handle _ hs hc hw ih => exact .K_Handle ih hs (hc.store hΨ) hw
   | K_Drop hl hs _ ih => exact .K_Drop (hΨ _ _ hl) hs ih
+  | K_Guard hm hs hp hb _ ih => exact .K_Guard (hm.store hΨ) hs hp (hb.store hΨ) ih
   | K_Sub _ hle ih => exact .K_Sub ih hle
 
 /-! ## エフェクトの名前が継続の末尾まで届くこと -/
@@ -40,6 +41,7 @@ theorem ContTy.name_end {Ψ R ε k a b ε0 Re l} (h : ContTy P B Ψ R ε k a b �
       simp only [Eff.union, Bool.or_eq_true, hh, Bool.false_eq_true, or_false] at hl
       exact ih (hsub _ hl) (fun hs' hm => hno hs' (by simp [hm]))
   | K_Drop _ _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
+  | K_Guard => simp [Eff.empty] at hl
   | K_Sub _ _ ih => exact ih hl hno
 
 /-- `State` はどの `handled(H)` にも含まれない。 -/
@@ -135,6 +137,23 @@ theorem ContTy.inv_drop {Ψ R ε κ k a b ε0 Re} (h : ContTy P B Ψ R ε (.drop
       exact ⟨b', t', ε', R', h1, h2, .K_Sub h3 hle⟩
   | _ => cases hk
 
+/-- ガードの枠の逆転。入力の R とエフェクトは、元の計算のものとは別である。 -/
+theorem ContTy.inv_guard {Ψ R ε v arms next body k a b ε0 Re}
+    (h : ContTy P B Ψ R ε (.guardF v arms next body :: k) a b ε0 Re) :
+    ∃ R' ε' ε1 c, R = none ∧ ε = Eff.empty ∧ Ty.Le a (.base .boolean) ∧
+      HasTypeC P B Ψ [] [] R' (.match v arms) c ε1 ∧ Eff.Sub ε1 ε' ∧
+      MatchPrefix v arms next ∧ HasTypeC P B Ψ [] [] R' body c ε1 ∧
+      ContTy P B Ψ R' ε' k c b ε0 Re := by
+  generalize hk : (Frame.guardF v arms next body :: k) = k0 at h
+  induction h with
+  | K_Guard hm hs hp hb ht _ =>
+      cases hk
+      exact ⟨_, _, _, _, rfl, rfl, Ty.Le.refl _, hm, hs, hp, hb, ht⟩
+  | K_Sub _ hle ih =>
+      obtain ⟨R', ε', ε1, c, hr, he, hle', hm, hs, hp, hb, ht⟩ := ih hk
+      exact ⟨R', ε', ε1, c, hr, he, hle.trans hle', hm, hs, hp, hb, ht⟩
+  | _ => cases hk
+
 /-! ## E-Resume：捕まえた継続を今の継続につなぐ -/
 
 /-- 継続が `handle` の枠で終わる。 -/
@@ -171,6 +190,8 @@ theorem ContTy.resume_append {Ψ R ε k' b t εκ Rκ} (hcell : ContTy P B Ψ R 
         exact .K_Handle (.K_Sub hk (hle0.trans hle)) (hsc.trans (hs0.trans hsub)) hc hw
       · exact .K_Handle (ih (hend.tail hn') hle hk hsub) hsc hc hw
   | K_Drop hl hs hrest ih => exact .K_Drop hl hs (ih (hend.tail' (by intro _ h; cases h)) hle hk hsub)
+  | K_Guard hm hs hp hb _ ih =>
+      exact .K_Guard hm hs hp hb (ih (hend.tail' (by intro _ h; cases h)) hle hk hsub)
   | K_Sub _ hle' ih => exact .K_Sub (ih hend hle hk hsub) hle'
 
 /-! ## E-Op：継続を `handle` の枠で分ける -/
@@ -186,6 +207,10 @@ theorem ContTy.split {Ψ R ε a b E Re hs k2} :
         hrest, hsub, hc, hw⟩
   | f :: k1, h => by
       cases f with
+      | guardF v arms next body =>
+          obtain ⟨R', ε', ε1, c, rfl, rfl, hle, hm, hs, hp, hb, ht⟩ := h.inv_guard
+          obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ContTy.split ht
+          exact ⟨t, εb, εc, Rh, .K_Sub (.K_Guard hm hs hp hb h1) hle, h2, h3, h4, h5⟩
       | letF n =>
           obtain ⟨a', c, ε1, hle, hn, hs', hrest⟩ := h.inv_let
           obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ContTy.split hrest
@@ -252,6 +277,10 @@ theorem ContTy.framesOk (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ R ε 
   | K_Drop hl hs hrest ih =>
       intro f hf; rcases List.mem_cons.mp hf with rfl | hf
       · exact ⟨_, _, _, _, hl, fun h' => hrest.state_end hdecl hb (hs h')⟩
+      · exact ih f hf
+  | K_Guard _ _ _ _ _ ih =>
+      intro f hf; rcases List.mem_cons.mp hf with rfl | hf
+      · trivial
       · exact ih f hf
   | K_Sub _ _ ih => exact ih
 

@@ -1,4 +1,4 @@
-//! HTTP の値の契約と解放の失敗（実装プラン L30、ADR 0289・0321）。
+//! HTTP の値の契約と解放の失敗（実装プラン L30、設計書 03-09「サーバ」、02-09「リソースの追跡」）。
 // テストの失敗は panic で表す（実装プラン 00-02）。
 #![allow(clippy::unwrap_used, clippy::panic, clippy::indexing_slicing)]
 use super::*;
@@ -146,7 +146,7 @@ fn request_record_fields_and_release_check() {
         ));
     });
 }
-// 関門: 明示 close は解放の理由を NetworkError.Other として返す（ADR 0321）。
+// 関門: 明示 close は解放の理由を NetworkError.Other として返す（設計書 02-09「リソースの追跡」）。
 // L30 の指定により失敗を返す OsResource を入れ、OS の特定の失敗に依存しない。
 #[test]
 fn explicit_close_returns_other_and_then_release_is_idempotent() {
@@ -259,7 +259,7 @@ builtin! {
     }
 }
 // 関門: close で受け取った失敗は with を抜けるとき再報告しない。Exchange の
-// with の失敗は捨てる（ADR 0149・0321）。偽の release は L30 が指定する注入。
+// with の失敗は捨てる（設計書 02-09「リソースの追跡」）。偽の release は L30 が指定する注入。
 #[test]
 fn close_failures_and_exchange_implicit_release_follow_vm_scopes() {
     use crate::vm::{MainOutcome, Vm, VmConfig, VmStep};
@@ -365,7 +365,7 @@ fn respond_status_checks_argument_one() {
         }
     });
 }
-// 関門: 不正な応答ヘッダを送る前に第二引数の範囲違反として止める（ADR 0331）。
+// 関門: 不正な応答ヘッダを送る前に第二引数の範囲違反として止める（設計書 03-09「サーバの接続と要求の読み方」）。
 // 従来の応答テストは不正文字を含まない。実際の組み込み関数を呼び、
 // 許す値は解放済みリソースの検査まで進むことを確かめ、差し込み口を加えない。
 #[test]

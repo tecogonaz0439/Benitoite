@@ -1,4 +1,4 @@
-//! OPEN-062 の R14 と R04 の HTTP の反例を実通信で確かめる（設計書 03-09・07-03、実装プラン L33）。
+//! 設計書のレビューで挙がった反例（docs/todo の TODO-025）のうち、R14 と R04 の HTTP の反例を実通信で確かめる（設計書 03-09・07-03、実装プラン L33）。
 // テストの失敗は panic で表す（実装プラン 00-02）。
 #![allow(clippy::unwrap_used, clippy::panic)]
 
@@ -242,9 +242,9 @@ function main() -> Result[Unit, String] uses Http.Listen, Console.Write, State
 end function
 "#;
 
-// OPEN-062 R14 の反例: `?q=%FF`、`%G0`、UTF-8 でない受信のヘッダ。
+// TODO-025 R14 の反例: `?q=%FF`、`%G0`、UTF-8 でない受信のヘッダ。
 // クエリ: %FF には 400 を返し、同じ accept が %G0 を字面の Pair として受け付ける
-// （設計書 03-09「サーバの接続と要求の読み方」「要求と応答の型」、ADR 0322 決定 4・0330 決定 1）。
+// （設計書 03-09「サーバの接続と要求の読み方」「要求と応答の型」）。
 // 関門: 拒否の後に同じ accept を続ける契約。正常なソースのクライアントでは不正な入力を作れない。
 #[test]
 fn open_062_r14_query_rejects_invalid_utf8_and_keeps_malformed_escape() {
@@ -267,8 +267,8 @@ fn open_062_r14_query_rejects_invalid_utf8_and_keeps_malformed_escape() {
     }
 }
 
-// OPEN-062 R14 の反例: `?q=%FF`、`%G0`、UTF-8 でない受信のヘッダ。
-// サーバ: UTF-8 でない値には 400 を返し、同じ accept が次の正しい要求を受け付ける（03-09、ADR 0291）。
+// TODO-025 R14 の反例: `?q=%FF`、`%G0`、UTF-8 でない受信のヘッダ。
+// サーバ: UTF-8 でない値には 400 を返し、同じ accept が次の正しい要求を受け付ける（03-09「サーバの接続と要求の読み方」）。
 // 関門: クエリの拒否とは別の外部入力。値を String にする前の拒否の漏れを捕まえる。
 #[test]
 fn open_062_r14_server_header_rejects_invalid_utf8() {
@@ -294,7 +294,7 @@ fn open_062_r14_server_header_rejects_invalid_utf8() {
     }
 }
 
-// OPEN-062 R14 の反例: `?q=%FF`、`%G0`、UTF-8 でない受信のヘッダ。
+// TODO-025 R14 の反例: `?q=%FF`、`%G0`、UTF-8 でない受信のヘッダ。
 // クライアント: UTF-8 でない応答の値は InvalidHTTPData の Result.Error になる（03-09、10-16）。
 // 関門: 本物のクライアントの応答から言語の String への変換を守る。注入の表はこの変換を通らない。
 #[test]
@@ -361,10 +361,10 @@ function main() -> Result[Unit, String] uses Http.Listen, Console.Write, State
 end function
 "#;
 
-// OPEN-062 R04 の反例: 読み手が読まないパイプに 64 KiB を超えて書くと、
+// TODO-025 R04 の反例: 読み手が読まないパイプに 64 KiB を超えて書くと、
 // ほかのタスク、タイマー、HTTP の受け付け、中断の要求の確認が止まる。
 // 1 MiB を超える出力の後、容量待ちになったタスクを観測してから接続し、
-// stdout の Mutex を放す前に HTTP の応答が届く性質を確かめる（ADR 0265、L33）。
+// stdout の Mutex を放す前に HTTP の応答が届く性質を確かめる（02-09「出力のバッファ」、L33）。
 // 関門: R30 のタイマーのテストでは届かない、出力の待ちと本物の準備の待ちの組み合わせ。
 #[test]
 fn open_062_r04_blocked_stdout_does_not_block_http_accept() {

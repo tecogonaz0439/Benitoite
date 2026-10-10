@@ -84,7 +84,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
                     }
                 }
                 // 型構成子を決められない対象には表の鍵を作らない。出力の仮の target_con を
-                // 本物の Unit の実装と比較すると、対象の誤りから重なりの診断が派生する（ADR 0024）。
+                // 本物の Unit の実装と比較すると、対象の誤りから重なりの診断が派生する（02-05「誤りの報告と検査の継続」）。
                 if let Some(con) = solve::target_con(&i) {
                     if let Some(span) = seen.get(&(i.class, con)) {
                         d.diagnostics.push(

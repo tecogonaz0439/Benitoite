@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""同梱の Agent Skill の評価の道具（設計書 06-06「Skill の評価」、ADR 0232・0246）。
+"""同梱の Agent Skill の評価の道具（設計書 06-06「Skill の評価」）。
 
 課題ごとに作業ディレクトリを作り、Skill を置き、ハーネス（コーディングエージェント）を起動し、書かれた
 スクリプトを実行して期待する出力と比べ、検査と修正の回数（包みのコマンドの記録の check・run・test の行の数）
@@ -362,7 +362,7 @@ def skill_version(directory: str) -> str:
 
 
 def install_skill(benitoite: str, harness: Dict[str, object], workspace: str, skill_dir: Optional[str]) -> str:
-    """Skill を作業ディレクトリに置き、置いたディレクトリを返す。--skill-dir があればそれを写す（ADR 0246）。"""
+    """Skill を作業ディレクトリに置き、置いたディレクトリを返す。--skill-dir があればそれを写す（docs/todo の TODO-017）。"""
     target = os.path.join(workspace, str(harness['skill_parent']), 'benitoite')
     if skill_dir:
         shutil.copytree(skill_dir, target)

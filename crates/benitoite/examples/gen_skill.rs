@@ -1,5 +1,5 @@
 //! 同梱の Agent Skill の参照の文書の生成の道具（実装プラン 10-19「生成の道具と、生成物が古くないことのテスト」、
-//! ADR 0288）。`cargo run -p benitoite --example gen_skill` で、`skill/references/` の生成物と
+//! 設計書 06-06「同梱の Agent Skill の構成」）。`cargo run -p benitoite --example gen_skill` で、`skill/references/` の生成物と
 //! `src/cli/tools/skill/bundle.rs` を書き直し、書いたファイルの一覧を標準出力に書く。
 
 use std::error::Error;

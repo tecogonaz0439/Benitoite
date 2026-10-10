@@ -9,7 +9,7 @@ use crate::vm::unwind::{
 };
 
 // 遅い命令の経路を一か所から呼び、通常のループで同時に生きる参照を減らす
-// （ADR 0313 の決定 2）。窓の読み直しもこの関数内に閉じ込める。
+// （設計書 07-02「性能の関門」）。窓の読み直しもこの関数内に閉じ込める。
 #[cold]
 #[inline(never)]
 pub(super) fn dispatch<'p>(
@@ -178,7 +178,7 @@ pub(super) fn fail_instruction(
     cleanup(state, ctx)
 }
 
-// 普通の CALL の引数の並びや速い経路を変えず、暗黙の呼び出しだけが使う（ADR 0313）。
+// 普通の CALL の引数の並びや速い経路を変えず、暗黙の呼び出しだけが使う（設計書 07-02「性能の関門」）。
 fn target<'p, 'e>(
     program: &'p CompiledProgram,
     ctx: &NoGcCtx<'e>,
@@ -245,7 +245,7 @@ fn precall(
 
 fn save_next(state: &mut RunState, cursor: &Cursor<'_>) -> Result<(), Stop> {
     // 移動の後は Reload で読み直すので、呼び出し側の局所の値は書き換えない。
-    // 遅い経路へ渡す共有の参照は、普通の命令の局所を変更できない（ADR 0313・0263）。
+    // 遅い経路へ渡す共有の参照は、普通の命令の局所を変更できない（設計書 02-08「実行の手順」）。
     let pc = cursor
         .locals
         .pc
@@ -405,9 +405,9 @@ fn find<'e>(
     let mut inherited_start = 0;
     'segments: for (index, segment) in state.stack.segments.iter().enumerate().rev() {
         // 区画の底の handle より先に、節の枠の連鎖の切り替えを調べる。
-        // 節より内側で始めた handle は、上の区画で既に探索している（ADR 0151）。
+        // 節より内側で始めた handle は、上の区画で既に探索している（設計書 02-08「ハンドラと継続」）。
         // chain_resume は継承した節だけが作る。空の連鎖なら通常の呼び出しの深さに
-        // 比例する走査をせず、区画の handle だけを調べる（ADR 0151）。
+        // 比例する走査をせず、区画の handle だけを調べる（設計書 02-08「ハンドラと継続」）。
         if !state.inherited.is_empty() {
             for call in segment.calls.iter().rev() {
                 if let Some(start) = call.chain_resume {
@@ -668,7 +668,7 @@ fn invoke_clause<'e>(
 
 fn clear_captured(program: &CompiledProgram, segment: &mut Segment, ctx: &NoGcCtx<'_>) {
     for frame in &segment.calls {
-        // 継続の最上位の枠も操作の結果をまだ待つ。情報を引けない枠は保存する（ADR 0314、R20）。
+        // 継続の最上位の枠も操作の結果をまだ待つ。情報を引けない枠は保存する（設計書 02-08「枠を降ろす原因と処理」、R20）。
         let Ok((live, dest)) = frame_live_registers(program, frame, false) else {
             continue;
         };
@@ -780,7 +780,7 @@ pub(super) fn resume(
         })
         .flatten()
         .ok_or_else(|| missing("continuation changed during resume"))?;
-    // 深さ、窓、ret は区画内の位置なので、呼び出し元の深さに合わせて直さない（ADR 0262）。
+    // 深さ、窓、ret は区画内の位置なので、呼び出し元の深さに合わせて直さない（設計書 02-08「枠の積み重ね」）。
     state.stack.segments.extend(segments);
     Ok(Control::Reload)
 }

@@ -1,4 +1,4 @@
-//! 本体ごとに作って捨てる推論の文脈（設計書 02-05「検査の単位と手順」、ADR 0015）。
+//! 本体ごとに作って捨てる推論の文脈（設計書 02-05「検査の単位と手順」）。
 use super::decls::{Decls, Scope};
 use super::infer::*;
 use super::solve::Solver;
@@ -38,7 +38,7 @@ pub(super) struct Body<'a, 'd> {
     pub handlers: NodeMap<HandleInfo>,
     pub clauses: Vec<ClauseContext>,
     /// 節を辿り終えた後の制約の解決でも、操作が宣言した組み込みの制約を引く
-    /// （設計書 02-05「型とエフェクトの表現」、ADR 0312）。
+    /// （設計書 02-05「型とエフェクトの表現」）。
     pub clause_params: NodeMap<Vec<TypeParamInfo>>,
     pub matches: Vec<(MatchExpr, ITy)>,
     pub lambda_returns: Vec<(Block, ITy)>,

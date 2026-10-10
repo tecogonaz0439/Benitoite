@@ -621,7 +621,7 @@ fn deep_walk_and_remove_tree_use_bounded_stack_and_close_directory_handles() {
 }
 
 // 関門: OS 上の実物のディレクトリを判定直後・開いた後・記述子を閉じた後に
-// 差し替えても、リンク先や別の inode の木を削除・列挙しない（ADR 0352）。
+// 差し替えても、リンク先や別の inode の木を削除・列挙しない（設計書 03-07「File」）。
 // 静止したリンクと深い木の既存テストでは競合の窓を捕まえられない。
 // 差し込みは依頼で認められた cfg(test) の仕事の引数に限り、大域の状態を加えない。
 #[cfg(unix)]

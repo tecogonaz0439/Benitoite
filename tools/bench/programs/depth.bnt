@@ -1,5 +1,5 @@
 // 末尾でない再帰で、引数の数だけ呼び出しを重ねる。
-// 呼び出しの情報の上限（設計書 07-02「測る項目」、ADR 0030）に達する段数を測るために、tools/bench/run.py が使う。
+// 呼び出しの情報の上限（設計書 07-02「測る項目」）に達する段数を測るために、tools/bench/run.py が使う。
 // 比較対象の版と `.args.small` は置かない（性能の比較と差分テストの対象ではない）。
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process

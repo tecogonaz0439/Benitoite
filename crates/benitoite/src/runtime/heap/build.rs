@@ -1,4 +1,4 @@
-//! 大きさを確かめる構築（設計書 02-09「一つの操作で作る値の大きさの上限」、ADR 0049）。
+//! 大きさを確かめる構築（設計書 02-09「一つの操作で作る値の大きさの上限」）。
 
 use crate::runtime::{MAX_LIST_LEN, MAX_STRING_BYTES, ResourceError, SizeUnit, Stop};
 

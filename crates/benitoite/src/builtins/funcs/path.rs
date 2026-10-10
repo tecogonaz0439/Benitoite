@@ -8,7 +8,7 @@ use crate::runtime::heap::{CheckedLen, StrBuf, Value, ValueCtx};
 use crate::runtime::{RuntimeError, Stop};
 
 builtin! {
-    /// `Path.join` の本体。空の子にも区切りを足す（設計書 03-08「Path」、ADR 0328）。
+    /// `Path.join` の本体。空の子にも区切りを足す（設計書 03-08「Path」）。
     name = "Path.join",
     pure fn join(ctx, base: &'c str, child: &'c str) -> Value<'e> {
         let mut buf = StrBuf::new("Path.join");
@@ -117,7 +117,7 @@ builtin! {
         let prefix = p.get(..end)
             .ok_or_else(|| Stop::Internal("file stem boundary outside UTF-8 path".into()))?;
         // 区切り入りの拡張子で panic する PathBuf の API は使わず、上限付きで組み立てる
-        // （設計書 03-08「Path」、ADR 0328）。
+        // （設計書 03-08「Path」）。
         let mut buf = StrBuf::new("Path.withExtension");
         buf.push_str(prefix)?;
         if !extension.is_empty() {
@@ -353,7 +353,7 @@ mod tests {
                     "withExtension({p:?}, {ext:?})"
                 );
             }
-            // 名前がなくても不正な拡張子を受理しない（ADR 0328 の決定 1）。
+            // 名前がなくても不正な拡張子を受理しない（設計書 03-08「Path」）。
             for p in ["a", "", "/", "a/.."] {
                 assert!(matches!(
                     direct!(ctx, with_extension, p, "b/c"),

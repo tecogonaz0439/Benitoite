@@ -731,7 +731,7 @@ fn effect_flow_direction_call_errors_and_float_fix() {
     );
 }
 // return の値が呼び出しのとき、戻り値の型の食い違いを、関数でない値の呼び出し（E0403）ではなく
-// return の理由の型の食い違い（E0401）として報告する（設計書 02-05「診断」、FE403）。
+// return の理由の型の食い違い（E0401）として報告する（設計書 02-05「誤りの報告と検査の継続」、FE403）。
 #[test]
 fn return_call_mismatch_reports_return_reason() {
     for (s, line, col, expected, found) in [

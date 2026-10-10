@@ -3,7 +3,7 @@ use super::{TypeckOutput, typecheck};
 use crate::diag::Diagnostic;
 use crate::modules::LoadOutput;
 use crate::resolve::{ResolveOutput, test_support::resolve_files};
-/// メモリ上のソースを本物の標準ライブラリとともに検査する。誤りのある前段の出力は後段へ渡さない（ADR 0019）。
+/// メモリ上のソースを本物の標準ライブラリとともに検査する。誤りのある前段の出力は後段へ渡さない（02-01「誤りが見つかったときの段の進め方」）。
 pub(crate) fn check_files(
     files: &[(&str, &str)],
     require_main: bool,

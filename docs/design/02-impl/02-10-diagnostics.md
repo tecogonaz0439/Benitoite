@@ -1,25 +1,20 @@
 # 診断エンジン
 
-- 状態: 確定
-- 関連ADR: [0012](../decisions/0012-invalid-utf8-input.md), [0019](../decisions/0019-stop-after-failing-stage.md), [0024](../decisions/0024-continue-after-type-errors.md), [0025](../decisions/0025-columns-in-code-points.md), [0031](../decisions/0031-numbered-diagnostic-codes.md), [0032](../decisions/0032-rust-style-text-and-json.md), [0033](../decisions/0033-english-diagnostic-messages.md), [0034](../decisions/0034-call-trace-in-runtime-errors.md), [0035](../decisions/0035-help-suggestions-without-rewriting.md), [0037](../decisions/0037-exit-status-values.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0045](../decisions/0045-late-detection-of-output-write-failure.md), [0047](../decisions/0047-parenthesized-types-and-uses-binding.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0068](../decisions/0068-release-resources-on-stop.md), [0071](../decisions/0071-permission-declaration-and-runtime-denial.md), [0093](../decisions/0093-no-reserved-words-for-absent-constructs.md), [0113](../decisions/0113-div-and-mod-operators.md), [0116](../decisions/0116-builtin-fine-grained-effects.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0123](../decisions/0123-top-level-constants.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0146](../decisions/0146-runtime-errors-not-in-types.md), [0147](../decisions/0147-remove-permission-declaration-syntax.md), [0149](../decisions/0149-http-exchange-release-failure.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0154](../decisions/0154-public-contract-includes-effects-and-supertraits.md), [0155](../decisions/0155-resume-not-in-lazy.md), [0156](../decisions/0156-module-loading-and-whole-program-checking.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0161](../decisions/0161-single-threaded-task-scheduler.md), [0163](../decisions/0163-interrupt-releases-resources.md), [0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md), [0166](../decisions/0166-warnings-reported-by-run-and-deny-option.md), [0177](../decisions/0177-server-mode-after-first-release.md), [0184](../decisions/0184-permissions-granted-per-builtin-effect.md), [0208](../decisions/0208-test-report-destination.md), [0210](../decisions/0210-mcp-in-server-chapter-and-explain-tool.md), [0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md), [0252](../decisions/0252-test-report-format.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0256](../decisions/0256-data-keyword-for-algebraic-types.md), [0257](../decisions/0257-match-with-case-arms.md), [0279](../decisions/0279-no-duplicate-method-names-in-trait.md), [0317](../decisions/0317-await-on-cancelled-task-is-runtime-error.md), [0324](../decisions/0324-test-task-origins-end-at-test-function.md), [0325](../decisions/0325-outermost-frame-shows-no-call-site.md)
-- 未決事項: [OPEN-052](../open-issues.md#open-052)
-- 移行元: [設計メモ](../sources/fp-language-design.md) 8.2, 8.3
-
 ## 目的と範囲
 
 診断データモデル、エラーコード体系、各アダプタへの変換。
 
-現在の版は、初回リリース版（[ロードマップ](../00-overview/00-03-roadmap.md)）の範囲を定める。対象は、診断の内部の表現、修正案とその置き換え、診断コードの体系と区分、警告の扱い、CLI への出力（文章と JSON）、実行時エラー・資源の不足・解放の失敗・処理系の不具合・処理系の制限の報告、MCP サーバと LSP サーバとテストの実行器への受け渡しである。MCP サーバの通信の形は[サーバモード](../06-tooling/06-07-server.md)で、LSP サーバの通信の形は[LSP サーバ](../06-tooling/06-02-lsp.md)で、テストの結果の報告の形は[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)で定める。
+本章は、初回リリース版（[ロードマップ](../00-overview/00-03-roadmap.md)）の範囲を定める。対象は、診断の内部の表現、修正案とその置き換え、診断コードの体系と区分、警告の扱い、CLI への出力（文章と JSON）、実行時エラー・資源の不足・解放の失敗・処理系の不具合・処理系の制限の報告、テストの実行器への受け渡しである。テストの結果の報告の形は[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)で定める。MCP サーバと LSP サーバは、初回リリース版に含めない。
 
 ## 前提
 
-各段は出力と診断の組を返し、誤りがあれば次の段に進まない（[ADR 0019](../decisions/0019-stop-after-failing-stage.md)）。初回リリース版のプログラムは複数のモジュールからなり、名前解決と型検査はプログラム全体を一つの単位として行う（[ADR 0156](../decisions/0156-module-loading-and-whole-program-checking.md)）。位置は内部ではバイトで持ち、行と列への変換は出力の直前に行う（[ソース管理と位置情報](02-02-source-and-spans.md)）。各段が出す診断の内容（どの誤りに何を示すか）は、仕様の各章と、各段の章で定める。実行時エラーの種類は[評価意味論](../01-spec/01-08-evaluation.md)で、実行時の報告の材料の集め方は[仮想機械](02-08-vm.md)と[ランタイム](02-09-runtime.md)で定める。
+各段は出力と診断の組を返し、誤りがあれば次の段に進まない。初回リリース版のプログラムは複数のモジュールからなり、名前解決と型検査はプログラム全体を一つの単位として行う。位置は内部ではバイトで持ち、行と列への変換は出力の直前に行う（[ソース管理と位置情報](02-02-source-and-spans.md)）。各段が出す診断の内容（どの誤りに何を示すか）は、仕様の各章と、各段の章で定める。実行時エラーの種類は[評価意味論](../01-spec/01-08-evaluation.md)で、実行時の報告の材料の集め方は[仮想機械](02-08-vm.md)と[ランタイム](02-09-runtime.md)で定める。
 
 ## 仕様
 
 ### 診断の内部の表現
 
-【方針】診断は、プロトコルに依存しない次の表現で持つ（[設計メモ](../sources/fp-language-design.md) 8.2）。
+【方針】診断は、プロトコルに依存しない次の表現で持つ。
 
 | 項目 | 内容 |
 |---|---|
@@ -35,18 +30,18 @@
 
 実行時エラー・資源の不足・解放の失敗の報告は、上の項目に加えて、呼び出しの履歴と、タスクの起動の履歴（後述の「実行時エラーと資源の不足の報告」）を持つ。
 
-CLI の文章と JSON、MCP サーバ、LSP サーバ、テストの実行器は、どれもこの表現から出力を作る。
+CLI の文章と JSON、テストの実行器は、どれもこの表現から出力を作る。
 
 ### 修正案
 
-【決定】処理系は、ソースを直接修正しない。修正案を示すだけとし、ソースを修正するのは、利用者か、利用者から指示を受けた LLM である（[ADR 0035](../decisions/0035-help-suggestions-without-rewriting.md)）。
+【決定】処理系は、ソースを直接修正しない。修正案を示すだけとし、ソースを修正するのは、利用者か、利用者から指示を受けた LLM である。
 
-【決定】初回リリース版では、修正案を示す診断を検査の誤りの診断全般に広げる。利用者のソースの該当箇所を使って、書き換えた後のコードの例を組み立てて示す（[ADR 0035](../decisions/0035-help-suggestions-without-rewriting.md)）。
+【決定】修正案は、直し方を示せる検査の誤りの診断に示す。初回リリース版では、修正案を持たない検査の診断コードもある（診断の表 `diag::codes` で、修正案の欄が空のもの）。利用者のソースの該当箇所を使って、書き換えた後のコードの例を組み立てて示す。
 
 【方針】修正案は、直し方を示す文と、置き換えの並びからなる。置き換えは、ソースの範囲（ファイルと span）と、その範囲に入れる文字列の組である。範囲が空であれば挿入、入れる文字列が空であれば削除を表す。
 
 - 置き換えは、それを当てれば誤りがなくなると処理系が決められるときだけ付ける（`uses IO` を `uses IO.All` にする、`;` を消す、`Tree.Leaf()` の括弧を消す、など）。直し方が一つに決まらないとき（綴りの近い名前が複数ある、型注釈に書く型が決まらないなど）は、文だけを示す。一つの修正案の置き換えは、互いに重ならない。
-- 置き換えは、LSP サーバのコードアクションと、MCP サーバが返す修正案に使う。処理系は置き換えを当てない。CLI の文章の形式では、置き換えを当てた後の行を示す（後述の「文章の形式」）。
+- 処理系は置き換えを当てない。CLI の文章の形式では、置き換えを当てた後の行を示し（後述の「文章の形式」）、JSON の形式では置き換えの範囲と文字列を示す（後述の「JSON の形式」）。
 - 文は、置き換えを当てるかを判断するための説明であり、置き換えがなくても直し方が分かるように書く。
 
 【方針】修正案を示す診断は、少なくとも次のものとする。いずれも、仕様の各章または処理系の各章が修正案を求めている。「置き換え」の欄は、置き換えを付けるかを示す。
@@ -56,81 +51,80 @@ CLI の文章と JSON、MCP サーバ、LSP サーバ、テストの実行器は
 | キーワードを名前に使った | その語がキーワードであることと、別の名前を付けること | なし | [字句構造](../01-spec/01-01-lexical.md)、[字句解析器と構文解析器](02-03-frontend.md) |
 | `;` を書いた | 文を改行で区切ること | あり | [字句構造](../01-spec/01-01-lexical.md) |
 | 複数のスカラー値からなる文字を文字リテラルに書いた | 文字列リテラルを使うこと | あり | [字句構造](../01-spec/01-01-lexical.md) |
-| 波括弧 `{`・`}` でブロックを書いた | ブロックをキーワードで始め、`end` と構文の名前で閉じること（[ADR 0108](../decisions/0108-keyword-blocks-closed-by-end.md)） | なし | [字句構造](../01-spec/01-01-lexical.md)、[構文](../01-spec/01-02-syntax.md)の「ブロックと文」、[字句解析器と構文解析器](02-03-frontend.md) |
+| 波括弧 `{`・`}` でブロックを書いた | ブロックをキーワードで始め、`end` と構文の名前で閉じること | なし | [字句構造](../01-spec/01-01-lexical.md)、[構文](../01-spec/01-02-syntax.md)の「ブロックと文」、[字句解析器と構文解析器](02-03-frontend.md) |
 | 比較演算子を連ねた | `a < b and b < c` の形 | あり | [構文](../01-spec/01-02-syntax.md) |
 | 値に続けてドットを書いた | `\|>` を使った書き方 | なし | [構文](../01-spec/01-02-syntax.md) |
 | `try` の直後に `{` を書いた | 例外がないことと、`Result` を返す書き方 | なし | [エラー処理](../01-spec/01-09-errors.md) |
-| 見つからない名前 | 綴りの近い名前。単位を持たない `String.length` などには単位を持つ関数。`Option.unwrap` などには `unwrapOr` と `match`（[ADR 0043](../decisions/0043-option-result-rust-names-no-unwrap.md)） | 候補が一つのときだけ | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[名前解決とモジュール読込](02-04-resolver.md)、[基本型の意味論](../01-spec/01-04-types-basic.md) |
+| 見つからない名前 | 綴りの近い名前。単位を持たない `String.length` などには単位を持つ関数。`Option.unwrap` などには `unwrapOr` と `match` | 候補が一つのときだけ | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[名前解決とモジュール読込](02-04-resolver.md)、[基本型の意味論](../01-spec/01-04-types-basic.md) |
 | `Option` と `Result` の構成子を修飾せずに書いた | 修飾した書き方（`Option.Some(x)` など） | あり | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
 | 取り込んでいない標準ライブラリのモジュールの名前を使った | その import の行 | あり | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md) |
 | `Float` の位置に整数リテラルを書いた | `2.0` のような浮動小数リテラル | あり | [基本型の意味論](../01-spec/01-04-types-basic.md) |
 | `String` と他の型を `+` でつないだ | `Integer.toString` などで変換すること、または文字列補間 | なし | [基本型の意味論](../01-spec/01-04-types-basic.md) |
 | 型が決まらない、制約を持つ型変数が決まらない | 型注釈を書くこと | なし | [型システム](../01-spec/01-06-type-system.md) |
-| `uses` の並びにエフェクトでない名前を書いた | 関数の型を括弧で囲むこと（[ADR 0047](../decisions/0047-parenthesized-types-and-uses-binding.md)） | あり | [構文](../01-spec/01-02-syntax.md)、[名前解決とモジュール読込](02-04-resolver.md) |
-| 最小実行版の `uses IO` を書いた | `uses IO.All`（[ADR 0130](../decisions/0130-builtin-effect-names-and-placement.md)） | あり | [エフェクト](../01-spec/01-07-effects.md) |
-| `TaskGroup.open()` を `with` の束縛の外に書いた | `with group = TaskGroup.open() do … end with` の形（[ADR 0153](../decisions/0153-taskgroup-open-only-in-with.md)） | なし | [並行処理](../01-spec/01-11-concurrency.md) |
+| `uses` の並びにエフェクトでない名前を書いた | 関数の型を括弧で囲むこと | あり | [構文](../01-spec/01-02-syntax.md)、[名前解決とモジュール読込](02-04-resolver.md) |
+| エフェクトの位置にモジュールの名前 `IO` を書いた（`uses IO`） | `uses IO.All` | あり | [エフェクト](../01-spec/01-07-effects.md) |
+| `TaskGroup.open()` を `with` の束縛の外に書いた | `with group = TaskGroup.open() do … end with` の形 | なし | [並行処理](../01-spec/01-11-concurrency.md) |
 | 引数のない構成子に括弧を付けた（`Tree.Leaf()`） | 括弧を取り除くこと | あり | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)、[型検査器](02-05-typechecker.md) |
 | 範囲のパターンを Rust などの形（`1..=9`）で書いた | `下端..上端` の形 | あり | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
 | 必ず照合しないパターンを束縛の文の左辺に書いた | `match` で分岐する書き方 | なし | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
-| `match` の分岐のパターンの変数に定数と同じ名前を付けた | ガードで比べる書き方（`case n if n = maxRetries ->`。[ADR 0123](../decisions/0123-top-level-constants.md)） | あり | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
-| 最小実行版の書き方で束縛の文を書いた（`let x = e`） | `bind x <- e`。名前が局所の名前として見えていれば `shadow x <- e`（[ADR 0255](../decisions/0255-bind-and-shadow.md)） | なし | [構文](../01-spec/01-02-syntax.md)、[字句解析器と構文解析器](02-03-frontend.md) |
-| 最小実行版の書き方でパターンの分岐を書いた（`case e of`、`when p:`） | `match e with` と `case p ->` の形（[ADR 0257](../decisions/0257-match-with-case-arms.md)） | なし | [構文](../01-spec/01-02-syntax.md)、[字句解析器と構文解析器](02-03-frontend.md) |
-| 代数的データ型を `type` で宣言した | `data … end data`（[ADR 0256](../decisions/0256-data-keyword-for-algebraic-types.md)） | あり | [構文](../01-spec/01-02-syntax.md)、[字句解析器と構文解析器](02-03-frontend.md) |
-| 戻り値の型を `:` の後に書いた | `:` を `->` にすること（[ADR 0254](../decisions/0254-return-type-after-arrow.md)） | あり | [構文](../01-spec/01-02-syntax.md)、[字句解析器と構文解析器](02-03-frontend.md) |
-| 局所の名前として見えている名前を `bind` で束縛した、見えていない名前を `shadow` で束縛した | `shadow`、`bind` と書くこと（[ADR 0255](../decisions/0255-bind-and-shadow.md)） | あり | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[名前解決とモジュール読込](02-04-resolver.md) |
+| `match` の分岐のパターンの変数に定数と同じ名前を付けた | ガードで比べる書き方（`case n if n = maxRetries ->`） | あり | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
+| `let x = e` の形で束縛の文を書いた | `bind x <- e`。名前が局所の名前として見えていれば `shadow x <- e` | なし | [構文](../01-spec/01-02-syntax.md)、[字句解析器と構文解析器](02-03-frontend.md) |
+| `case e of`、`when p:` の形でパターンの分岐を書いた | `match e with` と `case p ->` の形 | なし | [構文](../01-spec/01-02-syntax.md)、[字句解析器と構文解析器](02-03-frontend.md) |
+| 代数的データ型を `type` で宣言した | `data … end data` | あり | [構文](../01-spec/01-02-syntax.md)、[字句解析器と構文解析器](02-03-frontend.md) |
+| 戻り値の型を `:` の後に書いた | `:` を `->` にすること | あり | [構文](../01-spec/01-02-syntax.md)、[字句解析器と構文解析器](02-03-frontend.md) |
+| 局所の名前として見えている名前を `bind` で束縛した、見えていない名前を `shadow` で束縛した | `shadow`、`bind` と書くこと | あり | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[名前解決とモジュール読込](02-04-resolver.md) |
 | 束縛の文の左辺のパターンに、見えている名前と見えていない名前が混ざった | 束縛を分けて書くこと | なし | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[名前解決とモジュール読込](02-04-resolver.md) |
 | 変数を束縛しない左辺に `shadow` を書いた | `bind _ <- e` の書き方 | あり | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[名前解決とモジュール読込](02-04-resolver.md) |
 | ラムダの引数、`match` の分岐のパターンの変数、`handle` の節の引数、`with` の束縛が、局所の名前を隠した | 名前を変えること。隠された束縛の位置を補助の位置に示す | なし | [名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)、[名前解決とモジュール読込](02-04-resolver.md) |
-| 名前と式を `=` で比べた値の式文（`x = 5`） | 変数を書き換えられないことと、`shadow x <- 5` の書き方 | なし | [構文](../01-spec/01-02-syntax.md)、[型検査器](02-05-typechecker.md) |
-| 書けない属性を書いた | 書ける属性の一覧（[ADR 0119](../decisions/0119-attributes-test-and-deprecated.md)） | なし | [構文](../01-spec/01-02-syntax.md) |
+| 名前と式を `=` で比べた値の式文（`x = 5`） | 変数を書き換えられないことと、`shadow x <- 5` の書き方 | あり | [構文](../01-spec/01-02-syntax.md)、[型検査器](02-05-typechecker.md) |
+| 書けない属性を書いた | 書ける属性の一覧 | なし | [構文](../01-spec/01-02-syntax.md) |
 
-この表にない検査の誤りにも、診断コードごとの型板で修正案を示す。どの診断に置き換えを付けるかは、実装プランの診断の表で定める。
+この表にない検査の誤りにも、診断コードごとの型板で修正案を示す。どの診断に置き換えを付けるかは、処理系の中の診断の表（後述の「診断コード」）で定める。
 
 ### 診断コード
 
-【決定】診断コードは、種類を表す英大文字 1 文字と 4 桁の番号で表す。番号の上 2 桁は区分を表す。一度公開したコードの意味は変えず、廃止したコードを別の意味で使わない（[ADR 0031](../decisions/0031-numbered-diagnostic-codes.md)）。
+【決定】診断コードは、種類を表す英大文字 1 文字と 4 桁の番号で表す。番号の上 2 桁は区分を表す。一度公開したコードの意味は変えず、廃止したコードを別の意味で使わない。
 
-【方針】分類と区分は次のとおりとする。`E` の区分と `W` の区分は、上 2 桁が同じなら同じ区分を表す。初回リリース版で加える区分と、既存の区分に加える検査を「初回リリース版」の欄に示す。
+【方針】分類と区分は次のとおりとする。`E` の区分と `W` の区分は、上 2 桁が同じなら同じ区分を表す。「含む誤りの例」の欄は、区分に含む誤りのうち、区分の名前からは分かりにくいものを示す。
 
-| コード | 分類 | 区分 | 初回リリース版で加えるもの |
+| コード | 分類 | 区分 | 含む誤りの例 |
 |---|---|---|---|
-| `E01nn` | 検査の誤り | 読み込みと字句 | import で辿ったファイルの読み込みの誤り（[ADR 0156](../decisions/0156-module-loading-and-whole-program-checking.md)）、すべてのソースの大きさの和の上限（[ソース管理と位置情報](02-02-source-and-spans.md)の「ソースの大きさの上限」） |
-| `E02nn` | 検査の誤り | 構文 | 初回リリース版の構文の誤り、最小実行版の書き方（`let`、`case … of` と `when`、`type` による代数的データ型の宣言、`:` の後の戻り値の型。[ADR 0254](../decisions/0254-return-type-after-arrow.md)〜[ADR 0257](../decisions/0257-match-with-case-arms.md)）、`try` の直後の `{`、属性の書き方の誤り、`lazy` の本体とガードの中の `return`・`try`、制約の位置の書けない小文字の名前（利用者のソースの `ordered` を含む。[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)）（[字句解析器と構文解析器](02-03-frontend.md)の「文脈の制限」） |
-| `E03nn` | 検査の誤り | 名前、import、公開 | 最小実行版の `uses IO`（エフェクトの位置に書いたモジュールの名前。[ADR 0130](../decisions/0130-builtin-effect-names-and-placement.md)）、見つからないモジュール、同じモジュールの二度の取り込み、import の循環、実行を始めるモジュールの取り込み、公開する契約に非公開の型・型クラス・エフェクトを使った（[ADR 0154](../decisions/0154-public-contract-includes-effects-and-supertraits.md)）、`Benitoite` の名前空間の名前の宣言、一つの型クラスの中のメソッドの名前の重なり（[ADR 0279](../decisions/0279-no-duplicate-method-names-in-trait.md)）、束縛の書き分けの誤り（`bind` と `shadow` の取り違え、見えている名前と見えていない名前の混ざった左辺、変数のない `shadow`、キーワードを書けない束縛による局所の名前の隠し。[ADR 0255](../decisions/0255-bind-and-shadow.md)） |
-| `E04nn` | 検査の誤り | 型（宣言、リテラルの範囲、`main` の条件を含む） | レコードの構築と更新のフィールドの誤り、型の別名の誤り、定数の宣言と定数式の誤り（定数式の算術の確実な誤り、定数の循環、定数式の `Map.fromList`・`Set.fromList` の重なる鍵。[ADR 0123](../decisions/0123-top-level-constants.md)、[ADR 0136](../decisions/0136-map-and-set-in-constants.md)） |
-| `E05nn` | 検査の誤り | エフェクト、ハンドラ | `main` とテストの関数で処理していない利用者のエフェクト、エフェクトの宣言の誤り、`handle` の節の `case` に操作でない関数（`State` を型に持つ関数など）を書いた、一つの `handle` の同じ操作の節、`resume` を書けない位置（節の外、節の中のラムダと `lazy`。構文解析器が報告する。[ADR 0155](../decisions/0155-resume-not-in-lazy.md)）、`TaskGroup.open` の位置（[ADR 0153](../decisions/0153-taskgroup-open-only-in-with.md)） |
+| `E01nn` | 検査の誤り | 読み込みと字句 | ファイルの読み込みの誤り（import で辿ったファイルを含む）、すべてのソースの大きさの和の上限（[ソース管理と位置情報](02-02-source-and-spans.md)の「ソースの大きさの上限」） |
+| `E02nn` | 検査の誤り | 構文 | 構文の誤り、本言語にない書き方（`let`、`case … of` と `when`、`type` による代数的データ型の宣言、`:` の後の戻り値の型）、`try` の直後の `{`、属性の書き方の誤り、`lazy` の本体とガードの中の `return`・`try`、制約の位置の書けない小文字の名前（利用者のソースの `ordered` を含む。[字句解析器と構文解析器](02-03-frontend.md)の「文脈の制限」） |
+| `E03nn` | 検査の誤り | 名前、import、公開 | `uses IO`（エフェクトの位置に書いたモジュールの名前）、見つからないモジュール、同じモジュールの二度の取り込み、import の循環、実行を始めるモジュールの取り込み、公開する契約に非公開の型・型クラス・エフェクトを使った、`Benitoite` の名前空間の名前の宣言、一つの型クラスの中のメソッドの名前の重なり、束縛の書き分けの誤り（`bind` と `shadow` の取り違え、見えている名前と見えていない名前の混ざった左辺、変数のない `shadow`、キーワードを書けない束縛による局所の名前の隠し） |
+| `E04nn` | 検査の誤り | 型（宣言、リテラルの範囲、`main` の条件を含む） | レコードの構築と更新のフィールドの誤り、型の別名の誤り、定数の宣言と定数式の誤り（定数式の算術の確実な誤り、定数の循環、定数式の `Map.fromList`・`Set.fromList` の重なる鍵） |
+| `E05nn` | 検査の誤り | エフェクト、ハンドラ | `main` とテストの関数で処理していない利用者のエフェクト、エフェクトの宣言の誤り、`handle` の節の `case` に操作でない関数（`State` を型に持つ関数など）を書いた、一つの `handle` の同じ操作の節、`resume` を書けない位置（節の外、節の中のラムダと `lazy`。構文解析器が報告する）、`TaskGroup.open` の位置 |
 | `E06nn` | 検査の誤り | パターン | 範囲のパターンの誤り、選ばれない選択肢、選択肢の束縛する名前の違い、必ず照合しない束縛の文のパターン、定数と同じ名前のパターンの変数 |
-| `E07nn` | 検査の誤り | 型クラス（初回リリース版で新設） | 孤立した実装、重なる実装、上位の型クラスの循環、上位の型クラスの制約が解けない実装、解けない制約、メソッドの欠けた実装、型クラスの引数を含まないメソッド |
-| `E08nn` | 検査の誤り | 属性（初回リリース版で新設） | 書けない属性、`@test` を付けた関数の型パラメータ・引数・戻り値の型の条件（[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)）、`@deprecated` の引数の誤り（引数がない、二つ以上、空の文字列）、利用者のソースの `@builtin` と本体のない関数（[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)） |
-| `W03nn` | 警告 | 名前 | `@deprecated` を付けた宣言の参照（[ADR 0119](../decisions/0119-attributes-test-and-deprecated.md)） |
-| `W04nn` | 警告 | 型と演算 | 除数が 0 の定数式の除算、引数がすべて定数式の演算の溢れ（[ADR 0146](../decisions/0146-runtime-errors-not-in-types.md)）、`Map.fromList`・`Set.fromList` の引数のリストのリテラルで重なる鍵（[ADR 0136](../decisions/0136-map-and-set-in-constants.md)） |
-| `W05nn` | 警告 | エフェクト | `uses IO.All` と書いた関数の本体が `IO.All` の一部のエフェクトしか生じない（[ADR 0116](../decisions/0116-builtin-fine-grained-effects.md)） |
-| `R01nn` | 実行時エラー | 基本型の演算 | `Decimal` の溢れ |
-| `R02nn` | 実行時エラー | 標準出力と標準エラー出力 | なし |
-| `R03nn` | 実行の開始前の誤り | コマンドライン引数（正しくない UTF-8） | なし |
-| `R04nn` | 実行時エラー | リソース（初回リリース版で新設） | リソースの解放の失敗、解放したリソースの使用 |
-| `R05nn` | 実行時エラー | ハンドラ（初回リリース版で新設） | 継続の二度目の再開、引き継いだハンドラの節の誤り |
-| `R06nn` | 実行時エラー | 権限（サーバモードで新設。[ADR 0177](../decisions/0177-server-mode-after-first-release.md)） | 権限の拒否 |
-| `R07nn` | 実行時エラー | 引数（初回リリース版で新設） | 引数が定義域の外 |
-| `R08nn` | 実行時エラー | ネットワーク（初回リリース版で新設） | 応答の二度目の送信 |
-| `R09nn` | 資源の不足 | 呼び出しの入れ子が深すぎる（[仮想機械](02-08-vm.md)）、一つの操作で作る値が大きすぎる（[ランタイム](02-09-runtime.md)の「一つの操作で作る値の大きさの上限」、[ADR 0049](../decisions/0049-size-limit-for-built-values.md)） | `Bytes` と、入力を読む操作の大きさの上限 |
-| `R10nn` | 実行時エラー | 並行処理（初回リリース版で新設） | タスクの待ち合いの行き詰まり（`R1001`。[ADR 0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md)）、取り消したタスクの結果の待ち（`R1002`。[ADR 0317](../decisions/0317-await-on-cancelled-task-is-runtime-error.md)） |
-| `L01nn` | 処理系の制限 | コード生成の上限（[バイトコードとコード生成](02-07-bytecode.md)） | 原型ごとの分岐表の数とハンドラの記述の数、プログラム全体の表（構成子・組み込みの関数の参照・実装・操作）の大きさと、型クラスと実装ごとの数（同章の「処理系の制限」） |
+| `E07nn` | 検査の誤り | 型クラス | 孤立した実装、重なる実装、上位の型クラスの循環、上位の型クラスの制約が解けない実装、解けない制約、メソッドの欠けた実装、型クラスの引数を含まないメソッド |
+| `E08nn` | 検査の誤り | 属性 | 書けない属性、`@test` を付けた関数の型パラメータ・引数・戻り値の型の条件（[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)）、`@deprecated` の引数の誤り（引数がない、二つ以上、空の文字列）、利用者のソースの `@builtin` と本体のない関数 |
+| `W03nn` | 警告 | 名前 | `@deprecated` を付けた宣言の参照 |
+| `W04nn` | 警告 | 型と演算 | 除数が 0 の定数式の除算、引数がすべて定数式の演算の溢れ、`Map.fromList`・`Set.fromList` の引数のリストのリテラルで重なる鍵 |
+| `W05nn` | 警告 | エフェクト | `uses IO.All` と書いた関数の本体が `IO.All` の一部のエフェクトしか生じない |
+| `R01nn` | 実行時エラー | 基本型の演算 | 0 による除算、`Integer` と `Decimal` の溢れ |
+| `R02nn` | 実行時エラー | 標準出力と標準エラー出力 | 書き込みの失敗 |
+| `R03nn` | 実行の開始前の誤り | コマンドライン引数 | 正しい UTF-8 でない引数 |
+| `R04nn` | 実行時エラー | リソース | リソースの解放の失敗、解放したリソースの使用 |
+| `R05nn` | 実行時エラー | ハンドラ | 継続の二度目の再開、引き継いだハンドラの節の誤り |
+| `R07nn` | 実行時エラー | 引数 | 引数が定義域の外 |
+| `R08nn` | 実行時エラー | ネットワーク | 応答の二度目の送信 |
+| `R09nn` | 資源の不足 | 呼び出しの入れ子が深すぎる（[仮想機械](02-08-vm.md)）、一つの操作で作る値が大きすぎる（[ランタイム](02-09-runtime.md)の「一つの操作で作る値の大きさの上限」） | 文字列・`Bytes`・リストを作る操作と、入力を読む操作の大きさの上限 |
+| `R10nn` | 実行時エラー | 並行処理 | タスクの待ち合いの行き詰まり（`R1001`）、取り消したタスクの結果の待ち（`R1002`） |
+| `L01nn` | 処理系の制限 | コード生成の上限（[バイトコードとコード生成](02-07-bytecode.md)） | 原型ごとのレジスタの数・定数の数・分岐表の数・ハンドラの記述の数、プログラム全体の表（構成子・組み込みの関数の参照・実装・操作）の大きさと、型クラスと実装ごとの数（同章の「処理系の制限」） |
 
-実行時エラーの種類と区分の対応は、[評価意味論](../01-spec/01-08-evaluation.md)の「実行時エラーによる停止」の表の種類ごとに一つのコードを割り当てる形とする。
+実行時エラーの種類と区分の対応は、[評価意味論](../01-spec/01-08-evaluation.md)の「実行時エラーによる停止」の表の種類ごとに一つ以上のコードを割り当てる形とする。一つの種類に複数のコードを割り当てるのは、資源の不足の「作る値が大きすぎる」を値を作る操作（`R0902`）と入力を読む操作（`R0903`）とに分ける場合と、書き込みの失敗を標準出力（`R0201`）と標準エラー出力（`R0202`）とに分ける場合である。
 
-区分の中の番号は、01 から順に振る。最小実行版で割り当てた番号（`E0101`〜`E0117`、`E0201`〜`E0210`、`E0301`〜`E0317`、`E0401`〜`E0419`、`E0501`・`E0502`、`E0601`・`E0602`、`R0101`・`R0102`、`R0201`・`R0202`、`R0301`、`R0901`・`R0902`、`L0101`・`L0102`）は意味を変えず、初回リリース版の検査は、各区分の続きの番号に割り当てる。ただし、名前の重なりの `E0305`（型の名前）と `E0306`（関数の名前）は、初回リリース版で同じ名前空間に入る名前が増えても、そのまま使う。`E0305` は型と同じ名前空間の名前（型・型の別名・レコード・型クラス・エフェクト・import で付けた名前）の重なりに、`E0306` は関数と同じ名前空間の名前（関数・定数・エフェクトの操作）の重なりに使う。どちらも同じ名前空間の名前の重なりという同じ誤りであり、意味を変えたことにはならない。最小実行版の診断のうち、初回リリース版で起きなくなるもの（最小実行版だけの書き方に対するもの）は廃止し、番号を使い回さない。個々のコードの割り当ては、処理系の中の診断の表で管理し、実装プランで一覧を定める。
+区分の中の番号は、01 から順に振り、新しい検査は各区分の続きの番号に割り当てる。廃止したコードの番号は使い回さない（表の番号に欠けがあるのはこのためである）。名前の重なりの `E0305` は型と同じ名前空間の名前（型・型の別名・レコード・型クラス・エフェクト・import で付けた名前）の重なりに、`E0306` は関数と同じ名前空間の名前（関数・定数・エフェクトの操作）の重なりに使う。個々のコードの割り当ては、処理系の中の診断の表で管理する。
 
 【方針】処理系の中に、診断コード（diagnostic code）ごとに次のものを持つ表（診断の表）を置く。
 
 - コード、重大度、区分
 - 文言・ラベル・注記・修正案の型板（英語）
 - 置き換えを付けるかどうか
-- コードの説明（誤りの意味と、よくある直し方）。MCP の道具 `explain` で引く（[サーバモード](../06-tooling/06-07-server.md)の「MCP の道具」、[ADR 0210](../decisions/0210-mcp-in-server-chapter-and-explain-tool.md)）
+- コードの説明（誤りの意味と、よくある直し方）。同梱の Agent Skill の診断の参照の文書は、この説明から作る
 
 ### 警告の扱い
 
-【決定】警告は、`check` でも `run` でも、誤りと同じ形で標準エラー出力に書く。警告だけなら、`check` は終了状態 0 で終え、`run` は実行する。`check`・`run`・`test` のオプション `--deny-warnings` を指定したときは、警告を誤りとして扱い、検査の誤りと同じく終了状態 2 で終える（[ADR 0166](../decisions/0166-warnings-reported-by-run-and-deny-option.md)）。
+【決定】警告は、`check` でも `run` でも、誤りと同じ形で標準エラー出力に書く。警告だけなら、`check` は終了状態 0 で終え、`run` は実行する。`check`・`run`・`test` のオプション `--deny-warnings` を指定したときは、警告を誤りとして扱い、検査の誤りと同じく終了状態 2 で終える。
 
 【方針】警告の扱いは次のとおりとする。
 
@@ -142,11 +136,11 @@ CLI の文章と JSON、MCP サーバ、LSP サーバ、テストの実行器は
 
 ### 文言の言語
 
-【決定】診断と、実行時エラー・資源の不足・解放の失敗・処理系の不具合の報告の文言は、英語で書く。文言は診断の表の型板にまとめ、診断を出す処理と分ける（[ADR 0033](../decisions/0033-english-diagnostic-messages.md)）。
+【決定】診断と、実行時エラー・資源の不足・解放の失敗・処理系の不具合の報告の文言は、英語で書く。文言は診断の表の型板にまとめ、診断を出す処理と分ける。理由: 文言を処理と分けておけば、ほかの言語の文言を表の差し替えで加えられるからである。
 
 ### 文章の形式
 
-【決定】CLI は、既定では診断を Rust 風の文章で標準エラー出力に書く（[ADR 0032](../decisions/0032-rust-style-text-and-json.md)）。
+【決定】CLI は、既定では診断を Rust 風の文章で標準エラー出力に書く。オプションで、同じ内容を JSON で書ける（後述の「JSON の形式」）。文章と JSON は、同じ内部の表現から作る。
 
 【方針】一つの診断は次の形で書く。
 
@@ -167,7 +161,7 @@ error[E0401]: mismatched types
 ```
 
 - 1 行目は、重大度（`error` か `warning`）、角括弧に入れたコード、文言である。
-- `-->` の行は、主な位置のファイルの表示名、行、列である。表示名は、import で読み込んだモジュールと標準ライブラリのファイル（`<benitoite>/X/Y.bnt`。[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)）を含め、[ソース管理と位置情報](02-02-source-and-spans.md)で定める。
+- `-->` の行は、主な位置のファイルの表示名、行、列である。表示名は、import で読み込んだモジュールと標準ライブラリのファイル（`<benitoite>/X/Y.bnt`）を含め、[ソース管理と位置情報](02-02-source-and-spans.md)で定める。
 - ソースの抜粋は、主な位置を含む行を行番号付きで示し、span の下に `^` を並べ、ラベルを添える。span が複数行にわたるときは、最初の行を示し、`^` を行末まで並べる。
 - 補助の位置は、主な位置と同じ行にあればその行に、別の行か別のファイルにあれば `:::` の行と抜粋を加えて示し、span の下に `-` を並べてラベルを添える。
 - 注記と修正案は、`= note:` と `= help:` の行で示す。置き換えを持つ修正案は、`= help:` の行の後に、置き換えを当てた後の行を行番号付きで示し、変わった部分の下に `~` を並べる。
@@ -189,9 +183,9 @@ error[E0333]: `IO` is a module, not an effect
 
 【方針】標準エラー出力が端末であれば、重大度・コード・印に色を付けてよい。環境変数 `NO_COLOR` が設定されていれば、色を付けない。
 
-【方針】検査の診断は、段の順に書く。同じ段の中では、ファイルを読み込みの段が読んだ順（実行を始めるファイルが最初。[ADR 0156](../decisions/0156-module-loading-and-whole-program-checking.md)）に、同じファイルの中ではソース上の位置の順に書く。型検査は、型の誤りの後も検査を続けて、互いに独立した誤りをすべて診断にする（[ADR 0024](../decisions/0024-continue-after-type-errors.md)）。文章の形式では、一回の検査で書く診断は、誤りと警告を合わせて 50 件までとし、それを超えた分は書かずに件数だけを示す。
+【方針】検査の診断は、段の順に書く。同じ段の中では、ファイルを読み込みの段が読んだ順（実行を始めるファイルが最初）に、同じファイルの中ではソース上の位置の順に書く。型検査は、型の誤りの後も検査を続けて、互いに独立した誤りをすべて診断にする。文章の形式では、一回の検査で書く診断は、誤りと警告を合わせて 50 件までとし、それを超えた分は書かずに件数だけを示す。
 
-【方針】最後に、件数を示す行を書く。件数は、誤りと警告を分けて数える（[ADR 0166](../decisions/0166-warnings-reported-by-run-and-deny-option.md)）。`--deny-warnings` で誤りとして扱った警告は、誤りに数える。
+【方針】最後に、件数を示す行を書く。件数は、誤りと警告を分けて数える。`--deny-warnings` で誤りとして扱った警告は、誤りに数える。
 
 | 場合 | 件数の行 |
 |---|---|
@@ -216,7 +210,7 @@ error[E0333]: `IO` is a module, not an effect
 | `notes` | 注記の文字列の配列 |
 | `helps` | 修正案の配列。各要素は、文 `message` と、置き換えの配列 `edits` を持つ。置き換えは、`file`、`start` と `end`（位置の形の `line`・`column`・`offset`）、入れる文字列 `replacement` を持つ。置き換えのない修正案の `edits` は空の配列 |
 
-位置は、`file`（表示名）、`start` と `end`（それぞれ `line`・`column`・`offset`）、`label` を持つ。`line` と `column` は文章の形式と同じく 1 から数え（`column` はコードポイントの数。[ADR 0025](../decisions/0025-columns-in-code-points.md)）、`offset` はファイルの先頭からのバイトの位置である。位置を持たない報告では、`primary` を `null` にする。
+位置は、`file`（表示名）、`start` と `end`（それぞれ `line`・`column`・`offset`）、`label` を持つ。`line` と `column` は文章の形式と同じく 1 から数え（`column` はコードポイントの数）、`offset` はファイルの先頭からのバイトの位置である。位置を持たない報告では、`primary` を `null` にする。
 
 【方針】`kind` の値は次のとおりとする。`severity` は、警告の診断だけを `"warning"` とし、ほかはすべて `"error"` とする。`--deny-warnings` で誤りとして扱った警告は `"error"` とする。
 
@@ -224,7 +218,7 @@ error[E0333]: `IO` is a module, not an effect
 |---|---|---|
 | `"check"` | 検査の誤りと警告の診断 | `E`・`W` のコード |
 | `"limit"` | 処理系の制限 | `L` のコード |
-| `"runtime"` | 実行時エラー。`Process.exit` と中断の要求で止めた後の、出力の最後の書き出しの失敗（`R02nn`）も含む | `R01nn`・`R02nn`・`R04nn`〜`R08nn` |
+| `"runtime"` | 実行時エラー。`Process.exit` と中断の要求で止めた後の、出力の最後の書き出しの失敗（`R02nn`）も含む | `R01nn`・`R02nn`・`R04nn`・`R05nn`・`R07nn`・`R08nn`・`R10nn` |
 | `"resource"` | 資源の不足 | `R09nn` |
 | `"release"` | `Process.exit` と中断の要求で止める途中の解放の失敗（後述） | `R04nn` |
 | `"args"` | 実行の開始前の誤り（コマンドライン引数） | `R03nn` |
@@ -244,7 +238,7 @@ JSON の形式では、診断の件数による打ち切りを行わず、件数
 
 【方針】実行時エラーと資源の不足は、検査の診断と同じ文章の形式で標準エラー出力に書く。重大度の位置には `runtime error` と書き、主な位置は実行時エラーを起こした式（資源の不足では、上限を超えた呼び出し、または大きすぎる値を作ろうとした操作）の位置とする（[評価意味論](../01-spec/01-08-evaluation.md)）。その式が標準ライブラリのソースの中にあるときの扱いは、[仮想機械](02-08-vm.md)の「実行時エラーの情報の記録」に従う。
 
-【決定】報告には、残っている呼び出しの枠を内側から並べた履歴を含める。各段は関数の名前（ラムダは `<lambda>` とそれを書いた位置）と、その関数を呼び出した位置を示す。20 段を超えるときは内側の 10 段と外側の 10 段を示し、省いた段の数を示す。末尾呼び出しで通った関数が現れないことを注記する（[ADR 0034](../decisions/0034-call-trace-in-runtime-errors.md)）。
+【決定】報告には、残っている呼び出しの枠を内側から並べた履歴を含める。各段は関数の名前（ラムダは `<lambda>` とそれを書いた位置）と、その関数を呼び出した位置を示す。20 段を超えるときは内側の 10 段と外側の 10 段を示し、省いた段の数を示す。末尾呼び出しで通った関数が現れないことを注記する。
 
 【方針】履歴の段、各段の名前と呼び出した位置、主な位置は、[仮想機械](02-08-vm.md)の「実行時エラーの情報の記録」に従って作る。各段は `名前` と `at 位置` を並べた一行で示す。`at` の列は、呼び出しの履歴と後述のタスクの起動の履歴を合わせた中で最長の名前の幅に揃える。名前は次のとおりとする。
 
@@ -257,7 +251,7 @@ JSON の形式では、診断の件数による打ち切りを行わず、件数
 
 これらの名前は、原型の名前と由来の種類（[バイトコードとコード生成](02-07-bytecode.md)の「原型の名前と由来の種類」）から作る。
 
-呼び出した位置を持たない段（タスクの最初の段、標準ライブラリのソースの中から呼ばれた段）は、名前だけを示す。`main` のタスクを含む各タスクの積み重ねの最も外側の段は、末尾呼び出しで置き換わった後も、呼び出した位置を持たない段として扱う（[ADR 0325](../decisions/0325-outermost-frame-shows-no-call-site.md)）。
+呼び出した位置を持たない段（タスクの最初の段、標準ライブラリのソースの中から呼ばれた段）は、名前だけを示す。`main` のタスクを含む各タスクの積み重ねの最も外側の段は、末尾呼び出しで置き換わった後も、呼び出した位置を持たない段として扱う。
 
 ```text
 runtime error[R0101]: division by zero
@@ -269,14 +263,13 @@ runtime error[R0101]: division by zero
    = note: call trace (innermost first):
              ratio                    at count.bnt:22:44
              <lambda count.bnt:22:27>
-             List.map                 at count.bnt:22:14
              main
    = note: functions left by tail calls are not shown
 ```
 
-この例では、22 行目 `bind rs <- List.map(xs, lambda(x) return ratio(x, n) + 1 end lambda)` の `List.map` が、標準ライブラリのソースの中からラムダを呼び、ラムダが `ratio` を呼んでいる。ラムダの中の `ratio` の呼び出しは、結果に 1 を加える前なので末尾呼び出しではなく、ラムダの段が履歴に残る。`lambda(x) return ratio(x, n) end lambda` と書いた場合は末尾呼び出しになり、ラムダの段は現れない。
+この例では、22 行目 `bind rs <- List.map(xs, lambda(x) return ratio(x, n) + 1 end lambda)` の `List.map` が、標準ライブラリの補助の関数を末尾呼び出しで呼び、補助の関数がラムダを呼び、ラムダが `ratio` を呼んでいる。`List.map` の段は末尾呼び出しで補助の関数の段に置き換わり、補助の関数の段は示さないので、どちらも履歴に現れない。ラムダの段は標準ライブラリのソースの中から呼ばれた段なので、名前だけを示す。ラムダの中の `ratio` の呼び出しは、結果に 1 を加える前なので末尾呼び出しではなく、ラムダの段が履歴に残る。`lambda(x) return ratio(x, n) end lambda` と書いた場合は末尾呼び出しになり、ラムダの段は現れない。
 
-【方針】実行時エラーが `main` の呼び出しでないタスク（[並行処理](../01-spec/01-11-concurrency.md)）で起きたときは、呼び出しの履歴は、実行時エラーを起こしたタスクのものだけを示す。その後に、そのタスクを起動した位置を、内側のタスクから `main` のタスクまで並べたタスクの起動の履歴を示す。`test` のコマンドの実行では、最初のタスクは `main` ではなくテストの関数なので、`main` の代わりにテストの関数のタスクまで並べ、最後の段をテストの関数の名前にする（[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)の「結果の報告」、[ADR 0324](../decisions/0324-test-task-origins-end-at-test-function.md)）。各段は、タスクを起動した関数（`TaskGroup.spawn`・`Task.all` など）の名前と、その呼び出しの位置である。起動した呼び出しが標準ライブラリのソースの中にあるとき（`Http.serve` の中の `TaskGroup.spawn` など）は、呼び出しの履歴の主な位置と同じく、利用者のソースにある最も内側の呼び出しの名前と位置を示す。ほかのタスクの呼び出しの履歴は示さない。材料は[仮想機械](02-08-vm.md)がタスクごとに記録する（[ADR 0161](../decisions/0161-single-threaded-task-scheduler.md)）。
+【方針】実行時エラーが `main` の呼び出しでないタスク（[並行処理](../01-spec/01-11-concurrency.md)）で起きたときは、呼び出しの履歴は、実行時エラーを起こしたタスクのものだけを示す。その後に、そのタスクを起動した位置を、内側のタスクから `main` のタスクまで並べたタスクの起動の履歴を示す。`test` のコマンドの実行では、最初のタスクは `main` ではなくテストの関数なので、`main` の代わりにテストの関数のタスクまで並べ、最後の段をテストの関数の名前にする（[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)の「結果の報告」）。各段は、タスクを起動した関数（`TaskGroup.spawn`・`Task.all` など）の名前と、その呼び出しの位置である。起動した呼び出しが標準ライブラリのソースの中にあるとき（`Http.serve` の中の `TaskGroup.spawn` など）は、呼び出しの履歴の主な位置と同じく、利用者のソースにある最も内側の呼び出しの名前と位置を示す。ほかのタスクの呼び出しの履歴は示さない。材料は[仮想機械](02-08-vm.md)がタスクごとに記録する。
 
 ```text
 runtime error[R0101]: division by zero
@@ -296,7 +289,7 @@ runtime error[R0101]: division by zero
 
 JSON の形式を指定したときは、診断と同じ項目に、呼び出しの履歴の配列 `trace` と、省いた段の数 `traceOmitted` と、タスクの起動の履歴の配列 `taskOrigins` を加えた一行を書く。`trace` と `taskOrigins` の各要素は、`function`（上の名前）と `location`（位置の形。持たない段では `null`）を持つ。`main` のタスク（`test` のコマンドの実行では、テストの関数のタスク）で起きたときは、`taskOrigins` を空の配列にする。
 
-【方針】主な位置を持たない実行時エラーは、`-->` の行と抜粋を書かない。標準出力と標準エラー出力への書き込みの失敗（[ランタイム](02-09-runtime.md)の「出力のバッファ」、[ADR 0045](../decisions/0045-late-detection-of-output-write-failure.md)）は、主な位置も呼び出しの履歴も持たないので、一行目と、失敗した出力と理由を示す注記だけを書く。
+【方針】主な位置を持たない実行時エラーは、`-->` の行と抜粋を書かない。標準出力と標準エラー出力への書き込みの失敗（[ランタイム](02-09-runtime.md)の「出力のバッファ」）は、主な位置も呼び出しの履歴も持たないので、一行目と、失敗した出力と理由を示す注記だけを書く。
 
 ```text
 runtime error[R0201]: failed to write to standard output
@@ -305,49 +298,37 @@ runtime error[R0201]: failed to write to standard output
 
 `Process.exit` と中断の要求で止めた後に、出力の最後の書き出しに失敗したとき（[ランタイム](02-09-runtime.md)の「プログラムの実行の流れ」）も、同じ形で書く。止める途中の解放の失敗（後述の「解放の失敗の報告」）とは違い、JSON の形式の `kind` は `"runtime"` とする。終了状態は、止めた理由の値のまま変えない。
 
-【方針】一つの操作で作る値が大きすぎるときの資源の不足の報告は、文言に、値を作ろうとした関数（または `+`）、計算した結果の大きさ、上限を含める。入力を読む操作では、結果の大きさの代わりに、上限を超えたことを示す。
+【方針】一つの操作で作る値が大きすぎるときの資源の不足の報告は、文言に値を作ろうとした関数（または `+`）を示し、注記に計算した結果の大きさと上限を示す。入力を読む操作では、文言に関数と上限を示す。
 
-【方針】権限の拒否の報告は、実行時の権限制御とあわせて、初回リリース版の後にサーバモードで加える（[ADR 0177](../decisions/0177-server-mode-after-first-release.md)）。初回リリース版の処理系は権限の拒否を報告しない。権限の拒否の報告は、文言に許可の単位（[ADR 0184](../decisions/0184-permissions-granted-per-builtin-effect.md)）とスクリプトが渡した対象を含め、注記に、操作の名前と、解決した絶対パス（`run` では見つけた実行ファイルの絶対パス）を示す（[ADR 0071](../decisions/0071-permission-declaration-and-runtime-denial.md)、[ランタイム](02-09-runtime.md)の「実行時の権限制御の判定」）。主な位置と呼び出しの履歴は、ほかの実行時エラーと同じく作る。スクリプトは権限を宣言しない（[ADR 0147](../decisions/0147-remove-permission-declaration-syntax.md)）ので、宣言を直す修正案はない。許可を与える方法を示す修正案は、許可の与え方（[OPEN-052](../open-issues.md#open-052)）を決めるときにあわせて定める。
+初回リリース版の処理系は実行時の権限制御を行わないので、権限の拒否を報告しない。
 
-```text
-runtime error[R0601]: permission `write` is not allowed for `out/report.txt`
-  --> report.bnt:12:3
-   |
-12 |   try File.writeText("out/report.txt", text)
-   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |
-   = note: call trace (innermost first):
-             main
-   = note: operation: File.writeText
-   = note: resolved path: /home/user/work/out/report.txt
-```
-
-【方針】タスクの待ち合いの行き詰まり（`R1001`。[並行処理](../01-spec/01-11-concurrency.md)の「失敗と停止」、[ADR 0238](../decisions/0238-task-wait-deadlock-as-runtime-error.md)）は、止まった一つの式がないので、主な位置と呼び出しの履歴を持たず、`-->` の行と抜粋を書かない。代わりに、待つタスクごとに一行を注記に並べる。各行は、タスク（`main` のタスクは `main`、ほかのタスクは起動の履歴の最も内側の段の名前と位置。`test` のコマンドの実行では、最初のタスクはテストの関数の名前で示す。[ADR 0324](../decisions/0324-test-task-origins-end-at-test-function.md)）、待つ種類、待つ位置を示す。タスクの列と待つ種類の列は、それぞれの列の最長の幅に揃える。待つ位置を持たない行は、待つ位置を書かない。待つ位置は、[仮想機械](02-08-vm.md)の「実行時エラーの情報の記録」の材料から、主な位置と同じ規則で作る。タスクの並びは、起動した順とする。
+【方針】タスクの待ち合いの行き詰まり（`R1001`。[並行処理](../01-spec/01-11-concurrency.md)の「失敗と停止」）は、止まった一つの式がないので、主な位置と呼び出しの履歴を持たず、`-->` の行と抜粋を書かない。代わりに、待つタスクごとに一行を注記に並べる。各行は、タスク（`main` のタスクは `main`、ほかのタスクは起動の履歴の最も内側の段の名前と位置。`test` のコマンドの実行では、最初のタスクはテストの関数の名前で示す）、待つ種類、待つ位置を示す。タスクの列と待つ種類の列は、それぞれの列の最長の幅に揃える。待つ位置を持たない行は、待つ位置を書かない。待つ位置は、[仮想機械](02-08-vm.md)の「実行時エラーの情報の記録」の材料から、主な位置と同じ規則で作る。`TaskGroup` の解放を待つ行の待つ位置は、後述の「解放の失敗の報告」の主な位置と同じく、その `with` の束縛（束縛の名前の位置）とする。タスクの並びは、起動した順とする。
 
 ```text
 runtime error[R1001]: no task can proceed because tasks are waiting for each other
    = note: waiting tasks:
-             main                              waits for TaskGroup release at pair.bnt:4:3
-             TaskGroup.spawn at pair.bnt:6:13  waits for Task.await        at pair.bnt:7:5
-             TaskGroup.spawn at pair.bnt:10:13 waits for Task.await        at pair.bnt:11:5
+             main                              waits for TaskGroup release at pair.bnt:11:8
+             TaskGroup.spawn at pair.bnt:12:15 waits for Task.await        at pair.bnt:4:31
+             TaskGroup.spawn at pair.bnt:13:15 waits for Task.await        at pair.bnt:4:31
 ```
+
+この例では、12 行目と 13 行目で起動した二つのタスクが、どちらも同じ利用者の関数の 4 行目の `Task.await` で互いの結果を待つ。`main` は 11 行目 `with group = TaskGroup.open() do` を抜けるときにグループの解放を待ち、待つ位置は束縛の名前 `group` の位置である。
 
 JSON の形式を指定したときは、`trace` と `taskOrigins` を空の配列にし、待つタスクの配列 `waitingTasks` を加える。各要素は、`task`（上のタスクの名前と位置）、`waitsFor`（待つ種類）、`location`（待つ位置。持たないときは `null`）を持つ。
 
-コマンドライン引数が正しい UTF-8 でないときの報告（[ADR 0012](../decisions/0012-invalid-utf8-input.md)）は、ソースの位置を持たないので、抜粋を書かず、何番目の引数かを文言に含める。
-
+コマンドライン引数が正しい UTF-8 でないときの報告は、ソースの位置を持たないので、抜粋を書かず、何番目の引数かを文言に含める。
 
 ### 解放の失敗の報告
 
 【方針】`with` を抜けるとき、タスクの取り消し、ハンドラが本体の続きを捨てるときの解放の失敗は、実行時エラー（リソースの解放の失敗）として報告する（[リソース管理](../01-spec/01-10-resources.md)の「解放の失敗」）。主な位置は解放した `with` の束縛、または `resume` を呼ばずに終えた節と取り消したタスクを起動した呼び出しとし、失敗した解放ごとに、リソースの型、開いた位置、失敗の理由を注記で示す。複数の失敗があれば、すべてを注記に並べる。
 
-【方針】実行時エラーか資源の不足で止める途中の解放の失敗は、その報告に注記として加え、先の実行時エラーを置き換えない（[ADR 0068](../decisions/0068-release-resources-on-stop.md)）。
+【方針】実行時エラーか資源の不足で止める途中の解放の失敗は、その報告に注記として加え、先の実行時エラーを置き換えない。
 
 ```text
    = note: while stopping, failed to release `File.Writer` opened at count.bnt:5:8: no space left on device
 ```
 
-【方針】`Process.exit` と中断の要求で止める途中の解放の失敗は、失敗ごとに次の形で書き、終了状態は変えない（[仮想機械](02-08-vm.md)の「止める手順」、[ADR 0163](../decisions/0163-interrupt-releases-resources.md)）。JSON の形式では `kind` を `"release"` とする。
+【方針】`Process.exit` と中断の要求で止める途中の解放の失敗は、失敗ごとに次の形で書き、終了状態は変えない（[仮想機械](02-08-vm.md)の「止める手順」）。JSON の形式では `kind` を `"release"` とする。
 
 ```text
 error[R0401]: failed to release `File.Writer` opened at count.bnt:5:8
@@ -355,25 +336,17 @@ error[R0401]: failed to release `File.Writer` opened at count.bnt:5:8
    = note: the program was exiting by `Process.exit(2)`; the exit status is not changed
 ```
 
-中断の要求のときは、最後の注記を `the program was interrupted; the exit status is not changed` とする。解放の失敗を実行時エラーにしないリソースの型（`Http.Exchange`。[ADR 0149](../decisions/0149-http-exchange-release-failure.md)）の失敗は、どの時期にも報告しない。
+中断の要求のときは、最後の注記を `the program was interrupted; the exit status is not changed` とする。解放の失敗を実行時エラーにしないリソースの型（`Http.Exchange`）の失敗は、どの時期にも報告しない。
 
 ### 処理系の不具合と処理系の制限の報告
 
-【方針】処理系の不具合（脱糖・コード生成で処理を続けられない状態、表に結果がない、Rust の panic。[パイプライン](02-01-pipeline.md)、[ランタイム](02-09-runtime.md)）は、診断コードを持たない `internal error` として標準エラー出力に書き、終了状態 3 で終わる（[ADR 0037](../decisions/0037-exit-status-values.md)）。報告には、処理系の版、不具合が起きた段、Rust の panic であればその内容と起きたスレッド（VM のスレッドか作業用のスレッドか）、取得できれば処理系のバックトレースを含め、処理系の不具合として報告するよう求める文を添える。JSON の形式では、版・段・スレッド・panic の内容・報告を求める文を `notes` に、バックトレースを文字列の項目 `backtrace` に入れる。標準ライブラリのソースの中に主な位置を持つ検査の誤り（[名前解決](02-04-resolver.md)の「標準ライブラリのソースの持ち方」）も処理系の不具合であり、検査の診断としては書かず、段を検査とする `internal error` として書いて終了状態 3 で終わる。
+【方針】処理系の不具合（脱糖・コード生成で処理を続けられない状態、表に結果がない、Rust の panic。[パイプライン](02-01-pipeline.md)、[ランタイム](02-09-runtime.md)）は、診断コードを持たない `internal error` として標準エラー出力に書き、終了状態 3 で終わる。報告には、処理系の版、不具合が起きた段、Rust の panic であればその内容と起きたスレッド（検査の段、VM のスレッド、作業用のスレッド、書き出し用のスレッドのどれか）、取得できれば処理系のバックトレースを含め、処理系の不具合として報告するよう求める文を添える。JSON の形式では、版・段・スレッド・panic の内容・報告を求める文を `notes` に、バックトレースを文字列の項目 `backtrace` に入れる。標準ライブラリのソースの中に主な位置を持つ検査の誤り（[名前解決](02-04-resolver.md)の「標準ライブラリのソースの持ち方」）も処理系の不具合であり、検査の診断としては書かず、段を検査とする `internal error` として書いて終了状態 3 で終わる。
 
-処理系の制限（`L` のコード）は、プログラムの誤りではないが実行できないことを表す。検査の誤りと同じ文章の形式で書き、主な位置は、制限を超えた関数の宣言とする。
+処理系の制限（`L` のコード）は、プログラムの誤りではないが実行できないことを表す。検査の誤りと同じ文章の形式で書く。原型ごとの上限（`L0101`〜`L0104`）では、主な位置は制限を超えた関数の宣言とする。プログラム全体の表の大きさと、型クラスと実装ごとの数の上限（`L0105`〜`L0111`）は主な位置を持たず、`-->` の行と抜粋を書かずに、一行目と上限を示す注記だけを書く。
 
 ### 実行の外への受け渡し
 
-【方針】MCP サーバ（初回リリース版の後にサーバモードとあわせて加える。[ADR 0177](../decisions/0177-server-mode-after-first-release.md)）と LSP サーバ（初回リリース版の後）は、診断の内部の表現を受け取り、それぞれの通信の形に変える（[サーバモード](../06-tooling/06-07-server.md)の「MCP の道具」、[LSP サーバ](../06-tooling/06-02-lsp.md)、[ADR 0210](../decisions/0210-mcp-in-server-chapter-and-explain-tool.md)）。
+【決定】テストの実行器は、検査の診断と処理系の不具合の報告を、`check` と同じ形で標準エラー出力に書く。テストごとの結果と集計は標準出力に書き、`--diagnostics=json` を指定したときは、結果も JSON Lines の形で書く。
 
-- MCP サーバは、JSON の形式と同じ項目を返す。道具 `explain` は、診断コードの説明を診断の表から引いて返す。実行の結果には、捕らえた標準出力と標準エラー出力と、実行時の報告を分けて含める（[ADR 0165](../decisions/0165-exit-and-stdio-in-embedded-runs.md)、[スクリプト実行と埋め込み](02-11-embedding.md)）。
-- LSP サーバは、重大度・コード・文言・主な位置・補助の位置を LSP の診断に、置き換えを持つ修正案をコードアクションに変える。LSP の位置の数え方への変換は、[LSP サーバ](../06-tooling/06-02-lsp.md)で定める。
+【方針】失敗したテストの実行時エラーの報告は、本章の実行時エラーの報告と同じ内部の表現から作る。テストごとの結果の文章の形と JSON Lines の形は、[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)で定める。
 
-【決定】テストの実行器は、検査の診断と処理系の不具合の報告を、`check` と同じ形で標準エラー出力に書く。テストごとの結果と集計は標準出力に書き、`--diagnostics=json` を指定したときは、結果も JSON Lines の形で書く（[ADR 0208](../decisions/0208-test-report-destination.md)）。
-
-【方針】失敗したテストの実行時エラーの報告は、本章の実行時エラーの報告と同じ内部の表現から作る。テストごとの結果の文章の形と JSON Lines の形は、[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)で定める（[ADR 0252](../decisions/0252-test-report-format.md)）。
-
-## 未決事項
-
-- [OPEN-052](../open-issues.md#open-052): 実行時の権限制御の方式（権限の拒否の報告に添える、許可の与え方の修正案）

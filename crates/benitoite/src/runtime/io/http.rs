@@ -1,4 +1,4 @@
-//! HTTP/1.1 のサーバの接続の層（設計書 02-09「IO 実行器」、03-09、ADR 0143・0149・0170）。
+//! HTTP/1.1 のサーバの接続の層（設計書 02-09「IO 実行器」、03-09「実装に使うクレート」「サーバ」「失敗の種類」）。
 //! `mio` の型は、このモジュールと `runtime::io::event` の外に出さない（実装プラン 10-16）。
 
 use super::event::{self, Wakeup};
@@ -15,10 +15,10 @@ use std::net::ToSocketAddrs;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-/// 受け付ける要求の本体の大きさの上限（16 MiB。03-09「要求と応答の型」、ADR 0287）。
+/// 受け付ける要求の本体の大きさの上限（16 MiB。03-09「要求と応答の型」）。
 /// 超えた要求には、処理系が状態コード 413 の応答を返す。
 pub const MAX_REQUEST_BODY_BYTES: u64 = 16_777_216;
-/// 資源の不足で受け付けをやり直すまで待つ時間の最初の値（ミリ秒。03-09「失敗の種類」、ADR 0170）。
+/// 資源の不足で受け付けをやり直すまで待つ時間の最初の値（ミリ秒。03-09「失敗の種類」）。
 pub const ACCEPT_RETRY_INITIAL_MILLIS: u64 = 5;
 /// 資源の不足で受け付けをやり直すまで待つ時間の上限（ミリ秒）。
 pub const ACCEPT_RETRY_MAX_MILLIS: u64 = 1_000;
@@ -357,7 +357,7 @@ pub(crate) enum AcceptStep {
     Accepted(Box<Exchange>, RequestData),
     Failed(Failure),
 }
-/// 接続を WouldBlock まで進め、要求か再試行の待ちを返す（設計書 03-09、ADR 0170）。
+/// 接続を WouldBlock まで進め、要求か再試行の待ちを返す（設計書 03-09「失敗の種類」）。
 pub(crate) fn accept(
     table: &mut ResourceTable,
     id: ResourceId,
@@ -365,7 +365,7 @@ pub(crate) fn accept(
 ) -> Result<(AcceptStep, Option<String>), Stop> {
     let listener = resource::<Listener>(table, id, ResourceKind::HttpListener)?;
     // 登録は VM が待ちを公開した後に行う。そこでの OS の失敗も、この入口で
-    // accept と同じ分類・警告・タイマーの規則に従って扱う（03-09、ADR 0170）。
+    // accept と同じ分類・警告・タイマーの規則に従って扱う（03-09「失敗の種類」）。
     let mut warning = if let Some(e) = listener.registration_failure.take() {
         if resource_shortage(&e) {
             listener.retry(now, &e)?
@@ -913,14 +913,14 @@ fn parse_query(s: &str) -> Option<Vec<(String, String)>> {
         .collect()
 }
 
-/// 全長の上限を検査してから応答を組み立て、処理系が付けるヘッダを置き換える（ADR 0049、10-16）。
+/// 全長の上限を検査してから応答を組み立て、処理系が付けるヘッダを置き換える（02-09「一つの操作で作る値の大きさの上限」、10-16）。
 pub(crate) fn response_bytes(
     status: u16,
     headers: &[(String, String)],
     body: &[u8],
 ) -> Result<Vec<u8>, Stop> {
     let mut head = format!("HTTP/1.1 {status} {}\r\n", text::reason(status));
-    // 応答の全長を調べてから大きな領域を作る（ADR 0049）。固定の頭だけを先に作る。
+    // 応答の全長を調べてから大きな領域を作る（02-09「一つの操作で作る値の大きさの上限」）。固定の頭だけを先に作る。
     let tail = format!(
         "content-length: {}\r\nconnection: close\r\n\r\n",
         body.len()
@@ -964,7 +964,7 @@ fn error_response(status: u16) -> Vec<u8> {
     .into_bytes()
 }
 
-/// 待ちの対応は言語の値を含まない。取り消しでは配送先だけを外し、準備の後に登録を手放す（ADR 0266）。
+/// 待ちの対応は言語の値を含まない。取り消しでは配送先だけを外し、準備の後に登録を手放す（02-09「タスクの待ちと取り消し」）。
 #[derive(Debug, Default)]
 pub(crate) struct ReadinessState {
     pub tokens: BTreeMap<usize, BTreeSet<ExtOpId>>,
@@ -1047,7 +1047,7 @@ pub(crate) fn arm(
                             }
                             listener.registration_failure = Some(e);
                             // 即時のタイマーで Http.accept に戻し、通常の警告と再試行へ接続する。
-                            // 登録の失敗した接続は、資源が戻るまで所有を保つ（ADR 0170）。
+                            // 登録の失敗した接続は、資源が戻るまで所有を保つ（03-09「失敗の種類」）。
                             return Ok(Armed {
                                 tokens,
                                 deadline: Some(0),

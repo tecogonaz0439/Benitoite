@@ -581,7 +581,7 @@ fn if_expr(ctx: &mut Body<'_, '_>, e: &IfExpr) -> ITy {
     }
 }
 // 分岐の不一致は結果の式を指し、整数から Float への修正案もその式に付ける
-// （設計書 02-05「制約の生成」「診断の修正案」）。
+// （設計書 02-05「制約の生成」「誤りの報告と検査の継続」）。
 fn branch_reason(ctx: &Body<'_, '_>, block: &Block) -> Reason {
     match block.stmts.last() {
         Some(Stmt::Expr(expr)) => {
@@ -1018,7 +1018,7 @@ fn unary(ctx: &mut Body<'_, '_>, e: &UnaryExpr) -> ITy {
         )
     {
         let ty = literal(ctx, e.id, e.span, &l.lit, true);
-        // 符号を含めて読んだ MIN を、正のリテラルとして再び検査しない（設計書 02-05「リテラル」）。
+        // 符号を含めて読んだ MIN を、正のリテラルとして再び検査しない（設計書 02-05「制約の生成」）。
         ctx.record_type(l.id, ty.clone());
         let positive = match ctx.decls.out.lit_values.get(e.id) {
             Some(ConstValue::Integer(n)) => n.checked_neg().map(ConstValue::Integer),

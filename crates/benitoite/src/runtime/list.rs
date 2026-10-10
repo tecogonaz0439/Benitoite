@@ -481,6 +481,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
     fn ten_million_elements_are_traversed_without_rust_recursion() {
         // Miri でも同じ操作の経路を調べ、解釈するセルの数だけ減らす（R06「長いリスト」）。
         let count: u32 = if cfg!(miri) { 24 } else { 10_000_000 };
@@ -640,6 +641,7 @@ mod tests {
     // 大きい from_values だけでは追加時の木への押し込みを確かめられない。
     // 根を通常の Slot に保存して回収を行い、長い区間に全履歴を残す準備は避ける。
     #[test]
+    #[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
     fn million_appends_gets_and_repeated_splits_do_not_recurse() {
         use crate::runtime::heap::Slot;
         let count: u32 = if cfg!(miri) { 40 } else { 1 << 20 };
@@ -691,8 +693,9 @@ mod tests {
 
     // 関門: 切り出しの単子鎖を連結・再切り出しで蓄積させても、公開 API が値を拒まない。
     // 32769 要素までの無作為テストと短い葉だけの連結では、この履歴の退行に届かない。
-    // 修正前は二巡目の連結で get が Internal になった。高さは検査せず Vec と比べる（ADR 0211）。
+    // 修正前は二巡目の連結で get が Internal になった。高さは検査せず Vec と比べる（設計書 03-06「List の内部の表現」）。
     #[test]
+    #[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
     fn repeated_cuts_of_joined_lists_preserve_sequences() {
         let count: usize = if cfg!(miri) { 8 } else { 26_039 };
         let pivot: u32 = if cfg!(miri) { 64 } else { 1 << 20 };
@@ -749,8 +752,9 @@ mod tests {
     }
 
     // 関門: 小さいリストの反復連結で疎な境界が蓄積しても値と順序を保ち、再帰しない。
-    // 単発の境界テストでは反復連結の平衡の退行を検出できない。高さは検査しない（ADR 0211）。
+    // 単発の境界テストでは反復連結の平衡の退行を検出できない。高さは検査しない（設計書 03-06「List の内部の表現」）。
     #[test]
+    #[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
     fn hundred_thousand_short_concatenations_match_vec() {
         use crate::runtime::heap::Slot;
         let count = if cfg!(miri) { 20 } else { 100_000 };

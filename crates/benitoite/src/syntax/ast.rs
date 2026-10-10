@@ -1,4 +1,4 @@
-//! 抽象構文木（設計書 02-03「AST」）。名前解決と型検査はこの木を変更しない（ADR 0022）。
+//! 抽象構文木（設計書 02-03「AST」）。名前解決と型検査はこの木を変更しない（02-01「段と段の間のデータ」）。
 //! 形は 01-02「初回リリース版の文法の全体」をそのまま表す。
 
 use crate::base::{FileId, NodeId, Span};
@@ -357,7 +357,7 @@ pub enum Stmt {
     Error(ErrorNode),
 }
 
-/// `bind` と `shadow` のどちらで書いたか（02-03「構文解析の方式」、ADR 0255）。
+/// `bind` と `shadow` のどちらで書いたか（02-03「構文解析の方式」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum BindMode {
     Bind,
@@ -463,7 +463,7 @@ pub struct UnitExpr {
     pub span: Span,
 }
 
-/// 括弧で囲んだ式 `(e)`。パイプの右辺の括弧を区別するためにノードとして残す（ADR 0050）。
+/// 括弧で囲んだ式 `(e)`。パイプの右辺の括弧を区別するためにノードとして残す（02-03「AST」）。
 #[derive(Clone, PartialEq, Debug)]
 pub struct ParenExpr {
     pub id: NodeId,
@@ -471,7 +471,7 @@ pub struct ParenExpr {
     pub inner: Box<Expr>,
 }
 
-/// リストリテラル。展開 `..e` は高々一つ（構文解析器が検査する。ADR 0272）。
+/// リストリテラル。展開 `..e` は高々一つ（構文解析器が検査する。01-02「リストの展開（初回リリース版）」）。
 #[derive(Clone, PartialEq, Debug)]
 pub struct ListExpr {
     pub id: NodeId,
@@ -731,7 +731,7 @@ pub struct ClauseParam {
     pub name: Option<Name>,
 }
 
-/// `resume(e)`。`handle` の節の中に直接書いたものだけを構文解析器が受け付ける（ADR 0155）。
+/// `resume(e)`。`handle` の節の中に直接書いたものだけを構文解析器が受け付ける（02-03「文脈の制限」）。
 #[derive(Clone, PartialEq, Debug)]
 pub struct ResumeExpr {
     pub id: NodeId,

@@ -20,7 +20,7 @@ pub struct RunInput {
 
 /// 中断の要求の読み口（02-09「中断の要求」）。CLI ではプロセス全体の印を読む。
 pub trait InterruptSource: std::fmt::Debug {
-    /// 中断の要求があるか（`Relaxed` で読む。ADR 0263 の決定 4）。
+    /// 中断の要求があるか（`Relaxed` で読む。印はほかのデータの公開を知らせないため）。
     fn requested(&self) -> bool;
     /// 中断のシグナルで実行ごとのイベントループ（`wakeup` の `Poll`）が起きるように登録する。
     /// 返した印を実行の終わりまで持ち、落とすと登録を外す。登録しない読み口は `Ok(None)` を返す。
@@ -64,7 +64,7 @@ pub struct IoRuntime {
         std::collections::BTreeMap<crate::runtime::sched::TimerId, (crate::vm::TaskId, InstrRef)>,
     pub(crate) sleep_timers:
         std::collections::BTreeMap<crate::vm::TaskId, crate::runtime::sched::TimerId>,
-    /// 容量を待つ IO の命令の入口（実装プラン R27、ADR 0314）。
+    /// 容量を待つ IO の命令の入口（実装プラン R27、設計書 02-08「IO の命令」）。
     pub(crate) output_sites: std::collections::BTreeMap<crate::vm::TaskId, InstrRef>,
     /// HTTP の準備の待ちとやり直しの期限（実装プラン 10-16）。
     pub(crate) readiness: super::http::ReadinessState,

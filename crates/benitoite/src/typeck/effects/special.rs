@@ -197,7 +197,7 @@ fn solve_try(
     }
 }
 fn poison(ctx: &mut Body<'_, '_>, tys: &[ITy], r: &Reason) {
-    // 誤りの型との単一化が未確定の変数だけを誤りにする（ADR 0024）。
+    // 誤りの型との単一化が未確定の変数だけを誤りにする（02-05「誤りの報告と検査の継続」）。
     for ty in tys {
         let unified = ctx.solver.equal(ty, &ITy::Error, r).is_ok();
         debug_assert!(unified, "error type must unify");

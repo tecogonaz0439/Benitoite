@@ -115,7 +115,7 @@ pub(super) fn parse_range_rest(
         );
     let mut extra = if invalid { Some(p.bump()) } else { None };
     // '..<-1' の '<-' は字句の最長一致で一つになる。範囲の文脈では '<' と
-    // 上端の負号に分ける（設計書 01-01「演算子と区切り記号」、02-03「他の言語の書き方」）。
+    // 上端の負号に分ける（設計書 01-01「演算子と区切り記号」、02-03「他の言語の書き方への診断」）。
     let negative = if let Some(token) = &mut extra
         && token.kind == TokenKind::LeftArrow
     {

@@ -183,7 +183,7 @@ impl Scheme {
     }
 }
 
-/// 型が関数の型または中身を見せない型（鍵の要約では `Float`）を含むかの要約（01-06「等値の型」、ADR 0082）。
+/// 型が関数の型または中身を見せない型（鍵の要約では `Float`）を含むかの要約（01-06「等値の型」）。
 #[derive(Clone, PartialEq, Eq, Debug, Default)]
 pub struct TypeSummary {
     /// 型引数によらず含む
@@ -355,7 +355,7 @@ impl TySet {
         BuiltinTypeId::BYTE,
         BuiltinTypeId::DECIMAL,
     ]);
-    /// 文字列補間の `${e}` の e（01-06「演算子の型付け」、ADR 0058）
+    /// 文字列補間の `${e}` の e（01-06「演算子の型付け」）
     pub const INTERP: TySet = TySet(&[
         BuiltinTypeId::STRING,
         BuiltinTypeId::INTEGER,
@@ -409,7 +409,7 @@ impl Ty {
 }
 
 impl EffectSet {
-    /// エフェクト変数を集合で置き換える（01-12「ε[E/ρ]」）。`effs` にない変数はそのまま残す。
+    /// エフェクト変数を集合で置き換える（01-12「構文」の `ε[E/ρ]`）。`effs` にない変数はそのまま残す。
     pub fn subst(&self, effs: &[EffectSet]) -> EffectSet {
         let mut out = EffectSet {
             names: self.names.clone(),

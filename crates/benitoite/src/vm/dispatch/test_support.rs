@@ -14,12 +14,12 @@ pub(crate) struct TestIo {
     pub(crate) rt: IoRuntime,
 }
 
-/// 捕捉・再開・破棄の小さな VM の経路を通す（ADR 0318）。
+/// 捕捉・再開・破棄の小さな VM の経路を通す（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
 pub(crate) fn check_small_continuations() {
     super::handlers::tests::check_small_continuations();
 }
 
-/// Lazy の結果とセルの書き込みの経路を回収と組み合わせる（ADR 0318）。
+/// Lazy の結果とセルの書き込みの経路を回収と組み合わせる（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
 pub(crate) fn check_lazy_and_cell_writes() {
     super::lazy::tests::check_lazy_capture_and_result();
     super::cell::tests::check_cell_update_roots();

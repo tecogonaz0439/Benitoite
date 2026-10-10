@@ -347,7 +347,7 @@ fn syntax_errors_are_reported_with_diagnostics() {
 }
 
 /// 構文解析器が出す字句・構文の誤り以外の診断（属性の E0801、`resume` の位置の E0509）だけなら整形し、
-/// 構文の誤り（E02nn）なら断る（10-17「整形の流れ」の 2、ADR 0333 の決定 1）。
+/// 構文の誤り（E02nn）なら断る（10-17「整形の流れ」の 2、設計書 06-03「構文の誤りがあるファイル」）。
 #[test]
 fn only_lexical_and_syntax_errors_refuse_formatting() {
     for src in [

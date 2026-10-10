@@ -395,7 +395,7 @@ impl OsResource for FailRelease {
 }
 
 // 関門: closeWriter が待ちの後の理由を Other と文字列で返す。StateServices だけの検査では
-// IOError の値への変換を確かめられない（ADR 0321）。
+// IOError の値への変換を確かめられない（設計書 02-09「リソースの追跡」）。
 #[test]
 fn close_writer_returns_the_blocking_release_failure_as_ioerror() {
     let mut resources = ResourceTable::default();
@@ -637,7 +637,7 @@ impl crate::runtime::sched::parts::WorkerExec for ReleaseWorkers {
     }
     fn idle(&mut self, deadline: Option<u64>) -> crate::runtime::sched::parts::IdleWake {
         // 進められるタスクがなくなるまで write を保留する。勝者が終わって取り消しの
-        // 後始末が返却を待つ位置で、初めて仕事を進める（ADR 0266、実装プラン L12）。
+        // 後始末が返却を待つ位置で、初めて仕事を進める（設計書 02-09「リソースの追跡」、実装プラン L12）。
         if self.inner.hold_resources
             && !*self.delayed.borrow()
             && let Some(&op) = self.inner.resource_jobs.borrow().first()
@@ -705,7 +705,7 @@ end function
     ))
 }
 
-// 関門: 貸した Writer を race で取り消し、返却してから一度だけ書き出す（ADR 0266）。
+// 関門: 貸した Writer を race で取り消し、返却してから一度だけ書き出す（設計書 02-09「リソースの追跡」）。
 // ScriptedWorkers が write を保留し、勝者の後に返却を待つ位置で仕事を許す。
 #[test]
 fn cancelled_write_returns_writer_before_flushing_in_both_io_modes() {
@@ -738,7 +738,7 @@ fn cancelled_write_returns_writer_before_flushing_in_both_io_modes() {
 }
 
 // 関門: 要求の方式で外側に公開した write を、送り出す前に race が取り消す。
-// 貸した後のテストでは、期限切れの要求が本体を呼ぶ退行を捕まえられない（ADR 0282）。
+// 貸した後のテストでは、期限切れの要求が本体を呼ぶ退行を捕まえられない（設計書 02-09「IO 実行器」）。
 #[test]
 fn outstanding_write_cancelled_by_race_is_never_invoked_or_lent() {
     let dir = TempDir::new();

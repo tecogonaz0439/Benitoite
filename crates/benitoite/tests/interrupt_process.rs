@@ -1,5 +1,5 @@
 //! 実際のシグナルから停止・出力・終了状態までを別プロセスで確かめる
-//! （設計書 07-03「中断の要求のテスト（初回リリース版）」、ADR 0223）。
+//! （設計書 07-03「中断の要求のテスト（初回リリース版）」）。
 #![cfg(unix)]
 // テストの失敗は panic で表す（実装プラン 00-02）。
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
@@ -218,7 +218,7 @@ fn interrupted(source: &str, signal: &str, hold_stdout: bool, expected_stdout: &
 }
 
 // 関門: API に印を渡す R28 のテストでは、実際のシグナル登録とイベントループの
-// 起こしを通らない。五つの独立した停止の契約を CLI の境界で確かめる（ADR 0223）。
+// 起こしを通らない。五つの独立した停止の契約を CLI の境界で確かめる（設計書 07-03「中断の要求のテスト（初回リリース版）」）。
 #[test]
 fn sigint_interrupts_stdin_and_preserves_output_after_the_ready_line() {
     interrupted(

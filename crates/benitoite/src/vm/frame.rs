@@ -1,4 +1,4 @@
-//! 区画と枠（設計書 02-08「枠の積み重ね」「枠の種類」、ADR 0262）。
+//! 区画と枠（設計書 02-08「枠の積み重ね」「枠の種類」）。
 
 use crate::bytecode::program::ProtoIdx;
 use crate::runtime::heap::{Discard, Discarder, ResourceId, Slot, Trace, Tracer};
@@ -115,7 +115,7 @@ pub enum FrameAt {
     Other(usize),
 }
 
-/// 区画（ADR 0262 の決定 1）。
+/// 区画（設計書 02-08「枠の積み重ね」）。
 #[derive(Debug, Default)]
 pub struct Segment {
     pub calls: Vec<CallFrame>,

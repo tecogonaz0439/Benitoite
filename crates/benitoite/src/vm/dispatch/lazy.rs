@@ -76,7 +76,7 @@ fn force(
             })
             .ok_or_else(|| missing("Lazy value required"))?;
             // 待ちの間は FORCE の入口を保つ。R[B] は再開後にも読む
-            // （実装プラン 10-09「呼び出しの前の安全点」、ADR 0314）。
+            // （実装プラン 10-09「呼び出しの前の安全点」、設計書 02-08「枠を降ろす原因と処理」）。
             cursor.locals.save(state.frame_mut()?);
             return tasks::park(state, WaitReason::Lazy);
         }
@@ -152,7 +152,7 @@ fn force(
     .ok_or_else(|| missing("Lazy value required"))??;
     let segment = state.segment_mut()?;
     // 結果がまだ書かれていない呼び出し元として整理できるよう、先に pc を進める。
-    // この後、枠と窓を積み終えるまでは安全点を置かない（ADR 0314 の決定 5）。
+    // この後、枠と窓を積み終えるまでは安全点を置かない（設計書 02-08「枠を降ろす原因と処理」）。
     segment
         .calls
         .last_mut()
@@ -181,7 +181,7 @@ fn force(
     Ok(Control::Reload)
 }
 
-// 原因ごとの違いをこの一か所に置き、停止中の再評価を防ぐ（ADR 0267 の決定 4）。
+// 原因ごとの違いをこの一か所に置き、停止中の再評価を防ぐ（設計書 02-08「枠を降ろす原因と処理」）。
 #[cold]
 #[inline(never)]
 pub(in crate::vm) fn finish<'e>(

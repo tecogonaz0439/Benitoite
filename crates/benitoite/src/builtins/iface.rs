@@ -1,4 +1,4 @@
-//! 組み込みの関数の型付きの形（設計書 02-08「組み込みの関数の呼び出し」、02-09「組み込みの操作とハンドラ表」、ADR 0261）。
+//! 組み込みの関数の型付きの形（設計書 02-08「組み込みの関数の呼び出し」、02-09「組み込みの操作とハンドラ表」）。
 //! 実装者は `builtin!` で名前と型の付いた引数を受け取る関数を書き、内部の共通の形（`RawFn`）を直接書かない。
 
 use std::any::Any;
@@ -133,7 +133,7 @@ pub enum WaitRequest {
     State(StateWait),
 }
 
-/// 応答（内部の共通の形。ADR 0261 の決定 1）。
+/// 応答（内部の共通の形。設計書 02-08「組み込みの関数の呼び出し」）。
 #[derive(Debug)]
 pub enum Reply<'e> {
     Done(Value<'e>),
@@ -190,7 +190,7 @@ pub enum Lent<'a> {
     Stdin(&'a mut dyn BufRead),
 }
 
-/// 完了を言語の値に変える処理。環境を捕えない `fn` ポインタである（ADR 0261 の決定 5）。
+/// 完了を言語の値に変える処理。環境を捕えない `fn` ポインタである（設計書 02-08「組み込みの関数の呼び出し」）。
 /// `args` は、待った組み込みの関数の呼び出しの引数（レジスタから読み直したもの）。
 pub type CompleteFn<O> =
     for<'c, 'e> fn(&mut IoCtx<'c, 'e>, O, &[Value<'e>]) -> Result<Value<'e>, Stop>;
@@ -268,7 +268,7 @@ impl WorkerWait {
         self.after_output_flush
     }
 
-    /// 仕事を実行する（作業用のスレッド、またはテスト用の実装では VM のスレッド。ADR 0274）。
+    /// 仕事を実行する（作業用のスレッド、またはテスト用の実装では VM のスレッド。設計書 07-03「順序を与えるスケジューラと仮想の時間（初回リリース版）」）。
     pub fn run(self, lent: Lent<'_>) -> WorkerDone {
         WorkerDone {
             done: (self.job)(lent),
@@ -357,7 +357,7 @@ pub trait StateServices {
     fn resource_table(&mut self) -> Option<&mut crate::runtime::io::resources::ResourceTable> {
         None
     }
-    /// close の関数が解放を始める（ADR 0321）。すぐに終われば `CloseStep::Done`、待つなら `CloseStep::Wait` を返す。
+    /// close の関数が解放を始める（設計書 02-09「リソースの追跡」）。すぐに終われば `CloseStep::Done`、待つなら `CloseStep::Wait` を返す。
     /// 解放の失敗は `Stop` にも捨てもせず、理由の文字列を `CloseStep::Done(Some(..))` で返す。待った後にもう一度
     /// 呼ばれたときは、記録した解放の失敗を一度だけ取り出して返す。既定の本体は `begin_release` に委ね、失敗の理由を
     /// 返さない。VM の側の実装が上書きする。
@@ -591,7 +591,7 @@ impl<'c, 'e> FromArg<'c, 'e> for &'c [u8] {
 
 /// `pure` の関数の結果を値にする。確保の要らない型だけに実装する。文字列やリストは、関数の中で
 /// 大きさを確かめる確保の関数（10-08）で値にしてから `Value` で返す。Rust の `String` などには実装しない
-/// （大きさを確かめない値の作り方を型で塞ぐ。ADR 0261 の決定 4）。
+/// （大きさを確かめない値の作り方を型で塞ぐ。設計書 02-09「一つの操作で作る値の大きさの上限」）。
 pub trait IntoValue<'e> {
     fn into_value(self) -> Value<'e>;
 }
@@ -640,7 +640,7 @@ impl<'e> IntoValue<'e> for () {
 
 // ---- 登録 -----------------------------------------------------------------
 
-/// 内部の共通の形（ADR 0261 の決定 1）。`builtin!` が作り、実装者は直接書かない。
+/// 内部の共通の形（設計書 02-08「組み込みの関数の呼び出し」）。`builtin!` が作り、実装者は直接書かない。
 pub type RawFn = for<'c, 'e> fn(&'c mut CallCtx<'c, 'e>, &[Value<'e>]) -> Result<Reply<'e>, Stop>;
 
 /// 組み込みの関数の登録の項目。`builtin!` が関数ごとに `DECL` として作る。

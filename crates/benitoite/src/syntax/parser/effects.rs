@@ -51,7 +51,7 @@ fn push_op(p: &mut Parser, depth: u32, out: &mut Vec<OpSig>) -> PResult<()> {
     let start = p.pos;
     let doc = p.docs.take_for(p.peek().span, &mut p.diagnostics);
     let mut sig = decls::parse_signature(p, depth)?;
-    // シグネチャの終わりまで読んでから、不許可の欄だけを捨てる（ADR 0311・0312）。
+    // シグネチャの終わりまで読んでから、不許可の欄だけを捨てる（01-02「エフェクトの宣言とハンドラ（初回リリース版）」）。
     // 独立した違反はそれぞれ報告する（設計書 02-03「文脈の制限」）。
     sig.type_params.retain(|param| {
         let key = match param.kind {

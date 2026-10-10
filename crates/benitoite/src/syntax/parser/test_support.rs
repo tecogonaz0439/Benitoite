@@ -1,4 +1,4 @@
-//! 構文解析のテストの準備（設計書 07-03「持ち主の境界」）。
+//! 構文解析のテストの準備（設計書 07-03「テストの設計の原則」の持ち主の境界）。
 use super::{ParseOutput, parse};
 use crate::base::{BytePos, FileId, IdGen, SourceKind};
 use crate::diag::{DiagCode, Diagnostic};

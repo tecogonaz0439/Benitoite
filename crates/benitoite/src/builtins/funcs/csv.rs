@@ -1,4 +1,4 @@
-//! CSV の読み書きとレコード開始行の追跡（設計書 03-08「Csv」、ADR 0329）。
+//! CSV の読み書きとレコード開始行の追跡（設計書 03-08「Csv」）。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::builtins::table::tags;
@@ -48,7 +48,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Csv.format` の本体（設計書 03-08「Csv」、ADR 0329）。
+    /// `Csv.format` の本体（設計書 03-08「Csv」）。
     name = "Csv.format",
     pure fn format(ctx, arg0: Value<'e>) -> Value<'e> {
         write_csv(&ctx, arg0, ',', "Csv.format")
@@ -104,7 +104,7 @@ enum QuoteState {
 }
 
 // Reader は誤りを返さず、line() は LF だけを数える。引用符と物理行だけを
-// 追跡し、フィールドの解析は Reader に任せる（実装プラン L23、ADR 0329）。
+// 追跡し、フィールドの解析は Reader に任せる（実装プラン L23、設計書 03-08「Csv」）。
 struct Position {
     state: QuoteState,
     line: usize,

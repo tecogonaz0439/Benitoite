@@ -1,4 +1,4 @@
-//! 正規表現の組み立てと照合（設計書 03-08「Regex」、ADR 0168・0248・0316）。
+//! 正規表現の組み立てと照合（設計書 03-08「Regex」）。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::builtins::table::tags;
@@ -92,7 +92,7 @@ fn group_value<'e>(
 
 builtin! {
     /// `Regex.compile` の本体。既定の設定で組み立て、誤りの表示をそのまま返す
-    /// （設計書 03-08「Regex」「共通の規則」、ADR 0316）。
+    /// （設計書 03-08「Regex」「共通の規則」）。
     name = "Regex.compile",
     pure fn compile(ctx, arg0: Value<'e>) -> Value<'e> {
         let source = string(&ctx, arg0)?;
@@ -159,7 +159,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Regex.matchByteStart` の本体。位置はバイトで数える（設計書 03-08「Regex」、ADR 0248）。
+    /// `Regex.matchByteStart` の本体。位置はバイトで数える（設計書 03-08「Regex」）。
     name = "Regex.matchByteStart",
     pure fn match_byte_start(ctx, arg0: Value<'e>) -> Value<'e> {
         Ok(Value::Int(super::integer_count(whole(matched(&ctx, arg0)?)?.0)?))
@@ -167,7 +167,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Regex.matchByteEnd` の本体。半開区間の終端を返す（設計書 03-08「Regex」、ADR 0248）。
+    /// `Regex.matchByteEnd` の本体。半開区間の終端を返す（設計書 03-08「Regex」）。
     name = "Regex.matchByteEnd",
     pure fn match_byte_end(ctx, arg0: Value<'e>) -> Value<'e> {
         Ok(Value::Int(super::integer_count(whole(matched(&ctx, arg0)?)?.1)?))

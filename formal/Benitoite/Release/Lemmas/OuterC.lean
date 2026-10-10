@@ -113,13 +113,17 @@ mutual
           (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hm.2.1))) hes (HasTypeVs.outer hb hws hm.2.2.2)
 
   theorem HasTypeArms.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ R arms a b ε}
-      (h : HasTypeArms P B Ψ C1 Γ R arms a b ε) (hm : Comp.VarsInArms C1.length (fun _ => True) arms) :
+      (h : HasTypeArms P B Ψ C1 Γ R arms a b ε) (hm : Arm.VarsInList C1.length (fun _ => True) arms) :
       HasTypeArms P B Ψ (C1 ++ C0) Γ R arms a b ε := by
     match h with
     | .nil hw => exact .nil (Ty.WF.mono (by simp) _ hw)
-    | .cons hp hbody hrest =>
-        simp only [Comp.VarsInArms] at hm
-        exact .cons hp (HasTypeC.outer hb hbody hm.1) (HasTypeArms.outer hb hrest hm.2)
+    | .plain hp hbody hrest =>
+        simp only [Arm.VarsInList] at hm
+        exact .plain hp (HasTypeC.outer hb hbody hm.1) (HasTypeArms.outer hb hrest hm.2)
+    | .guarded hp hg hbody hrest =>
+        simp only [Arm.VarsInList] at hm
+        exact .guarded hp (HasTypeC.outer hb hg hm.1) (HasTypeC.outer hb hbody hm.2.1)
+          (HasTypeArms.outer hb hrest hm.2.2)
 
   theorem HasTypeClauses.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ R h t ε}
       (hc : HasTypeClauses P B Ψ C1 Γ R h t ε) (hm : Clause.VarsInList C1.length (fun _ => True) h) :

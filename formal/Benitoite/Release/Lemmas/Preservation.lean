@@ -126,7 +126,7 @@ theorem pres_op_common (hwf : P.WellFormed) (hb : B.Assumptions P)
     | some x => simp only [Option.map_some]; rw [Ty.shift_of_wf _ _ (hRh x hR)]
   rw [hshT, hshR] at hbody
   simp only [shiftEnv, List.map_nil, List.append_nil] at hbody
-  -- 型引数の置き換え（01-12 の E-Op の θ = [T̄/ᾱ]。ADR 0297）。
+  -- 型引数の置き換え（01-12 の E-Op の θ = [T̄/ᾱ]。01-12「型パラメータの組み込みの制約」）。
   have hsc := opSig_scoped hwf hb hsg
   have hθ := HasTypeC.substTy (c := 0) hwf hb hbody (Nat.zero_le _) hts
     (by simpa using hsat) (StoreFix.of_wf hΨwf ts)

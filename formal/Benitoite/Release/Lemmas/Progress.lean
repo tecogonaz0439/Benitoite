@@ -104,7 +104,6 @@ theorem HasTypeC.resume_form {Ψ C Γ R m T ε w v} (h : HasTypeC P B Ψ C Γ R 
   | .C_Let _ _ => cases hm
   | .C_App _ _ => cases hm
   | .C_If _ _ _ => cases hm
-  | .C_Match _ _ _ => cases hm
   | .C_Lazy _ => cases hm
   | .C_Escape _ _ => cases hm
   | .C_Use _ _ _ _ => cases hm
@@ -197,13 +196,19 @@ theorem no_unhandled_user (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb o od}
 /-! ## 各形の状態の進行 -/
 
 theorem progress_ret (hb : B.Assumptions P) {Ψ σ R ε v a b Eb k} (hσ : StoreOk P B Ψ σ)
-    (hk : ContTy P B Ψ R ε k a b Eb none) :
+    (hk : ContTy P B Ψ R ε k a b Eb none) (hv : HasTypeV P B Ψ [] [] v a) :
     State.Final (.run (.ret v) k σ) ∨ ∃ l s', Step P B (.run (.ret v) k σ) l s' := by
   cases k with
   | nil => exact Or.inl trivial
   | cons f k =>
       right
       cases f with
+      | guardF w arms next body =>
+          obtain ⟨_, _, _, _, _, _, hle, _⟩ := hk.inv_guard
+          obtain ⟨flag, rfl⟩ := (HasTypeV.V_Sub hv hle).canonical_boolean
+          cases flag
+          · exact ⟨_, _, .E_GuardF⟩
+          · exact ⟨_, _, .E_GuardT⟩
       | letF n => exact ⟨_, _, .E_Return⟩
       | mark => exact ⟨_, _, .E_Mark⟩
       | update l => exact ⟨_, _, .E_Update⟩
@@ -227,6 +232,9 @@ theorem progress_escape (hb : B.Assumptions P) {Ψ σ R ε v a b Eb k r} (hσ : 
   | nil => obtain ⟨_, _, e, _⟩ := hk.inv_nil; rw [hR] at e; cases e
   | cons f k =>
       cases f with
+      | guardF v arms next body =>
+          obtain ⟨_, _, _, _, hr, _⟩ := hk.inv_guard
+          rw [hR] at hr; cases hr
       | letF n => exact ⟨_, _, .E_EscLet⟩
       | mark => exact ⟨_, _, .E_EscMark⟩
       | update l => obtain ⟨_, _, _, e, _⟩ := hk.inv_update; rw [hR] at e; cases e
@@ -251,6 +259,7 @@ theorem progress_error (hb : B.Assumptions P) {Ψ σ R ε a b Eb k rs} (hσ : St
   | cons f k =>
       right
       cases f with
+      | guardF v arms next body => exact ⟨_, _, .E_ErrPopGuard⟩
       | letF n => exact ⟨_, _, .E_ErrPopLet⟩
       | mark => exact ⟨_, _, .E_ErrPopMark⟩
       | update l => exact ⟨_, _, .E_ErrPopUpdate⟩
@@ -275,6 +284,7 @@ theorem progress_exit (hb : B.Assumptions P) {Ψ σ R ε a b Eb k n rs} (hσ : S
   | cons f k =>
       right
       cases f with
+      | guardF v arms next body => exact ⟨_, _, .E_ExitPopGuard⟩
       | letF n => exact ⟨_, _, .E_ExitPopLet⟩
       | mark => exact ⟨_, _, .E_ExitPopMark⟩
       | update l => exact ⟨_, _, .E_ExitPopUpdate⟩
@@ -413,7 +423,9 @@ theorem progress_run (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assum
     (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) :
     State.Final (.run m k σ) ∨ ∃ l s', Step P B (.run m k σ) l s' := by
   cases m with
-  | ret v => exact progress_ret hb hσ hk
+  | ret v =>
+      obtain ⟨a', hv, hle⟩ := hm.inv_ret rfl
+      exact progress_ret hb hσ hk (.V_Sub hv hle)
   | letIn m n => exact Or.inr ⟨_, _, .E_Let⟩
   | app f ws => exact Or.inr (progress_app hdecl hb hσ hm hε hk hEb)
   | ite v m n =>
@@ -422,10 +434,7 @@ theorem progress_run (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assum
       cases c
       · exact Or.inr ⟨_, _, .E_IfF⟩
       · exact Or.inr ⟨_, _, .E_IfT⟩
-  | «match» v arms =>
-      obtain ⟨_, _, _, hv, _, hex, _⟩ := hm.inv_match rfl
-      obtain ⟨m', ws, hfm⟩ := firstMatch_exists (hex v hv.inhabits)
-      exact Or.inr ⟨_, _, .E_Match hfm⟩
+  | «match» v arms => exact Or.inr ⟨_, _, .E_Match⟩
   | lazyC m =>
       obtain ⟨l, hl, _⟩ := hσ.fresh
       exact Or.inr ⟨_, _, .E_Lazy hl⟩
@@ -450,6 +459,30 @@ theorem progressE (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assumpti
   | run m k σ =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, _, _, _⟩ := hs
       exact progress_run hwt hdecl hb hσ hm hε hk hEb
+  | matchRun v arms next k σ =>
+      obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, _, _, _, hpref⟩ := hs
+      obtain ⟨t, c, ε', hv, harms, hex, _, _⟩ := hm.inv_match rfl
+      obtain ⟨p, hp, hpm⟩ := hex v hv.inhabits
+      obtain ⟨arm, harm, hg, alt, halt, he⟩ := unguardedPats_mem hp
+      obtain ⟨δ, ha, _, _⟩ := harms.mem harm
+      obtain ⟨ws, hws⟩ := ha.firstAlt_exists hv ⟨alt, halt, by simpa [he] using hpm⟩
+      have hnext : next < arms.length := by
+        by_cases hn : next < arms.length
+        · exact hn
+        · exfalso
+          have ht : arm ∈ arms.take next := by
+            rw [List.take_of_length_le (by omega)]; exact harm
+          have hn := hpref arm ht hg
+          rw [hws] at hn; cases hn
+      have har : arms[next]? = some arms[next] := List.getElem?_eq_some_iff.mpr ⟨hnext, rfl⟩
+      generalize he : arms[next] = ar at har
+      cases ar with
+      | mk alts guard body =>
+          cases hs : firstAlt v alts with
+          | none => exact Or.inr ⟨_, _, .E_MatchSkip har hs⟩
+          | some vs => cases guard with
+            | none => exact Or.inr ⟨_, _, .E_MatchBody har hs⟩
+            | some g => exact Or.inr ⟨_, _, .E_MatchGuard har hs⟩
   | error rs k σ =>
       obtain ⟨Ψ, R, a, b, ε, hσ, hk, _, _⟩ := hs
       exact progress_error hb hσ hk

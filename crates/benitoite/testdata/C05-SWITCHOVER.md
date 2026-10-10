@@ -23,7 +23,7 @@ C05 の移行、CLI とベンチマークの切り替えを実施した。追加
 | `src/resolve/lookup.rs` | `String.substring` に `slice` の修正案を対応させた。取り込み済みの型板の `characterCount`・`characterSlice` を使う。`Benitoite.String` の表示名は今回の指示で受け入れた |
 | `src/refinterp/convert.rs` | 関数と位置の値を、呼び出し中の表の番号を持つ非公開の opaque の値で写す。戻りで元の値に戻し、表は呼び出しを越えて残さない |
 | `src/prelude/stdlib/List.bnt` | map・filter・fold・forEach・any・all・find の補助の関数を、head と tail で残りのリストを辿る形にした。map と filter の結果は prepend で積み、最後に reverse する。補助の名前と公開シグネチャ、評価順序・短絡・エフェクトは維持した |
-| `docs/implement/10-interfaces/10-14-prelude-and-stdlib-sources.md` | 上の List.bnt の写しを同じ内容にした。実ファイルとブロックの完全一致、公開の関数の全シグネチャの維持を確認した |
+| `docs/archive/2026-10-09-implement-first-release/10-interfaces/10-14-prelude-and-stdlib-sources.md` | 上の List.bnt の写しを同じ内容にした。実ファイルとブロックの完全一致、公開の関数の全シグネチャの維持を確認した |
 | `patterns/f04_scores.bnt`・`syntax/f03_constants_aliases.bnt` | 指定された match と lambda に return を加えた。成功する終了状態の期待値は変えていない |
 
 取り込み済みの 10 ファイルの参照の変更も維持した。47 個の `include_str!` と 2 個の実行時のパスから `testdata-next/` がなくなったことを確認した。

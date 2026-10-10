@@ -75,7 +75,7 @@ pub(super) fn dispatch(
                 }
                 result => {
                     // 待ちと失敗では同じ枠を元の位置に保つ。pc は命令の入口なので、
-                    // 再開後は RELEASE を初めから実行する（実装プラン R24、ADR 0314）。
+                    // 再開後は RELEASE を初めから実行する（実装プラン R24、設計書 02-08「枠を降ろす原因と処理」）。
                     state.segment_mut()?.others.insert(position, other);
                     match result {
                         Ok(UnwindStep::Wait(reason)) => {
@@ -95,7 +95,7 @@ pub(super) fn dispatch(
 }
 
 // 失敗を一度取り出した後に、現在の原因で扱う。待ちの間に取り消し・停止へ変わる場合も
-// 同じ入口を使う（設計書 01-10「解放の失敗」、ADR 0149・0266）。
+// 同じ入口を使う（設計書 01-10「解放の失敗」）。
 pub(in crate::vm) fn release_failure(
     kind: ResourceKind,
     opened_at: Option<InstrRef>,
@@ -121,7 +121,7 @@ pub(in crate::vm) fn release_failure(
 }
 
 // R39 で共通の取り消しの入口へ接続した。Return で待つ間に Cancel へ変わった場合にも
-// 子を調べ直して取り消す（実装プラン R24・R39、ADR 0164）。
+// 子を調べ直して取り消す（実装プラン R24・R39、設計書 02-08「取り消し」）。
 pub(in crate::vm) fn cancel_group_children(
     ctx: &mut NoGcCtx<'_>,
     state: &mut RunState,

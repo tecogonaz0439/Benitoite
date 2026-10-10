@@ -3,3 +3,29 @@ defaultTargets = ["Benitoite"]
 
 [[lean_lib]]
 name = "Benitoite"
+
+[[lean_exe]]
+name = "desugarDiff"
+root = "DesugarDiff.Main"
+
+[[lean_exe]]
+name = "builtinCheck"
+root = "BuiltinCheck.Main"
+
+[[lean_exe]]
+name = "coverageDiff"
+root = "CoverageDiff.Main"
+
+[[lean_exe]]
+name = "coverageProgramDiff"
+root = "CoverageProgramDiff.Main"
+
+[[lean_exe]]
+name = "surfaceCheck"
+root = "SurfaceCheck.Main"
+[[lean_exe]]
+name = "surfaceCheckAll"
+root = "SurfaceCheck.All"
+
+[[lean_lib]]
+name = "SurfaceCheck"

@@ -13,7 +13,7 @@ pub enum SourceKind {
     Prelude,
 }
 
-/// 1 から数える行と列。列はコードポイントの数（ADR 0025）。
+/// 1 から数える行と列。列はコードポイントの数（02-02「行と列」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct LineCol {
     pub line: u32,

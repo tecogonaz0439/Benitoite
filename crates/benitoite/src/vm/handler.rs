@@ -1,4 +1,4 @@
-//! ハンドラの記録、継続、Lazy の対象（設計書 02-08「ハンドラと継続」「明示遅延」、ADR 0160・0266・0267）。
+//! ハンドラの記録、継続、Lazy の対象（設計書 02-08「ハンドラと継続」「明示遅延」）。
 
 use crate::bytecode::program::HandlerIdx;
 use crate::runtime::heap::{HostData, Slot, Trace, Tracer};
@@ -15,7 +15,7 @@ pub struct HandlerRecord {
     pub desc: HandlerIdx,
     /// この `handle` を評価したタスク
     pub evaluated_by: TaskId,
-    /// 属する終わっていないタスク（ADR 0266 の決定 6・7）
+    /// 属する終わっていないタスク（設計書 02-08「タスクの起動と待ち方」）
     pub members: Vec<TaskId>,
     /// 本体が終わったか。本体が終わり、`members` が空になるまで記録を残す
     pub body_finished: bool,
@@ -50,7 +50,7 @@ impl Trace for ContState {
 
 impl HostData for ContState {}
 
-/// `Lazy` の対象の状態（ADR 0267 の決定 2）。
+/// `Lazy` の対象の状態（設計書 02-08「明示遅延」）。
 #[derive(Debug)]
 pub enum LazyState {
     /// 本体の関数の値

@@ -1,6 +1,6 @@
 //! 読み込みの段: モジュールの探索と読み込み、モジュールの表、依存グラフと循環の検出
 //! （設計書 02-04「モジュールの表」「モジュールの探し方」「依存グラフと循環の検出」「標準ライブラリのソースの持ち方」、
-//! 02-02「ソースとファイル ID」、ADR 0126・0127・0156・0244）。
+//! 02-02「ソースとファイル ID」）。
 
 use std::path::PathBuf;
 
@@ -74,14 +74,14 @@ pub struct StdlibModuleSource {
     pub path: &'static [&'static str],
     /// prelude に入るか
     pub prelude: bool,
-    /// 非公式のモジュールか（設計書 03-06「標準のモジュールと非公式のモジュール（初回リリース版）」、ADR 0286）。
+    /// 非公式のモジュールか（設計書 03-06「標準のモジュールと非公式のモジュール（初回リリース版）」）。
     /// 真なら `import Benitoite.Unofficial.<path>` で取り込み、偽なら `import Benitoite.<path>` で取り込む。
     /// `path` は、どちらでも標準に加えた後の名前の段である
     pub unofficial: bool,
     pub text: &'static str,
 }
 
-/// 実行を始めるファイル（02-02「ソースとファイル ID」、ADR 0127）。
+/// 実行を始めるファイル（02-02「ソースとファイル ID」）。
 /// ディレクトリを指定したときの `main.bnt` の補いと表示名の組み立ては、呼び出し側（パイプライン）が行う。
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct EntrySpec {
@@ -94,7 +94,7 @@ pub struct EntrySpec {
     pub root: PathBuf,
 }
 
-/// ディレクトリの項目一つ（ADR 0244 の照合に使う）。
+/// ディレクトリの項目一つ（02-04「モジュールの探し方」の照合に使う）。
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct DirEntryName {
     /// ファイルシステムに保存された名前
@@ -125,7 +125,7 @@ use crate::base::IdGen;
 pub trait ModuleFs {
     /// ファイルの内容を読む。
     fn read_file(&self, path: &Path) -> io::Result<Vec<u8>>;
-    /// ディレクトリの項目の一覧を読む。名前はファイルシステムに保存された形で返す（ADR 0244）。
+    /// ディレクトリの項目の一覧を読む。名前はファイルシステムに保存された形で返す（02-04「モジュールの探し方」）。
     fn list_dir(&self, dir: &Path) -> io::Result<Vec<DirEntryName>>;
     /// シンボリックリンクを解決した絶対パス（02-04「モジュールの探し方」の手順 3）。
     fn canonicalize(&self, path: &Path) -> io::Result<PathBuf>;
@@ -174,7 +174,7 @@ impl ModuleTable {
 /// 実行を始めるファイルから import を辿ってすべてのモジュールを読み、字句解析と構文解析を行う
 /// （02-02「ソースとファイル ID」の 4 手順）。作業の一覧の最初に実行を始めるファイルを、続けて
 /// `stdlib` のうち prelude のモジュールを表の順に置く。`stdlib` の prelude でないモジュールは、
-/// import で辿れたものだけを読む（ADR 0156）。
+/// import で辿れたものだけを読む（02-01「段と段の間のデータ」）。
 /// すべてのファイルを読み終えた後、依存グラフの循環を明示の積み重ねで調べる（02-04「依存グラフと循環の検出」）。
 /// 誤りがあっても読めたものは結果に入れる。呼び出し側は、診断に誤りが一つでもあれば名前解決に進まない。
 pub fn load_program(

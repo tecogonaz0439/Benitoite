@@ -8,10 +8,10 @@ import Benitoite.Release.WellFormed
 
 01-12 との表現の違い:
 
-- E-Super は、値の等しさではなく、メソッドの呼び出しの辞書から `↑` を一段取り出す遷移として定める（ADR 0305）。
+- E-Super は、値の等しさではなく、メソッドの呼び出しの辞書から `↑` を一段取り出す遷移として定める（01-12「型クラス」）。
 - ストアは、場所から中身への関数とする。有限であることは、ストアの型付け（`StoreOk`）の条件にする。
 - 組み込みの操作の E-Op は、規則 E-OpPrim として分けて書く。
-- IO の事象は、組み込みの関数の名前、引数、応答からなり、型引数とエフェクト引数を含めない（ADR 0296）。
+- IO の事象は、組み込みの関数の名前、引数、応答からなり、型引数とエフェクト引数を含めない（01-12「実行の規則」）。
   応答の関係は、型引数とエフェクト引数も受け取る。
 - `escape`、実行時エラーの状態、終了の状態が `drop κ` の枠を通るときの扱い（01-12「ハンドラ」の箇条）を、
   E-EscDrop・E-EscDropRel・E-ErrDrop・E-ErrDropRel・E-ExitDrop・E-ExitDropRel の規則として書く。
@@ -27,6 +27,8 @@ inductive Frame where
   | release (v : Val)
   | handleF (h : List Clause)
   | drop (k : Nat)
+  /-- ガードの結果を待つ。本体は束縛を置換済み。偽なら全体の next 番目から再開する。 -/
+  | guardF (v : Val) (arms : List Arm) (next : Nat) (body : Comp)
 
 abbrev Cont := List Frame
 
@@ -49,6 +51,8 @@ inductive State where
   | run (m : Comp) (k : Cont) (σ : Store)
   | error (rs : List ErrKind) (k : Cont) (σ : Store)
   | exit (n : Int) (rs : List ErrKind) (k : Cont) (σ : Store)
+  /-- 実行中だけの照合。分岐全体を保持し、next 番目から調べる。 -/
+  | matchRun (v : Val) (arms : List Arm) (next : Nat) (k : Cont) (σ : Store)
 
 /-- 事象。IO の事象 `b(W̄) ↦ …` と、解放の事象 `release(V) ↦ ok | error(r)`。 -/
 inductive Event where
@@ -98,6 +102,11 @@ def Val.superStep (P : Program) : Val → Option Val
 /-- 継続の二度目の再開の実行時エラーの種類 `r_resume`。 -/
 def rResume : ErrKind := "ResumeTwice"
 
+/-- 再開位置より前に、ガードのない照合可能な分岐はない。ガードの真偽は数えない。
+型の付いた選択肢について、全体の網羅性とこの条件から、再開位置以降にもガードのない照合可能な分岐が残る。 -/
+def MatchPrefix (v : Val) (arms : List Arm) (next : Nat) : Prop :=
+  ∀ arm ∈ arms.take next, arm.guard = none → firstAlt v arm.alts = none
+
 /-- 遷移。 -/
 inductive Step (P : Program) (B : Builtins) : State → Option Event → State → Prop
   | E_Let {m n k σ} : Step P B (.run (.letIn m n) k σ) none (.run m (.letF n :: k) σ)
@@ -120,7 +129,7 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State �
       ss.length = ms.tparams.length → es.length = ms.neffs →
       Step P B (.run (.meth (.dict i ts vs) m ss es ws) k σ) none
         (.run ((body.substTy (ss ++ ts) es).instantiate (vs ++ ws)) (markPush k) σ)
-  /-- E-Super。メソッドの呼び出しの辞書が上位の型クラスの辞書 `V↑S` のとき、`↑` を一段取り出す（ADR 0305）。 -/
+  /-- E-Super。メソッドの呼び出しの辞書が上位の型クラスの辞書 `V↑S` のとき、`↑` を一段取り出す（01-12「型クラス」）。 -/
   | E_Super {v v' m ss es ws k σ} :
       v.superStep P = some v' →
       Step P B (.run (.meth v m ss es ws) k σ) none (.run (.meth v' m ss es ws) k σ)
@@ -128,9 +137,27 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State �
       Step P B (.run (.ite (.const (.boolean true)) m n) k σ) none (.run m k σ)
   | E_IfF {m n k σ} :
       Step P B (.run (.ite (.const (.boolean false)) m n) k σ) none (.run n k σ)
-  | E_Match {v arms k σ m ws} :
-      firstMatch v arms = some (m, ws) →
-      Step P B (.run (.match v arms) k σ) none (.run (m.instantiate ws) k σ)
+  | E_Match {v arms k σ} :
+      Step P B (.run (.match v arms) k σ) none (.matchRun v arms 0 k σ)
+  | E_MatchSkip {v arms next alts guard body k σ} :
+      arms[next]? = some (.mk alts guard body) → firstAlt v alts = none →
+      Step P B (.matchRun v arms next k σ) none (.matchRun v arms (next + 1) k σ)
+  | E_MatchBody {v arms next alts body ws k σ} :
+      arms[next]? = some (.mk alts none body) → firstAlt v alts = some ws →
+      Step P B (.matchRun v arms next k σ) none (.run (body.instantiate ws) k σ)
+  | E_MatchGuard {v arms next alts guard body ws k σ} :
+      arms[next]? = some (.mk alts (some guard) body) → firstAlt v alts = some ws →
+      Step P B (.matchRun v arms next k σ) none
+        (.run (guard.instantiate ws) (.guardF v arms (next + 1) (body.instantiate ws) :: k) σ)
+  | E_GuardT {v arms next body k σ} :
+      Step P B (.run (.ret (.const (.boolean true))) (.guardF v arms next body :: k) σ) none (.run body k σ)
+  | E_GuardF {v arms next body k σ} :
+      Step P B (.run (.ret (.const (.boolean false))) (.guardF v arms next body :: k) σ) none
+        (.matchRun v arms next k σ)
+  | E_ErrPopGuard {rs v arms next body k σ} :
+      Step P B (.error rs (.guardF v arms next body :: k) σ) none (.error rs k σ)
+  | E_ExitPopGuard {n rs v arms next body k σ} :
+      Step P B (.exit n rs (.guardF v arms next body :: k) σ) none (.exit n rs k σ)
   | E_Prim {b ts es ws k σ s v} :
       B.sig b = some s → s.kind = .pure → B.delta b ts es ws = some (.val v) →
       Step P B (.run (.app (.prim b ts es) ws) k σ) none (.run (.ret v) k σ)
@@ -142,7 +169,7 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State �
       B.sig b = some s → s.kind = .io → NoHandler k (.prim b) →
       B.ioResponse b ts es ws (.val v) →
       Step P B (.run (.app (.prim b ts es) ws) k σ) (some (.io b ws (.val v))) (.run (.ret v) k σ)
-  /-- E-IOErr。プロセスの終了の関数の、許可がないときの応答も `error(r)` である（01-12「プロセスの終了」）。 -/
+  /-- E-IOErr。プロセスの終了の関数の、引数が定義域の外のときの応答も `error(r)` である（01-12「プロセスの終了」）。 -/
   | E_IOErr {b ts es ws k σ s r} :
       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → NoHandler k (.prim b) →
       B.ioResponse b ts es ws (.err r) →
@@ -320,6 +347,10 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
       | some .used => some (none, .run (.ret v) k σ)
       | some (.cont k') => some (none, .run (.ret v) (releases k' ++ k) (σ.set κ .used))
       | _ => none
+  | .run (.ret (.const (.boolean true))) (.guardF _ _ _ body :: k) σ => some (none, .run body k σ)
+  | .run (.ret (.const (.boolean false))) (.guardF v arms next _ :: k) σ =>
+      some (none, .matchRun v arms next k σ)
+  | .run (.ret _) (.guardF _ _ _ _ :: _) _ => none
   | .run (.ret _) [] _ => none
   | .run (.app (.lam ps body) ws) k σ =>
       if ws.length = ps.length then some (none, .run (body.instantiate ws) (markPush k) σ) else none
@@ -403,10 +434,18 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
   | .run (.ite (.const (.boolean true)) m _) k σ => some (none, .run m k σ)
   | .run (.ite (.const (.boolean false)) _ n) k σ => some (none, .run n k σ)
   | .run (.ite _ _ _) _ _ => none
-  | .run (.match v arms) k σ =>
-      match firstMatch v arms with
-      | some (m, ws) => some (none, .run (m.instantiate ws) k σ)
+  | .run (.match v arms) k σ => some (none, .matchRun v arms 0 k σ)
+  | .matchRun v arms next k σ =>
+      match arms[next]? with
       | none => none
+      | some (.mk alts guard body) =>
+          match firstAlt v alts with
+          | none => some (none, .matchRun v arms (next + 1) k σ)
+          | some ws =>
+              match guard with
+              | none => some (none, .run (body.instantiate ws) k σ)
+              | some g => some (none, .run (g.instantiate ws)
+                  (.guardF v arms (next + 1) (body.instantiate ws) :: k) σ)
   | .run (.lazyC m) k σ =>
       let l := fresh σ
       some (none, .run (.ret (.loc l)) k (σ.set l (.thunk m)))
@@ -476,18 +515,24 @@ inductive ContTy (P : Program) (B : Builtins) (Ψ : StoreTy) :
   | K_Release {R ε v o k a b ε0 Re} :
       HasTypeV P B Ψ [] [] v (.opaque o) → B.isResource o = true → ε (.name stateEff) = true →
       ContTy P B Ψ R ε k a b ε0 Re → ContTy P B Ψ R ε (.release v :: k) a b ε0 Re
-  /-- K-Handle。節は、枠の下の継続が許すエフェクトに含まれるエフェクト εc で検査する（ADR 0302）。 -/
+  /-- K-Handle。節は、枠の下の継続が許すエフェクトに含まれるエフェクト εc で検査する（01-12「確かめる性質」）。 -/
   | K_Handle {R ε εc h k t b ε0 Re} :
       ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub εc ε → HasTypeClauses P B Ψ [] [] R h t εc →
       Ty.WF 0 t →
       ContTy P B Ψ R (Eff.union εc (handled P B h)) (.handleF h :: k) t b ε0 Re
   /-- K-Drop。捨てる継続の解放の枠を、この位置で実行できるように、κ の継続の型のエフェクトが `State` を
-  含むなら、ε も `State` を含む（ADR 0300）。 -/
+  含むなら、ε も `State` を含む（01-12「確かめる性質」）。 -/
   | K_Drop {R ε κ k a b ε0 Re b' t' ε' R'} :
       Ψ κ = some (.cont b' t' ε' R') → (ε' (.name stateEff) = true → ε (.name stateEff) = true) →
       ContTy P B Ψ R ε k a b ε0 Re →
       ContTy P B Ψ R ε (.drop κ :: k) a b ε0 Re
-  /-- K-Sub。継続が受け取る型を広げる（ADR 0301）。 -/
+  /-- ガードは R = none、空のエフェクトで実行し、本体と再開先では元の R とエフェクトに戻る。 -/
+  | K_Guard {R ε v arms next body k a b ε0 Re ε1} :
+      HasTypeC P B Ψ [] [] R (.match v arms) a ε1 → Eff.Sub ε1 ε →
+      MatchPrefix v arms next → HasTypeC P B Ψ [] [] R body a ε1 →
+      ContTy P B Ψ R ε k a b ε0 Re →
+      ContTy P B Ψ none Eff.empty (.guardF v arms next body :: k) (.base .boolean) b ε0 Re
+  /-- K-Sub。継続が受け取る型を広げる（01-12「確かめる性質」）。 -/
   | K_Sub {R ε k a a' b ε0 Re} :
       ContTy P B Ψ R ε k a' b ε0 Re → Ty.Le a a' → ContTy P B Ψ R ε k a b ε0 Re
 
@@ -510,7 +555,7 @@ def LocTy.WF : LocTy → Prop
   | .cont b t _ r => Ty.WF 0 b ∧ Ty.WF 0 t ∧ ∀ x, r = some x → Ty.WF 0 x
 
 /-- ストアがストアの型付けに合う。ストアは有限であり、Ψ が型を与える場所には中身がある（`dom Ψ = dom σ`。
-ADR 0300）。 -/
+01-12「確かめる性質」）。 -/
 def StoreOk (P : Program) (B : Builtins) (Ψ : StoreTy) (σ : Store) : Prop :=
   (∃ n, ∀ l, n ≤ l → σ l = none) ∧ (∀ l x, Ψ l = some x → x.WF) ∧
     (∀ l x, Ψ l = some x → σ l ≠ none) ∧
@@ -529,6 +574,8 @@ def Frame.Closed : Frame → Prop
   | .release v => Val.VarsIn 0 (fun _ => True) v
   | .handleF h => Clause.VarsInList 0 (fun _ => True) h
   | .drop _ => True
+  | .guardF v arms _ body => Val.VarsIn 0 (fun _ => True) v ∧
+      Arm.VarsInList 0 (fun _ => True) arms ∧ Comp.VarsIn 0 (fun _ => True) body
 
 def Cont.Closed (k : Cont) : Prop := ∀ f ∈ k, f.Closed
 
@@ -544,13 +591,18 @@ def Store.Closed (σ : Store) : Prop := ∀ l c, σ l = some c → c.Closed
 /-! ## 状態の型付け -/
 
 /-- 状態に型が付く（01-12「確かめる性質」の初回リリース版の状態の型付け）。継続の判断は、末尾の K-Empty を
-`R = none` で使う導出で満たす（ADR 0299）。加えて、状態の中の項が型の変数を含まないこと
+`R = none` で使う導出で満たす（同節）。加えて、状態の中の項が型の変数を含まないこと
 （`WellFormed.lean` の冒頭）を求める。 -/
 def StateTy (P : Program) (B : Builtins) : State → Prop
   | .run m k σ => ∃ Ψ R a b ε ε1 Eb,
       StoreOk P B Ψ σ ∧ HasTypeC P B Ψ [] [] R m a ε1 ∧ Eff.Sub ε1 ε ∧
       ContTy P B Ψ R ε k a b Eb none ∧ BuiltinOnly P B Eb ∧
       Comp.VarsIn 0 (fun _ => True) m ∧ Cont.Closed k ∧ Store.Closed σ
+  | .matchRun v arms next k σ => ∃ Ψ R a b ε ε1 Eb,
+      StoreOk P B Ψ σ ∧ HasTypeC P B Ψ [] [] R (.match v arms) a ε1 ∧ Eff.Sub ε1 ε ∧
+      ContTy P B Ψ R ε k a b Eb none ∧ BuiltinOnly P B Eb ∧
+      Comp.VarsIn 0 (fun _ => True) (.match v arms) ∧ Cont.Closed k ∧ Store.Closed σ ∧
+      MatchPrefix v arms next
   | .error _ k σ => ∃ Ψ R a b ε Eb,
       StoreOk P B Ψ σ ∧ ContTy P B Ψ R ε k a b Eb none ∧ BuiltinOnly P B Eb ∧
       Cont.Closed k ∧ Store.Closed σ

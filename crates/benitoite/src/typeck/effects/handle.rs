@@ -1,4 +1,4 @@
-//! ハンドラの節を剛な型パラメータで検査する（設計書 01-06、02-05、ADR 0311・0312）。
+//! ハンドラの節を剛な型パラメータで検査する（設計書 01-06「エフェクトの宣言とハンドラの型付け（初回リリース版）」、02-05）。
 use super::super::{
     ClauseInfo, HandleInfo,
     context::{Body, ClauseContext, IArg, reason, substitute},

@@ -28,7 +28,7 @@ pub struct RunState {
     pub(crate) returning: Option<ReturnWork>,
     // R25 が TaskState::Unwinding へ移す。回収と待ちの間も根に残す（実装プラン R21）。
     pub(crate) unwinding: Option<UnwindWork>,
-    // 第 2 段だけが使う大きい状態を窓・予算・計数から離す（ADR 0313）。
+    // 第 2 段だけが使う大きい状態を窓・予算・計数から離す（設計書 07-02「性能の関門」）。
     pub(crate) scheduler: Box<Scheduler>,
     pub(crate) resources: Box<ResourceTable>,
     // 命令のない UPDATE の呼び直しでも、設定した初期予算へ戻す（設計書 02-08「タスクの切り替え」）。
@@ -165,14 +165,14 @@ impl RunState {
     }
 }
 
-// 失敗の説明の確保は、枠を得る正常な経路へ展開しない（ADR 0313 の決定 2）。
+// 失敗の説明の確保は、枠を得る正常な経路へ展開しない（設計書 07-02「性能の関門」）。
 #[cold]
 #[inline(never)]
 pub(crate) fn internal(message: &str) -> Stop {
     Stop::Internal(message.to_owned())
 }
 
-/// 切り替えのときだけ読む状態を窓と予算から離す（ADR 0313）。
+/// 切り替えのときだけ読む状態を窓と予算から離す（設計書 07-02「性能の関門」）。
 #[derive(Default)]
 pub(crate) struct Scheduling {
     pub(crate) boundary_at: Option<crate::runtime::io::WaitPoint>,
@@ -337,7 +337,7 @@ mod tests {
     }
 
     // 関門: close はすぐに終わる失敗と待った後の失敗を一度返し、後の解放を失敗させない。
-    // 既存の begin_release のテストは失敗を Stop として扱うため、ADR 0321 の契約を確かめない。
+    // 既存の begin_release のテストは失敗を Stop として扱うため、close の関数が解放の失敗を返す契約（設計書 02-09「リソースの追跡」）を確かめない。
     #[test]
     fn begin_close_returns_release_failure_once_for_immediate_and_blocking_resources() {
         use crate::builtins::iface::{CloseStep, StateWait};

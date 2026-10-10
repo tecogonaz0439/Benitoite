@@ -143,7 +143,7 @@ builtin! {
 
 builtin! {
     /// `Benitoite.IO.Process.runAttached` の本体（設計書 03-07「Process」）。
-    /// `input: Option.Some` は標準入力の継承と空の入力より優先する（ADR 0322 の決定 5）。
+    /// `input: Option.Some` は標準入力の継承と空の入力より優先する（設計書 03-07「Process」）。
     /// 出力のつなぎ先は `input` によらず実行の環境で決める。
     /// 子の終わりまで作業用のスレッドを一本占める。最大 64 本が埋まるとほかの仕事も待つ。
     /// 取り消しと中断の要求でも子を終わらせない（設計書 02-09「タスクの待ちと取り消し」）。
@@ -161,7 +161,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Process.shell` の本体（設計書 03-07「外部コマンドの起動とシェル」、ADR 0243）。
+    /// `Benitoite.IO.Process.shell` の本体（設計書 03-07「外部コマンドの起動とシェル」）。
     /// 子の終わりまで作業用のスレッドを一本占める。最大 64 本が埋まるとほかの仕事も待つ。
     /// 取り消しと中断の要求でも子を終わらせない（設計書 02-09「タスクの待ちと取り消し」）。
     name = "Benitoite.IO.Process.shell",
@@ -281,7 +281,7 @@ fn execute(
     }
     let program = Path::new(&command.program);
     // 基準のディレクトリも相対の場合を含めて絶対化し、current_dir との組み合わせに
-    // OS ごとの差を残さない（ADR 0327 の決定 4）。名前だけの場合は PATH から探させる。
+    // OS ごとの差を残さない（設計書 03-07「Process」）。名前だけの場合は PATH から探させる。
     let program = if command.program.contains('/') && program.is_relative() {
         std::path::absolute(command.directory.join(program))?
     } else {
@@ -386,7 +386,7 @@ fn exit_code(status: ExitStatus) -> Result<i64, Stop> {
     if let Some(code) = status.code() {
         return Ok(i64::from(code));
     }
-    // Unix の wait は終了コードかシグナルのどちらかを返す（設計書 03-07「Process」、ADR 0243）。
+    // Unix の wait は終了コードかシグナルのどちらかを返す（設計書 03-07「Process」）。
     let signal = status
         .signal()
         .ok_or_else(|| Stop::Internal("child status has neither exit code nor signal".into()))?;

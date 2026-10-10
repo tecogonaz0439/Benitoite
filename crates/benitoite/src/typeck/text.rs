@@ -1,4 +1,4 @@
-//! 型検査の診断に埋める固定の文言（設計書 02-10、ADR 0033）。
+//! 型検査の診断に埋める固定の文言（設計書 02-10「文言の言語」）。
 
 pub(super) const INTEGER_OVERFLOW: &str = "integer overflow";
 pub(super) const DECIMAL_OVERFLOW: &str = "Decimal overflow";

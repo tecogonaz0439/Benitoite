@@ -135,6 +135,7 @@ struct Generator {
     next_name: usize,
     nodes: usize,
     stage: usize,
+    formal: bool,
 }
 impl Generator {
     fn hit(&mut self, name: &'static str) {
@@ -356,7 +357,7 @@ impl Generator {
                 for _ in 0..count {
                     values.push(self.expr(Ty::Integer, depth));
                 }
-                if depth > 0 && self.random.below(3) == 0 {
+                if !self.formal && depth > 0 && self.random.below(3) == 0 {
                     let tail = self.expr(ty, depth);
                     values.push(format!("..{tail}"));
                 }
@@ -732,6 +733,7 @@ pub fn generate(seed: u64, max_stage: usize) -> Generated {
         next_name: 0,
         nodes: 0,
         stage: max_stage,
+        formal: false,
     };
     let total: u64 = STAGE_WEIGHTS[..max_stage].iter().sum();
     let mut choice = generator.random.below(total);
@@ -799,4 +801,799 @@ pub fn generate(seed: u64, max_stage: usize) -> Generated {
         source,
         coverage: generator.coverage,
     }
+}
+
+/// C1〜C6 の差分検査用。既存の generate の乱数列と出力には影響しない。
+/// 段の追加部分を出さず、整数の観察を補間なしの呼び出しで書く。
+pub fn generate_formal(seed: u64) -> Generated {
+    let mut generator = Generator {
+        random: Random(seed),
+        coverage: Coverage::default(),
+        declarations: BTreeMap::new(),
+        bindings: Vec::new(),
+        next_name: 0,
+        nodes: 0,
+        stage: 1,
+        formal: true,
+    };
+    let mut body = String::new();
+    for _ in 0..2 {
+        let expr = generator.expr(Ty::Integer, MAX_DEPTH);
+        let name = generator.fresh();
+        body.push_str(&format!(
+            "bind {name}: Integer <- {expr}\nConsole.writeLine(Integer.toString({name}))\n"
+        ));
+        generator.bindings.push((name, Ty::Integer));
+    }
+    // formal 専用の選択。通常の generate の乱数列・出力には触れない。
+    let mut control = Random(seed ^ 0xc4c1);
+    let option = if control.below(2) == 0 {
+        "Option.Some(7)"
+    } else {
+        "Option.None"
+    };
+    let result = if control.below(2) == 0 {
+        "Result.Ok(9)"
+    } else {
+        "Result.Error(\"failure\")"
+    };
+    let groups = if control.below(2) == 0 {
+        "group = TaskGroup.open()"
+    } else {
+        "group = TaskGroup.open(), second = TaskGroup.open()"
+    };
+    let exit = if control.below(2) == 0 {
+        "if n > 0 then return n else return 0 end if"
+    } else {
+        "match Option.Some(n) with\n case Option.Some(x) -> return x\n case Option.None -> return 0\n end match"
+    };
+    generator.bindings.clear();
+    let lazy_expr = generator.expr(Ty::Integer, MAX_DEPTH);
+    body.push_str(&format!(
+        "bind _ <- formalOption({option})\nbind _ <- formalResult({result})\nbind _ <- formalWith(3)\nbind _ <- formalLazy(5)\n"
+    ));
+    generator.coverage.hit("try-option");
+    generator.coverage.hit("try-result");
+    generator.coverage.hit("with");
+    generator.coverage.hit("lazy");
+    let controls = format!(
+        "function formalOption(input: Option[Integer]) -> Option[String]\n bind n <- try input\n return Option.Some(Integer.toString(n))\nend function\n\
+         function formalResult(input: Result[Integer, String]) -> Result[String, String]\n bind n <- try input\n return Result.Ok(Integer.toString(n))\nend function\n\
+         function formalWith(n: Integer) -> Integer uses State\n with {groups} do\n {exit}\n end with\nend function\n\
+         function formalLazy(n: Integer) -> Integer\n bind delayed <- lazy\n bind f <- lambda(x: Integer) return x + n end lambda\n f({lazy_expr})\n end lazy\n return Lazy.force(delayed)\nend function\n"
+    );
+    let mut source = String::from("import Benitoite.Unofficial.IO.Console\n");
+    for declaration in generator.declarations.values() {
+        source.push_str(declaration);
+    }
+    source.push_str(&controls);
+    source.push_str(&formal_handlers(&mut control, &mut generator.coverage));
+    source.push_str(&formal_dictionaries(seed, &mut generator.coverage));
+    source.push_str(&formal_direct_calls(seed, &mut generator.coverage));
+    source.push_str(&formal_extensions(seed, &mut generator.coverage));
+    source.push_str(&formal_records(seed, &mut generator.coverage));
+    source.push_str(&formal_constants(seed, &mut generator.coverage));
+    source.push_str(&formal_patterns(seed, &mut generator.coverage));
+    source.push_str(&format!(
+        "function main() -> Unit uses Console.Write, State\n{body}bind _ <- formalRecordUse(3)\nbind _ <- formalHandle(3)\nbind _ <- formalNested(4)\nbind _ <- formalPoly(Option.Some(5))\nbind result: Result[Integer, String] <- Result.Ok(6)\nbind _ <- formalPolyResult(result)\nbind _ <- formalRigid(Option.Some(7))\nbind _ <- formalPlaceholder(8)\nend function\n"
+    ));
+    Generated {
+        source,
+        coverage: generator.coverage,
+    }
+}
+
+// C6c-1: 独立した乱数源で値・式・展開の位置を選ぶ。generate からは呼ばない。
+fn formal_extensions(seed: u64, coverage: &mut Coverage) -> String {
+    let mut random = Random(seed ^ 0xc6c1);
+    let n = random.below(100);
+    let byte = random.below(256);
+    let fraction = random.below(100);
+    let string = if random.below(2) == 0 { "" } else { "formal" };
+    let boolean = if random.below(2) == 0 {
+        "true"
+    } else {
+        "false"
+    };
+    let mut spreads = String::new();
+    // 先頭・途中・末尾、両側とも空。両端の位置が片側だけ空の場合でもある。
+    for (before, after) in [("", "n, n + 1"), ("n + 2, n", "n + 3"), ("n", ""), ("", "")] {
+        spreads.push_str(&format!(
+            "bind _ <- [{before}{}..xs{}{after}]\n",
+            if before.is_empty() { "" } else { ", " },
+            if after.is_empty() { "" } else { ", " }
+        ));
+    }
+    // 展開式・前後の要素と補間式の中にもラムダを置き、注釈走査を検査する。
+    let position = random.below(3);
+    let nested = "(lambda(x: Integer) return x + n end lambda)(n)";
+    spreads.push_str(&match position {
+        0 => format!("bind _ <- [{nested}, ..xs]\n"),
+        1 => "bind _ <- [..(lambda(x: List[Integer]) return x end lambda)(xs)]\n".to_owned(),
+        _ => format!("bind _ <- [..xs, {nested}]\n"),
+    });
+    for feature in ["formal-decimal", "formal-interpolation", "formal-spread"] {
+        coverage.hit(feature);
+    }
+    format!(
+        r#"
+function formalExtensions(n: Integer, xs: List[Integer]) -> String
+  bind decimal <- {n}.{fraction:02}m
+  bind negative <- -{n}.{fraction:02}m
+  bind zero <- -0.0m
+  bind large <- 79228162514264337593543950335m
+  bind smallest <- -79228162514264337593543950335m
+  bind _ <- -(1.50m)
+  {spreads}
+  bind s <- "{string}"
+  bind _ <- "${{s}}"
+  bind _ <- "${{n}}"
+  bind _ <- "${{n}}${{s}}${{negative}}"
+  bind _ <- "head${{n}}middle${{s}}tail"
+  bind _ <- "${{{nested}}}"
+  bind _ <- "${{(lambda(x: Integer) -> Integer return x end lambda)(n)}}${{(lambda(x: String) -> String return x end lambda)(s)}}"
+  return match Byte.fromInteger({byte}) with
+    case Option.Some(b) -> "${{s}}${{n}}${{{n}.25}}${{'x'}}${{{boolean}}}${{b}}${{decimal}}"
+    case Option.None -> "${{zero}}"
+  end match
+end function
+function formalExtensionsUse() -> String
+  return formalExtensions({n}, [{n}, {n} + 1])
+end function
+"#
+    )
+}
+
+// C5c-2: 同じ表で頭の種類と呼び出しの形を組み合わせる。
+// 複数の辞書の順、パイプ・穴の束縛による移動、括弧による値化を比較する。
+fn formal_direct_calls(seed: u64, coverage: &mut Coverage) -> String {
+    let mut random = Random(seed ^ 0xc5c2);
+    let amount = random.below(19);
+    let mut calls = String::new();
+    for (index, (head, args, rest, input)) in [
+        ("formalBoth", "x,y", "y", "x"),
+        ("FormalChoose.choose", "x,y,x,identity", "y,x,identity", "x"),
+        ("FormalIdentity.echo", "x", "", "x"),
+        ("formalRender", "x", "", "x"),
+        ("FormalRelay.relay", "paired", "", "paired"),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        calls.push_str(&format!(
+            "bind _ <- {head}({args})\nbind _ <- {input} |> {head}({rest})\n"
+        ));
+        calls.push_str(&format!(
+            "bind _ <- ({head})({args})\nbind _ <- {input} |> ({head})({rest})\n"
+        ));
+        let hole_args = if rest.is_empty() {
+            "_".to_owned()
+        } else {
+            format!("_,{rest}")
+        };
+        calls.push_str(&format!("bind part{index} <- {head}({hole_args})\nbind _ <- part{index}({input})\nbind _ <- {input} |> {head}({hole_args})\n"));
+        calls.push_str(&format!("bind parenPart{index} <- ({head})({hole_args})\nbind _ <- parenPart{index}({input})\nbind _ <- {input} |> ({head})({hole_args})\n"));
+        if rest.is_empty() {
+            calls.push_str(&format!(
+                "bind _ <- {input} |> {head}\nbind _ <- {input} |> ({head})\n"
+            ));
+        }
+    }
+    for feature in [
+        "constrained-direct",
+        "method-direct",
+        "direct-pipe-1",
+        "direct-pipe-2",
+        "direct-placeholder",
+        "placeholder-pipe-2",
+        "parenthesized-dictionary-head",
+    ] {
+        coverage.hit(feature);
+    }
+    format!(
+        r#"
+trait FormalRelay[T]
+  function relay[A: FormalIdentity](x: Pair[T,A]) -> Pair[T,A]
+end trait
+implement[T: FormalIdentity] FormalRelay[Option[T]]
+  function relay[A: FormalIdentity](x: Pair[Option[T],A]) -> Pair[Option[T],A]
+    return FormalIdentity.echo(x)
+  end function
+end implement
+function formalRender[A: FormalIdentity & FormalStrong](x: A) -> A
+  bind _ <- FormalIdentity.echo(x)
+  return FormalStrong.strong(x)
+end function
+function formalDirect[A: FormalIdentity & FormalStrong & FormalChoose & FormalRelay, B: FormalIdentity, effect E](x: A, y: B, identity: function(B) -> B uses E) -> A uses E
+  bind paired <- Pair(x,y)
+  {calls}
+  return x
+end function
+function formalDirectUse() -> Option[Integer]
+  bind x <- Option.Some({amount})
+  bind y <- Option.Some("direct")
+  return formalDirect(x,y,lambda(v: Option[String]) return v end lambda)
+end function
+"#
+    )
+}
+
+// C4c-2 専用。通常の生成器の乱数源・分岐・宣言には触れない。
+fn formal_handlers(random: &mut Random, coverage: &mut Coverage) -> String {
+    let amount = random.below(9);
+    let clause = match random.below(3) {
+        0 => {
+            coverage.hit("tail-resume");
+            format!("resume(x + n + {amount})")
+        }
+        1 => {
+            coverage.hit("non-tail-resume");
+            format!("bind saved <- resume(x + {amount})\nsaved + n")
+        }
+        _ => {
+            coverage.hit("no-resume");
+            "x + n".to_owned()
+        }
+    };
+    let ret = if random.below(2) == 0 {
+        "resume(x)"
+    } else {
+        "return input"
+    };
+    for feature in [
+        "user-operation",
+        "operation-value",
+        "polymorphic-operation",
+        "nested-handle",
+        "clause-rigid",
+        "clause-try",
+        "placeholder-local-resume",
+    ] {
+        coverage.hit(feature);
+    }
+    format!(
+        r#"
+effect FormalAsk
+  function formalAsk(left: Integer, right: Integer) -> Integer
+end effect
+effect FormalEcho
+  function formalEcho[A](value: A) -> A
+end effect
+effect FormalPick
+  function formalPick[A, B](first: A, second: B, ignored: Integer) -> B
+end effect
+function formalAdd(left: Integer, right: Integer) -> Integer
+  return left + right
+end function
+function formalHandle(n: Integer) -> Integer
+  return handle
+    bind operation <- formalAsk
+    bind part <- formalAsk(n, _)
+    bind x <- operation(n, part(2))
+    n |> formalAsk(x)
+  with
+    case formalAsk(x, _) ->
+      bind f <- lambda(z: Integer) return z + n end lambda
+      bind _ <- f(1)
+      {clause}
+  end handle
+end function
+function formalNested(n: Integer) -> Integer
+  return handle formalAsk(n, 1) with
+    case formalAsk(x, _) ->
+      bind saved <- n + {amount}
+      handle
+        bind _ <- formalAsk(x, saved)
+        resume(x)
+      with
+        case formalAsk(_, y) -> resume(y + saved)
+      end handle
+  end handle
+end function
+function formalPoly[A](input: Option[A]) -> Option[A]
+  return handle formalEcho(input) with
+    case formalEcho(x) ->
+      bind _ <- try input
+      {ret}
+  end handle
+end function
+function formalPolyResult[A, B](input: Result[A, B]) -> Result[A, B]
+  return handle formalEcho(input) with
+    case formalEcho(x) ->
+      bind _ <- try input
+      match input with
+        case Result.Ok(y) -> return Result.Ok(y)
+        case Result.Error(e) -> resume(x)
+      end match
+  end handle
+end function
+function formalRigid[A](input: Option[A]) -> Option[A]
+  return handle formalEcho(input) with
+    case formalEcho(x) ->
+      bind saved <- x
+      handle
+        bind _ <- formalPick(x, input, 0)
+        resume(saved)
+      with
+        case formalPick(_, second, _) ->
+          bind capture <- lambda(value) return value end lambda
+          bind _ <- capture(saved)
+          bind definition <- lambda(value) return value end lambda
+          bind _ <- definition(input)
+          bind keep <- lambda(value) return value end lambda
+          resume(keep(second))
+      end handle
+  end handle
+end function
+function formalPlaceholder(n: Integer) -> Integer
+  bind f <- formalAdd(handle formalAsk(n, 0) with
+    case formalAsk(x, _) -> resume(x)
+  end handle, _)
+  return f({amount})
+end function
+"#
+    )
+}
+
+// C5c-1 専用。すべて値化してから呼び、直接呼び出しの暫定除外に依存しない。
+fn formal_dictionaries(seed: u64, coverage: &mut Coverage) -> String {
+    let mut random = Random(seed ^ 0xc5c1);
+    let amount = random.below(17);
+    let (first, second) = if random.below(2) == 0 {
+        ("Integer", "String")
+    } else {
+        ("String", "Integer")
+    };
+    for feature in [
+        "constrained-function-value",
+        "method-value-own-dictionary",
+        "super-dictionary",
+        "nested-dictionary",
+        "implementation-dictionary",
+        "higher-kind-value",
+    ] {
+        coverage.hit(feature);
+    }
+    format!(
+        r#"
+trait FormalIdentity[T]
+  function echo(x: T) -> T
+end trait
+trait FormalStrong[T: FormalIdentity]
+  function strong(x: T) -> T
+end trait
+trait FormalStronger[T: FormalStrong]
+  function stronger(x: T) -> T
+end trait
+trait FormalChoose[T]
+  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: T, y: A, z: B, f: function(A) -> A uses E) -> B uses E
+end trait
+implement FormalIdentity[Integer]
+  function echo(x: Integer) -> Integer return x + {amount} end function
+end implement
+implement FormalIdentity[String]
+  function echo(x: String) -> String return x end function
+end implement
+implement[A: FormalIdentity] FormalIdentity[Option[A]]
+  function echo(x: Option[A]) -> Option[A]
+    bind f <- FormalIdentity.echo
+    return Option.map(x, f)
+  end function
+end implement
+implement[A: FormalIdentity, B: FormalIdentity] FormalIdentity[Pair[A,B]]
+  function echo(x: Pair[A,B]) -> Pair[A,B]
+    return match x with
+      case Pair(a,b) ->
+        bind left <- FormalIdentity.echo
+        bind right <- FormalIdentity.echo
+        return Pair(left(a),right(b))
+    end match
+  end function
+end implement
+implement[A: FormalIdentity] FormalStrong[Option[A]]
+  function strong(x: Option[A]) -> Option[A]
+    bind f <- FormalIdentity.echo
+    return f(x)
+  end function
+end implement
+implement[A: FormalIdentity] FormalStronger[Option[A]]
+  function stronger(x: Option[A]) -> Option[A]
+    return x
+  end function
+end implement
+implement[T: FormalIdentity] FormalChoose[Option[T]]
+  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: Option[T], y: A, z: B, f: function(A) -> A uses E) -> B uses E
+    bind outer <- FormalIdentity.echo
+    bind _ <- outer(x)
+    bind own <- FormalIdentity.echo
+    bind _ <- own(f(y))
+    bind result <- FormalIdentity.echo
+    return result(z)
+  end function
+end implement
+implement[T: FormalIdentity, U: FormalIdentity] FormalChoose[Pair[T,U]]
+  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: Pair[T,U], y: A, z: B, f: function(A) -> A uses E) -> B uses E
+    bind outer <- FormalIdentity.echo
+    bind _ <- outer(x)
+    bind own <- FormalIdentity.echo
+    bind _ <- own(f(y))
+    bind result <- FormalIdentity.echo
+    return result(z)
+  end function
+end implement
+function formalBoth[A: FormalIdentity, B: FormalIdentity](x: A, y: B) -> B
+  bind left <- FormalIdentity.echo
+  bind _ <- left(x)
+  bind right <- FormalIdentity.echo
+  return right(y)
+end function
+function formalCapture[A: FormalIdentity, B: FormalIdentity](x: A, y: B) -> B
+  bind f <- formalBoth
+  return f(x,y)
+end function
+function formalSuper[A: FormalStronger](x: A) -> A
+  bind f <- FormalIdentity.echo
+  bind g <- lambda(y: A)
+    bind nested <- FormalIdentity.echo
+    return nested(y)
+  end lambda
+  return g(f(x))
+end function
+function formalClassUse(x: Option[Option[Integer]], y: Option[String]) -> Option[String]
+  bind f <- formalBoth
+  bind _ <- f(x,y)
+  bind paired <- Pair(x,y)
+  bind pairFunction <- formalBoth
+  bind _ <- pairFunction(paired,y)
+  bind pairMethod <- FormalChoose.choose
+  bind _ <- pairMethod(paired,y,x,lambda(v: Option[String]) return v end lambda)
+  bind swapped <- formalBoth
+  bind _ <- swapped(y,x)
+  bind local <- formalCapture
+  bind _ <- local(x,y)
+  bind echo <- FormalIdentity.echo
+  bind _ <- echo(x)
+  bind choose <- FormalChoose.choose
+  bind _ <- choose(x,y,x,lambda(v: Option[String]) return v end lambda)
+  bind part <- (FormalChoose.choose)(x,y,_,lambda(v: Option[String]) return v end lambda)
+  bind _ <- part(x)
+  bind _ <- (formalBoth)(x,y)
+  bind _ <- x |> (FormalIdentity.echo)
+  return y
+end function
+function formalClassEffects[A: FormalIdentity, B: FormalIdentity](x: A, y: B) -> B
+  return handle formalPick(x,y,0) with
+    case formalPick(first, second, _) ->
+      bind f <- formalBoth
+      bind _ <- f(x,y)
+      bind g <- lambda(v: A) return v end lambda
+      bind _ <- g(x)
+      resume(second)
+  end handle
+end function
+trait FormalFunctor[F[_]]
+  function map[A,B,effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+end trait
+implement FormalFunctor[Option]
+  function map[A,B,effect E](x: Option[A], f: function(A) -> B uses E) -> Option[B] uses E
+    return Option.map(x,f)
+  end function
+end implement
+function formalHigher[F[_]: FormalFunctor,A,B,effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+  bind map <- FormalFunctor.map
+  return map(x,f)
+end function
+function formalHigherUse(x: Option[{first}], f: function({first}) -> {second}) -> Option[{second}]
+  bind map <- formalHigher
+  return map(x,f)
+end function
+"#
+    )
+}
+
+// C6c-2 専用。通常の generate の乱数源・宣言・分岐には触れない。
+fn formal_records(seed: u64, coverage: &mut Coverage) -> String {
+    let mut random = Random(seed ^ 0xc6c2);
+    let a = random.below(29);
+    let b = random.below(31);
+    let fields = if random.below(2) == 0 {
+        format!("third: Option.Some({b}), second: {a}, first: n")
+    } else {
+        format!("first: n, second: {a}, third: Option.Some({b})")
+    };
+    let partial = match random.below(3) {
+        0 => format!("second: {b}"),
+        1 => format!("third: Option.Some({a}), first: n + {b}"),
+        _ => format!("second: {b}, first: n + {a}"),
+    };
+    let nested = if random.below(2) == 0 {
+        "tail: t, inner: FormalRow(third: Option.Some(z), second: y, first: x)"
+    } else {
+        "inner: FormalRow(first: x, second: y, third: Option.Some(z)), tail: t"
+    };
+    for feature in [
+        "record-construction",
+        "record-update-partial",
+        "record-update-all",
+        "record-pattern-partial",
+        "record-pattern-nested",
+        "record-pattern-reordered",
+        "accessor-call",
+        "accessor-parenthesized",
+        "accessor-pipe",
+        "accessor-placeholder",
+        "record-lambda-effects",
+    ] {
+        coverage.hit(feature);
+    }
+    format!(
+        r#"
+record FormalRow[T]
+  first: T
+  second: Integer
+  third: Option[T]
+end record
+record FormalOuter[T]
+  inner: FormalRow[T]
+  tail: Integer
+end record
+record FormalCallbacks
+  stateful: function(Integer) -> Integer uses State
+  pure: function(Integer) -> Integer
+end record
+function formalRecordChange[A](value: A, other: A) -> A
+  bind row <- FormalRow(third: Option.Some(value), first: other, second: {a})
+  bind updated <- FormalRow(..row, first: value)
+  bind FormalRow(third: saved, first: changed, second: count) <- updated
+  bind _ <- count
+  bind _ <- saved
+  return FormalRow.first(FormalRow(..updated, third: Option.Some(changed), second: {b}, first: other))
+end function
+function formalRecordUse(n: Integer) -> Integer uses State
+  bind original <- FormalRow({fields})
+  bind partial <- FormalRow(..original, {partial})
+  bind all <- FormalRow(..partial, third: Option.Some(n), second: {b}, first: n + {a})
+  bind FormalRow(third: some, first: first, second: second) <- all
+  bind FormalRow(second: only, ..) <- partial
+  bind outer <- FormalOuter(tail: only, inner: all)
+  bind matched <- match outer with
+    case FormalOuter({nested}) -> x + y + z + t + first + second
+    case FormalOuter(inner: FormalRow(first: fallback, ..), ..) -> fallback + only
+  end match
+  bind _ <- FormalRow.first(all)
+  bind getter <- (FormalRow.first)
+  bind _ <- getter(all)
+  bind _ <- (FormalRow.first)(all)
+  bind _ <- all |> FormalRow.first
+  bind _ <- all |> FormalRow.first()
+  bind _ <- all |> (FormalRow.first)
+  bind _ <- all |> (FormalRow.first)()
+  bind hole <- FormalRow.first(_)
+  bind _ <- hole(all)
+  bind parenHole <- (FormalRow.first)(_)
+  bind _ <- parenHole(all)
+  bind _ <- all |> FormalRow.first(_)
+  bind _ <- all |> (FormalRow.first)(_)
+  bind callbacks <- FormalCallbacks(
+    pure: lambda(x: Integer) return x + n end lambda,
+    stateful: lambda(x: Integer) -> Integer uses State
+      bind cell <- Reference.new(x + matched)
+      return Reference.get(cell)
+    end lambda)
+  bind updatedCallbacks <- FormalCallbacks(..callbacks,
+    stateful: lambda(x: Integer) -> Integer uses State
+      bind cell <- Reference.new(x + only)
+      return Reference.get(cell)
+    end lambda,
+    pure: lambda(x: Integer) return x + first end lambda)
+  bind FormalCallbacks(pure: pure, stateful: stateful) <- updatedCallbacks
+  bind _ <- pure(n)
+  return stateful(n)
+end function
+"#
+    )
+}
+
+// C6c-3: 定数の本体と使用位置を別の乱数源で生成する。通常の generate は変えない。
+fn formal_constants(seed: u64, coverage: &mut Coverage) -> String {
+    let mut random = Random(seed ^ 0xc6c3);
+    let a = random.below(41);
+    let b = random.below(43);
+    let flag = if random.below(2) == 0 {
+        "true"
+    } else {
+        "false"
+    };
+    let fields = if random.below(2) == 0 {
+        "third: Option.Some(formalConstNext), first: formalConstBase, second: formalConstNext"
+    } else {
+        "second: formalConstNext, first: formalConstBase, third: Option.Some(formalConstNext)"
+    };
+    for feature in [
+        "constant-basic",
+        "constant-list",
+        "constant-record",
+        "constant-nested",
+        "constant-call-argument",
+        "constant-constructor-field",
+        "constant-list-element",
+        "constant-lambda",
+        "constant-record-update-base",
+        "constant-under-local-binding",
+    ] {
+        coverage.hit(feature);
+    }
+    format!(
+        r#"
+const formalConstBase: Integer = {a} + {b}
+const formalConstNext: Integer = formalConstBase + {b}
+const formalConstAlias: Integer = formalConstNext
+const formalConstBool: Boolean = {flag}
+const formalConstFloat: Float = -{a}.5
+const formalConstDecimal: Decimal = -{b}.25m
+const formalConstString: String = "constant-{a}"
+const formalConstChar: Character = 'k'
+const formalConstUnit: Unit = ()
+const formalConstList: List[Integer] = [formalConstBase, formalConstNext, formalConstAlias]
+const formalConstRow: FormalRow[Integer] = FormalRow({fields})
+const formalConstRows: List[FormalRow[Integer]] = [formalConstRow, formalConstRow]
+function formalConstantUse(n: Integer) -> Integer
+  bind local <- n + 1
+  bind _ <- formalConstBool
+  bind _ <- formalConstFloat
+  bind _ <- formalConstDecimal
+  bind _ <- formalConstString
+  bind _ <- formalConstChar
+  bind _ <- formalConstUnit
+  bind _ <- formalConstList
+  bind _ <- formalConstRows
+  bind _ <- Integer.toString(formalConstAlias)
+  bind _ <- Option.Some(formalConstNext)
+  bind _ <- [local, formalConstAlias, formalConstBase]
+  bind row <- FormalRow(..formalConstRow, second: formalConstNext, first: local)
+  bind f <- lambda(x: Integer) return x + local + formalConstAlias end lambda
+  bind g <- lambda(x: Integer) -> Integer uses State
+    bind cell <- Reference.new(formalConstNext + x)
+    return Reference.get(cell)
+  end lambda
+  bind _ <- g
+  return f(FormalRow.first(row))
+end function
+function formalConstantPoly[A](value: A) -> A
+  bind _ <- formalConstRow
+  bind _ <- formalConstList
+  return value
+end function
+"#
+    )
+}
+
+// C7c: パターン拡張の専用入力。通常の generate の乱数源から独立させる。
+fn formal_patterns(seed: u64, coverage: &mut Coverage) -> String {
+    let mut random = Random(seed ^ 0xc7c);
+    let offset = random.below(9);
+    let lower = 10 + random.below(10);
+    let upper = 1 + random.below(8);
+    let enabled = if random.below(2) == 0 {
+        "true"
+    } else {
+        "false"
+    };
+    let packet = if random.below(2) == 0 { "A" } else { "B" };
+    for feature in [
+        "guard",
+        "alternatives",
+        "alternative-reordered-binders",
+        "range-negative",
+        "range-character",
+        "list-pattern-no-rest",
+        "list-pattern-skip",
+        "list-pattern-bind",
+        "list-pattern-suffix",
+        "list-pattern-binding",
+        "guard-lambda-effects",
+        "guard-resume-known",
+    ] {
+        coverage.hit(feature);
+    }
+    format!(
+        r#"
+data FormalPattern
+  A(Integer, Integer)
+  B(Integer, Integer)
+end data
+record FormalPatternRow
+  left: Integer
+  right: Integer
+end record
+record FormalPatternList
+  items: List[Integer]
+  flag: Boolean
+end record
+effect FormalPatternBool
+  function formalPatternBool(value: Boolean) -> Boolean
+end effect
+function formalPatternChoice(input: FormalPattern, outer: Integer, enabled: Boolean) -> Integer
+  return match input with
+    case FormalPattern.A(x, y), FormalPattern.B(y, x) if enabled and x + outer > y ->
+      bind f <- lambda(z: Integer) return z + x - y + outer end lambda
+      f({offset})
+    case FormalPattern.A(x, y), FormalPattern.B(y, x) -> x - y + outer
+  end match
+end function
+function formalPatternRecords(row: FormalPatternRow, outer: Integer) -> Integer
+  return match row with
+    case FormalPatternRow(right: y, left: x), FormalPatternRow(left: y, right: x) if (lambda(z: Integer) return z + outer > y end lambda)(x) -> x - y
+    case FormalPatternRow(right: y, left: x) -> outer + x - y
+  end match
+end function
+function formalPatternRanges(n: Integer, c: Character) -> Integer
+  bind integer <- match n with
+    case -{lower}..-{upper} -> 1
+    case -1..4 -> 2
+    case _ -> 3
+  end match
+  return integer + match c with
+    case 'a'..'z' -> 10
+    case _ -> 20
+  end match
+end function
+function formalPatternLists(xs: List[Integer], outer: Integer) -> Integer
+  bind [..] <- xs
+  bind [..saved] <- xs
+  bind exact <- match saved with
+    case [x, y] if true -> x - y + outer
+    case [] -> outer
+    case _ -> 0
+  end match
+  bind skip <- match xs with
+    case [x, .., y] if false -> x - y
+    case [.., y] -> y + outer
+    case [] -> 0
+  end match
+  bind named <- match xs with
+    case [x, ..rest, y], [y, ..rest, x] if x + outer > y ->
+      x - y + List.length(rest) + outer
+    case [..rest] -> List.length(rest)
+  end match
+  return exact + skip + named
+end function
+function formalPatternNested(row: FormalPatternList, outer: Integer) -> Integer
+  return match row with
+    case FormalPatternList(flag: true, items: [x, ..rest, y]),
+         FormalPatternList(items: [y, ..rest, x], flag: true) if x + outer > y ->
+      x - y + List.length(rest)
+    case FormalPatternList(items: [..rest], ..) -> List.length(rest) + outer
+  end match
+end function
+function formalPatternGuardLocal(enabled: Boolean) -> Boolean
+  return match enabled with
+    case flag if handle formalPatternBool(flag) with
+      case formalPatternBool(x) -> resume(x)
+    end handle -> true
+    case _ -> false
+  end match
+end function
+function formalPatternGuardResume(enabled: Boolean) -> Boolean
+  return handle formalPatternBool(enabled) with
+    case formalPatternBool(x) ->
+      match x with
+        case flag if resume(flag) -> true
+        case _ -> false
+      end match
+  end handle
+end function
+function formalPatternUse() -> Integer
+  bind _ <- formalPatternGuardLocal({enabled})
+  bind _ <- formalPatternGuardResume({enabled})
+  bind a <- formalPatternChoice(FormalPattern.{packet}({offset}, 4), 3, true)
+  bind b <- formalPatternChoice(FormalPattern.{packet}(4, {offset}), 2, false)
+  bind c <- formalPatternRecords(FormalPatternRow(right: 4, left: {offset}), 2)
+  bind d <- formalPatternRanges(-{lower}, 'b')
+  bind e <- formalPatternLists([{offset}, 3, 4], 2)
+  bind f <- formalPatternNested(FormalPatternList(flag: true, items: [{offset}, 4]), 3)
+  return a + b + c + d + e + f
+end function
+"#
+    )
 }

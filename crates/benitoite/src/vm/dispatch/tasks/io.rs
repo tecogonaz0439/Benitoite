@@ -1,4 +1,4 @@
-//! IO の要求と完了を、待ちと予算の終わりの冷たい境界で処理する（設計書 02-09、ADR 0264・0266）。
+//! IO の要求と完了を、待ちと予算の終わりの冷たい境界で処理する（設計書 02-09「IO 実行器」）。
 use super::*;
 use crate::builtins::iface::{IoWait, Lend, OutputWaitKind, WorkerWait};
 use crate::runtime::Stream;
@@ -160,7 +160,7 @@ pub(super) fn write_result<'e>(
             .pc
             .checked_add(1)
             .ok_or_else(|| missing("IO pc overflow"))?;
-        // 書き込みと位置の更新を一続きにする。回収が見るのは次の命令の入口だけである（ADR 0314）。
+        // 書き込みと位置の更新を一続きにする。回収が見るのは次の命令の入口だけである（設計書 02-08「IO の命令」）。
         slots.store(
             segment
                 .regs

@@ -8,7 +8,7 @@ import Benitoite.Release.Subst
 
 段階 A からの表現の違い:
 
-- 型付けの判断は、型パラメータの組み込みの制約の並び `C`（型の変数の番号の順）を持つ（ADR 0297）。V-Prim は
+- 型付けの判断は、型パラメータの組み込みの制約の並び `C`（型の変数の番号の順）を持つ（01-12「型パラメータの組み込みの制約」）。V-Prim は
   組み込みの関数の型パラメータの制約を `C` のもとで確かめ、V-Fun は型引数が関数の型パラメータの制約を
   満たすことを確かめる。型が制約を満たすか（等値の型・鍵の型）は 01-06 に委ね、`Builtins.sat` で与える。
 - 環境 Γ の要素は `Option Ty` である。V-Lam の前提と `lazy M` の M の検査では、Γ から継続の型を持つ変数を
@@ -17,7 +17,7 @@ import Benitoite.Release.Subst
   D-Impl のメソッドの本体の型付けは、メソッドの型パラメータを内側（番号 `0..g-1`）、実装の型パラメータを
   外側に並べた制約の並びで行う。
 - `handle` の節が処理する操作の型パラメータは、節の中で型の変数の番号 `0..k-1` に束縛し、制約の並びの
-  先頭に加える（01-06「その型パラメータをほかの何とも等しくない型として扱う」）。節の外側の型（環境の型、
+  先頭に加える（01-06「エフェクトの宣言とハンドラの型付け（初回リリース版）」）。節の外側の型（環境の型、
   `handle` の式の型、R）は、節の中では番号を k だけずらす。
 -/
 
@@ -57,7 +57,7 @@ def PrimSig.ntys (s : PrimSig) : Nat := s.tparams.length
 /-- 組み込みの関数と、01-12 がほかの章に委ねているもの。 -/
 structure Builtins where
   sig : PrimName → Option PrimSig
-  /-- IO を行わない組み込みの関数の値 δ(b[T̄; Ē], W̄)（ADR 0296）。 -/
+  /-- IO を行わない組み込みの関数の値 δ(b[T̄; Ē], W̄)（01-12「実行の規則」）。 -/
   delta : PrimName → List Ty → List Eff → List Val → Option Outcome
   /-- IO を行う組み込みの関数の応答として起こりうるもの。 -/
   ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → Prop
@@ -67,7 +67,7 @@ structure Builtins where
   isResource : OpaqueName → Bool
   /-- 組み込みのエフェクトと、その操作。`State` は操作を持たない。 -/
   effects : EffName → Option (List PrimName)
-  /-- 型が組み込みの制約を満たすか（01-06「等値の型」「鍵の型」）。制約の並び `C` のもとで判定する。 -/
+  /-- 型が組み込みの制約を満たすか（01-06「等値の型」「鍵の型（初回リリース版）」）。制約の並び `C` のもとで判定する。 -/
   sat : List TParam → Ty → TParam → Prop
   /-- `Reference.get` と `Reference.set` の名前。`Reference.update` の遷移が使う。 -/
   refGet : PrimName
@@ -174,6 +174,12 @@ def shiftEnv (k : Nat) (Γ : List (Option Ty)) : List (Option Ty) := Γ.map (Opt
 
 /-! ## パターンと網羅性 -/
 
+/-- 残りを束縛する場合だけ List の型を一つ加える。 -/
+def restTys (rest : Option ListRest) (a : Ty) : List Ty :=
+  match rest with
+  | some .bind => [.list a]
+  | _ => []
+
 mutual
   inductive PatTy (P : Program) : Pat → Ty → List Ty → Prop
     | P_Wild {a} : PatTy P .wild a []
@@ -182,6 +188,15 @@ mutual
         (∀ x, c ≠ .float x) → (∀ n, c ≠ .byte n) → (∀ n s, c ≠ .decimal n s) →
         (∀ o n, c ≠ .opaque o n) →
         PatTy P (.const c) c.type []
+    | P_RangeInt {lo hi : Int} :
+        PatTy P (.range (.integer lo) (.integer hi)) (.base .integer) []
+    | P_RangeChar {lo hi : Char} :
+        PatTy P (.range (.character lo) (.character hi)) (.base .character) []
+    | P_List {before rest after a δb δa} :
+        PatTys P before (List.replicate before.length a) δb →
+        PatTys P after (List.replicate after.length a) δa →
+        (rest = none → after = []) →
+        PatTy P (.list before rest after) (.list a) (δb ++ restTys rest a ++ δa)
     | P_Con {c ps cd ts δ} :
         P.cons c = some cd → ts.length = cd.ntys →
         PatTys P ps (cd.args.map (Ty.subst ts [])) δ →
@@ -227,13 +242,29 @@ end
 def Exhaustive (P : Program) (a : Ty) (ps : List Pat) : Prop :=
   ∀ v, Inhabits P a v → ∃ p ∈ ps, (Pat.matchVal p v).isSome
 
+/-- 各選択肢は同じ変数を一度ずつ束縛する。最初の対応は恒等であり、
+全選択肢の束縛の型を対応で並べ替えると、分岐の変数の型 δ になる。 -/
+def AltsTy (P : Program) (alts : List Alt) (a : Ty) (δ : List Ty) : Prop :=
+  alts ≠ [] ∧ δ.length = Arm.bindersOf alts ∧
+  (∀ alt, alts.head? = some alt → alt.slots = List.range alt.pat.binders) ∧
+  ∀ alt ∈ alts, ∃ γ, PatTy P alt.pat a γ ∧
+    alt.slots.Perm (List.range γ.length) ∧ selectSlots γ alt.slots = some δ
+
+theorem AltsTy.witness {P alts a δ} (h : AltsTy P alts a δ) :
+    ∃ p γ slots, PatTy P p a γ ∧ selectSlots γ slots = some δ := by
+  cases alts with
+  | nil => exact (h.1 rfl).elim
+  | cons alt alts =>
+      obtain ⟨γ, hp, _, hs⟩ := h.2.2.2 alt (by simp)
+      exact ⟨alt.pat, γ, alt.slots, hp, hs⟩
+
 /-! ## 値と計算の型付け -/
 
 mutual
   /-- `Γ ⊢v V : A`（制約の並び C とストアの型付け Ψ のもとで）。 -/
   inductive HasTypeV (P : Program) (B : Builtins) (Ψ : StoreTy) :
       List TParam → List (Option Ty) → Val → Ty → Prop
-    /-- 継続の型の変数は、`resume` の第一引数にだけ書ける（C-Resume。ADR 0300）。 -/
+    /-- 継続の型の変数は、`resume` の第一引数にだけ書ける（C-Resume。01-12「ハンドラ」）。 -/
     | V_Var {Γ i a} : Γ[i]? = some (some a) → (∀ b t ε, a ≠ .cont b t ε) →
         HasTypeV P B Ψ C Γ (.var i) a
     | V_Const {Γ c} : HasTypeV P B Ψ C Γ (.const c) c.type
@@ -309,9 +340,9 @@ mutual
         HasTypeC P B Ψ C Γ R n a ε → HasTypeC P B Ψ C Γ R (.ite v m n) a ε
     | C_Match {Γ R v arms a b ε} :
         HasTypeV P B Ψ C Γ v a → HasTypeArms P B Ψ C Γ R arms a b ε →
-        Exhaustive P a (arms.map Prod.fst) → HasTypeC P B Ψ C Γ R (.match v arms) b ε
+        Exhaustive P a (unguardedPats arms) → HasTypeC P B Ψ C Γ R (.match v arms) b ε
     /-- `Γ ⊢c M : A ! { }` のとき `Γ ⊢c lazy M : Lazy[A] ! { }`。M は R を持たない判断で、継続の型を持つ
-    変数を除いた環境で検査する（01-12「ストア」「関数の境界と escape」「ハンドラ」）。 -/
+    変数を除いた環境で検査する（01-12「ストア：可変のセルと明示遅延」「関数の境界と `escape`：途中の `return` と `try`」「ハンドラ」）。 -/
     | C_Lazy {Γ R m a} :
         HasTypeC P B Ψ C (hideConts Γ) none m a Eff.empty →
         HasTypeC P B Ψ C Γ R (.lazyC m) (.lazy a) Eff.empty
@@ -329,7 +360,7 @@ mutual
         HasTypeClauses P B Ψ C Γ R h t ε →
         HasTypeC P B Ψ C Γ R (.handle m h) t ε
     /-- C-Resume（節の変数 k）と C-ResumeL（継続の場所 κ）。継続の型の値は、`resume` の第一引数に
-    だけ書ける（ADR 0300）。κ に `resume` するときは、κ を作った節の R が、いまの R と等しい。 -/
+    だけ書ける（01-12「ハンドラ」）。κ に `resume` するときは、κ を作った節の R が、いまの R と等しい。 -/
     | C_Resume {Γ R i v b t ε} :
         Γ[i]? = some (some (.cont b t ε)) → HasTypeV P B Ψ C Γ v b →
         HasTypeC P B Ψ C Γ R (.resume (.var i) v) t ε
@@ -345,12 +376,18 @@ mutual
         HasTypeC P B Ψ C Γ R (.meth v m ss es ws) (ms.ret.subst (ss ++ [τ]) es) (Eff.substRho es ms.eff)
 
   inductive HasTypeArms (P : Program) (B : Builtins) (Ψ : StoreTy) :
-      List TParam → List (Option Ty) → Option Ty → List (Pat × Comp) → Ty → Ty → Eff → Prop
+      List TParam → List (Option Ty) → Option Ty → List Arm → Ty → Ty → Eff → Prop
     | nil {Γ R a b ε} : Ty.WF C.length b → HasTypeArms P B Ψ C Γ R [] a b ε
-    | cons {Γ R p m arms a b ε δ} :
-        PatTy P p a δ → HasTypeC P B Ψ C (binds δ ++ Γ) R m b ε →
+    | plain {Γ R alts body arms a b ε δ} :
+        AltsTy P alts a δ → HasTypeC P B Ψ C (binds δ ++ Γ) R body b ε →
         HasTypeArms P B Ψ C Γ R arms a b ε →
-        HasTypeArms P B Ψ C Γ R ((p, m) :: arms) a b ε
+        HasTypeArms P B Ψ C Γ R (.mk alts none body :: arms) a b ε
+    | guarded {Γ R alts guard body arms a b ε δ} :
+        AltsTy P alts a δ →
+        HasTypeC P B Ψ C (hideConts (binds δ ++ Γ)) none guard (.base .boolean) Eff.empty →
+        HasTypeC P B Ψ C (binds δ ++ Γ) R body b ε →
+        HasTypeArms P B Ψ C Γ R arms a b ε →
+        HasTypeArms P B Ψ C Γ R (.mk alts (some guard) body :: arms) a b ε
 
   /-- C-Handle の各節 `op(x̄) k ⇒ N`：`Γ, x̄:Ā, k:Cont(B → T ! ε); R ⊢c N : T ! ε`。操作の型パラメータは、
   節の中の型の変数の番号 `0..k-1` に束縛した、宣言の制約を持つ、ほかの型とは等しくない型の変数である。

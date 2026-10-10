@@ -1,4 +1,4 @@
-//! リソースの表と状態（設計書 02-09「リソースの追跡」、ADR 0150・0266）。
+//! リソースの表と状態（設計書 02-09「リソースの追跡」）。
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
@@ -8,7 +8,7 @@ use crate::runtime::sched::ExtOpId;
 use crate::runtime::{ResourceKind, Stop};
 use crate::vm::{InstrRef, TaskId};
 
-/// リソースの状態（ADR 0266 の決定 2）。
+/// リソースの状態（設計書 02-09「リソースの追跡」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum ResourceState {
     Open,
@@ -24,7 +24,7 @@ pub enum ResourceState {
 pub enum ResourceContent {
     /// OS の資源。貸している間と解放した後は `None`
     Os(Option<Box<dyn OsResource>>),
-    /// `TaskGroup` が起動したタスク（所有しない番号。ADR 0266 の決定 10）
+    /// `TaskGroup` が起動したタスク（所有しない番号。設計書 02-09「リソースの追跡」）
     TaskGroup(Vec<TaskId>),
 }
 
@@ -204,7 +204,7 @@ impl ResourceTable {
     /// 呼び出し側は、ほかの処理を挟まずに `request_release` で解放を始める。
     pub fn give_back(&mut self, id: ResourceId, handle: Box<dyn OsResource>) -> bool {
         let Some(entry) = self.entries.get_mut(&id) else {
-            // 実行終了後の返却は言語の解放を呼ばず、OS の資源だけ閉じる（ADR 0266 の決定 11）。
+            // 実行終了後の返却は言語の解放を呼ばず、OS の資源だけ閉じる（設計書 02-09「リソースの追跡」）。
             drop(handle);
             return false;
         };
@@ -216,7 +216,7 @@ impl ResourceTable {
             entry.state = ResourceState::Open;
             return requested;
         }
-        // 完了の共通処理は一度だけ返却する。食い違いでも既存の資源を上書きしない（ADR 0266）。
+        // 完了の共通処理は一度だけ返却する。食い違いでも既存の資源を上書きしない（設計書 02-09「タスクの待ちと取り消し」）。
         debug_assert!(false, "resource is not lent");
         drop(handle);
         false
@@ -353,7 +353,7 @@ impl ResourceTable {
     /// 実行を終えるとき、表に残った OS の資源を閉じる（言語の解放ではない。失敗は報告しない）。
     pub fn close_all_silently(&mut self) {
         // 言語の release（書き出しなど）を呼ばない。実行終了後の返却も同じく破棄する
-        // （設計書 02-09「リソースの追跡」、ADR 0266 の決定 11）。
+        // （設計書 02-09「リソースの追跡」）。
         self.release_jobs.clear();
         self.entries.clear();
         self.attachments.clear();

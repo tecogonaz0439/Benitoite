@@ -1,5 +1,5 @@
 //! 整形の結果の書き出し（設計書 06-03「字句の間の空白」「字下げ」「コメント」「空の行」「行末と文字」
-//! 「複数行の文字列」）。字句の字面は元のソースから写し、AST を出力し直さない（ADR 0226・0227）。
+//! 「複数行の文字列」）。字句の字面は元のソースから写し、AST を出力し直さない（06-03「整形の考え方」）。
 
 use super::roles::RoleTable;
 use crate::syntax::token::{Comment, Token};
@@ -22,7 +22,7 @@ use crate::syntax::token::{CommentKind, TokenKind};
 
 /// 整形の結果のバイト列を作る（本章「書き出し」）。
 pub fn print(input: &PrintInput<'_>) -> Vec<u8> {
-    // 書き手の改行の位置は保つ（ADR 0226）ので、改行の印で区切った論理の行を単位に、行の種類（シェバン・空・
+    // 書き手の改行の位置は保つ（06-03「整形の考え方」）ので、改行の印で区切った論理の行を単位に、行の種類（シェバン・空・
     // コメントだけ・コード）を決め、空の行の数と字下げを行ごとに決めてから書き出す（06-03「空の行」「コメント」）。
     let text = input.text;
     let lines = split_lines(input);
@@ -219,7 +219,7 @@ fn split_lines(input: &PrintInput<'_>) -> Vec<Line> {
     lines
 }
 
-/// ファイルの先頭（U+FEFF の後）が `#!` で始まるか（01-01「シェバンの行」）。
+/// ファイルの先頭（U+FEFF の後）が `#!` で始まるか（01-01「シェバンの行（初回リリース版）」）。
 fn is_shebang(text: &[u8]) -> bool {
     text.strip_prefix(BOM).unwrap_or(text).starts_with(b"#!")
 }

@@ -383,7 +383,7 @@ builtin! {
     /// `String.fromUTF8` の本体（実装プラン 10-15「項目の一覧」）。
     name = "String.fromUTF8",
     pure fn from_u_t_f8(ctx, b: &'c [u8]) -> Value<'e> {
-        // UTF-8 の検査を公開 API に集め、BOM もそのまま残す（設計書 03-06「Bytes と ByteOrder」）。
+        // UTF-8 の検査を公開 API に集め、BOM もそのまま残す（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
         super::option(&ctx, ctx.alloc_str_utf8(b, "String.fromUTF8")?)
     }
 }

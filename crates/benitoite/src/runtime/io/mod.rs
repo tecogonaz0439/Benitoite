@@ -72,11 +72,11 @@ pub enum DispatchAction {
 pub enum WaitPoint {
     /// 要求を置いたタスクを待たせる位置
     Park,
-    /// 予算を使い切った遅い経路の手順 2
+    /// 予算を使い切った遅い経路から移る切り替えの境界（設計書 02-08「タスクの切り替え」）
     SlowPath,
 }
 
-/// 列を処理する部品（ADR 0264 の決定 4）。
+/// 列を処理する部品（設計書 02-09「IO 実行器」）。
 pub trait Dispatcher: std::fmt::Debug {
     fn on_wait_point(&mut self, queue: &mut DispatchQueue, at: WaitPoint) -> DispatchAction;
 }

@@ -13,7 +13,7 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.1`, the first release. It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.2`. The language is the same as in `0.0.1`, the first release. It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md). For the earlier minimal implementation (`0.0.0`), see [benitoite-minimal.md](benitoite-minimal.md); the changes between the two are listed in the [CHANGELOG](../../CHANGELOG.md).
 
@@ -91,7 +91,7 @@ benitoite --licenses
 | `fmt` | Rewrites the given files, or all `.bnt` files under the given directories, in the standard layout. See [Formatting](#17-formatting). |
 | `skill` | Writes the bundled Agent Skill to the places where coding agents read skills, or removes it. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.1`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.2`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
 `<script>` is a file, or a directory that contains `main.bnt`. The file name and its extension are not checked. The directory of the script is the *root directory*: the script can import modules from the root directory and below it, and from the standard library ([Modules](#12-modules)). `benitoite` reads no configuration file.
@@ -855,4 +855,4 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: `0.0.1` is a source-only release; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: `0.0.2`, like `0.0.1`, is a source-only release; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.

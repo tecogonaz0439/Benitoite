@@ -1,4 +1,4 @@
-//! 処理系のテスト専用の筋書きと仮想の時間（設計書 07-03「順序を与えるスケジューラと仮想の時間」、ADR 0274）。
+//! 処理系のテスト専用の筋書きと仮想の時間（設計書 07-03「順序を与えるスケジューラと仮想の時間（初回リリース版）」）。
 //! CLI と利用者のテストからは選べない。R26 の仕事を実行する部品も同じ筋書きを共有する。
 
 use std::cell::RefCell;
@@ -256,7 +256,7 @@ impl Clock for VirtualClock {
 #[cfg(test)]
 mod tests {
     use super::*;
-    // 関門: 三つの部品は同じ指示列を消費し、誤った選択で指示も待ち行列も進めない（ADR 0274）。
+    // 関門: 三つの部品は同じ指示列を消費し、誤った選択で指示も待ち行列も進めない（設計書 07-03「順序を与えるスケジューラと仮想の時間（初回リリース版）」）。
     #[test]
     fn virtual_clock_picker_and_worker_share_the_script_and_record() {
         let task = TaskId {
@@ -340,7 +340,7 @@ mod tests {
 }
 
 impl ScheduleHandle {
-    /// 三つの部品を同じ筋書きで動かす（ADR 0274）。
+    /// 三つの部品を同じ筋書きで動かす（設計書 07-03「順序を与えるスケジューラと仮想の時間（初回リリース版）」）。
     pub fn parts(&self) -> super::parts::RuntimeParts {
         super::parts::RuntimeParts {
             network_faults: super::parts::NetworkFaults::default(),

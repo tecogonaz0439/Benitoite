@@ -1,4 +1,4 @@
-//! タスクの対象、状態、タスクの表（設計書 02-08「タスクの切り替え」「取り消し」、ADR 0161・0266）。
+//! タスクの対象、状態、タスクの表（設計書 02-08「タスクの切り替え」「取り消し」）。
 
 use crate::builtins::iface::{OutputWaitKind, SpawnMode};
 use crate::runtime::Stream;
@@ -48,13 +48,13 @@ pub enum WaitReason {
 }
 
 impl WaitReason {
-    /// 行き詰まりの判定で外部の完了の待ちとして数えるか（ADR 0266 の決定 8、ADR 0267 の決定 5、ADR 0283）。
+    /// 行き詰まりの判定で外部の完了の待ちとして数えるか（設計書 02-08「タスクの切り替え」）。
     pub fn is_external(self) -> bool {
         !matches!(self, WaitReason::TaskEnd(_) | WaitReason::Lazy)
     }
 }
 
-/// タスクの状態（ADR 0266 の決定 1）。
+/// タスクの状態（設計書 02-08「取り消し」）。
 #[derive(Debug)]
 pub enum TaskState {
     Ready,
@@ -105,7 +105,7 @@ pub struct TaskObj {
     pub result: TaskResult,
     /// 終わりを待つタスク
     pub awaiters: Vec<TaskId>,
-    /// 属する `handle` のハンドラの記録（ADR 0266 の決定 6）。どの `handle` にも属さなければ `None`
+    /// 属する `handle` のハンドラの記録（設計書 02-08「タスクの起動と待ち方」）。どの `handle` にも属さなければ `None`
     pub handle: Option<Slot>,
     /// このタスクが起動したタスク
     pub spawned: Vec<TaskId>,

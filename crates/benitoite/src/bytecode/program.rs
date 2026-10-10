@@ -1,5 +1,5 @@
 //! 関数の原型とコンパイル済みプログラム（設計書 02-07「コンパイル済みプログラム」、実装プラン 10-07）。
-//! 生成の後に変更せず、スレッドの間で共有する（ADR 0015）。
+//! 生成の後に変更せず、スレッドの間で共有する（設計書 02-01「コンパイル済みプログラムと実行ごとの状態」）。
 
 use std::sync::Arc;
 
@@ -81,7 +81,7 @@ pub enum CaptureSource {
     Capture(u16),
 }
 
-/// 定数の記述（02-07「定数表」、ADR 0083）。実行中の値そのものは置かない。
+/// 定数の記述（02-07「定数表」）。実行中の値そのものは置かない。
 /// 子の記述を指す番号は、その記述自身の番号より小さい（VM は番号の小さい順に作れば子が先にできる）。
 #[derive(Clone, PartialEq, Debug)]
 pub enum ConstDesc {
@@ -127,7 +127,7 @@ pub struct SwitchTable {
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct ClauseDesc {
     pub op: OpIdx,
-    /// 末尾で再開する節か（ADR 0151）
+    /// 末尾で再開する節か（02-05「書く位置の検査」）
     pub tail_resumptive: bool,
 }
 
@@ -159,7 +159,7 @@ pub struct Proto {
     /// 命令ごとの由来位置。`code` と同じ長さ。値として使う組み込みの関数と操作の原型では `None`
     pub positions: Vec<Option<Span>>,
     /// 命令ごとのメソッドの呼び出しの型クラス。`code` と同じ長さ。`METHOD`・`TAILMETHOD` の位置に
-    /// `Some(型クラスの表の番号)`、ほかの位置に `None`（ADR 0310）。引数の並びの長さを
+    /// `Some(型クラスの表の番号)`、ほかの位置に `None`（02-07「辞書とメソッドの呼び出し」）。引数の並びの長さを
     /// `TraitInfo::methods[C].arity` から決めるために使う
     pub method_traits: Vec<Option<TraitIdx>>,
     /// 生存の情報（10-07「生存の情報」）
@@ -369,7 +369,7 @@ impl Proto {
     }
 }
 
-/// コンパイル済みプログラムがスレッドの間で共有できることを、コンパイルの時点で確かめる（ADR 0015）。
+/// コンパイル済みプログラムがスレッドの間で共有できることを、コンパイルの時点で確かめる（02-01「コンパイル済みプログラムと実行ごとの状態」）。
 // 呼ばれない関数で、型の性質をコンパイルの時点で確かめる（00-02「`#[allow]` を書いてよい箇所」）。
 #[allow(dead_code)]
 fn assert_shareable() {

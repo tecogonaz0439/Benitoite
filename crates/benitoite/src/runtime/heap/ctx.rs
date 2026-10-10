@@ -1,4 +1,4 @@
-//! 実行ごとのヒープ（Heap）と、回収しない区間の文脈（ValueCtx・NoGcCtx・SlotOps）（ADR 0260 の決定 3）。
+//! 実行ごとのヒープ（Heap）と、回収しない区間の文脈（ValueCtx・NoGcCtx・SlotOps）（設計書 02-09「メモリの管理」）。
 
 use std::ops::Deref;
 
@@ -338,7 +338,7 @@ impl Heap {
     pub fn stats(&self) -> HeapStats {
         self.core.stats()
     }
-    /// ヒープの検証器（ADR 0260 の決定 7）。`heap-verify` を無効にした構成では何もせず `Ok` を返す。
+    /// ヒープの検証器（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。`heap-verify` を無効にした構成では何もせず `Ok` を返す。
     /// すべての対象の頭と、対象と根の `Slot` が指す先を確かめる。
     pub fn verify(&self, roots: &dyn Trace) -> Result<(), HeapFault> {
         self.core.verify(roots)
@@ -400,13 +400,13 @@ impl<'e> NoGcCtx<'e> {
         x.discard(&mut d);
     }
     /// 回収の要求が、前にこの関数を呼んだ後に新しく立ったかを返す（一度だけ真を返す）。
-    /// VM は真を受けたら予算を 0 にして遅い経路に入る（ADR 0263 の決定 3）。
+    /// VM は真を受けたら予算を 0 にして遅い経路に入る（設計書 02-08「タスクの切り替え」）。
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub fn take_collect_signal(&self) -> bool {
         self.values.core.take_collect_signal()
     }
-    /// 回収の要求が立っているか。続けて戻る処理と後始末の回収の位置が調べる（ADR 0259 の決定 5）。
+    /// 回収の要求が立っているか。続けて戻る処理と後始末の回収の位置が調べる（設計書 02-08「タスクの切り替え」）。
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub fn collect_requested(&self) -> bool {
@@ -452,7 +452,7 @@ impl<'e> ValueCtx<'e> {
         self.core.alloc_str_parts(self.epoch, len.get(), parts)
     }
     /// 外部から受け取ったバイト列を文字列の値にする。上限を超えれば `Err(Stop)`、
-    /// 正しい UTF-8 でなければ `Ok(None)`（呼び出し側が `IOErrorKind.InvalidUTF8` にする。ADR 0012）。
+    /// 正しい UTF-8 でなければ `Ok(None)`（呼び出し側が `IOErrorKind.InvalidUTF8` にする。設計書 01-09「IO の失敗の種類」）。
     pub fn alloc_str_utf8(
         &self,
         bytes: &[u8],
@@ -679,7 +679,7 @@ mod tests {
     // 内部層の既存のテストは公開層の検査の抜けを捕まえない。上限超過時の確保数も確認し、
     // 本番の公開範囲を広げない。大きさの測定は R06 が定数の表明とは別に要求する。
 
-    // heap-verify は対象の世代を値に加えるため、通常構成だけで 16 バイトを要求する（ADR 0258）。
+    // heap-verify は対象の世代を値に加えるため、通常構成だけで 16 バイトを要求する（設計書 02-08「値の表現」）。
     #[cfg(not(feature = "heap-verify"))]
     #[test]
     fn r06_value_and_slot_sizes_are_sixteen_bytes() {
@@ -983,7 +983,7 @@ mod tests {
                 assert_eq!(ctx.cell_version(cell), Some(version));
             }
             assert_eq!(ctx.cell_get(cell).unwrap().as_bool(), Some(true));
-            // 自己参照も版を進め、一つの実行の中で循環を作れる（ADR 0267）。
+            // 自己参照も版を進め、一つの実行の中で循環を作れる（設計書 02-08「可変のセル」）。
             ctx.cell_set(cell, cell).unwrap();
             assert!(ctx.same_object(ctx.cell_get(cell).unwrap(), cell));
             assert_eq!(ctx.cell_version(cell), Some(3));
@@ -1392,6 +1392,10 @@ mod r04_tests {
     }
 
     #[test]
+    #[cfg_attr(
+        not(miri),
+        ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"
+    )]
     fn r04_million_linked_and_nested_objects_free_without_recursion() {
         // Miri は解放の連鎖の安全性を小さな構造で調べ、百万の深さは通常実行に残す（実装プラン R11）。
         let depth = if cfg!(miri) { 64 } else { 1_000_000 };

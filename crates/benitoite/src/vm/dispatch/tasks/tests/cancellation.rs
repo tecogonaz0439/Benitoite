@@ -298,7 +298,7 @@ fn timeouts_wait_for_cancellation_and_remove_obsolete_timers() {
     );
 }
 
-// 関門: Await の停止位置は VM の PRIM。完了済みと待っている間の取り消しを同じ表で守る（ADR 0317）。
+// 関門: Await の停止位置は VM の PRIM。完了済みと待っている間の取り消しを同じ表で守る（設計書 01-11「取り消し」）。
 #[test]
 fn await_of_a_cancelled_task_stops_at_its_own_prim_even_after_waiting() {
     for waiting in [false, true] {

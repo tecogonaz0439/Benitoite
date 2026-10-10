@@ -286,7 +286,7 @@ impl<'a> Resolver<'a> {
                 self.collect_decl(module.id, top);
             }
         }
-        // 索引は公開したトップレベルとその中の名前を指す。import の別名を含めない（ADR 0128）。
+        // 索引は公開したトップレベルとその中の名前を指す。import の別名を含めない（02-04「標準ライブラリのソースの持ち方」）。
         for module in self
             .modules
             .iter()

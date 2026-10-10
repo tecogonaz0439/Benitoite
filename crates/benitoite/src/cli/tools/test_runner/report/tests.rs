@@ -97,7 +97,7 @@ fn assert_details_put_release_notes_before_the_tail_note() {
         json.contains("\"taskOrigins\":[{\"function\":\"check\",\"location\":null}]}"),
         "{json}"
     );
-    // JSON の notes も、解放の注記の後に末尾呼び出しの注記を置く（ADR 0333 の決定 2）。
+    // JSON の notes も、解放の注記の後に末尾呼び出しの注記を置く（06-04「結果の報告」）。
     assert!(
         json.contains(&format!(
             "\"notes\":[\"release note\",\"{}\"],\"trace\":",
@@ -119,7 +119,7 @@ fn exit_json(reports: Vec<crate::diag::Diagnostic>) -> String {
 }
 
 // 関門: `"exit"` の notes が解放の失敗の報告ごとに RELEASE_WHILE_STOPPING と同じ文を並べ、報告がなければ空の配列に
-// なること（10-18「JSON Lines の形」、ADR 0333 の決定 2）。
+// なること（10-18「JSON Lines の形」、06-04「結果の報告」）。
 #[test]
 fn exit_json_notes_list_release_failures() {
     let mut report = crate::diag::DiagBuilder::new(crate::diag::DiagCode::R0401).build();

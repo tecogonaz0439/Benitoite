@@ -1,4 +1,4 @@
-//! イベントループ（設計書 02-09「IO 実行器」、ADR 0162）。`mio` の型はこのモジュールと HTTP の接続の層の中に閉じる（実装プラン 10-16）。
+//! イベントループ（設計書 02-09「IO 実行器」）。`mio` の型はこのモジュールと HTTP の接続の層の中に閉じる（実装プラン 10-16）。
 
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::Duration;
@@ -147,7 +147,7 @@ pub(crate) fn wakeup_with_poll() -> std::io::Result<Wakeup> {
                 poll: Mutex::new(Some(Arc::clone(&poll))),
                 registry,
                 active_poll: poll,
-                // 切り替えのたびの確保を避ける（ADR 0331）。idle 用とは別に保つ。
+                // 切り替えのたびの確保を避ける。idle 用とは別に保つ。
                 ready_events: Mutex::new(mio::Events::with_capacity(128)),
                 ready: Arc::new(Mutex::new(Vec::new())),
                 next_token: std::sync::atomic::AtomicUsize::new(2),

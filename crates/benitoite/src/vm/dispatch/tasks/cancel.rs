@@ -1,4 +1,4 @@
-//! 取り消しの要求・辿りへの移行と、取り消しを伴う待ち方（設計書 02-08「取り消し」、ADR 0282）。
+//! 取り消しの要求・辿りへの移行と、取り消しを伴う待ち方（設計書 02-08「取り消し」）。
 
 use super::*;
 use crate::runtime::sched::TimerId;
@@ -130,7 +130,7 @@ pub(in crate::vm) fn checked_requested(ctx: &NoGcCtx<'_>, state: &RunState) -> R
         .ok_or_else(|| missing("task object missing"))
 }
 
-/// handle の記録の借用を終えてから、属するタスクへ要求を出す（ADR 0266 の決定 7）。
+/// handle の記録の借用を終えてから、属するタスクへ要求を出す（設計書 02-08「枠を降ろす原因と処理」）。
 #[cold]
 #[inline(never)]
 pub(in crate::vm) fn handle_members(
@@ -160,7 +160,7 @@ pub(in crate::vm::dispatch) fn finish(
     Ok(Control::Return)
 }
 
-// 結果だけが子の Task の値に残っている間も、SpawnWait が所有を続ける（ADR 0314）。
+// 結果だけが子の Task の値に残っている間も、SpawnWait が所有を続ける。
 #[cold]
 #[inline(never)]
 pub(super) fn discard_cancelled_parent(
@@ -224,7 +224,7 @@ pub(super) fn expire(
     Ok(true)
 }
 
-/// 結果を決める前に、結果に影響しない未完了の子だけを取り消す（ADR 0152）。
+/// 結果を決める前に、結果に影響しない未完了の子だけを取り消す（設計書 02-08「タスクの起動と待ち方」）。
 #[cold]
 #[inline(never)]
 pub(super) fn deliver<'e>(

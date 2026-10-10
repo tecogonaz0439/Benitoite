@@ -4,7 +4,7 @@ use crate::typeck::TryKind;
 use crate::types::EffectName;
 
 impl State<'_> {
-    /// 01-12「関数の境界と escape」の `Result` と `Option` の `try` の二つの行。
+    /// 01-12「関数の境界と `escape`：途中の `return` と `try`」の `Result` と `Option` の `try` の二つの行。
     pub(super) fn try_expr(&mut self, e: &ast::TryExpr) -> Result<Comp, InternalError> {
         let info = self
             .types
@@ -139,7 +139,7 @@ impl State<'_> {
         }
     }
 
-    /// 01-12「解放の枠と実行時エラーの継続」の `with` の行。
+    /// 01-12「解放の枠と実行時エラーの継続：`with`」の `with` の行。
     pub(super) fn with(
         &mut self,
         e: &ast::WithExpr,
@@ -360,7 +360,7 @@ fn settle_handle(h: &mut Handle<Comp>) {
         patch_resume(&mut clause.body, clause.cont.id, &eff);
     }
 }
-/// 再開を確定して外へエフェクトを求め直す。ラムダと遅延には入り込まない（ADR 0155）。
+/// 再開を確定して外へエフェクトを求め直す。ラムダと遅延には入り込まない（`resume` はそこに書けない。設計書 02-03「文脈の制限」）。
 fn patch_resume(c: &mut Comp, target: VarId, eff: &EffectSet) {
     match &mut c.kind {
         CompKind::Resume { cont, .. } => {

@@ -1,5 +1,5 @@
 //! ゴールデンテストの `fmt`・`fmt-check` の方式と、`check`・`run` のテストでのフォーマッタの性質の確かめ
-//! （設計書 07-03「ゴールデンテストの形式（初回リリース版）」、06-03「テスト」、ADR 0224 の決定 2・4）。
+//! （設計書 07-03「ゴールデンテストの形式（初回リリース版）」、06-03「テスト」）。
 
 use std::ffi::OsString;
 use std::fs;
@@ -231,7 +231,7 @@ pub(super) enum Property {
 }
 
 /// `check`・`run` のテストについて、整形の冪等性と、整形の前後で `check` の診断のコードと文言の並びが同じことを
-/// 確かめる（ADR 0224 の決定 4。位置は比べない、07-03）。
+/// 確かめる（位置は比べない。設計書 07-03「ゴールデンテストの形式（初回リリース版）」）。
 pub(super) fn check_properties(case: &TestCase, deny_warnings: bool) -> TestResult<Property> {
     let mut files = script_files(&case.path)?;
     if case.path.is_dir() {

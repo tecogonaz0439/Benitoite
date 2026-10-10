@@ -327,7 +327,7 @@ end function
     );
 }
 
-// 関門: 不正なリテラルの実行時の扱い（ADR 0316）、生の置換文字列、03-08 の
+// 関門: 不正なリテラルの実行時の扱い（設計書 03-08「Regex」）、生の置換文字列、03-08 の
 // extractDates の組み合わせを実経路で守る。単体テストは検査の段や List.map を通らない。
 #[test]
 fn scripts_accept_invalid_pattern_literals_and_extract_dates_and_literal_replacements() {

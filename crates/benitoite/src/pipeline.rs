@@ -1,5 +1,5 @@
 //! 段をつなぐ公開の関数（設計書 02-01「段と段の間のデータ」「検査と実行の経路」「誤りが見つかったときの段の進め方」
-//! 「関数の呼び出しと処理系のスタック」、02-11「実行を始めるファイルとプログラムの読み込み」、ADR 0019・0087・0156・0166）。
+//! 「関数の呼び出しと処理系のスタック」、02-11「実行を始めるファイルとプログラムの読み込み」）。
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -13,10 +13,10 @@ use crate::syntax::ast::Module;
 use crate::syntax::token::Comment;
 use crate::typeck::TypeckOutput;
 
-/// 検査・脱糖・コンパイルの段を動かすスレッドのスタックの大きさ（64 MiB。02-01、ADR 0087）。
+/// 検査・脱糖・コンパイルの段を動かすスレッドのスタックの大きさ（64 MiB。02-01「関数の呼び出しと処理系のスタック」）。
 pub const STAGE_STACK_BYTES: usize = 64 * 1024 * 1024;
 
-/// ディレクトリを指定したときに実行を始めるファイルの名前（06-01「ディレクトリの指定」、ADR 0127）。
+/// ディレクトリを指定したときに実行を始めるファイルの名前（06-01「ディレクトリの指定（初回リリース版）」）。
 pub const ENTRY_FILE_NAME: &str = "main.bnt";
 
 /// 検査の選択肢。
@@ -24,7 +24,7 @@ pub const ENTRY_FILE_NAME: &str = "main.bnt";
 pub struct CheckOptions {
     /// `main` の有無と形を検査する。`check`・`run` で真、`test` で偽（10-05 の `typecheck`）
     pub require_main: bool,
-    /// `--deny-warnings`（02-01「誤りが見つかったときの段の進め方」、ADR 0166）
+    /// `--deny-warnings`（02-01「誤りが見つかったときの段の進め方」）
     pub deny_warnings: bool,
 }
 
@@ -73,7 +73,7 @@ pub enum CompileError {
     Internal(InternalError),
 }
 
-/// 実行を始めるファイルを決められない（CLI の使い方の誤り。終了状態 2。06-01「ディレクトリの指定」）。
+/// 実行を始めるファイルを決められない（CLI の使い方の誤り。終了状態 2。06-01「ディレクトリの指定（初回リリース版）」）。
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum EntryError {
     /// 指定したディレクトリに `main.bnt` がない
@@ -86,7 +86,7 @@ use crate::bytecode::program::CompiledProgram;
 use crate::ir::core_ir::CoreProgram;
 use crate::modules::{EntrySpec, ModuleFs};
 
-/// コマンドラインで与えたパスから、実行を始めるファイルを決める（06-01「ディレクトリの指定」、02-02「ソースとファイル ID」の表示名）。
+/// コマンドラインで与えたパスから、実行を始めるファイルを決める（06-01「ディレクトリの指定（初回リリース版）」、02-02「ソースとファイル ID」の表示名）。
 /// ディレクトリなら、その下の `main.bnt` を読むファイルとし、表示名をディレクトリのパスに `main.bnt` を続けた名前にする。
 /// ディレクトリに `main.bnt` がなければ `EntryError::NoMainFile`。ファイル（と、存在しないパス）はそのまま読むファイルとし、
 /// 表示名はパスの文字列（`Path::display`）とする。存在しないパスの誤りは、読み込みの段が E0101 にする。
@@ -117,7 +117,7 @@ pub fn entry_spec(path: &Path) -> Result<EntrySpec, EntryError> {
 
 /// 実行を始めるファイルから、読み込み・字句解析・構文解析・名前解決・型検査（定数の評価を含む）を行う
 /// （02-01「検査と実行の経路」の `check`）。標準ライブラリのソースは 10-14 の表から読み込みの段に渡す。
-/// 段の中身は `STAGE_STACK_BYTES` のスタックを持つスレッドで行う（ADR 0087）。そのスレッドの panic は段のスレッドの
+/// 段の中身は `STAGE_STACK_BYTES` のスタックを持つスレッドで行う（02-01「関数の呼び出しと処理系のスタック」）。そのスレッドの panic は段のスレッドの
 /// 中で捕らえ、報告の種類が `Internal` の診断（段は `check`、スレッドは `Stage`）にして `diagnostics` に入れて返す。
 pub fn check(entry: &EntrySpec, fs: &(dyn ModuleFs + Sync), opts: CheckOptions) -> CheckResult {
     match on_large_stack(|| crate::runtime::panic::catch(|| check_stages(entry, fs, opts))) {

@@ -109,7 +109,7 @@ pub(super) fn check_bound(
     check_parameter_bound(ctx, &p, mode, set, r, Some(index));
 }
 
-/// 節の型パラメータを囲む関数のパラメータと混同しない（設計書 01-06、ADR 0312）。
+/// 節の型パラメータを囲む関数のパラメータと混同しない（設計書 01-06「エフェクトの宣言とハンドラの型付け（初回リリース版）」）。
 pub(super) fn check_rigid_bound(
     ctx: &mut Body<'_, '_>,
     clause: NodeId,

@@ -1,4 +1,4 @@
-//! 出力の待ちを本物の VM・IO 実行器と筋書きで確かめる（実装プラン R27、ADR 0265・0283・0314）。
+//! 出力の待ちを本物の VM・IO 実行器と筋書きで確かめる（実装プラン R27、設計書 02-09「出力のバッファ」「IO 実行器」、02-08「IO の命令」）。
 // テストの失敗は panic で表す（実装プラン 00-02）。
 #![allow(
     clippy::unwrap_used,
@@ -60,7 +60,7 @@ fn vm(program: &CompiledProgram) -> Vm<'_> {
 }
 // 関門: 小さい非端末出力は、ほかのタスクが走っている間の予算切り替えでも届く。
 // OutputPort 単体では VM の切り替えとの接続を確かめられない。出力先からの通知で
-// 到着を待ち、実時間を切り替えの順序に使わない（設計書 02-09「出力のバッファ」、ADR 0320）。
+// 到着を待ち、実時間を切り替えの順序に使わない（設計書 02-09「出力のバッファ」）。
 #[test]
 fn budget_switch_transfers_both_short_outputs_while_another_task_computes() {
     let program = compile(&format!(

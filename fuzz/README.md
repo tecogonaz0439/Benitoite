@@ -13,7 +13,7 @@ cargo install cargo-fuzz --version 0.13.2 --locked
 
 ルートの Cargo ワークスペースは `fuzz/` を除外する。通常の検査は `rust-toolchain.toml` の stable 版で行い、fuzzing だけ `cargo +nightly fuzz` を使う。
 
-`libfuzzer-sys` は `0.4.13` に固定している。ライセンスは `(MIT OR Apache-2.0) AND NCSA` であり、NCSA はこの fuzzing 用クレートに限って認める（ADR 0003、実装プラン 00-02「依存するクレート」）。処理系のクレートはパス依存として参照する。
+`libfuzzer-sys` は `0.4.13` に固定している。ライセンスは `(MIT OR Apache-2.0) AND NCSA` であり、NCSA はこの fuzzing 用クレートに限って認める（[ロードマップ](../docs/design/00-overview/00-03-roadmap.md)の「利用する既存の OSS のライセンス」、実装プラン 00-02「依存するクレート」）。処理系のクレートはパス依存として参照する。
 
 ## 短時間の実行
 

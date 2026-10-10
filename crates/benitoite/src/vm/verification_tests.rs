@@ -221,7 +221,7 @@ fn workload_results_and_output_agree_with_and_without_stress() {
     let depth = if cfg!(miri) { 2 } else { 7 };
     let count = if cfg!(miri) { 3 } else { 100 };
     let total: usize = (0..count).map(|i| 2 * (i % 71 + 1)).sum();
-    // 各 walk/leaf の呼び出し前と復帰後の安全点に一回ずつ要る（ADR 0259 の決定 5）。
+    // 各 walk/leaf の呼び出し前と復帰後の安全点に一回ずつ要る（設計書 02-08「タスクの切り替え」）。
     let cases = [
         (
             tree_program(depth, false),

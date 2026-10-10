@@ -1,4 +1,4 @@
-//! 組み込みの関数を呼ぶときの値の変換（設計書 02-08「参照インタプリタ」、ADR 0276）。
+//! 組み込みの関数を呼ぶときの値の変換（設計書 02-08「参照インタプリタ」）。
 //! BuiltinBridge は評価の実行ごとに一つ持つ。呼び出しごとに区間を開き、引数と結果を区間の中で
 //! 変換し終えた後、成功・停止・終了のいずれでも回収する。中身を見せない値は Bridge の根の表で
 //! 保持し、独自の値には表の位置だけを持たせる。次の区間では表から読み直し、終了時に根を手放す。
@@ -322,7 +322,7 @@ enum FromHeap<'e> {
     Set { len: usize },
 }
 
-// 区間が閉じる前に、ヒープを指さない値へ戻す。リストは公開 API で読む（ADR 0276）。
+// 区間が閉じる前に、ヒープを指さない値へ戻す。リストは公開 API で読む（設計書 02-08「参照インタプリタ」）。
 fn from_heap_with<'e>(
     ctx: &ValueCtx<'e>,
     value: HeapValue<'e>,
@@ -580,6 +580,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
     fn million_element_lists_and_million_deep_constructors_round_trip_and_drop() {
         let mut heap = Heap::new(HeapConfig::default());
         let input = Value::list((0..1_000_000).map(Value::Int).collect());
@@ -936,7 +937,7 @@ mod tests {
         assert!(bridge.heap.object_ids().is_empty());
     }
     builtin! {
-        /// 中身を見せない値は、変換の境目の表でだけ保持する（F14、ADR 0276）。
+        /// 中身を見せない値は、変換の境目の表でだけ保持する（F14、設計書 02-08「参照インタプリタ」）。
         name = "Test.makeOpaque",
         pure fn make_opaque(ctx) -> HeapValue<'e> { Ok(ctx.alloc_opaque(Opaque)) }
     }

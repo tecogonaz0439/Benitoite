@@ -40,7 +40,7 @@ fn lazy_captures_and_update_frame_survive_collection_and_cache_the_result() {
     check_lazy_capture_and_result();
 }
 
-/// 回収と結果の書き込みを同じ小さなケースで Miri からも通す（ADR 0318）。
+/// 回収と結果の書き込みを同じ小さなケースで Miri からも通す（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
 pub(crate) fn check_lazy_capture_and_result() {
     let mut b = ProgramBuilder::new();
     b.program.main_kind = MainKind::Result;
@@ -381,6 +381,7 @@ fn update_unwind_obeys_every_cause_and_rejects_non_evaluating_states() {
 // 関門: 10 万段の値を実行しても Rust のスタックが深くならず、言語の上限で
 // 止まる契約。小さな入れ子やヒープだけの深い値のテストでは捕まえられない。
 #[test]
+#[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
 fn a_hundred_thousand_lazies_stop_at_the_vm_stack_limit() {
     let mut b = ProgramBuilder::new();
     let main = b.proto("main", 0, 1).unwrap();

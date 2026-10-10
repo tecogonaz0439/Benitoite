@@ -88,9 +88,9 @@ def monoidIntMeths : MethName → Option Comp
 
 /-- 環境は d, x, y の順（y が番号 0）。 -/
 def semigroupBoxMeths : MethName → Option Comp
-  | "combine" => some (.match (.var 1) [(.con "Box" [.var],
-      .match (.var 1) [(.con "Box" [.var],
-        .letIn (.meth (.var 4) "combine" [] [] [.var 1, .var 0])
+  | "combine" => some (.match (.var 1) [.mk [⟨.con "Box" [.var], [0]⟩] none
+      (.match (.var 1) [.mk [⟨.con "Box" [.var], [0]⟩] none
+        (.letIn (.meth (.var 4) "combine" [] [] [.var 1, .var 0])
           (.ret (.con "Box" [.tvar 0] [.var 0])))])])
   | _ => none
 
@@ -244,5 +244,138 @@ example : exec (.meth (.dict "MonoidInt" [] []) "empty" [] [] []) = (.returned 0
 メソッドの本体は、辞書の引数 d を通して `Integer` の `combine` を呼ぶ（E-Meth の辞書の引数の置き換え）。 -/
 example : exec (.meth (.dict "SemigroupBox" [intTy] [.super (.dict "MonoidInt" [] []) "Semigroup"]) "combine"
     [] [] [.con "Box" [intTy] [int 1], .con "Box" [intTy] [int 2]]) = (.boxed 3, 0) := by decide
+
+/-! ## 拡張したパターン（C7）
+
+実行結果を境界として、選択肢の順、束縛の対応、ガードの偽で飛ばす範囲、範囲の両端、
+リストの長さと束縛を確かめる。Box の例のガードなし・単一選択肢の照合では、これらの誤りを検出できない。
+-/
+
+/-- A(x, y), B(y, x) の二番目の選択肢では、x は二番目の束縛になる。 -/
+def choiceMatch : Comp := .match (.con "B" [] [int 10, int 20])
+  [.mk [⟨.con "A" [.var, .var], [0, 1]⟩, ⟨.con "B" [.var, .var], [1, 0]⟩] none (.ret (.var 1)),
+   .mk [⟨.wild, []⟩] none (.ret (int 99))]
+
+example : exec choiceMatch = (.returned 20, 0) := by decide
+
+/-- 二つとも照合する選択肢は、左の選択肢の束縛を使う。 -/
+example : exec (.match (.list [int 10, int 20])
+    [.mk [⟨.list [.var, .wild] none [], [0]⟩, ⟨.list [.wild, .var] none [], [0]⟩]
+      none (.ret (.var 0)), .mk [⟨.wild, []⟩] none (.ret (int 99))]) = (.returned 10, 0) := by decide
+
+/-- 一番目の選択肢は false を、二番目は true を束縛する。
+一番目でガードが偽なら、二番目の選択肢を試さず次の分岐へ進む。 -/
+def guardSkip : Comp := .match (.list [.const (.boolean false), .const (.boolean true)])
+  [.mk [⟨.list [.var, .wild] none [], [0]⟩, ⟨.list [.wild, .var] none [], [0]⟩]
+    (some (.ret (.var 0))) (.ret (int 1)),
+   .mk [⟨.wild, []⟩] none (.ret (int 2))]
+
+example : exec guardSkip = (.returned 2, 0) := by decide
+
+/-- ガードを計算して真になったとき、束縛を置換した本体に戻る。 -/
+example : exec (.match (int 7)
+    [.mk [⟨.var, [0]⟩]
+      (some (.letIn (.ret (.const (.boolean true))) (.ret (.var 0)))) (.ret (.var 0)),
+     .mk [⟨.wild, []⟩] none (.ret (int 99))]) = (.returned 7, 0) := by decide
+
+/-- Integer の負の下端と両端を含み、範囲外は次の分岐へ進む。 -/
+example : ([-3, -2, 0, 2, 3] : List Int).map (fun n => exec (.match (int n)
+    [.mk [⟨.range (.integer (-2)) (.integer 2), []⟩] none (.ret (int 1)),
+     .mk [⟨.wild, []⟩] none (.ret (int 0))])) =
+    [(.returned 0, 0), (.returned 1, 0), (.returned 1, 0), (.returned 1, 0), (.returned 0, 0)] := by decide
+
+/-- Character も両端を含む。 -/
+example : (['`', 'a', 'm', 'z', '{'] : List Char).map (fun c => exec (.match (.const (.character c))
+    [.mk [⟨.range (.character 'a') (.character 'z'), []⟩] none (.ret (int 1)),
+     .mk [⟨.wild, []⟩] none (.ret (int 0))])) =
+    [(.returned 0, 0), (.returned 1, 0), (.returned 1, 0), (.returned 1, 0), (.returned 0, 0)] := by decide
+
+/-- 長さが一つなら残りなし、二つ以上なら残りを束縛せず末尾を返し、空なら 0 を返す。 -/
+example : ([[], [int 1], [int 1, int 2], [int 1, int 2, int 3, int 4]] : List (List Val)).map
+    (fun vs => exec (.match (.list vs)
+      [.mk [⟨.list [.var] none [], [0]⟩] none (.ret (.var 0)),
+       .mk [⟨.list [.wild] (some .skip) [.var], [0]⟩] none (.ret (.var 0)),
+       .mk [⟨.list [] none [], []⟩] none (.ret (int 0))])) =
+    [(.returned 0, 0), (.returned 1, 0), (.returned 2, 0), (.returned 4, 0)] := by decide
+
+/-- 前・残り・後の束縛順を、値として返す。残りは切り取ったリストである。 -/
+example : (run program builtins oracle rel fresh 20
+    (.run (.match (.list [int 1, int 2, int 3, int 4])
+      [.mk [⟨.list [.var] (some .bind) [.var], [0, 1, 2]⟩] none
+        (.ret (.list [.var 2, .var 1, .var 0]))]) [] Store.empty) []).1 =
+    .run (.ret (.list [int 1, .list [int 2, int 3], int 4])) [] Store.empty := by rfl
+
+/-- 必要な長さと等しい場合、残りの束縛は空のリストになる。 -/
+example : (run program builtins oracle rel fresh 20
+    (.run (.match (.list [int 1, int 4])
+      [.mk [⟨.list [.var] (some .bind) [.var], [0, 1, 2]⟩] none
+        (.ret (.var 1))]) [] Store.empty) []).1 =
+    .run (.ret (.list [])) [] Store.empty := by rfl
+
+/-! ## 拡張した分岐の型付け
+
+実行例とは別に、選択肢の対応とガードの型付けの前提が満たせることを示す。
+-/
+
+private theorem wildAltsTy (P : Program) (a : Ty) : AltsTy P [⟨.wild, []⟩] a [] := by
+  refine ⟨by decide, rfl, ?_, ?_⟩
+  · intro alt h; simp at h; subst alt; rfl
+  · intro alt h; simp at h; subst alt
+    exact ⟨[], .P_Wild, .refl _, rfl⟩
+
+/-- ガードの環境は継続を隠し、ガードを R なし・空のエフェクトで検査できる。 -/
+example : HasTypeC program builtins StoreTy.empty [] [] none guardSkip intTy Eff.empty := by
+  have ha : AltsTy program
+      [⟨.list [.var, .wild] none [], [0]⟩, ⟨.list [.wild, .var] none [], [0]⟩]
+      (.list (.base .boolean)) [.base .boolean] := by
+    refine ⟨by decide, rfl, ?_, ?_⟩
+    · intro alt h; simp at h; subst alt; rfl
+    · intro alt h
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at h
+      rcases h with rfl | rfl
+      · exact ⟨[.base .boolean], .P_List (.cons .P_Var (.cons .P_Wild .nil)) .nil
+          (by intro _; rfl), .refl _, rfl⟩
+      · exact ⟨[.base .boolean], .P_List (.cons .P_Wild (.cons .P_Var .nil)) .nil
+          (by intro _; rfl), .refl _, rfl⟩
+  refine .C_Match (.V_List (.cons .V_Const (.cons .V_Const .nil)) trivial)
+    (.guarded ha (.C_Return (.V_Var rfl (by intro b t e h; cases h)))
+      (.C_Return .V_Const)
+      (.plain (wildAltsTy program _) (.C_Return .V_Const) (.nil trivial))) ?_
+  intro v _
+  exact ⟨.wild, by simp [unguardedPats], rfl⟩
+
+/-- A と B は、二つの Integer を持つ同じデータ型の構成子である。 -/
+def choiceProgram : Program := { program with
+  cons := fun c => if c = "A" ∨ c = "B" then
+    some { data := "Choice", ntys := 0, args := [intTy, intTy] } else program.cons c }
+
+/-- B(y, x) の対応 [1, 0] は、A(x, y) と同じ分岐の変数の型を持つ。 -/
+example : HasTypeC choiceProgram builtins StoreTy.empty [] [] none choiceMatch intTy Eff.empty := by
+  have ha : AltsTy choiceProgram
+      [⟨.con "A" [.var, .var], [0, 1]⟩, ⟨.con "B" [.var, .var], [1, 0]⟩]
+      (.data "Choice" []) [intTy, intTy] := by
+    refine ⟨by decide, rfl, ?_, ?_⟩
+    · intro alt h; simp at h; subst alt; rfl
+    · intro alt h
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at h
+      rcases h with rfl | rfl
+      · exact ⟨[intTy, intTy], .P_Con (cd := { data := "Choice", ntys := 0, args := [intTy, intTy] })
+          (by simp [choiceProgram]) rfl
+          (by simpa [Ty.subst, Ty.substAt, intTy] using
+              (PatTys.cons (PatTy.P_Var (a := intTy)) (PatTys.cons (PatTy.P_Var (a := intTy)) .nil))), .refl _, rfl⟩
+      · exact ⟨[intTy, intTy], .P_Con (cd := { data := "Choice", ntys := 0, args := [intTy, intTy] })
+          (by simp [choiceProgram]) rfl
+          (by simpa [Ty.subst, Ty.substAt, intTy] using
+              (PatTys.cons (PatTy.P_Var (a := intTy)) (PatTys.cons (PatTy.P_Var (a := intTy)) .nil))), .swap 0 1 [], rfl⟩
+  refine .C_Match (a := .data "Choice" [])
+    (.V_Con (cd := { data := "Choice", ntys := 0, args := [intTy, intTy] })
+      (by simp [choiceProgram]) rfl (by
+        simpa [Ty.subst, Ty.substAt, intTy, int, Const.type] using
+          (HasTypeVs.cons (HasTypeV.V_Const (c := .integer 10))
+            (HasTypeVs.cons (HasTypeV.V_Const (c := .integer 20)) .nil))))
+    (.plain ha (.C_Return (.V_Var rfl (by intro b t e h; cases h)))
+      (.plain (wildAltsTy choiceProgram _) (.C_Return .V_Const) (.nil trivial))) ?_
+  intro v _
+  exact ⟨.wild, by simp [unguardedPats], rfl⟩
 
 end Benitoite.Release.Examples

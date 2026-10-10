@@ -1,4 +1,4 @@
-//! 読み込みのときの範囲と生存の情報の検証（設計書 02-08「実行の手順」、ADR 0263、
+//! 読み込みのときの範囲と生存の情報の検証（設計書 02-08「実行の手順」、
 //! 実装プラン 10-07「読み込みのときの検証器」）。値の種類と実行中の枠は保証しない。
 
 use crate::builtins::builtin_decl;
@@ -20,7 +20,7 @@ pub struct VerifyError {
     pub message: String,
 }
 
-/// コンパイル済みプログラムを検証する（ADR 0263 の決定 2、OPEN-064）。R32 の評価に使う。
+/// コンパイル済みプログラムを検証する（設計書 02-08「実行の手順」）。R32 の評価に使う。
 pub fn verify(program: &CompiledProgram) -> Result<(), VerifyError> {
     verify_tables(program)?;
     for (index, proto) in program.protos.iter().enumerate() {

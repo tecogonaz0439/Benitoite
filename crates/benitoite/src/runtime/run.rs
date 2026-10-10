@@ -1,5 +1,5 @@
 //! プログラムの実行の流れ（設計書 02-09「プログラムの実行の流れ」「中断の要求」「panic 境界」、
-//! 02-11「CLI の一回の実行」「実行の入力と結果」、06-01「終了状態」、ADR 0037・0163・0165）。
+//! 02-11「CLI の一回の実行」「実行の入力と結果」、06-01「終了状態」）。
 //! 報告を標準エラー出力に書くのは呼び出し側（CLI、テストの実行器、ゴールデンテストの実行器）である。
 
 use std::sync::{Arc, Mutex};
@@ -10,7 +10,7 @@ use crate::runtime::io::services::{InterruptSource, RunInput};
 use crate::runtime::sched::parts::RuntimeParts;
 use crate::vm::{ExecMode, VmConfig};
 
-/// 終了状態（06-01「終了状態」、ADR 0037・0163）。`Process.exit(code)` では `code`。
+/// 終了状態（06-01「終了状態」）。`Process.exit(code)` では `code`。
 pub const EXIT_OK: u8 = 0;
 pub const EXIT_FAILURE: u8 = 1;
 pub const EXIT_CHECK: u8 = 2;
@@ -57,7 +57,7 @@ pub struct RunEnv {
     pub stdout: OutputTarget,
     pub stderr: OutputTarget,
     pub interrupt: Box<dyn InterruptSource>,
-    /// テストで差し替える部品（ADR 0274）。`None` は実際の実装。CLI と `benitoite test` は `None` を渡す。
+    /// テストで差し替える部品（07-03「順序を与えるスケジューラと仮想の時間（初回リリース版）」）。`None` は実際の実装。CLI と `benitoite test` は `None` を渡す。
     pub parts: Option<RuntimeParts>,
     /// IO の命令の実行の方式（06-01「開発用の設定」の `BENITOITE_DEV_IO_MODE`）
     pub mode: ExecMode,
@@ -162,7 +162,7 @@ pub fn check_args(args: Vec<OsString>) -> Result<Vec<String>, Box<Diagnostic>> {
 }
 
 /// 実行の入力を作る（02-11「実行の入力と結果」）。実行を始めるスクリプトのディレクトリは、`entry.path` の
-/// シンボリックリンクを解決した絶対パスの親とし、実行を始めるときに一度だけ求める（ADR 0131）。
+/// シンボリックリンクを解決した絶対パスの親とし、実行を始めるときに一度だけ求める（02-11「実行を始めるファイルとプログラムの読み込み」）。
 /// `working_directory` は基準のディレクトリ（CLI では処理系を起動したときの作業ディレクトリ）。
 pub fn run_input(
     entry: &EntrySpec,
@@ -182,7 +182,7 @@ pub fn run_input(
 }
 
 /// プロセス全体の中断の印を読む読み口を作り、`SIGINT`・`SIGTERM`（Windows では Ctrl-C と Ctrl-Break）を受ける設定をする
-/// （02-09「中断の要求」、ADR 0163）。二度目の要求で OS の既定の振る舞いが起きるように、一度目の後に登録を戻す。
+/// （02-09「中断の要求」）。二度目の要求で OS の既定の振る舞いが起きるように、一度目の後に登録を戻す。
 /// CLI の `run` と `test` が、コマンドラインを解釈した後、検査の前に一度だけ呼ぶ（02-11「CLI の一回の実行」の手順 2）。
 pub fn process_interrupt() -> std::io::Result<Box<dyn InterruptSource>> {
     interrupt::register()
@@ -242,7 +242,7 @@ fn run_entry(program: &CompiledProgram, env: RunEnv, entry: &Entry) -> TestEnd {
             wakeup.clone(),
         ),
     );
-    // stdin を消費する前に、子へ継がせるストリームを個別に決める（実装プラン 10-16、ADR 0165）。
+    // stdin を消費する前に、子へ継がせるストリームを個別に決める（実装プラン 10-16、設計書 02-11「実行の入力と結果」）。
     let process_stdio = super::io::services::ProcessStdio {
         inherit_stdin: matches!(env.stdin, StdinSource::Process),
         inherit_stdout: matches!(env.stdout, OutputTarget::Stdout),

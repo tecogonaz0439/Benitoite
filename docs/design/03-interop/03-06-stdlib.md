@@ -1,33 +1,28 @@
 # 標準ライブラリ
 
-- 状態: 確定
-- 関連ADR: [0006](../decisions/0006-basic-types-semantics.md), [0007](../decisions/0007-constructors-and-list.md), [0008](../decisions/0008-effect-variables.md), [0009](../decisions/0009-typing-without-type-classes.md), [0011](../decisions/0011-io-failure-and-entry-point.md), [0012](../decisions/0012-invalid-utf8-input.md), [0030](../decisions/0030-call-stack-size-limit.md), [0041](../decisions/0041-list-as-linked-list.md), [0042](../decisions/0042-minimal-prelude-scope.md), [0043](../decisions/0043-option-result-rust-names-no-unwrap.md), [0049](../decisions/0049-size-limit-for-built-values.md), [0077](../decisions/0077-abolish-go-layer.md), [0091](../decisions/0091-acronyms-in-uppercase.md), [0096](../decisions/0096-explicit-return.md), [0099](../decisions/0099-qualified-option-result-constructors.md), [0101](../decisions/0101-unabbreviated-names.md), [0102](../decisions/0102-pair-and-triple.md), [0103](../decisions/0103-map-and-set-ordered-by-key.md), [0104](../decisions/0104-list-as-persistent-vector.md), [0105](../decisions/0105-byte-type.md), [0106](../decisions/0106-bitwise-functions.md), [0107](../decisions/0107-bytes.md), [0113](../decisions/0113-div-and-mod-operators.md), [0114](../decisions/0114-decimal-type.md), [0115](../decisions/0115-structured-io-concurrency.md), [0119](../decisions/0119-attributes-test-and-deprecated.md), [0120](../decisions/0120-test-functions-and-assert-effect.md), [0125](../decisions/0125-doc-comments.md), [0126](../decisions/0126-import-by-module-name.md), [0128](../decisions/0128-prelude-and-benitoite-namespace.md), [0129](../decisions/0129-effects-declared-in-modules.md), [0130](../decisions/0130-builtin-effect-names-and-placement.md), [0131](../decisions/0131-script-directory-and-permission-base.md), [0132](../decisions/0132-language-name-benitoite.md), [0133](../decisions/0133-builtin-equality-and-key-constraints.md), [0134](../decisions/0134-standard-type-classes.md), [0136](../decisions/0136-map-and-set-in-constants.md), [0137](../decisions/0137-first-release-library-scope.md), [0140](../decisions/0140-network-separated-from-local-io.md), [0145](../decisions/0145-network-error.md), [0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md), [0062](../decisions/0062-operators-stay-outside-traits.md), [0153](../decisions/0153-taskgroup-open-only-in-with.md), [0169](../decisions/0169-unicode-character-property-functions.md), [0171](../decisions/0171-map-set-higher-order-functions.md), [0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md), [0254](../decisions/0254-return-type-after-arrow.md), [0255](../decisions/0255-bind-and-shadow.md), [0257](../decisions/0257-match-with-case-arms.md), [0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)
-- 未決事項: [OPEN-012](../open-issues.md#open-012), [OPEN-040](../open-issues.md#open-040), [OPEN-043](../open-issues.md#open-043), [OPEN-046](../open-issues.md#open-046), [OPEN-049](../open-issues.md#open-049), [OPEN-050](../open-issues.md#open-050), [OPEN-078](../open-issues.md#open-078), [OPEN-109](../open-issues.md#open-109)
-- 移行元: [設計メモ](../sources/fp-language-design.md) なし（10 の層1・層2）
-
 ## 目的と範囲
 
-標準ライブラリの名前空間と prelude の範囲、初期版の API 範囲、永続コレクション。永続コレクションは、公開 API と利用者向けの規則（等値比較、反復順序）に加え、実装設計（採用するデータ構造と内部表現、構造共有の規則、各操作の計算量の目標、テストする不変条件）も扱う。値を VM 上で保持・受け渡す表現は[仮想機械](../02-impl/02-08-vm.md)、メモリの生存管理は[ランタイム](../02-impl/02-09-runtime.md)が扱う。永続コレクションの実装設計が大きくなった場合は、`02-impl/` の独立章に分けることを検討する。
+標準ライブラリの名前空間と prelude の範囲、標準のモジュールと非公式のモジュールの区別、prelude の型と関数、標準の型クラス、永続コレクション、標準ライブラリのソースの書き方を定める。永続コレクションは、公開 API と利用者向けの規則（等値比較、反復順序）に加え、実装設計（採用するデータ構造と内部表現、構造共有の規則、各操作の計算量の目標、テストする不変条件）も扱う。値を VM 上で保持・受け渡す表現は[仮想機械](../02-impl/02-08-vm.md)、メモリの生存管理は[ランタイム](../02-impl/02-09-runtime.md)が扱う。
 
-現在の版は、初回リリース版の標準ライブラリの名前空間と prelude（後述の「名前空間と prelude（初回リリース版）」）、prelude の型と関数、標準の型クラス（後述の「標準の型クラス（初回リリース版）」）、永続コレクションの表現、標準ライブラリのソースの書き方を定める。最小実行版（[ロードマップ](../00-overview/00-03-roadmap.md)）のライブラリは prelude だけであり、`Benitoite.IO` の下のモジュールと永続コレクションはなかった。初回リリース版では、prelude に型（`Byte`・`Decimal`・`RoundingMode`・`Reference`・`Lazy`・`Task`・`TaskGroup`・`Pair`・`Triple`・`Map`・`Set`・`Bytes`・`ByteOrder`）と関数を加え、`List` の表現を変える（[ADR 0104](../decisions/0104-list-as-persistent-vector.md)）。初回リリース版の標準ライブラリに入れるモジュールは [ADR 0137](../decisions/0137-first-release-library-scope.md) で決めた。IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール](03-07-io-modules.md)で、テキストとデータを扱う純粋なモジュール（`Benitoite.Path`・`Benitoite.Json` など）は[テキストとデータの処理](03-08-text-and-data.md)で定める。標準ライブラリの作り方（組み込みの関数とソースの分担、使う Rust のクレート）は[ライブラリの構成](03-01-library-structure.md)で定める。標準ライブラリのほかにパッケージをどう提供するかは【未決】である（[OPEN-049](../open-issues.md#open-049)）。
+IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール](03-07-io-modules.md)で、テキストとデータを扱う純粋なモジュール（`Benitoite.Path`・`Benitoite.Json` など）は[テキストとデータの処理](03-08-text-and-data.md)で、ネットワークの操作を行うモジュールは[ネットワークのモジュール](03-09-network.md)で定める。標準ライブラリの作り方（組み込みの関数とソースの分担、使う Rust のクレート）は[ライブラリの構成](03-01-library-structure.md)で定める。初回リリース版は、標準ライブラリのほかにライブラリを提供する仕組み（パッケージ）を持たない。
 
 ## 前提
 
-基本型の演算子と、位置を扱う文字列の関数、型の変換の関数は[基本型の意味論](../01-spec/01-04-types-basic.md)（[ADR 0006](../decisions/0006-basic-types-semantics.md)）で、IO を行う関数の意味は[エフェクト](../01-spec/01-07-effects.md)で、IO のモジュールの関数の一覧は[IO のモジュール](03-07-io-modules.md)で定める。本章は、それらを含む標準ライブラリの関数の一覧と、残りの関数の意味を定める。標準ライブラリの名前は、すべてモジュールの名前で修飾して使う（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)）。
+基本型の演算子と、位置を扱う文字列の関数、型の変換の関数は[基本型の意味論](../01-spec/01-04-types-basic.md)で、IO を行う関数の意味は[エフェクト](../01-spec/01-07-effects.md)で、IO のモジュールの関数の一覧は[IO のモジュール](03-07-io-modules.md)で定める。本章は、それらを含む標準ライブラリの関数の一覧と、残りの関数の意味を定める。標準ライブラリの名前は、すべてモジュールの名前で修飾して使う（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)）。
 
-標準ライブラリの関数は、処理系の実装言語（Rust）で実装する組み込みの関数と、言語で書いた標準ライブラリのソースの関数から成る（[名前解決とモジュール読込](../02-impl/02-04-resolver.md)）。どちらで実装するかは、prelude に入るかどうかと関係しない（[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)）。関数を引数にとる関数は標準ライブラリのソースで定める（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の Σ）。
+標準ライブラリの関数は、処理系の実装言語（Rust）で実装する組み込みの関数と、言語で書いた標準ライブラリのソースの関数から成る（[名前解決とモジュール読込](../02-impl/02-04-resolver.md)）。どちらで実装するかは、prelude に入るかどうかと関係しない。関数を引数にとる関数は、原則として標準ライブラリのソースで定める（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の Σ）。例外は、タスクを起動する関数（`Task`・`TaskGroup`。[並行処理](../01-spec/01-11-concurrency.md)）と、専用の命令で実装する `Reference.update` であり、これらは組み込みで実装する。
 
 ## 仕様
 
 ### 範囲と名前の付け方
 
-【決定】最小実行版の prelude には、仕様の各章・完了条件・ベンチマークが参照する関数に加え、文字列とリストのよく使う操作と、`Option`・`Result` をつなぐ関数を入れる。Unicode の文字の性質の規則に依る関数（大文字と小文字の変換、文字の分類）は初回リリース版に回し、最小実行版で文字を分類する関数は ASCII の範囲だけを扱って名前にそれを示す（[ADR 0042](../decisions/0042-minimal-prelude-scope.md)）。
+【決定】prelude には、文字列とリストのよく使う操作と、`Option`・`Result` をつなぐ関数を入れる。文字を分類する関数のうち ASCII の範囲だけを扱うものは、名前にそれを示す（`Character.isASCIIDigit`）。Unicode の文字の性質に依る関数は、後述の「Character」で定める。
 
-【決定】標準ライブラリの型と関数の名前は、省略しない英単語で書く（`Integer`、`Boolean`、`Character`、`Console.writeLine`、`Process.arguments`。[ADR 0101](../decisions/0101-unabbreviated-names.md)）。ただし、`Float` と、利用者が頭字語のまま見聞きする語（次の段落）は例外とする。
+【決定】標準ライブラリの型と関数の名前は、省略しない英単語で書く（`Integer`、`Boolean`、`Character`、`Console.writeLine`、`Process.arguments`）。理由: スクリプトを主に書くのは LLM なので書く量を減らす利点は小さく、省略しない語のほうが、プログラマでない利用者にも意味を推測しやすい。ただし、`Float` と、利用者が頭字語のまま見聞きする語（次の段落）は例外とする。
 
-【決定】標準ライブラリの名前の中の頭字語（IO、UTF-8、ASCII など）は、すべて大文字で書く（`IOError`、`IOErrorKind.InvalidUTF8`、`Character.isASCIIDigit`）。ただし、小文字で始まる名前の先頭に頭字語を置くときは、頭字語をすべて小文字で書く。利用者が付ける名前に対しては、処理系はこの規則を検査しない（[ADR 0091](../decisions/0091-acronyms-in-uppercase.md)）。
+【決定】標準ライブラリの名前の中の頭字語（IO、UTF-8、ASCII など）は、すべて大文字で書く（`IOError`、`IOErrorKind.InvalidUTF8`、`Character.isASCIIDigit`）。ただし、小文字で始まる名前の先頭に頭字語を置くときは、頭字語をすべて小文字で書く。利用者が付ける名前に対しては、処理系はこの規則を検査しない。
 
-【方針】初回リリース版では、標準ライブラリの型・関数・構成子・定数の説明を、利用者のモジュールと同じくドキュメントコメント（`///`）で持つ（[ADR 0125](../decisions/0125-doc-comments.md)）。MCP サーバと LSP サーバは、利用者の宣言と同じ方法で標準ライブラリの説明を示す。
+【方針】標準ライブラリの型・関数・構成子・定数の説明は、利用者のモジュールと同じくドキュメントコメント（`///`）で持つ。
 
 【方針】関数の引数は、操作の対象（文字列、リスト、`Option` など）を第 1 引数に置く。パイプ（`xs |> List.map(f)`）で対象を渡せるようにするためである。
 
@@ -37,24 +32,24 @@
 
 ### 名前空間と prelude（初回リリース版）
 
-【決定】標準ライブラリは、処理系と一緒に配るモジュールの全体であり、名前空間 `Benitoite` の下に置く。prelude は、標準ライブラリのうち import なしで使える部分である（[ADR 0128](../decisions/0128-prelude-and-benitoite-namespace.md)）。
+【決定】標準ライブラリは、処理系と一緒に配るモジュールの全体であり、名前空間 `Benitoite` の下に置く。prelude は、標準ライブラリのうち import なしで使える部分である。
 
 | 部分 | モジュール・型・エフェクト | 使い方 |
 |---|---|---|
 | prelude | 基本型とその関数のモジュール（`Integer`・`Float`・`Decimal`・`Byte`・`Character`・`String`・`Boolean`）、`List`・`Map`・`Set`・`Bytes`・`ByteOrder`、`Option`・`Result`・`Pair`・`Triple`、`IOError`・`IOErrorKind`、`NetworkError`・`NetworkErrorKind`、`RoundingMode`、`Reference`、`Lazy`、`Task`・`TaskGroup`、`Assert`、エフェクト `State`、モジュール `IO` | import なしで `List.map` と書ける。`Benitoite.List.map` とも書ける |
 | 標準の型クラス | `Benitoite.Trait`（後述の「標準の型クラス（初回リリース版）」） | `import Benitoite.Trait` で取り込み、`Trait.Monad.flatMap` と書く |
-| IO を行うモジュール | `Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`（[IO のモジュール](03-07-io-modules.md)） | `import Benitoite.IO.Console` で取り込み、`Console.writeLine` と書く |
-| ネットワークの操作を行うモジュール | `Benitoite.Network.Http`（[ネットワークのモジュール](03-09-network.md)、[ADR 0140](../decisions/0140-network-separated-from-local-io.md)） | `import Benitoite.Network.Http` で取り込み、`Http.get` と書く |
-| テキストとデータを扱うモジュール | `Benitoite.Path`・`Benitoite.Json`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash`（[テキストとデータの処理](03-08-text-and-data.md)、[ADR 0137](../decisions/0137-first-release-library-scope.md)） | `import Benitoite.Json` で取り込み、`Json.parse` と書く |
+| IO を行うモジュール | `Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`（[IO のモジュール](03-07-io-modules.md)） | `import Benitoite.Unofficial.IO.Console` で取り込み、`Console.writeLine` と書く |
+| ネットワークの操作を行うモジュール | `Benitoite.Network.Http`（[ネットワークのモジュール](03-09-network.md)） | `import Benitoite.Unofficial.Network.Http` で取り込み、`Http.get` と書く |
+| テキストとデータを扱うモジュール | `Benitoite.Path`・`Benitoite.Json`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash`（[テキストとデータの処理](03-08-text-and-data.md)） | `import Benitoite.Unofficial.Json` で取り込み、`Json.parse` と書く |
 
-- prelude のモジュール `IO`（`Benitoite.IO`）は、`State` と `Benitoite.IO` の下のモジュールのエフェクトをまとめたエフェクト `IO.All` だけを持つ。ネットワークのエフェクトは `IO.All` に含まれない（[エフェクト](../01-spec/01-07-effects.md)、[ADR 0130](../decisions/0130-builtin-effect-names-and-placement.md)、[ADR 0140](../decisions/0140-network-separated-from-local-io.md)）。`uses IO.All` は import なしに書ける。`Benitoite.IO` の下のモジュールの関数を呼ぶには import が要る。
+- prelude のモジュール `IO`（`Benitoite.IO`）は、`State` と `Benitoite.IO` の下のモジュールのエフェクトをまとめたエフェクト `IO.All` だけを持つ。ネットワークのエフェクトは `IO.All` に含まれない（[エフェクト](../01-spec/01-07-effects.md)）。理由: ネットワークの操作は、スクリプトを動かす機械の外の資源に触れ、機械の中の操作（コンソール、ファイル、プロセス、環境変数、時計、乱数）とは影響の及ぶ範囲が異なる。`uses IO.All` は import なしに書ける。`Benitoite.IO` の下のモジュールの関数を呼ぶには import が要る。
 - import なしに完全な名前で書けるのは prelude だけである。`Benitoite.IO.Console.writeLine` を import なしに書くことはできない。
 - 利用者の宣言や取り込みが prelude と同じ名前を持つときの扱いと、根の直下の `Benitoite` を取り込めないことは、[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)で定める。
 
-初回リリース版では、表のモジュールのうち、IO・ネットワーク・テキストとデータのモジュールは非公式のモジュールであり、`Benitoite.Unofficial` の下の名前で取り込む（後述の「標準のモジュールと非公式のモジュール（初回リリース版）」）。上の表と次の例は、標準に加えた後の名前で書いている。初回リリース版では、次の例の import の行は `import Benitoite.Unofficial.IO.Console` と書く。
+初回リリース版では、表のモジュールのうち、IO・ネットワーク・テキストとデータのモジュールは非公式のモジュールであり、`Benitoite.Unofficial` の下の名前で取り込む（後述の「標準のモジュールと非公式のモジュール（初回リリース版）」）。上の表の「モジュール」の欄はモジュールの名前を、「使い方」の欄と次の例は取り込みの名前を書いている。
 
 ```text
-import Benitoite.IO.Console
+import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
   bind doubled <- List.map([1, 2, 3], lambda(x) return x * 2 end lambda)
@@ -62,11 +57,9 @@ function main() -> Unit uses Console.Write
 end function
 ```
 
-最小実行版には `Benitoite` の名前空間と import がなく、`Console`・`File`・`Process` も prelude にある。最小実行版のスクリプトを初回リリース版で動かすには、`import Benitoite.Unofficial.IO.Console` などを加え、`uses IO` を `uses IO.All` などに改める。処理系は、足りない import と `uses IO.All` を修正案として示す。
-
 ### 標準のモジュールと非公式のモジュール（初回リリース版）
 
-【決定】標準ライブラリのモジュールは、「標準」か「非公式」のどちらかの状態を持つ。非公式のモジュールは、設計者が実装を吟味する前のモジュールであり、吟味の結果で名前・型・振る舞いを改めうる。状態はモジュールを単位に決め、一つのモジュールの関数を二つの状態に分けない（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md)）。
+【決定】標準ライブラリのモジュールは、「標準」か「非公式」のどちらかの状態を持つ。非公式のモジュールは、設計者が実装を吟味する前のモジュールであり、吟味の結果で名前・型・振る舞いを改めうる。状態はモジュールを単位に決め、一つのモジュールの関数を二つの状態に分けない。初回リリース版は、標準ライブラリと別に配る公式のライブラリ（公式の追加のライブラリ）を持たない。
 
 | 状態 | モジュール | 取り込み方 |
 |---|---|---|
@@ -75,9 +68,8 @@ end function
 
 - 非公式のモジュールを取り込んだ後の書き方は、標準のモジュールと同じである。名前の最後の要素（`as` を書けばその名前）で修飾する（`Console.writeLine`、`uses Console.Write`、`File.Reader`）。非公式のモジュールは prelude に入らない。
 - 非公式のモジュールを `import Benitoite.IO.Console` と書くこと、標準のモジュールを `import Benitoite.Unofficial.Trait` と書くことは、どちらも標準ライブラリにないモジュールの取り込みの誤りである。診断は、その版で正しい取り込みの名前を修正案として示す（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)の「標準ライブラリの名前空間と prelude（初回リリース版）」）。
-- 本章とほかの章（01-spec、03-01、03-07〜03-09 など）は、非公式のモジュールも標準に加えた後の名前（`Benitoite.IO.Console`）で書く。モジュールの同一性、処理系による組み込みの型とエフェクトの照合、標準ライブラリのソースの置き場所（後述の「標準ライブラリのソースの書き方」）も、この名前による。`Benitoite.Unofficial.IO.Console` は、非公式の間の取り込みの名前である。
+- 本章とほかの章（01-spec、03-01、03-07〜03-09 など）は、非公式のモジュールも `Unofficial` を挟まない名前（`Benitoite.IO.Console`）で書く。モジュールの同一性、処理系による組み込みの型とエフェクトの照合、標準ライブラリのソースの置き場所（後述の「標準ライブラリのソースの書き方」）も、この名前による。`Benitoite.Unofficial.IO.Console` は、非公式の間の取り込みの名前である。
 - 非公式のモジュールも、設計書が定める意味に従う。パッチの版で変えないことも、標準のモジュールと同じである（[配布形態](../05-platform/05-01-distribution.md)の「互換性の方針」）。
-- 【方針】設計者が吟味を終えたモジュールは、マイナーの版で標準に移す。移すと取り込みの名前が変わるので、互換性を壊す変更として、`CHANGELOG` に移行の手順（import の行の書き換え）を記す。吟味で見つかった名前・型・振る舞いの変更は、同じ版で行ってよい。
 - prelude の `Task` の関数（`Task.race`・`Task.withTimeout`）の型は、非公式のモジュール `Benitoite.IO.Clock` のエフェクト `Clock.Time` を含む（[並行処理](../01-spec/01-11-concurrency.md)）。標準のモジュールが非公式のモジュールに依存するのは、この一か所である。
 
 ```text
@@ -90,10 +82,6 @@ end function
 
 この例の `String.toUppercase` は prelude（標準）の関数、`Console.writeLine` は非公式のモジュールの関数である。
 
-### 公式の追加のライブラリ（初回リリース版の後）
-
-【未決】標準ライブラリに入れずに処理系と別に配る公式のライブラリ（公式の追加のライブラリ）を設けるか、吟味を終えた非公式のモジュールの行き先に標準のほかにそれを加えるか（[ADR 0286](../decisions/0286-unofficial-modules-imported-under-unofficial.md) の決定 7 を改めるか）は、[OPEN-078](../open-issues.md#open-078) で決める。組み込みのエフェクトを宣言するモジュールと、`@builtin` を使うモジュールは、そのままでは移せない（OPEN-078）。
-
 ### 関数を引数にとる関数の共通の規則
 
 【方針】関数を引数にとる関数は、次の規則に従う。
@@ -101,13 +89,13 @@ end function
 - 受け取った関数を、要素を先頭から順に一つずつ渡して呼ぶ。同じ要素について二度呼ばない。受け取った関数が IO を行うとき、その IO はこの順に起こる。
 - `List.any`・`List.all`・`List.find` は、結果が決まった時点で残りの要素について関数を呼ばない。
 - 受け取った関数の呼び出しで実行時エラーが起きたら、そこで止まる（[評価意味論](../01-spec/01-08-evaluation.md)）。
-- 型は、受け取る関数のエフェクトをエフェクト変数 `E` で表し、同じ `E` を自身のエフェクトとする（[ADR 0008](../decisions/0008-effect-variables.md)）。
+- 型は、受け取る関数のエフェクトをエフェクト変数 `E` で表し、同じ `E` を自身のエフェクトとする。
 
-【方針】標準ライブラリのソースの関数は、リストの長さに比例する深さの末尾でない再帰を使わない。長いリストを処理しても、呼び出しの入れ子が深くならないようにするためである（[ADR 0030](../decisions/0030-call-stack-size-limit.md)）。
+【方針】標準ライブラリのソースの関数は、リストの長さに比例する深さの末尾でない再帰を使わない。長いリストを処理しても、呼び出しの入れ子が深くならないようにするためである。
 
 ### 作る値の大きさの上限
 
-【決定】文字列かリストを新しく作る組み込みの関数（`String.repeat`・`String.join`・`String.replace`・`String.fromCharacters`・`String.split`・`String.lines`・`String.characters`・`String.toUppercase`・`String.toLowercase`・`List.range`・`List.prepend`・`List.append`・`List.concatenate` など）と、`String` の `+` は、結果の大きさを値を作る前に計算し、処理系の上限を超えるときは、値を作らずに資源の不足で停止する（[ADR 0049](../decisions/0049-size-limit-for-built-values.md)、[評価意味論](../01-spec/01-08-evaluation.md)）。
+【決定】文字列かリストを新しく作る組み込みの関数（`String.repeat`・`String.join`・`String.replace`・`String.fromCharacters`・`String.split`・`String.lines`・`String.characters`・`String.toUppercase`・`String.toLowercase`・`List.range`・`List.prepend`・`List.append`・`List.concatenate` など）と、`String` の `+` は、結果の大きさを値を作る前に計算し、処理系の上限を超えるときは、値を作らずに資源の不足で停止する（[評価意味論](../01-spec/01-08-evaluation.md)）。理由: 実行環境のメモリが尽きると、評価意味論の停止の手順によらずに終わる。処理系が自ら設けた上限で止めれば、その手順で停止できる。
 
 【方針】上限は、文字列が 2^30 バイト、リストが 2^24 要素である。上限の値と、結果の大きさの計算の仕方は[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」で定める。
 
@@ -124,7 +112,7 @@ end function
 | `Integer.minimum(a, b)` | `function(Integer, Integer) -> Integer` | 小さいほう | | 組み込み |
 | `Integer.maximum(a, b)` | `function(Integer, Integer) -> Integer` | 大きいほう | | 組み込み |
 
-初回リリース版では、ビット演算の関数（`Integer.bitwiseAnd`・`bitwiseOr`・`bitwiseExclusiveOr`・`bitwiseNot`・`shiftLeft`・`shiftRight`・`shiftRightUnsigned`）を加える。意味は[基本型の意味論](../01-spec/01-04-types-basic.md)の「ビット演算（初回リリース版）」で定め、すべて組み込みで実装する（[ADR 0106](../decisions/0106-bitwise-functions.md)）。
+ビット演算の関数（`Integer.bitwiseAnd`・`bitwiseOr`・`bitwiseExclusiveOr`・`bitwiseNot`・`shiftLeft`・`shiftRight`・`shiftRightUnsigned`）を置く。意味は[基本型の意味論](../01-spec/01-04-types-basic.md)の「ビット演算（初回リリース版）」で定め、すべて組み込みで実装する。
 
 ### Float
 
@@ -149,15 +137,15 @@ end function
 | `Character.toString(c)` | `function(Character) -> String` | 同上 | | 組み込み |
 | `Character.isASCIIDigit(c)` | `function(Character) -> Boolean` | `c` が `'0'`〜`'9'` か | | 組み込み |
 | `Character.isASCIIWhitespace(c)` | `function(Character) -> Boolean` | `c` が ASCII の空白（U+0020、U+0009、U+000A、U+000D）か | | 組み込み |
-| `Character.isAlphabetic(c)` | `function(Character) -> Boolean` | `c` が Unicode の Alphabetic の性質を持つか（初回リリース版） | | 組み込み |
-| `Character.isNumeric(c)` | `function(Character) -> Boolean` | `c` の Unicode の一般カテゴリが Nd・Nl・No のどれかか（初回リリース版） | | 組み込み |
-| `Character.isWhitespace(c)` | `function(Character) -> Boolean` | `c` が Unicode の White_Space の性質を持つか（初回リリース版） | | 組み込み |
-| `Character.isUppercase(c)` | `function(Character) -> Boolean` | `c` が Unicode の Uppercase の性質を持つか（初回リリース版） | | 組み込み |
-| `Character.isLowercase(c)` | `function(Character) -> Boolean` | `c` が Unicode の Lowercase の性質を持つか（初回リリース版） | | 組み込み |
-| `Character.toUppercase(c)` | `function(Character) -> String` | `c` を大文字にした文字列（初回リリース版。後述） | | 組み込み |
-| `Character.toLowercase(c)` | `function(Character) -> String` | `c` を小文字にした文字列（初回リリース版。後述） | | 組み込み |
+| `Character.isAlphabetic(c)` | `function(Character) -> Boolean` | `c` が Unicode の Alphabetic の性質を持つか | | 組み込み |
+| `Character.isNumeric(c)` | `function(Character) -> Boolean` | `c` の Unicode の一般カテゴリが Nd・Nl・No のどれかか | | 組み込み |
+| `Character.isWhitespace(c)` | `function(Character) -> Boolean` | `c` が Unicode の White_Space の性質を持つか | | 組み込み |
+| `Character.isUppercase(c)` | `function(Character) -> Boolean` | `c` が Unicode の Uppercase の性質を持つか | | 組み込み |
+| `Character.isLowercase(c)` | `function(Character) -> Boolean` | `c` が Unicode の Lowercase の性質を持つか | | 組み込み |
+| `Character.toUppercase(c)` | `function(Character) -> String` | `c` を大文字にした文字列（後述） | | 組み込み |
+| `Character.toLowercase(c)` | `function(Character) -> String` | `c` を小文字にした文字列（後述） | | 組み込み |
 
-【決定】初回リリース版では、Unicode の文字の性質に依る分類と変換の関数を加える（[ADR 0169](../decisions/0169-unicode-character-property-functions.md)）。
+【決定】Unicode の文字の性質に依る分類と変換の関数は、次の規則に従う。
 
 - 変換は、Unicode の大文字と小文字の対応のうち、地域に依らないもの（特殊な対応を含む）に従う。一つの文字が複数の文字に変わることがあるので、`Character` の変換の結果は `String` である（`Character.toUppercase('ß')` は `"SS"`）。対応のない文字は、その文字だけの文字列になる。
 - 従う Unicode の版は、処理系を作った Rust の標準ライブラリが従う版である。処理系は、その版を `benitoite --version` の出力に示す（[CLI](../06-tooling/06-01-cli.md)）。ASCII の範囲だけを扱う関数（`Character.isASCIIDigit` など）の結果は、Unicode の版に依らない。
@@ -181,8 +169,8 @@ end function
 | `String.repeat(s, n)` | `function(String, Integer) -> String` | `s` を `n` 回連結した文字列。`n` が 0 以下なら空文字列 | 組み込み |
 | `String.characters(s)` | `function(String) -> List[Character]` | `s` のスカラー値を順に並べたリスト | 組み込み |
 | `String.fromCharacters(cs)` | `function(List[Character]) -> String` | `cs` の文字を順に連結した文字列 | 組み込み |
-| `String.toUppercase(s)` | `function(String) -> String` | `s` の各文字を `Character.toUppercase` で変換して連結した文字列（初回リリース版） | 組み込み |
-| `String.toLowercase(s)` | `function(String) -> String` | `s` を小文字にした文字列。ギリシャ文字のシグマは、語の終わりでは `ς` にする（初回リリース版） | 組み込み |
+| `String.toUppercase(s)` | `function(String) -> String` | `s` の各文字を `Character.toUppercase` で変換して連結した文字列 | 組み込み |
+| `String.toLowercase(s)` | `function(String) -> String` | `s` を小文字にした文字列。ギリシャ文字のシグマは、語の終わりでは `ς` にする | 組み込み |
 
 【方針】`String.split(s, sep)` は次の値を返す。
 
@@ -193,7 +181,7 @@ end function
 
 ### List
 
-【決定】`List[T]` は構成子を公開しない型であり、リストはリストリテラルと `List` モジュールの関数だけで作り、分解する（[ADR 0007](../decisions/0007-constructors-and-list.md)）。`List[T]` は、添字で引ける永続ベクタで表す（[ADR 0104](../decisions/0104-list-as-persistent-vector.md)）。表現は後述の「List の内部の表現」で定める。最小実行版の処理系は、単方向の連結リストで表している（[ADR 0041](../decisions/0041-list-as-linked-list.md)。0104 で置き換えた）。
+【決定】`List[T]` は構成子を公開しない型であり、リストはリストリテラルと `List` モジュールの関数だけで作り、分解する。`List[T]` は、添字で引ける永続ベクタで表す。表現は後述の「List の内部の表現」で定める。
 
 | 関数 | 型 | 値 | 計算量 | 実装 |
 |---|---|---|---|---|
@@ -221,7 +209,7 @@ end function
 
 計算量の n は `xs` の長さ（`List.concatenate` では二つのリストの長さの和）である。O(log n) の対数の底は木の分岐の数（32）であり、実用上の長さでは小さい定数になる。関数を引数にとる関数の計算量は、受け取った関数の呼び出しを 1 と数えたものである。
 
-`List.contains` の型の `equality` は、`T` が等値の型であるという組み込みの制約である。利用者も関数の型に書ける（[型システム](../01-spec/01-06-type-system.md)、[ADR 0133](../decisions/0133-builtin-equality-and-key-constraints.md)）。`List.sort` の型の `ordered` は、`T` が順序の比較演算子の型の集まり（[型システム](../01-spec/01-06-type-system.md)の「演算子の型付け」。初回リリース版では `Byte`・`Decimal` を含む）のどれかであるという制約である。演算子の型の集まりの制約は、利用者は関数の型に書けず、標準ライブラリの関数だけが持てる（[ADR 0009](../decisions/0009-typing-without-type-classes.md)、[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)）。
+`List.contains` の型の `equality` は、`T` が等値の型であるという組み込みの制約である。利用者も関数の型に書ける（[型システム](../01-spec/01-06-type-system.md)）。`List.sort` の型の `ordered` は、`T` が順序の比較演算子の型の集まり（[型システム](../01-spec/01-06-type-system.md)の「演算子の型付け」。`Byte`・`Decimal` を含む）のどれかであるという制約である。演算子の型の集まりの制約は、利用者は関数の型に書けず、標準ライブラリの関数だけが持てる。
 
 【方針】`List.sort` は安定な並べ替えであり、等しい要素の順序を保つ。順序は `<` に従う（[基本型の意味論](../01-spec/01-04-types-basic.md)）。ただし `Float` の NaN は、どの値よりも後に置き、NaN どうしは元の順序を保つ。`0.0` と `-0.0` は等しいものとして扱う。
 
@@ -231,7 +219,7 @@ end function
 
 `Option` の関数は、すべて標準ライブラリのソースで定める。
 
-【決定】関数の名前は Rust の名前を lowerCamelCase にしたものに合わせ、`Option.None` のときに実行時エラーになる `unwrap` などは設けない（[ADR 0043](../decisions/0043-option-result-rust-names-no-unwrap.md)）。ただし、`Result` の失敗の構成子を `Result.Error` としたので、Rust の名前の `err` に当たる部分は `Error` とする（`Result.mapError`、`Result.isError`。[ADR 0099](../decisions/0099-qualified-option-result-constructors.md)）。
+【決定】関数の名前は Rust の名前を lowerCamelCase にしたものに合わせ、`Option.None` のときに実行時エラーになる `unwrap` などは設けない。ただし、`Result` の失敗の構成子を `Result.Error` としたので、Rust の名前の `err` に当たる部分は `Error` とする（`Result.mapError`、`Result.isError`）。
 
 | 関数 | 型 | 値 |
 |---|---|---|
@@ -244,7 +232,7 @@ end function
 
 ### Result
 
-`Result` の関数は、すべて標準ライブラリのソースで定める。名前の付け方は `Option` と同じである（[ADR 0043](../decisions/0043-option-result-rust-names-no-unwrap.md)）。
+`Result` の関数は、すべて標準ライブラリのソースで定める。名前の付け方は `Option` と同じである。
 
 | 関数 | 型 | 値 |
 |---|---|---|
@@ -258,13 +246,13 @@ end function
 
 ### Assert（初回リリース版）
 
-【決定】prelude のモジュール `Assert` は、テストの期待の確認を表すエフェクト `Assert.Check` を宣言する。その操作（`Assert.equal`・`Assert.notEqual`・`Assert.isTrue`・`Assert.fail`）は、[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)で定める（[ADR 0120](../decisions/0120-test-functions-and-assert-effect.md)、[ADR 0130](../decisions/0130-builtin-effect-names-and-placement.md)）。
+【決定】prelude のモジュール `Assert` は、テストの期待の確認を表すエフェクト `Assert.Check` を宣言する。その操作（`Assert.equal`・`Assert.notEqual`・`Assert.isTrue`・`Assert.fail`）は、[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)で定める。
 
-【方針】標準ライブラリの宣言は、非推奨にするときに `@deprecated` の属性を付ける（[構文](../01-spec/01-02-syntax.md)の「属性（初回リリース版）」、[ADR 0119](../decisions/0119-attributes-test-and-deprecated.md)）。非推奨にした宣言を取り除く時期は、互換性を壊す変更の範囲（[OPEN-040](../open-issues.md#open-040)）とあわせて決める。
+【方針】標準ライブラリの宣言は、非推奨にするときに `@deprecated` の属性を付ける（[構文](../01-spec/01-02-syntax.md)の「属性（初回リリース版）」）。
 
 ### Task と TaskGroup（初回リリース版）
 
-【決定】タスクを起動して結果を待つ `Task` モジュールの関数と、タスクの集まりのリソースの型 `TaskGroup` は、[並行処理](../01-spec/01-11-concurrency.md)で定める（[ADR 0115](../decisions/0115-structured-io-concurrency.md)）。どれも組み込みで実装する。`Task` と `TaskGroup` は prelude に入る。`Task` と `TaskGroup` の関数のエフェクトは、prelude の `State` である。これらはエフェクトの操作ではなく、`State` を型に持つ組み込みの関数であり、ハンドラで処理できない。`TaskGroup.open()` は `with` の束縛の式としてだけ書ける（[ADR 0153](../decisions/0153-taskgroup-open-only-in-with.md)）。時間の経過を待つ関数は `Benitoite.IO.Clock` の `Clock.sleep` である。`Task[T]` は中身を見せない型であり、等値の型ではない。HTTP のサーバとクライアントは[ネットワークのモジュール](03-09-network.md)で定める。
+【決定】タスクを起動して結果を待つ `Task` モジュールの関数と、タスクの集まりのリソースの型 `TaskGroup` は、[並行処理](../01-spec/01-11-concurrency.md)で定める。どれも組み込みで実装する。`Task` と `TaskGroup` は prelude に入る。`Task.await`・`TaskGroup.open`・`TaskGroup.spawn`・`Task.race`・`Task.withTimeout` の型は、prelude の `State` を含む。`Task.all`・`Task.allOk` の型は、受け取った関数のエフェクトだけを持つ。型は[並行処理](../01-spec/01-11-concurrency.md)で定める。これらはエフェクトの操作ではなく組み込みの関数であり、ハンドラで処理できない。`TaskGroup.open()` は `with` の束縛の式としてだけ書ける。時間の経過を待つ関数は `Benitoite.IO.Clock` の `Clock.sleep` である。`Task[T]` は中身を見せない型であり、等値の型ではない。HTTP のサーバとクライアントは[ネットワークのモジュール](03-09-network.md)で定める。
 
 ### Reference と Lazy（初回リリース版）
 
@@ -272,15 +260,15 @@ end function
 
 ### Byte（初回リリース版）
 
-【決定】`Byte` は 0 以上 255 以下の整数の基本型である（[ADR 0105](../decisions/0105-byte-type.md)）。変換の関数（`Byte.fromInteger`・`Byte.toInteger`・`Byte.toString`）とビット演算の関数は、[基本型の意味論](../01-spec/01-04-types-basic.md)の「Byte（初回リリース版）」と「ビット演算（初回リリース版）」で定め、すべて組み込みで実装する。
+【決定】`Byte` は 0 以上 255 以下の整数の基本型である。変換の関数（`Byte.fromInteger`・`Byte.toInteger`・`Byte.toString`）とビット演算の関数は、[基本型の意味論](../01-spec/01-04-types-basic.md)の「Byte（初回リリース版）」と「ビット演算（初回リリース版）」で定め、すべて組み込みで実装する。
 
 ### Decimal と RoundingMode（初回リリース版）
 
-【決定】`Decimal` は 10 進の小数の基本型である（[ADR 0114](../decisions/0114-decimal-type.md)）。丸めの関数（`Decimal.round`・`Decimal.absolute`）と変換の関数（`Decimal.fromInteger`・`Decimal.truncate`・`Decimal.toFloat`・`Decimal.fromFloat`・`Decimal.toString`・`Decimal.parse`）は、[基本型の意味論](../01-spec/01-04-types-basic.md)の「Decimal（初回リリース版）」と「型の変換」で定め、すべて組み込みで実装する。丸め方を表す `RoundingMode` は、構成子を公開する代数的データ型である（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。
+【決定】`Decimal` は 10 進の小数の基本型である。丸めの関数（`Decimal.round`・`Decimal.absolute`）と変換の関数（`Decimal.fromInteger`・`Decimal.truncate`・`Decimal.toFloat`・`Decimal.fromFloat`・`Decimal.toString`・`Decimal.parse`）は、[基本型の意味論](../01-spec/01-04-types-basic.md)の「Decimal（初回リリース版）」と「型の変換」で定め、すべて組み込みで実装する。丸め方を表す `RoundingMode` は、構成子を公開する代数的データ型である（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。
 
 ### Pair と Triple（初回リリース版）
 
-【決定】組の型 `Pair[A, B]` と `Triple[A, B, C]` は、構成子が一つだけの代数的データ型である（[ADR 0102](../decisions/0102-pair-and-triple.md)、[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。4 要素以上の組は、利用者が `record` を宣言して書く。
+【決定】組の型 `Pair[A, B]` と `Triple[A, B, C]` は、構成子が一つだけの代数的データ型である（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。4 要素以上の組は、利用者が `record` を宣言して書く。
 
 | 関数 | 型 | 値 | 実装 |
 |---|---|---|---|
@@ -292,7 +280,7 @@ end function
 
 ### Map と Set（初回リリース版）
 
-【決定】`Map[K, V]` と `Set[T]` は、構成子を公開しない永続コレクションである（[ADR 0103](../decisions/0103-map-and-set-ordered-by-key.md)）。更新する関数は新しい値を返し、元の値は変わらない。鍵と集合の要素の型は、鍵の型（[型システム](../01-spec/01-06-type-system.md)の「鍵の型（初回リリース版）」）でなければならない。反復の順序（`Map.toList` などが要素を並べる順序）は、後述の鍵の順序の昇順である。
+【決定】`Map[K, V]` と `Set[T]` は、構成子を公開しない永続コレクションである。更新する関数は新しい値を返し、元の値は変わらない。鍵と集合の要素の型は、鍵の型（[型システム](../01-spec/01-06-type-system.md)の「鍵の型（初回リリース版）」）でなければならない。反復の順序（`Map.toList` などが要素を並べる順序）は、後述の鍵の順序の昇順である。
 
 | 関数 | 型 | 値 | 計算量 |
 |---|---|---|---|
@@ -318,9 +306,9 @@ end function
 | `Set.size(s)` | `function[T: key](Set[T]) -> Integer` | 要素の数 | O(1) |
 | `Set.union(a, b)`・`Set.intersection(a, b)`・`Set.difference(a, b)` | `function[T: key](Set[T], Set[T]) -> Set[T]` | 和集合・共通部分・差集合 | O(m log(n/m + 1))。m と n は小さいほうと大きいほうの要素の数 |
 
-表の型の `key` は、`K` と `T` が鍵の型であるという組み込みの制約である。利用者も関数の型に書けるので、`Map` と `Set` を使う汎用の関数（`function countBy[T, K: key](xs: List[T], f: function(T) -> K) -> Map[K, Integer]` など）を書ける（[型システム](../01-spec/01-06-type-system.md)、[ADR 0133](../decisions/0133-builtin-equality-and-key-constraints.md)）。
+表の型の `key` は、`K` と `T` が鍵の型であるという組み込みの制約である。利用者も関数の型に書けるので、`Map` と `Set` を使う汎用の関数（`function countBy[T, K: key](xs: List[T], f: function(T) -> K) -> Map[K, Integer]` など）を書ける（[型システム](../01-spec/01-06-type-system.md)）。
 
-【決定】`Map` と `Set` の関数を引数にとる関数は、次のとおりとする（[ADR 0171](../decisions/0171-map-set-higher-order-functions.md)）。どれも標準ライブラリのソースで書き、受け取った関数を鍵の順序で呼ぶ（前述の「関数を引数にとる関数の共通の規則」）。計算量は、受け取った関数の呼び出しを 1 と数えたものである。
+【決定】`Map` と `Set` の関数を引数にとる関数は、次のとおりとする。どれも標準ライブラリのソースで書き、受け取った関数を鍵の順序で呼ぶ（前述の「関数を引数にとる関数の共通の規則」）。計算量は、受け取った関数の呼び出しを 1 と数えたものである。
 
 | 関数 | 型 | 値 | 計算量 |
 |---|---|---|---|
@@ -333,22 +321,22 @@ end function
 | `Set.fold(s, initial, f)` | `function[T: key, A, effect E](Set[T], A, function(A, T) -> A uses E) -> A uses E` | `initial` から始め、鍵の順に `f(acc, x)` で畳み込んだ値 | O(n) |
 | `Set.forEach(s, f)` | `function[T: key, effect E](Set[T], function(T) -> Unit uses E) -> Unit uses E` | 各要素に `f` を適用する | O(n) |
 
-【決定】`Map` と `Set` のリテラルの構文はない（[ADR 0103](../decisions/0103-map-and-set-ordered-by-key.md)）。`Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` は、定数式に書ける（[構文](../01-spec/01-02-syntax.md)の「定数（初回リリース版）」、[ADR 0136](../decisions/0136-map-and-set-in-constants.md)）。定数式の外で、`Map.fromList` の引数のリストのリテラルに、鍵が定数式で同じ値になる組が二つ以上あるときは、処理系は警告を出す。`Set.fromList` の要素も同じである。警告は検査と実行を止めず、値は表のとおり後の組の値を使う。定数式の中では誤りとする。
+【決定】`Map` と `Set` のリテラルの構文はない。`Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` は、定数式に書ける（[構文](../01-spec/01-02-syntax.md)の「定数（初回リリース版）」）。定数式の外で、`Map.fromList` の引数のリストのリテラルに、鍵が定数式で同じ値になる組が二つ以上あるときは、処理系は警告を出す。`Set.fromList` の要素も同じである。警告は検査と実行を止めず、値は表のとおり後の組の値を使う。定数式の中では誤りとする。
 
 【方針】鍵の順序は、鍵の型の値に定める全順序であり、次のとおりとする。
 
 - `Integer`・`Byte`・`Decimal` は数の大小、`String` は `<` と同じ順序（スカラー値の列の辞書式）、`Character` はスカラー値の大小による。`Boolean` は `false` を `true` より前、`Unit` の値は一つである。
-- 代数的データ型の値は、まず構成子を型の宣言に書いた順で比べ、構成子が同じなら引数を前から順に比べる（辞書式）。初回リリース版のレコードは、フィールドを宣言の順に並べた構成子が一つの型として比べる。`Pair` と `Triple` も同じである。
+- 代数的データ型の値は、まず構成子を型の宣言に書いた順で比べ、構成子が同じなら引数を前から順に比べる（辞書式）。レコードは、フィールドを宣言の順に並べた構成子が一つの型として比べる。`Pair` と `Triple` も同じである。
 - `List`・`Bytes` は、要素を前から順に比べ、一方が他方の先頭の部分に当たるときは短いほうを前とする（辞書式）。
 - `Set` は、要素を鍵の順序で並べたリストとして比べる。`Map` は、組を鍵の順序で並べたリストとして比べる。
 
 `Decimal` の値は、小数の桁数が違っても数が等しければ同じ鍵である（`1.0m` と `1.00m`）。`Map.set`・`Set.add`・`Map.fromList` などで、同じ鍵が既にあるマップや集合に鍵を加えるときは、元の鍵を保つ（`Map.set` は値だけを替える）。
 
-【方針】`Map` と `Set` は、平衡二分木で表す。木の種類（重みで平衡させる木）とノードの持つものは[仮想機械](../02-impl/02-08-vm.md)の「値の表現」で定める。ノードは作った後に変更せず、更新は根から変わるノードまでの道筋だけを写す。処理系のテストでは、リストと同じく（[ADR 0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md)）、操作の列を単純なモデル（Rust の `BTreeMap`・`BTreeSet`）と同時に適用し、内容と鍵の順序が一致することを確かめる。木の平衡の条件は、テストではなく、デバッグ用のビルドで実装の中の `debug_assert!` として確かめる。
+【方針】`Map` と `Set` は、平衡二分木で表す。木の種類（重みで平衡させる木）とノードの持つものは[仮想機械](../02-impl/02-08-vm.md)の「値の表現」で定める。ノードは作った後に変更せず、更新は根から変わるノードまでの道筋だけを写す。処理系のテストでは、リストと同じく、操作の列を単純なモデル（Rust の `BTreeMap`・`BTreeSet`）と同時に適用し、内容と鍵の順序が一致することを確かめる。木の平衡の条件は、テストではなく、デバッグ用のビルドで実装の中の `debug_assert!` として確かめる。
 
 ### Bytes と ByteOrder（初回リリース版）
 
-【決定】`Bytes` は、変更できないバイト列の型であり、要素は `Byte` である（[ADR 0107](../decisions/0107-bytes.md)）。`Bytes` は等値の型である。リテラルはなく、次の関数で作る。位置を指定する関数は、位置が正しくなければ `Option.None` を返す。
+【決定】`Bytes` は、変更できないバイト列の型であり、要素は `Byte` である。`Bytes` は等値の型である。リテラルはなく、次の関数で作る。位置を指定する関数は、位置が正しくなければ `Option.None` を返す。
 
 | 関数 | 型 | 値 | 計算量 |
 |---|---|---|---|
@@ -362,7 +350,7 @@ end function
 | `Bytes.toBinary(b)` | `function(Bytes) -> String` | 各バイトを 2 進 8 桁で表し、区切りなしで並べた文字列 | O(n) |
 | `Bytes.length(b)` | `function(Bytes) -> Integer` | バイト数 | O(1) |
 | `Bytes.get(b, i)` | `function(Bytes, Integer) -> Option[Byte]` | 位置 `i` のバイト | O(1) |
-| `Bytes.slice(b, start, stop)` | `function(Bytes, Integer, Integer) -> Option[Bytes]` | 位置 `start` から `stop` の手前までのバイト列 | O(1) |
+| `Bytes.slice(b, start, stop)` | `function(Bytes, Integer, Integer) -> Option[Bytes]` | 位置 `start` から `stop` の手前までのバイト列 | O(n) |
 | `Bytes.concatenate(a, b)` | `function(Bytes, Bytes) -> Bytes` | `a` の後に `b` を続けたバイト列 | O(n) |
 | `Bytes.readUnsigned(b, offset, count, order)` | `function(Bytes, Integer, Integer, ByteOrder) -> Option[Integer]` | `offset` から `count` バイトを、符号なしの整数として `order` のバイト順で読んだ値 | O(count) |
 | `Bytes.readSigned(b, offset, count, order)` | `function(Bytes, Integer, Integer, ByteOrder) -> Option[Integer]` | 同じく、2 の補数の符号付きの整数として読んだ値 | O(count) |
@@ -373,17 +361,17 @@ end function
 
 - `count` は 1 以上 8 以下でなければならず、外なら `Option.None` を返す。`Bytes.readUnsigned` の `count` が 8 で、値が `Integer` の範囲を超えるときも `Option.None` を返す。
 - `Bytes.fromHex` と `Bytes.fromBinary` は、区切りとして `_` と空白（U+0020）を読み飛ばす。16 進の数字は大文字と小文字のどちらも受け付ける。区切りを除いた桁の数が、16 進では 2 の倍数、2 進では 8 の倍数でなければならない。
-- `String.fromUTF8` は、正しくない UTF-8 を置き換えたり捨てたりしない（[ADR 0012](../decisions/0012-invalid-utf8-input.md) の方針と同じ）。先頭の BOM（U+FEFF）は取り除かない。
+- `String.fromUTF8` は、正しくない UTF-8 を置き換えたり捨てたりしない（`File.readText` が正しくない UTF-8 を誤りとするのと同じ方針。[IO のモジュール](03-07-io-modules.md)の「共通の規則」）。先頭の BOM（U+FEFF）は取り除かない。
 - `ByteOrder` は構成子 `ByteOrder.BigEndian`（上位のバイトが先）と `ByteOrder.LittleEndian`（下位のバイトが先）を持つ代数的データ型である（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。
-- ファイルとの読み書きは `File.readBytes`・`File.writeBytes` で行う（[エフェクト](../01-spec/01-07-effects.md)）。Base64 との変換は `Benitoite.Encoding`（[テキストとデータの処理](03-08-text-and-data.md)）で行う。UTF-8 以外の文字コードとの変換と、Base64 以外の符号化は、[OPEN-043](../open-issues.md#open-043) で検討する。
+- ファイルとの読み書きは `File.readBytes`・`File.writeBytes` で行う（[エフェクト](../01-spec/01-07-effects.md)）。Base64 との変換は `Benitoite.Encoding`（[テキストとデータの処理](03-08-text-and-data.md)）で行う。UTF-8 以外の文字コードとの変換と、Base64 以外の符号化は、初回リリース版に含めない。
 
-【方針】`Bytes` は、連続したバイトの領域と、その中の開始位置と長さで表す。領域は作った後に変更しない。`Bytes.slice` は、同じ領域を共有し、開始位置と長さだけを変えた値を作る。
+【方針】`Bytes` は、一つのヒープの対象にバイトの並びを連続して持つ形で表し、作った後に変更しない。`Bytes.slice` は、元の値と領域を共有せず、範囲のバイトを新しい値に写して作るので、計算量は結果のバイト数に比例する。元の領域を共有して開始位置と長さだけを変える表現は、初回リリース版に含めない（docs/todo の TODO-185）。
 
 ### 標準の型クラス（初回リリース版）
 
-【決定】標準ライブラリのモジュール `Benitoite.Trait` に、標準の型クラスと、比較の結果を表す型 `Ordering` を置く（[ADR 0134](../decisions/0134-standard-type-classes.md)）。`Benitoite.Trait` は prelude に入らない。使うには `import Benitoite.Trait` と書き、型クラスは `Trait.Monad`、メソッドは `Trait.Monad.flatMap(x, f)`、制約は `[F: Trait.Monad]` と書く。型クラスの宣言と実装の規則（上位の型クラス、戻り値の型で実装を選ぶメソッドを含む）は、[型システム](../01-spec/01-06-type-system.md)の「型クラス（初回リリース版）」で定める。
+【決定】標準ライブラリのモジュール `Benitoite.Trait` に、標準の型クラスと、比較の結果を表す型 `Ordering` を置く。`Benitoite.Trait` は prelude に入らない。使うには `import Benitoite.Trait` と書き、型クラスは `Trait.Monad`、メソッドは `Trait.Monad.flatMap(x, f)`、制約は `[F: Trait.Monad]` と書く。型クラスの宣言と実装の規則（上位の型クラス、戻り値の型で実装を選ぶメソッドを含む）は、[型システム](../01-spec/01-06-type-system.md)の「型クラス（初回リリース版）」で定める。
 
-【決定】標準の型クラスのメソッドは、既存の関数と同じ役割を持つ（`Trait.Functor.map` と `Option.map`・`List.map`、`Trait.Foldable.fold` と `List.fold` など）。これは、学習の目的のために設けた原則 5（[目的と設計原則](../00-overview/00-01-goals.md)）の例外である。重複する既存の関数を隠すかは、初回リリース版を実装した後に評価して決める（[OPEN-050](../open-issues.md#open-050)）。
+【決定】標準の型クラスのメソッドは、既存の関数と同じ役割を持つ（`Trait.Functor.map` と `Option.map`・`List.map`、`Trait.Foldable.fold` と `List.fold` など）。これは、学習の目的のために設けた原則 5（[目的と設計原則](../00-overview/00-01-goals.md)）の例外である。重複する既存の関数も残し、隠さない。
 
 ```text
 import Benitoite.Trait
@@ -413,9 +401,9 @@ end function
 | `Foldable[F[_]]` | — | `function fold[A, B, effect E](x: F[A], initial: B, f: function(B, A) -> B uses E) -> B uses E` |
 | `Traversable[F[_]]` | `Functor`、`Foldable` | `function traverse[G[_]: Applicative, A, B, effect E](x: F[A], f: function(A) -> G[B] uses E) -> G[F[B]] uses E` |
 
-`Monoid.empty` と `Applicative.pure` は、型クラスの引数を戻り値の型にだけ含むので、呼び出した位置で求める型から実装を選ぶ。等値の型クラスは置かない。等値は `=` と組み込みの制約 `equality` で扱う（[型システム](../01-spec/01-06-type-system.md)、[ADR 0133](../decisions/0133-builtin-equality-and-key-constraints.md)）。
+`Monoid.empty` と `Applicative.pure` は、型クラスの引数を戻り値の型にだけ含むので、呼び出した位置で求める型から実装を選ぶ。等値の型クラスは置かない。等値は `=` と組み込みの制約 `equality` で扱う（[型システム](../01-spec/01-06-type-system.md)）。
 
-【決定】標準ライブラリの型に、次の実装を置く。実装は、どれも標準ライブラリのソースで書く。
+【決定】標準ライブラリの型に、次の実装を置く。実装は、どれも標準ライブラリのソースで書く。`String` と `Character` の `Show.show` は、文字のエスケープを、ソースから非公開の組み込みの関数を呼んで行う。
 
 | 型クラス | 実装する型 |
 |---|---|
@@ -425,9 +413,9 @@ end function
 | `Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable` | `Option`・`List` |
 
 - `Result[T, X]` は型引数を二つとるので、型構成子を引数にとる型クラスを実装できない。型の部分適用がないからである（[型システム](../01-spec/01-06-type-system.md)の「高カインド型（初回リリース版）」）。
-- 利用者の型の実装は `implement` で書く。実装を導出する仕組みは設けない。導出は [OPEN-046](../open-issues.md#open-046) で決める。
-- メソッドの既定の実装はない。型クラスから派生する関数も、初回リリース版では置かない（[ADR 0171](../decisions/0171-map-set-higher-order-functions.md)）。
-- 演算子と文字列補間は、型クラスを使わない（[ADR 0062](../decisions/0062-operators-stay-outside-traits.md)）。`Order` を実装した型に `<` は使えず、`Show` を実装した型の値を文字列補間に埋め込むことはできない。
+- 利用者の型の実装は `implement` で書く。実装を導出する仕組みは設けない。
+- メソッドの既定の実装はない。型クラスから派生する関数も置かない。
+- 演算子と文字列補間は、型クラスを使わない。`Order` を実装した型に `<` は使えず、`Show` を実装した型の値を文字列補間に埋め込むことはできない。
 
 【方針】`Show.show` は、値を式の書き方に近い文字列で表す。
 
@@ -469,7 +457,7 @@ IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各�
 
 ### List の内部の表現
 
-【決定】`List[T]` は、添字で引ける永続ベクタ（persistent vector）で表す（[ADR 0104](../decisions/0104-list-as-persistent-vector.md)）。
+【決定】`List[T]` は、添字で引ける永続ベクタ（persistent vector）で表す。理由: 単方向の連結リストでは、添字での参照（`List.get`）と末尾への追加が長さに比例する時間になり、LLM が添字のループの中で `List.get` を書くと要素の数の 2 乗の時間になる。この遅さは型の誤りにならないので、静的な検査でも見つけられない。
 
 【方針】永続ベクタは、分岐の数を 32 とする木（RRB 木、relaxed radix balanced tree）で表す。
 
@@ -479,9 +467,7 @@ IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各�
 - ノードと葉は、作った後に変更しない。更新は、根から変わる葉までの道筋のノードだけを写し、ほかのノードを共有する（構造共有、structural sharing）。
 - リストどうしの `=` と `List.contains`、`List.sort` の比較は、処理系の再帰に頼らずに要素を辿る（[仮想機械](../02-impl/02-08-vm.md)）。
 
-木の形の細部（緩和したノードを詰め直す条件など）は、実装プランで定める。
-
-【決定】リストの次の不変条件は、それぞれ次の方法で確かめる（[ADR 0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md)）。
+【決定】リストの次の不変条件は、それぞれ次の方法で確かめる。
 
 | 不変条件 | 確かめ方 |
 |---|---|
@@ -489,11 +475,11 @@ IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各�
 | どの関数も、引数のリストのノードと葉を変更しない | 処理系のテストで、関数を呼ぶ前後で引数のリストの要素の並びが変わらないことを確かめる |
 | 木の高さは、要素の数に対して O(log n) に収まる | [性能](../07-quality/07-02-performance.md)の測定で、大きなリストの添字の操作の時間として観察する |
 
-【決定】リストの処理系のテストは、無作為に選んだ操作の列を、リストと単純なモデル（Rust の `Vec`）の両方に同じ順に適用し、要素の並びと長さが一致することを確かめる（[ADR 0211](../decisions/0211-list-invariants-by-model-comparison-and-debug-assertions.md)、[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。テストはデバッグビルドで実行するので、操作のたびに一つ目の不変条件も確かめられる。
+【決定】リストの処理系のテストは、無作為に選んだ操作の列を、リストと単純なモデル（Rust の `Vec`）の両方に同じ順に適用し、要素の並びと長さが一致することを確かめる（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。テストはデバッグビルドで実行するので、操作のたびに一つ目の不変条件も確かめられる。
 
 ### 標準ライブラリのソースの書き方
 
-【決定】標準ライブラリのソースは、利用者のモジュールと同じ構文のモジュールとして書く（[ADR 0157](../decisions/0157-stdlib-sources-as-modules-with-builtin-attribute.md)）。モジュール `Benitoite.X.Y` のソースは、処理系に同梱する標準ライブラリの根の下の `X/Y.bnt` に置く。読み込みと名前解決は[名前解決とモジュール読込](../02-impl/02-04-resolver.md)で定める。
+【決定】標準ライブラリのソースは、利用者のモジュールと同じ構文のモジュールとして書く。モジュール `Benitoite.X.Y` のソースは、処理系に同梱する標準ライブラリの根の下の `X/Y.bnt` に置く。読み込みと名前解決は[名前解決とモジュール読込](../02-impl/02-04-resolver.md)で定める。
 
 - 利用者から見える関数・型・型クラス・エフェクトには `public` を付ける。補助の関数は `public` を付けずに書き、そのモジュールの中からだけ使う。
 - 組み込みの関数は、本体のない関数の宣言に属性 `@builtin("名前")` を付けて宣言する。名前は処理系の組み込みの関数の表の鍵であり、型は宣言のシグネチャで与える。`@builtin` と本体のない宣言は、標準ライブラリのソースでだけ書ける。
@@ -527,15 +513,5 @@ public function sort[T: ordered](xs: List[T]) -> List[T]
 
 上の例は `List` のモジュールのソース（`List.bnt`）の一部であり、同じモジュールの関数は修飾せずに呼ぶ。
 
-この例は書き方を示すものであり、`List.get` の代わりに、標準ライブラリのソースの中だけで使える組み込みの関数（`Option` を作らずに要素を順に取り出すもの）を使ってよい。この例は O(n log n) であり、要素を順に取り出す組み込みの関数を使えば O(n) にできる。標準ライブラリのソースの関数の定義そのものは、実装プランで与える。
+この例は書き方を示すものであり、`List.get` の代わりに、標準ライブラリのソースの中だけで使える組み込みの関数（`Option` を作らずに要素を順に取り出すもの）を使ってよい。この例は O(n log n) であり、要素を順に取り出す組み込みの関数を使えば O(n) にできる。標準ライブラリのソースの関数の定義そのものは、処理系に同梱するソースが与える。
 
-## 未決事項
-
-- [OPEN-012](../open-issues.md#open-012): 構文の種類ごとの LLM の生成精度（最小実行版の prelude の関数が、測定に足りるか）
-- [OPEN-040](../open-issues.md#open-040): 正式リリース版とする条件と、互換性を壊す変更の範囲（非推奨にした宣言を取り除く時期）
-- [OPEN-043](../open-issues.md#open-043): UTF-8 以外の文字コードとの変換と、Base64 以外の符号化
-- [OPEN-046](../open-issues.md#open-046): プロパティベーステストと、入力の生成器の導出（標準の型クラスの実装の導出を含む）
-- [OPEN-049](../open-issues.md#open-049): パッケージの名前空間と取り込み方
-- [OPEN-050](../open-issues.md#open-050): 標準の型クラスと重複する既存の関数を隠すか
-- [OPEN-078](../open-issues.md#open-078): 公式の追加のライブラリの配り方と、非公式のモジュールの行き先
-- [OPEN-109](../open-issues.md#open-109): Web システムに要る標準ライブラリの部品の範囲（初回リリース版の後。暗号、Cookie、セッション、CORS、テンプレートなど）

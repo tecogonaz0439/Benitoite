@@ -28,7 +28,7 @@ pub fn run_tool(tool: ToolCommand, args: Vec<OsString>, env: CliEnv) -> u8 {
     }
 }
 
-/// 埋め込んだ第三者のライセンスを `env.stdout` に書き、終了状態を返す（06-01「コマンドラインの形」、ADR 0235）。
+/// 埋め込んだ第三者のライセンスを `env.stdout` に書き、終了状態を返す（06-01「コマンドラインの形」）。
 pub fn print_licenses(env: &CliEnv) -> u8 {
     let mut out = String::from(licenses::text::OWN_LICENSE);
     // リリースのスクリプトを通さないビルドは一覧を持たないことを伝える（05-01「ライセンスの表示」）

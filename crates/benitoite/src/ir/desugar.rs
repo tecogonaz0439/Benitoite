@@ -155,7 +155,7 @@ fn constant(c: &ConstValue) -> Result<Const, InternalError> {
 }
 
 // 解放が残る with の本体も関数の結果になるので、末尾と結果を区別する
-// （設計書 01-08「末尾呼び出し」、01-12「関数の境界と escape」）。
+// （設計書 01-08「末尾呼び出し」、01-12「関数の境界と `escape`：途中の `return` と `try`」）。
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Position {
     Tail,

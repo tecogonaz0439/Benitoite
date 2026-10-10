@@ -93,7 +93,7 @@ impl Solver {
         }
         ty
     }
-    /// 型注釈の型を参照の共有先に置き、誤りの印も局所の使い先へ伝える（ADR 0024）。
+    /// 型注釈の型を参照の共有先に置き、誤りの印も局所の使い先へ伝える（02-05「誤りの報告と検査の継続」）。
     pub fn known(&mut self, t: ITy) -> ITy {
         let variable = self.fresh_ty();
         if let ITy::Var(v) = variable
@@ -154,7 +154,7 @@ impl Solver {
             match step {
                 ZonkStep::Visit(mut t, depth) => {
                     // 共有する変数の連鎖自体はノードに数えず、展開した出現ごとに
-                    // 予算を消費する。子を作る前に拒否する意味は変えない（ADR 0353）。
+                    // 予算を消費する。子を作る前に拒否する意味は変えない（02-03「入れ子の深さ」）。
                     while let ITy::Var(v) = t {
                         match self.node(*v).and_then(|n| n.binding.as_ref()) {
                             Some(bound) => t = bound,
@@ -1132,7 +1132,7 @@ impl Solver {
         d: DiagBuilder,
     ) -> DiagBuilder {
         // 同じモジュールの import から別名を引く。ほかのモジュールが取り込んだ
-        // Trait はこの位置から参照できない（設計書 01-03「モジュールと import」）。
+        // Trait はこの位置から参照できない（設計書 01-03「モジュールと import（初回リリース版）」）。
         let alias = ctx
             .decls
             .asts

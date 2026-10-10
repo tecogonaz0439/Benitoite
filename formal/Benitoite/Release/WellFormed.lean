@@ -29,7 +29,7 @@ mutual
     | .tvar i => i < n
     | .reference a => Ty.VarsIn n pe a
     | .lazy a => Ty.VarsIn n pe a
-    -- 継続の型は、項に書く型に含めない（01-12「ハンドラ」、ADR 0303）。
+    -- 継続の型は、項に書く型に含めない（01-12「ハンドラ」）。
     | .cont _ _ _ => False
     | .map a b => Ty.VarsIn n pe a ∧ Ty.VarsIn n pe b
     | .set a => Ty.VarsIn n pe a
@@ -73,7 +73,7 @@ mutual
     | .letIn m m' => Comp.VarsIn n pe m ∧ Comp.VarsIn n pe m'
     | .app f args => Val.VarsIn n pe f ∧ Val.VarsInList n pe args
     | .ite v m m' => Val.VarsIn n pe v ∧ Comp.VarsIn n pe m ∧ Comp.VarsIn n pe m'
-    | .match v arms => Val.VarsIn n pe v ∧ Comp.VarsInArms n pe arms
+    | .match v arms => Val.VarsIn n pe v ∧ Arm.VarsInList n pe arms
     | .lazyC m => Comp.VarsIn n pe m
     | .escape v => Val.VarsIn n pe v
     | .use v m => Val.VarsIn n pe v ∧ Comp.VarsIn n pe m
@@ -82,9 +82,11 @@ mutual
     | .meth d _ tys effs args =>
         Val.VarsIn n pe d ∧ Ty.VarsInList n pe tys ∧ Eff.RhosInList pe effs ∧ Val.VarsInList n pe args
 
-  def Comp.VarsInArms (n : Nat) (pe : Nat → Prop) : List (Pat × Comp) → Prop
+  def Arm.VarsInList (n : Nat) (pe : Nat → Prop) : List Arm → Prop
     | [] => True
-    | (_, m) :: arms => Comp.VarsIn n pe m ∧ Comp.VarsInArms n pe arms
+    | .mk _ none m :: arms => Comp.VarsIn n pe m ∧ Arm.VarsInList n pe arms
+    | .mk _ (some g) m :: arms =>
+        Comp.VarsIn n pe g ∧ Comp.VarsIn n pe m ∧ Arm.VarsInList n pe arms
 
   /-- 節の本体では、操作の型パラメータの個数だけ、束縛された型の変数が増える。 -/
   def Clause.VarsInList (n : Nat) (pe : Nat → Prop) : List Clause → Prop

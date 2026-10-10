@@ -1,4 +1,4 @@
-//! プロセスの中断の印とシグナルの登録（設計書 02-09「中断の要求」、ADR 0163・0263）。
+//! プロセスの中断の印とシグナルの登録（設計書 02-09「中断の要求」）。
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};

@@ -41,6 +41,17 @@ mutual
     | .P_Wild => .P_Wild
     | .P_Var => by simpa using PatTy.P_Var
     | .P_Const h1 h2 h3 h4 => by rw [Const.type_substAt]; exact .P_Const h1 h2 h3 h4
+    | .P_RangeInt => by simpa only [Ty.substAt, List.map_nil] using PatTy.P_RangeInt (P := P)
+    | .P_RangeChar => by simpa only [Ty.substAt, List.map_nil] using PatTy.P_RangeChar (P := P)
+    | .P_List (rest := rest) (a := t) hb ha hn => by
+        have hb' := PatTys.substAt hwf c ts' es' hb
+        have ha' := PatTys.substAt hwf c ts' es' ha
+        simp only [List.map_replicate] at hb' ha'
+        have hr : (restTys rest t).map (Ty.substAt c ts' es') = restTys rest (Ty.substAt c ts' es' t) := by
+          cases rest with
+          | none => rfl
+          | some r => cases r <;> simp [restTys, Ty.substAt]
+        simpa only [Ty.substAt, List.map_append, hr] using PatTy.P_List (rest := rest) hb' ha' hn
     | .P_Con (cd := cd) (ts := ts) hc hts hps => by
         simp only [Ty.substAt]
         refine .P_Con hc (by simpa using hts) ?_
@@ -54,6 +65,15 @@ mutual
         simp only [List.map_cons, List.map_append]
         exact .cons (PatTy.substAt hwf c ts' es' hp) (PatTys.substAt hwf c ts' es' hps)
 end
+
+theorem AltsTy.substAt (hwf : P.WellFormed) (c : Nat) (ts : List Ty) (es : List Eff)
+    {alts a δ} (h : AltsTy P alts a δ) :
+    AltsTy P alts (a.substAt c ts es) (δ.map (Ty.substAt c ts es)) := by
+  refine ⟨h.1, by simpa using h.2.1, h.2.2.1, ?_⟩
+  intro alt halt
+  obtain ⟨γ, hp, hperm, hs⟩ := h.2.2.2 alt halt
+  refine ⟨γ.map (Ty.substAt c ts es), PatTy.substAt hwf c ts es hp, by simpa using hperm, ?_⟩
+  rw [selectSlots_map, hs]; rfl
 
 /-! ## 網羅性 -/
 
@@ -332,17 +352,19 @@ theorem opSig_scoped (hwf : P.WellFormed) (hb : B.Assumptions P) {o sg} (h : opS
         · cases h
       · cases h
 
+theorem unguardedPats_substTy (c : Nat) (ts : List Ty) (es : List Eff) (arms : List Arm) :
+    unguardedPats (Arm.substTyAtList c ts es arms) = unguardedPats arms := by
+  induction arms with
+  | nil => rfl
+  | cons arm arms ih =>
+      cases arm with
+      | mk alts guard body => cases guard <;> simp [Arm.substTyAtList, unguardedPats, ih]
+
 theorem Clause.substTyAtList_ops (c : Nat) (ts : List Ty) (es : List Eff) (h : List Clause) :
     (Clause.substTyAtList c ts es h).map Clause.op = h.map Clause.op := by
   induction h with
   | nil => simp [Clause.substTyAtList]
   | cons cl cs ih => obtain ⟨o, n, k, m⟩ := cl; simp [Clause.substTyAtList, Clause.op, ih]
-
-theorem Comp.substTyAtArms_fst (c : Nat) (ts : List Ty) (es : List Eff) (arms : List (Pat × Comp)) :
-    (Comp.substTyAtArms c ts es arms).map Prod.fst = arms.map Prod.fst := by
-  induction arms with
-  | nil => simp [Comp.substTyAtArms]
-  | cons x xs ih => obtain ⟨p, m⟩ := x; simp [Comp.substTyAtArms, ih]
 
 /-- 閉じた型引数が、空の制約の並びのもとで満たす制約は、どの並びのもとでも満たす。 -/
 theorem SatAll.closed (hb : B.Assumptions P) {ts tps} (hts : ClosedArgs ts) (h : SatAll B [] ts tps)
@@ -560,7 +582,7 @@ mutual
         simp only [Comp.substTyAt]
         refine .C_Match (HasTypeV.substTy hwf hb hv hc hts hsat hΨ)
           (HasTypeArms.substTy hwf hb harms hc hts hsat hΨ) ?_
-        rw [Comp.substTyAtArms_fst]
+        rw [unguardedPats_substTy]
         exact hex.substAt hwf _ _ _
     | .C_Lazy hm =>
         simp only [Comp.substTyAt, Ty.substAt]
@@ -631,22 +653,35 @@ mutual
       (h : HasTypeArms P B Ψ C Γ R arms a b ε) (hc : c ≤ C.length) (hts : ClosedArgs ts')
       (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') :
       HasTypeArms P B Ψ (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
-        (Comp.substTyAtArms c ts' es' arms) (a.substAt c ts' es')
+        (Arm.substTyAtList c ts' es' arms) (a.substAt c ts' es')
         (b.substAt c ts' es') (Eff.substRho es' ε) := by
     have htc : (C.take c).length = c := by simp; omega
     match h with
     | .nil hw =>
-        simp only [Comp.substTyAtArms]
+        simp only [Arm.substTyAtList]
         refine .nil ?_
         rw [htc]
         refine Ty.substAt_wf es' (fun t ht => (hts t ht).1) _ ?_
         rw [hsat.1]; exact Ty.WF.mono (by simp; omega) _ hw
-    | .cons hp hbody hrest =>
-        simp only [Comp.substTyAtArms]
-        refine .cons (PatTy.substAt hwf _ _ _ hp) ?_ (HasTypeArms.substTy hwf hb hrest hc hts hsat hΨ)
-        have := HasTypeC.substTy hwf hb hbody hc hts hsat hΨ
-        rw [envSubst_binds] at this
-        exact this
+    | .plain hp hbody hrest =>
+        simp only [Arm.substTyAtList]
+        refine .plain (AltsTy.substAt hwf _ _ _ hp) ?_ (HasTypeArms.substTy hwf hb hrest hc hts hsat hΨ)
+        have hh := HasTypeC.substTy hwf hb hbody hc hts hsat hΨ
+        rw [envSubst_binds] at hh
+        exact hh
+    | .guarded hp hg hbody hrest =>
+        simp only [Arm.substTyAtList]
+        refine .guarded (AltsTy.substAt hwf _ _ _ hp) ?_ ?_ (HasTypeArms.substTy hwf hb hrest hc hts hsat hΨ)
+        · have hh := HasTypeC.substTy hwf hb hg hc hts hsat hΨ
+          simp only [Ty.substAt, Option.map_none, Eff.substRho_empty] at hh
+          simp only [envSubst] at hh
+          rw [← hideConts_map hts] at hh
+          change HasTypeC _ _ _ _ (hideConts (envSubst c ts' es' (_ ++ Γ))) _ _ _ _ at hh
+          rw [envSubst_binds] at hh
+          exact hh
+        · have hh := HasTypeC.substTy hwf hb hbody hc hts hsat hΨ
+          rw [envSubst_binds] at hh
+          exact hh
 
   theorem HasTypeClauses.substTy (hwf : P.WellFormed) (hb : B.Assumptions P)
       {Ψ C Γ R h t ε ts' es'} {c : Nat}

@@ -1,4 +1,4 @@
-//! 記述子の上限を実際に使い切り、HTTP サーバの継続と復帰を確かめる（03-09、ADR 0170、SECB1）。
+//! 記述子の上限を実際に使い切り、HTTP サーバの継続と復帰を確かめる（03-09「失敗の種類」、SECB1）。
 #![cfg(unix)]
 // テストの失敗は panic で表す（実装プラン 00-02）。
 #![allow(clippy::unwrap_used, clippy::panic)]
@@ -177,7 +177,7 @@ impl Server {
         let reports: Vec<_> = self.stderr.try_iter().collect();
         assert!(status.success(), "{status:?}: {reports:?}");
         // クライアント側の close と、サーバ側での切断済みの接続の回収は同期しない。
-        // 途中で接続の受け付けに成功すれば、次の資源不足では再び警告する（03-09、ADR 0170）。
+        // 途中で接続の受け付けに成功すれば、次の資源不足では再び警告する（03-09「失敗の種類」）。
         assert!(
             reports
                 .iter()

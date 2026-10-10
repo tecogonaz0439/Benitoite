@@ -1,9 +1,9 @@
-//! `benitoite --licenses` の表示（設計書 05-01「ライセンスの表示」、06-01「コマンドラインの形」、ADR 0235）。
+//! `benitoite --licenses` の表示（設計書 05-01「ライセンスの表示」、06-01「コマンドラインの形」）。
 //! 第三者のライセンスの表示は、リリースのスクリプトが生成し、機能 `bundled-licenses` のビルドでだけ埋め込む。
 
-/// 表示の文（ADR 0033）。
+/// 表示の文（設計書 02-10「文言の言語」）。
 pub mod text {
-    /// 処理系自身のライセンス（ADR 0003）
+    /// 処理系自身のライセンス（設計書 00-03「利用する既存の OSS のライセンス」）
     pub const OWN_LICENSE: &str = "benitoite is licensed under either of the MIT License or the Apache License, Version 2.0, at your option.\n";
     /// リリースのスクリプトを通さないビルドの文（05-01「ライセンスの表示」）
     pub const NOT_BUNDLED: &str = "This build does not include the list of third-party licenses.\nThe release archives built by scripts/release.sh include it.\n";
