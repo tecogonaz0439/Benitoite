@@ -1,0 +1,23 @@
+// spec: 01-06 型クラス（初回リリース版）
+trait A[T]
+  function a(x: T) -> Unit
+end trait
+trait B[T]
+  function b(x: T) -> Unit
+end trait
+implement A[Integer]
+  function a(x: Integer) -> Unit end function
+end implement
+implement B[Integer]
+  function b(x: Integer) -> Unit end function
+end implement
+implement[T: A & B] A[List[T]]
+  function a(x: List[T]) -> Unit end function
+end implement
+implement[T: A & B] B[List[T]]
+  function b(x: List[T]) -> Unit end function
+end implement
+function consume[T: A](x: T) -> Unit end function
+function main() -> Unit
+  consume([[[[[[[[[[[[[[1]]]]]]]]]]]]]])
+end function

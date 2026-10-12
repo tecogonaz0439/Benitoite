@@ -1,6 +1,6 @@
 //! 文字列の位置・分割・構築（設計書 01-04「String」、03-06「String」）。
-//! 仮の本体は、後の作業が本体と Rust の引数型だけを書き換える。
-//! 名前・権限・引数の数・DECLS の中の位置は変えない（実装プラン 10-12「まだ書かない項目の仮の本体」）。
+//! 名前・権限・引数の数は標準ライブラリのソースの宣言と一致させる
+//! （設計書 02-04「標準ライブラリのソースの持ち方」）。番号は表の中の位置で決まるので、DECLS の中の位置は変えない。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::runtime::MAX_STRING_BYTES;
@@ -12,7 +12,7 @@ use crate::runtime::heap::StrBuf;
 use crate::runtime::heap::Value;
 
 builtin! {
-    /// `String.byteLength` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.byteLength` の本体。
     name = "String.byteLength",
     pure fn byte_length(ctx, s: &'c str) -> i64 {
         let _ = ctx;
@@ -21,7 +21,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.characterCount` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.characterCount` の本体。
     name = "String.characterCount",
     pure fn character_count(ctx, s: &'c str) -> i64 {
         let _ = ctx;
@@ -30,7 +30,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.byteSlice` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.byteSlice` の本体。
     name = "String.byteSlice",
     pure fn byte_slice(ctx, s: &'c str, start: i64, end: i64) -> Value<'e> {
         let value = match (usize::try_from(start), usize::try_from(end)) {
@@ -45,7 +45,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.characterSlice` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.characterSlice` の本体。
     name = "String.characterSlice",
     pure fn character_slice(ctx, s: &'c str, start: i64, end: i64) -> Value<'e> {
         let (Ok(start), Ok(end)) = (usize::try_from(start), usize::try_from(end)) else {
@@ -67,7 +67,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.characterAt` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.characterAt` の本体。
     name = "String.characterAt",
     pure fn character_at(ctx, s: &'c str, i: i64) -> Value<'e> {
         super::option(
@@ -81,7 +81,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.isEmpty` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.isEmpty` の本体。
     name = "String.isEmpty",
     pure fn is_empty(ctx, s: &'c str) -> bool {
         let _ = ctx;
@@ -90,7 +90,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.contains` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.contains` の本体。
     name = "String.contains",
     pure fn contains(ctx, s: &'c str, sub: &'c str) -> bool {
         let _ = ctx;
@@ -99,7 +99,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.startsWith` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.startsWith` の本体。
     name = "String.startsWith",
     pure fn starts_with(ctx, s: &'c str, sub: &'c str) -> bool {
         let _ = ctx;
@@ -108,7 +108,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.endsWith` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.endsWith` の本体。
     name = "String.endsWith",
     pure fn ends_with(ctx, s: &'c str, sub: &'c str) -> bool {
         let _ = ctx;
@@ -117,7 +117,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.byteIndexOf` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.byteIndexOf` の本体。
     name = "String.byteIndexOf",
     pure fn byte_index_of(ctx, s: &'c str, sub: &'c str) -> Value<'e> {
         let i = s.find(sub).map(super::integer_count).transpose()?;
@@ -126,7 +126,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.split` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.split` の本体。
     name = "String.split",
     pure fn split(ctx, s: &'c str, sep: &'c str) -> Value<'e> {
         let n = if sep.is_empty() {
@@ -151,7 +151,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.lines` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.lines` の本体。
     name = "String.lines",
     pure fn lines(ctx, s: &'c str) -> Value<'e> {
         let n = line_parts(s).count();
@@ -172,7 +172,7 @@ pub(super) fn line_parts(s: &str) -> impl Iterator<Item = &str> {
 }
 
 builtin! {
-    /// `String.join` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.join` の本体。
     name = "String.join",
     pure fn join(ctx, xs: Value<'e>, sep: &'c str) -> Value<'e> {
         let items = crate::runtime::list::to_vec(&ctx, xs)?;
@@ -207,7 +207,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.trim` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.trim` の本体。
     name = "String.trim",
     pure fn trim(ctx, s: &'c str) -> Value<'e> {
         ctx.alloc_str(s.trim_matches(super::ascii_whitespace), "String.trim")
@@ -215,7 +215,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.replace` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.replace` の本体。
     name = "String.replace",
     pure fn replace(ctx, s: &'c str, old: &'c str, new: &'c str) -> Value<'e> {
         if old.is_empty() {
@@ -239,7 +239,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.repeat` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.repeat` の本体。
     name = "String.repeat",
     pure fn repeat(ctx, s: &'c str, n: i64) -> Value<'e> {
         if n <= 0 || s.is_empty() {
@@ -258,7 +258,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.characters` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.characters` の本体。
     name = "String.characters",
     pure fn characters(ctx, s: &'c str) -> Value<'e> {
         CheckedLen::elements(super::count(s.chars().count())?, "String.characters")?;
@@ -268,7 +268,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.fromCharacters` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `String.fromCharacters` の本体。
     name = "String.fromCharacters",
     pure fn from_characters(ctx, xs: Value<'e>) -> Value<'e> {
         let items = crate::runtime::list::to_vec(&ctx, xs)?;
@@ -305,7 +305,7 @@ fn too_large(function: &'static str) -> Stop {
         limit: MAX_STRING_BYTES,
     })
 }
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     byte_length::DECL,
     character_count::DECL,
@@ -347,7 +347,7 @@ builtin! {
     /// `String.toLowercase` の本体。`str::to_lowercase` で語末のシグマも変換する（設計書 03-06「String」）。
     name = "String.toLowercase",
     pure fn to_lowercase(ctx, s: &'c str) -> Value<'e> {
-        // 語末の判定は Rust に任せ、言語の値を確保する前に結果のバイト数を確かめる（実装プラン L01「手順の要点」）。
+        // 語末の判定は Rust に任せ、言語の値を確保する前に結果のバイト数を確かめる。
         let lower = s.to_lowercase();
         checked_case_len([lower.len()], "String.toLowercase")?;
         let mut buf = StrBuf::new("String.toLowercase");
@@ -368,11 +368,12 @@ fn checked_case_len(
     CheckedLen::bytes(size, function)
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const UNICODE_DECLS: &[BuiltinDecl] = &[to_uppercase::DECL, to_lowercase::DECL];
 
 builtin! {
-    /// `String.toUTF8` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `String.toUTF8` の本体。
     name = "String.toUTF8",
     pure fn to_u_t_f8(ctx, s: &'c str) -> Value<'e> {
         ctx.alloc_bytes(s.as_bytes(), "String.toUTF8")
@@ -380,7 +381,7 @@ builtin! {
 }
 
 builtin! {
-    /// `String.fromUTF8` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `String.fromUTF8` の本体。
     name = "String.fromUTF8",
     pure fn from_u_t_f8(ctx, b: &'c [u8]) -> Value<'e> {
         // UTF-8 の検査を公開 API に集め、BOM もそのまま残す（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
@@ -388,15 +389,16 @@ builtin! {
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const UTF8_DECLS: &[BuiltinDecl] = &[to_u_t_f8::DECL, from_u_t_f8::DECL];
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(clippy::unwrap_used)]
-    // 関門: 文字列の変換結果を守る。複数文字への展開と語末シグマの欠落を捕まえ、
-    // 既存の位置・分割のテストとは重ならない。長さ計算の直接のテストは L01 の個別指示に従う。
+    // 関門: 文字列の変換結果を守る。複数文字への展開と語末シグマの欠落を捕まえる。
+    // 既存の位置・分割のテストとは重ならない。長さ計算は巨大な値を確保せずに確かめる。
     use super::*;
     use crate::builtins::funcs::operators::tests::direct;
     use crate::runtime::heap::{Heap, HeapConfig};

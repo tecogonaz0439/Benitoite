@@ -91,11 +91,10 @@ impl TreeKind {
         let lw = u64::from(l).saturating_add(1);
         let rw = u64::from(r).saturating_add(1);
         debug_assert!(DELTA.saturating_mul(lw) >= rw && DELTA.saturating_mul(rw) >= lw);
-        let fields = match self {
-            Self::Map => vec![n.key, n.value, left, right],
-            Self::Set => vec![n.key, left, right],
+        let result = match self {
+            Self::Map => ctx.alloc_fields(self.kind(), count, &[n.key, n.value, left, right])?,
+            Self::Set => ctx.alloc_fields(self.kind(), count, &[n.key, left, right])?,
         };
-        let result = ctx.alloc_fields(self.kind(), count, &fields)?;
         debug_assert_eq!(ctx.fields_header(result), Some((self.kind(), count)));
         debug_assert_eq!(
             u64::from(count),
@@ -104,7 +103,7 @@ impl TreeKind {
         Ok(result)
     }
     // 重み size + 1 の原型の条件で回転する。一重の判定は厳密な < とする
-    // （R37「木の形」、Hirai・Yamamoto 2011 の 3.4 節）。
+    // （設計書 02-08「値の表現」。Hirai・Yamamoto 2011（JFP 21(3)）の 3.4 節の原型の条件）。
     fn balance<'e>(
         self,
         ctx: &ValueCtx<'e>,
@@ -140,6 +139,10 @@ impl TreeKind {
             self.make(ctx, n, left, right)
         }
     }
+    // 重い側の内側を下り、帰りに Γ の判定で回転する。Hirai・Yamamoto 2011 の付属の
+    // Coq のスクリプト Balance.v の join と同じ形で、join_balanced（Δ = 3、Γ = 2）が
+    // その平衡を示す。一方が空のとき Coq は insert を呼ぶ点が違う
+    // （設計書 02-08「値の表現」）。
     fn join<'e>(
         self,
         ctx: &ValueCtx<'e>,
@@ -336,12 +339,14 @@ impl TreeKind {
         }
         Ok((left, found, right))
     }
-    // 中央の組を親にして後順で組む。各組を一度だけ読み、並べ替えない（10-07「定数の記述」）。
+    // 中央の組を親にして後順で組む。各組を一度だけ読み、並べ替えない（設計書 02-07「定数表」）。
     pub(super) fn build_sorted<'e>(
         self,
         ctx: &ValueCtx<'e>,
         pairs: &[(Value<'e>, Value<'e>)],
     ) -> Result<Value<'e>, Stop> {
+        debug_assert!(pairs.windows(2).all(|w| matches!(w, [a, b]
+            if matches!(compare_keys(ctx, a.0, b.0), Ok(Ordering::Less)))));
         u32::try_from(pairs.len()).map_err(|_| invalid())?;
         let mut work = vec![(0usize, pairs.len(), false)];
         let mut results = Vec::new();
@@ -381,7 +386,7 @@ impl TreeKind {
     }
 }
 
-// 中順の位置だけを保存し、木全体の写しを持たない（R37「構造の等しさ」）。
+// 中順の位置だけを保存し、木全体の写しを持たない。
 pub(in crate::runtime) struct Cursor<'e> {
     kind: TreeKind,
     at: Value<'e>,
@@ -426,8 +431,9 @@ pub(super) enum Operation {
     Difference,
 }
 
-// 小さい木を分割の軸にして、大きい木の道筋だけを写す。左右の仕事を順に
-// 積み重ねへ置き、帰りに join する（R37「木の形」、SPAA 2016 の join に基づく集合演算）。
+// 分割と join で道筋だけを写す（設計書 03-06「Map と Set（初回リリース版）」の計算量）。
+// Blelloch・Ferizovic・Sun 2016（arXiv v4）の図 1 と違い、各段で小さい木を軸にし、
+// Γ の判定で回転する join を使うため、論文の計算量の定理をそのまま当てはめない。
 pub(super) fn combine<'e>(
     ctx: &ValueCtx<'e>,
     a: Value<'e>,

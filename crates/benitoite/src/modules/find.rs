@@ -169,25 +169,50 @@ impl<'a> Finder<'a> {
                 }],
             );
         } else {
-            let candidates: Vec<_> = ranked_candidates(
-                &path.dotted(),
-                self.stdlib.iter().map(import_name).collect(),
-            )
-            .into_iter()
-            .take(3)
-            .collect();
+            let mut candidates: Vec<_> = self
+                .stdlib
+                .iter()
+                .filter(|source| {
+                    path.0
+                        .last()
+                        .zip(source.path.last())
+                        .is_some_and(|(wanted, actual)| wanted.eq_ignore_ascii_case(actual))
+                })
+                .map(import_name)
+                .collect();
+            candidates.sort();
+            candidates.dedup();
+            let key = if candidates.is_empty() {
+                candidates = ranked_candidates(
+                    &path.dotted(),
+                    self.stdlib.iter().map(import_name).collect(),
+                )
+                .into_iter()
+                .take(3)
+                .collect();
+                "similar"
+            } else {
+                "last_segment"
+            };
             if !candidates.is_empty() {
-                diagnostic = diagnostic.arg("candidates", candidates.join(", "));
+                diagnostic = diagnostic.arg(
+                    "candidates",
+                    candidates
+                        .iter()
+                        .map(|n| format!("`{n}`"))
+                        .collect::<Vec<_>>()
+                        .join(", "),
+                );
                 if let [candidate] = candidates.as_slice() {
                     diagnostic = diagnostic.help_edits(
-                        "similar",
+                        key,
                         vec![Edit {
                             span,
                             replacement: candidate.clone(),
                         }],
                     );
                 } else {
-                    diagnostic = diagnostic.note("similar");
+                    diagnostic = diagnostic.help(key);
                 }
             }
         }

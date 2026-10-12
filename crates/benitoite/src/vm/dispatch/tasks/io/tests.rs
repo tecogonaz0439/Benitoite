@@ -1,5 +1,5 @@
-//! 要求と完了の競合を本番の VM と筋書きの部品で確かめる（実装プラン R26）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 要求と完了の競合を本番の VM と筋書きの部品で確かめる（設計書 02-09「IO 実行器」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::panic,
@@ -535,7 +535,7 @@ end function
 }
 
 // 関門: 外側がまだ応答していないときも VM は戻る。新しい要求の送り出しだけでは
-// Outstanding だけになった後に idle を繰り返す退行を捕まえられない（10-10）。
+// Outstanding だけになった後に idle を繰り返す退行を捕まえられない。
 #[test]
 fn outstanding_response_without_ready_tasks_returns_to_executor() {
     let program = compile(&format!(
@@ -789,7 +789,7 @@ end function
     }
 }
 // 関門: USE/RETURN から WorkerExec へ解放を渡す本番の経路は、表の単体テストと
-// R25 の補助による完了では届かない。待つ枠、失敗の開いた位置、停止中の返却を確かめる。
+// 補助の関数で完了を与えるだけでは届かない。待つ枠、失敗の開いた位置、停止中の返却を確かめる。
 #[test]
 fn blocking_release_keeps_the_frame_until_worker_completion_and_preserves_failure_site() {
     for fail in [false, true] {
@@ -1346,8 +1346,99 @@ end function
     }
 }
 
-// 関門: 同じ待ちへの二つの準備と配送後の古い準備を完了の記録の入口で除く（L30）。
+fn record_readiness_wait(
+    state: &mut RunState,
+    rt: &mut IoRuntime,
+    task: TaskId,
+    op: ExtOpId,
+    resource: ResourceId,
+    token: usize,
+) {
+    rt.ops.insert(
+        op,
+        OpRecord {
+            kind: OpKind::Readiness,
+            deliver_to: Some(task),
+            lent: None,
+            site: None,
+        },
+    );
+    rt.readiness.resources.insert(op, resource);
+    rt.readiness
+        .resource_ops
+        .entry(resource)
+        .or_default()
+        .insert(op);
+    state.resources.watch_readiness(resource);
+    rt.readiness.tokens.entry(token).or_default().insert(op);
+    rt.readiness.op_tokens.insert(op, vec![token]);
+}
+
+// 関門: 取り消した準備の待ちが蓄積せず、同じリソースの生きた待ちの登録を保つことを確かめる。
+// 単一操作の古いイベントの選別では捕まえられない共有登録の退行であり、本番の差し込み口は足さない。
+// （設計書 02-09「タスクの待ちと取り消し」）
+#[test]
+fn cancelling_readiness_waits_removes_their_records_and_keeps_live_registrations() {
+    let program =
+        compile("function main() -> Result[Unit,String]\n return Result.Ok(())\nend function");
+    let mut vm = Vm::new(&program, VmConfig::default(), HeapConfig::default());
+    let mut io = services();
+    let live_task = TaskId {
+        index: 0,
+        generation: 0,
+    };
+    let live_op = ExtOpId(0);
+    let resource = ResourceId(1);
+    let token = 2;
+    record_readiness_wait(
+        &mut vm.state,
+        &mut io.rt,
+        live_task,
+        live_op,
+        resource,
+        token,
+    );
+
+    for index in 1..=20 {
+        let cancelled_task = TaskId {
+            index,
+            generation: 0,
+        };
+        record_readiness_wait(
+            &mut vm.state,
+            &mut io.rt,
+            cancelled_task,
+            ExtOpId(u64::from(index)),
+            resource,
+            token,
+        );
+        vm.state.scheduling.cancelled_io.push(cancelled_task);
+        reflect_cancellation(&mut vm.state, &mut io.rt).unwrap();
+
+        assert_eq!(io.rt.ops.records.len(), 1);
+        assert_eq!(io.rt.readiness.resource_ops[&resource], [live_op].into());
+        assert_eq!(io.rt.readiness.tokens[&token], [live_op].into());
+        assert_eq!(io.rt.readiness.resources.len(), 1);
+        assert_eq!(io.rt.readiness.op_tokens.len(), 1);
+        assert_eq!(
+            ready_for_tokens(&vm.state, &io.rt, [token]),
+            [live_op].into()
+        );
+    }
+
+    vm.state.scheduling.cancelled_io.push(live_task);
+    reflect_cancellation(&mut vm.state, &mut io.rt).unwrap();
+    assert!(io.rt.ops.records.is_empty());
+    assert!(io.rt.readiness.resource_ops.is_empty());
+    assert!(io.rt.readiness.tokens.is_empty());
+    assert!(io.rt.readiness.resources.is_empty());
+    assert!(io.rt.readiness.op_tokens.is_empty());
+    assert!(ready_for_tokens(&vm.state, &io.rt, [token]).is_empty());
+}
+
+// 関門: 同じ待ちへの二つの準備と、配送後・取り消し後の古い準備を完了の記録の入口で除く。
 // check_completion 自体は記録のない操作を Internal にするため、その前の選別が要る。
+// （設計書 02-09「タスクの待ちと取り消し」）
 #[test]
 fn readiness_deduplicates_live_operations_and_discards_stale_tokens() {
     let program =
@@ -1377,16 +1468,21 @@ fn readiness_deduplicates_live_operations_and_discards_stale_tokens() {
             [op].into()
         );
         if cancelled {
+            io.rt.readiness.op_tokens.insert(op, vec![2, 3]);
             let timer = vm.state.scheduler.new_timer_id();
             vm.state.scheduler.add_timer(5, timer, task);
             io.rt.readiness.retries.insert(timer, op);
             io.rt.readiness.op_timers.insert(op, timer);
             vm.state.scheduling.cancelled_io.push(task);
-            reflect_cancellation(&mut vm.state, &mut io.rt);
+            reflect_cancellation(&mut vm.state, &mut io.rt).unwrap();
+            assert!(!io.rt.ops.records.contains_key(&op));
+            assert!(io.rt.readiness.tokens.is_empty());
+            assert!(io.rt.readiness.op_tokens.is_empty());
             assert!(io.rt.readiness.retries.is_empty());
+            assert!(io.rt.readiness.op_timers.is_empty());
             assert!(vm.state.scheduler.timers.is_empty());
-            assert!(io.rt.ops.records.contains_key(&op));
-            assert_eq!(io.rt.ops.records[&op].deliver_to, None);
+            assert!(ready_for_tokens(&vm.state, &io.rt, [2, 3]).is_empty());
+            continue;
         }
         let completion = Completion {
             op,
@@ -1400,17 +1496,13 @@ fn readiness_deduplicates_live_operations_and_discards_stale_tokens() {
             &mut io.rt.stdin,
             completion,
         );
-        if cancelled {
-            assert!(matches!(result.as_slice(), [Accepted::Dropped]));
-        } else {
-            assert!(matches!(
-                result.as_slice(),
-                [Accepted::Deliver {
-                    outcome: Outcome::Ready,
-                    ..
-                }]
-            ));
-        }
+        assert!(matches!(
+            result.as_slice(),
+            [Accepted::Deliver {
+                outcome: Outcome::Ready,
+                ..
+            }]
+        ));
         assert!(ready_for_tokens(&vm.state, &io.rt, [2, 3]).is_empty());
     }
 }

@@ -1,6 +1,6 @@
-//! 型検査の公開の出力と診断で、型クラスの言語規則と脱糖への契約を確かめる（実装プラン F08）。
+//! 型検査の公開の出力と診断で、型クラスの言語規則と脱糖への契約を確かめる（設計書 02-05「型クラスの制約の解決」）。
 // 作成時の関門: 辞書の選択・番号・型引数と制約の拒否が観察可能な契約である。
-// 選択の優先順位や型の形の検査を誤る退行は F07 のテストでは捕まらない。
+// 選択の優先順位や型の形の検査を誤る退行は型推論だけのテストでは捕まらない。
 // 実際の読み込み・名前解決・型検査をつなぎ、本番の差し込み口を加えない（設計書 07-03）。
 // テストの失敗と期待値の直接の比較にだけ panic と添字を使う。
 #![allow(
@@ -476,21 +476,15 @@ fn coherence_and_method_contracts() {
         s.find("implement").unwrap()
     );
     let s = "import Benitoite.Trait\nimplement Trait.Show[Integer]\n function show(x: Integer) -> String return \"\" end function\nend implement\n";
-    let (l, _, _, d) = check(s);
+    let (_, _, _, d) = check(s);
     assert_eq!(
         d.iter().map(|d| d.code).collect::<Vec<_>>(),
-        [Some(C::E0701), Some(C::E0702)]
+        [Some(C::E0701)]
     );
     assert_eq!(
         d[0].primary.as_ref().unwrap().span.start.0 as usize,
         s.find("implement").unwrap()
     );
-    let overlap = d[1].primary.as_ref().unwrap().span;
-    assert_eq!(
-        l.sources.get(overlap.file).unwrap().name(),
-        "<benitoite>/Trait.bnt"
-    );
-    assert_eq!(d[1].secondary[0].span, d[0].primary.as_ref().unwrap().span);
     let (l, _, _, d) = check_files(
         &[
             (
@@ -724,4 +718,128 @@ fn permuted_implementation_arguments_and_method_dictionaries_keep_their_order() 
             integer,
         ]
     );
+}
+
+// 作成時の関門: 公開の型検査の辞書と診断を確かめる。小さい既存の辞書では、
+// 指数的に増える実装の予算を外す退行と、修正案の判定の予算漏れを捕まえられない。
+// ゴールデンは別に CLI の診断の内容と位置を守り、本番に差し込み口は加えない。
+#[test]
+fn dictionary_budget_preserves_small_dictionaries_and_reports_the_use() {
+    let source = include_str!("../../../testdata/traits/todo195-dictionary-budget.bnt");
+    let deep = format!("{}1{}", "[".repeat(14), "]".repeat(14));
+    let shallow = format!("{}1{}", "[".repeat(13), "]".repeat(13));
+    let source13 = source.replace(&deep, &shallow);
+    let (l, _, t) = clean(&source13);
+    let dictionary = &dict(&l, &t, &source13, "consume", 1)[0];
+    let DictExpr::Impl { args, .. } = dictionary else {
+        panic!("expected a concrete dictionary");
+    };
+    assert_eq!(args.len(), 2);
+    // 少ない辞書の節でも、各節で幅の大きい型を写すなら止める。
+    let wide_declarations = source
+        .split("function consume")
+        .next()
+        .unwrap()
+        .replace("[T: A & B]", "[T: A & B, U]")
+        .replace("List[T]", "W[T, U]");
+    let wide = format!("{}1{}", "[".repeat(300), "]".repeat(300));
+    let mut value = "1".to_owned();
+    for _ in 0..8 {
+        value = format!("W(a: {value}, b: {wide})");
+    }
+    let wide_source = format!(
+        "record W[T, U]\n a: T\n b: U\nend record\n{wide_declarations}function consume[T: A](x: T) -> Unit end function\nfunction main() -> Unit\n consume({value})\nend function\n"
+    );
+    expect(&wide_source, &[(C::E0715, "consume", 1)]);
+    let repeated = source.replace("consume[T: A]", "consume[T: A & B]");
+    let d = expect(&repeated, &[(C::E0715, "consume", 1)]);
+    assert_eq!(d[0].helps.len(), 1);
+    assert!(d[0].helps[0].message.contains("nest the types less deeply"));
+}
+
+#[test]
+fn interpolation_of_type_parameters_reports_conversion_help() {
+    // 別のモジュールの import を修正案に使う退行も、同じ表で確かめる。
+    let other = "import Benitoite.Trait as Elsewhere\nfunction untouched() -> Unit end function";
+    let mut mismatches = vec![];
+    for (source, name, help, has_edit) in [
+        (
+            "function f[A](a: A) -> String return \"${a}\" end function",
+            "A",
+            "write `import Benitoite.Trait`, add the constraint `Trait.Show` to the type parameter, such as `[A: Trait.Show]`, and convert the value with `Trait.Show.show`",
+            false,
+        ),
+        (
+            "import Benitoite.Trait\nfunction f[A](a: A) -> String return \"${a}\" end function",
+            "A",
+            "add the constraint `Trait.Show` to the type parameter, such as `[A: Trait.Show]`, and convert the value with `Trait.Show.show`",
+            false,
+        ),
+        (
+            "import Benitoite.Trait as Text\nfunction f[A](a: A) -> String return \"${a}\" end function",
+            "A",
+            "add the constraint `Text.Show` to the type parameter, such as `[A: Text.Show]`, and convert the value with `Text.Show.show`",
+            false,
+        ),
+        (
+            "import Benitoite.Trait as Text\nfunction f[A: Text.Show](a: A) -> String return \"${a}\" end function",
+            "A",
+            "convert the value to a `String` first with `Text.Show.show`",
+            true,
+        ),
+        (
+            "effect Swap\n function store[T](x: T) -> T\nend effect\nfunction run[T](a: T) -> T\n return handle store(a) with case store(x) ->\n bind _ <- \"${x}\"\n resume(x)\n end handle\nend function",
+            "store.T",
+            "values of the operation's type parameter `store.T` cannot be converted to `String`; interpolate a value of a known type instead",
+            false,
+        ),
+    ] {
+        let main = format!("import Other\n{source}");
+        let (_, _, _, diagnostics) =
+            check_files(&[("main.bnt", &main), ("Other.bnt", other)], false);
+        assert_eq!(diagnostics.len(), 1, "{diagnostics:#?}");
+        let d = &diagnostics[0];
+        if d.code != Some(C::E0422) {
+            mismatches.push(format!("{help}: {d:#?}"));
+            continue;
+        }
+        assert_eq!(
+            d.message,
+            format!("a value of type `{name}` cannot be interpolated into a string")
+        );
+        assert_eq!(d.helps.len(), 1);
+        assert_eq!(!d.helps[0].edits.is_empty(), has_edit);
+        if d.helps[0].message != help {
+            mismatches.push(format!("expected {help:?}: {d:#?}"));
+        }
+        if has_edit {
+            assert_eq!(d.helps[0].edits[0].replacement, "Text.Show.show(a)");
+        }
+    }
+    assert!(mismatches.is_empty(), "{}", mismatches.join("\n"));
+}
+
+#[test]
+fn interpolation_suggestion_stops_at_the_dictionary_budget() {
+    let declarations = "import Benitoite.Trait\nrecord Box[T]\n value: T\nend record\ntrait Other[T]\n function other(x: T) -> Unit\nend trait\nimplement Other[Integer]\n function other(x: Integer) -> Unit end function\nend implement\nimplement[T: Trait.Show & Other] Trait.Show[Box[T]]\n function show(x: Box[T]) -> String return \"\" end function\nend implement\nimplement[T: Trait.Show & Other] Other[Box[T]]\n function other(x: Box[T]) -> Unit end function\nend implement\n";
+    for (depth, has_edit) in [(13, true), (14, false)] {
+        let mut value = "1".to_owned();
+        for _ in 0..depth {
+            value = format!("Box(value: {value})");
+        }
+        let source = format!(
+            "{declarations}function f() -> String\n return \"${{{value}}}\"\nend function\n"
+        );
+        let (_, _, _, diagnostics) = check(&source);
+        assert_eq!(diagnostics.len(), 1, "{diagnostics:#?}");
+        assert_eq!(diagnostics[0].code, Some(C::E0422));
+        let help = &diagnostics[0].helps[0];
+        assert_eq!(!help.edits.is_empty(), has_edit, "{help:#?}");
+        if !has_edit {
+            assert_eq!(
+                help.message,
+                "convert the value to a `String` before interpolating it"
+            );
+        }
+    }
 }

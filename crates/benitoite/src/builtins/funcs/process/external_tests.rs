@@ -1,17 +1,17 @@
-//! 外部コマンドの結果と引数の契約（設計書 03-07「Process」、実装プラン L13）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 外部コマンドの結果と引数の契約（設計書 03-07「Process」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic)]
 
 use super::*;
+use crate::builtins::funcs::fixed_io::FixedIo;
 use crate::builtins::funcs::runtime_test_support::{error_kind, payload, worker};
-use crate::builtins::funcs::stage1_io::TestIo;
 use crate::builtins::iface::{CallCtx, Lent};
 use crate::runtime::heap::{Heap, HeapConfig, NoGcCtx, ValueCtx};
 use crate::runtime::io::services::RunInput;
 use std::os::unix::fs::PermissionsExt;
 
-fn services(directory: &Path) -> TestIo {
-    TestIo::new(RunInput {
+fn services(directory: &Path) -> FixedIo {
+    FixedIo::new(RunInput {
         arguments: vec![],
         working_directory: directory.to_owned(),
         script_directory: directory.to_owned(),
@@ -47,7 +47,7 @@ fn command<'e>(
     .unwrap()
 }
 
-fn finish<'e>(ctx: &mut NoGcCtx<'e>, io: &mut TestIo, reply: IoReply<'e>) -> Value<'e> {
+fn finish<'e>(ctx: &mut NoGcCtx<'e>, io: &mut FixedIo, reply: IoReply<'e>) -> Value<'e> {
     let done = worker(reply).run(Lent::Nothing);
     done.complete(
         &mut CallCtx::new(ctx, Some(io), None, None).io_ctx().unwrap(),
@@ -56,7 +56,7 @@ fn finish<'e>(ctx: &mut NoGcCtx<'e>, io: &mut TestIo, reply: IoReply<'e>) -> Val
     .unwrap()
 }
 
-fn invoke<'e>(ctx: &mut NoGcCtx<'e>, io: &mut TestIo, cmd: Value<'e>) -> Value<'e> {
+fn invoke<'e>(ctx: &mut NoGcCtx<'e>, io: &mut FixedIo, cmd: Value<'e>) -> Value<'e> {
     let reply = run(
         CallCtx::new(ctx, Some(io), None, None).io_ctx().unwrap(),
         cmd,
@@ -65,7 +65,7 @@ fn invoke<'e>(ctx: &mut NoGcCtx<'e>, io: &mut TestIo, cmd: Value<'e>) -> Value<'
     finish(ctx, io, reply)
 }
 
-fn invoke_script<'e>(ctx: &mut NoGcCtx<'e>, io: &mut TestIo, cmd: Value<'e>) -> Value<'e> {
+fn invoke_script<'e>(ctx: &mut NoGcCtx<'e>, io: &mut FixedIo, cmd: Value<'e>) -> Value<'e> {
     // Linux ではほかのテストの fork が書き込みの fd を一時的に継いで ETXTBSY になりうる。
     // 本体は errno を IOError の理由に変換するため、raw_os_error が 26 の誤りを同じ経路で
     // 表した文字列との完全一致で判定する。起動の再試行はテストだけで行う。
@@ -101,7 +101,7 @@ fn output<'e>(ctx: &ValueCtx<'e>, result: Value<'e>) -> (i64, String, String) {
 }
 
 // 関門: 実際の起動と完了の値を境界にし、終了状態・二つの出力・引数の保存を守る。
-// 既存の L10 は Command を作るだけで、起動の退行を捕まえない。新しい差し込み口は使わない。
+// Command を作るだけのテストでは、起動の退行を捕まえない。新しい差し込み口は使わない。
 #[test]
 fn run_preserves_arguments_streams_and_nonzero_exit_status() {
     let mut io = services(Path::new("/"));
@@ -123,6 +123,47 @@ fn run_preserves_arguments_streams_and_nonzero_exit_status() {
             assert_eq!(actual, (expected.0, expected.1.into(), expected.2.into()));
         }
     });
+}
+
+// 上限を超えた出力を読み捨てて子の終了を待ち、値を作る前に資源の不足を返す契約。
+// 読み捨てを止めると、子は SIGPIPE で終わるか、パイプを開いたままなら止まる。
+#[test]
+fn oversized_output_is_drained_before_reporting_input_limit() {
+    let command = OwnedCommand {
+        program: "sh".into(),
+        arguments: vec!["-c".into(), "head -c 1048576 /dev/zero".into()],
+        directory: PathBuf::from("/"),
+        environment: vec![],
+        input: None,
+    };
+    let (send, receive) = std::sync::mpsc::channel();
+    let thread = std::thread::spawn(move || {
+        let _sent = send.send(execute(command, ProcessStdio::default(), 16));
+    });
+    let result = receive
+        .recv_timeout(std::time::Duration::from_secs(30))
+        .unwrap_or_else(|error| panic!("1 MiB の出力を読み捨てる子の終わりを待っていた: {error}"));
+    thread.join().unwrap();
+    let output = match result {
+        Ok(output) => output,
+        Err(_) => panic!("1 MiB を出力する子の実行が失敗した"),
+    };
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "上限の後も読み捨てて子が正常に終わるはず"
+    );
+    assert_eq!(output.stdout.len(), 17);
+    assert!(matches!(
+        check_output(&output, "Benitoite.IO.Process.run", 16),
+        Err(Stop::Resource(
+            crate::runtime::ResourceError::InputTooLarge {
+                function: "Benitoite.IO.Process.run",
+                unit: SizeUnit::Bytes,
+                limit: 16,
+            }
+        ))
+    ));
 }
 
 // 関門: 二つの出力がパイプの容量を超えた後に入力を読む子で、循環する待ちを捕まえる。

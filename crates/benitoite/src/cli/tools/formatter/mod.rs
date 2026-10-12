@@ -32,18 +32,27 @@ pub enum FormatError {
 pub mod text {
     /// `--check` で、整形で変わるファイル一つの行。`{path}` は表示名
     pub const WOULD_REFORMAT: &str = "would reformat {path}";
-    /// 処理系の不具合の報告（10-13 の `internal_diagnostic`）の段の名前
+    /// 処理系の不具合の報告（`internal_diagnostic`）の段の名前
     pub const STAGE_FMT: &str = "fmt";
+    /// E0125 の注記 `reason` に入れる、所有者の書き込みの許可がないために置き換えを拒む理由
+    pub const READ_ONLY: &str = "refusing to replace a file whose owner has no write permission";
+    /// E0125 の注記 `reason` に入れる、固いリンクが二つ以上あるために置き換えを拒む理由
+    pub const HARD_LINKS: &str = "refusing to replace a file with more than one hard link";
+    /// E0125 の注記 `reason` に入れる、所有者が実行した利用者と違うために置き換えを拒む理由
+    pub const OTHER_OWNER: &str = "refusing to replace a file owned by another user";
 }
 
-use std::io::{Read, Write};
+use std::io::Write;
+use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
 use std::path::Path;
 
 use super::args::{self, PathArgs};
 use crate::base::source::MAX_SOURCE_BYTES;
 use crate::base::{FileId, IdGen, Source, SourceKind, SourceTable};
 use crate::cli::{CliEnv, DiagFormat};
-use crate::diag::render::{TextOptions, render_json_line, render_one_text};
+use crate::diag::render::{
+    TextOptions, escape_terminal_controls, render_json_line, render_one_text,
+};
 use crate::diag::{DiagBuilder, DiagCode};
 use crate::runtime::panic as panic_boundary;
 use crate::runtime::report::{FaultThread, internal_diagnostic};
@@ -91,7 +100,7 @@ pub fn format_source(
 }
 
 /// 整形を断る診断（字句の誤り E01nn か構文の誤り E02nn）か。診断コードの表は区分の欄を持たないので、番号の
-/// 区間（10-02「番号の付け方」）で判定する。コードのない診断（処理系の不具合）も断る側に入れる。
+/// 区間（設計書 02-10「診断コード」）で判定する。コードのない診断（処理系の不具合）も断る側に入れる。
 pub(crate) fn is_syntax_error(diagnostic: &Diagnostic) -> bool {
     diagnostic.code.is_none_or(|code| {
         let id = code.info().id;
@@ -128,7 +137,7 @@ fn run_fmt_with(
         match args::bnt_files(&resolved) {
             Ok(files) => {
                 for file in files {
-                    // 表示名は、与えたディレクトリのパスに相対パスを続けたもの（10-17「`fmt` の実行」）
+                    // 表示名は、与えたディレクトリのパスに相対パスを続けたもの。
                     let relative = file.strip_prefix(&resolved).unwrap_or(&file);
                     let display = given.join(relative).to_string_lossy().into_owned();
                     status = status.max(fmt_file(args, env, format, &file, &display));
@@ -150,7 +159,7 @@ fn run_fmt_with(
     status
 }
 
-/// 一つのファイルを整形し、終了状態への寄与を返す（10-17「`fmt` の実行」の表）。
+/// 一つのファイルを整形し、終了状態への寄与を返す（設計書 06-01「`fmt` のコマンドライン（初回リリース版）」）。
 fn fmt_file(
     args: &PathArgs,
     env: &CliEnv,
@@ -170,31 +179,51 @@ fn fmt_file(
             return EXIT_CHECK;
         }
     };
-    // 診断の位置のために、このファイルだけを入れた表を作る（10-17「`fmt` の実行」）。
+    // 診断の位置のために、このファイルだけを入れた表を作る。
     let mut sources = SourceTable::new();
-    let file = sources.add(Source::new(
-        display.to_owned(),
-        SourceKind::User,
-        text.clone(),
-    ));
-    let formatted = match panic_boundary::catch(|| format(&text, file)) {
-        Ok(Ok(formatted)) => formatted,
-        Ok(Err(FormatError::Syntax(diagnostics))) => {
+    let file = sources.add(Source::new(display.to_owned(), SourceKind::User, text));
+    let Some(source_text) = sources.get(file).map(Source::text) else {
+        let diag = internal_diagnostic(
+            text::STAGE_FMT,
+            "source missing from source table",
+            None,
+            FaultThread::Stage,
+        );
+        write_diag(env, args.diagnostics, &sources, &diag);
+        return EXIT_INTERNAL;
+    };
+    // panic の記録はスレッドごとに持つため、捕捉も段のスレッドの中で行う
+    // （設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    let formatted = match crate::pipeline::on_large_stack(|| {
+        panic_boundary::catch(|| format(source_text, file))
+    }) {
+        Ok(Ok(Ok(formatted))) => formatted,
+        Ok(Ok(Err(FormatError::Syntax(diagnostics)))) => {
             for diag in &diagnostics {
                 write_diag(env, args.diagnostics, &sources, diag);
             }
             return EXIT_CHECK;
         }
-        Ok(Err(FormatError::Verify(message))) => {
+        Ok(Ok(Err(FormatError::Verify(message)))) => {
             let diag = internal_diagnostic(text::STAGE_FMT, &message, None, FaultThread::Stage);
             write_diag(env, args.diagnostics, &sources, &diag);
             return EXIT_INTERNAL;
         }
-        Err(panic) => {
+        Ok(Err(panic)) => {
             let diag = internal_diagnostic(
                 text::STAGE_FMT,
                 &panic.message,
                 Some(&panic),
+                FaultThread::Stage,
+            );
+            write_diag(env, args.diagnostics, &sources, &diag);
+            return EXIT_INTERNAL;
+        }
+        Err(error) => {
+            let diag = internal_diagnostic(
+                text::STAGE_FMT,
+                &error.to_string(),
+                None,
                 FaultThread::Stage,
             );
             write_diag(env, args.diagnostics, &sources, &diag);
@@ -205,7 +234,10 @@ fn fmt_file(
         return EXIT_OK;
     }
     if args.check {
-        let line = format!("{}\n", text::WOULD_REFORMAT.replace("{path}", display));
+        let line = format!(
+            "{}\n",
+            text::WOULD_REFORMAT.replace("{path}", &escape_terminal_controls(display))
+        );
         let _result = env.stderr.write_bytes(line.as_bytes());
         return EXIT_FAILURE;
     }
@@ -218,19 +250,10 @@ fn fmt_file(
     }
 }
 
-/// ソースを `limit` バイトまで読む。超えたら、大きさの上限の理由の文を返す（作業 D03 の手順 3）。
+/// ソースを `limit` バイトまで読む。超えたら、大きさの上限の理由の文を返す。
 fn read_source(path: &Path, limit: usize) -> Result<Vec<u8>, String> {
-    let mut file = std::fs::File::open(path).map_err(|e| e.to_string())?;
-    // 上限より 1 バイト多く読めたら、上限を超えたと分かる。
-    let cap = u64::try_from(limit)
-        .ok()
-        .and_then(|n| n.checked_add(1))
-        .unwrap_or(u64::MAX);
-    let mut text = Vec::new();
-    (&mut file)
-        .take(cap)
-        .read_to_end(&mut text)
-        .map_err(|e| e.to_string())?;
+    let text = crate::base::file_read::read_regular_file(path, limit, false)
+        .map_err(|error| error.to_string())?;
     if text.len() > limit {
         return Err(source_text::SOURCE_TOO_LARGE.to_owned());
     }
@@ -246,7 +269,7 @@ fn read_error(display: &str, reason: &str) -> Diagnostic {
         .build()
 }
 
-/// 診断を一件、`--diagnostics` の形式で `env.stderr` に書く（10-17「`fmt` の実行」）。
+/// 診断を一件、`--diagnostics` の形式で `env.stderr` に書く。
 fn write_diag(env: &CliEnv, format: DiagFormat, sources: &SourceTable, diag: &Diagnostic) {
     let message = match format {
         DiagFormat::Text => render_one_text(diag, sources, TextOptions { color: env.color }),
@@ -260,8 +283,10 @@ mod source_text {
     pub(super) const SOURCE_TOO_LARGE: &str = "the source file exceeds the size limit of 256 MiB";
 }
 
-/// 整形の結果でファイルを置き換える（06-01「`fmt` のコマンドライン（初回リリース版）」）。同じディレクトリの一時ファイルに書き、
-/// 元のファイルの許可の設定を写してから、名前の変更で置き換える。失敗したら元のファイルを変えずに残し、一時ファイルを消して、
+/// 整形の結果でファイルを置き換える（06-01「`fmt` のコマンドライン（初回リリース版）」）。
+/// 同じディレクトリに一時ファイルを 0600 で作り、内容を書いて元のファイルの許可の設定を写してから、名前の変更で置き換える。
+/// 元のファイルの所有者が実行した利用者と違う、所有者の書き込みの許可がない、固いリンクが二つ以上ある場合は、
+/// `replacement_refusal` の判定で置き換えを拒む。失敗したら元のファイルを変えずに残し、一時ファイルを消して、
 /// E0125 の診断を返す（`display` は診断に書く表示名）。
 pub fn replace_file(path: &Path, display: &str, content: &[u8]) -> Result<(), Box<Diagnostic>> {
     let write_error = |error: &std::io::Error| {
@@ -286,17 +311,20 @@ pub fn replace_file(path: &Path, display: &str, content: &[u8]) -> Result<(), Bo
     temp_name.push(format!(".fmt-{}", std::process::id()));
     let temp = target.with_file_name(temp_name);
     // 既にあるファイルは他者のものかもしれないので、作れなければ消さずに失敗とする（create_new）。
-    let mut file = std::fs::OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&temp)
-        .map_err(|e| Box::new(write_error(&e).build()))?;
-    let result = file
-        .write_all(content)
-        .and_then(|()| file.sync_all())
-        .and_then(|()| std::fs::metadata(&target))
-        // 実行の許可を整形で失わないよう、元の許可の設定を写す（10-17「`fmt` の実行」）。
-        .and_then(|metadata| std::fs::set_permissions(&temp, metadata.permissions()));
+    let mut file = create_temp_file(&temp).map_err(|e| Box::new(write_error(&e).build()))?;
+    let result = file.metadata().and_then(|temporary| {
+        let original = std::fs::metadata(&target)?;
+        if let Some(reason) = replacement_refusal(temporary.uid(), &original) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::PermissionDenied,
+                reason,
+            ));
+        }
+        file.write_all(content)?;
+        file.sync_all()?;
+        // 実行の許可を整形で失わないよう、書き終えた後に元の許可の設定を写す（設計書 06-01「`fmt` のコマンドライン（初回リリース版）」）。
+        file.set_permissions(original.permissions())
+    });
     drop(file);
     let result = result.and_then(|()| std::fs::rename(&temp, &target));
     let Err(error) = result else {
@@ -309,6 +337,30 @@ pub fn replace_file(path: &Path, display: &str, content: &[u8]) -> Result<(), Bo
             .note("temp_left");
     }
     Err(Box::new(builder.build()))
+}
+
+// 内容を書き始める前から他者による読み取りを禁止する。後から chmod しても既に開かれた記述子を取り戻せない。
+fn create_temp_file(path: &Path) -> std::io::Result<std::fs::File> {
+    std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .open(path)
+}
+
+fn replacement_refusal(temporary_uid: u32, original: &std::fs::Metadata) -> Option<&'static str> {
+    if temporary_uid != original.uid() {
+        return Some(text::OTHER_OWNER);
+    }
+    // 所有者の一致を求めるので、group/other の許可ではなく所有者の書き込みの許可を判定する。
+    if original.mode() & 0o200 == 0 {
+        return Some(text::READ_ONLY);
+    }
+    // rename は名前を新しい inode に付け替え、ほかの固いリンクには古い中身が残るため拒む。
+    if original.nlink() > 1 {
+        return Some(text::HARD_LINKS);
+    }
+    None
 }
 
 #[cfg(test)]

@@ -1,4 +1,4 @@
-//! HTTP のサーバの操作と要求の値（設計書 03-09「サーバ」、実装プラン 10-15・10-16）。
+//! HTTP のサーバの操作と要求の値（設計書 03-09「サーバ」）。
 use crate::builtins::iface::{
     BuiltinDecl, CloseStep, Interest, IoCtx, IoReply, IoServices, IoWait, Lend, StateCtx,
     StateReply, WorkerWait, builtin,
@@ -11,7 +11,7 @@ use crate::runtime::sched::parts::NetworkFault;
 use crate::runtime::{ResourceKind, RuntimeError, Stop, Stream};
 
 builtin! {
-    /// `Benitoite.Network.Http.listen` の本体（実装プラン 10-15）。
+    /// `Benitoite.Network.Http.listen` の本体。
     name = "Benitoite.Network.Http.listen",
     io fn listen(ctx, host: &'c str, port: i64) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -50,7 +50,7 @@ fn listen_done<'c, 'e>(
     }
 }
 builtin! {
-    /// `Benitoite.Network.Http.listenerPort` の本体（実装プラン 10-15）。
+    /// `Benitoite.Network.Http.listenerPort` の本体。
     name = "Benitoite.Network.Http.listenerPort",
     io fn listener_port(ctx, listener: ResourceId) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -59,7 +59,7 @@ builtin! {
     }
 }
 builtin! {
-    /// `Benitoite.Network.Http.accept` の本体（実装プラン 10-15）。
+    /// `Benitoite.Network.Http.accept` の本体。
     name = "Benitoite.Network.Http.accept",
     io fn accept(ctx, listener: ResourceId) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -68,7 +68,7 @@ builtin! {
             let mut view = ctx.services().runtime_view().ok_or_else(|| internal("HTTP runtime unavailable"))?;
             let now = view.rt.parts.clock.monotonic_millis();
             let (step, warning) = http::accept(view.resources, listener, now)?;
-            if let Some(warning) = warning { drop(view.write_output(Stream::Stderr, &warning)?); }
+            if let Some(warning) = warning { view.write_output_if_room(Stream::Stderr, &warning)?; }
             match step {
                 AcceptStep::Accepted(exchange, request) => {
                     let id = view.register_resource(ResourceKind::HttpExchange, exchange, site);
@@ -86,21 +86,34 @@ builtin! {
     }
 }
 builtin! {
-    /// `Benitoite.Network.Http.respond` の本体（実装プラン 10-15）。
+    /// `Benitoite.Network.Http.respond` の本体。
     name = "Benitoite.Network.Http.respond",
     io fn respond(ctx, exchange: ResourceId, response: Value<'e>) -> IoReply<'e> {
         let mut ctx = ctx;
+        {
+            let view = ctx.services().runtime_view().ok_or_else(|| internal("HTTP runtime unavailable"))?;
+            if let http::Resume::Writing(step) = http::resume(view.resources, exchange, view.rt.output_task)? {
+                return match step {
+                    None => Ok(IoReply::Wait(IoWait::Readiness { resource: exchange, interest: Interest::Writable })),
+                    Some(Ok(())) => Ok(IoReply::Done(ok(&ctx, Value::Unit)?)),
+                    Some(Err(failure)) => Ok(IoReply::Done(error(&ctx, failure, "Benitoite.Network.Http.respond")?)),
+                };
+            }
+        }
         let status = ctx.field(response, 0).and_then(Value::as_int).ok_or_else(|| internal("HTTP response status missing"))?;
-        if !(100..=599).contains(&status) { return Err(domain("Benitoite.Network.Http.respond")); }
+        if !(200..=599).contains(&status) { return Err(domain("Benitoite.Network.Http.respond")); }
         let headers = read_pairs(&ctx, ctx.field(response, 1).ok_or_else(|| internal("HTTP response headers missing"))?)?;
         // 応答の分割を防ぐため、置き換えるヘッダも書き込み前に検査する（設計書 03-09「サーバの接続と要求の読み方」）。
         if headers.iter().any(|(name, value)| {
             name.is_empty() || !name.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'!' | b'#' | b'$' | b'%' | b'&' | b'\'' | b'*' | b'+' | b'-' | b'.' | b'^' | b'_' | b'`' | b'|' | b'~'))
                 || !value.bytes().all(|b| matches!(b, b'\t' | b' '..=b'~' | 0x80..=0xff))
         }) { return Err(domain(respond::DECL.name)); }
-        let body = ctx.field(response, 2).and_then(|body| ctx.bytes(body)).ok_or_else(|| internal("HTTP response body missing"))?;
-        let bytes = http::response_bytes(u16::try_from(status).map_err(|_| internal("validated HTTP status overflow"))?, &headers, body)?;
+        let body = ctx.field(response, 2).and_then(|body| ctx.values().bytes(body)).ok_or_else(|| internal("HTTP response body missing"))?;
         let view = ctx.services().runtime_view().ok_or_else(|| internal("HTTP runtime unavailable"))?;
+        let framing = view.resources.attachments.get(&exchange)
+            .and_then(|request| request.downcast_ref::<RequestData>())
+            .map_or(http::ResponseFraming::Other, |request| http::ResponseFraming::from_method(&request.method));
+        let bytes = http::response_bytes(u16::try_from(status).map_err(|_| internal("validated HTTP status overflow"))?, &headers, body, framing)?;
         let step = http::respond(view.resources, exchange, view.rt.output_task, bytes)?;
         match step {
             None => Ok(IoReply::Wait(IoWait::Readiness { resource: exchange, interest: Interest::Writable })),
@@ -110,7 +123,7 @@ builtin! {
     }
 }
 builtin! {
-    /// `Network.Http.requestOf` の本体（実装プラン 10-15）。
+    /// `Network.Http.requestOf` の本体。
     name = "Network.Http.requestOf",
     state fn request_of(ctx, exchange: ResourceId) -> StateReply<'e> {
         let mut ctx = ctx;
@@ -131,14 +144,14 @@ builtin! {
     }
 }
 builtin! {
-    /// `Network.Http.closeListener` の本体（実装プラン 10-15）。
+    /// `Network.Http.closeListener` の本体。
     name = "Network.Http.closeListener",
     state fn close_listener(ctx, listener: ResourceId) -> StateReply<'e> {
         close(ctx, listener, "Network.Http.closeListener")
     }
 }
 builtin! {
-    /// `Network.Http.closeExchange` の本体（実装プラン 10-15）。
+    /// `Network.Http.closeExchange` の本体。
     name = "Network.Http.closeExchange",
     state fn close_exchange(ctx, exchange: ResourceId) -> StateReply<'e> {
         close(ctx, exchange, "Network.Http.closeExchange")
@@ -222,7 +235,7 @@ fn domain(function: &'static str) -> Stop {
 mod text {
     pub const INJECTED: &str = "injected network failure";
 }
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     listen::DECL,
     listener_port::DECL,

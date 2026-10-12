@@ -1,4 +1,4 @@
-//! 宣言・文を一つずつ取り除く反例の縮小（設計書 07-03「差分テスト」、実装プラン C14）。
+//! 宣言・文を一つずつ取り除く反例の縮小（設計書 07-03「差分テスト」）。
 
 use benitoite::base::{FileId, IdGen, SourceKind, Span};
 use benitoite::syntax::ast::{Arg, Block, ElseBranch, Expr, Item, ListElem, Stmt};

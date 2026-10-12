@@ -1,33 +1,33 @@
 //! 型検査（設計書 02-05）。
 //! infer.rs: 推論の型と制約、patterns.rs: パターンの検査。
-//! 制約の生成、制約の解決、宣言の検査、定数の評価の子のモジュールは F07〜F10 の作業の文書で分ける。
+//! 制約の生成、制約の解決、宣言の検査、定数の評価を子のモジュールに分ける。
 //!
-//! フックは次の表の関数として固定する。Decls は宣言の情報、Body は本体の可変の文脈である。
+//! フックの呼ぶ位置と入出力を次の表に示す。Decls は宣言の情報、Body は本体の可変の文脈である。
 //! 表の入力の Decls と Body はいずれも可変の参照で、戻り値の — は () を表す。
 //!
-//! | 番号・関数 | 呼ぶ位置 | 入力 | 戻り値 | 仮の本体 | 中身を書く作業 |
-//! |---|---|---|---|---|---|
-//! | T1 traits::collect | 宣言の収集の後 | Decls | — | 受け付ける | F08 |
-//! | T2 traits::check_parameters | 型パラメータを移すとき | Decls、宣言の並び、Scope、Scheme、制約を書けるか | — | 受け付ける | F08 |
-//! | T3 traits::check_impls | 宣言の要約の後 | Decls | — | 受け付ける | F08 |
-//! | T4 traits::instantiate | クラスの制約を持つ名前の具体化 | Body、NodeId、Span、Scheme、型引数 IArg の並び、IEffect の並び | — | 受け付ける | F08 |
-//! | T5 traits::method | メソッドの名前 | Body、NameExpr | ITy | Error を返す | F08 |
-//! | T6 traits::solve_classes | エフェクトの解決の後 | Body（constraints の Class） | — | 受け付ける | F08 |
-//! | T7 traits::check_bound | Param に対する組み込みの制約 | Body、パラメータの番号、区分（0: 集まり、1: 等値、2: 鍵）、Option<TySet>、Reason | — | 満たすものとする | F08 |
-//! | E1 effects::check_uses | uses を移すとき | Decls、UsesList、Scope | — | 受け付ける | F09 |
-//! | E2 effects::check_entries | main と @test の署名の検査の後 | Decls | — | 受け付ける | F09 |
-//! | E3 effects::expr | lazy、with、try、handle、resume | Body、Expr | ITy | 子を辿らず Error を返す | F09 |
-//! | E4 effects::name | 名前を使うとき | Body、NameExpr、with の束縛の直接の呼び出しか | — | 受け付ける | F09 |
-//! | E5 effects::solve_special | 型の制約の解決の後、エフェクトの解決の前 | Body（constraints の Try と Resource） | — | 満たすものとする | F09 |
-//! | E6 effects::check_body | 本体の後の検査 | Body（owner、scheme、actual_effects を参照） | — | 受け付ける | F09 |
-//! | E7 effects::effect_failure | LazyBody のエフェクトの失敗 | Body、Reason、示すエフェクトの文字列、呼び出しの Span | Diagnostic | E0501 を作る | F09 |
-//! | P1 pattern_ext::pattern | 範囲・リストのパターン | Body、Pattern | ITy | Error を返す | F10 |
-//! | P2 pattern_ext::alternatives | 二つ以上の選択肢を辿った後 | Body、MatchArm | — | 受け付ける | F10 |
-//! | P3 pattern_ext::guard | ガード | Body、Expr | — | 子を辿らない | F10 |
-//! | P4 pattern_ext::check_body | 本体の後の検査 | Body（matches と bindings） | — | 受け付ける | F10 |
-//! | P5 pattern_ext::effect_failure | MatchGuard のエフェクトの失敗 | Body、Reason、示すエフェクトの文字列、呼び出しの Span | Diagnostic | E0501 を作る | F10 |
+//! | 番号・関数 | 呼ぶ位置 | 入力 | 戻り値 |
+//! |---|---|---|---|
+//! | T1 traits::collect | 宣言の収集の後 | Decls | — |
+//! | T2 traits::check_parameters | 型パラメータを移すとき | Decls、宣言の並び、Scope、Scheme、制約を書けるか | — |
+//! | T3 traits::check_impls | 宣言の要約の後 | Decls | — |
+//! | T4 traits::instantiate | クラスの制約を持つ名前の具体化 | Body、NodeId、Span、Scheme、型引数 IArg の並び、IEffect の並び | — |
+//! | T5 traits::method | メソッドの名前 | Body、NameExpr | ITy |
+//! | T6 traits::solve_classes | エフェクトの解決の後 | Body（constraints の Class） | — |
+//! | T7 traits::check_bound | Param に対する組み込みの制約 | Body、パラメータの番号、区分（0: 集まり、1: 等値、2: 鍵）、Option<TySet>、Reason | — |
+//! | E1 effects::check_uses | uses を移すとき | Decls、UsesList、Scope | — |
+//! | E2 effects::check_entries | main と @test の署名の検査の後 | Decls | — |
+//! | E3 effects::expr | lazy、with、try、handle、resume | Body、Expr | ITy |
+//! | E4 effects::name | 名前を使うとき | Body、NameExpr、with の束縛の直接の呼び出しか | — |
+//! | E5 effects::solve_special | 型の制約の解決の後、エフェクトの解決の前 | Body（constraints の Try と Resource） | — |
+//! | E6 effects::check_body | 本体の後の検査 | Body（owner、scheme、actual_effects を参照） | — |
+//! | E7 effects::effect_failure | LazyBody のエフェクトの失敗 | Body、Reason、示すエフェクトの文字列、呼び出しの Span | Diagnostic |
+//! | P1 pattern_ext::pattern | 範囲・リストのパターン | Body、Pattern | ITy |
+//! | P2 pattern_ext::alternatives | 二つ以上の選択肢を辿った後 | Body、MatchArm | — |
+//! | P3 pattern_ext::guard | ガード | Body、Expr | — |
+//! | P4 pattern_ext::check_body | 本体の後の検査 | Body（matches と bindings） | — |
+//! | P5 pattern_ext::effect_failure | MatchGuard のエフェクトの失敗 | Body、Reason、示すエフェクトの文字列、呼び出しの Span | Diagnostic |
 //!
-//! Body::expr_in、block_in、pattern_in は E と R を差し替え、終了後に元へ戻す。
+//! Body::expr_in、block_in は E と R を差し替え、終了後に元へ戻す。
 //! Body::unify はフックが生成した型の一致を解き、失敗を通常の診断にする。
 //! E5 は決まる必要のある型を Body::require_type で登録し、Solver::zonk で判定する。
 //! constraints の Class は T6 が、Try と Resource は E5 が取り出す。
@@ -84,7 +84,7 @@ pub struct HandleInfo {
     pub handled: EffectSet,
 }
 
-/// 型検査の出力（02-05「出力」）。表に書く型は型変数を含まない。鍵と値は実装プラン 10-05「型検査の出力」の表。
+/// 型検査の出力（02-05「出力」）。表に書く型は型変数を含まない。各段へ渡す表は設計書 02-05「出力」で定める。
 #[derive(Debug, Default)]
 pub struct TypeckOutput {
     pub expr_types: NodeMap<Ty>,

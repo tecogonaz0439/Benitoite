@@ -1,11 +1,11 @@
 //! Set の組み込みの関数（設計書 03-06「Map と Set（初回リリース版）」）。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
-use crate::runtime::heap::Value;
+use crate::runtime::heap::{CheckedLen, Value};
 use crate::runtime::{list, map};
 
 builtin! {
-    /// `Set.empty` の本体（実装プラン 10-12「リスト・マップ・集合」）。
+    /// `Set.empty` の本体。
     name = "Set.empty",
     pure fn empty(ctx) -> Value<'e> {
         let _ = ctx;
@@ -14,7 +14,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Set.fromList` の本体（実装プラン 10-12「リスト・マップ・集合」）。
+    /// `Set.fromList` の本体。
     name = "Set.fromList",
     pure fn from_list(ctx, xs: Value<'e>) -> Value<'e> {
         let mut result = Value::EmptySet;
@@ -27,21 +27,24 @@ builtin! {
 }
 
 builtin! {
-    /// `Set.toList` の本体（実装プラン 10-12「リスト・マップ・集合」）。
+    /// `Set.toList` の本体。
     name = "Set.toList",
     pure fn to_list(ctx, xs: Value<'e>) -> Value<'e> {
+        // 集める前に確かめる。from_values だけでは、上限を超える数の要素を
+        // 集めた後で止まる（設計書 02-09「一つの操作で作る値の大きさの上限」）。
+        CheckedLen::elements(u64::from(map::set_len(&ctx, xs)?), "Set.toList")?;
         list::from_values(&ctx, &map::set_to_vec(&ctx, xs)?, "Set.toList")
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[empty::DECL, from_list::DECL, to_list::DECL];
 
 #[cfg(test)]
 mod tests {
     // 関門: 三つの本体が型付きの引数と Pair・リストを正しく接続する契約。
     // ランタイムの木のテストでは項目の配線とタグの誤りを検出できない。
-    // 10-12 の個別の指示どおり直接呼び、公開の口を増やさない。
+    // 組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -101,8 +104,8 @@ mod tests {
         assert!(heap.take_fault().is_none());
     }
 
-    // 関門: L02 の入口の配線、集合演算の向き、鍵の保存、引数の永続性を守る。
-    // runtime::map のテストでは入口の誤りは分からない。L02 の指示に従って
+    // 関門: 入口の配線、集合演算の向き、鍵の保存、引数の永続性を守る。
+    // runtime::map のテストでは入口の誤りは分からない。
     // BTreeSet を入口の結果と比べ、木の内部やテスト用の本番の口を使わない。
     use super::super::map::tests::{KEY_KINDS, KeyKind, key, number, random};
     use crate::base::Decimal;
@@ -315,7 +318,7 @@ mod tests {
 }
 
 builtin! {
-    /// `Set.contains` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Set.contains` の本体。
     name = "Set.contains",
     pure fn contains(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         Ok(Value::Bool(map::set_contains(&ctx, arg0, arg1)?))
@@ -323,7 +326,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Set.add` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Set.add` の本体。
     name = "Set.add",
     pure fn add(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         map::set_insert(&ctx, arg0, arg1, "Set.add")
@@ -331,7 +334,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Set.remove` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Set.remove` の本体。
     name = "Set.remove",
     pure fn remove(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         map::set_remove(&ctx, arg0, arg1)
@@ -339,7 +342,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Set.size` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Set.size` の本体。
     name = "Set.size",
     pure fn size(ctx, arg0: Value<'e>) -> Value<'e> {
         Ok(Value::Int(i64::from(map::set_len(&ctx, arg0)?)))
@@ -347,7 +350,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Set.union` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Set.union` の本体。
     name = "Set.union",
     pure fn union(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         map::set_union(&ctx, arg0, arg1, "Set.union")
@@ -355,7 +358,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Set.intersection` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Set.intersection` の本体。
     name = "Set.intersection",
     pure fn intersection(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         map::set_intersection(&ctx, arg0, arg1)
@@ -363,14 +366,15 @@ builtin! {
 }
 
 builtin! {
-    /// `Set.difference` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Set.difference` の本体。
     name = "Set.difference",
     pure fn difference(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         map::set_difference(&ctx, arg0, arg1)
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const MORE_DECLS: &[BuiltinDecl] = &[
     contains::DECL,
     add::DECL,

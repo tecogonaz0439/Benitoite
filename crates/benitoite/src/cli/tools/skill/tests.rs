@@ -1,6 +1,5 @@
-//! `skill install`・`uninstall` のテスト（設計書 06-06「Skill の導入（初回リリース版）」、実装プラン 10-19
-//! 「`skill install`・`uninstall`」）。ホームと作業ディレクトリを一時ディレクトリにして `run_skill` を呼ぶ。
-// テストの失敗は panic で表す（00-02「`#[allow]` を書いてよい箇所」）
+//! `skill install`・`uninstall` のテスト（設計書 06-06「Skill の導入（初回リリース版）」）。ホームと作業ディレクトリを一時ディレクトリにして `run_skill` を呼ぶ。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -263,10 +262,105 @@ fn uninstall_removes_installs_and_ignores_missing_directories() {
 #[test]
 fn user_scope_without_home_reports_no_home() {
     let temp = Temp::new("no-home");
-    let result = run(&temp, &["install"], None);
-    assert_eq!(result.exit, 1);
-    assert_eq!(result.err, format!("{}\n", text::NO_HOME));
-    assert!(result.out.is_empty());
+    for action in ["install", "uninstall"] {
+        for home in [None, Some(PathBuf::new())] {
+            let result = run(&temp, &[action], home);
+            assert_eq!(result.exit, 1);
+            assert_eq!(result.err, format!("{}\n", text::NO_HOME));
+            assert!(result.out.is_empty());
+        }
+    }
+    assert_eq!(fs::read_dir(temp.home()).unwrap().count(), 0);
+    assert_eq!(fs::read_dir(temp.work()).unwrap().count(), 0);
+}
+
+#[test]
+fn user_scope_rejects_home_that_is_not_an_absolute_existing_directory() {
+    for action in ["install", "uninstall"] {
+        let temp = Temp::new("invalid-home");
+        let missing = temp.0.join("missing-\x1b{path}-{reason}");
+        let file = temp.0.join("file");
+        fs::write(&file, "keep").unwrap();
+        // 作業ディレクトリから根まで上り、一時ディレクトリを相対パスで指す。
+        // 相対パスの拒否が退行しても、書き出し先と後始末は一時ディレクトリの中に収まる。
+        let cwd = std::env::current_dir().unwrap();
+        let mut relative_base = PathBuf::new();
+        for component in cwd.components() {
+            if matches!(component, std::path::Component::Normal(_)) {
+                relative_base.push("..");
+            }
+        }
+        relative_base.push(temp.0.strip_prefix("/").unwrap());
+        let relative = relative_base.join("rel-missing");
+        let relative_existing = relative_base.join("rel-existing");
+        assert!(!relative.is_absolute());
+        assert!(!relative.exists());
+        fs::create_dir(&relative_existing).unwrap();
+        let homes = vec![
+            missing.clone(),
+            file.clone(),
+            relative.clone(),
+            relative_existing.clone(),
+        ];
+        #[cfg(unix)]
+        let homes = {
+            let mut homes = homes;
+            let broken = temp.0.join("broken-home");
+            std::os::unix::fs::symlink(&missing, &broken).unwrap();
+            homes.push(broken);
+            homes
+        };
+        for home in homes {
+            let result = run(&temp, &[action], Some(home.clone()));
+            assert_eq!(result.exit, 1, "{action}: {home:?}");
+            let escaped = home.display().to_string().replace('\x1b', r#"\u{1B}"#);
+            assert_eq!(
+                result.err,
+                format!("{}\n", text::HOME_NOT_DIRECTORY.replace("{path}", &escaped)),
+                "{action}: {home:?}"
+            );
+            assert!(result.out.is_empty(), "{action}: {home:?}");
+        }
+        assert!(!missing.exists());
+        assert!(!relative.exists());
+        assert_eq!(fs::read_dir(&relative_existing).unwrap().count(), 0);
+        assert_eq!(fs::read_to_string(file).unwrap(), "keep");
+        assert_eq!(fs::read_dir(temp.home()).unwrap().count(), 0);
+        assert_eq!(fs::read_dir(temp.work()).unwrap().count(), 0);
+    }
+}
+
+// 関門: HOME のディレクトリへのリンクを辿る契約を、実際の導入結果で確かめる。
+// metadata を symlink_metadata に変える退行は、通常のディレクトリと拒否の表だけでは捕まらない。
+// 本番の差し込み口を増やさず run_skill から確かめる（設計書 06-06「Skill の導入（初回リリース版）」）。
+#[cfg(unix)]
+#[test]
+fn user_scope_installs_through_a_symlink_to_a_home_directory() {
+    let temp = Temp::new("home-link");
+    let link = temp.0.join("home-link");
+    std::os::unix::fs::symlink(temp.home(), &link).unwrap();
+    let result = run(&temp, &["install"], Some(link.clone()));
+    assert_eq!(result.exit, 0, "{}", result.err);
+    assert!(result.err.is_empty());
+    assert_eq!(
+        result.out,
+        format!(
+            "{}{}",
+            line(text::INSTALLED, &claude(&link)),
+            line(text::INSTALLED, &agents(&link))
+        )
+    );
+    assert_installed(&claude(&temp.home()));
+    assert_installed(&agents(&temp.home()));
+    assert!(
+        fs::symlink_metadata(&link)
+            .unwrap()
+            .file_type()
+            .is_symlink()
+    );
+    assert_no_temp(&claude(&temp.home()));
+    assert_no_temp(&agents(&temp.home()));
+    assert_eq!(fs::read_dir(temp.work()).unwrap().count(), 0);
 }
 
 #[test]
@@ -383,4 +477,102 @@ fn an_old_install_that_cannot_be_removed_keeps_the_new_install() {
     assert!(old_locked.join("stuck.md").exists());
     assert!(!dir.join("references/locked").exists());
     assert_installed(&dir);
+}
+
+// 関門: project の既存 SKILL.md が FIFO なら、停止せず上書きを拒む。
+#[cfg(unix)]
+#[test]
+fn install_refuses_a_fifo_skill_without_blocking() {
+    let temp = Temp::new("fifo");
+    let dir = claude(&temp.work());
+    fs::create_dir_all(&dir).unwrap();
+    let fifo = dir.join("SKILL.md");
+    assert!(
+        std::process::Command::new("mkfifo")
+            .arg(&fifo)
+            .status()
+            .unwrap()
+            .success()
+    );
+    let (send, recv) = std::sync::mpsc::channel();
+    let worker = std::thread::spawn(move || {
+        let result = run(
+            &temp,
+            &["install", "--project", "--agent", "claude-code"],
+            None,
+        );
+        send.send((temp, result)).unwrap();
+    });
+    let (_temp, result) = recv
+        .recv_timeout(std::time::Duration::from_secs(5))
+        .expect("skill install blocked while reading a FIFO");
+    worker.join().unwrap();
+    assert_eq!(result.exit, 1);
+    assert_eq!(result.err, line(text::NOT_OURS, &dir));
+    assert!(result.out.is_empty());
+    use std::os::unix::fs::FileTypeExt;
+    assert!(fs::symlink_metadata(fifo).unwrap().file_type().is_fifo());
+    assert_no_temp(&dir);
+}
+
+// 関門: パスの制御文字を逃がし、埋めたパスの {reason} をもう一度展開しない。
+#[cfg(unix)]
+#[test]
+fn skill_messages_escape_paths_and_preserve_template_names() {
+    let temp = Temp::new("escape-\u{1b}{reason}");
+    let home = temp.home();
+    let dir = claude(&home);
+    let escaped = dir.display().to_string().replace('\u{1b}', "\\u{1B}");
+    for (action, verb) in [("install", "installed"), ("uninstall", "removed")] {
+        let result = run(
+            &temp,
+            &[action, "--agent", "claude-code"],
+            Some(home.clone()),
+        );
+        assert_eq!(result.exit, 0, "{}", result.err);
+        assert_eq!(result.out, format!("{verb} {escaped}\n"));
+    }
+    fs::create_dir_all(&dir).unwrap();
+    let result = run(&temp, &["install", "--agent", "claude-code"], Some(home));
+    assert_eq!(result.exit, 1);
+    assert_eq!(
+        result.err,
+        format!(
+            "error: `{escaped}` was not written by `benitoite skill install`; it was left unchanged\n"
+        )
+    );
+    assert_eq!(
+        write_failed(&dir, "denied"),
+        format!("error: cannot write `{escaped}`: denied")
+    );
+    assert_eq!(
+        remove_failed(&dir, "denied"),
+        format!("error: cannot remove `{escaped}`: denied")
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn install_refuses_symlinked_and_oversized_skill_files() {
+    let temp = Temp::new("skill-file");
+    let dir = claude(&temp.work());
+    fs::create_dir_all(&dir).unwrap();
+    let original = "---\nmetadata:\n  benitoite-version: 1\n---\n";
+    let outside = temp.work().join("ours.md");
+    fs::write(&outside, original).unwrap();
+    std::os::unix::fs::symlink(&outside, dir.join("SKILL.md")).unwrap();
+    let args = ["install", "--project", "--agent", "claude-code"];
+    let result = run(&temp, &args, None);
+    assert_eq!(result.exit, 1, "{}", result.err);
+    assert_eq!(result.err, line(text::NOT_OURS, &dir));
+    assert_eq!(fs::read_to_string(&outside).unwrap(), original);
+    fs::remove_file(dir.join("SKILL.md")).unwrap();
+    let mut oversized = original.to_owned();
+    oversized.push_str(&"x".repeat(1024 * 1024));
+    fs::write(dir.join("SKILL.md"), &oversized).unwrap();
+    let result = run(&temp, &args, None);
+    assert_eq!(result.exit, 1, "{}", result.err);
+    assert_eq!(result.err, line(text::NOT_OURS, &dir));
+    assert_eq!(fs::read_to_string(dir.join("SKILL.md")).unwrap(), oversized);
+    assert_no_temp(&dir);
 }

@@ -1,4 +1,4 @@
-//! 埋め込みの一覧に並べる Skill のパスの決め方（実装プラン D20「手順の要点」の 6）。
+//! 埋め込みの一覧に並べる Skill のパスの決め方（設計書 06-06「同梱の Agent Skill の構成」）。
 //! 生成の道具（`examples/gen_skill.rs`）と古くないことのテスト（`tests/skill_docs.rs`）が `#[path]` で読み、
 //! 両方が同じ並びと同じ判定を使う。
 
@@ -6,7 +6,7 @@ use std::path::Path;
 
 use benitoite::cli::tools::skill::generate::GeneratedFile;
 
-/// 手で書く文書（D21）。生成物とあわせて埋め込みの一覧に並べる。
+/// 手で書く文書。生成物とあわせて埋め込みの一覧に並べる。
 pub const HAND_WRITTEN: &[&str] = &[
     "SKILL.md",
     "references/common-mistakes.md",

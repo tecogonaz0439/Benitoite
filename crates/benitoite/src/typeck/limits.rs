@@ -1,4 +1,4 @@
-//! 展開・推論した型の資源の上限（設計書 02-03「入れ子の深さ」）。
+//! 展開・推論した型の資源の上限（設計書 02-03「入れ子の深さ」、02-05「本体の後の検査」）。
 
 use crate::base::Span;
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
@@ -6,6 +6,7 @@ use crate::types::Ty;
 
 pub(super) const MAX_TYPE_DEPTH: usize = 1000;
 pub(super) const MAX_TYPE_NODES: usize = 16_384;
+pub(super) const MAX_COVERAGE_WORK: usize = 1 << 20;
 
 #[derive(Clone, Copy)]
 pub(super) enum TypeLimit {
@@ -84,3 +85,6 @@ impl TypeBudget {
         Ok(())
     }
 }
+
+/// 辞書の節と、その節で写す型の節の合計の上限（設計書 02-05「型クラスの制約の解決」）。
+pub(super) const MAX_DICT_WORK: usize = 32_768;

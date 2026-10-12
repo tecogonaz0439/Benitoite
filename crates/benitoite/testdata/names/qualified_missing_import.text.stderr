@@ -1,0 +1,15 @@
+error[E0303]: `IO` has no member `Console`
+  --> testdata/names/qualified_missing_import.bnt:3:6
+   |
+ 3 |   IO.Console.writeLine("ok")
+   |      ^^^^^^^ not found in `IO`
+   |
+   = help: add `import Benitoite.Unofficial.IO.Console` and use `Console.`
+   |
+ 2 | import Benitoite.Unofficial.IO.Console
+   | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 3 | function main() -> Unit
+ 4 |   Console.writeLine("ok")
+   |   ~~~~~~~
+
+error: could not check testdata/names/qualified_missing_import.bnt due to 1 previous error

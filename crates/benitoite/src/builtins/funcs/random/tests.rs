@@ -1,5 +1,5 @@
-//! 乱数の列・変換・純粋性と、IO の生成器の経路を確かめる（設計書 03-07「Random」、実装プラン L14）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 乱数の列・変換・純粋性と、IO の生成器の経路を確かめる（設計書 03-07「Random」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -16,7 +16,7 @@ use crate::runtime::sched::testing::ScheduleHandle;
 use crate::vm::ExecMode;
 
 // 関門: 版をまたぐ列を固定する契約は、共通の本体を使う差分テストでは守れない。
-// L14 の指示に従い、参照の手順をテスト内に独立に書き下す。上端の判定は u128 で書く。
+// 参照の手順をテスト内に独立に書き下す。上端の判定は u128 で書く。
 // 式の出典: https://prng.di.unimi.it/splitmix64.c
 //           https://prng.di.unimi.it/xoshiro256starstar.c
 // 作者の出力の値は取得していない。テストの参照実装で期待する列を求める。

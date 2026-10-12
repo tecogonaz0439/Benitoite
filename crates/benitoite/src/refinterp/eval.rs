@@ -173,6 +173,8 @@ impl<'p> Machine<'p> {
                 return outcome;
             }
             let at = state.origin();
+            // 巻き戻し中の Stop::Internal は、元の停止と集めた解放の失敗を置き換える。
+            // 参照インタプリタの不具合なので、差分テストは必ず失敗にする（設計書 07-03「差分テスト」）。
             state = self.step(state, io).unwrap_or_else(|s| error(s, at));
         }
     }
@@ -646,6 +648,15 @@ impl<'p> Machine<'p> {
                         env.set(id, v)?;
                     }
                     if let Some(guard) = &arm.guard {
+                        // 行は元の分岐の順に並び、同じ分岐の選択肢は連続する。
+                        // ガードが偽なら、その分岐の残りを飛ばす
+                        // （設計書 02-06「パターンの拡張」、01-12「実行の規則」）。
+                        debug_assert!(m.rows.windows(2).all(|rows| {
+                            let [a, b] = rows else {
+                                return false;
+                            };
+                            a.arm <= b.arm
+                        }));
                         m.next = m
                             .rows
                             .iter()

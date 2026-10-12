@@ -1,4 +1,4 @@
-//! 専用命令だけが遅延を評価する契約（実装プラン R29）。
+//! 専用命令だけが遅延を評価する契約（設計書 02-07「コード生成」）。
 use super::*;
 use crate::builtins::table::call_builtin;
 use crate::runtime::heap::{Heap, HeapConfig};

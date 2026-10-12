@@ -1,6 +1,6 @@
-//! リストの操作とパターンの内部の項目（設計書 03-06「List」、実装プラン 10-12「リスト・マップ・集合」）。
-//! 仮の本体は、後の作業が本体と Rust の引数型だけを書き換える。
-//! 名前・権限・引数の数・DECLS の中の位置は変えない（実装プラン 10-12「まだ書かない項目の仮の本体」）。
+//! リストの操作とパターンの内部の項目（設計書 03-06「List」）。
+//! 名前・権限・引数の数は標準ライブラリのソースの宣言と一致させる
+//! （設計書 02-04「標準ライブラリのソースの持ち方」）。番号は表の中の位置で決まるので、DECLS の中の位置は変えない。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::runtime::Stop;
@@ -8,7 +8,7 @@ use crate::runtime::heap::CheckedLen;
 use crate::runtime::heap::Value;
 
 builtin! {
-    /// `List.length` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.length` の本体。
     name = "List.length",
     pure fn length(ctx, xs: Value<'e>) -> i64 {
         Ok(i64::from(crate::runtime::list::len(&ctx, xs)?))
@@ -16,7 +16,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.isEmpty` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.isEmpty` の本体。
     name = "List.isEmpty",
     pure fn is_empty(ctx, xs: Value<'e>) -> bool {
         Ok(crate::runtime::list::len(&ctx, xs)? == 0)
@@ -24,7 +24,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.head` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.head` の本体。
     name = "List.head",
     pure fn head(ctx, xs: Value<'e>) -> Value<'e> {
         super::option(&ctx, crate::runtime::list::get(&ctx, xs, 0)?)
@@ -32,7 +32,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.tail` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.tail` の本体。
     name = "List.tail",
     pure fn tail(ctx, xs: Value<'e>) -> Value<'e> {
         super::option(&ctx, crate::runtime::list::tail(&ctx, xs)?)
@@ -40,7 +40,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.get` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.get` の本体。
     name = "List.get",
     pure fn get(ctx, xs: Value<'e>, i: i64) -> Value<'e> {
         let value = match u32::try_from(i) {
@@ -55,7 +55,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.prepend` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.prepend` の本体。
     name = "List.prepend",
     pure fn prepend(ctx, xs: Value<'e>, x: Value<'e>) -> Value<'e> {
         crate::runtime::list::prepend(&ctx, xs, x, "List.prepend")
@@ -63,7 +63,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.append` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.append` の本体。
     name = "List.append",
     pure fn append(ctx, xs: Value<'e>, x: Value<'e>) -> Value<'e> {
         crate::runtime::list::append(&ctx, xs, x, "List.append")
@@ -71,7 +71,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.concatenate` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.concatenate` の本体。
     name = "List.concatenate",
     pure fn concatenate(ctx, xs: Value<'e>, ys: Value<'e>) -> Value<'e> {
         crate::runtime::list::concat(&ctx, xs, ys, "List.concatenate")
@@ -79,7 +79,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.reverse` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.reverse` の本体。
     name = "List.reverse",
     pure fn reverse(ctx, xs: Value<'e>) -> Value<'e> {
         let mut items = crate::runtime::list::to_vec(&ctx, xs)?;
@@ -89,7 +89,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.take` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.take` の本体。
     name = "List.take",
     pure fn take(ctx, xs: Value<'e>, n: i64) -> Value<'e> {
         let len = crate::runtime::list::len(&ctx, xs)?;
@@ -99,7 +99,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.drop` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.drop` の本体。
     name = "List.drop",
     pure fn drop(ctx, xs: Value<'e>, n: i64) -> Value<'e> {
         let len = crate::runtime::list::len(&ctx, xs)?;
@@ -109,7 +109,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.range` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.range` の本体。
     name = "List.range",
     pure fn range(ctx, start: i64, end: i64) -> Value<'e> {
         if end <= start {
@@ -127,7 +127,7 @@ builtin! {
 }
 
 builtin! {
-    /// `List.contains` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.contains` の本体。
     name = "List.contains",
     pure fn contains(ctx, xs: Value<'e>, x: Value<'e>) -> bool {
         for value in crate::runtime::list::to_vec(&ctx, xs)? {
@@ -140,12 +140,12 @@ builtin! {
 }
 
 builtin! {
-    /// `List.sort` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `List.sort` の本体。
     name = "List.sort",
     pure fn sort(ctx, xs: Value<'e>) -> Value<'e> {
         let mut items = crate::runtime::list::to_vec(&ctx, xs)?;
         // 比較器に不正な種類を渡さず、一要素だけの場合も型を確かめる
-        // （設計書 03-06「List」、実装プラン 00-02「失敗を panic で表さない」）。
+        // （設計書 03-06「List」、AGENTS.md「実装の規約」の「失敗を panic で表さない」）。
         if let Some(first) = items.first().copied() {
             for item in &items {
                 compare(&ctx, first, *item)?;
@@ -167,7 +167,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%List.length` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%List.length` の本体。
     name = "%List.length",
     pure fn pattern_length(ctx, xs: Value<'e>) -> i64 {
         length(ctx, xs)
@@ -175,7 +175,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%List.getFront` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%List.getFront` の本体。
     name = "%List.getFront",
     pure fn get_front(ctx, xs: Value<'e>, i: i64) -> Value<'e> {
         let i =
@@ -186,7 +186,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%List.getBack` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%List.getBack` の本体。
     name = "%List.getBack",
     pure fn get_back(ctx, xs: Value<'e>, i: i64) -> Value<'e> {
         let n = crate::runtime::list::len(&ctx, xs)?;
@@ -201,7 +201,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%List.slice` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%List.slice` の本体。
     name = "%List.slice",
     pure fn slice(ctx, xs: Value<'e>, front: i64, back: i64) -> Value<'e> {
         let n = crate::runtime::list::len(&ctx, xs)?;
@@ -248,7 +248,7 @@ fn compare<'e>(
         )),
     }
 }
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     length::DECL,
     is_empty::DECL,

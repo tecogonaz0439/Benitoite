@@ -1,0 +1,12 @@
+error[E0302]: cannot find `Int`
+  --> testdata/names/renamed_module.bnt:3:13
+   |
+ 3 |   bind _ <- Int.abs(-1)
+   |             ^^^ not found
+   |
+   = help: `Int.abs` was renamed to `Integer.absolute` in 0.0.1
+   |
+ 3 |   bind _ <- Integer.absolute(-1)
+   |             ~~~~~~~~~~~~~~~~
+
+error: could not check testdata/names/renamed_module.bnt due to 1 previous error

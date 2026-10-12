@@ -57,7 +57,7 @@ impl Resolver<'_> {
     }
 
     // 括弧で囲んだ型は独立した型であり、uses のコンマを外の並びへ戻せない。
-    // 修正案は、型引数か関数の引数の型の並びにある場合だけに付ける（02-04「誤りと修正案」、F06「確認の観点」）。
+    // 修正案は、型引数か関数の引数の型の並びにある場合だけに付ける（02-04「誤りと修正案」）。
     fn ty_in_list(&mut self, ctx: &mut Ctx, ty: &TypeExpr, in_list: bool) {
         match ty {
             TypeExpr::Named(t) => {
@@ -203,7 +203,7 @@ impl Resolver<'_> {
                 self.ty(&mut ctx, &d.target);
                 for f in &d.fns {
                     let mut fn_ctx = ctx.clone();
-                    // 非推奨の自己参照の除外は、実装全体を囲む宣言の ID を使う（10-04）。
+                    // 非推奨の自己参照の除外は、実装全体を囲む宣言の ID を使う（設計書 02-04「束縛と表」）。
                     fn_ctx.used.clear();
                     self.signature(
                         &mut fn_ctx,
@@ -263,6 +263,7 @@ impl Resolver<'_> {
                     | Item::Error(_) => {}
                 }
             }
+            self.finish_aliases(module.id);
         }
     }
 
@@ -298,6 +299,8 @@ impl Resolver<'_> {
         }
     }
 
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn expr(&mut self, ctx: &mut Ctx, expr: &Expr) {
         match expr {
             Expr::Name(e) => {
@@ -326,24 +329,7 @@ impl Resolver<'_> {
                     }
                 }
             }
-            Expr::Record(e) => {
-                let record = self.name(ctx, e.id, &e.path, Position::Record);
-                if let Some(base) = &e.base {
-                    self.expr(ctx, base);
-                }
-                for field in &e.fields {
-                    if let Some(record) = record
-                        && let Some(id) = self
-                            .members
-                            .get(&record)
-                            .and_then(|m| m.get(&field.name.text))
-                            .copied()
-                    {
-                        self.record_ref(ctx, field.id, id, field.name.span);
-                    }
-                    self.expr(ctx, &field.value);
-                }
-            }
+            Expr::Record(e) => self.resolve_record(ctx, e),
             Expr::Binary(e) => {
                 self.expr(ctx, &e.lhs);
                 self.expr(ctx, &e.rhs);
@@ -360,59 +346,91 @@ impl Resolver<'_> {
                     self.arm(ctx, arm);
                 }
             }
-            Expr::Lambda(e) => {
-                for param in &e.params {
-                    if let Some(ty) = &param.ty {
-                        self.ty(ctx, ty);
-                    }
-                }
-                if let Some(ty) = &e.ret {
-                    self.ty(ctx, ty);
-                }
-                if let Some(uses) = &e.uses {
-                    self.uses(ctx, uses, None);
-                }
-                ctx.scopes.push(BTreeMap::new());
-                self.parameters(ctx, &e.params, LocalKind::LambdaParam);
-                self.block(ctx, &e.body);
-                ctx.scopes.pop();
-            }
+            Expr::Lambda(e) => self.resolve_lambda(ctx, e),
             Expr::Return(e) => self.expr(ctx, &e.value),
             Expr::Try(e) => self.expr(ctx, &e.value),
             Expr::Lazy(e) => self.block(ctx, &e.body),
-            Expr::With(e) => {
-                ctx.scopes.push(BTreeMap::new());
-                for bind in &e.binds {
-                    self.expr(ctx, &bind.value);
-                    self.implicit_shadow(ctx, &bind.name, LocalKind::WithVar);
-                    self.add_local(ctx, bind.id, &bind.name, LocalKind::WithVar);
-                }
-                self.block(ctx, &e.body);
-                ctx.scopes.pop();
-            }
-            Expr::Handle(e) => {
-                self.block(ctx, &e.body);
-                for clause in &e.clauses {
-                    self.name(ctx, clause.op.id, &clause.op.path, Position::Value);
-                    ctx.scopes.push(BTreeMap::new());
-                    let mut seen = BTreeMap::new();
-                    for param in &clause.params {
-                        if let Some(name) = &param.name {
-                            if let Some(first) = seen.get(&name.text).copied() {
-                                self.duplicate(DiagCode::E0310, name, first, "");
-                            } else {
-                                self.implicit_shadow(ctx, name, LocalKind::ClauseParam);
-                            }
-                            let id = self.add_local(ctx, param.id, name, LocalKind::ClauseParam);
-                            seen.entry(name.text.clone()).or_insert(id);
-                        }
-                    }
-                    self.block(ctx, &clause.body);
-                    ctx.scopes.pop();
-                }
-            }
+            Expr::With(e) => self.resolve_with(ctx, e),
+            Expr::Handle(e) => self.resolve_handle(ctx, e),
             Expr::Resume(e) => self.expr(ctx, &e.value),
             Expr::Lit(_) | Expr::Unit(_) | Expr::Error(_) => {}
+        }
+    }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn resolve_record(&mut self, ctx: &mut Ctx, e: &RecordExpr) {
+        let record = self.name(ctx, e.id, &e.path, Position::Record);
+        if let Some(base) = &e.base {
+            self.expr(ctx, base);
+        }
+        for field in &e.fields {
+            if let Some(record) = record
+                && let Some(id) = self
+                    .members
+                    .get(&record)
+                    .and_then(|m| m.get(&field.name.text))
+                    .copied()
+            {
+                self.record_ref(ctx, field.id, id, field.name.span);
+            }
+            self.expr(ctx, &field.value);
+        }
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn resolve_lambda(&mut self, ctx: &mut Ctx, e: &LambdaExpr) {
+        for param in &e.params {
+            if let Some(ty) = &param.ty {
+                self.ty(ctx, ty);
+            }
+        }
+        if let Some(ty) = &e.ret {
+            self.ty(ctx, ty);
+        }
+        if let Some(uses) = &e.uses {
+            self.uses(ctx, uses, None);
+        }
+        ctx.scopes.push(BTreeMap::new());
+        self.parameters(ctx, &e.params, LocalKind::LambdaParam);
+        self.block(ctx, &e.body);
+        ctx.scopes.pop();
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn resolve_with(&mut self, ctx: &mut Ctx, e: &WithExpr) {
+        ctx.scopes.push(BTreeMap::new());
+        for bind in &e.binds {
+            self.expr(ctx, &bind.value);
+            self.implicit_shadow(ctx, &bind.name, LocalKind::WithVar);
+            self.add_local(ctx, bind.id, &bind.name, LocalKind::WithVar);
+        }
+        self.block(ctx, &e.body);
+        ctx.scopes.pop();
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn resolve_handle(&mut self, ctx: &mut Ctx, e: &HandleExpr) {
+        self.block(ctx, &e.body);
+        for clause in &e.clauses {
+            self.name(ctx, clause.op.id, &clause.op.path, Position::Value);
+            ctx.scopes.push(BTreeMap::new());
+            let mut seen = BTreeMap::new();
+            for param in &clause.params {
+                if let Some(name) = &param.name {
+                    if let Some(first) = seen.get(&name.text).copied() {
+                        self.duplicate(DiagCode::E0310, name, first, "");
+                    } else {
+                        self.implicit_shadow(ctx, name, LocalKind::ClauseParam);
+                    }
+                    let id = self.add_local(ctx, param.id, name, LocalKind::ClauseParam);
+                    seen.entry(name.text.clone()).or_insert(id);
+                }
+            }
+            self.block(ctx, &clause.body);
+            ctx.scopes.pop();
         }
     }
 }

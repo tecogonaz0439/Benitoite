@@ -5,7 +5,6 @@ open Lean Benitoite.Exchange
 structure Counts where
   matched : Nat := 0
   mismatched : Nat := 0
-  knownMismatched : Nat := 0
   outside : Nat := 0
   excluded : Nat := 0
   deriving ToJson
@@ -17,7 +16,6 @@ structure Summary where
   programElements : List (String × Nat) := []
   constructions : List (String × Nat) := []
   constructionUnits : List (String × Nat) := []
-  knownDifferences : List (String × Nat) := []
   deriving ToJson
 
 def increment (entries : List (String × Nat)) (name : String) : List (String × Nat) :=
@@ -339,7 +337,6 @@ structure Mismatch where
   actual : Json
   expectedDefinition : CoreDef
   actualDefinition : CoreDef
-  knownDifferences : List String
   deriving ToJson
 
 def compareInput (atoms : Eff) (operators : List OperatorEntry) (input : Input)
@@ -359,9 +356,6 @@ def compareInput (atoms : Eff) (operators : List OperatorEntry) (input : Input)
   let names := input.definitions.filterMap (fun d => match d.scope with
     | .accessor name _ _ _ _ => some name | _ => none)
   for d in input.definitions do
-    if d.knownDifferences.eraseDups != d.knownDifferences ||
-        d.knownDifferences.any (fun k => k != "ガードの中の resume（TODO-190）") then
-      throw "invalid known-difference classification"
     match d.scope with
     | .outOfScope elements =>
         if elements.isEmpty then throw "outOfScope without a reason"
@@ -395,34 +389,23 @@ def compareInput (atoms : Eff) (operators : List OperatorEntry) (input : Input)
             expected := e
             actual := a
             expectedDefinition := expected
-            actualDefinition := core
-            knownDifferences := d.knownDifferences }]
-          if d.knownDifferences.isEmpty then
-            s := { s with definitions.mismatched := s.definitions.mismatched + 1 }
-          else
-            s := { s with definitions.knownMismatched := s.definitions.knownMismatched + 1 }
-          for k in d.knownDifferences do
-            s := { s with knownDifferences := increment s.knownDifferences (k ++ ": mismatched") }
+            actualDefinition := core }]
+          s := { s with definitions.mismatched := s.definitions.mismatched + 1 }
         else
           s := { s with definitions.matched := s.definitions.matched + 1 }
-          for k in d.knownDifferences do
-            s := { s with knownDifferences := increment s.knownDifferences (k ++ ": matched") }
   for e in outsideElements do
     s := { s with programElements := increment s.programElements e }
-  if failures.any (fun f => f.knownDifferences.isEmpty) then s := { s with programs.mismatched := s.programs.mismatched + 1 }
-  else if !failures.isEmpty then s := { s with programs.knownMismatched := s.programs.knownMismatched + 1 }
+  if !failures.isEmpty then s := { s with programs.mismatched := s.programs.mismatched + 1 }
   else if anyOutside then s := { s with programs.outside := s.programs.outside + 1 }
   else s := { s with programs.matched := s.programs.matched + 1 }
   return (s, failures)
 
 def printCounts (label : String) (c : Counts) : IO Unit :=
-  IO.println s!"{label}: matched={c.matched} mismatched={c.mismatched} knownMismatched={c.knownMismatched} outOfScope={c.outside} excluded(check error)={c.excluded}"
+  IO.println s!"{label}: matched={c.matched} mismatched={c.mismatched} outOfScope={c.outside} excluded(check error)={c.excluded}"
 
 def printSummary (group : String) (s : Summary) : IO Unit := do
   printCounts (group ++ " programs") s.programs
   printCounts (group ++ " functions") s.definitions
-  for (name, count) in s.knownDifferences do
-    IO.println s!"{group} known difference: {name}: functions={count}"
   for (name, count) in s.constructions do
     IO.println s!"{group} compared construction: {name}: positions={count}, units={(s.constructionUnits.find? (fun p => p.1 == name)).map Prod.snd |>.getD 0}"
   for (name, count) in s.elements do
@@ -438,7 +421,6 @@ def run (args : List String) : IO UInt32 := do
   if corpus.version != 7 then throw (IO.userError "unsupported exchange version")
   let atoms := (collectAtoms json).eraseDups
   let initial : Summary := {
-    knownDifferences := [("ガードの中の resume（TODO-190）: matched", 0), ("ガードの中の resume（TODO-190）: mismatched", 0)]
     constructions := extensionNames.map (fun n => (n, 0))
     constructionUnits := extensionNames.map (fun n => (n, 0)) }
   let mut golden := initial
@@ -456,7 +438,7 @@ def run (args : List String) : IO UInt32 := do
     IO.println s!"mismatch: {m.group}/{m.input}: {m.definition}: {m.path}"
   IO.FS.writeFile report ((Json.mkObj [("golden", toJson golden), ("random", toJson random),
     ("mismatches", toJson mismatches)]).pretty ++ "\n")
-  return if mismatches.all (fun f => !f.knownDifferences.isEmpty) then 0 else 1
+  return if mismatches.isEmpty then 0 else 1
 
 def main (args : List String) : IO UInt32 := do
   try run args catch e =>

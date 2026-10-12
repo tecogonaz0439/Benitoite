@@ -1,4 +1,4 @@
-//! 取り消しの観察できる結果と、待ち・解放・回収との組み合わせ（実装プラン R39）。
+//! 取り消しの観察できる結果と、待ち・解放・回収との組み合わせ（設計書 02-08「取り消し」）。
 use super::*;
 
 const PAUSE: &str = r#"
@@ -102,7 +102,7 @@ end function"#
 }
 
 // 関門: 取り消された SpawnWait の結果は積み重ねに書かず、子二つの終了を待つ。
-// 一つ目の子の終了直後の境界でも親が待っていることを確かめる（R39 の個別の指示）。
+// 一つ目の子の終了直後の境界でも親が待っていることを確かめる。
 #[test]
 fn cancelling_a_spawn_wait_keeps_the_parent_parked_until_both_children_finish() {
     let source = format!(
@@ -204,7 +204,7 @@ fn timeouts_wait_for_cancellation_and_remove_obsolete_timers() {
         let recorded = script.clone();
         vm.state.scheduling.test_boundary = Some(Box::new(move |state, _| {
             // 子が終わって親を選ぶ境界は、次の予算切れで Advance を読むより前にある。
-            // 最終的な finish_task による除去だけで通るテストにしない（R39 の受け入れテスト）。
+            // 最終的な finish_task による除去だけで通るテストにしない。
             if before_advance
                 && recorded.record().consumed == 1
                 && recorded.next_step() == Some(ScheduleStep::PickTask(0))
@@ -296,6 +296,87 @@ fn timeouts_wait_for_cancellation_and_remove_obsolete_timers() {
         &[1, 2, 3, 1, 0],
         false,
     );
+}
+
+fn check_timeout_after_child_runs(source: &str, waiting_parents: usize, millis: u64) {
+    let program = compile(source);
+    let mut vm = Vm::new(
+        &program,
+        VmConfig {
+            call_budget: 1000,
+            ..VmConfig::default()
+        },
+        HeapConfig {
+            stress: true,
+            ..HeapConfig::default()
+        },
+    );
+    let script = ScheduleHandle::new([], false);
+    vm.use_schedule(script.clone());
+    let clock = script.clone();
+    let mut advanced = false;
+    vm.state.scheduling.test_boundary = Some(Box::new(move |state, _| {
+        // 境界が時刻 0 を読んだ後、子を選ぶ前に時計だけを進める。
+        // 子は境界を通らずに終わるので、次の境界で初めて期限を検査する（TODO-197）。
+        if !advanced
+            && state.scheduling.deliveries.len() == waiting_parents
+            && !state.scheduler.ready.is_empty()
+        {
+            clock.allow_time(millis);
+            assert!(clock.advance_time().unwrap());
+            advanced = true;
+        }
+        Ok(())
+    }));
+    vm.start_main().unwrap();
+    assert_eq!(
+        vm.run(services().runtime(ExecMode::Direct)),
+        VmStep::Finished(MainOutcome::Ok)
+    );
+    assert_eq!(script.clock().monotonic_millis(), millis);
+    assert!(script.record().error.is_none());
+    assert_eq!(script.record().remaining, 0);
+    assert!(vm.state.scheduler.timers.is_empty());
+    assert!(vm.state.scheduling.timed_out.is_empty());
+    assert!(vm.state.scheduling.pending_timeouts.is_empty());
+    assert_eq!(vm.state.tasks.live_count(), 0);
+    assert!(vm.heap.take_fault().is_none());
+}
+
+// 関門: 既存の Advance は期限の検査前に読まれるため、境界なしで終わる子の
+// 期限超過を捕まえない。期限と同時の完了も None にする契約を VM の入口で守る。
+#[test]
+fn timeout_discards_a_child_result_completed_at_or_after_the_deadline() {
+    let source = r#"import Benitoite.Unofficial.IO.Clock
+function main() -> Result[Unit, String] uses Clock.Time, State
+ bind result <- Task.withTimeout(10, lambda() return 42 end lambda)
+ if result = Option.None then return Result.Ok(()) else return Result.Error("late result") end if
+end function"#;
+    for millis in [20, 10] {
+        check_timeout_after_child_runs(source, 1, millis);
+    }
+}
+
+// 関門: 外側の期限の満了が、内側の判定待ちを取り消す場合を既存の race は作れない。
+// 判定を待つ間に外側の満了で取り消された親へ結果を配送しない（二重の配送で処理系の
+// 不具合にならない）ことを守る。
+#[test]
+fn outer_timeout_cancels_a_parent_waiting_for_its_timeout_decision() {
+    let source = r#"import Benitoite.Unofficial.IO.Clock
+function main() -> Result[Unit, String] uses Clock.Time, State
+ bind changed <- Reference.new(false)
+ bind result <- Task.withTimeout(10, lambda()
+  bind _ <- Task.withTimeout(100, lambda() return 1 end lambda)
+  Reference.set(changed, true)
+  return 2
+ end lambda)
+ if result = Option.None and not Reference.get(changed) then
+  return Result.Ok(())
+ else
+  return Result.Error("cancelled timeout resumed")
+ end if
+end function"#;
+    check_timeout_after_child_runs(source, 2, 50);
 }
 
 // 関門: Await の停止位置は VM の PRIM。完了済みと待っている間の取り消しを同じ表で守る（設計書 01-11「取り消し」）。
@@ -730,7 +811,7 @@ end function"#;
     assert!(vm.state.scheduling.timed_out.is_empty());
 }
 
-// 関門: Lend の返却待ちは除き、Release の完了待ちは除かない（R39 の状態の表）。
+// 関門: Lend の返却待ちは除き、Release の完了待ちは除かない。
 // 作業用のスレッドの代わりに貸した資源をテストが保持し、同じ VM で取り消しを完了させる。
 #[test]
 fn cancellation_removes_lend_waiters_but_preserves_release_waits() {
@@ -896,7 +977,7 @@ fn global_stop_does_not_deliver_cancelling_spawn_results_before_the_parent_finis
                 watched.store(true, std::sync::atomic::Ordering::Relaxed);
             }
             // cleanup の再試行は配送の Err を吸収するため、実際に終わった子を持つ親で
-            // 配送の入口も検査する。子の状態や結果はテストで作らない（R39 の確認の観点）。
+            // 配送の入口も検査する。子の状態や結果はテストで作らない。
             if state.scheduling.stopping && checked_delivery.lock().unwrap().is_none() {
                 let parent = state.tasks.entries.iter().find_map(|entry| {
                     let task = ctx.host::<TaskObj>(ctx.load(entry.task.as_ref()?))?;
@@ -959,7 +1040,7 @@ fn global_stop_does_not_deliver_cancelling_spawn_results_before_the_parent_finis
 }
 
 // 関門: 既に辿っている区画と解放の失敗を全体の停止へ移し、子の終わりを待たない。
-// R25 の DropRel × Release に加え、Cancel × HandleEnd / Release と DropRel × HandleEnd を守る。
+// DropRel × Release に加え、Cancel × HandleEnd / Release と DropRel × HandleEnd を守る。
 #[test]
 fn global_stop_escalates_cancel_and_drop_waits_and_keeps_prior_release_failures() {
     use crate::runtime::sched::ExtOpId;
@@ -1015,9 +1096,7 @@ end function"#
                     task.state = TaskState::Waiting(WaitReason::Lazy)
                 })
                 .unwrap();
-                let at = ctx.host::<TaskObj>(value).unwrap().stack.segments[0].calls[0]
-                    .call_site
-                    .unwrap();
+                let at = ctx.host::<TaskObj>(value).unwrap().spawner.unwrap().1;
                 let mut ids = Vec::new();
                 for name in ["outer", "inner"] {
                     ids.push(state.resources.insert(
@@ -1188,7 +1267,7 @@ fn instruction_site(program: &CompiledProgram, opcode: Opcode) -> InstrRef {
 }
 
 // 関門: UnwindWork の区画は空の stack の上にある。全体を実行して、待つ HANDLE / USE と
-// 呼び出しの並びを診断で確かめる。自然なスクリプトで作れない待ちの組み合わせは R39 の指示で組み立てる。
+// 呼び出しの並びを診断で確かめる。自然なスクリプトで作れない待ちの組み合わせを組み立てる。
 #[test]
 fn deadlock_reports_unwinding_handle_and_group_frames_and_both_segment_stacks() {
     use crate::vm::frame::{HandleFrame, OtherFrame};
@@ -1567,5 +1646,67 @@ end function"#;
     assert_eq!(*events.lock().unwrap(), ["blocked"]);
     assert_eq!(vm.state.tasks.live_count(), 0);
     assert_eq!(vm.state.meter.bytes(), 0);
+    assert!(vm.heap.take_fault().is_none());
+}
+
+// 子が一度走って ready に戻った境界でだけ時計を進め、照合の途中で取り消す。
+// 全件を一つの組み込みで探す退行では時計を進めず Some が返る。完了の印で、
+// None を返すだけで子が最後まで走る退行も捕まえる（設計書 03-08「Regex」）。
+#[test]
+fn regex_find_all_times_out_between_matches() {
+    let source = r#"
+import Benitoite.Unofficial.Regex
+import Benitoite.Unofficial.IO.Clock
+function main() -> Result[Unit, String] uses Clock.Time, State
+  bind p <- try Regex.compile("a")
+  bind input <- String.repeat("a", 20000)
+  bind finished <- Reference.new(false)
+  bind result <- Task.withTimeout(10, lambda()
+    bind n <- List.length(Regex.findAll(p, input))
+    Reference.set(finished, true)
+    return n
+  end lambda)
+  if result <> Option.None then return Result.Error("regex did not time out") end if
+  return if not Reference.get(finished) then Result.Ok(()) else Result.Error("regex child finished") end if
+end function
+"#;
+    let program = compile(source);
+    let mut vm = Vm::new(
+        &program,
+        VmConfig {
+            call_budget: 1000,
+            ..VmConfig::default()
+        },
+        HeapConfig {
+            stress: true,
+            ..HeapConfig::default()
+        },
+    );
+    let script = ScheduleHandle::new([ScheduleStep::PickTask(1)], false);
+    vm.use_schedule(script.clone());
+    let clock = script.clone();
+    let mut advanced = false;
+    vm.state.scheduling.test_boundary = Some(Box::new(move |state, _| {
+        if !advanced
+            && picks(&clock.record()).contains(&1)
+            && state.scheduler.ready.iter().any(|task| task.index == 1)
+        {
+            clock.allow_time(10);
+            assert!(clock.advance_time().unwrap());
+            advanced = true;
+        }
+        Ok(())
+    }));
+    vm.start_main().unwrap();
+    assert_eq!(
+        vm.run(services().runtime(ExecMode::Direct)),
+        VmStep::Finished(MainOutcome::Ok)
+    );
+    let record = script.record();
+    assert!(record.error.is_none(), "{record:?}");
+    assert_eq!(record.remaining, 0);
+    assert_eq!(script.clock().monotonic_millis(), 10);
+    assert_eq!(record.consumed, 2);
+    assert_eq!(vm.state.tasks.live_count(), 0);
     assert!(vm.heap.take_fault().is_none());
 }

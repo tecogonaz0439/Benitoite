@@ -1,0 +1,8 @@
+runtime error[R0502]: the handler for `Ask.ask` cannot be used in a task
+   = note: call trace (innermost first):
+             Ask.ask
+   = note: in a task started by (innermost first):
+             TaskGroup.spawn at testdata/concurrency/inherited_operation_task_location.bnt:10:20
+             main
+   = note: functions left by tail calls are not shown
+   = help: a handler inherited by a task must end its clause with `resume`

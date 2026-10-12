@@ -495,7 +495,6 @@ inductive Scope where
   deriving ToJson, FromJson
 structure Definition where
   name : String
-  knownDifferences : List String := []
   scope : Scope
   deriving ToJson, FromJson
 structure OpEntry where

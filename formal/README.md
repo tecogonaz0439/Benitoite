@@ -66,7 +66,7 @@ lake env lean /tmp/axioms.lean
 
 脱糖の型の保存（性質 1）の段階 C1・C2 は 2026-10-10 に完了した。`Surface/Theorems.lean` の二つの定理（`desugar_typed`・`surface_effect_soundness`）に `sorry` はなく、使う公理は段階 B と同じである。段階 C4（`try`・`with`・`lazy`・ハンドラ・`resume`・利用者の操作）は 2026-10-10 に完了した。段階 C5（型クラス）も 2026-10-10 に完了した。段階 C6（`Decimal` のリテラル・リストの展開・文字列補間・レコード・トップレベルの定数）も 2026-10-10 に完了した。段階 C7（`match` のパターンの拡張: 選択肢・ガード・範囲のパターン・リストのパターン）も 2026-10-10 に完了した。段階 C7 は `Release` の `match` を選択肢とガードを持つ形に置き換え、性質 2・3 の証明を直した（定理の言明は変えていない）。旧来の選択肢もガードもない `match` は `Release` から消し、照合の構成を一つにした（段階 A の `Core` には残る）。表層のすべての照合は、この `match` に脱糖する。
 
-段階 E1（網羅性の判定の手順）は 2026-10-10 に完了した。`Release/Coverage.lean` が 02-05「本体の後の検査」の有用性の手順を定義し、補題 U（`useful_none_sound`）と、その系の網羅性（`checkMatch_exhaustive_sound`）・必ず照合するパターン（`irrefutable_sound`）・選ばれない選択肢（`checkMatch_unreachable_sound`）を証明する。`Release/Lemmas/CoverageRuntime.lean` は、選ばれない選択肢を実行の規則の照合に結ぶ系（`checkMatch_unreachable_runtime`・`checkMatch_unreachable_runtime_of_C_Match`）を証明する。手順は、同じ分岐の左の選択肢を分岐のガードの有無によらず前の行に数え、処理系と違う（07-04「01-12 との対応」。docs/todo の TODO-178）。段階 E2（型検査の出力の検査）も 2026-10-10 に完了した。`Surface/Check.lean` が表層の型付けを計算する検査の関数を定義し、`Surface/CheckSound.lean` が健全性の 11 件を、`Surface/CheckProgramSound.lean` がプログラム全体の検査の健全性（`checkProgram_sound`・`checkProgram_empty`）を証明する。段階 E の定理に `sorry` はなく、使う公理は段階 B と同じである。段階 B・C の定義と定理は変えていない。
+段階 E1（網羅性の判定の手順）は 2026-10-10 に完了した。`Release/Coverage.lean` が 02-05「本体の後の検査」の有用性の手順を定義し、補題 U（`useful_none_sound`）と、その系の網羅性（`checkMatch_exhaustive_sound`）・必ず照合するパターン（`irrefutable_sound`）・選ばれない選択肢（`checkMatch_unreachable_sound`）を証明する。`Release/Lemmas/CoverageRuntime.lean` は、選ばれない選択肢を実行の規則の照合に結ぶ系（`checkMatch_unreachable_runtime`・`checkMatch_unreachable_runtime_of_C_Match`）を証明する。手順は、同じ分岐の左の選択肢を分岐のガードの有無によらず前の行に数える（処理系も同じ）。段階 E2（型検査の出力の検査）も 2026-10-10 に完了した。`Surface/Check.lean` が表層の型付けを計算する検査の関数を定義し、`Surface/CheckSound.lean` が健全性の 11 件を、`Surface/CheckProgramSound.lean` がプログラム全体の検査の健全性（`checkProgram_sound`・`checkProgram_empty`）を証明する。段階 E の定理に `sorry` はなく、使う公理は段階 B と同じである。段階 B・C の定義と定理は変えていない。
 
 ## 構成
 
@@ -144,7 +144,7 @@ lake env lean /tmp/axioms.lean
 | `Benitoite/Surface/CheckSoundBasicExpr.lean` / `CheckSoundCalls.lean` / `CheckSoundCollections.lean` / `CheckSoundControl.lean` / `CheckSoundDicts.lean` / `CheckSoundSequence.lean` | 構文の場合ごとの健全性の証明 | |
 | `Benitoite/Surface/CheckSound.lean` | 検査の関数の健全性の 11 件 | |
 | `Benitoite/Surface/CheckTables.lean` / `CheckTablesSound.lean` / `CheckProgramSound.lean` | 有限の宣言の材料から検査の入力の表を作る関数と、その前提の証明、プログラム全体の検査と健全性（`CheckedUnder`） | |
-| `Benitoite/Surface/CheckExamples.lean` / `CheckToolsExamples.lean` / `CheckCounterexamples.lean` | 検査の関数と判定の例、docs/todo の TODO-178 の型検査の誤りを検査の関数が拒否する例 | |
+| `Benitoite/Surface/CheckExamples.lean` / `CheckToolsExamples.lean` / `CheckCounterexamples.lean` | 検査の関数と判定の例、処理系が 0.0.2 まで受け付けていた型検査の誤り（プレースホルダの引数の中の `return`・`try`・`resume`）を検査の関数が拒否する例 | |
 | `Benitoite/Exchange/Builtins.lean` / `CheckInput.lean` | 組み込みの関数とデータ型の宣言の交換用の表現と具体的な組み込みの関数の欄、型検査の出力の検査の入力（原子の集合を含む）の読み込み | |
 | `BuiltinCheck/Main.lean` | 組み込みの関数の表の検査の実行ファイル（`lean_exe builtinCheck`） | |
 | `CoverageDiff/Main.lean` | 網羅性の手順の差分テストの実行ファイル（`lean_exe coverageDiff`） | |

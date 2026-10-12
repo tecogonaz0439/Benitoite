@@ -1,5 +1,6 @@
 //! ヒープの内部の層の入口（設計書 02-09「メモリの管理」）。確保器、対象の頭、根の列挙、マーク・スイープの実装を子のモジュールに置く。
-//! 守る不変条件: 実装プランの 10-08「不変条件」の H1〜H11。子のモジュールは、関わる項目を先頭の `//!` に挙げる。
+//! 守る不変条件: `runtime::heap` の先頭の一覧の H1〜H12。
+//! 子のモジュールは、関わる項目を先頭の `//!` に挙げる。
 //!
 //! O1: 生きている対象の並びは初期化済みの対象だけを持ち、頭の列挙添字は並びの位置と一致する。
 //!     swap_remove で移した対象の添字も更新し、除いた頭には u32::MAX を書く。
@@ -18,9 +19,11 @@
 //! O7: 解放には、このヒープの生存中の対象から得た、確保時の provenance を持つポインタを渡す。
 //!     回収方式側がこの契約を守り、Rust に返した領域は読まない。
 //!     塊の解放済みの頭は塊を所有する間だけ残り、無効な添字により二度目の解放を拒む。
+//! O9: 生存対象の記録の charged_bytes の合計は current_bytes と等しい。
+//!     両者は allocate・free_object・recharge_host だけが、同じ関数の中で揃えて直す。
 
 // 内部の層は生のポインタで対象を読み書きする（設計書 02-09「メモリの管理」）。`unsafe` のブロックは操作を一つだけ含め、
-// `// SAFETY:` のコメントで不変条件の番号を引く（00-02「`unsafe` の書き方」）。
+// `// SAFETY:` のコメントで不変条件の番号を引く（AGENTS.md「実装の規約」の「`unsafe` の書き方」）。
 #![allow(unsafe_code)]
 
 mod alloc;
@@ -51,11 +54,11 @@ use crate::runtime::Stop;
 use alloc::{Allocation, Allocator};
 use layout::{CellPayload, ObjectLayout};
 
-// Heap::new が呼ぶ内部の初期化だけが増やす（設計書 02-09「メモリの管理」、実装プラン R01「内部の層が持つもの」）。
+// Heap::new が呼ぶ内部の初期化だけが増やす（設計書 02-09「メモリの管理」）。
 static NEXT_HEAP_NO: AtomicU32 = AtomicU32::new(1);
 
 /// ヒープの状態（ヒープの番号、確保器、回収の要求、測定の記録、方式ごとの状態）。区間の中で `&HeapCore` から
-/// 確保するので、変わる欄は内部の可変性（`Cell` など）で持つ。欄は R01 が決める。
+/// 確保するので、変わる欄は内部の可変性（`Cell` など）で持つ。
 pub(super) struct HeapCore {
     heap_no: HeapNo,
     mode: mode::State,
@@ -64,6 +67,7 @@ pub(super) struct HeapCore {
     config: HeapConfig,
     allocator: RefCell<Allocator>,
     objects: RefCell<Vec<ObjectRecord>>,
+    next_serial: Cell<u64>,
     #[cfg(all(feature = "heap-per-object", not(feature = "heap-verify")))]
     live_allocations: RefCell<HashSet<usize>>,
     stats: RefCell<HeapStats>,
@@ -80,6 +84,8 @@ struct ObjectRecord {
     charged_bytes: u64,
     #[cfg(feature = "heap-verify")]
     layout: ObjectLayout,
+    #[cfg(feature = "heap-verify")]
+    serial: u64,
 }
 
 #[cfg(feature = "heap-verify")]
@@ -90,7 +96,8 @@ struct Life {
 }
 
 /// 対象の頭。種類、長さ、印（マーク・スイープ）、
-/// `heap-verify` の構成では確保の世代を持つ。欄は R01 が決める。
+/// 既定の構成では確保の通し番号を、`heap-verify` の構成では確保の世代を持つ。
+/// `heap-verify` の構成の通し番号は、生存対象の記録に置く。
 #[repr(C, align(16))]
 pub(super) struct ObjHeader {
     kind: ObjKind,
@@ -98,6 +105,8 @@ pub(super) struct ObjHeader {
     tag: Cell<u32>,
     index: Cell<u32>,
     word: Cell<u64>,
+    #[cfg(not(feature = "heap-verify"))]
+    serial: Cell<u64>,
     #[cfg(feature = "heap-verify")]
     generation: Cell<u32>,
 }
@@ -106,7 +115,7 @@ pub(super) struct ObjHeader {
 pub(super) const HEADER_BYTES: usize = 32;
 const _: () = assert!(std::mem::size_of::<ObjHeader>() == HEADER_BYTES);
 
-/// `Tracer` が `Slot` を知らせる相手（印付け、検証器の数え上げ）。メソッドは R01・R02 が決める。
+/// `Tracer` が `Slot` を知らせる相手（印付け、検証器の数え上げ）。
 pub(super) trait TraceSink {
     fn core(&self) -> &HeapCore;
     fn visit(&mut self, s: &Slot);
@@ -124,6 +133,7 @@ impl HeapCore {
             notifications: probe::Events::default(),
             allocator: RefCell::new(Allocator::new()),
             objects: RefCell::new(Vec::new()),
+            next_serial: Cell::new(1),
             #[cfg(all(feature = "heap-per-object", not(feature = "heap-verify")))]
             live_allocations: RefCell::new(HashSet::new()),
             stats: RefCell::new(HeapStats::default()),
@@ -136,6 +146,7 @@ impl HeapCore {
         }
     }
 
+    #[cfg(test)]
     pub(super) fn heap_no(&self) -> HeapNo {
         self.heap_no
     }
@@ -167,10 +178,16 @@ impl HeapCore {
         self.objects
             .borrow()
             .iter()
-            .filter_map(|record| {
-                u64::try_from(record.allocation.ptr.addr().get())
-                    .ok()
-                    .map(ObjId)
+            .map(|record| {
+                #[cfg(feature = "heap-verify")]
+                let serial = record.serial;
+                #[cfg(not(feature = "heap-verify"))]
+                let serial = {
+                    // SAFETY: O1・O4。並びにある初期化済みの頭を読み、共有借用中には解放しない。
+                    let head = unsafe { record.allocation.ptr.cast::<ObjHeader>().as_ref() };
+                    head.serial.get()
+                };
+                ObjId(serial)
             })
             .collect()
     }
@@ -211,17 +228,41 @@ impl HeapCore {
     pub(super) fn kind(&self, value: Value<'_>) -> Option<ObjKind> {
         self.header(value).map(|head| head.kind)
     }
+    /// 生きている対象（最後の回収で根から辿れた対象か、その後に作った対象）にだけ呼ぶ。
+    /// そうでない対象に呼ぶと、既定の構成では解放した領域を読む（H4・H5）。
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub(super) fn object_id(&self, value: Value<'_>) -> Option<ObjId> {
-        let object = self.checked_object(value)?;
-        u64::try_from(object.ptr().addr().get()).ok().map(ObjId)
+        #[cfg(not(feature = "heap-verify"))]
+        {
+            self.header(value).map(|head| ObjId(head.serial.get()))
+        }
+        #[cfg(feature = "heap-verify")]
+        {
+            // O5: 生存と世代を頭より先に確かめ、O1 の添字からこの対象の記録を引く。
+            let object = self.checked_object(value)?;
+            // SAFETY: H1・H4・H5・O2・O4・O5。生存と世代を確認済みの頭を共有借用中に読む。
+            let head = unsafe { object.ptr().as_ref() };
+            let objects = self.objects.borrow();
+            let identity = usize::try_from(head.index.get())
+                .ok()
+                .and_then(|index| objects.get(index))
+                .filter(|record| record.allocation.ptr.cast::<ObjHeader>() == object.ptr())
+                .map(|record| ObjId(record.serial));
+            if identity.is_none() {
+                self.record_fault(
+                    HeapFaultKind::CorruptHeader,
+                    "object header differs from allocation metadata",
+                );
+            }
+            identity
+        }
     }
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub(super) fn same_object(&self, a: Value<'_>, b: Value<'_>) -> bool {
-        match (self.object_id(a), self.object_id(b)) {
-            (Some(a), Some(b)) => a == b,
+        match (self.checked_object(a), self.checked_object(b)) {
+            (Some(a), Some(b)) => a.ptr() == b.ptr(),
             (Some(_), None) | (None, Some(_)) | (None, None) => false,
         }
     }
@@ -240,6 +281,7 @@ impl HeapCore {
     pub(super) fn len(&self, value: Value<'_>) -> Option<u32> {
         self.header(value).map(|head| head.len)
     }
+    #[cfg(test)]
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub(super) fn tag(&self, value: Value<'_>) -> Option<u32> {
@@ -286,6 +328,8 @@ impl HeapCore {
             .ok()
             .filter(|index| *index != u32::MAX)
             .ok_or_else(size_overflow)?;
+        let serial = self.next_serial.get();
+        let next_serial = serial.checked_add(1).ok_or_else(size_overflow)?;
         let allocation = self.allocator.borrow_mut().allocate(layout.layout)?;
         let ptr = allocation.ptr.cast::<ObjHeader>();
         let header = ObjHeader {
@@ -294,6 +338,8 @@ impl HeapCore {
             tag: Cell::new(layout.tag),
             index: Cell::new(index),
             word: Cell::new(0),
+            #[cfg(not(feature = "heap-verify"))]
+            serial: Cell::new(serial),
             #[cfg(feature = "heap-verify")]
             generation: Cell::new(generation),
         };
@@ -308,7 +354,10 @@ impl HeapCore {
             charged_bytes: charged,
             #[cfg(feature = "heap-verify")]
             layout,
+            #[cfg(feature = "heap-verify")]
+            serial,
         });
+        self.next_serial.set(next_serial);
         #[cfg(all(feature = "heap-per-object", not(feature = "heap-verify")))]
         self.live_allocations.borrow_mut().insert(addr);
         #[cfg(feature = "heap-verify")]
@@ -464,10 +513,13 @@ impl HeapCore {
         epoch: Epoch<'e>,
         data: T,
     ) -> Result<Value<'e>, Stop> {
-        // T が所有する Vec などの別領域の容量は数えていない。凍結した OpaqueData に容量を返す口がないため、
-        // 現時点では Box 内の size_of::<T>() だけを加える（10-08「設定と測定の記録」、docs/todo の TODO-042）。
+        // 箱の中身と、この対象だけが所有する別領域を一度だけ数える
+        // （設計書 02-09「メモリの管理」）。
+        let external = std::mem::size_of::<T>()
+            .checked_add(data.heap_bytes())
+            .ok_or_else(size_overflow)?;
         let layout = ObjectLayout::new(ObjKind::Opaque, 1, 0)?;
-        self.allocate(epoch, layout, std::mem::size_of::<T>(), |payload| {
+        self.allocate(epoch, layout, external, |payload| {
             let data: Box<dyn OpaqueData> = Box::new(data);
             // SAFETY: O2・O3・O4。Box 用の未公開の領域へ所有権を移し、free_object だけが捨てる。
             unsafe { payload.cast::<Box<dyn OpaqueData>>().as_ptr().write(data) };
@@ -478,10 +530,13 @@ impl HeapCore {
         epoch: Epoch<'e>,
         data: T,
     ) -> Result<Value<'e>, Stop> {
-        // T が所有する Vec などの別領域の容量は数えていない。凍結した HostData に容量を返す口がないため、
-        // 現時点では Box 内の size_of::<T>() だけを加える（10-08「設定と測定の記録」、docs/todo の TODO-042）。
+        // 箱の中身と、この対象だけが所有する別領域の確保時の容量を数える。後の増減は with_host_mut が数え直す
+        // （設計書 02-09「メモリの管理」）。
+        let external = std::mem::size_of::<T>()
+            .checked_add(data.heap_bytes())
+            .ok_or_else(size_overflow)?;
         let layout = ObjectLayout::new(ObjKind::Host, 1, 0)?;
-        self.allocate(epoch, layout, std::mem::size_of::<T>(), |payload| {
+        self.allocate(epoch, layout, external, |payload| {
             let data: Box<dyn HostData> = Box::new(data);
             // SAFETY: O2・O3・O4。Box 用の未公開の領域へ所有権を移し、free_object だけが捨てる。
             unsafe { payload.cast::<Box<dyn HostData>>().as_ptr().write(data) };
@@ -515,7 +570,16 @@ impl HeapCore {
         let len = usize::try_from(len).ok()?;
         // SAFETY: H1・O2・O3・O4。文字列の領域は同じ長さで初期化され、共有借用中には変えず解放しない。
         let bytes = unsafe { std::slice::from_raw_parts(ptr.as_ptr(), len) };
-        std::str::from_utf8(bytes).ok()
+        #[cfg(feature = "heap-verify")]
+        if std::str::from_utf8(bytes).is_err() {
+            self.record_fault(
+                HeapFaultKind::CorruptHeader,
+                "string object is not valid UTF-8",
+            );
+            return None;
+        }
+        // SAFETY: H1・H12・O2・O3・O4。作成時から正しい UTF-8 の初期化済みの領域で、共有借用中には変えず解放しない。
+        Some(unsafe { std::str::from_utf8_unchecked(bytes) })
     }
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
@@ -895,11 +959,11 @@ impl HeapCore {
         self.infallible_allocation(self.alloc_host(epoch, data))
     }
     pub(super) fn new_opaque<'e, T: OpaqueData>(&'e self, epoch: Epoch<'e>, data: T) -> Value<'e> {
-        // 結果型に Stop がない確保は、セルと Host と同じく不具合を安全点で報告する（10-08「ヒープと区間」）。
+        // 結果型に Stop がない確保は、セルと Host と同じく不具合を安全点で報告する（設計書 02-09「メモリの管理」）。
         self.infallible_allocation(self.alloc_opaque(epoch, data))
     }
     pub(super) fn new_decimal<'e>(&'e self, epoch: Epoch<'e>, d: Decimal) -> Value<'e> {
-        // Stop を返さない公開の確保も、失敗は安全点で報告する（10-08「ヒープと区間」）。
+        // Stop を返さない公開の確保も、失敗は安全点で報告する（設計書 02-09「メモリの管理」）。
         self.infallible_allocation(self.alloc_decimal(epoch, d))
     }
     fn infallible_allocation<'e>(&self, value: Result<Value<'e>, Stop>) -> Value<'e> {
@@ -947,9 +1011,66 @@ impl HeapCore {
         let (ptr, _) = self.payload(value, ObjKind::Host)?;
         // SAFETY: H1・H7・O2・O4・O8。初期化済みの Box は生存し、NoGcCtx の可変借用が別名の借用を防ぐ。
         let data = unsafe { &mut *ptr.cast::<Box<dyn HostData>>().as_ptr() };
+        let before = data.heap_bytes();
         let any: &mut dyn std::any::Any = data.as_mut();
         // Host の書き込みの障壁は、この可変借用を渡す一か所に置く（H7）。
-        Some(f(any.downcast_mut()?))
+        let result = f(any.downcast_mut()?);
+        let after = data.heap_bytes();
+        // 既定の 0 を返す TaskObj などは、切り替えのたびに記録の表を引かない。
+        if before != after {
+            self.recharge_host(value, before, after);
+        }
+        Some(result)
+    }
+
+    // Host の容量の増減を記録と合計に反映し、両者の一致（O9）を保つ。
+    fn recharge_host(&self, value: Value<'_>, before: usize, after: usize) {
+        let updated = (|| {
+            let head = self.header(value)?;
+            let index = usize::try_from(head.index.get()).ok()?;
+            let ptr = value.as_obj()?.ptr();
+            let growing = after > before;
+            let diff = if growing {
+                after.checked_sub(before)?
+            } else {
+                before.checked_sub(after)?
+            };
+            let diff = u64::try_from(diff).ok()?;
+            let mut objects = self.objects.borrow_mut();
+            let record = objects
+                .get_mut(index)
+                .filter(|record| record.allocation.ptr.cast::<ObjHeader>() == ptr)?;
+            if growing {
+                let charged = record.charged_bytes.checked_add(diff)?;
+                let current = self.current_bytes.get().checked_add(diff)?;
+                let mut stats = self.stats.borrow_mut();
+                let allocated = stats.allocated_bytes.checked_add(diff)?;
+                // すべての計算が成功した後で記録と合計を同時に直し、解放の引き算と揃える。
+                record.charged_bytes = charged;
+                self.current_bytes.set(current);
+                stats.allocated_bytes = allocated;
+                stats.peak_heap_bytes = stats.peak_heap_bytes.max(current);
+                drop(stats);
+                drop(objects);
+                // allocate と同じく、借用を外してから方式へ確保を通知する。
+                self.mode.allocated(self, value, diff);
+            } else {
+                let charged = record.charged_bytes.checked_sub(diff)?;
+                let current = self.current_bytes.get().checked_sub(diff)?;
+                record.charged_bytes = charged;
+                self.current_bytes.set(current);
+                // A は前回の回収からの累計なので、容量が減っても引かない
+                // （設計書 02-09「メモリの管理」）。
+            }
+            Some(())
+        })();
+        if updated.is_none() {
+            // 結果型は変えず、infallible_allocation と同じく安全点で不具合を報告する。
+            self.record_fault(
+                HeapFaultKind::CorruptHeader,
+                "cannot recharge host owned capacity: invalid record or byte count overflow",
+            );
+        }
     }
 
     pub(super) fn reuse_ctor<'e>(
@@ -959,7 +1080,7 @@ impl HeapCore {
         tag: u32,
         args: &[Value<'e>],
     ) -> Result<Option<Value<'e>>, Stop> {
-        // 種類と長さの契約は、回収方式と再利用の設定によらない（10-08「その場での再利用」）。
+        // 種類と長さの契約は、回収方式と再利用の設定によらない（設計書 02-07「その場での再利用」）。
         if !matches!(
             self.kind(candidate),
             Some(ObjKind::Fields(FieldsKind::Ctor))
@@ -998,8 +1119,8 @@ impl HeapCore {
 
 #[cfg(all(test, feature = "heap-verify"))]
 mod region_verifier_tests {
-    // 内部層の入口で、頭を壊す操作だけを直接行う（R02 の個別の指示、設計書 07-03「テストの設計の原則」）。
-    // 作成時の関門: R01 は検証器を持たず、公開層の正常な操作では壊れた頭を作れない。
+    // 内部層の入口で、頭を壊す操作だけを直接行う（設計書 07-03「テストの設計の原則」）。
+    // 作成時の関門: 公開層の正常な操作では壊れた頭を作れない。
     // 中身を読む前に頭の範囲の食い違いを拒む独立した契約を守る。
     #![allow(
         clippy::unwrap_used,

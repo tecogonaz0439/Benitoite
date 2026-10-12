@@ -43,6 +43,8 @@ pub enum IdleWake {
     Interrupted,
     /// テスト用の実装で、筋書きが尽きた（テストの誤り。VM は `Stop::Internal` にする）
     ScriptExhausted,
+    /// 待ちの失敗が続いた。待ち続けず処理系の不具合として止める（設計書 02-09「IO 実行器」）。
+    Failed(String),
 }
 
 /// 作業用のスレッドの仕事の実行と、完了とイベントの待ち。
@@ -56,7 +58,7 @@ pub trait WorkerExec: Debug {
     /// この部品が使ってほしい起こし口。`run_program` は、`RunEnv::parts` で部品を受け取ったとき、
     /// これが `Some` ならその `Wakeup` を出力と IO 実行器に渡し、`None` なら `mio` を使わない形を作る。
     /// テスト用の部品が、書き出し用のスレッドの知らせを待てる形を渡すために使う。
-    /// R27 が加えた既定の本体付きの関数。本物の部品と既存の部品は既定のまま。
+    /// 起こし口を渡す必要のない部品は既定の本体（`None`）を使う。
     fn wakeup(&self) -> Option<Wakeup> {
         None
     }
@@ -68,14 +70,14 @@ pub struct RuntimeParts {
     pub picker: Box<dyn TaskPicker>,
     pub clock: Box<dyn Clock>,
     pub workers: Box<dyn WorkerExec>,
-    /// テスト用のハンドラ表のネットワークの失敗（実装プラン 10-16）。実際の実装の組（`RuntimeParts::real`）は空である
+    /// テスト用のハンドラ表のネットワークの失敗。実際の実装の組（`RuntimeParts::real`）は空である
     pub network_faults: NetworkFaults,
 }
 
 use crate::runtime::io::event::Wakeup;
 
 impl RuntimeParts {
-    /// イベントループを持つ実際の部品を作る（実装プラン 10-16）。
+    /// イベントループを持つ実際の部品を作る。
     pub fn real_with_poll(network_faults: NetworkFaults) -> std::io::Result<RuntimeParts> {
         let mut parts = Self::real(crate::runtime::io::event::wakeup_with_poll()?);
         parts.network_faults = network_faults;
@@ -190,7 +192,7 @@ impl ThreadWorkers {
     fn timeout(&self, deadline: Option<u64>) -> Option<Duration> {
         deadline.map(|deadline| {
             let remaining = Duration::from_millis(deadline).saturating_sub(self.started.elapsed());
-            // Poll の待ち時間は切り上げ、期限の直前に何度も起きることを防ぐ（実装プラン R40）。
+            // Poll の待ち時間は切り上げ、期限の直前に何度も起きることを防ぐ。
             let millis = u64::try_from(remaining.as_millis()).unwrap_or(u64::MAX);
             Duration::from_millis(millis.saturating_add(u64::from(
                 !remaining.subsec_nanos().is_multiple_of(1_000_000),
@@ -225,8 +227,8 @@ impl WorkerExec for ThreadWorkers {
                 }
                 Err(error) if queue.threads == 0 => {
                     if let Some(job) = queue.jobs.pop_front() {
-                        // 凍結した submit の戻り値に誤りを載せられないので、完了で不具合を
-                        // 報告し、貸したものも返す（実装プラン R40）。
+                        // submit の戻り値に誤りを載せられないので、完了で不具合を
+                        // 報告し、貸したものも返す。
                         drop(self.sender.send(Completion {
                             op: job.op,
                             outcome: Outcome::Panicked(PanicReport {
@@ -239,7 +241,7 @@ impl WorkerExec for ThreadWorkers {
                         self.wakeup.wake();
                     }
                 }
-                // 既存のスレッドが空いたときに実行する。列から仕事を消さない（実装プラン R40）。
+                // 既存のスレッドが空いたときに実行する。列から仕事を消さない。
                 Err(_) => {}
             }
         }
@@ -265,8 +267,7 @@ impl WorkerExec for ThreadWorkers {
             events.wait(timeout)
         } else {
             // Poll のないテスト用の実行器も、本物の仕事は channel から受け取る。
-            // 出力の起こしは何もしないので、期限がないときは定期的に VM に戻って確認する
-            // （実装プラン R40「RuntimeParts::real」）。
+            // 出力の起こしは何もしないので、期限がないときは定期的に VM に戻って確認する。
             let interval = Duration::from_millis(1);
             let timeout = timeout.unwrap_or(interval);
             self.pending = self.receiver.recv_timeout(timeout).ok();
@@ -322,7 +323,7 @@ impl Drop for ThreadWorkers {
 #[cfg(test)]
 mod tests;
 
-/// テスト用のハンドラ表が返すネットワークの失敗（実装プラン 10-16、設計書 07-03「HTTP のテスト（初回リリース版）」）。
+/// テスト用のハンドラ表が返すネットワークの失敗（設計書 07-03「HTTP のテスト（初回リリース版）」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum NetworkFault {
     HostNotFound,
@@ -334,7 +335,8 @@ pub enum NetworkFault {
 /// テスト用のハンドラ表のネットワークの失敗の表。空なら、本番のハンドラ表と同じく実際に行う。
 #[derive(Clone, Debug, Default)]
 pub struct NetworkFaults {
-    /// 名前（`Http.send`・`Http.get` の URL の host と、`Http.listen` の `host`）ごとに返す失敗
+    /// 名前（`Http.send`・`Http.get` の URL の host と、`Http.listen` の `host`）ごとに返す失敗。
+    /// URL の IPv6 の名前は、角括弧を除いた形（`::1`）で引く。
     pub by_host: Vec<(String, NetworkFault)>,
 }
 

@@ -1,0 +1,15 @@
+// spec: 01-06 必ず抜ける文
+effect Ask
+ function ask() -> Integer
+end effect
+function f() -> Integer
+ return handle
+  return 1
+  bind y <- 5
+  1
+ with
+ case ask() -> resume(1)
+ end handle
+end function
+function main() -> Unit
+end function

@@ -40,7 +40,7 @@ pub struct Module {
 }
 
 /// `import A.B.C [as X]`。取り込んだモジュールに付けた名前の束縛を宣言し、
-/// モジュールの名前を使う箇所でもある（10-04「名前解決の表」）。
+/// モジュールの名前を使う箇所でもある（設計書 02-04「束縛と表」）。
 #[derive(Clone, PartialEq, Debug)]
 pub struct ImportDecl {
     pub id: NodeId,

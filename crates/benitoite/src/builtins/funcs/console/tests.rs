@@ -1,15 +1,53 @@
-//! 標準入力を借り、完了で UTF-8 の行と残りを作る契約（実装プラン R29）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 標準入力を借り、完了で UTF-8 の行と残りを作る契約（設計書 03-07「Console」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used)]
 use super::super::runtime_test_support::*;
 use super::*;
 use crate::builtins::iface::CallCtx;
 use crate::builtins::table::tags;
+use crate::runtime::ResourceError;
 use crate::runtime::heap::{Heap, HeapConfig};
 use crate::runtime::io::resources::ResourceTable;
 use crate::runtime::io::services::IoView;
 use crate::runtime::sched::testing::ScheduleHandle;
 use crate::vm::ExecMode;
+
+// 受け取った上限を判定に渡すことを確かめる。
+#[test]
+fn remaining_input_checks_byte_limit_before_building_value() {
+    let script = ScheduleHandle::new([], false);
+    let (mut rt, _) = runtime(std::path::Path::new("/"), ExecMode::Direct, &script);
+    let mut resources = ResourceTable::default();
+    let mut services = IoView {
+        rt: &mut rt,
+        resources: &mut resources,
+    };
+    Heap::new(HeapConfig::default()).epoch(|ctx| {
+        for size in [4, 5] {
+            let result = remaining_input(
+                &CallCtx::new(ctx, Some(&mut services), None, None)
+                    .io_ctx()
+                    .unwrap(),
+                Ok(Ok(vec![b'a'; size])),
+                "Benitoite.IO.Console.readAllBytes",
+                4,
+            );
+            if size == 4 {
+                assert_eq!(result.unwrap().unwrap(), b"aaaa");
+            } else {
+                assert!(matches!(
+                    result,
+                    Err(Stop::Resource(ResourceError::InputTooLarge {
+                        function: "Benitoite.IO.Console.readAllBytes",
+                        unit: SizeUnit::Bytes,
+                        limit: 4,
+                    }))
+                ));
+            }
+        }
+    });
+}
+
 // 関門: 一行の区切り、終端、無効な UTF-8 と、二操作が読み手の位置を共有する契約。
 // 既存の Console テストは書き込みだけであり、仕事から完了までを通す。
 #[test]
@@ -194,7 +232,7 @@ impl std::io::BufRead for FailedInput {
 }
 // 関門: OS の分類を読み取りの仕事から Result.Error まで通して確かめる。
 // 生の OS の失敗だけを与え、期待する言語の種類や値はテストダブルで作らない。
-// L10 の二操作も同じ表を通し、共通のエラー変換のテストを重ねない。
+// 二つの読み取り操作も同じ表を通し、共通のエラー変換のテストを重ねない。
 #[test]
 fn input_failures_keep_the_os_message_and_classify_error_kinds() {
     use std::io::ErrorKind;
@@ -249,7 +287,7 @@ fn input_failures_keep_the_os_message_and_classify_error_kinds() {
 
 // 関門: 新しい二操作の行の区切り、残りの位置、UTF-8 の拒否とバイト列の保持を
 // 仕事から完了まで通す。既存のテストは readAll の文字列だけであり、新しい戻り値を扱わない。
-// 作業 L10 は本体ごとの単体テストを明示しているので、この境界で直接呼ぶ。
+// 組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
 #[test]
 fn read_all_lines_and_bytes_preserve_input_contracts() {
     let script = ScheduleHandle::new([], false);
@@ -391,10 +429,10 @@ fn read_all_lines_checks_element_limit_before_building_lines() {
         );
         assert!(matches!(
             result,
-            Err(Stop::Resource(ResourceError::ValueTooLarge {
+            Err(Stop::Resource(ResourceError::InputTooLarge {
                 function: "Benitoite.IO.Console.readAllLines",
                 unit: SizeUnit::Elements,
-                ..
+                limit: MAX_LIST_LEN,
             }))
         ));
     });

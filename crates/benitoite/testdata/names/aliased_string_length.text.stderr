@@ -1,0 +1,9 @@
+error[E0303]: `S` has no member `length`
+  --> testdata/names/aliased_string_length.bnt:5:15
+   |
+ 5 |   bind _ <- S.length("abc")
+   |               ^^^^^^ not found in `S`
+   |
+   = help: strings have no unit-less length; use `S.byteLength` (bytes) or `S.characterCount` (characters)
+
+error: could not check testdata/names/aliased_string_length.bnt due to 1 previous error

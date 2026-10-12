@@ -1,5 +1,7 @@
 //! 実行ごとの状態のうち VM が使うもの（設計書 02-08）。
 
+use std::rc::Rc;
+
 use crate::runtime::Stop;
 use crate::runtime::heap::{RootStack, Slot, Trace, Tracer};
 
@@ -12,7 +14,7 @@ use super::budget::{Budget, StackMeter};
 use super::frame::{CallFrame, Segment, TaskStack};
 use super::{FrameRecord, InstrRef, StopInfo, StopReason, VmConfig, VmStep};
 
-/// 実行ごとの状態のうち VM が使うもの。欄は R09（第 1 段）と R20〜R28（第 2 段）が決める。
+/// 実行ごとの状態のうち VM が使うもの（設計書 02-08「実行ごとの状態のうち VM が使うもの」）。
 pub struct RunState {
     pub(crate) stack: TaskStack,
     pub(crate) roots: RootStack,
@@ -26,20 +28,20 @@ pub struct RunState {
     pub(crate) current_task: TaskId,
     pub(crate) inherited: Vec<Slot>,
     pub(crate) returning: Option<ReturnWork>,
-    // R25 が TaskState::Unwinding へ移す。回収と待ちの間も根に残す（実装プラン R21）。
+    // タスクの切り替えで TaskState::Unwinding へ移す。回収と待ちの間も根に残す。
     pub(crate) unwinding: Option<UnwindWork>,
-    // 第 2 段だけが使う大きい状態を窓・予算・計数から離す（設計書 07-02「性能の関門」）。
+    // ハンドラ・タスクの大きい状態を窓・予算・計数から離す（設計書 07-02「性能の関門」）。
     pub(crate) scheduler: Box<Scheduler>,
     pub(crate) resources: Box<ResourceTable>,
     // 命令のない UPDATE の呼び直しでも、設定した初期予算へ戻す（設計書 02-08「タスクの切り替え」）。
     pub(crate) call_budget: u32,
     pub(crate) tasks: Box<super::task::TaskTable>,
     pub(crate) scheduling: Box<Scheduling>,
-    // テストの実行だけが使う。`start_test` を呼ばない実行（`run`）では空のまま（実装プラン 10-18）。
+    // テストの実行だけが使う。`start_test` を呼ばない実行（`run`）では空のまま（設計書 02-11「テストの実行」）。
     pub(crate) assert: Option<std::sync::Arc<crate::runtime::assert::AssertTable>>,
-    // 最初のタスクの戻り値の型。`None` なら `CompiledProgram::main_kind` で読む（10-18「テストの関数の実行」）。
+    // 最初のタスクの戻り値の型。`None` なら `CompiledProgram::main_kind` で読む（設計書 02-11「テストの実行」）。
     pub(crate) main_kind: Option<crate::bytecode::program::MainKind>,
-    // 確認の失敗の記録。失敗を見つけた時点で、枠を降ろす前に作る（10-18「`Assert.Check` の処理」）。
+    // 確認の失敗の記録。失敗を見つけた時点で、枠を降ろす前に作る（設計書 02-11「テストの実行」）。
     pub(crate) check_failure: Option<Box<crate::runtime::assert::CheckFailure>>,
 }
 
@@ -129,29 +131,33 @@ impl RunState {
             .ok_or_else(|| internal("no active call frame"))
     }
 
+    /// 起動時に履歴全体を写さず呼び出しの枠だけを記録する（設計書 02-08「実行時エラーの情報の記録」）。
+    pub(crate) fn frame_records(&self) -> Vec<FrameRecord> {
+        self.stack
+            .segments
+            .iter()
+            .rev()
+            .flat_map(|s| {
+                s.calls.iter().rev().map(|f| FrameRecord {
+                    proto: f.proto,
+                    call_site: f.call_site,
+                })
+            })
+            .collect()
+    }
+
     pub(crate) fn stop_info(&self, stop: Stop, at: Option<InstrRef>) -> StopInfo {
         StopInfo {
             stop,
             // 枠を降ろす途中の停止は、既に降ろした呼び出しではなく戻りを始めた命令に付ける
-            // （実装プラン R21「止まったときの記録」、設計書 02-08「実行時エラーの情報の記録」）。
+            // （設計書 02-08「実行時エラーの情報の記録」）。
             at: self.returning.as_ref().map_or(at, |work| Some(work.at)),
-            frames: self
-                .stack
-                .segments
-                .iter()
-                .rev()
-                .flat_map(|s| {
-                    s.calls.iter().rev().map(|f| FrameRecord {
-                        proto: f.proto,
-                        call_site: f.call_site,
-                    })
-                })
-                .collect(),
+            frames: self.frame_records(),
             spawns: self
                 .scheduling
                 .spawns
                 .get(&self.current_task)
-                .map_or_else(Vec::new, |s| s.history.clone()),
+                .map_or_else(Vec::new, SpawnHistory::records),
             deadlock: Vec::new(),
         }
     }
@@ -184,10 +190,17 @@ pub(crate) struct Scheduling {
     pub(crate) child_positions: std::collections::BTreeMap<TaskId, usize>,
     pub(crate) deliveries: std::collections::BTreeMap<TaskId, u16>,
     pub(crate) timed_out: std::collections::BTreeSet<TaskId>,
+    // WithTimeout の子が全員終わり、timed_out に属さず、取り消しも全体停止もない
+    // 親だけを保持する。親は deliveries と Spawned の待ちに残り、タイマーも保つ。
+    // 子の終了後、最初に時刻を読む boundary で期限を先に処理してから配送し、
+    // 次の boundary の最後には必ず空になる。子の終了から時刻を読むまでの回収と境界の処理の分だけ、判定が遅れうる。
+    // 取り消し・結果の配送は remove_timer、親の終了・全体停止もそれぞれ番号を外す
+    // （TODO-197、設計書 02-08「タスクの起動と待ち方」）。
+    pub(crate) pending_timeouts: std::collections::BTreeSet<TaskId>,
     pub(crate) spawns: std::collections::BTreeMap<TaskId, SpawnHistory>,
     pub(crate) stopping: bool,
     pub(crate) active: bool,
-    // ブロックする偽の資源の完了を、待ちの境界で記録する補助（実装プラン R25「受け入れテスト」）。
+    // ブロックする偽の資源の完了を、待ちの境界で記録する補助。
     #[cfg(test)]
     pub(crate) test_boundary: Option<Box<TestBoundary>>,
     #[cfg(test)]
@@ -195,13 +208,44 @@ pub(crate) struct Scheduling {
     pub(crate) failures: Vec<crate::runtime::ReleaseFailure>,
     // 停止の理由を置き換えず、後始末を進められなかった処理系の不具合を残す。
     pub(crate) stop_error: Option<Stop>,
-    // IO に触る前の共通境界で取り消しを反映する（実装プラン R26）。
+    // IO に触る前の共通境界で取り消しを反映する。
     pub(crate) cancelled_io: Vec<TaskId>,
     pub(crate) expire_io: bool,
 }
+/// 親の履歴を共有し、起動時の複製を一定量に抑える（設計書 02-08「実行時エラーの情報の記録」）。
 pub(crate) struct SpawnHistory {
     pub(crate) serial: u64,
-    pub(crate) history: Vec<super::SpawnRecord>,
+    pub(crate) chain: Option<Rc<SpawnNode>>,
+}
+/// 起動の情報は言語の値を含まず、親が終了した後も共有して保持する（設計書 02-08「実行時エラーの情報の記録」）。
+pub(crate) struct SpawnNode {
+    pub(crate) record: super::SpawnRecord,
+    pub(crate) parent: Option<Rc<SpawnNode>>,
+}
+impl SpawnHistory {
+    /// 報告を作るときだけ、自分の起動から親へ順に展開する（設計書 02-08「実行時エラーの情報の記録」）。
+    pub(crate) fn records(&self) -> Vec<super::SpawnRecord> {
+        let mut records = Vec::new();
+        let mut next = self.chain.as_deref();
+        while let Some(node) = next {
+            records.push(node.record.clone());
+            next = node.parent.as_deref();
+        }
+        records
+    }
+}
+impl Drop for SpawnNode {
+    fn drop(&mut self) {
+        // 共有が残る段で止め、最後の所有者だけが反復で親を外す。深い鎖でも
+        // 処理系のスタックを使い尽くさない（設計書 02-09「メモリの管理」）。
+        let mut next = self.parent.take();
+        while let Some(node) = next {
+            match Rc::try_unwrap(node) {
+                Ok(mut node) => next = node.parent.take(),
+                Err(_) => break,
+            }
+        }
+    }
 }
 #[derive(Clone, Copy)]
 pub(crate) enum Switch {
@@ -209,12 +253,15 @@ pub(crate) enum Switch {
     Park,
     Done,
 }
-// 一度の呼び出しだけ借り、実行中の窓とサービスの表を分ける（実装プラン R25）。
-pub(crate) struct Stage1StateServices<'a> {
+// 一度の呼び出しの間だけリソースの表とスケジューラを借り、State の口を組み込みの関数に渡す
+// （設計書 02-08「組み込みの関数の呼び出し」）。
+pub(crate) struct BorrowedStateServices<'a> {
+    /// close の解放を始めた呼び手として記録する、現在のタスク。
+    pub(crate) current_task: TaskId,
     pub(crate) resources: &'a mut ResourceTable,
     pub(crate) scheduler: &'a mut Scheduler,
 }
-impl crate::builtins::iface::StateServices for Stage1StateServices<'_> {
+impl crate::builtins::iface::StateServices for BorrowedStateServices<'_> {
     fn resource_table(&mut self) -> Option<&mut ResourceTable> {
         Some(self.resources)
     }
@@ -265,7 +312,12 @@ impl crate::builtins::iface::StateServices for Stage1StateServices<'_> {
                 .resources
                 .take_release_failure(resource)
                 .map_or(Ok(()), Err),
-            ReleaseStart::Blocking | ReleaseStart::AfterReturn | ReleaseStart::InProgress => {
+            ReleaseStart::Blocking | ReleaseStart::AfterReturn => {
+                self.resources
+                    .mark_release_starter(resource, self.current_task);
+                return Ok(Some(crate::builtins::iface::StateWait::Resource(resource)));
+            }
+            ReleaseStart::InProgress => {
                 return Ok(Some(crate::builtins::iface::StateWait::Resource(resource)));
             }
             ReleaseStart::TaskGroup(_) => {
@@ -303,9 +355,12 @@ impl crate::builtins::iface::StateServices for Stage1StateServices<'_> {
             ReleaseStart::AlreadyReleased => {
                 CloseStep::Done(self.resources.take_release_failure(resource))
             }
-            ReleaseStart::Blocking | ReleaseStart::AfterReturn | ReleaseStart::InProgress => {
+            ReleaseStart::Blocking | ReleaseStart::AfterReturn => {
+                self.resources
+                    .mark_release_starter(resource, self.current_task);
                 CloseStep::Wait(StateWait::Resource(resource))
             }
+            ReleaseStart::InProgress => CloseStep::Wait(StateWait::Resource(resource)),
             ReleaseStart::TaskGroup(_) => {
                 return Err(internal("TaskGroup cannot be closed as an OS resource"));
             }
@@ -319,11 +374,30 @@ pub(crate) type TestBoundary =
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(clippy::unwrap_used)]
     use super::*;
     use crate::builtins::iface::{IoServices, StateServices};
     use crate::runtime::io::services::{IoView, ProcessStdio, RunInput};
+
+    // 参照カウントの解放を再帰へ戻す退行でスタックが尽きる（設計書 02-09「メモリの管理」）。
+    #[test]
+    fn deep_spawn_chain_can_be_dropped_without_recursion() {
+        let mut chain = None;
+        for _ in 0..100_000 {
+            chain = Some(Rc::new(SpawnNode {
+                record: super::super::SpawnRecord {
+                    spawned_at: InstrRef {
+                        proto: crate::bytecode::program::ProtoIdx(0),
+                        pc: 0,
+                    },
+                    spawner_frames: Vec::new(),
+                },
+                parent: chain,
+            }));
+        }
+        drop(chain);
+    }
 
     #[derive(Debug)]
     struct ReleaseResult(Option<String>);
@@ -356,7 +430,11 @@ mod tests {
                     ResourceContent::Os(Some(Box::new(ReleaseResult(reason.clone())))),
                     None,
                 );
-                let result = Stage1StateServices {
+                let result = BorrowedStateServices {
+                    current_task: crate::vm::TaskId {
+                        index: 0,
+                        generation: 0,
+                    },
                     resources: &mut resources,
                     scheduler: &mut scheduler,
                 }
@@ -367,7 +445,11 @@ mod tests {
                 } else {
                     assert_eq!(result, CloseStep::Wait(StateWait::Resource(resource)));
                     assert_eq!(
-                        Stage1StateServices {
+                        BorrowedStateServices {
+                            current_task: crate::vm::TaskId {
+                                index: 0,
+                                generation: 0
+                            },
                             resources: &mut resources,
                             scheduler: &mut scheduler
                         }
@@ -379,7 +461,11 @@ mod tests {
                     assert_eq!(id, resource);
                     resources.finish_release(id, handle.release());
                     assert_eq!(
-                        Stage1StateServices {
+                        BorrowedStateServices {
+                            current_task: crate::vm::TaskId {
+                                index: 0,
+                                generation: 0
+                            },
                             resources: &mut resources,
                             scheduler: &mut scheduler
                         }
@@ -389,7 +475,11 @@ mod tests {
                     );
                 }
                 assert_eq!(resources.state(resource), Some(ResourceState::Released));
-                let mut state = Stage1StateServices {
+                let mut state = BorrowedStateServices {
+                    current_task: crate::vm::TaskId {
+                        index: 0,
+                        generation: 0,
+                    },
                     resources: &mut resources,
                     scheduler: &mut scheduler,
                 };
@@ -419,7 +509,7 @@ mod tests {
         }
     }
 
-    // 関門: 既存のサービスは begin_close を上書きしなくても、待ちと完了を引き継ぐ（10-16）。
+    // 関門: 既存のサービスは begin_close を上書きしなくても、待ちと完了を引き継ぐ（設計書 02-09「IO 実行器」）。
     #[test]
     fn default_begin_close_maps_the_existing_release_reply() {
         use crate::builtins::iface::{CloseStep, StateWait};
@@ -437,7 +527,7 @@ mod tests {
     #[test]
     fn u3_runtime_views_reborrow_the_vm_runtime_and_resources() {
         // 関門: 口を通した変更が VM の実際の状態に戻ることを確かめる。単に Some を返す
-        // テストでは、別の表を返す誤りを捕まえられない（実装プラン L00「10-16 の口」）。
+        // テストでは、別の表を返す誤りを捕まえられない。
         let mut io = super::super::dispatch::test_support::TestIo::new(RunInput {
             arguments: Vec::new(),
             working_directory: ".".into(),
@@ -460,7 +550,11 @@ mod tests {
         assert!(io.rt.process_stdio.inherit_stdout);
         let mut scheduler = Scheduler::default();
         {
-            let mut state = Stage1StateServices {
+            let mut state = BorrowedStateServices {
+                current_task: crate::vm::TaskId {
+                    index: 0,
+                    generation: 0,
+                },
                 resources: &mut resources,
                 scheduler: &mut scheduler,
             };

@@ -11,7 +11,7 @@ use crate::diag::{DiagBuilder, DiagCode, Diagnostic, Edit};
 #[derive(Debug)]
 pub struct LexOutput {
     /// 字句と改行の印（`LineBreak`）の列。最後は必ず `Eof`。
-    /// フォーマッタ（U4）は、この列を改行の位置を知るために使う（02-03「用途」）
+    /// フォーマッタは、この列を改行の位置を知るために使う（02-03「用途」）
     pub tokens: Vec<Token>,
     /// ドキュメントコメントを含むすべてのコメント。ソースの順
     pub comments: Vec<Comment>,
@@ -55,7 +55,7 @@ enum Quote {
 }
 
 impl Quote {
-    /// 正しくないエスケープ（E0110）に付ける注記の鍵（10-02 の E0110 の extras）。
+    /// 正しくないエスケープ（E0110）に付ける注記の鍵（`diag::codes` の E0110 の extras）。
     fn valid_escapes_key(self) -> &'static str {
         match self {
             Quote::Double => "valid_string",
@@ -692,7 +692,7 @@ fn is_ident_byte(b: u8) -> bool {
     b.is_ascii_alphanumeric() || b == b'_'
 }
 
-/// 診断の `char` の値。`U+` と 4 桁以上の大文字の 16 進数にする（F01「字句の誤り」）。
+/// 診断の `char` の値。`U+` と 4 桁以上の大文字の 16 進数にする。
 /// 文字そのものを表示しないのは、見えない文字や端末で崩れる文字があるからである。
 fn code_point(c: char) -> String {
     format!("U+{:04X}", u32::from(c))
@@ -772,7 +772,7 @@ fn keyword(word: &str) -> Option<TokenKind> {
 type NumberError = (DiagCode, &'static str);
 
 /// 数値の塊を、整数リテラルか浮動小数リテラルとして読む。読めなければ誤りの種類を返す。
-/// 一つの塊に複数の誤りがあるときは、F01 が引き継ぐ形の誤りの優先順で最初に当たったものだけを返す。
+/// 一つの塊に複数の誤りがあるときは、形の誤りの優先順で最初に当たったものだけを返す。
 fn classify_number(chunk: &[u8]) -> Result<(TokenKind, TokenValue), NumberError> {
     if let Some(result) = classify_decimal_literal(chunk) {
         return result;
@@ -937,7 +937,7 @@ fn without_underscores(bytes: &[u8]) -> String {
         .collect()
 }
 
-/// 接尾辞の位置までを数値の形として調べる。形の優先順は F01「Decimal の形の誤り」に従う。
+/// 接尾辞の位置までを数値の形として調べる。形の優先順は設計書 02-03「字句の誤り」に従う。
 fn classify_decimal_literal(chunk: &[u8]) -> Option<Result<(TokenKind, TokenValue), NumberError>> {
     let prefixed = matches!(
         chunk.get(..2),

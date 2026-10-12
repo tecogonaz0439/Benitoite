@@ -1,0 +1,14 @@
+// spec: 01-06 エフェクトの宣言とハンドラの型付け（初回リリース版）
+// 関門: CLI がガードから外側の継続を再開する式を E0509 と補助 guard で拒否し、終了状態 2 を返す。
+// 構文解析の表だけでは CLI の診断と終了状態の接続を確かめられない。専用の差し込み口は不要。
+effect Flip
+  function flip(value: Boolean) -> Boolean
+end effect
+function main() -> Unit
+  bind _ <- handle flip(true) with
+    case flip(x) -> match x with
+      case flag if resume(flag) -> true
+      case _ -> resume(false)
+    end match
+  end handle
+end function

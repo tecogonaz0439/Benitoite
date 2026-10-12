@@ -1,4 +1,5 @@
-//! Regular expressions with matching time linear in the input. The types `Pattern` and `Match` are built in.
+//! Regular expressions. A single match (`isMatch`, `find`, `replaceFirst`) takes time proportional to the product of the input length and pattern size in the worst case.
+//! Repeated matching (`findAll`, `replaceAll`, `replaceAllWith`, `split`) can take time proportional to the square of the input length times the pattern size in the worst case. The types `Pattern` and `Match` are built in.
 
 /// Builds a regular expression. Returns the reason as `Result.Error` when the syntax is wrong.
 @builtin("Regex.compile")
@@ -13,8 +14,9 @@ public function isMatch(pattern: Pattern, text: String) -> Boolean
 public function find(pattern: Pattern, text: String) -> Option[Match]
 
 /// Returns the non-overlapping matches from the left.
-@builtin("Regex.findAll")
 public function findAll(pattern: Pattern, text: String) -> List[Match]
+  return findAllFrom(pattern, text, 0, false, [])
+end function
 
 /// Returns the matched text.
 @builtin("Regex.matchText")
@@ -41,26 +43,83 @@ public function namedGroup(m: Match, name: String) -> Option[String]
 public function replaceFirst(pattern: Pattern, text: String, replacement: String) -> String
 
 /// Replaces every match with `replacement`, taken literally.
-@builtin("Regex.replaceAll")
 public function replaceAll(pattern: Pattern, text: String, replacement: String) -> String
+  return replaceAllFrom(pattern, text, replacement, 0, false, Pair(Pair([], []), 0))
+end function
 
 /// Splits `text` at each match.
-@builtin("Regex.split")
 public function split(pattern: Pattern, text: String) -> List[String]
+  return splitFrom(pattern, text, 0, false, [])
+end function
 
 /// Replaces every match with `f` applied to it. `f` is called for each match from the left.
 public function replaceAllWith[effect E](pattern: Pattern, text: String, f: function(Match) -> String uses E) -> String uses E
-  return replaceFrom(text, findAll(pattern, text), f, 0, 0, [])
+  return replaceFrom(pattern, text, f, 0, false, Pair(Pair([], []), 0))
 end function
 
-function replaceFrom[effect E](text: String, matches: List[Match], f: function(Match) -> String uses E, i: Integer, position: Integer, parts: List[String]) -> String uses E
-  return match List.get(matches, i) with
-    case Option.None -> String.join(List.append(parts, sliceOrEmpty(text, position, String.byteLength(text))), "")
+@builtin("Regex.findAt")
+function findAt(pattern: Pattern, text: String, start: Integer, afterMatch: Boolean) -> Option[Match]
+
+@builtin("Regex.spanAt")
+function spanAt(pattern: Pattern, text: String, start: Integer, afterMatch: Boolean) -> Option[Pair[Integer, Integer]]
+
+@builtin("Regex.maxStringBytes")
+function maxStringBytes() -> Integer
+
+function findAllFrom(pattern: Pattern, text: String, start: Integer, afterMatch: Boolean, acc: List[Match]) -> List[Match]
+  return match findAt(pattern, text, start, afterMatch) with
+    case Option.None -> acc
+    case Option.Some(m) -> findAllFrom(pattern, text, matchByteEnd(m), true, List.append(acc, m))
+  end match
+end function
+
+function splitFrom(pattern: Pattern, text: String, start: Integer, afterMatch: Boolean, acc: List[String]) -> List[String]
+  return match spanAt(pattern, text, start, afterMatch) with
+    case Option.None -> List.append(acc, sliceOrEmpty(text, start, String.byteLength(text)))
+    case Option.Some(Pair(s, e)) -> splitFrom(pattern, text, e, true, List.append(acc, sliceOrEmpty(text, start, s)))
+  end match
+end function
+
+function replaceAllFrom(pattern: Pattern, text: String, replacement: String, start: Integer, afterMatch: Boolean, parts: Pair[Pair[List[String], List[String]], Integer]) -> String
+  return match spanAt(pattern, text, start, afterMatch) with
+    case Option.None -> finishParts(appendPart(parts, sliceOrEmpty(text, start, String.byteLength(text))))
+    case Option.Some(Pair(s, e)) ->
+      bind next <- appendPart(appendPart(parts, sliceOrEmpty(text, start, s)), replacement)
+      replaceAllFrom(pattern, text, replacement, e, true, next)
+  end match
+end function
+
+function replaceFrom[effect E](pattern: Pattern, text: String, f: function(Match) -> String uses E, start: Integer, afterMatch: Boolean, parts: Pair[Pair[List[String], List[String]], Integer]) -> String uses E
+  return match findAt(pattern, text, start, afterMatch) with
+    case Option.None -> finishParts(appendPart(parts, sliceOrEmpty(text, start, String.byteLength(text))))
     case Option.Some(m) ->
       bind replaced <- f(m)
-      bind before <- sliceOrEmpty(text, position, matchByteStart(m))
-      replaceFrom(text, matches, f, i + 1, matchByteEnd(m), List.append(List.append(parts, before), replaced))
+      bind next <- appendPart(appendPart(parts, sliceOrEmpty(text, start, matchByteStart(m))), replaced)
+      replaceFrom(pattern, text, f, matchByteEnd(m), true, next)
   end match
+end function
+
+// 部分の数でリストの上限に達しないよう、4096 部分ごとに一度だけ結合する。
+// まとまりと最後の結合で各部分のバイトを二度だけ写す。
+// 文字列の上限は組み込みの関数から得て、累積の長さが超えたら結合の上限検査で止める
+// （設計書 03-08「Regex」、02-09「一つの操作で作る値の大きさの上限」）。
+function appendPart(parts: Pair[Pair[List[String], List[String]], Integer], part: String) -> Pair[Pair[List[String], List[String]], Integer]
+  bind Pair(Pair(pending, chunks), bytes) <- parts
+  bind next <- List.append(pending, part)
+  bind nextBytes <- bytes + String.byteLength(part)
+  if nextBytes > maxStringBytes() then
+    bind _ <- finishParts(Pair(Pair(next, chunks), nextBytes))
+  end if
+  return if List.length(next) = 4096 then
+    Pair(Pair([], List.append(chunks, String.join(next, ""))), nextBytes)
+  else
+    Pair(Pair(next, chunks), nextBytes)
+  end if
+end function
+
+function finishParts(parts: Pair[Pair[List[String], List[String]], Integer]) -> String
+  bind Pair(Pair(pending, chunks), _) <- parts
+  return String.join(List.append(chunks, String.join(pending, "")), "")
 end function
 
 function sliceOrEmpty(text: String, start: Integer, stop: Integer) -> String

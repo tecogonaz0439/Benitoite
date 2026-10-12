@@ -1,6 +1,6 @@
 import Benitoite.Surface.Check
 
-/-! TODO-178: 穴で展開するラムダの R と継続の境界を独立した項で検査する。
+/-! プレースホルダから展開するラムダの戻り値型と継続の境界を独立した項で検査する。
 引数の個数と宣言を満たし、拒否の経路と理由まで固定する。 -/
 namespace Benitoite.Surface.Check.Counterexamples
 open Benitoite.Release Benitoite.Surface.CheckTools

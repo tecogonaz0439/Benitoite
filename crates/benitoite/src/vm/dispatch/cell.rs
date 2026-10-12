@@ -34,8 +34,7 @@ fn fits(state: &RunState, frames: u64, regs: u16) -> Result<(), Stop> {
     }
 }
 
-// 命令のない呼び直しも同じ印を使い、回収からの再開で予算を二度数えない
-// （実装プラン 10-09「呼び出しの前の安全点」、R23「Retry を受けたとき」）。
+// 命令のない呼び直しも同じ印を使い、回収からの再開で予算を二度数えない。
 fn precall(
     state: &mut RunState,
     ctx: &NoGcCtx<'_>,
@@ -148,6 +147,7 @@ pub(super) fn update(
     state.segment_mut()?.others.push(OtherFrame {
         depth,
         kind: OtherKind::CellUpdate(CellUpdate {
+            at,
             cell: ctx.new_slot(cell),
             version,
             func: ctx.new_slot(func),
@@ -186,6 +186,7 @@ pub(super) fn retry(
     let Some(OtherKind::CellUpdate(frame)) = state.segment()?.others.last().map(|o| &o.kind) else {
         return Err(missing("update retry frame missing"));
     };
+    let site = frame.at;
     let called = target(program, ctx, ctx.load(&frame.func))?;
     // 更新の枠は残したままなので、呼び出しの枠一つだけを加える（設計書 02-08「可変のセル」）。
     fits(state, 1, called.proto.num_regs)?;
@@ -208,7 +209,7 @@ pub(super) fn retry(
     frame.version = ctx
         .cell_version(cell)
         .ok_or_else(|| missing("update retry cell version missing"))?;
-    push_call(state, ctx, called, value, ret, at)?;
+    push_call(state, ctx, called, value, ret, site)?;
     if let Some(work) = state.returning.take() {
         ctx.discard(work);
     }

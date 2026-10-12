@@ -1,6 +1,6 @@
 # Benitoite の定番の書き方
 
-> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。訳した元は、コミット d2a00c7 の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。訳した元は、Benitoite 0.0.3 の版の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:

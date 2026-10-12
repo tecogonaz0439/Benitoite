@@ -1,6 +1,6 @@
-//! ハンドラのコード生成と VM の組み合わせ（実装プラン R20）。
+//! ハンドラのコード生成と VM の組み合わせ（設計書 02-08「ハンドラと継続」）。
 
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::indexing_slicing)]
 
 use benitoite::runtime::heap::HeapConfig;
@@ -8,7 +8,7 @@ use benitoite::runtime::io::services::RunInput;
 use benitoite::vm::{ExecMode, VmConfig};
 
 // 関門: 実際の型検査・コード生成・VM をつなぐ契約。asm の検査は、コード生成が
-// 節の引数や HANDLE の記述を取り違えた場合を捕まえない（R20 の受け入れテスト）。
+// 節の引数や HANDLE の記述を取り違えた場合を捕まえない。
 #[test]
 fn scripts_connect_real_codegen_to_handlers_and_runtime() {
     use benitoite::pipeline::{self, CheckOptions};
@@ -95,14 +95,14 @@ fn scripts_connect_real_codegen_to_handlers_and_runtime() {
         ),
         (
             "escape from body",
-            "function early() -> Integer\n bind x <- handle\n return 42\n 0\n with\n case ask(n) -> resume(n)\n end handle\n return x + 1\nend function\n",
+            "function early() -> Integer\n bind x <- handle\n return 42\n with\n case ask(n) -> resume(n)\n end handle\n return x + 1\nend function\n",
             "early()",
             42,
             None,
         ),
         (
             "escape from clause",
-            "function early() -> Integer\n bind x <- handle\n ask(1) + (1 div 0)\n with\n case ask(n) ->\n return 42\n 0\n end handle\n return x + 1\nend function\n",
+            "function early() -> Integer\n bind x <- handle\n ask(1) + (1 div 0)\n with\n case ask(n) ->\n return 42\n end handle\n return x + 1\nend function\n",
             "early()",
             42,
             None,

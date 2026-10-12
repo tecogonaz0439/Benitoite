@@ -4,7 +4,7 @@
 //! span の終わりより前で最後に始まる字句を最後の字句とする。開きの字句・区切りの字句・閉じの字句は、
 //! 06-03「字下げ」の表の構文ごとに、AST のノードの種類ごとの関数で一か所にまとめて決める。
 //! 括弧の閉じの字句は、AST から決めた開きの括弧から、字句の列の括弧の対応で求める。誤りのない AST だけを
-//! 受け取る（10-17「役割の表」）ので、括弧は必ず対応する。
+//! 受け取る（設計書 06-03「入力表現」）ので、括弧は必ず対応する。
 
 use super::{BlankBefore, RoleTable, TokenRole, TopKind, TopRange};
 use crate::base::{BytePos, Span};
@@ -52,12 +52,14 @@ pub(super) struct Walker<'a> {
     tight_open: Vec<bool>,
     /// 単項の `-`
     unary_minus: Vec<bool>,
-    /// 閉じの字句と、それが閉じる構文の開きの字句の添字
+    /// 閉じの字句か、中身が空の分岐・本体の後の区切りの字句と、その構文の開きの字句の添字
     closers: Vec<(usize, usize)>,
     /// 構文の中身の範囲（開きの字句と、中身の最後の字句の添字）。中身の最初の行の空の行を除くために使う
     contents: Vec<(usize, usize)>,
-    /// 前の空の行を除く字句
-    remove_blank: Vec<bool>,
+    /// コメントだけの行の前でも、前のコードの行との間の空の行を除く字句（設計書 06-03「空の行」）
+    leading_blank: Vec<bool>,
+    /// その行の直前の空の行だけを除く字句（設計書 06-03「空の行」）
+    direct_blank: Vec<bool>,
     top: Vec<TopRange>,
 }
 
@@ -106,7 +108,8 @@ impl<'a> Walker<'a> {
             unary_minus: vec![false; len],
             closers: Vec::new(),
             contents: Vec::new(),
-            remove_blank: vec![false; len],
+            leading_blank: vec![false; len],
+            direct_blank: vec![false; len],
             top: Vec::new(),
         }
     }
@@ -226,17 +229,19 @@ impl<'a> Walker<'a> {
         }
     }
 
-    /// 閉じの字句（`end`・`)`・`]`）を記録する（規則 1、06-03「空の行」、10-17「役割の表」の `inner_level`）。
+    /// 閉じの字句（`end`・`)`・`]`）を記録する。閉じの字句か、中身が空の分岐・本体の後の区切りの字句に
+    /// 付ける `inner_level` のため、開きの字句も記録する（規則 1、設計書 06-03「空の行」「コメント」）。
     fn closer(&mut self, close: usize, open: usize) {
         self.set_place(close, Strength::Fixed, Place::Same(open));
-        Self::mark(&mut self.remove_blank, close);
+        Self::mark(&mut self.direct_blank, close);
         self.closers.push((close, open));
     }
 
-    /// 区切りの字句（`if` の `else`、節の並びを始める `with`）を記録する（規則 1）。
+    /// 区切りの字句（`if` の `else`、節の並びを始める `with`）を記録する（規則 1）。中身が空の分岐・本体の
+    /// 後の区切りの字句は、呼び出し側で閉じの字句と同じく `closers` に加える（設計書 06-03「コメント」）。
     fn separator(&mut self, index: usize, open: usize) {
         self.set_place(index, Strength::Fixed, Place::Same(open));
-        Self::mark(&mut self.remove_blank, index);
+        Self::mark(&mut self.direct_blank, index);
     }
 
     /// 構文の中身（開きの字句 `open` の後から `last` まで）を記録する（06-03「空の行」）。
@@ -312,12 +317,6 @@ impl<'a> Walker<'a> {
         self.top_range(decl.span, kind);
         self.element(decl.span, Place::Top);
         let first = self.first(decl.span);
-        // `///` の行と属性の間の空の行を除く（06-03「空の行」）。
-        if decl.doc.is_some()
-            && let Some(first) = first
-        {
-            Self::mark(&mut self.remove_blank, first);
-        }
         // 属性と `public` と宣言の本体は、どれもトップレベルの並びの要素として段 0 に置く（規則 3）。
         // 宣言の最初の行の後に置いた属性・`public`・宣言の行の前の空の行を除く（属性の行と宣言の間）。
         let mut heads: Vec<usize> = Vec::new();
@@ -332,7 +331,7 @@ impl<'a> Walker<'a> {
         for head in heads {
             self.set_place(head, Strength::Element, Place::Top);
             if Some(head) != first {
-                Self::mark(&mut self.remove_blank, head);
+                Self::mark(&mut self.leading_blank, head);
             }
         }
         self.item(&decl.item);
@@ -627,7 +626,7 @@ impl<'a> Walker<'a> {
         }
     }
 
-    /// 式を辿る。入れ子の深さに比例する再帰であり、構文解析器が深さを抑える（00-02「再帰の深さ」）。
+    /// 式を辿る。入れ子の深さに比例する再帰であり、構文解析器が深さを抑える（AGENTS.md「実装の規約」の「再帰の深さ」）。
     /// 普通のスレッドのスタックで深い入れ子を辿れるように、式の種類ごとの処理は別の関数に分ける。
     fn expr(&mut self, expr: &Expr) {
         match expr {
@@ -783,6 +782,9 @@ impl<'a> Walker<'a> {
                     return;
                 };
                 self.separator(else_word, open);
+                if e.then_block.stmts.is_empty() {
+                    self.closers.push((else_word, open));
+                }
                 if let Some(end) = end {
                     self.content(else_word, end);
                 }
@@ -796,6 +798,9 @@ impl<'a> Walker<'a> {
                     return;
                 };
                 self.separator(else_word, open);
+                if e.then_block.stmts.is_empty() {
+                    self.closers.push((else_word, open));
+                }
                 if let Some(end) = end {
                     self.content(inner_if, end);
                 }
@@ -872,6 +877,9 @@ impl<'a> Walker<'a> {
             .filter(|&i| self.kind(i) == Some(TokenKind::KwWith))
         {
             self.separator(with, open);
+            if e.body.stmts.is_empty() {
+                self.closers.push((with, open));
+            }
         }
         for clause in &e.clauses {
             let Some((case, last)) = self.range(clause.span) else {
@@ -1059,9 +1067,10 @@ impl<'a> Walker<'a> {
         for (index, role) in roles.iter_mut().enumerate() {
             role.level = levels.get(index).copied().flatten().unwrap_or(0);
             role.space_before = self.space_before(index);
-            if self.remove_blank.get(index).copied().unwrap_or(false) {
-                role.blank_before = BlankBefore::Remove;
-            }
+            role.blank_before = BlankBefore {
+                leading: self.leading_blank.get(index).copied().unwrap_or(false),
+                direct: self.direct_blank.get(index).copied().unwrap_or(false),
+            };
         }
         // 構文の中身の最初の行（開きの行の次の行）の前の空の行を除く（06-03「空の行」）。
         for &(open, last) in &self.contents {
@@ -1070,7 +1079,7 @@ impl<'a> Walker<'a> {
                 && index <= last
                 && let Some(role) = roles.get_mut(index)
             {
-                role.blank_before = BlankBefore::Remove;
+                role.blank_before.leading = true;
             }
         }
         for &(close, open) in &self.closers {

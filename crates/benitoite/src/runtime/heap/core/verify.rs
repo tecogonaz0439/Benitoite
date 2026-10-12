@@ -111,8 +111,15 @@ impl HeapCore {
     pub(super) fn verify_live_objects(&self, roots: &dyn Trace) -> Result<(), HeapFault> {
         let objects = self.objects.borrow();
         let mut values = Vec::with_capacity(objects.len());
+        let mut charged_bytes = 0u64;
         // O2: 壊れた長さを使って中身を読む前に、全対象の頭を確かめる。
         for (index, record) in objects.iter().enumerate() {
+            charged_bytes = charged_bytes
+                .checked_add(record.charged_bytes)
+                .ok_or_else(|| HeapFault {
+                    kind: HeapFaultKind::CorruptHeader,
+                    detail: "charged bytes of live objects overflow".into(),
+                })?;
             let ptr = record.allocation.ptr.cast::<ObjHeader>();
             // SAFETY: H2・O1・O2・O4。生存対象一覧の初期化済みの頭。検証中に解放しない。
             let head = unsafe { ptr.as_ref() };
@@ -136,7 +143,14 @@ impl HeapCore {
                 head.generation.get(),
             )));
         }
-        // 根からの経路を先に調べ、到達可能な解放済みの対象を専用の種類で報告する（R11）。
+        // O9: 生存対象の記録の合計と、確保している量が一致することを確かめる。
+        if charged_bytes != self.current_bytes.get() {
+            return Err(HeapFault {
+                kind: HeapFaultKind::CorruptHeader,
+                detail: "charged bytes of live objects differ from the current heap bytes".into(),
+            });
+        }
+        // 根からの経路を先に調べ、到達可能な解放済みの対象を専用の種類で報告する。
         let mut reachable = VerifySink::new(self, true);
         roots.trace(&mut Tracer::new(&mut reachable));
         while reachable.fault.is_none() {

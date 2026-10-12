@@ -1,0 +1,11 @@
+// spec: 01-06 型の別名（初回リリース版）
+type Bad = Option[Integer, Integer]
+function f(x: Bad) -> Integer
+  return 1
+end function
+function use() -> Integer
+  return f(Option.Some(1))
+end function
+function main() -> Unit
+  ()
+end function

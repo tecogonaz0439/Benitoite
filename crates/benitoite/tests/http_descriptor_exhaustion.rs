@@ -1,6 +1,6 @@
-//! 記述子の上限を実際に使い切り、HTTP サーバの継続と復帰を確かめる（03-09「失敗の種類」、SECB1）。
+//! 記述子の上限を実際に使い切り、HTTP サーバの継続と復帰を確かめる（03-09「失敗の種類」）。
 #![cfg(unix)]
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic)]
 
 use std::fs;
@@ -119,7 +119,9 @@ impl Server {
                 }
             }
         }));
-        let (read, line) = ready.recv_timeout(LIMIT).unwrap();
+        let (read, line) = ready
+            .recv_timeout(LIMIT)
+            .unwrap_or_else(|error| panic!("waiting for server port: {error}"));
         assert!(
             read.unwrap() > 0,
             "server ended before readiness: {:?}",
@@ -155,7 +157,10 @@ impl Server {
         );
     }
     fn wait_for_shortage(&mut self) {
-        let line = self.stderr.recv_timeout(LIMIT).unwrap();
+        let line = self
+            .stderr
+            .recv_timeout(LIMIT)
+            .unwrap_or_else(|error| panic!("waiting for descriptor shortage report: {error}"));
         assert!(
             line.starts_with(ACCEPT_RETRY_REPORT),
             "unexpected report: {line}"

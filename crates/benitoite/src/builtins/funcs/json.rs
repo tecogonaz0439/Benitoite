@@ -1,15 +1,22 @@
 //! JSON の解析と、再帰を使わない値の変換・文字列化（設計書 03-08「Json」）。
 
+use std::collections::BTreeMap;
+use std::fmt;
+
+use serde_core::de::{self, DeserializeSeed, MapAccess, SeqAccess, Visitor};
+
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::builtins::table::tags;
 use crate::runtime::heap::{CheckedLen, CtorTag, FieldsKind, StrBuf, Value, ValueCtx};
 use crate::runtime::{Stop, list, map};
 
 mod text {
+    pub const INVALID_NUMBER: &str = "invalid number";
+    pub const JSON_VALUE: &str = "a JSON value";
     pub const NUMBER_OUT_OF_RANGE: &str = "number out of range";
 }
 
-// レコードの宣言順を一か所で定める（実装プラン 10-15「レコードの値の作り方」）。
+// レコードの宣言順を一か所で定める（設計書 02-06「脱糖」）。
 mod parse_error {
     pub const LINE: usize = 0;
     pub const COLUMN: usize = 1;
@@ -23,20 +30,51 @@ builtin! {
     pure fn parse(ctx, arg0: Value<'e>) -> Value<'e> {
         let input = ctx.str(arg0)
             .ok_or_else(|| Stop::Internal("Json.parse expected String".into()))?;
-        let parsed = match serde_json::from_str::<serde_json::Value>(input) {
+        let mut numbers = NumberState {
+            lexemes: number_lexemes(input).peekable(),
+            error_position: None,
+        };
+        let mut deserializer = serde_json::Deserializer::from_str(input);
+        let parsed = match (&mut numbers).deserialize(&mut deserializer).and_then(|value| {
+            deserializer.end()?;
+            if let Some(number) = numbers.lexemes.peek() {
+                // 正しい JSON では字面と Visitor の呼び出しが一対一に対応するため
+                // 届かない分岐だが、対応が崩れても余った字面の位置で入力の誤りにする。
+                numbers.error_position = Some(number.position);
+                return Err(de::Error::custom(text::INVALID_NUMBER));
+            }
+            Ok(value)
+        }) {
             Ok(value) => value,
             Err(error) => {
                 let reason = error.to_string();
                 let suffix = format!(" at line {} column {}", error.line(), error.column());
-                return error_value(&ctx, error.line(), character_column(input, error.line(), error.column()),
-                    reason.strip_suffix(&suffix).unwrap_or(&reason));
+                let reason = reason.strip_suffix(&suffix).unwrap_or(&reason);
+                // serde は数の終わりを指すため、自前の数の誤りと serde の範囲外の
+                // 誤りだけ始まりへ戻す。入力の終わりの誤りは最後の文字の直後を指し、
+                // それ以外の構文の位置はそのまま使う（設計書 03-08「Json」）。
+                // 文言の比較は serde_json の ErrorCode::NumberOutOfRange の表示が
+                // NUMBER_OUT_OF_RANGE と同じことに頼る。serde_json の版を上げるときに確かめる。
+                let position = if error.classify() == serde_json::error::Category::Data {
+                    numbers.error_position
+                } else if reason == text::NUMBER_OUT_OF_RANGE {
+                    numbers.lexemes.peek().map(|number| number.position)
+                } else if error.classify() == serde_json::error::Category::Eof {
+                    // serde は最後の文字を指し、LF で終わるときだけ次の行になるため、
+                    // 入力全体から最後の文字の直後を求める（設計書 03-08「Json」）。
+                    let line = input.bytes().filter(|&b| b == b'\n').count().saturating_add(1);
+                    let column = input.rsplit('\n').next().unwrap_or("")
+                        .chars().count().saturating_add(1);
+                    Some((line, column))
+                } else {
+                    None
+                };
+                let (line, column) = position.unwrap_or_else(|| (
+                    error.line(), character_column(input, error.line(), error.column())
+                ));
+                return error_value(&ctx, line, column, reason);
             }
         };
-        // arbitrary_precision は範囲外の数も保存する。重複した鍵で捨てられた数も含めて
-        // 入力を検査し、文字列内の数字は読み飛ばす（設計書 03-08「Json」、実装プラン L21）。
-        if let Some((line, column)) = overflow_position(input) {
-            return error_value(&ctx, line, column, text::NUMBER_OUT_OF_RANGE);
-        }
         let value = convert(&ctx, &parsed)?;
         ctx.alloc_fields(FieldsKind::Ctor, tags::RESULT_OK, &[value])
     }
@@ -44,8 +82,9 @@ builtin! {
 
 fn character_column(input: &str, line: usize, column: usize) -> usize {
     let row = input.split('\n').nth(line.saturating_sub(1)).unwrap_or("");
-    // serde の列はバイトであり EOF では 0 になる。境界を切らず文字の開始を数える
-    // （設計書 03-08「Json」、実装プラン L21「手順の要点」）。
+    // serde の列はバイトであり、LF の直後を指すとき（文字列の中の LF の誤りなど）は
+    // 0 になる。境界を切らず文字の開始を数える
+    // （設計書 03-08「Json」）。
     row.char_indices()
         .take_while(|(i, _)| *i < column)
         .count()
@@ -75,57 +114,200 @@ fn error_value<'e>(
     ctx.alloc_fields(FieldsKind::Ctor, tags::RESULT_ERROR, &[error])
 }
 
-fn number_value<'e>(s: &str) -> Option<Value<'e>> {
+fn number_value(s: &str) -> Option<JsonNumber> {
     if !s.contains(['.', 'e', 'E'])
         && let Ok(n) = s.parse::<i64>()
     {
-        return Some(Value::Int(n));
+        return Some(JsonNumber::Integer(n));
     }
     s.parse::<f64>()
         .ok()
         .filter(|n| n.is_finite())
-        .map(Value::Float)
+        .map(JsonNumber::Float)
 }
 
-fn overflow_position(input: &str) -> Option<(usize, usize)> {
-    let mut chars = input.char_indices().peekable();
-    let mut line = 1usize;
-    let mut column = 1usize;
-    while let Some((start, c)) = chars.next() {
-        if c == '"' {
-            column = column.saturating_add(1);
-            while let Some((_, c)) = chars.next() {
-                column = column.saturating_add(1);
-                if c == '\\' {
-                    chars.next();
-                    column = column.saturating_add(1);
-                } else if c == '"' {
-                    break;
-                }
-            }
-        } else if c == '-' || c.is_ascii_digit() {
-            let location = (line, column);
-            let mut end = start.saturating_add(c.len_utf8());
-            column = column.saturating_add(1);
-            while let Some(&(i, c)) = chars.peek() {
-                if !matches!(c, '0'..='9' | '.' | 'e' | 'E' | '+' | '-') {
-                    break;
-                }
-                chars.next();
-                end = i.saturating_add(c.len_utf8());
-                column = column.saturating_add(1);
-            }
-            if number_value(input.get(start..end)?).is_none() {
-                return Some(location);
-            }
-        } else if c == '\n' {
-            line = line.saturating_add(1);
-            column = 1;
-        } else {
-            column = column.saturating_add(1);
-        }
+fn number_lexemes(input: &str) -> NumberLexemes<'_> {
+    NumberLexemes {
+        input,
+        chars: input.char_indices().peekable(),
+        line: 1,
+        column: 1,
     }
-    None
+}
+
+struct NumberLexemes<'a> {
+    input: &'a str,
+    chars: std::iter::Peekable<std::str::CharIndices<'a>>,
+    line: usize,
+    column: usize,
+}
+
+impl NumberLexemes<'_> {
+    fn take_if(&mut self, predicate: impl FnOnce(char) -> bool) -> Option<char> {
+        let (_, c) = self.chars.next_if(|&(_, c)| predicate(c))?;
+        self.column = self.column.saturating_add(1);
+        Some(c)
+    }
+
+    fn digits(&mut self) {
+        while self.take_if(|c| c.is_ascii_digit()).is_some() {}
+    }
+}
+
+impl<'a> Iterator for NumberLexemes<'a> {
+    type Item = NumberLexeme<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        while let Some((start, c)) = self.chars.next() {
+            let position = (self.line, self.column);
+            self.column = self.column.saturating_add(1);
+            if c == '"' {
+                while let Some((_, c)) = self.chars.next() {
+                    self.column = self.column.saturating_add(1);
+                    if c == '\\' {
+                        self.chars.next();
+                        self.column = self.column.saturating_add(1);
+                    } else if c == '"' {
+                        break;
+                    }
+                }
+            } else if c == '-' || c.is_ascii_digit() {
+                // 数の直後の構文の誤りを範囲外と誤診断しないよう、JSON の数の文法
+                // -?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)? で止める。
+                // -・1.・1e など不完全な字面は serde が Visitor を呼ぶ前に拒む。
+                let first = if c == '-' {
+                    self.take_if(|c| c.is_ascii_digit()).unwrap_or(c)
+                } else {
+                    c
+                };
+                if matches!(first, '1'..='9') {
+                    self.digits();
+                }
+                if self.take_if(|c| c == '.').is_some() {
+                    self.digits();
+                }
+                if self.take_if(|c| matches!(c, 'e' | 'E')).is_some() {
+                    self.take_if(|c| matches!(c, '+' | '-'));
+                    self.digits();
+                }
+                let end = self.chars.peek().map_or(self.input.len(), |&(i, _)| i);
+                return Some(NumberLexeme {
+                    source: self.input.get(start..end).unwrap_or(""),
+                    position,
+                });
+            } else if c == '\n' {
+                self.line = self.line.saturating_add(1);
+                self.column = 1;
+            }
+        }
+        None
+    }
+}
+
+// 言語の値をここで確保すると Stop を serde の誤りへ通せないため、深さ 128 以下の
+// 材料の木だけを作る。CheckedLen は convert に残す（設計書 03-08「Json」）。
+enum JsonNumber {
+    Integer(i64),
+    Float(f64),
+}
+
+enum JsonMaterial {
+    Null,
+    Bool(bool),
+    Number(JsonNumber),
+    String(String),
+    Array(Vec<JsonMaterial>),
+    Object(BTreeMap<String, JsonMaterial>),
+}
+
+struct NumberLexeme<'a> {
+    source: &'a str,
+    position: (usize, usize),
+}
+
+struct NumberState<'a> {
+    lexemes: std::iter::Peekable<NumberLexemes<'a>>,
+    error_position: Option<(usize, usize)>,
+}
+
+impl NumberState<'_> {
+    fn next_number<E: de::Error>(&mut self) -> Result<JsonMaterial, E> {
+        let number = self
+            .lexemes
+            .next()
+            .ok_or_else(|| E::custom(text::INVALID_NUMBER))?;
+        // serde の数の値では -0 の分類が失われる。元の字面で分類することで
+        // 型と符号を保ち、重複した鍵の値も文書の順に消費する（設計書 03-08「Json」）。
+        let Some(value) = number_value(number.source) else {
+            self.error_position = Some(number.position);
+            return Err(E::custom(text::NUMBER_OUT_OF_RANGE));
+        };
+        Ok(JsonMaterial::Number(value))
+    }
+}
+
+impl<'de> DeserializeSeed<'de> for &mut NumberState<'_> {
+    type Value = JsonMaterial;
+
+    fn deserialize<D: de::Deserializer<'de>>(
+        self,
+        deserializer: D,
+    ) -> Result<Self::Value, D::Error> {
+        deserializer.deserialize_any(self)
+    }
+}
+
+impl<'de> Visitor<'de> for &mut NumberState<'_> {
+    type Value = JsonMaterial;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(text::JSON_VALUE)
+    }
+
+    fn visit_unit<E: de::Error>(self) -> Result<Self::Value, E> {
+        Ok(JsonMaterial::Null)
+    }
+
+    fn visit_bool<E: de::Error>(self, value: bool) -> Result<Self::Value, E> {
+        Ok(JsonMaterial::Bool(value))
+    }
+
+    fn visit_i64<E: de::Error>(self, _value: i64) -> Result<Self::Value, E> {
+        self.next_number()
+    }
+
+    fn visit_u64<E: de::Error>(self, _value: u64) -> Result<Self::Value, E> {
+        self.next_number()
+    }
+
+    fn visit_f64<E: de::Error>(self, _value: f64) -> Result<Self::Value, E> {
+        self.next_number()
+    }
+
+    fn visit_str<E: de::Error>(self, value: &str) -> Result<Self::Value, E> {
+        Ok(JsonMaterial::String(value.to_owned()))
+    }
+
+    fn visit_string<E: de::Error>(self, value: String) -> Result<Self::Value, E> {
+        Ok(JsonMaterial::String(value))
+    }
+
+    fn visit_seq<A: SeqAccess<'de>>(self, mut array: A) -> Result<Self::Value, A::Error> {
+        let mut items = Vec::new();
+        while let Some(item) = array.next_element_seed(&mut *self)? {
+            items.push(item);
+        }
+        Ok(JsonMaterial::Array(items))
+    }
+
+    fn visit_map<A: MapAccess<'de>>(self, mut object: A) -> Result<Self::Value, A::Error> {
+        let mut items = BTreeMap::new();
+        while let Some(key) = object.next_key::<String>()? {
+            let value = object.next_value_seed(&mut *self)?;
+            items.insert(key, value);
+        }
+        Ok(JsonMaterial::Object(items))
+    }
 }
 
 fn ctor<'e>(ctx: &ValueCtx<'e>, tag: u32, value: Value<'e>) -> Result<Value<'e>, Stop> {
@@ -133,41 +315,38 @@ fn ctor<'e>(ctx: &ValueCtx<'e>, tag: u32, value: Value<'e>) -> Result<Value<'e>,
 }
 
 enum Convert<'a> {
-    Visit(&'a serde_json::Value),
+    Visit(&'a JsonMaterial),
     Array(usize),
-    Object(&'a serde_json::Map<String, serde_json::Value>),
+    Object(&'a BTreeMap<String, JsonMaterial>),
 }
 
-fn convert<'e>(ctx: &ValueCtx<'e>, root: &serde_json::Value) -> Result<Value<'e>, Stop> {
+fn convert<'e>(ctx: &ValueCtx<'e>, root: &JsonMaterial) -> Result<Value<'e>, Stop> {
     let mut work = vec![Convert::Visit(root)];
     let mut values = Vec::new();
     while let Some(step) = work.pop() {
         let value = match step {
             Convert::Visit(value) => match value {
-                serde_json::Value::Null => Value::Tag(CtorTag(tags::JSON_VALUE_NULL)),
-                serde_json::Value::Bool(b) => ctor(ctx, tags::JSON_VALUE_BOOLEAN, Value::Bool(*b))?,
-                serde_json::Value::Number(n) => {
-                    let value = number_value(n.as_str())
-                        .ok_or_else(|| Stop::Internal("unchecked JSON number".into()))?;
-                    let tag = if matches!(value, Value::Int(_)) {
-                        tags::JSON_VALUE_INTEGER
-                    } else {
-                        tags::JSON_VALUE_FLOAT
+                JsonMaterial::Null => Value::Tag(CtorTag(tags::JSON_VALUE_NULL)),
+                JsonMaterial::Bool(b) => ctor(ctx, tags::JSON_VALUE_BOOLEAN, Value::Bool(*b))?,
+                JsonMaterial::Number(n) => {
+                    let (tag, value) = match n {
+                        JsonNumber::Integer(n) => (tags::JSON_VALUE_INTEGER, Value::Int(*n)),
+                        JsonNumber::Float(n) => (tags::JSON_VALUE_FLOAT, Value::Float(*n)),
                     };
                     ctor(ctx, tag, value)?
                 }
-                serde_json::Value::String(s) => ctor(
+                JsonMaterial::String(s) => ctor(
                     ctx,
                     tags::JSON_VALUE_STRING,
                     ctx.alloc_str(s, "Json.parse")?,
                 )?,
-                serde_json::Value::Array(items) => {
+                JsonMaterial::Array(items) => {
                     CheckedLen::elements(super::count(items.len())?, "Json.parse")?;
                     work.push(Convert::Array(items.len()));
                     work.extend(items.iter().rev().map(Convert::Visit));
                     continue;
                 }
-                serde_json::Value::Object(items) => {
+                JsonMaterial::Object(items) => {
                     CheckedLen::elements(super::count(items.len())?, "Json.parse")?;
                     work.push(Convert::Object(items));
                     work.extend(items.values().rev().map(Convert::Visit));
@@ -311,7 +490,7 @@ fn write_json<'e>(
                         // 一つの数だけをクレートで書式化し、木は自前で辿る。1.0 と -0.0 の
                         // 型と符号を往復で保つ（設計書 03-08「Json」）。
                         if let Some(n) = serde_json::Number::from_f64(n) {
-                            buf.push_str(n.as_str())?;
+                            buf.push_str(&n.to_string())?;
                         } else {
                             buf.push_str("null")?;
                         }
@@ -364,21 +543,21 @@ fn write_json<'e>(
     ctx.alloc_str_buf(buf)
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[parse::DECL, stringify::DECL, stringify_pretty::DECL];
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::indexing_slicing,
         clippy::arithmetic_side_effects
     )]
-    // 関門: 03-08 の数の分類、位置、出力と L21 が指定した深さの境目を守る。
+    // 関門: 数の分類、位置、出力と深さの境目を守る（設計書 03-08「Json」）。
     // 浮動小数点への一律変換、バイト列の列、再帰の採用による退行を捕まえる。
-    // 既存の表の照合は本体を呼ばない。新しい差し込み口は作らず、10-15 の
-    // 個別指示どおり本体を直接呼ぶ。ソースの関数とレコードの欄は tests/l21_json.rs で守る。
+    // 組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
+    // ソースの関数とレコードの欄は tests/l21_json.rs で守る。
     use super::*;
     use crate::builtins::funcs::operators::tests::direct;
     use crate::runtime::heap::{Heap, HeapConfig, NoGcCtx};
@@ -424,6 +603,8 @@ mod tests {
             for (source, expected, written) in [
                 ("-0.0", -0.0f64, "-0.0"),
                 ("0.0", 0.0, "0.0"),
+                ("1e-400", 0.0, "0.0"),
+                ("-1e-400", -0.0, "-0.0"),
                 ("1.0", 1.0, "1.0"),
                 ("1E2", 100.0, "100.0"),
                 ("1.25", 1.25, "1.25"),
@@ -432,6 +613,11 @@ mod tests {
                     "9223372036854775808",
                     9223372036854775808.0,
                     "9.223372036854776e+18",
+                ),
+                (
+                    "18446744073709551616",
+                    1.8446744073709552e19,
+                    "1.8446744073709552e+19",
                 ),
                 (
                     "-9223372036854775809",
@@ -470,6 +656,33 @@ mod tests {
     }
 
     #[test]
+    fn special_number_key_remains_an_object() {
+        // 関門: 正当な object を内部の数と取り違える TODO-194 の退行を捕まえる。
+        // 既存の往復の表にはこの鍵がなく、公開の範囲や差し込み口を増やさず本体で確かめる。
+        Heap::new(HeapConfig::default()).epoch(|ctx| {
+            for contents in ["123", "1e9999", "-0", "abc"] {
+                let object = format!(r#"{{"$serde_json::private::Number":"{contents}"}}"#);
+                let escaped = format!(r#"{{"\u0024serde_json::private::Number":"{contents}"}}"#);
+                for (source, expected) in [
+                    (object.clone(), object.clone()),
+                    (escaped, object.clone()),
+                    (format!("[{object}]"), format!("[{object}]")),
+                    (
+                        format!(r#"{{"nested":{object}}}"#),
+                        format!(r#"{{"nested":{object}}}"#),
+                    ),
+                ] {
+                    let value = parsed(ctx, &source, tags::RESULT_OK);
+                    let out = direct!(ctx, stringify, value).unwrap();
+                    assert_eq!(ctx.str(out), Some(expected.as_str()), "{source}");
+                    let back = parsed(ctx, &expected, tags::RESULT_OK);
+                    assert!(crate::runtime::equal::values_equal(ctx, value, back).unwrap());
+                }
+            }
+        });
+    }
+
+    #[test]
     fn values_round_trip_with_escapes_sorted_keys_and_last_duplicate() {
         Heap::new(HeapConfig::default()).epoch(|ctx| {
             for (source, expected) in [
@@ -489,6 +702,9 @@ mod tests {
                     r#"{"a":[true,null,{"é":"😀"}],"z":2}"#,
                 ),
                 ("[1,-2,3.0,\"text\",false]", "[1,-2,3.0,\"text\",false]"),
+                ("[-0, -0.0, -0e3, -0]", "[0,-0.0,-0.0,0]"),
+                (r#"{"a":-0.0,"a":-0}"#, r#"{"a":0}"#),
+                (r#"{"a":-0,"a":-0.0,"b":-0}"#, r#"{"a":-0.0,"b":0}"#),
                 (
                     r#"{"n":"1e400 and \"-1e400\""}"#,
                     r#"{"n":"1e400 and \"-1e400\""}"#,
@@ -525,12 +741,32 @@ mod tests {
 
     #[test]
     fn parse_errors_report_character_columns_and_separate_reasons() {
+        // 関門: Json.parse の診断を守る。数の直後の構文の誤りを範囲外と誤診断する
+        // 退行は既存の行では捕まらないため、基準の位置と文言を同じ表で確かめる。
+        // CR だけの行も試す。CR LF の行だけでは、CR を行の区切りにする退行を捕まえられない。
         Heap::new(HeapConfig::default()).epoch(|ctx| {
             for (source, line, column, reason) in [
                 ("[1,]", 1, 4, "trailing comma"),
+                ("[1-2]", 1, 3, "expected `,` or `]`"),
+                ("[1+2]", 1, 3, "expected `,` or `]`"),
+                ("[1.5.5]", 1, 5, "expected `,` or `]`"),
+                (r#"{"a":1e5e5}"#, 1, 9, "expected `,` or `}`"),
+                ("[1,2-]", 1, 5, "expected `,` or `]`"),
+                ("[1E+2-3]", 1, 6, "expected `,` or `]`"),
+                (r#"["\\",1-2]"#, 1, 8, "expected `,` or `]`"),
+                ("[01]", 1, 3, text::INVALID_NUMBER),
+                ("[-]", 1, 3, text::INVALID_NUMBER),
+                ("[1.]", 1, 4, text::INVALID_NUMBER),
+                ("[1.0e]", 1, 6, text::INVALID_NUMBER),
+                ("1 2", 1, 3, "trailing characters"),
                 ("[\n1,\n]", 3, 1, "trailing comma"),
                 ("[\"é😀\",]", 1, 7, "trailing comma"),
-                ("\"é", 1, 2, "EOF while parsing a string"),
+                ("\"é", 1, 3, "EOF while parsing a string"),
+                ("[1,", 1, 4, "EOF while parsing a value"),
+                ("", 1, 1, "EOF while parsing a value"),
+                ("   ", 1, 4, "EOF while parsing a value"),
+                ("[1,\r\n", 2, 1, "EOF while parsing a value"),
+                ("[1,\r", 1, 5, "EOF while parsing a value"),
                 ("[1,\n", 2, 1, "EOF while parsing a value"),
                 ("1e400", 1, 1, text::NUMBER_OUT_OF_RANGE),
                 ("-1e400", 1, 1, text::NUMBER_OUT_OF_RANGE),
@@ -542,6 +778,8 @@ mod tests {
                 ),
                 (r#"["1e400\"",2,1e400]"#, 1, 14, text::NUMBER_OUT_OF_RANGE),
                 (r#"{"a":1e400,"a":0}"#, 1, 6, text::NUMBER_OUT_OF_RANGE),
+                ("[1e400,}", 1, 2, text::NUMBER_OUT_OF_RANGE),
+                ("[},1e400]", 1, 2, "expected value"),
             ] {
                 let error = parsed(ctx, source, tags::RESULT_ERROR);
                 assert_eq!(

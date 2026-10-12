@@ -6,7 +6,7 @@ use crate::runtime::heap::FieldsKind;
 use crate::runtime::heap::Value;
 
 builtin! {
-    /// `IOError.message` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `IOError.message` の本体。
     name = "IOError.message",
     pure fn message(ctx, error: Value<'e>) -> Value<'e> {
         if !matches!(ctx.fields_header(error), Some((FieldsKind::IoError, _)))
@@ -25,7 +25,7 @@ builtin! {
 }
 
 builtin! {
-    /// `IOError.kind` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `IOError.kind` の本体。
     name = "IOError.kind",
     pure fn kind(ctx, error: Value<'e>) -> Value<'e> {
         let Some((FieldsKind::IoError, tag)) = ctx.fields_header(error) else {
@@ -35,7 +35,7 @@ builtin! {
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[message::DECL, kind::DECL];
 
 #[cfg(test)]

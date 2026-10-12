@@ -175,6 +175,8 @@ pub(super) fn report_unclaimed(p: &mut Parser) {
             .help("end")
             .build(),
         "}" => DiagBuilder::new(DiagCode::E0212).primary(span).build(),
+        // 演算子を置けない位置なので、語に置き換えても誤りが残る。
+        // 誤りがなくなると決められない修正には edits を付けない（設計書 02-10「修正案」）。
         "==" | "!=" | "&&" | "||" | "!" | "=>" | "%" | "?" => DiagBuilder::new(DiagCode::E0211)
             .arg("symbol", &symbol)
             .primary(span)
@@ -197,7 +199,7 @@ pub(super) fn report_unclaimed(p: &mut Parser) {
     report_symbol(p, d);
 }
 
-/// F04 のハンドラも同じ位置で旧式の `when` を検出する。
+/// ハンドラも同じ位置で旧式の `when` を検出する。
 pub(super) fn take_when(p: &mut Parser) -> Option<Span> {
     if when_ahead(p) {
         Some(p.bump().span)

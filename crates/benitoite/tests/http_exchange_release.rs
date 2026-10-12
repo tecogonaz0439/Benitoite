@@ -1,7 +1,7 @@
-//! 読まない相手との実通信で Exchange の解放と CLI の停止を確かめる（SECB2）。
+//! 読まない相手との実通信で Exchange の解放と CLI の停止を確かめる（設計書 03-09「サーバの接続と要求の読み方」）。
 #![cfg(unix)]
-// テストの失敗は panic で表す（実装プラン 00-02）。
-#![allow(clippy::unwrap_used)]
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
+#![allow(clippy::unwrap_used, clippy::panic)]
 
 use std::fs;
 use std::io::{BufRead, BufReader, Read, Write};
@@ -149,7 +149,10 @@ impl Server {
             err.read_to_string(&mut report).unwrap();
             drop(stderr_tx.send(report));
         }));
-        let line = server.stdout.recv_timeout(LIMIT).unwrap();
+        let line = server
+            .stdout
+            .recv_timeout(LIMIT)
+            .unwrap_or_else(|error| panic!("waiting for server port: {error}"));
         server.port = line.parse().unwrap();
         assert_ne!(server.port, 0);
         server
@@ -173,7 +176,7 @@ impl Server {
             let line = self
                 .stdout
                 .recv_timeout(LIMIT.saturating_sub(started.elapsed()))
-                .unwrap();
+                .unwrap_or_else(|error| panic!("waiting for server output {expected:?}: {error}"));
             // 大きな応答が完送された場合は、送信待ちの退行を検査できていない。
             assert!(
                 line == "cancelled" || line == "released" || line == "file-ok",
@@ -213,7 +216,12 @@ impl Server {
             reader.join().unwrap();
         }
         self.observed.extend(self.stdout.try_iter());
-        (status, self.stderr.recv_timeout(LIMIT).unwrap())
+        (
+            status,
+            self.stderr.recv_timeout(LIMIT).unwrap_or_else(|error| {
+                panic!("waiting for server stderr reader to finish: {error}")
+            }),
+        )
     }
 }
 impl Drop for Server {

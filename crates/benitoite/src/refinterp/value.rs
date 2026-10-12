@@ -41,7 +41,7 @@ pub(super) struct Values {
     pub(super) items: Vec<Value>,
 }
 
-/// 関数の本体の識別。F14 はこの識別からコア IR の本体を引く。
+/// 関数の本体の識別。この識別からコア IR の本体を引く。
 #[derive(Clone, Copy, Debug)]
 pub(super) enum FunctionCode {
     Body(BodyId),
@@ -50,7 +50,7 @@ pub(super) enum FunctionCode {
     Op(BindingId),
 }
 
-/// 関数の本体と捕捉した変数。評価の状態や継続の枠は F14 が別に持つ。
+/// 関数の本体と捕捉した変数。評価の状態や継続の枠は別に持つ。
 pub(super) struct Closure {
     pub(super) code: FunctionCode,
     pub(super) captures: Vec<(VarId, Value)>,
@@ -196,7 +196,7 @@ pub(super) fn values_equal(a: &Value, b: &Value) -> Result<bool, Stop> {
 // 最後の Rc だけを開き、子を先に取り出す。共有している子は参照の数を減らすだけである。
 // 同じ子を複数持つ場合も、一つずつ try_unwrap するので最後の参照を取りこぼさない。
 // 開いた対象の Drop は空の並びを受け取るため、値の深さに比例する再帰を起こさない
-// （実装プラン 00-02「再帰の深さ」）。
+// （AGENTS.md「実装の規約」の「再帰の深さ」）。
 fn release(mut pending: Vec<Value>) {
     while let Some(value) = pending.pop() {
         match value {
@@ -251,7 +251,7 @@ impl Drop for Closure {
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -263,7 +263,7 @@ mod tests {
 
     // 作成時の関門: 独自の値の等値規則を、仕様から決めた期待値で守る。
     // VM のテストは独自の比較を呼ばず、Rc の同一性で NaN を省く退行も検出できない。
-    // R10 の指示に従い非公開の値の境界で検査し、本番の可視性と差し込み口は増やさない。
+    // 値の境界で検査し、本番の可視性と差し込み口は増やさない。
     #[test]
     fn equality_obeys_scalar_and_structural_rules() {
         for (a, b, expected) in [

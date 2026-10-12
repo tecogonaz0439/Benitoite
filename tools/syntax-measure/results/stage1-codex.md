@@ -10,7 +10,7 @@
 
 | 実行 ID | パス | SHA-256 | 大きさ（バイト） |
 |---|---|---|---|
-| stage1-codex | `/Users/tecogonaz/.cache/benitoite-syntax-measure/archives/stage1-codex.tar.gz` | `2e0d07b9ea89912e6fcb23557b281063c72bb813398b62071ce23d8ba76b0a5d` | 22220139 |
+| stage1-codex | `~/.cache/benitoite-syntax-measure/archives/stage1-codex.tar.gz` | `2e0d07b9ea89912e6fcb23557b281063c72bb813398b62071ce23d8ba76b0a5d` | 22220139 |
 
 ## 案ごとの率
 

@@ -1,0 +1,8 @@
+// spec: 01-03 標準ライブラリの名前空間と prelude（初回リリース版）
+record Result
+  value: Integer
+end record
+
+function main() -> Unit
+  bind r: Result <- Benitoite.Result.Ok(1)
+end function

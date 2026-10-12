@@ -8,7 +8,7 @@
     clippy::arithmetic_side_effects
 )]
 use benitoite::base::{BindingId, ModuleId};
-use benitoite::typeck::patterns::{ArmPats, MatchIssue, Pat, check_match, is_irrefutable};
+use benitoite::typeck::patterns::{ArmPats, MatchIssue, Pat, check_binding, check_match};
 use benitoite::types::builtin::BuiltinTypeId as B;
 use benitoite::types::{AdtDef, AdtTable, CtorDef, FieldInfo, Ty, TyCon, TypeArg, TypeSummary};
 use serde_json::{Value, json};
@@ -295,10 +295,20 @@ fn pat_json(p: &Pat) -> Value {
         }
     }
 }
-fn result(ty: &Ty, arms: &[ArmPats], table: &AdtTable) -> Value {
+#[derive(Default)]
+struct BudgetStats {
+    stopped: usize,
+    max_work: usize,
+}
+fn result(ty: &Ty, arms: &[ArmPats], table: &AdtTable, budget: &mut BudgetStats) -> Value {
     let mut uncovered = None;
     let mut unreachable = vec![];
-    for issue in check_match(ty, arms, table) {
+    let Ok(checked) = check_match(ty, arms, table) else {
+        budget.stopped += 1;
+        return Value::Null;
+    };
+    budget.max_work = budget.max_work.max(checked.work);
+    for issue in checked.issues {
         match issue {
             MatchIssue::NonExhaustive { witness } => uncovered = Some(witness),
             MatchIssue::Unreachable {
@@ -310,23 +320,39 @@ fn result(ty: &Ty, arms: &[ArmPats], table: &AdtTable) -> Value {
     }
     json!({"exhaustive":uncovered.is_none(),"uncovered":uncovered,"unreachable":unreachable})
 }
-fn export_case(name: String, ty: Ty, arms: Vec<ArmPats>, p: Pat, table: &AdtTable) -> Value {
+fn export_case(
+    name: String,
+    ty: Ty,
+    arms: Vec<ArmPats>,
+    p: Pat,
+    table: &AdtTable,
+    budget: &mut BudgetStats,
+) -> Value {
     let ds: Vec<_> = (0..6).map(|n| {
         let d = table.get(BindingId(n)).unwrap();
         json!({"name":format!("d{n}"),"typeName":d.name,"ntys":d.type_params.len(),
             "fields":d.record.as_ref().map(|fs| fs.iter().map(|f| f.name.clone()).collect::<Vec<_>>()),
             "ctors":d.ctors.iter().map(|c| json!({"name":format!("d{n}c{}",c.tag),"constructorName":c.name,"tag":c.tag,"args":c.fields.iter().map(ty_json).collect::<Vec<_>>()})).collect::<Vec<_>>()})
     }).collect();
-    let ir = is_irrefutable(&ty, &p, table);
-    let single = result(&ty, &[arm(p.clone())], table);
+    let Ok(binding) = check_binding(&ty, &p, table) else {
+        budget.stopped += 1;
+        return Value::Null;
+    };
+    budget.max_work = budget.max_work.max(binding.work);
+    let ir = binding.witness.is_none();
+    let single = result(&ty, &[arm(p.clone())], table, budget);
+    if single.is_null() {
+        return Value::Null;
+    }
     assert_eq!(ir, single["exhaustive"].as_bool().unwrap());
+    assert_eq!(json!(binding.witness), single["uncovered"]);
     json!({"name":name,"decls":ds,"ty":ty_json(&ty),"arms":arms.iter().map(|a| json!({"guarded":a.guarded,"alts":a.alts.iter().map(pat_json).collect::<Vec<_>>()})).collect::<Vec<_>>(),
-        "pattern":pat_json(&p),"expected":result(&ty,&arms,table),"irrefutable":ir,"irrefutableWitness":single["uncovered"]})
+        "pattern":pat_json(&p),"expected":result(&ty,&arms,table,budget),"irrefutable":ir,"irrefutableWitness":single["uncovered"]})
 }
-fn boundaries(table: &AdtTable) -> Vec<Value> {
+fn boundaries(table: &AdtTable, budget: &mut BudgetStats) -> Vec<Value> {
     let mut cases = vec![];
     let mut add = |name: &str, ty: Ty, arms: Vec<ArmPats>, p: Pat| {
-        cases.push(export_case(name.into(), ty, arms, p, table))
+        cases.push(export_case(name.into(), ty, arms, p, table, budget))
     };
     // E0601/2/7/8 を持つ七つのファイルの九つの照合と同じ形。
     for (name, ty, p, q) in [
@@ -513,7 +539,8 @@ fn export_coverage() {
         dir.starts_with(&repo) && dir != repo,
         "output directory must be inside the repository"
     );
-    let mut cases = boundaries(&declarations(&mut Random(0)));
+    let mut budget = BudgetStats::default();
+    let mut cases = boundaries(&declarations(&mut Random(0)), &mut budget);
     let boundary_count = cases.len();
     for seed in 0..RANDOM_CASES {
         let mut r = Random(u64::try_from(seed).unwrap() ^ 0xe1c1);
@@ -536,7 +563,14 @@ fn export_coverage() {
             });
         }
         let p = gen_pat(&mut r, &ty, &table, MAX_DEPTH, &mut 0);
-        cases.push(export_case(format!("random/{seed}"), ty, arms, p, &table));
+        cases.push(export_case(
+            format!("random/{seed}"),
+            ty,
+            arms,
+            p,
+            &table,
+            &mut budget,
+        ));
     }
     let mut stats = BTreeMap::new();
     for c in &cases {
@@ -545,16 +579,22 @@ fn export_coverage() {
             &mut stats,
         );
     }
-    let corpus = json!({"version":1,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":boundary_count,"kinds":stats,"cases":cases});
+    assert_eq!(
+        budget.stopped, 0,
+        "coverage export must stay within the work budget"
+    );
+    let corpus = json!({"budget":{"stopped":budget.stopped,"maxWork":budget.max_work},"version":1,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":boundary_count,"kinds":stats,"cases":cases});
     let bytes = serde_json::to_vec(&corpus).unwrap();
     let roundtrip: Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(roundtrip, corpus, "JSON must preserve i64 boundaries");
     fs::write(dir.join("corpus.json"), bytes).unwrap();
     println!(
-        "coverage export: {} cases ({} boundary, {} random), {:.3}s",
+        "coverage export: {} cases ({} boundary, {} random), {:.3}s, budget stopped: {}, max work per check: {}",
         cases.len(),
         boundary_count,
         RANDOM_CASES,
-        started.elapsed().as_secs_f64()
+        started.elapsed().as_secs_f64(),
+        budget.stopped,
+        budget.max_work
     );
 }

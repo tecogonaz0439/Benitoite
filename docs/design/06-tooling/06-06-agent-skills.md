@@ -76,6 +76,7 @@ benitoite skill uninstall [--user | --project] [--agent <名前>]...
 
 - `install` は、埋め込んだ Skill を、指定したエージェントの置き場所の `benitoite/` に書き出す。`uninstall` は、`install` が書き出した Skill を消す。
 - `--user` は利用者の単位の置き場所に、`--project` は作業ディレクトリの下の置き場所に書き出す。既定は `--user` である。`--project` は、リポジトリの根を探して辿らない。
+- `--user` の置き場所の基準は、環境変数 `HOME` の値とする。`install`・`uninstall` は、`HOME` がないか空のとき、絶対パスでないとき、存在するディレクトリでないときは、何も書き出さず、消さず、ディレクトリも作らずに誤りを報告し、終了状態 1 で終える。`HOME` がシンボリックリンクのときは、リンクの先がディレクトリかを確かめる。理由: 誤った `HOME` の下や作業ディレクトリの下で、意図しない導入や除去を行わないためである。
 - `--agent` は複数指定できる。省いたときは、次の表のすべてのエージェントの置き場所に書き出す。書き出す先が同じ別々のエージェント（`codex` と `opencode`）を指定したときは、一度だけ書き出す。同じ名前の `--agent` を二度書くこと、`--user` と `--project` を両方書くことは、使い方の誤りとする。
 
 | `--agent` | `--user` | `--project` |
@@ -87,9 +88,10 @@ benitoite skill uninstall [--user | --project] [--agent <名前>]...
 表の置き場所は、各エージェントの文書で確かめた、エージェントが Skill を読み込む場所である（Claude Code は [Extend Claude with skills](https://code.claude.com/docs/en/skills)、Codex CLI は [Build skills](https://learn.chatgpt.com/docs/build-skills)、opencode は [Agent Skills](https://opencode.ai/docs/skills/)。2026-10-08 に確認）。opencode は `.claude/skills` と `.agents/skills` の両方を読むので、`--agent` を省くと、同じ名前の Skill を二か所から読む。opencode v2.0.21 のソース（タグ `v2.0.21` の `packages/core/src/config/plugin/compatibility.ts`）では、`.claude` の置き場所を先に、`.agents` の置き場所を後に読み、Skill のディレクトリの名前を鍵にして、後に読んだものが先のものを置き換える。したがって、二か所の `benitoite` は一つの Skill として扱われ、`.agents/skills/benitoite/` の中身が使われる。`install` は二か所に同じ中身を書き出すので、どちらが使われても結果は変わらない。置き場所はエージェントの版で変わりうるので、リリースのたびに文書で確かめ直す。
 
 - 書き出す先に `benitoite/` がすでにあるとき、それが `install` の書き出したもの（`SKILL.md` の前付けの `metadata` に処理系の版の欄があるもの）なら置き換える。そうでなければ書き出さずに失敗とする。`uninstall` も、`install` が書き出したものだけを消す。
-- 置き換えは、同じ親のディレクトリの一時ディレクトリに書き出してから名前を変えて行う。途中で止まっても、半端な Skill を残さない。
-- `skill` は、書き出した先と消した先のディレクトリのパスを標準出力に書く。
-- 終了状態は、成功が 0、ファイルを書けない・消せない場合と、既存の `benitoite/` を置き換えないと決めた場合が 1、使い方の誤りが 2、処理系の不具合が 3 である。
+- `install` の書き出したものかの判定では、`SKILL.md` がシンボリックリンクでない普通のファイルであるときだけ、1 MiB の上限まで読む。リンク、FIFO などの普通のファイルでないもの、上限を超えるものは、`install` の書き出したものでないとする。理由: リンクの先のファイルを置き換えの根拠にせず、FIFO を読んで止まらないようにするためである。読み方は、ソースの読み方（[ソース管理と位置情報](../02-impl/02-02-source-and-spans.md)の「ソースとファイル ID」）と同じく、開いた記述子で普通のファイルかを確かめる。
+- 置き換えは、同じ親のディレクトリの一時ディレクトリに書き出してから名前を変えて行う。途中で止まっても、半端な Skill を残さない。途中で強制終了されると、親のディレクトリに `.benitoite.install-<pid>` か `.benitoite.old-<pid>` が残ることがある。`install` と `uninstall` は、自分の pid のもの以外を消さない。これらの名残は、Skill の置き場所の `benitoite/` を変えない。理由: 並行に動く別の実行の一時ディレクトリを壊さないためである。
+- `skill` は、書き出した先と消した先のディレクトリのパスを標準出力に書く。この報告と誤りの報告のパスに含まれる端末の制御文字は、診断のファイルの表示名と同じく逃がす（[診断エンジン](../02-impl/02-10-diagnostics.md)の「文章の形式」）。
+- 終了状態は、成功が 0、`--user` の `HOME` が前述の条件を満たさない場合、ファイルを書けない・消せない場合、既存の `benitoite/` を置き換えないと決めた場合が 1、使い方の誤りが 2、処理系の不具合が 3 である。
 
 `skill` のコマンドラインの位置付け（`run` を省いた実行との関係）は [CLI](06-01-cli.md)の「`skill` のコマンドライン（初回リリース版）」で定める。
 

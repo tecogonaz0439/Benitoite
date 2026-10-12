@@ -1,0 +1,17 @@
+error[E0416]: the value of this expression is not used
+  --> testdata/types/final-expression-reassign.bnt:3:3
+   |
+ 3 |   x = 5
+   |   ^^^^^ this has type `Boolean`, not `Unit`
+   |
+   = help: write `bind _ <- ...` to discard the value
+   |
+ 3 |   bind _ <- x = 5
+   |   ~~~~~~~~~~
+   |
+   = help: `=` compares values and variables cannot be reassigned; to bind a new value to the name, write `shadow x <- ...`
+   |
+ 3 |   shadow x <- 5
+   |   ~~~~~~~~~~~~~
+
+error: could not check testdata/types/final-expression-reassign.bnt due to 1 previous error

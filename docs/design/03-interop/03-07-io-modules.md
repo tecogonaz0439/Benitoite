@@ -55,7 +55,7 @@ IO を行う関数の振る舞いと IO の失敗は[エフェクト](../01-spec
 - パスは `String` で表す。相対パスは、実行ごとの基準のディレクトリから辿る（[エフェクト](../01-spec/01-07-effects.md)）。基準のディレクトリは、CLI の `run` とテストの実行器では処理系を起動したときの作業ディレクトリである（[スクリプト実行と埋め込み](../02-impl/02-11-embedding.md)）。パスの組み立ては `Benitoite.Path` の関数で行う。
 - 外部の状態によって失敗しうる関数は `Result[T, IOError]` を返す。OS が操作を拒んだときは `IOErrorKind.PermissionDenied` を返す。
 - テキストは UTF-8 で読み書きする。読んだ内容が正しい UTF-8 でなければ、`IOErrorKind.InvalidUTF8` の `Result.Error` を返す。
-- 行に分けるときは、LF（U+000A）で区切り、各行の末尾に CR（U+000D）が一つあれば取り除く。最後の LF の後に文字が残れば、それも一つの行とする。行の値は、区切りの文字を含まない。この分け方は `String.lines`（[標準ライブラリ](03-06-stdlib.md)）と同じであり、内容全体を行に分ける関数（`File.readLines`・`Console.readAllLines`）にも、一行ずつ読む関数（`Console.readLine`・`File.readLine`）にも当てはまる。一行ずつ読む関数は、行の末尾の LF と、その直前にあれば CR を一つ取り除いた値を返す。LF のないまま入力の終わりに達したときは、残りの文字（末尾に CR が一つあれば取り除く）を一つの行として返し、次の呼び出しで `Option.None` を返す。
+- 行に分けるときは、LF（U+000A）で区切り、各行の末尾に CR（U+000D）が一つあれば取り除く。最後の LF の後に文字が残れば、それも一つの行とする。行の値は、区切りの文字を含まない。この分け方は `String.lines`（[標準ライブラリ](03-06-stdlib.md)）と同じであり、内容全体を行に分ける関数（`File.readLines`・`Console.readAllLines`）にも、一行ずつ読む関数（`Console.readLine`・`File.readLine`）にも当てはまる。一行ずつ読む関数は、行の末尾の LF と、その直前にあれば CR を一つ取り除いた値を返す。LF のないまま入力の終わりに達したときは、残りの文字（末尾に CR が一つあれば取り除く）を一つの行として返し、次の呼び出しで `Option.None` を返す。一行ずつ読む関数の大きさの上限（[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」）は、行末を除いた内容の長さで数える。
 - 時間の長さは、ミリ秒を単位とする `Integer` で表す（`Clock.sleep`・`Task.withTimeout` と同じ。[並行処理](../01-spec/01-11-concurrency.md)）。
 - ディレクトリの中の名前を並べる関数は、名前を UTF-8 のバイト列の辞書式の順に並べる。OS が返す順に依存しないので、同じ内容のディレクトリからは、同じ結果が得られる。
 
@@ -146,6 +146,9 @@ end data
 - `with` で束縛したときの解放は、`File.Reader` では `File.closeReader`、`File.Writer` では `File.closeWriter` と同じ処理である。`File.closeReader` と `File.closeWriter` は、`File.Read`・`File.Write` の操作ではなく、`State` を型に持つ組み込みの関数であり、ハンドラで処理できない。解放のエフェクトは `State` である（[リソース管理](../01-spec/01-10-resources.md)）。
 - 解放した後の `File.Reader` と `File.Writer` に対する操作は、実行時エラー（解放したリソースの使用）とする（[リソース管理](../01-spec/01-10-resources.md)の「解放したリソースの使用」）。
 - `File.readChunk` の `maximumBytes` が 1 未満なら、実行時エラーとする。
+- 【決定】書き込み（途中の書き出しを含む）が失敗した `File.Writer` は、失敗の状態になり、バッファに残った分を捨てる。以後の `File.write`・`File.writeLine`・`File.writeChunk` は、何も書かず、記録した `IOError` を種類も含めて返す。`File.closeWriter` と `with` の解放は、書き出さずに閉じ、記録した失敗と同じ文を返す。ただし、`File.closeWriter` が返す種類は `IOErrorKind.Other` である。したがって、書き込みの `Result.Error` を扱っていても、`with` のブロックを抜けるときの解放は、解放の失敗（実行時エラー）になる。扱うには、ブロックの最後で `File.closeWriter` を呼んで結果を調べる（[リソース管理](../01-spec/01-10-resources.md)の「解放の失敗」）。理由: 失敗の後に残りを書き直して、どこまで書けたかがスクリプトから分からなくなるのを防ぐためである。
+- 【決定】`File.Reader`・`File.Writer` を閉じるときの OS の close の誤りは、`File.closeReader`・`File.closeWriter`・`with` の解放のどれでも捨てる。`File.closeWriter` が返すのは、書き出しの失敗と、記録した書き込みの失敗までである。理由: Rust の標準ライブラリに close の結果を受け取る安全な口がなく、[`File` の `Drop`](https://doc.rust-lang.org/std/fs/struct.File.html) は閉じるときの誤りを捨てるためである。
+- 束縛の文で束縛して解放しなかった `File.Writer` を実行の終わりに捨てるときは、書き出していない内容を書き出さない（[ランタイム](../02-impl/02-09-runtime.md)の「リソースの追跡」）。
 
 ```text
 import Benitoite.Unofficial.IO.File
@@ -202,6 +205,7 @@ end record
 - `environment` の組は、スクリプトの環境変数に加えるか、同じ名前の変数を置き換える。起動したコマンドは、スクリプトの環境変数をすべて受け取る。初回リリース版は、子に渡す環境変数をスクリプトのものから切り離す方法と、API キーやパスワードなどの秘密の情報を区別して扱う型を持たない。
 - 起動するコマンドが見つからなければ `IOErrorKind.NotFound` を返す。コマンドが 0 以外の終了状態で終わっても、`Result.Ok` を返す。終了状態は `exitCode` で調べる。
 - `Process.run`・`Process.shell` で、集めた出力が正しい UTF-8 でなければ、`IOErrorKind.InvalidUTF8` を返す。
+- 【決定】`Process.run`・`Process.shell` は、標準出力と標準エラー出力の終わりまで読む。子が終わっても、子から起動した孫のプロセスがこれらを開いたままだと、呼び出しは返らない。出力を集めるテストの実行器の `Process.runAttached` も同じである。出力を集めない CLI の `run` の `Process.runAttached` には当たらない。`Task.withTimeout` で待つ時間の上限を付けられるが、時間切れになっても起動したプロセスは止めない。理由: 子の出力を読み落とさないために出力の終わりまで読み、[`Command::output`](https://doc.rust-lang.org/std/process/struct.Command.html#method.output) と同じく子の終了と出力の収集を待つためである。
 - 【決定】`Process.run`・`Process.runAttached` で `input` に `Option.Some` を指定したとき、子が入力を読み切らずに終わり、子の標準入力への書き込みが失敗しても（読み手のいないパイプへの書き込み。Rust の `std::io::ErrorKind::BrokenPipe`）、誤りにしない。書けた分で入力を終えたものとし、子の終了状態と集めた出力を `Result.Ok` で返す。
 - 【決定】シグナルで終わったコマンドの `exitCode` は、Unix では 128 にシグナルの番号を足した値とする。POSIX のシェルがシグナルで終わったコマンドに与える終了状態と同じ形である。Rust の標準ライブラリはこのとき終了コードを返さない（`ExitStatus::code()` が `None`）ので、処理系はシグナルの番号（`ExitStatusExt::signal()`）から計算する。
 - 【決定】`Process.shell` は、Unix では `/bin/sh -c` で文字列を実行する。`/bin/sh` の実装は OS と設定によって違う。macOS の `/bin/sh` は、設定によって bash・dash・zsh のどれかとして動き、Debian の `/bin/sh` は dash である。そのため、`Process.shell` に渡す文字列は POSIX の sh の範囲で書く必要がある。同梱の Agent Skill は、そのように書くようエージェントに指示する（[Agent Skills 対応](../06-tooling/06-06-agent-skills.md)）。
@@ -223,6 +227,7 @@ end record
 
 - `Time.Instant` は `Benitoite.Time` の型である（[テキストとデータの処理](03-08-text-and-data.md)）。
 - OS から地方時の UTC からの差を得られないとき（タイムゾーンの設定を持たない最小のコンテナなど）、`Clock.localOffsetMinutes` は 0 を返す。実行時エラーにも `IOError` にもしない。
+- 同じプロセスの中では、システムのタイムゾーンの変更が最大 5 分遅れて `Clock.localOffsetMinutes` に現れる（[03-01「使う Rust のクレート」](03-01-library-structure.md#使う-rust-のクレート)）。
 - 経過時間は、`Clock.monotonicMilliseconds` の二つの値の差で計る。`Clock.now` は、OS の時計が調整されると戻ることがあるので、経過時間の計測には使わない。
 
 ### Random

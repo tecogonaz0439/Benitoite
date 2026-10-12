@@ -8,7 +8,7 @@ use crate::runtime::heap::{Value, ValueCtx};
 use crate::runtime::{RuntimeError, Stop};
 
 builtin! {
-    /// `Decimal.round` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Decimal.round` の本体。
     name = "Decimal.round",
     pure fn round(ctx, x: Value<'e>, places: i64, mode: Value<'e>) -> Value<'e> {
         let x = operand(&ctx, x)?;
@@ -31,7 +31,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Decimal.absolute` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Decimal.absolute` の本体。
     name = "Decimal.absolute",
     pure fn absolute(ctx, x: Value<'e>) -> Value<'e> {
         Ok(ctx.alloc_decimal(operand(&ctx, x)?.abs()))
@@ -39,7 +39,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Decimal.fromInteger` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Decimal.fromInteger` の本体。
     name = "Decimal.fromInteger",
     pure fn from_integer(ctx, n: i64) -> Value<'e> {
         Ok(ctx.alloc_decimal(Decimal::from_integer(n)))
@@ -47,7 +47,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Decimal.truncate` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Decimal.truncate` の本体。
     name = "Decimal.truncate",
     pure fn truncate(ctx, x: Value<'e>) -> Value<'e> {
         let integral = operand(&ctx, x)?.round(0, DecimalRounding::TowardZero)
@@ -57,7 +57,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Decimal.toFloat` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Decimal.toFloat` の本体。
     name = "Decimal.toFloat",
     pure fn to_float(ctx, x: Value<'e>) -> f64 {
         operand(&ctx, x)?.to_text().parse()
@@ -66,7 +66,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Decimal.fromFloat` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Decimal.fromFloat` の本体。
     name = "Decimal.fromFloat",
     pure fn from_float(ctx, x: f64) -> Value<'e> {
         super::option(&ctx, float_decimal(x).map(|d| ctx.alloc_decimal(d)))
@@ -74,7 +74,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Decimal.toString` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Decimal.toString` の本体。
     name = "Decimal.toString",
     pure fn to_string(ctx, x: Value<'e>) -> Value<'e> {
         ctx.alloc_str(&operand(&ctx, x)?.to_text(), "Decimal.toString")
@@ -82,20 +82,24 @@ builtin! {
 }
 
 builtin! {
-    /// `Decimal.parse` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Decimal.parse` の本体。
     name = "Decimal.parse",
     pure fn parse(ctx, s: &'c str) -> Value<'e> {
         let (digits, negative) = match s.strip_prefix('-') {
             Some(digits) => (digits, true),
             None => (s, false),
         };
+        let integer = digits.split_once('.').map_or(digits, |(integer, _)| integer);
+        if !super::decimal_integer(integer) {
+            return super::option(&ctx, None);
+        }
         let value = Decimal::parse_literal(digits)
             .map(|d| if negative { d.negate() } else { d });
         super::option(&ctx, value.map(|d| ctx.alloc_decimal(d)))
     }
 }
 
-// FromArg にない Decimal は公開の読み取り API で検査する（実装プラン R35「組み込みの関数」）。
+// FromArg にない Decimal は公開の読み取り API で検査する。
 pub(super) fn operand<'e>(ctx: &ValueCtx<'e>, value: Value<'e>) -> Result<Decimal, Stop> {
     ctx.decimal(value)
         .ok_or_else(|| Stop::Internal("Decimal operand required".into()))
@@ -147,7 +151,7 @@ fn float_decimal(x: f64) -> Option<Decimal> {
     Decimal::new(mantissa, u8::try_from(scale.min(28)).ok()?)
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     round::DECL,
     absolute::DECL,
@@ -161,7 +165,7 @@ pub const DECLS: &[BuiltinDecl] = &[
 
 #[cfg(test)]
 mod tests {
-    // 関門: 8 項目の桁数・タグの対応・変換の失敗を、名前の付いた本体で確かめる（R35、10-12）。
+    // 関門: 8 項目の桁数・タグの対応・変換の失敗を、名前の付いた本体で確かめる。
     // base の算術では Float の表記、Option と RoundingMode の接続の退行を検出できない。
     // 期待値を仕様の数で記し、本番の口は増やさない。
     #![allow(
@@ -267,6 +271,9 @@ mod tests {
             for text in [
                 "1.50",
                 "-3",
+                "0",
+                "0.5",
+                "-0.5",
                 "0.05",
                 "0.00",
                 "79228162514264337593543950335",
@@ -283,6 +290,7 @@ mod tests {
                 ),
                 "0.00"
             );
+            let mut accepted_non_literals = Vec::new();
             for text in [
                 "",
                 "-",
@@ -299,14 +307,21 @@ mod tests {
                 "Infinity",
                 "１２",
                 "--1",
+                "01",
+                "007",
+                "00.5",
+                "-01.5",
                 "79228162514264337593543950336",
                 "0.12345678901234567890123456789",
             ] {
-                assert!(
-                    payload(direct!(ctx, parse, text).unwrap(), ctx).is_none(),
-                    "{text}"
-                );
+                if payload(direct!(ctx, parse, text).unwrap(), ctx).is_some() {
+                    accepted_non_literals.push(text);
+                }
             }
+            assert!(
+                accepted_non_literals.is_empty(),
+                "{accepted_non_literals:?}"
+            );
         });
     }
 
@@ -328,6 +343,7 @@ mod tests {
                 (0.0, "0.0"),
                 (-0.0, "0.0"),
                 (1e21, "1000000000000000000000"),
+                (1.5e-7, "0.00000015"),
                 (1.25e-27, "0.0000000000000000000000000012"),
                 (1.35e-27, "0.0000000000000000000000000014"),
                 (-1.35e-27, "-0.0000000000000000000000000014"),

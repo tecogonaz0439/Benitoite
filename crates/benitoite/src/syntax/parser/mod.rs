@@ -3,42 +3,41 @@
 //! 再帰の経路では式・型・パターンを箱で受け渡し、ノードの組み立てを別の関数に分ける。
 //! 並びの要素は、要素を読む関数が直接並びに加え、再帰の枠に大きな値を残さない。
 //!
-//! F03・F04 のフックは子のモジュールに置く。引数の `p` は解析器、`depth` はノードの深さ。
+//! フックは子のモジュールに置く。引数の `p` は解析器、`depth` はノードの深さ。
 //! `PResult<T>` は成功した値か回復を要求する `Fail`、`PatternCounter` はパターンの通し番号である。
-//! 次の表のシグネチャは F03・F04 と共有し、各作業は担当する子のモジュールだけを実装する。
 //!
-//! | フック（`p: &mut Parser` は略記） | 引数 → 戻り値 | 仮の本体 | 担当 |
-//! |---|---|---|---|
-//! | `items::DocStore::new` | `text: &[u8], comments: &[Comment] → DocStore` | 参照を保存 | F03 |
-//! | `DocStore::take_for` | `&mut self, start: Span, diagnostics: &mut Vec<Diagnostic> → Option<DocComment>` | `None`、報告なし | F03 |
-//! | `DocStore::module_doc` | `&mut self, diagnostics: &mut Vec<Diagnostic> → Option<DocComment>` | `None`、報告なし | F03 |
-//! | `DocStore::finish` | `&mut self, diagnostics: &mut Vec<Diagnostic> → ()` | 何もしない | F03 |
-//! | `items::parse_import` | `p, first_decl: Option<Span>, depth: u32 → PResult<ImportDecl>` | E0201、次の宣言まで回復 | F03 |
-//! | `items::parse_attributes` | `p → Vec<Attribute>` | E0201、属性を飛ばし空の並び | F03 |
-//! | `items::parse_public` | `p → Option<Span>` | `public` を読み span を返す | F03 |
-//! | `items::body_rule` | `attrs: &[Attribute], kind: SourceKind → BodyRule` | `Required` | F03 |
-//! | `items::check_decl_header` | `p, decl: &TopDecl → ()` | 何もしない | F03 |
-//! | `items::report_missing_body` | `p, name: &Name, attrs: &[Attribute] → ()` | E0201 | F03 |
-//! | `items::reject_public` | `p, span: Span → ()` | 何もしない | F03 |
-//! | `items::try_foreign_decl_start` | `p, depth: u32 → Option<PResult<Item>>` | `None` | F03 |
-//! | `items::parse_record_decl` | `p, depth: u32 → PResult<Item>` | E0201、`end record` か次の宣言まで回復、誤りのノード | F03 |
-//! | `items::parse_alias_decl`, `parse_const_decl` | `p, depth: u32 → PResult<Item>` | E0201、次の宣言まで回復、誤りのノード | F03 |
-//! | `records::parse_record_expr` | `p, path: Vec<Name>, start: Span, depth: u32 → PResult<Box<Expr>>` | E0201、`)` まで回復、誤りのノード | F03 |
-//! | `records::parse_record_pattern` | `p, path: Vec<Name>, start: Span, counter: &mut PatternCounter → PResult<Box<Pattern>>` | 同上 | F03 |
-//! | `traits::parse_trait_decl`, `parse_impl_decl` | `p, depth: u32 → PResult<Item>` | E0201、対応する `end` か次の宣言まで回復、誤りのノード | F04 |
-//! | `traits::builtin_constraint` | `p, name: &Name → Option<BuiltinConstraint>` | `equality`, `key`, `ordered` は `Some`、ほかは E0201 と `None`（その制約だけを捨てる） | F04 |
-//! | `effects::parse_effect_decl` | `p, depth: u32 → PResult<Item>` | E0201、`end effect` か次の宣言まで回復、誤りのノード | F04 |
-//! | `effects::parse_handle`, `parse_with`, `parse_lazy` | `p, depth: u32 → PResult<Box<Expr>>` | E0201、対応する `end` まで回復、誤りのノード | F04 |
-//! | `effects::parse_resume` | `p, depth: u32 → PResult<Box<Expr>>` | E0201、`)` まで回復、誤りのノード | F04 |
-//! | `effects::parse_try` | `p, depth: u32 → PResult<Box<Expr>>` | E0201、後の式を読んで捨て、誤りのノード | F04 |
-//! | `effects::check_escape` | `p, keyword: TokenKind, span: Span → ()` | 何もしない | F04 |
-//! | `interp::parse_interp` | `p, depth: u32 → PResult<Box<Expr>>` | E0201、対応する `StrEnd` まで回復、誤りのノード | F04 |
-//! | `spread::parse_spread_elem` | `p, depth: u32, out: &mut Vec<ListElem> → PResult<()>` | E0201、要素の終わりまで回復、誤りのノードを追加 | F04 |
-//! | `spread::check_list_spreads` | `p, list: &ListExpr → ()` | 何もしない | F04 |
-//! | `patterns_ext::parse_arm_head_rest` | `p, first: Pattern, counter: &mut PatternCounter, depth: u32 → PResult<(Vec<Pattern>, Option<Box<Expr>>)>` | 最初のパターンだけ、ガードなし | F04 |
-//! | `patterns_ext::parse_range_rest` | `p, first: Pattern, counter: &mut PatternCounter → PResult<Box<Pattern>>` | E0201、パターンの終わりまで回復、誤りのノード | F04 |
-//! | `patterns_ext::parse_list_pattern` | `p, counter: &mut PatternCounter → PResult<Box<Pattern>>` | E0201、`]` まで回復、誤りのノード | F04 |
-//! | `patterns_ext::report_tuple` | `p, count: usize, span: Span → ()` | `)` を期待する E0201 | F04 |
+//! | フック（`p: &mut Parser` は略記） | 引数 → 戻り値 |
+//! |---|---|
+//! | `items::DocStore::new` | `text: &[u8], comments: &[Comment] → DocStore` |
+//! | `DocStore::take_for` | `&mut self, start: Span, diagnostics: &mut Vec<Diagnostic> → Option<DocComment>` |
+//! | `DocStore::module_doc` | `&mut self, diagnostics: &mut Vec<Diagnostic> → Option<DocComment>` |
+//! | `DocStore::finish` | `&mut self, diagnostics: &mut Vec<Diagnostic> → ()` |
+//! | `items::parse_import` | `p, first_decl: Option<Span>, depth: u32 → PResult<ImportDecl>` |
+//! | `items::parse_attributes` | `p → Vec<Attribute>` |
+//! | `items::parse_public` | `p → Option<Span>` |
+//! | `items::body_rule` | `attrs: &[Attribute], kind: SourceKind → BodyRule` |
+//! | `items::check_decl_header` | `p, decl: &TopDecl → ()` |
+//! | `items::report_missing_body` | `p, name: &Name, attrs: &[Attribute] → ()` |
+//! | `items::reject_public` | `p, span: Span → ()` |
+//! | `items::try_foreign_decl_start` | `p, depth: u32 → Option<PResult<Item>>` |
+//! | `items::parse_record_decl` | `p, depth: u32 → PResult<Item>` |
+//! | `items::parse_alias_decl`, `parse_const_decl` | `p, depth: u32 → PResult<Item>` |
+//! | `records::parse_record_expr` | `p, path: Vec<Name>, start: Span, depth: u32 → PResult<Box<Expr>>` |
+//! | `records::parse_record_pattern` | `p, path: Vec<Name>, start: Span, counter: &mut PatternCounter → PResult<Box<Pattern>>` |
+//! | `traits::parse_trait_decl`, `parse_impl_decl` | `p, depth: u32 → PResult<Item>` |
+//! | `traits::builtin_constraint` | `p, name: &Name → Option<BuiltinConstraint>` |
+//! | `effects::parse_effect_decl` | `p, depth: u32 → PResult<Item>` |
+//! | `effects::parse_handle`, `parse_with`, `parse_lazy` | `p, depth: u32 → PResult<Box<Expr>>` |
+//! | `effects::parse_resume` | `p, depth: u32 → PResult<Box<Expr>>` |
+//! | `effects::parse_try` | `p, depth: u32 → PResult<Box<Expr>>` |
+//! | `effects::check_escape` | `p, keyword: TokenKind, span: Span → ()` |
+//! | `interp::parse_interp` | `p, depth: u32 → PResult<Box<Expr>>` |
+//! | `spread::parse_spread_elem` | `p, depth: u32, out: &mut Vec<ListElem> → PResult<()>` |
+//! | `spread::check_list_spreads` | `p, list: &ListExpr → ()` |
+//! | `patterns_ext::parse_arm_head_rest` | `p, first: Pattern, counter: &mut PatternCounter, depth: u32 → PResult<(Vec<Pattern>, Option<Box<Expr>>)>` |
+//! | `patterns_ext::parse_range_rest` | `p, first: Pattern, counter: &mut PatternCounter → PResult<Box<Pattern>>` |
+//! | `patterns_ext::parse_list_pattern` | `p, counter: &mut PatternCounter → PResult<Box<Pattern>>` |
+//! | `patterns_ext::report_tuple` | `p, count: usize, span: Span → ()` |
 //!
 //! 共通の関数（すべて `pub(super)`。`Parser` の状態と文脈の印も子から使える）:
 //!
@@ -47,14 +46,12 @@
 //! | 字句・名前 | `Parser::{peek, peek_kind, peek_nth_kind, at, advance, bump, eat, expect, expect_name, qual_name, word, symbol, skip_newlines, at_line_start}` |
 //! | 位置・ノード | `Parser::{node_id, span_from, empty_span, error_node_from, error_token_node, snippet}`, `snippet::snippet`, `exprs::{span_of, pattern_span}`, `name_of`, `literal_of` |
 //! | 診断・回復 | `Parser::{report, unexpected, recover}`, `Recovery`, `foreign::{report_symbol, report_unclaimed, operator, take_when, when_ahead, report_when, return_arrow}` |
-//! | 深さ・並び | `Parser::enter`, `child`, `nth_child`, `element_depth`, `comma_list`, `CommaList`, `comma_list_tail`, `push`, `patterns::PatternCounter::{new, next_depth}` |
+//! | 深さ・並び | `Parser::enter`, `child`, `nth_child`, `element_depth`, `comma_list`, `CommaList`, `comma_list_tail`, `patterns::PatternCounter::{new, next_depth}` |
 //! | 式・文・パターン・型 | `exprs::{parse_expr, parse_block, record_ahead}`, `exprs::BlockEnd`, `patterns::parse_pattern`, `types::{parse_type, parse_uses, parse_type_params}` |
 //! | 宣言・シグネチャ | `decls::{parse_function, parse_signature, parse_params}`, `decls::Signature`, `is_decl_start` |
-//! | ブロック | `Parser::{open_block, close_block, stub_expr}`, `items::{stub_decl, skip_delimited}` |
+//! | ブロック | `Parser::{open_block, close_block}`, `items::skip_delimited` |
 //! | 呼び名・テスト | `text` の字句・構文の呼び名、`test_support::{parse_source, codes, position, assert_recovers}`（テストのビルドだけ） |
 //!
-//! 仮の本体に依存するテストは各フックのファイルに置く。F03・F04 は中身を実装するときに
-//! 自分のテストも改められるので、F02 のファイルとシグネチャを変えずに作業できる。
 
 mod decls;
 mod effects;
@@ -92,7 +89,7 @@ pub struct ParseOutput {
 }
 
 /// NEWLINE を含む字句の列（`resolve_newlines` の出力）から、ファイル一つのモジュールの AST を作る。
-/// `kind` が `SourceKind::Prelude`（標準ライブラリのソース。10-01「ソースの表」）のときだけ、`@builtin`・本体のない関数の宣言・制約 `ordered` を受け付ける。
+/// `kind` が `SourceKind::Prelude`（標準ライブラリのソース。設計書 02-02「ソースとファイル ID」）のときだけ、`@builtin`・本体のない関数の宣言・制約 `ordered` を受け付ける。
 /// ノード番号は `ids` から振る。`ids` は検査ごとに一つで、すべてのファイルで共有する（02-03「AST」）。
 /// ドキュメントコメントは `comments` から宣言に結び付け、結び付かなかったものを構文エラーにする。
 /// `text` は `lex` に渡したのと同じソースのバイト列（`Source::text()`）である。ドキュメントコメントと宣言の間の
@@ -133,6 +130,7 @@ pub(super) enum ClauseContext {
     None,
     Direct,
     Blocked,
+    BlockedByGuard,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum EscapeContext {
@@ -142,7 +140,6 @@ pub(super) enum EscapeContext {
 }
 #[derive(Clone, Copy, Debug)]
 pub(super) struct Context {
-    pub(super) stdlib: bool,
     pub(super) clause: ClauseContext,
     pub(super) escape: EscapeContext,
     pub(super) in_arm_head: bool,
@@ -208,7 +205,6 @@ impl<'a> Parser<'a> {
             blocks: Vec::new(),
             reported_symbols: BTreeSet::new(),
             ctx: Context {
-                stdlib: kind == SourceKind::Prelude,
                 clause: ClauseContext::None,
                 escape: EscapeContext::Allowed,
                 in_arm_head: false,
@@ -289,15 +285,20 @@ impl<'a> Parser<'a> {
             });
         }
         if text::keyword(self.peek_kind()).is_some() {
+            let repair = self.qualified_keyword_help();
             let token = self.bump();
             let word = text::keyword(token.kind).unwrap_or_default();
-            self.report(
-                DiagBuilder::new(DiagCode::E0216)
-                    .arg("word", word)
-                    .primary(token.span)
-                    .help("rename")
-                    .build(),
-            );
+            let d = DiagBuilder::new(DiagCode::E0216)
+                .arg("word", word)
+                .primary(token.span);
+            let d = if let Some((old, new, key, span, replacement)) = repair {
+                d.arg("old", old)
+                    .arg("new", new)
+                    .help_edits(key, vec![crate::diag::Edit { span, replacement }])
+            } else {
+                d.help("rename")
+            };
+            self.report(d.build());
             return Ok(Name {
                 text: word.to_owned(),
                 span: token.span,
@@ -307,6 +308,42 @@ impl<'a> Parser<'a> {
             return Err(self.unexpected(expected));
         }
         Ok(name_of(&self.bump()))
+    }
+
+    // 解決前のキーワードは直前のモジュールの綴りだけで照合する。別名の推測はしない
+    // （設計書 02-10「修正案」）。
+    #[cold]
+    #[inline(never)]
+    fn qualified_keyword_help(&self) -> Option<(String, String, &'static str, Span, String)> {
+        if self.tokens.get(self.pos.checked_sub(1)?)?.kind != TokenKind::Dot {
+            return None;
+        }
+        let previous = self.tokens.get(self.pos.checked_sub(2)?)?;
+        if previous.kind != TokenKind::UpperIdent {
+            return None;
+        }
+        let written = name_of(previous);
+        let renamed_module =
+            crate::resolve::renames::find("Benitoite", &written.text).map(|(new, _)| new);
+        let module = renamed_module.unwrap_or(&written.text);
+        let canonical = crate::prelude::STDLIB
+            .iter()
+            .find(|m| m.path.last().copied() == Some(module))?;
+        let canonical = format!("Benitoite.{}", canonical.path.join("."));
+        let token = self.peek();
+        let word = text::keyword(token.kind)?;
+        let (new, kind) = crate::resolve::renames::find(&canonical, word)?;
+        if !kind.replace() {
+            return None;
+        }
+        let old = format!("{}.{word}", written.text);
+        let target = format!("{module}.{new}");
+        let (span, replacement) = if renamed_module.is_some() {
+            (previous.span.to(token.span), target.clone())
+        } else {
+            (token.span, new.to_owned())
+        };
+        Some((old, target, kind.key(), span, replacement))
     }
 
     // ---------------- 位置とノード番号 ----------------
@@ -454,12 +491,6 @@ impl<'a> Parser<'a> {
                 .is_none_or(|t| t.kind == TokenKind::Newline),
         }
     }
-}
-
-/// 解析の結果を並びに加える。`comma_list` と `line_list` の要素の解析の関数を書くのに使う。
-pub(super) fn push<T>(out: &mut Vec<T>, result: PResult<T>) -> PResult<()> {
-    out.push(result?);
-    Ok(())
 }
 
 /// 丸括弧・角括弧の中のコンマ区切りの並び（01-02 の `CommaList`）の読み方。
@@ -801,43 +832,13 @@ impl Parser<'_> {
         );
         at
     }
-    pub(super) fn stub_expr(
-        &mut self,
-        depth: u32,
-        expected: &str,
-        end: TokenKind,
-    ) -> PResult<Box<super::ast::Expr>> {
-        self.enter(depth)?;
-        let start = self.pos;
-        self.unexpected(expected);
-        self.advance();
-        let mut nesting = 0_u32;
-        while !self.at(TokenKind::Eof) && !self.aborted {
-            if self.at(TokenKind::KwEnd) && self.peek_nth_kind(1) == end {
-                self.advance();
-                self.advance();
-                if nesting == 0 {
-                    break;
-                }
-                nesting = nesting.saturating_sub(1);
-            } else {
-                if self.at(end) {
-                    nesting = nesting.saturating_add(1);
-                }
-                self.advance();
-            }
-        }
-        Ok(Box::new(super::ast::Expr::Error(
-            self.error_node_from(start),
-        )))
-    }
 }
 
 #[cfg(test)]
 // 公開の parse の結果（AST・診断・位置・修正案・打ち切り）が契約である。最小実行版とは
 // 字句と AST が異なるため、新構文の退行をこの境界で確かめる。準備は本物の lex と改行判定を使い、
 // 実装の補助の関数を置き換えない（test-audit の作成時の関門、設計書 07-03）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -854,6 +855,26 @@ mod tests {
         let (out, lex) = parse_source(src, SourceKind::User);
         assert!(lex.is_empty(), "{src}: {lex:?}");
         out
+    }
+
+    #[test]
+    fn bracket_assist_requires_a_name_and_only_repairs_calls() {
+        // 添字や未完の型引数には削除の編集を付けず、名前以外の後には案内しない。
+        for (statement, assist) in [
+            ("xs[0]", true),
+            ("Map.empty[String", true),
+            ("1[0]", false),
+            ("Map.empty[String]", true),
+        ] {
+            let out = user(&body(statement));
+            let diag = out
+                .diagnostics
+                .iter()
+                .find(|d| d.code == Some(DiagCode::E0201))
+                .unwrap();
+            assert_eq!(!diag.helps.is_empty(), assist, "{diag:?}");
+            assert!(diag.helps.iter().all(|h| h.edits.is_empty()), "{diag:?}");
+        }
     }
     fn body(src: &str) -> String {
         format!("function f() -> Unit\n{src}\nend function")
@@ -1672,6 +1693,43 @@ mod tests {
         }
         result
     }
+
+    #[test]
+    fn uses_before_type_arguments_can_be_repaired_with_parentheses() {
+        for next in ["List[Integer]", "Map[String, List[Integer]]"] {
+            let source = format!(
+                "function f(callback: function(function() -> Unit uses Console.Write, {next}) -> Unit) -> Unit\nend function\n"
+            );
+            let out = user(&source);
+            let d = out
+                .diagnostics
+                .iter()
+                .find(|d| d.code == Some(DiagCode::E0209))
+                .unwrap();
+            let span = d.primary.as_ref().unwrap().span;
+            assert_eq!(
+                source.get(span.start.0 as usize..span.end.0 as usize),
+                Some(next)
+            );
+            assert_eq!(d.helps[0].edits.len(), 2);
+            let fixed = apply_edit(&source, &d.helps[0].edits);
+            assert!(fixed.contains(&format!("(function() -> Unit uses Console.Write), {next}")));
+            assert!(user(&fixed).diagnostics.is_empty(), "{fixed}");
+        }
+        for source in [
+            "function f() -> Unit uses Console.Write, List[Integer]\nend function\n",
+            "function f() -> Unit\n bind _ <- lambda() -> Unit uses Console.Write, List[Integer]\n () end lambda\nend function\n",
+            "function f(callback: function(function() -> Unit uses Console.Write, List[Integer) -> Unit) -> Unit\nend function\n",
+        ] {
+            let out = user(source);
+            let d = out
+                .diagnostics
+                .iter()
+                .find(|d| d.code == Some(DiagCode::E0209))
+                .unwrap();
+            assert!(d.helps.iter().all(|h| h.edits.is_empty()), "{source}");
+        }
+    }
     #[test]
     fn fixes_have_exact_locations_and_resulting_text() {
         for (source, expected, primary) in [
@@ -1798,7 +1856,6 @@ mod tests {
     #[test]
     fn builtin_body_rule_is_ready_for_f03() {
         let source = "function native() -> Unit\n";
-        // F02 の作業文書が、仮の body_rule を通さず、この形で確かめるよう個別に指定する。
         let lexed = crate::syntax::lexer::lex(FileId(0), source.as_bytes());
         let mut p = Parser::new(
             FileId(0),

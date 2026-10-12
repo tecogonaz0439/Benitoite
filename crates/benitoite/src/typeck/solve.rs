@@ -2,10 +2,11 @@
 use super::context::{Body, fixed};
 use super::infer::*;
 use super::limits::{TypeBudget, TypeLimit};
+use super::traits::Bound;
 use crate::base::{NodeId, Span};
 use crate::diag::{DiagBuilder, DiagCode, Edit};
 use crate::resolve::ResolveOutput;
-use crate::syntax::ast::{BinOp, UnOp};
+use crate::syntax::ast::BinOp;
 use crate::types::builtin::{BuiltinTypeClass, BuiltinTypeId as B};
 use crate::types::*;
 use std::collections::{BTreeMap, BTreeSet};
@@ -47,6 +48,8 @@ struct EffectState {
     set: EffectSet,
     origins: BTreeMap<Elem, Span>,
 }
+type Escape = (NodeId, u32);
+type LateFailure = (DiagCode, ITy, ITy, Reason, Option<Escape>);
 type EffectConstraint = (IEffect, IEffect, Reason, Option<(ITy, ITy)>);
 
 /// 一つの本体でだけ有効な型変数とエフェクト変数の状態。
@@ -54,15 +57,26 @@ type EffectConstraint = (IEffect, IEffect, Reason, Option<(ITy, ITy)>);
 pub(super) struct Solver {
     vars: Vec<Var>,
     clauses: Vec<NodeId>,
+    // 現在の単一化の失敗の出どころ。報告を保留するときは失敗とともに保存する。
+    escaped: Option<Escape>,
     heads: BTreeMap<u32, TyHead>,
     effs: Vec<EffectState>,
     effects: Vec<EffectConstraint>,
     required: Vec<(ITy, Reason)>,
-    // 宣言の型への流れ込む制約（`return` など）が先に結び付けた型変数と、その理由。呼び出しの
-    // 戻り値の型の食い違いを、宣言の側の理由で報告するために使う（設計書 02-05「誤りの報告と検査の継続」）。
+    // 宣言の型への流れ込む制約（`return` など）が先に結び付けた型変数と、その理由。
+    // 呼び出しの戻り値の食い違い、パターンの失敗の移し替え、宣言どうしの食い違いの判定に使う
+    // （設計書 02-05「誤りの報告と検査の継続」）。
     declared: BTreeMap<u32, Reason>,
-    // call_return が後へ回した失敗の報告。どちらの段で積んだものも、solve の終わりで報告する。
-    late: Vec<(DiagCode, ITy, ITy, Reason)>,
+    // 宣言の側の理由で後へ回した失敗の報告。どちらの段で積んだものも、solve の終わりで報告する。
+    late: Vec<LateFailure>,
+    // 束縛の失敗を宣言へ移した根だけを記録し、通常の使う側の誤りはすぐ報告する。
+    // 記録のある根は型変数以外の型に結び付いているので、その後の変数どうしの結合で移らない
+    // パターンの制約は `Equal` で遅らせず、変数を使う式の制約より先に生成されるので、使う側の制約を
+    // 解く時点で記録は済んでいる（設計書 02-05「誤りの報告と検査の継続」）。
+    redirected: BTreeSet<u32>,
+    // 宣言どうしと変数を使う側の食い違いは、束縛との食い違いを先に示してから報告の要否を決める
+    // （設計書 02-05「誤りの報告と検査の継続」）。
+    dependent_late: Vec<LateFailure>,
 }
 impl Solver {
     pub fn fresh_ty(&mut self) -> ITy {
@@ -318,7 +332,8 @@ impl Solver {
         let mut vars = BTreeSet::new();
         while let Some(t) = pending.pop() {
             match t {
-                ITy::Rigid { clause, .. } if !clauses.contains(&clause) => {
+                ITy::Rigid { clause, index } if !clauses.contains(&clause) => {
+                    self.escaped = Some((clause, index));
                     return Err(DiagCode::E0401);
                 }
                 ITy::Var(v) => {
@@ -354,7 +369,12 @@ impl Solver {
         }
     }
     pub fn equal(&mut self, a: &ITy, b: &ITy, reason: &Reason) -> Result<(), DiagCode> {
+        self.clear_escape();
         self.equal_with_outer(a, b, reason, a, b)
+    }
+    /// 独自の診断で扱った単一化の脱出情報を、後の報告へ残さない。
+    pub(super) fn clear_escape(&mut self) {
+        self.escaped = None;
     }
     // 関数の入れ子のエフェクトが一致しない場合も、制約の外側の期待と実際を示す。
     // solve_effects は (実際, 期待) の対を受け取る（設計書 02-05「誤りの報告と検査の継続」）。
@@ -450,6 +470,7 @@ impl Solver {
         }
     }
     fn flow(&mut self, a: &ITy, b: &ITy, r: &Reason) -> Result<bool, DiagCode> {
+        self.clear_escape();
         let a = self.zonk_checked(a).map_err(|_| DiagCode::E0208)?;
         let b = self.zonk_checked(b).map_err(|_| DiagCode::E0208)?;
         if has_error(&a) || has_error(&b) {
@@ -534,7 +555,8 @@ impl Solver {
             return true;
         }
         if let Err(code) = self.equal(&x.ret, &y.ret, &r) {
-            self.late.push((code, x.ret.clone(), y.ret.clone(), r));
+            self.late
+                .push((code, x.ret.clone(), y.ret.clone(), r, self.escaped.take()));
         }
         true
     }
@@ -561,22 +583,11 @@ impl Solver {
         }
     }
     fn show(&self, ctx: &Body<'_, '_>, t: &ITy) -> String {
-        let names: Vec<_> = ctx
-            .scheme
-            .type_params
-            .iter()
-            .map(|p| p.name.clone())
-            .collect();
-        self.diagnostic_type(t).show(&TyNames {
-            adts: &ctx.decls.out.adts,
-            effects: &ctx.decls.out.effects,
-            type_params: &names,
-            effect_params: &ctx.scheme.effect_params,
-        })
+        ctx.show_type_with(self, t)
     }
-    // 出力用の finalize の既定値を診断へ持ち込まない。未確定の変数には
-    // 名前の表にない番号を用い、Ty::show の `_` の表示を使う（設計書 02-05「誤りの報告と検査の継続」）。
-    fn diagnostic_type(&self, t: &ITy) -> Ty {
+    /// 出力用の finalize の既定値を診断へ持ち込まない。未確定の変数には
+    /// 名前の表にない番号を用い、Ty::show の `_` の表示を使う（設計書 02-05「誤りの報告と検査の継続」）。
+    pub(super) fn diagnostic_type(&self, t: &ITy) -> Ty {
         match self.zonk(t) {
             ITy::Var(_) | ITy::Error => Ty::Param(u32::MAX),
             ITy::Con(c, a) => Ty::Con(c, a.iter().map(|t| self.diagnostic_type(t)).collect()),
@@ -605,6 +616,28 @@ impl Solver {
         found: &ITy,
         r: &Reason,
     ) {
+        let escaped = self.escaped.take();
+        self.failure_with_escape(ctx, code, expected, found, r, escaped);
+    }
+    #[cold]
+    #[inline(never)]
+    fn failure_with_escape(
+        &mut self,
+        ctx: &mut Body<'_, '_>,
+        code: DiagCode,
+        expected: &ITy,
+        found: &ITy,
+        r: &Reason,
+        escaped: Option<Escape>,
+    ) {
+        if r.kind == ReasonKind::LambdaReturn
+            && ctx
+                .lambda_body_ends
+                .get(&r.span)
+                .is_some_and(|end| ctx.reported_body_values.contains(end))
+        {
+            return;
+        }
         if code == DiagCode::E0208 {
             let limit = self
                 .zonk_checked(expected)
@@ -623,9 +656,14 @@ impl Solver {
         let mut code = code;
         if code == DiagCode::E0401 && matches!(r.kind, ReasonKind::ExprStmt | ReasonKind::FnBody) {
             code = DiagCode::E0416;
+            if r.kind == ReasonKind::FnBody {
+                ctx.reported_body_values.insert(r.span);
+            }
         }
-        let mut exp = self.show(ctx, expected);
-        let shown = self.show(ctx, expected);
+        let mut names = ctx.type_param_names();
+        let mut indices = BTreeMap::new();
+        let mut exp = ctx.show_type_named(self, expected, &mut names, &mut indices);
+        let shown = exp.clone();
         if let Some(span) = r.related
             && ctx
                 .decls
@@ -636,7 +674,7 @@ impl Solver {
         {
             exp = text.into();
         }
-        let mut f = self.show(ctx, found);
+        let mut f = ctx.show_type_named(self, found, &mut names, &mut indices);
         if code == DiagCode::E0402
             && let (ITy::Fn(e), ITy::Fn(actual)) = (self.zonk(expected), self.zonk(found))
         {
@@ -661,6 +699,22 @@ impl Solver {
             d = d.secondary(span, "declared");
         }
         if code == DiagCode::E0401 {
+            if let Some((clause, index)) = escaped
+                && let Some((op, span)) = ctx.clause_ops.get(clause)
+            {
+                // 期待・実際に表示した名前の表を注記でも使う。
+                let mut ty = Ty::Rigid { clause, index };
+                ctx.name_rigid_types(&mut ty, &mut names, &mut indices);
+                let param = indices
+                    .get(&(clause, index))
+                    .and_then(|n| usize::try_from(*n).ok().and_then(|i| names.get(i)))
+                    .map_or("_", String::as_str);
+                d = d
+                    .arg("param", param)
+                    .arg("operation", op)
+                    .note("escaped")
+                    .secondary(*span, "clause");
+            }
             if exp != shown {
                 d = d.arg("expanded", shown).note("expanded");
             }
@@ -752,18 +806,60 @@ impl Solver {
                     d.help("to_string_any")
                 };
             }
+            let expected_type = self.diagnostic_type(expected);
+            let found_type = self.diagnostic_type(found);
+            if let Some(shadowed) = ctx
+                .decls
+                .prelude_type_in(&[&expected_type, &found_type], r.span)
+            {
+                d = d
+                    .arg("shadowed", shadowed)
+                    .note("shadowed")
+                    .help("prelude_type");
+            }
         }
         if code == DiagCode::E0416 {
-            d = d.help_edits(
-                "discard",
-                vec![Edit {
-                    span: Span {
-                        end: r.span.start,
-                        ..r.span
-                    },
-                    replacement: "bind _ <- ".into(),
-                }],
-            );
+            let body = ctx
+                .body_returns
+                .get(&r.span)
+                .filter(|_| r.kind == ReasonKind::FnBody);
+            let returns =
+                body.is_some_and(|body| self.zonk(&body.ty) != super::generate::basic(B::UNIT));
+            if returns && let Some(body) = body {
+                let what = match body.owner {
+                    super::context::ReturnOwner::Function => super::text::FUNCTION,
+                    super::context::ReturnOwner::Lambda
+                    | super::context::ReturnOwner::Placeholder(_) => super::text::LAMBDA,
+                };
+                d = d.arg("what", what);
+                let returned = self.zonk(&body.ty);
+                d = if matches!(returned, ITy::Var(_)) || returned == self.zonk(found) {
+                    d.help_edits(
+                        "return_value",
+                        vec![Edit {
+                            span: Span {
+                                end: r.span.start,
+                                ..r.span
+                            },
+                            replacement: "return ".into(),
+                        }],
+                    )
+                } else {
+                    d.help("return_value")
+                };
+            }
+            if !returns || body.is_some_and(|body| !body.annotated) {
+                d = d.help_edits(
+                    "discard",
+                    vec![Edit {
+                        span: Span {
+                            end: r.span.start,
+                            ..r.span
+                        },
+                        replacement: "bind _ <- ".into(),
+                    }],
+                );
+            }
             if let Some(ExprStmtInfo { name, value }) = reassign(ctx, r.span) {
                 d = d.arg("name", &name).help_edits(
                     "reassign",
@@ -786,7 +882,9 @@ impl Solver {
                 Constraint::EffSub { sub, sup, reason } => {
                     self.effects.push((sub, sup, reason, None))
                 }
-                Constraint::Flow { ref reason, .. } if reason.priority == Priority::Declared => {
+                Constraint::Equal { ref reason, .. } | Constraint::Flow { ref reason, .. }
+                    if reason.priority == Priority::Declared =>
+                {
                     declared.push(c)
                 }
                 Constraint::Equal { .. } | Constraint::Flow { .. } => normal.push(c),
@@ -824,7 +922,7 @@ impl Solver {
                     if let Constraint::Flow { from, to, reason } = c
                         && let Err(code) = self.equal(&to, &from, &reason)
                     {
-                        self.failure(ctx, code, &to, &from, &reason);
+                        self.pair_failure(ctx, code, &to, &from, &reason);
                     }
                 }
                 break;
@@ -832,7 +930,7 @@ impl Solver {
             deferred = remaining;
         }
         bounds = self.bounds(ctx, bounds, false);
-        // F09 の試行とリソースの検査がこの状態に制約を足せるように移して戻す（F07 フック E5）。
+        // 試行とリソースの検査がこの状態に制約を足せるように移して戻す。
         ctx.solver = std::mem::take(self);
         super::effects::solve_special(ctx);
         *self = std::mem::take(&mut ctx.solver);
@@ -857,11 +955,15 @@ impl Solver {
             if let Constraint::Flow { from, to, reason } = c
                 && let Err(code) = self.equal(&to, &from, &reason)
             {
-                self.failure(ctx, code, &to, &from, &reason);
+                self.pair_failure(ctx, code, &to, &from, &reason);
             }
         }
-        for (code, expected, found, reason) in std::mem::take(&mut self.late) {
-            self.failure(ctx, code, &expected, &found, &reason);
+        for (code, expected, found, reason, escaped) in std::mem::take(&mut self.late) {
+            self.failure_with_escape(ctx, code, &expected, &found, &reason, escaped);
+        }
+        for (code, expected, found, reason, escaped) in std::mem::take(&mut self.dependent_late) {
+            // 移し替えた報告から伝わった誤りの型は、両辺を調べる failure_with_escape が抑える。
+            self.failure_with_escape(ctx, code, &expected, &found, &reason, escaped);
         }
         self.bounds(ctx, bounds, true);
         self.solve_effects(ctx);
@@ -878,16 +980,24 @@ impl Solver {
                 found,
                 reason,
             } => {
+                if reason.kind == ReasonKind::LambdaReturn
+                    && ctx
+                        .lambda_body_ends
+                        .get(&reason.span)
+                        .is_some_and(|end| ctx.reported_body_values.contains(end))
+                {
+                    return;
+                }
                 if self.call_return(ctx, &expected, &found, &reason) {
                     return;
                 }
                 if let Err(code) = self.equal(&expected, &found, &reason) {
-                    self.failure(ctx, code, &expected, &found, &reason);
+                    self.pair_failure(ctx, code, &expected, &found, &reason);
                 }
             }
             Constraint::Flow { from, to, reason } => match self.flow(&from, &to, &reason) {
                 Ok(false) => deferred.push(Constraint::Flow { from, to, reason }),
-                Err(code) => self.failure(ctx, code, &to, &from, &reason),
+                Err(code) => self.pair_failure(ctx, code, &to, &from, &reason),
                 _ => {}
             },
             Constraint::OneOf { .. }
@@ -898,6 +1008,86 @@ impl Solver {
             | Constraint::Resource { .. }
             | Constraint::EffSub { .. } => {}
         }
+    }
+    // 宣言が先に決めた変数を定めるパターンとの食い違いは、その宣言への流れ込む位置で示す。
+    // 型の表示は、ほかの制約で引数の型が決まった後まで待つ（設計書 02-05「誤りの報告と検査の継続」）。
+    #[cold]
+    #[inline(never)]
+    fn pair_failure(
+        &mut self,
+        ctx: &mut Body<'_, '_>,
+        code: DiagCode,
+        expected: &ITy,
+        found: &ITy,
+        reason: &Reason,
+    ) {
+        if code == DiagCode::E0401 && reason.kind == ReasonKind::FnBody {
+            // ラムダを渡す引数の制約も解いてから、戻り値の編集が可能か判定する。
+            // 既に報告対象となった本体では、既定の Unit との比較を重ねない。
+            ctx.reported_body_values.insert(reason.span);
+            self.late.push((
+                code,
+                expected.clone(),
+                found.clone(),
+                reason.clone(),
+                self.escaped.take(),
+            ));
+            return;
+        }
+        if reason.priority == Priority::Declared
+            && code == DiagCode::E0401
+            && matches!(reason.kind, ReasonKind::Return | ReasonKind::BindAnnotation)
+            && let ITy::Var(v) = found
+            && self
+                .declared
+                .get(&self.root(*v).0)
+                .is_some_and(|r| r != reason)
+        {
+            // ここで誤りの型にすると、手順 2 の束縛との食い違いを報告できなくなる。
+            // 移し替えた報告が変数を誤りの型にした後で、宣言どうしの報告の要否を決める。
+            self.dependent_late.push((
+                code,
+                expected.clone(),
+                found.clone(),
+                reason.clone(),
+                self.escaped.take(),
+            ));
+            return;
+        }
+        if reason.priority != Priority::Declared
+            && code == DiagCode::E0401
+            && reason.kind == ReasonKind::Pattern
+            // パターンの等しい型の制約は、expected が値の側、found がパターンの側である。
+            && let ITy::Var(v) = found
+            && let Some(r) = self.declared.get(&self.root(*v).0).cloned()
+            && !(reason.span.file == r.span.file
+                && reason.span.start >= r.span.start
+                && reason.span.end <= r.span.end)
+        {
+            self.redirected.insert(self.root(*v).0);
+            let escaped = self.escaped.take();
+            self.late
+                .push((code, found.clone(), expected.clone(), r, escaped));
+            return;
+        }
+        if reason.priority != Priority::Declared
+            && code == DiagCode::E0401
+            && [expected, found]
+                .iter()
+                .any(|ty| matches!(ty, ITy::Var(v) if self.redirected.contains(&self.root(*v).0)))
+        {
+            // 宣言の型との比較だけで生じた使う側の誤りは、束縛の報告から誤りの型が伝わるまで待つ。
+            // パターンの失敗と違い、理由と位置は変えない（設計書 02-05「誤りの報告と検査の継続」）。
+            self.dependent_late.push((
+                code,
+                expected.clone(),
+                found.clone(),
+                reason.clone(),
+                self.escaped.take(),
+            ));
+            return;
+        }
+        self.failure(ctx, code, expected, found, reason);
     }
     fn bounds(
         &mut self,
@@ -913,9 +1103,9 @@ impl Solver {
         while let Some((c, outer)) = pending.pop() {
             let original = c.clone();
             let (ty, r, mode, set) = match c {
-                Constraint::OneOf { ty, reason, set } => (ty, reason, 0, Some(set)),
-                Constraint::Equality { ty, reason } => (ty, reason, 1, None),
-                Constraint::Key { ty, reason } => (ty, reason, 2, None),
+                Constraint::OneOf { ty, reason, set } => (ty, reason, Bound::Set, Some(set)),
+                Constraint::Equality { ty, reason } => (ty, reason, Bound::Equality, None),
+                Constraint::Key { ty, reason } => (ty, reason, Bound::Key, None),
                 Constraint::Equal { .. }
                 | Constraint::Flow { .. }
                 | Constraint::Class { .. }
@@ -945,7 +1135,7 @@ impl Solver {
                 ITy::Con(con, args) => {
                     let mut valid = true;
                     let mut indices = vec![];
-                    if mode == 0 {
+                    if mode == Bound::Set {
                         valid =
                             matches!(con,TyCon::Builtin(b) if set.is_some_and(|s|s.contains(b)));
                     } else {
@@ -956,7 +1146,7 @@ impl Solver {
                                         d.class,
                                         BuiltinTypeClass::Opaque | BuiltinTypeClass::Resource
                                     )
-                                }) && (mode != 2 || b != B::FLOAT);
+                                }) && (mode != Bound::Key || b != B::FLOAT);
                                 if b.def()
                                     .is_some_and(|d| d.class == BuiltinTypeClass::Collection)
                                 {
@@ -966,14 +1156,14 @@ impl Solver {
                             TyCon::Adt(id) => {
                                 if let Some(a) = ctx.decls.out.adts.get(id) {
                                     valid = !a.eq_summary.always
-                                        && (mode != 2 || !a.key_summary.always);
+                                        && (mode != Bound::Key || !a.key_summary.always);
                                     indices.extend(
                                         a.eq_summary
                                             .depends_on
                                             .iter()
                                             .filter_map(|i| usize::try_from(*i).ok()),
                                     );
-                                    if mode == 2 {
+                                    if mode == Bound::Key {
                                         indices.extend(
                                             a.key_summary
                                                 .depends_on
@@ -990,7 +1180,7 @@ impl Solver {
                         indices.dedup();
                         for i in indices.into_iter().rev() {
                             if let Some(t) = args.get(i) {
-                                let constraint = if mode == 2 {
+                                let constraint = if mode == Bound::Key {
                                     Constraint::Key {
                                         ty: t.clone(),
                                         reason: r.clone(),
@@ -1001,7 +1191,7 @@ impl Solver {
                                         reason: r.clone(),
                                     }
                                 };
-                                let outer = (mode == 1)
+                                let outer = (mode == Bound::Equality)
                                     .then(|| outer.clone().unwrap_or_else(|| ty.clone()));
                                 pending.push((constraint, outer));
                             }
@@ -1066,12 +1256,12 @@ impl Solver {
         ty: &ITy,
         outer: Option<&ITy>,
         r: &Reason,
-        mode: u8,
+        mode: Bound,
         set: Option<TySet>,
     ) {
-        let code = if mode == 2 {
+        let code = if mode == Bound::Key {
             DiagCode::E0423
-        } else if mode == 1 {
+        } else if mode == Bound::Equality {
             DiagCode::E0406
         } else if r.kind == ReasonKind::Interp {
             DiagCode::E0422
@@ -1094,13 +1284,8 @@ impl Solver {
         if let Some(set) = set
             && code == DiagCode::E0405
         {
-            let allowed = set
-                .0
-                .iter()
-                .filter_map(|b| b.def())
-                .map(|d| format!("`{}`", d.name))
-                .collect::<Vec<_>>()
-                .join(", ");
+            let allowed =
+                crate::diag::code_list(set.0.iter().filter_map(|b| b.def()).map(|d| d.name));
             d = d.arg("allowed", allowed).note("allowed");
         }
         if code == DiagCode::E0405
@@ -1124,30 +1309,15 @@ impl Solver {
         self.poison(std::slice::from_ref(ty));
     }
 
-    fn interpolation_help(
+    /// `Show` の実装とこのモジュールの import に合う、文字列への変換の案内を作る。
+    pub(super) fn interpolation_help(
         &self,
         ctx: &Body<'_, '_>,
         ty: &ITy,
         span: Span,
         d: DiagBuilder,
     ) -> DiagBuilder {
-        // 同じモジュールの import から別名を引く。ほかのモジュールが取り込んだ
-        // Trait はこの位置から参照できない（設計書 01-03「モジュールと import（初回リリース版）」）。
-        let alias = ctx
-            .decls
-            .asts
-            .iter()
-            .find(|m| m.file == span.file)
-            .and_then(|m| {
-                m.imports.iter().find(|i| {
-                    i.path
-                        .iter()
-                        .map(|n| n.text.as_str())
-                        .eq(["Benitoite", "Trait"])
-                })
-            })
-            .and_then(|i| i.alias.as_ref().or_else(|| i.path.last()));
-        let Some(alias) = alias else {
+        let Some(alias) = super::traits::trait_import_alias(ctx, span) else {
             return d.help("import_show");
         };
         let Some(class) = ctx.decls.resolved.stdlib("Benitoite.Trait.Show") else {
@@ -1156,7 +1326,7 @@ impl Solver {
         if !super::traits::implements(ctx, self, class, ty) {
             return d.help("convert");
         }
-        let function = format!("{}.Show.show", alias.text);
+        let function = format!("{alias}.Show.show");
         let edits = source(ctx.decls.sources, span)
             .map(|expr| Edit {
                 span,
@@ -1219,7 +1389,7 @@ impl Solver {
                 }
                 if let Some((a, b)) = &pair {
                     if reported.insert((r.span.file.0, r.span.start.0, r.span.end.0)) {
-                        self.failure(ctx, DiagCode::E0401, b, a, &r);
+                        self.failure_with_escape(ctx, DiagCode::E0401, b, a, &r, None);
                     }
                     break;
                 }
@@ -1331,27 +1501,7 @@ pub(super) fn source(sources: &crate::base::SourceTable, span: Span) -> Option<&
 fn op_text(r: &ReasonKind) -> String {
     match r {
         ReasonKind::Operator { op } | ReasonKind::Operands { op } | ReasonKind::Logic { op } => {
-            match op {
-                OpName::Un(UnOp::Neg) => "-",
-                OpName::Un(UnOp::Not) => "not",
-                OpName::Bin(b) => match b {
-                    BinOp::Add => "+",
-                    BinOp::Sub => "-",
-                    BinOp::Mul => "*",
-                    BinOp::Div => "/",
-                    BinOp::IntDiv => "div",
-                    BinOp::Mod => "mod",
-                    BinOp::Eq => "=",
-                    BinOp::Ne => "<>",
-                    BinOp::Lt => "<",
-                    BinOp::Le => "<=",
-                    BinOp::Gt => ">",
-                    BinOp::Ge => ">=",
-                    BinOp::And => "and",
-                    BinOp::Or => "or",
-                },
-            }
-            .into()
+            super::text::operator_spelling(*op).into()
         }
         ReasonKind::BuiltinParam { name } | ReasonKind::ParamBound { name } => name.clone(),
         ReasonKind::CallArg { .. }
@@ -1385,7 +1535,7 @@ fn op_text(r: &ReasonKind) -> String {
         | ReasonKind::HandleBody
         | ReasonKind::HandleClause
         | ReasonKind::Resume
-        | ReasonKind::ConstValue => "=".into(),
+        | ReasonKind::ConstValue => super::text::operator_spelling(OpName::Bin(BinOp::Eq)).into(),
     }
 }
 struct ExprStmtInfo {
@@ -1393,18 +1543,8 @@ struct ExprStmtInfo {
     value: String,
 }
 fn reassign(ctx: &Body<'_, '_>, span: Span) -> Option<ExprStmtInfo> {
-    use crate::syntax::ast::Expr;
-    let e = ctx.expr_stmts.iter().find(|(_, e)| e.span() == span)?.1;
-    let Expr::Binary(b) = e else {
-        return None;
-    };
-    if b.op != BinOp::Eq {
-        return None;
-    }
-    let Expr::Name(n) = b.lhs.as_ref() else {
-        return None;
-    };
-    let name = source(ctx.decls.sources, n.span)?.to_owned();
-    let value = source(ctx.decls.sources, b.rhs.span())?.to_owned();
+    let (lhs, rhs) = ctx.expr_stmts.get(&span)?;
+    let name = source(ctx.decls.sources, *lhs)?.to_owned();
+    let value = source(ctx.decls.sources, *rhs)?.to_owned();
     Some(ExprStmtInfo { name, value })
 }

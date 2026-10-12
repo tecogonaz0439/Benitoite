@@ -124,6 +124,8 @@ impl State<'_> {
 
     /// 01-12「リスト、ラムダ、条件分岐、match」の `match` の行。
     /// 初回リリース版の選択肢は行ごと、ガードと本体は分岐ごとに一つだけ作る（設計書 02-06「パターンの拡張」）。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn match_expr(
         &mut self,
         e: &ast::MatchExpr,
@@ -131,6 +133,18 @@ impl State<'_> {
     ) -> Result<Comp, InternalError> {
         let mut pending = vec![];
         let scrutinee = self.eval(&e.scrutinee, &mut pending)?;
+        self.match_arms(e, position, pending, scrutinee)
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn match_arms(
+        &mut self,
+        e: &ast::MatchExpr,
+        position: Position,
+        pending: Vec<(Var, Comp)>,
+        scrutinee: CoreVal,
+    ) -> Result<Comp, InternalError> {
         let mut rows = vec![];
         let mut arms = vec![];
         let mut eff = EffectSet::empty();

@@ -6,29 +6,23 @@ open Benitoite.Release Benitoite.Surface Benitoite.Surface.Check Benitoite.Surfa
 open SurfaceCheck.Batch
 private def q : Input := {
   D := { funs := fun _ => none, cons := fun _ => none }, B := { sig := fun _ => none, delta := fun _ _ _ _ => none, ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False, isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => False, refGet := "get", refSet := "set" }, satDec := fun _ _ _ => false, admitsDec := fun _ _ _ => false, opPrim := fun _ _ => none, ctors := fun _ => [], atoms := [.name "A"] }
-private def marked : List String := ["ガードの中の resume（TODO-190）"]
-private def guarded : WalkState := { guards := #[[0,1,0]] }
-#guard category q guarded marked [] (.error ⟨[0,1,0,2],"continuation is missing or hidden"⟩) == "knownDifference"
-#guard category q guarded marked [] (.error ⟨[0,1,1],"continuation is missing or hidden"⟩) == "mismatched"
-#guard category q guarded marked [] (.error ⟨[0,1,0,2],"type is not included in the expected type"⟩) == "mismatched"
-#guard category q guarded [] [] (.error ⟨[0,1,0,2],"continuation is missing or hidden"⟩) == "mismatched"
-#guard category q { guarded with partialReturns := #[[2,0]] } marked []
-    (.error ⟨[0,1,0,2],"continuation is missing or hidden"⟩) == "mismatched"
-#guard category q { prims := ["unsupported"] } [] ["unsupported"] (.ok ()) == "outOfScope"
-#guard category q { prims := ["supported"] } [] ["unsupported"] (.ok ()) == "matched"
+-- 継続が隠された誤りも、プレースホルダ引数の誤りも、不一致として扱う。
+#guard category q {} [] (.error ⟨[0,1,0,2],"continuation is missing or hidden"⟩) == "mismatched"
+#guard category q { prims := ["unsupported"] } ["unsupported"] (.ok ()) == "outOfScope"
+#guard category q { prims := ["supported"] } ["unsupported"] (.ok ()) == "matched"
 
 private def intTy : Ty := .base .integer
 private def fn : Expr := .lam [] intTy emptyEff (.last (.returnE intTy (.literal (.integer 1))))
 private def lazyWalk : WalkState := {
   nodes := #[⟨[0],.lazyE (.last fn),some (.lazy (.fn [] intTy (Eff.single "A")))⟩] }
-#guard category q lazyWalk [] [] (.error ⟨[0],"type is not included in the expected type"⟩) == "lazyRestriction"
-#guard category q lazyWalk [] [] (.error ⟨[0],"effect exceeds the allowed effect"⟩) == "mismatched"
-#guard category q lazyWalk [] [] (.error ⟨[0,0,0,0],"type is not included in the expected type"⟩) == "mismatched"
+#guard category q lazyWalk [] (.error ⟨[0],"type is not included in the expected type"⟩) == "lazyRestriction"
+#guard category q lazyWalk [] (.error ⟨[0],"effect exceeds the allowed effect"⟩) == "mismatched"
+#guard category q lazyWalk [] (.error ⟨[0,0,0,0],"type is not included in the expected type"⟩) == "mismatched"
 
 private def tailMatch : Expr := .matchE (.base .unit) (.literal (.boolean true))
   (.single .wild (.last (.returnE (.base .unit) (.literal (.integer 1)))) .nil)
 private def changes (e : Expr) (p : Position) : Nat :=
-  ((walkExpr q (some (.base .string)) p [] false none e).run {}).2.changes.size
+  ((walkExpr q (some (.base .string)) p [] none e).run {}).2.changes.size
 #guard changes tailMatch .tail == 1
 #guard changes tailMatch .other == 0
 #guard changes (.lam [] intTy emptyEff (.last tailMatch)) .other == 1
@@ -42,7 +36,7 @@ namespace SurfaceCheck.Validation
 open Benitoite.Release Benitoite.Surface Benitoite.Surface.Check Benitoite.Surface.CheckTools
 open Benitoite.Surface.CheckTables Benitoite.Exchange.CheckInput SurfaceCheck.Batch
 -- 個数だけでなく、ラムダ自身の R に置き換わることを検査する。
-#guard match ((walkExpr q (some (.base .string)) .other [] false none
+#guard match ((walkExpr q (some (.base .string)) .other [] none
     (.lam [] intTy emptyEff (.last tailMatch))).run {}).1 with
   | .lam _ _ _ (.last (.matchE t _ _)) => tyEq q.atoms t intTy
   | _ => false

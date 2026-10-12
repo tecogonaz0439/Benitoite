@@ -29,7 +29,7 @@ pub enum Verb {
 }
 
 /// 検査の診断（誤りと警告）の一覧を、文章の形式にする。渡された順に書き（並べるのは呼び出し側。
-/// 10-13 の `pipeline::check`）、誤りと警告を合わせて 50 件を超えた分は書かずに件数を示し、
+/// `pipeline::check`）、誤りと警告を合わせて 50 件を超えた分は書かずに件数を示し、
 /// 最後に件数の行を書く（誤りも警告もなければ書かない）。`file` は実行を始めるファイルの表示名。
 pub fn render_check_text(
     diags: &[Diagnostic],
@@ -80,7 +80,7 @@ pub fn render_check_text(
             },
             &[
                 ("verb", verb.to_owned()),
-                ("file", file.to_owned()),
+                ("file", escape_terminal_controls(file)),
                 ("count", errors.to_string()),
             ],
         )
@@ -292,11 +292,17 @@ pub fn render_json_line(diag: &Diagnostic, sources: &SourceTable) -> String {
         output.push_str("{\"message\":");
         push_json_string(&mut output, &help.message);
         output.push_str(",\"edits\":[");
-        for (index, edit) in help.edits.iter().enumerate() {
-            if index > 0 {
-                output.push(',');
+        if help
+            .edits
+            .iter()
+            .all(|edit| sources.get(edit.span.file).is_some())
+        {
+            for (index, edit) in help.edits.iter().enumerate() {
+                if index > 0 {
+                    output.push(',');
+                }
+                append_json_edit(&mut output, edit, sources);
             }
-            append_json_edit(&mut output, edit, sources);
         }
         output.push_str("]}");
     }
@@ -304,6 +310,17 @@ pub fn render_json_line(diag: &Diagnostic, sources: &SourceTable) -> String {
     if let Some(trace) = diag.trace.as_ref() {
         output.push(',');
         output.push_str(&json_trace_fields(trace, &diag.task_origins, sources));
+    }
+    if diag.trace.is_none() && !diag.waiting.is_empty() {
+        output.push(',');
+        output.push_str(&json_trace_fields(
+            &CallTrace {
+                frames: Vec::new(),
+                omitted: 0,
+            },
+            &diag.task_origins,
+            sources,
+        ));
     }
     if !diag.waiting.is_empty() {
         output.push_str(",\"waitingTasks\":[");
@@ -354,7 +371,8 @@ fn prepare_label<'a>(label: &'a Label, sources: &'a SourceTable) -> Option<Prepa
     let line_text = source.line_text(start_location.line)?;
     let source_bytes = source.text();
     let start_offset = byte_offset(source_bytes, label.span.start);
-    let line_start = line_start_offset(source_bytes, start_offset);
+    let line_start =
+        excerpt_start_offset(source_bytes, line_start_offset(source_bytes, start_offset));
     let start_in_line = start_offset.saturating_sub(line_start).min(line_text.len());
     let end_offset = byte_offset(source_bytes, label.span.end);
     let end_location = source.line_col(label.span.end);
@@ -408,6 +426,15 @@ fn line_start_offset(source: &[u8], offset: usize) -> usize {
         .map_or(0, |newline| newline.saturating_add(1))
 }
 
+// BOM は列に数えず、抜粋にも示さない（設計書 02-10「文章の形式」）。
+fn excerpt_start_offset(bytes: &[u8], start: usize) -> usize {
+    if start == 0 && bytes.starts_with(b"\xEF\xBB\xBF") {
+        b"\xEF\xBB\xBF".len()
+    } else {
+        start
+    }
+}
+
 fn visit_source_units(bytes: &[u8], mut visit: impl FnMut(char, usize)) {
     let mut offset = 0_usize;
     while offset < bytes.len() {
@@ -415,7 +442,7 @@ fn visit_source_units(bytes: &[u8], mut visit: impl FnMut(char, usize)) {
         match std::str::from_utf8(remaining) {
             Ok(valid) => {
                 for character in valid.chars() {
-                    visit(character, if character == '\t' { 4 } else { 1 });
+                    visit(character, source_unit_width(character));
                 }
                 break;
             }
@@ -424,7 +451,7 @@ fn visit_source_units(bytes: &[u8], mut visit: impl FnMut(char, usize)) {
                 let valid_prefix = remaining.get(..valid_len).unwrap_or_default();
                 if let Ok(valid) = std::str::from_utf8(valid_prefix) {
                     for character in valid.chars() {
-                        visit(character, if character == '\t' { 4 } else { 1 });
+                        visit(character, source_unit_width(character));
                     }
                 }
                 offset = offset.saturating_add(valid_len);
@@ -438,6 +465,47 @@ fn visit_source_units(bytes: &[u8], mut visit: impl FnMut(char, usize)) {
                 }
             }
         }
+    }
+}
+
+fn escaped_terminal_control(character: char) -> Option<String> {
+    match character {
+        '\u{0}'..='\u{1F}'
+        | '\u{7F}'..='\u{9F}'
+        | '\u{61C}'
+        | '\u{200E}'
+        | '\u{200F}'
+        | '\u{202A}'..='\u{202E}'
+        | '\u{2066}'..='\u{2069}'
+        | '\u{FEFF}' => Some(format!("\\u{{{:X}}}", u32::from(character))),
+        _ => None,
+    }
+}
+
+/// ファイル名など一行に収める文字列の端末と双方向の書式の制御文字、および U+FEFF を、字句の修正案と同じ形で逃がす。
+/// LF による行の追加を防ぎ、タブも端末による表示位置の違いを避けて元の文字を示す。
+/// 抜粋のタブは別の経路で空白 4 つに展開し、修正案は LF で行を分けてから描画する。
+pub(crate) fn escape_terminal_controls(text: &str) -> String {
+    let mut output = String::new();
+    for character in text.chars() {
+        append_terminal_character(&mut output, character);
+    }
+    output
+}
+
+fn append_terminal_character(output: &mut String, character: char) {
+    if let Some(escaped) = escaped_terminal_control(character) {
+        output.push_str(&escaped);
+    } else {
+        output.push(character);
+    }
+}
+
+fn source_unit_width(character: char) -> usize {
+    if character == '\t' {
+        4
+    } else {
+        escaped_terminal_control(character).map_or(1, |escaped| escaped.len())
     }
 }
 
@@ -455,7 +523,7 @@ fn render_source_line(bytes: &[u8]) -> String {
         if character == '\t' {
             output.push_str("    ");
         } else {
-            output.push(character);
+            append_terminal_character(&mut output, character);
         }
     });
     output
@@ -484,7 +552,7 @@ fn append_header(output: &mut String, diag: &Diagnostic, opts: TextOptions) {
         opts.color,
     );
     output.push_str(": ");
-    output.push_str(&diag.message);
+    output.push_str(&escape_terminal_controls(&diag.message));
 }
 
 fn code_prefix(severity: &str, diag: &Diagnostic) -> String {
@@ -544,7 +612,7 @@ fn append_secondary_excerpt(
 }
 
 fn append_location(output: &mut String, file: &str, line: u32, column: u32) {
-    output.push_str(file);
+    output.push_str(&escape_terminal_controls(file));
     output.push(':');
     output.push_str(&line.to_string());
     output.push(':');
@@ -604,7 +672,7 @@ fn append_marker_line(
     }
     if !label.text.is_empty() {
         output.push(' ');
-        output.push_str(label.text);
+        output.push_str(&escape_terminal_controls(label.text));
     }
     output.push('\n');
 }
@@ -621,12 +689,21 @@ fn append_tagged_line(
     output.push(' ');
     push_colored(output, tag, BOLD, opts.color);
     output.push_str(": ");
-    output.push_str(message);
-    output.push('\n');
+    let message = message.strip_suffix('\n').unwrap_or(message);
+    for (index, line) in message.split('\n').enumerate() {
+        if index > 0 {
+            push_spaces(
+                output,
+                gutter_width.saturating_add(tag.len()).saturating_add(5),
+            );
+        }
+        output.push_str(&escape_terminal_controls(line));
+        output.push('\n');
+    }
 }
 
 // 呼び出しの履歴とタスクの起動の履歴の節を書く。名前の欄の幅は二つの節で揃える（02-10「実行時エラーと資源の不足の報告」）。
-// `render_one_text` と `render_trace_text` の共通の部分（実装プラン D11「作るもの」）。
+// `render_one_text` と `render_trace_text` の共通の部分。
 fn append_trace_sections(
     output: &mut String,
     trace: Option<&CallTrace>,
@@ -727,6 +804,10 @@ fn append_omitted_frames(output: &mut String, omitted: u32, indent: usize) {
 }
 
 fn trace_frame_name(frame: &TraceFrame, sources: &SourceTable) -> String {
+    escape_terminal_controls(&frame_name_text(frame, sources))
+}
+
+fn frame_name_text(frame: &TraceFrame, sources: &SourceTable) -> String {
     match &frame.name {
         FrameName::Named(name) => name.clone(),
         FrameName::Lambda(span) => anonymous_name("lambda", *span, sources),
@@ -775,8 +856,10 @@ fn append_waiting(
                 name.push_str(" at ");
                 append_location(&mut name, location.file, location.line, location.column);
             }
-            let kind =
-                codes::fill_template(codes::text::WAITS_FOR, &[("kind", task.waits_for.clone())]);
+            let kind = codes::fill_template(
+                codes::text::WAITS_FOR,
+                &[("kind", escape_terminal_controls(&task.waits_for))],
+            );
             (
                 name,
                 kind,
@@ -827,7 +910,7 @@ fn append_json_frames(output: &mut String, frames: &[TraceFrame], sources: &Sour
 
 fn append_json_frame(output: &mut String, frame: &TraceFrame, sources: &SourceTable) {
     output.push_str("{\"function\":");
-    push_json_string(output, &trace_frame_name(frame, sources));
+    push_json_string(output, &frame_name_text(frame, sources));
     output.push_str(",\"location\":");
     append_json_optional_span(output, frame.call_site, sources);
     output.push('}');
@@ -862,7 +945,7 @@ fn append_backtrace(output: &mut String, backtrace: &str, gutter_width: usize, o
     output.push_str(" backtrace:\n");
     for line in backtrace.lines() {
         push_spaces(output, gutter_width.saturating_add(3));
-        output.push_str(line);
+        output.push_str(&escape_terminal_controls(line));
         output.push('\n');
     }
 }
@@ -990,7 +1073,7 @@ pub fn render_trace_text(
 }
 
 /// `render_trace_text` に、末尾呼び出しの注記の前に置く注記の並び（止める途中の解放の失敗）を加えたもの。
-/// 実行時エラーの報告と同じく、解放の注記を末尾呼び出しの注記の前に置く（実装プラン D11「作るもの」）。
+/// 実行時エラーの報告と同じく、解放の注記を末尾呼び出しの注記の前に置く。
 pub(crate) fn render_trace_text_with_notes(
     primary: Option<Span>,
     trace: &CallTrace,

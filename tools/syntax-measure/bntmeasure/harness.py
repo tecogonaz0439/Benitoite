@@ -46,6 +46,15 @@ def utcnow():
     return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
 
 
+def recorded_path(path):
+    """記録では家のディレクトリの接頭辞を伏せ、実際に使うパスは変えない。
+
+    版の取得に失敗したときの文にもパスが含まれるので、文字列の途中の接頭辞も置き換える。
+    """
+    prefix = os.path.expanduser('~') + os.sep
+    return path.replace(prefix, '~/')
+
+
 def sha256_bytes(b):
     return hashlib.sha256(b).hexdigest()
 
@@ -107,14 +116,16 @@ def metadata(args, run_id, cfg, combos, seed):
         'host': {'platform': platform.platform(), 'system': platform.system(), 'release': platform.release(),
                  'version': platform.version(), 'machine': platform.machine(), 'mac_ver': platform.mac_ver()[0]},
         'python': sys.version,
-        'tool_versions': {'codex': _cmd_output(['codex', '--version']),
-                          'opencode': _cmd_output(['opencode', '--version']),
-                          'agent': _cmd_output(cfg['version'])},
+        'tool_versions': {'codex': recorded_path(_cmd_output(['codex', '--version'])),
+                          'opencode': recorded_path(_cmd_output(['opencode', '--version'])),
+                          'agent': recorded_path(_cmd_output(cfg['version']))},
         'agent': args.agent,
         'model': cfg['model'],
         'agent_options': cfg['options'],
-        'command_templates': {'start': cfg['start'], 'resume': cfg['resume'], 'cwd': cfg['cwd']},
-        'commands_rendered': {'start': A.render(cfg['start'], values), 'resume': A.render(cfg['resume'], values)},
+        'command_templates': {'start': [recorded_path(p) for p in cfg['start']],
+                              'resume': [recorded_path(p) for p in cfg['resume']], 'cwd': recorded_path(cfg['cwd'])},
+        'commands_rendered': {'start': [recorded_path(p) for p in A.render(cfg['start'], values)],
+                              'resume': [recorded_path(p) for p in A.render(cfg['resume'], values)]},
         'prompts': {'first': A.FIRST_PROMPT, 'fix': A.FIX_PROMPT},
         'timeout_seconds': args.timeout,
         'parallel': args.parallel,
@@ -124,7 +135,7 @@ def metadata(args, run_id, cfg, combos, seed):
         'tasks': sorted({c[1] for c in combos}),
         'trials': args.trials,
         'combinations': len(combos),
-        'workspace_root': os.path.abspath(args.workspace_root),
+        'workspace_root': recorded_path(os.path.abspath(args.workspace_root)),
         'git': {'head': git('rev-parse', 'HEAD'), 'dirty': bool(status.strip()), 'status_porcelain': status},
         'sha256': {
             'references': {vid: sha256_file(refgen.path_of(vid)) for vid in V.VARIANT_IDS},
@@ -261,11 +272,13 @@ class Runner:
             paths[stream] = p
         sess, tokens, cost = parse_agent_output(r['stdout'].decode('utf-8', 'replace'), cfg['session_keys'])
         outside = find_outside_access(r['stdout'].decode('utf-8', 'replace'), ws, self.args.workspace_root)
-        rec = dict(n=n, started_at=started, command=cmd, cwd=cwd, prompt=prompt, prompt_sha256=sha256_text(prompt),
-                   stdout_path=paths['stdout'], stdout_sha256=sha256_bytes(r['stdout']),
-                   stderr_path=paths['stderr'], stderr_sha256=sha256_bytes(r['stderr']),
+        rec = dict(n=n, started_at=started, command=[recorded_path(p) for p in cmd], cwd=recorded_path(cwd),
+                   prompt=prompt, prompt_sha256=sha256_text(prompt),
+                   stdout_path=recorded_path(paths['stdout']), stdout_sha256=sha256_bytes(r['stdout']),
+                   stderr_path=recorded_path(paths['stderr']), stderr_sha256=sha256_bytes(r['stderr']),
                    exit_code=r['exit_code'], duration_s=r['duration_s'], timed_out=r['timed_out'],
-                   session_id=sess or session, tokens=tokens, cost=cost, outside_access=outside)
+                   session_id=sess or session, tokens=tokens, cost=cost,
+                   outside_access=[recorded_path(p) for p in outside])
         script = os.path.join(ws, 'main.bnt')
         if os.path.exists(script):
             src = open(script, encoding='utf-8', errors='replace').read()
@@ -276,7 +289,7 @@ class Runner:
             d = res.diagnostic
             with open(os.path.join(logs, 'check-%d.txt' % n), 'w', encoding='utf-8') as f:
                 f.write(res.text + '\n')
-            rec.update(script_path=saved, script_sha256=sha256_text(src), script_lines=src.count('\n') + 1,
+            rec.update(script_path=recorded_path(saved), script_sha256=sha256_text(src), script_lines=src.count('\n') + 1,
                        check_ok=res.ok, diagnostic=res.text if not res.ok else None,
                        category=d.category if d else None, diagnostic_detail=d.to_dict() if d else None)
         else:
@@ -300,7 +313,7 @@ class Runner:
             os.remove(stale)
         rec = dict(run_id=run_id, agent=self.args.agent, model=self.cfg['model'], agent_options=self.cfg['options'],
                    variant=vid, task=tid, trial=trial, order_index=order_index, started_at=utcnow(),
-                   trial_dir=base, reference_sha256=sha256_text(ref), task_sha256=sha256_text(task),
+                   trial_dir=recorded_path(base), reference_sha256=sha256_text(ref), task_sha256=sha256_text(task),
                    checker_sha256=checker_fingerprint(), variant_grammar_sha256=variant_fingerprint(V.get(vid)))
         t0 = time.monotonic()
         attempts = []
@@ -439,7 +452,7 @@ def archive(args):
             p = os.path.join(args.out, args.run_id + suffix)
             if os.path.exists(p):
                 tar.add(p, arcname=os.path.join(args.run_id, 'results', os.path.basename(p)))
-    info = dict(run_id=args.run_id, path=path, sha256=sha256_file(path), bytes=os.path.getsize(path),
+    info = dict(run_id=args.run_id, path=recorded_path(path), sha256=sha256_file(path), bytes=os.path.getsize(path),
                 created_at=utcnow())
     os.makedirs(args.out, exist_ok=True)
     with open(os.path.join(args.out, args.run_id + '.archive.json'), 'w', encoding='utf-8') as f:

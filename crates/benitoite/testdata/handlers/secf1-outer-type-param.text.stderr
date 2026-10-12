@@ -1,0 +1,10 @@
+error[E0401]: mismatched types
+  --> testdata/handlers/secf1-outer-type-param.bnt:12:22
+   |
+12 |     case store(x) -> Option.Some(x)
+   |                      ^^^^^^^^^^^^^^ expected `Option[_]`, found `Option[T]`
+   |          ----- the clause of `store`
+   |
+   = note: `T` is a type parameter of the operation `store`; a value of this type cannot leave the clause
+
+error: could not check testdata/handlers/secf1-outer-type-param.bnt due to 1 previous error

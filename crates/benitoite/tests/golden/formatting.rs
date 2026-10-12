@@ -19,7 +19,7 @@ use super::{
     has_diagnostics_option, sidecar, sorted_entries, split_actual, with_directory, write_expected,
 };
 
-/// `fmt`・`fmt-check` のテストを一つ実行する（実装プラン D04「`fmt` と `fmt-check` の方式」）。
+/// `fmt`・`fmt-check` のテストを一つ実行する（設計書 06-01「`fmt` のコマンドライン（初回リリース版）」）。
 pub(super) fn run_fmt_case(
     case: &TestCase,
     index: usize,
@@ -34,6 +34,16 @@ pub(super) fn run_fmt_case(
         .file_name()
         .ok_or_else(|| "test path has no file name".to_owned())?;
     let originals = script_files(&case.path)?;
+    for path in stale_formatted(case, &originals)? {
+        if bless {
+            remove_formatted(&path)?;
+        } else {
+            failures.push(format!("{name}: stale .formatted: {}", path.display()));
+        }
+    }
+    if bless && case.path.is_dir() {
+        remove_empty_dirs(&sidecar(&case.stem, "formatted"))?;
+    }
     let (actual, results) = with_directory(case, index, summary, |directory| {
         let copied = directory.join(file_name);
         if case.path.is_dir() {
@@ -65,6 +75,24 @@ pub(super) fn run_fmt_case(
         }
         Ok((split_actual(exit, out, err)?, results))
     })?;
+    if !check {
+        let previous_failures = failures.len();
+        for (index, ((relative, _), result)) in originals.iter().zip(&results).enumerate() {
+            let file = FileId(u32::try_from(index).map_err(|e| e.to_string())?);
+            let context = format!("{name} formatted {}", relative.display());
+            match is_idempotent(file, result) {
+                Ok(true) | Err(FormatError::Syntax(_)) => {}
+                Ok(false) => failures.push(format!("{context}: formatting is not idempotent")),
+                Err(error) => failures.push(format!(
+                    "{context}: formatted source cannot be formatted again: {error:?}"
+                )),
+            }
+        }
+        // 冪等でない結果を期待値として固定しない（設計書 06-03「テスト」）。
+        if bless && failures.len() != previous_failures {
+            return Ok(());
+        }
+    }
     if bless {
         write_expected(case, &actual, None)?;
         if !check {
@@ -129,6 +157,48 @@ fn formatted_path(case: &TestCase, relative: &Path) -> PathBuf {
     } else {
         base
     }
+}
+
+// 元のスクリプトだけを走査すると、削除されたファイルの期待値を見落とす。
+fn stale_formatted(case: &TestCase, originals: &[(PathBuf, Vec<u8>)]) -> TestResult<Vec<PathBuf>> {
+    let base = sidecar(&case.stem, "formatted");
+    if !base.exists() {
+        return Ok(Vec::new());
+    }
+    if case.mode == "fmt-check" {
+        return Ok(vec![base]);
+    }
+    if !case.path.is_dir() {
+        return Ok(Vec::new());
+    }
+    let mut stale = Vec::new();
+    let mut pending = vec![base.clone()];
+    while let Some(dir) = pending.pop() {
+        for entry in sorted_entries(&dir)? {
+            let path = entry.path();
+            if entry.file_type().map_err(|e| e.to_string())?.is_dir() {
+                pending.push(path);
+            } else {
+                let relative = path.strip_prefix(&base).map_err(|e| e.to_string())?;
+                if !originals.iter().any(|(original, _)| original == relative) {
+                    stale.push(path);
+                }
+            }
+        }
+    }
+    stale.sort();
+    Ok(stale)
+}
+
+/// 古い期待値を消す。ディレクトリを指すシンボリックリンクもリンク自体だけを消す。
+pub(super) fn remove_formatted(path: &Path) -> TestResult<()> {
+    let kind = fs::symlink_metadata(path).map_err(|e| format!("{}: {e}", path.display()))?;
+    let result = if kind.is_dir() {
+        fs::remove_dir_all(path)
+    } else {
+        fs::remove_file(path)
+    };
+    result.map_err(|e| format!("{}: {e}", path.display()))
 }
 
 /// 書き直しの指定で `.formatted` を書き直す。元と同じ結果のファイルは `.formatted` を作らず、あれば消す。
@@ -230,6 +300,11 @@ pub(super) enum Property {
     Failed(String),
 }
 
+/// 実際の整形の結果を再び整形し、変わらないことを確かめる（設計書 06-03「テスト」）。
+fn is_idempotent(file: FileId, formatted: &[u8]) -> Result<bool, FormatError> {
+    format_source(file, SourceKind::User, formatted).map(|again| !again.changed)
+}
+
 /// `check`・`run` のテストについて、整形の冪等性と、整形の前後で `check` の診断のコードと文言の並びが同じことを
 /// 確かめる（位置は比べない。設計書 07-03「ゴールデンテストの形式（初回リリース版）」）。
 pub(super) fn check_properties(case: &TestCase, deny_warnings: bool) -> TestResult<Property> {
@@ -255,9 +330,9 @@ pub(super) fn check_properties(case: &TestCase, deny_warnings: bool) -> TestResu
                 )));
             }
         };
-        match format_source(file, SourceKind::User, &once.text) {
-            Ok(again) if !again.changed => {}
-            Ok(_) => {
+        match is_idempotent(file, &once.text) {
+            Ok(true) => {}
+            Ok(false) => {
                 return Ok(Property::Failed(format!(
                     "{}: formatting is not idempotent",
                     relative.display()

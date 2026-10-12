@@ -1,5 +1,5 @@
-//! 読み込みのときの範囲と生存の情報の検証（設計書 02-08「実行の手順」、
-//! 実装プラン 10-07「読み込みのときの検証器」）。値の種類と実行中の枠は保証しない。
+//! コード生成の出力の範囲と生存の情報を確かめるテスト用の検証器（設計書 02-08「実行の手順」）。
+//! 本番の読み込みの経路からは呼ばない。値の種類と実行中の枠は保証しない。
 
 use crate::builtins::builtin_decl;
 
@@ -20,7 +20,7 @@ pub struct VerifyError {
     pub message: String,
 }
 
-/// コンパイル済みプログラムを検証する（設計書 02-08「実行の手順」）。R32 の評価に使う。
+/// コンパイル済みプログラムを検証する（設計書 02-08「実行の手順」）。
 pub fn verify(program: &CompiledProgram) -> Result<(), VerifyError> {
     verify_tables(program)?;
     for (index, proto) in program.protos.iter().enumerate() {
@@ -52,10 +52,6 @@ fn require(
     } else {
         Err(error(proto, pc, message))
     }
-}
-
-fn in_table(index: u32, len: usize) -> bool {
-    usize::try_from(index).is_ok_and(|i| i < len)
 }
 
 fn verify_tables(p: &CompiledProgram) -> Result<(), VerifyError> {
@@ -148,7 +144,7 @@ fn verify_tables(p: &CompiledProgram) -> Result<(), VerifyError> {
         for method in &info.methods {
             check(p.proto(*method).is_some(), "method prototype is missing")?;
         }
-        // 辞書の式は入れ子になりうるので、Rust の再帰を使わない（実装プラン R32）。
+        // 辞書の式は入れ子になりうるので、Rust の再帰を使わない。
         let mut pending: Vec<_> = info.supers.iter().collect();
         while let Some(recipe) = pending.pop() {
             match recipe {
@@ -322,7 +318,7 @@ fn verify_proto(p: &CompiledProgram, id: ProtoIdx, proto: &Proto) -> Result<(), 
             )?;
         }
         // reg_use は全命令の読み書きと、表の arity に従う引数の並びを検査する。
-        // 実行器と検証器で引数の数を別々に定義しない（10-07「生存の情報」）。
+        // 実行器と検証器で引数の数を別々に定義しない。
         reg_use(p, id, pc).map_err(|e| error(e.proto, Some(e.pc), &e.message))?;
         match opcode {
             Opcode::LoadK => check(
@@ -697,7 +693,7 @@ mod tests {
     type Mutation = (&'static str, Option<u32>, fn(&mut CompiledProgram));
 
     // 関門: 範囲を省く根拠となる各表と生存の情報を一か所ずつ壊す。別の検査に
-    // 拒まれても通らないように、違反の種類と命令の位置も確認する（実装プラン R32）。
+    // 拒まれても通らないように、違反の種類と命令の位置も確認する。
     #[test]
     fn rejects_table_and_liveness_contract_violations_at_the_right_site() {
         let cases: &[Mutation] = &[

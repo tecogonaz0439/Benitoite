@@ -1,16 +1,21 @@
 //! 型と型パラメータの解析（設計書 02-03「型の解析」、01-02「初回リリース版の文法の全体」）。
 use super::{CommaList, Fail, PResult, Parser, child, comma_list, patterns_ext, text, traits};
-use crate::diag::{DiagBuilder, DiagCode};
+use crate::base::Span;
+use crate::diag::{DiagBuilder, DiagCode, Edit};
 use crate::syntax::{ast::*, token::TokenKind};
 
 pub(super) fn parse_type(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
+    parse_type_in(p, depth, false)
+}
+// 型の並びの要素だけに、括弧で囲めば並びを分けられるという情報を渡す。
+fn parse_type_in(p: &mut Parser, depth: u32, in_list: bool) -> PResult<Box<TypeExpr>> {
     p.enter(depth)?;
     if p.at(TokenKind::Error) {
         return Ok(Box::new(TypeExpr::Error(p.error_token_node())));
     }
     match p.peek_kind() {
         TokenKind::LParen => parse_paren(p, depth),
-        TokenKind::KwFunction => parse_fn(p, depth),
+        TokenKind::KwFunction => parse_fn(p, depth, in_list),
         TokenKind::UpperIdent => parse_named(p, depth),
         TokenKind::LowerIdent
         | TokenKind::IntLit
@@ -112,12 +117,14 @@ fn parse_named(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
     })))
 }
 fn push_type(p: &mut Parser, depth: u32, out: &mut Vec<TypeExpr>) -> PResult<()> {
-    let Ok(ty) = parse_type(p, depth) else {
+    let Ok(ty) = parse_type_in(p, depth, true) else {
         return Err(Fail);
     };
     out.push(*ty);
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_paren(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
     let start = p.pos;
     p.bump();
@@ -140,6 +147,8 @@ fn parse_paren(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
     p.expect(TokenKind::RParen)?;
     Ok(finish_paren(p, start, inner))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_paren(p: &mut Parser, start: usize, inner: Box<TypeExpr>) -> Box<TypeExpr> {
     Box::new(TypeExpr::Paren(ParenType {
         id: p.node_id(),
@@ -147,7 +156,7 @@ fn finish_paren(p: &mut Parser, start: usize, inner: Box<TypeExpr>) -> Box<TypeE
         inner,
     }))
 }
-fn parse_fn(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
+fn parse_fn(p: &mut Parser, depth: u32, in_list: bool) -> PResult<Box<TypeExpr>> {
     let start = p.pos;
     p.bump();
     p.expect(TokenKind::LParen)?;
@@ -168,9 +177,11 @@ fn parse_fn(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
     let Ok(ret) = parse_type(p, child(depth)) else {
         return Err(Fail);
     };
-    let uses = parse_uses(p, depth)?;
+    let uses = parse_uses(p, depth, in_list.then_some(start))?;
     Ok(finish_fn(p, start, params, ret, uses))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_fn(
     p: &mut Parser,
     start: usize,
@@ -187,7 +198,11 @@ fn finish_fn(
     }))
 }
 
-pub(super) fn parse_uses(p: &mut Parser, depth: u32) -> PResult<Option<UsesList>> {
+pub(super) fn parse_uses(
+    p: &mut Parser,
+    depth: u32,
+    fn_start: Option<usize>,
+) -> PResult<Option<UsesList>> {
     if !p.at(TokenKind::KwUses) {
         return Ok(None);
     }
@@ -204,12 +219,38 @@ pub(super) fn parse_uses(p: &mut Parser, depth: u32) -> PResult<Option<UsesList>
             path,
         });
         if effects.len() > 1 && p.at(TokenKind::LBracket) {
-            p.report(
-                DiagBuilder::new(DiagCode::E0209)
-                    .primary(p.peek().span)
-                    .help("paren")
-                    .build(),
-            );
+            let end = matching_bracket(p);
+            let span = end
+                .and_then(|end| effects.last().map(|e| e.span.to(end)))
+                .unwrap_or(p.peek().span);
+            let mut d = DiagBuilder::new(DiagCode::E0209).primary(span);
+            if end.is_some()
+                && let Some(start) = fn_start.and_then(|i| p.tokens.get(i))
+                && let Some(prev) = effects.len().checked_sub(2).and_then(|i| effects.get(i))
+            {
+                d = d.help_edits(
+                    "paren",
+                    vec![
+                        Edit {
+                            span: Span {
+                                end: start.span.start,
+                                ..start.span
+                            },
+                            replacement: "(".into(),
+                        },
+                        Edit {
+                            span: Span {
+                                start: prev.span.end,
+                                ..prev.span
+                            },
+                            replacement: ")".into(),
+                        },
+                    ],
+                );
+            } else {
+                d = d.help("paren");
+            }
+            p.report(d.build());
             p.bump();
             p.recover(p.pos, super::Recovery::Comma);
             while !p.at(TokenKind::RBracket) && !p.at(TokenKind::Eof) {
@@ -228,6 +269,33 @@ pub(super) fn parse_uses(p: &mut Parser, depth: u32) -> PResult<Option<UsesList>
         span: p.span_from(start),
         effects,
     }))
+}
+
+// 回復で字句を読み飛ばす前に、入れ子の型引数も含めた位置を求める。
+// 閉じ括弧がなければ、誤りが消えると決められないので置き換えは付けない（設計書 02-03「型の解析」）。
+fn matching_bracket(p: &Parser) -> Option<Span> {
+    let mut depth = 0_usize;
+    let mut parens = 0_usize;
+    for token in p.tokens.iter().skip(p.pos) {
+        if token.kind == TokenKind::LBracket {
+            depth = depth.saturating_add(1);
+        } else if token.kind == TokenKind::RBracket {
+            depth = depth.checked_sub(1)?;
+            if depth == 0 {
+                return Some(token.span);
+            }
+        } else if token.kind == TokenKind::LParen {
+            parens = parens.saturating_add(1);
+        } else if token.kind == TokenKind::RParen {
+            parens = parens.checked_sub(1)?;
+        } else if matches!(
+            token.kind,
+            TokenKind::Newline | TokenKind::KwEnd | TokenKind::Eof
+        ) {
+            break;
+        }
+    }
+    None
 }
 
 /// `full` は関数・実装・メソッド・操作の型パラメータかを示す。
@@ -285,8 +353,7 @@ fn push_type_param(
         loop {
             let from = p.pos;
             if !full {
-                // 型の宣言の制約は読み捨て、後続の型パラメータと本体を保つ
-                // （実装プラン F08「`data` の型パラメータの制約」）。
+                // 型の宣言の制約は読み捨て、後続の型パラメータと本体を保つ。
                 if p.at(TokenKind::LowerIdent) {
                     p.bump();
                 } else {
@@ -339,6 +406,31 @@ mod tests {
     use crate::base::SourceKind;
     use crate::diag::DiagCode;
     use crate::syntax::{ast::Item, parser::test_support::parse_source};
+
+    #[test]
+    fn uses_bracket_repairs_require_a_type_list_and_a_local_closing_bracket() {
+        // 型の並びなら括弧が修正になる。宣言の型や閉じ忘れでは編集を付けない。
+        for source in [
+            "function f(cb: function() -> Unit uses A, List[Integer]) -> Unit\nend function",
+            "function f() -> function() -> Unit uses A, List[Integer]\nend function",
+            "record R\n cb: function() -> Unit uses A, List[Integer]\nend record",
+            "function f() -> Unit\n bind cb: function() -> Unit uses A, List[Integer] <- g\nend function",
+            "type F = function(function() -> Unit uses A, List[Integer) -> Unit\ntype G = List[Integer]]",
+        ] {
+            let (out, _) = parse_source(source, SourceKind::User);
+            let diag = out
+                .diagnostics
+                .iter()
+                .find(|d| d.code == Some(DiagCode::E0209))
+                .unwrap();
+            assert!(
+                diag.helps.iter().all(|h| h.edits.is_empty()),
+                "{source}: {diag:#?}"
+            );
+            let span = diag.primary.as_ref().unwrap().span;
+            assert!(!source[span.start.0 as usize..span.end.0 as usize].contains('\n'));
+        }
+    }
 
     #[test]
     fn declaration_constraints_are_reported_and_left_out_of_the_ast() {

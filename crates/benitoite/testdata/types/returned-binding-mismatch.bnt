@@ -1,0 +1,7 @@
+// spec: 01-06 関数の型とエフェクト
+function probe() -> Unit
+  bind s <- Integer.toString(1)
+  return s
+end function
+function main() -> Unit
+end function

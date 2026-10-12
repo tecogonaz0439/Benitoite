@@ -6,13 +6,15 @@ use crate::runtime::heap::{CheckedLen, FieldsKind, StrBuf, Value, ValueCtx};
 use crate::runtime::{RuntimeError, Stop, list, map};
 use csv_core::{ReadFieldResult, ReaderBuilder};
 
+const READ_BUFFER_LEN: usize = 4096;
+
 mod text {
     pub const UNCLOSED_QUOTE: &str = "unclosed quoted field";
     pub const DUPLICATE_HEADER: &str = "duplicate header name";
     pub const FIELD_COUNT: &str = "field count differs from header";
 }
 
-// レコードの宣言順を一か所で定める（実装プラン 10-15「レコードの値の作り方」）。
+// レコードの宣言順を一か所で定める（設計書 02-06「脱糖」）。
 mod parse_error {
     pub const LINE: usize = 0;
     pub const MESSAGE: usize = 1;
@@ -31,7 +33,7 @@ builtin! {
     /// `Csv.parseWith` の本体。区切りは ASCII に限る（設計書 03-08「Csv」）。
     name = "Csv.parseWith",
     pure fn parse_with(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
-        let delimiter = delimiter(arg1, true, "Csv.parseWith")?;
+        let delimiter = delimiter(arg1, "Csv.parseWith")?;
         let delimiter = u8::try_from(u32::from(delimiter))
             .map_err(|_| Stop::Internal("checked ASCII delimiter does not fit u8".into()))?;
         read_csv(&ctx, arg0, delimiter, false, "Csv.parseWith")
@@ -40,7 +42,7 @@ builtin! {
 
 builtin! {
     /// `Csv.parseWithHeader` の本体。見出しのない空の入力は空のリストを返す
-    /// （設計書 03-08「Csv」、実装プラン L23「手順の要点」）。
+    /// （設計書 03-08「Csv」）。
     name = "Csv.parseWithHeader",
     pure fn parse_with_header(ctx, arg0: Value<'e>) -> Value<'e> {
         read_csv(&ctx, arg0, b',', true, "Csv.parseWithHeader")
@@ -56,18 +58,18 @@ builtin! {
 }
 
 builtin! {
-    /// `Csv.formatWith` の本体。ASCII でない区切りも書く（設計書 03-08「Csv」）。
+    /// `Csv.formatWith` の本体。区切りは ASCII に限る（設計書 03-08「Csv」）。
     name = "Csv.formatWith",
     pure fn format_with(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
-        write_csv(&ctx, arg0, delimiter(arg1, false, "Csv.formatWith")?, "Csv.formatWith")
+        write_csv(&ctx, arg0, delimiter(arg1, "Csv.formatWith")?, "Csv.formatWith")
     }
 }
 
-fn delimiter(value: Value<'_>, ascii: bool, function: &'static str) -> Result<char, Stop> {
+fn delimiter(value: Value<'_>, function: &'static str) -> Result<char, Stop> {
     let c = value
         .as_char()
         .ok_or_else(|| Stop::Internal("CSV delimiter is not Character".into()))?;
-    if matches!(c, '"' | '\r' | '\n') || (ascii && !c.is_ascii()) {
+    if matches!(c, '"' | '\r' | '\n') || !c.is_ascii() {
         return Err(Stop::Runtime(RuntimeError::ArgumentOutOfDomain {
             function,
             argument: 1,
@@ -104,7 +106,7 @@ enum QuoteState {
 }
 
 // Reader は誤りを返さず、line() は LF だけを数える。引用符と物理行だけを
-// 追跡し、フィールドの解析は Reader に任せる（実装プラン L23、設計書 03-08「Csv」）。
+// 追跡し、フィールドの解析は Reader に任せる（設計書 03-08「Csv」）。
 struct Position {
     state: QuoteState,
     line: usize,
@@ -172,7 +174,7 @@ fn read_csv<'e>(
     let mut first_read = true;
     let mut reader = ReaderBuilder::new().delimiter(delimiter).build();
     let mut position = Position::new();
-    let mut buffer = [0u8; 4096];
+    let mut buffer = [0u8; READ_BUFFER_LEN];
     let mut field = Vec::new();
     let mut fields = Vec::new();
     let mut rows = Vec::new();
@@ -233,7 +235,7 @@ fn read_csv<'e>(
                             );
                         }
                         // header は鍵の順で保存し、元の列の位置で値を取り出す
-                        // （実装プラン L23、runtime::map::map_from_sorted の前提）。
+                        // （runtime::map::map_from_sorted の前提）。
                         CheckedLen::elements(super::count(header.len())?, function)?;
                         let pairs = header
                             .iter()
@@ -308,7 +310,7 @@ fn write_csv<'e>(
                 .str(field)
                 .ok_or_else(|| Stop::Internal("CSV field is not String".into()))?;
             // Reader はファイル先頭の BOM を読み捨てるので、フィールドの内容として
-            // 保つには引用符を先に書く（実装プラン L23「往復」）。
+            // 保つには引用符を先に書く。
             let leading_bom = output.as_str().is_empty() && field.starts_with('\u{feff}');
             let quoted = leading_bom
                 || (fields.len() == 1 && field.is_empty())
@@ -331,7 +333,7 @@ fn write_csv<'e>(
     ctx.alloc_str_buf(output)
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     parse::DECL,
     parse_with::DECL,
@@ -342,7 +344,7 @@ pub const DECLS: &[BuiltinDecl] = &[
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::indexing_slicing,
@@ -350,7 +352,7 @@ mod tests {
     )]
     // 関門: 03-08 の行・引用符・見出し・区切り・往復の契約を本体の境界で守る。
     // CRLF の二重計数、空の行の生成、列の取り違え、引用符の閉じ忘れの見逃しを捕まえる。
-    // 既存の表のテストは本体を呼ばない。L23 の個別指示に従い直接呼び、差し込み口は増やさない。
+    // 組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
     // レコードの脱糖と欄の宣言順は tests/l23_csv.rs のスクリプトだけで確かめる。
     use super::*;
     use crate::builtins::funcs::operators::tests::direct;
@@ -422,6 +424,8 @@ mod tests {
                     vec![vec!["", ""], vec!["", "", ""], vec!["x", ""]],
                 ),
                 ("a\"b,\"c\"\"d\"", vec![vec!["a\"b", "c\"d"]]),
+                ("\"abc\"x,y", vec![vec!["abcx", "y"]]),
+                ("\"a\"b\"c", vec![vec!["ab\"c"]]),
                 ("\u{feff}a,b", vec![vec!["a", "b"]]),
                 ("\u{feff}\u{feff}a,b", vec![vec!["\u{feff}a", "b"]]),
             ] {
@@ -433,33 +437,47 @@ mod tests {
 
     #[test]
     fn parse_errors_point_to_record_start_across_blank_lines_and_multiline_fields() {
+        enum Parser {
+            Plain,
+            Header,
+            With(char),
+        }
+        use Parser::{Header, Plain, With};
+
         Heap::new(HeapConfig::default()).epoch(|ctx| {
-            for (source, header, line, reason) in [
-                ("\"unfinished", false, 1, text::UNCLOSED_QUOTE),
-                ("a\n\"unfinished", false, 2, text::UNCLOSED_QUOTE),
+            for (source, parser, line, reason) in [
+                ("\"unfinished", Plain, 1, text::UNCLOSED_QUOTE),
+                ("a\n\"unfinished", Plain, 2, text::UNCLOSED_QUOTE),
                 (
                     "a\r\n\r\n\"first\nsecond\r\nthird",
-                    false,
+                    Plain,
                     3,
                     text::UNCLOSED_QUOTE,
                 ),
-                ("a\r\r\"first\rsecond", false, 3, text::UNCLOSED_QUOTE),
-                ("\n\"first\nsecond", false, 2, text::UNCLOSED_QUOTE),
-                ("h1,h2\n\"first\nsecond", true, 2, text::UNCLOSED_QUOTE),
-                ("a,a\n1,2", true, 1, text::DUPLICATE_HEADER),
-                ("\r\n\r\na,a", true, 3, text::DUPLICATE_HEADER),
-                ("\"a\",a", true, 1, text::DUPLICATE_HEADER),
-                (",", true, 1, text::DUPLICATE_HEADER),
-                ("a,b\n1", true, 2, text::FIELD_COUNT),
-                ("a,b\n1,2,3", true, 2, text::FIELD_COUNT),
-                ("a,b\r\n\r\n\"first\nsecond\"", true, 3, text::FIELD_COUNT),
-                ("a,b\r\r\"first\rsecond\",x,y", true, 3, text::FIELD_COUNT),
+                ("a\r\r\"first\rsecond", Plain, 3, text::UNCLOSED_QUOTE),
+                ("\n\"first\nsecond", Plain, 2, text::UNCLOSED_QUOTE),
+                ("h1,h2\n\"first\nsecond", Header, 2, text::UNCLOSED_QUOTE),
+                ("a,a\n1,2", Header, 1, text::DUPLICATE_HEADER),
+                ("\r\n\r\na,a", Header, 3, text::DUPLICATE_HEADER),
+                ("\"a\",a", Header, 1, text::DUPLICATE_HEADER),
+                (",", Header, 1, text::DUPLICATE_HEADER),
+                ("a,b\n1", Header, 2, text::FIELD_COUNT),
+                ("a,b\n1,2,3", Header, 2, text::FIELD_COUNT),
+                ("a,b\r\n\r\n\"first\nsecond\"", Header, 3, text::FIELD_COUNT),
+                ("a,b\r\r\"first\rsecond\",x,y", Header, 3, text::FIELD_COUNT),
+                ("a;b\n1;\"x", With(';'), 2, text::UNCLOSED_QUOTE),
+                (
+                    "a;b\r\n\r\n\"first\nsecond",
+                    With(';'),
+                    3,
+                    text::UNCLOSED_QUOTE,
+                ),
             ] {
                 let input = ctx.alloc_str(source, "test").unwrap();
-                let result = if header {
-                    direct!(ctx, parse_with_header, input)
-                } else {
-                    direct!(ctx, parse, input)
+                let result = match parser {
+                    Plain => direct!(ctx, parse, input),
+                    Header => direct!(ctx, parse_with_header, input),
+                    With(delimiter) => direct!(ctx, parse_with, input, Value::Char(delimiter)),
                 }
                 .unwrap();
                 let error = payload(ctx, result, tags::RESULT_ERROR);
@@ -584,15 +602,23 @@ mod tests {
                 )
                 .unwrap()
             );
+            let input = rows(ctx, &[&[], &["\u{feff}x"]]);
+            let out = direct!(ctx, format, input).unwrap();
+            assert_eq!(ctx.str(out), Some("\n\u{feff}x\n"));
+            let result = direct!(ctx, parse, out).unwrap();
+            assert_eq!(
+                strings(ctx, payload(ctx, result, tags::RESULT_OK)),
+                vec![vec!["\u{feff}x"]]
+            );
         });
     }
 
     #[test]
-    fn delimiters_enforce_argument_domain_and_support_ascii_and_unicode_output() {
+    fn delimiters_must_be_ascii_and_not_quote_or_line_breaks() {
         Heap::new(HeapConfig::default()).epoch(|ctx| {
             let input = ctx.alloc_str("a,b", "test").unwrap();
             let rows = rows(ctx, &[&["a、b", "é", "plain"]]);
-            for c in ['"', '\r', '\n'] {
+            for c in ['"', '\r', '\n', '、', 'é'] {
                 assert_eq!(
                     direct!(ctx, parse_with, input, Value::Char(c)).unwrap_err(),
                     Stop::Runtime(RuntimeError::ArgumentOutOfDomain {
@@ -608,15 +634,6 @@ mod tests {
                     })
                 );
             }
-            for c in ['、', 'é'] {
-                assert_eq!(
-                    direct!(ctx, parse_with, input, Value::Char(c)).unwrap_err(),
-                    Stop::Runtime(RuntimeError::ArgumentOutOfDomain {
-                        function: "Csv.parseWith",
-                        argument: 1
-                    })
-                );
-            }
             for (c, source) in [(';', "a;b"), ('|', "a|b"), ('\0', "a\0b")] {
                 let input = ctx.alloc_str(source, "test").unwrap();
                 let result = direct!(ctx, parse_with, input, Value::Char(c)).unwrap();
@@ -625,10 +642,13 @@ mod tests {
                     vec![vec!["a", "b"]]
                 );
             }
-            for (c, expected) in [('、', "\"a、b\"、é、plain\n"), ('é', "a、bé\"é\"éplain\n")]
-            {
+            for c in [',', '\t', ';', '|', '\0'] {
                 let out = direct!(ctx, format_with, rows, Value::Char(c)).unwrap();
-                assert_eq!(ctx.str(out), Some(expected));
+                let result = direct!(ctx, parse_with, out, Value::Char(c)).unwrap();
+                assert_eq!(
+                    strings(ctx, payload(ctx, result, tags::RESULT_OK)),
+                    vec![vec!["a、b", "é", "plain"]]
+                );
             }
         });
     }
@@ -636,7 +656,11 @@ mod tests {
     #[test]
     fn long_fields_preserve_utf8_and_quotes_across_reader_output_chunks() {
         Heap::new(HeapConfig::default()).epoch(|ctx| {
-            let field = format!("{}é😀\"\r\n{}", "x".repeat(4095), "y".repeat(5000));
+            let field = format!(
+                "{}é😀\"\r\n{}",
+                "x".repeat(READ_BUFFER_LEN - 1),
+                "y".repeat(5000)
+            );
             let input = rows(ctx, &[&[&field, "end"]]);
             let out = direct!(ctx, format, input).unwrap();
             let result = direct!(ctx, parse, out).unwrap();
@@ -648,6 +672,36 @@ mod tests {
                 )
                 .unwrap()
             );
+            // 出力は x が k バイト、引用符が 1 バイト、CR LF が 2 バイトとなる。
+            // 整形した入力では開きの引用符により、二重の引用符は k+1 と k+2、
+            // CR LF は k+3 と k+4 の位置になる（いずれも 0 から数える）。
+            // k=READ_BUFFER_LEN では二重の引用符の直前、k=READ_BUFFER_LEN-1 では直後で満ちる。
+            // 一つ目の引用符は何も出力せず、出力が満ちた後は次のバイトを消費しないので、
+            // 二重の引用符の間で切れることはない（Position が AfterQuote を持ち越す経路は通らない）。
+            // k=READ_BUFFER_LEN-2 では CR を写して達するので、LF が次の読み出しに入る。
+            // 前後の k も試し、状態の持ち越しで値と行番号を保つことを確かめる
+            // （設計書 03-08「Csv」）。
+            for k in READ_BUFFER_LEN - 3..=READ_BUFFER_LEN + 1 {
+                let field = format!("{}\"\r\ny", "x".repeat(k));
+                let input = rows(ctx, &[&[&field]]);
+                let out = direct!(ctx, format, input).unwrap();
+                let result = direct!(ctx, parse, out).unwrap();
+                assert_eq!(
+                    strings(ctx, payload(ctx, result, tags::RESULT_OK)),
+                    vec![vec![field]],
+                    "k={k}"
+                );
+                let source = format!("{}\"unfinished", ctx.str(out).unwrap());
+                let source = ctx.alloc_str(&source, "test").unwrap();
+                let result = direct!(ctx, parse, source).unwrap();
+                let error = payload(ctx, result, tags::RESULT_ERROR);
+                assert_eq!(ctx.field(error, 0).unwrap().as_int(), Some(3), "k={k}");
+                assert_eq!(
+                    ctx.str(ctx.field(error, 1).unwrap()),
+                    Some(text::UNCLOSED_QUOTE),
+                    "k={k}"
+                );
+            }
         });
     }
 }

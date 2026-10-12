@@ -1,0 +1,9 @@
+// spec: 01-05 レコード（初回リリース版）
+record Point
+  z: Integer
+  a: Integer
+end record
+function main() -> Unit
+  bind _ <- Point(1, 2)
+  bind _ <- Point.new(1, 2)
+end function

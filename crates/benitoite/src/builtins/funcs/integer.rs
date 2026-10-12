@@ -6,7 +6,7 @@ use crate::runtime::Stop;
 use crate::runtime::heap::Value;
 
 builtin! {
-    /// `Integer.toString` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.toString` の本体。
     name = "Integer.toString",
     pure fn to_string(ctx, n: i64) -> Value<'e> {
         ctx.alloc_str(&n.to_string(), "Integer.toString")
@@ -14,7 +14,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.parse` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.parse` の本体。
     name = "Integer.parse",
     pure fn parse(ctx, s: &'c str) -> Value<'e> {
         let digits = s.strip_prefix('-').unwrap_or(s);
@@ -26,7 +26,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.toFloat` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.toFloat` の本体。
     name = "Integer.toFloat",
     pure fn to_float(ctx, n: i64) -> f64 {
         let _ = ctx;
@@ -36,7 +36,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.floorDivide` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.floorDivide` の本体。
     name = "Integer.floorDivide",
     pure fn floor_divide(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -52,7 +52,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.floorModulo` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.floorModulo` の本体。
     name = "Integer.floorModulo",
     pure fn floor_modulo(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -67,7 +67,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.absolute` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.absolute` の本体。
     name = "Integer.absolute",
     pure fn absolute(ctx, n: i64) -> i64 {
         let _ = ctx;
@@ -77,7 +77,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.minimum` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.minimum` の本体。
     name = "Integer.minimum",
     pure fn minimum(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -86,7 +86,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.maximum` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.maximum` の本体。
     name = "Integer.maximum",
     pure fn maximum(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -95,7 +95,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.bitwiseAnd` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.bitwiseAnd` の本体。
     name = "Integer.bitwiseAnd",
     pure fn bitwise_and(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -104,7 +104,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.bitwiseOr` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.bitwiseOr` の本体。
     name = "Integer.bitwiseOr",
     pure fn bitwise_or(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -113,7 +113,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.bitwiseExclusiveOr` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.bitwiseExclusiveOr` の本体。
     name = "Integer.bitwiseExclusiveOr",
     pure fn bitwise_exclusive_or(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -122,7 +122,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.bitwiseNot` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.bitwiseNot` の本体。
     name = "Integer.bitwiseNot",
     pure fn bitwise_not(ctx, a: i64) -> i64 {
         let _ = ctx;
@@ -131,7 +131,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.shiftLeft` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.shiftLeft` の本体。
     name = "Integer.shiftLeft",
     pure fn shift_left(ctx, a: i64, n: i64) -> i64 {
         let _ = ctx;
@@ -141,7 +141,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.shiftRight` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.shiftRight` の本体。
     name = "Integer.shiftRight",
     pure fn shift_right(ctx, a: i64, n: i64) -> i64 {
         let _ = ctx;
@@ -151,7 +151,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Integer.shiftRightUnsigned` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Integer.shiftRightUnsigned` の本体。
     name = "Integer.shiftRightUnsigned",
     pure fn shift_right_unsigned(ctx, a: i64, n: i64) -> i64 {
         let _ = ctx;
@@ -160,7 +160,7 @@ builtin! {
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     to_string::DECL,
     parse::DECL,
@@ -193,7 +193,7 @@ pub(super) fn shift_amount(n: i64, maximum: u32, function: &'static str) -> Resu
 #[cfg(test)]
 mod tests {
     // 関門: 各ビット演算の向き、符号の補充、無効な量の停止を守る。既存の算術の
-    // テストはこれらの関数を呼ばず、差し込み口も加えない（実装プラン R35、10-12）。
+    // テストはこれらの関数を呼ばず、差し込み口も加えない。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,

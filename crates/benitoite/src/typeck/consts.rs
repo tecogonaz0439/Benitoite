@@ -1,4 +1,6 @@
 //! 定数の形・型・値の順の検査と算術の警告（設計書 02-05「定数の検査と評価」「警告」）。
+mod key;
+
 use super::{
     context::{Body, fixed, reason},
     decls::{Decls, Scope},
@@ -13,6 +15,7 @@ use crate::syntax::ast::*;
 use crate::types::{ConstValue as V, EffectSet, Ty};
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, BTreeSet};
+use std::mem::size_of;
 
 pub(super) fn check(d: &mut Decls<'_>) {
     let mut pending = BTreeMap::new();
@@ -76,6 +79,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
     }
     // 依存先が失敗した定数は後続へ渡さない。参照の循環は名前解決が拒む（02-04「宣言の検査」）。
     let mut failed = BTreeSet::new();
+    let mut budget = EvalBudget::default();
     while !pending.is_empty() {
         let mut progress = false;
         let ids = pending.keys().copied().collect::<Vec<_>>();
@@ -98,7 +102,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
                 failed.insert(id);
                 continue;
             }
-            match eval(d, &c.value) {
+            match eval(d, &c.value, &mut budget) {
                 Ok(v) => {
                     d.out.consts.insert(id, v);
                 }
@@ -110,6 +114,21 @@ pub(super) fn check(d: &mut Decls<'_>) {
                             .primary(span)
                             .build(),
                     );
+                    failed.insert(id);
+                }
+                Err(EvalError::Limit(span, limit)) => {
+                    let mut diag = DiagBuilder::new(DiagCode::E0435)
+                        .arg("name", &c.name.text)
+                        .arg("condition", limit.condition(budget.limits))
+                        .primary(span);
+                    if matches!(limit, EvalLimit::Budget) {
+                        diag = diag.help("budget");
+                    }
+                    d.diagnostics.push(diag.build());
+                    if matches!(limit, EvalLimit::Budget) {
+                        // 予算は全定数で共有する。独立した後続の定数も評価せず、派生の誤りを出さない。
+                        return;
+                    }
                     failed.insert(id);
                 }
                 Err(EvalError::Duplicate { span, first, key }) => {
@@ -238,7 +257,111 @@ fn dependencies(d: &Decls<'_>, e: &Expr) -> Vec<BindingId> {
     deps
 }
 
+// 定数の検査で作る値の総量を 64 MiB に制限する（設計書 02-05「定数の検査と評価」）。
+const CONST_EVAL_BUDGET: usize = 67_108_864;
+
+#[derive(Clone, Copy)]
+struct EvalLimits {
+    string_bytes: u64,
+    list_len: u64,
+    budget: usize,
+}
+impl Default for EvalLimits {
+    fn default() -> Self {
+        Self {
+            // 検査時だけ実行時より大きい値を作らないよう、実行時と上限を揃える
+            // （設計書 02-09「一つの操作で作る値の大きさの上限」）。
+            string_bytes: crate::runtime::MAX_STRING_BYTES,
+            list_len: crate::runtime::MAX_LIST_LEN,
+            budget: CONST_EVAL_BUDGET,
+        }
+    }
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum EvalLimit {
+    String,
+    List,
+    Budget,
+}
+impl EvalLimit {
+    fn condition(self, limits: EvalLimits) -> String {
+        match self {
+            Self::String => super::text::const_string_limit(limits.string_bytes),
+            Self::List => super::text::const_list_limit(limits.list_len),
+            Self::Budget => super::text::const_budget_limit(limits.budget),
+        }
+    }
+}
+#[derive(Default)]
+struct EvalBudget {
+    limits: EvalLimits,
+    used: usize,
+}
+impl EvalBudget {
+    fn charge(&mut self, bytes: usize, span: Span) -> Result<(), EvalError> {
+        self.used = self
+            .used
+            .checked_add(bytes)
+            .filter(|used| *used <= self.limits.budget)
+            .ok_or(EvalError::Limit(span, EvalLimit::Budget))?;
+        Ok(())
+    }
+    fn string(&mut self, bytes: usize, span: Span) -> Result<(), EvalError> {
+        if u64::try_from(bytes).unwrap_or(u64::MAX) > self.limits.string_bytes {
+            return Err(EvalError::Limit(span, EvalLimit::String));
+        }
+        self.charge(bytes, span)
+    }
+    fn list(&self, len: usize, span: Span) -> Result<(), EvalError> {
+        if u64::try_from(len).unwrap_or(u64::MAX) > self.limits.list_len {
+            return Err(EvalError::Limit(span, EvalLimit::List));
+        }
+        Ok(())
+    }
+    fn slots(&mut self, count: usize, span: Span) -> Result<(), EvalError> {
+        // Vec の再確保で旧領域と新領域が重なる分を含め、要素の格納領域を二倍で見積もる。
+        self.charge(count.saturating_mul(size_of::<V>()).saturating_mul(2), span)
+    }
+    fn clone_value(&mut self, value: &V, span: Span) -> EvalResult {
+        // 複製も新しく作る値である。文字列の容量、Vec の容量と入れ子の確保を全て数える。
+        // 明示の積み重ねで辿り、既存の値の深さを Rust の呼び出しの深さにしない。
+        let mut work = vec![value];
+        self.charge(size_of::<V>(), span)?;
+        while let Some(value) = work.pop() {
+            match value {
+                V::String(s) => {
+                    self.string(s.len(), span)?;
+                    self.charge(s.capacity().saturating_sub(s.len()), span)?;
+                }
+                V::List(v) | V::Set(v) | V::Ctor { args: v, .. } => {
+                    if matches!(value, V::List(_)) {
+                        self.list(v.len(), span)?;
+                    }
+                    self.slots(v.capacity(), span)?;
+                    work.extend(v);
+                }
+                V::Map(v) => {
+                    self.slots(v.capacity().saturating_mul(2), span)?;
+                    for (k, v) in v {
+                        work.push(k);
+                        work.push(v);
+                    }
+                }
+                V::Integer(_)
+                | V::Float(_)
+                | V::Character(_)
+                | V::Boolean(_)
+                | V::Unit
+                | V::Byte(_)
+                | V::Decimal(_) => {}
+            }
+        }
+        Ok(value.clone())
+    }
+}
+
 enum EvalError {
+    Limit(Span, EvalLimit),
     Arithmetic(Span, &'static str),
     Duplicate {
         span: Span,
@@ -249,20 +372,22 @@ enum EvalError {
 }
 type EvalResult = Result<V, EvalError>;
 #[inline(never)]
-fn eval(d: &Decls<'_>, e: &Expr) -> EvalResult {
+fn eval(d: &Decls<'_>, e: &Expr, budget: &mut EvalBudget) -> EvalResult {
+    // 各評価の値の本体も数える。移動先の格納領域との重複は保守的な見積もりとして残す。
+    budget.charge(size_of::<V>(), e.span())?;
     if let Some(v) = d.out.lit_values.get(e.id()) {
-        return Ok(v.clone());
+        return budget.clone_value(v, e.span());
     }
     match e {
         Expr::Unit(_) => Ok(V::Unit),
-        Expr::Paren(p) => eval(d, &p.inner),
-        Expr::Name(n) => eval_name(d, n),
-        Expr::Interp(i) => eval_interp(d, i),
-        Expr::List(l) => eval_list(d, l),
-        Expr::Record(r) => eval_record(d, r),
-        Expr::Call(c) => eval_call(d, c),
-        Expr::Unary(u) => eval_unary(d, u),
-        Expr::Binary(b) => eval_binary(d, b),
+        Expr::Paren(p) => eval(d, &p.inner, budget),
+        Expr::Name(n) => eval_name(d, n, budget),
+        Expr::Interp(i) => eval_interp(d, i, budget),
+        Expr::List(l) => eval_list(d, l, budget),
+        Expr::Record(r) => eval_record(d, r, budget),
+        Expr::Call(c) => eval_call(d, c, budget),
+        Expr::Unary(u) => eval_unary(d, u, budget),
+        Expr::Binary(b) => eval_binary(d, b, budget),
         Expr::Lit(_)
         | Expr::Pipe(_)
         | Expr::If(_)
@@ -277,19 +402,19 @@ fn eval(d: &Decls<'_>, e: &Expr) -> EvalResult {
         | Expr::Error(_) => Err(EvalError::Unavailable),
     }
 }
-fn eval_call(d: &Decls<'_>, c: &CallExpr) -> EvalResult {
+fn eval_call(d: &Decls<'_>, c: &CallExpr, budget: &mut EvalBudget) -> EvalResult {
     if let Expr::Name(n) = c.callee.as_ref()
         && let Some(id) = d.reference(n.id)
         && let Some(BindingKind::Ctor { data, tag }) = d.resolved.bindings.get(id).map(|b| b.kind)
     {
-        let args = c
-            .args
-            .iter()
-            .map(|a| match a {
-                Arg::Expr(e) => eval(d, e),
-                _ => Err(EvalError::Unavailable),
-            })
-            .collect::<Result<Vec<_>, _>>()?;
+        budget.slots(c.args.len(), c.span)?;
+        let mut args = Vec::with_capacity(c.args.len());
+        for arg in &c.args {
+            let Arg::Expr(e) = arg else {
+                return Err(EvalError::Unavailable);
+            };
+            args.push(eval(d, e, budget)?);
+        }
         return Ok(V::Ctor {
             adt: data,
             tag,
@@ -308,11 +433,18 @@ fn eval_call(d: &Decls<'_>, c: &CallExpr) -> EvalResult {
         let Some(Arg::Expr(list)) = c.args.first() else {
             return Err(EvalError::Unavailable);
         };
-        let V::List(values) = eval(d, list)? else {
+        let V::List(values) = eval(d, list, budget)? else {
             return Err(EvalError::Unavailable);
         };
+        // 入力の入れ子の値は移動する。新たな格納領域、位置の表、安定ソートの一時領域は
+        // 作る前に数える。Map と Set には一つの値の上限はない（設計書 02-09）。
+        let per_entry = size_of::<(V, Option<V>, Span)>()
+            .saturating_mul(2)
+            .saturating_add(size_of::<Span>().saturating_mul(2))
+            .saturating_add(size_of::<(V, V)>());
+        budget.charge(values.len().saturating_mul(per_entry), c.span)?;
         let spans = list_spans(d, list, map);
-        let mut entries = vec![];
+        let mut entries = Vec::with_capacity(values.len());
         for (i, value) in values.into_iter().enumerate() {
             let span = spans.get(i).copied().unwrap_or(list.span());
             let (key, value) = if map {
@@ -352,23 +484,23 @@ fn eval_call(d: &Decls<'_>, c: &CallExpr) -> EvalResult {
             }
         }
         if map {
-            let values = entries
-                .into_iter()
-                .map(|(k, v, _)| v.map(|v| (k, v)).ok_or(EvalError::Unavailable))
-                .collect::<Result<Vec<_>, _>>()?;
+            let mut values = Vec::with_capacity(entries.len());
+            for (k, v, _) in entries {
+                values.push((k, v.ok_or(EvalError::Unavailable)?));
+            }
             return Ok(V::Map(values));
         }
         return Ok(V::Set(entries.into_iter().map(|(k, _, _)| k).collect()));
     }
     // 警告だけに使う標準関数も、名前の綴りでなく束縛を照合する（02-05「警告」）。
-    let values = c
-        .args
-        .iter()
-        .map(|a| match a {
-            Arg::Expr(e) => eval(d, e),
-            _ => Err(EvalError::Unavailable),
-        })
-        .collect::<Result<Vec<_>, _>>()?;
+    budget.slots(c.args.len(), c.span)?;
+    let mut values = Vec::with_capacity(c.args.len());
+    for arg in &c.args {
+        let Arg::Expr(e) = arg else {
+            return Err(EvalError::Unavailable);
+        };
+        values.push(eval(d, e, budget)?);
+    }
     if std_call(d, &c.callee, "Benitoite.Integer.absolute")
         && let Some(V::Integer(n)) = values.first()
     {
@@ -415,7 +547,7 @@ fn int_div(a: i64, b: i64, floor: bool, modulo: bool, span: Span) -> EvalResult 
     v.map(V::Integer)
         .ok_or(EvalError::Arithmetic(span, super::text::INTEGER_OVERFLOW))
 }
-fn binary(op: BinOp, a: V, b: V, span: Span) -> EvalResult {
+fn binary(op: BinOp, a: V, b: V, span: Span, budget: &mut EvalBudget) -> EvalResult {
     if matches!(op, BinOp::Eq | BinOp::Ne) {
         let same = value_equal(&a, &b);
         return Ok(V::Boolean(if op == BinOp::Eq { same } else { !same }));
@@ -505,9 +637,13 @@ fn binary(op: BinOp, a: V, b: V, span: Span) -> EvalResult {
                 )
             })
         }
-        (V::String(mut a), V::String(b)) if op == BinOp::Add => {
-            a.push_str(&b);
-            Ok(V::String(a))
+        (V::String(a), V::String(b)) if op == BinOp::Add => {
+            let len = a.len().saturating_add(b.len());
+            budget.string(len, span)?;
+            let mut out = String::with_capacity(len);
+            out.push_str(&a);
+            out.push_str(&b);
+            Ok(V::String(out))
         }
         (V::Boolean(a), V::Boolean(b)) => match op {
             BinOp::And => Ok(V::Boolean(a && b)),
@@ -541,29 +677,9 @@ fn value_text(v: &V) -> Option<String> {
     }
 }
 fn key_text(d: &Decls<'_>, v: &V) -> String {
-    if let Some(s) = value_text(v) {
-        return s;
-    }
-    match v {
-        V::Unit => "()".into(),
-        V::Ctor { adt, tag, .. } => d
-            .out
-            .adts
-            .get(*adt)
-            .and_then(|a| usize::try_from(*tag).ok().and_then(|t| a.ctors.get(t)))
-            .map_or_else(String::new, |c| c.name.clone()),
-        V::Integer(_)
-        | V::Float(_)
-        | V::String(_)
-        | V::Character(_)
-        | V::Boolean(_)
-        | V::Byte(_)
-        | V::Decimal(_)
-        | V::List(_)
-        | V::Map(_)
-        | V::Set(_) => format!("{v:?}"),
-    }
+    key::const_key(&d.out.adts, v)
 }
+
 fn atom(v: &V) -> Option<KeyAtom<'_>> {
     match v {
         V::Unit => Some(KeyAtom::Unit),
@@ -576,7 +692,7 @@ fn atom(v: &V) -> Option<KeyAtom<'_>> {
         V::Float(_) | V::Ctor { .. } | V::List(_) | V::Map(_) | V::Set(_) => None,
     }
 }
-/// 値の深さを Rust の呼び出しの深さにしない（実装プラン 00-02「再帰の深さ」）。
+/// 値の深さを Rust の呼び出しの深さにしない（AGENTS.md「実装の規約」の「再帰の深さ」）。
 fn compare(a: &V, b: &V, float: bool) -> Option<Ordering> {
     enum Work<'a> {
         Pair(&'a V, &'a V),
@@ -697,16 +813,20 @@ fn list_spans(d: &Decls<'_>, e: &Expr, map: bool) -> Vec<Span> {
 }
 // 型の付いた Pair の構築だけは値が定数式でなくても鍵を調べる。普通の関数の第1引数を
 // 鍵とみなすと、定数式でない鍵にも警告してしまう（設計書 02-05「警告」）。
-fn known_key(d: &Decls<'_>, e: &Expr, map: bool) -> Option<(V, Span)> {
+fn known_key(
+    d: &Decls<'_>,
+    e: &Expr,
+    map: bool,
+    budget: &mut EvalBudget,
+) -> Result<(V, Span), EvalError> {
     if !map {
-        return bad_shape(d, e)
-            .is_none()
-            .then(|| eval(d, e).ok())
-            .flatten()
-            .map(|v| (v, e.span()));
+        if bad_shape(d, e).is_some() {
+            return Err(EvalError::Unavailable);
+        }
+        return eval(d, e, budget).map(|v| (v, e.span()));
     }
     if let Expr::Paren(p) = e {
-        return known_key(d, &p.inner, true);
+        return known_key(d, &p.inner, true, budget);
     }
     if let Expr::Call(c) = e
         && let Expr::Name(n) = c.callee.as_ref()
@@ -714,15 +834,52 @@ fn known_key(d: &Decls<'_>, e: &Expr, map: bool) -> Option<(V, Span)> {
         && let Some(Arg::Expr(key)) = c.args.first()
         && bad_shape(d, key).is_none()
     {
-        return eval(d, key).ok().map(|v| (v, key.span()));
+        return eval(d, key, budget).map(|v| (v, key.span()));
     }
     if bad_shape(d, e).is_some() {
-        return None;
+        return Err(EvalError::Unavailable);
     }
-    let V::Ctor { args, .. } = eval(d, e).ok()? else {
-        return None;
+    let V::Ctor { args, .. } = eval(d, e, budget)? else {
+        return Err(EvalError::Unavailable);
     };
-    args.into_iter().next().map(|v| (v, e.span()))
+    args.into_iter()
+        .next()
+        .map(|v| (v, e.span()))
+        .ok_or(EvalError::Unavailable)
+}
+fn duplicate_key_warnings(
+    d: &Decls<'_>,
+    l: &ListExpr,
+    map: bool,
+    budget: &mut EvalBudget,
+) -> Vec<crate::diag::Diagnostic> {
+    let mut diagnostics = vec![];
+    let mut keys: Vec<(V, Span)> = vec![];
+    for el in &l.elems {
+        let ListElem::Expr(e) = el else {
+            continue;
+        };
+        let (value, span) = match known_key(d, e, map, budget) {
+            Ok(key) => key,
+            Err(EvalError::Limit(..)) => break,
+            Err(_) => continue,
+        };
+        if let Some((_, first)) = keys
+            .iter()
+            .find(|(v, _)| compare(v, &value, false) == Some(Ordering::Equal))
+        {
+            diagnostics.push(
+                DiagBuilder::new(DiagCode::W0403)
+                    .arg("key", key_text(d, &value))
+                    .primary(span)
+                    .secondary(*first, "first")
+                    .build(),
+            );
+        } else {
+            keys.push((value, span));
+        }
+    }
+    diagnostics
 }
 fn arithmetic_candidate(d: &Decls<'_>, e: &Expr) -> bool {
     match e {
@@ -817,24 +974,28 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
         };
         if let Some(e) = divisor
             && bad_shape(ctx.decls, e).is_none()
-            && eval(ctx.decls, e).ok().is_some_and(|v| match v {
-                V::Integer(n) => n == 0,
-                V::Decimal(n) => n.mantissa() == 0,
-                V::Float(_)
-                | V::String(_)
-                | V::Character(_)
-                | V::Boolean(_)
-                | V::Unit
-                | V::Byte(_)
-                | V::Ctor { .. }
-                | V::List(_)
-                | V::Map(_)
-                | V::Set(_) => false,
-            })
+            && eval(ctx.decls, e, &mut EvalBudget::default())
+                .ok()
+                .is_some_and(|v| match v {
+                    V::Integer(n) => n == 0,
+                    V::Decimal(n) => n.mantissa() == 0,
+                    V::Float(_)
+                    | V::String(_)
+                    | V::Character(_)
+                    | V::Boolean(_)
+                    | V::Unit
+                    | V::Byte(_)
+                    | V::Ctor { .. }
+                    | V::List(_)
+                    | V::Map(_)
+                    | V::Set(_) => false,
+                })
         {
             diagnostics.push(DiagBuilder::new(DiagCode::W0401).primary(e.span()).build());
         }
-        match arithmetic_candidate(ctx.decls, e).then(|| eval(ctx.decls, e)) {
+        match arithmetic_candidate(ctx.decls, e)
+            .then(|| eval(ctx.decls, e, &mut EvalBudget::default()))
+        {
             Some(Err(EvalError::Arithmetic(span, condition)))
                 if span == e.span() && condition != super::text::DIVISION_BY_ZERO =>
             {
@@ -860,29 +1021,10 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
         {
             let map = std_call(ctx.decls, &c.callee, "Benitoite.Map.fromList");
             if let Some(Arg::Expr(Expr::List(l))) = c.args.first() {
-                let mut keys: Vec<(V, Span)> = vec![];
-                for el in &l.elems {
-                    let ListElem::Expr(e) = el else {
-                        continue;
-                    };
-                    let Some((value, span)) = known_key(ctx.decls, e, map) else {
-                        continue;
-                    };
-                    if let Some((_, first)) = keys
-                        .iter()
-                        .find(|(v, _)| compare(v, &value, false) == Some(Ordering::Equal))
-                    {
-                        diagnostics.push(
-                            DiagBuilder::new(DiagCode::W0403)
-                                .arg("key", key_text(ctx.decls, &value))
-                                .primary(span)
-                                .secondary(*first, "first")
-                                .build(),
-                        );
-                    } else {
-                        keys.push((value, span));
-                    }
-                }
+                // 予算の単位は「警告を調べる一つの式」。fromList の全ての鍵で共有し、
+                // 保持する鍵の総量も制限する。上限に達した鍵には警告せず、残りを調べない。
+                let mut budget = EvalBudget::default();
+                diagnostics.extend(duplicate_key_warnings(ctx.decls, l, map, &mut budget));
             }
         }
     });
@@ -894,6 +1036,17 @@ fn visit_block(b: &Block, f: &mut impl FnMut(&Expr)) {
             Stmt::Expr(e) => visit_expr(e, f),
             Stmt::Bind(b) => visit_expr(&b.value, f),
             _ => {}
+        }
+    }
+}
+// 呼び出し側の検査は If 自体を対象にしないので、else if の子だけを同じ順序で辿る。
+fn visit_if(i: &IfExpr, f: &mut impl FnMut(&Expr)) {
+    visit_expr(&i.cond, f);
+    visit_block(&i.then_block, f);
+    if let Some(b) = &i.else_branch {
+        match b {
+            ElseBranch::Block(b) => visit_block(b, f),
+            ElseBranch::If(i) => visit_if(i, f),
         }
     }
 }
@@ -940,16 +1093,7 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(&Expr)) {
             visit_expr(&p.rhs, f);
         }
         Expr::Return(r) => visit_expr(&r.value, f),
-        Expr::If(i) => {
-            visit_expr(&i.cond, f);
-            visit_block(&i.then_block, f);
-            if let Some(b) = &i.else_branch {
-                match b {
-                    ElseBranch::Block(b) => visit_block(b, f),
-                    ElseBranch::If(i) => visit_expr(&Expr::If(i.as_ref().clone()), f),
-                }
-            }
-        }
+        Expr::If(i) => visit_if(i, f),
         Expr::Match(m) => {
             visit_expr(&m.scrutinee, f);
             for arm in &m.arms {
@@ -979,12 +1123,12 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(&Expr)) {
     }
 }
 
-// 複合値の評価の一時値を入口の再帰の枠から分ける（実装プラン F10「型検査の再帰の深さ」）。
+// 複合値の評価の一時値を入口の再帰の枠から分ける。
 #[inline(never)]
-fn eval_name(d: &Decls<'_>, n: &NameExpr) -> EvalResult {
+fn eval_name(d: &Decls<'_>, n: &NameExpr, budget: &mut EvalBudget) -> EvalResult {
     let id = d.reference(n.id).ok_or(EvalError::Unavailable)?;
     if let Some(v) = d.out.consts.get(id) {
-        return Ok(v.clone());
+        return budget.clone_value(v, n.span);
     }
     let Some(BindingKind::Ctor { data, tag }) = d.resolved.bindings.get(id).map(|b| b.kind) else {
         return Err(EvalError::Unavailable);
@@ -997,23 +1141,51 @@ fn eval_name(d: &Decls<'_>, n: &NameExpr) -> EvalResult {
 }
 
 #[inline(never)]
-fn eval_interp(d: &Decls<'_>, i: &InterpExpr) -> EvalResult {
-    let mut text = i.head.clone();
+fn eval_interp(d: &Decls<'_>, i: &InterpExpr, budget: &mut EvalBudget) -> EvalResult {
+    // 各段の値は通常どおり予算に数え、出力の全長を求めてから一度だけ確保する。
+    budget.charge(i.segments.len().saturating_mul(size_of::<String>()), i.span)?;
+    let mut fragments = Vec::with_capacity(i.segments.len());
+    let mut len = i.head.len();
     for s in &i.segments {
-        text.push_str(&value_text(&eval(d, &s.expr)?).ok_or(EvalError::Unavailable)?);
-        text.push_str(&s.tail);
+        let value = eval(d, &s.expr, budget)?;
+        let fragment = if let V::String(text) = value {
+            text
+        } else {
+            // 基本型の書式化は最大でも 128 バイト未満。文字列の値は移動し、複製しない。
+            budget.charge(128, s.expr.span())?;
+            value_text(&value).ok_or(EvalError::Unavailable)?
+        };
+        len = len
+            .saturating_add(fragment.len())
+            .saturating_add(s.tail.len());
+        fragments.push(fragment);
+    }
+    budget.string(len, i.span)?;
+    let mut text = String::with_capacity(len);
+    text.push_str(&i.head);
+    for (fragment, segment) in fragments.iter().zip(&i.segments) {
+        text.push_str(fragment);
+        text.push_str(&segment.tail);
     }
     Ok(V::String(text))
 }
 
 #[inline(never)]
-fn eval_list(d: &Decls<'_>, l: &ListExpr) -> EvalResult {
-    let mut out = vec![];
+fn eval_list(d: &Decls<'_>, l: &ListExpr, budget: &mut EvalBudget) -> EvalResult {
+    budget.slots(l.elems.len(), l.span)?;
+    let mut out = Vec::with_capacity(l.elems.len());
     for el in &l.elems {
         match el {
-            ListElem::Expr(e) => out.push(eval(d, e)?),
+            ListElem::Expr(e) => {
+                budget.list(out.len().saturating_add(1), l.span)?;
+                let value = eval(d, e, budget)?;
+                reserve_values(&mut out, 1, budget, l.span)?;
+                out.push(value);
+            }
             ListElem::Spread(s) => {
-                if let V::List(v) = eval(d, &s.expr)? {
+                if let V::List(v) = eval(d, &s.expr, budget)? {
+                    budget.list(out.len().saturating_add(v.len()), l.span)?;
+                    reserve_values(&mut out, v.len(), budget, l.span)?;
                     out.extend(v);
                 } else {
                     return Err(EvalError::Unavailable);
@@ -1024,8 +1196,25 @@ fn eval_list(d: &Decls<'_>, l: &ListExpr) -> EvalResult {
     Ok(V::List(out))
 }
 
+// 展開を含むリストは全長が先に分からない。幾何的に領域を増やして伸長を二乗の手間にせず、
+// 新しい領域の全体を確保前に数える（移動する入れ子の値の確保は既に数えている）。
+fn reserve_values(
+    out: &mut Vec<V>,
+    additional: usize,
+    budget: &mut EvalBudget,
+    span: Span,
+) -> Result<(), EvalError> {
+    let needed = out.len().saturating_add(additional);
+    if needed > out.capacity() {
+        let capacity = needed.max(out.capacity().saturating_mul(2));
+        budget.slots(capacity, span)?;
+        out.reserve_exact(capacity.saturating_sub(out.len()));
+    }
+    Ok(())
+}
+
 #[inline(never)]
-fn eval_record(d: &Decls<'_>, r: &RecordExpr) -> EvalResult {
+fn eval_record(d: &Decls<'_>, r: &RecordExpr, budget: &mut EvalBudget) -> EvalResult {
     let id = d.reference(r.id).ok_or(EvalError::Unavailable)?;
     let fields = d
         .out
@@ -1033,14 +1222,15 @@ fn eval_record(d: &Decls<'_>, r: &RecordExpr) -> EvalResult {
         .get(id)
         .and_then(|a| a.record.as_ref())
         .ok_or(EvalError::Unavailable)?;
-    let mut args = vec![];
+    budget.slots(fields.len(), r.span)?;
+    let mut args = Vec::with_capacity(fields.len());
     for f in fields {
         let arg = r
             .fields
             .iter()
             .find(|arg| arg.name.text == f.name)
             .ok_or(EvalError::Unavailable)?;
-        args.push(eval(d, &arg.value)?);
+        args.push(eval(d, &arg.value, budget)?);
     }
     Ok(V::Ctor {
         adt: id,
@@ -1050,8 +1240,8 @@ fn eval_record(d: &Decls<'_>, r: &RecordExpr) -> EvalResult {
 }
 
 #[inline(never)]
-fn eval_unary(d: &Decls<'_>, u: &UnaryExpr) -> EvalResult {
-    let v = eval(d, &u.operand)?;
+fn eval_unary(d: &Decls<'_>, u: &UnaryExpr, budget: &mut EvalBudget) -> EvalResult {
+    let v = eval(d, &u.operand, budget)?;
     match (u.op, v) {
         (UnOp::Not, V::Boolean(b)) => Ok(V::Boolean(!b)),
         (UnOp::Neg, V::Integer(n)) => n
@@ -1065,13 +1255,283 @@ fn eval_unary(d: &Decls<'_>, u: &UnaryExpr) -> EvalResult {
 }
 
 #[inline(never)]
-fn eval_binary(d: &Decls<'_>, b: &BinaryExpr) -> EvalResult {
-    let lhs = eval(d, &b.lhs)?;
+fn eval_binary(d: &Decls<'_>, b: &BinaryExpr, budget: &mut EvalBudget) -> EvalResult {
+    let lhs = eval(d, &b.lhs, budget)?;
     if b.op == BinOp::And && matches!(lhs, V::Boolean(false)) {
         return Ok(lhs);
     }
     if b.op == BinOp::Or && matches!(lhs, V::Boolean(true)) {
         return Ok(lhs);
     }
-    binary(b.op, lhs, eval(d, &b.rhs)?, b.span)
+    binary(b.op, lhs, eval(d, &b.rhs, budget)?, b.span, budget)
+}
+
+#[cfg(test)]
+mod tests {
+    // テストの失敗は panic で表す。ソースの準備の失敗もテストの失敗である。
+    #![allow(clippy::expect_used, clippy::panic)]
+    // 小さい上限を評価器に渡し、実際の連結と値の複製が拒否する境界を確かめる。
+    // 1 GiB の値をテストで作らないための、T7 で指定された評価器の単体テストである。
+    use super::*;
+    use crate::base::{BytePos, FileId};
+
+    #[test]
+    fn duplicate_key_display_is_bounded_at_utf8_boundaries() {
+        // 公開の型検査の診断で、上限ちょうど・超過・多バイト文字・構造の走査を確かめる。
+        // 短い鍵の表記のテストでは、出力を無制限にする退行を捕まえられない。
+        let exact = format!("\"{}\"", "a".repeat(4094));
+        for (value, expected) in [
+            (exact.clone(), exact),
+            (
+                format!("\"{}\"", "a".repeat(4095)),
+                format!("\"{}…", "a".repeat(4092)),
+            ),
+            (
+                format!("\"{}\"", "あ".repeat(2048)),
+                format!("\"{}…", "あ".repeat(1364)),
+            ),
+            (
+                format!("[{}]", vec!["1000000000"; 400].join(", ")),
+                format!("[{}…", "1000000000, ".repeat(341)),
+            ),
+        ] {
+            let source = format!(
+                "import Benitoite.Set\nfunction f() -> Unit\n bind _ <- Set.fromList([{value}, {value}])\nend function\n"
+            );
+            let (_, _, _, diagnostics) =
+                crate::typeck::test_support::check_files(&[("main.bnt", &source)], false);
+            assert_eq!(diagnostics.len(), 1, "{diagnostics:#?}");
+            let actual = diagnostics
+                .first()
+                .expect("duplicate key diagnostic")
+                .message
+                .as_str();
+            let expected = format!("the key `{expected}` appears more than once");
+            assert!(
+                actual == expected,
+                "value bytes {}, actual bytes {}, expected bytes {}, tails {:?} / {:?}",
+                value.len(),
+                actual.len(),
+                expected.len(),
+                actual.get(actual.len().saturating_sub(50)..),
+                expected.get(expected.len().saturating_sub(50)..)
+            );
+        }
+    }
+
+    #[test]
+    fn duplicate_key_headings_use_show_notation() {
+        for (decls, ty, value, shown) in [
+            ("", "String", "\"a\\nb\"", "\"a\\nb\""),
+            (
+                "data Color\n Rgb(Integer, Integer)\n Red\nend data\n",
+                "Color",
+                "Color.Rgb(1, 2)",
+                "Color.Rgb(1, 2)",
+            ),
+            (
+                "record Point\n x: Integer\n y: Integer\nend record\n",
+                "Point",
+                "Point(x: 1, y: 2)",
+                "Point(x: 1, y: 2)",
+            ),
+            ("", "List[Integer]", "[1, 2]", "[1, 2]"),
+            (
+                "",
+                "Set[Integer]",
+                "Set.fromList([2, 1])",
+                "Set.fromList([1, 2])",
+            ),
+            (
+                "",
+                "Map[Integer, String]",
+                "Map.fromList([Pair(2, \"b\"), Pair(1, \"a\")])",
+                "Map.fromList([Pair(1, \"a\"), Pair(2, \"b\")])",
+            ),
+            ("", "Character", "'\\n'", "'\\n'"),
+            (
+                "",
+                "Pair[Integer, String]",
+                "Pair(1, \"x\")",
+                "Pair(1, \"x\")",
+            ),
+            (
+                "data Color\n Red\n Blue\nend data\n",
+                "Color",
+                "Color.Red",
+                "Color.Red",
+            ),
+        ] {
+            let source = format!(
+                "import Benitoite.Set\nimport Benitoite.Map\n{decls}function f() -> Unit\n bind _ <- Set.fromList([{value}, {value}])\nend function\n"
+            );
+            let (_, _, _, diagnostics) =
+                crate::typeck::test_support::check_files(&[("main.bnt", &source)], false);
+            assert_eq!(diagnostics.len(), 1, "{source}: {diagnostics:#?}");
+            assert_eq!(
+                diagnostics.first().map(|d| d.code),
+                Some(Some(DiagCode::W0403))
+            );
+            assert_eq!(
+                diagnostics.first().map(|d| d.message.as_str()),
+                Some(format!("the key `{shown}` appears more than once").as_str())
+            );
+            let source = format!(
+                "import Benitoite.Set\nimport Benitoite.Map\n{decls}const keys: Set[{ty}] = Set.fromList([{value}, {value}])\n"
+            );
+            let (_, _, _, diagnostics) =
+                crate::typeck::test_support::check_files(&[("main.bnt", &source)], false);
+            assert_eq!(diagnostics.len(), 1, "{source}: {diagnostics:#?}");
+            assert_eq!(
+                diagnostics.first().map(|d| d.code),
+                Some(Some(DiagCode::E0436))
+            );
+            assert_eq!(
+                diagnostics.first().map(|d| d.message.as_str()),
+                Some(format!("the key `{shown}` appears more than once in a constant").as_str())
+            );
+        }
+    }
+
+    #[test]
+    fn single_value_limits_allow_the_boundary_and_reject_the_next_size() {
+        // spec: 01-06 定数の型（初回リリース版）
+        let span = Span {
+            file: FileId(0),
+            start: BytePos(0),
+            end: BytePos(1),
+        };
+        for (string_bytes, list_len, string_ok, list_ok) in
+            [(4, 2, true, true), (3, 1, false, false)]
+        {
+            let limits = EvalLimits {
+                string_bytes,
+                list_len,
+                budget: 4096,
+            };
+            let mut budget = EvalBudget { limits, used: 0 };
+            let result = binary(
+                BinOp::Add,
+                V::String("ab".into()),
+                V::String("cd".into()),
+                span,
+                &mut budget,
+            );
+            if string_ok {
+                assert!(matches!(result, Ok(V::String(s)) if s == "abcd"));
+            } else {
+                assert!(matches!(result, Err(EvalError::Limit(s, EvalLimit::String)) if s == span));
+            }
+            let mut budget = EvalBudget { limits, used: 0 };
+            let value = V::List(vec![V::Integer(1), V::Integer(2)]);
+            let result = budget.clone_value(&value, span);
+            if list_ok {
+                assert!(matches!(result, Ok(V::List(v)) if v.len() == 2));
+            } else {
+                assert!(matches!(result, Err(EvalError::Limit(s, EvalLimit::List)) if s == span));
+            }
+        }
+    }
+
+    // 本物の読み込み・名前解決・型検査で作った式と値の表を、小さい上限で再評価する。
+    fn with_const_expr(source: &str, f: impl FnOnce(&Decls<'_>, &Expr)) {
+        let (load, resolved, out, diagnostics) =
+            crate::typeck::test_support::check_files(&[("main.bnt", source)], false);
+        assert!(diagnostics.is_empty(), "{diagnostics:#?}");
+        let expr = load
+            .asts
+            .iter()
+            .flat_map(|m| &m.decls)
+            .find_map(|top| {
+                if let Item::Const(c) = &top.item {
+                    Some(&c.value)
+                } else {
+                    None
+                }
+            })
+            .expect("fixture must contain a constant");
+        let mut d = Decls::new(&load.modules, &load.asts, &load.sources, &resolved);
+        d.out = out;
+        f(&d, expr);
+    }
+
+    #[test]
+    fn duplicate_key_warning_stops_at_the_second_key_when_budget_is_exhausted() {
+        // spec: 01-06 定数の型（初回リリース版）
+        // 関門: fromList 全体の予算を守る。鍵ごとに予算を作り直す退行と、超過後に
+        // 調査を再開する退行を捕まえる。既存の W0403 のテストは予算の境界を扱わない。
+        with_const_expr(
+            "const keys: List[String] = [\"abc\", \"abc\", \"x\", \"x\"]\n",
+            |d, e| {
+                let Expr::List(l) = e else {
+                    panic!("fixture must be a list")
+                };
+                let mut budget = EvalBudget::default();
+                let full = duplicate_key_warnings(d, l, false, &mut budget);
+                assert_eq!(full.len(), 2);
+                assert!(full.iter().all(|d| d.code == Some(DiagCode::W0403)));
+
+                // 最初の文字列だけを評価できる。二つ目で止まり、後ろの短い鍵も調べない。
+                let mut budget = EvalBudget {
+                    limits: EvalLimits {
+                        budget: size_of::<V>().saturating_mul(2).saturating_add(3),
+                        ..EvalLimits::default()
+                    },
+                    used: 0,
+                };
+                assert!(duplicate_key_warnings(d, l, false, &mut budget).is_empty());
+            },
+        );
+    }
+
+    #[test]
+    fn spread_list_checks_the_length_after_expansion() {
+        // spec: 01-06 定数の型（初回リリース版）
+        // 関門: 展開後の全長を制限する。元のリストと展開元だけを検査する退行を捕まえる。
+        // 既存の上限テストは値の複製だけを扱い、展開の組み立てには届かない。
+        with_const_expr("const xs: List[Integer] = [1, ..[2, 3]]\n", |d, e| {
+            for (list_len, allowed) in [(3, true), (2, false)] {
+                let mut budget = EvalBudget {
+                    limits: EvalLimits {
+                        list_len,
+                        budget: 4096,
+                        ..EvalLimits::default()
+                    },
+                    used: 0,
+                };
+                let result = eval(d, e, &mut budget);
+                if allowed {
+                    assert!(
+                        matches!(result, Ok(V::List(v)) if matches!(v.as_slice(), [V::Integer(1), V::Integer(2), V::Integer(3)]))
+                    );
+                } else {
+                    assert!(
+                        matches!(result, Err(EvalError::Limit(span, EvalLimit::List)) if span == e.span())
+                    );
+                }
+            }
+        });
+    }
+
+    #[test]
+    fn interpolation_counts_the_output_once() {
+        // spec: 01-06 定数の型（初回リリース版）
+        // 関門: 最終文字列と段の値が収まる予算で補間できることを守る。
+        // 各段の累積長を重ねて数える退行を捕まえる。上限のテストとは別の契約である。
+        let fragment = "a".repeat(256);
+        let segment = format!("${{\"{fragment}\"}}");
+        let source = format!("const text: String = \"{}\"\n", segment.repeat(5));
+        with_const_expr(&source, |d, e| {
+            let mut budget = EvalBudget {
+                limits: EvalLimits {
+                    budget: 4096,
+                    ..EvalLimits::default()
+                },
+                used: 0,
+            };
+            assert!(
+                matches!(eval(d, e, &mut budget), Ok(V::String(text)) if text == fragment.repeat(5))
+            );
+        });
+    }
 }

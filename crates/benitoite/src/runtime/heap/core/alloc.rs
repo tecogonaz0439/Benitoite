@@ -14,7 +14,9 @@ use std::alloc::{Layout, alloc, dealloc, handle_alloc_error};
 use std::ptr::NonNull;
 
 pub(super) const ALIGN: usize = 16;
+#[cfg(not(feature = "heap-per-object"))]
 pub(super) const CHUNK_BYTES: usize = 65_536;
+#[cfg(any(test, not(feature = "heap-per-object")))]
 pub(super) const SIZE_CLASSES: [usize; 14] = [
     32, 64, 96, 128, 192, 256, 384, 512, 768, 1024, 1536, 2048, 3072, 4096,
 ];
@@ -51,6 +53,7 @@ struct Chunk {
 #[derive(Clone, Copy)]
 pub(super) struct Allocation {
     pub(super) ptr: NonNull<u8>,
+    #[cfg(feature = "heap-verify")]
     pub(super) capacity: usize,
     #[cfg(not(feature = "heap-per-object"))]
     class: Option<usize>,
@@ -114,6 +117,7 @@ impl Allocator {
             if let Some(ptr) = self.free.get_mut(class).and_then(Vec::pop) {
                 return Ok(Allocation {
                     ptr,
+                    #[cfg(feature = "heap-verify")]
                     capacity,
                     class: Some(class),
                     separate_index: None,
@@ -144,6 +148,7 @@ impl Allocator {
             chunk.used = end;
             return Ok(Allocation {
                 ptr,
+                #[cfg(feature = "heap-verify")]
                 capacity,
                 class: Some(class),
                 separate_index: None,
@@ -153,6 +158,7 @@ impl Allocator {
         let index = self.vacant.pop().unwrap_or(self.separate.len());
         let allocation = Allocation {
             ptr: region.ptr,
+            #[cfg(feature = "heap-verify")]
             capacity: layout.size(),
             #[cfg(not(feature = "heap-per-object"))]
             class: None,

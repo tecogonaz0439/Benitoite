@@ -1,7 +1,7 @@
 //! 一つのソースの整形（`format_source`）のテスト（設計書 06-03「コメント」「空の行」「行末と文字」
 //! 「複数行の文字列」「整形の例」「構文の誤りがあるファイル」「標準ライブラリのソース」、07-03「ほかの章が求めるテスト
 //! （初回リリース版）」）。本物の字句解析・構文解析・役割の表・書き出し・検証をつないで確かめる。
-// テストの失敗は panic で表す（00-02「`#[allow]` を書いてよい箇所」）
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -314,7 +314,7 @@ end function
 }
 
 /// 1 行に文字列が多い入力と、宣言とコメントの行が多い入力も整形でき、結果が冪等である。字句ごとに行の頭まで
-/// 後ろへ走査する形と、行ごとに宣言を線形に探す形では、時間が二乗で増えていた（D02 の確認の直し）。時間の上限は付けない。
+/// 後ろへ走査する形と、行ごとに宣言を線形に探す形では、時間が二乗で増えていた。時間の上限は付けない。
 #[test]
 fn large_inputs_are_formatted_idempotently() {
     let inner = format!("[{}]", vec!["\"a\""; 900].join(" , "));
@@ -347,7 +347,7 @@ fn syntax_errors_are_reported_with_diagnostics() {
 }
 
 /// 構文解析器が出す字句・構文の誤り以外の診断（属性の E0801、`resume` の位置の E0509）だけなら整形し、
-/// 構文の誤り（E02nn）なら断る（10-17「整形の流れ」の 2、設計書 06-03「構文の誤りがあるファイル」）。
+/// 構文の誤り（E02nn）なら断る（設計書 06-03「構文の誤りがあるファイル」）。
 #[test]
 fn only_lexical_and_syntax_errors_refuse_formatting() {
     for src in [
@@ -406,7 +406,7 @@ fn stdlib_sources_are_canonical() {
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
-/// `run_fmt` の終了状態と `replace_file` のテスト（06-01「`fmt` のコマンドライン（初回リリース版）」、10-17「`fmt` の実行」）。
+/// `run_fmt` の終了状態と `replace_file` のテスト（06-01「`fmt` のコマンドライン（初回リリース版）」）。
 /// 検証の失敗と panic と一時ファイルの衝突は CLI のプロセスからは作れないので、ここで確かめる。
 mod command {
     use super::super::*;
@@ -521,5 +521,33 @@ mod command {
         assert_eq!(diag.code, Some(DiagCode::E0125));
         assert_eq!(std::fs::read_to_string(&path).unwrap(), "original");
         assert_eq!(std::fs::read_to_string(&temp).unwrap(), "someone else's");
+    }
+
+    // 関門: 内容をまだ書いていない時点から、一時ファイルを所有者だけが読み書きできる。
+    #[cfg(unix)]
+    #[test]
+    fn temporary_file_is_private_from_creation() {
+        use std::os::unix::fs::PermissionsExt;
+        let dir = Scratch::new("private-temp");
+        let path = dir.0.join("temp");
+        let file = create_temp_file(&path).unwrap();
+        assert_eq!(file.metadata().unwrap().permissions().mode() & 0o777, 0o600);
+        assert_eq!(file.metadata().unwrap().len(), 0);
+    }
+
+    // 関門: 別の所有者のファイルは、書き込み可能でも拒む。実際の chown の権限は要しない。
+    #[cfg(unix)]
+    #[test]
+    fn replacement_refuses_a_different_owner() {
+        use std::os::unix::fs::MetadataExt;
+        let dir = Scratch::new("owner");
+        let path = dir.0.join("a.bnt");
+        std::fs::write(&path, "original").unwrap();
+        let metadata = std::fs::metadata(&path).unwrap();
+        assert_eq!(replacement_refusal(metadata.uid(), &metadata), None);
+        assert_eq!(
+            replacement_refusal(metadata.uid().wrapping_add(1), &metadata),
+            Some(text::OTHER_OWNER)
+        );
     }
 }

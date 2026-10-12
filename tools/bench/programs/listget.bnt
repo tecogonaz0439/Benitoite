@@ -13,7 +13,7 @@ end function
 
 function lookup(values: List[Integer], length: Integer, count: Integer, seed: Integer, total: Integer) -> Integer
   return if count = 0 then total else
-    // 種は 2147483647 未満に保ち、掛け算も Integer の範囲に収める（実装プラン C16）。
+    // 種は 2147483647 未満に保ち、掛け算も Integer の範囲に収める。
     bind next <- (seed * 48271 + 11) mod 2147483647
     bind value <- match List.get(values, next mod length) with
       case Option.Some(x) -> x

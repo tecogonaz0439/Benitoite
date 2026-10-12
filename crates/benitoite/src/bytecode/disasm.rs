@@ -1,4 +1,4 @@
-//! 命令とオペランドの表示（設計書 02-07「命令」、実装プラン 10-07）。
+//! 命令とオペランドの表示（設計書 02-07「命令」「コンパイル済みプログラム」）。
 
 use super::instr::Opcode;
 use super::program::CompiledProgram;

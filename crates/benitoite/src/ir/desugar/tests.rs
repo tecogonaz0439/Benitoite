@@ -1,5 +1,5 @@
 //! ソースから公開の脱糖を呼び、IR の契約と独立した検査器を確かめる（設計書 07-03「テストの設計の原則」）。
-// テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -123,20 +123,24 @@ function nested(c: Boolean) -> Integer uses State
    end lambda
    if c then "a" else "b" end if
   end lazy
-  bind n <- with inner = TaskGroup.open() do
+  bind label <- with inner = TaskGroup.open() do
    if c then return 3 end if
-   1
+   if c then "a" else "b" end if
   end with
   bind flag <- c and if c then return 4 else true end if
-  handle
+  bind handled <- handle
    if c then return 5 end if
    ping()
+   if c then true else false end if
   with
    case ping() ->
     if c then return 6 end if
-    resume(())
+    match c with
+     case true -> resume(())
+     case false -> resume(())
+    end match
   end handle
-  return n
+  return 7
  end with
 end function
 function tried(x: Result[Integer, String]) -> Result[String, String] uses State

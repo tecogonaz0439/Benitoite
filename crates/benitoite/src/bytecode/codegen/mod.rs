@@ -1,5 +1,5 @@
-//! 下位 IR をレジスタ型の命令へ移す（設計書 02-07、実装プラン F15）。
-//! 表をすべて埋めてから生存の情報を求める（10-07「生存の情報」）。
+//! 下位 IR をレジスタ型の命令へ移す（設計書 02-07「コード生成」）。
+//! 表をすべて埋めてから生存の情報を求める。
 
 mod analysis;
 mod emit;
@@ -28,14 +28,14 @@ use std::sync::Arc;
 /// コード生成の失敗。
 #[derive(Debug)]
 pub enum CodegenError {
-    /// 処理系の制限（原型ごとの L0101〜L0104 と、10-07「オペランドの補足」の表の大きさの制限 L0105〜L0111）。原型ごとの制限は当たった関数ごとに一つ、表の大きさの制限は表ごとに一つ
+    /// 処理系の制限（原型ごとの L0101〜L0104 と、設計書 02-07「処理系の制限」の表の大きさの制限 L0105〜L0111）。原型ごとの同じ制限は当たった定義ごとに一つ、表の大きさの制限は表ごとに一つ
     Limit(Vec<Diagnostic>),
     Internal(InternalError),
 }
 
 type CgResult<T> = Result<T, Box<InternalError>>;
 
-/// 下位 IR からコンパイル済みプログラムを作る（02-07「コード生成」、10-07「コード生成」）。
+/// 下位 IR からコンパイル済みプログラムを作る（設計書 02-07「コード生成」）。
 pub fn codegen(
     program: &LowerProgram,
     sources: Arc<SourceTable>,
@@ -48,7 +48,7 @@ fn generate(
     sources: Arc<SourceTable>,
 ) -> CgResult<Result<CompiledProgram, CodegenError>> {
     let mut g = Gen::new(input, sources);
-    // 相互再帰と後の定義への参照のため、本体より先に番号を振る（F15「表と原型の番号」）。
+    // 相互再帰と後の定義への参照のため、本体より先に番号を振る。
     for def in &input.defs {
         let index = g.reserve_proto()?;
         if g.def_protos.insert(def.binding, index).is_some() {
@@ -104,7 +104,7 @@ fn generate(
     if g.filled.iter().any(|filled| !filled) {
         return Err(internal("unfilled prototype slot"));
     }
-    // 捕捉と命令の引数の数は表から引くので、表の生成の途中では計算しない（10-07「生存の情報」）。
+    // 捕捉と命令の引数の数は表から引くので、表の生成の途中では計算しない。
     for i in 0..g.out.protos.len() {
         let live = compute_liveness(&g.out, ProtoIdx(count(i)?))
             .map_err(|e| internal(format!("liveness: {e:?}")))?;
@@ -123,7 +123,7 @@ struct Gen<'p> {
     filled: Vec<bool>,
     def_protos: HashMap<BindingId, ProtoIdx>,
     method_protos: HashMap<NodeId, Vec<ProtoIdx>>,
-    builtin_protos: HashMap<BuiltinId, ProtoIdx>,
+    builtin_protos: HashMap<(BuiltinId, Vec<TypeArg>), ProtoIdx>,
     op_protos: HashMap<BindingId, ProtoIdx>,
     const_index: HashMap<tables::ConstKey, ConstIdx>,
     const_refs: HashMap<BindingId, ConstIdx>,
@@ -134,6 +134,7 @@ struct Gen<'p> {
     builtin_index: HashMap<BuiltinId, BuiltinRefIdx>,
     diags: Vec<Diagnostic>,
     limit_keys: HashSet<(DiagCode, String)>,
+    definition_limit_keys: HashSet<(DiagCode, Span)>,
     pending: VecDeque<PendingBody<'p>>,
 }
 
@@ -179,6 +180,7 @@ impl<'p> Gen<'p> {
             builtin_index: HashMap::new(),
             diags: Vec::new(),
             limit_keys: HashSet::new(),
+            definition_limit_keys: HashSet::new(),
             pending: VecDeque::new(),
         }
     }
@@ -245,7 +247,7 @@ impl<'p> Gen<'p> {
             (DiagCode::L0103, fg.switch_tables.len(), 65536),
             (DiagCode::L0104, fg.handlers.len(), 65536),
         ] {
-            if size > max {
+            if size > max && self.definition_limit_keys.insert((code, fg.def.span)) {
                 self.diags.push(
                     DiagBuilder::new(code)
                         .arg("name", fg.def.name.clone())

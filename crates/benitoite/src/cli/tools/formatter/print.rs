@@ -17,7 +17,7 @@ pub struct PrintInput<'a> {
 }
 
 use super::INDENT_WIDTH;
-use super::roles::{BlankBefore, TopKind, TopRange};
+use super::roles::{TopKind, TopRange};
 use crate::syntax::token::{CommentKind, TokenKind};
 
 /// 整形の結果のバイト列を作る（本章「書き出し」）。
@@ -119,7 +119,7 @@ struct Printer<'p, 'a> {
     out: Vec<u8>,
 }
 
-/// 行と宣言を引く表。行ごと・字句ごとに前もって作り、行の数×宣言の数の線形探索を避ける（D02 の確認の直し）。
+/// 行と宣言を引く表。行ごと・字句ごとに前もって作り、行の数×宣言の数の線形探索を避ける。
 struct Tables {
     /// 行の添字ごとの、その行から後（その行を含む）の最初のコードの行
     next_code: Vec<Option<usize>>,
@@ -293,7 +293,7 @@ impl Printer<'_, '_> {
         let Some(prev_index) = previous else {
             return BlankRule::Zero;
         };
-        let (Some(prev), Some(_line)) = (self.line(prev_index), self.line(index)) else {
+        let (Some(prev), Some(_)) = (self.line(prev_index), self.line(index)) else {
             return BlankRule::Zero;
         };
         // シェバンの行と `//!` の行の後は一つまで。
@@ -323,29 +323,17 @@ impl Printer<'_, '_> {
             return BlankRule::KeepOne;
         };
         let role = self.role(code.first);
-        if role.blank_before == BlankBefore::KeepOne {
+        let blank = role.blank_before;
+        if !blank.leading && !blank.direct {
             return BlankRule::KeepOne;
         }
-        // `Remove` の行の前にコメントだけの行があるときは、最初の字句の種類で除く位置を分ける
-        // （D02「手順の要点」の 2 の近似。凍結した `BlankBefore` は除く理由を持たない）。
-        let closing = role.inner_level.is_some()
-            || self
-                .input
-                .tokens
-                .get(code.first)
-                .is_some_and(|t| matches!(t.kind, TokenKind::KwElse | TokenKind::KwWith));
-        if closing {
-            // 閉じの字句・`else`・`with` の直前の空の行だけを除く。
-            if index == code_index {
-                BlankRule::Zero
-            } else {
-                BlankRule::KeepOne
-            }
-        } else if prev.kind == LineKind::Comment {
-            BlankRule::KeepOne
-        } else {
-            // 前のコードの行と、コメントだけの行か字句の行との間の空の行を除く。
+        if blank.direct && index == code_index {
+            return BlankRule::Zero;
+        }
+        if blank.leading && prev.kind != LineKind::Comment {
             BlankRule::Zero
+        } else {
+            BlankRule::KeepOne
         }
     }
 
@@ -386,7 +374,9 @@ impl Printer<'_, '_> {
                 self.out.extend_from_slice(raw);
             }
             LineKind::Comment => {
-                // コメントだけの行は、後の最初のコードの行の段（閉じの字句なら閉じる構文の中の段）に置く。
+                // コメントだけの行は、後の最初のコードの行の段に置く。閉じの字句か、
+                // 中身が空の分岐・本体の後の `else`・`with` なら、構文の中の段に置く
+                // （設計書 06-03「コメント」）。
                 let level = self
                     .next_code(index)
                     .and_then(|i| self.line(i))
@@ -446,7 +436,7 @@ impl Printer<'_, '_> {
         let group = self.groups.of_token.get(index).copied().flatten();
         if let Some(id) = group {
             // 字下げの差は複数行の文字列の組でだけ要る。1 行の文字列ごとに行の頭まで後ろへ走査すると、1 行に文字列が
-            // 多いときに時間が二乗で増える（D02 の確認の直し）。
+            // 多いときに時間が二乗で増える。
             let is_first = self
                 .groups
                 .list

@@ -1,13 +1,13 @@
 //! 文字の変換と ASCII・Unicode の判定（設計書 01-04「Character」、03-06「Character」）。
-//! 仮の本体は、後の作業が本体と Rust の引数型だけを書き換える。
-//! 名前・権限・引数の数・DECLS の中の位置は変えない（実装プラン 10-12「まだ書かない項目の仮の本体」）。
+//! 名前・権限・引数の数は標準ライブラリのソースの宣言と一致させる
+//! （設計書 02-04「標準ライブラリのソースの持ち方」）。番号は表の中の位置で決まるので、DECLS の中の位置は変えない。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::runtime::Stop;
 use crate::runtime::heap::{CheckedLen, StrBuf, Value};
 
 builtin! {
-    /// `Character.toInteger` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Character.toInteger` の本体。
     name = "Character.toInteger",
     pure fn to_integer(ctx, c: char) -> i64 {
         let _ = ctx;
@@ -16,7 +16,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Character.fromInteger` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Character.fromInteger` の本体。
     name = "Character.fromInteger",
     pure fn from_integer(ctx, n: i64) -> Value<'e> {
         super::option(
@@ -30,7 +30,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Character.toString` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Character.toString` の本体。
     name = "Character.toString",
     pure fn to_string(ctx, c: char) -> Value<'e> {
         let mut buf = [0; 4];
@@ -39,7 +39,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Character.isASCIIDigit` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Character.isASCIIDigit` の本体。
     name = "Character.isASCIIDigit",
     pure fn is_a_s_c_i_i_digit(ctx, c: char) -> bool {
         let _ = ctx;
@@ -48,7 +48,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Character.isASCIIWhitespace` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Character.isASCIIWhitespace` の本体。
     name = "Character.isASCIIWhitespace",
     pure fn is_a_s_c_i_i_whitespace(ctx, c: char) -> bool {
         let _ = ctx;
@@ -56,7 +56,7 @@ builtin! {
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     to_integer::DECL,
     from_integer::DECL,
@@ -126,7 +126,8 @@ builtin! {
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const UNICODE_DECLS: &[BuiltinDecl] = &[
     is_alphabetic::DECL,
     is_numeric::DECL,
@@ -155,7 +156,7 @@ fn case_buf(
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(clippy::unwrap_used)]
     // 関門: Unicode の分類と複数文字への変換を守る。ASCII 関数への取り違えや
     // 一文字への切り詰めを捕まえ、既存の ASCII のテストとは重ならず、公開の口を加えない。

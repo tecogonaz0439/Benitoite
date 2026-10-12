@@ -9,6 +9,8 @@ use crate::base::Span;
 use crate::diag::{DiagBuilder, DiagCode};
 use crate::syntax::{ast::*, token::TokenKind};
 
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn parse_effect_decl(p: &mut Parser, depth: u32) -> PResult<Item> {
     p.enter(depth)?;
     let start = p.pos;
@@ -104,18 +106,22 @@ fn push_op(p: &mut Parser, depth: u32, out: &mut Vec<OpSig>) -> PResult<()> {
     Ok(())
 }
 
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn parse_handle(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.enter(depth)?;
     let start = p.pos;
     let opened = p.bump().span;
     p.open_block(TokenKind::KwHandle, opened);
-    // 外側の節の継続は内側の handle の本体からも使える（実装プラン F04）。
+    // 外側の節の継続は内側の handle の本体からも使える。
     let body = exprs::parse_block(p, child(depth), BlockEnd::WithCase)?;
     p.expect(TokenKind::KwWith)?;
     let clauses = parse_clauses(p, depth)?;
     p.close_block(TokenKind::KwHandle);
     Ok(finish_handle(p, start, *body, clauses))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_clauses(p: &mut Parser, depth: u32) -> PResult<Vec<HandleClause>> {
     let mut clauses = Vec::new();
     let mut index = 0_usize;
@@ -221,6 +227,8 @@ fn push_clause_param(p: &mut Parser, depth: u32, out: &mut Vec<ClauseParam>) -> 
     });
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_clause(
     p: &mut Parser,
     start: usize,
@@ -241,6 +249,8 @@ fn finish_clause(
         body,
     });
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_handle(
     p: &mut Parser,
     start: usize,
@@ -255,6 +265,8 @@ fn finish_handle(
     }))
 }
 
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn parse_resume(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.enter(depth)?;
     let start = p.pos;
@@ -266,15 +278,17 @@ pub(super) fn parse_resume(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     Ok(finish_resume(p, start, value))
 }
 fn check_resume(p: &mut Parser, span: Span) {
-    if p.ctx.clause == ClauseContext::Direct {
-        return;
-    }
-    let mut d = DiagBuilder::new(DiagCode::E0509).primary(span);
-    if p.ctx.clause == ClauseContext::Blocked {
-        d = d.help("lambda");
-    }
+    let d = DiagBuilder::new(DiagCode::E0509).primary(span);
+    let d = match p.ctx.clause {
+        ClauseContext::Direct => return,
+        ClauseContext::None => d,
+        ClauseContext::Blocked => d.help("lambda"),
+        ClauseContext::BlockedByGuard => d.help("guard"),
+    };
     p.report(d.build());
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_resume(p: &mut Parser, start: usize, value: Box<Expr>) -> Box<Expr> {
     Box::new(Expr::Resume(ResumeExpr {
         id: p.node_id(),
@@ -283,6 +297,8 @@ fn finish_resume(p: &mut Parser, start: usize, value: Box<Expr>) -> Box<Expr> {
     }))
 }
 
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn parse_with(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.enter(depth)?;
     let start = p.pos;
@@ -324,6 +340,8 @@ fn push_with_bind(p: &mut Parser, depth: u32, out: &mut Vec<WithBind>) -> PResul
     });
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_with(p: &mut Parser, start: usize, binds: Vec<WithBind>, body: Block) -> Box<Expr> {
     Box::new(Expr::With(WithExpr {
         id: p.node_id(),
@@ -333,7 +351,7 @@ fn finish_with(p: &mut Parser, start: usize, binds: Vec<WithBind>, body: Block) 
     }))
 }
 fn skip_foreign_with(p: &mut Parser) {
-    // 対応する end with があるときだけ全体を捨て、外側の終わりを消費しない（F04）。
+    // 対応する end with があるときだけ全体を捨て、外側の終わりを消費しない。
     let mut nesting = 0_u32;
     let mut end = None;
     for (offset, token) in p.tokens.get(p.pos..).unwrap_or_default().iter().enumerate() {
@@ -368,6 +386,8 @@ fn skip_foreign_with(p: &mut Parser) {
     }
 }
 
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn parse_lazy(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.enter(depth)?;
     let start = p.pos;
@@ -375,7 +395,10 @@ pub(super) fn parse_lazy(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let saved = p.ctx;
     p.ctx.escape = EscapeContext::InLazy;
     p.ctx.in_arm_head = false;
-    if p.ctx.clause == ClauseContext::Direct {
+    if matches!(
+        p.ctx.clause,
+        ClauseContext::Direct | ClauseContext::BlockedByGuard
+    ) {
         p.ctx.clause = ClauseContext::Blocked;
     }
     p.open_block(TokenKind::KwLazy, opened);
@@ -385,6 +408,8 @@ pub(super) fn parse_lazy(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.close_block(TokenKind::KwLazy);
     Ok(finish_lazy(p, start, *body))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_lazy(p: &mut Parser, start: usize, body: Block) -> Box<Expr> {
     Box::new(Expr::Lazy(LazyExpr {
         id: p.node_id(),
@@ -393,6 +418,8 @@ fn finish_lazy(p: &mut Parser, start: usize, body: Block) -> Box<Expr> {
     }))
 }
 
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn parse_try(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.enter(depth)?;
     let start = p.pos;
@@ -463,9 +490,9 @@ pub(super) fn check_escape(p: &mut Parser, keyword: TokenKind, span: Span) {
 }
 
 #[cfg(test)]
-// 公開の parse で文脈と回復を確かめる。文脈の漏れと式の範囲の退行は、仮の本体の
-// テストでは捕まらない。準備は F02 の共通関数を使う（設計書 07-03、test-audit）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// 公開の parse で文脈と回復を確かめる。文脈の漏れと式の範囲の退行を捕まえる。
+// 準備は共通関数を使う（test-audit）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -628,19 +655,58 @@ mod tests {
     }
     #[test]
     fn resume_context_follows_nested_handlers_and_restores_on_exit() {
-        for (inside, expected, blocked) in [
-            ("resume(())", None, false),
+        for (inside, expected, help) in [
+            ("resume(())", None, None),
             (
                 "handle resume(()) with case op() -> resume(()) end handle",
                 None,
-                false,
+                None,
             ),
             (
                 "lambda() resume(()) end lambda",
                 Some(DiagCode::E0509),
-                true,
+                Some("lambda or a `lazy` body"),
             ),
-            ("lazy resume(()) end lazy", Some(DiagCode::E0509), true),
+            (
+                "lazy resume(()) end lazy",
+                Some(DiagCode::E0509),
+                Some("lambda or a `lazy` body"),
+            ),
+            (
+                "lambda() match 1 with case k if resume(true) -> k\ncase k -> k\nend match end lambda",
+                Some(DiagCode::E0509),
+                Some("lambda or a `lazy` body"),
+            ),
+            (
+                "match 1 with case k if resume(true) -> resume(k)\ncase k -> resume(k)\nend match",
+                Some(DiagCode::E0509),
+                Some("`match` guard"),
+            ),
+            (
+                "match 1 with case k if handle ask(k > 0) with case ask(b) -> resume(b) end handle -> resume(k + 10)\ncase k -> resume(k - 10)\nend match",
+                None,
+                None,
+            ),
+            (
+                "match 1 with case k if handle ask(k > 0) with case ask(b) -> match b with case x if resume(true) -> resume(x)\ncase x -> resume(x)\nend match end handle -> resume(k)\ncase k -> resume(k)\nend match",
+                Some(DiagCode::E0509),
+                Some("`match` guard"),
+            ),
+            (
+                "match 1 with case k if handle resume(true) with case ask(b) -> resume(b) end handle -> resume(k)\ncase k -> resume(k)\nend match",
+                Some(DiagCode::E0509),
+                Some("`match` guard"),
+            ),
+            (
+                "match 1 with case k if lambda() resume(true) end lambda -> resume(k)\ncase k -> resume(k)\nend match",
+                Some(DiagCode::E0509),
+                Some("lambda or a `lazy` body"),
+            ),
+            (
+                "match 1 with case k if lazy resume(true) end lazy -> resume(k)\ncase k -> resume(k)\nend match",
+                Some(DiagCode::E0509),
+                Some("lambda or a `lazy` body"),
+            ),
         ] {
             let src = body(&format!(
                 "handle () with case Log.write(_) ->\n{inside}\nend handle"
@@ -657,12 +723,8 @@ mod tests {
             };
             assert_eq!(h.clauses[0].op.path.len(), 2);
             assert!(h.clauses[0].params[0].name.is_none());
-            if blocked {
-                assert!(
-                    out.diagnostics[0].helps[0]
-                        .message
-                        .contains("lambda or a `lazy` body")
-                );
+            if let Some(help) = help {
+                assert!(out.diagnostics[0].helps[0].message.contains(help));
                 assert_eq!(
                     out.diagnostics[0].primary.as_ref().unwrap().span.start,
                     position(&src, "resume").unwrap()
@@ -672,6 +734,7 @@ mod tests {
         for source in [
             "resume(())",
             "handle resume(()) with case op() -> resume(()) end handle",
+            "match 1 with case k if resume(true) -> k\ncase k -> k\nend match",
         ] {
             let src = body(source);
             let out = user(&src);
@@ -740,11 +803,27 @@ mod tests {
     }
     #[test]
     fn lazy_escape_and_try_operand_extent() {
+        // spec: 01-02 明示遅延（初回リリース版）
         for (source, expected, key) in [
             ("lazy\ncompute()\nend lazy", None, ""),
             ("lazy return 1 end lazy", Some(DiagCode::E0218), "lazy_body"),
             ("lazy try f() end lazy", Some(DiagCode::E0218), "lazy_body"),
+            (
+                "lazy f(return 1, _) end lazy",
+                Some(DiagCode::E0218),
+                "lazy_body",
+            ),
+            (
+                "lazy f(try g(), _) end lazy",
+                Some(DiagCode::E0218),
+                "lazy_body",
+            ),
             ("lazy lambda() return 1 end lambda end lazy", None, ""),
+            (
+                "lazy lambda() return f(return 1, _)(0) end lambda end lazy",
+                None,
+                "",
+            ),
         ] {
             let src = body(source);
             let out = user(&src);
@@ -760,7 +839,7 @@ mod tests {
                 assert!(
                     out.diagnostics[0].helps[1]
                         .message
-                        .contains("allowed inside a lambda")
+                        .contains("lambda ... end lambda")
                 );
             }
         }

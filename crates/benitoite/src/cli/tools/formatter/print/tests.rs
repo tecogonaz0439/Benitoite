@@ -1,7 +1,7 @@
 //! 字句の間の空白と字下げの整形のテスト（設計書 06-03「字句の間の空白」「字下げ」、
 //! 07-03「テストの種類（初回リリース版）」のフォーマッタ）。入力はコメント・空の行・複数行の文字列を含まない
-//! ソースに限り（10-17「書き出し」の D01 の範囲）、本物の字句解析・構文解析・役割の表をつないで整形する。
-// テストの失敗は panic で表す（00-02「`#[allow]` を書いてよい箇所」）
+//! ソースに限り、本物の字句解析・構文解析・役割の表をつないで整形する。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -447,7 +447,7 @@ fn canonical_forms_are_fixed_points() {
 }
 
 /// 入れ子の深さが構文解析器の上限（`MAX_DEPTH`）の近くでも、普通のテストのスレッドのスタックで整形できる
-/// （00-02「再帰の深さ」、D01「手順の要点」の 8）。
+/// （AGENTS.md「実装の規約」の「再帰の深さ」）。
 #[test]
 fn deep_nesting_uses_the_default_test_thread_stack() {
     let wrap = |body: String| format!("function main() -> Unit\n{body}\nend function\n");

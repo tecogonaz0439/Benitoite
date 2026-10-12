@@ -1,9 +1,12 @@
 //! パターンの検査: 網羅性、選ばれない分岐、必ず照合するパターン（設計書 02-05「本体の後の検査」、01-05）。
 
+use std::collections::HashMap;
+
+use super::limits::MAX_COVERAGE_WORK;
 use crate::base::BindingId;
 
 /// 検査に使うパターン。
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub enum Pat {
     /// ワイルドカードと変数のパターン（どちらもすべての値に照合する）
     Wild,
@@ -34,7 +37,7 @@ pub enum Pat {
 pub struct ArmPats {
     /// コンマで並べた選択肢
     pub alts: Vec<Pat>,
-    /// ガードを持つか。ガードの付いた分岐の行は、後の行を覆うものに数えない（02-05「本体の後の検査」）
+    /// ガードを持つか。ガードの付いた分岐の行は、後の分岐を覆うものに数えない（02-05「本体の後の検査」）
     pub guarded: bool,
 }
 
@@ -54,42 +57,141 @@ pub enum MatchIssue {
 
 use crate::types::{AdtTable, Ty};
 
-/// 一つの `match` を検査する。選ばれない選択肢を分岐と選択肢の順に、その後に網羅していないこと（あれば一つ）を返す。
-/// 構成子の名前の表示は、型名で修飾した名前（`Tree.Leaf`、`Option.Some`）とし、型の名前と同じ名前の
-/// 構成子（`Pair`）とレコードは修飾しない。
-pub fn check_match(scrutinee: &Ty, arms: &[ArmPats], adts: &AdtTable) -> Vec<MatchIssue> {
+/// 仕事量の予算を超えて判定をやめたこと（設計書 02-05「本体の後の検査」）。
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct Undecided;
+
+/// 選ばれない選択肢の位置と、それを覆う選択肢の位置。
+pub type CoveringAlternatives = ((usize, usize), Vec<(usize, usize)>);
+
+/// 一つの `match` の判定の結果。途中で予算を超えた場合、部分的な結果は返さない。
+#[derive(Clone, PartialEq, Debug)]
+pub struct MatchCheck {
+    /// 選ばれない選択肢を分岐と選択肢の順に、その後に網羅していないこと（あれば一つ）。
+    pub issues: Vec<MatchIssue>,
+    /// 選ばれない選択肢 `(arm, alt)` ごとの、覆っている選択肢の位置。
+    pub covering: Vec<CoveringAlternatives>,
+    /// 判定に使った仕事量。
+    pub work: usize,
+}
+
+/// 束縛の文の判定の結果。
+#[derive(Clone, PartialEq, Debug)]
+pub struct BindingCheck {
+    /// 必ず照合するなら `None`、そうでなければ照合しない値の形。
+    pub witness: Option<String>,
+    /// 判定に使った仕事量。
+    pub work: usize,
+}
+
+#[derive(PartialEq, Eq, Hash)]
+struct SearchKey {
+    types: Vec<Ty>,
+    matrix: Vec<Vec<Pat>>,
+    query: Vec<Pat>,
+}
+
+// 表と予算は一つの match または束縛の文の間だけ共有する。表を引く順序は探索の順序に影響しない。
+struct Search {
+    limit: usize,
+    used: usize,
+    memo: Option<HashMap<SearchKey, Option<Vec<String>>>>,
+}
+impl Search {
+    fn new(limit: usize) -> Self {
+        Self {
+            limit,
+            used: 0,
+            memo: Some(HashMap::new()),
+        }
+    }
+    fn charge(&mut self, work: usize) -> Result<(), Undecided> {
+        self.used = self.used.saturating_add(work);
+        if self.used > self.limit {
+            Err(Undecided)
+        } else {
+            Ok(())
+        }
+    }
+    fn matrix(&mut self, rows: &[Vec<Pat>]) -> Result<(), Undecided> {
+        self.charge(
+            rows.iter()
+                .fold(0usize, |n, row| n.saturating_add(row.len())),
+        )
+    }
+    fn finish(
+        &mut self,
+        key: Option<Box<SearchKey>>,
+        result: Option<Vec<String>>,
+    ) -> Option<Vec<String>> {
+        if let (Some(memo), Some(key)) = (&mut self.memo, key) {
+            memo.insert(*key, result.clone());
+        }
+        result
+    }
+}
+
+/// 一つの `match` を検査する。構成子の名前は型名で修飾し、同名の構成子とレコードは修飾しない。
+pub fn check_match(
+    scrutinee: &Ty,
+    arms: &[ArmPats],
+    adts: &AdtTable,
+) -> Result<MatchCheck, Undecided> {
+    check_match_with(scrutinee, arms, adts, &mut Search::new(MAX_COVERAGE_WORK))
+}
+fn check_match_with(
+    scrutinee: &Ty,
+    arms: &[ArmPats],
+    adts: &AdtTable,
+    search: &mut Search,
+) -> Result<MatchCheck, Undecided> {
     let mut issues = Vec::new();
+    let mut covering = Vec::new();
     let mut rows = Vec::new();
     for (arm, a) in arms.iter().enumerate() {
+        let previous_len = rows.len();
         for (alt, pat) in a.alts.iter().enumerate() {
-            if useful(scrutinee, &rows, pat, adts).is_none() {
-                let mut covered_by = covering_alternatives(scrutinee, arms, arm, alt, adts)
-                    .into_iter()
-                    .map(|(i, _)| i)
+            if useful(scrutinee, &rows, pat, adts, search)?.is_none() {
+                let positions = covering_alternatives(scrutinee, arms, arm, alt, adts, search)?;
+                let mut covered_by = positions
+                    .iter()
+                    .map(|(i, _)| *i)
                     .filter(|i| *i != arm)
                     .collect::<Vec<_>>();
                 covered_by.sort_unstable();
                 covered_by.dedup();
+                covering.push(((arm, alt), positions));
                 issues.push(MatchIssue::Unreachable {
                     arm,
                     alt,
                     covered_by,
                 });
             }
-            if !a.guarded {
-                rows.push(pat.clone());
-            }
+            // 同じ分岐の前の選択肢はガードによらず後の選択肢を覆う（01-05「選ばれない分岐の検査」）。
+            rows.push(pat.clone());
+        }
+        if a.guarded {
+            rows.truncate(previous_len);
         }
     }
-    if let Some(witness) = useful(scrutinee, &rows, &Pat::Wild, adts) {
+    if let Some(witness) = useful(scrutinee, &rows, &Pat::Wild, adts, search)? {
         issues.push(MatchIssue::NonExhaustive { witness });
     }
-    issues
+    Ok(MatchCheck {
+        issues,
+        covering,
+        work: search.used,
+    })
 }
 
-/// 束縛の文の左辺のパターンが必ず照合するか（01-05「必ず照合するパターン（初回リリース版）」）。
-pub fn is_irrefutable(ty: &Ty, pat: &Pat, adts: &AdtTable) -> bool {
-    useful(ty, std::slice::from_ref(pat), &Pat::Wild, adts).is_none()
+/// 束縛の文の反例まで、一つの予算で一度だけ求める。
+pub fn check_binding(ty: &Ty, pat: &Pat, adts: &AdtTable) -> Result<BindingCheck, Undecided> {
+    let mut search = Search::new(MAX_COVERAGE_WORK);
+    let witness = useful(ty, std::slice::from_ref(pat), &Pat::Wild, adts, &mut search)?;
+    Ok(BindingCheck {
+        witness,
+        work: search.used,
+    })
 }
 
 use crate::types::{TyCon, builtin::BuiltinTypeId as B};
@@ -189,21 +291,22 @@ fn interval(p: &Pat) -> Option<(i128, i128)> {
         | Pat::List { .. } => None,
     }
 }
-fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable) -> Vec<Shape> {
-    match ty {
-        Ty::Con(TyCon::Adt(id), args) => adts.get(*id).map_or_else(
-            || vec![Shape::Other],
-            |d| {
-                d.ctors
-                    .iter()
-                    .map(|c| Shape::Ctor {
-                        adt: *id,
-                        tag: c.tag,
-                        fields: adts.field_types(*id, c.tag, args).unwrap_or_default(),
-                    })
-                    .collect()
-            },
-        ),
+fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable) -> Option<Vec<Shape>> {
+    Some(match ty {
+        Ty::Con(TyCon::Adt(id), args) => {
+            let Some(d) = adts.get(*id) else {
+                return Some(vec![Shape::Other]);
+            };
+            let mut result = Vec::new();
+            for c in &d.ctors {
+                result.push(Shape::Ctor {
+                    adt: *id,
+                    tag: c.tag,
+                    fields: adts.field_types(*id, c.tag, args)?,
+                });
+            }
+            result
+        }
         Ty::Con(TyCon::Builtin(b), _) if *b == B::BOOLEAN => {
             vec![Shape::Boolean(true), Shape::Boolean(false)]
         }
@@ -280,7 +383,7 @@ fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable) -> Vec<Shape> {
         Ty::Con(..) | Ty::Fn(_) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => {
             vec![Shape::Other]
         }
-    }
+    })
 }
 fn specialize(p: &Pat, shape: &Shape) -> Option<Vec<Pat>> {
     if matches!(p, Pat::Wild) {
@@ -337,75 +440,253 @@ fn specialize(p: &Pat, shape: &Shape) -> Option<Vec<Pat>> {
         _ => None,
     }
 }
-fn useful(ty: &Ty, rows: &[Pat], pat: &Pat, adts: &AdtTable) -> Option<String> {
-    let matrix = rows.iter().map(|p| vec![p.clone()]).collect::<Vec<_>>();
-    usefulness(
-        std::slice::from_ref(ty),
-        &matrix,
-        std::slice::from_ref(pat),
-        adts,
-    )
-    .and_then(|v| v.into_iter().next())
-}
-fn usefulness(
-    tys: &[Ty],
-    matrix: &[Vec<Pat>],
-    query: &[Pat],
+fn useful(
+    ty: &Ty,
+    rows: &[Pat],
+    pat: &Pat,
     adts: &AdtTable,
-) -> Option<Vec<String>> {
-    if matrix
+    search: &mut Search,
+) -> Result<Option<String>, Undecided> {
+    search.charge(rows.len())?;
+    let input = SearchInput {
+        types: vec![ty.clone()],
+        matrix: rows.iter().map(|p| vec![p.clone()]).collect(),
+        query: vec![pat.clone()],
+    };
+    Ok(usefulness(input, adts, search)?.and_then(|v| v.into_iter().next()))
+}
+
+struct SearchInput {
+    types: Vec<Ty>,
+    matrix: Vec<Vec<Pat>>,
+    query: Vec<Pat>,
+}
+impl SearchInput {
+    fn fallback(&self, adts: &AdtTable) -> Option<Vec<String>> {
+        Some(self.query.iter().map(|p| show_pattern(p, adts)).collect())
+    }
+}
+struct Branches {
+    key: Option<Box<SearchKey>>,
+    input: SearchInput,
+    shapes: std::vec::IntoIter<Shape>,
+    specialized: bool,
+}
+enum Continue {
+    Wild(usize),
+    Branch {
+        branches: Box<Branches>,
+        shape: Shape,
+        arity: usize,
+    },
+}
+enum Step {
+    Done(Option<Vec<String>>),
+    Descend(SearchInput, Continue),
+}
+
+fn usefulness(
+    input: SearchInput,
+    adts: &AdtTable,
+    search: &mut Search,
+) -> Result<Option<Vec<String>>, Undecided> {
+    // 再帰の戻り先を明示したスタックに置く。深い構成子やリストでも、鍵の複製と
+    // ハッシュの再帰を探索の再帰と重ねない（07-03「テストの設計の原則」の深い入力）。
+    let mut pending = Vec::new();
+    let mut step = enter(input, adts, search)?;
+    loop {
+        match step {
+            Step::Descend(input, continuation) => {
+                pending.push(continuation);
+                step = enter(input, adts, search)?;
+            }
+            Step::Done(result) => {
+                let Some(continuation) = pending.pop() else {
+                    return Ok(result);
+                };
+                step = match continuation {
+                    Continue::Wild(count) => {
+                        let result = result.map(|result| {
+                            let mut witness = vec!["_".into(); count];
+                            witness.extend(result);
+                            witness
+                        });
+                        Step::Done(result)
+                    }
+                    Continue::Branch {
+                        branches,
+                        shape,
+                        arity,
+                    } => {
+                        if let Some(result) = result {
+                            let tail_len = branches.input.query.len().saturating_sub(1);
+                            let witness = if result.len() == arity.saturating_add(tail_len) {
+                                if let Some((fields, rest)) = result.split_at_checked(arity) {
+                                    let mut witness = vec![shape.show(fields, adts)];
+                                    witness.extend_from_slice(rest);
+                                    Some(witness)
+                                } else {
+                                    branches.input.fallback(adts)
+                                }
+                            } else {
+                                branches.input.fallback(adts)
+                            };
+                            Step::Done(search.finish(branches.key, witness))
+                        } else {
+                            next_branch(*branches, adts, search)?
+                        }
+                    }
+                };
+            }
+        }
+    }
+}
+fn enter(mut input: SearchInput, adts: &AdtTable, search: &mut Search) -> Result<Step, Undecided> {
+    search.charge(1)?;
+    // Lean の usefulFuel と同じく、長さの違う行を被覆と記憶の判定より先に除く。
+    input.matrix.retain(|row| row.len() == input.query.len());
+    // 不整合は有用の側に倒し、問いの形を返す（02-05「本体の後の検査」）。
+    if input.types.len() != input.query.len() {
+        return Ok(Step::Done(input.fallback(adts)));
+    }
+    if input
+        .matrix
         .iter()
         .any(|row| row.iter().all(|p| matches!(p, Pat::Wild)))
     {
-        return None;
+        return Ok(Step::Done(None));
     }
-    let Some((q, tail)) = query.split_first() else {
-        return Some(vec![]);
+    let (Some(q), Some(ty)) = (input.query.first(), input.types.first()) else {
+        return Ok(Step::Done(input.fallback(adts)));
     };
-    let (ty, types_tail) = tys.split_first()?;
-    // 空の行列は候補そのものを反例にできる。再帰型の存在を展開し続けない
-    // （設計書 01-05「選ばれない分岐の検査」）。
-    if matrix.is_empty() {
-        return Some(query.iter().map(|p| show_pattern(p, adts)).collect());
+    if input.matrix.is_empty() {
+        return Ok(Step::Done(input.fallback(adts)));
     }
-    let column = matrix
+    // ワイルドカードだけの先頭の列は、連続する分を一度に落とす。
+    // 行列の残りを複製するのは一回だけであり、作るセルをすべて先に数える。
+    let wild_columns = input
+        .query
+        .iter()
+        .enumerate()
+        .take_while(|(i, p)| {
+            matches!(p, Pat::Wild)
+                && input
+                    .matrix
+                    .iter()
+                    .all(|row| matches!(row.get(*i), Some(Pat::Wild)))
+        })
+        .count();
+    if wild_columns > 0 {
+        search.charge(input.matrix.iter().fold(0usize, |n, row| {
+            n.saturating_add(row.len().saturating_sub(wild_columns))
+        }))?;
+        let matrix = input
+            .matrix
+            .iter()
+            .map(|row| row.iter().skip(wild_columns).cloned().collect())
+            .collect::<Vec<_>>();
+        return Ok(Step::Descend(
+            SearchInput {
+                types: input.types.into_iter().skip(wild_columns).collect(),
+                query: input.query.into_iter().skip(wild_columns).collect(),
+                matrix,
+            },
+            Continue::Wild(wild_columns),
+        ));
+    }
+    let column = input
+        .matrix
         .iter()
         .filter_map(|row| row.first())
         .chain(std::iter::once(q))
         .collect::<Vec<_>>();
-    if column.iter().all(|p| matches!(p, Pat::Wild)) {
-        let rows = matrix
-            .iter()
-            .map(|row| row.iter().skip(1).cloned().collect())
-            .collect::<Vec<_>>();
-        let mut result = usefulness(types_tail, &rows, tail, adts)?;
-        result.insert(0, "_".into());
-        return Some(result);
+    let Some(shapes) = shapes(ty, &column, adts) else {
+        return Ok(Step::Done(input.fallback(adts)));
+    };
+    // 記憶は構成子で分ける段の入力だけに持つ。検索のための複製も、表で再利用
+    // できた場合を含めて数える（型の並びと問いのセルも含む）。
+    let key = if search.memo.is_some() {
+        search.matrix(&input.matrix)?;
+        search.charge(input.types.len().saturating_add(input.query.len()))?;
+        Some(Box::new(SearchKey {
+            types: input.types.clone(),
+            matrix: input.matrix.clone(),
+            query: input.query.clone(),
+        }))
+    } else {
+        None
+    };
+    if let Some(result) = key
+        .as_ref()
+        .and_then(|key| search.memo.as_ref()?.get(key.as_ref()))
+    {
+        return Ok(Step::Done(result.clone()));
     }
-    for shape in shapes(ty, &column, adts) {
-        let Some(mut args) = specialize(q, &shape) else {
+    next_branch(
+        Branches {
+            key,
+            input,
+            shapes: shapes.into_iter(),
+            specialized: false,
+        },
+        adts,
+        search,
+    )
+}
+fn next_branch(
+    mut branches: Branches,
+    adts: &AdtTable,
+    search: &mut Search,
+) -> Result<Step, Undecided> {
+    for shape in branches.shapes.by_ref() {
+        let Some(q) = branches.input.query.first() else {
+            break;
+        };
+        let Some(mut query) = specialize(q, &shape) else {
             continue;
         };
-        args.extend_from_slice(tail);
-        let rows = matrix
-            .iter()
-            .filter_map(|row| {
-                let mut specialized = specialize(row.first()?, &shape)?;
-                specialized.extend(row.iter().skip(1).cloned());
-                Some(specialized)
-            })
-            .collect::<Vec<_>>();
+        branches.specialized = true;
+        query.extend(branches.input.query.iter().skip(1).cloned());
+        let mut matrix = Vec::new();
+        for row in &branches.input.matrix {
+            let Some(first) = row.first() else {
+                continue;
+            };
+            let Some(mut specialized) = specialize(first, &shape) else {
+                continue;
+            };
+            // 行全体を複製する前に数える。予算に当たる行があれば、その先の行を作らない。
+            search.charge(
+                specialized
+                    .len()
+                    .saturating_add(row.len().saturating_sub(1)),
+            )?;
+            specialized.extend(row.iter().skip(1).cloned());
+            matrix.push(specialized);
+        }
         let mut types = shape.fields();
         let arity = types.len();
-        types.extend_from_slice(types_tail);
-        if let Some(result) = usefulness(&types, &rows, &args, adts) {
-            let (fields, rest) = result.split_at_checked(arity)?;
-            let mut witness = vec![shape.show(fields, adts)];
-            witness.extend_from_slice(rest);
-            return Some(witness);
-        }
+        types.extend(branches.input.types.iter().skip(1).cloned());
+        return Ok(Step::Descend(
+            SearchInput {
+                types,
+                matrix,
+                query,
+            },
+            Continue::Branch {
+                branches: Box::new(branches),
+                shape,
+                arity,
+            },
+        ));
     }
-    None
+    let result =
+        if !branches.specialized && !matches!(branches.input.query.first(), Some(Pat::Wild)) {
+            branches.input.fallback(adts)
+        } else {
+            None
+        };
+    Ok(Step::Done(search.finish(branches.key, result)))
 }
 fn show_pattern(p: &Pat, adts: &AdtTable) -> String {
     match p {
@@ -446,38 +727,56 @@ fn show_pattern(p: &Pat, adts: &AdtTable) -> String {
         | Pat::CharacterRange(..) => "_".into(),
     }
 }
-fn overlaps(ty: &Ty, a: &Pat, b: &Pat, adts: &AdtTable) -> bool {
+fn overlaps(
+    ty: &Ty,
+    a: &Pat,
+    b: &Pat,
+    adts: &AdtTable,
+    search: &mut Search,
+) -> Result<bool, Undecided> {
+    search.charge(1)?;
     if matches!(a, Pat::Wild) || matches!(b, Pat::Wild) {
-        return true;
+        return Ok(true);
     }
-    shapes(ty, &[a, b], adts).into_iter().any(|shape| {
-        let (Some(xs), Some(ys)) = (specialize(a, &shape), specialize(b, &shape)) else {
-            return false;
-        };
-        xs.len() == ys.len()
-            && shape
-                .fields()
-                .iter()
-                .zip(xs.iter().zip(&ys))
-                .all(|(t, (x, y))| overlaps(t, x, y, adts))
-    })
+    if let Some(shapes) = shapes(ty, &[a, b], adts) {
+        for shape in shapes {
+            let (Some(xs), Some(ys)) = (specialize(a, &shape), specialize(b, &shape)) else {
+                continue;
+            };
+            if xs.len() != ys.len() {
+                continue;
+            }
+            let mut all = true;
+            for (t, (x, y)) in shape.fields().iter().zip(xs.iter().zip(&ys)) {
+                if !overlaps(t, x, y, adts, search)? {
+                    all = false;
+                    break;
+                }
+            }
+            if all {
+                return Ok(true);
+            }
+        }
+    }
+    Ok(false)
 }
-/// 補助の位置は分岐の番号だけでは足りないので、選択肢の単位で求める（実装プラン F10「P4」）。
-pub(super) fn covering_alternatives(
+/// 補助の位置は分岐の番号だけでは足りないので、選択肢の単位で求める。
+fn covering_alternatives(
     ty: &Ty,
     arms: &[ArmPats],
     arm: usize,
     alt: usize,
     adts: &AdtTable,
-) -> Vec<(usize, usize)> {
+    search: &mut Search,
+) -> Result<Vec<(usize, usize)>, Undecided> {
     let Some(target) = arms.get(arm).and_then(|a| a.alts.get(alt)) else {
-        return vec![];
+        return Ok(vec![]);
     };
     let previous = arms
         .iter()
         .enumerate()
         .take(arm.saturating_add(1))
-        .filter(|(_, a)| !a.guarded)
+        .filter(|(i, a)| *i == arm || !a.guarded)
         .flat_map(|(i, a)| {
             a.alts
                 .iter()
@@ -487,23 +786,24 @@ pub(super) fn covering_alternatives(
         })
         .collect::<Vec<_>>();
     for (position, p) in &previous {
-        if useful(ty, std::slice::from_ref(*p), target, adts).is_none() {
-            return vec![*position];
+        if useful(ty, std::slice::from_ref(*p), target, adts, search)?.is_none() {
+            return Ok(vec![*position]);
         }
     }
     let mut rows = vec![];
     for (k, (_, p)) in previous.iter().enumerate() {
         rows.push((*p).clone());
-        if useful(ty, &rows, target, adts).is_none() {
-            return previous
-                .iter()
-                .take(k.saturating_add(1))
-                .filter(|(_, p)| overlaps(ty, p, target, adts))
-                .map(|(position, _)| *position)
-                .collect();
+        if useful(ty, &rows, target, adts, search)?.is_none() {
+            let mut positions = vec![];
+            for (position, p) in previous.iter().take(k.saturating_add(1)) {
+                if overlaps(ty, p, target, adts, search)? {
+                    positions.push(*position);
+                }
+            }
+            return Ok(positions);
         }
     }
-    vec![]
+    Ok(vec![])
 }
 
 #[cfg(test)]
@@ -584,14 +884,20 @@ mod tests {
             (builtin(B::FLOAT), vec![arm(Pat::Wild)], vec![]),
             (Ty::Param(0), vec![arm(Pat::Wild)], vec![]),
         ] {
-            assert_eq!(check_match(&ty, &arms, &table), expected);
+            assert_eq!(checked_issues(&ty, &arms, &table), expected);
         }
-        assert!(is_irrefutable(&builtin(B::UNIT), &Pat::Unit, &table));
-        assert!(!is_irrefutable(
-            &builtin(B::BOOLEAN),
-            &Pat::Boolean(true),
-            &table
-        ));
+        assert!(
+            check_binding(&builtin(B::UNIT), &Pat::Unit, &table)
+                .unwrap()
+                .witness
+                .is_none()
+        );
+        assert!(
+            check_binding(&builtin(B::BOOLEAN), &Pat::Boolean(true), &table)
+                .unwrap()
+                .witness
+                .is_some()
+        );
     }
     #[test]
     fn intervals_choose_single_cover_before_minimal_joint_cover() {
@@ -642,7 +948,7 @@ mod tests {
             ),
         ] {
             assert_eq!(
-                check_match(&ty, &pats.into_iter().map(arm).collect::<Vec<_>>(), &table),
+                checked_issues(&ty, &pats.into_iter().map(arm).collect::<Vec<_>>(), &table),
                 expected
             );
         }
@@ -654,12 +960,12 @@ mod tests {
             arm(Pat::Wild),
         ];
         assert_eq!(
-            check_match(&ty, &arms, &table),
+            checked_issues(&ty, &arms, &table),
             vec![unreachable(0, 1, &[])]
         );
         let ty = builtin(B::CHARACTER);
         assert_eq!(
-            check_match(
+            checked_issues(
                 &ty,
                 &[
                     arm(Pat::CharacterRange('a', 'm')),
@@ -672,7 +978,7 @@ mod tests {
             vec![unreachable(2, 0, &[0, 1])]
         );
         assert_eq!(
-            check_match(
+            checked_issues(
                 &ty,
                 &[
                     arm(Pat::CharacterRange('\0', '\u{d7ff}')),
@@ -694,16 +1000,103 @@ mod tests {
             guarded: true,
         };
         assert_eq!(
-            check_match(&ty, std::slice::from_ref(&guarded), &adts),
+            checked_issues(&ty, std::slice::from_ref(&guarded), &adts),
             vec![missing("_")]
         );
         assert_eq!(
-            check_match(&ty, &[guarded.clone(), arm(Pat::Wild)], &adts),
+            checked_issues(&ty, &[guarded.clone(), arm(Pat::Wild)], &adts),
             vec![]
         );
         assert_eq!(
-            check_match(&ty, &[arm(Pat::Wild), guarded], &adts),
+            checked_issues(&ty, &[arm(Pat::Wild), guarded], &adts),
             vec![unreachable(1, 0, &[0])]
+        );
+    }
+    // spec: 01-05 選ばれない分岐の検査
+    #[test]
+    fn guarded_alternatives_cover_only_later_alternatives_in_the_same_arm() {
+        let ty = builtin(B::INTEGER);
+        let table = AdtTable::default();
+        for (arms, expected) in [
+            (
+                vec![
+                    ArmPats {
+                        alts: vec![Pat::Integer(1), Pat::Integer(1)],
+                        guarded: true,
+                    },
+                    arm(Pat::Integer(1)),
+                    arm(Pat::Wild),
+                ],
+                vec![unreachable(0, 1, &[])],
+            ),
+            (
+                vec![
+                    arm(Pat::IntegerRange(0, 1)),
+                    arm(Pat::IntegerRange(2, 3)),
+                    ArmPats {
+                        alts: vec![Pat::IntegerRange(0, 3), Pat::IntegerRange(0, 3)],
+                        guarded: true,
+                    },
+                    arm(Pat::Wild),
+                ],
+                vec![unreachable(2, 0, &[0, 1]), unreachable(2, 1, &[])],
+            ),
+        ] {
+            assert_eq!(checked_issues(&ty, &arms, &table), expected);
+        }
+    }
+    // spec: 02-05 本体の後の検査
+    #[test]
+    fn inconsistent_constructor_matrices_remain_useful() {
+        let (ty, table) = option();
+        let malformed = |args| Pat::Ctor {
+            adt: BindingId(0),
+            tag: 1,
+            args,
+        };
+        // 引数の足りない問いと多すぎる問い、長さの違うワイルドカードの行を含む行列。
+        for arms in [
+            vec![arm(some(Pat::Wild)), arm(malformed(vec![])), arm(Pat::Wild)],
+            vec![
+                arm(some(Pat::Wild)),
+                arm(malformed(vec![Pat::Wild, Pat::Wild])),
+                arm(Pat::Wild),
+            ],
+            vec![
+                arm(malformed(vec![])),
+                arm(some(Pat::Boolean(true))),
+                arm(Pat::Wild),
+            ],
+            vec![
+                arm(malformed(vec![Pat::Wild, Pat::Wild])),
+                arm(some(Pat::Boolean(true))),
+                arm(Pat::Wild),
+            ],
+        ] {
+            assert_eq!(checked_issues(&ty, &arms, &table), vec![]);
+        }
+        // 型引数が足りず構成子の欄の型を取得できない場合も、問いの形を保つ。
+        let missing_args = Ty::Con(TyCon::Adt(BindingId(0)), vec![]);
+        assert_eq!(
+            checked_issues(
+                &missing_args,
+                &[arm(some(Pat::Wild)), arm(some(Pat::Boolean(true)))],
+                &table
+            ),
+            vec![missing("_")]
+        );
+        // ワイルドカードでない問いが、型のどの構成子にも特殊化できない。
+        assert_eq!(
+            checked_issues(
+                &builtin(B::INTEGER),
+                &[
+                    arm(Pat::Integer(0)),
+                    arm(Pat::Boolean(true)),
+                    arm(Pat::Wild)
+                ],
+                &table
+            ),
+            vec![]
         );
     }
     #[test]
@@ -761,20 +1154,30 @@ mod tests {
             ),
         ] {
             assert_eq!(
-                check_match(&ty, &pats.into_iter().map(arm).collect::<Vec<_>>(), &table),
+                checked_issues(&ty, &pats.into_iter().map(arm).collect::<Vec<_>>(), &table),
                 expected
             );
         }
-        assert!(is_irrefutable(&ty, &list(vec![], true, vec![]), &table));
-        assert!(!is_irrefutable(&ty, &exact_one, &table));
-        // 長い長さの反例は min 未満のリストを表さない（実装プラン F10）。
+        assert!(
+            check_binding(&ty, &list(vec![], true, vec![]), &table)
+                .unwrap()
+                .witness
+                .is_none()
+        );
+        assert!(
+            check_binding(&ty, &exact_one, &table)
+                .unwrap()
+                .witness
+                .is_some()
+        );
+        // 長い長さの反例は min 未満のリストを表さない。
         let pats = [
             empty,
             exact_one,
             list(vec![Pat::Boolean(true)], true, vec![Pat::Boolean(true)]),
         ];
         assert_eq!(
-            check_match(&ty, &pats.into_iter().map(arm).collect::<Vec<_>>(), &table),
+            checked_issues(&ty, &pats.into_iter().map(arm).collect::<Vec<_>>(), &table),
             vec![missing("[true, .., false]")]
         );
     }
@@ -825,7 +1228,7 @@ mod tests {
             args: vec![],
         };
         assert_eq!(
-            check_match(
+            checked_issues(
                 &ty,
                 &[
                     arm(none.clone()),
@@ -837,7 +1240,7 @@ mod tests {
             vec![]
         );
         assert_eq!(
-            check_match(
+            checked_issues(
                 &ty,
                 &[arm(none.clone()), arm(some(Pat::Boolean(true)))],
                 &table
@@ -845,7 +1248,7 @@ mod tests {
             vec![missing("Option.Some(false)")]
         );
         assert_eq!(
-            check_match(
+            checked_issues(
                 &ty,
                 &[
                     arm(some(Pat::Boolean(true))),
@@ -857,6 +1260,158 @@ mod tests {
             ),
             vec![unreachable(3, 0, &[0, 2])]
         );
-        assert!(!is_irrefutable(&ty, &some(Pat::Wild), &table));
+        assert!(
+            check_binding(&ty, &some(Pat::Wild), &table)
+                .unwrap()
+                .witness
+                .is_some()
+        );
+    }
+
+    // 省略した先頭の欄が多くても、後ろの少数の欄を調べるだけで予算を使い切らない。
+    // 判定 API で確かめ、時間や内部の記憶の表の形には依存しない。
+    #[test]
+    fn wide_record_tail_checks_fit_the_budget() {
+        let width = 1000;
+        let (ty, table) = boolean_record(width);
+        let mut arms = (0..10)
+            .map(|k| {
+                let mut args = vec![Pat::Wild; width];
+                args[width - 1 - k] = Pat::Boolean(true);
+                arm(Pat::Ctor {
+                    adt: BindingId(0),
+                    tag: 0,
+                    args,
+                })
+            })
+            .collect::<Vec<_>>();
+        arms.push(arm(Pat::Wild));
+        let checked = check_match(&ty, &arms, &table).unwrap();
+        assert!(checked.issues.is_empty());
+        assert!(checked.covering.is_empty());
+    }
+    fn checked_issues(ty: &Ty, arms: &[ArmPats], table: &AdtTable) -> Vec<MatchIssue> {
+        let checked = check_match(ty, arms, table).unwrap();
+        let mut search = Search::new(MAX_COVERAGE_WORK);
+        search.memo = None;
+        let plain = check_match_with(ty, arms, table, &mut search).unwrap();
+        assert_eq!(checked.issues, plain.issues);
+        assert_eq!(checked.covering, plain.covering);
+        checked.issues
+    }
+    // 予算切れは部分的な診断を返さず、ちょうど予算の内側なら以前と同じ結果を返す。
+    // 非公開の探索を同じモジュールから使い、テスト用の公開の差し込み口は設けない。
+    #[test]
+    fn budget_stops_instead_of_returning_partial_coverage() {
+        let table = AdtTable::default();
+        let ty = builtin(B::INTEGER);
+        let arms = [
+            arm(Pat::IntegerRange(1, 5)),
+            arm(Pat::IntegerRange(6, 10)),
+            arm(Pat::IntegerRange(1, 10)),
+        ];
+        let expected = check_match(&ty, &arms, &table).unwrap();
+        assert_eq!(
+            expected.issues,
+            vec![unreachable(2, 0, &[0, 1]), missing("_")]
+        );
+        assert_eq!(expected.covering, vec![((2, 0), vec![(0, 0), (1, 0)])]);
+        for limit in [0, expected.work - 1] {
+            assert_eq!(
+                check_match_with(&ty, &arms, &table, &mut Search::new(limit)),
+                Err(Undecided)
+            );
+        }
+        assert_eq!(
+            check_match_with(&ty, &arms, &table, &mut Search::new(expected.work)),
+            Ok(expected)
+        );
+        let pat = Pat::Boolean(true);
+        assert_eq!(
+            useful(
+                &builtin(B::BOOLEAN),
+                std::slice::from_ref(&pat),
+                &Pat::Wild,
+                &table,
+                &mut Search::new(0)
+            ),
+            Err(Undecided)
+        );
+        assert_eq!(
+            check_binding(&builtin(B::BOOLEAN), &pat, &table)
+                .unwrap()
+                .witness,
+            Some("false".into())
+        );
+    }
+
+    fn boolean_record(width: usize) -> (Ty, AdtTable) {
+        let id = BindingId(0);
+        let mut table = AdtTable::default();
+        table.adts.insert(
+            id,
+            AdtDef {
+                binding: id,
+                name: "Flags".into(),
+                module: ModuleId(0),
+                type_params: vec![],
+                ctors: vec![CtorDef {
+                    name: "Flags".into(),
+                    binding: BindingId(1),
+                    tag: 0,
+                    fields: vec![builtin(B::BOOLEAN); width],
+                }],
+                record: Some(
+                    (0..width)
+                        .map(|i| crate::types::FieldInfo {
+                            name: format!("f{i}"),
+                            binding: BindingId(u32::try_from(i + 2).unwrap()),
+                        })
+                        .collect(),
+                ),
+                eq_summary: TypeSummary::default(),
+                key_summary: TypeSummary::default(),
+            },
+        );
+        (Ty::Con(TyCon::Adt(id), vec![]), table)
+    }
+    fn review_arms(n: usize) -> Vec<ArmPats> {
+        let mut arms = vec![];
+        for group in 0..n {
+            let mut args = vec![Pat::Wild; 4 * n + 1];
+            for field in &mut args[4 * group..4 * group + 4] {
+                *field = Pat::Boolean(false);
+            }
+            arms.push(arm(Pat::Ctor {
+                adt: BindingId(0),
+                tag: 0,
+                args,
+            }));
+        }
+        for value in [true, false] {
+            let mut args = vec![Pat::Wild; 4 * n + 1];
+            args[4 * n] = Pat::Boolean(value);
+            arms.push(arm(Pat::Ctor {
+                adt: BindingId(0),
+                tag: 0,
+                args,
+            }));
+        }
+        arms
+    }
+    // FE-03 の重複した探索を再現する。時間の閾値には依存しない。
+    #[test]
+    fn repeated_boolean_groups_fit_with_memo_and_stop_without_it() {
+        let (ty, table) = boolean_record(49);
+        let arms = review_arms(12);
+        let checked = check_match(&ty, &arms, &table).unwrap();
+        assert!(checked.issues.is_empty());
+        assert!(checked.work <= MAX_COVERAGE_WORK);
+        let mut plain = Search::new(MAX_COVERAGE_WORK);
+        plain.memo = None;
+        assert_eq!(
+            check_match_with(&ty, &arms, &table, &mut plain),
+            Err(Undecided)
+        );
     }
 }

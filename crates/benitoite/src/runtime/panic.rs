@@ -2,7 +2,7 @@
 //!
 //! 既定の hook は標準エラー出力に書くので、出力のバッファより先に診断の形式によらない文が出てしまう。
 //! 処理系の hook は何も書かず、panic したスレッドのスレッドローカルな記憶域に内容を記録する。
-//! この記録は、大域の状態を持たない規約の例外として 00-02「大域の状態」が認めたものである。
+//! この記録は、大域の状態を持たない規約の例外として AGENTS.md「実装の規約」の「大域の状態」が認めたものである。
 
 use std::backtrace::{Backtrace, BacktraceStatus};
 use std::cell::RefCell;
@@ -84,7 +84,7 @@ pub fn catch<T>(f: impl FnOnce() -> T) -> Result<T, PanicReport> {
 }
 
 #[cfg(test)]
-// テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -102,7 +102,7 @@ mod tests {
     )]
     fn caught_panic_carries_message_and_location() {
         // panic hook はプロセス全体で共有するので、別のプロセスでこの一つだけを
-        // 走らせ、同じプロセスの別のテストと hook を取り合わない（実装プラン R09）。
+        // 走らせ、同じプロセスの別のテストと hook を取り合わない。
         if std::env::var_os("BENITOITE_R09_PANIC_TEST_CHILD").is_none() {
             let output = std::process::Command::new(std::env::current_exe().unwrap())
                 .env("BENITOITE_R09_PANIC_TEST_CHILD", "1")

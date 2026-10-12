@@ -113,10 +113,10 @@ pub struct TaskObj {
     pub spawn_wait: Option<SpawnWait>,
     /// 起動したタスクと、起動した命令（最初のタスクでは `None`）
     pub spawner: Option<(TaskId, InstrRef)>,
-    /// 呼び出しの前の安全点を通り、呼び出しがまだ成立していない命令（10-09「呼び出しの前の安全点」）。
+    /// 呼び出しの前の安全点を通り、呼び出しがまだ成立していない命令。
     /// 実行中は `RunState` へ移してあり、ここは `None`
     pub precall_done: Option<InstrRef>,
-    /// 戻りの再開状態（10-09「戻りの再開状態」）。実行中は `RunState` へ移してあり、ここは `None`
+    /// 戻りの再開状態。実行中は `RunState` へ移してあり、ここは `None`
     pub returning: Option<ReturnWork>,
 }
 
@@ -185,7 +185,7 @@ impl TaskTable {
         make: impl FnOnce(TaskId) -> Value<'e>,
     ) -> TaskId {
         if self.check_insert().is_err() {
-            // VM が先に確かめるので、ここへは来ない（実装プラン R25）。
+            // VM が先に確かめるので、ここへは来ない。
             debug_assert!(false, "task table overflow");
             return TaskId {
                 index: u32::MAX,
@@ -204,7 +204,7 @@ impl TaskTable {
                 };
             };
             // 古い番号が同じ世代になるには、同じ項目を 2^32 回使い回してなお古い番号を
-            // 保持する必要があるため、実際上起きない（実装プラン R25）。
+            // 保持する必要があるため、実際上起きない。
             entry.generation = entry.generation.wrapping_add(1);
             TaskId {
                 index,
@@ -238,7 +238,7 @@ impl TaskTable {
     /// タスクを表から除く（`Done` にするとき）。
     pub fn remove<'e>(&mut self, ctx: &NoGcCtx<'e>, id: TaskId) {
         if self.check_remove(id).is_err() {
-            // VM は check_remove を先に通す（実装プラン R25）。
+            // VM は check_remove を先に通す。
             debug_assert!(false, "invalid task removal");
             return;
         }

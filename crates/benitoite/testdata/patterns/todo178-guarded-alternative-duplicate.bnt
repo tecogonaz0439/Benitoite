@@ -1,0 +1,12 @@
+// spec: 01-05 選ばれない分岐の検査
+function choose(n: Integer, g: Boolean) -> Integer
+    return match n with
+        case 1, 1 if g -> 1
+        case 1 -> 2
+        case _ -> 3
+    end match
+end function
+
+function main() -> Unit
+    return ()
+end function

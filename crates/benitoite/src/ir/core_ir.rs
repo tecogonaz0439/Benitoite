@@ -1,6 +1,6 @@
 //! コア IR（設計書 02-06「コア IR」、01-12「構文」「初回リリース版の拡張」）。
 //! 値の型 `Val<C>` はラムダの本体の計算の型 `C` を型引数にとり、コア IR と下位 IR で共有する。
-//! 辞書（`DictVal`）と継続（`ContVar`）は `Val` と分けて持つ（実装プラン 10-06「型、辞書、継続」）。
+//! 辞書（`DictVal`）と継続（`ContVar`）は `Val` と分けて持つ（設計書 02-06「コア IR」）。
 
 use crate::base::{BindingId, BindingMap, Decimal, NodeId, Span};
 use crate::builtins::BuiltinId;
@@ -81,7 +81,7 @@ pub enum OperatorKind {
 /// 02-07「演算子の移し方」）。
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum Intrinsic {
-    /// `⊕_T`・`neg_T`。`operand` はオペランドの型（10-05 の組み込みの型の表の番号）
+    /// `⊕_T`・`neg_T`。`operand` はオペランドの型（組み込みの型の表の番号）
     Operator {
         op: OperatorKind,
         operand: BuiltinTypeId,
@@ -104,7 +104,7 @@ pub struct BuiltinInfo {
     /// `class` が `Io` のとき、この組み込みの関数に当たる組み込みのエフェクトの操作の束縛。
     /// ハンドラの節を探す鍵になる（02-09「操作の振り分け」）
     pub op: Option<BindingId>,
-    /// 項目の宣言の束縛。`Declared` の項目（10-12）では `@builtin` を付けた関数の束縛（`BindingKind::BuiltinFn`）、
+    /// 項目の宣言の束縛。`Declared` の項目（設計書 02-06「コア IR」）では `@builtin` を付けた関数の束縛（`BindingKind::BuiltinFn`）、
     /// `EffectOp` の項目では操作の束縛（`op` と同じ）。ソースに宣言のない項目（演算子、`eq`・`ne`、文字列補間の内部の項目）では `None`。
     /// 検査器が宣言の型（`Program::schemes`）を引く鍵になる
     pub decl: Option<BindingId>,
@@ -217,7 +217,7 @@ pub struct ContVar {
 pub struct Clause<C> {
     pub id: BodyId,
     /// 節の AST のノード番号。節の中の型に現れる `Ty::Rigid { clause, index }` の `clause` と同じ番号であり、
-    /// 検査器はこの番号で、`Ty::Rigid` がこの節の操作の型パラメータかを判定する（10-05「型の表現」）
+    /// 検査器はこの番号で、`Ty::Rigid` がこの節の操作の型パラメータかを判定する（設計書 02-05「型とエフェクトの表現」）
     pub node: NodeId,
     /// 節の操作の束縛の番号（利用者の操作と組み込みのエフェクトの操作のどちらも `Op` の束縛）
     pub op: BindingId,
@@ -347,7 +347,7 @@ pub struct ListRest {
     pub var: Option<VarId>,
 }
 
-/// 定義の由来。原型の名前と由来の種類（10-07 の `ProtoOrigin`）を決めるのに使う。
+/// 定義の由来。原型の名前と由来の種類（設計書 02-07「原型の名前と由来の種類」）を決めるのに使う。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum DefOrigin {
     /// 利用者のモジュールの定義
@@ -434,7 +434,7 @@ pub struct ConstDef<C> {
     pub var_count: u32,
 }
 
-/// エフェクトの操作の表の項目（10-07 の操作の表の元）。
+/// エフェクトの操作の表の項目（設計書 02-07「コンパイル済みプログラム」の操作の表の元）。
 #[derive(Clone, PartialEq, Debug)]
 pub struct OpDef {
     pub binding: BindingId,
@@ -459,7 +459,7 @@ pub struct Program<C> {
     pub traits: BindingMap<TraitDef>,
     /// 宣言の型（型検査の `decl_types` の写し）。検査器が関数・操作・メソッドの型を引く
     pub schemes: BindingMap<Scheme>,
-    /// `main` の束縛。`main` を検査しない経路（10-05 の `typecheck` の `require_main` が偽。`test` の経路と、
+    /// `main` の束縛。`main` を検査しない経路（`typecheck` の `require_main` が偽。`test` の経路と、
     /// `main` を持たないプログラムを脱糖する単体テスト）では `None`（型検査の出力の `main` を写す）
     pub main: Option<BindingId>,
     /// `main` の戻り値の型が `Result[Unit, String]` か。`main` が `None` なら偽

@@ -1,5 +1,5 @@
 //! HTTP/1.1 のサーバの接続の層（設計書 02-09「IO 実行器」、03-09「実装に使うクレート」「サーバ」「失敗の種類」）。
-//! `mio` の型は、このモジュールと `runtime::io::event` の外に出さない（実装プラン 10-16）。
+//! `mio` の型は、このモジュールと `runtime::io::event` の外に出さない。
 
 use super::event::{self, Wakeup};
 use super::resources::{ResourceContent, ResourceState, ResourceTable};
@@ -9,6 +9,7 @@ use crate::runtime::heap::ResourceId;
 use crate::runtime::sched::{ExtOpId, TimerId};
 use crate::runtime::{ResourceKind, RuntimeError, Stop};
 use crate::vm::TaskId;
+use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::{self, Read, Write};
 use std::net::ToSocketAddrs;
@@ -24,6 +25,25 @@ pub const ACCEPT_RETRY_INITIAL_MILLIS: u64 = 5;
 pub const ACCEPT_RETRY_MAX_MILLIS: u64 = 1_000;
 const MAX_HEAD_BYTES: usize = 65_536;
 const MAX_HEADERS: usize = 100;
+/// 拒否の応答の後に読み捨てる量の上限（03-09「サーバの接続と要求の読み方」）。
+const LINGER_MAX_BYTES: usize = 1_048_576;
+/// 拒否の応答を書き終えてから接続を閉じるまでの上限（ミリ秒）。
+const LINGER_MILLIS: u64 = 2_000;
+// Linux の accept は、新しい接続に既に生じたネットワークの失敗も返す。
+// 待ち受け自体の失敗にせず、次の接続へ進む（設計書 03-09「失敗の種類」、Linux accept(2)）。
+#[cfg(target_os = "linux")]
+const PER_CONNECTION_ACCEPT_ERRORS: &[rustix::io::Errno] = &[
+    rustix::io::Errno::NETDOWN,
+    rustix::io::Errno::PROTO,
+    rustix::io::Errno::NOPROTOOPT,
+    rustix::io::Errno::HOSTDOWN,
+    rustix::io::Errno::NONET,
+    rustix::io::Errno::HOSTUNREACH,
+    rustix::io::Errno::OPNOTSUPP,
+    rustix::io::Errno::NETUNREACH,
+];
+#[cfg(not(target_os = "linux"))]
+const PER_CONNECTION_ACCEPT_ERRORS: &[rustix::io::Errno] = &[];
 // 解放は利用者の timeout とは独立に終える（設計書 03-09「サーバ」）。
 const RELEASE_TIMEOUT: Duration = Duration::from_secs(3);
 
@@ -33,7 +53,7 @@ mod text {
     pub const EMPTY_ADDRESSES: &str = "host resolved to no addresses";
     pub const WRITE_ZERO: &str = "connection closed during response";
     pub const RELEASE_TIMEOUT: &str = "HTTP exchange release timed out";
-    // 理由の句を RFC 9110 の表に揃える（実装プラン 10-16「実装プランで決める値」）。
+    // 理由の句を RFC 9110 と RFC 6585 §3〜§5 の表に揃える（設計書 03-09「サーバの接続と要求の読み方」）。
     pub(super) fn reason(status: u16) -> &'static str {
         match status {
             100 => "Continue",
@@ -74,6 +94,9 @@ mod text {
             421 => "Misdirected Request",
             422 => "Unprocessable Content",
             426 => "Upgrade Required",
+            428 => "Precondition Required",
+            429 => "Too Many Requests",
+            431 => "Request Header Fields Too Large",
             500 => "Internal Server Error",
             501 => "Not Implemented",
             502 => "Bad Gateway",
@@ -124,7 +147,8 @@ impl From<io::Error> for Failure {
     }
 }
 
-/// 接続から読んだ要求の写し。言語の値を含めず、リソースの添え物に保存する（実装プラン 10-16）。
+/// 接続から読んだ要求の写し。言語の値を含めず、リソースの添え物に保存する
+/// （設計書 03-09「サーバの接続と要求の読み方」）。
 #[derive(Clone, Debug)]
 pub(crate) struct RequestData {
     pub method: String,
@@ -190,7 +214,7 @@ impl OsResource for Listener {
         self
     }
     fn release(mut self: Box<Self>) -> Result<(), String> {
-        // ブロックしない解放は VM から直接呼ばれるので Registry を資源に持つ（実装プラン L30）。
+        // ブロックしない解放は VM から直接呼ばれるので Registry を資源に持つ。
         self.disarm().map_err(|e| e.to_string())
     }
 }
@@ -270,7 +294,7 @@ fn resource<T: OsResource>(
         .downcast_mut()
         .ok_or_else(|| Stop::Internal("HTTP resource handle kind mismatch".into()))
 }
-/// 開いている待ち受けのポートを読む（実装プラン 10-16）。
+/// 開いている待ち受けのポートを読む（設計書 03-09「サーバ」）。
 pub(crate) fn listener_port(table: &mut ResourceTable, id: ResourceId) -> Result<u16, Stop> {
     resource::<Listener>(table, id, ResourceKind::HttpListener)?
         .socket
@@ -286,8 +310,39 @@ struct Connection {
     socket: Option<mio::net::TcpStream>,
     registration: Option<Registration>,
     reader: RequestReader,
+    interim: Option<WriteBuffer>,
     rejection: Option<WriteBuffer>,
+    lingering: Option<Lingering>,
     retry_registration: bool,
+}
+#[derive(Debug)]
+struct Lingering {
+    deadline: u64,
+    discarded: usize,
+}
+impl Lingering {
+    fn advance(&mut self, socket: &mut mio::net::TcpStream, now: u64) -> ConnectionStep {
+        if now >= self.deadline {
+            return ConnectionStep::Dropped;
+        }
+        let mut bytes = [0; 8192];
+        loop {
+            // 準備の通知を取りこぼさないよう、上限を超えなければ WouldBlock まで読む。
+            // 解析用の入力には足さず、残りの要求を捨てる（設計書 03-09「サーバの接続と要求の読み方」）。
+            match socket.read(&mut bytes) {
+                Ok(0) => return ConnectionStep::Dropped,
+                Ok(n) => {
+                    self.discarded = self.discarded.saturating_add(n);
+                    if self.discarded > LINGER_MAX_BYTES {
+                        return ConnectionStep::Dropped;
+                    }
+                }
+                Err(e) if e.kind() == io::ErrorKind::Interrupted => continue,
+                Err(e) if e.kind() == io::ErrorKind::WouldBlock => return ConnectionStep::Waiting,
+                Err(_) => return ConnectionStep::Dropped,
+            }
+        }
+    }
 }
 impl Connection {
     fn new(socket: mio::net::TcpStream) -> Self {
@@ -295,7 +350,9 @@ impl Connection {
             socket: Some(socket),
             registration: None,
             reader: RequestReader::default(),
+            interim: None,
             rejection: None,
+            lingering: None,
             retry_registration: false,
         }
     }
@@ -305,19 +362,38 @@ impl Connection {
             None => Ok(()),
         }
     }
-    fn advance(&mut self) -> ConnectionStep {
+    fn advance(&mut self, now: u64) -> ConnectionStep {
         let Some(socket) = &mut self.socket else {
             return ConnectionStep::Dropped;
         };
+        if let Some(lingering) = &mut self.lingering {
+            return lingering.advance(socket, now);
+        }
         if self.rejection.is_none() {
             loop {
+                // 100 と最終の応答が混ざらないよう、100 を書き切るまで要求を進めない
+                // （設計書 03-09「サーバの接続と要求の読み方」）。
+                if let Some(buffer) = &mut self.interim {
+                    match buffer.advance(socket) {
+                        Ok(true) => self.interim = None,
+                        Ok(false) => return ConnectionStep::Waiting,
+                        Err(_) => return ConnectionStep::Dropped,
+                    }
+                }
                 match self.reader.advance() {
                     ParseStep::Complete(request) => return ConnectionStep::Request(request),
                     ParseStep::Reject(code) => {
                         self.rejection = Some(WriteBuffer::new(error_response(code)));
                         break;
                     }
-                    ParseStep::NeedMore => {}
+                    ParseStep::NeedMore => {
+                        if self.reader.take_continue() {
+                            self.interim = Some(WriteBuffer::new(
+                                format!("HTTP/1.1 100 {}\r\n\r\n", text::reason(100)).into_bytes(),
+                            ));
+                            continue;
+                        }
+                    }
                 }
                 let mut bytes = [0; 8192];
                 match socket.read(&mut bytes) {
@@ -336,9 +412,24 @@ impl Connection {
             }
         }
         match self.rejection.as_mut().map(|buffer| buffer.advance(socket)) {
-            Some(Ok(false)) => ConnectionStep::Waiting,
-            Some(Ok(true) | Err(_)) | None => ConnectionStep::Dropped,
+            Some(Ok(false)) => return ConnectionStep::Waiting,
+            Some(Ok(true)) => (),
+            Some(Err(_)) | None => return ConnectionStep::Dropped,
         }
+        if socket.shutdown(std::net::Shutdown::Write).is_err() {
+            return ConnectionStep::Dropped;
+        }
+        self.rejection = None;
+        // 閉じる途中では解析を再開しないため、入力と解析済みの要求を手放す。
+        self.reader = RequestReader::default();
+        let mut lingering = Lingering {
+            deadline: now.saturating_add(LINGER_MILLIS),
+            discarded: 0,
+        };
+        // 既に届いた残りには次の準備の通知が来るとは限らないため、その場で読み始める。
+        let step = lingering.advance(socket, now);
+        self.lingering = Some(lingering);
+        step
     }
 }
 impl Drop for Connection {
@@ -394,6 +485,7 @@ pub(crate) fn accept(
                 {
                     continue;
                 }
+                Err(e) if per_connection_accept_error(&e) => continue,
                 Err(e) if resource_shortage(&e) => {
                     warning = listener.retry(now, &e)?;
                     break;
@@ -408,7 +500,7 @@ pub(crate) fn accept(
             .connections
             .get_mut(index)
             .ok_or_else(|| Stop::Internal("HTTP connection missing".into()))?
-            .advance();
+            .advance(now);
         match step {
             ConnectionStep::Waiting => index = index.saturating_add(1),
             ConnectionStep::Dropped => {
@@ -485,6 +577,10 @@ fn resource_shortage(e: &io::Error) -> bool {
     #[cfg(not(target_os = "macos"))]
     const ERRORS: &[i32] = &[24, 23, 105, 12];
     e.raw_os_error().is_some_and(|code| ERRORS.contains(&code))
+}
+fn per_connection_accept_error(e: &io::Error) -> bool {
+    rustix::io::Errno::from_io_error(e)
+        .is_some_and(|errno| PER_CONNECTION_ACCEPT_ERRORS.contains(&errno))
 }
 
 /// 一つの要求に対応する接続と書きかけの応答を所有する（設計書 03-09「サーバ」）。
@@ -617,7 +713,7 @@ pub(crate) fn stop_exchange(table: &mut ResourceTable, id: ResourceId) -> bool {
     true
 }
 
-/// 応答の途中の位置を保存し、書き終えたら接続を閉じる（実装プラン 10-16）。
+/// 応答の途中の位置を保存し、書き終えたら接続を閉じる（設計書 03-09「サーバ」）。
 pub(crate) fn respond(
     table: &mut ResourceTable,
     id: ResourceId,
@@ -628,16 +724,60 @@ pub(crate) fn respond(
     if exchange.responded || exchange.response_owner.is_some_and(|task| task != owner) {
         return Err(Stop::Runtime(RuntimeError::ResponseSentTwice));
     }
+    if exchange.response.is_none() {
+        exchange.response = Some(WriteBuffer::new(response));
+        exchange.response_owner = Some(owner);
+    }
+    advance_response(exchange)
+}
+
+/// 応答の再開の結果。未開始なら引数の検査へ戻り、書きかけなら保存した応答だけを進める
+/// （設計書 03-09「サーバ」）。
+pub(crate) enum Resume {
+    /// 応答は未開始であり、引数の検査と組み立てが必要である。
+    NotStarted,
+    /// 保存した応答の書き込みの結果。`None` は書き込みの待ちを表す。
+    Writing(Option<Result<(), Failure>>),
+}
+
+/// 書きかけの応答を、その応答を始めたタスクの再開のときだけ、組み立て直さずに続きを書く
+/// （設計書 03-09「サーバ」）。未開始のときと別のタスクの呼び出しのときは、ここでは誤りを返さず、
+/// 引数の検査の後に `respond` で検査する。
+pub(crate) fn resume(
+    table: &mut ResourceTable,
+    id: ResourceId,
+    owner: TaskId,
+) -> Result<Resume, Stop> {
+    let Some(entry) = table.entries.get_mut(&id) else {
+        return Ok(Resume::NotStarted);
+    };
+    if entry.state != ResourceState::Open {
+        return Ok(Resume::NotStarted);
+    }
+    let ResourceContent::Os(Some(handle)) = &mut entry.content else {
+        return Ok(Resume::NotStarted);
+    };
+    let Some(exchange) = handle.as_any_mut().downcast_mut::<Exchange>() else {
+        return Ok(Resume::NotStarted);
+    };
+    if exchange.response.is_none() {
+        return Ok(Resume::NotStarted);
+    }
+    // 別のタスクの呼び出しは再開ではなく新しい応答なので、引数の検査を先に行い、その後の
+    // `respond` が二度目の応答として拒む（直す前と同じ誤りの順序を保つ）。
+    if exchange.response_owner.is_some_and(|task| task != owner) {
+        return Ok(Resume::NotStarted);
+    }
+    advance_response(exchange).map(Resume::Writing)
+}
+
+fn advance_response(exchange: &mut Exchange) -> Result<Option<Result<(), Failure>>, Stop> {
     if let Some(failure) = exchange.registration_failure.take() {
         exchange.responded = true;
         exchange.response = None;
         exchange.socket = None;
         exchange.registration = None;
         return Ok(Some(Err(failure)));
-    }
-    if exchange.response.is_none() {
-        exchange.response = Some(WriteBuffer::new(response));
-        exchange.response_owner = Some(owner);
     }
     let result = match (&mut exchange.response, &mut exchange.socket) {
         (Some(buffer), Some(socket)) => buffer.advance(socket),
@@ -689,6 +829,7 @@ struct RequestReader {
     input: Vec<u8>,
     request: Option<RequestData>,
     body: BodyRead,
+    send_continue: bool,
 }
 #[derive(Debug, Default)]
 enum BodyRead {
@@ -697,7 +838,7 @@ enum BodyRead {
     Length(usize),
     ChunkSize,
     ChunkData(usize),
-    Trailers(usize),
+    Trailers,
 }
 enum ParseStep {
     NeedMore,
@@ -705,6 +846,9 @@ enum ParseStep {
     Reject(u16),
 }
 impl RequestReader {
+    fn take_continue(&mut self) -> bool {
+        std::mem::take(&mut self.send_continue)
+    }
     fn advance(&mut self) -> ParseStep {
         loop {
             match self.body {
@@ -732,6 +876,18 @@ impl RequestReader {
                     let Some(target) = request.path else {
                         return ParseStep::Reject(400);
                     };
+                    // 起点形と絶対形の文法は断片を含まない。RFC 9112 §3.2・§3.2.1・§3.2.2 に従い、
+                    // # を取り除いて処理せず、変換前の対象を 400 で拒む（設計書 03-09「サーバの接続と要求の読み方」）。
+                    if target.contains('#') {
+                        return ParseStep::Reject(400);
+                    }
+                    if !acceptable_target(method, target) {
+                        return ParseStep::Reject(400);
+                    }
+                    let Some(target) = origin_target(method, target) else {
+                        return ParseStep::Reject(400);
+                    };
+                    let target = target.as_ref();
                     let (path, query) = target.split_once('?').unwrap_or((target, ""));
                     let Some(query) = parse_query(query) else {
                         return ParseStep::Reject(400);
@@ -745,11 +901,23 @@ impl RequestReader {
                     };
                     let mut length = None;
                     let mut chunked = false;
+                    let http11 = request.version == Some(1);
+                    let mut hosts = 0_usize;
+                    let mut expect_continue = false;
                     for header in request.headers.iter() {
                         let Ok(value) = std::str::from_utf8(header.value) else {
                             return ParseStep::Reject(400);
                         };
                         let name = header.name.to_ascii_lowercase();
+                        if name == "host" {
+                            hosts = hosts.saturating_add(1);
+                            if !valid_host_characters(value) {
+                                return ParseStep::Reject(400);
+                            }
+                        }
+                        if name == "expect" && value.eq_ignore_ascii_case("100-continue") {
+                            expect_continue = true;
+                        }
                         if name == "content-length" {
                             if length.is_some()
                                 || value.is_empty()
@@ -757,10 +925,8 @@ impl RequestReader {
                             {
                                 return ParseStep::Reject(400);
                             }
-                            let Ok(n) = value.parse::<u64>() else {
-                                return ParseStep::Reject(413);
-                            };
-                            length = Some(n);
+                            // 桁あふれも上限超過として後で拒み、Host の検査を先に終える。
+                            length = Some(value.parse::<u64>().unwrap_or(u64::MAX));
                         }
                         if name == "transfer-encoding" {
                             if chunked || !value.eq_ignore_ascii_case("chunked") {
@@ -770,12 +936,21 @@ impl RequestReader {
                         }
                         result.headers.push((name, value.into()));
                     }
+                    // HTTP/1.0 は Host を求めず、重複と使えない文字は版を問わず拒む（設計書 03-09「サーバの接続と要求の読み方」）。
+                    if (http11 && hosts != 1) || hosts > 1 {
+                        return ParseStep::Reject(400);
+                    }
                     if chunked && length.is_some() {
                         return ParseStep::Reject(400);
                     }
                     if length.is_some_and(|n| n > MAX_REQUEST_BODY_BYTES) {
                         return ParseStep::Reject(413);
                     }
+                    // RFC 9110 §10.1.1 により本体のバイトを既に受け取っていれば 100 を省いてよく、HTTP/1.0 の Expect は無視する（設計書 03-09「サーバの接続と要求の読み方」）。
+                    self.send_continue = http11
+                        && expect_continue
+                        && (chunked || length.unwrap_or(0) > 0)
+                        && self.input.len() == count;
                     self.body = if chunked {
                         BodyRead::ChunkSize
                     } else {
@@ -825,7 +1000,7 @@ impl RequestReader {
                     }
                     self.input.drain(..end.saturating_add(2));
                     self.body = if size == 0 {
-                        BodyRead::Trailers(0)
+                        BodyRead::Trailers
                     } else {
                         BodyRead::ChunkData(usize::try_from(size).unwrap_or(usize::MAX))
                     };
@@ -843,29 +1018,25 @@ impl RequestReader {
                     self.input.drain(..2);
                     self.body = BodyRead::ChunkSize;
                 }
-                BodyRead::Trailers(total) => {
-                    let Some(end) = line_end(&self.input) else {
-                        return if total.saturating_add(self.input.len()) > MAX_HEAD_BYTES {
-                            ParseStep::Reject(431)
-                        } else {
-                            ParseStep::NeedMore
-                        };
+                BodyRead::Trailers => {
+                    let mut headers = [httparse::EMPTY_HEADER; MAX_HEADERS];
+                    let count = match httparse::parse_headers(&self.input, &mut headers) {
+                        Ok(httparse::Status::Partial) => {
+                            return if self.input.len() > MAX_HEAD_BYTES {
+                                ParseStep::Reject(431)
+                            } else {
+                                ParseStep::NeedMore
+                            };
+                        }
+                        Ok(httparse::Status::Complete((n, _))) => n,
+                        Err(httparse::Error::TooManyHeaders) => return ParseStep::Reject(431),
+                        Err(_) => return ParseStep::Reject(400),
                     };
-                    if end == 0 {
-                        return self.complete();
-                    }
-                    if total.saturating_add(end) > MAX_HEAD_BYTES {
+                    if count > MAX_HEAD_BYTES {
                         return ParseStep::Reject(431);
                     }
-                    if !self
-                        .input
-                        .get(..end)
-                        .is_some_and(|line| line.contains(&b':'))
-                    {
-                        return ParseStep::Reject(400);
-                    }
-                    self.input.drain(..end.saturating_add(2));
-                    self.body = BodyRead::Trailers(total.saturating_add(end).saturating_add(2));
+                    self.input.drain(..count);
+                    return self.complete();
                 }
             }
         }
@@ -874,6 +1045,78 @@ impl RequestReader {
         self.request
             .take()
             .map_or(ParseStep::Reject(400), ParseStep::Complete)
+    }
+}
+fn valid_host_characters(value: &str) -> bool {
+    value
+        .bytes()
+        .all(|b| b.is_ascii_alphanumeric() || b"-._~!$&'()*+,;=:[]%".contains(&b))
+}
+// 対象全体を変換前に確かめ、方法ごとの形の誤りと、生で許さない文字を拒む
+// （設計書 03-09「サーバの接続と要求の読み方」）。
+fn acceptable_target(method: &str, target: &str) -> bool {
+    if target
+        .bytes()
+        .any(|b| matches!(b, b'"' | b'<' | b'>') || !b.is_ascii())
+    {
+        return false;
+    }
+    if method == "CONNECT" {
+        let Some((host, port)) = target.rsplit_once(':') else {
+            return false;
+        };
+        return !host.is_empty()
+            && valid_host_characters(host)
+            && !port.is_empty()
+            && port.bytes().all(|b| b.is_ascii_digit())
+            && port.parse::<u16>().is_ok();
+    }
+    if target == "*" {
+        return method == "OPTIONS";
+    }
+    target.starts_with('/')
+        || target
+            .get(..7)
+            .is_some_and(|s| s.eq_ignore_ascii_case("http://"))
+        || target
+            .get(..8)
+            .is_some_and(|s| s.eq_ignore_ascii_case("https://"))
+}
+// RFC 9112 §3.2.2 によりサーバは絶対形を受け付け、scheme と authority を外す（設計書 03-09「サーバの接続と要求の読み方」）。
+fn origin_target<'a>(method: &str, target: &'a str) -> Option<Cow<'a, str>> {
+    let rest = if target
+        .get(..7)
+        .is_some_and(|s| s.eq_ignore_ascii_case("http://"))
+    {
+        target.get(7..)
+    } else if target
+        .get(..8)
+        .is_some_and(|s| s.eq_ignore_ascii_case("https://"))
+    {
+        target.get(8..)
+    } else {
+        return Some(Cow::Borrowed(target));
+    };
+    let rest = rest?;
+    let authority_end = rest.find(['/', '?', '#']).unwrap_or(rest.len());
+    let authority = rest.get(..authority_end)?;
+    // RFC 9110 §4.2.1 の空の host の拒否と §4.2.4 の userinfo の拒否に従い、authority は Host と同じ文字の集合で検査する。
+    if authority.is_empty() || !valid_host_characters(authority) {
+        return None;
+    }
+    let path = rest
+        .find(['/', '?'])
+        .and_then(|n| rest.get(n..))
+        .unwrap_or("");
+    // RFC 9112 §3.3 ではパスもクエリもない OPTIONS の絶対形と * が同じ対象 URI になる。
+    // §3.2.4 の中継の変換と同じ結果にし、? だけでもクエリの部分があれば変えない
+    // （設計書 03-09「サーバの接続と要求の読み方」）。
+    if method == "OPTIONS" && path.is_empty() {
+        Some(Cow::Borrowed("*"))
+    } else if path.starts_with('/') {
+        Some(Cow::Borrowed(path))
+    } else {
+        Some(Cow::Owned(format!("/{path}")))
     }
 }
 fn line_end(bytes: &[u8]) -> Option<usize> {
@@ -913,25 +1156,92 @@ fn parse_query(s: &str) -> Option<Vec<(String, String)>> {
         .collect()
 }
 
-/// 全長の上限を検査してから応答を組み立て、処理系が付けるヘッダを置き換える（02-09「一つの操作で作る値の大きさの上限」、10-16）。
+/// 応答の本体と区切りを決める要求の方法の分類（設計書 03-09「サーバの接続と要求の読み方」、
+/// RFC 9110 §8.6・§9.3.6、RFC 9112 §6.3）。
+#[derive(Clone, Copy, Debug)]
+pub(crate) enum ResponseFraming {
+    Head,
+    Connect,
+    Other,
+}
+impl ResponseFraming {
+    /// 方法は大文字と小文字を区別し、応答の区切りに関わる方法だけを残す
+    /// （設計書 03-09「サーバの接続と要求の読み方」、RFC 9110 §9.1）。
+    pub(crate) fn from_method(method: &str) -> Self {
+        match method {
+            "HEAD" => Self::Head,
+            "CONNECT" => Self::Connect,
+            _ => Self::Other,
+        }
+    }
+    // 本体と content-length の表。CONNECT への 2xx、状態の規則（204・304・205）、HEAD の順に適用する。
+    // CONNECT への 2xx は content-length を禁止するため、205 の長さ 0 より先に当てる
+    // （設計書 03-09「サーバの接続と要求の読み方」、RFC 9110 §8.6・§9.3.6・§15.3.6、RFC 9112 §6.3）。
+    fn body_and_length(self, status: u16, body: &[u8]) -> (&[u8], Option<usize>) {
+        match (status, self) {
+            (200..=299, Self::Connect) => (&[], None),
+            (204 | 304, _) => (&[], None),
+            (205, _) => (&[], Some(0)),
+            (_, Self::Head) => (&[], (!body.is_empty()).then_some(body.len())),
+            _ => (body, Some(body.len())),
+        }
+    }
+}
+
+// 区切りと接続は処理系が決める。chunked の区切りと、閉じる接続や切り替えなしの実際に
+// 合わないヘッダを除く（設計書 03-09「サーバの接続と要求の読み方」、RFC 9112 §6.2・§6.3、RFC 9110 §7.6.1・§7.8）。
+fn replaced_response_header(name: &str, connection_options: &[String]) -> bool {
+    [
+        "content-length",
+        "connection",
+        "transfer-encoding",
+        "trailer",
+        "keep-alive",
+        "proxy-connection",
+        "te",
+        "upgrade",
+    ]
+    .iter()
+    .any(|replaced| name.eq_ignore_ascii_case(replaced))
+        // Connection がなければ、名前の小文字化も集合への照合も省く。
+        || (!connection_options.is_empty()
+            && connection_options
+                .binary_search(&name.to_ascii_lowercase())
+                .is_ok())
+}
+
+/// 全長の上限を検査してから応答を組み立て、処理系が付けるヘッダを置き換える（02-09「一つの操作で作る値の大きさの上限」）。
 pub(crate) fn response_bytes(
     status: u16,
     headers: &[(String, String)],
     body: &[u8],
+    framing: ResponseFraming,
 ) -> Result<Vec<u8>, Stop> {
+    // すべての Connection の要素を一度だけ集めて並べ、各ヘッダの判定を二分探索にする。
+    // Connection がない場合は、空の並びを確保なしで作る。
+    // OWS は空白と水平タブだけで、空の要素は名前として扱わない（RFC 9110 §5.6.1・§5.6.3・§7.6.1）。
+    let mut connection_options: Vec<String> = headers
+        .iter()
+        .filter(|(name, _)| name.eq_ignore_ascii_case("connection"))
+        .flat_map(|(_, value)| value.split(','))
+        .map(|option| option.trim_matches([' ', '\t']))
+        .filter(|option| !option.is_empty())
+        .map(str::to_ascii_lowercase)
+        .collect();
+    connection_options.sort_unstable();
+    let (body, content_length) = framing.body_and_length(status, body);
     let mut head = format!("HTTP/1.1 {status} {}\r\n", text::reason(status));
     // 応答の全長を調べてから大きな領域を作る（02-09「一つの操作で作る値の大きさの上限」）。固定の頭だけを先に作る。
-    let tail = format!(
-        "content-length: {}\r\nconnection: close\r\n\r\n",
-        body.len()
-    );
+    let tail = match content_length {
+        Some(length) => format!("content-length: {length}\r\nconnection: close\r\n\r\n"),
+        None => "connection: close\r\n\r\n".into(),
+    };
     let mut length = head
         .len()
         .checked_add(tail.len())
         .and_then(|n| n.checked_add(body.len()));
     for (name, value) in headers {
-        if !name.eq_ignore_ascii_case("content-length") && !name.eq_ignore_ascii_case("connection")
-        {
+        if !replaced_response_header(name, &connection_options) {
             length = length
                 .and_then(|n| n.checked_add(name.len()))
                 .and_then(|n| n.checked_add(value.len()))
@@ -943,8 +1253,7 @@ pub(crate) fn response_bytes(
         .ok_or_else(|| Stop::Internal("HTTP response size overflow".into()))?;
     crate::runtime::heap::CheckedLen::bytes(length, "Benitoite.Network.Http.respond")?;
     for (name, value) in headers {
-        if !name.eq_ignore_ascii_case("content-length") && !name.eq_ignore_ascii_case("connection")
-        {
+        if !replaced_response_header(name, &connection_options) {
             head.push_str(name);
             head.push_str(": ");
             head.push_str(value);
@@ -964,7 +1273,8 @@ fn error_response(status: u16) -> Vec<u8> {
     .into_bytes()
 }
 
-/// 待ちの対応は言語の値を含まない。取り消しでは配送先だけを外し、準備の後に登録を手放す（02-09「タスクの待ちと取り消し」）。
+/// 待ちの対応は言語の値を含まない。取り消しと準備の後に、その操作の対応を外し、
+/// 最後の待ちならリソースの登録を手放す（設計書 02-09「タスクの待ちと取り消し」）。
 #[derive(Debug, Default)]
 pub(crate) struct ReadinessState {
     pub tokens: BTreeMap<usize, BTreeSet<ExtOpId>>,
@@ -974,12 +1284,13 @@ pub(crate) struct ReadinessState {
     pub op_timers: BTreeMap<ExtOpId, TimerId>,
     pub resource_ops: BTreeMap<ResourceId, BTreeSet<ExtOpId>>,
 }
-/// 登録した準備のトークンと、資源不足で再試行する期限（実装プラン 10-16）。
+/// 登録した準備のトークンと、資源不足の再試行か閉じる途中の接続の最も早い期限のうち早い方
+/// （設計書 02-09「IO 実行器」、03-09「サーバの接続と要求の読み方」）。
 pub(crate) struct Armed {
     pub tokens: Vec<usize>,
     pub deadline: Option<u64>,
 }
-/// リソースの接続を登録し、VM が操作と対応付けるトークンと期限を返す（実装プラン 10-16）。
+/// リソースの接続を登録し、VM が操作と対応付けるトークンと期限を返す（設計書 02-09「IO 実行器」）。
 pub(crate) fn arm(
     table: &mut ResourceTable,
     id: ResourceId,
@@ -1030,7 +1341,12 @@ pub(crate) fn arm(
                     continue;
                 }
                 if let Some(socket) = &mut connection.socket {
-                    let interest = if connection.rejection.is_some() {
+                    // 100 の書き込み待ちでは読み込みを止めているため、READABLE を登録すると
+                    // 未読の本体で空回りする（設計書 03-09「サーバの接続と要求の読み方」）。
+                    let interest = if connection.lingering.is_some() {
+                        // 送信側を閉じた後は、相手の FIN か要求の残りを待つ（RFC 9112 §9.6）。
+                        mio::Interest::READABLE
+                    } else if connection.rejection.is_some() || connection.interim.is_some() {
                         mio::Interest::WRITABLE
                     } else {
                         mio::Interest::READABLE
@@ -1068,7 +1384,15 @@ pub(crate) fn arm(
             }
             Ok(Armed {
                 tokens,
-                deadline: listener.retry_at,
+                // 登録の再試行中の接続にも期限を当て、受け付けの再試行とは別に保つ。
+                deadline: listener
+                    .connections
+                    .iter()
+                    .filter_map(|connection| {
+                        connection.lingering.as_ref().map(|state| state.deadline)
+                    })
+                    .chain(listener.retry_at)
+                    .min(),
             })
         }
         ResourceKind::HttpExchange => {
@@ -1101,7 +1425,7 @@ pub(crate) fn arm(
         }
     }
 }
-/// 最後の準備の待ちを除いたリソースの登録を外す（実装プラン L30）。
+/// 最後の準備の待ちを除いたリソースの登録を外す（設計書 02-09「IO 実行器」）。
 pub(crate) fn disarm(
     table: &mut ResourceTable,
     id: ResourceId,
@@ -1114,7 +1438,7 @@ pub(crate) fn disarm(
         return Ok(());
     };
     if let Some(listener) = handle.as_any_mut().downcast_mut::<Listener>() {
-        // 待ちの配送先を外す処理で OS の解除の失敗を内部エラーに変えない。
+        // 待ちの登録を外す処理で OS の解除の失敗を内部エラーに変えない。
         // Registration は失敗した登録を保持し、再登録か資源の解放で処理する。
         drop(listener.disarm());
         for connection in &mut listener.connections {

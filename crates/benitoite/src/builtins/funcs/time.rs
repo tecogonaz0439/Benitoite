@@ -12,7 +12,7 @@ mod text {
     pub const FORMAT_SPECIFIER: &str = "unknown or incomplete time format specifier";
 }
 
-// 欄の位置はソースの宣言順に揃える（実装プラン 10-15「レコードの値の作り方」）。
+// 欄の位置はソースの宣言順に揃える（設計書 02-06「脱糖」）。
 mod instant {
     pub const UNIX_NANOSECONDS: u32 = 0;
 }
@@ -32,7 +32,7 @@ const SECOND_NANOS: i128 = 1_000_000_000;
 const MILLISECOND_NANOS: i128 = 1_000_000;
 
 builtin! {
-    /// `Time.fromUnixSeconds` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.fromUnixSeconds` の本体。
     name = "Time.fromUnixSeconds",
     pure fn from_unix_seconds(ctx, arg0: Value<'e>) -> Value<'e> {
         let nanos = scaled(integer(arg0)?, SECOND_NANOS)?;
@@ -41,7 +41,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Time.fromUnixMilliseconds` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.fromUnixMilliseconds` の本体。
     name = "Time.fromUnixMilliseconds",
     pure fn from_unix_milliseconds(ctx, arg0: Value<'e>) -> Value<'e> {
         let nanos = scaled(integer(arg0)?, MILLISECOND_NANOS)?;
@@ -50,7 +50,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Time.toUnixSeconds` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.toUnixSeconds` の本体。
     name = "Time.toUnixSeconds",
     pure fn to_unix_seconds(ctx, arg0: Value<'e>) -> Value<'e> {
         Ok(Value::Int(narrow(i128::from(nanoseconds(&ctx, arg0)?).div_euclid(SECOND_NANOS))?))
@@ -58,7 +58,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Time.toUnixMilliseconds` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.toUnixMilliseconds` の本体。
     name = "Time.toUnixMilliseconds",
     pure fn to_unix_milliseconds(ctx, arg0: Value<'e>) -> Value<'e> {
         Ok(Value::Int(narrow(i128::from(nanoseconds(&ctx, arg0)?).div_euclid(MILLISECOND_NANOS))?))
@@ -66,10 +66,10 @@ builtin! {
 }
 
 builtin! {
-    /// `Time.addMilliseconds` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.addMilliseconds` の本体。
     name = "Time.addMilliseconds",
     pure fn add_milliseconds(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
-        // 積だけを i64 に戻すと、負の時刻との和が収まる場合まで拒否する（実装プラン L24）。
+        // 積だけを i64 に戻すと、負の時刻との和が収まる場合まで拒否する。
         let nanos = i128::from(nanoseconds(&ctx, arg0)?)
             .checked_add(scaled(integer(arg1)?, MILLISECOND_NANOS)?)
             .ok_or_else(|| Stop::Internal("time addition exceeds i128".into()))?;
@@ -78,7 +78,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Time.differenceMilliseconds` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.differenceMilliseconds` の本体。
     name = "Time.differenceMilliseconds",
     pure fn difference_milliseconds(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         let nanos = i128::from(nanoseconds(&ctx, arg0)?)
@@ -89,7 +89,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Time.toDateTime` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.toDateTime` の本体。
     name = "Time.toDateTime",
     pure fn to_date_time(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         let minutes = integer(arg1)?;
@@ -105,7 +105,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Time.fromDateTime` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.fromDateTime` の本体。
     name = "Time.fromDateTime",
     pure fn from_date_time(ctx, arg0: Value<'e>) -> Value<'e> {
         // 日付が不正でも時差の定義域の違反を先に報告する（設計書 03-08「Time」）。
@@ -125,7 +125,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Time.formatISO8601` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.formatISO8601` の本体。
     name = "Time.formatISO8601",
     pure fn format_i_s_o8601(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         let offset = checked_offset(integer(arg1)?, "Time.formatISO8601", 1)?;
@@ -143,7 +143,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Time.parseISO8601` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.parseISO8601` の本体。
     name = "Time.parseISO8601",
     pure fn parse_i_s_o8601(ctx, arg0: Value<'e>) -> Value<'e> {
         let source = ctx.str(arg0).ok_or_else(|| Stop::Internal("time text is not String".into()))?;
@@ -156,7 +156,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Time.format` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Time.format` の本体。
     name = "Time.format",
     pure fn format(ctx, arg0: Value<'e>, arg1: Value<'e>, arg2: Value<'e>) -> Value<'e> {
         let offset = checked_offset(integer(arg1)?, "Time.format", 1)?;
@@ -171,7 +171,7 @@ builtin! {
                 writer.buf.push_char(c)?;
                 continue;
             }
-            // 字句単位の変換なら %%f を壊さず、フラグや幅を拒否できる（設計書 03-08「Time」、実装プラン L24）。
+            // 字句単位の変換なら %%f を壊さず、フラグや幅を拒否できる（設計書 03-08「Time」）。
             let specifier = match chars.next() {
                 Some('Y') => "%Y", Some('m') => "%m", Some('d') => "%d",
                 Some('H') => "%H", Some('I') => "%I", Some('p') => "%p",
@@ -314,7 +314,7 @@ impl std::fmt::Write for TimeWriter {
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     from_unix_seconds::DECL,
     from_unix_milliseconds::DECL,

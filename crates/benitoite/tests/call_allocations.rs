@@ -1,8 +1,9 @@
-//! 普通の呼び出しと戻りは容量の伸長以外に確保しない（設計書 07-02「性能の関門」、実装プラン R15）。
+//! 普通の呼び出しと戻りは容量の伸長以外に確保しない（設計書 07-02「性能の関門」）。
 #![cfg(not(feature = "gc-stress"))]
-// このバイナリだけで System への委譲を数える（実装プラン 00-02 の R15 の例外）。
+// このバイナリだけで System への委譲を数える
+// （AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(unsafe_code)]
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -106,7 +107,7 @@ fn allocations(program: &CompiledProgram) -> usize {
 }
 
 // 関門: 普通の呼び出しに比例する Rust の確保を検出する。既存の出力のテストでは
-// 引数の Vec の復活を検出できない。公開のパイプラインと実行の入口だけを使う（R15）。
+// 引数の Vec の復活を検出できない。公開のパイプラインと実行の入口だけを使う。
 #[test]
 fn ordinary_calls_and_returns_allocate_only_for_capacity_growth() {
     let small = compile(18, 2584);

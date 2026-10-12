@@ -1,0 +1,51 @@
+// spec: 01-11 タスクの集まり
+// 設計書 03-08「Json」、03-09「応答を作る関数と、要求を調べる関数」。
+// 関門: Json.parse の不具合がハンドラからサーバ全体を止める TODO-194 の退行を捕まえる。
+// 単体テストでは届かない、特殊なキーの POST の後も次の要求へ応答する契約を守る。
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.IO.Console
+
+function route(request: Http.Request) -> Http.Response
+  return match String.fromUTF8(Http.Request.body(request)) with
+    case Option.None -> Http.text(400, "invalid UTF-8")
+    case Option.Some(text) ->
+      match Json.parse(text) with
+        case Result.Error(error) -> Http.text(400, Json.ParseError.message(error))
+        case Result.Ok(value) -> Http.json(200, value)
+      end match
+  end match
+end function
+
+function serveLoop(listener: Http.Listener, group: TaskGroup, remaining: Integer) -> Result[Unit, String] uses Http.Listen, State
+  if remaining = 0 then return Result.Ok(()) end if
+  bind exchange <- try Http.accept(listener) |> Result.mapError(_, NetworkError.message)
+  bind _ <- TaskGroup.spawn(group, lambda()
+    with current = exchange do
+      return Http.respond(current, route(Http.requestOf(current))) |> Result.mapError(_, NetworkError.message)
+    end with
+  end lambda)
+  return serveLoop(listener, group, remaining - 1)
+end function
+
+function post(base: String, body: String) -> Result[Unit, String] uses Http.Connect, Console.Write
+  bind request <- Http.clientRequest("POST", base + "/")
+  bind response <- try Http.send(Http.ClientRequest(..request, body: String.toUTF8(body))) |> Result.mapError(_, NetworkError.message)
+  Console.writeLine(Integer.toString(Http.Response.status(response)))
+  Console.writeLine(Option.unwrapOr(String.fromUTF8(Http.Response.body(response)), "invalid UTF-8"))
+  return Result.Ok(())
+end function
+
+function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
+  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message),
+    group = TaskGroup.open() do
+    bind base <- "http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener))
+    bind server <- TaskGroup.spawn(group, lambda() return serveLoop(listener, group, 4) end lambda)
+    bind _ <- try post(base, "{\"\$serde_json::private::Number\":\"1e9999\"}")
+    bind _ <- try post(base, "{\"\$serde_json::private::Number\":\"123\"}")
+    bind _ <- try post(base, "1e400")
+    bind _ <- try post(base, "{\"ok\":true}")
+    bind _ <- try Task.await(server)
+    return Result.Ok(())
+  end with
+end function

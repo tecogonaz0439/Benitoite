@@ -1,8 +1,8 @@
-//! 内部層の入口で確保器の不変条件を検査する（設計書 07-03「テストの設計の原則」、実装プラン R01）。
-//! H1・H2・H9 と O1〜O6、A1〜A3、L1〜L2 を内容・集合・計数で確かめる。
+//! 内部層の入口で確保器の不変条件を検査する（設計書 07-03「テストの設計の原則」）。
+//! H1・H2・H9・H12 と O1〜O6、A1〜A3、L1〜L2 を内容・集合・計数で確かめる。
 //! T1: 毒を読むテストは塊の小さな対象だけを扱い、塊の所有者を生かしたまま読む。
 
-// テストの失敗は panic で表す（実装プラン 00-02）。内部層の毒の検査だけ生の領域を読む。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。内部層の毒の検査だけ生の領域を読む。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -18,6 +18,46 @@ use super::*;
 use std::cell::Cell;
 use std::collections::BTreeSet;
 use std::rc::Rc;
+
+// 作成時の関門: H12 に反する対象を借りたとき、heap-verify が不具合を記録する契約を守る。
+// 正常な作成経路の既存テストでは検査の欠落を捕まえられない。内部層の入口で確かめ、注入口は加えない。
+#[cfg(feature = "heap-verify")]
+#[test]
+fn invalid_string_utf8_records_corrupt_header() {
+    let mut core = HeapCore::new(HeapConfig::default());
+    let value = core
+        .alloc_byte_data(Epoch::new(), ObjKind::Str, &[0xff, 0xc0])
+        .unwrap();
+    assert_eq!(core.str(value), None);
+    assert_eq!(
+        core.take_fault().unwrap().kind,
+        HeapFaultKind::CorruptHeader
+    );
+}
+
+// 関門: 識別を読むときも O1 の添字と対象の記録が一致しなければ不具合を残す。
+// 正常な確保と解放のテストでは検査漏れを捕まえない。内部層の入口で頭を一時的に壊し、注入口は加えない。
+#[cfg(feature = "heap-verify")]
+#[test]
+fn object_id_records_corrupt_header_when_allocation_metadata_differs() {
+    // 別の対象の記録を指す場合と、記録の範囲外を指す場合を確かめる。
+    for invalid_index in [1, u32::MAX] {
+        let mut core = HeapCore::new(HeapConfig::default());
+        let value = core.alloc_str(Epoch::new(), "first").unwrap();
+        core.alloc_str(Epoch::new(), "second").unwrap();
+        core.header(value).unwrap().index.set(invalid_index);
+        let identity = core.object_id(value);
+        // 表明が失敗しても、捨てる処理が正しい添字で対象を解放できるように戻す。
+        core.header(value).unwrap().index.set(0);
+        assert_eq!(identity, None);
+        let fault = core.take_fault().unwrap();
+        assert_eq!(fault.kind, HeapFaultKind::CorruptHeader);
+        assert_eq!(
+            fault.detail,
+            "object header differs from allocation metadata"
+        );
+    }
+}
 
 // 作成時の関門: 既存のヒープのテストはない。下の各テストはこの入口の独立した契約を守る。
 // 誤った配置・別名への書き込み・二重解放・世代の取り違え・計数漏れを捕まえ、公開 API の拡張や注入口は要しない。
@@ -104,7 +144,6 @@ fn object_kinds_headers_and_payloads() {
         FieldsKind::Ctor,
         FieldsKind::Func,
         FieldsKind::Dict,
-        FieldsKind::ListCell,
         FieldsKind::ListNode,
         FieldsKind::MapNode,
         FieldsKind::SetNode,
@@ -148,19 +187,17 @@ fn object_kinds_headers_and_payloads() {
 
 #[test]
 fn identity_and_immediates() {
-    let core = HeapCore::new(HeapConfig::default());
+    let mut core = HeapCore::new(HeapConfig::default());
     let epoch = Epoch::new();
     let a = core.alloc_str(epoch, "same").unwrap();
     let b = core.alloc_str(epoch, "same").unwrap();
     assert!(core.same_object(a, a));
     assert!(!core.same_object(a, b));
     assert_ne!(core.object_id(a), core.object_id(b));
-    assert_eq!(
-        core.object_id(a),
-        Some(ObjId(
-            u64::try_from(a.as_obj().unwrap().ptr().addr().get()).unwrap()
-        ))
-    );
+    let a_id = core.object_id(a).unwrap();
+    let b_id = core.object_id(b).unwrap();
+    let a_ptr = a.as_obj().unwrap().ptr();
+    let b_slot = core.slot_new_slot(b);
     let immediates = [
         Value::Int(3),
         Value::Float(1.5),
@@ -181,6 +218,21 @@ fn identity_and_immediates() {
         assert!(!core.same_object(a, value));
         assert!(!core.same_object(value, a));
     }
+    // 空き領域を再利用しても、確保ごとの識別を引き継がない（設計書 02-09「メモリの管理」）。
+    core.free_object(a_ptr).unwrap();
+    let replacement = core.alloc_str(Epoch::new(), "same").unwrap();
+    #[cfg(not(feature = "heap-per-object"))]
+    assert_eq!(replacement.as_obj().unwrap().ptr(), a_ptr);
+    assert_ne!(core.object_id(replacement), Some(a_id));
+    // 解放で並びの位置が変わった対象も、元の識別を保つ。
+    let b = core.slot_load(&b_slot, Epoch::new());
+    assert_eq!(core.object_id(b), Some(b_id));
+    assert_eq!(
+        core.object_ids().into_iter().collect::<BTreeSet<_>>(),
+        [b_id, core.object_id(replacement).unwrap()]
+            .into_iter()
+            .collect()
+    );
     assert!(core.fault.borrow().is_none());
 }
 
@@ -242,6 +294,117 @@ fn free_reuse_and_exact_accounting() {
         Err(Stop::Internal(_))
     ));
     assert_eq!(core.stats().frees, count);
+}
+
+// 関門: 内部層の計上と解放の不変条件を守る。既存の型は別領域の容量を返さないため、
+// 容量の加算漏れと Host の数え直し漏れを捕まえない。差し込み口は加えない。
+#[derive(Debug)]
+struct OwnedBytes(Vec<u8>);
+impl OpaqueData for OwnedBytes {
+    fn heap_bytes(&self) -> usize {
+        self.0.capacity()
+    }
+}
+impl HostData for OwnedBytes {
+    fn heap_bytes(&self) -> usize {
+        self.0.capacity()
+    }
+}
+impl Trace for OwnedBytes {
+    fn trace(&self, _t: &mut Tracer<'_>) {}
+}
+
+#[test]
+fn opaque_owned_capacity_is_charged_and_removed_on_free() {
+    let mut core = HeapCore::new(HeapConfig::default());
+    let anchor = core
+        .alloc_str(Epoch::new(), "anchor")
+        .unwrap()
+        .as_obj()
+        .unwrap()
+        .ptr();
+    let before = core.current_bytes();
+    let empty = core
+        .alloc_opaque(Epoch::new(), OwnedBytes(Vec::new()))
+        .unwrap()
+        .as_obj()
+        .unwrap()
+        .ptr();
+    let base = core.current_bytes() - before;
+    core.free_object(empty).unwrap();
+    let bytes = Vec::with_capacity(4096);
+    let capacity = u64::try_from(bytes.capacity()).unwrap();
+    let ptr = {
+        let value = core.alloc_opaque(Epoch::new(), OwnedBytes(bytes)).unwrap();
+        let index = usize::try_from(core.header(value).unwrap().index.get()).unwrap();
+        assert_eq!(core.objects.borrow()[index].charged_bytes, base + capacity);
+        assert_eq!(core.current_bytes(), before + base + capacity);
+        value.as_obj().unwrap().ptr()
+    };
+    core.free_object(ptr).unwrap();
+    assert_eq!(core.current_bytes(), before);
+    core.free_object(anchor).unwrap();
+    assert_eq!(core.current_bytes(), 0);
+}
+
+#[test]
+fn host_owned_capacity_tracks_growth_and_shrinkage_until_free() {
+    let mut core = HeapCore::new(HeapConfig::default());
+    let empty = core
+        .alloc_host(Epoch::new(), OwnedBytes(Vec::new()))
+        .unwrap()
+        .as_obj()
+        .unwrap()
+        .ptr();
+    let base = core.current_bytes();
+    core.free_object(empty).unwrap();
+    let ptr = {
+        let bytes = Vec::with_capacity(64);
+        let initial = u64::try_from(bytes.capacity()).unwrap();
+        let value = core.alloc_host(Epoch::new(), OwnedBytes(bytes)).unwrap();
+        let index = usize::try_from(core.header(value).unwrap().index.get()).unwrap();
+        assert_eq!(core.objects.borrow()[index].charged_bytes, base + initial);
+        assert_eq!(core.current_bytes(), base + initial);
+        let mut allocated = core.stats().allocated_bytes;
+        let mut previous = initial;
+        let mut peak = base + initial;
+        for size in [128, 512, 64, 64, 0] {
+            let capacity = core
+                .with_host_mut(value, |data: &mut OwnedBytes| {
+                    data.0 = Vec::with_capacity(size);
+                    u64::try_from(data.0.capacity()).unwrap()
+                })
+                .unwrap();
+            allocated += capacity.saturating_sub(previous);
+            peak = peak.max(base + capacity);
+            assert_eq!(core.objects.borrow()[index].charged_bytes, base + capacity);
+            assert_eq!(core.current_bytes(), base + capacity);
+            assert_eq!(core.stats().allocated_bytes, allocated);
+            assert_eq!(core.stats().peak_heap_bytes, peak);
+            assert_eq!(core.verify(&super::super::RootStack::new()), Ok(()));
+            previous = capacity;
+        }
+        value.as_obj().unwrap().ptr()
+    };
+    core.free_object(ptr).unwrap();
+    assert_eq!(core.current_bytes(), 0);
+    assert!(core.take_fault().is_none());
+}
+
+// 関門: 対象ごとの記録と全体の量の一致を検証する契約を守る。正常な増減の検査だけでは、
+// 検証器自身の検査漏れは見えない。既存の内部層の記録を壊し、公開範囲は広げない。
+#[cfg(feature = "heap-verify")]
+#[test]
+fn verification_rejects_charged_bytes_that_differ_from_the_heap_total() {
+    let core = HeapCore::new(HeapConfig::default());
+    core.alloc_str(Epoch::new(), "test").unwrap();
+    core.objects.borrow_mut()[0].charged_bytes += 1;
+    let fault = core.verify(&super::super::RootStack::new()).unwrap_err();
+    assert_eq!(fault.kind, HeapFaultKind::CorruptHeader);
+    assert_eq!(
+        fault.detail,
+        "charged bytes of live objects differ from the current heap bytes"
+    );
 }
 
 #[test]
@@ -332,7 +495,9 @@ fn freed_slab_payload_is_poisoned_and_generation_advances() {
         let object = core.objects.borrow();
         let record = object
             .iter()
-            .find(|record| record.allocation.ptr.addr().get() == usize::try_from(id.0).unwrap())
+            .find(|record| {
+                record.allocation.ptr.cast::<ObjHeader>() == value.as_obj().unwrap().ptr()
+            })
             .unwrap();
         (
             id,
@@ -353,7 +518,8 @@ fn freed_slab_payload_is_poisoned_and_generation_advances() {
     let header = unsafe { allocation.ptr.cast::<ObjHeader>().as_ref() };
     assert_eq!(header.generation.get(), generation + 1);
     let replacement = core.alloc_bytes(Epoch::new(), &[91; 11]).unwrap();
-    assert_eq!(core.object_id(replacement), Some(id));
+    assert_eq!(replacement.as_obj().unwrap().ptr(), allocation.ptr.cast());
+    assert_ne!(core.object_id(replacement), Some(id));
     assert_ne!(replacement.as_obj().unwrap().generation(), generation);
     assert_eq!(core.bytes(replacement), Some([91; 11].as_slice()));
 }
@@ -372,7 +538,7 @@ fn per_object_liveness_and_generation_survive_deallocation() {
                 retime(value, Epoch::<'static>::new()),
             )
         };
-        let addr = usize::try_from(id.0).unwrap();
+        let addr = raw.as_obj().unwrap().ptr().addr().get();
         assert_eq!(
             core.generations
                 .borrow()
@@ -401,7 +567,7 @@ fn per_object_liveness_and_generation_survive_deallocation() {
 #[test]
 fn many_small_and_mixed_objects_remain_nonmoving() {
     let mut core = HeapCore::new(HeapConfig::default());
-    // Miri では混合する確保を四回含む規模に縮め、大量の確保は通常実行で調べる（実装プラン R11）。
+    // Miri では混合する確保を四回含む規模に縮め、大量の確保は通常実行で調べる。
     let count = if cfg!(miri) { 64 } else { 1_000_000 };
     let mixed_interval = if cfg!(miri) { 16 } else { 256 };
     let mut objects = Vec::new();

@@ -48,7 +48,7 @@ fn append_child(buf: &mut StrBuf, child: &str) -> Result<(), Stop> {
 
 builtin! {
     /// `Path.parent` の本体。`"a"` と `"."` の親は `Some("")` とする
-    /// （設計書 03-08「Path」、実装プラン L20「手順の要点」）。
+    /// （設計書 03-08「Path」）。
     name = "Path.parent",
     pure fn parent(ctx, p: &'c str) -> Value<'e> {
         option_string(&ctx, Path::new(p).parent().map(Path::as_os_str), "Path.parent")
@@ -95,7 +95,7 @@ fn option_string<'e>(
 
 builtin! {
     /// `Path.withExtension` の本体。ファイル名のないパス（空、根、末尾の `..`、`.`）は
-    /// 入力のまま返す（設計書 03-08「Path」、実装プラン L20「手順の要点」）。
+    /// 入力のまま返す（設計書 03-08「Path」）。
     name = "Path.withExtension",
     pure fn with_extension(ctx, p: &'c str, extension: &'c str) -> Value<'e> {
         if extension.contains(is_separator) {
@@ -181,7 +181,7 @@ builtin! {
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     join::DECL,
     join_all::DECL,
@@ -197,16 +197,16 @@ pub const DECLS: &[BuiltinDecl] = &[
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::arithmetic_side_effects,
         clippy::indexing_slicing
     )]
-    // 関門: 03-08 の返す値と L20 の端のケースを守る。空の親、隠しファイル、
+    // 関門: 返す値と端のケースを守る（設計書 03-08「Path」）。空の親、隠しファイル、
     // 根を越える ..、絶対パスによる置き換えの退行を捕まえる。既存の表のテストは
     // 本体を呼ばないため、この失敗を捕まえない。差し込み口や公開範囲は加えない。
-    // 本体を直接呼ぶ形は、実装プラン 10-15「確かめること」の個別指示に従う。
+    // 組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
     use super::*;
     use crate::builtins::funcs::operators::tests::direct;
     use crate::builtins::table::tags;
@@ -429,8 +429,7 @@ mod tests {
     }
 
     // 関門: 独立した再構成と冪等性の契約を、固定例にない組み合わせでも守る。
-    // 期待値を標準ライブラリで作らず、組み込みの返す値どうしの関係で確かめる
-    // （実装プラン L20「受け入れテスト」）。
+    // 期待値を標準ライブラリで作らず、組み込みの返す値どうしの関係で確かめる。
     #[test]
     fn seeded_paths_preserve_normalized_parent_name_reconstruction_and_idempotence() {
         let mut seed = 0x20_ba_71_0fu64;

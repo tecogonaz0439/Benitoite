@@ -111,7 +111,7 @@ formal/.lake/build/bin/coverageProgramDiff "$output_dir/coverage-matches.json" "
 printf 'coverageProgramDiff: %ss; report: %s/coverage/report.json\n' "$((SECONDS - program_coverage_start))" "$output_dir"
 surface_check_start=$SECONDS
 printf '%s\n' '== formal: surfaceCheckAll'
-# 型検査の成功・既知の差・対象外を区別し、不一致は 1、準備の失敗は 2 で止める。
+# 型検査の成功・対象外を区別し、不一致は 1、準備の失敗は 2 で止める。
 mkdir -p "$output_dir/surface-check"
 formal/.lake/build/bin/surfaceCheckAll "$output_dir/corpus.json" "$output_dir/builtins.json" "$output_dir/stdlib-decls.json" "$output_dir/surface-check/report.json" || status=$?
 printf 'surfaceCheckAll: %ss; report: %s/surface-check/report.json\n' "$((SECONDS - surface_check_start))" "$output_dir"

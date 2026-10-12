@@ -1,14 +1,53 @@
-//! 既存の VM のテストの準備処理を第 2 段のランタイムへ移す（実装プラン R26）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! VM のテストで使うヒープの観察とランタイムの準備処理
+//! （設計書 02-08「値の表現」、02-09「IO 実行器」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::indexing_slicing)]
+use crate::bytecode::program::ConstIdx;
 use crate::runtime::Stream;
+use crate::runtime::heap::{NoGcCtx, ObjId, ObjKind, Value};
 use crate::runtime::io::output::OutputPort;
 
 use crate::runtime::io::services::{IoRuntime, RunInput};
 use crate::runtime::io::{DirectDispatcher, RequestDispatcher};
 use crate::runtime::run::NoInterrupt;
 use crate::runtime::sched::parts::RuntimeParts;
+use crate::vm::state::RunState;
 use crate::vm::{ExecMode, Vm};
+use std::collections::HashSet;
+
+/// 読み込み済みの定数を、回収しない区間の値として読む（設計書 02-07「定数表」）。
+pub(crate) fn constant<'e>(state: &RunState, ctx: &NoGcCtx<'e>, k: ConstIdx) -> Value<'e> {
+    ctx.load(
+        state
+            .constants
+            .get(usize::try_from(k.0).unwrap())
+            .unwrap()
+            .as_ref()
+            .unwrap(),
+    )
+}
+
+/// 値の並びの欄から到達できる対象の ID を、言語の値を確保せずに集める。
+/// セルや Host の子は辿らない（設計書 02-08「値の表現」）。
+/// 解放を確かめる用途では、元の値だけが持つ対象から成る値に使う。
+pub(crate) fn reachable_object_ids<'e>(ctx: &NoGcCtx<'e>, value: Value<'e>) -> HashSet<ObjId> {
+    let mut pending = vec![value];
+    let mut ids = HashSet::new();
+    while let Some(value) = pending.pop() {
+        let Some(kind) = ctx.kind(value) else {
+            continue;
+        };
+        if !ids.insert(ctx.object_id(value).unwrap()) {
+            continue;
+        }
+        if matches!(kind, ObjKind::Fields(_)) {
+            for i in 0..ctx.fields_len(value).unwrap() {
+                pending.push(ctx.field(value, i).unwrap());
+            }
+        }
+    }
+    ids
+}
 
 pub(crate) struct TestIo {
     pub(crate) rt: IoRuntime,
@@ -68,7 +107,7 @@ impl Vm<'_> {
     }
 }
 
-/// 保存したタスクの枠を読む。待つ間は RunState の実行中の窓が空になる（実装プラン R26）。
+/// 保存したタスクの枠を読む。待つ間は RunState の実行中の窓が空になる。
 pub(crate) fn stack<'a, 'e>(
     state: &'a crate::vm::state::RunState,
     ctx: &'a crate::runtime::heap::NoGcCtx<'e>,

@@ -1,5 +1,6 @@
-//! 設計書のレビューで挙がった反例（docs/todo の TODO-025）のうち、R14 と R04 の HTTP の反例を実通信で確かめる（設計書 03-09・07-03、実装プラン L33）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 設計書のレビューで挙がった反例（docs/todo の TODO-025）のうち、R14 と R04 の HTTP の反例を実通信で確かめる
+//! （設計書 07-03「HTTP のテスト（初回リリース版）」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic)]
 
 use benitoite::pipeline::{self, CheckOptions};
@@ -23,6 +24,7 @@ const LIMIT: Duration = Duration::from_secs(10);
 const IMPORTS: &str =
     "import Benitoite.Unofficial.Network.Http\nimport Benitoite.Unofficial.IO.Console\n";
 type Capture = Arc<Mutex<Vec<u8>>>;
+type Stopper = mpsc::Sender<(Arc<AtomicBool>, Wakeup)>;
 
 #[derive(Debug)]
 struct Interrupt(Arc<AtomicBool>);
@@ -35,20 +37,30 @@ impl InterruptSource for Interrupt {
     }
 }
 
-// R30 と同じ上限付きの観測。上限は停止の検出にだけ使い、期待値や実行の順序は決めない。
-fn bounded<T: Send + 'static>(f: impl FnOnce() -> T + Send + 'static) -> T {
+// 上限付きの観測。上限は停止の検出にだけ使い、期待値や実行の順序は決めない。
+fn bounded<T: Send + 'static>(what: &str, f: impl FnOnce(Stopper) -> T + Send + 'static) -> T {
     let (tx, rx) = mpsc::channel();
+    let (stopper, stops) = mpsc::channel();
     let thread = std::thread::spawn(move || {
-        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(f));
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| f(stopper)));
         let _sent = tx.send(result);
     });
-    let result = rx.recv_timeout(Duration::from_secs(20)).unwrap();
+    let result = rx
+        .recv_timeout(Duration::from_secs(120))
+        .unwrap_or_else(|error| {
+            for (flag, wakeup) in stops.try_iter() {
+                flag.store(true, Ordering::Relaxed);
+                wakeup.wake();
+            }
+            // 中断の印で解けない待ちもあるため、時間切れではスレッドを待たない。
+            panic!("{what} did not finish within 120 s: {error}");
+        });
     thread.join().unwrap();
     result.unwrap_or_else(|payload| std::panic::resume_unwind(payload))
 }
 
-// 作業文書が求める出力の容量待ちを、公開の待ち行列から観測する。
-// 本物の選択は変えず、spawned を含めて内側の部品へ渡す（R30「補助の作り方」）。
+// 出力の容量待ちを、公開の待ち行列から観測する。
+// 本物の選択は変えず、spawned を含めて内側の部品へ渡す。
 #[derive(Debug)]
 struct BlockedWriter {
     inner: Box<dyn TaskPicker>,
@@ -89,6 +101,7 @@ impl Server {
         stdout: Capture,
         stderr: Capture,
         notify: Option<mpsc::Sender<()>>,
+        stopper: Stopper,
     ) -> Self {
         let checked = pipeline::check_text(
             "open-062-http.bnt",
@@ -108,7 +121,10 @@ impl Server {
         let (tx, result) = mpsc::channel();
         let thread = std::thread::spawn(move || {
             let mut parts = RuntimeParts::real_with_poll(NetworkFaults::default()).unwrap();
-            wake_tx.send(parts.workers.wakeup().unwrap()).unwrap();
+            let wakeup = parts.workers.wakeup().unwrap();
+            // 外側の待ちが先に終わると受け手はなくなるため、遅れた登録の失敗は捨てる。
+            let _registered = stopper.send((Arc::clone(&interrupted), wakeup.clone()));
+            wake_tx.send(wakeup).unwrap();
             if notify.is_some() {
                 parts.picker = Box::new(BlockedWriter {
                     inner: parts.picker,
@@ -146,7 +162,9 @@ impl Server {
         });
         Self {
             flag,
-            wakeup: wake_rx.recv_timeout(LIMIT).unwrap(),
+            wakeup: wake_rx.recv_timeout(LIMIT).unwrap_or_else(|error| {
+                panic!("waiting for server wakeup: {error}");
+            }),
             result,
             thread: Some(thread),
             stderr,
@@ -168,7 +186,9 @@ impl Server {
         }
     }
     fn finish(mut self) -> RunEnd {
-        let end = self.result.recv_timeout(LIMIT).unwrap();
+        let end = self.result.recv_timeout(LIMIT).unwrap_or_else(|error| {
+            panic!("waiting for server execution to finish: {error}");
+        });
         self.thread.take().unwrap().join().unwrap();
         end
     }
@@ -189,16 +209,22 @@ fn normal(end: RunEnd) {
     );
 }
 fn socket(port: u16) -> TcpStream {
-    let stream = TcpStream::connect(("127.0.0.1", port)).unwrap();
+    let stream = TcpStream::connect(("127.0.0.1", port)).unwrap_or_else(|error| {
+        panic!("connecting to HTTP server on port {port}: {error}");
+    });
     stream.set_read_timeout(Some(LIMIT)).unwrap();
     stream.set_write_timeout(Some(LIMIT)).unwrap();
     stream
 }
 fn request(port: u16, request: &[u8]) -> Vec<u8> {
     let mut stream = socket(port);
-    stream.write_all(request).unwrap();
+    stream.write_all(request).unwrap_or_else(|error| {
+        panic!("writing HTTP request to port {port}: {error}");
+    });
     let mut bytes = Vec::new();
-    stream.read_to_end(&mut bytes).unwrap();
+    stream.read_to_end(&mut bytes).unwrap_or_else(|error| {
+        panic!("reading HTTP response from port {port}: {error}");
+    });
     bytes
 }
 fn response(bytes: &[u8], status: u16, body: Option<&str>) {
@@ -218,7 +244,7 @@ fn matrix() -> impl Iterator<Item = (ExecMode, u32)> {
         })
 }
 
-fn server(source: &str, mode: ExecMode, budget: u32) -> Server {
+fn server(source: &str, mode: ExecMode, budget: u32, stopper: Stopper) -> Server {
     Server::start(
         source,
         mode,
@@ -226,6 +252,7 @@ fn server(source: &str, mode: ExecMode, budget: u32) -> Server {
         Arc::new(Mutex::new(vec![])),
         Arc::new(Mutex::new(vec![])),
         None,
+        stopper,
     )
 }
 
@@ -249,8 +276,9 @@ end function
 #[test]
 fn open_062_r14_query_rejects_invalid_utf8_and_keeps_malformed_escape() {
     for (mode, budget) in matrix() {
-        bounded(move || {
-            let server = server(ACCEPT_QUERY, mode, budget);
+        let what = format!("r14 query {mode:?} budget {budget}");
+        bounded(&what, move |stopper| {
+            let server = server(ACCEPT_QUERY, mode, budget, stopper);
             let port = server.port();
             response(
                 &request(port, b"GET /?q=%FF HTTP/1.1\r\nHost: localhost\r\n\r\n"),
@@ -273,8 +301,9 @@ fn open_062_r14_query_rejects_invalid_utf8_and_keeps_malformed_escape() {
 #[test]
 fn open_062_r14_server_header_rejects_invalid_utf8() {
     for (mode, budget) in matrix() {
-        bounded(move || {
-            let server = server(ACCEPT_QUERY, mode, budget);
+        let what = format!("r14 server header {mode:?} budget {budget}");
+        bounded(&what, move |stopper| {
+            let server = server(ACCEPT_QUERY, mode, budget, stopper);
             let port = server.port();
             response(
                 &request(
@@ -295,12 +324,13 @@ fn open_062_r14_server_header_rejects_invalid_utf8() {
 }
 
 // TODO-025 R14 の反例: `?q=%FF`、`%G0`、UTF-8 でない受信のヘッダ。
-// クライアント: UTF-8 でない応答の値は InvalidHTTPData の Result.Error になる（03-09、10-16）。
+// クライアント: UTF-8 でない応答の値は InvalidHTTPData の Result.Error になる（03-09、設計書 02-09「IO 実行器」）。
 // 関門: 本物のクライアントの応答から言語の String への変換を守る。注入の表はこの変換を通らない。
 #[test]
 fn open_062_r14_client_header_returns_invalid_http_data() {
     for (mode, budget) in matrix() {
-        bounded(move || {
+        let what = format!("r14 client header {mode:?} budget {budget}");
+        bounded(&what, move |stopper| {
             let listener = TcpListener::bind(("127.0.0.1", 0)).unwrap();
             let port = listener.local_addr().unwrap().port();
             let source = format!(
@@ -313,8 +343,29 @@ function main() -> Result[Unit, String] uses Http.Connect
 end function
 "#
             );
-            let client = server(&source, mode, budget);
-            let (mut stream, _) = listener.accept().unwrap();
+            let client = server(&source, mode, budget, stopper);
+            listener.set_nonblocking(true).unwrap();
+            let started = Instant::now();
+            let mut stream = loop {
+                match listener.accept() {
+                    Ok((stream, _)) => break stream,
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {}
+                    Err(error) => panic!("accepting HTTP client connection: {error}"),
+                }
+                match client.result.try_recv() {
+                    Ok(end) => panic!("client ended before connecting: {end:?}"),
+                    Err(mpsc::TryRecvError::Empty) => {}
+                    Err(mpsc::TryRecvError::Disconnected) => {
+                        panic!("client result channel disconnected before connecting");
+                    }
+                }
+                assert!(
+                    started.elapsed() < LIMIT,
+                    "waiting for HTTP client connection: no connection arrived within 10 s"
+                );
+                std::thread::sleep(Duration::from_millis(2));
+            };
+            stream.set_nonblocking(false).unwrap();
             stream.set_read_timeout(Some(LIMIT)).unwrap();
             stream.set_write_timeout(Some(LIMIT)).unwrap();
             let mut head = vec![];
@@ -364,13 +415,14 @@ end function
 // TODO-025 R04 の反例: 読み手が読まないパイプに 64 KiB を超えて書くと、
 // ほかのタスク、タイマー、HTTP の受け付け、中断の要求の確認が止まる。
 // 1 MiB を超える出力の後、容量待ちになったタスクを観測してから接続し、
-// stdout の Mutex を放す前に HTTP の応答が届く性質を確かめる（02-09「出力のバッファ」、L33）。
-// 関門: R30 のタイマーのテストでは届かない、出力の待ちと本物の準備の待ちの組み合わせ。
+// stdout の Mutex を放す前に HTTP の応答が届く性質を確かめる（02-09「出力のバッファ」）。
+// 関門: タイマーだけのテストでは届かない、出力の待ちと本物の準備の待ちの組み合わせ。
 #[test]
 fn open_062_r04_blocked_stdout_does_not_block_http_accept() {
     for mode in [ExecMode::Direct, ExecMode::Request] {
         for budget in [1, VmConfig::default().call_budget] {
-            bounded(move || {
+            let what = format!("r04 blocked stdout {mode:?} budget {budget}");
+            bounded(&what, move |stopper| {
                 let output = Arc::new(Mutex::new(vec![]));
                 let held = Arc::clone(&output);
                 let (release_tx, release_rx) = mpsc::channel();
@@ -382,7 +434,9 @@ fn open_062_r04_blocked_stdout_does_not_block_http_accept() {
                     drop(guard);
                     released
                 });
-                held_rx.recv_timeout(LIMIT).unwrap();
+                held_rx.recv_timeout(LIMIT).unwrap_or_else(|error| {
+                    panic!("waiting for output gate to hold stdout: {error}");
+                });
                 let (blocked_tx, blocked_rx) = mpsc::channel();
                 let server = Server::start(
                     BLOCKED_OUTPUT,
@@ -391,9 +445,12 @@ fn open_062_r04_blocked_stdout_does_not_block_http_accept() {
                     Arc::clone(&output),
                     Arc::new(Mutex::new(vec![])),
                     Some(blocked_tx),
+                    stopper,
                 );
                 let port = server.port();
-                blocked_rx.recv_timeout(LIMIT).unwrap();
+                blocked_rx.recv_timeout(LIMIT).unwrap_or_else(|error| {
+                    panic!("waiting for stdout capacity to block the writer: {error}");
+                });
                 // Mutex はまだ助けのスレッドが持つ。容量待ちのまま accept と respond が進む。
                 assert!(output.try_lock().is_err());
                 let bytes = request(port, b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n");

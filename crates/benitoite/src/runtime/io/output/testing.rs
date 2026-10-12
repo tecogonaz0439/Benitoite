@@ -1,5 +1,5 @@
-//! 出力先だけを置き換え、転送の順序を channel で定める部品（実装プラン R27、設計書 07-03）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 出力先だけを置き換え、転送の順序を channel で定める部品（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::panic,
@@ -208,8 +208,52 @@ fn failure_or_panic_releases_waiters_and_rejects_later_writes() {
         let failure = failure.unwrap();
         assert_eq!(matches!(failure, WriteFailure::Panicked(_)), panic);
         assert_eq!(port.write(task(3), b"later"), Err(failure.clone()));
+        assert_eq!(port.write_if_room(b"warning"), Err(failure.clone()));
         assert_eq!(port.flush_pending(), Err(failure.clone()));
         assert_eq!(port.finish(), Err(failure));
         assert!(gate.bytes.lock().unwrap().is_empty());
     }
+}
+
+// 関門: 警告を捨てても預かりの列は増えず、容量が戻っても届かない。通常の write は預ける。
+#[test]
+fn write_if_room_drops_without_deferring_and_does_not_overtake_pending_writes() {
+    let wakeup = crate::runtime::io::event::wakeup_counted();
+    let (sink, gate) = gated(false, false);
+    let mut port = OutputPort::start(Stream::Stderr, sink, false, wakeup.clone());
+    assert_eq!(port.write_if_room(&vec![b'a'; 1_048_576]), Ok(true));
+    assert_eq!(gate.entered(), 1_048_576);
+    assert_eq!(port.write_if_room(b"dropped-full"), Ok(false));
+    assert!(port.deferred.is_empty());
+    assert_eq!(port.write(task(2), b"pending"), Ok(Accept::Deferred));
+    let pending = port.deferred.len();
+    gate.release();
+    let mut seen = 0;
+    notified(&wakeup, &mut seen);
+    // 容量が戻っても、まだ預かった書き込みより先に警告を入れない。
+    assert_eq!(port.write_if_room(b"dropped-fifo"), Ok(false));
+    assert_eq!(port.deferred.len(), pending);
+    assert_eq!(port.poll(), (vec![task(2)], None));
+    assert_eq!(port.write_if_room(b"accepted"), Ok(true));
+    port.request_transfer();
+    assert_eq!(gate.entered(), b"pendingaccepted".len());
+    gate.release();
+    assert_eq!(port.finish(), Ok(()));
+    let bytes = gate.bytes.lock().unwrap();
+    assert_eq!(bytes.len(), 1_048_576 + b"pendingaccepted".len());
+    assert!(bytes[..1_048_576].iter().all(|&byte| byte == b'a'));
+    assert_eq!(&bytes[1_048_576..], b"pendingaccepted");
+}
+
+// OS の起動失敗を注入し、起動の記録と停止しない Drop を確かめる（設計書 02-09「出力のバッファ」）。
+#[test]
+fn failed_thread_start_is_recorded_and_can_be_dropped() {
+    let port = OutputPort::with_thread(
+        Stream::Stdout,
+        false,
+        Arc::new(WriterShared::default()),
+        Err(std::io::Error::other("injected")),
+    );
+    assert_eq!(port.start_error(), Some("injected"));
+    drop(port);
 }

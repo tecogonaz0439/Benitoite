@@ -1,0 +1,93 @@
+const xs: List[Integer] = [
+  // まだ要素がない
+
+  // 引き続き空である
+]
+
+function empty() -> Unit
+  // 文がない
+end function
+
+function firstWith() -> Unit uses IO.All
+  // 入力を開く
+
+  with r = File.openReader("in.txt") do
+    // まだ処理がない
+  end with
+end function
+
+function blocks(c: Bool) -> Unit
+  f(
+    // 引数がない
+  )
+  if c then
+    // then の中身が空である
+  else
+    // else の中身が空である
+  end if
+  if c then
+    // else if の前の分岐が空である
+  else if c then
+    // else if の分岐も空である
+  else if c then
+    ()
+  end if
+  handle
+    // handle の本体が空である
+  with
+    case Ask.ask() -> resume(1)
+  end handle
+  bind deferred <- lazy
+    // lazy の本体が空である
+  end lazy
+  bind callback <- lambda()
+    // lambda の本体が空である
+  end lambda
+end function
+
+data EmptyData
+  // 構成子がない
+end data
+
+trait EmptyTrait[T]
+  // メソッドがない
+end trait
+
+implement EmptyTrait[Integer]
+  // 実装する関数がない
+end implement
+
+effect EmptyEffect
+  // 操作がない
+end effect
+
+@test
+// 属性と宣言の間
+
+function unchanged(c: Bool) -> Unit
+  bind ys <- [
+    1,
+
+    // 要素の後
+  ]
+  if c then
+    ()
+
+  // else の前
+  else
+    ()
+  end if
+  handle
+    ()
+
+  // ハンドラの節の前
+  with
+    case Ask.ask() -> resume(1)
+  end handle
+
+  // 途中の with の文の前
+
+  with r = File.openReader("in.txt") do
+    ()
+  end with
+end function

@@ -9,9 +9,9 @@ use super::frame::Segment;
 /// ハンドラの記録（02-08「ハンドラの記録とハンドラの連鎖」）。
 #[derive(Debug)]
 pub struct HandlerRecord {
-    /// 節の関数の値の並び（10-07 のハンドラの記述の順）
+    /// 節の関数の値の並び（ハンドラの記述の順）
     pub clauses: Vec<Slot>,
-    /// ハンドラの記述の、プログラム全体の並びの番号（10-07 の `CompiledProgram::handlers`）
+    /// ハンドラの記述の、プログラム全体の並びの番号（`CompiledProgram::handlers`）
     pub desc: HandlerIdx,
     /// この `handle` を評価したタスク
     pub evaluated_by: TaskId,

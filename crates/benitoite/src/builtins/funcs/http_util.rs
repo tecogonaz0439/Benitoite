@@ -6,7 +6,7 @@ use crate::runtime::heap::{CheckedLen, Value};
 builtin! {
     /// 経路の空の要素を除き、パーセント符号化を戻す（設計書 03-09）。
     /// UTF-8 に戻せない要素と、`%` の後が 16 進の 2 桁でない要素は、
-    /// 要素全体をそのまま残す。`+` は空白に変えない（実装プラン L31）。
+    /// 要素全体をそのまま残す。`+` は空白に変えない。
     name = "Network.Http.pathSegments",
     pure fn path_segments(ctx, path: &'c str) -> Value<'e> {
         let parts = || path.split('/').filter(|part| !part.is_empty());
@@ -21,7 +21,7 @@ builtin! {
 }
 
 // 分割してから復号するので、%2F は一つの要素の中の文字になる。
-// 一部だけの復号は避け、どこか一か所でも戻せなければ元の要素を保つ（実装プラン L31）。
+// 一部だけの復号は避け、どこか一か所でも戻せなければ元の要素を保つ。
 fn decode_segment(segment: &str) -> Option<String> {
     if !segment.contains('%') {
         return None;
@@ -40,16 +40,16 @@ fn decode_segment(segment: &str) -> Option<String> {
     String::from_utf8(decoded).ok()
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[path_segments::DECL];
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(clippy::unwrap_used)]
     // 関門: 分割と要素全体の復号という返す値の契約を守る。空の要素、
     // 不正な UTF-8、不完全な % の復号の退行を捕まえる。既存の表のテストは
-    // 本体を呼ばない。差し込み口を足さず、10-15 の指示どおり本体を呼ぶ。
+    // 本体を呼ばない。組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
     use super::*;
     use crate::builtins::funcs::operators::tests::direct;
     use crate::runtime::heap::{Heap, HeapConfig};

@@ -22,7 +22,7 @@ enum Work<'a> {
     Unbind(Vec<Key>),
 }
 
-// ガードを写した兄弟の分岐で同じ番号を束縛できるよう、走査も束縛の有効範囲を持つ（F15）。
+// ガードを写した兄弟の分岐で同じ番号を束縛できるよう、走査も束縛の有効範囲を持つ。
 pub(super) fn free_keys(root: Node<'_>, bound: Vec<Key>) -> Vec<Key> {
     let mut scope: HashMap<Key, usize> = bound.into_iter().map(|k| (k, 1)).collect();
     let mut work = vec![Work::Node(root)];

@@ -1,6 +1,6 @@
 //! Show のリテラルの表記（設計書 03-06「標準の型クラス（初回リリース版）」、01-01「文字列リテラル」「文字リテラル」）。
-//! 仮の本体は、後の作業が本体と Rust の引数型だけを書き換える。
-//! 名前・権限・引数の数・DECLS の中の位置は変えない（実装プラン 10-12「まだ書かない項目の仮の本体」）。
+//! 名前・権限・引数の数は標準ライブラリのソースの宣言と一致させる
+//! （設計書 02-04「標準ライブラリのソースの持ち方」）。番号は表の中の位置で決まるので、DECLS の中の位置は変えない。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::runtime::MAX_STRING_BYTES;
@@ -12,7 +12,7 @@ use crate::runtime::heap::StrBuf;
 use crate::runtime::heap::Value;
 
 builtin! {
-    /// `Trait.showString` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Trait.showString` の本体。
     name = "Trait.showString",
     pure fn show_string(ctx, s: &'c str) -> Value<'e> {
         show(&ctx, s.chars(), '"', "Trait.showString")
@@ -20,7 +20,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Trait.showCharacter` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Trait.showCharacter` の本体。
     name = "Trait.showCharacter",
     pure fn show_character(ctx, c: char) -> Value<'e> {
         show(&ctx, std::iter::once(c), '\'', "Trait.showCharacter")
@@ -28,23 +28,9 @@ builtin! {
 }
 
 fn escaped(c: char, quote: char) -> String {
-    match c {
-        '\n' => "\\n".into(),
-        '\r' => "\\r".into(),
-        '\t' => "\\t".into(),
-        '\\' => "\\\\".into(),
-        '$' if quote == '"' => "\\$".into(),
-        c if c == quote => format!("\\{c}"),
-        '\u{0}'..='\u{1f}'
-        | '\u{7f}'
-        | '\u{61c}'
-        | '\u{200e}'
-        | '\u{200f}'
-        | '\u{202a}'..='\u{202e}'
-        | '\u{2066}'..='\u{2069}'
-        | '\u{feff}' => format!("\\u{{{:x}}}", u32::from(c)),
-        c => c.to_string(),
-    }
+    let mut out = String::new();
+    crate::base::literal::escape_into(&mut out, c, quote);
+    out
 }
 
 fn show<'e>(
@@ -73,5 +59,5 @@ fn show<'e>(
     buf.push_char(quote)?;
     ctx.alloc_str_buf(buf)
 }
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[show_string::DECL, show_character::DECL];

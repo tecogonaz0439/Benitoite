@@ -1,0 +1,36 @@
+// spec: 01-11 取り消し
+// 設計書 02-09「タスクの待ちと取り消し」。
+// 関門: 最後の accept の取り消し後の再登録と、生きた待ちがある間の登録の維持を実通信で確かめる。
+// 表を組む単体テストでは OS の登録の付け外しを通らず、ここでは専用の差し込み口を使わない。
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Clock
+import Benitoite.Unofficial.IO.Console
+
+function cancelAccepts(listener: Http.Listener, remaining: Integer) -> Result[Unit, String] uses Http.Listen, Clock.Time, State
+  if remaining = 0 then return Result.Ok(()) end if
+  // この段階ではクライアントが接続しないため、accept は期限まで完了しない。
+  bind result <- Task.withTimeout(1, lambda() return Http.accept(listener) end lambda)
+  return match result with
+    case Option.None -> cancelAccepts(listener, remaining - 1)
+    case Option.Some(_) -> Result.Error("accept did not time out")
+  end match
+end function
+
+function server(listener: Http.Listener) -> Result[Unit, String] uses Http.Listen, State
+  with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+    return Http.respond(exchange, Http.text(200, "accepted after cancellations")) |> Result.mapError(_, NetworkError.message)
+  end with
+end function
+
+function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Clock.Time, Console.Write, State
+  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+    bind _ <- try cancelAccepts(listener, 30)
+    bind live <- TaskGroup.spawn(group, lambda() return server(listener) end lambda)
+    bind _ <- try cancelAccepts(listener, 30)
+    bind response <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/") |> Result.mapError(_, NetworkError.message)
+    bind _ <- try Task.await(live)
+    Console.writeLine(Integer.toString(Http.Response.status(response)))
+    Console.writeLine(try Option.okOr(String.fromUTF8(Http.Response.body(response)), "UTF-8"))
+    return Result.Ok(())
+  end with
+end function

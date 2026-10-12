@@ -30,7 +30,8 @@ builtin! {
     }
 }
 builtin! {
-    /// `Reference.update` の raw の本体（実装プラン 10-12「項目の種類」）。
+    /// `Reference.update` の表の項目。コード生成が専用の命令 `UPDATE` に移すので、
+    /// この本体は呼ばれない（設計書 02-07「コード生成」）。
     name = "Reference.update",
     state fn update(ctx, a0: Value<'e>, a1: Value<'e>) -> StateReply<'e> {
         let _ = (ctx, a0, a1);
@@ -38,27 +39,31 @@ builtin! {
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[new::DECL, get::DECL, set::DECL, update::DECL];
 
 #[cfg(test)]
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(clippy::unwrap_used, clippy::panic, clippy::arithmetic_side_effects)]
 mod tests {
     use super::*;
     use crate::builtins::iface::CallCtx;
     use crate::runtime::heap::{Heap, HeapConfig};
-    use crate::vm::state::Stage1StateServices;
+    use crate::vm::state::BorrowedStateServices;
 
     // 関門: 名前の付いた本体の値・Unit・版の契約。ヒープのテストは組み込みの応答を
-    // 確かめず、スクリプトのテストでは版を読めない。差し込み口は加えない（実装プラン 10-12）。
+    // 確かめず、スクリプトのテストでは版を読めない。差し込み口は加えない。
     #[test]
     fn new_get_and_set_preserve_values_and_increment_version() {
         let mut heap = Heap::new(HeapConfig::default());
         heap.epoch(|ctx| {
             let mut resources = crate::runtime::io::resources::ResourceTable::default();
             let mut scheduler = crate::runtime::sched::Scheduler::default();
-            let mut services = Stage1StateServices {
+            let mut services = BorrowedStateServices {
+                current_task: crate::vm::TaskId {
+                    index: 0,
+                    generation: 0,
+                },
                 resources: &mut resources,
                 scheduler: &mut scheduler,
             };
@@ -133,7 +138,11 @@ mod tests {
         heap.epoch(|ctx| {
             let mut resources = crate::runtime::io::resources::ResourceTable::default();
             let mut scheduler = crate::runtime::sched::Scheduler::default();
-            let mut services = Stage1StateServices {
+            let mut services = BorrowedStateServices {
+                current_task: crate::vm::TaskId {
+                    index: 0,
+                    generation: 0,
+                },
                 resources: &mut resources,
                 scheduler: &mut scheduler,
             };

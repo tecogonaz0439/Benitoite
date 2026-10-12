@@ -1,6 +1,7 @@
-//! 二つの回収方式で、VM の根と CONR の再利用を確かめる（実装プラン R11、設計書 07-03）。
+//! 二つの回収方式で、VM の根と CONR の再利用を確かめる
+//! （設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
 // 関門: 公開ヒープのテストでは確かめられない、VM の生存の情報・枠・再利用の順序を守る。
-// R09 は CONR が新規確保する経路だけを扱う。本物の命令・組み込み・ヒープをつなぐ。
+// 新規確保する経路に加え、再利用の候補の検査も通す。本物の命令・組み込み・ヒープをつなぐ。
 use super::*;
 use crate::bytecode::program::CtorIdx;
 use crate::runtime::heap::{CtorTag, FieldsKind, ObjId, RootIdx};
@@ -165,7 +166,7 @@ fn strings_and_survivor_program(count: usize, survivor: bool) -> CompiledProgram
         ctor(&mut b, main, 3, batches[i % 4], 1);
         b.loadk(main, 4, ConstDesc::Func(leaf)).unwrap();
         b.code(main).unwrap().op(Opcode::Call, 5, 4, 0);
-        // 並びの長さも変え、短命な並びの内部参照を回収後に確かめる（実装プラン R11）。
+        // 並びの長さも変え、短命な並びの内部参照を回収後に確かめる。
         b.code(main).unwrap().op(Opcode::Field, 6, 3, 0);
         b.code(main)
             .unwrap()
@@ -250,7 +251,7 @@ fn workload_results_and_output_agree_with_and_without_stress() {
             check_program(&program, stress, &expected, minimum);
         }
     }
-    // R09 の深い再帰の組み立てを共有し、小さな同一プログラムを四つの構成に通す。
+    // 深い再帰の組み立てを共有し、小さな同一プログラムを四つの構成に通す。
     let depth = if cfg!(miri) { 3 } else { 128 };
     let program = deep_returns_program(depth, 12);
     for stress in [false, true] {
@@ -407,7 +408,7 @@ fn conr_constructs_each_node_and_preserves_shared_chain() {
                         .map(|n| i64::try_from(n).unwrap())
                         .collect::<Vec<_>>()
                 );
-                assert_eq!(vm.heap_stats().reuses, 0);
+
                 if shared {
                     assert_eq!(chain(&mut vm, saved), before);
                 }
@@ -476,7 +477,7 @@ fn conr_argument_alias_keeps_original_node_and_never_creates_self_edge() {
             let id = request(&mut vm, &mut services);
             vm.heap.collect(&vm.state);
             assert_eq!(vm.heap.verify(&vm.state), Ok(()));
-            assert_eq!(vm.heap_stats().reuses, 0);
+
             let observation = vm.heap.epoch(|ctx| {
                 let outer = ctx.load(
                     &crate::vm::dispatch::test_support::stack(&vm.state, ctx).segments[0].regs[1],

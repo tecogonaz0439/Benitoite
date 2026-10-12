@@ -10,7 +10,7 @@ end record
 @builtin("Csv.parse")
 public function parse(text: String) -> Result[List[List[String]], ParseError]
 
-/// Reads `text` as rows of fields separated by `delimiter`.
+/// Reads `text` as rows of fields separated by `delimiter`. `delimiter` must be an ASCII character other than `"`, CR, and LF.
 @builtin("Csv.parseWith")
 public function parseWith(text: String, delimiter: Character) -> Result[List[List[String]], ParseError]
 
@@ -22,6 +22,6 @@ public function parseWithHeader(text: String) -> Result[List[Map[String, String]
 @builtin("Csv.format")
 public function format(rows: List[List[String]]) -> String
 
-/// Writes the rows as CSV with `delimiter` between fields.
+/// Writes the rows as CSV with `delimiter` between fields. `delimiter` must be an ASCII character other than `"`, CR, and LF.
 @builtin("Csv.formatWith")
 public function formatWith(rows: List[List[String]], delimiter: Character) -> String

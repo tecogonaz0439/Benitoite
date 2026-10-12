@@ -5,8 +5,10 @@ pub mod report;
 
 use crate::base::{BindingId, Span};
 use crate::bytecode::program::MainKind;
+use crate::diag::render;
 use crate::diag::{CallTrace, Diagnostic, TraceFrame};
 use crate::runtime::assert::AssertOp;
+use crate::runtime::report::FaultThread;
 
 /// テストの関数一つ（06-04「テストの関数」）。
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -88,7 +90,7 @@ pub mod text {
     pub const RESULT: &str = "test result: {outcome}. {passed} passed; {failed} failed";
     pub const FILES_NOT_RUN: &str = "; {count} files not run due to errors";
     pub const INTERRUPTED: &str = "; interrupted";
-    /// 処理系の不具合の報告（10-13 の `internal_diagnostic`）の段の名前
+    /// 処理系の不具合の報告（`internal_diagnostic`）の段の名前
     pub const STAGE_TEST: &str = "test";
     /// `"exit"` の JSON の注記の前に付ける語（`codes::text::RELEASE_WHILE_STOPPING` と同じ文にする）
     pub(super) const RELEASE_STOPPING_PREFIX: &str = "while stopping, ";
@@ -111,7 +113,7 @@ pub fn run_test_command(args: PathArgs, env: CliEnv) -> u8 {
     let entries = match test_entries(&args.paths) {
         Ok(entries) => entries,
         Err((path, error)) => {
-            // 読めないディレクトリはテストを一つも実行せずに終える（実装プラン D11「手順の要点」の 1）。
+            // 読めないディレクトリはテストを一つも実行せずに終える。
             let diag = DiagBuilder::new(DiagCode::E0101)
                 .arg("path", path.display().to_string())
                 .arg("reason", error.to_string())
@@ -121,7 +123,7 @@ pub fn run_test_command(args: PathArgs, env: CliEnv) -> u8 {
             return EXIT_CHECK;
         }
     };
-    // 読み口はコマンドラインを解釈した後、最初の検査の前に一度だけ作る（10-18「ファイルごとの手順」）。
+    // 読み口はコマンドラインを解釈した後、最初の検査の前に一度だけ作る。
     let interrupt = match env.interrupt.take() {
         Some(interrupt) => interrupt,
         None => match run::process_interrupt() {
@@ -134,6 +136,7 @@ pub fn run_test_command(args: PathArgs, env: CliEnv) -> u8 {
                     text::STAGE_TEST,
                     &error.to_string(),
                     None,
+                    FaultThread::Stage,
                 );
             }
         },
@@ -252,8 +255,8 @@ use crate::types::builtin::BuiltinTypeId as BuiltinTy;
 use crate::types::{Ty, TyCon};
 use crate::vm::{DEFAULT_MAX_CALL_STACK, StopInfo};
 
-// 一回の `test` の実行で作った中断の要求の読み口を、テストごとの `RunEnv` で共有する包み（10-18「テストの関数の実行」の
-// `interrupt`）。`attach`・`flag` も中の読み口へ渡す。渡さないと、待っているテストが中断の要求で起きない。
+// 一回の `test` の実行で作った中断の要求の読み口を、テストごとの `RunEnv` で共有する包み（設計書 02-11「テストの実行」）。
+// `attach`・`flag` も中の読み口へ渡す。渡さないと、待っているテストが中断の要求で起きない。
 #[derive(Debug, Clone)]
 struct SharedInterrupt(Rc<Box<dyn InterruptSource>>);
 
@@ -275,7 +278,7 @@ enum Flow {
     Exit(u8),
 }
 
-// 大きなスタックのスレッドで作り、呼び出し側へ返すもの（検査の AST はそのスレッドで捨てる。実装プラン F18）。
+// 大きなスタックのスレッドで作り、呼び出し側へ返すもの。検査の AST はそのスレッドで捨てる。
 struct Prepared {
     result: CheckResult,
     compiled: Option<Result<Compiled, PrepareError>>,
@@ -302,7 +305,7 @@ struct Runner {
     deny_warnings: bool,
     interrupt: SharedInterrupt,
     summary: Summary,
-    /// 文章の形の失敗の詳細。ソースの表が使えるうちに文字列にして溜める（10-18「ファイルごとの手順」の 5）
+    /// 文章の形の失敗の詳細。ソースの表が使えるうちに文字列にして溜める。
     failures: Vec<String>,
     wrote_test_line: bool,
 }
@@ -316,6 +319,7 @@ impl Runner {
             stage,
             message,
             None,
+            FaultThread::Stage,
         ))
     }
 
@@ -326,7 +330,7 @@ impl Runner {
         });
         let prepared = match prepared {
             Ok(Ok(Ok(prepared))) => prepared,
-            Ok(Ok(Err(panic))) | Err(panic) => {
+            Ok(Ok(Err(panic))) => {
                 return Flow::Exit(write_internal(
                     &self.env,
                     self.format,
@@ -334,6 +338,18 @@ impl Runner {
                     "check",
                     &panic.message,
                     Some(&panic),
+                    FaultThread::Stage,
+                ));
+            }
+            Err(panic) => {
+                return Flow::Exit(write_internal(
+                    &self.env,
+                    self.format,
+                    &SourceTable::new(),
+                    "check",
+                    &panic.message,
+                    Some(&panic),
+                    FaultThread::Main,
                 ));
             }
             Ok(Err(error)) => {
@@ -358,8 +374,24 @@ impl Runner {
         let compiled = match prepared.compiled {
             Some(Ok(compiled)) => compiled,
             Some(Err(PrepareError::Limit(diags))) => {
-                for diag in &diags {
-                    write_report(&self.env, self.format, &sources, diag);
+                match self.format {
+                    DiagFormat::Text => {
+                        let text = render::render_check_text(
+                            &diags,
+                            &sources,
+                            Verb::Test,
+                            &entry.display_name,
+                            TextOptions {
+                                color: self.env.color,
+                            },
+                        );
+                        let _result = self.env.stderr.write_bytes(text.as_bytes());
+                    }
+                    DiagFormat::Json => {
+                        for diag in &diags {
+                            write_report(&self.env, self.format, &sources, diag);
+                        }
+                    }
                 }
                 self.summary.files_not_run = self.summary.files_not_run.saturating_add(1);
                 return Flow::Continue;
@@ -404,7 +436,8 @@ impl Runner {
                     stdout: OutputTarget::Capture(Arc::clone(&stdout)),
                     stderr: OutputTarget::Capture(Arc::clone(&stderr)),
                     interrupt: Box::new(self.interrupt.clone()),
-                    // `RuntimeParts` は Clone できないので、テストごとの `RunEnv` には常に実際の実装を使う（10-18）。
+                    // `RuntimeParts` は Clone できないので、テストごとの `RunEnv` には常に実際の実装を使う
+                    // （設計書 02-11「テストの実行」）。
                     parts: None,
                     mode: self.env.mode,
                     vm: crate::vm::VmConfig {
@@ -516,7 +549,7 @@ impl Runner {
     }
 }
 
-// 検査からコンパイルまで（10-18「ファイルごとの手順」の 2〜4）。大きなスタックのスレッドで行う。
+// 検査からコンパイルまで（設計書 06-04「テストの実行」）。大きなスタックのスレッドで行う。
 fn prepare(entry: &EntrySpec, deny_warnings: bool) -> Prepared {
     let checked = pipeline::check(
         entry,
@@ -580,13 +613,18 @@ fn take_bytes(bytes: &Arc<Mutex<Vec<u8>>>) -> Vec<u8> {
         .unwrap_or_default()
 }
 
-// 実行の結果から失敗の詳細を作る（実装プラン D11「手順の要点」の 4）。`Interrupted`・`Internal` は呼び出し側が扱う。
+// 実行の結果から失敗の詳細を作る。`Interrupted`・`Internal` は呼び出し側が扱う。
 fn failure_of(
     program: &CompiledProgram,
     test: &TestFn,
     end: TestEnd,
 ) -> Result<Option<Failure>, &'static str> {
     let run = end.run;
+    // 捕らえる出力先が失敗するのはミューテックスが毒されたときだけであり、
+    // 書き出し用のスレッドの panic は先に処理系の不具合になる（設計書 02-09「panic 境界」）。
+    if matches!(run.end, EndKind::Returned | EndKind::MainError) && !run.reports.is_empty() {
+        return Err("output capture failed");
+    }
     let failure = match run.end {
         EndKind::Returned => return Ok(None),
         EndKind::MainError => {
@@ -618,7 +656,7 @@ fn failure_of(
                 return Err("check failure record missing");
             };
             // 位置と履歴は実行時エラーの報告と同じ規則で作る。規則を書き写さず、位置と履歴を持つ任意の実行時エラーの
-            // 報告から取り出す（実装プラン D11「手順の要点」の 4）。
+            // 報告から取り出す。
             let info = StopInfo {
                 stop: Stop::Runtime(RuntimeError::DivisionByZero),
                 at: Some(check.at),

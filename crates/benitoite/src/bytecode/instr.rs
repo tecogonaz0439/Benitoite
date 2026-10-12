@@ -1,6 +1,6 @@
-//! 命令の符号化（実装プラン 10-07「命令の符号化」「命令の表」、設計書 02-07「命令」）。
+//! 命令の符号化（設計書 02-07「命令」）。
 
-/// 命令の種類。番号は 10-07 の命令の表のとおり。
+/// 命令の種類。番号は命令の表のとおり（設計書 02-07「命令」）。
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 #[repr(u8)]
 pub enum Opcode {
@@ -224,80 +224,6 @@ impl Opcode {
             Opcode::Handle => "HANDLE",
             Opcode::Perform => "PERFORM",
             Opcode::Resume => "RESUME",
-        }
-    }
-
-    /// 第 1 段の VM が実装する命令か（10-07 の命令の表の段の欄が 1）。
-    pub fn in_stage1(self) -> bool {
-        match self {
-            Opcode::Move
-            | Opcode::LoadK
-            | Opcode::GetCap
-            | Opcode::Closure
-            | Opcode::Call
-            | Opcode::TailCall
-            | Opcode::Return
-            | Opcode::Prim
-            | Opcode::Io
-            | Opcode::AddI
-            | Opcode::SubI
-            | Opcode::MulI
-            | Opcode::DivI
-            | Opcode::ModI
-            | Opcode::NegI
-            | Opcode::AddF
-            | Opcode::SubF
-            | Opcode::MulF
-            | Opcode::DivF
-            | Opcode::NegF
-            | Opcode::Concat
-            | Opcode::EqI
-            | Opcode::LtI
-            | Opcode::LeI
-            | Opcode::EqF
-            | Opcode::LtF
-            | Opcode::LeF
-            | Opcode::EqS
-            | Opcode::LtS
-            | Opcode::LeS
-            | Opcode::EqC
-            | Opcode::LtC
-            | Opcode::LeC
-            | Opcode::EqB
-            | Opcode::EqV
-            | Opcode::Not
-            | Opcode::Con
-            | Opcode::List
-            | Opcode::Field
-            | Opcode::ConR
-            | Opcode::Jmp
-            | Opcode::JmpF
-            | Opcode::Switch => true,
-            Opcode::Escape
-            | Opcode::GetDict
-            | Opcode::Dict
-            | Opcode::Super
-            | Opcode::Method
-            | Opcode::TailMethod
-            | Opcode::AddD
-            | Opcode::SubD
-            | Opcode::MulD
-            | Opcode::DivD
-            | Opcode::NegD
-            | Opcode::EqD
-            | Opcode::LtD
-            | Opcode::LeD
-            | Opcode::EqBt
-            | Opcode::LtBt
-            | Opcode::LeBt
-            | Opcode::Lazy
-            | Opcode::Force
-            | Opcode::Update
-            | Opcode::Use
-            | Opcode::Release
-            | Opcode::Handle
-            | Opcode::Perform
-            | Opcode::Resume => false,
         }
     }
 }

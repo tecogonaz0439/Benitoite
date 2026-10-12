@@ -52,7 +52,7 @@ pub(in crate::vm) fn request(
             state.scheduling.deliveries.remove(&id);
             remove_timer(state, id, timer);
             pending.extend(children);
-            // 子が既に全員終わっている場合も、結果を書かず親を起こす（実装プラン R39）。
+            // 子が既に全員終わっている場合も、結果を書かず親を起こす。
             discard_cancelled_parent(state, ctx, id)?;
         } else if !matches!(reason, Some(WaitReason::Release(_))) {
             if let Some(WaitReason::TaskEnd(TaskEndWait::Await(target))) = reason
@@ -87,12 +87,17 @@ fn remove_timer(state: &mut RunState, parent: TaskId, timer: Option<TimerId>) {
         state.scheduler.remove_timer(timer);
     }
     state.scheduling.timed_out.remove(&parent);
+    state.scheduling.pending_timeouts.remove(&parent);
 }
 
-/// 選ばれたタスクの命令を実行する前に、要求を辿りへ移す（実装プラン R39）。
+/// 選ばれたタスクの命令を実行する前に、要求を辿りへ移す。
 #[cold]
 #[inline(never)]
-pub(super) fn begin(state: &mut RunState, ctx: &mut NoGcCtx<'_>) -> Result<(), Stop> {
+pub(super) fn begin(
+    state: &mut RunState,
+    ctx: &mut NoGcCtx<'_>,
+    waited_release: Option<crate::runtime::heap::ResourceId>,
+) -> Result<(), Stop> {
     if !checked_requested(ctx, state)? || state.unwinding.is_some() {
         return Ok(());
     }
@@ -107,6 +112,16 @@ pub(super) fn begin(state: &mut RunState, ctx: &mut NoGcCtx<'_>) -> Result<(), S
     }
     ctx.discard(state.returning.take());
     state.precall_done = None;
+    // 完了で起きた後に要求された場合も、自分が始めた close の失敗だけを捨てる。
+    // 他の呼び手が始めた解放や with の枠には理由を残す（設計書 02-09「リソースの追跡」）。
+    if let Some(resource) = waited_release
+        && !state.resources.is_with_bound(resource)
+        && state
+            .resources
+            .is_release_starter(resource, state.current_task)
+    {
+        state.resources.take_release_failure(resource);
+    }
     state.unwinding = Some(UnwindWork {
         cause: UnwindCause::Cancel,
         segments: std::mem::take(&mut state.stack)
@@ -120,7 +135,7 @@ pub(super) fn begin(state: &mut RunState, ctx: &mut NoGcCtx<'_>) -> Result<(), S
     Ok(())
 }
 
-/// 凍結した bool の入口の前に、タスクの対象を引けることを確かめる（実装プラン R39）。
+/// bool を返す入口の前に、タスクの対象を引けることを確かめる。
 #[cold]
 #[inline(never)]
 pub(in crate::vm) fn checked_requested(ctx: &NoGcCtx<'_>, state: &RunState) -> Result<bool, Stop> {
@@ -193,7 +208,7 @@ pub(super) fn discard_cancelled_parent(
     Ok(())
 }
 
-/// 満了した番号を今の待ちと照合し、子の停止が済むまで親を待たせる（実装プラン R39）。
+/// 満了した番号を今の待ちと照合し、子の停止が済むまで親を待たせる。
 #[cold]
 #[inline(never)]
 pub(super) fn expire(
@@ -231,6 +246,7 @@ pub(super) fn deliver<'e>(
     state: &mut RunState,
     ctx: &mut NoGcCtx<'e>,
     parent: TaskId,
+    timeout_checked: bool,
 ) -> Result<(), Stop> {
     let value = object(state, ctx, parent)?;
     let task = ctx
@@ -308,6 +324,16 @@ pub(super) fn deliver<'e>(
     if results.iter().any(|(_, r)| r.is_none()) {
         return Ok(());
     }
+    if matches!(mode, SpawnMode::WithTimeout { .. })
+        && !timeout_checked
+        && !state.scheduling.timed_out.contains(&parent)
+        && timer.is_some()
+    {
+        // 子が境界を通らずに期限を過ぎて終わる場合がある。次の境界が時刻を読むまで
+        // 結果もタイマーも残す（TODO-197、設計書 02-08「タスクの起動と待ち方」）。
+        state.scheduling.pending_timeouts.insert(parent);
+        return Ok(());
+    }
     let result = match mode {
         SpawnMode::AllOk => {
             if let Some(error) = error {
@@ -315,7 +341,7 @@ pub(super) fn deliver<'e>(
             } else {
                 // AllOk が子を取り消すのは Error を得た後だけで、その Error は children に残る。
                 // 親の取り消しと全体停止は deliver_all が先に除くため、ここでは Error が必要である
-                // （設計書 01-11「タスクを起動する関数」、実装プラン R39）。
+                // （設計書 01-11「タスクを起動する関数」）。
                 if results.iter().any(|(_, r)| matches!(r, Some(None))) {
                     return Err(missing("Task.allOk child cancelled without error"));
                 }
@@ -329,7 +355,7 @@ pub(super) fn deliver<'e>(
             } else {
                 // Race は勝者を得てからほかの子を取り消し、WithTimeout の取り消しは timed_out を記録する。
                 // 親の取り消しと全体停止は既に除かれているので、この分岐には勝者が残る
-                // （設計書 01-11「タスクを起動する関数」、実装プラン R39）。
+                // （設計書 01-11「タスクを起動する関数」）。
                 let result = results
                     .iter()
                     .find_map(|(_, r)| r.and_then(|v| v))

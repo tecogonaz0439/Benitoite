@@ -5,8 +5,35 @@ use super::solve::Solver;
 use super::{HandleInfo, TryKind};
 use crate::base::{BindingId, BindingMap, NodeId, NodeMap, Span};
 use crate::diag::Diagnostic;
-use crate::syntax::ast::{BindStmt, Block, Expr, MatchExpr, Pattern};
+use crate::syntax::ast::{Block, Expr, Pattern};
 use crate::types::*;
+use std::collections::{BTreeMap, HashMap, HashSet};
+
+/// `try` が抜ける関数の境界。診断まで保持して、外側の関数との混同を防ぐ。
+#[derive(Clone, Copy)]
+pub(super) enum ReturnOwner {
+    Function,
+    Lambda,
+    Placeholder(Span),
+}
+
+/// 本体の最後の式の修正案に使う戻り値の情報。
+pub(super) struct BodyReturn {
+    pub annotated: bool,
+    pub ty: ITy,
+    pub owner: ReturnOwner,
+}
+
+/// 網羅性の後検査に要るパターンとガードの有無だけを保存する。
+pub(super) struct MatchInfo {
+    pub arms: Vec<MatchArmInfo>,
+    pub scrutinee: Span,
+}
+/// 後検査には分岐の本体やガードの式を保存する必要がない。
+pub(super) struct MatchArmInfo {
+    pub patterns: Vec<Pattern>,
+    pub guarded: bool,
+}
 
 /// 型構成子の引数も値の型と区別して覚え、finalize の後にだけ出力へ移す。
 #[derive(Clone)]
@@ -14,9 +41,8 @@ pub(super) enum IArg {
     Ty(ITy),
     Head(IHead),
 }
-/// 囲むハンドラの節の情報（F09 の E3 が積み降ろしする）。
+/// 囲むハンドラの節の情報。
 pub(super) struct ClauseContext {
-    pub node: NodeId,
     pub op_ret: ITy,
     pub handle_ty: ITy,
 }
@@ -37,18 +63,33 @@ pub(super) struct Body<'a, 'd> {
     pub try_kinds: NodeMap<(TryKind, ITy)>,
     pub handlers: NodeMap<HandleInfo>,
     pub clauses: Vec<ClauseContext>,
+    /// プレースホルダの展開が継続を隠している間の E0509 の補助。
+    pub placeholder_boundary: bool,
+    /// 現在の `return` が抜ける境界。診断で戻り値の持ち主を示す。
+    pub return_owner: ReturnOwner,
+    /// 制約を解く時点で、各 `try` の戻り先の境界を引く。
+    pub try_owners: NodeMap<ReturnOwner>,
     /// 節を辿り終えた後の制約の解決でも、操作が宣言した組み込みの制約を引く
     /// （設計書 02-05「型とエフェクトの表現」）。
     pub clause_params: NodeMap<Vec<TypeParamInfo>>,
-    pub matches: Vec<(MatchExpr, ITy)>,
+    /// 操作の書いた名前と節の位置。剛な型の脱出の診断で出どころを示す。
+    pub clause_ops: NodeMap<(String, Span)>,
+    pub matches: Vec<(MatchInfo, ITy)>,
     pub lambda_returns: Vec<(Block, ITy)>,
-    pub bindings: Vec<(BindStmt, ITy)>,
+    pub bindings: Vec<(Pattern, ITy)>,
     pub effect: IEffect,
     pub ret: Option<ITy>,
     pub body_effect: IEffect,
     pub diagnostics: Vec<Diagnostic>,
     pub return_annotation: Option<Span>,
-    pub expr_stmts: NodeMap<Expr>,
+    /// E0416 の再代入の修正案に使う、比較の文の位置から左辺の名前・右辺の位置への表。
+    pub expr_stmts: HashMap<Span, (Span, Span)>,
+    /// 最後の式の位置で、本体が要求する戻り値を引く。
+    pub body_returns: HashMap<Span, BodyReturn>,
+    /// E0416 を報告済みの本体の最後の位置。同じ原因の後検査を抑える。
+    pub reported_body_values: HashSet<Span>,
+    /// LambdaReturn の理由のブロックの位置から、最後の式の位置への対応。
+    pub lambda_body_ends: HashMap<Span, Span>,
 }
 impl<'a, 'd> Body<'a, 'd> {
     pub fn new(decls: &'a mut Decls<'d>, scope: Scope, scheme: Scheme) -> Self {
@@ -71,7 +112,11 @@ impl<'a, 'd> Body<'a, 'd> {
             try_kinds: NodeMap::default(),
             handlers: NodeMap::default(),
             clauses: vec![],
+            placeholder_boundary: false,
+            return_owner: ReturnOwner::Function,
+            try_owners: NodeMap::default(),
             clause_params: NodeMap::default(),
+            clause_ops: NodeMap::default(),
             matches: vec![],
             lambda_returns: vec![],
             bindings: vec![],
@@ -80,7 +125,110 @@ impl<'a, 'd> Body<'a, 'd> {
             ret,
             diagnostics: vec![],
             return_annotation: None,
-            expr_stmts: NodeMap::default(),
+            expr_stmts: HashMap::new(),
+            body_returns: HashMap::new(),
+            reported_body_values: HashSet::new(),
+            lambda_body_ends: HashMap::new(),
+        }
+    }
+    /// 本体の診断では、剛な型の名前と未確定の型の表示を全経路で揃える。
+    pub fn show_type(&self, ty: &ITy) -> String {
+        self.show_type_with(&self.solver, ty)
+    }
+    /// 一つの診断に現れる複数の型には、同じ剛な型の表示名を使う。
+    pub fn show_types<const N: usize>(&self, tys: [&ITy; N]) -> [String; N] {
+        let mut names = self.type_param_names();
+        let mut indices = BTreeMap::new();
+        tys.map(|ty| self.show_type_named(&self.solver, ty, &mut names, &mut indices))
+    }
+    /// 解決中には solver が本体から取り出されているため、その状態で表示する。
+    pub(super) fn show_type_with(&self, solver: &Solver, ty: &ITy) -> String {
+        self.show_type_named(
+            solver,
+            ty,
+            &mut self.type_param_names(),
+            &mut BTreeMap::new(),
+        )
+    }
+    /// 外側の型パラメータの名前を、本文と注記の共通の表の先頭に置く。
+    pub(super) fn type_param_names(&self) -> Vec<String> {
+        self.scheme
+            .type_params
+            .iter()
+            .map(|p| p.name.clone())
+            .collect()
+    }
+    /// 注記と本文の型に、呼び出し側が保持する共通の名前の表を使う。
+    pub(super) fn show_type_named(
+        &self,
+        solver: &Solver,
+        t: &ITy,
+        names: &mut Vec<String>,
+        indices: &mut BTreeMap<(NodeId, u32), u32>,
+    ) -> String {
+        let mut ty = solver.diagnostic_type(t);
+        self.name_rigid_types(&mut ty, names, indices);
+        ty.show(&TyNames {
+            adts: &self.decls.out.adts,
+            effects: &self.decls.out.effects,
+            type_params: names,
+            effect_params: &self.scheme.effect_params,
+        })
+    }
+    /// 型の深さは検査の上限で抑えられる。同じ節の同じ型パラメータには同じ番号を使い、
+    /// 外側の関数の型パラメータと区別する（設計書 02-05「誤りの報告と検査の継続」）。
+    pub(super) fn name_rigid_types(
+        &self,
+        ty: &mut Ty,
+        names: &mut Vec<String>,
+        indices: &mut BTreeMap<(NodeId, u32), u32>,
+    ) {
+        match ty {
+            Ty::Rigid { clause, index } => {
+                let key = (*clause, *index);
+                let n = if let Some(n) = indices.get(&key) {
+                    *n
+                } else if let Some(p) = self
+                    .clause_params
+                    .get(*clause)
+                    .and_then(|ps| usize::try_from(*index).ok().and_then(|i| ps.get(i)))
+                    && let Ok(n) = u32::try_from(names.len())
+                {
+                    let mut name = p.name.clone();
+                    if names.contains(&name) {
+                        let op = self
+                            .clause_ops
+                            .get(*clause)
+                            .map_or("_", |(op, _)| op.as_str());
+                        name = format!("{op}.{}", p.name);
+                        // 同名の操作の別の節が一つの診断に現れても区別する。
+                        let base = name.clone();
+                        let mut suffix = 2_u32;
+                        while names.contains(&name) {
+                            name = format!("{base}#{suffix}");
+                            suffix = suffix.saturating_add(1);
+                        }
+                    }
+                    names.push(name);
+                    indices.insert(key, n);
+                    n
+                } else {
+                    u32::MAX
+                };
+                *ty = Ty::Param(n);
+            }
+            Ty::Con(_, args) | Ty::App(_, args) => {
+                for t in args {
+                    self.name_rigid_types(t, names, indices);
+                }
+            }
+            Ty::Fn(f) => {
+                for t in &mut f.params {
+                    self.name_rigid_types(t, names, indices);
+                }
+                self.name_rigid_types(&mut f.ret, names, indices);
+            }
+            Ty::Param(_) => {}
         }
     }
     pub fn fresh_ty(&mut self) -> ITy {
@@ -123,15 +271,6 @@ impl<'a, 'd> Body<'a, 'd> {
         self.ret = old_r;
         ty
     }
-    /// 子のパターンの走査中だけ文脈を差し替える（F10 の P1）。
-    pub fn pattern_in(&mut self, p: &Pattern, effect: IEffect, ret: Option<ITy>) -> ITy {
-        let old_e = std::mem::replace(&mut self.effect, effect);
-        let old_r = std::mem::replace(&mut self.ret, ret);
-        let ty = self.pattern(p);
-        self.effect = old_e;
-        self.ret = old_r;
-        ty
-    }
     /// フックが確定した型どうしを単一化し、失敗には通常の診断を付ける。
     pub fn unify(&mut self, expected: &ITy, found: &ITy, r: &Reason) -> bool {
         let mut solver = std::mem::take(&mut self.solver);
@@ -151,8 +290,10 @@ impl<'a, 'd> Body<'a, 'd> {
     }
     pub fn annotation(&mut self, t: &crate::syntax::ast::TypeExpr) -> ITy {
         let before = self.decls.diagnostics.len();
+        let before_aliases = self.decls.invalid_alias_uses;
         let ty = self.decls.ty(t, &self.scope);
-        if before != self.decls.diagnostics.len() {
+        if before != self.decls.diagnostics.len() || before_aliases != self.decls.invalid_alias_uses
+        {
             ITy::Error
         } else {
             lift(&ty)

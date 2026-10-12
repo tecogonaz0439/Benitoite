@@ -1,0 +1,12 @@
+error[E0303]: `String` has no member `charCount`
+  --> testdata/names/renamed_member.bnt:3:20
+   |
+ 3 |   bind _ <- String.charCount("abc")
+   |                    ^^^^^^^^^ not found in `String`
+   |
+   = help: `charCount` was renamed to `String.characterCount` in 0.0.1
+   |
+ 3 |   bind _ <- String.characterCount("abc")
+   |                    ~~~~~~~~~~~~~~
+
+error: could not check testdata/names/renamed_member.bnt due to 1 previous error

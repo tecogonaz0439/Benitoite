@@ -1,5 +1,5 @@
-//! 修正案を当てて本物の段で読み直す（設計書 02-10「修正案」、実装プラン F16）。
-// テストの失敗と準備用の算術・添字は、00-02 のテストの例外に従う。
+//! 修正案を当てて本物の段で読み直す（設計書 02-10「修正案」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::panic,
@@ -17,6 +17,39 @@ fn syntax_diagnostics(text: &str) -> Vec<Diagnostic> {
     let (parsed, mut diagnostics) = parse_source(text, SourceKind::User);
     diagnostics.extend(parsed.diagnostics);
     diagnostics
+}
+
+#[test]
+fn type_repairs_pass_typechecking_when_applied() {
+    // 編集の適用後まで検査し、構文として有効でも型の誤りを残す編集を検出する。
+    for text in [
+        "function f(x: Integer) -> Integer\n bind y <- x + 1\n y * 2\nend function",
+        "function f(x: Integer) -> Unit\n x = 5\nend function",
+        "function f(c: Boolean) -> Integer\n if c then\n  1\n else\n  2\n end if\nend function",
+        "function accept(cb: function() -> Unit) -> Unit\nend function\nfunction f() -> Unit\n accept(lambda()\n  1\n end lambda)\nend function",
+        "function f() -> Unit\n bind g <- lambda() -> Integer\n  1\n end lambda\nend function",
+        "function f() -> Unit\n bind g <- lambda()\n  1\n end lambda\nend function",
+    ] {
+        let (load, _, _, diagnostics) =
+            crate::typeck::test_support::check_files(&[("main.bnt", text)], false);
+        let diag = diagnostic(&diagnostics, DiagCode::E0416);
+        validate_keys(diag);
+        let repairs = diag
+            .helps
+            .iter()
+            .filter(|h| !h.edits.is_empty())
+            .collect::<Vec<_>>();
+        assert!(!repairs.is_empty());
+        for help in repairs {
+            let fixed = apply(&[("main.bnt", text)], &load.sources, help);
+            let (_, _, _, after) =
+                crate::typeck::test_support::check_files(&[("main.bnt", &fixed[0].1)], false);
+            assert!(
+                !after.iter().any(Diagnostic::is_error),
+                "{fixed:?}: {after:?}"
+            );
+        }
+    }
 }
 
 fn diagnostic(diags: &[Diagnostic], code: DiagCode) -> &Diagnostic {
@@ -121,6 +154,10 @@ fn syntax_repairs_remove_the_original_code_when_reparsed() {
     // 作成時の関門: 診断の修正案という独立の契約を、実際の字句・構文解析で
     // 確かめる。描画のテストは範囲と修正文字列の正しさを検出できない。
     let cases = [
+        (
+            DiagCode::E0201,
+            "function f() -> Unit\n bind m <- Map.empty[String, List[Integer]]()\n bind _ <- Map.set(m, \"x\", [1])\nend function",
+        ),
         (
             DiagCode::E0106,
             "function f() -> Unit\n bind x <- 1;\nend function",
@@ -239,6 +276,67 @@ fn syntax_repairs_remove_the_original_code_when_reparsed() {
 fn resolver_repairs_remove_the_original_code_when_reloaded() {
     let cases = [
         (
+            DiagCode::E0303,
+            "function f() -> Unit\n Benitoite.Unofficial.IO.Console.writeLine(\"ok\")\nend function",
+        ),
+        (
+            DiagCode::E0303,
+            "function f() -> Integer\n return Benitoite.Int.abs(-1)\nend function",
+        ),
+        (
+            DiagCode::E0303,
+            "record Task\n title: String\nend record\nfunction main() -> Unit\n bind _ <- Task.all([])\nend function",
+        ),
+        (
+            DiagCode::E0339,
+            "import Benitoite.Unofficial.IO.Console as C\nfunction main() -> Unit uses Console.Write\n C.writeLine(\"ok\")\nend function",
+        ),
+        (
+            DiagCode::E0339,
+            "import Benitoite.Unofficial.IO.File as Console\nfunction main() -> Result[Unit, String] uses Console.Write\n return Console.writeText(\"output.txt\", \"hello\") |> Result.mapError(_, IOError.message)\nend function",
+        ),
+        (
+            DiagCode::E0303,
+            "import Benitoite.Unofficial.Json as J\nfunction f() -> Unit\n bind _ <- Benitoite.Json.parse(\"{}\")\nend function",
+        ),
+        (
+            DiagCode::E0303,
+            "function f() -> Integer\n return String.charCount(\"abc\")\nend function",
+        ),
+        (
+            DiagCode::E0303,
+            "import Benitoite.String as S\nfunction f() -> Integer\n return S.charCount(\"abc\")\nend function",
+        ),
+        (
+            DiagCode::E0303,
+            "function f() -> Map[String, Integer]\n return Map.insert(Map.empty(), \"x\", 1)\nend function",
+        ),
+        (
+            DiagCode::E0302,
+            "function f() -> Integer\n return Int.abs(-1)\nend function",
+        ),
+        (
+            DiagCode::E0302,
+            "function f() -> String\n return Int.toString(1)\nend function",
+        ),
+        (DiagCode::E0301, "function f(x: Int) -> Unit\nend function"),
+        (
+            DiagCode::E0303,
+            "function f() -> Unit\n IO.Console.writeLine(\"ok\")\nend function",
+        ),
+        (
+            DiagCode::E0303,
+            "import Benitoite.Unofficial.IO.Console\nfunction f() -> Unit\n Benitoite.IO.Console.writeLine(\"ok\")\nend function",
+        ),
+        (
+            DiagCode::E0303,
+            "import Benitoite.Unofficial.IO.Console\nfunction f() -> Unit\n IO.Console.writeLine(\"ok\")\nend function",
+        ),
+        (
+            DiagCode::E0303,
+            "import Benitoite.Unofficial.IO.Console\nfunction f() -> Unit\n Console.println(\"ok\")\nend function",
+        ),
+        (
             DiagCode::E0301,
             "function total() -> Unit\nend function\nfunction f() -> Unit\n totla()\nend function",
         ),
@@ -287,6 +385,13 @@ fn resolver_repairs_remove_the_original_code_when_reloaded() {
         let (load, resolved, _) = resolve_files(&[("main.bnt", text)]);
         let diag = diagnostic(&resolved.diagnostics, code);
         validate_keys(diag);
+        if text.starts_with("import Benitoite.Unofficial.Json as J") {
+            assert_eq!(
+                diag.helps[0].message,
+                "`Benitoite.Unofficial.Json` is imported as `J`; use `J.`"
+            );
+            assert_eq!(diag.helps[0].edits.len(), 1);
+        }
         let help = diag
             .helps
             .iter()
@@ -309,12 +414,32 @@ fn resolver_repairs_remove_the_original_code_when_reloaded() {
             "{code:?}: {fixed:?}: {:?}",
             after.diagnostics
         );
+        if code == DiagCode::E0339 || text.starts_with("record Task") {
+            let (_, _, _, diagnostics) = crate::typeck::test_support::check_files(&files, true);
+            assert!(
+                !diagnostics.iter().any(Diagnostic::is_error),
+                "{code:?}: {fixed:?}: {diagnostics:?}"
+            );
+        }
     }
 }
 
 #[test]
 fn module_repairs_update_the_file_selected_by_the_edit() {
     for (code, files) in [
+        (
+            DiagCode::E0330,
+            vec![
+                (
+                    "main.bnt",
+                    "import Lib.Task\nfunction main() -> Unit\n bind _ <- Task.all([])\nend function",
+                ),
+                (
+                    "Lib/Task.bnt",
+                    "function all(x: Integer) -> Unit\nend function",
+                ),
+            ],
+        ),
         (
             DiagCode::E0323,
             vec![
@@ -372,6 +497,7 @@ fn module_repairs_update_the_file_selected_by_the_edit() {
         "import Benitoite.IO.Console",
         "import Benitoite.Unofficial.List",
         "import Benitoite.Lisst",
+        "import Benitoite.Http as H",
     ] {
         let (load, _) = load_files(&[("main.bnt", text)]);
         let diag = diagnostic(&load.diagnostics, DiagCode::E0321);
@@ -447,6 +573,36 @@ fn text_only_repairs_and_multiple_candidates_do_not_attach_edits() {
     }
     for (code, text, key) in [
         (
+            DiagCode::E0303,
+            "function f() -> Unit\n bind _ <- List.reduce([1], lambda(a, b) return a + b end lambda)\nend function",
+            "alias",
+        ),
+        (
+            DiagCode::E0303,
+            "function f() -> Unit\n bind _ <- List.count([1], lambda(x) return x > 0 end lambda)\nend function",
+            "alias",
+        ),
+        (
+            DiagCode::E0301,
+            "record Integer\n value: String\nend record\nfunction f(x: Int) -> Unit\nend function",
+            "renamed",
+        ),
+        (
+            DiagCode::E0301,
+            "function f() -> Unit\n bind _ <- Int\nend function",
+            "renamed",
+        ),
+        (
+            DiagCode::E0302,
+            "function f() -> Unit\n Int.noSuchMember()\nend function",
+            "renamed",
+        ),
+        (
+            DiagCode::E0303,
+            "record Console\n value: Integer\nend record\nfunction f() -> Unit\n IO.Console.writeLine(\"ok\")\nend function",
+            "import_member_as",
+        ),
+        (
             DiagCode::E0336,
             "function f(a: Integer, p: Pair[Integer, Integer]) -> Unit\n shadow Pair(a, b) <- p\nend function",
             "split",
@@ -514,4 +670,61 @@ fn deprecated_warning_preserves_the_message_without_guessing_a_replacement() {
     assert!(diag.helps.is_empty());
     assert!(diag.is_warning());
     assert!(codes::DiagCode::W0301.info().fixes.is_empty());
+}
+
+#[test]
+fn qualified_keyword_repairs_rename_the_module_and_member() {
+    // 作成時の関門: キーワードの旧名は名前解決に届かない。編集を読み直して
+    // 構文の受理と名前の解決の両方を確かめる（設計書 02-10「修正案」）。
+    for (reference, replacement, key) in [
+        ("Int.mod(5, 2)", "Integer.floorModulo(5, 2)", "renamed"),
+        ("Integer.mod(5, 2)", "Integer.floorModulo(5, 2)", "renamed"),
+        (
+            "Benitoite.Int.mod(5, 2)",
+            "Benitoite.Integer.floorModulo(5, 2)",
+            "renamed",
+        ),
+        (
+            "Option.bind(Option.Some(1), Option.Some)",
+            "Option.andThen(Option.Some(1), Option.Some)",
+            "alias",
+        ),
+    ] {
+        let text = format!("function f() -> Unit\n bind _ <- {reference}\nend function");
+        let diagnostics = syntax_diagnostics(&text);
+        let d = diagnostic(&diagnostics, DiagCode::E0216);
+        validate_keys(d);
+        let h = &d.helps[0];
+        assert!(has_template(
+            DiagCode::E0216
+                .info()
+                .extras
+                .iter()
+                .find(|(k, _)| *k == key)
+                .unwrap()
+                .1,
+            &h.message
+        ));
+        assert!(!h.edits.is_empty());
+        let mut sources = SourceTable::new();
+        sources.add(Source::new(
+            "main.bnt".into(),
+            SourceKind::User,
+            text.as_bytes().to_vec(),
+        ));
+        let fixed = apply(&[("main.bnt", &text)], &sources, h);
+        assert_eq!(fixed[0].1, text.replace(reference, replacement));
+        let (load, after, _) = resolve_files(&[("main.bnt", &fixed[0].1)]);
+        assert!(load.diagnostics.is_empty(), "{:?}", load.diagnostics);
+        assert!(after.diagnostics.is_empty(), "{:?}", after.diagnostics);
+    }
+    for text in [
+        "function f() -> Unit\n S.bind()\nend function",
+        "function mod() -> Unit\nend function",
+    ] {
+        let diagnostics = syntax_diagnostics(text);
+        let d = diagnostic(&diagnostics, DiagCode::E0216);
+        assert_eq!(d.helps[0].message, "choose another name");
+        assert!(d.helps[0].edits.is_empty());
+    }
 }

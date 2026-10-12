@@ -189,6 +189,8 @@ fn push_impl_fn(p: &mut Parser, depth: u32, out: &mut Vec<ImplFn>) -> PResult<()
     });
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_line(p: &mut Parser, from: usize) {
     if p.pos == from && !p.at(TokenKind::Eof) {
         p.advance();
@@ -245,7 +247,7 @@ pub(super) fn builtin_constraint(p: &mut Parser, name: &Name) -> Option<BuiltinC
 }
 
 #[cfg(test)]
-// 公開の parse の AST と診断を守る。仮の本体のテストでは新構文の意味を確かめられない。
+// 公開の parse の AST と診断を守る。型クラスの構文の意味を確かめる。
 // 本物の字句解析・改行判定を使い、テストの失敗は panic で表す（設計書 07-03、test-audit）。
 #[allow(
     clippy::unwrap_used,
@@ -446,23 +448,6 @@ mod tests {
         }
     }
     #[test]
-    fn all_standard_library_sources_parse_as_prelude() {
-        let document = include_str!(
-            "../../../../../docs/archive/2026-10-09-implement-first-release/10-interfaces/10-14-prelude-and-stdlib-sources.md"
-        );
-        let mut count = 0;
-        for block in document.split("```text file=src/prelude/stdlib/").skip(1) {
-            let (path, block) = block.split_once('\n').unwrap();
-            let source = block.split_once("```").unwrap().0;
-            let (out, lex) = parse_source(source, SourceKind::Prelude);
-            assert!(lex.is_empty(), "{path}: {lex:?}");
-            assert!(out.diagnostics.is_empty(), "{path}: {:?}", out.diagnostics);
-            count += 1;
-        }
-        assert_eq!(count, 27);
-    }
-
-    #[test]
     fn golden_programs_and_resource_specification_example_parse() {
         for src in [
             include_str!("../../../testdata/traits/f04_standard_trait.bnt"),
@@ -482,8 +467,8 @@ mod tests {
                 matches!(&out.module.decls.last().unwrap().item, Item::Fn(f) if f.name.text == "main")
             );
         }
-        // 仕様書の copyHeader は書き込みの関数を含む。構文の検査では版の範囲によらず
-        // 原文を読み、実行用のゴールデンテストは U1・U2 の関数だけを使う（実装プラン 10-14）。
+        // 仕様書の copyHeader は書き込みの関数を含む。構文の検査では、版の範囲によらず
+        // 仕様書の例の原文をそのまま解析する。
         let spec = include_str!("../../../../../docs/design/01-spec/01-10-resources.md");
         let src = spec
             .split_once("```text\n")

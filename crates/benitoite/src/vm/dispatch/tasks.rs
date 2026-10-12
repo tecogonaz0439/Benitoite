@@ -7,9 +7,10 @@ use crate::builtins::iface::{Spawn, SpawnMode, StateWait, TaskEndTarget};
 use crate::runtime::io::resources::ResourceState;
 use crate::vm::frame::{OtherKind, Segment, TaskStack};
 use crate::vm::handler::HandlerRecord;
-use crate::vm::state::{SpawnHistory, Switch};
+use crate::vm::state::{SpawnHistory, SpawnNode, Switch};
 use crate::vm::task::{SpawnWait, TaskEndWait, TaskObj, TaskResult, TaskState, WaitReason};
 use crate::vm::{DeadlockWaitKind, DeadlockWaiter, SpawnRecord, TaskId};
+use std::rc::Rc;
 
 fn object<'e>(state: &RunState, ctx: &NoGcCtx<'e>, id: TaskId) -> Result<Value<'e>, Stop> {
     state
@@ -49,7 +50,7 @@ pub(in crate::vm) fn start_main(state: &mut RunState, ctx: &NoGcCtx<'_>) -> Resu
         id,
         SpawnHistory {
             serial: 0,
-            history: Vec::new(),
+            chain: None,
         },
     );
     Ok(())
@@ -59,7 +60,7 @@ pub(in crate::vm) fn start_main(state: &mut RunState, ctx: &NoGcCtx<'_>) -> Resu
 pub(in crate::vm) fn slow_path_end(state: &mut RunState, initial: u32) -> Result<bool, Stop> {
     if state.budget.finish_slow(initial) == SlowPathEnd::Switch {
         // 回収だけで戻るときは仮想時間を進めない。時間の境界は待ちと予算の
-        // 終わりに限る（10-10「テストで差し替える部品」）。
+        // 終わりに限る。
         state.scheduling.switch = Some(Switch::Yield);
         Ok(true)
     } else {
@@ -76,8 +77,7 @@ pub(super) fn park(state: &mut RunState, reason: WaitReason) -> Result<Control, 
     Ok(Control::Return)
 }
 
-// 全欄を同じ区間の中で移す。TaskObj の空の欄と RunState の欄が二重の根にならない
-// （実装プラン R25「タスクの対象と実行中のタスク」）。
+// 全欄を同じ区間の中で移す。TaskObj の空の欄と RunState の欄が二重の根にならない。
 fn save(state: &mut RunState, ctx: &mut NoGcCtx<'_>, switch: Switch) -> Result<(), Stop> {
     state.scheduling.active = false;
     if matches!(switch, Switch::Done) {
@@ -111,31 +111,36 @@ fn save(state: &mut RunState, ctx: &mut NoGcCtx<'_>, switch: Switch) -> Result<(
 }
 fn restore(state: &mut RunState, ctx: &mut NoGcCtx<'_>, id: TaskId) -> Result<(), Stop> {
     let value = object(state, ctx, id)?;
-    ctx.host_mut::<TaskObj, _>(value, |task, _| {
-        state.stack = std::mem::take(&mut task.stack);
-        state.inherited = std::mem::take(&mut task.inherited);
-        state.returning = task.returning.take();
-        state.precall_done = task.precall_done.take();
-        state.budget = task.budget;
-        state.unwinding = match std::mem::replace(&mut task.state, TaskState::Ready) {
-            TaskState::Unwinding(mut work) => {
-                work.waiting = None;
-                Some(work)
-            }
-            TaskState::Ready | TaskState::Waiting(_) | TaskState::Done => None,
-        };
-    })
-    .ok_or_else(|| missing("task object missing"))?;
+    let waited_release = ctx
+        .host_mut::<TaskObj, _>(value, |task, _| {
+            state.stack = std::mem::take(&mut task.stack);
+            state.inherited = std::mem::take(&mut task.inherited);
+            state.returning = task.returning.take();
+            state.precall_done = task.precall_done.take();
+            state.budget = task.budget;
+            let (unwinding, waited_release) =
+                match std::mem::replace(&mut task.state, TaskState::Ready) {
+                    TaskState::Unwinding(mut work) => {
+                        work.waiting = None;
+                        (Some(work), None)
+                    }
+                    TaskState::Waiting(WaitReason::Release(resource)) => (None, Some(resource)),
+                    TaskState::Ready | TaskState::Waiting(_) | TaskState::Done => (None, None),
+                };
+            state.unwinding = unwinding;
+            waited_release
+        })
+        .ok_or_else(|| missing("task object missing"))?;
     state.current_task = id;
     state.scheduling.active = true;
     if ctx.collect_requested() {
         state.budget.interrupt();
     }
-    cancel::begin(state, ctx)?;
+    cancel::begin(state, ctx, waited_release)?;
     Ok(())
 }
 
-// 待ちと予算の終わりを同じ順序で処理する（実装プラン 10-10）。
+// 待ちと予算の終わりを同じ順序で処理する。
 #[cold]
 #[inline(never)]
 fn boundary(
@@ -159,6 +164,30 @@ fn boundary(
             io::expire_retry(program, state, ctx, rt, timer)?;
             state.scheduler.wake_if(task, WaitReason::Timer(timer));
         }
+    }
+    // 判定は期限の処理の後に行う。期限の時刻を過ぎた親は、上の expire が timed_out に記録して
+    // None を配送し、remove_timer で集合から外れる。残った親だけを期限の前に終えたものとして
+    // Some を配送する。外側の期限の満了が内側の判定待ちを取り消す場合も、同じ順で扱える。
+    // 配送は remove_timer で集合を変えるため、取り出してから生きている待ちを確かめ直す
+    // （TODO-197、設計書 02-08「タスクの起動と待ち方」）。
+    for parent in std::mem::take(&mut state.scheduling.pending_timeouts) {
+        let Some(value) = state.tasks.get(ctx, parent) else {
+            continue;
+        };
+        let task = ctx
+            .host::<TaskObj>(value)
+            .ok_or_else(|| missing("spawner object missing"))?;
+        if state.scheduling.stopping
+            || task.cancel_requested
+            || !task
+                .spawn_wait
+                .as_ref()
+                .is_some_and(|wait| matches!(wait.mode, SpawnMode::WithTimeout { .. }))
+        {
+            continue;
+        }
+        // true: 期限の判定を済ませたので、集合へ入れ直さずに結果を配送する。
+        cancel::deliver(state, ctx, parent, true)?;
     }
     Ok(())
 }
@@ -272,6 +301,9 @@ fn switch_inner(
                     begin_stop_all(state, ctx)?;
                 }
             }
+            crate::runtime::sched::parts::IdleWake::Failed(reason) => {
+                return Err(Stop::Internal(format!("event loop wait failed: {reason}")));
+            }
             crate::runtime::sched::parts::IdleWake::ScriptExhausted => {
                 return Err(missing("scheduler script exhausted while waiting"));
             }
@@ -281,7 +313,7 @@ fn switch_inner(
 
 // 既に全体を止めているときは、同じ失敗で停止を始め直しても進まない。
 // 残った所有と計数を手放し、最初の理由と既に集めた解放の失敗を保って終える
-// （実装プラン R25「cleanup の抜ける条件」、02-08「止める手順」）。
+// （02-08「止める手順」）。
 #[cold]
 #[inline(never)]
 pub(super) fn stop_without_progress(state: &mut RunState, ctx: &mut NoGcCtx<'_>, stop: Stop) {
@@ -349,6 +381,7 @@ pub(super) fn stop_without_progress(state: &mut RunState, ctx: &mut NoGcCtx<'_>,
     state.scheduler.clear_waiting();
     state.scheduler.clear_timers();
     state.scheduling.timed_out.clear();
+    state.scheduling.pending_timeouts.clear();
     state.scheduling.active = false;
     state.scheduling.switch = None;
     state.precall_done = None;
@@ -393,7 +426,8 @@ pub(super) fn dispatch(
     let decl =
         builtin_decl(reference.id).ok_or_else(|| missing("state builtin declaration missing"))?;
     let reply = {
-        let mut services = super::super::state::Stage1StateServices {
+        let mut services = super::super::state::BorrowedStateServices {
+            current_task: state.current_task,
             resources: &mut state.resources,
             scheduler: &mut state.scheduler,
         };
@@ -522,7 +556,7 @@ fn spawn_tasks<'e>(
                 base: 0,
                 size,
                 ret: None,
-                call_site: Some(at),
+                call_site: None,
                 boundary: proto.boundary,
                 chain_resume: None,
             });
@@ -539,20 +573,24 @@ fn spawn_tasks<'e>(
             .serial
             .checked_add(1)
             .ok_or_else(|| missing("spawn serial overflow"))?;
-        let mut history = vec![SpawnRecord {
+        let record = SpawnRecord {
             spawned_at: at,
-            spawner_frames: state
-                .stop_info(Stop::Internal(String::new()), Some(at))
-                .frames,
-        }];
-        if let Some(previous) = state.scheduling.spawns.get(&state.current_task) {
-            history.extend(previous.history.clone());
-        }
+            spawner_frames: state.frame_records(),
+        };
+        let history_parent = state
+            .scheduling
+            .spawns
+            .get(&state.current_task)
+            .and_then(|previous| previous.chain.clone());
+        let chain = Some(Rc::new(SpawnNode {
+            record,
+            parent: history_parent,
+        }));
         state.scheduling.spawns.insert(
             id,
             SpawnHistory {
                 serial: state.scheduling.serial,
-                history,
+                chain,
             },
         );
         rt.parts.picker.spawned(state.scheduling.serial, id);
@@ -656,7 +694,7 @@ pub(super) fn finish<'e>(
     value: Value<'e>,
 ) -> Result<Control, Stop> {
     if state.scheduling.main == Some(state.current_task) {
-        // テストの関数は `start_test` が置いた型で読む（実装プラン 10-18「テストの関数の実行」）。
+        // テストの関数は `start_test` が置いた型で読む（設計書 02-11「テストの実行」）。
         let kind = state.main_kind.unwrap_or(program.main_kind);
         state.scheduling.outcome = Some(main_outcome(kind, ctx, value)?);
     }
@@ -726,7 +764,7 @@ fn finish_task<'e>(
     if let Some((parent, _)) = spawner {
         if let Some(parent_value) = state.tasks.get(ctx, parent) {
             // 結果の所有は SpawnWait::children が続ける。取り消す候補の番号には
-            // 終わっていない子だけを残す（10-09「タスクの対象」、R39）。
+            // 終わっていない子だけを残す（設計書 02-08「タスクの切り替え」）。
             ctx.host_mut::<TaskObj, _>(parent_value, |task, _| {
                 remove_member(&mut task.spawned, &mut state.scheduling.child_positions, id)
             })
@@ -741,6 +779,7 @@ fn finish_task<'e>(
     state.scheduler.remove_waiting(id);
     state.scheduler.remove_task_timers(id);
     state.scheduling.timed_out.remove(&id);
+    state.scheduling.pending_timeouts.remove(&id);
     state.resources.remove_waiter(id);
     state.tasks.check_remove(id)?;
     state.tasks.remove(ctx, id);
@@ -749,7 +788,7 @@ fn finish_task<'e>(
     Ok(())
 }
 // members と spawned は所属と取り消しの集合であり、結果の順序は SpawnWait が持つ。
-// 位置を引いて末尾と入れ替えることで、終了ごとに生きている兄弟を走査しない（SECB6）。
+// 位置を引いて末尾と入れ替えることで、終了ごとに生きている兄弟を走査しない。
 fn remove_member(
     members: &mut Vec<TaskId>,
     positions: &mut std::collections::BTreeMap<TaskId, usize>,
@@ -787,7 +826,7 @@ fn deliver_all(state: &mut RunState, ctx: &mut NoGcCtx<'_>, parent: TaskId) -> R
         return cancel::discard_cancelled_parent(state, ctx, parent);
     }
     if wait.mode != SpawnMode::All {
-        return cancel::deliver(state, ctx, parent);
+        return cancel::deliver(state, ctx, parent, false);
     }
     let mut results = Vec::new();
     for child in &wait.children {
@@ -816,7 +855,7 @@ fn deliver_all(state: &mut RunState, ctx: &mut NoGcCtx<'_>, parent: TaskId) -> R
             .calls
             .last_mut()
             .ok_or_else(|| missing("spawner frame missing"))?;
-        // 結果の書き込みと pc の更新を回収なしで行う（実装プラン R25「回収の前の整理」）。
+        // 結果の書き込みと pc の更新を回収なしで行う。
         let reg = frame
             .base
             .checked_add(u32::from(dest))
@@ -945,7 +984,7 @@ fn deadlock(state: &RunState, ctx: &NoGcCtx<'_>) -> Result<super::super::StopInf
                 kind,
                 at,
                 call_sites: frames.iter().map(|f| f.call_site).collect(),
-                spawns: spawn.history.clone(),
+                spawns: spawn.records(),
             },
         ));
     }
@@ -970,6 +1009,7 @@ pub(super) fn begin_stop_all(state: &mut RunState, ctx: &mut NoGcCtx<'_>) -> Res
     state.scheduling.expire_io = true;
     state.scheduling.deliveries.clear();
     state.scheduling.timed_out.clear();
+    state.scheduling.pending_timeouts.clear();
     let ids: Vec<_> = state
         .tasks
         .entries

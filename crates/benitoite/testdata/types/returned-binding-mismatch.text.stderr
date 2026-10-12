@@ -1,0 +1,14 @@
+error[E0401]: mismatched types
+  --> testdata/types/returned-binding-mismatch.bnt:4:10
+   |
+ 4 |   return s
+   |          ^ expected `Unit`, found `String`
+   |
+  ::: testdata/types/returned-binding-mismatch.bnt:2:21
+   |
+ 2 | function probe() -> Unit
+   |                     ---- expected because of this
+   |
+   = note: the returned value must match the declared return type
+
+error: could not check testdata/types/returned-binding-mismatch.bnt due to 1 previous error

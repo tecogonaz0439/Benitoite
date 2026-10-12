@@ -6,18 +6,6 @@ use crate::vm::unwind::{
     self, ReleaseLog, ReturnDest, ReturnStage, ReturnWork, UnwindCause, UnwindStep, UnwindWork,
 };
 
-#[cold]
-#[inline(never)]
-pub(super) fn resume(
-    program: &CompiledProgram,
-    state: &mut RunState,
-    ctx: &mut NoGcCtx<'_>,
-    interrupt: Option<&AtomicBool>,
-) -> Option<LoopExit> {
-    // 命令の局所を読む前に辿りを再開する。戻りへの接続も一つの冷たい呼び出しに閉じる（実装プラン R21）。
-    handlers::resume_return(program, state, ctx, interrupt)
-}
-
 pub(super) fn begin_traverse(state: &mut RunState, segments: Vec<Segment>, cause: UnwindCause) {
     state.unwinding = Some(UnwindWork {
         cause,
@@ -204,7 +192,7 @@ fn advance_work(
             let step = match result {
                 Ok(step) => step,
                 Err(stop) if cause == UnwindCause::Stop => {
-                    // 元の停止理由を保つ。不具合の説明は StopEnd に置けない（実装プラン R21）。
+                    // 元の停止理由を保つ。不具合の説明は StopEnd に置けない。
                     if let Stop::Runtime(RuntimeError::ReleaseFailed(failures)) = stop {
                         work.log.failures.extend(failures);
                     }
@@ -243,7 +231,7 @@ fn advance_work(
         }
         None => {
             if let Some((segment, _)) = work.segments.pop() {
-                // 枠ごとに計数を減らし終えた空の区画を除き、一つ下の区画へ進む（実装プラン R21）。
+                // 枠ごとに計数を減らし終えた空の区画を除き、一つ下の区画へ進む。
                 ctx.discard(segment);
             }
         }
@@ -384,8 +372,7 @@ pub(super) fn cleanup(state: &mut RunState, ctx: &mut NoGcCtx<'_>) -> LoopExit {
                             .shrink(segment.frame_count(), segment.reg_count());
                         ctx.discard(segment);
                     } else {
-                        // 進む枠も辿りも失った不整合では、同じ Err を繰り返さず終える
-                        // （実装プラン R25「cleanup の抜ける条件」）。
+                        // 進む枠も辿りも失った不整合では、同じ Err を繰り返さず終える。
                         let failures = state
                             .unwinding
                             .take()

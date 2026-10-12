@@ -1,4 +1,4 @@
-//! 中断の待ちと全タスクの解放（実装プラン R28、設計書 02-08「止める手順」）。
+//! 中断の待ちと全タスクの解放（設計書 02-08「止める手順」）。
 use super::*;
 use crate::builtins::iface::{IoReply, OsResource, builtin};
 use crate::runtime::io::ops::{Completion, WorkerJob, execute_job};

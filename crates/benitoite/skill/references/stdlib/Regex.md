@@ -4,7 +4,8 @@ Status: unofficial. Import it with `import Benitoite.Unofficial.Regex`. When the
 
 Refer to its declarations as `Regex.<name>`, for example `Regex.compile`.
 
-Regular expressions with matching time linear in the input. The types `Pattern` and `Match` are built in.
+Regular expressions. A single match (`isMatch`, `find`, `replaceFirst`) takes time proportional to the product of the input length and pattern size in the worst case.
+Repeated matching (`findAll`, `replaceAll`, `replaceAllWith`, `split`) can take time proportional to the square of the input length times the pattern size in the worst case. The types `Pattern` and `Match` are built in.
 
 ```benitoite
 public function compile(source: String) -> Result[Pattern, String]

@@ -5,6 +5,13 @@ use std::path::PathBuf;
 
 use crate::cli::DiagFormat;
 
+/// パスを受け取る補助のコマンド（設計書 06-01「サブコマンドの振る舞い」）。
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum PathTool {
+    Test,
+    Fmt,
+}
+
 /// 解釈した `test`・`fmt` のコマンドライン。
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct PathArgs {
@@ -19,7 +26,7 @@ pub struct PathArgs {
     pub paths: Vec<PathBuf>,
 }
 
-/// 使い方の誤りの文（設計書 02-10「文言の言語」）。ほかの誤りの文は 10-13 の `cli::text` を使う。
+/// 使い方の誤りの文（設計書 02-10「文言の言語」）。ほかの誤りの文は `cli::text` を使う。
 pub mod text {
     /// パスが一つもない
     pub const MISSING_PATH: &str = "missing path";
@@ -30,17 +37,15 @@ pub mod text {
 use std::ffi::OsString;
 use std::path::Path;
 
+use crate::cli::parse_size;
 use crate::cli::text as cli_text;
-use crate::cli::{ToolCommand, parse_size};
 
-/// `benitoite test|fmt` の後の引数を解釈する。`tool` は `Test` か `Fmt`（`skill` は CLI からこの関数を通らない）。
-/// 使い方の誤りは、10-13 の `cli::text::USAGE_ERROR` の `{detail}` に埋める 1 行を返す。
-pub fn parse_path_args(tool: ToolCommand, args: Vec<OsString>) -> Result<PathArgs, String> {
+/// `benitoite test|fmt` の後の引数を解釈する。
+/// 使い方の誤りは、`cli::text::USAGE_ERROR` の `{detail}` に埋める 1 行を返す。
+pub fn parse_path_args(tool: PathTool, args: Vec<OsString>) -> Result<PathArgs, String> {
     let command = match tool {
-        ToolCommand::Test => "test",
-        ToolCommand::Fmt => "fmt",
-        // `skill` はこの関数を使わない（作業 D03 の手順 1）。名前だけを与え、同じ規則で解釈する。
-        ToolCommand::Skill => "skill",
+        PathTool::Test => "test",
+        PathTool::Fmt => "fmt",
     };
     let mut parsed = PathArgs {
         diagnostics: DiagFormat::Text,
@@ -52,7 +57,7 @@ pub fn parse_path_args(tool: ToolCommand, args: Vec<OsString>) -> Result<PathArg
     let mut seen: Vec<String> = Vec::new();
     for arg in args {
         let value = arg.to_string_lossy().into_owned();
-        // `-` で始まる引数はすべてオプションとして読む（10-17「`test` と `fmt` のコマンドライン」）。
+        // `-` で始まる引数はすべてオプションとして読む（設計書 06-01「コマンドラインの形」）。
         if !value.starts_with('-') {
             parsed.paths.push(PathBuf::from(arg));
             continue;
@@ -61,10 +66,8 @@ pub fn parse_path_args(tool: ToolCommand, args: Vec<OsString>) -> Result<PathArg
             .split_once('=')
             .map_or((value.as_str(), None), |(n, v)| (n, Some(v)));
         let accepted: &[&str] = match tool {
-            ToolCommand::Fmt => &["--diagnostics", "--check"],
-            ToolCommand::Test | ToolCommand::Skill => {
-                &["--diagnostics", "--max-call-stack", "--deny-warnings"]
-            }
+            PathTool::Fmt => &["--diagnostics", "--check"],
+            PathTool::Test => &["--diagnostics", "--max-call-stack", "--deny-warnings"],
         };
         if !accepted.contains(&name) {
             return Err(
@@ -108,7 +111,7 @@ pub fn parse_path_args(tool: ToolCommand, args: Vec<OsString>) -> Result<PathArg
 /// ディレクトリの下のすべての `.bnt` のファイルを、パスの辞書順に並べて返す（06-01「ディレクトリの指定（初回リリース版）」）。
 /// シンボリックリンクは辿らず、返す並びにも含めない。読めないディレクトリがあれば、そのパスと理由を返す。
 pub fn bnt_files(dir: &Path) -> Result<Vec<PathBuf>, (PathBuf, std::io::Error)> {
-    // 実行時の入れ子の深さに依らないよう、明示の積み重ねで辿る（00-02「再帰の深さ」）。
+    // 実行時の入れ子の深さに依らないよう、明示の積み重ねで辿る（AGENTS.md「実装の規約」の「再帰の深さ」）。
     let mut files = Vec::new();
     let mut pending = vec![dir.to_path_buf()];
     while let Some(current) = pending.pop() {
@@ -116,9 +119,9 @@ pub fn bnt_files(dir: &Path) -> Result<Vec<PathBuf>, (PathBuf, std::io::Error)> 
         for entry in entries {
             let entry = entry.map_err(|e| (current.clone(), e))?;
             let path = entry.path();
-            // シンボリックリンクは辿らず集めない（設計書 06-01「`fmt` のコマンドライン（初回リリース版）」）。`symlink_metadata` はリンクそのものを見る。
-            let metadata = std::fs::symlink_metadata(&path).map_err(|e| (path.clone(), e))?;
-            let file_type = metadata.file_type();
+            // シンボリックリンクは辿らず集めない（設計書 06-01「`fmt` のコマンドライン（初回リリース版）」）。
+            // `DirEntry::file_type` はリンクを辿らず、リンクそのものの種類を返す。
+            let file_type = entry.file_type().map_err(|e| (path.clone(), e))?;
             if file_type.is_dir() {
                 pending.push(path);
             } else if file_type.is_file() && path.extension().is_some_and(|ext| ext == "bnt") {

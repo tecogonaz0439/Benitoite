@@ -1,0 +1,9 @@
+error[E0104]: invisible control character U+202E is not allowed
+  --> testdata/lexical/bidi_in_string.bnt:4:18
+   |
+ 4 |   bind _ <- "left\u{202E}right"
+   |                  ^^^^^^^^
+   |
+   = help: to include it in a value, write the escape `\u{202E}` in a string or character literal
+
+error: could not check testdata/lexical/bidi_in_string.bnt due to 1 previous error

@@ -17,14 +17,14 @@ use crate::vm::{InstrRef, RequestId, TaskId};
 pub struct Request {
     pub id: RequestId,
     pub task: TaskId,
-    /// 操作（10-11 の `io` の権限の組み込みの関数）
+    /// 操作（`io` の権限の組み込みの関数。設計書 02-08「組み込みの関数の呼び出し」）
     pub op: &'static BuiltinDecl,
-    /// 呼び出しの命令。引数と結果のレジスタは、この命令の被演算子（10-07 の
-    /// `CompiledProgram::builtin_call_operands`）で決まる
+    /// 呼び出しの命令。引数と結果のレジスタは、この命令の被演算子を読む
+    /// `CompiledProgram::builtin_call_operands` で決まる（設計書 02-07「命令」）。
     pub site: InstrRef,
 }
 
-/// 外部の操作に移る前の要求の段階（本章の段階の表）。
+/// 外部の操作に移る前の要求の段階（設計書 02-09「IO 実行器」）。
 #[derive(Debug)]
 pub enum RequestPhase {
     /// 送り出しの列にある
@@ -87,7 +87,7 @@ pub struct DirectDispatcher;
 #[derive(Clone, Copy, Debug, Default)]
 pub struct RequestDispatcher;
 
-/// 標準入力はリソースの表に載らないので、貸し出しの待ちだけに予約番号を使う（実装プラン R26）。
+/// 標準入力はリソースの表に載らないので、貸し出しの待ちだけに予約番号を使う。
 pub(crate) const STDIN_LEND: ResourceId = ResourceId(u64::MAX);
 
 impl DispatchQueue {
@@ -122,7 +122,7 @@ impl DispatchQueue {
     }
     /// 応答の仕事と要求を、段階を付けて戻す。
     pub fn park_request(&mut self, req: Request, phase: RequestPhase) {
-        // VM が先に確かめる。凍結した戻り値では不具合を返せない（実装プラン R26）。
+        // VM が先に確かめる。戻り値では不具合を返せない。
         if self.check_park_request(&req).is_err() {
             debug_assert!(false, "request already live");
             return;
@@ -200,8 +200,8 @@ impl Dispatcher for RequestDispatcher {
 
 #[cfg(test)]
 mod tests {
-    // 関門: 番号の失効と Outstanding の再通知は、部品の独立した契約である（R26）。
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // 関門: 番号の失効と Outstanding の再通知は、部品の独立した契約である。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(clippy::unwrap_used, clippy::indexing_slicing)]
     use super::*;
     use crate::bytecode::program::ProtoIdx;

@@ -1,7 +1,7 @@
 //! 実際のシグナルから停止・出力・終了状態までを別プロセスで確かめる
 //! （設計書 07-03「中断の要求のテスト（初回リリース版）」）。
 #![cfg(unix)]
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::fs;
@@ -31,7 +31,7 @@ impl Directory {
                 std::process::id()
             ));
             // 時刻の分解能で名前が重なっても、作成に成功したテストだけが使う。
-            // create_dir_all では既存のディレクトリを共有してしまう（R31）。
+            // create_dir_all では既存のディレクトリを共有してしまう。
             match fs::create_dir(&path) {
                 Ok(()) => return Self(path.canonicalize().unwrap()),
                 Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
@@ -49,7 +49,7 @@ impl Drop for Directory {
 }
 
 // 待ちの上限を超えたときも、アサーションが失敗したときも子を kill して回収する。
-// パイプを読むスレッドは、子が閉じた後で完了の channel に結果を返す（実装プラン R31）。
+// パイプを読むスレッドは、子が閉じた後で完了の channel に結果を返す。
 struct Process {
     child: Child,
     ready: Receiver<Vec<u8>>,
@@ -217,7 +217,7 @@ fn interrupted(source: &str, signal: &str, hold_stdout: bool, expected_stdout: &
     }
 }
 
-// 関門: API に印を渡す R28 のテストでは、実際のシグナル登録とイベントループの
+// 関門: API に印を渡すテストでは、実際のシグナル登録とイベントループの
 // 起こしを通らない。五つの独立した停止の契約を CLI の境界で確かめる（設計書 07-03「中断の要求のテスト（初回リリース版）」）。
 #[test]
 fn sigint_interrupts_stdin_and_preserves_output_after_the_ready_line() {
@@ -281,6 +281,42 @@ end function
     // 02-09「出力のバッファ」）。
 }
 
+// List.sort の後に呼び出しも待ちも置かないため、VM の切り替えの位置だけでは印を読めない。
+// 最後の転送が終わる前の SIGINT を終了状態に反映する契約を、実際のシグナルで確かめる
+// （設計書 02-09「中断の要求」、07-03「中断の要求のテスト（初回リリース版）」）。
+fn interrupt_after_sort(return_type: &str, return_value: &str) {
+    // 印を読むのは最後の転送の後なので、結果はソートの長さによらない。回収の強制（機能
+    // `gc-stress`）では確保ごとにヒープ全体を辿り、リストを作る時間が長さの 2 乗で延びて
+    // 準備の行が待ちの上限に間に合わないので、短くする。
+    let count = if cfg!(feature = "gc-stress") {
+        100
+    } else {
+        200_000
+    };
+    let body = "x".repeat(2 * 1024 * 1024);
+    let source = format!(
+        r#"
+function main() -> {return_type} uses Console.Write
+ bind xs <- List.map(List.range(0, {count}), lambda(i) return (i * 7919) mod 1000003 end lambda)
+ Console.write("ready\n{body}")
+ bind _ <- List.sort(xs)
+ return {return_value}
+end function
+"#
+    );
+    interrupted(&source, "-INT", true, format!("ready\n{body}").as_bytes());
+}
+
+#[test]
+fn sigint_at_sort_end_overrides_a_unit_return() {
+    interrupt_after_sort("Unit", "()");
+}
+
+#[test]
+fn sigint_at_sort_end_overrides_a_result_error_return() {
+    interrupt_after_sort("Result[Unit, String]", "Result.Error(\"x\")");
+}
+
 #[test]
 fn sigint_interrupts_with_an_open_reader() {
     interrupted(
@@ -303,7 +339,7 @@ end function
 #[test]
 fn second_sigint_terminates_without_waiting_for_blocked_stdout() {
     // 一つの write に準備行と 2 MiB を含める。準備行を受け取る時点で大きな出力の
-    // 転送が始まっており、親は行の後を読まないので転送が完了しない（実装プラン R31）。
+    // 転送が始まっており、親は行の後を読まないので転送が完了しない。
     let source = format!(
         r#"
 function main() -> Unit uses Console.Write,Clock.Time
@@ -319,7 +355,7 @@ end function
         // CLI は一度目の受信を外へ通知せず、標準出力も塞いでいるので、受信を確認してから
         // 二度目を送る手段がない。kill の成功は受信の確認ではなく、保留中の同じシグナルが
         // まとまる環境ではこのテストが揺れる制約が残る。時間待ちで受信済みと仮定しない。
-        // 一度目の停止手順と終了コード 130 は、上の四件が両 IO 方式で別途確かめる（R31）。
+        // 一度目の停止手順と終了コード 130 は、上の四件が両 IO 方式で別途確かめる。
         process.signal("-INT");
         process.signal("-INT");
         let status = process.wait();
@@ -333,4 +369,24 @@ end function
         let (_, stderr) = process.output();
         assert!(stderr.is_empty(), "{}", String::from_utf8_lossy(&stderr));
     }
+}
+
+// 64 KiB 以上を一度に書いて転送を始め、その直後の照合の間にシグナルを送る。
+// 待ちを挟まないので、照合の前の待ちだけで通らない（設計書 03-08「Regex」）。
+#[test]
+fn sigint_interrupts_regex_find_all_between_matches() {
+    let body = "x".repeat(2 * 1024 * 1024);
+    let source = format!(
+        r#"
+import Benitoite.Unofficial.Regex
+function main() -> Result[Unit, String] uses Console.Write
+  bind pattern <- try Regex.compile(".*[^A-Z]|[A-Z]")
+  bind input <- String.repeat("A", 1048576)
+  Console.write("ready\n{body}")
+  bind _ <- Regex.findAll(pattern, input)
+  return Result.Ok(())
+end function
+"#
+    );
+    interrupted(&source, "-INT", true, format!("ready\n{body}").as_bytes());
 }

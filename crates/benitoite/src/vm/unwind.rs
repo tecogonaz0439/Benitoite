@@ -63,7 +63,7 @@ impl Trace for UnwindWork {
 
 impl UnwindWork {
     /// 辿る途中の状態を原因 `cause`（`Stop`、または E-DropRel を辿り終えた後の `Cancel`）へ移す
-    /// （10-09「既に枠を降ろしているタスクの扱い」）。辿る位置、区画、`log` は保つ。`rest` はタスクの
+    /// （設計書 02-08「取り消し」）。辿る位置、区画、`log` は保つ。`rest` はタスクの
     /// 積み重ねに残る区画であり、辿る区画の下に加える。全体の停止では子のタスクの終わりの待ちを外し、
     /// 外したら `true` を返す（呼び出し側がタスクを進められるタスクに戻す）。
     pub fn escalate(&mut self, rest: TaskStack, cause: UnwindCause) -> bool {
@@ -84,7 +84,7 @@ impl UnwindWork {
     }
 }
 
-/// 戻りの処理の段階（10-09「戻りの再開状態」）。
+/// 戻りの処理の段階。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum ReturnStage {
     /// `RETURN`: 降ろす呼び出しの枠に属する解放の枠を処理している。呼び出しの枠はまだ降ろしていない
@@ -247,7 +247,7 @@ pub fn unwind_cell_update<'e>(
         .as_mut()
         .ok_or_else(|| super::state::internal("cell update return work missing"))?;
     // 確かめと書き込みの間に安全点を置かず、UPDATE の結果は Unit に替える
-    // （設計書 02-08「可変のセル」、実装プラン 10-09「戻りの再開状態」）。
+    // （設計書 02-08「可変のセル」）。
     ctx.cell_set(cell, ctx.load(&work.value))?;
     ctx.store(&mut work.value, crate::runtime::heap::Value::Unit);
     Ok(UnwindStep::Popped)
@@ -306,8 +306,8 @@ pub fn unwind_drop<'e>(
     .ok_or_else(|| super::state::internal("continuation required"))?
 }
 
-// R39 で、所属タスクへの要求の記録と子の取り消しを共通の入口へ接続した
-// （実装プラン R21「E-DropRel」、設計書 02-08「取り消し」）。
+// 所属タスクへの要求の記録と子の取り消しには共通の入口を使う
+// （設計書 02-08「取り消し」）。
 fn cancel_handle_members(
     ctx: &mut NoGcCtx<'_>,
     rt: &mut RunState,
@@ -317,9 +317,9 @@ fn cancel_handle_members(
     super::dispatch::tasks::cancel::handle_members(ctx, rt, at, frame)
 }
 
-/// E-DropRel の終了時に読む取り消しの印。R39 でタスクの印に接続した（実装プラン R21・R39）。
+/// E-DropRel の終了時に読む取り消しの印。タスクの印を読む。
 pub(crate) fn cancel_requested(ctx: &NoGcCtx<'_>, rt: &RunState) -> bool {
-    // traverse が checked_requested を先に通すため、この失敗には到達しない（実装プラン R39）。
+    // traverse が checked_requested を先に通すため、この失敗には到達しない。
     match super::dispatch::tasks::cancel::checked_requested(ctx, rt) {
         Ok(requested) => requested,
         Err(_) => {

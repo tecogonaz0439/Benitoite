@@ -42,9 +42,8 @@
 - `e` が `Result.Error(x)` なら、`try e` を含む最も内側の関数かラムダの呼び出しを終え、`Result.Error(x)` を返す。`e` が `Option.None` なら、同じく `Option.None` を返す。関数から抜ける点は、`return`（[構文](01-02-syntax.md)の「`return`」）と同じである。
 - `Result` に `try` を使えるのは、最も内側の関数かラムダの戻り値の型が `Result[U, E]` で、`E` が `e` の `Result.Error` の型と等しい場合に限る。`Option` に `try` を使えるのは、戻り値の型が `Option[U]` の場合に限る。
 - `Result.Error` の型が違うとき（`IOError` と `String` など）は、自動では変換しない。`Result.mapError` で変換してから `try` を使う。この誤りの診断は、`Result.mapError` を使った書き方を修正案として示す。
-- `Result` と `Option` の間も自動では変換しない。`Option.okOr` などで変換する。
-  - 初回リリース版（`0.0.1`）の処理系には、この誤りの診断（E0441）の修正案が、存在しない関数 `Result.toOption` を示す誤りがある。`Result` から `Option` への変換は `Result.ok` で行う。規則は本節のとおりとし、処理系を直す（docs/todo の TODO-165）。
-- `lazy` のブロックの中には、内側のラムダの中を除き、`try` を書けない。`lazy` のブロックは、それを作った関数とは別の時点で評価されるからである（[評価意味論](01-08-evaluation.md)の「明示遅延（初回リリース版）」）。
+- `Result` と `Option` の間も自動では変換しない。`Option` から `Result` へは `Option.okOr`、`Result` から `Option` へは `Result.ok` で変換する。この誤りの診断は、この二つの関数で変換する書き方を修正案として示す。
+- `lazy` のブロックの中には、内側の `lambda … end lambda` の本体の中を除き、`try` を書けない。その中のプレースホルダを含む呼び出しの呼ぶ関数と引数は、この例外に当たらない（[構文](01-02-syntax.md)の「部分適用のプレースホルダ」）。`lazy` のブロックは、それを作った関数とは別の時点で評価されるからである（[評価意味論](01-08-evaluation.md)の「明示遅延（初回リリース版）」）。
 
 ```text
 import Benitoite.Unofficial.IO.File

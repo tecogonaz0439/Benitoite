@@ -1,5 +1,5 @@
 //! テストの関数一つの実行（`run_test`）の終わり方・終了状態・確認の失敗の記録を、本物の VM とランタイムで
-//! 確かめる（実装プラン D10「受け入れテスト」、10-18「テストの関数の実行」）。
+//! 確かめる（設計書 02-11「テストの実行」）。
 
 use super::*;
 use crate::builtins::iface::{IoReply, OsResource, builtin};
@@ -21,7 +21,7 @@ fn captured(bytes: &Arc<Mutex<Vec<u8>>>) -> String {
     String::from_utf8(bytes.lock().unwrap().clone()).unwrap()
 }
 
-// 関門: 10-18 の表の行ごとに、VM の結果を終わり方・終了状態・報告へ写す。`run_program` と分けた共通の手順の
+// 関門: VM の結果を終わり方・終了状態・報告へ写す（設計書 02-11「テストの実行」）。`run_program` と分けた共通の手順の
 // 取り違え（`main_kind` で戻り値を読む、確認の失敗以外の欄を埋める）を、テストの関数の戻り値の型ごとに捕まえる。
 #[test]
 fn test_functions_end_as_the_runner_table_requires() {
@@ -74,7 +74,7 @@ end function
             assert!(end.check_failure.is_none(), "{name}");
             assert!(end.release_failures.is_empty(), "{name}");
         }
-        // 表にない原型は枠を積まずに処理系の不具合として終える（10-18 の `start_test`）。
+        // 表にない原型は枠を積まずに処理系の不具合として終える（設計書 02-11「テストの実行」）。
         let mut target = prepared.target("unitOk", MainKind::Unit);
         target.proto = crate::bytecode::program::ProtoIdx(u32::MAX);
         let end = run_test(&prepared.program, target, environment(mode).0);
@@ -85,7 +85,7 @@ end function
 }
 
 // 関門: 確認の失敗は、操作を呼んだ位置で止め、後の文を評価しない（02-11）。記録の位置は呼び出しの式、枠は
-// 失敗を見つけた時点のもの（10-18 の手順 4）。捕らえた出力は止める手順の後の最後の転送で届く。
+// 失敗を見つけた時点のもの（設計書 02-11「テストの実行」）。捕らえた出力は止める手順の後の最後の転送で届く。
 #[test]
 fn failed_check_stops_at_the_call_and_keeps_captured_output() {
     let source = r#"
@@ -129,7 +129,7 @@ end function
     }
 }
 
-// リソースの OS の依存だけを差し替え、close を失敗させる（10-10「テストで差し替える部品」と同じ考え方）。
+// リソースの OS の依存だけを差し替え、close を失敗させる（設計書 02-09「実行ごとの状態」）。
 #[derive(Debug)]
 struct FailingClose(String);
 impl OsResource for FailingClose {
@@ -225,7 +225,7 @@ end function
     }
 }
 
-// 関門: 起動したタスクの `Assert` の操作も同じ分岐を通る（10-18「`Assert.Check` の処理」の手順 2 の最後の段落）。
+// 関門: 起動したタスクの `Assert` の操作も同じ分岐を通る（設計書 02-11「テストの実行」）。
 // 最初のタスクだけで確かめる退行（起動したタスクで送り出しの列に置き、表の本体の `Stop::Internal` に達する）を、
 // 終わり方と起動の履歴で捕まえる。利用者のハンドラは組み込みの処理より先に受ける（手順 1）。
 #[test]
@@ -275,7 +275,39 @@ impl InterruptSource for Requested {
     }
 }
 
-// 関門: 中断の要求の終わり方は、テストの実行器が残りのテストを止める合図になる（10-18 の表）。テストの関数を
+// 呼び出しのないテストの関数も、中断として実行器に返す必要があるため、値で終わる
+// 場合を両 IO 方式で確かめる（設計書 02-09「中断の要求」、02-11「テストの実行」）。
+#[test]
+fn interrupt_request_overrides_a_test_value_without_calls() {
+    let prepared = prepare(
+        r#"
+@test
+function unit() -> Unit
+  return ()
+end function
+@test
+function error() -> Result[Unit, String]
+  return Result.Error("x")
+end function
+"#,
+    );
+    for mode in MODES {
+        for (name, kind) in [("unit", MainKind::Unit), ("error", MainKind::Result)] {
+            let (mut env, _) = environment(mode);
+            env.interrupt = Box::new(Requested(AtomicBool::new(true)));
+            env.parts = Some(ScheduleHandle::new([], false).parts());
+            let end = prepared.run(name, kind, env);
+            assert_eq!(end.run.end, EndKind::Interrupted, "{mode:?}: {name}");
+            assert_eq!(end.run.exit_code, EXIT_INTERRUPTED);
+            assert!(end.run.main_error.is_none());
+            assert!(end.run.reports.is_empty(), "{:?}", end.run.reports);
+            assert!(end.check_failure.is_none());
+            assert!(end.release_failures.is_empty());
+        }
+    }
+}
+
+// 関門: 中断の要求の終わり方は、テストの実行器が残りのテストを止める合図になる（設計書 02-11「テストの実行」）。テストの関数を
 // 最初のタスクにした実行でも、中断の読み口を VM に渡す経路が働くことを確かめる。
 #[test]
 fn interrupt_request_ends_a_test_as_interrupted() {

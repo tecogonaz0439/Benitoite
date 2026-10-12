@@ -25,7 +25,7 @@ Reads `text` as rows of fields separated by commas.
 public function parseWith(text: String, delimiter: Character) -> Result[List[List[String]], ParseError]
 ```
 
-Reads `text` as rows of fields separated by `delimiter`.
+Reads `text` as rows of fields separated by `delimiter`. `delimiter` must be an ASCII character other than `"`, CR, and LF.
 
 ```benitoite
 public function parseWithHeader(text: String) -> Result[List[Map[String, String]], ParseError]
@@ -43,4 +43,4 @@ Writes the rows as CSV, ending each row with a line feed.
 public function formatWith(rows: List[List[String]], delimiter: Character) -> String
 ```
 
-Writes the rows as CSV with `delimiter` between fields.
+Writes the rows as CSV with `delimiter` between fields. `delimiter` must be an ASCII character other than `"`, CR, and LF.

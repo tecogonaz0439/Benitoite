@@ -1,5 +1,5 @@
-//! 差し替えた時計と sleep の応答（実装プラン R29）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 差し替えた時計と sleep の応答（設計書 03-07「Clock」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic)]
 use super::super::runtime_test_support::*;
 use super::*;

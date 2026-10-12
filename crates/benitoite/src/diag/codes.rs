@@ -1,5 +1,5 @@
 //! 診断コードと文言の型板の表（設計書 02-10「診断コード」「文言の言語」「修正案」）。
-//! 番号の付け方と各コードを出す段は、実装プラン 10-02「診断コードの表」「コードの一覧」で定める。
+//! 番号の区分は設計書 02-10「診断コード」に従い、各コードの文言と報告する段をこの表にまとめる。
 
 use super::{ReportKind, Severity};
 
@@ -21,7 +21,7 @@ pub struct CodeInfo {
     pub explanation: &'static str,
 }
 
-/// 廃止したコード。番号を使い回さない（設計書 02-10「診断コード」、実装プラン 10-02「番号の付け方」）。
+/// 廃止したコード。番号を使い回さない（設計書 02-10「診断コード」）。
 pub const RETIRED: &[&str] = &[
     "E0111", "E0117", "E0205", "E0307", "E0308", "E0317", "E0444",
 ];
@@ -167,10 +167,12 @@ diag_codes! {
         "Decimal literals are decimal numbers followed by a lowercase `m`, such as `12.50m`.";
     E0125 Check "cannot write formatted file `{path}`" ""
         [reason: "{reason}", temp_left: "the temporary file `{temp}` could not be removed"]
-        "`benitoite fmt` writes the formatted source to a temporary file in the same directory and renames it over the original file. Writing or renaming failed, so the original file was left unchanged. Check the permissions of the file and its directory.";
+        "`benitoite fmt` writes the formatted source to a temporary file in the same directory and renames it over the original file. It refuses to replace a read-only file, a file with more than one hard link, or a file owned by another user. Writing or renaming failed or was refused, so the original file was left unchanged. Check the permissions, links, and owner of the file and its directory.";
 
     // ---- E02: 構文 ----
-    E0201 Check "expected {expected}, found {found}" "unexpected {found}" []
+    E0201 Check "expected {expected}, found {found}" "unexpected {found}"
+        [type_arguments: "call functions without type arguments, such as `Map.empty()`; write the type on the binding, such as `bind m: Map[String, Integer] <- Map.empty()`, and use `List.get` to read list elements"]
+        fix [type_arguments]
         "The parser found a token that cannot appear here.";
     E0202 Check "comparison operators cannot be chained" "second comparison"
         [and: "write the comparisons separately, such as `a < b and b < c`"]
@@ -193,8 +195,9 @@ diag_codes! {
         "Top-level functions are declared with a plain name. The module of a function is the file it is written in.";
     E0208 Check "the program is nested too deeply" "nesting limit of {limit} reached here" []
         "The parser limits the depth of nested syntax.";
-    E0209 Check "a function type with `uses` must be parenthesized here" ""
+    E0209 Check "a function type with `uses` must be parenthesized here" "read as part of the `uses` list"
         [paren: "write the function type in parentheses, such as `function((function() -> Unit uses Console.Write), List[Integer]) -> Unit`"]
+        fix [paren]
         "`uses` reads as many effect names as possible, so a function type with `uses` inside a list of types must be parenthesized.";
     E0210 Check "`_` cannot be a lambda parameter" ""
         [name: "use a name that starts with `_`, such as `_unused`"]
@@ -228,7 +231,10 @@ diag_codes! {
         fix [same_line]
         "A line break after the value of `match` ends the expression, so `with` must follow on the same line.";
     E0216 Check "`{word}` is a keyword and cannot be used as a name" "keyword used as a name"
-        [rename: "choose another name"]
+        [rename: "choose another name",
+         renamed: "`{old}` was renamed to `{new}` in 0.0.1",
+         alias: "use `{new}`"]
+        fix [renamed, alias]
         "Keywords cannot be used as names of variables, functions, or types.";
     E0217 Check "parenthesized lists of values are not tuples" ""
         [pair: "use `Pair`, such as `Pair(a, b)` or the type `Pair[A, B]`",
@@ -238,8 +244,8 @@ diag_codes! {
     E0218 Check "`{keyword}` cannot be used inside {context}" ""
         [lazy_body: "a `lazy` body produces one value; compute the value with an expression",
          guard: "a guard is a condition; check the value in the branch body instead",
-         lambda: "`{keyword}` is allowed inside a lambda written there"]
-        "`return` and `try` cannot leave a `lazy` body or a `match` guard, except inside a lambda written there.";
+         lambda: "`{keyword}` is allowed inside a `lambda ... end lambda` written there"]
+        "`return` and `try` cannot leave a `lazy` body or a `match` guard, except inside a `lambda ... end lambda` written there. The function and the arguments of a call with `_` placeholders are not exempt.";
     E0219 Check "`import` must come before other declarations" "import after a declaration"
         [first: "the first declaration is here"]
         "All `import` declarations are written at the start of the file.";
@@ -364,27 +370,44 @@ diag_codes! {
 
     // ---- E03: 名前、import、公開 ----
     E0301 Check "cannot find `{name}` in this scope" "not found"
-        [similar: "a similar name exists: {candidates}"]
-        fix [similar]
+        [similar: "a similar name exists: {candidates}",
+         renamed: "`{old}` was renamed to `{new}` in 0.0.1"]
+        fix [similar, renamed]
         "The name is not bound by a local binding, a function, or a constant visible here.";
     E0302 Check "cannot find `{name}`" "not found"
-        [similar: "a similar name exists: {candidates}"]
-        fix [similar]
+        [similar: "a similar name exists: {candidates}",
+         renamed: "`{old}` was renamed to `{new}` in 0.0.1"]
+        fix [similar, renamed]
         "The name before `.` must be a module imported in this file, a prelude module, a type, a record, a trait, or an effect.";
     E0303 Check "`{module}` has no member `{name}`" "not found in `{module}`"
         [similar: "a similar name exists: {candidates}",
-         length: "strings have no unit-less length; use `String.byteLength` (bytes) or `String.characterCount` (characters)",
-         slice: "use `String.byteSlice` (byte positions) or `String.characterSlice` (character positions)",
-         index_of: "use `String.byteIndexOf`, which returns a byte position",
+         length: "strings have no unit-less length; use `{module}.byteLength` (bytes) or `{module}.characterCount` (characters)",
+         slice: "use `{module}.byteSlice` (byte positions) or `{module}.characterSlice` (character positions)",
+         index_of: "use `{module}.byteIndexOf`, which returns a byte position",
          unwrap: "there is no `{name}`; use `{module}.unwrapOr` or `match`",
+         renamed: "`{old}` was renamed to `{module}.{new}` in 0.0.1",
+         alias: "use `{module}.{new}`",
+         import_member: "add `import {full}` and use `{local}.`",
+         use_imported: "`{full}` is imported as `{local}`; use `{local}.`",
+         import_member_as: "add `import {full} as <name>` and use that name, since `{local}` is already used in this file",
+         construct: "build a record with its field names, such as `{record}({fields})`",
+         members: "`{module}` has: {names}",
+         members_more: "`{module}` has: {names}, and {remaining} more",
+         shadowed: "`{first}` here is the {shadow_kind} declared in this file, which hides the prelude {prelude_kind} `{first}`",
+         shadowing: "`{first}` declared here",
+         shadowed_import: "`{first}` here is the module imported in this file, which hides the prelude {prelude_kind} `{first}`",
+         imported: "`{first}` imported here",
+         prelude: "write `Benitoite.{first}` to use the prelude {prelude_kind}",
          not_reexported: "names imported by `{module}` are not visible through it; import that module directly"]
-        fix [similar]
+        fix [similar, renamed, alias, import_member, use_imported, prelude]
         "The module, type, record, trait, or effect does not define this name.";
-    E0304 Check "`{name}` is {found_kind}, not {expected_kind}" "" []
+    E0304 Check "`{name}` is {found_kind}, not {expected_kind}" ""
+        [construct: "build a record with its field names, such as `{record}({fields})`"]
         "Each position accepts only one kind of name.";
     E0305 Check "the name `{name}` is defined more than once" "redefined here"
         [first: "first defined here",
-         import: "give the import another name with `as`, such as `{suggestion}`"]
+         import: "give the import another name with `as`, such as `{suggestion}`",
+         rename: "rename the declaration `{name}`; the module `{module}` declares built-in effects and cannot be renamed with `as`"]
         fix [import]
         "Types, records, type aliases, traits, effects, and import names share one namespace in a module.";
     E0306 Check "`{name}` is defined more than once" "redefined here"
@@ -402,9 +425,9 @@ diag_codes! {
     E0312 Check "the type parameter `{name}` is declared more than once" "redeclared here"
         [first: "first declared here"]
         "Type parameter names must be unique within a list.";
-    E0313 Check "the type parameter `{name}` has the same name as a top-level declaration" ""
-        [declared: "the top-level declaration is here"]
-        "Type parameters and effect variables cannot reuse top-level uppercase names or `Benitoite`.";
+    E0313 Check "the type parameter `{name}` has the same name as a top-level declaration, an imported name, or a prelude name" ""
+        [declared: "the other declaration is here"]
+        "Type parameters and effect variables cannot reuse the module's top-level uppercase names, imported names, prelude names, or `Benitoite`.";
     E0314 Check "`{name}` is an effect and cannot be used as a type" ""
         [uses_only: "effects and effect variables can only appear after `uses`"]
         "Effect names and effect variables are not types.";
@@ -428,10 +451,11 @@ diag_codes! {
         "The starting module is not a library. Move the shared declarations to another module.";
     E0321 Check "`{module}` is not a standard library module" ""
         [similar: "a similar module exists: {candidates}",
+         last_segment: "use {candidates}",
          root_file: "names that start with `Benitoite` always refer to the standard library, so `{path}` cannot be imported",
          unofficial: "this module is unofficial in this version and is imported as `{suggestion}`",
          standard: "this module is a standard module in this version and is imported as `{suggestion}`"]
-        fix [similar, unofficial, standard]
+        fix [similar, last_segment, unofficial, standard]
         "Modules whose names start with `Benitoite` are the standard library modules. Unofficial modules are imported with `Unofficial` after `Benitoite`, such as `Benitoite.Unofficial.IO.Console`.";
     E0322 Check "modules import each other in a cycle" "this import closes the cycle"
         [member: "part of the cycle",
@@ -467,8 +491,13 @@ diag_codes! {
         "Everything a public declaration exposes, including types, traits, and effects, must also be public.";
     E0330 Check "`{name}` is not public in `{module}`" "not public"
         [declared: "declared here",
-         make_public: "mark `{name}` as `public` in `{module}`"]
-        fix [make_public]
+         shadowed: "`{first}` here is the {shadow_kind} declared in this file, which hides the prelude {prelude_kind} `{first}`",
+         shadowing: "`{first}` declared here",
+         shadowed_import: "`{first}` here is the module imported in this file, which hides the prelude {prelude_kind} `{first}`",
+         imported: "`{first}` imported here",
+         prelude: "write `Benitoite.{first}` to use the prelude {prelude_kind}",
+         make_public: "mark `{name}` as `public` in `{declared_in}`"]
+        fix [prelude, make_public]
         "Only `public` declarations of another module can be used.";
     E0331 Check "the constructor `{name}` must be written with its type name" ""
         [qualify: "write `{suggestion}`"]
@@ -503,10 +532,16 @@ diag_codes! {
         [hidden: "`{name}` is bound here",
          rename: "choose another name"]
         "Lambda parameters, pattern variables of branches, handler clause parameters, and `with` bindings cannot hide visible local names.";
+    E0339 Check "the module `{module}` declares built-in effects and cannot be renamed with `as`" "renamed here"
+        [remove: "remove `as {name}` and replace references to `{name}.` with `{original}.`"]
+        fix [remove]
+        "Modules that declare built-in effects cannot be renamed, so that `uses` always shows the original effect names, such as `Console.Write` and `File.Write`.";
 
     // ---- E04: 型 ----
     E0401 Check "mismatched types" "expected `{expected}`, found `{found}`"
         [declared: "expected because of this",
+         escaped: "`{param}` is a type parameter of the operation `{operation}`; a value of this type cannot leave the clause",
+         clause: "the clause of `{operation}`",
          expanded: "the expanded expected type is `{expanded}`",
          because_call_arg: "argument {index} must match the parameter type of the called function",
          because_if_branches: "the branches of `if` must have compatible types",
@@ -531,7 +566,9 @@ diag_codes! {
          because_call: "the called value must be a function",
          float_literal: "write a floating-point literal such as `{literal}.0`",
          to_string: "convert the value with `{function}`, or use string interpolation such as `\"${x}\"`",
-         to_string_any: "convert the other value to a `String` before joining it with `+`, or use string interpolation"]
+         to_string_any: "convert the other value to a `String` before joining it with `+`, or use string interpolation",
+         shadowed: "`{shadowed}` here is a type declared in a user module, which hides the prelude name `{shadowed}`",
+         prelude_type: "write `Benitoite.{shadowed}` for the prelude type"]
         fix [float_literal]
         "Two types that must be equal are different.";
     E0402 Check "this function takes {expected} argument(s) but {found} were supplied" ""
@@ -553,7 +590,8 @@ diag_codes! {
         "Arithmetic and ordering operators work only on the listed basic types.";
     E0406 Check "values of type `{ty}` cannot be compared with `{op}`" ""
         [why: "types that contain functions, `IOError`, or other opaque types cannot be compared with `=` or `<>`",
-         constraint: "add the constraint `equality` to the type parameter, such as `[{param}: equality]`"]
+         constraint: "add the constraint `equality` to the type parameter, such as `[{param}: equality]`",
+         operation: "add the constraint `{constraint}` to the type parameter `{declared}` in the declaration of the operation `{operation}`"]
         fix [constraint]
         "Equality is defined only for types without functions and opaque standard library types.";
     E0407 Check "the type of this expression cannot be determined" ""
@@ -564,7 +602,9 @@ diag_codes! {
         "Integer literals must fit in a 64-bit signed integer.";
     E0409 Check "floating-point literal is too large for `Float`" "" []
         "The literal rounds to infinity.";
-    E0410 Check "`{name}` expects {expected} type argument(s) but {found} were given" "" []
+    E0410 Check "`{name}` expects {expected} type argument(s) but {found} were given" ""
+        [shadowed: "`{shadowed}` here is a type declared in a user module, which hides the prelude name `{shadowed}`",
+         prelude_type: "write `Benitoite.{shadowed}` for the prelude type"]
         "Every type argument of a generic type or a type alias must be written.";
     E0411 Check "the type `{name}` has no constructors" ""
         [add: "add at least one constructor"]
@@ -586,10 +626,11 @@ diag_codes! {
          assert: "`main` cannot use `Assert.Check`"]
         "`main` has no parameters, returns `Unit` or `Result[Unit, String]`, and uses only built-in effects.";
     E0416 Check "the value of this expression is not used" "this has type `{found}`, not `Unit`"
-        [discard: "write `bind _ <- ...` to discard the value",
+        [return_value: "write `return` to return this value from the {what}",
+         discard: "write `bind _ <- ...` to discard the value",
          reassign: "`=` compares values and variables cannot be reassigned; to bind a new value to the name, write `shadow {name} <- ...`"]
-        fix [discard, reassign]
-        "An expression statement that is not the last in a block must have type `Unit`.";
+        fix [return_value, discard, reassign]
+        "An expression statement must have type `Unit` unless it is the last in a block other than a function or lambda body. Return a value from a function or lambda with `return`.";
     E0417 Check "a `uses` list can contain at most one effect variable" "" []
         "Use the same effect variable for several parameters to combine their effects.";
     E0418 Check "the effect variable `{name}` does not appear in any parameter type" "" []
@@ -607,7 +648,10 @@ diag_codes! {
     E0422 Check "a value of type `{ty}` cannot be interpolated into a string" ""
         [show: "convert the value to a `String` first with `{function}`",
          import_show: "if this type implements `Show`, write `import Benitoite.Trait` and convert the value with `Trait.Show.show`",
-         convert: "convert the value to a `String` before interpolating it"]
+         convert: "convert the value to a `String` before interpolating it",
+         type_param: "add the constraint `{constraint}` to the type parameter, such as `[{param}: {constraint}]`, and convert the value with `{function}`",
+         type_param_import: "write `import Benitoite.Trait`, add the constraint `Trait.Show` to the type parameter, such as `[{param}: Trait.Show]`, and convert the value with `Trait.Show.show`",
+         rigid: "values of the operation's type parameter `{declared}` cannot be converted to `String`; interpolate a value of a known type instead"]
         fix [show]
         "`${...}` accepts `String`, `Integer`, `Float`, `Decimal`, `Byte`, `Character`, and `Boolean`.";
     E0423 Check "`{ty}` cannot be used as a key" ""
@@ -615,7 +659,8 @@ diag_codes! {
         "Map keys and set elements must have types that satisfy `key`. Types that contain `Float` do not.";
     E0424 Check "the type parameter `{param}` needs the constraint `{constraint}`" ""
         [required: "required by this use",
-         add: "add the constraint, such as `[{param}: {constraint}]`"]
+         add: "add the constraint, such as `[{param}: {constraint}]`",
+         operation: "add the constraint `{constraint}` to the type parameter `{declared}` in the declaration of the operation `{operation}`"]
         fix [add]
         "Comparing values or using them as keys requires `equality` or `key` on a type parameter.";
     E0425 Check "the constraint `{constraint}` cannot be written here" "" []
@@ -646,8 +691,9 @@ diag_codes! {
         "A constant is computed before the program runs, from literals, other constants, operators, constructors, records, lists, and `Map.fromList` or `Set.fromList`.";
     E0434 Check "the type of the constant `{name}` cannot contain type parameters" "" []
         "A constant has one value, so its type must be a concrete type.";
-    E0435 Check "computing the constant `{name}` fails: {condition}" "fails here" []
-        "A constant whose computation would stop with a runtime error is reported before the program runs.";
+    E0435 Check "computing the constant `{name}` fails: {condition}" "fails here"
+        [budget: "compute this value in a function without parameters, which runs when the script runs"]
+        "A constant is computed when the script is checked. Its computation must not stop with a runtime error, and the values that the constants create must fit in the budget for constants; compute a large value in a function without parameters instead.";
     E0436 Check "the key `{key}` appears more than once in a constant" "repeated key"
         [first: "first given here"]
         "`Map.fromList` and `Set.fromList` in a constant must not repeat a key.";
@@ -667,10 +713,16 @@ diag_codes! {
         "`try` takes a `Result` or an `Option`.";
     E0441 Check "`try` on `{ty}` needs the function to return {needed}" ""
         [declared: "the function returns `{declared}`",
-         convert: "convert the value with `Option.okOr` or `Result.toOption` before `try`"]
+         declared_lambda: "the lambda returns `{declared}`",
+         declared_placeholder: "the function made by `_` in this call returns `{declared}`",
+         placeholder_call: "this call with `_` makes a function",
+         convert: "convert the value with `Option.okOr` or `Result.ok` before `try`"]
         "`try` on a `Result` needs the enclosing function or lambda to return a `Result`, and `try` on an `Option` needs it to return an `Option`.";
     E0442 Check "`try` cannot return an error of type `{found}` from a function that returns errors of type `{expected}`" ""
         [declared: "the function returns `{declared}`",
+         declared_lambda: "the lambda returns `{declared}`",
+         declared_placeholder: "the function made by `_` in this call returns `{declared}`",
+         placeholder_call: "this call with `_` makes a function",
          map_error: "convert the error with `Result.mapError` before `try`"]
         "The error type of the value after `try` must be the error type of the function's result.";
     E0443 Check "`{ty}` is not a resource type" ""
@@ -704,8 +756,10 @@ diag_codes! {
         [first: "first clause here"]
         "Each operation has at most one clause in a `handle`.";
     E0509 Check "`resume` can only be used directly in a clause of `handle`" ""
-        [lambda: "`resume` cannot be used in a lambda or a `lazy` body inside a clause"]
-        "`resume` continues the computation that performed the operation, so it is written in the clause itself.";
+        [lambda: "`resume` cannot be used in a lambda or a `lazy` body inside a clause",
+         guard: "`resume` cannot be used in a `match` guard; call it in the body of the branch",
+         placeholder: "`resume` cannot be used in an argument of a call with `_` placeholders; the arguments are evaluated inside the function that the call creates"]
+        "`resume` continues the computation that performed the operation, so it is written in the clause itself, not inside a lambda, a `lazy` body, a `match` guard, or an argument of a call with `_` placeholders.";
     E0510 Check "invalid effect operation declaration" ""
         [uses: "an operation declaration cannot have `uses`; the handler decides the effects",
          effect_var: "an operation cannot have effect variables",
@@ -745,6 +799,11 @@ diag_codes! {
     E0608 Check "this alternative can never be selected" "unreachable alternative"
         [covering: "already matched here"]
         "Earlier patterns match every value this alternative matches.";
+
+    E0609 Check "could not confirm that {subject}" "checking stopped after {limit} steps"
+        [split: "split the `match` into smaller ones, or check fewer fields in one branch",
+         split_pattern: "check fewer fields in this pattern, or bind the value first and check the fields separately"]
+        "The checker limits the work it spends on deciding whether a `match` covers every value and whether a pattern on the left of `bind` or `shadow` matches every value. A `match` or a pattern that needs more work than the limit is an error.";
 
     // ---- E07: 型クラス ----
     E0701 Check "this implementation must be in the module of `{trait_name}` or of `{ty}`" ""
@@ -791,6 +850,10 @@ diag_codes! {
         [value: "`{trait_name}` is for types of values, such as `Integer`",
          constructor: "`{trait_name}` is for type constructors, such as `List`"]
         "A trait is either for types of values or for type constructors, and its implementations and constraints must match.";
+
+    E0715 Check "the dictionary for `{trait_name}` on `{ty}` is too large" "more than {limit} dictionary and type nodes are needed here"
+        [reduce: "nest the types less deeply, or require fewer traits of the type parameters in the implementations"]
+        "Nesting implementations that require two or more traits of the same type parameter doubles the size of the dictionary at each level. The checker limits the total number of dictionary nodes and type nodes copied into them.";
 
     // ---- E08: 属性 ----
     E0801 Check "unknown attribute `@{name}`" ""
@@ -937,6 +1000,10 @@ diag_codes! {
     L0111 Limit "an implementation of `{name}` has too many constraints" ""
         [limit: "an implementation can have at most 65535 constraint dictionaries"]
         "The bytecode addresses the dictionaries of an implementation with 16 bits.";
+    L0112 Limit "the `match` in `{name}` is too large to compile" ""
+        [limit: "the decision tree of a `match` is too large; split it into smaller ones",
+         definition: "building decision trees in this definition requires too much work, including copies of guards; simplify the matches or move them into separate functions"]
+        "The decision tree of a `match` can grow exponentially in the number of its branches, so the compiler limits its size.";
 }
 
 /// 型板の `{名前}` を値で置き換える。値のない `{名前}` はそのまま残す。
@@ -1017,6 +1084,5 @@ pub mod text {
     pub const INTERNAL_STAGE: &str = "the error occurred in the {stage} stage";
     pub const INTERNAL_THREAD: &str = "the panic occurred in the {thread} thread";
     pub const INTERNAL_PANIC: &str = "panic: {message} at {location}";
-    pub const INTERNAL_REPORT: &str =
-        "this is a bug in the implementation; please report it with the script that caused it";
+    pub const INTERNAL_REPORT: &str = "this is a bug in the implementation; please report it with the script that caused it, after removing any secrets";
 }

@@ -8,7 +8,7 @@ use crate::modules::ModuleKind;
 use crate::syntax::ast::{Name, UsesList};
 
 use super::collect::Resolver;
-use super::{BindingKind, suggest, text};
+use super::{BindingKind, renames, suggest, text};
 
 #[derive(Clone)]
 pub(super) struct Ctx {
@@ -108,6 +108,43 @@ pub(super) fn kind_label(kind: BindingKind) -> &'static str {
         BindingKind::TypeParam { .. } => text::TYPE_PARAMETER,
         BindingKind::EffectVar { .. } => text::EFFECT_VARIABLE,
     }
+}
+
+// 診断の冠詞に依存せず、注記に埋める種類の名を選ぶ（設計書 02-04「名前の引き方」）。
+fn kind_name(kind: BindingKind) -> &'static str {
+    match kind {
+        BindingKind::Module(_) => text::MODULE_NAME,
+        BindingKind::NamespaceRoot => text::NAMESPACE_NAME,
+        BindingKind::Record => text::RECORD_DECL,
+        BindingKind::Trait => text::TRAIT_DECL,
+        BindingKind::Effect | BindingKind::BuiltinEffect(_) => text::EFFECT_DECL,
+        BindingKind::Ctor { .. } => text::CONSTRUCTOR_NAME,
+        BindingKind::TypeParam { .. } => text::TYPE_PARAMETER_NAME,
+        BindingKind::EffectVar { .. } => text::EFFECT_VARIABLE_NAME,
+        BindingKind::Data | BindingKind::BuiltinType(_) | BindingKind::Alias => text::DATA,
+        BindingKind::Fn
+        | BindingKind::BuiltinFn(_)
+        | BindingKind::ImplFn { .. }
+        | BindingKind::Const
+        | BindingKind::Field { .. }
+        | BindingKind::Method { .. }
+        | BindingKind::Op { .. }
+        | BindingKind::Local(_) => text::VALUE_NAME,
+    }
+}
+
+// 見つからない名前の一覧は最大 40 個まで示す（設計書 02-04「誤りと修正案」）。
+const MEMBER_LIST_LIMIT: usize = 40;
+
+// 補助の優先順位を一か所で定め、候補の一覧にも同じ絞り込みを使う（設計書 02-04「誤りと修正案」）。
+struct MemberLookup<'a> {
+    path: &'a [Name],
+    index: usize,
+    module: Option<ModuleId>,
+    pool: Vec<String>,
+    hidden: Option<BindingId>,
+    parent: BindingId,
+    position: Position,
 }
 
 impl Resolver<'_> {
@@ -262,6 +299,12 @@ impl Resolver<'_> {
             if code == DiagCode::E0314 {
                 d = d.note("uses_only");
             }
+            if code == DiagCode::E0304
+                && binding.kind == BindingKind::Record
+                && position == Position::Value
+            {
+                d = self.record_construct(d, id, dotted(path));
+            }
             self.out.diagnostics.push(d.build());
             return None;
         }
@@ -328,19 +371,35 @@ impl Resolver<'_> {
             let d = DiagBuilder::new(code)
                 .arg("name", first.text.clone())
                 .primary(first.span);
-            let d = self.similar(d, &first.text, first.span, pool);
+            let d = if let Some((new, _)) = renames::find("Benitoite", &first.text) {
+                self.module_rename(d, ctx, path, new, position)
+            } else {
+                self.similar(d, &first.text, first.span, pool)
+            };
             self.out.diagnostics.push(d.build());
             return None;
         };
-        if let Some(hidden) = self.prelude.get(&first.text).copied()
-            && hidden != id
-            && self
-                .modules
-                .get(ctx.module)
-                .is_some_and(|m| matches!(m.kind, ModuleKind::Entry | ModuleKind::User))
+        if let Some(alias) = self
+            .pending_aliases
+            .get_mut(&ctx.module)
+            .and_then(|m| m.get_mut(&id))
+            && first.text == alias.alias
+            && first.text != alias.original
         {
+            alias.references.push(first.span);
+        }
+        let hidden = self.prelude.get(&first.text).copied().filter(|hidden| {
+            *hidden != id
+                && !(self.as_module(id).is_some() && self.as_module(id) == self.as_module(*hidden))
+                && self
+                    .modules
+                    .get(ctx.module)
+                    .is_some_and(|m| matches!(m.kind, ModuleKind::Entry | ModuleKind::User))
+        });
+        if let Some(hidden) = hidden {
             self.out.prelude_shadowed.insert(node, hidden);
         }
+        let shadowing = id;
         for (index, next) in path.iter().enumerate().skip(1) {
             let binding = self.out.bindings.get(id)?.clone();
             let module = self.as_module(id);
@@ -378,10 +437,19 @@ impl Resolver<'_> {
             {
                 let mut d = DiagBuilder::new(DiagCode::E0330)
                     .arg("name", next.text.clone())
-                    .arg("module", self.modules.get(module)?.name.dotted())
+                    .arg("module", dotted(path.get(..index)?))
+                    .arg("declared_in", self.modules.get(module)?.name.dotted())
                     .primary(next.span);
                 if let Some(span) = self.out.bindings.get(private).and_then(|b| b.span) {
                     d = d.secondary(span, "declared");
+                }
+                if index == 1
+                    && let Some(hidden) = hidden
+                {
+                    d = self.shadowing_note(d, first, shadowing, hidden);
+                    if self.children(ctx, hidden, true).contains_key(&next.text) {
+                        d = self.prelude_help(d, first);
+                    }
                 }
                 // 標準ライブラリの名前を `public` にする修正案は、利用者には行えないので出さない。
                 let user_module = self
@@ -403,46 +471,21 @@ impl Resolver<'_> {
                 self.out.diagnostics.push(d.build());
                 return None;
             }
-            let module_name = module
-                .and_then(|m| self.modules.get(m))
-                .map_or(binding.name.clone(), |m| m.name.dotted());
             let mut d = DiagBuilder::new(DiagCode::E0303)
-                .arg("module", module_name)
+                .arg("module", dotted(path.get(..index)?))
                 .arg("name", next.text.clone())
                 .primary(next.span);
+            if index == 1
+                && let Some(hidden) = hidden
+            {
+                d = self.shadowing_note(d, first, shadowing, hidden);
+            }
             if module.is_some_and(|m| {
                 self.imported
                     .get(&m)
                     .is_some_and(|names| names.contains_key(&next.text))
             }) {
                 d = d.note("not_reexported");
-            }
-            if module.is_some_and(|m| {
-                self.modules
-                    .get(m)
-                    .is_some_and(|m| m.name.dotted() == "Benitoite.String")
-            }) {
-                let key = match next.text.as_str() {
-                    "length" => Some("length"),
-                    "slice" | "substring" => Some("slice"),
-                    "indexOf" => Some("index_of"),
-                    _ => None,
-                };
-                if let Some(key) = key {
-                    d = d.help(key);
-                }
-            }
-            if matches!(next.text.as_str(), "unwrap" | "expect")
-                && module.is_some_and(|m| {
-                    self.modules.get(m).is_some_and(|m| {
-                        matches!(
-                            m.name.dotted().as_str(),
-                            "Benitoite.Option" | "Benitoite.Result"
-                        )
-                    })
-                })
-            {
-                d = d.help("unwrap");
             }
             let pool = children
                 .into_iter()
@@ -467,11 +510,393 @@ impl Resolver<'_> {
                 })
                 .map(|(name, _)| name)
                 .collect();
-            let d = self.similar(d, &next.text, next.span, pool);
+            let d = self.member_assists(
+                d,
+                ctx,
+                MemberLookup {
+                    path,
+                    index,
+                    module,
+                    pool,
+                    hidden: hidden.filter(|_| index == 1),
+                    parent: id,
+                    position,
+                },
+            );
             self.out.diagnostics.push(d.build());
             return None;
         }
         Some(self.final_name(id, position))
+    }
+
+    fn shadowing_note(
+        &self,
+        mut d: DiagBuilder,
+        first: &Name,
+        shadowing: BindingId,
+        hidden: BindingId,
+    ) -> DiagBuilder {
+        let Some(binding) = self.out.bindings.get(shadowing) else {
+            return d;
+        };
+        let Some(prelude) = self.out.bindings.get(hidden) else {
+            return d;
+        };
+        // import の位置を宣言と呼ばず、利用者が直す場所を区別する（設計書 02-04「名前の引き方」）。
+        let imported = self.ast(binding.module).is_some_and(|ast| {
+            ast.imports
+                .iter()
+                .any(|import| self.out.refs.get(import.id) == Some(&shadowing))
+        });
+        d = d
+            .arg("first", &first.text)
+            .arg("shadow_kind", kind_name(binding.kind))
+            .arg("prelude_kind", kind_name(prelude.kind))
+            .note(if imported {
+                "shadowed_import"
+            } else {
+                "shadowed"
+            });
+        if let Some(span) = binding.span {
+            d = d.secondary(span, if imported { "imported" } else { "shadowing" });
+        }
+        d
+    }
+
+    fn prelude_help(&self, d: DiagBuilder, first: &Name) -> DiagBuilder {
+        d.help_edits(
+            "prelude",
+            vec![Edit {
+                span: Span {
+                    end: first.span.start,
+                    ..first.span
+                },
+                replacement: "Benitoite.".into(),
+            }],
+        )
+    }
+
+    // 当てた先が標準のモジュールで、書いた位置を解決できる場合だけ編集する（設計書 02-10「修正案」）。
+    #[cold]
+    #[inline(never)]
+    fn module_rename(
+        &self,
+        d: DiagBuilder,
+        ctx: &Ctx,
+        path: &[Name],
+        new: &str,
+        position: Position,
+    ) -> DiagBuilder {
+        let rooted = path.first().is_some_and(|n| n.text == "Benitoite");
+        let offset = usize::from(rooted);
+        let Some(first) = path.get(offset) else {
+            return d;
+        };
+        let mut old = first.text.clone();
+        let mut replacement = new.to_owned();
+        let module_name = format!("Benitoite.{new}");
+        let new_module = if rooted {
+            self.prelude.get(new).copied()
+        } else {
+            self.upper(ctx, new, false)
+        }
+        .filter(|id| {
+            self.as_module(*id)
+                .and_then(|m| self.modules.get(m))
+                .is_some_and(|m| m.name.dotted() == module_name)
+        });
+        let mut span = None;
+        if let Some(next) = path.get(offset.saturating_add(1)) {
+            let renamed = renames::find(&module_name, &next.text);
+            if let Some((member, renames::RenameKind::Renamed)) = renamed {
+                old = format!("{}.{}", first.text, next.text);
+                replacement = format!("{new}.{member}");
+                span = new_module.map(|_| first.span.to(next.span));
+            } else if new_module
+                .is_some_and(|id| self.children(ctx, id, false).contains_key(&next.text))
+            {
+                span = Some(first.span);
+            }
+        } else if new_module.is_some_and(|id| {
+            self.out
+                .bindings
+                .get(self.final_name(id, position))
+                .is_some_and(|b| position.accepts(b.kind))
+        }) {
+            span = Some(first.span);
+        }
+        let d = d.arg("old", old).arg("new", replacement.clone());
+        match span {
+            Some(span) => d.help_edits("renamed", vec![Edit { span, replacement }]),
+            None => d.help("renamed"),
+        }
+    }
+
+    // 補助の分類は一つに絞り、無関係な import より元のモジュールの名前を優先する（設計書 02-04「誤りと修正案」）。
+    #[cold]
+    #[inline(never)]
+    fn member_assists(
+        &self,
+        mut d: DiagBuilder,
+        ctx: &Ctx,
+        lookup: MemberLookup<'_>,
+    ) -> DiagBuilder {
+        let Some(next) = lookup.path.get(lookup.index) else {
+            return d;
+        };
+        if let Some(hidden) = lookup.hidden
+            && self.children(ctx, hidden, true).contains_key(&next.text)
+            && let Some(first) = lookup.path.first()
+        {
+            return self.prelude_help(d, first);
+        }
+        // 利用者の同名モジュールを、標準ライブラリの取り込みへ誘導しない。
+        let root = self
+            .out
+            .bindings
+            .get(lookup.parent)
+            .is_some_and(|b| b.kind == BindingKind::NamespaceRoot);
+        let standard = lookup
+            .module
+            .and_then(|m| self.modules.get(m))
+            .is_some_and(|m| matches!(m.kind, ModuleKind::Prelude | ModuleKind::Stdlib));
+        if (root || standard)
+            && let Some((full, local, key, edits)) =
+                self.member_import(ctx, lookup.path, lookup.index)
+        {
+            d = d.arg("full", full).arg("local", local);
+            return if edits.is_empty() {
+                d.help(key)
+            } else {
+                d.help_edits(key, edits)
+            };
+        }
+        if root && let Some((new, _)) = renames::find("Benitoite", &next.text) {
+            return self.module_rename(d, ctx, lookup.path, new, lookup.position);
+        }
+        let module = lookup.module.and_then(|m| self.modules.get(m));
+        if matches!(
+            next.text.as_str(),
+            "new" | "create" | "make" | "of" | "init"
+        ) && let Some(record) = self.record_binding(lookup.parent)
+        {
+            let mut name = dotted(lookup.path.get(..lookup.index).unwrap_or_default());
+            if self.as_module(lookup.parent).is_some()
+                && self.type_in_module(lookup.parent).is_none()
+                && let Some(binding) = self.out.bindings.get(record)
+            {
+                name.push('.');
+                name.push_str(&binding.name);
+            }
+            return self.record_construct(d, record, name);
+        }
+        if let Some(module) = module
+            && matches!(module.kind, ModuleKind::Prelude | ModuleKind::Stdlib)
+            && let Some((new, kind)) = renames::find(&module.name.dotted(), &next.text)
+        {
+            let d = d.arg("old", next.text.clone()).arg("new", new);
+            return if kind.replace() {
+                d.help_edits(
+                    kind.key(),
+                    vec![Edit {
+                        span: next.span,
+                        replacement: new.into(),
+                    }],
+                )
+            } else {
+                d.help(kind.key())
+            };
+        }
+        let mut has_help = false;
+        if module.is_some_and(|m| m.name.dotted() == "Benitoite.String") {
+            let key = match next.text.as_str() {
+                "length" => Some("length"),
+                "slice" | "substring" => Some("slice"),
+                "indexOf" => Some("index_of"),
+                _ => None,
+            };
+            if let Some(key) = key {
+                d = d.help(key);
+                has_help = true;
+            }
+        }
+        if matches!(next.text.as_str(), "unwrap" | "expect")
+            && module.is_some_and(|m| {
+                matches!(
+                    m.name.dotted().as_str(),
+                    "Benitoite.Option" | "Benitoite.Result"
+                )
+            })
+        {
+            d = d.help("unwrap");
+            has_help = true;
+        }
+        // 専用の案内と近い名前は従来どおり併記する。一覧はどちらもない場合だけ示す。
+        let candidates = suggest::candidates(&next.text, lookup.pool.iter().map(String::as_str));
+        if !candidates.is_empty() {
+            return Self::similar_candidates(d, next.span, candidates);
+        }
+        if !has_help && !lookup.pool.is_empty() {
+            let names = crate::diag::code_list(
+                lookup
+                    .pool
+                    .iter()
+                    .take(MEMBER_LIST_LIMIT)
+                    .map(String::as_str),
+            );
+            d = d.arg("names", names);
+            d = if lookup.pool.len() > MEMBER_LIST_LIMIT {
+                d.arg(
+                    "remaining",
+                    lookup
+                        .pool
+                        .len()
+                        .saturating_sub(MEMBER_LIST_LIMIT)
+                        .to_string(),
+                )
+                .note("members_more")
+            } else {
+                d.note("members")
+            };
+        }
+        d
+    }
+
+    fn record_binding(&self, id: BindingId) -> Option<BindingId> {
+        if self.out.bindings.get(id)?.kind == BindingKind::Record {
+            return Some(id);
+        }
+        let module = self.as_module(id)?;
+        let name = self.modules.get(module)?.name.0.last()?;
+        let record = *self.top.get(&module)?.get(name)?;
+        (self.out.bindings.get(record)?.kind == BindingKind::Record).then_some(record)
+    }
+
+    #[cold]
+    #[inline(never)]
+    fn record_construct(&self, d: DiagBuilder, id: BindingId, record: String) -> DiagBuilder {
+        let mut fields = self
+            .members
+            .get(&id)
+            .into_iter()
+            .flat_map(|names| names.iter())
+            .filter_map(|(name, id)| {
+                let BindingKind::Field { index, .. } = self.out.bindings.get(*id)?.kind else {
+                    return None;
+                };
+                Some((index, name))
+            })
+            .collect::<Vec<_>>();
+        fields.sort_by_key(|(index, _)| *index);
+        let fields = fields
+            .into_iter()
+            .map(|(_, name)| format!("{name}: ..."))
+            .collect::<Vec<_>>()
+            .join(", ");
+        d.arg("record", record)
+            .arg("fields", fields)
+            .help("construct")
+    }
+
+    // 取り込み済みなら参照だけを直し、衝突する名前には別名を案内する（設計書 02-10「修正案」）。
+    #[cold]
+    #[inline(never)]
+    fn member_import(
+        &self,
+        ctx: &Ctx,
+        path: &[Name],
+        index: usize,
+    ) -> Option<(String, String, &'static str, Vec<Edit>)> {
+        let rooted = path.first()?.text == "Benitoite";
+        let unofficial = rooted && path.get(1).is_some_and(|n| n.text == "Unofficial");
+        let offset = if unofficial { 2 } else { usize::from(rooted) };
+        let tail = if unofficial {
+            path.get(offset..)?
+        } else {
+            path.get(offset..=index)?
+        };
+        let module = crate::prelude::STDLIB
+            .iter()
+            .filter(|m| !m.prelude)
+            .filter(|m| {
+                if unofficial {
+                    m.unofficial
+                        && tail.len() >= m.path.len()
+                        && tail
+                            .iter()
+                            .take(m.path.len())
+                            .map(|n| n.text.as_str())
+                            .eq(m.path.iter().copied())
+                } else {
+                    tail.iter()
+                        .map(|n| n.text.as_str())
+                        .eq(m.path.iter().copied())
+                }
+            })
+            .max_by_key(|m| m.path.len())?;
+        let prefix = path.get(..offset.saturating_add(module.path.len()))?;
+        let canonical = format!("Benitoite.{}", module.path.join("."));
+        let full = if module.unofficial {
+            format!("Benitoite.Unofficial.{}", module.path.join("."))
+        } else {
+            canonical.clone()
+        };
+        let imports = self.imported.get(&ctx.module);
+        let imported = imports.and_then(|names| {
+            names.iter().find_map(|(name, id)| {
+                let id = (*id)?;
+                let m = self.as_module(id).and_then(|m| self.modules.get(m))?;
+                (m.name.dotted() == canonical).then_some(name.clone())
+            })
+        });
+        let local = imported
+            .clone()
+            .unwrap_or_else(|| module.path.last().copied().unwrap_or_default().into());
+        let conflict = self
+            .top
+            .get(&ctx.module)
+            .is_some_and(|names| names.contains_key(&local))
+            || (imported.is_none() && imports.is_some_and(|names| names.contains_key(&local)));
+        if conflict {
+            return Some((full, local, "import_member_as", Vec::new()));
+        }
+        let mut edits = Vec::new();
+        if imported.is_none() {
+            let Some(span) = self.import_start(ctx) else {
+                return Some((full, local, "import_member", Vec::new()));
+            };
+            edits.push(Edit {
+                span,
+                replacement: format!("import {full}\n"),
+            });
+        }
+        edits.push(Edit {
+            span: prefix.first()?.span.to(prefix.last()?.span),
+            replacement: local.clone(),
+        });
+        Some((
+            full,
+            local,
+            if imported.is_some() {
+                "use_imported"
+            } else {
+                "import_member"
+            },
+            edits,
+        ))
+    }
+
+    // 取り込みの修正案は、文書コメントより前の同じ行頭に挿入する（設計書 02-04「誤りと修正案」）。
+    fn import_start(&self, ctx: &Ctx) -> Option<Span> {
+        self.ast(ctx.module)
+            .and_then(|a| {
+                a.imports.first().map(|i| i.span).or_else(|| {
+                    a.decls
+                        .first()
+                        .map(|d| d.doc.as_ref().map_or(d.span, |doc| doc.span))
+                })
+            })
+            .and_then(|s| self.line_start(s))
     }
 
     // 最後の段は位置に合わせて、標準のモジュールの同名の型と省略できる構成子を選ぶ。
@@ -558,14 +983,14 @@ impl Resolver<'_> {
         pool: Vec<String>,
     ) -> DiagBuilder {
         let candidates = suggest::candidates(name, pool.iter().map(String::as_str));
+        Self::similar_candidates(d, span, candidates)
+    }
+
+    fn similar_candidates(d: DiagBuilder, span: Span, candidates: Vec<String>) -> DiagBuilder {
         if candidates.is_empty() {
             return d;
         }
-        let listed = candidates
-            .iter()
-            .map(|n| format!("`{n}`"))
-            .collect::<Vec<_>>()
-            .join(", ");
+        let listed = crate::diag::code_list(candidates.iter().map(String::as_str));
         let d = d.arg("candidates", listed);
         if candidates.len() == 1 {
             d.help_edits(
@@ -687,16 +1112,7 @@ impl Resolver<'_> {
             .arg("module", name.text.clone())
             .arg("full", full.clone())
             .primary(name.span);
-        let start = self
-            .ast(ctx.module)
-            .and_then(|a| {
-                a.imports.first().map(|i| i.span).or_else(|| {
-                    a.decls
-                        .first()
-                        .map(|d| d.doc.as_ref().map_or(d.span, |doc| doc.span))
-                })
-            })
-            .and_then(|s| self.line_start(s));
+        let start = self.import_start(ctx);
         if let Some(span) = start {
             d = d.help_edits(
                 "import",

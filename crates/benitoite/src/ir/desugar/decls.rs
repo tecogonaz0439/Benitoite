@@ -1,7 +1,7 @@
 //! モジュールの定義を宣言の順にまとめる（設計書 01-12「モジュール」、02-06「コア IR」）。
 use super::*;
 use crate::modules::{ModuleInfo, ModuleKind};
-use crate::types::{EffectName, TyHead, TyNames};
+use crate::types::{TyHead, TyNames};
 
 /// 01-12「初回リリース版の拡張」のモジュール・型の別名・ドキュメントコメントの行。
 /// 別名は型検査済みの型に現れず、コメントは実行の意味を持たない。
@@ -74,9 +74,9 @@ pub(super) fn program(
             let module = modules
                 .get(b.module)
                 .ok_or_else(|| error("missing operation module"))?;
-            let prefix = match effect.name {
-                EffectName::User(_) => effect.display_name.as_str(),
-                EffectName::Builtin(_) => module
+            let prefix = match module.kind {
+                ModuleKind::Entry | ModuleKind::User => effect.display_name.as_str(),
+                ModuleKind::Prelude | ModuleKind::Stdlib => module
                     .name
                     .0
                     .last()

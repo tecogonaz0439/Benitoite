@@ -51,7 +51,9 @@
 | `Task.all(actions)` | `function[T, effect E](List[function() -> T uses E]) -> List[T] uses E` | `actions` の各関数をタスクとして起動し、すべてが終わるのを待って、結果を `actions` と同じ順に並べたリスト |
 | `Task.allOk(actions)` | `function[T, X, effect E](List[function() -> Result[T, X] uses E]) -> Result[List[T], X] uses E` | すべてのタスクが `Result.Ok` を返したら、値を `actions` と同じ順に並べたリストの `Result.Ok`。どれかが `Result.Error` を返したら、`Result.Error` を返したタスクのうち `actions` の中で最も前にあるものの `Result.Error`（後述） |
 | `Task.race(actions)` | `function[T, effect E](List[function() -> T uses E]) -> Option[T] uses Clock.Time, State, E` | 最初に終わったタスクの結果の `Option.Some`。そのほかのタスクは取り消す。`actions` が空なら `Option.None` |
-| `Task.withTimeout(milliseconds, action)` | `function[T, effect E](Integer, function() -> T uses E) -> Option[T] uses Clock.Time, State, E` | `action` を起動し、`milliseconds` ミリ秒以内に終われば結果の `Option.Some`。終わらなければタスクを取り消して `Option.None`。`milliseconds` が 0 以下なら、0 として扱う |
+| `Task.withTimeout(milliseconds, action)` | `function[T, effect E](Integer, function() -> T uses E) -> Option[T] uses Clock.Time, State, E` | `action` を起動し、`milliseconds` ミリ秒が過ぎる前に終われば結果の `Option.Some`。そうでなければ `Option.None`。期限までに終わらなければタスクを取り消し、期限の時刻以後に終わったときは結果を捨てる。`milliseconds` が 0 以下なら、0 として扱う |
+
+【方針】`Task.withTimeout` で、`action` のタスクが期限の前に終わったかは、処理系がタスクの終わりの後に時刻を読んだ時点で判定してよい。このため、期限の直前に終わったタスクも `Option.None` になりうる。
 
 【決定】`Task.allOk` の結果は、タスクを切り替える位置によらない。理由: `E` が空の `Task.allOk` の呼び出しは純粋であり、結果が切り替えの順序で変わると、純粋な関数は同じ引数なら同じ値を返すという保証（[エフェクト](01-07-effects.md)）と食い違う。`actions` の i 番目のタスクが `Result.Error` を返したら、i より後ろの、終わっていないタスクを取り消し、i より前のタスクの終わりを待つ。i より前のタスクがすべて `Result.Ok` を返したら、i 番目のタスクの `Result.Error` を返す。i より前のタスクが `Result.Error` を返したら、そのタスクについて同じ規則を繰り返す。起動したタスクのどれも実行時エラーで止まらず、エフェクト `E` が空のとき、結果の値は、各関数を `actions` の順に呼び、最初の `Result.Error` で打ち切ったときの値と一致する。起動したタスクが実行時エラーで止まるときは、切り替えの順序によって、`Result.Error` を返すか実行時エラーで止まるかが変わりうる。`Task.all` で複数のタスクが実行時エラーで止まりうるときも、どの実行時エラーで止まるかは切り替えの順序に依存しうる。
 

@@ -81,6 +81,36 @@ python3 tools/bench/run.py --benitoite target/release/benitoite \
 
 確保と回収の統計は、`--benitoite-alloc` に渡した `alloc-stats` のビルドで `BENITOITE_DEV_ALLOC_STATS=1` を指定して取得する。初回リリース版の統計行は `alloc-stats: allocations=… allocated_bytes=… peak_heap_bytes=… collections=…` の形であり、確保回数・累積確保量・最大ヒープ使用量・回収回数を記録する。統計行が出なければ記録にその旨を残す。
 
+## 性能の関門（gate.py）
+
+`gate.py` は fib(35) と loop（1,500 万回）を、比べる版ごとに交互に実行する。各版の `bench_run` を release でビルドして保存し、`--version LABEL=PATH/bench_run` で指定する。回収の係数は 100、IO は direct、ほかは `bench_run` の既定の設定を使う。測定の前に各組を一度ずつ実行して温め、毎回、標準出力を期待値と照合する。
+
+```sh
+cargo build --release -p benitoite --example bench_run
+python3 tools/bench/gate.py --version before=target/gate-before/bench_run \
+  --version head=target/release/examples/bench_run \
+  --iterations 10 --output target/gate.json
+```
+
+変更の前の実行ファイルは、変更後のビルドが上書きする前に `target/gate-before/bench_run` などへ保存する。`--iterations` の既定は 10 で、正の整数を指定する。短い測定では回数を減らす。
+
+最小実行版の VM と比べる場合は、その版の CLI とスクリプトを別に用意する。次の `LEGACY_SRC` と `LEGACY_BUILD` は実際の作業用ディレクトリに置き換える。展開先を先に作り、リポジトリの根で実行する。
+
+```sh
+mkdir -p LEGACY_SRC
+git archive 'd4668a9^' | tar -x -C LEGACY_SRC
+cargo build --release -p benitoite --manifest-path LEGACY_SRC/Cargo.toml \
+  --target-dir LEGACY_BUILD
+python3 tools/bench/gate.py --version head=target/release/examples/bench_run \
+  --legacy LEGACY_BUILD/release/benitoite \
+  --legacy-programs LEGACY_SRC/tools/bench/programs \
+  --iterations 10 --output target/gate-legacy.json
+```
+
+JSON の `inputs` に入力、`versions` と `legacy` に比べた実行ファイルのパス、`revision` に測定を走らせたリポジトリのコミット、`system` に計算機の情報、`samples` に `LABEL/fib`・`LABEL/loop` ごとのナノ秒の標本を記録する。`wall` はプロセスの起動から終了まで、`run` は標準エラーの `bench-run:` 行の `run_nanos` である。統計行が欠けていたり、必要な項目を読めなかったりした版は失敗とする。最小実行版の `legacy` には `wall` だけを記録し、`run` の配列は空にする。
+
+`summaries` に各組の `wall`・`run` の中央値（`median`）と最小値（`min`）をナノ秒で記録し（`legacy` の組は `wall` だけ）、同じ値を秒で表示する。[07-02「性能の関門」](../../docs/design/07-quality/07-02-performance.md#性能の関門)に従い、本測定では実行の段の中央値を、変更ごとの短い測定では最小値を変更の前の版と比べる。本測定で fib または loop が基準より 5% を超えて遅くなった場合は、理由を記録し、設計者の合意を得る。経過時間と実行の段の時間は、それぞれ同じ項目どうしで比較する。
+
 ## CPU プロファイル
 
 `--profile` を付けると、各 Benitoite ベンチマークを samply で一度ずつ実行し、出力先を測定記録に記す。
@@ -139,7 +169,7 @@ Ruby の通常版と YJIT 版は、`ruby` が見つかった場合に `ruby --ve
 
 ## 段別の時間と回収統計を取る例
 
-`bench_run` は、CLI と同じ公開のパイプラインと実行関数を通る開発用の例である。`stage1_bench` と異なり、第 2 段の命令を実行できる。既定のビルドで作り、時間の計測には `alloc-stats`、`heap-verify`、`gc-stress` を有効にしない。
+`bench_run` は、CLI と同じ公開のパイプラインと実行関数を通る開発用の例である。既定のビルドで作り、時間の計測には `alloc-stats`、`heap-verify`、`gc-stress` を有効にしない。
 
 ```sh
 cargo build --release -p benitoite --example bench_run
@@ -163,13 +193,12 @@ target/release/examples/bench_run --call-budget=2500 --trigger-factor=100 \
 
 百分位は nearest-rank（小さい順に並べた標本の `ceil(標本数 × 百分率 / 100)` 番目）で求める。小さな入力などで回収が一度もなければ、停止の標本数と時間はすべて `0` になる。
 
-R33 用に、別の `bench-pauses: n,n,…` 行へ個々の `HeapStats::pause_nanos` も出す。
-`remeasure.py` はこれを保存し、R12 と同じく全実行の標本を合わせた百分位と最大も求める。
+別の `bench-pauses: n,n,…` 行へ個々の `HeapStats::pause_nanos` も出す。
 既存の `bench-run:` 行と、完了時の測定の「各実行の百分位の中央値」は変えない。
 
 ## 初回リリース版の追加の項目
 
-追加のプログラムと項目は、測定時に `--first-release` を指定した場合だけ取る。指定しない測定は、既存の 8 本、10 回の中央値、既存の測る項目のままである。`gate.py` の本測定にはこの道具を使わない。
+追加のプログラムと項目は、測定時に `--first-release` を指定した場合だけ取る。指定しない測定は、既存の 8 本、10 回の中央値、既存の測る項目のままである。`gate.py` は `bench_run` を直接使う。
 
 ```sh
 python3 tools/bench/run.py --benitoite target/release/benitoite \
@@ -224,30 +253,12 @@ HTTP は Benitoite のサーバと Python 標準ライブラリのクライア�
 
 HTTP の表と線形目盛のグラフは、計算タスク有無・クライアント数・呼び出し予算の組ごとに示す。「応答最大」は各実行で求めた最大の応答時間の、10 回の中央値であり、全実行を合わせた最大値ではない。時間切れ（起動から終了まで既定 30 秒）や失敗ではサーバを止めて終了を待ち、誤りを報告する。HTTP には比較対象の言語の版を置かない。
 
-L41 で置いた仮の入力は Map 200,000 鍵、HTTP 1,000 要求である。Map 10,000 鍵の実行時間 0.063 秒から、20 倍を約 1.26 秒と見積もった。HTTP 100 要求・1 クライアントは計算なし 0.022 秒、計算あり 0.256 秒であり、1,000 要求を約 0.22 秒・2.56 秒と見積もった。これらは L41 時点の単純な比例の見積もりであり、木の高さ、回収、並行数、予算の影響は含まない。2026-10-09 の短い試行で、入力を調整した（下記「R33 の短い試行と測り直し」）。
+L41 で置いた仮の入力は Map 200,000 鍵、HTTP 1,000 要求である。Map 10,000 鍵の実行時間 0.063 秒から、20 倍を約 1.26 秒と見積もった。HTTP 100 要求・1 クライアントは計算なし 0.022 秒、計算あり 0.256 秒であり、1,000 要求を約 0.22 秒・2.56 秒と見積もった。これらは L41 時点の単純な比例の見積もりであり、木の高さ、回収、並行数、予算の影響は含まない。2026-10-09 の短い試行で、入力を調整した（下記「入力の調整」）。
 
-## R33 の短い試行と測り直し
-
-`remeasure.py` は既定で各入力を一回だけ実行する。R12 の入力と期待値の計算、
-`run.py` の HTTP クライアントと統計の読み出し、`bench_run` を使う。
-`--plan` は `label`・`name`・`args` を持つ配列の JSON である。
-`options` に `bench_run` の設定、HTTP の行には `clients` も指定できる。
-`@lines:N` の引数は作業ディレクトリ内に生成した N 行のファイルへ置き換える。
-比較対象がある負荷は独立した Rust 版と全出力を照合し、それ以外は式から期待値を求める。
-HTTP は各応答の状態・本体と応答数を照合する。
-
-```sh
-python3 tools/bench/remeasure.py --plan <入力の JSON> --output target/r33-trial/record.md
-```
-
-Markdown、線形目盛の HTML、個々の停止標本とソース・実行ファイルの SHA-256 を含む JSON を作る。
-既存の出力は上書きしない。`--measure` を明示した場合だけ各入力を 10 回実行する。
-短い試行からメモリの管理の方式を確定する案は出さず、本測定と CPU プロファイルの後に所見を書く。
+## 入力の調整
 
 handler の単一の操作数を増やすと、1 秒になる前に既定の呼び出し情報の上限へ達した。
 初回リリース版の入力は深さ 100,000 を 100 回繰り返す形に調整した。
-`stage1/returns.bnt` も第二引数に独立した実行の回数を受け取り、省略時は従来の一回となる。
-R12 と比べるときは省略時の入力を使い、長さを調整する実行とは別に記録する。
 
 `--task-memory-work N` は、タスク数による RSS の測定だけで各タスクの計算量を変える。
 省略すると `BENCH_INPUTS` の計算量を使う。予算による時間の測定には影響しない。
@@ -266,22 +277,10 @@ R12 と比べるときは省略時の入力を使い、長さを調整する実�
 このラッパーは対象を一個だけ子プロセスとして実行し、終了後の
 `resource.getrusage(RUSAGE_CHILDREN).ru_maxrss` を `bench-rss:` 行へ出す。
 測定対象の標準出力はそのまま渡す。HTTP でも同じラッパーを使い、失敗時にはプロセス群を終了する。
-`remeasure.py` はこの方式を使う。通常の `run.py` は環境変数がなければ従来の OS の道具を使う。
+通常の `run.py` は環境変数がなければ従来の OS の道具を使う。
 
 `/usr/bin/true` の試行では 1,048,576 bytes を報告した。
 過去の OS の道具との値の一致は、この制限のある環境では確認できていない。
 小さい RSS の変化は、パイプラインや標準ライブラリの変更も含むため、GC 単独の影響と扱わない。
 タスク一個あたりの近似には同じ方式での 0 タスクとの差を使う。
 ラッパーの起動時間は `bench_run` の `run_nanos` に含まれず、CLI の通常の時間測定にもラッパーを入れない。
-
-## SECB6 の変更の有無の比較
-
-`secb6.py` は、開始時に保存した `bench_run` と変更後の `bench_run` を交互に実行する。`remeasure.sample` と `run.http_sample` を使い、fib（34）・loop（20,000,000）は各 7 回の最小値、計算なしの HTTP は 1 クライアント・20,000/80,000 要求を各 3 回の最小値と中央値で比べる。全出力と HTTP の全応答を照合し、Markdown・線形目盛の HTML・全標本と SHA-256 の JSON を保存する。既存の出力は上書きしない。
-
-```sh
-python3 tools/bench/secb6.py --before target/secb6/bench_run-before \
-  --after target/secb6/bench_run-after \
-  --output tools/bench/results/2026-10-09-secb6-resource-table.md
-```
-
-二つの `bench_run` と、独立した出力の照合に使う Rust 版の fib・loop を、測定前に release でビルドしておく。測定中はビルドやテストを動かさない。比較用の実行ファイルの保存と作成はこの道具では行わない。

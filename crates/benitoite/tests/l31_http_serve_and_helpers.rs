@@ -1,8 +1,8 @@
-//! HTTP のソースの関数を公開パイプラインと実通信で確かめる（設計書 03-09、実装プラン L31）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! HTTP のソースの関数を公開パイプラインと実通信で確かめる（設計書 07-03「HTTP のテスト（初回リリース版）」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic, clippy::indexing_slicing)]
 
-// 関門: L30 の接続のテストでは届かない、ソースの応答・経路・要求ごとの
+// 関門: 接続だけのテストでは届かない、ソースの応答・経路・要求ごとの
 // タスク起動・引き継いだハンドラの契約を守る。逐次処理への退行と、ソースの
 // フィールドやエフェクトの接続の誤りを捕まえる。本番の差し込み口は加えない。
 use benitoite::bytecode::program::CompiledProgram;
@@ -96,7 +96,9 @@ impl Server {
         });
         Self {
             flag,
-            wakeup: wake_rx.recv_timeout(LIMIT).unwrap(),
+            wakeup: wake_rx
+                .recv_timeout(LIMIT)
+                .unwrap_or_else(|error| panic!("waiting for server wakeup: {error}")),
             result,
             stdout,
             thread: Some(thread),
@@ -125,16 +127,29 @@ impl Server {
     }
 
     fn finish(mut self) -> RunEnd {
-        let end = self.result.recv_timeout(LIMIT).unwrap();
+        let end = self
+            .result
+            .recv_timeout(LIMIT)
+            .unwrap_or_else(|error| panic!("waiting for server execution to finish: {error}"));
         self.thread.take().unwrap().join().unwrap();
         end
     }
 }
 impl Drop for Server {
     fn drop(&mut self) {
-        // アサーションの失敗でも、待ち受けと子のタスクを取り消す（L30 と同じ起こし口）。
+        // アサーションの失敗でも、待ち受けと子のタスクを取り消す。
         self.flag.store(true, Ordering::Relaxed);
         self.wakeup.wake();
+        if self.thread.is_some()
+            && matches!(
+                self.result.recv_timeout(LIMIT),
+                Ok(_) | Err(mpsc::RecvTimeoutError::Disconnected)
+            )
+            && let Some(thread) = self.thread.take()
+        {
+            // 巻き戻しの途中で二度目の panic を起こさない。
+            let _joined = thread.join();
+        }
     }
 }
 
@@ -188,12 +203,12 @@ fn returned(end: RunEnd) {
 
 fn stop(server: Server, port: u16) {
     // 印を読んだ相手のタスクは、/stop の応答の完了を待たずに serve を取り消せる。
-    // 終了用の要求は送り、Task.race と解放が正常に終わったことを確かめる（実装プラン L31）。
+    // 終了用の要求は送り、Task.race と解放が正常に終わったことを確かめる。
     let _socket = send(port, "/stop");
     returned(server.finish());
 }
 
-// 空いたポートの予約は Http.serve の開始前に外す（実装プラン L31）。
+// 空いたポートの予約は Http.serve の開始前に外す。
 fn vacant_port() -> u16 {
     TcpListener::bind(("127.0.0.1", 0))
         .unwrap()
@@ -202,7 +217,52 @@ fn vacant_port() -> u16 {
         .port()
 }
 
+fn start_on_vacant_port(source: impl Fn(u16) -> String, mode: ExecMode) -> (Server, u16) {
+    let mut last_result = None;
+    for attempt in 0..=3 {
+        let port = vacant_port();
+        let server = Server::start(&source(port), mode);
+        let started = Instant::now();
+        loop {
+            match server.result.try_recv() {
+                Ok(end) => {
+                    if end.main_error.as_deref() == Some("address in use") {
+                        last_result = Some(end);
+                        break;
+                    }
+                    panic!(
+                        "server ended while starting on port {port}, attempt {attempt}: {end:?}"
+                    );
+                }
+                Err(mpsc::TryRecvError::Empty) => {}
+                Err(error) => panic!("server result on port {port}: {error}"),
+            }
+            assert!(
+                started.elapsed() < LIMIT,
+                "server did not listen on port {port}"
+            );
+            // 別の相手が先に待ち受けた場合は、こちらの失敗より先に接続が成功しうる。
+            match TcpStream::connect(("127.0.0.1", port)) {
+                Ok(socket) => {
+                    drop(socket);
+                    return (server, port);
+                }
+                Err(error) if error.kind() == ErrorKind::ConnectionRefused => {
+                    std::thread::sleep(Duration::from_millis(1));
+                }
+                Err(error) => panic!("connect while starting on port {port}: {error}"),
+            }
+        }
+    }
+    panic!("server could not listen after three retries: {last_result:?}");
+}
+
 const ROUTE: &str = r#"
+function serveError(error: NetworkError) -> String
+  return if NetworkError.kind(error) = NetworkErrorKind.AddressInUse then "address in use"
+    else NetworkError.message(error) end if
+end function
+
 function route(request: Http.Request) -> Http.Response
   bind segments <- Http.pathSegments(Http.Request.path(request))
   return match Pair(Http.Request.method(request), segments) with
@@ -258,7 +318,7 @@ fn route_source(port: Option<u16>) -> String {
         lambda() return {action} end lambda,
         lambda() return waitStop(stopped) end lambda])
       return match winner with
-        case Option.Some(result) -> Result.mapError(result, NetworkError.message)
+        case Option.Some(result) -> Result.mapError(result, serveError)
         case Option.None -> Result.Error("race had no result")
       end match"#
         )
@@ -291,9 +351,13 @@ fn route_source(port: Option<u16>) -> String {
 fn route_and_helpers_work_with_listen_and_serve_in_both_modes() {
     for mode in [ExecMode::Direct, ExecMode::Request] {
         for use_serve in [false, true] {
-            let selected = use_serve.then(vacant_port);
-            let server = Server::start(&route_source(selected), mode);
-            let port = selected.unwrap_or_else(|| server.wait_line(None).parse().unwrap());
+            let (server, port) = if use_serve {
+                start_on_vacant_port(|port| route_source(Some(port)), mode)
+            } else {
+                let server = Server::start(&route_source(None), mode);
+                let port = server.wait_line(None).parse().unwrap();
+                (server, port)
+            };
             for (path, status, content_type, body) in [
                 ("/", 200, "text/html; charset=utf-8", "<h1>Hello</h1>"),
                 ("/items/1", 200, "application/json", "{\"id\":\"1\"}"),
@@ -312,8 +376,7 @@ fn serve_responds_to_all_simultaneous_requests() {
     // 4 要求で所要時間を確かめてから増やした。回収の強制では要求数を抑える（依頼の補足）。
     let count = if cfg!(feature = "gc-stress") { 8 } else { 32 };
     for mode in [ExecMode::Direct, ExecMode::Request] {
-        let port = vacant_port();
-        let server = Server::start(&route_source(Some(port)), mode);
+        let (server, port) = start_on_vacant_port(|port| route_source(Some(port)), mode);
         let sockets = (0..count)
             .map(|_| send(port, "/items/1"))
             .collect::<Vec<_>>();
@@ -355,7 +418,7 @@ end function
       lambda() return Http.serve("127.0.0.1", {port}, handler) end lambda,
       lambda() return waitStop(stopped) end lambda])
     return match winner with
-      case Option.Some(result) -> Result.mapError(result, NetworkError.message)
+      case Option.Some(result) -> Result.mapError(result, serveError)
       case Option.None -> Result.Error("race had no result")
     end match"#
         ),
@@ -369,8 +432,7 @@ fn computing_handler_allows_another_request_to_run() {
     // 要求ごとにタスクを起動しない退行では、B の応答の読み取りが LIMIT で時間切れになって失敗する。
     let limit = 1_000_000_000;
     for mode in [ExecMode::Direct, ExecMode::Request] {
-        let port = vacant_port();
-        let server = Server::start(&computation_source(port, limit), mode);
+        let (server, port) = start_on_vacant_port(|port| computation_source(port, limit), mode);
         let waiting = send(port, "/spin");
         server.wait_line(Some("spinning"));
         response(
@@ -392,7 +454,7 @@ fn error_source(port: u16, handler: &str, clause: Option<&str>) -> String {
     };
     main_source(
         "effect Answer\nfunction answer() -> String\nend effect\n",
-        &format!("return {action} |> Result.mapError(_, NetworkError.message)"),
+        &format!("return {action} |> Result.mapError(_, serveError)"),
     )
 }
 
@@ -411,9 +473,9 @@ fn handler_runtime_error_and_non_tail_inherited_clause_stop_every_task() {
                 DiagCode::R0502,
             ),
         ] {
-            let port = vacant_port();
-            let server = Server::start(&error_source(port, handler, clause), mode);
-            // クライアントの応答・切断の時機を期待に含めない（実装プラン L31）。
+            let (server, port) =
+                start_on_vacant_port(|port| error_source(port, handler, clause), mode);
+            // クライアントの応答・切断の時機を期待に含めない。
             let _socket = send(port, "/");
             let end = server.finish();
             assert_eq!(end.end, EndKind::Stopped, "{end:?}");
@@ -426,13 +488,15 @@ fn handler_runtime_error_and_non_tail_inherited_clause_stop_every_task() {
 #[test]
 fn serve_inherits_tail_resuming_handler() {
     for mode in [ExecMode::Direct, ExecMode::Request] {
-        let port = vacant_port();
-        let base = route_source(Some(port));
-        let source = base.replace("return route(request)", "return Http.text(200, answer())")
+        let (server, port) = start_on_vacant_port(
+            |port| {
+                route_source(Some(port)).replace("return route(request)", "return Http.text(200, answer())")
             .replace("function main()", "effect Answer\nfunction answer() -> String\nend effect\nfunction main()")
             .replace("bind winner <- Task.race([", "bind winner <- handle\nTask.race([")
-            .replace("lambda() return waitStop(stopped) end lambda])", "lambda() return waitStop(stopped) end lambda])\nwith\ncase answer() -> resume(\"inherited\")\nend handle");
-        let server = Server::start(&source, mode);
+            .replace("lambda() return waitStop(stopped) end lambda])", "lambda() return waitStop(stopped) end lambda])\nwith\ncase answer() -> resume(\"inherited\")\nend handle")
+            },
+            mode,
+        );
         response(
             send(port, "/"),
             200,

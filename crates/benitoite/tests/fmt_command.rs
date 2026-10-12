@@ -1,6 +1,6 @@
 //! `benitoite fmt` のプロセスのテスト（設計書 06-01「`fmt` のコマンドライン（初回リリース版）」「ディレクトリの指定
-//! （初回リリース版）」、10-17「`fmt` の実行」）。
-// テストの失敗は panic で表す（00-02「`#[allow]` を書いてよい箇所」）
+//! （初回リリース版）」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -265,6 +265,16 @@ fn a_link_given_directly_rewrites_its_target_and_keeps_the_link() {
     );
     assert_eq!(fs::read_link(&link).unwrap(), target);
     assert_eq!(dir.read("real/a.bnt"), FORMATTED);
+    let names = |path: &Path| {
+        let mut names: Vec<_> = fs::read_dir(path)
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name())
+            .collect();
+        names.sort();
+        names
+    };
+    assert_eq!(names(&dir.path.join("real")), ["a.bnt"]);
+    assert_eq!(names(&dir.path), ["link.bnt", "real"]);
 }
 
 #[cfg(unix)]
@@ -281,4 +291,113 @@ fn execute_permission_is_kept() {
         fs::metadata(&path).unwrap().permissions().mode() & 0o777,
         0o751
     );
+}
+
+// 関門: 直接指定した FIFO で fmt のプロセスが停止しない。
+#[cfg(unix)]
+#[test]
+fn fmt_rejects_a_fifo_without_blocking() {
+    use std::process::Stdio;
+    use std::time::{Duration, Instant};
+    let dir = TestDirectory::new("fifo");
+    assert!(
+        Command::new("mkfifo")
+            .arg(dir.path.join("pipe.bnt"))
+            .status()
+            .unwrap()
+            .success()
+    );
+    let mut child = Command::new(env!("CARGO_BIN_EXE_benitoite"))
+        .env_remove("BENITOITE_DEV_PANIC")
+        .current_dir(&dir.path)
+        .args(["fmt", "pipe.bnt"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let started = Instant::now();
+    while child.try_wait().unwrap().is_none() {
+        if started.elapsed() >= Duration::from_secs(5) {
+            child.kill().unwrap();
+            child.wait().unwrap();
+            panic!("fmt blocked while opening a FIFO");
+        }
+        std::thread::sleep(Duration::from_millis(2));
+    }
+    let output = child.wait_with_output().unwrap();
+    assert_eq!(code(&output), 2);
+    assert!(stderr(&output).contains("E0101"), "{}", stderr(&output));
+    assert!(output.stdout.is_empty());
+}
+
+// 関門: 書き込み禁止と固いリンクの拒否理由、元の保存、一時ファイルの掃除を CLI で確かめる。
+#[cfg(unix)]
+#[test]
+fn fmt_refuses_read_only_and_hard_linked_targets_but_check_does_not() {
+    use std::os::unix::fs::{MetadataExt, PermissionsExt, symlink};
+    for (tag, mode, hard_link, reason) in [
+        ("read-only", 0o444, false, "owner has no write permission"),
+        (
+            "group-writable",
+            0o464,
+            false,
+            "owner has no write permission",
+        ),
+        ("hard-link", 0o644, true, "more than one hard link"),
+    ] {
+        let dir = TestDirectory::new(tag);
+        let target = dir.write("original.bnt", UNFORMATTED);
+        fs::set_permissions(&target, fs::Permissions::from_mode(mode)).unwrap();
+        if hard_link {
+            fs::hard_link(&target, dir.path.join("other.bnt")).unwrap();
+        }
+        symlink("original.bnt", dir.path.join("link.bnt")).unwrap();
+        let before = fs::metadata(&target).unwrap();
+        for path in ["original.bnt", "link.bnt"] {
+            let check = fmt(&dir, &["--check", path]);
+            assert_eq!(code(&check), 1, "{}", stderr(&check));
+            assert_eq!(stderr(&check), format!("would reformat {path}\n"));
+            let output = fmt(&dir, &["--diagnostics=json", path]);
+            assert_eq!(code(&output), 2, "{}", stderr(&output));
+            let diag: serde_json::Value = serde_json::from_slice(&output.stderr).unwrap();
+            assert_eq!(diag["code"], "E0125");
+            assert!(
+                diag["notes"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|note| note.as_str().unwrap().contains(reason)),
+                "{diag}"
+            );
+            let after = fs::metadata(&target).unwrap();
+            assert_eq!(
+                (after.ino(), after.nlink(), after.mode(), after.uid()),
+                (before.ino(), before.nlink(), before.mode(), before.uid())
+            );
+            assert_eq!(dir.read("original.bnt"), UNFORMATTED);
+            assert_eq!(
+                fs::read_link(dir.path.join("link.bnt")).unwrap(),
+                PathBuf::from("original.bnt")
+            );
+            assert_eq!(
+                fs::read_dir(&dir.path).unwrap().count(),
+                if hard_link { 3 } else { 2 }
+            );
+        }
+        if hard_link {
+            assert_eq!(dir.read("other.bnt"), UNFORMATTED);
+        }
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn check_escapes_terminal_controls_in_the_file_name() {
+    let dir = TestDirectory::new("escaped-name");
+    let name = "a\u{1b}[2J.bnt";
+    dir.write(name, UNFORMATTED);
+    let output = fmt(&dir, &["--check", name]);
+    assert_eq!(code(&output), 1);
+    assert_eq!(stderr(&output), "would reformat a\\u{1B}[2J.bnt\n");
+    assert_eq!(dir.read(name), UNFORMATTED);
 }

@@ -49,15 +49,6 @@ def arms (as : List RawArm) : Except String (List Benitoite.Release.Arm) :=
     return .mk (ps.map (fun p => ⟨p, []⟩))
       (if a.guarded then some (.ret (.const (.boolean true))) else none) (.ret (.const .unit))
 
--- E1c-1 と同じ分割。ガードなし分岐の先行選択肢は保持する。
-def splitGuarded (as : List Benitoite.Release.Arm) : List Benitoite.Release.Arm × List (Nat × Option Nat) :=
-  let entries := as.zipIdx.flatMap fun (a, i) =>
-    match a with
-    | .mk ps guard body =>
-        if guard.isSome then ps.zipIdx.map (fun (p,j) => (.mk [p] guard body, (i, some j)))
-        else [(a, (i, none))]
-  (entries.map Prod.fst, entries.map Prod.snd)
-
 structure Result where
   exhaustive : Bool
   uncovered : Option String
@@ -69,22 +60,11 @@ def result (r : MatchCoverage) : Result :=
   ⟨r.exhaustive, r.uncovered.map (CoverageWitness.show (fun _ => none)),
     r.unreachable, r.coveredBy⟩
 
-def restore (r : Result) (mapping : List (Nat × Option Nat)) : Result :=
-  let position := fun (i,j) =>
-    let (k,l) := (mapping[i]?).getD (i, none)
-    (k, l.getD j)
-  { r with
-    unreachable := r.unreachable.map position
-    coveredBy := r.coveredBy.map fun (pos, ks) =>
-      let pos := position pos
-      (pos, ((ks.map fun k => ((mapping[k]?).getD (k, none)).1).filter (· != pos.1)).eraseDups) }
-
 def accepted : Result := ⟨true, none, [], []⟩
 
 structure Counts where
   cases : Nat := 0
   matched : Nat := 0
-  knownQ3 : Nat := 0
   mismatched : Nat := 0
   outOfScope : Nat := 0
   fuelExhausted : Nat := 0
@@ -106,13 +86,6 @@ def compareMatch (P : Program) (ctors : DataName → List ConName) (m : RawMatch
   let original := result r
   let fuel := if r.fuelExhausted then 1 else 0
   if original == accepted then return ⟨"matched", fuel, toJson original⟩
-  if !r.unreachable.isEmpty then
-    let (split, mapping) := splitGuarded as
-    let retry := checkMatch P ctors t split
-    let restored := restore (result retry) mapping
-    let fuel := fuel + if retry.fuelExhausted then 1 else 0
-    return ⟨if restored == accepted then "knownQ3" else "mismatched", fuel,
-      Json.mkObj [("original",toJson original),("restored",toJson restored)]⟩
   return ⟨"mismatched", fuel, toJson original⟩
 
 def compareBinding (P : Program) (ctors : DataName → List ConName) (b : RawBinding) :
@@ -131,7 +104,6 @@ def compareBinding (P : Program) (ctors : DataName → List ConName) (b : RawBin
 def Counts.add (c : Counts) (o : Outcome) : Counts :=
   { cases := c.cases + 1
     matched := c.matched + if o.classification == "matched" then 1 else 0
-    knownQ3 := c.knownQ3 + if o.classification == "knownQ3" then 1 else 0
     mismatched := c.mismatched + if o.classification == "mismatched" then 1 else 0
     outOfScope := c.outOfScope + if o.classification == "outOfScope" then 1 else 0
     fuelExhausted := c.fuelExhausted + o.fuelExhausted }
@@ -150,7 +122,6 @@ def run (args : List String) : IO UInt32 := do
   let mut matchCounts : Counts := {}
   let mut bindings : Counts := {}
   let mut mismatches : Array Json := #[]
-  let mut knownExamples : Array Json := #[]
   let mut outsideExamples : Array Json := #[]
   let mut fuelExamples : Array Json := #[]
   for (input, builtin) in corpus.inputs.zip builtins.inputs do
@@ -168,23 +139,21 @@ def run (args : List String) : IO UInt32 := do
         ("kind",toJson kind),("node",toJson node),("input",raw),("outcome",toJson o)]
       match o.classification with
       | "mismatched" => mismatches := mismatches.push entry
-      | "knownQ3" => if knownExamples.size < 12 then knownExamples := knownExamples.push entry
       | "outOfScope" => if outsideExamples.size < 12 then outsideExamples := outsideExamples.push entry
       | _ => pure ()
       if o.fuelExhausted > 0 then fuelExamples := fuelExamples.push entry
   let total := matchCounts.cases + bindings.cases
   let matched := matchCounts.matched + bindings.matched
-  let known := matchCounts.knownQ3 + bindings.knownQ3
   let outside := matchCounts.outOfScope + bindings.outOfScope
   let fuel := matchCounts.fuelExhausted + bindings.fuelExhausted
   IO.FS.writeFile reportFile ((Json.mkObj [
     ("inputs",toJson corpus.inputs.length),("cases",toJson total),
-    ("matched",toJson matched),("knownQ3",toJson known),("mismatched",toJson mismatches.size),
+    ("matched",toJson matched),("mismatched",toJson mismatches.size),
     ("outOfScope",toJson outside),("fuelExhausted",toJson fuel),
     ("matches",toJson matchCounts),("bindings",toJson bindings),
-    ("knownExamples",.arr knownExamples),("mismatches",.arr mismatches),
+    ("mismatches",.arr mismatches),
     ("outOfScopeExamples",.arr outsideExamples),("fuelExamples",.arr fuelExamples)]).pretty ++ "\n")
-  IO.println s!"coverageProgramDiff: inputs={corpus.inputs.length} matches={matchCounts.cases} bindings={bindings.cases} matched={matched} knownQ3={known} mismatched={mismatches.size} outOfScope={outside} fuelExhausted={fuel}"
+  IO.println s!"coverageProgramDiff: inputs={corpus.inputs.length} matches={matchCounts.cases} bindings={bindings.cases} matched={matched} mismatched={mismatches.size} outOfScope={outside} fuelExhausted={fuel}"
   return if mismatches.isEmpty && fuel == 0 && total > 0 then 0 else 1
 
 end CoverageProgramDiff

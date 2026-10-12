@@ -1,9 +1,12 @@
 //! 鍵の辞書式比較（設計書 03-06「Map と Set（初回リリース版）」）。
 //! 基本型の葉は定数評価器と同じ関数で比べ、複合の鍵は仕事の積み重ねで辿る。
+//! 同じ対象の組でも 1 回目は成分を調べ、調べ終えた組は省いて共有を指数時間で展開しない
+//! （設計書 02-08「組み込みの関数の呼び出し」）。
 
 use super::tree::invalid;
 use super::{Cursor, Stop, Value, ValueCtx};
 use crate::base::prim::{KeyAtom, cmp_key_atom};
+use crate::runtime::equal::SharedPairs;
 use crate::runtime::{
     heap::{FieldsKind, ObjKind},
     list,
@@ -61,7 +64,9 @@ pub(super) fn compare<'e>(
     b: Value<'e>,
 ) -> Result<Ordering, Stop> {
     let mut pending = vec![Work::Values(a, b)];
+    let mut shared = SharedPairs::default();
     while let Some(work) = pending.pop() {
+        shared.step();
         let order = match work {
             Work::Order(order) => order,
             Work::Lists(mut a, mut b) => match (a.next(ctx)?, b.next(ctx)?) {
@@ -93,6 +98,9 @@ pub(super) fn compare<'e>(
                 } else if let (Some((at, an)), Some((bt, bn))) = (ctor(ctx, a), ctor(ctx, b)) {
                     let tag_order = at.cmp(&bt);
                     if tag_order == Ordering::Equal {
+                        if !shared.first_visit(ctx, a, b)? {
+                            continue;
+                        }
                         pending.push(Work::Order(an.cmp(&bn)));
                         for i in (0..an.min(bn)).rev() {
                             pending.push(Work::Values(
@@ -103,12 +111,21 @@ pub(super) fn compare<'e>(
                     }
                     tag_order
                 } else if list::is_list(ctx, a) && list::is_list(ctx, b) {
+                    if !shared.first_visit(ctx, a, b)? {
+                        continue;
+                    }
                     pending.push(Work::Lists(list::cursor(ctx, a)?, list::cursor(ctx, b)?));
                     Ordering::Equal
                 } else if is_tree(ctx, a, true) && is_tree(ctx, b, true) {
+                    if !shared.first_visit(ctx, a, b)? {
+                        continue;
+                    }
                     pending.push(Work::Trees(Cursor::map(a), Cursor::map(b), true));
                     Ordering::Equal
                 } else if is_tree(ctx, a, false) && is_tree(ctx, b, false) {
+                    if !shared.first_visit(ctx, a, b)? {
+                        continue;
+                    }
                     pending.push(Work::Trees(Cursor::set(a), Cursor::set(b), false));
                     Ordering::Equal
                 } else {

@@ -1,6 +1,6 @@
 //! `Assert.Check` の確認と値の書き出しを、検査・脱糖・コード生成を通したプログラムを `run_test` で動かして確かめる
-//! （実装プラン D10「受け入れテスト」）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! （設計書 02-11「テストの実行」、06-04「期待の確認」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -68,7 +68,7 @@ pub(crate) struct Captured {
     pub(crate) stderr: Arc<Mutex<Vec<u8>>>,
 }
 
-/// テストの実行器と同じ形の環境（10-18「テストの関数の実行」の表）。
+/// テストの実行器と同じ形の環境（設計書 02-11「テストの実行」の表）。
 pub(crate) fn environment(mode: ExecMode) -> (RunEnv, Captured) {
     let stdout = Arc::new(Mutex::new(Vec::new()));
     let stderr = Arc::new(Mutex::new(Vec::new()));
@@ -168,6 +168,28 @@ fn failed_equality_renders_both_values_in_show_form() {
             r#""""#,
             r#""a\"b\n\$\\""#,
             r#""""#,
+        ),
+        (
+            "String",
+            r#""\u{1b}\u{7f}\u{202e}\u{2066}\u{feff}""#,
+            r#""""#,
+            r#""\u{1b}\u{7f}\u{202e}\u{2066}\u{feff}""#,
+            r#""""#,
+        ),
+        ("Character", r#"'\u{7}'"#, "'x'", r#"'\u{7}'"#, "'x'"),
+        (
+            "Option[Byte]",
+            "Byte.fromInteger(7)",
+            "Byte.fromInteger(255)",
+            "Option.Some(7)",
+            "Option.Some(255)",
+        ),
+        (
+            "Option[Bytes]",
+            "Bytes.fromIntegers([0, 255])",
+            "Bytes.fromIntegers([])",
+            "Option.Some(Bytes.fromList([0, 255]))",
+            "Option.Some(Bytes.fromList([]))",
         ),
         ("Character", "'x'", r"'\''", "'x'", r"'\''"),
         ("Boolean", "true", "false", "true", "false"),
@@ -269,25 +291,275 @@ fn failed_equality_renders_both_values_in_show_form() {
     );
 }
 
-// 関門: 型が分からない位置（型パラメータの補助の関数）と、型の表の鍵の取り方（パイプの式全体の span）は、
-// 上の表の確認の式では通らない別の経路である。前者は 10-18 が決めた `<constructor #タグ>` の形、後者は
-// 脱糖がパイプの展開に付ける由来位置との対応を確かめる。
+// 関門: 型パラメータの確認は、呼び出しの枠や使用箇所の型引数を使わないと構成子名を失う。
+// 静的な型だけの表記のテストでは通らない経路を、VM が返す失敗の記録で確かめる。
+#[test]
+fn generic_helpers_recover_constructor_names() {
+    let source = format!(
+        r#"{TYPES}
+data ChoiceNumber
+  Empty
+  Value(Integer)
+end data
+
+data ChoiceText
+  Empty
+  Value(String)
+end data
+
+record Point
+  x: Integer
+  y: Integer
+end record
+
+function checkSame[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  Assert.equal(a, b)
+end function
+
+function checkList[T: equality](a: List[T], b: List[T]) -> Unit uses Assert.Check
+  Assert.equal(a, b)
+end function
+
+function checkTwice[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  checkSame(a, b)
+  checkSame(a, b)
+end function
+
+function checkTail[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  checkSame(a, b)
+end function
+
+function checkPair[T: equality](p: Pair[T, T]) -> Unit uses Assert.Check
+  Assert.equal(Pair.first(p), Pair.second(p))
+end function
+
+function checkEach[T: equality](xs: List[T], y: T) -> Unit uses Assert.Check
+  List.forEach(xs, lambda(x) Assert.equal(x, y) end lambda)
+end function
+
+@test
+function lambdaForEach() -> Unit uses Assert.Check
+  List.forEach([Pair(Color.Red, Color.Green)], lambda(p)
+    Assert.equal(Pair.first(p), Pair.second(p))
+  end lambda)
+end function
+
+@test
+function callback() -> Unit uses Assert.Check
+  List.forEach([Pair(Color.Red, Color.Green)], checkPair)
+end function
+
+@test
+function genericLambda() -> Unit uses Assert.Check
+  checkEach([Color.Red], Color.Green)
+end function
+"#
+    );
+    let cases = [
+        (
+            "direct",
+            "Assert.equal(Color.Red, Color.Green)",
+            "Color.Red",
+            "Color.Green",
+        ),
+        (
+            "nullary",
+            "checkSame(Color.Red, Color.Green)",
+            "Color.Red",
+            "Color.Green",
+        ),
+        (
+            "fields",
+            "checkSame(Shape.Circle(1), Shape.Square(2, 3))",
+            "Shape.Circle(1)",
+            "Shape.Square(2, 3)",
+        ),
+        (
+            "recordCase",
+            "checkSame(Point(x: 1, y: 2), Point(x: 1, y: 3))",
+            "Point(x: 1, y: 2)",
+            "Point(x: 1, y: 3)",
+        ),
+        (
+            "option",
+            "checkSame(Option.Some(Color.Green), Option.None)",
+            "Option.Some(Color.Green)",
+            "Option.None",
+        ),
+        (
+            "list",
+            "checkList([Color.Red], [Color.Green])",
+            "[Color.Red]",
+            "[Color.Green]",
+        ),
+        (
+            "nonTail",
+            "checkSame(Color.Red, Color.Green)\n  Assert.isTrue(true, \"after\")",
+            "Color.Red",
+            "Color.Green",
+        ),
+        (
+            "twoLevels",
+            "checkTwice(Option.Some(Color.Red), Option.Some(Color.Green))\n  Assert.isTrue(true, \"after\")",
+            "Option.Some(Color.Red)",
+            "Option.Some(Color.Green)",
+        ),
+        (
+            "twoTails",
+            "checkTail(Color.Red, Color.Green)",
+            "Color.Red",
+            "Color.Green",
+        ),
+        // 左だけでは二つの型が同じタグに合うので、右の引数の形も照合しなければ名前が決まらない。
+        (
+            "numberChoice",
+            "checkTail(ChoiceNumber.Empty, ChoiceNumber.Value(1))",
+            "ChoiceNumber.Empty",
+            "ChoiceNumber.Value(1)",
+        ),
+        (
+            "textChoice",
+            r#"checkTail(ChoiceText.Empty, ChoiceText.Value("a"))"#,
+            "ChoiceText.Empty",
+            r#"ChoiceText.Value("a")"#,
+        ),
+        (
+            "pipedHelper",
+            "Color.Red |> checkSame(Color.Green)",
+            "Color.Red",
+            "Color.Green",
+        ),
+        (
+            "parenHelper",
+            "(checkSame)(Color.Red, Color.Green)",
+            "Color.Red",
+            "Color.Green",
+        ),
+    ];
+    let mut source = source;
+    for (name, body, _, _) in cases {
+        source.push_str(&format!(
+            "@test\nfunction {name}() -> Unit uses Assert.Check\n  {body}\nend function\n"
+        ));
+    }
+    let prepared = prepare(&source);
+    for (name, _, left, right) in cases {
+        let failure = prepared.failure(name);
+        assert_eq!(failure.left.as_deref(), Some(left), "{name}");
+        assert_eq!(failure.right.as_deref(), Some(right), "{name}");
+    }
+    for name in ["lambdaForEach", "callback", "genericLambda"] {
+        let failure = prepared.failure(name);
+        assert_eq!(failure.left.as_deref(), Some("Color.Red"), "{name}");
+        assert_eq!(failure.right.as_deref(), Some("Color.Green"), "{name}");
+    }
+}
+
+// 関門: 同じ形の二つの型で使う補助の関数は、使用箇所の候補だけでは名前が決まらない。
+// 通常の呼び出しの枠を辿れなくなる退行を、既存の一つの型だけで使う例では捕まえられないので、
+// 三段の呼び出しとラムダからの呼び出しで左右の構成子名を必須とする（設計書 06-04「結果の報告」）。
+#[test]
+fn non_tail_helper_chain_recovers_constructor_names_for_each_type() {
+    let source = format!(
+        r#"{TYPES}
+data Dir
+  Up
+  Down
+end data
+
+function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+  Assert.equal(actual, expected)
+end function
+
+function checkTwice[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  checkSame(a, b)
+  checkSame(a, b)
+end function
+
+function outer[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  checkTwice(a, b)
+  Assert.isTrue(true, "after")
+end function
+
+@test
+function color() -> Unit uses Assert.Check
+  outer(Color.Red, Color.Green)
+  Assert.isTrue(true, "after")
+end function
+
+@test
+function dir() -> Unit uses Assert.Check
+  outer(Dir.Up, Dir.Down)
+end function
+
+@test
+function fromLambda() -> Unit uses Assert.Check
+  List.forEach([1], lambda(i) outer(Dir.Up, Dir.Down) end lambda)
+end function
+"#
+    );
+    let prepared = prepare(&source);
+    for (name, left, right) in [
+        ("color", "Color.Red", "Color.Green"),
+        ("dir", "Dir.Up", "Dir.Down"),
+        ("fromLambda", "Dir.Up", "Dir.Down"),
+    ] {
+        let failure = prepared.failure(name);
+        assert_eq!(failure.left.as_deref(), Some(left), "{name}");
+        assert_eq!(failure.right.as_deref(), Some(right), "{name}");
+    }
+}
+
+// 関門: 同じ形の二つの型は、枠を失った補助の関数の型引数だけでは区別できない。
+// 分かる外側の型は残し、決まらない構成子の位置だけ形から書く（設計書 06-04「結果の報告」）。
 #[test]
 fn unknown_types_render_by_shape_and_pipes_use_the_static_type() {
     let source = format!(
         r#"{TYPES}
+data A
+  A1
+  A2
+end data
+
+data B
+  B1
+  B2
+end data
+
 function check[T: equality](a: T, b: T) -> Unit uses Assert.Check
   Assert.equal(a, b)
 end function
 
-@test
-function generic() -> Unit uses Assert.Check
-  check(Shape.Square(1, 2), Shape.Circle(3))
+function checkTail[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  check(a, b)
+end function
+
+function checkOption[T: equality](a: Option[T], b: Option[T]) -> Unit uses Assert.Check
+  Assert.equal(a, b)
+end function
+
+function optionTail[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  checkOption(Option.Some(a), Option.Some(b))
 end function
 
 @test
-function genericBasics() -> Unit uses Assert.Check
-  check([Option.Some("a")], [Option.None])
+function genericA() -> Unit uses Assert.Check
+  checkTail(A.A1, A.A2)
+end function
+
+@test
+function genericB() -> Unit uses Assert.Check
+  checkTail(B.B1, B.B2)
+end function
+
+@test
+function optionA() -> Unit uses Assert.Check
+  optionTail(A.A1, A.A2)
+end function
+
+@test
+function optionB() -> Unit uses Assert.Check
+  optionTail(B.B1, B.B2)
 end function
 
 @test
@@ -302,13 +574,33 @@ end function
 "#
     );
     let prepared = prepare(&source);
-    let failure = prepared.failure("generic");
-    assert_eq!(failure.left.as_deref(), Some("<constructor #1>(1, 2)"));
-    assert_eq!(failure.right.as_deref(), Some("<constructor #0>(3)"));
-    let failure = prepared.failure("genericBasics");
-    assert_eq!(failure.left.as_deref(), Some(r#"[<constructor #0>("a")]"#));
-    assert_eq!(failure.right.as_deref(), Some("[<constructor #1>]"));
-    // プレースホルダの形（ラムダの中の呼び出し）と、第 1 引数に加える形（パイプの式全体が由来位置）の両方。
+    for name in ["genericA", "genericB"] {
+        let failure = prepared.failure(name);
+        assert_eq!(
+            failure.left.as_deref(),
+            Some("<constructor #0 of an unknown type>"),
+            "{name}"
+        );
+        assert_eq!(
+            failure.right.as_deref(),
+            Some("<constructor #1 of an unknown type>"),
+            "{name}"
+        );
+    }
+    for name in ["optionA", "optionB"] {
+        let failure = prepared.failure(name);
+        assert_eq!(
+            failure.left.as_deref(),
+            Some("Option.Some(<constructor #0 of an unknown type>)"),
+            "{name}"
+        );
+        assert_eq!(
+            failure.right.as_deref(),
+            Some("Option.Some(<constructor #1 of an unknown type>)"),
+            "{name}"
+        );
+    }
+    // プレースホルダの形と、第 1 引数に加える形の両方で、パイプ全体の由来位置を使う。
     for name in ["piped", "pipedFirst"] {
         let failure = prepared.failure(name);
         assert_eq!(failure.left.as_deref(), Some("Option.Some(5)"), "{name}");
@@ -316,20 +608,90 @@ end function
     }
 }
 
-// 関門: 書き出しは実行時の値を辿るので、Rust の再帰で書く退行はスタックの溢れ（処理系の不具合）になる
-// （実装プラン 00-02「再帰の深さ」）。深い入れ子と長いリストの値で、報告の文字列が最後まで作られることを確かめる。
+// 関門: 4 KiB の上限は、境目での切り過ぎ・UTF-8 の途中での切断・逃がす前の長さによる判定・
+// コレクションや深い値への適用漏れで破れる。既存の表記の表は短い値だけなので、利用者の確認の式から
+// 上限と末尾の省略記号を確かめる（設計書 06-04「結果の報告」）。型の有無で走査の入口が違うので両方を通す。
 #[test]
-#[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
-fn deep_and_long_values_render_without_internal_failure() {
-    // 回収の強制では確保のたびに全体を辿るので、値を作る時間が大きさの二乗になる。再帰の深さの退行は既定の
-    // 構成の大きさで捕まえ、回収の強制では書き出しの途中の回収がないことだけを小さな値で確かめる。
-    let (depth, length) = if cfg!(feature = "gc-stress") {
-        (500, 500)
-    } else {
-        (100_000, 100_000)
-    };
-    let source = format!(
+fn long_values_are_cut_at_4_kib_with_an_ellipsis() {
+    let numbers = (0..1000)
+        .map(|n| n.to_string())
+        .collect::<Vec<_>>()
+        .join(", ");
+    let pairs = (0..8)
+        .map(|n| format!("Pair({n}, \"{}\")", "a".repeat(600)))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let cases = [
+        (
+            "String",
+            r#"String.repeat("a", 4094)"#,
+            r#""""#,
+            format!("\"{}\"", "a".repeat(4094)),
+            r#""""#,
+        ),
+        (
+            "String",
+            r#"String.repeat("a", 4095)"#,
+            r#""""#,
+            format!("\"{}…", "a".repeat(4092)),
+            r#""""#,
+        ),
+        (
+            "String",
+            r#""a" + String.repeat("あ", 1400)"#,
+            r#""""#,
+            format!("\"a{}…", "あ".repeat(1363)),
+            r#""""#,
+        ),
+        (
+            "String",
+            r#"String.repeat("\u{202e}", 600)"#,
+            r#""""#,
+            cut_expected(&format!("\"{}\"", r#"\u{202e}"#.repeat(600))),
+            r#""""#,
+        ),
+        (
+            "List[Integer]",
+            "List.range(0, 1000)",
+            "[]",
+            cut_expected(&format!("[{numbers}]")),
+            "[]",
+        ),
+        (
+            "Set[Integer]",
+            "Set.fromList(List.range(0, 1000))",
+            "Set.fromList([])",
+            cut_expected(&format!("Set.fromList([{numbers}])")),
+            "Set.fromList([])",
+        ),
+        (
+            "Map[Integer, String]",
+            r#"Map.fromList(List.map(List.range(0, 8), lambda(n) return Pair(n, String.repeat("a", 600)) end lambda))"#,
+            "Map.fromList([])",
+            cut_expected(&format!("Map.fromList([{pairs}])")),
+            "Map.fromList([])",
+        ),
+        (
+            "Bytes",
+            "bytes(1400)",
+            "bytes(0)",
+            cut_expected(&format!("Bytes.fromList([{}])", vec!["0"; 1400].join(", "))),
+            "Bytes.fromList([])",
+        ),
+    ];
+    let mut source = format!(
         r#"{TYPES}
+function check[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  Assert.equal(a, b)
+end function
+
+function bytes(n: Integer) -> Bytes
+  match Bytes.fromHex(String.repeat("00", n)) with
+  case Option.Some(bs) -> return bs
+  case Option.None -> return bytes(0)
+  end match
+end function
+
 function nest(n: Integer, acc: Nested) -> Nested
   if n = 0 then return acc end if
   return nest(n - 1, Nested.Node([acc]))
@@ -337,35 +699,128 @@ end function
 
 @test
 function deep() -> Unit uses Assert.Check
-  Assert.equal(nest({depth}, Nested.Leaf), Nested.Leaf)
+  Assert.equal(nest(320, Nested.Leaf), Nested.Leaf)
 end function
 
 @test
-function long() -> Unit uses Assert.Check
-  Assert.equal(List.range(0, {length}), [])
+function notEqual() -> Unit uses Assert.Check
+  bind s <- String.repeat("a", 4095)
+  Assert.notEqual(s, s)
 end function
 "#
     );
+    for (i, (ty, actual, expected, _, _)) in cases.iter().enumerate() {
+        for (prefix, call) in [("typed", "Assert.equal"), ("generic", "check")] {
+            source.push_str(&format!(
+                "@test\nfunction {prefix}{i}() -> Unit uses Assert.Check\n  bind a: {ty} <- {actual}\n  bind b: {ty} <- {expected}\n  {call}(a, b)\nend function\n"
+            ));
+        }
+    }
     let prepared = prepare(&source);
+    for (i, (_, _, _, left, right)) in cases.iter().enumerate() {
+        for prefix in ["typed", "generic"] {
+            let name = format!("{prefix}{i}");
+            let failure = prepared.failure(&name);
+            assert_eq!(failure.left.as_deref(), Some(left.as_str()), "{name}");
+            assert_eq!(failure.right.as_deref(), Some(*right), "{name}");
+            assert!(left.len() <= 4096, "{name}");
+        }
+    }
     let failure = prepared.failure("deep");
-    let expected = format!(
+    let expected = cut_expected(&format!(
         "{}Nested.Leaf{}",
-        "Nested.Node([".repeat(depth),
-        "])".repeat(depth)
-    );
-    assert!(failure.left.as_deref() == Some(expected.as_str()));
-    let failure = prepared.failure("long");
-    let expected = format!(
-        "[{}]",
-        (0..length)
-            .map(|n| n.to_string())
-            .collect::<Vec<_>>()
-            .join(", ")
-    );
-    assert!(failure.left.as_deref() == Some(expected.as_str()));
+        "Nested.Node([".repeat(320),
+        "])".repeat(320)
+    ));
+    assert_eq!(failure.left.as_deref(), Some(expected.as_str()));
+    assert_eq!(failure.right.as_deref(), Some("Nested.Leaf"));
+    let failure = prepared.failure("notEqual");
+    let expected = format!("\"{}…", "a".repeat(4092));
+    assert_eq!(failure.left.as_deref(), Some(expected.as_str()));
+    assert_eq!(failure.right.as_deref(), Some(expected.as_str()));
 }
 
-// 関門: `isTrue`・`fail` は値を書き出さず、引数の文を報告する（10-18 の表）。成り立つ確認は `()` を返して
+// 期待値は Show の表記から作った全体を、契約のバイト数で切る。本番の書き出し処理は使わない。
+fn cut_expected(full: &str) -> String {
+    assert!(full.len() > 4096);
+    let mut end = 4093;
+    while !full.is_char_boundary(end) {
+        end -= 1;
+    }
+    format!("{}…", &full[..end])
+}
+
+// 関門: 共有された構造の展開は、値の大きさに対して指数的に伸びる。比較を最初のタグの違いで終え、
+// 書き出しが残りを辿らず上限で止まることを、VM を通した失敗の記録で確かめる（設計書 06-04「結果の報告」）。
+// 型の復元の照合も共有した構造を辿るので、その上限と、決まらない型の書き出しの上限を確かめる。
+#[test]
+fn shared_values_stop_rendering_at_the_limit() {
+    let prepared = prepare(
+        r#"
+data Tree
+  Node(Tree, Tree)
+  Leaf
+end data
+
+data OtherTree
+  Node(OtherTree, OtherTree)
+  Leaf
+end data
+
+function grow(n: Integer, t: Tree) -> Tree
+  if n = 0 then return t end if
+  return grow(n - 1, Tree.Node(t, t))
+end function
+
+function check[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  Assert.equal(a, b)
+end function
+
+function checkTail[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  check(a, b)
+end function
+
+@test
+function sharedUnknown() -> Unit uses Assert.Check
+  checkTail(grow(64, Tree.Leaf), Tree.Leaf)
+end function
+
+@test
+function otherTree() -> Unit uses Assert.Check
+  checkTail(OtherTree.Node(OtherTree.Leaf, OtherTree.Leaf), OtherTree.Leaf)
+end function
+
+@test
+function shared() -> Unit uses Assert.Check
+  Assert.equal(grow(64, Tree.Leaf), Tree.Leaf)
+end function
+
+@test
+function sharedGeneric() -> Unit uses Assert.Check
+  check(grow(64, Tree.Leaf), Tree.Leaf)
+end function
+"#,
+    );
+    let failure = prepared.failure("shared");
+    let left = failure.left.as_deref().unwrap();
+    assert!(left.starts_with(&"Tree.Node(".repeat(64)));
+    assert!(left.len() <= 4096);
+    assert!(left.ends_with('…'));
+    assert_eq!(failure.right.as_deref(), Some("Tree.Leaf"));
+    let failure = prepared.failure("sharedGeneric");
+    let left = failure.left.as_deref().unwrap();
+    assert!(left.starts_with(&"Tree.Node(".repeat(64)));
+    assert!(left.len() <= 4096);
+    assert!(left.ends_with('…'));
+    assert_eq!(failure.right.as_deref(), Some("Tree.Leaf"));
+    let failure = prepared.failure("sharedUnknown");
+    let left = failure.left.as_deref().unwrap();
+    assert!(left.starts_with("<constructor #0 of an unknown type>("));
+    assert!(left.len() <= 4096);
+    assert!(left.ends_with('…'));
+}
+
+// 関門: `isTrue`・`fail` は値を書き出さず、引数の文を報告する（設計書 06-04「期待の確認」）。成り立つ確認は `()` を返して
 // 続ける（02-11）。どちらも `equal` の経路では確かめられない分岐である。
 #[test]
 fn message_operations_report_the_message_and_passing_checks_continue() {
@@ -394,4 +849,281 @@ end function
         assert_eq!(failure.message, message);
         assert_eq!((failure.left, failure.right), (None, None));
     }
+}
+
+// 関門: 別の起動の枠や欠けた候補から、同じ形の別の型名を表示しない。
+// 正しい名前か型不明の表示を、VM の失敗の記録で確かめる（設計書 06-04「結果の報告」）。
+#[test]
+fn constructor_names_do_not_use_an_outer_tail_call_instance() {
+    let prepared = prepare(
+        r#"
+data Color
+  Red
+  Green
+end data
+
+data Dir
+  Up
+  Down
+end data
+
+function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+  Assert.equal(actual, expected)
+end function
+
+function viaTail[T: equality](a: T, b: T, k: function() -> Unit uses Assert.Check) -> Unit uses Assert.Check
+  k()
+  checkSame(a, b)
+end function
+
+@test("tail call inside an outer instance")
+function nested() -> Unit uses Assert.Check
+  viaTail(Dir.Up, Dir.Up, lambda()
+    viaTail(Color.Red, Color.Green, lambda() return () end lambda)
+  end lambda)
+end function
+"#,
+    );
+    let failure = prepared.failure("nested");
+    assert_constructor_names(
+        &failure,
+        ("Color.Red", "Color.Green"),
+        (
+            "<constructor #0 of an unknown type>",
+            "<constructor #1 of an unknown type>",
+        ),
+    );
+}
+
+#[test]
+fn constructor_names_do_not_use_an_outer_lambda_instance() {
+    let prepared = prepare(
+        r#"
+data Color
+  Red
+  Green
+end data
+
+data Dir
+  Up
+  Down
+end data
+
+function each[T: equality](a: T, b: T, k: function() -> Unit uses Assert.Check) -> Unit uses Assert.Check
+  k()
+  List.forEach([a], lambda(x) Assert.equal(x, b) end lambda)
+end function
+
+@test("lambda after a tail call inside an outer instance")
+function nested() -> Unit uses Assert.Check
+  each(Dir.Up, Dir.Up, lambda()
+    each(Color.Red, Color.Green, lambda() return () end lambda)
+  end lambda)
+end function
+
+"#,
+    );
+    let failure = prepared.failure("nested");
+    assert_constructor_names(
+        &failure,
+        ("Color.Red", "Color.Green"),
+        (
+            "<constructor #0 of an unknown type>",
+            "<constructor #1 of an unknown type>",
+        ),
+    );
+}
+
+#[test]
+fn constructor_names_do_not_use_another_escaped_closure_instance() {
+    let prepared = prepare(
+        r#"
+data Color
+  Red
+  Green
+end data
+
+data Dir
+  Up
+  Down
+end data
+
+function keep[T: equality](a: T, g: function() -> Unit uses Assert.Check) -> (function(T) -> Unit uses Assert.Check) uses Assert.Check
+  g()
+  return lambda(x) Assert.equal(a, x) end lambda
+end function
+
+@test("escaped closure called inside another instance of its function")
+function escaped() -> Unit uses Assert.Check
+  bind f <- keep(Color.Red, lambda() return () end lambda)
+  bind ignored <- keep(Dir.Up, lambda()
+    f(Color.Green)
+    Assert.isTrue(true, "after")
+  end lambda)
+  Assert.isTrue(true, "end")
+end function
+"#,
+    );
+    let failure = prepared.failure("escaped");
+    assert_constructor_names(
+        &failure,
+        ("Color.Red", "Color.Green"),
+        (
+            "<constructor #0 of an unknown type>",
+            "<constructor #1 of an unknown type>",
+        ),
+    );
+}
+
+#[test]
+fn constructor_names_require_all_implementation_uses() {
+    let prepared = prepare(
+        r#"
+data Color
+  Red
+  Green
+end data
+
+data Dir
+  Up
+  Down
+end data
+
+trait Check[T]
+  function check(a: T, b: T) -> Unit uses Assert.Check
+end trait
+
+implement[T: equality] Check[Option[T]]
+  function check(a: Option[T], b: Option[T]) -> Unit uses Assert.Check
+    twoStep(a, b)
+  end function
+end implement
+
+function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+  Assert.equal(actual, expected)
+end function
+
+function twoStep[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+  checkSame(actual, expected)
+end function
+
+@test("passing use with Color")
+function colors() -> Unit uses Assert.Check
+  twoStep(Option.Some(Color.Red), Option.Some(Color.Red))
+end function
+
+@test("failing use through an implementation with Dir")
+function dirs() -> Unit uses Assert.Check
+  Check.check(Option.Some(Dir.Up), Option.Some(Dir.Down))
+end function
+"#,
+    );
+    let failure = prepared.failure("dirs");
+    assert_constructor_names(
+        &failure,
+        ("Option.Some(Dir.Up)", "Option.Some(Dir.Down)"),
+        (
+            "<constructor #0 of an unknown type>(<constructor #0 of an unknown type>)",
+            "<constructor #0 of an unknown type>(<constructor #1 of an unknown type>)",
+        ),
+    );
+}
+
+// 関門: 同じ型の使用が多くても、候補の重なりを除けば型名が決まる。
+#[test]
+fn repeated_uses_recover_constructor_names() {
+    let source = r#"
+data Color
+  Red
+  Green
+end data
+
+function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+  Assert.equal(actual, expected)
+end function
+
+function twoStep[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+  checkSame(actual, expected)
+end function
+
+@test("fails")
+function fails() -> Unit uses Assert.Check
+  twoStep(Color.Red, Color.Green)
+end function
+
+@test("passes")
+function passes() -> Unit uses Assert.Check
+  twoStep(Color.Red, Color.Red)
+  Assert.isTrue(true, "x")
+end function
+"#
+    .replace(
+        "  twoStep(Color.Red, Color.Red)\n",
+        &"  twoStep(Color.Red, Color.Red)\n".repeat(64),
+    );
+    let failure = prepare(&source).failure("fails");
+    assert_eq!(failure.left.as_deref(), Some("Color.Red"));
+    assert_eq!(failure.right.as_deref(), Some("Color.Green"));
+}
+
+// 二つの型が同じ形でも、正しい名前か型不明の表示だけを許す。
+fn assert_constructor_names(failure: &CheckFailure, correct: (&str, &str), unknown: (&str, &str)) {
+    for (actual, correct, unknown) in [
+        (failure.left.as_deref(), correct.0, unknown.0),
+        (failure.right.as_deref(), correct.1, unknown.1),
+    ] {
+        assert!(
+            actual == Some(correct) || actual == Some(unknown),
+            "{actual:?}"
+        );
+    }
+}
+
+// 関門: 型コンストラクタの引数を含む使用を候補から落とすと、別の使用の型名に決まってしまう。
+#[test]
+fn constructor_names_require_all_type_constructor_uses() {
+    let prepared = prepare(
+        r#"
+data Color
+  Red
+  Green
+end data
+
+data Dir
+  Up
+  Down
+end data
+
+function checkSame[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  Assert.equal(a, b)
+end function
+
+function twoStep[T: equality](a: T, b: T) -> Unit uses Assert.Check
+  checkSame(a, b)
+end function
+
+function higher[F[_], T: equality](marker: F[Integer], a: T, b: T) -> Unit uses Assert.Check
+  twoStep(a, b)
+end function
+
+@test
+function colors() -> Unit uses Assert.Check
+  twoStep(Color.Red, Color.Red)
+end function
+
+@test
+function dirs() -> Unit uses Assert.Check
+  higher(Option.Some(1), Dir.Up, Dir.Down)
+end function
+"#,
+    );
+    let failure = prepared.failure("dirs");
+    assert_constructor_names(
+        &failure,
+        ("Dir.Up", "Dir.Down"),
+        (
+            "<constructor #0 of an unknown type>",
+            "<constructor #1 of an unknown type>",
+        ),
+    );
 }

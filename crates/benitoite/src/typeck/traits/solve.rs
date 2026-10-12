@@ -6,6 +6,7 @@ use crate::typeck::{
     context::Body,
     decls::{Decls, Scope},
     infer::*,
+    limits::MAX_DICT_WORK,
     solve::Solver,
 };
 use crate::types::*;
@@ -37,6 +38,7 @@ pub(super) enum Failure {
     Parameter { class: BindingId, index: u32 },
     Missing { class: BindingId, arg: IClassArg },
     Suppressed,
+    Limit,
 }
 fn path(d: &Decls<'_>, from: BindingId, to: BindingId) -> Option<Vec<BindingId>> {
     let mut pending = VecDeque::from([(from, vec![])]);
@@ -65,6 +67,7 @@ pub(super) fn resolve(
     table: &ImplTable,
     class: BindingId,
     arg: &IClassArg,
+    parts: &mut usize,
 ) -> Result<Resolution, Failure> {
     let normalized = match arg {
         IClassArg::Ty(t) => {
@@ -90,7 +93,23 @@ pub(super) fn resolve(
             }
         }
     };
-    let parameter = match &normalized {
+    resolve_normalized(d, solver, scheme, table, class, &normalized, parts)
+}
+
+// 親で正規化済みの型の部分を子へ渡し、子では再び zonk しない。
+fn resolve_normalized(
+    d: &Decls<'_>,
+    solver: &Solver,
+    scheme: &Scheme,
+    table: &ImplTable,
+    class: BindingId,
+    normalized: &IClassArg,
+    parts: &mut usize,
+) -> Result<Resolution, Failure> {
+    // 子と同じ数えを使うことで、指数的に増える子も一つの辞書の予算に含める
+    // （設計書 02-05「型クラスの制約の解決」）。
+    charge(parts, 1)?;
+    let parameter = match normalized {
         IClassArg::Ty(ITy::Param(i)) | IClassArg::Head(IHead::Param(i)) => Some(*i),
         IClassArg::Ty(_) | IClassArg::Con(_) | IClassArg::Head(IHead::Var(_)) => None,
     };
@@ -118,38 +137,51 @@ pub(super) fn resolve(
         normalized,
         IClassArg::Ty(ITy::Var(_)) | IClassArg::Head(IHead::Var(_))
     ) {
-        return Err(Failure::Unknown(normalized));
+        return Err(Failure::Unknown(normalized.clone()));
     }
-    let (con, args) = match &normalized {
-        IClassArg::Ty(ITy::Con(c, args)) => (*c, args.clone()),
-        IClassArg::Con(c) => (*c, vec![]),
+    let (con, args) = match normalized {
+        IClassArg::Ty(ITy::Con(c, args)) => (*c, args.as_slice()),
+        IClassArg::Con(c) => (*c, &[][..]),
         IClassArg::Ty(_) | IClassArg::Head(_) => {
+            if d.invalid_impl_targets.contains(&class) {
+                return Err(Failure::Suppressed);
+            }
             return Err(Failure::Missing {
                 class,
-                arg: normalized,
+                arg: normalized.clone(),
             });
         }
     };
     let Some(id) = table.get(&(class, con)) else {
         return Err(Failure::Missing {
             class,
-            arg: normalized,
+            arg: normalized.clone(),
         });
     };
     let Some(i) = d.out.impls.get(*id) else {
         return Err(Failure::Suppressed);
     };
+    // 型の数えは TypeBudget と同じく Con/App と Fn の引数・戻り値を一節ずつ数える。
+    // 写す前に予算を検査し、大きな型を持つ辞書も止める。
+    if let TypeArg::Ty(Ty::Con(_, params)) = &i.target {
+        for (_, ty) in params.iter().zip(args) {
+            charge_type(parts, ty)?;
+        }
+        charge(parts, i.type_params.len().saturating_sub(args.len()))?;
+    } else {
+        charge(parts, i.type_params.len())?;
+    }
     let mut type_args = vec![TypeArg::Ty(crate::typeck::decls::unit()); i.type_params.len()];
     let mut infer_args = vec![ITy::Error; i.type_params.len()];
     // 対象は引数の順が宣言の順とは限らない（Pair[B, A]）。対象の Param の番号で置き換える。
     if let TypeArg::Ty(Ty::Con(_, params)) = &i.target {
-        for (p, t) in params.iter().zip(&args) {
+        for (p, t) in params.iter().zip(args) {
             if let Ty::Param(index) = p
                 && let Ok(index) = usize::try_from(*index)
                 && let (Some(out), Some(infer)) =
                     (type_args.get_mut(index), infer_args.get_mut(index))
             {
-                *out = TypeArg::Ty(solver.finalize(t, d.resolved));
+                *out = TypeArg::Ty(finalize_normalized(solver, t, d.resolved));
                 *infer = t.clone();
             }
         }
@@ -171,7 +203,15 @@ pub(super) fn resolve(
             else {
                 return Err(Failure::Suppressed);
             };
-            let child = resolve(d, solver, scheme, table, c.class, &IClassArg::Ty(t.clone()))?;
+            let child = resolve_normalized(
+                d,
+                solver,
+                scheme,
+                table,
+                c.class,
+                &IClassArg::Ty(t.clone()),
+                parts,
+            )?;
             dicts.push(child.dict);
             bounds.extend(child.bounds);
         }
@@ -186,6 +226,68 @@ pub(super) fn resolve(
     })
 }
 
+fn charge(parts: &mut usize, amount: usize) -> Result<(), Failure> {
+    *parts = parts.saturating_add(amount);
+    if *parts > MAX_DICT_WORK {
+        return Err(Failure::Limit);
+    }
+    Ok(())
+}
+
+fn charge_type(parts: &mut usize, ty: &ITy) -> Result<(), Failure> {
+    let mut pending = vec![ty];
+    while let Some(ty) = pending.pop() {
+        charge(parts, 1)?;
+        match ty {
+            ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
+            ITy::Fn(f) => {
+                pending.extend(&f.params);
+                pending.push(&f.ret);
+            }
+            ITy::Var(_) | ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
+        }
+    }
+    Ok(())
+}
+
+// 正規化済みの型を一度だけたどる。未確定の変数・頭・エフェクトの扱いは
+// Solver::finalize と同じにする（設計書 02-05「型クラスの制約の解決」）。
+fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOutput) -> Ty {
+    match ty {
+        ITy::Var(_) | ITy::Error => crate::typeck::decls::unit(),
+        ITy::Con(c, args) => Ty::Con(
+            *c,
+            args.iter()
+                .map(|t| finalize_normalized(solver, t, r))
+                .collect(),
+        ),
+        ITy::App(h, args) => {
+            let args = args
+                .iter()
+                .map(|t| finalize_normalized(solver, t, r))
+                .collect();
+            match solver.finalize_head(*h, r) {
+                TyHead::Con(c) => Ty::Con(c, args),
+                TyHead::Param(i) => Ty::App(i, args),
+            }
+        }
+        ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
+            params: f
+                .params
+                .iter()
+                .map(|t| finalize_normalized(solver, t, r))
+                .collect(),
+            ret: finalize_normalized(solver, &f.ret, r),
+            effects: solver.finalize_effect(&f.effect),
+        })),
+        ITy::Param(i) => Ty::Param(*i),
+        ITy::Rigid { clause, index } => Ty::Rigid {
+            clause: *clause,
+            index: *index,
+        },
+    }
+}
+
 pub(super) fn check_bounds(
     d: &mut Decls<'_>,
     scope: &Scope,
@@ -196,7 +298,7 @@ pub(super) fn check_bounds(
     if resolution.bounds.is_empty() {
         return vec![];
     }
-    // 解決済みの型について F07 の等値・鍵・集まりの判定を再利用する。本体のエフェクトの
+    // 解決済みの型について等値・鍵・集まりの判定を再利用する。本体のエフェクトの
     // 状態とは分け、既に報告したエフェクトの失敗を繰り返さない（設計書 02-05「制約の解決」）。
     let constraints = resolution
         .bounds
@@ -225,6 +327,7 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>) {
     let table = table(ctx.decls);
     let constraints = std::mem::take(&mut ctx.constraints);
     let mut uses: BTreeMap<NodeId, BTreeMap<u32, DictExpr>> = BTreeMap::new();
+    let mut limited_uses = BTreeSet::new();
     for c in constraints {
         let Constraint::Class {
             class,
@@ -236,7 +339,21 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>) {
             ctx.constraints.push(c);
             continue;
         };
-        let dict = match resolve(ctx.decls, &ctx.solver, &ctx.scheme, &table, class, &arg) {
+        if let DictSite::Use { node, .. } = site
+            && limited_uses.contains(&node)
+        {
+            continue;
+        }
+        let mut parts = 0;
+        let dict = match resolve(
+            ctx.decls,
+            &ctx.solver,
+            &ctx.scheme,
+            &table,
+            class,
+            &arg,
+            &mut parts,
+        ) {
             Ok(resolution) => {
                 let diagnostics =
                     check_bounds(ctx.decls, &ctx.scope, &ctx.scheme, &resolution, &reason);
@@ -251,7 +368,12 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>) {
                 resolution.dict
             }
             Err(failure) => {
-                report(ctx, failure, &reason);
+                if matches!(failure, Failure::Limit)
+                    && let DictSite::Use { node, .. } = site
+                {
+                    limited_uses.insert(node);
+                }
+                report(ctx, failure, class, &arg, &reason);
                 continue;
             }
         };
@@ -284,7 +406,28 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>) {
         }
     }
 }
-fn report(ctx: &mut Body<'_, '_>, failure: Failure, r: &Reason) {
+fn argument_ty(ctx: &Body<'_, '_>, arg: &IClassArg) -> Ty {
+    match arg {
+        IClassArg::Ty(t) => ctx.solver.finalize(t, ctx.decls.resolved),
+        IClassArg::Con(c) => Ty::Con(*c, vec![]),
+        IClassArg::Head(h) => Ty::App(
+            match ctx.solver.finalize_head(*h, ctx.decls.resolved) {
+                TyHead::Param(i) => i,
+                TyHead::Con(_) => 0,
+            },
+            vec![],
+        ),
+    }
+}
+fn show_argument(ctx: &Body<'_, '_>, arg: &IClassArg) -> String {
+    match arg {
+        IClassArg::Ty(ty) => ctx.show_type(ty),
+        IClassArg::Con(_) | IClassArg::Head(_) => {
+            show(ctx.decls, &ctx.scheme, &argument_ty(ctx, arg))
+        }
+    }
+}
+fn report(ctx: &mut Body<'_, '_>, failure: Failure, class: BindingId, arg: &IClassArg, r: &Reason) {
     let diag = match failure {
         Failure::Unknown(arg) => {
             let ty = match arg {
@@ -316,24 +459,18 @@ fn report(ctx: &mut Body<'_, '_>, failure: Failure, r: &Reason) {
                 .help_edits("add", parameter_edit(ctx.decls, &ctx.scope, index, &class))
                 .build()
         }
-        Failure::Missing { class, arg } => {
-            let ty = match arg {
-                IClassArg::Ty(t) => ctx.solver.finalize(&t, ctx.decls.resolved),
-                IClassArg::Con(c) => Ty::Con(c, vec![]),
-                IClassArg::Head(h) => Ty::App(
-                    match ctx.solver.finalize_head(h, ctx.decls.resolved) {
-                        TyHead::Param(i) => i,
-                        TyHead::Con(_) => 0,
-                    },
-                    vec![],
-                ),
-            };
-            DiagBuilder::new(DiagCode::E0705)
-                .primary(r.span)
-                .arg("trait_name", class_name(ctx.decls, class))
-                .arg("ty", show(ctx.decls, &ctx.scheme, &ty))
-                .build()
-        }
+        Failure::Missing { class, arg } => DiagBuilder::new(DiagCode::E0705)
+            .primary(r.span)
+            .arg("trait_name", class_name(ctx.decls, class))
+            .arg("ty", show_argument(ctx, &arg))
+            .build(),
+        Failure::Limit => DiagBuilder::new(DiagCode::E0715)
+            .primary(r.span)
+            .arg("trait_name", class_name(ctx.decls, class))
+            .arg("ty", show_argument(ctx, arg))
+            .arg("limit", MAX_DICT_WORK.to_string())
+            .help("reduce")
+            .build(),
         Failure::Suppressed => return,
     };
     ctx.diagnostic(diag);

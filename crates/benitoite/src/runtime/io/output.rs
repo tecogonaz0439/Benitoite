@@ -13,7 +13,7 @@ use super::event::Wakeup;
 
 /// 転送を依頼するバッファの大きさ（64 KiB）。
 pub const TRANSFER_THRESHOLD: u64 = 65_536;
-/// 転送していない量の上限 B（1 MiB。本章「実装プランで決める値」）。
+/// 転送していない量の上限 B（1 MiB）。
 pub const UNSENT_LIMIT: u64 = 1_048_576;
 
 /// 書き出しの失敗の記録。
@@ -67,6 +67,7 @@ pub struct OutputPort {
     flush_waiters: Vec<(TaskId, u64)>,
     shared: Arc<WriterShared>,
     thread: Option<JoinHandle<()>>,
+    start_error: Option<String>,
 }
 
 impl OutputPort {
@@ -79,19 +80,31 @@ impl OutputPort {
     ) -> OutputPort {
         let shared = Arc::new(WriterShared::default());
         let writer = Arc::clone(&shared);
-        let thread =
-            match std::thread::Builder::new().spawn(move || writer_loop(writer, sink, wakeup)) {
-                Ok(thread) => Some(thread),
-                Err(error) => {
-                    // start の戻り値は凍結している。通常の書き込み・完了確認で同じ失敗を返す（10-10）。
-                    shared
-                        .state
-                        .lock()
-                        .unwrap_or_else(|e| e.into_inner())
-                        .failure = Some(WriteFailure::Io(error.to_string()));
-                    None
-                }
-            };
+        let spawned = std::thread::Builder::new().spawn(move || writer_loop(writer, sink, wakeup));
+        Self::with_thread(stream, is_terminal, shared, spawned)
+    }
+
+    /// 起動の結果を口へ記録し、準備の失敗を実行前に扱えるようにする（設計書 02-09「出力のバッファ」）。
+    pub(crate) fn with_thread(
+        stream: Stream,
+        is_terminal: bool,
+        shared: Arc<WriterShared>,
+        spawned: std::io::Result<JoinHandle<()>>,
+    ) -> OutputPort {
+        let start_error = spawned.as_ref().err().map(ToString::to_string);
+        let thread = match spawned {
+            Ok(thread) => Some(thread),
+            Err(error) => {
+                // 起動に失敗した口も安全に閉じられ、開始前に失敗を報告できるよう記録を保つ
+                // （設計書 02-09「出力のバッファ」「プログラムの実行の流れ」）。
+                shared
+                    .state
+                    .lock()
+                    .unwrap_or_else(|e| e.into_inner())
+                    .failure = Some(WriteFailure::Io(error.to_string()));
+                None
+            }
+        };
         OutputPort {
             stream,
             is_terminal,
@@ -101,7 +114,13 @@ impl OutputPort {
             flush_waiters: Vec::new(),
             shared,
             thread,
+            start_error,
         }
+    }
+
+    /// 実行前に起動の失敗を報告するための読み口（設計書 02-09「プログラムの実行の流れ」）。
+    pub(crate) fn start_error(&self) -> Option<&str> {
+        self.start_error.as_deref()
     }
     /// 書き込む（設計書 02-09「出力のバッファ」の規則）。失敗が記録されていれば、それを返す（書いたものは捨てる）。
     pub fn write(&mut self, task: TaskId, text: &[u8]) -> Result<Accept, WriteFailure> {
@@ -118,6 +137,20 @@ impl OutputPort {
         }
         self.accept_bytes(text);
         Ok(Accept::Accepted)
+    }
+    /// 警告で受け付けを止めないよう、容量がなければ預けずに捨てる。預かった書き込みを追い越さない
+    /// （設計書 03-09「失敗の種類」、設計書 02-09「出力のバッファ」）。
+    pub(crate) fn write_if_room(&mut self, text: &[u8]) -> Result<bool, WriteFailure> {
+        let state = writer_state(&self.shared);
+        if let Some(failure) = state.failure.clone() {
+            return Err(failure);
+        }
+        let fits = self.deferred.is_empty() && accepts(&state, self.buf.len(), text.len());
+        drop(state);
+        if fits {
+            self.accept_bytes(text);
+        }
+        Ok(fits)
     }
     fn accept_bytes(&mut self, text: &[u8]) {
         self.buf.extend_from_slice(text);
@@ -149,7 +182,7 @@ impl OutputPort {
         self.flush_waiters.push((task, self.sent_seq));
         self.sent_seq
     }
-    /// 完了済みの出力は待たず、記録した失敗は仕事を出す前に返す（実装プラン R27）。
+    /// 完了済みの出力は待たず、記録した失敗は仕事を出す前に返す。
     pub(crate) fn flush_pending(&self) -> Result<bool, WriteFailure> {
         let state = writer_state(&self.shared);
         match state.failure.clone() {
@@ -202,7 +235,7 @@ impl OutputPort {
         self.deferred.retain(|(owner, _)| *owner != task);
         self.flush_waiters.retain(|(owner, _)| *owner != task);
     }
-    /// 全体停止では受け付け前の書き込みと完了の待ちだけを捨てる（実装プラン R27）。
+    /// 全体停止では受け付け前の書き込みと完了の待ちだけを捨てる。
     pub(crate) fn cancel_all_pending(&mut self) {
         self.deferred.clear();
         self.flush_waiters.clear();
@@ -249,7 +282,7 @@ fn writer_state(shared: &WriterShared) -> std::sync::MutexGuard<'_, WriterState>
     match shared.state.lock() {
         Ok(state) => state,
         Err(poison) => {
-            // 毒を通常の IO の失敗にしない。凍結した口が持つ panic の記録で伝える（実装プラン R27）。
+            // 毒を通常の IO の失敗にしない。口が持つ panic の記録で伝える。
             let mut state = poison.into_inner();
             state.failure = Some(writer_bug("output state mutex poisoned"));
             state.queue.clear();

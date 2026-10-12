@@ -106,10 +106,13 @@ impl Source {
         }
     }
 
-    /// 1 から数えた行番号の行の内容。改行（LF と、CR LF の CR）を含まない。
+    /// 1 から数えた行番号の行の内容。改行（LF と、CR LF の CR）と、1 行目の先頭の BOM を含まない。
     pub fn line_text(&self, line: u32) -> Option<&[u8]> {
         let line_index = usize::try_from(line.checked_sub(1)?).ok()?;
-        let start = usize::try_from(self.line_starts.get(line_index)?.0).ok()?;
+        let mut start = usize::try_from(self.line_starts.get(line_index)?.0).ok()?;
+        if line_index == 0 && self.text.starts_with(b"\xEF\xBB\xBF") {
+            start = b"\xEF\xBB\xBF".len();
+        }
         let mut end = self
             .line_starts
             .get(line_index.checked_add(1)?)
@@ -261,6 +264,7 @@ mod tests {
             "\u{FEFF}x".as_bytes().to_vec(),
         );
         assert_eq!(bom.line_col(BytePos(3)), LineCol { line: 1, column: 1 });
+        assert_eq!(bom.line_text(1), Some(b"x".as_slice()));
 
         let empty = Source::new(String::new(), SourceKind::User, Vec::new());
         assert_eq!(empty.line_count(), 1);

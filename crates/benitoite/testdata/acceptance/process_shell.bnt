@@ -6,7 +6,7 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 
 function main() -> Result[Unit, String] uses Process.Run, Console.Write
-  bind piped <- try Process.shell("printf 'cherry\\napple\\nbanana\\n' | LC_ALL=C sort | tr 'a-z' 'A-Z'") |> Result.mapError(_, IOError.message)
+  bind piped <- try Process.shell("printf 'cherry\\napple\\nbanana\\n' | LC_ALL=C sort | LC_ALL=C tr 'a-z' 'A-Z'") |> Result.mapError(_, IOError.message)
   Console.write(Process.Output.standardOutput(piped))
   bind mixed <- try Process.shell("name=shell; printf 'out:%s\\n' \"$name\"; printf 'err\\n' >&2; exit 4") |> Result.mapError(_, IOError.message)
   Console.write(Process.Output.standardOutput(mixed))

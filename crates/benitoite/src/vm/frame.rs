@@ -22,7 +22,7 @@ pub struct CallFrame {
     /// 呼び出した命令。`main` の枠とタスクの最初の枠では `None`
     pub call_site: Option<InstrRef>,
     /// 関数の境界の印（02-07「関数の境界」。`ESCAPE` はここで止まる）。枠を積むときに、呼んだ原型の
-    /// `Proto::boundary`（10-07）を写す
+    /// `Proto::boundary`（設計書 02-07「関数の境界」）を写す
     pub boundary: bool,
     /// 引き継いだハンドラの末尾で再開する節を直接呼んだ枠では、見つけたハンドラより外側の連鎖の始まり
     /// （タスクの引き継いだハンドラの連鎖の中の位置）。ハンドラを探す処理はここで連鎖を移る（02-08「ハンドラと継続」）
@@ -32,6 +32,8 @@ pub struct CallFrame {
 /// セルの更新の枠が持つもの（02-08「可変のセル」）。
 #[derive(Debug)]
 pub struct CellUpdate {
+    /// 積んだ UPDATE の命令（設計書 02-08「実行時エラーの情報の記録」）。
+    pub at: InstrRef,
     pub cell: Slot,
     /// 読んだときの版の番号
     pub version: u64,
@@ -42,7 +44,7 @@ pub struct CellUpdate {
 /// `handle` の枠が持つもの（02-08「ハンドラの記録とハンドラの連鎖」）。
 #[derive(Debug)]
 pub struct HandleFrame {
-    /// ハンドラの記録（`Host` の対象。10-09「ハンドラの記録、継続、`Lazy`」）
+    /// ハンドラの記録（`Host` の対象。設計書 02-08「ハンドラと継続」）
     pub record: Slot,
     /// 値を返したときの戻り先。この区画のすぐ下の区画の `regs` の中の位置。
     /// 初めは `HANDLE` の結果のレジスタ、`RESUME` で区画を戻すたびに `RESUME` の結果のレジスタに付け替える
@@ -80,7 +82,7 @@ pub struct OtherFrame {
     pub kind: OtherKind,
 }
 
-/// 枠の種類（枠を降ろす処理の表の行。10-09「枠を降ろす原因と処理」）。
+/// 枠の種類（枠を降ろす処理の表の行。設計書 02-08「枠を降ろす原因と処理」）。
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum FrameKind {
     Call,
@@ -192,7 +194,7 @@ impl Trace for TaskStack {
     }
 }
 
-// 枠と区画を捨てるときは、所有する `Slot` を値で手放す（10-08 の不変条件 H11）。`Trace` と同じ `Slot` を訪れる。
+// 枠と区画を捨てるときは、所有する `Slot` を値で手放す（`runtime::heap` の不変条件 H11）。`Trace` と同じ `Slot` を訪れる。
 
 impl Discard for CallFrame {
     fn discard(self, d: &mut Discarder<'_>) {

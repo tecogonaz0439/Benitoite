@@ -1,0 +1,11 @@
+// spec: 01-06 型の別名（初回リリース版）
+type Bad = Option[Integer, Integer]
+function use() -> Unit
+  bind x: Bad <- 1
+  bind _ <- x
+  bind y: Integer <- "s"
+  bind _ <- y
+end function
+function main() -> Unit
+  ()
+end function

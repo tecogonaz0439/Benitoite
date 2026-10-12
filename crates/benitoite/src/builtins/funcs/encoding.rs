@@ -55,7 +55,7 @@ fn encode<'e>(
     let mut buf = StrBuf::new(function);
     let mut chunk = [0u8; 1024];
     // 3 バイト境界で分け、途中に詰め物が入らないようにする。全体の長さを確かめた後、
-    // 固定の作業領域から上限付きの構築器へ書く（実装プラン L25「手順の要点」）。
+    // 固定の作業領域から上限付きの構築器へ書く。
     for bytes in data.chunks(768) {
         let written = engine
             .encode_slice(bytes, &mut chunk)
@@ -76,8 +76,7 @@ fn decode<'e>(
     engine: &GeneralPurpose,
     function: &'static str,
 ) -> Result<Value<'e>, Stop> {
-    // 復号した値は入力より短く、alloc_bytes が上限を確かめる
-    // （実装プラン L25「手順の要点」）。
+    // 復号した値は入力より短く、alloc_bytes が上限を確かめる。
     let (tag, value) = match engine.decode(source) {
         Ok(bytes) => (tags::RESULT_OK, ctx.alloc_bytes(&bytes, function)?),
         Err(_) => (
@@ -92,7 +91,7 @@ mod text {
     pub(super) const INVALID_BASE64: &str = "invalid Base64 encoding";
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     base64_encode::DECL,
     base64_decode::DECL,
@@ -102,9 +101,9 @@ pub const DECLS: &[BuiltinDecl] = &[
 
 #[cfg(test)]
 mod tests {
-    // L25 の契約を登録済みの包みから確かめる。表と詰め物の取り違え、入力を寛容に読む
+    // 登録済みの包みから契約を確かめる。表と詰め物の取り違え、入力を寛容に読む
     // 変更、途中に詰め物を入れる退行を捕まえる。既存のテストに Encoding の振る舞いはない。
-    // テストの失敗は panic で表す（実装プラン 00-02、test-audit の作成時の関門）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。test-audit の作成時の関門に従う。
     #![allow(clippy::unwrap_used, clippy::panic)]
 
     use super::*;

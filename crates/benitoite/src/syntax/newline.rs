@@ -236,7 +236,7 @@ fn continues_before(kind: TokenKind) -> bool {
 }
 
 #[cfg(test)]
-// テストの失敗は panic で表す（実装プラン 00-02「`#[allow]` を書いてよい箇所」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,

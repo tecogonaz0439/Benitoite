@@ -1,5 +1,5 @@
-//! パスの操作の仕事と完了、ソースの copy とレコードの読み出しを確かめる（実装プラン L11）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! パスの操作の仕事と完了、ソースの copy とレコードの読み出しを確かめる（設計書 03-07「File」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::panic,
@@ -96,7 +96,7 @@ fn unit<'e>(result: Value<'e>, ctx: &ValueCtx<'e>) {
 
 // 関門: 13 項目の成功、置換・追記・基準ディレクトリ・LF/CR の契約を実物のファイルで守る。
 // 既存の readText/writeText のテストは Bytes・パスの操作を呼ばない。差し込み口は加えない。
-// 本体の直接呼び出しは L11 の個別の指示に従う（テスト戦略の一般的な境界の規則との違い）。
+// 組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
 #[test]
 fn path_operations_succeed_and_preserve_bytes_lines_and_relative_paths() {
     let dir = TempDir::new();
@@ -539,7 +539,6 @@ fn path_permissions_allow_search_only_parents_and_report_denied_access() {
 }
 
 // 関門: FS が日時を丸める環境でも、Integer の両端と範囲外の Other を直接確かめる。
-// 純粋な補助の関数の直接検査は、オーケストレータの追加指示に従う。
 #[test]
 fn modification_nanoseconds_preserve_integer_boundaries_and_reject_overflow() {
     use std::time::{Duration, UNIX_EPOCH};
@@ -735,11 +734,10 @@ fn oversized_sparse_bytes_and_too_many_lines_stop_before_building_values() {
         ));
         assert!(matches!(
             run(ctx, &mut io, read_lines, "lines"),
-            Err(Stop::Resource(ResourceError::ValueTooLarge {
+            Err(Stop::Resource(ResourceError::InputTooLarge {
                 function: "Benitoite.IO.File.readLines",
                 unit: SizeUnit::Elements,
                 limit: MAX_LIST_LEN,
-                ..
             }))
         ));
     });

@@ -58,7 +58,7 @@ impl Resources {
             }
             Lend::Stdin => {
                 // 読み手を呼び出しごとに作ると先読みしたバイトを失う。実行中は同じ読み手を貸す
-                // （実装プラン 10-11「応答と待つ理由」の Lend::Stdin）。
+                // （設計書 02-09「組み込みの操作とハンドラ表」）。
                 let reader = self
                     .stdin
                     .get_or_insert_with(|| std::io::BufReader::new(std::io::stdin()));
@@ -139,7 +139,7 @@ impl StateServices for State {
         ))
     }
     fn open_task_group(&mut self, _at: Option<InstrRef>) -> ResourceId {
-        // この口は失敗を返せない。呼ばれた記録を呼び出しの境目で Stop::Internal にする（F14「解放」）。
+        // この口は失敗を返せない。呼ばれた記録を呼び出しの境目で Stop::Internal にする。
         if let Ok(mut table) = self.resources.try_borrow_mut() {
             table.fault = Some(Stop::Internal(
                 "reference interpreter cannot open task groups".into(),
@@ -161,19 +161,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn reference_and_stage1_services_do_not_expose_vm_runtime_views() {
-        // 関門: VM 専用の口を、異なる表現のリソースを持つ実装が公開しない契約を守る
-        // （実装プラン L00「10-16 の口」）。差し込みのための本番の口は加えない。
+    fn reference_and_fixed_services_do_not_expose_vm_runtime_views() {
+        // 関門: VM 専用の口を、異なる表現のリソースを持つ実装が公開しない契約を守る。
+        // 差し込みのための本番の口は加えない。
         let input = crate::runtime::io::services::RunInput {
             arguments: Vec::new(),
             working_directory: ".".into(),
             script_directory: ".".into(),
         };
-        let mut stage1 = crate::builtins::funcs::stage1_io::TestIo::new(input);
-        assert!(stage1.runtime_view().is_none());
+        let mut fixed = crate::builtins::funcs::fixed_io::FixedIo::new(input);
+        assert!(fixed.runtime_view().is_none());
         let resources = Rc::new(RefCell::new(Resources::default()));
         let mut io = Io {
-            base: &mut stage1,
+            base: &mut fixed,
             resources: Rc::clone(&resources),
         };
         assert!(io.runtime_view().is_none());

@@ -2,3 +2,5 @@
 pub(super) const EQUALITY: &str = "equality";
 pub(super) const KEY: &str = "key";
 pub(super) const ORDERED: &str = "ordered";
+pub(super) const SHOW: &str = "Show";
+pub(super) const SHOW_METHOD: &str = "show";

@@ -7,17 +7,6 @@ use crate::syntax::ast::*;
 use crate::typeck::decls::{Decls, Scope, scheme, unit};
 use crate::types::*;
 
-pub(super) fn trait_decl<'a>(d: &'a Decls<'_>, id: BindingId) -> Option<&'a TraitDecl> {
-    d.asts.iter().flat_map(|a| &a.decls).find_map(|top| {
-        if let Item::Trait(t) = &top.item
-            && d.binding(t.id) == Some(id)
-        {
-            Some(t)
-        } else {
-            None
-        }
-    })
-}
 pub(super) fn parameter<'a>(d: &'a Decls<'_>, id: BindingId) -> Option<&'a TypeParamDecl> {
     let mut params = vec![];
     for top in d.asts.iter().flat_map(|a| &a.decls) {
@@ -76,10 +65,9 @@ pub(super) fn check_parameters(
                 }
                 ConstraintRef::Class(c) => {
                     if let Some(class) = d.reference(c.id)
-                        && let Some(t) = trait_decl(d, class)
-                        && kind(&t.param) != kind(p)
+                        && let Some(&wanted) = d.trait_param_kinds.get(class)
+                        && wanted != kind(p)
                     {
-                        let wanted = kind(&t.param);
                         let diag =
                             if let (ParamKind::Ctor { arity }, ParamKind::Ctor { arity: needed }) =
                                 (kind(p), wanted)
@@ -167,7 +155,7 @@ fn collect_trait(d: &mut Decls<'_>, t: &TraitDecl) {
         false,
     );
     // 引数の宣言の制約は上位のクラスであり、メソッド自身が受け取る辞書は自己のクラス一つである
-    // （実装プラン 10-05「型パラメータの番号」）。
+    // （`types` のモジュールの説明）。
     s.class_constraints = vec![ClassConstraint { param: 0, class }];
     d.scopes.insert(t.id, scope.clone());
     if t.methods.is_empty() {
@@ -196,6 +184,7 @@ fn collect_trait(d: &mut Decls<'_>, t: &TraitDecl) {
         };
         let s = d.signature(&f, scope.clone(), s.clone());
         if before == d.diagnostics.len()
+            && !d.invalid.contains(&id)
             && !s.params.iter().any(|t| has_param(t, 0))
             && !has_param(&s.ret, 0)
         {
@@ -231,6 +220,7 @@ fn collect_impl(d: &mut Decls<'_>, i: &ImplDecl, module: ModuleId) {
         true,
     );
     d.scopes.insert(i.id, scope.clone());
+    let before_aliases = d.invalid_alias_uses;
     let target = match t.param_kind {
         ParamKind::Value => TypeArg::Ty(d.ty(&i.target, &scope)),
         ParamKind::Ctor { arity } => {
@@ -265,10 +255,19 @@ fn collect_impl(d: &mut Decls<'_>, i: &ImplDecl, module: ModuleId) {
                         .help("form")
                         .build(),
                 );
+                d.invalid_impl_targets.insert(class);
                 // 具体的な型構成子のない誤りを、本物の Unit の実装として登録しない（02-05「誤りの報告と検査の継続」）。
                 TypeArg::Head(TyHead::Param(u32::MAX))
             }
         }
+    };
+    let invalid_alias = before_aliases != d.invalid_alias_uses;
+    // 誤った別名の置き換え先で実装の鍵を作ると、重なりの診断が派生する。
+    // E0712 の対象と同じく、表に加えずメソッドを誤りとして扱う（02-05「誤りの報告と検査の継続」）。
+    let target = if invalid_alias {
+        TypeArg::Head(TyHead::Param(u32::MAX))
+    } else {
+        target
     };
     let target_con = match &target {
         TypeArg::Ty(Ty::Con(c, _)) | TypeArg::Head(TyHead::Con(c)) => *c,
@@ -276,7 +275,7 @@ fn collect_impl(d: &mut Decls<'_>, i: &ImplDecl, module: ModuleId) {
             TyCon::Builtin(crate::types::builtin::BuiltinTypeId::UNIT)
         }
     };
-    let invalid = before != d.diagnostics.len() || d.invalid.contains(&class);
+    let invalid = before != d.diagnostics.len() || invalid_alias || d.invalid.contains(&class);
     let methods = t
         .methods
         .iter()

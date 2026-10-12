@@ -70,9 +70,9 @@ pub(super) fn check_list_spreads(p: &mut Parser, list: &ListExpr) {
 }
 
 #[cfg(test)]
-// 公開の parse で展開の位置と診断・置き換えを確かめる。仮の本体は式を捨てるため、
-// 展開の値や複数展開の診断の契約を守れない（設計書 07-03、test-audit）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// 公開の parse で展開の位置と診断・置き換えを確かめる。展開の値や複数展開の診断の退行を捕まえる
+// （設計書 07-03「テストの設計の原則」、test-audit）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,

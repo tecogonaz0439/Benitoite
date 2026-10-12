@@ -13,14 +13,14 @@ builtin! {
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[sha256::DECL];
 
 #[cfg(test)]
 mod tests {
     // 既知の値との比較で、別のハッシュ算法や表記文字列を返す退行を捕まえる。
     // Hash の本体を確かめる既存のテストはない。包みを通し、差し込み口を加えない
-    // （test-audit の作成時の関門）。テストの失敗は panic で表す（実装プラン 00-02）。
+    // （test-audit の作成時の関門）。テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(clippy::unwrap_used, clippy::panic)]
 
     use super::*;
@@ -34,7 +34,7 @@ mod tests {
         // abc の値は次の NIST の例の Message Digest と照合した。
         // https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA256.pdf
         // 空の入力と abc の値は、作業中に printf '' / printf 'abc' をそれぞれ
-        // shasum -a 256 に渡して確認した（実装プラン L25「受け入れテスト」）。
+        // shasum -a 256 に渡して確認した。
         Heap::new(HeapConfig::default()).epoch(|ctx| {
             for (input, expected) in [
                 (

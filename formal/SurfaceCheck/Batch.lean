@@ -8,7 +8,6 @@ open Benitoite.Exchange.CheckInput Benitoite.Surface.CheckTables
 structure Counts where
   matched : Nat := 0
   q11 : Nat := 0
-  knownDifference : Nat := 0
   outOfScope : Nat := 0
   lazyRestriction : Nat := 0
   mismatched : Nat := 0
@@ -31,7 +30,6 @@ def bump (c : Counts) (category : String) : Counts :=
   match category with
   | "matched" => { c with matched := c.matched + 1 }
   | "q11" => { c with q11 := c.q11 + 1 }
-  | "knownDifference" => { c with knownDifference := c.knownDifference + 1 }
   | "outOfScope" => { c with outOfScope := c.outOfScope + 1 }
   | "lazyRestriction" => { c with lazyRestriction := c.lazyRestriction + 1 }
   | _ => { c with mismatched := c.mismatched + 1 }
@@ -64,17 +62,13 @@ def lazyDifference (q : Benitoite.Surface.Check.Input) (w : WalkState)
     | return false
   return tysEq q.atoms ps ps' && tyEq q.atoms r r' && !effEq q.atoms eff eff'
 
-def category (q : Benitoite.Surface.Check.Input) (w : WalkState) (marks : List String) (badPrims : List String)
+def category (q : Benitoite.Surface.Check.Input) (w : WalkState) (badPrims : List String)
     (result : Benitoite.Surface.Check.Result Unit) : String :=
   if w.prims.any badPrims.contains then "outOfScope" else
   match result with
   | .ok _ => if w.changes.isEmpty then "matched" else "q11"
   | .error e =>
-    if !w.partialReturns.isEmpty then "mismatched" else
-    if marks.contains "ガードの中の resume（TODO-190）" &&
-        e.reason == "continuation is missing or hidden" &&
-        w.guards.any (fun p => p.isPrefixOf e.path) then "knownDifference"
-    else if lazyDifference q w e then "lazyRestriction" else "mismatched"
+    if lazyDifference q w e then "lazyRestriction" else "mismatched"
 
 def outcomeJson (group input name kind cat : String) (w : WalkState)
     (result : Benitoite.Surface.Check.Result Unit) : Json :=
@@ -86,20 +80,19 @@ def outcomeJson (group input name kind cat : String) (w : WalkState)
   Json.mkObj [("group",toJson group),("input",toJson input),("definition",toJson name),
     ("kind",toJson kind),("category",toJson cat),("error",error),
     ("q11Paths",toJson w.changes),("nonUnitReplacements",toJson w.nonUnit),
-    ("partialReturnPaths",toJson w.partialReturns),
     ("diagnosis",toJson (if cat != "mismatched" then "classified" else
-      if !w.partialReturns.isEmpty then "rustTypecheckerCandidate" else "requiresReview"))]
+      "requiresReview"))]
 
 def record (q : Benitoite.Surface.Check.Input) (r : Report) (group input name kind : String) (w : WalkState)
-    (marks badPrims : List String) (result : Benitoite.Surface.Check.Result Unit) : Report :=
-  let cat := category q w marks badPrims result
+    (badPrims : List String) (result : Benitoite.Surface.Check.Result Unit) : Report :=
+  let cat := category q w badPrims result
   { r with tailMatches := r.tailMatches + w.tailMatches, counts := bump r.counts cat, replacements := r.replacements + w.changes.size, nonUnitReplacements := r.nonUnitReplacements + w.nonUnit, outcomes := r.outcomes.push (match outcomeJson group input name kind cat w result with
       | .obj fields => Json.mkObj (fields.toArray.toList ++ [("unconvertiblePrims",toJson (w.prims.filter badPrims.contains).eraseDups)])
       | j => j) }
 
 def normalize (p : Prepared) : Materials × List (String × WalkState) := Id.run do
   let defs := p.materials.defs.map fun (n,d) =>
-    let (body,w) := (walkBlock p.input (some d.ret) .tail [0] false (some d.ret) d.body).run {}
+    let (body,w) := (walkBlock p.input (some d.ret) .tail [0] (some d.ret) d.body).run {}
     ((n,{ d with body }), (n,w))
   let walks := defs.map Prod.snd
   let impls := p.materials.impls.map fun (n,i) => Id.run do
@@ -107,7 +100,7 @@ def normalize (p : Prepared) : Materials × List (String × WalkState) := Id.run
       let ms : Option MethSig := (p.input.D.classes i.signature.cls).bind (fun c => c.methods method)
       let result := ms.map fun (m : MethSig) => substTyAt m.tparams.length [i.signature.target] [] m.ret
       let index := p.materials.names.methods.idxOf method
-      let body' ← walkBlock p.input result .tail [0,index] false result body
+      let body' ← walkBlock p.input result .tail [0,index] result body
       pure (method,body')).run {}
     return ((n,{ i with methods }), (n,w))
   return ({ p.materials with defs := defs.map Prod.fst, impls := impls.map Prod.fst }, walks ++ impls.map Prod.snd)
@@ -122,10 +115,8 @@ def checkInput (r : Report) (input : Benitoite.Exchange.Input)
   let mut r := { r with inputs := r.inputs + 1, definitions := r.definitions + m.defs.length, implementations := r.implementations + m.impls.length }
   for (n,d) in m.defs do
     let w := (Benitoite.Surface.CheckTables.lookup ws n).getD {}
-    let marks := input.definitions.filterMap fun d =>
-      if (functionKey d.name).toOption == some n then some d.knownDifferences else none
     let result := Benitoite.Surface.Check.checkDef q [] d
-    r := record q r input.group input.name n "definition" w marks.flatten bad result
+    r := record q r input.group input.name n "definition" w bad result
     if !w.changes.isEmpty then
       let before := (Benitoite.Surface.CheckTables.lookup p.materials.defs n).map
         (Benitoite.Surface.Check.checkDef p.input [])
@@ -139,18 +130,11 @@ def checkInput (r : Report) (input : Benitoite.Exchange.Input)
   for (n,i) in m.impls do
     let w := (Benitoite.Surface.CheckTables.lookup ws n).getD {}
     let result := Benitoite.Surface.Check.checkImpl q m.names.methods m.names.supers [] i.decl
-    let failedMethod := match result with
-      | .error ⟨0 :: index :: _, _⟩ => m.names.methods[index]?
-      | _ => none
-    let marks := input.definitions.flatMap fun d => match d.scope with
-      | .inScope s _ => if s.implementation == some n && s.method == failedMethod then d.knownDifferences else []
-      | _ => []
-    r := record q r input.group input.name n "implementation" w marks bad result
+    r := record q r input.group input.name n "implementation" w bad result
   for (n,reasons) in p.outside do
     r := { r with counts := bump r.counts "outOfScope", outcomes := r.outcomes.push (Json.mkObj [("group",toJson input.group),("input",toJson input.name),("definition",toJson n),
         ("kind",toJson "unconverted"),("category",toJson "outOfScope"),("reasons",toJson reasons)]) }
-  let allChecked := r.counts.knownDifference == before.knownDifference &&
-    r.counts.outOfScope == before.outOfScope && r.counts.lazyRestriction == before.lazyRestriction &&
+  let allChecked := r.counts.outOfScope == before.outOfScope && r.counts.lazyRestriction == before.lazyRestriction &&
     r.counts.mismatched == before.mismatched
   return { r with fullyCheckedInputs := r.fullyCheckedInputs + if allChecked then 1 else 0 }
 
@@ -205,11 +189,9 @@ def run (args : List String) : IO UInt32 := do
   let counts := toJson r.counts
   let mismatches := r.outcomes.filter fun j =>
     (j.getObjValAs? String "category").toOption == some "mismatched"
-  let candidates := mismatches.filter fun j =>
-    (j.getObjValAs? String "diagnosis").toOption == some "rustTypecheckerCandidate"
   let output := Json.mkObj [("mismatchClasses",Json.mkObj [
-    ("rustTypecheckerCandidates",toJson candidates.size),("leanFalseRejection",toJson (0 : Nat)),
-    ("exporter",toJson (0 : Nat)),("requiresReview",toJson (mismatches.size - candidates.size))]),("q11Agrees",toJson q11Agrees),("expectedTailMatch",toJson expectedTail),("version",toJson (1 : Nat)),("counts",counts),
+    ("leanFalseRejection",toJson (0 : Nat)),
+    ("exporter",toJson (0 : Nat)),("requiresReview",toJson mismatches.size)]),("q11Agrees",toJson q11Agrees),("expectedTailMatch",toJson expectedTail),("version",toJson (1 : Nat)),("counts",counts),
     ("inputs",toJson r.inputs),("excludedInputs",toJson r.excluded),("fullyCheckedInputs",toJson r.fullyCheckedInputs),
     ("definitions",toJson r.definitions),("implementations",toJson r.implementations),
     ("tailMatches",toJson r.tailMatches),("replacements",toJson r.replacements),("nonUnitReplacements",toJson r.nonUnitReplacements),

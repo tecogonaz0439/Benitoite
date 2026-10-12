@@ -1,0 +1,18 @@
+error[E0303]: `Task` has no member `all`
+  --> testdata/names/prelude_shadowed_member.bnt:7:18
+   |
+ 7 |   bind _ <- Task.all([])
+   |                  ^^^ not found in `Task`
+   |
+  ::: testdata/names/prelude_shadowed_member.bnt:2:8
+   |
+ 2 | record Task
+   |        ---- `Task` declared here
+   |
+   = note: `Task` here is the record declared in this file, which hides the prelude module `Task`
+   = help: write `Benitoite.Task` to use the prelude module
+   |
+ 7 |   bind _ <- Benitoite.Task.all([])
+   |             ~~~~~~~~~~
+
+error: could not check testdata/names/prelude_shadowed_member.bnt due to 1 previous error

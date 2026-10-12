@@ -28,15 +28,15 @@ public function remove[T: key](s: Set[T], x: T) -> Set[T]
 @builtin("Set.size")
 public function size[T: key](s: Set[T]) -> Integer
 
-/// Returns the elements in `a` or `b`.
+/// Returns the elements in `a` or `b`. An element in both sets keeps its form from `a`.
 @builtin("Set.union")
 public function union[T: key](a: Set[T], b: Set[T]) -> Set[T]
 
-/// Returns the elements in both `a` and `b`.
+/// Returns the elements in both `a` and `b`. Each element keeps its form from `a`.
 @builtin("Set.intersection")
 public function intersection[T: key](a: Set[T], b: Set[T]) -> Set[T]
 
-/// Returns the elements in `a` and not in `b`.
+/// Returns the elements in `a` and not in `b`. Each element keeps its form from `a`.
 @builtin("Set.difference")
 public function difference[T: key](a: Set[T], b: Set[T]) -> Set[T]
 

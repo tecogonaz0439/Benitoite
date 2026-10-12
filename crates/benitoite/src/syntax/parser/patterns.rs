@@ -103,6 +103,8 @@ fn parse_ctor(p: &mut Parser, counter: &mut PatternCounter) -> PResult<Box<Patte
     };
     Ok(finish_ctor(p, start, path, has_parens, args))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_ctor(
     p: &mut Parser,
     start: usize,
@@ -129,6 +131,8 @@ fn push_pattern(
     out.push(*pattern);
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_paren(p: &mut Parser, counter: &mut PatternCounter) -> PResult<Box<Pattern>> {
     let start = p.pos;
     p.bump();

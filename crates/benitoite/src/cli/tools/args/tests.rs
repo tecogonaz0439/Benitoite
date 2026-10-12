@@ -1,6 +1,6 @@
 //! `test`・`fmt` のコマンドラインの解釈と `.bnt` の列挙のテスト（設計書 06-01「ディレクトリの指定（初回リリース版）」
-//! 「`fmt` のコマンドライン（初回リリース版）」、10-17「`test` と `fmt` のコマンドライン」）。
-// テストの失敗は panic で表す（00-02「`#[allow]` を書いてよい箇所」）
+//! 「`fmt` のコマンドライン（初回リリース版）」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -17,14 +17,14 @@ fn os(args: &[&str]) -> Vec<OsString> {
 
 #[test]
 fn reads_options_before_and_after_the_name_alike() {
-    // 10-13 の Command::Tool は名前の前のオプションと後の引数を並べて渡すので、並びの位置に依らず同じに読む。
+    // `Command::Tool` は名前の前のオプションと後の引数を並べて渡すので、並びの位置に依らず同じに読む。
     let front = parse_path_args(
-        ToolCommand::Test,
+        PathTool::Test,
         os(&["--max-call-stack=2GiB", "--deny-warnings", "a.bnt", "dir"]),
     )
     .unwrap();
     let back = parse_path_args(
-        ToolCommand::Test,
+        PathTool::Test,
         os(&["a.bnt", "--deny-warnings", "dir", "--max-call-stack=2GiB"]),
     )
     .unwrap();
@@ -38,7 +38,7 @@ fn reads_options_before_and_after_the_name_alike() {
     );
 
     let fmt = parse_path_args(
-        ToolCommand::Fmt,
+        PathTool::Fmt,
         os(&["--diagnostics=json", "a.bnt", "--check"]),
     )
     .unwrap();
@@ -49,41 +49,37 @@ fn reads_options_before_and_after_the_name_alike() {
 
 #[test]
 fn usage_errors() {
-    let cases: [(ToolCommand, &[&str], String); 7] = [
-        (ToolCommand::Fmt, &[], text::MISSING_PATH.to_owned()),
+    let cases: [(PathTool, &[&str], String); 7] = [
+        (PathTool::Fmt, &[], text::MISSING_PATH.to_owned()),
+        (PathTool::Fmt, &["--check"], text::MISSING_PATH.to_owned()),
         (
-            ToolCommand::Fmt,
-            &["--check"],
-            text::MISSING_PATH.to_owned(),
-        ),
-        (
-            ToolCommand::Fmt,
+            PathTool::Fmt,
             &["--deny-warnings", "a.bnt"],
             text::OPTION_NOT_FOR_COMMAND
                 .replace("{name}", "--deny-warnings")
                 .replace("{command}", "fmt"),
         ),
         (
-            ToolCommand::Test,
+            PathTool::Test,
             &["--check", "a.bnt"],
             text::OPTION_NOT_FOR_COMMAND
                 .replace("{name}", "--check")
                 .replace("{command}", "test"),
         ),
         (
-            ToolCommand::Fmt,
+            PathTool::Fmt,
             &["--frobnicate", "a.bnt"],
             cli_text::UNKNOWN_OPTION.replace("{name}", "--frobnicate"),
         ),
         (
-            ToolCommand::Fmt,
+            PathTool::Fmt,
             &["--diagnostics=xml", "a.bnt"],
             cli_text::BAD_VALUE
                 .replace("{name}", "--diagnostics")
                 .replace("{value}", "xml"),
         ),
         (
-            ToolCommand::Fmt,
+            PathTool::Fmt,
             &["--check", "--check", "a.bnt"],
             cli_text::DUPLICATE_OPTION.replace("{name}", "--check"),
         ),

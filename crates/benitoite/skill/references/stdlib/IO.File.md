@@ -56,10 +56,13 @@ public effect Write
   /// Opens the file for writing. `WriteMode.Replace` creates or empties it; `WriteMode.Append` adds to its end.
   function openWriter(path: String, mode: WriteMode) -> Result[Writer, IOError]
   /// Writes `text`.
+  /// After a write fails, returns the same error without writing anything.
   function write(writer: Writer, text: String) -> Result[Unit, IOError]
   /// Writes `text` and a line feed.
+  /// After a write fails, returns the same error without writing anything.
   function writeLine(writer: Writer, text: String) -> Result[Unit, IOError]
   /// Writes `content`.
+  /// After a write fails, returns the same error without writing anything.
   function writeChunk(writer: Writer, content: Bytes) -> Result[Unit, IOError]
 end effect
 ```
@@ -83,6 +86,7 @@ public function closeWriter(writer: Writer) -> Result[Unit, IOError] uses State
 ```
 
 Writes out what was written and closes the writer. A `with` binding closes it in the same way.
+After a write fails, closes without writing and returns the same message with `IOErrorKind.Other`.
 
 ```benitoite
 public record Info

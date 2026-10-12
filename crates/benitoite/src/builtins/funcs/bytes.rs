@@ -6,7 +6,7 @@ use crate::runtime::heap::{CheckedLen, CtorTag, StrBuf, Value};
 use crate::runtime::{Stop, list};
 
 builtin! {
-    /// 空のバイト列を作る（実装プラン 10-15「Bytes」）。
+    /// 空のバイト列を作る（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.empty",
     pure fn empty(ctx) -> Value<'e> {
         ctx.alloc_bytes(&[], "Bytes.empty")
@@ -14,7 +14,7 @@ builtin! {
 }
 
 builtin! {
-    /// Byte のリストをバイト列にする（実装プラン 10-15「Bytes」）。
+    /// Byte のリストをバイト列にする（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.fromList",
     pure fn from_list(ctx, xs: Value<'e>) -> Value<'e> {
         CheckedLen::bytes(u64::from(list::len(&ctx, xs)?), "Bytes.fromList")?;
@@ -26,7 +26,7 @@ builtin! {
 }
 
 builtin! {
-    /// Integer の各要素が Byte の範囲に収まればバイト列にする（実装プラン 10-15「Bytes」）。
+    /// Integer の各要素が Byte の範囲に収まればバイト列にする（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.fromIntegers",
     pure fn from_integers(ctx, xs: Value<'e>) -> Value<'e> {
         let len = list::len(&ctx, xs)?;
@@ -45,7 +45,7 @@ builtin! {
 }
 
 builtin! {
-    /// 区切りを除いた 16 進数をバイト列にする（実装プラン 10-15「Bytes」）。
+    /// 区切りを除いた 16 進数をバイト列にする（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.fromHex",
     pure fn from_hex(ctx, s: &'c str) -> Value<'e> {
         parse_digits(ctx, s, 4, 2, "Bytes.fromHex")
@@ -53,7 +53,7 @@ builtin! {
 }
 
 builtin! {
-    /// 区切りを除いた 2 進数をバイト列にする（実装プラン 10-15「Bytes」）。
+    /// 区切りを除いた 2 進数をバイト列にする（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.fromBinary",
     pure fn from_binary(ctx, s: &'c str) -> Value<'e> {
         parse_digits(ctx, s, 1, 8, "Bytes.fromBinary")
@@ -61,7 +61,7 @@ builtin! {
 }
 
 builtin! {
-    /// バイト列を Byte のリストにする（実装プラン 10-15「Bytes」）。
+    /// バイト列を Byte のリストにする（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.toList",
     pure fn to_list(ctx, b: &'c [u8]) -> Value<'e> {
         CheckedLen::elements(super::count(b.len())?, "Bytes.toList")?;
@@ -71,7 +71,7 @@ builtin! {
 }
 
 builtin! {
-    /// 各バイトを小文字の 16 進 2 桁で表す（実装プラン 10-15「Bytes」）。
+    /// 各バイトを小文字の 16 進 2 桁で表す（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.toHex",
     pure fn to_hex(ctx, b: &'c [u8]) -> Value<'e> {
         checked_encoded_len(super::count(b.len())?, 2, "Bytes.toHex")?;
@@ -87,7 +87,7 @@ builtin! {
 }
 
 builtin! {
-    /// 各バイトを 2 進 8 桁で表す（実装プラン 10-15「Bytes」）。
+    /// 各バイトを 2 進 8 桁で表す（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.toBinary",
     pure fn to_binary(ctx, b: &'c [u8]) -> Value<'e> {
         checked_encoded_len(super::count(b.len())?, 8, "Bytes.toBinary")?;
@@ -102,7 +102,7 @@ builtin! {
 }
 
 builtin! {
-    /// バイト数を返す（実装プラン 10-15「Bytes」）。
+    /// バイト数を返す（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.length",
     pure fn length(ctx, b: &'c [u8]) -> i64 {
         let _ = ctx;
@@ -111,7 +111,7 @@ builtin! {
 }
 
 builtin! {
-    /// 範囲内の位置の Byte を返す（実装プラン 10-15「Bytes」）。
+    /// 範囲内の位置の Byte を返す（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.get",
     pure fn get(ctx, b: &'c [u8], i: i64) -> Value<'e> {
         super::option(&ctx, usize::try_from(i).ok().and_then(|i| b.get(i)).copied().map(Value::Byte))
@@ -119,7 +119,7 @@ builtin! {
 }
 
 builtin! {
-    /// 正しい範囲なら部分のバイト列を写して作る（実装プラン 10-15「Bytes」の表現の例外）。
+    /// 正しい範囲なら部分のバイト列を写して作る（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.slice",
     pure fn slice(ctx, b: &'c [u8], start: i64, stop: i64) -> Value<'e> {
         let bytes = match (usize::try_from(start), usize::try_from(stop)) {
@@ -131,7 +131,7 @@ builtin! {
 }
 
 builtin! {
-    /// 合計の大きさを確かめてから二つのバイト列を連結する（実装プラン 10-15「Bytes」）。
+    /// 合計の大きさを確かめてから二つのバイト列を連結する（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.concatenate",
     pure fn concatenate(ctx, a: &'c [u8], b: &'c [u8]) -> Value<'e> {
         let len = checked_concat_len(super::count(a.len())?, super::count(b.len())?)?;
@@ -144,7 +144,7 @@ builtin! {
 }
 
 builtin! {
-    /// 範囲内のバイト列を符号なしの Integer として読む（実装プラン 10-15「Bytes」）。
+    /// 範囲内のバイト列を符号なしの Integer として読む（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.readUnsigned",
     pure fn read_unsigned(ctx, b: &'c [u8], offset: i64, count: i64, order: Value<'e>) -> Value<'e> {
         let big = big_endian(order)?;
@@ -154,7 +154,7 @@ builtin! {
 }
 
 builtin! {
-    /// 範囲内のバイト列を 2 の補数の Integer として読む（実装プラン 10-15「Bytes」）。
+    /// 範囲内のバイト列を 2 の補数の Integer として読む（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.readSigned",
     pure fn read_signed(ctx, b: &'c [u8], offset: i64, count: i64, order: Value<'e>) -> Value<'e> {
         let big = big_endian(order)?;
@@ -164,7 +164,7 @@ builtin! {
 }
 
 builtin! {
-    /// 非負の Integer が指定した幅に収まればバイト列にする（実装プラン 10-15「Bytes」）。
+    /// 非負の Integer が指定した幅に収まればバイト列にする（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.fromUnsigned",
     pure fn from_unsigned(ctx, n: i64, count: i64, order: Value<'e>) -> Value<'e> {
         write_integer(ctx, n, count, order, false, "Bytes.fromUnsigned")
@@ -172,14 +172,14 @@ builtin! {
 }
 
 builtin! {
-    /// Integer が指定した符号付きの幅に収まればバイト列にする（実装プラン 10-15「Bytes」）。
+    /// Integer が指定した符号付きの幅に収まればバイト列にする（設計書 03-06「Bytes と ByteOrder（初回リリース版）」）。
     name = "Bytes.fromSigned",
     pure fn from_signed(ctx, n: i64, count: i64, order: Value<'e>) -> Value<'e> {
         write_integer(ctx, n, count, order, true, "Bytes.fromSigned")
     }
 }
 
-// L03 の個別指示に従い、巨大な値を確保せず長さの計算を確かめられる形にする。
+// 巨大な値を確保せず、長さの計算を確かめられる形にする。
 fn checked_encoded_len(len: u64, width: u64, function: &'static str) -> Result<CheckedLen, Stop> {
     CheckedLen::bytes(len.saturating_mul(width), function)
 }
@@ -319,7 +319,9 @@ fn write_integer<'e>(
     let len = CheckedLen::bytes(super::count(count)?, function)?;
     let value = ctx.alloc_bytes_with(len, |out| {
         if big {
-            out.copy_from_slice(bytes);
+            for (dst, src) in out.iter_mut().zip(bytes) {
+                *dst = *src;
+            }
         } else {
             for (dst, src) in out.iter_mut().zip(bytes.iter().rev()) {
                 *dst = *src;
@@ -329,7 +331,7 @@ fn write_integer<'e>(
     super::option(&ctx, Some(value))
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     empty::DECL,
     from_list::DECL,
@@ -351,7 +353,7 @@ pub const DECLS: &[BuiltinDecl] = &[
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -360,7 +362,7 @@ mod tests {
         clippy::arithmetic_side_effects
     )]
     // 関門: 各本体の返す値・None・符号とバイト順を守る。ヒープや整数のテストは
-    // この変換の配線を通らない。直接の呼び出しは設計書 07-03「差分テスト」、長さの直接検査は L03 の指示。
+    // この変換の配線を通らない。組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
     // 似た境界は表にまとめ、本番の公開範囲や差し込み口を増やさない。
     use super::*;
     use crate::builtins::iface::CallCtx;
@@ -412,13 +414,15 @@ mod tests {
             let pure = call.pure_ctx();
             let ctx = pure.values();
             assert_eq!(ctx.bytes(call!(pure, empty).unwrap()), Some(&[][..]));
-            let long = (0..4096).map(|i| (i % 256) as u8).collect::<Vec<_>>();
+            let long = (0..4096)
+                .map(|i| u8::try_from(i % 256).unwrap())
+                .collect::<Vec<_>>();
             for bytes in [&[][..], &[255][..], &[0, 255][..], &long] {
                 let value = call!(pure, from_list, bytes_list(ctx, bytes, false)).unwrap();
                 assert_eq!(ctx.bytes(value), Some(bytes));
                 assert_eq!(
                     call!(pure, length, ctx.bytes(value).unwrap()).unwrap(),
-                    bytes.len() as i64
+                    i64::try_from(bytes.len()).unwrap()
                 );
                 let integer_value = option_value(
                     ctx,
@@ -519,7 +523,9 @@ mod tests {
                     Some(binary)
                 );
             }
-            let bytes = (0..4096).map(|i| (i % 256) as u8).collect::<Vec<_>>();
+            let bytes = (0..4096)
+                .map(|i| u8::try_from(i % 256).unwrap())
+                .collect::<Vec<_>>();
             let hex = call!(pure, to_hex, bytes.as_slice()).unwrap();
             let binary = call!(pure, to_binary, bytes.as_slice()).unwrap();
             // 片方だけが同じ誤りをしても往復で通らないよう、標準の書式とも照合する。
@@ -551,7 +557,7 @@ mod tests {
             let pure = call.pure_ctx();
             let ctx = pure.values();
             for bytes in [&[][..], &[255][..], &[0, 255][..]] {
-                let len = bytes.len() as i64;
+                let len = i64::try_from(bytes.len()).unwrap();
                 for (i, expected) in [
                     (-1, None),
                     (0, bytes.first().copied()),
@@ -632,7 +638,7 @@ mod tests {
                     let unsigned_max = if count == 8 {
                         i64::MAX
                     } else {
-                        ((1i128 << bits) - 1) as i64
+                        i64::try_from((1i128 << bits) - 1).unwrap()
                     };
                     for n in [0, 1, unsigned_max] {
                         let value =
@@ -645,9 +651,9 @@ mod tests {
                             n.to_le_bytes()
                         };
                         let expected = if big {
-                            &full[8 - count as usize..]
+                            &full[8 - usize::try_from(count).unwrap()..]
                         } else {
-                            &full[..count as usize]
+                            &full[..usize::try_from(count).unwrap()]
                         };
                         assert_eq!(bytes, expected);
                         let got = option_value(
@@ -679,8 +685,8 @@ mod tests {
                             .is_none()
                         );
                     }
-                    let signed_min = (-(1i128 << (bits - 1))) as i64;
-                    let signed_max = ((1i128 << (bits - 1)) - 1) as i64;
+                    let signed_min = i64::try_from(-(1i128 << (bits - 1))).unwrap();
+                    let signed_max = i64::try_from((1i128 << (bits - 1)) - 1).unwrap();
                     for n in [signed_min, -1, 0, 1, signed_max] {
                         let value =
                             option_value(ctx, call!(pure, from_signed, n, count, order).unwrap())
@@ -692,9 +698,9 @@ mod tests {
                             n.to_le_bytes()
                         };
                         let expected = if big {
-                            &full[8 - count as usize..]
+                            &full[8 - usize::try_from(count).unwrap()..]
                         } else {
-                            &full[..count as usize]
+                            &full[..usize::try_from(count).unwrap()]
                         };
                         assert_eq!(bytes, expected);
                         let got = option_value(

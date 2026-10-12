@@ -1,5 +1,5 @@
-//! ソースからの生成と VM の実行でコード生成の契約を確かめる（設計書 07-03、実装プラン F15）。
-// テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+//! ソースからの生成と VM の実行でコード生成の契約を確かめる（設計書 07-03「テストの設計の原則」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -38,7 +38,7 @@ fn compile_files(files: &[(&str, &str)], main: bool) -> CompiledProgram {
 }
 
 // 関門: 末尾呼び出しで窓の旧値を残すための、コード生成の出力の契約を確かめる。
-// asm は書く前に読む原型も作れるので、生存解析のテストではこの前提を守れない（R18）。
+// asm は書く前に読む原型も作れるので、生存解析のテストではこの前提を守れない。
 fn assert_entry_uses_only_parameters(p: &CompiledProgram, source: &str) {
     for proto in &p.protos {
         let live = proto.live.live_in_at(0).unwrap();
@@ -56,11 +56,25 @@ fn corpus_prototype_entries_use_only_parameters() {
     use crate::pipeline::{self, CheckOptions};
     use std::path::Path;
 
-    fn checked_entries(result: pipeline::CheckResult, name: &str) -> Option<usize> {
+    fn checked_entries(
+        result: pipeline::CheckResult,
+        name: &str,
+        expected_limit: bool,
+    ) -> Option<usize> {
         // 診断の例や、未定義の名前・型を含む仕様の断片はコード生成の入力にならない。
         let checked = result.program?;
         let core = pipeline::desugar_checked(&checked).unwrap();
-        let p = pipeline::compile(&core, result.sources).unwrap();
+        let p = match pipeline::compile(&core, result.sources) {
+            Ok(p) => p,
+            // 処理系の制限のゴールデンは原型を作らず、この契約の入力にならない。
+            Err(pipeline::CompileError::Limit(_)) if expected_limit => return None,
+            Err(pipeline::CompileError::Limit(diags)) => {
+                panic!("{name}: unexpected implementation limit: {diags:?}");
+            }
+            Err(pipeline::CompileError::Internal(error)) => {
+                panic!("{name}: compilation failed: {error:?}");
+            }
+        };
         assert_entry_uses_only_parameters(&p, name);
         Some(p.protos.len())
     }
@@ -78,14 +92,24 @@ fn corpus_prototype_entries_use_only_parameters() {
             && let Some(count) = checked_entries(
                 pipeline::check_path(&path, opts).unwrap(),
                 &path.display().to_string(),
+                std::fs::read_to_string(path.with_extension("exit")).is_ok_and(|s| s.trim() == "2")
+                    && std::fs::read_to_string(path.with_extension("diag.json")).is_ok_and(|s| {
+                        s.lines().any(|line| {
+                            serde_json::from_str::<serde_json::Value>(line)
+                                .ok()
+                                .is_some_and(|d| {
+                                    d.get("code")
+                                        .and_then(|c| c.as_str())
+                                        .is_some_and(|c| c.starts_with('L'))
+                                })
+                        })
+                    }),
             )
         {
             programs += 1;
             prototypes += count;
         }
     }
-    assert!(programs > 0);
-
     let design = root.join("../../docs/design");
     let mut chapters: Vec<_> = std::fs::read_dir(design.join("01-spec"))
         .unwrap()
@@ -127,6 +151,7 @@ fn corpus_prototype_entries_use_only_parameters() {
                 if let Some(count) = checked_entries(
                     pipeline::check_text("example.bnt", candidate.as_bytes(), opts),
                     &name,
+                    false,
                 ) {
                     examples += 1;
                     prototypes += count;
@@ -135,8 +160,6 @@ fn corpus_prototype_entries_use_only_parameters() {
             }
         }
     }
-    assert!(examples > 0);
-
     // prelude だけでなく、遅れて読み込まれる標準モジュールの本体も含める。
     let mut imports = String::new();
     for module in crate::prelude::STDLIB {
@@ -150,8 +173,15 @@ fn corpus_prototype_entries_use_only_parameters() {
     let stdlib = checked_entries(
         pipeline::check_text("stdlib.bnt", imports.as_bytes(), opts),
         "all stdlib",
+        false,
     )
     .expect("standard library must compile");
+    // 検査対象の入力が意図せず減っても通らないよう、実際に数えた件数を下限にする。
+    // 入力を減らして下限を下げるときは、理由をこのコメントに書く。
+    // stdlib は原型の数なので、コード生成や標準ライブラリの変更で減るときも理由を書いて下げる。
+    assert!(programs >= 287, "golden programs: {programs}");
+    assert!(examples >= 37, "spec examples: {examples}");
+    assert!(stdlib >= 169, "stdlib prototypes: {stdlib}");
     println!(
         "R18 entry contract: {programs} golden programs, {examples} spec examples, {stdlib} stdlib prototypes, {} total prototypes",
         prototypes + stdlib
@@ -220,16 +250,17 @@ fn operator_selection_and_tail_returns() {
     }
 }
 
-// 関門: 既存の実行結果を保つ契約と、第1段だけを使う契約を、ソースの構文変更後も確かめる。
+// 既存の実行結果を保つ契約を、ソースの構文変更後も確かめる（設計書 07-03「テストの設計の原則」）。
 // VM の命令の単体テストでは脱糖からの引数の順序や捕捉の誤りを捕まえない。
 #[test]
-fn stage_one_golden_programs() {
+fn rewritten_eval_programs_keep_outputs() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("testdata/eval");
     let mut count = 0;
     let mut copied = 0;
     for entry in std::fs::read_dir(root).unwrap() {
         let path = entry.unwrap().path();
-        // C03 が同じディレクトリに置く書き直したテスト（実行時エラーを含む）は対象にしない。
+        // 名前が `f15_` で始まるテストだけを対象にし、
+        // 同じディレクトリのほかのテスト（実行時エラーを含む）は除く。
         let ours = path
             .file_name()
             .and_then(|n| n.to_str())
@@ -247,11 +278,6 @@ fn stage_one_golden_programs() {
         count += 1;
         let source = std::fs::read_to_string(&path).unwrap();
         let p = compile_files(&[("main.bnt", &source)], true);
-        for proto in &p.protos {
-            for op in ops(proto) {
-                assert!(op.in_stage1(), "{}: {op:?}", path.display());
-            }
-        }
         let expected = std::fs::read_to_string(path.with_extension("stdout")).unwrap();
         // 最小実行版から写した例は、接頭辞の f15_ を外した名前で元の期待値と比べる。
         let name = path.file_name().unwrap().to_str().unwrap();
@@ -442,7 +468,7 @@ end function
     }
 }
 
-// 関門: 関数の境界と継続の捕捉は第2段の実行前に、原型と命令の ABI で確認する。
+// 関門: 関数の境界と継続の捕捉は実行前に、原型と命令の ABI で確認する。
 #[test]
 fn handlers_escapes_and_nested_continuation_capture() {
     let p = compile(
@@ -793,7 +819,7 @@ end function
     }
 }
 
-// 関門: 巨大なソースでは前段のスタックを検査してしまうため、F15 指定の下位 IR で限界を確かめる。
+// 関門: 巨大なソースでは前段のスタックを検査してしまうため、下位 IR で限界を確かめる。
 pub(super) fn over_limit_program(items: usize, two: bool) -> (LowerProgram, Arc<SourceTable>) {
     let source = if two {
         "function first() -> List[Integer]\n return []\nend function\nfunction second() -> List[Integer]\n return []\nend function\n"
@@ -869,4 +895,193 @@ fn nested_closures_capture_registers_then_captures() {
             .any(|p| p.origin == ProtoOrigin::UserLambda
                 && p.captures == [CaptureSource::Capture(0)])
     );
+}
+
+// 関門: 型ごとに専用命令が異なる組み込みの値をコード生成の出力で確かめる。
+// ソースでは %eq・%ne を値として書けず、既存の呼び出しのテストは原型の共有に届かない。
+// 型引数に依存しない原型の共有も同じ境界で守る。テスト専用の本番 API は加えない。
+#[test]
+fn builtin_value_prototypes_respect_type_dependent_instructions() {
+    for (name, intrinsic, wanted) in [
+        ("%eq", Intrinsic::Eq, vec![Opcode::EqI, Opcode::EqS]),
+        ("%ne", Intrinsic::Ne, vec![Opcode::EqI, Opcode::EqS]),
+        ("Lazy.force", Intrinsic::Force, vec![Opcode::Force]),
+    ] {
+        let mut source = String::from("function first() -> Unit\n");
+        for (binding, ty) in [("a", "Integer"), ("b", "String")] {
+            let (params, result, value) = if intrinsic == Intrinsic::Force {
+                (format!("Lazy[{ty}]"), ty, "Lazy.force(x)")
+            } else {
+                (format!("{ty}, {ty}"), "Boolean", "x = y")
+            };
+            let lambda_params = if intrinsic == Intrinsic::Force {
+                "x"
+            } else {
+                "x, y"
+            };
+            source.push_str(&format!(
+                " bind {binding}: function({params}) -> {result} <- lambda({lambda_params}) return {value} end lambda\n"
+            ));
+        }
+        source.push_str(" ()\nend function\n");
+        let (load, _, _, core) = desugar_files(&[("main.bnt", &source)], false);
+        let mut lower = crate::ir::decision::lower_program(&core).unwrap();
+        let id = crate::builtins::table::lookup_builtin(name).unwrap();
+        let def = lower.defs.iter_mut().find(|d| d.name == "first").unwrap();
+        let mut body = &mut def.body;
+        for ty in [BuiltinTypeId::INTEGER, BuiltinTypeId::STRING] {
+            let LCompKind::Let {
+                bound, body: rest, ..
+            } = &mut body.kind
+            else {
+                panic!("expected a binding for a builtin value");
+            };
+            bound.kind = LCompKind::Return(LowVal {
+                kind: ValKind::Builtin {
+                    id,
+                    targs: TypeArgs {
+                        tys: vec![TypeArg::Ty(Ty::Con(TyCon::Builtin(ty), vec![]))],
+                        effects: vec![],
+                    },
+                    info: BuiltinInfo {
+                        class: Capability::Pure,
+                        op: None,
+                        decl: None,
+                        intrinsic: Some(intrinsic),
+                    },
+                },
+                ty: bound.ty.clone(),
+                origin: bound.origin,
+            });
+            body = rest;
+        }
+        let p = codegen(&lower, Arc::new(load.sources)).unwrap();
+        let wrappers: Vec<_> = p
+            .protos
+            .iter()
+            .filter(|p| p.origin == ProtoOrigin::BuiltinValue && p.name == name)
+            .collect();
+        assert_eq!(wrappers.len(), wanted.len(), "{name}");
+        for opcode in wanted {
+            assert_eq!(
+                wrappers.iter().filter(|p| ops(p).contains(&opcode)).count(),
+                1,
+                "{name}: {opcode:?}"
+            );
+        }
+    }
+}
+
+// 関門: 同じ定義の本体とラムダが限界を超えても、同じ診断を重ねない。
+#[test]
+fn nested_prototype_limits_are_reported_once_per_definition() {
+    let source = "function first() -> Pair[List[Integer], function() -> List[Integer]]\n return Pair([], lambda() return [] end lambda)\nend function\n";
+    let (load, _, _, core) = desugar_files(&[("main.bnt", source)], false);
+    let mut lower = crate::ir::decision::lower_program(&core).unwrap();
+    let def = lower.defs.iter_mut().find(|d| d.name == "first").unwrap();
+    fn fill(value: &mut LowVal) -> usize {
+        match &mut value.kind {
+            ValKind::List(items) => {
+                *items = (0..70000)
+                    .map(|i| LowVal {
+                        kind: ValKind::Const(Const::Int(i)),
+                        ty: Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]),
+                        origin: value.origin,
+                    })
+                    .collect();
+                1
+            }
+            ValKind::Ctor { args, .. } => args.iter_mut().map(fill).sum(),
+            ValKind::Lambda(lambda) => fill_body(&mut lambda.body),
+            ValKind::Var(_)
+            | ValKind::Const(_)
+            | ValKind::TopFn { .. }
+            | ValKind::Builtin { .. }
+            | ValKind::Op { .. }
+            | ValKind::ConstRef(_) => 0,
+        }
+    }
+    fn fill_body(body: &mut LComp) -> usize {
+        match &mut body.kind {
+            LCompKind::Return(value) => fill(value),
+            LCompKind::Let { bound, body, .. } => fill_body(bound) + fill_body(body),
+            LCompKind::App { .. }
+            | LCompKind::Method(_)
+            | LCompKind::If { .. }
+            | LCompKind::CaseCtor { .. }
+            | LCompKind::CaseConst { .. }
+            | LCompKind::CaseLength { .. }
+            | LCompKind::ListGet { .. }
+            | LCompKind::ListSlice { .. }
+            | LCompKind::Join { .. }
+            | LCompKind::Jump { .. }
+            | LCompKind::Escape(_)
+            | LCompKind::Use { .. }
+            | LCompKind::Lazy { .. }
+            | LCompKind::Handle(_)
+            | LCompKind::Resume { .. } => panic!("unexpected list preparation: {body:?}"),
+        }
+    }
+    assert_eq!(fill_body(&mut def.body), 2);
+    let Err(CodegenError::Limit(diags)) = codegen(&lower, Arc::new(load.sources)) else {
+        panic!("expected limits")
+    };
+    assert_eq!(
+        diags
+            .iter()
+            .filter(|d| d.code == Some(DiagCode::L0102))
+            .count(),
+        1,
+        "{diags:?}"
+    );
+    assert_eq!(
+        diags
+            .iter()
+            .filter(|d| d.code == Some(DiagCode::L0101))
+            .count(),
+        1,
+        "{diags:?}"
+    );
+}
+
+// 関門: 下位 IR の長さの腕の欠落・重複・逆順を、不具合として拒む。
+#[test]
+fn malformed_length_cases_are_internal_errors() {
+    let (load, _, _, core) = desugar_files(
+        &[(
+            "main.bnt",
+            "function first() -> Integer\n return 0\nend function\n",
+        )],
+        false,
+    );
+    let lower = crate::ir::decision::lower_program(&core).unwrap();
+    for (lengths, at_least) in [(vec![], 1), (vec![0, 0], 2), (vec![1, 0], 2), (vec![0], 0)] {
+        let mut lower = lower.clone();
+        let def = lower.defs.iter_mut().find(|d| d.name == "first").unwrap();
+        let otherwise = def.body.clone();
+        def.body.kind = LCompKind::CaseLength {
+            scrutinee: LowVal {
+                kind: ValKind::List(vec![]),
+                ty: Ty::Con(
+                    TyCon::Builtin(BuiltinTypeId::LIST),
+                    vec![Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![])],
+                ),
+                origin: def.span,
+            },
+            exact: lengths
+                .into_iter()
+                .map(|len| LengthArm {
+                    len,
+                    body: otherwise.clone(),
+                })
+                .collect(),
+            at_least,
+            otherwise: Box::new(otherwise),
+        };
+        assert!(matches!(
+            codegen(&lower, Arc::new(SourceTable::new())),
+            Err(CodegenError::Internal(_))
+        ));
+    }
+    drop(load);
 }

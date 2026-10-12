@@ -1,8 +1,9 @@
-//! 読み込みの段の契約の検査（設計書 02-02・02-04、実装プラン F05「受け入れテスト」）。
+//! 読み込みの段の契約の検査（設計書 02-02「ソースとファイル ID」、
+//! 02-04「モジュールの探し方」「依存グラフと循環の検出」）。
 //! 探索規則・ID の対応・診断の位置と順・循環を公開の読み込みの結果で確かめる。
 //! 既存の構文解析のテストでは届かない、複数のソースと外部のファイルシステムの境界を扱う。
 
-// テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -127,7 +128,7 @@ fn prelude_order_kinds_and_clock_dependency() {
 
 #[test]
 fn every_stdlib_source_and_its_imports_load_without_cycles() {
-    // prelude も明示して取り込むので、その import から始まる循環を取り逃がさない（F05）。
+    // prelude も明示して取り込むので、その import から始まる循環を取り逃がさない。
     let imports = STDLIB
         .iter()
         .map(|source| format!("import {}\n", find::import_name(source)))
@@ -338,7 +339,7 @@ fn stdlib_spelling_status_and_reserved_root_diagnostics() {
             }]
         );
         let expected = match key {
-            "similar" => format!("a similar module exists: {suggestion}"),
+            "similar" => format!("a similar module exists: `{suggestion}`"),
             "unofficial" => format!(
                 "this module is unofficial in this version and is imported as `{suggestion}`"
             ),
@@ -362,6 +363,46 @@ fn stdlib_spelling_status_and_reserved_root_diagnostics() {
             "names that start with `Benitoite` always refer to the standard library, so `/root/Benitoite` cannot be imported"
         ]
     );
+}
+
+#[test]
+fn stdlib_last_segment_candidates_precede_distance_and_require_uniqueness() {
+    // 距離だけでは見つからないモジュールと、最後の段が曖昧な場合の契約を守る。
+    let embedded = [
+        StdlibModuleSource {
+            path: &["IO", "Console"],
+            prelude: false,
+            unofficial: true,
+            text: "",
+        },
+        StdlibModuleSource {
+            path: &["Other", "Console"],
+            prelude: false,
+            unofficial: false,
+            text: "",
+        },
+    ];
+    for sources in [&embedded[..1], &embedded[..]] {
+        let fs = MemFs::new(&[("main.bnt", "import Benitoite.CONSOLE as C")]);
+        let output = load_program(&entry("main.bnt"), sources, &fs, &mut IdGen::new());
+        assert_eq!(codes(&output), [DiagCode::E0321]);
+        let d = &output.diagnostics[0];
+        assert!(d.notes.is_empty());
+        assert_eq!(d.helps.len(), 1);
+        if sources.len() == 1 {
+            assert_eq!(d.helps[0].message, "use `Benitoite.Unofficial.IO.Console`");
+            assert_eq!(
+                d.helps[0].edits[0].replacement,
+                "Benitoite.Unofficial.IO.Console"
+            );
+        } else {
+            assert_eq!(
+                d.helps[0].message,
+                "use `Benitoite.Other.Console`, `Benitoite.Unofficial.IO.Console`"
+            );
+            assert!(d.helps[0].edits.is_empty());
+        }
+    }
 }
 
 #[test]

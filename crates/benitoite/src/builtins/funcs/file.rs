@@ -17,7 +17,7 @@ use crate::runtime::heap::FieldsKind;
 use crate::runtime::heap::{CtorTag, ResourceId, Value};
 
 builtin! {
-    /// `Benitoite.IO.File.readText` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.File.readText` の本体。
     name = "Benitoite.IO.File.readText",
     io fn read_text(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -31,7 +31,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.writeText` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.File.writeText` の本体。
     name = "Benitoite.IO.File.writeText",
     io fn write_text(ctx, path: &'c str, text: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -50,7 +50,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.appendText` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.File.appendText` の本体。
     name = "Benitoite.IO.File.appendText",
     io fn append_text(ctx, path: &'c str, text: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -69,7 +69,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.openReader` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.File.openReader` の本体。
     name = "Benitoite.IO.File.openReader",
     io fn open_reader(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -83,7 +83,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.readLine` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.File.readLine` の本体。
     name = "Benitoite.IO.File.readLine",
     io fn read_line(ctx, reader: ResourceId) -> IoReply<'e> {
         let _ = ctx;
@@ -95,7 +95,7 @@ builtin! {
                 };
                 let reader = resource.as_any_mut().downcast_mut::<FileReader>()
                     .ok_or_else(|| Stop::Internal("File.readLine requires File.Reader".into()))?;
-                Ok(read_line_limited(&mut reader.0))
+                Ok(read_line_limited(&mut reader.0, MAX_STRING_BYTES))
             },
             read_line_done,
         ))))
@@ -103,7 +103,7 @@ builtin! {
 }
 
 builtin! {
-    /// `IO.File.closeReader` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `IO.File.closeReader` の本体。
     name = "IO.File.closeReader",
     state fn close_reader(ctx, reader: ResourceId) -> StateReply<'e> {
         let mut ctx = ctx;
@@ -141,6 +141,7 @@ mod text {
     pub const WRITER_BUFFER_MISSING: &str = "File.Writer buffer missing during release";
 }
 
+#[derive(Clone, Debug)]
 pub(super) struct IoFailure {
     kind: u32,
     reason: String,
@@ -202,23 +203,31 @@ impl OsResource for FileReader {
 }
 
 fn read_limited(path: &Path) -> Result<Vec<u8>, IoFailure> {
-    read_all_limited(&mut File::open(path)?)
+    read_all_limited(&mut File::open(path)?, MAX_STRING_BYTES)
 }
 
-pub(super) fn read_all_limited(reader: &mut (impl Read + ?Sized)) -> Result<Vec<u8>, IoFailure> {
+pub(super) fn read_all_limited(
+    reader: &mut (impl Read + ?Sized),
+    limit: u64,
+) -> Result<Vec<u8>, IoFailure> {
     let mut bytes = Vec::new();
     // 上限より 1 バイト多い分まで読み、VM 側で値を作る前に判定する
     // （設計書 02-09「一つの操作で作る値の大きさの上限」）。
     reader
-        .take(MAX_STRING_BYTES.saturating_add(1))
+        .take(limit.saturating_add(1))
         .read_to_end(&mut bytes)?;
     Ok(bytes)
 }
 
-pub(super) fn read_line_limited(reader: &mut dyn BufRead) -> Result<Option<Vec<u8>>, IoFailure> {
+pub(super) fn read_line_limited(
+    reader: &mut dyn BufRead,
+    limit: u64,
+) -> Result<Option<Vec<u8>>, IoFailure> {
     let mut bytes = Vec::new();
+    // 行末の CRLF は値に含めないので、内容の上限に 2 バイトを加えて読む
+    // （設計書 02-09「一つの操作で作る値の大きさの上限」）。
     let count = reader
-        .take(MAX_STRING_BYTES.saturating_add(1))
+        .take(limit.saturating_add(2))
         .read_until(b'\n', &mut bytes)?;
     Ok((count != 0).then_some(bytes))
 }
@@ -233,27 +242,35 @@ pub(super) fn result_error<'c, 'e>(
     ctx.alloc_fields(FieldsKind::Ctor, tags::RESULT_ERROR, &[error])
 }
 
-fn check_input(bytes: &[u8], function: &'static str) -> Result<(), Stop> {
-    if super::count(bytes.len())? > MAX_STRING_BYTES {
-        return Err(Stop::Resource(ResourceError::InputTooLarge {
-            function,
-            unit: SizeUnit::Bytes,
-            limit: MAX_STRING_BYTES,
-        }));
+/// 外部入力の大きさの超過を、値を作る操作の超過と区別する
+/// （設計書 02-09「一つの操作で作る値の大きさの上限」）。
+pub(super) fn check_input_size(
+    len: usize,
+    limit: u64,
+    unit: SizeUnit,
+    function: &'static str,
+) -> Result<(), Stop> {
+    if super::count(len)? > limit {
+        return Err(input_too_large(function, unit, limit));
     }
     Ok(())
+}
+
+fn check_input(bytes: &[u8], function: &'static str, limit: u64) -> Result<(), Stop> {
+    check_input_size(bytes.len(), limit, SizeUnit::Bytes, function)
 }
 
 pub(super) fn complete_text<'c, 'e>(
     ctx: &IoCtx<'c, 'e>,
     output: Result<Vec<u8>, IoFailure>,
     function: &'static str,
+    limit: u64,
 ) -> Result<Value<'e>, Stop> {
     let bytes = match output {
         Ok(bytes) => bytes,
         Err(failure) => return result_error(ctx, failure, function),
     };
-    check_input(&bytes, function)?;
+    check_input(&bytes, function, limit)?;
     match ctx.alloc_str_utf8(&bytes, function)? {
         Some(value) => ctx.alloc_fields(FieldsKind::Ctor, tags::RESULT_OK, &[value]),
         None => result_error(
@@ -271,6 +288,7 @@ pub(super) fn complete_line<'c, 'e>(
     ctx: &IoCtx<'c, 'e>,
     output: Result<Option<Vec<u8>>, IoFailure>,
     function: &'static str,
+    limit: u64,
 ) -> Result<Value<'e>, Stop> {
     let mut bytes = match output {
         Ok(Some(bytes)) => bytes,
@@ -283,7 +301,6 @@ pub(super) fn complete_line<'c, 'e>(
         }
         Err(failure) => return result_error(ctx, failure, function),
     };
-    check_input(&bytes, function)?;
     // LF がなくても末尾の CR を一つ除く（設計書 03-07「共通の規則」）。
     if bytes.last() == Some(&b'\n') {
         bytes.pop();
@@ -291,6 +308,7 @@ pub(super) fn complete_line<'c, 'e>(
     if bytes.last() == Some(&b'\r') {
         bytes.pop();
     }
+    check_input(&bytes, function, limit)?;
     match ctx.alloc_str_utf8(&bytes, function)? {
         Some(value) => {
             let line = ctx.alloc_fields(FieldsKind::Ctor, tags::OPTION_SOME, &[value])?;
@@ -312,14 +330,14 @@ fn read_text_done<'c, 'e>(
     output: Result<Vec<u8>, IoFailure>,
     _args: &[Value<'e>],
 ) -> Result<Value<'e>, Stop> {
-    complete_text(ctx, output, "Benitoite.IO.File.readText")
+    complete_text(ctx, output, "Benitoite.IO.File.readText", MAX_STRING_BYTES)
 }
 fn read_line_done<'c, 'e>(
     ctx: &mut IoCtx<'c, 'e>,
     output: Result<Result<Option<Vec<u8>>, IoFailure>, Stop>,
     _args: &[Value<'e>],
 ) -> Result<Value<'e>, Stop> {
-    complete_line(ctx, output?, "Benitoite.IO.File.readLine")
+    complete_line(ctx, output?, "Benitoite.IO.File.readLine", MAX_STRING_BYTES)
 }
 fn write_done<'c, 'e>(
     ctx: &IoCtx<'c, 'e>,
@@ -368,7 +386,7 @@ fn open_reader_done<'c, 'e>(
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     read_text::DECL,
     write_text::DECL,
@@ -386,7 +404,7 @@ mod resource_tests;
 mod tests;
 
 builtin! {
-    /// `Benitoite.IO.File.readBytes` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.readBytes` の本体。
     name = "Benitoite.IO.File.readBytes",
     io fn read_bytes(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -400,7 +418,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.readLines` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.readLines` の本体。
     name = "Benitoite.IO.File.readLines",
     io fn read_lines(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -414,7 +432,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.exists` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.exists` の本体。
     /// 壊れたシンボリックリンクも、リンクそのものがあるので true を返す（設計書 03-07「File」）。
     name = "Benitoite.IO.File.exists",
     io fn exists(ctx, path: &'c str) -> IoReply<'e> {
@@ -433,7 +451,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.info` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.info` の本体。
     name = "Benitoite.IO.File.info",
     io fn info(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -447,7 +465,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.listDirectory` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.listDirectory` の本体。
     name = "Benitoite.IO.File.listDirectory",
     io fn list_directory(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -461,7 +479,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.walk` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.walk` の本体。
     name = "Benitoite.IO.File.walk",
     io fn walk(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -475,7 +493,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.canonicalize` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.canonicalize` の本体。
     name = "Benitoite.IO.File.canonicalize",
     io fn canonicalize(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -489,7 +507,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.writeBytes` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.writeBytes` の本体。
     name = "Benitoite.IO.File.writeBytes",
     io fn write_bytes(ctx, path: &'c str, content: &'c [u8]) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -504,7 +522,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.appendBytes` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.appendBytes` の本体。
     name = "Benitoite.IO.File.appendBytes",
     io fn append_bytes(ctx, path: &'c str, content: &'c [u8]) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -519,7 +537,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.createDirectory` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.createDirectory` の本体。
     name = "Benitoite.IO.File.createDirectory",
     io fn create_directory(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -533,7 +551,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.remove` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.remove` の本体。
     name = "Benitoite.IO.File.remove",
     io fn remove(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -547,7 +565,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.removeTree` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.removeTree` の本体。
     name = "Benitoite.IO.File.removeTree",
     io fn remove_tree(ctx, path: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -561,7 +579,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.rename` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.rename` の本体。
     name = "Benitoite.IO.File.rename",
     io fn rename(ctx, from: &'c str, to: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -594,8 +612,8 @@ fn read_bytes_job(path: &Path) -> PathInput<Vec<u8>> {
             MAX_STRING_BYTES,
         ));
     }
-    // 読む間にファイルが増える場合にも、上限より 1 バイト多い分までに留める（実装プラン L11）。
-    Ok(read_all_limited(&mut file))
+    // 読む間にファイルが増える場合にも、上限より 1 バイト多い分までに留める。
+    Ok(read_all_limited(&mut file, MAX_STRING_BYTES))
 }
 
 fn input_too_large(function: &'static str, unit: SizeUnit, limit: u64) -> Stop {
@@ -642,7 +660,7 @@ fn info_job(path: &Path) -> Result<FileInfo, IoFailure> {
 }
 
 fn modified_nanoseconds(time: std::time::SystemTime) -> Result<i64, IoFailure> {
-    // epoch より前の時刻も符号付きナノ秒で表す。i128 を介して i64::MIN も扱う（実装プラン L11）。
+    // epoch より前の時刻も符号付きナノ秒で表す。i128 を介して i64::MIN も扱う。
     let nanos = match time.duration_since(std::time::UNIX_EPOCH) {
         Ok(duration) => i128::try_from(duration.as_nanos()).ok(),
         Err(e) => i128::try_from(e.duration().as_nanos())
@@ -846,7 +864,7 @@ fn read_bytes_done<'c, 'e>(
         Ok(bytes) => bytes,
         Err(e) => return result_error(ctx, e, FUNCTION),
     };
-    check_input(&bytes, FUNCTION)?;
+    check_input(&bytes, FUNCTION, MAX_STRING_BYTES)?;
     let value = ctx.alloc_bytes(&bytes, FUNCTION)?;
     ctx.alloc_fields(FieldsKind::Ctor, tags::RESULT_OK, &[value])
 }
@@ -861,7 +879,7 @@ fn read_lines_done<'c, 'e>(
         Ok(bytes) => bytes,
         Err(e) => return result_error(ctx, e, FUNCTION),
     };
-    check_input(&bytes, FUNCTION)?;
+    check_input(&bytes, FUNCTION, MAX_STRING_BYTES)?;
     let s = match std::str::from_utf8(&bytes) {
         Ok(s) => s,
         Err(_) => {
@@ -873,7 +891,7 @@ fn read_lines_done<'c, 'e>(
         }
     };
     let count = super::string::line_parts(s).count();
-    CheckedLen::elements(super::count(count)?, FUNCTION)?;
+    check_input_size(count, MAX_LIST_LEN, SizeUnit::Elements, FUNCTION)?;
     let mut lines = Vec::with_capacity(count);
     for part in super::string::line_parts(s) {
         lines.push(
@@ -907,7 +925,7 @@ fn info_done<'c, 'e>(
     };
     let modified =
         ctx.alloc_fields(FieldsKind::Ctor, tags::RECORD, &[Value::Int(info.modified)])?;
-    // File.Info の宣言の順は kind, size, modified（実装プラン 10-15「レコードの値の作り方」）。
+    // File.Info の宣言の順は kind, size, modified（設計書 02-06「脱糖」）。
     let info = ctx.alloc_fields(
         FieldsKind::Ctor,
         tags::RECORD,
@@ -1033,7 +1051,8 @@ fn rename_done<'c, 'e>(
     write_done(ctx, output, "Benitoite.IO.File.rename")
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const PATH_DECLS: &[BuiltinDecl] = &[
     read_bytes::DECL,
     read_lines::DECL,
@@ -1051,7 +1070,7 @@ pub const PATH_DECLS: &[BuiltinDecl] = &[
 ];
 
 builtin! {
-    /// `Benitoite.IO.File.readChunk` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.readChunk` の本体。
     name = "Benitoite.IO.File.readChunk",
     io fn read_chunk(ctx, reader: ResourceId, maximum_bytes: i64) -> IoReply<'e> {
         let _ = ctx;
@@ -1079,7 +1098,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.openWriter` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.openWriter` の本体。
     name = "Benitoite.IO.File.openWriter",
     io fn open_writer(ctx, path: &'c str, mode: Value<'e>) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -1102,34 +1121,34 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.File.write` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.write` の本体。
     name = "Benitoite.IO.File.write",
     io fn write(ctx, writer: ResourceId, text: &'c str) -> IoReply<'e> {
         let _ = ctx;
-        writer_work(writer, text.as_bytes().to_vec(), false, write_resource_done)
+        writer_work(writer, text.as_bytes().to_vec(), false, "Benitoite.IO.File.write", write_resource_done)
     }
 }
 
 builtin! {
-    /// `Benitoite.IO.File.writeLine` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.writeLine` の本体。
     name = "Benitoite.IO.File.writeLine",
     io fn write_line(ctx, writer: ResourceId, text: &'c str) -> IoReply<'e> {
         let _ = ctx;
-        writer_work(writer, text.as_bytes().to_vec(), true, write_line_resource_done)
+        writer_work(writer, text.as_bytes().to_vec(), true, "Benitoite.IO.File.writeLine", write_line_resource_done)
     }
 }
 
 builtin! {
-    /// `Benitoite.IO.File.writeChunk` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.File.writeChunk` の本体。
     name = "Benitoite.IO.File.writeChunk",
     io fn write_chunk(ctx, writer: ResourceId, data: &'c [u8]) -> IoReply<'e> {
         let _ = ctx;
-        writer_work(writer, data.to_vec(), false, write_chunk_resource_done)
+        writer_work(writer, data.to_vec(), false, "Benitoite.IO.File.writeChunk", write_chunk_resource_done)
     }
 }
 
 builtin! {
-    /// `IO.File.closeWriter` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `IO.File.closeWriter` の本体。
     name = "IO.File.closeWriter",
     state fn close_writer(ctx, writer: ResourceId) -> StateReply<'e> {
         let mut ctx = ctx;
@@ -1151,18 +1170,62 @@ builtin! {
 }
 
 #[derive(Debug)]
-struct FileWriter(Option<BufWriter<File>>);
+struct FileWriter {
+    writer: Option<BufWriter<File>>,
+    failure: Option<IoFailure>,
+}
+
+impl FileWriter {
+    fn new(file: File) -> Self {
+        Self {
+            writer: Some(BufWriter::new(file)),
+            failure: None,
+        }
+    }
+
+    fn write(&mut self, bytes: &[u8], newline: bool, function: &str) -> WriteOutput {
+        if let Some(failure) = &self.failure {
+            return Ok(Err(failure.clone()));
+        }
+        let writer = self
+            .writer
+            .as_mut()
+            .ok_or_else(|| Stop::Internal(format!("{function} requires File.Writer")))?;
+        let result = writer.write_all(bytes).and_then(|()| {
+            if newline {
+                writer.write_all(b"\n")
+            } else {
+                Ok(())
+            }
+        });
+        if let Err(error) = result {
+            // どこまで書けたかが分からないため、残りを再試行しない
+            // （設計書 03-07「File」）。BufWriter の drop による書き出しも防ぐ。
+            if let Some(writer) = self.writer.take() {
+                drop(writer.into_parts());
+            }
+            let failure = IoFailure::from(error);
+            self.failure = Some(failure.clone());
+            return Ok(Err(failure));
+        }
+        Ok(Ok(()))
+    }
+}
 
 impl OsResource for FileWriter {
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
         self
     }
 
-    /// 書き出してから閉じる。03-07「File」はディスクへの同期を要求しないので、
-    /// `sync_all` は呼ばない。失敗した書き出しを drop で再試行しない。
+    /// 開いた状態なら書き出して閉じ、失敗の状態なら記録した失敗を返す。
+    /// ディスクへの同期は要求しないので `sync_all` は呼ばず、失敗した書き出しを
+    /// drop で再試行しない（設計書 03-07「File」）。
     fn release(mut self: Box<Self>) -> Result<(), String> {
+        if let Some(failure) = self.failure.take() {
+            return Err(failure.reason);
+        }
         let mut writer = self
-            .0
+            .writer
             .take()
             .ok_or_else(|| text::WRITER_BUFFER_MISSING.to_owned())?;
         let result = writer.flush().map_err(|e| e.to_string());
@@ -1175,7 +1238,7 @@ impl Drop for FileWriter {
     fn drop(&mut self) {
         // 束縛の文の未解放の Writer は、実行を捨てるときに書き出さない
         // （設計書 02-09「リソースの追跡」）。BufWriter の drop に任せない。
-        if let Some(writer) = self.0.take() {
+        if let Some(writer) = self.writer.take() {
             drop(writer.into_parts());
         }
     }
@@ -1187,29 +1250,22 @@ fn writer_work<'e>(
     writer: ResourceId,
     bytes: Vec<u8>,
     newline: bool,
+    function: &'static str,
     complete: crate::builtins::iface::CompleteFn<WriteOutput>,
 ) -> Result<IoReply<'e>, Stop> {
     Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
         Lend::Resource(writer),
         move |lent| {
             let Lent::Resource(resource) = lent else {
-                return Err(Stop::Internal("File.write requires a lent resource".into()));
+                return Err(Stop::Internal(format!(
+                    "{function} requires a lent resource"
+                )));
             };
             let writer = resource
                 .as_any_mut()
                 .downcast_mut::<FileWriter>()
-                .and_then(|writer| writer.0.as_mut())
-                .ok_or_else(|| Stop::Internal("File.write requires File.Writer".into()))?;
-            Ok(writer
-                .write_all(&bytes)
-                .and_then(|()| {
-                    if newline {
-                        writer.write_all(b"\n")
-                    } else {
-                        Ok(())
-                    }
-                })
-                .map_err(IoFailure::from))
+                .ok_or_else(|| Stop::Internal(format!("{function} requires File.Writer")))?;
+            writer.write(&bytes, newline, function)
         },
         complete,
     ))))
@@ -1244,7 +1300,7 @@ fn open_writer_done<'c, 'e>(
             let site = ctx.site();
             let writer = ctx.services().register_resource(
                 ResourceKind::FileWriter,
-                Box::new(FileWriter(Some(BufWriter::new(file)))),
+                Box::new(FileWriter::new(file)),
                 site,
             );
             ctx.alloc_fields(
@@ -1281,7 +1337,8 @@ fn write_chunk_resource_done<'c, 'e>(
     write_done(ctx, output?, "Benitoite.IO.File.writeChunk")
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const RESOURCE_DECLS: &[BuiltinDecl] = &[
     read_chunk::DECL,
     open_writer::DECL,

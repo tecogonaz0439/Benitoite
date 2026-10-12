@@ -8,6 +8,8 @@ use crate::base::Span;
 use crate::diag::{DiagBuilder, DiagCode, Edit};
 use crate::syntax::{ast::*, token::TokenKind};
 
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn parse_record_expr(
     p: &mut Parser,
     path: Vec<Name>,
@@ -42,6 +44,8 @@ pub(super) fn parse_record_expr(
 fn open_record(p: &mut Parser) -> PResult<()> {
     p.expect(TokenKind::LParen).map(|_| ())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_base(p: &mut Parser, depth: u32) -> PResult<Option<Box<Expr>>> {
     if !p.eat(TokenKind::DotDot) {
         return Ok(None);
@@ -57,6 +61,8 @@ fn field_name(p: &mut Parser) -> PResult<Name> {
     p.expect(TokenKind::Colon)?;
     Ok(name)
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn record_placeholder(p: &mut Parser) -> Box<Expr> {
     let from = p.pos;
     let span = p.bump().span;
@@ -90,6 +96,8 @@ fn push_field_arg(p: &mut Parser, depth: u32, out: &mut Vec<FieldArg>) -> PResul
     finish_field_arg(p, start, name, value, out);
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_field_arg(
     p: &mut Parser,
     start: usize,
@@ -105,6 +113,8 @@ fn finish_field_arg(
         value: *value,
     });
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_expr(
     p: &mut Parser,
     path: Vec<Name>,
@@ -219,6 +229,8 @@ fn push_field_pat(
     let result = patterns::parse_pattern(p, counter);
     finish_field_pat(p, start, name, result, out)
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_field_pat(
     p: &mut Parser,
     start: usize,
@@ -236,6 +248,8 @@ fn finish_field_pat(
     });
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_pattern(
     p: &mut Parser,
     path: Vec<Name>,
@@ -270,8 +284,9 @@ fn finish_pattern(
 
 #[cfg(test)]
 // レコードの構築・更新・照合の AST と診断は公開の parse の契約である。二字句での読み分け、
-// 修正案、回復、深さの上限を本物の字句解析から確かめる。仮の本体のテストを置き換え、
-// 非公開の判定を呼ばない（test-audit の作成時の関門、設計書 07-03）。失敗は panic で表す（00-02）。
+// 修正案、回復、深さの上限を本物の字句解析から確かめる。
+// 非公開の判定を呼ばない（test-audit の作成時の関門、設計書 07-03「テストの設計の原則」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,

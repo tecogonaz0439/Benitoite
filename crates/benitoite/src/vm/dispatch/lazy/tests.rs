@@ -1,4 +1,4 @@
-//! Lazy の状態遷移、枠の根、深い連鎖の検査（実装プラン R22「受け入れテスト」）。
+//! Lazy の状態遷移、枠の根、深い連鎖の検査（設計書 02-08「明示遅延」）。
 
 use super::*;
 use crate::bytecode::asm::ProgramBuilder;
@@ -199,13 +199,22 @@ pub(crate) fn check_lazy_capture_and_result() {
     );
     assert!(vm.state.precall_done.is_none());
     assert_eq!(vm.state.meter.frames(), 0);
-    vm.heap.epoch(|ctx| vm.state.roots.truncate(ctx, 0));
+    vm.heap.epoch(|ctx| {
+        let LazyState::Done { value } = ctx
+            .host::<LazyState>(lazy_at(ctx, &vm.state, retained))
+            .unwrap()
+        else {
+            panic!()
+        };
+        assert_eq!(ctx.str(ctx.load(value)), Some("only in the lazy capture"));
+        vm.state.roots.truncate(ctx, 0);
+    });
     vm.heap.collect(&vm.state);
     assert!(vm.heap.object_ids().is_empty());
 }
 
 // 関門: 停止時の Before への復元は VM の停止の契約。正常な結果のテストでは
-// update の枠の Stop 分岐を通らない（R22 の受け入れテスト）。
+// update の枠の Stop 分岐を通らない。
 #[test]
 fn stopping_a_lazy_body_restores_before_and_preserves_its_captures() {
     let mut b = ProgramBuilder::new();
@@ -288,7 +297,7 @@ fn stopping_a_lazy_body_restores_before_and_preserves_its_captures() {
 }
 
 // 関門: 原因ごとの復元は公開の unwind_update の契約。DropRel は純粋な lazy の
-// プログラムからは到達できないため、作業文書の指定どおり直接呼ぶ。
+// プログラムからは到達できないため、直接呼ぶ。
 #[test]
 fn update_unwind_obeys_every_cause_and_rejects_non_evaluating_states() {
     for cause in [

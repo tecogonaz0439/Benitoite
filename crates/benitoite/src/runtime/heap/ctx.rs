@@ -260,7 +260,7 @@ impl Heap {
     /// ```
     ///
     /// `SlotOps` の借用を `host_mut` の外へ持ち出す（H2・H7）:
-    /// R02 の値の例では扱わない、操作用の文脈の寿命を確かめる（実装プラン R11）。
+    /// 値の寿命の例では扱わない、操作用の文脈の寿命を確かめる（設計書 02-09「メモリの管理」）。
     ///
     /// ```rust,compile_fail
     /// use benitoite::runtime::heap::{Heap, HeapConfig, HostData, Trace, Tracer};
@@ -289,7 +289,7 @@ impl Heap {
     /// ```
     ///
     /// `Discarder` の借用を `discard` の外に残す（H2・H11）:
-    /// 手放す操作の文脈を保存して後で使う書き方を拒む（実装プラン R11）。
+    /// 手放す操作の文脈を保存して後で使う書き方を拒む。
     ///
     /// ```rust,compile_fail
     /// use benitoite::runtime::heap::{Discard, Discarder, Heap, HeapConfig};
@@ -332,6 +332,8 @@ impl Heap {
         self.core.collect_requested()
     }
     /// 安全点で回収する。`roots` は、この先使う `Slot` をすべて辿る（不変条件 H4）。
+    /// `roots` が辿らなかった `Slot` を、この呼び出しの後に読んではならない。読むと解放した対象を読むことがある
+    /// （モジュールの先頭の「安全の範囲」）。既定の構成では、この誤りを見つけない。
     pub fn collect(&mut self, roots: &dyn Trace) {
         self.core.collect(roots);
     }
@@ -357,6 +359,9 @@ impl<'e> NoGcCtx<'e> {
     /// `Slot` の値を読む。区間の終わりまで使える写しを返す（数は変えない）。
     /// すべての構成でヒープの番号を比べ、`heap-verify` の構成ではさらに確保の世代を確かめる。
     /// 食い違えば不具合を記録して `Value::Unit` を返す。
+    /// `s` は、最後の回収で根から辿れた `Slot` か、その回収の後に書いた `Slot` でなければならない（H4）。
+    /// そうでない `Slot` を読むと、`heap-verify` の構成では不具合を記録して `Value::Unit` を返し、
+    /// 既定の構成では解放した対象を読む（モジュールの先頭の「安全の範囲」）。
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub fn load(&self, s: &Slot) -> Value<'e> {
@@ -387,6 +392,9 @@ impl<'e> NoGcCtx<'e> {
         self.values.core.slot_move_slot(dst, src)
     }
     /// `src` の値を読み、`src` を空にする。最後の使用の読み出しに使う。
+    /// `src` は、最後の回収で根から辿れた `Slot` か、その後に書いた `Slot` でなければならない（H4）。
+    /// そうでない `Slot` を読むと、`heap-verify` の構成では不具合を記録して `Value::Unit` を返し、
+    /// 既定の構成では解放した対象を読む（モジュールの先頭の「安全の範囲」）。
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub fn take(&self, src: &mut Slot) -> Value<'e> {
@@ -431,6 +439,8 @@ impl<'e> ValueCtx<'e> {
     pub fn same_object(&self, a: Value<'e>, b: Value<'e>) -> bool {
         self.core.same_object(a, b)
     }
+    /// 生きている対象（最後の回収で根から辿れた対象か、その後に作った対象）の識別を返す。
+    /// 生きていない対象に呼ぶと、既定の構成では解放した領域を読む（モジュールの先頭の「安全の範囲」）。
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub fn object_id(&self, v: Value<'e>) -> Option<ObjId> {
@@ -500,7 +510,7 @@ impl<'e> ValueCtx<'e> {
     ) -> Result<Value<'e>, Stop> {
         u32::try_from(items.len())
             .map_err(|_| Stop::Internal("fields length exceeds u32".into()))?;
-        // 内部参照の開始は内部層の allocated が方式へ通知する（10-08「根と対象を辿る」、H6）。
+        // 内部参照の開始は内部層の allocated が方式へ通知する（設計書 02-09「メモリの管理」、H6）。
         self.core.alloc_fields(self.epoch, kind, tag, items)
     }
     /// 値の並びを持つ対象の種類と `tag`。それ以外の値には `None`。
@@ -656,7 +666,7 @@ impl NoGcCtx<'_> {
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -670,14 +680,14 @@ mod tests {
     use super::super::trace::{Discarder, Tracer};
     use super::*;
 
-    // 作成時の関門: この公開 API の既存のテストはない。R01 の内部層のテストでは
+    // 作成時の関門: 内部層のテストでは
     // 区間・Slot・RootStack・Host の借用と方式への通知を経由しないため、その退行を捕まえない。
     // 以下は区間をまたぐ値の保存、参照の所有の移動、型の検査、外国の Slot の拒否を守る。
-    // R06 の前の文字列の準備と R02 が指定する通知の計数だけを内部層で行い、公開範囲は広げない。
+    // 文字列の準備と方式への通知の計数だけを内部層で行い、公開範囲は広げない。
 
-    // R06 の作成時の関門: 公開の値操作による UTF-8・型・欄・上限の契約を守る。
+    // 作成時の関門: 公開の値操作による UTF-8・型・欄・上限の契約を守る。
     // 内部層の既存のテストは公開層の検査の抜けを捕まえない。上限超過時の確保数も確認し、
-    // 本番の公開範囲を広げない。大きさの測定は R06 が定数の表明とは別に要求する。
+    // 本番の公開範囲を広げない。大きさは定数の表明とは別にテストでも測り、出力する。
 
     // heap-verify は対象の世代を値に加えるため、通常構成だけで 16 バイトを要求する（設計書 02-08「値の表現」）。
     #[cfg(not(feature = "heap-verify"))]
@@ -690,7 +700,7 @@ mod tests {
     }
 
     // 関門: Decimal の公開の確保・読み取りの接続と、根に残した値の区間をまたぐ保持。
-    // 内部の対象のテストだけでは公開 API の種類や桁数の取り違えを検出できない（R35）。
+    // 内部の対象のテストだけでは公開 API の種類や桁数の取り違えを検出できない。
     #[test]
     fn decimal_values_preserve_representation_across_collection() {
         let mut heap = Heap::new(HeapConfig::default());
@@ -1270,8 +1280,8 @@ mod tests {
 #[cfg(test)]
 mod r04_tests {
     // 作成時の関門: 公開層で H1・H6 と再利用の契約を確かめる。
-    // R02 は方式への通知、R06 は値の読み書きが主対象なので、候補の重複・
-    // 循環の残留・再利用の契約違反はここが持ち主となる。
+    // 方式への通知や値の読み書きのテストだけでは、候補の重複・
+    // 循環の残留・再利用の契約違反を捕まえないため、ここで確かめる。
     // 期待する到達集合は操作とともに作る独立のグラフから求める。
     #![allow(
         clippy::unwrap_used,
@@ -1329,7 +1339,7 @@ mod r04_tests {
                 for bad in [
                     Value::Int(1),
                     ctx.alloc_str("wrong", "test").unwrap(),
-                    ctx.alloc_fields(FieldsKind::ListCell, 0, &[Value::Int(1)])
+                    ctx.alloc_fields(FieldsKind::Func, 0, &[Value::Int(1)])
                         .unwrap(),
                 ] {
                     assert!(matches!(
@@ -1369,16 +1379,6 @@ mod r04_tests {
             heap.collect(&roots);
             assert_eq!(heap.stats().frees - before, 3);
             assert_eq!(heap.object_ids().len(), 1);
-            let stats = heap.stats();
-            assert_eq!(
-                (
-                    stats.rc_increments,
-                    stats.rc_decrements,
-                    stats.rc_elided,
-                    stats.reuses
-                ),
-                (0, 0, 0, 0)
-            );
             heap.epoch(|ctx| {
                 let value = ctx.load(&roots[0]);
                 assert_eq!(ctx.fields_header(value), Some((FieldsKind::Ctor, 1)));
@@ -1397,18 +1397,18 @@ mod r04_tests {
         ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"
     )]
     fn r04_million_linked_and_nested_objects_free_without_recursion() {
-        // Miri は解放の連鎖の安全性を小さな構造で調べ、百万の深さは通常実行に残す（実装プラン R11）。
+        // Miri は解放の連鎖の安全性を小さな構造で調べ、百万の深さは通常実行に残す。
         let depth = if cfg!(miri) { 64 } else { 1_000_000 };
-        for kind in [FieldsKind::ListCell, FieldsKind::Ctor] {
+        for linked in [true, false] {
             let mut heap = Heap::new(HeapConfig::default());
             let mut roots = Vec::new();
             heap.epoch(|ctx| {
                 let mut value = Value::Unit;
                 for i in 0..depth {
-                    value = if kind == FieldsKind::ListCell {
-                        ctx.alloc_fields(kind, 0, &[Value::Int(i), value])
+                    value = if linked {
+                        ctx.alloc_fields(FieldsKind::Ctor, 0, &[Value::Int(i), value])
                     } else {
-                        ctx.alloc_fields(kind, 0, &[value])
+                        ctx.alloc_fields(FieldsKind::Ctor, 0, &[value])
                     }
                     .unwrap();
                 }

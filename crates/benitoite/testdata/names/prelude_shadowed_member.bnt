@@ -1,0 +1,8 @@
+// spec: 01-03 標準ライブラリの名前空間と prelude（初回リリース版）
+record Task
+  title: String
+end record
+
+function main() -> Unit
+  bind _ <- Task.all([])
+end function

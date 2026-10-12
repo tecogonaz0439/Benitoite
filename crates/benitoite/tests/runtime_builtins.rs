@@ -1,5 +1,5 @@
-//! R29 の組み込みの関数を、部品を渡す公開の実行経路で確かめる。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! ランタイムを使う組み込みの関数を、部品を渡す公開の実行経路で確かめる（設計書 02-09「実行ごとの状態」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -53,7 +53,7 @@ fn environment(mode: ExecMode, output: Arc<Mutex<Vec<u8>>>) -> RunEnv {
     }
 }
 // ScriptWorkers の起こし口と出力の待ちをそのまま使い、単一の標準入力の仕事を同期で行う。
-// 出力先のロックを idle まで保ち、偶然 writer が先に終わる場合を除く（実装プラン R29）。
+// 出力先のロックを idle まで保ち、偶然 writer が先に終わる場合を除く。
 #[derive(Debug)]
 struct InlineWorkers {
     waiting: Box<dyn WorkerExec>,
@@ -113,7 +113,7 @@ impl WorkerExec for InlineWorkers {
         self.waiting.idle(deadline)
     }
 }
-// 関門: 公開の RunEnv::parts が R27 の WorkerExec::wakeup を出力へ渡す契約。
+// 関門: 公開の RunEnv::parts が WorkerExec::wakeup を出力へ渡す契約。
 // 本体や VM のテストでは run_program の部品の配線を通らない。
 #[test]
 fn injected_parts_wait_for_output_before_reading_stdin() {
@@ -133,10 +133,16 @@ end function
         let (release, receive) = mpsc::channel();
         let (ready, initialized) = mpsc::channel();
         let gate = std::thread::spawn(move || {
-            let guard = held.lock().unwrap();
-            ready.send(()).unwrap();
-            receive.recv().unwrap();
+            let guard = held
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            let _ready = ready.send(());
+            let timed_out = matches!(
+                receive.recv_timeout(std::time::Duration::from_secs(120)),
+                Err(mpsc::RecvTimeoutError::Timeout)
+            );
             drop(guard);
+            timed_out
         });
         initialized.recv().unwrap();
         let script = ScheduleHandle::new([], false);
@@ -155,11 +161,15 @@ end function
         env.parts = Some(parts);
         let end = run::run_program(&program, env);
         let _released = release.send(());
-        gate.join().unwrap();
+        let gate_timed_out = gate.join().unwrap();
         assert_eq!(end.end, EndKind::Returned, "{mode:?}: {end:?}");
         assert_eq!(end.exit_code, 0);
         assert!(end.reports.is_empty());
         assert!(end.main_error.is_none());
+        assert!(
+            !gate_timed_out,
+            "the output gate was not released by idle within 120 s"
+        );
         assert_eq!(*output.lock().unwrap(), b"Name: ");
         assert_eq!(*observations.lock().unwrap(), (true, 1));
         assert!(script.record().error.is_none(), "{:?}", script.record());
@@ -206,7 +216,7 @@ end function
     }
 }
 
-// 関門: L00 の八つのソース関数が、鍵順に一度ずつ関数を呼び、その結果を使う契約。
+// 関門: コレクションの八つのソース関数が、鍵順に一度ずつ関数を呼び、その結果を使う契約。
 // 本体の単体テストはソースの脱糖や State の伝播を通らない。実行の公開の境界を使い、
 // Reference の観察結果と返り値を確かめる（設計書 03-06「関数を引数にとる関数の共通の規則」）。
 #[test]

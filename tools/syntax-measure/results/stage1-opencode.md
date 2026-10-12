@@ -10,7 +10,7 @@
 
 | 実行 ID | パス | SHA-256 | 大きさ（バイト） |
 |---|---|---|---|
-| stage1-opencode | `/Users/tecogonaz/.cache/benitoite-syntax-measure/archives/stage1-opencode.tar.gz` | `a6058fffdaf34aa225c48f5b6df7470ae984a82974a12bf8df081bc9a723f7aa` | 35417294 |
+| stage1-opencode | `~/.cache/benitoite-syntax-measure/archives/stage1-opencode.tar.gz` | `a6058fffdaf34aa225c48f5b6df7470ae984a82974a12bf8df081bc9a723f7aa` | 35417294 |
 
 ## 案ごとの率
 

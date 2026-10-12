@@ -22,7 +22,7 @@ fn invalid() -> Stop {
 mod tests {
     // 関門: LOADK が子を鍵・値の順に接続し、回収後にも定数を共有する契約。
     // runtime::map のテストでは定数の子の平坦化と根の表の漏れを捕まえられない。
-    // 手で組んだバイトコードを VM の入口から実行し、公開の口を増やさない（R37）。
+    // 手で組んだバイトコードを VM の入口から実行し、公開の口を増やさない。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -34,7 +34,7 @@ mod tests {
     use crate::builtins::iface::Capability;
     use crate::bytecode::{asm::ProgramBuilder, instr::Opcode, program::ConstDesc};
     use crate::runtime::{heap::HeapConfig, io::services::RunInput};
-    use crate::vm::dispatch::test_support::TestIo;
+    use crate::vm::dispatch::test_support::{TestIo, constant};
     use crate::vm::{ExecMode, MainOutcome, Vm, VmConfig, VmStep};
 
     #[test]
@@ -91,7 +91,14 @@ mod tests {
         let VmStep::Requests(ids) = vm.run(io.runtime(ExecMode::Request)) else {
             panic!("expected waiting IO");
         };
+        let identities = vm
+            .heap
+            .epoch(|ctx| [map, set].map(|k| ctx.object_id(constant(&vm.state, ctx, k)).unwrap()));
+        // レジスタも根なので、ここでは回収後もキャッシュと同じ対象であることを確かめる。
+        // キャッシュだけを根にした回収は heap_constants_keep_identity_when_only_the_cache_roots_them が確かめる。
         vm.heap.collect(&vm.state);
+        let objects = vm.heap.object_ids();
+        assert!(identities.iter().all(|id| objects.contains(id)));
         vm.heap.epoch(|ctx| {
             let regs = &crate::vm::dispatch::test_support::stack(&vm.state, ctx)
                 .segments
@@ -102,32 +109,8 @@ mod tests {
             let s = ctx.load(&regs[2]);
             assert!(ctx.same_object(m, ctx.load(&regs[1])));
             assert!(ctx.same_object(s, ctx.load(&regs[3])));
-            assert!(
-                ctx.same_object(
-                    m,
-                    ctx.load(
-                        vm.state
-                            .constants
-                            .get(usize::try_from(map.0).unwrap())
-                            .unwrap()
-                            .as_ref()
-                            .unwrap()
-                    )
-                )
-            );
-            assert!(
-                ctx.same_object(
-                    s,
-                    ctx.load(
-                        vm.state
-                            .constants
-                            .get(usize::try_from(set.0).unwrap())
-                            .unwrap()
-                            .as_ref()
-                            .unwrap()
-                    )
-                )
-            );
+            assert!(ctx.same_object(m, constant(&vm.state, ctx, map)));
+            assert!(ctx.same_object(s, constant(&vm.state, ctx, set)));
             let pairs = crate::runtime::map::map_to_vec(ctx, m).unwrap();
             assert_eq!(
                 pairs

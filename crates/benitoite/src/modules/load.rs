@@ -51,7 +51,7 @@ struct Requested {
 }
 
 // 上限を超えたソースは ID を持たないので、読めた名前と失敗の理由を別々に保持する
-// （設計書 02-02「ソースの大きさの上限」、実装プラン F05「作業の一覧とファイル ID」）。
+// （設計書 02-02「ソースの大きさの上限」）。
 pub(super) fn load(
     entry: &EntrySpec,
     stdlib: &[StdlibModuleSource],
@@ -166,7 +166,7 @@ pub(super) fn load_with_limits(
     }
 
     // ID は読めたソースにだけ振る。辺の確定と読めない import の診断を後に行えば、
-    // 読む順と診断の順の両方を守れる（実装プラン F05「診断の順序」）。
+    // 読む順と診断の順の両方を守れる。
     for ((module, mut diagnostics), imports) in output
         .modules
         .modules

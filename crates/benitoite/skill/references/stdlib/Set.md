@@ -52,19 +52,19 @@ Returns the number of elements.
 public function union[T: key](a: Set[T], b: Set[T]) -> Set[T]
 ```
 
-Returns the elements in `a` or `b`.
+Returns the elements in `a` or `b`. An element in both sets keeps its form from `a`.
 
 ```benitoite
 public function intersection[T: key](a: Set[T], b: Set[T]) -> Set[T]
 ```
 
-Returns the elements in both `a` and `b`.
+Returns the elements in both `a` and `b`. Each element keeps its form from `a`.
 
 ```benitoite
 public function difference[T: key](a: Set[T], b: Set[T]) -> Set[T]
 ```
 
-Returns the elements in `a` and not in `b`.
+Returns the elements in `a` and not in `b`. Each element keeps its form from `a`.
 
 ```benitoite
 public function map[T: key, U: key, effect E](s: Set[T], f: function(T) -> U uses E) -> Set[U] uses E

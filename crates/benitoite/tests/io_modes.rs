@@ -1,6 +1,6 @@
 //! タスクの待ちと完了の順序を変え、IO の方式の同等性を公開の実行経路で確かめる
 //! （設計書 07-03「IO の方式のテスト」「順序を与えるスケジューラと仮想の時間（初回リリース版）」）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use benitoite::diag::Diagnostic;
@@ -51,7 +51,7 @@ impl TaskPicker for ChildOrderPicker {
         self.children_ready |= serial >= 2;
     }
     fn pick(&mut self, ready: &VecDeque<TaskId>) -> Option<usize> {
-        // main がリソースを開く待ちは、子の選択の指示を消費しない（R31）。
+        // main がリソースを開く待ちは、子の選択の指示を消費しない。
         if self.children_ready {
             self.scripted.pick(ready)
         } else if ready.is_empty() {
@@ -151,7 +151,7 @@ impl Directory {
         let mut attempt = 0_u64;
         loop {
             // 作業ディレクトリの外へは書かない。時刻が重なる場合も作成で名前を予約し、
-            // 並行するテストのファイルを共有しない（R31 の依頼）。
+            // 並行するテストのファイルを共有しない。
             let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(format!(
                 "../../target/r31-io-{}-{stamp}-{attempt}",
                 std::process::id()
@@ -349,7 +349,7 @@ fn compare(
     reference.unwrap()
 }
 
-// 関門: C12 の固定入力のゴールデンでは、待つ仕事の完了順を変えられない。
+// 関門: 固定入力のゴールデンでは、待つ仕事の完了順を変えられない。
 // 順序を逆転しても Task.all の結果・外部のファイル・終了結果が一致する契約を守る。
 #[test]
 fn concurrent_file_operations_collect_results_in_action_order() {
@@ -462,7 +462,7 @@ end function
 
 #[test]
 fn runtime_error_during_reader_io_has_the_same_stop_report() {
-    // U2 の Reader の解放は外から観測できないので、終わり方と完全な診断の比較に留める（R31）。
+    // Reader の解放は外から観測できないので、終わり方と完全な診断の比較に留める。
     compare(
         r#"
 function main() -> Result[Unit,String] uses File.Read,State

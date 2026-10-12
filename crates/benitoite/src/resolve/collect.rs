@@ -20,8 +20,10 @@ pub(super) struct Resolver<'a> {
     pub(super) ids: &'a mut IdGen,
     pub(super) out: ResolveOutput,
     pub(super) top: BTreeMap<ModuleId, Names>,
-    // None の取り込みは派生した未定義名の診断を抑える（実装プラン F06「import」）。
+    // None の取り込みは派生した未定義名の診断を抑える。
     pub(super) imported: BTreeMap<ModuleId, BTreeMap<String, Option<BindingId>>>,
+    pub(super) pending_aliases:
+        BTreeMap<ModuleId, BTreeMap<BindingId, super::imports::PendingAlias>>,
     pub(super) prelude: Names,
     pub(super) members: BTreeMap<BindingId, Names>,
     pub(super) contexts: NodeMap<Ctx>,
@@ -48,6 +50,7 @@ impl<'a> Resolver<'a> {
             out: ResolveOutput::default(),
             top: BTreeMap::new(),
             imported: BTreeMap::new(),
+            pending_aliases: BTreeMap::new(),
             prelude: Names::new(),
             members: BTreeMap::new(),
             contexts: NodeMap::new(),

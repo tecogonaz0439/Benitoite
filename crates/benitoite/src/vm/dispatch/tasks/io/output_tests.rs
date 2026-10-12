@@ -1,5 +1,5 @@
-//! 出力の待ちを本物の VM・IO 実行器と筋書きで確かめる（実装プラン R27、設計書 02-09「出力のバッファ」「IO 実行器」、02-08「IO の命令」）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 出力の待ちを本物の VM・IO 実行器と筋書きで確かめる（設計書 02-09「出力のバッファ」「IO 実行器」、02-08「IO の命令」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::panic,
@@ -378,7 +378,7 @@ end function
                     {
                         if index == 0 {
                             // 進められるタスクがないと両出力を転送するため、転送を始めた順序ではなく
-                            // 完了を待つ順序を確かめる（実装プラン R27「転送を依頼する時点」「完了の待ち」）。
+                            // 完了を待つ順序を確かめる。
                             assert!(!state.scheduler.waiting.values().any(|w| {
                                 w.reason
                                     == WaitReason::Output(Stream::Stderr, OutputWaitKind::Flush)

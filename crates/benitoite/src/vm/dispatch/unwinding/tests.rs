@@ -1,5 +1,5 @@
-//! 辿りの順序・途中の停止・根の契約（実装プラン R21）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 辿りの順序・途中の停止・根の契約（設計書 02-08「枠を降ろす原因と処理」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -82,8 +82,7 @@ fn handle(ctx: &mut NoGcCtx<'_>, member: bool) -> OtherFrame {
     }
 }
 
-// 関門: R24 の解放処理を呼ばずに、二つの Vec から復元する順序を確かめる。
-// 作業文書が指定する内部の順序のテストであり、一般の境界の原則の例外（R21）。
+// 関門: リソースの解放処理を呼ばずに、二つの Vec から復元する順序を確かめる。
 #[test]
 fn traversal_selects_call_then_wrapper_then_own_release_then_call() {
     let mut w = work(vec![Segment {
@@ -127,7 +126,7 @@ fn traversal_selects_call_then_wrapper_then_own_release_then_call() {
     );
 }
 
-// 関門: 既に始めた解放と集めた失敗を失う退行を、公開の escalate の契約で捕まえる（R21）。
+// 関門: 既に始めた解放と集めた失敗を失う退行を、公開の escalate の契約で捕まえる。
 #[test]
 fn escalation_preserves_progress_log_and_resource_wait() {
     for waiting in [
@@ -167,7 +166,7 @@ fn escalation_preserves_progress_log_and_resource_wait() {
 }
 
 // 関門: 一つのタスクでは言語から作れない「E-DropRel の途中の停止」を本物の辿りで進める。
-// 戻りへの復帰、入れ子へ原因を渡す誤り、log の消失を同時に検出する（R21 の指定）。
+// 戻りへの復帰、入れ子へ原因を渡す誤り、log の消失を同時に検出する。
 #[test]
 fn stopping_inside_nested_drop_keeps_progress_and_uses_stop_cause() {
     let mut heap = Heap::new(HeapConfig {
@@ -262,7 +261,7 @@ fn stopping_inside_nested_drop_keeps_progress_and_uses_stop_cause() {
 }
 
 // 関門: UnwindWork の区画だけに残る根と、ReturnWork だけに残る値を回収を挟んで読み直す。
-// 通常の戻りの根のテストは、積み重ねの外の区画を通らない（R03 の引き渡し、R21）。
+// 通常の戻りの根のテストは、積み重ねの外の区画を通らない。
 #[test]
 fn traversal_segments_and_clause_return_value_remain_roots_across_collection() {
     let mut heap = Heap::new(HeapConfig {

@@ -73,7 +73,7 @@ pub enum StateWait {
     Resource(ResourceId),
 }
 
-/// close の関数が解放を始めた結果（実装プラン 10-16「close の関数が解放の失敗を受け取る口」）。
+/// close の関数が解放を始めた結果（設計書 02-09「リソースの追跡」）。
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum CloseStep {
     /// 解放を終えた。失敗したときは理由の文字列を持つ
@@ -300,8 +300,7 @@ impl WorkerDone {
 
 // ---- ランタイムの口 ---------------------------------------------------------
 
-/// `io` の関数が使うランタイムの口。第 1 段は一時的な実装（10-09「第 1 段の実行の関数」）、
-/// 第 2 段は 10-10 の実行ごとの状態が実装する。
+/// `io` の関数が使うランタイムの口（設計書 02-09「実行ごとの状態」）。
 pub trait IoServices {
     /// 出力のバッファに書く（02-09「出力のバッファ」）。受け付けたら `None`、転送していない量の上限で
     /// 受け付けられなければ、書き込みを預けたうえで待つ理由を返す。書き出しの失敗が記録されていれば、
@@ -313,7 +312,8 @@ pub trait IoServices {
     /// 基準のディレクトリ（02-09「実行ごとの状態」）
     fn working_directory(&self) -> &Path;
     fn environment_variable(&self, name: &str) -> Option<OsString>;
-    /// UTC の 1970-01-01 からのミリ秒（`Clock.now`）。時計は 10-10 の差し替えられる部品が決める
+    /// UTC の 1970-01-01 からのミリ秒（`Clock.now`）。値は差し替えられる時計の部品が決める
+    /// （設計書 02-09「実行ごとの状態」）。
     fn now_millis(&self) -> i64;
     /// 地方時の UTC からの差（分）
     fn local_offset_minutes(&self) -> i32;
@@ -328,9 +328,9 @@ pub trait IoServices {
         handle: Box<dyn OsResource>,
         opened_at: Option<InstrRef>,
     ) -> ResourceId;
-    /// 実行ごとの状態のうちランタイムが持つものと、リソースの表を借りる（実装プラン 10-16「ランタイムの内部への口」）。
-    /// 第 2 段の `IoView` だけが `Some` を返す。第 1 段の一時的な実装、参照インタプリタ、テスト用の実装は既定の
-    /// `None` のままとし、これを要る組み込みの関数は `None` のとき `Stop::Internal` を返す。
+    /// 実行ごとの状態のうちランタイムが持つものと、リソースの表を借りる（設計書 02-09「実行ごとの状態」）。
+    /// `IoView` は `Some` を返す。参照インタプリタとテスト用の実装は既定の `None` のままとし、
+    /// この口を使う組み込みの関数は `None` のとき `Stop::Internal` を返す。
     fn runtime_view(&mut self) -> Option<crate::runtime::io::services::IoView<'_>> {
         None
     }
@@ -344,7 +344,7 @@ pub enum TaskPoll<'e> {
     Pending(TaskId),
 }
 
-/// `state` の関数が使うランタイムの口。第 2 段の VM の側が実装する（R23 が一時的な実装を置き、R25 が置き換える）。
+/// `state` の関数が使うランタイムの口。VM が実装する（設計書 02-08「組み込みの関数の呼び出し」）。
 pub trait StateServices {
     /// `Task` の値のタスクが終わっていれば結果を返す。
     fn task_poll<'e>(&mut self, ctx: &NoGcCtx<'e>, task: Value<'e>) -> Result<TaskPoll<'e>, Stop>;
@@ -353,7 +353,7 @@ pub trait StateServices {
     /// リソースの解放を始める（02-08「リソースの解放の枠」）。すぐに終われば `None`、待つなら待つ理由を返す。
     /// 解放の失敗は、リソースの型の規則に従って `Stop` にするか無視する。
     fn begin_release(&mut self, resource: ResourceId) -> Result<Option<StateWait>, Stop>;
-    /// リソースの表を借りる（実装プラン 10-16「受け付けた要求の保存」）。第 2 段の VM の側の実装だけが `Some` を返す。
+    /// リソースの表を借りる（設計書 03-09「サーバの接続と要求の読み方」）。VM の実装だけが `Some` を返す。
     fn resource_table(&mut self) -> Option<&mut crate::runtime::io::resources::ResourceTable> {
         None
     }
@@ -489,7 +489,7 @@ pub struct StateCtx<'c, 'e> {
 
 impl<'c, 'e> StateCtx<'c, 'e> {
     /// タスクの状態を読む。`StateServices::task_poll` はヒープと実行時のサービスを同時に要るが、
-    /// `services()` は文脈の全体を可変で借りるので、二つを分けて借りてこの関数から呼ぶ（R25 で加えた）。
+    /// `services()` は文脈の全体を可変で借りるので、二つを分けて借りてこの関数から呼ぶ。
     pub fn task_poll(&mut self, task: Value<'e>) -> Result<TaskPoll<'e>, Stop> {
         self.services.task_poll(&*self.heap, task)
     }
@@ -590,7 +590,7 @@ impl<'c, 'e> FromArg<'c, 'e> for &'c [u8] {
 }
 
 /// `pure` の関数の結果を値にする。確保の要らない型だけに実装する。文字列やリストは、関数の中で
-/// 大きさを確かめる確保の関数（10-08）で値にしてから `Value` で返す。Rust の `String` などには実装しない
+/// 大きさを確かめる確保の関数で値にしてから `Value` で返す。Rust の `String` などには実装しない
 /// （大きさを確かめない値の作り方を型で塞ぐ。設計書 02-09「一つの操作で作る値の大きさの上限」）。
 pub trait IntoValue<'e> {
     fn into_value(self) -> Value<'e>;
@@ -646,7 +646,7 @@ pub type RawFn = for<'c, 'e> fn(&'c mut CallCtx<'c, 'e>, &[Value<'e>]) -> Result
 /// 組み込みの関数の登録の項目。`builtin!` が関数ごとに `DECL` として作る。
 #[derive(Clone, Copy)]
 pub struct BuiltinDecl {
-    /// 修飾した名前（`String.byteLength` など。10-12 の表の名前と一致させる）
+    /// 修飾した名前（`String.byteLength` など。組み込みの表の名前と一致させる）
     pub name: &'static str,
     pub capability: Capability,
     pub arity: u16,
@@ -668,9 +668,9 @@ pub fn arg_mismatch(name: &'static str) -> Stop {
     Stop::Internal(format!("builtin {name}: argument count or kind mismatch"))
 }
 
-/// 組み込みの関数を宣言する（本章「宣言のマクロ」）。
+/// 組み込みの関数を宣言する（設計書 02-08「組み込みの関数の呼び出し」）。
 ///
-/// 次の例は、権限と値の作り方の誤りがコンパイルの誤りになることを確かめる（10-11「コンパイルの失敗のテスト」）。
+/// 次の例は、権限と値の作り方の誤りがコンパイルの誤りになることを確かめる。
 ///
 /// 純粋な関数が待つ応答を返す（権限の誤り）:
 ///

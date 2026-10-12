@@ -1,4 +1,4 @@
-//! 関数の原型とコンパイル済みプログラム（設計書 02-07「コンパイル済みプログラム」、実装プラン 10-07）。
+//! 関数の原型とコンパイル済みプログラム（設計書 02-07「コンパイル済みプログラム」）。
 //! 生成の後に変更せず、スレッドの間で共有する（設計書 02-01「コンパイル済みプログラムと実行ごとの状態」）。
 
 use std::sync::Arc;
@@ -92,8 +92,8 @@ pub enum ConstDesc {
     Bool(bool),
     Unit,
     Byte(u8),
-    /// `Decimal` の値 `mantissa / 10^scale`（10-01 の `base::Decimal` の仮数と小数の桁数）。
-    /// `base::Decimal` は C02 で置くので、C01 の本章は同じ二つの値を直接持つ
+    /// `Decimal` の値 `mantissa / 10^scale`。仮数と小数の桁数を保持する
+    /// （設計書 02-07「定数表」）。
     Decimal {
         mantissa: i128,
         scale: u8,
@@ -162,7 +162,7 @@ pub struct Proto {
     /// `Some(型クラスの表の番号)`、ほかの位置に `None`（02-07「辞書とメソッドの呼び出し」）。引数の並びの長さを
     /// `TraitInfo::methods[C].arity` から決めるために使う
     pub method_traits: Vec<Option<TraitIdx>>,
-    /// 生存の情報（10-07「生存の情報」）
+    /// 生存の情報
     pub live: LiveInfo,
 }
 
@@ -237,7 +237,7 @@ pub struct OpInfo {
 pub struct BuiltinRef {
     pub id: BuiltinId,
     pub arity: u16,
-    /// 権限（10-11 の `BuiltinDecl::capability` と同じ）。生存の情報と VM が、待ちうる呼び出しかを決める
+    /// 権限（`BuiltinDecl::capability` と同じ。設計書 02-08「組み込みの関数の呼び出し」）。生存の情報と VM が、待ちうる呼び出しかを決める
     pub capability: Capability,
     /// 組み込みのエフェクトの操作なら、その操作（`IO` が節を探す鍵）
     pub op: Option<OpIdx>,
@@ -272,7 +272,8 @@ pub struct CompiledProgram {
     pub sources: Arc<SourceTable>,
 }
 
-/// `PRIM`・`IO` の命令の被演算子（10-10 の要求と完了の処理が、引数と結果のレジスタを決めるのに使う）。
+/// `PRIM`・`IO` の命令の被演算子。要求と完了の処理が、引数と結果のレジスタを決めるのに使う
+/// （設計書 02-09「組み込みの操作とハンドラ表」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct BuiltinCallOperands {
     pub result: u16,
@@ -370,7 +371,7 @@ impl Proto {
 }
 
 /// コンパイル済みプログラムがスレッドの間で共有できることを、コンパイルの時点で確かめる（02-01「コンパイル済みプログラムと実行ごとの状態」）。
-// 呼ばれない関数で、型の性質をコンパイルの時点で確かめる（00-02「`#[allow]` を書いてよい箇所」）。
+// 呼ばれない関数で、型の性質をコンパイルの時点で確かめる（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(dead_code)]
 fn assert_shareable() {
     fn check<T: Send + Sync>() {}

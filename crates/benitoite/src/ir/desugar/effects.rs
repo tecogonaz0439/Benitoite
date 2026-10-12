@@ -5,6 +5,8 @@ use crate::types::EffectName;
 
 impl State<'_> {
     /// 01-12「関数の境界と `escape`：途中の `return` と `try`」の `Result` と `Option` の `try` の二つの行。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn try_expr(&mut self, e: &ast::TryExpr) -> Result<Comp, InternalError> {
         let info = self
             .types
@@ -15,6 +17,24 @@ impl State<'_> {
         let Ty::Con(_, input_args) = self.ty(e.value.id())? else {
             return Err(error("try operand has no type arguments"));
         };
+        if !matches!(&info.ret, Ty::Con(_, _)) {
+            return Err(error("try return has no type arguments"));
+        }
+        let mut pending = vec![];
+        let scrutinee = self.eval(&e.value, &mut pending)?;
+        self.finish_try(e, info, input_args, pending, scrutinee)
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn finish_try(
+        &mut self,
+        e: &ast::TryExpr,
+        info: crate::typeck::TryInfo,
+        input_args: Vec<Ty>,
+        pending: Vec<(Var, Comp)>,
+        scrutinee: CoreVal,
+    ) -> Result<Comp, InternalError> {
         let Ty::Con(_, ret_args) = &info.ret else {
             return Err(error("try return has no type arguments"));
         };
@@ -22,8 +42,6 @@ impl State<'_> {
             TryKind::Result => ("Benitoite.Result.Ok", "Benitoite.Result.Error"),
             TryKind::Option => ("Benitoite.Option.Some", "Benitoite.Option.None"),
         };
-        let mut pending = vec![];
-        let scrutinee = self.eval(&e.value, &mut pending)?;
         let y = self.var(
             None,
             input_args
@@ -108,6 +126,7 @@ impl State<'_> {
         };
         Ok(finish(pending, body, e.span))
     }
+
     fn std_ctor(&self, name: &str) -> Result<(BindingId, u32), InternalError> {
         let id = self
             .resolved
@@ -140,6 +159,8 @@ impl State<'_> {
     }
 
     /// 01-12「解放の枠と実行時エラーの継続：`with`」の `with` の行。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn with(
         &mut self,
         e: &ast::WithExpr,
@@ -176,6 +197,8 @@ impl State<'_> {
     }
 
     /// 01-12「ストア：可変のセルと明示遅延」の `lazy` の規則。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn lazy(&mut self, e: &ast::LazyExpr) -> Result<Comp, InternalError> {
         let id = self.body_id()?;
         let conts = std::mem::take(&mut self.conts);
@@ -196,6 +219,8 @@ impl State<'_> {
     }
 
     /// 01-12「ハンドラ」の `handle` と節の規則。`Resume` のエフェクトは節を作った後に確定する。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn handle(&mut self, e: &ast::HandleExpr) -> Result<Comp, InternalError> {
         let info = self
             .types

@@ -1,4 +1,5 @@
-//! Decimal と Byte の命令（設計書 01-04、02-08「値の表現」、実装プラン 10-07「算術」「比較」）。
+//! Decimal と Byte の命令（設計書 01-04「Decimal（初回リリース版）」「Byte（初回リリース版）」、
+//! 02-08「値の表現」、02-07「命令」）。
 
 use super::{Instr, NoGcCtx, Slot, Stop, Value, missing, operators, read_one};
 use crate::base::Decimal;
@@ -69,7 +70,7 @@ pub(super) fn compare<'e>(
 mod tests {
     // 関門: 命令の振り分け、被演算子の読み出し、停止位置、回収後の結果と定数の共有を守る。
     // base と組み込みの本体のテストは VM のレジスタや安全点を通らない。
-    // 本番の API を増やさず、R05 の組み立てから VM の結果まで確かめる（実装プラン R35）。
+    // 本番の API を増やさず、バイトコードの組み立てから VM の結果まで確かめる。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -87,7 +88,7 @@ mod tests {
     use crate::runtime::RuntimeError;
     use crate::runtime::heap::HeapConfig;
     use crate::runtime::io::services::RunInput;
-    use crate::vm::dispatch::test_support::TestIo;
+    use crate::vm::dispatch::test_support::{TestIo, constant};
     use crate::vm::{ExecMode, InstrRef, MainOutcome, StopEnd, StopReason, Vm, VmConfig, VmStep};
 
     fn desc(text: &str) -> ConstDesc {
@@ -160,7 +161,7 @@ mod tests {
         } else {
             builder.code(main).unwrap().op(opcode, 2, 0, 1);
         }
-        // 確保した結果の後に安全点を通し、回収後に変換へ渡す（10-09）。
+        // 確保した結果の後に安全点を通し、回収後に変換へ渡す（設計書 02-09「メモリの管理」）。
         let target = builder.code(main).unwrap().label("after_numeric").unwrap();
         builder.code(main).unwrap().jmp(target);
         builder.code(main).unwrap().place(target).unwrap();
@@ -385,7 +386,13 @@ mod tests {
         let VmStep::Requests(ids) = vm.run(io.runtime(ExecMode::Request)) else {
             panic!("expected waiting IO");
         };
+        let identity = vm
+            .heap
+            .epoch(|ctx| ctx.object_id(constant(&vm.state, ctx, decimal)).unwrap());
+        // レジスタも根なので、ここでは回収後もキャッシュと同じ対象であることを確かめる。
+        // キャッシュだけを根にした回収は heap_constants_keep_identity_when_only_the_cache_roots_them が確かめる。
         vm.heap.collect(&vm.state);
+        assert!(vm.heap.object_ids().contains(&identity));
         vm.heap.epoch(|ctx| {
             let regs = &crate::vm::dispatch::test_support::stack(&vm.state, ctx)
                 .segments
@@ -393,19 +400,7 @@ mod tests {
                 .unwrap()
                 .regs;
             assert!(ctx.same_object(ctx.load(&regs[0]), ctx.load(&regs[1])));
-            assert!(
-                ctx.same_object(
-                    ctx.load(&regs[0]),
-                    ctx.load(
-                        vm.state
-                            .constants
-                            .get(usize::try_from(decimal.0).unwrap())
-                            .unwrap()
-                            .as_ref()
-                            .unwrap()
-                    )
-                )
-            );
+            assert!(ctx.same_object(ctx.load(&regs[0]), constant(&vm.state, ctx, decimal)));
             assert_eq!(ctx.decimal(ctx.load(&regs[0])).unwrap().to_text(), "1.00");
         });
         for id in ids {

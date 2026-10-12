@@ -2,15 +2,15 @@
 //! 字下げと空白の規則に要る構文の情報（開き・区切り・閉じの字句、並びの要素、呼び出しの括弧、単項の `-`）は
 //! 字句の列だけでは決まらないので、AST を辿って字句ごとに決める。
 
-/// 行の最初の字句のときの、その前の空の行の扱い（06-03「空の行」）。
+/// 行の最初の字句の前の空の行を除く二つの理由。中身が空の構文の閉じでは両方が当てはまる
+/// （設計書 06-03「空の行」）。どちらも当てはまらなければ、書き手の空の行を一つまで保つ。
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
-pub enum BlankBefore {
-    /// 書き手の空の行を一つまでにまとめて保つ（ブロックの中と括弧の中、`case` の前）
-    #[default]
-    KeepOne,
-    /// 空の行を除く（構文の中身の最初の行、閉じの字句・`else`・節の並びを始める `with` で始まる行、
-    /// 属性の行と宣言の間、`///` の行と属性の間）
-    Remove,
+pub struct BlankBefore {
+    /// 構文の中身の最初の行・属性と宣言の間。前のコードの行との間の空の行を、
+    /// コメントだけの行の前でも除く
+    pub leading: bool,
+    /// 閉じの字句・`else`・節の並びを始める `with`。その行の直前の空の行だけを除く
+    pub direct: bool,
 }
 
 /// 字句一つの役割。
@@ -22,7 +22,7 @@ pub struct TokenRole {
     pub space_before: bool,
     /// 行の最初の字句のときの、その前の空の行の扱い
     pub blank_before: BlankBefore,
-    /// 閉じの字句のとき、閉じる構文の中の行の段。ほかの字句では `None`
+    /// 閉じの字句か、中身が空の分岐・本体の後の区切りの字句のとき、構文の中の行の段。ほかの字句では `None`
     pub inner_level: Option<u32>,
 }
 
@@ -60,7 +60,7 @@ use crate::syntax::token::Token;
 /// `text` はソースのバイト列で、複数行の文字列の字句の行を数えるために読む。
 pub fn build_roles(module: &Module, tokens: &[Token], text: &[u8]) -> RoleTable {
     // 複数行の文字列の字句は、字句の span がそのまま行をまたぐので、行の最初の字句は改行の印の
-    // 直後の字句として決まる（10-17「役割の表」）。`text` は行を数え直すためには読まない。
+    // 直後の字句として決まる（設計書 06-03「入力表現」）。`text` は行を数え直すためには読まない。
     let _ = text;
     let mut walker = walk::Walker::new(tokens);
     walker.module(module);

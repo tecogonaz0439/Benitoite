@@ -1,0 +1,13 @@
+// spec: 01-06 必ず抜ける文
+function f() -> Option[Integer]
+ bind n <- try (match true with
+ case true ->
+  return Option.None
+  bind w <- 1
+  Option.Some(1)
+ case false -> Option.Some(2)
+ end match)
+ return Option.Some(n)
+end function
+function main() -> Unit
+end function

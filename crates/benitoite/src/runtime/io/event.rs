@@ -1,16 +1,32 @@
-//! イベントループ（設計書 02-09「IO 実行器」）。`mio` の型はこのモジュールと HTTP の接続の層の中に閉じる（実装プラン 10-16）。
+//! イベントループ（設計書 02-09「IO 実行器」）。`mio` の型はこのモジュールと HTTP の接続の層の中に閉じる。
 
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::Duration;
 
 use crate::runtime::sched::parts::IdleWake;
 
+const POLL_FAILURE_LIMIT: u32 = 1_000;
+
+// 一時的な失敗は再試行し、待ちが壊れたまま続くときだけ止める（設計書 02-09「IO 実行器」）。
+#[derive(Debug, Default)]
+struct PollFailures {
+    count: u32,
+}
+impl PollFailures {
+    fn failed(&mut self) -> bool {
+        self.count = self.count.saturating_add(1);
+        self.count >= POLL_FAILURE_LIMIT
+    }
+    fn reset(&mut self) {
+        self.count = 0;
+    }
+}
+
 const WAKE_TOKEN: mio::Token = mio::Token(0);
-// R28 のシグナルの登録に予約する。起こし口と区別して中断を返す（設計書 02-09「中断の要求」）。
+// 中断のシグナルの登録に予約する。起こし口と区別して中断を返す（設計書 02-09「中断の要求」）。
 const INTERRUPT_TOKEN: mio::Token = mio::Token(1);
 
 /// 中断のシグナルを実行ごとのイベントループに登録した印。落とすと登録を外す（`Drop`）。
-/// R28 が `InterruptSource::attach` とあわせて加えた。中身の欄は R28 が決める。
 pub struct InterruptGuard {
     registry: mio::Registry,
     signals: signal_hook_mio::v1_0::Signals,
@@ -24,13 +40,12 @@ impl std::fmt::Debug for InterruptGuard {
 
 impl Drop for InterruptGuard {
     fn drop(&mut self) {
-        // Poll の登録を先に外し、続いて Signals 自身がシグナルの登録を外す
-        // （実装プラン R28「読み口のトレイトへの追加」）。
+        // Poll の登録を先に外し、続いて Signals 自身がシグナルの登録を外す。
         drop(self.registry.deregister(&mut self.signals));
     }
 }
 
-/// Poll の所有を実行器へ渡す前に、中断の起こしを登録する（実装プラン R28）。
+/// Poll の所有を実行器へ渡す前に、中断の起こしを登録する（設計書 02-09「中断の要求」）。
 pub(crate) fn attach_interrupt(wakeup: &Wakeup) -> std::io::Result<InterruptGuard> {
     let WakeBackend::WithPoll { poll, .. } = &wakeup.inner.backend else {
         return Err(std::io::Error::other("interrupt wakeup has no event loop"));
@@ -57,7 +72,7 @@ pub struct Wakeup {
     inner: Arc<WakeupInner>,
 }
 
-/// `Wakeup` の中身。欄は R26・R40 が決める（R26 は欄を置かず、R40 が `mio` を使う形との分岐の欄を加える）。
+/// `Wakeup` の中身。OS のイベントループと、テスト用の起こし口を切り替える（設計書 02-09「IO 実行器」）。
 #[derive(Debug)]
 pub struct WakeupInner {
     backend: WakeBackend,
@@ -91,15 +106,14 @@ impl Wakeup {
                 cond.notify_all();
             }
             WakeBackend::WithPoll { waker, .. } => {
-                // 失敗は捨ててよい。次のタイマーの期限か channel の確認でも待ちから戻る
-                // （実装プラン R40「Wakeup とイベントループ」）。
+                // 失敗は捨ててよい。次のタイマーの期限か channel の確認でも待ちから戻る。
                 drop(waker.wake());
             }
         }
     }
 }
 
-/// 筋書きの部品が書き出しの知らせを失わずに待つ口（実装プラン R27）。
+/// 筋書きの部品が書き出しの知らせを失わずに待つ口。
 pub(crate) fn wakeup_counted() -> Wakeup {
     Wakeup {
         inner: Arc::new(WakeupInner {
@@ -111,7 +125,7 @@ pub(crate) fn wakeup_counted() -> Wakeup {
     }
 }
 
-/// 前回より新しい知らせを待つ。上限はテストの停止を検出するためだけに使う（実装プラン R27）。
+/// 前回より新しい知らせを待つ。上限はテストの停止を検出するためだけに使う。
 pub(crate) fn wait_counted(wakeup: &Wakeup, seen: u64) -> Option<u64> {
     match &wakeup.inner.backend {
         WakeBackend::WithoutPoll | WakeBackend::WithPoll { .. } => None,
@@ -134,7 +148,7 @@ pub(crate) fn wakeup_without_poll() -> Wakeup {
     }
 }
 
-/// OS の待ちと起こし口を作る。資源の不足は呼ぶ側が内部の誤りとして報告する（実装プラン R40）。
+/// OS の待ちと起こし口を作る。資源の不足は呼ぶ側が内部の誤りとして報告する。
 pub(crate) fn wakeup_with_poll() -> std::io::Result<Wakeup> {
     let poll = mio::Poll::new()?;
     let waker = mio::Waker::new(poll.registry(), WAKE_TOKEN)?;
@@ -157,16 +171,18 @@ pub(crate) fn wakeup_with_poll() -> std::io::Result<Wakeup> {
 }
 
 /// `mio` の型を IO の外へ出さずに待つための包み（設計書 02-09「IO 実行器」）。
-/// R28 はこのモジュール内で `poll.registry()` にシグナルを `INTERRUPT_TOKEN` で登録できる。
+/// 中断のシグナルを `INTERRUPT_TOKEN` で登録するため、OS の待ちの登録先を借りる
+/// （設計書 02-09「中断の要求」）。
 #[derive(Debug)]
 pub(crate) struct EventLoop {
     poll: Arc<Mutex<mio::Poll>>,
     ready: Arc<Mutex<Vec<usize>>>,
     events: mio::Events,
+    failures: PollFailures,
 }
 
 impl EventLoop {
-    /// 一つの実行器だけが Poll を所有する。テスト用の起こし口には Poll がない（実装プラン R40）。
+    /// 一つの実行器だけが Poll を所有する。テスト用の起こし口には Poll がない。
     pub(crate) fn take(wakeup: &Wakeup) -> Option<Self> {
         match &wakeup.inner.backend {
             WakeBackend::WithoutPoll | WakeBackend::Counted { .. } => None,
@@ -177,6 +193,7 @@ impl EventLoop {
                     poll,
                     ready: Arc::clone(ready),
                     events: mio::Events::with_capacity(8),
+                    failures: PollFailures::default(),
                 })
             }
         }
@@ -191,6 +208,7 @@ impl EventLoop {
             .poll(&mut self.events, timeout)
         {
             Ok(()) => {
+                self.failures.reset();
                 collect_ready(&self.ready, &self.events);
                 if self.events.iter().any(|e| e.token() == INTERRUPT_TOKEN) {
                     IdleWake::Interrupted
@@ -199,10 +217,18 @@ impl EventLoop {
                 }
             }
             // EINTR の後も VM に戻り、印とタイマーを調べ直す（設計書 02-09「中断の要求」）。
-            Err(e) if e.kind() == std::io::ErrorKind::Interrupted => IdleWake::Progress,
-            Err(_) => {
-                // 戻り値は凍結しており IO の失敗を返せない。OS の待ちが失敗し続けても
-                // 空回りせず、channel とタイマーを調べ直せるようにする（実装プラン R40）。
+            Err(e) if e.kind() == std::io::ErrorKind::Interrupted => {
+                self.failures.reset();
+                IdleWake::Progress
+            }
+            Err(error) => {
+                if self.failures.failed() {
+                    return IdleWake::Failed(format!(
+                        "{POLL_FAILURE_LIMIT} consecutive failures: {error}"
+                    ));
+                }
+                // 再試行の間は眠り、channel とタイマーを調べ直せるようにする
+                // （設計書 02-09「IO 実行器」）。
                 std::thread::sleep(Duration::from_millis(1));
                 IdleWake::Progress
             }
@@ -219,7 +245,7 @@ fn collect_ready(ready: &Mutex<Vec<usize>>, events: &mio::Events) {
     }));
 }
 
-/// HTTP の資源が解放時にも登録を外せるよう、実行ごとの Registry を共有する（実装プラン L30）。
+/// HTTP の資源が解放時にも登録を外せるよう、実行ごとの Registry を共有する。
 /// 接続ごとの複製は記述子を消費するため、HTTP では起こし口の作成時の一つを共有する。
 pub(crate) fn registry(wakeup: &Wakeup) -> std::io::Result<Arc<mio::Registry>> {
     match &wakeup.inner.backend {
@@ -230,7 +256,7 @@ pub(crate) fn registry(wakeup: &Wakeup) -> std::io::Result<Arc<mio::Registry>> {
     }
 }
 
-/// 予約済みの二つのトークンを避け、実行内で再利用しない番号を割り当てる（実装プラン 10-16）。
+/// 予約済みの二つのトークンを避け、実行内で再利用しない番号を割り当てる（設計書 02-09「IO 実行器」）。
 pub(crate) fn next_token(wakeup: &Wakeup) -> Result<usize, crate::runtime::Stop> {
     match &wakeup.inner.backend {
         WakeBackend::WithPoll { next_token, .. } => next_token
@@ -246,7 +272,7 @@ pub(crate) fn next_token(wakeup: &Wakeup) -> Result<usize, crate::runtime::Stop>
     }
 }
 
-/// HTTP の接続を、VM が待ちを公開した後に登録する（実装プラン 10-16）。
+/// HTTP の接続を、VM が待ちを公開した後に登録する（設計書 02-09「IO 実行器」）。
 pub(crate) fn register(
     wakeup: &Wakeup,
     source: &mut impl mio::event::Source,
@@ -255,7 +281,7 @@ pub(crate) fn register(
 ) -> std::io::Result<()> {
     registry(wakeup)?.register(source, mio::Token(token), interest)
 }
-/// 読み書きの向きが変わった接続の準備を再登録する（実装プラン 10-16）。
+/// 読み書きの向きが変わった接続の準備を再登録する（設計書 02-09「IO 実行器」）。
 pub(crate) fn reregister(
     wakeup: &Wakeup,
     source: &mut impl mio::event::Source,
@@ -264,7 +290,8 @@ pub(crate) fn reregister(
 ) -> std::io::Result<()> {
     registry(wakeup)?.reregister(source, mio::Token(token), interest)
 }
-/// HTTP の接続の登録を外す（実装プラン 10-16）。
+/// テストが登録した接続を外す（設計書 02-09「IO 実行器」）。
+#[cfg(test)]
 pub(crate) fn deregister(
     wakeup: &Wakeup,
     source: &mut impl mio::event::Source,
@@ -298,13 +325,29 @@ pub(crate) fn take_ready(wakeup: &Wakeup) -> Vec<usize> {
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(clippy::unwrap_used)]
     use super::*;
     use std::sync::mpsc;
 
+    // 連続失敗だけを数え、成功と EINTR によるリセットで数え直す（設計書 02-09「IO 実行器」）。
+    #[test]
+    fn poll_failure_limit_counts_only_consecutive_failures() {
+        let mut failures = PollFailures::default();
+        for _ in 0..999 {
+            assert!(!failures.failed());
+        }
+        failures.reset();
+        for _ in 0..999 {
+            assert!(!failures.failed());
+        }
+        assert!(failures.failed());
+        failures.reset();
+        assert!(!failures.failed());
+    }
+
     // 関門: 登録が所有の移動の後に遅れると、待つ実行器を中断で起こせない。
-    // シグナルを登録・送信せず、登録できない起こし口の拒否を確かめる（実装プラン R28）。
+    // シグナルを登録・送信せず、登録できない起こし口の拒否を確かめる。
     #[test]
     fn interrupt_attachment_rejects_missing_or_already_taken_poll() {
         assert!(attach_interrupt(&wakeup_without_poll()).is_err());
@@ -346,7 +389,7 @@ mod tests {
     }
 
     // 関門: シグナルと完了のトークンを取り違えると中断が通常の進行として失われる。
-    // R28 のシグナルの登録に先立ち、同じトークンの OS の読み取り通知で分類を確かめる。
+    // シグナルを登録せず、同じトークンの OS の読み取り通知で分類を確かめる。
     #[cfg(unix)]
     #[test]
     fn reserved_interrupt_token_returns_interrupted() {
@@ -375,7 +418,7 @@ mod tests {
         ));
     }
     // 関門: 予約外の準備が Poll の所有の移動の後にも VM の take_ready に届く。
-    // ソケット対を使い、ポートの bind と実時間の待ちに依存しない（L30）。
+    // ソケット対を使い、ポートの bind と実時間の待ちに依存しない。
     #[cfg(unix)]
     #[test]
     fn ordinary_readiness_is_collected_and_drained_after_poll_transfer() {

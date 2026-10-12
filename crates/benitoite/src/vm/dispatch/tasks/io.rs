@@ -38,7 +38,7 @@ pub(in crate::vm::dispatch) fn publish(
 
 #[cold]
 #[inline(never)]
-fn reflect_cancellation(state: &mut RunState, rt: &mut IoRuntime) {
+fn reflect_cancellation(state: &mut RunState, rt: &mut IoRuntime) -> Result<(), Stop> {
     if std::mem::take(&mut state.scheduling.expire_io) {
         rt.queue.expire_all();
         rt.stdin_waiters.clear();
@@ -56,9 +56,12 @@ fn reflect_cancellation(state: &mut RunState, rt: &mut IoRuntime) {
     for task in std::mem::take(&mut state.scheduling.cancelled_io) {
         rt.queue.expire_task(task);
         for op in rt.ops.task_operations(task) {
-            if let Some(timer) = rt.readiness.op_timers.remove(&op) {
-                rt.readiness.retries.remove(&timer);
-                state.scheduler.remove_timer(timer);
+            let kind = rt.ops.records.get(&op).map(|record| record.kind);
+            if kind == Some(OpKind::Readiness) {
+                // 準備の待ちは対応と記録を消し、共有リソースの生きた待ちは残す。
+                // （設計書 02-09「タスクの待ちと取り消し」）
+                clear_ready(state, rt, op)?;
+                rt.ops.remove_readiness(op)?;
             }
         }
         rt.ops.detach_task(task);
@@ -70,6 +73,7 @@ fn reflect_cancellation(state: &mut RunState, rt: &mut IoRuntime) {
         rt.stderr.cancel_pending(task);
         rt.output_sites.remove(&task);
     }
+    Ok(())
 }
 
 fn operands(
@@ -232,7 +236,7 @@ fn fail_task(
                 .scheduling
                 .spawns
                 .get(&task)
-                .map_or_else(Vec::new, |s| s.history.clone()),
+                .map_or_else(Vec::new, |s| s.records()),
             deadlock: Vec::new(),
         }));
     }
@@ -248,7 +252,7 @@ pub(in crate::vm) fn serve(
     rt: &mut IoRuntime,
     id: crate::vm::RequestId,
 ) -> Result<(), Stop> {
-    reflect_cancellation(state, rt);
+    reflect_cancellation(state, rt)?;
     let Some(req) = rt.queue.take_for_serve(id) else {
         return Ok(());
     };
@@ -261,7 +265,7 @@ pub(in crate::vm) fn serve(
     }
     if state.stopping.is_some() {
         begin_stop_all(state, ctx)?;
-        reflect_cancellation(state, rt);
+        reflect_cancellation(state, rt)?;
     }
     Ok(())
 }
@@ -318,7 +322,7 @@ fn serve_inner(
                 .or_default()
                 .insert(op);
             state.resources.watch_readiness(resource);
-            // 待ちの記録を公開してから OS の登録を行う（実装プラン 10-16「準備の待ちの規則」）。
+            // 待ちの記録を公開してから OS の登録を行う（設計書 02-09「IO 実行器」）。
             let armed = crate::runtime::io::http::arm(
                 &mut state.resources,
                 resource,
@@ -391,7 +395,7 @@ fn submit(
     from: WaitReason,
 ) -> Result<(), Stop> {
     if work.needs_output_flush() {
-        // 再開時は既に完了した出力を待ち直さない。貸し出しの待ちも出力の後である（10-10）。
+        // 再開時は既に完了した出力を待ち直さない。貸し出しの待ちも出力の後である（設計書 02-09「組み込みの操作とハンドラ表」）。
         let streams: &[Stream] = match from {
             WaitReason::Output(Stream::Stdout, OutputWaitKind::Flush) => &[Stream::Stderr],
             WaitReason::Output(Stream::Stderr, OutputWaitKind::Flush) | WaitReason::Lend(_) => &[],
@@ -507,7 +511,7 @@ fn resume_lender(
     if let Err(stop) = submit(state, ctx, rt, request.req, work, reason) {
         fail_task(state, ctx, task, request.req.site, stop)?;
         begin_stop_all(state, ctx)?;
-        reflect_cancellation(state, rt);
+        reflect_cancellation(state, rt)?;
     }
     Ok(true)
 }
@@ -540,6 +544,7 @@ fn poll_outputs(
     ctx: &mut NoGcCtx<'_>,
     rt: &mut IoRuntime,
 ) -> Result<(), Stop> {
+    reflect_cancellation(state, rt)?;
     for stream in [Stream::Stdout, Stream::Stderr] {
         let (tasks, failure) = match stream {
             Stream::Stdout => rt.stdout.poll(),
@@ -582,7 +587,7 @@ fn poll_outputs(
             if let Err(stop) = result {
                 fail_task(state, ctx, task, site, stop)?;
                 begin_stop_all(state, ctx)?;
-                reflect_cancellation(state, rt);
+                reflect_cancellation(state, rt)?;
             }
         }
     }
@@ -598,12 +603,13 @@ pub(super) fn boundary(
     rt: &mut IoRuntime,
     at: WaitPoint,
 ) -> Result<(), Stop> {
-    reflect_cancellation(state, rt);
+    reflect_cancellation(state, rt)?;
     if state.stopping.is_some() && !state.scheduling.stopping {
         begin_stop_all(state, ctx)?;
-        reflect_cancellation(state, rt);
+        reflect_cancellation(state, rt)?;
     }
     dispatch_pending(program, state, ctx, rt, at)?;
+    // この境界の繰り返しでは cancelled_io は増えず、止める手順の枝も記録を消さないため、集めた操作の記録は残る。
     let mut readiness = ready_ops(state, rt).into_iter();
     loop {
         while let Some((id, op, resource)) = state.resources.take_release_job() {
@@ -660,7 +666,7 @@ pub(super) fn boundary(
                     state.fail(internal(&report.message), None);
                     rt.worker_bug = Some(report);
                     begin_stop_all(state, ctx)?;
-                    reflect_cancellation(state, rt);
+                    reflect_cancellation(state, rt)?;
                 }
                 Accepted::Deliver {
                     task,
@@ -689,7 +695,7 @@ pub(super) fn boundary(
                         Err(stop) => {
                             fail_task(state, ctx, task, site, stop)?;
                             begin_stop_all(state, ctx)?;
-                            reflect_cancellation(state, rt);
+                            reflect_cancellation(state, rt)?;
                         }
                     }
                 }
@@ -708,7 +714,7 @@ pub(super) fn boundary(
     poll_outputs(program, state, ctx, rt)?;
     Ok(())
 }
-// やり直した要求を、同じ境界で実行器へ渡す（実装プラン L30 の手順 (b)）。
+// やり直した要求を、同じ境界で実行器へ渡す。
 fn dispatch_pending(
     program: &CompiledProgram,
     state: &mut RunState,
@@ -804,7 +810,7 @@ fn ready_ops(
     };
     ready_for_tokens(state, rt, tokens)
 }
-// 一つの操作を二度完了させず、配送後の古い知らせを捨てる（実装プラン L30 の手順 (c)）。
+// 一つの操作を二度完了させず、配送後の古い知らせを捨てる。
 fn ready_for_tokens(
     state: &RunState,
     rt: &IoRuntime,
@@ -816,7 +822,7 @@ fn ready_for_tokens(
             ready.extend(ops);
         }
     }
-    // 解放で登録が外れた資源の待ちもやり直し、解放後の使用の誤りとして起こす（実装プラン L30）。
+    // 解放で登録が外れた資源の待ちもやり直し、解放後の使用の誤りとして起こす。
     for resource in state.resources.closed_readiness() {
         if let Some(ops) = rt.readiness.resource_ops.get(&resource) {
             ready.extend(ops);
@@ -826,7 +832,7 @@ fn ready_for_tokens(
     ready
 }
 
-/// 満了した受け付けの再試行を Ready の完了として処理する（実装プラン L30）。
+/// 受け付けの再試行か、閉じる途中の接続の期限の満了を Ready の完了として処理する。
 pub(super) fn expire_retry(
     program: &CompiledProgram,
     state: &mut RunState,

@@ -53,7 +53,7 @@ fn check_syntax(
     tokens: Vec<Token>,
 ) -> Result<(), String> {
     // 字句と構文の誤り（E01nn・E02nn）だけを失敗にする。そのほかの診断は整形の前のソースにもあったもの
-    // である（10-17「整形後の検証」、設計書 06-03「構文の誤りがあるファイル」）。
+    // である（設計書 06-03「整形後の検証」、設計書 06-03「構文の誤りがあるファイル」）。
     if let Some(d) = lexed.diagnostics.iter().find(|d| is_syntax_error(d)) {
         return Err(format!("lexical error after formatting: {}", d.message));
     }

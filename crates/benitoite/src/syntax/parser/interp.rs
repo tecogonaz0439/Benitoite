@@ -6,6 +6,8 @@ use crate::syntax::{
     token::{TokenKind, TokenValue},
 };
 
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn parse_interp(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.enter(depth)?;
     let start = p.pos;
@@ -57,6 +59,8 @@ fn push_segment(out: &mut Vec<InterpSegment>, span: Span, expr: Box<Expr>, tail:
         tail,
     });
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_interp(
     p: &mut Parser,
     start: usize,
@@ -91,7 +95,7 @@ fn skip_to_end(p: &mut Parser) {
 #[cfg(test)]
 // 補間ノードの断片と由来位置は後の段が使う契約である。公開の parse を通し、文字列の
 // エスケープ後の値とソース上の span を別に確かめる（設計書 07-03、test-audit）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,

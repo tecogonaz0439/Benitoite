@@ -1,5 +1,6 @@
-//! VM の解放順序、待ち、失敗と継続の破棄（設計書 01-10・02-08、実装プラン R24）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! VM の解放順序、待ち、失敗と継続の破棄（設計書 01-10「解放の時期と順序」「解放の失敗」、
+//! 02-08「リソースの解放の枠」「ハンドラと継続」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -223,10 +224,10 @@ fn own_releases_return_explicit_release_and_failure_aggregation() {
     }
 }
 
-// 関門: 作業文書が指定する普通の戻りを、RETURN 一命令の出口で確かめる。
+// 関門: 普通の戻りを、RETURN 一命令の出口で確かめる。
 // 普通の戻りは局所を呼び出し元へ更新する。ReturnWork の経路は局所を読み直すため、
 // この命令の出口ではまだ B を指す。回収の強制でもこの違いで経路を確かめる。
-// この内部経路の確認は R24 の個別指示であり、新しい差し込み口は作らない。
+// 新しい差し込み口は作らない。
 #[test]
 fn callee_return_keeps_callers_release_and_uses_plain_return() {
     let mut b = ProgramBuilder::new();
@@ -304,7 +305,7 @@ fn callee_return_keeps_callers_release_and_uses_plain_return() {
     assert_eq!(*events.lock().unwrap(), vec!["A"]);
 }
 
-// 関門: 解放が完了するまで Wait を返し続け、完了時の原因で失敗を扱う契約（R24 の指定）。
+// 関門: 解放が完了するまで Wait を返し続け、完了時の原因で失敗を扱う契約。
 #[test]
 fn waiting_release_rechecks_completion_and_current_cause() {
     for kind in [
@@ -426,7 +427,7 @@ fn waiting_release_rechecks_completion_and_current_cause() {
 // 表のテストでは根と命令位置の誤りに届かない。
 #[test]
 fn release_and_return_wait_keep_live_values_across_collection() {
-    // R25 からは待ちが VM の内部で進む。外部の完了を与える直前の境界まで進め、
+    // 待ちは VM の内部で進む。外部の完了を与える直前の境界まで進め、
     // 仮の Requests 応答の代わりに、実際の待つ理由と保存した値を確かめる。
     fn parked(vm: &mut Vm<'_>) {
         let mut io = services();
@@ -609,7 +610,7 @@ fn captured_program(action: &str) -> (CompiledProgram, InstrRef) {
 }
 
 // 関門: 捕捉した区画の実物の解放枠を、E-DropRel/Stop/ESCAPE が内側から降ろす契約。
-// R21 から引き渡された PERFORM の上限の検査も、同じプログラムで確かめる。
+// PERFORM の上限の検査も、同じプログラムで確かめる。
 #[test]
 fn captured_releases_drop_stop_escape_and_perform_limit() {
     for action in ["drop", "stop body", "stop clause", "escape", "limit"] {
@@ -670,7 +671,7 @@ fn captured_releases_drop_stop_escape_and_perform_limit() {
 }
 
 // 関門: A の解放枠・B を包む drop・B の呼び出し・B の解放枠が同一区画にある場合。
-// HANDLE と PERFORM の実行が drop を作るので、準備で枠の順序を与えていない（R24）。
+// HANDLE と PERFORM の実行が drop を作るので、準備で枠の順序を与えていない。
 #[test]
 fn releases_around_a_wrapped_clause_in_one_segment_keep_order() {
     for action in ["drop", "stop", "escape"] {
@@ -741,10 +742,10 @@ fn invalid_use_and_release_report_internal_without_creating_frames() {
     }
 }
 
-// 関門: USE の上限の検査は積む前、RELEASE は呼び出し元の枠へ進まない（R24）。
+// 上限でも解放を行い、解放の失敗で停止理由を変えない（設計書 01-10「解放の時期と順序」「解放の失敗」）。
 #[test]
 fn use_limit_and_release_ownership_preserve_cleanup() {
-    for limit in [false, true] {
+    for (limit, fail) in [(false, false), (true, false), (true, true)] {
         let mut b = ProgramBuilder::new();
         let main = b.proto("main", 0, 4).unwrap();
         let child = b.proto("child", 0, 1).unwrap();
@@ -765,7 +766,7 @@ fn use_limit_and_release_ownership_preserve_cleanup() {
         };
         let mut vm = vm(&program, config);
         let events = Arc::new(Mutex::new(vec![]));
-        install(&mut vm, 0, ResourceKind::FileReader, "A", false, &events);
+        install(&mut vm, 0, ResourceKind::FileReader, "A", fail, &events);
         let end = stopped(run(&mut vm));
         if limit {
             assert_eq!(
@@ -773,7 +774,8 @@ fn use_limit_and_release_ownership_preserve_cleanup() {
                 Stop::Resource(ResourceError::CallStackTooDeep { frames: 1 })
             );
             assert_eq!(stop_error(&end).at, Some(InstrRef { proto: main, pc: 0 }));
-            assert!(events.lock().unwrap().is_empty());
+            assert_eq!(*events.lock().unwrap(), vec!["A"]);
+            assert_eq!(end.release_failures.len(), usize::from(fail));
         } else {
             assert!(matches!(stop_error(&end).stop, Stop::Internal(_)));
             assert_eq!(

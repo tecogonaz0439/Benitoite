@@ -1,0 +1,18 @@
+// spec: 01-06 エフェクトの宣言とハンドラの型付け（初回リリース版）
+// 外側の型パラメータと操作の型パラメータを、診断の表示で取り違えない。
+effect Swap
+  function store[T](x: T) -> T
+end effect
+
+function run[A](a: A) -> Unit
+  bind _ <- handle
+    bind _ <- store(a)
+    Option.None
+  with
+    case store(x) -> Option.Some(x)
+  end handle
+end function
+
+function main() -> Unit
+  run(1)
+end function

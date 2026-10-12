@@ -1,0 +1,11 @@
+// spec: 01-06 型の別名（初回リリース版）
+type Outer = List[Bad]
+type Bad = Option[Integer, Integer]
+function use() -> Integer
+  bind y: Outer <- [Option.Some(1)]
+  bind _ <- y
+  return 1
+end function
+function main() -> Unit
+  ()
+end function

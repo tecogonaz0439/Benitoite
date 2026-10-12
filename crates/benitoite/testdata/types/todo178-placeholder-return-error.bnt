@@ -1,0 +1,11 @@
+// spec: 01-02 部分適用のプレースホルダ
+// 関門: 生成する関数の戻り値と継続の境界を CLI の結果・診断で確かめる。
+function add(a: Integer, b: Integer) -> Integer
+  return a + b
+end function
+function make() -> String
+  bind g <- add(return "escaped", _)
+  return Integer.toString(g(1))
+end function
+function main() -> Unit
+end function

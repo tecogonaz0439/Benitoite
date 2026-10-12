@@ -1,6 +1,6 @@
 //! `benitoite test` の CLI のテスト（設計書 06-01「`test` のコマンドライン（初回リリース版）」、06-04「テストの実行」
-//! 「結果の報告」、10-18「結果の報告」、02-10「実行時エラーと資源の不足の報告」、実装プラン D11「受け入れテスト」）。
-// テストの失敗は panic で表す（00-02「`#[allow]` を書いてよい箇所」）
+//! 「結果の報告」、02-10「実行時エラーと資源の不足の報告」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -163,7 +163,7 @@ function passesQuietly() -> Unit uses Console.Write
 end function
 "#;
 
-// 関門: 成功と失敗の混じったファイルの文章の形の全体（06-04「結果の報告」、10-18「文章の形」）。
+// 関門: 成功と失敗の混じったファイルの文章の形の全体（設計書 06-04「結果の報告」）。
 // 説明の有無、理由ごとの詳細、捕らえた出力の節、成功したテストの出力を示さないこと、空の行の置き方を一度に確かめる。
 #[test]
 fn mixed_results_are_reported_in_the_text_form() {
@@ -225,7 +225,7 @@ test result: FAILED. 2 passed; 5 failed
     assert_eq!(out.stdout, expected);
 }
 
-// 関門: JSON Lines の項目と順（06-04「結果の報告」、10-18「JSON Lines の形」）。`"runtime"` は実行時エラーの報告の
+// 関門: JSON Lines の項目と順（設計書 06-04「結果の報告」）。`"runtime"` は実行時エラーの報告の
 // JSON の項目をそのまま持つ。
 #[test]
 fn json_lines_have_the_fields_in_order() {
@@ -613,7 +613,7 @@ fn usage_errors_write_two_lines_and_exit_two() {
     }
 }
 
-// 関門: 読めないディレクトリはテストを一つも実行せず、E0101 を書いて終了状態 2（10-18「ファイルごとの手順」の 1）。
+// 関門: 読めないディレクトリはテストを一つも実行せず、E0101 を書いて終了状態 2。
 #[cfg(unix)]
 #[test]
 fn an_unreadable_directory_runs_no_tests() {
@@ -732,4 +732,31 @@ mod process_interrupt {
             );
         }
     }
+}
+
+// 関門: テスト行と失敗の見出しはパスを逃がす。JSON の file は元のパスを保つ。
+#[cfg(unix)]
+#[test]
+fn result_lines_escape_file_names_only_in_text_output() {
+    let dir = Directory::new("escaped-name");
+    let file = dir.write("test\u{1b}[2J.bnt", "@test\nfunction fails() -> Result[Unit, String]\n  return Result.Error(\"failed\")\nend function\n");
+    let out = run(&dir, &[&file]);
+    assert_eq!(out.exit, 1, "{}", out.stderr);
+    assert!(!out.stdout.contains('\u{1b}'), "{}", out.stdout);
+    assert!(
+        out.stdout
+            .starts_with("test <dir>/test\\u{1B}[2J.bnt: fails ... FAILED\n"),
+        "{}",
+        out.stdout
+    );
+    assert!(
+        out.stdout
+            .contains("---- <dir>/test\\u{1B}[2J.bnt: fails ----\n"),
+        "{}",
+        out.stdout
+    );
+    let out = run(&dir, &["--diagnostics=json", &file]);
+    assert_eq!(out.exit, 1, "{}", out.stderr);
+    let test: serde_json::Value = serde_json::from_str(out.stdout.lines().next().unwrap()).unwrap();
+    assert_eq!(test["file"], "<dir>/test\u{1b}[2J.bnt");
 }

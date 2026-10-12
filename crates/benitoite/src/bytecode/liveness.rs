@@ -1,5 +1,4 @@
-//! コード生成が VM に渡す生存の情報（設計書 02-08「枠を降ろす原因と処理」、
-//! 実装プラン 10-07「生存の情報」）。回収の方式によらず同じ情報を使う。
+//! コード生成が VM に渡す生存の情報（設計書 02-08「枠を降ろす原因と処理」）。回収の方式によらず同じ情報を使う。
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
@@ -90,7 +89,7 @@ pub struct LivenessError {
 
 use super::program::CompiledProgram;
 
-/// 原型 `proto` の命令 `pc` が読むレジスタと書くレジスタ（10-07「生存の情報」の規則の 1 つ目）。
+/// 原型 `proto` の命令 `pc` が読むレジスタと書くレジスタ。
 pub fn reg_use(
     program: &CompiledProgram,
     proto: ProtoIdx,
@@ -280,8 +279,7 @@ pub fn compute_liveness(
     }
 
     // 空集合から始め、入口の集合が増えたときだけ先行命令を再計算する。
-    // 有限個のレジスタの集合は単調に増えるため、後ろ向きの辺があっても終了する
-    // （実装プラン R05「compute_liveness」）。
+    // 有限個のレジスタの集合は単調に増えるため、後ろ向きの辺があっても終了する。
     let mut work: VecDeque<_> = (0..nodes.len()).rev().collect();
     while let Some(index) = work.pop_front() {
         let current = node(&nodes, index, proto)?;
@@ -330,8 +328,7 @@ pub fn compute_liveness(
     }
 
     // H の変換は固定した生存集合との積・最後の使用の除去・書き込みの追加である。
-    // これも単調なので、合流では和を取り、増えた分を後続へ伝えれば最小の解になる
-    // （実装プラン 10-07「生存の情報」）。
+    // これも単調なので、合流では和を取り、増えた分を後続へ伝えれば最小の解になる。
     if let Some(first) = nodes.first_mut() {
         first.held.extend(0..p.num_params);
     }
@@ -500,7 +497,7 @@ impl<'a> Site<'a> {
             }
         }
         // SWITCH はすべて表の相対位置へ跳ぶ。表にないタグで default もない場合は停止する
-        // （実装プラン 10-07「コンパイル済みプログラム」）。
+        // （設計書 02-07「コンパイル済みプログラム」）。
         if instr.opcode() != Some(Opcode::Jmp) && instr.opcode() != Some(Opcode::Switch) {
             let next = self
                 .index
@@ -639,7 +636,7 @@ mod tests {
     }
 
     // 関門: 68 命令の読み書きは VM とコード生成が共有する契約であり、取り違えた
-    // レジスタや表の arity をここで検出する。C01 の仮置きには既存のテストがない。
+    // レジスタの範囲や表の引数の数の不整合を検出する。
     #[test]
     fn all_opcodes_obey_register_operand_contracts() {
         use Opcode::*;
@@ -1255,7 +1252,7 @@ mod tests {
                 .collect();
 
             // H を集合の方程式では求めず、具体的な窓の状態を全探索する。到達しない命令も
-            // 空の窓から始めることで、R05 が定める H の最小の解と同じ書き込みを含める。
+            // 空の窓から始めることで、保持するレジスタの集合 H の最小の解と同じ書き込みを含める。
             let mut stack: Vec<_> = (0..len).map(|pc| (pc, 0_u16)).collect();
             stack.push((0, 0b11_1111));
             let mut visited = BTreeSet::new();

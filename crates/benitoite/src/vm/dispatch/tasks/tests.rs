@@ -1,5 +1,5 @@
-//! タスクの観察できる結果と、切り替え・待ちをまたぐ根を確かめる（実装プラン R25）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! タスクの観察できる結果と、切り替え・待ちをまたぐ根を確かめる（設計書 02-08「タスクの切り替え」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::panic,
@@ -154,7 +154,7 @@ end function
 }
 const PROBE: &str = "effect Probe\n function ask(n: Integer) -> Integer\nend effect\n";
 // 関門: 引き継いだ記録は親が終わっても孫を所有し、handle の戻り値と戻り先を
-// 保存する。R20 の一タスクの resume のテストでは、待ちの間の別の RETURN に届かない。
+// 保存する。一タスクの resume のテストでは、待ちの間の別の RETURN に届かない。
 #[test]
 fn inherited_handler_waits_for_grandchild_and_preserves_wrapped_return() {
     let source = PROBE.to_owned(); // 以下で本番の構文をつなぐ。
@@ -421,8 +421,8 @@ end function
                 false,
             );
             vm.use_schedule(script.clone());
-            // Clock.sleep の組み込みは L10 が書く。VM の待ちの境界で第二の子を
-            // タイマーに登録し、満了と第三の子の起動が競合する状況を作る。
+            // VM の待ちの境界で第二の子をタイマーに登録し、
+            // 満了と第三の子の起動が競合する状況を作る。
             let mut installed = false;
             vm.state.scheduling.test_boundary = Some(Box::new(move |state, ctx| {
                 if !installed {
@@ -658,7 +658,7 @@ fn cleanup_terminates_when_a_traversal_error_does_not_advance() {
             LoopExit::Return
         );
     });
-    // 第 2 段の切り替えは回収を先に返すことがある。実行の入口でその再開も通す（設計書 02-08「タスクの切り替え」）。
+    // タスクの切り替えは回収を先に返すことがある。実行の入口でその再開も通す（設計書 02-08「タスクの切り替え」）。
     assert_eq!(
         vm.run(runtime),
         VmStep::Stopped(StopEnd {
@@ -671,7 +671,7 @@ fn cleanup_terminates_when_a_traversal_error_does_not_advance() {
 }
 
 // 関門: 各置き場だけに残る値は、別の根を残すスクリプトだけでは漏れを検出できない。
-// R03/R25 の指定どおり実際の RunState を回収の根にし、一つずつ孤立させる。
+// 実際の RunState を回収の根にし、一つずつ孤立させる。
 #[test]
 fn every_task_owned_root_survives_collection_in_isolation() {
     use crate::runtime::heap::Heap;
@@ -886,7 +886,7 @@ impl crate::builtins::iface::OsResource for FakeResource {
     }
 }
 // 関門: E-DropRel は節の値と辿りを同時に保存する。偽の外部の資源をテスト用の
-// 境界で置き、解放の完了を別のタスクの RETURN / 停止より後にする（R21/R24/R25）。
+// 境界で置き、解放の完了を別のタスクの RETURN / 停止より後にする。
 #[test]
 fn blocking_drop_release_preserves_clause_return_while_another_task_returns() {
     let source = PROBE.to_owned()
@@ -1075,7 +1075,7 @@ end function
             }
         }
         // Lazy の本体は純粋なので、この捕捉済み update と待つ側の組み合わせは
-        // スクリプトだけでは作れない。R25 が指定した停止の組み合わせを、
+        // スクリプトだけでは作れない。停止の組み合わせを、
         // 実際の辿りとスケジューラに準備する。言語の規則は変えない。
         if !injected {
             let values: Vec<_> = state
@@ -1204,7 +1204,7 @@ fn invalid_script_selection_stops_instead_of_repeating_cleanup() {
         "function main() -> Unit\n bind _ <- Task.all([lambda() return () end lambda])\n return ()\nend function\n",
     );
     // 関門: 選べるタスクがある場合だけでなく、タイマーの待ちの間に行えない指示も
-    // 記録し、元の指示を消費せず停止する（実装プラン R25「テスト用の部品」）。
+    // 記録し、元の指示を消費せず停止する。
     for external_wait in [false, true] {
         let mut vm = Vm::new(
             &program,
@@ -1412,7 +1412,7 @@ fn completed_children_do_not_accumulate_in_groups_or_spawners() {
 
 mod cancellation;
 
-// 旧 sleep の直接呼び出しで組んだ、スケジューラ自身のタイマーの準備を保つ（実装プラン R26）。
+// 旧 sleep の直接呼び出しで組んだ、スケジューラ自身のタイマーの準備を保つ。
 fn test_timer(state: &mut RunState, millis: u64) -> Result<Control, Stop> {
     let timer = state.scheduler.new_timer_id();
     state.scheduler.add_timer(millis, timer, state.current_task);
@@ -1420,3 +1420,54 @@ fn test_timer(state: &mut RunState, millis: u64) -> Result<Control, Stop> {
 }
 
 mod interrupt;
+
+// 全段を保持し、最新の起動から親へ並べる契約を、異なる二つの起動位置で確かめる
+// （設計書 02-08「実行時エラーの情報の記録」）。
+#[test]
+fn deep_spawn_history_keeps_all_origins_in_child_to_parent_order() {
+    let source = r#"
+function chain(n: Integer) -> Integer
+ if n = 0 then return 1 div 0 end if
+ if n mod 2 = 0 then
+  bind xs <- Task.all([lambda() return chain(n - 1) end lambda])
+  return List.length(xs)
+ else
+  bind xs <- Task.all([lambda() return chain(n - 1) end lambda])
+  return List.length(xs)
+ end if
+end function
+function main() -> Unit
+ bind _ <- chain(50)
+ return ()
+end function
+"#;
+    let (step, _) = run(source, 100, vec![]);
+    let VmStep::Stopped(StopEnd {
+        reason: StopReason::Error(info),
+        ..
+    }) = step
+    else {
+        panic!("expected stop")
+    };
+    assert_eq!(info.stop, Stop::Runtime(RuntimeError::DivisionByZero));
+    assert_eq!(info.spawns.len(), 50);
+    let program = compile(source);
+    let even = source.find("Task.all(").unwrap();
+    let odd = source.rfind("Task.all(").unwrap();
+    for (i, record) in info.spawns.iter().enumerate() {
+        let span = crate::runtime::report::instr_span(&program, record.spawned_at).unwrap();
+        assert_eq!(
+            usize::try_from(span.start.0).unwrap(),
+            if i % 2 == 0 { odd } else { even }
+        );
+    }
+    let report = crate::runtime::report::stop_diagnostic(&program, &info);
+    assert_eq!(report.task_origins.len(), 51);
+    for (i, frame) in report.task_origins.iter().take(50).enumerate() {
+        assert_eq!(
+            usize::try_from(frame.call_site.unwrap().start.0).unwrap(),
+            if i % 2 == 0 { odd } else { even }
+        );
+    }
+    assert!(report.task_origins.last().unwrap().call_site.is_none());
+}

@@ -1,7 +1,7 @@
 //! VM と参照インタプリタの比較（設計書 07-03「差分テスト」「コア IR の検査」）。
-//! C14 からも使うため、ゴールデンテストのファイルの形式には依存しない。
+//! ランダムなプログラムのテストからも使うため、ゴールデンテストのファイルの形式には依存しない。
 
-// 再利用する統合テストでもテストの失敗を panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -17,7 +17,7 @@ use std::sync::{Arc, Mutex};
 use benitoite::base::{SourceKind, SourceTable, Span};
 use benitoite::builtins::iface::{IoServices, IoWait, OsResource};
 use benitoite::diag::ReportKind;
-use benitoite::pipeline::{self, CheckedProgram};
+use benitoite::pipeline::{self, CheckedProgram, CompileError};
 use benitoite::refinterp::{self, RefOutcome};
 use benitoite::runtime::heap::{HeapConfig, ResourceId};
 use benitoite::runtime::io::services::RunInput;
@@ -33,19 +33,38 @@ pub enum Comparison {
     Excluded(String),
 }
 
+/// 比較から外してよい制限と、正常終了を求めるかの指定。
+#[derive(Default)]
+pub struct CompareOptions {
+    pub expected_limit: bool,
+    pub require_returned: bool,
+}
+
 /// 型検査済みのプログラムを脱糖・検査し、VM と参照インタプリタの出力と終わり方を比べる。
-/// 深い IR の検査と破棄も CLI の段と同じスタックで行う（実装プラン C10）。
+/// 深い IR の検査と破棄も CLI の段と同じスタックで行う。
 pub fn compare(
     checked: CheckedProgram,
     sources: Arc<SourceTable>,
     input: RunInput,
     config: VmConfig,
     mode: ExecMode,
+    options: CompareOptions,
+    prepare_reference: Box<dyn FnOnce() -> Result<(), String> + Send>,
 ) -> Comparison {
     let thread = std::thread::Builder::new()
         .name("golden-differential".into())
         .stack_size(pipeline::STAGE_STACK_BYTES)
-        .spawn(move || compare_on_stage(checked, sources, input, config, mode));
+        .spawn(move || {
+            compare_on_stage(
+                checked,
+                sources,
+                input,
+                config,
+                mode,
+                options,
+                prepare_reference,
+            )
+        });
     match thread {
         Ok(thread) => match thread.join() {
             Ok(result) => result,
@@ -61,6 +80,8 @@ fn compare_on_stage(
     input: RunInput,
     config: VmConfig,
     mode: ExecMode,
+    options: CompareOptions,
+    prepare_reference: Box<dyn FnOnce() -> Result<(), String> + Send>,
 ) -> Comparison {
     let core = match pipeline::desugar_checked(&checked) {
         Ok(core) => core,
@@ -72,7 +93,16 @@ fn compare_on_stage(
     }
     let program = match pipeline::compile(&core, Arc::clone(&sources)) {
         Ok(program) => program,
-        Err(error) => return Comparison::Failed(format!("compilation failed: {error:?}")),
+        // 処理系の制限は抽象機械の規則にない。実行時の資源の上限と同じく比較から外す。
+        Err(CompileError::Limit(_)) if options.expected_limit => {
+            return Comparison::Excluded("implementation limit".into());
+        }
+        Err(CompileError::Limit(diags)) => {
+            return Comparison::Failed(format!("unexpected implementation limit: {diags:?}"));
+        }
+        Err(CompileError::Internal(error)) => {
+            return Comparison::Failed(format!("compilation failed: {error:?}"));
+        }
     };
     let stdout = Arc::new(Mutex::new(Vec::new()));
     let stderr = Arc::new(Mutex::new(Vec::new()));
@@ -91,6 +121,12 @@ fn compare_on_stage(
             dev_panic_after_first_write: false,
         },
     );
+    if options.require_returned && vm.end != EndKind::Returned {
+        return Comparison::Failed(format!(
+            "benchmark did not return normally: VM {:?}/{:?}, reports {:?}",
+            vm.end, vm.main_error, vm.reports
+        ));
+    }
     if vm.end == EndKind::Internal {
         return Comparison::Failed(format!(
             "differential test failed: VM internal error: {:?}",
@@ -100,6 +136,9 @@ fn compare_on_stage(
     // 資源の上限は抽象機械の規則にない。深い再帰を参照側で走らせる前に外す（設計書 07-03「差分テスト」）。
     if vm.reports.iter().any(|d| d.kind == ReportKind::Resource) {
         return Comparison::Excluded("resource exhaustion".into());
+    }
+    if let Err(error) = prepare_reference() {
+        return Comparison::Failed(format!("reference preparation failed: {error}"));
     }
     let mut io = ReferenceIo {
         input,
@@ -117,7 +156,7 @@ fn compare_on_stage(
     )
 }
 
-/// 実行結果の比較。C14 の検出力の検査でも同じ判定を使う（実装プラン C14）。
+/// 実行結果の比較。ランダムなプログラムの検出力の検査でも同じ判定を使う。
 pub fn compare_results(
     program: &benitoite::bytecode::program::CompiledProgram,
     sources: &SourceTable,
@@ -254,7 +293,7 @@ impl IoServices for ReferenceIo {
     fn environment_variable(&self, _name: &str) -> Option<OsString> {
         None
     }
-    // 時計と乱数を使うケースは呼ぶ側が名前の一覧で外す（実装プラン C10）。
+    // 時計と乱数を使うケースは呼ぶ側が名前の一覧で外す。
     fn now_millis(&self) -> i64 {
         0
     }

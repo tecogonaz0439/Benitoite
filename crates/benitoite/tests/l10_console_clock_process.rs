@@ -1,6 +1,6 @@
-//! L10 のソースの関数・レコードの欄と、OS の時計を公開の経路で確かめる
-//! （設計書 03-07「Process」「Clock」、実装プラン L10）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! Console・Process・Clock のソースの関数・レコードの欄と、OS の時計を公開の経路で確かめる
+//! （設計書 03-07「Process」「Clock」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic)]
 
 use benitoite::pipeline::{self, CheckOptions};
@@ -100,7 +100,8 @@ impl ScriptDirectory {
 }
 impl Drop for ScriptDirectory {
     fn drop(&mut self) {
-        std::fs::remove_dir_all(&self.0).unwrap();
+        // 巻き戻しの途中で二度目の panic を起こさない。
+        let _removed = std::fs::remove_dir_all(&self.0);
     }
 }
 
@@ -133,6 +134,7 @@ end function
     ] {
         let output = std::process::Command::new(env!("CARGO_BIN_EXE_benitoite"))
             .env("TZ", tz)
+            .env_remove("TZDIR")
             .args(["run"])
             .arg(&path)
             .output()

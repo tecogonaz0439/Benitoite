@@ -1,5 +1,5 @@
-//! IOError の種類を値から取り出す契約（実装プラン R29）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! IOError の種類を値から取り出す契約（設計書 03-07「IOErrorKind と関数の対応」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used)]
 use super::*;
 use crate::builtins::iface::CallCtx;

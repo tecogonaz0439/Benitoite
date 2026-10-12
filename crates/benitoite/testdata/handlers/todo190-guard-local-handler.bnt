@@ -1,0 +1,24 @@
+// spec: 01-06 エフェクトの宣言とハンドラの型付け（初回リリース版）
+// 関門: 外側の節のガードにある handle の継続は使え、分岐の本体では外側の継続へ戻る。
+// CLI からガードの真偽両方を実行し、型検査の文脈復元と継続の選択の退行を捕まえる。差し込み口は不要。
+import Benitoite.Unofficial.IO.Console
+effect Flip
+  function flip(value: Integer) -> Integer
+end effect
+effect Ask
+  function ask(value: Boolean) -> Boolean
+end effect
+function choose(n: Integer) -> Integer
+  return handle flip(n) with
+    case flip(x) -> match x with
+      case k if handle ask(k > 0) with
+        case ask(b) -> resume(b)
+      end handle -> resume(k + 10)
+      case k -> resume(k - 10)
+    end match
+  end handle
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(choose(1)))
+  Console.writeLine(Integer.toString(choose(-1)))
+end function

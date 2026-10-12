@@ -65,6 +65,8 @@ fn check_field(
         None
     }
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &RecordExpr) -> ITy {
     let Some(id) = ctx.decls.reference(e.id) else {
         return ITy::Error;
@@ -106,6 +108,19 @@ pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &RecordExpr) -> ITy {
             );
         }
     }
+    check_missing_fields(ctx, e, id, &name, &fields, &seen);
+    ret
+}
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
+fn check_missing_fields(
+    ctx: &mut Body<'_, '_>,
+    e: &RecordExpr,
+    id: BindingId,
+    name: &str,
+    fields: &[FieldInfo],
+    seen: &BTreeMap<String, Span>,
+) {
     if e.base.is_none() {
         let missing = fields
             .iter()
@@ -123,8 +138,8 @@ pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &RecordExpr) -> ITy {
             ctx.diagnostic(d.build());
         }
     }
-    ret
 }
+
 pub(super) fn pattern(ctx: &mut Body<'_, '_>, p: &RecordPat) -> ITy {
     let Some(id) = ctx.decls.reference(p.id) else {
         return ITy::Error;

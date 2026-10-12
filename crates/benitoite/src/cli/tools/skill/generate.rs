@@ -167,7 +167,7 @@ fn grammar(chapter: &str) -> Result<String, String> {
     ))
 }
 
-/// 一行から `(* … *)` の注釈を除く。注釈は入れ子にならない前提とする（D20「手順の要点」の 1）。
+/// 一行から `(* … *)` の注釈を除く。注釈は入れ子にならない前提とする。
 fn strip_comments(line: &str) -> String {
     let mut out = String::new();
     let mut rest = line;
@@ -287,7 +287,7 @@ fn module_reference(module: &StdlibModuleSource, name: &str) -> Result<(String, 
 
 /// 宣言の頭をソースのとおりに切り出す。`public` から始めるので、その前の `@builtin` などの属性の行は含まない。
 /// 関数は戻りの型（`uses` があればその終わり）までとし、本体を除く。定数は型までとし、右辺を除く。
-/// 型・エフェクト・型クラスは、構成子・操作・メソッドの宣言を含む宣言の全体とする（10-19「Skill のファイルの置き場所」）。
+/// 型・エフェクト・型クラスは、構成子・操作・メソッドの宣言を含む宣言の全体とする（設計書 06-06「同梱の Agent Skill の構成」）。
 fn decl_head(source: &str, public: Span, decl: &TopDecl) -> Option<String> {
     let end = match &decl.item {
         Item::Fn(f) => match &f.uses {
@@ -363,7 +363,7 @@ pub fn bundle_source(paths: &[String]) -> String {
     }
     out.push_str("pub const FILES: &[SkillFile] = &[\n");
     for path in paths {
-        // ライセンス文はリポジトリの根に、ほかは処理系のクレートの `skill/` に置く（10-19「Skill のファイルの置き場所」）。
+        // ライセンス文はリポジトリの根に、ほかは処理系のクレートの `skill/` に置く（設計書 06-06「同梱の Agent Skill の構成」）。
         let source = if path.starts_with("LICENSE") {
             format!("../../../../../../{path}")
         } else {
@@ -378,7 +378,7 @@ pub fn bundle_source(paths: &[String]) -> String {
 }
 
 #[cfg(test)]
-// テストの失敗は panic で表す（実装プラン 00-02「`#[allow]` を書いてよい箇所」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;

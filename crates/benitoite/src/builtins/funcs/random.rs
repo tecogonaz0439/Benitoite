@@ -4,34 +4,16 @@ use crate::builtins::iface::IoReply;
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::builtins::table::tags;
 use crate::runtime::heap::{CtorTag, FieldsKind, OpaqueData, Value, ValueCtx};
+use crate::runtime::random::seeded_state;
 use crate::runtime::{RuntimeError, Stop, list};
 
 #[derive(Clone, Copy, Debug)]
 struct Generator([u64; 4]);
 impl OpaqueData for Generator {}
 
-/// 純粋な生成器と実行開始時の種の設定は、同じ展開手順を使う（設計書 03-07「Random」）。
-pub(crate) fn seeded_state(mut seed: u64) -> [u64; 4] {
-    std::array::from_fn(|_| {
-        seed = seed.wrapping_add(0x9e3779b97f4a7c15);
-        let mut value = seed;
-        value = (value ^ (value >> 30)).wrapping_mul(0xbf58476d1ce4e5b9);
-        value = (value ^ (value >> 27)).wrapping_mul(0x94d049bb133111eb);
-        value ^ (value >> 31)
-    })
-}
-
 impl Generator {
     fn next(&mut self) -> u64 {
-        let [a, b, c, d] = self.0;
-        let value = b.wrapping_mul(5).rotate_left(7).wrapping_mul(9);
-        self.0 = [
-            a ^ d ^ b,
-            b ^ c ^ a,
-            c ^ a ^ b.wrapping_shl(17),
-            (d ^ b).rotate_left(45),
-        ];
-        value
+        crate::runtime::random::next(&mut self.0)
     }
 }
 
@@ -103,7 +85,7 @@ fn pair<'e>(ctx: &ValueCtx<'e>, value: Value<'e>, next: Generator) -> Result<Val
 }
 
 builtin! {
-    /// `Benitoite.IO.Random.integer` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Random.integer` の本体。
     name = "Benitoite.IO.Random.integer",
     io fn integer(ctx, low: i64, high: i64) -> crate::builtins::iface::IoReply<'e> {
         let mut ctx = ctx;
@@ -113,7 +95,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Random.float` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Random.float` の本体。
     name = "Benitoite.IO.Random.float",
     io fn float(ctx) -> crate::builtins::iface::IoReply<'e> {
         let mut ctx = ctx;
@@ -122,7 +104,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Random.boolean` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Random.boolean` の本体。
     name = "Benitoite.IO.Random.boolean",
     io fn boolean(ctx) -> crate::builtins::iface::IoReply<'e> {
         let mut ctx = ctx;
@@ -131,7 +113,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Random.shuffle` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Random.shuffle` の本体。
     name = "Benitoite.IO.Random.shuffle",
     io fn shuffle(ctx, arg0: Value<'e>) -> crate::builtins::iface::IoReply<'e> {
         let mut ctx = ctx;
@@ -141,7 +123,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Random.choose` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Random.choose` の本体。
     name = "Benitoite.IO.Random.choose",
     io fn choose(ctx, arg0: Value<'e>) -> crate::builtins::iface::IoReply<'e> {
         let mut ctx = ctx;
@@ -157,7 +139,7 @@ builtin! {
 }
 
 builtin! {
-    /// `IO.Random.fromSeed` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `IO.Random.fromSeed` の本体。
     name = "IO.Random.fromSeed",
     pure fn from_seed(ctx, seed: i64) -> Value<'e> {
         Ok(ctx.alloc_opaque(Generator(seeded_state(u64::from_ne_bytes(seed.to_ne_bytes())))))
@@ -165,7 +147,7 @@ builtin! {
 }
 
 builtin! {
-    /// `IO.Random.nextInteger` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `IO.Random.nextInteger` の本体。
     name = "IO.Random.nextInteger",
     pure fn next_integer(ctx, arg0: Value<'e>, low: i64, high: i64) -> Value<'e> {
         let n = width(low, high, next_integer::DECL.name, 2)?;
@@ -176,7 +158,7 @@ builtin! {
 }
 
 builtin! {
-    /// `IO.Random.nextFloat` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `IO.Random.nextFloat` の本体。
     name = "IO.Random.nextFloat",
     pure fn next_float(ctx, arg0: Value<'e>) -> Value<'e> {
         let mut next = generator(&ctx, arg0)?;
@@ -186,7 +168,7 @@ builtin! {
 }
 
 builtin! {
-    /// `IO.Random.shuffleWith` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `IO.Random.shuffleWith` の本体。
     name = "IO.Random.shuffleWith",
     pure fn shuffle_with(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         let mut next = generator(&ctx, arg0)?;
@@ -195,7 +177,7 @@ builtin! {
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     integer::DECL,
     float::DECL,

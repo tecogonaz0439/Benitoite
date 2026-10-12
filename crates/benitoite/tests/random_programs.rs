@@ -5,9 +5,9 @@
 //! 種は十進の u64、件数は正の整数。同じ種からは同じソースができる。
 //! 固定の並びは種 0 から始める。既知の反例は理由付きの ignore に残し、既定の並びからだけ外す。
 //! 件数・種を指定した実行は既知の反例も試し、最後まで数えた後で失敗を返す。
-//! 通常と gc-stress の既定の時間予算はそれぞれ 60 秒（実装プラン C14）。
+//! 通常と gc-stress の既定の時間予算はそれぞれ 60 秒。
 
-// テストの失敗を panic で示し、生成の有限の上限の内側では添字と算術を使う（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -85,7 +85,15 @@ fn evaluate(seed: u64, source: &str) -> Result<(), Failure> {
                 format!("check failed: {:?}", checked.diagnostics),
             ));
         };
-        match differential::compare(program, checked.sources, input(), VmConfig::default(), mode) {
+        match differential::compare(
+            program,
+            checked.sources,
+            input(),
+            VmConfig::default(),
+            mode,
+            differential::CompareOptions::default(),
+            Box::new(|| Ok(())),
+        ) {
             Comparison::Matched => {}
             Comparison::Failed(detail) => {
                 // 位置・実際の値が変わっても、同じ失敗の種類と方式だけを縮小する。
@@ -200,7 +208,7 @@ fn random_differential() {
     }
 }
 
-// 関門: 種による再現は C14 が明示した生成器の契約。失敗を再現できなくなる退行を捕まえる。
+// 関門: 種による再現は生成器の契約。失敗を再現できなくなる退行を捕まえる。
 // 個々のソースの字面を固定せず、違う種と別の生成を挟んでも種だけで再現できることを確かめる。
 #[test]
 fn seed_reproduces_source() {
@@ -213,7 +221,7 @@ fn seed_reproduces_source() {
     }
 }
 
-// 関門: 比較の検出力と縮小を C14 の個別指示で確かめる。実行結果の一バイトだけを変え、
+// 関門: 比較の検出力と縮小を確かめる。実行結果の一バイトだけを変え、
 // 構文・型の誤りを反例として採用しないことと、不要な宣言・文を落とすことを確認する。
 #[test]
 fn detects_and_shrinks_changed_output() {

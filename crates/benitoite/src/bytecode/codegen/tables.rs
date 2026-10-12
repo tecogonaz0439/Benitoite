@@ -57,7 +57,7 @@ pub(super) fn scalar(c: &Const) -> ConstDesc {
     }
 }
 
-// プログラム全体の表は 65536 項目以上を拒む（10-07「オペランドの補足」）。
+// プログラム全体の表は 65536 項目以上を拒む（設計書 02-07「処理系の制限」）。
 fn table_limit(size: usize) -> bool {
     size >= 65536
 }
@@ -382,7 +382,7 @@ impl Gen<'_> {
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -391,7 +391,7 @@ mod tests {
         clippy::arithmetic_side_effects
     )]
     use super::*;
-    // 関門: F15 が非公開の関数での検査を指定する。巨大な表の構築に費やさず、符号化の境界を確かめる。
+    // 関門: 巨大な表の構築に費やさず、符号化の境界を確かめる。
     #[test]
     fn global_limits_have_no_span_and_are_reported_once_per_table() {
         let (lower, sources) = super::super::tests::over_limit_program(0, false);

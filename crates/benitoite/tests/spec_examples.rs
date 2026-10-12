@@ -5,7 +5,7 @@
     clippy::indexing_slicing,
     clippy::arithmetic_side_effects
 )]
-// テストの失敗は panic で表すため、テストコードではこれらを許す（実装規約 00-02「#[allow] を書いてよい箇所」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 //! 言語仕様と付録の例を、初回リリース版の構文解析器と名前解決で確かめる（設計書 07-03「言語仕様の例の検査」）。
 
 use std::fs;
@@ -21,7 +21,7 @@ use benitoite::syntax::newline::resolve_newlines;
 use benitoite::syntax::parser::parse;
 
 // 例を足したときは、この表も見直す。誤りの例と本体を省略した宣言などを除く唯一の一覧である。
-// C13 で削除する前の grammar_check.py の EXPECTED のうち、現在の例に当たる 7 件を写した。
+// 仕様例のうち、構文解析の成功を求めない 7 件を挙げる。
 const EXPECTED_FAILURES: &[(&str, &str)] = &[
     (
         "01-01-lexical.md",
@@ -248,7 +248,7 @@ fn strip_strings_and_comments(source: &str) -> String {
     let mut position = 0;
 
     // Python の is_source と同じく、文字列を先に除き、その結果からコメントを除く。
-    // 文字リテラルと raw 文字列には、特別な規則を加えない（実装プラン C13「例の取り出し」）。
+    // 文字リテラルと raw 文字列には、特別な規則を加えない。
     while position < chars.len() {
         if chars.get(position) == Some(&'"')
             && let Some(end) = string_end(&chars, position)
@@ -428,7 +428,7 @@ fn check_local_bindings(
         InputShape::Type | InputShape::Pattern => return Ok(Vec::new()),
     };
     // 仮のモジュールの内容は不要だが、ファイルがないと読み込みで止まり名前解決に
-    // 進まない。構文解析した import のパスに空のソースを当てる（実装プラン C13「局所の束縛の規則」）。
+    // 進まない。構文解析した import のパスに空のソースを当てる。
     let mut paths: Vec<_> = module
         .imports
         .iter()
@@ -462,7 +462,7 @@ fn check_local_bindings(
         },
     );
     // 読み込みには字句・構文の検査も含まれる。これらの誤りとモジュールの探索の
-    // 誤りがあると名前解決を走らせないため、束縛の検査が済んだと数えない（10-13「check」）。
+    // 誤りがあると名前解決を走らせないため、束縛の検査が済んだと数えない（設計書 02-01「検査と実行の経路」）。
     let loading_errors: Vec<_> = checked
         .diagnostics
         .iter()
@@ -628,7 +628,7 @@ fn spec_and_appendix_examples_are_readable() {
 }
 
 // 検査器が壊れた例を見逃す退行を、この検査器の判定と集計で確かめる。本番の段に
-// テスト用の口を加えない（test-audit「作成時の関門」、実装プラン C13「受け入れテスト」）。
+// テスト用の口を加えない（test-audit「作成時の関門」）。
 #[test]
 fn broken_syntax_example_is_counted_as_unreadable() {
     let blocks = read_file_blocks(&design_directory().join("01-spec/01-02-syntax.md"));
@@ -662,8 +662,7 @@ fn broken_syntax_example_is_counted_as_unreadable() {
 fn local_binding_violations_are_counted_and_fragment_shadow_is_allowed() {
     for (source, expected_code) in [
         ("bind x <- 1\nbind x <- 2", Some("E0334")),
-        // 仮の名前への診断を無視しても、後の束縛違反を見逃さないことを確かめる
-        // （実装プラン C13「局所の束縛の規則」）。
+        // 仮の名前への診断を無視しても、後の束縛違反を見逃さないことを確かめる。
         ("bind x <- missing\nbind x <- 2", Some("E0334")),
         // 読み替えを誤ると、読み込みで止まり E0334 が出ない。この層で名前解決まで
         // 進めることを確かめる（設計書 07-03「言語仕様の例の検査」）。
@@ -721,7 +720,7 @@ fn local_binding_violations_are_counted_and_fragment_shadow_is_allowed() {
 }
 
 // 除く表が、直した例の検査を飛ばす退行を確かめる。表の照合キーを保ったまま
-// E0338 の原因となる本体を除く（実装プラン C13「例の取り出し」）。
+// E0338 の原因となる本体を除く。
 #[test]
 fn expected_failure_must_still_be_invalid() {
     let blocks = read_file_blocks(&design_directory().join("01-spec/01-03-names-modules.md"));

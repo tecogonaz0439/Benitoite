@@ -1,5 +1,5 @@
 //! 字句解析の公開の入口で、値・診断・回復・位置を確かめる（設計書 07-03）。
-// テストの失敗は panic で表す（00-02「`#[allow]` を書いてよい箇所」）
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,

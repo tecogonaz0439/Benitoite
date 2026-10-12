@@ -1,5 +1,5 @@
 //! 設計書のレビューで挙がった実行時の振る舞いの反例（docs/todo の TODO-025）を公開のパイプラインと実行器で確かめる（設計書 01-07・01-11・07-03）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -84,7 +84,7 @@ fn env(
         dev_panic_after_first_write: false,
     }
 }
-// 待つ側の上限は停止の検出だけに使い、筋書きや期待値を実時間から決めない（R30）。
+// 待つ側の上限は停止の検出だけに使い、筋書きや期待値を実時間から決めない。
 // 負荷のもとでも通知と後始末を待てるよう、実行全体と各通知の待ちに余裕を持たせる。
 const STALL_TIMEOUT: Duration = Duration::from_secs(120);
 fn receive<T>(receiver: &mpsc::Receiver<T>, flag: &AtomicBool, waiting_for: &str) -> T {
@@ -869,7 +869,7 @@ impl TaskPicker for Picker {
 }
 impl Picker {
     // VM の停止中は次の pick がない場合がある。その場合は出力の完了の取り込みで
-    // 同じ picker に観測を依頼し、Reader の解放後にだけ保持を放す（R30 の停止の観測）。
+    // 同じ picker に観測を依頼し、Reader の解放後にだけ保持を放す。
     fn release_when_stopping(&mut self) {
         if self.blocked.is_some()
             && self.flag.load(Ordering::Relaxed)
@@ -894,7 +894,7 @@ impl TaskPicker for SharedPicker {
 }
 // TODO-025 R13（プロンプト）: Console.write の後の readLine を待つ間に Name: が出ない。
 // stdin の仕事を submit した時点で既に出力済みであることを期待する（設計書 02-09「出力のバッファ」）。
-// 関門: R29 の配線の試験とは重なるが、R30 の個別指示により項目の試験を同じファイルに置く。
+// 関門: 出力の配線の試験と重なるが、この項目の試験も置く。
 #[test]
 fn open_062_r13_prompt_arrives_before_stdin_work_starts() {
     let source = r#"

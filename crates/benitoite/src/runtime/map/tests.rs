@@ -1,9 +1,9 @@
 //! 公開のコレクション操作と独立したモデルの比較（設計書 07-03「ほかの章が求めるテスト（初回リリース版）」）。
 
 // 作成時の関門: 公開 API の順序・永続性・集合演算と、元の鍵の保存を守る。
-// 回転や分割の取り違えは既存の仮置きのテストでは検出できない。
+// 回転や分割の取り違えを、操作の列とモデルの比較で検出する。
 // BTreeMap・BTreeSet を独立した期待値とし、公開の口を増やさない。
-// 大きな木の確保数は R37 が個別に要求する共有の契約として測る。
+// 大きな木の確保数を測り、道筋の外のノードを共有する契約を確かめる（設計書 03-06「Map と Set（初回リリース版）」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -296,7 +296,7 @@ fn key_order_is_lexicographic_for_all_key_kinds_and_rejects_invalid_values() {
                 Ordering::Less,
             ),
         ];
-        // R36: 鍵の辞書式比較は、異なる木の形・内部ノードの境界・長い共通接頭辞を
+        // 鍵の辞書式比較は、異なる木の形・内部ノードの境界・長い共通接頭辞を
         // 要素列で扱う。小さい既存の鍵では Cursor の内部ノードに届かない。
         let count = if cfg!(miri) { 35 } else { 1057 };
         let items: Vec<_> = (0..count).map(Value::Int).collect();
@@ -349,6 +349,249 @@ fn key_order_is_lexicographic_for_all_key_kinds_and_rejects_invalid_values() {
         }
         assert_eq!(compare_keys(ctx, a, b).unwrap(), Ordering::Less);
     });
+}
+
+// 作成時の関門: 共有した鍵の比較を終え、後ろの成分が決める辞書式の順序を守る。
+// 既存の深い構成子は子が一つなので、共有を展開する退行を捕まえない。
+// 組を覚える仕組みが壊れると、共有を指数時間で展開するため、このテストは終わらなくなる。
+// 別に作った等しい鍵と、等しい第 1 欄の後に違う第 2 欄を持つ鍵を公開の比較関数で調べる。
+// 差し込み口は増やさない（設計書 03-06「Map と Set（初回リリース版）」、02-08「組み込みの関数の呼び出し」）。
+#[test]
+fn shared_keys_preserve_lexicographic_order_without_expansion() {
+    let mut heap = Heap::new(HeapConfig::default());
+    heap.epoch(|ctx| {
+        for shape in ["constructor", "list", "map", "set"] {
+            let pair = |a, b| crate::runtime::equal::test_support::pair(ctx, shape, a, b);
+            let grow =
+                |depth, leaf| crate::runtime::equal::test_support::grow(ctx, shape, depth, leaf);
+            let a63 = grow(63, Value::Int(1));
+            let a = pair(a63, a63);
+            let b = pair(grow(63, Value::Int(1)), grow(63, Value::Int(1)));
+            let c = pair(a63, grow(63, Value::Int(2)));
+            for (case, x, y, expected) in [
+                ("equal", a, b, Ordering::Equal),
+                ("late lesser", a, c, Ordering::Less),
+                ("late greater", c, a, Ordering::Greater),
+            ] {
+                assert_eq!(
+                    compare_keys(ctx, x, y).unwrap(),
+                    expected,
+                    "{shape}: {case}"
+                );
+            }
+        }
+    });
+    assert!(heap.take_fault().is_none());
+}
+
+// 作成時の関門: 対数の更新と、道筋の外の共有を公開 API の確保数と独立したモデルで守る。
+// 偏った挿入と最小の鍵の削除で回転の向きの誤りを、集合演算で join の回転の欠落を捕まえる。
+// 平衡の崩れは make の debug_assert! で捕まえるため、デバッグビルドで走らせる。
+// 既存の無作為のテストは鍵が 257 種類で浅く、昇順・降順の更新を含まない。
+// 差し込み口は増やさず、既存の heap.stats() で確保数を観察する
+// （設計書 03-06「Map と Set（初回リリース版）」）。
+#[test]
+fn skewed_workloads_keep_update_paths_logarithmic() {
+    let started = std::time::Instant::now();
+    let count: i64 = if cfg!(feature = "gc-stress") {
+        1 << 12
+    } else {
+        1 << 15
+    };
+    let log = u64::from(count.ilog2() + 1);
+    // Δ = 3 では子の重みは親の 3/4 以下なので、高さ h は
+    // log_(4/3)(n + 1) ≈ 2.41 * log2(n + 1) 以下である。
+    // 挿入は道筋の各段で高々 3 ノードを作り、葉の 1 ノードを加えても 8 * log に収まる。
+    // 削除は祖先・最小の取り出し・join の下りの各道筋をそれぞれ h 以下として、
+    // 高々 9h + 1 ノードを見込む。24 * log はこの上界に余裕を加えた値である。
+    let insert_bound = 8 * log;
+    let remove_bound = 24 * log;
+    for is_map in [true, false] {
+        let mut heap = Heap::new(HeapConfig {
+            stress: false,
+            ..HeapConfig::default()
+        });
+        let mut roots = heap.epoch(|ctx| {
+            let empty = if is_map {
+                Value::EmptyMap
+            } else {
+                Value::EmptySet
+            };
+            vec![ctx.new_slot(empty), ctx.new_slot(empty)]
+        });
+        let mut map_model = BTreeMap::new();
+        let mut set_model = BTreeSet::new();
+        let mut max_insert = 0;
+        for i in 0..count {
+            let n = if is_map { i } else { count - 1 - i };
+            let before = heap.stats().allocations;
+            heap.epoch(|ctx| {
+                let old = ctx.load(&roots[0]);
+                let updated = if is_map {
+                    map_insert(ctx, old, Value::Int(n), Value::Int(-n), "test").unwrap()
+                } else {
+                    set_insert(ctx, old, Value::Int(n), "test").unwrap()
+                };
+                ctx.store(&mut roots[0], updated);
+            });
+            let allocated = heap.stats().allocations - before;
+            max_insert = max_insert.max(allocated);
+            assert!(allocated <= insert_bound, "insert {n}: {allocated} objects");
+            map_model.insert(n, -n);
+            set_model.insert(n);
+        }
+        heap.epoch(|ctx| {
+            let tree = ctx.load(&roots[0]);
+            if is_map {
+                assert_eq!(
+                    contents(ctx, 0, tree),
+                    map_model.iter().map(|(&k, &v)| (k, v)).collect::<Vec<_>>()
+                );
+            } else {
+                assert_eq!(
+                    elements(ctx, 0, tree),
+                    set_model.iter().copied().collect::<Vec<_>>()
+                );
+            }
+            ctx.store(&mut roots[1], tree);
+        });
+        // 回収は段の区切りだけで行う。毎操作では、強制の構成で木全体を何度も辿ってしまう。
+        heap.collect(&roots);
+        let mut max_remove = 0;
+        for n in 0..count / 2 {
+            let before = heap.stats().allocations;
+            heap.epoch(|ctx| {
+                let old = ctx.load(&roots[0]);
+                let updated = if is_map {
+                    map_remove(ctx, old, Value::Int(n)).unwrap()
+                } else {
+                    set_remove(ctx, old, Value::Int(n)).unwrap()
+                };
+                ctx.store(&mut roots[0], updated);
+            });
+            let allocated = heap.stats().allocations - before;
+            max_remove = max_remove.max(allocated);
+            assert!(allocated <= remove_bound, "remove {n}: {allocated} objects");
+            map_model.remove(&n);
+            set_model.remove(&n);
+        }
+        heap.collect(&roots);
+        assert!(heap.take_fault().is_none());
+        heap.epoch(|ctx| {
+            if is_map {
+                assert_eq!(
+                    contents(ctx, 0, ctx.load(&roots[0])),
+                    map_model.iter().map(|(&k, &v)| (k, v)).collect::<Vec<_>>()
+                );
+                assert_eq!(
+                    contents(ctx, 0, ctx.load(&roots[1])),
+                    (0..count).map(|n| (n, -n)).collect::<Vec<_>>()
+                );
+            } else {
+                assert_eq!(
+                    elements(ctx, 0, ctx.load(&roots[0])),
+                    set_model.iter().copied().collect::<Vec<_>>()
+                );
+                assert_eq!(
+                    elements(ctx, 0, ctx.load(&roots[1])),
+                    (0..count).collect::<Vec<_>>()
+                );
+            }
+            ctx.discard(roots);
+        });
+        eprintln!("is_map={is_map}: max insert={max_insert}, max remove={max_remove}");
+    }
+
+    // 4 要素の木と両端の集合の和は join の帰りに回転を要する。挿入の向きも反転する。
+    for (large_count, descending) in [(4i64, false), (4, true), (count, false)] {
+        let mut heap = Heap::new(HeapConfig::default());
+        let large_model: BTreeSet<_> = (0..large_count).collect();
+        let small_model: BTreeSet<_> = if large_count == 4 {
+            [0, 3].into_iter().collect()
+        } else {
+            [
+                0,
+                count / 7,
+                count / 2,
+                count - 1,
+                count,
+                count + 1,
+                count * 2,
+            ]
+            .into_iter()
+            .collect()
+        };
+        let roots = heap.epoch(|ctx| {
+            // 順序を偏らせた挿入で平衡の境界に近い木を作り、join の回転を試す。
+            let mut large = Value::EmptySet;
+            for i in 0..large_count {
+                let n = if descending { large_count - 1 - i } else { i };
+                large = set_insert(ctx, large, Value::Int(n), "test").unwrap();
+            }
+            let small = set_from_sorted(
+                ctx,
+                &small_model
+                    .iter()
+                    .copied()
+                    .map(Value::Int)
+                    .collect::<Vec<_>>(),
+                "test",
+            )
+            .unwrap();
+            vec![ctx.new_slot(large), ctx.new_slot(small)]
+        });
+        for operation in ["union", "intersection", "difference"] {
+            for reverse in [false, true] {
+                let before = heap.stats().allocations;
+                heap.epoch(|ctx| {
+                    let large = ctx.load(&roots[0]);
+                    let small = ctx.load(&roots[1]);
+                    let (a, b, am, bm) = if reverse {
+                        (small, large, &small_model, &large_model)
+                    } else {
+                        (large, small, &large_model, &small_model)
+                    };
+                    let result = if operation == "union" {
+                        set_union(ctx, a, b, "test").unwrap()
+                    } else if operation == "intersection" {
+                        set_intersection(ctx, a, b).unwrap()
+                    } else {
+                        set_difference(ctx, a, b).unwrap()
+                    };
+                    let expected: Vec<_> = if operation == "union" {
+                        am.union(bm).copied().collect()
+                    } else if operation == "intersection" {
+                        am.intersection(bm).copied().collect()
+                    } else {
+                        am.difference(bm).copied().collect()
+                    };
+                    assert_eq!(elements(ctx, 0, result), expected);
+                    assert_eq!(
+                        elements(ctx, 0, large),
+                        large_model.iter().copied().collect::<Vec<_>>()
+                    );
+                    assert_eq!(
+                        elements(ctx, 0, small),
+                        small_model.iter().copied().collect::<Vec<_>>()
+                    );
+                });
+                let allocated = heap.stats().allocations - before;
+                // 既存の和のテストと同じ、少数の分割・join の道筋に余裕を持たせた上限を使う。
+                assert!(
+                    allocated
+                        <= 64
+                            * u64::try_from(small_model.len()).unwrap()
+                            * u64::from(large_count.ilog2() + 1),
+                    "operation={operation}, reverse={reverse}, count={large_count}, descending={descending}: {allocated} objects"
+                );
+                eprintln!(
+                    "operation={operation}, reverse={reverse}, count={large_count}, descending={descending}: allocated={allocated}"
+                );
+            }
+        }
+        heap.epoch(|ctx| ctx.discard(roots));
+    }
+    eprintln!("skewed workloads elapsed: {:?}", started.elapsed());
 }
 
 #[test]

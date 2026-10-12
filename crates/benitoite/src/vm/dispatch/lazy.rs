@@ -7,7 +7,7 @@ use crate::vm::handler::LazyState;
 use crate::vm::task::WaitReason;
 use crate::vm::unwind::{UnwindCause, UnwindStep};
 
-// 通常の呼び出しの経路へ状態の判定と枠の確保を展開しない（実装プラン R22「性能」）。
+// 通常の呼び出しの経路へ状態の判定と枠の確保を展開しない。
 #[cold]
 #[inline(never)]
 pub(super) fn dispatch(
@@ -76,7 +76,7 @@ fn force(
             })
             .ok_or_else(|| missing("Lazy value required"))?;
             // 待ちの間は FORCE の入口を保つ。R[B] は再開後にも読む
-            // （実装プラン 10-09「呼び出しの前の安全点」、設計書 02-08「枠を降ろす原因と処理」）。
+            // （設計書 02-08「枠を降ろす原因と処理」）。
             cursor.locals.save(state.frame_mut()?);
             return tasks::park(state, WaitReason::Lazy);
         }
@@ -123,6 +123,7 @@ fn force(
         .base
         .checked_add(u32::from(instr.a()))
         .ok_or_else(|| missing("lazy return register overflow"))?;
+    let task = state.current_task;
     let segment = state.segment_mut()?;
     let depth =
         u32::try_from(segment.calls.len()).map_err(|_| missing("lazy frame count overflow"))?;
@@ -137,7 +138,11 @@ fn force(
         .pc
         .checked_add(1)
         .ok_or_else(|| missing("pc overflow"))?;
-    let task = state.current_task;
+    let end_index = index(end)?;
+    segment
+        .calls
+        .last()
+        .ok_or_else(|| missing("call frame missing"))?;
     ctx.host_mut::<LazyState, _>(lazy, |data, _| {
         let LazyState::Before { body } = data else {
             return Err(missing("Lazy changed before evaluation"));
@@ -150,14 +155,13 @@ fn force(
         Ok(())
     })
     .ok_or_else(|| missing("Lazy value required"))??;
-    let segment = state.segment_mut()?;
     // 結果がまだ書かれていない呼び出し元として整理できるよう、先に pc を進める。
     // この後、枠と窓を積み終えるまでは安全点を置かない（設計書 02-08「枠を降ろす原因と処理」）。
-    segment
-        .calls
-        .last_mut()
-        .ok_or_else(|| missing("call frame missing"))?
-        .pc = next;
+    // 枠の存在は Lazy を変更する前に確かめた。以後は失敗せず包む枠を積む
+    // （設計書 02-08「明示遅延」）。
+    if let Some(frame) = segment.calls.last_mut() {
+        frame.pc = next;
+    }
     segment.others.push(OtherFrame {
         depth,
         kind: OtherKind::Update {
@@ -165,7 +169,7 @@ fn force(
             at,
         },
     });
-    segment.regs.resize_with(index(end)?, Slot::default);
+    segment.regs.resize_with(end_index, Slot::default);
     segment.calls.push(CallFrame {
         func: ctx.new_slot(body),
         proto: target,
@@ -226,8 +230,7 @@ pub(in crate::vm) fn finish<'e>(
         .ok_or_else(|| missing("Lazy value required"))??;
     if cause != UnwindCause::Stop {
         for task in waiters {
-            // 世代を含む番号と現在の待ちの理由を確かめ、古い知らせで起こさない
-            // （実装プラン R25「待つタスクを知らせで起こすとき」）。
+            // 世代を含む番号と現在の待ちの理由を確かめ、古い知らせで起こさない。
             rt.scheduler.wake_if(task, WaitReason::Lazy);
         }
     }
@@ -235,7 +238,7 @@ pub(in crate::vm) fn finish<'e>(
 }
 
 #[cfg(test)]
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,

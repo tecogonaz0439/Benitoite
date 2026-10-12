@@ -28,7 +28,7 @@ impl InterruptSource for ProcessInterrupt {
 
 impl Drop for ProcessInterrupt {
     fn drop(&mut self) {
-        // 登録の途中の失敗でも、それまでの登録を残さない（実装プラン R28「中断の印」）。
+        // 登録の途中の失敗でも、それまでの登録を残さない。
         for id in self.registrations.drain(..) {
             signal_hook::low_level::unregister(id);
         }

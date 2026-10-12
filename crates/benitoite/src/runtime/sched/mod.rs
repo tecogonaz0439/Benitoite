@@ -23,24 +23,6 @@ pub struct Waiting {
     pub reason: WaitReason,
 }
 
-#[cfg(test)]
-mod tests {
-    // 関門: 二つの種類の番号はそれぞれ進み、相互に計数を変えない（実装プラン R24）。
-    // テストの失敗は panic で表す（実装プラン 00-02）。
-    use super::{ExtOpId, Scheduler, TimerId};
-
-    #[test]
-    fn external_operation_and_timer_numbers_are_independent() {
-        let mut scheduler = Scheduler::default();
-        assert_eq!(scheduler.new_ext_op_id(), ExtOpId(0));
-        assert_eq!(scheduler.new_timer_id(), TimerId(0));
-        assert_eq!(scheduler.new_timer_id(), TimerId(1));
-        assert_eq!(scheduler.new_ext_op_id(), ExtOpId(1));
-        assert_eq!(scheduler.new_ext_op_id(), ExtOpId(2));
-        assert_eq!(scheduler.new_timer_id(), TimerId(2));
-    }
-}
-
 /// スケジューラの状態。
 #[derive(Debug, Default)]
 pub struct Scheduler {
@@ -64,20 +46,20 @@ impl Scheduler {
     pub fn new_ext_op_id(&mut self) -> ExtOpId {
         let id = ExtOpId(self.next_ext_op);
         // 1 ns に一つでも 2^64 個には 500 年以上かかる。一実行で使い切らない前提で
-        // 番号を進める（実装プラン R24「凍結した戻り値で処理系の不具合を扱う方法」）。
+        // 番号を進める。
         self.next_ext_op = self.next_ext_op.wrapping_add(1);
         id
     }
     pub fn new_timer_id(&mut self) -> TimerId {
         let id = TimerId(self.next_timer);
-        // 外部の操作の番号と同じく、一実行で 2^64 個を使い切らない（実装プラン R24）。
+        // 外部の操作の番号と同じく、一実行で 2^64 個を使い切らない。
         self.next_timer = self.next_timer.wrapping_add(1);
         id
     }
     /// 実行中のタスクを待たせる。要求を送り出しの列に公開する前に呼ぶ（02-09「IO 実行器」）。
     pub fn park(&mut self, task: TaskId, reason: WaitReason) {
         if self.check_park(task).is_err() {
-            // VM は check_park を先に通す（実装プラン R25）。
+            // VM は check_park を先に通す。
             debug_assert!(false, "invalid scheduler park");
             return;
         }
@@ -131,8 +113,8 @@ impl Scheduler {
     }
     /// 行き詰まりか: 待ち行列が空で、外部の待ち（`WaitReason::is_external`）で待つタスクもタイマーもなく、
     /// 待つタスクがあるとき（02-08「タスクの切り替え」、02-09「IO 実行器」）。どのタスクも待って
-    /// いない外部の操作の記録と出力の転送は数えないので、ほかの状態は調べない（本章「完了の処理と行き詰まりの
-    /// 判定の順序」の手順 5）。止める手順の途中では、呼び出し側が停止の理由を置き換えない。
+    /// いない外部の操作の記録と出力の転送は数えないので、ほかの状態は調べない（設計書 02-09「IO 実行器」）。
+    /// 止める手順の途中では、呼び出し側が停止の理由を置き換えない。
     pub fn is_deadlocked(&self) -> bool {
         self.ready.is_empty() && !self.waiting.is_empty() && !self.has_external_waits()
     }
@@ -158,7 +140,7 @@ impl Scheduler {
 }
 
 impl Scheduler {
-    // 凍結した park の戻り値では不具合を返せないので、VM が先に照合する（実装プラン R25）。
+    // park の戻り値では不具合を返せないので、VM が先に照合する。
     pub(crate) fn check_park(&self, task: TaskId) -> Result<(), crate::runtime::Stop> {
         if self.waiting.contains_key(&task) || self.ready.contains(&task) {
             Err(crate::vm::state::internal("task already queued or waiting"))
@@ -171,7 +153,7 @@ impl Scheduler {
 #[cfg(test)]
 mod contract_tests {
     // 関門: 古い知らせで別の待ちを解かず、二重の待ちを拒む。単一タスクの実行では
-    // 誤った起こしでも次に進めるため、スケジューラ自身の境界で照合する（実装プラン R25）。
+    // 誤った起こしでも次に進めるため、スケジューラ自身の境界で照合する。
     use super::*;
     use crate::vm::task::TaskEndWait;
     fn task(index: u32) -> TaskId {
@@ -242,7 +224,7 @@ mod contract_tests {
 }
 
 impl Scheduler {
-    /// 二重に park せず、要求の処理で決まった理由へ待ちを移す（実装プラン R26）。
+    /// 二重に park せず、要求の処理で決まった理由へ待ちを移す。
     pub(crate) fn repark(
         &mut self,
         task: TaskId,
@@ -338,5 +320,23 @@ fn resource_wait_key(reason: WaitReason) -> Option<(bool, crate::runtime::heap::
         | WaitReason::TaskEnd(_)
         | WaitReason::Lazy
         | WaitReason::Response => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    // 関門: 二つの種類の番号はそれぞれ進み、相互に計数を変えない。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
+    use super::{ExtOpId, Scheduler, TimerId};
+
+    #[test]
+    fn external_operation_and_timer_numbers_are_independent() {
+        let mut scheduler = Scheduler::default();
+        assert_eq!(scheduler.new_ext_op_id(), ExtOpId(0));
+        assert_eq!(scheduler.new_timer_id(), TimerId(0));
+        assert_eq!(scheduler.new_timer_id(), TimerId(1));
+        assert_eq!(scheduler.new_ext_op_id(), ExtOpId(1));
+        assert_eq!(scheduler.new_ext_op_id(), ExtOpId(2));
+        assert_eq!(scheduler.new_timer_id(), TimerId(2));
     }
 }

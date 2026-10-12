@@ -176,21 +176,6 @@ def result (m : Material) (r : MatchCoverage) : Result :=
   ⟨r.exhaustive, r.uncovered.map (CoverageWitness.show m.display),
     r.unreachable.map (fun (i,j) => ⟨i,j, ((r.coveredBy.find? (·.1 == (i,j))).map Prod.snd).getD []⟩)⟩
 
--- ガード付き分岐だけを分割する。ガードなし分岐の中の先行選択肢は保持する。
-def splitGuarded (arms : List Arm) : List Arm × List (Nat × Option Nat) :=
-  let entries := arms.zipIdx.flatMap fun (arm, i) =>
-    match arm with
-    | .mk alts guard body =>
-        if guard.isSome then alts.zipIdx.map (fun (alt,j) => (.mk [alt] guard body, (i, some j)))
-        else [(arm, (i, none))]
-  (entries.map Prod.fst, entries.map Prod.snd)
-
-def restore (r : Result) (mapping : List (Nat × Option Nat)) : Result :=
-  { r with unreachable := r.unreachable.map fun u =>
-      let (i, j) := (mapping[u.arm]?).getD (u.arm, none)
-      let covered := ((u.coveredBy.map fun k => ((mapping[k]?).getD (k, none)).1).filter (· != i)).eraseDups
-      ⟨i, j.getD u.alt, covered⟩ }
-
 structure FuelCounts where
   matchChecks : Nat := 0
   coveringSingletons : Nat := 0
@@ -257,7 +242,6 @@ structure CaseReport where
   classification : String
   expected : Result
   lean : Result
-  adjusted : Result
   expectedIrrefutable : Bool
   leanIrrefutable : Bool
   expectedIrrefutableWitness : Option String
@@ -275,26 +259,16 @@ def compare (input : Input) : Except String CaseReport := do
   if !typedPat m t p then throw "ill-typed irrefutable pattern"
   let r := checkMatch m.program m.constructors t arms
   let original := result m r
-  let (split, mapping) := splitGuarded arms
-  let sr := checkMatch m.program m.constructors t split
-  let adjusted := restore (result m sr) mapping
   let ir := irrefutable m.program m.constructors t p
   let iw := (checkMatch m.program m.constructors t [.mk [⟨p,[]⟩] none (.ret (.const .unit))]).uncovered.map (CoverageWitness.show m.display)
   let irFuel := usefulReport m.program m.constructors [t] [[p]] [.wild]
   let sameIr := ir == input.irrefutable && iw == input.irrefutableWitness
   let equal := original == input.expected && sameIr
-  -- Q3 で除外できる差は位置と coveredBy に限る。処理系だけの位置は常に不一致。
-  let rustOnly := input.expected.unreachable.any fun u =>
-    !(original.unreachable.any fun v => u.arm == v.arm && u.alt == v.alt)
-  let known := !equal && sameIr && !rustOnly && original.exhaustive == input.expected.exhaustive &&
-    original.uncovered == input.expected.uncovered && adjusted == input.expected
-  let originalFuel ← auditMatch m t arms r
-  let adjustedFuel ← auditMatch m t split sr
-  let fuel := originalFuel.add adjustedFuel
+  let fuel ← auditMatch m t arms r
   let fuel := { fuel with irrefutable := if irFuel.fuelExhausted then 1 else 0 }
   return {
-    name := input.name, classification := (if equal then "matched" else if known then "knownQ3" else "mismatched"),
-    expected := input.expected, lean := original, adjusted := adjusted,
+    name := input.name, classification := (if equal then "matched" else "mismatched"),
+    expected := input.expected, lean := original,
     expectedIrrefutable := input.irrefutable, leanIrrefutable := ir,
     expectedIrrefutableWitness := input.irrefutableWitness, leanIrrefutableWitness := iw,
     extraUnreachable := original.unreachable.filter (fun v => !(input.expected.unreachable.any fun u => u.arm == v.arm && u.alt == v.alt)),
@@ -311,15 +285,9 @@ def run (args : List String) : IO UInt32 := do
   if corpus.cases.length != corpus.randomCases + corpus.boundaryCases || duplicate (corpus.cases.map Input.name) then
     throw (IO.userError "case count/names")
   let mut matched := 0
-  let mut known := 0
   let mut mismatches : Array Json := #[]
-  let mut knownExamples : Array Json := #[]
   let mut fuel : FuelCounts := {}
   let mut fuelExamples : Array Json := #[]
-  let mut extraCases := 0
-  let mut changedCases := 0
-  let mut extraPositions := 0
-  let mut changedPositions := 0
   let mut boundary : Array Json := #[]
   for input in corpus.cases do
     let report ← IO.ofExcept ((compare input).mapError (fun e => s!"{input.name}: {e}"))
@@ -328,23 +296,14 @@ def run (args : List String) : IO UInt32 := do
     if !input.name.startsWith "random/" then boundary := boundary.push (toJson report)
     match report.classification with
     | "matched" => matched := matched + 1
-    | "knownQ3" =>
-        known := known + 1
-        if !report.extraUnreachable.isEmpty then extraCases := extraCases + 1
-        if !report.changedCoveredBy.isEmpty then changedCases := changedCases + 1
-        extraPositions := extraPositions + report.extraUnreachable.length
-        changedPositions := changedPositions + report.changedCoveredBy.length
-        if knownExamples.size < 12 then knownExamples := knownExamples.push (toJson report)
     | _ => mismatches := mismatches.push (Json.mkObj [("input",toJson input), ("report",toJson report)])
   IO.FS.writeFile reportFile ((Json.mkObj [
     ("cases",toJson corpus.cases.length),("randomCases",toJson corpus.randomCases),("boundaryCases",toJson corpus.boundaryCases),
-    ("matched",toJson matched),("knownQ3",toJson known),("mismatched",toJson mismatches.size),
+    ("matched",toJson matched),("mismatched",toJson mismatches.size),
     ("fuelExhausted",toJson fuel.total),("fuel",toJson fuel),
-    ("q3ExtraPositionCases",toJson extraCases),("q3ChangedCoveredByCases",toJson changedCases),
-    ("q3ExtraPositions",toJson extraPositions),("q3ChangedCoveredByPositions",toJson changedPositions),
-    ("knownExamples",.arr knownExamples),("mismatches",.arr mismatches),("fuelExamples",.arr fuelExamples),
+    ("mismatches",.arr mismatches),("fuelExamples",.arr fuelExamples),
     ("boundaryResults",.arr boundary),("kinds",corpus.kinds)]).pretty ++ "\n")
-  IO.println s!"coverageDiff: cases={corpus.cases.length} matched={matched} knownQ3={known} mismatched={mismatches.size} fuelExhausted={fuel.total}"
+  IO.println s!"coverageDiff: cases={corpus.cases.length} matched={matched} mismatched={mismatches.size} fuelExhausted={fuel.total}"
   return if mismatches.isEmpty && fuel.total == 0 then 0 else 1
 
 end CoverageDiff

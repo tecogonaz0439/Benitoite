@@ -53,8 +53,8 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 | `assets/brand/` | ロゴ・アイコン・ワードマークの画像（SVG と PNG）と、作り直す道具（`make_logos.py`）。キャラクターの案 A・B・C の画像は `mascots/`。将来の Web サイトや README に貼るためのもの（`reference/Benitoite-brand/` と `reference/benitoite-mascots/` からの写し。色と書体は `README.md`、キャラクターの案は `mascots/README-ja.txt`） | 画像を手で直さず、`make_logos.py` で作り直す |
 | `fuzz/` | cargo-fuzz のクレート（nightly の Rust を使うので、ワークスペースに含めない） | `scripts/fuzz-short.sh` で実行する |
 | `formal/` | 形式検証の段階 2 の Lean 4 のプロジェクト。コア計算（`docs/design/01-spec/01-12-core-calculus.md`）の形式化した規則と、形式化した範囲の脱糖の規則と網羅性の判定の手順の正。進行と保存・エフェクトの健全性・脱糖の型の保存（性質 1）・網羅性の判定と表層の検査の関数の健全性の定理（`docs/design/07-quality/07-04-formal-semantics.md`） | `formal/` で `lake build` を実行する（`scripts/check.sh` は `formal/` を変えたときだけ選ぶ）。形式化した規則を変えるときは、Lean の定義と 01-12 の写しを同じ変更で直し（判断の理由は改造のディレクトリと 01-12 に書く）、`lake build` が `sorry` なしで通ることを確かめる。構文・型の規則・脱糖を変える改造は、07-04「01-12 との対応」の決まりに従い、形式化した範囲の内側なら処理系より先に Lean の定義と性質 1 の証明を直し、範囲の外なら同節の表に「対象外」として書き足す |
-| `scripts/` | `check.sh`（完了条件の共通の検査。変更に応じて検査を選ぶ。`--full` で全体の検査）、`check-heap.sh`（nightly の Rust が要る検査と時間のかかる検査）、`check-formal.sh`（形式化の検査。`lake build` と、脱糖・網羅性の判定についての Lean と処理系の差分テスト、型検査の出力の Lean での検査）、`fuzz-seed.sh`・`fuzz-short.sh`（fuzzing） | 作業を取り込む前に `check.sh` を通す（選び方は 07-03「実装の規約と静的な検査」）。形式化した範囲に触れる改造（構文・型の規則・脱糖。07-04「01-12 との対応」）は、`check-formal.sh` も通す。`check.sh` は `runtime::heap` を変えたときに `check-heap.sh` も走らせる。全体の検査（`--full`）は、リリースの前と設計者が指示したときに行う |
-| `.claude/skills/` | プロジェクト固有のスキル（`git-workflow`、`test-audit`、`benchmark`、`skill-eval`） | `.agents/skills/` にシンボリックリンクを置く |
+| `scripts/` | `check.sh`（完了条件の共通の検査。変更に応じて検査を選ぶ。`--full` で全体の検査）、`check-heap.sh`（nightly の Rust が要る検査と時間のかかる検査）、`check-formal.sh`（形式化の検査。`lake build` と、脱糖・網羅性の判定についての Lean と処理系の差分テスト、型検査の出力の Lean での検査）、`fuzz-seed.sh`・`fuzz-short.sh`（fuzzing） | 作業を取り込む前に `check.sh` を通す（選び方は 07-03「実装の規約と静的な検査」）。形式化した範囲に触れる改造（構文・型の規則・脱糖。07-04「01-12 との対応」）は、`check-formal.sh` も通す。`check.sh` は `runtime::heap` を変えたときに `check-heap.sh` も走らせる。既定の構成のライブラリのテスト（`default_lib`）は、`--only default_lib`・`--full`・`src/runtime/heap/` の変更で走らせる。全体の検査（`--full`）は、リリースの前と設計者が指示したときに行う |
+| `.claude/skills/` | プロジェクト固有のスキル（`git-workflow`、`test-audit`、`benchmark`、`skill-eval`、`clean-build`、`archive-and-bundle`） | `.agents/skills/` にシンボリックリンクを置く。ビルドの生成物の片付けは `clean-build`、ソースのアーカイブとブランチの bundle は `archive-and-bundle` に従う |
 | `.claude/agents/` | 実装を担うサブエージェントの定義（`impl-medium`、`impl-low`。最小実行版の実装プランに従う担当） | オーケストレータが起動する |
 
 ## 設計書の規約
@@ -188,7 +188,7 @@ C01・C02 は、`docs/archive/2026-10-09-implement-first-release/tools/extract_i
 
 ### `unsafe` の書き方
 
-- `unsafe` を書いてよいのは、`runtime::heap` の内部の層だけである（[リポジトリとクレートの配置](docs/archive/2026-10-09-implement-first-release/00-common/00-01-repository-layout.md)の「`unsafe` を書いてよいモジュール」）。処理系の本体の外の例外として、テストのバイナリ `tests/call_allocations.rs` の確保を数える確保器にだけ書いてよい（後述の「`#[allow]` を書いてよい箇所」）。
+- `unsafe` を書いてよいのは、`runtime::heap` の内部の層（`src/runtime/heap/core.rs` と `src/runtime/heap/core/` の直下の Rust ファイル）だけである。`scripts/check.sh` は許可の属性を書いた場所を、`unsafe_code` の語を単語として探して確かめる。子のモジュールへの属性の継承や、`#[path]` で指定した子のファイルの場所は確かめない。処理系の本体の外の例外として、テストのバイナリ `tests/call_allocations.rs` の確保を数える確保器にだけ書いてよい（後述の「`#[allow]` を書いてよい箇所」）。
 - `unsafe` のブロックは、操作を一つだけ含め、直前に `// SAFETY:` のコメントで、その操作が前提とする不変条件と、それがなぜ成り立つかを書く（lint が形だけを確かめ、中身は確認の観点で読む）。
 - 内部の層の各ファイルの先頭の `//!` のコメントに、そのファイルが守る不変条件の一覧を書く。`// SAFETY:` のコメントは、その一覧の項目を名指しして引く。
 - `unsafe fn` を公開の層に出さない。内部の層の `unsafe fn` には、呼び出し側が守る条件を `/// # Safety` の節で書く。
@@ -223,8 +223,10 @@ C01・C02 は、`docs/archive/2026-10-09-implement-first-release/tools/extract_i
 
 - panic hook の記録（02-09「panic 境界」がスレッドローカルな記憶域を指定した。`runtime/panic.rs`）。
 - 解放の回数の計数（07-02「測る項目」）。機能 `alloc-stats` を有効にしたビルドでだけ、`thread_local!` の計数器で数える。既定のビルドには含めない。
-- 初回リリース版の中断の印（02-09「中断の要求」。`crates/benitoite/src/runtime/run/interrupt.rs`）。`SIGINT`・`SIGTERM` を受けたことを、プロセス全体で一つの原子的な真偽値で表す。印を書くのはシグナルの登録の仕組みだけ、読むのは VM の実行の区切りだけである。
+- 初回リリース版の中断の印（02-09「中断の要求」。`crates/benitoite/src/runtime/run/interrupt.rs`）。`SIGINT`・`SIGTERM` を受けたことを、プロセス全体で一つの原子的な真偽値で表す。印を書くのはシグナルの登録の仕組みだけ、読むのは、VM の実行の区切り、ランタイムが実行を終えるとき（一度）、テストの実行器がファイルとテストを始める前だけである。
 - ヒープの番号を割り当てる計数器（プロセスで一つの `AtomicU32`）。`Heap::new` だけが増やす（[02-09「メモリの管理」](docs/design/02-impl/02-09-runtime.md)、10-08「根の保存領域」）。
+
+この規約は処理系のコードに当てはまる。依存のクレートが内部に持つ大域の状態は例外の一覧に加えず、[03-01「使う Rust のクレート」](docs/design/03-interop/03-01-library-structure.md#使う-rust-のクレート)に書く。
 
 ヒープは実行ごとに持ち、大域の確保器の状態を作らない。回収の要求と予算は実行ごとの状態に置く。
 
@@ -233,9 +235,11 @@ C01・C02 は、`docs/archive/2026-10-09-implement-first-release/tools/extract_i
 最小実行版の規約のとおりとする。
 
 - AST と、AST から作る中間表現を辿る処理は、再帰で書いてよい。
+- 再帰で辿る振り分けの関数は、大きな分岐の中身を `#[inline(never)]` の補助の関数に分け、誤りのときだけ通る処理を `#[cold]` と `#[inline(never)]` の関数に出す。文の並びや `Let` の連なりのように長さで積み重なるものは、ループで下りる（[02-01「関数の呼び出しと処理系のスタック」](docs/design/02-impl/02-01-pipeline.md)）。
 - 実行時の値を辿る処理（構造の `==`、マーク、参照カウントの解放の連鎖、到達可能性の計算、リストの走査）は、明示の積み重ね（`Vec`）で書く。
 - 言語の関数の呼び出しで Rust の関数を入れ子に呼ばない（[02-01「関数の呼び出しと処理系のスタック」](docs/design/02-impl/02-01-pipeline.md)）。VM と参照インタプリタの両方に適用する。
 - 処理系のテストは、深い入れ子と長いリストの場合を含める。スレッドのスタックの大きさを変えてテストを通すことはしない。
+  - 例外: 入れ子の上限の深さで段を通すテスト（`pipeline` の `stages_fit_the_measured_stack_` で始まるテスト）は、16 MiB のスタックのスレッドで行う。上限の深さで最も多くを要する形が、最適化しないビルドで約 12.8 MiB を要するためである（02-01「関数の呼び出しと処理系のスタック」）。大きさは測って決め（`examples/stack_probe.rs`）、枠が大きくなる退行を捕まえられるよう、本番の段のスレッド（64 MiB）より小さく保つ。
 
 ### 数値の変換
 
@@ -243,16 +247,15 @@ C01・C02 は、`docs/archive/2026-10-09-implement-first-release/tools/extract_i
 
 ### `#[allow]` を書いてよい箇所
 
-lint を個別に許す `#[allow(...)]` は、次の箇所だけに書き、許す理由をコメントで書く。最小実行版の表からの変更は、`runtime::heap` の内部の層の行と `todo!()` の仮置きの行を加え、`src/lib.rs` の行を作業の途中の間だけに限ったことである。
+lint を個別に許す `#[allow(...)]` は、次の箇所だけに書き、許す理由をコメントで書く。最小実行版の表からの変更は、`runtime::heap` の内部の層の行と `todo!()` の仮置きの行を加え、`src/lib.rs` の `dead_code` の行を除いたことである。
 
 | 箇所 | 許す lint | 理由 |
 |---|---|---|
-| `src/runtime/heap/` の内部の層のファイル（10-08 がファイルを指定する） | `unsafe_code` | 確保器と生のポインタを扱う（02-09「メモリの管理」）。公開の層のファイルには書かない |
-| `src/lib.rs` | `dead_code` | 作業の途中では、後の作業が使う欄が読まれない。C01 で置き、U1・U2 を終えた後に外す（90-after-completion の「移行の締めの残り」） |
+| `src/runtime/heap/core.rs` と `src/runtime/heap/core/` の直下の Rust ファイル（`scripts/check.sh` は許可の属性を書いた場所を単語で調べ、子のモジュールへの継承は確かめない） | `unsafe_code` | 確保器と生のポインタを扱う（02-09「メモリの管理」）。公開の層のファイルには書かない |
 | `docs/archive/2026-10-09-implement-first-release/tools/extract_interfaces.py place` が `todo!()` の仮置きを置いたファイルの先頭（道具が置く。前述の「`todo!()` の仮置き」） | `clippy::todo`・`unused_variables` | 後の作業が本体を書くまで、置いた直後のクレートをコンパイルでき lint を通るようにする。そのファイルの `todo!()` をすべて書き換えた作業が消す |
-| テストのモジュール（`#[cfg(test)] mod tests`）と `tests/` の各ファイル | `clippy::unwrap_used`・`clippy::expect_used`・`clippy::panic`・`clippy::indexing_slicing`・`clippy::arithmetic_side_effects` | テストの失敗は panic で表す |
+| テストのビルドだけのモジュール（`#[cfg(test)]` を付けたモジュール。`mod tests`・`test_support` など）と `tests/` の各ファイル | `clippy::unwrap_used`・`clippy::expect_used`・`clippy::panic`・`clippy::indexing_slicing`・`clippy::arithmetic_side_effects` | テストの失敗は panic で表す |
 | `tests/call_allocations.rs`（R15 の、普通の呼び出しと戻りで確保がないことを確かめるテスト） | `unsafe_code` | 確保を数える `#[global_allocator]` は `unsafe impl GlobalAlloc` を要する。中身は `std::alloc::System` へ委ねて数えるだけとする（[07-02「性能の関門」](docs/design/07-quality/07-02-performance.md)） |
-| `src/cli/`、IO 実行器、`src/runtime/run.rs` の第 1 段の IoServices を包む型（R26 が IO 実行器へ移す）の `BENITOITE_DEV_PANIC` の処理 | `clippy::panic` | 処理系の不具合の報告をテストするために、意図して panic を起こす |
+| `src/cli/mod.rs` と IO 実行器（`src/runtime/io/services.rs`）の `BENITOITE_DEV_PANIC` の処理 | `clippy::panic` | 処理系の不具合の報告をテストするために、意図して panic を起こす |
 | `src/bytecode/program.rs` の `assert_shareable` | `dead_code` | 呼ばれない関数で、型の性質をコンパイルの時点で確かめる |
 
 振り分けのループで範囲の確かめを省くための `unsafe` は許さない（[02-08「実行の手順」](docs/design/02-impl/02-08-vm.md)）。表にない箇所で許す必要が生じたら、作業を止めて報告する。
@@ -265,7 +268,8 @@ lint を個別に許す `#[allow(...)]` は、次の箇所だけに書き、許�
 
 - 識別子は英語で書く。コメントは日本語で書く。コメントは「何をするか」より「なぜそうするか」を書き、根拠になる設計書の章と節を `（設計書 02-08「実行の手順」）` の形で示す。
 - 各モジュールの先頭に `//!` のコメントを置き、そのモジュールの役割と、対応する設計書の章を書く。
-- 公開の関数と型には `///` のコメントを書く。10-interfaces のコメントはそのまま残す。
+- 公開の関数と型には `///` のコメントを書く。
+- コメントに、保管した実装プラン（`docs/archive/`）の節や作業の ID（R21、F10 など）を引かない。根拠は今の設計書の節か、本書の節で示す。
 
 ## Agent Skills の運用
 

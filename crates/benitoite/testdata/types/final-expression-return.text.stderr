@@ -1,0 +1,12 @@
+error[E0416]: the value of this expression is not used
+  --> testdata/types/final-expression-return.bnt:4:3
+   |
+ 4 |   y * 2
+   |   ^^^^^ this has type `Integer`, not `Unit`
+   |
+   = help: write `return` to return this value from the function
+   |
+ 4 |   return y * 2
+   |   ~~~~~~~
+
+error: could not check testdata/types/final-expression-return.bnt due to 1 previous error

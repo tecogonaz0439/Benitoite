@@ -3,18 +3,18 @@
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::builtins::iface::{IoCtx, IoReply, IoWait, Lend, WorkerWait};
 use crate::builtins::table::tags;
-use crate::runtime::Stop;
 use crate::runtime::heap::CheckedLen;
 use crate::runtime::heap::FieldsKind;
 use crate::runtime::heap::Value;
 use crate::runtime::io::services::ProcessStdio;
+use crate::runtime::{MAX_STRING_BYTES, SizeUnit, Stop};
 use std::io::{self, Read, Write};
 use std::os::unix::process::ExitStatusExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus, Stdio};
 
 builtin! {
-    /// `Benitoite.IO.Process.arguments` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.Process.arguments` の本体。
     name = "Benitoite.IO.Process.arguments",
     io fn arguments(ctx) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -38,7 +38,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Process.exit` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.Process.exit` の本体。
     name = "Benitoite.IO.Process.exit",
     io fn exit(ctx, code: i64) -> IoReply<'e> {
         let _ = ctx;
@@ -52,7 +52,7 @@ builtin! {
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[arguments::DECL, exit::DECL];
 
 #[cfg(test)]
@@ -61,7 +61,7 @@ mod external_tests;
 mod tests;
 
 builtin! {
-    /// `Benitoite.IO.Process.scriptDirectory` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Process.scriptDirectory` の本体。
     name = "Benitoite.IO.Process.scriptDirectory",
     io fn script_directory(ctx) -> crate::builtins::iface::IoReply<'e> {
         let mut ctx = ctx;
@@ -72,7 +72,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Process.environmentVariable` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Process.environmentVariable` の本体。
     name = "Benitoite.IO.Process.environmentVariable",
     io fn environment_variable(ctx, arg0: Value<'e>) -> crate::builtins::iface::IoReply<'e> {
         let mut ctx = ctx;
@@ -98,7 +98,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Process.workingDirectory` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Process.workingDirectory` の本体。
     name = "Benitoite.IO.Process.workingDirectory",
     io fn working_directory(ctx) -> crate::builtins::iface::IoReply<'e> {
         let mut ctx = ctx;
@@ -113,7 +113,8 @@ builtin! {
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const ENVIRONMENT_DECLS: &[BuiltinDecl] = &[
     script_directory::DECL,
     environment_variable::DECL,
@@ -136,7 +137,7 @@ builtin! {
         let mut ctx = ctx;
         let command = read_command(&mut ctx, arg0)?;
         Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
-            Lend::Nothing, move |_| execute(command, ProcessStdio::default()), run_done,
+            Lend::Nothing, move |_| execute(command, ProcessStdio::default(), MAX_STRING_BYTES), run_done,
         ))))
     }
 }
@@ -155,7 +156,7 @@ builtin! {
             .ok_or_else(|| Stop::Internal("Process.runAttached requires runtime view".into()))?
             .rt.process_stdio;
         Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
-            Lend::Nothing, move |_| execute(command, stdio), attached_done,
+            Lend::Nothing, move |_| execute(command, stdio, MAX_STRING_BYTES), attached_done,
         ).after_output_flush())))
     }
 }
@@ -176,15 +177,16 @@ builtin! {
             input: None,
         };
         Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
-            Lend::Nothing, move |_| execute(command, ProcessStdio::default()), shell_done,
+            Lend::Nothing, move |_| execute(command, ProcessStdio::default(), MAX_STRING_BYTES), shell_done,
         ))))
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const RUN_DECLS: &[BuiltinDecl] = &[run::DECL, run_attached::DECL, shell::DECL];
 
-// 欄は宣言順で扱う。位置を一箇所に集める（実装プラン 10-15「レコードの値の作り方」）。
+// 欄は宣言順で扱う。位置を一箇所に集める（設計書 02-06「脱糖」）。
 mod command_fields {
     pub const PROGRAM: u32 = 0;
     pub const ARGUMENTS: u32 = 1;
@@ -270,6 +272,7 @@ fn read_command<'e>(ctx: &mut IoCtx<'_, 'e>, command: Value<'e>) -> Result<Owned
 fn execute(
     command: OwnedCommand,
     stdio: ProcessStdio,
+    limit: u64,
 ) -> Result<CommandOutput, super::file::IoFailure> {
     if command.program.contains('\0')
         || command.arguments.iter().any(|arg| arg.contains('\0'))
@@ -311,7 +314,7 @@ fn execute(
         .spawn()?;
     std::thread::scope(|scope| {
         // 入力と二つの出力を同時に進める。片方のパイプの満杯でほかも止まるのを防ぐ
-        // （設計書 03-07「Process」、実装プラン L13）。子は取り消しでも終わらせない。
+        // （設計書 03-07「Process」）。子は取り消しでも終わらせない。
         let input = command
             .input
             .zip(child.stdin.take())
@@ -327,10 +330,12 @@ fn execute(
                 })
             });
         let stdout = child.stdout.take().map(|mut pipe| {
-            std::thread::Builder::new().spawn_scoped(scope, move || collect_output(&mut pipe))
+            std::thread::Builder::new()
+                .spawn_scoped(scope, move || collect_output(&mut pipe, limit))
         });
         let stderr = child.stderr.take().map(|mut pipe| {
-            std::thread::Builder::new().spawn_scoped(scope, move || collect_output(&mut pipe))
+            std::thread::Builder::new()
+                .spawn_scoped(scope, move || collect_output(&mut pipe, limit))
         });
         let status = child.wait();
         // エラーの有無によらずすべて join し、パイプを使う仕事を残さない。
@@ -360,26 +365,16 @@ fn join_pipe<T>(
 
 /// EOF まで待つため、孫プロセスが出力のパイプを持ち続けると、子が終わっても run は返らない。
 /// Rust の Command::output と同じ性質である（設計書 03-07「Process」の出力の収集）。
-fn collect_output(reader: &mut impl Read) -> Result<Vec<u8>, super::file::IoFailure> {
-    let bytes = super::file::read_all_limited(reader)?;
+fn collect_output(reader: &mut impl Read, limit: u64) -> Result<Vec<u8>, super::file::IoFailure> {
+    let bytes = super::file::read_all_limited(reader, limit)?;
     // 上限を超えても EOF まで読み捨てる。子が満杯のパイプで止まらずに終わるためである。
     io::copy(reader, &mut io::sink())?;
     Ok(bytes)
 }
 
-fn check_output(output: &CommandOutput, function: &'static str) -> Result<(), Stop> {
-    if super::count(output.stdout.len())? > crate::runtime::MAX_STRING_BYTES
-        || super::count(output.stderr.len())? > crate::runtime::MAX_STRING_BYTES
-    {
-        return Err(Stop::Resource(
-            crate::runtime::ResourceError::InputTooLarge {
-                function,
-                unit: crate::runtime::SizeUnit::Bytes,
-                limit: crate::runtime::MAX_STRING_BYTES,
-            },
-        ));
-    }
-    Ok(())
+fn check_output(output: &CommandOutput, function: &'static str, limit: u64) -> Result<(), Stop> {
+    super::file::check_input_size(output.stdout.len(), limit, SizeUnit::Bytes, function)?;
+    super::file::check_input_size(output.stderr.len(), limit, SizeUnit::Bytes, function)
 }
 
 fn exit_code(status: ExitStatus) -> Result<i64, Stop> {
@@ -402,7 +397,7 @@ fn complete_output<'c, 'e>(
         Ok(output) => output,
         Err(error) => return super::file::result_error(ctx, error, function),
     };
-    check_output(&output, function)?;
+    check_output(&output, function, MAX_STRING_BYTES)?;
     let (Ok(stdout), Ok(stderr)) = (
         std::str::from_utf8(&output.stdout),
         std::str::from_utf8(&output.stderr),
@@ -413,7 +408,7 @@ fn complete_output<'c, 'e>(
             function,
         );
     };
-    // 全出力を検査してから宣言順でレコードを作る（実装プラン 10-15「レコードの値の作り方」）。
+    // 全出力を検査してから宣言順でレコードを作る（設計書 02-06「脱糖」）。
     let fields = [
         Value::Int(exit_code(output.status)?),
         ctx.alloc_str(stdout, function)?,
@@ -449,8 +444,8 @@ fn attached_done<'c, 'e>(
         Ok(output) => output,
         Err(error) => return super::file::result_error(ctx, error, FUNCTION),
     };
-    check_output(&output, FUNCTION)?;
-    // 完了は待てない。容量待ちになっても預けた書き込みの順は保たれる（実装プラン 10-16）。
+    check_output(&output, FUNCTION, MAX_STRING_BYTES)?;
+    // 完了は待てない。容量待ちになっても預けた書き込みの順は保たれる。
     for (stream, bytes) in [
         (crate::runtime::Stream::Stdout, output.stdout),
         (crate::runtime::Stream::Stderr, output.stderr),

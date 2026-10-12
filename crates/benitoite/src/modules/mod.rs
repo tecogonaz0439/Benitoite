@@ -66,7 +66,7 @@ pub struct ModuleTable {
 }
 
 /// 処理系に埋め込んだ標準ライブラリのモジュール一つ（02-04「標準ライブラリのソースの持ち方」）。
-/// 表は 10-14 が `prelude` モジュールに置く。
+/// 表は `prelude` モジュールに置く。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct StdlibModuleSource {
     /// `Benitoite` を除いたモジュールの名前の段（`&["IO", "Console"]`）。ソースは標準ライブラリの根の下の
@@ -137,7 +137,11 @@ pub struct RealFs;
 
 impl ModuleFs for RealFs {
     fn read_file(&self, path: &Path) -> io::Result<Vec<u8>> {
-        std::fs::read(path)
+        crate::base::file_read::read_regular_file(
+            path,
+            crate::base::source::MAX_SOURCE_BYTES,
+            false,
+        )
     }
     fn list_dir(&self, dir: &Path) -> io::Result<Vec<DirEntryName>> {
         let mut entries = Vec::new();

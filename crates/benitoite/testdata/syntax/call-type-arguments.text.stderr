@@ -1,0 +1,11 @@
+error[E0201]: expected a newline or the end of the block, found `[`
+  --> testdata/syntax/call-type-arguments.bnt:3:22
+   |
+ 3 |   bind m <- Map.empty[String, Integer]()
+   |                      ^ unexpected `[`
+   |
+   = help: call functions without type arguments, such as `Map.empty()`; write the type on the binding, such as `bind m: Map[String, Integer] <- Map.empty()`, and use `List.get` to read list elements
+   |
+ 3 |   bind m <- Map.empty()
+
+error: could not check testdata/syntax/call-type-arguments.bnt due to 1 previous error

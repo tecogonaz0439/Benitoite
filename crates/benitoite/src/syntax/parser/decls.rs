@@ -198,7 +198,7 @@ fn alias_ahead(p: &Parser) -> bool {
     p.tokens.get(index).is_some_and(|t| t.kind == TokenKind::Eq)
 }
 
-/// メソッドと操作もこのシグネチャの読み方を共有する。F04 は必要な欄を各ノードへ移す。
+/// メソッドと操作もこのシグネチャの読み方を共有する。必要な欄を各ノードへ移す。
 pub(super) struct Signature {
     pub(super) name: Name,
     pub(super) type_params: Vec<TypeParamDecl>,
@@ -249,7 +249,7 @@ pub(super) fn parse_signature(p: &mut Parser, depth: u32) -> PResult<Signature> 
     let params = parse_params(p, depth, false)?;
     foreign::return_arrow(p)?;
     let ret = types::parse_type(p, child(depth))?;
-    let uses = types::parse_uses(p, depth)?;
+    let uses = types::parse_uses(p, depth, None)?;
     Ok(Signature {
         name,
         type_params,

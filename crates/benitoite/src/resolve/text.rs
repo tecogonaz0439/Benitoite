@@ -1,5 +1,5 @@
 //! 種類の合わない名前（E0304）の `{found_kind}` と `{expected_kind}` に埋める種類の呼び名
-//! （実装プラン 00-02「文言」）。診断の型板そのものは `diag::codes` の表にある。
+//! （AGENTS.md「実装の規約」の「文言」）。診断の型板そのものは `diag::codes` の表にある。
 
 pub(super) const TYPE: &str = "a type";
 pub(super) const MODULE: &str = "a module";
@@ -22,3 +22,11 @@ pub(super) const PATTERN_VAR: &str = "pattern variable";
 pub(super) const CLAUSE_PARAM: &str = "handler clause parameter";
 pub(super) const WITH_VAR: &str = "with binding";
 pub(super) const NAMESPACE: &str = "a namespace";
+
+// 注記では冠詞を型板が持つため、種類の名だけを渡す（設計書 02-04「名前の引き方」）。
+pub(super) const MODULE_NAME: &str = "module";
+pub(super) const NAMESPACE_NAME: &str = "namespace";
+pub(super) const CONSTRUCTOR_NAME: &str = "constructor";
+pub(super) const TYPE_PARAMETER_NAME: &str = "type parameter";
+pub(super) const EFFECT_VARIABLE_NAME: &str = "effect variable";
+pub(super) const VALUE_NAME: &str = "value";

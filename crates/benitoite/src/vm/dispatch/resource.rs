@@ -26,11 +26,12 @@ pub(super) fn dispatch(
             .as_resource()
             .ok_or_else(|| missing("USE requires a resource"))?;
             state.resources.check_release(resource)?;
-            if !state.meter.fits(1, 0) {
-                return Err(Stop::Resource(ResourceError::CallStackTooDeep {
-                    frames: state.meter.frames(),
-                }));
-            }
+            state.resources.mark_with_bound(resource);
+            let fits = state.meter.fits(1, 0);
+            let frames = state.meter.frames();
+            // 上限でも解放の枠を残し、停止時にバッファと解放の失敗を失わない
+            // 枠を積む命令のうち USE だけの例外である（設計書 01-10「解放の時期と順序」「解放の失敗」、
+            // 02-08「呼び出しの入れ子の上限」）。
             state.segment_mut()?.others.push(OtherFrame {
                 depth,
                 kind: OtherKind::Release {
@@ -42,7 +43,11 @@ pub(super) fn dispatch(
                 },
             });
             state.meter.grow(1, 0);
-            Ok(Control::Next)
+            if fits {
+                Ok(Control::Next)
+            } else {
+                Err(Stop::Resource(ResourceError::CallStackTooDeep { frames }))
+            }
         }
         Some(Opcode::Release) => {
             let position = state
@@ -75,7 +80,7 @@ pub(super) fn dispatch(
                 }
                 result => {
                     // 待ちと失敗では同じ枠を元の位置に保つ。pc は命令の入口なので、
-                    // 再開後は RELEASE を初めから実行する（実装プラン R24、設計書 02-08「枠を降ろす原因と処理」）。
+                    // 再開後は RELEASE を初めから実行する（設計書 02-08「枠を降ろす原因と処理」）。
                     state.segment_mut()?.others.insert(position, other);
                     match result {
                         Ok(UnwindStep::Wait(reason)) => {
@@ -120,8 +125,8 @@ pub(in crate::vm) fn release_failure(
     }
 }
 
-// R39 で共通の取り消しの入口へ接続した。Return で待つ間に Cancel へ変わった場合にも
-// 子を調べ直して取り消す（実装プラン R24・R39、設計書 02-08「取り消し」）。
+// 共通の取り消しの入口を使う。Return で待つ間に Cancel へ変わった場合にも
+// 子を調べ直して取り消す（設計書 02-08「取り消し」）。
 pub(in crate::vm) fn cancel_group_children(
     ctx: &mut NoGcCtx<'_>,
     state: &mut RunState,

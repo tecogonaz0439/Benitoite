@@ -10,12 +10,56 @@ use benitoite::types::builtin::{BuiltinTypeClass, BuiltinTypeId};
 use benitoite::types::{
     self, ConstValue, DictExpr, EffectName, EffectSet, Scheme, Ty, TyCon, TyHead, TypeArg, TypeArgs,
 };
+use serde_core::ser::{Serialize, SerializeMap, SerializeSeq, Serializer};
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 
 #[path = "builtins.rs"]
 mod builtin_export;
 pub use builtin_export::{builtin_tables, complete_stdlib};
+
+// arbitrary_precision なしの Value は Decimal の 96 ビットの仮数を保持できない。
+// 材料では文字列に保持し、交換形式の書き出し時だけ i128 の整数として書く。
+// Lean が読む mantissa の型と数の精度を変えない（設計書 07-04「01-12 との対応」）。
+struct ExchangeJson<'a>(&'a Value);
+
+impl Serialize for ExchangeJson<'_> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        match self.0 {
+            Value::Object(object) => {
+                let mut output = serializer.serialize_map(Some(object.len()))?;
+                for (key, value) in object {
+                    if key == "mantissa"
+                        && let Value::String(value) = value
+                    {
+                        let number = value
+                            .parse::<i128>()
+                            .map_err(serde_core::ser::Error::custom)?;
+                        output.serialize_entry(key, &number)?;
+                    } else {
+                        output.serialize_entry(key, &ExchangeJson(value))?;
+                    }
+                }
+                output.end()
+            }
+            Value::Array(array) => {
+                let mut output = serializer.serialize_seq(Some(array.len()))?;
+                for value in array {
+                    output.serialize_element(&ExchangeJson(value))?;
+                }
+                output.end()
+            }
+            Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => {
+                self.0.serialize(serializer)
+            }
+        }
+    }
+}
+
+/// Decimal の仮数を整数のまま書く、交換形式のバイト列。
+pub(super) fn to_vec(value: &Value) -> serde_json::Result<Vec<u8>> {
+    serde_json::to_vec(&ExchangeJson(value))
+}
 
 fn tagged(tag: &str, fields: Value) -> Value {
     json!({tag:fields})
@@ -91,7 +135,7 @@ fn constant(v: &ConstValue) -> Value {
         ConstValue::Boolean(value) => tagged("boolean", json!({"value":value})),
         ConstValue::Decimal(value) => tagged(
             "decimal",
-            json!({"mantissa":value.mantissa(),"scale":value.scale()}),
+            json!({"mantissa":value.mantissa().to_string(),"scale":value.scale()}),
         ),
         ConstValue::Unit => json!("unit"),
         ConstValue::Byte(_)
@@ -194,10 +238,6 @@ struct Surface<'a> {
     closed_constant: bool,
     outside: BTreeSet<String>,
     return_ty: Option<Ty>,
-    placeholder_argument: bool,
-    placeholder_clause_depth: Option<usize>,
-    guard_clause_depth: Option<usize>,
-    known_differences: BTreeSet<String>,
     clause_types: Vec<(NodeId, usize)>,
     type_order: Vec<usize>,
     // [対象箇所数, 元の注釈が R と異なる箇所数]。対象外の関数も含む。
@@ -213,10 +253,6 @@ impl Surface<'_> {
             closed_constant: false,
             outside: BTreeSet::new(),
             return_ty: ret,
-            placeholder_argument: false,
-            placeholder_clause_depth: None,
-            guard_clause_depth: None,
-            known_differences: BTreeSet::new(),
             clause_types: Vec::new(),
             type_order,
             annotations: BTreeMap::new(),
@@ -790,7 +826,7 @@ impl Surface<'_> {
                     assert_eq!(value.scale(), positive.scale());
                     return tagged(
                         "negDecimal",
-                        json!({"mantissa":positive.mantissa(),"scale":positive.scale()}),
+                        json!({"mantissa":positive.mantissa().to_string(),"scale":positive.scale()}),
                     );
                 }
                 if v.op == a::UnOp::Neg
@@ -902,8 +938,6 @@ impl Surface<'_> {
                         .map(|p| SurfaceSlot::Local(self.declaration(p.id))),
                 );
                 let saved_ret = self.return_ty.replace(f.ret.clone());
-                let saved_argument = std::mem::replace(&mut self.placeholder_argument, false);
-                let saved_depth = self.placeholder_clause_depth.take();
                 for slot in &mut local {
                     if *slot == SurfaceSlot::Continuation {
                         *slot = SurfaceSlot::Ignored;
@@ -911,8 +945,6 @@ impl Surface<'_> {
                 }
                 let body = self.block(&v.body, &local, Position::Tail);
                 self.return_ty = saved_ret;
-                self.placeholder_argument = saved_argument;
-                self.placeholder_clause_depth = saved_depth;
                 tagged(
                     "lam",
                     json!({"params":params,"ret":ret,"eff":eff(effects),"body":body}),
@@ -958,12 +990,7 @@ impl Surface<'_> {
                         }
                         let mut local = env.to_vec();
                         local.extend(first.into_iter().map(SurfaceSlot::Local));
-                        let guard = arm.guard.as_ref().map(|g| {
-                            let saved = self.guard_clause_depth.replace(self.clause_types.len());
-                            let guard = self.expr(g, &local);
-                            self.guard_clause_depth = saved;
-                            guard
-                        });
+                        let guard = arm.guard.as_ref().map(|g| self.expr(g, &local));
                         let body = self.block(&arm.body, &local, position);
                         tagged("mk", json!({"alts":alts,"guard":guard,"body":body}))
                     })
@@ -1059,9 +1086,6 @@ impl Surface<'_> {
                 }
             }
             a::Expr::Try(v) => {
-                if self.placeholder_argument {
-                    self.outside("known: try in placeholder argument");
-                }
                 let info = self.p.types.try_kinds.get(v.id).unwrap();
                 let Ty::Con(_, ret_args) = &info.ret else {
                     panic!("try return type")
@@ -1081,8 +1105,6 @@ impl Surface<'_> {
             }
             a::Expr::Lazy(v) => {
                 let saved_ret = self.return_ty.take();
-                let saved_argument = std::mem::replace(&mut self.placeholder_argument, false);
-                let saved_depth = self.placeholder_clause_depth.take();
                 let local: Vec<_> = env
                     .iter()
                     .map(|s| {
@@ -1095,8 +1117,6 @@ impl Surface<'_> {
                     .collect();
                 let body = self.block(&v.body, &local, Position::Other);
                 self.return_ty = saved_ret;
-                self.placeholder_argument = saved_argument;
-                self.placeholder_clause_depth = saved_depth;
                 tagged("lazyE", json!({"body":body}))
             }
             a::Expr::Resume(v) => {
@@ -1107,19 +1127,6 @@ impl Surface<'_> {
                     .expect(
                         "accepted resume without enclosing continuation (lambda/lazy boundary)",
                     );
-                if self
-                    .placeholder_clause_depth
-                    .is_some_and(|depth| self.clause_types.len() <= depth)
-                {
-                    self.outside("known: resume in placeholder argument");
-                }
-                if self
-                    .guard_clause_depth
-                    .is_some_and(|depth| self.clause_types.len() <= depth)
-                {
-                    self.known_differences
-                        .insert("ガードの中の resume（TODO-190）".to_owned());
-                }
                 tagged(
                     "resume",
                     json!({"index":index,"inner":self.expr(&v.value, env)}),
@@ -1194,27 +1201,26 @@ impl Surface<'_> {
                 ctor = Some((con_name(data, tag), tys));
             }
         }
+        let holes = v.args.iter().any(|a| matches!(a, a::Arg::Placeholder(_)));
+        let saved_ret = self.return_ty.clone();
+        if holes {
+            let Ty::Fn(f) = self.p.types.expr_types.get(v.id).unwrap() else {
+                panic!("partial type")
+            };
+            self.return_ty = Some(f.ret.clone());
+        }
         let callee = if ctor.is_none() {
             self.expr(&v.callee, env)
         } else {
             self.node_ty(v.callee.id());
             json!("unit")
         };
-        let holes = v.args.iter().any(|a| matches!(a, a::Arg::Placeholder(_)));
         let args: Vec<_> = v
             .args
             .iter()
             .map(|a| match a {
                 a::Arg::Expr(e) => {
-                    let saved_argument = self.placeholder_argument;
-                    self.placeholder_argument |= holes;
-                    let saved_depth = self.placeholder_clause_depth;
-                    if holes {
-                        self.placeholder_clause_depth = Some(self.clause_types.len());
-                    }
                     let inner = self.expr(e, env);
-                    self.placeholder_argument = saved_argument;
-                    self.placeholder_clause_depth = saved_depth;
                     if holes {
                         tagged("expr", json!({"inner":inner}))
                     } else {
@@ -1224,6 +1230,7 @@ impl Surface<'_> {
                 a::Arg::Placeholder(p) => tagged("hole", json!({"ty":self.node_ty(p.id)})),
             })
             .collect();
+        self.return_ty = saved_ret;
         match (ctor, holes) {
             (Some((name, tys)), false) => {
                 tagged("conCall", json!({"name":name,"tys":tys,"args":args}))
@@ -1293,7 +1300,7 @@ impl Surface<'_> {
                 let mut local = env.to_vec();
                 let pattern = self.pattern(&b.pattern, &mut local);
                 let last = rest.is_empty();
-                // check_body が is_irrefutable を呼ぶ束縛だけを収集する。
+                // check_body が check_binding を呼ぶ束縛だけを収集する。
                 if !matches!(&b.pattern, a::Pattern::Var(_) | a::Pattern::Wildcard(_)) {
                     let kind = if last { "lastPat" } else { "bindPat" };
                     self.coverage
@@ -1804,12 +1811,11 @@ fn definition(
     let surface = json!({"header":header,"dictParams":dict_params,"body":body,
         "implementation":implementation.map(|(i,_)| impl_name(i.impl_decl)),
         "method":implementation.map(|(_,m)| method_name(m)),"supers":[]});
-    let known_differences = json!(s.known_differences);
     let (core, core_outside) = core_definition(s, core, d, impl_count);
     if !core_outside.is_empty() {
         return json!({"name":name,"annotations":annotations,"scope":tagged("outOfScope",json!({"elements":core_outside}))});
     }
-    json!({"name":name,"annotations":annotations,"knownDifferences":known_differences,"scope":tagged("inScope",json!({"surface":surface,"core":core}))})
+    json!({"name":name,"annotations":annotations,"scope":tagged("inScope",json!({"surface":surface,"core":core}))})
 }
 
 fn core_definition(
@@ -2090,13 +2096,6 @@ pub fn definitions(
         };
         let core = json!({"header":header,"body":body,"lambdaEffects":[],"supers":supers});
         result.push(json!({"name":name,"annotations":{},"scope":tagged("inScope",json!({"surface":surface,"core":core}))}));
-    }
-    for definition in &mut result {
-        definition
-            .as_object_mut()
-            .unwrap()
-            .entry("knownDifferences")
-            .or_insert_with(|| json!([]));
     }
     (result, constants.json(), coverage)
 }

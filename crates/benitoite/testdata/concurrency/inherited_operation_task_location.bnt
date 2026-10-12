@@ -1,0 +1,16 @@
+// spec: 01-11 タスクとハンドラ
+// 関門: 操作を直接起動したタスクの primary が、親の起動の位置を指さない。
+effect Ask
+  function ask() -> Integer
+end effect
+
+function main() -> Unit uses State
+  with group = TaskGroup.open() do
+    bind _ <- handle
+      bind task <- TaskGroup.spawn(group, ask)
+      Task.await(task)
+    with
+      case ask() -> 1
+    end handle
+  end with
+end function

@@ -13,7 +13,7 @@ use crate::types::builtin::{
 use crate::types::*;
 use std::collections::{BTreeMap, BTreeSet};
 
-/// 定義の型パラメータの番号。囲む定義の分を先に置く（実装プラン 10-05）。
+/// 定義の型パラメータの番号。囲む定義の分を先に置く（`types` のモジュールの説明）。
 #[derive(Clone, Default)]
 pub(super) struct Scope {
     pub params: BindingMap<(u32, ParamKind)>,
@@ -30,6 +30,12 @@ pub(super) struct Decls<'a> {
     pub diagnostics: Vec<Diagnostic>,
     pub scopes: BTreeMap<NodeId, Scope>,
     pub invalid: BTreeSet<BindingId>,
+    /// キャッシュ済みの誤った別名の使用も、宣言と本体の注釈を誤りの型にするために数える。
+    pub invalid_alias_uses: usize,
+    /// 型構成子のない対象への誤った実装から、同じ型クラスの E0705 を派生させない。
+    pub invalid_impl_targets: BTreeSet<BindingId>,
+    /// 型クラスの束縛から引数の種類を引く表。関数のシグネチャの検査は型クラスの表を作る前に走るので、`Decls::new` で全モジュールの宣言から一度だけ作る。
+    pub trait_param_kinds: BindingMap<ParamKind>,
     aliases: BindingMap<AliasDecl>,
     alias_types: BindingMap<Ty>,
     expanding: BTreeSet<BindingId>,
@@ -53,6 +59,44 @@ pub(super) fn scheme(params: Vec<Ty>, ret: Ty) -> Scheme {
         ret,
         effects: EffectSet::empty(),
         wrote_io_all: false,
+    }
+}
+
+impl<'a> Decls<'a> {
+    pub(super) fn new(
+        modules: &'a ModuleTable,
+        asts: &'a [Module],
+        sources: &'a SourceTable,
+        resolved: &'a ResolveOutput,
+    ) -> Self {
+        // 最初の check_parameters より前に、後方と別モジュールの宣言も引けるようにする。
+        let mut trait_param_kinds = BindingMap::default();
+        for top in asts.iter().flat_map(|ast| &ast.decls) {
+            if let Item::Trait(t) = &top.item
+                && let Some(binding) = resolved.decls.get(t.id)
+            {
+                trait_param_kinds.insert(*binding, super::traits::kind(&t.param));
+            }
+        }
+        Self {
+            modules,
+            asts,
+            sources,
+            resolved,
+            out: TypeckOutput::default(),
+            diagnostics: vec![],
+            scopes: BTreeMap::new(),
+            invalid: BTreeSet::new(),
+            invalid_alias_uses: 0,
+            invalid_impl_targets: BTreeSet::new(),
+            trait_param_kinds,
+            aliases: BindingMap::default(),
+            alias_types: BindingMap::default(),
+            expanding: BTreeSet::new(),
+            ty_recursion: 0,
+            type_limit: false,
+            alias_spans: Vec::new(),
+        }
     }
 }
 
@@ -131,6 +175,79 @@ impl Decls<'_> {
             }
         }
         Some(EffectName::User(id))
+    }
+
+    pub(super) fn shadowed_prelude_type(&self, id: BindingId, span: Span) -> Option<&str> {
+        let binding = self.resolved.bindings.get(id)?;
+        let name = binding.name.as_str();
+        self.is_shadowed_prelude_type(binding.module, name, span)
+            .then_some(name)
+    }
+
+    fn is_shadowed_prelude_type(&self, module: ModuleId, name: &str, span: Span) -> bool {
+        // 修飾して書く別モジュールの型は、この位置の prelude を隠さない（設計書 02-04「名前の引き方」）。
+        usize::try_from(module.0)
+            .ok()
+            .and_then(|index| self.asts.get(index))
+            .is_some_and(|ast| ast.file == span.file)
+            && self
+                .modules
+                .get(module)
+                .is_some_and(|m| matches!(m.kind, ModuleKind::Entry | ModuleKind::User))
+            && (matches!(name, "Unit" | "State")
+                || crate::prelude::STDLIB
+                    .iter()
+                    .any(|m| m.prelude && m.path == [name]))
+    }
+
+    pub(super) fn prelude_type_in<'a>(&'a self, types: &[&Ty], span: Span) -> Option<&'a str> {
+        let (expected, found) = (types.first()?, types.get(1)?);
+        for (user, standard) in [(expected, found), (found, expected)] {
+            let mut pending = vec![*user];
+            while let Some(ty) = pending.pop() {
+                if let Ty::Con(TyCon::Adt(id), _) = ty
+                    && let Some(adt) = self.out.adts.get(*id)
+                    && self.is_shadowed_prelude_type(adt.module, &adt.name, span)
+                    && self.contains_prelude_type(standard, &adt.name)
+                {
+                    return Some(&adt.name);
+                }
+                Self::push_type_children(ty, &mut pending);
+            }
+        }
+        None
+    }
+    fn contains_prelude_type(&self, ty: &Ty, name: &str) -> bool {
+        let mut pending = vec![ty];
+        while let Some(ty) = pending.pop() {
+            if let Ty::Con(con, _) = ty {
+                let same = match con {
+                    TyCon::Builtin(id) => id.def().is_some_and(|def| def.name == name),
+                    TyCon::Adt(id) => self.out.adts.get(*id).is_some_and(|adt| {
+                        adt.name == name
+                            && self
+                                .modules
+                                .get(adt.module)
+                                .is_some_and(|m| m.kind == ModuleKind::Prelude)
+                    }),
+                };
+                if same {
+                    return true;
+                }
+            }
+            Self::push_type_children(ty, &mut pending);
+        }
+        false
+    }
+    fn push_type_children<'t>(ty: &'t Ty, pending: &mut Vec<&'t Ty>) {
+        match ty {
+            Ty::Con(_, args) | Ty::App(_, args) => pending.extend(args.iter().rev()),
+            Ty::Fn(f) => {
+                pending.push(&f.ret);
+                pending.extend(f.params.iter().rev());
+            }
+            Ty::Param(_) | Ty::Rigid { .. } => {}
+        }
     }
     pub fn uses(&mut self, uses: Option<&UsesList>, scope: &Scope) -> (EffectSet, bool) {
         let mut result = EffectSet::empty();
@@ -259,6 +376,7 @@ impl Decls<'_> {
                 ParamKind::Ctor { arity } => arity,
             };
             if !self.arity(
+                id,
                 &binding.name,
                 n,
                 args.len(),
@@ -289,6 +407,7 @@ impl Decls<'_> {
                     return unit();
                 };
                 if !self.arity(
+                    id,
                     &binding.name,
                     u32::try_from(alias.type_params.len()).unwrap_or(u32::MAX),
                     args.len(),
@@ -301,13 +420,13 @@ impl Decls<'_> {
                     return unit();
                 }
                 if self.alias_types.get(id).is_none() {
-                    let scope = self.scopes.get(&alias.id).cloned().unwrap_or_default();
-                    let ty = self.ty(&alias.ty, &scope);
-                    if !self.type_limit {
-                        self.alias_types.insert(id, ty);
-                    }
+                    self.cache_alias(id, &alias);
                 }
                 self.expanding.remove(&id);
+                if self.invalid.contains(&id) {
+                    self.invalid_alias_uses = self.invalid_alias_uses.saturating_add(1);
+                    return unit();
+                }
                 let Some(ty) = self.alias_types.get(id) else {
                     return unit();
                 };
@@ -334,12 +453,20 @@ impl Decls<'_> {
             | BindingKind::EffectVar { .. }
             | BindingKind::Local(_) => return unit(),
         };
-        if !self.arity(&binding.name, arity, args.len(), t.span, true) {
+        if !self.arity(id, &binding.name, arity, args.len(), t.span, true) {
             return unit();
         }
         Ty::Con(con, args)
     }
-    fn arity(&mut self, name: &str, expected: u32, found: usize, span: Span, ctor: bool) -> bool {
+    fn arity(
+        &mut self,
+        binding: BindingId,
+        name: &str,
+        expected: u32,
+        found: usize,
+        span: Span,
+        ctor: bool,
+    ) -> bool {
         if usize::try_from(expected).ok() == Some(found) {
             return true;
         }
@@ -348,17 +475,24 @@ impl Decls<'_> {
         } else {
             DiagCode::E0410
         };
-        self.diagnostics.push(
-            DiagBuilder::new(code)
-                .arg("name", name)
-                .arg("expected", expected.to_string())
-                .arg("found", found.to_string())
-                .primary(span)
-                .build(),
-        );
+        let mut d = DiagBuilder::new(code)
+            .arg("name", name)
+            .arg("expected", expected.to_string())
+            .arg("found", found.to_string())
+            .primary(span);
+        if code == DiagCode::E0410
+            && let Some(shadowed) = self.shadowed_prelude_type(binding, span)
+        {
+            d = d
+                .arg("shadowed", shadowed)
+                .note("shadowed")
+                .help("prelude_type");
+        }
+        self.diagnostics.push(d.build());
         false
     }
     pub fn signature(&mut self, f: &FnDecl, scope: Scope, s: Scheme) -> Scheme {
+        let before_aliases = self.invalid_alias_uses;
         let (scope, mut s) = self.parameters(&f.type_params, scope, s, true);
         let mut budget = TypeBudget::default();
         if let Err(limit) = budget.enter(1) {
@@ -402,6 +536,11 @@ impl Decls<'_> {
             }
         }
         self.scopes.insert(f.id, scope);
+        if before_aliases != self.invalid_alias_uses
+            && let Some(id) = self.binding(f.id)
+        {
+            self.invalid.insert(id);
+        }
         s
     }
     fn type_child(&mut self, budget: &mut TypeBudget, ty: &Ty, span: Span) -> bool {
@@ -413,6 +552,20 @@ impl Decls<'_> {
             return false;
         }
         true
+    }
+    fn cache_alias(&mut self, id: BindingId, alias: &AliasDecl) {
+        let before = self.diagnostics.len();
+        let before_aliases = self.invalid_alias_uses;
+        let scope = self.scopes.get(&alias.id).cloned().unwrap_or_default();
+        let ty = self.ty(&alias.ty, &scope);
+        // Ty は誤りの型を持たない。派生した別名にも印を残し、使用側の
+        // 宣言や注釈を ITy::Error にする（設計書 02-05「誤りの報告と検査の継続」）。
+        if before != self.diagnostics.len() || before_aliases != self.invalid_alias_uses {
+            self.invalid.insert(id);
+        }
+        if !self.type_limit {
+            self.alias_types.insert(id, ty);
+        }
     }
     fn prepare_aliases(&mut self) {
         // 宣言の順に依存しない。前方の別名を参照する長い連鎖でも、Rust の
@@ -429,13 +582,11 @@ impl Decls<'_> {
                 };
                 if ready {
                     let alias = alias.clone();
-                    let scope = self.scopes.get(&alias.id).cloned().unwrap_or_default();
-                    let ty = self.ty(&alias.ty, &scope);
+                    self.cache_alias(id, &alias);
                     self.expanding.remove(&id);
                     if self.type_limit {
                         return;
                     }
-                    self.alias_types.insert(id, ty);
                     continue;
                 }
                 // 循環は名前解決が拒否するが、その前提が壊れてもここで再帰しない。
@@ -497,22 +648,7 @@ pub(super) fn check(
     resolved: &ResolveOutput,
     require_main: bool,
 ) -> (TypeckOutput, Vec<Diagnostic>) {
-    let mut d = Decls {
-        modules,
-        asts,
-        sources,
-        resolved,
-        out: TypeckOutput::default(),
-        diagnostics: vec![],
-        scopes: BTreeMap::new(),
-        invalid: BTreeSet::new(),
-        aliases: BindingMap::default(),
-        alias_types: BindingMap::default(),
-        expanding: BTreeSet::new(),
-        ty_recursion: 0,
-        type_limit: false,
-        alias_spans: Vec::new(),
-    };
+    let mut d = Decls::new(modules, asts, sources, resolved);
     check_declarations(&mut d, require_main);
     if d.type_limit {
         return (d.out, d.diagnostics);
@@ -607,6 +743,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                 continue;
             };
             let before = d.diagnostics.len();
+            let before_aliases = d.invalid_alias_uses;
             match &top.item {
                 Item::Fn(f) => {
                     let s = d.signature(f, Scope::default(), scheme(vec![], unit()));
@@ -739,6 +876,9 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                         return;
                     }
                     for (i, p) in a.type_params.iter().enumerate() {
+                        if d.invalid.contains(&binding) {
+                            break;
+                        }
                         if !has_param(&ty, u32::try_from(i).unwrap_or(u32::MAX)) {
                             d.diagnostics.push(
                                 DiagBuilder::new(DiagCode::E0432)
@@ -786,7 +926,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
             if d.type_limit {
                 return;
             }
-            if d.diagnostics.len() != before {
+            if d.diagnostics.len() != before || d.invalid_alias_uses != before_aliases {
                 d.invalid.insert(binding);
                 match &top.item {
                     Item::Data(a) => {

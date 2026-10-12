@@ -12,7 +12,29 @@ enum Callee<'a> {
     Method(&'a ast::NameExpr),
 }
 
+struct ListParts {
+    ty: Ty,
+    elem: Ty,
+    before: Vec<CoreVal>,
+    after: Vec<CoreVal>,
+    spread: Option<CoreVal>,
+}
+
+enum StatementWrap {
+    Eval(Vec<(Var, Comp)>, Span),
+    Let(Var, Comp, Span),
+    Match {
+        pending: Vec<(Var, Comp)>,
+        scrutinee: CoreVal,
+        vars: Vec<Var>,
+        pattern: CorePat,
+        span: Span,
+    },
+}
+
 impl State<'_> {
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn expr(
         &mut self,
         e: &ast::Expr,
@@ -57,6 +79,8 @@ impl State<'_> {
         )))
     }
     /// 01-12「名前とリテラル」の `(e)` の行。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn parenthesized(
         &mut self,
         e: &ast::ParenExpr,
@@ -290,6 +314,8 @@ impl State<'_> {
     }
 
     /// 01-12「呼び出し」の構成子とそのほかの呼び出しの行。展開後の呼び出しもここを通す。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn call(
         &mut self,
         e: &ast::CallExpr,
@@ -320,22 +346,33 @@ impl State<'_> {
                 params.push(self.var(None, self.ty(p.id)?)?);
             }
         }
-        let mut parameters = params.iter();
-        let mut pending = vec![];
-        let callee = self.prepare(&e.callee, &mut pending, span)?;
-        let mut args = vec![];
-        for arg in &e.args {
-            args.push(match arg {
-                ast::Arg::Expr(e) => self.eval(e, &mut pending)?,
-                ast::Arg::Placeholder(p) => {
-                    let v = parameters
-                        .next()
-                        .ok_or_else(|| error("missing placeholder parameter"))?;
-                    bind(self, returned(variable(v, p.span)), &mut pending)?
-                }
-            });
-        }
-        let body = finish(pending, self.invoke(callee, args, span)?, span);
+        let Ty::Fn(ty) = self.ty(e.id)? else {
+            return Err(error("placeholder call does not have a function type"));
+        };
+        let conts = std::mem::take(&mut self.conts);
+        let return_ty = self.return_ty.replace(ty.ret);
+        let body = (|| {
+            let mut parameters = params.iter();
+            let mut pending = vec![];
+            let callee = self.prepare(&e.callee, &mut pending, span)?;
+            let mut args = vec![];
+            for arg in &e.args {
+                args.push(match arg {
+                    ast::Arg::Expr(e) => self.eval(e, &mut pending)?,
+                    ast::Arg::Placeholder(p) => {
+                        let v = parameters
+                            .next()
+                            .ok_or_else(|| error("missing placeholder parameter"))?;
+                        bind(self, returned(variable(v, p.span)), &mut pending)?
+                    }
+                });
+            }
+            let body = finish(pending, self.invoke(callee, args, span)?, span);
+            Ok::<_, InternalError>(body)
+        })();
+        self.return_ty = return_ty;
+        self.conts = conts;
+        let body = body?;
         let effects = self
             .types
             .lambda_effects
@@ -360,6 +397,8 @@ impl State<'_> {
     }
 
     /// 01-12「呼び出し」のパイプの行。左辺を先に一度だけ評価する。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn pipe(&mut self, p: &ast::PipeExpr) -> Result<Comp, InternalError> {
         let mut pending = vec![];
         let left = self.eval(&p.lhs, &mut pending)?;
@@ -375,89 +414,128 @@ impl State<'_> {
     }
 
     /// 01-12「演算子」の二項演算の行、および `and`・`or` の二つの行。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn binary(&mut self, e: &ast::BinaryExpr, position: Position) -> Result<Comp, InternalError> {
         let mut pending = vec![];
         let lhs = self.eval(&e.lhs, &mut pending)?;
-        let body = if matches!(e.op, ast::BinOp::And | ast::BinOp::Or) {
+        if matches!(e.op, ast::BinOp::And | ast::BinOp::Or) {
             let rhs_position = if position == Position::Tail {
                 Position::Tail
             } else {
                 Position::Other
             };
             let rhs = self.expr(&e.rhs, rhs_position)?;
-            let fixed = boolean(e.op == ast::BinOp::Or, e.span);
-            let (then_branch, else_branch) = if e.op == ast::BinOp::And {
-                (rhs, fixed)
-            } else {
-                (fixed, rhs)
-            };
-            branching(lhs, then_branch, else_branch, self.ty(e.id)?, e.span)
+            self.finish_logic_binary(e, pending, lhs, rhs)
         } else {
             let rhs = self.eval(&e.rhs, &mut pending)?;
-            let operand = self
-                .types
-                .operand_types
-                .get(e.id)
-                .ok_or_else(|| error(format!("missing operand_types for {:?}", e.id)))?;
-            let (id, tys) = match e.op {
-                ast::BinOp::Eq | ast::BinOp::Ne => (
-                    table::equality_builtin(e.op == ast::BinOp::Ne)
-                        .ok_or_else(|| error("missing equality_builtin"))?,
-                    vec![TypeArg::Ty(operand.clone())],
-                ),
-                ast::BinOp::Add
-                | ast::BinOp::Sub
-                | ast::BinOp::Mul
-                | ast::BinOp::Div
-                | ast::BinOp::IntDiv
-                | ast::BinOp::Mod
-                | ast::BinOp::Lt
-                | ast::BinOp::Le
-                | ast::BinOp::Gt
-                | ast::BinOp::Ge => {
-                    let op = match e.op {
-                        ast::BinOp::Add => OperatorKind::Add,
-                        ast::BinOp::Sub => OperatorKind::Sub,
-                        ast::BinOp::Mul => OperatorKind::Mul,
-                        ast::BinOp::Div => OperatorKind::Div,
-                        ast::BinOp::IntDiv => OperatorKind::IntDiv,
-                        ast::BinOp::Mod => OperatorKind::Mod,
-                        ast::BinOp::Lt => OperatorKind::Lt,
-                        ast::BinOp::Le => OperatorKind::Le,
-                        ast::BinOp::Gt => OperatorKind::Gt,
-                        ast::BinOp::Ge => OperatorKind::Ge,
-                        ast::BinOp::Eq | ast::BinOp::Ne | ast::BinOp::And | ast::BinOp::Or => {
-                            return Err(error("invalid arithmetic operator"));
-                        }
-                    };
-                    (
-                        table::operator_builtin(op, basic_id(operand)?).ok_or_else(|| {
-                            error(format!("missing operator_builtin for {:?}", e.id))
-                        })?,
-                        vec![],
-                    )
-                }
-                ast::BinOp::And | ast::BinOp::Or => {
-                    return Err(error("invalid strict logical operator"));
-                }
-            };
-            app(
-                self.table_builtin(id, tys, e.span)?,
-                vec![],
-                vec![lhs, rhs],
-                e.span,
-            )?
+            self.finish_strict_binary(e, pending, lhs, rhs)
+        }
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn finish_logic_binary(
+        &self,
+        e: &ast::BinaryExpr,
+        pending: Vec<(Var, Comp)>,
+        lhs: CoreVal,
+        rhs: Comp,
+    ) -> Result<Comp, InternalError> {
+        let fixed = boolean(e.op == ast::BinOp::Or, e.span);
+        let (then_branch, else_branch) = if e.op == ast::BinOp::And {
+            (rhs, fixed)
+        } else {
+            (fixed, rhs)
         };
+        let body = branching(lhs, then_branch, else_branch, self.ty(e.id)?, e.span);
+        Ok(finish(pending, body, e.span))
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn finish_strict_binary(
+        &self,
+        e: &ast::BinaryExpr,
+        pending: Vec<(Var, Comp)>,
+        lhs: CoreVal,
+        rhs: CoreVal,
+    ) -> Result<Comp, InternalError> {
+        let operand = self
+            .types
+            .operand_types
+            .get(e.id)
+            .ok_or_else(|| error(format!("missing operand_types for {:?}", e.id)))?;
+        let (id, tys) = match e.op {
+            ast::BinOp::Eq | ast::BinOp::Ne => (
+                table::equality_builtin(e.op == ast::BinOp::Ne)
+                    .ok_or_else(|| error("missing equality_builtin"))?,
+                vec![TypeArg::Ty(operand.clone())],
+            ),
+            ast::BinOp::Add
+            | ast::BinOp::Sub
+            | ast::BinOp::Mul
+            | ast::BinOp::Div
+            | ast::BinOp::IntDiv
+            | ast::BinOp::Mod
+            | ast::BinOp::Lt
+            | ast::BinOp::Le
+            | ast::BinOp::Gt
+            | ast::BinOp::Ge => {
+                let op = match e.op {
+                    ast::BinOp::Add => OperatorKind::Add,
+                    ast::BinOp::Sub => OperatorKind::Sub,
+                    ast::BinOp::Mul => OperatorKind::Mul,
+                    ast::BinOp::Div => OperatorKind::Div,
+                    ast::BinOp::IntDiv => OperatorKind::IntDiv,
+                    ast::BinOp::Mod => OperatorKind::Mod,
+                    ast::BinOp::Lt => OperatorKind::Lt,
+                    ast::BinOp::Le => OperatorKind::Le,
+                    ast::BinOp::Gt => OperatorKind::Gt,
+                    ast::BinOp::Ge => OperatorKind::Ge,
+                    ast::BinOp::Eq | ast::BinOp::Ne | ast::BinOp::And | ast::BinOp::Or => {
+                        return Err(error("invalid arithmetic operator"));
+                    }
+                };
+                (
+                    table::operator_builtin(op, basic_id(operand)?)
+                        .ok_or_else(|| error(format!("missing operator_builtin for {:?}", e.id)))?,
+                    vec![],
+                )
+            }
+            ast::BinOp::And | ast::BinOp::Or => {
+                return Err(error("invalid strict logical operator"));
+            }
+        };
+        let body = app(
+            self.table_builtin(id, tys, e.span)?,
+            vec![],
+            vec![lhs, rhs],
+            e.span,
+        )?;
         Ok(finish(pending, body, e.span))
     }
 
     /// 01-12「演算子」の `-e` と `not e` の二つの行。直接の負のリテラルは定数にする。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn unary(&mut self, e: &ast::UnaryExpr) -> Result<Comp, InternalError> {
         if self.types.lit_values.get(e.id).is_some() {
             return self.literal(e.id, e.span);
         }
         let mut pending = vec![];
         let operand = self.eval(&e.operand, &mut pending)?;
+        self.finish_unary(e, pending, operand)
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn finish_unary(
+        &self,
+        e: &ast::UnaryExpr,
+        pending: Vec<(Var, Comp)>,
+        operand: CoreVal,
+    ) -> Result<Comp, InternalError> {
         let body = match e.op {
             ast::UnOp::Not => branching(
                 operand,
@@ -486,6 +564,8 @@ impl State<'_> {
     }
 
     /// 01-12「リスト、ラムダ、条件分岐、match」のラムダの行。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn lambda(&mut self, e: &ast::LambdaExpr) -> Result<Comp, InternalError> {
         let id = self.body_id()?;
         let params = e
@@ -526,29 +606,51 @@ impl State<'_> {
     }
 
     /// 01-12「リスト、ラムダ、条件分岐、match」の `if`・`else if`・`else` なしの三つの行。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn if_expr(&mut self, e: &ast::IfExpr, position: Position) -> Result<Comp, InternalError> {
-        let mut pending = vec![];
-        let cond = self.eval(&e.cond, &mut pending)?;
-        let then_branch = self.block(&e.then_block, position)?;
-        let else_branch = match &e.else_branch {
-            Some(ast::ElseBranch::Block(b)) => self.block(b, position)?,
-            Some(ast::ElseBranch::If(b)) => self.if_expr(b, position)?,
-            None => unit(e.span),
+        // else if は同じ順に条件と then を下ろし、型を取って包む順も逆順のまま保つ
+        // （設計書 01-12「リスト、ラムダ、条件分岐、match」、02-01「関数の呼び出しと処理系のスタック」）。
+        let mut current = e;
+        let mut branches = Vec::new();
+        let mut body = loop {
+            let mut pending = vec![];
+            let cond = self.eval(&current.cond, &mut pending)?;
+            let then_branch = self.block(&current.then_block, position)?;
+            branches.push((current, pending, cond, then_branch));
+            match &current.else_branch {
+                Some(ast::ElseBranch::If(next)) => current = next,
+                Some(ast::ElseBranch::Block(block)) => break self.block(block, position)?,
+                None => break unit(current.span),
+            }
         };
-        Ok(finish(
+        for (original, pending, cond, then_branch) in branches.into_iter().rev() {
+            let ty = self.result_ty(original.id, position)?;
+            body = Self::finish_if(original.span, pending, cond, then_branch, body, ty);
+        }
+        Ok(body)
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn finish_if(
+        span: Span,
+        pending: Vec<(Var, Comp)>,
+        cond: CoreVal,
+        then_branch: Comp,
+        else_branch: Comp,
+        ty: Ty,
+    ) -> Comp {
+        finish(
             pending,
-            branching(
-                cond,
-                then_branch,
-                else_branch,
-                self.result_ty(e.id, position)?,
-                e.span,
-            ),
-            e.span,
-        ))
+            branching(cond, then_branch, else_branch, ty, span),
+            span,
+        )
     }
 
     /// 01-12「ブロック」の空・最後の式・式文・束縛の文の各行。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn block(
         &mut self,
         block: &ast::Block,
@@ -556,46 +658,75 @@ impl State<'_> {
     ) -> Result<Comp, InternalError> {
         self.statements(&block.stmts, block.span, position)
     }
+    // 一つの式だけのブロックでは文の組み立ての枠を積まない
+    // （設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn statements(
         &mut self,
         stmts: &[ast::Stmt],
         span: Span,
         position: Position,
     ) -> Result<Comp, InternalError> {
-        let Some((first, rest)) = stmts.split_first() else {
-            return Ok(unit(span));
-        };
-        match first {
-            ast::Stmt::Expr(e) if rest.is_empty() => self.expr(e, position),
-            ast::Stmt::Expr(e) => {
-                let mut pending = vec![];
-                self.eval(e, &mut pending)?;
-                let body = self.statements(rest, span, position)?;
-                Ok(finish(pending, body, e.span()))
-            }
-            ast::Stmt::Bind(b) => self.binding_stmt(b, rest, span, position),
-            ast::Stmt::Error(e) => Err(error(format!("error statement {:?}", e.id))),
+        if let [ast::Stmt::Expr(e)] = stmts {
+            return self.expr(e, position);
         }
+        self.statement_sequence(stmts, span, position)
     }
-    /// 01-12「ブロック」の変数・ワイルドカード・パターンの束縛の文（最後の文を含む）。
-    fn binding_stmt(
+
+    // 文を順に下ろして番号と誤りの順を保ち、続きを逆順に包むことで文の数に比例する再帰を避ける
+    // （設計書 01-12「ブロック」、02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn statement_sequence(
         &mut self,
-        b: &ast::BindStmt,
-        rest: &[ast::Stmt],
+        mut stmts: &[ast::Stmt],
         span: Span,
         position: Position,
     ) -> Result<Comp, InternalError> {
+        let mut wrappers = Vec::new();
+        let mut body = loop {
+            let Some((first, rest)) = stmts.split_first() else {
+                break unit(span);
+            };
+            match first {
+                ast::Stmt::Expr(e) if rest.is_empty() => break self.expr(e, position)?,
+                ast::Stmt::Expr(e) => {
+                    let mut pending = vec![];
+                    self.eval(e, &mut pending)?;
+                    wrappers.push(StatementWrap::Eval(pending, e.span()));
+                }
+                ast::Stmt::Bind(b) => wrappers.push(self.binding_stmt(b)?),
+                ast::Stmt::Error(e) => return Err(error(format!("error statement {:?}", e.id))),
+            }
+            stmts = rest;
+        };
+        for wrapper in wrappers.into_iter().rev() {
+            body = Self::finish_statement(wrapper, body);
+        }
+        Ok(body)
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn binding_stmt(&mut self, b: &ast::BindStmt) -> Result<StatementWrap, InternalError> {
         let bound = self.expr(&b.value, Position::Other)?;
+        self.binding_wrap(b, bound)
+    }
+
+    // パターンと変数の作成を値の式の再帰から分ける（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn binding_wrap(
+        &mut self,
+        b: &ast::BindStmt,
+        bound: Comp,
+    ) -> Result<StatementWrap, InternalError> {
         match &b.pattern {
             ast::Pattern::Var(v) => {
                 let var = self.local(v.id, Some(v.name.text.clone()), self.ty(b.id)?)?;
-                let body = self.statements(rest, span, position)?;
-                Ok(let_comp(var, bound, body, b.span))
+                Ok(StatementWrap::Let(var, bound, b.span))
             }
             ast::Pattern::Wildcard(_) => {
                 let var = self.var(None, self.ty(b.id)?)?;
-                let body = self.statements(rest, span, position)?;
-                Ok(let_comp(var, bound, body, b.span))
+                Ok(StatementWrap::Let(var, bound, b.span))
             }
             ast::Pattern::Lit(_)
             | ast::Pattern::Unit(_)
@@ -607,11 +738,36 @@ impl State<'_> {
                 let scrutinee = bind(self, bound, &mut pending)?;
                 let mut vars = vec![];
                 let pattern = self.pattern(&b.pattern, &mut vars)?;
-                let body = self.statements(rest, span, position)?;
+                Ok(StatementWrap::Match {
+                    pending,
+                    scrutinee,
+                    vars,
+                    pattern,
+                    span: b.span,
+                })
+            }
+            ast::Pattern::Error(e) => Err(error(format!("error binding pattern {:?}", e.id))),
+        }
+    }
+
+    // 本体の型とエフェクトは包む時点で取り、再帰していたときと同じ IR を作る
+    // （設計書 01-12「ブロック」、02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn finish_statement(wrapper: StatementWrap, body: Comp) -> Comp {
+        match wrapper {
+            StatementWrap::Eval(pending, span) => finish(pending, body, span),
+            StatementWrap::Let(var, bound, span) => let_comp(var, bound, body, span),
+            StatementWrap::Match {
+                pending,
+                scrutinee,
+                vars,
+                pattern,
+                span,
+            } => {
                 let comp = Comp {
                     ty: body.ty.clone(),
                     eff: body.eff.clone(),
-                    origin: b.span,
+                    origin: span,
                     kind: CompKind::Match {
                         scrutinee,
                         rows: vec![MatchRow { pattern, arm: 0 }],
@@ -622,9 +778,8 @@ impl State<'_> {
                         }],
                     },
                 };
-                Ok(finish(pending, comp, b.span))
+                finish(pending, comp, span)
             }
-            ast::Pattern::Error(e) => Err(error(format!("error binding pattern {:?}", e.id))),
         }
     }
 
@@ -652,6 +807,8 @@ impl State<'_> {
     }
 
     /// 01-12「リスト、ラムダ、条件分岐、match」のリスト、および「リストの展開」の行。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn list(&mut self, e: &ast::ListExpr) -> Result<Comp, InternalError> {
         let ty = self.ty(e.id)?;
         let Ty::Con(TyCon::Builtin(b), types) = &ty else {
@@ -686,6 +843,34 @@ impl State<'_> {
                 }
             }
         }
+        self.finish_list(
+            e,
+            pending,
+            ListParts {
+                ty,
+                elem,
+                before,
+                after,
+                spread,
+            },
+        )
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn finish_list(
+        &mut self,
+        e: &ast::ListExpr,
+        mut pending: Vec<(Var, Comp)>,
+        parts: ListParts,
+    ) -> Result<Comp, InternalError> {
+        let ListParts {
+            ty,
+            elem,
+            before,
+            after,
+            spread,
+        } = parts;
         let body = if let Some(spread) = spread {
             let binding = self
                 .resolved
@@ -761,6 +946,8 @@ impl State<'_> {
     }
 
     /// 01-12「レコード」の構築と更新の二つの行。式を評価した後、宣言の順に値を並べる。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn record(&mut self, e: &ast::RecordExpr) -> Result<Comp, InternalError> {
         let adt = self.reference(e.id)?;
         let ty = self.ty(e.id)?;
@@ -852,6 +1039,8 @@ impl State<'_> {
     }
 
     /// 01-12「文字列補間」の行。式の評価を先に終え、変換と連結を左から行う。
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn interpolation(&mut self, e: &ast::InterpExpr) -> Result<Comp, InternalError> {
         let mut pending = vec![];
         let mut evaluated = vec![];

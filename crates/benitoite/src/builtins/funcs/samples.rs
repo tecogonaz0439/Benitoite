@@ -153,7 +153,7 @@ builtin! {
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -222,7 +222,7 @@ mod tests {
     impl TempDirectory {
         fn new() -> Self {
             // 作業ディレクトリの外を変えず、並行するテスト実行とも名前を重ねない
-            // （R07 の受け入れテストの一時ディレクトリ）。
+            // （受け入れテストの一時ディレクトリ）。
             let base = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target");
             std::fs::create_dir_all(&base).unwrap();
             for attempt in 0..1000 {
@@ -239,7 +239,8 @@ mod tests {
 
     impl Drop for TempDirectory {
         fn drop(&mut self) {
-            std::fs::remove_dir_all(&self.0).unwrap();
+            // 巻き戻しの途中で二度目の panic を起こさない。
+            let _removed = std::fs::remove_dir_all(&self.0);
         }
     }
 
@@ -492,7 +493,7 @@ mod tests {
     }
 
     #[test]
-    fn stage_one_rejects_lending_before_running_the_job() {
+    fn synchronous_worker_rejects_lending_before_running_the_job() {
         let directory = TempDirectory::new();
         let mut io = TestIo {
             directory: directory.0.clone(),
@@ -507,7 +508,9 @@ mod tests {
                 );
                 assert_eq!(
                     complete_worker(wait, ctx, &mut io, None, &[]).unwrap_err(),
-                    Stop::Internal("stage 1 worker cannot borrow resources or stdin".into())
+                    Stop::Internal(
+                        "synchronous test worker cannot borrow resources or stdin".into()
+                    )
                 );
             }
         });

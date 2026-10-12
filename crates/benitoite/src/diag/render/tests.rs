@@ -1,4 +1,4 @@
-//! 引き継いだ診断描画の出力契約を、新しい診断の型で確かめる（設計書 02-10、実装プラン F16）。
+//! 引き継いだ診断描画の出力契約を、新しい診断の型で確かめる（設計書 02-10「文章の形式」「JSON の形式」）。
 
 // テストの失敗は assert で表し、準備データには必要な添字と算術を使う。
 #![allow(
@@ -274,6 +274,42 @@ fn check_text_shows_at_most_fifty_diagnostics_and_reports_the_counts() {
     assert!(output.ends_with("error: could not run count.bnt due to 53 previous errors\n"));
 }
 
+// 関門: 要約のファイル名も制御文字を逃がし、一行に収める。位置表示の既存の
+// テストは要約を出さないため、共有の変換を通し忘れる退行を捕まえられない。
+#[test]
+fn terminal_controls_in_summary_filenames_are_escaped() {
+    let sources = SourceTable::new();
+    let diagnostics = [check_diag("one"), check_diag("two")];
+    for (file, escaped) in [
+        ("esc\u{1B}.bnt", "esc\\u{1B}.bnt"),
+        ("line\nname.bnt", "line\\u{A}name.bnt"),
+        ("tab\tname.bnt", "tab\\u{9}name.bnt"),
+    ] {
+        for (verb, name) in [
+            (Verb::Run, "run"),
+            (Verb::Check, "check"),
+            (Verb::Test, "test"),
+        ] {
+            for (count, previous) in [(1, "1 previous error"), (2, "2 previous errors")] {
+                let output = render_check_text(
+                    &diagnostics[..count],
+                    &sources,
+                    verb,
+                    file,
+                    TextOptions { color: false },
+                );
+                assert!(
+                    output.ends_with(&format!(
+                        "error: could not {name} {escaped} due to {previous}\n"
+                    )),
+                    "{output}"
+                );
+                assert!(!output.contains(file), "{output}");
+            }
+        }
+    }
+}
+
 #[test]
 fn tab_expansion_keeps_the_marker_under_the_selected_character() {
     let bytes = b"\tlet x = y";
@@ -289,6 +325,81 @@ fn tab_expansion_keeps_the_marker_under_the_selected_character() {
     let output = render_one_text(&diag, &sources, TextOptions { color: false });
     assert!(output.contains(" 1 |     let x = y\n"));
     assert!(output.contains("   |             ^\n"));
+}
+
+// 関門: 端末の制御文字による出力の改変と、逃がした文字の幅を無視する退行を
+// 描画の公開の出力で捕まえる。タブだけの既存の例では制御文字の幅を確かめられない。
+#[test]
+fn terminal_controls_are_escaped_in_excerpts_and_locations() {
+    let bytes = "\tA\u{1B}\u{9B}\u{7F}Z\n\u{0}\rB".as_bytes();
+    let mut sources = SourceTable::new();
+    let file = sources.add(Source::new(
+        "esc\u{1B}\n\t.bnt".to_owned(),
+        SourceKind::User,
+        bytes.to_vec(),
+    ));
+    let mut diag = check_diag("selected controls");
+    diag.primary = Some(Label {
+        span: span(file, 2, 4),
+        text: String::new(),
+    });
+    diag.secondary.push(Label {
+        span: span(file, 8, 2),
+        text: String::new(),
+    });
+
+    let output = render_one_text(&diag, &sources, TextOptions { color: false });
+    assert!(
+        output.contains("  --> esc\\u{1B}\\u{A}\\u{9}.bnt:1:3\n"),
+        "{output}"
+    );
+    assert!(
+        output.contains("  ::: esc\\u{1B}\\u{A}\\u{9}.bnt:2:1\n"),
+        "{output}"
+    );
+    assert!(
+        output.contains(" 1 |     A\\u{1B}\\u{9B}\\u{7F}Z\n"),
+        "{output}"
+    );
+    assert!(
+        output.contains("   |      ^^^^^^^^^^^^^^^^^^\n"),
+        "{output}"
+    );
+    assert!(output.contains(" 2 | \\u{0}\\u{D}B\n"), "{output}");
+    assert!(output.contains("   | ----------\n"), "{output}");
+    assert!(!output.contains('\u{1B}'), "{output}");
+}
+
+// 関門: 修正案の行でも同じ幅で ~ を置き、LF の行分割と CR LF の除去を保つ。
+// 抜粋のテストは、置き換えで挿入される制御文字や改行の処理を通らない。
+#[test]
+fn terminal_controls_in_edits_keep_markers_and_line_endings() {
+    use crate::diag::{Edit, Help};
+
+    let bytes = "\tA\u{1B}x\r\nkeep\n".as_bytes();
+    let mut sources = SourceTable::new();
+    let file = add_source(&mut sources, bytes);
+    let mut diag = check_diag("edit controls");
+    diag.helps.push(Help {
+        message: "replace the value".to_owned(),
+        edits: vec![Edit {
+            span: span(file, 3, 1),
+            replacement: "\u{9B}\u{7F}\n\u{0}\rQ".to_owned(),
+        }],
+    });
+
+    let output = render_one_text(&diag, &sources, TextOptions { color: false });
+    assert!(
+        output.contains(" 1 |     A\\u{1B}\\u{9B}\\u{7F}\n"),
+        "{output}"
+    );
+    assert!(
+        output.contains("   |            ~~~~~~~~~~~~\n"),
+        "{output}"
+    );
+    assert!(output.contains(" 2 | \\u{0}\\u{D}Q\n"), "{output}");
+    assert!(output.contains("   | ~~~~~~~~~~~\n"), "{output}");
+    assert!(!output.contains('\r'), "{output}");
 }
 
 #[test]
@@ -454,4 +565,180 @@ fn color_is_applied_only_when_requested() {
 
     assert!(colored.starts_with("\x1b[1;31merror[E0401]\x1b[0m: mismatched types\n"));
     assert!(!plain.contains('\x1b'));
+}
+
+// 関門: 診断の値は保ったまま、文章の埋め込みだけを逃がし、注記の改行と色を保つ。
+#[test]
+fn embedded_controls_are_escaped_without_changing_json_or_layout() {
+    use crate::diag::{Edit, Help, WaitingTask};
+    let mut sources = SourceTable::new();
+    let file = sources.add(Source::new(
+        "x\u{1B}\u{202E}.bnt".into(),
+        SourceKind::User,
+        b"x".to_vec(),
+    ));
+    let mut diag = check_diag("header\n\u{1B}\u{202E}");
+    diag.primary = Some(Label {
+        span: span(file, 0, 1),
+        text: "label\n\u{200F}".into(),
+    });
+    diag.notes.push("first\u{61C}\nsecond\u{FEFF}\n".into());
+    diag.helps.push(Help {
+        message: "help\u{200E}\nnext\u{2066}".into(),
+        edits: vec![Edit {
+            span: span(file, 0, 1),
+            replacement: "x".into(),
+        }],
+    });
+    diag.trace = Some(CallTrace {
+        frames: vec![
+            TraceFrame {
+                name: FrameName::Lambda(span(file, 0, 1)),
+                call_site: Some(span(file, 0, 1)),
+            },
+            TraceFrame {
+                name: FrameName::Named(
+                    "named\n\u{202A}\u{202B}\u{202C}\u{202D}\u{2067}\u{2068}\u{2069}".into(),
+                ),
+                call_site: Some(span(file, 0, 1)),
+            },
+        ],
+        omitted: 0,
+    });
+    diag.task_origins.push(TraceFrame {
+        name: FrameName::Lazy(span(file, 0, 1)),
+        call_site: None,
+    });
+    diag.backtrace = Some("frame\u{1B}\npath\u{202E}".into());
+    let text = render_one_text(&diag, &sources, TextOptions { color: false });
+    assert!(text.contains("header\\u{A}\\u{1B}\\u{202E}"), "{text}");
+    assert!(text.contains("label\\u{A}\\u{200F}"), "{text}");
+    assert!(
+        text.contains("   = note: first\\u{61C}\n           second\\u{FEFF}\n"),
+        "{text}"
+    );
+    assert!(
+        text.contains("   = help: help\\u{200E}\n           next\\u{2066}\n"),
+        "{text}"
+    );
+    assert!(
+        text.contains("<lambda x\\u{1B}\\u{202E}.bnt:1:1>"),
+        "{text}"
+    );
+    assert!(
+        text.contains("named\\u{A}\\u{202A}\\u{202B}\\u{202C}\\u{202D}\\u{2067}\\u{2068}\\u{2069}"),
+        "{text}"
+    );
+    let trace_rows: Vec<_> = text.lines().filter(|line| line.contains(" at ")).collect();
+    assert_eq!(trace_rows[0].find(" at "), trace_rows[1].find(" at "));
+    let json: serde_json::Value = serde_json::from_str(&render_json_line(&diag, &sources)).unwrap();
+    assert_eq!(json["message"], diag.message);
+    assert_eq!(json["notes"][0], diag.notes[0]);
+    assert_eq!(
+        json["trace"][0]["function"],
+        "<lambda x\u{1B}\u{202E}.bnt:1:1>"
+    );
+    assert_eq!(
+        json["trace"][1]["function"],
+        "named\n\u{202A}\u{202B}\u{202C}\u{202D}\u{2067}\u{2068}\u{2069}"
+    );
+    assert_eq!(
+        json["taskOrigins"][0]["function"],
+        "<lazy x\u{1B}\u{202E}.bnt:1:1>"
+    );
+    assert_eq!(json["backtrace"], "frame\u{1B}\npath\u{202E}");
+    assert!(
+        text.contains("     frame\\u{1B}\n     path\\u{202E}\n"),
+        "{text}"
+    );
+    assert!(
+        !text
+            .lines()
+            .any(|line| !line.is_empty() && line.trim().is_empty()),
+        "{text}"
+    );
+    let colored = render_one_text(&diag, &sources, TextOptions { color: true });
+    assert!(colored.contains("\u{1B}[1;31m"));
+    assert!(!text.chars().any(|c| c == '\u{1B}' || c == '\u{202E}'));
+    diag.waiting.push(WaitingTask {
+        task: TraceFrame {
+            name: FrameName::Named("task\n\u{202E}".into()),
+            call_site: None,
+        },
+        waits_for: "wait\u{1B}".into(),
+        location: None,
+    });
+    let waiting = render_one_text(&diag, &sources, TextOptions { color: false });
+    assert!(waiting.contains("task\\u{A}\\u{202E}"), "{waiting}");
+    assert!(waiting.contains("wait\\u{1B}"), "{waiting}");
+    let json: serde_json::Value = serde_json::from_str(&render_json_line(&diag, &sources)).unwrap();
+    assert_eq!(
+        json["waitingTasks"][0]["task"]["function"],
+        "task\n\u{202E}"
+    );
+}
+
+// 関門: 行き詰まりの JSON の必須欄を、呼び出し側が履歴を用意しない場合も守る。
+#[test]
+fn waiting_json_has_empty_trace_when_no_trace_was_recorded() {
+    let mut diag = check_diag("waiting");
+    diag.waiting.push(crate::diag::WaitingTask {
+        task: TraceFrame {
+            name: FrameName::Named("main".into()),
+            call_site: None,
+        },
+        waits_for: "Lazy evaluation".into(),
+        location: None,
+    });
+    let json: serde_json::Value =
+        serde_json::from_str(&render_json_line(&diag, &SourceTable::new())).unwrap();
+    assert_eq!(json["trace"], serde_json::json!([]));
+    assert_eq!(json["traceOmitted"], 0);
+    assert_eq!(json["taskOrigins"], serde_json::json!([]));
+    assert_eq!(json["waitingTasks"].as_array().unwrap().len(), 1);
+}
+
+// 関門: 修正案の一部だけを示すと、利用者が不完全な編集を当ててしまう。
+#[test]
+fn missing_edit_source_omits_the_whole_help_edit_group() {
+    use crate::diag::{Edit, Help};
+    let mut sources = SourceTable::new();
+    let file = add_source(&mut sources, b"original");
+    let mut diag = check_diag("missing source");
+    diag.helps.push(Help {
+        message: "keep this help".into(),
+        edits: vec![
+            Edit {
+                span: span(file, 0, 8),
+                replacement: "changed".into(),
+            },
+            Edit {
+                span: span(FileId(99), 0, 1),
+                replacement: "unavailable".into(),
+            },
+        ],
+    });
+    let text = render_one_text(&diag, &sources, TextOptions { color: false });
+    assert!(text.contains("keep this help"));
+    assert!(!text.contains("changed"), "{text}");
+    let json: serde_json::Value = serde_json::from_str(&render_json_line(&diag, &sources)).unwrap();
+    assert_eq!(json["helps"][0]["edits"], serde_json::json!([]));
+}
+
+// 関門: BOM を抜粋から除いても、修正案の元のバイト位置と挿入の印が揃う。
+#[test]
+fn bom_is_hidden_in_edited_first_line() {
+    use crate::diag::{Edit, Help};
+    let mut sources = SourceTable::new();
+    let file = add_source(&mut sources, "\u{FEFF}abc\n".as_bytes());
+    let mut diag = check_diag("edit");
+    diag.helps.push(Help {
+        message: "replace".into(),
+        edits: vec![Edit {
+            span: span(file, 4, 1),
+            replacement: "X".into(),
+        }],
+    });
+    let text = render_one_text(&diag, &sources, TextOptions { color: false });
+    assert!(text.contains(" 1 | aXc\n   |  ~\n"), "{text}");
 }

@@ -1,4 +1,4 @@
-//! 初回リリース版の段別の時間と回収の費用を測る（設計書 07-02、実装プラン C16）。
+//! 初回リリース版の段別の時間と回収の費用を測る（設計書 07-02「測る項目」）。
 //! 開発用の例なので、文言を `text` にまとめる規約は対象外とする。lint は処理系と同じである。
 
 use std::path::Path;
@@ -21,7 +21,10 @@ struct Options {
 
 fn options() -> Result<Options, String> {
     let mut vm = VmConfig::default();
-    let mut heap = HeapConfig::default();
+    let mut heap = HeapConfig {
+        record_pauses: true,
+        ..HeapConfig::default()
+    };
     let mut mode = ExecMode::Direct;
     let mut repeat_check = 1;
     let mut args = std::env::args().skip(1);
@@ -67,7 +70,7 @@ fn positive(value: &str) -> Result<u32, String> {
     Ok(count)
 }
 
-// 百分位は nearest-rank とし、標本がない場合を 0 として出す（実装プラン C16）。
+// 百分位は nearest-rank とし、標本がない場合を 0 として出す。
 fn percentile(sorted: &[u64], percent: usize) -> Result<u64, String> {
     if sorted.is_empty() {
         return Ok(0);
@@ -111,7 +114,7 @@ fn emit(stats: &HeapStats, times: [u128; 5], options: &Options) -> Result<(), St
         percentile(&pauses, 99)?,
         pauses.last().copied().unwrap_or(0),
     );
-    // R33 は R12 と同じく全実行の標本を合わせた百分位も求める。
+    // 全実行の標本を合わせた百分位も求める。
     // 既存の整数だけの統計行を保ち、個々の停止時間は別の行で出す。
     eprintln!(
         "bench-pauses: {}",

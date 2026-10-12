@@ -91,6 +91,8 @@ fn parse_bp(p: &mut Parser, depth: u32, min: u8) -> PResult<Box<Expr>> {
     }
     continue_bp(p, depth, min, outer, lhs)
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn continue_bp(
     p: &mut Parser,
     depth: u32,
@@ -141,6 +143,8 @@ fn continue_bp(
     p.deepest = height.max(outer);
     Ok(lhs)
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_binary(
     p: &mut Parser,
     op: Infix,
@@ -162,6 +166,8 @@ fn finish_binary(
         Infix::Pipe => Expr::Pipe(PipeExpr { id, span, lhs, rhs }),
     })
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_call(p: &mut Parser, callee: Box<Expr>, args: Vec<Arg>) -> Box<Expr> {
     let span = span_of(&callee).to(p.span_from(p.pos.saturating_sub(1)));
     Box::new(Expr::Call(CallExpr {
@@ -171,6 +177,9 @@ fn finish_call(p: &mut Parser, callee: Box<Expr>, args: Vec<Arg>) -> Box<Expr> {
         args,
     }))
 }
+// 誤りのときだけ通るので、正常な再帰の枠に置かない（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[cold]
+#[inline(never)]
 fn report_chain(p: &mut Parser, middle: Span) {
     let operator = p.peek().span;
     // 演算子の前の空白も挿入点まで含め、直した行の空白が重複しないようにする。
@@ -193,6 +202,9 @@ fn report_chain(p: &mut Parser, middle: Span) {
             .build(),
     );
 }
+// 誤りのときだけ通るので、正常な再帰の枠に置かない（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[cold]
+#[inline(never)]
 fn skip_dot(p: &mut Parser, depth: u32, lhs: Box<Expr>) -> PResult<Box<Expr>> {
     let from = p.pos;
     let start = span_of(&lhs);
@@ -223,6 +235,8 @@ pub(super) fn record_ahead(p: &Parser) -> bool {
             || p.peek_nth_kind(1) == TokenKind::LowerIdent
                 && p.peek_nth_kind(2) == TokenKind::Colon)
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_primary(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.enter(depth)?;
     if p.at(TokenKind::KwReturn) {
@@ -311,6 +325,8 @@ fn parse_primary(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
         | TokenKind::Eof => parse_leaf(p, depth),
     }
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_leaf(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     // レコードの更新元は深さの上限まで再帰する。リテラルや診断の組み立てを
     // 同じ枠に置くと、上限内でもスタックを使い切る（設計書 02-03「入れ子の深さ」）。
@@ -322,6 +338,8 @@ fn parse_leaf(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     }
     parse_literal_or_error(p)
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_literal_or_error(p: &mut Parser) -> PResult<Box<Expr>> {
     if p.at(TokenKind::Error) {
         return Ok(Box::new(Expr::Error(p.error_token_node())));
@@ -342,11 +360,15 @@ fn parse_literal_or_error(p: &mut Parser) -> PResult<Box<Expr>> {
     }
     Err(p.unexpected(text::EXPRESSION))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_foreign_lambda(p: &mut Parser) -> PResult<Box<Expr>> {
     let start = p.pos;
     foreign::fn_form(p, "lambda");
     Ok(Box::new(Expr::Error(p.error_node_from(start))))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_name(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let start = p.pos;
     let upper = p.at(TokenKind::UpperIdent);
@@ -361,6 +383,8 @@ fn parse_name(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     }
     Ok(finish_name(p, start, path))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_name(p: &mut Parser, start: usize, path: Vec<Name>) -> Box<Expr> {
     Box::new(Expr::Name(NameExpr {
         id: p.node_id(),
@@ -368,6 +392,8 @@ fn finish_name(p: &mut Parser, start: usize, path: Vec<Name>) -> Box<Expr> {
         path,
     }))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_return(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let start = p.pos;
     let span = p.bump().span;
@@ -381,6 +407,8 @@ fn parse_return(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
         value,
     })))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_unary(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let start = p.pos;
     let op = if p.at(TokenKind::Minus) {
@@ -403,6 +431,8 @@ fn parse_unary(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
         operand,
     })))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_paren(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let start = p.pos;
     p.bump();
@@ -426,6 +456,8 @@ fn parse_paren(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.expect(TokenKind::RParen)?;
     Ok(finish_paren(p, start, inner))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_paren(p: &mut Parser, start: usize, inner: Box<Expr>) -> Box<Expr> {
     Box::new(Expr::Paren(ParenExpr {
         id: p.node_id(),
@@ -480,6 +512,8 @@ fn push_arg(p: &mut Parser, depth: u32, out: &mut Vec<Arg>) -> PResult<()> {
     }
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_list(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let start = p.pos;
     p.bump();
@@ -508,6 +542,8 @@ fn push_list_elem(p: &mut Parser, depth: u32, out: &mut Vec<ListElem>) -> PResul
     out.push(ListElem::Expr(*expr));
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_list(p: &mut Parser, start: usize, elems: Vec<ListElem>) -> Box<Expr> {
     let list = ListExpr {
         id: p.node_id(),
@@ -518,7 +554,7 @@ fn finish_list(p: &mut Parser, start: usize, elems: Vec<ListElem>) -> Box<Expr> 
     Box::new(Expr::List(list))
 }
 
-/// ブロックを終える語。`WithCase` は F04 の `handle` の本体で使う。
+/// ブロックを終える語。`WithCase` は `handle` の本体で使う。
 #[derive(Clone, Copy)]
 pub(super) enum BlockEnd {
     End,
@@ -548,8 +584,8 @@ fn block_end(p: &Parser, end: BlockEnd) -> bool {
     }
 }
 fn legacy_clause_after_with(p: &Parser) -> bool {
-    // F04 の旧式の節を診断するため、foreign::when_ahead と同じく括弧の外の ':'
-    // まで確かめる。リソースの束縛や when の呼び出しとは区別する（実装プラン F04）。
+    // 旧式の節を診断するため、foreign::when_ahead と同じく括弧の外の ':'
+    // まで確かめる。リソースの束縛や when の呼び出しとは区別する。
     if !p.tokens.get(p.pos.saturating_add(1)).is_some_and(
         |t| matches!(&t.value, crate::syntax::token::TokenValue::Ident(s) if s == "when"),
     ) {
@@ -613,12 +649,62 @@ pub(super) fn parse_block(p: &mut Parser, depth: u32, end: BlockEnd) -> PResult<
         if p.symbol(";") {
             p.bump();
         } else if !p.at(TokenKind::Newline) && !block_end(p, end) {
-            p.unexpected(text::NEWLINE_OR_END);
+            if p.at(TokenKind::LBracket)
+                && p.tokens.get(p.pos.saturating_sub(1)).is_some_and(|token| {
+                    matches!(token.kind, TokenKind::LowerIdent | TokenKind::UpperIdent)
+                })
+            {
+                call_type_arguments(p);
+            } else {
+                p.unexpected(text::NEWLINE_OR_END);
+            }
             p.recover(p.pos, Recovery::Line);
         }
         p.skip_newlines();
     }
     Ok(finish_block(p, start, stmts))
+}
+#[cold]
+#[inline(never)]
+fn call_type_arguments(p: &mut Parser) {
+    let token = p.peek();
+    let mut d = DiagBuilder::new(DiagCode::E0201)
+        .arg("expected", text::NEWLINE_OR_END)
+        .arg("found", text::describe(token))
+        .primary(token.span);
+    let mut nesting = 0_usize;
+    let mut end = None;
+    for (index, token) in p.tokens.iter().enumerate().skip(p.pos) {
+        if matches!(token.kind, TokenKind::LBracket | TokenKind::LParen) {
+            nesting = nesting.saturating_add(1);
+        } else if matches!(token.kind, TokenKind::RBracket | TokenKind::RParen) {
+            nesting = nesting.saturating_sub(1);
+            if nesting == 0 {
+                if token.kind == TokenKind::RBracket
+                    && p.tokens
+                        .get(index.saturating_add(1))
+                        .is_some_and(|t| t.kind == TokenKind::LParen)
+                {
+                    end = Some(token.span);
+                }
+                break;
+            }
+        } else if matches!(token.kind, TokenKind::Eof | TokenKind::Newline) {
+            break;
+        }
+    }
+    d = if let Some(end) = end {
+        d.help_edits(
+            "type_arguments",
+            vec![Edit {
+                span: token.span.to(end),
+                replacement: String::new(),
+            }],
+        )
+    } else {
+        d.help("type_arguments")
+    };
+    p.report(d.build());
 }
 fn push_stmt(p: &mut Parser, depth: u32, out: &mut Vec<Stmt>) -> PResult<()> {
     p.enter(depth)?;
@@ -657,6 +743,8 @@ fn recover_statement(p: &mut Parser, start: usize, out: &mut Vec<Stmt>) {
     p.recover(start, Recovery::Line);
     out.push(Stmt::Error(p.error_node_from(start)));
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_block(p: &mut Parser, start: usize, stmts: Vec<Stmt>) -> Box<Block> {
     let span = stmts.first().zip(stmts.last()).map_or_else(
         || p.empty_span(),
@@ -739,6 +827,8 @@ fn push_bind(p: &mut Parser, depth: u32, out: &mut Vec<Stmt>) -> PResult<()> {
     finish_bind(p, start, (mode, keyword_span), *pattern, ty, value, out);
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_bind(
     p: &mut Parser,
     start: usize,
@@ -759,6 +849,8 @@ fn finish_bind(
     })));
 }
 
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_if(p: &mut Parser, depth: u32, close: bool) -> PResult<Box<Expr>> {
     p.enter(depth)?;
     let start = p.pos;
@@ -807,12 +899,16 @@ fn parse_else(p: &mut Parser, depth: u32) -> PResult<Option<Box<ElseBranch>>> {
     };
     Ok(Some(Box::new(ElseBranch::Block(*block))))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_else_if(expr: Box<Expr>) -> PResult<Box<ElseBranch>> {
     let Expr::If(branch) = *expr else {
         return Err(Fail);
     };
     Ok(Box::new(ElseBranch::If(Box::new(branch))))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_if(
     p: &mut Parser,
     start: usize,
@@ -828,6 +924,8 @@ fn finish_if(
         else_branch: else_branch.map(|b| *b),
     }))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_lambda(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let start = p.pos;
     let opened = p.bump().span;
@@ -842,12 +940,15 @@ fn parse_lambda(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
         None
     };
     let uses = if ret.is_some() {
-        types::parse_uses(p, depth)?
+        types::parse_uses(p, depth, None)?
     } else {
         None
     };
     let saved = p.ctx;
-    if p.ctx.clause == ClauseContext::Direct {
+    if matches!(
+        p.ctx.clause,
+        ClauseContext::Direct | ClauseContext::BlockedByGuard
+    ) {
         p.ctx.clause = ClauseContext::Blocked;
     }
     p.ctx.escape = EscapeContext::Allowed;
@@ -861,6 +962,8 @@ fn parse_lambda(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.close_block(TokenKind::KwLambda);
     Ok(finish_lambda(p, start, params, ret, uses, *body))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_lambda(
     p: &mut Parser,
     start: usize,
@@ -878,6 +981,8 @@ fn finish_lambda(
         body,
     }))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn parse_match(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let start = p.pos;
     let opened = p.bump().span;
@@ -886,30 +991,7 @@ fn parse_match(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
         return Err(Fail);
     };
     if p.at(TokenKind::Newline) && p.peek_nth_kind(1) == TokenKind::KwWith {
-        let gap = Span {
-            start: span_of(&scrutinee).end,
-            end: p
-                .tokens
-                .get(p.pos.saturating_add(1))
-                .map_or(p.peek().span.start, |t| t.span.start),
-            file: p.file,
-        };
-        let primary = p
-            .tokens
-            .get(p.pos.saturating_add(1))
-            .map_or(p.peek().span, |t| t.span);
-        p.report(
-            DiagBuilder::new(DiagCode::E0215)
-                .primary(primary)
-                .help_edits(
-                    "same_line",
-                    vec![Edit {
-                        span: gap,
-                        replacement: " ".to_owned(),
-                    }],
-                )
-                .build(),
-        );
+        report_match_with_newline(p, &scrutinee);
         p.advance();
     }
     let braces = p.symbol("{");
@@ -952,6 +1034,38 @@ fn parse_match(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     p.close_block(TokenKind::KwMatch);
     Ok(finish_match(p, start, scrutinee, arms))
 }
+// 診断を作る枠は正常な match の再帰に積まない（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[cold]
+#[inline(never)]
+fn report_match_with_newline(p: &mut Parser, scrutinee: &Expr) {
+    let gap = Span {
+        start: span_of(scrutinee).end,
+        end: p
+            .tokens
+            .get(p.pos.saturating_add(1))
+            .map_or(p.peek().span.start, |t| t.span.start),
+        file: p.file,
+    };
+    let primary = p
+        .tokens
+        .get(p.pos.saturating_add(1))
+        .map_or(p.peek().span, |t| t.span);
+    p.report(
+        DiagBuilder::new(DiagCode::E0215)
+            .primary(primary)
+            .help_edits(
+                "same_line",
+                vec![Edit {
+                    span: gap,
+                    replacement: " ".to_owned(),
+                }],
+            )
+            .build(),
+    );
+}
+
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_match(
     p: &mut Parser,
     start: usize,
@@ -965,6 +1079,8 @@ fn finish_match(
         arms,
     }))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn push_arm(
     p: &mut Parser,
     depth: u32,
@@ -1014,7 +1130,8 @@ fn push_arm(
     } else if (when.is_some() || default) && p.at(TokenKind::Colon) {
         p.bump();
     } else if p.at(TokenKind::Comma) {
-        // F04 の仮の本体がまだ読まない選択肢は、矢印まで回復して一つの誤りで続ける。
+        // ガードの後にコンマで選択肢を続けた誤りは、矢印まで回復して一つの誤りで続ける
+        // （設計書 02-03「誤りからの回復」）。
         p.unexpected(text::token_name(TokenKind::Arrow));
         while !p.at(TokenKind::Arrow)
             && !p.at(TokenKind::Newline)
@@ -1042,6 +1159,8 @@ fn push_arm(
     finish_arm(p, start, patterns, guard, *body, out);
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_arm(
     p: &mut Parser,
     start: usize,
@@ -1062,6 +1181,8 @@ fn finish_arm(
         body,
     });
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn foreign_case(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let start = p.pos;
     let keyword = p.bump().span;

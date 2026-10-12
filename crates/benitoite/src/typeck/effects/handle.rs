@@ -5,6 +5,7 @@ use super::super::{
     infer::{Constraint, IEffect, IFnTy, ITy, ReasonKind},
 };
 use crate::diag::{DiagBuilder, DiagCode};
+use crate::modules::ModuleKind;
 use crate::resolve::BindingKind;
 use crate::syntax::ast::HandleExpr;
 use crate::types::builtin::BuiltinEffectId;
@@ -50,12 +51,16 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
                         .join("."),
                 );
             if op
-                .and_then(|op| ctx.decls.out.decl_types.get(op))
-                .is_some_and(|s| {
-                    s.effects
-                        .names
-                        .contains(&EffectName::Builtin(BuiltinEffectId::STATE))
-                })
+                .and_then(|op| ctx.decls.resolved.bindings.get(op))
+                .and_then(|b| ctx.decls.modules.get(b.module))
+                .is_some_and(|m| matches!(m.kind, ModuleKind::Prelude | ModuleKind::Stdlib))
+                && op
+                    .and_then(|op| ctx.decls.out.decl_types.get(op))
+                    .is_some_and(|s| {
+                        s.effects
+                            .names
+                            .contains(&EffectName::Builtin(BuiltinEffectId::STATE))
+                    })
             {
                 d = d.note("state");
             }
@@ -99,6 +104,19 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
                 })
                 .collect();
             ctx.clause_params.insert(clause.id, s.type_params.clone());
+            ctx.clause_ops.insert(
+                clause.id,
+                (
+                    clause
+                        .op
+                        .path
+                        .iter()
+                        .map(|n| n.text.as_str())
+                        .collect::<Vec<_>>()
+                        .join("."),
+                    clause.op.span,
+                ),
+            );
             (
                 s.params
                     .iter()
@@ -140,7 +158,6 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
             ctx.record_type(param.id, t);
         }
         ctx.clauses.push(ClauseContext {
-            node: clause.id,
             op_ret: ret,
             handle_ty: ty.clone(),
         });

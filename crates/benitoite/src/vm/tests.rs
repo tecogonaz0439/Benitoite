@@ -1,5 +1,6 @@
-//! 第 1 段の VM の契約を、R05 の組み立てと本番のヒープ・組み込みの表をつないで確かめる。
-// テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+//! VM の契約を、バイトコードの組み立てと本番のヒープ・組み込みの表をつないで確かめる
+//! （設計書 02-08「実行の手順」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -14,11 +15,13 @@ use crate::builtins::table::tags;
 use crate::bytecode::asm::ProgramBuilder;
 use crate::bytecode::instr::{Instr, Opcode};
 use crate::bytecode::liveness::LiveItem;
-use crate::bytecode::program::{CaptureSource, ConstDesc, MainKind};
+use crate::bytecode::program::{
+    CaptureSource, ConstDesc, ImplIdx, ImplInfo, MainKind, MethodInfo, TraitIdx, TraitInfo,
+};
 use crate::runtime::heap::{CheckedLen, HeapConfig, Slot, Value};
 use crate::runtime::io::services::RunInput;
-use crate::runtime::{ResourceError, RuntimeError, Stop, Stream, list};
-use crate::vm::dispatch::test_support::TestIo;
+use crate::runtime::{ResourceError, RuntimeError, Stop, Stream};
+use crate::vm::dispatch::test_support::{TestIo, constant, reachable_object_ids};
 
 #[path = "verification_tests.rs"]
 mod verification_tests;
@@ -402,11 +405,10 @@ fn constants_data_and_main_outcomes() {
 }
 
 // 関門: 定数表だけを根にした回収の後も、同じ番号の LOADK が同じ対象を返す。
-// 文字列以外の種類でもキャッシュの保存や Trace を漏らす退行を、VM の入口で検出する
-// （実装プラン R17「受け入れテスト」。既存の文字列・写像・集合のテストを補う）。
+// 文字列以外の種類でもキャッシュの保存や Trace を漏らす退行を、VM の入口で検出する。
 #[test]
 fn heap_constants_keep_identity_when_only_the_cache_roots_them() {
-    for kind in 0..7 {
+    for kind in 0..8 {
         let mut b = ProgramBuilder::new();
         let main = b.proto("main", 0, 5).unwrap();
         let leaf = b.proto("leaf", 0, 1).unwrap();
@@ -429,6 +431,26 @@ fn heap_constants_keep_identity_when_only_the_cache_roots_them() {
                 mantissa: 123,
                 scale: 2,
             },
+            7 => {
+                let trait_ = TraitIdx(u32::try_from(b.program.traits.len()).unwrap());
+                b.program.traits.push(TraitInfo {
+                    name: "Cached".into(),
+                    methods: vec![MethodInfo {
+                        name: "call".into(),
+                        arity: 0,
+                    }],
+                    supers: vec![],
+                });
+                let imp = ImplIdx(u32::try_from(b.program.impls.len()).unwrap());
+                b.program.impls.push(ImplInfo {
+                    name: "Cached[Unit]".into(),
+                    trait_,
+                    dict_arity: 0,
+                    methods: vec![leaf],
+                    supers: vec![],
+                });
+                ConstDesc::Dict(imp)
+            }
             _ => panic!("unknown constant test kind"),
         };
         let constant = b.constant(desc).unwrap();
@@ -440,7 +462,7 @@ fn heap_constants_keep_identity_when_only_the_cache_roots_them() {
         b.code(main)
             .unwrap()
             .op(Opcode::Io, 4, u16::try_from(pause.0).unwrap(), 0);
-        // 第 2 段は要求を返す前にも整理する。最初の観察までは二つの値を生存させ、
+        // 要求を返す前にも整理する。最初の観察までは二つの値を生存させ、
         // 観察後に明示的に消してキャッシュだけを根にする（設計書 02-08「枠を降ろす原因と処理」）。
         b.code(main).unwrap().op(Opcode::Move, 4, 0, 0);
         b.code(main).unwrap().op(Opcode::Move, 4, 1, 0);
@@ -473,6 +495,7 @@ fn heap_constants_keep_identity_when_only_the_cache_roots_them() {
             identity
         });
         vm.heap.collect(&vm.state);
+        assert!(vm.heap.object_ids().contains(&identity), "kind {kind}");
         assert_eq!(vm.heap.verify(&vm.state), Ok(()));
         vm.serve_request(&mut services.rt, first);
         let second = request(&mut vm, &mut services);
@@ -871,7 +894,7 @@ fn io_modes_write_the_same_output_and_finish_reports_sink_failure() {
         vm.run(services.runtime(ExecMode::Request)),
         VmStep::Finished(MainOutcome::Ok)
     );
-    // 書き込みは書き出しスレッドへ渡るので、完了の確認で失敗を取り込む（R26）。
+    // 書き込みは書き出しスレッドへ渡るので、完了の確認で失敗を取り込む。
     assert!(matches!(
         services.rt.stdout.finish(),
         Err(crate::runtime::io::output::WriteFailure::Io(_))
@@ -923,9 +946,9 @@ fn roots_constants_and_waiting_arguments_survive_collection() {
         },
     );
     vm.start_main().unwrap();
-    let root = vm.heap.epoch(|ctx| {
+    let (root, root_id) = vm.heap.epoch(|ctx| {
         let v = ctx.alloc_str("only root stack", "test").unwrap();
-        vm.state.roots.push(ctx, v)
+        (vm.state.roots.push(ctx, v), ctx.object_id(v).unwrap())
     });
     let mut services = io();
     let first = request(&mut vm, &mut services);
@@ -937,27 +960,23 @@ fn roots_constants_and_waiting_arguments_survive_collection() {
     vm.serve_request(&mut services.rt, first);
     let second = request(&mut vm, &mut services);
     // 命令ごとの消去には依存せず、待つ IO の引数以外の窓を明示して空にする。
-    // 定数の表・根の保存領域・待つ引数の三つだけを根にするという意図を保つ（実装プラン R16）。
-    vm.heap.epoch(|ctx| {
+    // 定数の表・根の保存領域・待つ引数の三つだけを根にするという意図を保つ。
+    let waiting_id = vm.heap.epoch(|ctx| {
+        let regs = &crate::vm::dispatch::test_support::stack(&vm.state, ctx).segments[0].regs;
+        let id = ctx.object_id(ctx.load(&regs[1])).unwrap();
         crate::vm::dispatch::test_support::clear_waiting_registers(&mut vm.state, ctx, &[0, 2, 3]);
-        let cached = ctx.load(
-            vm.state
-                .constants
-                .get(usize::try_from(string.0).unwrap())
-                .unwrap()
-                .as_ref()
-                .unwrap(),
-        );
-        assert_eq!(ctx.object_id(cached), Some(cached_id));
-        assert_eq!(ctx.str(cached), Some("cached"));
-        assert_eq!(
-            ctx.str(vm.state.roots.get(ctx, root).unwrap()),
-            Some("only root stack")
-        );
+        id
     });
     vm.heap.collect(&vm.state);
+    let objects = vm.heap.object_ids();
+    for id in [cached_id, root_id, waiting_id] {
+        assert!(objects.contains(&id));
+    }
     assert_eq!(vm.heap.verify(&vm.state), Ok(()));
     vm.heap.epoch(|ctx| {
+        let cached = constant(&vm.state, ctx, string);
+        assert_eq!(ctx.object_id(cached), Some(cached_id));
+        assert_eq!(ctx.str(cached), Some("cached"));
         assert_eq!(
             ctx.str(ctx.load(
                 &crate::vm::dispatch::test_support::stack(&vm.state, ctx).segments[0].regs[1]
@@ -986,34 +1005,39 @@ fn roots_constants_and_waiting_arguments_survive_collection() {
 }
 
 #[test]
-fn unimplemented_and_unknown_instructions_stop_and_disassembly_lists_supported() {
+fn invalid_operands_and_unknown_instructions_stop_and_disassembly_lists_all() {
     let mut b = ProgramBuilder::new();
     let main = b.proto("main", 0, 1).unwrap();
     b.loadk(main, 0, ConstDesc::Unit).unwrap();
     b.code(main).unwrap().ret(0);
     let mut p = b.finish(main).unwrap();
     let opcodes: Vec<_> = (0..=u8::MAX).filter_map(Opcode::from_u8).collect();
-    let supported = |op: Opcode| {
-        op.in_stage1()
-            || matches!(
-                op,
-                Opcode::GetDict
-                    | Opcode::Dict
-                    | Opcode::Super
-                    | Opcode::Method
-                    | Opcode::TailMethod
-                    | Opcode::Escape
-            )
-    };
-    // 型クラスの命令の成功と誤値の拒否は R34 のテストが確かめる。ここに残すと、
-    // 表のないプログラムを別の理由で拒んだことを、未実装の拒否と取り違える。
-    // ESCAPE の成功と境界の検査は R21 のテストが確かめる。
-    let stage_two: Vec<_> = opcodes
-        .iter()
-        .filter(|op| !supported(**op))
-        .copied()
-        .collect();
-    for opcode in stage_two {
+    // 検証器を通していない不正な被演算子のプログラムでも、命令は panic せず、処理系の不具合
+    // （`Stop::Internal`）として止まる。未知の命令も同じである。型クラスと ESCAPE の境界は
+    // それぞれのテストで確かめる（AGENTS.md「実装の規約」の「失敗を panic で表さない」、
+    // 設計書 02-08「実行の手順」）。
+    let invalid_operands = [
+        Opcode::AddD,
+        Opcode::SubD,
+        Opcode::MulD,
+        Opcode::DivD,
+        Opcode::NegD,
+        Opcode::EqD,
+        Opcode::LtD,
+        Opcode::LeD,
+        Opcode::EqBt,
+        Opcode::LtBt,
+        Opcode::LeBt,
+        Opcode::Lazy,
+        Opcode::Force,
+        Opcode::Update,
+        Opcode::Use,
+        Opcode::Release,
+        Opcode::Handle,
+        Opcode::Perform,
+        Opcode::Resume,
+    ];
+    for opcode in invalid_operands {
         p.protos[0].code[0] = Instr::abc(opcode, 0, 0, 0);
         assert!(
             matches!(
@@ -1046,15 +1070,11 @@ fn unimplemented_and_unknown_instructions_stop_and_disassembly_lists_supported()
         .stop,
         Stop::Internal(_)
     ));
-    let stage_one: Vec<_> = opcodes.into_iter().filter(|op| supported(*op)).collect();
-    p.protos[0].code = stage_one
-        .iter()
-        .map(|op| Instr::abc(*op, 1, 2, 3))
-        .collect();
+    p.protos[0].code = opcodes.iter().map(|op| Instr::abc(*op, 1, 2, 3)).collect();
     let output = crate::bytecode::disasm::disassemble(&p);
     let lines: Vec<_> = output.lines().skip(1).collect();
-    assert_eq!(lines.len(), stage_one.len());
-    for (line, opcode) in lines.iter().zip(stage_one) {
+    assert_eq!(lines.len(), opcodes.len());
+    for (line, opcode) in lines.iter().zip(opcodes) {
         assert!(line.split_whitespace().any(|word| word == opcode.name()));
     }
 }
@@ -1293,8 +1313,8 @@ pub(super) fn check_dead_list_at_safepoints(count: u16) {
         let range = b
             .named_builtin("List.range", 2, Capability::Pure, None)
             .unwrap();
-        // リストのセル数だけを大きくする。レジスタ数まで増やすと、ここで調べない
-        // 生存解析の費用が増える（実装プラン R09「生存の情報と回収」）。
+        // リストの要素数だけを大きくする。レジスタ数まで増やすと、ここで調べない
+        // 生存解析の費用が増える。
         b.loadk_int(main, 0, 0).unwrap();
         b.loadk_int(main, 1, i64::from(count)).unwrap();
         b.code(main)
@@ -1322,31 +1342,31 @@ pub(super) fn check_dead_list_at_safepoints(count: u16) {
             HeapConfig {
                 stress,
                 trigger_min_bytes: 1,
+                // 観察では確保しない。再開後の小さな確保（関数の定数と "after"）でも
+                // 次の安全点で回収するよう、生存量に比例する閾値を 0 にする（設計書 02-09「メモリの管理」）。
+                trigger_factor_percent: 0,
                 ..HeapConfig::default()
             },
         );
         vm.start_main().unwrap();
         let mut services = io();
         let id = request(&mut vm, &mut services);
-        let cells = vm.heap.epoch(|ctx| {
-            let mut value = ctx.load(
-                &crate::vm::dispatch::test_support::stack(&vm.state, ctx).segments[0].regs[2],
-            );
-            let mut cells = vec![];
-            while list::len(ctx, value).unwrap() > 0 {
-                cells.push(ctx.object_id(value).unwrap());
-                value = list::tail(ctx, value).unwrap().unwrap();
-            }
-            cells
+        let objects = vm.heap.epoch(|ctx| {
+            let regs = &crate::vm::dispatch::test_support::stack(&vm.state, ctx).segments[0].regs;
+            reachable_object_ids(ctx, ctx.load(&regs[2]))
         });
-        assert_eq!(cells.len(), usize::from(count));
+        // 頭と全葉を含める下限で、元のリスト全体を辿ったことを確かめる
+        // （設計書 03-06「List の内部の表現」）。
+        assert!(objects.len() > usize::from(count).div_ceil(32));
+        let collections = vm.heap_stats().collections;
         vm.serve_request(&mut services.rt, id);
-        // run の呼び出し前の安全点で回収した直後に確かめる。枠をすべて
-        // 降ろした後の直接の collect だけでは、安全点の整理漏れを捕まえない（R16）。
+        // 再開後に run が安全点で回収し、次の IO 要求を返した時点で確かめる。枠をすべて
+        // 降ろした後の直接の collect だけでは、安全点の整理漏れを捕まえない。
         let after = request(&mut vm, &mut services);
+        assert!(vm.heap_stats().collections > collections);
         let remaining = vm.heap.object_ids();
-        for cell in &cells {
-            assert!(!remaining.contains(cell));
+        for object in &objects {
+            assert!(!remaining.contains(object));
         }
         assert_eq!(vm.heap.verify(&vm.state), Ok(()));
         vm.serve_request(&mut services.rt, after);
@@ -1370,9 +1390,10 @@ pub(super) fn check_dead_list_at_safepoints(count: u16) {
 }
 
 // 関門: 新しい末尾呼び出しの窓に旧値が残る三つの場合を、実際の安全点の回収で確かめる。
-// 既存の回収の精度のテストは、呼び出し元の窓の再利用を含まない（R18、設計書 02-08「枠を降ろす原因と処理」）。
+// 既存の回収の精度のテストは、呼び出し元の窓の再利用を含まない（設計書 02-08「枠を降ろす原因と処理」）。
 #[test]
 fn tail_window_old_objects_are_cleared_at_collection() {
+    let count: u16 = if cfg!(miri) { 8 } else { 128 };
     for size in [4, 8, 12] {
         let mut b = ProgramBuilder::new();
         let main = b.proto("main", 0, 16).unwrap();
@@ -1391,8 +1412,7 @@ fn tail_window_old_objects_are_cleared_at_collection() {
         finish_value(&mut b, main, 2, None);
 
         b.loadk_int(caller, 0, 0).unwrap();
-        b.loadk_int(caller, 1, if cfg!(miri) { 8 } else { 128 })
-            .unwrap();
+        b.loadk_int(caller, 1, i64::from(count)).unwrap();
         b.code(caller)
             .unwrap()
             .op(Opcode::Prim, 0, u16::try_from(range.0).unwrap(), 0);
@@ -1438,20 +1458,13 @@ fn tail_window_old_objects_are_cleared_at_collection() {
         .unwrap();
         assert!(base > 0);
         let old = vm.heap.epoch(|ctx| {
-            let mut value = ctx.load(
-                &crate::vm::dispatch::test_support::stack(&vm.state, ctx).segments[0].regs[base],
-            );
-            let mut ids = vec![];
-            while list::len(ctx, value).unwrap() > 0 {
-                ids.push(ctx.object_id(value).unwrap());
-                value = list::tail(ctx, value).unwrap().unwrap();
-            }
-            ids
+            let regs = &crate::vm::dispatch::test_support::stack(&vm.state, ctx).segments[0].regs;
+            reachable_object_ids(ctx, ctx.load(&regs[base]))
         });
-        assert!(!old.is_empty());
+        assert!(old.len() > usize::from(count).div_ceil(32));
         vm.serve_request(&mut services.rt, before);
         // 回収を caller の TAILCALL の前ではなく、callee の CALL の前で起こす。
-        // 外部 IO の停止位置で予算を与え、本番の run の整理と回収を通す（R18）。
+        // 外部 IO の停止位置で予算を与え、本番の run の整理と回収を通す。
         vm.heap.epoch(|ctx| {
             let task = vm.state.tasks.get(ctx, vm.state.current_task).unwrap();
             ctx.host_mut::<crate::vm::task::TaskObj, _>(task, |t, _| {
@@ -1528,11 +1541,11 @@ fn tail_window_old_objects_are_cleared_at_collection() {
 
 // 関門: 呼び出し元の窓が 0 以外から始まる場合に、引数と結果の旧値だけを除き、
 // 呼び出しをまたぐ値を残す。既存の回収テストは未書き込みの結果の旧値を持たない。
-// run が行う回収を使い、heap の計数・VM の出力・停止位置で契約を確かめる（R16）。
+// run が行う回収を使い、heap の計数・VM の出力・停止位置で契約を確かめる。
 #[test]
 fn suspended_callers_release_old_arguments_and_results_before_collection() {
     for stop in [false, true] {
-        let count = if cfg!(miri) { 8 } else { 1024 };
+        let count: u16 = if cfg!(miri) { 8 } else { 1024 };
         let mut b = ProgramBuilder::new();
         let main = b.proto("main", 0, 16).unwrap();
         let caller = b.proto("caller", 0, 8).unwrap();
@@ -1557,10 +1570,10 @@ fn suspended_callers_release_old_arguments_and_results_before_collection() {
         finish_value(&mut b, main, 2, Some("Integer.toString"));
 
         b.loadk_int(caller, 0, 0).unwrap();
-        b.loadk_int(caller, 1, count).unwrap();
+        b.loadk_int(caller, 1, i64::from(count)).unwrap();
         b.code(caller).unwrap().op(Opcode::Prim, 1, range, 0);
         b.loadk_int(caller, 4, 0).unwrap();
-        b.loadk_int(caller, 5, count).unwrap();
+        b.loadk_int(caller, 5, i64::from(count)).unwrap();
         b.code(caller).unwrap().op(Opcode::Prim, 6, range, 4);
         b.loadk(caller, 7, ConstDesc::Str("keep".into())).unwrap();
         b.code(caller).unwrap().op(Opcode::Concat, 7, 7, 7);
@@ -1619,22 +1632,20 @@ fn suspended_callers_release_old_arguments_and_results_before_collection() {
             let regs = &crate::vm::dispatch::test_support::stack(&vm.state, ctx).segments[0].regs;
             let mut old = vec![];
             for reg in [1, 6] {
-                let mut value = ctx.load(&regs[base + reg]);
-                while list::len(ctx, value).unwrap() > 0 {
-                    old.push(ctx.object_id(value).unwrap());
-                    value = list::tail(ctx, value).unwrap().unwrap();
-                }
+                let ids = reachable_object_ids(ctx, ctx.load(&regs[base + reg]));
+                assert!(ids.len() > usize::from(count).div_ceil(32));
+                old.extend(ids);
             }
             (old, ctx.object_id(ctx.load(&regs[base + 7])).unwrap())
         });
-        assert_eq!(old.len(), usize::try_from(2 * count).unwrap());
+        let collections = vm.heap_stats().collections;
         vm.serve_request(&mut services.rt, before);
         let after = request(&mut vm, &mut services);
         let objects = vm.heap.object_ids();
         assert!(old.iter().all(|id| !objects.contains(id)));
         assert!(objects.contains(&kept));
         assert_eq!(vm.heap.verify(&vm.state), Ok(()));
-        assert!(vm.heap_stats().collections > 0);
+        assert!(vm.heap_stats().collections > collections);
         let collections = vm.heap_stats().collections;
         vm.serve_request(&mut services.rt, after);
         if stop {
@@ -1691,7 +1702,7 @@ fn consecutive_calls_program() -> CompiledProgram {
 }
 
 // 関門: 直前の CALL の結果は次の CALL の入口では引数である。最内側にも結果を除く
-// 規則を当てる退行を、動的な文字列の出力で検出する（設計書 02-08「枠を降ろす原因と処理」、実装プラン R16）。
+// 規則を当てる退行を、動的な文字列の出力で検出する（設計書 02-08「枠を降ろす原因と処理」）。
 #[test]
 fn consecutive_calls_keep_returned_heap_arguments_at_pre_call_safepoints() {
     let p = consecutive_calls_program();
@@ -1714,7 +1725,7 @@ fn consecutive_calls_keep_returned_heap_arguments_at_pre_call_safepoints() {
 }
 
 // 関門: 検証器をまだ持たない VM でも、不整合な情報で窓の一部を消さない。
-// 既存の正常なバイトコードでは None と空集合、昇順と範囲の検査の退行を捕まえない（R16）。
+// 既存の正常なバイトコードでは None と空集合、昇順と範囲の検査の退行を捕まえない。
 #[test]
 fn invalid_safepoint_information_is_conservative_or_an_internal_stop() {
     for case in 0..5 {
@@ -1843,7 +1854,7 @@ fn deep_returns_collect_requested_allocations_without_rust_recursion() {
 
 // 関門: 12 個の動的な引数を通常呼び出しと重なる末尾呼び出しで渡し、回収後の順序を守る。
 // 既存の末尾呼び出しは引数一つであり、未読の写し元を消す誤りと多引数の経路を捕まえない。
-// 組み立てから VM の出力まで確かめ、専用の公開 API を加えない（実装プラン R15）。
+// 組み立てから VM の出力まで確かめ、専用の公開 API を加えない。
 #[test]
 fn overlapping_tail_arguments_preserve_many_heap_values_in_order() {
     // 関門: 小さい作業領域と全レジスタを覆う作業領域の双方で、重なる窓から

@@ -5,13 +5,15 @@
 /// 処理系の不具合が起きたスレッド（02-10「処理系の不具合と処理系の制限の報告」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum FaultThread {
+    /// 主スレッド（CLI の外側の境界と、`fmt`・`test`・`skill` の本体）
+    Main,
     /// 検査・脱糖・コンパイルの段（`pipeline` の段のスレッド）
     Stage,
     /// VM のスレッド
     Vm,
-    /// 作業用のスレッド（10-10）
+    /// 作業用のスレッド
     Worker,
-    /// 書き出し用のスレッド（10-10）
+    /// 書き出し用のスレッド
     Writer,
 }
 
@@ -25,6 +27,7 @@ pub enum ReleaseCause {
 /// 報告の型板に埋める値の語（02-10「文言の言語」）。
 pub mod text {
     /// `FaultThread` の呼び名（`codes::text::INTERNAL_THREAD` の `{thread}`）
+    pub const THREAD_MAIN: &str = "main";
     pub const THREAD_STAGE: &str = "compiler";
     pub const THREAD_VM: &str = "VM";
     pub const THREAD_WORKER: &str = "worker";
@@ -63,10 +66,11 @@ use crate::runtime::{
 };
 use crate::vm::{DeadlockWaitKind, FrameRecord, InstrRef, SpawnRecord, StopInfo};
 
-/// 実行時エラー・資源の不足の報告を作る。`Stop` の値ごとのコードは 10-02「実行時エラー、資源の不足、処理系の制限」の表に従う。
+/// 実行時エラー・資源の不足の報告を作る。`Stop` の値ごとのコードは診断の規則に従う
+/// （設計書 02-10「実行時エラーと資源の不足の報告」）。
 /// 主な位置、呼び出しの履歴、タスクの起動の履歴は 02-08「実行時エラーの情報の記録」の 1〜4 で作る。
 /// 書き込みの失敗は主な位置と履歴を持たない。行き詰まり（R1001）は主な位置を持たず、段のない履歴と、待つタスクの並びを持つ。
-/// `Stop::Internal` は処理系の不具合の報告（`internal_diagnostic` と同じ形。スレッドは VM）にする。
+/// `Stop::Internal` は処理系の不具合の報告（`internal_diagnostic` と同じ形。panic ではないのでスレッドの注記なし）にする。
 pub fn stop_diagnostic(program: &CompiledProgram, info: &StopInfo) -> Diagnostic {
     let builder = match &info.stop {
         Stop::Runtime(RuntimeError::DivisionByZero) => DiagBuilder::new(DiagCode::R0101),
@@ -228,8 +232,9 @@ pub fn add_flush_failure(report: &mut Diagnostic, stream: Stream, reason: &str) 
 }
 
 /// 処理系の不具合の報告（02-10「処理系の不具合と処理系の制限の報告」）。コードを持たないので `DiagBuilder` を使わず、
-/// `Diagnostic` を直接組み立てる（kind は `Internal`、文言は `codes::text::INTERNAL_*`）。版・段・スレッド・panic の内容・
-/// 報告を求める文を注記に、バックトレースを `backtrace` に入れる。`stage` は段の名前、`message` は不具合の説明。
+/// `Diagnostic` を直接組み立てる（kind は `Internal`、文言は `codes::text::INTERNAL_*`）。版・段・報告を求める文と、
+/// panic のときだけスレッド・panic の内容を注記に、バックトレースを `backtrace` に入れる。
+/// `stage` は段の名前、`message` は不具合の説明。同じ説明を panic の内容と重ねて書かない。
 pub fn internal_diagnostic(
     stage: &str,
     message: &str,
@@ -237,6 +242,7 @@ pub fn internal_diagnostic(
     thread: FaultThread,
 ) -> Diagnostic {
     let thread = match thread {
+        FaultThread::Main => text::THREAD_MAIN,
         FaultThread::Stage => text::THREAD_STAGE,
         FaultThread::Vm => text::THREAD_VM,
         FaultThread::Worker => text::THREAD_WORKER,
@@ -251,12 +257,14 @@ pub fn internal_diagnostic(
             codes::text::INTERNAL_STAGE,
             &[("stage", String::from(stage))],
         ),
-        fill_template(
+    ];
+    if panic.is_some() {
+        notes.push(fill_template(
             codes::text::INTERNAL_THREAD,
             &[("thread", String::from(thread))],
-        ),
-    ];
-    if !message.is_empty() {
+        ));
+    }
+    if !message.is_empty() && panic.is_none_or(|panic| message != panic.message) {
         notes.push(String::from(message));
     }
     if let Some(panic) = panic {
@@ -320,7 +328,7 @@ pub fn frame_name(program: &CompiledProgram, proto: ProtoIdx) -> Option<FrameNam
 pub fn instr_span(program: &CompiledProgram, at: InstrRef) -> Option<Span> {
     let proto = program.proto(at.proto)?;
     let pc = usize::try_from(at.pc).ok()?;
-    // 位置の表だけに項目があっても、存在しない命令の位置とはしない（10-13）。
+    // 位置の表だけに項目があっても、存在しない命令の位置とはしない。
     proto.code.get(pc)?;
     proto.positions.get(pc).copied().flatten()
 }
@@ -448,7 +456,7 @@ fn task_origins(
 
 fn deadlock_diagnostic(program: &CompiledProgram, info: &StopInfo) -> Diagnostic {
     let mut report = DiagBuilder::new(DiagCode::R1001).build();
-    // 行き詰まりには段のない履歴を付ける。末尾呼び出しの注記は付けない（10-13）。
+    // 行き詰まりには段のない履歴を付ける。末尾呼び出しの注記は付けない。
     report.trace = Some(CallTrace {
         frames: Vec::new(),
         omitted: 0,
@@ -1267,6 +1275,7 @@ mod tests {
     #[test]
     fn internal_reports_order_notes_and_preserve_panic_details() {
         for (thread, name) in [
+            (FaultThread::Main, "main"),
             (FaultThread::Stage, "compiler"),
             (FaultThread::Vm, "VM"),
             (FaultThread::Worker, "worker"),
@@ -1296,13 +1305,16 @@ mod tests {
                         codes::text::INTERNAL_REPORT.into()
                     ]
                 );
+                let duplicate = internal_diagnostic("run", &panic.message, Some(&panic), thread);
+                assert_eq!(duplicate.notes.len(), 5);
+                assert!(!duplicate.notes.iter().any(|note| note == "boom"));
                 assert_eq!(d.backtrace.as_deref(), Some("bt"));
                 assert_eq!(d.primary, None);
                 assert_eq!(d.trace, None);
             }
         }
         let d = internal_diagnostic("check", "", None, FaultThread::Stage);
-        assert_eq!(d.notes.len(), 4);
+        assert_eq!(d.notes.len(), 3);
         assert_eq!(d.backtrace, None);
         let p = chain();
         assert_eq!(

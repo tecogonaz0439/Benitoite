@@ -24,8 +24,8 @@ done < <(find "$testdata_dir" -type d \( -name '*.files' -o -name '*.formatted' 
 
 printf 'Copied %s .bnt seed(s) to check_mutated, compile_ok and format corpora\n' "$seed_count"
 
-# 固定のパスに収まるディレクトリだけを写し、別のモジュール構成に変えてしまわない
-# （実装プラン C15「種の入力」）。バイト 0x00 はシェルの変数に保存せず Python で連結する。
+# 固定のパスに収まるディレクトリだけを写し、別のモジュール構成に変えてしまわない。
+# バイト 0x00 はシェルの変数に保存せず Python で連結する。
 python3 - "$testdata_dir" "$repo_root/fuzz/corpus/check_modules" <<'PY'
 from pathlib import Path
 import sys

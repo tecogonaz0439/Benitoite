@@ -1,4 +1,4 @@
-//! 組み込みの関数の本体（設計書 02-08「組み込みの関数の呼び出し」、実装プラン 10-12）。
+//! 組み込みの関数の本体（設計書 02-08「組み込みの関数の呼び出し」）。
 
 use crate::builtins::iface::BuiltinDecl;
 use crate::builtins::table::tags;
@@ -75,6 +75,8 @@ pub mod clock;
 pub mod console;
 pub mod decimal;
 pub mod file;
+#[cfg(test)]
+pub(crate) mod fixed_io;
 pub mod float;
 pub mod integer;
 pub mod io_error;
@@ -85,13 +87,12 @@ pub mod operators;
 pub mod process;
 pub mod reference;
 pub mod set;
-pub mod stage1_io;
 pub mod string;
 pub mod task;
 pub mod task_group;
 pub mod traits;
 
-/// 表の部分。末尾にだけ加える（実装プラン 10-12「部分と番号」）。
+/// 表の部分。番号は部分を順につないだ並びの中の位置で決まるので、部分は末尾にだけ加える。
 pub const PARTS: &[&[BuiltinDecl]] = &[
     operators::DECLS,
     integer::DECLS,
@@ -144,8 +145,8 @@ pub const PARTS: &[&[BuiltinDecl]] = &[
 #[cfg(test)]
 mod tests {
     // VM と参照インタプリタが本体を共有するため、項目の意味は本体を直接呼んで確かめる
-    // （設計書 07-03「差分テスト」、実装プラン R08「受け入れテスト」）。
-    // テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+    // （設計書 07-03「差分テスト」）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -1159,8 +1160,8 @@ mod tests {
     fn pure_wrappers_from_each_implemented_part_match_the_bodies() {
         let mut heap = Heap::new(HeapConfig::default());
         heap.epoch(|ctx| {
-            // 包みの引数の読み出しと IntoValue の適用を、部分ごとに一つの項目で確かめる
-            // （実装プラン R08「包み」）。意味の期待値は項目の本体のテストが持つ。
+            // 包みの引数の読み出しと IntoValue の適用を、部分ごとに一つの項目で確かめる。
+            // 意味の期待値は項目の本体のテストが持つ。
             macro_rules! wrapped {
                 ($function:path, $decl:expr, [$($rust:expr),*], [$($value:expr),*]) => {{
                     let direct = direct!(ctx, $function $(, $rust)*).unwrap();
@@ -1187,7 +1188,7 @@ mod tests {
     #[test]
     fn console_bodies_and_wrappers_record_streams_and_call_order() {
         let mut heap = Heap::new(HeapConfig::default());
-        let mut io = stage1_io::TestIo::new(input());
+        let mut io = fixed_io::FixedIo::new(input());
         heap.epoch(|ctx| {
             type ConsoleBody = for<'c, 'e> fn(
                 crate::builtins::iface::IoCtx<'c, 'e>,
@@ -1241,7 +1242,7 @@ mod tests {
     #[test]
     fn process_arguments_body_and_wrapper_return_the_supplied_list() {
         let mut heap = Heap::new(HeapConfig::default());
-        let mut io = stage1_io::TestIo::new(input());
+        let mut io = fixed_io::FixedIo::new(input());
         heap.epoch(|ctx| {
             let mut call = CallCtx::new(ctx, Some(&mut io), None, None);
             let IoReply::Done(direct) = process::arguments(call.io_ctx().unwrap()).unwrap() else {
@@ -1274,7 +1275,7 @@ mod tests {
         std::fs::write(directory.join("invalid"), [0xff]).unwrap();
         let mut input = input();
         input.working_directory = directory.clone();
-        let mut io = stage1_io::TestIo::new(input);
+        let mut io = fixed_io::FixedIo::new(input);
         let mut heap = Heap::new(HeapConfig::default());
         heap.epoch(|ctx| {
             for (path, error_tag) in [

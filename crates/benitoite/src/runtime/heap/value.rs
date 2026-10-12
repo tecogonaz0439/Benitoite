@@ -18,8 +18,8 @@ impl<'e> Epoch<'e> {
     }
 }
 
-/// 引数のない構成子のタグ。型の宣言の中で 0 から数えた番号である（10-07「コンパイル済みプログラム」）。
-/// 構成子の表の位置（10-07 の `CtorIdx`）とは別の値である。
+/// 引数のない構成子のタグ。型の宣言の中で 0 から数えた番号である（設計書 02-07「コンパイル済みプログラム」）。
+/// 構成子の表の位置（`CtorIdx`。設計書 02-07「コンパイル済みプログラム」）とは別の値である。
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct CtorTag(pub u32);
 
@@ -34,7 +34,8 @@ pub struct ObjRef<'e> {
     /// 確保の世代（機能 `heap-verify`）。対象の頭の世代と比べ、解放後の使用を見つける
     #[cfg(feature = "heap-verify")]
     generation: u32,
-    epoch: Epoch<'e>,
+    // 読み出しは不要だが、区間の寿命を型に保持する（設計書 02-09「メモリの管理」）。
+    _epoch: Epoch<'e>,
 }
 
 impl<'e> ObjRef<'e> {
@@ -42,7 +43,7 @@ impl<'e> ObjRef<'e> {
     pub(super) fn from_raw(ptr: NonNull<ObjHeader>) -> ObjRef<'e> {
         ObjRef {
             ptr,
-            epoch: Epoch::new(),
+            _epoch: Epoch::new(),
         }
     }
 
@@ -51,7 +52,7 @@ impl<'e> ObjRef<'e> {
         ObjRef {
             ptr,
             generation,
-            epoch: Epoch::new(),
+            _epoch: Epoch::new(),
         }
     }
 
@@ -62,10 +63,6 @@ impl<'e> ObjRef<'e> {
     #[cfg(feature = "heap-verify")]
     pub(super) fn generation(self) -> u32 {
         self.generation
-    }
-
-    pub(super) fn epoch(self) -> Epoch<'e> {
-        self.epoch
     }
 }
 
@@ -195,15 +192,13 @@ pub enum ObjKind {
 pub enum FieldsKind {
     /// 構成子を適用した値（レコード、`Pair`・`Triple` を含む）。`tag` は構成子のタグ
     Ctor,
-    /// 関数の値。`tag` は原型の番号（10-07 の `ProtoIdx` の値）、並びは捕捉した値
+    /// 関数の値。`tag` は原型の番号（`ProtoIdx` の値。設計書 02-07「コンパイル済みプログラム」）、並びは捕捉した値
     Func,
-    /// 型クラスの辞書。`tag` は実装の番号（10-07 の `ImplIdx` の値）、並びは実装の制約の辞書（設計書 02-08「値の表現」）
+    /// 型クラスの辞書。`tag` は実装の番号（`ImplIdx` の値）、並びは実装の制約の辞書（設計書 02-08「値の表現」）
     Dict,
-    /// 連結リストのセル（第 1 段のリストの表現。並びは先頭の要素と残りのリスト、`tag` は長さ）
-    ListCell,
-    /// 永続ベクタのノードと葉（設計書 03-06「List の内部の表現」。`tag` の使い方はリストの表現を作る作業 R36 が決める）
+    /// 永続ベクタのノードと葉（設計書 03-06「List の内部の表現」）
     ListNode,
-    /// マップの木のノード（設計書 02-08「値の表現」。`tag` の使い方は R37 が決める）
+    /// マップの木のノード（設計書 02-08「値の表現」）
     MapNode,
     /// 集合の木のノード
     SetNode,
@@ -215,14 +210,28 @@ pub enum FieldsKind {
 
 /// `ObjKind::Opaque` の対象が持つ Rust の値。言語の値（`Slot`）を含めてはならない。
 /// 作った後に変更しない（`ValueCtx::opaque` は共有の参照だけを返す）。
-pub trait OpaqueData: Any + Debug {}
+pub trait OpaqueData: Any + Debug {
+    /// この対象だけが所有する別の領域の容量（バイト）を返す。`Rc` などで共有する領域は数えない。
+    /// 作った後に変更しない約束により、確保のときに一度だけ読む。
+    fn heap_bytes(&self) -> usize {
+        0
+    }
+}
 
 /// `ObjKind::Host` の対象が持つ Rust の値。持つ `Slot` を `Trace` ですべて訪れる（不変条件 H5）。
 /// 書き換えは `NoGcCtx::host_mut` だけで行う（不変条件 H7）。
 /// 対象を解放するときに内部の層が Rust の値を `drop` するが、`Drop` の実装でリソースの解放やタスクの取り消しなど
-/// 言語の後始末を行ってはならない。後始末は VM が枠を降ろす処理と止める手順で行う（10-08「根の保存領域」）。
-pub trait HostData: Trace + Any + Debug {}
+/// 言語の後始末を行ってはならない。後始末は VM が枠を降ろす処理と止める手順で行う（設計書 02-09「メモリの管理」）。
+pub trait HostData: Trace + Any + Debug {
+    /// この対象だけが所有する別の領域の容量（バイト）を返す。`Rc` などで共有する領域は数えない。
+    /// 返す値は `host_mut` の閉包の中でだけ変わってよい。数え直しはその前後だけで行う。
+    fn heap_bytes(&self) -> usize {
+        0
+    }
+}
 
-/// 対象の識別（テストで到達可能性を独立に計算するために使う。番地から作る）。
+/// 対象の識別（確保ごとにヒープの中で一意な 64 ビットの通し番号。一周しない）。
+/// 解放した番地に作った対象も別の識別を持つ。テストで到達可能性を独立に計算するためにも使う。
+/// 構造の等しさと鍵の順序の比較で、調べた対象の組を覚える鍵にも使う。
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct ObjId(pub u64);

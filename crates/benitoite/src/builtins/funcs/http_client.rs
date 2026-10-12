@@ -1,4 +1,4 @@
-//! HTTP クライアントの操作と TLS の構成（設計書 03-09「クライアント」、実装プラン 10-15・10-16）。
+//! HTTP クライアントの操作と TLS の構成（設計書 03-09「クライアント」）。
 
 use crate::builtins::iface::{BuiltinDecl, IoCtx, IoReply, IoWait, Lend, WorkerWait, builtin};
 use crate::builtins::table::tags;
@@ -13,6 +13,11 @@ use ureq::unversioned::transport::NextTimeout;
 
 mod redirect_body;
 
+// ureq は Instant + Duration で期限を計算し、標準ライブラリは溢れると panic する。
+// 2^40 ミリ秒（約 34.8 年）で頭打ちにして、足し算が溢れない大きさに収める。これより長い上限は
+// 実行の時間として区別できない（設計書 03-09「クライアント」）。
+const MAX_CLIENT_TIMEOUT_MILLISECONDS: u64 = 1_099_511_627_776;
+
 builtin! {
     /// `Benitoite.Network.Http.send` の本体（設計書 03-09「クライアント」）。
     name = "Benitoite.Network.Http.send",
@@ -23,6 +28,9 @@ builtin! {
             Err(failure) => return Ok(IoReply::Done(complete(&ctx, Err(failure))?)),
         };
         let host = request.uri().host().ok_or_else(|| internal("validated URL has no host"))?;
+        // Uri::host は IPv6 を角括弧付きで返す。失敗の表は `::1` の形で引くので、照合のためだけに
+        // 角括弧を除き、要求そのものは変えない（設計書 02-09「組み込みの操作とハンドラ表」）。
+        let host = host.strip_prefix('[').and_then(|host| host.strip_suffix(']')).unwrap_or(host);
         let fault = ctx.services().runtime_view()
             .ok_or_else(|| internal("HTTP runtime unavailable"))?
             .rt.parts.network_faults.lookup(host);
@@ -46,7 +54,7 @@ builtin! {
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[send::DECL];
 
 // provider を大域に登録せず、Agent ごとに渡す（設計書 02-01「コンパイル済みプログラムと実行ごとの状態」、03-09「実装に使うクレート」）。
@@ -101,7 +109,7 @@ impl<R: Resolver> Resolver for NetworkResolver<R> {
     }
 }
 
-// レコードの宣言順の位置を一箇所に置く（実装プラン 10-15「レコードの値の作り方」）。
+// レコードの宣言順の位置を一箇所に置く（設計書 02-06「脱糖」）。
 mod request_fields {
     pub const METHOD: u32 = 0;
     pub const URL: u32 = 1;
@@ -181,7 +189,10 @@ fn read_request<'e>(ctx: &ValueCtx<'e>, value: Value<'e>) -> Result<PreparedRequ
             )));
         }
     };
-    Ok(Ok((request, Duration::from_millis(timeout))))
+    Ok(Ok((
+        request,
+        Duration::from_millis(timeout.min(MAX_CLIENT_TIMEOUT_MILLISECONDS)),
+    )))
 }
 
 fn valid_header(name: &str, value: &str) -> bool {
@@ -240,7 +251,7 @@ fn execute(
         .map_err(|error| classify(error, &missing))?;
     let mut headers = Vec::new();
     for (name, value) in response.headers() {
-        // to_str は非 ASCII の UTF-8 も拒むため、バイト列で検査する（実装プラン L32）。
+        // to_str は非 ASCII の UTF-8 も拒むため、バイト列で検査する。
         let value = std::str::from_utf8(value.as_bytes()).map_err(|_| {
             Failure::Network(
                 tags::NETWORK_ERROR_KIND_INVALID_HTTP_DATA,
@@ -281,7 +292,7 @@ fn validate_request(request: Request<Vec<u8>>) -> Result<Request<Vec<u8>>, Failu
     call.proceed()
         .headers_map()
         .map_err(request_protocol_failure)?;
-    // GET は L32 の追加指示で拒み、HEAD・CONNECT は ureq-proto の既定の制約を守る。
+    // GET・HEAD・CONNECT では本体を拒み、HEAD・CONNECT は ureq-proto の既定の制約も守る。
     // Content-Length: 0 を指定した本体も、強制送信の入口へ渡さない。
     if !body.is_empty()
         && matches!(
@@ -453,7 +464,7 @@ fn missing_cpu_features() -> Vec<&'static str> {
         ("sha2", std::arch::is_aarch64_feature_detected!("sha2")),
     ];
     #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
-    let features = [("supported architecture", false)];
+    let features = [(text::UNSUPPORTED_ARCHITECTURE, false)];
     features
         .into_iter()
         .filter_map(|(name, present)| (!present).then_some(name))
@@ -520,6 +531,8 @@ fn domain() -> Stop {
     })
 }
 mod text {
+    #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+    pub const UNSUPPORTED_ARCHITECTURE: &str = "supported architecture";
     pub const INVALID_URL: &str = "URL must be an absolute http or https URL";
     pub const INJECTED: &str = "injected network failure";
     pub const INVALID_HEADER_UTF8: &str = "HTTP response header is not valid UTF-8";

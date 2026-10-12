@@ -174,7 +174,7 @@ pub(super) fn check_decl_header(p: &mut Parser, decl: &TopDecl) {
         Item::Trait(_) => (false, true, text::TRAIT),
         Item::Effect(_) => (false, true, text::EFFECT),
         Item::Impl(_) => (false, false, text::IMPLEMENT),
-        // F04 の仮の本体でも、実装の頭に付けた属性は検査できるようにする。
+        // 実装の頭に付けた属性も検査する。
         Item::Error(e) => {
             if p.tokens
                 .iter()
@@ -485,7 +485,7 @@ fn attribute_args_error(p: &Parser, attr: &Attribute) -> Option<Diagnostic> {
     Some(d.primary(attr.span).build())
 }
 fn skip_attribute_arg(p: &mut Parser) {
-    // 補間を式として解析すると F04 の診断が重なる。属性では引数全体を読み飛ばす
+    // 補間を式として解析すると文脈の診断が重なる。属性では引数全体を読み飛ばす
     // （設計書 02-03「文脈の制限」）。
     let mut nesting = Vec::new();
     let mut interpolation = 0_u32;
@@ -649,52 +649,6 @@ fn restore_newline(p: &mut Parser) {
     }
 }
 
-pub(super) fn stub_decl(
-    p: &mut Parser,
-    depth: u32,
-    expected: &str,
-    end: Option<TokenKind>,
-) -> PResult<Item> {
-    p.enter(depth)?;
-    let start = p.pos;
-    p.unexpected(expected);
-    p.advance();
-    if let Some(end) = end {
-        let mut nested = Vec::new();
-        let mut previous = TokenKind::Eof;
-        while !p.at(TokenKind::Eof) {
-            if p.at(TokenKind::KwEnd) && p.peek_nth_kind(1) == end {
-                p.advance();
-                p.advance();
-                break;
-            }
-            if nested.is_empty()
-                && p.at_line_start()
-                && super::is_decl_start(p.peek_kind())
-                // trait と effect のシグネチャ、implement の関数は宣言の内側にある。
-                // 仮の本体の段階でも、それを次のトップレベルの宣言として残さない（F02 のフック）。
-                && !(matches!(end, TokenKind::KwImplement | TokenKind::KwTrait | TokenKind::KwEffect)
-                    && p.at(TokenKind::KwFunction))
-            {
-                break;
-            }
-            let kind = p.peek_kind();
-            if kind == TokenKind::KwFunction
-                && previous != TokenKind::KwEnd
-                && end == TokenKind::KwImplement
-            {
-                nested.push(kind);
-            } else {
-                super::recovery_nesting(&mut nested, kind, previous);
-            }
-            previous = kind;
-            p.advance();
-        }
-    } else {
-        p.recover(start, Recovery::TopLevel);
-    }
-    Ok(Item::Error(p.error_node_from(start)))
-}
 pub(super) fn parse_record_decl(p: &mut Parser, depth: u32) -> PResult<Item> {
     p.enter(depth)?;
     let start = p.pos;
@@ -818,6 +772,8 @@ pub(super) fn parse_const_decl(p: &mut Parser, depth: u32) -> PResult<Item> {
     let value = exprs::parse_expr(p, child(depth))?;
     Ok(finish_const(p, start, name, ty, *value))
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_const(p: &mut Parser, start: usize, name: Name, ty: TypeExpr, value: Expr) -> Item {
     Item::Const(ConstDecl {
         id: p.node_id(),
@@ -828,7 +784,7 @@ fn finish_const(p: &mut Parser, start: usize, name: Name, ty: TypeExpr, value: E
     })
 }
 
-/// 開き括弧の位置から、対応する閉じ括弧も含めて飛ばす。仮のフックの回復で共有する。
+/// 開き括弧の位置から、対応する閉じ括弧も含めて飛ばす。フックの回復で共有する。
 pub(super) fn skip_delimited(p: &mut Parser) {
     let mut nested = Vec::new();
     let mut previous = TokenKind::Eof;
@@ -847,9 +803,10 @@ pub(super) fn skip_delimited(p: &mut Parser) {
 }
 
 #[cfg(test)]
-// 公開の parse の AST・診断・回復を契約として確かめる。F02 の仮の本体のテストを置き換え、
+// 公開の parse の AST・診断・回復を契約として確かめ、
 // 各規則の境界の場合を表にまとめる。内部のフックを直接呼ばず、本物の字句解析と改行判定を使う
-// （test-audit の作成時の関門、設計書 07-03「テストの設計の原則」）。失敗は panic で表す（00-02）。
+// （test-audit の作成時の関門、設計書 07-03「テストの設計の原則」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -1002,7 +959,7 @@ mod tests {
             }
         }
         assert_recovers("@test\ndata D\nC\nend data", &[DiagCode::E0802]);
-        // F04 の実装の仮の本体による E0201 と、属性の位置の E0802 は別の誤りである。
+        // 構文の E0201 を除き、属性の位置の E0802 を確かめる。
         let out = user("@deprecated(\"x\")\nimplement Show[T]\nend implement");
         assert_eq!(
             codes(&out)
@@ -1087,7 +1044,7 @@ mod tests {
         }
         let src = "const maxRetries: Integer = 3\npublic const defaultPort: Integer = 8000 + 80\nconst greeting: String = \"hello, ${defaultPort}\"\nconst primaryColors: List[Color] = [Color.Red, Color.Green, Color.Blue]\nconst statusNames: Map[Integer, String] = Map.fromList([Pair(200, \"OK\"), Pair(404, \"Not Found\")])";
         let out = user(src);
-        // 定数の式を読むのは F03、補間の本体を読むのは F04 である。
+        // 誤りがあっても構文の E0201 だけで、宣言が 5 個とも残ることを確かめる。
         assert!(codes(&out).iter().all(|c| *c == DiagCode::E0201));
         assert_eq!(out.module.decls.len(), 5);
         assert!(
@@ -1193,38 +1150,10 @@ mod tests {
     }
 
     #[test]
-    fn stdlib_modules_without_f04_syntax_parse_as_prelude() {
-        for (name, src) in [
-            ("Integer", include_str!("../../prelude/stdlib/Integer.bnt")),
-            ("Option", include_str!("../../prelude/stdlib/Option.bnt")),
-            ("List", include_str!("../../prelude/stdlib/List.bnt")),
-            ("Result", include_str!("../../prelude/stdlib/Result.bnt")),
-            ("Pair", include_str!("../../prelude/stdlib/Pair.bnt")),
-            ("Triple", include_str!("../../prelude/stdlib/Triple.bnt")),
-            ("Boolean", include_str!("../../prelude/stdlib/Boolean.bnt")),
-            (
-                "Character",
-                include_str!("../../prelude/stdlib/Character.bnt"),
-            ),
-            ("Byte", include_str!("../../prelude/stdlib/Byte.bnt")),
-            ("Float", include_str!("../../prelude/stdlib/Float.bnt")),
-            ("String", include_str!("../../prelude/stdlib/String.bnt")),
-            (
-                "Reference",
-                include_str!("../../prelude/stdlib/Reference.bnt"),
-            ),
-            ("Lazy", include_str!("../../prelude/stdlib/Lazy.bnt")),
-            (
-                "RoundingMode",
-                include_str!("../../prelude/stdlib/RoundingMode.bnt"),
-            ),
-            ("IOError", include_str!("../../prelude/stdlib/IOError.bnt")),
-            (
-                "IOErrorKind",
-                include_str!("../../prelude/stdlib/IOErrorKind.bnt"),
-            ),
-        ] {
-            let (out, lex) = parse_source(src, SourceKind::Prelude);
+    fn standard_library_sources_parse_as_prelude() {
+        for module in crate::prelude::STDLIB {
+            let name = module.path.join("/");
+            let (out, lex) = parse_source(module.text, SourceKind::Prelude);
             assert!(lex.is_empty(), "{name}: {lex:?}");
             assert!(out.diagnostics.is_empty(), "{name}: {:?}", out.diagnostics);
             assert!(out.module.doc.is_some(), "{name}");

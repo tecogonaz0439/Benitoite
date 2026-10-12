@@ -350,13 +350,13 @@ impl<'a> State<'a> {
 }
 
 #[cfg(test)]
-// テストの失敗を処理系の停止と区別する（実装プラン F11「テストの補助」）。
+// テストの失敗を処理系の停止と区別する。
 #[allow(clippy::panic)]
 pub(crate) mod test_support {
     use super::*;
     use crate::modules::LoadOutput;
 
-    /// ソースから脱糖し、独立したコア IR の検査器にも通す（実装プラン F11「テストの補助」）。
+    /// ソースから脱糖し、独立したコア IR の検査器にも通す。
     pub(crate) fn desugar_files(
         files: &[(&str, &str)],
         require_main: bool,

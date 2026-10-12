@@ -2,14 +2,15 @@
 
 use super::{Failure, Summary, TestFn, TestResult, text};
 use crate::base::SourceTable;
+use crate::base::literal::quoted;
 use crate::diag::codes::{self, fill_template};
 use crate::diag::render::{self, TextOptions};
-use crate::runtime::assert::{AssertOp, quoted};
+use crate::runtime::assert::AssertOp;
 
 /// テストの名前（説明を文字列リテラルの形にしたものか、関数の名前）。
 pub fn test_name(test: &TestFn) -> String {
     match &test.description {
-        // `Trait.showString` と同じ形の文字列リテラルにする（10-18「文章の形」）。
+        // `Trait.showString` と同じ形の文字列リテラルにする（設計書 06-04「結果の報告」）。
         Some(description) => quoted(description.chars(), '"'),
         None => test.function.clone(),
     }
@@ -26,7 +27,7 @@ pub fn text_line(file: &str, result: &TestResult) -> String {
     let mut line = fill_template(
         text::TEST_LINE,
         &[
-            ("file", file.to_owned()),
+            ("file", render::escape_terminal_controls(file)),
             ("name", test_name(&result.test)),
             ("outcome", outcome.to_owned()),
         ],
@@ -47,7 +48,10 @@ pub fn text_failure(
     };
     let mut output = fill_template(
         text::FAILURE_HEADER,
-        &[("file", file.to_owned()), ("name", test_name(&result.test))],
+        &[
+            ("file", render::escape_terminal_controls(file)),
+            ("name", test_name(&result.test)),
+        ],
     );
     output.push('\n');
     match failure {
@@ -123,7 +127,7 @@ pub fn text_failure(
             continue;
         }
         push_line(&mut output, header);
-        // 正しくない UTF-8 は U+FFFD に置き換える（実装プラン D11「手順の要点」の 6）。
+        // 正しくない UTF-8 は U+FFFD に置き換える。
         output.push_str(&String::from_utf8_lossy(bytes));
         if !output.ends_with('\n') {
             output.push('\n');
@@ -161,7 +165,7 @@ pub fn json_test(file: &str, result: &TestResult, sources: &SourceTable) -> Stri
     let mut output = String::from("{\"kind\":\"test\",\"file\":");
     output.push_str(&render::json_string(file));
     output.push_str(",\"name\":");
-    // JSON の `name` は引用符を付けない説明か関数の名前（10-18「JSON Lines の形」）。
+    // JSON の `name` は引用符を付けない説明か関数の名前（設計書 06-04「結果の報告」）。
     output.push_str(&render::json_string(
         test.description.as_deref().unwrap_or(&test.function),
     ));
@@ -200,7 +204,7 @@ pub fn json_summary(summary: &Summary) -> String {
     )
 }
 
-// 終了状態が 0 になるときだけ `ok`（10-18「文章の形」）。
+// 終了状態が 0 になるときだけ `ok`（設計書 06-04「結果の報告」）。
 fn outcome(summary: &Summary) -> &'static str {
     if summary.failed == 0 && summary.files_not_run == 0 && !summary.interrupted {
         text::OUTCOME_OK
@@ -214,7 +218,7 @@ fn push_line(output: &mut String, line: &str) {
     output.push('\n');
 }
 
-// `failure` の項目（06-04「結果の報告」、10-18「JSON Lines の形」）。
+// `failure` の項目（設計書 06-04「結果の報告」）。
 fn json_failure(failure: &Failure, sources: &SourceTable) -> String {
     match failure {
         Failure::Assert {
@@ -259,7 +263,7 @@ fn json_failure(failure: &Failure, sources: &SourceTable) -> String {
             render::json_string(message)
         ),
         Failure::Exit { code, reports } => {
-            // 解放の失敗の報告ごとに、RELEASE_WHILE_STOPPING と同じ文を作る（10-18「JSON Lines の形」）。
+            // 解放の失敗の報告ごとに、RELEASE_WHILE_STOPPING と同じ文を作る（設計書 06-04「結果の報告」）。
             let notes: Vec<String> = reports
                 .iter()
                 .map(|report| {

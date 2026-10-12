@@ -453,7 +453,7 @@ impl Checker<'_> {
         }
         self.computation(&lambda.body, &inner);
         // uses の注釈は、本体が使わないエフェクトも含んでよい
-        // （設計書 02-06「コア IR の検査器」、実装プラン F11「F13 の検査器のラムダの検査」）。
+        // （設計書 02-06「コア IR の検査器」）。
         let effects = match ty {
             Ty::Fn(f) => {
                 self.effects(lambda.body.origin, &lambda.body.eff, &f.effects);
@@ -503,7 +503,7 @@ impl Checker<'_> {
     }
 
     /// 計算の規則の振り分け。再帰の段ごとに各規則の作業領域を保持しないよう、
-    /// 型とエフェクトの検査は規則ごとの関数で行う（実装プラン F13「受け入れテスト」）。
+    /// 型とエフェクトの検査は規則ごとの関数で行う。
     fn computation(&mut self, comp: &Comp, env: &Env) {
         match &comp.kind {
             CompKind::Return(v) => self.return_comp(v, comp, env),
@@ -690,7 +690,7 @@ impl Checker<'_> {
                             i.type_params.len(),
                         );
                         // 実装の β の制約は、ImplFn の Scheme の先頭 k 個にも残る
-                        // （設計書 01-12「型クラス」、実装プラン 10-05「型パラメータの番号」）。
+                        // （`types` のモジュールの説明）。
                         if let Some(s) = i
                             .methods
                             .iter()
@@ -861,7 +861,7 @@ impl Checker<'_> {
             ..Env::default()
         };
         // 頭部には Scheme がない。メソッドの Scheme の先頭 k 個が頭部の宣言の写しである
-        // （実装プラン 10-05「型パラメータの番号」）。メソッドがない不正な IR でも上位の辞書は調べる。
+        // （`types` のモジュールの説明）。メソッドがない不正な IR でも上位の辞書は調べる。
         if let Some(s) = def
             .methods
             .iter()
@@ -1228,9 +1228,8 @@ impl Checker<'_> {
 #[cfg(test)]
 mod tests {
     // check_program の出力を境界に、各規則の受理と一か所の破損の拒否を対にする。
-    // 検査器の仮置きにはこの契約を確かめるテストがなく、包含・環境・置換の検査漏れを
-    // 捕まえる必要がある。準備を共有し、本番の差し込み口は増やさない
-    // （設計書 07-03「テストの設計の原則」、実装プラン F13「受け入れテスト」）。
+    // 包含・環境・置換の検査漏れを捕まえる。準備を共有し、本番の差し込み口は増やさない
+    // （設計書 07-03「テストの設計の原則」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -3076,7 +3075,7 @@ mod tests {
     #[test]
     fn deep_ir_is_checked_without_changing_the_thread_stack() {
         // IR の再帰は許されるが、通常のテストのスレッドで入れ子を検査できる必要がある
-        // （実装プラン F13「受け入れテスト」、設計書 07-03）。
+        // （設計書 07-03「実装の規約と静的な検査」）。
         let mut body = ret(integer(10));
         for i in 0..1000 {
             body = comp(

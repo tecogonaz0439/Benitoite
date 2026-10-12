@@ -1,7 +1,7 @@
 //! 役割の表のテスト（設計書 07-03「テストの種類（初回リリース版）」のフォーマッタ）。字下げと空白の結果は
 //! `print` のテストが整形の結果で確かめるので、ここでは整形の結果に現れない欄（`top`・`blank_before`・
-//! `inner_level`）を確かめる。D02 がこれらの欄を使って空の行とコメントを置く（10-17「役割の表」）。
-// テストの失敗は panic で表す（00-02「`#[allow]` を書いてよい箇所」）
+//! `inner_level`）を確かめる。出力の処理がこれらの欄を使って空の行とコメントを置く（設計書 06-03「入力表現」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -24,7 +24,7 @@ pub(in crate::cli::tools::formatter) struct Pipeline {
     pub roles: RoleTable,
 }
 
-/// 本物の字句解析と構文解析から役割の表を作る。誤りのない入力だけを受け取る（10-17「役割の表」）。
+/// 本物の字句解析と構文解析から役割の表を作る。誤りのない入力だけを受け取る（設計書 06-03「入力表現」）。
 pub(in crate::cli::tools::formatter) fn pipeline(src: &str) -> Pipeline {
     let lexed = lex(FileId(0), src.as_bytes());
     assert!(
@@ -51,7 +51,7 @@ pub(in crate::cli::tools::formatter) fn pipeline(src: &str) -> Pipeline {
     Pipeline { tokens, roles }
 }
 
-/// 整形の結果を文字列で返す（D01 の範囲: コメント・空の行・複数行の文字列を含まない入力）。
+/// 整形の結果を文字列で返す。コメント・空の行・複数行の文字列を含まない入力だけを扱う。
 pub(in crate::cli::tools::formatter) fn format(src: &str) -> String {
     let Pipeline { tokens, roles } = pipeline(src);
     let out = print(&PrintInput {
@@ -115,7 +115,6 @@ fn top_ranges_cover_each_declaration_with_its_attributes() {
 
 #[test]
 fn blank_line_handling_follows_the_kind_of_line() {
-    use BlankBefore::{KeepOne, Remove};
     let src = "\
 /// doc
 @test
@@ -146,34 +145,38 @@ end function
 ";
     let p = pipeline(src);
     let expected = [
-        (2, Remove),   // `///` の行と属性の間
-        (3, Remove),   // 属性の行と属性の間
-        (4, Remove),   // 属性の行と宣言の間
-        (5, Remove),   // 本体の最初の行
-        (6, KeepOne),  // ブロックの中
-        (7, KeepOne),  // ブロックの中
-        (8, Remove),   // `if` の分岐の最初の行
-        (9, Remove),   // `else`
-        (10, Remove),  // `else` の分岐の最初の行
-        (11, Remove),  // 閉じの字句
-        (12, KeepOne), // ブロックの中
-        (13, Remove),  // `match` の中身の最初の行
-        (14, KeepOne), // 2 つ目の `case`
-        (15, Remove),  // 分岐の本体の最初の行
-        (16, Remove),  // 閉じの字句
-        (17, KeepOne), // ブロックの中
-        (18, Remove),  // `handle` の本体の最初の行
-        (19, Remove),  // 節の並びを始める `with`
-        (20, KeepOne), // 節の `case`
-        (21, Remove),  // 閉じの字句
-        (22, KeepOne), // ブロックの中
-        (23, Remove),  // 括弧の中の最初の行
-        (24, KeepOne), // 括弧の中
-        (25, Remove),  // 閉じ括弧
-        (26, Remove),  // 閉じの字句
+        (2, (false, false)),  // `///` の後の行（空の行は置けない）
+        (3, (true, false)),   // 属性の行と属性の間
+        (4, (true, false)),   // 属性の行と宣言の間
+        (5, (true, false)),   // 本体の最初の行
+        (6, (false, false)),  // ブロックの中
+        (7, (false, false)),  // ブロックの中
+        (8, (true, false)),   // `if` の分岐の最初の行
+        (9, (false, true)),   // `else`
+        (10, (true, false)),  // `else` の分岐の最初の行
+        (11, (false, true)),  // 閉じの字句
+        (12, (false, false)), // ブロックの中
+        (13, (true, false)),  // `match` の中身の最初の行
+        (14, (false, false)), // 2 つ目の `case`
+        (15, (true, false)),  // 分岐の本体の最初の行
+        (16, (false, true)),  // 閉じの字句
+        (17, (false, false)), // ブロックの中
+        (18, (true, false)),  // `handle` の本体の最初の行
+        (19, (false, true)),  // 節の並びを始める `with`
+        (20, (false, false)), // 節の `case`
+        (21, (false, true)),  // 閉じの字句
+        (22, (false, false)), // ブロックの中
+        (23, (true, false)),  // 括弧の中の最初の行
+        (24, (false, false)), // 括弧の中
+        (25, (false, true)),  // 閉じ括弧
+        (26, (false, true)),  // 閉じの字句
     ];
-    for (line, blank) in expected {
-        assert_eq!(line_role(&p, line).blank_before, blank, "line {line}");
+    for (line, (leading, direct)) in expected {
+        assert_eq!(
+            line_role(&p, line).blank_before,
+            BlankBefore { leading, direct },
+            "line {line}"
+        );
     }
 }
 
@@ -181,7 +184,6 @@ end function
 /// 最初の行も、構文の中身の最初の行として空の行を除く（06-03「空の行」）。
 #[test]
 fn blank_lines_are_removed_at_the_start_of_each_branch_in_an_else_if_chain() {
-    use BlankBefore::{KeepOne, Remove};
     let src = "\
 function main() -> Unit
   if a then
@@ -202,19 +204,23 @@ end function
 ";
     let p = pipeline(src);
     let expected = [
-        (3, Remove),   // `if` の分岐の最初の行
-        (4, Remove),   // `else if`
-        (6, Remove),   // 途中の `else if` の本体の最初の行
-        (7, KeepOne),  // ブロックの中
-        (8, Remove),   // 2 つ目の `else if`
-        (10, Remove),  // 2 つ目の `else if` の本体の最初の行
-        (11, Remove),  // `else`
-        (13, Remove),  // 最後の `else` の本体の最初の行
-        (14, KeepOne), // ブロックの中
-        (15, Remove),  // 閉じの字句
+        (3, (true, false)),   // `if` の分岐の最初の行
+        (4, (false, true)),   // `else if`
+        (6, (true, false)),   // 途中の `else if` の本体の最初の行
+        (7, (false, false)),  // ブロックの中
+        (8, (false, true)),   // 2 つ目の `else if`
+        (10, (true, false)),  // 2 つ目の `else if` の本体の最初の行
+        (11, (false, true)),  // `else`
+        (13, (true, false)),  // 最後の `else` の本体の最初の行
+        (14, (false, false)), // ブロックの中
+        (15, (false, true)),  // 閉じの字句
     ];
-    for (line, blank) in expected {
-        assert_eq!(line_role(&p, line).blank_before, blank, "line {line}");
+    for (line, (leading, direct)) in expected {
+        assert_eq!(
+            line_role(&p, line).blank_before,
+            BlankBefore { leading, direct },
+            "line {line}"
+        );
     }
 }
 

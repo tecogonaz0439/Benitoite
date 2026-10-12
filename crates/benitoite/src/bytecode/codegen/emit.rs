@@ -1,10 +1,12 @@
-//! 計算と値の移し方（設計書 02-07「コード生成」、実装プラン 10-07「コード生成」）。
+//! 計算と値の移し方（設計書 02-07「コード生成」）。
 
 use super::*;
 use crate::builtins::table::{ListPatternOp, list_pattern_builtin};
 use analysis::with_reads;
 
 impl<'p> Gen<'p> {
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn comp(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -45,62 +47,106 @@ impl<'p> Gen<'p> {
             ),
             LCompKind::Join { .. } => self.join(fg, c, target, future),
             LCompKind::Jump { label, args } => self.jump(fg, *label, args, c.origin, future),
-            LCompKind::Escape(v) => {
-                let mark = fg.next_reg;
-                let r = self.operand(fg, v, future)?;
-                fg.emit(
-                    Instr::abc(
-                        if fg.boundary {
-                            Opcode::Return
-                        } else {
-                            Opcode::Escape
-                        },
-                        r16(r),
-                        0,
-                        0,
-                    ),
-                    Some(c.origin),
-                );
-                fg.release(mark);
-                Ok(())
-            }
+            LCompKind::Escape(..) => self.escape_(fg, c, target, future),
             LCompKind::Use { .. } => self.use_(fg, c, target, future),
-            LCompKind::Lazy { body, .. } => {
-                let mark = fg.next_reg;
-                let dst = fg.result(target);
-                let index = self.body_proto(
-                    fg,
-                    body,
-                    &[],
-                    (
-                        false,
-                        text::LAZY.to_string(),
-                        ProtoOrigin::UserLazy,
-                        c.origin,
-                    ),
-                )?;
-                fg.emit(Instr::abx(Opcode::Lazy, r16(dst), index.0), Some(c.origin));
-                fg.returned(target, dst, Some(c.origin));
-                fg.release(mark);
-                Ok(())
-            }
+            LCompKind::Lazy { .. } => self.lazy_(fg, c, target, future),
             LCompKind::Handle(h) => self.handle(fg, h, target, c.origin),
-            LCompKind::Resume { cont, value } => {
-                let mark = fg.next_reg;
-                let k = self.key_operand(fg, Key::Var(*cont), c.origin)?;
-                let v = self.operand(fg, value, future)?;
-                let dst = fg.result(target);
-                fg.emit(
-                    Instr::abc(Opcode::Resume, r16(dst), r16(k), r16(v)),
-                    Some(c.origin),
-                );
-                fg.returned(target, dst, Some(c.origin));
-                fg.release(mark);
-                Ok(())
-            }
+            LCompKind::Resume { .. } => self.resume_(fg, c, target, future),
         }
     }
 
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn escape_(
+        &mut self,
+        fg: &mut FnGen<'p>,
+        c: &'p LComp,
+        _target: Target,
+        future: &HashSet<Key>,
+    ) -> CgResult<()> {
+        let LCompKind::Escape(v) = &c.kind else {
+            return Err(internal("expected escape"));
+        };
+
+        let mark = fg.next_reg;
+        let r = self.operand(fg, v, future)?;
+        fg.emit(
+            Instr::abc(
+                if fg.boundary {
+                    Opcode::Return
+                } else {
+                    Opcode::Escape
+                },
+                r16(r),
+                0,
+                0,
+            ),
+            Some(c.origin),
+        );
+        fg.release(mark);
+        Ok(())
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn lazy_(
+        &mut self,
+        fg: &mut FnGen<'p>,
+        c: &'p LComp,
+        target: Target,
+        _future: &HashSet<Key>,
+    ) -> CgResult<()> {
+        let LCompKind::Lazy { body, .. } = &c.kind else {
+            return Err(internal("expected lazy"));
+        };
+
+        let mark = fg.next_reg;
+        let dst = fg.result(target);
+        let index = self.body_proto(
+            fg,
+            body,
+            &[],
+            (
+                false,
+                text::LAZY.to_string(),
+                ProtoOrigin::UserLazy,
+                c.origin,
+            ),
+        )?;
+        fg.emit(Instr::abx(Opcode::Lazy, r16(dst), index.0), Some(c.origin));
+        fg.returned(target, dst, Some(c.origin));
+        fg.release(mark);
+        Ok(())
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn resume_(
+        &mut self,
+        fg: &mut FnGen<'p>,
+        c: &'p LComp,
+        target: Target,
+        future: &HashSet<Key>,
+    ) -> CgResult<()> {
+        let LCompKind::Resume { cont, value } = &c.kind else {
+            return Err(internal("expected resume"));
+        };
+
+        let mark = fg.next_reg;
+        let k = self.key_operand(fg, Key::Var(*cont), c.origin)?;
+        let v = self.operand(fg, value, future)?;
+        let dst = fg.result(target);
+        fg.emit(
+            Instr::abc(Opcode::Resume, r16(dst), r16(k), r16(v)),
+            Some(c.origin),
+        );
+        fg.returned(target, dst, Some(c.origin));
+        fg.release(mark);
+        Ok(())
+    }
+
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn return_(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -120,6 +166,8 @@ impl<'p> Gen<'p> {
             }
         }
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn let_(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -127,26 +175,36 @@ impl<'p> Gen<'p> {
         target: Target,
         future: &HashSet<Key>,
     ) -> CgResult<()> {
-        let LCompKind::Let { var, bound, body } = &c.kind else {
-            return Err(internal("expected let"));
-        };
-        let mark = fg.next_reg;
-        let r = fg.alloc();
-        let next = Box::new(with_reads(future, Node::Comp(body)));
-        self.comp(fg, bound, Target::Reg(r), &next)?;
-        fg.bind(Key::Var(var.id), Loc::Reg(r))?;
-        if let LCompKind::Return(LowVal {
-            kind: ValKind::Var(of),
-            ..
-        }) = &bound.kind
-        {
-            fg.alias(Key::Var(var.id), Key::Var(*of));
+        // 各 bound の前に元の body の読み出しを数え、割り当てと別名の順を保つ。
+        // 解放は本体の後で逆順に行い、文の数に比例する再帰を避ける
+        // （設計書 02-07「コード生成」、02-01「関数の呼び出しと処理系のスタック」）。
+        let mut current = c;
+        let mut bindings = Vec::new();
+        while let LCompKind::Let { var, bound, body } = &current.kind {
+            let mark = fg.next_reg;
+            let r = fg.alloc();
+            let next = Box::new(with_reads(future, Node::Comp(body)));
+            self.comp(fg, bound, Target::Reg(r), &next)?;
+            fg.bind(Key::Var(var.id), Loc::Reg(r))?;
+            if let LCompKind::Return(LowVal {
+                kind: ValKind::Var(of),
+                ..
+            }) = &bound.kind
+            {
+                fg.alias(Key::Var(var.id), Key::Var(*of));
+            }
+            bindings.push((mark, var.id));
+            current = body;
         }
-        self.comp(fg, body, target, future)?;
-        fg.unbind(Key::Var(var.id));
-        fg.release(mark);
+        self.comp(fg, current, target, future)?;
+        for (mark, var) in bindings.into_iter().rev() {
+            fg.unbind(Key::Var(var));
+            fg.release(mark);
+        }
         Ok(())
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn app(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -237,6 +295,8 @@ impl<'p> Gen<'p> {
         fg.release(mark);
         Ok(())
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn method(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -328,6 +388,8 @@ impl<'p> Gen<'p> {
         }
         Ok(())
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn if_(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -361,6 +423,8 @@ impl<'p> Gen<'p> {
         merge_reuse(&mut fg.reuse, &after);
         fg.end(end)
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn use_(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -405,6 +469,15 @@ fn binary(op: Opcode) -> Plan {
         op,
         swap: false,
         negate: false,
+    }
+}
+
+// 型引数で原型の命令が変わるものだけ、型引数を原型の共有の鍵に含める。
+// 新しい intrinsic はこの分類を明示する。
+fn depends_on_type_args(intrinsic: Intrinsic) -> bool {
+    match intrinsic {
+        Intrinsic::Eq | Intrinsic::Ne => true,
+        Intrinsic::Force | Intrinsic::Update | Intrinsic::Operator { .. } => false,
     }
 }
 
@@ -495,6 +568,8 @@ fn equality(ty: &Ty, negate: bool) -> CgResult<Plan> {
 }
 
 impl<'p> Gen<'p> {
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn case_ctor(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -636,6 +711,8 @@ impl<'p> Gen<'p> {
         fg.release(mark);
         Ok(jumps)
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn case_const(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -688,6 +765,8 @@ impl<'p> Gen<'p> {
         fg.release(mark);
         Ok(())
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn case_length(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -704,6 +783,18 @@ impl<'p> Gen<'p> {
         else {
             return Err(internal("expected length case"));
         };
+        let expected =
+            usize::try_from(*at_least).map_err(|_| internal("length case bound overflow"))?;
+        if exact.len() != expected
+            || exact
+                .iter()
+                .enumerate()
+                .any(|(index, arm)| usize::try_from(arm.len).ok() != Some(index))
+        {
+            return Err(internal(
+                "length case arms must cover every length below the bound in order",
+            ));
+        }
         let mark = fg.next_reg;
         let len = fg.alloc();
         self.list_prim(
@@ -722,7 +813,7 @@ impl<'p> Gen<'p> {
             fg.release(mark);
             return Ok(());
         }
-        // 大きい長さを先に分け、残る小さい長さを昇順で調べる（10-06「下位 IR」）。
+        // 大きい長さを先に分け、残る小さい長さを昇順で調べる（設計書 02-06「判定の木への変換」）。
         let temp_mark = fg.next_reg;
         let t = fg.alloc();
         let k = self.constant(ConstDesc::Int(i64::from(*at_least)))?;
@@ -803,6 +894,8 @@ impl<'p> Gen<'p> {
         fg.release(mark);
         Ok(())
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn join(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -997,6 +1090,8 @@ impl<'p> Gen<'p> {
         }
         Ok(())
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn val(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -1069,6 +1164,8 @@ impl<'p> Gen<'p> {
             }
         }
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn ctor_val(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -1235,6 +1332,8 @@ impl<'p> Gen<'p> {
         }
         Ok(())
     }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     fn handle(
         &mut self,
         fg: &mut FnGen<'p>,
@@ -1312,7 +1411,15 @@ impl<'p> Gen<'p> {
         info: BuiltinInfo,
         def: &'p LowerDef,
     ) -> CgResult<ProtoIdx> {
-        if let Some(index) = self.builtin_protos.get(&id) {
+        let key = (
+            id,
+            if info.intrinsic.is_some_and(depends_on_type_args) {
+                types.tys.clone()
+            } else {
+                vec![]
+            },
+        );
+        if let Some(index) = self.builtin_protos.get(&key) {
             return Ok(*index);
         }
         let decl = crate::builtins::builtin_decl(id).ok_or_else(|| internal("unknown builtin"))?;
@@ -1348,7 +1455,7 @@ impl<'p> Gen<'p> {
             n,
         )?;
         self.set_proto(index, proto)?;
-        self.builtin_protos.insert(id, index);
+        self.builtin_protos.insert(key, index);
         Ok(index)
     }
     fn op_value(&mut self, binding: BindingId, def: &'p LowerDef) -> CgResult<ProtoIdx> {

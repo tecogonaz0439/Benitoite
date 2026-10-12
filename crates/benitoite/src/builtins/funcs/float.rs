@@ -1,12 +1,12 @@
 //! 浮動小数の変換と演算（設計書 01-04「Float」「型の変換」、03-06「Float」）。
-//! 仮の本体は、後の作業が本体と Rust の引数型だけを書き換える。
-//! 名前・権限・引数の数・DECLS の中の位置は変えない（実装プラン 10-12「まだ書かない項目の仮の本体」）。
+//! 名前・権限・引数の数は標準ライブラリのソースの宣言と一致させる
+//! （設計書 02-04「標準ライブラリのソースの持ち方」）。番号は表の中の位置で決まるので、DECLS の中の位置は変えない。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::runtime::heap::Value;
 
 builtin! {
-    /// `Float.toString` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Float.toString` の本体。
     name = "Float.toString",
     pure fn to_string(ctx, n: f64) -> Value<'e> {
         ctx.alloc_str(&crate::base::prim::float_to_text(n), "Float.toString")
@@ -14,7 +14,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Float.parse` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Float.parse` の本体。
     name = "Float.parse",
     pure fn parse(ctx, s: &'c str) -> Value<'e> {
         let parsed = super::decimal_float(s)
@@ -26,7 +26,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Float.truncate` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Float.truncate` の本体。
     name = "Float.truncate",
     pure fn truncate(ctx, n: f64) -> Value<'e> {
         let n = n.trunc();
@@ -43,7 +43,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Float.isNaN` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Float.isNaN` の本体。
     name = "Float.isNaN",
     pure fn is_na_n(ctx, n: f64) -> bool {
         let _ = ctx;
@@ -52,7 +52,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Float.absolute` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Float.absolute` の本体。
     name = "Float.absolute",
     pure fn absolute(ctx, n: f64) -> f64 {
         let _ = ctx;
@@ -61,7 +61,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Float.floor` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Float.floor` の本体。
     name = "Float.floor",
     pure fn floor(ctx, n: f64) -> f64 {
         let _ = ctx;
@@ -70,7 +70,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Float.ceiling` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Float.ceiling` の本体。
     name = "Float.ceiling",
     pure fn ceiling(ctx, n: f64) -> f64 {
         let _ = ctx;
@@ -79,7 +79,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Float.round` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Float.round` の本体。
     name = "Float.round",
     pure fn round(ctx, n: f64) -> f64 {
         let _ = ctx;
@@ -88,7 +88,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Float.squareRoot` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Float.squareRoot` の本体。
     name = "Float.squareRoot",
     pure fn square_root(ctx, n: f64) -> f64 {
         let _ = ctx;
@@ -96,7 +96,7 @@ builtin! {
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     to_string::DECL,
     parse::DECL,

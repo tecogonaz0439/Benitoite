@@ -40,7 +40,7 @@ The modules of the standard library. Each module has its own file in this direct
 | [IO.Random](IO.Random.md) | unofficial | `import Benitoite.Unofficial.IO.Random` | Random numbers. |
 | [Path](Path.md) | unofficial | `import Benitoite.Unofficial.Path` | Joining and splitting paths as strings. |
 | [Json](Json.md) | unofficial | `import Benitoite.Unofficial.Json` | JSON values, parsing, and writing. |
-| [Regex](Regex.md) | unofficial | `import Benitoite.Unofficial.Regex` | Regular expressions with matching time linear in the input. |
+| [Regex](Regex.md) | unofficial | `import Benitoite.Unofficial.Regex` | Regular expressions. |
 | [Csv](Csv.md) | unofficial | `import Benitoite.Unofficial.Csv` | Reading and writing CSV as in RFC 4180. |
 | [Encoding](Encoding.md) | unofficial | `import Benitoite.Unofficial.Encoding` | Base64 encoding of bytes. |
 | [Hash](Hash.md) | unofficial | `import Benitoite.Unofficial.Hash` | Hash values of bytes. |

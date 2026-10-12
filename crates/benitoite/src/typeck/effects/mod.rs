@@ -24,50 +24,15 @@ pub(super) fn check_uses(d: &mut Decls<'_>, uses: &UsesList, scope: &Scope) {
 pub(super) fn check_entries(d: &mut Decls<'_>) {
     declarations::check_entries(d);
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &Expr) -> ITy {
     match e {
-        Expr::Lazy(e) => {
-            let effect = ctx.fresh_effect();
-            let ty = ctx.block_in(&e.body, effect.clone(), None);
-            ctx.add(Constraint::EffSub {
-                sub: effect,
-                sup: fixed(EffectSet::empty()),
-                reason: reason(e.span, ReasonKind::LazyBody),
-            });
-            ITy::Con(TyCon::Builtin(B::LAZY), vec![ty])
-        }
+        Expr::Lazy(e) => lazy_expr(ctx, e),
         Expr::With(e) => with(ctx, e),
-        Expr::Try(e) => {
-            let target = ctx.expr(&e.value);
-            let Some(ret) = ctx.ret.clone() else {
-                debug_assert!(false, "try outside a function boundary");
-                return ITy::Error;
-            };
-            let result = ctx.fresh_ty();
-            ctx.add(Constraint::Try {
-                target,
-                ret,
-                result: result.clone(),
-                node: e.id,
-                reason: reason(e.span, ReasonKind::Try),
-            });
-            result
-        }
+        Expr::Try(e) => try_expr(ctx, e),
         Expr::Handle(e) => handle::check(ctx, e),
-        Expr::Resume(e) => {
-            let value = ctx.expr(&e.value);
-            let Some(clause) = ctx.clauses.last() else {
-                debug_assert!(false, "resume outside a handler clause");
-                return ITy::Error;
-            };
-            let ty = clause.handle_ty.clone();
-            ctx.add(Constraint::Flow {
-                from: value,
-                to: clause.op_ret.clone(),
-                reason: reason(e.value.span(), ReasonKind::Resume),
-            });
-            ty
-        }
+        Expr::Resume(e) => resume_expr(ctx, e),
         Expr::Lit(_)
         | Expr::Interp(_)
         | Expr::Name(_)
@@ -88,6 +53,60 @@ pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &Expr) -> ITy {
             ITy::Error
         }
     }
+}
+
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
+fn lazy_expr(ctx: &mut Body<'_, '_>, e: &LazyExpr) -> ITy {
+    let effect = ctx.fresh_effect();
+    let ty = ctx.block_in(&e.body, effect.clone(), None);
+    ctx.add(Constraint::EffSub {
+        sub: effect,
+        sup: fixed(EffectSet::empty()),
+        reason: reason(e.span, ReasonKind::LazyBody),
+    });
+    ITy::Con(TyCon::Builtin(B::LAZY), vec![ty])
+}
+
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
+fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
+    let target = ctx.expr(&e.value);
+    let Some(ret) = ctx.ret.clone() else {
+        debug_assert!(false, "try outside a function boundary");
+        return ITy::Error;
+    };
+    let result = ctx.fresh_ty();
+    ctx.try_owners.insert(e.id, ctx.return_owner);
+    ctx.add(Constraint::Try {
+        target,
+        ret,
+        result: result.clone(),
+        node: e.id,
+        reason: reason(e.span, ReasonKind::Try),
+    });
+    result
+}
+
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
+fn resume_expr(ctx: &mut Body<'_, '_>, e: &ResumeExpr) -> ITy {
+    let value = ctx.expr(&e.value);
+    let Some(clause) = ctx.clauses.last() else {
+        let mut d = DiagBuilder::new(DiagCode::E0509).primary(e.span);
+        if ctx.placeholder_boundary {
+            d = d.help("placeholder");
+        }
+        ctx.diagnostics.push(d.build());
+        return ITy::Error;
+    };
+    let ty = clause.handle_ty.clone();
+    ctx.add(Constraint::Flow {
+        from: value,
+        to: clause.op_ret.clone(),
+        reason: reason(e.value.span(), ReasonKind::Resume),
+    });
+    ty
 }
 
 fn with(ctx: &mut Body<'_, '_>, e: &WithExpr) -> ITy {
@@ -126,7 +145,7 @@ fn with(ctx: &mut Body<'_, '_>, e: &WithExpr) -> ITy {
 
 fn direct_open(ctx: &mut Body<'_, '_>, call: &CallExpr, name: &NameExpr) -> ITy {
     // E3 が直接の呼び出しだけを E4 に許す。引数の中の参照には印を渡さない
-    // （実装プラン F07「式の制約の生成」、設計書 02-05「書く位置の検査」）。
+    // （設計書 02-05「書く位置の検査」）。
     let callee = generate::name(ctx, name, true);
     ctx.record_type(name.id, callee.clone());
     let params: Vec<_> = call.args.iter().map(|_| ctx.fresh_ty()).collect();

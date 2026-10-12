@@ -1,6 +1,6 @@
 //! 組み込みの関数を呼ぶときの値の変換（設計書 02-08「参照インタプリタ」）。
 //! BuiltinBridge は評価の実行ごとに一つ持つ。呼び出しごとに区間を開き、引数と結果を区間の中で
-//! 変換し終えた後、成功・停止・終了のいずれでも回収する。中身を見せない値は Bridge の根の表で
+//! 変換し終えた後、回収の予算に従って回収する。中身を見せない値は Bridge の根の表で
 //! 保持し、独自の値には表の位置だけを持たせる。次の区間では表から読み直し、終了時に根を手放す。
 //! リソースも独自の番号で表す。セル・Lazy・継続は独自のストアで扱い、Force・Update は
 //! 評価器が raw を呼ばず評価する。関数を引数に取るタスクの起動は変換の前に Unsupported にする。
@@ -16,13 +16,13 @@ use crate::builtins::table::call_builtin;
 use crate::builtins::{BuiltinId, builtin_decl};
 use crate::runtime::Stop;
 use crate::runtime::heap::{
-    CheckedLen, CtorTag, FieldsKind, Heap, HeapConfig, ObjKind, OpaqueData, RootStack, Trace,
-    Tracer, Value as HeapValue, ValueCtx,
+    CheckedLen, CtorTag, FieldsKind, Heap, HeapConfig, NoGcCtx, ObjKind, OpaqueData, RootIdx,
+    RootStack, Trace, Tracer, Value as HeapValue, ValueCtx,
 };
 use crate::runtime::list;
 use std::cell::RefCell;
 
-/// F14 が継続の評価に戻す、区間に依存しない組み込みの関数の結果。
+/// 継続の評価に戻す、区間に依存しない組み込みの関数の結果。
 #[derive(Debug)]
 pub(super) enum BuiltinOutcome {
     Done(Value),
@@ -35,15 +35,20 @@ pub(super) enum BuiltinOutcome {
 pub(super) struct BuiltinBridge {
     heap: Heap,
     roots: RootStack,
+    generation: u64,
     pub(super) resources: Shared,
     #[cfg(test)]
     pub(super) overrides: std::collections::HashMap<BuiltinId, &'static BuiltinDecl>,
 }
 
-// 関数と位置は評価器の値のまま保持する。ヒープには呼び出し中の表の番号だけを置くので、
-// ヒープの値や Slot を辿る必要はない（設計書 02-08「参照インタプリタ」）。
+// 関数と位置は評価器の値のまま保持する。ヒープには呼び出しの世代と、その呼び出しの表の
+// 番号だけを置くので、ヒープの値や Slot を辿る必要はない。世代を照合して、中身を見せない
+// 値の中に残った別の呼び出しの値を拒む（設計書 02-08「参照インタプリタ」）。
 #[derive(Debug)]
-struct RefValue(u32);
+struct RefValue {
+    generation: u64,
+    index: u32,
+}
 impl OpaqueData for RefValue {}
 impl Trace for RefValue {
     fn trace(&self, _tracer: &mut Tracer<'_>) {}
@@ -55,6 +60,7 @@ impl BuiltinBridge {
         Self {
             heap: Heap::new(HeapConfig::default()),
             roots: RootStack::new(),
+            generation: 0,
             resources: Rc::new(RefCell::new(Resources::default())),
             #[cfg(test)]
             overrides: std::collections::HashMap::new(),
@@ -90,24 +96,24 @@ impl BuiltinBridge {
         io: &mut dyn IoServices,
         state: Option<&mut dyn StateServices>,
     ) -> BuiltinOutcome {
+        let Some(generation) = self.generation.checked_add(1) else {
+            return BuiltinOutcome::Stopped(invalid_conversion());
+        };
+        self.generation = generation;
         let resources = Rc::clone(&self.resources);
         let mut io = resources::Io {
             base: io,
             resources: Rc::clone(&resources),
         };
+        // 中身を見せない値の根は実行の終わりまで減らない。このため Value::Opaque の番号は
+        // 実行の間同じ根を指し、区間ごとに番号で読み直せる。使い終えた値も保持し続けることは
+        // 残る弱さである（設計書 02-08「参照インタプリタ」）。
         let roots = &mut self.roots;
         let result = self.heap.epoch(|ctx| {
             let mut references = Vec::new();
-            let opaque = (0..roots.len())
-                .map(|n| {
-                    roots
-                        .get(ctx, crate::runtime::heap::RootIdx(n))
-                        .ok_or_else(invalid_conversion)
-                })
-                .collect::<Result<Vec<_>, _>>()?;
             let args = args
                 .iter()
-                .map(|v| to_heap_with(ctx, v, decl.name, &opaque, &mut references))
+                .map(|v| to_heap_with(ctx, v, decl.name, roots, &mut references, generation))
                 .collect::<Result<Vec<_>, _>>()?;
             let reply = call_builtin(
                 decl,
@@ -124,7 +130,7 @@ impl BuiltinBridge {
             let value = match reply {
                 Reply::Done(value) => value,
                 Reply::Wait(WaitRequest::Io(IoWait::Worker(wait))) => {
-                    // 貸すリソースを独自の表から借り、完了の処理では登録の口を同じ表に戻す（F14「解放」）。
+                    // 貸すリソースを独自の表から借り、完了の処理では登録の口を同じ表に戻す。
                     let done = resources
                         .try_borrow_mut()
                         .map_err(|_| resources::fault())?
@@ -145,8 +151,11 @@ impl BuiltinBridge {
             };
             from_heap_with(ctx, value, &mut |v| {
                 if let Some(reference) = ctx.opaque::<RefValue>(v) {
+                    if reference.generation != generation {
+                        return Err(invalid_conversion());
+                    }
                     references
-                        .get(usize::try_from(reference.0).map_err(|_| invalid_conversion())?)
+                        .get(usize::try_from(reference.index).map_err(|_| invalid_conversion())?)
                         .cloned()
                         .ok_or_else(invalid_conversion)
                 } else {
@@ -155,7 +164,10 @@ impl BuiltinBridge {
             })
             .map(BuiltinOutcome::Done)
         });
-        self.heap.collect(&self.roots);
+        // ヒープの検証は回収のときに走るので、原因を探すときは gc-stress の構成で走らせる。
+        if self.heap.collect_requested() {
+            self.heap.collect(&self.roots);
+        }
         if let Some(fault) = self.heap.take_fault() {
             return BuiltinOutcome::Stopped(Stop::Internal(fault.detail));
         }
@@ -182,13 +194,14 @@ enum ToHeap<'a> {
     Set { len: usize },
 }
 
-// 子を先に変換し、明示した作業列で親を組み立てる（実装プラン 00-02「再帰の深さ」）。
+// 子を先に変換し、明示した作業列で親を組み立てる（AGENTS.md「実装の規約」の「再帰の深さ」）。
 fn to_heap_with<'e>(
-    ctx: &ValueCtx<'e>,
+    ctx: &NoGcCtx<'e>,
     value: &Value,
     function: &'static str,
-    opaque: &[HeapValue<'e>],
+    roots: &RootStack,
     references: &mut Vec<Value>,
+    generation: u64,
 ) -> Result<HeapValue<'e>, Stop> {
     let mut pending = vec![ToHeap::Visit(value)];
     let mut ready = Vec::new();
@@ -197,11 +210,9 @@ fn to_heap_with<'e>(
             ToHeap::Visit(value) => match value {
                 Value::Decimal(d) => ready.push(ctx.alloc_decimal(*d)),
                 Value::Resource(id) => ready.push(HeapValue::Resource(*id)),
-                Value::Opaque(n) => ready.push(
-                    *opaque
-                        .get(usize::try_from(*n).map_err(|_| invalid_conversion())?)
-                        .ok_or_else(invalid_conversion)?,
-                ),
+                Value::Opaque(n) => {
+                    ready.push(roots.get(ctx, RootIdx(*n)).ok_or_else(invalid_conversion)?)
+                }
                 Value::Map(items) if items.items.is_empty() => ready.push(HeapValue::EmptyMap),
                 Value::Map(items) => {
                     pending.push(ToHeap::Map {
@@ -220,7 +231,7 @@ fn to_heap_with<'e>(
                     let index =
                         u32::try_from(references.len()).map_err(|_| invalid_conversion())?;
                     references.push(value.clone());
-                    ready.push(ctx.alloc_opaque(RefValue(index)));
+                    ready.push(ctx.alloc_opaque(RefValue { generation, index }));
                 }
                 Value::Dict { .. } => return Err(invalid_conversion()),
                 Value::Int(n) => ready.push(HeapValue::Int(*n)),
@@ -401,12 +412,8 @@ fn from_heap_with<'e>(
                         ready.push(opaque(value)?)
                     }
                     ObjKind::Cell
-                    | ObjKind::Fields(
-                        FieldsKind::Func
-                        | FieldsKind::Dict
-                        | FieldsKind::ListCell
-                        | FieldsKind::ListNode,
-                    ) => {
+                    | ObjKind::Fields(FieldsKind::Func | FieldsKind::Dict | FieldsKind::ListNode) =>
+                    {
                         return Err(invalid_conversion());
                     }
                 },
@@ -457,7 +464,7 @@ fn invalid_conversion() -> Stop {
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -482,18 +489,18 @@ mod tests {
     use crate::vm::InstrRef;
 
     fn to_heap<'e>(
-        ctx: &ValueCtx<'e>,
+        ctx: &NoGcCtx<'e>,
         v: &Value,
         function: &'static str,
     ) -> Result<HeapValue<'e>, Stop> {
-        to_heap_with(ctx, v, function, &[], &mut Vec::new())
+        to_heap_with(ctx, v, function, &RootStack::new(), &mut Vec::new(), 0)
     }
     fn from_heap<'e>(ctx: &ValueCtx<'e>, v: HeapValue<'e>) -> Result<Value, Stop> {
         from_heap_with(ctx, v, &mut |_| Err(invalid_conversion()))
     }
 
     // 作成時の関門: 変換でタグ・順序・文字・エラーの内容を失わないことと、非再帰を守る。
-    // R06 のテストは独自の値との変換を通らない。R10 が求めた非公開の境界で往復し、
+    // ヒープだけのテストは独自の値との変換を通らない。変換の境目で往復し、
     // 等値規則のテストとは別に、ヒープ側の種類も確かめる。差し込み口は加えない。
     fn round_trip(heap: &mut Heap, input: &Value) -> Value {
         let output =
@@ -505,7 +512,7 @@ mod tests {
     }
 
     #[test]
-    fn round_trips_preserve_stage_one_values_and_heap_kinds() {
+    fn round_trips_preserve_values_and_heap_kinds() {
         let mut heap = Heap::new(HeapConfig::default());
         for input in [
             Value::Resource(ResourceId(0)),
@@ -613,7 +620,7 @@ mod tests {
 
     #[test]
     fn unsupported_and_malformed_values_are_internal_errors() {
-        let mut bridge = BuiltinBridge::new();
+        let mut bridge = stress_bridge();
         let mut io = TestIo {
             directory: PathBuf::from("."),
         };
@@ -685,8 +692,8 @@ mod tests {
     }
 
     // 作成時の関門: 呼び出しの境目で、包みへの引数・応答の変換・停止の伝達・回収を守る。
-    // R07 は独自の値を使わないためこの退行を捕まえない。本体の直接の結果と仕様の期待値を
-    // 両方確かめる。見本は本番の表にないので R10 の指示に従い call_decl で呼ぶ。
+    // ヒープの値だけを使うテストでは変換の退行を捕まえない。本体の直接の結果と仕様の期待値を
+    // 両方確かめる。見本は本番の表にないので `call_decl` で呼ぶ。
     fn done(outcome: BuiltinOutcome) -> Value {
         match outcome {
             BuiltinOutcome::Done(value) => value,
@@ -696,9 +703,57 @@ mod tests {
         }
     }
 
+    // 呼び出しごとの回収を前提に、対象の残りと根の保持を確かめるので、回収を強制する
+    // ヒープを使う。既定のヒープは予算に従い、回収を飛ばす。
+    fn stress_bridge() -> BuiltinBridge {
+        let mut bridge = BuiltinBridge::new();
+        bridge.heap = Heap::new(HeapConfig {
+            stress: true,
+            ..HeapConfig::default()
+        });
+        bridge
+    }
+
+    // 作成時の関門: 呼び出しの境目で、予算に達するまで回収を飛ばし、達したら回収する契約を守る。
+    // 常に回収する退行と回収しなくなる退行は、回収を強制する既存のテストや出力の比較では
+    // 捕まえない。ヒープの公開の記録で確かめ、本番の差し込み口は加えない。
+    #[test]
+    fn builtin_calls_collect_only_when_the_budget_is_reached() {
+        if cfg!(feature = "gc-stress") {
+            return;
+        }
+        let mut bridge = BuiltinBridge::new();
+        bridge.heap = Heap::new(HeapConfig {
+            trigger_min_bytes: 8192,
+            ..HeapConfig::default()
+        });
+        let mut io = TestIo {
+            directory: PathBuf::from("."),
+        };
+        let args = [Value::Str(Rc::from("ab")), Value::Int(128)];
+        let expected = Value::Str(Rc::from("ab".repeat(128)));
+        let mut collections = 0;
+        for call in 0..128 {
+            let actual =
+                done(bridge.call_decl(&samples::string_repeat::DECL, &args, &mut io, None));
+            assert!(values_equal(&actual, &expected).unwrap());
+            let after = bridge.heap.stats().collections;
+            if call == 0 {
+                assert_eq!(after, 0);
+                assert!(!bridge.heap.object_ids().is_empty());
+            }
+            if after > collections {
+                assert!(bridge.heap.object_ids().is_empty());
+            }
+            collections = after;
+        }
+        assert!(collections > 0);
+        assert!(bridge.heap.object_ids().len() < 128);
+    }
+
     #[test]
     fn samples_match_direct_bodies_and_preserve_stops() {
-        let mut bridge = BuiltinBridge::new();
+        let mut bridge = stress_bridge();
         let mut io = TestIo {
             directory: PathBuf::from("."),
         };
@@ -798,7 +853,8 @@ mod tests {
     }
     impl Drop for TempDirectory {
         fn drop(&mut self) {
-            std::fs::remove_dir_all(&self.0).unwrap();
+            // 巻き戻しの途中で二度目の panic を起こさない。
+            let _removed = std::fs::remove_dir_all(&self.0);
         }
     }
 
@@ -810,7 +866,7 @@ mod tests {
         let mut io = TestIo {
             directory: directory.0.clone(),
         };
-        let mut bridge = BuiltinBridge::new();
+        let mut bridge = stress_bridge();
         let mut direct_heap = Heap::new(HeapConfig::default());
         for (path, error) in [
             ("valid", None),
@@ -919,7 +975,7 @@ mod tests {
 
     #[test]
     fn exit_spawn_and_other_waits_remain_distinct() {
-        let mut bridge = BuiltinBridge::new();
+        let mut bridge = stress_bridge();
         let mut io = TestIo {
             directory: PathBuf::from("."),
         };
@@ -937,7 +993,7 @@ mod tests {
         assert!(bridge.heap.object_ids().is_empty());
     }
     builtin! {
-        /// 中身を見せない値は、変換の境目の表でだけ保持する（F14、設計書 02-08「参照インタプリタ」）。
+        /// 中身を見せない値は、変換の境目の表でだけ保持する（設計書 02-08「参照インタプリタ」）。
         name = "Test.makeOpaque",
         pure fn make_opaque(ctx) -> HeapValue<'e> { Ok(ctx.alloc_opaque(Opaque)) }
     }
@@ -953,7 +1009,7 @@ mod tests {
     // 既存の往復は中身を見せない値を拒むので根の削除・変換の取り違えを捕まえない。
     #[test]
     fn opaque_values_remain_rooted_across_builtin_calls() {
-        let mut bridge = BuiltinBridge::new();
+        let mut bridge = stress_bridge();
         let mut io = TestIo {
             directory: PathBuf::from("."),
         };

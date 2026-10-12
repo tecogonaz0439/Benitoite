@@ -1,5 +1,5 @@
-//! リソース表の遷移、所有の受け渡し、解放が一度だけ行われる契約（設計書 02-09、実装プラン R24）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! リソース表の遷移、所有の受け渡し、解放が一度だけ行われる契約（設計書 02-09「リソースの追跡」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -37,7 +37,11 @@ impl OsResource for Resource {
 }
 impl Drop for Resource {
     fn drop(&mut self) {
-        self.counts.lock().unwrap().dropped += 1;
+        // 巻き戻しの途中で二度目の panic を起こさない。
+        self.counts
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .dropped += 1;
     }
 }
 fn task(index: u32) -> TaskId {
@@ -156,6 +160,27 @@ fn os_state_transitions_and_one_release_job() {
             assert_eq!(counts.lock().unwrap().dropped, 1);
         }
     }
+}
+
+// 関門: 貸し出し中の解放を求めた最初の呼び手を保持する契約
+// （設計書 02-09「リソースの追跡」の release_starter の方針）。後続の呼び手で
+// 番号を上書きする退行を捕まえる。既存の遷移テストは呼び手を記録せず、VM の
+// close のテストは貸し出し中の AfterReturn を通らない。本番の差し込み口は要らない。
+#[test]
+fn repeated_release_requests_while_lent_preserve_first_starter() {
+    let mut table = ResourceTable::default();
+    let (id, _) = insert(&mut table, ResourceKind::FileWriter, false);
+    let handle = lent(&mut table, id, 1, 0);
+    for who in [1, 2] {
+        assert!(matches!(
+            release(&mut table, id, u64::from(who) + 1),
+            ReleaseStart::AfterReturn
+        ));
+        table.mark_release_starter(id, task(who));
+    }
+    assert!(table.is_release_starter(id, task(1)));
+    assert!(!table.is_release_starter(id, task(2)));
+    assert!(table.give_back(id, handle));
 }
 
 // 関門: 返却順の契約と、取り消した待ちを返却で起こさない契約を同じ並びで守る。
@@ -310,7 +335,7 @@ fn silent_close_and_late_return_drop_os_handles_without_language_release() {
     assert_eq!(table.state(open), None);
 }
 
-// 関門: 不具合を待ちや言語の解放失敗に変えずに、事前の検査で返す（R24 の個別指示）。
+// 関門: 不具合を待ちや言語の解放失敗に変えずに、事前の検査で返す。
 #[test]
 fn preflight_rejects_missing_or_inconsistent_resources_without_changing_them() {
     let mut table = ResourceTable::default();
@@ -368,7 +393,7 @@ fn deferred_release_jobs_keep_start_order_and_failure_after_immediate_return() {
     assert!(table.take_release_failure(id).is_none());
 }
 
-// 関門: Released の全経路で要求の添え物を除く（L30、設計書 03-09「サーバ」）。
+// 関門: Released の全経路で要求の添え物を除く（設計書 03-09「サーバ」）。
 // OS 資源の Drop だけでは別の表に残った要求を検出できない。
 #[test]
 fn released_resources_remove_attachments_on_every_path() {

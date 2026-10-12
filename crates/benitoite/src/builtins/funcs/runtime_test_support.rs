@@ -1,5 +1,5 @@
-//! R29 の本体とプログラムを本番のランタイムにつなぐテストの準備（実装プラン R29）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 組み込みの関数の本体とプログラムを本番のランタイムにつなぐテストの準備（設計書 02-09「プログラムの実行の流れ」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic, clippy::indexing_slicing)]
 
 use super::super::table::tags;
@@ -68,7 +68,8 @@ impl TempDir {
 }
 impl Drop for TempDir {
     fn drop(&mut self) {
-        std::fs::remove_dir_all(&self.0).unwrap();
+        // 巻き戻しの途中で二度目の panic を起こさない。
+        let _removed = std::fs::remove_dir_all(&self.0);
     }
 }
 

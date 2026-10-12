@@ -1,5 +1,5 @@
-//! HTTP の要求の検査・失敗の注入・本体の上限（実装プラン L32）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! HTTP の要求の検査・失敗の注入・本体の上限（設計書 03-09「クライアント」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic)]
 use super::*;
 use crate::builtins::funcs::runtime_test_support::{payload, runtime};
@@ -11,7 +11,7 @@ use crate::runtime::sched::testing::ScheduleHandle;
 use crate::vm::ExecMode;
 
 // 関門: OS の名前解決の Io を HostNotFound に揃え、Timeout の種類を保つ。
-// 失敗の注入は解決器を通らない。オーケストレータの指示に従い外部 DNS を置き換える。
+// 失敗の注入は解決器を通らないため、外部 DNS を置き換えて確かめる。
 #[test]
 fn resolver_io_becomes_host_not_found_and_timeout_is_preserved() {
     #[derive(Debug)]
@@ -114,7 +114,7 @@ fn invalid_urls_and_timeout_finish_before_worker_submission() {
 }
 
 // 関門: ヘッダの分割と名前の不正文字を送信前に拒む。許す文字は worker の待ちまで進む。
-// 通常の通信ではこの失敗を起こせず、L32 が単体テストを指定する（設計書 03-09「クライアント」）。
+// 通常の通信ではこの失敗を起こせないため、単体テストで確かめる（設計書 03-09「クライアント」）。
 #[test]
 fn request_headers_check_argument_zero_and_allow_utf8_and_tab() {
     let script = ScheduleHandle::new([], false);
@@ -185,7 +185,7 @@ fn configured_network_faults_return_without_worker() {
     }
 }
 
-// 関門: L32 が指定する非公開関数のテスト。OS の CPU を差し替える公開の口を作らず、
+// 関門: OS の CPU を差し替える公開の口を作らず、
 // CPU が足りない理由が実際の完了の変換で Other の Result.Error になることを守る。
 #[test]
 fn missing_cpu_features_return_other_with_names() {
@@ -204,7 +204,7 @@ fn missing_cpu_features_return_other_with_names() {
     });
 }
 
-// 関門: L32 が指定する非公開関数の境界テスト。1 GiB の通信を行わず、上限ちょうどと
+// 関門: 1 GiB の通信を行わず、上限ちょうどと
 // 上限 + 1 の判定・読み過ぎの防止・資源の不足への変換を、本番で使う関数で守る。
 #[test]
 fn body_limit_reads_at_most_one_extra_byte_and_stops() {

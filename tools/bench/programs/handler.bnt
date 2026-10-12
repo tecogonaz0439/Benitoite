@@ -28,7 +28,7 @@ end function
 function runSaved(count: Integer) -> Integer
   return handle repeat(count, 1) with
     case step(value) ->
-      // 再開の後に加算を残し、末尾でない再開の区画の保存を測る（設計書 07-02、実装プラン C16）。
+      // 再開の後に加算を残し、末尾でない再開の区画の保存を測る。
       bind result <- resume((value * 17 + 11) mod 65521)
       result + 0
   end handle

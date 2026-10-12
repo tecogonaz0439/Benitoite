@@ -1,4 +1,4 @@
-//! 後続の段のテストが使う実際の読み込み・名前解決・型検査（実装プラン F07「テストの補助」）。
+//! 後続の段のテストが使う実際の読み込み・名前解決・型検査（設計書 02-01「検査と実行の経路」）。
 use super::{TypeckOutput, typecheck};
 use crate::diag::Diagnostic;
 use crate::modules::LoadOutput;
@@ -8,7 +8,7 @@ pub(crate) fn check_files(
     files: &[(&str, &str)],
     require_main: bool,
 ) -> (LoadOutput, ResolveOutput, TypeckOutput, Vec<Diagnostic>) {
-    // F06 の補助は読み込みの成功を前提にする。失敗の場合も全診断を返すため、先に読み込む。
+    // 名前解決のテストの補助は読み込みの成功を前提にする。失敗の場合も全診断を返すため、先に読み込む。
     let (loaded, _) = crate::modules::memfs::load_files(files);
     if loaded.diagnostics.iter().any(Diagnostic::is_error) {
         let diagnostics = loaded.diagnostics.clone();

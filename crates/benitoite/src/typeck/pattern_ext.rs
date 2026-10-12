@@ -9,7 +9,7 @@ use crate::base::{NodeId, Span};
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic, Edit};
 use crate::resolve::BindingKind;
 use crate::syntax::ast::{Expr, Literal, MatchArm, Pattern, RangeEnd};
-use crate::types::{ConstValue, EffectSet, TyCon, TyNames, builtin::BuiltinTypeId as B};
+use crate::types::{ConstValue, EffectSet, TyCon, builtin::BuiltinTypeId as B};
 
 pub(super) fn pattern(ctx: &mut Body<'_, '_>, p: &Pattern) -> ITy {
     match p {
@@ -154,14 +154,16 @@ fn alternative_binding(ctx: &mut Body<'_, '_>, node: NodeId, span: Span) {
         && let Some(expected) = ctx.locals.get(binding).cloned()
         && let Some(found) = ctx.expr_types.get(node).cloned()
     {
-        // 対象とパターンの制約より後に解き、対象の誤りの理由を選択肢で上書きしない
-        // （実装プラン F10「選択肢」）。
+        // 対象とパターンの制約より後に解き、対象の誤りの理由を選択肢で上書きしない。
         equal(ctx, expected, found, span, ReasonKind::Alternatives);
     }
 }
 pub(super) fn guard(ctx: &mut Body<'_, '_>, g: &Expr) {
     let effect = ctx.fresh_effect();
+    // ガードは外側の継続を使えないが、内側の handle は新しい節を加えられる。
+    let clauses = std::mem::take(&mut ctx.clauses);
     let ty = ctx.expr_in(g, effect.clone(), None);
+    ctx.clauses = clauses;
     ctx.add(Constraint::EffSub {
         sub: effect,
         sup: fixed(EffectSet::empty()),
@@ -171,7 +173,7 @@ pub(super) fn guard(ctx: &mut Body<'_, '_>, g: &Expr) {
 }
 
 // 移し替えに失敗したパターンは検査しない。finalize が Error を Unit にする前に調べる
-// （実装プラン F10「P4」、設計書 02-05「誤りの報告と検査の継続」）。
+// （設計書 02-05「誤りの報告と検査の継続」）。
 #[inline(never)]
 fn lower(ctx: &Body<'_, '_>, p: &Pattern) -> Option<Pat> {
     // 確定した型どうしの不一致には誤りにする型変数がない。パターンの位置の
@@ -256,7 +258,7 @@ fn lower(ctx: &Body<'_, '_>, p: &Pattern) -> Option<Pat> {
         Pattern::Error(_) => None,
     }
 }
-// 再帰する移し替えでは collect のクロージャの枠を各段に重ねない（実装プラン F10）。
+// 再帰する移し替えでは collect のクロージャの枠を各段に重ねない。
 #[inline(never)]
 fn lower_ctor(ctx: &Body<'_, '_>, p: &crate::syntax::ast::CtorPat) -> Option<Pat> {
     let binding = ctx
@@ -292,7 +294,7 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
                         .iter()
                         .map(|p| lower(ctx, p))
                         .collect::<Option<_>>()?,
-                    guarded: arm.guard.is_some(),
+                    guarded: arm.guarded,
                 })
             })
             .collect::<Option<Vec<_>>>()
@@ -300,7 +302,15 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
             continue;
         };
         let ty = ctx.solver.finalize(&ty, ctx.decls.resolved);
-        let issues = patterns::check_match(&ty, &arms, &ctx.decls.out.adts);
+        let Ok(checked) = patterns::check_match(&ty, &arms, &ctx.decls.out.adts) else {
+            ctx.diagnostic(coverage_stopped(
+                m.scrutinee,
+                super::text::COVERAGE_MATCH,
+                "split",
+            ));
+            continue;
+        };
+        let issues = checked.issues;
         for (i, arm) in m.arms.iter().enumerate() {
             let unreachable = issues
                 .iter()
@@ -331,13 +341,13 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
                 .primary(span);
                 let mut covering = vec![];
                 for alt in group {
-                    covering.extend(patterns::covering_alternatives(
-                        &ty,
-                        &arms,
-                        i,
-                        alt,
-                        &ctx.decls.out.adts,
-                    ));
+                    if let Some((_, positions)) = checked
+                        .covering
+                        .iter()
+                        .find(|(position, _)| *position == (i, alt))
+                    {
+                        covering.extend_from_slice(positions);
+                    }
                 }
                 covering.sort_unstable();
                 covering.dedup();
@@ -354,57 +364,52 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
                 ctx.diagnostic(
                     DiagBuilder::new(DiagCode::E0601)
                         .arg("witness", witness)
-                        .primary(m.scrutinee.span())
+                        .primary(m.scrutinee)
                         .help("add_arm")
                         .build(),
                 );
             }
         }
     }
-    for (bind, ty) in std::mem::take(&mut ctx.bindings) {
-        if matches!(bind.pattern, Pattern::Var(_) | Pattern::Wildcard(_))
+    for (pattern, ty) in std::mem::take(&mut ctx.bindings) {
+        if matches!(pattern, Pattern::Var(_) | Pattern::Wildcard(_))
             || ctx.solver.contains_error(&ty)
         {
             continue;
         }
-        let Some(pat) = lower(ctx, &bind.pattern) else {
+        let Some(pat) = lower(ctx, &pattern) else {
             continue;
         };
-        let ty = ctx.solver.finalize(&ty, ctx.decls.resolved);
-        if patterns::is_irrefutable(&ty, &pat, &ctx.decls.out.adts) {
+        let finalized = ctx.solver.finalize(&ty, ctx.decls.resolved);
+        let Ok(checked) = patterns::check_binding(&finalized, &pat, &ctx.decls.out.adts) else {
+            ctx.diagnostic(coverage_stopped(
+                pattern.span(),
+                super::text::COVERAGE_PATTERN,
+                "split_pattern",
+            ));
             continue;
-        }
-        let arms = [ArmPats {
-            alts: vec![pat],
-            guarded: false,
-        }];
-        let witness = patterns::check_match(&ty, &arms, &ctx.decls.out.adts)
-            .into_iter()
-            .find_map(|i| match i {
-                MatchIssue::NonExhaustive { witness } => Some(witness),
-                MatchIssue::Unreachable { .. } => None,
-            })
-            .unwrap_or_else(|| "_".into());
-        let shown = ty.show(&TyNames {
-            adts: &ctx.decls.out.adts,
-            effects: &ctx.decls.out.effects,
-            type_params: &ctx
-                .scheme
-                .type_params
-                .iter()
-                .map(|p| p.name.clone())
-                .collect::<Vec<_>>(),
-            effect_params: &ctx.scheme.effect_params,
-        });
+        };
+        let Some(witness) = checked.witness else {
+            continue;
+        };
+        let shown = ctx.show_type(&ty);
         ctx.diagnostic(
             DiagBuilder::new(DiagCode::E0607)
                 .arg("witness", witness)
                 .arg("ty", shown)
-                .primary(bind.pattern.span())
+                .primary(pattern.span())
                 .help("match")
                 .build(),
         );
     }
+}
+fn coverage_stopped(span: Span, subject: &str, help: &'static str) -> Diagnostic {
+    DiagBuilder::new(DiagCode::E0609)
+        .arg("subject", subject)
+        .arg("limit", super::limits::MAX_COVERAGE_WORK.to_string())
+        .primary(span)
+        .help(help)
+        .build()
 }
 pub(super) fn effect_failure(
     _: &mut Body<'_, '_>,
@@ -423,7 +428,7 @@ pub(super) fn effect_failure(
 mod tests {
     // 型検査の公開の結果で、AST からの移し替え・制約の順序・診断位置を守る。
     // 判定 API だけのテストはこの接続の失敗を捕まえない。実際の読み込みと名前解決を使い、
-    // 本番の差し込み口は増やさない（設計書 07-03「テストの設計の原則」、実装プラン F10）。
+    // 本番の差し込み口は増やさない（設計書 07-03「テストの設計の原則」）。
     #![allow(
         clippy::unwrap_used,
         clippy::indexing_slicing,
@@ -461,6 +466,50 @@ mod tests {
             );
         }
         d
+    }
+    // 判定 API では捕まえられない、レコードの省略した欄の lowering と診断との接続を確かめる。
+    #[test]
+    fn repeated_boolean_groups_check_without_diagnostics() {
+        let n = 12;
+        let mut source = String::from("record Flags\n");
+        for i in 0..4 * n + 1 {
+            source.push_str(&format!(" f{i}: Boolean\n"));
+        }
+        source.push_str("end record\nfunction f(flags: Flags) -> Unit\n match flags with\n");
+        for group in 0..n {
+            let fields = (4 * group..4 * group + 4)
+                .map(|i| format!("f{i}: false"))
+                .collect::<Vec<_>>()
+                .join(", ");
+            source.push_str(&format!(" case Flags({fields}, ..) -> ()\n"));
+        }
+        for value in [true, false] {
+            source.push_str(&format!(" case Flags(f{}: {value}, ..) -> ()\n", 4 * n));
+        }
+        source.push_str(" end match\nend function\n");
+        clean(&source);
+    }
+    #[test]
+    fn binding_budget_reports_only_coverage_stopped_at_the_pattern() {
+        let mut source = String::from("record Units\n");
+        for i in 0..1100 {
+            source.push_str(&format!(" f{i}: Unit\n"));
+        }
+        let prefix = source;
+        let tail_pattern = "Units(f1099: (), ..)";
+        clean(&format!(
+            "{prefix}end record\nfunction f(units: Units) -> Unit\n bind {tail_pattern} <- units\n ()\nend function\n"
+        ));
+        // 各欄を明示すれば構成子ごとの入力が異なり、記憶で行列の複製を省けない。
+        let fields = (0..800)
+            .map(|i| format!("f{i}: ()"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let pattern = format!("Units({fields}, ..)");
+        let source = format!(
+            "{prefix}end record\nfunction f(units: Units) -> Unit\n bind {pattern} <- units\n ()\nend function\n"
+        );
+        expect(&source, &[(C::E0609, &pattern, 0)]);
     }
     #[test]
     fn range_and_list_outputs_feed_lowering() {
@@ -524,7 +573,7 @@ mod tests {
             "data L\n Mk(L)\nend data\nfunction f(n: L) -> Unit\n match n with\n case L.Mk(_) -> ()\n end match\nend function".into(),
             match_source("Integer", " case -9223372036854775808..9223372036854775807 -> ()\n case _ -> ()"),
             match_source("Character", " case 'a'..'z' -> ()\n case _ -> ()"),
-            match_source("List[Integer]", " case [x, ..rest], [..rest, x] if x > 0 -> ()\n case _ -> ()"),
+            match_source("List[Integer]", " case [x, 0, ..rest], [..rest, 0, x] if x > 0 -> ()\n case _ -> ()"),
         ] { clean(&s); }
     }
     #[test]
@@ -546,6 +595,7 @@ mod tests {
             assert_eq!(d[0].helps.len(), 1);
         }
     }
+    // spec: 01-05 選ばれない分岐の検査
     #[test]
     fn unreachable_diagnostics_identify_covering_alternatives() {
         for (ty, arms, code, needle, occurrence, cover) in [
@@ -560,6 +610,14 @@ mod tests {
             (
                 "Integer",
                 " case 1, 1 -> ()\n case _ -> ()",
+                C::E0608,
+                "1",
+                1,
+                "1",
+            ),
+            (
+                "Integer",
+                " case 1, 1 if true -> ()\n case _ -> ()",
                 C::E0608,
                 "1",
                 1,
@@ -710,7 +768,7 @@ mod tests {
         assert!(!d[0].notes.iter().any(|n| n.contains("alternatives")));
     }
     // 型検査の入口で深い AST の検査結果まで確かめる。分岐を追加したときに
-    // 再帰の枠が大きくなる退行を、既定のスレッドで捕まえる（実装プラン F10）。
+    // 再帰の枠が大きくなる退行を、既定のスレッドで捕まえる。
     #[test]
     fn deep_expressions_stay_within_the_normal_stack() {
         for (prefix, leaf, suffix, depth) in [

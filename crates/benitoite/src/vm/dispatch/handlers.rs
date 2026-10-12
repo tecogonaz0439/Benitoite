@@ -56,7 +56,7 @@ pub(super) fn dispatch<'p>(
             return Ok(control);
         }
         // どの言語のハンドラも処理しなかった `Assert` の操作は、送り出しの列に置かずにその場で確かめる
-        // （実装プラン 10-18「`Assert.Check` の処理」の手順 2）。両方の IO の方式がここを通る。
+        // （設計書 02-11「テストの実行」）。両方の IO の方式がここを通る。
         if let Some(table) = &state.assert
             && let Some(assert_op) = table.op_of(reference.id)
         {
@@ -77,7 +77,7 @@ pub(super) fn dispatch<'p>(
     }
 }
 
-// 10-18「`Assert.Check` の処理」の手順 2〜5。要求を作らない。
+// 確認を VM の中で処理し、要求を作らない（設計書 02-11「テストの実行」）。
 #[cold]
 #[inline(never)]
 fn assert_check(
@@ -101,9 +101,13 @@ fn assert_check(
     reg_ref(window, instr.a())?;
     let args = read_range(ctx, window, &reg_range(instr.c(), reference.arity)?)?;
     let site = crate::runtime::report::instr_span(program, at);
-    // 失敗の値は区間の中で文字列に書き出す。ヒープの値を区間の外へ持ち出さない（10-18）。
-    match crate::runtime::assert::evaluate(ctx, table, op, &args, site)? {
+    // 失敗の値は区間の中で文字列に書き出す。ヒープの値を区間の外へ持ち出さない（設計書 02-11「テストの実行」）。
+    match crate::runtime::assert::evaluate(ctx, table, op, &args, site, program, &|| {
+        state.frame_records()
+    })? {
         AssertVerdict::Passed => {
+            let window =
+                active_window(state.segment_mut()?, cursor.locals.base, cursor.active.size)?;
             write(ctx, window, instr.a(), Value::Unit)?;
             save_next(state, cursor)?;
             Ok(Control::Reload)
@@ -311,7 +315,7 @@ pub(super) fn handle(
     let clauses = window
         .get(begin..end)
         .ok_or_else(|| missing("handler clause range missing"))?;
-    // 節の窓の範囲も、安全点を通る前に確かめる（実装プラン R20「HANDLE」）。
+    // 節の窓の範囲も、安全点を通る前に確かめる。
     for (slot, clause) in clauses.iter().zip(&handler.clauses) {
         let op = program
             .op(clause.op)
@@ -586,7 +590,7 @@ fn invoke_clause<'e>(
             .checked_add(u32::from(instr.a()))
             .ok_or_else(|| missing("clause result overflow"))?
     };
-    // 切り離す前に、停止しうる検査をすべて済ませる。安全点の後は探索からやり直す（R20）。
+    // 切り離す前に、停止しうる検査をすべて済ませる。安全点の後は探索からやり直す。
     if !precall(config, state, ctx, cursor)? {
         return Ok(if state.stopping.is_some() {
             Control::Reload
@@ -624,7 +628,7 @@ fn invoke_clause<'e>(
         for segment in state.stack.segments.iter_mut().skip(start) {
             clear_captured(program, segment, ctx);
         }
-        // この所有の移動から drop の枠まで、失敗する処理を挟まない（R20 手順 4.4）。
+        // この所有の移動から drop の枠まで、失敗する処理を挟まない。
         let segments = state.stack.segments.split_off(start);
         let cont = ctx.alloc_host(ContState::Captured(segments));
         if let Some(segment) = state.stack.segments.last_mut() {
@@ -639,7 +643,7 @@ fn invoke_clause<'e>(
     } else {
         ctx.alloc_host(ContState::Direct)
     };
-    // 所有を移した後に不整合があっても、drop の枠から継続を辿れる（R20）。
+    // 所有を移した後に不整合があっても、drop の枠から継続を辿れる。
     let segment = state.segment_mut()?;
     let cont_index = base
         .checked_add(u32::from(operation.arity))
@@ -668,7 +672,7 @@ fn invoke_clause<'e>(
 
 fn clear_captured(program: &CompiledProgram, segment: &mut Segment, ctx: &NoGcCtx<'_>) {
     for frame in &segment.calls {
-        // 継続の最上位の枠も操作の結果をまだ待つ。情報を引けない枠は保存する（設計書 02-08「枠を降ろす原因と処理」、R20）。
+        // 継続の最上位の枠も操作の結果をまだ待つ。情報を引けない枠は保存する（設計書 02-08「枠を降ろす原因と処理」）。
         let Ok((live, dest)) = frame_live_registers(program, frame, false) else {
             continue;
         };
@@ -812,7 +816,7 @@ pub(super) fn begin_return(
     continue_return(program, state, ctx, cursor.interrupt)
 }
 
-// 値を取り出した枠は、成功なら discard、待ちや失敗なら元へ戻す。枠の Slot の受け持ちはここ一つ（10-09）。
+// 値を取り出した枠は、成功なら discard、待ちや失敗なら元へ戻す。枠の Slot の受け持ちはここ一つ。
 #[cold]
 #[inline(never)]
 pub(super) fn unwind_top(state: &mut RunState, ctx: &mut NoGcCtx<'_>) -> Result<UnwindStep, Stop> {

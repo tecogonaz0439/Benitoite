@@ -8,7 +8,7 @@ use crate::runtime::heap::FieldsKind;
 use crate::runtime::heap::Value;
 
 builtin! {
-    /// `Benitoite.IO.Clock.sleep` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.Clock.sleep` の本体。
     name = "Benitoite.IO.Clock.sleep",
     io fn sleep(ctx, millis: i64) -> IoReply<'e> {
         let _ = ctx;
@@ -22,7 +22,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Clock.monotonicMilliseconds` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.Clock.monotonicMilliseconds` の本体。
     name = "Benitoite.IO.Clock.monotonicMilliseconds",
     io fn monotonic_milliseconds(ctx) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -30,14 +30,14 @@ builtin! {
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[sleep::DECL, monotonic_milliseconds::DECL];
 
 #[cfg(test)]
 mod tests;
 
 builtin! {
-    /// `Benitoite.IO.Clock.now` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Clock.now` の本体。
     name = "Benitoite.IO.Clock.now",
     io fn now(ctx) -> crate::builtins::iface::IoReply<'e> {
         let mut ctx = ctx;
@@ -48,7 +48,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Clock.localOffsetMinutes` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Clock.localOffsetMinutes` の本体。
     name = "Benitoite.IO.Clock.localOffsetMinutes",
     io fn local_offset_minutes(ctx) -> crate::builtins::iface::IoReply<'e> {
         let mut ctx = ctx;
@@ -56,5 +56,6 @@ builtin! {
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const MORE_DECLS: &[BuiltinDecl] = &[now::DECL, local_offset_minutes::DECL];

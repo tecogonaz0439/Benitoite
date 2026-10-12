@@ -90,7 +90,7 @@ pub enum LocalKind {
 /// 束縛を宣言した場所。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum DeclSite {
-    /// AST のノード（[字句と構文木](10-03-syntax.md)の「束縛を宣言したノード」）
+    /// AST のノード（設計書 02-03「AST」）
     Node(NodeId),
     /// 組み込みの表の項目（組み込みの型、`State`・`IO.All`、prelude のモジュール、`Benitoite`）
     Table,
@@ -133,7 +133,7 @@ pub struct ResolveOutput {
     /// モジュールの公開した名前と、その中の構成子・フィールド・メソッド・操作を載せる。処理系が組み込みの
     /// 型・関数・エフェクトを綴りでなく名前空間の名前で照合するために使う（02-04「標準ライブラリのソースの持ち方」）
     pub stdlib_names: BTreeMap<String, BindingId>,
-    /// 組み込みのエフェクトの操作の束縛 → 組み込みの関数の表の項目（10-04「名前解決の表」）。
+    /// 組み込みのエフェクトの操作の束縛 → 組み込みの関数の表の項目（設計書 02-04「束縛と表」）。
     /// 利用者のエフェクトの操作は載せない
     pub builtin_ops: BindingMap<BuiltinId>,
     /// プログラムの入口: 実行を始めるモジュールのトップレベルの関数 `main`。なければ `None`
@@ -149,7 +149,7 @@ use crate::syntax::ast::Module;
 
 /// プログラム全体の名前を解決する（02-04「解決の手順」の手順 1〜6）。`asts` の添字はモジュールの ID の値。
 /// 束縛の番号は `ids` から、トップレベルの宣言にはモジュールの ID の順に、各モジュールの中では宣言の順に振る。
-/// 組み込みの型とエフェクトの束縛は、組み込みの表（10-05 の `types::builtin`）から作る。
+/// 組み込みの型とエフェクトの束縛は、組み込みの表（`types::builtin`）から作る。
 /// `sources` は読み込みの段のソースの表（`LoadOutput::sources`）。修正案の位置（行の先頭、行末の改行）を
 /// 字句の span から求めるために、ソースの本文を読む。
 /// 誤りがあっても出力を返す。呼び出し側は、診断に誤りが一つでもあれば型検査に進まない（02-01「誤りが見つかったときの段の進め方」）。
@@ -184,6 +184,7 @@ mod checks;
 mod collect;
 mod imports;
 mod lookup;
+pub(crate) mod renames;
 mod shadow;
 pub(crate) mod suggest;
 mod text;

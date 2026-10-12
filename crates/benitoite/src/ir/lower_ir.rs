@@ -54,7 +54,7 @@ pub enum LCompKind {
     /// リストの長さで分岐する `case length V of { =k ⇒ M | … | ≥m ⇒ M }`
     CaseLength {
         scrutinee: Val<LComp>,
-        /// 長さがちょうど `len` のとき（`len` の昇順。どれも `at_least` より小さい）
+        /// 長さがちょうど `len` のとき。`0..at_least` のすべての長さを一つずつ昇順に持つ
         exact: Vec<LengthArm>,
         at_least: u32,
         /// 長さが `at_least` 以上のとき

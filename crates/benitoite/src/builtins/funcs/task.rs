@@ -1,5 +1,6 @@
 //! タスクの起動と待ち（設計書 01-11「タスクを起動する関数」「タスクの集まり」）。
-//! 名前・権限・引数の数・DECLS の中の位置は、実装プラン 10-12 の宣言に揃える。
+//! 名前・権限・引数の数は標準ライブラリのソースの宣言と一致させる
+//! （設計書 02-04「標準ライブラリのソースの持ち方」）。番号は表の中の位置で決まるので、DECLS の中の位置は変えない。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::builtins::iface::{Spawn, SpawnMode, StateReply, StateWait, TaskEndTarget, TaskPoll};
@@ -54,7 +55,7 @@ builtin! {
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     all::DECL,
     all_ok::DECL,
@@ -64,21 +65,25 @@ pub const DECLS: &[BuiltinDecl] = &[
 ];
 
 #[cfg(test)]
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(clippy::unwrap_used, clippy::panic)]
 mod tests {
     use super::*;
     use crate::builtins::iface::CallCtx;
     use crate::runtime::heap::{Heap, HeapConfig};
 
-    // 関門: 期限の正規化は組み込みの本体が守る独立の境界条件（実装プラン R39）。
+    // 関門: 期限の正規化は組み込みの本体が守る独立の境界条件。
     #[test]
     fn timeout_normalizes_non_positive_milliseconds() {
         let mut heap = Heap::new(HeapConfig::default());
         heap.epoch(|ctx| {
             let mut resources = crate::runtime::io::resources::ResourceTable::default();
             let mut scheduler = crate::runtime::sched::Scheduler::default();
-            let mut services = crate::vm::state::Stage1StateServices {
+            let mut services = crate::vm::state::BorrowedStateServices {
+                current_task: crate::vm::TaskId {
+                    index: 0,
+                    generation: 0,
+                },
                 resources: &mut resources,
                 scheduler: &mut scheduler,
             };

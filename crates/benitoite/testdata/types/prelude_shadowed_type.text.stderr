@@ -1,0 +1,12 @@
+error[E0401]: mismatched types
+  --> testdata/types/prelude_shadowed_type.bnt:7:21
+   |
+ 7 |   bind r: Result <- Benitoite.Result.Ok(1)
+   |                     ^^^^^^^^^^^^^^^^^^^^^^ expected `Result`, found `Result[Integer, _]`
+   |           ------ expected because of this
+   |
+   = note: the value must match the type annotation
+   = note: `Result` here is a type declared in a user module, which hides the prelude name `Result`
+   = help: write `Benitoite.Result` for the prelude type
+
+error: could not check testdata/types/prelude_shadowed_type.bnt due to 1 previous error

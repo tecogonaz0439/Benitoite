@@ -1,5 +1,5 @@
-//! 完了の順序と照合を、外部操作の表の境界で確かめる（実装プラン R26）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 完了の順序と照合を、外部操作の表の境界で確かめる（設計書 02-09「IO 実行器」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic, clippy::indexing_slicing)]
 use super::*;
 use crate::bytecode::program::ProtoIdx;
@@ -16,7 +16,7 @@ impl OsResource for Resource {
     }
 }
 // 関門: 返却を配送より後にする、取り消しで記録を消す、panic を捨てる退行を
-// 凍結した完了の API で捕まえる。VM のテストだけでは完了の種類と順序を分離できない。
+// 完了の API で捕まえる。VM のテストだけでは完了の種類と順序を分離できない。
 #[test]
 fn completion_returns_before_delivery_and_keeps_detached_cleanup_and_bugs() {
     let op = ExtOpId(7);

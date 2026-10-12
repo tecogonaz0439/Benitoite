@@ -1,5 +1,5 @@
 //! CLI（設計書 06-01）。初回リリース版のサブコマンドは `run`・`check`・`test`・`fmt`・`skill`。
-//! `test`・`fmt`・`skill` と `--licenses` の中身は U4 が `tools` に書く。
+//! `test`・`fmt`・`skill` と `--licenses` は `tools` で処理する。
 
 pub mod tools;
 
@@ -39,7 +39,7 @@ impl Default for Options {
     }
 }
 
-/// U4 が中身を書くサブコマンド。
+/// `tools` で処理するサブコマンド。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum ToolCommand {
     Test,
@@ -83,9 +83,11 @@ pub enum DevPanic {
     Check,
     /// 最初の書き込みを出力のバッファに加えた直後に panic を起こす（`RunEnv::dev_panic_after_first_write`）
     Run,
+    /// `skill`・`test`・`fmt` の本体の先頭で、ファイルに触れる前に panic を起こす
+    Tool,
 }
 
-/// CLI の一回の実行の環境。`main` はプロセスの標準入出力で作り、ゴールデンテストの実行器（C10）は
+/// CLI の一回の実行の環境。`main` はプロセスの標準入出力で作り、ゴールデンテストの実行器は
 /// メモリに捕らえる出力先で作る。
 #[derive(Debug)]
 pub struct CliEnv {
@@ -332,6 +334,7 @@ pub fn main() -> ExitCode {
                 "run",
                 &error.to_string(),
                 None,
+                FaultThread::Stage,
             ));
         }
     };
@@ -372,13 +375,36 @@ fn usage_error(env: &CliEnv, detail: &str) -> u8 {
     EXIT_CHECK
 }
 fn write_report(env: &CliEnv, format: DiagFormat, sources: &SourceTable, diagnostic: &Diagnostic) {
+    write_report_to(&env.stderr, env.color, format, sources, diagnostic);
+}
+fn write_report_to(
+    stderr: &OutputTarget,
+    color: bool,
+    format: DiagFormat,
+    sources: &SourceTable,
+    diagnostic: &Diagnostic,
+) {
     let message = match format {
-        DiagFormat::Text => {
-            render::render_one_text(diagnostic, sources, TextOptions { color: env.color })
-        }
+        DiagFormat::Text => render::render_one_text(diagnostic, sources, TextOptions { color }),
         DiagFormat::Json => format!("{}\n", render::render_json_line(diagnostic, sources)),
     };
-    let _result = env.stderr.write_bytes(message.as_bytes());
+    let _result = stderr.write_bytes(message.as_bytes());
+}
+fn write_tool_panic(
+    stderr: &OutputTarget,
+    color: bool,
+    format: DiagFormat,
+    stage: &str,
+    panic: &panic_boundary::PanicReport,
+) -> u8 {
+    write_report_to(
+        stderr,
+        color,
+        format,
+        &SourceTable::new(),
+        &report::internal_diagnostic(stage, &panic.message, Some(panic), FaultThread::Main),
+    );
+    EXIT_INTERNAL
 }
 fn write_internal(
     env: &CliEnv,
@@ -387,12 +413,13 @@ fn write_internal(
     stage: &str,
     message: &str,
     panic: Option<&panic_boundary::PanicReport>,
+    thread: FaultThread,
 ) -> u8 {
     write_report(
         env,
         format,
         sources,
-        &report::internal_diagnostic(stage, message, panic, FaultThread::Stage),
+        &report::internal_diagnostic(stage, message, panic, thread),
     );
     EXIT_INTERNAL
 }
@@ -423,6 +450,7 @@ fn report_check(
             "check",
             &message,
             None,
+            FaultThread::Stage,
         ));
     }
     if let Some(diag) = result
@@ -480,11 +508,12 @@ fn execute_script(
                     "run",
                     &error.to_string(),
                     None,
+                    FaultThread::Stage,
                 );
             }
         }
     }
-    // 検査の状態と IR の破棄も段のスレッドで行い、深い構造の drop によるスタック超過を防ぐ（実装プラン F18）。
+    // 検査の状態と IR の破棄も段のスレッドで行い、深い構造の drop によるスタック超過を防ぐ。
     let dev_panic = env.dev_panic;
     let prepared = panic_boundary::catch(|| {
         pipeline::on_large_stack(|| {
@@ -536,6 +565,7 @@ fn execute_script(
                 "check",
                 &panic.message,
                 Some(&panic),
+                FaultThread::Stage,
             );
         }
         Ok(Err(error)) => {
@@ -546,6 +576,7 @@ fn execute_script(
                 "check",
                 &error.to_string(),
                 None,
+                FaultThread::Stage,
             );
         }
         Err(panic) => {
@@ -556,6 +587,7 @@ fn execute_script(
                 "check",
                 &panic.message,
                 Some(&panic),
+                FaultThread::Main,
             );
         }
     };
@@ -581,11 +613,26 @@ fn execute_script(
                 "compile",
                 &panic.message,
                 Some(&panic),
+                FaultThread::Stage,
             );
         }
         Some(Ok(Err(CompileError::Limit(diags)))) => {
-            for diag in diags {
-                write_report(&env, options.diagnostics, &checked.sources, &diag);
+            match options.diagnostics {
+                DiagFormat::Text => {
+                    let text = render::render_check_text(
+                        &diags,
+                        &checked.sources,
+                        verb,
+                        &entry.display_name,
+                        TextOptions { color: env.color },
+                    );
+                    let _result = env.stderr.write_bytes(text.as_bytes());
+                }
+                DiagFormat::Json => {
+                    for diag in &diags {
+                        write_report(&env, options.diagnostics, &checked.sources, diag);
+                    }
+                }
             }
             return EXIT_CHECK;
         }
@@ -597,6 +644,7 @@ fn execute_script(
                 error.stage,
                 &error.message,
                 None,
+                FaultThread::Stage,
             );
         }
         None => {
@@ -607,6 +655,7 @@ fn execute_script(
                 "check",
                 "missing compilation result",
                 None,
+                FaultThread::Stage,
             );
         }
     };
@@ -627,6 +676,7 @@ fn execute_script(
                 "run",
                 &error.to_string(),
                 None,
+                FaultThread::Stage,
             );
         }
     };
@@ -640,6 +690,7 @@ fn execute_script(
                 "run",
                 "missing interrupt source",
                 None,
+                FaultThread::Stage,
             );
         }
     };
@@ -678,10 +729,16 @@ fn execute_script(
     end.exit_code
 }
 
-// 処理系の不具合の報告を確認する開発用の panic に限る（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+// 処理系の不具合の報告を確認する開発用の panic に限る（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(clippy::panic)]
 fn development_check_panic() {
     panic!("BENITOITE_DEV_PANIC=check");
+}
+
+// 処理系の不具合の報告を確認する開発用の panic に限る（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
+#[allow(clippy::panic)]
+fn development_tool_panic() {
+    panic!("BENITOITE_DEV_PANIC=tool");
 }
 
 fn read_development_environment(env: &mut CliEnv) -> Result<(), String> {
@@ -698,6 +755,7 @@ fn read_development_environment(env: &mut CliEnv) -> Result<(), String> {
         env.dev_panic = match value.to_str() {
             Some("check") => DevPanic::Check,
             Some("run") => DevPanic::Run,
+            Some("tool") => DevPanic::Tool,
             _ => return Err(bad_environment("BENITOITE_DEV_PANIC", &value)),
         };
     }
@@ -722,7 +780,7 @@ use std::sync::Arc;
 mod tests {
     // 関門: CLI が段をつなぐ時の終了状態・出力・診断を確かめる。各段のテストだけでは
     // 入口の選択や実行を止める判定の退行を捕まえない。内部の段は本物をつなぐ（設計書 07-03）。
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -732,16 +790,20 @@ mod tests {
     )]
     use super::*;
     use std::sync::Mutex;
+    use std::sync::atomic::{AtomicUsize, Ordering};
 
     const HELLO: &str = include_str!("../../testdata/modules/f18_hello.bnt");
     struct Directory(PathBuf);
     impl Directory {
         fn new() -> Self {
+            // テストのビルドだけの計数器で、処理系の大域の状態ではない。並列のテストが同じ名前のディレクトリを作らないようにする。
+            static NEXT: AtomicUsize = AtomicUsize::new(0);
             let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
                 .join("../../target/f18-tests")
                 .join(format!(
-                    "{}-{}",
+                    "{}-{}-{}",
                     std::process::id(),
+                    NEXT.fetch_add(1, Ordering::Relaxed),
                     std::time::SystemTime::now()
                         .duration_since(std::time::UNIX_EPOCH)
                         .unwrap()
@@ -759,7 +821,8 @@ mod tests {
     }
     impl Drop for Directory {
         fn drop(&mut self) {
-            std::fs::remove_dir_all(&self.0).unwrap();
+            // 巻き戻しの途中で二度目の panic を起こさない。
+            let _removed = std::fs::remove_dir_all(&self.0);
         }
     }
     type Capture = Arc<Mutex<Vec<u8>>>;
@@ -1103,7 +1166,7 @@ mod tests {
 
     #[test]
     fn prelude_source_errors_are_internal_and_user_errors_are_check_failures() {
-        // 作業文書が指定した判定の単体テスト。check_files では埋め込んだソースを差し替えられない。
+        // check_files では埋め込んだソースを差し替えられないので、判定を直接呼ぶ。
         let mut table = SourceTable::new();
         let user = table.add(crate::base::Source::new(
             "user.bnt".into(),
@@ -1189,8 +1252,8 @@ mod tests {
     #[test]
     fn codegen_limit_is_a_run_error_but_check_succeeds() {
         let dir = Directory::new();
-        // 宣言を大量に並べる入力は検査が遅いため、作業文書が認める原型内の定数の上限を使う。
-        // 引数を一つ混ぜ、リスト全体を単一の定数へ畳ませない（実装プラン F18「処理系の制限」）。
+        // 原型の中の定数の上限の近くまで並べる。
+        // 引数を一つ混ぜ、リスト全体を単一の定数へ畳ませない。
         let mut source = String::from("function many(x: Integer) -> Unit\n");
         // 一つのリストと文の数をそれぞれ抑え、構文の入れ子の上限ではなく定数の上限へ届かせる。
         for start in (0..65537).step_by(256) {
@@ -1218,5 +1281,12 @@ mod tests {
         assert_eq!(exit, EXIT_CHECK, "{err}");
         assert!(out.is_empty());
         assert!(err.contains("L0102"), "{err}");
+        assert!(
+            err.lines()
+                .last()
+                .unwrap()
+                .ends_with("due to 1 previous error"),
+            "{err}"
+        );
     }
 }

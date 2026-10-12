@@ -4,7 +4,10 @@
 //! H6・H9: 参照の数は持たず、Slot のヒープの番号の検査は Tracer に委ねる。
 //! O1・O2・O4・O7: 親の生存対象一覧は初期化済みの頭と正しい配置を持つ。
 //! 解放には一覧から得たポインタを渡し、解放後は頭も中身も読まない。
-//! M1: 印付けの間は解放しない。対象は印を立てたときに一度だけ積み、掃き出し前に全印を消す。
+//! M1: 印付けの間は解放しない。印は回収ごとの番号で付け、頭の印が今の回収の番号と等しい対象だけを、
+//! 今の回収で辿った対象とみなす。対象は印を付けたときに一度だけ積み、前の回収の印は消さない。
+//! 確保した対象の印は 0、回収の番号は 1 以上なので、確保した対象は次の回収で未訪問とみなす。
+//! 番号が一周するときだけ、印付けの前に全対象の印を 0 に戻す。
 
 // 内部の層で Host の所有値と生存対象の頭を読む（設計書 02-09「メモリの管理」）。
 #![allow(unsafe_code)]
@@ -26,6 +29,7 @@ pub(super) struct State {
     live_bytes: Cell<u64>,
     signal: Cell<bool>,
     requested: Cell<bool>,
+    mark_epoch: Cell<u64>,
 }
 impl State {
     pub(super) fn new(config: HeapConfig) -> Self {
@@ -35,6 +39,7 @@ impl State {
             live_bytes: Cell::new(0),
             signal: Cell::new(config.stress),
             requested: Cell::new(config.stress),
+            mark_epoch: Cell::new(0),
         }
     }
     pub(super) fn retain(&self, _core: &HeapCore, _value: Value<'_>) {}
@@ -48,7 +53,7 @@ impl State {
             .checked_mul(u64::from(self.config.trigger_factor_percent))
             .and_then(|scaled| scaled.checked_div(100))
             .map(|scaled| scaled.max(self.config.trigger_min_bytes));
-        // 溢れたときは回収を遅らせない（実装プラン R03「回収の要求」）。
+        // 溢れたときは回収を遅らせない。
         let reached = match (allocated, threshold) {
             (Some(allocated), Some(threshold)) => allocated >= threshold,
             _ => true,
@@ -80,6 +85,7 @@ impl State {
 
 struct Marker<'a> {
     core: &'a HeapCore,
+    epoch: u64,
     pending: Vec<Value<'a>>,
     roots_traced: u64,
     tracing_roots: bool,
@@ -94,7 +100,8 @@ impl<'a> Marker<'a> {
             self.failed = true;
             return;
         };
-        if word.replace(1) == 0 {
+        if word.get() != self.epoch {
+            word.set(self.epoch);
             self.pending.push(value);
         }
     }
@@ -152,8 +159,23 @@ pub(super) fn collect(core: &mut HeapCore, roots: &dyn Trace) {
         core.record_fault(fault.kind, &fault.detail);
         return;
     }
+    let epoch = match core.mode.mark_epoch.get().checked_add(1) {
+        Some(epoch) => epoch,
+        None => {
+            // 番号が一周すると古い印と一致するので、全対象を未訪問に戻してから始める。
+            for record in core.objects.get_mut().iter() {
+                // SAFETY: O1・O4・M1。一覧の初期化済みの頭を印付けと解放の前に読み、印だけを戻す。
+                let head = unsafe { record.allocation.ptr.cast::<ObjHeader>().as_ref() };
+                head.word.set(0);
+            }
+            1
+        }
+    };
+    // Trace が panic しても番号を残し、次の回収では途中まで付けた印を未訪問とみなす。
+    core.mode.mark_epoch.set(epoch);
     let mut marker = Marker {
         core,
+        epoch,
         pending: Vec::new(),
         roots_traced: 0,
         tracing_roots: true,
@@ -173,11 +195,11 @@ pub(super) fn collect(core: &mut HeapCore, roots: &dyn Trace) {
         let ptr = record.allocation.ptr.cast::<ObjHeader>();
         // SAFETY: O1・O2・O4・O7・M1。一覧の初期化済みの頭を解放前に読み、元の provenance のまま解放へ渡す。
         let head = unsafe { ptr.as_ref() };
-        if head.word.replace(0) == 0 {
+        if head.word.get() != epoch {
             dead.push(ptr);
         }
     }
-    // 根の契約違反を見つけた場合も印を消す。根が欠けたままの解放は行わない。
+    // 印は回収ごとの番号なので消さずに戻ってよい。根が欠けたままの解放は行わない。
     if failed {
         return;
     }
@@ -202,15 +224,19 @@ pub(super) fn collect(core: &mut HeapCore, roots: &dyn Trace) {
     core.mode.allocated_bytes.set(0);
     core.mode.requested.set(false);
     core.mode.signal.set(false);
-    core.stats
-        .get_mut()
-        .pause_nanos
-        .push(u64::try_from(started.elapsed().as_nanos()).unwrap_or(u64::MAX));
+    let pause = u64::try_from(started.elapsed().as_nanos()).unwrap_or(u64::MAX);
+    let record_pauses = core.config().record_pauses;
+    let stats = core.stats.get_mut();
+    stats.pause_total_nanos = stats.pause_total_nanos.saturating_add(pause);
+    stats.pause_max_nanos = stats.pause_max_nanos.max(pause);
+    if record_pauses {
+        stats.pause_nanos.push(pause);
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    // 作成時の関門: R02 の共通テストは根の保存と一回の回収だけを確かめる。
+    // 作成時の関門: 公開層の根の保存と一回の回収だけでは、回収方式の状態遷移の退行を捕まえない。
     // ここでは方式の持ち主の公開境界で、辿り漏れ・循環の残留・印の消し忘れ・
     // 閾値と信号の退行・深い値でのスタックの枯渇を確かめる。差し込み口は加えない。
     // 到達の期待値は操作と同時に記録する独立したグラフから求め、本番の Trace を使わない。
@@ -254,6 +280,64 @@ mod tests {
         }
     }
 
+    // 関門: 印付けが panic で止まっても、次の回収で到達できる子を解放しない契約を守る。
+    // 既存の正常終了の回収では残った印の退行を捕まえない。公開の Trace だけで止め、差し込み口は加えない。
+    #[test]
+    fn reachable_child_survives_collection_after_marking_panics() {
+        struct PanicRoots {
+            slot: Slot,
+            calls: Cell<u32>,
+            panic_at: Cell<Option<u32>>,
+        }
+        impl Trace for PanicRoots {
+            fn trace(&self, t: &mut Tracer<'_>) {
+                t.slot(&self.slot);
+                let calls = self.calls.get() + 1;
+                self.calls.set(calls);
+                if self.panic_at.get() == Some(calls) {
+                    panic!("stop during marking");
+                }
+            }
+        }
+
+        let mut heap = Heap::new(HeapConfig::default());
+        let (parent, child_id) = heap.epoch(|ctx| {
+            let child = ctx.alloc_str("保持する子", "test").unwrap();
+            let parent = ctx.alloc_fields(FieldsKind::Ctor, 0, &[child]).unwrap();
+            (ctx.new_slot(parent), ctx.object_id(child).unwrap())
+        });
+        let roots = PanicRoots {
+            slot: parent,
+            calls: Cell::new(0),
+            panic_at: Cell::new(None),
+        };
+        // 検証器の呼び出し数を測り、その後の印付けで親を積んだ直後に止める。
+        heap.verify(&roots).unwrap();
+        roots.panic_at.set(Some(roots.calls.get() + 1));
+        roots.calls.set(0);
+        assert!(
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                heap.collect(&roots);
+            }))
+            .is_err()
+        );
+
+        roots.panic_at.set(None);
+        heap.collect(&roots);
+        // 解放済みの領域を読まないよう、生存と不具合の有無を中身より先に確かめる。
+        assert!(
+            heap.object_ids().contains(&child_id),
+            "{:?}",
+            heap.take_fault()
+        );
+        assert!(heap.take_fault().is_none());
+        heap.epoch(|ctx| {
+            let parent = ctx.load(&roots.slot);
+            let child = ctx.field(parent, 0).unwrap();
+            assert_eq!(ctx.str(child), Some("保持する子"));
+        });
+    }
+
     #[derive(Default)]
     struct Model {
         edges: BTreeMap<ObjId, Vec<ObjId>>,
@@ -266,7 +350,7 @@ mod tests {
             children: &[ObjId],
             make: impl for<'e> FnOnce(&mut NoGcCtx<'e>) -> Value<'e>,
         ) -> (Slot, ObjId) {
-            // 確保器の量の計数は R01 の契約。対象ごとの記録から生存分だけを合計する。
+            // 確保器の量の計数を確かめる。対象ごとの記録から生存分だけを合計する。
             let before = heap.stats().allocated_bytes;
             let (slot, id) = heap.epoch(|ctx| {
                 let value = make(ctx);
@@ -309,14 +393,29 @@ mod tests {
                 after.live_bytes,
                 expected.iter().map(|id| self.bytes[id]).sum::<u64>()
             );
-            assert_eq!(
-                after.pause_nanos.len(),
-                usize::try_from(after.collections).unwrap()
-            );
-            assert_eq!(after.pause_nanos.len() - before.pause_nanos.len(), 1);
+            assert!(after.pause_nanos.is_empty());
+            assert!(after.pause_total_nanos >= before.pause_total_nanos);
+            assert!(after.pause_max_nanos >= before.pause_max_nanos);
+            assert!(after.pause_total_nanos >= after.pause_max_nanos);
             assert_eq!(heap.verify(roots), Ok(()));
             assert!(heap.take_fault().is_none());
         }
+    }
+
+    // 生の並びは測定の設定でだけ保持し、合計と最大と同じ停止時間を表す（設計書 07-02「測る項目」）。
+    #[test]
+    fn pause_samples_are_recorded_when_requested() {
+        let mut heap = Heap::new(HeapConfig {
+            record_pauses: true,
+            ..HeapConfig::default()
+        });
+        let roots = RootStack::new();
+        heap.collect(&roots);
+        let stats = heap.stats();
+        assert_eq!(stats.collections, 1);
+        assert_eq!(stats.pause_nanos.len(), 1);
+        assert_eq!(stats.pause_total_nanos, stats.pause_nanos[0]);
+        assert_eq!(stats.pause_max_nanos, stats.pause_nanos[0]);
     }
 
     #[test]
@@ -452,18 +551,22 @@ mod tests {
         ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"
     )]
     fn million_linked_and_nested_fields_use_bounded_rust_stack() {
-        // Miri は内部参照と回収の安全性を小さな構造で調べ、深さの検査は通常実行に残す（実装プラン R11）。
+        // Miri は内部参照と回収の安全性を小さな構造で調べ、深さの検査は通常実行に残す。
         let depth = if cfg!(miri) { 64_u32 } else { 1_000_000_u32 };
-        for kind in [FieldsKind::ListCell, FieldsKind::Ctor] {
+        for linked in [true, false] {
             let mut heap = Heap::new(HeapConfig::default());
             let mut roots = RootStack::new();
             heap.epoch(|ctx| {
                 let mut value = ctx.alloc_str("end", "test").unwrap();
                 for i in 0..depth {
-                    value = if kind == FieldsKind::ListCell {
-                        ctx.alloc_fields(kind, i + 1, &[Value::Int(i64::from(i)), value])
+                    value = if linked {
+                        ctx.alloc_fields(
+                            FieldsKind::Ctor,
+                            i + 1,
+                            &[Value::Int(i64::from(i)), value],
+                        )
                     } else {
-                        ctx.alloc_fields(kind, i, &[value])
+                        ctx.alloc_fields(FieldsKind::Ctor, i, &[value])
                     }
                     .unwrap();
                 }
@@ -477,7 +580,7 @@ mod tests {
             heap.epoch(|ctx| {
                 let mut value = roots.get(ctx, RootIdx(0)).unwrap();
                 for i in (0..depth).rev() {
-                    let next = if kind == FieldsKind::ListCell {
+                    let next = if linked {
                         assert_eq!(ctx.field(value, 0).unwrap().as_int(), Some(i64::from(i)));
                         1
                     } else {
@@ -493,6 +596,92 @@ mod tests {
             assert!(heap.object_ids().is_empty());
             assert!(heap.take_fault().is_none());
         }
+    }
+
+    #[derive(Debug)]
+    struct OwnedBytes(Vec<u8>);
+    impl OpaqueData for OwnedBytes {
+        fn heap_bytes(&self) -> usize {
+            self.0.capacity()
+        }
+    }
+    impl HostData for OwnedBytes {
+        fn heap_bytes(&self) -> usize {
+            self.0.capacity()
+        }
+    }
+    impl Trace for OwnedBytes {
+        fn trace(&self, _t: &mut Tracer<'_>) {}
+    }
+
+    // 関門: 公開の確保・書き換えから回収要求までの契約を守る。内部層の合計だけでは
+    // 回収方式への通知漏れを捕まえない。閾値を使い、A を読む差し込み口は加えない。
+    #[test]
+    fn discarded_opaque_owned_capacity_requests_collection() {
+        if cfg!(feature = "gc-stress") {
+            return;
+        }
+        let mut heap = Heap::new(HeapConfig {
+            trigger_min_bytes: 8192,
+            stress: false,
+            ..HeapConfig::default()
+        });
+        heap.epoch(|ctx| {
+            for i in 0..3 {
+                assert_eq!(ctx.collect_requested(), i >= 2);
+                ctx.alloc_opaque(OwnedBytes(Vec::with_capacity(4096)));
+            }
+            assert!(ctx.collect_requested());
+        });
+        heap.collect(&RootStack::new());
+        assert!(heap.object_ids().is_empty());
+        assert_eq!(heap.stats().live_bytes, 0);
+        assert!(heap.take_fault().is_none());
+    }
+
+    #[test]
+    fn host_shrinkage_does_not_reduce_allocations_since_collection() {
+        if cfg!(feature = "gc-stress") {
+            return;
+        }
+        let mut probe = Heap::new(HeapConfig::default());
+        probe.epoch(|ctx| {
+            ctx.alloc_host(OwnedBytes(Vec::new()));
+        });
+        let base = probe.stats().allocated_bytes;
+        let mut heap = Heap::new(HeapConfig {
+            trigger_min_bytes: base + 6144,
+            stress: false,
+            ..HeapConfig::default()
+        });
+        let added_capacity = heap.epoch(|ctx| {
+            let host = ctx.alloc_host(OwnedBytes(Vec::new()));
+            let mut added_capacity = 0;
+            for size in [4096, 0] {
+                added_capacity += ctx
+                    .host_mut(host, |data: &mut OwnedBytes, _| {
+                        data.0 = Vec::with_capacity(size);
+                        data.0.capacity()
+                    })
+                    .unwrap();
+                assert!(!ctx.collect_requested());
+            }
+            added_capacity += ctx
+                .host_mut(host, |data: &mut OwnedBytes, _| {
+                    data.0 = Vec::with_capacity(4096);
+                    data.0.capacity()
+                })
+                .unwrap();
+            assert!(ctx.collect_requested());
+            added_capacity
+        });
+        assert_eq!(
+            heap.stats().allocated_bytes,
+            base + u64::try_from(added_capacity).unwrap()
+        );
+        heap.collect(&RootStack::new());
+        assert_eq!(heap.stats().live_bytes, 0);
+        assert!(heap.take_fault().is_none());
     }
 
     #[test]

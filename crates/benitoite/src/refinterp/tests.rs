@@ -1,5 +1,5 @@
 //! 利用者のソースから評価する受け入れテスト（設計書 07-03「テストの設計の原則」）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -9,21 +9,21 @@
 )]
 use super::eval::Machine;
 use super::*;
-use crate::builtins::funcs::stage1_io::TestIo;
+use crate::builtins::funcs::fixed_io::FixedIo;
 use crate::ir::desugar::test_support::desugar_files;
 use crate::runtime::io::services::RunInput;
 use crate::runtime::{RuntimeError, Stream};
 use std::path::PathBuf;
 
 // 作成時の関門: run の結果・出力・由来位置を、言語仕様から決めた期待値で確かめる。
-// 既存の R10 は値の変換だけを通り、継続・ストア・ガード・辞書の退行を捕まえない。
+// 値の変換のテストだけでは、継続・ストア・ガード・辞書の退行を捕まえない。
 // 入力には本物の脱糖までの各段を使い、公開の範囲は増やさない。
-// F14 が個別に指示する最大の継続長と Lazy の更新数だけは cfg(test) の内部の記録で確かめる。
+// 最大の継続長と Lazy の更新数だけは cfg(test) の内部の記録で確かめる。
 fn compile(source: &str) -> CoreProgram {
     desugar_files(&[("main.bnt", source)], true).3
 }
-fn io() -> TestIo {
-    TestIo::new(RunInput {
+fn io() -> FixedIo {
+    FixedIo::new(RunInput {
         arguments: vec![],
         script_directory: PathBuf::from("."),
         working_directory: PathBuf::from("."),
@@ -284,7 +284,7 @@ fn match_skips_guarded_arm_alternatives_and_checks_ranges_and_lists() {
             r#"
 function choose(xs: List[Integer]) -> Integer
  return match xs with
- case [x, ..], [.., x] if x > 0 -> x
+ case [x, 0, ..], [.., 0, x] if x > 0 -> x
  case [0, ..rest] -> List.length(rest)
  case [.., last] -> last
  case [] -> -1
@@ -297,9 +297,10 @@ function letter(c: Character) -> String
  end match
 end function
 function main() -> Unit uses Console.Write
- Console.writeLine("${choose([0, 7])}")
+ Console.writeLine("${choose([0, 0, 7])}")
  Console.writeLine("${choose([-1, 7])}")
- Console.writeLine("${choose([3, 4])}")
+ Console.writeLine("${choose([3, 0, 4])}")
+ Console.writeLine("${choose([0, 5])}")
  Console.writeLine("${choose([])}")
  Console.writeLine(letter('a'))
  Console.writeLine(letter('z'))
@@ -307,7 +308,7 @@ function main() -> Unit uses Console.Write
 end function
 "#
         ),
-        "1\n7\n3\n-1\nlower\nlower\nother\n",
+        "2\n7\n3\n5\n-1\nlower\nlower\nother\n",
     );
 }
 #[test]
@@ -405,7 +406,8 @@ impl Directory {
 }
 impl Drop for Directory {
     fn drop(&mut self) {
-        std::fs::remove_dir_all(&self.0).unwrap();
+        // 巻き戻しの途中で二度目の panic を起こさない。
+        let _removed = std::fs::remove_dir_all(&self.0);
     }
 }
 #[derive(Debug)]
@@ -432,7 +434,7 @@ impl OsResource for Resource {
     }
 }
 builtin! {
-    /// R29 の前に、終了の遷移を本物の型付きの包みで確かめる（F14「受け入れテスト」）。
+    /// 終了の遷移を本物の型付きの包みで確かめる。
     name = "Benitoite.IO.Process.exit",
     io fn exit(ctx, status:i64) -> IoReply<'e> {
         let _=ctx;
@@ -440,7 +442,7 @@ builtin! {
     }
 }
 builtin! {
-    /// リソースの OS の依存だけを差し替える（F14「受け入れテスト」）。
+    /// リソースの OS の依存だけを差し替える。
     name = "Benitoite.IO.File.openReader",
     io fn open_reader(ctx, name: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -481,7 +483,7 @@ end function
 fn resource_run(source: &str) -> (RefOutcome, String, String) {
     let dir = Directory::new();
     let p = compile(source);
-    let mut io = TestIo::new(RunInput {
+    let mut io = FixedIo::new(RunInput {
         arguments: vec![],
         script_directory: dir.0.clone(),
         working_directory: dir.0.clone(),
@@ -497,7 +499,7 @@ fn resource_run(source: &str) -> (RefOutcome, String, String) {
     (result, output, releases)
 }
 // 作成時の関門: 終了・解放は外部の操作の順と停止の理由として観察する。
-// F14 が明示した差し替えの表だけを用い、継続や解放の順をテストダブルには実装しない。
+// 外部操作の差し替えの表だけを用い、継続や解放の順をテストダブルには実装しない。
 #[test]
 fn process_exit_keeps_output_and_requested_status() {
     let (out, output, _) = resource_run(&format!(
@@ -531,7 +533,7 @@ fn releases_run_once_inside_out_on_each_kind_of_unwinding() {
         assert_eq!(releases, "inner\nouter\n", "{kind}");
         match kind {
             "error" => assert!(
-                matches!(out,RefOutcome::Stopped {stop:Stop::Runtime(RuntimeError::DivisionByZero),release_failures,..} if release_failures.is_empty())
+                matches!(out, RefOutcome::Stopped { stop: Stop::Runtime(RuntimeError::DivisionByZero), release_failures, .. } if release_failures.is_empty())
             ),
             "exit" => assert_eq!(
                 out,
@@ -546,17 +548,27 @@ fn releases_run_once_inside_out_on_each_kind_of_unwinding() {
 }
 #[test]
 fn discarded_nested_continuations_release_their_resources() {
-    // 外側が内側の節を捕まえるので、drop の枠の中にも未使用の継続を含む（E-DropRel）。
-    let source = format!(
-        "{RESOURCE_IMPORTS}{}",
-        r#"
+    // 外側が内側の節を捕まえる版は、drop の枠の中にも未使用の継続を含む。
+    // 正常な終わりだけでは、escape・停止・終了が drop の枠を通るときの解放漏れを捕まえない。
+    for (body, kind) in [
+        ("abort()\nresume(())", "return"),
+        (
+            "if true then return Result.Ok(()) end if\nresume(())",
+            "escape",
+        ),
+        ("bind _ <- 1 div 0\nresume(())", "error"),
+        ("Process.exit(3)\nresume(())", "exit"),
+    ] {
+        let source = format!(
+            "{RESOURCE_IMPORTS}{}",
+            r#"
 effect Outer
  function abort() -> Unit
 end effect
 effect Inner
  function pause() -> Unit
 end effect
-function main() -> Result[Unit, String] uses File.Read, State
+function main() -> Result[Unit, String] uses File.Read, State, Process.Exit
  return handle
   with outer = try open("outer") do
    handle
@@ -566,8 +578,7 @@ function main() -> Result[Unit, String] uses File.Read, State
     end with
    with
     case pause() ->
-     abort()
-     resume(())
+     BODY
    end handle
   end with
  with
@@ -575,10 +586,26 @@ function main() -> Result[Unit, String] uses File.Read, State
  end handle
 end function
 "#
-    );
-    let (out, _, releases) = resource_run(&source);
-    assert_eq!(out, RefOutcome::Finished(MainOutcome::Ok));
-    assert_eq!(releases, "inner\nouter\n");
+            .replace("BODY", body)
+        );
+        let (out, _, releases) = resource_run(&source);
+        assert_eq!(releases, "inner\nouter\n", "{kind}");
+        match kind {
+            "error" => assert!(
+                matches!(out, RefOutcome::Stopped { stop: Stop::Runtime(RuntimeError::DivisionByZero), release_failures, .. } if release_failures.is_empty()),
+                "{kind}"
+            ),
+            "exit" => assert_eq!(
+                out,
+                RefOutcome::Exited {
+                    status: 3,
+                    release_failures: vec![]
+                },
+                "{kind}"
+            ),
+            _ => assert_eq!(out, RefOutcome::Finished(MainOutcome::Ok), "{kind}"),
+        }
+    }
 }
 #[test]
 fn release_failures_preserve_primary_stop_exit_and_order() {

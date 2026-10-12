@@ -2,7 +2,7 @@
 # 完了条件の共通の検査（設計書 07-03「実装の規約と静的な検査」）。
 #
 #   scripts/check.sh                 基準の版からの変更に応じて、走らせる検査を選ぶ（選んだ検査）
-#   scripts/check.sh --full          全部の検査と、長いテスト（#[ignore = "long: ..."]）を走らせる（全体の検査）
+#   scripts/check.sh --full          全部の検査と、長いテスト（#[ignore = "long: ..."]）・release の段のスタックのテストを走らせる（全体の検査）
 #   scripts/check.sh --base <版>     変更を比べる基準の版（既定は origin/san_benito）
 #   scripts/check.sh --only <検査,...> 名前を挙げた検査だけを走らせる（名前は --dry-run の表示の [ ] の中）
 #   scripts/check.sh --none          検査を走らせない（設計者が不要と判断したとき）
@@ -13,6 +13,8 @@
 # 始めずに止まり（終了状態 3）、設計者に --full・--only・--none のどれで続けるかを決めてもらう。
 # nightly が要る Miri と到達可能性の比較の長い実行は check-heap.sh に置き、
 # runtime::heap を変えたときに選ぶ（全体の検査には含めない）。
+# 既定の構成のライブラリのテスト（default_lib）は、--only で名指ししたとき、--full、
+# src/runtime/heap/ を変えたときに選ぶ。
 # 言語仕様と付録の例は、cargo test の tests/spec_examples.rs で検査する。
 set -euo pipefail
 
@@ -25,7 +27,7 @@ full=0
 dry_run=0
 only=""
 none=0
-check_names="rust long licenses heap spec_examples reference_examples skill spec_coverage skill_eval python formal"
+check_names="rust default_lib long release_stack licenses heap spec_examples reference_examples skill spec_coverage skill_eval python formal"
 
 usage() {
     printf '%s\n' 'usage: scripts/check.sh [--full | --only <check,...> | --none] [--base <rev>] [--dry-run]' >&2
@@ -75,15 +77,51 @@ check_licenses() {
 }
 
 check_placeholder_allows() {
-    local source_file
+    local source_file source_files grep_status
     local failed=0
 
+    source_files="$(grep -rlF --include='*.rs' '#![allow(clippy::todo, unused_variables)]' crates/benitoite/src/)" || {
+        grep_status=$?
+        [ "$grep_status" -eq 1 ] || return 1
+    }
     while IFS= read -r source_file; do
-        if ! grep -Fq 'todo!(' "$source_file"; then
+        [ -n "$source_file" ] || continue
+        if grep -Fq 'todo!(' "$source_file"; then
+            continue
+        else
+            grep_status=$?
+            [ "$grep_status" -eq 1 ] || return 1
             printf 'leftover placeholder allow: %s\n' "$source_file" >&2
             failed=1
         fi
-    done < <(grep -rlF --include='*.rs' '#![allow(clippy::todo, unused_variables)]' crates/benitoite/src/ || true)
+    done <<< "$source_files"
+
+    return "$failed"
+}
+
+# 複数行の属性と追跡していないファイルも調べるため、属性の形によらず単語で探す。
+check_unsafe_allows() {
+    local source_file source_files grep_status
+    local failed=0
+
+    source_files="$(grep -rlw --include='*.rs' unsafe_code crates/)" || {
+        grep_status=$?
+        [ "$grep_status" -eq 1 ] || return 1
+    }
+    while IFS= read -r source_file; do
+        [ -n "$source_file" ] || continue
+        case "$source_file" in
+            crates/benitoite/src/runtime/heap/core.rs|crates/benitoite/tests/call_allocations.rs)
+                continue ;;
+            crates/benitoite/src/runtime/heap/core/*/*)
+                ;;
+            crates/benitoite/src/runtime/heap/core/*.rs)
+                continue ;;
+        esac
+        printf 'unsafe_code outside the allowed files: %s\n' "$source_file" >&2
+        grep -Hnw -- unsafe_code "$source_file" >&2 || failed=1
+        failed=1
+    done <<< "$source_files"
 
     return "$failed"
 }
@@ -144,7 +182,7 @@ classify() {
     local file="$1"
     case "$file" in
         scripts/check-formal.sh) select_check formal "$file" ;;
-        scripts/*|.cargo/*|rust-toolchain.toml|clippy.toml|rustfmt.toml|.gitignore)
+        scripts/*|.cargo/*|rust-toolchain.toml|clippy.toml|rustfmt.toml)
             select_check full "$file"
             unclassified="$unclassified $file" ;;
         Cargo.toml|Cargo.lock|deny.toml|about.toml|about.hbs|crates/*/Cargo.toml)
@@ -153,6 +191,8 @@ classify() {
         crates/benitoite/src/runtime/heap/*)
             select_check rust "$file"
             select_check long "$file"
+            # ヒープの変更でだけ追加する。--only heap は別の検査を選ばない。
+            select_check default_lib "$file"
             select_check heap "$file" ;;
         crates/benitoite/src/runtime/*|crates/benitoite/src/vm/*|crates/benitoite/src/refinterp/*)
             select_check rust "$file"
@@ -183,6 +223,10 @@ classify() {
         formal/*)
             select_check formal "$file" ;;
         docs/*|*.md|assets/*|.claude/*|.agents/*|LICENSE*|NOTICE*)
+            ;;
+        # 検査に響かないファイル。.gitignore は追跡するファイルを変えず、変えても処理系と道具の
+        # 振る舞いは変わらない（設計書 07-03「実装の規約と静的な検査」）。
+        .gitignore)
             ;;
         *)
             select_check full "$file"
@@ -234,7 +278,7 @@ elif [ "$full" -eq 0 ]; then
 fi
 
 if [ "$full" -eq 1 ]; then
-    for check in rust long licenses spec_examples spec_coverage reference_examples skill skill_eval python; do
+    for check in rust default_lib long release_stack licenses spec_examples spec_coverage reference_examples skill skill_eval python; do
         select_check "$check" "full check"
     done
 fi
@@ -255,8 +299,10 @@ describe() {
         printf '   %-62s because of %s\n' "[$1] $2" "$(reason "$1")"
     fi
 }
-describe rust "format, lint, tests, gc-stress, placeholder allows, Skill"
+describe rust "format, lint (heap-verify/default), tests, gc-stress, placeholder allows/unsafe_code locations, Skill"
+describe default_lib "library tests with default configuration (~1 min: ~15 s rebuild after heap changes, ~40 s tests)"
 describe long "long tests (#[ignore = \"long: ...\"], ~15 min more)"
+describe release_stack "release measured-stack stage tests (~5 min more)"
 describe licenses "licenses"
 describe heap "scripts/check-heap.sh (nightly Miri, ~10 min)"
 describe spec_examples "spec examples"
@@ -292,9 +338,11 @@ fi
 if has rust; then
     run_check "format" cargo fmt --all --check
     run_check "lint (mark-sweep)" cargo clippy --workspace --all-targets --no-default-features --features "$features",alloc-stats
+    run_check "lint (default configuration)" cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep
     run_check "test (mark-sweep)" cargo test --workspace --no-default-features --features "$features" -- $test_args
     run_check "gc-stress (mark-sweep)" cargo test --workspace --no-default-features --features "$features",gc-stress --lib --tests -- $test_args
     run_check "leftover placeholder allows" check_placeholder_allows
+    run_check "unsafe_code locations" check_unsafe_allows
     select_check skill "$(reason rust)"
 else
     # 処理系のテストの全体を走らせないときは、文書を読むテストだけを走らせる。
@@ -307,6 +355,9 @@ else
     if has skill; then
         run_check "skill docs" cargo test -q -p benitoite --test skill_docs
     fi
+fi
+if has default_lib; then
+    run_check "lib tests (default configuration)" cargo test -p benitoite --lib --no-default-features --features gc-mark-sweep
 fi
 if has skill; then
     run_check "generated Skill files" check_skill_generated
@@ -323,6 +374,9 @@ if has python; then
 fi
 if has licenses; then
     run_check "licenses" check_licenses
+fi
+if has release_stack; then
+    run_check "release measured-stack tests" cargo test --release -p benitoite --lib -- pipeline::tests::stages_fit_the_measured_stack_ --include-ignored
 fi
 if has formal; then
     run_check "formal (lake build)" check_formal

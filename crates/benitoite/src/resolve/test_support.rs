@@ -1,4 +1,4 @@
-//! 後続の段のテストが使う読み込みと名前解決（実装プラン F06「作るもの」、設計書 02-04）。
+//! 後続の段のテストが使う読み込みと名前解決（設計書 02-04「解決の手順」）。
 
 use crate::base::IdGen;
 use crate::modules::{LoadOutput, memfs::load_files};

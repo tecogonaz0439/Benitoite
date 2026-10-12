@@ -1,4 +1,4 @@
-//! 基本型の演算子と構造の等しさ（設計書 01-04、01-06「等値の型」、実装プラン 10-12「演算子」）。
+//! 基本型の演算子と構造の等しさ（設計書 01-04、01-06「等値の型」）。
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::runtime::RuntimeError;
@@ -6,7 +6,7 @@ use crate::runtime::Stop;
 use crate::runtime::heap::Value;
 
 builtin! {
-    /// `%Integer.add` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Integer.add` の本体。
     name = "%Integer.add",
     pure fn integer_add(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -16,7 +16,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Integer.subtract` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Integer.subtract` の本体。
     name = "%Integer.subtract",
     pure fn integer_subtract(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -26,7 +26,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Integer.multiply` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Integer.multiply` の本体。
     name = "%Integer.multiply",
     pure fn integer_multiply(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -36,7 +36,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Integer.div` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Integer.div` の本体。
     name = "%Integer.div",
     pure fn integer_div(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -45,7 +45,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Integer.mod` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Integer.mod` の本体。
     name = "%Integer.mod",
     pure fn integer_mod(ctx, a: i64, b: i64) -> i64 {
         let _ = ctx;
@@ -54,7 +54,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Integer.negate` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Integer.negate` の本体。
     name = "%Integer.negate",
     pure fn integer_negate(ctx, a: i64) -> i64 {
         let _ = ctx;
@@ -64,7 +64,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Integer.less` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Integer.less` の本体。
     name = "%Integer.less",
     pure fn integer_less(ctx, a: i64, b: i64) -> bool {
         let _ = ctx;
@@ -73,7 +73,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Integer.lessOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Integer.lessOrEqual` の本体。
     name = "%Integer.lessOrEqual",
     pure fn integer_less_or_equal(ctx, a: i64, b: i64) -> bool {
         let _ = ctx;
@@ -82,7 +82,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Integer.greater` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Integer.greater` の本体。
     name = "%Integer.greater",
     pure fn integer_greater(ctx, a: i64, b: i64) -> bool {
         let _ = ctx;
@@ -91,7 +91,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Integer.greaterOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Integer.greaterOrEqual` の本体。
     name = "%Integer.greaterOrEqual",
     pure fn integer_greater_or_equal(ctx, a: i64, b: i64) -> bool {
         let _ = ctx;
@@ -100,7 +100,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Float.add` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Float.add` の本体。
     name = "%Float.add",
     pure fn float_add(ctx, a: f64, b: f64) -> f64 {
         let _ = ctx;
@@ -109,7 +109,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Float.subtract` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Float.subtract` の本体。
     name = "%Float.subtract",
     pure fn float_subtract(ctx, a: f64, b: f64) -> f64 {
         let _ = ctx;
@@ -118,7 +118,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Float.multiply` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Float.multiply` の本体。
     name = "%Float.multiply",
     pure fn float_multiply(ctx, a: f64, b: f64) -> f64 {
         let _ = ctx;
@@ -127,7 +127,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Float.divide` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Float.divide` の本体。
     name = "%Float.divide",
     pure fn float_divide(ctx, a: f64, b: f64) -> f64 {
         let _ = ctx;
@@ -136,7 +136,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Float.negate` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Float.negate` の本体。
     name = "%Float.negate",
     pure fn float_negate(ctx, a: f64) -> f64 {
         let _ = ctx;
@@ -145,7 +145,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Float.less` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Float.less` の本体。
     name = "%Float.less",
     pure fn float_less(ctx, a: f64, b: f64) -> bool {
         let _ = ctx;
@@ -154,7 +154,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Float.lessOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Float.lessOrEqual` の本体。
     name = "%Float.lessOrEqual",
     pure fn float_less_or_equal(ctx, a: f64, b: f64) -> bool {
         let _ = ctx;
@@ -163,7 +163,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Float.greater` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Float.greater` の本体。
     name = "%Float.greater",
     pure fn float_greater(ctx, a: f64, b: f64) -> bool {
         let _ = ctx;
@@ -172,7 +172,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Float.greaterOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Float.greaterOrEqual` の本体。
     name = "%Float.greaterOrEqual",
     pure fn float_greater_or_equal(ctx, a: f64, b: f64) -> bool {
         let _ = ctx;
@@ -181,7 +181,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Decimal.add` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Decimal.add` の本体。
     name = "%Decimal.add",
     pure fn decimal_add(ctx, a: Value<'e>, b: Value<'e>) -> Value<'e> {
         let a = super::decimal::operand(&ctx, a)?;
@@ -192,7 +192,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Decimal.subtract` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Decimal.subtract` の本体。
     name = "%Decimal.subtract",
     pure fn decimal_subtract(ctx, a: Value<'e>, b: Value<'e>) -> Value<'e> {
         let a = super::decimal::operand(&ctx, a)?;
@@ -203,7 +203,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Decimal.multiply` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Decimal.multiply` の本体。
     name = "%Decimal.multiply",
     pure fn decimal_multiply(ctx, a: Value<'e>, b: Value<'e>) -> Value<'e> {
         let a = super::decimal::operand(&ctx, a)?;
@@ -214,7 +214,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Decimal.divide` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Decimal.divide` の本体。
     name = "%Decimal.divide",
     pure fn decimal_divide(ctx, a: Value<'e>, b: Value<'e>) -> Value<'e> {
         let a = super::decimal::operand(&ctx, a)?;
@@ -225,7 +225,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Decimal.negate` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Decimal.negate` の本体。
     name = "%Decimal.negate",
     pure fn decimal_negate(ctx, a: Value<'e>) -> Value<'e> {
         Ok(ctx.alloc_decimal(super::decimal::operand(&ctx, a)?.negate()))
@@ -233,7 +233,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Decimal.less` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Decimal.less` の本体。
     name = "%Decimal.less",
     pure fn decimal_less(ctx, a: Value<'e>, b: Value<'e>) -> bool {
         let a = super::decimal::operand(&ctx, a)?;
@@ -243,7 +243,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Decimal.lessOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Decimal.lessOrEqual` の本体。
     name = "%Decimal.lessOrEqual",
     pure fn decimal_less_or_equal(ctx, a: Value<'e>, b: Value<'e>) -> bool {
         let a = super::decimal::operand(&ctx, a)?;
@@ -253,7 +253,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Decimal.greater` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Decimal.greater` の本体。
     name = "%Decimal.greater",
     pure fn decimal_greater(ctx, a: Value<'e>, b: Value<'e>) -> bool {
         let a = super::decimal::operand(&ctx, a)?;
@@ -263,7 +263,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Decimal.greaterOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Decimal.greaterOrEqual` の本体。
     name = "%Decimal.greaterOrEqual",
     pure fn decimal_greater_or_equal(ctx, a: Value<'e>, b: Value<'e>) -> bool {
         let a = super::decimal::operand(&ctx, a)?;
@@ -273,7 +273,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%String.add` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%String.add` の本体。
     name = "%String.add",
     pure fn string_add(ctx, a: &'c str, b: &'c str) -> Value<'e> {
         ctx.alloc_str_parts(&[a, b], "+")
@@ -281,7 +281,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%String.less` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%String.less` の本体。
     name = "%String.less",
     pure fn string_less(ctx, a: &'c str, b: &'c str) -> bool {
         let _ = ctx;
@@ -290,7 +290,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%String.lessOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%String.lessOrEqual` の本体。
     name = "%String.lessOrEqual",
     pure fn string_less_or_equal(ctx, a: &'c str, b: &'c str) -> bool {
         let _ = ctx;
@@ -299,7 +299,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%String.greater` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%String.greater` の本体。
     name = "%String.greater",
     pure fn string_greater(ctx, a: &'c str, b: &'c str) -> bool {
         let _ = ctx;
@@ -308,7 +308,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%String.greaterOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%String.greaterOrEqual` の本体。
     name = "%String.greaterOrEqual",
     pure fn string_greater_or_equal(ctx, a: &'c str, b: &'c str) -> bool {
         let _ = ctx;
@@ -317,7 +317,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Character.less` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Character.less` の本体。
     name = "%Character.less",
     pure fn character_less(ctx, a: char, b: char) -> bool {
         let _ = ctx;
@@ -326,7 +326,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Character.lessOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Character.lessOrEqual` の本体。
     name = "%Character.lessOrEqual",
     pure fn character_less_or_equal(ctx, a: char, b: char) -> bool {
         let _ = ctx;
@@ -335,7 +335,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Character.greater` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Character.greater` の本体。
     name = "%Character.greater",
     pure fn character_greater(ctx, a: char, b: char) -> bool {
         let _ = ctx;
@@ -344,7 +344,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Character.greaterOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Character.greaterOrEqual` の本体。
     name = "%Character.greaterOrEqual",
     pure fn character_greater_or_equal(ctx, a: char, b: char) -> bool {
         let _ = ctx;
@@ -353,7 +353,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Byte.less` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Byte.less` の本体。
     name = "%Byte.less",
     pure fn byte_less(ctx, a: u8, b: u8) -> bool {
         let _ = ctx;
@@ -362,7 +362,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Byte.lessOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Byte.lessOrEqual` の本体。
     name = "%Byte.lessOrEqual",
     pure fn byte_less_or_equal(ctx, a: u8, b: u8) -> bool {
         let _ = ctx;
@@ -371,7 +371,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Byte.greater` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Byte.greater` の本体。
     name = "%Byte.greater",
     pure fn byte_greater(ctx, a: u8, b: u8) -> bool {
         let _ = ctx;
@@ -380,7 +380,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%Byte.greaterOrEqual` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%Byte.greaterOrEqual` の本体。
     name = "%Byte.greaterOrEqual",
     pure fn byte_greater_or_equal(ctx, a: u8, b: u8) -> bool {
         let _ = ctx;
@@ -389,7 +389,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%eq` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%eq` の本体。
     name = "%eq",
     pure fn eq(ctx, a: Value<'e>, b: Value<'e>) -> bool {
         crate::runtime::equal::values_equal(&ctx, a, b)
@@ -397,7 +397,7 @@ builtin! {
 }
 
 builtin! {
-    /// `%ne` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `%ne` の本体。
     name = "%ne",
     pure fn ne(ctx, a: Value<'e>, b: Value<'e>) -> bool {
         Ok(!crate::runtime::equal::values_equal(&ctx, a, b)?)
@@ -420,7 +420,7 @@ pub(crate) fn int_modulo(a: i64, b: i64) -> Result<i64, Stop> {
     }
     Ok(a.checked_rem(b).unwrap_or(0))
 }
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     integer_add::DECL,
     integer_subtract::DECL,
@@ -484,7 +484,7 @@ pub(crate) fn decimal_error(error: crate::base::decimal::DecimalError) -> Stop {
 
 #[cfg(test)]
 pub(super) mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -544,7 +544,7 @@ pub(super) mod tests {
         }
     }
 
-    // 名前の付いた本体を直接呼ぶことは R35・10-12 が個別に指定する（00-03 の個別指示の優先）。
+    // 組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
     // 関門: 数としての比較・桁数の保持・エラーの対応づけを守る。base のテストだけでは
     // 誤った関数や停止理由への接続を捕まえられず、公開の口も加えない。
     use super::*;

@@ -18,6 +18,8 @@ public effect Listen
   /// Waits for the next request and accepts it. Other tasks run while it waits.
   function accept(listener: Listener) -> Result[Exchange, NetworkError]
   /// Sends the response. Stops the program when called twice for one exchange.
+  /// The status must be between 200 and 599. Sends no body for HEAD requests,
+  /// statuses 204, 205, and 304, or 2xx responses to CONNECT requests.
   function respond(exchange: Exchange, response: Response) -> Result[Unit, NetworkError]
 end effect
 ```

@@ -1,0 +1,17 @@
+error[E0304]: `Point` is a record, not a value
+  --> testdata/names/record-construction.bnt:7:13
+   |
+ 7 |   bind _ <- Point(1, 2)
+   |             ^^^^^
+   |
+   = help: build a record with its field names, such as `Point(z: ..., a: ...)`
+
+error[E0303]: `Point` has no member `new`
+  --> testdata/names/record-construction.bnt:8:19
+   |
+ 8 |   bind _ <- Point.new(1, 2)
+   |                   ^^^ not found in `Point`
+   |
+   = help: build a record with its field names, such as `Point(z: ..., a: ...)`
+
+error: could not check testdata/names/record-construction.bnt due to 2 previous errors

@@ -1,0 +1,9 @@
+error[E0303]: `Map` has no member `noSuchMember`
+  --> testdata/names/available_members.bnt:3:17
+   |
+ 3 |   bind _ <- Map.noSuchMember(Map.empty())
+   |                 ^^^^^^^^^^^^ not found in `Map`
+   |
+   = note: `Map` has: `contains`, `empty`, `filter`, `fold`, `forEach`, `fromList`, `get`, `keys`, `map`, `remove`, `set`, `size`, `toList`, `values`
+
+error: could not check testdata/names/available_members.bnt due to 1 previous error

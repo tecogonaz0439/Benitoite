@@ -1,6 +1,6 @@
 # Benitoite
 
-> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。訳した元は、コミット b34346c の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。訳した元は、Benitoite 0.0.3 の版の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 原文の前付け:
 
@@ -90,7 +90,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 - 演算子: `=` と `<>` は比較、`and`・`or`・`not` は論理演算、`div` と `mod` は整数の除算である。`+` は文字列の連結にも使う。`==`、`!=`、`&&`、`||`、`!` は存在しない。
 - `try e` は、パイプを含めて、右側の式全体に適用される: `try File.readText(p) |> Result.mapError(_, IOError.message)`。`try` は `Result`（または `Option`）を返す関数の中でだけ使う。エラーの型が異なるときは、先に `Result.mapError` で変換する。
 - `x |> f(a)` は `x` を最初の引数として渡す: `f(x, a)`。`_` が部分適用を作るのは、呼び出しの直接の引数としてだけである: `Result.mapError(_, IOError.message)`。
-- `return` は関数とラムダの本体で使う。`if`、`match` の分岐、ハンドラの節の値は、その最後の式である。`case` の本体の中の `return` は、関数全体から戻る。値を作る関数とラムダは、最後の式が `match` や `if` のときも、`return` で終わらなければならない: `lambda(acc, x) return acc + x end lambda`。
+- `return` は関数とラムダの本体で使う。`if`、`match` の分岐、ハンドラの節の値は、その最後の式である。`case` の本体の中の `return` は、関数全体から戻る。値を作る関数とラムダは、最後の式が `match` や `if` のときも、`return` で終わらなければならない: `lambda(acc, x) return acc + x end lambda`。`lazy` の本体と `match` のガードは、`return` も `try` も含められない。ただし、そこに書いた `lambda ... end lambda` の中は除く（`_` を持つ呼び出しの中は除かない）。
 - `Unit` 型の値は `()` と書く: `Result.Ok(())`。
 - レコードは名前付きの引数で作り、型の名前で読む: `bind item <- Item(name: "pen", price: 120)`、`Item.price(item)`。一部を変えた写しは `Item(..item, price: 100)` で作る。`item.price`、`Item { ... }`、`Item(price = 100)` は誤りである。
 - 呼び出しは型引数をとらない: `Map.empty[String, Integer]()` でなく `Map.empty()` と書く。map に項目を加えるのは `Map.set(m, key, value)` であり、`Map.insert` はない。`Integer.parse` などの解析の関数は `Option` を返す。
@@ -100,7 +100,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 - マップと集合は、挿入の順ではなくキーの順に並ぶ。
 - 文字列補間は `"${expression}"` と書く。コメントは `//` で始まる。
 - `null` も例外もループの文もない。`Option`、`try` を伴う `Result`、および `List.map`・`List.fold`・`List.forEach` か再帰を使う。
-- prelude の外のモジュールは、`uses` にだけ現れるときも含めて、すべて取り込む。非公式のモジュール（IO とネットワークのすべてのモジュール、`Json`、`Csv` など）は `Benitoite.Unofficial` の下で取り込む: `import Benitoite.Unofficial.IO.Console` と書き、`Console` として参照する。`import Benitoite.IO.Console` は誤りである。非公式のモジュールは `IO.Console`、`IO.File`、`IO.Process`、`IO.Clock`、`IO.Random`、`Network.Http`、`Json`、`Csv`、`Regex`、`Path`、`Time`、`Encoding`、`Hash` である。たとえば `import Benitoite.Unofficial.Network.Http` は `Http` として参照する。
+- prelude の外のモジュールは、`uses` にだけ現れるときも含めて、すべて取り込む。非公式のモジュール（IO とネットワークのすべてのモジュール、`Json`、`Csv` など）は `Benitoite.Unofficial` の下で取り込む: `import Benitoite.Unofficial.IO.Console` と書き、`Console` として参照する。`import Benitoite.IO.Console` は誤りである。非公式のモジュールは `IO.Console`、`IO.File`、`IO.Process`、`IO.Clock`、`IO.Random`、`Network.Http`、`Json`、`Csv`、`Regex`、`Path`、`Time`、`Encoding`、`Hash` である。たとえば `import Benitoite.Unofficial.Network.Http` は `Http` として参照する。エフェクトを宣言するモジュール（IO とネットワークのモジュール、`IO`、`Assert`）の名前を `as` で変えない。`uses` が常に本当のエフェクトの名前を示すように、名前を変えると誤りになる。
 - エフェクトを直接または呼び出しを通して行う関数は、すべてそのエフェクトを `uses` の後に並べる。ネットワークのエフェクト（`Http.Connect`、`Http.Listen`）は `IO.All` に含まれない。
 - 値が `Unit` でない文は誤りである。各 `Result` を、`try`、`match`、`bind _ <-` のどれかで処理する。
 - `Process.shell` は、その文字列を `/bin/sh -c` で実行する。POSIX の sh だけを書く。bash の配列、`[[ ]]`、`{a,b}` の展開、`$'...'` は使わない。シェルの機能が要らないときは、引数の並びを渡す `Process.run` を使う。
@@ -139,7 +139,7 @@ first: one
 
 ## テスト
 
-テストは、`@test("description")` を付け、引数を持たず、戻り値の型が `Unit` か `Result[Unit, String]` の関数である（テストが `try` を使うときは後者にする）。`Assert.equal(actual, expected)` で確かめる。テストが外の世界に触れないように、`File.readText` や `Process.run` などの操作をハンドラで置き換える。ほかの例は `references/idioms.md` にある。
+テストは、`@test("description")` を付け、引数を持たず、戻り値の型が `Unit` か `Result[Unit, String]` の関数である（テストが `try` を使うときは後者にする）。`Assert.equal(actual, expected)` で確かめる。テストが外の世界に触れないように、`File.readText` や `Process.run` などの操作をハンドラで置き換える。ほかの例は `references/idioms.md` にある。型パラメータを持つ補助の関数の中の確かめは、呼び出し元の型を決められるときは、構成子の名前を復元する。決められないときは、型が不明のまま残ることがある。報告が `<constructor #n of an unknown type>`（n は 0 から数えた構成子の位置）を示すときは、確かめの中で具体的な型の値を比べると、構成子の名前が表示される。
 
 ```benitoite test
 import Benitoite.Unofficial.IO.File

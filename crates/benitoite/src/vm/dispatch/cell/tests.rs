@@ -1,5 +1,5 @@
-//! セルの更新の枠と回収の根の契約（設計書 02-08「可変のセル」、実装プラン R23）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! セルの更新の枠と回収の根の契約（設計書 02-08「可変のセル」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::panic,
@@ -74,6 +74,7 @@ fn unwind_respects_version_and_cause_and_roots_the_returned_value() {
                 others: vec![OtherFrame {
                     depth: 0,
                     kind: OtherKind::CellUpdate(CellUpdate {
+                        at: at(),
                         cell: ctx.new_slot(cell),
                         version,
                         func: Slot::default(),
@@ -82,7 +83,7 @@ fn unwind_respects_version_and_cause_and_roots_the_returned_value() {
                 ..crate::vm::frame::Segment::default()
             });
         });
-        // 関数の結果は ReturnWork::value 以外から辿れない状態で回収する（R03 の根の引き渡し）。
+        // 関数の結果は ReturnWork::value 以外から辿れない状態で回収する。
         heap.collect(&state);
         heap.epoch(|ctx| {
             let other = state.segment_mut().unwrap().others.pop().unwrap();
@@ -237,7 +238,7 @@ pub(crate) fn check_cell_update_roots() {
 }
 
 // 関門: タスクなしで版の不一致を作り、本物の戻りの経路から安全点・再開・呼び直しを通す。
-// 枠の version、ret、ReturnWork の手放しを忘れた退行と、二重の tick を捕まえる（R23）。
+// 枠の version、ret、ReturnWork の手放しを忘れた退行と、二重の tick を捕まえる。
 #[test]
 fn retry_reloads_version_and_argument_after_collecting_and_returns_to_same_destination() {
     let mut b = ProgramBuilder::new();
@@ -267,6 +268,7 @@ fn retry_reloads_version_and_argument_after_collecting_and_returns_to_same_desti
         vm.state.segment_mut().unwrap().others.push(OtherFrame {
             depth: 1,
             kind: OtherKind::CellUpdate(CellUpdate {
+                at: InstrRef { proto: main, pc: 0 },
                 cell: ctx.new_slot(cell),
                 version: 0,
                 func: ctx.new_slot(func),

@@ -1,6 +1,6 @@
-//! 名前解決の公開の出力を確かめる（設計書 02-04、実装プラン F06「受け入れテスト」）。
+//! 名前解決の公開の出力を確かめる（設計書 02-04「解決の手順」）。
 
-// テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -10,6 +10,104 @@
 )]
 
 use super::test_support::resolve_files;
+
+#[test]
+fn record_construction_assists_preserve_field_order_and_qualification() {
+    // フィールドの宣言順と修飾名を保持し、data や無関係な名前へ案内を出す退行を防ぐ。
+    for (expr, code, expected) in [
+        ("Point", DiagCode::E0304, Some("Point(z: ..., a: ...)")),
+        (
+            "Point(1, 2)",
+            DiagCode::E0304,
+            Some("Point(z: ..., a: ...)"),
+        ),
+        (
+            "Point.new(1, 2)",
+            DiagCode::E0303,
+            Some("Point(z: ..., a: ...)"),
+        ),
+        (
+            "Point.create(1, 2)",
+            DiagCode::E0303,
+            Some("Point(z: ..., a: ...)"),
+        ),
+        (
+            "Point.make(1, 2)",
+            DiagCode::E0303,
+            Some("Point(z: ..., a: ...)"),
+        ),
+        (
+            "Point.of(1, 2)",
+            DiagCode::E0303,
+            Some("Point(z: ..., a: ...)"),
+        ),
+        (
+            "Point.init(1, 2)",
+            DiagCode::E0303,
+            Some("Point(z: ..., a: ...)"),
+        ),
+        ("Pair.new(1, 2)", DiagCode::E0303, None),
+        ("Point.unknown(1, 2)", DiagCode::E0303, None),
+    ] {
+        let source = format!(
+            "record Point\n z: Integer\n a: Integer\nend record\nfunction f() -> Unit\n bind _ <- {expr}\nend function"
+        );
+        let (_, out, _) = resolve_files(&[("main.bnt", &source)]);
+        let diag = out
+            .diagnostics
+            .iter()
+            .find(|d| d.code == Some(code))
+            .unwrap();
+        let helps = diag
+            .helps
+            .iter()
+            .filter(|h| h.message.starts_with("build a record"))
+            .collect::<Vec<_>>();
+        if let Some(expected) = expected {
+            assert_eq!(helps.len(), 1, "{diag:?}");
+            assert_eq!(
+                helps[0].message,
+                format!("build a record with its field names, such as `{expected}`")
+            );
+            assert!(helps[0].edits.is_empty());
+        } else {
+            assert!(helps.is_empty(), "{diag:?}");
+        }
+    }
+    for (name, reference, construction) in [
+        ("Point", "G.Point", "G.Point"),
+        ("Geometry", "G", "G.Geometry"),
+    ] {
+        let main = format!(
+            "import Geometry as G\nfunction f() -> Unit\n bind _ <- {reference}.new(1, 2)\nend function"
+        );
+        let module = format!("public record {name}\n z: Integer\n a: Integer\nend record");
+        let (_, out, _) = resolve_files(&[("main.bnt", &main), ("Geometry.bnt", &module)]);
+        let diag = out
+            .diagnostics
+            .iter()
+            .find(|d| d.code == Some(DiagCode::E0303))
+            .unwrap();
+        assert_eq!(
+            diag.helps[0].message,
+            format!(
+                "build a record with its field names, such as `{construction}(z: ..., a: ...)`"
+            )
+        );
+        let fixed = main.replace(
+            &format!("{reference}.new(1, 2)"),
+            &format!("{construction}(z: 1, a: 2)"),
+        );
+        let (_, after, _) = resolve_files(&[("main.bnt", &fixed), ("Geometry.bnt", &module)]);
+        clean(&after);
+    }
+    let (_, out, _) = resolve_files(&[(
+        "main.bnt",
+        "record Point\n z: Integer\n a: Integer\nend record\nfunction f(p: Point) -> Unit\n bind Point(z, a) <- p\nend function",
+    )]);
+    let d = diagnostic(&out, DiagCode::E0304);
+    assert!(d.helps.is_empty(), "{d:?}");
+}
 
 #[test]
 fn all_stdlib_sources_resolve() {
@@ -30,7 +128,65 @@ fn all_stdlib_sources_resolve() {
     );
 }
 
-// 作成時の関門: F06 の受け入れ条件を公開の resolve と実際のソースで検査する。
+#[test]
+fn rename_targets_resolve_in_the_current_standard_library() {
+    // 表が古くなって存在しない名前を案内する退行を、本物の読み込みと名前解決で捕まえる。
+    let mut source = String::from(
+        "import Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.Process\n",
+    );
+    for (index, (module, _, new, _)) in super::renames::RENAMES.iter().enumerate() {
+        if *module == "Benitoite" {
+            source.push_str(&format!(
+                "function type{index}(x: {new}) -> Unit\nend function\n"
+            ));
+        }
+    }
+    source.push_str("function main() -> Unit\n");
+    for (module, _, new, _) in super::renames::RENAMES {
+        if *module != "Benitoite" {
+            let local = module.rsplit('.').next().unwrap();
+            source.push_str(&format!(" bind _ <- {local}.{new}\n"));
+        }
+    }
+    source.push_str("end function\n");
+    let (load, out, _) = resolve_files(&[("main.bnt", &source)]);
+    clean(&out);
+    for (module, old, _, _) in super::renames::RENAMES {
+        if *module == "Benitoite" {
+            assert!(!out.bindings.iter().any(|(_, b)| b.name == *old));
+        } else {
+            let info = load
+                .modules
+                .iter()
+                .find(|m| m.name.dotted() == *module)
+                .unwrap();
+            assert!(
+                crate::prelude::STDLIB
+                    .iter()
+                    .any(|m| format!("Benitoite.{}", m.path.join(".")) == *module)
+            );
+            assert!(
+                !out.bindings.iter().any(|(_, b)| b.module == info.id
+                    && b.name == *old
+                    && !matches!(
+                        b.kind,
+                        BindingKind::Local(_)
+                            | BindingKind::TypeParam { .. }
+                            | BindingKind::EffectVar { .. }
+                    )),
+                "{module}.{old}"
+            );
+            assert!(
+                !out.exports
+                    .get(&info.id)
+                    .is_some_and(|names| names.contains_key(*old)),
+                "{module}.{old}"
+            );
+        }
+    }
+}
+
+// 作成時の関門: 公開の `resolve` と実際のソースで名前解決の規則を検査する。
 // 最小実行版の検査から移したテストだけでは、新しい表・複数モジュールの契約を確かめられない。
 // 束縛の誤った共有、非公開名の漏れ、修正案の誤った範囲が利用者に及ぼす回帰を検出する
 // （設計書 07-03「テストの設計の原則」、スキル test-audit「作成時の関門」）。
@@ -203,8 +359,8 @@ fn stdlib_source_and_table_contracts() {
         }
         index += 1;
     }
-    // 引数の数と権限は、Rust の宣言の字面でなく、ソースを読んだ結果と表で照合する
-    // （実装プラン L00「ソースと表の照合」）。U3 の State の例外が増減した場合も検出する。
+    // 引数の数と権限は、Rust の宣言の字面でなく、ソースを読んだ結果と表で照合する。
+    // State の例外が増減した場合も検出する。
     let state_names = crate::builtins::funcs::PARTS[22..]
         .iter()
         .flat_map(|part| part.iter())
@@ -480,56 +636,65 @@ fn lookup_modules_constructors_and_prelude_shadowing() {
 
 #[test]
 fn name_errors_have_the_failed_segment_and_appropriate_guidance() {
-    for (source, code, segment, note) in [
+    for (source, code, segment, guidance, is_help) in [
         (
             "function f(s: String) -> Unit\n String.length(s)\nend function",
             DiagCode::E0303,
             "length",
             "byteLength",
+            true,
         ),
         (
             "function f(o: Option[Integer]) -> Unit\n Option.unwrap(o)\nend function",
             DiagCode::E0303,
             "unwrap",
             "match",
+            true,
         ),
         (
             "function f() -> Unit\n Nothing.x()\nend function",
             DiagCode::E0302,
             "Nothing",
             "",
+            false,
         ),
         (
             "function f() -> Unit\n missing()\nend function",
             DiagCode::E0301,
             "missing",
             "",
+            false,
         ),
         (
             "function f(x: State) -> Unit\nend function",
             DiagCode::E0314,
             "State",
             "uses",
+            false,
         ),
         (
             "function f() -> Unit\n Integer()\nend function",
             DiagCode::E0304,
             "Integer",
             "",
+            false,
         ),
     ] {
         let (load, out, _) = resolve_files(&[("main.bnt", source)]);
         assert_eq!(out.diagnostics.len(), 1, "{source}: {:?}", out.diagnostics);
         assert_eq!(primary(&load, &out, code), segment);
-        if !note.is_empty() {
+        if !guidance.is_empty() {
             assert!(
                 {
                     let diagnostic = diagnostic(&out, code);
-                    diagnostic.notes.iter().any(|n| n.contains(note))
-                        || diagnostic
+                    if is_help {
+                        diagnostic
                             .helps
                             .iter()
-                            .any(|help| help.message.contains(note))
+                            .any(|help| help.message.contains(guidance))
+                    } else {
+                        diagnostic.notes.iter().any(|note| note.contains(guidance))
+                    }
                 },
                 "{:?}",
                 out.diagnostics
@@ -554,13 +719,15 @@ fn name_errors_have_the_failed_segment_and_appropriate_guidance() {
     let (load, out, _) = resolve_files(&[
         (
             "main.bnt",
-            "import Lib.A\nfunction main() -> Unit\n A.hidden()\nend function",
+            "import Lib.A as X\nfunction main() -> Unit\n X.hidden()\nend function",
         ),
         ("Lib/A.bnt", "function hidden() -> Unit\nend function"),
     ]);
     assert_eq!(primary(&load, &out, DiagCode::E0330), "hidden");
     assert_eq!(out.diagnostics.len(), 1);
-    assert!(!diagnostic(&out, DiagCode::E0330).helps.is_empty());
+    let d = diagnostic(&out, DiagCode::E0330);
+    assert_eq!(d.message, "`hidden` is not public in `X`");
+    assert_eq!(d.helps[0].message, "mark `hidden` as `public` in `Lib.A`");
 }
 
 #[test]
@@ -606,6 +773,323 @@ fn imports_conflicts_and_whole_line_removal() {
             "import Lib.A as First\n"
         );
     }
+}
+
+#[test]
+fn effect_module_aliases_are_rejected_without_cascading_errors() {
+    // 作成時の関門: 公開の名前解決で、組み込みの uses の表示を別名で偽れない契約を守る。
+    // 既存の import テストにはこの拒否と、拒否後も参照を解決する場合がない。
+    for (module, alias) in [
+        ("Benitoite.IO", "Pure"),
+        ("Benitoite.Assert", "Log"),
+        ("Benitoite.Unofficial.IO.Console", "C"),
+        ("Benitoite.Unofficial.IO.File", "Console"),
+        ("Benitoite.Unofficial.IO.Process", "Safe"),
+        ("Benitoite.Unofficial.IO.Clock", "Pure"),
+        ("Benitoite.Unofficial.IO.Random", "Pure"),
+        ("Benitoite.Unofficial.Network.Http", "Clock"),
+        ("Benitoite.Unofficial.IO.Console", "Console"),
+    ] {
+        let source = format!("import {module} as {alias}");
+        let (load, out, _) = resolve_files(&[("main.bnt", &source)]);
+        assert_eq!(out.diagnostics.len(), 1, "{source}: {:?}", out.diagnostics);
+        let d = diagnostic(&out, DiagCode::E0339);
+        assert_eq!(primary(&load, &out, DiagCode::E0339), alias);
+        assert_eq!(
+            d.message,
+            format!(
+                "the module `{module}` declares built-in effects and cannot be renamed with `as`"
+            )
+        );
+        assert_eq!(d.primary.as_ref().unwrap().text, "renamed here");
+        let original = module.rsplit('.').next().unwrap();
+        assert_eq!(d.helps.len(), 1);
+        assert_eq!(
+            d.helps[0].message,
+            format!("remove `as {alias}` and replace references to `{alias}.` with `{original}.`")
+        );
+        assert_eq!(d.helps[0].edits.len(), 1);
+        assert_eq!(
+            snippet(&load, d.helps[0].edits[0].span),
+            format!(" as {alias}")
+        );
+        let fixed = apply(&source, d);
+        assert_eq!(fixed, format!("import {module}"));
+        let (_, out, _) = resolve_files(&[("main.bnt", &fixed)]);
+        clean(&out);
+    }
+    for (module, alias) in [
+        ("Benitoite.Unofficial.IO.File", "Console"),
+        ("Benitoite.Unofficial.IO.Console", "Console"),
+    ] {
+        let source = format!(
+            "import {module} as {alias}\nfunction main() -> Unit uses Console.Write\nend function"
+        );
+        let (_, out, _) = resolve_files(&[("main.bnt", &source)]);
+        assert_eq!(out.diagnostics.len(), 1, "{:?}", out.diagnostics);
+        let fixed = apply(&source, diagnostic(&out, DiagCode::E0339));
+        let original = module.rsplit('.').next().unwrap();
+        assert_eq!(
+            fixed,
+            source
+                .replacen(" as Console", "", 1)
+                .replace("Console.Write", &format!("{original}.Write"))
+        );
+        let (_, out, _) = resolve_files(&[("main.bnt", &fixed)]);
+        clean(&out);
+    }
+    let (_, out, _) = resolve_files(&[("main.bnt", "import Benitoite.IO as Benitoite")]);
+    assert_eq!(out.diagnostics.len(), 1);
+    diagnostic(&out, DiagCode::E0325);
+}
+
+#[test]
+fn pure_and_user_module_aliases_remain_valid() {
+    for source in [
+        "import Benitoite.Unofficial.Json as J",
+        "import Benitoite.Trait as T",
+        "import Benitoite.Unofficial.Time as TimeValue",
+        "import Lib.IO.Console as C",
+    ] {
+        let (_, out, _) = resolve_files(&[("main.bnt", source), ("Lib/IO/Console.bnt", "")]);
+        clean(&out);
+    }
+}
+
+#[test]
+fn prelude_shadowing_assists_follow_the_failed_segment() {
+    // 注記だけの誤りと、非公開名の修正案の順序を公開の名前解決で確かめる。
+    for (source, library, code, shadowed, repair) in [
+        (
+            "import Lib.Task\nfunction main() -> Unit\n bind _ <- Task.all([])\nend function",
+            "function all(x: Integer) -> Unit\nend function",
+            DiagCode::E0330,
+            true,
+            true,
+        ),
+        (
+            "import Lib.Task\nfunction main() -> Unit\n Task.hidden()\nend function",
+            "function hidden() -> Unit\nend function",
+            DiagCode::E0330,
+            true,
+            false,
+        ),
+        (
+            "import Lib.Task\nfunction main() -> Unit\n bind _ <- Task.Item.noSuchMember\nend function",
+            "public record Item\n value: Integer\nend record",
+            DiagCode::E0303,
+            false,
+            false,
+        ),
+        (
+            "record Task\n title: String\nend record\nfunction main() -> Unit\n bind _ <- Task.noSuchMember\nend function",
+            "",
+            DiagCode::E0303,
+            true,
+            false,
+        ),
+    ] {
+        let (_, out, _) = resolve_files(&[("main.bnt", source), ("Lib/Task.bnt", library)]);
+        let d = diagnostic(&out, code);
+        assert_eq!(
+            d.notes
+                .first()
+                .is_some_and(|n| n.contains("hides the prelude")),
+            shadowed,
+            "{d:?}"
+        );
+        assert_eq!(
+            d.helps
+                .first()
+                .is_some_and(|h| h.message.starts_with("write `Benitoite.Task`")),
+            repair,
+            "{d:?}"
+        );
+        if shadowed {
+            let label = d.secondary.last().unwrap();
+            let imported = source.starts_with("import ");
+            assert_eq!(
+                label.text,
+                if imported {
+                    "`Task` imported here"
+                } else {
+                    "`Task` declared here"
+                }
+            );
+            if imported {
+                assert_eq!(
+                    d.notes[0],
+                    "`Task` here is the module imported in this file, which hides the prelude module `Task`"
+                );
+            }
+        }
+        if code == DiagCode::E0330 {
+            assert_eq!(d.secondary.first().unwrap().text, "declared here");
+            assert!(d.helps.last().unwrap().message.starts_with("mark `"));
+        }
+    }
+}
+
+#[test]
+fn effect_alias_references_cover_types_patterns_and_name_conflicts() {
+    // 参照全体を置き換える退行と、別の束縛を参照するようになる退行を捕まえる。
+    let source = "import Benitoite.Unofficial.IO.File as F\nfunction f(x: F.EntryKind) -> Unit uses F.Read\n bind _ <- F.info\n match x with\n case F.EntryKind.RegularFile -> ()\n case _ -> ()\n end match\nend function";
+    let (load, out, _) = resolve_files(&[("main.bnt", source)]);
+    assert_eq!(out.diagnostics.len(), 1, "{:?}", out.diagnostics);
+    let d = diagnostic(&out, DiagCode::E0339);
+    let fixed = apply(source, d);
+    let (_, after, _) = resolve_files(&[("main.bnt", &fixed)]);
+    clean(&after);
+    let replaced = d.helps[0]
+        .edits
+        .iter()
+        .skip(1)
+        .map(|e| snippet(&load, e.span))
+        .collect::<Vec<_>>();
+    assert_eq!(replaced, ["F", "F", "F", "F"]);
+    for source in [
+        "import Benitoite.Unofficial.IO.Console as C\nrecord Console\n value: Integer\nend record\nfunction f() -> Unit uses C.Write\n C.writeLine(\"ok\")\nend function",
+        "import Benitoite.Unofficial.IO.Console as C\nimport Lib.Other as Console\nfunction f() -> Unit uses C.Write\n C.writeLine(\"ok\")\nend function",
+    ] {
+        let (_, out, _) = resolve_files(&[("main.bnt", source), ("Lib/Other.bnt", "")]);
+        let d = diagnostic(&out, DiagCode::E0339);
+        assert_eq!(d.helps[0].edits.len(), 1, "{d:?}");
+        assert!(d.helps[0].edits[0].replacement.is_empty());
+        let (_, original, _) = resolve_files(&[
+            (
+                "main.bnt",
+                &source.replace("uses C.Write", "uses Console.Write"),
+            ),
+            ("Lib/Other.bnt", ""),
+        ]);
+        assert!(
+            original
+                .diagnostics
+                .iter()
+                .any(|d| d.code == Some(DiagCode::E0303)),
+            "{:?}",
+            original.diagnostics
+        );
+    }
+}
+
+#[test]
+fn effect_module_import_collisions_rename_the_other_import() {
+    // 作成時の関門: 修正案を適用して再解決し、組み込み側への as による E0339 を防ぐ。
+    // 既存の衝突テストは利用者のモジュール同士だけを扱う。
+    for (source, changed, expected) in [
+        (
+            "import Lib.Console\nimport Benitoite.Unofficial.IO.Console",
+            0,
+            "import Lib.Console as LibConsole\nimport Benitoite.Unofficial.IO.Console",
+        ),
+        (
+            "import Lib.A as Console\nimport Benitoite.Unofficial.IO.Console",
+            0,
+            "import Lib.A as LibA\nimport Benitoite.Unofficial.IO.Console",
+        ),
+        (
+            "import Benitoite.Unofficial.IO.Console\nimport Lib.Console",
+            1,
+            "import Benitoite.Unofficial.IO.Console\nimport Lib.Console as LibConsole",
+        ),
+    ] {
+        let files = [
+            ("main.bnt", source),
+            ("Lib/Console.bnt", ""),
+            ("Lib/A.bnt", ""),
+        ];
+        let (load, out, _) = resolve_files(&files);
+        assert_eq!(out.diagnostics.len(), 1, "{:?}", out.diagnostics);
+        let d = diagnostic(&out, DiagCode::E0323);
+        assert_eq!(primary(&load, &out, DiagCode::E0323), "Console");
+        let later = &entry(&load).imports[1];
+        let later_name = later.alias.as_ref().or_else(|| later.path.last()).unwrap();
+        assert_eq!(d.primary.as_ref().unwrap().span, later_name.span);
+        let edit = &d.helps[0].edits[0];
+        let import = &entry(&load).imports[changed];
+        assert!(edit.span.start >= import.span.start && edit.span.end <= import.span.end);
+        assert!(d.helps[0].message.contains("import Lib."));
+        let fixed = apply(source, d);
+        assert_eq!(fixed, expected);
+        let (_, out, _) = resolve_files(&[("main.bnt", &fixed), files[1], files[2]]);
+        clean(&out);
+    }
+    let mut redundant_helps = Vec::new();
+    for source in [
+        "import Benitoite.Unofficial.IO.File as Console\nimport Benitoite.Unofficial.IO.Console",
+        "import Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.Console",
+        "import Lib.Console\nimport Benitoite.Unofficial.IO.File as Console",
+        "import Benitoite.Unofficial.IO.File as Console\nimport Lib.Console",
+    ] {
+        let (_, out, _) = resolve_files(&[("main.bnt", source), ("Lib/Console.bnt", "")]);
+        if !diagnostic(&out, DiagCode::E0323).helps.is_empty() {
+            redundant_helps.push(source);
+        }
+        let repair = if source.contains(" as ") {
+            DiagCode::E0339
+        } else {
+            DiagCode::E0324
+        };
+        let fixed = apply(source, diagnostic(&out, repair));
+        let (_, out, _) = resolve_files(&[("main.bnt", &fixed), ("Lib/Console.bnt", "")]);
+        clean(&out);
+    }
+    assert!(redundant_helps.is_empty(), "{redundant_helps:?}");
+}
+
+#[test]
+fn duplicate_effect_module_import_does_not_offer_overlapping_alias_removal() {
+    // 作成時の関門: 二度目の import は E0324 の行の削除だけで直せる。
+    // 既存の重複テストは、組み込みの別名の拒否と重なる編集を確かめていない。
+    let source =
+        "import Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.Console as Console";
+    let (_, out, _) = resolve_files(&[("main.bnt", source)]);
+    assert!(
+        !out.diagnostics
+            .iter()
+            .any(|d| d.code == Some(DiagCode::E0339))
+    );
+    assert_eq!(out.diagnostics.len(), 2, "{:?}", out.diagnostics);
+    assert!(diagnostic(&out, DiagCode::E0323).helps.is_empty());
+    let fixed = apply(source, diagnostic(&out, DiagCode::E0324));
+    assert_eq!(fixed, "import Benitoite.Unofficial.IO.Console\n");
+    let (_, out, _) = resolve_files(&[("main.bnt", &fixed)]);
+    clean(&out);
+}
+
+#[test]
+fn effect_module_declaration_collisions_suggest_renaming_the_declaration() {
+    for module in [
+        "Benitoite.IO",
+        "Benitoite.Assert",
+        "Benitoite.Unofficial.IO.Console",
+    ] {
+        let name = module.rsplit('.').next().unwrap();
+        let source = format!("import {module}\ndata {name}\n One\nend data");
+        let (load, out, _) = resolve_files(&[("main.bnt", &source)]);
+        assert_eq!(out.diagnostics.len(), 1);
+        let d = diagnostic(&out, DiagCode::E0305);
+        assert_eq!(primary(&load, &out, DiagCode::E0305), name);
+        assert_eq!(d.helps.len(), 1);
+        assert_eq!(
+            d.helps[0].message,
+            format!(
+                "rename the declaration `{name}`; the module `{module}` declares built-in effects and cannot be renamed with `as`"
+            )
+        );
+        assert!(d.helps.iter().all(|h| h.edits.is_empty()));
+        let fixed = source.replace(&format!("data {name}\n"), "data LocalName\n");
+        let (_, out, _) = resolve_files(&[("main.bnt", &fixed)]);
+        clean(&out);
+    }
+    let source = "import Benitoite.Unofficial.IO.File as Console\ndata Console\n One\nend data";
+    let (_, out, _) = resolve_files(&[("main.bnt", source)]);
+    assert_eq!(out.diagnostics.len(), 2, "{:?}", out.diagnostics);
+    assert!(diagnostic(&out, DiagCode::E0305).helps.is_empty());
+    let fixed = apply(source, diagnostic(&out, DiagCode::E0339));
+    let (_, out, _) = resolve_files(&[("main.bnt", &fixed)]);
+    clean(&out);
 }
 
 #[test]
@@ -1041,7 +1525,7 @@ fn deprecated_references_warn_outside_declaration() {
 #[test]
 fn independent_errors_survive_and_unresolved_imports_do_not_cascade() {
     // 読み込みが失敗した出力を意図して渡す。通常の呼び出し側はここに進まないが、
-    // 解決器自身も決まらない import からの派生の誤りを抑える（F06「import」）。
+    // 解決器自身も決まらない import からの派生の誤りを抑える。
     let (load, mut ids) = crate::modules::memfs::load_files(&[(
         "main.bnt",
         "import Missing.Module\nfunction f(x: Unknown) -> Unit\n Module.anything()\n absent()\nend function\nfunction g() -> Unit\n other()\nend function",
@@ -1267,4 +1751,103 @@ fn qualified_typo_candidates_follow_the_segment_position() {
         let (_, out, _) = resolve_files(&[("main.bnt", &fixed), ("Lib/Geo.bnt", other)]);
         clean(&out);
     }
+}
+
+#[test]
+fn member_lists_follow_visibility_and_the_segment_position() {
+    // 一覧が非公開名を漏らす、または位置に合わない種類を示す退行を検出する。
+    for (reference, expected) in [
+        ("A.missingName()", vec!["`A` has: `visible`"]),
+        ("A.AbsentName.Case", vec!["`A` has: `Shape`"]),
+        ("A.AbsentName[Integer]", vec!["`A` has: `Shape`"]),
+    ] {
+        let source = if reference.contains('[') {
+            format!("import Lib.A\nfunction f(x: {reference}) -> Unit\nend function")
+        } else {
+            format!("import Lib.A\nfunction f() -> Unit\n bind _ <- {reference}\nend function")
+        };
+        let (_, out, _) = resolve_files(&[
+            ("main.bnt", &source),
+            (
+                "Lib/A.bnt",
+                "public function visible() -> Unit\nend function\nfunction hidden() -> Unit\nend function\npublic data Shape[T]\n Case(T)\nend data",
+            ),
+        ]);
+        let d = diagnostic(&out, DiagCode::E0303);
+        assert!(d.helps.is_empty(), "{d:?}");
+        assert_eq!(d.notes, expected);
+    }
+    let (_, out, _) = resolve_files(&[
+        (
+            "main.bnt",
+            "import Lib.A\nfunction f() -> Unit\n A.missingName()\nend function",
+        ),
+        ("Lib/A.bnt", "function hidden() -> Unit\nend function"),
+    ]);
+    let d = diagnostic(&out, DiagCode::E0303);
+    assert!(d.notes.is_empty());
+    assert!(d.helps.is_empty());
+    for count in [40, 43] {
+        let module = (0..count)
+            .map(|i| format!("public function item{i:02}() -> Unit\nend function\n"))
+            .collect::<String>();
+        let (_, out, _) = resolve_files(&[
+            (
+                "main.bnt",
+                "import A\nfunction f() -> Unit\n A.missingName()\nend function",
+            ),
+            ("A.bnt", &module),
+        ]);
+        let d = diagnostic(&out, DiagCode::E0303);
+        let names = (0..40)
+            .map(|i| format!("`item{i:02}`"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        assert_eq!(
+            d.notes,
+            [if count > 40 {
+                format!("`A` has: {names}, and 3 more")
+            } else {
+                format!("`A` has: {names}")
+            }]
+        );
+    }
+}
+
+#[test]
+fn member_import_does_not_edit_a_conflicting_import_name() {
+    let (_, out, _) = resolve_files(&[
+        (
+            "main.bnt",
+            "import Lib.Console\nfunction f() -> Unit\n IO.Console.writeLine(\"ok\")\nend function",
+        ),
+        ("Lib/Console.bnt", ""),
+    ]);
+    let d = diagnostic(&out, DiagCode::E0303);
+    assert_eq!(d.helps.len(), 1);
+    assert_eq!(
+        d.helps[0].message,
+        "add `import Benitoite.Unofficial.IO.Console as <name>` and use that name, since `Console` is already used in this file"
+    );
+    assert!(d.helps[0].edits.is_empty());
+}
+
+#[test]
+fn member_assists_respect_module_identity() {
+    // 作成時の関門: 同名の import と利用者のモジュールは既存のテストになく、
+    // 誤った注記・取り込み案内を公開の診断で捕まえる（設計書 02-04「誤りと修正案」）。
+    let (_, out, _) = resolve_files(&[(
+        "main.bnt",
+        "import Benitoite.List\nfunction f() -> Unit\n bind _ <- List.lenght([])\n bind _ <- List.length([])\nend function",
+    )]);
+    assert!(diagnostic(&out, DiagCode::E0303).notes.is_empty());
+    assert!(out.prelude_shadowed.iter().next().is_none());
+    let (_, out, _) = resolve_files(&[
+        (
+            "main.bnt",
+            "import MyApp.IO\nfunction f() -> Unit\n IO.Console.foo()\nend function",
+        ),
+        ("MyApp/IO.bnt", ""),
+    ]);
+    assert!(diagnostic(&out, DiagCode::E0303).helps.is_empty());
 }

@@ -1,0 +1,15 @@
+error[E0339]: the module `Benitoite.Unofficial.IO.Console` declares built-in effects and cannot be renamed with `as`
+  --> testdata/modules/effect_alias_references.bnt:2:43
+   |
+ 2 | import Benitoite.Unofficial.IO.Console as C
+   |                                           ^ renamed here
+   |
+   = help: remove `as C` and replace references to `C.` with `Console.`
+   |
+ 2 | import Benitoite.Unofficial.IO.Console
+ 3 | 
+ 4 | function main() -> Unit uses Console.Write
+ 5 |   Console.writeLine("ok")
+   |   ~~~~~~~
+
+error: could not check testdata/modules/effect_alias_references.bnt due to 1 previous error

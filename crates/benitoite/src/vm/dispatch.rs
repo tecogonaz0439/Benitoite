@@ -1,4 +1,4 @@
-//! 振り分けのループ（設計書 02-08「実行の手順」）。命令ごとの処理は 10-07 の命令に従う。
+//! 振り分けのループ（設計書 02-08「実行の手順」）。命令ごとの処理は設計書 02-07「命令」に従う。
 
 mod cell;
 mod collections;
@@ -17,7 +17,7 @@ use crate::bytecode::program::ProtoIdx;
 #[derive(Clone, Copy, Debug)]
 pub struct LoopLocals<'p> {
     pub proto: ProtoIdx,
-    /// 実行中の原型の命令の並び（10-07 の `Instr`）
+    /// 実行中の原型の命令の並び（設計書 02-07「命令」）
     pub code: &'p [Instr],
     /// 次に実行する命令の位置
     pub pc: u32,
@@ -89,7 +89,7 @@ struct ActiveProto<'p> {
     size: u32,
 }
 
-// 凍結した LoopLocals を変えず、原型への参照と窓の大きさを一緒に切り替える（設計書 02-08「実行の手順」）。
+// `LoopLocals` の欄を増やさず、原型への参照と窓の大きさを一緒に切り替える（設計書 02-08「実行の手順」）。
 struct Cursor<'p> {
     locals: LoopLocals<'p>,
     active: ActiveProto<'p>,
@@ -153,7 +153,7 @@ enum Control {
 }
 
 // 印への参照と IO の可変の借用を分け、panic の巻き戻しでも読み口を戻す。
-// 最後の出力の転送を終えるまでシグナルの登録を保つ（実装プラン R28）。
+// 最後の出力の転送を終えるまでシグナルの登録を保つ。
 struct InterruptLease<'a> {
     rt: &'a mut IoRuntime,
     source: Box<dyn crate::runtime::io::services::InterruptSource>,
@@ -201,7 +201,7 @@ pub(super) fn run_epoch(
             }
         }
         // 待ちの処理はこの呼び出しの外で行う。計算中だけ読み口を別に所有して、
-        // 印への参照と IO の可変の借用を両立させる（実装プラン R28「性能」）。
+        // 印への参照と IO の可変の借用を両立させる。
         let exit = {
             let source = std::mem::replace(
                 &mut rt.interrupt,
@@ -239,7 +239,7 @@ fn run_until_exit(
         return cleanup(state, ctx);
     }
     if (state.unwinding.is_some() || state.returning.is_some())
-        && let Some(exit) = unwinding::resume(program, state, ctx, interrupt)
+        && let Some(exit) = handlers::resume_return(program, state, ctx, interrupt)
     {
         return exit;
     }
@@ -346,7 +346,7 @@ fn clear_stack(
     if returning.is_some_and(|work| work.stage == super::unwind::ReturnStage::Escaping) {
         return Ok(());
     }
-    // UnwindWork の区画は通常の再開をせず、ここでは整理せずに保つ（実装プラン R21）。
+    // UnwindWork の区画は通常の再開をせず、ここでは整理せずに保つ。
     let wrapping_return =
         returning.is_some_and(|work| work.stage == super::unwind::ReturnStage::Wrapping);
     for (segment_index, segment) in stack.segments.iter_mut().enumerate() {
@@ -369,8 +369,7 @@ fn clear_stack(
             let (window, live, dest) = match info {
                 Ok(info) => info,
                 Err(stop) => {
-                    // 未検証の情報で途中まで消さない。通常の構成は窓全体を保存する
-                    // （実装プラン R16「回収の前に空にする」）。
+                    // 未検証の情報で途中まで消さない。通常の構成は窓全体を保存する。
                     if cfg!(feature = "heap-verify") {
                         return Err(stop);
                     }
@@ -421,7 +420,7 @@ fn frame_live_registers<'p>(
         )
     };
     // 番号は窓の相対位置であり、ret の区画内の位置とは異なる。集合全体を先に
-    // 確かめ、異常な番号の前にあるレジスタも保存する（設計書 02-08「枠を降ろす原因と処理」、実装プラン R16）。
+    // 確かめ、異常な番号の前にあるレジスタも保存する（設計書 02-08「枠を降ろす原因と処理」）。
     if live.iter().any(|reg| u32::from(*reg) >= frame.size)
         || live.iter().zip(live.iter().skip(1)).any(|(a, b)| a >= b)
         || dest.is_some_and(|reg| u32::from(reg) >= frame.size)
@@ -466,7 +465,7 @@ fn execute<'p, 'e>(
         .ok_or_else(|| missing("window missing"))?;
     let calls = &mut segment.calls;
     // 引数は使う分岐で復号し、通常のループで state と同時に保持する値を減らす
-    // （設計書 07-02「性能の関門」）。命令はこの match で一度だけ判定する（R15 手順 6）。
+    // （設計書 07-02「性能の関門」）。命令はこの match で一度だけ判定する。
     macro_rules! binary_values {
         ($decode:expr, $operation:expr) => {{
             let [left, right] = read_pair(ctx, window, instr.b(), instr.c())?;
@@ -502,7 +501,7 @@ fn execute<'p, 'e>(
                     .ok_or_else(|| missing("constant cache index missing"))?;
                 if let Some(slot) = cached {
                     write(ctx, window, instr.a(), ctx.load(slot))?;
-                    // 作り終えた定数は確保しない（10-07「定数の記述」、R17）。
+                    // 作り終えた定数は確保しない（設計書 02-07「定数表」）。
                     return Ok(Control::Next);
                 }
                 let desc = program
@@ -510,7 +509,7 @@ fn execute<'p, 'e>(
                     .ok_or_else(|| missing("constant description missing"))?;
                 if let Some(v) = immediate_constant(program, desc)? {
                     write(ctx, window, instr.a(), v)?;
-                    // 即値は確保しないので、回収の要求の知らせも調べない（10-09）。
+                    // 即値は確保しないので、回収の要求の知らせも調べない。
                     return Ok(Control::Next);
                 }
                 let v = constant(program, &mut state.constants, ctx, k)?;
@@ -792,7 +791,7 @@ fn execute<'p, 'e>(
             Opcode::LeBt => binary_values!(byte_value, |x: u8, y: u8| Ok::<_, Stop>(Value::Bool(
                 x <= y
             ))),
-            // 第 2 段の命令の分岐は、並行して書く作業（R22・R23・R24）ごとに分けて置く。
+            // 遅延・セル・リソースの命令の処理は、それぞれの子のモジュールに置く。
             Opcode::Lazy | Opcode::Force => {
                 return lazy::dispatch(program, config, state, ctx, cursor, instr);
             }
@@ -927,7 +926,7 @@ fn execute_builtin<'a>(
     Ok(BuiltinEnd::Value)
 }
 
-// 第 1 段でも invoke はループの外にあった。応答の片付けをループへ展開しない（設計書 07-02「性能の関門」）。
+// `invoke` はループの外に置く。応答の片付けをループへ展開しない（設計書 07-02「性能の関門」）。
 #[inline(never)]
 fn invoke_pure<'e>(
     program: &CompiledProgram,
@@ -1021,7 +1020,7 @@ fn build_closure<'e>(
 }
 
 // LAZY も同じ捕捉の表から関数を作る。保存先は呼び出し側が決める
-// （設計書 02-08「明示遅延」、実装プラン R22「LAZY」）。
+// （設計書 02-08「明示遅延」）。
 #[inline(never)]
 fn closure_value<'e>(
     program: &CompiledProgram,
@@ -1086,7 +1085,7 @@ fn build_constructor<'e>(
             return Err(missing("invalid reuse candidate"));
         }
     }
-    // マーク・スイープでは再利用しない。候補の形だけを確かめて新しく作る（10-07、設計書 02-08「実行の手順」）。
+    // マーク・スイープでは再利用しない。候補の形だけを確かめて新しく作る（設計書 02-07「その場での再利用」、02-08「実行の手順」）。
     let value = ctx.alloc_fields(FieldsKind::Ctor, ctor.tag, &args)?;
     write(ctx, window, a, value)?;
 
@@ -1120,7 +1119,7 @@ fn cold_binary<'e, T>(
 
 // 引数は窓から窓へ直接写す。末尾では写し元が写し先より後ろなので、先頭から
 // 写せば未読の引数を壊さない（設計書 02-08「実行の手順」）。
-// 通常と末尾の選択は命令の分岐で確定し、手順の途中で繰り返し判定しない（実装プラン R17）。
+// 通常と末尾の選択は命令の分岐で確定し、手順の途中で繰り返し判定しない。
 #[inline]
 fn call<'p, 'e, const TAIL: bool>(
     config: VmConfig,
@@ -1160,7 +1159,7 @@ fn call<'p, 'e, const TAIL: bool>(
     if interrupt.is_some_and(|flag| flag.load(Ordering::Relaxed)) {
         return interrupt_call(state, Some(locals));
     }
-    // 回収から再開した命令は tick を繰り返さず、引数をまだ根に残す（10-09「呼び出しの前の安全点」）。
+    // 回収から再開した命令は tick を繰り返さず、引数をまだ根に残す。
     if state.precall_done != Some(at)
         && !state.budget.tick()
         && let Some(control) = call_slow_path(state, ctx, locals, at, config.call_budget)?
@@ -1233,9 +1232,9 @@ fn call<'p, 'e, const TAIL: bool>(
     if TAIL {
         // 拡張前の最上位の枠の終わりは regs.len()。拡張後は旧窓と新窓の大きい方になる
         // （設計書 02-08「実行の手順」）。窓の内部の旧値は回収の前に生存集合で空にする。
-        // コード生成した原型の入口では引数だけが生きている（R18、設計書 02-08「枠を降ろす原因と処理」）。
+        // コード生成した原型の入口では引数だけが生きている（設計書 02-08「枠を降ろす原因と処理」）。
         debug_assert_eq!(old_end_index.max(end_index), segment.regs.len());
-        // 窓の外になる場所だけを必ず空にしてから縮める（10-08「コード生成から受け取る生存の情報」）。
+        // 窓の外になる場所だけを必ず空にしてから縮める（設計書 02-08「枠を降ろす原因と処理」）。
         if new_size < old_size {
             shrink_tail_window(ctx, &mut segment.regs, end_index, old_end_index)?;
         }
@@ -1296,7 +1295,7 @@ fn call<'p, 'e, const TAIL: bool>(
 }
 
 // 保存して回収か切り替えへ出る二つの枝をまとめ、CALL/TAILCALL の機械語に
-// 枠の保存を二度展開しない（設計書 07-02「性能の関門」、実装プラン R25「切り替えの位置の集約」）。
+// 枠の保存を二度展開しない（設計書 07-02「性能の関門」）。
 #[cold]
 #[inline(never)]
 fn call_slow_path(
@@ -1318,7 +1317,7 @@ fn call_slow_path(
     Ok(Some(control))
 }
 
-// 窓が同じ大きさの末尾再帰では使わない片付けを、呼び出しの経路へ展開しない（R18）。
+// 窓が同じ大きさの末尾再帰では使わない片付けを、呼び出しの経路へ展開しない。
 #[inline(never)]
 fn shrink_tail_window(
     ctx: &NoGcCtx<'_>,
@@ -1348,7 +1347,7 @@ fn copy_tail_arguments(
     if range.start == 0 {
         return Err(missing("tail argument overlaps unread source"));
     }
-    // 確かめた引数の終端をコピーでも使い、同じ窓の範囲を引き直さない（実装プラン R17）。
+    // 確かめた引数の終端をコピーでも使い、同じ窓の範囲を引き直さない。
     let window = window
         .get_mut(..range.end)
         .ok_or_else(|| missing("call argument range missing"))?;
@@ -1369,7 +1368,7 @@ fn copy_tail_arguments(
 }
 
 // 確保の結果を保存してから通知する。opcode を振り分けの後まで保持しない
-// （10-09「呼び出しの前の安全点」、設計書 02-08「タスクの切り替え」）。
+// （設計書 02-08「タスクの切り替え」）。
 #[cfg_attr(debug_assertions, inline)]
 #[cfg_attr(not(debug_assertions), inline(always))]
 fn after_alloc(state: &mut RunState, ctx: &NoGcCtx<'_>) -> Control {
@@ -1426,7 +1425,7 @@ fn reg_range(start: u16, count: u16) -> Result<std::ops::Range<usize>, Stop> {
     Ok(usize::from(start)..index(end)?)
 }
 
-// 組み込みの引数の上限は表のテストで確かめる。大きな構築は Vec に退避する（R15 手順 2）。
+// 組み込みの引数の上限は表のテストで確かめる。大きな構築は Vec に退避する。
 const INLINE_OPERANDS: usize = 8;
 enum Operands<'e> {
     Inline {
@@ -1548,14 +1547,14 @@ fn integer_result<'e>(value: Option<i64>) -> Result<Value<'e>, Stop> {
     value.map(Value::Int).ok_or_else(integer_overflow)
 }
 
-// 成功のたびに RuntimeError の後始末をしない（R17 の手順 2）。
+// 成功のたびに RuntimeError の後始末をしない。
 #[cold]
 #[inline(never)]
 fn integer_overflow() -> Stop {
     Stop::Runtime(RuntimeError::IntegerOverflow)
 }
 
-// 同じレジスタを二度使う命令でも、書き込みの前に両方を読む（10-07）。
+// 同じレジスタを二度使う命令でも、書き込みの前に両方を読む（設計書 02-07「命令」）。
 #[cfg_attr(debug_assertions, inline)]
 #[cfg_attr(not(debug_assertions), inline(always))]
 fn read_pair<'e>(
@@ -1568,7 +1567,7 @@ fn read_pair<'e>(
     Ok(values)
 }
 
-// 子を持たない即値は根の表を使わずに作る（実装プラン 10-07「定数の記述」）。
+// 子を持たない即値は根の表を使わずに作る（設計書 02-07「定数表」）。
 #[cfg_attr(debug_assertions, inline)]
 #[cfg_attr(not(debug_assertions), inline(always))]
 fn immediate_constant<'e>(
@@ -1607,7 +1606,7 @@ fn immediate_constant<'e>(
 
 // ヒープの値だけを根の表へ置き、組み立て中の子は局所の積み重ねに残す。
 // 区間の中では回収が起きず、深い定数でも Rust の再帰を使わない
-// （設計書 02-07「定数表」、実装プラン 10-07「定数の記述」）。
+// （設計書 02-07「定数表」）。
 fn constant<'e>(
     program: &CompiledProgram,
     constants: &mut [Option<Slot>],
@@ -1785,7 +1784,7 @@ fn cleanup(state: &mut RunState, ctx: &mut NoGcCtx<'_>) -> LoopExit {
 }
 
 #[cfg(test)]
-// テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -1801,7 +1800,7 @@ mod tests {
     use crate::vm::Vm;
     use crate::vm::dispatch::test_support::TestIo;
 
-    // R09 が明示的に認める、まだ本体のない Process.exit の代わりの組み込み宣言。
+    // Process.exit と同じ終了の応答を返すテスト用の組み込み宣言。
     crate::builtins::iface::builtin! {
         /// 止める手順へ終了状態を引き渡す受け入れテスト用の宣言。
         name = "R09.exit",
@@ -1811,7 +1810,7 @@ mod tests {
         }
     }
 
-    // 関門: 宣言の引数がスタック上の保存領域に収まる契約を守る（R15 手順 2）。
+    // 関門: 宣言の引数がスタック上の保存領域に収まる契約を守る。
     // 一覧の複写ではなく、本番の登録の表を上限に照らす。範囲を超えても VM は Vec に退避する。
     #[test]
     fn registered_builtin_arguments_fit_inline_operands() {
@@ -1923,7 +1922,7 @@ impl<'p> Vm<'p> {
                         );
                     } else if self.state.precall_done.is_some() {
                         // 呼び出しの遅い経路は回収後に終える。戻りと止める手順の回収では
-                        // 予算を数えない（実装プラン R09「予算と要求の知らせ」）。
+                        // 予算を数えない。
                         if let Err(stop) = super::dispatch::tasks::slow_path_end(
                             &mut self.state,
                             self.config.call_budget,
@@ -1953,7 +1952,7 @@ impl<'p> Vm<'p> {
             .epoch(|ctx| tasks::io::serve(self.program, &mut self.state, ctx, rt, id));
         if let Err(stop) = result {
             self.state.fail(stop, None);
-            // 外側は同じ一括の次の番号も処理する。次の serve より先に失効を反映する（10-10）。
+            // 外側は同じ一括の次の番号も処理する。次の serve より先に失効を反映する。
             self.state.scheduling.expire_io = true;
         }
         if let Some(fault) = self.heap.take_fault() {

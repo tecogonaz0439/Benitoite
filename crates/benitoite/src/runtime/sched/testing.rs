@@ -1,5 +1,5 @@
 //! 処理系のテスト専用の筋書きと仮想の時間（設計書 07-03「順序を与えるスケジューラと仮想の時間（初回リリース版）」）。
-//! CLI と利用者のテストからは選べない。R26 の仕事を実行する部品も同じ筋書きを共有する。
+//! CLI と利用者のテストからは選べない。筋書きの仕事を実行する部品も同じ筋書きを共有する。
 
 use std::cell::RefCell;
 use std::collections::{BTreeMap, VecDeque};
@@ -76,7 +76,7 @@ impl ScheduleHandle {
         })))
     }
 
-    /// 出力ポートと筋書きの仕事の部品が共有する起こし口（実装プラン R27）。
+    /// 出力ポートと筋書きの仕事の部品が共有する起こし口。
     pub fn wakeup(&self) -> crate::runtime::io::event::Wakeup {
         let mut script = self.0.borrow_mut();
         if !script.output_wakes {
@@ -141,7 +141,7 @@ impl ScheduleHandle {
             .steps
             .push_back(ScheduleStep::Advance(millis));
     }
-    /// 次の指示を読む。R26 の仕事を実行する部品が使う。
+    /// 次の指示を読む。筋書きの仕事を実行する部品が使う。
     pub fn next_step(&self) -> Option<ScheduleStep> {
         self.0.borrow().steps.front().copied()
     }
@@ -166,7 +166,7 @@ impl ScheduleHandle {
             Ok(progressed)
         }
     }
-    /// 仕事を実行した部品が、指示を消費したことを記録する（R26）。
+    /// 仕事を実行した部品が、指示を消費したことを記録する。
     pub fn worker_ran(&self, op: ExtOpId) {
         let mut script = self.0.borrow_mut();
         if script.steps.front() != Some(&ScheduleStep::RunWorker(op)) {
@@ -369,8 +369,9 @@ impl ScriptWorkers {
             match self.script.next_step() {
                 Some(ScheduleStep::Advance(_)) => match self.script.advance_time() {
                     Ok(value) => progressed |= value,
-                    // WorkerExec の凍結した口ではこの誤りを返せないため、進行だけを止める。
-                    // 誤りは筋書きに残り、テストが record().error で確かめる（R26 の確認後の指示）。
+                    // 誤りは筋書きに残る。idle は完了も進行もなければ、誤りが残っているときは
+                    // 待たずに尽きたと返す。
+                    // テストは record().error で誤りを確かめる。
                     Err(_) => return progressed,
                 },
                 Some(ScheduleStep::RunWorker(op)) => {
@@ -404,6 +405,9 @@ impl super::parts::WorkerExec for ScriptWorkers {
         if !self.done.is_empty() || self.advance() {
             super::parts::IdleWake::Progress
         } else {
+            if self.script.0.borrow().record.error.is_some() {
+                return super::parts::IdleWake::ScriptExhausted;
+            }
             let wakeup = self.script.0.borrow().wakeup.clone();
             if let Some(count) = crate::runtime::io::event::wait_counted(&wakeup, self.seen_wakes) {
                 self.seen_wakes = count;

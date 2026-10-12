@@ -36,6 +36,7 @@ pub enum Agent {
 
 /// 文（設計書 02-10「文言の言語」）。`{名前}` は埋める値。
 pub mod text {
+    pub const STAGE_SKILL: &str = "skill";
     pub const INSTALLED: &str = "installed {path}";
     pub const REMOVED: &str = "removed {path}";
     pub const NOT_OURS: &str =
@@ -44,6 +45,7 @@ pub mod text {
     pub const REMOVE_FAILED: &str = "error: cannot remove `{path}`: {reason}";
     pub const NO_HOME: &str =
         "error: cannot find the home directory; set `HOME` or use `--project`";
+    pub const HOME_NOT_DIRECTORY: &str = "error: the home directory `{path}` is not an absolute path to an existing directory; set `HOME` or use `--project`";
     /// 使い方の誤りの `{detail}` に埋める文
     pub const MISSING_ACTION: &str = "missing `install` or `uninstall`";
     pub const UNKNOWN_AGENT: &str =
@@ -55,6 +57,11 @@ use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
 use crate::cli::CliEnv;
+use crate::diag::codes::fill_template;
+use crate::diag::render::escape_terminal_controls;
+
+// 埋め込んだ SKILL.md と、利用者が残した追記に十分な余裕を持たせる。
+const MAX_SKILL_BYTES: usize = 1024 * 1024;
 
 /// 埋め込んだ Skill のファイル（`bundle::FILES`）。`SKILL.md` は版の型板を置き換える前の形である。
 pub fn files() -> &'static [SkillFile] {
@@ -116,7 +123,7 @@ pub fn install_dir(dir: &Path, version: &str) -> Result<(), String> {
         });
     }
     // 置き換え: 古いものを退け、新しいものを据え、古いものを消す。新しいものの名前を据える前の段で失敗したら
-    // 元に戻す。据えた後は置き換えが済んだものとし、古いものを消しきれなくても新しいものを残す（10-19）
+    // 元に戻す。据えた後は置き換えが済んだものとし、古いものを消しきれなくても新しいものを残す（設計書 06-06「Skill の導入（初回リリース版）」）
     let old = parent.join(format!(".{SKILL_NAME}.old-{pid}"));
     let _ignored = std::fs::remove_dir_all(&old);
     if let Err(error) = std::fs::rename(dir, &old) {
@@ -154,7 +161,7 @@ fn write_files(temp: &Path, version: &str) -> Result<(), String> {
 }
 
 /// `dir` が `install` の書き出したものか。`SKILL.md` の前付けの `metadata:` の下に `benitoite-version:` の行があるかで
-/// 判定する（前付けを YAML として解析するクレートは加えない。00-02「依存するクレート」）。
+/// 判定する（前付けを YAML として解析するクレートは加えない。設計書 03-01「使う Rust のクレート」）。
 fn is_ours(dir: &Path) -> bool {
     let Ok(metadata) = std::fs::symlink_metadata(dir) else {
         return false;
@@ -162,7 +169,18 @@ fn is_ours(dir: &Path) -> bool {
     if !metadata.is_dir() {
         return false;
     }
-    let Ok(skill) = std::fs::read_to_string(dir.join("SKILL.md")) else {
+    let path = dir.join("SKILL.md");
+    if !std::fs::symlink_metadata(&path).is_ok_and(|metadata| metadata.is_file()) {
+        return false;
+    }
+    // 検査後に末尾のリンクへ差し替えられても、リンク先を上書きの根拠として読まない。
+    let Ok(bytes) = crate::base::file_read::read_regular_file(&path, MAX_SKILL_BYTES, true) else {
+        return false;
+    };
+    if bytes.len() > MAX_SKILL_BYTES {
+        return false;
+    }
+    let Ok(skill) = String::from_utf8(bytes) else {
         return false;
     };
     has_version_key(&skill)
@@ -199,13 +217,23 @@ fn has_version_key(skill: &str) -> bool {
 }
 
 fn write_failed(path: &Path, reason: &str) -> String {
-    text::WRITE_FAILED
-        .replace("{path}", &path.display().to_string())
-        .replace("{reason}", reason)
+    fill_template(
+        text::WRITE_FAILED,
+        &[
+            (
+                "path",
+                escape_terminal_controls(&path.display().to_string()),
+            ),
+            ("reason", reason.to_owned()),
+        ],
+    )
 }
 
 fn not_ours(path: &Path) -> String {
-    text::NOT_OURS.replace("{path}", &path.display().to_string())
+    text::NOT_OURS.replace(
+        "{path}",
+        &escape_terminal_controls(&path.display().to_string()),
+    )
 }
 
 /// `dir` の Skill を消す。消したら `Ok(true)`、なければ `Ok(false)`。`install` の書き出したものでなければ誤りの文を返す。
@@ -223,9 +251,16 @@ pub fn uninstall_dir(dir: &Path) -> Result<bool, String> {
 }
 
 fn remove_failed(path: &Path, reason: &str) -> String {
-    text::REMOVE_FAILED
-        .replace("{path}", &path.display().to_string())
-        .replace("{reason}", reason)
+    fill_template(
+        text::REMOVE_FAILED,
+        &[
+            (
+                "path",
+                escape_terminal_controls(&path.display().to_string()),
+            ),
+            ("reason", reason.to_owned()),
+        ],
+    )
 }
 
 /// `skill` の後の引数を解釈した結果。
@@ -312,8 +347,23 @@ pub fn run_skill(args: Vec<OsString>, env: CliEnv, home: Option<PathBuf>) -> u8 
     };
     let base = match parsed.scope {
         Scope::Project => env.working_directory.clone(),
-        Scope::User => match home {
-            Some(home) => home,
+        Scope::User => match home.filter(|home| !home.as_os_str().is_empty()) {
+            Some(home) => {
+                if !home.is_absolute()
+                    || !std::fs::metadata(&home).is_ok_and(|metadata| metadata.is_dir())
+                {
+                    let message = fill_template(
+                        text::HOME_NOT_DIRECTORY,
+                        &[(
+                            "path",
+                            escape_terminal_controls(&home.display().to_string()),
+                        )],
+                    );
+                    let _ignored = env.stderr.write_bytes(format!("{message}\n").as_bytes());
+                    return EXIT_FAILURE;
+                }
+                home
+            }
             None => {
                 let _ignored = env
                     .stderr
@@ -324,7 +374,7 @@ pub fn run_skill(args: Vec<OsString>, env: CliEnv, home: Option<PathBuf>) -> u8 
     };
     let mut exit = EXIT_OK;
     for dir in target_dirs(parsed.scope, &parsed.agents, &base) {
-        let path = dir.display().to_string();
+        let path = escape_terminal_controls(&dir.display().to_string());
         let result = if parsed.install {
             install_dir(&dir, env!("CARGO_PKG_VERSION"))
                 .map(|()| Some(text::INSTALLED.replace("{path}", &path)))

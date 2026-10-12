@@ -8,7 +8,7 @@
 //!
 //! 連結は末尾の葉を木へ押し込んで、両端の道筋を下から結合する。
 //! 各高さの境界の並びが r 個のノードに s 個の子（葉では要素）を持つとき、
-//! `r > ceil(s / 32) + 2` なら隣へ詰め直す（実装プラン R36、E_MAX = 2）。
+//! `r > ceil(s / 32) + 2` なら隣へ詰め直す（E_MAX = 2）。
 //! 詰め直すときは 32 個ずつに詰め、区切りが合う満ちたノードは共有する。
 //! 分割は両境界の道筋だけを写す。新しいノードの不変条件だけを debug_assert で検査する。
 //! 長さ 2^24 は 32 進で 5 桁なので連結の根一段を含め MAX_SHIFT = 25 とし、cut の境界の単子鎖は根直下を 32 欄以内にまとめられる段も縮め、連結の履歴で高さを増やさない。
@@ -258,7 +258,7 @@ fn head<'e>(
     tail: Tree<'e>,
 ) -> Result<Value<'e>, Stop> {
     // 作成と追加は子が一つの根を作らず、連結・切り出しは各操作が根を縮める。
-    // 頭では辿り直さず、末尾の葉だけを写す追加の定数の費用を保つ（実装プラン R36）。
+    // 頭では辿り直さず、末尾の葉だけを写す追加の定数の費用を保つ。
     debug_assert_eq!(
         root.map_or(0, |tree| tree.size).checked_add(tail.size),
         Some(length)
@@ -282,7 +282,7 @@ fn invalid_list() -> Stop {
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -296,7 +296,7 @@ mod tests {
 
     // 作成時の関門: 公開 API の要素の順・永続性・上限と、非再帰の走査を守る。
     // Vec を独立したモデルにし、位置や共有の誤りを捕まえる。既存のヒープのテストは
-    // リストの操作を呼ばない。本番にテスト用の口は加えず、R36 が認めた上限の頭だけ準備する。
+    // リストの操作を呼ばない。本番にテスト用の口は加えず、上限の頭だけ準備する。
     fn ints<'e>(ctx: &ValueCtx<'e>, list: Value<'e>) -> Vec<i64> {
         to_vec(ctx, list)
             .unwrap()
@@ -419,7 +419,7 @@ mod tests {
     }
 
     fn oversized_head<'e>(ctx: &ValueCtx<'e>) -> Value<'e> {
-        // R36 が許す準備: 上限の失敗は長さだけで決まり、実際に 2^24 要素を作る必要がない。
+        // 上限の失敗は長さだけで決まり、実際に 2^24 要素を作る必要がない。
         ctx.alloc_fields(
             FieldsKind::ListNode,
             rrb::HEAD,
@@ -483,7 +483,7 @@ mod tests {
     #[test]
     #[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
     fn ten_million_elements_are_traversed_without_rust_recursion() {
-        // Miri でも同じ操作の経路を調べ、解釈するセルの数だけ減らす（R06「長いリスト」）。
+        // Miri でも同じ操作の経路を調べ、解釈するセルの数だけ減らす。
         let count: u32 = if cfg!(miri) { 24 } else { 10_000_000 };
         let mut heap = Heap::new(HeapConfig::default());
         heap.epoch(|ctx| {
@@ -506,7 +506,7 @@ mod tests {
         assert!(heap.take_fault().is_none());
     }
     // 関門: 境界をまたぐ連結・分割・追加の組み合わせと旧値の永続性を公開 API で守る。
-    // R06 の小さいモデルでは内部ノードの境界に届かず、単独の大きい作成では緩和を作らない。
+    // 小さいモデルでは内部ノードの境界に届かず、単独の大きい作成では緩和を作らない。
     // 独立した Vec を使い、内部の高さや対象の同一性は期待値にしない。公開の口は増やさない。
     #[test]
     fn boundary_operations_match_vec_and_preserve_shared_inputs() {
@@ -602,7 +602,7 @@ mod tests {
                 if model.is_empty() {
                     assert!(matches!(result, Value::EmptyList));
                 }
-                // 小さいモデルだけで共有部分も含む全体の不変条件を検査する（R36）。
+                // 小さいモデルだけで共有部分も含む全体の不変条件を検査する。
                 if model.len() < 2048 {
                     assert_valid_tree(ctx, result);
                 }

@@ -22,7 +22,7 @@ pub const ENTRY_FILE_NAME: &str = "main.bnt";
 /// 検査の選択肢。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct CheckOptions {
-    /// `main` の有無と形を検査する。`check`・`run` で真、`test` で偽（10-05 の `typecheck`）
+    /// `main` の有無と形を検査する。`check`・`run` で真、`test` で偽（設計書 02-01「検査と実行の経路」）
     pub require_main: bool,
     /// `--deny-warnings`（02-01「誤りが見つかったときの段の進め方」）
     pub deny_warnings: bool,
@@ -32,7 +32,7 @@ pub struct CheckOptions {
 #[derive(Debug)]
 pub struct CheckedProgram {
     pub modules: ModuleTable,
-    /// モジュールごとの AST。添字はモジュールの ID の値（10-04 の `LoadOutput::asts`）
+    /// モジュールごとの AST。添字はモジュールの ID の値（設計書 02-04「モジュールの表」）
     pub asts: Vec<Module>,
     /// モジュールごとのコメントの一覧（フォーマッタは使わない。フォーマッタは `lex` と `parse` を直接呼ぶ）
     pub comments: Vec<Vec<Comment>>,
@@ -116,7 +116,7 @@ pub fn entry_spec(path: &Path) -> Result<EntrySpec, EntryError> {
 }
 
 /// 実行を始めるファイルから、読み込み・字句解析・構文解析・名前解決・型検査（定数の評価を含む）を行う
-/// （02-01「検査と実行の経路」の `check`）。標準ライブラリのソースは 10-14 の表から読み込みの段に渡す。
+/// （02-01「検査と実行の経路」の `check`）。標準ライブラリのソースは `prelude::STDLIB` から読み込みの段に渡す。
 /// 段の中身は `STAGE_STACK_BYTES` のスタックを持つスレッドで行う（02-01「関数の呼び出しと処理系のスタック」）。そのスレッドの panic は段のスレッドの
 /// 中で捕らえ、報告の種類が `Internal` の診断（段は `check`、スレッドは `Stage`）にして `diagnostics` に入れて返す。
 pub fn check(entry: &EntrySpec, fs: &(dyn ModuleFs + Sync), opts: CheckOptions) -> CheckResult {
@@ -155,6 +155,11 @@ pub fn check_path(path: &Path, opts: CheckOptions) -> Result<CheckResult, EntryE
 /// ファイルシステムを使わずに検査する（テストで使う）。`files` はパスと内容の組で、最初の要素が実行を始めるファイルである。
 /// パスは仮の根のディレクトリからの相対パス（`main.bnt`、`Lib/Text.bnt`）で、表示名はそのパスとする。
 pub fn check_files(files: &[(&str, &[u8])], opts: CheckOptions) -> CheckResult {
+    let (entry, fs) = memory_entry(files);
+    check(&entry, &fs, opts)
+}
+
+fn memory_entry(files: &[(&str, &[u8])]) -> (EntrySpec, MemoryFs) {
     let root = PathBuf::from("/root");
     let fs = MemoryFs {
         files: files
@@ -163,15 +168,22 @@ pub fn check_files(files: &[(&str, &[u8])], opts: CheckOptions) -> CheckResult {
             .collect(),
     };
     let name = files.first().map_or("main.bnt", |(name, _)| *name);
-    check(
-        &EntrySpec {
+    (
+        EntrySpec {
             path: root.join(name),
             display_name: name.to_owned(),
             root,
         },
-        &fs,
-        opts,
+        fs,
     )
+}
+
+/// 段のスレッドを使わずに、呼んだスレッドで `check` の段を行う。スタックの消費を測る開発用の例
+/// （`examples/stack_probe.rs`）のための入口で、本番の経路は `check` を使う（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[doc(hidden)]
+pub fn check_text_on_current_thread(name: &str, text: &[u8], opts: CheckOptions) -> CheckResult {
+    let (entry, fs) = memory_entry(&[(name, text)]);
+    check_stages(&entry, &fs, opts)
 }
 
 /// 一つのファイルだけからなるプログラムを検査する（`check_files` の略記。テストで使う）。`name` は表示名。
@@ -179,7 +191,7 @@ pub fn check_text(name: &str, text: &[u8], opts: CheckOptions) -> CheckResult {
     check_files(&[(name, text)], opts)
 }
 
-/// 脱糖してコア IR を作る（10-06 の `desugar`）。`STAGE_STACK_BYTES` のスタックを持つスレッドで行う。
+/// 脱糖してコア IR を作る（設計書 02-06「脱糖」）。`STAGE_STACK_BYTES` のスタックを持つスレッドで行う。
 pub fn desugar_checked(checked: &CheckedProgram) -> Result<CoreProgram, InternalError> {
     on_large_stack(|| {
         crate::ir::desugar::desugar(
@@ -195,14 +207,17 @@ pub fn desugar_checked(checked: &CheckedProgram) -> Result<CoreProgram, Internal
     })?
 }
 
-/// 判定の木への変換（10-06 の `lower_program`）とコード生成（10-07 の `codegen`）を行う。
+/// 判定の木への変換（設計書 02-06「判定の木への変換」）とコード生成（設計書 02-07「コード生成」）を行う。
 /// `STAGE_STACK_BYTES` のスタックを持つスレッドで行う。
 pub fn compile(
     core: &CoreProgram,
     sources: Arc<SourceTable>,
 ) -> Result<CompiledProgram, CompileError> {
     on_large_stack(|| {
-        let lower = crate::ir::decision::lower_program(core).map_err(CompileError::Internal)?;
+        let lower = crate::ir::decision::lower_program(core).map_err(|error| match error {
+            crate::ir::decision::LowerError::Limit(diags) => CompileError::Limit(diags),
+            crate::ir::decision::LowerError::Internal(error) => CompileError::Internal(error),
+        })?;
         crate::bytecode::codegen::codegen(&lower, sources).map_err(|error| match error {
             crate::bytecode::codegen::CodegenError::Limit(diags) => CompileError::Limit(diags),
             crate::bytecode::codegen::CodegenError::Internal(error) => {
@@ -306,7 +321,7 @@ fn append_stage(result: &mut CheckResult, mut diagnostics: Vec<Diagnostic>) {
     result.diagnostics.extend(diagnostics);
 }
 
-// 公開の check_files はテスト用モジュールに依存できないため、ファイルだけを持つ実装を置く（実装プラン F18）。
+// 公開の check_files はテスト用モジュールに依存できないため、ファイルだけを持つ実装を置く。
 struct MemoryFs {
     files: std::collections::BTreeMap<PathBuf, Vec<u8>>,
 }
@@ -338,10 +353,14 @@ impl ModuleFs for MemoryFs {
 }
 
 #[cfg(test)]
+#[path = "../examples/stack_probe/support.rs"]
+mod stack_test_inputs;
+
+#[cfg(test)]
 mod tests {
     // 関門: 公開の検査の入口が段の順、警告の扱い、深い入力への対応を守る。
     // 各段の単独のテストは段の接続と deny の適用順を確かめない（設計書 07-03）。
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -357,11 +376,122 @@ mod tests {
             deny_warnings,
         }
     }
+    // 明示した上限で全段をつなぎ、診断による早期終了を成功と取り違えない。
+    // 既存の段のスレッドのテストでは、各段の枠が大きくなる退行を捕まえられない
+    // （設計書 02-01「関数の呼び出しと処理系のスタック」、07-03「テストの設計の原則」）。
+    const MEASURED_STACK_BYTES: usize = 16 * 1024 * 1024;
+
+    fn assert_stages_fit_measured_stack(shapes: &[&'static str]) {
+        for &shape in shapes {
+            let depth = stack_test_inputs::limit(shape, crate::syntax::parser::MAX_DEPTH).unwrap();
+            let source = stack_test_inputs::source(shape, depth).unwrap();
+            std::thread::Builder::new()
+                .stack_size(MEASURED_STACK_BYTES)
+                .spawn(move || {
+                    let result = check_text_on_current_thread(
+                        "deep.bnt",
+                        source.as_bytes(),
+                        CheckOptions {
+                            require_main: false,
+                            deny_warnings: false,
+                        },
+                    );
+                    assert!(
+                        result.diagnostics.is_empty(),
+                        "{shape}: {:?}",
+                        result.diagnostics
+                    );
+                    let program = result
+                        .program
+                        .as_ref()
+                        .expect("check must produce a program");
+                    let core = crate::ir::desugar::desugar(
+                        &program.modules,
+                        &program.asts,
+                        &program.resolved,
+                        &program.types,
+                    )
+                    .expect("desugaring must succeed");
+                    let lower =
+                        crate::ir::decision::lower_program(&core).expect("lowering must succeed");
+                    let compiled =
+                        crate::bytecode::codegen::codegen(&lower, Arc::clone(&result.sources))
+                            .expect("code generation must succeed");
+                    // AST と IR をスレッドの外へ返さず、破棄の退行も同じ上限の中で捕まえる
+                    // （設計書 02-03「入れ子の深さ」）。
+                    drop((compiled, lower, core, result));
+                })
+                .expect("measured-stack thread must start")
+                .join()
+                .expect("stages must finish on the measured stack");
+        }
+    }
+
+    #[test]
+    fn stages_fit_the_measured_stack_for_statement_sequences() {
+        assert_stages_fit_measured_stack(&["statements"]);
+    }
+
+    #[test]
+    #[ignore = "long: wide expressions require repeated type and liveness traversal"]
+    fn stages_fit_the_measured_stack_for_flat_sequences() {
+        assert_stages_fit_measured_stack(&["list", "arguments", "fields"]);
+    }
+
+    #[test]
+    fn stages_fit_the_measured_stack_through_deep_branches() {
+        assert_stages_fit_measured_stack(&["if", "else-if", "match-body", "match-subject"]);
+    }
+
+    #[test]
+    fn stages_fit_the_measured_stack_through_guard_fallbacks() {
+        assert_stages_fit_measured_stack(&["guards"]);
+    }
+
+    #[test]
+    fn stages_fit_the_measured_stack_through_deep_operators() {
+        assert_stages_fit_measured_stack(&[
+            "binary-right",
+            "binary-left",
+            "pipe",
+            "unary",
+            "parentheses",
+        ]);
+    }
+
+    #[test]
+    #[ignore = "long: nested record types require repeated traversal"]
+    fn stages_fit_the_measured_stack_through_deep_records() {
+        assert_stages_fit_measured_stack(&["record", "record-base"]);
+    }
+
+    #[test]
+    #[ignore = "long: nested Lazy types require repeated traversal"]
+    fn stages_fit_the_measured_stack_through_deep_blocks() {
+        assert_stages_fit_measured_stack(&["lambda", "with", "lazy", "handle", "try"]);
+    }
+
+    #[test]
+    fn stages_fit_the_measured_stack_through_recursive_types() {
+        assert_stages_fit_measured_stack(&["list-type", "function-type"]);
+    }
+
+    #[test]
+    #[ignore = "long: nested pattern coverage is expensive"]
+    fn stages_fit_the_measured_stack_through_nested_patterns() {
+        assert_stages_fit_measured_stack(&["constructor-pattern", "list-pattern"]);
+    }
+
+    #[test]
+    #[ignore = "long: nested list types and pattern coverage are expensive"]
+    fn stages_fit_the_measured_stack_through_nested_lists() {
+        assert_stages_fit_measured_stack(&["nested-list"]);
+    }
+
     #[test]
     fn u3_sources_import_names_and_record_tags_pass_check() {
-        // 関門: 公開の検査で U3 の各モジュールを実際に読み、利用者から見える型と取り込み名を
-        // 守る。ソースと Rust の表の照合は、型検査や Clock の別名の取り込みには届かない
-        // （実装プラン L00「標準ライブラリのソースの検査」「取り込みの名前」）。
+        // 関門: 公開の検査で標準ライブラリの各モジュールを実際に読み、利用者から見える型と取り込み名を
+        // 守る。ソースと Rust の表の照合は、型検査や Clock の別名の取り込みには届かない。
         let main = "function main() -> Unit\nend function\n";
         let mut source = String::new();
         for module in crate::prelude::STDLIB.iter().filter(|m| !m.prelude) {
@@ -464,6 +594,16 @@ end function
     }
     #[test]
     fn checking_sorts_each_stage_and_stops_before_later_errors() {
+        let positions_of = |result: &CheckResult| {
+            result
+                .diagnostics
+                .iter()
+                .map(|d| {
+                    let span = d.primary.as_ref().unwrap().span;
+                    (span.file, span.start)
+                })
+                .collect::<Vec<_>>()
+        };
         let result = check_files(&[
             ("main.bnt", b"import Lib.Text\nfunction main() -> Unit\n bind _ <- missing1\n bind _ <- missing2\nend function\n"),
             ("Lib/Text.bnt", b"public function text() -> Unit\n bind _ <- missing3\n bind _ <- missing4\nend function\n"),
@@ -476,17 +616,27 @@ end function
                 .iter()
                 .all(|d| d.code == Some(DiagCode::E0301))
         );
-        let positions: Vec<_> = result
-            .diagnostics
-            .iter()
-            .map(|d| {
-                let label = d.primary.as_ref().unwrap();
-                (label.span.file, label.span.start)
-            })
-            .collect();
+        let positions = positions_of(&result);
         assert!(positions.windows(2).all(|p| p[0] <= p[1]));
         assert_eq!(positions[0].0, FileId(0));
         assert!(positions[2].0 > positions[1].0);
+        // 関数の前後に誤りのある定数を置き、定数と関数のどちらを先に検査しても、
+        // 並べ替えがなければ位置の順にならないようにする。
+        // 名前解決の例だけでは、ソース上の順に並べ直さない退行を捕まえない。
+        let result = check_files(
+            &[("main.bnt", b"const a: Integer = \"x\"\nfunction main() -> Unit\n bind n: Integer <- \"function\"\nend function\nconst b: Integer = \"y\"\n")],
+            opts(false),
+        );
+        assert!(result.program.is_none());
+        assert_eq!(result.diagnostics.len(), 3, "{:?}", result.diagnostics);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .all(|d| d.code == Some(DiagCode::E0401))
+        );
+        let positions = positions_of(&result);
+        assert!(positions.windows(2).all(|p| p[0] <= p[1]), "{positions:?}");
         let result = check_files(
             &[
                 (
@@ -570,9 +720,170 @@ end function
             "Lib/Text.bnt"
         );
     }
+    fn check_depth_boundary(
+        name: &str,
+        max: usize,
+        options: CheckOptions,
+        source: impl Fn(usize) -> String,
+    ) {
+        for depth in [max, max + 1] {
+            let source = source(depth);
+            let result = check_text("deep.bnt", source.as_bytes(), options);
+            if depth == max {
+                assert!(
+                    result.diagnostics.is_empty(),
+                    "{name} at {depth}: {:?}",
+                    result.diagnostics
+                );
+                assert!(result.program.is_some(), "{name} at {depth}");
+            } else {
+                assert!(result.program.is_none(), "{name} at {depth}");
+                assert!(
+                    result
+                        .diagnostics
+                        .iter()
+                        .any(|d| d.code == Some(DiagCode::E0208)),
+                    "{name} at {depth}: {:?}",
+                    result.diagnostics
+                );
+            }
+        }
+    }
     #[test]
-    fn deep_if_and_else_if_check_on_the_default_calling_stack() {
-        // if の then の中に次の if を置き、else if の分岐も含める（実装プラン F18「大きなスタック」）。
+    fn deep_expressions_check_at_the_parser_depth_limit() {
+        // spec: 02-03 入れ子の深さ
+        // 関門: 段のスレッドで、構文の上限まで型検査できる契約を守る。型検査だけの
+        // 既定のスレッドのテストは上限より浅く、構文解析との接続を確かめない。
+        // 外側は関数(1)、ブロック(2)、bind(3)、値の式(4)。各形の最深部は k * n + c。
+        for (name, prefix, leaf, suffix, k, c) in [
+            // 括弧と二項演算の右辺で二段ずつ増え、葉は 4 + 2n。
+            ("binary", "(1 + ", "1", ")", 2, 4),
+            // 括弧一つで一段増え、葉は 4 + n。
+            ("parentheses", "(", "1", ")", 1, 4),
+            // ラムダのブロック、bind、その値で三段増え、葉は 4 + 3n。
+            ("lambda", "lambda() bind _ <- ", "()", "\nend lambda", 3, 4),
+            // if のブロックと最初の文で二段増え、葉は 4 + 2n。
+            ("if", "if true then ", "1", " else 0 end if", 2, 4),
+            // 最初の分岐、ブロック、文で三段増える。最後の match は深さ
+            // 4 + 3(n - 1)、二番目の分岐の値はさらに四段下なので 3n + 5。
+            (
+                "match-body",
+                "match true with\n case true -> ",
+                "1",
+                "\n case false -> 0\n end match",
+                3,
+                5,
+            ),
+            // 対象で一段増える。最後の match は 4 + (n - 1)、
+            // 二番目の分岐の値がさらに四段下なので n + 7。
+            (
+                "match-scrutinee",
+                "match ",
+                "true",
+                " with\n case true -> true\n case false -> false\n end match",
+                1,
+                7,
+            ),
+        ] {
+            let max = (usize::try_from(crate::syntax::parser::MAX_DEPTH).unwrap() - c) / k;
+            check_depth_boundary(name, max, opts(false), |depth| {
+                let nested = format!("{}{leaf}{}", prefix.repeat(depth), suffix.repeat(depth));
+                format!("function main() -> Unit\n bind _ <- {nested}\nend function\n")
+            });
+        }
+    }
+    #[test]
+    #[ignore = "long: 構文の上限直前のリストと構成子のパターンを検査する（約26秒）"]
+    fn deep_patterns_check_at_the_parser_depth_limit() {
+        // spec: 02-03 入れ子の深さ
+        // spec: 01-05 網羅性の検査
+        // 関門: 深いパターンの網羅性の判定まで、段のスレッドで上限内の入力を検査する。
+        // 関数(1)、ブロック(2)、match の式文(3)。パターンは節ごとに一段を数える。
+        // リストは n 個のリスト、葉の _、次の分岐の _ の合計 n + 2 節で k=1, c=5。
+        // 構成子は n 個の構成子と葉の _ の n + 1 節で k=1, c=4。
+        for (name, k, c) in [("list", 1, 5), ("constructor", 1, 4)] {
+            let max = (usize::try_from(crate::syntax::parser::MAX_DEPTH).unwrap() - c) / k;
+            check_depth_boundary(
+                name,
+                max,
+                CheckOptions {
+                    require_main: false,
+                    deny_warnings: false,
+                },
+                |depth| {
+                    if name == "list" {
+                        // 引数の型は深さ 3 + n なので、パターンのほうが先に上限に達する。
+                        let ty = format!("{}Integer{}", "List[".repeat(depth), "]".repeat(depth));
+                        let pat = format!("{}_{}", "[".repeat(depth), "]".repeat(depth));
+                        format!(
+                            "function f(n: {ty}) -> Unit\n match n with\n case {pat} -> ()\n case _ -> ()\n end match\nend function\n"
+                        )
+                    } else {
+                        let pat = format!("{}_{}", "L.Mk(".repeat(depth), ")".repeat(depth));
+                        format!(
+                            "data L\n Mk(L)\nend data\nfunction f(n: L) -> Unit\n match n with\n case {pat} -> ()\n end match\nend function\n"
+                        )
+                    }
+                },
+            );
+        }
+    }
+    #[test]
+    fn long_list_patterns_and_boolean_matrix_check_near_the_depth_limit() {
+        // spec: 02-03 入れ子の深さ
+        // spec: 01-05 網羅性の検査
+        // 関門: 入れ子が浅くても節の多いパターンで、有用性の判定がスタックを溢れさせず
+        // 検査を終える契約を守る。深いパターンだけでは長い列と多数の行の組合せに届かない。
+        let limit = usize::try_from(crate::syntax::parser::MAX_DEPTH).unwrap();
+        let match_depth = 3; // 関数(1)、ブロック(2)、match の式文(3)。
+        // リスト自身一節、要素の節、次の分岐の _ 一節を、match の深さに加える。
+        let elements = limit - match_depth - 2;
+        let flat = format!(" case [{}] -> ()\n", vec!["_"; elements].join(", "));
+        // 正方形の行列で、行ごとにリスト自身一節と列の節を数え、最後に _ 一節を置く。
+        let mut side = 1;
+        while match_depth + (side + 1) * (side + 2) < limit {
+            side += 1;
+        }
+        let mut matrix = String::new();
+        let significant_bits = usize::try_from(usize::BITS - (side - 1).leading_zeros()).unwrap();
+        for row in 0..side {
+            // 行番号を真偽値の列として表し、互いに覆われない行を作る。
+            let values = (0..side)
+                .map(|column| {
+                    if column >= significant_bits {
+                        "_"
+                    } else if row & (1 << column) == 0 {
+                        "false"
+                    } else {
+                        "true"
+                    }
+                })
+                .collect::<Vec<_>>();
+            matrix.push_str(&format!(" case [{}] -> ()\n", values.join(", ")));
+        }
+        for (ty, arms) in [("Integer", flat), ("Boolean", matrix)] {
+            let source = format!(
+                "function f(n: List[{ty}]) -> Unit\n match n with\n{arms} case _ -> ()\n end match\nend function\n"
+            );
+            let result = check_text(
+                "long.bnt",
+                source.as_bytes(),
+                CheckOptions {
+                    require_main: false,
+                    deny_warnings: false,
+                },
+            );
+            assert!(
+                result.diagnostics.is_empty(),
+                "{ty}: {:?}",
+                result.diagnostics
+            );
+            assert!(result.program.is_some(), "{ty}");
+        }
+    }
+    #[test]
+    fn deep_if_and_else_if_check_on_the_stage_stack() {
+        // if の then の中に次の if を置き、else if の分岐も含める。
         // 構文解析器は if の式とその文の二段を数えるため、490 個で上限 1000 の近くになる。
         let depth = 490;
         let mut source = String::from("function main() -> Unit\n");

@@ -1,5 +1,5 @@
-//! ハンドラと継続を降ろす契約を VM の入口から確かめる（実装プラン R20・R21）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! ハンドラと継続を降ろす契約を VM の入口から確かめる（設計書 02-08「枠を降ろす原因と処理」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -125,7 +125,7 @@ fn resume_clause(b: &mut ProgramBuilder, name: &str, add: i64, after: i64) -> Pr
 }
 
 // 関門: 同じ本体で操作を繰り返し、E-Resume の戻り先と深いハンドラの保持を守る。
-// 第 1 段のテストには区画の移動がなく、この退行を捕まえられない。公開の VM の入口を使う。
+// 区画を移さないテストでは、この退行を捕まえられない。公開の VM の入口を使う。
 #[test]
 fn repeated_operations_and_computation_around_resume() {
     for after in [0, 100] {
@@ -726,7 +726,7 @@ fn perform_pre_call_collection_keeps_arguments_and_counts_the_call_once() {
     vm.start_main().unwrap();
     let mut io = services();
     // 関門: 引数を作った後、PERFORM の前で回収する出口そのものを観測する。
-    // HANDLE 前の回収だけでも通ってしまう、全体の回収回数の下限では代用しない（R20）。
+    // HANDLE 前の回収だけでも通ってしまう、全体の回収回数の下限では代用しない。
     let perform_at = InstrRef { proto: body, pc: 3 };
     loop {
         let exit = vm.heap.epoch(|ctx| {
@@ -876,8 +876,8 @@ fn io_operations_use_the_handler_before_invoking_external_services() {
     }
 }
 
-// 関門: 継続を再開しない節と ESCAPE は R20 では未実装だった。
-// 入れ子の drop を含め、VM の入口の結果・停止位置・計数を一つの表で確かめる（R21）。
+// 関門: 継続を再開しない節と ESCAPE、入れ子の drop を含め、
+// VM の入口の結果・停止位置・計数を一つの表で確かめる。
 #[test]
 fn discarded_nested_continuations_escape_and_stop() {
     for nested in [false, true] {
@@ -997,7 +997,7 @@ fn discarded_nested_continuations_escape_and_stop() {
     }
 }
 
-// 関門: 捨てた継続が計数に残ると小さい上限で反復が止まる。通常の末尾再帰では検出できない（R21）。
+// 関門: 捨てた継続が計数に残ると小さい上限で反復が止まる。通常の末尾再帰では検出できない。
 #[test]
 #[ignore = "long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"]
 fn dropping_one_hundred_thousand_continuations_does_not_accumulate_stack() {
@@ -1043,7 +1043,7 @@ fn dropping_one_hundred_thousand_continuations_does_not_accumulate_stack() {
 }
 
 // 関門: 長い継続を捨てる途中の各回収で、節の戻り値が ReturnWork だけに残る。
-// 通常の RETURN のテストは UnwindWork の辿りを挟まない（R21、R03 の根の引き渡し）。
+// 通常の RETURN のテストは UnwindWork の辿りを挟まない。
 #[test]
 fn long_dropped_continuation_roots_clause_result_between_steps() {
     let mut b = ProgramBuilder::new();
@@ -1133,7 +1133,7 @@ fn long_dropped_continuation_roots_clause_result_between_steps() {
 }
 
 // 関門: CallFrame::func だけが持つクロージャと捕捉値を、破棄・ESCAPE・停止で根から外す。
-// R20 の通常の戻りのテストを、この三つの経路へ広げる（R21）。
+// 通常の戻りに加え、この三つの経路を確かめる。
 #[test]
 fn frame_only_closure_and_capture_are_collected_after_drop_escape_and_stop() {
     for action in ["drop", "escape", "stop"] {
@@ -1235,7 +1235,7 @@ fn frame_only_closure_and_capture_are_collected_after_drop_escape_and_stop() {
 }
 
 // 関門: 包む枠から Reg へ戻った後の回収要求を、次の命令より前に処理する。
-// return_plain の経路のテストでは finish_return の要求の見落としを捕まえない（R21 の補足）。
+// return_plain の経路のテストでは finish_return の要求の見落としを捕まえない。
 #[test]
 fn wrapped_return_checks_collection_before_executing_the_caller() {
     let mut b = ProgramBuilder::new();
@@ -1299,7 +1299,7 @@ fn wrapped_return_checks_collection_before_executing_the_caller() {
 }
 
 // 関門: 戻りの途中でヒープの不具合が届くと、実行の入口は残った枠の命令を渡す。
-// 命令の処理自体が失敗する場合と違い、fail_instruction の位置の補正を通らない（R21）。
+// 命令の処理自体が失敗する場合と違い、fail_instruction の位置の補正を通らない。
 #[test]
 fn heap_fault_during_return_records_origin_and_only_remaining_calls() {
     for opcode in [Opcode::Return, Opcode::Escape] {

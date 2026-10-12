@@ -1,0 +1,9 @@
+error[E0114]: control character U+001B must be escaped
+  --> testdata/lexical/todo194-control-escape.bnt:3:22
+   |
+ 3 |   bind _ <- "escape: \u{1B}"
+   |                      ^^^^^^
+   |
+   = help: write it as `\u{1B}`
+
+error: could not check testdata/lexical/todo194-control-escape.bnt due to 1 previous error

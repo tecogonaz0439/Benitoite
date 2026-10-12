@@ -1,4 +1,4 @@
-// テストの失敗は panic で表す（実装プラン 00-02「`#[allow]` を書いてよい箇所」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -49,7 +49,7 @@ fn test_fn(description: Option<&str>, location: Span) -> TestFn {
 }
 
 // 関門: `"assert"` の詳細の注記の並び（解放の注記を末尾呼び出しの注記の前に置く）と、位置の行の字下げが溝の幅
-// （行番号の桁数）に従うこと、起動の履歴の節が履歴の名前の欄と揃うこと（10-18「文章の形」、実装プラン D11）。
+// （行番号の桁数）に従うこと、起動の履歴の節が履歴の名前の欄と揃うこと（設計書 06-04「結果の報告」）。
 #[test]
 fn assert_details_put_release_notes_before_the_tail_note() {
     let (table, call, name) = sources();
@@ -119,7 +119,7 @@ fn exit_json(reports: Vec<crate::diag::Diagnostic>) -> String {
 }
 
 // 関門: `"exit"` の notes が解放の失敗の報告ごとに RELEASE_WHILE_STOPPING と同じ文を並べ、報告がなければ空の配列に
-// なること（10-18「JSON Lines の形」、06-04「結果の報告」）。
+// なること（設計書 06-04「結果の報告」）。
 #[test]
 fn exit_json_notes_list_release_failures() {
     let mut report = crate::diag::DiagBuilder::new(crate::diag::DiagCode::R0401).build();
@@ -164,7 +164,7 @@ fn a_passing_test_has_no_failure_details() {
     );
 }
 
-// 関門: 集計の `ok` は、失敗も実行しなかったファイルも中断もないときだけ（10-18「文章の形」）。
+// 関門: 集計の `ok` は、失敗も実行しなかったファイルも中断もないときだけ（設計書 06-04「結果の報告」）。
 #[test]
 fn summary_is_ok_only_when_the_exit_status_is_zero() {
     let cases = [

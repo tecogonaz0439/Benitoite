@@ -1,0 +1,17 @@
+// spec: 01-06 型クラス（初回リリース版）
+trait Score[T]
+  function score(x: T) -> Integer
+end trait
+implement Score[function(Integer) -> Integer]
+  function score(x: function(Integer) -> Integer) -> Integer
+    return 0
+  end function
+end implement
+function use(f: function(Integer) -> Integer) -> Unit
+  bind _ <- Score.score(f)
+  bind _ <- Score.score(f)
+  bind _ <- Score.score(f)
+end function
+function main() -> Unit
+  ()
+end function

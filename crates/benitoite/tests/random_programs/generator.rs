@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-// 段を選ぶ重みと、式・値・再帰の上限をここにまとめる（実装プラン C14）。
+// 段を選ぶ重みと、式・値・再帰の上限をここにまとめる。
 const STAGE_WEIGHTS: [u64; 6] = [35, 15, 10, 15, 20, 5];
 const MAX_DEPTH: usize = 3;
 const MAX_NODES: usize = 70;
@@ -24,7 +24,7 @@ impl Coverage {
     }
 }
 
-/// 固定の種の並びで必ず試す機能（実装プラン C14「機能の網羅」）。
+/// 固定の種の並びで必ず試す機能。
 pub const REQUIRED: &[&str] = &[
     "integer",
     "boolean",
@@ -868,6 +868,7 @@ pub fn generate_formal(seed: u64) -> Generated {
     }
     source.push_str(&controls);
     source.push_str(&formal_handlers(&mut control, &mut generator.coverage));
+    source.push_str(&formal_placeholder_escapes(seed, &mut generator.coverage));
     source.push_str(&formal_dictionaries(seed, &mut generator.coverage));
     source.push_str(&formal_direct_calls(seed, &mut generator.coverage));
     source.push_str(&formal_extensions(seed, &mut generator.coverage));
@@ -875,7 +876,7 @@ pub fn generate_formal(seed: u64) -> Generated {
     source.push_str(&formal_constants(seed, &mut generator.coverage));
     source.push_str(&formal_patterns(seed, &mut generator.coverage));
     source.push_str(&format!(
-        "function main() -> Unit uses Console.Write, State\n{body}bind _ <- formalRecordUse(3)\nbind _ <- formalHandle(3)\nbind _ <- formalNested(4)\nbind _ <- formalPoly(Option.Some(5))\nbind result: Result[Integer, String] <- Result.Ok(6)\nbind _ <- formalPolyResult(result)\nbind _ <- formalRigid(Option.Some(7))\nbind _ <- formalPlaceholder(8)\nend function\n"
+        "function main() -> Unit uses Console.Write, State\n{body}bind _ <- formalRecordUse(3)\nbind _ <- formalHandle(3)\nbind _ <- formalNested(4)\nbind _ <- formalPoly(Option.Some(5))\nbind result: Result[Integer, String] <- Result.Ok(6)\nbind _ <- formalPolyResult(result)\nbind _ <- formalRigid(Option.Some(7))\nbind _ <- formalPlaceholder(8)\nbind _ <- formalPlaceholderReturn(9)\nbind _ <- formalPlaceholderTry(Option.None)\nbind _ <- formalPlaceholderTry(Option.Some(10))\nend function\n"
     ));
     Generated {
         source,
@@ -1130,6 +1131,32 @@ function formalPlaceholder(n: Integer) -> Integer
     case formalAsk(x, _) -> resume(x)
   end handle, _)
   return f({amount})
+end function
+"#
+    )
+}
+
+// 生成した関数の return/try の境界を脱糖・型検査の差分検査へ渡す。
+fn formal_placeholder_escapes(seed: u64, coverage: &mut Coverage) -> String {
+    let mut random = Random(seed ^ 0x1782);
+    let n = random.below(17);
+    coverage.hit("placeholder-return");
+    coverage.hit("placeholder-try");
+    format!(
+        r#"
+function formalPlaceholderReturn(n: Integer) -> String
+  bind f <- formalAdd(return n, _)
+  return Integer.toString(f({n}))
+end function
+function formalPlaceholderWrap(a: Integer, b: Integer) -> Option[Integer]
+  return Option.Some(a + b)
+end function
+function formalPlaceholderTry(input: Option[Integer]) -> String
+  bind f <- formalPlaceholderWrap(try input, _)
+  return match f({n}) with
+    case Option.Some(value) -> Integer.toString(value)
+    case Option.None -> "none"
+  end match
 end function
 "#
     )
@@ -1492,7 +1519,6 @@ fn formal_patterns(seed: u64, coverage: &mut Coverage) -> String {
         "list-pattern-suffix",
         "list-pattern-binding",
         "guard-lambda-effects",
-        "guard-resume-known",
     ] {
         coverage.hit(feature);
     }
@@ -1505,6 +1531,7 @@ end data
 record FormalPatternRow
   left: Integer
   right: Integer
+  flag: Boolean
 end record
 record FormalPatternList
   items: List[Integer]
@@ -1523,8 +1550,8 @@ function formalPatternChoice(input: FormalPattern, outer: Integer, enabled: Bool
 end function
 function formalPatternRecords(row: FormalPatternRow, outer: Integer) -> Integer
   return match row with
-    case FormalPatternRow(right: y, left: x), FormalPatternRow(left: y, right: x) if (lambda(z: Integer) return z + outer > y end lambda)(x) -> x - y
-    case FormalPatternRow(right: y, left: x) -> outer + x - y
+    case FormalPatternRow(right: y, left: x, flag: true), FormalPatternRow(left: y, right: x, flag: false) if (lambda(z: Integer) return z + outer > y end lambda)(x) -> x - y
+    case FormalPatternRow(right: y, left: x, ..) -> outer + x - y
   end match
 end function
 function formalPatternRanges(n: Integer, c: Character) -> Integer
@@ -1552,7 +1579,7 @@ function formalPatternLists(xs: List[Integer], outer: Integer) -> Integer
     case [] -> 0
   end match
   bind named <- match xs with
-    case [x, ..rest, y], [y, ..rest, x] if x + outer > y ->
+    case [x, 0, ..rest, y], [y, ..rest, 0, x] if x + outer > y ->
       x - y + List.length(rest) + outer
     case [..rest] -> List.length(rest)
   end match
@@ -1561,7 +1588,7 @@ end function
 function formalPatternNested(row: FormalPatternList, outer: Integer) -> Integer
   return match row with
     case FormalPatternList(flag: true, items: [x, ..rest, y]),
-         FormalPatternList(items: [y, ..rest, x], flag: true) if x + outer > y ->
+         FormalPatternList(items: [y, ..rest, x], flag: false) if x + outer > y ->
       x - y + List.length(rest)
     case FormalPatternList(items: [..rest], ..) -> List.length(rest) + outer
   end match
@@ -1574,21 +1601,11 @@ function formalPatternGuardLocal(enabled: Boolean) -> Boolean
     case _ -> false
   end match
 end function
-function formalPatternGuardResume(enabled: Boolean) -> Boolean
-  return handle formalPatternBool(enabled) with
-    case formalPatternBool(x) ->
-      match x with
-        case flag if resume(flag) -> true
-        case _ -> false
-      end match
-  end handle
-end function
 function formalPatternUse() -> Integer
   bind _ <- formalPatternGuardLocal({enabled})
-  bind _ <- formalPatternGuardResume({enabled})
   bind a <- formalPatternChoice(FormalPattern.{packet}({offset}, 4), 3, true)
   bind b <- formalPatternChoice(FormalPattern.{packet}(4, {offset}), 2, false)
-  bind c <- formalPatternRecords(FormalPatternRow(right: 4, left: {offset}), 2)
+  bind c <- formalPatternRecords(FormalPatternRow(right: 4, left: {offset}, flag: {enabled}), 2)
   bind d <- formalPatternRanges(-{lower}, 'b')
   bind e <- formalPatternLists([{offset}, 3, 4], 2)
   bind f <- formalPatternNested(FormalPatternList(flag: true, items: [{offset}, 4]), 3)

@@ -1,6 +1,6 @@
 //! 式と基本パターンから制約を作る（設計書 02-05「制約の生成」）。
 use super::{
-    context::{Body, fixed, lift, reason},
+    context::{Body, BodyReturn, ReturnOwner, fixed, lift, reason},
     decls::Decls,
     infer::*,
 };
@@ -110,7 +110,16 @@ pub(super) fn check_function(d: &mut Decls<'_>, f: &FnDecl) {
         ctx.record_type(p.id, t);
     }
     let ty = ctx.block(block);
-    equal(&mut ctx, basic(B::UNIT), ty, block.span, ReasonKind::FnBody);
+    let end = body_end(block);
+    ctx.body_returns.insert(
+        end,
+        BodyReturn {
+            annotated: true,
+            ty: lift(&ctx.scheme.ret),
+            owner: ReturnOwner::Function,
+        },
+    );
+    equal(&mut ctx, basic(B::UNIT), ty, end, ReasonKind::FnBody);
     let mut r = reason(f.name.span, ReasonKind::FnUses);
     r.related = Some(f.name.span);
     ctx.add(Constraint::EffSub {
@@ -199,6 +208,8 @@ pub(super) fn name(ctx: &mut Body<'_, '_>, e: &NameExpr, direct_with: bool) -> I
         | BindingKind::EffectVar { .. } => ctx.instantiate(e.id, e.span, id).0,
     }
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 pub(super) fn call(ctx: &mut Body<'_, '_>, e: &CallExpr, insert: Option<&Expr>) -> ITy {
     if let Expr::Name(n) = e.callee.as_ref()
         && let Some(id) = ctx.decls.reference(n.id)
@@ -217,46 +228,7 @@ pub(super) fn call(ctx: &mut Body<'_, '_>, e: &CallExpr, insert: Option<&Expr>) 
                     .is_some_and(|s| s.params.is_empty())
         {
             let t = ctx.expr(&e.callee);
-            let code = if kind == Some(BindingKind::Const) {
-                DiagCode::E0403
-            } else {
-                DiagCode::E0413
-            };
-            let name = n
-                .path
-                .iter()
-                .map(|n| n.text.as_str())
-                .collect::<Vec<_>>()
-                .join(".");
-            let mut d = DiagBuilder::new(code).primary(e.span).arg("name", name);
-            if code == DiagCode::E0403 {
-                let t = ctx.solver.finalize(&t, ctx.decls.resolved);
-                d = d.arg(
-                    "found",
-                    t.show(&TyNames {
-                        adts: &ctx.decls.out.adts,
-                        effects: &ctx.decls.out.effects,
-                        type_params: &[],
-                        effect_params: &[],
-                    }),
-                );
-            }
-            let mut span = e.span;
-            span.start = n.span.end;
-            ctx.diagnostic(
-                d.help_edits(
-                    if code == DiagCode::E0403 {
-                        "constant"
-                    } else {
-                        "remove"
-                    },
-                    vec![Edit {
-                        span,
-                        replacement: String::new(),
-                    }],
-                )
-                .build(),
-            );
+            report_value_call(ctx, e, n, kind, t);
             for a in &e.args {
                 if let Arg::Expr(a) = a {
                     ctx.expr(a);
@@ -266,13 +238,99 @@ pub(super) fn call(ctx: &mut Body<'_, '_>, e: &CallExpr, insert: Option<&Expr>) 
         }
     }
     let partial = e.args.iter().any(|a| matches!(a, Arg::Placeholder(_)));
-    let old = if partial {
-        let eff = ctx.fresh_effect();
-        Some(std::mem::replace(&mut ctx.effect, eff))
+    if !partial {
+        return call_body(ctx, e, insert, None);
+    }
+    let ret = ctx.fresh_ty();
+    let effect = ctx.fresh_effect();
+    let old_effect = std::mem::replace(&mut ctx.effect, effect);
+    let old_ret = ctx.ret.replace(ret.clone());
+    let old_clauses = std::mem::take(&mut ctx.clauses);
+    let old_annotation = ctx.return_annotation.take();
+    let old_boundary = std::mem::replace(&mut ctx.placeholder_boundary, true);
+    let old_owner = std::mem::replace(&mut ctx.return_owner, ReturnOwner::Placeholder(e.span));
+    // 子の検査で誤りが起きても、call_body から戻ってから文脈を復元する。
+    let ty = call_body(ctx, e, insert, Some(ret));
+    ctx.effect = old_effect;
+    ctx.ret = old_ret;
+    ctx.clauses = old_clauses;
+    ctx.return_annotation = old_annotation;
+    ctx.placeholder_boundary = old_boundary;
+    ctx.return_owner = old_owner;
+    ty
+}
+// 値を関数として呼んだ診断は誤りの場合だけ作る（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[cold]
+#[inline(never)]
+fn report_value_call(
+    ctx: &mut Body<'_, '_>,
+    e: &CallExpr,
+    n: &NameExpr,
+    kind: Option<BindingKind>,
+    t: ITy,
+) {
+    let code = if kind == Some(BindingKind::Const) {
+        DiagCode::E0403
     } else {
-        None
+        DiagCode::E0413
     };
+    let name = n
+        .path
+        .iter()
+        .map(|n| n.text.as_str())
+        .collect::<Vec<_>>()
+        .join(".");
+    let mut d = DiagBuilder::new(code).primary(e.span).arg("name", name);
+    if code == DiagCode::E0403 {
+        let t = ctx.solver.finalize(&t, ctx.decls.resolved);
+        d = d.arg(
+            "found",
+            t.show(&TyNames {
+                adts: &ctx.decls.out.adts,
+                effects: &ctx.decls.out.effects,
+                type_params: &[],
+                effect_params: &[],
+            }),
+        );
+    }
+    let mut span = e.span;
+    span.start = n.span.end;
+    ctx.diagnostic(
+        d.help_edits(
+            if code == DiagCode::E0403 {
+                "constant"
+            } else {
+                "remove"
+            },
+            vec![Edit {
+                span,
+                replacement: String::new(),
+            }],
+        )
+        .build(),
+    );
+}
+
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
+fn call_body(
+    ctx: &mut Body<'_, '_>,
+    e: &CallExpr,
+    insert: Option<&Expr>,
+    partial_ret: Option<ITy>,
+) -> ITy {
     let callee = ctx.expr(&e.callee);
+    let partial = partial_ret.is_some();
+    // 展開後の戻り値型を引数の return より先に呼ばれる関数の型と結ぶ。
+    let signature = partial_ret.map(|ret| {
+        call_constraint(
+            ctx,
+            e,
+            callee.clone(),
+            e.args.len().saturating_add(usize::from(insert.is_some())),
+            Some(ret),
+        )
+    });
     let mut args = vec![];
     let mut slots = vec![];
     if let Some(e) = insert {
@@ -289,23 +347,8 @@ pub(super) fn call(ctx: &mut Body<'_, '_>, e: &CallExpr, insert: Option<&Expr>) 
             }
         }
     }
-    let params = (0..args.len()).map(|_| ctx.fresh_ty()).collect::<Vec<_>>();
-    let ret = ctx.fresh_ty();
-    let eff = ctx.fresh_effect();
-    let expected = ITy::Fn(Box::new(IFnTy {
-        params: params.clone(),
-        ret: ret.clone(),
-        effect: eff.clone(),
-    }));
-    let mut r = reason(e.span, ReasonKind::Call);
-    if let Expr::Name(n) = e.callee.as_ref() {
-        r.related = ctx.decls.resolved.binding_of_ref(n.id).and_then(|b| b.span);
-    }
-    ctx.add(Constraint::Equal {
-        expected,
-        found: callee,
-        reason: r,
-    });
+    let (params, ret, eff) =
+        signature.unwrap_or_else(|| call_constraint(ctx, e, callee, args.len(), None));
     let parameter_spans = declaration_params(ctx, &e.callee);
     for (i, ((t, arg), p)) in args.into_iter().zip(params).enumerate() {
         let rkind = ReasonKind::CallArg {
@@ -330,8 +373,8 @@ pub(super) fn call(ctx: &mut Body<'_, '_>, e: &CallExpr, insert: Option<&Expr>) 
         sup: ctx.effect.clone(),
         reason: reason(e.span, ReasonKind::CallEffect),
     });
-    if let Some(old) = old {
-        let latent = std::mem::replace(&mut ctx.effect, old);
+    if partial {
+        let latent = ctx.effect.clone();
         ctx.lambda_effects.insert(e.id, latent.clone());
         ITy::Fn(Box::new(IFnTy {
             params: slots,
@@ -341,6 +384,37 @@ pub(super) fn call(ctx: &mut Body<'_, '_>, e: &CallExpr, insert: Option<&Expr>) 
     } else {
         ret
     }
+}
+fn call_constraint(
+    ctx: &mut Body<'_, '_>,
+    e: &CallExpr,
+    callee: ITy,
+    arity: usize,
+    ret: Option<ITy>,
+) -> (Vec<ITy>, ITy, IEffect) {
+    let partial = ret.is_some();
+    let params = (0..arity).map(|_| ctx.fresh_ty()).collect::<Vec<_>>();
+    let ret = ret.unwrap_or_else(|| ctx.fresh_ty());
+    let eff = ctx.fresh_effect();
+    let expected = ITy::Fn(Box::new(IFnTy {
+        params: params.clone(),
+        ret: ret.clone(),
+        effect: eff.clone(),
+    }));
+    let mut r = reason(e.span, ReasonKind::Call);
+    if partial {
+        // return の Flow と同じ優先群で、追加した順に解く。
+        r.priority = Priority::Declared;
+    }
+    if let Expr::Name(n) = e.callee.as_ref() {
+        r.related = ctx.decls.resolved.binding_of_ref(n.id).and_then(|b| b.span);
+    }
+    ctx.add(Constraint::Equal {
+        expected,
+        found: callee,
+        reason: r,
+    });
+    (params, ret, eff)
 }
 fn declaration_params(ctx: &Body<'_, '_>, callee: &Expr) -> Vec<Option<Span>> {
     let Expr::Name(n) = callee else {
@@ -618,7 +692,9 @@ fn lambda(ctx: &mut Body<'_, '_>, e: &LambdaExpr) -> ITy {
         &mut ctx.return_annotation,
         e.ret.as_ref().map(TypeExpr::span),
     );
+    let old_owner = std::mem::replace(&mut ctx.return_owner, ReturnOwner::Lambda);
     let body = ctx.block_in(&e.body, effect.clone(), Some(ret.clone()));
+    ctx.return_owner = old_owner;
     ctx.return_annotation = old_annotation;
     lambda_result(ctx, e, ret, effect, params, body)
 }
@@ -633,7 +709,17 @@ fn lambda_result(
     params: Vec<ITy>,
     body: ITy,
 ) -> ITy {
-    equal(ctx, basic(B::UNIT), body, e.body.span, ReasonKind::FnBody);
+    let end = body_end(&e.body);
+    ctx.body_returns.insert(
+        end,
+        BodyReturn {
+            annotated: e.ret.is_some(),
+            ty: ret.clone(),
+            owner: ReturnOwner::Lambda,
+        },
+    );
+    ctx.lambda_body_ends.insert(e.body.span, end);
+    equal(ctx, basic(B::UNIT), body, end, ReasonKind::FnBody);
     let exposed = if let Some(u) = &e.uses {
         let (uses, _) = ctx.decls.uses(Some(u), &ctx.scope);
         let fixed = fixed(uses);
@@ -659,6 +745,8 @@ fn lambda_result(
             reason: r,
         });
     }
+    // Body は AST の寿命を持たず、後検査は本体全体を辿るため複製を残す。
+    // 本体の走査中に後検査を移すと、制約の解決後に出す診断の順序が変わる。
     ctx.lambda_returns.push((e.body.clone(), ret.clone()));
     ITy::Fn(Box::new(IFnTy {
         params,
@@ -677,7 +765,12 @@ pub(super) fn block(ctx: &mut Body<'_, '_>, b: &Block) -> ITy {
             }
             Stmt::Expr(e) => {
                 result = ctx.expr(e);
-                ctx.expr_stmts.insert(e.id(), e.clone());
+                if let Expr::Binary(b) = e
+                    && b.op == BinOp::Eq
+                    && let Expr::Name(n) = b.lhs.as_ref()
+                {
+                    ctx.expr_stmts.insert(e.span(), (n.span, b.rhs.span()));
+                }
                 if i.saturating_add(1) != b.stmts.len() {
                     equal(
                         ctx,
@@ -727,11 +820,19 @@ fn poison_pattern(ctx: &mut Body<'_, '_>, pattern: &Pattern) {
             }
             Pattern::Ctor(c) => pending.extend(&c.args),
             Pattern::Record(r) => pending.extend(r.fields.iter().map(|f| &f.pattern)),
+            Pattern::List(list) => {
+                pending.extend(list.before.iter().chain(&list.after));
+                if let Some(rest) = &list.rest {
+                    ctx.record_type(rest.id, ITy::Error);
+                    if let Some(id) = ctx.decls.binding(rest.id) {
+                        ctx.locals.insert(id, ITy::Error);
+                    }
+                }
+            }
             Pattern::Wildcard(_)
             | Pattern::Unit(_)
             | Pattern::Lit(_)
             | Pattern::Range(_)
-            | Pattern::List(_)
             | Pattern::Error(_) => {}
         }
     }
@@ -798,13 +899,7 @@ fn always_expr(e: &Expr) -> bool {
     match e {
         Expr::Return(_) => true,
         Expr::Paren(p) => always_expr(&p.inner),
-        Expr::If(i) => {
-            always_block(&i.then_block)
-                && i.else_branch.as_ref().is_some_and(|b| match b {
-                    ElseBranch::Block(b) => always_block(b),
-                    ElseBranch::If(i) => always_expr(&Expr::If(i.as_ref().clone())),
-                })
-        }
+        Expr::If(i) => always_if(i),
         Expr::Match(m) => !m.arms.is_empty() && m.arms.iter().all(|a| always_block(&a.body)),
         Expr::With(w) => always_block(&w.body),
         Expr::Lit(_)
@@ -825,51 +920,58 @@ fn always_expr(e: &Expr) -> bool {
         | Expr::Error(_) => false,
     }
 }
+fn always_if(i: &IfExpr) -> bool {
+    always_block(&i.then_block)
+        && i.else_branch.as_ref().is_some_and(|b| match b {
+            ElseBranch::Block(b) => always_block(b),
+            ElseBranch::If(i) => always_if(i),
+        })
+}
 fn always_block(b: &Block) -> bool {
     b.stmts
         .iter()
         .any(|s| matches!(s,Stmt::Expr(e) if always_expr(e)))
+}
+fn body_end(b: &Block) -> Span {
+    match b.stmts.last() {
+        Some(Stmt::Expr(e)) => e.span(),
+        Some(Stmt::Bind(_) | Stmt::Error(_)) | None => b.span,
+    }
 }
 pub(super) fn reachability(ctx: &mut Body<'_, '_>, b: &Block, ret: Option<ITy>) {
     if let Some(ret) = ret
         && !ctx.solver.contains_error(&ret)
         && ctx.solver.finalize(&ret, ctx.decls.resolved) != super::decls::unit()
         && !always_block(b)
+        && !ctx.reported_body_values.contains(&body_end(b))
     {
-        let shown = ctx
-            .solver
-            .finalize(&ret, ctx.decls.resolved)
-            .show(&TyNames {
-                adts: &ctx.decls.out.adts,
-                effects: &ctx.decls.out.effects,
-                type_params: &ctx
-                    .scheme
-                    .type_params
-                    .iter()
-                    .map(|p| p.name.clone())
-                    .collect::<Vec<_>>(),
-                effect_params: &ctx.scheme.effect_params,
-            });
+        let shown = ctx.show_type(&ret);
         ctx.diagnostic(
             DiagBuilder::new(DiagCode::E0438)
                 .arg("expected", shown)
-                .primary(b.span)
+                .primary(body_end(b))
                 .help("add")
                 .build(),
         );
     }
     let mut exit = None;
+    let mut reported = false;
     for s in &b.stmts {
-        if let Some(span) = exit {
+        if let Some(span) = exit
+            && !reported
+        {
             ctx.diagnostic(
                 DiagBuilder::new(DiagCode::E0439)
                     .primary(s.span())
                     .secondary(span, "exit")
                     .build(),
             );
+            // 同じ必ず抜ける文に由来する誤りは一度だけ報告する。後続文の子の
+            // ブロックは独立に検査するため、走査は続ける（設計書 01-06「必ず抜ける文」）。
+            reported = true;
         }
         if let Stmt::Expr(e) = s {
-            if always_expr(e) {
+            if exit.is_none() && always_expr(e) {
                 exit = Some(e.span());
             }
             reach_expr(ctx, e);
@@ -879,21 +981,27 @@ pub(super) fn reachability(ctx: &mut Body<'_, '_>, b: &Block, ret: Option<ITy>) 
         }
     }
 }
+fn reach_if(ctx: &mut Body<'_, '_>, i: &IfExpr) {
+    reach_expr(ctx, &i.cond);
+    reachability(ctx, &i.then_block, None);
+    if let Some(b) = &i.else_branch {
+        match b {
+            ElseBranch::Block(b) => reachability(ctx, b, None),
+            ElseBranch::If(i) => reach_if(ctx, i),
+        }
+    }
+}
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn reach_expr(ctx: &mut Body<'_, '_>, e: &Expr) {
     match e {
-        Expr::If(i) => {
-            reach_expr(ctx, &i.cond);
-            reachability(ctx, &i.then_block, None);
-            if let Some(b) = &i.else_branch {
-                match b {
-                    ElseBranch::Block(b) => reachability(ctx, b, None),
-                    ElseBranch::If(i) => reach_expr(ctx, &Expr::If(i.as_ref().clone())),
-                }
-            }
-        }
+        Expr::If(i) => reach_if(ctx, i),
         Expr::Match(m) => {
             reach_expr(ctx, &m.scrutinee);
             for a in &m.arms {
+                if let Some(guard) = &a.guard {
+                    reach_expr(ctx, guard);
+                }
                 reachability(ctx, &a.body, None);
             }
         }
@@ -943,21 +1051,22 @@ fn reach_expr(ctx: &mut Body<'_, '_>, e: &Expr) {
             }
             reachability(ctx, &w.body, None);
         }
-        // ラムダは固有の戻り値の検査とともに別に辿る。E3 の残りの式は仮の本体が子を辿らない。
-        Expr::Lit(_)
-        | Expr::Name(_)
-        | Expr::Unit(_)
-        | Expr::Lambda(_)
-        | Expr::Try(_)
-        | Expr::Lazy(_)
-        | Expr::Handle(_)
-        | Expr::Resume(_)
-        | Expr::Error(_) => {}
+        Expr::Try(t) => reach_expr(ctx, &t.value),
+        Expr::Lazy(l) => reachability(ctx, &l.body, None),
+        Expr::Handle(h) => {
+            reachability(ctx, &h.body, None);
+            for clause in &h.clauses {
+                reachability(ctx, &clause.body, None);
+            }
+        }
+        Expr::Resume(r) => reach_expr(ctx, &r.value),
+        // ラムダは固有の戻り値の検査とともに別に辿るため、ここでは二重に検査しない。
+        Expr::Lit(_) | Expr::Name(_) | Expr::Unit(_) | Expr::Lambda(_) | Expr::Error(_) => {}
     }
 }
 
-// 大きい分岐を再帰する入口から分け、構文の上限内で枠が積み重なる量を抑える
-// （実装プラン F10「型検査の再帰の深さ」）。展開すると再び枠が大きくなる。
+// 大きい分岐を再帰する入口から分け、構文の上限内で枠が積み重なる量を抑える。
+// 展開すると再び枠が大きくなる。
 #[inline(never)]
 fn interp(ctx: &mut Body<'_, '_>, e: &InterpExpr) -> ITy {
     for s in &e.segments {
@@ -1098,7 +1207,20 @@ fn match_expr(ctx: &mut Body<'_, '_>, e: &MatchExpr) -> ITy {
             reason: reason(arm.body.span, ReasonKind::MatchArms),
         });
     }
-    ctx.matches.push((e.clone(), scrutinee));
+    ctx.matches.push((
+        super::context::MatchInfo {
+            arms: e
+                .arms
+                .iter()
+                .map(|arm| super::context::MatchArmInfo {
+                    patterns: arm.patterns.clone(),
+                    guarded: arm.guard.is_some(),
+                })
+                .collect(),
+            scrutinee: e.scrutinee.span(),
+        },
+        scrutinee,
+    ));
     result
 }
 
@@ -1149,12 +1271,7 @@ fn invalid_ctor_pattern(ctx: &mut Body<'_, '_>, p: &CtorPat, count: usize, ret: 
         if let Some(last) = p.path.last() {
             span.start = last.span.end;
         }
-        let name = p
-            .path
-            .iter()
-            .map(|n| n.text.as_str())
-            .collect::<Vec<_>>()
-            .join(".");
+        let name = pattern_path(p);
         ctx.diagnostic(
             DiagBuilder::new(DiagCode::E0413)
                 .arg("name", name)
@@ -1171,7 +1288,7 @@ fn invalid_ctor_pattern(ctx: &mut Body<'_, '_>, p: &CtorPat, count: usize, ret: 
     } else {
         ctx.diagnostic(
             DiagBuilder::new(DiagCode::E0412)
-                .arg("name", p.path.last().map_or("", |n| &n.text))
+                .arg("name", pattern_path(p))
                 .arg("expected", count.to_string())
                 .arg("found", p.args.len().to_string())
                 .primary(p.span)
@@ -1184,6 +1301,14 @@ fn invalid_ctor_pattern(ctx: &mut Body<'_, '_>, p: &CtorPat, count: usize, ret: 
         }
     }
     ITy::Error
+}
+
+fn pattern_path(p: &CtorPat) -> String {
+    p.path
+        .iter()
+        .map(|n| n.text.as_str())
+        .collect::<Vec<_>>()
+        .join(".")
 }
 
 #[inline(never)]
@@ -1214,5 +1339,5 @@ fn bind_stmt(ctx: &mut Body<'_, '_>, bind: &BindStmt) {
         ReasonKind::Pattern,
     );
     ctx.record_type(bind.id, target.clone());
-    ctx.bindings.push((bind.clone(), target));
+    ctx.bindings.push((bind.pattern.clone(), target));
 }

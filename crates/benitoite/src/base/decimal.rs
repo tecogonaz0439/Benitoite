@@ -1,5 +1,5 @@
 //! `Decimal` の値の表現と算術（設計書 01-04「Decimal（初回リリース版）」）。
-//! 算術はクレートを使わずにこのファイルの中で行う（設計書 00-03「自作する部分と既存の OSS を使う部分」、実装プラン 10-05「`Decimal` の算術」）。
+//! 算術はクレートを使わずにこのファイルの中で行う（設計書 00-03「自作する部分と既存の OSS を使う部分」）。
 
 /// 小数の桁数の上限（01-04）。
 pub const MAX_SCALE: u8 = 28;
@@ -271,7 +271,7 @@ impl Decimal {
 }
 
 // 算術の中間値だけに使う符号なし 256 bit。公開の Decimal の不変条件は make で検査する
-// （設計書 01-04「Decimal（初回リリース版）」、実装プラン 10-05「Decimal の算術」）。
+// （設計書 01-04「Decimal（初回リリース版）」）。
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 struct Wide {
     hi: u128,
@@ -446,7 +446,7 @@ fn fit(magnitude: Wide, original_scale: u32, negative: bool) -> Result<Decimal, 
 }
 
 #[cfg(test)]
-// テストの失敗を panic で表し、数値の仕様の期待値を直接記す（実装プラン F07）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,

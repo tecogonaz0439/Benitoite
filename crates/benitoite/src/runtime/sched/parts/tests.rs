@@ -1,5 +1,5 @@
-//! 作業用のスレッドの契約を実際の WorkerExec の境界で確かめる（実装プラン R40）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! 作業用のスレッドの契約を実際の WorkerExec の境界で確かめる（設計書 02-09「IO 実行器」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::panic,
@@ -14,12 +14,12 @@ use crate::runtime::io::event::{wakeup_with_poll, wakeup_without_poll};
 use crate::runtime::io::ops::{JobWork, LentOwned};
 use crate::runtime::sched::ExtOpId;
 use std::collections::HashSet;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread::ThreadId;
 
 #[test]
 fn network_faults_lookup_is_ascii_case_insensitive_and_uses_first_match() {
-    // 関門: 差し替えの表が実際に選ぶ失敗を公開の口で確かめる。ネットワークの本体がまだ
-    // 仮置きの L00 では、そのテストは選択の順と ASCII の規則を検査できない（実装プラン 10-16）。
+    // 関門: 差し替えの表が選ぶ失敗を、選択の順と ASCII の比較の規則まで公開の口で確かめる。
     let faults = NetworkFaults {
         by_host: vec![
             ("Example.COM".into(), NetworkFault::ConnectionRefused),
@@ -52,7 +52,7 @@ fn network_faults_lookup_is_ascii_case_insensitive_and_uses_first_match() {
 }
 
 // 関門: panic 時の返却、64 本の上限と再使用、期限のない待ちの起こし、終了時の非待機は
-// 本物のスレッドと Poll 固有の契約であり、R26 の筋書きの実行器では捕まえられない。
+// 本物のスレッドと Poll 固有の契約であり、筋書きの実行器では捕まえられない。
 // 外部の仕事だけを channel で止める。テストのための本番の差し込み口は加えない。
 // recv_timeout は退行時にテストが終わらなくなるのを防ぐためだけで、順序は channel で決める。
 fn receive<T>(receiver: &mpsc::Receiver<T>) -> T {
@@ -76,13 +76,30 @@ fn job(op: u64, lend: LentOwned, work: impl FnOnce() + Send + 'static) -> Worker
     }
 }
 
-fn completed(workers: &mut dyn WorkerExec) -> Completion {
+fn completed(parts: &mut RuntimeParts) -> Completion {
+    let started = Instant::now();
+    let limit = Duration::from_secs(120);
     loop {
-        if let Some(completion) = workers.try_recv() {
+        if let Some(completion) = parts.workers.try_recv() {
             return completion;
         }
+        assert!(
+            started.elapsed() < limit,
+            "no worker completion arrived within 120 s"
+        );
         // 不具合で通知がなくても期限で戻る。時間の経過は結果の判定に使わない。
-        assert!(matches!(workers.idle(Some(10_000)), IdleWake::Progress));
+        // 時計と実行器は開始時刻を共有する。毎回、今からの残り時間を期限に足す。
+        let remaining = limit
+            .saturating_sub(started.elapsed())
+            .min(Duration::from_secs(10));
+        let deadline = parts
+            .clock
+            .monotonic_millis()
+            .saturating_add(u64::try_from(remaining.as_millis()).unwrap());
+        assert!(matches!(
+            parts.workers.idle(Some(deadline)),
+            IdleWake::Progress
+        ));
     }
 }
 
@@ -136,7 +153,7 @@ fn panic_returns_lent_resource_and_stdin_and_worker_remains_usable() {
         parts
             .workers
             .submit(job(op, lend, || panic!("worker panic")));
-        let result = completed(&mut *parts.workers);
+        let result = completed(&mut parts);
         assert_eq!(result.op, ExtOpId(op));
         assert!(matches!(result.outcome, Outcome::Panicked(_)));
         match result.returned {
@@ -155,10 +172,7 @@ fn panic_returns_lent_resource_and_stdin_and_worker_remains_usable() {
         }
     }
     parts.workers.submit(job(3, LentOwned::Nothing, || {}));
-    assert!(matches!(
-        completed(&mut *parts.workers).outcome,
-        Outcome::Worker(_)
-    ));
+    assert!(matches!(completed(&mut parts).outcome, Outcome::Worker(_)));
 }
 
 fn gated_job(op: u64, started: mpsc::Sender<(u64, ThreadId)>) -> (WorkerJob, mpsc::Sender<()>) {
@@ -199,14 +213,14 @@ fn sixty_four_workers_queue_the_next_job_and_reuse_idle_threads() {
     let (op, thread) = receive(&starts);
     assert_eq!(op, 64);
     assert_eq!(Some(thread), first_thread);
-    assert_eq!(completed(&mut *parts.workers).op, ExtOpId(0));
+    assert_eq!(completed(&mut parts).op, ExtOpId(0));
     resume.send(()).unwrap();
     for gate in gates.into_iter().skip(1) {
         gate.send(()).unwrap();
     }
     let mut finished = HashSet::new();
     for _ in 0..64 {
-        finished.insert(completed(&mut *parts.workers).op);
+        finished.insert(completed(&mut parts).op);
     }
     assert_eq!(finished.len(), 64);
     let (job, resume) = gated_job(65, started);
@@ -214,7 +228,7 @@ fn sixty_four_workers_queue_the_next_job_and_reuse_idle_threads() {
     let (_, thread) = receive(&starts);
     assert!(threads.contains(&thread));
     resume.send(()).unwrap();
-    assert_eq!(completed(&mut *parts.workers).op, ExtOpId(65));
+    assert_eq!(completed(&mut parts).op, ExtOpId(65));
 }
 
 #[test]
@@ -231,13 +245,30 @@ fn completion_wakes_idle_without_deadline_and_expired_timer_does_not_wait() {
         assert!(matches!(parts.workers.idle(Some(0)), IdleWake::Progress));
         parts.workers.submit(job);
         receive(&starts);
+        let wakeup = parts.workers.wakeup().unwrap();
+        let expired = Arc::new(AtomicBool::new(false));
+        let watchdog_expired = Arc::clone(&expired);
+        let (stop, stopped) = mpsc::channel();
+        let watchdog = std::thread::spawn(move || {
+            if matches!(
+                stopped.recv_timeout(Duration::from_secs(120)),
+                Err(mpsc::RecvTimeoutError::Timeout)
+            ) {
+                watchdog_expired.store(true, Ordering::Relaxed);
+                wakeup.wake();
+            }
+        });
         let finishing = std::thread::spawn(move || resume.send(()).unwrap());
-        assert!(matches!(parts.workers.idle(None), IdleWake::Progress));
-        let completion = if poll {
-            parts.workers.try_recv().unwrap()
-        } else {
-            completed(&mut *parts.workers)
-        };
+        let wake = parts.workers.idle(None);
+        // 成功時は見張りをすぐに止め、見張りの起こしを完了の知らせと取り違えない。
+        let _stopped = stop.send(());
+        watchdog.join().unwrap();
+        assert!(
+            !expired.load(Ordering::Relaxed),
+            "idle(None) was woken only by the watchdog"
+        );
+        assert!(matches!(wake, IdleWake::Progress));
+        let completion = completed(&mut parts);
         assert_eq!(completion.op, ExtOpId(1));
         finishing.join().unwrap();
     }
@@ -261,7 +292,7 @@ fn blocking_release_runs_once_on_worker_and_returns_failure() {
         assert_ne!(receive(&entries), std::thread::current().id());
         assert!(parts.workers.try_recv().is_none());
         resume.send(()).unwrap();
-        let result = completed(&mut *parts.workers);
+        let result = completed(&mut parts);
         match result.outcome {
             Outcome::Released(result) => assert_eq!(
                 result,

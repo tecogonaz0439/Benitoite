@@ -1,0 +1,17 @@
+// spec: 01-02 部分適用のプレースホルダ
+// 関門: 生成する関数の戻り値と継続の境界を CLI の結果・診断で確かめる。
+import Benitoite.Unofficial.IO.Console
+function wrap(a: Integer, b: Integer) -> Option[Integer]
+  return Option.Some(a + b)
+end function
+function probe(o: Option[Integer]) -> String
+  bind f <- wrap(try o, _)
+  return match f(1) with
+    case Option.Some(n) -> Integer.toString(n)
+    case Option.None -> "none"
+  end match
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(probe(Option.None))
+  Console.writeLine(probe(Option.Some(4)))
+end function

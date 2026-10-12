@@ -21,9 +21,20 @@ pub(in crate::runtime::heap) struct CellPayload {
     pub(in crate::runtime::heap) version: Cell<u64>,
 }
 
+#[cfg(test)]
 pub(super) const FIELD_BYTES: usize = std::mem::size_of::<Value<'static>>();
+#[cfg(test)]
 pub(super) const CELL_BYTES: usize = std::mem::size_of::<CellPayload>();
+#[cfg(test)]
 pub(super) const DECIMAL_BYTES: usize = std::mem::size_of::<Decimal>();
+// Decimal の中身は core の decimal で写して返し、free_object で drop しない。
+// 所有の重複を防ぐため、Copy と解放不要の性質を型で確かめる（設計書 02-09「メモリの管理」）。
+const _: () = {
+    const fn copy<T: Copy>() {}
+    copy::<Decimal>();
+    assert!(!std::mem::needs_drop::<Decimal>());
+    assert!(std::mem::align_of::<Decimal>() <= super::alloc::ALIGN);
+};
 pub(super) const BOX_BYTES: usize = std::mem::size_of::<Box<dyn OpaqueData>>();
 const _: () = assert!(BOX_BYTES == std::mem::size_of::<Box<dyn HostData>>());
 

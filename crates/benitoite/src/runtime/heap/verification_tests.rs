@@ -1,7 +1,7 @@
-//! 公開のヒープ API と独立のグラフ模型を比較する（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」、実装プラン R11）。
+//! 公開のヒープ API と独立のグラフ模型を比較する（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
 // 関門: 固定のグラフでは届かない、確保・上書き・根の増減・候補の復活の組み合わせを守る。
 // 期待する到達先は操作から記録し、Trace と内部層の辿りを使わない。公開の口の追加は不要である。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -316,7 +316,7 @@ fn random_reachability_matches_model_and_preserves_contents() {
     }
 }
 
-// 関門: H4 の根の列挙漏れを検出する。R02 の世代テストは強制的な解放だけを扱う。
+// 関門: H4 の根の列挙漏れを検出する。世代のテストは強制的な解放だけを扱う。
 #[cfg(feature = "heap-verify")]
 #[test]
 fn omitted_root_is_detected_without_reading_freed_memory() {

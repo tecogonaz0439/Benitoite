@@ -1,11 +1,11 @@
-//! RRB 木の不変なノードと道筋の操作（設計書 03-06「List の内部の表現」、実装プラン R36）。
+//! RRB 木の不変なノードと道筋の操作（設計書 03-06「List の内部の表現」）。
 
 use super::{Stop, Value, ValueCtx, invalid_list};
 use crate::runtime::heap::FieldsKind;
 
 pub(super) const WIDTH: usize = 32;
 pub(super) const BITS: u32 = 5;
-/// 頭と正規化した根に認める最大のシフト量（実装プラン R36）。
+/// 頭と正規化した根に認める最大のシフト量。
 pub(super) const MAX_SHIFT: u32 = 25;
 pub(super) const HEAD: u32 = 0;
 const STRICT: u32 = 1;
@@ -162,7 +162,7 @@ pub(super) fn branch<'e>(
     let tag = shift.checked_shl(2).ok_or_else(invalid_list)? | kind;
     let value = ctx.alloc_fields(FieldsKind::ListNode, tag, &values)?;
     let tree = Tree { value, shift, size };
-    // 新しいノードの直下だけを検査する。共有した子孫全体は辿らない（R36「共通の規則」）。
+    // 新しいノードの直下だけを検査する。共有した子孫全体は辿らない。
     debug_assert!(valid_local(ctx, tree));
     Ok(tree)
 }
@@ -247,7 +247,7 @@ pub(super) fn lookup<'e>(
             RELAXED if fields % 2 == 0 && (2..=64).contains(&fields) => {
                 let n = fields / 2;
                 // 各子は高々 full 要素なので、基数で選ぶ位置より左に目的の子はない。
-                // 累積表をその位置から前へ調べる（R36「木の形」）。
+                // 累積表をその位置から前へ調べる。
                 let first = i >> tree.shift;
                 let mut previous = if first == 0 {
                     0
@@ -304,7 +304,7 @@ pub(super) fn normalize<'e>(ctx: &ValueCtx<'e>, mut tree: Tree<'e>) -> Result<Tr
             tree = leaf(ctx, &items)?;
         } else {
             // cut の両境界に残る単子鎖を、別の切り出しとの連結で高さとして蓄積させない。
-            // 根直下の子の欄が合計 32 個以内なら、孫を共有して一段縮める（実装プラン R36）。
+            // 根直下の子の欄が合計 32 個以内なら、孫を共有して一段縮める。
             let mut count = 0_u32;
             for node in &nodes {
                 count = add(count, slot_count(ctx, *node)?)?;
@@ -360,6 +360,8 @@ pub(super) fn push_leaf<'e>(
 
 // 各高さでノードの個数 r と、そのノードが持つ子の数 s を数える。
 // r > ceil(s / 32) + 2 のときだけ詰め直す。満ちたノードが詰め直しの区切りにあれば共有する。
+// 条件は Bagwell・Rompf 2011 の 2.5 節の e = 2。詰め方は論文より強く、ceil(s / 32) 個に詰める
+// （設計書 03-06「List の内部の表現」）。
 fn slot_count<'e>(ctx: &ValueCtx<'e>, tree: Tree<'e>) -> Result<u32, Stop> {
     let fields = ctx.fields_len(tree.value).ok_or_else(invalid_list)?;
     let count = match role(ctx, tree)? {
@@ -381,7 +383,7 @@ fn rebalance<'e>(ctx: &ValueCtx<'e>, nodes: Vec<Tree<'e>>) -> Result<Vec<Tree<'e
         if node.shift != shift {
             return Err(invalid_list());
         }
-        // 個数だけなら累積表と子の Vec は要らない。詰め直すと決めてから読む（実装プラン R36）。
+        // 個数だけなら累積表と子の Vec は要らない。詰め直すと決めてから読む。
         let count = usize::try_from(slot_count(ctx, *node)?).map_err(|_| invalid_list())?;
         slots = slots.checked_add(count).ok_or_else(invalid_list)?;
     }
@@ -551,7 +553,7 @@ pub(super) fn pop_leaf<'e>(
         remaining = if nodes.is_empty() {
             None
         } else {
-            // 右端だけの除去は、最後以外の子の充足を壊さない。形に応じて厳密にする（R36）。
+            // 右端だけの除去は、最後以外の子の充足を壊さない。形に応じて厳密にする。
             Some(branch(ctx, &nodes, false)?)
         };
     }
@@ -578,7 +580,7 @@ impl<'e> Cursor<'e> {
             index: 0,
         }
     }
-    /// 次の要素。走査だけではヒープの対象を確保しない（R36「作るもの」）。
+    /// 次の要素。走査だけではヒープの対象を確保しない。
     pub(crate) fn next(&mut self, ctx: &ValueCtx<'e>) -> Result<Option<Value<'e>>, Stop> {
         loop {
             if let Some(tree) = self.leaf {

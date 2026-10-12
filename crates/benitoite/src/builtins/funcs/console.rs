@@ -6,12 +6,12 @@ use crate::builtins::iface::{IoReply, IoWait, Lend, Lent, WorkerWait};
 use crate::builtins::table::tags;
 use crate::runtime::Stop;
 use crate::runtime::Stream;
+use crate::runtime::heap::FieldsKind;
 use crate::runtime::heap::Value;
-use crate::runtime::heap::{CheckedLen, FieldsKind};
-use crate::runtime::{MAX_STRING_BYTES, ResourceError, SizeUnit};
+use crate::runtime::{MAX_LIST_LEN, MAX_STRING_BYTES, SizeUnit};
 
 builtin! {
-    /// `Benitoite.IO.Console.write` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.Console.write` の本体。
     name = "Benitoite.IO.Console.write",
     io fn write(ctx, s: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -20,7 +20,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Console.writeLine` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.Console.writeLine` の本体。
     name = "Benitoite.IO.Console.writeLine",
     io fn write_line(ctx, s: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -29,7 +29,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Console.writeError` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.Console.writeError` の本体。
     name = "Benitoite.IO.Console.writeError",
     io fn write_error(ctx, s: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -38,7 +38,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Console.writeErrorLine` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.Console.writeErrorLine` の本体。
     name = "Benitoite.IO.Console.writeErrorLine",
     io fn write_error_line(ctx, s: &'c str) -> IoReply<'e> {
         let mut ctx = ctx;
@@ -47,7 +47,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Console.readLine` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.Console.readLine` の本体。
     name = "Benitoite.IO.Console.readLine",
     io fn read_line(ctx) -> IoReply<'e> {
         let _ = ctx;
@@ -57,7 +57,7 @@ builtin! {
                 let Lent::Stdin(reader) = lent else {
                     return Err(Stop::Internal("Console.readLine requires lent stdin".into()));
                 };
-                Ok(super::file::read_line_limited(reader))
+                Ok(super::file::read_line_limited(reader, MAX_STRING_BYTES))
             },
             read_line_done,
         ).after_output_flush())))
@@ -65,7 +65,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Console.readAll` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Benitoite.IO.Console.readAll` の本体。
     name = "Benitoite.IO.Console.readAll",
     io fn read_all(ctx) -> IoReply<'e> {
         let _ = ctx;
@@ -75,7 +75,7 @@ builtin! {
                 let Lent::Stdin(reader) = lent else {
                     return Err(Stop::Internal("Console.readAll requires lent stdin".into()));
                 };
-                Ok(super::file::read_all_limited(reader))
+                Ok(super::file::read_all_limited(reader, MAX_STRING_BYTES))
             },
             read_all_done,
         ).after_output_flush())))
@@ -101,7 +101,7 @@ fn write_text<'c, 'e>(
         Some(wait) => Ok(IoReply::Wait(wait)),
     }
 }
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     write::DECL,
     write_line::DECL,
@@ -116,21 +116,31 @@ fn read_line_done<'c, 'e>(
     output: Result<Result<Option<Vec<u8>>, super::file::IoFailure>, Stop>,
     _args: &[Value<'e>],
 ) -> Result<Value<'e>, Stop> {
-    super::file::complete_line(ctx, output?, "Benitoite.IO.Console.readLine")
+    super::file::complete_line(
+        ctx,
+        output?,
+        "Benitoite.IO.Console.readLine",
+        MAX_STRING_BYTES,
+    )
 }
 fn read_all_done<'c, 'e>(
     ctx: &mut IoCtx<'c, 'e>,
     output: Result<Result<Vec<u8>, super::file::IoFailure>, Stop>,
     _args: &[Value<'e>],
 ) -> Result<Value<'e>, Stop> {
-    super::file::complete_text(ctx, output?, "Benitoite.IO.Console.readAll")
+    super::file::complete_text(
+        ctx,
+        output?,
+        "Benitoite.IO.Console.readAll",
+        MAX_STRING_BYTES,
+    )
 }
 
 #[cfg(test)]
 mod tests;
 
 builtin! {
-    /// `Benitoite.IO.Console.readAllLines` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Console.readAllLines` の本体。
     name = "Benitoite.IO.Console.readAllLines",
     io fn read_all_lines(ctx) -> crate::builtins::iface::IoReply<'e> {
         let _ = ctx;
@@ -139,7 +149,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Benitoite.IO.Console.readAllBytes` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Benitoite.IO.Console.readAllBytes` の本体。
     name = "Benitoite.IO.Console.readAllBytes",
     io fn read_all_bytes(ctx) -> crate::builtins::iface::IoReply<'e> {
         let _ = ctx;
@@ -147,7 +157,8 @@ builtin! {
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const MORE_DECLS: &[BuiltinDecl] = &[read_all_lines::DECL, read_all_bytes::DECL];
 
 type RemainingInput = Result<Result<Vec<u8>, super::file::IoFailure>, Stop>;
@@ -165,7 +176,7 @@ fn read_remaining(
             let Lent::Stdin(reader) = lent else {
                 return Err(Stop::Internal("Console read requires lent stdin".into()));
             };
-            Ok(super::file::read_all_limited(reader))
+            Ok(super::file::read_all_limited(reader, MAX_STRING_BYTES))
         },
         done,
     )
@@ -176,16 +187,11 @@ fn remaining_input<'c, 'e>(
     ctx: &IoCtx<'c, 'e>,
     output: RemainingInput,
     function: &'static str,
+    limit: u64,
 ) -> Result<Result<Vec<u8>, Value<'e>>, Stop> {
     match output? {
         Ok(bytes) => {
-            if super::count(bytes.len())? > MAX_STRING_BYTES {
-                return Err(Stop::Resource(ResourceError::InputTooLarge {
-                    function,
-                    unit: SizeUnit::Bytes,
-                    limit: MAX_STRING_BYTES,
-                }));
-            }
+            super::file::check_input_size(bytes.len(), limit, SizeUnit::Bytes, function)?;
             Ok(Ok(bytes))
         }
         Err(failure) => Ok(Err(super::file::result_error(ctx, failure, function)?)),
@@ -198,7 +204,7 @@ fn read_all_lines_done<'c, 'e>(
     _args: &[Value<'e>],
 ) -> Result<Value<'e>, Stop> {
     const FUNCTION: &str = "Benitoite.IO.Console.readAllLines";
-    let bytes = match remaining_input(ctx, output, FUNCTION)? {
+    let bytes = match remaining_input(ctx, output, FUNCTION, MAX_STRING_BYTES)? {
         Ok(bytes) => bytes,
         Err(error) => return Ok(error),
     };
@@ -213,7 +219,7 @@ fn read_all_lines_done<'c, 'e>(
         }
     };
     let n = super::string::line_parts(s).count();
-    CheckedLen::elements(super::count(n)?, FUNCTION)?;
+    super::file::check_input_size(n, MAX_LIST_LEN, SizeUnit::Elements, FUNCTION)?;
     let mut lines = Vec::with_capacity(n);
     for part in super::string::line_parts(s) {
         // 外部入力の各行も UTF-8 を検査する確保の口を通す（設計書 01-07）。
@@ -232,7 +238,7 @@ fn read_all_bytes_done<'c, 'e>(
     _args: &[Value<'e>],
 ) -> Result<Value<'e>, Stop> {
     const FUNCTION: &str = "Benitoite.IO.Console.readAllBytes";
-    let bytes = match remaining_input(ctx, output, FUNCTION)? {
+    let bytes = match remaining_input(ctx, output, FUNCTION, MAX_STRING_BYTES)? {
         Ok(bytes) => bytes,
         Err(error) => return Ok(error),
     };

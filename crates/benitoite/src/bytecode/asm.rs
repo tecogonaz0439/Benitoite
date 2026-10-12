@@ -1,4 +1,4 @@
-//! テスト用のバイトコードの組み立て（実装プラン 10-07「第 1 段で実行するプログラム」）。
+//! テスト用のバイトコードの組み立て（設計書 02-07「命令」）。
 //! 印の相対位置と表の番号を埋め、すべての原型に本番と同じ生存解析を適用する。
 
 use std::sync::Arc;
@@ -343,7 +343,7 @@ impl ProgramBuilder {
         Ok(index)
     }
 
-    /// 組み込みの関数を番号で参照する。R08 の表が完成する前でも使える。
+    /// 組み込みの関数を番号で参照する。
     pub(crate) fn builtin(
         &mut self,
         id: BuiltinId,
@@ -364,7 +364,7 @@ impl ProgramBuilder {
         Ok(index)
     }
 
-    /// 名前で組み込みの関数を参照する。finish で R08 の lookup_builtin を呼ぶ。
+    /// 名前で組み込みの関数を参照する。`finish` で `lookup_builtin` を呼ぶ。
     pub(crate) fn named_builtin(
         &mut self,
         name: &str,

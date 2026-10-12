@@ -6,7 +6,7 @@ use crate::runtime::{
 };
 
 builtin! {
-    /// `NetworkError.kind` の本体（実装プラン 10-15）。
+    /// `NetworkError.kind` の本体。
     name = "NetworkError.kind",
     pure fn kind(ctx, error: Value<'e>) -> Value<'e> {
         let Some((FieldsKind::NetworkError, tag)) = ctx.fields_header(error) else {
@@ -16,7 +16,7 @@ builtin! {
     }
 }
 builtin! {
-    /// `NetworkError.message` の本体（実装プラン 10-15）。
+    /// `NetworkError.message` の本体。
     name = "NetworkError.message",
     pure fn message(ctx, error: Value<'e>) -> Value<'e> {
         if !matches!(ctx.fields_header(error), Some((FieldsKind::NetworkError, _))) || ctx.fields_len(error) != Some(1) {
@@ -27,18 +27,18 @@ builtin! {
         Ok(message)
     }
 }
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[kind::DECL, message::DECL];
 
 #[cfg(test)]
 mod tests {
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(clippy::unwrap_used)]
     use super::*;
     use crate::builtins::iface::CallCtx;
     use crate::builtins::table::tags;
     use crate::runtime::heap::{Heap, HeapConfig};
-    // 関門: NetworkError の九つの分類と理由を、本番のアクセサで読む（L30）。
+    // 関門: NetworkError の九つの分類と理由を、本番のアクセサで読む。
     #[test]
     fn all_kinds_and_messages_are_preserved() {
         Heap::new(HeapConfig::default()).epoch(|ctx| {

@@ -212,13 +212,14 @@ Decimal literals are decimal numbers followed by a lowercase `m`, such as `12.50
 - `reason`: {reason}
 - `temp_left`: the temporary file `{temp}` could not be removed
 
-`benitoite fmt` writes the formatted source to a temporary file in the same directory and renames it over the original file. Writing or renaming failed, so the original file was left unchanged. Check the permissions of the file and its directory.
+`benitoite fmt` writes the formatted source to a temporary file in the same directory and renames it over the original file. It refuses to replace a read-only file, a file with more than one hard link, or a file owned by another user. Writing or renaming failed or was refused, so the original file was left unchanged. Check the permissions, links, and owner of the file and its directory.
 
 ## E0201
 
 - Kind: check (error)
 - Message: expected {expected}, found {found}
 - Label: unexpected {found}
+- `type_arguments`: call functions without type arguments, such as `Map.empty()`; write the type on the binding, such as `bind m: Map[String, Integer] <- Map.empty()`, and use `List.get` to read list elements
 
 The parser found a token that cannot appear here.
 
@@ -278,6 +279,7 @@ The parser limits the depth of nested syntax.
 
 - Kind: check (error)
 - Message: a function type with `uses` must be parenthesized here
+- Label: read as part of the `uses` list
 - `paren`: write the function type in parentheses, such as `function((function() -> Unit uses Console.Write), List[Integer]) -> Unit`
 
 `uses` reads as many effect names as possible, so a function type with `uses` inside a list of types must be parenthesized.
@@ -350,6 +352,8 @@ A line break after the value of `match` ends the expression, so `with` must foll
 - Message: `{word}` is a keyword and cannot be used as a name
 - Label: keyword used as a name
 - `rename`: choose another name
+- `renamed`: `{old}` was renamed to `{new}` in 0.0.1
+- `alias`: use `{new}`
 
 Keywords cannot be used as names of variables, functions, or types.
 
@@ -369,9 +373,9 @@ Benitoite has no tuple syntax. `Pair` and `Triple` hold two or three values, and
 - Message: `{keyword}` cannot be used inside {context}
 - `lazy_body`: a `lazy` body produces one value; compute the value with an expression
 - `guard`: a guard is a condition; check the value in the branch body instead
-- `lambda`: `{keyword}` is allowed inside a lambda written there
+- `lambda`: `{keyword}` is allowed inside a `lambda ... end lambda` written there
 
-`return` and `try` cannot leave a `lazy` body or a `match` guard, except inside a lambda written there.
+`return` and `try` cannot leave a `lazy` body or a `match` guard, except inside a `lambda ... end lambda` written there. The function and the arguments of a call with `_` placeholders are not exempt.
 
 ## E0219
 
@@ -654,6 +658,7 @@ Declare functions with `function` and write anonymous functions with `lambda`.
 - Message: cannot find `{name}` in this scope
 - Label: not found
 - `similar`: a similar name exists: {candidates}
+- `renamed`: `{old}` was renamed to `{new}` in 0.0.1
 
 The name is not bound by a local binding, a function, or a constant visible here.
 
@@ -663,6 +668,7 @@ The name is not bound by a local binding, a function, or a constant visible here
 - Message: cannot find `{name}`
 - Label: not found
 - `similar`: a similar name exists: {candidates}
+- `renamed`: `{old}` was renamed to `{new}` in 0.0.1
 
 The name before `.` must be a module imported in this file, a prelude module, a type, a record, a trait, or an effect.
 
@@ -672,10 +678,23 @@ The name before `.` must be a module imported in this file, a prelude module, a 
 - Message: `{module}` has no member `{name}`
 - Label: not found in `{module}`
 - `similar`: a similar name exists: {candidates}
-- `length`: strings have no unit-less length; use `String.byteLength` (bytes) or `String.characterCount` (characters)
-- `slice`: use `String.byteSlice` (byte positions) or `String.characterSlice` (character positions)
-- `index_of`: use `String.byteIndexOf`, which returns a byte position
+- `length`: strings have no unit-less length; use `{module}.byteLength` (bytes) or `{module}.characterCount` (characters)
+- `slice`: use `{module}.byteSlice` (byte positions) or `{module}.characterSlice` (character positions)
+- `index_of`: use `{module}.byteIndexOf`, which returns a byte position
 - `unwrap`: there is no `{name}`; use `{module}.unwrapOr` or `match`
+- `renamed`: `{old}` was renamed to `{module}.{new}` in 0.0.1
+- `alias`: use `{module}.{new}`
+- `import_member`: add `import {full}` and use `{local}.`
+- `use_imported`: `{full}` is imported as `{local}`; use `{local}.`
+- `import_member_as`: add `import {full} as <name>` and use that name, since `{local}` is already used in this file
+- `construct`: build a record with its field names, such as `{record}({fields})`
+- `members`: `{module}` has: {names}
+- `members_more`: `{module}` has: {names}, and {remaining} more
+- `shadowed`: `{first}` here is the {shadow_kind} declared in this file, which hides the prelude {prelude_kind} `{first}`
+- `shadowing`: `{first}` declared here
+- `shadowed_import`: `{first}` here is the module imported in this file, which hides the prelude {prelude_kind} `{first}`
+- `imported`: `{first}` imported here
+- `prelude`: write `Benitoite.{first}` to use the prelude {prelude_kind}
 - `not_reexported`: names imported by `{module}` are not visible through it; import that module directly
 
 The module, type, record, trait, or effect does not define this name.
@@ -684,6 +703,7 @@ The module, type, record, trait, or effect does not define this name.
 
 - Kind: check (error)
 - Message: `{name}` is {found_kind}, not {expected_kind}
+- `construct`: build a record with its field names, such as `{record}({fields})`
 
 Each position accepts only one kind of name.
 
@@ -694,6 +714,7 @@ Each position accepts only one kind of name.
 - Label: redefined here
 - `first`: first defined here
 - `import`: give the import another name with `as`, such as `{suggestion}`
+- `rename`: rename the declaration `{name}`; the module `{module}` declares built-in effects and cannot be renamed with `as`
 
 Types, records, type aliases, traits, effects, and import names share one namespace in a module.
 
@@ -745,10 +766,10 @@ Type parameter names must be unique within a list.
 ## E0313
 
 - Kind: check (error)
-- Message: the type parameter `{name}` has the same name as a top-level declaration
-- `declared`: the top-level declaration is here
+- Message: the type parameter `{name}` has the same name as a top-level declaration, an imported name, or a prelude name
+- `declared`: the other declaration is here
 
-Type parameters and effect variables cannot reuse top-level uppercase names or `Benitoite`.
+Type parameters and effect variables cannot reuse the module's top-level uppercase names, imported names, prelude names, or `Benitoite`.
 
 ## E0314
 
@@ -807,6 +828,7 @@ The starting module is not a library. Move the shared declarations to another mo
 - Kind: check (error)
 - Message: `{module}` is not a standard library module
 - `similar`: a similar module exists: {candidates}
+- `last_segment`: use {candidates}
 - `root_file`: names that start with `Benitoite` always refer to the standard library, so `{path}` cannot be imported
 - `unofficial`: this module is unofficial in this version and is imported as `{suggestion}`
 - `standard`: this module is a standard module in this version and is imported as `{suggestion}`
@@ -894,7 +916,12 @@ Everything a public declaration exposes, including types, traits, and effects, m
 - Message: `{name}` is not public in `{module}`
 - Label: not public
 - `declared`: declared here
-- `make_public`: mark `{name}` as `public` in `{module}`
+- `shadowed`: `{first}` here is the {shadow_kind} declared in this file, which hides the prelude {prelude_kind} `{first}`
+- `shadowing`: `{first}` declared here
+- `shadowed_import`: `{first}` here is the module imported in this file, which hides the prelude {prelude_kind} `{first}`
+- `imported`: `{first}` imported here
+- `prelude`: write `Benitoite.{first}` to use the prelude {prelude_kind}
+- `make_public`: mark `{name}` as `public` in `{declared_in}`
 
 Only `public` declarations of another module can be used.
 
@@ -968,12 +995,23 @@ All variables on the left of `bind` must be new, and all variables on the left o
 
 Lambda parameters, pattern variables of branches, handler clause parameters, and `with` bindings cannot hide visible local names.
 
+## E0339
+
+- Kind: check (error)
+- Message: the module `{module}` declares built-in effects and cannot be renamed with `as`
+- Label: renamed here
+- `remove`: remove `as {name}` and replace references to `{name}.` with `{original}.`
+
+Modules that declare built-in effects cannot be renamed, so that `uses` always shows the original effect names, such as `Console.Write` and `File.Write`.
+
 ## E0401
 
 - Kind: check (error)
 - Message: mismatched types
 - Label: expected `{expected}`, found `{found}`
 - `declared`: expected because of this
+- `escaped`: `{param}` is a type parameter of the operation `{operation}`; a value of this type cannot leave the clause
+- `clause`: the clause of `{operation}`
 - `expanded`: the expanded expected type is `{expanded}`
 - `because_call_arg`: argument {index} must match the parameter type of the called function
 - `because_if_branches`: the branches of `if` must have compatible types
@@ -999,6 +1037,8 @@ Lambda parameters, pattern variables of branches, handler clause parameters, and
 - `float_literal`: write a floating-point literal such as `{literal}.0`
 - `to_string`: convert the value with `{function}`, or use string interpolation such as `"${x}"`
 - `to_string_any`: convert the other value to a `String` before joining it with `+`, or use string interpolation
+- `shadowed`: `{shadowed}` here is a type declared in a user module, which hides the prelude name `{shadowed}`
+- `prelude_type`: write `Benitoite.{shadowed}` for the prelude type
 
 Two types that must be equal are different.
 
@@ -1045,6 +1085,7 @@ Arithmetic and ordering operators work only on the listed basic types.
 - Message: values of type `{ty}` cannot be compared with `{op}`
 - `why`: types that contain functions, `IOError`, or other opaque types cannot be compared with `=` or `<>`
 - `constraint`: add the constraint `equality` to the type parameter, such as `[{param}: equality]`
+- `operation`: add the constraint `{constraint}` to the type parameter `{declared}` in the declaration of the operation `{operation}`
 
 Equality is defined only for types without functions and opaque standard library types.
 
@@ -1075,6 +1116,8 @@ The literal rounds to infinity.
 
 - Kind: check (error)
 - Message: `{name}` expects {expected} type argument(s) but {found} were given
+- `shadowed`: `{shadowed}` here is a type declared in a user module, which hides the prelude name `{shadowed}`
+- `prelude_type`: write `Benitoite.{shadowed}` for the prelude type
 
 Every type argument of a generic type or a type alias must be written.
 
@@ -1126,10 +1169,11 @@ A program starts by calling `main` of the starting module.
 - Kind: check (error)
 - Message: the value of this expression is not used
 - Label: this has type `{found}`, not `Unit`
+- `return_value`: write `return` to return this value from the {what}
 - `discard`: write `bind _ <- ...` to discard the value
 - `reassign`: `=` compares values and variables cannot be reassigned; to bind a new value to the name, write `shadow {name} <- ...`
 
-An expression statement that is not the last in a block must have type `Unit`.
+An expression statement must have type `Unit` unless it is the last in a block other than a function or lambda body. Return a value from a function or lambda with `return`.
 
 ## E0417
 
@@ -1176,6 +1220,9 @@ Decimal literals are not rounded, so their value must fit the `Decimal` type.
 - `show`: convert the value to a `String` first with `{function}`
 - `import_show`: if this type implements `Show`, write `import Benitoite.Trait` and convert the value with `Trait.Show.show`
 - `convert`: convert the value to a `String` before interpolating it
+- `type_param`: add the constraint `{constraint}` to the type parameter, such as `[{param}: {constraint}]`, and convert the value with `{function}`
+- `type_param_import`: write `import Benitoite.Trait`, add the constraint `Trait.Show` to the type parameter, such as `[{param}: Trait.Show]`, and convert the value with `Trait.Show.show`
+- `rigid`: values of the operation's type parameter `{declared}` cannot be converted to `String`; interpolate a value of a known type instead
 
 `${...}` accepts `String`, `Integer`, `Float`, `Decimal`, `Byte`, `Character`, and `Boolean`.
 
@@ -1193,6 +1240,7 @@ Map keys and set elements must have types that satisfy `key`. Types that contain
 - Message: the type parameter `{param}` needs the constraint `{constraint}`
 - `required`: required by this use
 - `add`: add the constraint, such as `[{param}: {constraint}]`
+- `operation`: add the constraint `{constraint}` to the type parameter `{declared}` in the declaration of the operation `{operation}`
 
 Comparing values or using them as keys requires `equality` or `key` on a type parameter.
 
@@ -1282,8 +1330,9 @@ A constant has one value, so its type must be a concrete type.
 - Kind: check (error)
 - Message: computing the constant `{name}` fails: {condition}
 - Label: fails here
+- `budget`: compute this value in a function without parameters, which runs when the script runs
 
-A constant whose computation would stop with a runtime error is reported before the program runs.
+A constant is computed when the script is checked. Its computation must not stop with a runtime error, and the values that the constants create must fit in the budget for constants; compute a large value in a function without parameters instead.
 
 ## E0436
 
@@ -1336,7 +1385,10 @@ A statement after `return`, or after an `if` or `match` that always leaves, is n
 - Kind: check (error)
 - Message: `try` on `{ty}` needs the function to return {needed}
 - `declared`: the function returns `{declared}`
-- `convert`: convert the value with `Option.okOr` or `Result.toOption` before `try`
+- `declared_lambda`: the lambda returns `{declared}`
+- `declared_placeholder`: the function made by `_` in this call returns `{declared}`
+- `placeholder_call`: this call with `_` makes a function
+- `convert`: convert the value with `Option.okOr` or `Result.ok` before `try`
 
 `try` on a `Result` needs the enclosing function or lambda to return a `Result`, and `try` on an `Option` needs it to return an `Option`.
 
@@ -1345,6 +1397,9 @@ A statement after `return`, or after an `if` or `match` that always leaves, is n
 - Kind: check (error)
 - Message: `try` cannot return an error of type `{found}` from a function that returns errors of type `{expected}`
 - `declared`: the function returns `{declared}`
+- `declared_lambda`: the lambda returns `{declared}`
+- `declared_placeholder`: the function made by `_` in this call returns `{declared}`
+- `placeholder_call`: this call with `_` makes a function
 - `map_error`: convert the error with `Result.mapError` before `try`
 
 The error type of the value after `try` must be the error type of the function's result.
@@ -1433,8 +1488,10 @@ Each operation has at most one clause in a `handle`.
 - Kind: check (error)
 - Message: `resume` can only be used directly in a clause of `handle`
 - `lambda`: `resume` cannot be used in a lambda or a `lazy` body inside a clause
+- `guard`: `resume` cannot be used in a `match` guard; call it in the body of the branch
+- `placeholder`: `resume` cannot be used in an argument of a call with `_` placeholders; the arguments are evaluated inside the function that the call creates
 
-`resume` continues the computation that performed the operation, so it is written in the clause itself.
+`resume` continues the computation that performed the operation, so it is written in the clause itself, not inside a lambda, a `lazy` body, a `match` guard, or an argument of a call with `_` placeholders.
 
 ## E0510
 
@@ -1520,6 +1577,16 @@ The pattern on the left of `bind` or `shadow` must match every value.
 - `covering`: already matched here
 
 Earlier patterns match every value this alternative matches.
+
+## E0609
+
+- Kind: check (error)
+- Message: could not confirm that {subject}
+- Label: checking stopped after {limit} steps
+- `split`: split the `match` into smaller ones, or check fewer fields in one branch
+- `split_pattern`: check fewer fields in this pattern, or bind the value first and check the fields separately
+
+The checker limits the work it spends on deciding whether a `match` covers every value and whether a pattern on the left of `bind` or `shadow` matches every value. A `match` or a pattern that needs more work than the limit is an error.
 
 ## E0701
 
@@ -1635,6 +1702,15 @@ Every type parameter of an implementation must appear in the implemented type.
 - `constructor`: `{trait_name}` is for type constructors, such as `List`
 
 A trait is either for types of values or for type constructors, and its implementations and constraints must match.
+
+## E0715
+
+- Kind: check (error)
+- Message: the dictionary for `{trait_name}` on `{ty}` is too large
+- Label: more than {limit} dictionary and type nodes are needed here
+- `reduce`: nest the types less deeply, or require fewer traits of the type parameters in the implementations
+
+Nesting implementations that require two or more traits of the same type parameter doubles the size of the dictionary at each level. The checker limits the total number of dictionary nodes and type nodes copied into them.
 
 ## E0801
 
@@ -1962,3 +2038,12 @@ The bytecode addresses the supertraits of a trait with 16 bits.
 - `limit`: an implementation can have at most 65535 constraint dictionaries
 
 The bytecode addresses the dictionaries of an implementation with 16 bits.
+
+## L0112
+
+- Kind: limit (error)
+- Message: the `match` in `{name}` is too large to compile
+- `limit`: the decision tree of a `match` is too large; split it into smaller ones
+- `definition`: building decision trees in this definition requires too much work, including copies of guards; simplify the matches or move them into separate functions
+
+The decision tree of a `match` can grow exponentially in the number of its branches, so the compiler limits its size.

@@ -1,4 +1,4 @@
-//! エフェクトの規則・診断と後続の段に渡す表を型検査の入口で確かめる（実装プラン F09）。
+//! エフェクトの規則・診断と後続の段に渡す表を型検査の入口で確かめる（設計書 02-05「書く位置の検査」）。
 // テストの失敗は panic で表し、AST と期待した診断の位置を直接参照する。
 #![allow(
     clippy::unwrap_used,
@@ -10,10 +10,10 @@
 use crate::base::BindingId;
 use crate::diag::{DiagCode as C, Diagnostic};
 use crate::modules::LoadOutput;
-use crate::resolve::{BindingKind, ResolveOutput};
+use crate::resolve::ResolveOutput;
 use crate::syntax::ast::*;
-use crate::typeck::{TryKind, TypeckOutput, test_support::check_files, typecheck};
-use crate::types::builtin::{BuiltinTypeId as B, find_builtin_effect};
+use crate::typeck::{TryKind, TypeckOutput, test_support::check_files};
+use crate::types::builtin::BuiltinTypeId as B;
 use crate::types::{EffectName, Ty, TyCon};
 
 const LOG: &str = include_str!("../../../testdata/handlers/first-release-log.bnt");
@@ -155,7 +155,7 @@ fn specification_examples_and_output_tables() {
             .is_empty()
     );
     let (l, r, t) = clean(TRY);
-    // 標準ライブラリ内の try が増えても、仕様例の三つの出力を確かめる（実装プラン L00）。
+    // 標準ライブラリ内の try が増えても、仕様例の三つの出力を確かめる。
     let tries: Vec<_> = ["parseConfig", "loadConfig"]
         .into_iter()
         .flat_map(|name| &function(&l, name).body.as_ref().unwrap().stmts)
@@ -258,6 +258,9 @@ fn invalid_clauses_and_effects_have_precise_diagnostics() {
     let source = "function f() -> Unit\n handle () with case Reference.set(r, v) -> () end handle\nend function\n";
     let d = expect(source, &[(C::E0507, "Reference.set", 0)]);
     assert!(d[0].notes.iter().any(|n| n.contains("State")));
+    let source = "function bump(r: Reference[Integer]) -> Unit uses State\n Reference.set(r, 1)\nend function\nfunction f() -> Unit\n handle () with case bump(r) -> () end handle\nend function\n";
+    let d = expect(source, &[(C::E0507, "bump(r)", 0)]);
+    assert!(d[0].notes.is_empty(), "{:?}", d[0]);
     let source = "effect Ping\n function ping() -> Unit\nend effect\nfunction f() -> Unit\n handle ping() with\n case ping() -> resume(())\n case ping() -> resume(())\n end handle\nend function\n";
     let d = expect(source, &[(C::E0508, "ping()", 3)]);
     assert_eq!(
@@ -293,6 +296,122 @@ fn invalid_clauses_and_effects_have_precise_diagnostics() {
     clean(
         "effect Log\n function write() -> Unit\nend effect\nfunction f[effect E](act: function() -> Unit uses E) -> Unit uses E\n handle act() with case write() -> resume(()) end handle\nend function\n",
     );
+}
+
+#[test]
+fn nested_clauses_distinguish_same_named_operation_parameters() {
+    // 診断の期待と実際を同時に示す境界で、別の節の同名の型パラメータを区別する。
+    // 数字を名前に直接付けると、操作が宣言した型パラメータ名と取り違える。
+    let source = "effect Swap\n function store[T](x: T) -> T\nend effect\nfunction f[T](seed: T) -> Unit\n bind _ <- handle store(seed) with case store(x) ->\n  handle store(x) with case store(y) ->\n   if true then Option.Some(x) else Option.Some(y) end if\n  end handle\n end handle\nend function";
+    let (_, _, _, diagnostics) = check(source);
+    let diag = diagnostics
+        .iter()
+        .find(|d| {
+            d.primary.as_ref().is_some_and(|p| {
+                &source[p.span.start.0 as usize..p.span.end.0 as usize] == "Option.Some(y)"
+            })
+        })
+        .unwrap();
+    assert_eq!(diag.code, Some(C::E0401));
+    assert_eq!(
+        diag.primary.as_ref().unwrap().text,
+        "expected `Option[store.T]`, found `Option[store.T#2]`"
+    );
+}
+
+#[test]
+fn type_escape_note_is_not_reused_for_other_failures() {
+    // 剛な型の出どころを別の E0401 に持ち越さない。
+    // 一件だけの脱出のゴールデンでは、記録を消し忘れる退行を捕まえられない。
+    let sources = [
+        "effect Swap\n function store[T](x: T) -> T\nend effect\nfunction f() -> Unit\n bind _ <- handle\n bind _ <- store(42)\n Option.None\n with case store(x) -> Option.Some(x)\n end handle\n bind _ <- String.characterCount(1)\nend function\n",
+        "effect Swap\n function store[T](x: T) -> T\nend effect\nfunction f() -> Unit\n bind g <- lambda()\n  bind _ <- handle store(42) with case store(x) ->\n   bind s <- Option.Some(x)\n   return s\n  end handle\n  return Option.None\n end lambda\n bind _ <- 1 + \"bad\"\nend function\n",
+    ];
+    for source in sources {
+        let (_, _, _, diagnostics) = check(source);
+        assert_eq!(diagnostics.len(), 2, "{diagnostics:#?}");
+        for d in diagnostics {
+            assert_eq!(d.code, Some(C::E0401));
+            let span = d.primary.as_ref().unwrap().span;
+            let at = source
+                .get(span.start.0 as usize..span.end.0 as usize)
+                .unwrap();
+            let escaped = d
+                .notes
+                .iter()
+                .any(|n| n.contains("cannot leave the clause"));
+            if at == "Option.Some(x)" || at == "s" {
+                assert!(escaped, "{d:#?}");
+            } else {
+                assert!(at == "1" || at == "\"bad\"", "{at}");
+                assert!(!escaped, "{d:#?}");
+            }
+        }
+    }
+}
+
+#[test]
+fn try_error_type_escape_does_not_annotate_a_deferred_return_mismatch() {
+    // try が独自の E0442 を報告した脱出情報を、保留中の別の E0401 へ渡さない。
+    let source = "effect Swap\n function store[T](x: T) -> T\nend effect\nfunction f() -> Unit\n bind g <- lambda()\n  bind _ <- handle store(42) with case store(x) ->\n   bind _ <- try Result.Error(x)\n   resume(x)\n  end handle\n  return Result.Ok(())\n end lambda\n bind s <- Integer.toString(1)\n return s\nend function\n";
+    let (_, _, _, diagnostics) = check(source);
+    assert_eq!(diagnostics.len(), 2, "{diagnostics:#?}");
+    assert!(
+        diagnostics.iter().any(|d| d.code == Some(C::E0442)),
+        "{diagnostics:#?}"
+    );
+    let d = diagnostics
+        .iter()
+        .find(|d| d.code == Some(C::E0401))
+        .unwrap();
+    assert_eq!(
+        d.primary.as_ref().unwrap().text,
+        "expected `Unit`, found `String`"
+    );
+    assert!(
+        !d.notes
+            .iter()
+            .any(|n| n.contains("cannot leave the clause")),
+        "{d:#?}"
+    );
+    assert!(
+        d.secondary
+            .iter()
+            .all(|label| !label.text.contains("clause")),
+        "{d:#?}"
+    );
+}
+
+#[test]
+fn operation_type_parameters_are_qualified_when_outer_names_collide() {
+    for (body, expected, escaped) in [
+        (
+            "-> Unit\n bind _ <- handle",
+            "expected `Option[_]`, found `Option[store.T]`",
+            true,
+        ),
+        (
+            "-> Option[T]\n return handle",
+            "expected `Option[T]`, found `Option[store.T]`",
+            false,
+        ),
+    ] {
+        let source = format!(
+            "effect Swap\n function store[T](x: T) -> T\nend effect\nfunction run[T](a: T) {body}\n  bind _ <- store(a)\n  Option.None\n with case store(x) -> Option.Some(x)\n end handle\nend function\n"
+        );
+        let (_, _, _, diagnostics) = check(&source);
+        assert_eq!(diagnostics.len(), 1, "{diagnostics:#?}");
+        let d = &diagnostics[0];
+        assert_eq!(d.code, Some(C::E0401));
+        assert_eq!(d.primary.as_ref().unwrap().text, expected);
+        assert_eq!(
+            d.notes
+                .iter()
+                .any(|n| n.contains("`store.T`") && n.contains("cannot leave the clause")),
+            escaped,
+            "{d:#?}"
+        );
+    }
 }
 
 #[test]
@@ -388,6 +507,9 @@ fn try_infers_return_types_and_reports_incompatible_types() {
     ] {
         let d = expect(source, &[(code, "try", 0)]);
         assert!(d[0].helps[0].message.contains(help));
+        if code == C::E0441 {
+            assert!(d[0].helps[0].message.contains("`Result.ok`"));
+        }
     }
     expect(
         "function f() -> Unit\n bind _ <- lambda(x) try x end lambda\nend function\n",
@@ -401,6 +523,66 @@ fn try_infers_return_types_and_reports_incompatible_types() {
 }
 
 #[test]
+fn try_notes_follow_lambda_and_placeholder_return_boundaries() {
+    // プレースホルダ内のラムダと、ラムダ内のプレースホルダの両方で境界の復元を確かめる。
+    for (source, code, note, call) in [
+        (
+            "function f(x: Result[Integer, String]) -> Unit\n bind _ <- lambda() -> Integer\n  return try x\n end lambda\nend function",
+            C::E0441,
+            "the lambda returns `Integer`",
+            None,
+        ),
+        (
+            "function f(x: Result[Integer, Integer]) -> Unit\n bind _ <- lambda() -> Result[Integer, String]\n  return Result.Ok(try x)\n end lambda\nend function",
+            C::E0442,
+            "the lambda returns `Result[Integer, String]`",
+            None,
+        ),
+        (
+            "function add(x: Integer, y: Integer) -> Integer\n return x + y\nend function\nfunction f() -> Unit\n bind _ <- add(try Option.None, _)\nend function",
+            C::E0441,
+            "the function made by `_` in this call returns `Integer`",
+            Some("add(try Option.None, _)"),
+        ),
+        (
+            "function add(x: Integer, y: Integer) -> Result[Integer, String]\n return Result.Ok(x + y)\nend function\nfunction f(x: Result[Integer, Integer]) -> Unit\n bind _ <- add(try x, _)\nend function",
+            C::E0442,
+            "the function made by `_` in this call returns `Result[Integer, String]`",
+            Some("add(try x, _)"),
+        ),
+        (
+            "function use(g: function() -> Integer, n: Integer) -> Unit\nend function\nfunction f(x: Option[Integer]) -> Unit\n bind _ <- use(lambda() -> Integer return try x end lambda, _)\nend function",
+            C::E0441,
+            "the lambda returns `Integer`",
+            None,
+        ),
+        (
+            "function add(x: Integer, y: Integer) -> Integer\n return x + y\nend function\nfunction f() -> Unit\n bind _ <- lambda()\n  bind _ <- add(try Option.None, _)\n  return ()\n end lambda\nend function",
+            C::E0441,
+            "the function made by `_` in this call returns `Integer`",
+            Some("add(try Option.None, _)"),
+        ),
+    ] {
+        let (load, _, _, diagnostics) = check(source);
+        assert_eq!(diagnostics.len(), 1, "{diagnostics:?}");
+        let diag = &diagnostics[0];
+        assert_eq!(diag.code, Some(code), "{diag:?}");
+        assert_eq!(diag.notes, [note]);
+        if let Some(call) = call {
+            let label = &diag.secondary[0];
+            assert_eq!(label.text, "this call with `_` makes a function");
+            let text = load.sources.get(label.span.file).unwrap().text();
+            assert_eq!(
+                &text[label.span.start.0 as usize..label.span.end.0 as usize],
+                call.as_bytes()
+            );
+        } else {
+            assert!(diag.secondary.is_empty(), "{diag:?}");
+        }
+    }
+}
+
+#[test]
 fn entry_effects_and_uses_duplicates() {
     for (name, attr) in [("main", ""), ("sample", "@test\n")] {
         let source = format!(
@@ -408,57 +590,25 @@ fn entry_effects_and_uses_duplicates() {
         );
         expect(&source, &[(C::E0506, "Log\n", 1)]);
     }
-    // 未提供の Assert と Network のソースの代わりに、公開の名前解決の表に
-    // 組み込みの番号を置き、型検査の入口に渡す（実装プラン F09「受け入れテスト」）。
-    for (module, effect, is_test, expected) in [
-        (vec!["Assert"], "Check", false, Some(C::E0415)),
-        (vec!["Assert"], "Check", true, None),
-        (vec!["Network", "Http"], "Connect", false, None),
-        (vec!["Network", "Http"], "Listen", false, None),
-    ] {
-        let source = format!(
-            "{}function main() -> Unit uses State\n ()\nend function\n",
-            if is_test { "@test\n" } else { "" }
-        );
-        let (l, mut r, _, d) = check(&source);
-        assert!(d.is_empty());
-        if is_test {
-            r.main = None;
-        }
-        let state = r
-            .bindings
-            .iter()
-            .find(|(_, b)| {
-                matches!(
-                    b.kind,
-                    BindingKind::BuiltinEffect(crate::types::builtin::BuiltinEffectId::STATE)
-                )
-            })
-            .unwrap()
-            .0;
-        let mut b = r.bindings.get(state).unwrap().clone();
-        b.kind = BindingKind::BuiltinEffect(find_builtin_effect(&module, effect).unwrap());
-        r.bindings.insert(state, b);
-        let (_, d) = typecheck(&l.modules, &l.asts, &l.sources, &r, false);
-        assert_eq!(
-            d.iter().map(|d| d.code.unwrap()).collect::<Vec<_>>(),
-            expected.into_iter().collect::<Vec<_>>()
-        );
-        if !d.is_empty() {
-            assert_eq!(
-                d[0].primary.as_ref().unwrap().span.start.0 as usize,
-                source.find("State").unwrap()
-            );
-            assert!(d[0].notes.iter().any(|n| n.contains("Assert.Check")));
-        }
+    let d = expect(
+        "function main() -> Unit uses Assert.Check\n ()\nend function\n",
+        &[(C::E0415, "Assert.Check", 0)],
+    );
+    assert!(d[0].notes.iter().any(|n| n.contains("Assert.Check")));
+    // main 以外の関数は Assert のエフェクトを書いてよい。
+    clean("function sample() -> Unit uses Assert.Check\n ()\nend function\n");
+    for effect in ["Connect", "Listen"] {
+        clean(&format!(
+            "import Benitoite.Unofficial.Network.Http\nfunction main() -> Unit uses Http.{effect}\n ()\nend function\n"
+        ));
     }
-    let source = "import Benitoite.Unofficial.IO.Console as C\nfunction f() -> Unit uses C.Write, C.Write\n ()\nend function\n";
-    let d = expect(source, &[(C::E0419, "C.Write", 1)]);
+    let source = "import Benitoite.Unofficial.IO.Console\nfunction f() -> Unit uses Console.Write, Console.Write\n ()\nend function\n";
+    let d = expect(source, &[(C::E0419, "Console.Write", 1)]);
     let edit = &d[0].helps[0].edits[0];
     assert!(edit.replacement.is_empty());
     assert_eq!(
         &source[edit.span.start.0 as usize..edit.span.end.0 as usize],
-        ", C.Write"
+        ", Console.Write"
     );
     clean(
         "import Benitoite.Unofficial.IO.Console\nfunction f(action: function() -> Unit uses IO.All) -> Unit uses IO.All, Console.Write\n action()\nend function\n",
@@ -566,4 +716,92 @@ fn tail_resumption_checks_every_path_and_excludes_inner_lambda_escapes() {
             "{source}"
         );
     }
+}
+
+// 診断の型名と案内先を型検査の入口で確かめる。既存の脱出の検査では、試行・
+// パターン・型クラスの別経路による外側の型名の混入を捕まえない（設計書 02-05「誤りの報告と検査の継続」）。
+#[test]
+fn rigid_types_keep_operation_names_in_body_diagnostics() {
+    let mut mismatches = vec![];
+    for outer in ["A", "T"] {
+        let name = if outer == "T" { "store.T" } else { "T" };
+        for (body, code, message, note) in [
+            (
+                "bind f <- lambda()\n bind v <- try Option.Some(x)\n return x\n end lambda",
+                C::E0441,
+                format!("`try` on `Option[{name}]` needs the function to return Option"),
+                Some(format!("the lambda returns `{name}`")),
+            ),
+            (
+                "bind f <- lambda()\n bind v <- try x\n return Option.Some(v)\n end lambda",
+                C::E0440,
+                format!("`try` cannot be applied to `{name}`"),
+                None,
+            ),
+            (
+                "bind f <- lambda()\n bind v <- try Result.Error(x)\n return Result.Error(\"s\")\n end lambda",
+                C::E0442,
+                format!(
+                    "`try` cannot return an error of type `{name}` from a function that returns errors of type `String`"
+                ),
+                Some("the lambda returns `Result[_, String]`".into()),
+            ),
+            (
+                "bind Option.Some(v) <- Option.Some(x)",
+                C::E0607,
+                format!("this pattern does not match every value of `Option[{name}]`"),
+                None,
+            ),
+            (
+                "bind s <- Trait.Show.show(Option.Some(x))",
+                C::E0705,
+                format!("`{name}` does not implement `Show`"),
+                None,
+            ),
+        ] {
+            let source = format!(
+                "import Benitoite.Trait\neffect Swap\n function store[T](x: T) -> T\nend effect\nfunction run[{outer}](a: {outer}) -> {outer}\n return handle\n store(a)\n with case store(x) ->\n {body}\n resume(x)\n end handle\nend function\n"
+            );
+            let (_, _, _, diagnostics) = check(&source);
+            assert_eq!(diagnostics.len(), 1, "{outer}: {diagnostics:#?}");
+            let d = &diagnostics[0];
+            assert_eq!(d.code, Some(code));
+            if d.message != message
+                || note
+                    .as_ref()
+                    .is_some_and(|note| !d.notes.iter().any(|n| n == note))
+            {
+                mismatches.push(format!(
+                    "{outer}, {code:?}: expected {message:?}, note {note:?}; got {d:#?}"
+                ));
+            }
+        }
+    }
+    assert!(mismatches.is_empty(), "{}", mismatches.join("\n"));
+}
+
+#[test]
+fn rigid_constraint_help_targets_the_operation_declaration() {
+    let mut mismatches = vec![];
+    for (body, code, constraint) in [
+        ("bind _ <- x = x", C::E0406, "equality"),
+        ("bind _ <- Map.fromList([Pair(x, 1)])", C::E0424, "key"),
+    ] {
+        let source = format!(
+            "effect Swap\n function store[T](x: T) -> T\nend effect\nfunction run[T](a: T) -> T\n return handle\n store(a)\n with case store(x) ->\n {body}\n resume(x)\n end handle\nend function\n"
+        );
+        let (_, _, _, diagnostics) = check(&source);
+        assert_eq!(diagnostics.len(), 1, "{diagnostics:#?}");
+        let d = &diagnostics[0];
+        assert_eq!(d.code, Some(code));
+        assert_eq!(d.helps.len(), 1);
+        let expected = format!(
+            "add the constraint `{constraint}` to the type parameter `T` in the declaration of the operation `store`"
+        );
+        if !d.message.contains("`store.T`") || d.helps[0].message != expected {
+            mismatches.push(format!("{constraint}: {d:#?}"));
+        }
+        assert!(d.helps[0].edits.is_empty());
+    }
+    assert!(mismatches.is_empty(), "{}", mismatches.join("\n"));
 }

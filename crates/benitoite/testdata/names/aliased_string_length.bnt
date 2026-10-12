@@ -1,0 +1,6 @@
+// spec: 01-03 修飾された名前の解決
+import Benitoite.String as S
+
+function main() -> Unit
+  bind _ <- S.length("abc")
+end function

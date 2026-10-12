@@ -8,6 +8,14 @@ pub use codes::{CodeInfo, DiagCode};
 
 use crate::base::Span;
 
+/// 名前の一覧をコードの囲みで示し、呼び出し側の並びを保つ。
+pub(crate) fn code_list<'a>(names: impl Iterator<Item = &'a str>) -> String {
+    names
+        .map(|name| format!("`{name}`"))
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
 /// 重大度（02-10「診断の内部の表現」）。`W` のコードは `Warning`、ほかは `Error`。
 /// `--deny-warnings` で誤りとして扱った警告は `Error` に変える（`Diagnostic::deny_warning`）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -224,7 +232,7 @@ impl DiagBuilder {
         self
     }
 
-    /// 置き換えを持つ修正案。`key` はそのコードの `fixes` に挙げた鍵でなければならない（F16 のテストで確かめる）。
+    /// 置き換えを持つ修正案。`key` はそのコードの `fixes` に挙げた鍵でなければならない。
     pub fn help_edits(mut self, key: &'static str, edits: Vec<Edit>) -> DiagBuilder {
         self.helps.push((key, edits));
         self

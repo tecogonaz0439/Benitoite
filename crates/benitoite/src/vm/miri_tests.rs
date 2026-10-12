@@ -1,6 +1,6 @@
 //! ヒープの内部を VM の代表的な使い方で通す小さなテスト（設計書 07-03「ヒープとランタイムの確かめ方（初回リリース版）」）。
 //! 振る舞いの網羅は既存のテストに残し、ここではパイプラインのコンパイルを行わない。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -180,7 +180,7 @@ fn complete_work<'c, 'e>(
     ctx.alloc_fields(FieldsKind::Ctor, tags::RESULT_OK, &[value])
 }
 
-// 確認する状態を引数だけ変えて共有し、通常の競合の組み合わせは R26 の受け入れテストに残す。
+// 確認する状態を引数だけ変えて共有し、通常の競合の組み合わせは要求と完了のテストで確かめる。
 fn check_worker_wait(lend: bool) {
     let mut b = ProgramBuilder::new();
     b.program.main_kind = MainKind::Result;
@@ -231,7 +231,7 @@ fn check_worker_wait(lend: bool) {
         &small_work::DECL,
     );
     let id = request(&mut vm, &mut io);
-    // 外へ渡した後の回収と、Worker へ待ちを移した後の回収の両方を通す（R26、設計書 02-08「枠を降ろす原因と処理」）。
+    // 外へ渡した後の回収と、Worker へ待ちを移した後の回収の両方を通す（設計書 02-08「枠を降ろす原因と処理」）。
     vm.heap.collect(&vm.state);
     vm.serve_request(&mut io.rt, id);
     assert_eq!(

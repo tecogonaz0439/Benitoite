@@ -24,7 +24,7 @@ pub enum OutputTarget {
     Stdout,
     /// 処理系のプロセスの標準エラー出力
     Stderr,
-    /// メモリに捕らえる。端末でない出力先として扱う（10-10「実装プランで決める値」）
+    /// メモリに捕らえる。端末でない出力先として扱う
     Capture(Arc<Mutex<Vec<u8>>>),
 }
 
@@ -82,7 +82,7 @@ pub enum EndKind {
     Exited(u8),
     /// 中断の要求で止まった
     Interrupted,
-    /// テストの確認の失敗で止まった（テストの実行器だけ。U4）
+    /// テストの確認の失敗で止まった（テストの実行器だけ）
     CheckFailed,
     /// 処理系の不具合
     Internal,
@@ -133,7 +133,7 @@ impl OutputTarget {
         }
     }
     /// 出力先が端末か。`Stdout`・`Stderr` はそれぞれのストリームを `std::io::IsTerminal` で調べる。
-    /// `Capture` は偽（10-10「実装プランで決める値」）。
+    /// `Capture` は偽。
     pub fn is_terminal(&self) -> bool {
         use std::io::IsTerminal;
         match self {
@@ -205,6 +205,14 @@ enum Entry {
 
 // `run_program` と `run_test` に共通の手順 2〜5（設計書 02-09「プログラムの実行の流れ」、02-11「テストの実行」）。
 fn run_entry(program: &CompiledProgram, env: RunEnv, entry: &Entry) -> TestEnd {
+    let seed = match getrandom::u64() {
+        Ok(seed) => seed,
+        Err(error) => {
+            return plain(internal_end(&format!(
+                "cannot seed hidden random generator: {error}"
+            )));
+        }
+    };
     let wakeup = if let Some(parts) = &env.parts {
         parts
             .workers
@@ -242,7 +250,10 @@ fn run_entry(program: &CompiledProgram, env: RunEnv, entry: &Entry) -> TestEnd {
             wakeup.clone(),
         ),
     );
-    // stdin を消費する前に、子へ継がせるストリームを個別に決める（実装プラン 10-16、設計書 02-11「実行の入力と結果」）。
+    if let Some(end) = output_start_failure(&outputs) {
+        return plain(end);
+    }
+    // stdin を消費する前に、子へ継がせるストリームを個別に決める（設計書 02-11「実行の入力と結果」）。
     let process_stdio = super::io::services::ProcessStdio {
         inherit_stdin: matches!(env.stdin, StdinSource::Process),
         inherit_stdout: matches!(env.stdout, OutputTarget::Stdout),
@@ -265,19 +276,20 @@ fn run_entry(program: &CompiledProgram, env: RunEnv, entry: &Entry) -> TestEnd {
         env.interrupt,
         wakeup,
     );
-    if let Err(error) = seed_hidden_random(&mut rt) {
-        return plain(internal_end(&format!(
-            "cannot seed hidden random generator: {error}"
-        )));
-    }
+    rt.random_state = crate::runtime::random::seeded_state(seed);
     rt.process_stdio = process_stdio;
     rt.dev_panic_after_first_write = env.dev_panic_after_first_write;
     run_vm_entry(program, env.vm, env.heap, rt, entry)
 }
-// テスト用の部品を使う実行にも、OS の種を一度入れる（設計書 03-07「Random」、実装プラン 10-16）。
-fn seed_hidden_random(rt: &mut super::io::services::IoRuntime) -> Result<(), getrandom::Error> {
-    rt.random_state = crate::builtins::funcs::random::seeded_state(getrandom::u64()?);
-    Ok(())
+// 書き込みを始める前に準備の失敗を報告する（設計書 02-09「プログラムの実行の流れ」）。
+fn output_start_failure(
+    outputs: &(super::io::output::OutputPort, super::io::output::OutputPort),
+) -> Option<RunEnd> {
+    outputs
+        .0
+        .start_error()
+        .or_else(|| outputs.1.start_error())
+        .map(|error| internal_end(&format!("cannot start output thread: {error}")))
 }
 
 fn plain(run: RunEnd) -> TestEnd {
@@ -336,7 +348,7 @@ fn run_vm_entry(
             reason: StopReason::CheckFailed(_),
             release_failures,
         })) if matches!(entry, Entry::Test(_)) => match vm.take_check_failure() {
-            // 確認の失敗の報告は実行器が記録から作る（10-18「テストの関数の実行」の表）。
+            // 確認の失敗の報告は実行器が記録から作る（設計書 02-11「テストの実行」の表）。
             Some(failure) => TestEnd {
                 run: RunEnd {
                     exit_code: EXIT_FAILURE,
@@ -362,15 +374,7 @@ fn run_vm_entry(
         }),
     };
     if let Some(panic) = rt.worker_bug.take() {
-        end = plain(RunEnd {
-            reports: vec![report::internal_diagnostic(
-                "run",
-                &panic.message,
-                Some(&panic),
-                report::FaultThread::Worker,
-            )],
-            ..internal_end_fields()
-        });
+        record_internal_panic(&mut end, &panic, report::FaultThread::Worker);
     }
     // panic の場合も標準出力、標準エラー出力の順に最後の転送を終える（設計書 02-09）。
     for port in [&mut rt.stdout, &mut rt.stderr] {
@@ -380,18 +384,18 @@ fn run_vm_entry(
                     flush_failure(&mut end.run, port.stream, &reason)
                 }
                 super::io::output::WriteFailure::Panicked(panic) => {
-                    end = plain(RunEnd {
-                        reports: vec![report::internal_diagnostic(
-                            "run",
-                            &panic.message,
-                            Some(&panic),
-                            report::FaultThread::Writer,
-                        )],
-                        ..internal_end_fields()
-                    });
+                    record_internal_panic(&mut end, &panic, report::FaultThread::Writer);
                 }
             }
         }
+    }
+    // 最後の呼び出しから転送の完了までに受けた中断も、値で終わった実行に反映する。
+    // 全タスクは終了済みなので止める手順は始めず、既に止まった理由と転送の失敗の報告は
+    // 変えない（設計書 02-09「中断の要求」「プログラムの実行の流れ」）。
+    if matches!(end.run.end, EndKind::Returned | EndKind::MainError) && rt.interrupt.requested() {
+        end.run.end = EndKind::Interrupted;
+        end.run.exit_code = EXIT_INTERRUPTED;
+        end.run.main_error = None;
     }
     end.run.heap = vm.heap_stats();
     end
@@ -400,6 +404,30 @@ fn run_vm_entry(
 use crate::runtime::report;
 use crate::runtime::{Stop, Stream};
 use crate::vm::{MainOutcome, StopReason, VmStep};
+
+// VM が写した同じ panic だけをまとめ、別の不具合の記録を残す
+// （設計書 02-10「処理系の不具合と処理系の制限の報告」）。
+fn record_internal_panic(
+    end: &mut TestEnd,
+    panic: &super::panic::PanicReport,
+    thread: report::FaultThread,
+) {
+    let diagnostic = report::internal_diagnostic("run", &panic.message, Some(panic), thread);
+    let copied = report::internal_diagnostic("run", &panic.message, None, report::FaultThread::Vm);
+    if end.run.end != EndKind::Internal {
+        *end = plain(RunEnd {
+            reports: vec![diagnostic],
+            ..internal_end_fields()
+        });
+    } else if let Some(report) = end.run.reports.iter_mut().find(|r| **r == copied) {
+        *report = diagnostic;
+    } else if thread == report::FaultThread::Worker {
+        // 作業用のスレッドの不具合は VM の panic より前に記録される。
+        end.run.reports.insert(0, diagnostic);
+    } else {
+        end.run.reports.push(diagnostic);
+    }
+}
 
 fn internal_end_fields() -> RunEnd {
     RunEnd {
@@ -437,7 +465,7 @@ fn step_end(program: &CompiledProgram, step: VmStep) -> RunEnd {
             end.main_error = Some(message);
         }
         VmStep::Requests(_) => {
-            return internal_end("stage 1 execution ended with pending requests");
+            return internal_end("execution ended with pending requests");
         }
         VmStep::Stopped(stopped) => match stopped.reason {
             StopReason::Error(info) => {
@@ -525,7 +553,7 @@ impl super::io::ops::StdinReader for std::io::BufReader<std::io::Stdin> {}
 mod tests {
     // 関門: 出力の最終転送が失敗した場合の終了状態と報告、開始時の失敗を公開の run_program で確かめる。
     // VM と IO の単独のテストは、最後の転送で失敗した後の終わり方の分類を捕まえない（設計書 02-09）。
-    // テストの失敗は panic で表す（実装プラン 00-02）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -570,7 +598,7 @@ mod tests {
             dev_panic_after_first_write: false,
         }
     }
-    // 関門: VM で捕えた仕事の panic を VM のスレッドと報告する退行を、実行の結果で捕まえる（R26）。
+    // 関門: VM で捕えた仕事の panic を VM のスレッドと報告する退行を、実行の結果で捕まえる。
     #[test]
     fn panicked_external_work_is_reported_as_worker_failure() {
         use super::super::io::ops::{Completion, JobWork, WorkerJob};
@@ -618,6 +646,40 @@ mod tests {
             );
         }
     }
+    // 起動の失敗は書き込みを待たず終了状態 3 になる（設計書 02-09「プログラムの実行の流れ」）。
+    #[test]
+    fn output_thread_start_failure_stops_before_execution() {
+        use super::super::io::output::{OutputPort, WriterShared};
+        for stream in [Stream::Stdout, Stream::Stderr] {
+            let failed = OutputPort::with_thread(
+                stream,
+                false,
+                Arc::new(WriterShared::default()),
+                Err(std::io::Error::other("injected")),
+            );
+            let started = OutputPort::start(
+                stream,
+                Box::new(std::io::sink()),
+                false,
+                super::super::io::event::wakeup_without_poll(),
+            );
+            let outputs = if stream == Stream::Stdout {
+                (failed, started)
+            } else {
+                (started, failed)
+            };
+            let end = output_start_failure(&outputs).unwrap();
+            assert_eq!(end.end, EndKind::Internal);
+            assert_eq!(end.exit_code, EXIT_INTERNAL);
+            assert!(
+                end.reports[0]
+                    .notes
+                    .iter()
+                    .any(|note| note.contains("cannot start output thread"))
+            );
+        }
+    }
+
     fn poisoned() -> OutputTarget {
         let out = Arc::new(Mutex::new(Vec::new()));
         assert!(
@@ -632,13 +694,35 @@ mod tests {
         OutputTarget::Capture(out)
     }
     // 関門: writer の失敗と panic の分類を、run_program と同じ実行・最後の転送の経路で確かめる。
-    // 出力先だけを置き換える。RunEnv の凍結した OutputTarget にテスト専用の種類を加えない。
+    // 出力先だけを置き換える。RunEnv の OutputTarget にテスト専用の種類を加えない。
+    // 短い出力を非端末のバッファに残し、write の中で初めて印を立てるので、転送前に印を
+    // 読む退行と、転送の失敗の報告を失う退行、既に止まった理由を中断で置き換える退行を
+    // 捕まえる。既存の中断のテストは最初から印を立てるので、転送前後の順序は確かめない
+    // （設計書 02-09「中断の要求」「プログラムの実行の流れ」）。
     #[test]
     fn writer_failure_and_panic_finish_with_the_required_reports() {
-        struct FaultyWriter(bool);
+        use std::sync::atomic::{AtomicBool, Ordering};
+
+        #[derive(Debug)]
+        struct Flag(Arc<AtomicBool>);
+        impl InterruptSource for Flag {
+            fn requested(&self) -> bool {
+                self.0.load(Ordering::Relaxed)
+            }
+            fn flag(&self) -> Option<&AtomicBool> {
+                Some(&self.0)
+            }
+        }
+        struct FaultyWriter {
+            panic: bool,
+            interrupt: Option<Arc<AtomicBool>>,
+        }
         impl std::io::Write for FaultyWriter {
             fn write(&mut self, _: &[u8]) -> std::io::Result<usize> {
-                assert!(!self.0, "writer test panic");
+                if let Some(flag) = &self.interrupt {
+                    flag.store(true, Ordering::Relaxed);
+                }
+                assert!(!self.panic, "writer test panic");
                 Err(std::io::ErrorKind::BrokenPipe.into())
             }
             fn flush(&mut self) -> std::io::Result<()> {
@@ -659,13 +743,19 @@ mod tests {
                 "import Benitoite.Unofficial.IO.Console\nfunction main() -> {ty} uses Console.Write\n Console.write(\"last\")\n {body}\nend function\n"
             ));
             for mode in [ExecMode::Direct, ExecMode::Request] {
-                for panic in [false, true] {
+                for (panic, interrupt) in
+                    [(false, false), (true, false), (false, true), (true, true)]
+                {
                     let env = environment();
+                    let flag = Arc::new(AtomicBool::new(false));
                     let wakeup = super::super::io::event::wakeup_with_poll().unwrap();
                     let outputs = (
                         super::super::io::output::OutputPort::start(
                             Stream::Stdout,
-                            Box::new(FaultyWriter(panic)),
+                            Box::new(FaultyWriter {
+                                panic,
+                                interrupt: interrupt.then(|| Arc::clone(&flag)),
+                            }),
                             false,
                             wakeup.clone(),
                         ),
@@ -682,13 +772,29 @@ mod tests {
                         outputs,
                         Box::new(std::io::Cursor::new(Vec::<u8>::new())),
                         RuntimeParts::real(wakeup.clone()),
-                        env.interrupt,
+                        Box::new(Flag(Arc::clone(&flag))),
                         wakeup,
                     );
                     let end = run_vm(&program, env.vm, env.heap, rt);
+                    assert_eq!(flag.load(Ordering::Relaxed), interrupt);
+                    let interrupted = interrupt && kind != EndKind::Stopped && !panic;
                     assert_eq!(
                         end.exit_code,
-                        if panic { EXIT_INTERNAL } else { EXIT_FAILURE }
+                        if panic {
+                            EXIT_INTERNAL
+                        } else if interrupted {
+                            EXIT_INTERRUPTED
+                        } else {
+                            EXIT_FAILURE
+                        }
+                    );
+                    assert_eq!(
+                        end.main_error.as_deref(),
+                        if kind == EndKind::MainError && !panic && !interrupted {
+                            Some("bad")
+                        } else {
+                            None
+                        }
                     );
                     assert_eq!(end.reports.len(), 1);
                     if panic {
@@ -700,7 +806,14 @@ mod tests {
                                 .any(|n| n.contains("output writer"))
                         );
                     } else {
-                        assert_eq!(end.end, kind);
+                        assert_eq!(
+                            end.end,
+                            if interrupted {
+                                EndKind::Interrupted
+                            } else {
+                                kind.clone()
+                            }
+                        );
                         assert_eq!(
                             end.reports[0].code,
                             Some(if kind == EndKind::Stopped {
@@ -709,9 +822,6 @@ mod tests {
                                 crate::diag::DiagCode::R0201
                             })
                         );
-                        if kind == EndKind::MainError {
-                            assert_eq!(end.main_error.as_deref(), Some("bad"));
-                        }
                         if kind == EndKind::Stopped {
                             assert!(
                                 end.reports[0]
@@ -725,6 +835,71 @@ mod tests {
             }
         }
     }
+    // 関門: 別々の不具合は発生順に残し、VM が写した同じ説明だけを置き換える。
+    #[test]
+    fn internal_panic_reports_preserve_distinct_faults_and_replace_copies() {
+        use super::super::panic::PanicReport;
+        use report::FaultThread;
+        let panic = |message: &str| PanicReport {
+            message: message.into(),
+            location: None,
+            backtrace: None,
+        };
+        let vm = panic("vm panic");
+        let worker = panic("worker panic");
+        let writer = panic("writer panic");
+        let vm_report = report::internal_diagnostic("run", &vm.message, Some(&vm), FaultThread::Vm);
+        let worker_report =
+            report::internal_diagnostic("run", &worker.message, Some(&worker), FaultThread::Worker);
+        let writer_report =
+            report::internal_diagnostic("run", &writer.message, Some(&writer), FaultThread::Writer);
+        for (first, expected_worker, expected_writer) in [
+            (
+                internal_end("worker panic"),
+                vec![worker_report.clone()],
+                vec![worker_report.clone(), writer_report.clone()],
+            ),
+            (
+                RunEnd {
+                    reports: vec![vm_report.clone()],
+                    ..internal_end_fields()
+                },
+                vec![worker_report.clone(), vm_report.clone()],
+                vec![
+                    worker_report.clone(),
+                    vm_report.clone(),
+                    writer_report.clone(),
+                ],
+            ),
+        ] {
+            let mut end = plain(first);
+            record_internal_panic(&mut end, &worker, FaultThread::Worker);
+            assert_eq!(end.run.reports, expected_worker);
+            record_internal_panic(&mut end, &writer, FaultThread::Writer);
+            assert_eq!(end.run.reports, expected_writer);
+        }
+        let writer_copy =
+            report::internal_diagnostic("run", &writer.message, None, FaultThread::Vm);
+        for (reports, expected) in [
+            (vec![writer_copy.clone()], vec![writer_report.clone()]),
+            (
+                vec![worker_report.clone(), writer_copy.clone()],
+                vec![worker_report.clone(), writer_report.clone()],
+            ),
+            (
+                vec![worker_report.clone(), writer_copy, vm_report.clone()],
+                vec![worker_report, writer_report, vm_report],
+            ),
+        ] {
+            let mut end = plain(RunEnd {
+                reports,
+                ..internal_end_fields()
+            });
+            record_internal_panic(&mut end, &writer, FaultThread::Writer);
+            assert_eq!(end.run.reports, expected);
+        }
+    }
+
     #[test]
     fn development_panic_returns_only_after_accepted_output_is_transferred() {
         let program = compiled(
@@ -829,7 +1004,7 @@ use crate::runtime::assert::{AssertTable, CheckFailure};
 /// テストの関数一つの実行の指定（02-11「テストの実行」）。
 #[derive(Clone, Debug)]
 pub struct TestTarget {
-    /// テストの関数の原型（10-07 の `CompiledProgram::top_fns` から引く）
+    /// テストの関数の原型（`CompiledProgram::top_fns` から引く。設計書 02-07「コンパイル済みプログラム」）
     pub proto: ProtoIdx,
     /// 戻り値の型（`Unit` か `Result[Unit, String]`）
     pub kind: MainKind,
@@ -840,7 +1015,7 @@ pub struct TestTarget {
 /// テストの関数一つの実行の結果。
 #[derive(Debug)]
 pub struct TestEnd {
-    /// 終わり方と報告（本章「テストの関数の実行」の表）
+    /// 終わり方と報告（設計書 02-11「テストの実行」）
     pub run: RunEnd,
     /// `run.end` が `EndKind::CheckFailed` のときの確認の失敗の記録
     pub check_failure: Option<CheckFailure>,
@@ -848,7 +1023,7 @@ pub struct TestEnd {
     pub release_failures: Vec<ReleaseFailure>,
 }
 
-/// テストの関数を、引数なしで最初のタスクとして実行する（本章「テストの関数の実行」）。
+/// テストの関数を、引数なしで最初のタスクとして実行する（設計書 02-11「テストの実行」）。
 /// VM の実行を `runtime::panic::catch` で囲み、捕らえた panic は処理系の不具合（終了状態 3）にする。
 pub fn run_test(program: &CompiledProgram, target: TestTarget, env: RunEnv) -> TestEnd {
     run_entry(program, env, &Entry::Test(target))

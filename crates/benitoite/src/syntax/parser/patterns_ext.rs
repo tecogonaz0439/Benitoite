@@ -1,6 +1,7 @@
 //! 選択肢・ガード・範囲・リストのパターンと組の診断（設計書 01-02、01-05、02-03）。
 use super::{
-    CommaList, EscapeContext, Fail, PResult, Parser, child, comma_list, exprs, literal_of,
+    ClauseContext, CommaList, EscapeContext, Fail, PResult, Parser, child, comma_list, exprs,
+    literal_of,
     patterns::{self, PatternCounter},
     text,
 };
@@ -50,6 +51,10 @@ pub(super) fn parse_arm_head_rest(
         let keyword = p.bump().span;
         let saved = p.ctx;
         p.ctx.escape = EscapeContext::InGuard;
+        // ガードでは外側の継続を隠す。内側の handle は自身の節で Direct に戻す。
+        if p.ctx.clause == ClauseContext::Direct {
+            p.ctx.clause = ClauseContext::BlockedByGuard;
+        }
         // 分岐の頭にある if はガード。式の if は括弧内でだけ受け付ける（01-02）。
         p.ctx.in_arm_head = true;
         let guard = parse_guard(p, child(depth));
@@ -281,6 +286,8 @@ fn push_list_rest(
     }));
     Ok(())
 }
+// 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
 fn finish_list_pattern(p: &mut Parser, start: usize, parts: Vec<ListPart>) -> Box<Pattern> {
     let mut before = Vec::new();
     let mut after = Vec::new();
@@ -332,9 +339,9 @@ pub(super) fn report_tuple(p: &mut Parser, count: usize, span: Span) {
 }
 
 #[cfg(test)]
-// 公開の parse でパターンの区切り・文脈・修正後の意味を確かめる。仮の本体の回復テストを
-// 置き換え、本番用の差し込み口は足さない（設計書 07-03、test-audit）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// 公開の parse でパターンの区切り・文脈・修正後の意味を確かめる。意味と回復を検査し、
+// 本番用の差し込み口は足さない（設計書 07-03「テストの設計の原則」、test-audit）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -377,6 +384,29 @@ mod tests {
         result
     }
     #[test]
+    fn comma_after_guard_reports_one_error_and_recovers_to_next_arm() {
+        let src = "function f() -> Unit\nmatch x with\ncase 1 if true, 2 -> ()\ncase _ -> ()\nend match\nend function";
+        let out = user(src);
+        assert_eq!(codes(&out), [DiagCode::E0201], "{:?}", out.diagnostics);
+        assert_eq!(
+            out.diagnostics[0].primary.as_ref().unwrap().span.start,
+            position(src, ",").unwrap()
+        );
+        assert!(out.diagnostics[0].message.contains("`->`"));
+        assert_eq!(arm(&out).patterns.len(), 1);
+        assert!(matches!(arm(&out).guard.as_deref(), Some(Expr::Lit(_))));
+        let Item::Fn(f) = &out.module.decls[0].item else {
+            panic!()
+        };
+        let Stmt::Expr(Expr::Match(m)) = &f.body.as_ref().unwrap().stmts[0] else {
+            panic!()
+        };
+        assert_eq!(m.arms.len(), 2);
+        assert!(matches!(m.arms[1].patterns[0], Pattern::Wildcard(_)));
+        assert!(m.arms.iter().all(|a| !a.body.stmts.is_empty()));
+    }
+
+    #[test]
     fn alternatives_respect_constructor_parentheses_and_fix_foreign_separator() {
         for (head, expected) in [
             ("1, 2", None),
@@ -411,11 +441,15 @@ mod tests {
     }
     #[test]
     fn guard_context_requires_parenthesized_if_and_restores_escape() {
+        // spec: 01-05 パターンの拡張（初回リリース版）
         for (head, expected) in [
             ("n if n > 0", None),
             ("n if (if a then true else false end if)", None),
+            ("n if f(lambda() return true end lambda, _)(n)", None),
             ("n if return 1", Some(DiagCode::E0218)),
             ("n if try f()", Some(DiagCode::E0218)),
+            ("n if f(return 1, _)(n)", Some(DiagCode::E0218)),
+            ("n if f(try g(), _)(n)", Some(DiagCode::E0218)),
             ("n when n > 0", Some(DiagCode::E0241)),
             ("n where n > 0", Some(DiagCode::E0241)),
         ] {
@@ -437,7 +471,7 @@ mod tests {
                 assert!(
                     out.diagnostics[0].helps[1]
                         .message
-                        .contains("inside a lambda")
+                        .contains("lambda ... end lambda")
                 );
             }
             if expected == Some(DiagCode::E0241) {

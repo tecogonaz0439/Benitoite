@@ -13,7 +13,7 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.2`. The language is the same as in `0.0.1`, the first release. It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.3`. The language is that of `0.0.1`, the first release, with the incompatible changes listed in the [CHANGELOG](../../CHANGELOG.md). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md). For the earlier minimal implementation (`0.0.0`), see [benitoite-minimal.md](benitoite-minimal.md); the changes between the two are listed in the [CHANGELOG](../../CHANGELOG.md).
 
@@ -91,10 +91,12 @@ benitoite --licenses
 | `fmt` | Rewrites the given files, or all `.bnt` files under the given directories, in the standard layout. See [Formatting](#17-formatting). |
 | `skill` | Writes the bundled Agent Skill to the places where coding agents read skills, or removes it. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.2`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.3`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
 `<script>` is a file, or a directory that contains `main.bnt`. The file name and its extension are not checked. The directory of the script is the *root directory*: the script can import modules from the root directory and below it, and from the standard library ([Modules](#12-modules)). `benitoite` reads no configuration file.
+
+The script and its modules must be regular files. A path to a pipe, such as `/dev/stdin` connected to a pipe or `<(...)` in the shell, cannot be read and is reported as `E0101`; write such a script to a temporary file and pass that path.
 
 `benitoite script.bnt` without a command means `benitoite run script.bnt`. A file whose name is a command (such as `check`) is run as `benitoite ./check`. The names `server`, `mcp`, `sign`, `verify`, `repl`, `lsp`, `package`, and `agent` are reserved for later versions; `benitoite server` is a usage error.
 
@@ -148,7 +150,7 @@ Inside a block:
 - `return expression` ends the function and returns the value.
 - An expression on its own line is a statement. When it is not the last statement of its block, or when it is the last statement of a function or lambda body, its value must be `Unit`; write `bind _ <- expression` to discard any other value.
 
-A function whose return type is not `Unit` must end with `return` (or with an `if` or `match` whose every branch returns). The value of an `if`, of a `match` branch, of a handler clause, and of the bodies of `with`, `handle`, and `lazy` is its last expression. A `return` inside any of these returns from the function that contains it.
+A function whose return type is not `Unit` must end with `return` (or with an `if` or `match` whose every branch returns). The value of an `if`, of a `match` branch, of a handler clause, and of the bodies of `with`, `handle`, and `lazy` is its last expression. A `return` inside an `if`, a `match` branch, a handler clause, or the body of `with` or `handle` returns from the function that contains it. A `lazy` body and a `match` guard cannot contain `return` or `try`, except inside a `lambda ... end lambda` written there; the arguments of a call with `_` placeholders are not such an exception.
 
 `//` starts a comment that runs to the end of the line. `///` before a declaration documents it, and `//!` at the start of a file documents the module. Identifiers use ASCII letters, digits, and `_`. Names of functions, values, and parameters start with a lowercase letter; names of types, constructors, modules, and effects start with an uppercase letter.
 
@@ -506,7 +508,7 @@ An effect is part of the type of a function value: `function(String) -> Unit use
 
 ## 11. Effect handlers
 
-You can declare your own effects. An `effect` declaration lists its operations, which are called like functions. `handle body with case operation(arguments) -> clause end handle` runs `body` and, whenever the body calls one of the listed operations, runs the clause instead. In the clause, `resume(value)` continues the body, with `value` as the result of the operation. A clause that does not call `resume` ends the `handle` with its own value.
+You can declare your own effects. An `effect` declaration lists its operations, which are called like functions. `handle body with case operation(arguments) -> clause end handle` runs `body` and, whenever the body calls one of the listed operations, runs the clause instead. In the clause, `resume(value)` continues the body, with `value` as the result of the operation. A clause that does not call `resume` ends the `handle` with its own value. `resume` is written directly in the clause; it cannot appear in a lambda, a `lazy` body, a `match` guard, or an argument of a call with `_` placeholders (a `handle` written there can resume its own clauses).
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -573,6 +575,8 @@ The modules of the standard library are named `Benitoite.<Name>`. Most of the co
 In this release, the IO and network modules and the text and data modules are *unofficial*: their interfaces may still change, so they are imported under `Benitoite.Unofficial`. Write `import Benitoite.Unofficial.IO.Console` and refer to the module as `Console`. `import Benitoite.IO.Console` is an error in this release. When an unofficial module becomes standard in a later minor version, its import name changes to `Benitoite.<Name>` and scripts must change their imports.
 
 Every module outside the prelude must be imported, also when it appears only in `uses`. See [The standard library](#19-the-standard-library) for the list.
+
+The modules that declare built-in effects (`IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `IO`, and `Assert`) cannot be renamed with `as`; that is the error `E0339`, also when the new name is the same as the original one. This keeps the effect names in `uses` true: `uses Console.Write` always means writing to the console. When an imported module of your own has the same name as one of these modules, rename your module with `as`.
 
 ## 13. Type classes
 
@@ -649,7 +653,7 @@ A `Reference` is a mutable cell. `Reference.new`, `Reference.get`, and `Referenc
 
 ### Tasks
 
-Tasks run concurrently within one program. `TaskGroup.open()` opens a group as a resource; `TaskGroup.spawn(group, lambda() ... end lambda)` starts a task in it, and `Task.await(task)` waits for its result. Releasing the group at `end with` waits for all its tasks. `Task.all` runs a list of functions as tasks and returns their results in order; `Task.withTimeout` and `Task.race` give up waiting after a time or for the first result. Operations that wait, such as reading a file, an HTTP request, or `Clock.sleep`, let other tasks run.
+Tasks run concurrently within one program. `TaskGroup.open()` opens a group as a resource; `TaskGroup.spawn(group, lambda() ... end lambda)` starts a task in it, and `Task.await(task)` waits for its result. Releasing the group at `end with` waits for all its tasks. `Task.all` runs a list of functions as tasks and returns their results in order; `Task.race` returns the first result and cancels the other tasks. `Task.withTimeout(milliseconds, action)` returns `Option.Some` with the result when the task finishes before the time has passed, and otherwise cancels the task and returns `Option.None`; a task that finishes just before the deadline can still give `Option.None`, because the deadline is checked when `benitoite` next switches tasks. Operations that wait, such as reading a file, an HTTP request, or `Clock.sleep`, let other tasks run.
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -728,6 +732,14 @@ assertion failed: Assert.equal
 test result: FAILED. 1 passed; 1 failed
 ```
 
+In reports of failed `Assert.equal` and `Assert.notEqual` checks, `left` and `right` each contain at most 4 KiB (4,096 bytes), including any final `…` (U+2026). A longer rendering is cut at the last character boundary within 4,093 bytes and ends with `…`; the remaining value is not traversed. The cut may fall inside an escape sequence such as `\u{202e}`. Text and JSON Lines reports use the same rendered strings.
+
+Checks directly in generic helper bodies recover constructor names from the direct caller's type arguments, including a tail call from a caller with concrete types. Recovery stops after a tail call, even if an outer call of the same function is still running. Checks inside lambda bodies or handler bodies and clauses use the types with which the enclosing function is used in the program, rather than guessing which call created them. Checks inside implementation methods do not recover types from callers.
+
+When a generic helper calls another helper through a tail call, the caller's type arguments are no longer available from that call. In this case, or when a generic function is passed as a value, the report uses a type only if the types at every use of the function can be determined and the shapes of both compared values identify a unique type. A recursive generic helper can also leave the type unknown.
+
+At positions where the type remains unknown, constructors appear as `<constructor #n of an unknown type>`, where `n` is their zero-based position in the type declaration. A check with a concrete compared type renders constructors by name; known parts of a type, such as `Option` in `Option[T]`, retain their names even when `T` cannot be recovered.
+
 A file with check errors is not run: its diagnostics go to standard error, and the tests of the other files still run. `benitoite check` reports an error for a file without `main`, so use `test`, not `check`, on test files.
 
 With `--diagnostics=json`, `test` writes one JSON object per line to standard output: one with `"kind": "test"` per test, with the fields `file`, `name`, `function`, `location`, `outcome` (`"passed"` or `"failed"`), `failure`, `stdout`, and `stderr`, and a last one with `"kind": "testSummary"` and the counts `passed`, `failed`, and `filesNotRun`, and `interrupted`. A `failure` has a `reason` and a `message`. The reason is `"assert"` (a failed check, with `primary`, `trace`, and for `Assert.equal` and `Assert.notEqual` the values `left` and `right`), `"error"` (the test returned `Result.Error`), `"runtime"` (a runtime error, with the fields of a runtime error report), or `"exit"` (the test called `Process.exit`, with `exitCode`). Failures with the reasons `"assert"`, `"runtime"`, and `"exit"` also have `notes`, an array of strings that includes failures to release resources while stopping.
@@ -738,7 +750,9 @@ The exit status of `test` is 0 when all tests pass, 1 when a test fails, 2 for c
 
 `benitoite fmt` rewrites files in the standard layout. It changes only whitespace: spaces within lines, indentation, blank lines, and trailing spaces. It keeps your line breaks and comments, does not add or remove tokens, and has no settings. `fmt` checks only the syntax, so a file with type errors can be formatted. A file with lexical or syntax errors (codes `E01nn` and `E02nn`) is left unchanged and its diagnostics are reported; the other files are still formatted. Other errors found while reading the file, such as a wrong attribute, do not stop formatting.
 
-`fmt --check` rewrites nothing and lists the files that would change on standard error. `fmt` writes nothing to standard output. A file is replaced only after the new content is written completely, so an interrupted `fmt` does not leave a broken file.
+`fmt --check` rewrites nothing and lists the files that would change on standard error. `fmt` writes nothing to standard output. A file is replaced only after the new content is written completely, so an interrupted `fmt` does not leave a broken file. The new content is first written to a temporary file in the same directory that only the owner can read.
+
+`fmt` does not replace a file whose owner has no write permission (such as mode `0444`), a file with more than one hard link, or a file owned by another user. It reports `E0125` with the reason and leaves the file unchanged. To format such a file, make it writable for its owner, remove the other hard links, or run `fmt` as the owner. `fmt --check` checks these files as usual. `fmt` reads only regular files.
 
 The exit status of `fmt` is 0 on success, 1 when `--check` finds a file that would change, 2 for syntax errors, files that cannot be read or written, and usage errors, and 3 for an internal error.
 
@@ -789,16 +803,21 @@ Modules in the prelude need no import. The others are imported with the name in 
 | `Path` | `import Benitoite.Unofficial.Path` | Joining and splitting paths |
 | `Json` | `import Benitoite.Unofficial.Json` | JSON |
 | `Csv` | `import Benitoite.Unofficial.Csv` | CSV (RFC 4180) |
-| `Regex` | `import Benitoite.Unofficial.Regex` | Regular expressions with matching time linear in the input |
+| `Regex` | `import Benitoite.Unofficial.Regex` | Regular expressions; finding one match takes time proportional to the input length times the pattern size, and finding all matches can take time proportional to the square of the input length |
 | `Encoding` | `import Benitoite.Unofficial.Encoding` | Base64 |
 | `Hash` | `import Benitoite.Unofficial.Hash` | SHA-256 hash values of bytes |
 | `Network.Http` | `import Benitoite.Unofficial.Network.Http` | HTTP/1.1 servers without TLS, and clients for `http` and `https` |
 
 A few behaviors worth knowing:
 
+- After a write to a `File.Writer` fails, including a write that flushes the buffer, the writer discards the buffered data and keeps the error. Later `File.write`, `File.writeLine`, and `File.writeChunk` return the same error without writing anything. `File.closeWriter` closes without writing and returns the same message with `IOErrorKind.Other`. Leaving a `with` block that holds the writer is a release failure (a runtime error), even if you handled the write error. To handle the release error, call `File.closeWriter` at the end of the block and check its result. Stop writing at the first error and open the file again to retry.
+- `Process.run` and `Process.shell` wait until the command's standard output and standard error are closed. If the command starts a background process that keeps either output open, they do not return after the command exits; wrap the call in `Task.withTimeout` to limit the wait. A timeout does not stop the started processes.
 - Relative file paths are resolved against the working directory. Use `Process.scriptDirectory()` for files next to the script.
 - `Process.run` starts a program with a list of arguments, without a shell. A non-zero exit code is not an error; read it from the result. When the command does not read all of the `input` you gave it (as `head` does), that is not an error either.
 - `Process.shell` runs a command line with `/bin/sh -c`. Write only POSIX sh.
+- `Http.respond` accepts statuses from 200 to 599; any other status, including the `1xx` statuses, is a runtime error. `benitoite` sets `content-length` and `connection: close` and drops your `content-length`, `connection`, `transfer-encoding`, `trailer`, `keep-alive`, `proxy-connection`, `te`, and `upgrade` headers, as well as any headers named in any of your `connection` values. Names are compared without regard to case; `connection` values are split at commas, surrounding spaces and tabs are removed, and empty elements are skipped. It sends no body for responses to `HEAD` requests, for the statuses 204, 205, and 304, and for `2xx` responses to `CONNECT` requests; a body given in these cases is dropped.
+- The HTTP server accepts targets beginning with `/` (including `//a`), absolute targets beginning with `http://` or `https://` (case-insensitive), `*` for uppercase `OPTIONS` only, and authority targets for uppercase `CONNECT` only. A `CONNECT` target must consist of a non-empty host made of ASCII letters, digits, and `-._~!$&'()*+,;=:[]%`, followed by `:` and one or more ASCII digits with a value from 0 to 65535; other forms, including `/path` and absolute targets, are rejected for `CONNECT`. Other target forms, and any target containing a literal `"`, `<`, `>`, or a non-ASCII character, receive 400 without calling the handler. Percent-encode these characters. Literal `[`, `]`, `\`, `^`, `` ` ``, `{`, `|`, and `}` are accepted in paths and queries. A `%` that is not followed by two hexadecimal digits is accepted and kept as is.
+- The HTTP server answers 400 to a request target containing `#` and does not pass it to the handler. Omit the fragment or encode a literal `#` as `%23`; the `path` keeps percent encoding. For an uppercase `OPTIONS` request, an absolute target with neither a path nor a query component (`OPTIONS http://host`) gives `path` `*` and an empty `query`; `OPTIONS http://host/`, `OPTIONS http://host?x=1`, and `OPTIONS http://host?` give `path` `/`. Other methods, such as `GET http://host` or `options http://host`, give `path` `/` for an empty absolute path.
 - `Http.get` and `Http.send` accept only the standard methods (`GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `CONNECT`, `OPTIONS`, `TRACE`, `PATCH`, in uppercase). Another method, or a non-empty body with `GET`, `HEAD`, or `CONNECT`, gives `NetworkErrorKind.InvalidInput` without sending anything. A host name that cannot be resolved gives `NetworkErrorKind.HostNotFound`.
 
 This example reads a JSON file and sums the amounts per category:
@@ -855,4 +874,4 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: `0.0.2`, like `0.0.1`, is a source-only release; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: `0.0.3`, like `0.0.1` and `0.0.2`, is a source-only release; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.

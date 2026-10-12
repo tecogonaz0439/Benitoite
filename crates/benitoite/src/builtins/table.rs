@@ -1,17 +1,19 @@
-//! 組み込みの表（実装プラン 10-11「登録と第 1 段の扱い」、10-12）。初期化の後に変更しないので、
+//! 組み込みの表。初期化の後に変更しないので、
 //! `const` か関数で表す（設計書 02-01「コンパイル済みプログラムと実行ごとの状態」）。
 
 use super::BuiltinId;
 use super::iface::BuiltinDecl;
+#[cfg(test)]
+use super::iface::{Lend, Lent, WorkerWait};
 
-use super::iface::{CallCtx, Capability, IoServices, Lend, Lent, Reply, StateServices, WorkerWait};
+use super::iface::{CallCtx, Capability, IoServices, Reply, StateServices};
 use crate::runtime::Stop;
 use crate::runtime::heap::{NoGcCtx, Value};
 use crate::vm::InstrRef;
 
 /// VM と参照インタプリタが、同じ文脈で組み込みの関数の包みを呼ぶ。
 /// `heap` は呼び出しの区間、`site` は呼んだ命令、`args` は引数の値の並びである。
-/// IO と State の口は、その権限の関数を呼ぶときに必須である。第 1 段では `state` に `None` を渡す。
+/// IO と State の口は、その権限の関数を呼ぶときに必須である。
 /// 完了・待つ・起動・終了の応答の処理は、呼び出し側が行う（設計書 02-08「組み込みの関数の呼び出し」）。
 pub(crate) fn call_builtin<'e>(
     decl: &BuiltinDecl,
@@ -34,18 +36,18 @@ pub(crate) fn call_builtin<'e>(
         }
         Capability::Pure | Capability::Io | Capability::State => {}
     }
-    // 口の参照とトレイトオブジェクトの寿命を、局所の CallCtx を借りる間に縮める
-    // （実装プラン 10-11「型と文脈」）。
+    // 口の参照とトレイトオブジェクトの寿命を、局所の CallCtx を借りる間に縮める。
     let io = io.map(|services| services as &mut dyn IoServices);
     let state = state.map(|services| services as &mut dyn StateServices);
     let mut call = CallCtx::new(heap, io, state, site);
     (decl.raw)(&mut call, args)
 }
 
-/// 第 1 段の VM と参照インタプリタが、待つ仕事をその場で実行して結果の値を作る。
+/// テストが待つ仕事をその場で実行して結果の値を作る。
 /// `args` は待った関数の引数、`site` は呼んだ命令であり、完了の処理にも渡す。
-/// リソースと標準入力の貸し出しは、第 2 段の共通の部分が扱うため、ここでは拒む
-/// （実装プラン 10-11「登録と第 1 段の扱い」、設計書 02-09「タスクの待ちと取り消し」）。
+/// リソースと標準入力の貸し出しは IO 実行器が扱うため、ここでは拒む
+/// （設計書 02-09「タスクの待ちと取り消し」）。
+#[cfg(test)]
 pub(crate) fn complete_worker<'e>(
     wait: WorkerWait,
     heap: &mut NoGcCtx<'e>,
@@ -55,7 +57,7 @@ pub(crate) fn complete_worker<'e>(
 ) -> Result<Value<'e>, Stop> {
     if wait.lend() != Lend::Nothing {
         return Err(Stop::Internal(
-            "stage 1 worker cannot borrow resources or stdin".into(),
+            "synchronous test worker cannot borrow resources or stdin".into(),
         ));
     }
     let done = wait.run(Lent::Nothing);
@@ -76,7 +78,7 @@ pub fn builtin_decl(id: BuiltinId) -> Option<&'static BuiltinDecl> {
 }
 
 /// 修飾した名前（`BuiltinDecl::name`。`String.byteLength`、`Benitoite.IO.Console.writeLine` など、
-/// 10-12 が定める形）から番号を引く。表にない名前なら `None`。
+/// 標準ライブラリのソースで宣言する名前）から番号を引く。表にない名前なら `None`。
 pub fn lookup_builtin(name: &str) -> Option<BuiltinId> {
     let index = super::funcs::PARTS
         .iter()
@@ -85,8 +87,8 @@ pub fn lookup_builtin(name: &str) -> Option<BuiltinId> {
     u16::try_from(index).ok().map(BuiltinId)
 }
 
-/// 標準ライブラリのソースで宣言した型の構成子のタグ（実装プラン 10-12「構成子のタグ」）。
-/// 10-14 のソースの構成子の宣言の順であり、F06 のテストがソースと一致することを確かめる。
+/// 標準ライブラリのソースで宣言した型の構成子のタグ（設計書 02-08「値の表現」）。
+/// 標準ライブラリのソースの構成子の宣言の順であり、テストがソースと一致することを確かめる。
 pub mod tags {
     /// `Option.Some`
     pub const OPTION_SOME: u32 = 0;
@@ -116,7 +118,7 @@ pub mod tags {
     pub const ROUNDING_MODE_TOWARD_ZERO: u32 = 2;
     pub const ROUNDING_MODE_TOWARD_NEGATIVE_INFINITY: u32 = 3;
     pub const ROUNDING_MODE_TOWARD_POSITIVE_INFINITY: u32 = 4;
-    /// レコードの構成子（レコードは構成子が一つの型であり、タグは 0。10-06「脱糖」のレコードの構築）
+    /// レコードの構成子（レコードは構成子が一つの型であり、タグは 0。設計書 02-06「脱糖」のレコードの構築）
     pub const RECORD: u32 = 0;
     /// `ByteOrder` の構成子（03-06「Bytes と ByteOrder（初回リリース版）」の順）
     pub const BYTE_ORDER_BIG_ENDIAN: u32 = 0;
@@ -154,7 +156,7 @@ use crate::ir::lower_ir::ListEnd;
 use crate::types::Scheme;
 use crate::types::builtin::BuiltinTypeId;
 
-/// 組み込みの表の項目の種類（実装プラン 10-12「項目の種類」）。
+/// 組み込みの表の項目の種類（設計書 02-06「コア IR」）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum EntryKind {
     /// 標準ライブラリのソースで `@builtin` を付けて宣言した関数。型はソースの宣言が与える
@@ -174,7 +176,7 @@ pub enum EntryKind {
     Interpolation { operand: BuiltinTypeId },
 }
 
-/// リストのパターンの内部の項目（10-06 の下位 IR の `CaseLength`・`ListGet`・`ListSlice`）。
+/// リストのパターンの内部の項目（設計書 02-06「下位 IR からコード生成へ渡すもの」）。
 /// どれも実行時エラーを起こさない。範囲の外の位置を受け取ったら `Stop::Internal` を返す（判定の木が長さを
 /// 確かめてから呼ぶので、型検査を通ったプログラムでは起きない）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -468,8 +470,9 @@ pub fn builtin_scheme(id: BuiltinId) -> Option<Scheme> {
 
 #[cfg(test)]
 mod tests {
-    // 164 項目の登録は、U1 が番号・権限・宣言の型を引く契約である（実装プラン 10-12「確かめること」）。
-    // テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+    // 登録した項目の番号・権限・宣言の型を、名前解決と脱糖・コード生成が引く契約を確かめる
+    // （設計書 02-04「標準ライブラリのソースの持ち方」）。
+    // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -564,9 +567,8 @@ mod tests {
     #[test]
     fn u3_declarations_match_the_frozen_interface() {
         use Capability::{Io, Pure, State};
-        // L00 は、10-15 の名前・権限・引数の数・部分内の順を凍結する。ソースとの照合だけでは
-        // 宣言とソースを一緒に変えた誤りを捕まえられないため、独立した期待の一覧を持つ
-        // （実装プラン L00「宣言の照合」。test-audit の固定の一覧の原則への個別の指示）。
+        // 名前・権限・引数の数・部分内の順を確かめる。ソースとの照合だけでは
+        // 宣言とソースを一緒に変えた誤りを捕まえられないため、独立した期待の一覧を持つ。
         let expected: &[&[(&str, Capability, u16)]] = &[
             &[
                 ("Character.isAlphabetic", Pure, 1),
@@ -695,15 +697,15 @@ mod tests {
                 ("Regex.compile", Pure, 1),
                 ("Regex.isMatch", Pure, 2),
                 ("Regex.find", Pure, 2),
-                ("Regex.findAll", Pure, 2),
                 ("Regex.matchText", Pure, 1),
                 ("Regex.matchByteStart", Pure, 1),
                 ("Regex.matchByteEnd", Pure, 1),
                 ("Regex.group", Pure, 2),
                 ("Regex.namedGroup", Pure, 2),
                 ("Regex.replaceFirst", Pure, 3),
-                ("Regex.replaceAll", Pure, 3),
-                ("Regex.split", Pure, 2),
+                ("Regex.findAt", Pure, 4),
+                ("Regex.spanAt", Pure, 4),
+                ("Regex.maxStringBytes", Pure, 0),
             ],
             &[
                 ("Csv.parse", Pure, 1),

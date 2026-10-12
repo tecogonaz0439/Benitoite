@@ -1,0 +1,254 @@
+// spec: 01-05 網羅性の検査
+// Stop without reporting the unreachable branches found before the budget ran out.
+record Flags
+ f0: Boolean
+ f1: Boolean
+ f2: Boolean
+ f3: Boolean
+ f4: Boolean
+ f5: Boolean
+ f6: Boolean
+ f7: Boolean
+ f8: Boolean
+ f9: Boolean
+ f10: Boolean
+ f11: Boolean
+ f12: Boolean
+ f13: Boolean
+ f14: Boolean
+ f15: Boolean
+ f16: Boolean
+ f17: Boolean
+ f18: Boolean
+ f19: Boolean
+ f20: Boolean
+ f21: Boolean
+ f22: Boolean
+ f23: Boolean
+ f24: Boolean
+ f25: Boolean
+ f26: Boolean
+ f27: Boolean
+ f28: Boolean
+ f29: Boolean
+ f30: Boolean
+ f31: Boolean
+ f32: Boolean
+ f33: Boolean
+ f34: Boolean
+ f35: Boolean
+ f36: Boolean
+ f37: Boolean
+ f38: Boolean
+ f39: Boolean
+ f40: Boolean
+ f41: Boolean
+ f42: Boolean
+ f43: Boolean
+ f44: Boolean
+ f45: Boolean
+ f46: Boolean
+ f47: Boolean
+ f48: Boolean
+ f49: Boolean
+ f50: Boolean
+ f51: Boolean
+ f52: Boolean
+ f53: Boolean
+ f54: Boolean
+ f55: Boolean
+ f56: Boolean
+ f57: Boolean
+ f58: Boolean
+ f59: Boolean
+ f60: Boolean
+ f61: Boolean
+ f62: Boolean
+ f63: Boolean
+ f64: Boolean
+ f65: Boolean
+ f66: Boolean
+ f67: Boolean
+ f68: Boolean
+ f69: Boolean
+ f70: Boolean
+ f71: Boolean
+ f72: Boolean
+ f73: Boolean
+ f74: Boolean
+ f75: Boolean
+ f76: Boolean
+ f77: Boolean
+ f78: Boolean
+ f79: Boolean
+ f80: Boolean
+ f81: Boolean
+ f82: Boolean
+ f83: Boolean
+ f84: Boolean
+ f85: Boolean
+ f86: Boolean
+ f87: Boolean
+ f88: Boolean
+ f89: Boolean
+ f90: Boolean
+ f91: Boolean
+ f92: Boolean
+ f93: Boolean
+ f94: Boolean
+ f95: Boolean
+ f96: Boolean
+ f97: Boolean
+ f98: Boolean
+ f99: Boolean
+ f100: Boolean
+ f101: Boolean
+ f102: Boolean
+ f103: Boolean
+ f104: Boolean
+ f105: Boolean
+ f106: Boolean
+ f107: Boolean
+ f108: Boolean
+ f109: Boolean
+ f110: Boolean
+ f111: Boolean
+ f112: Boolean
+ f113: Boolean
+ f114: Boolean
+ f115: Boolean
+ f116: Boolean
+ f117: Boolean
+ f118: Boolean
+ f119: Boolean
+ f120: Boolean
+ f121: Boolean
+ f122: Boolean
+ f123: Boolean
+ f124: Boolean
+ f125: Boolean
+ f126: Boolean
+ f127: Boolean
+ f128: Boolean
+ f129: Boolean
+ f130: Boolean
+ f131: Boolean
+ f132: Boolean
+ f133: Boolean
+ f134: Boolean
+ f135: Boolean
+ f136: Boolean
+ f137: Boolean
+ f138: Boolean
+ f139: Boolean
+ f140: Boolean
+ f141: Boolean
+ f142: Boolean
+ f143: Boolean
+ f144: Boolean
+ f145: Boolean
+ f146: Boolean
+ f147: Boolean
+ f148: Boolean
+ f149: Boolean
+ f150: Boolean
+ f151: Boolean
+ f152: Boolean
+ f153: Boolean
+ f154: Boolean
+ f155: Boolean
+ f156: Boolean
+ f157: Boolean
+ f158: Boolean
+ f159: Boolean
+ f160: Boolean
+ f161: Boolean
+ f162: Boolean
+ f163: Boolean
+ f164: Boolean
+ f165: Boolean
+ f166: Boolean
+ f167: Boolean
+ f168: Boolean
+ f169: Boolean
+ f170: Boolean
+ f171: Boolean
+ f172: Boolean
+ f173: Boolean
+ f174: Boolean
+ f175: Boolean
+ f176: Boolean
+ f177: Boolean
+ f178: Boolean
+ f179: Boolean
+ f180: Boolean
+ f181: Boolean
+ f182: Boolean
+ f183: Boolean
+ f184: Boolean
+ f185: Boolean
+ f186: Boolean
+ f187: Boolean
+ f188: Boolean
+ f189: Boolean
+ f190: Boolean
+ f191: Boolean
+ f192: Boolean
+end record
+function f(flags: Flags) -> Unit
+ match flags with
+ case Flags(f192: true, ..) -> ()
+ case Flags(f192: false, ..) -> ()
+ case Flags(f0: false, f1: false, f2: false, f3: false, ..) -> ()
+ case Flags(f4: false, f5: false, f6: false, f7: false, ..) -> ()
+ case Flags(f8: false, f9: false, f10: false, f11: false, ..) -> ()
+ case Flags(f12: false, f13: false, f14: false, f15: false, ..) -> ()
+ case Flags(f16: false, f17: false, f18: false, f19: false, ..) -> ()
+ case Flags(f20: false, f21: false, f22: false, f23: false, ..) -> ()
+ case Flags(f24: false, f25: false, f26: false, f27: false, ..) -> ()
+ case Flags(f28: false, f29: false, f30: false, f31: false, ..) -> ()
+ case Flags(f32: false, f33: false, f34: false, f35: false, ..) -> ()
+ case Flags(f36: false, f37: false, f38: false, f39: false, ..) -> ()
+ case Flags(f40: false, f41: false, f42: false, f43: false, ..) -> ()
+ case Flags(f44: false, f45: false, f46: false, f47: false, ..) -> ()
+ case Flags(f48: false, f49: false, f50: false, f51: false, ..) -> ()
+ case Flags(f52: false, f53: false, f54: false, f55: false, ..) -> ()
+ case Flags(f56: false, f57: false, f58: false, f59: false, ..) -> ()
+ case Flags(f60: false, f61: false, f62: false, f63: false, ..) -> ()
+ case Flags(f64: false, f65: false, f66: false, f67: false, ..) -> ()
+ case Flags(f68: false, f69: false, f70: false, f71: false, ..) -> ()
+ case Flags(f72: false, f73: false, f74: false, f75: false, ..) -> ()
+ case Flags(f76: false, f77: false, f78: false, f79: false, ..) -> ()
+ case Flags(f80: false, f81: false, f82: false, f83: false, ..) -> ()
+ case Flags(f84: false, f85: false, f86: false, f87: false, ..) -> ()
+ case Flags(f88: false, f89: false, f90: false, f91: false, ..) -> ()
+ case Flags(f92: false, f93: false, f94: false, f95: false, ..) -> ()
+ case Flags(f96: false, f97: false, f98: false, f99: false, ..) -> ()
+ case Flags(f100: false, f101: false, f102: false, f103: false, ..) -> ()
+ case Flags(f104: false, f105: false, f106: false, f107: false, ..) -> ()
+ case Flags(f108: false, f109: false, f110: false, f111: false, ..) -> ()
+ case Flags(f112: false, f113: false, f114: false, f115: false, ..) -> ()
+ case Flags(f116: false, f117: false, f118: false, f119: false, ..) -> ()
+ case Flags(f120: false, f121: false, f122: false, f123: false, ..) -> ()
+ case Flags(f124: false, f125: false, f126: false, f127: false, ..) -> ()
+ case Flags(f128: false, f129: false, f130: false, f131: false, ..) -> ()
+ case Flags(f132: false, f133: false, f134: false, f135: false, ..) -> ()
+ case Flags(f136: false, f137: false, f138: false, f139: false, ..) -> ()
+ case Flags(f140: false, f141: false, f142: false, f143: false, ..) -> ()
+ case Flags(f144: false, f145: false, f146: false, f147: false, ..) -> ()
+ case Flags(f148: false, f149: false, f150: false, f151: false, ..) -> ()
+ case Flags(f152: false, f153: false, f154: false, f155: false, ..) -> ()
+ case Flags(f156: false, f157: false, f158: false, f159: false, ..) -> ()
+ case Flags(f160: false, f161: false, f162: false, f163: false, ..) -> ()
+ case Flags(f164: false, f165: false, f166: false, f167: false, ..) -> ()
+ case Flags(f168: false, f169: false, f170: false, f171: false, ..) -> ()
+ case Flags(f172: false, f173: false, f174: false, f175: false, ..) -> ()
+ case Flags(f176: false, f177: false, f178: false, f179: false, ..) -> ()
+ case Flags(f180: false, f181: false, f182: false, f183: false, ..) -> ()
+ case Flags(f184: false, f185: false, f186: false, f187: false, ..) -> ()
+ case Flags(f188: false, f189: false, f190: false, f191: false, ..) -> ()
+ end match
+end function
+function main() -> Unit
+ ()
+end function

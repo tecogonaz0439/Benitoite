@@ -1,6 +1,6 @@
-//! lazy の型検査・コード生成と VM の接続（実装プラン R22「受け入れテスト」）。
+//! lazy の型検査・コード生成と VM の接続（設計書 02-08「明示遅延」）。
 
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::indexing_slicing)]
 
 use benitoite::pipeline::{self, CheckOptions};

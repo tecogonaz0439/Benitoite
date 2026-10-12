@@ -1,4 +1,4 @@
-//! 言語の規則・後続の段への出力・診断の位置を、実際の読み込みから検査する（実装プラン F07）。
+//! 言語の規則・後続の段への出力・診断の位置を、実際の読み込みから検査する（設計書 02-05「出力」）。
 // テストの失敗を panic で表し、期待値の位置と公開の表を直接確かめる。
 #![allow(
     clippy::unwrap_used,
@@ -19,6 +19,102 @@ use crate::types::{ConstValue as V, EffectName, Ty, TyCon, TypeArg};
 fn check(s: &str) -> (LoadOutput, ResolveOutput, TypeckOutput, Vec<Diagnostic>) {
     check_files(&[("main.bnt", s)], false)
 }
+
+#[test]
+fn prelude_type_shadowing_in_nested_types_and_type_arity() {
+    // 公開の型検査で、入れ子の型と型引数の数にも注記が付くことを確かめる。
+    // 診断の描画のテストでは、利用者と標準の同名の型の判定には届かない。
+    for (source, code, name) in [
+        (
+            "record Result\n value: Integer\nend record\nfunction f() -> List[Result]\n return [Benitoite.Result.Ok(1)]\nend function",
+            C::E0401,
+            "Result",
+        ),
+        (
+            "record String\n value: Integer\nend record\nfunction f(x: String) -> Benitoite.String\n return x\nend function",
+            C::E0401,
+            "String",
+        ),
+        (
+            "record Result\n value: Integer\nend record\nfunction f(x: List[Result]) -> Integer\n return x\nend function",
+            C::E0401,
+            "",
+        ),
+        (
+            "record Unit\n value: Integer\nend record\nfunction f(x: function(Unit) -> Integer) -> Integer\n return x\nend function",
+            C::E0401,
+            "",
+        ),
+        (
+            "record Unit\n value: Integer\nend record\nfunction f(x: function(Unit) -> Integer) -> function(Benitoite.Unit) -> Integer\n return x\nend function",
+            C::E0401,
+            "Unit",
+        ),
+        (
+            "record State\n value: Integer\nend record\nfunction f(x: function() -> State) -> Integer\n return x\nend function",
+            C::E0401,
+            "",
+        ),
+        (
+            "record Result\n value: Integer\nend record\nfunction f(x: Result[Integer, String]) -> Unit\nend function",
+            C::E0410,
+            "Result",
+        ),
+        (
+            "record Local\n value: Integer\nend record\nfunction f(x: Local[Integer]) -> Unit\nend function",
+            C::E0410,
+            "",
+        ),
+    ] {
+        let (_, _, _, diagnostics) = check(source);
+        let diag = diagnostics.iter().find(|d| d.code == Some(code)).unwrap();
+        if name.is_empty() {
+            assert!(
+                !diag.notes.iter().any(|n| n.contains("hides the prelude")),
+                "{diag:?}"
+            );
+            assert!(diag.helps.is_empty());
+        } else {
+            assert!(
+                diag.notes.iter().any(|n| n.contains("hides the prelude")),
+                "{diag:?}"
+            );
+            assert_eq!(
+                diag.helps.last().unwrap().message,
+                format!("write `Benitoite.{name}` for the prelude type")
+            );
+            assert!(diag.helps.last().unwrap().edits.is_empty());
+        }
+    }
+    for (main, code) in [
+        (
+            "import M\nfunction f(x: M.Result[Integer, String]) -> Unit\nend function",
+            C::E0410,
+        ),
+        (
+            "import M\nfunction f(x: M.Result) -> Benitoite.Result[Integer, String]\n return x\nend function",
+            C::E0401,
+        ),
+    ] {
+        let (_, _, _, diagnostics) = check_files(
+            &[
+                ("main.bnt", main),
+                ("M.bnt", "public record Result\n value: Integer\nend record"),
+            ],
+            false,
+        );
+        let diag = diagnostics.iter().find(|d| d.code == Some(code)).unwrap();
+        assert!(
+            !diag.notes.iter().any(|n| n.contains("hides the prelude")),
+            "{diag:?}"
+        );
+        assert!(diag.helps.is_empty(), "{diag:?}");
+    }
+    clean(
+        "record Task\n title: String\nend record\nfunction f(x: Task) -> Task\n return x\nend function",
+    );
+}
+
 fn clean(s: &str) -> (LoadOutput, ResolveOutput, TypeckOutput) {
     let (l, r, t, d) = check(s);
     assert!(d.is_empty(), "{d:#?}");
@@ -369,6 +465,335 @@ fn returns_monomorphism_unknown_types_and_error_recovery() {
         &[(C::E0401, 2, 21)],
     );
 }
+
+#[test]
+fn final_expression_reports_once_at_the_expression() {
+    // 本体の最後の式と、戻り値の型が違う再代入の形を区別する。
+    // ブロックの先頭への挿入や、同じ原因の二重の診断を検出する（設計書 02-05）。
+    for (source, line, column, helps) in [
+        (
+            "function f(x: Integer) -> Integer\n bind y <- x + 1\n y * 2\nend function\n",
+            3,
+            2,
+            vec![("return ", true)],
+        ),
+        (
+            "function f(x: Integer) -> Unit\n x = 5\nend function\n",
+            2,
+            2,
+            vec![("bind _ <- ", true), ("shadow x <- 5", true)],
+        ),
+        (
+            "function f(x: Integer) -> Integer\n x = 5\nend function\n",
+            2,
+            2,
+            vec![("", false), ("shadow x <- 5", true)],
+        ),
+        (
+            "function f() -> Unit\n bind g <- lambda() -> Integer\n  1\n end lambda\nend function\n",
+            3,
+            3,
+            vec![("return ", true)],
+        ),
+        (
+            "function f() -> Unit\n bind g <- lambda()\n  1\n end lambda\nend function\n",
+            3,
+            3,
+            vec![("return ", true), ("bind _ <- ", true)],
+        ),
+        (
+            "function accept(cb: function() -> Unit) -> Unit\nend function\nfunction f() -> Unit\n accept(lambda()\n  1\n end lambda)\nend function\n",
+            5,
+            3,
+            vec![("bind _ <- ", true)],
+        ),
+    ] {
+        let diagnostics = expect(source, &[(C::E0416, line, column)]);
+        let diag = &diagnostics[0];
+        assert_eq!(diag.helps.len(), helps.len(), "{diag:?}");
+        for (help, (replacement, has_edit)) in diag.helps.iter().zip(helps) {
+            assert_eq!(!help.edits.is_empty(), has_edit, "{help:?}");
+            if has_edit {
+                assert_eq!(help.edits[0].replacement, replacement);
+            } else {
+                assert!(help.message.contains("write `return`"), "{help:?}");
+            }
+        }
+    }
+}
+
+#[test]
+fn returned_binding_mismatch_uses_the_declared_return_reason() {
+    let mut cases = vec![];
+    for (annotation, ret) in [("", "Unit"), (": String", "Unit"), ("", "Integer")] {
+        let source = format!(
+            "function f() -> {ret}\n bind s{annotation} <- Integer.toString(1)\n return s\nend function\n"
+        );
+        cases.push((source, ret, "String", 3, 9));
+    }
+    // 分岐の変数も、宣言の戻り値とパターンの値の食い違いを return の位置で示す。
+    cases.push((
+        "function f(n: Integer) -> String\n match n with\n case s -> return s\n end match\nend function\n".into(),
+        "String",
+        "Integer",
+        3,
+        19,
+    ));
+    for (source, ret, found, line, column) in cases {
+        let diagnostics = expect(&source, &[(C::E0401, line, column)]);
+        let diag = &diagnostics[0];
+        assert_eq!(
+            diag.primary.as_ref().unwrap().text,
+            format!("expected `{ret}`, found `{found}`")
+        );
+        assert!(
+            diag.notes
+                .iter()
+                .any(|n| n.contains("declared return type")),
+            "{diag:?}"
+        );
+    }
+}
+#[test]
+fn binding_mismatch_suppresses_spurious_variable_use_failures() {
+    // 束縛の値には合う呼び出しが、宣言で仮に決まった型との比較で誤りにならないことを守る。
+    // 既存の宣言のテストは食い違う変数を別の呼び出しに渡さず、診断の取り違えに届かない。
+    // 使う側をラムダの本体と分岐の中に置く行は、記録が使う側の制約より先に起きる前提を守る。
+    // 型検査の入口で件数・位置・型の向きを確かめ、差し込み口は加えない。
+    let callee = "function h(x: Integer) -> Integer\n  return x\nend function\n\n";
+    let mut mismatches = vec![];
+    for (body, line, column) in [
+        (
+            "function f(n: Integer) -> String\n  bind s <- n\n  bind _ <- h(s)\n  return s\nend function\n",
+            8,
+            10,
+        ),
+        (
+            "function f(n: Integer) -> Unit\n  bind s <- n\n  bind t: String <- s\n  bind _ <- h(s)\nend function\n",
+            7,
+            21,
+        ),
+        (
+            "function f(n: Integer) -> Integer\n  bind s <- n\n  bind t: String <- s\n  bind _ <- h(s)\n  return s\nend function\n",
+            7,
+            21,
+        ),
+        (
+            "function f(n: Integer) -> String\n  bind s <- n\n  bind k <- lambda() -> Integer\n    return h(s)\n  end lambda\n  return s\nend function\n",
+            10,
+            10,
+        ),
+        (
+            "function f(n: Integer) -> String\n  match n with\n  case s ->\n    bind _ <- h(s)\n    return s\n  end match\nend function\n",
+            9,
+            12,
+        ),
+    ] {
+        let source = format!("{callee}{body}");
+        let (loaded, _, _, diagnostics) = check(&source);
+        let actual: Vec<_> = diagnostics
+            .iter()
+            .map(|d| {
+                let p = d.primary.as_ref().unwrap();
+                let loc = loaded
+                    .sources
+                    .get(p.span.file)
+                    .unwrap()
+                    .line_col(p.span.start);
+                (
+                    d.code,
+                    loc.line as usize,
+                    loc.column as usize,
+                    p.text.as_str(),
+                )
+            })
+            .collect();
+        if actual
+            != [(
+                Some(C::E0401),
+                line,
+                column,
+                "expected `String`, found `Integer`",
+            )]
+        {
+            mismatches.push(format!("{body}: {diagnostics:#?}"));
+        }
+    }
+    assert!(mismatches.is_empty(), "{}", mismatches.join("\n"));
+}
+#[test]
+fn declaration_flow_keeps_variable_use_failures_at_the_argument() {
+    // 関門: 宣言で型が決まった変数を使う側の診断を、引数の位置と型の向きで守る。
+    // 既存の部分式のテストには変数の引数がなく、宣言への誤った移し替えを捕まえられない。
+    // 型検査の入口で確かめ、テスト用の差し込み口は加えない。
+    // 束縛と宣言が一致するときは、最初の引数の誤りから後続の報告を抑える。
+    // 一回だけ変数を使う既存の例では、報告の増加や別の誤りへの入れ替わりを捕まえられない。
+    let callee = "function g(x: String) -> Integer\n  return 1\nend function\n\n";
+    for (body, line, column) in [
+        (
+            "function f(n: Integer) -> Integer\n  bind s <- n\n  bind _ <- g(s)\n  return s\nend function\n",
+            7,
+            15,
+        ),
+        (
+            "function f(c: Boolean, n: Integer) -> Integer\n  bind s <- n\n  if c then\n    return s\n  end if\n  return g(s)\nend function\n",
+            10,
+            12,
+        ),
+        (
+            "function f(c: Boolean, n: Integer) -> Integer\n  bind s <- n\n  if c then\n    return g(s)\n  end if\n  return s\nend function\n",
+            8,
+            14,
+        ),
+        (
+            "function f(n: Integer) -> Integer\n  bind s <- n\n  bind _ <- g(s)\n  bind z <- [s, \"x\"]\n  return s\nend function\n",
+            7,
+            15,
+        ),
+        (
+            "function f(n: Integer) -> Integer\n  bind s <- n\n  bind _ <- g(s)\n  bind z <- s + \"x\"\n  return s\nend function\n",
+            7,
+            15,
+        ),
+        (
+            "function f(n: Integer) -> Integer\n  bind s <- n\n  bind _ <- g(s)\n  bind z <- s < \"x\"\n  return s\nend function\n",
+            7,
+            15,
+        ),
+        (
+            "function f(n: Integer) -> Integer\n  bind s <- n\n  bind _ <- g(s)\n  bind _ <- s(1)\n  return s\nend function\n",
+            7,
+            15,
+        ),
+    ] {
+        let source = format!("{callee}{body}");
+        let diagnostics = expect(&source, &[(C::E0401, line, column)]);
+        let diag = &diagnostics[0];
+        assert_eq!(
+            diag.primary.as_ref().unwrap().text,
+            "expected `String`, found `Integer`"
+        );
+        assert!(
+            !diag
+                .notes
+                .iter()
+                .any(|n| n.contains("declared return type")),
+            "{diag:?}"
+        );
+    }
+}
+
+#[test]
+fn conflicting_declaration_flows_report_the_annotation_once() {
+    // 関門: 宣言どうしが食い違うとき、値を定める束縛の誤りを先に示し、派生した報告を抑える。
+    // 既存の戻り値のテストには二つの宣言の流れ込みがなく、注釈の理由の取り違えに届かない。
+    // 型検査の入口で、戻り値の型と宣言の順序を変えて確かめる。差し込み口は不要。
+    for (source, line) in [
+        (
+            "function f(n: Integer) -> Integer\n  bind s <- n\n  bind t: String <- s\n  return s\nend function\n",
+            3,
+        ),
+        (
+            "function f(n: Integer) -> Unit\n  bind s <- n\n  bind t: String <- s\n  return s\nend function\n",
+            3,
+        ),
+        (
+            "function f(c: Boolean, n: Integer) -> Integer\n  bind s <- n\n  if c then\n    return s\n  end if\n  bind t: String <- s\n  return s\nend function\n",
+            6,
+        ),
+    ] {
+        let diagnostics = expect(source, &[(C::E0401, line, 21)]);
+        let diag = &diagnostics[0];
+        assert_eq!(
+            diag.primary.as_ref().unwrap().text,
+            "expected `String`, found `Integer`"
+        );
+        assert!(
+            diag.notes.iter().any(|n| n.contains("type annotation")),
+            "{diag:?}"
+        );
+        assert!(
+            !diag
+                .notes
+                .iter()
+                .any(|n| n.contains("declared return type")),
+            "{diag:?}"
+        );
+    }
+}
+
+#[test]
+fn declaration_flow_preserves_inner_failure_positions_and_repairs() {
+    // 宣言の型への流れ込みの内側では、部分式の位置と整数リテラルの修正案を保つ。
+    for source in [
+        "function f(value: Float) -> Float\n return value * 2\nend function\n",
+        "function f(value: Float) -> Unit\n bind x: Float <- value * 2\nend function\n",
+        "function f(value: Float, c: Boolean) -> Float\n return if c then value else 2 end if\nend function\n",
+        "function f(value: Float, c: Boolean) -> Float\n return match c with\n case true -> value\n case false -> value * 2\n end match\nend function\n",
+    ] {
+        let (_, _, _, diagnostics) = check(source);
+        assert_eq!(diagnostics.len(), 1, "{diagnostics:#?}");
+        let diag = &diagnostics[0];
+        assert_eq!(diag.code, Some(C::E0401));
+        let span = diag.primary.as_ref().unwrap().span;
+        assert_eq!(&source[span.start.0 as usize..span.end.0 as usize], "2");
+        assert_eq!(diag.helps[0].edits[0].replacement, "2.0");
+        assert_eq!(diag.helps[0].edits[0].span, span);
+        assert!(
+            !diag
+                .notes
+                .iter()
+                .any(|n| n.contains("declared return type") || n.contains("type annotation"))
+        );
+    }
+}
+
+#[test]
+fn unreachable_statements_are_reported_once_per_block_in_effect_children() {
+    // spec: 01-06 必ず抜ける文
+    // 関門: 型検査の診断数と最初の後続文の位置を守る。既存の一文だけの例では、
+    // 重複とエフェクトの子の見落としを捕まえられない。CLI の診断全体はゴールデンで守る。
+    let effect = "effect Ask\n function ask() -> Integer\nend effect\n";
+    for (source, line) in [
+        (
+            "function f() -> Integer\n return handle\n  return 1\n  bind y <- 5\n  1\n with\n case ask() -> resume(1)\n end handle\nend function\n",
+            7,
+        ),
+        (
+            "function f() -> Integer\n return handle ask() with\n case ask() ->\n  return 2\n  bind z <- 6\n  2\n end handle\nend function\n",
+            8,
+        ),
+        (
+            "function f() -> Integer\n return handle ask() with\n case ask() -> resume(if true then\n  return 2\n  bind z <- 6\n  2\n else\n  1\n end if)\n end handle\nend function\n",
+            8,
+        ),
+    ] {
+        expect(&format!("{effect}{source}"), &[(C::E0439, line, 3)]);
+    }
+    expect(
+        "function f() -> Option[Integer]\n bind n <- try (match true with\n case true ->\n  return Option.None\n  bind w <- 1\n  Option.Some(1)\n case false -> Option.Some(2)\n end match)\n return Option.Some(n)\nend function\n",
+        &[(C::E0439, 5, 3)],
+    );
+}
+#[test]
+fn unreachable_statements_are_reported_once_per_block() {
+    // spec: 01-06 必ず抜ける文
+    // 関門: 後続文の数によらず一度だけ報告し、入れ子とラムダの独立した検査を守る。
+    expect(
+        "function f() -> Unit\n return ()\n bind x <- 1\n return ()\n bind y <- 2\nend function\n",
+        &[(C::E0439, 3, 2)],
+    );
+    // 外側が到達しなくても内側のブロックを検査し、それぞれ最初の文だけを報告する。
+    expect(
+        "function f() -> Unit\n return ()\n if true then\n  return ()\n  bind x <- 1\n  bind y <- 2\n end if\n ()\nend function\n",
+        &[(C::E0439, 3, 2), (C::E0439, 5, 3)],
+    );
+    // ラムダは固有の戻り値の検査で辿るため、外側の走査で二重に報告しない。
+    expect(
+        "function f() -> Unit\n bind g <- lambda()\n  return ()\n  bind x <- 1\n end lambda\nend function\n",
+        &[(C::E0439, 4, 3)],
+    );
+}
 #[test]
 fn effect_inference_names_and_stubs() {
     let choose = "import Benitoite.Unofficial.IO.Console\nfunction choose[effect E](unused: function() -> Unit uses Console.Write, E, act: function() -> Unit uses E) -> Unit uses E\n act()\nend function\nfunction main() -> Unit\n choose(lambda() Console.writeLine(\"unused\") end lambda, lambda() () end lambda)\nend function\n";
@@ -676,7 +1101,7 @@ const pair: Pair[Integer, String] = Pair(1, "a")
 
 #[test]
 fn source_diagnostics_and_constant_type_parameters() {
-    // 通常のソースでは自由な T を名前解決が拒む。凍結した表の境界に型パラメータが
+    // 通常のソースでは自由な T を名前解決が拒む。出力の表の境界に型パラメータが
     // 渡された場合も E0434 にする契約を、同じ読み込みと名前解決から作った表で確かめる。
     let (l, mut r, _) = clean("type Identity[T] = T\nconst a: Integer = 1\n");
     let Item::Const(c) = &l.asts[0].decls[1].item else {
@@ -730,6 +1155,16 @@ fn effect_flow_direction_call_errors_and_float_fix() {
         "function f() -> Boolean\n return match Byte.fromInteger(1) with\n  case Option.Some(b) -> b < b or b = b\n  case Option.None -> false\n end match\nend function\n",
     );
 }
+// spec: 01-02 部分適用のプレースホルダ
+// 関門: callee 内の return も生成する関数を抜ける。引数側の CLI テストでは届かない境界であり、
+// 外側の String と照合する退行を型検査の公開入口で捕まえる。差し込み口は不要。
+#[test]
+fn placeholder_callee_return_uses_generated_function_boundary() {
+    clean(
+        "function add(a: Integer, b: Integer) -> Integer\n return a + b\nend function\nfunction make() -> String\n bind f <- (if true then return 5 else add end if)(_, 1)\n return Integer.toString(f(2))\nend function\n",
+    );
+}
+
 // return の値が呼び出しのとき、戻り値の型の食い違いを、関数でない値の呼び出し（E0403）ではなく
 // return の理由の型の食い違い（E0401）として報告する（設計書 02-05「誤りの報告と検査の継続」、FE403）。
 #[test]

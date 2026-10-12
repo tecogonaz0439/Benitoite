@@ -1,7 +1,7 @@
 //! 初回リリース版の CLI のゴールデンテスト（設計書 07-03「ゴールデンテストの形式（初回リリース版）」）。
 //! 報告の分離のため、スクリプトが `{` で始まる行を標準エラー出力へ書くケースと、
-//! 改行で終えずに標準エラー出力へ書いてから止まるケースは置かない（実装プラン C10）。
-// テストの失敗は panic で表す（実装プラン 00-02「#[allow] を書いてよい箇所」）。
+//! 改行で終えずに標準エラー出力へ書いてから止まるケースは置かない。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -34,14 +34,16 @@ const GOLDEN_ROOTS: &[&str] = &["testdata"];
 const BENCH_DIRS: &[&str] = &["../../tools/bench/programs"];
 // 時計・乱数を使うケースは名前をここへ加える。CLI のオプションには独自の印を混ぜない。
 const NONDETERMINISTIC_CASES: &[&str] = &["testdata/io/l40-clock-sleep.bnt"];
-// 10-16「広げるものの一覧」の表と「ランタイムの内部への口」は、参照インタプリタの
-// runtime_view を None と定めるため、これを要るケースだけ差分比較から除く。
+// 参照インタプリタの runtime_view は None なので、これを要るケースだけ差分比較から除く。
 // CLI の二方式・コア IR・フォーマッタの検査は残す（設計書 02-06「参照インタプリタの範囲」）。
 const RUNTIME_VIEW_CASES: &[&str] = &["testdata/io/l40-process-attached.bnt"];
-// 参照インタプリタは組み込みの呼び出しごとにリスト全体を写すため、5 万要素では
-// 差分検査が二次の時間になり終わらない（2026-10-10 の全体の検査で 1 時間 49 分を超えた）。
-// CLI の二方式の検査とコア IR の検査は残す（C05 の追加指示）。参照インタプリタの費用は
-// docs/todo の TODO-181 で扱い、直すまで全体の検査でも除く。
+// 参照インタプリタは組み込みの呼び出しごとに引数と結果のリストの全体を変換する。
+// List.map・filter・fold の実装は要素ごとに get・append を呼ぶので、コードからは
+// 呼び出しごとの変換量は長さに比例し、ケース全体では長さの二乗に比例すると見積もられる。
+// 2026-10-12 の測定では、要る根だけを読み、回収を予算に従わせても、5 万要素の差分比較が
+// 300 秒の上限に達して終わらなかった。参照インタプリタは簡単さを優先し、このケースの値は
+// VM 側のゴールデンの期待値で確かめる。回収の強制の構成を除き、CLI の二方式とコア IR の
+// 検査も残す（設計書 07-03「差分テスト」）。
 const EXPENSIVE_REFERENCE_CASES: &[&str] = &["testdata/eval/list_hof_long.bnt"];
 // 回収の強制（機能 `gc-stress`）は安全点ごとに生きている構造の全体を辿るので、長さに比例した
 // 生きているリストを持つケースは二次の時間になり終わらない。回収の強制のビルドでだけ除き、
@@ -60,7 +62,7 @@ struct TestCase {
     args: Vec<String>,
     stdin: Option<Vec<u8>>,
     text: Option<Vec<u8>>,
-    /// `.text.stdout`。`test` の方式で、文章の形の結果の報告を確かめるテストだけに置く（実装プラン D12）
+    /// `.text.stdout`。`test` の方式で、文章の形の結果の報告を確かめるテストだけに置く
     text_stdout: Option<Vec<u8>>,
     expected: Actual,
 }
@@ -77,7 +79,7 @@ struct Actual {
 struct Summary {
     matched: usize,
     check_core_matched: usize,
-    excluded: BTreeMap<String, usize>,
+    excluded: BTreeMap<String, Vec<String>>,
     warnings: Vec<String>,
     /// フォーマッタの性質を確かめた `check`・`run` のテストの数
     format_checked: usize,
@@ -88,8 +90,8 @@ impl Summary {
     fn merge(&mut self, other: Summary) {
         self.matched += other.matched;
         self.check_core_matched += other.check_core_matched;
-        for (reason, count) in other.excluded {
-            *self.excluded.entry(reason).or_default() += count;
+        for (reason, names) in other.excluded {
+            self.excluded.entry(reason).or_default().extend(names);
         }
         self.warnings.extend(other.warnings);
         self.format_checked += other.format_checked;
@@ -98,11 +100,47 @@ impl Summary {
         }
     }
 
+    fn report(&self, filter: &str, selected: usize, stress_excluded: &[String]) -> String {
+        let mut lines = vec![
+            format!("{FILTER_ENV}={filter:?}"),
+            format!(
+                "golden: {selected} cases; differential (golden run and bench): {} matched",
+                self.matched
+            ),
+            format!("check mode core IR: {} matched", self.check_core_matched),
+            format!("gc-stress excluded: {}", stress_excluded.len()),
+        ];
+        for name in stress_excluded {
+            lines.push(format!("  {name}"));
+        }
+        for (reason, names) in &self.excluded {
+            lines.push(format!("differential excluded: {reason}: {}", names.len()));
+            for name in names {
+                lines.push(format!("  {name}"));
+            }
+        }
+        let format_excluded: usize = self.format_excluded.values().sum();
+        lines.push(format!(
+            "formatter properties: {} checked, {format_excluded} excluded",
+            self.format_checked
+        ));
+        for (reason, count) in &self.format_excluded {
+            lines.push(format!("formatter properties excluded: {reason}: {count}"));
+        }
+        lines.push(String::new());
+        lines.join("\n")
+    }
+
     fn record(&mut self, comparison: Comparison, name: &str, failures: &mut Vec<String>) {
         match comparison {
             Comparison::Matched => self.matched += 1,
             Comparison::Failed(reason) => failures.push(format!("{name}: {reason}")),
-            Comparison::Excluded(reason) => *self.excluded.entry(reason).or_default() += 1,
+            Comparison::Excluded(reason) => {
+                self.excluded
+                    .entry(reason)
+                    .or_default()
+                    .push(name.to_owned());
+            }
         }
     }
 }
@@ -126,7 +164,7 @@ fn golden_suite() {
     let mut stress_excluded: Vec<String> = Vec::new();
     let mut jobs = Vec::new();
     for root in GOLDEN_ROOTS {
-        let scripts = match discover_scripts(Path::new(root)) {
+        let scripts = match discover_scripts(Path::new(root), &filter, bless, &mut failures) {
             Ok(scripts) => scripts,
             Err(error) => {
                 failures.push(error);
@@ -187,7 +225,7 @@ fn golden_suite() {
                         }
                         let entry = pipeline::entry_spec(&path)
                             .map_err(|e| format!("entry error: {e:?}"))?;
-                        let directory = fs::canonicalize(dir).map_err(|e| e.to_string())?;
+                        let directory = fs::canonicalize("../..").map_err(|e| e.to_string())?;
                         let input =
                             run::run_input(&entry, args, directory).map_err(|e| e.to_string())?;
                         summary.record(
@@ -197,6 +235,11 @@ fn golden_suite() {
                                 input,
                                 VmConfig::default(),
                                 ExecMode::Direct,
+                                differential::CompareOptions {
+                                    require_returned: true,
+                                    ..differential::CompareOptions::default()
+                                },
+                                Box::new(|| Ok(())),
                             ),
                             &name,
                             &mut failures,
@@ -213,29 +256,22 @@ fn golden_suite() {
     if selected == 0 {
         failures.push(format!("{FILTER_ENV} matched no test: {filter:?}"));
     }
-    eprintln!(
-        "golden: {selected} cases; core IR/differential: {} matched",
-        summary.matched
-    );
-    eprintln!("check mode core IR: {} matched", summary.check_core_matched);
-    for name in &stress_excluded {
-        eprintln!("gc-stress excluded: {name}");
+    let report = summary.report(&filter, selected, &stress_excluded);
+    let report_path = Path::new(env!("CARGO_TARGET_TMPDIR")).join(if cfg!(feature = "gc-stress") {
+        "golden-summary-gc-stress.txt"
+    } else {
+        "golden-summary.txt"
+    });
+    if let Err(error) = fs::create_dir_all(Path::new(env!("CARGO_TARGET_TMPDIR")))
+        .and_then(|()| fs::write(&report_path, &report))
+    {
+        failures.push(format!("cannot write {}: {error}", report_path.display()));
     }
-    for (reason, count) in summary.excluded {
-        eprintln!("differential excluded: {reason}: {count}");
-    }
-    let format_excluded: usize = summary.format_excluded.values().sum();
-    eprintln!(
-        "formatter properties: {} checked, {format_excluded} excluded",
-        summary.format_checked
-    );
-    for (reason, count) in &summary.format_excluded {
-        eprintln!("formatter properties excluded: {reason}: {count}");
-    }
+    eprint!("{report}");
     for failure in &failures {
         eprintln!("{failure}");
     }
-    for warning in summary.warnings {
+    for warning in &summary.warnings {
         eprintln!("warning: {warning}");
     }
     assert!(
@@ -247,7 +283,7 @@ fn golden_suite() {
 }
 
 // 各ケースは番号ごとに別の一時ディレクトリで動くので、スレッドに分けて並べて走らせる。
-// 失敗の報告の順を保つため、結果をケースの順に並べてから返す（TODO-171 の改造）。
+// 失敗の報告の順を保つため、結果をケースの順に並べてから返す。
 /// 一つのケースの集計と失敗の一覧
 type CaseResult = (Summary, Vec<String>);
 
@@ -268,7 +304,7 @@ fn run_parallel(jobs: &[(usize, PathBuf)], bless: bool) -> Vec<CaseResult> {
                     let name = path.display().to_string();
                     let mut summary = Summary::default();
                     let mut failures = Vec::new();
-                    if let Err(error) = load_case(path.clone()).and_then(|case| {
+                    if let Err(error) = load_case(path.clone(), bless).and_then(|case| {
                         run_case(&case, *index, bless, &mut summary, &mut failures)
                     }) {
                         failures.push(format!("{name}: {error}"));
@@ -284,17 +320,37 @@ fn run_parallel(jobs: &[(usize, PathBuf)], bless: bool) -> Vec<CaseResult> {
         .collect()
 }
 
-fn discover_scripts(root: &Path) -> TestResult<Vec<PathBuf>> {
+fn discover_scripts(
+    root: &Path,
+    filter: &str,
+    bless: bool,
+    failures: &mut Vec<String>,
+) -> TestResult<Vec<PathBuf>> {
     let mut pending = vec![root.to_path_buf()];
     let mut scripts = Vec::new();
     while let Some(dir) = pending.pop() {
         for entry in sorted_entries(&dir)? {
             let path = entry.path();
             let kind = entry.file_type().map_err(|e| e.to_string())?;
+            if path.extension().is_some_and(|ext| ext == "formatted") {
+                let stem = path.with_extension("");
+                // フィルタは期待値でなく元のケース名に当て、範囲外の期待値には触れない。
+                if sidecar(&stem, "bnt").display().to_string().contains(filter)
+                    && !stem.is_dir()
+                    && !sidecar(&stem, "bnt").is_file()
+                {
+                    if bless {
+                        formatting::remove_formatted(&path)?;
+                    } else {
+                        failures.push(format!("stale .formatted: {}", path.display()));
+                    }
+                }
+                continue;
+            }
             if kind.is_dir() {
                 let name = entry.file_name();
                 let name = name.to_string_lossy();
-                if name.ends_with(".files") || name.ends_with(".formatted") {
+                if name.ends_with(".files") {
                     continue;
                 }
                 if sidecar(&path, "mode").is_file() {
@@ -338,7 +394,7 @@ fn lines(path: &Path) -> TestResult<Vec<String>> {
         .map(|line| line.strip_suffix('\r').unwrap_or(line).to_owned())
         .collect())
 }
-fn load_case(path: PathBuf) -> TestResult<TestCase> {
+fn load_case(path: PathBuf, bless: bool) -> TestResult<TestCase> {
     let stem = if path.is_dir() {
         path.clone()
     } else {
@@ -359,8 +415,10 @@ fn load_case(path: PathBuf) -> TestResult<TestCase> {
     if has_diagnostics_option(&options) && sidecar(&stem, "diag.json").exists() {
         return Err(".options with --diagnostics cannot have .diag.json".into());
     }
-    // `.exit` は必須である（07-03「ゴールデンテストの形式（初回リリース版）」）。
+    // 書き直しでは実際の終了状態を保存するので、初回の `.exit` を省いてよい。
+    // 通常は必須である（設計書 07-03「ゴールデンテストの形式（初回リリース版）」）。
     let exit_code = match optional(&sidecar(&stem, "exit"))? {
+        None if bless => 0,
         None => return Err("missing .exit".into()),
         Some(bytes) => {
             let text = String::from_utf8(bytes).map_err(|e| format!(".exit: {e}"))?;
@@ -496,8 +554,15 @@ fn run_case(
     if case.mode == "fmt" || case.mode == "fmt-check" {
         return formatting::run_fmt_case(case, index, bless, summary, failures);
     }
-    // `test` の方式は fmt と同じく頭で分け、フォーマッタの性質の確かめ（対象は `check`・`run`）に数えない
-    // （実装プラン D12「手順の要点」の 6）。
+    let formatted = sidecar(&case.stem, "formatted");
+    if formatted.try_exists().map_err(|e| e.to_string())? {
+        if bless {
+            formatting::remove_formatted(&formatted)?;
+        } else {
+            failures.push(format!("{name}: stale .formatted: {}", formatted.display()));
+        }
+    }
+    // `test` の方式は fmt と同じく頭で分け、フォーマッタの性質の確かめ（対象は `check`・`run`）に数えない。
     if case.mode != "test" {
         // `check`・`run` のすべてのテストで、フォーマッタの性質を確かめる（設計書 07-03「ゴールデンテストの形式（初回リリース版）」）。コマンドラインが
         // 使い方の誤りになるテストは `--deny-warnings` を決められないので除き、除いた数に含める。
@@ -521,7 +586,7 @@ fn run_case(
         }
     }
     let mut actuals = Vec::new();
-    // `test` は利用者のテストの関数を実行するので、`run` と同じく IO の二つの方式で確かめる（実装プラン D12）。
+    // `test` は利用者のテストの関数を実行するので、`run` と同じく IO の二つの方式で確かめる。
     let modes: &[ExecMode] = if case.mode == "run" || case.mode == "test" {
         &[ExecMode::Direct, ExecMode::Request]
     } else {
@@ -577,6 +642,8 @@ fn run_case(
     } else {
         None
     };
+    // 書き直しでは仮の終了状態によって、コア IR の検査と制限の除外を誤って選ばない。
+    let expected = if bless { &actuals[0] } else { &case.expected };
     if case.mode == "run"
         && let Ok(Command::Run { options, .. }) = command(case, false)
     {
@@ -598,7 +665,7 @@ fn run_case(
             let reason = if case.stdin.is_some() {
                 Some("stdin")
             } else if name.starts_with("testdata/network/") {
-                // サーバのタスクと runtime_view は参照インタプリタの対象外（実装プラン L33、設計書 02-06）。
+                // サーバのタスクと runtime_view は参照インタプリタの対象外。
                 Some("network (tasks and runtime view)")
             } else if NONDETERMINISTIC_CASES.contains(&name.as_str()) {
                 Some("clock/random")
@@ -617,6 +684,9 @@ fn run_case(
             }
             let entry =
                 pipeline::entry_spec(&case.path).map_err(|e| format!("entry error: {e:?}"))?;
+            let reference_directory = directory.clone();
+            let files = sidecar(&case.stem, "files");
+            let prepare_reference = Box::new(move || reset_directory(&reference_directory, &files));
             let input = run::run_input(&entry, case.args.clone(), directory)
                 .map_err(|e| format!("run input: {e}"))?;
             let config = VmConfig {
@@ -629,6 +699,20 @@ fn run_case(
                 input,
                 config,
                 ExecMode::Direct,
+                differential::CompareOptions {
+                    require_returned: false,
+                    expected_limit: expected.exit_code == 2
+                        && expected.diagnostics.iter().any(|line| {
+                            serde_json::from_str::<serde_json::Value>(line)
+                                .ok()
+                                .is_some_and(|diag| {
+                                    diag.get("code")
+                                        .and_then(|c| c.as_str())
+                                        .is_some_and(|c| c.starts_with('L'))
+                                })
+                        }),
+                },
+                prepare_reference,
             )))
         })?;
         if let Some(result) = result {
@@ -636,8 +720,8 @@ fn run_case(
         }
     }
     // 関門: CLI の check が成功した入力も脱糖後に型が付く契約を守る。従来は run だけを
-    // 検査したため、実行を要しない言語機能の脱糖の誤りを見逃した（実装プラン F19）。
-    if case.expected.exit_code == 0
+    // 検査したため、実行を要しない言語機能の脱糖の誤りを見逃した。
+    if expected.exit_code == 0
         && let Ok(Command::Check { options, .. }) = command(case, false)
     {
         let checked = pipeline::check_path(
@@ -652,10 +736,13 @@ fn run_case(
             .program
             .ok_or_else(|| format!("successful check has no program: {:?}", checked.diagnostics))?;
         let result = validate_core(program, Comparison::Matched);
-        if matches!(result, Comparison::Matched) {
-            summary.check_core_matched += 1;
+        match result {
+            Comparison::Matched => summary.check_core_matched += 1,
+            Comparison::Failed(reason) => failures.push(format!("{name}: {reason}")),
+            Comparison::Excluded(reason) => {
+                failures.push(format!("{name}: unexpected exclusion: {reason}"));
+            }
         }
-        summary.record(result, &name, failures);
     }
     if bless && consistent {
         write_expected(case, &actuals[0], text.as_ref())?;
@@ -695,18 +782,8 @@ fn with_directory<T>(
 ) -> TestResult<T> {
     let directory =
         std::env::temp_dir().join(format!("benitoite-golden-{}-{index}", std::process::id()));
-    if directory.exists() {
-        fs::remove_dir_all(&directory)
-            .map_err(|e| format!("reset {}: {e}", directory.display()))?;
-    }
-    fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
-    let result = (|| {
-        let files = sidecar(&case.stem, "files");
-        if files.exists() {
-            copy_files(&files, &directory)?;
-        }
-        action(directory.clone())
-    })();
+    let result = reset_directory(&directory, &sidecar(&case.stem, "files"))
+        .and_then(|()| action(directory.clone()));
     if let Err(e) = fs::remove_dir_all(&directory) {
         summary
             .warnings
@@ -714,6 +791,29 @@ fn with_directory<T>(
     }
     result
 }
+// VM と参照側に同じ初期状態を与える。消せる場所を一時ディレクトリの直下に限る。
+fn reset_directory(directory: &Path, files: &Path) -> TestResult<()> {
+    if directory.parent() != Some(std::env::temp_dir().as_path())
+        || !directory.file_name().is_some_and(|name| {
+            name.to_string_lossy()
+                .starts_with(&format!("benitoite-golden-{}-", std::process::id()))
+        })
+    {
+        return Err(format!(
+            "refusing to reset non-temporary directory: {}",
+            directory.display()
+        ));
+    }
+    if directory.exists() {
+        fs::remove_dir_all(directory).map_err(|e| format!("reset {}: {e}", directory.display()))?;
+    }
+    fs::create_dir_all(directory).map_err(|e| e.to_string())?;
+    if files.exists() {
+        copy_files(files, directory)?;
+    }
+    Ok(())
+}
+
 fn copy_files(source: &Path, target: &Path) -> TestResult<()> {
     for entry in sorted_entries(source)? {
         let destination = target.join(entry.file_name());

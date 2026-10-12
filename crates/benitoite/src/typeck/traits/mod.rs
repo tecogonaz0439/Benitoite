@@ -61,7 +61,7 @@ pub(super) fn method(ctx: &mut Body<'_, '_>, name: &NameExpr) -> ITy {
         return ITy::Error;
     };
     // メソッドの宣言の型に自己の制約を先頭に置くことで、値として使う場合も T4 と同じ経路にする
-    // （実装プラン 10-05「型パラメータの番号」）。
+    // （`types` のモジュールの説明）。
     ctx.instantiate(name.id, name.span, binding).0
 }
 pub(super) fn solve_classes(ctx: &mut Body<'_, '_>) {
@@ -75,6 +75,7 @@ pub(super) fn implements(
     class: BindingId,
     ty: &ITy,
 ) -> bool {
+    let mut parts = 0;
     solve::resolve(
         ctx.decls,
         solver,
@@ -82,12 +83,14 @@ pub(super) fn implements(
         &solve::table(ctx.decls),
         class,
         &IClassArg::Ty(ty.clone()),
+        &mut parts,
     )
     .is_ok()
 }
 
-/// F07 の区分を入口だけで読み替え、内部の判定で数値を取り違えないようにする。
-enum Bound {
+/// 組み込みの制約の区分を、制約の解決と型パラメータの検査で共有する。
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Bound {
     Set,
     Equality,
     Key,
@@ -95,7 +98,7 @@ enum Bound {
 pub(super) fn check_bound(
     ctx: &mut Body<'_, '_>,
     index: u32,
-    mode: u8,
+    mode: Bound,
     set: Option<TySet>,
     r: &Reason,
 ) {
@@ -106,7 +109,7 @@ pub(super) fn check_bound(
     else {
         return;
     };
-    check_parameter_bound(ctx, &p, mode, set, r, Some(index));
+    check_parameter_bound(ctx, &p, mode, set, r, ITy::Param(index));
 }
 
 /// 節の型パラメータを囲む関数のパラメータと混同しない（設計書 01-06「エフェクトの宣言とハンドラの型付け（初回リリース版）」）。
@@ -114,7 +117,7 @@ pub(super) fn check_rigid_bound(
     ctx: &mut Body<'_, '_>,
     clause: NodeId,
     index: u32,
-    mode: u8,
+    mode: Bound,
     set: Option<TySet>,
     r: &Reason,
 ) {
@@ -127,24 +130,18 @@ pub(super) fn check_rigid_bound(
         debug_assert!(false, "missing operation type parameter");
         return;
     };
-    check_parameter_bound(ctx, &p, mode, set, r, None);
+    check_parameter_bound(ctx, &p, mode, set, r, ITy::Rigid { clause, index });
 }
 
 fn check_parameter_bound(
     ctx: &mut Body<'_, '_>,
     p: &TypeParamInfo,
-    mode: u8,
+    mode: Bound,
     set: Option<TySet>,
     r: &Reason,
-    index: Option<u32>,
+    ty: ITy,
 ) {
-    let bound = match mode {
-        0 => Bound::Set,
-        1 => Bound::Equality,
-        2 => Bound::Key,
-        _ => return,
-    };
-    let valid = match bound {
+    let valid = match mode {
         Bound::Equality => matches!(
             p.builtin,
             Some(BuiltinConstraint::Equality | BuiltinConstraint::Key)
@@ -158,32 +155,87 @@ fn check_parameter_bound(
     if valid {
         return;
     }
-    let name = p.name.clone();
-    let (code, constraint, help) = match bound {
-        Bound::Set => (DiagCode::E0405, text::ORDERED, "type_param"),
+    let name = ctx.show_type(&ty);
+    let index = if let ITy::Param(index) = ty {
+        Some(index)
+    } else {
+        None
+    };
+    let (code, requirement) = match mode {
+        Bound::Set if r.kind == ReasonKind::Interp => (DiagCode::E0422, None),
+        Bound::Set => (DiagCode::E0405, Some((text::ORDERED, "type_param"))),
         Bound::Equality if matches!(r.kind, ReasonKind::Operator { .. }) => {
-            (DiagCode::E0406, text::EQUALITY, "constraint")
+            (DiagCode::E0406, Some((text::EQUALITY, "constraint")))
         }
-        Bound::Equality => (DiagCode::E0424, text::EQUALITY, "add"),
-        Bound::Key => (DiagCode::E0424, text::KEY, "add"),
+        Bound::Equality => (DiagCode::E0424, Some((text::EQUALITY, "add"))),
+        Bound::Key => (DiagCode::E0424, Some((text::KEY, "add"))),
     };
     let mut diag = DiagBuilder::new(code)
         .primary(r.span)
         .arg("param", &name)
         .arg("ty", &name)
-        .arg("op", op_text(&r.kind))
-        .arg("constraint", constraint);
-    if code == DiagCode::E0405 {
-        diag = diag.help(help);
+        .arg("op", op_text(&r.kind));
+    if let Some((constraint, help)) = requirement {
+        diag = diag.arg("constraint", constraint);
+        if code == DiagCode::E0405 {
+            diag = diag.help(help);
+        } else if let ITy::Rigid { clause, .. } = ty {
+            let operation = ctx
+                .clause_ops
+                .get(clause)
+                .map_or("_", |(name, _)| name.as_str());
+            diag = diag
+                .arg("declared", &p.name)
+                .arg("operation", operation)
+                .help("operation");
+        } else {
+            diag = diag.help_edits(
+                help,
+                index.map_or_else(Vec::new, |index| {
+                    parameter_edit(ctx.decls, &ctx.scope, index, constraint)
+                }),
+            );
+        }
     } else {
-        diag = diag.help_edits(
-            help,
-            index.map_or_else(Vec::new, |index| {
-                parameter_edit(ctx.decls, &ctx.scope, index, constraint)
-            }),
-        );
+        diag = if index.is_none() {
+            diag.arg("declared", &name).help("rigid")
+        } else if ctx
+            .decls
+            .resolved
+            .stdlib("Benitoite.Trait.Show")
+            .is_some_and(|class| implements(ctx, &ctx.solver, class, &ty))
+        {
+            ctx.solver.interpolation_help(ctx, &ty, r.span, diag)
+        } else if let Some(alias) = trait_import_alias(ctx, r.span) {
+            let constraint = format!("{alias}.{}", text::SHOW);
+            diag.arg("function", format!("{constraint}.{}", text::SHOW_METHOD))
+                .arg("constraint", constraint)
+                .help("type_param")
+        } else {
+            diag.help("type_param_import")
+        };
     }
     ctx.diagnostic(diag.build());
+}
+
+/// 修正案の名前は診断と同じモジュールの import に合わせる。
+pub(super) fn trait_import_alias<'a>(ctx: &'a Body<'_, '_>, span: Span) -> Option<&'a str> {
+    // 別のモジュールが取り込んだ Trait は、この位置から参照できない
+    // （設計書 01-03「モジュールと import（初回リリース版）」）。
+    ctx.decls
+        .asts
+        .iter()
+        .find(|m| m.file == span.file)
+        .and_then(|m| {
+            m.imports.iter().find(|i| {
+                i.path
+                    .iter()
+                    .map(|n| n.text.as_str())
+                    .eq(["Benitoite", "Trait"])
+            })
+        })
+        .and_then(|i| i.alias.as_ref().or_else(|| i.path.last()))
+        .map(|alias| alias.text.as_str())
 }
 
 fn class_name(d: &Decls<'_>, id: BindingId) -> String {
@@ -231,7 +283,8 @@ fn constraint_name(ctx: &Body<'_, '_>, class: BindingId) -> String {
         .or_else(|| import.path.last())
         .map_or(name.clone(), |alias| format!("{}.{name}", alias.text))
 }
-fn kind(p: &TypeParamDecl) -> ParamKind {
+/// 宣言の収集前の型クラスの表でも、検査と同じパラメータの形を使う。
+pub(super) fn kind(p: &TypeParamDecl) -> ParamKind {
     if let crate::syntax::ast::TypeParamKind::Ctor { arity } = p.kind {
         ParamKind::Ctor { arity }
     } else {
@@ -261,30 +314,8 @@ fn parameter_edit(d: &Decls<'_>, scope: &Scope, index: u32, constraint: &str) ->
     }]
 }
 fn op_text(r: &ReasonKind) -> String {
-    use crate::syntax::ast::{BinOp, UnOp};
-    use crate::typeck::infer::OpName;
     if let ReasonKind::Operator { op } = r {
-        match op {
-            OpName::Un(UnOp::Neg) => "-",
-            OpName::Un(UnOp::Not) => "not",
-            OpName::Bin(b) => match b {
-                BinOp::Add => "+",
-                BinOp::Sub => "-",
-                BinOp::Mul => "*",
-                BinOp::Div => "/",
-                BinOp::IntDiv => "div",
-                BinOp::Mod => "mod",
-                BinOp::Eq => "=",
-                BinOp::Ne => "<>",
-                BinOp::Lt => "<",
-                BinOp::Le => "<=",
-                BinOp::Gt => ">",
-                BinOp::Ge => ">=",
-                BinOp::And => "and",
-                BinOp::Or => "or",
-            },
-        }
-        .into()
+        super::text::operator_spelling(*op).into()
     } else if let ReasonKind::BuiltinParam { name } | ReasonKind::ParamBound { name } = r {
         name.clone()
     } else {

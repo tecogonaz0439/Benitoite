@@ -1,5 +1,5 @@
 //! 英語の言語リファレンス `docs/reference/benitoite.md` に載せたコードの例の検査
-//! （設計書 06-06「言語の文書と日本語の訳」、実装プラン D33）。例の書き方と検査の規則は、
+//! （設計書 06-06「言語の文書と日本語の訳」）。例の書き方と検査の規則は、
 //! 同梱の Skill の文書（`tests/skill_examples.rs`）と同じであり、共有する `doc_examples` に置く。
 #![allow(
     clippy::unwrap_used,

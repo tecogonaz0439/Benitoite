@@ -1,5 +1,5 @@
-//! ネットワークの失敗の表を実行器と CLI へ渡して確かめる（設計書 03-09・07-03、実装プラン L33）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! ネットワークの失敗の表を実行器と CLI へ渡して確かめる（設計書 07-03「HTTP のテスト（初回リリース版）」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic)]
 
 use benitoite::cli::{self, CliEnv, DevPanic};
@@ -23,6 +23,7 @@ fn faults() -> NetworkFaults {
             ("REFUSED.INVALID".into(), NetworkFault::ConnectionRefused),
             ("ReSeT.InVaLiD".into(), NetworkFault::ConnectionReset),
             ("TiMeOuT.InVaLiD".into(), NetworkFault::TimedOut),
+            ("::1".into(), NetworkFault::TimedOut),
         ],
     }
 }
@@ -138,7 +139,8 @@ fn execute_injected(source: &str, mode: ExecMode, through_cli: bool) -> String {
 }
 
 // 関門: ソースの get/send とエラーのアクセサを含む、二つの parts の引き渡しの契約。
-// L32 の関数単体のテストでは CLI と RunEnv の引き渡し忘れ・名前の大小文字を捕まえない。
+// クライアントの関数単体のテストでは CLI と RunEnv の引き渡し忘れ・名前の大小文字を捕まえない。
+// IPv6 の角括弧を除き忘れると、表の ::1 に当たらず筋書きにない仕事の待ちで失敗する。
 // 注入は既存の外部依存の表だけを使い、本番の差し込み口を増やさない。
 #[test]
 fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
@@ -150,8 +152,11 @@ fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
         ("refused.invalid", "ConnectionRefused"),
         ("reset.invalid", "ConnectionReset"),
         ("timeout.invalid", "TimedOut"),
+        ("[::1]:1", "TimedOut"),
     ] {
-        for host in [host.to_owned(), host.to_ascii_uppercase()] {
+        let mut hosts = vec![host.to_owned(), host.to_ascii_uppercase()];
+        hosts.dedup();
+        for host in hosts {
             for call in [
                 format!("Http.get(\"http://{host}/\")"),
                 format!("Http.send(Http.clientRequest(\"POST\", \"http://{host}/\"))"),
@@ -175,7 +180,7 @@ fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
 }
 
 // 関門: listen の待ち受けと serve のループへ進まず HostNotFound を返す契約。
-// L30 の単体の返り値だけでは、serve のソースと実行口の接続を確かめられない。
+// サーバの単体の返り値だけでは、serve のソースと実行口の接続を確かめられない。
 #[test]
 fn listen_and_serve_return_host_not_found_before_listening() {
     let source = r#"
@@ -204,7 +209,7 @@ end function
 }
 
 // 関門: 表にない名前を一律に注入へ振り分ける退行を捕まえる。同じ実行の中で
-// 注入と本物の loopback を通し、準備の待ちも扱える real_with_poll を使う（実装プラン 10-16）。
+// 注入と本物の loopback を通し、準備の待ちも扱える real_with_poll を使う（設計書 02-09「IO 実行器」）。
 #[test]
 fn an_unmatched_host_reaches_the_loopback_server() {
     let source = format!(

@@ -263,7 +263,7 @@
 | `Decimal.fromInteger(n)` | `function(Integer) -> Decimal` | `n` と等しい値。小数の桁数は 0 |
 | `Decimal.truncate(x)` | `function(Decimal) -> Option[Integer]` | `x` を 0 の方向に切り捨てた整数。結果が `Integer` の範囲を超えるときは `Option.None` |
 | `Decimal.toFloat(x)` | `function(Decimal) -> Float` | `x` に最も近い `Float` の値（最近接偶数丸め） |
-| `Decimal.fromFloat(x)` | `function(Float) -> Option[Decimal]` | `Float.toString(x)` の表記が表す数を、`Decimal` の値として読んだもの。小数点の後が 29 桁以上になるときは、小数の桁数 28 に最近接偶数丸めで丸める。`x` が NaN・無限大か、絶対値が `Decimal` の範囲を超えるときは `Option.None` |
+| `Decimal.fromFloat(x)` | `function(Float) -> Option[Decimal]` | `Float.toString(x)` の表記が表す数を、`Decimal` の値として読んだもの。小数の桁数は、表記の指数を展開した後の小数点の後の桁数である（`Decimal.fromFloat(1.0e21)` の中身は小数の桁数 0 の `1000000000000000000000`、`Decimal.fromFloat(1.5e-7)` の中身は 8 の `0.00000015`、`Decimal.fromFloat(0.1)` の中身は 1 の `0.1`）。小数点の後が 29 桁以上になるときは、小数の桁数 28 に最近接偶数丸めで丸める。`x` が NaN・無限大か、絶対値が `Decimal` の範囲を超えるときは `Option.None` |
 | `Decimal.toString(x)` | `function(Decimal) -> String` | 下の規則による表記 |
 | `Decimal.parse(s)` | `function(String) -> Option[Decimal]` | 10 進の数の表記を読んだ値。表記が正しくないときと、`Decimal` のリテラルなら型検査の誤りになる値のときは `Option.None` |
 
@@ -282,6 +282,4 @@
 
 【方針】`Integer.parse` と `Float.parse` が受け付ける表記は、それぞれ整数リテラルの 10 進の形と浮動小数リテラルの形に、先頭の任意の `-` を加えたものである。ただし、桁の区切り `_`、先頭の `+`、前後の空白は受け付けない。`Float.parse` は、整数リテラルの 10 進の形（`42`）も受け付ける。`NaN`・`Infinity` は受け付けない。絶対値が小さすぎて 0 に丸められる表記（`1e-9999`）は、浮動小数リテラルと同じく受け付け、符号を保った 0 を返す（`Float.parse("-1e-9999")` は `Option.Some(-0.0)`）。
 
-【方針】`Decimal.parse` が受け付ける表記は、`Decimal` のリテラルから接尾辞 `m` を除いた形（`12`、`1.25`）に、先頭の任意の `-` を加えたものである。`Integer.parse` と同じく、桁の区切り `_`、先頭の `+`、前後の空白は受け付けない。
-
-初回リリース版（`0.0.1`）の処理系の `Decimal.parse` には、この規則に反して、整数部の先頭に 0 の続く表記（`"01.5"`、`"007"`）を受け付ける誤りがある。`Decimal` のリテラルでは、`0` 自身を除き `0` で始まる整数部は誤りであり、`Integer.parse` と `Float.parse` もこの表記を受け付けない。規則は本節のとおりとし、処理系を直す（docs/todo の TODO-166）。
+【方針】`Decimal.parse` が受け付ける表記は、`Decimal` のリテラルから接尾辞 `m` を除いた形（`12`、`1.25`）に、先頭の任意の `-` を加えたものである。`Integer.parse` と同じく、桁の区切り `_`、先頭の `+`、前後の空白は受け付けない。リテラルと同じく、`0` 自身を除き `0` で始まる整数部（`"01.5"`、`"007"`、`"-01.5"`）も受け付けない。

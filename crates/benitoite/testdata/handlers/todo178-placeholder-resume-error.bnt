@@ -1,0 +1,24 @@
+// spec: 01-02 部分適用のプレースホルダ
+// 関門: 生成する関数の戻り値と継続の境界を CLI の結果・診断で確かめる。
+function add(a: Integer, b: Integer) -> Integer
+  return a + b
+end function
+effect Ask
+  function ask() -> Integer
+end effect
+function first() -> Integer
+  return handle ask() + 2 with
+    case ask() ->
+      bind f <- add(resume(10), _)
+      f(1)
+  end handle
+end function
+function second() -> Integer
+  return handle ask() + 2 with
+    case ask() ->
+      bind f <- add(_, resume(10))
+      f(1)
+  end handle
+end function
+function main() -> Unit
+end function

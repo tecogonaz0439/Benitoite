@@ -1,5 +1,5 @@
 //! 検証器の受理・拒否を、コード生成したゴールデンテストのプログラムで確かめる
-//! （設計書 02-08「実行の手順」、実装プラン R32）。
+//! （設計書 02-08「実行の手順」）。
 
 // 変異の準備は添字と算術で記述し、検証器の失敗はテストの panic にする。
 #![allow(
@@ -14,7 +14,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use benitoite::bytecode::instr::{Instr, Opcode};
-use benitoite::bytecode::program::{CompiledProgram, ConstIdx};
+use benitoite::bytecode::program::{CompiledProgram, ConstIdx, ProtoIdx};
 use benitoite::bytecode::verify::verify;
 use benitoite::pipeline::{self, CheckOptions};
 
@@ -56,7 +56,28 @@ fn compile(path: &Path) -> Option<CompiledProgram> {
     .ok()?;
     let checked_program = checked.program?;
     let core = pipeline::desugar_checked(&checked_program).unwrap();
-    Some(pipeline::compile(&core, checked.sources).unwrap())
+    match pipeline::compile(&core, checked.sources) {
+        Ok(program) => Some(program),
+        // 期待した処理系の制限では命令を作らないので、検証器の入力にならない。
+        Err(pipeline::CompileError::Limit(_))
+            if std::fs::read_to_string(path.with_extension("exit"))
+                .is_ok_and(|s| s.trim() == "2")
+                && std::fs::read_to_string(path.with_extension("diag.json")).is_ok_and(|s| {
+                    s.lines().any(|line| {
+                        serde_json::from_str::<serde_json::Value>(line)
+                            .ok()
+                            .is_some_and(|d| {
+                                d.get("code")
+                                    .and_then(|c| c.as_str())
+                                    .is_some_and(|c| c.starts_with('L'))
+                            })
+                    })
+                }) =>
+        {
+            None
+        }
+        Err(error) => panic!("{}: compilation failed: {error:?}", path.display()),
+    }
 }
 
 fn copy(p: &CompiledProgram) -> CompiledProgram {
@@ -85,6 +106,7 @@ fn random(seed: &mut u64, bound: usize) -> usize {
 
 // 関門: verify の見落としが、正しく生成した命令の範囲外の変異を受け付ける退行を捕まえる。
 // 手書きの表では捕まらない生成結果との不整合を、実際のパイプラインで確かめる。
+// 命令を拒む位置も確かめ、別の位置や位置なしで報告する退行を捕まえる。
 #[test]
 fn golden_programs_and_seeded_single_site_mutations() {
     let mut seed = 0x32_b017_5eed_0263_u64;
@@ -147,7 +169,21 @@ fn golden_programs_and_seeded_single_site_mutations() {
             }
             mutations += 1;
             match verify(&changed) {
-                Err(_) => rejected += 1,
+                Err(error) => {
+                    if matches!(kind, 0 | 1 | 2 | 6) {
+                        // 命令だけの差し替えは表の長さを変えず、先に検査する原型と命令も元のままである。
+                        // 壊した命令で最初の誤りが出るため、表を変える場合と違い、原型と命令の位置を特定できる。
+                        let expected_proto = ProtoIdx(u32::try_from(pi).unwrap());
+                        let expected_pc = u32::try_from(pc).unwrap();
+                        assert_eq!(
+                            (error.proto, error.pc),
+                            (expected_proto, Some(expected_pc)),
+                            "incorrect mutation error location: {}, kind {kind}, expected proto {expected_proto:?}, pc {expected_pc}: {error:?}",
+                            path.display()
+                        );
+                    }
+                    rejected += 1;
+                }
                 Ok(()) => {
                     assert!(
                         !must_reject,

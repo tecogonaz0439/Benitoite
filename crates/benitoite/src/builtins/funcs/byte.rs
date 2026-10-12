@@ -4,7 +4,7 @@ use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::runtime::heap::Value;
 
 builtin! {
-    /// `Byte.fromInteger` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Byte.fromInteger` の本体。
     name = "Byte.fromInteger",
     pure fn from_integer(ctx, n: i64) -> Value<'e> {
         super::option(&ctx, u8::try_from(n).ok().map(Value::Byte))
@@ -12,7 +12,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Byte.toInteger` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Byte.toInteger` の本体。
     name = "Byte.toInteger",
     pure fn to_integer(ctx, b: u8) -> i64 {
         let _ = ctx;
@@ -21,7 +21,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Byte.toString` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Byte.toString` の本体。
     name = "Byte.toString",
     pure fn to_string(ctx, b: u8) -> Value<'e> {
         ctx.alloc_str(&b.to_string(), "Byte.toString")
@@ -29,7 +29,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Byte.bitwiseAnd` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Byte.bitwiseAnd` の本体。
     name = "Byte.bitwiseAnd",
     pure fn bitwise_and(ctx, a: u8, b: u8) -> u8 {
         let _ = ctx;
@@ -38,7 +38,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Byte.bitwiseOr` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Byte.bitwiseOr` の本体。
     name = "Byte.bitwiseOr",
     pure fn bitwise_or(ctx, a: u8, b: u8) -> u8 {
         let _ = ctx;
@@ -47,7 +47,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Byte.bitwiseExclusiveOr` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Byte.bitwiseExclusiveOr` の本体。
     name = "Byte.bitwiseExclusiveOr",
     pure fn bitwise_exclusive_or(ctx, a: u8, b: u8) -> u8 {
         let _ = ctx;
@@ -56,7 +56,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Byte.bitwiseNot` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Byte.bitwiseNot` の本体。
     name = "Byte.bitwiseNot",
     pure fn bitwise_not(ctx, a: u8) -> u8 {
         let _ = ctx;
@@ -65,7 +65,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Byte.shiftLeft` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Byte.shiftLeft` の本体。
     name = "Byte.shiftLeft",
     pure fn shift_left(ctx, a: u8, n: i64) -> u8 {
         let _ = ctx;
@@ -75,7 +75,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Byte.shiftRight` の本体（実装プラン 10-12「項目の一覧」）。
+    /// `Byte.shiftRight` の本体。
     name = "Byte.shiftRight",
     pure fn shift_right(ctx, a: u8, n: i64) -> u8 {
         let _ = ctx;
@@ -84,7 +84,7 @@ builtin! {
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[
     from_integer::DECL,
     to_integer::DECL,
@@ -100,7 +100,7 @@ pub const DECLS: &[BuiltinDecl] = &[
 #[cfg(test)]
 mod tests {
     // 関門: Byte の範囲、8 bit の切り捨て、10 進表記と停止理由を守る。
-    // 既存の Integer のテストには幅の違いがなく、公開の口も加えない（R35、10-12）。
+    // 既存の Integer のテストには幅の違いがなく、公開の口も加えない。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,

@@ -1,13 +1,13 @@
 //! 型が決まった試行とリソースの制約を解く（設計書 02-05「制約の解決」、01-09・01-10）。
 use super::super::{
     TryKind,
-    context::Body,
+    context::{Body, ReturnOwner},
     infer::{Constraint, ITy, Reason},
 };
 use crate::base::NodeId;
 use crate::diag::{DiagBuilder, DiagCode};
+use crate::types::TyCon;
 use crate::types::builtin::BuiltinTypeClass;
-use crate::types::{TyCon, TyNames};
 
 pub(super) fn solve(ctx: &mut Body<'_, '_>) {
     let mut pending = vec![];
@@ -56,7 +56,7 @@ pub(super) fn solve(ctx: &mut Body<'_, '_>) {
                 {
                     ctx.diagnostic(
                         DiagBuilder::new(DiagCode::E0443)
-                            .arg("ty", show(ctx, &ty))
+                            .arg("ty", ctx.show_type(&ty))
                             .primary(reason.span)
                             .help("resources")
                             .build(),
@@ -128,7 +128,7 @@ fn solve_try(
         | ITy::Error => {
             ctx.diagnostic(
                 DiagBuilder::new(DiagCode::E0440)
-                    .arg("ty", show(ctx, target))
+                    .arg("ty", ctx.show_type(target))
                     .primary(r.span)
                     .help("kinds")
                     .build(),
@@ -145,22 +145,19 @@ fn solve_try(
     if !matches!(&current_ret, ITy::Var(_))
         && !matches!(&current_ret, ITy::Con(c, a) if *c == con && a.len() == args.len())
     {
-        ctx.diagnostic(
-            DiagBuilder::new(DiagCode::E0441)
-                .arg("ty", show(ctx, target))
-                .arg(
-                    "needed",
-                    match kind {
-                        TryKind::Result => text::RESULT,
-                        TryKind::Option => text::OPTION,
-                    },
-                )
-                .arg("declared", show(ctx, ret))
-                .primary(r.span)
-                .note("declared")
-                .help("convert")
-                .build(),
-        );
+        let [target_name, return_name] = ctx.show_types([target, ret]);
+        let d = DiagBuilder::new(DiagCode::E0441)
+            .arg("ty", target_name)
+            .arg(
+                "needed",
+                match kind {
+                    TryKind::Result => text::RESULT,
+                    TryKind::Option => text::OPTION,
+                },
+            )
+            .arg("declared", return_name)
+            .primary(r.span);
+        ctx.diagnostic(return_note(ctx, node, d).help("convert").build());
         poison(ctx, &[ret.clone(), result.clone()], r);
         return;
     }
@@ -178,22 +175,31 @@ fn solve_try(
             && let Some(expected) = returned.get(1)
             && ctx.solver.equal(expected, error, r).is_err()
         {
-            ctx.diagnostic(
-                DiagBuilder::new(DiagCode::E0442)
-                    .arg("expected", show(ctx, expected))
-                    .arg("found", show(ctx, error))
-                    .arg("declared", show(ctx, ret))
-                    .primary(r.span)
-                    .note("declared")
-                    .help("map_error")
-                    .build(),
-            );
+            ctx.solver.clear_escape();
+            let [expected_name, error_name, return_name] = ctx.show_types([expected, error, ret]);
+            let d = DiagBuilder::new(DiagCode::E0442)
+                .arg("expected", expected_name)
+                .arg("found", error_name)
+                .arg("declared", return_name)
+                .primary(r.span);
+            ctx.diagnostic(return_note(ctx, node, d).help("map_error").build());
             poison(ctx, &[ret.clone(), target.clone(), result.clone()], r);
             return;
         }
     }
     if ctx.unify(ret, &ITy::Con(con, wanted), r) {
         ctx.try_kinds.insert(node, (kind, ret.clone()));
+    }
+}
+#[cold]
+#[inline(never)]
+fn return_note(ctx: &Body<'_, '_>, node: NodeId, d: DiagBuilder) -> DiagBuilder {
+    match ctx.try_owners.get(node) {
+        Some(ReturnOwner::Lambda) => d.note("declared_lambda"),
+        Some(ReturnOwner::Placeholder(span)) => d
+            .secondary(*span, "placeholder_call")
+            .note("declared_placeholder"),
+        Some(ReturnOwner::Function) | None => d.note("declared"),
     }
 }
 fn poison(ctx: &mut Body<'_, '_>, tys: &[ITy], r: &Reason) {
@@ -206,18 +212,4 @@ fn poison(ctx: &mut Body<'_, '_>, tys: &[ITy], r: &Reason) {
 mod text {
     pub(super) const RESULT: &str = "Result";
     pub(super) const OPTION: &str = "Option";
-}
-fn show(ctx: &Body<'_, '_>, ty: &ITy) -> String {
-    let names: Vec<_> = ctx
-        .scheme
-        .type_params
-        .iter()
-        .map(|p| p.name.clone())
-        .collect();
-    ctx.solver.finalize(ty, ctx.decls.resolved).show(&TyNames {
-        adts: &ctx.decls.out.adts,
-        effects: &ctx.decls.out.effects,
-        type_params: &names,
-        effect_params: &ctx.scheme.effect_params,
-    })
 }

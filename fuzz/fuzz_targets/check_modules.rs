@@ -16,7 +16,7 @@ const PATHS: [&str; 6] = [
 ];
 
 fuzz_target!(|data: &[u8]| {
-    // 空の補助ファイルは置かず、欠落した import も試す（実装プラン C15「対象」）。
+    // 空の補助ファイルは置かず、欠落した import も試す。
     let files: Vec<_> = PATHS
         .iter()
         .zip(data.split(|byte| *byte == 0))

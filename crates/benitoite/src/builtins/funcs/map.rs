@@ -2,12 +2,12 @@
 
 use crate::builtins::iface::{BuiltinDecl, builtin};
 use crate::builtins::table::tags;
-use crate::runtime::heap::FieldsKind;
 use crate::runtime::heap::Value;
+use crate::runtime::heap::{CheckedLen, FieldsKind};
 use crate::runtime::{Stop, list, map};
 
 builtin! {
-    /// `Map.empty` の本体（実装プラン 10-12「リスト・マップ・集合」）。
+    /// `Map.empty` の本体。
     name = "Map.empty",
     pure fn empty(ctx) -> Value<'e> {
         let _ = ctx;
@@ -16,7 +16,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Map.fromList` の本体（実装プラン 10-12「リスト・マップ・集合」）。
+    /// `Map.fromList` の本体。
     name = "Map.fromList",
     pure fn from_list(ctx, xs: Value<'e>) -> Value<'e> {
         let mut result = Value::EmptyMap;
@@ -34,23 +34,26 @@ builtin! {
 }
 
 builtin! {
-    /// `Map.toList` の本体（実装プラン 10-12「リスト・マップ・集合」）。
+    /// `Map.toList` の本体。
     name = "Map.toList",
     pure fn to_list(ctx, xs: Value<'e>) -> Value<'e> {
+        // 集める前に確かめる。from_values だけでは、上限を超える数の要素と Pair を
+        // 集めた後で止まる（設計書 02-09「一つの操作で作る値の大きさの上限」）。
+        CheckedLen::elements(u64::from(map::map_len(&ctx, xs)?), "Map.toList")?;
         let pairs = map::map_to_vec(&ctx, xs)?;
         let items: Result<Vec<_>, Stop> = pairs.into_iter().map(|(k, v)| ctx.alloc_fields(FieldsKind::Ctor, tags::PAIR, &[k, v])).collect();
         list::from_values(&ctx, &items?, "Map.toList")
     }
 }
 
-/// 部分の項目。末尾以外には加えない（実装プラン 10-12「部分と番号」）。
+/// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[empty::DECL, from_list::DECL, to_list::DECL];
 
 #[cfg(test)]
 pub(in crate::builtins::funcs) mod tests {
     // 関門: 三つの本体が型付きの引数と Pair・リストを正しく接続する契約。
     // ランタイムの木のテストでは項目の配線とタグの誤りを検出できない。
-    // 10-12 の個別の指示どおり直接呼び、公開の口を増やさない。
+    // 組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
     #![allow(
         clippy::unwrap_used,
         clippy::expect_used,
@@ -126,8 +129,8 @@ pub(in crate::builtins::funcs) mod tests {
         assert!(heap.take_fault().is_none());
     }
 
-    // 関門: L02 の型付きの入口で、引数の位置・Option の包み・鍵順のリスト・永続性を守る。
-    // runtime::map のモデル比較では入口の配線の誤りは分からない。L02 の個別の指示で
+    // 関門: 型付きの入口で、引数の位置・Option の包み・鍵順のリスト・永続性を守る。
+    // runtime::map のモデル比較では入口の配線の誤りは分からない。
     // 同じ固定種の生成器を入口に適用する。木の形を読まず、公開の口も増やさない。
     use crate::base::Decimal;
     use crate::runtime::heap::{CtorTag, NoGcCtx, ValueCtx};
@@ -375,7 +378,7 @@ pub(in crate::builtins::funcs) mod tests {
 }
 
 builtin! {
-    /// `Map.get` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Map.get` の本体。
     name = "Map.get",
     pure fn get(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         super::option(&ctx, map::map_get(&ctx, arg0, arg1)?)
@@ -383,7 +386,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Map.set` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Map.set` の本体。
     name = "Map.set",
     pure fn set(ctx, arg0: Value<'e>, arg1: Value<'e>, arg2: Value<'e>) -> Value<'e> {
         map::map_insert(&ctx, arg0, arg1, arg2, "Map.set")
@@ -391,7 +394,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Map.remove` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Map.remove` の本体。
     name = "Map.remove",
     pure fn remove(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         map::map_remove(&ctx, arg0, arg1)
@@ -399,7 +402,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Map.contains` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Map.contains` の本体。
     name = "Map.contains",
     pure fn contains(ctx, arg0: Value<'e>, arg1: Value<'e>) -> Value<'e> {
         Ok(Value::Bool(map::map_get(&ctx, arg0, arg1)?.is_some()))
@@ -407,7 +410,7 @@ builtin! {
 }
 
 builtin! {
-    /// `Map.size` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Map.size` の本体。
     name = "Map.size",
     pure fn size(ctx, arg0: Value<'e>) -> Value<'e> {
         Ok(Value::Int(i64::from(map::map_len(&ctx, arg0)?)))
@@ -415,24 +418,31 @@ builtin! {
 }
 
 builtin! {
-    /// `Map.keys` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Map.keys` の本体。
     name = "Map.keys",
     pure fn keys(ctx, arg0: Value<'e>) -> Value<'e> {
+        // 集める前に確かめる。from_values だけでは、上限を超える数の要素を
+        // 集めた後で止まる（設計書 02-09「一つの操作で作る値の大きさの上限」）。
+        CheckedLen::elements(u64::from(map::map_len(&ctx, arg0)?), "Map.keys")?;
         let items: Vec<_> = map::map_to_vec(&ctx, arg0)?.into_iter().map(|(k, _)| k).collect();
         list::from_values(&ctx, &items, "Map.keys")
     }
 }
 
 builtin! {
-    /// `Map.values` の本体（実装プラン 10-15「項目の一覧」）。
+    /// `Map.values` の本体。
     name = "Map.values",
     pure fn values(ctx, arg0: Value<'e>) -> Value<'e> {
+        // 集める前に確かめる。from_values だけでは、上限を超える数の要素を
+        // 集めた後で止まる（設計書 02-09「一つの操作で作る値の大きさの上限」）。
+        CheckedLen::elements(u64::from(map::map_len(&ctx, arg0)?), "Map.values")?;
         let items: Vec<_> = map::map_to_vec(&ctx, arg0)?.into_iter().map(|(_, v)| v).collect();
         list::from_values(&ctx, &items, "Map.values")
     }
 }
 
-/// U3 の部分の項目（実装プラン 10-15「部分と番号」）。
+/// 後から加えた部分の項目。既存の部分の途中に入れると後ろの番号がずれるので、
+/// 別の部分にした。末尾以外には加えない。
 pub const MORE_DECLS: &[BuiltinDecl] = &[
     get::DECL,
     set::DECL,

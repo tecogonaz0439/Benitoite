@@ -6,8 +6,8 @@
     clippy::arithmetic_side_effects
 )]
 //! CLI を別プロセスで起動し、終了状態と標準入出力を確かめる
-//! （設計書 07-03「前提」、実装プラン C05「CLI の切り替え」）。
-// テストの失敗は panic で表すため、テストコードではこれらを許す（実装規約 00-02「#[allow] を書いてよい箇所」）。
+//! （設計書 07-03「前提」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 
 use std::ffi::OsStr;
 use std::fs;
@@ -15,6 +15,33 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Output, Stdio};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
+
+// 作成時の関門: run のゴールデンでは届かない check と test の段の選択を守る。
+// 公開の CLI と実ファイルを使い、時刻や本番の差し込み口には依存しない。
+#[test]
+fn decision_tree_limit_is_reported_by_test_but_not_check() {
+    let directory = TestDirectory::new();
+    let script = directory.write(
+        "tree-budget.bnt",
+        include_str!("../testdata/patterns/todo195-decision-tree-budget.bnt"),
+    );
+    for (mode, expected) in [("check", 0), ("test", 2)] {
+        let output = command().arg(mode).arg(&script).output().unwrap();
+        assert_eq!(exit_code(&output), expected, "{mode}: {output:?}");
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        if mode == "check" {
+            assert!(stderr.is_empty(), "{stderr}");
+        } else {
+            assert!(stderr.contains("L0112"), "{stderr}");
+            assert!(!stderr.contains("internal"), "{stderr}");
+            assert!(
+                stderr.lines().any(|line| line.contains("could not test")
+                    && line.contains("due to 1 previous error")),
+                "{stderr}"
+            );
+        }
+    }
+}
 
 #[test]
 fn cli_process_contracts() {
@@ -92,6 +119,16 @@ fn cli_process_contracts() {
     assert_eq!(exit_code(&panic_check), 3);
     assert!(panic_check.stdout.is_empty());
     assert_internal_report(&panic_check.stderr);
+    let text = String::from_utf8_lossy(&panic_check.stderr);
+    assert!(
+        text.contains("the panic occurred in the compiler thread"),
+        "{text}"
+    );
+    assert_eq!(
+        text.matches("BENITOITE_DEV_PANIC=check").count(),
+        1,
+        "{text}"
+    );
 
     let panic_run = command()
         .arg("run")
@@ -131,6 +168,58 @@ fn command() -> Command {
         .env_remove("BENITOITE_DEV_IO_MODE")
         .env_remove("NO_COLOR");
     command
+}
+
+// 関門: 三つの道具の本体の外側の panic を、終了状態・段・診断形式まで確かめる。
+// run/check の既存の例ではこの境界と JSON への hook 出力の混入を捕まえられない。
+// 設計書 07-03 が指定する開発用の panic を使い、CLI を本物のプロセスで起動する。
+#[test]
+fn tool_panics_are_internal_reports() {
+    let directory = TestDirectory::new();
+    for (stage, args, json) in [
+        ("skill", vec!["skill", "install", "--project"], false),
+        ("test", vec!["test", "missing.bnt"], false),
+        ("fmt", vec!["fmt", "missing.bnt"], false),
+        (
+            "test",
+            vec!["test", "--diagnostics=json", "missing.bnt"],
+            true,
+        ),
+        (
+            "fmt",
+            vec!["fmt", "--diagnostics=json", "missing.bnt"],
+            true,
+        ),
+    ] {
+        let output = command()
+            .args(args)
+            .current_dir(directory.path())
+            .env("HOME", directory.path())
+            .env("BENITOITE_DEV_PANIC", "tool")
+            .output()
+            .unwrap();
+        assert_eq!(exit_code(&output), 3, "{stage}: {output:?}");
+        assert!(output.stdout.is_empty(), "{stage}: {output:?}");
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        if json {
+            assert_eq!(stderr.lines().count(), 1, "{stderr}");
+            let report: serde_json::Value = serde_json::from_str(&stderr).unwrap();
+            assert_eq!(report["kind"], "internal", "{stderr}");
+        } else {
+            assert_internal_report(&output.stderr);
+            assert!(
+                stderr.contains("the panic occurred in the main thread"),
+                "{stderr}"
+            );
+        }
+        assert!(
+            stderr.contains(&format!("in the {stage} stage")),
+            "{stderr}"
+        );
+        assert!(stderr.contains("BENITOITE_DEV_PANIC=tool"), "{stderr}");
+        assert!(!stderr.contains("panicked at"), "{stderr}");
+    }
+    assert!(!directory.path().join(".claude").exists());
 }
 
 fn exit_code(output: &Output) -> i32 {
@@ -313,27 +402,29 @@ fn assert_internal_report(stderr: &[u8]) {
 #[cfg(unix)]
 fn broken_pipe_is_a_runtime_error(directory: &TestDirectory) {
     let payload = "x".repeat(80 * 1024);
-    let script = directory.write(
-        "broken-pipe.bnt",
-        &format!("import Benitoite.Unofficial.IO.Console\n\nfunction main() -> Unit uses Console.Write\n    Console.write(\"{payload}\")\nend function\n"),
-    );
-    let mut child: Child = command()
-        .arg("run")
-        .arg(&script)
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .unwrap_or_else(|error| panic!("could not start broken-pipe child: {error}"));
-    let Some(reader) = child.stdout.take() else {
-        panic!("child stdout was not piped");
-    };
-    drop(reader);
-    let output = child
-        .wait_with_output()
-        .unwrap_or_else(|error| panic!("could not wait for broken-pipe child: {error}"));
-    assert_eq!(exit_code(&output), 1);
-    let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("R0201"), "{stderr}");
+    for (ending, expected_status) in [("", 1), ("Process.exit(3)", 3)] {
+        let script = directory.write(
+            "broken-pipe.bnt",
+            &format!("import Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.Process\n\nfunction main() -> Unit uses Console.Write, Process.Exit\n    Console.write(\"{payload}\")\n    {ending}\nend function\n"),
+        );
+        let mut child: Child = command()
+            .arg("run")
+            .arg(&script)
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap_or_else(|error| panic!("could not start broken-pipe child: {error}"));
+        let Some(reader) = child.stdout.take() else {
+            panic!("child stdout was not piped");
+        };
+        drop(reader);
+        let output = child
+            .wait_with_output()
+            .unwrap_or_else(|error| panic!("could not wait for broken-pipe child: {error}"));
+        assert_eq!(exit_code(&output), expected_status, "{ending}: {output:?}");
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(stderr.contains("R0201"), "{stderr}");
+    }
 }
 
 #[cfg(unix)]
@@ -402,4 +493,98 @@ impl Drop for TestDirectory {
             Err(_) => {}
         }
     }
+}
+
+// 関門: 管から渡した入口も普通のファイルに限り、E0101・終了状態 2 で拒む。
+// import 用の FIFO のテストでは、入口だけ管を許してしまう退行を捕まえられない。
+#[cfg(unix)]
+#[test]
+fn check_rejects_a_script_piped_to_dev_stdin() {
+    let dir = TestDirectory::new();
+    let script = dir.write("main.bnt", "function main() -> Unit\nend function\n");
+    let mut cat = Command::new("cat")
+        .arg(&script)
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let pipe = cat.stdout.take().unwrap();
+    // 小さな入力は管の容量に収まる。先に cat を終えて、check の拒否による SIGPIPE を避ける。
+    assert!(cat.wait().unwrap().success());
+    let output = command()
+        .args(["check", "/dev/stdin"])
+        .stdin(Stdio::from(pipe))
+        .output()
+        .unwrap();
+    assert_eq!(exit_code(&output), 2);
+    let err = String::from_utf8_lossy(&output.stderr);
+    assert!(err.contains("E0101") && err.contains("/dev/stdin"), "{err}");
+    assert!(err.contains("not a regular file"), "{err}");
+    assert!(output.stdout.is_empty());
+}
+
+// 関門: 実際の FIFO を import しても、check が読めない理由を報告して終了する。
+#[cfg(unix)]
+#[test]
+fn check_rejects_a_fifo_module_without_blocking() {
+    use std::time::{Duration, Instant};
+    let dir = TestDirectory::new();
+    let fifo = dir.path().join("Pipe.bnt");
+    assert!(
+        Command::new("mkfifo")
+            .arg(&fifo)
+            .status()
+            .unwrap()
+            .success()
+    );
+    let entry = dir.write(
+        "main.bnt",
+        "import Pipe\nfunction main() -> Unit\n  ()\nend function\n",
+    );
+    let mut child = command()
+        .arg("check")
+        .arg(entry)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let started = Instant::now();
+    while child.try_wait().unwrap().is_none() {
+        if started.elapsed() >= Duration::from_secs(5) {
+            child.kill().unwrap();
+            child.wait().unwrap();
+            panic!("check blocked while opening a FIFO module");
+        }
+        std::thread::sleep(Duration::from_millis(2));
+    }
+    let output = child.wait_with_output().unwrap();
+    assert_eq!(exit_code(&output), 2);
+    let err = String::from_utf8_lossy(&output.stderr);
+    assert!(err.contains("E0101") && err.contains("Pipe.bnt"), "{err}");
+    assert!(output.stdout.is_empty());
+}
+
+// 関門: 読み込みに失敗したパスが見出しから端末の制御列を実行させない。
+#[test]
+fn unreadable_path_controls_are_escaped_in_the_header() {
+    let directory = TestDirectory::new();
+    let output = command()
+        .arg("check")
+        .arg(directory.path().join("missing\u{1B}[31m.bnt"))
+        .output()
+        .unwrap();
+    assert_eq!(exit_code(&output), 2);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("error[E0101]: cannot read file `"),
+        "{stderr}"
+    );
+    assert!(
+        stderr
+            .lines()
+            .next()
+            .unwrap()
+            .contains("missing\\u{1B}[31m.bnt"),
+        "{stderr}"
+    );
+    assert!(!stderr.contains('\u{1B}'), "{stderr}");
 }

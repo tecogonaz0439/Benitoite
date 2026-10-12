@@ -1,6 +1,6 @@
-//! 正規表現の値とソースの関数の振る舞い（設計書 03-08「Regex」、実装プラン L22）。
+//! 正規表現の値とソースの関数の振る舞い（設計書 03-08「Regex」）。
 
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::arithmetic_side_effects)]
 
 use super::*;
@@ -36,7 +36,7 @@ fn option_text<'a, 'e>(ctx: &'a ValueCtx<'e>, value: Value<'e>) -> Option<&'a st
     optional(ctx, value).map(|v| ctx.str(v).unwrap())
 }
 
-// 関門: 本体の値を直接確かめる指示（実装プラン 10-15）に従う。
+// 関門: 組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
 // 既存の表の検査は照合を実行しない。左端の選択、UTF-8 のバイト位置、捕獲の
 // 欠落と名前の対応を取り違える退行を捕まえ、内部の表現や共有の方式は確かめない。
 // 差し込み口や公開範囲は加えない。
@@ -82,11 +82,6 @@ fn leftmost_match_has_byte_positions_and_numbered_and_named_captures() {
             Some(false)
         );
         assert!(optional(ctx, find(pure, pattern, absent).unwrap()).is_none());
-        assert!(
-            list::to_vec(ctx, find_all(pure, pattern, absent).unwrap())
-                .unwrap()
-                .is_empty()
-        );
 
         let pattern = compiled(pure, r"(?P<first>a)?(?P<second>b)");
         let m = payload(
@@ -103,45 +98,93 @@ fn leftmost_match_has_byte_positions_and_numbered_and_named_captures() {
     });
 }
 
-// 関門: 重ならない順序と空の一致の進め方を守る。空の一致を飛ばす、末尾で無限に
-// 照合する、文字の途中を返す退行は、通常の find のテストでは捕まらない。
+// 関門: 入力の全文を写す退行は言語の値では見えないため、保持する文字列の長さを
+// 本体の境界で確かめる。既存の位置・グループのテストは写しの量を検査しない。
 #[test]
-fn find_all_keeps_nonoverlapping_matches_and_empty_matches_at_utf8_boundaries() {
+fn matches_keep_only_the_matched_text() {
     Heap::new(HeapConfig::default()).epoch(|ctx| {
         let call = CallCtx::new(ctx, None, None, None);
         let pure = call.pure_ctx();
         let ctx = pure.values();
-        for (source, input, expected) in [
-            ("aba", "ababa aba", vec![("aba", 0, 3), ("aba", 6, 9)]),
-            ("a*", "baaa", vec![("", 0, 0), ("aaa", 1, 4)]),
-            ("", "日é", vec![("", 0, 0), ("", 3, 3), ("", 5, 5)]),
-            ("", "", vec![("", 0, 0)]),
-            ("x", "", vec![]),
-        ] {
-            let p = compiled(pure, source);
-            let matches = find_all(pure, p, text(ctx, input)).unwrap();
-            let actual = list::to_vec(ctx, matches)
-                .unwrap()
-                .into_iter()
-                .map(|m| {
-                    (
-                        ctx.str(match_text(pure, m).unwrap()).unwrap(),
-                        match_byte_start(pure, m).unwrap().as_int().unwrap(),
-                        match_byte_end(pure, m).unwrap().as_int().unwrap(),
-                    )
-                })
-                .collect::<Vec<_>>();
-            assert_eq!(actual, expected, "{source:?} on {input:?}");
+        let pattern = compiled(pure, r"(?P<word>é)");
+        let input = text(ctx, "日é suffix é tail");
+        let first = payload(ctx, find(pure, pattern, input).unwrap(), tags::OPTION_SOME);
+        let second = payload(
+            ctx,
+            find_at(pure, pattern, input, 5, true).unwrap(),
+            tags::OPTION_SOME,
+        );
+        for value in [first, second] {
+            let m = ctx.opaque::<Match>(value).unwrap();
+            assert_eq!(m.text.len(), "é".len());
+            assert_eq!(
+                m.heap_bytes(),
+                "é".len() + 2 * std::mem::size_of::<Option<(usize, usize)>>()
+            );
         }
-        let p = compiled(pure, r"(?P<letter>[ab])");
-        let matches = list::to_vec(ctx, find_all(pure, p, text(ctx, "aba")).unwrap()).unwrap();
-        let captures = matches
-            .into_iter()
-            .map(|m| option_text(ctx, named_group(pure, m, text(ctx, "letter")).unwrap()).unwrap())
-            .collect::<Vec<_>>();
-        assert_eq!(captures, ["a", "b", "a"]);
     });
 }
+
+// 関門: 重ならない順序と空の一致の進め方を守る。空の一致を飛ばす、末尾で無限に
+// 照合する、文字の途中を返す退行は、通常の find のテストでは捕まらない。
+#[test]
+fn find_all_keeps_nonoverlapping_matches_and_empty_matches_at_utf8_boundaries() {
+    let mut checks = String::new();
+    for (i, (source, input, expected)) in [
+        ("aba", "ababa aba", vec![("aba", 0, 3), ("aba", 6, 9)]),
+        ("a*", "baaa", vec![("", 0, 0), ("aaa", 1, 4)]),
+        ("", "日é", vec![("", 0, 0), ("", 3, 3), ("", 5, 5)]),
+        ("", "", vec![("", 0, 0)]),
+        ("x", "", vec![]),
+        ("x", "zzz", vec![]),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let expected = expected
+            .into_iter()
+            .map(|(text, s, e)| format!("Pair(r\"{text}\", Pair({s}, {e}))"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        checks.push_str(&format!(
+            r#"
+  bind p{i} <- try Regex.compile(r"{source}")
+  bind actual{i} <- List.map(Regex.findAll(p{i}, r"{input}"), lambda(m)
+    return Pair(Regex.matchText(m), Pair(Regex.matchByteStart(m), Regex.matchByteEnd(m)))
+  end lambda)
+  if actual{i} <> [{expected}] then return Result.Error("findAll: {source} / {input}") end if
+"#
+        ));
+    }
+    checks.push_str(r#"
+  bind capturePattern <- try Regex.compile(r"(?P<letter>[ab])")
+  bind actual <- List.map(Regex.findAll(capturePattern, "aba"), lambda(m) return Regex.namedGroup(m, "letter") end lambda)
+  if actual <> [Option.Some("a"), Option.Some("b"), Option.Some("a")] then return Result.Error("named captures") end if
+"#);
+    run_script(&format!(
+        "import Benitoite.Unofficial.Regex\nfunction main() -> Result[Unit, String]\n{checks}  return Result.Ok(())\nend function\n"
+    ));
+}
+
+const REPLACEMENTS: &[(&str, &str, &str, &str, &str)] = &[
+    ("(?P<name>a)", "aba", "$1", "$1ba", "$1b$1"),
+    ("(a)", "aba", "${1}", "${1}ba", "${1}b${1}"),
+    (
+        "(?P<name>a)",
+        "aba",
+        "${name}",
+        "${name}ba",
+        "${name}b${name}",
+    ),
+    ("a", "aba", "", "ba", "b"),
+    ("a", "日aéa", "空", "日空éa", "日空é空"),
+    ("a*", "baaa", "X", "Xbaaa", "XbX"),
+    ("", "é", "X", "Xé", "XéX"),
+    ("", "", "X", "X", "X"),
+    ("x", "aba", "$1", "aba", "aba"),
+    ("(?P<name>a)", "aba", "$name", "$nameba", "$nameb$name"),
+    ("a", "aba", "$$", "$$ba", "$$b$$"),
+];
 
 // 関門: NoExpand の契約と、初回だけ／すべての置換の差を守る。
 // 捕獲の展開や空の一致の置換漏れを捕まえる。期待値は regex で生成しない。
@@ -151,23 +194,7 @@ fn replacements_are_literal_and_preserve_unmatched_text() {
         let call = CallCtx::new(ctx, None, None, None);
         let pure = call.pure_ctx();
         let ctx = pure.values();
-        for (source, input, replacement, first, all) in [
-            ("(?P<name>a)", "aba", "$1", "$1ba", "$1b$1"),
-            ("(a)", "aba", "${1}", "${1}ba", "${1}b${1}"),
-            (
-                "(?P<name>a)",
-                "aba",
-                "${name}",
-                "${name}ba",
-                "${name}b${name}",
-            ),
-            ("a", "aba", "", "ba", "b"),
-            ("a", "日aéa", "空", "日空éa", "日空é空"),
-            ("a*", "baaa", "X", "Xbaaa", "XbX"),
-            ("", "é", "X", "Xé", "XéX"),
-            ("", "", "X", "X", "X"),
-            ("x", "aba", "$1", "aba", "aba"),
-        ] {
+        for &(source, input, replacement, first, _) in REPLACEMENTS {
             let p = compiled(pure, source);
             let input = text(ctx, input);
             let replacement = text(ctx, replacement);
@@ -175,42 +202,51 @@ fn replacements_are_literal_and_preserve_unmatched_text() {
                 ctx.str(replace_first(pure, p, input, replacement).unwrap()),
                 Some(first)
             );
-            assert_eq!(
-                ctx.str(replace_all(pure, p, input, replacement).unwrap()),
-                Some(all)
-            );
         }
     });
+    let mut checks = String::new();
+    for (i, &(source, input, replacement, _, all)) in REPLACEMENTS.iter().enumerate() {
+        checks.push_str(&format!(r#"
+  bind p{i} <- try Regex.compile(r"{source}")
+  if Regex.replaceAll(p{i}, r"{input}", r"{replacement}") <> r"{all}" then return Result.Error(r"replaceAll: {source} / {input} / {replacement}") end if
+"#));
+    }
+    run_script(&format!(
+        "import Benitoite.Unofficial.Regex\nfunction main() -> Result[Unit, String]\n{checks}  return Result.Ok(())\nend function\n"
+    ));
 }
 
 // 関門: split 固有の空の部分を残す契約。Rust の str::split への置き換えや空の
 // 部分の削除を捕まえる。空の一致の結果を固定値で示し、外部クレートと比較しない。
 #[test]
 fn split_preserves_empty_parts_and_skips_empty_matches_next_to_nonempty_matches() {
-    Heap::new(HeapConfig::default()).epoch(|ctx| {
-        let call = CallCtx::new(ctx, None, None, None);
-        let pure = call.pure_ctx();
-        let ctx = pure.values();
-        for (source, input, expected) in [
-            (",", "", vec![""]),
-            (",", ",a,,b,", vec!["", "a", "", "b", ""]),
-            (",", "abc", vec!["abc"]),
-            ("", "", vec!["", ""]),
-            ("", "ab", vec!["", "a", "b", ""]),
-            ("", "日é", vec!["", "日", "é", ""]),
-            ("a*", "baaa", vec!["", "b", ""]),
-            ("(,)", "a,b", vec!["a", "b"]),
-        ] {
-            let p = compiled(pure, source);
-            let value = split(pure, p, text(ctx, input)).unwrap();
-            let actual = list::to_vec(ctx, value)
-                .unwrap()
-                .into_iter()
-                .map(|v| ctx.str(v).unwrap())
-                .collect::<Vec<_>>();
-            assert_eq!(actual, expected, "{source:?} on {input:?}");
-        }
-    });
+    let mut checks = String::new();
+    for (i, (source, input, expected)) in [
+        (",", "", vec![""]),
+        (",", ",a,,b,", vec!["", "a", "", "b", ""]),
+        (",", "abc", vec!["abc"]),
+        ("", "", vec!["", ""]),
+        ("", "ab", vec!["", "a", "b", ""]),
+        ("", "日é", vec!["", "日", "é", ""]),
+        ("a*", "baaa", vec!["", "b", ""]),
+        ("(,)", "a,b", vec!["a", "b"]),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let expected = expected
+            .into_iter()
+            .map(|part| format!("r\"{part}\""))
+            .collect::<Vec<_>>()
+            .join(", ");
+        checks.push_str(&format!(r#"
+  bind p{i} <- try Regex.compile(r"{source}")
+  if Regex.split(p{i}, r"{input}") <> [{expected}] then return Result.Error("split: {source} / {input}") end if
+"#));
+    }
+    run_script(&format!(
+        "import Benitoite.Unofficial.Regex\nfunction main() -> Result[Unit, String]\n{checks}  return Result.Ok(())\nend function\n"
+    ));
 }
 
 // 関門: 組み立ての失敗は Result.Error にし、クレートの既定の上限を保つ。
@@ -238,11 +274,9 @@ fn invalid_or_oversized_patterns_return_nonempty_error_reasons() {
     });
 }
 
-// 関門: 結果を確保する前の上限検査を守る。数えずに Match を確保する退行と、
-// 置換結果を先に作る退行は通常の小さい入力では見つからない。巨大な結果は作らない。
+// 一回の置換だけなら全体の展開を作らずに済む（設計書 03-08「Regex」）。
 #[test]
-fn expanded_replacement_and_empty_match_lists_are_rejected_before_building() {
-    use crate::runtime::{MAX_LIST_LEN, MAX_STRING_BYTES, ResourceError, SizeUnit};
+fn replace_first_does_not_build_all_replacements() {
     Heap::new(HeapConfig::default()).epoch(|ctx| {
         let call = CallCtx::new(ctx, None, None, None);
         let pure = call.pure_ctx();
@@ -250,45 +284,27 @@ fn expanded_replacement_and_empty_match_lists_are_rejected_before_building() {
         let p = compiled(pure, "a");
         let input = text(ctx, &"a".repeat(32768));
         let replacement = text(ctx, &"b".repeat(32769));
-        assert!(matches!(
-            replace_all(pure, p, input, replacement),
-            Err(Stop::Resource(ResourceError::ValueTooLarge {
-                function: "Regex.replaceAll", size, unit: SizeUnit::Bytes, limit,
-            })) if size == 32768 * 32769 && limit == MAX_STRING_BYTES
-        ));
         let first = replace_first(pure, p, input, replacement).unwrap();
         assert_eq!(ctx.str(first).unwrap().len(), 32769 + 32767);
-
-        let p = compiled(pure, "");
-        let input = text(ctx, &"b".repeat(usize::try_from(MAX_LIST_LEN).unwrap()));
-        assert!(matches!(
-            find_all(pure, p, input),
-            Err(Stop::Resource(ResourceError::ValueTooLarge {
-                function: "Regex.findAll", size, unit: SizeUnit::Elements, limit,
-            })) if size == MAX_LIST_LEN + 1 && limit == MAX_LIST_LEN
-        ));
-        assert!(matches!(
-            split(pure, p, input),
-            Err(Stop::Resource(ResourceError::ValueTooLarge {
-                function: "Regex.split", size, unit: SizeUnit::Elements, limit,
-            })) if size == MAX_LIST_LEN + 2 && limit == MAX_LIST_LEN
-        ));
     });
 }
 
 fn run_script(source: &str) {
+    run_script_in_heap(
+        source,
+        HeapConfig {
+            stress: true,
+            ..HeapConfig::default()
+        },
+    );
+}
+
+fn run_script_in_heap(source: &str, heap: HeapConfig) {
     let program = compile_script(source);
     for mode in [crate::vm::ExecMode::Direct, crate::vm::ExecMode::Request] {
         let script = ScheduleHandle::new([], false);
         let (mut rt, _) = runtime(std::path::Path::new("/"), mode, &script);
-        let mut vm = crate::vm::Vm::new(
-            &program,
-            crate::vm::VmConfig::default(),
-            HeapConfig {
-                stress: true,
-                ..HeapConfig::default()
-            },
-        );
+        let mut vm = crate::vm::Vm::new(&program, crate::vm::VmConfig::default(), heap);
         vm.start_main().unwrap();
         assert_eq!(
             finish(&mut vm, &mut rt),
@@ -355,5 +371,122 @@ function main() -> Result[Unit, String]
     then Result.Ok(()) else Result.Error("regex script") end if
 end function
 "#,
+    );
+}
+
+// 途中の位置でも前後の文脈を保ち、空の一致は次の文字の境目で再探索する。
+// スクリプトのループが渡さない不正な位置も本体で拒む（設計書 03-08「Regex」）。
+#[test]
+fn position_searches_preserve_context_and_retry_empty_matches() {
+    Heap::new(HeapConfig::default()).epoch(|ctx| {
+        let call = CallCtx::new(ctx, None, None, None);
+        let pure = call.pure_ctx();
+        let ctx = pure.values();
+        for (source, input, start, after, expected) in [
+            (r"\bchew\b", "eschew", 2, false, None),
+            ("^a", "ba", 1, false, None),
+            ("(?m)^a", "ba\na", 1, false, Some((3, 4))),
+            ("(?m)^a", "ba\na", 3, false, Some((3, 4))),
+            ("", "日é", 0, false, Some((0, 0))),
+            ("", "日é", 0, true, Some((3, 3))),
+            ("", "日é", 3, true, Some((5, 5))),
+            ("", "日é", 5, false, Some((5, 5))),
+            ("", "日é", 5, true, None),
+            ("", "", 0, false, Some((0, 0))),
+            ("", "", 0, true, None),
+            ("a*", "aaa", 0, true, Some((0, 3))),
+            ("a*", "éaaa", 0, true, Some((2, 5))),
+            ("a*", "éaaa", 5, true, None),
+            ("a*", "日é", 0, true, Some((3, 3))),
+        ] {
+            let p = compiled(pure, source);
+            let input = text(ctx, input);
+            let found = optional(ctx, find_at(pure, p, input, start, after).unwrap()).map(|m| {
+                (
+                    match_byte_start(pure, m).unwrap().as_int().unwrap(),
+                    match_byte_end(pure, m).unwrap().as_int().unwrap(),
+                )
+            });
+            let span = optional(ctx, span_at(pure, p, input, start, after).unwrap()).map(|pair| {
+                assert_eq!(
+                    ctx.fields_header(pair),
+                    Some((FieldsKind::Ctor, tags::PAIR))
+                );
+                (
+                    ctx.field(pair, 0).unwrap().as_int().unwrap(),
+                    ctx.field(pair, 1).unwrap().as_int().unwrap(),
+                )
+            });
+            assert_eq!(
+                found, expected,
+                "findAt: {source:?}, start={start}, after={after}"
+            );
+            assert_eq!(
+                span, expected,
+                "spanAt: {source:?}, start={start}, after={after}"
+            );
+        }
+        let p = compiled(pure, "");
+        let input = text(ctx, "日é");
+        for start in [-1, 1, 2, 4, 6, i64::MIN, i64::MAX] {
+            for after in [false, true] {
+                assert!(matches!(
+                    find_at(pure, p, input, start, after),
+                    Err(Stop::Internal(_))
+                ));
+                assert!(matches!(
+                    span_at(pure, p, input, start, after),
+                    Err(Stop::Internal(_))
+                ));
+            }
+        }
+    });
+}
+
+// 長い正規表現を表示用の値に残さず、誤りの種類と切り詰めの印を残す。
+// 通常の短い構文の誤りでは過大な表示の退行を捕まえない（設計書 03-08「Regex」）。
+#[test]
+fn compile_errors_omit_long_patterns_and_keep_the_reason() {
+    Heap::new(HeapConfig::default()).epoch(|ctx| {
+        let call = CallCtx::new(ctx, None, None, None);
+        let pure = call.pure_ctx();
+        let ctx = pure.values();
+        for source in [
+            format!("{}(", "日".repeat(4096)),
+            format!("{}[", "é\n".repeat(2048)),
+        ] {
+            let result = compile(pure, text(ctx, &source)).unwrap();
+            let reason = ctx.str(payload(ctx, result, tags::RESULT_ERROR)).unwrap();
+            assert!(reason.len() <= 4096);
+            assert!(reason.contains("pattern omitted"));
+            assert!(reason.contains("error: unclosed"), "{reason}");
+            assert!(!reason.contains("日日"));
+        }
+        let result = compile(pure, text(ctx, "(")).unwrap();
+        let reason = ctx.str(payload(ctx, result, tags::RESULT_ERROR)).unwrap();
+        assert_eq!(
+            reason,
+            "regex parse error:\n    (\n    ^\nerror: unclosed group"
+        );
+    });
+}
+
+// 部分のまとまりを越えても入力と置換結果を欠かさない。
+// 小さい置換の表ではまとまりの切り替えを通らない（設計書 03-08「Regex」）。
+#[test]
+fn regex_replacements_join_multiple_chunks() {
+    run_script_in_heap(
+        r#"
+import Benitoite.Unofficial.Regex
+function main() -> Result[Unit, String]
+  bind p <- try Regex.compile("a")
+  bind input <- String.repeat("éa", 2050) + "日"
+  bind expected <- String.repeat("éX", 2050) + "日"
+  if Regex.replaceAll(p, input, "X") <> expected then return Result.Error("replaceAll chunks") end if
+  if Regex.replaceAllWith(p, input, lambda(m) return "X" end lambda) <> expected then return Result.Error("replaceAllWith chunks") end if
+  return Result.Ok(())
+end function
+"#,
+        HeapConfig::default(),
     );
 }

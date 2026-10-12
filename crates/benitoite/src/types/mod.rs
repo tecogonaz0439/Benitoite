@@ -1,6 +1,11 @@
 //! 型とエフェクトの表現、宣言の情報、辞書の求め方、定数の値
 //! （設計書 01-06、02-05「型とエフェクトの表現」「出力」、02-06「辞書の引数」）。
-//! 型パラメータの番号の振り方は実装プラン 10-05「型パラメータの番号」に従う。
+//! 型パラメータとエフェクト変数の番号は、定義ごとにそれぞれの宣言の順で振る。
+//! 型クラスのメソッドは 0 番が型クラスの引数で、1 番からメソッド自身の型パラメータを並べる。
+//! 実装の中の関数は実装の型パラメータを先に、関数自身の型パラメータを後に並べる。
+//! ラムダの本体も外側の定義の番号を使い、操作の節の型パラメータは `Ty::Rigid` で区別する。
+//! 型クラスの制約の番号も、定義ごとに宣言の順で振る。メソッドは 0 番が自己のクラスである。
+//! 実装の中の関数は実装の制約を先に、関数自身の制約を後に並べる。
 
 pub mod builtin;
 
@@ -34,7 +39,7 @@ pub enum EffectName {
     User(BindingId),
 }
 
-/// エフェクト変数。定義の中の番号（10-05「型パラメータの番号」）。
+/// エフェクト変数。定義の中の番号（`types` のモジュールの説明）。
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct EffVar(pub u32);
 
@@ -163,7 +168,7 @@ pub struct Scheme {
     pub type_params: Vec<TypeParamInfo>,
     /// エフェクト変数の名前（番号の順）
     pub effect_params: Vec<String>,
-    /// 型クラスの制約。並びの順が制約の番号であり、辞書の引数の順である（10-05「型パラメータの番号」）
+    /// 型クラスの制約。並びの順が制約の番号であり、辞書の引数の順である（設計書 02-06「辞書の引数」）
     pub class_constraints: Vec<ClassConstraint>,
     pub params: Vec<Ty>,
     pub ret: Ty,
@@ -496,7 +501,26 @@ fn show_ty(ty: &Ty, names: &TyNames<'_>, out: &mut String) {
             if !f.effects.is_empty() {
                 out.push_str(" uses ");
                 let mut effects = Vec::new();
+                let io_all = builtin::BUILTIN_EFFECTS
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, d)| d.in_io_all)
+                    .all(|(i, _)| {
+                        u16::try_from(i).ok().is_some_and(|i| {
+                            f.effects
+                                .names
+                                .contains(&EffectName::Builtin(BuiltinEffectId(i)))
+                        })
+                    });
+                if io_all {
+                    effects.push("IO.All".into());
+                }
                 for name in &f.effects.names {
+                    if io_all
+                        && matches!(name, EffectName::Builtin(id) if id.def().is_some_and(|d| d.in_io_all))
+                    {
+                        continue;
+                    }
                     let text = match name {
                         EffectName::Builtin(id) => id
                             .def()
@@ -555,6 +579,53 @@ mod tests {
 
     fn integer() -> Ty {
         Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![])
+    }
+
+    #[test]
+    fn function_type_display_groups_all_io_effects_and_keeps_other_effects() {
+        let mut effects = io_all_for_display();
+        effects.insert_name(EffectName::Builtin(BuiltinEffectId(12)));
+        effects.insert_var(EffVar(0));
+        assert_eq!(
+            show_effects(effects),
+            "function() -> Integer uses IO.All, Http.Connect, E"
+        );
+    }
+
+    #[test]
+    fn function_type_display_keeps_nine_io_effects_separate() {
+        let mut effects = io_all_for_display();
+        effects.names.pop();
+        assert_eq!(
+            show_effects(effects),
+            "function() -> Integer uses State, Console.Write, Console.Read, File.Read, File.Write, Process.Run, Process.Exit, Process.Environment, Clock.Time"
+        );
+    }
+
+    fn io_all_for_display() -> EffectSet {
+        EffectSet {
+            names: builtin::BUILTIN_EFFECTS
+                .iter()
+                .enumerate()
+                .filter(|(_, d)| d.in_io_all)
+                .map(|(i, _)| EffectName::Builtin(BuiltinEffectId(u16::try_from(i).unwrap())))
+                .collect(),
+            vars: vec![],
+        }
+    }
+
+    fn show_effects(effects: EffectSet) -> String {
+        Ty::Fn(Box::new(FnTy {
+            params: vec![],
+            ret: integer(),
+            effects,
+        }))
+        .show(&TyNames {
+            adts: &AdtTable::default(),
+            effects: &BindingMap::default(),
+            type_params: &[],
+            effect_params: &["E".into()],
+        })
     }
 
     #[test]

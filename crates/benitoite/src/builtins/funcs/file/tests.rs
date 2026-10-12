@@ -1,5 +1,5 @@
-//! ファイルの仕事、完了、資源の登録と解放をつなぐ（実装プラン R29）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! ファイルの仕事、完了、資源の登録と解放をつなぐ（設計書 03-07「File」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::panic,
@@ -14,10 +14,64 @@ use crate::runtime::io::resources::{LendResult, ResourceState, ResourceTable};
 use crate::runtime::io::services::IoView;
 use crate::runtime::sched::testing::ScheduleHandle;
 use crate::runtime::sched::{ExtOpId, Scheduler};
-use crate::vm::state::Stage1StateServices;
+use crate::vm::state::BorrowedStateServices;
 use crate::vm::{ExecMode, TaskId};
+
+// 行末を含まない値の長さで上限を守る契約を、読み取りから完了まで一つの表で確かめる。
+// 通常の行のテストでは、上限ちょうどの CRLF と take による切り詰めの退行を捕まえない。
+#[test]
+fn read_line_limit_counts_content_without_line_ending() {
+    let script = ScheduleHandle::new([], false);
+    let (mut rt, _) = runtime(Path::new("/"), ExecMode::Direct, &script);
+    let mut resources = ResourceTable::default();
+    let mut services = IoView {
+        rt: &mut rt,
+        resources: &mut resources,
+    };
+    Heap::new(HeapConfig::default()).epoch(|ctx| {
+        for (bytes, accepted) in [
+            (b"abcd\r\n".as_slice(), true),
+            (b"abcd\n".as_slice(), true),
+            (b"abcd".as_slice(), true),
+            (b"abcd\r".as_slice(), true),
+            (b"abcde\n".as_slice(), false),
+            (b"abcd\r\r\n".as_slice(), false),
+            (b"abcdef".as_slice(), false),
+        ] {
+            let output = read_line_limited(&mut std::io::Cursor::new(bytes), 4);
+            let result = complete_line(
+                &CallCtx::new(ctx, Some(&mut services), None, None)
+                    .io_ctx()
+                    .unwrap(),
+                output,
+                "Benitoite.IO.File.readLine",
+                4,
+            );
+            if accepted {
+                assert_eq!(
+                    line(ctx, result.unwrap()).as_deref(),
+                    Some("abcd"),
+                    "{bytes:?}"
+                );
+            } else {
+                assert!(
+                    matches!(
+                        result,
+                        Err(Stop::Resource(ResourceError::InputTooLarge {
+                            function: "Benitoite.IO.File.readLine",
+                            unit: SizeUnit::Bytes,
+                            limit: 4,
+                        }))
+                    ),
+                    "{bytes:?}"
+                );
+            }
+        }
+    });
+}
+
 // 関門: 作業用の仕事が相対パスで書き、完了が成功・OS の失敗を Result にする契約。
-// readText の既存のテストは書き込みや追記を呼ばない。本体を直接呼ぶ指示は R29 に従う。
+// 組み込みの関数は関数ごとの単体テストで確かめる（設計書 07-03「差分テスト」）。
 #[test]
 fn write_and_append_round_trip_and_classify_os_errors() {
     let dir = TempDir::new();
@@ -166,12 +220,12 @@ fn reader_preserves_lines_registers_site_and_close_is_idempotent() {
             // 読み取り中の close は待ち、返った資源の解放後に再実行する。
             let LendResult::Lent(handle) = resources.lend(reader, ExtOpId(101), TaskId {index: 0, generation: 0}) else {panic!("not lent")};
             {
-                let mut state = Stage1StateServices {resources: &mut resources, scheduler: &mut scheduler};
+                let mut state = BorrowedStateServices {current_task: TaskId {index: 0, generation: 0}, resources: &mut resources, scheduler: &mut scheduler};
                 assert!(matches!(close_reader(CallCtx::new(ctx, None, Some(&mut state), None).state_ctx().unwrap(), reader).unwrap(), StateReply::Wait(crate::builtins::iface::StateWait::Resource(r)) if r == reader));
             }
             assert!(resources.give_back(reader, handle));
             for _ in 0..2 {
-                let mut state = Stage1StateServices {resources: &mut resources, scheduler: &mut scheduler};
+                let mut state = BorrowedStateServices {current_task: TaskId {index: 0, generation: 0}, resources: &mut resources, scheduler: &mut scheduler};
                 let StateReply::Done(result) = close_reader(CallCtx::new(ctx, None, Some(&mut state), None).state_ctx().unwrap(), reader).unwrap() else {panic!("close waited after return")};
                 assert!(matches!(payload(ctx, result, tags::RESULT_OK), Value::Unit));
             }
@@ -192,7 +246,7 @@ fn reader_preserves_lines_registers_site_and_close_is_idempotent() {
         let work = worker(open_reader(CallCtx::new(ctx, Some(&mut io), None, None).io_ctx().unwrap(), "missing").unwrap());
         let result = work.run(Lent::Nothing).complete(&mut CallCtx::new(ctx, Some(&mut io), None, None).io_ctx().unwrap(), &[]).unwrap();
         assert_eq!(error_kind(ctx, result), tags::IO_ERROR_KIND_NOT_FOUND);
-        let mut state = Stage1StateServices {resources: &mut resources, scheduler: &mut scheduler};
+        let mut state = BorrowedStateServices {current_task: TaskId {index: 0, generation: 0}, resources: &mut resources, scheduler: &mut scheduler};
         assert!(matches!(close_reader(CallCtx::new(ctx, None, Some(&mut state), None).state_ctx().unwrap(), reader).unwrap(), StateReply::Done(_)));
     });
 }
@@ -337,7 +391,7 @@ fn with_releases_the_opened_reader_once_on_return_error_and_exit() {
         }
     }
 }
-// 関門: 解放済みの使用の判定は R26 の貸し出し境界だけにある。本体の単体テストでは届かない。
+// 関門: 解放済みの使用の判定はリソースの貸し出し境界だけにある。本体の単体テストでは届かない。
 #[test]
 fn reading_a_closed_reader_stops_with_released_resource_used() {
     let dir = TempDir::new();

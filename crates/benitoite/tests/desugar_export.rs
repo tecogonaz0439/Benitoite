@@ -1,5 +1,5 @@
 //! Lean の脱糖との差分検査用の書き出し。比較は scripts/check-formal.sh が行う。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -229,24 +229,24 @@ fn export_desugar_corpus() {
     let corpus = json!({"version":7,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
     fs::write(
         output.join("corpus.json"),
-        serde_json::to_vec(&corpus).unwrap(),
+        exchange::to_vec(&corpus).unwrap(),
     )
     .unwrap();
     // corpus の原子の収集に新しい表を混ぜず、版 7 のバイト列を保存する。
     fs::write(
         output.join("builtins.json"),
-        serde_json::to_vec(&json!({"version":1,"inputs":builtin_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":1,"inputs":builtin_inputs})).unwrap(),
     )
     .unwrap();
     fs::write(
         output.join("stdlib-decls.json"),
-        serde_json::to_vec(&json!({"version":1,"inputs":stdlib_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":1,"inputs":stdlib_inputs})).unwrap(),
     )
     .unwrap();
     // 同じ型検査済み AST の走査で得た照合だけを別のファイルへ書く。
     fs::write(
         output.join("coverage-matches.json"),
-        serde_json::to_vec(&json!({"version":1,"inputs":coverage_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":1,"inputs":coverage_inputs})).unwrap(),
     )
     .unwrap();
     eprintln!(
@@ -311,11 +311,54 @@ fn export_rejects_constref_in_value_position() {
     );
 }
 
-// 関門: TODO-190 の印はガードの外の継続を指す resume だけに付ける。
-// ガード内の handle が自分の節で resume する形は、既知の差として除外してはならない。
-// 比較器の失敗扱いがこの印で変わるので、通常の差分比較とは独立した境界の契約である。
+// 関門: Decimal の仮数を交換形式へ精度を失わず整数として書く契約を守る。
+// arbitrary_precision を外すと json! が大きい i128 を拒む退行と、Float への丸めを捕まえる。
+// 既存の生成例の受理の検査は最終のバイト列を読まず、この契約には届かない。
 #[test]
-fn export_distinguishes_guard_continuation_scope() {
+fn export_preserves_decimal_mantissas_as_exact_json_integers() {
+    let checked = pipeline::check_text(
+        "decimal-mantissas.bnt",
+        b"function sample() -> List[Decimal]\n  return [79228162514264337593543950335m, -79228162514264337593543950335m, 1.25m]\nend function\nfunction main() -> Unit\nend function\n",
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let input = export(
+        "decimal",
+        "decimal-mantissas.bnt",
+        checked,
+        None,
+        &mut Vec::new(),
+    );
+    let sample = input["definitions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|definition| definition["name"].as_str().unwrap().starts_with("sample ("))
+        .unwrap();
+    assert!(sample["scope"].get("inScope").is_some());
+    let bytes = exchange::to_vec(sample).unwrap();
+    let written = String::from_utf8(bytes).unwrap();
+    for decimal in [
+        r#""decimal":{"mantissa":79228162514264337593543950335,"scale":0}"#,
+        r#""decimal":{"mantissa":-79228162514264337593543950335,"scale":0}"#,
+        r#""decimal":{"mantissa":125,"scale":2}"#,
+    ] {
+        assert!(written.contains(decimal), "missing {decimal}: {written}");
+    }
+    assert!(
+        written.contains(r#""negDecimal":{"mantissa":79228162514264337593543950335,"scale":0}"#)
+    );
+    assert!(!written.contains(r#""mantissa":""#));
+}
+
+// 関門: ガード内の handle が自分の継続を再開する生成例は、検査と書き出しの対象に残す。
+// 生成器が拒否される入力を作る退行と、書き出しがこの形を対象外にする退行を捕まえる。
+// CLI の実行テストでは書き出しの対象範囲を確かめられず、専用の差し込み口は不要。
+#[test]
+fn export_accepts_generated_guard_local_handler() {
     let generated = generator::generate_formal(0);
     let checked = pipeline::check_text(
         "guard-scope.bnt",
@@ -328,29 +371,51 @@ fn export_distinguishes_guard_continuation_scope() {
     assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
     let input = export("random", "guard-scope.bnt", checked, None, &mut Vec::new());
     let definitions = input["definitions"].as_array().unwrap();
-    for (name, expected) in [
-        (
-            "formalPatternGuardResume (",
-            vec!["ガードの中の resume（TODO-190）"],
-        ),
-        ("formalPatternGuardLocal (", vec![]),
-    ] {
+    let definition = definitions
+        .iter()
+        .find(|d| {
+            d["name"]
+                .as_str()
+                .unwrap()
+                .starts_with("formalPatternGuardLocal (")
+        })
+        .unwrap();
+    assert!(definition["scope"].get("inScope").is_some(), "{definition}");
+}
+
+// spec: 01-02 部分適用のプレースホルダ
+// 関門: 新しい生成例を公開の書き出しで inScope に保つ。CLI のゴールデンは
+// 差分検査の対象外への退行を捕まえない。既存の生成器と export を使い、差し込み口は不要。
+#[test]
+fn export_accepts_generated_placeholder_escapes() {
+    let generated = generator::generate_formal(0);
+    let checked = pipeline::check_text(
+        "placeholder-escapes.bnt",
+        generated.source.as_bytes(),
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let input = export(
+        "random",
+        "placeholder-escapes.bnt",
+        checked,
+        None,
+        &mut Vec::new(),
+    );
+    let definitions = input["definitions"].as_array().unwrap();
+    for name in ["formalPlaceholderReturn", "formalPlaceholderTry"] {
         let definition = definitions
             .iter()
-            .find(|d| d["name"].as_str().unwrap().starts_with(name))
+            .find(|d| {
+                d["name"]
+                    .as_str()
+                    .unwrap()
+                    .starts_with(&format!("{name} ("))
+            })
             .unwrap();
         assert!(definition["scope"].get("inScope").is_some(), "{definition}");
-        assert_eq!(definition["knownDifferences"], json!(expected));
     }
-    // 開発中にも同じ公開の書き出しを Lean と突き合わせられる小さなコーパスを保持する。
-    let output = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target/c7c");
-    fs::create_dir_all(&output).unwrap();
-    fs::write(
-        output.join("smoke.json"),
-        serde_json::to_vec(&json!({
-            "version":7,"operators":exchange::operators(),"inputs":[input]
-        }))
-        .unwrap(),
-    )
-    .unwrap();
 }

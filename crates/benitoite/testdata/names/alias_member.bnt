@@ -1,0 +1,4 @@
+// spec: 01-03 修飾された名前の解決
+function main() -> Unit
+  bind _ <- Map.insert(Map.empty(), "x", 1)
+end function

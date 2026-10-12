@@ -1,0 +1,19 @@
+// spec: 01-02 部分適用のプレースホルダ
+// 関門: 生成する関数の戻り値と継続の境界を CLI の結果・診断で確かめる。
+import Benitoite.Unofficial.IO.Console
+function add(a: Integer, b: Integer) -> Integer
+  return a + b
+end function
+function make() -> String
+  bind g <- add(return 5, _)
+  bind h <- add(_, return 7)
+  return Integer.toString(g(1)) + "," + Integer.toString(h(1))
+end function
+function piped() -> String
+  bind n <- 1 |> add(return 9, _)
+  return Integer.toString(n)
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(make())
+  Console.writeLine(piped())
+end function

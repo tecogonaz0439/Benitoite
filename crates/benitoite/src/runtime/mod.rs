@@ -1,6 +1,5 @@
 //! ランタイム（設計書 02-09）: 値とヒープ（heap）、リスト（list）、マップと集合（map）、構造の等しさ（equal）、
 //! スケジューラ（sched）と IO 実行器（io）、panic 境界（panic）、報告（report）、実行の流れ（run）。
-//! 値とヒープとコレクションは 10-08、スケジューラと IO は 10-10、panic 境界と報告と実行の流れは 10-13 が定める。
 
 pub mod equal;
 pub mod heap;
@@ -8,6 +7,7 @@ pub mod io;
 pub mod list;
 pub mod map;
 pub mod panic;
+pub mod random;
 pub mod report;
 pub mod run;
 pub mod sched;
@@ -39,7 +39,7 @@ pub enum ResourceKind {
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct ReleaseFailure {
     pub kind: ResourceKind,
-    /// リソースを開いた呼び出しの命令。報告の位置は 10-13 がこれから作る
+    /// リソースを開いた呼び出しの命令。解放の失敗の報告で位置を示す（設計書 02-10「解放の失敗の報告」）。
     pub opened_at: Option<InstrRef>,
     /// 失敗の理由（`std::io::Error` の文字列など）
     pub reason: String,

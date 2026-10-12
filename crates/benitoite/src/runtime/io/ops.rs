@@ -74,12 +74,13 @@ pub struct Completion {
 #[derive(Debug)]
 pub struct OpRecord {
     pub kind: OpKind,
-    /// 結果を渡すタスク。取り消しで外す（記録は残す）
+    /// 結果を渡すタスク。取り消しでは準備の待ちの記録を消し、作業用のスレッドの操作は配送先だけを外す
+    /// （設計書 02-09「タスクの待ちと取り消し」）。
     pub deliver_to: Option<TaskId>,
     /// 貸したリソース（返るまで `Lent` の状態にある）
     pub lent: Option<ResourceId>,
     /// 操作を呼んだ命令。結果を入れるレジスタと、完了の処理に渡す引数のレジスタは、この命令の被演算子
-    /// （10-07 の `CompiledProgram::builtin_call_operands`）で決まる
+    /// （`CompiledProgram::builtin_call_operands`）で決まる（設計書 02-07「命令」）。
     pub site: Option<InstrRef>,
 }
 
@@ -117,7 +118,7 @@ pub enum Accepted {
 
 impl OpTable {
     pub fn insert(&mut self, op: ExtOpId, record: OpRecord) {
-        // VM が check_insert を通す。二重の登録で既存の記録を失わない（実装プラン R26）。
+        // VM が check_insert を通す。二重の登録で既存の記録を失わない。
         if self.check_insert(op).is_err() {
             debug_assert!(false, "operation already recorded");
             return;
@@ -127,7 +128,8 @@ impl OpTable {
         }
         self.records.insert(op, record);
     }
-    /// 取り消したタスクの記録から `deliver_to` を外す。記録は残す。
+    /// 取り消したタスクの作業用のスレッドの操作から `deliver_to` を外し、記録は残す。
+    /// 準備の待ちの記録は、先に `remove_readiness` で消す（設計書 02-09「タスクの待ちと取り消し」）。
     pub fn detach_task(&mut self, task: TaskId) {
         if let Some(ops) = self.task_ops.remove(&task) {
             for op in ops {
@@ -142,6 +144,17 @@ impl OpTable {
             .get(&task)
             .map(|ops| ops.iter().copied().collect())
             .unwrap_or_default()
+    }
+    /// 貸し出しのない準備の待ちの記録を消す（設計書 02-09「タスクの待ちと取り消し」）。
+    pub(crate) fn remove_readiness(&mut self, op: ExtOpId) -> Result<(), crate::runtime::Stop> {
+        let Some(record) = self.records.get(&op) else {
+            return Err(crate::vm::state::internal("readiness operation missing"));
+        };
+        if record.kind != OpKind::Readiness || record.lent.is_some() {
+            return Err(crate::vm::state::internal("invalid readiness operation"));
+        }
+        self.remove(op);
+        Ok(())
     }
     pub(crate) fn detach_all(&mut self) {
         for record in self.records.values_mut() {
@@ -171,7 +184,7 @@ pub fn accept_completion(
     stdin: &mut Option<Box<dyn StdinReader>>,
     completion: Completion,
 ) -> Vec<Accepted> {
-    // 呼ぶ側が check_completion を通す。凍結した戻り値では不整合を報告できない（実装プラン R26）。
+    // 呼ぶ側が check_completion を通す。戻り値では不整合を報告できない。
     if check_completion(ops, resources, &completion).is_err() {
         debug_assert!(false, "invalid completion");
         return Vec::new();

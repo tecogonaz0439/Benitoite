@@ -95,7 +95,7 @@ pub enum ReasonKind {
     MatchArms,
     MatchGuard,
     Pattern,
-    /// 一つの分岐の選択肢が同じ名前で束縛する変数の型（F10 の P2）
+    /// 一つの分岐の選択肢が同じ名前で束縛する変数の型
     Alternatives,
     ListElement,
     /// リストリテラルの展開の要素

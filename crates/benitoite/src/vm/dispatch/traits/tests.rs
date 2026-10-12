@@ -1,5 +1,5 @@
-//! 型クラスの命令の契約を、組み立てたバイトコードから VM の実行結果まで確かめる（実装プラン R34）。
-// 準備の表とテストの失敗には、添字・算術と panic を使う（実装プラン 00-02）。
+//! 型クラスの命令の契約を、組み立てたバイトコードから VM の実行結果まで確かめる（設計書 02-07「辞書とメソッドの呼び出し」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
@@ -19,7 +19,7 @@ use crate::bytecode::program::{
 use crate::runtime::heap::HeapConfig;
 use crate::runtime::io::services::RunInput;
 use crate::runtime::{ResourceError, Stop};
-use crate::vm::dispatch::test_support::TestIo;
+use crate::vm::dispatch::test_support::{TestIo, constant};
 use crate::vm::{
     ExecMode, FRAME_COST, InstrRef, MainOutcome, REG_COST, StopEnd, StopInfo, StopReason, Vm,
     VmConfig, VmStep,
@@ -183,19 +183,17 @@ fn constant_dictionary_is_shared_and_method_constraints_are_arguments() {
         panic!("expected IO request");
     };
     assert_eq!(ids.len(), 1);
+    let identity = vm
+        .heap
+        .epoch(|ctx| ctx.object_id(constant(&vm.state, ctx, cached)).unwrap());
+    // レジスタも根なので、ここでは回収後もキャッシュと同じ対象であることを確かめる。
+    // キャッシュだけを根にした回収は heap_constants_keep_identity_when_only_the_cache_roots_them が確かめる。
+    vm.heap.collect(&vm.state);
+    assert!(vm.heap.object_ids().contains(&identity));
     vm.heap.epoch(|ctx| {
         let regs = &crate::vm::dispatch::test_support::stack(&vm.state, ctx).segments[0].regs;
         assert!(ctx.same_object(ctx.load(&regs[0]), ctx.load(&regs[1])));
-        assert!(
-            ctx.same_object(
-                ctx.load(&regs[0]),
-                ctx.load(
-                    vm.state.constants[usize::try_from(cached.0).unwrap()]
-                        .as_ref()
-                        .unwrap()
-                )
-            )
-        );
+        assert!(ctx.same_object(ctx.load(&regs[0]), constant(&vm.state, ctx, cached)));
     });
     vm.serve_request(&mut services.rt, ids[0]);
     assert_eq!(

@@ -1,0 +1,8 @@
+// spec: 01-06 必ず抜ける文
+function f() -> Unit
+ return ()
+ bind x <- 1
+ bind y <- 2
+end function
+function main() -> Unit
+end function

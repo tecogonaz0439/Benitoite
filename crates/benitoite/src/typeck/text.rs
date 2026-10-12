@@ -6,5 +6,47 @@ pub(super) const DIVISION_BY_ZERO: &str = "division by zero";
 pub(super) const INTEGER_TO_STRING: &str = "Integer.toString";
 pub(super) const FLOAT_TO_STRING: &str = "Float.toString";
 pub(super) const CHARACTER_TO_STRING: &str = "Character.toString";
+pub(super) const COVERAGE_MATCH: &str = "this `match` covers every value";
+pub(super) const COVERAGE_PATTERN: &str = "this pattern matches every value";
 pub(super) const TYPE_DEPTH: &str = " levels in a type";
 pub(super) const TYPE_NODES: &str = " nodes in a type";
+
+pub(super) fn const_string_limit(limit: u64) -> String {
+    format!("the string would exceed the limit of {limit} bytes")
+}
+pub(super) fn const_list_limit(limit: u64) -> String {
+    format!("the list would exceed the limit of {limit} elements")
+}
+pub(super) fn const_budget_limit(limit: usize) -> String {
+    format!("the constants would exceed the budget of {limit} bytes")
+}
+
+/// 演算子の診断に示す綴り。理由の種類と既定値は呼ぶ側で決める。
+pub(super) fn operator_spelling(op: super::infer::OpName) -> &'static str {
+    use super::infer::OpName;
+    use crate::syntax::ast::{BinOp, UnOp};
+    match op {
+        OpName::Un(UnOp::Neg) => "-",
+        OpName::Un(UnOp::Not) => "not",
+        OpName::Bin(b) => match b {
+            BinOp::Add => "+",
+            BinOp::Sub => "-",
+            BinOp::Mul => "*",
+            BinOp::Div => "/",
+            BinOp::IntDiv => "div",
+            BinOp::Mod => "mod",
+            BinOp::Eq => "=",
+            BinOp::Ne => "<>",
+            BinOp::Lt => "<",
+            BinOp::Le => "<=",
+            BinOp::Gt => ">",
+            BinOp::Ge => ">=",
+            BinOp::And => "and",
+            BinOp::Or => "or",
+        },
+    }
+}
+/// 戻り値の修正案に示す関数の呼び方。
+pub(super) const FUNCTION: &str = "function";
+/// 戻り値の修正案に示すラムダの呼び方。
+pub(super) const LAMBDA: &str = "lambda";

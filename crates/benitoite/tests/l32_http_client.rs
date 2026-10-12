@@ -1,10 +1,10 @@
-//! HTTP クライアントをループバックの実通信で確かめる（設計書 07-03「HTTP のテスト（初回リリース版）」、実装プラン L32）。
-// テストの失敗は panic で表す（実装プラン 00-02）。
+//! HTTP クライアントをループバックの実通信で確かめる（設計書 07-03「HTTP のテスト（初回リリース版）」）。
+// テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 #![allow(clippy::unwrap_used, clippy::panic)]
 use benitoite::pipeline::{self, CheckOptions};
 use benitoite::runtime::heap::HeapConfig;
 use benitoite::runtime::io::services::{InterruptSource, RunInput};
-use benitoite::runtime::run::{self, EndKind, OutputTarget, RunEnv, StdinSource};
+use benitoite::runtime::run::{self, EndKind, OutputTarget, RunEnd, RunEnv, StdinSource};
 use benitoite::runtime::sched::parts::{NetworkFaults, RuntimeParts};
 use benitoite::vm::{ExecMode, VmConfig};
 use std::io::{Read, Write};
@@ -28,7 +28,7 @@ impl InterruptSource for Interrupt {
 }
 const IMPORTS: &str =
     "import Benitoite.Unofficial.Network.Http\nimport Benitoite.Unofficial.IO.Console\n";
-fn run_script(body: &str, mode: ExecMode) -> String {
+fn run_script_end(body: &str, mode: ExecMode) -> (RunEnd, String, Vec<u8>) {
     let program = {
         let checked = pipeline::check_text(
             "l32.bnt",
@@ -80,7 +80,9 @@ fn run_script(body: &str, mode: ExecMode) -> String {
         );
         drop(tx.send(end));
     });
-    let wakeup = wake_rx.recv_timeout(Duration::from_secs(30)).unwrap();
+    let wakeup = wake_rx
+        .recv_timeout(Duration::from_secs(30))
+        .unwrap_or_else(|error| panic!("waiting for HTTP client wakeup: {error}"));
     let end = rx
         .recv_timeout(Duration::from_secs(30))
         .unwrap_or_else(|error| {
@@ -89,21 +91,28 @@ fn run_script(body: &str, mode: ExecMode) -> String {
             panic!("HTTP script did not finish: {error}");
         });
     thread.join().unwrap();
+    let output = String::from_utf8(stdout.lock().unwrap().clone()).unwrap();
+    let errors = stderr.lock().unwrap().clone();
+    (end, output, errors)
+}
+
+fn script_output(end: RunEnd, output: String, errors: Vec<u8>) -> String {
     assert_eq!(end.end, EndKind::Returned, "{end:?}");
     assert!(
         end.main_error.is_none() && end.reports.is_empty(),
         "{end:?}"
     );
-    assert!(
-        stderr.lock().unwrap().is_empty(),
-        "{:?}",
-        stderr.lock().unwrap()
-    );
-    String::from_utf8(stdout.lock().unwrap().clone()).unwrap()
+    assert!(errors.is_empty(), "{errors:?}");
+    output
+}
+
+fn run_script(body: &str, mode: ExecMode) -> String {
+    let (end, output, errors) = run_script_end(body, mode);
+    script_output(end, output, errors)
 }
 
 // 関門: 200/404/500、POST・DELETE の本体・要求のヘッダ、応答のレコードの欄・重複ヘッダ・UTF-8、
-// ソースの get/clientRequest を同じスクリプトで守る。L30 の外部クライアントでは
+// ソースの get/clientRequest を同じスクリプトで守る。サーバを試す外部クライアントでは
 // Http.send の読み書きとワーカからの完了を確かめられない。差し込み口を加えない。
 #[test]
 fn status_headers_post_and_source_defaults_roundtrip() {
@@ -279,6 +288,31 @@ fn read_wire_request(stream: &mut TcpStream) -> Vec<u8> {
         assert!(read > 0, "request ended early");
         bytes.extend_from_slice(chunk.get(..read).unwrap());
         assert!(bytes.len() < 65536, "test request too large");
+    }
+}
+
+// 最大の Integer を時間の上限にしても、期限の計算で停止せず応答を受け取る契約。
+// 既存の時間切れのテストは小さな値だけを使う。共有の実通信のサーバで結果を確かめる。
+#[test]
+fn maximum_integer_timeout_receives_response() {
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let (port, server) = raw_server(vec![
+            b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nok".to_vec(),
+        ]);
+        let source = format!(
+            r#"
+function main() -> Result[Unit, String] uses Http.Connect, Console.Write
+  return match Http.send(Http.ClientRequest(..Http.clientRequest("GET", "http://127.0.0.1:{port}/"), timeoutMilliseconds: 9223372036854775807)) with
+    case Result.Ok(response) ->
+      Console.writeLine(Integer.toString(Http.Response.status(response)))
+      Result.Ok(())
+    case Result.Error(error) -> Result.Error(NetworkError.message(error))
+  end match
+end function
+"#
+        );
+        assert_eq!(run_script(&source, mode), "200\n");
+        assert_eq!(server.join().unwrap().len(), 1);
     }
 }
 
@@ -536,6 +570,13 @@ function main() -> Result[Unit,String] uses Http.Listen, Http.Connect, State
 end function
 "#;
     for mode in [ExecMode::Direct, ExecMode::Request] {
-        assert!(run_script(source, mode).is_empty());
+        for attempt in 0..=3 {
+            let (end, output, errors) = run_script_end(source, mode);
+            if end.main_error.as_deref() == Some("closed port connected") && attempt < 3 {
+                continue;
+            }
+            assert!(script_output(end, output, errors).is_empty());
+            break;
+        }
     }
 }

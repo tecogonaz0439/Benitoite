@@ -1,4 +1,4 @@
-//! 中断から停止・解放・報告までを本物の VM とランタイムで確かめる（実装プラン R28）。
+//! 中断から停止・解放・報告までを本物の VM とランタイムで確かめる（設計書 02-09「中断の要求」）。
 
 use super::*;
 use crate::runtime::io::event::Wakeup;
@@ -95,6 +95,29 @@ fn implicit_calls_observe_the_flag_before_running_the_body() {
         let end = run_program(&program, env);
         assert_eq!(end.end, EndKind::Interrupted, "{source}: {:?}", end.reports);
         assert_eq!(end.exit_code, EXIT_INTERRUPTED);
+    }
+}
+
+// 呼び出しのない main は VM の切り替えの位置を通らないため、実行の終わりで中断を
+// 反映し、Result.Error の文字列も返さないことを確かめる（設計書 02-09「中断の要求」）。
+#[test]
+fn interrupt_request_overrides_a_main_value_without_calls() {
+    for source in [
+        "function main() -> Unit\n return ()\nend function\n",
+        "function main() -> Result[Unit, String]\n return Result.Error(\"x\")\nend function\n",
+    ] {
+        let program = compiled(source);
+        for mode in [ExecMode::Direct, ExecMode::Request] {
+            let mut env = environment();
+            env.mode = mode;
+            env.interrupt = Box::new(Flag(Arc::new(AtomicBool::new(true))));
+            env.parts = Some(ScheduleHandle::new([], false).parts());
+            let end = run_program(&program, env);
+            assert_eq!(end.end, EndKind::Interrupted, "{mode:?}: {source}");
+            assert_eq!(end.exit_code, EXIT_INTERRUPTED);
+            assert!(end.main_error.is_none());
+            assert!(end.reports.is_empty(), "{:?}", end.reports);
+        }
     }
 }
 

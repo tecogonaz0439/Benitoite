@@ -1,11 +1,10 @@
 //! 仮想機械（設計書 02-08）。言語の関数の呼び出しで Rust の関数を入れ子に呼ばない（設計書 02-08「枠の積み重ね」）。
-//! 命令の型と命令ごとの処理は 10-07 が定める。本モジュールは命令の集合に依存しない部分を持つ。
+//! 命令の型と命令ごとの処理は設計書 02-07「命令」で定める。本モジュールは命令の集合に依存しない部分を持つ。
 
 pub mod budget;
 pub mod dispatch;
 pub mod frame;
 pub mod handler;
-pub mod stage1;
 pub mod state;
 pub mod task;
 pub mod unwind;
@@ -136,7 +135,7 @@ pub enum StopReason {
     Exit(u8),
     /// 中断の要求（終了状態 130）
     Interrupted,
-    /// テストの確認の失敗（`Assert.Check`。内容は U4 が定める）
+    /// テストの確認の失敗（`Assert.Check`。設計書 02-11「テストの実行」）
     CheckFailed(String),
 }
 

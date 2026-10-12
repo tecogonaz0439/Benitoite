@@ -1,0 +1,48 @@
+// spec: 01-05 パターン
+record R
+  f0: Boolean
+  f1: Boolean
+  f2: Boolean
+  f3: Boolean
+  f4: Boolean
+  f5: Boolean
+  f6: Boolean
+  f7: Boolean
+  f8: Boolean
+  f9: Boolean
+  f10: Boolean
+  f11: Boolean
+  f12: Boolean
+  f13: Boolean
+  f14: Boolean
+  f15: Boolean
+  f16: Boolean
+  f17: Boolean
+  f18: Boolean
+  f19: Boolean
+  f20: Boolean
+  f21: Boolean
+  f22: Boolean
+  f23: Boolean
+  f24: Boolean
+  f25: Boolean
+end record
+function choose(x: R) -> Integer
+  return match x with
+    case R(f0: true, f1: true, ..) -> 0
+    case R(f2: true, f3: true, ..) -> 1
+    case R(f4: true, f5: true, ..) -> 2
+    case R(f6: true, f7: true, ..) -> 3
+    case R(f8: true, f9: true, ..) -> 4
+    case R(f10: true, f11: true, ..) -> 5
+    case R(f12: true, f13: true, ..) -> 6
+    case R(f14: true, f15: true, ..) -> 7
+    case R(f16: true, f17: true, ..) -> 8
+    case R(f18: true, f19: true, ..) -> 9
+    case R(f20: true, f21: true, ..) -> 10
+    case R(f22: true, f23: true, ..) -> 11
+    case R(f24: true, f25: true, ..) -> 12
+    case _ -> -1
+  end match
+end function
+function main() -> Unit end function

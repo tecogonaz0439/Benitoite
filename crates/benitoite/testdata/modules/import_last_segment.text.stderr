@@ -1,0 +1,12 @@
+error[E0321]: `Benitoite.Http` is not a standard library module
+  --> testdata/modules/import_last_segment.bnt:2:8
+   |
+ 2 | import Benitoite.Http as H
+   |        ^^^^^^^^^^^^^^
+   |
+   = help: use `Benitoite.Unofficial.Network.Http`
+   |
+ 2 | import Benitoite.Unofficial.Network.Http as H
+   |        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+error: could not check testdata/modules/import_last_segment.bnt due to 1 previous error

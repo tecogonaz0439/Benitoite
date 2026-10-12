@@ -66,6 +66,8 @@ impl Resolver<'_> {
         }
     }
 
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn bind_statement(&mut self, ctx: &mut Ctx, stmt: &BindStmt) {
         self.expr(ctx, &stmt.value);
         if let Some(ty) = &stmt.ty {
@@ -211,8 +213,20 @@ impl Resolver<'_> {
         }
     }
 
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
     pub(super) fn arm(&mut self, ctx: &mut Ctx, arm: &MatchArm) {
         ctx.scopes.push(BTreeMap::new());
+        self.arm_bindings(ctx, arm);
+        if let Some(guard) = &arm.guard {
+            self.expr(ctx, guard);
+        }
+        self.block(ctx, &arm.body);
+        ctx.scopes.pop();
+    }
+    // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    #[inline(never)]
+    fn arm_bindings(&mut self, ctx: &mut Ctx, arm: &MatchArm) {
         let mut alternatives = Vec::new();
         for pattern in &arm.patterns {
             alternatives.push(self.pattern(ctx, pattern));
@@ -348,10 +362,5 @@ impl Resolver<'_> {
         if let Some(scope) = ctx.scopes.last_mut() {
             scope.extend(bindings);
         }
-        if let Some(guard) = &arm.guard {
-            self.expr(ctx, guard);
-        }
-        self.block(ctx, &arm.body);
-        ctx.scopes.pop();
     }
 }

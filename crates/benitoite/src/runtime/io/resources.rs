@@ -40,6 +40,10 @@ pub struct ResourceEntry {
     pub waiters: Vec<TaskId>,
     /// 解放の完了を待った側に渡す解放の失敗の理由（`finish_release` が入れ、`take_release_failure` が除く）
     pub release_failure: Option<String>,
+    /// `with` の解放の枠が失敗を受け取る印。一度立てたら下ろさない（設計書 02-09「リソースの追跡」）。
+    pub with_bound: bool,
+    /// close が待つ解放を始めたタスク。取り消された待ち手が他の呼び手の失敗を捨てないために持つ。
+    pub release_starter: Option<TaskId>,
 }
 
 /// リソースの表（実行ごとに一つ）。
@@ -49,7 +53,7 @@ pub struct ResourceTable {
     /// 作業用のスレッドへまだ出していない、ブロックする解放の仕事（`Releasing` の項目の番号。始めた順）
     pub release_jobs: VecDeque<ResourceId>,
     // 下位 3 ビットは種類、残りは種類ごとの通し番号。FileReader の計数器は next。
-    // 解放済みの種類を項目ごとに保存せず、発行した範囲だけを固定量で持つ（SECB6）。
+    // 解放済みの種類を項目ごとに保存せず、発行した範囲だけを固定量で持つ。
     next: u64,
     other_next: [u64; 4],
     closed_before: [u64; 5],
@@ -57,8 +61,8 @@ pub struct ResourceTable {
     group_tasks: BTreeMap<TaskId, (ResourceId, usize)>,
     readiness_watches: BTreeSet<ResourceId>,
     closed_watches: BTreeSet<ResourceId>,
-    /// リソースに添えた、言語の値を含まない Rust の値（受け付けた HTTP の要求など。実装プラン 10-16
-    /// 「受け付けた要求の保存」）。リソースを解放するときに除く
+    /// リソースに添えた、言語の値を含まない Rust の値（受け付けた HTTP の要求など）。
+    /// リソースを解放するときに除く（設計書 02-09「リソースの追跡」）。
     pub attachments: BTreeMap<ResourceId, Box<dyn std::any::Any + Send>>,
 }
 
@@ -83,7 +87,8 @@ pub enum ReleaseStart {
     AfterReturn,
     /// 解放を行っている（`Releasing`）。完了を待つ
     InProgress,
-    /// `TaskGroup`: 子のタスクの終わりを待つか取り消すかは呼び出し側（10-09 の解放の枠）が決める。
+    /// `TaskGroup`: 子のタスクの終わりを待つか取り消すかは呼び出し側の解放の枠が決める
+    /// （設計書 02-08「リソースの解放の枠」）。
     /// 既に `Released` でも子の並びを返す（解放の枠が呼ばれるたびに子を評価し直すため）
     TaskGroup(Vec<TaskId>),
     /// 解放を終えてある（`Released`）
@@ -124,9 +129,34 @@ impl ResourceTable {
                 opened_at,
                 waiters: Vec::new(),
                 release_failure: None,
+                with_bound: false,
+                release_starter: None,
             },
         );
         id
+    }
+    /// `USE` が解放の枠を積むリソースに印を立てる（設計書 02-09「リソースの追跡」）。
+    pub(crate) fn mark_with_bound(&mut self, id: ResourceId) {
+        if let Some(entry) = self.entries.get_mut(&id) {
+            entry.with_bound = true;
+        }
+    }
+    /// 取り消された close の失敗を、別のタスクの解放の枠にも残すために印を調べる。
+    pub(crate) fn is_with_bound(&self, id: ResourceId) -> bool {
+        self.entries.get(&id).is_some_and(|entry| entry.with_bound)
+    }
+    /// 貸し出し中の後続の close も AfterReturn を受け取るため、最初の呼び手を保つ
+    /// （設計書 02-09「リソースの追跡」）。
+    pub(crate) fn mark_release_starter(&mut self, id: ResourceId, task: TaskId) {
+        if let Some(entry) = self.entries.get_mut(&id) {
+            entry.release_starter.get_or_insert(task);
+        }
+    }
+    /// 取り消されたタスク自身が解放を始めたかを、世代付きの番号で調べる。
+    pub(crate) fn is_release_starter(&self, id: ResourceId, task: TaskId) -> bool {
+        self.entries
+            .get(&id)
+            .is_some_and(|entry| entry.release_starter == Some(task))
     }
     pub fn state(&self, id: ResourceId) -> Option<ResourceState> {
         self.entries
@@ -137,7 +167,7 @@ impl ResourceTable {
     /// OS の資源を操作 `op` に貸す。`MustWait` なら `task` を返却を待つ並びの末尾に加える。
     pub fn lend(&mut self, id: ResourceId, op: ExtOpId, task: TaskId) -> LendResult {
         // 呼び出し側の check_lend を前提にする。失敗を表せない戻り値なので、不整合でも
-        // 待ちを登録せず状態を保つ（実装プラン R24「凍結した戻り値で処理系の不具合を扱う方法」）。
+        // 待ちを登録せず状態を保つ。
         let valid = self.check_lend(id).is_ok();
         debug_assert!(valid, "check_lend must precede lend");
         if !valid {
@@ -224,7 +254,7 @@ impl ResourceTable {
     /// 解放を要求する（`with` を抜けるとき、取り消し、止める手順、E-DropRel、返却の後の解放）。
     pub fn request_release(&mut self, id: ResourceId, op: ExtOpId) -> ReleaseStart {
         // check_release を先に通した呼び出しだけを受ける。不整合を解放の失敗と混同せず、
-        // この到達しない分岐では表を変えない（実装プラン R24 のオーケストレータの決定）。
+        // この到達しない分岐では表を変えない。
         let valid = self.check_release(id).is_ok();
         debug_assert!(valid, "check_release must precede request_release");
         if !valid {
@@ -364,7 +394,7 @@ impl ResourceTable {
         self.closed_before = self.counters();
     }
 
-    /// 凍結した貸し出しの戻り値にない不具合を、呼ぶ側で先に報告する（実装プラン R24）。
+    /// 貸し出しの戻り値にない不具合を、呼ぶ側で先に報告する。
     pub(crate) fn check_lend(&self, id: ResourceId) -> Result<(), Stop> {
         self.check_release(id)?;
         let Some(entry) = self.entries.get(&id) else {
@@ -376,7 +406,7 @@ impl ResourceTable {
         Ok(())
     }
 
-    /// 解放前に番号と状態・種類・中身の不変条件を確かめる（実装プラン R24）。
+    /// 解放前に番号と状態・種類・中身の不変条件を確かめる。
     pub(crate) fn check_release(&self, id: ResourceId) -> Result<(), Stop> {
         let Some(entry) = self.entries.get(&id) else {
             return self

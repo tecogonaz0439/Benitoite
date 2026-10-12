@@ -48,6 +48,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
                 let s = head_scheme(&i);
                 let ty = show(d, &s, &target_ty(&i));
                 let class = class_name(d, i.class);
+                let mut orphan = false;
                 if !invalid(d, &i) && d.diagnostics.len() == before {
                     let class_module = d.resolved.bindings.get(i.class).map(|b| b.module);
                     let type_module = match i.target_con {
@@ -68,6 +69,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
                         }),
                     };
                     if Some(i.module) != class_module && Some(i.module) != type_module {
+                        orphan = true;
                         let mut diag = DiagBuilder::new(DiagCode::E0701)
                             .arg("trait_name", &class)
                             .arg("ty", &ty)
@@ -85,7 +87,9 @@ pub(super) fn check(d: &mut Decls<'_>) {
                 }
                 // 型構成子を決められない対象には表の鍵を作らない。出力の仮の target_con を
                 // 本物の Unit の実装と比較すると、対象の誤りから重なりの診断が派生する（02-05「誤りの報告と検査の継続」）。
-                if let Some(con) = solve::target_con(&i) {
+                // 孤立した実装を標準ライブラリの実装と比べると、標準ライブラリの
+                // 位置に E0702 が派生するので、照合も登録もしない（設計書 02-05「誤りの報告と検査の継続」）。
+                if !orphan && let Some(con) = solve::target_con(&i) {
                     if let Some(span) = seen.get(&(i.class, con)) {
                         d.diagnostics.push(
                             DiagBuilder::new(DiagCode::E0702)
@@ -123,8 +127,28 @@ pub(super) fn check(d: &mut Decls<'_>) {
                         }
                     };
                     for sup in t.supers {
-                        let resolution =
-                            solve::resolve(d, &Solver::default(), &s, &table, sup, &arg);
+                        let mut parts = 0;
+                        let resolution = solve::resolve(
+                            d,
+                            &Solver::default(),
+                            &s,
+                            &table,
+                            sup,
+                            &arg,
+                            &mut parts,
+                        );
+                        if matches!(resolution, Err(solve::Failure::Limit)) {
+                            d.diagnostics.push(
+                                DiagBuilder::new(DiagCode::E0715)
+                                    .arg("trait_name", class_name(d, sup))
+                                    .arg("ty", show(d, &s, &target_ty(&i)))
+                                    .arg("limit", crate::typeck::limits::MAX_DICT_WORK.to_string())
+                                    .primary(source.span)
+                                    .help("reduce")
+                                    .build(),
+                            );
+                            continue;
+                        }
                         let r = reason(source.span, ReasonKind::ImplSuper { class: sup });
                         let scope = d.scopes.get(&source.id).cloned().unwrap_or_default();
                         let dict = resolution.ok().and_then(|resolution| {
@@ -169,6 +193,9 @@ fn check_shape(d: &mut Decls<'_>, source: &ImplDecl, i: &ImplDef) {
         TypeArg::Ty(_) | TypeArg::Head(TyHead::Param(_)) => false,
     };
     if !valid {
+        if solve::target_con(i).is_none() {
+            d.invalid_impl_targets.insert(i.class);
+        }
         d.diagnostics.push(
             DiagBuilder::new(DiagCode::E0712)
                 .arg("ty", show(d, &head_scheme(i), &target_ty(i)))
@@ -257,10 +284,19 @@ fn check_methods(d: &mut Decls<'_>, source: &ImplDecl, i: &ImplDef) {
                 ret,
                 effects: expected.effects,
             }));
+            // 置換後の番号は実装の頭部の分に宣言のメソッドの分を続けたもの。
+            // 実装のメソッドの名前を使うと、型パラメータ数の違いで対応が崩れる（設計書 02-05「実装の検査」）。
+            let mut expected_names = found.clone();
+            expected_names.type_params = i
+                .type_params
+                .iter()
+                .chain(expected.type_params.iter().skip(1))
+                .cloned()
+                .collect();
             let mut diag = DiagBuilder::new(DiagCode::E0711)
                 .arg("name", class_name(d, *method))
                 .arg("trait_name", &t.name)
-                .arg("expected", show(d, &found, &expected_ty))
+                .arg("expected", show(d, &expected_names, &expected_ty))
                 .arg("found", show(d, &found, &found.fn_ty()))
                 .primary(span);
             if let Some(declared) = binding_span(d, *method) {
