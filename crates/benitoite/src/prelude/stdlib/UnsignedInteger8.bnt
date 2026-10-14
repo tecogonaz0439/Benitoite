@@ -1,0 +1,46 @@
+//! Functions on `UnsignedInteger8`, the same type as `Byte`, exposed under the canonical module name.
+
+/// Calls `Byte.fromInteger` with the same result and stopping conditions.
+public function fromInteger(n: Integer) -> Option[UnsignedInteger8]
+  return Byte.fromInteger(n)
+end function
+
+/// Calls `Byte.toInteger` with the same result and stopping conditions.
+public function toInteger(b: UnsignedInteger8) -> Integer
+  return Byte.toInteger(b)
+end function
+
+/// Calls `Byte.toString` with the same result and stopping conditions.
+public function toString(b: UnsignedInteger8) -> String
+  return Byte.toString(b)
+end function
+
+/// Calls `Byte.bitwiseAnd` with the same result and stopping conditions.
+public function bitwiseAnd(a: UnsignedInteger8, b: UnsignedInteger8) -> UnsignedInteger8
+  return Byte.bitwiseAnd(a, b)
+end function
+
+/// Calls `Byte.bitwiseOr` with the same result and stopping conditions.
+public function bitwiseOr(a: UnsignedInteger8, b: UnsignedInteger8) -> UnsignedInteger8
+  return Byte.bitwiseOr(a, b)
+end function
+
+/// Calls `Byte.bitwiseExclusiveOr` with the same result and stopping conditions.
+public function bitwiseExclusiveOr(a: UnsignedInteger8, b: UnsignedInteger8) -> UnsignedInteger8
+  return Byte.bitwiseExclusiveOr(a, b)
+end function
+
+/// Calls `Byte.bitwiseNot` with the same result and stopping conditions.
+public function bitwiseNot(a: UnsignedInteger8) -> UnsignedInteger8
+  return Byte.bitwiseNot(a)
+end function
+
+/// Calls `Byte.shiftLeft` with the same result and stopping conditions.
+public function shiftLeft(a: UnsignedInteger8, n: Integer) -> UnsignedInteger8
+  return Byte.shiftLeft(a, n)
+end function
+
+/// Calls `Byte.shiftRight` with the same result and stopping conditions.
+public function shiftRight(a: UnsignedInteger8, n: Integer) -> UnsignedInteger8
+  return Byte.shiftRight(a, n)
+end function

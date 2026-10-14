@@ -1,0 +1,69 @@
+//! Functions on `Integer32`, the integers from -2147483648 to 2147483647.
+
+/// Converts from `Integer`. Returns `Option.None` when out of range.
+@builtin("Integer32.fromInteger")
+public function fromInteger(n: Integer) -> Option[Integer32]
+
+/// Converts exactly to `Integer`.
+@builtin("Integer32.toInteger")
+public function toInteger(n: Integer32) -> Integer
+
+/// Reads a decimal integer without whitespace, prefixes, underscores, or extra leading zeros. Returns `Option.None` when invalid or out of range.
+@builtin("Integer32.parse")
+public function parse(s: String) -> Option[Integer32]
+
+/// Returns the decimal representation, with a leading `-` when negative.
+@builtin("Integer32.toString")
+public function toString(n: Integer32) -> String
+
+/// Converts exactly to `Float`.
+@builtin("Integer32.toFloat")
+public function toFloat(n: Integer32) -> Float
+
+/// Returns the absolute value. Stops the program for the smallest value of this type.
+@builtin("Integer32.absolute")
+public function absolute(n: Integer32) -> Integer32
+
+/// Returns the smaller of `a` and `b`.
+@builtin("Integer32.minimum")
+public function minimum(a: Integer32, b: Integer32) -> Integer32
+
+/// Returns the larger of `a` and `b`.
+@builtin("Integer32.maximum")
+public function maximum(a: Integer32, b: Integer32) -> Integer32
+
+/// Divides and rounds the quotient toward negative infinity. Stops the program when the divisor is 0 or the smallest value is divided by -1.
+@builtin("Integer32.floorDivide")
+public function floorDivide(a: Integer32, b: Integer32) -> Integer32
+
+/// Returns a remainder that is zero or has the sign of the divisor. Stops the program when the divisor is 0.
+@builtin("Integer32.floorModulo")
+public function floorModulo(a: Integer32, b: Integer32) -> Integer32
+
+/// Returns the bitwise AND of `a` and `b`.
+@builtin("Integer32.bitwiseAnd")
+public function bitwiseAnd(a: Integer32, b: Integer32) -> Integer32
+
+/// Returns the bitwise OR of `a` and `b`.
+@builtin("Integer32.bitwiseOr")
+public function bitwiseOr(a: Integer32, b: Integer32) -> Integer32
+
+/// Returns the bitwise exclusive OR of `a` and `b`.
+@builtin("Integer32.bitwiseExclusiveOr")
+public function bitwiseExclusiveOr(a: Integer32, b: Integer32) -> Integer32
+
+/// Inverts all bits within the width of this type.
+@builtin("Integer32.bitwiseNot")
+public function bitwiseNot(a: Integer32) -> Integer32
+
+/// Shifts left, discarding bits beyond the width and filling low bits with 0. Stops the program unless the shift count is between 0 and 31.
+@builtin("Integer32.shiftLeft")
+public function shiftLeft(a: Integer32, n: Integer) -> Integer32
+
+/// Shifts right, filling high bits with the sign bit. Stops the program unless the shift count is between 0 and 31.
+@builtin("Integer32.shiftRight")
+public function shiftRight(a: Integer32, n: Integer) -> Integer32
+
+/// Shifts right, filling high bits with 0. Stops the program unless the shift count is between 0 and 31.
+@builtin("Integer32.shiftRightUnsigned")
+public function shiftRightUnsigned(a: Integer32, n: Integer) -> Integer32

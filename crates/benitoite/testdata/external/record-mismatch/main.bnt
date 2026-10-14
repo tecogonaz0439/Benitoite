@@ -1,0 +1,10 @@
+// spec: 01-02 外部の関数の宣言
+record Point
+  byteStart: Integer
+  z: Integer
+end record
+@external("wasm", "x.wasm", "move-point")
+function move(p: Point) -> Point
+function main() -> Unit
+  ()
+end function

@@ -29,3 +29,30 @@ multiple_unsafe_ops_per_block = "deny"
 [profile.release]
 overflow-checks = true
 panic = "unwind"
+
+# debug の検査でも大きな WASM コンポーネントを短時間でコンパイルするため、実行系とコンパイラを最適化する（設計書 07-03「実装の規約と静的な検査」）。
+# cargo tree で本体から Wasmtime・Cranelift に至る依存を確かめ、aarch64 の macOS で測った構成のクレートを選んだ。
+[profile.dev.package.cranelift-codegen]
+opt-level = 2
+[profile.dev.package.cranelift-frontend]
+opt-level = 2
+[profile.dev.package.cranelift-entity]
+opt-level = 2
+[profile.dev.package.cranelift-bforest]
+opt-level = 2
+[profile.dev.package.cranelift-bitset]
+opt-level = 2
+[profile.dev.package.cranelift-native]
+opt-level = 2
+[profile.dev.package.regalloc2]
+opt-level = 2
+[profile.dev.package.wasmtime]
+opt-level = 2
+[profile.dev.package.wasmtime-environ]
+opt-level = 2
+[profile.dev.package.wasmtime-internal-cranelift]
+opt-level = 2
+[profile.dev.package.wasmtime-internal-core]
+opt-level = 2
+[profile.dev.package.wasmparser]
+opt-level = 2

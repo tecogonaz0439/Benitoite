@@ -1,0 +1,49 @@
+// 作成時の関門: 単精度の標準関数の零の符号・半分の丸め・特殊値の判定を守る。
+// Float のテストでは単精度の公開関数の接続と結果の幅を確認できない。
+// CLI の独立した期待値を使い、算術のテストと同じ式は繰り返さない。
+import Benitoite.Unofficial.IO.Console
+
+function floatText(value: Option[Float32]) -> String
+  return match value with
+    case Option.Some(n) -> Float32.toString(n)
+    case Option.None -> "None"
+  end match
+end function
+
+function integerText(value: Option[Integer]) -> String
+  return match value with
+    case Option.Some(n) -> Integer.toString(n)
+    case Option.None -> "None"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Float32.toString(Float32.absolute(-1.5f32)))
+  Console.writeLine(Float32.toString(Float32.absolute(-0.0f32)))
+  Console.writeLine(Float32.toString(Float32.absolute(-1.0f32 / 0.0f32)))
+  Console.writeLine(Float32.toString(Float32.floor(-1.5f32)))
+  Console.writeLine(Float32.toString(Float32.floor(1.5f32)))
+  Console.writeLine(Float32.toString(Float32.floor(-0.0f32)))
+  Console.writeLine(Float32.toString(Float32.floor(1.0f32 / 0.0f32)))
+  Console.writeLine(Float32.toString(Float32.ceiling(-1.5f32)))
+  Console.writeLine(Float32.toString(Float32.ceiling(1.5f32)))
+  Console.writeLine(Float32.toString(Float32.ceiling(-0.5f32)))
+  Console.writeLine(Float32.toString(Float32.round(0.5f32)))
+  Console.writeLine(Float32.toString(Float32.round(-0.5f32)))
+  Console.writeLine(Float32.toString(Float32.round(-0.4f32)))
+  Console.writeLine(Float32.toString(Float32.round(16777216.0f32)))
+  Console.writeLine(Float32.toString(Float32.round(0.0f32 / 0.0f32)))
+  Console.writeLine(Float32.toString(Float32.squareRoot(2.0f32)))
+  Console.writeLine(Float32.toString(Float32.squareRoot(-0.0f32)))
+  Console.writeLine(Float32.toString(Float32.squareRoot(-1.0f32)))
+  Console.writeLine(Float32.toString(Float32.squareRoot(1.0f32 / 0.0f32)))
+  Console.writeLine("${Float32.isNaN(0.0f32 / 0.0f32)}")
+  Console.writeLine("${Float32.isNaN(1.0f32 / 0.0f32)}")
+  Console.writeLine("${Float32.isNaN(0.0f32)}")
+  Console.writeLine("${Float32.isInfinite(1.0f32 / 0.0f32)}")
+  Console.writeLine("${Float32.isInfinite(-1.0f32 / 0.0f32)}")
+  Console.writeLine("${Float32.isInfinite(0.0f32 / 0.0f32)}")
+  Console.writeLine("${Float32.isInfinite(3.4028235e38f32)}")
+  Console.writeLine("${Float32.isInfinite(-0.0f32)}")
+  Console.writeLine("${0.1f32}")
+end function

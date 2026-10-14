@@ -14,7 +14,7 @@
 //! | `DocStore::finish` | `&mut self, diagnostics: &mut Vec<Diagnostic> → ()` |
 //! | `items::parse_import` | `p, first_decl: Option<Span>, depth: u32 → PResult<ImportDecl>` |
 //! | `items::parse_attributes` | `p → Vec<Attribute>` |
-//! | `items::parse_public` | `p → Option<Span>` |
+//! | `items::parse_public` | `p → (Option<Span>, Option<Span>)` |
 //! | `items::body_rule` | `attrs: &[Attribute], kind: SourceKind → BodyRule` |
 //! | `items::check_decl_header` | `p, decl: &TopDecl → ()` |
 //! | `items::report_missing_body` | `p, name: &Name, attrs: &[Attribute] → ()` |
@@ -57,6 +57,7 @@ mod decls;
 mod effects;
 mod exprs;
 mod foreign;
+mod header;
 mod interp;
 mod items;
 mod patterns;
@@ -656,6 +657,24 @@ pub(super) fn literal_of(token: &Token) -> Option<Literal> {
             radix: *radix,
             digits: digits.clone(),
         }),
+        (
+            TokenKind::IntLit,
+            TokenValue::WidthInt {
+                radix,
+                digits,
+                suffix,
+            },
+        ) => Some(Literal::WidthInt {
+            radix: *radix,
+            digits: digits.clone(),
+            suffix: *suffix,
+        }),
+        (TokenKind::FloatLit, TokenValue::WidthFloat { text, suffix }) => {
+            Some(Literal::WidthFloat {
+                text: text.clone(),
+                suffix: *suffix,
+            })
+        }
         (TokenKind::FloatLit, TokenValue::Float(text)) => Some(Literal::Float(text.clone())),
         (TokenKind::DecimalLit, TokenValue::Decimal(text)) => Some(Literal::Decimal(text.clone())),
         (TokenKind::StringLit, TokenValue::Str(text)) => Some(Literal::Str(text.clone())),
@@ -663,6 +682,24 @@ pub(super) fn literal_of(token: &Token) -> Option<Literal> {
         (TokenKind::KwTrue, _) => Some(Literal::Bool(true)),
         (TokenKind::KwFalse, _) => Some(Literal::Bool(false)),
         _ => None,
+    }
+}
+
+/// パターンでは旧 Integer と同じ s64 だけを認め、新しい数のパターンを増やさない。
+fn pattern_literal_of(token: &Token) -> Option<Literal> {
+    match literal_of(token)? {
+        Literal::WidthInt {
+            radix,
+            digits,
+            suffix: crate::syntax::token::IntegerSuffix::S64,
+        } => Some(Literal::Int { radix, digits }),
+        Literal::WidthInt { .. } | Literal::WidthFloat { .. } => None,
+        lit @ (Literal::Int { .. }
+        | Literal::Float(_)
+        | Literal::Decimal(_)
+        | Literal::Str(_)
+        | Literal::Char(_)
+        | Literal::Bool(_)) => Some(lit),
     }
 }
 
@@ -901,6 +938,12 @@ mod tests {
                 .join("."),
             Expr::Lit(l) => match &l.lit {
                 Literal::Int { digits, .. } => digits.clone(),
+                Literal::WidthInt {
+                    radix,
+                    digits,
+                    suffix,
+                } => format!("{radix}:{digits}:{suffix:?}"),
+                Literal::WidthFloat { text, suffix } => format!("{text}:{suffix:?}"),
                 Literal::Bool(b) => b.to_string(),
                 Literal::Float(f) | Literal::Decimal(f) => f.clone(),
                 Literal::Str(s) => format!("{s:?}"),
@@ -1324,6 +1367,7 @@ mod tests {
                     | Item::Trait(_)
                     | Item::Effect(_)
                     | Item::Impl(_)
+                    | Item::ExternalType(_)
                     | Item::Error(_) => panic!("unexpected F02 declaration"),
                 }
             }

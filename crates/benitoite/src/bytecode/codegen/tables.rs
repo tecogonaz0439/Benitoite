@@ -6,6 +6,13 @@ use super::*;
 pub(super) enum ConstKey {
     Int(i64),
     Float(u64),
+    Int8(i8),
+    Int16(i16),
+    Int32(i32),
+    UInt16(u16),
+    UInt32(u32),
+    UInt64(u64),
+    Float32(u32),
     Str(String),
     Char(char),
     Bool(bool),
@@ -25,6 +32,13 @@ impl ConstKey {
         match desc {
             ConstDesc::Int(x) => Self::Int(*x),
             ConstDesc::Float(x) => Self::Float(x.to_bits()),
+            ConstDesc::Int8(x) => Self::Int8(*x),
+            ConstDesc::Int16(x) => Self::Int16(*x),
+            ConstDesc::Int32(x) => Self::Int32(*x),
+            ConstDesc::UInt16(x) => Self::UInt16(*x),
+            ConstDesc::UInt32(x) => Self::UInt32(*x),
+            ConstDesc::UInt64(x) => Self::UInt64(*x),
+            ConstDesc::Float32(x) => Self::Float32(x.to_bits()),
             ConstDesc::Str(x) => Self::Str(x.clone()),
             ConstDesc::Char(x) => Self::Char(*x),
             ConstDesc::Bool(x) => Self::Bool(*x),
@@ -45,6 +59,13 @@ pub(super) fn scalar(c: &Const) -> ConstDesc {
     match c {
         Const::Int(x) => ConstDesc::Int(*x),
         Const::Float(x) => ConstDesc::Float(*x),
+        Const::Int8(x) => ConstDesc::Int8(*x),
+        Const::Int16(x) => ConstDesc::Int16(*x),
+        Const::Int32(x) => ConstDesc::Int32(*x),
+        Const::UInt16(x) => ConstDesc::UInt16(*x),
+        Const::UInt32(x) => ConstDesc::UInt32(*x),
+        Const::UInt64(x) => ConstDesc::UInt64(*x),
+        Const::Float32(x) => ConstDesc::Float32(*x),
         Const::Str(x) => ConstDesc::Str(x.clone()),
         Const::Char(x) => ConstDesc::Char(*x),
         Const::Bool(x) => ConstDesc::Bool(*x),
@@ -282,6 +303,43 @@ impl Gen<'_> {
         }
         Ok(index)
     }
+    pub(super) fn external(&mut self, spec: &Arc<crate::external::ExternalSpec>) -> CgResult<u32> {
+        if let Some(index) = self.external_index.get(&spec.id) {
+            return Ok(*index);
+        }
+        let component = match self
+            .out
+            .externals
+            .components
+            .iter()
+            .position(|s| Arc::ptr_eq(s, &spec.component))
+        {
+            Some(i) => count(i)?,
+            None => {
+                let i = count(self.out.externals.components.len())?;
+                self.out
+                    .externals
+                    .components
+                    .push(Arc::clone(&spec.component));
+                i
+            }
+        };
+        let index = count(self.out.externals.functions.len())?;
+        self.external_index.insert(spec.id, index);
+        self.out.externals.functions.push(ExternalRef {
+            spec: Arc::clone(spec),
+            component,
+            arity: u16::try_from(spec.params.len())
+                .map_err(|_| internal("external arity overflow"))?,
+        });
+        self.check_table(
+            DiagCode::L0113,
+            self.out.externals.functions.len(),
+            String::new(),
+            "",
+        );
+        Ok(index)
+    }
     pub(super) fn builtin(
         &mut self,
         id: BuiltinId,
@@ -341,6 +399,13 @@ impl Gen<'_> {
     }
     fn const_value(&mut self, value: &ConstValue) -> CgResult<ConstIdx> {
         let desc = match value {
+            ConstValue::Integer8(x) => ConstDesc::Int8(*x),
+            ConstValue::Integer16(x) => ConstDesc::Int16(*x),
+            ConstValue::Integer32(x) => ConstDesc::Int32(*x),
+            ConstValue::UnsignedInteger16(x) => ConstDesc::UInt16(*x),
+            ConstValue::UnsignedInteger32(x) => ConstDesc::UInt32(*x),
+            ConstValue::UnsignedInteger64(x) => ConstDesc::UInt64(*x),
+            ConstValue::Float32(x) => ConstDesc::Float32(*x),
             ConstValue::Integer(x) => ConstDesc::Int(*x),
             ConstValue::Float(x) => ConstDesc::Float(*x),
             ConstValue::String(x) => ConstDesc::Str(x.clone()),
@@ -399,6 +464,7 @@ mod tests {
         for code in [
             DiagCode::L0105,
             DiagCode::L0106,
+            DiagCode::L0113,
             DiagCode::L0107,
             DiagCode::L0108,
             DiagCode::L0109,
@@ -409,7 +475,7 @@ mod tests {
                 g.check_table(code, size, "table".into(), "Trait");
             }
         }
-        assert_eq!(g.diags.len(), 7);
+        assert_eq!(g.diags.len(), 8);
         assert!(g.diags.iter().all(|d| d.primary.is_none()));
         assert!(!table_limit(65535));
         assert!(table_limit(65536));

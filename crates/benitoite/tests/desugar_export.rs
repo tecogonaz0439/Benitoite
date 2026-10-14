@@ -18,6 +18,162 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
+// 関門: 新しい数の脱糖と宣言表が Lean の独立した規則へ実際に渡せることを守る。
+// VM の実行だけでは、交換形式のビット欠落や対象外への誤った除外を捕まえられない。
+// 既存の書き出しを使い、全 corpus の発見・無作為の生成・本番の差し込み口を増やさない。
+#[test]
+fn export_width_smoke() {
+    let start = Instant::now();
+    let output = export_directory("width-smoke");
+    let stdlib = exchange::complete_stdlib();
+    let mut inputs = vec![];
+    let mut builtin_inputs = vec![];
+    let mut stdlib_inputs = vec![];
+    let mut coverage_inputs = vec![];
+    let groups = [
+        (
+            "signed",
+            vec![
+                ("Integer8", "-128s8"),
+                ("Integer16", "-32768s16"),
+                ("Integer32", "-2147483648s32"),
+            ],
+        ),
+        (
+            "unsigned",
+            vec![
+                ("UnsignedInteger16", "65535u16"),
+                ("UnsignedInteger32", "4294967295u32"),
+                ("UnsignedInteger64", "18446744073709551615u64"),
+            ],
+        ),
+        ("float", vec![("Float32", "1.000000059604644775390625f32")]),
+    ];
+    for (group, widths) in groups {
+        let mut source = String::new();
+        for (index, (ty, literal)) in widths.iter().enumerate() {
+            source.push_str(&format!(
+                "const edge{index}: {ty} = {literal}\n\
+                 function literal{index}() -> {ty}\n return {literal}\nend function\n\
+                 function constant{index}() -> {ty}\n return edge{index}\nend function\n"
+            ));
+            let operation = if *ty == "Float32" {
+                "((x + y) * (x - y)) / y".to_owned()
+            } else {
+                "((x + y) * (x - y)) div y mod y".to_owned()
+            };
+            let standard = if *ty == "Float32" {
+                "Float32.squareRoot(x + y)".to_owned()
+            } else {
+                format!("{ty}.minimum(x, y)")
+            };
+            source.push_str(&format!(
+                "function arithmetic{index}(x: {ty}, y: {ty}) -> {ty}\n\
+                 return {operation}\nend function\n\
+                 function standard{index}(x: {ty}, y: {ty}) -> {ty}\n\
+                 return {standard}\nend function\n"
+            ));
+        }
+        if group == "float" {
+            source.push_str("function negativeZero() -> Float32\n return -0.0f32\nend function\n");
+        }
+        if group == "unsigned" {
+            source.push_str("function upperHalf() -> UnsignedInteger64\n return 9223372036854775808u64\nend function\n");
+        }
+        let name = format!("width-{group}.bnt");
+        fs::write(output.join(&name), &source).unwrap();
+        let checked = pipeline::check_text(
+            &name,
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(
+            checked.error_count(),
+            0,
+            "{name}: {:?}",
+            checked.diagnostics
+        );
+        let input = export(
+            "golden",
+            &name,
+            checked,
+            Some((&mut builtin_inputs, &mut stdlib_inputs, &stdlib)),
+            &mut coverage_inputs,
+        );
+        assert_eq!(input["excluded"], json!([]));
+        let definitions = input["definitions"].as_array().unwrap();
+        assert_eq!(
+            definitions.len(),
+            widths.len() * 4 + usize::from(group != "signed")
+        );
+        for definition in definitions {
+            assert!(
+                definition["scope"].get("inScope").is_some(),
+                "{name}: {definition}"
+            );
+        }
+        // 型ごとに演算と標準関数を対象内に保ち、型の追加だけの空の確認にしない。
+        for (ty, _) in widths {
+            let standard = if ty == "Float32" {
+                "squareRoot"
+            } else {
+                "minimum"
+            };
+            assert!(
+                contains_json(&input["definitions"], &json!({"base":{"name":ty}})),
+                "{name}: {ty}"
+            );
+            assert!(
+                builtin_inputs.last().unwrap()["prims"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|p| p["name"] == format!("{ty}.{standard}")),
+                "{name}: {ty}.{standard}"
+            );
+        }
+        inputs.push(input);
+    }
+    let annotations = export_annotations(&inputs);
+    write_exchange(&output, inputs, builtin_inputs, stdlib_inputs, annotations);
+    // メモリ上の表だけでなく、Lean が読むファイルにも境界値とビットが残ることを確かめる。
+    let corpus: Value =
+        serde_json::from_slice(&fs::read(output.join("corpus.json")).unwrap()).unwrap();
+    for expected in [
+        json!({"integer8":{"value":-128}}),
+        json!({"integer16":{"value":-32768}}),
+        json!({"integer32":{"value":-2147483648_i64}}),
+        json!({"unsignedInteger16":{"value":65535}}),
+        json!({"unsignedInteger32":{"value":4294967295_u64}}),
+        json!({"unsignedInteger64":{"value":9223372036854775808_u64}}),
+        json!({"unsignedInteger64":{"value":u64::MAX}}),
+        json!({"float32":{"bits":0x3f800000_u32}}),
+        json!({"float32":{"bits":0x80000000_u32}}),
+    ] {
+        assert!(
+            contains_json(&corpus["inputs"], &expected),
+            "missing {expected}"
+        );
+    }
+    eprintln!(
+        "width export: 3 inputs; {:.3}s; {}",
+        start.elapsed().as_secs_f64(),
+        output.display()
+    );
+}
+
+fn contains_json(value: &Value, expected: &Value) -> bool {
+    value == expected
+        || match value {
+            Value::Array(values) => values.iter().any(|v| contains_json(v, expected)),
+            Value::Object(values) => values.values().any(|v| contains_json(v, expected)),
+            Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => false,
+        }
+}
+
 fn sidecar(stem: &Path, suffix: &str) -> PathBuf {
     let mut p = stem.as_os_str().to_os_string();
     p.push(format!(".{suffix}"));
@@ -82,6 +238,9 @@ fn export(
             .collect();
         return json!({"group":group,"name":name,"excluded":errors,"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
     };
+    if program.resolved.externals.iter().next().is_some() {
+        return json!({"group":group,"name":name,"excluded":["external function"],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
+    }
     let core = pipeline::desugar_checked(&program).unwrap_or_else(|e| panic!("{name}: {e:?}"));
     let tables = exchange::operation_tables(&program, &core);
     let classes = exchange::class_tables(&program, &core);
@@ -99,24 +258,14 @@ fn export(
     input
 }
 
-// 関門: 公開の脱糖が、独立して証明した Lean の脱糖に対応するという契約を守る。
-// 変数の移動、引数の評価順、末尾位置、構成子・演算子の選択の退行を検出する。
-// 既存の IR 型検査と VM/参照実行器の比較は、型の付く誤った脱糖を検出できない。
-// 本番の API と serde の導出を足さず、公開の AST と各段の出力だけを読む。
-// E2 の追加: 入力ごとの宣言表を Lean で変換し、prim・構成子の書き出し漏れを検出する。
-// 型保存の差分比較だけでは、型検査のための宣言表の欠けや opaque の型引数を検出できない。
-// E1c-2: 型検査が受理した表層の照合を Lean の独立した網羅性判定と比較する。
-// 既存の手順単独の比較は、実際の型検査が使う型・宣言との対応を検査しない。
-#[test]
-#[ignore = "formal: scripts/check-formal.sh が走らせる"]
-fn export_desugar_corpus() {
-    let start = Instant::now();
+// 書き出し先の検査は短い入力と全 corpus で揃え、リンク経由の逸脱も拒否する。
+fn export_directory(purpose: &str) -> PathBuf {
     let repo = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../..")
         .canonicalize()
         .unwrap();
     let output = std::env::var_os("BENITOITE_DESUGAR_DIFF_DIR").map_or_else(
-        || repo.join(format!("target/desugar-diff/export-{}", std::process::id())),
+        || repo.join(format!("target/{purpose}/export-{}", std::process::id())),
         PathBuf::from,
     );
     let output = if output.is_relative() {
@@ -138,6 +287,66 @@ fn export_desugar_corpus() {
         "output ancestor must stay inside this repository"
     );
     fs::create_dir_all(&output).unwrap();
+    output
+}
+
+// 表層の注釈の位置を同じ走査で集計し、短い corpus にも検査に必要な項目を残す。
+fn export_annotations(inputs: &[Value]) -> std::collections::BTreeMap<String, [usize; 2]> {
+    // 表層の実行器は、照合を含まない入力でも末尾の照合の件数を読む。
+    let mut annotations = std::collections::BTreeMap::from([("tailMatch".to_owned(), [0, 0])]);
+    for input in inputs {
+        for definition in input["definitions"].as_array().unwrap() {
+            for (kind, counts) in definition["annotations"].as_object().unwrap() {
+                let total = annotations.entry(kind.clone()).or_default();
+                total[0] += usize::try_from(counts[0].as_u64().unwrap()).unwrap();
+                total[1] += usize::try_from(counts[1].as_u64().unwrap()).unwrap();
+            }
+        }
+    }
+    annotations
+}
+
+// 三つの Lean の実行器へ渡す版と宣言表を、全 corpus と短い入力で共有する。
+fn write_exchange(
+    output: &Path,
+    inputs: Vec<Value>,
+    builtin_inputs: Vec<Value>,
+    stdlib_inputs: Vec<Value>,
+    annotations: std::collections::BTreeMap<String, [usize; 2]>,
+) -> Value {
+    let corpus = json!({"version":7,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
+    fs::write(
+        output.join("corpus.json"),
+        exchange::to_vec(&corpus).unwrap(),
+    )
+    .unwrap();
+    // corpus の原子の収集に新しい表を混ぜず、版 7 のバイト列を保存する。
+    fs::write(
+        output.join("builtins.json"),
+        exchange::to_vec(&json!({"version":1,"inputs":builtin_inputs})).unwrap(),
+    )
+    .unwrap();
+    fs::write(
+        output.join("stdlib-decls.json"),
+        exchange::to_vec(&json!({"version":1,"inputs":stdlib_inputs})).unwrap(),
+    )
+    .unwrap();
+    corpus
+}
+
+// 関門: 公開の脱糖が、独立して証明した Lean の脱糖に対応するという契約を守る。
+// 変数の移動、引数の評価順、末尾位置、構成子・演算子の選択の退行を検出する。
+// 既存の IR 型検査と VM/参照実行器の比較は、型の付く誤った脱糖を検出できない。
+// 本番の API と serde の導出を足さず、公開の AST と各段の出力だけを読む。
+// E2 の追加: 入力ごとの宣言表を Lean で変換し、prim・構成子の書き出し漏れを検出する。
+// 型保存の差分比較だけでは、型検査のための宣言表の欠けや opaque の型引数を検出できない。
+// E1c-2: 型検査が受理した表層の照合を Lean の独立した網羅性判定と比較する。
+// 既存の手順単独の比較は、実際の型検査が使う型・宣言との対応を検査しない。
+#[test]
+#[ignore = "formal: scripts/check-formal.sh が走らせる"]
+fn export_desugar_corpus() {
+    let start = Instant::now();
+    let output = export_directory("desugar-diff");
     let mut inputs = Vec::new();
     let mut builtin_inputs = Vec::new();
     let mut stdlib_inputs = Vec::new();
@@ -215,34 +424,9 @@ fn export_desugar_corpus() {
     }
     assert_eq!(exported + outside + excluded, inputs.len());
     assert!(exported > 0, "empty comparison corpus");
-    let mut annotations = std::collections::BTreeMap::<String, [usize; 2]>::new();
-    for input in &inputs {
-        for definition in input["definitions"].as_array().unwrap() {
-            for (kind, counts) in definition["annotations"].as_object().unwrap() {
-                let total = annotations.entry(kind.clone()).or_default();
-                total[0] += usize::try_from(counts[0].as_u64().unwrap()).unwrap();
-                total[1] += usize::try_from(counts[1].as_u64().unwrap()).unwrap();
-            }
-        }
-    }
+    let annotations = export_annotations(&inputs);
     eprintln!("desugar annotations [positions, different from R]: {annotations:?}");
-    let corpus = json!({"version":7,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
-    fs::write(
-        output.join("corpus.json"),
-        exchange::to_vec(&corpus).unwrap(),
-    )
-    .unwrap();
-    // corpus の原子の収集に新しい表を混ぜず、版 7 のバイト列を保存する。
-    fs::write(
-        output.join("builtins.json"),
-        exchange::to_vec(&json!({"version":1,"inputs":builtin_inputs})).unwrap(),
-    )
-    .unwrap();
-    fs::write(
-        output.join("stdlib-decls.json"),
-        exchange::to_vec(&json!({"version":1,"inputs":stdlib_inputs})).unwrap(),
-    )
-    .unwrap();
+    let corpus = write_exchange(&output, inputs, builtin_inputs, stdlib_inputs, annotations);
     // 同じ型検査済み AST の走査で得た照合だけを別のファイルへ書く。
     fs::write(
         output.join("coverage-matches.json"),

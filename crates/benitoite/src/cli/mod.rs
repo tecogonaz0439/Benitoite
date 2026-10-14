@@ -1,7 +1,9 @@
-//! CLI（設計書 06-01）。初回リリース版のサブコマンドは `run`・`check`・`test`・`fmt`・`skill`。
-//! `test`・`fmt`・`skill` と `--licenses` は `tools` で処理する。
+//! CLI（設計書 06-01）。サブコマンドは `run`・`check`・`test`・`fmt`・`skill`・`package`。
+//! `test`・`fmt`・`skill`・`package` と `--licenses` は `tools` で処理する。
 
 pub mod tools;
+mod wasm;
+pub use wasm::WasmOptions;
 
 use std::ffi::OsString;
 use std::path::PathBuf;
@@ -45,6 +47,7 @@ pub enum ToolCommand {
     Test,
     Fmt,
     Skill,
+    Package,
 }
 
 /// 解釈したコマンドライン。
@@ -55,12 +58,13 @@ pub enum Command {
         options: Options,
         script: PathBuf,
         args: Vec<OsString>,
+        wasm: WasmOptions,
     },
     Check {
         options: Options,
         script: PathBuf,
     },
-    /// `test`・`fmt`・`skill`。名前の前のオプションと名前の後の引数を、解釈せずに渡す（`tools::run_tool` が解釈する）
+    /// `test`・`fmt`・`skill`・`package`。名前の前のオプションと名前の後の引数を、解釈せずに渡す（`tools::run_tool` が解釈する）
     Tool {
         tool: ToolCommand,
         args: Vec<OsString>,
@@ -71,9 +75,7 @@ pub enum Command {
 }
 
 /// 予約したサブコマンドの名前（06-01「予約したサブコマンドの名前（初回リリース版）」）。
-pub const RESERVED_COMMANDS: &[&str] = &[
-    "server", "mcp", "sign", "verify", "repl", "lsp", "package", "agent",
-];
+pub const RESERVED_COMMANDS: &[&str] = &["server", "mcp", "sign", "verify", "repl", "lsp", "agent"];
 
 /// 開発用の panic の指定（`BENITOITE_DEV_PANIC`。デバッグのビルドでだけ読む）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -122,6 +124,9 @@ Usage:
   benitoite test  [options] <path>...
   benitoite fmt   [options] <path>...
   benitoite skill install|uninstall [--user | --project] [--agent <name>]...
+  benitoite package add [options] <alias> --path <directory> [<root or entry>]
+  benitoite package update [options] [<alias>] [<root or entry>]
+  benitoite package move [options] <entry>
   benitoite --help
   benitoite --version
   benitoite --licenses
@@ -131,6 +136,10 @@ Usage:
 Options:
   --diagnostics=text|json   format of diagnostics and error reports (default: text)
   --max-call-stack=<size>   limit for nested calls, such as 512MiB or 2GiB (default: 1GiB)
+  --wasm-memory=<size>      (run, test) linear memory limit, 1MiB-4GiB (default: 64MiB)
+  --wasm-fuel=<count>       (run, test) fuel per external call (default: 10000000000)
+  --wasm-transfer=<size>    (run, test) transfer budget, 1MiB-4GiB (default: 256MiB)
+  --wasm-stats              (run, test) write aggregate WASM statistics as JSON to stderr
   --deny-warnings           treat warnings as errors
   --check                   (fmt) report files that would change without rewriting them
 ";
@@ -144,6 +153,10 @@ Options:
     pub const RESERVED_COMMAND: &str =
         "`{name}` is reserved for a later version; to run a file with this name, write `./{name}`";
     pub const UNKNOWN_OPTION: &str = "unknown option `{name}`";
+    pub const MISSING_OPTION_VALUE: &str = "missing value for `{name}`";
+    pub const OPTION_TAKES_NO_VALUE: &str = "`{name}` does not take a value";
+    pub const WASM_SIZE_RANGE: &str = "expected a size in 1MiB-4GiB";
+    pub const WASM_FUEL_RANGE: &str = "expected an integer in 1-18446744073709551615";
     pub const BAD_VALUE: &str = "invalid value `{value}` for `{name}`";
     pub const DUPLICATE_OPTION: &str = "option `{name}` may only be specified once";
     pub const MISSING_SCRIPT: &str = "missing script path";
@@ -175,6 +188,7 @@ pub fn parse_args(args: Vec<OsString>) -> Result<Command, String> {
             "test" => Some(ToolCommand::Test),
             "fmt" => Some(ToolCommand::Fmt),
             "skill" => Some(ToolCommand::Skill),
+            "package" => Some(ToolCommand::Package),
             _ => None,
         };
         if let Some(tool) = tool {
@@ -199,6 +213,7 @@ pub fn parse_args(args: Vec<OsString>) -> Result<Command, String> {
         _ => (None, false),
     };
     let mut options = Options::default();
+    let mut wasm = WasmOptions::default();
     let mut seen = std::collections::BTreeSet::new();
     let mut script = None;
     let mut script_args = Vec::new();
@@ -219,11 +234,16 @@ pub fn parse_args(args: Vec<OsString>) -> Result<Command, String> {
             if !matches!(
                 name,
                 "--diagnostics" | "--max-call-stack" | "--deny-warnings"
-            ) {
+            ) && !(WasmOptions::accepts(name) && !checking)
+            {
                 return Err(text::UNKNOWN_OPTION.replace("{name}", &value));
             }
             if !seen.insert(name.to_owned()) {
                 return Err(text::DUPLICATE_OPTION.replace("{name}", name));
+            }
+            if WasmOptions::accepts(name) {
+                wasm.parse(name, setting)?;
+                continue;
             }
             match (name, setting) {
                 ("--diagnostics", Some("text")) => options.diagnostics = DiagFormat::Text,
@@ -256,6 +276,7 @@ pub fn parse_args(args: Vec<OsString>) -> Result<Command, String> {
             options,
             script,
             args: script_args,
+            wasm,
         }
     })
 }
@@ -299,8 +320,17 @@ pub fn execute(command: Command, env: CliEnv) -> u8 {
             options,
             script,
             args,
-        } => execute_script(options, script, Some(args), env),
-        Command::Check { options, script } => execute_script(options, script, None, env),
+            wasm,
+        } => {
+            let execution = wasm.execution();
+            let stderr = env.stderr.clone();
+            let code = execute_script(options, script, Some(args), env, execution.clone());
+            wasm.report(&execution, &stderr);
+            code
+        }
+        Command::Check { options, script } => {
+            execute_script(options, script, None, env, Default::default())
+        }
     }
 }
 
@@ -486,6 +516,7 @@ fn execute_script(
     script: PathBuf,
     args: Option<Vec<OsString>>,
     mut env: CliEnv,
+    externals: crate::external::stats::ExecutionOptions,
 ) -> u8 {
     let entry = match pipeline::entry_spec(&script) {
         Ok(entry) => entry,
@@ -694,7 +725,7 @@ fn execute_script(
             );
         }
     };
-    let end = run::run_program(
+    let end = run::run_program_with_externals(
         &program,
         run::RunEnv {
             input,
@@ -711,6 +742,7 @@ fn execute_script(
             heap: env.heap,
             dev_panic_after_first_write: env.dev_panic == DevPanic::Run,
         },
+        externals,
     );
     if let Some(message) = end.main_error {
         let _result = env.stderr.write_bytes(format!("{message}\n").as_bytes());
@@ -866,6 +898,377 @@ mod tests {
         args
     }
 
+    // 関門: 使い方の誤りは実行前に拒否し、run のパスの後だけはスクリプトへ渡す。
+    // spec: 06-01 オプション
+    #[test]
+    fn wasm_options_accept_units_and_reject_invalid_ranges() {
+        for (value, expected) in [
+            ("1048576", 1048576),
+            ("1024KiB", 1048576),
+            ("64MiB", 67108864),
+            ("4GiB", 4294967296),
+        ] {
+            for command in ["run", "test"] {
+                let args = strings(&[
+                    command,
+                    &format!("--wasm-memory={value}"),
+                    &format!("--wasm-transfer={value}"),
+                    "--wasm-fuel=18446744073709551615",
+                    "--wasm-stats",
+                    "a.bnt",
+                ]);
+                let wasm = if command == "run" {
+                    let Command::Run { wasm, .. } = parse_args(args).unwrap() else {
+                        panic!("run expected")
+                    };
+                    wasm
+                } else {
+                    tools::args::parse_test_args(args.into_iter().skip(1).collect())
+                        .unwrap()
+                        .1
+                };
+                assert_eq!(wasm.limits.memory, expected);
+                assert_eq!(wasm.limits.transfer, expected);
+                assert_eq!(wasm.limits.fuel, u64::MAX);
+                assert!(
+                    wasm.stats
+                        && wasm.memory_overridden
+                        && wasm.fuel_overridden
+                        && wasm.transfer_overridden
+                );
+            }
+        }
+        for option in [
+            "--wasm-memory=0",
+            "--wasm-memory=1KiB",
+            "--wasm-transfer=4294967297",
+            "--wasm-memory=5GiB",
+            "--wasm-fuel=0",
+            "--wasm-fuel=1MiB",
+            "--wasm-fuel=-1",
+            "--wasm-fuel=+1",
+            "--wasm-memory=1mib",
+            "--wasm-memory=18446744073709551615GiB",
+            "--wasm-fuel=18446744073709551616",
+            "--wasm-stats=yes",
+            "--wasm-stats=",
+            "--wasm-memory",
+            "--wasm-memory=",
+        ] {
+            let error = parse_args(strings(&["run", option, "a.bnt"]))
+                .err()
+                .unwrap();
+            assert!(!error.contains("``"), "{error}");
+            if option.starts_with("--wasm-memory") || option.starts_with("--wasm-transfer") {
+                assert!(error.contains("1MiB-4GiB"), "{error}");
+            } else if option.starts_with("--wasm-fuel") {
+                assert!(error.contains("1-18446744073709551615"), "{error}");
+            } else if option.starts_with("--wasm-stats=") {
+                assert_eq!(error, "`--wasm-stats` does not take a value");
+            }
+            let test_error = tools::args::parse_test_args(strings(&[option, "a.bnt"]))
+                .err()
+                .unwrap();
+            assert_eq!(test_error, error, "{option}");
+        }
+        assert!(parse_args(strings(&["run", "--wasm-stats", "--wasm-stats", "a.bnt"])).is_err());
+        assert!(
+            tools::args::parse_test_args(strings(&["--wasm-fuel=1", "a.bnt", "--wasm-fuel=2"]))
+                .is_err()
+        );
+        assert!(parse_args(strings(&["check", "--wasm-stats", "a.bnt"])).is_err());
+        assert!(
+            tools::args::parse_path_args(
+                tools::args::PathTool::Fmt,
+                strings(&["--wasm-stats", "a.bnt"])
+            )
+            .is_err()
+        );
+        let Command::Run { wasm, args, .. } =
+            parse_args(strings(&["a.bnt", "--wasm-fuel=0"])).unwrap()
+        else {
+            panic!("run expected")
+        };
+        assert_eq!(wasm, WasmOptions::default());
+        assert_eq!(args, strings(&["--wasm-fuel=0"]));
+    }
+
+    // 関門: CLI から VM への値の受け渡しと test の起動全体の集計を守る。
+    // 外部呼び出しの単体では CLI が既定値へ戻す退行を検出できない。
+    // spec: 06-01 オプション
+    #[test]
+    fn wasm_limits_and_stats_reach_run_and_test() {
+        let temp = Directory::new();
+        let function_key = format!("{}#f", temp.0.join("x.wasm").display());
+        let component = r#"(component (core module $m
+            (memory 32) (func (export "f") (result i64) i64.const 7))
+            (core instance $i (instantiate $m))
+            (func (export "f") (result s64) (canon lift (core func $i "f"))))"#;
+        std::fs::write(temp.0.join("x.wasm"), wat::parse_str(component).unwrap()).unwrap();
+        let path = temp.0.join("main.bnt");
+        let declaration = "@external(\"wasm\", \"x.wasm\", \"f\")\nfunction f() -> Integer\n";
+        std::fs::write(&path, format!("{declaration}function main() -> Unit\n  bind value <- f()\n  return ()\nend function\n")).unwrap();
+        for (limit, exit) in [("1MiB", EXIT_FAILURE), ("2MiB", EXIT_OK)] {
+            let (code, _, err) = call(
+                script_args(
+                    "run",
+                    &path,
+                    &[&format!("--wasm-memory={limit}"), "--wasm-stats"],
+                ),
+                ExecMode::Direct,
+                DevPanic::None,
+            );
+            assert_eq!(code, exit, "{err}");
+            let line = err.lines().find(|line| line.starts_with('{')).unwrap();
+            let stats: serde_json::Value = serde_json::from_str(line).unwrap();
+            assert_eq!(stats["calls"], 1);
+            assert_eq!(stats["routes"]["typed"], 1);
+            assert_eq!(
+                stats["functions"][function_key.as_str()]["routes"]["typed"],
+                1
+            );
+            assert_eq!(stats["construction_bytes"]["total"], 0);
+            assert_eq!(stats["construction_bytes"]["incomplete_calls"], 0);
+            assert_eq!(stats["fallback_reasons"], serde_json::json!({}));
+            assert_eq!(stats["overrides"]["memory"], true);
+            if exit == EXIT_FAILURE {
+                assert!(err.contains("R0905"));
+                assert_eq!(stats["reached_limits"]["memory"], 1);
+                assert_eq!(
+                    stats["functions"][function_key.as_str()]["reached_limits"]["memory"],
+                    1,
+                    "{stats}"
+                );
+            } else {
+                assert_eq!(stats["memory"]["total"], 2 * 1024 * 1024);
+                assert_eq!(stats["memory"]["maximum"], 2 * 1024 * 1024);
+                assert_eq!(stats["fuel"]["total"], 2);
+                assert_eq!(stats["results_transfer"]["total"], 0);
+            }
+        }
+        let (code, out, err) = call(
+            script_args("run", &path, &["--wasm-memory=2MiB"]),
+            ExecMode::Direct,
+            DevPanic::None,
+        );
+        assert_eq!(code, EXIT_OK, "{err}");
+        assert!(out.is_empty());
+        assert!(err.is_empty());
+        for (fuel, expected) in [("1", EXIT_FAILURE), ("100", EXIT_OK)] {
+            let (code, _, err) = call(
+                script_args(
+                    "run",
+                    &path,
+                    &[&format!("--wasm-fuel={fuel}"), "--wasm-stats"],
+                ),
+                ExecMode::Direct,
+                DevPanic::None,
+            );
+            assert_eq!(code, expected, "{err}");
+            if code == EXIT_FAILURE {
+                assert!(err.contains("R0904"));
+                let stats: serde_json::Value =
+                    serde_json::from_str(err.lines().find(|line| line.starts_with('{')).unwrap())
+                        .unwrap();
+                assert_eq!(stats["reached_limits"]["fuel"], 1);
+                assert_eq!(
+                    stats["functions"][function_key.as_str()]["reached_limits"]["fuel"],
+                    1
+                );
+                assert_eq!(stats["fuel"]["total"], 1);
+            }
+        }
+        std::fs::write(&path, format!("{declaration}@test\nfunction first() -> Unit\n  bind value <- f()\n  return ()\nend function\n@test\nfunction second() -> Unit\n  bind value <- f()\n  return ()\nend function\n")).unwrap();
+        let (code, _, err) = call(
+            script_args("test", &path, &["--wasm-stats", "--wasm-memory=2MiB"]),
+            ExecMode::Direct,
+            DevPanic::None,
+        );
+        assert_eq!(code, EXIT_OK, "{err}");
+        let lines: Vec<_> = err.lines().filter(|line| line.starts_with('{')).collect();
+        assert_eq!(lines.len(), 1);
+        let stats: serde_json::Value = serde_json::from_str(lines[0]).unwrap();
+        assert_eq!(stats["calls"], 2);
+        assert_eq!(stats["routes"]["typed"], 2);
+        assert_eq!(stats["functions"][function_key.as_str()]["calls"], 2);
+        assert_eq!(stats["memory"]["total"], 4 * 1024 * 1024);
+        assert_eq!(stats["memory"]["maximum"], 2 * 1024 * 1024);
+        let (code, _, err) = call(
+            script_args("test", &path, &["--wasm-memory=1MiB"]),
+            ExecMode::Direct,
+            DevPanic::None,
+        );
+        assert_eq!(code, EXIT_FAILURE, "{err}");
+        assert!(!err.contains("wasm_stats"));
+        let (code, _, err) = call(
+            script_args("test", &path, &["--wasm-stats", "--wasm-memory=1MiB"]),
+            ExecMode::Direct,
+            DevPanic::None,
+        );
+        assert_eq!(code, EXIT_FAILURE, "{err}");
+        let lines: Vec<_> = err.lines().filter(|line| line.starts_with('{')).collect();
+        assert_eq!(lines.len(), 1);
+        let stats: serde_json::Value = serde_json::from_str(lines[0]).unwrap();
+        assert_eq!(stats["calls"], 2);
+        assert_eq!(
+            stats["functions"][function_key.as_str()]["reached_limits"]["memory"],
+            2
+        );
+        std::fs::write(
+            temp.0.join("x.wasm"),
+            wat::parse_str(
+                r#"(component (core module $m
+            (memory (export "memory") 32)
+            (func (export "f") (result i32)
+                i32.const 0 i32.const 16 i32.store
+                i32.const 4 i32.const 1048577 i32.store i32.const 0))
+            (core instance $i (instantiate $m)) (type $bytes (list u8))
+            (func (export "f") (result $bytes)
+                (canon lift (core func $i "f") (memory (core memory $i "memory")))))"#,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        std::fs::write(&path, "@external(\"wasm\", \"x.wasm\", \"f\")\nfunction f() -> Bytes\nfunction main() -> Unit\n  bind value <- f()\n  return ()\nend function\n").unwrap();
+        for (transfer, expected) in [("1MiB", EXIT_FAILURE), ("2MiB", EXIT_OK)] {
+            let (code, _, err) = call(
+                script_args(
+                    "run",
+                    &path,
+                    &[&format!("--wasm-transfer={transfer}"), "--wasm-stats"],
+                ),
+                ExecMode::Direct,
+                DevPanic::None,
+            );
+            assert_eq!(code, expected, "{err}");
+            let stats: serde_json::Value =
+                serde_json::from_str(err.lines().find(|line| line.starts_with('{')).unwrap())
+                    .unwrap();
+            if code == EXIT_FAILURE {
+                assert!(err.contains("R0905"));
+                assert_eq!(stats["reached_limits"]["transfer"], 1);
+                assert_eq!(
+                    stats["functions"][function_key.as_str()]["reached_limits"]["transfer"],
+                    1
+                );
+                assert_eq!(stats["results_transfer"]["incomplete_calls"], 1);
+            } else {
+                assert_eq!(stats["results_transfer"]["total"], 1048577);
+            }
+        }
+        // 関門: 公開の補助経路の集計が run/test の指定へ届き、燃料切れを分類する。
+        // 内部の補助の試験は CLI のオプションと出力の省略を通らない。
+        std::fs::write(
+            temp.0.join("x.wasm"),
+            wat::parse_str(include_str!("../../testdata/external/adapter-route/x.wat")).unwrap(),
+        )
+        .unwrap();
+        let declaration = "@external(\"wasm\", \"x.wasm\", \"f\")\nfunction f(x: UnsignedInteger32) -> UnsignedInteger32\n";
+        for mode in ["run", "test"] {
+            let entry = if mode == "run" { "main" } else { "first" };
+            let attribute = if mode == "test" { "@test\n" } else { "" };
+            std::fs::write(&path, format!("{declaration}{attribute}function {entry}() -> Unit\n  bind value <- f(12u32)\n  return ()\nend function\n")).unwrap();
+            for (fuel, expected) in [("1", EXIT_FAILURE), ("100000", EXIT_OK)] {
+                for enabled in [true, false] {
+                    let fuel_option = format!("--wasm-fuel={fuel}");
+                    let options = if enabled {
+                        vec![fuel_option.as_str(), "--wasm-stats"]
+                    } else {
+                        vec![fuel_option.as_str()]
+                    };
+                    let (code, out, err) = call(
+                        script_args(mode, &path, &options),
+                        ExecMode::Direct,
+                        DevPanic::None,
+                    );
+                    assert_eq!(code, expected, "{mode}: {err}");
+                    if mode == "run" {
+                        assert!(out.is_empty(), "{out}");
+                    } else if expected == EXIT_OK {
+                        assert!(out.contains("1 passed"), "{out}");
+                    }
+                    if expected == EXIT_FAILURE {
+                        assert!(
+                            out.contains("R0904") || err.contains("R0904"),
+                            "{out}\n{err}"
+                        );
+                    }
+                    let lines: Vec<_> = err.lines().filter(|line| line.starts_with('{')).collect();
+                    assert_eq!(lines.len(), usize::from(enabled), "{err}");
+                    if !enabled {
+                        assert!(!err.contains("wasm_stats"), "{err}");
+                        if expected == EXIT_OK {
+                            assert!(err.is_empty(), "{err}");
+                        }
+                        continue;
+                    }
+                    let stats: serde_json::Value = serde_json::from_str(lines[0]).unwrap();
+                    assert_eq!(stats["calls"], 1);
+                    assert_eq!(stats["routes"]["adapter"], 1);
+                    assert_eq!(
+                        stats["functions"][function_key.as_str()]["routes"]["adapter"],
+                        1
+                    );
+                    assert_eq!(stats["fallback_reasons"], serde_json::json!({}));
+                    if expected == EXIT_FAILURE {
+                        assert_eq!(stats["reached_limits"]["fuel"], 1);
+                        assert_eq!(stats["construction_bytes"]["incomplete_calls"], 1);
+                    } else {
+                        assert_eq!(stats["arguments_transfer"]["total"], 36);
+                        assert_eq!(stats["results_transfer"]["total"], 36);
+                        assert_eq!(stats["construction_bytes"]["total"], 32);
+                        assert_eq!(stats["construction_bytes"]["incomplete_calls"], 0);
+                    }
+                }
+            }
+        }
+        for (name, guest) in [
+            (
+                "post-return",
+                include_str!("../../testdata/external/adapter-lifetime/post-return.wat"),
+            ),
+            (
+                "utf16",
+                include_str!("../../testdata/external/adapter-lifetime/utf16.wat"),
+            ),
+        ] {
+            std::fs::write(
+                temp.0.join(format!("{name}.wasm")),
+                wat::parse_str(guest).unwrap(),
+            )
+            .unwrap();
+        }
+        // 同じ期待値のゴールデンと違い、ここでは宣言ごとの経路が統計に反映されることを確かめる。
+        for (script, expected, typed, adapter) in [
+            (
+                include_str!("../../testdata/external/adapter-route/main.bnt"),
+                include_str!("../../testdata/external/adapter-route.stdout"),
+                1,
+                4,
+            ),
+            (
+                include_str!("../../testdata/external/adapter-lifetime/main.bnt"),
+                include_str!("../../testdata/external/adapter-lifetime.stdout"),
+                0,
+                5,
+            ),
+        ] {
+            std::fs::write(&path, script).unwrap();
+            let (code, out, err) = call(
+                script_args("run", &path, &["--wasm-stats"]),
+                ExecMode::Direct,
+                DevPanic::None,
+            );
+            assert_eq!(code, EXIT_OK, "{err}");
+            assert_eq!(out, expected);
+            let stats: serde_json::Value = serde_json::from_str(err.trim()).unwrap();
+            assert_eq!(stats["calls"], typed + adapter);
+            assert_eq!(stats["routes"]["typed"].as_u64().unwrap_or(0), typed);
+            assert_eq!(stats["routes"]["adapter"], adapter);
+            assert_eq!(stats["construction_bytes"]["incomplete_calls"], 0);
+        }
+    }
+
     #[test]
     fn parse_commands_sizes_options_and_passthrough() {
         for (size, expected) in [
@@ -887,7 +1290,8 @@ mod tests {
             Command::Run {
                 options: Options::default(),
                 script: "a.bnt".into(),
-                args: strings(&["--x", "y"])
+                args: strings(&["--x", "y"]),
+                wasm: WasmOptions::default()
             }
         );
         for prefix in [
@@ -906,6 +1310,13 @@ mod tests {
             Command::Tool {
                 tool: ToolCommand::Fmt,
                 args: strings(&["--diagnostics=json", "--check", "a.bnt"])
+            }
+        );
+        assert_eq!(
+            parse_args(strings(&["package", "add", "Text", "--path", "deps/text"])).unwrap(),
+            Command::Tool {
+                tool: ToolCommand::Package,
+                args: strings(&["add", "Text", "--path", "deps/text"]),
             }
         );
         assert!(matches!(

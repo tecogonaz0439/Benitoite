@@ -1,6 +1,6 @@
 # Installing Benitoite
 
-This page explains how to install `benitoite` `0.0.3`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
+This page explains how to install `benitoite` `0.0.4`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
 
 ## Supported systems
 
@@ -28,20 +28,20 @@ Download the archive for your system and `SHA256SUMS` with `curl`. In the comman
 ```sh
 RELEASE=<download address of the release>
 TARGET=aarch64-apple-darwin
-curl -LO "$RELEASE/benitoite-0.0.3-$TARGET.tar.gz"
+curl -LO "$RELEASE/benitoite-0.0.4-$TARGET.tar.gz"
 curl -LO "$RELEASE/SHA256SUMS"
 ```
 
 Check the hash. On macOS:
 
 ```sh
-grep "benitoite-0.0.3-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
+grep "benitoite-0.0.4-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
 ```
 
 On Linux:
 
 ```sh
-grep "benitoite-0.0.3-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
+grep "benitoite-0.0.4-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 ```
 
 The command prints `OK` after the file name when the hash matches. If it does not, download the archive again and do not use it.
@@ -53,16 +53,16 @@ The command prints `OK` after the file name when the hash matches. If it does no
 Extract the archive into a new directory, and move the extracted `benitoite` to a directory on your `PATH`, such as `~/.local/bin`:
 
 ```sh
-mkdir benitoite-0.0.3
-tar -xzf "benitoite-0.0.3-$TARGET.tar.gz" -C benitoite-0.0.3
+mkdir benitoite-0.0.4
+tar -xzf "benitoite-0.0.4-$TARGET.tar.gz" -C benitoite-0.0.4
 mkdir -p ~/.local/bin
-find benitoite-0.0.3 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
+find benitoite-0.0.4 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
 benitoite --version
 ```
 
 Keep `LICENSE-MIT`, `LICENSE-APACHE`, and `THIRD_PARTY_LICENSES` from the archive if you redistribute `benitoite`. `benitoite --licenses` prints the same `THIRD_PARTY_LICENSES`.
 
-`benitoite --version` prints `benitoite 0.0.3` on its first line. If the shell cannot find `benitoite`, add the directory to `PATH` in the startup file of your shell (for example, `export PATH="$HOME/.local/bin:$PATH"`).
+`benitoite --version` prints `benitoite 0.0.4` on its first line. If the shell cannot find `benitoite`, add the directory to `PATH` in the startup file of your shell (for example, `export PATH="$HOME/.local/bin:$PATH"`).
 
 #### If macOS blocks `benitoite`
 
@@ -114,7 +114,11 @@ The Skill describes only the version of `benitoite` it comes with. When the vers
 
 ## Build from source
 
-You need a Rust toolchain with `cargo` (see the `rust-version` in `Cargo.toml` of the repository for the minimum version). Get the source of the repository, and from its root run:
+You need a Rust toolchain with `cargo` (see the `rust-version` in `Cargo.toml` of the repository for the minimum version).
+
+You also need a C compiler to build Wasmtime: install the Xcode command line tools on macOS, or `cc` on Linux.
+
+Get the source of the repository, and from its root run:
 
 ```sh
 cargo install --locked --path crates/benitoite
@@ -138,4 +142,4 @@ rm ~/.local/bin/benitoite
 
 If you used `--project` or `--agent` when installing, pass the same options to `uninstall`.
 
-> Note: `0.0.3`, like `0.0.1` and `0.0.2`, is a source-only release; no executables are provided. Executables will be provided from `0.1.0`.
+> Note: `0.0.4`, like `0.0.1`, `0.0.2` and `0.0.3`, is a source-only release; no executables are provided. Executables will be provided from `0.1.0`.

@@ -1,0 +1,9 @@
+// spec: 01-03 依存の記述と `package.bnt`
+dependency Words
+  path "../hash-match/deps/hashkit"
+  hash "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+end dependency
+import Words.Value
+function main() -> Unit
+  ()
+end function

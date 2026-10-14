@@ -1,0 +1,18 @@
+// spec: 01-02 外部の関数の宣言
+// 文書の宣言と入力を本物のゲストへ渡し、型と結果が実行時にも一致することを確かめる。
+import Benitoite.Unofficial.IO.Console
+@external("wasm", "wasm/fuzzy.wasm", "distance")
+public function distance(a: String, b: String) -> Integer
+@external("wasm", "wasm/calc.wasm", "bnt:test/api@1.2.0#add")
+function add(a: Integer, b: Integer) -> Integer
+@external("wasm", "wasm/counter.wasm", "bnt:test/counter@0.1.0#cell")
+public type Cell
+@external("wasm", "wasm/counter.wasm", "bnt:test/counter@0.1.0#[constructor]cell")
+public function newCell(start: Integer) -> Cell uses State
+@external("wasm", "wasm/counter.wasm", "bnt:test/counter@0.1.0#[method]cell.get")
+function get(self: Cell) -> Integer uses State
+function main() -> Unit uses State, Console.Write
+  Console.writeLine("${distance("kitten", "sitting")}")
+  Console.writeLine("${add(20, 22)}")
+  Console.writeLine("${get(newCell(10))}")
+end function

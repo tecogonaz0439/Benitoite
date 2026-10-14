@@ -1,0 +1,6 @@
+package bnt:hash@0.1.0;
+
+world hash {
+  export sha256: func(data: list<u8>) -> list<u8>;
+  export sha256-hex: func(data: list<u8>) -> string;
+}

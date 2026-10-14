@@ -1,0 +1,40 @@
+// spec: 01-02 外部の関数の宣言
+// 文書の合成の型と入力を実際の外部境界で検査し、独立したゲストの結果と比べる。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Trait
+record Box[T]
+  value: T
+end record
+@external("wasm", "generic.wasm", "box")
+function box(v: Box[Integer]) -> Box[Integer]
+@external("wasm", "generic.wasm", "nested")
+function nested(v: Box[Box[Integer]]) -> Box[Box[Integer]]
+data D1
+  F1
+end data
+@external("wasm", "flags.wasm", "f1")
+function f1(v: Set[D1]) -> Pair[Set[D1], Integer]
+@external("wasm", "maps.wasm", "result")
+function result(v: Map[String, Integer]) -> Map[String, Integer]
+data Four
+  Item(Integer, Integer, Integer, Integer)
+end data
+@external("wasm", "tuples.wasm", "tuple4")
+function tuple4(v: Four) -> Four
+data Two
+  Value(Integer, Integer)
+  Empty
+end data
+@external("wasm", "variants.wasm", "fields")
+function two(v: Two) -> Two
+function main() -> Unit uses Console.Write
+  Console.writeLine("${Box.value(box(Box(value: 35)))}")
+  Console.writeLine("${Box.value(Box.value(nested(Box(value: Box(value: -7)))))}")
+  bind flags <- f1(Set.fromList([D1.F1]))
+  Console.writeLine("${Set.size(Pair.first(flags))} ${Set.contains(Pair.first(flags), D1.F1)} ${Pair.second(flags)}")
+  bind empty <- f1(Set.empty())
+  Console.writeLine("${Set.size(Pair.first(empty))} ${Pair.second(empty)}")
+  Console.writeLine("${Trait.Show.show(Map.toList(result(Map.empty())))}")
+  Console.writeLine("${tuple4(Four.Item(1, 2, 3, 4)) = Four.Item(12, 14, 16, 18)}")
+  Console.writeLine("${two(Two.Value(3, 7)) = Two.Value(14, 29)}")
+end function

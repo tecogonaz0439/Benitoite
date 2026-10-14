@@ -224,9 +224,23 @@ fn compare<'e>(
     use std::cmp::Ordering;
     match (a, b) {
         (Value::Int(a), Value::Int(b)) => Ok(a.cmp(&b)),
+        (Value::Int8(a), Value::Int8(b)) => Ok(a.cmp(&b)),
+        (Value::Int16(a), Value::Int16(b)) => Ok(a.cmp(&b)),
+        (Value::Int32(a), Value::Int32(b)) => Ok(a.cmp(&b)),
+        (Value::UInt16(a), Value::UInt16(b)) => Ok(a.cmp(&b)),
+        (Value::UInt32(a), Value::UInt32(b)) => Ok(a.cmp(&b)),
+        (Value::UInt64(a), Value::UInt64(b)) => Ok(a.cmp(&b)),
         (Value::Byte(a), Value::Byte(b)) => Ok(a.cmp(&b)),
         (Value::Char(a), Value::Char(b)) => Ok(a.cmp(&b)),
         (Value::Float(a), Value::Float(b)) => Ok(match (a.is_nan(), b.is_nan()) {
+            (true, true) => Ordering::Equal,
+            (true, false) => Ordering::Greater,
+            (false, true) => Ordering::Less,
+            (false, false) => a
+                .partial_cmp(&b)
+                .ok_or_else(|| Stop::Internal("finite float comparison failed".into()))?,
+        }),
+        (Value::Float32(a), Value::Float32(b)) => Ok(match (a.is_nan(), b.is_nan()) {
             (true, true) => Ordering::Equal,
             (true, false) => Ordering::Greater,
             (false, true) => Ordering::Less,

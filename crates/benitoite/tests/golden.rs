@@ -740,7 +740,7 @@ fn run_case(
             Comparison::Matched => summary.check_core_matched += 1,
             Comparison::Failed(reason) => failures.push(format!("{name}: {reason}")),
             Comparison::Excluded(reason) => {
-                failures.push(format!("{name}: unexpected exclusion: {reason}"));
+                summary.record(Comparison::Excluded(reason), &name, failures);
             }
         }
     }
@@ -910,5 +910,28 @@ fn write_nonempty(path: &Path, bytes: &[u8]) -> TestResult<()> {
         }
     } else {
         fs::write(path, bytes).map_err(|e| format!("{}: {e}", path.display()))
+    }
+}
+
+// テキストを正として置き、CLI が読むバイナリの食い違いを検出する。
+#[test]
+fn testdata_components_match_their_text() {
+    let mut pending = vec![PathBuf::from("testdata")];
+    while let Some(dir) = pending.pop() {
+        for entry in fs::read_dir(dir).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                pending.push(path);
+            } else if path.extension().is_some_and(|ext| ext == "wat") {
+                let bytes = wat::parse_file(&path).unwrap();
+                let binary = path.with_extension("wasm");
+                if std::env::var_os(BLESS_ENV).is_some_and(|v| v == "1")
+                    && fs::read(&binary).ok().as_deref() != Some(bytes.as_slice())
+                {
+                    fs::write(&binary, &bytes).unwrap();
+                }
+                assert_eq!(fs::read(&binary).unwrap(), bytes, "{}", binary.display());
+            }
+        }
     }
 }

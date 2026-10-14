@@ -68,6 +68,62 @@ run_check() {
 }
 
 check_licenses() {
+    # cargo-about は並びを優先の順に使うので、集合だけでなく順も一致させる。
+    python3 - deny.toml scripts/release/about.toml <<'PYLICENSE' || return 1
+import ast
+import re
+import sys
+
+def read_license_list(content, key, section=None):
+    # 必要な表だけを読み、配列の中のコメントと、後に続く表の値を除く。
+    lines = []
+    active = section is None
+    for raw_line in content.splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if line.startswith("["):
+            if active:
+                break
+            active = line == f"[{section}]"
+        elif active and line:
+            lines.append(line)
+    if not active:
+        raise ValueError(f"missing [{section}] table")
+    body = "\n".join(lines)
+    # 完全な TOML の読み取りではなく、文字列の配列だけに対象を限る。
+    assignments = re.findall(rf"(?m)^{re.escape(key)}\s*=", body)
+    arrays = re.findall(rf"(?m)^{re.escape(key)}\s*=\s*(\[[^\]]*\])\s*(?=\n|$)", body)
+    if len(assignments) != 1 or len(arrays) != 1:
+        raise ValueError(f"expected exactly one {key} list")
+    values = ast.literal_eval(arrays[0])
+    if not isinstance(values, list) or not all(isinstance(value, str) for value in values):
+        raise ValueError(f"{key} must be a list of license strings")
+    return values
+
+def self_test():
+    # コメントを含む配列と、別の allow を持つ例外の表を独立に確かめる。
+    cases = [
+        ('[licenses]\nallow = [\n"MIT", # 優先する使用許諾\n"Apache-2.0",\n]\n',
+         "allow", "licenses", ["MIT", "Apache-2.0"]),
+        ('[licenses]\nallow = ["MIT"]\n[[licenses.exceptions]]\nname = "example"\nallow = ["Zlib"]\n',
+         "allow", "licenses", ["MIT"]),
+        ('accepted = ["MIT", # 優先する使用許諾\n"Apache-2.0"]\n[other]\naccepted = ["Zlib"]\n',
+         "accepted", None, ["MIT", "Apache-2.0"]),
+    ]
+    for content, key, section, expected in cases:
+        if read_license_list(content, key, section) != expected:
+            sys.exit("license list self-test failed")
+
+def license_list(path, key, section=None):
+    try:
+        with open(path, encoding="utf-8") as source:
+            return read_license_list(source.read(), key, section)
+    except (OSError, UnicodeError, ValueError, SyntaxError) as error:
+        sys.exit(f"{path}: cannot read {key} list: {error}")
+
+self_test()
+if license_list(sys.argv[1], "allow", "licenses") != license_list(sys.argv[2], "accepted"):
+    sys.exit("scripts/release/about.toml: accepted must match deny.toml [licenses].allow in the same order")
+PYLICENSE
     if ! cargo deny --version >/dev/null 2>&1; then
         printf '%s\n' 'cargo-deny is unavailable. Install it with: cargo install cargo-deny --locked' >&2
         return 1
@@ -182,10 +238,11 @@ classify() {
     local file="$1"
     case "$file" in
         scripts/check-formal.sh) select_check formal "$file" ;;
+        scripts/release/about.toml|scripts/release/about.hbs) select_check licenses "$file" ;;
         scripts/*|.cargo/*|rust-toolchain.toml|clippy.toml|rustfmt.toml)
             select_check full "$file"
             unclassified="$unclassified $file" ;;
-        Cargo.toml|Cargo.lock|deny.toml|about.toml|about.hbs|crates/*/Cargo.toml)
+        Cargo.toml|Cargo.lock|deny.toml|crates/*/Cargo.toml)
             select_check rust "$file"
             select_check licenses "$file" ;;
         crates/benitoite/src/runtime/heap/*)

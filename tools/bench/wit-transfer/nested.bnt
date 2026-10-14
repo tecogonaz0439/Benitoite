@@ -1,0 +1,22 @@
+//! 空の子と可変長の子を含む入れ子のリストの比較入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+@external("wasm", "guests/nested.wasm", "run")
+function run(v: List[List[UnsignedInteger16]]) -> List[List[UnsignedInteger16]]
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+  bind source <- List.map(List.range(0, n), lambda(i: Integer) -> List[UnsignedInteger16] return
+    if i mod 3 = 0 then [10u16, 20u16] else if i mod 3 = 1 then [] else [30u16] end if
+  end lambda)
+  bind expected <- List.map(List.range(0, n), lambda(i: Integer) -> List[UnsignedInteger16] return
+    if i mod 3 = 0 then [11u16, 21u16] else if i mod 3 = 1 then [] else [31u16] end if
+  end lambda)
+
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind c0 <- run(source) = expected
+    return c0
+  end lambda)
+end function

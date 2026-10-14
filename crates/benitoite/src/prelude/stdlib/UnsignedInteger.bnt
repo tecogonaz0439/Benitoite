@@ -1,0 +1,91 @@
+//! Functions on `UnsignedInteger`, an alias of `UnsignedInteger64`.
+
+/// Converts from `Integer`. Returns `Option.None` for negative values.
+public function fromInteger(n: Integer) -> Option[UnsignedInteger]
+  return UnsignedInteger64.fromInteger(n)
+end function
+
+/// Converts to `Integer`. Returns `Option.None` when out of range.
+public function toInteger(n: UnsignedInteger) -> Option[Integer]
+  return UnsignedInteger64.toInteger(n)
+end function
+
+/// Reads a decimal integer without a minus sign, whitespace, prefixes, underscores, or extra leading zeros. Returns `Option.None` when invalid or out of range.
+public function parse(s: String) -> Option[UnsignedInteger]
+  return UnsignedInteger64.parse(s)
+end function
+
+/// Returns the decimal representation.
+public function toString(n: UnsignedInteger) -> String
+  return UnsignedInteger64.toString(n)
+end function
+
+/// Returns the nearest `Float`, rounding to binary64 precision.
+public function toFloat(n: UnsignedInteger) -> Float
+  return UnsignedInteger64.toFloat(n)
+end function
+
+/// Converts exactly to `Decimal` over the full range of this type.
+public function toDecimal(n: UnsignedInteger) -> Decimal
+  return UnsignedInteger64.toDecimal(n)
+end function
+
+/// Converts a mathematically integral `Decimal` in range, including values such as `1.0m`. Returns `Option.None` otherwise.
+public function fromDecimal(x: Decimal) -> Option[UnsignedInteger]
+  return UnsignedInteger64.fromDecimal(x)
+end function
+
+/// Returns the original value.
+public function absolute(n: UnsignedInteger) -> UnsignedInteger
+  return UnsignedInteger64.absolute(n)
+end function
+
+/// Returns the smaller of `a` and `b`.
+public function minimum(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
+  return UnsignedInteger64.minimum(a, b)
+end function
+
+/// Returns the larger of `a` and `b`.
+public function maximum(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
+  return UnsignedInteger64.maximum(a, b)
+end function
+
+/// Divides and rounds the quotient toward negative infinity. Stops the program when the divisor is 0.
+public function floorDivide(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
+  return UnsignedInteger64.floorDivide(a, b)
+end function
+
+/// Returns the remainder. Stops the program when the divisor is 0.
+public function floorModulo(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
+  return UnsignedInteger64.floorModulo(a, b)
+end function
+
+/// Calls `UnsignedInteger64.bitwiseAnd` with the same result and stopping conditions.
+public function bitwiseAnd(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
+  return UnsignedInteger64.bitwiseAnd(a, b)
+end function
+
+/// Calls `UnsignedInteger64.bitwiseOr` with the same result and stopping conditions.
+public function bitwiseOr(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
+  return UnsignedInteger64.bitwiseOr(a, b)
+end function
+
+/// Calls `UnsignedInteger64.bitwiseExclusiveOr` with the same result and stopping conditions.
+public function bitwiseExclusiveOr(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
+  return UnsignedInteger64.bitwiseExclusiveOr(a, b)
+end function
+
+/// Calls `UnsignedInteger64.bitwiseNot` with the same result and stopping conditions.
+public function bitwiseNot(a: UnsignedInteger) -> UnsignedInteger
+  return UnsignedInteger64.bitwiseNot(a)
+end function
+
+/// Calls `UnsignedInteger64.shiftLeft` with the same result and stopping conditions.
+public function shiftLeft(a: UnsignedInteger, n: Integer) -> UnsignedInteger
+  return UnsignedInteger64.shiftLeft(a, n)
+end function
+
+/// Calls `UnsignedInteger64.shiftRight` with the same result and stopping conditions.
+public function shiftRight(a: UnsignedInteger, n: Integer) -> UnsignedInteger
+  return UnsignedInteger64.shiftRight(a, n)
+end function

@@ -1,0 +1,16 @@
+// spec: 01-02 外部の関数の宣言
+@external("wasm", "x.wasm", "bnt:test/api@1.0.0#add")
+function wrongVersion(a: Integer, b: Integer) -> Integer
+@external("wasm", "x.wasm", "bnt:test/api@1.2.0")
+function interfaceName() -> Unit
+@external("wasm", "x.wasm", "bnt:test/api@1.2.0#missing")
+function missing() -> Unit
+@external("wasm", "x.wasm", "bnt:test/api@1.2.0#add")
+function wrongCount(a: Integer) -> Integer
+@external("wasm", "x.wasm", "bnt:test/api@1.2.0#add")
+function wrongArgument(a: String, b: Integer) -> Integer
+@external("wasm", "x.wasm", "bnt:test/api@1.2.0#add")
+function wrongResult(a: Integer, b: Integer) -> String
+function main() -> Unit
+  ()
+end function

@@ -1,0 +1,18 @@
+package bnt:test@0.1.0;
+interface counter {
+  resource cell {
+    constructor(start: s64);
+    count: static func() -> s64;
+    make: static func(start: s64) -> option<cell>;
+    get: func() -> s64;
+    bump: func(by: s64) -> s64;
+    pair: func(other: borrow<cell>) -> s64;
+    take: func(other: cell) -> s64;
+    live: func() -> s64;
+  }
+  other: func(x: s64) -> s64;
+}
+interface second {
+  resource cell { constructor(); }
+}
+world w { export counter; export second; }

@@ -1,0 +1,36 @@
+//! 文字列の再配置とバイトの変更を照合する基本値の比較入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+@external("wasm", "guests/primitives.wasm", "boolean")
+function invert(v: Boolean) -> Boolean
+@external("wasm", "guests/primitives.wasm", "character")
+function next(v: Character) -> Character
+@external("wasm", "guests/primitives.wasm", "string")
+function append(v: String) -> String
+@external("wasm", "guests/primitives.wasm", "bytes")
+function bytes(v: Bytes) -> Bytes
+@external("wasm", "guests/primitives.wasm", "bytes-adapter")
+function bytesAdapter(ignored: Boolean, v: Bytes) -> Bytes
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+  bind text <- String.repeat("A日😀", Integer.minimum(n, 4096))
+  bind source <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte return
+    if i mod 3 = 0 then 0u8 else if i mod 3 = 1 then 128u8 else 255u8 end if
+  end lambda))
+  bind expected <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte return
+    if i mod 3 = 0 then 255u8 else if i mod 3 = 1 then 127u8 else 0u8 end if
+  end lambda))
+
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind c0 <- invert(true) = false
+    bind c1 <- invert(false) = true
+    bind c2 <- next('😀') = '😁'
+    bind c3 <- append(text) = text + "!"
+    bind c4 <- bytes(source) = expected
+    bind c5 <- bytesAdapter(false, source) = expected
+    return c0 and c1 and c2 and c3 and c4 and c5
+  end lambda)
+end function

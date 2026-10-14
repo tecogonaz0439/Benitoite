@@ -164,6 +164,10 @@ mutual
     | .E_NegInt => exact .C_Return .V_Const
     | .E_NegFloat => exact .C_Return .V_Const
     | .E_NegDecimal => exact .C_Return .V_Const
+    | .E_NegInteger8 => exact .C_Return .V_Const
+    | .E_NegInteger16 => exact .C_Return .V_Const
+    | .E_NegInteger32 => exact .C_Return .V_Const
+    | .E_NegFloat32 => exact .C_Return .V_Const
     | .E_Unit => exact .C_Return .V_Const
     | .E_Paren h => simpa only [desugarExpr] using HasType.desugar hwf hsig h sc hΓ hR
     | .E_Record hc ht hp hs =>
@@ -234,7 +238,7 @@ mutual
               ((directCallee_typed hd hf hf').rename (RenOk.shift ys Γ))) .nil
           (hms.weaken ((eff_left _ _).trans (eff_right _ _))) hclean
           ((eff_right _ _).trans (eff_right _ _))
-    | .E_Binary (t := t) (ts := ts) (s := sg) hop _ hs ht he ha hfn hl hr =>
+    | .E_Binary (t := t) (ts := ts) (s := sg) _ hop _ hs ht he ha hfn hl hr =>
         have hl' := HasType.desugar hwf hsig hl sc.2.1 hΓ hR
         have hr' := HasType.desugar hwf hsig hr sc.2.2 hΓ hR
         simp only [desugarExpr, hop]
@@ -248,7 +252,7 @@ mutual
           · rw [← hfn]; exact .V_Prim hs ht (by simpa using he.symm) ha
           · exact hv
         · exact Eff.empty_sub _
-    | .E_Neg hop _ hs ht he ha hfn h =>
+    | .E_Neg _ hop _ hs ht he ha hfn h =>
         have hh := HasType.desugar hwf hsig h sc.2 hΓ hR
         simp only [desugarExpr, hop]
         apply HasTypeC.C_Let hh

@@ -1,0 +1,8 @@
+// spec: 01-07 外部の関数のエフェクト
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#cell")
+type Cell
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[constructor]cell")
+function newCell(start: Integer) -> Cell
+function main() -> Unit
+  ()
+end function

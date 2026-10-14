@@ -158,6 +158,7 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
             | Item::Record(_)
             | Item::Trait(_)
             | Item::Effect(_)
+            | Item::ExternalType(_)
             | Item::Error(_) => None,
         });
     let Some(FnDecl {

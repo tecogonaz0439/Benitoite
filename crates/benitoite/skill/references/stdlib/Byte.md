@@ -6,6 +6,14 @@ Refer to its declarations as `Byte.<name>`, for example `Byte.fromInteger`.
 
 Functions on `Byte`, the integers from 0 to 255.
 
+## Type
+
+Type: `Byte`. Canonical name: `UnsignedInteger8`. Displayed as `Byte`.
+
+Accepted aliases for this type: `Byte`. These names denote the same type; they do not require a conversion.
+
+This is a distinct numeric type. There are no implicit conversions between numeric types.
+
 ```benitoite
 public function fromInteger(n: Integer) -> Option[Byte]
 ```

@@ -91,6 +91,7 @@ fn expand<'a>(node: Node<'a>, work: &mut Vec<Work<'a>>) {
             ValKind::Const(_)
             | ValKind::TopFn { .. }
             | ValKind::Builtin { .. }
+            | ValKind::External { .. }
             | ValKind::Op { .. }
             | ValKind::ConstRef(_) => {}
         },

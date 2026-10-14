@@ -541,6 +541,48 @@ impl<'e> FromValue<'e> for Value<'e> {
     }
 }
 
+impl<'e> FromValue<'e> for i8 {
+    fn from_value(v: Value<'e>) -> Option<i8> {
+        v.as_int8()
+    }
+}
+
+impl<'e> FromValue<'e> for i16 {
+    fn from_value(v: Value<'e>) -> Option<i16> {
+        v.as_int16()
+    }
+}
+
+impl<'e> FromValue<'e> for i32 {
+    fn from_value(v: Value<'e>) -> Option<i32> {
+        v.as_int32()
+    }
+}
+
+impl<'e> FromValue<'e> for u16 {
+    fn from_value(v: Value<'e>) -> Option<u16> {
+        v.as_uint16()
+    }
+}
+
+impl<'e> FromValue<'e> for u32 {
+    fn from_value(v: Value<'e>) -> Option<u32> {
+        v.as_uint32()
+    }
+}
+
+impl<'e> FromValue<'e> for u64 {
+    fn from_value(v: Value<'e>) -> Option<u64> {
+        v.as_uint64()
+    }
+}
+
+impl<'e> FromValue<'e> for f32 {
+    fn from_value(v: Value<'e>) -> Option<f32> {
+        v.as_float32()
+    }
+}
+
 impl<'e> FromValue<'e> for i64 {
     fn from_value(v: Value<'e>) -> Option<i64> {
         v.as_int()
@@ -599,6 +641,48 @@ pub trait IntoValue<'e> {
 impl<'e> IntoValue<'e> for Value<'e> {
     fn into_value(self) -> Value<'e> {
         self
+    }
+}
+
+impl<'e> IntoValue<'e> for i8 {
+    fn into_value(self) -> Value<'e> {
+        Value::Int8(self)
+    }
+}
+
+impl<'e> IntoValue<'e> for i16 {
+    fn into_value(self) -> Value<'e> {
+        Value::Int16(self)
+    }
+}
+
+impl<'e> IntoValue<'e> for i32 {
+    fn into_value(self) -> Value<'e> {
+        Value::Int32(self)
+    }
+}
+
+impl<'e> IntoValue<'e> for u16 {
+    fn into_value(self) -> Value<'e> {
+        Value::UInt16(self)
+    }
+}
+
+impl<'e> IntoValue<'e> for u32 {
+    fn into_value(self) -> Value<'e> {
+        Value::UInt32(self)
+    }
+}
+
+impl<'e> IntoValue<'e> for u64 {
+    fn into_value(self) -> Value<'e> {
+        Value::UInt64(self)
+    }
+}
+
+impl<'e> IntoValue<'e> for f32 {
+    fn into_value(self) -> Value<'e> {
+        Value::Float32(self)
     }
 }
 
@@ -978,3 +1062,109 @@ macro_rules! builtin {
 }
 
 pub use builtin;
+
+#[cfg(test)]
+mod tests {
+    // 宣言の拒否と値の食い違いはテストの失敗として報告する。
+    #![allow(clippy::panic)]
+    use super::*;
+    use crate::runtime::heap::{Heap, HeapConfig};
+
+    macro_rules! declare_identity {
+        ($name:ident, $ty:ty) => {
+            crate::builtin! {
+                /// 幅の保存を確かめる型付きの宣言。
+                name = "Test.widthIdentity",
+                pure fn $name(ctx, n: $ty) -> $ty {
+                    let _ = ctx;
+                    Ok(n)
+                }
+            }
+        };
+    }
+    declare_identity!(identity_i8, i8);
+    declare_identity!(identity_i16, i16);
+    declare_identity!(identity_i32, i32);
+    declare_identity!(identity_u16, u16);
+    declare_identity!(identity_u32, u32);
+    declare_identity!(identity_u64, u64);
+    declare_identity!(identity_f32, f32);
+
+    // 作成時の関門: 宣言のマクロによる幅の読み出しと戻り値、種類・個数の拒否を守る。
+    // 値のアクセサのテストは、型付き宣言が選ぶ変換と Internal の応答を通らない。
+    // 本番の口を増やさず、独立した境界値を同じ宣言で照合する。
+    #[test]
+    fn width_declarations_preserve_bits_and_reject_argument_mismatches() {
+        macro_rules! check {
+            ($name:ident, $ty:ty, $variant:ident, $reader:ident, $values:expr) => {{
+                let mut heap = Heap::new(HeapConfig::default());
+                heap.epoch(|ctx| {
+                    for expected in $values {
+                        let mut call = CallCtx::new(ctx, None, None, None);
+                        let result = ($name::DECL.raw)(&mut call, &[Value::$variant(expected)]);
+                        match result {
+                            Ok(Reply::Done(value)) => assert_eq!(value.$reader(), Some(expected)),
+                            other => panic!("{other:?}"),
+                        }
+                    }
+                    for args in [
+                        vec![],
+                        vec![Value::Int(1)],
+                        vec![Value::Unit],
+                        vec![Value::$variant(0 as $ty), Value::$variant(0 as $ty)],
+                    ] {
+                        let mut call = CallCtx::new(ctx, None, None, None);
+                        assert!(matches!(
+                            ($name::DECL.raw)(&mut call, &args),
+                            Err(Stop::Internal(_))
+                        ));
+                    }
+                });
+            }};
+        }
+        check!(identity_i8, i8, Int8, as_int8, [i8::MIN, i8::MAX]);
+        check!(identity_i16, i16, Int16, as_int16, [i16::MIN, i16::MAX]);
+        check!(identity_i32, i32, Int32, as_int32, [i32::MIN, i32::MAX]);
+        check!(identity_u16, u16, UInt16, as_uint16, [0, u16::MAX]);
+        check!(identity_u32, u32, UInt32, as_uint32, [0, u32::MAX]);
+        check!(
+            identity_u64,
+            u64,
+            UInt64,
+            as_uint64,
+            [0, 1_u64 << 63, u64::MAX]
+        );
+        let mut heap = Heap::new(HeapConfig::default());
+        heap.epoch(|ctx| {
+            for bits in [
+                0,
+                0x8000_0000,
+                1,
+                0x3f80_0001,
+                0x7f7f_ffff,
+                0x7f80_0000,
+                0xff80_0000,
+                0x7fc0_1234,
+            ] {
+                let mut call = CallCtx::new(ctx, None, None, None);
+                let args = [Value::Float32(f32::from_bits(bits))];
+                let Ok(Reply::Done(value)) = (identity_f32::DECL.raw)(&mut call, &args) else {
+                    panic!("Float32 return required");
+                };
+                assert_eq!(value.as_float32().map(f32::to_bits), Some(bits));
+            }
+            for args in [
+                vec![],
+                vec![Value::Float(1.0)],
+                vec![Value::Int(1)],
+                vec![Value::Float32(1.0), Value::Float32(1.0)],
+            ] {
+                let mut call = CallCtx::new(ctx, None, None, None);
+                assert!(matches!(
+                    (identity_f32::DECL.raw)(&mut call, &args),
+                    Err(Stop::Internal(_))
+                ));
+            }
+        });
+    }
+}

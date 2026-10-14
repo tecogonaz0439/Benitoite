@@ -1,0 +1,26 @@
+// spec: 01-02 外部の関数の宣言
+// 関門: 直接と間接の ABI で欄の順序を保ち、宣言した構成子へ戻す。
+import Benitoite.Unofficial.IO.Console
+data Marker
+  Unused
+end data
+data One
+  Item(Integer)
+end data
+@external("wasm", "x.wasm", "tuple1")
+function tuple1(v: One) -> One
+data Four
+  Item(Integer, Integer, Integer, Integer)
+end data
+@external("wasm", "x.wasm", "tuple4")
+function tuple4(v: Four) -> Four
+data Seventeen
+  Item(Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer)
+end data
+@external("wasm", "x.wasm", "tuple17")
+function tuple17(v: Seventeen) -> Seventeen
+function main() -> Unit uses Console.Write
+  Console.writeLine("${tuple1(One.Item(1)) = One.Item(12)}")
+  Console.writeLine("${tuple4(Four.Item(1, 2, 3, 4)) = Four.Item(12, 14, 16, 18)}")
+  Console.writeLine("${tuple17(Seventeen.Item(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)) = Seventeen.Item(12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44)}")
+end function

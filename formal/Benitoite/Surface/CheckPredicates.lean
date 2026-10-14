@@ -80,6 +80,10 @@ mutual
     | .negInt _ => by simp [exprExits, Expr.Exits]
     | .negFloat _ => by simp [exprExits, Expr.Exits]
     | .negDecimal _ _ => by simp [exprExits, Expr.Exits]
+    | .negInteger8 _ => by simp [exprExits, Expr.Exits]
+    | .negInteger16 _ => by simp [exprExits, Expr.Exits]
+    | .negInteger32 _ => by simp [exprExits, Expr.Exits]
+    | .negFloat32 _ => by simp [exprExits, Expr.Exits]
     | .unit => by simp [exprExits, Expr.Exits]
     | .conCall _ _ _ => by simp [exprExits, Expr.Exits]
     | .record _ _ _ _ => by simp [exprExits, Expr.Exits]
@@ -183,6 +187,10 @@ theorem isIf_spec : (e : Expr) → (isIf e = true ↔ IsIf e)
   | .negInt _ => by constructor <;> intro h <;> cases h
   | .negFloat _ => by constructor <;> intro h <;> cases h
   | .negDecimal _ _ => by constructor <;> intro h <;> cases h
+  | .negInteger8 _ => by constructor <;> intro h <;> cases h
+  | .negInteger16 _ => by constructor <;> intro h <;> cases h
+  | .negInteger32 _ => by constructor <;> intro h <;> cases h
+  | .negFloat32 _ => by constructor <;> intro h <;> cases h
   | .unit => by constructor <;> intro h <;> cases h
   | .paren _ => by constructor <;> intro h <;> cases h
   | .conCall _ _ _ => by constructor <;> intro h <;> cases h
@@ -240,7 +248,9 @@ theorem allDirect_spec : (es : Exprs) → (allDirect es = true ↔ es.AllDirect)
 /-- 型の構造だけを見る。関数型のエフェクトを比較する必要はない。 -/
 def convertedAllowed : Ty → Bool
   | .base .integer | .base .float | .base .character | .base .boolean
-    | .base .byte | .base .decimal => true
+    | .base .byte | .base .decimal | .base .integer8 | .base .integer16
+    | .base .integer32 | .base .unsignedInteger16 | .base .unsignedInteger32
+    | .base .unsignedInteger64 | .base .float32 => true
   | _ => false
 
 def interpAllowed : List InterpPart → Bool
@@ -250,7 +260,10 @@ def interpAllowed : List InterpPart → Bool
 
 theorem convertedAllowed_spec (t : Ty) : convertedAllowed t = true ↔
     (t = .base .integer ∨ t = .base .float ∨ t = .base .character ∨
-     t = .base .boolean ∨ t = .base .byte ∨ t = .base .decimal) := by
+     t = .base .boolean ∨ t = .base .byte ∨ t = .base .decimal ∨
+     t = .base .integer8 ∨ t = .base .integer16 ∨ t = .base .integer32 ∨
+     t = .base .unsignedInteger16 ∨ t = .base .unsignedInteger32 ∨
+     t = .base .unsignedInteger64 ∨ t = .base .float32) := by
   cases t <;> simp [convertedAllowed]
   rename_i b; cases b <;> simp
 

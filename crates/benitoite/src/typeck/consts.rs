@@ -1,5 +1,7 @@
 //! 定数の形・型・値の順の検査と算術の警告（設計書 02-05「定数の検査と評価」「警告」）。
 mod key;
+#[cfg(test)]
+mod width_tests;
 
 use super::{
     context::{Body, fixed, reason},
@@ -7,6 +9,7 @@ use super::{
     infer::{Constraint, ReasonKind},
 };
 use crate::base::decimal::DecimalError;
+use crate::base::prim::numeric::{self, ArithmeticError, ArithmeticOp};
 use crate::base::prim::{KeyAtom, cmp_key_atom, float_to_text};
 use crate::base::{BindingId, Span};
 use crate::diag::{DiagBuilder, DiagCode};
@@ -16,6 +19,11 @@ use crate::types::{ConstValue as V, EffectSet, Ty};
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, BTreeSet};
 use std::mem::size_of;
+
+/// 型やリテラルの誤りがある式は評価しない（設計書 02-05「定数の検査と評価」）。
+pub(super) fn prevents_evaluation(diagnostic: &crate::diag::Diagnostic) -> bool {
+    diagnostic.is_error()
+}
 
 pub(super) fn check(d: &mut Decls<'_>) {
     let mut pending = BTreeMap::new();
@@ -66,10 +74,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
             });
             ctx.solve();
             ctx.check_type_limits(c.value.span());
-            let valid = !ctx
-                .diagnostics
-                .iter()
-                .any(crate::diag::Diagnostic::is_error)
+            let valid = !ctx.diagnostics.iter().any(prevents_evaluation)
                 && ctx.decls.diagnostics.len() == before;
             ctx.finish();
             if valid {
@@ -347,7 +352,14 @@ impl EvalBudget {
                         work.push(v);
                     }
                 }
-                V::Integer(_)
+                V::Integer8(_)
+                | V::Integer16(_)
+                | V::Integer32(_)
+                | V::UnsignedInteger16(_)
+                | V::UnsignedInteger32(_)
+                | V::UnsignedInteger64(_)
+                | V::Float32(_)
+                | V::Integer(_)
                 | V::Float(_)
                 | V::Character(_)
                 | V::Boolean(_)
@@ -571,7 +583,29 @@ fn binary(op: BinOp, a: V, b: V, span: Span, budget: &mut EvalBudget) -> EvalRes
             | BinOp::Or => false,
         }));
     }
+    macro_rules! width_integer {
+        ($a:expr, $b:expr, $variant:ident) => {
+            numeric::integer_binary(arithmetic_op(op)?, $a, $b)
+                .map(V::$variant)
+                .map_err(|error| arithmetic_error(error, span))
+        };
+    }
     match (a, b) {
+        (V::Integer8(a), V::Integer8(b)) => width_integer!(a, b, Integer8),
+        (V::Integer16(a), V::Integer16(b)) => width_integer!(a, b, Integer16),
+        (V::Integer32(a), V::Integer32(b)) => width_integer!(a, b, Integer32),
+        (V::UnsignedInteger16(a), V::UnsignedInteger16(b)) => {
+            width_integer!(a, b, UnsignedInteger16)
+        }
+        (V::UnsignedInteger32(a), V::UnsignedInteger32(b)) => {
+            width_integer!(a, b, UnsignedInteger32)
+        }
+        (V::UnsignedInteger64(a), V::UnsignedInteger64(b)) => {
+            width_integer!(a, b, UnsignedInteger64)
+        }
+        (V::Float32(a), V::Float32(b)) => numeric::float32_binary(arithmetic_op(op)?, a, b)
+            .map(V::Float32)
+            .ok_or(EvalError::Unavailable),
         (V::Integer(a), V::Integer(b)) => {
             let v = match op {
                 BinOp::Add => a.checked_add(b),
@@ -664,8 +698,41 @@ fn binary(op: BinOp, a: V, b: V, span: Span, budget: &mut EvalBudget) -> EvalRes
         _ => Err(EvalError::Unavailable),
     }
 }
+fn arithmetic_op(op: BinOp) -> Result<ArithmeticOp, EvalError> {
+    match op {
+        BinOp::Add => Ok(ArithmeticOp::Add),
+        BinOp::Sub => Ok(ArithmeticOp::Subtract),
+        BinOp::Mul => Ok(ArithmeticOp::Multiply),
+        BinOp::IntDiv | BinOp::Div => Ok(ArithmeticOp::Divide),
+        BinOp::Mod => Ok(ArithmeticOp::Modulo),
+        BinOp::Eq
+        | BinOp::Ne
+        | BinOp::Lt
+        | BinOp::Le
+        | BinOp::Gt
+        | BinOp::Ge
+        | BinOp::And
+        | BinOp::Or => Err(EvalError::Unavailable),
+    }
+}
+fn arithmetic_error(error: ArithmeticError, span: Span) -> EvalError {
+    EvalError::Arithmetic(
+        span,
+        match error {
+            ArithmeticError::Overflow => super::text::INTEGER_OVERFLOW,
+            ArithmeticError::DivisionByZero => super::text::DIVISION_BY_ZERO,
+        },
+    )
+}
 fn value_text(v: &V) -> Option<String> {
     match v {
+        V::Integer8(n) => Some(n.to_string()),
+        V::Integer16(n) => Some(n.to_string()),
+        V::Integer32(n) => Some(n.to_string()),
+        V::UnsignedInteger16(n) => Some(n.to_string()),
+        V::UnsignedInteger32(n) => Some(n.to_string()),
+        V::UnsignedInteger64(n) => Some(n.to_string()),
+        V::Float32(n) => Some(crate::base::prim::float32_to_text(*n)),
         V::Integer(n) => Some(n.to_string()),
         V::Float(n) => Some(float_to_text(*n)),
         V::Decimal(n) => Some(n.to_text()),
@@ -685,11 +752,17 @@ fn atom(v: &V) -> Option<KeyAtom<'_>> {
         V::Unit => Some(KeyAtom::Unit),
         V::Boolean(b) => Some(KeyAtom::Boolean(*b)),
         V::Integer(n) => Some(KeyAtom::Integer(*n)),
+        V::Integer8(n) => Some(KeyAtom::Integer8(*n)),
+        V::Integer16(n) => Some(KeyAtom::Integer16(*n)),
+        V::Integer32(n) => Some(KeyAtom::Integer32(*n)),
+        V::UnsignedInteger16(n) => Some(KeyAtom::UnsignedInteger16(*n)),
+        V::UnsignedInteger32(n) => Some(KeyAtom::UnsignedInteger32(*n)),
+        V::UnsignedInteger64(n) => Some(KeyAtom::UnsignedInteger64(*n)),
         V::Byte(n) => Some(KeyAtom::Byte(*n)),
         V::Character(c) => Some(KeyAtom::Character(*c)),
         V::Decimal(n) => Some(KeyAtom::Decimal(*n)),
         V::String(s) => Some(KeyAtom::String(s)),
-        V::Float(_) | V::Ctor { .. } | V::List(_) | V::Map(_) | V::Set(_) => None,
+        V::Float32(_) | V::Float(_) | V::Ctor { .. } | V::List(_) | V::Map(_) | V::Set(_) => None,
     }
 }
 /// 値の深さを Rust の呼び出しの深さにしない（AGENTS.md「実装の規約」の「再帰の深さ」）。
@@ -718,6 +791,12 @@ fn compare(a: &V, b: &V, float: bool) -> Option<Ordering> {
             continue;
         }
         match (a, b) {
+            (V::Float32(a), V::Float32(b)) if float => {
+                let o = a.partial_cmp(b)?;
+                if o != Ordering::Equal {
+                    return Some(o);
+                }
+            }
             (V::Float(a), V::Float(b)) if float => {
                 let o = a.partial_cmp(b)?;
                 if o != Ordering::Equal {
@@ -978,8 +1057,15 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
                 .ok()
                 .is_some_and(|v| match v {
                     V::Integer(n) => n == 0,
+                    V::Integer8(n) => n == 0,
+                    V::Integer16(n) => n == 0,
+                    V::Integer32(n) => n == 0,
+                    V::UnsignedInteger16(n) => n == 0,
+                    V::UnsignedInteger32(n) => n == 0,
+                    V::UnsignedInteger64(n) => n == 0,
                     V::Decimal(n) => n.mantissa() == 0,
-                    V::Float(_)
+                    V::Float32(_)
+                    | V::Float(_)
                     | V::String(_)
                     | V::Character(_)
                     | V::Boolean(_)
@@ -999,19 +1085,14 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
             Some(Err(EvalError::Arithmetic(span, condition)))
                 if span == e.span() && condition != super::text::DIVISION_BY_ZERO =>
             {
-                diagnostics.push(
-                    DiagBuilder::new(DiagCode::W0402)
-                        .arg(
-                            "ty",
-                            if condition == super::text::INTEGER_OVERFLOW {
-                                "Integer"
-                            } else {
-                                "Decimal"
-                            },
-                        )
-                        .primary(span)
-                        .build(),
-                )
+                if let Some(ty) = ctx.expr_types.get(e.id()) {
+                    diagnostics.push(
+                        DiagBuilder::new(DiagCode::W0402)
+                            .arg("ty", ctx.show_type(ty))
+                            .primary(span)
+                            .build(),
+                    );
+                }
             }
             _ => {}
         }
@@ -1248,6 +1329,16 @@ fn eval_unary(d: &Decls<'_>, u: &UnaryExpr, budget: &mut EvalBudget) -> EvalResu
             .checked_neg()
             .map(V::Integer)
             .ok_or(EvalError::Arithmetic(u.span, super::text::INTEGER_OVERFLOW)),
+        (UnOp::Neg, V::Integer8(n)) => numeric::integer_negate(n)
+            .map(V::Integer8)
+            .map_err(|e| arithmetic_error(e, u.span)),
+        (UnOp::Neg, V::Integer16(n)) => numeric::integer_negate(n)
+            .map(V::Integer16)
+            .map_err(|e| arithmetic_error(e, u.span)),
+        (UnOp::Neg, V::Integer32(n)) => numeric::integer_negate(n)
+            .map(V::Integer32)
+            .map_err(|e| arithmetic_error(e, u.span)),
+        (UnOp::Neg, V::Float32(n)) => Ok(V::Float32(-n)),
         (UnOp::Neg, V::Float(n)) => Ok(V::Float(-n)),
         (UnOp::Neg, V::Decimal(n)) => Ok(V::Decimal(n.negate())),
         _ => Err(EvalError::Unavailable),

@@ -40,7 +40,7 @@ mutual
       PatTy P p a δ → PatTy P p (a.substAt c ts' es') (δ.map (Ty.substAt c ts' es'))
     | .P_Wild => .P_Wild
     | .P_Var => by simpa using PatTy.P_Var
-    | .P_Const h1 h2 h3 h4 => by rw [Const.type_substAt]; exact .P_Const h1 h2 h3 h4
+    | .P_Const h => by rw [Const.type_substAt]; exact .P_Const h
     | .P_RangeInt => by simpa only [Ty.substAt, List.map_nil] using PatTy.P_RangeInt (P := P)
     | .P_RangeChar => by simpa only [Ty.substAt, List.map_nil] using PatTy.P_RangeChar (P := P)
     | .P_List (rest := rest) (a := t) hb ha hn => by

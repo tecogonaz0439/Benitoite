@@ -52,7 +52,9 @@ pub(super) fn check(d: &mut Decls<'_>) {
                 if !invalid(d, &i) && d.diagnostics.len() == before {
                     let class_module = d.resolved.bindings.get(i.class).map(|b| b.module);
                     let type_module = match i.target_con {
-                        TyCon::Adt(id) => d.resolved.bindings.get(id).map(|b| b.module),
+                        TyCon::Adt(id) | TyCon::External(id) => {
+                            d.resolved.bindings.get(id).map(|b| b.module)
+                        }
                         TyCon::Builtin(id) => id.def().and_then(|b| {
                             d.modules
                                 .modules
@@ -77,7 +79,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
                         if let Some(span) = d.resolved.bindings.get(i.class).and_then(|b| b.span) {
                             diag = diag.secondary(span, "trait_decl");
                         }
-                        if let TyCon::Adt(id) = i.target_con
+                        if let TyCon::Adt(id) | TyCon::External(id) = i.target_con
                             && let Some(span) = d.resolved.bindings.get(id).and_then(|b| b.span)
                         {
                             diag = diag.secondary(span, "type_decl");

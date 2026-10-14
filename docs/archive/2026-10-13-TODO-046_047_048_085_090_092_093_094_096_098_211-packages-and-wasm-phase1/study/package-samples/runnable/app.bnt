@@ -1,0 +1,50 @@
+//! 作業の一覧を管理する小さなスクリプト。三つのパッケージ（Textkit、Todo、Fuzzy）を使う。
+//!
+//!   benitoite run app.bnt list
+//!   benitoite run app.bnt add "Buy milk"
+//!   benitoite run app.bnt done "buy mlk"     （綴りが少し違っても、最も近い作業を済みにする）
+//!
+//! 今の処理系では、パッケージの代わりに、根のディレクトリの下に同じ名前のモジュールを置いている。
+//! パッケージ管理を入れた後は、import の行を変えずに、依存の記述（proposed/ を参照）だけを足す形を目指す。
+
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+import Textkit.Slug
+import Todo.Store
+import Fuzzy.Distance
+
+function main() -> Result[Unit, String] uses Console.Write, File.Read, File.Write, Process.Environment
+  bind path <- Process.scriptDirectory() + "/todo.txt"
+  bind items <- try loadOrEmpty(path) |> Result.mapError(_, IOError.message)
+  return match Process.arguments() with
+    case ["add", title] ->
+      bind added <- List.append(items, Store.Item(done: false, title: title))
+      bind _ <- try Store.save(path, added) |> Result.mapError(_, IOError.message)
+      Console.writeLine("added: ${title}")
+      Result.Ok(())
+    case ["done", title] ->
+      bind titles <- List.map(items, Store.Item.title)
+      match Distance.closest(title, titles, 3) with
+        case Option.Some(found) ->
+          bind _ <- try Store.save(path, Store.complete(items, found)) |> Result.mapError(_, IOError.message)
+          Console.writeLine("done: ${found}")
+          Result.Ok(())
+        case Option.None -> Result.Error("no task like \"${title}\"")
+      end match
+    case ["list"] ->
+      List.forEach(items, lambda(item)
+        bind mark <- if Store.Item.done(item) then "x" else " " end if
+        Console.writeLine("[${mark}] ${Slug.truncate(Store.Item.title(item), 30)}  (#${Slug.slug(Store.Item.title(item))})")
+      end lambda)
+      Result.Ok(())
+    case _ -> Result.Error("usage: app.bnt list | add TITLE | done TITLE")
+  end match
+end function
+
+function loadOrEmpty(path: String) -> Result[List[Store.Item], IOError] uses File.Read
+  if not (try File.exists(path)) then
+    return Result.Ok([])
+  end if
+  return Store.load(path)
+end function

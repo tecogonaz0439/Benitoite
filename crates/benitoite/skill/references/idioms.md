@@ -28,6 +28,8 @@ All examples import the IO modules under `Benitoite.Unofficial`, because those m
 - [Collections](#collections)
 - [Records and data types](#records-and-data-types)
 - [Writing tests](#writing-tests)
+- [Numeric widths and conversions](#numeric-widths-and-conversions)
+- [WASM external functions and WIT types](#wasm-external-functions-and-wit-types)
 
 ## Program shape and error handling
 
@@ -585,3 +587,94 @@ function gitBranchRunsGit() -> Unit uses Assert.Check, Process.Run
   Assert.equal(result, Result.Ok("main"))
 end function
 ```
+
+## Numeric widths and conversions
+
+Use `Integer`, `Float`, and `Byte` for the existing types. `Integer64`, `Float64`, and `UnsignedInteger8` are their canonical names, and `UnsignedInteger` is an alias of `UnsignedInteger64`. Aliases are the same type. The seven added types (`Integer8`, `Integer16`, `Integer32`, `UnsignedInteger16`, `UnsignedInteger32`, `UnsignedInteger64`, and `Float32`) are distinct. All numeric types and modules are in the prelude; no import is needed.
+
+Suffixes explicitly choose a width: `42s16`, `0xffu8`, `65535u16`, `18446744073709551615u64`, `1.5f32`. Unsuffixed values retain `Integer` or `Float`; the expected type never changes them. The suffix spelling is provisional and may change when the syntax is revised. Floating-point suffixes require a decimal point or exponent (`1.0f32`, not `1f32`). Only a directly applied minus sign includes the sign in signed-literal range checking: `-128s8` works, `-(128s8)` does not. Unsigned unary minus is forbidden even on zero. `Byte` has no arithmetic. New numeric widths and `Byte` cannot be constant or range patterns; use a bound name and a guard.
+
+Range-checked conversions return `Option`; integer arithmetic overflow and division by zero stop execution. Narrow integer modules convert through `Integer`. `UnsignedInteger64.toInteger` returns `Option` because its upper half does not fit; `toDecimal` is exact over its whole range. `Float32.fromFloat` rounds and returns `None` when finite input becomes infinite; `Float32.toFloat` widens finite values exactly. Arithmetic rounds to binary32 after each operation. Read the corresponding generated module reference for every function's signature.
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+
+function smallInteger(text: String) -> Option[Integer16]
+  bind value <- try Integer.parse(text)
+  return Integer16.fromInteger(value)
+end function
+
+function main() -> Unit uses Console.Write
+  bind value <- Option.unwrapOr(smallInteger("42"), 0s16)
+  bind wide: UnsignedInteger <- 18446744073709551615u64
+  Console.writeLine("${value + 1s16} ${smallInteger("32768") = Option.None}")
+  Console.writeLine("${UnsignedInteger64.toDecimal(wide)} ${UnsignedInteger64.toInteger(wide) = Option.None}")
+  Console.writeLine("${Float32.toFloat(1.5f32)} ${Byte.toInteger(255u8)}")
+end function
+```
+
+```output
+43 true
+18446744073709551615 true
+1.5 255
+```
+
+## WASM external functions and WIT types
+
+Declare external functions without a body or `end function`, and check the component's actual WIT contract before calling. The component must be a binary, import-free Component Model component, with no WASI or host functions. Paths are relative to the root that owns the declaration; package components must be under `wasm/`. The export is a world function or `interface#function`, matching the full interface name including its version. The declaration is monomorphic and uses concrete types. Functions containing external resource types in their actual parameter/result fields need `uses State`; others are pure.
+
+| Benitoite type | WIT correspondence |
+|---|---|
+| `Integer8`/`Integer16`/`Integer32`/`Integer` | `s8`/`s16`/`s32`/`s64` |
+| `Byte`/`UnsignedInteger16`/`UnsignedInteger32`/`UnsignedInteger64` | `u8`/`u16`/`u32`/`u64` |
+| `Float32`/`Float` | `f32`/`f64` |
+| `Bytes`, `List[Byte]`; other lists, options, results | `list<u8>`; recursive correspondence to WIT list/option/result |
+| Concrete records and `data` | Substitute type arguments, then match fields/cases in declaration order and normalized names |
+| `Set[D]`, D with 1–32 argument-free constructors | `flags`; an empty selection is allowed |
+| `Map[K, V]` | `map`; K is Boolean, an integer type, Character, or String; V is any supported type |
+| `Pair`, `Triple`, or another single-constructor `data` with one or more arguments | `tuple` by argument position |
+| A variant constructor with multiple arguments | One flat tuple payload, distributed back into those arguments |
+
+Record/case names match after removing hyphens and lowercasing ASCII. Finite generic nesting is allowed; recursive declarations and unresolved type/effect variables are rejected. Functions, Decimal, ordinary Set types, tasks, and resources used with `with` cannot be passed. `Unit` is allowed only as an omitted function result or omitted side of a standard `Result`.
+
+These declarations match the sample components used by the repository's `external/wit-docs-values` executable example:
+
+```text
+record Box[T]
+  value: T
+end record
+@external("wasm", "generic.wasm", "box")
+function box(v: Box[Integer]) -> Box[Integer]
+@external("wasm", "generic.wasm", "nested")
+function nested(v: Box[Box[Integer]]) -> Box[Box[Integer]]
+
+data D1
+  F1
+end data
+@external("wasm", "flags.wasm", "f1")
+function f1(v: Set[D1]) -> Pair[Set[D1], Integer]
+
+@external("wasm", "maps.wasm", "result")
+function result(v: Map[String, Integer]) -> Map[String, Integer]
+
+data Four
+  Item(Integer, Integer, Integer, Integer)
+end data
+@external("wasm", "tuples.wasm", "tuple4")
+function tuple4(v: Four) -> Four
+
+data Two
+  Value(Integer, Integer)
+  Empty
+end data
+@external("wasm", "variants.wasm", "fields")
+function two(v: Two) -> Two
+```
+
+The WIT shapes are a record with `value: s64`, a nested record, `flags { f1 }` with a tuple result, `map<string, s64>`, a four-element `tuple<s64, s64, s64, s64>`, and `variant { value(tuple<s64, s64>), empty }`. The sample guests return 42 from `box(Box(value: 35))`, inner value 0 from `nested(Box(value: Box(value: -7)))`, `Pair(Set.fromList([D1.F1]), 0)` from `f1(Set.empty())`, `Four.Item(12, 14, 16, 18)` from `tuple4(Four.Item(1, 2, 3, 4))`, and `Two.Value(14, 29)` from `two(Two.Value(3, 7))`. The sample `Map.toList(result(Map.empty()))` is `[Pair("a", 2), Pair("z", 3)]`: every returned entry is checked before normalization; duplicate keys keep the last value, and the final map is ordered by key. These numerical transformations are behavior of the sample guests.
+
+The checker selects `typed`, `adapter`, `dynamic`, or `stateful` before execution, and does not retry after a failure. The existing typed combinations retain byte/element accounting. Other supported values use a generated adapter; external resource types use the stateful dynamic route. Adapter generation or layout limits can select the dynamic route before calling. Generated and compiled code is shared within one execution, while pure calls each get a fresh Store.
+
+Default limits remain 10^10 fuel, 64 MiB total guest/adapter linear memory, 16 each of core instances/memories/tables, 10,000 elements per table, and 256 MiB transfer per direction. The adapter counts the entire packed argument/result sequences, including a 32-byte header and padding. Separately, the same `--wasm-transfer` value limits logical construction per direction: 16 bytes per language value occurrence plus string/Bytes contents. Bytes elements do not count as separate values; List[Byte] elements do. Map entries discarded by duplicate-key normalization still count. ABI-only grouping tuples do not add a language value. These limits do not bound total process memory. Adapter instructions consume fuel and respond to SIGINT/SIGTERM; `Task.withTimeout` cannot cancel an external call. Existing string/Bytes/list size limits still apply.
+
+Use `--wasm-stats` on `run` or `test` to inspect routes, fallback reasons, transfer, `construction_bytes` (the sum of both directions), and adapter failures. `--wasm-memory`, `--wasm-fuel`, and `--wasm-transfer` change limits without changing the function contract. Fuel exhaustion reports R0904, transfer/construction/memory exhaustion R0905, object limits R0906, and returned-value-size limits R0902. Traps and guest ABI violations report R0601; a declared `Result.Error` is an ordinary value. These runtime failures cannot be caught with `match` or `try`.

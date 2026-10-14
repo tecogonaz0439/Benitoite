@@ -378,4 +378,15 @@ example : HasTypeC choiceProgram builtins StoreTy.empty [] [] none choiceMatch i
   intro v _
   exact ⟨.wild, by simp [unguardedPats], rfl⟩
 
+/-- 幅付きの七種は定数のパターンに使えない。値そのものに型が付くこととは区別する。 -/
+example (P : Program) (n : Int) (bits : UInt32) :
+    (¬ PatTy P (.const (.integer8 n)) (.base .integer8) []) ∧
+    (¬ PatTy P (.const (.integer16 n)) (.base .integer16) []) ∧
+    (¬ PatTy P (.const (.integer32 n)) (.base .integer32) []) ∧
+    (¬ PatTy P (.const (.unsignedInteger16 n)) (.base .unsignedInteger16) []) ∧
+    (¬ PatTy P (.const (.unsignedInteger32 n)) (.base .unsignedInteger32) []) ∧
+    (¬ PatTy P (.const (.unsignedInteger64 n)) (.base .unsignedInteger64) []) ∧
+    (¬ PatTy P (.const (.float32 bits)) (.base .float32) []) := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩ <;> intro h <;> cases h <;> contradiction
+
 end Benitoite.Release.Examples

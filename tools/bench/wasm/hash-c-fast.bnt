@@ -1,0 +1,19 @@
+//! SHA-256 の境界の費用を比較する（設計書 07-02「測る項目」）。
+dependency WasmHash
+  path "../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash"
+end dependency
+
+import WasmHash.Digest
+import Benitoite.Unofficial.Hash
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Clock
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write, Process.Environment
+  bind path <- try Runner.argument(0)
+  bind count <- try Runner.rounds(1)
+  bind bytes <- try Result.mapError(File.readBytes(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
+  return Runner.measure(count, lambda() -> Result[Bytes, String] uses State return Result.Ok(Digest.sha256(bytes)) end lambda, Bytes.toHex)
+end function

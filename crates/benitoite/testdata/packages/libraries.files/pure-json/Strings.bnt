@@ -1,0 +1,107 @@
+//! JSON の文字列と UTF-16 のエスケープを読む（設計書 03-08「Json」）。
+import Benitoite.Unofficial.Json
+import Scan
+import Text
+import Parts
+
+/// 引用符の中身を復号し、閉じる引用符の直後を返す。
+public(package) function read(input: Scan.Input, start: Integer) -> Result[Pair[String, Integer], Json.ParseError]
+  return readFrom(input, start, start, Parts.empty())
+end function
+
+// エスケープのない区間は一度で切り出し、非 ASCII のバイトを一文字ずつ復号しない。
+function readFrom(input: Scan.Input, start: Integer, i: Integer, parts: Parts.Buffer) -> Result[Pair[String, Integer], Json.ParseError]
+  bind b <- Scan.byte(input, i)
+  if b = -1 then return Result.Error(Scan.eof(input, Text.eofString)) end if
+  if b = 34 then
+    return Result.Ok(Pair(Parts.finish(Parts.append(parts, Scan.slice(input, start, i))), i + 1))
+  end if
+  if b < 32 then return Result.Error(Scan.error(input, i + 1, Text.control)) end if
+  if b = 92 then
+    bind Pair(part, next) <- try escape(input, i + 1)
+    return readFrom(input, next, next, Parts.append(Parts.append(parts, Scan.slice(input, start, i)), part))
+  end if
+  return readFrom(input, start, i + 1, parts)
+end function
+
+function escape(input: Scan.Input, i: Integer) -> Result[Pair[String, Integer], Json.ParseError]
+  return match Scan.byte(input, i) with
+    case -1 -> Result.Error(Scan.eof(input, Text.eofString))
+    case 34 -> Result.Ok(Pair("\"", i + 1))
+    case 92 -> Result.Ok(Pair("\\", i + 1))
+    case 47 -> Result.Ok(Pair("/", i + 1))
+    case 98 -> Result.Ok(Pair("\u{08}", i + 1))
+    case 102 -> Result.Ok(Pair("\u{0c}", i + 1))
+    case 110 -> Result.Ok(Pair("\n", i + 1))
+    case 114 -> Result.Ok(Pair("\r", i + 1))
+    case 116 -> Result.Ok(Pair("\t", i + 1))
+    case 117 -> unicode(input, i + 1)
+    case _ -> Result.Error(Scan.error(input, i + 1, Text.escape))
+  end match
+end function
+
+function hex(b: Integer) -> Integer
+  return if Scan.digit(b) then b - 48 else if b >= 65 and b <= 70 then b - 55 else if b >= 97 and b <= 102 then b - 87 else -1 end if
+end function
+
+function fourHex(input: Scan.Input, i: Integer) -> Result[Integer, Json.ParseError]
+  if i + 4 > Scan.Input.length(input) then return Result.Error(Scan.eof(input, Text.eofString)) end if
+  bind a <- hex(Scan.byte(input, i))
+  bind b <- hex(Scan.byte(input, i + 1))
+  bind c <- hex(Scan.byte(input, i + 2))
+  bind d <- hex(Scan.byte(input, i + 3))
+  return if a < 0 or b < 0 or c < 0 or d < 0 then
+    Result.Error(Scan.error(input, i + 4, Text.escape))
+  else
+    Result.Ok(a * 4096 + b * 256 + c * 16 + d)
+  end if
+end function
+
+function unicode(input: Scan.Input, i: Integer) -> Result[Pair[String, Integer], Json.ParseError]
+  bind n <- try fourHex(input, i)
+  if n >= 56320 and n <= 57343 then return Result.Error(Scan.error(input, i + 4, Text.surrogate)) end if
+  if n < 55296 or n > 56319 then return scalar(input, n, i + 4) end if
+  bind next <- i + 4
+  if Scan.byte(input, next) = -1 then return Result.Error(Scan.eof(input, Text.eofString)) end if
+  if Scan.byte(input, next) <> 92 then return Result.Error(Scan.error(input, next + 1, Text.hexEnd)) end if
+  if Scan.byte(input, next + 1) = -1 then return Result.Error(Scan.eof(input, Text.eofString)) end if
+  if Scan.byte(input, next + 1) <> 117 then return Result.Error(Scan.error(input, next + 2, Text.hexEnd)) end if
+  bind low <- try fourHex(input, next + 2)
+  if low < 56320 or low > 57343 then return Result.Error(Scan.error(input, next + 6, Text.surrogate)) end if
+  return scalar(input, (n - 55296) * 1024 + low - 56320 + 65536, next + 6)
+end function
+
+function scalar(input: Scan.Input, n: Integer, next: Integer) -> Result[Pair[String, Integer], Json.ParseError]
+  return match Character.fromInteger(n) with
+    case Option.Some(c) -> Result.Ok(Pair(Character.toString(c), next))
+    case Option.None -> Result.Error(Scan.error(input, next, Text.unicode))
+  end match
+end function
+
+/// JSON の引用符とエスケープを付ける。
+public(package) function quoted(source: String) -> String
+  return quoteFrom(Scan.input(source), 0, 0, Parts.append(Parts.empty(), "\""))
+end function
+
+function quoteFrom(input: Scan.Input, start: Integer, i: Integer, parts: Parts.Buffer) -> String
+  bind b <- Scan.byte(input, i)
+  if b = -1 then return Parts.finish(Parts.append(Parts.append(parts, Scan.slice(input, start, i)), "\"")) end if
+  if b = 34 or b = 92 or b < 32 then
+    bind escaped <- match b with
+      case 34 -> "\\\""
+      case 92 -> "\\\\"
+      case 8 -> "\\b"
+      case 12 -> "\\f"
+      case 10 -> "\\n"
+      case 13 -> "\\r"
+      case 9 -> "\\t"
+      case _ -> "\\u00" + hexDigit(b div 16) + hexDigit(b mod 16)
+    end match
+    return quoteFrom(input, i + 1, i + 1, Parts.append(Parts.append(parts, Scan.slice(input, start, i)), escaped))
+  end if
+  return quoteFrom(input, start, i + 1, parts)
+end function
+
+function hexDigit(n: Integer) -> String
+  return Option.unwrapOr(String.byteSlice("0123456789abcdef", n, n + 1), "")
+end function

@@ -1,0 +1,81 @@
+// spec: 01-06 演算子の型付け
+// 作成時の関門: 引数経由の比較・補間・構造の等値を、独立した出力で守る。
+// 定数評価だけでは分からない登録漏れ、符号と幅の取り違え、NaN の全順序への混同を捕まえる。
+// CLI の二方式と参照実行器に本物の段をつなぎ、公開の差し込み口は増やさない。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Map
+import Benitoite.Set
+
+function compareInteger8(a: Integer8, b: Integer8) -> String
+  return "${a} ${b}: ${a = b} ${a <> b} ${a < b} ${a <= b} ${a > b} ${a >= b} ${[a] = [b]}"
+end function
+
+function compareInteger16(a: Integer16, b: Integer16) -> String
+  return "${a} ${b}: ${a = b} ${a <> b} ${a < b} ${a <= b} ${a > b} ${a >= b} ${[a] = [b]}"
+end function
+
+function compareInteger32(a: Integer32, b: Integer32) -> String
+  return "${a} ${b}: ${a = b} ${a <> b} ${a < b} ${a <= b} ${a > b} ${a >= b} ${[a] = [b]}"
+end function
+
+function compareUnsignedInteger16(a: UnsignedInteger16, b: UnsignedInteger16) -> String
+  return "${a} ${b}: ${a = b} ${a <> b} ${a < b} ${a <= b} ${a > b} ${a >= b} ${[a] = [b]}"
+end function
+
+function compareUnsignedInteger32(a: UnsignedInteger32, b: UnsignedInteger32) -> String
+  return "${a} ${b}: ${a = b} ${a <> b} ${a < b} ${a <= b} ${a > b} ${a >= b} ${[a] = [b]}"
+end function
+
+function compareUnsignedInteger64(a: UnsignedInteger64, b: UnsignedInteger64) -> String
+  return "${a} ${b}: ${a = b} ${a <> b} ${a < b} ${a <= b} ${a > b} ${a >= b} ${[a] = [b]}"
+end function
+
+function compareFloat32(a: Float32, b: Float32) -> String
+  return "${a} ${b}: ${a = b} ${a <> b} ${a < b} ${a <= b} ${a > b} ${a >= b} ${[a] = [b]}"
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(compareInteger8(-128s8, 127s8))
+  Console.writeLine(compareInteger8(127s8, 127s8))
+  Console.writeLine(compareInteger8(127s8, -128s8))
+  Console.writeLine(compareInteger16(-32768s16, 32767s16))
+  Console.writeLine(compareInteger16(32767s16, 32767s16))
+  Console.writeLine(compareInteger16(32767s16, -32768s16))
+  Console.writeLine(compareInteger32(-2147483648s32, 2147483647s32))
+  Console.writeLine(compareInteger32(2147483647s32, 2147483647s32))
+  Console.writeLine(compareInteger32(2147483647s32, -2147483648s32))
+  Console.writeLine(compareUnsignedInteger16(0u16, 65535u16))
+  Console.writeLine(compareUnsignedInteger16(65535u16, 65535u16))
+  Console.writeLine(compareUnsignedInteger16(65535u16, 0u16))
+  Console.writeLine(compareUnsignedInteger32(0u32, 4294967295u32))
+  Console.writeLine(compareUnsignedInteger32(4294967295u32, 4294967295u32))
+  Console.writeLine(compareUnsignedInteger32(4294967295u32, 0u32))
+  Console.writeLine(compareUnsignedInteger64(9223372036854775808u64, 18446744073709551615u64))
+  Console.writeLine(compareUnsignedInteger64(18446744073709551615u64, 18446744073709551615u64))
+  Console.writeLine(compareUnsignedInteger64(18446744073709551615u64, 9223372036854775808u64))
+  Console.writeLine(compareFloat32(0.1f32, 0.2f32))
+  Console.writeLine(compareFloat32(0.2f32, 0.2f32))
+  Console.writeLine(compareFloat32(0.2f32, 0.1f32))
+  bind nan <- 0.0f32 / 0.0f32
+  Console.writeLine(compareFloat32(nan, nan))
+  Console.writeLine(compareFloat32(nan, 0.0f32))
+  Console.writeLine(compareFloat32(0.0f32, nan))
+  Console.writeLine(compareFloat32(0.0f32, -0.0f32))
+  Console.writeLine(compareFloat32(1.0f32 / 0.0f32, -1.0f32 / 0.0f32))
+  Console.writeLine("${1.0f32 / 3.0f32} ${1e-5f32} ${1e-6f32} ${1e20f32} ${1e21f32}")
+  Console.writeLine("${1} ${0.1} ${-0.0} ${0xffu8} ${1.20m}")
+  bind maximum <- 18446744073709551615u64
+  bind m <- Map.fromList([Pair(18446744073709551615u64, "first"), Pair(0u64, "zero"), Pair(9223372036854775808u64, "half"), Pair(maximum, "last")])
+  bind s <- Set.fromList([18446744073709551615u64, 0u64, 9223372036854775808u64, maximum])
+  Console.writeLine("${Map.keys(m) = [0u64, 9223372036854775808u64, 18446744073709551615u64]} ${Map.values(m) = ["zero", "half", "last"]} ${Set.toList(s) = Map.keys(m)}")
+  bind nested <- Set.fromList([[1s16], [-1s16], [0s16]])
+  Console.writeLine("${Set.toList(nested) = [[-1s16], [0s16], [1s16]]}")
+  Console.writeLine("${List.sort([127s8, -128s8, 127s8]) = [-128s8, 127s8, 127s8]}")
+  Console.writeLine("${List.sort([32767s16, -32768s16, 32767s16]) = [-32768s16, 32767s16, 32767s16]}")
+  Console.writeLine("${List.sort([2147483647s32, -2147483648s32, 2147483647s32]) = [-2147483648s32, 2147483647s32, 2147483647s32]}")
+  Console.writeLine("${List.sort([65535u16, 0u16, 65535u16]) = [0u16, 65535u16, 65535u16]}")
+  Console.writeLine("${List.sort([4294967295u32, 0u32, 4294967295u32]) = [0u32, 4294967295u32, 4294967295u32]}")
+  Console.writeLine("${List.sort([18446744073709551615u64, 9223372036854775808u64, 18446744073709551615u64]) = [9223372036854775808u64, 18446744073709551615u64, 18446744073709551615u64]}")
+  Console.writeLine("${List.sort([0.2f32, 0.1f32, 0.2f32]) = [0.1f32, 0.2f32, 0.2f32]}")
+  Console.writeLine("${List.map(List.sort([nan, 1.0f32, -0.0f32, 0.0f32, nan, -1.0f32 / 0.0f32]), lambda(a) return "${a}" end lambda) = ["-Infinity", "-0.0", "0.0", "1.0", "NaN", "NaN"]}")
+end function

@@ -1,0 +1,158 @@
+// 定数と引数経由の算術を、独立した期待値との差で確かめる。差が負なら減算で、
+// 正なら最大値への加算で停止するため、比較と文字列化を必要としない。
+import Benitoite.Unofficial.IO.Console
+function check16(actual: UnsignedInteger16, expected: UnsignedInteger16) -> Unit
+  bind difference <- actual - expected
+  bind _ <- difference + 65535u16
+end function
+function add16(a: UnsignedInteger16, b: UnsignedInteger16) -> UnsignedInteger16
+  return a + b
+end function
+function subtract16(a: UnsignedInteger16, b: UnsignedInteger16) -> UnsignedInteger16
+  return a - b
+end function
+function multiply16(a: UnsignedInteger16, b: UnsignedInteger16) -> UnsignedInteger16
+  return a * b
+end function
+function divide16(a: UnsignedInteger16, b: UnsignedInteger16) -> UnsignedInteger16
+  return a div b
+end function
+function modulo16(a: UnsignedInteger16, b: UnsignedInteger16) -> UnsignedInteger16
+  return a mod b
+end function
+const sum16: UnsignedInteger16 = 32768u16 + 1u16
+const difference16: UnsignedInteger16 = 65535u16 - 1u16
+const product16: UnsignedInteger16 = 16384u16 * 2u16
+const quotient16: UnsignedInteger16 = 65535u16 div 2u16
+const remainder16: UnsignedInteger16 = 65535u16 mod 32768u16
+function check32(actual: UnsignedInteger32, expected: UnsignedInteger32) -> Unit
+  bind difference <- actual - expected
+  bind _ <- difference + 4294967295u32
+end function
+function add32(a: UnsignedInteger32, b: UnsignedInteger32) -> UnsignedInteger32
+  return a + b
+end function
+function subtract32(a: UnsignedInteger32, b: UnsignedInteger32) -> UnsignedInteger32
+  return a - b
+end function
+function multiply32(a: UnsignedInteger32, b: UnsignedInteger32) -> UnsignedInteger32
+  return a * b
+end function
+function divide32(a: UnsignedInteger32, b: UnsignedInteger32) -> UnsignedInteger32
+  return a div b
+end function
+function modulo32(a: UnsignedInteger32, b: UnsignedInteger32) -> UnsignedInteger32
+  return a mod b
+end function
+const sum32: UnsignedInteger32 = 2147483648u32 + 1u32
+const difference32: UnsignedInteger32 = 4294967295u32 - 1u32
+const product32: UnsignedInteger32 = 1073741824u32 * 2u32
+const quotient32: UnsignedInteger32 = 4294967295u32 div 2u32
+const remainder32: UnsignedInteger32 = 4294967295u32 mod 2147483648u32
+function check64(actual: UnsignedInteger64, expected: UnsignedInteger64) -> Unit
+  bind difference <- actual - expected
+  bind _ <- difference + 18446744073709551615u64
+end function
+function add64(a: UnsignedInteger64, b: UnsignedInteger64) -> UnsignedInteger64
+  return a + b
+end function
+function subtract64(a: UnsignedInteger64, b: UnsignedInteger64) -> UnsignedInteger64
+  return a - b
+end function
+function multiply64(a: UnsignedInteger64, b: UnsignedInteger64) -> UnsignedInteger64
+  return a * b
+end function
+function divide64(a: UnsignedInteger64, b: UnsignedInteger64) -> UnsignedInteger64
+  return a div b
+end function
+function modulo64(a: UnsignedInteger64, b: UnsignedInteger64) -> UnsignedInteger64
+  return a mod b
+end function
+const sum64: UnsignedInteger64 = 9223372036854775808u64 + 1u64
+const difference64: UnsignedInteger64 = 18446744073709551615u64 - 1u64
+const product64: UnsignedInteger64 = 4611686018427387904u64 * 2u64
+const quotient64: UnsignedInteger64 = 18446744073709551615u64 div 2u64
+const remainder64: UnsignedInteger64 = 18446744073709551615u64 mod 9223372036854775808u64
+function main() -> Unit uses Console.Write
+  check16(sum16, 32769u16)
+  check16(difference16, 65534u16)
+  check16(product16, 32768u16)
+  check16(quotient16, 32767u16)
+  check16(remainder16, 32767u16)
+  check16(add16(32768u16, 1u16), 32769u16)
+  check16(add16(65534u16, 1u16), 65535u16)
+  check16(add16(65535u16, 0u16), 65535u16)
+  check16(add16(0u16, 65535u16), 65535u16)
+  check16(subtract16(65535u16, 1u16), 65534u16)
+  check16(subtract16(65535u16, 32768u16), 32767u16)
+  check16(subtract16(0u16, 0u16), 0u16)
+  check16(subtract16(65535u16, 65535u16), 0u16)
+  check16(multiply16(16384u16, 2u16), 32768u16)
+  check16(multiply16(65535u16, 1u16), 65535u16)
+  check16(multiply16(0u16, 65535u16), 0u16)
+  check16(divide16(65535u16, 2u16), 32767u16)
+  check16(divide16(65535u16, 32768u16), 1u16)
+  check16(divide16(65535u16, 1u16), 65535u16)
+  check16(divide16(0u16, 65535u16), 0u16)
+  check16(divide16(32767u16, 32768u16), 0u16)
+  check16(modulo16(65535u16, 2u16), 1u16)
+  check16(modulo16(65535u16, 32768u16), 32767u16)
+  check16(modulo16(32768u16, 65535u16), 32768u16)
+  check16(modulo16(65535u16, 1u16), 0u16)
+  check16(modulo16(0u16, 65535u16), 0u16)
+  Console.writeLine("u16 arithmetic ok")
+  check32(sum32, 2147483649u32)
+  check32(difference32, 4294967294u32)
+  check32(product32, 2147483648u32)
+  check32(quotient32, 2147483647u32)
+  check32(remainder32, 2147483647u32)
+  check32(add32(2147483648u32, 1u32), 2147483649u32)
+  check32(add32(4294967294u32, 1u32), 4294967295u32)
+  check32(add32(4294967295u32, 0u32), 4294967295u32)
+  check32(add32(0u32, 4294967295u32), 4294967295u32)
+  check32(subtract32(4294967295u32, 1u32), 4294967294u32)
+  check32(subtract32(4294967295u32, 2147483648u32), 2147483647u32)
+  check32(subtract32(0u32, 0u32), 0u32)
+  check32(subtract32(4294967295u32, 4294967295u32), 0u32)
+  check32(multiply32(1073741824u32, 2u32), 2147483648u32)
+  check32(multiply32(4294967295u32, 1u32), 4294967295u32)
+  check32(multiply32(0u32, 4294967295u32), 0u32)
+  check32(divide32(4294967295u32, 2u32), 2147483647u32)
+  check32(divide32(4294967295u32, 2147483648u32), 1u32)
+  check32(divide32(4294967295u32, 1u32), 4294967295u32)
+  check32(divide32(0u32, 4294967295u32), 0u32)
+  check32(divide32(2147483647u32, 2147483648u32), 0u32)
+  check32(modulo32(4294967295u32, 2u32), 1u32)
+  check32(modulo32(4294967295u32, 2147483648u32), 2147483647u32)
+  check32(modulo32(2147483648u32, 4294967295u32), 2147483648u32)
+  check32(modulo32(4294967295u32, 1u32), 0u32)
+  check32(modulo32(0u32, 4294967295u32), 0u32)
+  Console.writeLine("u32 arithmetic ok")
+  check64(sum64, 9223372036854775809u64)
+  check64(difference64, 18446744073709551614u64)
+  check64(product64, 9223372036854775808u64)
+  check64(quotient64, 9223372036854775807u64)
+  check64(remainder64, 9223372036854775807u64)
+  check64(add64(9223372036854775808u64, 1u64), 9223372036854775809u64)
+  check64(add64(18446744073709551614u64, 1u64), 18446744073709551615u64)
+  check64(add64(18446744073709551615u64, 0u64), 18446744073709551615u64)
+  check64(add64(0u64, 18446744073709551615u64), 18446744073709551615u64)
+  check64(subtract64(18446744073709551615u64, 1u64), 18446744073709551614u64)
+  check64(subtract64(18446744073709551615u64, 9223372036854775808u64), 9223372036854775807u64)
+  check64(subtract64(0u64, 0u64), 0u64)
+  check64(subtract64(18446744073709551615u64, 18446744073709551615u64), 0u64)
+  check64(multiply64(4611686018427387904u64, 2u64), 9223372036854775808u64)
+  check64(multiply64(18446744073709551615u64, 1u64), 18446744073709551615u64)
+  check64(multiply64(0u64, 18446744073709551615u64), 0u64)
+  check64(divide64(18446744073709551615u64, 2u64), 9223372036854775807u64)
+  check64(divide64(18446744073709551615u64, 9223372036854775808u64), 1u64)
+  check64(divide64(18446744073709551615u64, 1u64), 18446744073709551615u64)
+  check64(divide64(0u64, 18446744073709551615u64), 0u64)
+  check64(divide64(9223372036854775807u64, 9223372036854775808u64), 0u64)
+  check64(modulo64(18446744073709551615u64, 2u64), 1u64)
+  check64(modulo64(18446744073709551615u64, 9223372036854775808u64), 9223372036854775807u64)
+  check64(modulo64(9223372036854775808u64, 18446744073709551615u64), 9223372036854775808u64)
+  check64(modulo64(18446744073709551615u64, 1u64), 0u64)
+  check64(modulo64(0u64, 18446744073709551615u64), 0u64)
+  Console.writeLine("u64 arithmetic ok")
+end function

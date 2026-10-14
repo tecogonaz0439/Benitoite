@@ -245,6 +245,13 @@ fn big_endian(order: Value<'_>) -> Result<bool, Stop> {
         Value::Tag(CtorTag(tags::BYTE_ORDER_LITTLE_ENDIAN)) => Ok(false),
         Value::Tag(_)
         | Value::Int(_)
+        | Value::Int8(_)
+        | Value::Int16(_)
+        | Value::Int32(_)
+        | Value::UInt16(_)
+        | Value::UInt32(_)
+        | Value::UInt64(_)
+        | Value::Float32(_)
         | Value::Float(_)
         | Value::Byte(_)
         | Value::Bool(_)

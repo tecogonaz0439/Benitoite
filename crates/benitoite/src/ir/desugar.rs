@@ -148,6 +148,13 @@ fn constant(c: &ConstValue) -> Result<Const, InternalError> {
         ConstValue::Unit => Const::Unit,
         ConstValue::Byte(v) => Const::Byte(*v),
         ConstValue::Decimal(v) => Const::Decimal(*v),
+        ConstValue::Integer8(v) => Const::Int8(*v),
+        ConstValue::Integer16(v) => Const::Int16(*v),
+        ConstValue::Integer32(v) => Const::Int32(*v),
+        ConstValue::UnsignedInteger16(v) => Const::UInt16(*v),
+        ConstValue::UnsignedInteger32(v) => Const::UInt32(*v),
+        ConstValue::UnsignedInteger64(v) => Const::UInt64(*v),
+        ConstValue::Float32(v) => Const::Float32(*v),
         ConstValue::Ctor { .. } | ConstValue::List(_) | ConstValue::Map(_) | ConstValue::Set(_) => {
             return Err(error("compound value in literal table"));
         }

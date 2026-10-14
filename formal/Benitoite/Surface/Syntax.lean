@@ -1,4 +1,4 @@
-import Benitoite.Release.Subst
+import Benitoite.Release.BuiltinTable
 
 /-!
 # 型の情報を付けた表層の構文（C1・C2・C4・C5a-1・C6a-1・C6a-2・C6a-3・C7b-2）
@@ -35,6 +35,17 @@ def Operator.typeArgs : Operator → Ty → List Ty
   | .binary .ne, t => [t]
   | _, _ => []
 
+/-- 演算子の閉じた型集合。等値の制約は組み込みの表の admits が検査する。
+表が不正な算術を含んでも、表層の規則はその型を受理しない（設計書 01-12「型の情報を付けた表層の構文と型付け」）。 -/
+def Operator.allowed : Operator → Ty → Bool
+  | .binary .add, .base .string => true
+  | .binary .add, t | .binary .sub, t | .binary .mul, t => arithmeticB t
+  | .binary .div, t => divisionB t
+  | .binary .intDiv, t | .binary .mod, t => integerArithmeticB t
+  | .binary .lt, t | .binary .le, t | .binary .gt, t | .binary .ge, t => orderedB t
+  | .binary .eq, _ | .binary .ne, _ => true
+  | .neg, t => negationB t
+
 /-- 表層のリテラル。Unit は `Expr.unit` に分ける。Decimal は係数と scale を持つ。 -/
 inductive Literal where
   | integer (n : Nat)
@@ -43,6 +54,17 @@ inductive Literal where
   | string (s : String)
   | character (c : Char)
   | boolean (b : Bool)
+  /-- 接尾辞の幅は構成子に、符号反転前の大きさは自然数に持つ。
+  字句の読み取りと値域の検査は対象外である（設計書 07-04「01-12 との対応」）。 -/
+  | integer8 (n : Nat)
+  | integer16 (n : Nat)
+  | integer32 (n : Nat)
+  | byte (n : Nat)
+  | unsignedInteger16 (n : Nat)
+  | unsignedInteger32 (n : Nat)
+  | unsignedInteger64 (n : Nat)
+  /-- 数字列から binary32 への丸めを終えたビット列。 -/
+  | float32 (bits : UInt32)
 
 def Literal.toConst : Literal → Const
   | .integer n => .integer (Int.ofNat n)
@@ -51,6 +73,14 @@ def Literal.toConst : Literal → Const
   | .string s => .string s
   | .character c => .character c
   | .boolean b => .boolean b
+  | .integer8 n => .integer8 (Int.ofNat n)
+  | .integer16 n => .integer16 (Int.ofNat n)
+  | .integer32 n => .integer32 (Int.ofNat n)
+  | .byte n => .byte n
+  | .unsignedInteger16 n => .unsignedInteger16 (Int.ofNat n)
+  | .unsignedInteger32 n => .unsignedInteger32 (Int.ofNat n)
+  | .unsignedInteger64 n => .unsignedInteger64 (Int.ofNat n)
+  | .float32 bits => .float32 bits
 
 inductive BindKind where
   | bind | shadow
@@ -195,12 +225,15 @@ def InterpPart.converterTypes : List InterpPart → List Ty
   | _ :: ps => converterTypes ps
 
 /-- 01-06「演算子の型付け」の補間に許す型。補間の制約を持つ型変数は型パラメータと等しくなれず、
-本体の検査を終えた時点で具体的な型に決まるので、型検査の後の補間の式の型は必ずこの 7 つのどれかである。 -/
+本体の検査を終えた時点で具体的な型に決まる。幅付きの七種も変換を許す。 -/
 def InterpPart.Allowed : List InterpPart → Prop
   | [] => True
   | .converted t :: ps =>
       (t = .base .integer ∨ t = .base .float ∨ t = .base .character ∨
-        t = .base .boolean ∨ t = .base .byte ∨ t = .base .decimal) ∧ Allowed ps
+        t = .base .boolean ∨ t = .base .byte ∨ t = .base .decimal ∨
+        t = .base .integer8 ∨ t = .base .integer16 ∨ t = .base .integer32 ∨
+        t = .base .unsignedInteger16 ∨ t = .base .unsignedInteger32 ∨
+        t = .base .unsignedInteger64 ∨ t = .base .float32) ∧ Allowed ps
   | _ :: ps => Allowed ps
 
 def InterpPart.count : List InterpPart → Nat
@@ -231,6 +264,13 @@ mutual
     | negFloat (x : Float)
     /-- 括弧を挟まず Decimal リテラルへ適用した -。scale を変えない。 -/
     | negDecimal (n : Int) (scale : Nat)
+    /-- 括弧を挟まない符号付きリテラルの負号。最小値も正の大きさから作る。
+    符号なしの負号はこの形を持たず、一般の neg の型付けで拒否する。 -/
+    | negInteger8 (n : Nat)
+    | negInteger16 (n : Nat)
+    | negInteger32 (n : Nat)
+    /-- binary32 の符号反転前のビット列。 -/
+    | negFloat32 (bits : UInt32)
     | unit
     | paren (e : Expr)
     | conCall (c : ConName) (tys : List Ty) (args : Exprs)

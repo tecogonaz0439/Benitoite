@@ -233,6 +233,7 @@ fn walk_value<'a>(v: &'a CoreVal, comps: &mut Vec<&'a Comp>, vals: &mut Vec<&'a 
         | ValKind::Const(_)
         | ValKind::TopFn { .. }
         | ValKind::Builtin { .. }
+        | ValKind::External { .. }
         | ValKind::Op { .. }
         | ValKind::ConstRef(_) => {}
     }

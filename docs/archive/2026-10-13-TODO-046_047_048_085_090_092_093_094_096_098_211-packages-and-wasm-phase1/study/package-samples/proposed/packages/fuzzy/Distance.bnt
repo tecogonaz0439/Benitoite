@@ -1,0 +1,22 @@
+//! 編集距離（Levenshtein の距離）と、候補の中から最も近い語を選ぶ関数（提案の形）。
+//! distance は WASM のコンポーネントの関数を呼ぶ。closest は Benitoite で書き、distance を使う。
+//! コンポーネントは何も取り込まない（imports が空）ので、処理系は distance を純粋な関数として受け入れる。
+//! 宣言の型（String、String -> Integer）は、WIT の型（string、string -> s64）と照合する。
+
+/// a を b に変えるのに要る、1 文字の挿入・削除・置換の最小の回数を返す。
+/// モジュールのパスはパッケージの根からのパスである。
+@external("wasm", "wasm/fuzzy.wasm", "distance")
+public function distance(a: String, b: String) -> Integer
+
+/// 候補のうち word との距離が最も小さく、limit 以下のものを返す。同じ距離なら先の候補を選ぶ。
+public function closest(word: String, candidates: List[String], limit: Integer) -> Option[String]
+  bind best <- List.fold(candidates, Option.None, lambda(acc: Option[Pair[Integer, String]], candidate: String) -> Option[Pair[Integer, String]]
+    bind d <- distance(word, candidate)
+    return match acc with
+      case Option.Some(Pair(bestDistance, _)) if bestDistance <= d -> acc
+      case _ if d <= limit -> Option.Some(Pair(d, candidate))
+      case _ -> acc
+    end match
+  end lambda)
+  return Option.map(best, lambda(p) return Pair.second(p) end lambda)
+end function

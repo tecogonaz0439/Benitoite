@@ -1,0 +1,36 @@
+//! 初回と反復の時間を分ける測定の共通部分（設計書 07-02「測る項目」）。
+import Benitoite.Unofficial.IO.Clock
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.Hash
+
+/// 引数を読み、欠けていれば失敗する。
+public function argument(index: Integer) -> Result[String, String] uses Process.Environment
+  return Option.okOr(List.get(Process.arguments(), index), "missing argument")
+end function
+
+/// 一回以上の反復数を読む。
+public function rounds(index: Integer) -> Result[Integer, String] uses Process.Environment
+  bind text <- try argument(index)
+  bind count <- try Option.okOr(Integer.parse(text), "invalid repeat count")
+  return if count > 0 then Result.Ok(count) else Result.Error("repeat count must be positive") end if
+end function
+
+function repeat[A](remaining: Integer, last: A, work: function() -> Result[A, String] uses State) -> Result[A, String] uses State
+  return if remaining = 0 then Result.Ok(last) else
+    bind next <- try work()
+    repeat(remaining - 1, next, work)
+  end if
+end function
+
+/// 出力の符号化とハッシュは計時の外で行い、測った結果を必ず使う。
+public function measure[A](count: Integer, work: function() -> Result[A, String] uses State, render: function(A) -> String) -> Result[Unit, String] uses State, Clock.Time, Console.Write
+  bind start <- Clock.monotonicMilliseconds()
+  bind first <- try work()
+  bind boundary <- Clock.monotonicMilliseconds()
+  bind last <- try repeat(count - 1, first, work)
+  bind stop <- Clock.monotonicMilliseconds()
+  bind output <- render(last)
+  Console.writeLine("first_ms=${boundary - start} rest_ms=${stop - boundary} rounds=${count} digest=" + Bytes.toHex(Hash.sha256(String.toUTF8(output))))
+  return Result.Ok(())
+end function

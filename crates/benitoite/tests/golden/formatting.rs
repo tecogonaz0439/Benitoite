@@ -33,7 +33,10 @@ pub(super) fn run_fmt_case(
         .path
         .file_name()
         .ok_or_else(|| "test path has no file name".to_owned())?;
-    let originals = script_files(&case.path)?;
+    let originals: Vec<_> = script_files(&case.path)?
+        .into_iter()
+        .filter(|(path, _)| path.extension().is_some_and(|ext| ext == "bnt"))
+        .collect();
     for path in stale_formatted(case, &originals)? {
         if bless {
             remove_formatted(&path)?;
@@ -135,7 +138,10 @@ fn script_files(path: &Path) -> TestResult<Vec<(PathBuf, Vec<u8>)>> {
             let kind = entry.file_type().map_err(|e| e.to_string())?;
             if kind.is_dir() {
                 pending.push(entry_path);
-            } else if entry_path.extension().is_some_and(|ext| ext == "bnt") {
+            } else if entry_path
+                .extension()
+                .is_some_and(|ext| ext == "bnt" || ext == "wasm")
+            {
                 let bytes = fs::read(&entry_path).map_err(|e| e.to_string())?;
                 let relative = entry_path
                     .strip_prefix(path)
@@ -319,6 +325,10 @@ pub(super) fn check_properties(case: &TestCase, deny_warnings: bool) -> TestResu
     }
     let mut formatted = Vec::new();
     for (index, (relative, text)) in files.iter().enumerate() {
+        if relative.extension().is_some_and(|ext| ext == "wasm") {
+            formatted.push(text.clone());
+            continue;
+        }
         let file = FileId(u32::try_from(index).map_err(|e| e.to_string())?);
         let once = match format_source(file, SourceKind::User, text) {
             Ok(once) => once,

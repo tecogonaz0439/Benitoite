@@ -136,6 +136,18 @@ pub fn disassemble(program: &CompiledProgram) -> String {
         )
         .unwrap_or(());
     }
+    for (i, external) in program.externals.functions.iter().enumerate() {
+        writeln!(
+            out,
+            "{} {i} {} {:?} {:?} {}",
+            text::EXTERNAL,
+            external.spec.function,
+            external.spec.component.display,
+            external.spec.export_name(),
+            external.arity
+        )
+        .unwrap_or(());
+    }
     out
 }
 
@@ -149,6 +161,7 @@ mod text {
     pub const IMPL: &str = "implementation";
     pub const OP: &str = "operation";
     pub const HANDLER: &str = "handler";
+    pub const EXTERNAL: &str = "external";
     pub const BUILTIN: &str = "builtin";
     pub const METHOD_TRAIT: &str = "method trait";
 }

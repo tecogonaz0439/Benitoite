@@ -1,6 +1,6 @@
 //! 基本のパターンの解析（設計書 02-03「入れ子の深さ」）。
 use super::{
-    CommaList, Fail, PResult, Parser, comma_list, literal_of, patterns_ext, records, text,
+    CommaList, Fail, PResult, Parser, comma_list, pattern_literal_of, patterns_ext, records, text,
 };
 use crate::syntax::{ast::*, token::TokenKind};
 
@@ -60,7 +60,7 @@ fn parse_atom(p: &mut Parser, counter: &mut PatternCounter) -> PResult<Box<Patte
     {
         return Err(p.unexpected(text::PATTERN));
     }
-    let Some(lit) = literal_of(p.peek()) else {
+    let Some(lit) = pattern_literal_of(p.peek()) else {
         return Err(p.unexpected(text::PATTERN));
     };
     let range_end = matches!(p.peek_kind(), TokenKind::IntLit | TokenKind::CharLit);

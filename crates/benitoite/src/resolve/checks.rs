@@ -7,7 +7,11 @@ use crate::diag::{DiagBuilder, DiagCode, Edit};
 use crate::syntax::ast::Item;
 
 use super::collect::Resolver;
-use super::{BindingKind, text};
+use super::{Binding, BindingKind, Level, text};
+
+fn level(binding: &Binding) -> Level {
+    Level::of(binding.public, binding.package)
+}
 
 impl Resolver<'_> {
     pub(super) fn check_declarations(&mut self) {
@@ -17,13 +21,16 @@ impl Resolver<'_> {
             else {
                 continue;
             };
-            if exposed.public
-                || exposed.module != binding.module
+            // 別モジュールの非公開名は名前の検索で拒み、公開名は契約の段階以上になる。
+            // 契約では別モジュールのパッケージ内公開だけを追加で調べる（設計書 01-03「公開（初回リリース版）」）。
+            if level(exposed) >= level(binding)
+                || (exposed.module != binding.module && level(exposed) != Level::Package)
                 || !matches!(
                     exposed.kind,
                     BindingKind::Data
                         | BindingKind::BuiltinType(_)
                         | BindingKind::Alias
+                        | BindingKind::ExternalType
                         | BindingKind::Record
                         | BindingKind::Trait
                         | BindingKind::Effect
@@ -32,7 +39,29 @@ impl Resolver<'_> {
             {
                 continue;
             }
+            let target = if binding.package {
+                text::PACKAGE
+            } else {
+                text::PUBLIC
+            };
             let mut d = DiagBuilder::new(DiagCode::E0329)
+                .arg(
+                    "level",
+                    if binding.package {
+                        text::PACKAGE_LEVEL
+                    } else {
+                        text::PUBLIC
+                    },
+                )
+                .arg(
+                    "used_level",
+                    if exposed.package {
+                        text::PACKAGE_LEVEL
+                    } else {
+                        text::NON_PUBLIC
+                    },
+                )
+                .arg("target", target)
                 .arg("what", declaration_kind(binding.kind))
                 .arg("name", binding.name.clone())
                 .arg("used_kind", declaration_kind(exposed.kind))
@@ -41,14 +70,19 @@ impl Resolver<'_> {
             if let Some(span) = exposed.span {
                 d = d.secondary(span, "declared");
             }
-            if let Some(span) = self.insertion.get(&used) {
-                d = d.help_edits(
-                    "make_public",
-                    vec![Edit {
-                        span: *span,
-                        replacement: "public ".into(),
-                    }],
-                );
+            let edit = if exposed.package {
+                self.package_span.get(&used).map(|span| Edit {
+                    span: *span,
+                    replacement: String::new(),
+                })
+            } else {
+                self.insertion.get(&used).map(|span| Edit {
+                    span: *span,
+                    replacement: format!("{target} "),
+                })
+            };
+            if let Some(edit) = edit {
+                d = d.help_edits("make_public", vec![edit]);
             } else {
                 d = d.help("make_public");
             }
@@ -197,6 +231,7 @@ fn declaration_kind(kind: BindingKind) -> &'static str {
         | BindingKind::BuiltinType(_)
         | BindingKind::TypeParam { .. }
         | BindingKind::Ctor { .. } => text::DATA,
+        BindingKind::ExternalType => text::DATA,
         BindingKind::Alias => text::ALIAS,
         BindingKind::Record => text::RECORD_DECL,
         BindingKind::Trait => text::TRAIT_DECL,

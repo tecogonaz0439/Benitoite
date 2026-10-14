@@ -1,0 +1,7 @@
+// spec: 01-03 依存の記述と `package.bnt`
+import Calc
+@external("wasm", "wasm/x.wasm", "add")
+function localAdd(a: Integer, b: Integer) -> Integer
+function main() -> Unit
+  ()
+end function

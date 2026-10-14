@@ -1,0 +1,182 @@
+// 算術の値は独立した期待値との差で確かめる。差を最小値・最大値へ加えて
+// 両方ともあふれないのは差が 0 のときだけなので、比較と文字列化を必要としない。
+import Benitoite.Unofficial.IO.Console
+const sum8: Integer8 = 40s8 + 2s8
+const difference8: Integer8 = 40s8 - 2s8
+const product8: Integer8 = -7s8 * 2s8
+const quotient8: Integer8 = -7s8 div 3s8
+const remainder8: Integer8 = -7s8 mod 3s8
+const negative8: Integer8 = -(7s8)
+const special8: Integer8 = -128s8 mod -1s8
+function check8(actual: Integer8, expected: Integer8) -> Unit
+  bind difference <- actual - expected
+  bind _ <- difference + 127s8
+  bind _ <- difference + -128s8
+end function
+function add8(a: Integer8, b: Integer8) -> Integer8
+  return a + b
+end function
+function subtract8(a: Integer8, b: Integer8) -> Integer8
+  return a - b
+end function
+function multiply8(a: Integer8, b: Integer8) -> Integer8
+  return a * b
+end function
+function divide8(a: Integer8, b: Integer8) -> Integer8
+  return a div b
+end function
+function modulo8(a: Integer8, b: Integer8) -> Integer8
+  return a mod b
+end function
+function negate8(a: Integer8) -> Integer8
+  return -a
+end function
+const sum16: Integer16 = 40s16 + 2s16
+const difference16: Integer16 = 40s16 - 2s16
+const product16: Integer16 = -7s16 * 2s16
+const quotient16: Integer16 = -7s16 div 3s16
+const remainder16: Integer16 = -7s16 mod 3s16
+const negative16: Integer16 = -(7s16)
+const special16: Integer16 = -32768s16 mod -1s16
+function check16(actual: Integer16, expected: Integer16) -> Unit
+  bind difference <- actual - expected
+  bind _ <- difference + 32767s16
+  bind _ <- difference + -32768s16
+end function
+function add16(a: Integer16, b: Integer16) -> Integer16
+  return a + b
+end function
+function subtract16(a: Integer16, b: Integer16) -> Integer16
+  return a - b
+end function
+function multiply16(a: Integer16, b: Integer16) -> Integer16
+  return a * b
+end function
+function divide16(a: Integer16, b: Integer16) -> Integer16
+  return a div b
+end function
+function modulo16(a: Integer16, b: Integer16) -> Integer16
+  return a mod b
+end function
+function negate16(a: Integer16) -> Integer16
+  return -a
+end function
+const sum32: Integer32 = 40s32 + 2s32
+const difference32: Integer32 = 40s32 - 2s32
+const product32: Integer32 = -7s32 * 2s32
+const quotient32: Integer32 = -7s32 div 3s32
+const remainder32: Integer32 = -7s32 mod 3s32
+const negative32: Integer32 = -(7s32)
+const special32: Integer32 = -2147483648s32 mod -1s32
+function check32(actual: Integer32, expected: Integer32) -> Unit
+  bind difference <- actual - expected
+  bind _ <- difference + 2147483647s32
+  bind _ <- difference + -2147483648s32
+end function
+function add32(a: Integer32, b: Integer32) -> Integer32
+  return a + b
+end function
+function subtract32(a: Integer32, b: Integer32) -> Integer32
+  return a - b
+end function
+function multiply32(a: Integer32, b: Integer32) -> Integer32
+  return a * b
+end function
+function divide32(a: Integer32, b: Integer32) -> Integer32
+  return a div b
+end function
+function modulo32(a: Integer32, b: Integer32) -> Integer32
+  return a mod b
+end function
+function negate32(a: Integer32) -> Integer32
+  return -a
+end function
+function main() -> Unit uses Console.Write
+  check8(sum8, 42s8)
+  check8(add8(40s8, 2s8), sum8)
+  check8(difference8, 38s8)
+  check8(subtract8(40s8, 2s8), difference8)
+  check8(product8, -14s8)
+  check8(multiply8(-7s8, 2s8), product8)
+  check8(quotient8, -2s8)
+  check8(divide8(-7s8, 3s8), quotient8)
+  check8(remainder8, -1s8)
+  check8(modulo8(-7s8, 3s8), remainder8)
+  check8(special8, 0s8)
+  check8(modulo8(-128s8, -1s8), special8)
+  check8(negative8, -7s8)
+  check8(negate8(7s8), negative8)
+  check8(add8(-128s8, 0s8), -128s8)
+  check8(add8(127s8, 0s8), 127s8)
+  check8(subtract8(-128s8, 0s8), -128s8)
+  check8(multiply8(127s8, 1s8), 127s8)
+  check8(multiply8(-128s8, 1s8), -128s8)
+  check8(divide8(-128s8, 1s8), -128s8)
+  check8(divide8(127s8, 1s8), 127s8)
+  check8(divide8(7s8, -3s8), -2s8)
+  check8(divide8(-7s8, -3s8), 2s8)
+  check8(modulo8(7s8, -3s8), 1s8)
+  check8(modulo8(-7s8, -3s8), -1s8)
+  check8(modulo8(-128s8, 1s8), 0s8)
+  check8(negate8(127s8), -127s8)
+  check8(negate8(0s8), 0s8)
+  Console.writeLine("s8 arithmetic ok")
+  check16(sum16, 42s16)
+  check16(add16(40s16, 2s16), sum16)
+  check16(difference16, 38s16)
+  check16(subtract16(40s16, 2s16), difference16)
+  check16(product16, -14s16)
+  check16(multiply16(-7s16, 2s16), product16)
+  check16(quotient16, -2s16)
+  check16(divide16(-7s16, 3s16), quotient16)
+  check16(remainder16, -1s16)
+  check16(modulo16(-7s16, 3s16), remainder16)
+  check16(special16, 0s16)
+  check16(modulo16(-32768s16, -1s16), special16)
+  check16(negative16, -7s16)
+  check16(negate16(7s16), negative16)
+  check16(add16(-32768s16, 0s16), -32768s16)
+  check16(add16(32767s16, 0s16), 32767s16)
+  check16(subtract16(-32768s16, 0s16), -32768s16)
+  check16(multiply16(32767s16, 1s16), 32767s16)
+  check16(multiply16(-32768s16, 1s16), -32768s16)
+  check16(divide16(-32768s16, 1s16), -32768s16)
+  check16(divide16(32767s16, 1s16), 32767s16)
+  check16(divide16(7s16, -3s16), -2s16)
+  check16(divide16(-7s16, -3s16), 2s16)
+  check16(modulo16(7s16, -3s16), 1s16)
+  check16(modulo16(-7s16, -3s16), -1s16)
+  check16(modulo16(-32768s16, 1s16), 0s16)
+  check16(negate16(32767s16), -32767s16)
+  check16(negate16(0s16), 0s16)
+  Console.writeLine("s16 arithmetic ok")
+  check32(sum32, 42s32)
+  check32(add32(40s32, 2s32), sum32)
+  check32(difference32, 38s32)
+  check32(subtract32(40s32, 2s32), difference32)
+  check32(product32, -14s32)
+  check32(multiply32(-7s32, 2s32), product32)
+  check32(quotient32, -2s32)
+  check32(divide32(-7s32, 3s32), quotient32)
+  check32(remainder32, -1s32)
+  check32(modulo32(-7s32, 3s32), remainder32)
+  check32(special32, 0s32)
+  check32(modulo32(-2147483648s32, -1s32), special32)
+  check32(negative32, -7s32)
+  check32(negate32(7s32), negative32)
+  check32(add32(-2147483648s32, 0s32), -2147483648s32)
+  check32(add32(2147483647s32, 0s32), 2147483647s32)
+  check32(subtract32(-2147483648s32, 0s32), -2147483648s32)
+  check32(multiply32(2147483647s32, 1s32), 2147483647s32)
+  check32(multiply32(-2147483648s32, 1s32), -2147483648s32)
+  check32(divide32(-2147483648s32, 1s32), -2147483648s32)
+  check32(divide32(2147483647s32, 1s32), 2147483647s32)
+  check32(divide32(7s32, -3s32), -2s32)
+  check32(divide32(-7s32, -3s32), 2s32)
+  check32(modulo32(7s32, -3s32), 1s32)
+  check32(modulo32(-7s32, -3s32), -1s32)
+  check32(modulo32(-2147483648s32, 1s32), 0s32)
+  check32(negate32(2147483647s32), -2147483647s32)
+  check32(negate32(0s32), 0s32)
+  Console.writeLine("s32 arithmetic ok")
+end function

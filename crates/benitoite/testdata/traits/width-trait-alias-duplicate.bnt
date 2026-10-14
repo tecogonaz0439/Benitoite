@@ -1,0 +1,57 @@
+// 作成時の関門: 別名による同一の型への実装の二重登録を拒否する。
+// 利用者の別名の試験だけでは組み込みの別名の採集を確認できない。
+trait Score0[T]
+  function score(x: T) -> Integer
+end trait
+implement Score0[Integer]
+  function score(x: Integer) -> Integer
+    return 0
+  end function
+end implement
+implement Score0[Integer64]
+  function score(x: Integer64) -> Integer
+    return 0
+  end function
+end implement
+trait Score1[T]
+  function score(x: T) -> Integer
+end trait
+implement Score1[Float]
+  function score(x: Float) -> Integer
+    return 0
+  end function
+end implement
+implement Score1[Float64]
+  function score(x: Float64) -> Integer
+    return 0
+  end function
+end implement
+trait Score2[T]
+  function score(x: T) -> Integer
+end trait
+implement Score2[Byte]
+  function score(x: Byte) -> Integer
+    return 0
+  end function
+end implement
+implement Score2[UnsignedInteger8]
+  function score(x: UnsignedInteger8) -> Integer
+    return 0
+  end function
+end implement
+trait Score3[T]
+  function score(x: T) -> Integer
+end trait
+implement Score3[UnsignedInteger64]
+  function score(x: UnsignedInteger64) -> Integer
+    return 0
+  end function
+end implement
+implement Score3[UnsignedInteger]
+  function score(x: UnsignedInteger) -> Integer
+    return 0
+  end function
+end implement
+function main() -> Unit
+  ()
+end function

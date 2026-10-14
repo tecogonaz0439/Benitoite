@@ -48,6 +48,101 @@ pub fn from_values<'e>(
     }
     head(ctx, length, nodes.pop(), tail)
 }
+/// 要素数を先に検査し、反復子から葉へ直接詰めて中間の値の並びを省く。
+/// 外部の型付きの戻り値に要素数分の Vec<Value> を重ねて確保しないためである
+/// （設計書 02-09「外部の関数の実行」、03-06「List の内部の表現」）。
+pub(crate) fn from_iter_exact<'e>(
+    ctx: &ValueCtx<'e>,
+    length: u64,
+    mut items: impl Iterator<Item = Value<'e>>,
+    function: &'static str,
+) -> Result<Value<'e>, Stop> {
+    let mut builder = TryListBuilder::new(length, function)?;
+    for _ in 0..builder.length {
+        builder.push(ctx, items.next().ok_or_else(invalid_list))?;
+    }
+    if items.next().is_some() {
+        return Err(invalid_list());
+    }
+    builder.finish(ctx)
+}
+
+/// 失敗しうる要素を小さい葉へ順次詰める、回収しない区間内の構築器。
+/// 入れ子の外部の値を作業列で復号し、全要素の値の並びを保存せずに組み立てる。
+pub(crate) struct TryListBuilder<'e> {
+    length: u32,
+    remaining: u32,
+    buffer: [Value<'e>; WIDTH],
+    buffered: usize,
+    nodes: Vec<Tree<'e>>,
+    tail: Option<Tree<'e>>,
+}
+
+impl<'e> TryListBuilder<'e> {
+    /// 最初の要素を受け取る前に言語の要素数上限を検査する。
+    pub(crate) fn new(length: u64, function: &'static str) -> Result<Self, Stop> {
+        let length = CheckedLen::elements(length, function)?.get();
+        Ok(Self {
+            length,
+            remaining: length,
+            buffer: [Value::Unit; WIDTH],
+            buffered: 0,
+            nodes: Vec::with_capacity(usize::try_from(length).map_err(|_| invalid_list())? / WIDTH),
+            tail: None,
+        })
+    }
+
+    /// 要素の失敗を保存せず返し、葉が満ちたときだけヒープへ移す。
+    pub(crate) fn push(
+        &mut self,
+        ctx: &ValueCtx<'e>,
+        item: Result<Value<'e>, Stop>,
+    ) -> Result<(), Stop> {
+        let value = item?;
+        self.remaining = self.remaining.checked_sub(1).ok_or_else(invalid_list)?;
+        *self
+            .buffer
+            .get_mut(self.buffered)
+            .ok_or_else(invalid_list)? = value;
+        self.buffered = self.buffered.checked_add(1).ok_or_else(invalid_list)?;
+        if self.buffered == WIDTH || self.remaining == 0 {
+            let leaf = rrb::leaf(
+                ctx,
+                self.buffer.get(..self.buffered).ok_or_else(invalid_list)?,
+            )?;
+            self.buffered = 0;
+            if self.remaining == 0 {
+                self.tail = Some(leaf);
+            } else {
+                self.nodes.push(leaf);
+            }
+        }
+        Ok(())
+    }
+
+    /// 宣言した個数が揃ったことを確認し、葉から内部ノードと頭を作る。
+    pub(crate) fn finish(mut self, ctx: &ValueCtx<'e>) -> Result<Value<'e>, Stop> {
+        if self.remaining != 0 {
+            return Err(invalid_list());
+        }
+        if self.length == 0 {
+            return Ok(Value::EmptyList);
+        }
+        while self.nodes.len() > 1 {
+            self.nodes = self
+                .nodes
+                .chunks(WIDTH)
+                .map(|c| rrb::branch(ctx, c, false))
+                .collect::<Result<_, _>>()?;
+        }
+        head(
+            ctx,
+            self.length,
+            self.nodes.pop(),
+            self.tail.ok_or_else(invalid_list)?,
+        )
+    }
+}
 /// 長さ。リストでなければ `Stop::Internal`。
 pub fn len<'e>(ctx: &ValueCtx<'e>, list: Value<'e>) -> Result<u32, Stop> {
     if matches!(list, Value::EmptyList) {
@@ -303,6 +398,101 @@ mod tests {
             .into_iter()
             .map(|v| v.as_int().unwrap())
             .collect()
+    }
+
+    #[test]
+    fn fallible_leaf_builder_propagates_element_failure_and_checks_completion() {
+        // 関門: 入れ子の復号の失敗を葉の構築でそのまま返す。成功だけの反復子の
+        // 試験では失敗の握りつぶしを捕まえない。葉の境界の直前・直後を小さく試す。
+        let mut heap = Heap::new(HeapConfig::default());
+        heap.epoch(|ctx| {
+            for good in [0, 31, 32, 33] {
+                let mut builder = TryListBuilder::new(64, "test").unwrap();
+                for i in 0..good {
+                    builder.push(ctx, Ok(Value::Int(i))).unwrap();
+                }
+                let failure = Stop::Internal("nested element failure".into());
+                assert_eq!(builder.push(ctx, Err(failure.clone())), Err(failure));
+            }
+            let mut builder = TryListBuilder::new(2, "test").unwrap();
+            builder.push(ctx, Ok(Value::Int(1))).unwrap();
+            assert!(matches!(builder.finish(ctx), Err(Stop::Internal(_))));
+            let mut builder = TryListBuilder::new(0, "test").unwrap();
+            assert!(matches!(
+                builder.push(ctx, Ok(Value::Unit)),
+                Err(Stop::Internal(_))
+            ));
+        });
+    }
+
+    // 関門: 葉の境界と末尾を既存の構築と同じに保ち、構造の等値と長さを守る。
+    // 新しい入口の要素数の不一致と確保前の上限検査は、既存の操作の検査では届かない。
+    // 本番にテスト用の入口を加えず、反復子からの構築そのものを呼ぶ。
+    // spec: 03-06 List の内部の表現
+    #[test]
+    fn iterator_build_matches_values_at_leaf_and_tree_boundaries() {
+        let mut heap = Heap::new(HeapConfig::default());
+        heap.epoch(|ctx| {
+            for length in [0, 1, 31, 32, 33, 1023, 1024, 1025, 1056, 1057, 32768, 32769] {
+                let values: Vec<_> = (0..length).map(Value::Int).collect();
+                let expected = from_values(ctx, &values, "test").unwrap();
+                let actual = from_iter_exact(
+                    ctx,
+                    u64::try_from(length).unwrap(),
+                    values.iter().copied(),
+                    "test",
+                )
+                .unwrap();
+                assert_eq!(len(ctx, actual).unwrap(), u32::try_from(length).unwrap());
+                assert!(crate::runtime::equal::values_equal(ctx, actual, expected).unwrap());
+                // 要素の等値だけでは見えない、頭・内部ノード・葉・末尾の形も比べる。
+                let mut pending = vec![(actual, expected)];
+                while let Some((actual, expected)) = pending.pop() {
+                    assert_eq!(ctx.fields_header(actual), ctx.fields_header(expected));
+                    assert_eq!(ctx.fields_len(actual), ctx.fields_len(expected));
+                    if let Some(count) = ctx.fields_len(actual) {
+                        for i in 0..count {
+                            let a = ctx.field(actual, i).unwrap();
+                            let b = ctx.field(expected, i).unwrap();
+                            pending.push((a, b));
+                        }
+                    } else {
+                        assert!(
+                            crate::runtime::equal::values_equal(ctx, actual, expected).unwrap()
+                        );
+                    }
+                }
+            }
+        });
+    }
+
+    // 関門: 宣言した長さに合わせて要素を捨てたり空きを補ったりせず、不整合を停止にする。
+    // 過大な長さは反復子を読む前に拒否し、実際の巨大なリストは作らない。
+    #[test]
+    fn iterator_build_rejects_length_mismatches_and_checks_limit_first() {
+        let mut heap = Heap::new(HeapConfig::default());
+        heap.epoch(|ctx| {
+            for (declared, supplied) in [(0, 1), (1, 0), (31, 32), (32, 31), (33, 32), (33, 34)] {
+                assert!(matches!(
+                    from_iter_exact(ctx, declared, (0..supplied).map(Value::Int), "test"),
+                    Err(Stop::Internal(_))
+                ));
+            }
+        });
+        let before = heap.stats().allocations;
+        heap.epoch(|ctx| {
+            let unread = std::iter::from_fn(|| panic!("oversized iterator was read"));
+            assert_eq!(
+                from_iter_exact(ctx, MAX_LIST_LEN + 1, unread, "test").unwrap_err(),
+                Stop::Resource(ResourceError::ValueTooLarge {
+                    function: "test",
+                    size: MAX_LIST_LEN + 1,
+                    unit: SizeUnit::Elements,
+                    limit: MAX_LIST_LEN,
+                })
+            );
+        });
+        assert_eq!(heap.stats().allocations, before);
     }
 
     #[test]

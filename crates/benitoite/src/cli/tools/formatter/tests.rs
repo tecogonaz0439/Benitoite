@@ -346,12 +346,13 @@ fn syntax_errors_are_reported_with_diagnostics() {
     }
 }
 
-/// 構文解析器が出す字句・構文の誤り以外の診断（属性の E0801、`resume` の位置の E0509）だけなら整形し、
+/// 構文解析器が出す字句・構文の誤り以外の診断（属性、`resume` の位置、先頭の部分の欄）だけなら整形し、
 /// 構文の誤り（E02nn）なら断る（設計書 06-03「構文の誤りがあるファイル」）。
 #[test]
 fn only_lexical_and_syntax_errors_refuse_formatting() {
     for src in [
         "@memoize\nfunction main() -> Unit\n    ()\nend function\n",
+        "package Textkit\n    unknown \"value\"\nend package\n",
         "function main() -> Unit\n    resume(())\nend function\n",
     ] {
         let formatted = format_source(FileId(0), SourceKind::User, src.as_bytes())
@@ -362,18 +363,19 @@ fn only_lexical_and_syntax_errors_refuse_formatting() {
             "{src}"
         );
     }
-    match format_source(
-        FileId(0),
-        SourceKind::User,
-        b"function f( -> Unit\nend function\n",
-    ) {
-        Err(FormatError::Syntax(diags)) => assert!(
-            diags
-                .iter()
-                .any(|d| d.code.is_some_and(|c| c.info().id.starts_with("E02"))),
-            "{diags:?}"
-        ),
-        other => panic!("{other:?}"),
+    for src in [
+        "function f( -> Unit\nend function\n",
+        "function main() -> Unit\n()\nend function\nlanguage \"0.0.3\"\n",
+    ] {
+        match format_source(FileId(0), SourceKind::User, src.as_bytes()) {
+            Err(FormatError::Syntax(diags)) => assert!(
+                diags
+                    .iter()
+                    .any(|d| d.code.is_some_and(|c| c.info().id.starts_with("E02"))),
+                "{diags:?}"
+            ),
+            other => panic!("{other:?}"),
+        }
     }
 }
 

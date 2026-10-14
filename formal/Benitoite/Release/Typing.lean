@@ -185,8 +185,7 @@ mutual
     | P_Wild {a} : PatTy P .wild a []
     | P_Var {a} : PatTy P .var a [a]
     | P_Const {c} :
-        (∀ x, c ≠ .float x) → (∀ n, c ≠ .byte n) → (∀ n s, c ≠ .decimal n s) →
-        (∀ o n, c ≠ .opaque o n) →
+        c.patternAllowed = true →
         PatTy P (.const c) c.type []
     | P_RangeInt {lo hi : Int} :
         PatTy P (.range (.integer lo) (.integer hi)) (.base .integer) []

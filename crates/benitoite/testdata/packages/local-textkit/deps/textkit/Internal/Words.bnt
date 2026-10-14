@@ -1,0 +1,4 @@
+public function split(text: String) -> List[String]
+  return String.split(String.toLowercase(String.trim(text)), " ")
+    |> List.filter(_, lambda(w) return w <> "" end lambda)
+end function

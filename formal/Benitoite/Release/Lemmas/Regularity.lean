@@ -148,7 +148,7 @@ mutual
     match hp with
     | .P_Wild => simp
     | .P_Var => simpa using ha
-    | .P_Const _ _ _ _ => simp
+    | .P_Const _ => simp
     | .P_RangeInt => simp
     | .P_RangeChar => simp
     | .P_List (rest := rest) hb ht _ =>

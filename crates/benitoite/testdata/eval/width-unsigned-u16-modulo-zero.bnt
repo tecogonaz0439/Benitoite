@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.Console
+function calculate(a: UnsignedInteger16, b: UnsignedInteger16) -> UnsignedInteger16
+  return a mod b
+end function
+function main() -> Unit uses Console.Write
+  bind _ <- calculate(65535u16, 0u16)
+  Console.writeLine("unreachable")
+end function

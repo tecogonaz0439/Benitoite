@@ -108,6 +108,13 @@ use crate::pipeline::CheckedProgram;
 
 /// `benitoite test` を実行し、終了状態を返す（本章「結果の報告」）。
 pub fn run_test_command(args: PathArgs, env: CliEnv) -> u8 {
+    run_test_with_externals(args, env, Default::default())
+}
+pub(super) fn run_test_with_externals(
+    args: PathArgs,
+    env: CliEnv,
+    externals: crate::external::stats::ExecutionOptions,
+) -> u8 {
     let mut env = env;
     let format = args.diagnostics;
     let entries = match test_entries(&args.paths) {
@@ -150,6 +157,7 @@ pub fn run_test_command(args: PathArgs, env: CliEnv) -> u8 {
         summary: Summary::default(),
         failures: Vec::new(),
         wrote_test_line: false,
+        externals,
     };
     for entry in &entries {
         if runner.interrupt.requested() {
@@ -175,7 +183,7 @@ pub fn test_entries(paths: &[PathBuf]) -> Result<Vec<EntrySpec>, (PathBuf, std::
     for path in paths {
         if path.is_dir() {
             // 根のディレクトリを指定したディレクトリにし、表示名はディレクトリのパスに相対パスを続ける（06-04「テストの実行」）。
-            for file in bnt_files(path)? {
+            for file in test_files(path)? {
                 let relative = file.strip_prefix(path).unwrap_or(&file);
                 entries.push(EntrySpec {
                     display_name: path.join(relative).display().to_string(),
@@ -194,6 +202,12 @@ pub fn test_entries(paths: &[PathBuf]) -> Result<Vec<EntrySpec>, (PathBuf, std::
         }
     }
     Ok(entries)
+}
+
+// パッケージの中のソースは、そのパッケージを根として検査する。走査の段で枝を除き、
+// そこにある読めないディレクトリも入口の探索には含めない（設計書 06-04「テストの実行」）。
+fn test_files(root: &std::path::Path) -> Result<Vec<PathBuf>, (PathBuf, std::io::Error)> {
+    super::args::collect_bnt_files(root, true)
 }
 
 /// 実行を始めるファイル `entry` のトップレベルの `@test` の関数を、宣言の順に集める（06-04「テストの実行」の
@@ -235,7 +249,6 @@ pub fn collect_tests(checked: &CheckedProgram, entry: FileId) -> Vec<TestFn> {
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 
-use super::args::bnt_files;
 use crate::base::SourceTable;
 use crate::bytecode::program::CompiledProgram;
 use crate::cli::{DiagFormat, prelude_error, report_check, write_internal, write_report};
@@ -256,7 +269,7 @@ use crate::types::{Ty, TyCon};
 use crate::vm::{DEFAULT_MAX_CALL_STACK, StopInfo};
 
 // 一回の `test` の実行で作った中断の要求の読み口を、テストごとの `RunEnv` で共有する包み（設計書 02-11「テストの実行」）。
-// `attach`・`flag` も中の読み口へ渡す。渡さないと、待っているテストが中断の要求で起きない。
+// 待ちを起こす読み口と Wasm の見張りに使う共有の印も渡し、どちらの実行中も中断できるようにする。
 #[derive(Debug, Clone)]
 struct SharedInterrupt(Rc<Box<dyn InterruptSource>>);
 
@@ -269,6 +282,9 @@ impl InterruptSource for SharedInterrupt {
     }
     fn flag(&self) -> Option<&std::sync::atomic::AtomicBool> {
         self.0.flag()
+    }
+    fn shared_flag(&self) -> Option<std::sync::Arc<std::sync::atomic::AtomicBool>> {
+        self.0.shared_flag()
     }
 }
 
@@ -308,6 +324,7 @@ struct Runner {
     /// 文章の形の失敗の詳細。ソースの表が使えるうちに文字列にして溜める。
     failures: Vec<String>,
     wrote_test_line: bool,
+    externals: crate::external::stats::ExecutionOptions,
 }
 
 impl Runner {
@@ -423,7 +440,7 @@ impl Runner {
             };
             let stdout = Arc::new(Mutex::new(Vec::new()));
             let stderr = Arc::new(Mutex::new(Vec::new()));
-            let end = run::run_test(
+            let end = run::run_test_with_externals(
                 &compiled.program,
                 TestTarget {
                     proto,
@@ -447,6 +464,7 @@ impl Runner {
                     heap: self.env.heap,
                     dev_panic_after_first_write: false,
                 },
+                self.externals.clone(),
             );
             match end.run.end {
                 EndKind::Interrupted => {

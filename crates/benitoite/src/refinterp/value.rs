@@ -34,6 +34,13 @@ pub(super) enum Value {
     List(Rc<Values>),
     Func(Rc<Closure>),
     IoError { kind: u32, reason: Rc<str> },
+    Int8(i8),
+    Int16(i16),
+    Int32(i32),
+    UInt16(u16),
+    UInt32(u32),
+    UInt64(u64),
+    Float32(f32),
 }
 
 /// 共有する子の並び。最後の参照の解放で深い構造へ再帰しないよう Drop を持つ。
@@ -90,6 +97,13 @@ impl fmt::Debug for Value {
             Self::Map(xs) => f.debug_tuple("Map").field(&xs.items.len()).finish(),
             Self::Set(xs) => f.debug_tuple("Set").field(&xs.items.len()).finish(),
             Self::Int(n) => f.debug_tuple("Int").field(n).finish(),
+            Self::Int8(n) => f.debug_tuple("Int8").field(n).finish(),
+            Self::Int16(n) => f.debug_tuple("Int16").field(n).finish(),
+            Self::Int32(n) => f.debug_tuple("Int32").field(n).finish(),
+            Self::UInt16(n) => f.debug_tuple("UInt16").field(n).finish(),
+            Self::UInt32(n) => f.debug_tuple("UInt32").field(n).finish(),
+            Self::UInt64(n) => f.debug_tuple("UInt64").field(n).finish(),
+            Self::Float32(n) => f.debug_tuple("Float32").field(n).finish(),
             Self::Float(x) => f.debug_tuple("Float").field(x).finish(),
             Self::Byte(b) => f.debug_tuple("Byte").field(b).finish(),
             Self::Bool(b) => f.debug_tuple("Bool").field(b).finish(),
@@ -125,6 +139,13 @@ pub(super) fn values_equal(a: &Value, b: &Value) -> Result<bool, Stop> {
         let equal = match (a, b) {
             (Value::Decimal(a), Value::Decimal(b)) => a.cmp_num(*b).is_eq(),
             (Value::Int(a), Value::Int(b)) => a == b,
+            (Value::Int8(a), Value::Int8(b)) => a == b,
+            (Value::Int16(a), Value::Int16(b)) => a == b,
+            (Value::Int32(a), Value::Int32(b)) => a == b,
+            (Value::UInt16(a), Value::UInt16(b)) => a == b,
+            (Value::UInt32(a), Value::UInt32(b)) => a == b,
+            (Value::UInt64(a), Value::UInt64(b)) => a == b,
+            (Value::Float32(a), Value::Float32(b)) => a == b,
             (Value::Float(a), Value::Float(b)) => a == b,
             (Value::Byte(a), Value::Byte(b)) => a == b,
             (Value::Bool(a), Value::Bool(b)) => a == b,
@@ -168,6 +189,13 @@ pub(super) fn values_equal(a: &Value, b: &Value) -> Result<bool, Stop> {
                 | Value::Map(_)
                 | Value::Set(_)
                 | Value::Int(_)
+                | Value::Int8(_)
+                | Value::Int16(_)
+                | Value::Int32(_)
+                | Value::UInt16(_)
+                | Value::UInt32(_)
+                | Value::UInt64(_)
+                | Value::Float32(_)
                 | Value::Float(_)
                 | Value::Byte(_)
                 | Value::Bool(_)
@@ -225,6 +253,13 @@ fn release(mut pending: Vec<Value>) {
             | Value::Resource(_)
             | Value::Opaque(_)
             | Value::Int(_)
+            | Value::Int8(_)
+            | Value::Int16(_)
+            | Value::Int32(_)
+            | Value::UInt16(_)
+            | Value::UInt32(_)
+            | Value::UInt64(_)
+            | Value::Float32(_)
             | Value::Float(_)
             | Value::Byte(_)
             | Value::Bool(_)
@@ -269,6 +304,21 @@ mod tests {
         for (a, b, expected) in [
             (Value::Int(-1), Value::Int(-1), true),
             (Value::Int(-1), Value::Int(1), false),
+            (Value::Int8(i8::MIN), Value::Int8(i8::MIN), true),
+            (Value::Int8(i8::MIN), Value::Int8(i8::MAX), false),
+            (Value::Int16(i16::MIN), Value::Int16(i16::MIN), true),
+            (Value::Int16(i16::MIN), Value::Int16(i16::MAX), false),
+            (Value::Int32(i32::MIN), Value::Int32(i32::MIN), true),
+            (Value::Int32(i32::MIN), Value::Int32(i32::MAX), false),
+            (Value::UInt16(u16::MAX), Value::UInt16(u16::MAX), true),
+            (Value::UInt16(u16::MAX), Value::UInt16(0), false),
+            (Value::UInt32(u32::MAX), Value::UInt32(u32::MAX), true),
+            (Value::UInt32(u32::MAX), Value::UInt32(0), false),
+            (Value::UInt64(u64::MAX), Value::UInt64(u64::MAX), true),
+            (Value::UInt64(u64::MAX), Value::UInt64(0), false),
+            (Value::Float32(0.0), Value::Float32(-0.0), true),
+            (Value::Float32(f32::NAN), Value::Float32(f32::NAN), false),
+            (Value::Float32(0.1), Value::Float32(0.2), false),
             (Value::Float(0.0), Value::Float(-0.0), true),
             (Value::Float(f64::NAN), Value::Float(f64::NAN), false),
             (Value::Byte(255), Value::Byte(0), false),

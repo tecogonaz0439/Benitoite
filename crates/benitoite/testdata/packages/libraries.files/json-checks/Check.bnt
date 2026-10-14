@@ -1,0 +1,50 @@
+//! JSON の三つの公開関数を CLI のケースで比較する共通の補助。
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.IO.Console
+
+function description(result: Result[Json.Value, Json.ParseError]) -> String
+  return match result with
+    case Result.Ok(value) -> "ok " + Json.stringify(value)
+    case Result.Error(error) -> "error ${Json.ParseError.line(error)}:${Json.ParseError.column(error)} " + Json.ParseError.message(error)
+  end match
+end function
+
+/// 独立した A と値・二つの出力を比較する。
+public function compare(source: String, parse: function(String) -> Result[Json.Value, Json.ParseError], stringify: function(Json.Value) -> String, writePretty: function(Json.Value) -> String) -> Result[Unit, String] uses Console.Write
+  bind a <- Json.parse(source)
+  bind b <- parse(source)
+  bind equal <- a = b
+  bind output <- match Pair(a, b) with
+    case Pair(Result.Ok(x), Result.Ok(y)) -> Json.stringify(x) = stringify(y) and Json.stringifyPretty(x) = writePretty(y)
+    case Pair(Result.Error(_), Result.Error(_)) -> true
+    case _ -> false
+  end match
+  Console.writeLine(description(a) + " | value=${equal} output=${output}")
+  return if equal and output then Result.Ok(()) else Result.Error("compact=" + (match b with
+    case Result.Ok(v) -> stringify(v)
+    case _ -> "error"
+  end match) + " A=" + description(a) + " B=" + description(b)) end if
+end function
+
+// 深さの境界は解析の値と診断だけで確かめ、出力の契約は別の表に任せる。
+/// 解析の境界を値と誤りで比較する。
+public function compareDepth(source: String, parse: function(String) -> Result[Json.Value, Json.ParseError]) -> Result[Unit, String] uses Console.Write
+  bind a <- Json.parse(source)
+  bind b <- parse(source)
+  bind equal <- a = b
+  Console.writeLine(description(a) + " | value=${equal}")
+  return if equal then Result.Ok(()) else Result.Error("A=" + description(a) + " B=" + description(b)) end if
+end function
+
+/// 解析で作れない値の二つの出力を比較する。
+public function writeValue(label: String, value: Json.Value, stringify: function(Json.Value) -> String, writePretty: function(Json.Value) -> String) -> Result[Unit, String] uses Console.Write
+  bind compact <- Json.stringify(value) = stringify(value)
+  bind pretty <- Json.stringifyPretty(value) = writePretty(value)
+  Console.writeLine("${label} | compact=${compact} pretty=${pretty} bytes=${String.byteLength(Json.stringify(value))}")
+  return if compact and pretty then Result.Ok(()) else Result.Error(label) end if
+end function
+
+/// 出力する深い値を末尾呼び出しで組み立てる。
+public function deep(n: Integer, value: Json.Value) -> Json.Value
+  return if n = 0 then value else deep(n - 1, Json.Value.Array([value])) end if
+end function

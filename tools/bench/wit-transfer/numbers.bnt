@@ -1,0 +1,109 @@
+//! 各幅の境界値と既知の変更結果を使う数の比較入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+@external("wasm", "guests/numbers.wasm", "flip-s8")
+function flipS8(v: Integer8) -> Integer8
+@external("wasm", "guests/numbers.wasm", "flip-s16")
+function flipS16(v: Integer16) -> Integer16
+@external("wasm", "guests/numbers.wasm", "flip-s32")
+function flipS32(v: Integer32) -> Integer32
+@external("wasm", "guests/numbers.wasm", "flip-s64")
+function flipS64(v: Integer64) -> Integer64
+@external("wasm", "guests/numbers.wasm", "flip-u8")
+function flipU8(v: UnsignedInteger8) -> UnsignedInteger8
+@external("wasm", "guests/numbers.wasm", "flip-u16")
+function flipU16(v: UnsignedInteger16) -> UnsignedInteger16
+@external("wasm", "guests/numbers.wasm", "flip-u32")
+function flipU32(v: UnsignedInteger32) -> UnsignedInteger32
+@external("wasm", "guests/numbers.wasm", "flip-u64")
+function flipU64(v: UnsignedInteger64) -> UnsignedInteger64
+@external("wasm", "guests/numbers.wasm", "negate-f32")
+function negateF32(v: Float32) -> Float32
+@external("wasm", "guests/numbers.wasm", "negate-f64")
+function negateF64(v: Float64) -> Float64
+@external("wasm", "guests/numbers.wasm", "flip-u64")
+function unsignedAlias(v: UnsignedInteger) -> UnsignedInteger
+@external("wasm", "guests/number-lists.wasm", "flip-s8")
+function flipS8List(v: List[Integer8]) -> List[Integer8]
+@external("wasm", "guests/number-lists.wasm", "flip-s16")
+function flipS16List(v: List[Integer16]) -> List[Integer16]
+@external("wasm", "guests/number-lists.wasm", "flip-s32")
+function flipS32List(v: List[Integer32]) -> List[Integer32]
+@external("wasm", "guests/number-lists.wasm", "flip-u16")
+function flipU16List(v: List[UnsignedInteger16]) -> List[UnsignedInteger16]
+@external("wasm", "guests/number-lists.wasm", "flip-u32")
+function flipU32List(v: List[UnsignedInteger32]) -> List[UnsignedInteger32]
+@external("wasm", "guests/number-lists.wasm", "flip-u64")
+function flipU64List(v: List[UnsignedInteger64]) -> List[UnsignedInteger64]
+@external("wasm", "guests/number-lists.wasm", "negate-f32")
+function negateF32List(v: List[Float32]) -> List[Float32]
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+  bind indexes <- List.range(0, n)
+  bind sourceS8 <- List.map(indexes, lambda(i: Integer) -> Integer8 return
+    if i mod 3 = 0 then -128s8 else if i mod 3 = 1 then 127s8 else 0s8 end if
+  end lambda)
+  bind expectedS8 <- List.map(indexes, lambda(i: Integer) -> Integer8 return
+    if i mod 3 = 0 then -127s8 else if i mod 3 = 1 then 126s8 else 1s8 end if
+  end lambda)
+  bind sourceS16 <- List.map(indexes, lambda(i: Integer) -> Integer16 return
+    if i mod 3 = 0 then -32768s16 else if i mod 3 = 1 then 32767s16 else 0s16 end if
+  end lambda)
+  bind expectedS16 <- List.map(indexes, lambda(i: Integer) -> Integer16 return
+    if i mod 3 = 0 then -32767s16 else if i mod 3 = 1 then 32766s16 else 1s16 end if
+  end lambda)
+  bind sourceS32 <- List.map(indexes, lambda(i: Integer) -> Integer32 return
+    if i mod 3 = 0 then -2147483648s32 else if i mod 3 = 1 then 2147483647s32 else 0s32 end if
+  end lambda)
+  bind expectedS32 <- List.map(indexes, lambda(i: Integer) -> Integer32 return
+    if i mod 3 = 0 then -2147483647s32 else if i mod 3 = 1 then 2147483646s32 else 1s32 end if
+  end lambda)
+  bind sourceU16 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger16 return
+    if i mod 3 = 0 then 0u16 else if i mod 3 = 1 then 65535u16 else 256u16 end if
+  end lambda)
+  bind expectedU16 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger16 return
+    if i mod 3 = 0 then 1u16 else if i mod 3 = 1 then 65534u16 else 257u16 end if
+  end lambda)
+  bind sourceU32 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger32 return
+    if i mod 3 = 0 then 0u32 else if i mod 3 = 1 then 4294967295u32 else 65536u32 end if
+  end lambda)
+  bind expectedU32 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger32 return
+    if i mod 3 = 0 then 1u32 else if i mod 3 = 1 then 4294967294u32 else 65537u32 end if
+  end lambda)
+  bind sourceU64 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger64 return
+    if i mod 3 = 0 then 0u64 else if i mod 3 = 1 then 9223372036854775808u64 else 18446744073709551615u64 end if
+  end lambda)
+  bind expectedU64 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger64 return
+    if i mod 3 = 0 then 1u64 else if i mod 3 = 1 then 9223372036854775809u64 else 18446744073709551614u64 end if
+  end lambda)
+  bind sourceF32 <- List.map(indexes, lambda(i: Integer) -> Float32 return
+    if i mod 3 = 0 then 0.1f32 else if i mod 3 = 1 then 16777217.0f32 else -1.25f32 end if
+  end lambda)
+  bind expectedF32 <- List.map(indexes, lambda(i: Integer) -> Float32 return
+    if i mod 3 = 0 then -0.1f32 else if i mod 3 = 1 then -16777216.0f32 else 1.25f32 end if
+  end lambda)
+
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind c0 <- flipS8(-128s8) = -127s8
+    bind c1 <- flipS16(-32768s16) = -32767s16
+    bind c2 <- flipS32(-2147483648s32) = -2147483647s32
+    bind c3 <- flipS64(-9223372036854775808s64) = -9223372036854775807s64
+    bind c4 <- flipU8(255u8) = 254u8
+    bind c5 <- flipU16(65535u16) = 65534u16
+    bind c6 <- flipU32(4294967295u32) = 4294967294u32
+    bind c7 <- flipU64(9223372036854775808u64) = 9223372036854775809u64
+    bind c8 <- unsignedAlias(18446744073709551615u64) = 18446744073709551614u64
+    bind c9 <- negateF32(0.1f32) = -0.1f32
+    bind c10 <- negateF64(1.25f64) = -1.25f64
+    bind c11 <- flipS8List(sourceS8) = expectedS8
+    bind c12 <- flipS16List(sourceS16) = expectedS16
+    bind c13 <- flipS32List(sourceS32) = expectedS32
+    bind c14 <- flipU16List(sourceU16) = expectedU16
+    bind c15 <- flipU32List(sourceU32) = expectedU32
+    bind c16 <- flipU64List(sourceU64) = expectedU64
+    bind c17 <- negateF32List(sourceF32) = expectedF32
+    return c0 and c1 and c2 and c3 and c4 and c5 and c6 and c7 and c8 and c9 and c10 and c11 and c12 and c13 and c14 and c15 and c16 and c17
+  end lambda)
+end function

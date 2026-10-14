@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "base_revision": "32df975b",
+  "cwd": "repository_root",
+  "benitoite_placeholder": "{benitoite}",
+  "expected_stdout": "expected/ok.stdout",
+  "expected_exit_code": 0,
+  "repeat_argument": 1,
+  "regeneration": {
+    "parser": "wat",
+    "version": "1.261.0",
+    "dependency_lock": "regenerate/Cargo.lock",
+    "command": [
+      "cargo",
+      "run",
+      "-q",
+      "--offline",
+      "--locked",
+      "--manifest-path",
+      "tools/bench/wit-transfer/regenerate/Cargo.toml",
+      "--target-dir",
+      "target/wit-transfer-fixtures"
+    ],
+    "check_command": [
+      "cargo",
+      "run",
+      "-q",
+      "--offline",
+      "--locked",
+      "--manifest-path",
+      "tools/bench/wit-transfer/regenerate/Cargo.toml",
+      "--target-dir",
+      "target/wit-transfer-fixtures",
+      "--",
+      "--check"
+    ]
+  },
+  "routes": {
+    "typed": "既存のTypedShapeの宣言。",
+    "adapter": "対応済みの通常の値でTypedShapeに含まれない宣言。",
+    "dynamic": "この入力群のCLI宣言では選ばない。直接のWasmtime比較は同じゲストを使う測定用の例に残す。",
+    "force_route_option": null
+  },
+  "guests": [
+    {
+      "id": "numbers",
+      "source": "guests/numbers.wat",
+      "binary": "guests/numbers.wasm",
+      "origin": "crates/benitoite/testdata/external/wit-numbers-scalar/x.wat",
+      "origin_revision": "32df975b",
+      "changes": "変更なし。",
+      "sha256": "cd401934b8e690020c1ea394da49dc0a4ce5279cafbcfa01b2c772638cec0d48",
+      "source_sha256": "280ce7d0ac2d36a2db4150850db5769ec474f8be44c3a177cf720a9916601a62",
+      "origin_sha256": "280ce7d0ac2d36a2db4150850db5769ec474f8be44c3a177cf720a9916601a62"
+    },
+    {
+      "id": "number-lists",
+      "source": "guests/number-lists.wat",
+      "binary": "guests/number-lists.wasm",
+      "origin": "crates/benitoite/testdata/external/wit-numbers-lists/x.wat",
+      "origin_revision": "32df975b",
+      "changes": "固定アドレスのreallocを整列・成長・内容保存付きの確保に変更。",
+      "sha256": "f34dd09dea6c35c954bf999d07bd9a138fc45b676fbb68b4cb5ddc0faed09875",
+      "source_sha256": "16b9c096743a0bf130cb70e5ca7ceb686569beb050236c7043d36ee448583890",
+      "origin_sha256": "24dcef968430f5cd783b3d9cc19f97ac9eb71f11e39baf2b8547bf186953c213"
+    },
+    {
+      "id": "flags",
+      "source": "guests/flags.wat",
+      "binary": "guests/flags.wasm",
+      "origin": "crates/benitoite/testdata/external/wit-flags-boundaries/x.wat",
+      "origin_revision": "32df975b",
+      "changes": "変更なし。",
+      "sha256": "290ae6c01aa15a16b52b5ffddb72195485de11189c55742e6f09ca550dcc8531",
+      "source_sha256": "9293614816b3cff0e16d93b85950bd43ac7bef2a17ab661b91287c3f240e4535",
+      "origin_sha256": "9293614816b3cff0e16d93b85950bd43ac7bef2a17ab661b91287c3f240e4535"
+    },
+    {
+      "id": "maps",
+      "source": "guests/maps.wat",
+      "binary": "guests/maps.wasm",
+      "origin": "crates/benitoite/testdata/external/wit-map-values/x.wat",
+      "origin_revision": "32df975b",
+      "changes": "確保を拡張し、echoで全値に7を加える。固定の重複結果は保存。",
+      "sha256": "0bb97eea9f246a3245e8d3b2a597dfa68f7427c31f6ff823e612e73d15868c7d",
+      "source_sha256": "12943bbe4ab0a35ee58748dc666d4ca9fe73da8f6cc3a907fa3cabd91f9b4f47",
+      "origin_sha256": "cad966677e3b2f5ecf2540e0403d4be9cb74f80e675e4b9c48a7088eba100803"
+    },
+    {
+      "id": "records",
+      "source": "guests/records.wat",
+      "binary": "guests/records.wasm",
+      "origin": "crates/benitoite/testdata/external/wit-generic-values/x.wat",
+      "origin_revision": "32df975b",
+      "changes": "変更なし。",
+      "sha256": "e690e647c45303dc8bddad822d1b26c3f9062d88c6e9a6d92ffeacb117daed3d",
+      "source_sha256": "a5f3ecaa07d43dd6d5c67ec2b5bc7a5329d5a73ee513791621cb4b2fb5e50ef9",
+      "origin_sha256": "a5f3ecaa07d43dd6d5c67ec2b5bc7a5329d5a73ee513791621cb4b2fb5e50ef9"
+    },
+    {
+      "id": "tuples",
+      "source": "guests/tuples.wat",
+      "binary": "guests/tuples.wasm",
+      "origin": "crates/benitoite/testdata/external/wit-tuple-values/x.wat",
+      "origin_revision": "32df975b",
+      "changes": "変更なし。",
+      "sha256": "d330d62e3b28c867a6337be923f085fc0a3860fe9eea18dfe334cd5d628b9406",
+      "source_sha256": "49dc1cc1db3af030526785964da3c6075c8304de2f7ce78d2a6138285a742c26",
+      "origin_sha256": "49dc1cc1db3af030526785964da3c6075c8304de2f7ce78d2a6138285a742c26"
+    },
+    {
+      "id": "variants",
+      "source": "guests/variants.wat",
+      "binary": "guests/variants.wasm",
+      "origin": "crates/benitoite/testdata/external/wit-variant-fields/x.wat",
+      "origin_revision": "32df975b",
+      "changes": "変更なし。",
+      "sha256": "d8749cc72e16a75dd6e5faa67f8f13573b26d1340f4a0519391f2bf3756b15af",
+      "source_sha256": "910d2b86ac85a2f4edfdf0b74ed87ea38c4bd14a1f6ea22c797bdf1e17dde2b8",
+      "origin_sha256": "910d2b86ac85a2f4edfdf0b74ed87ea38c4bd14a1f6ea22c797bdf1e17dde2b8"
+    },
+    {
+      "id": "primitives",
+      "source": "guests/primitives.wat",
+      "binary": "guests/primitives.wasm",
+      "origin": "crates/benitoite/src/external/adapter/fixed_tests.rs",
+      "origin_revision": "32df975b",
+      "changes": "scalar_widths_signed_extension_and_float_bits_cross_generated_adapter / strings_and_bytes_copy_content_and_relocate_resultsの演算・再配置を独立したWATに保存。Bytesは全要素を反転する。",
+      "sha256": "b39f60395dc4276204c161971a006adac65a98153623f303e60c96b6bbd08b6a",
+      "source_sha256": "3813b23ad546cfc62cae24e2534ad871bd345d519964c280a54120927307bc22",
+      "origin_sha256": "6d2a8038420457d5e6bb8c490cc23577f27604b4a4c1e170f4c7d8c5da7540b9"
+    },
+    {
+      "id": "nested",
+      "source": "guests/nested.wat",
+      "binary": "guests/nested.wasm",
+      "origin": "crates/benitoite/src/external/adapter/fixed_tests.rs",
+      "origin_revision": "32df975b",
+      "changes": "nested_numbers_guestの二段のlistのABI配置を採り、全子の要素へ1を加えるループに変更。",
+      "sha256": "abc3a20ab05c121f7bc4eac16602b485626828fa8cafdc8bf97e85140b25e8ec",
+      "source_sha256": "fb3fa80ab974b19a26aea860c8b9ff143c0a7f843f800c17f83c25df7f7a3def",
+      "origin_sha256": "6d2a8038420457d5e6bb8c490cc23577f27604b4a4c1e170f4c7d8c5da7540b9"
+    },
+    {
+      "id": "utf16",
+      "source": "guests/utf16.wat",
+      "binary": "guests/utf16.wasm",
+      "origin": "crates/benitoite/testdata/external/adapter-lifetime/utf16.wat",
+      "origin_revision": "32df975b",
+      "changes": "入力の符号単位の検査を反復し、日😀!へ置き換える。確保は古い内容を保って成長。",
+      "sha256": "e186bf1e207f8d7c33e0d482a67c650b172d0ff627a96246dd4bfadcff99a7b7",
+      "source_sha256": "62b17725c817e5faa98ac3e8a56fcae9282d630417191a87cebd5dcae2cfdf89",
+      "origin_sha256": "dc99f48f2634d42849484956465785ff4f5a23bd2d8109f6b18e32a4dfef12b9"
+    },
+    {
+      "id": "mixed-record",
+      "source": "guests/mixed-record.wat",
+      "binary": "guests/mixed-record.wasm",
+      "origin": "crates/benitoite/src/external/adapter/fixed_tests.rs",
+      "origin_revision": "32df975b",
+      "changes": "nested_record_and_tuple_use_direct_arguments_and_indirect_result_onceの手書きのABI配置と演算を独立したWATに保存。",
+      "origin_sha256": "6d2a8038420457d5e6bb8c490cc23577f27604b4a4c1e170f4c7d8c5da7540b9",
+      "sha256": "14f122e0816f4a247fb0f176b5e1790e7e9738478bb21b6687d601fc1c07395b",
+      "source_sha256": "847270b23d3d04104b4479260a95e3ee95e179c89f3471e65fab8ffaedfe15fa"
+    },
+    {
+      "id": "mixed-variant",
+      "source": "guests/mixed-variant.wat",
+      "binary": "guests/mixed-variant.wasm",
+      "origin": "crates/benitoite/src/external/adapter/variant_tests.rs",
+      "origin_revision": "32df975b",
+      "changes": "variant_cases_join_numeric_bits_and_zero_unused_slotsの手書きの合流と演算を独立したWATに保存。",
+      "origin_sha256": "5615fa1801171fbe28038fe6c231ca4470d90d0703073a2d5fb067aa31f863e7",
+      "sha256": "2523731efcf4bee846fbc2e0d895657d1eec4cf88d468badf59592dee5c5f98c",
+      "source_sha256": "d3e1daf4b478853bc2d56cfe51a1c2168fa02af3bf7a273d394f911d81ac38ec"
+    }
+  ],
+  "contracts": [
+    {
+      "id": "numbers",
+      "description": "全幅の数と数のリスト。u64 の上半分と f32 の丸めを含む。",
+      "script": "numbers.bnt",
+      "input_sizes": "スカラー11呼び出しと各リスト7呼び出し。リストの要素幅は1/2/4/8バイト。",
+      "oracle": "境界値の最下位ビット反転と符号反転。リストは三つの既知の入力・期待値を順に繰り返す。",
+      "declarations": [
+        {"function": "flipS8", "guest": "numbers", "export": "flip-s8", "parameters": "v: Integer8", "result": "Integer8", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipS16", "guest": "numbers", "export": "flip-s16", "parameters": "v: Integer16", "result": "Integer16", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipS32", "guest": "numbers", "export": "flip-s32", "parameters": "v: Integer32", "result": "Integer32", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipS64", "guest": "numbers", "export": "flip-s64", "parameters": "v: Integer64", "result": "Integer64", "route": "typed", "calls_per_round": 1},
+        {"function": "flipU8", "guest": "numbers", "export": "flip-u8", "parameters": "v: UnsignedInteger8", "result": "UnsignedInteger8", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipU16", "guest": "numbers", "export": "flip-u16", "parameters": "v: UnsignedInteger16", "result": "UnsignedInteger16", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipU32", "guest": "numbers", "export": "flip-u32", "parameters": "v: UnsignedInteger32", "result": "UnsignedInteger32", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipU64", "guest": "numbers", "export": "flip-u64", "parameters": "v: UnsignedInteger64", "result": "UnsignedInteger64", "route": "adapter", "calls_per_round": 1},
+        {"function": "negateF32", "guest": "numbers", "export": "negate-f32", "parameters": "v: Float32", "result": "Float32", "route": "adapter", "calls_per_round": 1},
+        {"function": "negateF64", "guest": "numbers", "export": "negate-f64", "parameters": "v: Float64", "result": "Float64", "route": "typed", "calls_per_round": 1},
+        {"function": "unsignedAlias", "guest": "numbers", "export": "flip-u64", "parameters": "v: UnsignedInteger", "result": "UnsignedInteger", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipS8List", "guest": "number-lists", "export": "flip-s8", "parameters": "v: List[Integer8]", "result": "List[Integer8]", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipS16List", "guest": "number-lists", "export": "flip-s16", "parameters": "v: List[Integer16]", "result": "List[Integer16]", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipS32List", "guest": "number-lists", "export": "flip-s32", "parameters": "v: List[Integer32]", "result": "List[Integer32]", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipU16List", "guest": "number-lists", "export": "flip-u16", "parameters": "v: List[UnsignedInteger16]", "result": "List[UnsignedInteger16]", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipU32List", "guest": "number-lists", "export": "flip-u32", "parameters": "v: List[UnsignedInteger32]", "result": "List[UnsignedInteger32]", "route": "adapter", "calls_per_round": 1},
+        {"function": "flipU64List", "guest": "number-lists", "export": "flip-u64", "parameters": "v: List[UnsignedInteger64]", "result": "List[UnsignedInteger64]", "route": "adapter", "calls_per_round": 1},
+        {"function": "negateF32List", "guest": "number-lists", "export": "negate-f32", "parameters": "v: List[Float32]", "result": "List[Float32]", "route": "adapter", "calls_per_round": 1}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "list_elements", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/numbers.bnt", "0", "1"]},
+        "small": {"size": 3, "unit": "list_elements", "arguments": ["3", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/numbers.bnt", "3", "1"]},
+        "large": {"size": 4096, "unit": "list_elements", "arguments": ["4096", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/numbers.bnt", "4096", "1"]},
+        "repeat": {"size": 3, "unit": "list_elements", "arguments": ["3", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/numbers.bnt", "3", "3"]}
+      }
+    },
+    {
+      "id": "flags",
+      "description": "1/8/9/16/17/32項目の flags。",
+      "script": "flags.bnt",
+      "input_sizes": "各幅の先頭 min(n,幅) 項目。",
+      "oracle": "結果は全選択と入力ビット列2^min(n,幅)-1。clear の結果は空集合。",
+      "declarations": [
+        {"function": "f1", "guest": "flags", "export": "f1", "parameters": "v: Set[D1]", "result": "Pair[Set[D1], Integer]", "route": "adapter", "calls_per_round": 1},
+        {"function": "f8", "guest": "flags", "export": "f8", "parameters": "v: Set[D8]", "result": "Pair[Set[D8], Integer]", "route": "adapter", "calls_per_round": 1},
+        {"function": "f9", "guest": "flags", "export": "f9", "parameters": "v: Set[D9]", "result": "Pair[Set[D9], Integer]", "route": "adapter", "calls_per_round": 1},
+        {"function": "f16", "guest": "flags", "export": "f16", "parameters": "v: Set[D16]", "result": "Pair[Set[D16], Integer]", "route": "adapter", "calls_per_round": 1},
+        {"function": "f17", "guest": "flags", "export": "f17", "parameters": "v: Set[D17]", "result": "Pair[Set[D17], Integer]", "route": "adapter", "calls_per_round": 1},
+        {"function": "f32", "guest": "flags", "export": "f32", "parameters": "v: Set[D32]", "result": "Pair[Set[D32], Integer]", "route": "adapter", "calls_per_round": 1},
+        {"function": "clear", "guest": "flags", "export": "clear", "parameters": "v: Set[D32]", "result": "Set[D32]", "route": "adapter", "calls_per_round": 1}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "selected_prefix", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/flags.bnt", "0", "1"]},
+        "small": {"size": 1, "unit": "selected_prefix", "arguments": ["1", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/flags.bnt", "1", "1"]},
+        "large": {"size": 32, "unit": "selected_prefix", "arguments": ["32", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/flags.bnt", "32", "1"]},
+        "repeat": {"size": 1, "unit": "selected_prefix", "arguments": ["1", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/flags.bnt", "1", "3"]}
+      }
+    },
+    {
+      "id": "maps",
+      "description": "文字列を鍵とする map と重複鍵の後勝ち。",
+      "script": "maps.bnt",
+      "input_sizes": "鍵は0からn-1の十進表記、値は同じ整数。",
+      "oracle": "全値に7を加える。固定の z:1,a:2,z:3 は a:2,z:3 に正規化する。first は空なら-1、それ以外48。",
+      "declarations": [
+        {"function": "result", "guest": "maps", "export": "result", "parameters": "v: Map[String, Integer]", "result": "Map[String, Integer]", "route": "adapter", "calls_per_round": 1},
+        {"function": "echo", "guest": "maps", "export": "echo", "parameters": "v: Map[String, Integer]", "result": "Map[String, Integer]", "route": "adapter", "calls_per_round": 1},
+        {"function": "first", "guest": "maps", "export": "first", "parameters": "v: Map[String, Integer]", "result": "Integer", "route": "adapter", "calls_per_round": 1}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "map_entries", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/maps.bnt", "0", "1"]},
+        "small": {"size": 3, "unit": "map_entries", "arguments": ["3", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/maps.bnt", "3", "1"]},
+        "large": {"size": 4096, "unit": "map_entries", "arguments": ["4096", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/maps.bnt", "4096", "1"]},
+        "repeat": {"size": 3, "unit": "map_entries", "arguments": ["3", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/maps.bnt", "3", "3"]}
+      }
+    },
+    {
+      "id": "records",
+      "description": "型引数を代入した record と有限の入れ子。",
+      "script": "records.bnt",
+      "input_sizes": "固定の record サイズ。n は欄の値であり転送の要素数ではない。 混合recordのABI固定部は24バイト。",
+      "oracle": "Boxの欄に7、Envelopeの欄に9を加える。空の構成子は空のまま。 混合幅の欄は(-128,2^63,(1.5,😀))から(-127,2^63+1,(-1.5,😁))へ変更。",
+      "declarations": [
+        {"function": "box", "guest": "records", "export": "box", "parameters": "v: Box[Integer]", "result": "Box[Integer]", "route": "adapter", "calls_per_round": 1},
+        {"function": "nested", "guest": "records", "export": "nested", "parameters": "v: Box[Box[Integer]]", "result": "Box[Box[Integer]]", "route": "adapter", "calls_per_round": 1},
+        {"function": "envelope", "guest": "records", "export": "envelope", "parameters": "v: Envelope[Integer]", "result": "Envelope[Integer]", "route": "adapter", "calls_per_round": 2},
+        {"function": "mixed", "guest": "mixed-record", "export": "run", "parameters": "v: Mixed", "result": "Mixed", "route": "adapter", "calls_per_round": 1}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "integer_magnitude", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/records.bnt", "0", "1"]},
+        "small": {"size": 35, "unit": "integer_magnitude", "arguments": ["35", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/records.bnt", "35", "1"]},
+        "large": {"size": 1000000, "unit": "integer_magnitude", "arguments": ["1000000", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/records.bnt", "1000000", "1"]},
+        "repeat": {"size": 35, "unit": "integer_magnitude", "arguments": ["35", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/records.bnt", "35", "3"]}
+      }
+    },
+    {
+      "id": "tuples",
+      "description": "1/4/17要素の tuple と間接の引数。",
+      "script": "tuples.bnt",
+      "input_sizes": "要素数1/4/17、固定部8/32/136バイト。",
+      "oracle": "位置iの n+i に11+iを加え、n+11+2iを得る。",
+      "declarations": [
+        {"function": "tuple1", "guest": "tuples", "export": "tuple1", "parameters": "v: One", "result": "One", "route": "adapter", "calls_per_round": 1},
+        {"function": "tuple4", "guest": "tuples", "export": "tuple4", "parameters": "v: Four", "result": "Four", "route": "adapter", "calls_per_round": 1},
+        {"function": "tuple17", "guest": "tuples", "export": "tuple17", "parameters": "v: Seventeen", "result": "Seventeen", "route": "adapter", "calls_per_round": 1}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "integer_magnitude", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/tuples.bnt", "0", "1"]},
+        "small": {"size": 1, "unit": "integer_magnitude", "arguments": ["1", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/tuples.bnt", "1", "1"]},
+        "large": {"size": 1000000, "unit": "integer_magnitude", "arguments": ["1000000", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/tuples.bnt", "1000000", "1"]},
+        "repeat": {"size": 1, "unit": "integer_magnitude", "arguments": ["1", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/tuples.bnt", "1", "3"]}
+      }
+    },
+    {
+      "id": "variants",
+      "description": "一つの組と複数引数の variant。",
+      "script": "variants.bnt",
+      "input_sizes": "空の場合と欄のある場合を毎回呼ぶ。 合流variantのABI固定部は16バイト。",
+      "oracle": "欄(n,n+4)を(n+11,n+26)へ変更。単一の欄には12を加える。 合流は空、s32、f32の負の零、f64、u64の上半分、複数引数の六場合を既知の変更結果と比べる。",
+      "declarations": [
+        {"function": "one", "guest": "variants", "export": "fields", "parameters": "v: One", "result": "One", "route": "adapter", "calls_per_round": 2},
+        {"function": "two", "guest": "variants", "export": "fields", "parameters": "v: Two", "result": "Two", "route": "adapter", "calls_per_round": 2},
+        {"function": "single", "guest": "variants", "export": "single", "parameters": "v: Single", "result": "Single", "route": "adapter", "calls_per_round": 1},
+        {"function": "joined", "guest": "mixed-variant", "export": "run", "parameters": "v: Joined", "result": "Joined", "route": "adapter", "calls_per_round": 6}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "integer_magnitude", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/variants.bnt", "0", "1"]},
+        "small": {"size": 3, "unit": "integer_magnitude", "arguments": ["3", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/variants.bnt", "3", "1"]},
+        "large": {"size": 1000000, "unit": "integer_magnitude", "arguments": ["1000000", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/variants.bnt", "1000000", "1"]},
+        "repeat": {"size": 3, "unit": "integer_magnitude", "arguments": ["3", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/variants.bnt", "3", "3"]}
+      }
+    },
+    {
+      "id": "primitives",
+      "description": "Boolean/Character/String/Bytes の両方向の変換。",
+      "script": "primitives.bnt",
+      "input_sizes": "Bytesはnバイト。文字列はA日😀をmin(n,4096)回、UTF-8で8*min(n,4096)バイト。",
+      "oracle": "Boolean反転、😀から😁、文字列へ!追加。バイト0/128/255を255/127/0へ変更。",
+      "declarations": [
+        {"function": "invert", "guest": "primitives", "export": "boolean", "parameters": "v: Boolean", "result": "Boolean", "route": "adapter", "calls_per_round": 2},
+        {"function": "next", "guest": "primitives", "export": "character", "parameters": "v: Character", "result": "Character", "route": "adapter", "calls_per_round": 1},
+        {"function": "append", "guest": "primitives", "export": "string", "parameters": "v: String", "result": "String", "route": "typed", "calls_per_round": 1},
+        {"function": "bytes", "guest": "primitives", "export": "bytes", "parameters": "v: Bytes", "result": "Bytes", "route": "typed", "calls_per_round": 1},
+        {"function": "bytesAdapter", "guest": "primitives", "export": "bytes-adapter", "parameters": "ignored: Boolean, v: Bytes", "result": "Bytes", "route": "adapter", "calls_per_round": 1}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "bytes", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/primitives.bnt", "0", "1"]},
+        "small": {"size": 3, "unit": "bytes", "arguments": ["3", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/primitives.bnt", "3", "1"]},
+        "large": {"size": 1048576, "unit": "bytes", "arguments": ["1048576", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/primitives.bnt", "1048576", "1"]},
+        "repeat": {"size": 3, "unit": "bytes", "arguments": ["3", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/primitives.bnt", "3", "3"]}
+      }
+    },
+    {
+      "id": "nested",
+      "description": "空の子を含む List[List[u16]]。",
+      "script": "nested.bnt",
+      "input_sizes": "子は[10,20]/空/[30]の順。内側の合計要素数は3*(n div 3)+2*(n mod 3 > 0)。",
+      "oracle": "各内側の要素へ1を加える。空の子と外側の順序を保つ。",
+      "declarations": [
+        {"function": "run", "guest": "nested", "export": "run", "parameters": "v: List[List[UnsignedInteger16]]", "result": "List[List[UnsignedInteger16]]", "route": "adapter", "calls_per_round": 1}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "outer_list_elements", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/nested.bnt", "0", "1"]},
+        "small": {"size": 3, "unit": "outer_list_elements", "arguments": ["3", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/nested.bnt", "3", "1"]},
+        "large": {"size": 4096, "unit": "outer_list_elements", "arguments": ["4096", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/nested.bnt", "4096", "1"]},
+        "repeat": {"size": 3, "unit": "outer_list_elements", "arguments": ["3", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/nested.bnt", "3", "3"]}
+      }
+    },
+    {
+      "id": "utf16",
+      "description": "元ゲストのUTF-16と補助のUTF-8。",
+      "script": "utf16.bnt",
+      "input_sizes": "A日😀をn回。UTF-8は8*nバイト、UTF-16は4*n符号単位(8*nバイト)。",
+      "oracle": "各A日😀を日😀!へ変更。戻り値のUTF-8も8*nバイト。",
+      "declarations": [
+        {"function": "run", "guest": "utf16", "export": "run", "parameters": "v: String", "result": "String", "route": "typed", "calls_per_round": 1},
+        {"function": "runAdapter", "guest": "utf16", "export": "run-adapter", "parameters": "ignored: Boolean, v: String", "result": "String", "route": "adapter", "calls_per_round": 1}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "string_units", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/utf16.bnt", "0", "1"]},
+        "small": {"size": 1, "unit": "string_units", "arguments": ["1", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/utf16.bnt", "1", "1"]},
+        "large": {"size": 4096, "unit": "string_units", "arguments": ["4096", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/utf16.bnt", "4096", "1"]},
+        "repeat": {"size": 1, "unit": "string_units", "arguments": ["1", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/utf16.bnt", "1", "3"]}
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "short-numbers",
+      "description": "短い数のtyped/adapter比較。",
+      "script": "short-numbers.bnt",
+      "input_sizes": "どちらも固定8バイトの数を渡す。符号付きと符号なしの契約を区別する。",
+      "oracle": "偶数は+1、奇数は-1。",
+      "declarations": [
+        {"function": "typed", "guest": "numbers", "export": "flip-s64", "parameters": "v: Integer", "result": "Integer", "route": "typed", "calls_per_round": 1},
+        {"function": "adapter", "guest": "numbers", "export": "flip-u64", "parameters": "v: UnsignedInteger64", "result": "UnsignedInteger64", "route": "adapter", "calls_per_round": 1}
+      ],
+      "cli_variants": [
+        {"route": "typed", "script": "short-numbers-typed.bnt", "declarations": ["typed"], "versions": ["start", "numbers", "adapter", "final"]},
+        {"route": "adapter", "script": "short-numbers-adapter.bnt", "declarations": ["adapter"], "versions": ["numbers", "adapter", "final"]}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "integer_magnitude", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/short-numbers.bnt", "0", "1"]},
+        "small": {"size": 42, "unit": "integer_magnitude", "arguments": ["42", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/short-numbers.bnt", "42", "1"]},
+        "large": {"size": 1000000, "unit": "integer_magnitude", "arguments": ["1000000", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/short-numbers.bnt", "1000000", "1"]},
+        "repeat": {"size": 42, "unit": "integer_magnitude", "arguments": ["42", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/short-numbers.bnt", "42", "3"]}
+      }
+    },
+    {
+      "id": "large-bytes",
+      "description": "大きなBytesのtyped/adapter比較。",
+      "script": "large-bytes.bnt",
+      "input_sizes": "一引数はtyped、Booleanの追加引数を持つ宣言はadapter。Bytesはnバイト。",
+      "oracle": "バイト0/128/255を255/127/0へ変更。両宣言を同じ独立した期待値と比べる。",
+      "declarations": [
+        {"function": "bytes", "guest": "primitives", "export": "bytes", "parameters": "v: Bytes", "result": "Bytes", "route": "typed", "calls_per_round": 1},
+        {"function": "bytesAdapter", "guest": "primitives", "export": "bytes-adapter", "parameters": "ignored: Boolean, v: Bytes", "result": "Bytes", "route": "adapter", "calls_per_round": 1}
+      ],
+      "cli_variants": [
+        {"route": "typed", "script": "large-bytes-typed.bnt", "declarations": ["bytes"], "versions": ["start", "numbers", "adapter", "final"]},
+        {"route": "adapter", "script": "large-bytes-adapter.bnt", "declarations": ["bytesAdapter"], "versions": ["numbers", "adapter", "final"]}
+      ],
+      "samples": {
+        "zero": {"size": 0, "unit": "bytes", "arguments": ["0", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/large-bytes.bnt", "0", "1"]},
+        "small": {"size": 3, "unit": "bytes", "arguments": ["3", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/large-bytes.bnt", "3", "1"]},
+        "large": {"size": 1048576, "unit": "bytes", "arguments": ["1048576", "1"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/large-bytes.bnt", "1048576", "1"]},
+        "repeat": {"size": 3, "unit": "bytes", "arguments": ["3", "3"], "command": ["{benitoite}", "run", "--wasm-stats", "tools/bench/wit-transfer/large-bytes.bnt", "3", "3"]}
+      }
+    }
+  ],
+  "small_values": "expected/small-values.json"
+}

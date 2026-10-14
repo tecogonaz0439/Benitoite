@@ -1,0 +1,48 @@
+//! WASM の型と関数の宣言（設計書 03-10「宣言の形」）。
+
+/// コンパイル済みの正規表現を持つ外部の型。
+@external("wasm", "wasm/regex.wasm", "bnt:regex/re@0.1.0#pattern")
+public type Pattern
+
+/// 一致した文字列とバイト位置。
+public record Found
+  text: String
+  byteStart: Integer
+  byteEnd: Integer
+end record
+
+/// コンポーネントの [static]pattern.compile を呼ぶ。
+@external("wasm", "wasm/regex.wasm", "bnt:regex/re@0.1.0#[static]pattern.compile")
+public(package) function compile(source: String) -> Result[Pattern, String] uses State
+
+/// コンポーネントの [method]pattern.is-match を呼ぶ。
+@external("wasm", "wasm/regex.wasm", "bnt:regex/re@0.1.0#[method]pattern.is-match")
+public(package) function isMatch(pattern: Pattern, text: String) -> Boolean uses State
+
+/// コンポーネントの [method]pattern.find を呼ぶ。
+@external("wasm", "wasm/regex.wasm", "bnt:regex/re@0.1.0#[method]pattern.find")
+public(package) function find(pattern: Pattern, text: String) -> Option[Found] uses State
+
+/// コンポーネントの [method]pattern.find-all を呼ぶ。
+@external("wasm", "wasm/regex.wasm", "bnt:regex/re@0.1.0#[method]pattern.find-all")
+public(package) function findAll(pattern: Pattern, text: String) -> List[Found] uses State
+
+/// コンポーネントの [method]pattern.replace-all を呼ぶ。
+@external("wasm", "wasm/regex.wasm", "bnt:regex/re@0.1.0#[method]pattern.replace-all")
+public(package) function replaceAll(pattern: Pattern, text: String, replacement: String) -> String uses State
+
+/// コンポーネントの [method]pattern.count を呼ぶ。
+@external("wasm", "wasm/regex.wasm", "bnt:regex/re@0.1.0#[method]pattern.count")
+public(package) function count(pattern: Pattern, text: String) -> Integer uses State
+
+/// コンポーネントの is-match-once を呼ぶ。
+@external("wasm", "wasm/regex.wasm", "bnt:regex/re@0.1.0#is-match-once")
+public(package) function isMatchOnce(source: String, text: String) -> Result[Boolean, String]
+
+/// コンポーネントの find-all-once を呼ぶ。
+@external("wasm", "wasm/regex.wasm", "bnt:regex/re@0.1.0#find-all-once")
+public(package) function findAllOnce(source: String, text: String) -> Result[List[Found], String]
+
+/// コンポーネントの count-once を呼ぶ。
+@external("wasm", "wasm/regex.wasm", "bnt:regex/re@0.1.0#count-once")
+public(package) function countOnce(source: String, text: String) -> Result[Integer, String]

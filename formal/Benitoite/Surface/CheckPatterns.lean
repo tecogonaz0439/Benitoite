@@ -4,7 +4,7 @@ import Benitoite.Surface.CheckPredicates
 namespace Benitoite.Surface.CheckTools
 open Benitoite.Release
 
-/-- コアに許された定数の型。Float・Byte・Decimal・Opaque はパターンに許さない。 -/
+/-- コアに許された定数の型。幅付きの七種と Float・Byte・Decimal・Opaque はパターンに許さない。 -/
 def constPatBase : Release.Const → Option BaseTy
   | .integer _ => some .integer
   | .string _ => some .string
@@ -57,8 +57,7 @@ private theorem pat_sound (P : Release.Program) :
     subst b'
     cases c <;> simp_all [constPatBase, patTy]
       <;> obtain ⟨rfl, rfl⟩ := h
-      <;> exact .P_Const (by intros; simp) (by intros; simp)
-        (by intros; simp) (by intros; simp)
+      <;> exact .P_Const rfl
   · intro c b b' hc hb δ h; simp [patTy, hc, hb] at h
   · intro c b hc δ h; simp [patTy, hc] at h
   · intro lo hi δ h; simp only [patTy, Option.some.injEq] at h; subst δ; exact .P_RangeInt

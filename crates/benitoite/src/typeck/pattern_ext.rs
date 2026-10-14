@@ -105,14 +105,26 @@ fn range_end(ctx: &mut Body<'_, '_>, end: &RangeEnd) -> Option<ConstValue> {
             value.map(ConstValue::Integer)
         }
         Literal::Char(c) => Some(ConstValue::Character(*c)),
-        Literal::Float(_) | Literal::Decimal(_) | Literal::Str(_) | Literal::Bool(_) => None,
+        Literal::WidthInt { .. }
+        | Literal::WidthFloat { .. }
+        | Literal::Float(_)
+        | Literal::Decimal(_)
+        | Literal::Str(_)
+        | Literal::Bool(_) => None,
     }
 }
 fn end_text(v: &ConstValue) -> String {
     match v {
         ConstValue::Integer(n) => n.to_string(),
         ConstValue::Character(c) => format!("'{}'", c.escape_default()),
-        ConstValue::Float(_)
+        ConstValue::Integer8(_)
+        | ConstValue::Integer16(_)
+        | ConstValue::Integer32(_)
+        | ConstValue::UnsignedInteger16(_)
+        | ConstValue::UnsignedInteger32(_)
+        | ConstValue::UnsignedInteger64(_)
+        | ConstValue::Float32(_)
+        | ConstValue::Float(_)
         | ConstValue::String(_)
         | ConstValue::Boolean(_)
         | ConstValue::Unit
@@ -204,7 +216,14 @@ fn lower(ctx: &Body<'_, '_>, p: &Pattern) -> Option<Pat> {
             ConstValue::Character(v) => Some(Pat::Character(*v)),
             ConstValue::String(v) => Some(Pat::String(v.clone())),
             ConstValue::Boolean(v) => Some(Pat::Boolean(*v)),
-            ConstValue::Float(_)
+            ConstValue::Integer8(_)
+            | ConstValue::Integer16(_)
+            | ConstValue::Integer32(_)
+            | ConstValue::UnsignedInteger16(_)
+            | ConstValue::UnsignedInteger32(_)
+            | ConstValue::UnsignedInteger64(_)
+            | ConstValue::Float32(_)
+            | ConstValue::Float(_)
             | ConstValue::Unit
             | ConstValue::Byte(_)
             | ConstValue::Decimal(_)
@@ -529,6 +548,7 @@ mod tests {
                 | Item::Trait(_)
                 | Item::Impl(_)
                 | Item::Effect(_)
+                | Item::ExternalType(_)
                 | Item::Error(_) => None,
             })
             .unwrap();

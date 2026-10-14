@@ -1,0 +1,11 @@
+// spec: 01-02 属性（初回リリース版）
+// spec: 01-02 外部の関数の宣言
+@external("wasm", "wasm/../x.wasm", "add")
+function malformed(a: Integer, b: Integer) -> Integer
+@external("wasm", "wasm/x.wasm", "add")
+function wrongCount(a: Integer) -> Integer
+@external("wasm", "wasm/invalid.wasm", "f")
+function invalid(a: Integer) -> Integer
+function main() -> Unit
+  ()
+end function

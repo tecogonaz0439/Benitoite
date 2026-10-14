@@ -1,0 +1,22 @@
+// 関門: 公開の入口から旧の速い経路、補助、戻り値なし、3 引数の数のリストを呼ぶ。
+// 内部の接続だけでは、照合から呼び出しまでの振り分けの退行を捕まえられない。
+// spec: 01-02 外部の関数の宣言
+import Benitoite.Unofficial.IO.Console
+@external("wasm", "x.wasm", "f")
+function f(x: UnsignedInteger32) -> UnsignedInteger32
+@external("wasm", "x.wasm", "typed")
+function typed() -> Integer
+@external("wasm", "x.wasm", "void")
+function void() -> Unit
+@external("wasm", "x.wasm", "tail-ints")
+function tailInts(n: Integer, xs: List[Integer], extra: Float) -> List[Integer]
+@external("wasm", "x.wasm", "tail-floats")
+function tailFloats(n: Integer, xs: List[Float], extra: Float) -> List[Float]
+function main() -> Unit uses Console.Write
+  Console.writeLine("${typed()}")
+  Console.writeLine("${f(12u32)}")
+  bind value <- void()
+  Console.writeLine("${value = ()}")
+  Console.writeLine("${tailInts(1, [7, -42, 99], 0.5) = [-42, 99]}")
+  Console.writeLine("${tailFloats(1, [7.0, -0.0, 1.5], 0.5) = [-0.0, 1.5]}")
+end function

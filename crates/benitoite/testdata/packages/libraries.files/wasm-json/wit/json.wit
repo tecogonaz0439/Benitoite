@@ -1,0 +1,37 @@
+package bnt:json@0.1.0;
+
+interface codec {
+  /// 平らな節点の表。前順（pre-order）に並べ、配列と対象は子の数を持つ。
+  /// 対象の子は、key の節点と値の節点の対を数える。
+  variant node {
+    null,
+    boolean(bool),
+    integer(s64),
+    float(f64),
+    text(string),
+    array(s64),
+    object(s64),
+    key(string),
+  }
+
+  record parse-error { line: s64, column: s64, message: string }
+
+  validate: func(text: string) -> result<_, parse-error>;
+  pretty: func(text: string) -> result<string, parse-error>;
+  minify: func(text: string) -> result<string, parse-error>;
+  parse: func(text: string) -> result<list<node>, parse-error>;
+  stringify: func(nodes: list<node>) -> result<string, string>;
+  stringify-pretty: func(nodes: list<node>) -> result<string, string>;
+
+  /// 文書を WASM の側に持ち、要る値だけを問い合わせる形。
+  resource document {
+    parse: static func(text: string) -> result<document, parse-error>;
+    /// JSON Pointer（RFC 6901）で指した値を JSON の文字列で返す。
+    get: func(pointer: string) -> option<string>;
+    len: func(pointer: string) -> option<s64>;
+  }
+}
+
+world json {
+  export codec;
+}

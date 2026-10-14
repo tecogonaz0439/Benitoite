@@ -1,0 +1,8 @@
+// 関門: 数の幅と符号の不一致を、文章と JSON の診断に示す。
+@external("wasm", "x.wasm", "signed-byte")
+function signedByte(v: UnsignedInteger8) -> Integer16
+@external("wasm", "x.wasm", "single")
+function single(v: Float64) -> Float64
+function main() -> Unit
+  ()
+end function

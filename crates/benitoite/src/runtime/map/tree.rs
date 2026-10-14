@@ -387,7 +387,8 @@ impl TreeKind {
 }
 
 // 中順の位置だけを保存し、木全体の写しを持たない。
-pub(in crate::runtime) struct Cursor<'e> {
+/// 木を複製せず、回収しない区間の中で鍵の順に走査する。
+pub(crate) struct Cursor<'e> {
     kind: TreeKind,
     at: Value<'e>,
     path: Vec<Node<'e>>,
@@ -406,7 +407,8 @@ impl<'e> Cursor<'e> {
     pub(in crate::runtime) fn set(at: Value<'e>) -> Self {
         Self::new(at, TreeKind::Set)
     }
-    pub(in crate::runtime) fn next(
+    /// 次の鍵と値を返す。集合では値を使わず、鍵だけを読む。
+    pub(crate) fn next(
         &mut self,
         ctx: &ValueCtx<'e>,
     ) -> Result<Option<(Value<'e>, Value<'e>)>, Stop> {

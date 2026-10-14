@@ -1,0 +1,46 @@
+// spec: 01-04 Float
+// 作成時の関門: 単精度の算術を定数と引数経由で実行し、専用命令への誤った振り分けと
+// 参照実行器の変換漏れを捕まえる。値の意味は組み込みの境界でビット列を検査する。
+import Benitoite.Unofficial.IO.Console
+
+const rounded: Float32 = (16777216.0f32 + 1.0f32) - 16777216.0f32
+const product: Float32 = 1.0000001192092896f32 * 1.0000001192092896f32
+const quotient: Float32 = 1.0f32 / 3.0f32
+const negativeZero: Float32 = -(0.0f32)
+const infinity: Float32 = 1.0f32 / 0.0f32
+const nan: Float32 = 0.0f32 / 0.0f32
+
+function add(a: Float32, b: Float32) -> Float32
+  return a + b
+end function
+function subtract(a: Float32, b: Float32) -> Float32
+  return a - b
+end function
+function multiply(a: Float32, b: Float32) -> Float32
+  return a * b
+end function
+function divide(a: Float32, b: Float32) -> Float32
+  return a / b
+end function
+function negate(a: Float32) -> Float32
+  return -a
+end function
+
+function main() -> Unit uses Console.Write
+  bind values <- [
+    rounded, product, quotient, negativeZero, infinity, nan,
+    subtract(add(16777216.0f32, 1.0f32), 16777216.0f32),
+    add(16777218.0f32, 1.0f32),
+    multiply(1.0000001192092896f32, 1.0000001192092896f32),
+    divide(1.0f32, 3.0f32),
+    add(-0.0f32, -0.0f32), subtract(-0.0f32, 0.0f32),
+    multiply(-0.0f32, 2.0f32), divide(0.0f32, -2.0f32),
+    negate(0.0f32), negate(-0.0f32),
+    divide(1.0f32, 0.0f32), divide(1.0f32, -0.0f32),
+    multiply(3.4028234663852886e38f32, 2.0f32),
+    divide(0.0f32, 0.0f32), add(nan, 1.0f32),
+    subtract(infinity, infinity), multiply(0.0f32, infinity),
+    divide(infinity, infinity), negate(nan)
+  ]
+  Console.writeLine(Integer.toString(List.length(values)))
+end function

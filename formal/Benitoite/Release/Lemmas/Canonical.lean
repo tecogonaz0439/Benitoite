@@ -222,7 +222,7 @@ mutual
     match hp with
     | .P_Wild => simp [Pat.matchVal] at hm; subst hm; exact .nil
     | .P_Var => simp [Pat.matchVal] at hm; subst hm; exact .cons hv .nil
-    | .P_Const _ _ _ _ =>
+    | .P_Const _ =>
         cases v with
         | const c' =>
             simp only [Pat.matchVal] at hm

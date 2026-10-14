@@ -62,6 +62,13 @@ pub(super) fn const_key(adts: &AdtTable, value: &ConstValue) -> String {
                 }
             }
             KeyWork::Value(v) => match v {
+                V::Integer8(n) => key_append(&mut out, &n.to_string()),
+                V::Integer16(n) => key_append(&mut out, &n.to_string()),
+                V::Integer32(n) => key_append(&mut out, &n.to_string()),
+                V::UnsignedInteger16(n) => key_append(&mut out, &n.to_string()),
+                V::UnsignedInteger32(n) => key_append(&mut out, &n.to_string()),
+                V::UnsignedInteger64(n) => key_append(&mut out, &n.to_string()),
+                V::Float32(n) => key_append(&mut out, &crate::base::prim::float32_to_text(*n)),
                 V::Integer(n) => key_append(&mut out, &n.to_string()),
                 V::Byte(n) => key_append(&mut out, &n.to_string()),
                 V::Float(n) => key_append(&mut out, &crate::base::prim::float_to_text(*n)),

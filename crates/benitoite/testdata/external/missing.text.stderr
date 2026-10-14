@@ -1,0 +1,9 @@
+error[E1001]: cannot read the component `wasm/x.wasm`
+  --> testdata/external/missing/main.bnt:2:19
+   |
+ 2 | @external("wasm", "wasm/x.wasm", "add")
+   |                   ^^^^^^^^^^^^^
+   |
+   = note: no such file
+
+error: could not check testdata/external/missing/main.bnt due to 1 previous error

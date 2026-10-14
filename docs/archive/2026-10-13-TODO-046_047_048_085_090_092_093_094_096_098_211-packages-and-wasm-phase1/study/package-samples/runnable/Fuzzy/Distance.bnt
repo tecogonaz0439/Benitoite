@@ -1,0 +1,44 @@
+//! 編集距離（Levenshtein の距離）と、候補の中から最も近い語を選ぶ関数。
+//! パッケージ Fuzzy の例。提案の形（proposed/packages/fuzzy/）では、distance を WASM の関数として
+//! @external で宣言する。ここには、今の処理系で動かせる Benitoite の実装を置き、WASM の版と結果を比べる基準にする。
+
+/// a を b に変えるのに要る、1 文字の挿入・削除・置換の最小の回数を返す。
+public function distance(a: String, b: String) -> Integer
+  bind bs <- String.characters(b)
+  bind initial <- List.range(0, List.length(bs) + 1)
+  bind Pair(lastRow, _) <- List.fold(String.characters(a), Pair(initial, 1), lambda(state: Pair[List[Integer], Integer], ca: Character) -> Pair[List[Integer], Integer]
+    bind Pair(previous, row) <- state
+    return Pair(nextRow(previous, ca, bs, row), row + 1)
+  end lambda)
+  return Option.unwrapOr(List.head(List.reverse(lastRow)), 0)
+end function
+
+/// 候補のうち word との距離が最も小さく、limit 以下のものを返す。同じ距離なら先の候補を選ぶ。
+public function closest(word: String, candidates: List[String], limit: Integer) -> Option[String]
+  bind best <- List.fold(candidates, Option.None, lambda(acc: Option[Pair[Integer, String]], candidate: String) -> Option[Pair[Integer, String]]
+    bind d <- distance(word, candidate)
+    return match acc with
+      case Option.Some(Pair(bestDistance, _)) if bestDistance <= d -> acc
+      case _ if d <= limit -> Option.Some(Pair(d, candidate))
+      case _ -> acc
+    end match
+  end lambda)
+  return Option.map(best, lambda(p) return Pair.second(p) end lambda)
+end function
+
+// 表の一行（previous）と a の一文字（ca）から、次の行を作る。行の先頭の値は row である。
+function nextRow(previous: List[Integer], ca: Character, bs: List[Character], row: Integer) -> List[Integer]
+  return List.reverse(step(previous, bs, ca, [row]))
+end function
+
+// acc は作りかけの行を逆順に持つ（先頭が左隣の値）。
+function step(previous: List[Integer], bs: List[Character], ca: Character, acc: List[Integer]) -> List[Integer]
+  return match Pair(previous, bs) with
+    case Pair([diagonal, up, ..rest], [cb, ..moreB]) ->
+      bind left <- Option.unwrapOr(List.head(acc), 0)
+      bind cost <- if ca = cb then 0 else 1 end if
+      bind value <- Integer.minimum(Integer.minimum(up + 1, left + 1), diagonal + cost)
+      step([up, ..rest], moreB, ca, List.prepend(acc, value))
+    case _ -> acc
+  end match
+end function

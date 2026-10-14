@@ -9,6 +9,13 @@ pub(super) fn constant(c: &Const) -> Value {
     match c {
         Const::Int(n) => Value::Int(*n),
         Const::Float(n) => Value::Float(*n),
+        Const::Int8(n) => Value::Int8(*n),
+        Const::Int16(n) => Value::Int16(*n),
+        Const::Int32(n) => Value::Int32(*n),
+        Const::UInt16(n) => Value::UInt16(*n),
+        Const::UInt32(n) => Value::UInt32(*n),
+        Const::UInt64(n) => Value::UInt64(*n),
+        Const::Float32(n) => Value::Float32(*n),
         Const::Str(s) => Value::Str(Rc::from(s.as_str())),
         Const::Char(c) => Value::Char(*c),
         Const::Bool(b) => Value::Bool(*b),

@@ -169,6 +169,12 @@ mutual
     -- | return c（c は係数の符号を反転し、小数の桁数を保った値。負のゼロはない）。
     -- Rust unary と同じ。n は符号を反転する前の係数。
     | .negDecimal n scale => .ret (.const (.decimal (-n) scale))
+    -- 01-12「名前とリテラル」: 正の大きさに負号を含め、演算子の呼び出しを作らない。
+    | .negInteger8 n => .ret (.const (.integer8 (-Int.ofNat n)))
+    | .negInteger16 n => .ret (.const (.integer16 (-Int.ofNat n)))
+    | .negInteger32 n => .ret (.const (.integer32 (-Int.ofNat n)))
+    -- binary32 の符号ビットだけを反転する。零の符号も保つ。
+    | .negFloat32 bits => .ret (.const (.float32 (bits ^^^ 0x80000000)))
     -- 01-12「名前とリテラル」: () | return ()
     | .unit => .ret (.const .unit)
     -- 同節: (e) | ⟦e⟧

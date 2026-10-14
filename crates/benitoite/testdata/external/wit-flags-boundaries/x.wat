@@ -1,0 +1,52 @@
+;; 各幅の flags を手書きの記憶域から返し、入力のビット列を独立した整数で観察する。
+(component
+  (core module $m
+    (memory (export "memory") 1)
+    (func (export "f1") (param i32) (result i32)
+      i32.const 0 i32.const -1 i32.store8
+      i32.const 8 local.get 0 i64.extend_i32_u i64.store i32.const 0)
+    (func (export "f8") (param i32) (result i32)
+      i32.const 0 i32.const -1 i32.store8
+      i32.const 8 local.get 0 i64.extend_i32_u i64.store i32.const 0)
+    (func (export "f9") (param i32) (result i32)
+      i32.const 0 i32.const -1 i32.store16
+      i32.const 8 local.get 0 i64.extend_i32_u i64.store i32.const 0)
+    (func (export "f16") (param i32) (result i32)
+      i32.const 0 i32.const -1 i32.store16
+      i32.const 8 local.get 0 i64.extend_i32_u i64.store i32.const 0)
+    (func (export "f17") (param i32) (result i32)
+      i32.const 0 i32.const -1 i32.store
+      i32.const 8 local.get 0 i64.extend_i32_u i64.store i32.const 0)
+    (func (export "f32") (param i32) (result i32)
+      i32.const 0 i32.const -1 i32.store
+      i32.const 8 local.get 0 i64.extend_i32_u i64.store i32.const 0)
+    (func (export "clear") (param i32) (result i32) i32.const 0)
+  )
+  (core instance $i (instantiate $m))
+  (type $t1 (flags "f1"))
+  (export $f1 "flags-1" (type $t1))
+  (func (export "f1") (param "v" $f1) (result (tuple $f1 s64))
+    (canon lift (core func $i "f1") (memory (core memory $i "memory"))))
+  (type $t8 (flags "f1" "f2" "f3" "f4" "f5" "f6" "f7" "f8"))
+  (export $f8 "flags-8" (type $t8))
+  (func (export "f8") (param "v" $f8) (result (tuple $f8 s64))
+    (canon lift (core func $i "f8") (memory (core memory $i "memory"))))
+  (type $t9 (flags "f1" "f2" "f3" "f4" "f5" "f6" "f7" "f8" "f9"))
+  (export $f9 "flags-9" (type $t9))
+  (func (export "f9") (param "v" $f9) (result (tuple $f9 s64))
+    (canon lift (core func $i "f9") (memory (core memory $i "memory"))))
+  (type $t16 (flags "f1" "f2" "f3" "f4" "f5" "f6" "f7" "f8" "f9" "f10" "f11" "f12" "f13" "f14" "f15" "f16"))
+  (export $f16 "flags-16" (type $t16))
+  (func (export "f16") (param "v" $f16) (result (tuple $f16 s64))
+    (canon lift (core func $i "f16") (memory (core memory $i "memory"))))
+  (type $t17 (flags "f1" "f2" "f3" "f4" "f5" "f6" "f7" "f8" "f9" "f10" "f11" "f12" "f13" "f14" "f15" "f16" "f17"))
+  (export $f17 "flags-17" (type $t17))
+  (func (export "f17") (param "v" $f17) (result (tuple $f17 s64))
+    (canon lift (core func $i "f17") (memory (core memory $i "memory"))))
+  (type $t32 (flags "f1" "f2" "f3" "f4" "f5" "f6" "f7" "f8" "f9" "f10" "f11" "f12" "f13" "f14" "f15" "f16" "f17" "f18" "f19" "f20" "f21" "f22" "f23" "f24" "f25" "f26" "f27" "f28" "f29" "f30" "f31" "f32"))
+  (export $f32 "flags-32" (type $t32))
+  (func (export "f32") (param "v" $f32) (result (tuple $f32 s64))
+    (canon lift (core func $i "f32") (memory (core memory $i "memory"))))
+  (func (export "clear") (param "v" $f32) (result $f32)
+    (canon lift (core func $i "clear")))
+)

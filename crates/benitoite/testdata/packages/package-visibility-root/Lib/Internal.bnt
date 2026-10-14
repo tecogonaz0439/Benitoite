@@ -1,0 +1,19 @@
+public(package) const answer: Integer = 42
+
+public(package) record Box
+  value: Integer
+end record
+
+public(package) data Token
+  Value(Integer)
+end data
+
+public(package) trait Read[T]
+  function read(x: T) -> Integer
+end trait
+
+implement Read[Integer]
+  function read(x: Integer) -> Integer
+    return x
+  end function
+end implement

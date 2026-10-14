@@ -36,7 +36,7 @@ IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール]
 
 | 部分 | モジュール・型・エフェクト | 使い方 |
 |---|---|---|
-| prelude | 基本型とその関数のモジュール（`Integer`・`Float`・`Decimal`・`Byte`・`Character`・`String`・`Boolean`）、`List`・`Map`・`Set`・`Bytes`・`ByteOrder`、`Option`・`Result`・`Pair`・`Triple`、`IOError`・`IOErrorKind`、`NetworkError`・`NetworkErrorKind`、`RoundingMode`、`Reference`、`Lazy`、`Task`・`TaskGroup`、`Assert`、エフェクト `State`、モジュール `IO` | import なしで `List.map` と書ける。`Benitoite.List.map` とも書ける |
+| prelude | 基本型とその関数のモジュール（`Integer`・`Float`・`Decimal`・`Byte`・`Character`・`String`・`Boolean`、各幅の数とその別名）、`List`・`Map`・`Set`・`Bytes`・`ByteOrder`、`Option`・`Result`・`Pair`・`Triple`、`IOError`・`IOErrorKind`、`NetworkError`・`NetworkErrorKind`、`RoundingMode`、`Reference`、`Lazy`、`Task`・`TaskGroup`、`Assert`、エフェクト `State`、モジュール `IO` | import なしで `List.map` と書ける。`Benitoite.List.map` とも書ける |
 | 標準の型クラス | `Benitoite.Trait`（後述の「標準の型クラス（初回リリース版）」） | `import Benitoite.Trait` で取り込み、`Trait.Monad.flatMap` と書く |
 | IO を行うモジュール | `Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`（[IO のモジュール](03-07-io-modules.md)） | `import Benitoite.Unofficial.IO.Console` で取り込み、`Console.writeLine` と書く |
 | ネットワークの操作を行うモジュール | `Benitoite.Network.Http`（[ネットワークのモジュール](03-09-network.md)） | `import Benitoite.Unofficial.Network.Http` で取り込み、`Http.get` と書く |
@@ -45,6 +45,8 @@ IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール]
 - prelude のモジュール `IO`（`Benitoite.IO`）は、`State` と `Benitoite.IO` の下のモジュールのエフェクトをまとめたエフェクト `IO.All` だけを持つ。ネットワークのエフェクトは `IO.All` に含まれない（[エフェクト](../01-spec/01-07-effects.md)）。理由: ネットワークの操作は、スクリプトを動かす機械の外の資源に触れ、機械の中の操作（コンソール、ファイル、プロセス、環境変数、時計、乱数）とは影響の及ぶ範囲が異なる。`uses IO.All` は import なしに書ける。`Benitoite.IO` の下のモジュールの関数を呼ぶには import が要る。
 - import なしに完全な名前で書けるのは prelude だけである。`Benitoite.IO.Console.writeLine` を import なしに書くことはできない。
 - 利用者の宣言や取り込みが prelude と同じ名前を持つときの扱いと、根の直下の `Benitoite` を取り込めないことは、[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)で定める。
+
+【決定】数の幅を示す標準モジュール `Integer8`・`Integer16`・`Integer32`・`UnsignedInteger16`・`UnsignedInteger32`・`UnsignedInteger64`・`Float32` と、同じ型の別名・正の名前で使う `Integer64`・`Float64`・`UnsignedInteger8`・`UnsignedInteger` も prelude に入る。型名とモジュールで修飾した関数名は import なしで使える。型の同一性と既定の表示名は、[基本型の意味論](../01-spec/01-04-types-basic.md)の「型の一覧」に従う。`Integer64`・`Float64`・`UnsignedInteger8`・`UnsignedInteger` の関数は、それぞれ `Integer`・`Float`・`Byte`・`UnsignedInteger64` の同名の関数を呼び、結果と停止条件を保つ。型クラスの実装も同じ型の一つの実装である。理由: 正の名前と別名で型と関数の名前を揃え、既存の関数の契約を保つ。
 
 初回リリース版では、表のモジュールのうち、IO・ネットワーク・テキストとデータのモジュールは非公式のモジュールであり、`Benitoite.Unofficial` の下の名前で取り込む（後述の「標準のモジュールと非公式のモジュール（初回リリース版）」）。上の表の「モジュール」の欄はモジュールの名前を、「使い方」の欄と次の例は取り込みの名前を書いている。
 
@@ -114,6 +116,29 @@ end function
 
 ビット演算の関数（`Integer.bitwiseAnd`・`bitwiseOr`・`bitwiseExclusiveOr`・`bitwiseNot`・`shiftLeft`・`shiftRight`・`shiftRightUnsigned`）を置く。意味は[基本型の意味論](../01-spec/01-04-types-basic.md)の「ビット演算（初回リリース版）」で定め、すべて組み込みで実装する。
 
+【決定】新しい整数六種の標準関数を次の表に示す。U は `Integer8`・`Integer16`・`Integer32`・`UnsignedInteger16`・`UnsignedInteger32`・`UnsignedInteger64`、T はこのうち `UnsignedInteger64` を除く五種である。各関数は型と同名のモジュールに置き、すべて純粋な組み込みの関数である。
+
+| 関数 | 型 | 値 | 実行時エラー |
+|---|---|---|---|
+| `U.fromInteger(n)` | `function(Integer) -> Option[U]` | 範囲検査付きの変換（01-04「型の変換」） | |
+| `T.toInteger(n)` | `function(T) -> Integer` | 全域で正確な変換 | |
+| `UnsignedInteger64.toInteger(n)` | `function(UnsignedInteger64) -> Option[Integer]` | 範囲外は `None` | |
+| `U.parse(s)` | `function(String) -> Option[U]` | 01-04「型の変換」の十進の字句。接尾辞を受け付けず、符号なしは負号を拒否する | |
+| `U.toString(n)` | `function(U) -> String` | 接尾辞なしの十進表記 | |
+| `U.toFloat(n)` | `function(U) -> Float` | 最近接の binary64 の値。T では全域で正確 | |
+| `UnsignedInteger64.toDecimal(n)` | `function(UnsignedInteger64) -> Decimal` | 全域で正確な値 | |
+| `UnsignedInteger64.fromDecimal(x)` | `function(Decimal) -> Option[UnsignedInteger64]` | 数学的に整数で範囲内なら `Some`、それ以外は `None` | |
+| `U.absolute(n)` | `function(U) -> U` | 絶対値。符号なしでは元の値 | 符号付きの最小値 |
+| `U.minimum(a, b)`・`U.maximum(a, b)` | `function(U, U) -> U` | 小さいほう・大きいほう | |
+| `U.floorDivide(a, b)` | `function(U, U) -> U` | 負の無限大の方向の商。符号なしでは `div` と同じ | 除数 0、符号付きの最小値を −1 で割る場合 |
+| `U.floorModulo(a, b)` | `function(U, U) -> U` | 除数と同符号か 0 の剰余。符号なしでは `mod` と同じ | 除数 0。符号付きの最小値と −1 の場合は 0 を返す |
+| `U.bitwiseAnd`・`U.bitwiseOr`・`U.bitwiseExclusiveOr` | `function(U, U) -> U` | 各幅のビット演算（01-04「ビット演算（初回リリース版）」） | |
+| `U.bitwiseNot` | `function(U) -> U` | 各幅のすべてのビットを反転 | |
+| `U.shiftLeft`・`U.shiftRight` | `function(U, Integer) -> U` | 各幅のシフト | シフト量が負、または幅以上 |
+| 符号付き三種の `shiftRightUnsigned` | `function(T, Integer) -> T`（T は符号付き三種） | 上位を零で埋める右シフト | シフト量が負、または幅以上 |
+
+変換の `None` と、算術・シフトの実行時エラーは区別する。除算・最小値・シフトの規則は、[基本型の意味論](../01-spec/01-04-types-basic.md)と[評価意味論](../01-spec/01-08-evaluation.md)でも定める。
+
 ### Float
 
 | 関数 | 型 | 値 | 実行時エラー | 実装 |
@@ -127,6 +152,23 @@ end function
 | `Float.ceiling(x)` | `function(Float) -> Float` | `x` 以上の最小の整数値。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ（`Float.ceiling(-0.5)` は `-0.0`） | | 組み込み |
 | `Float.round(x)` | `function(Float) -> Float` | 最も近い整数値。ちょうど中間なら 0 から遠いほう。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ（`Float.round(-0.4)` は `-0.0`） | | 組み込み |
 | `Float.squareRoot(x)` | `function(Float) -> Float` | IEEE 754 の平方根。負の数は NaN | | 組み込み |
+
+【決定】`Float32` の標準関数は次のとおりであり、すべて純粋な組み込みの関数である。
+
+| 関数 | 型 | 値 | 実行時エラー |
+|---|---|---|---|
+| `Float32.fromFloat(x)` | `function(Float) -> Option[Float32]` | 最近接偶数丸めで縮小。有限値が無限大になる場合だけ `None`（01-04「型の変換」） | |
+| `Float32.toFloat(x)` | `function(Float32) -> Float` | 有限値の正確な拡大。零の符号を保つ | |
+| `Float32.parse(s)` | `function(String) -> Option[Float32]` | `Float.parse` と同じ字句を直接 binary32 で読む。不正な表記と無限大になる値は `None` | |
+| `Float32.toString(x)` | `function(Float32) -> String` | binary32 へ読み戻せる最短表記（01-04「型の変換」） | |
+| `Float32.truncate(x)` | `function(Float32) -> Option[Integer]` | 0 の方向へ切り捨てる。特殊値と範囲外は `None` | |
+| `Float32.isNaN(x)`・`Float32.isInfinite(x)` | `function(Float32) -> Boolean` | NaN・正負の無限大の判定 | |
+| `Float32.absolute(x)` | `function(Float32) -> Float32` | 符号を正にした値。NaN は NaN | |
+| `Float32.floor(x)`・`Float32.ceiling(x)` | `function(Float32) -> Float32` | 負・正の無限大の方向へ丸めた整数値。NaN・無限大・±0 はそのまま。結果が零なら元の符号を保つ | |
+| `Float32.round(x)` | `function(Float32) -> Float32` | 最も近い整数値。ちょうど半分なら零から遠い側。特殊値と零の符号の扱いは `Float.round` と同じ | |
+| `Float32.squareRoot(x)` | `function(Float32) -> Float32` | 単精度の平方根。負値は NaN | |
+
+丸め・平方根は binary32 の値に対して行い、倍精度の計算結果の縮小で代用しない。
 
 ### Character
 
@@ -211,7 +253,7 @@ end function
 
 `List.contains` の型の `equality` は、`T` が等値の型であるという組み込みの制約である。利用者も関数の型に書ける（[型システム](../01-spec/01-06-type-system.md)）。`List.sort` の型の `ordered` は、`T` が順序の比較演算子の型の集まり（[型システム](../01-spec/01-06-type-system.md)の「演算子の型付け」。`Byte`・`Decimal` を含む）のどれかであるという制約である。演算子の型の集まりの制約は、利用者は関数の型に書けず、標準ライブラリの関数だけが持てる。
 
-【方針】`List.sort` は安定な並べ替えであり、等しい要素の順序を保つ。順序は `<` に従う（[基本型の意味論](../01-spec/01-04-types-basic.md)）。ただし `Float` の NaN は、どの値よりも後に置き、NaN どうしは元の順序を保つ。`0.0` と `-0.0` は等しいものとして扱う。
+【方針】`List.sort` は安定な並べ替えであり、等しい要素の順序を保つ。順序は `<` に従う（[基本型の意味論](../01-spec/01-04-types-basic.md)）。ただし `Float`・`Float32` の NaN は、どの値よりも後に置き、NaN どうしは元の順序を保つ。`0.0` と `-0.0` は等しいものとして扱う。
 
 末尾への追加と添字での参照は対数時間なので、`List.append` で末尾に一つずつ加えてリストを作ってよく、添字で要素を順に読んでもよい。
 
@@ -325,7 +367,7 @@ end function
 
 【方針】鍵の順序は、鍵の型の値に定める全順序であり、次のとおりとする。
 
-- `Integer`・`Byte`・`Decimal` は数の大小、`String` は `<` と同じ順序（スカラー値の列の辞書式）、`Character` はスカラー値の大小による。`Boolean` は `false` を `true` より前、`Unit` の値は一つである。
+- 各幅の整数と `Decimal` は数の大小、`String` は `<` と同じ順序（スカラー値の列の辞書式）、`Character` はスカラー値の大小による。`Boolean` は `false` を `true` より前、`Unit` の値は一つである。
 - 代数的データ型の値は、まず構成子を型の宣言に書いた順で比べ、構成子が同じなら引数を前から順に比べる（辞書式）。レコードは、フィールドを宣言の順に並べた構成子が一つの型として比べる。`Pair` と `Triple` も同じである。
 - `List`・`Bytes` は、要素を前から順に比べ、一方が他方の先頭の部分に当たるときは短いほうを前とする（辞書式）。
 - `Set` は、要素を鍵の順序で並べたリストとして比べる。`Map` は、組を鍵の順序で並べたリストとして比べる。
@@ -407,7 +449,7 @@ end function
 
 | 型クラス | 実装する型 |
 |---|---|
-| `Show`・`Order` | 基本型（`Integer`・`Float`・`Decimal`・`Byte`・`Character`・`String`・`Boolean`・`Unit`）、`List[T]`・`Option[T]`・`Pair[A, B]`・`Triple[A, B, C]`（要素の型が同じ型クラスを実装するとき） |
+| `Show`・`Order` | 基本型（各幅の数、`Decimal`・`Character`・`String`・`Boolean`・`Unit`）、`List[T]`・`Option[T]`・`Pair[A, B]`・`Triple[A, B, C]`（要素の型が同じ型クラスを実装するとき） |
 | `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき） |
 | `Semigroup`・`Monoid` | `String`・`List[T]`・`Map[K, V]`・`Set[T]` |
 | `Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable` | `Option`・`List` |
@@ -419,7 +461,7 @@ end function
 
 【方針】`Show.show` は、値を式の書き方に近い文字列で表す。
 
-- `Integer`・`Float`・`Decimal`・`Byte` は、それぞれの `toString` と同じ文字列である。`Boolean` は `true` か `false`、`Unit` は `()` である。
+- 各幅の数と `Decimal` は、それぞれの `toString` と同じ文字列である。`Boolean` は `true` か `false`、`Unit` は `()` である。
 - `String` と `Character` は、リテラルの形で表す（`"a\"b"`、`'x'`）。引用符と、字句構造でエスケープが要る文字（[字句構造](../01-spec/01-01-lexical.md)）は、エスケープシーケンスで書く。`String` の `$` は `\$` で書く。
 - `Option` は `Option.Some(1)`・`Option.None`、`Pair` と `Triple` は `Pair(1, "a")`・`Triple(1, "a", true)` の形で表す。
 - `List` は `[1, 2, 3]` の形で表す。`Set` は `Set.fromList([1, 2])`、`Map` は `Map.fromList([Pair(1, "a")])` の形で、要素を鍵の順序で並べて表す。
@@ -427,7 +469,7 @@ end function
 【方針】`Order.compare` は、次の順序で比べる。
 
 - 鍵の型の値は、鍵の順序（前節の「Map と Set（初回リリース版）」）と同じ順序で比べる。`Option` は構成子を宣言の順で比べるので、`Option.Some(x)` は `Option.None` より前（`Ordering.Less`）である。`List`・`Pair`・`Triple` は辞書式に比べる。
-- `Float` は、`<` の順序に、次の規則を加えた全順序で比べる。NaN はどの値よりも大きく、NaN どうしは `Ordering.Equal` とする。`0.0` と `-0.0` は `Ordering.Equal` とする。この結果は `=` と異なる（NaN は自分自身と `=` で等しくない）。`Float` を含む `List`・`Option` などは、要素をこの順序で比べる。
+- `Float`・`Float32` は、`<` の順序に、次の規則を加えた全順序で比べる。NaN はどの値よりも大きく、NaN どうしは `Ordering.Equal` とする。`0.0` と `-0.0` は `Ordering.Equal` とする。この結果は `=` と異なる（NaN は自分自身と `=` で等しくない）。`Float` または `Float32` を含む `List`・`Option` などは、要素をこの順序で比べる。
 
 【方針】`Semigroup.combine` と `Monoid.empty` は、次のとおりとする。
 
@@ -485,7 +527,7 @@ IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各�
 【決定】標準ライブラリのソースは、利用者のモジュールと同じ構文のモジュールとして書く。モジュール `Benitoite.X.Y` のソースは、処理系に同梱する標準ライブラリの根の下の `X/Y.bnt` に置く。読み込みと名前解決は[名前解決とモジュール読込](../02-impl/02-04-resolver.md)で定める。
 
 - 利用者から見える関数・型・型クラス・エフェクトには `public` を付ける。補助の関数は `public` を付けずに書き、そのモジュールの中からだけ使う。
-- 組み込みの関数は、本体のない関数の宣言に属性 `@builtin("名前")` を付けて宣言する。名前は処理系の組み込みの関数の表の鍵であり、型は宣言のシグネチャで与える。`@builtin` と本体のない宣言は、標準ライブラリのソースでだけ書ける。
+- 組み込みの関数は、本体のない関数の宣言に属性 `@builtin("名前")` を付けて宣言する。名前は処理系の組み込みの関数の表の鍵であり、型は宣言のシグネチャで与える。`@builtin` は標準ライブラリのソースでだけ書ける。本体のない関数の宣言は、`@builtin` か `@external`（[外部の関数](03-10-external-functions.md)）を付けたときだけ書ける。
 - 順序の比較演算子の型の集まりの制約は、組み込みの制約 `ordered` として書く（[型システム](../01-spec/01-06-type-system.md)）。
 - 中身を見せない組み込みの型（`Integer`・`List`・`Map` など）、操作を持たないエフェクト `State`、まとめたエフェクト `IO.All` は、ソースに宣言を置かず、処理系の表で与える。
 - ほかのモジュールの関数は、利用者のモジュールと同じく import して使う。

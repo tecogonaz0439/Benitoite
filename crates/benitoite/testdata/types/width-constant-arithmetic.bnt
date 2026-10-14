@@ -1,0 +1,17 @@
+import Benitoite.Set
+const signed8: Integer8 = 127s8 + 1s8
+const signed16: Integer16 = -32768s16 div -1s16
+const signed32: Integer32 = -(-2147483648s32)
+const unsigned16: UnsignedInteger16 = 0u16 - 1u16
+const unsigned32: UnsignedInteger32 = 4294967295u32 * 2u32
+const unsigned64: UnsignedInteger64 = 18446744073709551615u64 + 1u64
+const divide: Integer8 = 1s8 div 0s8
+const modulo: UnsignedInteger64 = 1u64 mod 0u64
+const validModulo: Integer16 = -32768s16 mod -1s16
+const rounded: Float32 = (16777216.0f32 + 1.0f32) - 16777216.0f32
+const infinity: Float32 = 1.0f32 / 0.0f32
+const nan: Float32 = 0.0f32 / 0.0f32
+const duplicate: Set[UnsignedInteger64] = Set.fromList([18446744073709551615u64, 18446744073709551615u64 - 0u64])
+function main() -> Unit
+  ()
+end function

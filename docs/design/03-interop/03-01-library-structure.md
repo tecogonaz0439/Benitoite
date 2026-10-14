@@ -6,7 +6,7 @@
 
 ## 前提
 
-標準ライブラリは、処理系と一緒に配るモジュールの全体であり、名前空間 `Benitoite` の下に置く。初回リリース版は、パッケージ管理、外部の関数の層、標準ライブラリと別に配る公式のライブラリを持たない（[ロードマップ](../00-overview/00-03-roadmap.md)）。したがって、利用者が使える機能は、標準ライブラリと、外部コマンドの起動（[IO のモジュール](03-07-io-modules.md)）に限られる。利用者がライブラリを後から足す手段がないので、スクリプトで要る機能（正規表現、JSON、CSV、パス、時刻、HTTP など）は標準ライブラリにそろえる。
+標準ライブラリは、処理系と一緒に配るモジュールの全体であり、名前空間 `Benitoite` の下に置く。初回リリース版は、パッケージ管理、外部の関数の層、標準ライブラリと別に配る公式のライブラリを持たない（[ロードマップ](../00-overview/00-03-roadmap.md)）。その範囲でスクリプトに要る機能（正規表現、JSON、CSV、パス、時刻、HTTP など）は標準ライブラリにそろえる。その後、実験的として手元の[パッケージ](../06-tooling/06-09-packages.md)の取り込みと、WASM のコンポーネントから本体を与える[外部の関数](03-10-external-functions.md)を加えた。
 
 ## 仕様
 
@@ -27,6 +27,10 @@
 
 ### prelude と import を要するモジュール
 
+【決定】幅付きの数の七モジュール `Integer8`・`Integer16`・`Integer32`・`UnsignedInteger16`・`UnsignedInteger32`・`UnsignedInteger64`・`Float32` と、`Integer64`・`Float64`・`UnsignedInteger8`・`UnsignedInteger` も prelude の標準モジュールとする。型名とモジュールの修飾名を import なしで使え、`Unofficial` を挟まない。既存の標準モジュールの順序を保ち、これらを一覧の末尾に加える。
+
+`Integer64`・`Float64`・`UnsignedInteger8` の公開の関数は、それぞれ既存の `Integer`・`Float`・`Byte` の関数へ転送する言語の関数である。`UnsignedInteger` も `UnsignedInteger64` の関数へ転送する。型の別名だけではモジュールの関数名の別名にはならないので、型の同一性と関数の転送を分けて扱う。Rust の本体と組み込みの関数の番号、型クラスの実装を複製しない。理由: 幅付きの名前を型と関数にそろえて使えるようにし、既存の関数の振る舞いと診断の名前を保つためである。
+
 【決定】prelude には、基本型、コレクション、`Option`・`Result` など、ほとんどのスクリプトが使うモジュールを入れる。IO を行うモジュール（`Benitoite.IO` の下）、ネットワークの操作を行うモジュール（`Benitoite.Network` の下）、標準の型クラス（`Benitoite.Trait`）、テキストとデータを扱う純粋なモジュール（`Benitoite.Path`・`Benitoite.Json` など）は、import を要する。一覧は[標準ライブラリ](03-06-stdlib.md)の「名前空間と prelude（初回リリース版）」で定める。
 
 【決定】初回リリース版では、prelude のモジュールと `Benitoite.Trait` を標準のモジュールとし、IO・ネットワーク・テキストとデータのモジュールを非公式のモジュールとする。非公式のモジュールは `Benitoite.Unofficial` の下の名前で取り込む（[標準ライブラリ](03-06-stdlib.md)の「標準のモジュールと非公式のモジュール（初回リリース版）」）。本章は、非公式のモジュールも `Unofficial` を挟まない名前（モジュールの同一性に使う名前。`Benitoite.IO.Console` など）で書く。
@@ -43,10 +47,11 @@
 
 ### 使う Rust のクレート
 
-【決定】標準ライブラリの実装に、次のクレートを使う。
+【決定】標準ライブラリと外部の関数の検査に、次のクレートを使う。
 
 | 用途 | クレート | リポジトリ | ライセンス |
 |---|---|---|---|
+| WASM のコンポーネントの検査と実行系 | `wasmtime` | https://github.com/bytecodealliance/wasmtime | Apache-2.0 WITH LLVM-exception |
 | 正規表現 | `regex` | https://github.com/rust-lang/regex | MIT OR Apache-2.0 |
 | JSON | `serde_json` | https://github.com/serde-rs/json | MIT OR Apache-2.0 |
 | JSON の値の組み立て（`serde_json` が呼ぶ読み手の trait） | `serde_core` | https://github.com/serde-rs/serde | MIT OR Apache-2.0 |
@@ -72,13 +77,25 @@
   | TLS の暗号 | `rustls-graviola`・`graviola` | https://github.com/ctz/graviola | Apache-2.0 OR ISC OR MIT-0 |
   | ルート証明書の検証 | `rustls-platform-verifier` | https://github.com/rustls/rustls-platform-verifier | MIT OR Apache-2.0 |
 
-- 初回リリース版の依存のクレートは、どれも C のコードを含まず、ビルドに Rust のツールチェーンだけを要する。この性質は、上の表のクレートを選んだ結果として成り立っている。
+- Wasmtime 49.0.2 の機能 `runtime` は、Unix で小さな C のファイル `helpers.c` を C コンパイラでビルドする（出典: [Wasmtime の build.rs](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/wasmtime/build.rs) の `build_c_helpers`）。これを C コンパイラを要する依存の唯一の例外とする。ほかの依存は C のコードを含まず、Rust のツールチェーンだけでビルドできる。この性質は、上の表のクレートを選んだ結果として成り立っている。
+
+Wasmtime 49.0.2 は、機能 `runtime`・`component-model`・`std`・`cranelift` だけを有効にし、事前にコンパイルしたコードの読み込みを使わない。検査と実行ごとに `Engine` を作る。`benitoite test` はテストの関数ごとに実行を作るので、外部の関数を呼ぶテストごとにエンジンを作り、コンポーネントをコンパイルする。Wasmtime 内部の次の状態は共有される。
+
+- プロセス全体のコードの登録表 `GLOBAL_CODE`（`src/runtime/module/registry.rs`）。コンパイルしたコードの位置からトラップの情報を引く。
+- スレッドごとの活性化の記録 `TLS`（`src/runtime/vm/sys/std_tls.rs`）。
+- プロセス全体のページの大きさの記録（`src/runtime/vm.rs`）と `Store` の番号の計数器（`src/runtime/store/data.rs`）。
+- Linux では、プロセス全体の `sigaction` の処理器を SIGSEGV・SIGILL に登録し、x86_64 と s390x では SIGFPE にも登録する。Wasm のトラップでなければ前の処理器へ委ねる。SIGBUS の登録は Apple と FreeBSD の条件に限られ、Linux では行わない。Wasm に入るスレッドの代替シグナルスタック `sigaltstack` は、既存のものが無効か 256 KiB より小さい場合に付け替える（出典: [signals.rs の `foreach_handler`](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/wasmtime/src/runtime/vm/sys/unix/signals.rs#L72)、[`trap_handler`](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/wasmtime/src/runtime/vm/sys/unix/signals.rs#L131)、[`lazy_per_thread_init`](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/wasmtime/src/runtime/vm/sys/unix/signals.rs#L459)）。
+- macOS では、既定の Mach ports の経路を使う。プロセスの寿命の例外処理のスレッドを一つ起こし、`pthread_atfork` の子の処理器を登録する。fork した子で Wasm に入ると panic する。Wasm に入るスレッドごとに `thread_set_exception_ports` で例外ポートを設定し、この経路では `sigaltstack` を付け替えない。別に、ホストのファイバのスタックあふれを検出する SIGBUS の処理器を登録し、該当しないシグナルは前の処理器へ委ねる（出典: [config.rs の既定値](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/wasmtime/src/config.rs#L312)、[machports.rs の `TrapHandler::new`](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/wasmtime/src/runtime/vm/sys/unix/machports.rs#L75)、[`sigbus_handler`](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/wasmtime/src/runtime/vm/sys/unix/machports.rs#L133)、[`lazy_per_thread_init`](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/crates/wasmtime/src/runtime/vm/sys/unix/machports.rs#L496)）。
+
+トラップの処理と Spectre の緩和の設定は、Wasmtime の既定のままとする。
+
+出典: [Wasmtime 49.0.2 のソース](https://github.com/bytecodealliance/wasmtime/tree/v49.0.2/crates/wasmtime/src)。これらは依存の内部の状態であり、処理系のコードに大域の可変状態を加えない。
 
 ### 依存のライセンス
 
-【決定】依存のクレートのライセンスとして、MIT・Apache-2.0・BSD-2-Clause・BSD-3-Clause・ISC・Zlib・0BSD・Unicode-3.0 を許可する。Unlicense は、MIT と選べる形のときに限り許可する。GPL・LGPL・MPL などのコピーレフトのライセンスは許可しない。
+【決定】依存のクレートのライセンスとして、MIT・Apache-2.0・Apache-2.0 WITH LLVM-exception・BSD-2-Clause・BSD-3-Clause・ISC・Zlib・0BSD・Unicode-3.0 を許可する。Unlicense は、MIT と選べる形のときに限り許可する。GPL・LGPL・MPL などのコピーレフトのライセンスは許可しない。理由: LLVM の例外は Apache-2.0 の条件を緩めるものであり、コピーレフトではない（出典: [Wasmtime のライセンス](https://github.com/bytecodealliance/wasmtime/blob/v49.0.2/LICENSE)）。
 
-- `graviola` のライセンス（`Apache-2.0 OR ISC OR MIT-0`）や `rustix` のライセンス（`Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`）のように、許可の一覧にないライセンス（MIT-0、`Apache-2.0 WITH LLVM-exception`）が OR の選択肢の一つとして含まれるときは、許可の一覧のライセンスを選んで使う。
+- `graviola` のライセンス（`Apache-2.0 OR ISC OR MIT-0`）や `rustix` のライセンス（`Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`）のように、許可の一覧にないライセンス（MIT-0）が OR の選択肢の一つとして含まれるときは、許可の一覧のライセンスを選んで使う。
 - 依存を加えるときは、`cargo deny` のライセンスの検査で確かめ、許可の一覧のうち実際に要るものだけを `deny.toml` に加える。
 - 配布物には、依存のクレートの著作権とライセンスの表示をまとめたファイルを同梱する。ファイルの作り方は[配布形態](../05-platform/05-01-distribution.md)で定める。
 
@@ -104,5 +121,7 @@
 | `Unit` | 同じ名前のモジュールを持たないので、`State` と同じく名前空間の根 `Benitoite` の直下の prelude の名前とする（`Benitoite.Unit`） |
 | そのほかの基本型、`List`・`Map`・`Set`・`Bytes`・`Reference`・`Lazy`・`Task`・`TaskGroup`・`IOError`・`NetworkError` | 同じ名前の prelude のモジュール（`Benitoite.Integer` の型 `Integer`、`Benitoite.IOError` の型 `IOError` など）。名前 `X` は、型を書く位置では型を、修飾の段ではモジュールを指す |
 | リソースの型と、IO・ネットワーク・テキストとデータのモジュールの中身を見せない型 | その型を定める章のモジュール（`Benitoite.IO.File` の `Reader`・`Writer`、`Benitoite.IO.Random` の `Generator`、`Benitoite.Regex` の `Pattern`・`Match`、`Benitoite.Network.Http` の `Listener`・`Exchange` など。[IO のモジュール](03-07-io-modules.md)、[テキストとデータの処理](03-08-text-and-data.md)、[ネットワークのモジュール](03-09-network.md)） |
+
+数の正の名前・別名・表示名は、型の定義と別の内部の表で対応付ける（[名前解決とモジュール読込](../02-impl/02-04-resolver.md)の「標準ライブラリのソースの持ち方」）。新しい七種は同名のモジュールに属し、既存の `Integer`・`Float`・`Byte` の定義の所属は保つ。幅付きの名前と別名の各モジュールでも、同名の型の束縛と標準ライブラリの索引が同じ型の番号を指す。例えば `Integer64` モジュール内の型 `Integer64` は、`Integer` モジュール内の型 `Integer` と同一である。`Show`・`Order` の実装は各型に一つずつ置き、別名のモジュールには追加しない。
 
 標準ライブラリを読み込む前に処理系が必要とする情報（組み込みの関数の表）は、[名前解決とモジュール読込](../02-impl/02-04-resolver.md)で定める。

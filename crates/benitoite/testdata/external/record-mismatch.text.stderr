@@ -1,0 +1,21 @@
+error[E1008]: argument 1 of `move` does not match the component
+  --> testdata/external/record-mismatch/main.bnt:7:18
+   |
+ 7 | function move(p: Point) -> Point
+   |                  ^^^^^ declared as `Point`
+   |
+   = note: the component expects `record { byte-start: s64, y: s64 }`
+   = note: `Point` is passed as `record { byteStart: s64, z: s64 }`
+   = note: field 2 is `y` in WIT but `z` in `Point`; names are compared without `-` and ignoring ASCII case; `_` is preserved
+
+error[E1009]: the result of `move` does not match the component
+  --> testdata/external/record-mismatch/main.bnt:7:28
+   |
+ 7 | function move(p: Point) -> Point
+   |                            ^^^^^ declared as `Point`
+   |
+   = note: the component returns `record { byte-start: s64, y: s64 }`
+   = note: `Point` is passed as `record { byteStart: s64, z: s64 }`
+   = note: field 2 is `y` in WIT but `z` in `Point`; names are compared without `-` and ignoring ASCII case; `_` is preserved
+
+error: could not check testdata/external/record-mismatch/main.bnt due to 2 previous errors

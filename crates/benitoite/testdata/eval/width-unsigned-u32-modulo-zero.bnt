@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.Console
+function calculate(a: UnsignedInteger32, b: UnsignedInteger32) -> UnsignedInteger32
+  return a mod b
+end function
+function main() -> Unit uses Console.Write
+  bind _ <- calculate(4294967295u32, 0u32)
+  Console.writeLine("unreachable")
+end function

@@ -38,14 +38,28 @@ pub enum Const {
     Unit,
     Byte(u8),
     Decimal(Decimal),
+    Int8(i8),
+    Int16(i16),
+    Int32(i32),
+    UInt16(u16),
+    UInt32(u32),
+    UInt64(u64),
+    Float32(f32),
 }
 
 impl PartialEq for Const {
-    /// 表現の等しさ。`Float` はビットの並び、`Decimal` は仮数と小数の桁数で比べる（木の形を比べるテストのため）。
+    /// 表現の等しさ。`Float` と `Float32` はビットの並び、`Decimal` は仮数と小数の桁数で比べる（木の形を比べるテストのため）。
     fn eq(&self, other: &Const) -> bool {
         match (self, other) {
             (Const::Int(a), Const::Int(b)) => a == b,
             (Const::Float(a), Const::Float(b)) => a.to_bits() == b.to_bits(),
+            (Const::Int8(a), Const::Int8(b)) => a == b,
+            (Const::Int16(a), Const::Int16(b)) => a == b,
+            (Const::Int32(a), Const::Int32(b)) => a == b,
+            (Const::UInt16(a), Const::UInt16(b)) => a == b,
+            (Const::UInt32(a), Const::UInt32(b)) => a == b,
+            (Const::UInt64(a), Const::UInt64(b)) => a == b,
+            (Const::Float32(a), Const::Float32(b)) => a.to_bits() == b.to_bits(),
             (Const::Str(a), Const::Str(b)) => a == b,
             (Const::Char(a), Const::Char(b)) => a == b,
             (Const::Bool(a), Const::Bool(b)) => a == b,
@@ -134,6 +148,11 @@ pub enum ValKind<C> {
         id: BuiltinId,
         targs: TypeArgs,
         info: BuiltinInfo,
+    },
+    /// 合成したトップレベルの関数の本体でだけ呼ぶ外部の関数（設計書 02-06「コア IR」）。
+    External {
+        def: BindingId,
+        spec: std::sync::Arc<crate::external::ExternalSpec>,
     },
     /// 利用者が宣言したエフェクトの操作 `op[T̄]`。操作の束縛の番号で指す
     Op {

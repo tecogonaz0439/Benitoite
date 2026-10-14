@@ -1,0 +1,11 @@
+"[a-z]+" "one 12 two" | A=true first=Option.Some(Triple("one", 0, 3)) all=[Triple("one", 0, 3), Triple("two", 7, 10)] replace="$1\\literal 12 $1\\literal" | resource=true reused=true pure=true
+"a*" "aa日b" | A=true first=Option.Some(Triple("aa", 0, 2)) all=[Triple("aa", 0, 2), Triple("", 5, 5), Triple("", 6, 6)] replace="$1\\literal日$1\\literalb$1\\literal" | resource=true reused=true pure=true
+"\\b" "é 日" | A=true first=Option.Some(Triple("", 0, 0)) all=[Triple("", 0, 0), Triple("", 2, 2), Triple("", 3, 3), Triple("", 6, 6)] replace="$1\\literalé$1\\literal $1\\literal日$1\\literal" | resource=true reused=true pure=true
+"" "é😀" | A=true first=Option.Some(Triple("", 0, 0)) all=[Triple("", 0, 0), Triple("", 2, 2), Triple("", 6, 6)] replace="$1\\literalé$1\\literal😀$1\\literal" | resource=true reused=true pure=true
+"(.)" "é😀" | A=true first=Option.Some(Triple("é", 0, 2)) all=[Triple("é", 0, 2), Triple("😀", 2, 6)] replace="$1\\literal$1\\literal" | resource=true reused=true pure=true
+"\\w+" "日本語 café" | A=true first=Option.Some(Triple("日本語", 0, 9)) all=[Triple("日本語", 0, 9), Triple("café", 10, 15)] replace="$1\\literal $1\\literal" | resource=true reused=true pure=true
+"z+" "abc" | A=false first=Option.None all=[] replace="abc" | resource=true reused=true pure=true
+"a*" "" | A=true first=Option.Some(Triple("", 0, 0)) all=[Triple("", 0, 0)] replace="$1\\literal" | resource=true reused=true pure=true
+error "regex parse error:\n    (\n    ^\nerror: unclosed group" | resource=true pure=true
+error "regex parse error:\n    [\n    ^\nerror: unclosed character class" | resource=true pure=true
+error "regex parse error:\n(pattern omitted; error message truncated)\nerror: unclosed group" | resource=true pure=true

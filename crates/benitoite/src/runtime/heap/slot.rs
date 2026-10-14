@@ -23,6 +23,13 @@ enum SlotRaw {
     EmptyMap,
     EmptySet,
     Obj(ObjRef<'static>, HeapNo),
+    Int8(i8),
+    Int16(i16),
+    Int32(i32),
+    UInt16(u16),
+    UInt32(u32),
+    UInt64(u64),
+    Float32(f32),
 }
 
 /// 区間の外で値を保つ場所。中身は区間の寿命を外した値であり、`runtime::heap` の外からは
@@ -48,8 +55,19 @@ impl Slot {
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub(super) fn raw(&self) -> (Value<'static>, Option<HeapNo>) {
+        // 既存の整数の読み出しを先に処理し、幅の増加で通常の VM の経路を長くしない。
+        if let SlotRaw::Int(n) = self.raw {
+            return (Value::Int(n), None);
+        }
         match self.raw {
             SlotRaw::Int(n) => (Value::Int(n), None),
+            SlotRaw::Int8(n) => (Value::Int8(n), None),
+            SlotRaw::Int16(n) => (Value::Int16(n), None),
+            SlotRaw::Int32(n) => (Value::Int32(n), None),
+            SlotRaw::UInt16(n) => (Value::UInt16(n), None),
+            SlotRaw::UInt32(n) => (Value::UInt32(n), None),
+            SlotRaw::UInt64(n) => (Value::UInt64(n), None),
+            SlotRaw::Float32(n) => (Value::Float32(n), None),
             SlotRaw::Float(x) => (Value::Float(x), None),
             SlotRaw::Byte(b) => (Value::Byte(b), None),
             SlotRaw::Bool(b) => (Value::Bool(b), None),
@@ -68,8 +86,20 @@ impl Slot {
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub(super) fn set_raw(&mut self, raw: Value<'static>, heap: HeapNo) {
+        // 既存の整数の保存も、ほかの幅を振り分ける前に終える。
+        if let Value::Int(n) = raw {
+            self.raw = SlotRaw::Int(n);
+            return;
+        }
         self.raw = match raw {
             Value::Int(n) => SlotRaw::Int(n),
+            Value::Int8(n) => SlotRaw::Int8(n),
+            Value::Int16(n) => SlotRaw::Int16(n),
+            Value::Int32(n) => SlotRaw::Int32(n),
+            Value::UInt16(n) => SlotRaw::UInt16(n),
+            Value::UInt32(n) => SlotRaw::UInt32(n),
+            Value::UInt64(n) => SlotRaw::UInt64(n),
+            Value::Float32(n) => SlotRaw::Float32(n),
             Value::Float(x) => SlotRaw::Float(x),
             Value::Byte(b) => SlotRaw::Byte(b),
             Value::Bool(b) => SlotRaw::Bool(b),

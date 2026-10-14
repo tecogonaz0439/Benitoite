@@ -1,0 +1,9 @@
+// パッケージ Fuzzy の WASM のコンポーネントのインターフェース（WIT）。
+// Benitoite の型との対応: String = string、Integer = s64。
+// world が何も import しないので、コンポーネントは外部に作用できない（純粋）。
+
+package example:fuzzy@1.0.0;
+
+world fuzzy {
+  export distance: func(a: string, b: string) -> s64;
+}

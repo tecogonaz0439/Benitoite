@@ -37,12 +37,19 @@ cmd_archive() {
         tag="$(git -C "$root" describe --tags --abbrev=0 "$commit" 2>/dev/null)" || die "no tag before $commit"
         prefix="Benitoite-$short/"
     fi
-    # ブランチは、今のブランチの先頭ならその名前、そうでなければコミットを含むブランチの最初のもの。
-    branch="$(git -C "$root" branch --show-current)"
+    # ブランチは、公開するブランチがコミットを含むならその名前、次に今のブランチ、どちらでもなければコミットを含むブランチの最初のもの。
+    # 作業用のブランチ（`mod/V2` など）の上で作っても、リリースのコミットには公開するブランチの名前を付けるためである。
+    # 名前の `/` はファイル名に使えないので `-` に替える。
+    if git -C "$root" merge-base --is-ancestor "$commit" "$main_branch" 2>/dev/null; then
+        branch="$main_branch"
+    else
+        branch="$(git -C "$root" branch --show-current)"
+    fi
     if [ -z "$branch" ] || ! git -C "$root" merge-base --is-ancestor "$commit" "$branch" 2>/dev/null; then
         branch="$(git -C "$root" branch --contains "$commit" --format='%(refname:short)' | head -1)"
     fi
     [ -n "$branch" ] || die "no branch contains $commit"
+    branch="${branch//\//-}"
     base="$out/Benitoite-$tag-$branch-$short"
     refuse_existing "$base.tar.gz"
     refuse_existing "$base.zip"

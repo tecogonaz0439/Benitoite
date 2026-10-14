@@ -226,6 +226,7 @@ impl ProgramBuilder {
                 impls: Vec::new(),
                 ops: Vec::new(),
                 builtins: Vec::new(),
+                externals: crate::bytecode::program::ExternalTable::default(),
                 handlers: Vec::new(),
                 main: None,
                 main_kind: MainKind::Unit,

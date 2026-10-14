@@ -1,0 +1,26 @@
+// spec: 01-02 外部の関数の宣言
+// 関門: 同じゲストを二つの型で呼び、組み込み版と出力を CLI で比べる。
+// 実際の SHA-256 と大きな入力を、型変換だけの往復では確かめられない。
+dependency WasmHash
+  path "../libraries.files/wasm-hash"
+end dependency
+import WasmHash.Digest
+import Benitoite.Unofficial.Hash
+import Benitoite.Unofficial.IO.Console
+
+function compare(bytes: Bytes) -> Result[Unit, String] uses Console.Write
+  bind a <- Hash.sha256(bytes)
+  bind fast <- Digest.sha256(bytes)
+  bind dynamic <- Bytes.fromList(Digest.sha256List(Bytes.toList(bytes)))
+  bind hex <- Digest.sha256Hex(bytes)
+  bind same <- fast = a and dynamic = a and hex = Bytes.toHex(a)
+  Console.writeLine("bytes=${Bytes.length(bytes)} A=${Bytes.toHex(a)} | fast=${fast = a} list=${dynamic = a} hex=${hex = Bytes.toHex(a)}")
+  return if same then Result.Ok(()) else Result.Error("SHA-256 mismatch") end if
+end function
+
+function main() -> Result[Unit, String] uses Console.Write
+  return List.fold([Bytes.empty(), String.toUTF8("abc"), String.toUTF8("日本語😀"), Option.unwrapOr(Bytes.fromHex("00ff807f"), Bytes.empty()), String.toUTF8(String.repeat("a", 1048576))], Result.Ok(()), lambda(acc: Result[Unit, String], bytes: Bytes) -> Result[Unit, String] uses Console.Write
+    bind _ <- try acc
+    return compare(bytes)
+  end lambda)
+end function

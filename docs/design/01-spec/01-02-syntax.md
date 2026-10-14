@@ -250,7 +250,7 @@ end match
 - 分岐の本体の後に `break` を書いた場合。`break` は要らないことを示す。
 - `パターン => 式`（Rust・Scala）や、`case` を付けない `パターン -> 式`（Haskell）の形で書いた場合。`case パターン -> 式` の形を示す。
 
-パターンの中の小文字識別子は新しい変数の束縛であり、大文字識別子はデータ構成子との照合である。データ構成子は、式の中と同じく型名で修飾して書く。浮動小数のリテラルはパターンに書けない。パターンの意味と、網羅性・到達不能の検査は[代数的データ型とパターンマッチ](01-05-data-types.md)で定める。
+パターンの中の小文字識別子は新しい変数の束縛であり、大文字識別子はデータ構成子との照合である。データ構成子は、式の中と同じく型名で修飾して書く。浮動小数のリテラルはパターンに書けない。接尾辞付きの整数では `s64` だけを定数・範囲パターンに使える。`s8`・`s16`・`s32` と `u8`・`u16`・`u32`・`u64` は使えず、束縛・ワイルドカードとガードで分岐する。パターンの意味と、網羅性・到達不能の検査は[代数的データ型とパターンマッチ](01-05-data-types.md)で定める。
 
 ### ラムダ
 
@@ -289,9 +289,11 @@ lambda(line: String) -> Unit uses IO Console.writeLine(line) end lambda
 
 【決定】等しいを `=`、等しくないを `<>`、論理演算子を `and`・`or`・`not` と書く。`=` は、`with` の束縛、定数の宣言、型の別名の宣言にも使う。これらの `=` は名前（と型）の直後にだけ現れるので、比較の `=` と一通りに読み分けられる。局所の束縛の文は `<-` で書くので、比較の結果を束縛する文（`bind ok <- a = b`）は括弧なしで読める。書き換えのつもりで `x = 5` と書いた式文は、値が `Boolean` の式文として型検査の誤りになり、診断は変数を書き換えられないことと、`shadow x <- 5` で同じ名前を束縛し直す書き方を示す。
 
-【決定】整数の除算を `div`、剰余を `mod` と書く。`/` のオペランドは、`Float` と `Decimal` に限る（[型システム](01-06-type-system.md)の演算子の型の表）。
+【決定】整数の除算を `div`、剰余を `mod` と書く。`/` のオペランドは、`Float`・`Float32`・`Decimal` に限る（[型システム](01-06-type-system.md)の演算子の型の表）。
 
 各演算子の型と意味は、[基本型の意味論](01-04-types-basic.md)と[型システム](01-06-type-system.md)で定める。
+
+【決定】数の接尾辞は、整数リテラルと浮動小数リテラルの字句の一部であり、文法に新しい式を加えない。負号は単項演算である。符号付きリテラルに直接付く負号だけは、符号込みで範囲検査する（`-128s8`）。括弧を挟む `-(128s8)` は一般の負号であり、内側の範囲外のリテラルを拒否する。符号なしの負号は `-0u16` も誤りである。理由: 最小値を表せるようにしつつ、一般の式に対する負号の型の規則を保つ。
 
 ### ドット記法
 
@@ -341,12 +343,13 @@ between(_, lo, _)   // lambda(p1, p2) return between(p1, lo, p2) end lambda
 
 ### モジュールと import（初回リリース版）
 
-【決定】一つのソースファイルを一つのモジュールとする。モジュールの名前は根のディレクトリからのパスで決まり、ほかのモジュールは `import` の宣言に名前を書いて取り込む。トップレベルの宣言に `public` を付けると、取り込んだ側から使える。トップレベルには値の定義を置けない。ただし、定数式に限った定数は置ける（後述の「定数（初回リリース版）」）。トップレベルに置けるのは、import の宣言、関数の宣言、定数の宣言、型の宣言、型の別名の宣言、レコードの宣言、型クラスの宣言、エフェクトの宣言、実装の宣言である。
+【決定】一つのソースファイルを一つのモジュールとする。モジュールの名前は根のディレクトリからのパスで決まり、ほかのモジュールは `import` の宣言に名前を書いて取り込む。トップレベルの宣言に `public` を付けると、取り込んだ側から使える。`public(package)` を付けると、同じパッケージのモジュールからだけ使える。`public` と `(` の間には空白と改行を置いてよい。`public(package)` の後の改行は `)` の後の区切りになるため、宣言との間には置けない。括弧の中に書ける語は `package` だけであり、予約語にはしない。トップレベルには値の定義を置けない。ただし、定数式に限った定数は置ける（後述の「定数（初回リリース版）」）。トップレベルに置けるのは、import の宣言、関数の宣言、定数の宣言、型の宣言、型の別名の宣言、レコードの宣言、型クラスの宣言、エフェクトの宣言、実装の宣言である。
 
 文法の次の規則を改める。ほかの規則は「文法」と同じである。
 
 ```text
-TopItem     = ImportDecl | [ "public" ] FnDecl | [ "public" ] DataDecl .
+Visibility  = "public" [ "(" "package" ")" ] .
+TopItem     = ImportDecl | [ Visibility ] FnDecl | [ Visibility ] DataDecl .
 ImportDecl  = "import" UpperIdent { "." UpperIdent } [ "as" UpperIdent ] .
 
 Type        = QualUpper [ "[" Type { "," Type } [ "," ] "]" ]
@@ -375,6 +378,38 @@ public function area(s: Geo.Shape) -> Float
 end function
 ```
 
+### ファイルの先頭の部分
+
+【決定】ファイルの先頭の `//!` の後、最初の import か宣言の前に、言語の版、依存の記述、パッケージの名前を書ける。項目の順序は問わない。`language`・`dependency`・`package` と欄の名前は、予約語ではなく、この位置で意味を持つ語である。理由: 通常の識別子としての用途を保ち、同じ設定を入口と設定ファイルで同じ構文で書くためである。
+
+```text
+language "0.0.3"
+
+dependency Textkit
+  path "../packages/textkit"
+end dependency
+
+import Textkit.Slug
+
+function main() -> Unit
+  ()
+end function
+```
+
+【決定】各項目の形は次のとおりとする。値は、補間を含まない文字列リテラルに限る。
+
+| 項目 | 形と欄 |
+|---|---|
+| 言語の版 | `language "MAJOR.MINOR.PATCH"` の一行。各部は ASCII の数字の並びで、`u64` に収まり、`0` 以外は `0` で始めない |
+| 依存の記述 | `dependency 別名` から `end dependency` まで。別名は大文字で始まる識別子で、`Benitoite` は使えない。欄は `path`（必須）、`hash`・`effects`（任意）。`source`・`version`・`commit` は欄として読むが、この版では使えない誤りとする |
+| パッケージの名前 | `package 名前` から `end package` まで。名前は大文字で始まる識別子。欄は `license` だけで、任意である。使用許諾の文字列の中身は検査せず、空の文字列も許す |
+
+【決定】ブロックの欄は、一行に名前と文字列を一つずつ書く。欄の順序は問わない。同じ欄を二度書くこと、知らない欄を書くこと、同じ別名の依存・言語の版・パッケージのブロックを二度書くことは誤りとする。`hash` は `sha256:` の後に小文字の 16 進数字を 64 文字続けた形に限る。理由: 設定が一意に決まり、知らない欄の診断で書ける欄の一覧を示せるようにするためである。
+
+【決定】`effects` は空の文字列か、カンマで区切ったエフェクトの名前の並びとする。各名前の前後の空白を除き、ドットで区切った各段は ASCII の大文字で始まり、ASCII の英数字と `_` だけを含む。形が合わなければ誤りとする（診断は[字句解析器と構文解析器](../02-impl/02-03-frontend.md)）。これはパッケージの命令が最後に報告した組み込みのエフェクトの記録であり、読み込み時にパッケージの中身と照合しない。理由: 更新前のエフェクトを記録に残し、変更の差を示せるようにするためである。
+
+【決定】最初の import か宣言の後で、`language` の次が文字列、または `dependency`・`package` の次が大文字の名前である行は、先頭に書くべき項目として誤りにする。構文の形の検査と、ファイルの種類に応じた置き場所の検査を区別する。置き場所と版の意味は、[名前・スコープ・モジュール](01-03-names-modules.md)の「依存の記述と `package.bnt`」で定める。
+
 ### レコード（初回リリース版）
 
 【決定】レコードは `record` で宣言し、フィールドを「名前: 型」の形で一行に一つずつ並べる。値は名前付きの引数で作り、一部のフィールドを変えた値は `..` で作る。フィールドの値は、型のモジュールの関数で取り出す。レコードの宣言は、フィールドごとに同じ名前の取り出す関数をその型のモジュールに加える。レコードの型と値の意味は[代数的データ型とパターンマッチ](01-05-data-types.md)の「レコード（初回リリース版）」で定める。
@@ -382,7 +417,7 @@ end function
 文法に次の規則を加える。
 
 ```text
-TopItem     = ... | [ "public" ] RecordDecl .
+TopItem     = ... | [ Visibility ] RecordDecl .
 RecordDecl  = "record" UpperIdent [ TypeParams ] LineList(Field) "end" "record" .
 Field       = LowerIdent ":" Type .
 
@@ -469,7 +504,7 @@ Console.writeLine("${name} is ${age} years old")
 文法に次の規則を加え、`FnTypeParam` を改める。
 
 ```text
-TopItem     = ... | [ "public" ] TraitDecl | ImplDecl .
+TopItem     = ... | [ Visibility ] TraitDecl | ImplDecl .
 TraitDecl   = "trait" UpperIdent "[" TypeParamDecl [ ":" QualUpper { "&" QualUpper } ] "]"
               LineList(MethodSig) "end" "trait" .
 MethodSig   = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" "->" Type [ Uses ] .
@@ -485,7 +520,7 @@ TypeParamDecl = UpperIdent [ "[" "_" { "," "_" } "]" ] .
 - 利用者のソースでは、`Constraint` の `LowerIdent` は、組み込みの制約 `equality` か `key` でなければならない。それ以外の小文字の名前を書くと構文エラーとする。標準ライブラリのソースでは、組み込みの制約 `ordered` も書ける（[標準ライブラリ](../03-interop/03-06-stdlib.md)の「標準ライブラリのソースの書き方」）。利用者のソースに `ordered` を書いたときの診断は、標準ライブラリでだけ使える制約であることを示す。`equality` と `key` はキーワードではなく、制約の位置でだけこの意味を持つ。ほかの位置では、変数などの名前に使える。型クラスの名前は大文字で始まるので、制約の位置の小文字の名前と取り違えることはない。組み込みの制約を書ける型パラメータの規則は[型システム](01-06-type-system.md)で定める。
 - `trait` の型パラメータの後の `:` に続く名前は、上位の型クラスである。上位の型クラスの位置には、組み込みの制約を書けない。
 - 一つの `trait` の中で、二つのメソッドに同じ名前を付けると誤りとする。違う型クラスのメソッドどうしは、同じ名前でもよい。
-- `implement` の中の関数の宣言には、`public` を付けない。`implement` にも `public` を付けない。
+- `implement` の中の関数の宣言には、`public` と `public(package)` を付けない。`implement` にも付けない。
 - 【方針】実装は、プログラム全体で有効である。どのモジュールで型クラスの制約を解くときも、プログラムを構成するすべてのモジュールの実装から探す。孤立した実装と重なる実装を誤りとするので、使える実装は一つに決まる（[型システム](01-06-type-system.md)）。
 - `M.C.m`（三つ目が小文字の名前）は、取り込んだモジュール `M` の型クラス `C` のメソッド `m` を表す。
 - `implement Person ... end implement` のように、型クラスの名前を書かない `implement` は構文エラーとする。診断は、トップレベルの関数として書く方法を修正案として示す。
@@ -572,7 +607,7 @@ end function
 【決定】利用者が定義するエフェクトは、モジュールのトップレベルで `effect 名前 … end effect` と宣言し、操作を `function` の形で並べる。操作は、エフェクトを宣言したモジュールの関数である。ハンドラは `handle 本体 with case 操作(引数) -> 節 … end handle` と書き、節の中で `resume(値)` によって本体の続きを再開する。意味は[エフェクト](01-07-effects.md)の「利用者が定義するエフェクトとハンドラ（初回リリース版）」で、型付けは[型システム](01-06-type-system.md)で定める。
 
 ```text
-TopItem     = ... | [ "public" ] EffectDecl .
+TopItem     = ... | [ Visibility ] EffectDecl .
 EffectDecl  = "effect" UpperIdent LineList(OpSig) "end" "effect" .
 OpSig       = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" "->" Type .
 Primary     = ... | HandleExpr | "resume" "(" Expr ")" .
@@ -616,7 +651,7 @@ end function
 
 ### 属性（初回リリース版）
 
-【決定】トップレベルの宣言の前に、属性を書ける。属性は、宣言の型付けと評価の意味を変えず、処理系や道具がその宣言をどう扱うかを表す。宣言の意味を変えるものは、キーワードで表す。
+【決定】トップレベルの宣言の前に、属性を書ける。評価の意味を変える属性は `@builtin` と `@external` だけであり、`@builtin` は本体のない関数、`@external` は本体のない関数と右辺のない型の宣言に付ける。ほかの属性は、型付けと評価の意味を変えず、処理系や道具が宣言をどう扱うかを表す。理由: 本体を別の実装から与える宣言を属性で表し、予約語を増やさないためである。
 
 文法の `TopItem` を次のように改める。それまでの節で定めた `TopItem` の選択肢のうち、import の宣言以外を `Decl` にまとめ、その前に属性を書けるようにする。後の節は、`Decl` に選択肢を加える。
 
@@ -624,21 +659,23 @@ end function
 TopItem     = ImportDecl | AttrDecl .
 AttrDecl    = { Attribute [ NL ] } Decl .
 Attribute   = "@" LowerIdent [ "(" CommaList(StringLit) ")" ] .
-Decl        = [ "public" ] FnDecl
-            | [ "public" ] DataDecl
-            | [ "public" ] RecordDecl
-            | [ "public" ] TraitDecl
-            | [ "public" ] EffectDecl
+Visibility  = "public" [ "(" "package" ")" ] .
+Decl        = [ Visibility ] FnDecl
+            | [ Visibility ] DataDecl
+            | [ Visibility ] RecordDecl
+            | [ Visibility ] TraitDecl
+            | [ Visibility ] EffectDecl
             | ImplDecl .
 ```
 
 - 属性は、宣言の前の行か、同じ行の宣言の前に書く。一つの宣言に複数の属性を書ける。
 - 属性の引数は、文字列補間を含まない文字列リテラルに限る。
-- 利用者のソースに書ける属性は次の二つに限る。ほかの名前の属性は誤りとし、診断は書ける属性の一覧を示す。一つの宣言に同じ属性を二度書くと誤りとする。
+- 利用者のソースに書ける属性は次の三つに限る。ほかの名前の属性は誤りとし、診断は書ける属性の一覧を示す。一つの宣言に同じ属性を二度書くと誤りとする。
 - 標準ライブラリのソースでは、組み込みの関数を宣言する属性 `@builtin("名前")` も書ける。`@builtin` を付けた関数の宣言は、`Body "end" "function"` を書かず、シグネチャ（`Uses` まで）で終える（[標準ライブラリ](../03-interop/03-06-stdlib.md)の「標準ライブラリのソースの書き方」）。利用者のソースに書くと誤りとする。
 
 | 属性 | 付けられる宣言 | 意味 |
 |---|---|---|
+| `@external("wasm", "パス", "名前")` | 型パラメータを持たないトップレベルの関数（外部の型を含む場合だけ `uses State`）と、右辺のない `type` | コンポーネントが関数の本体か型の実体を与える。`public` または `public(package)` と `@deprecated` を併用でき、`@test`・`@builtin` は併用できない |
 | `@test`、`@test("説明")` | 関数 | テストの関数である（[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)） |
 | `@deprecated("理由と移行先")` | 関数・定数・型・型の別名・レコード・型クラス・エフェクト | 非推奨である。文字列は一つだけ書き、省略できない。空の文字列（`@deprecated("")`）は誤りとする |
 
@@ -653,12 +690,20 @@ end function
 
 LLM が他の言語の属性の書き方（`#[test]`、`[<Test>]`、`@Test` など）で書いたときは、Benitoite の書き方を修正案として示す。
 
+### 外部の関数の宣言
+
+【決定】`@external` を付けた関数は、本体と `end function` を書かず、戻り値の型で宣言を終える。引数と戻り値には具体的な型を書く。型パラメータ（エフェクト変数と制約を含む）は書けない。型に外部の型を含む場合は `uses State` を書き、それ以外の場合は `uses` を書けない。属性の三つの引数は、種類（`"wasm"` だけ）、コンポーネントの相対パス、書き出した関数の名前である。[外部の関数](../03-interop/03-10-external-functions.md)が、パスと型の照合を定める。
+
+【決定】第 3 引数に `#` があれば、最後の `#` より前をインターフェースの書き出しの名前、後をその中の関数の名前とする。前半と後半は空にできない。`#` がなければ world の直下の関数の名前とする。理由: 同じ属性の形で、関数をまとめたインターフェースの書き出しも指定できるようにするためである。
+
+【決定】`@external("wasm", "パス", "書き出しの名前") type 名前` は、右辺のない外部の型の宣言である。型パラメータを持たず、`public`・`public(package)` と `@deprecated` を付けられる。`@test`・`@builtin` は付けられない。第 3 引数は、関数と同じ区切りの規則で resource を指す。`@external` のない右辺のない `type` は誤りとする。理由: 外部の型の実体をコンポーネントが与えることを宣言に示し、通常の型の別名と区別するためである。
+
 ### 定数（初回リリース版）
 
 【決定】トップレベルに `const` で定数を宣言できる。定数の値は、プログラムを実行する前に定まる定数式に限る。
 
 ```text
-Decl        = ... | [ "public" ] ConstDecl .
+Decl        = ... | [ Visibility ] ConstDecl .
 ConstDecl   = "const" LowerIdent ":" Type "=" Expr .
 ```
 
@@ -681,7 +726,7 @@ const statusNames: Map[Integer, String] = Map.fromList([Pair(200, "OK"), Pair(40
 【決定】トップレベルに `type 名前 = 型` で型の別名を宣言できる。別名は、右辺の型と同じ型を表す。
 
 ```text
-Decl        = ... | [ "public" ] AliasDecl .
+Decl        = ... | [ Visibility ] AliasDecl .
 AliasDecl   = "type" UpperIdent [ TypeParams ] "=" Type .
 ```
 
@@ -729,23 +774,35 @@ end record
 
 ### 初回リリース版の文法の全体
 
-【方針】初回リリース版の文法の全体は次のとおりである。前述の「文法」に、見出しに「（初回リリース版）」を付けた各節で加えた規則と置き換えた規則を反映したものであり、各規則の意味と、決定の確度は各節に従う。トップレベルの宣言の順序（import の宣言、ほかの宣言の順）も、この文法で表す。
+【方針】次の文法は、前述の「文法」に、見出しに「（初回リリース版）」を付けた各節で加えた規則と置き換えた規則を反映したものに、初回リリース版の後に加えた「ファイルの先頭の部分」と「外部の関数の宣言」の規則を加えたものである。各規則の意味と、決定の確度は各節に従う。トップレベルの宣言の順序（先頭の部分、import の宣言、ほかの宣言の順）も、この文法で表す。
+
+`@external` を付けた宣言は、関数なら `FnDecl` の代わりに `ExternalFnDecl`、外部の型なら `ExternalTypeDecl` で書く。`Uses` の条件は「外部の関数の宣言」に従う。
 
 ```text
 (* プログラム *)
-Program     = [ NL ] [ Items [ NL ] ] .
+Program     = [ NL ] [ ProgramBody [ NL ] ] .
+ProgramBody = Header [ NL Items ]
+            | Items .
+Header      = HeaderItem { NL HeaderItem } .
+HeaderItem  = "language" StringLit
+            | "dependency" UpperIdent NL { HeaderField NL } "end" "dependency"
+            | "package" UpperIdent NL { HeaderField NL } "end" "package" .
+HeaderField = LowerIdent StringLit .
 Items       = ImportDecl [ NL Items ]
             | Decls .
 Decls       = AttrDecl { NL AttrDecl } .
 AttrDecl    = { Attribute [ NL ] } Decl .
 Attribute   = "@" LowerIdent [ "(" CommaList(StringLit) ")" ] .
-Decl        = [ "public" ] FnDecl
-            | [ "public" ] ConstDecl
-            | [ "public" ] DataDecl
-            | [ "public" ] AliasDecl
-            | [ "public" ] RecordDecl
-            | [ "public" ] TraitDecl
-            | [ "public" ] EffectDecl
+Visibility  = "public" [ "(" "package" ")" ] .
+Decl        = [ Visibility ] FnDecl
+            | [ Visibility ] ExternalFnDecl
+            | [ Visibility ] ExternalTypeDecl
+            | [ Visibility ] ConstDecl
+            | [ Visibility ] DataDecl
+            | [ Visibility ] AliasDecl
+            | [ Visibility ] RecordDecl
+            | [ Visibility ] TraitDecl
+            | [ Visibility ] EffectDecl
             | ImplDecl .
 
 (* import の宣言 *)
@@ -754,6 +811,8 @@ ImportDecl  = "import" UpperIdent { "." UpperIdent } [ "as" UpperIdent ] .
 (* 関数の宣言 *)
 FnDecl      = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")"
               "->" Type [ Uses ] Body "end" "function" .
+ExternalFnDecl = "function" LowerIdent "(" CommaList(Param) ")" "->" Type [ Uses ] .
+ExternalTypeDecl = "type" UpperIdent .
 FnTypeParams = "[" FnTypeParam { "," FnTypeParam } [ "," ] "]" .
 FnTypeParam = "effect" UpperIdent
             | TypeParamDecl [ ":" Constraint { "&" Constraint } ] .
@@ -878,7 +937,7 @@ ListPatElem = Pattern | ".." [ LowerIdent ] .
 
 ### 初回リリース版に含めない構文
 
-初回リリース版の構文は、「文法」と、見出しに「（初回リリース版）」を付けた本章の各節で定めたものですべてである。本章に定めていない構文は、初回リリース版に含めない。たとえば、繰り返しの構文（`for`・`while`・`loop`）、例外を捕らえる構文、括弧のタプル、`Map` と `Set` のリテラルは持たない。
+初回リリース版の構文は、「文法」と、見出しに「（初回リリース版）」を付けた本章の各節で定めたものですべてである。その後、「ファイルの先頭の部分」と「外部の関数の宣言」の構文と、数のリテラルの接尾辞を加えた。本章に定めていない構文は、初回リリース版に含めない。たとえば、繰り返しの構文（`for`・`while`・`loop`）、例外を捕らえる構文、括弧のタプル、`Map` と `Set` のリテラルは持たない。
 
 ### 例
 

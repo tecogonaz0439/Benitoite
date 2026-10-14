@@ -1,0 +1,80 @@
+// 作成時の関門: u64 の上半分と Decimal の整数性を、CLI の独立した期待値で守る。
+// 狭い整数のテストでは i64 を経由する折り返しや端数の受理を捕まえない。
+// 別名の転送と組み込みの接続も本物の経路を通し、差し込み口は加えない。
+import Benitoite.Unofficial.IO.Console
+function unsignedText(value: Option[UnsignedInteger64]) -> String
+  return match value with
+    case Option.Some(n) -> UnsignedInteger64.toString(n)
+    case Option.None -> "None"
+  end match
+end function
+function integerText(value: Option[Integer]) -> String
+  return match value with
+    case Option.Some(n) -> Integer.toString(n)
+    case Option.None -> "None"
+  end match
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(unsignedText(UnsignedInteger64.fromInteger(0)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromInteger(9223372036854775807)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromInteger(-1)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromInteger(-9223372036854775808)))
+  Console.writeLine(integerText(UnsignedInteger64.toInteger(0u64)))
+  Console.writeLine(integerText(UnsignedInteger64.toInteger(9223372036854775807u64)))
+  Console.writeLine(integerText(UnsignedInteger64.toInteger(9223372036854775808u64)))
+  Console.writeLine(integerText(UnsignedInteger64.toInteger(18446744073709551615u64)))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("0")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("9223372036854775808")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("18446744073709551615")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("18446744073709551616")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("-1")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("-0")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("+1")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse(" 1")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("1 ")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("01")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("1_0")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("0x10")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("1.0")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("1u64")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("")))
+  Console.writeLine(unsignedText(UnsignedInteger64.parse("１２")))
+  Console.writeLine(Decimal.toString(UnsignedInteger64.toDecimal(0u64)))
+  Console.writeLine(Decimal.toString(UnsignedInteger64.toDecimal(9223372036854775808u64)))
+  Console.writeLine(Decimal.toString(UnsignedInteger64.toDecimal(18446744073709551615u64)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(0m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(1.0m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(0.0000000000000000000000000000m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(9223372036854775808m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(18446744073709551615m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(18446744073709551615.0m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(18446744073709551616m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(1.1m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(0.0000000000000000000000000001m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(18446744073709551615.1m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(-1m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(-0.1m)))
+  Console.writeLine(unsignedText(UnsignedInteger64.fromDecimal(79228162514264337593543950335m)))
+  Console.writeLine(Float.toString(UnsignedInteger64.toFloat(0u64)))
+  Console.writeLine(Float.toString(UnsignedInteger64.toFloat(9007199254740993u64)))
+  Console.writeLine(Float.toString(UnsignedInteger64.toFloat(9007199254740995u64)))
+  Console.writeLine(Float.toString(UnsignedInteger64.toFloat(9223372036854775808u64)))
+  Console.writeLine(Float.toString(UnsignedInteger64.toFloat(18446744073709551615u64)))
+  Console.writeLine(UnsignedInteger64.toString(UnsignedInteger64.absolute(18446744073709551615u64)))
+  Console.writeLine(UnsignedInteger64.toString(UnsignedInteger64.minimum(0u64, 18446744073709551615u64)))
+  Console.writeLine(UnsignedInteger64.toString(UnsignedInteger64.maximum(0u64, 18446744073709551615u64)))
+  Console.writeLine(UnsignedInteger64.toString(UnsignedInteger64.floorDivide(18446744073709551615u64, 2u64)))
+  Console.writeLine(UnsignedInteger64.toString(UnsignedInteger64.floorModulo(18446744073709551615u64, 2u64)))
+  Console.writeLine(unsignedText(UnsignedInteger.fromInteger(1)))
+  Console.writeLine(integerText(UnsignedInteger.toInteger(1u64)))
+  Console.writeLine(unsignedText(UnsignedInteger.parse("18446744073709551615")))
+  Console.writeLine(UnsignedInteger.toString(18446744073709551615u64))
+  Console.writeLine(Float.toString(UnsignedInteger.toFloat(1u64)))
+  Console.writeLine(Decimal.toString(UnsignedInteger.toDecimal(18446744073709551615u64)))
+  Console.writeLine(unsignedText(UnsignedInteger.fromDecimal(18446744073709551615m)))
+  Console.writeLine(UnsignedInteger.toString(UnsignedInteger.absolute(18446744073709551615u64)))
+  Console.writeLine(UnsignedInteger.toString(UnsignedInteger.minimum(18446744073709551615u64, 0u64)))
+  Console.writeLine(UnsignedInteger.toString(UnsignedInteger.maximum(18446744073709551615u64, 0u64)))
+  Console.writeLine(UnsignedInteger.toString(UnsignedInteger.floorDivide(7u64, 2u64)))
+  Console.writeLine(UnsignedInteger.toString(UnsignedInteger.floorModulo(7u64, 2u64)))
+end function

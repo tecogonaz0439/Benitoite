@@ -699,6 +699,129 @@ mod tests {
         assert_eq!((value_size, slot_size), (16, 16));
     }
 
+    // 作成時の関門: 幅の違う即値を Slot と対象の欄へ保存し、回収後も種類とビットを保つ。
+    // 既存の保存のテストは旧型だけであり、符号の取り違えや f64 への置き換えを捕まえない。
+    // 公開のヒープ API で確かめ、即値のための対象とテスト専用の差し込み口は作らない。
+    #[test]
+    fn width_immediates_preserve_kinds_and_bits_across_collection() {
+        fn cases<'e>() -> [Value<'e>; 21] {
+            [
+                Value::Int8(i8::MIN),
+                Value::Int8(i8::MAX),
+                Value::Int16(i16::MIN),
+                Value::Int16(i16::MAX),
+                Value::Int32(i32::MIN),
+                Value::Int32(i32::MAX),
+                Value::UInt16(0),
+                Value::UInt16(u16::MAX),
+                Value::UInt32(0),
+                Value::UInt32(u32::MAX),
+                Value::UInt64(0),
+                Value::UInt64(1_u64 << 63),
+                Value::UInt64(u64::MAX),
+                Value::Float32(0.1),
+                Value::Float32(0.0),
+                Value::Float32(-0.0),
+                Value::Float32(f32::from_bits(1)),
+                Value::Float32(f32::MAX),
+                Value::Float32(f32::INFINITY),
+                Value::Float32(f32::NEG_INFINITY),
+                Value::Float32(f32::from_bits(0x7fc0_1234)),
+            ]
+        }
+        fn check<'e>(actual: Value<'e>, expected: Value<'e>) {
+            assert!(actual.as_obj().is_none());
+            assert!(actual.as_int().is_none());
+            assert!(actual.as_float().is_none());
+            assert!(actual.as_byte().is_none());
+            assert_eq!(actual.as_int8(), expected.as_int8());
+            assert_eq!(actual.as_int16(), expected.as_int16());
+            assert_eq!(actual.as_int32(), expected.as_int32());
+            assert_eq!(actual.as_uint16(), expected.as_uint16());
+            assert_eq!(actual.as_uint32(), expected.as_uint32());
+            assert_eq!(actual.as_uint64(), expected.as_uint64());
+            assert_eq!(
+                actual.as_float32().map(f32::to_bits),
+                expected.as_float32().map(f32::to_bits)
+            );
+            assert_eq!(
+                std::mem::discriminant(&actual),
+                std::mem::discriminant(&expected)
+            );
+        }
+        let mut heap = Heap::new(HeapConfig::default());
+        let mut roots = heap.epoch(|ctx| {
+            // 読み出しは別の幅を受け付けず、整数と浮動小数点を混同しない。
+            macro_rules! reader {
+                ($variant:ident, $reader:ident, $n:expr) => {
+                    assert_eq!(Value::$variant($n).$reader(), Some($n));
+                    for other in [
+                        Value::Int(0),
+                        Value::Float(0.0),
+                        Value::Byte(0),
+                        Value::Int8(0),
+                        Value::Int16(0),
+                        Value::Int32(0),
+                        Value::UInt16(0),
+                        Value::UInt32(0),
+                        Value::UInt64(0),
+                        Value::Float32(0.0),
+                        Value::Unit,
+                    ] {
+                        if !matches!(other, Value::$variant(_)) {
+                            assert!(other.$reader().is_none());
+                        }
+                    }
+                };
+            }
+            reader!(Int8, as_int8, i8::MIN);
+            reader!(Int16, as_int16, i16::MIN);
+            reader!(Int32, as_int32, i32::MIN);
+            reader!(UInt16, as_uint16, u16::MAX);
+            reader!(UInt32, as_uint32, u32::MAX);
+            reader!(UInt64, as_uint64, u64::MAX);
+            reader!(Float32, as_float32, 0.1);
+            let mut roots = Vec::new();
+            for expected in cases() {
+                assert!(ctx.kind(expected).is_none());
+                let mut src = ctx.new_slot(expected);
+                assert!(src.is_immediate());
+                let mut dst = Slot::default();
+                ctx.move_slot(&mut dst, &mut src);
+                assert!(matches!(ctx.load(&src), Value::Unit));
+                check(ctx.take(&mut dst), expected);
+                assert!(matches!(ctx.load(&dst), Value::Unit));
+                ctx.store(&mut dst, expected);
+                roots.push(dst);
+            }
+            roots
+        });
+        assert!(heap.object_ids().is_empty());
+        heap.epoch(|ctx| {
+            roots.push(ctx.new_slot(ctx.alloc_fields(FieldsKind::Ctor, 0, &cases()).unwrap()));
+            let garbage = ctx.alloc_cell(Value::Unit);
+            let mut slot = ctx.new_slot(garbage);
+            ctx.clear(&mut slot);
+        });
+        heap.collect(&roots);
+        heap.epoch(|ctx| {
+            for (slot, expected) in roots.iter().zip(cases()) {
+                check(ctx.load(slot), expected);
+            }
+            let parent = ctx.load(roots.last().unwrap());
+            for (index, expected) in cases().into_iter().enumerate() {
+                check(
+                    ctx.field(parent, u32::try_from(index).unwrap()).unwrap(),
+                    expected,
+                );
+            }
+            ctx.discard(roots);
+        });
+        heap.collect(&Vec::<Slot>::new());
+        assert!(heap.object_ids().is_empty());
+        assert!(heap.take_fault().is_none());
+    }
+
     // 関門: Decimal の公開の確保・読み取りの接続と、根に残した値の区間をまたぐ保持。
     // 内部の対象のテストだけでは公開 API の種類や桁数の取り違えを検出できない。
     #[test]

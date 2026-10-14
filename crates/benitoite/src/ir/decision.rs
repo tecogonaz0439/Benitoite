@@ -195,6 +195,10 @@ impl<'a> Lowerer<'a> {
                 targs: targs.clone(),
                 info: *info,
             },
+            ValKind::External { def, spec } => ValKind::External {
+                def: *def,
+                spec: std::sync::Arc::clone(spec),
+            },
             ValKind::Op { op, targs } => ValKind::Op {
                 op: *op,
                 targs: targs.clone(),
@@ -1944,6 +1948,7 @@ mod tests {
             | ValKind::Const(_)
             | ValKind::TopFn { .. }
             | ValKind::Builtin { .. }
+            | ValKind::External { .. }
             | ValKind::Op { .. }
             | ValKind::ConstRef(_) => (),
         }
@@ -1972,6 +1977,7 @@ mod tests {
             ValKind::List(vs) => Value::List(vs.iter().map(|v| eval_val(v, env)).collect()),
             ValKind::TopFn { .. }
             | ValKind::Builtin { .. }
+            | ValKind::External { .. }
             | ValKind::Op { .. }
             | ValKind::Lambda(_)
             | ValKind::ConstRef(_) => panic!("unsupported test value"),
@@ -2892,6 +2898,7 @@ mod tests {
             | ValKind::Const(_)
             | ValKind::TopFn { .. }
             | ValKind::Builtin { .. }
+            | ValKind::External { .. }
             | ValKind::Op { .. }
             | ValKind::ConstRef(_) => (),
         }

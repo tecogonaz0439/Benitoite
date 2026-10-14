@@ -1,0 +1,58 @@
+//! 複数の欄と単一の組を区別する variant の比較入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+data Marker
+  Unused
+end data
+
+data One
+  Value(Pair[Integer, Integer])
+  Empty
+end data
+
+data Two
+  Value(Integer, Integer)
+  Empty
+end data
+
+data Single
+  Value(Integer)
+end data
+
+@external("wasm", "guests/variants.wasm", "fields")
+function one(v: One) -> One
+@external("wasm", "guests/variants.wasm", "fields")
+function two(v: Two) -> Two
+@external("wasm", "guests/variants.wasm", "single")
+function single(v: Single) -> Single
+data Joined
+  Empty
+  Signed(Integer32)
+  Single(Float32)
+  Double(Float)
+  Wide(UnsignedInteger64)
+  Pair(UnsignedInteger16, Byte)
+end data
+
+@external("wasm", "guests/mixed-variant.wasm", "run")
+function joined(v: Joined) -> Joined
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind c0 <- one(One.Value(Pair(n, n + 4))) = One.Value(Pair(n + 11, n + 26))
+    bind c1 <- two(Two.Value(n, n + 4)) = Two.Value(n + 11, n + 26)
+    bind c2 <- one(One.Empty) = One.Empty
+    bind c3 <- two(Two.Empty) = Two.Empty
+    bind c4 <- single(Single.Value(n)) = Single.Value(n + 12)
+    bind c5 <- joined(Joined.Empty) = Joined.Pair(13u16, 17u8)
+    bind c6 <- joined(Joined.Signed(-7s32)) = Joined.Signed(-8s32)
+    bind c7 <- joined(Joined.Single(-0.0f32)) = Joined.Single(-1.5f32)
+    bind c8 <- joined(Joined.Double(1.5)) = Joined.Double(-1.5)
+    bind c9 <- joined(Joined.Wide(9223372036854775808u64)) = Joined.Wide(9223372036854775809u64)
+    bind c10 <- joined(Joined.Pair(9u16, 11u8)) = Joined.Empty
+    return c0 and c1 and c2 and c3 and c4 and c5 and c6 and c7 and c8 and c9 and c10
+  end lambda)
+end function

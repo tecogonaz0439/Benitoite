@@ -169,6 +169,12 @@ pub struct Vm<'p> {
 use crate::runtime::heap::{HeapConfig, HeapStats};
 
 impl<'p> Vm<'p> {
+    pub(crate) fn configure_externals(
+        &mut self,
+        options: crate::external::stats::ExecutionOptions,
+    ) {
+        self.state.external_options = options;
+    }
     pub fn new(program: &'p CompiledProgram, config: VmConfig, heap: HeapConfig) -> Vm<'p> {
         Vm {
             program,

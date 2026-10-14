@@ -1,6 +1,6 @@
 [package]
 name = "benitoite"
-version = "0.0.3"
+version = "0.0.4"
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
@@ -38,3 +38,13 @@ ureq = { version = "=3.4.2", default-features = false, features = ["rustls-no-pr
 ureq-proto = { version = "=0.6.4", default-features = false, features = ["client"] }
 rustls = { version = "=0.23.45", default-features = false, features = ["std", "tls12"] }
 rustls-graviola = "=0.4.0"
+wasmtime = { version = "=49.0.2", default-features = false, features = ["runtime", "component-model", "std", "cranelift"] }
+# wasm-encoder 0.258.3 と必須依存 leb128fmt 0.1.0 の Cargo.toml の license を deny.toml と照合した。
+# 両方とも MIT / Apache-2.0 の許可範囲に入る。
+wasm-encoder = { version = "=0.258.3", default-features = false, features = ["std", "component-model"] }
+
+# Wasmtime と同じ版で、補助の追加前にコアインスタンス数を見積もる。
+wasmparser = { version = "=0.258.3", default-features = false, features = ["std", "component-model"] }
+
+[dev-dependencies]
+wat = "=1.261.0"

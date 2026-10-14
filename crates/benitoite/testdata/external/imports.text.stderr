@@ -1,0 +1,10 @@
+error[E1005]: the component `wasm/x.wasm` imports 1 item, so it cannot be called as a pure function
+  --> testdata/external/imports/main.bnt:2:19
+   |
+ 2 | @external("wasm", "wasm/x.wasm", "add")
+   |                   ^^^^^^^^^^^^^
+   |
+   = note: imports: wasi:cli/environment@0.2.0
+   = note: build it for `wasm32-unknown-unknown` and wrap it with `wasm-tools component new`; `wasm32-wasip2` adds WASI imports
+
+error: could not check testdata/external/imports/main.bnt due to 1 previous error

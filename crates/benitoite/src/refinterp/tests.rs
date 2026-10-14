@@ -663,3 +663,45 @@ fn release_failures_preserve_primary_stop_exit_and_order() {
         );
     }
 }
+
+// 関門: 言語の深い呼び出しの末端でも、通常のテストのスタックで Wasm を呼べる。
+// ゴールデンの差分の段は大きなスタックを持つので、この不足を捕まえられない。
+#[test]
+fn external_call_after_deep_language_calls_fits_the_test_stack() {
+    let bytes = wat::parse_str(r#"(component
+        (core module $m (func (export "add") (param i64 i64) (result i64) local.get 0 local.get 1 i64.add))
+        (core instance $i (instantiate $m))
+        (func (export "add") (param "a" s64) (param "b" s64) (result s64)
+            (canon lift (core func $i "add"))))"#).unwrap();
+    let source = r#"@external("wasm", "add.wasm", "add")
+function add(a: Integer, b: Integer) -> Integer
+function count(n: Integer) -> Integer
+  if n = 0 then return add(20, 22) end if
+  return 1 + count(n - 1)
+end function
+function main() -> Result[Unit, String]
+  if count(10000) = 10042 then return Result.Ok(()) end if
+  return Result.Error("incorrect result")
+end function
+"#;
+    let checked = crate::pipeline::check_files(
+        &[("main.bnt", source.as_bytes()), ("add.wasm", &bytes)],
+        crate::pipeline::CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let core = crate::pipeline::desugar_checked(&checked.program.unwrap()).unwrap();
+    assert_eq!(run(&core, &mut io()), RefOutcome::Finished(MainOutcome::Ok));
+}
+
+// 作成時の関門: const の読み込みから複合値の組み込み呼び出しまでを参照実行で通す。
+// コード生成と VM の試験は、参照実行器の定数の分岐漏れを検出できない。
+#[test]
+fn width_constant_collections_reach_reference_builtin_calls() {
+    ok(
+        include_str!("../../testdata/eval/width-constants.bnt"),
+        "3\n3\n3\n3\n3\n3\n6\n",
+    );
+}

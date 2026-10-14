@@ -170,7 +170,7 @@ fn command() -> Command {
     command
 }
 
-// 関門: 三つの道具の本体の外側の panic を、終了状態・段・診断形式まで確かめる。
+// 関門: 道具の本体の外側の panic を、終了状態・段・診断形式まで確かめる。
 // run/check の既存の例ではこの境界と JSON への hook 出力の混入を捕まえられない。
 // 設計書 07-03 が指定する開発用の panic を使い、CLI を本物のプロセスで起動する。
 #[test]
@@ -180,6 +180,12 @@ fn tool_panics_are_internal_reports() {
         ("skill", vec!["skill", "install", "--project"], false),
         ("test", vec!["test", "missing.bnt"], false),
         ("fmt", vec!["fmt", "missing.bnt"], false),
+        ("package", vec!["package", "update"], false),
+        (
+            "package",
+            vec!["package", "update", "--diagnostics=json"],
+            true,
+        ),
         (
             "test",
             vec!["test", "--diagnostics=json", "missing.bnt"],

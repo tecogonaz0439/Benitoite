@@ -74,6 +74,13 @@ fn constant_type(c: &Const) -> Ty {
     let id = match c {
         Const::Int(_) => BuiltinTypeId::INTEGER,
         Const::Float(_) => BuiltinTypeId::FLOAT,
+        Const::Int8(_) => BuiltinTypeId::INTEGER8,
+        Const::Int16(_) => BuiltinTypeId::INTEGER16,
+        Const::Int32(_) => BuiltinTypeId::INTEGER32,
+        Const::UInt16(_) => BuiltinTypeId::UNSIGNED_INTEGER16,
+        Const::UInt32(_) => BuiltinTypeId::UNSIGNED_INTEGER32,
+        Const::UInt64(_) => BuiltinTypeId::UNSIGNED_INTEGER64,
+        Const::Float32(_) => BuiltinTypeId::FLOAT32,
         Const::Str(_) => BuiltinTypeId::STRING,
         Const::Char(_) => BuiltinTypeId::CHARACTER,
         Const::Bool(_) => BuiltinTypeId::BOOLEAN,
@@ -270,6 +277,7 @@ impl Checker<'_> {
     fn kind(&mut self, arg: &TypeArg, expected: ParamKind, env: &Env, origin: Span) {
         let actual = match arg {
             TypeArg::Ty(_) => Some(ParamKind::Value),
+            TypeArg::Head(TyHead::Con(TyCon::External(_))) => Some(ParamKind::Ctor { arity: 0 }),
             TypeArg::Head(TyHead::Param(i)) => at(&env.params, *i).map(|p| p.kind),
             TypeArg::Head(TyHead::Con(TyCon::Builtin(b))) => b.def().map(|d| ParamKind::Ctor {
                 arity: u32::from(d.arity),
@@ -295,7 +303,7 @@ impl Checker<'_> {
             return matches!(ty, Ty::Con(TyCon::Builtin(b), args) if args.is_empty() && TySet::ORD.contains(*b));
         }
         match ty {
-            Ty::Fn(_) | Ty::App(_, _) => false,
+            Ty::Fn(_) | Ty::App(_, _) | Ty::Con(TyCon::External(_), _) => false,
             Ty::Param(i) => at(&env.params, *i)
                 .and_then(|p| p.builtin)
                 .is_some_and(|c| c == BuiltinConstraint::Key || c == constraint),
@@ -309,7 +317,8 @@ impl Checker<'_> {
             Ty::Con(TyCon::Builtin(b), args) => match b.def() {
                 Some(d) if usize::from(d.arity) == args.len() => match d.class {
                     BuiltinTypeClass::Basic => {
-                        constraint != BuiltinConstraint::Key || *b != BuiltinTypeId::FLOAT
+                        constraint != BuiltinConstraint::Key
+                            || !matches!(*b, BuiltinTypeId::FLOAT | BuiltinTypeId::FLOAT32)
                     }
                     BuiltinTypeClass::Collection => {
                         args.iter().all(|t| self.satisfies(t, constraint, env))
@@ -357,6 +366,13 @@ impl Checker<'_> {
                     None
                 }
             }
+            ValKind::External { def, .. } => match self.program.schemes.get(*def) {
+                Some(s) => Some(self.instantiate(s, &TypeArgs::default(), env, val.origin)),
+                None => {
+                    self.error(val.origin, "missing external scheme");
+                    None
+                }
+            },
             ValKind::Builtin { id, targs, info } => {
                 let scheme = match info.decl {
                     Some(decl) => self.program.schemes.get(decl).cloned(),
@@ -1158,7 +1174,19 @@ impl Checker<'_> {
             CorePat::Wild => {}
             CorePat::Var(v) => self.pattern_var(*v, ty, vars, origin),
             CorePat::Const(c) => {
-                if matches!(c, Const::Float(_) | Const::Byte(_) | Const::Decimal(_)) {
+                if !matches!(
+                    constant_type(c),
+                    Ty::Con(
+                        TyCon::Builtin(
+                            BuiltinTypeId::INTEGER
+                                | BuiltinTypeId::CHARACTER
+                                | BuiltinTypeId::STRING
+                                | BuiltinTypeId::BOOLEAN
+                                | BuiltinTypeId::UNIT
+                        ),
+                        _
+                    )
+                ) {
                     self.error(origin, "constant type is not permitted in a pattern");
                 } else {
                     self.equal(origin, ty, &constant_type(c));
@@ -2774,6 +2802,13 @@ mod tests {
             Const::Float(1.0),
             Const::Decimal(Decimal::new(1, 0).unwrap()),
             Const::Byte(1),
+            Const::Int8(1),
+            Const::Int16(1),
+            Const::Int32(1),
+            Const::UInt16(1),
+            Const::UInt32(1),
+            Const::UInt64(1),
+            Const::Float32(1.0),
         ] {
             let ty = constant_type(&c);
             let mut p = main_program(
@@ -2905,10 +2940,18 @@ mod tests {
         let plain_fn = fn_ty(vec![], int(), EffectSet::empty());
         let opaque = builtin(BuiltinTypeId::REFERENCE, vec![int()]);
         let float = builtin(BuiltinTypeId::FLOAT, vec![]);
+        let float32 = builtin(BuiltinTypeId::FLOAT32, vec![]);
         let option_float = Ty::Con(TyCon::Adt(OPTION), vec![float.clone()]);
         let option_fn = Ty::Con(TyCon::Adt(OPTION), vec![plain_fn.clone()]);
         for (constraint, ty, expected) in [
             (BuiltinConstraint::Equality, float, true),
+            (BuiltinConstraint::Equality, float32.clone(), true),
+            (BuiltinConstraint::Key, float32.clone(), false),
+            (
+                BuiltinConstraint::Key,
+                Ty::Con(TyCon::Adt(OPTION), vec![float32]),
+                false,
+            ),
             (BuiltinConstraint::Equality, plain_fn, false),
             (BuiltinConstraint::Equality, opaque, false),
             (BuiltinConstraint::Equality, option_fn, false),

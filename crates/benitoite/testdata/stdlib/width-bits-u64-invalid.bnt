@@ -1,0 +1,5 @@
+// 作成時の関門: 範囲外のシフトの停止が CLI の既存の診断で報告されることを守る。
+function main() -> Unit
+  bind _ <- UnsignedInteger64.shiftLeft(1u64, 64)
+  ()
+end function

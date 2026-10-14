@@ -1,0 +1,17 @@
+// spec: 01-02 外部の関数の宣言
+dependency Fuzzy
+  path "../libraries.files/fuzzy"
+end dependency
+import Benitoite.Unofficial.IO.Console
+import Fuzzy.Distance
+function main() -> Unit uses Console.Write
+  Console.writeLine(match Distance.closest("buy mlk", ["wash dishes", "buy milk", "send mail"], 3) with
+    case Option.Some(s) -> s
+    case Option.None -> "none"
+  end match)
+  Console.writeLine(match Distance.closest("xyz", ["abc"], 1) with
+    case Option.Some(s) -> s
+    case Option.None -> "none"
+  end match)
+  Console.writeLine("${Distance.distance("日本語🦀", "日本🦀")}")
+end function

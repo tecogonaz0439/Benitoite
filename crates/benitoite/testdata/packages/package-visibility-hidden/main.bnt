@@ -1,0 +1,9 @@
+// spec: 01-03 公開（初回リリース版）
+dependency Tk
+  path "deps/textkit"
+end dependency
+import Tk.Internal
+
+function main() -> Unit
+  bind _ <- Internal.answer()
+end function

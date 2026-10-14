@@ -1,0 +1,46 @@
+//! Functions on `Float64`, the same type as `Float`, exposed under the canonical module name.
+
+/// Calls `Float.toString` with the same result and stopping conditions.
+public function toString(x: Float64) -> String
+  return Float.toString(x)
+end function
+
+/// Calls `Float.parse` with the same result and stopping conditions.
+public function parse(s: String) -> Option[Float64]
+  return Float.parse(s)
+end function
+
+/// Calls `Float.truncate` with the same result and stopping conditions.
+public function truncate(x: Float64) -> Option[Integer]
+  return Float.truncate(x)
+end function
+
+/// Calls `Float.isNaN` with the same result and stopping conditions.
+public function isNaN(x: Float64) -> Boolean
+  return Float.isNaN(x)
+end function
+
+/// Calls `Float.absolute` with the same result and stopping conditions.
+public function absolute(x: Float64) -> Float64
+  return Float.absolute(x)
+end function
+
+/// Calls `Float.floor` with the same result and stopping conditions.
+public function floor(x: Float64) -> Float64
+  return Float.floor(x)
+end function
+
+/// Calls `Float.ceiling` with the same result and stopping conditions.
+public function ceiling(x: Float64) -> Float64
+  return Float.ceiling(x)
+end function
+
+/// Calls `Float.round` with the same result and stopping conditions.
+public function round(x: Float64) -> Float64
+  return Float.round(x)
+end function
+
+/// Calls `Float.squareRoot` with the same result and stopping conditions.
+public function squareRoot(x: Float64) -> Float64
+  return Float.squareRoot(x)
+end function

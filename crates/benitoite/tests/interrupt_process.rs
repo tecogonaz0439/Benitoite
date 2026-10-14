@@ -62,8 +62,19 @@ struct Process {
 
 impl Process {
     fn start(source: &str, mode: &str, hold_stdout: bool) -> Self {
+        Self::start_with_files(source, mode, hold_stdout, &[])
+    }
+    fn start_with_files(
+        source: &str,
+        mode: &str,
+        hold_stdout: bool,
+        files: &[(&str, &[u8])],
+    ) -> Self {
         let directory = Directory::new();
         fs::write(directory.0.join("input.txt"), b"resource\n").unwrap();
+        for (name, bytes) in files {
+            fs::write(directory.0.join(name), bytes).unwrap();
+        }
         let script = directory.0.join("main.bnt");
         fs::write(&script, format!("{IMPORTS}{source}")).unwrap();
         let child = Command::new(env!("CARGO_BIN_EXE_benitoite"))
@@ -389,4 +400,40 @@ end function
 "#
     );
     interrupted(&source, "-INT", true, format!("ready\n{body}").as_bytes());
+}
+
+// 関門: CLI の Wasm 実行中の中断は、トラップの報告を出さず終了状態 130 になる。
+#[test]
+fn sigint_interrupts_external_wasm_without_a_trap_report() {
+    let bytes = wat::parse_str(
+        r#"(component
+        (core module $m (func (export "spin") (loop br 0)))
+        (core instance $i (instantiate $m))
+        (func (export "spin") (canon lift (core func $i "spin"))))"#,
+    )
+    .unwrap();
+    for mode in ["direct", "request"] {
+        let mut process = Process::start_with_files(
+            r#"
+@external("wasm", "spin.wasm", "spin")
+function spin() -> Unit
+function main() -> Unit uses Console.Write,Clock.Time
+  Console.writeLine("ready")
+  Clock.sleep(1)
+  spin()
+end function
+"#,
+            mode,
+            false,
+            &[("spin.wasm", &bytes)],
+        );
+        process.await_ready();
+        thread::sleep(Duration::from_millis(200));
+        process.signal("-INT");
+        let status = process.wait();
+        let (stdout, stderr) = process.output();
+        assert_eq!(status.code(), Some(130), "{mode}: {stderr:?}");
+        assert_eq!(stdout, READY);
+        assert!(stderr.is_empty(), "{mode}: {stderr:?}");
+    }
 }

@@ -62,6 +62,19 @@ fn verify_tables(p: &CompiledProgram) -> Result<(), VerifyError> {
         p.main.is_none_or(|main| p.proto(main).is_some()),
         "main prototype is missing",
     )?;
+    for external in &p.externals.functions {
+        check(
+            usize::try_from(external.component)
+                .ok()
+                .and_then(|i| p.externals.components.get(i))
+                .is_some(),
+            "external component is missing",
+        )?;
+        check(
+            usize::from(external.arity) == external.spec.params.len(),
+            "external arity mismatch",
+        )?;
+    }
     for (_, proto) in &p.top_fns {
         check(p.proto(*proto).is_some(), "top-level prototype is missing")?;
     }
@@ -116,6 +129,13 @@ fn verify_tables(p: &CompiledProgram) -> Result<(), VerifyError> {
             }
             ConstDesc::Int(_)
             | ConstDesc::Float(_)
+            | ConstDesc::Int8(_)
+            | ConstDesc::Int16(_)
+            | ConstDesc::Int32(_)
+            | ConstDesc::UInt16(_)
+            | ConstDesc::UInt32(_)
+            | ConstDesc::UInt64(_)
+            | ConstDesc::Float32(_)
             | ConstDesc::Str(_)
             | ConstDesc::Char(_)
             | ConstDesc::Bool(_)
@@ -236,6 +256,9 @@ fn verify_proto(p: &CompiledProgram, id: ProtoIdx, proto: &Proto) -> Result<(), 
         // 空の並びでも始点が窓の終端を越えないことを別に確かめる。
         // reg_use が空の reads に番号を加えない場合にも、スライスの範囲を保証する。
         let range = match opcode {
+            Opcode::Ext => p
+                .external_call_operands(*instr)
+                .map(|call| (call.args_start, call.arg_count)),
             Opcode::Prim | Opcode::Io => p
                 .builtin(BuiltinRefIdx(u32::from(instr.b())))
                 .map(|info| (instr.c(), info.arity)),
@@ -372,6 +395,7 @@ fn verify_proto(p: &CompiledProgram, id: ProtoIdx, proto: &Proto) -> Result<(), 
             | Opcode::Return
             | Opcode::Prim
             | Opcode::Io
+            | Opcode::Ext
             | Opcode::Escape
             | Opcode::GetDict
             | Opcode::Dict
@@ -589,6 +613,7 @@ mod tests {
         let mut method = proto(vec![Instr::abc(Opcode::Return, 0, 0, 0)], 1, 1);
         method.captures.clear();
         let mut p = CompiledProgram {
+            externals: Default::default(),
             protos: vec![main, captured, method],
             consts: vec![ConstDesc::Unit],
             top_fns: vec![(BindingId(0), ProtoIdx(2))],
@@ -643,11 +668,36 @@ mod tests {
             main_kind: MainKind::Unit,
             sources: Arc::new(SourceTable::new()),
         };
+        let source = Arc::new(crate::external::ComponentSource {
+            display: "x.wasm".into(),
+            bytes: Arc::from([]),
+        });
+        p.externals.components.push(Arc::clone(&source));
+        p.externals
+            .functions
+            .push(crate::bytecode::program::ExternalRef {
+                spec: Arc::new(crate::external::ExternalSpec {
+                    adapter: None,
+                    id: 0,
+                    function: "f".into(),
+                    component: source,
+                    instance: None,
+                    export: "f".into(),
+                    params: vec![crate::external::WitPlan::S64],
+                    result: Some(crate::external::WitPlan::S64),
+                    route: crate::external::ExternalRoute::of(
+                        &[crate::external::WitPlan::S64; 1],
+                        Some(&crate::external::WitPlan::S64),
+                    ),
+                }),
+                component: 0,
+                arity: 1,
+            });
         refresh(&mut p);
         p
     }
 
-    // 関門: 68 命令の読み書きと表から求める引数の数の契約を verify の境界で守る。
+    // 関門: 69 命令の読み書きと表から求める引数の数の契約を verify の境界で守る。
     // 生存解析のテストは検証器の受理・拒否、VerifyError の位置を確かめていない。
     #[test]
     fn every_opcode_accepts_valid_operands_and_rejects_outside_registers() {
@@ -684,7 +734,7 @@ mod tests {
             }
             tested += 1;
         }
-        assert_eq!(tested, 68);
+        assert_eq!(tested, 69);
         // 空の引数の並びは窓の終端から始めてよい。
         let p = fixture(Instr::abc(Opcode::List, 1, 16, 0));
         assert_eq!(verify(&p), Ok(()));

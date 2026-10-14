@@ -1,0 +1,110 @@
+//! 平らな節点の表と JSON の木の相互変換（設計書 03-08「Json」、03-10「型の対応」）。
+import Benitoite.Unofficial.Json
+
+/// WIT の節点。配列と対象は直下の子の数を持つ。
+public(package) data Node
+  Null
+  Boolean(Boolean)
+  Integer(Integer)
+  Float(Float)
+  Text(String)
+  Array(Integer)
+  Object(Integer)
+  Key(String)
+end data
+
+/// JSON を前順の節点の表で受け取る。
+@external("wasm", "wasm/json.wasm", "bnt:json/codec@0.1.0#parse")
+public(package) function parse(text: String) -> Result[List[Node], Json.ParseError]
+
+/// 前順の節点の表を JSON に書く。
+@external("wasm", "wasm/json.wasm", "bnt:json/codec@0.1.0#stringify")
+public(package) function stringify(nodes: List[Node]) -> Result[String, String]
+
+/// 前順の節点の表を字下げして書く。
+@external("wasm", "wasm/json.wasm", "bnt:json/codec@0.1.0#stringify-pretty")
+public(package) function stringifyPretty(nodes: List[Node]) -> Result[String, String]
+
+data Visit
+  Value(Json.Value)
+  Key(String)
+end data
+
+/// 木を前順の表へ変換する。深さに比例する呼び出しの枠を作らない。
+public(package) function flatten(value: Json.Value) -> List[Node]
+  return flattenFrom([Visit.Value(value)], [])
+end function
+
+function flattenFrom(work: List[Visit], nodes: List[Node]) -> List[Node]
+  return match List.head(work) with
+    case Option.None -> nodes
+    case Option.Some(step) ->
+      bind rest <- Option.unwrapOr(List.tail(work), [])
+      match step with
+        case Visit.Key(k) -> flattenFrom(rest, List.append(nodes, Node.Key(k)))
+        case Visit.Value(v) -> match v with
+          case Json.Value.Null -> flattenFrom(rest, List.append(nodes, Node.Null))
+          case Json.Value.Boolean(b) -> flattenFrom(rest, List.append(nodes, Node.Boolean(b)))
+          case Json.Value.Integer(i) -> flattenFrom(rest, List.append(nodes, Node.Integer(i)))
+          case Json.Value.Float(f) -> flattenFrom(rest, List.append(nodes, Node.Float(f)))
+          case Json.Value.String(s) -> flattenFrom(rest, List.append(nodes, Node.Text(s)))
+          case Json.Value.Array(items) ->
+            bind next <- List.fold(List.reverse(items), rest, lambda(acc: List[Visit], child: Json.Value) -> List[Visit]
+              return List.prepend(acc, Visit.Value(child))
+            end lambda)
+            flattenFrom(next, List.append(nodes, Node.Array(List.length(items))))
+          case Json.Value.Object(items) ->
+            bind next <- List.fold(List.reverse(Map.toList(items)), rest, lambda(acc: List[Visit], pair: Pair[String, Json.Value]) -> List[Visit]
+              return List.prepend(List.prepend(acc, Visit.Value(Pair.second(pair))), Visit.Key(Pair.first(pair)))
+            end lambda)
+            flattenFrom(next, List.append(nodes, Node.Object(Map.size(items))))
+        end match
+      end match
+  end match
+end function
+
+data Frame
+  Root
+  Array(Integer, List[Json.Value], Frame)
+  Member(Integer, Map[String, Json.Value], String, Frame)
+end data
+
+/// 前順の表から木を組み直す。ゲストの正しい表だけを受け取る。
+public(package) function rebuild(nodes: List[Node]) -> Result[Json.Value, String]
+  return readNode(nodes, 0, Frame.Root)
+end function
+
+function readNode(nodes: List[Node], i: Integer, frame: Frame) -> Result[Json.Value, String]
+  return match List.get(nodes, i) with
+    case Option.None -> Result.Error("incomplete JSON node table")
+    case Option.Some(node) -> match node with
+      case Node.Null -> accept(nodes, i + 1, Json.Value.Null, frame)
+      case Node.Boolean(b) -> accept(nodes, i + 1, Json.Value.Boolean(b), frame)
+      case Node.Integer(n) -> accept(nodes, i + 1, Json.Value.Integer(n), frame)
+      case Node.Float(n) -> accept(nodes, i + 1, Json.Value.Float(n), frame)
+      case Node.Text(s) -> accept(nodes, i + 1, Json.Value.String(s), frame)
+      case Node.Array(n) -> if n = 0 then accept(nodes, i + 1, Json.Value.Array([]), frame) else if n > 0 then readNode(nodes, i + 1, Frame.Array(n, [], frame)) else Result.Error("negative JSON child count") end if
+      case Node.Object(n) -> if n = 0 then accept(nodes, i + 1, Json.Value.Object(Map.empty()), frame) else if n > 0 then readKey(nodes, i + 1, n, Map.empty(), frame) else Result.Error("negative JSON child count") end if
+      case Node.Key(_) -> Result.Error("unexpected JSON key")
+    end match
+  end match
+end function
+
+function readKey(nodes: List[Node], i: Integer, n: Integer, members: Map[String, Json.Value], frame: Frame) -> Result[Json.Value, String]
+  return match List.get(nodes, i) with
+    case Option.Some(Node.Key(k)) -> readNode(nodes, i + 1, Frame.Member(n, members, k, frame))
+    case _ -> Result.Error("missing JSON key")
+  end match
+end function
+
+function accept(nodes: List[Node], i: Integer, value: Json.Value, frame: Frame) -> Result[Json.Value, String]
+  return match frame with
+    case Frame.Root -> if i = List.length(nodes) then Result.Ok(value) else Result.Error("trailing JSON nodes") end if
+    case Frame.Array(n, items, parent) ->
+      bind next <- List.append(items, value)
+      if n = 1 then accept(nodes, i, Json.Value.Array(next), parent) else readNode(nodes, i, Frame.Array(n - 1, next, parent)) end if
+    case Frame.Member(n, members, key, parent) ->
+      bind next <- Map.set(members, key, value)
+      if n = 1 then accept(nodes, i, Json.Value.Object(next), parent) else readKey(nodes, i, n - 1, next, parent) end if
+  end match
+end function

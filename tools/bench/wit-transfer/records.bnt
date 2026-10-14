@@ -1,0 +1,40 @@
+//! 具体化した欄と有限の入れ子を持つ record の比較入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+record Box[T]
+  value: T
+end record
+
+data Envelope[T]
+  Wrapped(T)
+  Empty
+end data
+
+@external("wasm", "guests/records.wasm", "box")
+function box(v: Box[Integer]) -> Box[Integer]
+@external("wasm", "guests/records.wasm", "nested")
+function nested(v: Box[Box[Integer]]) -> Box[Box[Integer]]
+@external("wasm", "guests/records.wasm", "envelope")
+function envelope(v: Envelope[Integer]) -> Envelope[Integer]
+record Mixed
+  a: Integer8
+  b: UnsignedInteger64
+  c: Pair[Float32, Character]
+end record
+
+@external("wasm", "guests/mixed-record.wasm", "run")
+function mixed(v: Mixed) -> Mixed
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind c0 <- box(Box(value: n)) = Box(value: n + 7)
+    bind c1 <- nested(Box(value: Box(value: n))) = Box(value: Box(value: n + 7))
+    bind c2 <- envelope(Envelope.Wrapped(n)) = Envelope.Wrapped(n + 9)
+    bind c3 <- envelope(Envelope.Empty) = Envelope.Empty
+    bind c4 <- mixed(Mixed(a: -128s8, b: 9223372036854775808u64, c: Pair(1.5f32, '😀'))) = Mixed(a: -127s8, b: 9223372036854775809u64, c: Pair(-1.5f32, '😁'))
+    return c0 and c1 and c2 and c3 and c4
+  end lambda)
+end function

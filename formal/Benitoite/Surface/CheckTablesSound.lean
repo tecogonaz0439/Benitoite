@@ -36,7 +36,8 @@ theorem opPrim_sound (atoms entries) :
     by_cases hn : (entry.op != Benitoite.Exchange.operatorName op) = true
     · simp only [List.findSome?_cons, hn, ite_true] at h
       exact ih h
-    · by_cases ht : (entry.operand.isNone || (Benitoite.Exchange.fromTy atoms ty).toOption == entry.operand) = true
+    · by_cases ht : (entry.operand.isNone || (Benitoite.Exchange.fromTy atoms ty).toOption ==
+          entry.operand.bind (fun t => (t.toRelease >>= Benitoite.Exchange.fromTy atoms).toOption)) = true
       · simp only [List.findSome?_cons, hn, ht, Bool.false_eq_true, ite_false, ite_true, Option.some.injEq, Prod.mk.injEq] at h
         exact h.2.symm
       · simp only [List.findSome?_cons, hn, ht, Bool.false_eq_true, ite_false] at h

@@ -6,6 +6,14 @@ Refer to its declarations as `Float.<name>`, for example `Float.toString`.
 
 Functions on `Float`, the IEEE 754 double-precision type.
 
+## Type
+
+Type: `Float`. Canonical name: `Float64`. Displayed as `Float`.
+
+Accepted aliases for this type: `Float`. These names denote the same type; they do not require a conversion.
+
+This is a distinct numeric type. There are no implicit conversions between numeric types.
+
 ```benitoite
 public function toString(x: Float) -> String
 ```

@@ -1,0 +1,24 @@
+//! 行きの値の変更と戻りの重複鍵を照合する map の比較入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+@external("wasm", "guests/maps.wasm", "result")
+function result(v: Map[String, Integer]) -> Map[String, Integer]
+@external("wasm", "guests/maps.wasm", "echo")
+function echo(v: Map[String, Integer]) -> Map[String, Integer]
+@external("wasm", "guests/maps.wasm", "first")
+function first(v: Map[String, Integer]) -> Integer
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+  bind indexes <- List.range(0, n)
+  bind source <- Map.fromList(List.map(indexes, lambda(i: Integer) -> Pair[String, Integer] return Pair(Integer.toString(i), i) end lambda))
+  bind expected <- Map.fromList(List.map(indexes, lambda(i: Integer) -> Pair[String, Integer] return Pair(Integer.toString(i), i + 7) end lambda))
+
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind c0 <- echo(source) = expected
+    bind c1 <- result(source) = Map.fromList([Pair("a", 2), Pair("z", 3)])
+    bind c2 <- first(source) = (if n = 0 then -1 else 48 end if)
+    return c0 and c1 and c2
+  end lambda)
+end function

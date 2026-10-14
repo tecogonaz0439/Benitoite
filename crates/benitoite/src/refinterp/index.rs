@@ -50,6 +50,7 @@ impl<'p> Index<'p> {
                         | ValKind::Const(_)
                         | ValKind::TopFn { .. }
                         | ValKind::Builtin { .. }
+                        | ValKind::External { .. }
                         | ValKind::Op { .. }
                         | ValKind::Lambda(_)
                         | ValKind::Ctor { .. }
@@ -146,6 +147,7 @@ impl<'p> Index<'p> {
                 ValKind::Const(_)
                 | ValKind::TopFn { .. }
                 | ValKind::Builtin { .. }
+                | ValKind::External { .. }
                 | ValKind::Op { .. }
                 | ValKind::Ctor { .. }
                 | ValKind::List(_)
@@ -284,6 +286,7 @@ fn walk_val<'p>(v: &'p CoreVal, comps: &mut Vec<&'p Comp>, vals: &mut Vec<&'p Co
         | ValKind::Const(_)
         | ValKind::TopFn { .. }
         | ValKind::Builtin { .. }
+        | ValKind::External { .. }
         | ValKind::Op { .. }
         | ValKind::ConstRef(_) => {}
     }

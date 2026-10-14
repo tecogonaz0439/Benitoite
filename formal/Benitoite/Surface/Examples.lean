@@ -79,6 +79,40 @@ theorem neg_float_zero_row : desugarExpr opPrim .other (.negFloat (Float.ofBits 
     | .ret (.const (.float x)) => x.toBits == 0x8000000000000000
     | _ => false)
 
+-- 01-12「名前とリテラル」: 幅を落とす脱糖と u64 上半分の符号反転を検出する。
+-- 期待値は各幅の定数で独立に書き、値域の検査の例とはしない。
+theorem width_literal_rows :
+    desugarExpr opPrim .other (.literal (.integer8 127)) = .ret (.const (.integer8 127)) ∧
+    desugarExpr opPrim .other (.literal (.integer16 32767)) = .ret (.const (.integer16 32767)) ∧
+    desugarExpr opPrim .other (.literal (.integer32 2147483647)) = .ret (.const (.integer32 2147483647)) ∧
+    desugarExpr opPrim .other (.literal (.byte 255)) = .ret (.const (.byte 255)) ∧
+    desugarExpr opPrim .other (.literal (.unsignedInteger16 65535)) =
+      .ret (.const (.unsignedInteger16 65535)) ∧
+    desugarExpr opPrim .other (.literal (.unsignedInteger32 4294967295)) =
+      .ret (.const (.unsignedInteger32 4294967295)) ∧
+    desugarExpr opPrim .other (.literal (.unsignedInteger64 18446744073709551615)) =
+      .ret (.const (.unsignedInteger64 18446744073709551615)) ∧
+    desugarExpr opPrim .other (.literal (.float32 0x3fc00000)) =
+      .ret (.const (.float32 0x3fc00000)) := by
+  exact ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
+
+-- 最小値の大きさを先に正の定数へ移さず、直接に負の定数を作る。
+theorem width_direct_negative_rows :
+    desugarExpr opPrim .other (.negInteger8 128) = .ret (.const (.integer8 (-128))) ∧
+    desugarExpr opPrim .other (.negInteger16 32768) = .ret (.const (.integer16 (-32768))) ∧
+    desugarExpr opPrim .other (.negInteger32 2147483648) =
+      .ret (.const (.integer32 (-2147483648))) ∧
+    desugarExpr opPrim .other (.negFloat32 0x3fc00000) = .ret (.const (.float32 0xbfc00000)) ∧
+    desugarExpr opPrim .other (.negFloat32 0) = .ret (.const (.float32 0x80000000)) ∧
+    desugarExpr opPrim .other (.negFloat32 0x80000000) = .ret (.const (.float32 0)) := by
+  exact ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩
+
+-- 括弧を挟む形は一般の負号であり、直接負号の定数への脱糖と混同しない。
+theorem width_parenthesized_negative_row :
+    desugarExpr (fun _ _ => some ("neg_Integer8", [])) .other
+      (.neg (.base .integer8) (.paren (.literal (.integer8 127)))) =
+    .letIn (.ret (.const (.integer8 127))) (.app (.prim "neg_Integer8" [] []) [.var 0]) := rfl
+
 theorem unit_row : desugarExpr opPrim .other .unit = .ret (.const .unit) := rfl
 theorem paren_row : desugarExpr opPrim .tail (.paren (.returnE intTy (eInt 3))) = .ret (vInt 3) := rfl
 

@@ -284,3 +284,252 @@ handler の単一の操作数を増やすと、1 秒になる前に既定の呼�
 小さい RSS の変化は、パイプラインや標準ライブラリの変更も含むため、GC 単独の影響と扱わない。
 タスク一個あたりの近似には同じ方式での 0 タスクとの差を使う。
 ラッパーの起動時間は `bench_run` の `run_nanos` に含まれず、CLI の通常の時間測定にもラッパーを入れない。
+
+## WASM の比較（docs/todo の TODO-212・TODO-232）
+
+リポジトリの根で実行する。`wasm_bench.py` は、組み込み版 A、Benitoite で書いた Json の B、WASM の C を比較する。プログラムは `wasm/` に置き、検証用のパッケージを `testdata/packages/libraries.files/` から読み込む。既存の `run.py` の課題の一覧とゴールデンの探索には加えない。
+
+### 入力の生成と短い動作確認
+
+JSON は固定の種から生成する。レコードの配列に、整数・小数・真偽値・null・エスケープと非 ASCII を含む文字列・入れ子の配列を含める。指定のバイト数に足りない末尾は JSON の空白で埋める。表示する節点数は、越え方 2 の WIT の表に合わせて鍵も数える。生成物は一時ディレクトリに置く。
+
+```sh
+python3 tools/bench/wasm_bench.py gen-json --bytes 100000 --seed 212 target/benitoite-input.json
+cargo build --release -p benitoite --bin benitoite --example wasm_cost
+python3 tools/bench/wasm_bench.py --quick
+```
+
+`--quick` は、JSON 1 KB、Hash 0 B と 1 KB、短い Regex と少数の反復、Rust の例の燃料 10,000 と合成コンポーネント約 1 KB だけで道具を確認する。本測定の数字として使わない。正規数の二の冪 2,046 個、固定の非正規化数の標本、負のゼロを A・B・C で比較し、1,000 段の値の compact の書き出しと、オブジェクトの 127 段の解析の成功も比較する。深い値の書き出しを作業列で行うことの確認は `--quick` だけに置き、本測定やゴールデンでは繰り返さない。この二つの確認をここに置くのは、gc-stress と参照インタプリタでも走るゴールデンを 10 秒以内に保つためである。
+
+計時の前に、JSON の解析と書き出しの往復について、A・B・C の compact の出力の SHA-256 を比較する。さらに各課題を一回ずつ実行して出力を比較し、一致した実装だけを反復する。各課題は別プロセスで起動する。Hash と Regex も、一回の出力の一致を確かめてから反復する。一致しない場合は終了状態 1 を返す。浮動小数点数の追加の標本は、差異の入力と A・B・C の出力を記録し、残りの動作確認を終えてから失敗を返す。
+
+`2^-24` の中点の補正を直した後、二の冪と非正規化数など 2,185 個の標本は A・B で一致した。B は十進の中点を偶数側へ補正する際に、その候補を読み戻して元の Float と一致することも確かめる。
+
+ゲストの線形メモリは既定で 64 MiB に制限される。Json の越え方 1（整形）、2（節点の表）、3（文書の保持）と、Regex の `find-all` は、大きな入力では材料の木・結果の表・出力や保持する文書によって上限に達し、C がトラップしうる。Json の `validate` は木を作らずに検証するが、入力自体はゲストへ写す。状態を持つインスタンスの上限は寿命の合計である。`--wasm-memory`・`--wasm-fuel`・`--wasm-transfer` で CLI に渡す上限を変えられる。大きさの単位と範囲は CLI と同じである。各組の計時の前の一回だけの検証には `--wasm-stats` を付け、指定した上限と消費量の JSON を組の要約へ写す。要約の `wasm_stats` は、反復数 1 の確かめの実行の値である。統計がなければ、組の名前を示して停止する。較正と計時の標本には付けず、統計の計数の費用を時間に含めない。上限を指定しなければ既定値を使う。較正は計時の前に済ませ、同じ実装・課題・入力の組では反復数を固定する。要約には反復数も残す。
+
+2026-10-13 に release の処理系で、既定の入力を一回ずつ短く試した。本測定の時間としては使わない。
+
+| 入力 | C の結果（既定の上限） |
+|---|---|
+| 生成した JSON 1 KB・100 KB（種 212） | parse・stringify・read・pretty・validate は成功 |
+| 生成した JSON 10 MB（28,920 レコード、607,321 節点） | stringify・read・validate は成功。parse と pretty は線形メモリの R0905 |
+| 10 MB の数だけの配列（5,000,000 要素） | validate は成功。pretty・parse・document は線形メモリの R0905 |
+| Hash 1 MB・6 MB（Bytes と List[Byte]） | 成功 |
+| Hash 32 MiB（Bytes） | 成功 |
+| Regex の count（既定の 150,000 行、2,550,000 バイト） | resource と純粋な形は成功 |
+
+入力の大きさは維持し、通らない Json の課題は失敗と診断を記録する。比較できた実装の結果と、C が上限に達した課題を区別する。
+
+### 本測定と記録
+
+本測定は、スキル `benchmark` に従って計算機を静かにし、設計者の了承を得てから行う。`--output` は新しい JSON の記録を排他的に作り、既存のファイルを上書きしない。失敗した場合も、途中までの結果と理由を記録する。`--benitoite` と `--wasm-cost` で実行ファイル、`--samples` で各組のプロセスの標本数（既定 5、`--quick` は 1）、`--rounds` で反復数の明示の指定、`--timeout` で一プロセスの期限（既定 1,800 秒）を指定できる。B の 10 MB は長くかかりうるので、期限に達した場合は `limit = "timeout"` としてその課題と期限を記録し、残りを続け、最後にまとめて終了状態 1 を返す。
+
+```sh
+python3 tools/bench/wasm_bench.py --quick --output target/benitoite-wasm-quick.json
+python3 tools/bench/wasm_bench.py --output tools/bench/results/YYYY-MM-DD-wasm.json
+```
+
+記録はコマンド、入力の種・バイト数・節点数・ハッシュ、コンポーネントのバイト数とハッシュ、実行ファイルのバイト数、計算機の CPU・論理 CPU 数・メモリ・OS、Python と `rustc` の版、コミットと未コミットの変更の有無、ビルドの機能（`--build-features` で指定）、終了状態、標準出力・診断を含む。`--benitoite` を変えたら `--build-features` も指定する。所見と CPU プロファイルは、スキルに従って別にまとめる。
+
+| 課題 | 入力と比較対象 | 計時する処理 |
+|---|---|---|
+| JSON parse | 1 KB・100 KB・10 MB、A・B・C の越え方 2 | 解析。C は節点の表からの木の組み直しも含む |
+| JSON stringify | 同上 | 共通の A で作った木の書き出し。C は平らな表への変換も含む |
+| JSON read | 同上、C は越え方 3 | 解析して最初のレコードの id・label・nested を読む |
+| JSON pretty / validate | 同上、C は越え方 1 | A・B は解析して整形、または解析の成否。C はゲストで整形、または検証 |
+| Hash | 1 KB・1 MB・6 MB、A・C の Bytes・C の List[Byte]。32 MiB は A・C の Bytes | SHA-256。List[Byte] への入力の変換は計時の外 |
+| 空の Hash | 0 B、同じ三者 | 境界を含む呼び出しの費用。A と C の差を読む |
+| Regex | 短い入力と同じパターン、A・C の resource・C の純粋な形 | 照合。resource のコンパイルは一度だけ、プロセス全体の時間に含む |
+| Regex count | 数 MB、同じ三者 | 一致の数。A は findAll のリストを作り、C はリストを返さない count を使う。仕事の違いを含む比較 |
+| Regex find-all | 1,000 行、同じ三者 | 全一致のリストを返して長さを数える。C は findAll と findAllOnce を使い、A と同じ仕事を比較 |
+
+各 Benitoite プログラムは単調なミリ秒の時計で `first_ms`（最初の一回）と `rest_ms`（残りの合計）、`rounds` を出す。出力のハッシュは計時の外で計算する。純粋な C の最初の呼び出しの実行系のコンパイルは `first_ms` に入り、実行前の静的検査でのコンパイルと、resource の作成はプロセス全体の時間で確認する。道具の `process_seconds` は検査、実行、ハッシュ、プロセスの起動を含むので、`first_ms` と同じ範囲の数字ではない。ミリ秒未満の課題は 0 ms になりうる。
+
+最大 RSS は既存の `rss.py` を介して、一プロセスずつ取得する。macOS ではバイト、Linux では KiB の `ru_maxrss` をバイトに揃える。合成コンポーネントの生成は別のプロセスで行うため、コンパイルの最大 RSS に WAT の生成と符号化の作業領域は含めない。読み込み、エンジンの作成、コンポーネントの保持も含むプロセス全体の最大であり、コンパイラだけのメモリ使用量とは解釈しない。
+
+### 燃料とコンポーネントの大きさ
+
+Rust の例 `wasm_cost` は処理系と同じ `engine_config()` と、線形メモリ 64 MiB・受け渡し 256 MiB の設定で実行する。新しい依存のクレートは使わない。
+
+```sh
+target/release/examples/wasm_cost --quick
+target/release/examples/wasm_cost calls
+target/release/examples/wasm_cost fuel
+target/release/examples/wasm_cost fuzzy
+python3 tools/bench/rss.py target/release/examples/wasm_cost compile \
+  crates/benitoite/testdata/packages/libraries.files/wasm-json/wasm/json.wasm
+target/release/examples/wasm_cost synthesize 1048576 code target/wasm-code.wasm
+python3 tools/bench/rss.py target/release/examples/wasm_cost compile target/wasm-code.wasm
+target/release/examples/wasm_cost synthesize 1048576 data target/wasm-data.wasm
+python3 tools/bench/rss.py target/release/examples/wasm_cost compile target/wasm-data.wasm
+```
+
+`calls` は `func() -> s64` と `func(s64) -> s64` を各 10,000 回呼ぶ。インスタンスの作成だけ、保持したインスタンスの型付きの呼び出し、保持したインスタンスの動的な値の呼び出し、新しいインスタンスを毎回作る動的な値の呼び出しを分ける。保持したインスタンスの値は、resource を持つインスタンスと同じ寿命で呼ぶ費用を見積もるための対照である。resource の handle の変換と受け渡しの費用は、この空に近い関数の対照には含まれない。
+
+`fuel` は燃料 10^10 を無限ループで使い切り、`OutOfFuel` で終わったことを確認する。`fuzzy` は 100・1,000・3,000 文字の距離と燃料の消費量を読む。どちらもナノ秒、消費した燃料、ナノ秒を燃料で割った値を出す。`--quick` を付けると、呼び出しは 20 回、燃料は 10,000、Fuzzy は 10・30 文字になる。
+
+`compile PATH` は読み込みとエンジンの作成を除いて `Component::from_binary` を計時する。`synthesize BYTES code|data|nop PATH` は新しい `.wasm` を書く。`code` は局所変数の読み書き、`i64` の算術、比較・分岐、関数の呼び出しを含む本体を増やし、`data` はデータの区画、`nop` は対照の空の命令を増やす。生成のプロセスを終えてから別の `compile PATH` のプロセスを起こし、コンパイルの最大 RSS に生成の作業領域を混ぜない。符号化の区切りのため指定の大きさには端数が生じるので、実際のバイト数も出す。本測定の道具は Hash・Json・Regex・Fuzzy と合成の約 1・4・16・64 MiB をそれぞれ別プロセスで呼ぶ。約 256 MiB は `--include-256-mib` で明示したときだけ加える。
+
+### 上限に達する課題
+
+既定の上限では Hash の 100 MB は測れない。引数の写しだけで、ゲストの線形メモリ 64 MiB に達するためである。32 MiB も、ゲストの確保の増え方によっては上限に達しうる。動的な値の経路の Hash は一要素を約 40 バイトとして数えるので、6 MB までとする。
+
+越え方 2 の JSON は、節点一つにつき動的な値二つ分と場合の名前などを受け渡しの予算に数える。数ばかりの 10 MB は節点数が大きく、256 MiB に達しうる。生成する入力では十分な長さの文字列も含めるが、10 MB で `R0905` に達した場合は、その診断と失敗した課題を記録し、成功した実装の比較を続ける。全実装の一致を確認できたという結果にはしない。10 MB の document も較正した回数で反復する。状態を持つインスタンスでは、回収の時期によってメモリの消費量が変わり、上限に達した課題は失敗として記録する。
+
+反復数は課題・大きさ・実装ごとに較正する。50 ms 以上の反復区間から一回あたりの時間を見積もり、1.2 秒を目安に回数を決める。計時の前の較正で反復区間が 1 秒以上になるまで回数を調整し、計時の段では変えない。`first_ms` は初回だけ、`per_iteration_ms` は `rest_ms / (rounds - 1)` である。`--quick` と `--rounds` の明示の指定はこの較正を省く。各組を `--samples` 回起動し、回ごとに実装の先頭をずらし、巡回ごとに順を逆転する。JSON の `summary` に固定した反復数と初回、一回あたり、プロセス全体の時間、最大 RSS の中央値と最小値を残す。コンパイルも各大きさで同じ標本数を取り、`compile_nanos` の中央値と最小値を残す。
+
+`wasm_cost` は処理系と同じ `engine_config()` と既定の上限値を使う。ただし `StoreLimits` はメモリ一つごとに上限を当て、処理系の制限器は Store 全体の成長の合計を数えるので、上限の数え方は異なる。呼び出しの費用を測る関数はメモリを成長させない。`instantiate` の計時には `Store` の作成を含む。`fuel` のナノ秒/燃料は無限ループの命令列の値、`fuzzy` の値は距離計算の命令列と文字列の受け渡しを含む値であり、同じ換算率として読まない。
+
+V8 の Markdown の表には次の欄を使い、同じ表の横に設定した上限、呼び出し回数、燃料・線形メモリ・引数と戻り値の受け渡しの最大と合計、達した上限を書く。
+
+| 課題 | 入力のバイト数・節点数 | 実装 | 反復数 | 標本数 | 初回 ms（中央値/最小） | 一回 ms（中央値/最小） | プロセス秒（中央値/最小） | RSS bytes（中央値/最小） | 終了・上限 |
+|---|---|---|---|---|---|---|---|---|---|
+
+本測定は、較正と検証、各組 5 回の 1 秒以上の区間だけでも数分を要する。以前の短い試行で B の 100 KB の parse は一回 97 ms だった。10 MB を単純に 100 倍と見積もると一回約 10 秒になり、B の五つの課題の較正・検証・5 標本で十数分以上になる。この改造での `--quick` の動作確認は約 22 秒だった。その起動の固定費と、64 MiB までの実際のコードのコンパイルの 5 標本も加え、30〜60 分を見込む。大きさへの比例は未確認なので、実際の時間は期限や課題によって変わる。約 256 MiB を含める場合は別に見積もる。
+
+`--probe` は本測定の前の短い上限の確認であり、10 MB の生成 JSON（種は `--seed`）の C の verify・parse・stringify・read・pretty・validate を一回ずつ実行する。既定の上限と、線形メモリ 1 GiB・受け渡し 1 GiB の二組を比べ、成功か R0905/R0904 かを表に出す。燃料は既定値か `--wasm-fuel` の指定を両組で使う。反復や中央値の測定は行わない。
+
+```sh
+python3 tools/bench/wasm_bench.py --probe --output target/benitoite-wasm-probe.json
+python3 tools/bench/wasm_bench.py --wasm-memory=1GiB --wasm-transfer=1GiB \
+  --output tools/bench/results/YYYY-MM-DD-wasm-raised.json
+```
+
+## WIT の受け渡しの比較入力
+
+[`wit-transfer/manifest.json`](wit-transfer/manifest.json) に、数、flags、map、record、tuple、variant、基本値、入れ子のリスト、UTF-16 の九種類の契約を置く。各契約には空・小・大の設定と、同じ実行内で三回呼ぶ設定がある。別に、短い数だけを渡す `short-numbers.bnt` と、Bytes だけを渡す `large-bytes.bnt` を比較用に置く。処理系の経路を強制するオプションは使わない。短い数と Bytes には、`-typed.bnt` と `-adapter.bnt` の別々のスクリプトも置く。測定道具は manifest の `cli_variants` を読み、各プロセスでは一つの宣言だけを呼ぶ。元の二宣言を含むスクリプトは独立例の型の読み込みと従来の結果検証に使う。
+
+入力は `.bnt` のスクリプトが二つの引数から作る。第一引数は入力の大きさ、第二引数は同じ実行内の反復数である。入力と期待値を反復の前に用意し、反復ごとに実際の結果を照合する。正しい結果なら `ok` を一行出力して終了状態 0、不一致なら `failed` と実行失敗を報告する。固定した大きさの契約では、第一引数は欄の整数値を変える。転送の要素数が増えるものとは区別する。
+
+| 契約・比較 | 空 | 小 | 大 | 第一引数の意味 |
+|---|---:|---:|---:|---|
+| numbers | 0 | 3 | 4,096 | 各幅のリストの要素数。スカラーの境界値は毎回呼ぶ |
+| flags | 0 | 1 | 32 | 各幅の先頭から選ぶ項目数。幅を超える指定はその幅の全選択 |
+| maps | 0 | 3 | 4,096 | 入力の組の数。重複した三組を返す呼び出しも毎回行う |
+| records | 0 | 35 | 1,000,000 | 固定した欄の整数値。混合幅の欄の検査は既知の値を使う |
+| tuples | 0 | 1 | 1,000,000 | 固定した 1・4・17 要素の組の整数値 |
+| variants | 0 | 3 | 1,000,000 | 固定した欄の整数値。空と数の合流の各場合も毎回呼ぶ |
+| primitives | 0 | 3 | 1,048,576 | Bytes のバイト数。文字列は `A日😀` を最大 4,096 回繰り返す |
+| nested | 0 | 3 | 4,096 | 外側のリストの要素数。子は二要素・空・一要素の順 |
+| utf16 | 0 | 1 | 4,096 | `A日😀` の反復数。一単位は UTF-8 で 8 バイト、UTF-16 で 4 符号単位 |
+| short-numbers | 0 | 42 | 1,000,000 | 一個の数の値。各宣言が渡す数は 8 バイト |
+| large-bytes | 0 | 3 | 1,048,576 | Bytes のバイト数 |
+
+### ゲストの再生成
+
+手書きゲストの元ソース、元の版、比較用に変えた点、保存したソースとバイナリの SHA-256 は manifest の `guests` に記録する。比較用の `.wat` は独立したソースであり、再生成時に処理系のテストの内部コードを読み込まない。可変長の入力を持つゲストの確保処理は、整列・メモリの拡張・古い内容の保存を行う。
+
+再生成には、既存のテストの準備データと同じ `wat 1.261.0` を使う。独立したクレートの Cargo.lock で依存を固定する。リポジトリの根で次を実行する。既に取得した依存を使い、生成物を `target/` に置く。
+
+```sh
+cargo run -q --offline --locked \
+  --manifest-path tools/bench/wit-transfer/regenerate/Cargo.toml \
+  --target-dir target/wit-transfer-fixtures
+cargo run -q --offline --locked \
+  --manifest-path tools/bench/wit-transfer/regenerate/Cargo.toml \
+  --target-dir target/wit-transfer-fixtures -- --check
+```
+
+ソースを意図して変えたときは、再生成後に manifest の SHA-256 も更新する。`--check` はソースを解析した結果と保存したバイナリを照合し、不一致なら失敗する。
+
+### 小さい入力の確認と測定への引き継ぎ
+
+```sh
+cargo build -p benitoite --bin benitoite
+python3 tools/bench/wit-transfer/verify.py
+python3 tools/bench/wit-transfer/verify.py --sample zero --sample small --sample repeat
+python3 tools/bench/wit-transfer/verify.py --case large-bytes --sample repeat
+```
+
+`verify.py` は manifest の CLI コマンドを読み、独立した期待値を使うスクリプトの標準出力・終了状態と、`--wasm-stats` の宣言ごとの経路・呼び出し数を照合する。一回の起動の制限時間は 10 秒である。`--benitoite` で使う実行ファイルを指定できる。大きい入力の実行と計時は最後の本測定に残す。
+
+数の `Integer` と `Float`、文字列と一引数の Bytes は typed を選ぶ。新しい数・Byte・Boolean・Character・複合値は adapter を選ぶ。Bytes と UTF-16 の文字列には、Boolean を追加して adapter を選ぶ宣言も用意する。短い数の比較は `s64` と `u64` の異なる契約なので、幅だけで経路の性能差を説明しない。宣言ごとの型と経路は manifest の `declarations` を正とする。
+
+CLI が dynamic を選ぶ宣言はこの入力群にはない。動的な呼び出しとの比較には、同じゲストを Wasmtime から直接呼ぶ測定用の例 `wit_transfer_cost` を使う。小さい入力の引数と期待値を、[WIT の値の JSON](wit-transfer/expected/small-values.json) としても保存する。整数は正確な JSON 整数、Float32 は丸めた値を Float64 へ正確に拡大した数、variant は WIT の場合の名前とペイロードで表す。Bytes と `list<u8>`、一つの組と複数引数の構成子は、同じ WIT の値でも言語の構築量が異なるため、宣言を区別して記録する。
+
+`wit_transfer_bench.py` は manifest の入力・期待値・ゲストを使って、CLI 全体の実時間・最大 RSS・統計と、独立した関数の段別の時間を記録する。CLI の反復用コマンドは、一つの Benitoite の実行でキャッシュを再利用する。同じ実行の反復と、別プロセスの初回を区別する。スクリプトの実時間には結果の照合も含まれるので、外部呼び出しだけの時間として扱わない。
+
+### 計時・RSS・統計の記録
+
+道具の確認だけを行う場合は、次を実行する。`--quick` は最終版だけを既定の機能の debug 構成でビルドし、十一入力それぞれについて、別プロセスの試行を二回、同一実行内の反復を三回行う。入力は小さい設定を使う。標準出力・終了状態・経路・呼び出し数と、段別計時の JSON の形式を検査する。保存版の manifest も読まず、中間版を実行・再ビルドせず、strip も行わない。既存の出力ファイルは上書きしない。
+
+```sh
+python3 tools/bench/wit_transfer_bench.py --help
+python3 tools/bench/wit_transfer_bench.py --quick --output target/p3a-transfer-quick.json
+PYTHONPYCACHEPREFIX=target/pycache python3 -m py_compile tools/bench/wit_transfer_bench.py
+```
+
+本測定は、benchmark スキルに従って機械の状態を設計者が確認した後に行う。次のコマンドは、最終版を既定の機能の release 構成でビルドし、CLI には大きい設定、段別計時には独立した小さい入力を使う。試行回数と同一実行内の反復数は変更できる。`--case` は対象を限定し、複数指定できる。`--sample zero|small|large` は CLI の入力を選ぶ。
+
+```sh
+python3 tools/bench/wit_transfer_bench.py --iterations 5 --rounds 20 \
+  --output tools/bench/results/YYYY-MM-DD-wit-transfer.json
+```
+
+保存した版は `target/p3a-versions/start/manifest.json`、`target/p3a-versions/numbers/manifest.json` と `target/p3a-versions/adapter/manifest.json` から読む。開始前の start 版は短い数と Bytes の typed 用スクリプトだけを実行する。これらは旧い型と構文だけで書き、補助用の宣言は含まない。版・HEAD・差分の記録・機能・バイナリの位置・strip 前後の大きさと SHA-256 を JSON に残し、保存済みの各バイナリの大きさと SHA-256 を実体と照合する。中間版を `target/release/` から復元しない。`--versions-dir` で保存先を変えられる。初期の numbers 版が対応しない WIT の契約は、その版の静的検査の E1008・E1009・E1010 を `unavailable` に記録する。静的検査のほかの失敗は測定を止める。保存版の実行失敗は `measurements` に `status: failed`、`failure_kind`（資源上限・時間切れ・内部エラー・その他の実行失敗）、終了状態、標準出力・標準エラー、診断と取得できた統計を残し、次の試行へ進む。P36a の adapter 版がインスタンス数の上限で失敗しても、残る契約の記録は続ける。成功したが結果・経路が違う場合と、最終版の失敗は検証エラーとする。集計には成功・失敗の試行数を残し、時間・RSS の中央値は成功だけから計算する。全試行が失敗した集計の中央値は `null` とする。numbers 版で実行できる補助対象の宣言は dynamic として照合する。
+
+開始前の実行ファイルがない場合は、次をリポジトリの根で一度だけ実行する。既存の `start/` を上書きしない。git worktree を作らず、アーカイブのソースとビルド生成物を `target/p3a-versions/` の中に置く。保存後の測定はこのバイナリを直接読み、再ビルドしない。
+
+```sh
+mkdir target/p3a-versions/start
+mkdir -p target/p3a-versions/start-src
+git archive a85be5fb | tar -x -C target/p3a-versions/start-src
+(cd target/p3a-versions/start-src && cargo build --release -p benitoite --target-dir ../start-target)
+python3 - <<'PY_START'
+from pathlib import Path
+import hashlib, json, platform, shutil, subprocess
+folder = Path("target/p3a-versions/start")
+binary = folder / "benitoite"
+shutil.copy2("target/p3a-versions/start-target/release/benitoite", binary)
+stripped = folder / "benitoite.stripped"
+shutil.copy2(binary, stripped)
+subprocess.run(["strip", str(stripped)], check=True)
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+data = {
+    "version": "start", "head": subprocess.check_output(["git", "rev-parse", "a85be5fb"], text=True).strip(),
+    "dirty": False, "profile": "release", "default_features": True, "features": ["gc-mark-sweep"],
+    "source_command": "git archive a85be5fb | tar -x -C target/p3a-versions/start-src",
+    "build_command": "cargo build --release -p benitoite --target-dir ../start-target (cwd: target/p3a-versions/start-src)",
+    "rustc": subprocess.check_output(["rustc", "-Vv"], text=True).strip(),
+    "cargo": subprocess.check_output(["cargo", "-V"], text=True).strip(), "platform": platform.platform(),
+    "artifacts": {"benitoite": {
+        "path": str(binary), "size_bytes": binary.stat().st_size, "sha256": digest(binary),
+        "stripped_path": str(stripped), "stripped_size_bytes": stripped.stat().st_size,
+        "stripped_sha256": digest(stripped), "strip_command": ["strip", str(stripped)]}}
+}
+with (folder / "manifest.json").open("x") as stream:
+    json.dump(data, stream, indent=2)
+    stream.write("\n")
+PY_START
+```
+
+本測定では、最終版のバイナリの一時コピーにも strip を行い、前後の大きさと SHA-256 を記録する。最終版を別に用意した場合は、`--benitoite PATH --cost-example PATH` で両方指定する。既定の機能を使う構成で揃え、指定した版と構成が一致することは実行者が確認する。道具は指定されたバイナリを再ビルドしない。
+
+段別計時の例は、例えば次のコマンドで単独でも使える。
+
+```sh
+cargo build --release -p benitoite --example wit_transfer_cost
+target/release/examples/wit_transfer_cost \
+  tools/bench/wit-transfer/large-bytes.bnt large-bytes 20
+target/release/benitoite run --wasm-stats \
+  tools/bench/wit-transfer/large-bytes.bnt 1048576 20
+```
+
+上の例の第一コマンドは小さい JSON 入力を二十回呼び、第二コマンドは 1 MiB の Bytes を同じ Benitoite の実行内で二十回呼ぶ。短い数と Bytes の CLI 記録・集計は `cli_route` と `script` で経路を区別する。typed と adapter を同じプロセスで呼ばず、それぞれの時間と RSS を記録する。JSON のスキーマは第 2 版である。例は生成器・配置表・復号器を含む既存の処理系ソースを例のクレート内に読み込み、内部の `ComponentGroup`・`CodecPlan`・報告関数の接続を使う。測定専用の公開 API は増やさない。宣言の検査と Benitoite のコンパイルは段別計時の外で行い、照合済みの型から生成をやり直して時刻を取る。
+
+| JSON の欄 | 時刻を取る範囲 |
+|---|---|
+| `prepare_nanos` | `ComponentGroup::prepare_with_budget`。共有の鍵と生成用の型の準備 |
+| `generation_nanos` | `ComponentGroup::generate_with_budget`。型から補助を生成・合成 |
+| `compile_nanos` | `Component::from_binary`。各関数・経路につき初回だけ |
+| `instantiate_nanos` | 準備済みの Linker による `instantiate` の前後。Linker の作成と報告関数の接続は計時の外 |
+| `call_nanos` | TypedFunc または動的 Func の `call` の前後。canonical ABI の変換と post-return を含む |
+| `host_pack_nanos` | 補助の `CodecPlan::encode` の前後。型付き・動的は未測定の `null` |
+| `host_decode_nanos` | 補助の `CodecPlan::decode` の前後。型付き・動的は未測定の `null` |
+
+例はコンパイル済み Component を同一プロセス内で保持し、各呼び出しには新しい Store とインスタンスを作る。各関数・経路の最初の呼び出しを `cold`、続く呼び出しを `same-session` として保存する。型付きと動的の `call` の比較では同じゲストの同じ書き出しを使う。型付き・動的の引数と戻り値の準備には例固有の変換を使い、処理系の変換時間を測っていないため、ホスト変換の時間は補助との比較に使わない。この制約を例の `host_conversion_scope` と測定記録の `limits` に明記する。JSON の読み込みと期待値の準備も計時の外で行う。補助の生成を反復ごとにやり直さず、時間を既存 stats の合計から推測しない。
+
+RSS は POSIX の `wait4` が返す子プロセスの最大使用量から取得してバイトに揃える。CLI の記録には、`--wasm-stats` の経路・燃料・転送量・構築量・メモリをそのまま残す。保存した numbers 版の統計には経路と構築量がないため、`unreported_stats` に欠けた欄を記録し、経路と構築量を推測して補わない。呼び出し数と結果はその版でも検査する。例は呼び出しごとの燃料と、補助の転送バッファ全長・構築量を直接記録する。型付き・動的の転送量・構築量は例では `null` とし、CLI の統計と区別する。
+
+段別計時は最終版の小さい入力の費用であり、CLI 全体の時間の内訳でも、大きい入力の型付き・動的の性能比較でもない。最大 RSS はプロセス全体の値であり、関数ごとの使用量ではない。例の純粋な関数は既定の燃料・転送予算と StoreLimits のメモリ上限を使うが、本番の Store 全体の合計を数える制限器は使わない。資源上限の検証には処理系のテストを使う。`--quick` の時間を性能の評価に使わない。

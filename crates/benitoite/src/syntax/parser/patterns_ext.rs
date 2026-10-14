@@ -1,7 +1,7 @@
 //! 選択肢・ガード・範囲・リストのパターンと組の診断（設計書 01-02、01-05、02-03）。
 use super::{
     ClauseContext, CommaList, EscapeContext, Fail, PResult, Parser, child, comma_list, exprs,
-    literal_of,
+    pattern_literal_of,
     patterns::{self, PatternCounter},
     text,
 };
@@ -183,7 +183,10 @@ fn parse_range_end(p: &mut Parser, prefix: Option<Span>) -> PResult<RangeEnd> {
     if !(p.at(TokenKind::IntLit) || !negative && p.at(TokenKind::CharLit)) {
         return Err(p.unexpected(text::RANGE));
     }
-    let lit = literal_of(&p.bump()).ok_or(Fail)?;
+    let Some(lit) = pattern_literal_of(p.peek()) else {
+        return Err(p.unexpected(text::RANGE));
+    };
+    p.bump();
     let span = prefix.map_or_else(
         || p.span_from(start),
         |prefix| prefix.to(p.span_from(start)),
@@ -225,7 +228,12 @@ fn preceding(end: &RangeEnd) -> Option<String> {
             };
             Some(format!("'{escaped}'"))
         }
-        Literal::Float(_) | Literal::Decimal(_) | Literal::Str(_) | Literal::Bool(_) => None,
+        Literal::WidthInt { .. }
+        | Literal::WidthFloat { .. }
+        | Literal::Float(_)
+        | Literal::Decimal(_)
+        | Literal::Str(_)
+        | Literal::Bool(_) => None,
     }
 }
 
@@ -495,6 +503,8 @@ mod tests {
     fn ranges_preserve_endpoints_and_offer_inclusive_replacements() {
         for (head, expected, replacement) in [
             ("1..9", None, ""),
+            ("1s64..9s64", None, ""),
+            ("1s64..9", None, ""),
             ("-5..-1", None, ""),
             ("'a'..'z'", None, ""),
             ("1..=9", Some(DiagCode::E0242), "1..9"),
@@ -534,6 +544,15 @@ mod tests {
                 assert_eq!(corrected, source(replacement));
                 assert!(user(&corrected).diagnostics.is_empty());
             }
+        }
+        for head in ["1s8", "1u8", "1.0f32", "1.0f64", "1s8..9s8", "1..9u8"] {
+            let out = user(&source(head));
+            assert_eq!(
+                codes(&out),
+                [DiagCode::E0201],
+                "{head}: {:?}",
+                out.diagnostics
+            );
         }
         for head in ["0..<-9223372036854775808", "'a'..<'\\u{0}'"] {
             let out = user(&source(head));

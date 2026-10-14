@@ -791,8 +791,19 @@ fn retime_checked<'a, 'e>(
     epoch: Epoch<'e>,
     check: impl FnOnce(ObjRef<'a>) -> bool,
 ) -> Value<'e> {
+    // 通常の VM が使う整数は、追加した幅の振り分けを経ずに区間を付け直す。
+    if let Value::Int(n) = value {
+        return Value::Int(n);
+    }
     match value {
         Value::Int(n) => Value::Int(n),
+        Value::Int8(n) => Value::Int8(n),
+        Value::Int16(n) => Value::Int16(n),
+        Value::Int32(n) => Value::Int32(n),
+        Value::UInt16(n) => Value::UInt16(n),
+        Value::UInt32(n) => Value::UInt32(n),
+        Value::UInt64(n) => Value::UInt64(n),
+        Value::Float32(n) => Value::Float32(n),
         Value::Float(n) => Value::Float(n),
         Value::Byte(n) => Value::Byte(n),
         Value::Bool(n) => Value::Bool(n),

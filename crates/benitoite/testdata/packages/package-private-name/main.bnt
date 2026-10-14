@@ -1,0 +1,8 @@
+// spec: 01-03 公開（初回リリース版）
+dependency Tk
+  path "deps/textkit"
+end dependency
+import Tk.Slug
+function main() -> Unit
+  Slug.hidden()
+end function

@@ -1,0 +1,38 @@
+import Benitoite.Unofficial.IO.Console
+const n0: List[Integer8] = [-128s8, 127s8]
+const n1: List[Integer16] = [-32768s16, 32767s16]
+const n2: List[Integer32] = [-2147483648s32, 2147483647s32]
+const n3: List[UnsignedInteger16] = [0u16, 65535u16]
+const n4: List[UnsignedInteger32] = [0u32, 4294967295u32]
+const n5: List[UnsignedInteger64] = [0u64, 18446744073709551615u64]
+const f: List[Float32] = [0.0f32, -0.0f32, 1.401298464324817e-45f32, 1.0000000596046448f32, 3.4028234663852886e38f32]
+function sample0() -> Integer8
+ return -128s8
+end function
+function sample1() -> Integer16
+ return -32768s16
+end function
+function sample2() -> Integer32
+ return -2147483648s32
+end function
+function sample3() -> UnsignedInteger16
+ return 65535u16
+end function
+function sample4() -> UnsignedInteger32
+ return 4294967295u32
+end function
+function sample5() -> UnsignedInteger64
+ return 18446744073709551615u64
+end function
+function sample6() -> Float32
+ return 1.0000000596046448f32
+end function
+function main() -> Unit uses Console.Write
+ Console.writeLine(Integer.toString(List.length([sample0(), ..n0])))
+ Console.writeLine(Integer.toString(List.length([sample1(), ..n1])))
+ Console.writeLine(Integer.toString(List.length([sample2(), ..n2])))
+ Console.writeLine(Integer.toString(List.length([sample3(), ..n3])))
+ Console.writeLine(Integer.toString(List.length([sample4(), ..n4])))
+ Console.writeLine(Integer.toString(List.length([sample5(), ..n5])))
+ Console.writeLine(Integer.toString(List.length([sample6(), ..f])))
+end function

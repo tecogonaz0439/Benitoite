@@ -1,0 +1,10 @@
+// spec: 01-03 公開（初回リリース版）
+dependency Tk
+  path "deps/textkit"
+end dependency
+import Tk.Api
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  Console.writeLine("${Api.answer()}")
+end function

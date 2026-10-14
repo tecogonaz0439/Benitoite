@@ -239,6 +239,15 @@ impl DiagBuilder {
     }
 
     pub fn build(self) -> Diagnostic {
+        self.build_message(None)
+    }
+
+    /// 同じコードの別の場合の文言を、診断表の型板から選ぶ。
+    pub(crate) fn build_variant(self, key: &'static str) -> Diagnostic {
+        self.build_message(Some(key))
+    }
+
+    fn build_message(self, message_key: Option<&'static str>) -> Diagnostic {
         let info = self.code.info();
         let fill = |template: &str| codes::fill_template(template, &self.args);
         let extra = |key: &str| {
@@ -260,7 +269,7 @@ impl DiagBuilder {
             kind: self.kind.unwrap_or(info.kind),
             severity: info.severity,
             code: Some(self.code),
-            message: fill(info.message),
+            message: message_key.map_or_else(|| fill(info.message), extra),
             primary,
             secondary: self
                 .secondary

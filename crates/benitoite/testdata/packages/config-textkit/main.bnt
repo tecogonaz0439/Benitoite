@@ -1,0 +1,6 @@
+// spec: 01-03 依存のパッケージの取り込み
+import Benitoite.Unofficial.IO.Console
+import Textkit.Slug
+function main() -> Unit uses Console.Write
+  Console.writeLine(Slug.slug("  Hello   World "))
+end function

@@ -236,6 +236,7 @@ impl<'p> Machine<'p> {
                 vec![],
                 Rc::new(Values { items: vec![] }),
             )),
+            ValKind::External { .. } => Err(fault("external function used as a value")),
             ValKind::Builtin { id, info, .. } => Ok(function(
                 FunctionCode::Builtin(*id, *info),
                 vec![],
@@ -440,12 +441,26 @@ impl<'p> Machine<'p> {
                     });
                     Ok(State::Eval(bound, env))
                 }
-                CompKind::App { func, dicts, args } => Ok(State::Apply {
-                    func: self.value(func, &env)?,
-                    dicts: self.dicts(dicts, &env)?,
-                    args: self.values(args, &env)?,
-                    origin: comp.origin,
-                }),
+                CompKind::App { func, dicts, args } => {
+                    if let ValKind::External { spec, .. } = &func.kind {
+                        if spec.route == crate::external::ExternalRoute::Stateful {
+                            return Ok(State::End(RefOutcome::Unsupported(spec.function.clone())));
+                        }
+                        if !dicts.is_empty() {
+                            return Err(fault("external dictionaries"));
+                        }
+                        let args = self.values(args, &env)?;
+                        let value = self.bridge.external(spec, &args)?;
+                        Ok(State::Return(value))
+                    } else {
+                        Ok(State::Apply {
+                            func: self.value(func, &env)?,
+                            dicts: self.dicts(dicts, &env)?,
+                            args: self.values(args, &env)?,
+                            origin: comp.origin,
+                        })
+                    }
+                }
                 CompKind::Method(m) => Ok(State::Method {
                     dict: self.dict(&m.dict, &env)?,
                     method: m.method,
@@ -468,6 +483,13 @@ impl<'p> Machine<'p> {
                     | Value::Map(_)
                     | Value::Set(_)
                     | Value::Int(_)
+                    | Value::Int8(_)
+                    | Value::Int16(_)
+                    | Value::Int32(_)
+                    | Value::UInt16(_)
+                    | Value::UInt32(_)
+                    | Value::UInt64(_)
+                    | Value::Float32(_)
                     | Value::Float(_)
                     | Value::Byte(_)
                     | Value::Char(_)
@@ -719,6 +741,13 @@ impl<'p> Machine<'p> {
                         | Value::Map(_)
                         | Value::Set(_)
                         | Value::Int(_)
+                        | Value::Int8(_)
+                        | Value::Int16(_)
+                        | Value::Int32(_)
+                        | Value::UInt16(_)
+                        | Value::UInt32(_)
+                        | Value::UInt64(_)
+                        | Value::Float32(_)
                         | Value::Float(_)
                         | Value::Byte(_)
                         | Value::Char(_)

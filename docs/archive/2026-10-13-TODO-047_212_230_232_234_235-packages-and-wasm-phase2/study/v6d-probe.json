@@ -1,0 +1,1240 @@
+{
+  "quick": false,
+  "started": "2026-10-13T04:11:24.203758+00:00",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "python": "3.9.6 (default, Aug 25 2026, 21:26:21) \n[Clang 21.0.0 (clang-2100.3.34.2)]",
+  "seed": 212,
+  "rounds": null,
+  "samples": 5,
+  "probe": true,
+  "build_features": "default (gc-mark-sweep)",
+  "records": [
+    {
+      "component": "wasm-hash",
+      "bytes": 21948,
+      "sha256": "2c6484b64f17dc1ddfa6e11d74a2ef810f2220c4ec55e6b5e20d8e8d1c90a865"
+    },
+    {
+      "component": "wasm-json",
+      "bytes": 129759,
+      "sha256": "f4f5813226c3253a6325fa6ce5b75ed58c0020dce11731778304161e27e74d24"
+    },
+    {
+      "component": "wasm-regex",
+      "bytes": 919609,
+      "sha256": "9ea978836c933f8b05586c1732520989d9cd64094461ae6c155b21dd357c0aec"
+    },
+    {
+      "component": "fuzzy",
+      "bytes": 25141,
+      "sha256": "0be481b3b16b21773d87abd54498ddb33e52eb4ec9b850fc9a244cd655f91e1c"
+    },
+    {
+      "input": "json",
+      "bytes": 10000000,
+      "seed": 212,
+      "records": 28920,
+      "nodes": 607321,
+      "sha256": "35dfc0d71399f092b581a343690f008cffc238f5f81a40f7c7223ef91eac1583"
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "verify",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 0.23623962499999984,
+      "max_rss_bytes": 116375552,
+      "exit": 1,
+      "stdout": "",
+      "stderr": "runtime error[R0905]: the external function `WasmJson.Nodes.parse` exceeded its total guest linear-memory limit of 67108864 bytes\n  --> /Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/Nodes.bnt:18:17\n   |\n18 | public(package) function parse(text: String) -> Result[List[Node], Json.ParseError]\n   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             WasmJson.Nodes.parse at /Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/Codec.bnt:19:21\n             WasmJson.Codec.parse at /Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt:46:39\n             main\n   = note: component `/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/wasm/json.wasm`\n   = note: total guest linear memory is limited to 67108864 bytes per call\n   = note: functions left by tail calls are not shown\n{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1164131806,\"total\":1164131806},\"functions\":{\"WasmJson.Nodes.parse\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1164131806,\"total\":1164131806},\"memory\":{\"incomplete_calls\":0,\"maximum\":61472768,\"total\":61472768},\"reached_limits\":{\"memory\":1},\"results_transfer\":{\"incomplete_calls\":1,\"maximum\":0,\"total\":0}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":61472768,\"total\":61472768},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{\"memory\":1},\"results_transfer\":{\"incomplete_calls\":1,\"maximum\":0,\"total\":0},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 116375552\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": null,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 10000000,
+          "total": 10000000
+        },
+        "calls": 1,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 1164131806,
+          "total": 1164131806
+        },
+        "functions": {
+          "WasmJson.Nodes.parse": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 10000000,
+              "total": 10000000
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 1164131806,
+              "total": 1164131806
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 61472768,
+              "total": 61472768
+            },
+            "reached_limits": {
+              "memory": 1
+            },
+            "results_transfer": {
+              "incomplete_calls": 1,
+              "maximum": 0,
+              "total": 0
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 67108864,
+          "transfer": 268435456
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 61472768,
+          "total": 61472768
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": false,
+          "transfer": false
+        },
+        "reached_limits": {
+          "memory": 1
+        },
+        "results_transfer": {
+          "incomplete_calls": 1,
+          "maximum": 0,
+          "total": 0
+        },
+        "stateful_instances": [],
+        "wasm_stats": true
+      },
+      "label": "probe-default-verify",
+      "configured_limits": {
+        "memory": "64MiB",
+        "transfer": "256MiB",
+        "fuel": "10000000000"
+      },
+      "limit": "R0905"
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "parse",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 0.23813420799999996,
+      "max_rss_bytes": 116178944,
+      "exit": 1,
+      "stdout": "",
+      "stderr": "runtime error[R0905]: the external function `WasmJson.Nodes.parse` exceeded its total guest linear-memory limit of 67108864 bytes\n  --> /Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/Nodes.bnt:18:17\n   |\n18 | public(package) function parse(text: String) -> Result[List[Node], Json.ParseError]\n   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             WasmJson.Nodes.parse                                                      at /Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/Codec.bnt:19:21\n             WasmJson.Codec.parse                                                      at /Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt:20:107\n             <lambda /Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt:20:34> at /Users/tecogonaz/src/Benitoite/tools/bench/wasm/Runner.bnt:29:21\n             Runner.measure                                                            at /Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt:20:12\n             main\n   = note: component `/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/wasm/json.wasm`\n   = note: total guest linear memory is limited to 67108864 bytes per call\n   = note: functions left by tail calls are not shown\n{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1164131806,\"total\":1164131806},\"functions\":{\"WasmJson.Nodes.parse\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1164131806,\"total\":1164131806},\"memory\":{\"incomplete_calls\":0,\"maximum\":61472768,\"total\":61472768},\"reached_limits\":{\"memory\":1},\"results_transfer\":{\"incomplete_calls\":1,\"maximum\":0,\"total\":0}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":61472768,\"total\":61472768},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{\"memory\":1},\"results_transfer\":{\"incomplete_calls\":1,\"maximum\":0,\"total\":0},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 116178944\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": null,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 10000000,
+          "total": 10000000
+        },
+        "calls": 1,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 1164131806,
+          "total": 1164131806
+        },
+        "functions": {
+          "WasmJson.Nodes.parse": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 10000000,
+              "total": 10000000
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 1164131806,
+              "total": 1164131806
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 61472768,
+              "total": 61472768
+            },
+            "reached_limits": {
+              "memory": 1
+            },
+            "results_transfer": {
+              "incomplete_calls": 1,
+              "maximum": 0,
+              "total": 0
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 67108864,
+          "transfer": 268435456
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 61472768,
+          "total": 61472768
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": false,
+          "transfer": false
+        },
+        "reached_limits": {
+          "memory": 1
+        },
+        "results_transfer": {
+          "incomplete_calls": 1,
+          "maximum": 0,
+          "total": 0
+        },
+        "stateful_instances": [],
+        "wasm_stats": true
+      },
+      "label": "probe-default-parse",
+      "configured_limits": {
+        "memory": "64MiB",
+        "transfer": "256MiB",
+        "fuel": "10000000000"
+      },
+      "limit": "R0905"
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "stringify",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 5.325454958,
+      "max_rss_bytes": 767295488,
+      "exit": 0,
+      "stdout": "first_ms=5111 rest_ms=0 rounds=1 digest=cbcd69999163339beecea1200763d2a113d44a8534acfe0da7e1375814820c4a\n",
+      "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":56680120,\"total\":56680120},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1178949841,\"total\":1178949841},\"functions\":{\"WasmJson.Nodes.stringify\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":56680120,\"total\":56680120},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1178949841,\"total\":1178949841},\"memory\":{\"incomplete_calls\":0,\"maximum\":60162048,\"total\":60162048},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":9999865,\"total\":9999865}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":60162048,\"total\":60162048},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":9999865,\"total\":9999865},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 767295488\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": "cbcd69999163339beecea1200763d2a113d44a8534acfe0da7e1375814820c4a",
+      "first_ms": 5111,
+      "rest_ms": 0,
+      "rounds": 1,
+      "per_iteration_ms": 5111,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 56680120,
+          "total": 56680120
+        },
+        "calls": 1,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 1178949841,
+          "total": 1178949841
+        },
+        "functions": {
+          "WasmJson.Nodes.stringify": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 56680120,
+              "total": 56680120
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 1178949841,
+              "total": 1178949841
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 60162048,
+              "total": 60162048
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 9999865,
+              "total": 9999865
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 67108864,
+          "transfer": 268435456
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 60162048,
+          "total": 60162048
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": false,
+          "transfer": false
+        },
+        "reached_limits": {},
+        "results_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 9999865,
+          "total": 9999865
+        },
+        "stateful_instances": [],
+        "wasm_stats": true
+      },
+      "label": "probe-default-stringify",
+      "configured_limits": {
+        "memory": "64MiB",
+        "transfer": "256MiB",
+        "fuel": "10000000000"
+      }
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "read",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 0.22921033300000015,
+      "max_rss_bytes": 98566144,
+      "exit": 0,
+      "stdout": "first_ms=117 rest_ms=0 rounds=1 digest=e52a883716796ef9a16d1d0da0656aec389129f8ad4881eceb623a74dbcd34e6\n",
+      "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000022},\"calls\":4,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1064322899,\"total\":1064340667},\"functions\":{\"WasmJson.Codec.document\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1064322899,\"total\":1064322899},\"memory\":{\"incomplete_calls\":0,\"maximum\":43646976,\"total\":43646976},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":40,\"total\":40}},\"WasmJson.Codec.get\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":9,\"total\":22},\"calls\":3,\"fuel\":{\"incomplete_calls\":0,\"maximum\":8060,\"total\":17768},\"memory\":{\"incomplete_calls\":0,\"maximum\":43646976,\"total\":0},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":80,\"total\":186}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":43646976,\"total\":43646976},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":80,\"total\":226},\"stateful_instances\":[{\"component\":\"/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/wasm/json.wasm\",\"instance\":0,\"maximum\":43646976}],\"wasm_stats\":true}\nbench-rss: 98566144\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": "e52a883716796ef9a16d1d0da0656aec389129f8ad4881eceb623a74dbcd34e6",
+      "first_ms": 117,
+      "rest_ms": 0,
+      "rounds": 1,
+      "per_iteration_ms": 117,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 10000000,
+          "total": 10000022
+        },
+        "calls": 4,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 1064322899,
+          "total": 1064340667
+        },
+        "functions": {
+          "WasmJson.Codec.document": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 10000000,
+              "total": 10000000
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 1064322899,
+              "total": 1064322899
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 43646976,
+              "total": 43646976
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 40,
+              "total": 40
+            }
+          },
+          "WasmJson.Codec.get": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 9,
+              "total": 22
+            },
+            "calls": 3,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 8060,
+              "total": 17768
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 43646976,
+              "total": 0
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 80,
+              "total": 186
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 67108864,
+          "transfer": 268435456
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 43646976,
+          "total": 43646976
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": false,
+          "transfer": false
+        },
+        "reached_limits": {},
+        "results_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 80,
+          "total": 226
+        },
+        "stateful_instances": [
+          {
+            "component": "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/wasm/json.wasm",
+            "instance": 0,
+            "maximum": 43646976
+          }
+        ],
+        "wasm_stats": true
+      },
+      "label": "probe-default-read",
+      "configured_limits": {
+        "memory": "64MiB",
+        "transfer": "256MiB",
+        "fuel": "10000000000"
+      }
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "pretty",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 0.25242558299999995,
+      "max_rss_bytes": 116146176,
+      "exit": 1,
+      "stdout": "",
+      "stderr": "runtime error[R0905]: the external function `WasmJson.Codec.pretty` exceeded its total guest linear-memory limit of 67108864 bytes\n  --> /Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/Codec.bnt:11:8\n   |\n11 | public function pretty(text: String) -> Result[String, Json.ParseError]\n   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             WasmJson.Codec.pretty                                                     at /Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt:35:103\n             <lambda /Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt:35:34> at /Users/tecogonaz/src/Benitoite/tools/bench/wasm/Runner.bnt:29:21\n             Runner.measure                                                            at /Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt:35:12\n             main\n   = note: component `/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/wasm/json.wasm`\n   = note: total guest linear memory is limited to 67108864 bytes per call\n   = note: functions left by tail calls are not shown\n{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1552594983,\"total\":1552594983},\"functions\":{\"WasmJson.Codec.pretty\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1552594983,\"total\":1552594983},\"memory\":{\"incomplete_calls\":0,\"maximum\":62259200,\"total\":62259200},\"reached_limits\":{\"memory\":1},\"results_transfer\":{\"incomplete_calls\":1,\"maximum\":0,\"total\":0}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":62259200,\"total\":62259200},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{\"memory\":1},\"results_transfer\":{\"incomplete_calls\":1,\"maximum\":0,\"total\":0},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 116146176\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": null,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 10000000,
+          "total": 10000000
+        },
+        "calls": 1,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 1552594983,
+          "total": 1552594983
+        },
+        "functions": {
+          "WasmJson.Codec.pretty": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 10000000,
+              "total": 10000000
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 1552594983,
+              "total": 1552594983
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 62259200,
+              "total": 62259200
+            },
+            "reached_limits": {
+              "memory": 1
+            },
+            "results_transfer": {
+              "incomplete_calls": 1,
+              "maximum": 0,
+              "total": 0
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 67108864,
+          "transfer": 268435456
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 62259200,
+          "total": 62259200
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": false,
+          "transfer": false
+        },
+        "reached_limits": {
+          "memory": 1
+        },
+        "results_transfer": {
+          "incomplete_calls": 1,
+          "maximum": 0,
+          "total": 0
+        },
+        "stateful_instances": [],
+        "wasm_stats": true
+      },
+      "label": "probe-default-pretty",
+      "configured_limits": {
+        "memory": "64MiB",
+        "transfer": "256MiB",
+        "fuel": "10000000000"
+      },
+      "limit": "R0905"
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "validate",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 0.21632904199999992,
+      "max_rss_bytes": 66125824,
+      "exit": 0,
+      "stdout": "first_ms=103 rest_ms=0 rounds=1 digest=ec654fac9599f62e79e2706abef23dfb7c07c08185aa86db4d8695f0b718d1b3\n",
+      "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":880191455,\"total\":880191455},\"functions\":{\"WasmJson.Codec.validate\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":880191455,\"total\":880191455},\"memory\":{\"incomplete_calls\":0,\"maximum\":11141120,\"total\":11141120},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":11141120,\"total\":11141120},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 66125824\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": "ec654fac9599f62e79e2706abef23dfb7c07c08185aa86db4d8695f0b718d1b3",
+      "first_ms": 103,
+      "rest_ms": 0,
+      "rounds": 1,
+      "per_iteration_ms": 103,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 10000000,
+          "total": 10000000
+        },
+        "calls": 1,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 880191455,
+          "total": 880191455
+        },
+        "functions": {
+          "WasmJson.Codec.validate": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 10000000,
+              "total": 10000000
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 880191455,
+              "total": 880191455
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 11141120,
+              "total": 11141120
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 0,
+              "total": 0
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 67108864,
+          "transfer": 268435456
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 11141120,
+          "total": 11141120
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": false,
+          "transfer": false
+        },
+        "reached_limits": {},
+        "results_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 0,
+          "total": 0
+        },
+        "stateful_instances": [],
+        "wasm_stats": true
+      },
+      "label": "probe-default-validate",
+      "configured_limits": {
+        "memory": "64MiB",
+        "transfer": "256MiB",
+        "fuel": "10000000000"
+      }
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "--wasm-memory=1GiB",
+        "--wasm-transfer=1GiB",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "verify",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 6.854714958,
+      "max_rss_bytes": 800342016,
+      "exit": 0,
+      "stdout": "first_ms=0 rest_ms=0 rounds=1 digest=cbcd69999163339beecea1200763d2a113d44a8534acfe0da7e1375814820c4a\n",
+      "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":56680120,\"total\":66680120},\"calls\":2,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1518786078,\"total\":2697735919},\"functions\":{\"WasmJson.Nodes.parse\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1518786078,\"total\":1518786078},\"memory\":{\"incomplete_calls\":0,\"maximum\":78315520,\"total\":78315520},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":56680160,\"total\":56680160}},\"WasmJson.Nodes.stringify\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":56680120,\"total\":56680120},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1178949841,\"total\":1178949841},\"memory\":{\"incomplete_calls\":0,\"maximum\":60162048,\"total\":60162048},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":9999865,\"total\":9999865}}},\"limits\":{\"fuel\":10000000000,\"memory\":1073741824,\"transfer\":1073741824},\"memory\":{\"incomplete_calls\":0,\"maximum\":78315520,\"total\":138477568},\"overrides\":{\"fuel\":false,\"memory\":true,\"transfer\":true},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":56680160,\"total\":66680025},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 800342016\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": "cbcd69999163339beecea1200763d2a113d44a8534acfe0da7e1375814820c4a",
+      "first_ms": 0,
+      "rest_ms": 0,
+      "rounds": 1,
+      "per_iteration_ms": 0,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 56680120,
+          "total": 66680120
+        },
+        "calls": 2,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 1518786078,
+          "total": 2697735919
+        },
+        "functions": {
+          "WasmJson.Nodes.parse": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 10000000,
+              "total": 10000000
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 1518786078,
+              "total": 1518786078
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 78315520,
+              "total": 78315520
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 56680160,
+              "total": 56680160
+            }
+          },
+          "WasmJson.Nodes.stringify": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 56680120,
+              "total": 56680120
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 1178949841,
+              "total": 1178949841
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 60162048,
+              "total": 60162048
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 9999865,
+              "total": 9999865
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 1073741824,
+          "transfer": 1073741824
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 78315520,
+          "total": 138477568
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": true,
+          "transfer": true
+        },
+        "reached_limits": {},
+        "results_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 56680160,
+          "total": 66680025
+        },
+        "stateful_instances": [],
+        "wasm_stats": true
+      },
+      "label": "probe-raised-verify",
+      "configured_limits": {
+        "memory": "1GiB",
+        "transfer": "1GiB",
+        "fuel": "10000000000"
+      }
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "--wasm-memory=1GiB",
+        "--wasm-transfer=1GiB",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "parse",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 0.8788341660000007,
+      "max_rss_bytes": 483737600,
+      "exit": 0,
+      "stdout": "first_ms=659 rest_ms=0 rounds=1 digest=cbcd69999163339beecea1200763d2a113d44a8534acfe0da7e1375814820c4a\n",
+      "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1518786078,\"total\":1518786078},\"functions\":{\"WasmJson.Nodes.parse\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1518786078,\"total\":1518786078},\"memory\":{\"incomplete_calls\":0,\"maximum\":78315520,\"total\":78315520},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":56680160,\"total\":56680160}}},\"limits\":{\"fuel\":10000000000,\"memory\":1073741824,\"transfer\":1073741824},\"memory\":{\"incomplete_calls\":0,\"maximum\":78315520,\"total\":78315520},\"overrides\":{\"fuel\":false,\"memory\":true,\"transfer\":true},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":56680160,\"total\":56680160},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 483737600\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": "cbcd69999163339beecea1200763d2a113d44a8534acfe0da7e1375814820c4a",
+      "first_ms": 659,
+      "rest_ms": 0,
+      "rounds": 1,
+      "per_iteration_ms": 659,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 10000000,
+          "total": 10000000
+        },
+        "calls": 1,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 1518786078,
+          "total": 1518786078
+        },
+        "functions": {
+          "WasmJson.Nodes.parse": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 10000000,
+              "total": 10000000
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 1518786078,
+              "total": 1518786078
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 78315520,
+              "total": 78315520
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 56680160,
+              "total": 56680160
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 1073741824,
+          "transfer": 1073741824
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 78315520,
+          "total": 78315520
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": true,
+          "transfer": true
+        },
+        "reached_limits": {},
+        "results_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 56680160,
+          "total": 56680160
+        },
+        "stateful_instances": [],
+        "wasm_stats": true
+      },
+      "label": "probe-raised-parse",
+      "configured_limits": {
+        "memory": "1GiB",
+        "transfer": "1GiB",
+        "fuel": "10000000000"
+      }
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "--wasm-memory=1GiB",
+        "--wasm-transfer=1GiB",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "stringify",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 5.356851833,
+      "max_rss_bytes": 770244608,
+      "exit": 0,
+      "stdout": "first_ms=5143 rest_ms=0 rounds=1 digest=cbcd69999163339beecea1200763d2a113d44a8534acfe0da7e1375814820c4a\n",
+      "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":56680120,\"total\":56680120},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1178949841,\"total\":1178949841},\"functions\":{\"WasmJson.Nodes.stringify\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":56680120,\"total\":56680120},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1178949841,\"total\":1178949841},\"memory\":{\"incomplete_calls\":0,\"maximum\":60162048,\"total\":60162048},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":9999865,\"total\":9999865}}},\"limits\":{\"fuel\":10000000000,\"memory\":1073741824,\"transfer\":1073741824},\"memory\":{\"incomplete_calls\":0,\"maximum\":60162048,\"total\":60162048},\"overrides\":{\"fuel\":false,\"memory\":true,\"transfer\":true},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":9999865,\"total\":9999865},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 770244608\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": "cbcd69999163339beecea1200763d2a113d44a8534acfe0da7e1375814820c4a",
+      "first_ms": 5143,
+      "rest_ms": 0,
+      "rounds": 1,
+      "per_iteration_ms": 5143,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 56680120,
+          "total": 56680120
+        },
+        "calls": 1,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 1178949841,
+          "total": 1178949841
+        },
+        "functions": {
+          "WasmJson.Nodes.stringify": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 56680120,
+              "total": 56680120
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 1178949841,
+              "total": 1178949841
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 60162048,
+              "total": 60162048
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 9999865,
+              "total": 9999865
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 1073741824,
+          "transfer": 1073741824
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 60162048,
+          "total": 60162048
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": true,
+          "transfer": true
+        },
+        "reached_limits": {},
+        "results_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 9999865,
+          "total": 9999865
+        },
+        "stateful_instances": [],
+        "wasm_stats": true
+      },
+      "label": "probe-raised-stringify",
+      "configured_limits": {
+        "memory": "1GiB",
+        "transfer": "1GiB",
+        "fuel": "10000000000"
+      }
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "--wasm-memory=1GiB",
+        "--wasm-transfer=1GiB",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "read",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 0.2343115830000002,
+      "max_rss_bytes": 98418688,
+      "exit": 0,
+      "stdout": "first_ms=120 rest_ms=0 rounds=1 digest=e52a883716796ef9a16d1d0da0656aec389129f8ad4881eceb623a74dbcd34e6\n",
+      "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000022},\"calls\":4,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1064322899,\"total\":1064340667},\"functions\":{\"WasmJson.Codec.document\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":1064322899,\"total\":1064322899},\"memory\":{\"incomplete_calls\":0,\"maximum\":43646976,\"total\":43646976},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":40,\"total\":40}},\"WasmJson.Codec.get\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":9,\"total\":22},\"calls\":3,\"fuel\":{\"incomplete_calls\":0,\"maximum\":8060,\"total\":17768},\"memory\":{\"incomplete_calls\":0,\"maximum\":43646976,\"total\":0},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":80,\"total\":186}}},\"limits\":{\"fuel\":10000000000,\"memory\":1073741824,\"transfer\":1073741824},\"memory\":{\"incomplete_calls\":0,\"maximum\":43646976,\"total\":43646976},\"overrides\":{\"fuel\":false,\"memory\":true,\"transfer\":true},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":80,\"total\":226},\"stateful_instances\":[{\"component\":\"/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/wasm/json.wasm\",\"instance\":0,\"maximum\":43646976}],\"wasm_stats\":true}\nbench-rss: 98418688\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": "e52a883716796ef9a16d1d0da0656aec389129f8ad4881eceb623a74dbcd34e6",
+      "first_ms": 120,
+      "rest_ms": 0,
+      "rounds": 1,
+      "per_iteration_ms": 120,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 10000000,
+          "total": 10000022
+        },
+        "calls": 4,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 1064322899,
+          "total": 1064340667
+        },
+        "functions": {
+          "WasmJson.Codec.document": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 10000000,
+              "total": 10000000
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 1064322899,
+              "total": 1064322899
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 43646976,
+              "total": 43646976
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 40,
+              "total": 40
+            }
+          },
+          "WasmJson.Codec.get": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 9,
+              "total": 22
+            },
+            "calls": 3,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 8060,
+              "total": 17768
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 43646976,
+              "total": 0
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 80,
+              "total": 186
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 1073741824,
+          "transfer": 1073741824
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 43646976,
+          "total": 43646976
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": true,
+          "transfer": true
+        },
+        "reached_limits": {},
+        "results_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 80,
+          "total": 226
+        },
+        "stateful_instances": [
+          {
+            "component": "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-json/wasm/json.wasm",
+            "instance": 0,
+            "maximum": 43646976
+          }
+        ],
+        "wasm_stats": true
+      },
+      "label": "probe-raised-read",
+      "configured_limits": {
+        "memory": "1GiB",
+        "transfer": "1GiB",
+        "fuel": "10000000000"
+      }
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "--wasm-memory=1GiB",
+        "--wasm-transfer=1GiB",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "pretty",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 0.28956579199999766,
+      "max_rss_bytes": 156205056,
+      "exit": 0,
+      "stdout": "first_ms=172 rest_ms=0 rounds=1 digest=e5abb4a0319b8c54c7a9bddb2206159ce3cd3c5bd6f6e356da8779b3140ea46c\n",
+      "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":2057447946,\"total\":2057447946},\"functions\":{\"WasmJson.Codec.pretty\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":2057447946,\"total\":2057447946},\"memory\":{\"incomplete_calls\":0,\"maximum\":79101952,\"total\":79101952},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":13383506,\"total\":13383506}}},\"limits\":{\"fuel\":10000000000,\"memory\":1073741824,\"transfer\":1073741824},\"memory\":{\"incomplete_calls\":0,\"maximum\":79101952,\"total\":79101952},\"overrides\":{\"fuel\":false,\"memory\":true,\"transfer\":true},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":13383506,\"total\":13383506},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 156205056\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": "e5abb4a0319b8c54c7a9bddb2206159ce3cd3c5bd6f6e356da8779b3140ea46c",
+      "first_ms": 172,
+      "rest_ms": 0,
+      "rounds": 1,
+      "per_iteration_ms": 172,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 10000000,
+          "total": 10000000
+        },
+        "calls": 1,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 2057447946,
+          "total": 2057447946
+        },
+        "functions": {
+          "WasmJson.Codec.pretty": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 10000000,
+              "total": 10000000
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 2057447946,
+              "total": 2057447946
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 79101952,
+              "total": 79101952
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 13383506,
+              "total": 13383506
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 1073741824,
+          "transfer": 1073741824
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 79101952,
+          "total": 79101952
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": true,
+          "transfer": true
+        },
+        "reached_limits": {},
+        "results_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 13383506,
+          "total": 13383506
+        },
+        "stateful_instances": [],
+        "wasm_stats": true
+      },
+      "label": "probe-raised-pretty",
+      "configured_limits": {
+        "memory": "1GiB",
+        "transfer": "1GiB",
+        "fuel": "10000000000"
+      }
+    },
+    {
+      "command": [
+        "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+        "run",
+        "--wasm-stats",
+        "--wasm-memory=1GiB",
+        "--wasm-transfer=1GiB",
+        "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/json-c.bnt",
+        "validate",
+        "/Users/tecogonaz/src/Benitoite/target/benitoite-wasm-probe-10pszwp9/json-10mb.json",
+        "1"
+      ],
+      "process_seconds": 0.21861116699999883,
+      "max_rss_bytes": 65929216,
+      "exit": 0,
+      "stdout": "first_ms=106 rest_ms=0 rounds=1 digest=ec654fac9599f62e79e2706abef23dfb7c07c08185aa86db4d8695f0b718d1b3\n",
+      "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":880191455,\"total\":880191455},\"functions\":{\"WasmJson.Codec.validate\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":10000000,\"total\":10000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":880191455,\"total\":880191455},\"memory\":{\"incomplete_calls\":0,\"maximum\":11141120,\"total\":11141120},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0}}},\"limits\":{\"fuel\":10000000000,\"memory\":1073741824,\"transfer\":1073741824},\"memory\":{\"incomplete_calls\":0,\"maximum\":11141120,\"total\":11141120},\"overrides\":{\"fuel\":false,\"memory\":true,\"transfer\":true},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 65929216\n",
+      "timed_out": false,
+      "timeout_seconds": 1800,
+      "digest": "ec654fac9599f62e79e2706abef23dfb7c07c08185aa86db4d8695f0b718d1b3",
+      "first_ms": 106,
+      "rest_ms": 0,
+      "rounds": 1,
+      "per_iteration_ms": 106,
+      "wasm_stats": {
+        "arguments_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 10000000,
+          "total": 10000000
+        },
+        "calls": 1,
+        "fuel": {
+          "incomplete_calls": 0,
+          "maximum": 880191455,
+          "total": 880191455
+        },
+        "functions": {
+          "WasmJson.Codec.validate": {
+            "arguments_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 10000000,
+              "total": 10000000
+            },
+            "calls": 1,
+            "fuel": {
+              "incomplete_calls": 0,
+              "maximum": 880191455,
+              "total": 880191455
+            },
+            "memory": {
+              "incomplete_calls": 0,
+              "maximum": 11141120,
+              "total": 11141120
+            },
+            "reached_limits": {},
+            "results_transfer": {
+              "incomplete_calls": 0,
+              "maximum": 0,
+              "total": 0
+            }
+          }
+        },
+        "limits": {
+          "fuel": 10000000000,
+          "memory": 1073741824,
+          "transfer": 1073741824
+        },
+        "memory": {
+          "incomplete_calls": 0,
+          "maximum": 11141120,
+          "total": 11141120
+        },
+        "overrides": {
+          "fuel": false,
+          "memory": true,
+          "transfer": true
+        },
+        "reached_limits": {},
+        "results_transfer": {
+          "incomplete_calls": 0,
+          "maximum": 0,
+          "total": 0
+        },
+        "stateful_instances": [],
+        "wasm_stats": true
+      },
+      "label": "probe-raised-validate",
+      "configured_limits": {
+        "memory": "1GiB",
+        "transfer": "1GiB",
+        "fuel": "10000000000"
+      }
+    }
+  ],
+  "cpu": "arm64",
+  "logical_cpus": 10,
+  "memory_bytes": null,
+  "commit": "00e4fc49df7686924a299909e1e9710de9eb42fc",
+  "dirty": true,
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "benitoite_bytes": 27797072,
+  "status": "ok"
+}

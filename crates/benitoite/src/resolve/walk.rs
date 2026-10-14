@@ -1,4 +1,5 @@
 //! シグネチャと本体の AST の走査（設計書 02-04「解決の手順」の手順 3・5）。
+use super::Level;
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -39,7 +40,14 @@ impl Resolver<'_> {
                     BindingKind::EffectVar { owner, index }
                 }
             };
-            let id = self.node_binding(ctx.module, param.id, &param.name, kind, false, None);
+            let id = self.node_binding(
+                ctx.module,
+                param.id,
+                &param.name,
+                kind,
+                Level::Private,
+                None,
+            );
             seen.entry(param.name.text.clone()).or_insert(id);
             ctx.types.insert(param.name.text.clone(), id);
         }
@@ -216,7 +224,7 @@ impl Resolver<'_> {
                     self.contexts.insert(f.decl.id, fn_ctx);
                 }
             }
-            Item::Error(_) => {}
+            Item::ExternalType(_) | Item::Error(_) => {}
         }
         self.save_contract(top, &ctx);
     }
@@ -260,6 +268,7 @@ impl Resolver<'_> {
                     | Item::Record(_)
                     | Item::Trait(_)
                     | Item::Effect(_)
+                    | Item::ExternalType(_)
                     | Item::Error(_) => {}
                 }
             }

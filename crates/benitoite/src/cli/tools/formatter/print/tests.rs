@@ -420,6 +420,11 @@ end function
 
 const CASES: &[(&str, &str, &str)] = &[
     ("spaces", SPACES_INPUT, SPACES_EXPECTED),
+    (
+        "external package type",
+        "@external( \"wasm\" , \"x.wasm\" , \"api#cell\" )\npublic ( package ) type Cell\n",
+        "@external(\"wasm\", \"x.wasm\", \"api#cell\")\npublic(package) type Cell\n",
+    ),
     ("parentheses", PARENS_INPUT, PARENS_EXPECTED),
     ("operators", OPERATORS_INPUT, OPERATORS_EXPECTED),
     ("blocks", BLOCKS_INPUT, BLOCKS_EXPECTED),

@@ -1,0 +1,41 @@
+error[E1008]: argument 1 of `signedByte` does not match the component
+  --> testdata/external/wit-numbers-mismatch/main.bnt:3:24
+   |
+ 3 | function signedByte(v: UnsignedInteger8) -> Integer16
+   |                        ^^^^^^^^^^^^^^^^ declared as `Byte`
+   |
+   = note: the component expects `s8`
+   = note: `Byte` is passed as `u8`
+   = note: the component function corresponds to `function signedByte(v: Integer8) -> Integer8`
+
+error[E1009]: the result of `signedByte` does not match the component
+  --> testdata/external/wit-numbers-mismatch/main.bnt:3:45
+   |
+ 3 | function signedByte(v: UnsignedInteger8) -> Integer16
+   |                                             ^^^^^^^^^ declared as `Integer16`
+   |
+   = note: the component returns `s8`
+   = note: `Integer16` is passed as `s16`
+   = note: the component function corresponds to `function signedByte(v: Integer8) -> Integer8`
+
+error[E1008]: argument 1 of `single` does not match the component
+  --> testdata/external/wit-numbers-mismatch/main.bnt:5:20
+   |
+ 5 | function single(v: Float64) -> Float64
+   |                    ^^^^^^^ declared as `Float`
+   |
+   = note: the component expects `f32`
+   = note: `Float` is passed as `f64`
+   = note: the component function corresponds to `function single(v: Float32) -> Float32`
+
+error[E1009]: the result of `single` does not match the component
+  --> testdata/external/wit-numbers-mismatch/main.bnt:5:32
+   |
+ 5 | function single(v: Float64) -> Float64
+   |                                ^^^^^^^ declared as `Float`
+   |
+   = note: the component returns `f32`
+   = note: `Float` is passed as `f64`
+   = note: the component function corresponds to `function single(v: Float32) -> Float32`
+
+error: could not check testdata/external/wit-numbers-mismatch/main.bnt due to 4 previous errors

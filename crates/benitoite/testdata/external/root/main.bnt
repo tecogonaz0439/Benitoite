@@ -1,0 +1,18 @@
+// spec: 01-02 属性（初回リリース版）
+// spec: 01-02 外部の関数の宣言
+import Benitoite.Unofficial.IO.Console
+@external("wasm", "wasm/x.wasm", "add")
+public function add(first: Integer, second: Integer) -> Integer
+function sum(a: Integer) -> Integer
+  return add(a, 10)
+end function
+function descend(n: Integer) -> Integer
+  if n = 0 then return add(20, 22) end if
+  return descend(n - 1) + 1
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine("${add(1, 2)}")
+  Console.writeLine("${List.fold(List.map([1, 2, 3], sum), 0, add)}")
+  Console.writeLine("${List.fold([1, 2, 3], 0, add)}")
+  Console.writeLine("${descend(10000)}")
+end function

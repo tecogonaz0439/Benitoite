@@ -1,0 +1,25 @@
+//! 同じ Bytes を二つの宣言から渡す比較入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+@external("wasm", "guests/primitives.wasm", "bytes")
+function bytes(v: Bytes) -> Bytes
+@external("wasm", "guests/primitives.wasm", "bytes-adapter")
+function bytesAdapter(ignored: Boolean, v: Bytes) -> Bytes
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+  bind source <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte return
+    if i mod 3 = 0 then 0u8 else if i mod 3 = 1 then 128u8 else 255u8 end if
+  end lambda))
+  bind expected <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte return
+    if i mod 3 = 0 then 255u8 else if i mod 3 = 1 then 127u8 else 0u8 end if
+  end lambda))
+
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind typed <- bytes(source)
+    bind adapter <- bytesAdapter(false, source)
+    return typed = expected and adapter = expected
+  end lambda)
+end function

@@ -1,0 +1,76 @@
+//! Functions on `Integer64`, the same type as `Integer`, exposed under the canonical module name.
+
+/// Calls `Integer.toString` with the same result and stopping conditions.
+public function toString(n: Integer64) -> String
+  return Integer.toString(n)
+end function
+
+/// Calls `Integer.parse` with the same result and stopping conditions.
+public function parse(s: String) -> Option[Integer64]
+  return Integer.parse(s)
+end function
+
+/// Calls `Integer.toFloat` with the same result and stopping conditions.
+public function toFloat(n: Integer64) -> Float
+  return Integer.toFloat(n)
+end function
+
+/// Calls `Integer.floorDivide` with the same result and stopping conditions.
+public function floorDivide(a: Integer64, b: Integer64) -> Integer64
+  return Integer.floorDivide(a, b)
+end function
+
+/// Calls `Integer.floorModulo` with the same result and stopping conditions.
+public function floorModulo(a: Integer64, b: Integer64) -> Integer64
+  return Integer.floorModulo(a, b)
+end function
+
+/// Calls `Integer.absolute` with the same result and stopping conditions.
+public function absolute(n: Integer64) -> Integer64
+  return Integer.absolute(n)
+end function
+
+/// Calls `Integer.minimum` with the same result and stopping conditions.
+public function minimum(a: Integer64, b: Integer64) -> Integer64
+  return Integer.minimum(a, b)
+end function
+
+/// Calls `Integer.maximum` with the same result and stopping conditions.
+public function maximum(a: Integer64, b: Integer64) -> Integer64
+  return Integer.maximum(a, b)
+end function
+
+/// Calls `Integer.bitwiseAnd` with the same result and stopping conditions.
+public function bitwiseAnd(a: Integer64, b: Integer64) -> Integer64
+  return Integer.bitwiseAnd(a, b)
+end function
+
+/// Calls `Integer.bitwiseOr` with the same result and stopping conditions.
+public function bitwiseOr(a: Integer64, b: Integer64) -> Integer64
+  return Integer.bitwiseOr(a, b)
+end function
+
+/// Calls `Integer.bitwiseExclusiveOr` with the same result and stopping conditions.
+public function bitwiseExclusiveOr(a: Integer64, b: Integer64) -> Integer64
+  return Integer.bitwiseExclusiveOr(a, b)
+end function
+
+/// Calls `Integer.bitwiseNot` with the same result and stopping conditions.
+public function bitwiseNot(a: Integer64) -> Integer64
+  return Integer.bitwiseNot(a)
+end function
+
+/// Calls `Integer.shiftLeft` with the same result and stopping conditions.
+public function shiftLeft(a: Integer64, n: Integer) -> Integer64
+  return Integer.shiftLeft(a, n)
+end function
+
+/// Calls `Integer.shiftRight` with the same result and stopping conditions.
+public function shiftRight(a: Integer64, n: Integer) -> Integer64
+  return Integer.shiftRight(a, n)
+end function
+
+/// Calls `Integer.shiftRightUnsigned` with the same result and stopping conditions.
+public function shiftRightUnsigned(a: Integer64, n: Integer) -> Integer64
+  return Integer.shiftRightUnsigned(a, n)
+end function

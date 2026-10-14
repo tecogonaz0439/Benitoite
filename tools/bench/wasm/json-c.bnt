@@ -1,0 +1,51 @@
+//! JSON の課題を独立したプロセスで測る（設計書 07-02「測る項目」）。
+dependency WasmJson
+  path "../../../crates/benitoite/testdata/packages/libraries.files/wasm-json"
+end dependency
+
+import WasmJson.Codec
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Clock
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write, Process.Environment
+  bind task <- try Runner.argument(0)
+  bind path <- try Runner.argument(1)
+  bind count <- try Runner.rounds(2)
+  bind source <- try Result.mapError(File.readText(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
+  if task = "parse" then
+    return Runner.measure(count, lambda() -> Result[Json.Value, String] uses State return Result.mapError(Codec.parse(source), Json.ParseError.message) end lambda, Json.stringify)
+  end if
+  if task = "stringify" then
+    bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
+    return Runner.measure(count, lambda() -> Result[String, String] uses State return Codec.stringify(value) end lambda, lambda(s: String) -> String return s end lambda)
+  end if
+  if task = "read" then
+    return Runner.measure(count, lambda() -> Result[String, String] uses State
+      bind doc <- try Result.mapError(Codec.document(source), Json.ParseError.message)
+      return Result.Ok("[" + String.join(List.map(["/0/id", "/0/label", "/0/nested"], lambda(pointer: String) -> String uses State
+        return Option.unwrapOr(Codec.get(doc, pointer), "null")
+      end lambda), ",") + "]")
+    end lambda, lambda(s: String) -> String return s end lambda)
+  end if
+  if task = "pretty" then
+    return Runner.measure(count, lambda() -> Result[String, String] uses State return Result.mapError(Codec.pretty(source), Json.ParseError.message) end lambda, lambda(s: String) -> String return s end lambda)
+  end if
+  if task = "validate" then
+    return Runner.measure(count, lambda() -> Result[Unit, String] uses State return Result.mapError(Codec.validate(source), Json.ParseError.message) end lambda, lambda(_value: Unit) -> String return "valid" end lambda)
+  end if
+  if task = "canonical" then
+    bind value <- try Result.mapError(Codec.parse(source), Json.ParseError.message)
+    Console.writeLine(try Codec.stringify(value))
+    return Result.Ok(())
+  end if
+  if task = "verify" then
+    bind value <- try Result.mapError(Codec.parse(source), Json.ParseError.message)
+    bind output <- try Codec.stringify(value)
+    return Runner.measure(1, lambda() -> Result[String, String] uses State return Result.Ok(output) end lambda, lambda(s: String) -> String return s end lambda)
+  end if
+  return Result.Error("unknown JSON task")
+end function

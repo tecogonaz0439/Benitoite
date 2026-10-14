@@ -1,0 +1,11 @@
+// spec: 01-03 依存のパッケージの取り込み
+dependency Words
+  path "deps/textkit"
+end dependency
+import Benitoite.Unofficial.IO.Console
+import Slug as Local
+import Words.Slug as Remote
+function main() -> Unit uses Console.Write
+  Console.writeLine(Local.slug("x"))
+  Console.writeLine(Remote.slug(" Hello World "))
+end function

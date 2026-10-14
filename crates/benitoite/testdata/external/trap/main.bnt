@@ -1,0 +1,8 @@
+// spec: 01-08 実行時エラーによる停止
+// spec: 01-08 資源の不足
+@external("wasm", "x.wasm", "f")
+function externalFn() -> Unit
+function main() -> Unit
+  externalFn()
+  ()
+end function

@@ -3,7 +3,9 @@
 
 mod string;
 
-use super::token::{Comment, CommentKind, Token, TokenKind, TokenValue};
+use super::token::{
+    Comment, CommentKind, FloatSuffix, IntegerSuffix, Token, TokenKind, TokenValue,
+};
 use crate::base::{BytePos, FileId, Span};
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic, Edit};
 
@@ -726,7 +728,8 @@ fn scalar_from_hex(digits: &[u8]) -> Option<char> {
 
 // ---- キーワード（01-01「キーワード」） ----
 
-fn keyword(word: &str) -> Option<TokenKind> {
+/// 診断の宣言でも字句解析と同じ予約語を避ける（設計書 03-10「照合」）。
+pub(crate) fn keyword(word: &str) -> Option<TokenKind> {
     Some(match word {
         "and" => TokenKind::KwAnd,
         "bind" => TokenKind::KwBind,
@@ -777,6 +780,13 @@ fn classify_number(chunk: &[u8]) -> Result<(TokenKind, TokenValue), NumberError>
     if let Some(result) = classify_decimal_literal(chunk) {
         return result;
     }
+    if let Some(result) = classify_width_literal(chunk) {
+        return result;
+    }
+    classify_unsuffixed_number(chunk)
+}
+
+fn classify_unsuffixed_number(chunk: &[u8]) -> Result<(TokenKind, TokenValue), NumberError> {
     match chunk {
         [
             b'0',
@@ -785,6 +795,59 @@ fn classify_number(chunk: &[u8]) -> Result<(TokenKind, TokenValue), NumberError>
         ] => classify_prefixed(*p, body),
         _ => classify_decimal(chunk),
     }
+}
+
+/// 接尾辞を完全一致で読み、数の本体には既存の基数と下線の検査を適用する。
+fn classify_width_literal(chunk: &[u8]) -> Option<Result<(TokenKind, TokenValue), NumberError>> {
+    const INTEGERS: &[(&[u8], IntegerSuffix)] = &[
+        (b"s8", IntegerSuffix::S8),
+        (b"s16", IntegerSuffix::S16),
+        (b"s32", IntegerSuffix::S32),
+        (b"s64", IntegerSuffix::S64),
+        (b"u8", IntegerSuffix::U8),
+        (b"u16", IntegerSuffix::U16),
+        (b"u32", IntegerSuffix::U32),
+        (b"u64", IntegerSuffix::U64),
+    ];
+    if let Some((tail, suffix)) = INTEGERS.iter().find(|(tail, _)| chunk.ends_with(tail)) {
+        let body = chunk
+            .get(..chunk.len().saturating_sub(tail.len()))
+            .unwrap_or(&[]);
+        return Some(match classify_unsuffixed_number(body) {
+            Ok((TokenKind::IntLit, TokenValue::Int { radix, digits })) => Ok((
+                TokenKind::IntLit,
+                TokenValue::WidthInt {
+                    radix,
+                    digits,
+                    suffix: *suffix,
+                },
+            )),
+            Ok(_) => Err((DiagCode::E0127, "integer_form")),
+            Err(error) => Err(error),
+        });
+    }
+    // 十六進の f32/f64 は数字なので、浮動小数の接尾辞として切り出さない。
+    if matches!(
+        chunk.get(..2),
+        Some([b'0', b'x' | b'X' | b'o' | b'O' | b'b' | b'B'])
+    ) {
+        return None;
+    }
+    for (tail, suffix) in [
+        (b"f32".as_slice(), FloatSuffix::F32),
+        (b"f64".as_slice(), FloatSuffix::F64),
+    ] {
+        if let Some(body) = chunk.strip_suffix(tail) {
+            return Some(match classify_unsuffixed_number(body) {
+                Ok((TokenKind::FloatLit, TokenValue::Float(text))) => {
+                    Ok((TokenKind::FloatLit, TokenValue::WidthFloat { text, suffix }))
+                }
+                Ok(_) => Err((DiagCode::E0127, "float_form")),
+                Err(error) => Err(error),
+            });
+        }
+    }
+    None
 }
 
 /// 接頭辞（`0x`・`0o`・`0b`。大文字の誤りを含む）を持つ整数リテラル。

@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "encoding": {
+    "numbers": "WIT整数はJSON整数。f32は丸めた値をf64へ正確に拡大したJSON数。",
+    "record": "WITの欄名を鍵とするオブジェクト。",
+    "tuple_or_list_or_bytes": "宣言順のJSON配列。",
+    "flags": "WITの項目名の配列。",
+    "map": "鍵と値の二要素配列を鍵順に並べる。",
+    "variant": "caseはWITの名前、payloadはWITの値。引数なしはnull。",
+    "string_or_character": "JSON文字列。"
+  },
+  "cases": {
+    "numbers": {
+      "flipS8": [
+        {"arguments": [-128], "result": -127}
+      ],
+      "flipS16": [
+        {"arguments": [-32768], "result": -32767}
+      ],
+      "flipS32": [
+        {"arguments": [-2147483648], "result": -2147483647}
+      ],
+      "flipS64": [
+        {"arguments": [-9223372036854775808], "result": -9223372036854775807}
+      ],
+      "flipU8": [
+        {"arguments": [255], "result": 254}
+      ],
+      "flipU16": [
+        {"arguments": [65535], "result": 65534}
+      ],
+      "flipU32": [
+        {"arguments": [4294967295], "result": 4294967294}
+      ],
+      "flipU64": [
+        {"arguments": [9223372036854775808], "result": 9223372036854775809}
+      ],
+      "unsignedAlias": [
+        {"arguments": [18446744073709551615], "result": 18446744073709551614}
+      ],
+      "negateF32": [
+        {"arguments": [0.10000000149011612], "result": -0.10000000149011612}
+      ],
+      "negateF64": [
+        {"arguments": [1.25], "result": -1.25}
+      ],
+      "flipS8List": [
+        {"arguments": [[-128, 127, 0]], "result": [-127, 126, 1]}
+      ],
+      "flipS16List": [
+        {"arguments": [[-32768, 32767, 0]], "result": [-32767, 32766, 1]}
+      ],
+      "flipS32List": [
+        {"arguments": [[-2147483648, 2147483647, 0]], "result": [-2147483647, 2147483646, 1]}
+      ],
+      "flipU16List": [
+        {"arguments": [[0, 65535, 256]], "result": [1, 65534, 257]}
+      ],
+      "flipU32List": [
+        {"arguments": [[0, 4294967295, 65536]], "result": [1, 4294967294, 65537]}
+      ],
+      "flipU64List": [
+        {"arguments": [[0, 9223372036854775808, 18446744073709551615]], "result": [1, 9223372036854775809, 18446744073709551614]}
+      ],
+      "negateF32List": [
+        {"arguments": [[0.10000000149011612, 16777216.0, -1.25]], "result": [-0.10000000149011612, -16777216.0, 1.25]}
+      ]
+    },
+    "flags": {
+      "f1": [
+        {"arguments": [["f1"]], "result": [["f1"], 1]}
+      ],
+      "f8": [
+        {"arguments": [["f1"]], "result": [["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"], 1]}
+      ],
+      "f9": [
+        {"arguments": [["f1"]], "result": [["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9"], 1]}
+      ],
+      "f16": [
+        {"arguments": [["f1"]], "result": [["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "f13", "f14", "f15", "f16"], 1]}
+      ],
+      "f17": [
+        {"arguments": [["f1"]], "result": [["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "f13", "f14", "f15", "f16", "f17"], 1]}
+      ],
+      "f32": [
+        {"arguments": [["f1"]], "result": [["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "f13", "f14", "f15", "f16", "f17", "f18", "f19", "f20", "f21", "f22", "f23", "f24", "f25", "f26", "f27", "f28", "f29", "f30", "f31", "f32"], 1]}
+      ],
+      "clear": [
+        {"arguments": [["f1"]], "result": []}
+      ]
+    },
+    "maps": {
+      "echo": [
+        {"arguments": [[["0", 0], ["1", 1], ["2", 2]]], "result": [["0", 7], ["1", 8], ["2", 9]]}
+      ],
+      "result": [
+        {"arguments": [[["0", 0], ["1", 1], ["2", 2]]], "result": [["a", 2], ["z", 3]]}
+      ],
+      "first": [
+        {"arguments": [[["0", 0], ["1", 1], ["2", 2]]], "result": 48}
+      ]
+    },
+    "records": {
+      "box": [
+        {"arguments": [{"value": 35}], "result": {"value": 42}}
+      ],
+      "nested": [
+        {"arguments": [{"value": {"value": 35}}], "result": {"value": {"value": 42}}}
+      ],
+      "envelope": [
+        {"arguments": [{"case": "wrapped", "payload": 35}], "result": {"case": "wrapped", "payload": 44}},
+        {"arguments": [{"case": "empty", "payload": null}], "result": {"case": "empty", "payload": null}}
+      ],
+      "mixed": [
+        {"arguments": [{"a": -128, "b": 9223372036854775808, "c": [1.5, "😀"]}], "result": {"a": -127, "b": 9223372036854775809, "c": [-1.5, "😁"]}}
+      ]
+    },
+    "tuples": {
+      "tuple1": [
+        {"arguments": [[1]], "result": [12]}
+      ],
+      "tuple4": [
+        {"arguments": [[1, 2, 3, 4]], "result": [12, 14, 16, 18]}
+      ],
+      "tuple17": [
+        {"arguments": [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]], "result": [12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44]}
+      ]
+    },
+    "variants": {
+      "one": [
+        {"arguments": [{"case": "value", "payload": [3, 7]}], "result": {"case": "value", "payload": [14, 29]}},
+        {"arguments": [{"case": "empty", "payload": null}], "result": {"case": "empty", "payload": null}}
+      ],
+      "two": [
+        {"arguments": [{"case": "value", "payload": [3, 7]}], "result": {"case": "value", "payload": [14, 29]}},
+        {"arguments": [{"case": "empty", "payload": null}], "result": {"case": "empty", "payload": null}}
+      ],
+      "single": [
+        {"arguments": [{"case": "value", "payload": 3}], "result": {"case": "value", "payload": 15}}
+      ],
+      "joined": [
+        {"arguments": [{"case": "empty", "payload": null}], "result": {"case": "pair", "payload": [13, 17]}},
+        {"arguments": [{"case": "signed", "payload": -7}], "result": {"case": "signed", "payload": -8}},
+        {"arguments": [{"case": "single", "payload": -0.0}], "result": {"case": "single", "payload": -1.5}},
+        {"arguments": [{"case": "double", "payload": 1.5}], "result": {"case": "double", "payload": -1.5}},
+        {"arguments": [{"case": "wide", "payload": 9223372036854775808}], "result": {"case": "wide", "payload": 9223372036854775809}},
+        {"arguments": [{"case": "pair", "payload": [9, 11]}], "result": {"case": "empty", "payload": null}}
+      ]
+    },
+    "primitives": {
+      "invert": [
+        {"arguments": [true], "result": false},
+        {"arguments": [false], "result": true}
+      ],
+      "next": [
+        {"arguments": ["😀"], "result": "😁"}
+      ],
+      "append": [
+        {"arguments": ["A日😀A日😀A日😀"], "result": "A日😀A日😀A日😀!"}
+      ],
+      "bytes": [
+        {"arguments": [[0, 128, 255]], "result": [255, 127, 0]}
+      ],
+      "bytesAdapter": [
+        {"arguments": [false, [0, 128, 255]], "result": [255, 127, 0]}
+      ]
+    },
+    "large-bytes": {
+      "bytes": [
+        {"arguments": [[0, 128, 255]], "result": [255, 127, 0]}
+      ],
+      "bytesAdapter": [
+        {"arguments": [false, [0, 128, 255]], "result": [255, 127, 0]}
+      ]
+    },
+    "nested": {
+      "run": [
+        {"arguments": [[[10, 20], [], [30]]], "result": [[11, 21], [], [31]]}
+      ]
+    },
+    "utf16": {
+      "run": [
+        {"arguments": ["A日😀"], "result": "日😀!"}
+      ],
+      "runAdapter": [
+        {"arguments": [false, "A日😀"], "result": "日😀!"}
+      ]
+    },
+    "short-numbers": {
+      "typed": [
+        {"arguments": [42], "result": 43}
+      ],
+      "adapter": [
+        {"arguments": [42], "result": 43}
+      ]
+    }
+  }
+}

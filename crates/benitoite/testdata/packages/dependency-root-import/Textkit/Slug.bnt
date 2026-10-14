@@ -1,0 +1,10 @@
+import Helper
+public record Box
+  n: Integer
+end record
+public function make() -> Box
+  return Box(n: Helper.n())
+end function
+public function get(b: Box) -> Integer
+  return Box.n(b)
+end function

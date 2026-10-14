@@ -91,6 +91,9 @@ A script that passes `check` performs no built-in operation outside the `uses` o
 - `with r = acquire() do ... end with` releases its resources in reverse order when the block ends. `TaskGroup.spawn(group, lambda() ... end lambda)` starts a task in a group opened with `TaskGroup.open()`, and `Task.await(task)` waits for its result; releasing the group waits for all its tasks.
 - A handler that handles only some operations of an effect does not remove the effect from the type. Functions whose type has `State` (`Reference`, `TaskGroup`, `Task.await`, `close...`) cannot be handled.
 - Maps and sets are ordered by key, not by insertion.
+- Numeric widths are distinct types with no implicit conversion. Unsuffixed `1` is always `Integer`; use `1s32` for `Integer32` and `1.0f32` for `Float32`. Suffixes (`s8`–`s64`, `u8`–`u64`, `f32`/`f64`) are provisional and may change as the syntax is revised. `Integer64` = `Integer`, `Float64` = `Float`, `UnsignedInteger8` = `Byte`, and `UnsignedInteger` = `UnsignedInteger64`. Keep `Integer`, `Float`, and `Byte` as the usual names. `Byte` has no arithmetic, and unsigned types have no unary minus.
+- New integer arithmetic stops on overflow (including unsigned subtraction below zero) or division by zero. Failed numeric conversions return `Option.None`; check the per-module signatures. `Float32` rounds after each operation. See the numeric conversion examples in `references/idioms.md`.
+- Experimental `@external("wasm", "path.wasm", "export")` functions use a binary import-free Component Model component and have no body or `end function`. Concrete records/data, flags as `Set` of argument-free constructors, and `Map` with WIT-compatible keys can cross the boundary. External resource types require `uses State`; other external calls are pure. The generated adapter counts packed bytes and separately limits logical value construction with the same `--wasm-transfer` value. See the WIT examples and limits in `references/idioms.md`.
 - Strings interpolate with `"${expression}"`. Comments start with `//`.
 - There is no `null`, no exception, and no loop statement. Use `Option`, `Result` with `try`, and `List.map`, `List.fold`, `List.forEach`, or recursion.
 - Import every module outside the prelude, also when it only appears in `uses`. Unofficial modules (all IO and network modules, `Json`, `Csv`, and others) are imported under `Benitoite.Unofficial`: `import Benitoite.Unofficial.IO.Console`, then referred to as `Console`. `import Benitoite.IO.Console` is an error. The unofficial modules are `IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `Json`, `Csv`, `Regex`, `Path`, `Time`, `Encoding`, and `Hash`; for example `import Benitoite.Unofficial.Network.Http` is referred to as `Http`. Do not rename the modules that declare effects (the IO and network modules, `IO`, and `Assert`) with `as`; that is an error, so that `uses` always shows the real effect names.
@@ -159,7 +162,7 @@ Read these when you need them:
 
 | Document | When to read it |
 |---|---|
-| `references/idioms.md` | Writing a common task: files, JSON, CSV, external commands, arguments, HTTP, collections, records, tests. |
+| `references/idioms.md` | Writing a common task: files, JSON, CSV, external commands, arguments, HTTP, collections, records, tests, numeric conversions, and WASM/WIT declarations. |
 | `references/common-mistakes.md` | A diagnostic comes from a habit of another language (`let`, braces, `==`, missing imports). |
 | `references/language-comparison.md` | You know how to write something in Python, JavaScript, or Rust and need the Benitoite form. |
 | `references/diagnostics.md` | A diagnostic code (`E0201`, `W0501`, ...) is unclear. |

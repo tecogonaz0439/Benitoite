@@ -1,0 +1,9 @@
+// spec: 01-02 外部の関数の宣言
+data Pair[A, B]
+  Both(A, B, Integer)
+end data
+@external("wasm", "wasm/x.wasm", "f")
+function nested(value: Option[List[Pair[Integer, String]]]) -> Option[List[Pair[Integer, String]]]
+function main() -> Unit
+  ()
+end function

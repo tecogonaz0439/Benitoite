@@ -18,6 +18,9 @@ use super::{FrameRecord, InstrRef, StopInfo, StopReason, VmConfig, VmStep};
 pub struct RunState {
     pub(crate) stack: TaskStack,
     pub(crate) roots: RootStack,
+    pub(crate) external_interrupt: Option<std::sync::Arc<std::sync::atomic::AtomicBool>>,
+    pub(crate) externals: Option<Box<crate::external::ExternalRuntime>>,
+    pub(crate) external_options: crate::external::stats::ExecutionOptions,
     pub(crate) constants: Vec<Option<Slot>>,
     pub(crate) meter: StackMeter,
     pub(crate) budget: Budget,
@@ -66,6 +69,9 @@ impl Trace for RunState {
 impl RunState {
     pub(crate) fn new(config: VmConfig, constant_count: usize) -> Self {
         Self {
+            external_interrupt: None,
+            externals: None,
+            external_options: Default::default(),
             stack: TaskStack::default(),
             roots: RootStack::new(),
             constants: std::iter::repeat_with(|| None)

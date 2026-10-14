@@ -1,0 +1,46 @@
+// 作成時の関門: 新しい数の辞書の選択と全順序を CLI の出力で守る。
+// 演算子の試験は Show/Order の登録と NaN の全順序を呼ばない。
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+
+function orderingText(value: Trait.Ordering) -> String
+  return match value with
+    case Trait.Ordering.Less -> "Less"
+    case Trait.Ordering.Equal -> "Equal"
+    case Trait.Ordering.Greater -> "Greater"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Trait.Show.show([-128s8, 127s8]))
+  Console.writeLine(orderingText(Trait.Order.compare(-128s8, 127s8)))
+  Console.writeLine(orderingText(Trait.Order.compare(127s8, -128s8)))
+  Console.writeLine(orderingText(Trait.Order.compare(127s8, 127s8)))
+  Console.writeLine(Trait.Show.show([-32768s16, 32767s16]))
+  Console.writeLine(orderingText(Trait.Order.compare(-32768s16, 32767s16)))
+  Console.writeLine(orderingText(Trait.Order.compare(32767s16, -32768s16)))
+  Console.writeLine(orderingText(Trait.Order.compare(32767s16, 32767s16)))
+  Console.writeLine(Trait.Show.show([-2147483648s32, 2147483647s32]))
+  Console.writeLine(orderingText(Trait.Order.compare(-2147483648s32, 2147483647s32)))
+  Console.writeLine(orderingText(Trait.Order.compare(2147483647s32, -2147483648s32)))
+  Console.writeLine(orderingText(Trait.Order.compare(2147483647s32, 2147483647s32)))
+  Console.writeLine(Trait.Show.show([0u16, 65535u16]))
+  Console.writeLine(orderingText(Trait.Order.compare(0u16, 65535u16)))
+  Console.writeLine(orderingText(Trait.Order.compare(65535u16, 0u16)))
+  Console.writeLine(orderingText(Trait.Order.compare(65535u16, 65535u16)))
+  Console.writeLine(Trait.Show.show([0u32, 4294967295u32]))
+  Console.writeLine(orderingText(Trait.Order.compare(0u32, 4294967295u32)))
+  Console.writeLine(orderingText(Trait.Order.compare(4294967295u32, 0u32)))
+  Console.writeLine(orderingText(Trait.Order.compare(4294967295u32, 4294967295u32)))
+  Console.writeLine(Trait.Show.show([0u64, 18446744073709551615u64]))
+  Console.writeLine(orderingText(Trait.Order.compare(0u64, 18446744073709551615u64)))
+  Console.writeLine(orderingText(Trait.Order.compare(18446744073709551615u64, 0u64)))
+  Console.writeLine(orderingText(Trait.Order.compare(18446744073709551615u64, 18446744073709551615u64)))
+  Console.writeLine(Trait.Show.show([0.1f32, -0.0f32, 1.0f32 / 0.0f32, 0.0f32 / 0.0f32]))
+  Console.writeLine(orderingText(Trait.Order.compare(1.0f32, 2.0f32)))
+  Console.writeLine(orderingText(Trait.Order.compare(2.0f32, 1.0f32)))
+  Console.writeLine(orderingText(Trait.Order.compare(-0.0f32, 0.0f32)))
+  Console.writeLine(orderingText(Trait.Order.compare(0.0f32 / 0.0f32, 1.0f32 / 0.0f32)))
+  Console.writeLine(orderingText(Trait.Order.compare(-1.0f32 / 0.0f32, 0.0f32 / 0.0f32)))
+  Console.writeLine(orderingText(Trait.Order.compare(0.0f32 / 0.0f32, Float32.squareRoot(-1.0f32))))
+end function

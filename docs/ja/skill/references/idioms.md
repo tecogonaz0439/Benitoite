@@ -1,6 +1,6 @@
 # Benitoite の定番の書き方
 
-> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。訳した元は、Benitoite 0.0.3 の版の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。訳した元は、Benitoite 0.0.4 の版の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -21,16 +21,18 @@
 
 ## 目次
 
-- プログラムの形と誤りの扱い
-- ファイルの読み書き
-- JSON
-- CSV
-- 外部のコマンドの実行
-- コマンド行の引数と環境変数
-- HTTP
-- コレクション
-- レコードとデータ型
-- テストの書き方
+- [プログラムの形と誤りの扱い](#プログラムの形と誤りの扱い)
+- [ファイルの読み書き](#ファイルの読み書き)
+- [JSON](#json)
+- [CSV](#csv)
+- [外部のコマンドの実行](#外部のコマンドの実行)
+- [コマンド行の引数と環境変数](#コマンド行の引数と環境変数)
+- [HTTP](#http)
+- [コレクション](#コレクション)
+- [レコードとデータ型](#レコードとデータ型)
+- [テストの書き方](#テストの書き方)
+- [数値のビット幅と変換](#数値のビット幅と変換)
+- [WASM の外部の関数と WIT の型](#wasm-の外部の関数と-wit-の型)
 
 ## プログラムの形と誤りの扱い
 
@@ -588,3 +590,94 @@ function gitBranchRunsGit() -> Unit uses Assert.Check, Process.Run
   Assert.equal(result, Result.Ok("main"))
 end function
 ```
+
+## 数値のビット幅と変換
+
+既存の型には `Integer`、`Float`、`Byte` を使う。それぞれの正式な名前は `Integer64`、`Float64`、`UnsignedInteger8` であり、`UnsignedInteger` は `UnsignedInteger64` の別名である。別名は同じ型を表す。追加した七つの型（`Integer8`、`Integer16`、`Integer32`、`UnsignedInteger16`、`UnsignedInteger32`、`UnsignedInteger64`、`Float32`）は、それぞれ異なる型である。数値の型とモジュールはすべて prelude にあり、取り込みは要らない。
+
+接尾辞でビット幅を明示的に選ぶ。`42s16`、`0xffu8`、`65535u16`、`18446744073709551615u64`、`1.5f32` のように書く。接尾辞のない値は `Integer` か `Float` のままであり、期待する型によって変わることはない。接尾辞の表記は暫定であり、構文の見直しで変わることがある。浮動小数点の接尾辞には小数点か指数が要る（`1f32` ではなく `1.0f32`）。符号付きリテラルの範囲の検査に符号を含めるのは、直接付けた負号だけである。`-128s8` は使えるが、`-(128s8)` は使えない。符号なしの型では、0 であっても単項の負号を使えない。`Byte` に算術演算はない。新しい数値のビット幅の型と `Byte` は、定数のパターンにも範囲のパターンにもできない。束縛した名前とガードを使う。
+
+範囲を検査する変換は `Option` を返し、整数の算術演算の桁あふれと 0 による除算は実行を止める。狭い整数のモジュールは、`Integer` を通して変換する。`UnsignedInteger64.toInteger` は、その範囲の上半分が収まらないため `Option` を返す。`toDecimal` は全範囲で正確に変換する。`Float32.fromFloat` は丸めを行い、有限の入力が無限大になると `None` を返す。`Float32.toFloat` は、有限の値を正確に広い型へ変換する。算術演算は各演算の後に binary32 に丸める。各関数のシグネチャは、対応する生成のモジュールの参照文書で読む。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+
+function smallInteger(text: String) -> Option[Integer16]
+  bind value <- try Integer.parse(text)
+  return Integer16.fromInteger(value)
+end function
+
+function main() -> Unit uses Console.Write
+  bind value <- Option.unwrapOr(smallInteger("42"), 0s16)
+  bind wide: UnsignedInteger <- 18446744073709551615u64
+  Console.writeLine("${value + 1s16} ${smallInteger("32768") = Option.None}")
+  Console.writeLine("${UnsignedInteger64.toDecimal(wide)} ${UnsignedInteger64.toInteger(wide) = Option.None}")
+  Console.writeLine("${Float32.toFloat(1.5f32)} ${Byte.toInteger(255u8)}")
+end function
+```
+
+```output
+43 true
+18446744073709551615 true
+1.5 255
+```
+
+## WASM の外部の関数と WIT の型
+
+外部の関数は、本体も `end function` も付けずに宣言し、呼ぶ前にコンポーネントの実際の WIT の契約を確かめる。コンポーネントは、取り込みのないバイナリの Component Model のコンポーネントでなければならず、WASI もホストの関数も使えない。パスは宣言が属する根からの相対パスであり、パッケージのコンポーネントは `wasm/` の下に置かなければならない。公開名は world の関数か `interface#function` であり、版を含むインターフェースの完全な名前と一致させる。宣言は単相であり、具体的な型を使う。実際の引数と結果のフィールドに外部のリソース型を含む関数には `uses State` が要り、ほかの関数は純粋である。
+
+| Benitoite の型 | WIT との対応 |
+|---|---|
+| `Integer8`/`Integer16`/`Integer32`/`Integer` | `s8`/`s16`/`s32`/`s64` |
+| `Byte`/`UnsignedInteger16`/`UnsignedInteger32`/`UnsignedInteger64` | `u8`/`u16`/`u32`/`u64` |
+| `Float32`/`Float` | `f32`/`f64` |
+| `Bytes`, `List[Byte]`。ほかのリスト、オプション、結果 | `list<u8>`。WIT の list/option/result に再帰的に対応する |
+| 具体的なレコードと `data` | 型引数を置き換えた後、宣言の順序と正規化した名前でフィールドとケースを照合する |
+| `Set[D]`。D は引数のない構成子を 1〜32 個持つ | `flags`。何も選択しない値も許される |
+| `Map[K, V]` | `map`。K は Boolean、整数型、Character、String のいずれかであり、V は対応する任意の型 |
+| `Pair`、`Triple`、または引数を一つ以上持つほかの単一の構成子の `data` | 引数の位置に対応する `tuple` |
+| 複数の引数を持つ variant の構成子 | 平らなタプル一つをペイロードとし、戻すときはそれらの引数に振り分ける |
+
+レコードとケースの名前は、ハイフンを除き、ASCII の英字を小文字にして照合する。型パラメータを持つ型の有限の入れ子は許されるが、再帰する宣言と未解決の型変数・エフェクト変数は拒む。関数、Decimal、通常の Set の型、タスク、`with` で使うリソースは渡せない。`Unit` は、関数の省略した結果か、標準の `Result` の省略した片側としてだけ許される。
+
+これらの宣言は、リポジトリの実行可能な例 `external/wit-docs-values` で使うコンポーネントの例に対応する。
+
+```text
+record Box[T]
+  value: T
+end record
+@external("wasm", "generic.wasm", "box")
+function box(v: Box[Integer]) -> Box[Integer]
+@external("wasm", "generic.wasm", "nested")
+function nested(v: Box[Box[Integer]]) -> Box[Box[Integer]]
+
+data D1
+  F1
+end data
+@external("wasm", "flags.wasm", "f1")
+function f1(v: Set[D1]) -> Pair[Set[D1], Integer]
+
+@external("wasm", "maps.wasm", "result")
+function result(v: Map[String, Integer]) -> Map[String, Integer]
+
+data Four
+  Item(Integer, Integer, Integer, Integer)
+end data
+@external("wasm", "tuples.wasm", "tuple4")
+function tuple4(v: Four) -> Four
+
+data Two
+  Value(Integer, Integer)
+  Empty
+end data
+@external("wasm", "variants.wasm", "fields")
+function two(v: Two) -> Two
+```
+
+WIT の形は、`value: s64` を持つレコード、入れ子のレコード、結果がタプルの `flags { f1 }`、`map<string, s64>`、4 要素の `tuple<s64, s64, s64, s64>`、`variant { value(tuple<s64, s64>), empty }` である。例のゲストは、`box(Box(value: 35))` から 42、`nested(Box(value: Box(value: -7)))` の内側の値として 0、`f1(Set.empty())` から `Pair(Set.fromList([D1.F1]), 0)`、`tuple4(Four.Item(1, 2, 3, 4))` から `Four.Item(12, 14, 16, 18)`、`two(Two.Value(3, 7))` から `Two.Value(14, 29)` を返す。例の `Map.toList(result(Map.empty()))` は `[Pair("a", 2), Pair("z", 3)]` である。返された各項目は正規化の前にすべて検査し、キーが重複すれば最後の値を残し、最終的なマップはキーの順に並ぶ。これらの数値の変換は、例のゲストの動作である。
+
+検査器は実行の前に `typed`、`adapter`、`dynamic`、`stateful` のいずれかを選び、失敗の後に試し直すことはない。既存の型付きの組み合わせは、バイト数と要素数の計数を保つ。ほかの対応する値は生成したアダプタを使い、外部のリソース型は状態を持つ動的な経路を使う。アダプタの生成や配置の上限によって、呼び出し前に動的な経路を選ぶことがある。生成したコードとコンパイル済みのコードは一回の実行の中で共有するが、純粋な呼び出しは毎回新しい Store を使う。
+
+既定の上限は、引き続き燃料 10^10、ゲストとアダプタの線形メモリの合計 64 MiB、コアのインスタンス・メモリ・テーブル各 16 個、テーブルごとに 10,000 要素、方向ごとに転送量 256 MiB である。アダプタは、32 バイトのヘッダと詰め物を含め、詰めて格納した引数と結果の列全体を数える。それとは別に、同じ `--wasm-transfer` の値で、方向ごとの論理的な構築量も制限する。言語の値が現れるごとに 16 バイトを数え、文字列と Bytes の内容を加える。Bytes の要素は別の値として数えないが、List[Byte] の要素は数える。キーの重複の正規化で捨てる Map の項目も数える。ABI のためだけの、値をまとめるタプルは言語の値を加えない。これらの上限はプロセスのメモリ全体を制限しない。アダプタの命令は燃料を消費し、SIGINT/SIGTERM に応じる。`Task.withTimeout` は外部呼び出しを取り消せない。文字列、Bytes、リストの既存の大きさの上限も引き続き適用する。
+
+`run` と `test` の `--wasm-stats` を使って、経路、代替の経路を選んだ理由、転送量、`construction_bytes`（両方向の合計）、アダプタの失敗を調べる。`--wasm-memory`、`--wasm-fuel`、`--wasm-transfer` は、関数の契約を変えずに上限を変える。燃料の枯渇は R0904、転送量・構築量・メモリの枯渇は R0905、対象数の上限は R0906、戻り値の大きさの上限は R0902 を報告する。トラップとゲストの ABI 違反は R0601 を報告し、宣言した `Result.Error` は通常の値である。これらの実行時の失敗は `match` や `try` で捕えられない。

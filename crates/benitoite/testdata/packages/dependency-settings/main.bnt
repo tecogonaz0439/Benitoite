@@ -1,0 +1,13 @@
+// spec: 01-03 依存のパッケージの取り込み
+dependency Old
+  path "deps/nolanguage"
+end dependency
+dependency Nested
+  path "deps/transitive"
+end dependency
+dependency Future
+  path "deps/future"
+end dependency
+function main() -> Unit
+  ()
+end function

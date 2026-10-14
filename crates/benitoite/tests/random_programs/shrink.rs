@@ -66,6 +66,7 @@ fn removable_spans(source: &str) -> Vec<Span> {
             | Item::Record(_)
             | Item::Trait(_)
             | Item::Effect(_)
+            | Item::ExternalType(_)
             | Item::Error(_) => spans.push(declaration.span),
         }
     }

@@ -1,0 +1,15 @@
+// 関門: 独立したゲストの組から後勝ちと鍵順を確かめ、行きの順序と空の map も観察する。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Trait
+@external("wasm", "x.wasm", "result")
+function result(v: Map[String, Integer]) -> Map[String, Integer]
+@external("wasm", "x.wasm", "echo")
+function echo(v: Map[String, Integer]) -> Map[String, Integer]
+@external("wasm", "x.wasm", "first")
+function first(v: Map[String, Integer]) -> Integer
+function main() -> Unit uses Console.Write
+  bind m <- result(Map.empty())
+  Console.writeLine("${Trait.Show.show(Map.toList(m))}")
+  Console.writeLine("${echo(m) = m} ${first(m)}")
+  Console.writeLine("${Map.size(echo(Map.empty()))} ${first(Map.empty())}")
+end function

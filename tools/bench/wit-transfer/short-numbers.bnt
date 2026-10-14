@@ -1,0 +1,21 @@
+//! 一個の数を渡す二つの宣言を比べる入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+@external("wasm", "guests/numbers.wasm", "flip-s64")
+function typed(v: Integer) -> Integer
+@external("wasm", "guests/numbers.wasm", "flip-u64")
+function adapter(v: UnsignedInteger64) -> UnsignedInteger64
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+  bind wide <- try Option.okOr(UnsignedInteger64.fromInteger(n), "number out of range")
+  bind expected <- if n mod 2 = 0 then n + 1 else n - 1 end if
+  bind expectedWide <- try Option.okOr(UnsignedInteger64.fromInteger(expected), "number out of range")
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind a <- typed(n)
+    bind b <- adapter(wide)
+    return a = expected and b = expectedWide
+  end lambda)
+end function

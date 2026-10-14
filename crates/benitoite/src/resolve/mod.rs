@@ -11,7 +11,7 @@ use crate::types::builtin::{BuiltinEffectId, BuiltinTypeId};
 /// 束縛の種類（02-04「束縛と表」の束縛の種類の表）。
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum BindingKind {
-    /// トップレベルの関数（本体を持つもの）
+    /// トップレベルの関数（外部の関数の宣言を含む）
     Fn,
     /// `@builtin` を付けた本体のない関数。組み込みの関数の表の項目
     BuiltinFn(BuiltinId),
@@ -26,6 +26,8 @@ pub enum BindingKind {
     BuiltinType(BuiltinTypeId),
     /// 型の別名
     Alias,
+    /// コンポーネントの resource に対応する外部の型
+    ExternalType,
     Record,
     /// レコードのフィールド（フィールドを取り出す関数を兼ねる）。`index` は宣言の順の位置
     Field {
@@ -106,9 +108,11 @@ pub struct Binding {
     pub decl: DeclSite,
     /// 名前の位置。組み込みの表のものは `None`
     pub span: Option<Span>,
-    /// `public` を付けたか。局所の束縛と型パラメータは `false`。構成子・フィールド・メソッド・操作は、
+    /// `public` だけを付けたか。局所の束縛と型パラメータは `false`。構成子・フィールド・メソッド・操作は、
     /// それを含む宣言の `public` と同じ
     pub public: bool,
+    /// `public(package)` を付けたか。構成子・欄・メソッド・操作は包む宣言の値を受け継ぐ
+    pub package: bool,
     /// `@deprecated` の文字列
     pub deprecated: Option<String>,
 }
@@ -136,6 +140,9 @@ pub struct ResolveOutput {
     /// 組み込みのエフェクトの操作の束縛 → 組み込みの関数の表の項目（設計書 02-04「束縛と表」）。
     /// 利用者のエフェクトの操作は載せない
     pub builtin_ops: BindingMap<BuiltinId>,
+    /// 外部の関数の束縛 → 属性と照合の結果（設計書 03-10「照合」）。
+    /// 名前解決が属性を入れ、外部の関数の照合が spec を埋める。
+    pub externals: BindingMap<crate::external::ExternalDecl>,
     /// プログラムの入口: 実行を始めるモジュールのトップレベルの関数 `main`。なければ `None`
     /// （02-04「宣言の検査」の `main` の位置）
     pub main: Option<BindingId>,
@@ -177,6 +184,26 @@ impl ResolveOutput {
     /// 名前を使う箇所のノードが指す束縛。
     pub fn binding_of_ref(&self, node: NodeId) -> Option<&Binding> {
         self.bindings.get(*self.refs.get(node)?)
+    }
+}
+
+// 段階を一つの値で渡し、公開の印の組み合わせを取り違えない
+// （設計書 02-04「束縛と表」）。
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+enum Level {
+    Private,
+    Package,
+    Public,
+}
+impl Level {
+    fn of(public: bool, package: bool) -> Self {
+        if public {
+            Self::Public
+        } else if package {
+            Self::Package
+        } else {
+            Self::Private
+        }
     }
 }
 

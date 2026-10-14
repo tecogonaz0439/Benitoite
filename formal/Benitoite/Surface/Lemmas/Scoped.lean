@@ -105,6 +105,10 @@ mutual
     | .E_NegInt => trivial
     | .E_NegFloat => trivial
     | .E_NegDecimal => trivial
+    | .E_NegInteger8 => trivial
+    | .E_NegInteger16 => trivial
+    | .E_NegInteger32 => trivial
+    | .E_NegFloat32 => trivial
     | .E_Unit => trivial
     | .E_Paren h => simpa only [desugarExpr] using HasType.desugar_scoped h sc
     | .E_Record _ _ _ hs =>
@@ -121,7 +125,7 @@ mutual
     | .E_Call hf hs =>
         exact callComp_scoped (HasType.desugar_scoped hf sc.1)
           (fun _ hd => directCallee_scoped hd sc.1) trivial (HasTypes.desugar_scoped hs sc.2)
-    | .E_Binary hop hts _ _ _ _ _ hl hr =>
+    | .E_Binary _ hop hts _ _ _ _ _ hl hr =>
         simp only [desugarExpr, hop]
         apply sequence_scoped ?_
         · intro vs hv; exact ⟨by rw [hts]; exact ⟨operator_typeArgs_scoped sc.1 _, trivial⟩, hv⟩
@@ -129,7 +133,7 @@ mutual
           rcases hm with rfl | rfl
           · exact HasType.desugar_scoped hl sc.2.1
           · exact HasType.desugar_scoped hr sc.2.2
-    | .E_Neg hop hts _ _ _ _ _ h =>
+    | .E_Neg _ hop hts _ _ _ _ _ h =>
         simp only [desugarExpr, hop, Comp.VarsIn, Val.VarsIn]
         exact ⟨HasType.desugar_scoped h sc.2, ⟨by rw [hts]; trivial, trivial⟩, trivial, trivial⟩
     | .E_Not h => exact ⟨HasType.desugar_scoped h sc, trivial, trivial, trivial⟩

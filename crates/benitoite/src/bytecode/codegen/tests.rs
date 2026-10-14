@@ -671,6 +671,13 @@ end function
             ConstDesc::Map(xs) => xs.iter().flat_map(|(k, v)| [*k, *v]).collect(),
             ConstDesc::Int(_)
             | ConstDesc::Float(_)
+            | ConstDesc::Int8(_)
+            | ConstDesc::Int16(_)
+            | ConstDesc::Int32(_)
+            | ConstDesc::UInt16(_)
+            | ConstDesc::UInt32(_)
+            | ConstDesc::UInt64(_)
+            | ConstDesc::Float32(_)
             | ConstDesc::Str(_)
             | ConstDesc::Char(_)
             | ConstDesc::Bool(_)
@@ -997,6 +1004,7 @@ fn nested_prototype_limits_are_reported_once_per_definition() {
             | ValKind::Const(_)
             | ValKind::TopFn { .. }
             | ValKind::Builtin { .. }
+            | ValKind::External { .. }
             | ValKind::Op { .. }
             | ValKind::ConstRef(_) => 0,
         }
@@ -1084,4 +1092,101 @@ fn malformed_length_cases_are_internal_errors() {
         ));
     }
     drop(load);
+}
+
+// 作成時の関門: リテラルと const 内の幅を、独立した値とビットで照合する。
+// 旧型への置換と二重の丸めは、旧型のコード生成のテストでは検出できない。
+// 同じ入力を実行して検証器との整合と複合定数の読み込みも確かめる。
+#[test]
+fn width_constants_compile_and_verify_without_changing_their_representation() {
+    let p = compile(include_str!("../../../testdata/eval/width-constants.bnt"));
+    assert_eq!(crate::bytecode::verify::verify(&p), Ok(()));
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Int8(n) if *n == i8::MIN))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Int8(n) if *n == i8::MAX))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Int16(n) if *n == i16::MIN))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Int16(n) if *n == i16::MAX))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Int32(n) if *n == i32::MIN))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Int32(n) if *n == i32::MAX))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::UInt16(n) if *n == 0))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::UInt16(n) if *n == u16::MAX))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::UInt32(n) if *n == 0))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::UInt32(n) if *n == u32::MAX))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::UInt64(n) if *n == 0))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::UInt64(n) if *n == u64::MAX))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Float32(n) if n.to_bits() == 0x8000_0000))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Float32(n) if n.to_bits() == 1))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Float32(n) if n.to_bits() == 0x3f80_0001))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Float32(n) if n.to_bits() == 0x7f7f_ffff))
+    );
+    assert!(
+        p.consts
+            .iter()
+            .any(|c| matches!(c, ConstDesc::Float32(n) if n.to_bits() == 0))
+    );
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        assert_eq!(run(&p, mode, true), "3\n3\n3\n3\n3\n3\n6\n");
+    }
 }

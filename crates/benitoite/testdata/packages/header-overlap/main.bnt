@@ -1,0 +1,9 @@
+// spec: 01-02 ファイルの先頭の部分
+// spec: 01-03 依存の記述と `package.bnt`
+language "0.0.3"
+dependency Textkit
+  path "deps/textkit"
+end dependency
+function main() -> Unit
+  ()
+end function

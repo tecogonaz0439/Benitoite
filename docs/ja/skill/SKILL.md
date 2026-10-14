@@ -1,6 +1,6 @@
 # Benitoite
 
-> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。訳した元は、Benitoite 0.0.3 の版の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。訳した元は、Benitoite 0.0.4 の版の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 原文の前付け:
 
@@ -39,7 +39,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 2. `benitoite check script.bnt` を実行する。
 3. すべての診断を読み、スクリプトを直す。報告は `E0230` のようなコードを示す。その意味がわからないときは、`references/diagnostics.md` でコードを引く。`--diagnostics=json` を加えると、診断ごとに一つの JSON のオブジェクトが得られる。
 4. `check` が誤りを報告しなくなるまで、2 と 3 を繰り返す。警告も直す。警告はたいてい実際の誤りを指している。
-5. 「実行の前に」の節の確認を行う。
+5. [実行の前に](#実行の前に)の確認を行う。
 6. `benitoite run script.bnt [arguments...]` を実行する。
 
 `run` の終了コード: `main` が終わったときは 0、`main` が `Result.Error` を返したときとプログラムが実行時エラーで止まったときは 1、スクリプトが検査を通らないときとコマンドラインが誤っているときは 2、`benitoite` の処理系の不具合のときは 3 である。`Process.exit(n)` は `n` で終わる。`run` と `test` は、中断されたとき（`SIGINT` か `SIGTERM`）に 130 で終わる。
@@ -48,8 +48,8 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 
 `benitoite check` は `main` のないファイルに誤りを報告するので、テストのファイルには `check` を使わない。
 
-1. テストの関数を書く（「テスト」の節を参照する）。
-2. 「実行の前に」の節の確認を、`main` の代わりにテストの関数のエフェクトを使って行う。
+1. テストの関数を書く（[テスト](#テスト)を参照する）。
+2. [実行の前に](#実行の前に)の確認を、`main` の代わりにテストの関数のエフェクトを使って行う。
 3. `benitoite test file.bnt`（またはディレクトリ）を実行する。ファイルに検査の誤りがあるとき、`test` はテストを一つも実行せず、`check` と同じように誤りを報告する。誤りを直して、もう一度 `test` を実行する。直したことでテストの関数にエフェクトが加わったときは、そのエフェクトを利用者にもう一度示す。
 
 ## 実行の前に
@@ -98,6 +98,9 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 - `with r = acquire() do ... end with` は、ブロックが終わるときに、そのリソースを逆の順に解放する。`TaskGroup.spawn(group, lambda() ... end lambda)` は、`TaskGroup.open()` で開いたタスクの集まりの中でタスクを起動し、`Task.await(task)` はその結果を待つ。タスクの集まりを解放すると、そのすべてのタスクを待つ。
 - エフェクトの操作の一部だけを処理するハンドラは、型からそのエフェクトを取り除かない。型に `State` を持つ関数（`Reference`、`TaskGroup`、`Task.await`、`close...`）はハンドラで処理できない。
 - マップと集合は、挿入の順ではなくキーの順に並ぶ。
+- 数値のビット幅ごとに型が異なり、暗黙の変換はない。接尾辞のない `1` は常に `Integer` である。`Integer32` には `1s32`、`Float32` には `1.0f32` を使う。接尾辞（`s8`–`s64`、`u8`–`u64`、`f32`/`f64`）は暫定であり、構文の見直しで変わることがある。`Integer64` = `Integer`、`Float64` = `Float`、`UnsignedInteger8` = `Byte`、`UnsignedInteger` = `UnsignedInteger64` である。通常の名前には引き続き `Integer`、`Float`、`Byte` を使う。`Byte` に算術演算はなく、符号なしの型に単項の負号はない。
+- 新しい整数の算術演算は、桁あふれ（符号なし整数の減算で 0 より小さくなる場合を含む）と 0 による除算で止まる。数値の変換の失敗は `Option.None` を返す。モジュールごとのシグネチャを確かめる。`Float32` は各演算の後に丸める。`references/idioms.md` の数値の変換の例を参照する。
+- 実験的な `@external("wasm", "path.wasm", "export")` の関数は、取り込みのないバイナリの Component Model のコンポーネントを使い、本体も `end function` も持たない。具体的なレコードとデータ型、引数のない構成子の `Set` で表すフラグ、WIT に対応するキーを持つ `Map` を境界越しに渡せる。外部のリソース型には `uses State` が必要であり、ほかの外部呼び出しは純粋である。生成したアダプタは、詰めて格納したバイト数を数え、それとは別に、同じ `--wasm-transfer` の値で値の構築量の論理的な上限を設ける。`references/idioms.md` の WIT の例と上限を参照する。
 - 文字列補間は `"${expression}"` と書く。コメントは `//` で始まる。
 - `null` も例外もループの文もない。`Option`、`try` を伴う `Result`、および `List.map`・`List.fold`・`List.forEach` か再帰を使う。
 - prelude の外のモジュールは、`uses` にだけ現れるときも含めて、すべて取り込む。非公式のモジュール（IO とネットワークのすべてのモジュール、`Json`、`Csv` など）は `Benitoite.Unofficial` の下で取り込む: `import Benitoite.Unofficial.IO.Console` と書き、`Console` として参照する。`import Benitoite.IO.Console` は誤りである。非公式のモジュールは `IO.Console`、`IO.File`、`IO.Process`、`IO.Clock`、`IO.Random`、`Network.Http`、`Json`、`Csv`、`Regex`、`Path`、`Time`、`Encoding`、`Hash` である。たとえば `import Benitoite.Unofficial.Network.Http` は `Http` として参照する。エフェクトを宣言するモジュール（IO とネットワークのモジュール、`IO`、`Assert`）の名前を `as` で変えない。`uses` が常に本当のエフェクトの名前を示すように、名前を変えると誤りになる。
@@ -166,7 +169,7 @@ end function
 
 | 文書 | 読むとき |
 |---|---|
-| `references/idioms.md` | よくある作業（ファイル、JSON、CSV、外部のコマンド、引数、HTTP、コレクション、レコード、テスト）を書くとき。 |
+| `references/idioms.md` | よくある作業（ファイル、JSON、CSV、外部のコマンド、引数、HTTP、コレクション、レコード、テスト、数値の変換、WASM/WIT の宣言）を書くとき。 |
 | `references/common-mistakes.md` | ほかの言語の習慣（`let`、波括弧、`==`、取り込みの漏れ）から診断が出たとき。 |
 | `references/language-comparison.md` | Python、JavaScript、Rust での書き方は知っていて、Benitoite の形が必要なとき。 |
 | `references/diagnostics.md` | 診断のコード（`E0201`、`W0501` など）の意味がわからないとき。 |

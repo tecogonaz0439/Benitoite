@@ -43,6 +43,15 @@ inductive Const where
   | character (value : Nat)
   | boolean (value : Bool)
   | unit
+  | byte (value : Nat)
+  | integer8 (value : Int)
+  | integer16 (value : Int)
+  | integer32 (value : Int)
+  | unsignedInteger16 (value : Int)
+  | unsignedInteger32 (value : Int)
+  | unsignedInteger64 (value : Int)
+  /-- JSON の数を丸めずに読み、変換時に 32 bit に収まるか検査する。 -/
+  | float32 (bits : Nat)
   deriving BEq, ToJson, FromJson, Repr
 
 inductive ListRest where
@@ -99,6 +108,11 @@ mutual
     /-- 型検査が記録した符号反転後の Float のビット。 -/
     | negFloat (bits : UInt64)
     | negDecimal (mantissa : Int) (scale : Nat)
+    | negInteger8 (magnitude : Nat)
+    | negInteger16 (magnitude : Nat)
+    | negInteger32 (magnitude : Nat)
+    /-- 旧 Float と同じく、型検査が記録した符号反転後のビット列。 -/
+    | negFloat32 (bits : Nat)
     | unit
     | paren (inner : Expr)
     | record (name : String) (tys : List Ty) (positions : List Nat) (args : List Expr)
@@ -160,6 +174,10 @@ mutual
     | .literal value => Json.mkObj [("literal", Json.mkObj [("value", toJson value)])]
     | .negFloat bits => Json.mkObj [("negFloat", Json.mkObj [("bits", toJson bits)])]
     | .negDecimal mantissa scale => Json.mkObj [("negDecimal", Json.mkObj [("mantissa", toJson mantissa), ("scale", toJson scale)])]
+    | .negInteger8 magnitude => Json.mkObj [("negInteger8", Json.mkObj [("magnitude", toJson magnitude)])]
+    | .negInteger16 magnitude => Json.mkObj [("negInteger16", Json.mkObj [("magnitude", toJson magnitude)])]
+    | .negInteger32 magnitude => Json.mkObj [("negInteger32", Json.mkObj [("magnitude", toJson magnitude)])]
+    | .negFloat32 bits => Json.mkObj [("negFloat32", Json.mkObj [("bits", toJson bits)])]
     | .listSpread elem concat before spread after => Json.mkObj [("listSpread", Json.mkObj [("elem", toJson elem), ("concat", encodeExpr concat), ("before", Json.arr (before.map encodeExpr).toArray), ("spread", encodeExpr spread), ("after", Json.arr (after.map encodeExpr).toArray)])]
     | .interpolation parts es converters => Json.mkObj [("interpolation", Json.mkObj [("parts", toJson parts), ("es", Json.arr (es.map encodeExpr).toArray), ("converters", Json.arr (converters.map encodeExpr).toArray)])]
     | .unit  => toJson "unit"
@@ -232,6 +250,14 @@ mutual
       return .negFloat (← fromJson? (← o.getObjVal? "bits"))
     if let .ok o := j.getObjVal? "negDecimal" then
       return .negDecimal (← fromJson? (← o.getObjVal? "mantissa")) (← fromJson? (← o.getObjVal? "scale"))
+    if let .ok o := j.getObjVal? "negInteger8" then
+      return .negInteger8 (← fromJson? (← o.getObjVal? "magnitude"))
+    if let .ok o := j.getObjVal? "negInteger16" then
+      return .negInteger16 (← fromJson? (← o.getObjVal? "magnitude"))
+    if let .ok o := j.getObjVal? "negInteger32" then
+      return .negInteger32 (← fromJson? (← o.getObjVal? "magnitude"))
+    if let .ok o := j.getObjVal? "negFloat32" then
+      return .negFloat32 (← fromJson? (← o.getObjVal? "bits"))
     if let .ok o := j.getObjVal? "listSpread" then
       return .listSpread (← fromJson? (← o.getObjVal? "elem")) (← decodeExpr (← o.getObjVal? "concat")) (← (← (← o.getObjVal? "before").getArr?).toList.mapM decodeExpr) (← decodeExpr (← o.getObjVal? "spread")) (← (← (← o.getObjVal? "after").getArr?).toList.mapM decodeExpr)
     if let .ok o := j.getObjVal? "interpolation" then

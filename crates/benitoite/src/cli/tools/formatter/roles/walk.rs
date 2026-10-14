@@ -10,9 +10,9 @@ use super::{BlankBefore, RoleTable, TokenRole, TopKind, TopRange};
 use crate::base::{BytePos, Span};
 use crate::syntax::ast::{
     Arg, Attribute, Block, DataDecl, EffectDecl, ElseBranch, Expr, FnDecl, FnType, HandleExpr,
-    IfExpr, ImplDecl, Item, LambdaExpr, ListElem, MatchExpr, MethodSig, Module, Name, OpSig, Param,
-    Pattern, RecordDecl, RecordExpr, Stmt, TopDecl, TraitDecl, TypeExpr, TypeParamDecl,
-    TypeParamKind, UnOp, WithExpr,
+    HeaderItem, IfExpr, ImplDecl, Item, LambdaExpr, ListElem, MatchExpr, MethodSig, Module, Name,
+    OpSig, Param, Pattern, RecordDecl, RecordExpr, Stmt, TopDecl, TraitDecl, TypeExpr,
+    TypeParamDecl, TypeParamKind, UnOp, WithExpr,
 };
 use crate::syntax::token::{Token, TokenKind};
 
@@ -286,6 +286,24 @@ impl<'a> Walker<'a> {
     // ---------------- モジュールと宣言 ----------------
 
     pub(super) fn module(&mut self, module: &Module) {
+        for item in &module.header {
+            let (span, block) = match item {
+                HeaderItem::Language(decl) => (decl.span, None),
+                HeaderItem::Dependency(block) | HeaderItem::Package(block) => {
+                    (block.span, Some(block))
+                }
+            };
+            self.top_range(span, TopKind::Other);
+            self.element(span, Place::Top);
+            if let Some(block) = block
+                && let Some(open) = self.keyword(span)
+            {
+                self.open_end(open, span);
+                for field in &block.fields {
+                    self.element(field.span, Place::Deeper(open));
+                }
+            }
+        }
         for import in &module.imports {
             self.element(import.span, Place::Top);
             self.top_range(import.span, TopKind::Import);
@@ -312,6 +330,7 @@ impl<'a> Walker<'a> {
             | Item::Trait(_)
             | Item::Effect(_)
             | Item::Impl(_)
+            | Item::ExternalType(_)
             | Item::Error(_) => TopKind::Other,
         };
         self.top_range(decl.span, kind);
@@ -326,6 +345,11 @@ impl<'a> Walker<'a> {
         }
         if let Some(public) = decl.public {
             heads.extend(self.at(public.start));
+        }
+        if let Some(package) = decl.package
+            && let Some(index) = self.at(package.start)
+        {
+            self.open_bracket(index, true);
         }
         heads.extend(self.item_first(&decl.item));
         for head in heads {
@@ -343,6 +367,7 @@ impl<'a> Walker<'a> {
             Item::Const(d) => d.span,
             Item::Data(d) => d.span,
             Item::Alias(d) => d.span,
+            Item::ExternalType(d) => d.span,
             Item::Record(d) => d.span,
             Item::Trait(d) => d.span,
             Item::Effect(d) => d.span,
@@ -387,7 +412,7 @@ impl<'a> Walker<'a> {
             Item::Trait(d) => self.trait_decl(d),
             Item::Effect(d) => self.effect(d),
             Item::Impl(d) => self.implement(d),
-            Item::Error(_) => {}
+            Item::ExternalType(_) | Item::Error(_) => {}
         }
     }
 

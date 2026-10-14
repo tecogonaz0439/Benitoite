@@ -9,6 +9,7 @@ use crate::base::{NodeId, Span};
 use crate::diag::{DiagBuilder, DiagCode, Edit};
 use crate::resolve::BindingKind;
 use crate::syntax::ast::*;
+use crate::syntax::token::{FloatSuffix, IntegerSuffix};
 use crate::types::builtin::BuiltinTypeId as B;
 use crate::types::{ConstValue, TyCon, TyNames, TySet};
 
@@ -52,7 +53,12 @@ pub(super) fn flow(
 pub(super) fn integer_literal(ctx: &Body<'_, '_>, e: &Expr) -> Option<String> {
     match e {
         Expr::Lit(LitExpr {
-            lit: Literal::Int { .. },
+            lit:
+                Literal::Int { .. }
+                | Literal::WidthInt {
+                    suffix: IntegerSuffix::S64,
+                    ..
+                },
             ..
         })
         | Expr::Unary(UnaryExpr { op: UnOp::Neg, .. }) => {
@@ -137,7 +143,7 @@ pub(super) fn check_function(d: &mut Decls<'_>, f: &FnDecl) {
     let valid = !ctx
         .diagnostics
         .iter()
-        .any(crate::diag::Diagnostic::is_error)
+        .any(super::consts::prevents_evaluation)
         && ctx.decls.diagnostics.len() == before;
     if valid {
         super::consts::warnings(&mut ctx, block);
@@ -196,6 +202,7 @@ pub(super) fn name(ctx: &mut Body<'_, '_>, e: &NameExpr, direct_with: bool) -> I
         | BindingKind::Data
         | BindingKind::BuiltinType(_)
         | BindingKind::Alias
+        | BindingKind::ExternalType
         | BindingKind::Record
         | BindingKind::Field { .. }
         | BindingKind::Trait
@@ -286,6 +293,7 @@ fn report_value_call(
         d = d.arg(
             "found",
             t.show(&TyNames {
+                bindings: &ctx.decls.resolved.bindings,
                 adts: &ctx.decls.out.adts,
                 effects: &ctx.decls.out.effects,
                 type_params: &[],
@@ -472,6 +480,7 @@ fn declaration_params(ctx: &Body<'_, '_>, callee: &Expr) -> Vec<Option<Span>> {
                 | Item::Alias(_)
                 | Item::Record(_)
                 | Item::Trait(_)
+                | Item::ExternalType(_)
                 | Item::Error(_) => {}
             }
         }
@@ -569,14 +578,13 @@ fn binary_constraints(ctx: &mut Body<'_, '_>, e: &BinaryExpr, a: ITy, b: ITy) ->
             t.clone()
         }
         BinOp::IntDiv | BinOp::Mod => {
-            equal(
-                ctx,
-                basic(B::INTEGER),
-                t.clone(),
-                e.op_span,
-                ReasonKind::Operator { op },
-            );
-            basic(B::INTEGER)
+            r.span = e.op_span;
+            ctx.add(Constraint::OneOf {
+                ty: t.clone(),
+                set: TySet::INT_DIV,
+                reason: r,
+            });
+            t.clone()
         }
         BinOp::Eq | BinOp::Ne => {
             ctx.add(Constraint::Equality {
@@ -845,7 +853,12 @@ pub(super) fn literal(
     negative: bool,
 ) -> ITy {
     let (ty, value, error) = match l {
-        Literal::Int { radix, digits } => {
+        Literal::Int { radix, digits }
+        | Literal::WidthInt {
+            radix,
+            digits,
+            suffix: IntegerSuffix::S64,
+        } => {
             let v = u64::from_str_radix(digits, *radix).ok().and_then(|n| {
                 if negative {
                     if n == 1_u64.checked_shl(63).unwrap_or(0) {
@@ -863,13 +876,94 @@ pub(super) fn literal(
                 Some(DiagCode::E0408),
             )
         }
-        Literal::Float(s) => {
+        Literal::Float(s)
+        | Literal::WidthFloat {
+            text: s,
+            suffix: FloatSuffix::F64,
+        } => {
             let v = s
                 .parse::<f64>()
                 .ok()
                 .filter(|v| v.is_finite())
                 .map(|v| if negative { -v } else { v });
             (B::FLOAT, v.map(ConstValue::Float), Some(DiagCode::E0409))
+        }
+        Literal::WidthInt {
+            radix,
+            digits,
+            suffix: IntegerSuffix::U8,
+        } => {
+            if negative {
+                invalid_negation(ctx, span, B::BYTE);
+                return basic(B::BYTE);
+            }
+            let value = u64::from_str_radix(digits, *radix)
+                .ok()
+                .and_then(|n| u8::try_from(n).ok());
+            (B::BYTE, value.map(ConstValue::Byte), Some(DiagCode::E0446))
+        }
+        Literal::WidthInt {
+            radix,
+            digits,
+            suffix,
+        } => {
+            let ty = match suffix {
+                IntegerSuffix::S8 => B::INTEGER8,
+                IntegerSuffix::S16 => B::INTEGER16,
+                IntegerSuffix::S32 => B::INTEGER32,
+                IntegerSuffix::U16 => B::UNSIGNED_INTEGER16,
+                IntegerSuffix::U32 => B::UNSIGNED_INTEGER32,
+                IntegerSuffix::U64 => B::UNSIGNED_INTEGER64,
+                IntegerSuffix::S64 => B::INTEGER,
+                IntegerSuffix::U8 => B::BYTE,
+            };
+            if negative
+                && matches!(
+                    suffix,
+                    IntegerSuffix::U16 | IntegerSuffix::U32 | IntegerSuffix::U64
+                )
+            {
+                invalid_negation(ctx, span, ty);
+                return basic(ty);
+            }
+            // 大きさを u64 で読み、負号はより広い整数で適用してから目的の幅へ検査する。
+            // 符号付きの最小値と u64 の上半分を、正の i64 に収める必要がない。
+            let magnitude = u64::from_str_radix(digits, *radix).ok();
+            let signed = magnitude.and_then(|n| {
+                let n = i128::from(n);
+                if negative { n.checked_neg() } else { Some(n) }
+            });
+            let value = match suffix {
+                IntegerSuffix::S8 => signed
+                    .and_then(|n| i8::try_from(n).ok())
+                    .map(ConstValue::Integer8),
+                IntegerSuffix::S16 => signed
+                    .and_then(|n| i16::try_from(n).ok())
+                    .map(ConstValue::Integer16),
+                IntegerSuffix::S32 => signed
+                    .and_then(|n| i32::try_from(n).ok())
+                    .map(ConstValue::Integer32),
+                IntegerSuffix::U16 => magnitude
+                    .and_then(|n| u16::try_from(n).ok())
+                    .map(ConstValue::UnsignedInteger16),
+                IntegerSuffix::U32 => magnitude
+                    .and_then(|n| u32::try_from(n).ok())
+                    .map(ConstValue::UnsignedInteger32),
+                IntegerSuffix::U64 => magnitude.map(ConstValue::UnsignedInteger64),
+                IntegerSuffix::S64 | IntegerSuffix::U8 => None,
+            };
+            (ty, value, Some(DiagCode::E0447))
+        }
+        Literal::WidthFloat {
+            suffix: FloatSuffix::F32,
+            text,
+        } => {
+            let value = text
+                .parse::<f32>()
+                .ok()
+                .filter(|v| v.is_finite())
+                .map(|v| ConstValue::Float32(if negative { -v } else { v }));
+            (B::FLOAT32, value, Some(DiagCode::E0448))
         }
         Literal::Decimal(s) => {
             let v = Decimal::parse_literal(s).map(|v| if negative { v.negate() } else { v });
@@ -888,13 +982,44 @@ pub(super) fn literal(
         ctx.decls.out.lit_values.insert(id, v);
     } else if let Some(code) = error {
         let mut d = DiagBuilder::new(code).primary(span);
-        if code == DiagCode::E0408 {
+        if matches!(code, DiagCode::E0408 | DiagCode::E0446) {
             d = d.note("range");
+        }
+        if code == DiagCode::E0447 {
+            let (minimum, maximum) = integer_range(ty);
+            d = d
+                .arg("ty", ty.display_name().unwrap_or_default())
+                .arg("minimum", minimum)
+                .arg("maximum", maximum)
+                .note("range");
         }
         ctx.diagnostic(d.build());
     }
     basic(ty)
 }
+
+fn integer_range(ty: B) -> (String, String) {
+    match ty {
+        B::INTEGER8 => (i8::MIN.to_string(), i8::MAX.to_string()),
+        B::INTEGER16 => (i16::MIN.to_string(), i16::MAX.to_string()),
+        B::INTEGER32 => (i32::MIN.to_string(), i32::MAX.to_string()),
+        B::UNSIGNED_INTEGER16 => (u16::MIN.to_string(), u16::MAX.to_string()),
+        B::UNSIGNED_INTEGER32 => (u32::MIN.to_string(), u32::MAX.to_string()),
+        B::UNSIGNED_INTEGER64 => (u64::MIN.to_string(), u64::MAX.to_string()),
+        _ => (String::new(), String::new()),
+    }
+}
+
+fn invalid_negation(ctx: &mut Body<'_, '_>, span: Span, ty: B) {
+    ctx.diagnostic(
+        DiagBuilder::new(DiagCode::E0405)
+            .arg("ty", ty.display_name().unwrap_or_default())
+            .arg("op", super::text::operator_spelling(OpName::Un(UnOp::Neg)))
+            .primary(span)
+            .build(),
+    );
+}
+
 fn always_expr(e: &Expr) -> bool {
     match e {
         Expr::Return(_) => true,
@@ -1123,7 +1248,11 @@ fn unary(ctx: &mut Body<'_, '_>, e: &UnaryExpr) -> ITy {
         && let Expr::Lit(l) = e.operand.as_ref()
         && matches!(
             l.lit,
-            Literal::Int { .. } | Literal::Float(_) | Literal::Decimal(_)
+            Literal::Int { .. }
+                | Literal::WidthInt { .. }
+                | Literal::WidthFloat { .. }
+                | Literal::Float(_)
+                | Literal::Decimal(_)
         )
     {
         let ty = literal(ctx, e.id, e.span, &l.lit, true);
@@ -1133,6 +1262,10 @@ fn unary(ctx: &mut Body<'_, '_>, e: &UnaryExpr) -> ITy {
             Some(ConstValue::Integer(n)) => n.checked_neg().map(ConstValue::Integer),
             Some(ConstValue::Float(n)) => Some(ConstValue::Float(-n)),
             Some(ConstValue::Decimal(n)) => Some(ConstValue::Decimal(n.negate())),
+            Some(ConstValue::Integer8(n)) => n.checked_neg().map(ConstValue::Integer8),
+            Some(ConstValue::Integer16(n)) => n.checked_neg().map(ConstValue::Integer16),
+            Some(ConstValue::Integer32(n)) => n.checked_neg().map(ConstValue::Integer32),
+            Some(ConstValue::Float32(n)) => Some(ConstValue::Float32(-n)),
             _ => None,
         };
         if let Some(value) = positive {
@@ -1157,7 +1290,7 @@ fn unary(ctx: &mut Body<'_, '_>, e: &UnaryExpr) -> ITy {
         } else {
             ctx.add(Constraint::OneOf {
                 ty: t.clone(),
-                set: TySet::ARITH,
+                set: TySet::NEG,
                 reason: reason(
                     e.span,
                     ReasonKind::Operator {

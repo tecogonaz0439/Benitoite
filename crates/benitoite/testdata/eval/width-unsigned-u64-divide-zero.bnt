@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.Console
+function calculate(a: UnsignedInteger64, b: UnsignedInteger64) -> UnsignedInteger64
+  return a div b
+end function
+function main() -> Unit uses Console.Write
+  bind _ <- calculate(18446744073709551615u64, 0u64)
+  Console.writeLine("unreachable")
+end function

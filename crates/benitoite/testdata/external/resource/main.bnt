@@ -1,0 +1,31 @@
+// spec: 01-07 外部の関数のエフェクト
+import Benitoite.Unofficial.IO.Console
+import Lib.Cell
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[constructor]cell")
+function newCell(start: Integer) -> Cell.Cell uses State
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[static]cell.make")
+function make(start: Integer) -> Option[Cell.Cell] uses State
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[method]cell.get")
+function get(self: Cell.Cell) -> Integer uses State
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[method]cell.bump")
+function bump(self: Cell.Cell, by: Integer) -> Integer uses State
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[method]cell.pair")
+function pair(self: Cell.Cell, other: Cell.Cell) -> Integer uses State
+@external("wasm", "x.wasm", "bnt:test/counter@0.1.0#[static]cell.count")
+function count() -> Integer
+function createMany(n: Integer, total: Integer) -> Integer uses State
+  if n = 0 then return total end if
+  bind c <- newCell(n)
+  return createMany(n - 1, total + get(c))
+end function
+function main() -> Unit uses State, Console.Write
+  bind a <- newCell(10)
+  Console.writeLine("${count()}")
+  Console.writeLine("${bump(a, 2)}")
+  Console.writeLine("${bump(a, 3)}")
+  match make(20) with
+    case Option.Some(b) -> Console.writeLine("${pair(a, b)}")
+    case Option.None -> Console.writeLine("missing")
+  end match
+  Console.writeLine("${createMany(1500, 0)}")
+end function

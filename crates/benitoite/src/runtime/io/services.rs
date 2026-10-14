@@ -29,6 +29,11 @@ pub trait InterruptSource: std::fmt::Debug {
         Ok(None)
     }
 
+    /// 外部の関数の実行中に印を見張るスレッドへ共有する（設計書 02-09「中断の要求」）。
+    fn shared_flag(&self) -> Option<std::sync::Arc<std::sync::atomic::AtomicBool>> {
+        None
+    }
+
     /// 印そのものへの参照。振り分けのループが呼び出しのたびに動的な呼び出しなしで読むために使う。
     /// 印を持たない読み口は `None` を返し、ループは呼び出しごとの印の読み出しを省く
     /// （中断の要求が来ない読み口なので。切り替えの位置では `requested` を呼ぶ）。

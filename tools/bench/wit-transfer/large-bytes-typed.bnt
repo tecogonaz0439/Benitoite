@@ -1,0 +1,26 @@
+//! 既存の型と構文だけで Bytes を渡し、開始前の版と比較する入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+@external("wasm", "guests/primitives.wasm", "bytes")
+function bytes(v: Bytes) -> Bytes
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+  bind low <- try Option.okOr(Byte.fromInteger(0), "byte out of range")
+  bind middle <- try Option.okOr(Byte.fromInteger(128), "byte out of range")
+  bind high <- try Option.okOr(Byte.fromInteger(255), "byte out of range")
+  bind flippedMiddle <- try Option.okOr(Byte.fromInteger(127), "byte out of range")
+  bind source <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte return
+    if i mod 3 = 0 then low else if i mod 3 = 1 then middle else high end if
+  end lambda))
+  bind expected <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte return
+    if i mod 3 = 0 then high else if i mod 3 = 1 then flippedMiddle else low end if
+  end lambda))
+
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind typed <- bytes(source)
+    return typed = expected
+  end lambda)
+end function

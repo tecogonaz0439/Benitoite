@@ -132,6 +132,7 @@ mod consts;
 mod context;
 mod decls;
 mod effects;
+mod external;
 mod generate;
 mod limits;
 mod pattern_ext;

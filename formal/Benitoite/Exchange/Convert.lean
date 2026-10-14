@@ -19,26 +19,42 @@ partial def collectAtoms : Json → Eff
       | .error _ => xs.toArray.toList.flatMap (fun (_, v) => collectAtoms v)
   | _ => []
 
-/-- 比較の前に全エフェクトを同じ有限の原子の順にする。ほかの並びは保つ。 -/
-partial def canonicalJson (atoms : Eff) : Json → Json
-  | .arr xs =>
-      match (xs.toList.mapM (fromJson? · : Json → Except String Atom)) with
-      | .ok es => toJson (atoms.filter (fun a => es.contains a))
-      | .error _ => .arr (xs.map (canonicalJson atoms))
-  | .obj xs => Json.mkObj (xs.toArray.toList.map (fun (k, v) => (k, canonicalJson atoms v)))
-  | j => j
-
 def baseTy : String → Except String Benitoite.Release.BaseTy
-  | "Integer" => .ok .integer | "Float" => .ok .float
+  | "Integer" | "Integer64" => .ok .integer
+  | "Float" | "Float64" => .ok .float
   | "String" => .ok .string | "Character" => .ok .character
   | "Boolean" => .ok .boolean | "Unit" => .ok .unit
-  | "Byte" => .ok .byte | "Decimal" => .ok .decimal
+  | "Byte" | "UnsignedInteger8" => .ok .byte
+  | "Decimal" => .ok .decimal
+  | "Integer8" => .ok .integer8 | "Integer16" => .ok .integer16
+  | "Integer32" => .ok .integer32
+  | "UnsignedInteger16" => .ok .unsignedInteger16
+  | "UnsignedInteger32" => .ok .unsignedInteger32
+  | "UnsignedInteger64" | "UnsignedInteger" => .ok .unsignedInteger64
+  | "Float32" => .ok .float32
   | n => .error s!"unknown base type: {n}"
 
 def baseName : Benitoite.Release.BaseTy → String
   | .integer => "Integer" | .float => "Float" | .string => "String"
   | .character => "Character" | .boolean => "Boolean" | .unit => "Unit"
   | .byte => "Byte" | .decimal => "Decimal"
+  | .integer8 => "Integer8" | .integer16 => "Integer16" | .integer32 => "Integer32"
+  | .unsignedInteger16 => "UnsignedInteger16" | .unsignedInteger32 => "UnsignedInteger32"
+  | .unsignedInteger64 => "UnsignedInteger64" | .float32 => "Float32"
+
+/-- 比較ではエフェクトの順序と基本型の別名だけを揃える。ほかの並びは保つ。 -/
+partial def canonicalJson (atoms : Eff) : Json → Json
+  | .arr xs =>
+      match (xs.toList.mapM (fromJson? · : Json → Except String Atom)) with
+      | .ok es => toJson (atoms.filter (fun a => es.contains a))
+      | .error _ => .arr (xs.map (canonicalJson atoms))
+  | j@(.obj xs) =>
+      match (j.getObjVal? "base").bind (fun b => b.getObjValAs? String "name") with
+      | .ok n => match baseTy n with
+          | .ok t => toJson (Ty.base (baseName t))
+          | .error _ => j
+      | _ => Json.mkObj (xs.toArray.toList.map (fun (k, v) => (k, canonicalJson atoms v)))
+  | j => j
 
 def TyCon.toRelease : TyCon → Benitoite.Release.TyCon
   | .data n => .data n | .list => .list | .set => .set | .map => .map
@@ -88,6 +104,16 @@ def floatFromBits (bits : UInt64) : Except String Float := do
   if value.toBits != bits then throw s!"Float bits cannot round-trip: {bits}"
   return value
 
+/-- 自然数から UInt32 への変換で上位のビットを黙って捨てない。 -/
+private def float32Bits (bits : Nat) : Except String UInt32 := do
+  if bits ≥ UInt32.size then throw s!"Float32 bits outside 32-bit range: {bits}"
+  return UInt32.ofNat bits
+
+/-- コアの整数は数学的な整数であるが、交換入力の符号なしの負値は誤りとする。 -/
+private def unsignedValue (n : Int) : Except String Nat := do
+  if n < 0 then throw "negative unsigned integer constant"
+  return n.toNat
+
 def Const.toRelease : Const → Except String Benitoite.Release.Const
   | .integer n => return .integer n
   | .decimal n scale => return .decimal n scale
@@ -97,6 +123,14 @@ def Const.toRelease : Const → Except String Benitoite.Release.Const
       then return .character (Char.ofNat n) else throw "invalid Unicode scalar"
   | .boolean b => return .boolean b
   | .unit => return .unit
+  | .byte n => return .byte n
+  | .integer8 n => return .integer8 n
+  | .integer16 n => return .integer16 n
+  | .integer32 n => return .integer32 n
+  | .unsignedInteger16 n => return .unsignedInteger16 (Int.ofNat (← unsignedValue n))
+  | .unsignedInteger32 n => return .unsignedInteger32 (Int.ofNat (← unsignedValue n))
+  | .unsignedInteger64 n => return .unsignedInteger64 (Int.ofNat (← unsignedValue n))
+  | .float32 bits => return .float32 (← float32Bits bits)
 
 def fromConst : Benitoite.Release.Const → Except String Const
   | .integer n => return .integer n
@@ -106,7 +140,15 @@ def fromConst : Benitoite.Release.Const → Except String Const
   | .character c => return .character c.toNat
   | .boolean b => return .boolean b
   | .unit => return .unit
-  | _ => throw "unsupported Release constant"
+  | .byte n => return .byte n
+  | .integer8 n => return .integer8 n
+  | .integer16 n => return .integer16 n
+  | .integer32 n => return .integer32 n
+  | .unsignedInteger16 n => do let _ ← unsignedValue n; return .unsignedInteger16 n
+  | .unsignedInteger32 n => do let _ ← unsignedValue n; return .unsignedInteger32 n
+  | .unsignedInteger64 n => do let _ ← unsignedValue n; return .unsignedInteger64 n
+  | .float32 bits => return .float32 bits.toNat
+  | .opaque .. => throw "unsupported Release constant"
 
 def ListRest.toRelease : ListRest → Benitoite.Release.ListRest
   | .skip => .skip | .bind => .bind
@@ -140,6 +182,9 @@ partial def Pattern.toSurface : Pattern → Except String Benitoite.Surface.Patt
       | .unit => return .unit
       | .float _ => throw "Float pattern outside C3"
       | .decimal .. => throw "Decimal pattern outside C6c-1"
+      | .byte _ | .integer8 _ | .integer16 _ | .integer32 _
+        | .unsignedInteger16 _ | .unsignedInteger32 _ | .unsignedInteger64 _ | .float32 _ =>
+          throw "width-specific numeric constant pattern is not supported"
 
 partial def fromPattern : Benitoite.Release.Pat → Except String Pattern
   | .wild => return .wild | .var => return .var
@@ -165,7 +210,8 @@ def operatorName : Benitoite.Surface.Operator → String
 def makeOpPrim (atoms : Eff) (entries : List OperatorEntry) : Benitoite.Surface.OpPrim := fun op ty =>
   entries.findSome? fun entry =>
     if entry.op != operatorName op then none
-    else if entry.operand.isNone || (fromTy atoms ty).toOption == entry.operand then
+    else if entry.operand.isNone || (fromTy atoms ty).toOption ==
+        entry.operand.bind (fun t => (t.toRelease >>= fromTy atoms).toOption) then
       some (entry.name, op.typeArgs ty)
     else none
 
@@ -185,7 +231,8 @@ def InterpPart.toSurface : InterpPart → Except String Benitoite.Surface.Interp
   | .stringExpr => return .stringExpr
   | .converted t => do
       let .base n := t | throw "non-basic converted interpolation type"
-      if !["Integer", "Float", "Character", "Boolean", "Byte", "Decimal"].contains n then
+      let basic ← baseTy n
+      if basic == .string || basic == .unit then
         throw "invalid converted interpolation type"
       return .converted (← t.toRelease)
 
@@ -215,10 +262,23 @@ mutual
             return .literal (.character c)
         | .boolean b => return .literal (.boolean b)
         | .unit => return .unit
+        | .byte n => return .literal (.byte n)
+        | .integer8 n => if n < 0 then return .negInteger8 n.natAbs else return .literal (.integer8 n.toNat)
+        | .integer16 n => if n < 0 then return .negInteger16 n.natAbs else return .literal (.integer16 n.toNat)
+        | .integer32 n => if n < 0 then return .negInteger32 n.natAbs else return .literal (.integer32 n.toNat)
+        | .unsignedInteger16 n => return .literal (.unsignedInteger16 (← unsignedValue n))
+        | .unsignedInteger32 n => return .literal (.unsignedInteger32 (← unsignedValue n))
+        | .unsignedInteger64 n => return .literal (.unsignedInteger64 (← unsignedValue n))
+        | .float32 bits => return .literal (.float32 (← float32Bits bits))
     | .unit => return .unit
     | .paren e => return .paren (← e.toSurface constants)
     -- 交換形式は符号込みの結果を持つ。表層の negFloat は反転前の値を持つ。
     | .negFloat bits => return .negFloat (-(← floatFromBits bits))
+    | .negInteger8 n => return .negInteger8 n
+    | .negInteger16 n => return .negInteger16 n
+    | .negInteger32 n => return .negInteger32 n
+    -- 交換形式は反転後、表層は反転前を持つので、符号ビットだけを戻す。
+    | .negFloat32 bits => return .negFloat32 ((← float32Bits bits) ^^^ 0x80000000)
     | .negDecimal n scale => do
         if n < 0 then throw "negative negDecimal coefficient"
         return .negDecimal n scale

@@ -1,0 +1,16 @@
+//! 既存の型と構文だけで一個の数を渡し、開始前の版と比較する入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+@external("wasm", "guests/numbers.wasm", "flip-s64")
+function typed(v: Integer) -> Integer
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+  bind expected <- if n mod 2 = 0 then n + 1 else n - 1 end if
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind a <- typed(n)
+    return a = expected
+  end lambda)
+end function

@@ -1,6 +1,7 @@
 //! 抽象構文木（設計書 02-03「AST」）。名前解決と型検査はこの木を変更しない（02-01「段と段の間のデータ」）。
 //! 形は 01-02「初回リリース版の文法の全体」をそのまま表す。
 
+use super::token::{FloatSuffix, IntegerSuffix};
 use crate::base::{FileId, NodeId, Span};
 
 /// 名前の綴りと位置。ノードではない。
@@ -35,8 +36,43 @@ pub struct Module {
     pub file: FileId,
     /// ファイルの先頭の `//!` の説明
     pub doc: Option<DocComment>,
+    /// ソースの順に並べたファイルの先頭の部分。
+    pub header: Vec<HeaderItem>,
     pub imports: Vec<ImportDecl>,
     pub decls: Vec<TopDecl>,
+}
+
+/// ファイルの先頭の部分の項目（設計書 01-02「ファイルの先頭の部分」）。
+#[derive(Clone, PartialEq, Debug)]
+pub enum HeaderItem {
+    Language(LanguageDecl),
+    Dependency(HeaderBlock),
+    Package(HeaderBlock),
+}
+
+/// 書いた時点の言語の版を示す一行。
+#[derive(Clone, PartialEq, Debug)]
+pub struct LanguageDecl {
+    pub id: NodeId,
+    pub span: Span,
+    pub version: StrArg,
+}
+
+/// 依存の別名かパッケージの名前と、文字列の欄を持つブロック。
+#[derive(Clone, PartialEq, Debug)]
+pub struct HeaderBlock {
+    pub id: NodeId,
+    pub span: Span,
+    pub name: Name,
+    pub fields: Vec<HeaderField>,
+}
+
+/// 先頭の部分のブロックの欄。span は名前から文字列の終わりまで。
+#[derive(Clone, PartialEq, Debug)]
+pub struct HeaderField {
+    pub span: Span,
+    pub name: Name,
+    pub value: StrArg,
 }
 
 /// `import A.B.C [as X]`。取り込んだモジュールに付けた名前の束縛を宣言し、
@@ -59,6 +95,8 @@ pub struct TopDecl {
     pub attrs: Vec<Attribute>,
     /// `public` の字句の位置。書かなければ `None`
     pub public: Option<Span>,
+    /// `public(package)` の括弧の位置。`public` だけなら `None`
+    pub package: Option<Span>,
     pub item: Item,
 }
 
@@ -68,6 +106,7 @@ pub enum Item {
     Const(ConstDecl),
     Data(DataDecl),
     Alias(AliasDecl),
+    ExternalType(ExternalTypeDecl),
     Record(RecordDecl),
     Trait(TraitDecl),
     Effect(EffectDecl),
@@ -91,7 +130,7 @@ pub struct StrArg {
     pub value: String,
 }
 
-/// 関数の宣言。トップレベルの関数、実装の中の関数、`@builtin` を付けた本体のない関数。
+/// 関数の宣言。トップレベルの関数、実装の中の関数、`@builtin`・`@external` を付けた本体のない関数。
 #[derive(Clone, PartialEq, Debug)]
 pub struct FnDecl {
     pub id: NodeId,
@@ -101,7 +140,7 @@ pub struct FnDecl {
     pub params: Vec<Param>,
     pub ret: TypeExpr,
     pub uses: Option<UsesList>,
-    /// `@builtin` を付けた宣言（標準ライブラリのソースだけ）は `None`（02-03「標準ライブラリのソースの構文」）
+    /// `@builtin`（標準ライブラリのソースだけ）か `@external` を付けた宣言は `None`（02-03「標準ライブラリのソースの構文」）
     pub body: Option<Block>,
 }
 
@@ -199,6 +238,15 @@ pub struct AliasDecl {
     pub name: Name,
     pub type_params: Vec<TypeParamDecl>,
     pub ty: TypeExpr,
+}
+
+/// 外部の型の宣言。コンポーネントの resource に対応し、右辺を持たない。
+#[derive(Clone, PartialEq, Debug)]
+pub struct ExternalTypeDecl {
+    pub id: NodeId,
+    pub span: Span,
+    pub name: Name,
+    pub type_params: Vec<TypeParamDecl>,
 }
 
 /// `record Name[T] … end record`。
@@ -413,6 +461,17 @@ pub enum Literal {
     },
     /// `_` を除いた字面
     Float(String),
+    /// 接尾辞付きの整数。数字列は接頭辞・下線・接尾辞を含まない。
+    WidthInt {
+        radix: u32,
+        digits: String,
+        suffix: IntegerSuffix,
+    },
+    /// 接尾辞付きの浮動小数。字面は下線・接尾辞を含まない。
+    WidthFloat {
+        text: String,
+        suffix: FloatSuffix,
+    },
     /// `_` と接尾辞 `m` を除いた字面
     Decimal(String),
     Str(String),
@@ -864,6 +923,7 @@ impl Item {
             Item::Const(d) => d.id,
             Item::Data(d) => d.id,
             Item::Alias(d) => d.id,
+            Item::ExternalType(d) => d.id,
             Item::Record(d) => d.id,
             Item::Trait(d) => d.id,
             Item::Effect(d) => d.id,

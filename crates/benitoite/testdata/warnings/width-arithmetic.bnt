@@ -1,0 +1,19 @@
+import Benitoite.Set
+function f(a: UnsignedInteger64) -> Unit
+  bind _ <- 127s8 + 1s8
+  bind _ <- -32768s16 div -1s16
+  bind _ <- -(-2147483648s32)
+  bind _ <- 0u16 - 1u16
+  bind _ <- 4294967295u32 * 2u32
+  bind _ <- 18446744073709551615u64 + 1u64
+  bind _ <- 1s8 div 0s8
+  bind _ <- a mod (1u64 - 1u64)
+  bind _ <- -128s8 mod -1s8
+  bind _ <- 3.0e38f32 * 2.0f32
+  bind _ <- 0.0f32 / 0.0f32
+  bind _ <- Set.fromList([18446744073709551615u64, 18446744073709551615u64 - 0u64])
+  bind _ <- Byte.fromInteger(256)
+end function
+function main() -> Unit
+  ()
+end function

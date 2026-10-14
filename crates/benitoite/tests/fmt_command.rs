@@ -401,3 +401,20 @@ fn check_escapes_terminal_controls_in_the_file_name() {
     assert_eq!(stderr(&output), "would reformat a\\u{1B}[2J.bnt\n");
     assert_eq!(dir.read(name), UNFORMATTED);
 }
+
+#[test]
+fn directory_walk_formats_package_settings() {
+    let dir = TestDirectory::new("package-settings");
+    dir.write(
+        "package.bnt",
+        "language    \"0.0.3\"\npackage Textkit\n       license   \"MIT\"\nend package\n",
+    );
+    let output = fmt(&dir, &["."]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    assert_eq!(
+        dir.read("package.bnt"),
+        "language \"0.0.3\"\n\npackage Textkit\n  license \"MIT\"\nend package\n"
+    );
+    let output = fmt(&dir, &["--check", "."]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+}

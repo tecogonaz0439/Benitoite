@@ -1,0 +1,51 @@
+//! JSON の三つの WASM の越え方（設計書 03-08「Json」、03-10「外部の関数」）。
+import Benitoite.Unofficial.Json
+import Nodes
+
+/// JSON の構文と数と入れ子の深さを検証する。
+@external("wasm", "wasm/json.wasm", "bnt:json/codec@0.1.0#validate")
+public function validate(text: String) -> Result[Unit, Json.ParseError]
+
+/// JSON の文字列を字下げして返す。
+@external("wasm", "wasm/json.wasm", "bnt:json/codec@0.1.0#pretty")
+public function pretty(text: String) -> Result[String, Json.ParseError]
+
+/// JSON の文字列を空白なしで返す。
+@external("wasm", "wasm/json.wasm", "bnt:json/codec@0.1.0#minify")
+public function minify(text: String) -> Result[String, Json.ParseError]
+
+/// 節点の表を受け取り、標準ライブラリの値に組み直す。
+public function parse(text: String) -> Result[Json.Value, Json.ParseError]
+  bind nodes <- try Nodes.parse(text)
+  // 表の不整合は入力の誤りではない。成功の経路ではゲストがこの契約を守る。
+  return match Nodes.rebuild(nodes) with
+    case Result.Ok(value) -> Result.Ok(value)
+    case Result.Error(reason) -> Result.Error(Json.ParseError(line: 1, column: 1, message: "internal: " + reason))
+  end match
+end function
+
+/// 木を節点の表に変換し、WASM で空白なしの JSON を書く。
+public function stringify(value: Json.Value) -> Result[String, String]
+  return Nodes.stringify(Nodes.flatten(value))
+end function
+
+/// 木を節点の表に変換し、WASM で字下げした JSON を書く。
+public function stringifyPretty(value: Json.Value) -> Result[String, String]
+  return Nodes.stringifyPretty(Nodes.flatten(value))
+end function
+
+/// ゲストの中に解析した文書を持つ外部の型。
+@external("wasm", "wasm/json.wasm", "bnt:json/codec@0.1.0#document")
+public type Document
+
+/// 文書を解析してゲストの中に保持する。
+@external("wasm", "wasm/json.wasm", "bnt:json/codec@0.1.0#[static]document.parse")
+public function document(text: String) -> Result[Document, Json.ParseError] uses State
+
+/// JSON Pointer で指した値の JSON を返す。
+@external("wasm", "wasm/json.wasm", "bnt:json/codec@0.1.0#[method]document.get")
+public function get(document: Document, pointer: String) -> Option[String] uses State
+
+/// JSON Pointer で指した配列か対象の直下の子の数を返す。
+@external("wasm", "wasm/json.wasm", "bnt:json/codec@0.1.0#[method]document.len")
+public function len(document: Document, pointer: String) -> Option[Integer] uses State

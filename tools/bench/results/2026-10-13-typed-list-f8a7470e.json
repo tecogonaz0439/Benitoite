@@ -1,0 +1,786 @@
+{
+ "machine": {
+  "cpu": "Apple M4",
+  "logical_cpus": 10,
+  "memory_bytes": 34359738368,
+  "memory_description": null,
+  "commit": "f8a7470e20e51216992ca74981584105ab53e1c8",
+  "dirty": false,
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)"
+ },
+ "rows": [
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "--wasm-stats",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-fast.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-1000000.bin",
+    "1"
+   ],
+   "process_seconds": 0.066201834,
+   "max_rss_bytes": 29786112,
+   "exit": 0,
+   "stdout": "first_ms=21 rest_ms=0 rounds=1 digest=25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe\n",
+   "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":1000000,\"total\":1000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":111978474,\"total\":111978474},\"functions\":{\"/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash/wasm/hash.wasm#WasmHash.Digest.sha256\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":1000000,\"total\":1000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":111978474,\"total\":111978474},\"memory\":{\"incomplete_calls\":0,\"maximum\":2162688,\"total\":2162688},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":32,\"total\":32}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":2162688,\"total\":2162688},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":32,\"total\":32},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 29786112\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe",
+   "first_ms": 21,
+   "rest_ms": 0,
+   "rounds": 1,
+   "per_iteration_ms": 21,
+   "wasm_stats": {
+    "arguments_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 1000000,
+     "total": 1000000
+    },
+    "calls": 1,
+    "fuel": {
+     "incomplete_calls": 0,
+     "maximum": 111978474,
+     "total": 111978474
+    },
+    "functions": {
+     "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash/wasm/hash.wasm#WasmHash.Digest.sha256": {
+      "arguments_transfer": {
+       "incomplete_calls": 0,
+       "maximum": 1000000,
+       "total": 1000000
+      },
+      "calls": 1,
+      "fuel": {
+       "incomplete_calls": 0,
+       "maximum": 111978474,
+       "total": 111978474
+      },
+      "memory": {
+       "incomplete_calls": 0,
+       "maximum": 2162688,
+       "total": 2162688
+      },
+      "reached_limits": {},
+      "results_transfer": {
+       "incomplete_calls": 0,
+       "maximum": 32,
+       "total": 32
+      }
+     }
+    },
+    "limits": {
+     "fuel": 10000000000,
+     "memory": 67108864,
+     "transfer": 268435456
+    },
+    "memory": {
+     "incomplete_calls": 0,
+     "maximum": 2162688,
+     "total": 2162688
+    },
+    "overrides": {
+     "fuel": false,
+     "memory": false,
+     "transfer": false
+    },
+    "reached_limits": {},
+    "results_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 32,
+     "total": 32
+    },
+    "stateful_instances": [],
+    "wasm_stats": true
+   },
+   "size": 1000000,
+   "version": "c-fast",
+   "sample": 0
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-fast.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-1000000.bin",
+    "6"
+   ],
+   "process_seconds": 0.088486208,
+   "max_rss_bytes": 29933568,
+   "exit": 0,
+   "stdout": "first_ms=20 rest_ms=23 rounds=6 digest=25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe\n",
+   "stderr": "bench-rss: 29933568\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe",
+   "first_ms": 20,
+   "rest_ms": 23,
+   "rounds": 6,
+   "per_iteration_ms": 4.6,
+   "size": 1000000,
+   "version": "c-fast",
+   "sample": 1
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-fast.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-1000000.bin",
+    "6"
+   ],
+   "process_seconds": 0.08957712500000001,
+   "max_rss_bytes": 29884416,
+   "exit": 0,
+   "stdout": "first_ms=21 rest_ms=22 rounds=6 digest=25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe\n",
+   "stderr": "bench-rss: 29884416\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe",
+   "first_ms": 21,
+   "rest_ms": 22,
+   "rounds": 6,
+   "per_iteration_ms": 4.4,
+   "size": 1000000,
+   "version": "c-fast",
+   "sample": 2
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "--wasm-stats",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-1000000.bin",
+    "1"
+   ],
+   "process_seconds": 0.07920624999999998,
+   "max_rss_bytes": 71303168,
+   "exit": 0,
+   "stdout": "first_ms=26 rest_ms=0 rounds=1 digest=25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe\n",
+   "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":1000000,\"total\":1000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":111978474,\"total\":111978474},\"functions\":{\"/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash/wasm/hash.wasm#WasmHash.Digest.sha256List\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":1000000,\"total\":1000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":111978474,\"total\":111978474},\"memory\":{\"incomplete_calls\":0,\"maximum\":2162688,\"total\":2162688},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":32,\"total\":32}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":2162688,\"total\":2162688},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":32,\"total\":32},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 71303168\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe",
+   "first_ms": 26,
+   "rest_ms": 0,
+   "rounds": 1,
+   "per_iteration_ms": 26,
+   "wasm_stats": {
+    "arguments_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 1000000,
+     "total": 1000000
+    },
+    "calls": 1,
+    "fuel": {
+     "incomplete_calls": 0,
+     "maximum": 111978474,
+     "total": 111978474
+    },
+    "functions": {
+     "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash/wasm/hash.wasm#WasmHash.Digest.sha256List": {
+      "arguments_transfer": {
+       "incomplete_calls": 0,
+       "maximum": 1000000,
+       "total": 1000000
+      },
+      "calls": 1,
+      "fuel": {
+       "incomplete_calls": 0,
+       "maximum": 111978474,
+       "total": 111978474
+      },
+      "memory": {
+       "incomplete_calls": 0,
+       "maximum": 2162688,
+       "total": 2162688
+      },
+      "reached_limits": {},
+      "results_transfer": {
+       "incomplete_calls": 0,
+       "maximum": 32,
+       "total": 32
+      }
+     }
+    },
+    "limits": {
+     "fuel": 10000000000,
+     "memory": 67108864,
+     "transfer": 268435456
+    },
+    "memory": {
+     "incomplete_calls": 0,
+     "maximum": 2162688,
+     "total": 2162688
+    },
+    "overrides": {
+     "fuel": false,
+     "memory": false,
+     "transfer": false
+    },
+    "reached_limits": {},
+    "results_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 32,
+     "total": 32
+    },
+    "stateful_instances": [],
+    "wasm_stats": true
+   },
+   "size": 1000000,
+   "version": "c-list",
+   "sample": 0
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-1000000.bin",
+    "6"
+   ],
+   "process_seconds": 0.12380587500000001,
+   "max_rss_bytes": 71204864,
+   "exit": 0,
+   "stdout": "first_ms=25 rest_ms=45 rounds=6 digest=25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe\n",
+   "stderr": "bench-rss: 71204864\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe",
+   "first_ms": 25,
+   "rest_ms": 45,
+   "rounds": 6,
+   "per_iteration_ms": 9.0,
+   "size": 1000000,
+   "version": "c-list",
+   "sample": 1
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-1000000.bin",
+    "6"
+   ],
+   "process_seconds": 0.122572709,
+   "max_rss_bytes": 71319552,
+   "exit": 0,
+   "stdout": "first_ms=26 rest_ms=43 rounds=6 digest=25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe\n",
+   "stderr": "bench-rss: 71319552\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "25a2e735a758ecf742321eae301acaf6de8cc7c0bb121c6d4d517c94764f68fe",
+   "first_ms": 26,
+   "rest_ms": 43,
+   "rounds": 6,
+   "per_iteration_ms": 8.6,
+   "size": 1000000,
+   "version": "c-list",
+   "sample": 2
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "--wasm-stats",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-fast.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-6000000.bin",
+    "1"
+   ],
+   "process_seconds": 0.090301666,
+   "max_rss_bytes": 46776320,
+   "exit": 0,
+   "stdout": "first_ms=43 rest_ms=0 rounds=1 digest=5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b\n",
+   "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":6000000,\"total\":6000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":671744218,\"total\":671744218},\"functions\":{\"/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash/wasm/hash.wasm#WasmHash.Digest.sha256\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":6000000,\"total\":6000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":671744218,\"total\":671744218},\"memory\":{\"incomplete_calls\":0,\"maximum\":7143424,\"total\":7143424},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":32,\"total\":32}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":7143424,\"total\":7143424},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":32,\"total\":32},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 46776320\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b",
+   "first_ms": 43,
+   "rest_ms": 0,
+   "rounds": 1,
+   "per_iteration_ms": 43,
+   "wasm_stats": {
+    "arguments_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 6000000,
+     "total": 6000000
+    },
+    "calls": 1,
+    "fuel": {
+     "incomplete_calls": 0,
+     "maximum": 671744218,
+     "total": 671744218
+    },
+    "functions": {
+     "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash/wasm/hash.wasm#WasmHash.Digest.sha256": {
+      "arguments_transfer": {
+       "incomplete_calls": 0,
+       "maximum": 6000000,
+       "total": 6000000
+      },
+      "calls": 1,
+      "fuel": {
+       "incomplete_calls": 0,
+       "maximum": 671744218,
+       "total": 671744218
+      },
+      "memory": {
+       "incomplete_calls": 0,
+       "maximum": 7143424,
+       "total": 7143424
+      },
+      "reached_limits": {},
+      "results_transfer": {
+       "incomplete_calls": 0,
+       "maximum": 32,
+       "total": 32
+      }
+     }
+    },
+    "limits": {
+     "fuel": 10000000000,
+     "memory": 67108864,
+     "transfer": 268435456
+    },
+    "memory": {
+     "incomplete_calls": 0,
+     "maximum": 7143424,
+     "total": 7143424
+    },
+    "overrides": {
+     "fuel": false,
+     "memory": false,
+     "transfer": false
+    },
+    "reached_limits": {},
+    "results_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 32,
+     "total": 32
+    },
+    "stateful_instances": [],
+    "wasm_stats": true
+   },
+   "size": 6000000,
+   "version": "c-fast",
+   "sample": 0
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-fast.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-6000000.bin",
+    "6"
+   ],
+   "process_seconds": 0.22621583300000003,
+   "max_rss_bytes": 46678016,
+   "exit": 0,
+   "stdout": "first_ms=44 rest_ms=137 rounds=6 digest=5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b\n",
+   "stderr": "bench-rss: 46678016\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b",
+   "first_ms": 44,
+   "rest_ms": 137,
+   "rounds": 6,
+   "per_iteration_ms": 27.4,
+   "size": 6000000,
+   "version": "c-fast",
+   "sample": 1
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-fast.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-6000000.bin",
+    "6"
+   ],
+   "process_seconds": 0.22939733299999998,
+   "max_rss_bytes": 46891008,
+   "exit": 0,
+   "stdout": "first_ms=48 rest_ms=135 rounds=6 digest=5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b\n",
+   "stderr": "bench-rss: 46891008\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b",
+   "first_ms": 48,
+   "rest_ms": 135,
+   "rounds": 6,
+   "per_iteration_ms": 27.0,
+   "size": 6000000,
+   "version": "c-fast",
+   "sample": 2
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "--wasm-stats",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-6000000.bin",
+    "1"
+   ],
+   "process_seconds": 0.16283075000000014,
+   "max_rss_bytes": 304627712,
+   "exit": 0,
+   "stdout": "first_ms=69 rest_ms=0 rounds=1 digest=5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b\n",
+   "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":6000000,\"total\":6000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":671744218,\"total\":671744218},\"functions\":{\"/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash/wasm/hash.wasm#WasmHash.Digest.sha256List\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":6000000,\"total\":6000000},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":671744218,\"total\":671744218},\"memory\":{\"incomplete_calls\":0,\"maximum\":7143424,\"total\":7143424},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":32,\"total\":32}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":7143424,\"total\":7143424},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":32,\"total\":32},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 304627712\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b",
+   "first_ms": 69,
+   "rest_ms": 0,
+   "rounds": 1,
+   "per_iteration_ms": 69,
+   "wasm_stats": {
+    "arguments_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 6000000,
+     "total": 6000000
+    },
+    "calls": 1,
+    "fuel": {
+     "incomplete_calls": 0,
+     "maximum": 671744218,
+     "total": 671744218
+    },
+    "functions": {
+     "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash/wasm/hash.wasm#WasmHash.Digest.sha256List": {
+      "arguments_transfer": {
+       "incomplete_calls": 0,
+       "maximum": 6000000,
+       "total": 6000000
+      },
+      "calls": 1,
+      "fuel": {
+       "incomplete_calls": 0,
+       "maximum": 671744218,
+       "total": 671744218
+      },
+      "memory": {
+       "incomplete_calls": 0,
+       "maximum": 7143424,
+       "total": 7143424
+      },
+      "reached_limits": {},
+      "results_transfer": {
+       "incomplete_calls": 0,
+       "maximum": 32,
+       "total": 32
+      }
+     }
+    },
+    "limits": {
+     "fuel": 10000000000,
+     "memory": 67108864,
+     "transfer": 268435456
+    },
+    "memory": {
+     "incomplete_calls": 0,
+     "maximum": 7143424,
+     "total": 7143424
+    },
+    "overrides": {
+     "fuel": false,
+     "memory": false,
+     "transfer": false
+    },
+    "reached_limits": {},
+    "results_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 32,
+     "total": 32
+    },
+    "stateful_instances": [],
+    "wasm_stats": true
+   },
+   "size": 6000000,
+   "version": "c-list",
+   "sample": 0
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-6000000.bin",
+    "6"
+   ],
+   "process_seconds": 0.43062437500000006,
+   "max_rss_bytes": 304513024,
+   "exit": 0,
+   "stdout": "first_ms=70 rest_ms=265 rounds=6 digest=5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b\n",
+   "stderr": "bench-rss: 304513024\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b",
+   "first_ms": 70,
+   "rest_ms": 265,
+   "rounds": 6,
+   "per_iteration_ms": 53.0,
+   "size": 6000000,
+   "version": "c-list",
+   "sample": 1
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-6000000.bin",
+    "6"
+   ],
+   "process_seconds": 0.4278844169999998,
+   "max_rss_bytes": 304529408,
+   "exit": 0,
+   "stdout": "first_ms=70 rest_ms=263 rounds=6 digest=5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b\n",
+   "stderr": "bench-rss: 304529408\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "5d8791489acb8c7251d82ffce86e7f61225e3faa14dbc41018ba1b38a24e4f1b",
+   "first_ms": 70,
+   "rest_ms": 263,
+   "rounds": 6,
+   "per_iteration_ms": 52.6,
+   "size": 6000000,
+   "version": "c-list",
+   "sample": 2
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "--wasm-stats",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-fast.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-33554432.bin",
+    "1"
+   ],
+   "process_seconds": 0.21813158300000035,
+   "max_rss_bytes": 129417216,
+   "exit": 0,
+   "stdout": "first_ms=167 rest_ms=0 rounds=1 digest=6be4787dae9dec9083e463af202a112604dbce8420c0019d385ff48fc487c035\n",
+   "stderr": "{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":33554432,\"total\":33554432},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":3756549391,\"total\":3756549391},\"functions\":{\"/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash/wasm/hash.wasm#WasmHash.Digest.sha256\":{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":33554432,\"total\":33554432},\"calls\":1,\"fuel\":{\"incomplete_calls\":0,\"maximum\":3756549391,\"total\":3756549391},\"memory\":{\"incomplete_calls\":0,\"maximum\":34734080,\"total\":34734080},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":32,\"total\":32}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":34734080,\"total\":34734080},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":32,\"total\":32},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 129417216\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "6be4787dae9dec9083e463af202a112604dbce8420c0019d385ff48fc487c035",
+   "first_ms": 167,
+   "rest_ms": 0,
+   "rounds": 1,
+   "per_iteration_ms": 167,
+   "wasm_stats": {
+    "arguments_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 33554432,
+     "total": 33554432
+    },
+    "calls": 1,
+    "fuel": {
+     "incomplete_calls": 0,
+     "maximum": 3756549391,
+     "total": 3756549391
+    },
+    "functions": {
+     "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/../../../crates/benitoite/testdata/packages/libraries.files/wasm-hash/wasm/hash.wasm#WasmHash.Digest.sha256": {
+      "arguments_transfer": {
+       "incomplete_calls": 0,
+       "maximum": 33554432,
+       "total": 33554432
+      },
+      "calls": 1,
+      "fuel": {
+       "incomplete_calls": 0,
+       "maximum": 3756549391,
+       "total": 3756549391
+      },
+      "memory": {
+       "incomplete_calls": 0,
+       "maximum": 34734080,
+       "total": 34734080
+      },
+      "reached_limits": {},
+      "results_transfer": {
+       "incomplete_calls": 0,
+       "maximum": 32,
+       "total": 32
+      }
+     }
+    },
+    "limits": {
+     "fuel": 10000000000,
+     "memory": 67108864,
+     "transfer": 268435456
+    },
+    "memory": {
+     "incomplete_calls": 0,
+     "maximum": 34734080,
+     "total": 34734080
+    },
+    "overrides": {
+     "fuel": false,
+     "memory": false,
+     "transfer": false
+    },
+    "reached_limits": {},
+    "results_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 32,
+     "total": 32
+    },
+    "stateful_instances": [],
+    "wasm_stats": true
+   },
+   "size": 33554432,
+   "version": "c-fast",
+   "sample": 0
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-fast.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-33554432.bin",
+    "6"
+   ],
+   "process_seconds": 0.9797949999999997,
+   "max_rss_bytes": 129499136,
+   "exit": 0,
+   "stdout": "first_ms=169 rest_ms=760 rounds=6 digest=6be4787dae9dec9083e463af202a112604dbce8420c0019d385ff48fc487c035\n",
+   "stderr": "bench-rss: 129499136\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "6be4787dae9dec9083e463af202a112604dbce8420c0019d385ff48fc487c035",
+   "first_ms": 169,
+   "rest_ms": 760,
+   "rounds": 6,
+   "per_iteration_ms": 152.0,
+   "size": 33554432,
+   "version": "c-fast",
+   "sample": 1
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-fast.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-33554432.bin",
+    "6"
+   ],
+   "process_seconds": 0.9757290420000002,
+   "max_rss_bytes": 129368064,
+   "exit": 0,
+   "stdout": "first_ms=168 rest_ms=757 rounds=6 digest=6be4787dae9dec9083e463af202a112604dbce8420c0019d385ff48fc487c035\n",
+   "stderr": "bench-rss: 129368064\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": "6be4787dae9dec9083e463af202a112604dbce8420c0019d385ff48fc487c035",
+   "first_ms": 168,
+   "rest_ms": 757,
+   "rounds": 6,
+   "per_iteration_ms": 151.4,
+   "size": 33554432,
+   "version": "c-fast",
+   "sample": 2
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "--wasm-stats",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-33554432.bin",
+    "1"
+   ],
+   "process_seconds": 0.05049462499999979,
+   "max_rss_bytes": 95059968,
+   "exit": 1,
+   "stdout": "",
+   "stderr": "runtime error[R0902]: `Bytes.toList` would create a value that is too large\n  --> /Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt:18:17\n   |\n18 |   bind items <- Bytes.toList(bytes)\n   |                 ^^^^^^^^^^^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             main\n   = note: the result would have 33554432 elements; the limit is 16777216\n   = note: functions left by tail calls are not shown\n{\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":0,\"fuel\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"functions\":{},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"stateful_instances\":[],\"wasm_stats\":true}\nbench-rss: 95059968\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": null,
+   "wasm_stats": {
+    "arguments_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 0,
+     "total": 0
+    },
+    "calls": 0,
+    "fuel": {
+     "incomplete_calls": 0,
+     "maximum": 0,
+     "total": 0
+    },
+    "functions": {},
+    "limits": {
+     "fuel": 10000000000,
+     "memory": 67108864,
+     "transfer": 268435456
+    },
+    "memory": {
+     "incomplete_calls": 0,
+     "maximum": 0,
+     "total": 0
+    },
+    "overrides": {
+     "fuel": false,
+     "memory": false,
+     "transfer": false
+    },
+    "reached_limits": {},
+    "results_transfer": {
+     "incomplete_calls": 0,
+     "maximum": 0,
+     "total": 0
+    },
+    "stateful_instances": [],
+    "wasm_stats": true
+   },
+   "size": 33554432,
+   "version": "c-list",
+   "sample": 0
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-33554432.bin",
+    "6"
+   ],
+   "process_seconds": 0.05092520799999978,
+   "max_rss_bytes": 95010816,
+   "exit": 1,
+   "stdout": "",
+   "stderr": "runtime error[R0902]: `Bytes.toList` would create a value that is too large\n  --> /Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt:18:17\n   |\n18 |   bind items <- Bytes.toList(bytes)\n   |                 ^^^^^^^^^^^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             main\n   = note: the result would have 33554432 elements; the limit is 16777216\n   = note: functions left by tail calls are not shown\nbench-rss: 95010816\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": null,
+   "size": 33554432,
+   "version": "c-list",
+   "sample": 1
+  },
+  {
+   "command": [
+    "/Users/tecogonaz/src/Benitoite/target/release/benitoite",
+    "run",
+    "/Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt",
+    "/private/tmp/claude-501/-Users-tecogonaz-src-Benitoite/6253d5a4-70d2-428f-a9e7-3fd241935306/scratchpad/pkg2/tm/bytes-33554432.bin",
+    "6"
+   ],
+   "process_seconds": 0.050942667000000164,
+   "max_rss_bytes": 95191040,
+   "exit": 1,
+   "stdout": "",
+   "stderr": "runtime error[R0902]: `Bytes.toList` would create a value that is too large\n  --> /Users/tecogonaz/src/Benitoite/tools/bench/wasm/hash-c-list.bnt:18:17\n   |\n18 |   bind items <- Bytes.toList(bytes)\n   |                 ^^^^^^^^^^^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             main\n   = note: the result would have 33554432 elements; the limit is 16777216\n   = note: functions left by tail calls are not shown\nbench-rss: 95191040\n",
+   "timed_out": false,
+   "timeout_seconds": 600,
+   "digest": null,
+   "size": 33554432,
+   "version": "c-list",
+   "sample": 2
+  }
+ ]
+}

@@ -62,9 +62,11 @@ def substRho (es : List Eff) (ε : Eff) : Eff := fun a =>
 
 end Eff
 
-/-- 基本型。01-12 の `ι`（初回リリース版の `Byte`・`Decimal` を含む）。 -/
+/-- 基本型。01-12 の `ι`。既存の Integer・Float・Byte と幅付きの七種を区別する。 -/
 inductive BaseTy where
   | integer | float | string | character | boolean | unit | byte | decimal
+  | integer8 | integer16 | integer32
+  | unsignedInteger16 | unsignedInteger32 | unsignedInteger64 | float32
   deriving DecidableEq, Repr
 
 abbrev DataName := String
@@ -128,6 +130,15 @@ inductive Const where
   | byte (n : Nat)
   | decimal (n : Int) (scale : Nat)
   | opaque (o : OpaqueName) (id : Nat)
+  /-- 幅と符号は構成子で区別する。値域の検査は型付けの条件にしない（設計書 07-04「01-12 との対応」）。 -/
+  | integer8 (n : Int)
+  | integer16 (n : Int)
+  | integer32 (n : Int)
+  | unsignedInteger16 (n : Int)
+  | unsignedInteger32 (n : Int)
+  | unsignedInteger64 (n : Int)
+  /-- binary32 の表現を保ち、旧 Float の値と区別する。丸めの計算は形式化しない。 -/
+  | float32 (bits : UInt32)
 
 def Const.type : Const → Ty
   | .integer _ => .base .integer
@@ -139,9 +150,20 @@ def Const.type : Const → Ty
   | .byte _ => .base .byte
   | .decimal _ _ => .base .decimal
   | .opaque o _ => .opaque o
+  | .integer8 _ => .base .integer8
+  | .integer16 _ => .base .integer16
+  | .integer32 _ => .base .integer32
+  | .unsignedInteger16 _ => .base .unsignedInteger16
+  | .unsignedInteger32 _ => .base .unsignedInteger32
+  | .unsignedInteger64 _ => .base .unsignedInteger64
+  | .float32 _ => .base .float32
 
-/-- パターンの定数の照合。P-Const は `Float`・`Byte`・`Decimal` と `O` の型の値をパターンに許さないので、
-その四つは等しいと判定しない。 -/
+/-- パターンに許す定数の種類。数の型の追加で暗黙に許す種類が増えないよう列挙する。 -/
+def Const.patternAllowed : Const → Bool
+  | .integer _ | .string _ | .character _ | .boolean _ | .unit => true
+  | _ => false
+
+/-- パターンの定数の照合。P-Const が許さない種類は等しいと判定しない。 -/
 def Const.matches : Const → Const → Bool
   | .integer a, .integer b => a == b
   | .string a, .string b => a == b

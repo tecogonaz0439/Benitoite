@@ -1,0 +1,7 @@
+// spec: 01-08 実行時エラーによる停止
+@external("wasm", "x.wasm", "f")
+function externalFn() -> String
+function main() -> Unit
+  bind _result <- externalFn()
+  ()
+end function

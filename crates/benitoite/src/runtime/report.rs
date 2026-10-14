@@ -48,6 +48,10 @@ pub mod text {
     /// R0902・R0903 の `{unit}`
     pub const UNIT_BYTES: &str = "bytes";
     pub const UNIT_ELEMENTS: &str = "elements";
+    /// R0905 で区別する上限。
+    pub const EXTERNAL_MEMORY_BUDGET: &str = "total guest linear-memory";
+    pub const EXTERNAL_ADAPTER_MEMORY_BUDGET: &str = "adapter linear-memory allocation";
+    pub const EXTERNAL_TRANSFER_BUDGET: &str = "host value-transfer";
     /// 位置が分からないときに `{location}` に埋める値
     pub const UNKNOWN_LOCATION: &str = "<unknown>";
 }
@@ -73,6 +77,109 @@ use crate::vm::{DeadlockWaitKind, FrameRecord, InstrRef, SpawnRecord, StopInfo};
 /// `Stop::Internal` は処理系の不具合の報告（`internal_diagnostic` と同じ形。panic ではないのでスレッドの注記なし）にする。
 pub fn stop_diagnostic(program: &CompiledProgram, info: &StopInfo) -> Diagnostic {
     let builder = match &info.stop {
+        Stop::Runtime(RuntimeError::ExternalTrap {
+            function,
+            component,
+            export,
+            trap,
+        }) => DiagBuilder::new(DiagCode::R0601)
+            .arg("function", function.clone())
+            .arg("component", component.clone())
+            .arg("export", export.clone())
+            .arg("trap", trap.clone())
+            .note("component"),
+        Stop::Resource(ResourceError::ExternalFuel {
+            function,
+            component,
+            limit,
+        }) => DiagBuilder::new(DiagCode::R0904)
+            .arg("function", function.clone())
+            .arg("component", component.clone())
+            .arg("limit", limit.to_string())
+            .note("component"),
+        Stop::Resource(ResourceError::ExternalMemory {
+            function,
+            component,
+            limit,
+        }) => DiagBuilder::new(DiagCode::R0905)
+            .arg("function", function.clone())
+            .arg("component", component.clone())
+            .arg("limit", limit.to_string())
+            .note("component")
+            .arg("budget", text::EXTERNAL_MEMORY_BUDGET)
+            .note("linear_memory"),
+        Stop::Resource(ResourceError::ExternalAdapterMemory {
+            function,
+            component,
+            requested,
+            memory32_limit,
+            allocated,
+            store_limit,
+        }) => {
+            let builder = DiagBuilder::new(DiagCode::R0905)
+                .arg("function", function.clone())
+                .arg("component", component.clone())
+                .note("component");
+            match (*requested, *memory32_limit, *allocated, *store_limit) {
+                (None, None, None, Some(limit)) => builder
+                    .arg("limit", limit.to_string())
+                    .arg("budget", text::EXTERNAL_MEMORY_BUDGET)
+                    .note("linear_memory")
+                    .note("adapter_store_memory"),
+                (Some(requested), Some(limit), None, None) => builder
+                    .arg("requested", requested.to_string())
+                    .arg("limit", limit.to_string())
+                    .arg("budget", text::EXTERNAL_ADAPTER_MEMORY_BUDGET)
+                    .note("adapter_memory32"),
+                (Some(requested), None, Some(allocated), None) => builder
+                    .arg("requested", requested.to_string())
+                    .arg("allocated", allocated.to_string())
+                    .note("adapter_memory"),
+                _ => {
+                    return internal_diagnostic(
+                        "run",
+                        "inconsistent adapter memory report",
+                        None,
+                        FaultThread::Vm,
+                    );
+                }
+            }
+        }
+        Stop::Resource(ResourceError::ExternalTransfer {
+            function,
+            component,
+            limit,
+        }) => DiagBuilder::new(DiagCode::R0905)
+            .arg("function", function.clone())
+            .arg("component", component.clone())
+            .arg("limit", limit.to_string())
+            .note("component")
+            .arg("budget", text::EXTERNAL_TRANSFER_BUDGET)
+            .note("transfer"),
+        Stop::Resource(ResourceError::ExternalObjects {
+            function,
+            component,
+            resource,
+            size,
+            limit,
+        }) => DiagBuilder::new(DiagCode::R0906)
+            .arg("function", function.clone())
+            .arg("component", component.clone())
+            .arg("resource", *resource)
+            .arg("size", size.to_string())
+            .arg("limit", limit.to_string())
+            .note("component"),
+        Stop::Resource(ResourceError::ExternalValueTooLarge {
+            function,
+            size,
+            unit,
+            limit,
+        }) => DiagBuilder::new(DiagCode::R0902)
+            .arg("function", function.clone())
+            .arg("size", size.to_string())
+            .arg("unit", unit_name(*unit))
+            .arg("limit", limit.to_string())
+            .note("size"),
         Stop::Runtime(RuntimeError::DivisionByZero) => DiagBuilder::new(DiagCode::R0101),
         Stop::Runtime(RuntimeError::IntegerOverflow) => DiagBuilder::new(DiagCode::R0102),
         Stop::Runtime(RuntimeError::DecimalOverflow) => DiagBuilder::new(DiagCode::R0103),
@@ -141,7 +248,19 @@ pub fn stop_diagnostic(program: &CompiledProgram, info: &StopInfo) -> Diagnostic
         Some(span) => builder.primary(span),
         None => builder,
     };
-    let mut report = builder.build();
+    let mut report = if matches!(
+        &info.stop,
+        Stop::Resource(ResourceError::ExternalAdapterMemory {
+            allocated: Some(_),
+            memory32_limit: None,
+            store_limit: None,
+            ..
+        })
+    ) {
+        builder.build_variant("adapter_allocation")
+    } else {
+        builder.build()
+    };
     let trace = match call_trace(program, &info.frames) {
         Ok(trace) => trace,
         Err(message) => return internal_diagnostic("run", &message, None, FaultThread::Vm),
@@ -1063,6 +1182,59 @@ mod tests {
                 vec![],
             ),
             (
+                Stop::Resource(ResourceError::ExternalFuel {
+                    function: "Test.spin".into(),
+                    component: "wasm/spin.wasm".into(),
+                    limit: 100,
+                }),
+                DiagCode::R0904,
+                "the external function `Test.spin` used up its fuel limit of 100",
+                vec!["component `wasm/spin.wasm`"],
+            ),
+            (
+                Stop::Resource(ResourceError::ExternalAdapterMemory {
+                    function: "Test.bytes".into(),
+                    component: "wasm/bytes.wasm".into(),
+                    requested: Some(131_073),
+                    memory32_limit: None,
+                    allocated: Some(131_072),
+                    store_limit: None,
+                }),
+                DiagCode::R0905,
+                "the external function `Test.bytes` could not allocate generated adapter memory for 131073 bytes",
+                vec![
+                    "component `wasm/bytes.wasm`",
+                    "the generated adapter allocator's memory.grow failed while reserving 131073 bytes, with 131072 bytes already allocated; adapter memory also counts toward the Store's total linear-memory limit",
+                ],
+            ),
+            (
+                Stop::Resource(ResourceError::ExternalAdapterMemory {
+                    function: "Test.bytes".into(),
+                    component: "wasm/bytes.wasm".into(),
+                    requested: Some(4_294_967_303),
+                    memory32_limit: Some(u64::from(u32::MAX)),
+                    allocated: None,
+                    store_limit: None,
+                }),
+                DiagCode::R0905,
+                "the external function `Test.bytes` exceeded its adapter linear-memory allocation limit of 4294967295 bytes",
+                vec![
+                    "component `wasm/bytes.wasm`",
+                    "the generated adapter allocator requested 4294967303 bytes, exceeding the memory32 address limit of 4294967295 bytes",
+                ],
+            ),
+            (
+                Stop::Resource(ResourceError::ExternalValueTooLarge {
+                    function: "Test.items".into(),
+                    size: 9,
+                    unit: SizeUnit::Elements,
+                    limit: 8,
+                }),
+                DiagCode::R0902,
+                "`Test.items` would create a value that is too large",
+                vec!["the result would have 9 elements; the limit is 8"],
+            ),
+            (
                 Stop::Resource(ResourceError::CallStackTooDeep { frames: 42 }),
                 DiagCode::R0901,
                 "the call stack is too deep",
@@ -1117,7 +1289,14 @@ mod tests {
             assert_eq!(d.message, message);
             assert_eq!(
                 d.kind,
-                if matches!(code, DiagCode::R0901 | DiagCode::R0902 | DiagCode::R0903) {
+                if matches!(
+                    code,
+                    DiagCode::R0901
+                        | DiagCode::R0902
+                        | DiagCode::R0903
+                        | DiagCode::R0904
+                        | DiagCode::R0905
+                ) {
                     ReportKind::Resource
                 } else {
                     ReportKind::Runtime

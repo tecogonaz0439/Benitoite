@@ -36,6 +36,26 @@ fn prelude_type_shadowing_in_nested_types_and_type_arity() {
             "String",
         ),
         (
+            "record Integer64\n value: Integer\nend record\nfunction f(x: Integer64) -> Benitoite.Integer64\n return x\nend function",
+            C::E0401,
+            "Integer64",
+        ),
+        (
+            "record Float64\n value: Integer\nend record\nfunction f(x: Float64) -> Benitoite.Float64\n return x\nend function",
+            C::E0401,
+            "Float64",
+        ),
+        (
+            "record UnsignedInteger8\n value: Integer\nend record\nfunction f(x: UnsignedInteger8) -> Benitoite.UnsignedInteger8\n return x\nend function",
+            C::E0401,
+            "UnsignedInteger8",
+        ),
+        (
+            "record UnsignedInteger\n value: Integer\nend record\nfunction f(x: UnsignedInteger) -> Benitoite.UnsignedInteger\n return x\nend function",
+            C::E0401,
+            "UnsignedInteger",
+        ),
+        (
             "record Result\n value: Integer\nend record\nfunction f(x: List[Result]) -> Integer\n return x\nend function",
             C::E0401,
             "",
@@ -141,6 +161,7 @@ fn assert_output_nodes(load: &LoadOutput, out: &TypeckOutput) {
             | Item::Trait(_)
             | Item::Impl(_)
             | Item::Effect(_)
+            | Item::ExternalType(_)
             | Item::Error(_) => {}
         }
     }
@@ -426,6 +447,17 @@ fn operators_warnings_and_fixes() {
         "/"
     );
     clean("const a: Decimal = 1.5m + 2m\n");
+    expect(
+        "function f() -> Float\n return 1 div 2\nend function\n",
+        &[(C::E0401, 2, 9)],
+    );
+    expect(
+        "function f() -> Float\n return 1 mod 2\nend function\n",
+        &[(C::E0401, 2, 9)],
+    );
+    clean(
+        "function f() -> Unit\n bind divide <- lambda(a, b) return a div b end lambda\n bind modulo <- lambda(a, b) return a mod b end lambda\n bind _ <- divide(5, 2) + modulo(5, 2)\nend function\n",
+    );
     expect(
         "function f() -> Unit\n bind _ <- 1.5m div 2m\nend function\n",
         &[(C::E0401, 2, 17)],
@@ -1231,4 +1263,409 @@ fn return_call_keeps_argument_position_diagnostics() {
         "function g() -> Unit\n bind o: Option[String] <- Option.Some(1)\nend function\n",
         &[(C::E0401, 2, 40)],
     );
+}
+
+#[test]
+fn width_literals_keep_their_exact_types_and_values() {
+    let (_, resolved, typed) = clean(
+        "const integer: Integer64 = -9223372036854775808s64\nconst float: Float64 = -1.5f64\nconst byte: UnsignedInteger8 = 0xffu8\n",
+    );
+    assert!(matches!(
+        constant(&resolved, &typed, "integer"),
+        V::Integer(i64::MIN)
+    ));
+    assert!(matches!(constant(&resolved, &typed, "float"), V::Float(n) if *n == -1.5));
+    assert!(matches!(constant(&resolved, &typed, "byte"), V::Byte(255)));
+    // 新しい型を旧値に置き換えると、リテラルの型と値の表が食い違う。
+    for (literal, name, builtin) in [
+        ("-128s8", "Integer8", B::INTEGER8),
+        ("32767s16", "Integer16", B::INTEGER16),
+        ("42s32", "Integer32", B::INTEGER32),
+        ("42u16", "UnsignedInteger16", B::UNSIGNED_INTEGER16),
+        ("42u32", "UnsignedInteger32", B::UNSIGNED_INTEGER32),
+        (
+            "18446744073709551615u64",
+            "UnsignedInteger64",
+            B::UNSIGNED_INTEGER64,
+        ),
+        ("1e-3f32", "Float32", B::FLOAT32),
+    ] {
+        let source = format!("function f() -> {name}\n return {literal}\nend function\n");
+        let (loaded, _, typed, diagnostics) = check(&source);
+        assert!(diagnostics.is_empty(), "{source}: {diagnostics:?}");
+        let node = node_at(&loaded, source.find(literal).unwrap());
+        assert_eq!(
+            typed.expr_types.get(node),
+            Some(&Ty::Con(TyCon::Builtin(builtin), vec![]))
+        );
+        assert!(typed.lit_values.get(node).is_some());
+    }
+    for (literal, name, code) in [
+        ("256u8", "Byte", C::E0446),
+        ("-0u8", "Byte", C::E0405),
+        ("-1u8", "Byte", C::E0405),
+        ("9223372036854775808s64", "Integer", C::E0408),
+        ("-(9223372036854775808s64)", "Integer", C::E0408),
+        ("1e999f64", "Float", C::E0409),
+    ] {
+        let source = format!("function f() -> {name}\n return {literal}\nend function\n");
+        let (_, _, _, diagnostics) = check(&source);
+        assert_eq!(diagnostics.len(), 1, "{source}: {diagnostics:?}");
+        assert_eq!(diagnostics[0].code, Some(code));
+    }
+}
+
+// 型の検査結果を境界にし、字句の受理だけでは見つからない幅の取り違えと丸めを確かめる。
+fn assert_width_value(actual: &V, expected: &V) {
+    match (actual, expected) {
+        (V::Integer8(a), V::Integer8(b)) => assert_eq!(a, b),
+        (V::Integer16(a), V::Integer16(b)) => assert_eq!(a, b),
+        (V::Integer32(a), V::Integer32(b)) => assert_eq!(a, b),
+        (V::UnsignedInteger16(a), V::UnsignedInteger16(b)) => assert_eq!(a, b),
+        (V::UnsignedInteger32(a), V::UnsignedInteger32(b)) => assert_eq!(a, b),
+        (V::UnsignedInteger64(a), V::UnsignedInteger64(b)) => assert_eq!(a, b),
+        (V::Float32(a), V::Float32(b)) => assert_eq!(a.to_bits(), b.to_bits()),
+        _ => panic!("different numeric types: {actual:?}, {expected:?}"),
+    }
+}
+
+#[test]
+fn width_integer_literals_check_both_boundaries_and_record_exact_values() {
+    for (suffix, name, builtin, low, minimum, high, maximum, below, above) in [
+        (
+            "s8",
+            "Integer8",
+            B::INTEGER8,
+            "-128",
+            V::Integer8(-128),
+            "127",
+            V::Integer8(127),
+            "-129",
+            "128",
+        ),
+        (
+            "s16",
+            "Integer16",
+            B::INTEGER16,
+            "-32768",
+            V::Integer16(-32768),
+            "32767",
+            V::Integer16(32767),
+            "-32769",
+            "32768",
+        ),
+        (
+            "s32",
+            "Integer32",
+            B::INTEGER32,
+            "-2147483648",
+            V::Integer32(-2147483648),
+            "2147483647",
+            V::Integer32(2147483647),
+            "-2147483649",
+            "2147483648",
+        ),
+        (
+            "u16",
+            "UnsignedInteger16",
+            B::UNSIGNED_INTEGER16,
+            "0",
+            V::UnsignedInteger16(0),
+            "65535",
+            V::UnsignedInteger16(65535),
+            "-1",
+            "65536",
+        ),
+        (
+            "u32",
+            "UnsignedInteger32",
+            B::UNSIGNED_INTEGER32,
+            "0",
+            V::UnsignedInteger32(0),
+            "4294967295",
+            V::UnsignedInteger32(4294967295),
+            "-1",
+            "4294967296",
+        ),
+        (
+            "u64",
+            "UnsignedInteger64",
+            B::UNSIGNED_INTEGER64,
+            "0",
+            V::UnsignedInteger64(0),
+            "18446744073709551615",
+            V::UnsignedInteger64(18446744073709551615),
+            "-1",
+            "18446744073709551616",
+        ),
+    ] {
+        for (digits, expected) in [(low, &minimum), (high, &maximum)] {
+            let literal = format!("{digits}{suffix}");
+            let source = format!("function f() -> {name}\n return {literal}\nend function\n");
+            let (loaded, _, typed, diagnostics) = check(&source);
+            assert!(diagnostics.is_empty(), "{source}: {diagnostics:?}");
+            let node = node_at(&loaded, source.find(&literal).unwrap());
+            assert_eq!(
+                typed.expr_types.get(node),
+                Some(&Ty::Con(TyCon::Builtin(builtin), vec![]))
+            );
+            assert_width_value(typed.lit_values.get(node).unwrap(), expected);
+        }
+        for digits in [below, above] {
+            let literal = format!("{digits}{suffix}");
+            let source = format!("function f() -> {name}\n return {literal}\nend function\n");
+            let (loaded, _, typed, diagnostics) = check(&source);
+            let node = node_at(&loaded, source.find(&literal).unwrap());
+            assert!(typed.lit_values.get(node).is_none(), "{source}");
+            let range = diagnostics.iter().find(|d| d.code == Some(C::E0447));
+            if suffix.starts_with('s') || digits == above {
+                let range = range.unwrap_or_else(|| panic!("{source}: {diagnostics:?}"));
+                assert!(range.notes[0].contains(&format!("from {low} to {high}")));
+            } else {
+                assert!(range.is_none());
+                assert_eq!(diagnostics.len(), 1, "{diagnostics:?}");
+                assert_eq!(diagnostics[0].code, Some(C::E0405));
+            }
+        }
+    }
+    // u64 の上半分の値を各基数で読み、i64 へ縮めずに保存する。
+    for literal in [
+        "9223372036854775808u64",
+        "0x8000000000000000u64",
+        "0o1000000000000000000000u64",
+        "0b1000000000000000000000000000000000000000000000000000000000000000u64",
+    ] {
+        let source =
+            format!("function f() -> UnsignedInteger64\n return {literal}\nend function\n");
+        let (loaded, _, typed, diagnostics) = check(&source);
+        assert!(diagnostics.is_empty(), "{diagnostics:?}");
+        assert_width_value(
+            typed
+                .lit_values
+                .get(node_at(&loaded, source.find(literal).unwrap()))
+                .unwrap(),
+            &V::UnsignedInteger64(9223372036854775808),
+        );
+    }
+}
+
+#[test]
+fn width_float_literals_round_directly_to_binary32() {
+    for (literal, bits) in [
+        ("3.4028234663852886e38f32", 0x7f7fffff),
+        ("-3.4028234663852886e38f32", 0xff7fffff),
+        ("1.401298464324817e-45f32", 1),
+        ("1e-100f32", 0),
+        ("-1e-100f32", 0x80000000),
+        ("-0.0f32", 0x80000000),
+        // f64 で先に丸めると、ちょうど中点となって 1.0 に丸められてしまう。
+        ("1.0000000596046448f32", 0x3f800001),
+    ] {
+        let source = format!("function f() -> Float32\n return {literal}\nend function\n");
+        let (loaded, _, typed, diagnostics) = check(&source);
+        assert!(diagnostics.is_empty(), "{diagnostics:?}");
+        assert_width_value(
+            typed
+                .lit_values
+                .get(node_at(&loaded, source.find(literal).unwrap()))
+                .unwrap(),
+            &V::Float32(f32::from_bits(bits)),
+        );
+    }
+    for literal in ["3.4028236e38f32", "-3.4028236e38f32", "1e999f32"] {
+        let source = format!("function f() -> Float32\n return {literal}\nend function\n");
+        let (loaded, _, typed, diagnostics) = check(&source);
+        assert!(
+            diagnostics.iter().any(|d| d.code == Some(C::E0448)),
+            "{diagnostics:?}"
+        );
+        assert!(
+            typed
+                .lit_values
+                .get(node_at(&loaded, source.find(literal).unwrap()))
+                .is_none()
+        );
+    }
+}
+
+#[test]
+fn width_integer_division_waits_for_operands_and_defaults_unconstrained_lambdas() {
+    for op in ["div", "mod"] {
+        for suffix in ["s8", "s16", "s32", "u16", "u32", "u64", ""] {
+            let source = format!(
+                "function f() -> Unit\n bind calculate <- lambda(a, b) return a {op} b end lambda\n bind _ <- calculate(5{suffix}, 2{suffix})\nend function\n"
+            );
+            clean(&source);
+        }
+        let source = format!(
+            "function f() -> Unit\n bind calculate <- lambda(a, b) return a {op} b end lambda\nend function\n"
+        );
+        let (loaded, _, typed) = clean(&source);
+        let operand = node_at(&loaded, source.find(&format!("a {op} b")).unwrap());
+        assert_eq!(
+            typed.expr_types.get(operand),
+            Some(&Ty::Con(TyCon::Builtin(B::INTEGER), vec![]))
+        );
+    }
+}
+
+#[test]
+fn width_operators_accept_matching_types_and_reject_invalid_uses() {
+    for name in [
+        "Integer8",
+        "Integer16",
+        "Integer32",
+        "UnsignedInteger16",
+        "UnsignedInteger32",
+        "UnsignedInteger64",
+        "Float32",
+    ] {
+        let ops = if name == "Float32" {
+            vec!["+", "-", "*", "/", "=", "<>", "<", "<=", ">", ">="]
+        } else {
+            vec!["+", "-", "*", "div", "mod", "=", "<>", "<", "<=", ">", ">="]
+        };
+        for op in ops {
+            let comparison = matches!(op, "=" | "<>" | "<" | "<=" | ">" | ">=");
+            let result = if comparison { "Boolean" } else { name };
+            let source = format!(
+                "function f(a: {name}, b: {name}) -> {result}\n return a {op} b\nend function\n"
+            );
+            let (_, _, _, diagnostics) = check(&source);
+            assert!(diagnostics.is_empty(), "{source}: {diagnostics:?}");
+        }
+        let source = format!("function f(a: {name}) -> {name}\n return -a\nend function\n");
+        let (_, _, _, diagnostics) = check(&source);
+        if name.starts_with("Integer") || name == "Float32" {
+            assert!(diagnostics.is_empty(), "{source}: {diagnostics:?}");
+            continue;
+        }
+        assert_eq!(diagnostics.len(), 1, "{source}: {diagnostics:?}");
+        assert_eq!(diagnostics[0].code, Some(C::E0405));
+    }
+    for (name, expr) in [
+        ("Byte", "a + a"),
+        ("Byte", "a - a"),
+        ("Byte", "a * a"),
+        ("Byte", "-a"),
+        ("Float32", "a div a"),
+        ("Integer32", "a / a"),
+    ] {
+        let source = format!("function f(a: {name}) -> {name}\n return {expr}\nend function\n");
+        let (_, _, _, diagnostics) = check(&source);
+        assert!(
+            diagnostics
+                .iter()
+                .any(|d| d.code == Some(C::E0405) || d.code == Some(C::E0401)),
+            "{source}: {diagnostics:?}"
+        );
+        assert!(
+            diagnostics
+                .iter()
+                .all(|d| matches!(d.code, Some(C::E0405 | C::E0401))),
+            "{diagnostics:?}"
+        );
+    }
+    for (literal, name) in [
+        ("-(128s8)", "Integer8"),
+        ("-(32768s16)", "Integer16"),
+        ("-(2147483648s32)", "Integer32"),
+    ] {
+        let source = format!("function f() -> {name}\n return {literal}\nend function\n");
+        let (_, _, _, diagnostics) = check(&source);
+        assert!(
+            diagnostics.iter().any(|d| d.code == Some(C::E0447)),
+            "{diagnostics:?}"
+        );
+    }
+    for (name, suffix) in [
+        ("UnsignedInteger16", "u16"),
+        ("UnsignedInteger32", "u32"),
+        ("UnsignedInteger64", "u64"),
+    ] {
+        let source = format!("function f() -> {name}\n return -0{suffix}\nend function\n");
+        let (_, _, _, diagnostics) = check(&source);
+        assert_eq!(diagnostics.len(), 1, "{diagnostics:?}");
+        assert_eq!(diagnostics[0].code, Some(C::E0405));
+    }
+    for source in [
+        "function f() -> Integer32\n return 1\nend function\n",
+        "function f() -> Integer\n return 1s32\nend function\n",
+        "function f(a: Integer32, b: Integer) -> Integer32\n return a + b\nend function\n",
+        "function f(a: Integer32, b: Integer16) -> Boolean\n return a = b\nend function\n",
+        "function f(a: Float32, b: Float) -> Boolean\n return a < b\nend function\n",
+    ] {
+        let (_, _, _, diagnostics) = check(source);
+        let mismatch = diagnostics
+            .iter()
+            .find(|d| d.code == Some(C::E0401))
+            .unwrap_or_else(|| panic!("{source}: {diagnostics:?}"));
+        assert!(
+            mismatch
+                .helps
+                .iter()
+                .any(|h| h.message.contains("suffix") && h.message.contains("explicitly convert")),
+            "{mismatch:?}"
+        );
+    }
+}
+
+#[test]
+fn width_keys_reject_float32_and_accept_integers_and_interpolation() {
+    for (decls, name, code) in [
+        ("", "Float32", Some(C::E0423)),
+        (
+            "record Key\n value: Float32\nend record\n",
+            "Key",
+            Some(C::E0423),
+        ),
+        ("data Key\n Key(Float32)\nend data\n", "Key", Some(C::E0423)),
+        (
+            "data Key[T]\n Key(T)\nend data\n",
+            "Key[Float32]",
+            Some(C::E0423),
+        ),
+        ("", "Integer8", None),
+        ("", "UnsignedInteger64", None),
+        ("", "List[Integer16]", None),
+        ("record Key\n value: Integer32\nend record\n", "Key", None),
+        (
+            "data Key\n End\n Next(UnsignedInteger16, Key)\nend data\n",
+            "Key",
+            None,
+        ),
+        (
+            "data Key[T]\n Key(T)\nend data\n",
+            "Key[UnsignedInteger32]",
+            None,
+        ),
+    ] {
+        let source = format!(
+            "import Benitoite.Set\n{decls}function f() -> Set[{name}]\n return Set.empty()\nend function\n"
+        );
+        let (_, _, _, diagnostics) = check(&source);
+        if let Some(code) = code {
+            assert_eq!(diagnostics.len(), 1, "{source}: {diagnostics:?}");
+            assert_eq!(diagnostics[0].code, Some(code));
+            assert!(!diagnostics[0].helps.is_empty());
+        } else {
+            assert!(diagnostics.is_empty(), "{source}: {diagnostics:?}");
+        }
+    }
+    clean(
+        "import Benitoite.Set\ndata Phantom[T]\n Phantom\nend data\nfunction f() -> Set[Phantom[Integer8]]\n return Set.empty()\nend function\n",
+    );
+    for name in [
+        "Integer8",
+        "Integer16",
+        "Integer32",
+        "UnsignedInteger16",
+        "UnsignedInteger32",
+        "UnsignedInteger64",
+        "Float32",
+    ] {
+        let source = format!("function f(a: {name}) -> String\n return \"${{a}}\"\nend function\n");
+        let (_, _, _, diagnostics) = check(&source);
+        assert!(diagnostics.is_empty(), "{source}: {diagnostics:?}");
+    }
 }

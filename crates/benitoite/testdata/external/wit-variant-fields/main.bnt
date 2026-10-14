@@ -1,0 +1,29 @@
+// spec: 01-02 外部の関数の宣言
+// 関門: 同じ WIT のペイロードを単一の組と複数の欄へ別々に戻す。
+import Benitoite.Unofficial.IO.Console
+data Marker
+  Unused
+end data
+data One
+  Value(Pair[Integer, Integer])
+  Empty
+end data
+data Two
+  Value(Integer, Integer)
+  Empty
+end data
+data Single
+  Value(Integer)
+end data
+@external("wasm", "x.wasm", "fields")
+function one(v: One) -> One
+@external("wasm", "x.wasm", "fields")
+function two(v: Two) -> Two
+@external("wasm", "x.wasm", "single")
+function single(v: Single) -> Single
+function main() -> Unit uses Console.Write
+  Console.writeLine("${one(One.Value(Pair(3, 7))) = One.Value(Pair(14, 29))}")
+  Console.writeLine("${two(Two.Value(3, 7)) = Two.Value(14, 29)}")
+  Console.writeLine("${one(One.Empty) = One.Empty} ${two(Two.Empty) = Two.Empty}")
+  Console.writeLine("${single(Single.Value(30)) = Single.Value(42)}")
+end function

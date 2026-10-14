@@ -45,3 +45,14 @@ The modules of the standard library. Each module has its own file in this direct
 | [Encoding](Encoding.md) | unofficial | `import Benitoite.Unofficial.Encoding` | Base64 encoding of bytes. |
 | [Hash](Hash.md) | unofficial | `import Benitoite.Unofficial.Hash` | Hash values of bytes. |
 | [Network.Http](Network.Http.md) | unofficial | `import Benitoite.Unofficial.Network.Http` | HTTP/1.1 servers without TLS and clients for http and https URLs. |
+| [Integer8](Integer8.md) | standard (prelude) | not needed | Functions on `Integer8`, the integers from -128 to 127. |
+| [Integer16](Integer16.md) | standard (prelude) | not needed | Functions on `Integer16`, the integers from -32768 to 32767. |
+| [Integer32](Integer32.md) | standard (prelude) | not needed | Functions on `Integer32`, the integers from -2147483648 to 2147483647. |
+| [Integer64](Integer64.md) | standard (prelude) | not needed | Functions on `Integer64`, the same type as `Integer`, exposed under the canonical module name. |
+| [UnsignedInteger8](UnsignedInteger8.md) | standard (prelude) | not needed | Functions on `UnsignedInteger8`, the same type as `Byte`, exposed under the canonical module name. |
+| [UnsignedInteger16](UnsignedInteger16.md) | standard (prelude) | not needed | Functions on `UnsignedInteger16`, the integers from 0 to 65535. |
+| [UnsignedInteger32](UnsignedInteger32.md) | standard (prelude) | not needed | Functions on `UnsignedInteger32`, the integers from 0 to 4294967295. |
+| [UnsignedInteger64](UnsignedInteger64.md) | standard (prelude) | not needed | Conversions and functions over the full range of `UnsignedInteger64`. |
+| [UnsignedInteger](UnsignedInteger.md) | standard (prelude) | not needed | Functions on `UnsignedInteger`, an alias of `UnsignedInteger64`. |
+| [Float32](Float32.md) | standard (prelude) | not needed | Conversions and functions on `Float32`, the IEEE 754 single-precision type. |
+| [Float64](Float64.md) | standard (prelude) | not needed | Functions on `Float64`, the same type as `Float`, exposed under the canonical module name. |

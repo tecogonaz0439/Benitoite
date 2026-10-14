@@ -112,6 +112,13 @@ pub enum ConstDesc {
     Func(ProtoIdx),
     /// 制約の辞書を持たない実装の辞書
     Dict(ImplIdx),
+    Int8(i8),
+    Int16(i16),
+    Int32(i32),
+    UInt16(u16),
+    UInt32(u32),
+    UInt64(u64),
+    Float32(f32),
 }
 
 /// `SWITCH` の分岐表。
@@ -251,6 +258,28 @@ pub enum MainKind {
     Result,
 }
 
+/// 外部の関数の参照（設計書 02-07「コンパイル済みプログラム」）。
+#[derive(Clone, Debug)]
+pub struct ExternalRef {
+    pub spec: Arc<crate::external::ExternalSpec>,
+    pub component: u32,
+    pub arity: u16,
+}
+/// Wasmtime の状態を含まない外部の関数の表。
+#[derive(Clone, Debug, Default)]
+pub struct ExternalTable {
+    pub functions: Vec<ExternalRef>,
+    pub components: Vec<Arc<crate::external::ComponentSource>>,
+}
+/// 外部の呼び出しの結果と引数のレジスタ。
+#[derive(Clone, Copy, Debug)]
+pub struct ExternalCallOperands {
+    pub result: u16,
+    pub external: u32,
+    pub args_start: u16,
+    pub arg_count: u16,
+}
+
 /// コンパイル済みプログラム。
 #[derive(Debug)]
 pub struct CompiledProgram {
@@ -263,6 +292,8 @@ pub struct CompiledProgram {
     pub impls: Vec<ImplInfo>,
     pub ops: Vec<OpInfo>,
     pub builtins: Vec<BuiltinRef>,
+    /// `EXT` の B が指す外部の関数の表。
+    pub externals: ExternalTable,
     pub handlers: Vec<HandlerDesc>,
     /// `main` の原型。コア IR の `Program::main` が `None`（`main` を検査しない経路）なら `None`
     pub main: Option<ProtoIdx>,
@@ -331,6 +362,20 @@ impl CompiledProgram {
 
     pub fn handler(&self, idx: HandlerIdx) -> Option<&HandlerDesc> {
         at(&self.handlers, idx.0)
+    }
+
+    /// `EXT` の被演算子。番号が表にないか命令が違う場合は `None`。
+    pub fn external_call_operands(&self, instr: Instr) -> Option<ExternalCallOperands> {
+        if instr.opcode()? != Opcode::Ext {
+            return None;
+        }
+        let external = u32::from(instr.b());
+        Some(ExternalCallOperands {
+            result: instr.a(),
+            external,
+            args_start: instr.c(),
+            arg_count: self.externals.functions.get(usize::from(instr.b()))?.arity,
+        })
     }
 
     /// `PRIM`・`IO` の命令の被演算子。ほかの命令か、参照の番号が表にないときは `None`。

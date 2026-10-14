@@ -1,7 +1,7 @@
 # cargo-about の設定（設計書 05-01「ライセンスの表示」）。
 # accepted は deny.toml の [licenses] の allow と同じものを同じ並びで書く。cargo-about は並びを優先の順に読むので、
 # 二重ライセンスのクレート（MIT OR Apache-2.0 など）は MIT として載る。
-accepted = ["MIT", "Apache-2.0", "ISC", "BSD-3-Clause"]
+accepted = ["MIT", "Apache-2.0", "ISC", "BSD-3-Clause", "Apache-2.0 WITH LLVM-exception", "Zlib", "Unicode-3.0"]
 # licenses.sh が、ビルド先ごとにこの行を一つのビルド先に置き換えた設定を作る。
 targets = [
     "aarch64-apple-darwin",

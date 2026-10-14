@@ -1,0 +1,9 @@
+// spec: 01-02 外部の関数の宣言
+record Nest[T]
+  value: Nest[List[T]]
+end record
+@external("wasm", "missing.wasm", "next")
+function next(v: Nest[Integer]) -> Integer
+function main() -> Unit
+  ()
+end function

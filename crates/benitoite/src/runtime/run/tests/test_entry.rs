@@ -211,6 +211,7 @@ end function
             env.heap,
             rt,
             &Entry::Test(target),
+            Default::default(),
         );
         assert_eq!(end.run.end, EndKind::CheckFailed, "{:?}", end.run.reports);
         assert_eq!(end.run.exit_code, EXIT_FAILURE);

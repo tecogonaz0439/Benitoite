@@ -1,0 +1,26 @@
+// 関門: リストの子でも新しい数の幅と符号を保ち、ゲストの変更を復号できる。
+import Benitoite.Unofficial.IO.Console
+@external("wasm", "x.wasm", "flip-s8")
+function flipS8(v: List[Integer8]) -> List[Integer8]
+@external("wasm", "x.wasm", "flip-s16")
+function flipS16(v: List[Integer16]) -> List[Integer16]
+@external("wasm", "x.wasm", "flip-s32")
+function flipS32(v: List[Integer32]) -> List[Integer32]
+@external("wasm", "x.wasm", "flip-u16")
+function flipU16(v: List[UnsignedInteger16]) -> List[UnsignedInteger16]
+@external("wasm", "x.wasm", "flip-u32")
+function flipU32(v: List[UnsignedInteger32]) -> List[UnsignedInteger32]
+@external("wasm", "x.wasm", "flip-u64")
+function flipU64(v: List[UnsignedInteger64]) -> List[UnsignedInteger64]
+@external("wasm", "x.wasm", "negate-f32")
+function negateF32(v: List[Float32]) -> List[Float32]
+function main() -> Unit uses Console.Write
+  Console.writeLine("${flipS8([-128s8, 127s8, 0s8]) = [-127s8, 126s8, 1s8]}")
+  Console.writeLine("${flipS16([-32768s16, 32767s16, 0s16]) = [-32767s16, 32766s16, 1s16]}")
+  Console.writeLine("${flipS32([-2147483648s32, 2147483647s32, 0s32]) = [-2147483647s32, 2147483646s32, 1s32]}")
+  Console.writeLine("${flipU16([0u16, 65535u16]) = [1u16, 65534u16]}")
+  Console.writeLine("${flipU32([0u32, 4294967295u32]) = [1u32, 4294967294u32]}")
+  Console.writeLine("${flipU64([0u64, 9223372036854775808u64, 18446744073709551615u64]) = [1u64, 9223372036854775809u64, 18446744073709551614u64]}")
+  Console.writeLine("${negateF32([0.1f32, 16777217.0f32, -1.25f32]) = [-0.1f32, -16777216.0f32, 1.25f32]}")
+  Console.writeLine("${List.length(flipU64([]))}")
+end function

@@ -17,6 +17,10 @@ impl InterruptSource for ProcessInterrupt {
         self.flag.load(Ordering::Relaxed)
     }
 
+    fn shared_flag(&self) -> Option<Arc<AtomicBool>> {
+        Some(Arc::clone(&self.flag))
+    }
+
     fn flag(&self) -> Option<&AtomicBool> {
         Some(&self.flag)
     }

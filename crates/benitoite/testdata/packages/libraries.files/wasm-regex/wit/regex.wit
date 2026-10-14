@@ -1,0 +1,22 @@
+package bnt:regex@0.1.0;
+
+interface re {
+  record found { text: string, byte-start: s64, byte-end: s64 }
+
+  resource pattern {
+    compile: static func(source: string) -> result<pattern, string>;
+    is-match: func(text: string) -> bool;
+    find: func(text: string) -> option<found>;
+    find-all: func(text: string) -> list<found>;
+    count: func(text: string) -> s64;
+    replace-all: func(text: string, replacement: string) -> string;
+  }
+
+  is-match-once: func(source: string, text: string) -> result<bool, string>;
+  find-all-once: func(source: string, text: string) -> result<list<found>, string>;
+  count-once: func(source: string, text: string) -> result<s64, string>;
+}
+
+world regex {
+  export re;
+}

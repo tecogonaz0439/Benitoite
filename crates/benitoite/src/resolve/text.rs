@@ -1,5 +1,10 @@
-//! 種類の合わない名前（E0304）の `{found_kind}` と `{expected_kind}` に埋める種類の呼び名
-//! （AGENTS.md「実装の規約」の「文言」）。診断の型板そのものは `diag::codes` の表にある。
+//! 名前の種類と公開の段階の呼び名を診断の型板へ渡す（設計書 02-10「文言の言語」）。
+//! 診断の型板そのものは `diag::codes` の表にある。
+
+pub(super) const PUBLIC: &str = "public";
+pub(super) const PACKAGE: &str = "public(package)";
+pub(super) const PACKAGE_LEVEL: &str = "`public(package)`";
+pub(super) const NON_PUBLIC: &str = "non-public";
 
 pub(super) const TYPE: &str = "a type";
 pub(super) const MODULE: &str = "a module";

@@ -115,11 +115,12 @@ impl AssertTable {
                 .ok_or_else(|| format!("stdlib name index has no {name}"))
         };
         let mut functions = HashSet::new();
-        for module in checked
-            .modules
-            .iter()
-            .filter(|m| matches!(m.kind, ModuleKind::Entry | ModuleKind::User))
-        {
+        for module in checked.modules.iter().filter(|m| {
+            matches!(
+                m.kind,
+                ModuleKind::Entry | ModuleKind::User | ModuleKind::Package
+            )
+        }) {
             let ast = usize::try_from(module.id.0)
                 .ok()
                 .and_then(|index| checked.asts.get(index))
@@ -149,11 +150,12 @@ impl AssertTable {
             incomplete_instances: HashSet::new(),
         };
         // 利用者のモジュールだけを辿る。標準ライブラリの中の呼び出しは、利用者の確認の位置にならない。
-        for module in checked
-            .modules
-            .iter()
-            .filter(|m| matches!(m.kind, ModuleKind::Entry | ModuleKind::User))
-        {
+        for module in checked.modules.iter().filter(|m| {
+            matches!(
+                m.kind,
+                ModuleKind::Entry | ModuleKind::User | ModuleKind::Package
+            )
+        }) {
             let ast = usize::try_from(module.id.0)
                 .ok()
                 .and_then(|index| checked.asts.get(index))
@@ -437,6 +439,7 @@ impl Collector<'_> {
                 | ast::Item::Record(_)
                 | ast::Item::Trait(_)
                 | ast::Item::Effect(_)
+                | ast::Item::ExternalType(_)
                 | ast::Item::Error(_) => {}
             }
         }
@@ -889,6 +892,7 @@ fn fits<'e>(
                     }
                 }
             },
+            TyCon::External(_) => {}
             TyCon::Adt(binding) => {
                 let Some(def) = table.adts.adts.get(binding) else {
                     return Ok(false);
@@ -1006,6 +1010,13 @@ fn render_typed<'e>(
                 tree_sequence(out, map::Cursor::map(value), elem(0), elem(1), true);
             }
             BuiltinTypeId::INTEGER
+            | BuiltinTypeId::INTEGER8
+            | BuiltinTypeId::INTEGER16
+            | BuiltinTypeId::INTEGER32
+            | BuiltinTypeId::UNSIGNED_INTEGER16
+            | BuiltinTypeId::UNSIGNED_INTEGER32
+            | BuiltinTypeId::UNSIGNED_INTEGER64
+            | BuiltinTypeId::FLOAT32
             | BuiltinTypeId::FLOAT
             | BuiltinTypeId::DECIMAL
             | BuiltinTypeId::BYTE
@@ -1033,6 +1044,7 @@ fn render_typed<'e>(
                 out.push(Work::Owned(text::OPAQUE.replace("{name}", def.name)));
             }
         },
+        TyCon::External(_) => return Ok(false),
         TyCon::Adt(binding) => {
             let Some(def) = table.adts.adts.get(*binding) else {
                 return Ok(false);
@@ -1079,6 +1091,13 @@ fn render_typed<'e>(
 fn basic_matches<'e>(ctx: &ValueCtx<'e>, id: BuiltinTypeId, value: Value<'e>) -> bool {
     match id {
         BuiltinTypeId::INTEGER => matches!(value, Value::Int(_)),
+        BuiltinTypeId::INTEGER8 => matches!(value, Value::Int8(_)),
+        BuiltinTypeId::INTEGER16 => matches!(value, Value::Int16(_)),
+        BuiltinTypeId::INTEGER32 => matches!(value, Value::Int32(_)),
+        BuiltinTypeId::UNSIGNED_INTEGER16 => matches!(value, Value::UInt16(_)),
+        BuiltinTypeId::UNSIGNED_INTEGER32 => matches!(value, Value::UInt32(_)),
+        BuiltinTypeId::UNSIGNED_INTEGER64 => matches!(value, Value::UInt64(_)),
+        BuiltinTypeId::FLOAT32 => matches!(value, Value::Float32(_)),
         BuiltinTypeId::FLOAT => matches!(value, Value::Float(_)),
         BuiltinTypeId::BYTE => matches!(value, Value::Byte(_)),
         BuiltinTypeId::BOOLEAN => matches!(value, Value::Bool(_)),
@@ -1100,6 +1119,13 @@ fn render_shape<'e>(
 ) -> Result<(), Stop> {
     let written = match value {
         Value::Int(n) => n.to_string(),
+        Value::Int8(n) => n.to_string(),
+        Value::Int16(n) => n.to_string(),
+        Value::Int32(n) => n.to_string(),
+        Value::UInt16(n) => n.to_string(),
+        Value::UInt32(n) => n.to_string(),
+        Value::UInt64(n) => n.to_string(),
+        Value::Float32(x) => crate::base::prim::float32_to_text(x),
         Value::Float(x) => crate::base::prim::float_to_text(x),
         Value::Byte(b) => b.to_string(),
         Value::Bool(b) => {

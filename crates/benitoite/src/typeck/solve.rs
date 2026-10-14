@@ -775,6 +775,17 @@ impl Solver {
             if let Some(note) = note {
                 d = d.note(note);
             }
+            if let (ITy::Con(TyCon::Builtin(a), _), ITy::Con(TyCon::Builtin(b), _)) =
+                (self.zonk(expected), self.zonk(found))
+                && [a, b].iter().any(|ty| {
+                    super::text::numeric_suffix(*ty).is_some()
+                        && !matches!(*ty, B::INTEGER | B::FLOAT | B::BYTE)
+                })
+                && super::text::numeric_suffix(b).is_some()
+                && let Some(suffix) = super::text::numeric_suffix(a)
+            {
+                d = d.arg("suffix", suffix).help("numeric_width");
+            }
             if let Some(literal) = &r.int_literal
                 && self.zonk(expected) == ITy::Con(TyCon::Builtin(B::FLOAT), vec![])
             {
@@ -1117,6 +1128,19 @@ impl Solver {
             if has_error(&t) {
                 continue;
             }
+            // 型変数は呼び出し側の制約を待ち、最後まで幅が決まらなければ Integer にする。
+            // 既知の不適合な型への診断は保つ（設計書 02-05「制約の解決」）。
+            if set == Some(TySet::INT_DIV)
+                && (!matches!(&t, ITy::Var(_)) || final_pass)
+                && !matches!(&t, ITy::Con(TyCon::Builtin(b), args)
+                    if args.is_empty() && TySet::INT_DIV.contains(*b))
+            {
+                let integer = super::generate::basic(B::INTEGER);
+                if let Err(code) = self.equal(&integer, &ty, &r) {
+                    self.pair_failure(ctx, code, &integer, &ty, &r);
+                }
+                continue;
+            }
             match t {
                 ITy::Var(v) => {
                     unknown.entry(self.root(v).0).or_insert(r);
@@ -1140,13 +1164,15 @@ impl Solver {
                             matches!(con,TyCon::Builtin(b) if set.is_some_and(|s|s.contains(b)));
                     } else {
                         match con {
+                            TyCon::External(_) => valid = false,
                             TyCon::Builtin(b) => {
                                 valid = b.def().is_some_and(|d| {
                                     !matches!(
                                         d.class,
                                         BuiltinTypeClass::Opaque | BuiltinTypeClass::Resource
                                     )
-                                }) && (mode != Bound::Key || b != B::FLOAT);
+                                }) && (mode != Bound::Key
+                                    || !matches!(b, B::FLOAT | B::FLOAT32));
                                 if b.def()
                                     .is_some_and(|d| d.class == BuiltinTypeClass::Collection)
                                 {
@@ -1226,7 +1252,7 @@ impl Solver {
         let mut pending = vec![self.zonk(ty)];
         while let Some(ty) = pending.pop() {
             match ty {
-                ITy::Con(TyCon::Builtin(B::FLOAT), _) => return true,
+                ITy::Con(TyCon::Builtin(B::FLOAT | B::FLOAT32), _) => return true,
                 ITy::Con(TyCon::Adt(id), args) => {
                     if let Some(adt) = ctx.decls.out.adts.get(id) {
                         if adt.key_summary.always {
@@ -1295,7 +1321,7 @@ impl Solver {
                     op: OpName::Bin(BinOp::Div)
                 }
             )
-            && self.zonk(ty) == ITy::Con(TyCon::Builtin(B::INTEGER), vec![])
+            && matches!(self.zonk(ty), ITy::Con(TyCon::Builtin(b), _) if TySet::INT_DIV.contains(b))
         {
             d = d.help_edits(
                 "div",

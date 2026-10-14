@@ -1,0 +1,68 @@
+//! 正規表現の WASM の検証用パッケージ（設計書 03-08「Regex」、03-10「外部の関数」）。
+import Raw
+
+/// コンパイル済みの正規表現を持つ外部の型。
+public type Pattern = Raw.Pattern
+
+/// 一致した文字列とバイト位置。
+public type Found = Raw.Found
+
+/// [static]pattern.compile の検証用の入口。
+public function compile(source: String) -> Result[Pattern, String] uses State
+  return Raw.compile(source)
+end function
+
+/// [method]pattern.is-match の検証用の入口。
+public function isMatch(pattern: Pattern, text: String) -> Boolean uses State
+  return Raw.isMatch(pattern, text)
+end function
+
+/// [method]pattern.find の検証用の入口。
+public function find(pattern: Pattern, text: String) -> Option[Found] uses State
+  return Raw.find(pattern, text)
+end function
+
+/// [method]pattern.find-all の検証用の入口。
+public function findAll(pattern: Pattern, text: String) -> List[Found] uses State
+  return Raw.findAll(pattern, text)
+end function
+
+/// [method]pattern.replace-all の検証用の入口。
+public function replaceAll(pattern: Pattern, text: String, replacement: String) -> String uses State
+  return Raw.replaceAll(pattern, text, replacement)
+end function
+
+/// [method]pattern.count の検証用の入口。
+public function count(pattern: Pattern, text: String) -> Integer uses State
+  return Raw.count(pattern, text)
+end function
+
+/// is-match-once の検証用の入口。
+public function isMatchOnce(source: String, text: String) -> Result[Boolean, String]
+  return Raw.isMatchOnce(source, text)
+end function
+
+/// find-all-once の検証用の入口。
+public function findAllOnce(source: String, text: String) -> Result[List[Found], String]
+  return Raw.findAllOnce(source, text)
+end function
+
+/// count-once の検証用の入口。
+public function countOnce(source: String, text: String) -> Result[Integer, String]
+  return Raw.countOnce(source, text)
+end function
+
+/// 一致の text を返す。
+public function matchText(found: Found) -> String
+  return Raw.Found.text(found)
+end function
+
+/// 一致の byteStart を返す。
+public function matchByteStart(found: Found) -> Integer
+  return Raw.Found.byteStart(found)
+end function
+
+/// 一致の byteEnd を返す。
+public function matchByteEnd(found: Found) -> Integer
+  return Raw.Found.byteEnd(found)
+end function

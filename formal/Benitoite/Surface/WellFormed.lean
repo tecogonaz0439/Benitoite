@@ -45,7 +45,8 @@ mutual
     | .nullCon _ ts => Ty.VarsInList nt pe ts
     | .opName _ ts => Ty.VarsInList nt pe ts
     | .conValue _ ts ps => Ty.VarsInList nt pe ts ∧ Ty.VarsInList nt pe ps
-    | .literal _ | .negInt _ | .negFloat _ | .negDecimal _ _ | .unit => True
+    | .literal _ | .negInt _ | .negFloat _ | .negDecimal _ _ |
+      .negInteger8 _ | .negInteger16 _ | .negInteger32 _ | .negFloat32 _ | .unit => True
     | .paren e => e.Scoped nt pe nv
     | .record _ ts _ es => Ty.VarsInList nt pe ts ∧ es.Scoped nt pe nv
     | .recordUpdate _ ts _ _ base es =>

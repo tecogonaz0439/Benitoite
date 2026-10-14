@@ -1,0 +1,111 @@
+// 関門: B の公開する解析・診断・出力を、独立した A と CLI で比較する。
+// 数の分類、UTF-16、誤りの位置、深さと整形の退行は A の単体テストでは届かない。
+// パッケージの本当の入口を使い、検査専用の差し込み口を増やさない。
+dependency PureJson
+  path "../libraries.files/pure-json"
+end dependency
+
+dependency JsonChecks
+  path "../libraries.files/json-checks"
+end dependency
+
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.IO.Console
+import PureJson.Parser
+import JsonChecks.Check
+
+function main() -> Result[Unit, String] uses Console.Write
+  bind sources <- [
+    "[-0,-0.0,1.0,1e2]",
+    "{\"z\":1,\"a\":true,\"z\":2}",
+    " \n null\t ",
+    "true",
+    "false",
+    "\"\\u00e9\\ud83d\\ude00\"",
+    "\"\\\"\\\\\\b\\f\\n\\r\\t\\u0000\\u001f/\"",
+    "\"\u{7f}\"",
+    "[]",
+    "{}",
+    " { \"a\" : [ 1 , 2 ] , \"b\" : { } } ",
+    "{\"z\":1,\"a\":[true,null,{\"é\":\"😀\"}],\"z\":2}",
+    "[1,-2,3.0,\"text\",false]",
+    "[-0, -0.0, -0e3, -0]",
+    "{\"a\":-0.0,\"a\":-0}",
+    "{\"a\":-0,\"a\":-0.0,\"b\":-0}",
+    "{\"n\":\"1e400 and \\\"-1e400\\\"\"}",
+    "{\"$serde_json::private::Number\":\"123\"}",
+    "{\"\\u0024serde_json::private::Number\":\"1e9999\"}",
+    "{\"b\":{},\"a\":[1,{\"x\":[]},2]}",
+    "[-140268391805775.625,140268391805775.625]",
+    "5.960464477539063e-08",
+    "[1e15,1e16,1e17,1e-5,1e-6,5e-324,1.7976931348623157e308,-0.0]",
+    "[9223372036854775807,-9223372036854775808,9223372036854775808,18446744073709551616,-9223372036854775809,1e300,-0.0025]",
+    "\"\\/\\uD800\\uDC00\\uDBFF\\uDFFF\"",
+    "{\"é\":1,\"😀\":2,\"a\":3}",
+    "[1e-9999,0e9999,-0e9999]",
+    "[1,]",
+    "[1-2]",
+    "[1+2]",
+    "[1.5.5]",
+    "{\"a\":1e5e5}",
+    "[1,2-]",
+    "[1E+2-3]",
+    "[\"\\\\\",1-2]",
+    "[01]",
+    "[-]",
+    "[1.]",
+    "[1.0e]",
+    "1 2",
+    "[\n1,\n]",
+    "[\"é😀\",]",
+    "\"é",
+    "[1,",
+    "",
+    "   ",
+    "[1,\r\n",
+    "[1,\r",
+    "[1,\n",
+    "1e400",
+    "-1e400",
+    "{\n \"é😀\": [0, -1e400]\n}",
+    "[\"1e400\\\"\",2,1e400]",
+    "{\"a\":1e400,\"a\":0}",
+    "[1e400,}",
+    "[},1e400]",
+    "[",
+    "{",
+    "{\"a\"",
+    "{\"a\" 1}",
+    "{1:2}",
+    "{\"a\":1 \"b\":2}",
+    "{\"a\":1,}",
+    "nulX",
+    "tru",
+    "?",
+    "\"\\q\"",
+    "\"\\uZZZZ\"",
+    "\"\\uDC00\"",
+    "\"\\uD800x\"",
+    "\"\\uD800\\n\"",
+    "\"\\uD800\\u0041\"",
+    "\"a\u{1}b\"",
+    "\"a\nb\"",
+    "\"\\u123",
+    "1.",
+    "1e",
+    "-",
+    "\"\\uD800",
+    "\"\\uD800\\",
+    "[1]",
+    "{\"a\":}",
+    "\"\\uZZZZx\""
+  ]
+  bind _ <- try List.fold(sources, Result.Ok(()), lambda(acc: Result[Unit, String], source: String) -> Result[Unit, String] uses Console.Write
+    bind _ <- try acc
+    return Check.compare(source, Parser.parse, Parser.stringify, Parser.stringifyPretty)
+  end lambda)
+  bind _ <- try Check.writeValue("deep 32", Check.deep(32, Json.Value.Null), Parser.stringify, Parser.stringifyPretty)
+  bind _ <- try Check.writeValue("chunks and controls", Json.Value.String(String.repeat("\n\u{01}", 34)), Parser.stringify, Parser.stringifyPretty)
+  bind _ <- try Check.writeValue("non-finite", Json.Value.Array([Json.Value.Float(0.0 / 0.0), Json.Value.Float(1.0 / 0.0), Json.Value.Float(-1.0 / 0.0)]), Parser.stringify, Parser.stringifyPretty)
+  return Result.Ok(())
+end function

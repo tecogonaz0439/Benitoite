@@ -289,8 +289,19 @@ mod source_text {
 /// `replacement_refusal` の判定で置き換えを拒む。失敗したら元のファイルを変えずに残し、一時ファイルを消して、
 /// E0125 の診断を返す（`display` は診断に書く表示名）。
 pub fn replace_file(path: &Path, display: &str, content: &[u8]) -> Result<(), Box<Diagnostic>> {
+    replace_file_with(path, display, content, DiagCode::E0125, "fmt")
+}
+
+/// 道具ごとの診断を保ち、許可の検査と一時ファイルによる置換を共有する。
+pub(crate) fn replace_file_with(
+    path: &Path,
+    display: &str,
+    content: &[u8],
+    code: DiagCode,
+    suffix: &str,
+) -> Result<(), Box<Diagnostic>> {
     let write_error = |error: &std::io::Error| {
-        DiagBuilder::new(DiagCode::E0125)
+        DiagBuilder::new(code)
             .arg("path", display)
             .arg("reason", error.to_string())
             .note("reason")
@@ -308,7 +319,7 @@ pub fn replace_file(path: &Path, display: &str, content: &[u8]) -> Result<(), Bo
     };
     let mut temp_name = std::ffi::OsString::from(".");
     temp_name.push(name);
-    temp_name.push(format!(".fmt-{}", std::process::id()));
+    temp_name.push(format!(".{suffix}-{}", std::process::id()));
     let temp = target.with_file_name(temp_name);
     // 既にあるファイルは他者のものかもしれないので、作れなければ消さずに失敗とする（create_new）。
     let mut file = create_temp_file(&temp).map_err(|e| Box::new(write_error(&e).build()))?;

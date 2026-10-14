@@ -169,6 +169,7 @@ impl<'a, 'd> Body<'a, 'd> {
         let mut ty = solver.diagnostic_type(t);
         self.name_rigid_types(&mut ty, names, indices);
         ty.show(&TyNames {
+            bindings: &self.decls.resolved.bindings,
             adts: &self.decls.out.adts,
             effects: &self.decls.out.effects,
             type_params: names,

@@ -254,7 +254,11 @@ fn gen_pat(r: &mut Random, ty: &Ty, table: &AdtTable, depth: usize, nodes: &mut 
             }
             _ => panic!("unexpected builtin"),
         },
-        Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } | Ty::Fn(_) => {
+        Ty::Con(TyCon::External(_), _)
+        | Ty::Param(_)
+        | Ty::App(_, _)
+        | Ty::Rigid { .. }
+        | Ty::Fn(_) => {
             panic!("uninstantiated type")
         }
     }
@@ -268,7 +272,9 @@ fn ty_json(t: &Ty) -> Value {
             json!({"kind":b.def().unwrap().name.to_lowercase(),"args":args.iter().map(ty_json).collect::<Vec<_>>()})
         }
         Ty::Param(i) => json!({"kind":"param","index":i}),
-        Ty::App(_, _) | Ty::Rigid { .. } | Ty::Fn(_) => panic!("unexpected type"),
+        Ty::Con(TyCon::External(_), _) | Ty::App(_, _) | Ty::Rigid { .. } | Ty::Fn(_) => {
+            panic!("external or unexpected type")
+        }
     }
 }
 fn pat_json(p: &Pat) -> Value {

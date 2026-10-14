@@ -10,7 +10,7 @@ mutual
     match h with
     | .P_Wild => exact .P_Wild
     | .P_Var => exact .P_Var
-    | .P_Const hf hb hd ho => exact .P_Const hf hb hd ho
+    | .P_Const h => exact .P_Const h
     | .P_RangeInt => exact .P_RangeInt
     | .P_RangeChar => exact .P_RangeChar
     | .P_List hb ha hn => exact .P_List (PatTys.consCongr hc hb) (PatTys.consCongr hc ha) hn

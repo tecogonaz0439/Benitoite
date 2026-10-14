@@ -8,6 +8,8 @@
 // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 //! 言語仕様と付録の例を、初回リリース版の構文解析器と名前解決で確かめる（設計書 07-03「言語仕様の例の検査」）。
 
+mod doc_examples;
+
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -15,7 +17,7 @@ use benitoite::base::{FileId, IdGen, SourceKind};
 use benitoite::diag::{DiagCode, Diagnostic};
 use benitoite::pipeline::{self, CheckOptions};
 use benitoite::prelude;
-use benitoite::syntax::ast::Module;
+use benitoite::syntax::ast::{HeaderItem, Module};
 use benitoite::syntax::lexer::lex;
 use benitoite::syntax::newline::resolve_newlines;
 use benitoite::syntax::parser::parse;
@@ -429,16 +431,53 @@ fn check_local_bindings(
     };
     // 仮のモジュールの内容は不要だが、ファイルがないと読み込みで止まり名前解決に
     // 進まない。構文解析した import のパスに空のソースを当てる。
-    let mut paths: Vec<_> = module
-        .imports
+    let dependencies: Vec<_> = module
+        .header
         .iter()
-        .filter(|import| {
-            import
-                .path
-                .first()
-                .is_some_and(|name| name.text != "Benitoite")
+        .filter_map(|item| {
+            let HeaderItem::Dependency(block) = item else {
+                return None;
+            };
+            let path = block
+                .fields
+                .iter()
+                .find(|field| field.name.text == "path")?;
+            Some((block.name.text.as_str(), path.value.value.as_str()))
         })
-        .map(|import| {
+        .collect();
+    let mut fixtures: Vec<(String, Vec<u8>)> = dependencies
+        .iter()
+        .map(|(alias, path)| {
+            // 外部のファイルだけを補い、依存の解決も本物の読み込みと名前解決を通す。
+            (
+                format!("{path}/package.bnt"),
+                format!("language \"0.0.3\"\npackage {alias}\nend package\n").into_bytes(),
+            )
+        })
+        .collect();
+    for import in &module.imports {
+        if import
+            .path
+            .first()
+            .is_some_and(|name| name.text == "Benitoite")
+        {
+            continue;
+        }
+        let dependency = dependencies
+            .iter()
+            .find(|(alias, _)| import.path.first().is_some_and(|name| name.text == *alias));
+        let path = if let Some((_, root)) = dependency {
+            format!(
+                "{root}/{}.bnt",
+                import
+                    .path
+                    .iter()
+                    .skip(1)
+                    .map(|name| name.text.as_str())
+                    .collect::<Vec<_>>()
+                    .join("/")
+            )
+        } else {
             format!(
                 "{}.bnt",
                 import
@@ -448,12 +487,17 @@ fn check_local_bindings(
                     .collect::<Vec<_>>()
                     .join("/")
             )
-        })
-        .collect();
-    paths.sort();
-    paths.dedup();
+        };
+        fixtures.push((path, Vec::new()));
+    }
+    fixtures.sort_by(|left, right| left.0.cmp(&right.0));
+    fixtures.dedup_by(|left, right| left.0 == right.0);
     let mut files = vec![("example.bnt", source.as_bytes())];
-    files.extend(paths.iter().map(|path| (path.as_str(), b"".as_slice())));
+    files.extend(
+        fixtures
+            .iter()
+            .map(|(path, bytes)| (path.as_str(), bytes.as_slice())),
+    );
     let checked = pipeline::check_files(
         &files,
         CheckOptions {
@@ -478,6 +522,13 @@ fn check_local_bindings(
                                 | DiagCode::E0320
                                 | DiagCode::E0321
                                 | DiagCode::E0322
+                                | DiagCode::E0916
+                                | DiagCode::E0917
+                                | DiagCode::E0918
+                                | DiagCode::E0919
+                                | DiagCode::E0920
+                                | DiagCode::E0921
+                                | DiagCode::E0922
                         )
                 })
         })
@@ -625,6 +676,24 @@ fn spec_and_appendix_examples_are_readable() {
         failures.join("\n"),
         summaries.join("\n")
     );
+}
+
+// 文書の数の例をそのまま実行し、型と診断・結果が説明とずれる退行を検出する。
+// 構文と束縛だけの検査ではこのずれを捕まえられないため、文書の例の境界で
+// 共通の実行器を使う（設計書 01-04「Integer」「Float」、07-03「言語仕様の例の検査」）。
+#[test]
+fn numeric_spec_examples_behave_as_written() {
+    let (count, failures) = doc_examples::check_documents(
+        &design_directory().join("01-spec"),
+        &["01-04-types-basic.md"],
+        "docs/design/01-spec/",
+    );
+    assert!(
+        failures.is_empty(),
+        "{count} examples checked:\n{}",
+        failures.join("\n")
+    );
+    assert!(count > 0, "数の仕様の実行する例が必要である");
 }
 
 // 検査器が壊れた例を見逃す退行を、この検査器の判定と集計で確かめる。本番の段に

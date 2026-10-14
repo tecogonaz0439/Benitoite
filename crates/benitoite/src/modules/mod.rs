@@ -16,6 +16,7 @@ use crate::syntax::token::Comment;
 pub const MAX_TOTAL_SOURCE_BYTES: usize = 512 * 1024 * 1024;
 
 /// モジュールの名前の各段。利用者のモジュールは根のディレクトリからの名前（`["Lib", "Text"]`）、
+/// 依存のモジュールは別名から始まる名前（`["Textkit", "Slug"]`）、
 /// 標準ライブラリのモジュールは `Benitoite` から始まる名前（`["Benitoite", "IO", "Console"]`）。
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct ModulePath(pub Vec<String>);
@@ -32,8 +33,14 @@ impl ModulePath {
 pub enum ModuleKind {
     /// 実行を始めるモジュール
     Entry,
+    /// 宣言を持たない設定ファイル `package.bnt`。
+    Config,
+    /// 依存として読んだ設定ファイル。根の設定と警告の扱いを分ける。
+    PackageConfig,
     /// import で読み込んだ利用者のモジュール
     User,
+    /// 依存のパッケージから取り込んだモジュール。
+    Package,
     /// prelude のモジュール（標準ライブラリのうち import なしで使える部分）
     Prelude,
     /// prelude でない標準ライブラリのモジュール
@@ -150,10 +157,14 @@ impl ModuleFs for RealFs {
             let Ok(name) = entry.file_name().into_string() else {
                 continue;
             };
-            entries.push(DirEntryName {
-                name,
-                is_dir: std::fs::metadata(entry.path())?.is_dir(),
-            });
+            let kind = entry.file_type()?;
+            // 壊れたリンクも一覧には残し、各操作の規則で無視または拒否する。
+            let is_dir = if kind.is_symlink() {
+                std::fs::metadata(entry.path()).is_ok_and(|metadata| metadata.is_dir())
+            } else {
+                kind.is_dir()
+            };
+            entries.push(DirEntryName { name, is_dir });
         }
         Ok(entries)
     }
@@ -176,8 +187,9 @@ impl ModuleTable {
 }
 
 /// 実行を始めるファイルから import を辿ってすべてのモジュールを読み、字句解析と構文解析を行う
-/// （02-02「ソースとファイル ID」の 4 手順）。作業の一覧の最初に実行を始めるファイルを、続けて
-/// `stdlib` のうち prelude のモジュールを表の順に置く。`stdlib` の prelude でないモジュールは、
+/// （02-02「ソースとファイル ID」の手順）。作業の一覧の最初に実行を始めるファイルを、続けて
+/// `stdlib` のうち prelude のモジュールを表の順に置く。入口の解析の直後には根の設定ファイルも読む。
+/// `stdlib` の prelude でないモジュールは、
 /// import で辿れたものだけを読む（02-01「段と段の間のデータ」）。
 /// すべてのファイルを読み終えた後、依存グラフの循環を明示の積み重ねで調べる（02-04「依存グラフと循環の検出」）。
 /// 誤りがあっても読めたものは結果に入れる。呼び出し側は、診断に誤りが一つでもあれば名前解決に進まない。
@@ -192,10 +204,40 @@ pub fn load_program(
 
 mod cycle;
 mod find;
+mod hash;
 mod load;
+pub(crate) mod package;
 mod text;
 
 #[cfg(test)]
 pub(crate) mod memfs;
 #[cfg(test)]
+mod test_support;
+#[cfg(test)]
 mod tests;
+
+/// 読み込みの不変条件に反する状態を、検査の誤りと区別して報告する。
+fn internal_error(message: String) -> Diagnostic {
+    Diagnostic {
+        kind: crate::diag::ReportKind::Internal,
+        severity: crate::diag::Severity::Error,
+        code: None,
+        message,
+        primary: None,
+        secondary: Vec::new(),
+        notes: Vec::new(),
+        helps: Vec::new(),
+        trace: None,
+        task_origins: Vec::new(),
+        waiting: Vec::new(),
+        backtrace: None,
+    }
+}
+
+/// 依存の読み込みは OS の文言に依存しない理由を示す。
+fn io_reason(error: &io::Error) -> &'static str {
+    text::IO_REASONS
+        .iter()
+        .find_map(|(kind, reason)| (*kind == error.kind()).then_some(*reason))
+        .unwrap_or(text::IO_OTHER)
+}

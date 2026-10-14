@@ -1,0 +1,86 @@
+ok [0,-0.0,1.0,100.0] | value=true output=true
+ok {"a":true,"z":2} | value=true output=true
+ok null | value=true output=true
+ok true | value=true output=true
+ok false | value=true output=true
+ok "é😀" | value=true output=true
+ok "\"\\\b\f\n\r\t\u0000\u001f/" | value=true output=true
+ok "" | value=true output=true
+ok [] | value=true output=true
+ok {} | value=true output=true
+ok {"a":[1,2],"b":{}} | value=true output=true
+ok {"a":[true,null,{"é":"😀"}],"z":2} | value=true output=true
+ok [1,-2,3.0,"text",false] | value=true output=true
+ok [0,-0.0,-0.0,0] | value=true output=true
+ok {"a":0} | value=true output=true
+ok {"a":-0.0,"b":0} | value=true output=true
+ok {"n":"1e400 and \"-1e400\""} | value=true output=true
+ok {"$serde_json::private::Number":"123"} | value=true output=true
+ok {"$serde_json::private::Number":"1e9999"} | value=true output=true
+ok {"a":[1,{"x":[]},2],"b":{}} | value=true output=true
+ok [-140268391805775.62,140268391805775.62] | value=true output=true
+ok 5.960464477539063e-8 | value=true output=true
+ok [1000000000000000.0,1e+16,1e+17,0.00001,1e-6,5e-324,1.7976931348623157e+308,-0.0] | value=true output=true
+ok [9223372036854775807,-9223372036854775808,9.223372036854776e+18,1.8446744073709552e+19,-9.223372036854776e+18,1e+300,-0.0025] | value=true output=true
+ok "/𐀀􏿿" | value=true output=true
+ok {"a":3,"é":1,"😀":2} | value=true output=true
+ok [0.0,0.0,-0.0] | value=true output=true
+error 1:4 trailing comma | value=true output=true
+error 1:3 expected `,` or `]` | value=true output=true
+error 1:3 expected `,` or `]` | value=true output=true
+error 1:5 expected `,` or `]` | value=true output=true
+error 1:9 expected `,` or `}` | value=true output=true
+error 1:5 expected `,` or `]` | value=true output=true
+error 1:6 expected `,` or `]` | value=true output=true
+error 1:8 expected `,` or `]` | value=true output=true
+error 1:3 invalid number | value=true output=true
+error 1:3 invalid number | value=true output=true
+error 1:4 invalid number | value=true output=true
+error 1:6 invalid number | value=true output=true
+error 1:3 trailing characters | value=true output=true
+error 3:1 trailing comma | value=true output=true
+error 1:7 trailing comma | value=true output=true
+error 1:3 EOF while parsing a string | value=true output=true
+error 1:4 EOF while parsing a value | value=true output=true
+error 1:1 EOF while parsing a value | value=true output=true
+error 1:4 EOF while parsing a value | value=true output=true
+error 2:1 EOF while parsing a value | value=true output=true
+error 1:5 EOF while parsing a value | value=true output=true
+error 2:1 EOF while parsing a value | value=true output=true
+error 1:1 number out of range | value=true output=true
+error 1:1 number out of range | value=true output=true
+error 2:12 number out of range | value=true output=true
+error 1:14 number out of range | value=true output=true
+error 1:6 number out of range | value=true output=true
+error 1:2 number out of range | value=true output=true
+error 1:2 expected value | value=true output=true
+error 1:2 EOF while parsing a list | value=true output=true
+error 1:2 EOF while parsing an object | value=true output=true
+error 1:5 EOF while parsing an object | value=true output=true
+error 1:6 expected `:` | value=true output=true
+error 1:2 key must be a string | value=true output=true
+error 1:8 expected `,` or `}` | value=true output=true
+error 1:8 trailing comma | value=true output=true
+error 1:4 expected ident | value=true output=true
+error 1:4 EOF while parsing a value | value=true output=true
+error 1:1 expected value | value=true output=true
+error 1:3 invalid escape | value=true output=true
+error 1:7 invalid escape | value=true output=true
+error 1:7 lone leading surrogate in hex escape | value=true output=true
+error 1:8 unexpected end of hex escape | value=true output=true
+error 1:9 unexpected end of hex escape | value=true output=true
+error 1:13 lone leading surrogate in hex escape | value=true output=true
+error 1:3 control character (\u0000-\u001F) found while parsing a string | value=true output=true
+error 2:1 control character (\u0000-\u001F) found while parsing a string | value=true output=true
+error 1:7 EOF while parsing a string | value=true output=true
+error 1:3 EOF while parsing a value | value=true output=true
+error 1:3 EOF while parsing a value | value=true output=true
+error 1:2 EOF while parsing a value | value=true output=true
+error 1:8 EOF while parsing a string | value=true output=true
+error 1:9 EOF while parsing a string | value=true output=true
+ok [1] | value=true output=true
+error 1:6 expected value | value=true output=true
+error 1:7 invalid escape | value=true output=true
+deep 32 | compact=true pretty=true bytes=68
+chunks and controls | compact=true pretty=true bytes=274
+non-finite | compact=true pretty=true bytes=16

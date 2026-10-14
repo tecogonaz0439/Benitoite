@@ -72,6 +72,7 @@
 | [IO のモジュール](03-interop/03-07-io-modules.md) | `Benitoite.IO` の下のモジュール（Console・File・Process・Clock・Random）、外部コマンドとシェル、ファイルのリソースの型、IOErrorKind と関数の対応 |
 | [テキストとデータの処理](03-interop/03-08-text-and-data.md) | Path・Json・Regex・Csv・Time・Encoding・Hash |
 | [ネットワークのモジュール](03-interop/03-09-network.md) | `Benitoite.Network` の下のモジュール（Http）、HTTP のサーバとクライアント、失敗の種類、使うクレート |
+| [外部の関数](03-interop/03-10-external-functions.md) | 外部の関数と外部の型の宣言、パスの基準、取り込みと型の照合、実行と上限と失敗、外部の型の値の解放 |
 
 ### 配布とプラットフォーム（`05-platform/`）
 
@@ -87,6 +88,7 @@
 | [フォーマッタ](06-tooling/06-03-formatter.md) | 正規形（字句の間の空白、字下げ、コメント、空の行、行末と文字、複数行の文字列）、入力表現、整形後の検証、構文の誤りがあるファイルと標準ライブラリのソースの扱い、テスト |
 | [利用者プログラムのテスト](06-tooling/06-04-test-runner.md) | テストの関数と `Assert`、組み込みの操作の差し替え、テストの実行と報告、プロパティベーステスト（derive 機構の利用） |
 | [Agent Skills 対応](06-tooling/06-06-agent-skills.md) | 同梱する Agent Skill の構成と生成、`skill` による導入、実行の前の確認の手順、Skill の評価、言語の文書と日本語の訳 |
+| [パッケージ](06-tooling/06-09-packages.md) | `package.bnt`、言語の版、依存の解決、パッケージの構成、中身のハッシュ、`benitoite package` |
 
 ### 品質と非機能要件（`07-quality/`）
 

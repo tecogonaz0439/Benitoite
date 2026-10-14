@@ -1,5 +1,6 @@
 import Benitoite.Surface.CheckSound
 import Benitoite.Surface.Examples
+import Benitoite.Surface.CheckTables
 
 /-! 検査全体の評価例。成功の真偽値と、原子集合の上の結果型・エフェクトを比較する。 -/
 namespace Benitoite.Surface.Check.Examples
@@ -193,6 +194,119 @@ example : (run basic (.lazyE (.last (.returnE intTy (eInt 1)))) [] (some intTy))
 example : (run basic (.lam [] intTy emptyEff (.last (eInt 1)))).toBool = false := by decide
 example : (checkBlock basic .strict [] [] none .other [] (.lastBind .bind (.base .boolean) (eInt 1))).toBool = false := by decide
 example : (checkBlock basic .strict [] [] none .other [] (.lastDiscard (eInt 1))).toBool = true := by decide
+
+-- 新しい型の演算はリテラルの構文に依存せず、局所の値で検査する。
+private def widthIntegers : List Ty :=
+  [.base .integer8, .base .integer16, .base .integer32,
+   .base .unsignedInteger16, .base .unsignedInteger32, .base .unsignedInteger64]
+
+private def widthNumbers : List Ty := widthIntegers ++ [.base .float32]
+
+/-- 型集合の拒否を表の空欄で代用しないよう、全演算に同型のシグネチャを与える。
+比較・等値の制約は本番と同じ組み込みの判定から作る。 -/
+private def widthMaterials (t : Ty) : List (PrimName × Benitoite.Exchange.PrimMaterial) :=
+  [("arithmetic", ⟨[], 0, [t, t], t, emptyEff, .pure, none⟩),
+   ("negation", ⟨[], 0, [t], t, emptyEff, .pure, none⟩),
+   ("comparison", ⟨[], 0, [t, t],
+      .base .boolean, emptyEff, .pure, none⟩),
+   ("equality", ⟨[⟨true, false, false⟩], 0, [.tvar 0, .tvar 0],
+      .base .boolean, emptyEff, .pure, none⟩),
+   ("toString", ⟨[], 0, [t], .base .string, emptyEff, .pure, none⟩)]
+
+private def widthBuiltinInput : Benitoite.Exchange.BuiltinInput :=
+  ⟨"width", "operators", [], [], [], [], [], [], [], []⟩
+
+private def widthOp : OpPrim
+  | .binary .eq, t | .binary .ne, t => some ("equality", [t])
+  | .binary .lt, _ | .binary .le, _ | .binary .gt, _ | .binary .ge, _ =>
+      some ("comparison", [])
+  | .binary _, _ => some ("arithmetic", [])
+  | .neg, _ => some ("negation", [])
+
+private def widthInput (t : Ty) : Input :=
+  let S := dataSummaries []
+  let entries := CheckTables.primEntries S (widthMaterials t)
+  { D := emptyDecls, B := CheckTables.builtins S entries widthBuiltinInput,
+    satDec := satB S, admitsDec := CheckTables.admitsDec S entries,
+    opPrim := widthOp, ctors := fun _ => [], atoms := [] }
+
+private def widthBinary (t : Ty) (o : BinOp) : Result Inferred :=
+  run (widthInput t) (.binary o t (.local 0) (.local 1)) [some t, some t]
+
+private def rejected (x : Result Inferred) (reason : String) : Bool :=
+  match x with
+  | .error e => e.path == [] && e.reason == reason
+  | .ok _ => false
+
+-- 同型の整数の算術と Float32 の算術。整数に /、Float32 に div・mod は許さない。
+example : widthIntegers.all (fun t => [.add, .sub, .mul, .intDiv, .mod].all
+    (fun o => got (widthInput t) (widthBinary t o) t)) = true := by decide
+example : [.add, .sub, .mul, .div].all (fun o =>
+    got (widthInput (.base .float32)) (widthBinary (.base .float32) o) (.base .float32)) = true := by decide
+example : widthIntegers.all (fun t => rejected (widthBinary t .div)
+    "binary operator type is not allowed") = true := by decide
+example : [.intDiv, .mod].all (fun o => rejected (widthBinary (.base .float32) o)
+    "binary operator type is not allowed") = true := by decide
+
+-- 比較には ordered、等値には equality の実際の判定を使い、結果は Boolean になる。
+example : widthNumbers.all (fun t => [.eq, .ne, .lt, .le, .gt, .ge].all
+    (fun o => got (widthInput t) (widthBinary t o) (.base .boolean))) = true := by decide
+example : (run (widthInput (.base .integer32))
+    (.binary .add (.base .integer32) (.local 0) (.local 1))
+    [some (.base .integer32), some (.base .unsignedInteger32)]).toBool = false := by decide
+
+-- 同型の関数が表にあっても、Byte の算術と符号なしの負号は型集合で拒否する。
+example : [.add, .sub, .mul, .div, .intDiv, .mod].all (fun o => rejected (widthBinary (.base .byte) o)
+    "binary operator type is not allowed") = true := by decide
+example : [.base .unsignedInteger16, .base .unsignedInteger32, .base .unsignedInteger64,
+    .base .byte].all (fun t => rejected (run (widthInput t) (.neg t (.local 0)) [some t])
+      "negation type is not allowed") = true := by decide
+example : [.base .integer8, .base .integer16, .base .integer32, .base .float32].all
+    (fun t => got (widthInput t) (run (widthInput t) (.neg t (.local 0)) [some t]) t) = true := by decide
+
+-- リテラルの幅と直接負号の型を検査する。旧リテラルの例では幅の取り違えを捕まえられない。
+-- 大きさの境界値は脱糖の例が担当し、ここでは返す型と空のエフェクトを確かめる。
+private def widthLiterals : List (Literal × Ty) :=
+  [(.integer8 1, .base .integer8), (.integer16 1, .base .integer16),
+   (.integer32 1, .base .integer32), (.byte 1, .base .byte),
+   (.unsignedInteger16 1, .base .unsignedInteger16),
+   (.unsignedInteger32 1, .base .unsignedInteger32),
+   (.unsignedInteger64 1, .base .unsignedInteger64), (.float32 0x3f800000, .base .float32)]
+
+example : widthLiterals.all (fun (l, t) => got basic (run basic (.literal l)) t) = true := by decide
+example : [(Expr.negInteger8 128, Ty.base .integer8), (.negInteger16 32768, .base .integer16),
+    (.negInteger32 2147483648, .base .integer32), (.negFloat32 0, .base .float32)].all
+    (fun (e, t) => got basic (run basic e) t) = true := by decide
+
+-- 同型の関数が存在する表を使い、零への負号も型集合の条件で拒否する。
+example : [Literal.byte, .unsignedInteger16, .unsignedInteger32, .unsignedInteger64].all
+    (fun make => [0, 1].all (fun n =>
+      let l := make n
+      let t := l.toConst.type
+      rejected (run (widthInput t) (.neg t (.literal l)))
+        "negation type is not allowed")) = true := by decide
+
+-- 同じリテラルを使い、束縛とガードは通り、Integer の定数・新しい数の範囲は型で拒否される。
+-- match の入口で検査し、パターン用の判定だけを重ねて試験しない。
+example : widthLiterals.all (fun (l, t) =>
+    got basic (run basic (.matchE t (.literal l)
+      (.cons [⟨.var, [0]⟩] (some eTrue) (.last (.local 0))
+        (.single .wild (.last (.literal l)) .nil)))) t) = true := by decide
+example : widthLiterals.all (fun (l, _) =>
+    match run basic (.matchE unitTy (.literal l)
+      (.single (.integer 1) (.last .unit) (.single .wild (.last .unit) .nil))) with
+    | .error e => e.reason == "match alternatives have inconsistent bindings"
+    | .ok _ => false) = true := by decide
+example : widthLiterals.all (fun (l, _) =>
+    match run basic (.matchE unitTy (.literal l)
+      (.single (.range l.toConst l.toConst) (.last .unit) (.single .wild (.last .unit) .nil))) with
+    | .error e => e.reason == "match alternatives have inconsistent bindings"
+    | .ok _ => false) = true := by decide
+
+-- 各型の純粋な変換関数を実際に呼ぶ補間。変換と連結の型は別々に検査する。
+example : widthNumbers.all (fun t => got (widthInput t)
+    (run (widthInput t) (.interpolation [.converted t] (.cons (.local 0) .nil)
+      (.cons (.primName "toString" [] []) .nil)) [some t]) (.base .string)) = true := by decide
 
 end Benitoite.Surface.Check.Examples
 

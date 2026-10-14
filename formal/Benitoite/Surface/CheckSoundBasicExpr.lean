@@ -28,6 +28,30 @@ theorem negDecimal_case {q n scale} : CaseSound q (.expr (.negDecimal n scale)) 
   cases eq
   exact ⟨.E_NegDecimal, by trivial, emptyEff_atoms _⟩
 
+theorem negInteger8_case {q n} : CaseSound q (.expr (.negInteger8 n)) := by
+  intro ih C Γ R p path s s' a ε hq he hΓ hR h
+  obtain ⟨eq, _⟩ := checking_pure_ok h
+  cases eq
+  exact ⟨.E_NegInteger8, by trivial, emptyEff_atoms _⟩
+
+theorem negInteger16_case {q n} : CaseSound q (.expr (.negInteger16 n)) := by
+  intro ih C Γ R p path s s' a ε hq he hΓ hR h
+  obtain ⟨eq, _⟩ := checking_pure_ok h
+  cases eq
+  exact ⟨.E_NegInteger16, by trivial, emptyEff_atoms _⟩
+
+theorem negInteger32_case {q n} : CaseSound q (.expr (.negInteger32 n)) := by
+  intro ih C Γ R p path s s' a ε hq he hΓ hR h
+  obtain ⟨eq, _⟩ := checking_pure_ok h
+  cases eq
+  exact ⟨.E_NegInteger32, by trivial, emptyEff_atoms _⟩
+
+theorem negFloat32_case {q bits} : CaseSound q (.expr (.negFloat32 bits)) := by
+  intro ih C Γ R p path s s' a ε hq he hΓ hR h
+  obtain ⟨eq, _⟩ := checking_pure_ok h
+  cases eq
+  exact ⟨.E_NegFloat32, by trivial, emptyEff_atoms _⟩
+
 theorem unit_case {q} : CaseSound q (.expr .unit) := by
   intro ih C Γ R p path s s' a ε hq he hΓ hR h
   obtain ⟨eq, _⟩ := checking_pure_ok h
@@ -235,6 +259,7 @@ theorem neg_case {q t e} : CaseSound q (.expr (.neg t e)) := by
   have ihe : ExprSound q e := ih (.expr e) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
   simp only [Expr.AtomsIn] at he
+  obtain ⟨uAllowed, hallowed, h⟩ := checking_lift_bind_ok h
   obtain ⟨⟨b, ts⟩, hop, h⟩ := checking_lift_bind_ok h
   obtain ⟨u0, hnil, h⟩ := checking_lift_bind_ok h
   obtain ⟨sg, hsig, h⟩ := checking_lift_bind_ok h
@@ -253,7 +278,7 @@ theorem neg_case {q t e} : CaseSound q (.expr (.neg t e)) := by
   have htarget : Ty.AtomsIn q.atoms (.fn [t] t emptyEff) :=
     ⟨⟨he.1, trivial⟩, he.1, emptyEff_atoms _⟩
   have hfnEq := tyEq_sound (fnTyCheck_atoms ha.1 ha.2.1 ha.2.2 hts (by simp)) htarget (require_ok hfn).1
-  refine ⟨.E_Neg hop' (List.isEmpty_iff.mp (require_ok hnil).1) hsig'
+  refine ⟨.E_Neg (require_ok hallowed).1 hop' (List.isEmpty_iff.mp (require_ok hnil).1) hsig'
     (by simpa using (require_ok hlen).1) (by simpa using (require_ok heffs).1)
     (hq.admits b C ts sg hsig' (require_ok hadmit).1)
     (by simpa only [fnTyCheck_eq, emptyEff] using hfnEq) ht, he.1, hae⟩
@@ -264,6 +289,7 @@ theorem binary_case {q o t lhs rhs} : CaseSound q (.expr (.binary o t lhs rhs)) 
   have ihr : ExprSound q rhs := ih (.expr rhs) (by simp [CheckNode.size] <;> omega)
   intro C Γ R p path s s' a ε hq he hΓ hR h
   simp only [Expr.AtomsIn] at he
+  obtain ⟨uAllowed, hallowed, h⟩ := checking_lift_bind_ok h
   obtain ⟨⟨b, ts⟩, hop, h⟩ := checking_lift_bind_ok h
   obtain ⟨sg, hsig, h⟩ := checking_lift_bind_ok h
   obtain ⟨u1, hlen, h⟩ := checking_lift_bind_ok h
@@ -288,7 +314,7 @@ theorem binary_case {q o t lhs rhs} : CaseSound q (.expr (.binary o t lhs rhs)) 
   have hpsEq := tysEq_sound haf.1 (show Tys.AtomsIn q.atoms [t, t] from ⟨he.1, he.1, trivial⟩) (require_ok hps).1
   have hεEq := eff_eq_empty_of_sub (acceptEff_sound haf.2.2 hpure)
   rw [union_eq hal har]
-  refine ⟨.E_Binary hop' (hq.operators _ _ _ _ hop') hsig'
+  refine ⟨.E_Binary (require_ok hallowed).1 hop' (hq.operators _ _ _ _ hop') hsig'
     (by simpa using (require_ok hlen).1) (by simpa using (require_ok heffs).1)
     (hq.admits b C ts sg hsig' (require_ok hadmit).1) ?_ hl hr,
     haf.2.1, CheckTools.union_atoms hal har⟩

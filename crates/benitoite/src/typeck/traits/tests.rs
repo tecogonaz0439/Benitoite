@@ -56,7 +56,7 @@ fn standard_library_sources_and_dictionary_contracts() {
             }
         })
         .collect();
-    assert_eq!(impls.len(), 44);
+    assert_eq!(impls.len(), 58);
     assert_eq!(t.impls.iter().count(), impls.len());
     for source in impls {
         let imp = t.impls.get(source.id).unwrap();
@@ -221,6 +221,7 @@ fn node_at(l: &LoadOutput, start: usize, end: usize) -> NodeId {
             | Item::Record(_)
             | Item::Trait(_)
             | Item::Effect(_)
+            | Item::ExternalType(_)
             | Item::Error(_) => {}
         }
     }
@@ -468,13 +469,24 @@ fn missing_or_unknown_dictionary_and_parameter_fixes() {
 }
 #[test]
 fn coherence_and_method_contracts() {
-    let first = "implement Show[Integer]\n function show(x: Integer) -> String return \"\" end function\nend implement\n";
-    let s = format!("{SHOW}{first}{first}");
-    let d = expect(&s, &[(C::E0702, "implement Show[", 1)]);
-    assert_eq!(
-        d[0].secondary[0].span.start.0 as usize,
-        s.find("implement").unwrap()
-    );
+    // 別名で同じ型の実装を二度登録できる退行は、名前解決の成功だけでは捕まらない。
+    for (first, second) in [
+        ("Integer", "Integer"),
+        ("Integer", "Integer64"),
+        ("Float", "Float64"),
+        ("Byte", "UnsignedInteger8"),
+        ("UnsignedInteger64", "UnsignedInteger"),
+    ] {
+        let implementations = [first, second]
+            .map(|ty| format!("implement Show[{ty}]\n function show(x: {ty}) -> String return \"\" end function\nend implement\n"))
+            .join("");
+        let s = format!("{SHOW}{implementations}");
+        let d = expect(&s, &[(C::E0702, "implement Show[", 1)]);
+        assert_eq!(
+            d[0].secondary[0].span.start.0 as usize,
+            s.find("implement").unwrap()
+        );
+    }
     let s = "import Benitoite.Trait\nimplement Trait.Show[Integer]\n function show(x: Integer) -> String return \"\" end function\nend implement\n";
     let (_, _, _, d) = check(s);
     assert_eq!(

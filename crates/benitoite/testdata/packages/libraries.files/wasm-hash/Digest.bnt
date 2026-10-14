@@ -1,0 +1,13 @@
+//! SHA-256 の WASM の検証用パッケージ（設計書 03-08「Hash」、03-10「外部の関数」）。
+
+/// バイト列を速い経路で渡し、SHA-256 をバイト列で返す。
+@external("wasm", "wasm/hash.wasm", "sha256")
+public function sha256(bytes: Bytes) -> Bytes
+
+/// 同じ関数を、動的な値の経路で呼ぶ。
+@external("wasm", "wasm/hash.wasm", "sha256")
+public function sha256List(bytes: List[Byte]) -> List[Byte]
+
+/// SHA-256 を小文字の十六進で返す。
+@external("wasm", "wasm/hash.wasm", "sha256-hex")
+public function sha256Hex(bytes: Bytes) -> String

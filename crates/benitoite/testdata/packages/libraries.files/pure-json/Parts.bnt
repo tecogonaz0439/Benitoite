@@ -1,0 +1,29 @@
+//! 文字列の部分をまとめ、出力の要素数の上限を避ける（設計書 03-08「Json」）。
+
+/// 部分と結合済みのまとまり。
+public(package) record Buffer
+  pending: List[String]
+  chunks: List[String]
+  count: Integer
+end record
+
+/// 空の出力を作る。
+public(package) function empty() -> Buffer
+  return Buffer(pending: [], chunks: [], count: 0)
+end function
+
+// 各部分を二度だけ写す。64 部分ごとに結合し、最後に全体の長さも検査する。
+/// 出力の部分を追加する。
+public(package) function append(parts: Buffer, part: String) -> Buffer
+  bind next <- [..Buffer.pending(parts), part]
+  return if Buffer.count(parts) = 63 then
+    Buffer(pending: [], chunks: [..Buffer.chunks(parts), String.join(next, "")], count: 0)
+  else
+    Buffer(pending: next, chunks: Buffer.chunks(parts), count: Buffer.count(parts) + 1)
+  end if
+end function
+
+/// 全体を一度で結合する。
+public(package) function finish(parts: Buffer) -> String
+  return String.join([..Buffer.chunks(parts), String.join(Buffer.pending(parts), "")], "")
+end function

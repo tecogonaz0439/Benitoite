@@ -74,6 +74,7 @@ impl Position {
                 BindingKind::Data
                     | BindingKind::BuiltinType(_)
                     | BindingKind::Alias
+                    | BindingKind::ExternalType
                     | BindingKind::Record
                     | BindingKind::TypeParam { .. }
             ),
@@ -98,7 +99,10 @@ pub(super) fn kind_label(kind: BindingKind) -> &'static str {
         | BindingKind::Method { .. }
         | BindingKind::Op { .. }
         | BindingKind::Local(_) => text::VALUE,
-        BindingKind::Data | BindingKind::BuiltinType(_) | BindingKind::Alias => text::TYPE,
+        BindingKind::Data
+        | BindingKind::BuiltinType(_)
+        | BindingKind::Alias
+        | BindingKind::ExternalType => text::TYPE,
         BindingKind::Record => text::RECORD,
         BindingKind::Ctor { .. } => text::CONSTRUCTOR,
         BindingKind::Trait => text::TRAIT,
@@ -121,7 +125,10 @@ fn kind_name(kind: BindingKind) -> &'static str {
         BindingKind::Ctor { .. } => text::CONSTRUCTOR_NAME,
         BindingKind::TypeParam { .. } => text::TYPE_PARAMETER_NAME,
         BindingKind::EffectVar { .. } => text::EFFECT_VARIABLE_NAME,
-        BindingKind::Data | BindingKind::BuiltinType(_) | BindingKind::Alias => text::DATA,
+        BindingKind::Data
+        | BindingKind::BuiltinType(_)
+        | BindingKind::Alias
+        | BindingKind::ExternalType => text::DATA,
         BindingKind::Fn
         | BindingKind::BuiltinFn(_)
         | BindingKind::ImplFn { .. }
@@ -223,6 +230,12 @@ impl Resolver<'_> {
                 self.out.exports.get(&module)
             };
             let mut names = table.cloned().unwrap_or_default();
+            if !public_only
+                && self.same_package(ctx.module, module)
+                && let Some(package) = self.package_exports.get(&module)
+            {
+                names.extend(package.iter().map(|(name, id)| (name.clone(), *id)));
+            }
             if let Some(info) = self.modules.get(module)
                 && matches!(info.kind, ModuleKind::Prelude | ModuleKind::Stdlib)
                 && let Some(ty) = info
@@ -391,10 +404,12 @@ impl Resolver<'_> {
         let hidden = self.prelude.get(&first.text).copied().filter(|hidden| {
             *hidden != id
                 && !(self.as_module(id).is_some() && self.as_module(id) == self.as_module(*hidden))
-                && self
-                    .modules
-                    .get(ctx.module)
-                    .is_some_and(|m| matches!(m.kind, ModuleKind::Entry | ModuleKind::User))
+                && self.modules.get(ctx.module).is_some_and(|m| {
+                    matches!(
+                        m.kind,
+                        ModuleKind::Entry | ModuleKind::User | ModuleKind::Package
+                    )
+                })
         });
         if let Some(hidden) = hidden {
             self.out.prelude_shadowed.insert(node, hidden);
@@ -451,11 +466,24 @@ impl Resolver<'_> {
                         d = self.prelude_help(d, first);
                     }
                 }
-                // 標準ライブラリの名前を `public` にする修正案は、利用者には行えないので出さない。
+                // 標準ライブラリと依存を編集する修正案は、根のソースの修正にはならないので出さない。
                 let user_module = self
                     .modules
                     .get(module)
                     .is_some_and(|m| matches!(m.kind, ModuleKind::Entry | ModuleKind::User));
+                if self
+                    .modules
+                    .get(module)
+                    .is_some_and(|m| m.kind == ModuleKind::Package)
+                {
+                    d = d.note(
+                        if self.out.bindings.get(private).is_some_and(|b| b.package) {
+                            "package_only"
+                        } else {
+                            "package"
+                        },
+                    );
+                }
                 if user_module {
                     d = match self.insertion.get(&private) {
                         Some(span) => d.help_edits(

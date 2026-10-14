@@ -13,7 +13,7 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.3`. The language is that of `0.0.1`, the first release, with the incompatible changes listed in the [CHANGELOG](../../CHANGELOG.md). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.4`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). Changes since `0.0.1`, the first release, are listed in the [CHANGELOG](../../CHANGELOG.md). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md). For the earlier minimal implementation (`0.0.0`), see [benitoite-minimal.md](benitoite-minimal.md); the changes between the two are listed in the [CHANGELOG](../../CHANGELOG.md).
 
@@ -41,6 +41,7 @@ Benitoite is a statically typed functional scripting language. A script is a `.b
 18. [Diagnostics](#18-diagnostics)
 19. [The standard library](#19-the-standard-library)
 20. [Compatibility](#20-compatibility)
+21. [Experimental: packages and external functions](#21-experimental-packages-and-external-functions)
 
 ## 1. A first script
 
@@ -78,6 +79,7 @@ benitoite check [options] <script>
 benitoite test  [options] <path>...
 benitoite fmt   [options] <path>...
 benitoite skill install|uninstall [--user | --project] [--agent <name>]...
+benitoite package add|update|move ...
 benitoite --help
 benitoite --version
 benitoite --licenses
@@ -87,18 +89,19 @@ benitoite --licenses
 |---|---|
 | `run` | Checks the script and calls its `main`. Arguments after the script path are passed to the script (`Process.arguments()`), also when they start with `-`. |
 | `check` | Checks the script without running it. |
-| `test` | Runs the test functions in the given files, or in all `.bnt` files under the given directories. See [Tests](#16-tests). |
+| `test` | Runs the test functions in the given files, or in all `.bnt` files under the given directories, except `package.bnt` and nested packages. See [Tests](#16-tests). |
 | `fmt` | Rewrites the given files, or all `.bnt` files under the given directories, in the standard layout. See [Formatting](#17-formatting). |
 | `skill` | Writes the bundled Agent Skill to the places where coding agents read skills, or removes it. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
+| `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.3`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.4`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
-`<script>` is a file, or a directory that contains `main.bnt`. The file name and its extension are not checked. The directory of the script is the *root directory*: the script can import modules from the root directory and below it, and from the standard library ([Modules](#12-modules)). `benitoite` reads no configuration file.
+`<script>` is a file, or a directory that contains `main.bnt`. The file name and its extension are not checked, except that `package.bnt` is a settings file and cannot be the starting file. The directory of the script is the *root directory*: the script can import modules from the root directory and below it, from the standard library ([Modules](#12-modules)), and from declared local dependencies (see [section 21](#21-experimental-packages-and-external-functions)). `benitoite` reads `package.bnt` in the root directory itself as a settings file; it does not search parent directories or the working directory.
 
 The script and its modules must be regular files. A path to a pipe, such as `/dev/stdin` connected to a pipe or `<(...)` in the shell, cannot be read and is reported as `E0101`; write such a script to a temporary file and pass that path.
 
-`benitoite script.bnt` without a command means `benitoite run script.bnt`. A file whose name is a command (such as `check`) is run as `benitoite ./check`. The names `server`, `mcp`, `sign`, `verify`, `repl`, `lsp`, `package`, and `agent` are reserved for later versions; `benitoite server` is a usage error.
+`benitoite script.bnt` without a command means `benitoite run script.bnt`. A file whose name is a command (such as `check`) is run as `benitoite ./check`. The names `server`, `mcp`, `sign`, `verify`, `repl`, `lsp`, and `agent` are reserved for later versions; `benitoite server` is a usage error.
 
 To run a script directly, make the file executable and put this line first:
 
@@ -188,7 +191,10 @@ There are no loop statements, no `null`, and no exceptions. Use recursion or lis
 | `Integer` | Signed 64-bit integers | `42`, `-7`, `1_000_000`, `0xff`, `0o755`, `0b1010` |
 | `Float` | IEEE 754 binary64 | `3.14`, `1e10`, `1.2e-3` |
 | `Decimal` | 128-bit decimal fractions, for money and other exact decimal values | `12m`, `1.25m`, `1_000.50m` |
-| `Byte` | Integers from 0 to 255 | none; use `Byte.fromInteger` |
+| `Byte` | Integers from 0 to 255; no arithmetic | `255u8`, or `Byte.fromInteger` |
+| `Integer8`, `Integer16`, `Integer32` | Signed 8-, 16-, and 32-bit integers | `-128s8`, `42s16`, `0xffs32` |
+| `UnsignedInteger16`, `UnsignedInteger32`, `UnsignedInteger64` | Unsigned 16-, 32-, and 64-bit integers | `42u16`, `0xffffu32`, `18446744073709551615u64` |
+| `Float32` | IEEE 754 binary32 | `1.5f32`, `1e-3f32` |
 | `Character` | One Unicode scalar value | `'a'`, `'あ'`, `'\n'` |
 | `String` | Immutable sequences of Unicode scalar values | `"text"`, `"""…"""`, `r"…"` |
 | `Boolean` | `true` and `false` | `true`, `false` |
@@ -196,7 +202,71 @@ There are no loop statements, no `null`, and no exceptions. Use recursion or lis
 
 There are no implicit conversions. Use conversion functions such as `Integer.toFloat`, `Integer.toString`, `Decimal.fromInteger`, and `Integer.parse` (which returns `Option[Integer]`).
 
-`Integer` overflow, and `div` or `mod` by zero, stop the program with a runtime error. `Float` division follows IEEE 754: dividing by zero gives an infinity or NaN. A `Float` literal needs digits on both sides of the point (`1.0`, not `1.` or `.5`).
+Every integer type with arithmetic stops with a runtime error on overflow or `div`/`mod` by zero. Unsigned subtraction below zero also overflows. The signed minimum `div -1` overflows, while the signed minimum `mod -1` is zero. `Byte` has comparisons, bit operations, and conversions, but no arithmetic. `Float` and `Float32` division follow IEEE 754: dividing by zero gives an infinity or NaN. A floating-point literal needs digits on both sides of the point (`1.0`, not `1.` or `.5`).
+
+### Numeric type names and suffixes
+
+Width-qualified names are the canonical names. The existing names `Integer`, `Float`, and `Byte` remain the main names in this reference, diagnostics, and displayed signatures. The names in each row below denote one type; switching between them requires no conversion. All these types and their standard modules are in the prelude.
+
+| Canonical name | Alias | Default display | Integer range or floating-point format |
+|---|---|---|---|
+| `Integer8` | — | `Integer8` | −128 through 127 |
+| `Integer16` | — | `Integer16` | −32768 through 32767 |
+| `Integer32` | — | `Integer32` | −2^31 through 2^31−1 |
+| `Integer64` | `Integer` | `Integer` | −2^63 through 2^63−1 |
+| `UnsignedInteger8` | `Byte` | `Byte` | 0 through 255; no arithmetic |
+| `UnsignedInteger16` | — | `UnsignedInteger16` | 0 through 65535 |
+| `UnsignedInteger32` | — | `UnsignedInteger32` | 0 through 2^32−1 |
+| `UnsignedInteger64` | `UnsignedInteger` | `UnsignedInteger64` | 0 through 2^64−1 |
+| `Float32` | — | `Float32` | binary32 |
+| `Float64` | `Float` | `Float` | binary64 |
+
+`Integer8`, `Integer16`, `Integer32`, `UnsignedInteger16`, `UnsignedInteger32`, `UnsignedInteger64`, and `Float32` are seven distinct types. A literal without a suffix keeps its original type: `1` is always `Integer`, and `1.0` is always `Float`, even when the surrounding code expects another width. Binary arithmetic, equality, and comparisons require the same type on both sides after expanding aliases. Use `1s32 + 2s32` for `Integer32` arithmetic, or an explicit conversion for a computed value.
+
+The integer suffixes are lowercase `s8`, `s16`, `s32`, `s64`, `u8`, `u16`, `u32`, and `u64`; the floating-point suffixes are `f32` and `f64`. **This suffix syntax is provisional and may change when the language syntax is revised.** The ordinary compatibility policy still applies. `1s64` is an `Integer`, `1.0f64` is a `Float`, and `255u8` is a `Byte`. Integer suffixes retain hexadecimal, octal, binary, and underscores between digits: `0xffu8`, `0o177s8`, `0b1010u16`, `1_000s32`. A floating-point suffix needs a decimal point or exponent: use `1.0f32`, not `1f32`. In hexadecimal, `0xfff32` remains an unsuffixed integer because `f32` consists of hexadecimal digits. Decimal's `m` suffix cannot be combined with another suffix.
+
+Out-of-range literals are static errors. A minus sign directly on a signed literal includes the sign in range checking, so `-128s8` is valid; `-(128s8)` contains an out-of-range positive literal. Unary minus is forbidden for unsigned types, including `-0u16` and `-1u8`. New widths and `Byte` do not support constant or range patterns; bind the value and compare in a guard instead. Constant overflow and division by zero are errors in `const` expressions and warnings in ordinary expressions.
+
+`Float32` rounds at value creation and after each arithmetic operation to binary32, using nearest rounding with ties to even. Operations are not combined into a fused multiply-add. Infinity, NaN, signed zero, and comparisons follow `Float`; NaN payload bits are not preserved as a contract. `toString`, interpolation, and `Trait.Show` use decimal integers and the shortest decimal representation that reads back to the same floating-point width, without a suffix. New integers support equality, `ordered`, and map/set keys; `Float32` supports equality and `ordered`, but cannot be a key. `Trait.Show` and `Trait.Order` have standard implementations for all seven types; `Trait.Order` treats all NaNs as equal and greater than other values, and treats positive and negative zero as equal.
+
+### Numeric conversions and standard functions
+
+Conversion functions return `Option` when the value can be outside the destination's range. Arithmetic overflow stops execution; it does not return `Option.None`. There are no direct conversions between every pair of widths: use `Integer` as the intermediate type, and `Decimal` for the full unsigned 64-bit range.
+
+| Module(s) | Functions | Contract |
+|---|---|---|
+| `Integer8`, `Integer16`, `Integer32`, `UnsignedInteger16`, `UnsignedInteger32` | `fromInteger`, `toInteger` | `fromInteger` returns `Option[T]`; `toInteger` is exact and returns `Integer` |
+| `UnsignedInteger64` | `fromInteger`, `toInteger` | Both return `Option`; negative input or a result above `Integer`'s maximum gives `None` |
+| `UnsignedInteger64` | `fromDecimal`, `toDecimal` | Exact over the full range; `fromDecimal` accepts only integral values in range (including `1.0m`) and returns `Option` |
+| All six new integer modules | `parse`, `toString`, `toFloat` | Decimal parsing returns `Option` and rejects whitespace, base prefixes, underscores, out-of-range values, and negative unsigned values; `toFloat` rounds to binary64 |
+| All six new integer modules | `absolute`, `minimum`, `maximum`, `floorDivide`, `floorModulo` | Same-width results; signed minimum `absolute` overflows; unsigned `absolute` is the identity |
+| All six new integer modules | `bitwiseAnd`, `bitwiseOr`, `bitwiseExclusiveOr`, `bitwiseNot`, `shiftLeft`, `shiftRight` | Shift counts are `Integer` in 0 through width−1; left shifts discard bits beyond the width; signed right shifts extend the sign, unsigned right shifts fill with zero |
+| New signed integer modules | `shiftRightUnsigned` | Right shift with zero fill |
+| `Float32` | `fromFloat`, `toFloat` | `fromFloat` returns `Option`, rounds to binary32, and rejects finite values that become infinite; existing infinities and NaNs give `Some`; `toFloat` widens finite values exactly |
+| `Float32` | `parse`, `toString`, `truncate` | Parse directly to binary32 using `Float`'s decimal spelling, returning `Some` only for finite values; `truncate` returns `Option[Integer]`, rounding toward zero and rejecting NaN, infinity, and out-of-range values |
+| `Float32` | `absolute`, `floor`, `ceiling`, `round`, `squareRoot`, `isNaN`, `isInfinite` | Same behavior as `Float` at binary32 precision; `round` takes halfway values away from zero; negative square roots give NaN |
+
+For `Float32` to a narrow integer, combine `truncate` and `fromInteger`. There is no direct `Float` conversion to the upper half of `UnsignedInteger64`; use a literal, `parse`, or an exact `Decimal`. `Decimal.fromFloat` uses decimal formatting and is not an exact binary-integer conversion.
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind small <- Option.unwrapOr(Integer8.fromInteger(42), 0s8)
+  bind maximum <- 18446744073709551615u64
+  bind narrowed <- Option.unwrapOr(Float32.fromFloat(0.1), 0.0f32)
+  bind same: Integer64 <- Integer8.toInteger(small)
+  Console.writeLine("${small + 1s8} ${same} ${Integer8.fromInteger(128) = Option.None}")
+  Console.writeLine("${UnsignedInteger64.toInteger(maximum) = Option.None} ${UnsignedInteger64.toDecimal(maximum)}")
+  Console.writeLine("${narrowed} ${Float32.toFloat(narrowed) = 0.1}")
+end function
+```
+
+```output
+43 42 true
+true 18446744073709551615
+0.1 false
+```
 
 ### Strings
 
@@ -242,13 +312,13 @@ From lowest to highest precedence:
 | `and` | Logical and (short-circuit) | Left |
 | `=` `<>` `<` `<=` `>` `>=` | Comparison | None (`a < b < c` is an error) |
 | `+` `-` | Addition, subtraction; `+` also joins strings | Left |
-| `*` `/` `div` `mod` | Multiplication; `/` for `Float` and `Decimal`; `div` and `mod` for `Integer` | Left |
+| `*` `/` `div` `mod` | Multiplication; `/` for `Float`, `Float32`, and `Decimal`; `div` and `mod` for integer types with arithmetic | Left |
 | `-` `not` | Negation | Prefix |
 | `f(...)` | Call | Postfix |
 
-`==`, `!=`, `&&`, `||`, `!`, and `%` do not exist. `div` rounds toward zero and the sign of `mod` follows the dividend: `-7 div 2` is `-3` and `-7 mod 2` is `-1`. For rounding down, use `Integer.floorDivide` and `Integer.floorModulo`. `Integer` has no `/`.
+`==`, `!=`, `&&`, `||`, `!`, and `%` do not exist. `div` rounds toward zero and the sign of `mod` follows the dividend: `-7 div 2` is `-3` and `-7 mod 2` is `-1`. For rounding down, use `Integer.floorDivide` and `Integer.floorModulo`. Integer types have no `/`; use a floating-point or decimal conversion for a fractional result.
 
-`=` and `<>` compare values of *equality types*: types that contain no function type and no opaque type (`IOError`, `NetworkError`, `Reference`, `Lazy`, `Task`, resources, `Regex.Pattern`, and others). Lists, maps, sets, options, results, records, and data types are compared by their contents. `<`, `<=`, `>`, and `>=` work only on `Integer`, `Float`, `Decimal`, `Byte`, `Character`, and `String`. `Float` comparison follows IEEE 754: NaN is not equal to anything, even to itself, so use `Float.isNaN` to detect it.
+`=` and `<>` compare values of *equality types*: types that contain no function type and no opaque type (`IOError`, `NetworkError`, `Reference`, `Lazy`, `Task`, resources, external types, `Regex.Pattern`, and others). Lists, maps, sets, options, results, records, and data types are compared by their contents. `<`, `<=`, `>`, and `>=` work only on all the numeric types, `Character`, and `String`. `Float` and `Float32` comparison follow IEEE 754: NaN is not equal to anything, even to itself, so use the corresponding `isNaN` function to detect it.
 
 Operands are evaluated from left to right.
 
@@ -459,7 +529,7 @@ exit 1
 not a port: http
 ```
 
-Some failures are not values: `Integer` overflow, division by zero, a value too large to build, and running out of the call stack *stop* the program with a runtime error and exit status 1. A `match` cannot catch them. The report shows the place and the calls that led to it.
+Some failures are not values: integer overflow, division by zero, a value too large to build, and running out of the call stack *stop* the program with a runtime error and exit status 1. A `match` cannot catch them. The report shows the place and the calls that led to it.
 
 ## 10. Effects
 
@@ -545,7 +615,7 @@ In `uses` and in `case`, an effect or operation declared in the same module is w
 
 ## 12. Modules
 
-Each file is a module. Its name is its path from the root directory, with `/` replaced by `.` and without `.bnt`: the file `Lib/Text.bnt` is the module `Lib.Text`. `import Lib.Text` makes it available as `Text`; `import Lib.Text as T` makes it available as `T`. Only declarations marked `public` can be used from other modules. Imports cannot form a cycle.
+Each file is a module. Its name is its path from the root directory, with `/` replaced by `.` and without `.bnt`: the file `Lib/Text.bnt` is the module `Lib.Text`. `import Lib.Text` makes it available as `Text`; `import Lib.Text as T` makes it available as `T`. Declarations marked `public` can be used from any module that imports them. Declarations marked `public(package)` can be used only by modules of the same package. A dependency package consists of the modules under its root; the starting file and the modules under the starting root also count as one package. Unmarked declarations are private to their module. Imports cannot form a cycle.
 
 ```files
 name: Lib/Text.bnt
@@ -568,6 +638,10 @@ end function
 hello-world
 ```
 
+Visibility has three levels: private < `public(package)` < `public`. Types, traits, and effects used in a declaration's contract must be at least as visible as the declaration. This includes nested function types, constraints, and `uses`; a `public` function cannot expose a `public(package)` type from another module either. Constructors, record fields, trait methods, and effect operations inherit the visibility of their enclosing declaration. `public(package)` can also mark constants and type aliases. Neither `public` nor `public(package)` can mark `implement` or its functions.
+
+The parentheses accept only `package` (`E0253` for other words). Spaces before `(` are accepted and removed by `fmt`; a newline between `public` and `(` is accepted; a newline after `public(package)` separates it from the declaration and is an error. `package` remains available as an identifier. The effect report from `benitoite package` counts only `public` contracts.
+
 ### Standard and unofficial modules
 
 The modules of the standard library are named `Benitoite.<Name>`. Most of the core modules (`Integer`, `String`, `List`, `Map`, `Option`, `Result`, and others) are in the *prelude*: they can be used without `import`.
@@ -577,6 +651,8 @@ In this release, the IO and network modules and the text and data modules are *u
 Every module outside the prelude must be imported, also when it appears only in `uses`. See [The standard library](#19-the-standard-library) for the list.
 
 The modules that declare built-in effects (`IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `IO`, and `Assert`) cannot be renamed with `as`; that is the error `E0339`, also when the new name is the same as the original one. This keeps the effect names in `uses` true: `uses Console.Write` always means writing to the console. When an imported module of your own has the same name as one of these modules, rename your module with `as`.
+
+For importing modules from a local dependency, see [Experimental: packages and external functions](#21-experimental-packages-and-external-functions).
 
 ## 13. Type classes
 
@@ -785,7 +861,7 @@ Modules in the prelude need no import. The others are imported with the name in 
 
 | Module | Import | Contents |
 |---|---|---|
-| `Integer`, `Float`, `Decimal`, `RoundingMode`, `Byte`, `Character`, `String`, `Boolean` | prelude | Functions on the basic types |
+| `Integer`, `Float`, `Decimal`, `RoundingMode`, `Byte`, `Character`, `String`, `Boolean`, all numeric widths and aliases in [section 4](#numeric-type-names-and-suffixes) | prelude | Functions on the basic types |
 | `List`, `Map`, `Set` | prelude | Persistent collections; maps and sets are ordered by key |
 | `Option`, `Result`, `Pair`, `Triple` | prelude | Optional values, results, and tuples |
 | `Bytes`, `ByteOrder` | prelude | Immutable byte sequences |
@@ -874,4 +950,269 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: `0.0.3`, like `0.0.1` and `0.0.2`, is a source-only release; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: `0.0.4`, like `0.0.1`, `0.0.2` and `0.0.3`, is a source-only release; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+
+## 21. Experimental: packages and external functions
+
+Packages and external functions are experimental. Their spelling may change as the syntax is revised. They follow the same [compatibility policy](#20-compatibility) as the rest of the language; experimental features have no exception to that policy.
+
+### Local dependencies
+
+A package is a directory with a `package.bnt` settings file and modules that other scripts can import. For example, create these two files under `packages/textkit`:
+
+```files
+name: packages/textkit/package.bnt
+language "0.0.4"
+
+package Textkit
+  license "MIT"
+end package
+```
+
+```files
+name: packages/textkit/Slug.bnt
+public function slug(text: String) -> String
+  return String.toLowercase(String.replace(String.trim(text), " ", "-"))
+end function
+```
+
+Declare the dependency before imports and declarations in the starting script:
+
+```benitoite
+// spec: 01-03 依存のパッケージの取り込み
+language "0.0.4"
+
+dependency Textkit
+  path "packages/textkit"
+end dependency
+
+import Benitoite.Unofficial.IO.Console
+import Textkit.Slug
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Slug.slug(" Hello Packages "))
+end function
+```
+
+```output
+hello-packages
+```
+
+`Textkit` in `dependency Textkit` is the dependency alias: an uppercase identifier other than `Benitoite`. It may differ from the name in the package's `package` block. `import Textkit.Slug` uses this alias and the path from the package root, so it reads `Slug.bnt` in `packages/textkit`. Inside a package, imports use paths from that package's own root; they cannot import modules from the caller's root. Only `public` declarations are available to callers.
+
+The dependency's `path` is relative to the starting script's root directory, rather than the working directory. It may point outside the root, and an absolute path is also accepted. Each package needs its own `package.bnt` with a `package` block and a `language` declaration. Dependencies cannot themselves declare dependencies in this version. Git sources, version selection, and downloading packages are not supported; `source`, `version`, and `commit` fields are rejected.
+
+Keep dependency directories distinct from root module names, as in lowercase `packages/textkit` above. An import that finds different modules in both the root and a dependency is an error. A file inside a declared dependency must be imported through its alias. Dependency roots cannot contain the starting root, equal another dependency root, or contain one another. Imported package modules take part in the normal name and type checks. Their errors are reported; their warnings are suppressed, also with `--deny-warnings`.
+
+### File headers, settings, and language versions
+
+The file header contains `language` and `dependency` items after any leading `//!` documentation and before imports or declarations. Imported modules cannot contain these settings. Alternatively, place settings in `package.bnt` in the root directory itself. Benitoite does not search parent directories for it.
+
+For example, a root settings file can record the language version while the starting script contains only declarations:
+
+```files
+name: package.bnt
+language "0.0.4"
+```
+
+```benitoite check
+// spec: 01-03 依存の記述と `package.bnt`
+function main() -> Unit
+end function
+```
+
+Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
+
+`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. A version newer than the interpreter is rejected. Older versions are compared with the interpreter's table of incompatible language changes; that table is currently empty. The declaration is optional in the starting script and root settings, and required in a package's settings. Root and dependency versions are not compared with each other.
+
+`package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
+
+`package.bnt` cannot be the starting file for `run`, `check`, or `test`. `benitoite test <directory>` skips it and skips nested directories that contain their own `package.bnt`. To test a package, specify that package's root. `fmt` formats settings files as well as scripts.
+
+### Content hashes and effect records
+
+`hash` is optional for a local dependency. When present, Benitoite checks the package's included paths and file contents on every load, even if no module from the package is imported. A mismatch reports the expected and computed values. Without `hash`, no content check or warning about the missing hash is made; this is useful while developing a package.
+
+The following shows the field syntax. The all-zero hash is illustrative; use `package add` or `package update` to compute the actual value:
+
+```text
+dependency Textkit
+  path "packages/textkit"
+  hash "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  effects ""
+end dependency
+```
+
+The hash covers `.bnt` and `.wasm` files and files whose names start with `LICENSE`, `COPYING`, or `README` (the latter names ignore ASCII case). It includes `package.bnt`. It follows directories whose names start with an ASCII uppercase letter, and all non-hidden directories under the root's `wasm/`. Hidden entries and names that are not valid UTF-8 are excluded. Root directories such as `rust/`, `wit/`, and `target/` are not followed. Relative paths and file bytes determine the hash; file permissions and empty directories do not.
+
+Hashing rejects symbolic links in the visited non-hidden entries, included paths that collide after lowercasing or contain a newline, and unreadable included files. Limits are 10,000 included files, 100,000 visited entries, and 128 MiB of included file contents. A hash does not prevent another process from changing files between hashing and loading them.
+
+`effects` is a record written by the package commands, for example `effects "Console.Write, File.Read"`, or `effects ""` for an empty set. Loading checks its format but does not compare it with the package. The actual effect checks use function types, and operations reachable from `main` must appear in its `uses`, after accounting for handlers. The record is for reviewing changes to dependencies; it neither grants permissions nor restricts the files or hosts a script may access.
+
+### The package commands
+
+```text
+benitoite package add <alias> --path <directory> [<root or entry>]
+benitoite package update [<alias>] [<root or entry>]
+benitoite package move <entry>
+```
+
+`add` declares a new dependency, computes its hash, records its public built-in effects, and reports its components. The `--path` value is relative to the selected root (or absolute), and is copied into the declaration as written. Existing aliases are errors. `add` writes where dependencies already exist; otherwise it uses an existing `package.bnt`, or the starting file if there is no settings file. It needs a settings file or a starting file to edit.
+
+`update` recomputes hashes and effect records. Without an alias, it updates only dependencies that already have a hash. With an alias, it also adds a hash if one was absent. It shows effects added with `+` and removed with `-`, comparing with the stored `effects` field. If that record is absent or malformed, it reports `(not recorded)` and the current effects. A malformed `hash` or `effects` field can be repaired by an explicit update. If the hash is unchanged and only effects are updated, it shows the hash once. If no dependencies have hashes, a bulk update reports `no dependencies with hash to update`. If both records are unchanged, it reports `unchanged` and does not replace the file.
+
+For `add` and `update`, omitting the target selects the working directory. A directory target uses its `main.bnt` if present; a file target selects that starting file. Passing an existing `package.bnt` selects its directory as the root. An explicitly named `package.bnt` that does not exist reports `E0101` and does not edit the starting file. A single uppercase identifier argument to `update` is an alias; write an identifier-shaped directory path as `./Name` to distinguish it.
+
+For the pure Textkit package above, if `main.bnt` does not declare `Textkit` yet, adding it prints the following (`<computed-hash>` stands for the actual `sha256:` value):
+
+```text
+benitoite package add Textkit --path packages/textkit main.bnt
+
+added dependency Textkit (package Textkit) to main.bnt
+  hash: <computed-hash>
+  effects: (none)
+  components: (none)
+```
+
+The commands report built-in effects from all public function and public trait-method declarations, public type-alias right-hand sides, public record field types, and public `data` constructor field types, including effects in nested function types. Library modules are identified by their official import names, such as `Benitoite.Unofficial.IO.Console`; `State` and `IO.All` need no import. Effects reached through import names absent from the standard-library table are not counted. They do not type-check the package to make that report, include user-defined effects or effect variables, or expand `IO.All`. Component reports identify components with `(no imports)` or give a failure reason. A component failure alone does not prevent editing; `benitoite check` still checks the paths, exports, and types actually used by the script.
+
+`move` moves the starting file's header settings and associated comments into `package.bnt` next to it. It requires a file target; a directory is a usage error. It refuses an empty header or a destination that already contains `language` or dependencies. For example:
+
+```text
+benitoite package move main.bnt
+moved language, dependency Textkit from main.bnt to package.bnt
+```
+
+These commands edit the header while preserving the source body and its comments. Moving into a comment-only settings file appends after its comments and keeps their bytes and line endings. A newly created settings file copies the starting file's permissions with executable bits removed. They format the edited settings and replace files through temporary files; `move` attempts to restore the settings if writing the starting file fails. Validation checks the target dependency's declaration and settings, and does not reject editing because of errors in unrelated dependency settings. Diagnostics that point into a proposed edit identify it as not yet written. They report changes on standard output and diagnostics on standard error, returning 0 for success and 2 for invalid input or read/write failures (3 for an internal error). All three accept `--diagnostics=text|json`; their change reports remain text, and there is no `--json` report option.
+
+### External functions and types through WASM
+
+An external function gets its body from a binary WebAssembly Component Model component. The component must have no imports: Benitoite provides no host functions or WASI. A core Wasm module or a text-format file is not accepted. Declare a top-level function without a body or `end function`:
+
+<!-- WASM のバイナリは files ブロックで置けないため、以下は text の例とする。照合・実行は testdata/external/ のゴールデンが確かめる。 -->
+
+```text
+@external("wasm", "wasm/fuzzy.wasm", "distance")
+public function distance(a: String, b: String) -> Integer
+```
+
+The corresponding WIT contract exports the function directly from a world:
+
+```text
+package example:fuzzy;
+
+world fuzzy {
+  export distance: func(a: string, b: string) -> s64;
+}
+```
+
+The declaration must give concrete parameter and result types. It cannot have type parameters, constraints, or effect variables. Functions whose expanded parameter or result types contain an external type must declare `uses State`; all other external functions are pure and cannot declare `uses`. `public`, `public(package)`, and `@deprecated` may be used, but `@test` and `@builtin` may not. The third attribute argument names a function exported directly in the world, or a function inside an exported interface as `interface#function`, for example `bnt:test/api@1.2.0#add`. If the string contains `#`, the last `#` separates the interface export name from the function name; neither side may be empty (`E0815`). The interface name must match the export exactly, including its version; compatible versions are not substituted. `check`, `run`, and `test` check parameter counts and types by position and the result type before execution. Parameter names need not match. Missing-function diagnostics (`E1006`) list both direct exports and `interface#function` exports. Signature mismatches (`E1007`–`E1009`) suggest a declaration when every WIT type has a supported Benitoite representation; WIT parameter names such as `byte-start` become `byteStart`, `list<u8>` becomes `Bytes`, and omitted results become `Unit`.
+
+The component path is relative to the root that owns the declaration, including for declarations in nested modules. It uses `/`, ends in `.wasm`, and cannot contain empty segments, `.` or `..`, hidden segments, or backslashes. Names must match directory entries exactly, including case. Resolved paths must stay under the root. For a dependency, or a root whose `package.bnt` declares a package, components must also stay under `wasm/`.
+
+| Benitoite type | WIT type |
+|---|---|
+| `Integer8`, `Integer16`, `Integer32`, `Integer` (`Integer64`) | `s8`, `s16`, `s32`, `s64`, respectively |
+| `Byte` (`UnsignedInteger8`), `UnsignedInteger16`, `UnsignedInteger32`, `UnsignedInteger64` (`UnsignedInteger`) | `u8`, `u16`, `u32`, `u64`, respectively |
+| `Float32`, `Float` (`Float64`), `Boolean`, `Character`, `String` | `f32`, `f64`, `bool`, `char`, `string`, respectively |
+| `Bytes`, `List[Byte]` | `list<u8>` |
+| `List[T]`, `Option[T]`, `Result[T, E]` | `list<T>`, `option<T>`, `result<T, E>`, using the same correspondence recursively |
+| `Pair[A, B]`, `Triple[A, B, C]` | `tuple<A, B>`, `tuple<A, B, C>` |
+| Records with concrete type arguments | `record` with matching fields after substituting type arguments |
+| `data` with concrete type arguments | `variant` with matching cases; zero arguments mean no payload, one means that type, two or more mean one flat tuple payload |
+| `data` with only argument-free constructors | `enum` or a `variant` with no payloads |
+| Other single-constructor `data` with one or more arguments | `tuple` when the WIT type is a tuple; match arguments by position, ignoring the constructor name |
+| `Set[D]`, where D is concrete `data` with 1–32 argument-free constructors | `flags` with matching count, order, and names |
+| `Map[K, V]` | `map<K, V>`; K must be `Boolean`, an integer type (including `Byte`), `Character`, or `String` |
+| External type | `borrow<R>` in parameters, `own<R>` in results |
+| `Unit` as the function result | No result |
+
+Type aliases are expanded. `Option`, `Result`, `Pair`, and `Triple` must be the standard library types. For a `Unit` side of `Result`, omit that side in WIT: `Result[Unit, String]` corresponds to `result<_, string>`, and `Result[Unit, Unit]` to `result`. Other nested or parameter uses of `Unit`, including zero-element tuples, are unsupported. Records and `data` types from user modules and the standard library use the same structural rules. Their type names need not match WIT type names. Field and case counts, declaration order, names, types, and payload presence must match. Names are compared after removing `-` and lowercasing ASCII letters: `byte-start` matches `byteStart`, and `not-found` matches `NotFound`. Underscores are preserved and cannot match WIT names. Duplicate normalized names on either side of a record, variant, enum, or flags type are rejected.
+
+Concrete type arguments are substituted into fields and constructor arguments, so `Box[Box[Integer]]` is accepted when `Box[T]` contains a field of type T. External functions themselves remain monomorphic. Unresolved type/effect variables and recursive declaration dependencies, including recursion through `List` or `Option`, report `E1010`. Type expansion is limited to depth 100, 100,000 nodes per root type, and 1,000,000 nodes per check. Sharing one type between sibling fields is allowed. Structural mismatches report `E1008` or `E1009`, showing the WIT shape and the first mismatch in a `reason` note. A suggested declaration is omitted when its signature requires a user-defined record, variant, enum, flags element type, or resource handle, since Benitoite type names cannot be inferred.
+
+An empty flags selection is allowed even though the flags type needs 1–32 items. Returned bits beyond the declared items are discarded. A map argument is sent in key order. Every returned entry is checked in its original order, including entries later discarded by duplicate-key normalization; the last value for each key wins, and the final map is ordered by key. Unsupported key types such as `Decimal`, `Bytes`, records, and `data` report `E1010` even if they are valid map keys inside Benitoite. `Set` is supported only as flags. Functions, `Decimal`, the resource types used with `with`, and tasks cannot cross this boundary. External types use the separate rules below.
+
+For example, these declarations use the same components and exports as the repository's `external/wit-docs-values` executable example:
+
+```text
+record Box[T]
+  value: T
+end record
+@external("wasm", "generic.wasm", "box")
+function box(v: Box[Integer]) -> Box[Integer]
+@external("wasm", "generic.wasm", "nested")
+function nested(v: Box[Box[Integer]]) -> Box[Box[Integer]]
+
+data D1
+  F1
+end data
+@external("wasm", "flags.wasm", "f1")
+function f1(v: Set[D1]) -> Pair[Set[D1], Integer]
+
+@external("wasm", "maps.wasm", "result")
+function result(v: Map[String, Integer]) -> Map[String, Integer]
+
+data Four
+  Item(Integer, Integer, Integer, Integer)
+end data
+@external("wasm", "tuples.wasm", "tuple4")
+function tuple4(v: Four) -> Four
+
+data Two
+  Value(Integer, Integer)
+  Empty
+end data
+@external("wasm", "variants.wasm", "fields")
+function two(v: Two) -> Two
+```
+
+The corresponding WIT shapes are a record with `value: s64`, a nested record, `flags { f1 }` with a `tuple<flags-type, s64>` result, `map<string, s64>`, `tuple<s64, s64, s64, s64>`, and `variant { value(tuple<s64, s64>), empty }`. The sample guests return `42` from `box(Box(value: 35))`, `0` as the inner value of `nested(Box(value: Box(value: -7)))`, `Pair(Set.fromList([D1.F1]), 0)` from `f1(Set.empty())`, `[Pair("a", 2), Pair("z", 3)]` from `Map.toList(result(Map.empty()))`, `Four.Item(12, 14, 16, 18)` from `tuple4(Four.Item(1, 2, 3, 4))`, and `Two.Value(14, 29)` from `two(Two.Value(3, 7))`. These outputs describe the sample guests, not transformations imposed on arbitrary external functions.
+
+#### External types and instance lifetime
+
+Declare an external type with an `@external` attribute and a `type` declaration without `=` or a right-hand side. It names an exported WIT resource and has no type parameters. `public`, `public(package)`, and `@deprecated` are allowed. `@test` and `@builtin` are not. Missing or non-resource exports report `E1012`, listing resource exports.
+
+```text
+@external("wasm", "wasm/counter.wasm", "bnt:test/counter@0.1.0#cell")
+public type Cell
+@external("wasm", "wasm/counter.wasm", "bnt:test/counter@0.1.0#[constructor]cell")
+public function newCell(start: Integer) -> Cell uses State
+@external("wasm", "wasm/counter.wasm", "bnt:test/counter@0.1.0#[method]cell.bump")
+public function bump(self: Cell, by: Integer) -> Integer uses State
+```
+
+An external type corresponds to `borrow<R>` in a parameter and `own<R>` in a result. These rules also apply inside lists, options, results, tuples, records, and variants. The declaration and function must refer to the same resource in the same component file. Parameters that take ownership (`own<R>`) are rejected (`E1008`). External values are opaque and cannot be compared for equality, used as map keys or set elements, or passed to `Assert.equal`. They have no default `Show` implementation; user implementations follow the ordinary rules for user types. They are separate from the resource types managed by `with`, so they cannot be used in `with`. A function that passes an external type but omits `uses State` reports `E0816` with an insertion edit. Other effect declarations are rejected with `E0812`; functions with external types receive an edit replacing the declaration with `uses State`. Effect checking happens during type checking, before component matching, so `E0816` or `E0812` can precede unsupported-type (`E1010`) or missing-resource (`E1012`) errors.
+
+When an external value is collected, its handle is queued for destruction before the next call into its stateful instance. Destruction time depends on collection; methods that inspect shared guest state, and resource consumption, may therefore depend on collection time. There is no explicit destruction function. Destruction waits for collection, so retaining many non-external values can let repeatedly created and discarded external values reach the stateful instance’s memory limit (64 MiB by default). Functions whose signatures contain no external type, including `[static]` functions, create fresh instances and cannot inspect the stateful instance. Guest memory growth during a call that returns external values contributes to heap accounting to trigger collection; the first converted external value accounts for the whole increment. Execution end, interruption, or a failed call discards the stateful instance. Stateful calls are excluded from comparison with the reference interpreter.
+
+#### Execution limits and statistics
+
+External calls run synchronously. Functions that pass external types share one stateful component instance per component in each execution; other functions create a fresh instance on every call. During a call, other Benitoite tasks do not run and `Task.withTimeout` cannot cancel it. `SIGINT` and `SIGTERM` can interrupt Wasm execution and end the process with status 130. By default, each call has a fuel limit of 10^10, a total linear-memory limit of 64 MiB (over the lifetime of a stateful instance), and a value-transfer budget of 256 MiB in each direction. Fuel limits computation, not elapsed time. Each call also limits core instances, memories, and tables to 16 each, and each guest table to 10,000 elements. A `memory.grow` beyond the memory's own declared maximum returns -1 as in Wasm.
+
+The checker selects a transfer route before execution. It calls the original guest function once and never retries through another route after a failure:
+
+| Route in statistics | When used | Transfer accounting |
+|---|---|---|
+| `stateful` | A parameter or result contains an external resource type | Dynamic WIT values, retaining the component instance |
+| `typed` | No resources; zero to three parameters and one result; all types are `Integer`, `Float`, `String`, `Bytes`, `List[Byte]`, `List[Integer]`, or `List[Float]`; numeric-list parameters require at most two parameters | Numbers cost zero, bytes one per element, numeric lists eight per element, argument strings their UTF-8 byte length |
+| `adapter` | Other supported, nonrecursive values, including new numeric widths, nested lists, maps, flags, general tuples, variants, and functions without a result | Actual packed bytes, including the 32-byte header and padding; a separate construction budget uses the same configured limit |
+| `dynamic` | The adapter would exceed its 16 MiB generated-code limit or memory32 layout range, or the conservative core-instance estimate (including three adapter instances) would exceed 16 | Dynamic WIT values; the decision happens before the guest is called |
+
+Aliases preserve route selection: `Integer64`, `Float64`, and `UnsignedInteger8` denote the same types as `Integer`, `Float`, and `Byte`. Adapters are composed per function, so adding a declaration for another function does not change its composition or instance-count estimate. Compiled components and generated adapters are reused within checking or one execution; there is no persistent cache. The adapter's memory, core instances, and tables count toward the same Store limits as the guest, and its instructions consume the same fuel and respond to the same interruption requests. Each adapter adds three core instances for memory, conversion, and fusion. The defaults do not increase to accommodate the adapter. Multiple copies can make adapter linear-memory use approximately three to four times the transfer size, so a value accepted on a previous route may reach the default 64 MiB memory limit. Original guest string encodings, including UTF-16, are handled by the Component Model; the adapter's packed strings are UTF-8. Guest post-return cleanup runs through the Component Model after values have been copied, and the host does not call it a second time.
+
+For the adapter route, the transfer budget limits the complete packed argument and result byte sequences independently. A second budget limits the logical construction cost in each direction to the same `--wasm-transfer` value: 16 bytes per occurrence of a Benitoite value, plus string and `Bytes` contents. List elements, constructor fields, every map key/value, and selected flags constructors count as occurrences. A `Bytes` element does not add a separate 16 bytes; a `List[Byte]` element does. ABI-only root records, map-entry tuples, and tuples used to group a constructor's arguments do not add a Benitoite value. Duplicate map entries are counted and validated before normalization. Even zero-size ABI values count toward construction. This is logical construction cost, not allocated heap bytes or total process memory.
+
+Dynamic routes count each list element as a host `Val` (40 bytes on supported platforms), including each byte of `Bytes`; maps count both key and value representations. Record fields include their WIT names and child representations; variants include the selected name and a representation for a present payload; enums and selected flags include name bytes. Children add their own costs. Scalars and resource handles cost zero. On the typed route, result strings are charged their guest-encoded byte length during lifting, while statistics report UTF-8 bytes. Thus the same value can reach the transfer limit differently depending on the signature and route. `Bytes` and `List[Byte]` keep distinct Benitoite result types. Arguments are checked and prepared before execution-time compilation or instantiation; returned lists are built directly into small leaves, without an intermediate array of Benitoite values for the whole list.
+
+Existing value-size limits still apply before construction: strings and `Bytes` at most 2^30 bytes, and lists at most 2^24 elements. Map and Set do not gain a language-wide element-count limit. The transfer and construction budgets, fuel, and Store limits are checked even without statistics.
+
+`run` and `test` accept `--wasm-memory=<size>`, `--wasm-fuel=<count>`, and `--wasm-transfer=<size>` to change these limits. Sizes are byte counts or integers with a `KiB`, `MiB`, or `GiB` suffix, from 1 MiB through 4 GiB. Fuel is a decimal integer from 1 through 2^64−1. Invalid or duplicate settings are usage errors (exit status 2). For `run`, put these options before the script path; `test` also accepts them between paths. Every test function uses the same configured limits.
+
+`--wasm-stats` writes one JSON line to stderr at the end, including the configured `limits`, explicit `overrides`, `calls`, `functions`, `fuel`, `memory`, `arguments_transfer`, `results_transfer`, `stateful_instances`, and `reached_limits`. It also includes `routes` (call counts for `typed`, `adapter`, `dynamic`, and `stateful`), `fallback_reasons`, adapter-only `construction_bytes`, and `adapter_failures` with a numeric `code`, `requested`, `limit`, and `calls`. Each consumption object contains `total`, `maximum`, and `incomplete_calls`. `construction_bytes` aggregates argument and result logical costs so its maximum is the largest per-call sum; it is separate from packed transfer bytes. Typed, dynamic, and stateful calls do not increase `construction_bytes` or its `incomplete_calls`; only adapter calls stopped before the whole construction cost is measured increase that field. The memory total counts growth once; its maximum counts the whole call or stateful instance lifetime. Calls rejected during argument validation are included in the call count. Transfer totals include only calls whose values could be counted; unavailable consumption increases `incomplete_calls`. Dynamic and typed string statistics count host UTF-8 bytes, which may differ from the guest-encoded bytes charged during lifting. Adapter transfer statistics count the packed byte sequences. `test` aggregates all test executions into one report without a per-test breakdown. Without this option, output is unchanged. The public embedding API and reference interpreter keep the default limits.
+
+Traps, ABI violations, and instantiation failures other than resource-limit failures stop execution with `R0601`; exhausted fuel reports `R0904`, memory, transfer, and construction limits report `R0905` with notes identifying the exhausted budget and the adapter failure stage when available, table-size and core object-count limits report `R0906` with the resource kind and required count, and returned-value-size limits report `R0902`. The diagnostic code and failure category are consistent across routes, but trap wording can differ: a guest ABI violation may surface while the adapter lowers a value or calls the guest. These failures are not converted to `Result.Error`. A component that returns an error through a declared `Result` returns an ordinary value.
+
+Arguments and results can coexist in host memory. Dynamic WIT representations, typed arrays, packed adapter buffers, guest and adapter linear memory, and Benitoite values all consume memory. The configured transfer and memory budgets constrain different parts of this consumption; they do not bound total process memory.
+
+These checks do not guarantee a component's result is correct or that it returns normally. Component compilation happens during checking as well as execution. Input components are limited to 256 MiB, but checking has no time or host-memory limit. Isolation of the interpreter, including checking untrusted components, remains the responsibility of the harness or OS; scripts have no runtime permission control.

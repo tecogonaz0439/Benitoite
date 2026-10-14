@@ -134,6 +134,13 @@ pub fn reg_use(
             result.reads.push(a);
             result.terminal = true;
         }
+        Opcode::Ext => {
+            let call = program
+                .external_call_operands(instr)
+                .ok_or_else(|| site.error("external reference is missing"))?;
+            site.read_range(&mut result.reads, c, u32::from(call.arg_count))?;
+            result.write = Some(a);
+        }
         Opcode::Prim | Opcode::Io => {
             let builtin = program
                 .builtin(BuiltinRefIdx(u32::from(b)))
@@ -630,12 +637,45 @@ mod tests {
                 ],
             });
         }
+        let source = std::sync::Arc::new(crate::external::ComponentSource {
+            display: "x.wasm".into(),
+            bytes: std::sync::Arc::from([]),
+        });
+        builder
+            .program
+            .externals
+            .components
+            .push(std::sync::Arc::clone(&source));
+        for i in 0..3 {
+            builder
+                .program
+                .externals
+                .functions
+                .push(crate::bytecode::program::ExternalRef {
+                    spec: std::sync::Arc::new(crate::external::ExternalSpec {
+                        adapter: None,
+                        id: i,
+                        function: "f".into(),
+                        component: std::sync::Arc::clone(&source),
+                        instance: None,
+                        export: "f".into(),
+                        params: vec![crate::external::WitPlan::S64; 3],
+                        result: Some(crate::external::WitPlan::S64),
+                        route: crate::external::ExternalRoute::of(
+                            &vec![crate::external::WitPlan::S64; 3],
+                            Some(&crate::external::WitPlan::S64),
+                        ),
+                    }),
+                    component: 0,
+                    arity: 3,
+                });
+        }
         builder.code(main).unwrap().proto.handlers = vec![HandlerIdx(2); 5];
         builder.code(main).unwrap().ret(0);
         builder.finish(main).unwrap()
     }
 
-    // 関門: 68 命令の読み書きは VM とコード生成が共有する契約であり、取り違えた
+    // 関門: 69 命令の読み書きは VM とコード生成が共有する契約であり、取り違えた
     // レジスタの範囲や表の引数の数の不整合を検出する。
     #[test]
     fn all_opcodes_obey_register_operand_contracts() {
@@ -654,6 +694,7 @@ mod tests {
             (Escape, vec![1], None, true),
             (Prim, vec![4, 5, 6], Some(1), false),
             (Io, vec![4, 5, 6], Some(1), false),
+            (Ext, vec![4, 5, 6], Some(1), false),
             (Dict, vec![4, 5], Some(1), false),
             (Super, vec![2], Some(1), false),
             (Method, vec![2, 3, 4, 5], Some(1), false),
@@ -713,7 +754,7 @@ mod tests {
                 assert_eq!(live.call_write(1), None);
             }
         }
-        assert_eq!(covered.len(), 68);
+        assert_eq!(covered.len(), 69);
         assert_eq!(
             covered,
             (0..=u8::MAX)

@@ -8,6 +8,8 @@ use std::cmp::Ordering;
 
 use super::decimal::Decimal;
 
+pub(crate) mod numeric;
+
 /// `Float.toString` の表記（01-04「型の変換」の `Float.toString` の規則）。文字列補間の `Float` の変換も同じ表記を使う。
 pub fn float_to_text(value: f64) -> String {
     if value.is_nan() {
@@ -23,10 +25,29 @@ pub fn float_to_text(value: f64) -> String {
     // LowerExp が作る最短の仮数を使い、仕様の指数の境界で表記を切り替える
     // （設計書 01-04「型の変換」）。有限値の指数は必ず i32 に収まる。
     let scientific = format!("{:e}", value.abs());
-    let (mantissa, exponent) = scientific.split_once('e').unwrap_or((&scientific, "0"));
+    finite_float_to_text(&scientific, value.is_sign_negative())
+}
+
+/// Float32 の最短の仮数を、Float と同じ指数・零・特殊値の表記で示す。
+pub(crate) fn float32_to_text(value: f32) -> String {
+    if value.is_nan() {
+        return text::NAN.into();
+    }
+    if value == f32::INFINITY {
+        return text::INFINITY.into();
+    }
+    if value == f32::NEG_INFINITY {
+        return format!("-{}", text::INFINITY);
+    }
+    // f64 への拡大で仮数が変わるのを避け、f32 の値から最短表記を求める。
+    finite_float_to_text(&format!("{:e}", value.abs()), value.is_sign_negative())
+}
+
+fn finite_float_to_text(scientific: &str, negative: bool) -> String {
+    let (mantissa, exponent) = scientific.split_once('e').unwrap_or((scientific, "0"));
     let exponent = exponent.parse::<i32>().unwrap_or(0);
     let mut result = String::new();
-    if value.is_sign_negative() {
+    if negative {
         result.push('-');
     }
     if !(-5..21).contains(&exponent) {
@@ -86,6 +107,12 @@ pub enum KeyAtom<'a> {
     Decimal(Decimal),
     String(&'a str),
     Bytes(&'a [u8]),
+    Integer8(i8),
+    Integer16(i16),
+    Integer32(i32),
+    UnsignedInteger16(u16),
+    UnsignedInteger32(u32),
+    UnsignedInteger64(u64),
 }
 
 /// 同じ型の二つの葉を、03-06 の鍵の順序で比べる（`Decimal` は小数の桁数によらず数の大小。`String` はスカラー値の列の
@@ -96,6 +123,12 @@ pub fn cmp_key_atom(a: KeyAtom<'_>, b: KeyAtom<'_>) -> Option<Ordering> {
         (KeyAtom::Unit, KeyAtom::Unit) => Some(Ordering::Equal),
         (KeyAtom::Boolean(a), KeyAtom::Boolean(b)) => Some(a.cmp(&b)),
         (KeyAtom::Integer(a), KeyAtom::Integer(b)) => Some(a.cmp(&b)),
+        (KeyAtom::Integer8(a), KeyAtom::Integer8(b)) => Some(a.cmp(&b)),
+        (KeyAtom::Integer16(a), KeyAtom::Integer16(b)) => Some(a.cmp(&b)),
+        (KeyAtom::Integer32(a), KeyAtom::Integer32(b)) => Some(a.cmp(&b)),
+        (KeyAtom::UnsignedInteger16(a), KeyAtom::UnsignedInteger16(b)) => Some(a.cmp(&b)),
+        (KeyAtom::UnsignedInteger32(a), KeyAtom::UnsignedInteger32(b)) => Some(a.cmp(&b)),
+        (KeyAtom::UnsignedInteger64(a), KeyAtom::UnsignedInteger64(b)) => Some(a.cmp(&b)),
         (KeyAtom::Byte(a), KeyAtom::Byte(b)) => Some(a.cmp(&b)),
         (KeyAtom::Character(a), KeyAtom::Character(b)) => Some(a.cmp(&b)),
         (KeyAtom::Decimal(a), KeyAtom::Decimal(b)) => Some(a.cmp_num(b)),
@@ -110,6 +143,25 @@ mod tests {
     use super::{KeyAtom as K, cmp_key_atom};
     use crate::base::decimal::Decimal;
     use std::cmp::Ordering::{Equal, Greater, Less};
+    #[test]
+    fn float32_text_uses_binary32_precision_and_float_notation() {
+        // f64 への拡大と表示用の桁の丸めを区別し、各表示先で共有する規則を確かめる。
+        for (value, expected) in [
+            (0.1_f32, "0.1"),
+            (1.0_f32, "1.0"),
+            (-0.0_f32, "-0.0"),
+            (1e-5_f32, "0.00001"),
+            (1e-6_f32, "1.0e-6"),
+            (1e20_f32, "100000000000000000000.0"),
+            (1e21_f32, "1.0e+21"),
+            (f32::MAX, "3.4028235e+38"),
+            (f32::INFINITY, "Infinity"),
+            (f32::NEG_INFINITY, "-Infinity"),
+            (f32::NAN, "NaN"),
+        ] {
+            assert_eq!(super::float32_to_text(value), expected);
+        }
+    }
     #[test]
     fn key_leaf_order_and_type_boundary() {
         assert_eq!(cmp_key_atom(K::Integer(-1), K::Integer(0)), Some(Less));

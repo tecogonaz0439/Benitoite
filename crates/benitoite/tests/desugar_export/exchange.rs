@@ -130,6 +130,14 @@ fn constant(v: &ConstValue) -> Value {
     match v {
         ConstValue::Integer(value) => tagged("integer", json!({"value":value})),
         ConstValue::Float(value) => tagged("float", json!({"bits":value.to_bits().to_string()})),
+        ConstValue::Byte(value) => tagged("byte", json!({"value":value})),
+        ConstValue::Integer8(value) => tagged("integer8", json!({"value":value})),
+        ConstValue::Integer16(value) => tagged("integer16", json!({"value":value})),
+        ConstValue::Integer32(value) => tagged("integer32", json!({"value":value})),
+        ConstValue::UnsignedInteger16(value) => tagged("unsignedInteger16", json!({"value":value})),
+        ConstValue::UnsignedInteger32(value) => tagged("unsignedInteger32", json!({"value":value})),
+        ConstValue::UnsignedInteger64(value) => tagged("unsignedInteger64", json!({"value":value})),
+        ConstValue::Float32(value) => tagged("float32", json!({"bits":value.to_bits()})),
         ConstValue::String(value) => tagged("string", json!({"value":value})),
         ConstValue::Character(value) => tagged("character", json!({"value":u32::from(*value)})),
         ConstValue::Boolean(value) => tagged("boolean", json!({"value":value})),
@@ -138,11 +146,9 @@ fn constant(v: &ConstValue) -> Value {
             json!({"mantissa":value.mantissa().to_string(),"scale":value.scale()}),
         ),
         ConstValue::Unit => json!("unit"),
-        ConstValue::Byte(_)
-        | ConstValue::Ctor { .. }
-        | ConstValue::List(_)
-        | ConstValue::Map(_)
-        | ConstValue::Set(_) => panic!("unsupported literal sent to Exchange: {v:?}"),
+        ConstValue::Ctor { .. } | ConstValue::List(_) | ConstValue::Map(_) | ConstValue::Set(_) => {
+            panic!("unsupported literal sent to Exchange: {v:?}")
+        }
     }
 }
 
@@ -274,6 +280,7 @@ impl Surface<'_> {
             TypeArg::Head(TyHead::Param(i)) => tagged("tvar", json!({"index":self.type_index(*i)})),
             TypeArg::Head(TyHead::Con(con)) => {
                 let head = match con {
+                    TyCon::External(_) => self.outside("external type"),
                     TyCon::Adt(id) => tagged("data", json!({"name":data_name(*id)})),
                     TyCon::Builtin(id) => match *id {
                         BuiltinTypeId::LIST => json!("list"),
@@ -374,6 +381,7 @@ impl Surface<'_> {
             Ty::Con(con, args) => {
                 let args: Vec<_> = args.iter().map(|t| self.ty(t)).collect();
                 match con {
+                    TyCon::External(_) => self.outside("external type"),
                     TyCon::Adt(id) => tagged("data", json!({"name":data_name(*id),"args":args})),
                     TyCon::Builtin(id) => {
                         let d = id.def().unwrap();
@@ -496,7 +504,6 @@ impl Surface<'_> {
     fn literal(&mut self, id: NodeId) -> Value {
         let value = self.p.types.lit_values.get(id).unwrap();
         match value {
-            ConstValue::Byte(_) => self.outside("Byte literal"),
             ConstValue::Decimal(decimal) => {
                 assert!(
                     decimal.mantissa() >= 0,
@@ -505,6 +512,14 @@ impl Surface<'_> {
                 constant(value)
             }
             ConstValue::Integer(_)
+            | ConstValue::Byte(_)
+            | ConstValue::Integer8(_)
+            | ConstValue::Integer16(_)
+            | ConstValue::Integer32(_)
+            | ConstValue::UnsignedInteger16(_)
+            | ConstValue::UnsignedInteger32(_)
+            | ConstValue::UnsignedInteger64(_)
+            | ConstValue::Float32(_)
             | ConstValue::Float(_)
             | ConstValue::String(_)
             | ConstValue::Character(_)
@@ -686,6 +701,7 @@ impl Surface<'_> {
                     | BindingKind::Data
                     | BindingKind::BuiltinType(_)
                     | BindingKind::Alias
+                    | BindingKind::ExternalType
                     | BindingKind::Record
                     | BindingKind::Trait
                     | BindingKind::Effect
@@ -737,6 +753,7 @@ impl Surface<'_> {
             | BindingKind::Data
             | BindingKind::BuiltinType(_)
             | BindingKind::Alias
+            | BindingKind::ExternalType
             | BindingKind::Record
             | BindingKind::Trait
             | BindingKind::Effect
@@ -811,6 +828,32 @@ impl Surface<'_> {
             }
             a::Expr::Unary(v) => {
                 // 直接の負号だけが符号込みで記録される。括弧を挟む式は一般の neg にする。
+                if v.op == a::UnOp::Neg {
+                    match self.p.types.lit_values.get(v.id) {
+                        Some(ConstValue::Integer8(value)) => {
+                            return tagged(
+                                "negInteger8",
+                                json!({"magnitude":value.unsigned_abs()}),
+                            );
+                        }
+                        Some(ConstValue::Integer16(value)) => {
+                            return tagged(
+                                "negInteger16",
+                                json!({"magnitude":value.unsigned_abs()}),
+                            );
+                        }
+                        Some(ConstValue::Integer32(value)) => {
+                            return tagged(
+                                "negInteger32",
+                                json!({"magnitude":value.unsigned_abs()}),
+                            );
+                        }
+                        Some(ConstValue::Float32(value)) => {
+                            return tagged("negFloat32", json!({"bits":value.to_bits()}));
+                        }
+                        _ => {}
+                    }
+                }
                 if v.op == a::UnOp::Neg
                     && let Some(ConstValue::Decimal(value)) = self.p.types.lit_values.get(v.id)
                 {
@@ -1463,11 +1506,18 @@ impl Core<'_> {
         match v {
             c::Const::Int(n) => constant(&ConstValue::Integer(*n)),
             c::Const::Float(n) => constant(&ConstValue::Float(*n)),
+            c::Const::Int8(n) => constant(&ConstValue::Integer8(*n)),
+            c::Const::Int16(n) => constant(&ConstValue::Integer16(*n)),
+            c::Const::Int32(n) => constant(&ConstValue::Integer32(*n)),
+            c::Const::UInt16(n) => constant(&ConstValue::UnsignedInteger16(*n)),
+            c::Const::UInt32(n) => constant(&ConstValue::UnsignedInteger32(*n)),
+            c::Const::UInt64(n) => constant(&ConstValue::UnsignedInteger64(*n)),
+            c::Const::Float32(n) => constant(&ConstValue::Float32(*n)),
             c::Const::Str(n) => constant(&ConstValue::String(n.clone())),
             c::Const::Char(n) => constant(&ConstValue::Character(*n)),
             c::Const::Bool(n) => constant(&ConstValue::Boolean(*n)),
             c::Const::Unit => json!("unit"),
-            c::Const::Byte(_) => unsupported("Byte literal"),
+            c::Const::Byte(n) => constant(&ConstValue::Byte(*n)),
             c::Const::Decimal(n) => constant(&ConstValue::Decimal(*n)),
         }
     }
@@ -1487,6 +1537,7 @@ impl Core<'_> {
                     json!({"name":fun_name(*def),"tys":tys,"effs":effs}),
                 )
             }
+            c::ValKind::External { .. } => unsupported("external function"),
             c::ValKind::Builtin { id, targs, .. } => {
                 let (tys, effs) = self.surface.args(targs);
                 tagged(
@@ -1612,6 +1663,7 @@ impl Core<'_> {
                 // funDicts は Fn の頭だけを表し、prim・op・field の辞書は表さない。
                 if !dicts.is_empty() {
                     match &func.kind {
+                        c::ValKind::External { .. } => return unsupported("external function"),
                         c::ValKind::Builtin { .. } => {
                             return unsupported("constrained head: builtin");
                         }

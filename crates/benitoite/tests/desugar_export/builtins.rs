@@ -85,6 +85,7 @@ fn remap_ty(ty: &Ty, names: &BTreeMap<BindingId, BindingId>) -> Ty {
             match con {
                 TyCon::Adt(id) => TyCon::Adt(names[id]),
                 TyCon::Builtin(id) => TyCon::Builtin(*id),
+                TyCon::External(id) => TyCon::External(*id),
             },
             args.iter().map(|t| remap_ty(t, names)).collect(),
         ),

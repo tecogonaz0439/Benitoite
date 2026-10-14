@@ -468,6 +468,7 @@ mod tests {
                 | Item::Trait(_)
                 | Item::Effect(_)
                 | Item::Impl(_)
+                | Item::ExternalType(_)
                 | Item::Error(_) => panic!("declaration lost during recovery"),
             };
             assert_eq!(

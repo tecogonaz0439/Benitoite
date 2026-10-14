@@ -1,0 +1,8 @@
+// パッケージ Todo の根の設定（提案の形）。
+// 公開の関数がファイルを読み書きするので、依存を加えるときに処理系は
+// 「このパッケージは File.Read、File.Write を使う」と示す（TODO-094 の前半）。
+
+package Todo
+  language ">= 0.2, < 0.3"
+  license "MIT"
+end package

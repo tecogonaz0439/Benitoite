@@ -11,7 +11,7 @@ use crate::runtime::heap::{Value, ValueCtx};
 
 mod keys;
 mod tree;
-pub(super) use tree::Cursor;
+pub(crate) use tree::Cursor;
 use tree::TreeKind::{Map, Set};
 
 /// 二つの鍵を鍵の順序で比べる。鍵の型でない値に出会ったら `Stop::Internal`。
@@ -31,6 +31,11 @@ pub fn map_from_sorted<'e>(
 /// 組の数。マップでなければ `Stop::Internal`。
 pub fn map_len<'e>(ctx: &ValueCtx<'e>, map: Value<'e>) -> Result<u32, Stop> {
     Map.len(ctx, map)
+}
+/// マップであることを確かめ、組を鍵の順に走査するカーソルを作る。
+pub(crate) fn map_cursor<'e>(ctx: &ValueCtx<'e>, map: Value<'e>) -> Result<Cursor<'e>, Stop> {
+    Map.len(ctx, map)?;
+    Ok(Cursor::map(map))
 }
 /// 鍵に対応する値。鍵がなければ `None`。
 pub fn map_get<'e>(
@@ -85,6 +90,11 @@ pub fn set_from_sorted<'e>(
 /// 要素の数。集合でなければ `Stop::Internal`。
 pub fn set_len<'e>(ctx: &ValueCtx<'e>, set: Value<'e>) -> Result<u32, Stop> {
     Set.len(ctx, set)
+}
+/// 集合であることを確かめ、要素を鍵の順に走査するカーソルを作る。
+pub(crate) fn set_cursor<'e>(ctx: &ValueCtx<'e>, set: Value<'e>) -> Result<Cursor<'e>, Stop> {
+    Set.len(ctx, set)?;
+    Ok(Cursor::set(set))
 }
 /// 鍵の順序で同じ要素が集合にあるか。
 pub fn set_contains<'e>(ctx: &ValueCtx<'e>, set: Value<'e>, x: Value<'e>) -> Result<bool, Stop> {

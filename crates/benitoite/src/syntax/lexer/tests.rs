@@ -109,6 +109,8 @@ fn integer_literals() {
         ("1_000_000", 10, "1000000"),
         ("0xFF_FF", 16, "FFFF"),
         ("0xff", 16, "ff"),
+        ("0xfff32", 16, "fff32"),
+        ("0xf64", 16, "f64"),
         ("0o755", 8, "755"),
         ("0b1010_0101", 2, "10100101"),
         // 値の範囲は型検査器が判定する（02-03「字句」）
@@ -165,9 +167,32 @@ fn float_literals() {
 
 #[test]
 fn malformed_numbers() {
-    use DiagCode::{E0115, E0116};
+    use DiagCode::{E0115, E0116, E0124, E0127};
     // (ソース, 塊の字面, コード, ラベルの鍵)。塊は先頭から始まり、一つの誤りの字句になる
     let cases = [
+        ("1s128", "1s128", E0115, "suffix"),
+        ("1S8", "1S8", E0115, "suffix"),
+        ("1u8x", "1u8x", E0115, "suffix"),
+        ("1_s8", "1_s8", E0115, "underscore"),
+        ("1.0s32", "1.0s32", E0127, "integer_form"),
+        ("1e3u16", "1e3u16", E0127, "integer_form"),
+        ("1f32", "1f32", E0127, "float_form"),
+        ("1f64", "1f64", E0127, "float_form"),
+        ("1.0f16", "1.0f16", E0116, "suffix"),
+        ("1.0F32", "1.0F32", E0116, "suffix"),
+        ("1s8u8", "1s8u8", E0115, "suffix"),
+        ("1.0f32f64", "1.0f32f64", E0116, "suffix"),
+        ("1mu8", "1mu8", E0124, "suffix"),
+        ("1s8m", "1s8m", E0115, "suffix"),
+        ("1.0mf32", "1.0mf32", E0124, "suffix"),
+        ("1.0f32m", "1.0f32m", E0116, "suffix"),
+        ("00s8", "00s8", E0115, "leading_zero"),
+        ("1__0s16", "1__0s16", E0115, "underscore"),
+        ("0b102u32", "0b102u32", E0115, "digit"),
+        ("0Xffu8", "0Xffu8", E0115, "prefix"),
+        ("0xu8", "0xu8", E0115, "no_digits"),
+        ("1e+f32", "1e+f32", E0116, "exponent"),
+        ("1_.0f32", "1_.0f32", E0116, "underscore"),
         ("007", "007", E0115, "leading_zero"),
         ("00.5", "00.5", E0116, "leading_zero"),
         ("01e5", "01e5", E0116, "leading_zero"),
@@ -1205,4 +1230,76 @@ fn deep_interpolation_uses_no_rust_recursion() {
     let out = lex_str(&format!("{}\nnext", "\"${".repeat(depth)));
     assert_eq!(kinds(&out), [K::Error, K::LineBreak, K::LowerIdent, K::Eof]);
     assert_eq!(out.diagnostics.len(), depth);
+}
+
+#[test]
+fn width_literal_values_and_separate_minus() {
+    use crate::syntax::token::{FloatSuffix as F, IntegerSuffix as I};
+    // 幅と基数の取り違えは後の型検査では復元できないため、字句の公開の値で確かめる。
+    for (source, radix, digits, suffix) in [
+        ("42s8", 10, "42", I::S8),
+        ("0o17s16", 8, "17", I::S16),
+        ("0b10_10s32", 2, "1010", I::S32),
+        ("0xFF_FFs64", 16, "FFFF", I::S64),
+        ("0xffu8", 16, "ff", I::U8),
+        ("0b1010u16", 2, "1010", I::U16),
+        ("1_000u32", 10, "1000", I::U32),
+        (
+            "18446744073709551615u64",
+            10,
+            "18446744073709551615",
+            I::U64,
+        ),
+    ] {
+        let out = lex_str(source);
+        assert!(
+            out.diagnostics.is_empty(),
+            "{source}: {:?}",
+            out.diagnostics
+        );
+        assert_eq!(
+            out.tokens,
+            vec![
+                Token {
+                    kind: K::IntLit,
+                    span: sp(0, len32(source)),
+                    value: TokenValue::WidthInt {
+                        radix,
+                        digits: digits.into(),
+                        suffix
+                    },
+                },
+                eof(len32(source))
+            ]
+        );
+    }
+    for (source, text, suffix) in [
+        ("1.5f32", "1.5", F::F32),
+        ("1e-3f32", "1e-3", F::F32),
+        ("1_000.0_5E+1_0f64", "1000.05E+10", F::F64),
+    ] {
+        let out = lex_str(source);
+        assert!(
+            out.diagnostics.is_empty(),
+            "{source}: {:?}",
+            out.diagnostics
+        );
+        assert_eq!(
+            out.tokens,
+            vec![
+                Token {
+                    kind: K::FloatLit,
+                    span: sp(0, len32(source)),
+                    value: TokenValue::WidthFloat {
+                        text: text.into(),
+                        suffix
+                    },
+                },
+                eof(len32(source))
+            ]
+        );
+    }
+    assert_clean_kinds("-128s8", &[K::Minus, K::IntLit, K::Eof]);
+    assert_clean_kinds("-0.0f32", &[K::Minus, K::FloatLit, K::Eof]);
+    assert_clean_kinds("1s64..5s64", &[K::IntLit, K::DotDot, K::IntLit, K::Eof]);
 }

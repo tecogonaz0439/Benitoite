@@ -1,0 +1,31 @@
+// プロジェクトの設定（提案の形。構文の見直しで見た目は変わりうる）。
+// 根のディレクトリ（app.bnt のあるディレクトリ）の直下に置き、処理系は親のディレクトリを遡らない。
+// 依存の記述を書けるのは、この設定か、入口のファイルの先頭のどちらか一か所だけである。
+//
+// commit と hash は、処理系の命令（benitoite package add に当たるもの）が取得して書き込む。
+// hash は、パッケージに含めるファイルのパスと中身から計算する SHA-256 である。
+// 依存の依存は、各パッケージの設定がそのパッケージの hash の対象に含まれることで固定される。
+
+project
+  language "0.2"
+end project
+
+dependency Textkit
+  source "https://github.com/example/benitoite-textkit"
+  version "1.2.0"
+  commit "0d6c3a9e5b7f41c2a8e9d0b1f2c3a4e5d6b7c8a9"
+  hash "sha256:3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b"
+end dependency
+
+dependency Todo
+  source "https://github.com/example/benitoite-todo"
+  version "0.4.1"
+  commit "9f8e7d6c5b4a39281706f5e4d3c2b1a098765432"
+  hash "sha256:b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"
+end dependency
+
+// 開発の途中の確認のための手元のパス（取得元 S4）。公開するパッケージの依存の記述には書けない。
+dependency Fuzzy
+  path "../packages/fuzzy"
+  hash "sha256:1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014"
+end dependency

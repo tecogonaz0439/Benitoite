@@ -40,8 +40,26 @@ pub(super) fn program(
                         &mut out.body_count,
                     )?);
                 }
-                ast::Item::Fn(_)
-                | ast::Item::Data(_)
+                ast::Item::Fn(f) => {
+                    let binding = resolved
+                        .decls
+                        .get(f.id)
+                        .copied()
+                        .ok_or_else(|| error("missing external declaration binding"))?;
+                    if resolved.externals.get(binding).is_some() {
+                        out.defs.push(definition(
+                            module,
+                            f,
+                            DefKind::Fn,
+                            None,
+                            resolved,
+                            types,
+                            &mut out.body_count,
+                        )?);
+                    }
+                }
+                ast::Item::Data(_)
+                | ast::Item::ExternalType(_)
                 | ast::Item::Alias(_)
                 | ast::Item::Trait(_)
                 | ast::Item::Effect(_) => {}
@@ -75,7 +93,11 @@ pub(super) fn program(
                 .get(b.module)
                 .ok_or_else(|| error("missing operation module"))?;
             let prefix = match module.kind {
-                ModuleKind::Entry | ModuleKind::User => effect.display_name.as_str(),
+                ModuleKind::Entry
+                | ModuleKind::User
+                | ModuleKind::Package
+                | ModuleKind::Config
+                | ModuleKind::PackageConfig => effect.display_name.as_str(),
                 ModuleKind::Prelude | ModuleKind::Stdlib => module
                     .name
                     .0
@@ -96,7 +118,11 @@ pub(super) fn program(
 
 fn origin(module: &ModuleInfo, public: bool) -> DefOrigin {
     match module.kind {
-        ModuleKind::Entry | ModuleKind::User => DefOrigin::User,
+        ModuleKind::Entry
+        | ModuleKind::User
+        | ModuleKind::Package
+        | ModuleKind::Config
+        | ModuleKind::PackageConfig => DefOrigin::User,
         ModuleKind::Prelude | ModuleKind::Stdlib => {
             if public {
                 DefOrigin::StdlibPublic
@@ -109,7 +135,9 @@ fn origin(module: &ModuleInfo, public: bool) -> DefOrigin {
 fn name(module: &ModuleInfo, public: bool, name: &str) -> Result<String, InternalError> {
     Ok(match module.kind {
         ModuleKind::Entry => name.into(),
-        ModuleKind::User => format!("{}.{name}", module.name.dotted()),
+        ModuleKind::User | ModuleKind::Package | ModuleKind::Config | ModuleKind::PackageConfig => {
+            format!("{}.{name}", module.name.dotted())
+        }
         ModuleKind::Prelude | ModuleKind::Stdlib => {
             if public {
                 format!(
@@ -171,12 +199,36 @@ fn definition(
     for (p, ty) in f.params.iter().zip(&scheme.params) {
         params.push(state.local(p.id, Some(p.name.text.clone()), ty.clone())?);
     }
-    let body = state.block(
-        f.body
-            .as_ref()
-            .ok_or_else(|| error("missing function body"))?,
-        Position::Tail,
-    )?;
+    let body = if let Some(body) = &f.body {
+        state.block(body, Position::Tail)?
+    } else {
+        let spec = resolved
+            .externals
+            .get(binding)
+            .and_then(|decl| decl.spec.as_ref())
+            .ok_or_else(|| error("missing checked external function"))?;
+        Comp {
+            kind: CompKind::App {
+                func: value(
+                    ValKind::External {
+                        def: binding,
+                        spec: std::sync::Arc::clone(spec),
+                    },
+                    function(
+                        scheme.params.clone(),
+                        scheme.ret.clone(),
+                        scheme.effects.clone(),
+                    ),
+                    f.span,
+                ),
+                dicts: vec![],
+                args: params.iter().map(|p| variable(p, f.span)).collect(),
+            },
+            ty: scheme.ret.clone(),
+            eff: scheme.effects.clone(),
+            origin: f.span,
+        }
+    };
     let public = state.binding(binding)?.public;
     Ok(Def {
         binding,
@@ -337,6 +389,7 @@ fn implementation(
         .ok_or_else(|| error(format!("missing impls for {:?}", decl.id)))?;
     let type_params: Vec<_> = info.type_params.iter().map(|p| p.name.clone()).collect();
     let names = TyNames {
+        bindings: &resolved.bindings,
         adts: &types.adts,
         effects: &types.effects,
         type_params: &type_params,
@@ -354,6 +407,9 @@ fn implementation(
             .ok_or_else(|| error("missing target ADT"))?
             .name
             .clone(),
+        TypeArg::Head(TyHead::Con(TyCon::External(id))) => {
+            Ty::Con(TyCon::External(*id), vec![]).show(&names)
+        }
         TypeArg::Head(TyHead::Con(TyCon::Builtin(b))) => basic(*b).show(&names),
     };
     let class = types

@@ -194,7 +194,7 @@ mod interrupt;
 /// 出力の最後の転送を標準出力、標準エラー出力の順に行ってから、終わり方・終了状態・報告を返す。
 /// VM の実行を `runtime::panic::catch` で囲み、捕らえた panic は処理系の不具合（終了状態 3）にする。
 pub fn run_program(program: &CompiledProgram, env: RunEnv) -> RunEnd {
-    run_entry(program, env, &Entry::Main).run
+    run_entry(program, env, &Entry::Main, Default::default()).run
 }
 
 // 最初のタスクにする関数（`main` かテストの関数）。
@@ -204,7 +204,12 @@ enum Entry {
 }
 
 // `run_program` と `run_test` に共通の手順 2〜5（設計書 02-09「プログラムの実行の流れ」、02-11「テストの実行」）。
-fn run_entry(program: &CompiledProgram, env: RunEnv, entry: &Entry) -> TestEnd {
+fn run_entry(
+    program: &CompiledProgram,
+    env: RunEnv,
+    entry: &Entry,
+    externals: crate::external::stats::ExecutionOptions,
+) -> TestEnd {
     let seed = match getrandom::u64() {
         Ok(seed) => seed,
         Err(error) => {
@@ -279,7 +284,7 @@ fn run_entry(program: &CompiledProgram, env: RunEnv, entry: &Entry) -> TestEnd {
     rt.random_state = crate::runtime::random::seeded_state(seed);
     rt.process_stdio = process_stdio;
     rt.dev_panic_after_first_write = env.dev_panic_after_first_write;
-    run_vm_entry(program, env.vm, env.heap, rt, entry)
+    run_vm_entry(program, env.vm, env.heap, rt, entry, externals)
 }
 // 書き込みを始める前に準備の失敗を報告する（設計書 02-09「プログラムの実行の流れ」）。
 fn output_start_failure(
@@ -307,7 +312,7 @@ fn run_vm(
     heap: HeapConfig,
     rt: super::io::services::IoRuntime,
 ) -> RunEnd {
-    run_vm_entry(program, config, heap, rt, &Entry::Main).run
+    run_vm_entry(program, config, heap, rt, &Entry::Main, Default::default()).run
 }
 fn run_vm_entry(
     program: &CompiledProgram,
@@ -315,8 +320,10 @@ fn run_vm_entry(
     heap: HeapConfig,
     mut rt: super::io::services::IoRuntime,
     entry: &Entry,
+    externals: crate::external::stats::ExecutionOptions,
 ) -> TestEnd {
     let mut vm = crate::vm::Vm::new(program, config, heap);
+    vm.configure_externals(externals);
 
     let mut end = match crate::runtime::panic::catch(|| {
         let started = match entry {
@@ -709,6 +716,9 @@ mod tests {
             fn requested(&self) -> bool {
                 self.0.load(Ordering::Relaxed)
             }
+            fn shared_flag(&self) -> Option<Arc<AtomicBool>> {
+                Some(Arc::clone(&self.0))
+            }
             fn flag(&self) -> Option<&AtomicBool> {
                 Some(&self.0)
             }
@@ -1026,5 +1036,21 @@ pub struct TestEnd {
 /// テストの関数を、引数なしで最初のタスクとして実行する（設計書 02-11「テストの実行」）。
 /// VM の実行を `runtime::panic::catch` で囲み、捕らえた panic は処理系の不具合（終了状態 3）にする。
 pub fn run_test(program: &CompiledProgram, target: TestTarget, env: RunEnv) -> TestEnd {
-    run_entry(program, env, &Entry::Test(target))
+    run_entry(program, env, &Entry::Test(target), Default::default())
+}
+
+pub(crate) fn run_program_with_externals(
+    program: &CompiledProgram,
+    env: RunEnv,
+    externals: crate::external::stats::ExecutionOptions,
+) -> RunEnd {
+    run_entry(program, env, &Entry::Main, externals).run
+}
+pub(crate) fn run_test_with_externals(
+    program: &CompiledProgram,
+    target: TestTarget,
+    env: RunEnv,
+    externals: crate::external::stats::ExecutionOptions,
+) -> TestEnd {
+    run_entry(program, env, &Entry::Test(target), externals)
 }

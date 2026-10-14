@@ -6,10 +6,12 @@ use crate::base::{BindingId, IdGen, ModuleId, NodeId, NodeMap, SourceTable, Span
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic, ReportKind, Severity};
 use crate::modules::{ModuleKind, ModuleTable};
 use crate::syntax::ast::*;
-use crate::types::builtin::{BUILTIN_TYPES, BuiltinEffectId, BuiltinTypeId, find_builtin_effect};
+use crate::types::builtin::{
+    BuiltinEffectId, BuiltinTypeId, builtin_types_in, find_builtin_effect,
+};
 
 use super::lookup::Ctx;
-use super::{Binding, BindingKind, DeclSite, ResolveOutput};
+use super::{Binding, BindingKind, DeclSite, Level, ResolveOutput};
 
 type Names = BTreeMap<String, BindingId>;
 
@@ -20,6 +22,8 @@ pub(super) struct Resolver<'a> {
     pub(super) ids: &'a mut IdGen,
     pub(super) out: ResolveOutput,
     pub(super) top: BTreeMap<ModuleId, Names>,
+    pub(super) package_exports: BTreeMap<ModuleId, Names>,
+    pub(super) package_span: BTreeMap<BindingId, Span>,
     // None の取り込みは派生した未定義名の診断を抑える。
     pub(super) imported: BTreeMap<ModuleId, BTreeMap<String, Option<BindingId>>>,
     pub(super) pending_aliases:
@@ -49,6 +53,8 @@ impl<'a> Resolver<'a> {
             ids,
             out: ResolveOutput::default(),
             top: BTreeMap::new(),
+            package_exports: BTreeMap::new(),
+            package_span: BTreeMap::new(),
             imported: BTreeMap::new(),
             pending_aliases: BTreeMap::new(),
             prelude: Names::new(),
@@ -65,6 +71,27 @@ impl<'a> Resolver<'a> {
 
     pub(super) fn ast(&self, module: ModuleId) -> Option<&'a Module> {
         self.asts.get(usize::try_from(module.0).ok()?)
+    }
+
+    // 依存の依存を許さないため、先頭の別名でパッケージを一意に識別できる
+    // （設計書 02-04「名前の引き方」）。設定ファイルはどのモジュールとも同じパッケージにしない。
+    pub(super) fn same_package(&self, a: ModuleId, b: ModuleId) -> bool {
+        let (Some(a), Some(b)) = (self.modules.get(a), self.modules.get(b)) else {
+            return false;
+        };
+        match (a.kind, b.kind) {
+            (ModuleKind::Package, ModuleKind::Package) => a
+                .name
+                .0
+                .first()
+                .is_some_and(|name| Some(name) == b.name.0.first()),
+            (ModuleKind::Entry | ModuleKind::User, ModuleKind::Entry | ModuleKind::User)
+            | (
+                ModuleKind::Prelude | ModuleKind::Stdlib,
+                ModuleKind::Prelude | ModuleKind::Stdlib,
+            ) => true,
+            _ => false,
+        }
     }
 
     pub(super) fn internal(&mut self, message: String) {
@@ -109,7 +136,7 @@ impl<'a> Resolver<'a> {
         node: NodeId,
         name: &Name,
         kind: BindingKind,
-        public: bool,
+        visibility: Level,
         deprecated: Option<String>,
     ) -> BindingId {
         self.bind(Binding {
@@ -118,7 +145,8 @@ impl<'a> Resolver<'a> {
             module,
             decl: DeclSite::Node(node),
             span: Some(name.span),
-            public,
+            public: visibility == Level::Public,
+            package: visibility == Level::Package,
             deprecated,
         })
     }
@@ -131,6 +159,7 @@ impl<'a> Resolver<'a> {
             decl: DeclSite::Table,
             span: None,
             public: true,
+            package: false,
             deprecated: None,
         })
     }
@@ -175,6 +204,12 @@ impl<'a> Resolver<'a> {
         if self.out.bindings.get(id).is_some_and(|b| b.public) {
             self.out
                 .exports
+                .entry(module)
+                .or_default()
+                .insert(name.text.clone(), id);
+        }
+        if self.out.bindings.get(id).is_some_and(|b| b.package) {
+            self.package_exports
                 .entry(module)
                 .or_default()
                 .insert(name.text.clone(), id);
@@ -241,29 +276,17 @@ impl<'a> Resolver<'a> {
             self.out.exports.entry(module.id).or_default();
             let path: Vec<&str> = module.name.0.iter().skip(1).map(String::as_str).collect();
             if matches!(module.kind, ModuleKind::Prelude | ModuleKind::Stdlib) {
-                for (index, def) in BUILTIN_TYPES
-                    .iter()
-                    .enumerate()
-                    .filter(|(_, d)| !d.module.is_empty() && d.module == path)
-                {
-                    let Ok(index) = u16::try_from(index) else {
-                        self.internal("builtin type index exceeds u16".into());
-                        continue;
-                    };
-                    let id = self.table_binding(
-                        module.id,
-                        def.name,
-                        BindingKind::BuiltinType(BuiltinTypeId(index)),
-                    );
+                for (ty, name) in builtin_types_in(&path).filter(|_| !path.is_empty()) {
+                    let id = self.table_binding(module.id, name, BindingKind::BuiltinType(ty));
                     self.top
                         .entry(module.id)
                         .or_default()
-                        .insert(def.name.into(), id);
+                        .insert(name.into(), id);
                     self.out
                         .exports
                         .entry(module.id)
                         .or_default()
-                        .insert(def.name.into(), id);
+                        .insert(name.into(), id);
                 }
                 if path == ["IO"] {
                     let id = self.table_binding(
@@ -317,7 +340,10 @@ impl<'a> Resolver<'a> {
     }
 
     fn collect_decl(&mut self, module: ModuleId, top: &TopDecl) {
-        let public = top.public.is_some();
+        let visibility = Level::of(
+            top.public.is_some() && top.package.is_none(),
+            top.package.is_some(),
+        );
         let deprecated = top
             .attrs
             .iter()
@@ -341,6 +367,7 @@ impl<'a> Resolver<'a> {
             Item::Const(d) => (&d.name, BindingKind::Const, d.span),
             Item::Data(d) => (&d.name, BindingKind::Data, d.span),
             Item::Alias(d) => (&d.name, BindingKind::Alias, d.span),
+            Item::ExternalType(d) => (&d.name, BindingKind::ExternalType, d.span),
             Item::Record(d) => (&d.name, BindingKind::Record, d.span),
             Item::Trait(d) => (&d.name, BindingKind::Trait, d.span),
             Item::Effect(d) => (&d.name, BindingKind::Effect, d.span),
@@ -352,7 +379,7 @@ impl<'a> Resolver<'a> {
                         f.decl.id,
                         &f.decl.name,
                         BindingKind::ImplFn { impl_decl: d.id },
-                        false,
+                        Level::Private,
                         None,
                     );
                     if let Some(first) = seen.insert(f.decl.name.text.clone(), id) {
@@ -365,8 +392,31 @@ impl<'a> Resolver<'a> {
             Item::Error(_) => return,
         };
         let owner = top.item.id();
-        let id = self.node_binding(module, owner, name, kind, public, deprecated.clone());
+        let id = self.node_binding(module, owner, name, kind, visibility, deprecated.clone());
+        if matches!(top.item, Item::Fn(_) | Item::ExternalType(_))
+            && let Some(attr) = top.attrs.iter().find(|attr| attr.name.text == "external")
+        {
+            if let [kind, path, export] = attr.args.as_slice() {
+                self.out.externals.insert(
+                    id,
+                    crate::external::ExternalDecl {
+                        module,
+                        decl: owner,
+                        kind: kind.clone(),
+                        path: path.clone(),
+                        export: export.clone(),
+                        spec: None,
+                        external_type: None,
+                    },
+                );
+            } else {
+                self.internal("invalid external attribute after parsing".into());
+            }
+        }
         self.parent.insert(id, owner);
+        if let Some(span) = top.package {
+            self.package_span.insert(id, span);
+        }
         self.insertion.insert(
             id,
             Span {
@@ -403,7 +453,7 @@ impl<'a> Resolver<'a> {
                         v.id,
                         &v.name,
                         BindingKind::Ctor { data: id, tag },
-                        public,
+                        visibility,
                         deprecated.clone(),
                     );
                     self.child(id, child, &v.name, DiagCode::E0309, &name.text);
@@ -418,7 +468,7 @@ impl<'a> Resolver<'a> {
                         f.id,
                         &f.name,
                         BindingKind::Field { record: id, index },
-                        public,
+                        visibility,
                         deprecated.clone(),
                     );
                     self.child(id, child, &f.name, DiagCode::E0327, &name.text);
@@ -433,7 +483,7 @@ impl<'a> Resolver<'a> {
                         m.id,
                         &m.name,
                         BindingKind::Method { trait_: id, index },
-                        public,
+                        visibility,
                         deprecated.clone(),
                     );
                     self.child(id, child, &m.name, DiagCode::E0328, &name.text);
@@ -466,7 +516,7 @@ impl<'a> Resolver<'a> {
                         op.id,
                         &op.name,
                         BindingKind::Op { effect: id, index },
-                        public,
+                        visibility,
                         deprecated.clone(),
                     );
                     self.add_top(module, child, &op.name);
@@ -483,7 +533,12 @@ impl<'a> Resolver<'a> {
                     }
                 }
             }
-            Item::Fn(_) | Item::Const(_) | Item::Alias(_) | Item::Impl(_) | Item::Error(_) => {}
+            Item::Fn(_)
+            | Item::Const(_)
+            | Item::Alias(_)
+            | Item::Impl(_)
+            | Item::ExternalType(_)
+            | Item::Error(_) => {}
         }
         for child in children {
             self.parent.insert(child, owner);

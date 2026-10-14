@@ -1,0 +1,9 @@
+// spec: 01-03 依存のパッケージの取り込み
+dependency Tk
+  path "Textkit"
+end dependency
+import Textkit.Slug as A
+import Tk.Slug as B
+function main() -> Unit
+  ()
+end function

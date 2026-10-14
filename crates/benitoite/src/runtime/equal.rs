@@ -138,6 +138,13 @@ pub fn values_equal<'e>(ctx: &ValueCtx<'e>, a: Value<'e>, b: Value<'e>) -> Resul
         // （設計書 01-06「等値の型」、02-08「組み込みの関数の呼び出し」）。
         let equal = match (a, b) {
             (Value::Int(a), Value::Int(b)) => a == b,
+            (Value::Int8(a), Value::Int8(b)) => a == b,
+            (Value::Int16(a), Value::Int16(b)) => a == b,
+            (Value::Int32(a), Value::Int32(b)) => a == b,
+            (Value::UInt16(a), Value::UInt16(b)) => a == b,
+            (Value::UInt32(a), Value::UInt32(b)) => a == b,
+            (Value::UInt64(a), Value::UInt64(b)) => a == b,
+            (Value::Float32(a), Value::Float32(b)) => a == b,
             (Value::Float(a), Value::Float(b)) => a == b,
             (Value::Byte(a), Value::Byte(b)) => a == b,
             (Value::Bool(a), Value::Bool(b)) => a == b,

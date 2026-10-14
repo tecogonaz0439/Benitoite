@@ -24,6 +24,12 @@ fn atom<'c, 'e>(ctx: &'c ValueCtx<'e>, v: Value<'e>) -> Option<KeyAtom<'c>> {
     match v {
         Value::Unit => Some(KeyAtom::Unit),
         Value::Int(n) => Some(KeyAtom::Integer(n)),
+        Value::Int8(n) => Some(KeyAtom::Integer8(n)),
+        Value::Int16(n) => Some(KeyAtom::Integer16(n)),
+        Value::Int32(n) => Some(KeyAtom::Integer32(n)),
+        Value::UInt16(n) => Some(KeyAtom::UnsignedInteger16(n)),
+        Value::UInt32(n) => Some(KeyAtom::UnsignedInteger32(n)),
+        Value::UInt64(n) => Some(KeyAtom::UnsignedInteger64(n)),
         Value::Byte(n) => Some(KeyAtom::Byte(n)),
         Value::Bool(b) => Some(KeyAtom::Boolean(b)),
         Value::Char(c) => Some(KeyAtom::Character(c)),
@@ -34,6 +40,7 @@ fn atom<'c, 'e>(ctx: &'c ValueCtx<'e>, v: Value<'e>) -> Option<KeyAtom<'c>> {
             ObjKind::Fields(_) | ObjKind::Cell | ObjKind::Opaque | ObjKind::Host => None,
         },
         Value::Float(_)
+        | Value::Float32(_)
         | Value::Tag(_)
         | Value::Resource(_)
         | Value::EmptyList

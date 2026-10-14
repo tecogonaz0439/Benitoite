@@ -1,0 +1,5 @@
+// 作成時の関門: 範囲外のシフトの停止が CLI の既存の診断で報告されることを守る。
+function main() -> Unit
+  bind _ <- Integer8.shiftRightUnsigned(1s8, -1)
+  ()
+end function

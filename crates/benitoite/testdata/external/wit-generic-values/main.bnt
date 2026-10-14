@@ -1,0 +1,21 @@
+// spec: 01-02 外部の関数の宣言
+// 関門: 具体的なレコードと data の欄を実行時にも同じ代入で受け渡す。
+import Benitoite.Unofficial.IO.Console
+record Box[T]
+  value: T
+end record
+data Envelope[T]
+  Wrapped(T)
+  Empty
+end data
+@external("wasm", "x.wasm", "box")
+function box(v: Box[Integer]) -> Box[Integer]
+@external("wasm", "x.wasm", "nested")
+function nested(v: Box[Box[Integer]]) -> Box[Box[Integer]]
+@external("wasm", "x.wasm", "envelope")
+function envelope(v: Envelope[Integer]) -> Envelope[Integer]
+function main() -> Unit uses Console.Write
+  Console.writeLine("${Box.value(box(Box(value: 35)))}")
+  Console.writeLine("${Box.value(Box.value(nested(Box(value: Box(value: -7)))))}")
+  Console.writeLine("${envelope(Envelope.Wrapped(33)) = Envelope.Wrapped(42)} ${envelope(Envelope.Empty) = Envelope.Empty}")
+end function

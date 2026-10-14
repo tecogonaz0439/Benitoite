@@ -55,6 +55,7 @@ fn function<'a>(l: &'a LoadOutput, name: &str) -> &'a FnDecl {
             | Item::Trait(_)
             | Item::Effect(_)
             | Item::Impl(_)
+            | Item::ExternalType(_)
             | Item::Error(_) => None,
         })
         .unwrap()

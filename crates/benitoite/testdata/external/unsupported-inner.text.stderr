@@ -1,0 +1,21 @@
+error[E1008]: argument 1 of `nested` does not match the component
+  --> testdata/external/unsupported-inner/main.bnt:6:24
+   |
+ 6 | function nested(value: Option[List[Pair[Integer, String]]]) -> Option[List[Pair[Integer, String]]]
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ declared as `Option[List[Pair[Integer, String]]]`
+   |
+   = note: the component expects `option<list<tuple<s64, string>>>`
+   = note: `Option[List[Pair[Integer, String]]]` is passed as `option<list<variant { Both(tuple<s64, string, s64>) }>>`
+   = note: the component function corresponds to `function nested(value: Option[List[Pair[Integer, String]]]) -> Option[List[Pair[Integer, String]]]`
+
+error[E1009]: the result of `nested` does not match the component
+  --> testdata/external/unsupported-inner/main.bnt:6:64
+   |
+ 6 | function nested(value: Option[List[Pair[Integer, String]]]) -> Option[List[Pair[Integer, String]]]
+   |                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ declared as `Option[List[Pair[Integer, String]]]`
+   |
+   = note: the component returns `option<list<tuple<s64, string>>>`
+   = note: `Option[List[Pair[Integer, String]]]` is passed as `option<list<variant { Both(tuple<s64, string, s64>) }>>`
+   = note: the component function corresponds to `function nested(value: Option[List[Pair[Integer, String]]]) -> Option[List[Pair[Integer, String]]]`
+
+error: could not check testdata/external/unsupported-inner/main.bnt due to 2 previous errors

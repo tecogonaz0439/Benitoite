@@ -6,6 +6,7 @@ pub mod builtins;
 pub mod bytecode;
 pub mod cli;
 pub mod diag;
+pub mod external;
 pub mod ir;
 pub mod modules;
 pub mod pipeline;

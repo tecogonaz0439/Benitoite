@@ -111,20 +111,44 @@ pub fn parse_path_args(tool: PathTool, args: Vec<OsString>) -> Result<PathArgs, 
 /// ディレクトリの下のすべての `.bnt` のファイルを、パスの辞書順に並べて返す（06-01「ディレクトリの指定（初回リリース版）」）。
 /// シンボリックリンクは辿らず、返す並びにも含めない。読めないディレクトリがあれば、そのパスと理由を返す。
 pub fn bnt_files(dir: &Path) -> Result<Vec<PathBuf>, (PathBuf, std::io::Error)> {
-    // 実行時の入れ子の深さに依らないよう、明示の積み重ねで辿る（AGENTS.md「実装の規約」の「再帰の深さ」）。
+    collect_bnt_files(dir, false)
+}
+
+/// テストでは下位のパッケージと設定ファイルを除き、整形ではすべて集める。
+pub(super) fn collect_bnt_files(
+    root: &Path,
+    skip_packages: bool,
+) -> Result<Vec<PathBuf>, (PathBuf, std::io::Error)> {
+    // 深いディレクトリでも Rust のスタックを増やさない（AGENTS.md「再帰の深さ」）。
     let mut files = Vec::new();
-    let mut pending = vec![dir.to_path_buf()];
+    let mut pending = vec![root.to_path_buf()];
     while let Some(current) = pending.pop() {
-        let entries = std::fs::read_dir(&current).map_err(|e| (current.clone(), e))?;
+        let entries = std::fs::read_dir(&current).map_err(|error| (current.clone(), error))?;
+        let mut children = Vec::new();
+        let mut package = false;
         for entry in entries {
-            let entry = entry.map_err(|e| (current.clone(), e))?;
+            let entry = entry.map_err(|error| (current.clone(), error))?;
             let path = entry.path();
-            // シンボリックリンクは辿らず集めない（設計書 06-01「`fmt` のコマンドライン（初回リリース版）」）。
-            // `DirEntry::file_type` はリンクを辿らず、リンクそのものの種類を返す。
-            let file_type = entry.file_type().map_err(|e| (path.clone(), e))?;
-            if file_type.is_dir() {
+            // リンクは辿らず集めない。設定の有無の判定にはリンクの項目も使う（設計書 06-01）。
+            let kind = entry.file_type().map_err(|error| (path.clone(), error))?;
+            let config = entry.file_name() == crate::modules::package::CONFIG_NAME;
+            package |= config && !kind.is_dir();
+            if kind.is_dir() {
+                children.push((path, true));
+            } else if kind.is_file()
+                && path.extension().is_some_and(|ext| ext == "bnt")
+                && !(skip_packages && config)
+            {
+                children.push((path, false));
+            }
+        }
+        if skip_packages && current != root && package {
+            continue;
+        }
+        for (path, is_dir) in children {
+            if is_dir {
                 pending.push(path);
-            } else if file_type.is_file() && path.extension().is_some_and(|ext| ext == "bnt") {
+            } else {
                 files.push(path);
             }
         }
@@ -135,3 +159,27 @@ pub fn bnt_files(dir: &Path) -> Result<Vec<PathBuf>, (PathBuf, std::io::Error)> 
 
 #[cfg(test)]
 mod tests;
+
+// PathArgs の契約を保ち、外部呼び出しの設定だけを別に返す。
+pub(in crate::cli) fn parse_test_args(
+    args: Vec<OsString>,
+) -> Result<(PathArgs, crate::cli::WasmOptions), String> {
+    let mut remaining = Vec::new();
+    let mut wasm = crate::cli::WasmOptions::default();
+    let mut seen = std::collections::BTreeSet::new();
+    for arg in args {
+        let value = arg.to_string_lossy();
+        let (name, setting) = value
+            .split_once('=')
+            .map_or((value.as_ref(), None), |(n, v)| (n, Some(v)));
+        if crate::cli::WasmOptions::accepts(name) {
+            if !seen.insert(name.to_owned()) {
+                return Err(cli_text::DUPLICATE_OPTION.replace("{name}", name));
+            }
+            wasm.parse(name, setting)?;
+        } else {
+            remaining.push(arg);
+        }
+    }
+    Ok((parse_path_args(PathTool::Test, remaining)?, wasm))
+}

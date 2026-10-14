@@ -373,3 +373,194 @@ end function
     assert!(end.main_error.is_none(), "{end:?}");
     assert_eq!(*output.lock().unwrap(), b"Map.fromList([Pair(1, \"a\"), Pair(2, \"b\")])\nSet.fromList([1, 2])\nMap.fromList([Pair(1, \"new\"), Pair(2, \"b\"), Pair(3, \"c\")])\nSet.fromList([1, 2, 3])\nMap.fromList([])\nSet.fromList([])\n");
 }
+
+// 作成時の関門: 狭い整数の変換の範囲と字句、拡大の正確さを公開の実行経路で守る。
+// 旧 Integer のテストには縮小や符号なしの負号の拒否がなく、登録漏れや幅の取り違えを捕まえない。
+// 本物の段をつなぎ、テスト専用の差し込み口は加えない。
+#[test]
+fn narrow_integer_conversions_preserve_values_and_reject_invalid_input() {
+    for (module, suffix, low, high) in [
+        ("Integer8", "s8", -128_i64, 127_i64),
+        ("Integer16", "s16", -32768, 32767),
+        ("Integer32", "s32", -2147483648, 2147483647),
+        ("UnsignedInteger16", "u16", 0, 65535),
+        ("UnsignedInteger32", "u32", 0, 4294967295),
+    ] {
+        let below = low - 1;
+        let above = high + 1;
+        let mut checks = vec![
+            format!("{module}.fromInteger({low}) = Option.Some({low}{suffix})"),
+            format!("{module}.fromInteger({high}) = Option.Some({high}{suffix})"),
+            format!("{module}.fromInteger({below}) = Option.None"),
+            format!("{module}.fromInteger({above}) = Option.None"),
+            format!("{module}.fromInteger(-9223372036854775808) = Option.None"),
+            format!("{module}.fromInteger(9223372036854775807) = Option.None"),
+            format!("{module}.toInteger({low}{suffix}) = {low}"),
+            format!("{module}.toInteger({high}{suffix}) = {high}"),
+            format!("{module}.toFloat({low}{suffix}) = {low}.0"),
+            format!("{module}.toFloat({high}{suffix}) = {high}.0"),
+            format!("{module}.parse(\"{low}\") = Option.Some({low}{suffix})"),
+            format!("{module}.parse(\"{high}\") = Option.Some({high}{suffix})"),
+            format!("{module}.parse(\"{below}\") = Option.None"),
+            format!("{module}.parse(\"{above}\") = Option.None"),
+            format!("{module}.parse(\"0\") = Option.Some(0{suffix})"),
+            format!(
+                "{module}.parse(\"-0\") = {}",
+                if low < 0 {
+                    format!("Option.Some(0{suffix})")
+                } else {
+                    "Option.None".into()
+                }
+            ),
+        ];
+        for invalid in [
+            "",
+            "-",
+            "+1",
+            "01",
+            "00",
+            "-01",
+            " 1",
+            "1 ",
+            "1\\n",
+            "0x10",
+            "1_0",
+            "1.0",
+            "1e1",
+            "999999999999999999999999999999",
+        ] {
+            checks.push(format!("{module}.parse(\"{invalid}\") = Option.None"));
+        }
+        let source = format!(
+            "function main() -> Result[Unit, String]\n return if {} then Result.Ok(()) else Result.Error(\"{module} conversions\") end if\nend function\n",
+            checks.join(" and ")
+        );
+        let program = compile(&source);
+        let output = Arc::new(Mutex::new(Vec::new()));
+        let end = run::run_program(&program, environment(ExecMode::Direct, output));
+        assert_eq!(end.exit_code, 0, "{module}: {end:?}");
+        assert_eq!(end.end, EndKind::Returned, "{module}: {end:?}");
+        assert!(end.reports.is_empty(), "{module}: {end:?}");
+    }
+}
+
+// 作成時の関門: 床と 0 方向の除算の違い、最小値の剰余、絶対値と大小を守る。
+// 算術演算子の既存テストは標準関数の床への補正を通らず、負の除数の誤りを捕まえない。
+#[test]
+fn narrow_integer_standard_functions_keep_floor_and_truncation_distinct() {
+    for (module, suffix, low, high) in [
+        ("Integer8", "s8", -128_i64, 127_i64),
+        ("Integer16", "s16", -32768, 32767),
+        ("Integer32", "s32", -2147483648, 2147483647),
+        ("UnsignedInteger16", "u16", 0, 65535),
+        ("UnsignedInteger32", "u32", 0, 4294967295),
+    ] {
+        let mut checks = vec![
+            format!("{module}.minimum({low}{suffix}, {high}{suffix}) = {low}{suffix}"),
+            format!("{module}.minimum({high}{suffix}, {low}{suffix}) = {low}{suffix}"),
+            format!("{module}.maximum({low}{suffix}, {high}{suffix}) = {high}{suffix}"),
+            format!("{module}.maximum({high}{suffix}, {low}{suffix}) = {high}{suffix}"),
+            format!("{module}.absolute({high}{suffix}) = {high}{suffix}"),
+            format!("{module}.absolute(0{suffix}) = 0{suffix}"),
+            format!("{module}.floorDivide({low}{suffix}, 1{suffix}) = {low}{suffix}"),
+            format!("{module}.floorModulo({low}{suffix}, 1{suffix}) = 0{suffix}"),
+        ];
+        let mut divisions = vec![(7, 3, 2, 1, 2, 1), (6, 3, 2, 0, 2, 0), (0, 3, 0, 0, 0, 0)];
+        if low < 0 {
+            checks.push(format!("{module}.absolute(-7{suffix}) = 7{suffix}"));
+            checks.push(format!(
+                "{module}.floorModulo({low}{suffix}, -1{suffix}) = 0{suffix}"
+            ));
+            checks.push(format!(
+                "{module}.floorDivide({high}{suffix}, {low}{suffix}) = -1{suffix}"
+            ));
+            checks.push(format!(
+                "{module}.floorModulo({high}{suffix}, {low}{suffix}) = -1{suffix}"
+            ));
+            checks.push(format!(
+                "{module}.floorDivide({low}{suffix}, {high}{suffix}) = -2{suffix}"
+            ));
+            checks.push(format!(
+                "{module}.floorModulo({low}{suffix}, {high}{suffix}) = {}{suffix}",
+                high - 1
+            ));
+            divisions.extend([
+                (-7, 3, -3, 2, -2, -1),
+                (7, -3, -3, -2, -2, 1),
+                (-7, -3, 2, -1, 2, -1),
+                (-6, 3, -2, 0, -2, 0),
+                (6, -3, -2, 0, -2, 0),
+                (0, -3, 0, 0, 0, 0),
+            ]);
+        }
+        for (a, b, q, r, trunc_q, trunc_r) in divisions {
+            checks.extend([
+                format!("{module}.floorDivide({a}{suffix}, {b}{suffix}) = {q}{suffix}"),
+                format!("{module}.floorModulo({a}{suffix}, {b}{suffix}) = {r}{suffix}"),
+                format!("({a}{suffix} div {b}{suffix}) = {trunc_q}{suffix}"),
+                format!("({a}{suffix} mod {b}{suffix}) = {trunc_r}{suffix}"),
+            ]);
+        }
+        let source = format!(
+            "function main() -> Result[Unit, String]\n return if {} then Result.Ok(()) else Result.Error(\"{module} standard functions\") end if\nend function\n",
+            checks.join(" and ")
+        );
+        let program = compile(&source);
+        let output = Arc::new(Mutex::new(Vec::new()));
+        let end = run::run_program(&program, environment(ExecMode::Direct, output));
+        assert_eq!(end.exit_code, 0, "{module}: {end:?}");
+        assert_eq!(end.end, EndKind::Returned, "{module}: {end:?}");
+        assert!(end.reports.is_empty(), "{module}: {end:?}");
+    }
+}
+
+// 作成時の関門: 標準関数の失敗が None や panic にならず、規定の診断で停止する契約。
+// 既存の演算子のテストは標準関数を呼ばないため、同じ幅でも別の登録と本体を確かめる。
+#[test]
+fn fixed_width_integer_standard_functions_report_overflow_and_zero_divisors() {
+    use benitoite::diag::DiagCode;
+    for (module, suffix, low) in [
+        ("Integer8", "s8", -128_i64),
+        ("Integer16", "s16", -32768),
+        ("Integer32", "s32", -2147483648),
+        ("UnsignedInteger16", "u16", 0),
+        ("UnsignedInteger32", "u32", 0),
+        ("UnsignedInteger64", "u64", 0),
+        ("UnsignedInteger", "u64", 0),
+    ] {
+        let mut cases = vec![
+            (
+                format!("{module}.floorDivide(1{suffix}, 0{suffix})"),
+                DiagCode::R0101,
+            ),
+            (
+                format!("{module}.floorModulo(1{suffix}, 0{suffix})"),
+                DiagCode::R0101,
+            ),
+        ];
+        if low < 0 {
+            cases.extend([
+                (format!("{module}.absolute({low}{suffix})"), DiagCode::R0102),
+                (
+                    format!("{module}.floorDivide({low}{suffix}, -1{suffix})"),
+                    DiagCode::R0102,
+                ),
+            ]);
+        }
+        for (expression, code) in cases {
+            let program = compile(&format!(
+                "function main() -> Unit\n bind n <- {expression}\n return ()\nend function\n"
+            ));
+            let output = Arc::new(Mutex::new(Vec::new()));
+            let end = run::run_program(&program, environment(ExecMode::Direct, output));
+            assert_eq!(end.end, EndKind::Stopped, "{expression}: {end:?}");
+            assert_eq!(end.exit_code, 1, "{expression}: {end:?}");
+            assert_eq!(end.reports.len(), 1, "{expression}: {end:?}");
+            assert_eq!(
+                end.reports.first().unwrap().code,
+                Some(code),
+                "{expression}: {end:?}"
+            );
+        }
+    }
+}

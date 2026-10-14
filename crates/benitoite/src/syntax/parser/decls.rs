@@ -1,6 +1,6 @@
 //! プログラムと基本の宣言（設計書 01-02「プログラムと宣言」、02-03「構文解析の方式」）。
 use super::{
-    CommaList, PResult, Parser, Recovery, child, comma_list, effects, exprs, foreign,
+    CommaList, PResult, Parser, Recovery, child, comma_list, effects, exprs, foreign, header,
     is_decl_start, items, text, traits, types,
 };
 use crate::base::Span;
@@ -14,19 +14,26 @@ pub(super) fn parse_module(p: &mut Parser) -> Module {
     let mut first_decl = None;
     let doc = p.docs.module_doc(&mut p.diagnostics);
     p.skip_newlines();
+    let header = header::parse_header(p);
+    let mut first_item = None;
     while !p.at(TokenKind::Eof) && !p.aborted {
         let from = p.pos;
         let saved = p.ctx;
         let open = p.blocks.len();
-        if p.at(TokenKind::KwImport) {
+        if header::header_ahead(p) {
+            header::report_late(p, first_item);
+            header::parse_one_recover(p);
+        } else if p.at(TokenKind::KwImport) {
+            first_item.get_or_insert(p.peek().span);
             if let Ok(import) = items::parse_import(p, first_decl, 1) {
                 imports.push(import);
             }
         } else {
+            first_item.get_or_insert(p.peek().span);
             first_decl.get_or_insert(p.peek().span);
             let doc = p.docs.take_for(p.peek().span, &mut p.diagnostics);
             let attrs = items::parse_attributes(p);
-            let public = items::parse_public(p);
+            let (public, package) = items::parse_public(p);
             let result = parse_item(p, &attrs, 1);
             let item = match result {
                 Ok(item) => item,
@@ -41,6 +48,7 @@ pub(super) fn parse_module(p: &mut Parser) -> Module {
                 doc,
                 attrs,
                 public,
+                package,
                 item,
             };
             items::check_decl_header(p, &decl);
@@ -68,6 +76,7 @@ pub(super) fn parse_module(p: &mut Parser) -> Module {
         span: p.span_from(start),
         file: p.file,
         doc,
+        header,
         imports,
         decls,
     }
@@ -81,6 +90,11 @@ fn parse_item(p: &mut Parser, attrs: &[Attribute], depth: u32) -> PResult<Item> 
             attrs,
         )?))),
         TokenKind::KwData => parse_data(p, depth, false),
+        TokenKind::KwType
+            if attrs.iter().any(|a| a.name.text == "external") && external_type_ahead(p) =>
+        {
+            parse_external_type(p, depth)
+        }
         TokenKind::KwType if !alias_ahead(p) => parse_data(p, depth, true),
         TokenKind::KwType => items::parse_alias_decl(p, depth),
         TokenKind::KwRecord => items::parse_record_decl(p, depth),
@@ -169,6 +183,47 @@ fn parse_item(p: &mut Parser, attrs: &[Attribute], depth: u32) -> PResult<Item> 
             Err(p.unexpected(text::DECLARATION))
         }
     }
+}
+fn parse_external_type(p: &mut Parser, depth: u32) -> PResult<Item> {
+    p.enter(depth)?;
+    let start = p.pos;
+    p.expect(TokenKind::KwType)?;
+    let name = p.expect_name(TokenKind::UpperIdent, text::UPPER_NAME)?;
+    let type_params = types::parse_type_params(p, depth, false)?;
+    Ok(Item::ExternalType(ExternalTypeDecl {
+        id: p.node_id(),
+        span: p.span_from(start),
+        name,
+        type_params,
+    }))
+}
+fn external_type_ahead(p: &Parser) -> bool {
+    if p.peek_nth_kind(1) != TokenKind::UpperIdent {
+        return false;
+    }
+    let mut index = p.pos.saturating_add(2);
+    if p.tokens
+        .get(index)
+        .is_some_and(|t| t.kind == TokenKind::LBracket)
+    {
+        let mut nested = 0_u32;
+        while let Some(t) = p.tokens.get(index) {
+            if t.kind == TokenKind::LBracket {
+                nested = nested.saturating_add(1);
+            }
+            if t.kind == TokenKind::RBracket {
+                nested = nested.saturating_sub(1);
+            }
+            index = index.saturating_add(1);
+            if nested == 0 {
+                break;
+            }
+        }
+    }
+    p.tokens.get(index).is_some_and(|t| {
+        matches!(t.kind, TokenKind::Newline | TokenKind::Eof)
+            || matches!(&t.value, crate::syntax::token::TokenValue::Symbol(s) if s == ";")
+    })
 }
 fn alias_ahead(p: &Parser) -> bool {
     if p.tokens.get(p.pos.saturating_add(1)).is_some_and(
@@ -271,6 +326,21 @@ pub(super) fn parse_function(
     let body = if rule == items::BodyRule::Omitted {
         if !p.at(TokenKind::Newline) && !p.at(TokenKind::Eof) {
             p.unexpected(text::token_name(TokenKind::Newline));
+        }
+        if attrs.iter().any(|attr| attr.name.text == "external") {
+            p.skip_newlines();
+            if !is_decl_start(p.peek_kind()) && !p.at(TokenKind::Eof) {
+                p.open_block(TokenKind::KwFunction, opened);
+                let block = exprs::parse_block(p, child(depth), exprs::BlockEnd::End)?;
+                p.close_block(TokenKind::KwFunction);
+                p.suppressed = false;
+                p.report(
+                    DiagBuilder::new(DiagCode::E0814)
+                        .primary(block.span)
+                        .help("remove")
+                        .build(),
+                );
+            }
         }
         None
     } else {

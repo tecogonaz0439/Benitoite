@@ -1,0 +1,21 @@
+//! UTF-16 の元ゲストを二つの宣言から呼ぶ文字列の比較入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+@external("wasm", "guests/utf16.wasm", "run")
+function run(v: String) -> String
+@external("wasm", "guests/utf16.wasm", "run-adapter")
+function runAdapter(ignored: Boolean, v: String) -> String
+
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+  bind source <- String.repeat("A日😀", n)
+  bind expected <- String.repeat("日😀!", n)
+
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind c0 <- run(source) = expected
+    bind c1 <- runAdapter(false, source) = expected
+    return c0 and c1
+  end lambda)
+end function

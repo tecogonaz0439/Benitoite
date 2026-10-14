@@ -9,6 +9,7 @@ use crate::resolve::{BindingKind, ResolveOutput};
 use crate::syntax::ast::*;
 use crate::types::builtin::{
     BUILTIN_EFFECTS, BuiltinEffectId, BuiltinTypeClass, BuiltinTypeId as B, find_builtin_effect,
+    find_builtin_type,
 };
 use crate::types::*;
 use std::collections::{BTreeMap, BTreeSet};
@@ -190,10 +191,12 @@ impl Decls<'_> {
             .ok()
             .and_then(|index| self.asts.get(index))
             .is_some_and(|ast| ast.file == span.file)
-            && self
-                .modules
-                .get(module)
-                .is_some_and(|m| matches!(m.kind, ModuleKind::Entry | ModuleKind::User))
+            && self.modules.get(module).is_some_and(|m| {
+                matches!(
+                    m.kind,
+                    ModuleKind::Entry | ModuleKind::User | ModuleKind::Package
+                )
+            })
             && (matches!(name, "Unit" | "State")
                 || crate::prelude::STDLIB
                     .iter()
@@ -222,7 +225,11 @@ impl Decls<'_> {
         while let Some(ty) = pending.pop() {
             if let Ty::Con(con, _) = ty {
                 let same = match con {
-                    TyCon::Builtin(id) => id.def().is_some_and(|def| def.name == name),
+                    TyCon::External(_) => false,
+                    TyCon::Builtin(id) => {
+                        id.def().is_some_and(|def| def.name == name)
+                            || find_builtin_type(&[name], name) == Some(*id)
+                    }
                     TyCon::Adt(id) => self.out.adts.get(*id).is_some_and(|adt| {
                         adt.name == name
                             && self
@@ -391,6 +398,7 @@ impl Decls<'_> {
             };
         }
         let (con, arity) = match binding.kind {
+            BindingKind::ExternalType => (TyCon::External(id), 0),
             BindingKind::BuiltinType(b) => {
                 (TyCon::Builtin(b), b.def().map_or(0, |d| u32::from(d.arity)))
             }
@@ -669,6 +677,7 @@ pub(super) fn check(
                 | Item::Record(_)
                 | Item::Trait(_)
                 | Item::Effect(_)
+                | Item::ExternalType(_)
                 | Item::Error(_) => {}
             }
         }
@@ -702,6 +711,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                 | Item::Trait(_)
                 | Item::Effect(_)
                 | Item::Impl(_)
+                | Item::ExternalType(_)
                 | Item::Error(_) => continue,
             };
             d.out.adts.adts.insert(
@@ -921,7 +931,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                         },
                     );
                 }
-                Item::Trait(_) | Item::Impl(_) | Item::Error(_) => {}
+                Item::Trait(_) | Item::Impl(_) | Item::ExternalType(_) | Item::Error(_) => {}
             }
             if d.type_limit {
                 return;
@@ -955,11 +965,13 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                     | Item::Alias(_)
                     | Item::Trait(_)
                     | Item::Impl(_)
+                    | Item::ExternalType(_)
                     | Item::Error(_) => {}
                 }
             }
         }
     }
+    super::external::check(d);
     super::traits::collect(d);
     summaries(&mut d.out.adts);
     check_entry(d, require_main);
@@ -1074,10 +1086,12 @@ fn summary(ty: &Ty, adts: &AdtTable, key: bool) -> TypeSummary {
     let mut out = TypeSummary::default();
     match ty {
         Ty::Param(i) => out.depends_on.push(*i),
-        Ty::Fn(_) | Ty::App(..) | Ty::Rigid { .. } => out.always = !key,
+        Ty::Fn(_) | Ty::App(..) | Ty::Rigid { .. } | Ty::Con(TyCon::External(_), _) => {
+            out.always = !key
+        }
         Ty::Con(TyCon::Builtin(b), args) => {
             if key {
-                out.always = *b == B::FLOAT;
+                out.always = matches!(*b, B::FLOAT | B::FLOAT32);
             } else {
                 out.always = b.def().is_some_and(|d| {
                     matches!(

@@ -5,6 +5,10 @@ use crate::runtime::RuntimeError;
 use crate::runtime::Stop;
 use crate::runtime::heap::Value;
 
+pub(super) mod float32;
+pub(super) mod signed;
+pub(super) mod unsigned;
+
 builtin! {
     /// `%Integer.add` の本体。
     name = "%Integer.add",

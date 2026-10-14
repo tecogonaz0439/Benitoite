@@ -247,6 +247,19 @@ impl<'p> Gen<'p> {
                 );
                 fg.returned(target, dst, Some(origin));
             }
+        } else if let ValKind::External { spec, .. } = &func.kind {
+            if !dicts.is_empty() || args.len() != spec.params.len() {
+                return Err(internal("external call disagrees with declaration"));
+            }
+            let index = self.external(spec)?;
+            let base = fg.alloc_block(count(args.len())?);
+            self.vals(fg, args, base, future)?;
+            let dst = fg.result(target);
+            fg.emit(
+                Instr::abc(Opcode::Ext, r16(dst), r16(index), r16(base)),
+                Some(origin),
+            );
+            fg.returned(target, dst, Some(origin));
         } else if let ValKind::Op { op, .. } = &func.kind {
             if !dicts.is_empty() {
                 return Err(internal("operation with dictionary arguments"));
@@ -554,10 +567,23 @@ fn equality(ty: &Ty, negate: bool) -> CgResult<Plan> {
             T::BYTE => Opcode::EqBt,
             T::BOOLEAN => Opcode::EqB,
             T::UNIT => return Ok(Plan::Bool(!negate)),
-            T::LIST | T::MAP | T::SET | T::BYTES => Opcode::EqV,
+            T::LIST
+            | T::MAP
+            | T::SET
+            | T::BYTES
+            | T::INTEGER8
+            | T::INTEGER16
+            | T::INTEGER32
+            | T::UNSIGNED_INTEGER16
+            | T::UNSIGNED_INTEGER32
+            | T::UNSIGNED_INTEGER64
+            | T::FLOAT32 => Opcode::EqV,
             _ => return Err(internal("equality on an opaque type")),
         },
-        Ty::Con(TyCon::Adt(_), _) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => Opcode::EqV,
+        Ty::Con(TyCon::Adt(_) | TyCon::External(_), _)
+        | Ty::Param(_)
+        | Ty::App(_, _)
+        | Ty::Rigid { .. } => Opcode::EqV,
         Ty::Fn(_) => return Err(internal("equality on a function type")),
     };
     Ok(Plan::Binary {
@@ -1118,6 +1144,7 @@ impl<'p> Gen<'p> {
                 let k = self.constant(ConstDesc::Func(index))?;
                 fg.load(dst, k, Some(v.origin))
             }
+            ValKind::External { .. } => Err(internal("external function used as a value")),
             ValKind::Builtin { id, targs, info } => {
                 let index = self.builtin_value(*id, targs, *info, fg.def)?;
                 let k = self.constant(ConstDesc::Func(index))?;
@@ -1487,6 +1514,13 @@ fn const_ty(c: &Const) -> Ty {
         TyCon::Builtin(match c {
             Const::Int(_) => T::INTEGER,
             Const::Float(_) => T::FLOAT,
+            Const::Int8(_) => T::INTEGER8,
+            Const::Int16(_) => T::INTEGER16,
+            Const::Int32(_) => T::INTEGER32,
+            Const::UInt16(_) => T::UNSIGNED_INTEGER16,
+            Const::UInt32(_) => T::UNSIGNED_INTEGER32,
+            Const::UInt64(_) => T::UNSIGNED_INTEGER64,
+            Const::Float32(_) => T::FLOAT32,
             Const::Str(_) => T::STRING,
             Const::Char(_) => T::CHARACTER,
             Const::Bool(_) => T::BOOLEAN,

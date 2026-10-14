@@ -1,0 +1,19 @@
+// 関門: 解析の深さの境界と診断の位置を、A と CLI で比較する。
+// 構文の退行を捕まえ、長い字下げの費用を含めずに回収の強制でも確かめる。
+dependency PureJson
+  path "../libraries.files/pure-json"
+end dependency
+
+dependency JsonChecks
+  path "../libraries.files/json-checks"
+end dependency
+
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.IO.Console
+import PureJson.Parser
+import JsonChecks.Check
+
+function main() -> Result[Unit, String] uses Console.Write
+  bind _ <- try Check.compareDepth(String.repeat("{\"a\":", 128) + "0" + String.repeat("}", 128), Parser.parse)
+  return Result.Ok(())
+end function

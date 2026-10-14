@@ -23,7 +23,7 @@ pub struct CodeInfo {
 
 /// 廃止したコード。番号を使い回さない（設計書 02-10「診断コード」）。
 pub const RETIRED: &[&str] = &[
-    "E0111", "E0117", "E0205", "E0307", "E0308", "E0317", "E0444",
+    "E0111", "E0117", "E0205", "E0307", "E0308", "E0317", "E0444", "E0445",
 ];
 
 /// 重大度はコードの頭の文字で決まる（`W` は警告）。
@@ -168,6 +168,15 @@ diag_codes! {
     E0125 Check "cannot write formatted file `{path}`" ""
         [reason: "{reason}", temp_left: "the temporary file `{temp}` could not be removed"]
         "`benitoite fmt` writes the formatted source to a temporary file in the same directory and renames it over the original file. It refuses to replace a read-only file, a file with more than one hard link, or a file owned by another user. Writing or renaming failed or was refused, so the original file was left unchanged. Check the permissions, links, and owner of the file and its directory.";
+
+    E0126 Check "cannot write `{path}`" ""
+        [reason: "{reason}", temp_left: "temporary file left at `{temp}`", create_rollback: "could not remove newly created `{config}`: {rollback_reason}; the entry file was not changed", rollback: "could not restore `{config}`: {rollback_reason}; declarations may remain in both files and cause E0911"]
+        "The package command could not safely replace or create a file. Check file permissions and the reported reason.";
+
+    E0127 Check "invalid numeric suffix in `{text}`" ""
+        [integer_form: "`s8/s16/s32/s64/u8/u16/u32/u64` require an integer literal",
+         float_form: "`f32/f64` require a decimal point or an exponent; write a form such as `1.0f32`"]
+        "Integer suffixes can follow decimal, hexadecimal, octal, or binary integers. Floating-point suffixes require a decimal point or an exponent. Suffixes cannot be combined with each other or with `m`.";
 
     // ---- E02: 構文 ----
     E0201 Check "expected {expected}, found {found}" "unexpected {found}"
@@ -350,7 +359,7 @@ diag_codes! {
         "Handlers are written with `handle ... with` and clauses `case`. `with` also binds resources.";
     E0247 Check "attributes are written with `@` and a lowercase name" ""
         [test: "write `@test`",
-         other: "the attributes are `@test`, `@test(\"...\")`, and `@deprecated(\"...\")`"]
+         other: "the attributes are `@test`, `@test(\"...\")`, `@deprecated(\"...\")`, and `@external(\"wasm\", \"...\", \"...\")`"]
         fix [test]
         "Attributes are written on the line before a declaration.";
     E0248 Check "a type alias is written `type Name = Type`" ""
@@ -367,6 +376,15 @@ diag_codes! {
         [function: "write `function {signature} ... end function`",
          lambda: "write `lambda{signature} ... end lambda`, using `return` for the result"]
         "Declare functions with `function` and write anonymous functions with `lambda`.";
+
+    E0252 Check "`{item}` must come at the start of the file, before `import` and declarations" "written after an import or a declaration"
+        [first: "the first import or declaration is here"]
+        "Write `language`, `dependency`, and `package` before the first `import` or declaration.";
+
+    E0253 Check "`public(...)` accepts only `package`" "expected `package`"
+        [package: "write `package` inside the parentheses"]
+        fix [package]
+        "Use `public(package)` to share a declaration only within its package.";
 
     // ---- E03: 名前、import、公開 ----
     E0301 Check "cannot find `{name}` in this scope" "not found"
@@ -439,13 +457,14 @@ diag_codes! {
         [paren: "if `{name}` belongs to the surrounding list, parenthesize the function type that has `uses`, such as `function((function() -> Unit uses Console.Write), Integer) -> Unit`"]
         fix [paren]
         "`uses` reads as many comma-separated names as possible, so a following list element may be taken as an effect.";
-    E0318 Check "cannot find module `{module}`" "no file `{path}` under the root directory"
+    E0318 Check "cannot find module `{module}`" "no file `{path}` under {where}"
         [similar: "a similar module exists: {candidates}",
-         case_only: "the directory has `{actual}`, which differs only in upper and lower case"]
-        "A module name refers to a file under the directory of the starting file, such as `Lib/Text.bnt` for `Lib.Text`.";
-    E0319 Check "the module `{module}` is outside the root directory" ""
+         case_only: "the directory has `{actual}`, which differs only in upper and lower case",
+         package: "modules of the package `{package}` are imported by their path from the package root `{root}`"]
+        "A module name refers to a file under the starting root or a declared package root, such as `Lib/Text.bnt` for `Lib.Text`.";
+    E0319 Check "the module `{module}` is outside {where}" ""
         [resolved: "`{path}` resolves to `{target}`, outside `{root}`"]
-        "Modules are imported only from the directory of the starting file and its subdirectories, after resolving symbolic links.";
+        "An imported module must stay within its root directory or package root after resolving symbolic links.";
     E0320 Check "the module where execution starts cannot be imported" ""
         [entry: "`{module}` is the starting file of this program"]
         "The starting module is not a library. Move the shared declarations to another module.";
@@ -472,8 +491,9 @@ diag_codes! {
         fix [remove]
         "A module is imported once in a file.";
     E0325 Check "`Benitoite` cannot be used as a name here" ""
-        [reserved: "`Benitoite` always refers to the standard library namespace"]
-        "`Benitoite` cannot be declared or used as an import name.";
+        [reserved: "`Benitoite` always refers to the standard library namespace",
+         dependency: "a dependency cannot be named `Benitoite`, which always refers to the standard library"]
+        "`Benitoite` cannot be declared or used as an import name or a dependency alias.";
     E0326 Check "the effect `{name}` has the same name as its module" ""
         [rename: "effects are not modules; choose a name different from the module name"]
         "An effect cannot have the name of the module that declares it, because a qualified name such as `Log.write` would be ambiguous.";
@@ -483,12 +503,12 @@ diag_codes! {
     E0328 Check "the method `{name}` is declared more than once in `{trait_name}`" "redeclared here"
         [first: "first declared here"]
         "Method names must be unique within a trait.";
-    E0329 Check "the public {what} `{name}` uses the non-public {used_kind} `{used}`" "`{used}` is not public"
+    E0329 Check "the {level} {what} `{name}` uses the {used_level} {used_kind} `{used}`" "`{used}` is not public"
         [declared: "`{used}` is declared here",
-         make_public: "mark `{used}` as `public`",
+         make_public: "mark `{used}` as `{target}`",
          handle: "handle the effect inside the function before returning"]
         fix [make_public]
-        "Everything a public declaration exposes, including types, traits, and effects, must also be public.";
+        "Everything a declaration exposes, including types, traits, and effects, must be at least as visible as the declaration.";
     E0330 Check "`{name}` is not public in `{module}`" "not public"
         [declared: "declared here",
          shadowed: "`{first}` here is the {shadow_kind} declared in this file, which hides the prelude {prelude_kind} `{first}`",
@@ -496,9 +516,11 @@ diag_codes! {
          shadowed_import: "`{first}` here is the module imported in this file, which hides the prelude {prelude_kind} `{first}`",
          imported: "`{first}` imported here",
          prelude: "write `Benitoite.{first}` to use the prelude {prelude_kind}",
-         make_public: "mark `{name}` as `public` in `{declared_in}`"]
+         make_public: "mark `{name}` as `public` in `{declared_in}`",
+         package: "`{declared_in}` belongs to a dependency package; use its public names",
+         package_only: "`{name}` is marked `public(package)`, so only modules of the same package can use it"]
         fix [prelude, make_public]
-        "Only `public` declarations of another module can be used.";
+        "Use `public` declarations of another module, or `public(package)` declarations within the same package.";
     E0331 Check "the constructor `{name}` must be written with its type name" ""
         [qualify: "write `{suggestion}`"]
         fix [qualify]
@@ -565,6 +587,7 @@ diag_codes! {
          because_int_operands: "the operands of `{op}` must have type `Integer`",
          because_call: "the called value must be a function",
          float_literal: "write a floating-point literal such as `{literal}.0`",
+         numeric_width: "use the `{suffix}` literal suffix for `{expected}`, or explicitly convert a value to that type; numeric types are not converted implicitly",
          to_string: "convert the value with `{function}`, or use string interpolation such as `\"${x}\"`",
          to_string_any: "convert the other value to a `String` before joining it with `+`, or use string interpolation",
          shadowed: "`{shadowed}` here is a type declared in a user module, which hides the prelude name `{shadowed}`",
@@ -593,7 +616,7 @@ diag_codes! {
          constraint: "add the constraint `equality` to the type parameter, such as `[{param}: equality]`",
          operation: "add the constraint `{constraint}` to the type parameter `{declared}` in the declaration of the operation `{operation}`"]
         fix [constraint]
-        "Equality is defined only for types without functions and opaque standard library types.";
+        "Equality is defined only for types without functions and opaque standard library types, and external types.";
     E0407 Check "the type of this expression cannot be determined" ""
         [annotate: "add a type annotation"]
         "An operator, an interpolation, a comparison, a key, a trait method, a `try`, or a `with` needs its type to be known by the end of the function body.";
@@ -729,6 +752,15 @@ diag_codes! {
         [resources: "`with` binds values opened by functions such as `File.openReader` and `TaskGroup.open`"]
         "A `with` binding needs a resource, which is released when the block ends.";
 
+    E0446 Check "integer literal is out of range for `Byte`" ""
+        [range: "a `u8` literal must be between 0 and 255"]
+        "The suffix `u8` denotes `Byte`. Byte literals are checked before execution and cannot be negative.";
+    E0447 Check "integer literal is out of range for `{ty}`" ""
+        [range: "`{ty}` values range from {minimum} to {maximum}"]
+        "A suffixed integer literal must fit in its declared width, including a directly applied minus sign.";
+    E0448 Check "floating-point literal is too large for `Float32`" "" []
+        "The literal rounds to infinity in binary32.";
+
     // ---- E05: エフェクト、ハンドラ ----
     E0501 Check "this function performs `{effect}` but does not declare it" "`{effect}` happens here"
         [declared: "declared here",
@@ -857,10 +889,10 @@ diag_codes! {
 
     // ---- E08: 属性 ----
     E0801 Check "unknown attribute `@{name}`" ""
-        [allowed: "the attributes are `@test`, `@test(\"...\")`, and `@deprecated(\"...\")`"]
+        [allowed: "the attributes are `@test`, `@test(\"...\")`, `@deprecated(\"...\")`, and `@external(\"wasm\", \"...\", \"...\")`"]
         "Only the listed attributes can be written.";
     E0802 Check "`@{name}` cannot be written on {what}" "" []
-        "`@test` is written on functions. `@deprecated` is written on functions, constants, `data` types, type aliases, records, traits, and effects.";
+        "`@test` is written on functions. `@external` is written on top-level functions and on `type` declarations without a right-hand side. `@deprecated` is written on functions, constants, `data` types, type aliases, records, traits, and effects.";
     E0803 Check "`@{name}` is written more than once" "written again here"
         [first: "first written here",
          remove: "remove this attribute"]
@@ -880,8 +912,191 @@ diag_codes! {
         [remove: "remove `@builtin` and write the body of the function"]
         "Built-in functions are provided by the standard library.";
     E0808 Check "the function `{name}` has no body" ""
-        [body: "write the body and close it with `end function`"]
-        "Functions without a body exist only in the standard library.";
+        [body: "write the body and close it with `end function`",
+         external: "to call a function of a WebAssembly component, write `@external(\"wasm\", \"path\", \"name\")` before the function"]
+        "A function needs a body, unless it is an external function declared with `@external` or a built-in function of the standard library.";
+    E0809 Check "`@external` takes three strings: the kind, the component path, and the function name" ""
+        [form: "write `@external(\"wasm\", \"wasm/fuzzy.wasm\", \"distance\")`"]
+        "External declarations identify a component and one exported function.";
+    E0810 Check "unknown kind of external function `{kind}`" "unknown kind"
+        [wasm: "this version supports only `\"wasm\"`"]
+        "Only WebAssembly components can provide external functions.";
+    E0811 Check "an external {what} cannot have type parameters" "type parameters"
+        [fixed: "write concrete types for the parameters and the result; the types are checked against the component",
+         resource: "an external type stands for one resource of the component and takes no type parameters"]
+        "External functions have concrete parameter and result types.";
+    E0812 Check "an external function can declare only `uses State`, and only when its type contains an external type" "not allowed here"
+        [pure: "external functions that pass external types declare `uses State`; all other external functions are pure",
+         remove: "remove `uses`",
+         state: "replace `uses` with `uses State`"] fix [remove, state]
+        "External functions declare State exactly when passing external types.";
+    E0813 Check "`@external` cannot be combined with `@{other}`" "" []
+        "An external function cannot also be a test or a built-in function.";
+    E0814 Check "an external function has no body" "remove this body"
+        [remove: "the component provides the body; end the declaration after the result type"]
+        "An external function obtains its body from the component.";
+    E0815 Check "the interface and function names in `@external` must both be nonempty" ""
+        [form: "write `interface#function`, with a name on each side of the last `#`"]
+        "The third argument of `@external` selects a function directly or as `interface#function`. Neither side of the last `#` can be empty.";
+
+    E0816 Check "the external function `{name}` passes an external type, so it must declare `uses State`" "external type in this signature"
+        [state: "add `uses State` after the result type"] fix [state]
+        "Functions that pass external types use component state.";
+
+    // ---- E09: パッケージと依存 ----
+    E0901 Check "unknown field `{field}` in `{block}`" ""
+        [fields: "the fields of `{block}` are {fields}"]
+        "Dependency fields are `path` and `hash`; `source`, `version`, and `commit` are recognized but unavailable. `package` blocks accept only `license`.";
+    E0902 Check "{what} is written more than once" "written again here"
+        [first: "first written here"]
+        "Each field, `language` line, `package` block, and dependency alias may appear only once in the header.";
+    E0903 Check "the field `{field}` cannot be used in this version" ""
+        [local: "this version reads dependencies only from a local directory written with `path`"]
+        "Only local `path` dependencies are supported. Do not write `source`, `version`, or `commit`.";
+    E0904 Check "the dependency `{alias}` has no `path`" ""
+        [path: "write the directory of the package, such as `path \"../textkit\"`"]
+        "Each dependency needs a `path` field.";
+    E0905 Check "malformed language version `{version}`" ""
+        [form: "write three numbers separated by `.`, such as `0.0.3`"]
+        "Language versions have three ASCII decimal numbers that fit in 64 bits, without leading zeroes except for zero itself.";
+    E0906 Check "malformed hash `{hash}`" ""
+        [form: "write `sha256:` followed by 64 lowercase hexadecimal digits"]
+        "A dependency hash consists of `sha256:` and exactly 64 lowercase hexadecimal digits.";
+    E0907 Check "this file needs Benitoite {version} or later, but this is Benitoite {current}" "" []
+        "The declared language version is newer than the interpreter. Use an interpreter at least as new as the declaration.";
+    E0908 Check "this file was written for Benitoite {version}, and the language changed incompatibly in {changed}" ""
+        [change: "{summary}"]
+        "The interpreter reports the earliest incompatible language change after the declared version and no later than its own version.";
+    E0909 Check "`{item}` can be written only at the start of the starting file or in `package.bnt`" "" []
+        "Imported modules cannot have `language` or `dependency` headers. A `package` block can be written only in `package.bnt`.";
+    E0910 Check "a `package` block can be written only in `package.bnt`" "" []
+        "Move the `package` block into `package.bnt` at the root.";
+    E0911 Check "{what} is written both at the start of `{file}` and in `package.bnt`" ""
+        [other: "also written here"]
+        "Write dependencies in one place, either the starting file or `package.bnt`. The same rule applies to `language` declarations.";
+    E0912 Check "`package.bnt` can contain only `language`, `dependency`, and `package`" "not allowed in `package.bnt`" []
+        "A settings file cannot contain imports or declarations.";
+    E0913 Check "`{path}` is a settings file and cannot be checked, run, or tested" "" []
+        "Do not specify `package.bnt` as a starting file. Check, run, or test the scripts that use it; `fmt` can format it.";
+    E0914 Check "the package `{package}` needs a `language` line" "" []
+        "A `package.bnt` with a `package` block must declare the language version, even when checked as the root package.";
+    E0915 Check "a package cannot have dependencies in this version" ""
+        [package: "this `package.bnt` declares the package `{package}`"]
+        "A `package.bnt` with a `package` block cannot contain dependencies in this version.";
+
+    E0916 Check "cannot read the dependency `{alias}` at `{path}`" ""
+        [reason: "{reason}"]
+        "The dependency directory and its `package.bnt` must be readable.";
+    E0917 Check "the dependency `{alias}` at `{path}` is not a Benitoite package" ""
+        [no_config: "the directory has no `package.bnt`",
+         no_block: "its `package.bnt` has no `package` block"]
+        "A dependency must have `package.bnt` with a `package` block and a `language` line.";
+    E0918 Check "`{module}` names both a module under the root directory and a module of the dependency `{alias}`" ""
+        [root_file: "under the root directory: `{root_path}`",
+         package_file: "in the package `{package}`: `{package_path}`",
+         rename: "rename the directory under the root directory, or the dependency"]
+        "An import cannot refer to two different files. A root path and package path resolving to the same file are allowed.";
+
+    E0919 Check "the contents of the dependency `{alias}` do not match its `hash`" ""
+        [expected: "expected: {expected}",
+         computed: "computed: {computed}",
+         package: "package: `{package}`",
+         update: "if the change is intended, write the computed hash"]
+        "A dependency with `hash` must match the computed hash of its package contents. Update the declaration only if the change is intended.";
+    E0920 Check "cannot compute the hash of the dependency `{alias}`" ""
+        [symlink: "`{path}` is a symbolic link",
+         case: "`{path}` and `{other}` have the same path after conversion to Unicode lowercase",
+         name: "`{path}` contains a newline",
+         too_many: "the number of included files exceeds the limit of {limit}",
+         too_many_entries: "the number of visited directory entries exceeds the limit of {limit}",
+         too_large: "the total size of included files exceeds the limit of {limit} bytes",
+         read: "cannot read `{path}`: {reason}",
+         package: "package: `{package}`"]
+        "The package hash rejects symbolic links, colliding lowercase paths, newline-containing paths, unreadable files, and packages exceeding the file count, directory entry count, or total size limit.";
+
+    E0921 Check "`{path}` belongs to the dependency `{alias}` and cannot be imported as a root module" "use the dependency alias"
+        [package: "package: `{package}`",
+         import: "write `import {suggestion}`"]
+        fix [import]
+        "A file under a declared dependency root must be imported through its dependency alias.";
+    E0922 Check "the dependency `{alias}` at `{path}` overlaps another root" "invalid dependency root"
+        [root: "a dependency root cannot be the root directory itself or an ancestor of it",
+         dependency: "dependency roots cannot be equal or contain one another",
+         other: "the overlapping dependency `{other}` is declared here"]
+        "Choose a dependency directory that does not contain the starting root and does not overlap another dependency root.";
+
+    E0923 Check "the dependency `{alias}` is already declared" "existing dependency" []
+        "Use a different alias or update the existing dependency.";
+    E0924 Check "the dependency `{alias}` is not declared" "" []
+        "Specify an alias declared in the entry or package.bnt.";
+    E0925 Check "there are no header items to move" "" []
+        "The entry must contain language or dependency declarations.";
+    E0926 Check "`{path}` already contains language or dependency declarations" "existing declaration" []
+        "Do not overwrite existing declarations when moving the entry header.";
+    E0927 Check "cannot choose a file for the dependency declaration" "" [entry: "specify an entry file, or create package.bnt"]
+        "A root without an entry and without package.bnt has no destination.";
+    E0928 Check "cannot move the header of `package.bnt`" "" []
+        "Specify an entry file rather than the configuration file.";
+    E0929 Check "malformed recorded effects" "" []
+        "The effects field must be empty or a comma-separated list of uppercase names such as Console.Write, File.Read. It records the last package command report and is not checked against package contents during loading.";
+
+    // ---- E10: 外部の関数 ----
+    E1001 Check "cannot read the component `{path}`" "" [reason: "{reason}"]
+        "The component must be a readable file within the allowed directory.";
+    E1002 Check "malformed component path `{path}`" ""
+        [form: "write a relative path separated by `/` that ends with `.wasm`, without `.` or `..`",
+         hidden: "a name that starts with `.` is not part of a package"]
+        "Component paths use visible relative names and the `.wasm` extension.";
+    E1003 Check "the component `{path}` is outside the {base}" ""
+        [root: "a component of a module under the root directory must be under the root directory",
+         package: "a component of the package `{package}` must be under its `wasm` directory"]
+        "Canonical component paths must remain within the allowed directory.";
+    E1004 Check "`{path}` is not a WebAssembly component" ""
+        [not_wasm: "the file does not start with the WebAssembly magic bytes",
+         core: "it is a core WebAssembly module; wrap it with `wasm-tools component new`",
+         invalid: "the component is invalid: {reason}"]
+        "External functions require binary WebAssembly components.";
+    E1005 Check "the component `{path}` imports {count}, so it cannot be called as a pure function" ""
+        [imports: "imports: {names}",
+         target: "build it for `wasm32-unknown-unknown` and wrap it with `wasm-tools component new`; `wasm32-wasip2` adds WASI imports"]
+        "Only components without imports can provide pure external functions, including calls through generated adapters.";
+    E1006 Check "the component `{path}` has no function `{name}`" ""
+        [exports: "the functions it exports are {names}",
+         version: "the component exports the interface as `{found}`; the version must match exactly",
+         interface: "`{name}` is an interface; write `{name}#function`"]
+        "External declarations name a function exported by the component, directly or as `interface#function`.";
+    E1007 Check "the function `{name}` of the component takes {found}, but `{function}` declares {expected}" ""
+        [declaration: "the component function corresponds to `{declaration}`"]
+        "The declared parameter count must match the component function.";
+    E1008 Check "argument {index} of `{function}` does not match the component" "declared as `{declared}`"
+        [component: "the component expects `{wit}`", maps: "`{declared}` is passed as `{expected}`", reason: "{reason}",
+         declaration: "the component function corresponds to `{declaration}`",
+         user_type: "`{name}` here is the type declared in `{file}`, not `Benitoite.{name}.{name}`"]
+        "Parameter types are checked by position against their WIT representations.";
+    E1009 Check "the result of `{function}` does not match the component" "declared as `{declared}`"
+        [component: "the component returns `{wit}`", maps: "`{declared}` is passed as `{expected}`", reason: "{reason}",
+         declaration: "the component function corresponds to `{declaration}`",
+         user_type: "`{name}` here is the type declared in `{file}`, not `Benitoite.{name}.{name}`"]
+        "The result type must match its WIT representation.";
+    E1010 Check "`{ty}` cannot be passed to or from an external function in this version" ""
+        [types: "the types that can be passed are Integer, Integer8, Integer16, Integer32, Float, Float32, Boolean, Character, String, Byte, UnsignedInteger16, UnsignedInteger32, UnsignedInteger64, Bytes, List, Map, Set[D] as flags when D is a data type with 1 to 32 constructors that take no arguments, Option, Result, Pair, Triple, records and `data` types with concrete type arguments that are not recursive (including a single-constructor data type passed as a tuple), and Unit as a result",
+         recursive: "recursive types cannot be passed, including recursion through List or other types",
+         recursive_declaration: "the dependency cycle includes the declaration of `{recursive_name}`",
+         flags_count: "flags require a data type with 1 to 32 constructors; empty selections are allowed",
+         flags_data: "flags require Set[D], where D is a concrete data type and every constructor takes no arguments",
+         map_key: "map keys must be Boolean, an integer of any supported width, Character, or String",
+         budget: "types deeper than 100 cannot match any WIT type; larger types are not checked (100,000 expanded nodes per type, 1,000,000 per check); declaration dependency visits also count toward the per-check limit",
+         adapter_preparation: "external function `{name}` cannot prepare its generated adapter within the type-walk budget",
+         adapter_preparation_budget: "adapter preparation allows 4,000,000 type-node visits per declaration, separately from WIT matching",
+         declaration_budget: "external function `{name}` is not checked because the total type expansion budget is exhausted",
+         declaration: "external declaration `{name}`",
+         user_type: "`{name}` here is the type declared in `{file}`, not `Benitoite.{name}.{name}`"]
+        "External functions accept only the supported concrete types.";
+    E1011 Check "the function `{name}` of the component `{path}` is asynchronous" "" []
+        "External functions must be synchronous in this version.";
+    E1012 Check "the component `{path}` has no resource `{name}`" ""
+        [exports: "exported resources: {names}"]
+        "External types name an exported resource of the component.";
 
     // ---- W03: 名前の警告 ----
     W0301 Check "`{name}` is deprecated" "deprecated"
@@ -941,6 +1156,11 @@ diag_codes! {
          tail: "a handler inherited by a task must end its clause with `resume`"]
         "Tasks inherit only handlers whose clauses end by calling `resume`.";
 
+    // ---- R06: 外部の関数 ----
+    R0601 Runtime "the external function `{function}` trapped: {trap}" ""
+        [component: "component `{component}`, function `{export}`"]
+        "A WebAssembly trap or a Component Model ABI violation stops execution. Guest panics and Rust allocation failures can also become an unreachable trap.";
+
     // ---- R07: 引数 ----
     R0701 Runtime "argument {index} of `{function}` is out of range" "" []
         "The function accepts only the values described in its documentation for this argument.";
@@ -959,6 +1179,23 @@ diag_codes! {
         "A single operation cannot build a string or `Bytes` larger than 2^30 bytes, or a list longer than 2^24 elements.";
     R0903 Resource "`{function}` read more than the limit of {limit} {unit}" "" []
         "A single read cannot produce a value larger than the size limit. Read the input in parts.";
+
+    R0904 Resource "the external function `{function}` used up its fuel limit of {limit}" ""
+        [component: "component `{component}`"]
+        "Each external call has a default fuel limit of 10^10, independent of elapsed time. The user running the script can change it with `--wasm-fuel`.";
+    R0905 Resource "the external function `{function}` exceeded its {budget} limit of {limit} bytes" ""
+        [component: "component `{component}`",
+         linear_memory: "total guest linear memory is limited to {limit} bytes per call, or over the lifetime of a stateful instance",
+         adapter_allocation: "the external function `{function}` could not allocate generated adapter memory for {requested} bytes",
+         adapter_memory: "the generated adapter allocator's memory.grow failed while reserving {requested} bytes, with {allocated} bytes already allocated; adapter memory also counts toward the Store's total linear-memory limit",
+         adapter_store_memory: "this call uses generated adapter memory as well as guest memory; both count toward the Store's total linear-memory limit",
+         adapter_memory32: "the generated adapter allocator requested {requested} bytes, exceeding the memory32 address limit of {limit} bytes",
+         transfer: "values passed to or from an external function are limited to {limit} bytes in their host representation, in each direction"]
+        "By default, external calls limit total guest linear memory to 64 MiB and each direction of value transfer to a 256 MiB budget. Generated adapters count the complete transfer buffer and separately limit logical value construction to the same budget. The user running the script can change these limits with `--wasm-memory` and `--wasm-transfer`.";
+    R0906 Resource "the external function `{function}` needed {size} {resource}; the limit is {limit}" ""
+        [component: "component `{component}`"]
+        "Each external call limits core instances, memories, and tables to 16 each, and each guest table to 10,000 elements. Reduce the component's resource requirements.";
+
 
     // ---- R10: 並行処理 ----
     R1001 Runtime "no task can proceed because tasks are waiting for each other" "" []
@@ -1000,6 +1237,9 @@ diag_codes! {
     L0111 Limit "an implementation of `{name}` has too many constraints" ""
         [limit: "an implementation can have at most 65535 constraint dictionaries"]
         "The bytecode addresses the dictionaries of an implementation with 16 bits.";
+    L0113 Limit "the program uses too many external functions" ""
+        [limit: "a program can use at most 65535 external functions"]
+        "The bytecode addresses external functions with 16 bits.";
     L0112 Limit "the `match` in `{name}` is too large to compile" ""
         [limit: "the decision tree of a `match` is too large; split it into smaller ones",
          definition: "building decision trees in this definition requires too much work, including copies of guards; simplify the matches or move them into separate functions"]

@@ -1735,10 +1735,19 @@ example : ([ [[]], [[.wild, .wild]], [[.wild], [.wild, .wild]] ] : List (List (L
 example : ([.const (.character 'a'), .range (.character 'a') (.character 'z'),
     .range (.integer 0) (.character 'z'), .const (.boolean true), .const .unit,
     .const (.string "97"), .const (.float 0.0), .const (.byte 97),
-    .const (.decimal 97 0), .const (.opaque "O" 97)] : List Pat).map
+    .const (.decimal 97 0), .const (.opaque "O" 97),
+    .const (.integer8 97), .const (.integer16 97), .const (.integer32 97),
+    .const (.unsignedInteger16 97), .const (.unsignedInteger32 97),
+    .const (.unsignedInteger64 97), .const (.float32 0x42c20000)] : List Pat).map
     (fun p => ((useful program ctors [intTy] [[p]] [int 97]).isSome,
       (useful program ctors [intTy] [[.wild]] [p]).isSome)) =
-    List.replicate 10 (true, true) := by decide
+    List.replicate 17 (true, true) := by decide
+
+/-- 幅付きの数では定数の分岐は網羅性に寄与せず、ワイルドカードで覆う。 -/
+example : ([.integer8 1, .integer16 1, .integer32 1, .unsignedInteger16 1,
+    .unsignedInteger32 1, .unsignedInteger64 1, .float32 0x3f800000] : List Const).all
+    (fun c => !(checkMatch program ctors c.type [plain [.const c]]).exhaustive &&
+      (checkMatch program ctors c.type [plain [.wild]]).exhaustive) = true := by decide
 
 example : ([.const (.integer 97), .range (.integer 0) (.integer 127)] : List Pat).map
     (fun p => (useful program ctors [charTy] [[p]] [.const (.character 'a')]).isSome) =

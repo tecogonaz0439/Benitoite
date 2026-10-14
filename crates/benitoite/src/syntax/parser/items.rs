@@ -158,7 +158,10 @@ pub(super) enum BodyRule {
     Omitted,
 }
 pub(super) fn body_rule(attrs: &[Attribute], _kind: SourceKind) -> BodyRule {
-    if attrs.iter().any(|a| a.name.text == "builtin") {
+    if attrs
+        .iter()
+        .any(|a| matches!(a.name.text.as_str(), "builtin" | "external"))
+    {
         BodyRule::Omitted
     } else {
         BodyRule::Required
@@ -170,6 +173,7 @@ pub(super) fn check_decl_header(p: &mut Parser, decl: &TopDecl) {
         Item::Const(_) => (false, true, text::CONSTANT),
         Item::Data(_) => (false, true, text::DATA),
         Item::Alias(_) => (false, true, text::ALIAS),
+        Item::ExternalType(_) => (false, true, text::EXTERNAL_TYPE_DECL),
         Item::Record(_) => (false, true, text::RECORD),
         Item::Trait(_) => (false, true, text::TRAIT),
         Item::Effect(_) => (false, true, text::EFFECT),
@@ -192,6 +196,7 @@ pub(super) fn check_decl_header(p: &mut Parser, decl: &TopDecl) {
         }
         let accepted = match attr.name.text.as_str() {
             "test" | "builtin" => function,
+            "external" => function || matches!(decl.item, Item::ExternalType(_)),
             "deprecated" => allowed,
             _ => true,
         };
@@ -202,6 +207,51 @@ pub(super) fn check_decl_header(p: &mut Parser, decl: &TopDecl) {
                     .arg("name", &attr.name.text)
                     .arg("what", what)
                     .primary(attr.span)
+                    .build(),
+            );
+        }
+    }
+    if let Item::ExternalType(d) = &decl.item
+        && let (Some(first), Some(last)) = (d.type_params.first(), d.type_params.last())
+    {
+        p.suppressed = false;
+        p.report(
+            DiagBuilder::new(DiagCode::E0811)
+                .arg("what", "type")
+                .primary(first.span.to(last.span))
+                .help("resource")
+                .build(),
+        );
+    }
+    if let Item::Fn(f) = &decl.item
+        && let Some(external) = decl.attrs.iter().find(|attr| attr.name.text == "external")
+    {
+        if let Some(first) = f.type_params.first()
+            && let Some(last) = f.type_params.last()
+        {
+            p.suppressed = false;
+            p.report(
+                DiagBuilder::new(DiagCode::E0811)
+                    .arg("what", "function")
+                    .primary(first.span.to(last.span))
+                    .help("fixed")
+                    .build(),
+            );
+        }
+        for other in decl
+            .attrs
+            .iter()
+            .filter(|attr| matches!(attr.name.text.as_str(), "test" | "builtin"))
+        {
+            p.suppressed = false;
+            p.report(
+                DiagBuilder::new(DiagCode::E0813)
+                    .arg("other", &other.name.text)
+                    .primary(if other.span.start > external.span.start {
+                        other.span
+                    } else {
+                        external.span
+                    })
                     .build(),
             );
         }
@@ -239,15 +289,65 @@ pub(super) fn reject_public(p: &mut Parser, span: Span) {
             .build(),
     );
 }
-pub(super) fn parse_public(p: &mut Parser) -> Option<Span> {
+pub(super) fn parse_public(p: &mut Parser) -> (Option<Span>, Option<Span>) {
     if !p.at(TokenKind::KwPublic) {
-        return None;
+        return (None, None);
     }
     let span = p.bump().span;
+    let package = if p.at(TokenKind::LParen) {
+        let open = p.bump().span;
+        let start = p.peek().span.start;
+        let valid = p.word("package");
+        if valid {
+            p.bump();
+        } else {
+            let mut nested = 0_u32;
+            while !matches!(p.peek_kind(), TokenKind::Newline | TokenKind::Eof)
+                && !(super::is_decl_start(p.peek_kind()) && p.peek_nth_kind(1) != TokenKind::RParen)
+                && !p.aborted
+            {
+                if p.at(TokenKind::RParen) {
+                    if nested == 0 {
+                        break;
+                    }
+                    nested = nested.saturating_sub(1);
+                } else if p.at(TokenKind::LParen) {
+                    nested = nested.saturating_add(1);
+                }
+                p.advance();
+            }
+            // 入れ子の引数の `)` を修飾の終わりと取り違え、宣言を修正案で消さない。
+            // 対応する `)` がなければ、欠けた字句の診断に任せる（設計書 02-10「修正案」）。
+            if p.at(TokenKind::RParen) {
+                let inside = Span {
+                    start,
+                    end: p.peek().span.start,
+                    ..open
+                };
+                p.report(
+                    DiagBuilder::new(DiagCode::E0253)
+                        .primary(inside)
+                        .help_edits(
+                            "package",
+                            vec![Edit {
+                                span: inside,
+                                replacement: "package".into(),
+                            }],
+                        )
+                        .build(),
+                );
+            }
+        }
+        p.expect(TokenKind::RParen)
+            .ok()
+            .map(|close| open.to(close.span))
+    } else {
+        None
+    };
     if p.at(TokenKind::KwImplement) {
-        reject_public(p, span);
+        reject_public(p, span.to(package.unwrap_or(span)));
     }
-    Some(span)
+    (Some(span), package)
 }
 pub(super) fn report_missing_body(p: &mut Parser, name: &Name, _attrs: &[Attribute]) {
     p.report(
@@ -255,6 +355,7 @@ pub(super) fn report_missing_body(p: &mut Parser, name: &Name, _attrs: &[Attribu
             .arg("name", &name.text)
             .primary(name.span)
             .help("body")
+            .help("external")
             .build(),
     );
 }
@@ -459,7 +560,7 @@ fn attribute_name_error(p: &Parser, name: &Name) -> Option<Diagnostic> {
                 .help("remove")
                 .build(),
         ),
-        "test" | "deprecated" | "builtin" => None,
+        "test" | "deprecated" | "builtin" | "external" => None,
         _ => Some(
             DiagBuilder::new(DiagCode::E0801)
                 .arg("name", &name.text)
@@ -471,6 +572,31 @@ fn attribute_name_error(p: &Parser, name: &Name) -> Option<Diagnostic> {
 }
 fn attribute_args_error(p: &Parser, attr: &Attribute) -> Option<Diagnostic> {
     let d = match attr.name.text.as_str() {
+        "external" if attr.args.len() != 3 => DiagBuilder::new(DiagCode::E0809).help("form"),
+        "external" if attr.args.first().is_some_and(|arg| arg.value != "wasm") => {
+            let arg = attr.args.first()?;
+            return Some(
+                DiagBuilder::new(DiagCode::E0810)
+                    .arg("kind", &arg.value)
+                    .primary(arg.span)
+                    .help("wasm")
+                    .build(),
+            );
+        }
+        "external" => {
+            let arg = attr.args.get(2)?;
+            if let Some((instance, function)) = arg.value.rsplit_once('#')
+                && (instance.is_empty() || function.is_empty())
+            {
+                return Some(
+                    DiagBuilder::new(DiagCode::E0815)
+                        .primary(arg.span)
+                        .help("form")
+                        .build(),
+                );
+            }
+            return None;
+        }
         "test" if attr.args.len() > 1 => DiagBuilder::new(DiagCode::E0805),
         "deprecated"
             if attr.args.len() != 1 || attr.args.first().is_some_and(|a| a.value.is_empty()) =>
@@ -914,6 +1040,137 @@ mod tests {
         );
     }
 
+    // 公開の修飾は字句間の空白と改行によらず、宣言に同じ範囲で付く。
+    // spec: 01-02 モジュールと import（初回リリース版）
+    #[test]
+    fn package_visibility_preserves_spans() {
+        for modifier in ["public(package)", "public (package)", "public\n(package)"] {
+            for decl in [
+                FUNCTION,
+                "const x: Integer = 1",
+                "data D\n C\nend data",
+                "record R\n x: Integer\nend record",
+                "trait C[T]\n function f(x: T) -> T\nend trait",
+                "effect E\n function op() -> Unit\nend effect",
+                "type A = Integer",
+            ] {
+                let src = format!("{modifier} {decl}");
+                let out = user(&src);
+                assert!(out.diagnostics.is_empty(), "{src}: {:?}", out.diagnostics);
+                let top = &out.module.decls[0];
+                let public = top.public.unwrap();
+                let package = top.package.unwrap();
+                assert_eq!(
+                    &src[public.start.0 as usize..public.end.0 as usize],
+                    "public"
+                );
+                assert_eq!(
+                    &src[package.start.0 as usize..package.end.0 as usize],
+                    "(package)"
+                );
+            }
+        }
+        for src in [
+            "public(package) implement Show[Integer]\nend implement",
+            "implement Show[Integer]\npublic(package) function show(x: Integer) -> String\n return \"x\"\nend function\nend implement",
+        ] {
+            let out = user(src);
+            assert_eq!(codes(&out), [DiagCode::E0221]);
+            let edit = &out.diagnostics[0].helps[0].edits[0];
+            assert!(
+                src[edit.span.start.0 as usize..edit.span.end.0 as usize].contains("(package)")
+            );
+            let mut fixed = src.to_owned();
+            fixed.replace_range(
+                edit.span.start.0 as usize..edit.span.end.0 as usize,
+                &edit.replacement,
+            );
+            assert!(user(&fixed).diagnostics.is_empty(), "{fixed}");
+        }
+    }
+
+    // 閉じ括弧がないときに、後続の宣言を消す置き換えを示す退行を捕まえる。
+    // spec: 01-02 モジュールと import（初回リリース版）
+    #[test]
+    fn package_visibility_repairs_only_closed_arguments() {
+        for argument in [
+            "crate",
+            "internal",
+            "",
+            "other words",
+            "crate(other)",
+            "function",
+            "type",
+        ] {
+            let src = format!("public({argument}) {FUNCTION}");
+            let out = user(&src);
+            assert_eq!(codes(&out), [DiagCode::E0253], "{src}");
+            let edit = &out.diagnostics[0].helps[0].edits[0];
+            assert_eq!(edit.replacement, "package");
+            let mut fixed = src.clone();
+            fixed.replace_range(
+                edit.span.start.0 as usize..edit.span.end.0 as usize,
+                &edit.replacement,
+            );
+            assert!(user(&fixed).diagnostics.is_empty(), "{fixed}");
+        }
+        for src in [
+            format!("public(package {FUNCTION}"),
+            "public(crate function f() -> Integer\nreturn 1\nend function".into(),
+            "public(crate".into(),
+        ] {
+            let out = user(&src);
+            assert!(
+                codes(&out).contains(&DiagCode::E0201),
+                "{src}: {:?}",
+                out.diagnostics
+            );
+            assert!(
+                !codes(&out).contains(&DiagCode::E0253),
+                "{src}: {:?}",
+                out.diagnostics
+            );
+        }
+        for declaration in [
+            "function f() -> Integer\nreturn 1\nend function",
+            "record R\na: Integer\nend record",
+            "data D\nA\nend data",
+            "type T = Integer",
+            "trait T[A]\nend trait",
+            "effect E\nfunction f() -> Unit\nend effect",
+            "const x: Integer = 1",
+            "import A.B",
+        ] {
+            let src = format!("public(crate {declaration}");
+            let out = user(&src);
+            assert!(
+                codes(&out).contains(&DiagCode::E0201),
+                "{src}: {:?}",
+                out.diagnostics
+            );
+            let diagnostic = out
+                .diagnostics
+                .iter()
+                .find(|d| d.code == Some(DiagCode::E0201))
+                .unwrap();
+            let span = diagnostic.primary.as_ref().unwrap().span;
+            assert_eq!(
+                &src[span.start.0 as usize..span.end.0 as usize],
+                declaration.split_whitespace().next().unwrap()
+            );
+        }
+        let out = user("public(crate function Bad() -> Integer\nreturn 1\nend function");
+        assert_eq!(codes(&out), [DiagCode::E0201, DiagCode::E0201]);
+        let span = out.diagnostics[1].primary.as_ref().unwrap().span;
+        assert_eq!(
+            &"public(crate function Bad() -> Integer\nreturn 1\nend function"
+                [span.start.0 as usize..span.end.0 as usize],
+            "Bad"
+        );
+        let out = user(&format!("public(package)\n{FUNCTION}"));
+        assert!(!out.diagnostics.is_empty());
+    }
+
     #[test]
     fn invalid_attributes_report_one_diagnostic_per_attribute() {
         for (attr, code) in [
@@ -1158,5 +1415,87 @@ mod tests {
             assert!(out.diagnostics.is_empty(), "{name}: {:?}", out.diagnostics);
             assert!(out.module.doc.is_some(), "{name}");
         }
+    }
+}
+
+#[cfg(test)]
+// テストの失敗は panic で表す（AGENTS.md「`#[allow]` を書いてよい箇所」）。
+#[allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::indexing_slicing
+)]
+mod external_tests {
+    use super::*;
+    use crate::syntax::parser::test_support::{assert_recovers, codes, parse_source};
+
+    #[test]
+    fn external_header_rules_and_body_recovery() {
+        // spec: 01-02 属性（初回リリース版）
+        let attr = "@external(\"wasm\", \"wasm/x.wasm\", \"f\")";
+        for (source, expected) in [
+            (
+                "@external(\"wasm\")\nfunction f() -> Unit".into(),
+                DiagCode::E0809,
+            ),
+            (
+                "@external(\"native\", \"x.wasm\", \"f\")\nfunction f() -> Unit".into(),
+                DiagCode::E0810,
+            ),
+            (
+                format!("{attr}\nfunction f[T: equality]() -> T"),
+                DiagCode::E0811,
+            ),
+            (
+                format!("{attr}\nfunction f[effect E]() -> Unit"),
+                DiagCode::E0811,
+            ),
+            (
+                format!("{attr}\n@test\nfunction f() -> Unit"),
+                DiagCode::E0813,
+            ),
+            (
+                format!("@test\n{attr}\nfunction f() -> Unit"),
+                DiagCode::E0813,
+            ),
+            (
+                format!("{attr}\nfunction f() -> Unit\n()\nend function"),
+                DiagCode::E0814,
+            ),
+            (format!("{attr}\nconst x: Integer = 1"), DiagCode::E0802),
+            (format!("{attr}\ntype Cell[T]"), DiagCode::E0811),
+            (format!("@test\n{attr}\ntype Cell"), DiagCode::E0802),
+            (format!("{attr}\ntype Cell = Integer"), DiagCode::E0802),
+        ] {
+            assert_recovers(&source, &[expected]);
+        }
+        for prefix in ["", "@deprecated(\"use g\")\n"] {
+            for public in ["", "public "] {
+                let source = format!("{prefix}{attr}\n{public}function f() -> Unit\n");
+                let (output, lexical) = parse_source(&source, SourceKind::User);
+                assert!(lexical.is_empty());
+                assert!(
+                    codes(&output).is_empty(),
+                    "{source}: {:?}",
+                    output.diagnostics
+                );
+                assert!(matches!(&output.module.decls[0].item, Item::Fn(f) if f.body.is_none()));
+            }
+        }
+        // 右辺のない通常の type は、既存の data の書き方の診断を保つ。
+        let (out, _) = parse_source("type Cell", SourceKind::User);
+        assert!(codes(&out).contains(&DiagCode::E0233));
+        // spec: 01-02 外部の関数の宣言
+        for public in ["", "public ", "public(package) "] {
+            let (out, lexical) =
+                parse_source(&format!("{attr}\n{public}type Cell"), SourceKind::User);
+            assert!(lexical.is_empty());
+            assert!(codes(&out).is_empty(), "{:?}", out.diagnostics);
+            assert!(matches!(out.module.decls[0].item, Item::ExternalType(_)));
+        }
+        let source = format!("{attr}\n@builtin(\"x\")\nfunction f() -> Unit");
+        let (output, _) = parse_source(&source, SourceKind::Prelude);
+        assert_eq!(codes(&output), vec![DiagCode::E0813]);
     }
 }

@@ -48,10 +48,31 @@ impl BuiltinTypeId {
     pub const TASK_GROUP: BuiltinTypeId = BuiltinTypeId(15);
     pub const IO_ERROR: BuiltinTypeId = BuiltinTypeId(16);
     pub const NETWORK_ERROR: BuiltinTypeId = BuiltinTypeId(17);
+    pub const INTEGER8: BuiltinTypeId = BuiltinTypeId(25);
+    pub const INTEGER16: BuiltinTypeId = BuiltinTypeId(26);
+    pub const INTEGER32: BuiltinTypeId = BuiltinTypeId(27);
+    pub const UNSIGNED_INTEGER16: BuiltinTypeId = BuiltinTypeId(28);
+    pub const UNSIGNED_INTEGER32: BuiltinTypeId = BuiltinTypeId(29);
+    pub const UNSIGNED_INTEGER64: BuiltinTypeId = BuiltinTypeId(30);
+    pub const FLOAT32: BuiltinTypeId = BuiltinTypeId(31);
+
+    pub const INTEGER64: BuiltinTypeId = Self::INTEGER;
+    pub const FLOAT64: BuiltinTypeId = Self::FLOAT;
+    pub const UNSIGNED_INTEGER8: BuiltinTypeId = Self::BYTE;
+    pub const UNSIGNED_INTEGER: BuiltinTypeId = Self::UNSIGNED_INTEGER64;
 
     /// 表の項目。
     pub fn def(self) -> Option<&'static BuiltinTypeDef> {
         BUILTIN_TYPES.get(usize::from(self.0))
+    }
+
+    /// 数の正の名前とは別に、既存の診断と型の書き出しの表示を保つ。
+    pub(crate) fn display_name(self) -> Option<&'static str> {
+        NUMBER_TYPE_NAMES
+            .iter()
+            .find(|names| names.id == self)
+            .map(|names| names.display)
+            .or_else(|| self.def().map(|def| def.name))
     }
 }
 
@@ -207,7 +228,141 @@ pub const BUILTIN_TYPES: &[BuiltinTypeDef] = &[
         arity: 0,
         class: BuiltinTypeClass::Resource,
     },
+    BuiltinTypeDef {
+        module: &["Integer8"],
+        name: "Integer8",
+        arity: 0,
+        class: BuiltinTypeClass::Basic,
+    },
+    BuiltinTypeDef {
+        module: &["Integer16"],
+        name: "Integer16",
+        arity: 0,
+        class: BuiltinTypeClass::Basic,
+    },
+    BuiltinTypeDef {
+        module: &["Integer32"],
+        name: "Integer32",
+        arity: 0,
+        class: BuiltinTypeClass::Basic,
+    },
+    BuiltinTypeDef {
+        module: &["UnsignedInteger16"],
+        name: "UnsignedInteger16",
+        arity: 0,
+        class: BuiltinTypeClass::Basic,
+    },
+    BuiltinTypeDef {
+        module: &["UnsignedInteger32"],
+        name: "UnsignedInteger32",
+        arity: 0,
+        class: BuiltinTypeClass::Basic,
+    },
+    BuiltinTypeDef {
+        module: &["UnsignedInteger64"],
+        name: "UnsignedInteger64",
+        arity: 0,
+        class: BuiltinTypeClass::Basic,
+    },
+    BuiltinTypeDef {
+        module: &["Float32"],
+        name: "Float32",
+        arity: 0,
+        class: BuiltinTypeClass::Basic,
+    },
 ];
+
+/// 数の正の名前・別名・表示名。型の定義のモジュールは既存の型クラスの実装の所属を保つ。
+pub(crate) struct BuiltinTypeNames {
+    pub(crate) id: BuiltinTypeId,
+    pub(crate) canonical: &'static str,
+    pub(crate) aliases: &'static [&'static str],
+    pub(crate) display: &'static str,
+}
+
+/// 別名にも同じ型の番号を使い、型クラスの実装や値の種類を増やさない。
+pub(crate) const NUMBER_TYPE_NAMES: &[BuiltinTypeNames] = &[
+    BuiltinTypeNames {
+        id: BuiltinTypeId::INTEGER8,
+        canonical: "Integer8",
+        aliases: &[],
+        display: "Integer8",
+    },
+    BuiltinTypeNames {
+        id: BuiltinTypeId::INTEGER16,
+        canonical: "Integer16",
+        aliases: &[],
+        display: "Integer16",
+    },
+    BuiltinTypeNames {
+        id: BuiltinTypeId::INTEGER32,
+        canonical: "Integer32",
+        aliases: &[],
+        display: "Integer32",
+    },
+    BuiltinTypeNames {
+        id: BuiltinTypeId::INTEGER,
+        canonical: "Integer64",
+        aliases: &["Integer"],
+        display: "Integer",
+    },
+    BuiltinTypeNames {
+        id: BuiltinTypeId::BYTE,
+        canonical: "UnsignedInteger8",
+        aliases: &["Byte"],
+        display: "Byte",
+    },
+    BuiltinTypeNames {
+        id: BuiltinTypeId::UNSIGNED_INTEGER16,
+        canonical: "UnsignedInteger16",
+        aliases: &[],
+        display: "UnsignedInteger16",
+    },
+    BuiltinTypeNames {
+        id: BuiltinTypeId::UNSIGNED_INTEGER32,
+        canonical: "UnsignedInteger32",
+        aliases: &[],
+        display: "UnsignedInteger32",
+    },
+    BuiltinTypeNames {
+        id: BuiltinTypeId::UNSIGNED_INTEGER64,
+        canonical: "UnsignedInteger64",
+        aliases: &["UnsignedInteger"],
+        display: "UnsignedInteger64",
+    },
+    BuiltinTypeNames {
+        id: BuiltinTypeId::FLOAT32,
+        canonical: "Float32",
+        aliases: &[],
+        display: "Float32",
+    },
+    BuiltinTypeNames {
+        id: BuiltinTypeId::FLOAT,
+        canonical: "Float64",
+        aliases: &["Float"],
+        display: "Float",
+    },
+];
+
+/// 標準モジュールに登録する型名。既存の定義にない正の名前と別名を同じ番号へ追加する。
+pub(crate) fn builtin_types_in<'a>(
+    module: &'a [&'a str],
+) -> impl Iterator<Item = (BuiltinTypeId, &'static str)> + 'a {
+    let definitions = BUILTIN_TYPES
+        .iter()
+        .enumerate()
+        .filter(move |(_, def)| def.module == module)
+        .filter_map(|(index, def)| Some((BuiltinTypeId(u16::try_from(index).ok()?), def.name)));
+    let names = NUMBER_TYPE_NAMES.iter().flat_map(move |names| {
+        std::iter::once(names.canonical)
+            .chain(names.aliases.iter().copied())
+            .filter(move |name| {
+                module == [*name] && !names.id.def().is_some_and(|def| def.name == *name)
+            })
+            .map(move |name| (names.id, name))
+    });
+    definitions.chain(names)
+}
 
 /// 組み込みのエフェクトの表の番号。
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
@@ -327,10 +482,7 @@ pub const BUILTIN_EFFECTS: &[BuiltinEffectDef] = &[
 
 /// モジュールの名前の段（`Benitoite` を除く）と名前から、組み込みの型を引く。
 pub fn find_builtin_type(module: &[&str], name: &str) -> Option<BuiltinTypeId> {
-    let index = BUILTIN_TYPES
-        .iter()
-        .position(|d| d.module == module && d.name == name)?;
-    u16::try_from(index).ok().map(BuiltinTypeId)
+    builtin_types_in(module).find_map(|(id, candidate)| (candidate == name).then_some(id))
 }
 
 /// モジュールの名前の段（`Benitoite` を除く）と名前から、組み込みのエフェクトを引く。

@@ -119,6 +119,42 @@ fn each_module_has_a_file_with_its_import_name() {
     );
     assert!(find(&generated, "references/stdlib/Trait.md").contains("import Benitoite.Trait"));
     assert!(find(&generated, "references/stdlib/List.md").contains("without `import`"));
+    // 宣言のない型のモジュールでも、別名の同一性と表示を生成する契約を守る。
+    for (canonical, alias, display) in [
+        ("Integer64", "Integer", "Integer"),
+        ("Float64", "Float", "Float"),
+        ("UnsignedInteger8", "Byte", "Byte"),
+        ("UnsignedInteger64", "UnsignedInteger", "UnsignedInteger64"),
+    ] {
+        for module in [canonical, alias] {
+            let doc = find(&generated, &format!("references/stdlib/{module}.md"));
+            assert!(doc.contains("without `import`"));
+            assert!(doc.contains(&format!(
+                "Type: `{module}`. Canonical name: `{canonical}`. Displayed as `{display}`."
+            )));
+            assert!(doc.contains(&format!("Accepted aliases for this type: `{alias}`.")));
+            assert!(
+                doc.contains("These names denote the same type; they do not require a conversion.")
+            );
+        }
+    }
+    // 型の表だけが持つ七種の同一性を、公開の生成結果で確かめる。
+    for name in [
+        "Integer8",
+        "Integer16",
+        "Integer32",
+        "UnsignedInteger16",
+        "UnsignedInteger32",
+        "UnsignedInteger64",
+        "Float32",
+    ] {
+        let doc = find(&generated, &format!("references/stdlib/{name}.md"));
+        assert!(doc.contains(&format!(
+            "Type: `{name}`. Canonical name: `{name}`. Displayed as `{name}`."
+        )));
+        assert!(doc.contains("This is a distinct numeric type."));
+        assert!(doc.find("## Type").unwrap() < doc.find("```benitoite").unwrap());
+    }
     assert!(
         find(&generated, "references/stdlib/List.md")
             .contains("Refer to its declarations as `List.<name>`, for example `List.length`.")

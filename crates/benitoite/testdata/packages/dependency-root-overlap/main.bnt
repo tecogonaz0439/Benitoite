@@ -1,0 +1,13 @@
+// spec: 01-03 依存のパッケージの取り込み
+dependency Me
+  path "."
+end dependency
+dependency Parent
+  path ".."
+end dependency
+import Me.Slug as A
+import Slug as B
+import Parent.Slug as C
+function main() -> Unit
+  ()
+end function

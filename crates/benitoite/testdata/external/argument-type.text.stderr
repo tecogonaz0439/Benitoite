@@ -1,0 +1,11 @@
+error[E1008]: argument 2 of `add` does not match the component
+  --> testdata/external/argument-type/main.bnt:3:29
+   |
+ 3 | function add(a: Integer, b: String) -> Integer
+   |                             ^^^^^^ declared as `String`
+   |
+   = note: the component expects `s64`
+   = note: `String` is passed as `string`
+   = note: the component function corresponds to `function add(a: Integer, b: Integer) -> Integer`
+
+error: could not check testdata/external/argument-type/main.bnt due to 1 previous error

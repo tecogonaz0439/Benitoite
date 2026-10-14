@@ -83,6 +83,48 @@ implement Show[Float]
   end function
 end implement
 
+implement Show[Integer8]
+  function show(x: Integer8) -> String
+    return Integer8.toString(x)
+  end function
+end implement
+
+implement Show[Integer16]
+  function show(x: Integer16) -> String
+    return Integer16.toString(x)
+  end function
+end implement
+
+implement Show[Integer32]
+  function show(x: Integer32) -> String
+    return Integer32.toString(x)
+  end function
+end implement
+
+implement Show[UnsignedInteger16]
+  function show(x: UnsignedInteger16) -> String
+    return UnsignedInteger16.toString(x)
+  end function
+end implement
+
+implement Show[UnsignedInteger32]
+  function show(x: UnsignedInteger32) -> String
+    return UnsignedInteger32.toString(x)
+  end function
+end implement
+
+implement Show[UnsignedInteger64]
+  function show(x: UnsignedInteger64) -> String
+    return UnsignedInteger64.toString(x)
+  end function
+end implement
+
+implement Show[Float32]
+  function show(x: Float32) -> String
+    return Float32.toString(x)
+  end function
+end implement
+
 implement Show[Decimal]
   function show(x: Decimal) -> String
     return Decimal.toString(x)
@@ -163,6 +205,54 @@ implement Order[Float]
       return if Float.isNaN(y) then Ordering.Equal else Ordering.Greater end if
     end if
     if Float.isNaN(y) then
+      return Ordering.Less
+    end if
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[Integer8]
+  function compare(x: Integer8, y: Integer8) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[Integer16]
+  function compare(x: Integer16, y: Integer16) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[Integer32]
+  function compare(x: Integer32, y: Integer32) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[UnsignedInteger16]
+  function compare(x: UnsignedInteger16, y: UnsignedInteger16) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[UnsignedInteger32]
+  function compare(x: UnsignedInteger32, y: UnsignedInteger32) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[UnsignedInteger64]
+  function compare(x: UnsignedInteger64, y: UnsignedInteger64) -> Ordering
+    return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if
+  end function
+end implement
+
+implement Order[Float32]
+  function compare(x: Float32, y: Float32) -> Ordering
+    if Float32.isNaN(x) then
+      return if Float32.isNaN(y) then Ordering.Equal else Ordering.Greater end if
+    end if
+    if Float32.isNaN(y) then
       return Ordering.Less
     end if
     return if x < y then Ordering.Less else if y < x then Ordering.Greater else Ordering.Equal end if

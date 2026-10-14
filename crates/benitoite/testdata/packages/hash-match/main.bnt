@@ -1,0 +1,7 @@
+// spec: 01-03 依存の記述と `package.bnt`
+// 期待値は deps/hashkit で sha256sum Value.bnt package.bnt | sha256sum として求めた。
+import Hashkit.Value
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(Value.value()))
+end function

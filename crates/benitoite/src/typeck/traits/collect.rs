@@ -32,7 +32,7 @@ pub(super) fn parameter<'a>(d: &'a Decls<'_>, id: BindingId) -> Option<&'a TypeP
                     params.extend(&op.type_params);
                 }
             }
-            Item::Const(_) | Item::Error(_) => {}
+            Item::Const(_) | Item::ExternalType(_) | Item::Error(_) => {}
         }
     }
     params.into_iter().find(|p| d.binding(p.id) == Some(id))
@@ -326,6 +326,9 @@ fn constructor(d: &Decls<'_>, expr: &TypeExpr) -> Option<(TyCon, u32, String)> {
     if let BindingKind::BuiltinType(c) = b.kind {
         return Some((TyCon::Builtin(c), u32::from(c.def()?.arity), b.name.clone()));
     }
+    if b.kind == BindingKind::ExternalType {
+        return Some((TyCon::External(id), 0, b.name.clone()));
+    }
     if matches!(b.kind, BindingKind::Data | BindingKind::Record) {
         return Some((
             TyCon::Adt(id),
@@ -347,6 +350,7 @@ pub(super) fn has_param(t: &Ty, p: u32) -> bool {
 pub(super) fn show(d: &Decls<'_>, s: &Scheme, t: &Ty) -> String {
     let names: Vec<_> = s.type_params.iter().map(|p| p.name.clone()).collect();
     t.show(&TyNames {
+        bindings: &d.resolved.bindings,
         adts: &d.out.adts,
         effects: &d.out.effects,
         type_params: &names,

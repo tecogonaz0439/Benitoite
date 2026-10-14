@@ -197,3 +197,13 @@ pub(super) const COMMA_OR_RBRACKET: &str = "`,` or `]`";
 pub(super) const NEWLINE_OR_END: &str = "a newline or the end of the block";
 pub(super) const DATA: &str = "a data declaration";
 pub(super) const RPAREN: &str = "`)`";
+
+// 先頭の部分の呼び名は予約語の表とは分ける（設計書 01-01「キーワード」）。
+pub(super) use crate::syntax::header::{
+    BENITOITE, DEPENDENCY, DEPENDENCY_FIELDS, HASH, LANGUAGE, PACKAGE, PACKAGE_FIELDS, PATH,
+    UNAVAILABLE_FIELDS,
+};
+pub(super) const VERSION_STRING: &str = "a version string";
+pub(super) const FIELD_STRING: &str = "a string without interpolation";
+
+pub(super) const EXTERNAL_TYPE_DECL: &str = "an external type declaration";

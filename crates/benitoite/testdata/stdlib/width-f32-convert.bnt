@@ -1,0 +1,51 @@
+// 作成時の関門: CLI の独立した期待値で縮小の偶数丸め・符号・Integer の境界を守る。
+// 既存の算術のテストでは、変換のあふれの拒否と正確な拡大を捕まえない。
+// 本物の公開関数を通し、テストのための差し込み口は加えない。
+import Benitoite.Unofficial.IO.Console
+
+function floatText(value: Option[Float32]) -> String
+  return match value with
+    case Option.Some(n) -> Float32.toString(n)
+    case Option.None -> "None"
+  end match
+end function
+
+function integerText(value: Option[Integer]) -> String
+  return match value with
+    case Option.Some(n) -> Integer.toString(n)
+    case Option.None -> "None"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(floatText(Float32.fromFloat(1.000000059604644775390625)))
+  Console.writeLine(floatText(Float32.fromFloat(1.000000178813934326171875)))
+  Console.writeLine(floatText(Float32.fromFloat(-1.000000059604644775390625)))
+  Console.writeLine(floatText(Float32.fromFloat(0.0)))
+  Console.writeLine(floatText(Float32.fromFloat(-0.0)))
+  Console.writeLine(floatText(Float32.fromFloat(1e-50)))
+  Console.writeLine(floatText(Float32.fromFloat(-1e-50)))
+  Console.writeLine(floatText(Float32.fromFloat(3.4028234663852886e38)))
+  Console.writeLine(floatText(Float32.fromFloat(-3.4028234663852886e38)))
+  Console.writeLine(floatText(Float32.fromFloat(3.4028236e38)))
+  Console.writeLine(floatText(Float32.fromFloat(-3.4028236e38)))
+  Console.writeLine(floatText(Float32.fromFloat(1.0 / 0.0)))
+  Console.writeLine(floatText(Float32.fromFloat(-1.0 / 0.0)))
+  Console.writeLine(floatText(Float32.fromFloat(0.0 / 0.0)))
+  Console.writeLine(Float.toString(Float32.toFloat(0.1f32)))
+  Console.writeLine(Float.toString(Float32.toFloat(-0.0f32)))
+  Console.writeLine(Float.toString(Float32.toFloat(3.4028235e38f32)))
+  Console.writeLine(Float.toString(Float32.toFloat(1.0f32 / 0.0f32)))
+  Console.writeLine(Float.toString(Float32.toFloat(-1.0f32 / 0.0f32)))
+  Console.writeLine(Float.toString(Float32.toFloat(0.0f32 / 0.0f32)))
+  Console.writeLine(integerText(Float32.truncate(3.9f32)))
+  Console.writeLine(integerText(Float32.truncate(-3.9f32)))
+  Console.writeLine(integerText(Float32.truncate(-0.0f32)))
+  Console.writeLine(integerText(Float32.truncate(9223371487098961920.0f32)))
+  Console.writeLine(integerText(Float32.truncate(9223372036854775808.0f32)))
+  Console.writeLine(integerText(Float32.truncate(-9223372036854775808.0f32)))
+  Console.writeLine(integerText(Float32.truncate(-9223373136366403584.0f32)))
+  Console.writeLine(integerText(Float32.truncate(1.0f32 / 0.0f32)))
+  Console.writeLine(integerText(Float32.truncate(-1.0f32 / 0.0f32)))
+  Console.writeLine(integerText(Float32.truncate(0.0f32 / 0.0f32)))
+end function

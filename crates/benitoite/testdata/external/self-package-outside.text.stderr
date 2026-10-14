@@ -1,0 +1,17 @@
+error[E1003]: the component `x.wasm` is outside the package's wasm directory
+  --> testdata/external/self-package-outside/main.bnt:3:19
+   |
+ 3 | @external("wasm", "x.wasm", "add")
+   |                   ^^^^^^^^
+   |
+   = note: a component of the package `Self` must be under its `wasm` directory
+
+error[E1003]: the component `x.wasm` is outside the package's wasm directory
+  --> testdata/external/self-package-outside/Calc.bnt:2:19
+   |
+ 2 | @external("wasm", "x.wasm", "add")
+   |                   ^^^^^^^^
+   |
+   = note: a component of the package `Self` must be under its `wasm` directory
+
+error: could not check testdata/external/self-package-outside/main.bnt due to 2 previous errors

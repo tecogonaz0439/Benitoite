@@ -1,0 +1,10 @@
+// spec: 01-02 外部の関数の宣言
+import Benitoite.Unofficial.IO.Console
+@external("wasm", "x.wasm", "bnt:test/api@1.2.0#add")
+function add(a: Integer, b: Integer) -> Integer
+@external("wasm", "x.wasm", "top")
+function top() -> Integer
+function main() -> Unit uses Console.Write
+  Console.writeLine("${add(20, 22)}")
+  Console.writeLine("${List.fold([1, 2, 3], top(), add)}")
+end function

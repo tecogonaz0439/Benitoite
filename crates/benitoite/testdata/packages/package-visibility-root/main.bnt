@@ -1,0 +1,15 @@
+// spec: 01-03 公開（初回リリース版）
+import Lib.Internal
+import Lib.Logging
+import Benitoite.Unofficial.IO.Console
+
+public(package) function main() -> Unit uses Console.Write
+  bind box <- Internal.Box(value: Internal.answer)
+  bind token <- Internal.Token.Value(Internal.Box.value(box))
+  match token with
+    case Internal.Token.Value(n) -> Console.writeLine("${Internal.Read.read(n)}")
+  end match
+  handle Logging.emit() with
+    case Logging.emit() -> resume(())
+  end handle
+end function

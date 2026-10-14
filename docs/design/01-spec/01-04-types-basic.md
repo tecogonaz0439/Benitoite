@@ -2,7 +2,7 @@
 
 ## 目的と範囲
 
-基本型である `Integer`・`Float`・`String`・`Character`・`Boolean`・`Unit`・`Byte`・`Decimal` について、値の範囲、リテラルが表す値、演算子の意味、実行時エラーになる条件を定める。ビット演算の関数もここで定める。
+基本型である各幅の整数・浮動小数点数と、`String`・`Character`・`Boolean`・`Unit`・`Decimal` について、値の範囲、リテラルが表す値、演算子の意味、実行時エラーになる条件を定める。ビット演算の関数もここで定める。
 
 基本型を扱う関数のうち、意味の定義に必要なもの（位置や長さを扱う文字列の関数、型の変換）は本章で定める。それ以外の関数の一覧は[標準ライブラリ](../03-interop/03-06-stdlib.md)で定める。
 
@@ -15,11 +15,11 @@
 【決定】算術の実行時エラー（整数の溢れ、`Decimal` の溢れ、0 による除算）は、次の二段で扱う。
 
 - 実行の前の検査: 実行する前に起きることが確実に分かる次のものを、警告とする。警告は検査と実行を止めない。
-  - `div`・`mod`・`Integer.floorDivide`・`Integer.floorModulo`、`Decimal` の `/` の除数が定数式（[構文](01-02-syntax.md)の「定数（初回リリース版）」）であり、その値が 0 であるとき。割られる数は定数式でなくてよい。
-  - 溢れうる演算（`Integer` の `+`・`-`・`*`・単項の `-`・`div`、`Integer.floorDivide`・`Integer.absolute`（[標準ライブラリ](../03-interop/03-06-stdlib.md)）、`Decimal` の `+`・`-`・`*`・`/`）のすべての引数が定数式であり、その計算が溢れの条件に当たるとき（`9223372036854775807 + 1` など）。
+  - 各整数型の `div`・`mod`・`Integer.floorDivide`・`Integer.floorModulo`、`Decimal` の `/` の除数が定数式（[構文](01-02-syntax.md)の「定数（初回リリース版）」）であり、その値が 0 であるとき（W0401）。割られる数は定数式でなくてよい。
+  - 溢れうる演算（各整数型の `+`・`-`・`*`・`div`、符号付き整数の単項の `-`、`Integer.floorDivide`・`Integer.absolute`（[標準ライブラリ](../03-interop/03-06-stdlib.md)）、`Decimal` の `+`・`-`・`*`・`/`）のすべての引数が定数式であり、その計算が溢れの条件に当たるとき（W0402）。符号なしの減算が 0 未満になる場合も含む（`0u16 - 1u16` など）。
 - 実行時: 値が実行して初めて分かるとき（変数に 0 や大きな値が入っているときなど）は、実行時エラーとする。
 
-トップレベルの定数の定数式の中でこれらの条件に当たるときは、警告ではなく検査の誤りとする。`Float` の演算は、0 による除算や範囲を超える結果でも実行時エラーにならない（後述）ので、警告の対象にしない。
+トップレベルの定数の定数式の中でこれらの条件に当たるときは、警告ではなく検査の誤り（E0435）とする。`Float`・`Float32` の演算は、0 による除算や範囲を超える結果でも実行時エラーにならない（後述）ので、警告の対象にしない。変換関数が `Option.None` を返す場合も、これらの警告の対象にしない。幅付きの整数の標準関数の呼び出しには、この算術の警告は適用しない。
 
 本章の型の名前 `Option[T]` は、prelude が定める型であり、値は `Option.Some(x)` または `Option.None` である（[代数的データ型とパターンマッチ](01-05-data-types.md)、[標準ライブラリ](../03-interop/03-06-stdlib.md)）。
 
@@ -27,20 +27,33 @@
 
 ### 型の一覧
 
-【方針】基本型は次の八つである。
+【決定】数の型の正の名前、別名と既定の表示名は、次のとおりである。別名は同じ型を表し、演算の規則も同じである。
+
+| 正の名前 | 別名・既定の表示名 | 値の範囲 |
+|---|---|---|
+| `Integer8`・`Integer16`・`Integer32` | 正の名前 | 幅 w が 8・16・32 bit の符号付き整数。−2^(w−1) 以上 2^(w−1) − 1 以下 |
+| `Integer64` | `Integer` | −2^63 以上 2^63 − 1 以下 |
+| `UnsignedInteger8` | `Byte` | 0 以上 255 以下。算術演算を持たない |
+| `UnsignedInteger16`・`UnsignedInteger32` | 正の名前 | 幅 w が 16・32 bit の符号なし整数。0 以上 2^w − 1 以下 |
+| `UnsignedInteger64` | 別名 `UnsignedInteger`。表示は `UnsignedInteger64` | 0 以上 2^64 − 1 以下 |
+| `Float32` | 正の名前 | IEEE 754 の単精度（binary32） |
+| `Float64` | `Float` | IEEE 754 の倍精度（binary64） |
+
+理由: 幅を明示した名前を使えるようにしつつ、既存のスクリプトと診断・結果の表示を保つ。以下では、64 bit の符号付き整数、倍精度、8 bit の符号なし整数を、主に `Integer`・`Float`・`Byte` と書く。
+
+【決定】基本型は、数の十種類と、次の五種類である。
 
 | 型 | 値 |
 |---|---|
-| `Integer` | 64 bit の符号付き整数 |
-| `Float` | IEEE 754 の倍精度（binary64）の浮動小数点数 |
 | `String` | Unicode のスカラー値の列 |
 | `Character` | Unicode のスカラー値 1 個 |
 | `Boolean` | `true` と `false` |
 | `Unit` | `()` だけ |
-| `Byte` | 0 以上 255 以下の整数 |
 | `Decimal` | 10 進の小数（128 bit） |
 
 【方針】基本型のあいだに暗黙の変換はない。`Integer` と `Float` を混ぜた演算（`1 + 2.0`）は型の誤りである。`Decimal` と、`Integer`・`Float` を混ぜた演算も同じである。変換は、本章の「型の変換」の関数で明示する。`Float` の値を書くべき位置に整数リテラルを書いたとき（`x * 2` で `x` が `Float` など）は、`2.0` と書くよう診断で示す。
+
+【決定】異なる幅・符号の数を混ぜた演算・比較・等値も型の誤りとする。接尾辞なしの `1` は、求められる型が `Integer32` でも `Integer` のままである。リテラルには目的の接尾辞を、動的な値には変換関数を使う。
 
 ### Integer
 
@@ -74,6 +87,95 @@
 
 ビット演算（論理積、シフトなど）の演算子はない。ビット演算は関数として設ける（後述の「ビット演算（初回リリース版）」）。
 
+【決定】`Integer8`・`Integer16`・`Integer32` は、幅に応じた上記の値域で、`Integer` と同じ算術・比較を持つ。`UnsignedInteger16`・`UnsignedInteger32`・`UnsignedInteger64` は、同型の `+`・二項の `-`・`*`・`div`・`mod` と比較を持つ。結果が値域を超える場合と、符号なしの減算が 0 未満になる場合は実行時エラーとし、折り返さない。`/` は使えず、符号なしの単項の `-` は 0 にも使えない。
+
+符号付きの `div` は 0 の方向に切り捨て、`mod` は左辺と同符号か 0 である。各幅の最小値 `div -1` は実行時エラー、最小値 `mod -1` は 0 である。符号なしの `div`・`mod` は非負の商と剰余を返す。いずれも除数 0 は実行時エラーとする。各モジュールの `floorDivide`・`floorModulo` は、符号付きでは `Integer` と同じ負の無限大の方向の商と剰余であり、符号なしでは `div`・`mod` と一致する。`absolute` は、符号付きの最小値で実行時エラー、符号なしでは元の値を返す。
+
+理由: 幅だけを変えたときに、除算と算術の失敗の意味を変えない。
+
+【決定】接尾辞を持つ整数リテラルは、その型の値域で検査する。`u64` は 2^64 − 1 まで表せる。符号付きリテラルへの直接の負号は、符号を含めて検査するので、`-128s8` は正しい。括弧を挟む `-(128s8)` はこの特例に含めず、内側のリテラルが範囲外であるため誤りとする。`-0u16`・`-1u8` も静的な誤りである。べき乗と折り返す算術の関数は設けない。
+
+`Integer8`・`Integer16`・`Integer32` と符号なしの各幅には、定数・範囲パターンを使えない。束縛・ワイルドカードとガードで分岐する。`s64` の接尾辞は既存の `Integer` のパターン規則に従う。
+
+次の例は、各幅の境界値と別名の同一性を示す。出力には接尾辞を付けない。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind a: Integer8 <- -128s8
+  bind b: Integer16 <- -32768s16
+  bind c: Integer32 <- -2147483648s32
+  bind d: Integer64 <- -9223372036854775808s64
+  bind e: UnsignedInteger8 <- 255u8
+  bind f: UnsignedInteger16 <- 65535u16
+  bind g: UnsignedInteger32 <- 4294967295u32
+  bind h: UnsignedInteger <- 18446744073709551615u64
+  Console.writeLine("${a}, ${b}, ${c}, ${Integer.toString(d)}")
+  Console.writeLine("${Byte.toString(e)}, ${f}, ${g}, ${UnsignedInteger64.toString(h)}")
+  Console.writeLine("${(-128s8) mod -1s8}, ${Integer8.floorModulo(-128s8, -1s8)}")
+end function
+```
+
+```output
+-128, -32768, -2147483648, -9223372036854775808
+255, 65535, 4294967295, 18446744073709551615
+0, 0
+```
+
+括弧を挟んだ負号は、範囲外の正のリテラルを許さない。
+
+```benitoite error
+function main() -> Unit
+  bind _ <- -(128s8)
+end function
+```
+
+```diagnostic
+E0447
+integer literal is out of range for `Integer8`
+```
+
+符号なしの負号と `Byte` の算術は、零でも使えない。
+
+```benitoite error
+function main() -> Unit
+  bind _ <- -0u16
+  bind _ <- 1u8 + 2u8
+end function
+```
+
+```diagnostic
+E0405
+`-` cannot be applied to `UnsignedInteger16`
+`+` cannot be applied to `Byte`
+```
+
+接尾辞を省略した整数は、型注釈に合わせて縮小されない。
+
+```benitoite error
+function main() -> Unit
+  bind n: Integer32 <- 1
+end function
+```
+
+```diagnostic
+E0401
+```
+
+`const` の算術の溢れは、実行前の誤りになる。
+
+```benitoite error
+const belowZero: UnsignedInteger16 = 0u16 - 1u16
+function main() -> Unit
+end function
+```
+
+```diagnostic
+E0435
+integer overflow
+```
+
 ### Float
 
 【方針】`Float` は IEEE 754 の倍精度（binary64）の値であり、正負の 0、正負の無限大、NaN を含む。
@@ -90,6 +192,32 @@
 値が NaN かどうかは `Float.isNaN(x)` で調べる。
 
 `Float` の値はパターンに書けない（[構文](01-02-syntax.md)）。
+
+【決定】`Float32` は binary32 の値であり、正負の零・無限大・NaN を含む。値の生成と `+`・`-`・`*`・`/` の各結果を、binary32 の最近接偶数丸めで丸める。倍精度で計算を続けたり、複数の演算を融合積和にまとめたりしない。単項の `-` は符号を反転する。0 による除算、特殊値と比較の規則は `Float` と同じであり、有限値の演算結果が無限大になっても実行時エラーにしない。NaN の追加のビット情報の保存は保証しない。
+
+理由: 各演算の後の丸めを定めることで、言語内の計算と比較を単精度の意味に揃える。
+
+`f32` のリテラルは、十進の数字列から直接 binary32 に丸めた値である。無限大に丸められるリテラルは静的な誤りとし、符号を保った零への丸めは認める。`Float32` の定数・範囲パターンは認めない。`f64` の接尾辞は `Float` の規則に従う。
+
+次の例では、各演算後の丸めによって `16777216.0f32 + 1.0f32` が元の値に戻る。後の減算の結果は零になる。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind single: Float32 <- (16777216.0f32 + 1.0f32) - 16777216.0f32
+  bind double: Float64 <- 1.5f64
+  Console.writeLine("${single}, ${Float.toString(double)}, ${0.1f32}, ${-0.0f32}")
+  Console.writeLine("${Float32.isNaN(0.0f32 / 0.0f32)}, ${Float32.isInfinite(1.0f32 / 0.0f32)}")
+  Console.writeLine("${Integer8.fromInteger(128) = Option.None}, ${UnsignedInteger64.fromDecimal(1.0m) = Option.Some(1u64)}")
+end function
+```
+
+```output
+0.0, 1.5, 0.1, -0.0
+true, true
+true, true
+```
 
 ### String
 
@@ -166,7 +294,7 @@
 
 - `Byte` には、`=`・`<>` と、順序の比較演算子（`<`・`<=`・`>`・`>=`）を使える。比較は数の大小による。
 - `Byte` には、算術の演算子（`+`・`-`・`*`・`/`・`div`・`mod`・単項の `-`）を使えない。計算は `Byte.toInteger` で `Integer` にしてから行う。
-- `Byte` のリテラルはない。`Integer` との間に暗黙の変換はない。
+- 接尾辞 `u8` のリテラルで値を作れる（`255u8`）。`UnsignedInteger8` は同じ型であり、別名によって算術を使えるようにはならない。`Integer` との間に暗黙の変換はない。
 
 | 関数 | 型 | 値 |
 |---|---|---|
@@ -248,6 +376,10 @@
 
 【決定】`Byte` のシフトで、ずらす量 `n` が 0 以上 7 以下でなければ、実行時エラーとする。
 
+【決定】新しい整数六種にも `bitwiseAnd`・`bitwiseOr`・`bitwiseExclusiveOr`・`bitwiseNot`・`shiftLeft`・`shiftRight` を設け、符号付き三種には `shiftRightUnsigned` も設ける。二項のビット演算の型は `function(T, T) -> T`、反転は `function(T) -> T`、シフトは `function(T, Integer) -> T` である。T は各整数型であり、シフト量は `Integer` で渡す。
+
+幅 w のシフト量は 0 以上 w−1 以下に限り、範囲外は実行時エラーとする。左シフトは幅からはみ出たビットを捨て、下位に零を入れる。右シフトは符号付きでは符号ビット、符号なしと `shiftRightUnsigned` では零を入れる。符号付きの値は、その幅の 2 の補数のビット列として扱う。理由: ビット列の切り捨てを、算術の溢れとは区別する。
+
 ### 型の変換
 
 【方針】基本型のあいだの変換の関数は次のとおりである。失敗しうる変換は `Option` を返す。
@@ -267,7 +399,30 @@
 | `Decimal.toString(x)` | `function(Decimal) -> String` | 下の規則による表記 |
 | `Decimal.parse(s)` | `function(String) -> Option[Decimal]` | 10 進の数の表記を読んだ値。表記が正しくないときと、`Decimal` のリテラルなら型検査の誤りになる値のときは `Option.None` |
 
-【方針】文字列補間（[字句構造](01-01-lexical.md)）は、`String` の値をそのまま、`Integer`・`Float`・`Character`・`Byte`・`Decimal` の値をそれぞれの `toString` と同じ文字列に、`Boolean` の値を `true` か `false` の文字列にして埋め込む。
+【決定】新しい数の変換は次のとおりである。表の T は `Integer8`・`Integer16`・`Integer32`・`UnsignedInteger16`・`UnsignedInteger32`、U はそれらと `UnsignedInteger64` の六種を表す。関数は各型と同名のモジュールに置き、すべて純粋である。
+
+| 関数 | 型 | 値 |
+|---|---|---|
+| `T.fromInteger(n)` | `function(Integer) -> Option[T]` | T の値域に収まれば `Some`、範囲外は `None` |
+| `T.toInteger(n)` | `function(T) -> Integer` | 全域で正確な値 |
+| `U.parse(s)` | `function(String) -> Option[U]` | `Integer.parse` と同じ十進の字句。符号なしは負号を拒否し、範囲外は `None` |
+| `U.toString(n)` | `function(U) -> String` | 十進表記。負値は先頭に `-`。接尾辞を付けない |
+| `U.toFloat(n)` | `function(U) -> Float` | 最近接偶数丸めによる binary64 の値。T の五種では全域で正確 |
+| `UnsignedInteger64.fromInteger(n)` | `function(Integer) -> Option[UnsignedInteger64]` | 負値は `None`、それ以外は正確な値 |
+| `UnsignedInteger64.toInteger(n)` | `function(UnsignedInteger64) -> Option[Integer]` | 2^63 以上は `None`、それ以外は正確な値 |
+| `UnsignedInteger64.toDecimal(n)` | `function(UnsignedInteger64) -> Decimal` | 全域で正確な値。小数の桁数は 0 |
+| `UnsignedInteger64.fromDecimal(x)` | `function(Decimal) -> Option[UnsignedInteger64]` | 数学的に整数で、0 以上 2^64 − 1 以下なら `Some`。`1.0m` も認める。それ以外は `None` |
+| `Float32.fromFloat(x)` | `function(Float) -> Option[Float32]` | 最近接偶数丸めで縮小。有限値が無限大になる場合は `None`。元からの無限大・NaN は `Some`。零への丸めと零の符号を保つ |
+| `Float32.toFloat(x)` | `function(Float32) -> Float` | 有限値を正確に拡大し、零の符号を保つ |
+| `Float32.parse(s)` | `function(String) -> Option[Float32]` | `Float.parse` と同じ字句を直接 binary32 に丸める。不正な表記と無限大になる値は `None` |
+| `Float32.toString(x)` | `function(Float32) -> String` | 下の規則による表記 |
+| `Float32.truncate(x)` | `function(Float32) -> Option[Integer]` | 0 の方向に切り捨てる。NaN・無限大・`Integer` の範囲外は `None` |
+
+理由: 変換の失敗を `Option` で返し、算術の停止と区別する。幅どうしの直接の変換を全組み合わせで設けず、`Integer` と、u64 の全域では `Decimal` を介す。
+
+`Float32` から狭い整数へは `truncate` と `fromInteger` を組み合わせる。`Float` から u64 の上半分への直接変換は設けない。`Decimal.fromFloat` は十進表記を介す関数であり、二進の値の正確な整数値を保存する変換ではない。
+
+【方針】文字列補間（[字句構造](01-01-lexical.md)）は、`String` の値をそのまま、各幅の数・`Character`・`Decimal` の値をそれぞれの `toString` と同じ文字列に、`Boolean` の値を `true` か `false` の文字列にして埋め込む。
 
 【方針】`Float.toString(x)` の表記は次のとおりである。同じ値に対して常に同じ文字列を返す。
 
@@ -278,8 +433,10 @@
 
 これらの表記は、どれも浮動小数リテラルとして書ける形である（NaN と無限大を除く）。
 
+【決定】`Float32.toString` は、binary32 へ読み戻すと元の値になる最短の十進表記を使う。有効数字の選び方、小数点・指数の切り替え、`NaN`・`Infinity`・`-Infinity` と負の零の表記は `Float.toString` と同じであり、接尾辞は付けない。倍精度に拡大した値の最短表記は使わない。文字列補間と `Trait.Show` も同じ表記を使う。理由: 単精度の値を、表示先によらず同じ文字列で表す。
+
 【方針】`Decimal.toString(x)` の表記は、`x` の符号（負の値だけ `-`）、整数部の 10 進表記、小数の桁数が 1 以上なら小数点と小数の桁数と同じ数の桁、の順に並べたものである。指数と接尾辞 `m` は付けない。`Decimal.toString(1.50m)` は `"1.50"`、`Decimal.toString(-3m)` は `"-3"`、`Decimal.toString(0.05m)` は `"0.05"` である。
 
-【方針】`Integer.parse` と `Float.parse` が受け付ける表記は、それぞれ整数リテラルの 10 進の形と浮動小数リテラルの形に、先頭の任意の `-` を加えたものである。ただし、桁の区切り `_`、先頭の `+`、前後の空白は受け付けない。`Float.parse` は、整数リテラルの 10 進の形（`42`）も受け付ける。`NaN`・`Infinity` は受け付けない。絶対値が小さすぎて 0 に丸められる表記（`1e-9999`）は、浮動小数リテラルと同じく受け付け、符号を保った 0 を返す（`Float.parse("-1e-9999")` は `Option.Some(-0.0)`）。
+【方針】`Integer.parse` と `Float.parse` が受け付ける表記は、それぞれ接尾辞のない整数リテラルの 10 進の形と浮動小数リテラルの形に、先頭の任意の `-` を加えたものである。ただし、接尾辞、基数の接頭辞、桁の区切り `_`、先頭の `+`、前後の空白は受け付けない。`Float.parse` は、整数リテラルの 10 進の形（`42`）も受け付ける。`NaN`・`Infinity` は受け付けない。絶対値が小さすぎて 0 に丸められる表記（`1e-9999`）は、浮動小数リテラルと同じく受け付け、符号を保った 0 を返す（`Float.parse("-1e-9999")` は `Option.Some(-0.0)`）。
 
 【方針】`Decimal.parse` が受け付ける表記は、`Decimal` のリテラルから接尾辞 `m` を除いた形（`12`、`1.25`）に、先頭の任意の `-` を加えたものである。`Integer.parse` と同じく、桁の区切り `_`、先頭の `+`、前後の空白は受け付けない。リテラルと同じく、`0` 自身を除き `0` で始まる整数部（`"01.5"`、`"007"`、`"-01.5"`）も受け付けない。

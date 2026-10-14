@@ -20,6 +20,17 @@ use memfs::{MemFs, load_files};
 
 const MAIN: &str = "function main() -> Unit\n  return ()\nend function\n";
 
+// spec: 01-03 依存の記述と `package.bnt`
+#[test]
+fn dependency_without_path_reports_only_the_missing_field() {
+    let source = format!(
+        "dependency Fuzzy\n  hash \"sha256:{}\"\nend dependency\n{MAIN}",
+        "00".repeat(32)
+    );
+    let (output, _) = load_files(&[("main.bnt", &source)]);
+    assert_eq!(codes(&output), vec![DiagCode::E0904]);
+}
+
 fn entry(display: &str) -> EntrySpec {
     EntrySpec {
         path: PathBuf::from("/root/main.bnt"),
@@ -97,6 +108,17 @@ fn prelude_order_kinds_and_clock_dependency() {
         "ByteOrder",
         "NetworkError",
         "NetworkErrorKind",
+        "Integer8",
+        "Integer16",
+        "Integer32",
+        "Integer64",
+        "UnsignedInteger8",
+        "UnsignedInteger16",
+        "UnsignedInteger32",
+        "UnsignedInteger64",
+        "UnsignedInteger",
+        "Float32",
+        "Float64",
     ];
     for (index, name) in expected.iter().enumerate() {
         let module = &output.modules.modules[index + 1];
@@ -551,17 +573,7 @@ fn syntax_and_lexical_errors_precede_import_errors_and_cycles() {
 
 #[test]
 fn real_fs_matches_memory_for_files_imports_and_missing_modules() {
-    struct Temporary(PathBuf);
-    impl Drop for Temporary {
-        fn drop(&mut self) {
-            let _result = std::fs::remove_dir_all(&self.0);
-        }
-    }
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../target")
-        .join(format!("benitoite-f05-{}", std::process::id()));
-    std::fs::create_dir(&path).unwrap();
-    let dir = Temporary(path);
+    let dir = super::test_support::Temporary::new();
     let files = [
         ("main.bnt", "import Lib.Text\nimport Missing\n"),
         ("Lib/Text.bnt", ""),
@@ -711,5 +723,346 @@ fn exact_size_boundaries_and_embedded_sources_count_toward_total() {
         output.modules.modules[1].name.dotted(),
         "Benitoite.TestPrelude"
     );
+    assert_aligned(&output);
+}
+
+// 設定ファイルにも同じ上限を適用し、読めなかったときには番号を振らない。
+#[test]
+fn settings_sources_count_toward_source_limits() {
+    let fs = MemFs::new(&[("main.bnt", " "), ("package.bnt", "  ")]);
+    for (file_limit, total_limit, reason) in [
+        (2, 3, None),
+        (1, 3, Some(text::SOURCE_TOO_LARGE)),
+        (2, 2, Some(text::TOTAL_TOO_LARGE)),
+    ] {
+        let output = load::load_with_limits(
+            &entry("main.bnt"),
+            &[],
+            &fs,
+            &mut IdGen::new(),
+            file_limit,
+            total_limit,
+        );
+        assert_aligned(&output);
+        if let Some(reason) = reason {
+            assert_eq!(codes(&output), [DiagCode::E0101]);
+            assert!(output.diagnostics[0].primary.is_none());
+            assert_eq!(output.diagnostics[0].notes, [reason]);
+            assert_eq!(output.asts.len(), 1);
+        } else {
+            assert!(output.diagnostics.is_empty());
+            assert_eq!(output.asts.len(), 2);
+        }
+    }
+}
+
+#[test]
+fn root_settings_do_not_come_from_parent_directories() {
+    let fs = MemFs::new(&[
+        ("project/main.bnt", MAIN),
+        ("package.bnt", "language \"99.0.0\"\n"),
+    ]);
+    let entry = EntrySpec {
+        path: "/root/project/main.bnt".into(),
+        display_name: "project/main.bnt".into(),
+        root: "/root/project".into(),
+    };
+    let output = load_program(&entry, STDLIB, &fs, &mut IdGen::new());
+    assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
+    assert_aligned(&output);
+    assert!(
+        !output
+            .modules
+            .iter()
+            .any(|module| module.kind == ModuleKind::Config)
+    );
+}
+
+// 設定ファイルが入ってもソースとモジュールの番号・読み込みの順を保つ契約を守る。
+#[test]
+fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
+    for config_name in ["package.bnt", "Package.bnt"] {
+        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.3\"\n")]);
+        assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
+        assert_aligned(&output);
+        if config_name == "package.bnt" {
+            assert_eq!(output.modules.modules[1].kind, ModuleKind::Config);
+            assert_eq!(
+                output.modules.modules[1].name,
+                ModulePath(vec!["package.bnt".into()])
+            );
+            assert_eq!(output.sources.get(FileId(1)).unwrap().name(), "package.bnt");
+            assert!(output.asts[1].decls.is_empty());
+            assert_eq!(output.modules.modules[2].kind, ModuleKind::Prelude);
+        } else {
+            assert_eq!(output.modules.modules[1].kind, ModuleKind::Prelude);
+        }
+    }
+}
+
+#[test]
+fn config_cannot_be_a_starting_file() {
+    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.3\"\n")]);
+    let entry = EntrySpec {
+        path: "/root/package.bnt".into(),
+        display_name: "package.bnt".into(),
+        root: "/root".into(),
+    };
+    let output = load_program(&entry, STDLIB, &fs, &mut IdGen::new());
+    assert_eq!(codes(&output), vec![DiagCode::E0913]);
+    assert!(output.diagnostics[0].primary.is_none());
+    assert!(output.sources.iter().next().is_none());
+}
+
+// 関門: 設定を import の有無によらず先に読み、異なる依存のモジュールと ID の対応を守る。
+// ゴールデンの出力からは読む順とソース表の対応を観察できない。
+#[test]
+fn dependency_configs_precede_prelude_and_imported_modules() {
+    let fs = MemFs::new(&[
+        ("main.bnt", "import One.Slug\nimport Two.Slug as Second\n"),
+        (
+            "package.bnt",
+            "dependency One\n  path \"/library\"\nend dependency\ndependency Two\n  path \"../second\"\nend dependency\ndependency Unused\n  path \"/unused\"\nend dependency\n",
+        ),
+        (
+            "/library/package.bnt",
+            "language \"0.0.3\"\npackage Textkit\nend package\n",
+        ),
+        ("/library/Slug.bnt", "import Internal.Helper\n"),
+        ("/library/Internal/Helper.bnt", ""),
+        (
+            "/second/package.bnt",
+            "language \"0.0.3\"\npackage Textkit\nend package\n",
+        ),
+        ("/second/Slug.bnt", "import Internal.Helper\n"),
+        ("/second/Internal/Helper.bnt", ""),
+        (
+            "/unused/package.bnt",
+            "language \"0.0.3\"\npackage Unused\nend package\n",
+        ),
+        ("/unused/Unread.bnt", "this is deliberately not a module"),
+    ]);
+    let output = load(&fs, "project/main.bnt");
+    assert!(output.diagnostics.is_empty(), "{:#?}", output.diagnostics);
+    assert_aligned(&output);
+    let names: Vec<_> = output
+        .modules
+        .iter()
+        .take(5)
+        .map(|module| module.name.dotted())
+        .collect();
+    assert_eq!(
+        names,
+        [
+            "",
+            "package.bnt",
+            "One.package.bnt",
+            "Two.package.bnt",
+            "Unused.package.bnt"
+        ]
+    );
+    for alias in ["One", "Two"] {
+        assert_eq!(
+            output
+                .modules
+                .find(&ModulePath(vec![alias.into(), "package.bnt".into()]))
+                .unwrap()
+                .kind,
+            ModuleKind::PackageConfig
+        );
+        let slug = output
+            .modules
+            .find(&module_path(&format!("{alias}.Slug")))
+            .unwrap();
+        let helper = output
+            .modules
+            .find(&module_path(&format!("{alias}.Internal.Helper")))
+            .unwrap();
+        assert_eq!(slug.kind, ModuleKind::Package);
+        assert_eq!(slug.imports[0].target, Some(helper.id));
+    }
+    assert_ne!(
+        output.modules.find(&module_path("One.Slug")).unwrap().id,
+        output.modules.find(&module_path("Two.Slug")).unwrap().id
+    );
+    assert!(output.modules.find(&module_path("Unused.Unread")).is_none());
+    assert_eq!(
+        output.sources.get(FileId(3)).unwrap().name(),
+        "project/../second/package.bnt"
+    );
+}
+
+// 関門: パッケージの根を境界とするリンクの検査と入口の取り込み禁止を守る。
+// ファイルシステムのリンクだけを差し替え、本物の読み込みの段の診断を調べる。
+#[test]
+fn package_imports_keep_their_canonical_root_and_reject_the_entry() {
+    // 入口自身は根のリンクから拒否する。依存から入口を指すリンクは根の境界で先に拒否する。
+    for (package_link, target, expected) in [
+        (true, "/outside/Target.bnt", DiagCode::E0319),
+        (true, "/root/main.bnt", DiagCode::E0319),
+        (false, "/root/main.bnt", DiagCode::E0320),
+    ] {
+        let main = if package_link {
+            "dependency Lib\n  path \"deps/library\"\nend dependency\nimport Lib.Linked\n"
+        } else {
+            "import Linked\n"
+        };
+        let mut fs = MemFs::new(&[
+            ("main.bnt", main),
+            (
+                "deps/library/package.bnt",
+                "language \"0.0.3\"\npackage Library\nend package\n",
+            ),
+            ("/outside/Target.bnt", ""),
+        ]);
+        fs.add_link(
+            if package_link {
+                "deps/library/Linked.bnt"
+            } else {
+                "Linked.bnt"
+            },
+            target,
+        );
+        let output = load(&fs, "main.bnt");
+        assert_eq!(codes(&output), vec![expected]);
+        assert_eq!(
+            primary_text(&output, &output.diagnostics[0]),
+            if package_link { "Lib.Linked" } else { "Linked" }
+        );
+        if package_link {
+            assert!(output.diagnostics[0].message.contains("package root"));
+        }
+    }
+}
+
+// 関門: 根の外の依存と根のリンクが同じファイルを指すとき、依存として取り込む。
+// 根として読む場合の境界検査を先に当てる退行を、読み込みの公開の結果で捕まえる。
+#[test]
+fn root_link_to_the_dependency_imports_the_package() {
+    let mut fs = MemFs::new(&[
+        (
+            "main.bnt",
+            "dependency Textkit\n  path \"../library\"\nend dependency\nimport Textkit.Slug\n",
+        ),
+        (
+            "/library/package.bnt",
+            "language \"0.0.3\"\npackage Textkit\nend package\n",
+        ),
+        ("/library/Slug.bnt", ""),
+    ]);
+    fs.add_link("Textkit", "/library");
+    let output = load(&fs, "main.bnt");
+    assert!(output.diagnostics.is_empty(), "{:#?}", output.diagnostics);
+    assert_eq!(
+        output
+            .modules
+            .find(&module_path("Textkit.Slug"))
+            .unwrap()
+            .kind,
+        ModuleKind::Package
+    );
+    assert_aligned(&output);
+}
+
+// 関門: 正規化した依存の根の重なりを、import の有無によらず拒否する。
+// 同じファイルが別名ごとに読まれる退行を、読み込みの境界で捕まえる。
+// spec: 01-03 依存のパッケージの取り込み
+#[test]
+fn overlapping_dependency_roots_are_rejected_before_imports() {
+    for (first, second) in [
+        ("/libs", "/libs"),
+        ("/libs", "/libs/Nested"),
+        ("/libs/Nested", "/libs"),
+        ("/libs", "Linked"),
+    ] {
+        let main = format!(
+            "dependency One\npath \"{first}\"\nend dependency\ndependency Two\npath \"{second}\"\nend dependency\nimport Two.Value\n"
+        );
+        let mut fs = MemFs::new(&[
+            ("main.bnt", &main),
+            (
+                "/libs/package.bnt",
+                "language \"0.0.3\"\npackage Libs\nend package\n",
+            ),
+            (
+                "/libs/Nested/package.bnt",
+                "language \"0.0.3\"\npackage Nested\nend package\n",
+            ),
+            ("/libs/Value.bnt", ""),
+            ("/libs/Nested/Value.bnt", ""),
+        ]);
+        fs.add_link("Linked", "/libs");
+        let output = load(&fs, "main.bnt");
+        assert_eq!(codes(&output), [DiagCode::E0922], "{main}");
+        assert_eq!(
+            primary_text(&output, &output.diagnostics[0]),
+            format!("\"{second}\"")
+        );
+        assert_eq!(output.diagnostics[0].secondary.len(), 1);
+        assert!(output.modules.find(&module_path("Two.Value")).is_none());
+        assert_aligned(&output);
+    }
+}
+
+// 関門: 根のリンクを通す診断でも、import に書ける候補にだけ編集を付ける。
+// パスの構文の検査では届かない、正規化後の名前の提案を読み込みで確かめる。
+// spec: 01-03 依存のパッケージの取り込み
+#[test]
+fn dependency_import_edits_only_use_valid_module_names() {
+    for (tail, expected) in [
+        ("Value.bnt", Some("Tk.Value")),
+        ("impl/x.bnt", None),
+        ("Bad-Name.bnt", None),
+    ] {
+        let mut fs = MemFs::new(&[
+            (
+                "main.bnt",
+                "dependency Tk\npath \"/library\"\nend dependency\nimport Linked as Local\n",
+            ),
+            (
+                "/library/package.bnt",
+                "language \"0.0.3\"\npackage Library\nend package\n",
+            ),
+        ]);
+        fs.add_file(format!("/library/{tail}"), vec![]);
+        fs.add_link("Linked.bnt", format!("/library/{tail}"));
+        let output = load(&fs, "main.bnt");
+        assert_eq!(codes(&output), [DiagCode::E0921]);
+        let diag = &output.diagnostics[0];
+        assert_eq!(diag.notes, ["package: `Library`"]);
+        let edits: Vec<_> = diag.helps.iter().flat_map(|help| &help.edits).collect();
+        assert_eq!(diag.helps.len(), usize::from(expected.is_some()));
+        assert_eq!(edits.len(), usize::from(expected.is_some()));
+        if let Some(expected) = expected {
+            assert_eq!(edits[0].replacement, expected);
+            assert_eq!(edits[0].span, diag.primary.as_ref().unwrap().span);
+            assert_eq!(primary_text(&output, diag), "Linked");
+        }
+    }
+}
+
+// 関門: 二か所の依存の記述は E0911 だけで報告し、片方を消すと消える E0922 を重ねない。
+// 二つの別名を使うため、別名の重複を飛ばす処理では通らない。
+// spec: 01-03 依存の記述と `package.bnt`
+#[test]
+fn duplicate_dependency_locations_do_not_also_report_root_overlap() {
+    let fs = MemFs::new(&[
+        (
+            "main.bnt",
+            "dependency One\npath \"deps/lib\"\nend dependency\nimport One.Value\n",
+        ),
+        (
+            "package.bnt",
+            "dependency Two\npath \"deps/lib\"\nend dependency\n",
+        ),
+        (
+            "deps/lib/package.bnt",
+            "language \"0.0.3\"\npackage Library\nend package\n",
+        ),
+        ("deps/lib/Value.bnt", ""),
+    ]);
+    let output = load(&fs, "main.bnt");
+    assert_eq!(codes(&output), [DiagCode::E0911]);
+    assert!(output.modules.find(&module_path("One.Value")).is_some());
     assert_aligned(&output);
 }

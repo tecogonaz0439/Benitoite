@@ -178,8 +178,9 @@ pub(super) fn parse_impl_decl(p: &mut Parser, depth: u32) -> PResult<Item> {
 }
 fn push_impl_fn(p: &mut Parser, depth: u32, out: &mut Vec<ImplFn>) -> PResult<()> {
     let doc = p.docs.take_for(p.peek().span, &mut p.diagnostics);
-    if let Some(span) = items::parse_public(p) {
-        items::reject_public(p, span);
+    let (public, package) = items::parse_public(p);
+    if let Some(span) = public {
+        items::reject_public(p, span.to(package.unwrap_or(span)));
     }
     let decl = decls::parse_function(p, depth, items::BodyRule::Required, &[])?;
     out.push(ImplFn {

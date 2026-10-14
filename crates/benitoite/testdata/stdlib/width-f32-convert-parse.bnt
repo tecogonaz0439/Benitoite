@@ -1,0 +1,49 @@
+// 作成時の関門: Float と同じ字句の受理・拒否と、数字列から直接 f32 へ丸める規則を守る。
+// 半分のすぐ上下の十進数は、f64 を経由すると同じ中間値になり、誤った丸めを捕まえる。
+// 期待値は固定した値とし、実装の解析器から作らない。公開の CLI 以外の入口は加えない。
+import Benitoite.Unofficial.IO.Console
+
+function floatText(value: Option[Float32]) -> String
+  return match value with
+    case Option.Some(n) -> Float32.toString(n)
+    case Option.None -> "None"
+  end match
+end function
+
+function integerText(value: Option[Integer]) -> String
+  return match value with
+    case Option.Some(n) -> Integer.toString(n)
+    case Option.None -> "None"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(floatText(Float32.parse("0")))
+  Console.writeLine(floatText(Float32.parse("-0")))
+  Console.writeLine(floatText(Float32.parse("0.1")))
+  Console.writeLine(floatText(Float32.parse("1E+2")))
+  Console.writeLine(floatText(Float32.parse("1e-2")))
+  Console.writeLine(floatText(Float32.parse("1.0000000596046447753906250000000001")))
+  Console.writeLine(floatText(Float32.parse("1.0000001788139343261718749999999999")))
+  Console.writeLine(floatText(Float32.parse("3.4028234663852886e38")))
+  Console.writeLine(floatText(Float32.parse("3.4028236e38")))
+  Console.writeLine(floatText(Float32.parse("-3.4028236e38")))
+  Console.writeLine(floatText(Float32.parse("1.401298464324817e-45")))
+  Console.writeLine(floatText(Float32.parse("-1e-50")))
+  Console.writeLine(floatText(Float32.parse("")))
+  Console.writeLine(floatText(Float32.parse("+1")))
+  Console.writeLine(floatText(Float32.parse(" 1")))
+  Console.writeLine(floatText(Float32.parse("1 ")))
+  Console.writeLine(floatText(Float32.parse("01")))
+  Console.writeLine(floatText(Float32.parse("1_0")))
+  Console.writeLine(floatText(Float32.parse("0x10")))
+  Console.writeLine(floatText(Float32.parse(".5")))
+  Console.writeLine(floatText(Float32.parse("1.")))
+  Console.writeLine(floatText(Float32.parse("1e")))
+  Console.writeLine(floatText(Float32.parse("1e+")))
+  Console.writeLine(floatText(Float32.parse("1.0f32")))
+  Console.writeLine(floatText(Float32.parse("NaN")))
+  Console.writeLine(floatText(Float32.parse("Infinity")))
+  Console.writeLine(floatText(Float32.parse("-Infinity")))
+  Console.writeLine(floatText(Float32.parse("１２")))
+end function

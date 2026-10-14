@@ -760,3 +760,37 @@ fn result_lines_escape_file_names_only_in_text_output() {
     let test: serde_json::Value = serde_json::from_str(out.stdout.lines().next().unwrap()).unwrap();
     assert_eq!(test["file"], "<dir>/test\u{1b}[2J.bnt");
 }
+
+#[test]
+fn directory_walk_skips_settings_and_nested_package_roots() {
+    let dir = Directory::new("package-roots");
+    dir.write("package.bnt", "language \"0.0.3\"\n");
+    dir.write(
+        "tests.bnt",
+        "@test\nfunction rootTest() -> Unit\n()\nend function\n",
+    );
+    dir.write(
+        "ordinary/checks.bnt",
+        "@test\nfunction nestedTest() -> Unit\n()\nend function\n",
+    );
+    dir.write(
+        "deps/textkit/package.bnt",
+        "language \"0.0.3\"\npackage Textkit\nend package\n",
+    );
+    dir.write(
+        "deps/textkit/tests.bnt",
+        "@test\nfunction packageTest() -> Unit\n()\nend function\n",
+    );
+    dir.write("deps/textkit/deeper/Broken.bnt", "invalid source\n");
+    let out = run(&dir, &[&dir.0.display().to_string()]);
+    assert_eq!(out.exit, 0, "{}", out.stderr);
+    assert!(out.stderr.is_empty());
+    assert!(out.stdout.contains("2 passed; 0 failed"), "{}", out.stdout);
+    assert!(out.stdout.contains("rootTest"));
+    assert!(out.stdout.contains("nestedTest"));
+    assert!(!out.stdout.contains("packageTest"));
+    let out = run(&dir, &[&dir.path("deps/textkit")]);
+    assert_eq!(out.exit, 2);
+    assert!(out.stdout.contains("packageTest"));
+    assert!(out.stderr.contains("Broken.bnt"));
+}

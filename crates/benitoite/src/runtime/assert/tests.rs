@@ -153,6 +153,64 @@ record Person
 end record
 "#;
 
+// 作成時の関門: 新しい即値の結果表示を独立した文字列で確かめる。
+// 値の保存と変換の検査では、f64 に拡大して整形する誤りや型付き表示の抜けを検出できない。
+// 公開の render_value を使い、言語のリテラルの入口には依存しない。
+#[test]
+fn width_immediates_render_with_and_without_static_types() {
+    let prepared = prepare("");
+    let mut heap = crate::runtime::heap::Heap::new(HeapConfig::default());
+    heap.epoch(|ctx| {
+        for (value, id, expected) in [
+            (Value::Int8(i8::MIN), BuiltinTypeId::INTEGER8, "-128"),
+            (Value::Int16(i16::MAX), BuiltinTypeId::INTEGER16, "32767"),
+            (
+                Value::Int32(i32::MIN),
+                BuiltinTypeId::INTEGER32,
+                "-2147483648",
+            ),
+            (
+                Value::UInt16(u16::MAX),
+                BuiltinTypeId::UNSIGNED_INTEGER16,
+                "65535",
+            ),
+            (
+                Value::UInt32(u32::MAX),
+                BuiltinTypeId::UNSIGNED_INTEGER32,
+                "4294967295",
+            ),
+            (
+                Value::UInt64(u64::MAX),
+                BuiltinTypeId::UNSIGNED_INTEGER64,
+                "18446744073709551615",
+            ),
+            (Value::Float32(0.1), BuiltinTypeId::FLOAT32, "0.1"),
+            (Value::Float32(-0.0), BuiltinTypeId::FLOAT32, "-0.0"),
+            (Value::Float32(f32::NAN), BuiltinTypeId::FLOAT32, "NaN"),
+            (
+                Value::Float32(f32::INFINITY),
+                BuiltinTypeId::FLOAT32,
+                "Infinity",
+            ),
+            (
+                Value::Float32(f32::NEG_INFINITY),
+                BuiltinTypeId::FLOAT32,
+                "-Infinity",
+            ),
+        ] {
+            let ty = Ty::Con(TyCon::Builtin(id), vec![]);
+            assert_eq!(
+                render_value(ctx, &prepared.table, value, Some(&ty)).unwrap(),
+                expected
+            );
+            assert_eq!(
+                render_value(ctx, &prepared.table, value, None).unwrap(),
+                expected
+            );
+        }
+    });
+}
+
 // 関門: 値の書き出しは静的な型と実行時の値を対応させる処理であり、型の表（呼び出しの式の span）・構成子の名前と
 // 型引数の置き換え・コレクションの読み出しのどれかを取り違えると報告が変わる。06-04 の「結果の報告」の表記の
 // 契約を、利用者が書く確認の式から観察する。VM の分岐の単体では書き出しの形を捕まえない。

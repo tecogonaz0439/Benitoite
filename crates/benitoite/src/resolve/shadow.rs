@@ -1,4 +1,5 @@
 //! 局所の束縛、書き分けとパターンの選択肢（設計書 02-04「名前の引き方」）。
+use super::Level;
 
 use std::collections::BTreeMap;
 
@@ -23,7 +24,7 @@ impl Resolver<'_> {
             node,
             name,
             BindingKind::Local(kind),
-            false,
+            Level::Private,
             None,
         );
         if let Some(scope) = ctx.scopes.last_mut() {
@@ -294,7 +295,7 @@ impl Resolver<'_> {
                 *node,
                 name,
                 BindingKind::Local(LocalKind::PatternVar),
-                false,
+                Level::Private,
                 None,
             );
             bindings.insert(name.text.clone(), id);

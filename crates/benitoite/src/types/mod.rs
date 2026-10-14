@@ -20,6 +20,8 @@ pub enum TyCon {
     Builtin(BuiltinTypeId),
     /// ソースで宣言した代数的データ型とレコード。宣言の束縛の番号で指す
     Adt(BindingId),
+    /// コンポーネントの resource に対応する、中身を見せない外部の型
+    External(BindingId),
 }
 
 /// 値の型を書く位置の型構成子の頭（型構成子そのもの、または型構成子を表す型パラメータ）。
@@ -188,7 +190,7 @@ impl Scheme {
     }
 }
 
-/// 型が関数の型または中身を見せない型（鍵の要約では `Float`）を含むかの要約（01-06「等値の型」）。
+/// 型が関数の型または中身を見せない型（鍵の要約では `Float`・`Float32`）を含むかの要約（01-06「等値の型」）。
 #[derive(Clone, PartialEq, Eq, Debug, Default)]
 pub struct TypeSummary {
     /// 型引数によらず含む
@@ -231,7 +233,7 @@ pub struct AdtDef {
     pub record: Option<Vec<FieldInfo>>,
     /// 等値の型の要約
     pub eq_summary: TypeSummary,
-    /// 鍵の型の要約（`Float` だけを無条件に含むものとした要約。02-05「宣言の検査」）
+    /// 鍵の型の要約（`Float`・`Float32` を無条件に含むものとした要約。02-05「宣言の検査」）
     pub key_summary: TypeSummary,
 }
 
@@ -307,7 +309,7 @@ pub enum DictExpr {
 }
 
 /// 定数の値（02-05「定数の検査と評価」）。定数の評価器が求め、脱糖とコード生成が読む。
-/// `Float` を含むので `PartialEq` を導出しない。
+/// `Float`・`Float32` を含むので `PartialEq` を導出しない。
 #[derive(Clone, Debug)]
 pub enum ConstValue {
     Integer(i64),
@@ -329,6 +331,13 @@ pub enum ConstValue {
     Map(Vec<(ConstValue, ConstValue)>),
     /// 鍵の順に並べた要素。同じ要素は現れない
     Set(Vec<ConstValue>),
+    Integer8(i8),
+    Integer16(i16),
+    Integer32(i32),
+    UnsignedInteger16(u16),
+    UnsignedInteger32(u32),
+    UnsignedInteger64(u64),
+    Float32(f32),
 }
 
 /// 演算子の型の集まり（01-06「演算子の型付け」）と、文字列補間の集まり。
@@ -342,15 +351,53 @@ impl TySet {
         BuiltinTypeId::FLOAT,
         BuiltinTypeId::STRING,
         BuiltinTypeId::DECIMAL,
+        BuiltinTypeId::INTEGER8,
+        BuiltinTypeId::INTEGER16,
+        BuiltinTypeId::INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        BuiltinTypeId::FLOAT32,
     ]);
-    /// `-`・`*`・単項の `-`
+    /// 二項の `-`・`*`
     pub const ARITH: TySet = TySet(&[
         BuiltinTypeId::INTEGER,
         BuiltinTypeId::FLOAT,
         BuiltinTypeId::DECIMAL,
+        BuiltinTypeId::INTEGER8,
+        BuiltinTypeId::INTEGER16,
+        BuiltinTypeId::INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        BuiltinTypeId::FLOAT32,
+    ]);
+    /// 単項の `-`。符号なし整数と Byte は含まない。
+    pub const NEG: TySet = TySet(&[
+        BuiltinTypeId::INTEGER,
+        BuiltinTypeId::FLOAT,
+        BuiltinTypeId::DECIMAL,
+        BuiltinTypeId::INTEGER8,
+        BuiltinTypeId::INTEGER16,
+        BuiltinTypeId::INTEGER32,
+        BuiltinTypeId::FLOAT32,
+    ]);
+    /// `div`・`mod`。Byte は含まない。
+    pub const INT_DIV: TySet = TySet(&[
+        BuiltinTypeId::INTEGER,
+        BuiltinTypeId::INTEGER8,
+        BuiltinTypeId::INTEGER16,
+        BuiltinTypeId::INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
     ]);
     /// `/`
-    pub const DIV: TySet = TySet(&[BuiltinTypeId::FLOAT, BuiltinTypeId::DECIMAL]);
+    pub const DIV: TySet = TySet(&[
+        BuiltinTypeId::FLOAT,
+        BuiltinTypeId::DECIMAL,
+        BuiltinTypeId::FLOAT32,
+    ]);
     /// `<`・`<=`・`>`・`>=` と、標準ライブラリの制約 `ordered`
     pub const ORD: TySet = TySet(&[
         BuiltinTypeId::INTEGER,
@@ -359,6 +406,13 @@ impl TySet {
         BuiltinTypeId::CHARACTER,
         BuiltinTypeId::BYTE,
         BuiltinTypeId::DECIMAL,
+        BuiltinTypeId::INTEGER8,
+        BuiltinTypeId::INTEGER16,
+        BuiltinTypeId::INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        BuiltinTypeId::FLOAT32,
     ]);
     /// 文字列補間の `${e}` の e（01-06「演算子の型付け」）
     pub const INTERP: TySet = TySet(&[
@@ -369,6 +423,13 @@ impl TySet {
         BuiltinTypeId::BOOLEAN,
         BuiltinTypeId::BYTE,
         BuiltinTypeId::DECIMAL,
+        BuiltinTypeId::INTEGER8,
+        BuiltinTypeId::INTEGER16,
+        BuiltinTypeId::INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        BuiltinTypeId::FLOAT32,
     ]);
 
     pub fn contains(self, t: BuiltinTypeId) -> bool {
@@ -433,6 +494,8 @@ impl EffectSet {
 /// 型を表示するための名前の表。
 #[derive(Clone, Copy, Debug)]
 pub struct TyNames<'a> {
+    /// 外部の型の名前を引く束縛の表
+    pub bindings: &'a BindingMap<crate::resolve::Binding>,
     pub adts: &'a AdtTable,
     /// エフェクトの名前の表示に使う（利用者のエフェクトの名前）
     pub effects: &'a BindingMap<EffectDef>,
@@ -464,17 +527,22 @@ fn show_ty(ty: &Ty, names: &TyNames<'_>, out: &mut String) {
         Ty::Con(con, args) => {
             match con {
                 TyCon::Builtin(id) => {
-                    if let Some(d) = id.def() {
+                    if let Some(d) = id.def()
+                        && let Some(name) = id.display_name()
+                    {
                         if let Some(module) = d.module.last()
                             && *module != d.name
                         {
                             out.push_str(module);
                             out.push('.');
                         }
-                        out.push_str(d.name);
+                        out.push_str(name);
                     } else {
                         out.push('_');
                     }
+                }
+                TyCon::External(id) => {
+                    out.push_str(names.bindings.get(*id).map_or("_", |b| b.name.as_str()))
                 }
                 TyCon::Adt(id) => {
                     out.push_str(names.adts.get(*id).map_or("_", |d| d.name.as_str()))
@@ -582,6 +650,40 @@ mod tests {
     }
 
     #[test]
+    fn width_type_display_preserves_legacy_names() {
+        // 同じ型でも名前の表の正の名前で診断を改名してしまう退行を、公開の表示で捕まえる。
+        let bindings = BindingMap::default();
+        let effects = BindingMap::default();
+        let adts = AdtTable::default();
+        let names = TyNames {
+            bindings: &bindings,
+            adts: &adts,
+            effects: &effects,
+            type_params: &[],
+            effect_params: &[],
+        };
+        for (ty, expected) in [
+            (BuiltinTypeId::INTEGER64, "Integer"),
+            (BuiltinTypeId::FLOAT64, "Float"),
+            (BuiltinTypeId::UNSIGNED_INTEGER8, "Byte"),
+            (BuiltinTypeId::UNSIGNED_INTEGER, "UnsignedInteger64"),
+            (BuiltinTypeId::INTEGER8, "Integer8"),
+            (BuiltinTypeId::INTEGER16, "Integer16"),
+            (BuiltinTypeId::INTEGER32, "Integer32"),
+            (BuiltinTypeId::UNSIGNED_INTEGER16, "UnsignedInteger16"),
+            (BuiltinTypeId::UNSIGNED_INTEGER32, "UnsignedInteger32"),
+            (BuiltinTypeId::FLOAT32, "Float32"),
+        ] {
+            let ty = Ty::Con(TyCon::Builtin(ty), vec![]);
+            assert_eq!(ty.show(&names), expected);
+            assert_eq!(
+                Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![ty]).show(&names),
+                format!("List[{expected}]")
+            );
+        }
+    }
+
+    #[test]
     fn function_type_display_groups_all_io_effects_and_keeps_other_effects() {
         let mut effects = io_all_for_display();
         effects.insert_name(EffectName::Builtin(BuiltinEffectId(12)));
@@ -621,6 +723,7 @@ mod tests {
             effects,
         }))
         .show(&TyNames {
+            bindings: &BindingMap::default(),
             adts: &AdtTable::default(),
             effects: &BindingMap::default(),
             type_params: &[],

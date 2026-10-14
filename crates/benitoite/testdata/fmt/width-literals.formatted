@@ -1,0 +1,7 @@
+function main() -> Unit
+  bind signed <- [42s8, 0o177s16, 0b10_10s32, -9223372036854775808s64]
+  bind unsigned <- [0xffu8, 42u16, 1_000u32, 18446744073709551615u64]
+  bind floating <- [1.5f32, 1e-3f32, -0.0f64, 1_000.0_5E+1_0f64]
+  bind hex <- 0xfff32
+  bind decimal <- 1.25m
+end function

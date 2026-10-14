@@ -1,0 +1,25 @@
+error[E1002]: malformed component path `wasm/../x.wasm`
+  --> testdata/external/diagnostics/main.bnt:3:19
+   |
+ 3 | @external("wasm", "wasm/../x.wasm", "add")
+   |                   ^^^^^^^^^^^^^^^^
+   |
+   = help: write a relative path separated by `/` that ends with `.wasm`, without `.` or `..`
+
+error[E1007]: the function `add` of the component takes 2 parameters, but `wrongCount` declares 1 parameter
+  --> testdata/external/diagnostics/main.bnt:6:10
+   |
+ 6 | function wrongCount(a: Integer) -> Integer
+   |          ^^^^^^^^^^
+   |
+   = note: the component function corresponds to `function wrongCount(a: Integer, b: Integer) -> Integer`
+
+error[E1004]: `wasm/invalid.wasm` is not a WebAssembly component
+  --> testdata/external/diagnostics/main.bnt:7:19
+   |
+ 7 | @external("wasm", "wasm/invalid.wasm", "f")
+   |                   ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: the component is invalid: failed to parse WebAssembly module: lowered parameter types `[I64]` do not match parameter types `[I32]` of core function 0 (at offset 0x54)
+
+error: could not check testdata/external/diagnostics/main.bnt due to 3 previous errors

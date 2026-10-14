@@ -1,0 +1,11 @@
+runtime error[R0601]: the external function `externalFn` trapped: wasm trap: wasm `unreachable` instruction executed
+  --> testdata/external/trap/main.bnt:4:1
+   |
+ 4 | function externalFn() -> Unit
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: call trace (innermost first):
+             externalFn at testdata/external/trap/main.bnt:6:3
+             main
+   = note: component `testdata/external/trap/x.wasm`, function `f`
+   = note: functions left by tail calls are not shown

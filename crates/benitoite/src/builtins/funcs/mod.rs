@@ -78,11 +78,13 @@ pub mod file;
 #[cfg(test)]
 pub(crate) mod fixed_io;
 pub mod float;
+pub(crate) mod float32;
 pub mod integer;
 pub mod io_error;
 pub mod lazy;
 pub mod list;
 pub mod map;
+pub(crate) mod narrow_integer;
 pub mod operators;
 pub mod process;
 pub mod reference;
@@ -91,6 +93,9 @@ pub mod string;
 pub mod task;
 pub mod task_group;
 pub mod traits;
+pub(crate) mod unsigned_integer64;
+pub(crate) mod width;
+pub(crate) mod width_bits;
 
 /// 表の部分。番号は部分を順につないだ並びの中の位置で決まるので、部分は末尾にだけ加える。
 pub const PARTS: &[&[BuiltinDecl]] = &[
@@ -140,6 +145,14 @@ pub const PARTS: &[&[BuiltinDecl]] = &[
     http_server::DECLS,
     http_util::DECLS,
     http_client::DECLS,
+    operators::signed::DECLS,
+    operators::unsigned::DECLS,
+    operators::float32::DECLS,
+    width::DECLS,
+    narrow_integer::DECLS,
+    unsigned_integer64::DECLS,
+    float32::DECLS,
+    width_bits::DECLS,
 ];
 
 #[cfg(test)]

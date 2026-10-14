@@ -1,0 +1,11 @@
+// spec: 01-03 依存のパッケージの取り込み
+dependency Textkit
+  path "deps/textkit"
+end dependency
+dependency OtherPkg
+  path "deps/other"
+end dependency
+import Textkit.Slug
+function main() -> Unit
+  ()
+end function

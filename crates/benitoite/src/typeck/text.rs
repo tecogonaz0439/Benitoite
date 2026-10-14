@@ -11,6 +11,23 @@ pub(super) const COVERAGE_PATTERN: &str = "this pattern matches every value";
 pub(super) const TYPE_DEPTH: &str = " levels in a type";
 pub(super) const TYPE_NODES: &str = " nodes in a type";
 
+pub(super) fn numeric_suffix(ty: crate::types::builtin::BuiltinTypeId) -> Option<&'static str> {
+    use crate::types::builtin::BuiltinTypeId as B;
+    match ty {
+        B::INTEGER => Some("s64"),
+        B::FLOAT => Some("f64"),
+        B::BYTE => Some("u8"),
+        B::INTEGER8 => Some("s8"),
+        B::INTEGER16 => Some("s16"),
+        B::INTEGER32 => Some("s32"),
+        B::UNSIGNED_INTEGER16 => Some("u16"),
+        B::UNSIGNED_INTEGER32 => Some("u32"),
+        B::UNSIGNED_INTEGER64 => Some("u64"),
+        B::FLOAT32 => Some("f32"),
+        _ => None,
+    }
+}
+
 pub(super) fn const_string_limit(limit: u64) -> String {
     format!("the string would exceed the limit of {limit} bytes")
 }
@@ -50,3 +67,5 @@ pub(super) fn operator_spelling(op: super::infer::OpName) -> &'static str {
 pub(super) const FUNCTION: &str = "function";
 /// 戻り値の修正案に示すラムダの呼び方。
 pub(super) const LAMBDA: &str = "lambda";
+
+pub(super) const USES_STATE: &str = " uses State";

@@ -59,6 +59,86 @@ fn elements<'e>(ctx: &ValueCtx<'e>, mode: u8, s: Value<'e>) -> Vec<i64> {
         .collect()
 }
 
+// 作成時の関門: 新しい整数の符号・幅と u64 の上半分の順序、重複の置換を守る。
+// 既存のモデルは旧 Integer だけなので幅の読み違いを検出できない。
+// 公開の Map/Set を未整列の値から作り、独立した期待列と回収後にも比較する。
+#[test]
+fn width_integer_keys_sort_replace_and_survive_collection() {
+    let mut heap = Heap::new(HeapConfig::default());
+    let roots = heap.epoch(|ctx| {
+        let mut roots = vec![];
+        for [low, middle, high] in [
+            [Value::Int8(i8::MIN), Value::Int8(0), Value::Int8(i8::MAX)],
+            [
+                Value::Int16(i16::MIN),
+                Value::Int16(0),
+                Value::Int16(i16::MAX),
+            ],
+            [
+                Value::Int32(i32::MIN),
+                Value::Int32(0),
+                Value::Int32(i32::MAX),
+            ],
+            [
+                Value::UInt16(0),
+                Value::UInt16(32_768),
+                Value::UInt16(u16::MAX),
+            ],
+            [
+                Value::UInt32(0),
+                Value::UInt32(2_147_483_648),
+                Value::UInt32(u32::MAX),
+            ],
+            [
+                Value::UInt64(0),
+                Value::UInt64(9_223_372_036_854_775_808),
+                Value::UInt64(u64::MAX),
+            ],
+        ] {
+            let mut map = Value::EmptyMap;
+            let mut set = Value::EmptySet;
+            for (index, key) in [high, low, middle, high].into_iter().enumerate() {
+                map = map_insert(
+                    ctx,
+                    map,
+                    key,
+                    Value::Int(i64::try_from(index).unwrap()),
+                    "test",
+                )
+                .unwrap();
+                set = set_insert(ctx, set, key, "test").unwrap();
+            }
+            let expected_map = map_from_sorted(
+                ctx,
+                &[
+                    (low, Value::Int(1)),
+                    (middle, Value::Int(2)),
+                    (high, Value::Int(3)),
+                ],
+                "test",
+            )
+            .unwrap();
+            let expected_set = set_from_sorted(ctx, &[low, middle, high], "test").unwrap();
+            roots.extend([map, expected_map, set, expected_set].map(|v| ctx.new_slot(v)));
+        }
+        roots
+    });
+    heap.collect(&roots);
+    heap.epoch(|ctx| {
+        for [map, expected_map, set, expected_set] in roots.as_chunks::<4>().0 {
+            assert_eq!(map_len(ctx, ctx.load(map)).unwrap(), 3);
+            assert_eq!(set_len(ctx, ctx.load(set)).unwrap(), 3);
+            for (actual, expected) in [(map, expected_map), (set, expected_set)] {
+                assert!(
+                    crate::runtime::equal::values_equal(ctx, ctx.load(actual), ctx.load(expected))
+                        .unwrap()
+                );
+            }
+        }
+    });
+    assert!(heap.take_fault().is_none());
+}
+
 #[test]
 fn randomized_operations_match_models_and_preserve_inputs_across_collection() {
     for mode in 0..3 {
@@ -323,6 +403,8 @@ fn key_order_is_lexicographic_for_all_key_kinds_and_rejects_invalid_values() {
         }
         for bad in [
             Value::Float(1.0),
+            Value::Float32(1.0),
+            ctor(1, &[Value::Float32(0.0)]),
             ctx.alloc_cell(Value::Int(0)),
             ctor(1, &[Value::Float(0.0)]),
             xs(&[Value::Float(0.0)]),

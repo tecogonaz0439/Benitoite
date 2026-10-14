@@ -208,6 +208,10 @@ pub(super) fn run_epoch(
                 Box::new(crate::runtime::run::NoInterrupt),
             );
             let lease = InterruptLease { rt, source };
+            if state.externals.is_none() && !program.externals.functions.is_empty() {
+                // エンジンは EXT まで作らず、借り出した読み口の共有の印だけを保存する。
+                state.external_interrupt = lease.source.shared_flag();
+            }
             run_until_exit(program, config, state, ctx, lease.rt, lease.source.flag())
         };
         if state.scheduling.switch.is_some() {
@@ -499,14 +503,24 @@ fn execute<'p, 'e>(
                     .constants
                     .get(index(k.0)?)
                     .ok_or_else(|| missing("constant cache index missing"))?;
+                let desc = program
+                    .constant(k)
+                    .ok_or_else(|| missing("constant description missing"))?;
+                // Integer は根の表へ保存しない即値なので、値の構築と保存をここで終える。
+                // 定数表・根の表・レジスタの範囲の検査は省かない（設計書 02-08「実行の手順」）。
+                if let ConstDesc::Int(n) = desc {
+                    write(ctx, window, instr.a(), Value::Int(*n))?;
+                    return Ok(Control::Next);
+                }
                 if let Some(slot) = cached {
                     write(ctx, window, instr.a(), ctx.load(slot))?;
                     // 作り終えた定数は確保しない（設計書 02-07「定数表」）。
                     return Ok(Control::Next);
                 }
-                let desc = program
-                    .constant(k)
-                    .ok_or_else(|| missing("constant description missing"))?;
+                if let ConstDesc::Float(n) = desc {
+                    write(ctx, window, instr.a(), Value::Float(*n))?;
+                    return Ok(Control::Next);
+                }
                 if let Some(v) = immediate_constant(program, desc)? {
                     write(ctx, window, instr.a(), v)?;
                     // 即値は確保しないので、回収の要求の知らせも調べない。
@@ -561,6 +575,7 @@ fn execute<'p, 'e>(
                 }
                 return return_plain(program, state, ctx, cursor, instr);
             }
+            Opcode::Ext => return external_call(program, state, ctx, cursor, instr),
             Opcode::Prim | Opcode::Io => {
                 let reference = program
                     .builtin(BuiltinRefIdx(u32::from(instr.b())))
@@ -975,6 +990,53 @@ fn finish_builtin(
             id,
         ),
         BuiltinEnd::Value => Ok(after_alloc(state, ctx)),
+    }
+}
+
+// Wasmtime の処理を振り分けのループへ展開しない（設計書 07-02「性能の関門」）。
+#[inline(never)]
+fn external_call(
+    program: &CompiledProgram,
+    state: &mut RunState,
+    ctx: &mut NoGcCtx<'_>,
+    cursor: &mut Cursor<'_>,
+    instr: Instr,
+) -> Result<Control, Stop> {
+    if cursor.interrupt.is_some_and(|f| f.load(Ordering::Relaxed)) {
+        return interrupt_call(state, Some(&cursor.locals));
+    }
+    let operands = program
+        .external_call_operands(instr)
+        .ok_or_else(|| missing("external reference missing"))?;
+    let start = usize::from(operands.args_start);
+    let end = start
+        .checked_add(usize::from(operands.arg_count))
+        .ok_or_else(|| missing("external operand overflow"))?;
+    let args = {
+        let window = active_window(state.segment_mut()?, cursor.locals.base, cursor.active.size)?;
+        read_range(ctx, window, &(start..end))?
+    };
+    if state.externals.is_none() {
+        state.externals = Some(Box::new(crate::external::ExternalRuntime::configured(
+            state.external_interrupt.take(),
+            state.external_options.clone(),
+        )?));
+    }
+    let runtime = state
+        .externals
+        .as_mut()
+        .ok_or_else(|| missing("external runtime missing"))?;
+    match crate::external::call(runtime, &program.externals, operands.external, ctx, &args) {
+        Ok(value) => {
+            let window =
+                active_window(state.segment_mut()?, cursor.locals.base, cursor.active.size)?;
+            write(ctx, window, operands.result, value)?;
+            finish_builtin(state, ctx, &mut cursor.locals, BuiltinEnd::Value)
+        }
+        Err(crate::external::ExternalFailure::Interrupted) => {
+            interrupt_call(state, Some(&cursor.locals))
+        }
+        Err(crate::external::ExternalFailure::Stop(stop)) => Err(stop),
     }
 }
 
@@ -1574,9 +1636,32 @@ fn immediate_constant<'e>(
     program: &CompiledProgram,
     desc: &ConstDesc,
 ) -> Result<Option<Value<'e>>, Stop> {
+    // Integer の読み込みは繰り返し通るので、ほかの幅の判定を振り分けの中へ展開しない。
+    // 値の種類と範囲の検査は残す（設計書 02-08「実行の手順」）。
+    if let ConstDesc::Int(n) = desc {
+        return Ok(Some(Value::Int(*n)));
+    }
+    if let ConstDesc::Float(n) = desc {
+        return Ok(Some(Value::Float(*n)));
+    }
+    other_immediate_constant(program, desc)
+}
+
+#[inline(never)]
+fn other_immediate_constant<'e>(
+    program: &CompiledProgram,
+    desc: &ConstDesc,
+) -> Result<Option<Value<'e>>, Stop> {
     Ok(match desc {
         ConstDesc::Int(n) => Some(Value::Int(*n)),
         ConstDesc::Float(n) => Some(Value::Float(*n)),
+        ConstDesc::Int8(n) => Some(Value::Int8(*n)),
+        ConstDesc::Int16(n) => Some(Value::Int16(*n)),
+        ConstDesc::Int32(n) => Some(Value::Int32(*n)),
+        ConstDesc::UInt16(n) => Some(Value::UInt16(*n)),
+        ConstDesc::UInt32(n) => Some(Value::UInt32(*n)),
+        ConstDesc::UInt64(n) => Some(Value::UInt64(*n)),
+        ConstDesc::Float32(n) => Some(Value::Float32(*n)),
         ConstDesc::Char(c) => Some(Value::Char(*c)),
         ConstDesc::Bool(b) => Some(Value::Bool(*b)),
         ConstDesc::Unit => Some(Value::Unit),
@@ -1649,6 +1734,13 @@ fn constant<'e>(
             ConstDesc::Map(pairs) => pairs.iter().flat_map(|&(k, v)| [k, v]).collect(),
             ConstDesc::Int(_)
             | ConstDesc::Float(_)
+            | ConstDesc::Int8(_)
+            | ConstDesc::Int16(_)
+            | ConstDesc::Int32(_)
+            | ConstDesc::UInt16(_)
+            | ConstDesc::UInt32(_)
+            | ConstDesc::UInt64(_)
+            | ConstDesc::Float32(_)
             | ConstDesc::Str(_)
             | ConstDesc::Char(_)
             | ConstDesc::Bool(_)
@@ -1697,6 +1789,13 @@ fn constant<'e>(
             ConstDesc::Dict(imp) => traits::alloc_dict(program, ctx, *imp, &[])?,
             ConstDesc::Int(_)
             | ConstDesc::Float(_)
+            | ConstDesc::Int8(_)
+            | ConstDesc::Int16(_)
+            | ConstDesc::Int32(_)
+            | ConstDesc::UInt16(_)
+            | ConstDesc::UInt32(_)
+            | ConstDesc::UInt64(_)
+            | ConstDesc::Float32(_)
             | ConstDesc::Char(_)
             | ConstDesc::Bool(_)
             | ConstDesc::Unit
@@ -1799,6 +1898,88 @@ mod tests {
     use crate::runtime::io::services::RunInput;
     use crate::vm::Vm;
     use crate::vm::dispatch::test_support::TestIo;
+
+    crate::builtin! {
+        /// 読み込んだ幅付き定数を、型付きの IO の入口で観察する。
+        name = "Test.observeWidths",
+        io fn observe_widths(ctx, values: Value<'e>) -> crate::builtins::iface::IoReply<'e> {
+            assert_eq!(ctx.field(values, 0).and_then(Value::as_int8), Some(i8::MIN));
+            assert_eq!(ctx.field(values, 1).and_then(Value::as_int16), Some(i16::MIN));
+            assert_eq!(ctx.field(values, 2).and_then(Value::as_int32), Some(i32::MIN));
+            assert_eq!(ctx.field(values, 3).and_then(Value::as_uint16), Some(u16::MAX));
+            assert_eq!(ctx.field(values, 4).and_then(Value::as_uint32), Some(u32::MAX));
+            assert_eq!(ctx.field(values, 5).and_then(Value::as_uint64), Some(u64::MAX));
+            assert_eq!(ctx.field(values, 6).and_then(Value::as_float32).map(f32::to_bits), Some(0x8000_0000));
+            Ok(crate::builtins::iface::IoReply::Done(Value::Unit))
+        }
+    }
+
+    // 作成時の関門: 定数の読み込みからレジスタ・IO の型付きの引数まで、幅とビットを保つ。
+    // コード生成の定数表と引数の変換だけの試験は、VM が別の即値として読む退行を捕まえない。
+    // 外への IO の観察だけを置き換え、本番の命令と読み込みを使う。
+    #[test]
+    fn width_constants_preserve_fields_through_vm_io() {
+        let mut b = ProgramBuilder::new();
+        let main = b.proto("main", 0, 8).unwrap();
+        let reference = b
+            .named_builtin("Benitoite.IO.Console.writeLine", 1, Capability::Io, None)
+            .unwrap();
+        for (i, desc) in [
+            ConstDesc::Int8(i8::MIN),
+            ConstDesc::Int16(i16::MIN),
+            ConstDesc::Int32(i32::MIN),
+            ConstDesc::UInt16(u16::MAX),
+            ConstDesc::UInt32(u32::MAX),
+            ConstDesc::UInt64(u64::MAX),
+            ConstDesc::Float32(-0.0),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            b.loadk(main, u16::try_from(i).unwrap(), desc).unwrap();
+        }
+        let ctor = b.ctor("Widths", "Widths", 0, 7).unwrap();
+        b.code(main)
+            .unwrap()
+            .op(Opcode::Con, 0, u16::try_from(ctor.0).unwrap(), 0);
+        b.code(main)
+            .unwrap()
+            .op(Opcode::Io, 7, u16::try_from(reference.0).unwrap(), 0);
+        b.code(main).unwrap().ret(7);
+        let p = b.finish(main).unwrap();
+        assert_eq!(crate::bytecode::verify::verify(&p), Ok(()));
+        for mode in [ExecMode::Direct, ExecMode::Request] {
+            let mut vm = Vm::new(
+                &p,
+                VmConfig::default(),
+                HeapConfig {
+                    stress: true,
+                    ..HeapConfig::default()
+                },
+            );
+            vm.start_main().unwrap();
+            let mut io = TestIo::new(RunInput {
+                arguments: vec![],
+                working_directory: "/".into(),
+                script_directory: "/".into(),
+            });
+            io.rt
+                .builtin_overrides
+                .insert(p.builtin(reference).unwrap().id, &observe_widths::DECL);
+            loop {
+                match vm.run(io.runtime(mode)) {
+                    VmStep::Requests(ids) => {
+                        for id in ids {
+                            vm.serve_request(&mut io.rt, id);
+                        }
+                    }
+                    VmStep::Finished(MainOutcome::Ok) => break,
+                    other @ (VmStep::Finished(_) | VmStep::Stopped(_)) => panic!("{other:?}"),
+                }
+            }
+            assert!(vm.heap.take_fault().is_none());
+        }
+    }
 
     // Process.exit と同じ終了の応答を返すテスト用の組み込み宣言。
     crate::builtins::iface::builtin! {

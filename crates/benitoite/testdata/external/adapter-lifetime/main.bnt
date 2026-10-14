@@ -1,0 +1,16 @@
+// 関門: 公開の補助経路で後処理後も値を保ち、呼び出しごとに純粋な状態を作り直す。
+// 内部の接続の試験では、利用者の宣言が旧の具体化へ入る誤りを捕まえられない。
+// spec: 01-02 外部の関数の宣言
+import Benitoite.Unofficial.IO.Console
+@external("wasm", "post-return.wasm", "run-adapter")
+function fresh(ignored: Boolean) -> String
+@external("wasm", "utf16.wasm", "run-adapter")
+function utf16(ignored: Boolean, text: String) -> String
+function main() -> Unit uses Console.Write
+  bind first <- fresh(false)
+  bind second <- fresh(false)
+  bind third <- fresh(false)
+  Console.writeLine("${first} ${second} ${third}")
+  Console.writeLine(utf16(false, "A日😀"))
+  Console.writeLine("empty=${utf16(false, "")}")
+end function

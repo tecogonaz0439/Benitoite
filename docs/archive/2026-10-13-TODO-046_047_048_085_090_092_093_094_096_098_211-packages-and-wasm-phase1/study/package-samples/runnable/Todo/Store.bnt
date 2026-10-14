@@ -1,0 +1,55 @@
+//! 1 行に 1 件の作業を書いたファイル（"[ ] 牛乳を買う"、"[x] 本を返す"）を読み書きする。
+//! パッケージ Todo の例。公開の関数の型にエフェクト（File.Read、File.Write）が現れるので、
+//! 利用者は、このパッケージがファイルを読み書きすることを型から知ることができる。
+
+import Benitoite.Unofficial.IO.File
+
+/// 作業の一件。
+public record Item
+  done: Boolean
+  title: String
+end record
+
+/// ファイルを読み、作業の一覧を返す。形の合わない行は読み飛ばす。
+public function load(path: String) -> Result[List[Item], IOError] uses File.Read
+  bind text <- try File.readText(path)
+  bind items <- List.fold(String.lines(text), [], lambda(acc: List[Item], line: String) -> List[Item]
+    return match parseLine(line) with
+      case Option.Some(item) -> List.append(acc, item)
+      case Option.None -> acc
+    end match
+  end lambda)
+  return Result.Ok(items)
+end function
+
+/// 作業の一覧をファイルに書く。
+public function save(path: String, items: List[Item]) -> Result[Unit, IOError] uses File.Write
+  bind text <- String.join(List.map(items, formatLine), "\n") + "\n"
+  return File.writeText(path, text)
+end function
+
+/// title の作業を済みにした一覧を返す。
+public function complete(items: List[Item], title: String) -> List[Item]
+  return List.map(items, lambda(item)
+    if Item.title(item) = title then
+      return Item(..item, done: true)
+    end if
+    return item
+  end lambda)
+end function
+
+function parseLine(line: String) -> Option[Item]
+  bind rest <- Option.unwrapOr(String.characterSlice(line, 4, String.characterCount(line)), "")
+  if String.startsWith(line, "[x] ") then
+    return Option.Some(Item(done: true, title: rest))
+  end if
+  if String.startsWith(line, "[ ] ") then
+    return Option.Some(Item(done: false, title: rest))
+  end if
+  return Option.None
+end function
+
+function formatLine(item: Item) -> String
+  bind mark <- if Item.done(item) then "[x]" else "[ ]" end if
+  return "${mark} ${Item.title(item)}"
+end function

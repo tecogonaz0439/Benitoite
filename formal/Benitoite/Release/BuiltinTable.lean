@@ -11,7 +11,7 @@ structure BuiltinDataDecl where
   ntys : Nat
   ctors : List (List Ty)
 
-/-- always は等値でない型（鍵の要約では Float）を無条件に含むこと。
+/-- always は等値でない型（鍵の要約では Float・Float32）を無条件に含むこと。
 無条件に含む場合は依存を吸収し、それ以外は昇順で重複のない集合を持つ。 -/
 structure BoundSummary where
   always : Bool := false
@@ -40,10 +40,10 @@ def BoundSummary.merge (a b : BoundSummary) : BoundSummary :=
   else ⟨false, b.dependsOn.foldl (fun ds i => insertDep i ds) a.dependsOn⟩
 
 mutual
-  /-- 宣言の引数の型が含む条件。key は Float の要約を選ぶ。
+  /-- 宣言の引数の型が含む条件。key は Float・Float32 の鍵の要約を選ぶ。
   関数・中身を見せない型・型パラメータの適用の中は辿らない（typeck/decls.rs）。 -/
   def summarizeTy (S : SummaryTable) (key : Bool) : Ty → BoundSummary
-    | .base .float => ⟨key, []⟩
+    | .base .float | .base .float32 => ⟨key, []⟩
     | .base _ | .bytes => ⟨false, []⟩
     | .tvar i => ⟨false, [i]⟩
     | .list t | .set t => summarizeTy S key t
@@ -96,7 +96,7 @@ def summariesConverged (ds : List BuiltinDataDecl) (S : SummaryTable) : Bool :=
 mutual
   /-- 等値・鍵の判定。データ型の鍵の判定は等値の条件も検査する（ir/check.rs）。 -/
   def satisfiesB (S : SummaryTable) (C : List TParam) (key : Bool) : Ty → Bool
-    | .base .float => !key
+    | .base .float | .base .float32 => !key
     | .base _ | .bytes => true
     | .tvar i => match C[i]? with
         | none => false
@@ -134,7 +134,35 @@ structure BuiltinConstraint where
 /-- 順序の比較の閉じた型の集まり TySet::ORD。型パラメータは通さない。 -/
 def orderedB : Ty → Bool
   | .base .integer | .base .float | .base .string | .base .character
-    | .base .byte | .base .decimal => true
+    | .base .byte | .base .decimal | .base .integer8 | .base .integer16
+    | .base .integer32 | .base .unsignedInteger16 | .base .unsignedInteger32
+    | .base .unsignedInteger64 | .base .float32 => true
+  | _ => false
+
+/-- 単項の負号が使える符号付き整数。Byte と符号なし整数は含めない。
+（設計書 01-12「型の情報を付けた表層の構文と型付け」） -/
+def signedIntegerB : Ty → Bool
+  | .base .integer | .base .integer8 | .base .integer16 | .base .integer32 => true
+  | _ => false
+
+/-- div・mod と二項算術が使える整数。Byte は従来どおり算術を持たない。 -/
+def integerArithmeticB : Ty → Bool
+  | .base .unsignedInteger16 | .base .unsignedInteger32 | .base .unsignedInteger64 => true
+  | t => signedIntegerB t
+
+/-- 二項の -・* が使える型。符号なし整数を単項の負号へ混ぜない。 -/
+def arithmeticB : Ty → Bool
+  | .base .float | .base .float32 | .base .decimal => true
+  | t => integerArithmeticB t
+
+/-- 単項の負号が使える型。符号なし整数は零の場合にも拒否する。 -/
+def negationB : Ty → Bool
+  | .base .float | .base .float32 | .base .decimal => true
+  | t => signedIntegerB t
+
+/-- / が使える型。整数の除算は div へ分ける。 -/
+def divisionB : Ty → Bool
+  | .base .float | .base .float32 | .base .decimal => true
   | _ => false
 
 /-- 個数と各位置の組み込みの制約を検査する。C は tvar の番号の順（内側から）。 -/
@@ -210,6 +238,22 @@ example : [Ty.opaque "IOError", .reference (.base .integer), .lazy (.base .integ
     satB [] [] .bytes keyC = true ∧ satB [] [] (.set (.base .integer)) keyC = true := by decide
 example : [Ty.base .integer, .base .float, .base .string, .base .character,
     .base .byte, .base .decimal].all orderedB = true := by decide
+-- 新しい整数の鍵と順序の判定を、組み込みの関数の制約を検査する入口で確かめる。
+example : [Ty.base .integer8, .base .integer16, .base .integer32,
+    .base .unsignedInteger16, .base .unsignedInteger32, .base .unsignedInteger64].all
+    (fun t => admitsB [] [⟨true, true, true⟩] [] [t]) = true := by decide
+-- Float32 の鍵の拒否は、型引数へ代入した場合にも失われない。
+example : admitsB sampleS [⟨true, false, true⟩] [] [.base .float32] = true ∧
+    admitsB sampleS [⟨false, true, false⟩] [] [.base .float32] = false ∧
+    satB sampleS [] (.data "Option" [.base .float32]) eqC = true ∧
+    satB sampleS [] (.data "Option" [.base .float32]) keyC = false ∧
+    satB [] [] (.map (.base .integer8) (.list (.base .float32))) keyC = false := by decide
+-- 宣言の内部に直接 Float32 がある場合も、相互参照を通じて鍵の拒否を伝える。
+example : dataSummaries [
+    ⟨"F32", 0, [[.data "G32" []]]⟩,
+    ⟨"G32", 0, [[.base .float32], [.data "F32" []]]⟩] =
+    [⟨"F32", 0, ⟨false, []⟩, ⟨true, []⟩⟩,
+     ⟨"G32", 0, ⟨false, []⟩, ⟨true, []⟩⟩] := by decide
 example : admitsB [] [⟨false, false, true⟩] [] [.base .decimal] = true ∧
     admitsB [] [⟨false, false, true⟩] [] [.base .boolean] = false ∧
     admitsB [] [⟨false, false, true⟩] [] [.base .unit] = false ∧

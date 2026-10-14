@@ -83,12 +83,96 @@ pub enum Value<'e> {
     EmptySet,
     /// ヒープの対象。種類は対象の頭にある（`ValueCtx::kind`）
     Obj(ObjRef<'e>),
+    Int8(i8),
+    Int16(i16),
+    Int32(i32),
+    UInt16(u16),
+    UInt32(u32),
+    UInt64(u64),
+    Float32(f32),
 }
 
 #[cfg(not(feature = "heap-verify"))]
 const _: () = assert!(std::mem::size_of::<Value<'static>>() == 16);
 
 impl<'e> Value<'e> {
+    /// i8 の即値を読む。別の幅や種類の値なら `None` を返す。
+    #[cfg_attr(debug_assertions, inline)]
+    #[cfg_attr(not(debug_assertions), inline(always))]
+    pub fn as_int8(self) -> Option<i8> {
+        if let Value::Int8(n) = self {
+            Some(n)
+        } else {
+            None
+        }
+    }
+
+    /// i16 の即値を読む。別の幅や種類の値なら `None` を返す。
+    #[cfg_attr(debug_assertions, inline)]
+    #[cfg_attr(not(debug_assertions), inline(always))]
+    pub fn as_int16(self) -> Option<i16> {
+        if let Value::Int16(n) = self {
+            Some(n)
+        } else {
+            None
+        }
+    }
+
+    /// i32 の即値を読む。別の幅や種類の値なら `None` を返す。
+    #[cfg_attr(debug_assertions, inline)]
+    #[cfg_attr(not(debug_assertions), inline(always))]
+    pub fn as_int32(self) -> Option<i32> {
+        if let Value::Int32(n) = self {
+            Some(n)
+        } else {
+            None
+        }
+    }
+
+    /// u16 の即値を読む。別の幅や種類の値なら `None` を返す。
+    #[cfg_attr(debug_assertions, inline)]
+    #[cfg_attr(not(debug_assertions), inline(always))]
+    pub fn as_uint16(self) -> Option<u16> {
+        if let Value::UInt16(n) = self {
+            Some(n)
+        } else {
+            None
+        }
+    }
+
+    /// u32 の即値を読む。別の幅や種類の値なら `None` を返す。
+    #[cfg_attr(debug_assertions, inline)]
+    #[cfg_attr(not(debug_assertions), inline(always))]
+    pub fn as_uint32(self) -> Option<u32> {
+        if let Value::UInt32(n) = self {
+            Some(n)
+        } else {
+            None
+        }
+    }
+
+    /// u64 の即値を読む。別の幅や種類の値なら `None` を返す。
+    #[cfg_attr(debug_assertions, inline)]
+    #[cfg_attr(not(debug_assertions), inline(always))]
+    pub fn as_uint64(self) -> Option<u64> {
+        if let Value::UInt64(n) = self {
+            Some(n)
+        } else {
+            None
+        }
+    }
+
+    /// f32 の即値を読む。別の幅や種類の値なら `None` を返す。
+    #[cfg_attr(debug_assertions, inline)]
+    #[cfg_attr(not(debug_assertions), inline(always))]
+    pub fn as_float32(self) -> Option<f32> {
+        if let Value::Float32(n) = self {
+            Some(n)
+        } else {
+            None
+        }
+    }
+
     #[cfg_attr(debug_assertions, inline)]
     #[cfg_attr(not(debug_assertions), inline(always))]
     pub fn as_int(self) -> Option<i64> {

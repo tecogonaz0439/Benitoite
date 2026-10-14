@@ -189,7 +189,7 @@ pub enum ListPatternOp {
     Slice,
 }
 
-/// 演算子の項目（01-06「演算子の型付け」、02-07「演算子の移し方」）。
+/// 演算子の項目（設計書 01-06「演算子の型付け」、02-07「演算子の移し方」）。
 pub const OPERATORS: &[(OperatorKind, BuiltinTypeId, &str)] = &[
     (OperatorKind::Add, BuiltinTypeId::INTEGER, "%Integer.add"),
     (
@@ -296,6 +296,304 @@ pub const OPERATORS: &[(OperatorKind, BuiltinTypeId, &str)] = &[
         BuiltinTypeId::BYTE,
         "%Byte.greaterOrEqual",
     ),
+    (OperatorKind::Add, BuiltinTypeId::INTEGER8, "%Integer8.add"),
+    (
+        OperatorKind::Sub,
+        BuiltinTypeId::INTEGER8,
+        "%Integer8.subtract",
+    ),
+    (
+        OperatorKind::Mul,
+        BuiltinTypeId::INTEGER8,
+        "%Integer8.multiply",
+    ),
+    (
+        OperatorKind::IntDiv,
+        BuiltinTypeId::INTEGER8,
+        "%Integer8.div",
+    ),
+    (OperatorKind::Mod, BuiltinTypeId::INTEGER8, "%Integer8.mod"),
+    (
+        OperatorKind::Neg,
+        BuiltinTypeId::INTEGER8,
+        "%Integer8.negate",
+    ),
+    (
+        OperatorKind::Add,
+        BuiltinTypeId::INTEGER16,
+        "%Integer16.add",
+    ),
+    (
+        OperatorKind::Sub,
+        BuiltinTypeId::INTEGER16,
+        "%Integer16.subtract",
+    ),
+    (
+        OperatorKind::Mul,
+        BuiltinTypeId::INTEGER16,
+        "%Integer16.multiply",
+    ),
+    (
+        OperatorKind::IntDiv,
+        BuiltinTypeId::INTEGER16,
+        "%Integer16.div",
+    ),
+    (
+        OperatorKind::Mod,
+        BuiltinTypeId::INTEGER16,
+        "%Integer16.mod",
+    ),
+    (
+        OperatorKind::Neg,
+        BuiltinTypeId::INTEGER16,
+        "%Integer16.negate",
+    ),
+    (
+        OperatorKind::Add,
+        BuiltinTypeId::INTEGER32,
+        "%Integer32.add",
+    ),
+    (
+        OperatorKind::Sub,
+        BuiltinTypeId::INTEGER32,
+        "%Integer32.subtract",
+    ),
+    (
+        OperatorKind::Mul,
+        BuiltinTypeId::INTEGER32,
+        "%Integer32.multiply",
+    ),
+    (
+        OperatorKind::IntDiv,
+        BuiltinTypeId::INTEGER32,
+        "%Integer32.div",
+    ),
+    (
+        OperatorKind::Mod,
+        BuiltinTypeId::INTEGER32,
+        "%Integer32.mod",
+    ),
+    (
+        OperatorKind::Neg,
+        BuiltinTypeId::INTEGER32,
+        "%Integer32.negate",
+    ),
+    (
+        OperatorKind::Add,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "%UnsignedInteger16.add",
+    ),
+    (
+        OperatorKind::Sub,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "%UnsignedInteger16.subtract",
+    ),
+    (
+        OperatorKind::Mul,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "%UnsignedInteger16.multiply",
+    ),
+    (
+        OperatorKind::IntDiv,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "%UnsignedInteger16.div",
+    ),
+    (
+        OperatorKind::Mod,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "%UnsignedInteger16.mod",
+    ),
+    (
+        OperatorKind::Add,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "%UnsignedInteger32.add",
+    ),
+    (
+        OperatorKind::Sub,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "%UnsignedInteger32.subtract",
+    ),
+    (
+        OperatorKind::Mul,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "%UnsignedInteger32.multiply",
+    ),
+    (
+        OperatorKind::IntDiv,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "%UnsignedInteger32.div",
+    ),
+    (
+        OperatorKind::Mod,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "%UnsignedInteger32.mod",
+    ),
+    (
+        OperatorKind::Add,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "%UnsignedInteger64.add",
+    ),
+    (
+        OperatorKind::Sub,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "%UnsignedInteger64.subtract",
+    ),
+    (
+        OperatorKind::Mul,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "%UnsignedInteger64.multiply",
+    ),
+    (
+        OperatorKind::IntDiv,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "%UnsignedInteger64.div",
+    ),
+    (
+        OperatorKind::Mod,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "%UnsignedInteger64.mod",
+    ),
+    (OperatorKind::Add, BuiltinTypeId::FLOAT32, "%Float32.add"),
+    (
+        OperatorKind::Sub,
+        BuiltinTypeId::FLOAT32,
+        "%Float32.subtract",
+    ),
+    (
+        OperatorKind::Mul,
+        BuiltinTypeId::FLOAT32,
+        "%Float32.multiply",
+    ),
+    (OperatorKind::Div, BuiltinTypeId::FLOAT32, "%Float32.divide"),
+    (OperatorKind::Neg, BuiltinTypeId::FLOAT32, "%Float32.negate"),
+    (OperatorKind::Lt, BuiltinTypeId::INTEGER8, "%Integer8.less"),
+    (
+        OperatorKind::Le,
+        BuiltinTypeId::INTEGER8,
+        "%Integer8.lessOrEqual",
+    ),
+    (
+        OperatorKind::Gt,
+        BuiltinTypeId::INTEGER8,
+        "%Integer8.greater",
+    ),
+    (
+        OperatorKind::Ge,
+        BuiltinTypeId::INTEGER8,
+        "%Integer8.greaterOrEqual",
+    ),
+    (
+        OperatorKind::Lt,
+        BuiltinTypeId::INTEGER16,
+        "%Integer16.less",
+    ),
+    (
+        OperatorKind::Le,
+        BuiltinTypeId::INTEGER16,
+        "%Integer16.lessOrEqual",
+    ),
+    (
+        OperatorKind::Gt,
+        BuiltinTypeId::INTEGER16,
+        "%Integer16.greater",
+    ),
+    (
+        OperatorKind::Ge,
+        BuiltinTypeId::INTEGER16,
+        "%Integer16.greaterOrEqual",
+    ),
+    (
+        OperatorKind::Lt,
+        BuiltinTypeId::INTEGER32,
+        "%Integer32.less",
+    ),
+    (
+        OperatorKind::Le,
+        BuiltinTypeId::INTEGER32,
+        "%Integer32.lessOrEqual",
+    ),
+    (
+        OperatorKind::Gt,
+        BuiltinTypeId::INTEGER32,
+        "%Integer32.greater",
+    ),
+    (
+        OperatorKind::Ge,
+        BuiltinTypeId::INTEGER32,
+        "%Integer32.greaterOrEqual",
+    ),
+    (
+        OperatorKind::Lt,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "%UnsignedInteger16.less",
+    ),
+    (
+        OperatorKind::Le,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "%UnsignedInteger16.lessOrEqual",
+    ),
+    (
+        OperatorKind::Gt,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "%UnsignedInteger16.greater",
+    ),
+    (
+        OperatorKind::Ge,
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "%UnsignedInteger16.greaterOrEqual",
+    ),
+    (
+        OperatorKind::Lt,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "%UnsignedInteger32.less",
+    ),
+    (
+        OperatorKind::Le,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "%UnsignedInteger32.lessOrEqual",
+    ),
+    (
+        OperatorKind::Gt,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "%UnsignedInteger32.greater",
+    ),
+    (
+        OperatorKind::Ge,
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "%UnsignedInteger32.greaterOrEqual",
+    ),
+    (
+        OperatorKind::Lt,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "%UnsignedInteger64.less",
+    ),
+    (
+        OperatorKind::Le,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "%UnsignedInteger64.lessOrEqual",
+    ),
+    (
+        OperatorKind::Gt,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "%UnsignedInteger64.greater",
+    ),
+    (
+        OperatorKind::Ge,
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "%UnsignedInteger64.greaterOrEqual",
+    ),
+    (OperatorKind::Lt, BuiltinTypeId::FLOAT32, "%Float32.less"),
+    (
+        OperatorKind::Le,
+        BuiltinTypeId::FLOAT32,
+        "%Float32.lessOrEqual",
+    ),
+    (OperatorKind::Gt, BuiltinTypeId::FLOAT32, "%Float32.greater"),
+    (
+        OperatorKind::Ge,
+        BuiltinTypeId::FLOAT32,
+        "%Float32.greaterOrEqual",
+    ),
 ];
 
 /// `eq[T]` の項目の名前。
@@ -304,7 +602,7 @@ pub const EQUALITY: &str = "%eq";
 pub const INEQUALITY: &str = "%ne";
 
 /// 文字列補間の `str_T` の項目（01-06「演算子の型付け」の補間の型のうち `String` を除くもの）。
-/// ソースに同じ意味の関数があるものはその項目を使い、`Boolean` だけ内部の項目を置く。
+/// ソースに同じ意味の関数があるものはその項目を使い、`Boolean` には内部の項目を置く。
 pub const INTERPOLATION: &[(BuiltinTypeId, &str)] = &[
     (BuiltinTypeId::INTEGER, "Integer.toString"),
     (BuiltinTypeId::FLOAT, "Float.toString"),
@@ -312,6 +610,22 @@ pub const INTERPOLATION: &[(BuiltinTypeId, &str)] = &[
     (BuiltinTypeId::BOOLEAN, "%Boolean.toString"),
     (BuiltinTypeId::BYTE, "Byte.toString"),
     (BuiltinTypeId::DECIMAL, "Decimal.toString"),
+    (BuiltinTypeId::INTEGER8, "Integer8.toString"),
+    (BuiltinTypeId::INTEGER16, "Integer16.toString"),
+    (BuiltinTypeId::INTEGER32, "Integer32.toString"),
+    (
+        BuiltinTypeId::UNSIGNED_INTEGER16,
+        "UnsignedInteger16.toString",
+    ),
+    (
+        BuiltinTypeId::UNSIGNED_INTEGER32,
+        "UnsignedInteger32.toString",
+    ),
+    (
+        BuiltinTypeId::UNSIGNED_INTEGER64,
+        "UnsignedInteger64.toString",
+    ),
+    (BuiltinTypeId::FLOAT32, "Float32.toString"),
 ];
 
 /// リストのパターンの内部の項目。
@@ -360,7 +674,20 @@ pub fn builtin_kind(id: BuiltinId) -> Option<EntryKind> {
 /// 専用の命令に移す項目の `Intrinsic`（`Operator`・`Equality` の項目と `INTRINSIC_FUNCTIONS`）。
 pub fn builtin_intrinsic(id: BuiltinId) -> Option<Intrinsic> {
     match builtin_kind(id)? {
-        EntryKind::Operator { op, operand } => Some(Intrinsic::Operator { op, operand }),
+        EntryKind::Operator { op, operand } => {
+            // 新しい幅は通常の呼び出しへ移し、既存の専用命令へ送らない
+            // （設計書 02-07「演算子の移し方」）。
+            matches!(
+                operand,
+                BuiltinTypeId::INTEGER
+                    | BuiltinTypeId::FLOAT
+                    | BuiltinTypeId::DECIMAL
+                    | BuiltinTypeId::STRING
+                    | BuiltinTypeId::CHARACTER
+                    | BuiltinTypeId::BYTE
+            )
+            .then_some(Intrinsic::Operator { op, operand })
+        }
         EntryKind::Equality { negated: false } => Some(Intrinsic::Eq),
         EntryKind::Equality { negated: true } => Some(Intrinsic::Ne),
         EntryKind::Declared
@@ -492,7 +819,8 @@ mod tests {
     fn table_names_parts_capabilities_and_schemes_are_consistent() {
         let lengths = [
             43, 15, 9, 5, 18, 1, 9, 8, 18, 3, 3, 2, 4, 1, 5, 2, 2, 6, 6, 2, 2, 4, 7, 2, 7, 7, 2,
-            16, 2, 2, 3, 2, 13, 6, 3, 9, 10, 3, 12, 5, 11, 4, 1, 7, 1, 1,
+            16, 2, 2, 3, 2, 13, 6, 3, 9, 10, 3, 12, 5, 11, 4, 1, 7, 1, 1, 18, 15, 5, 35, 45, 11,
+            11, 39,
         ];
         assert_eq!(
             super::super::funcs::PARTS
@@ -553,9 +881,9 @@ mod tests {
                 !decl.name.starts_with('%') && !decl.name.starts_with("Benitoite.")
             );
         }
-        assert_eq!(lengths.len(), 46);
-        assert_eq!(names.len(), 304);
-        assert_eq!(capabilities, [231, 16, 57]);
+        assert_eq!(lengths.len(), 54);
+        assert_eq!(names.len(), 483);
+        assert_eq!(capabilities, [410, 16, 57]);
         assert!(lookup_builtin("missing.name").is_none());
         let invalid = BuiltinId(u16::MAX);
         assert!(builtin_decl(invalid).is_none());
@@ -746,7 +1074,7 @@ mod tests {
             &[("Network.Http.pathSegments", Pure, 1)],
             &[("Benitoite.Network.Http.send", Io, 1)],
         ];
-        let actual = &super::super::funcs::PARTS[22..];
+        let actual = &super::super::funcs::PARTS[22..46];
         assert_eq!(actual.len(), expected.len());
         assert_eq!(expected.iter().map(|part| part.len()).sum::<usize>(), 136);
         for (actual, expected) in actual.iter().zip(expected) {
@@ -768,7 +1096,20 @@ mod tests {
             assert_eq!(builtin_kind(id), Some(EntryKind::Operator { op, operand }));
             assert_eq!(
                 builtin_intrinsic(id),
-                Some(Intrinsic::Operator { op, operand })
+                if matches!(
+                    operand,
+                    BuiltinTypeId::INTEGER8
+                        | BuiltinTypeId::INTEGER16
+                        | BuiltinTypeId::INTEGER32
+                        | BuiltinTypeId::UNSIGNED_INTEGER16
+                        | BuiltinTypeId::UNSIGNED_INTEGER32
+                        | BuiltinTypeId::UNSIGNED_INTEGER64
+                        | BuiltinTypeId::FLOAT32
+                ) {
+                    None
+                } else {
+                    Some(Intrinsic::Operator { op, operand })
+                }
             );
             let scheme = builtin_scheme(id).unwrap();
             let ty = basic(operand);
@@ -817,9 +1158,9 @@ mod tests {
             let id = interpolation_builtin(operand).unwrap();
             assert_eq!(builtin_decl(id).unwrap().name, name);
             assert!(builtin_intrinsic(id).is_none());
-            if name.starts_with('%') {
+            if matches!(builtin_kind(id), Some(EntryKind::Interpolation { .. })) {
                 let scheme = builtin_scheme(id).unwrap();
-                assert_eq!(scheme.params, vec![basic(BuiltinTypeId::BOOLEAN)]);
+                assert_eq!(scheme.params, vec![basic(operand)]);
                 assert_eq!(scheme.ret, basic(BuiltinTypeId::STRING));
                 assert!(scheme.type_params.is_empty());
             } else {

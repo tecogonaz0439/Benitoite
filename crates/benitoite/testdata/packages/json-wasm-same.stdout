@@ -1,0 +1,107 @@
+ok [{"amount":1200,"category":"book","id":1},{"amount":350,"category":"food","id":2},{"amount":800,"category":"book","id":3},{"amount":4300,"category":"tool","id":4},{"amount":150,"category":"food","id":5}] | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+ok [0,-0.0,1.0,100.0] | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+ok {"a":true,"z":2} | validate=true strings=true value=true output=true document=true
+ok null | validate=true strings=true value=true output=true document=true
+ok true | validate=true strings=true value=true output=true document=true
+ok false | validate=true strings=true value=true output=true document=true
+ok "é😀" | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+ok "\"\\\b\f\n\r\t\u0000\u001f/" | validate=true strings=true value=true output=true document=true
+ok "" | validate=true strings=true value=true output=true document=true
+ok [] | validate=true strings=true value=true output=true document=true
+ok {} | validate=true strings=true value=true output=true document=true
+ok {"a":[true,null,{"é":"😀"}],"z":2} | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+ok [1,-2,3.0,"text",false] | validate=true strings=true value=true output=true document=true
+ok [0,-0.0,-0.0,0] | validate=true strings=true value=true output=true document=true
+ok {"a":0} | validate=true strings=true value=true output=true document=true
+ok {"a":-0.0,"b":0} | validate=true strings=true value=true output=true document=true
+ok {"n":"1e400 and \"-1e400\""} | validate=true strings=true value=true output=true document=true
+ok {"$serde_json::private::Number":"123"} | validate=true strings=true value=true output=true document=true
+ok {"$serde_json::private::Number":"1e9999"} | validate=true strings=true value=true output=true document=true
+ok {"a":[1,{"x":[]},2],"b":{}} | validate=true strings=true value=true output=true document=true
+ok [-140268391805775.62,140268391805775.62] | validate=true strings=true value=true output=true document=true
+ok [1000000000000000.0,1e+16,1e+17,0.00001,1e-6,5e-324,1.7976931348623157e+308,-0.0] | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+ok [9223372036854775807,-9223372036854775808,9.223372036854776e+18,1.8446744073709552e+19,-9.223372036854776e+18,1e+300,-0.0025] | validate=true strings=true value=true output=true document=true
+ok "/𐀀􏿿" | validate=true strings=true value=true output=true document=true
+ok {"a":3,"é":1,"😀":2} | validate=true strings=true value=true output=true document=true
+ok [0.0,0.0,-0.0] | validate=true strings=true value=true output=true document=true
+error 1:4 trailing comma | validate=true strings=true value=true output=true document=true
+error 1:3 expected `,` or `]` | validate=true strings=true value=true output=true document=true
+error 1:3 expected `,` or `]` | validate=true strings=true value=true output=true document=true
+error 1:5 expected `,` or `]` | validate=true strings=true value=true output=true document=true
+error 1:9 expected `,` or `}` | validate=true strings=true value=true output=true document=true
+error 1:5 expected `,` or `]` | validate=true strings=true value=true output=true document=true
+error 1:6 expected `,` or `]` | validate=true strings=true value=true output=true document=true
+error 1:8 expected `,` or `]` | validate=true strings=true value=true output=true document=true
+error 1:3 invalid number | validate=true strings=true value=true output=true document=true
+error 1:3 invalid number | validate=true strings=true value=true output=true document=true
+error 1:4 invalid number | validate=true strings=true value=true output=true document=true
+error 1:6 invalid number | validate=true strings=true value=true output=true document=true
+error 1:3 trailing characters | validate=true strings=true value=true output=true document=true
+error 3:1 trailing comma | validate=true strings=true value=true output=true document=true
+error 1:7 trailing comma | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+error 1:3 EOF while parsing a string | validate=true strings=true value=true output=true document=true
+error 1:4 EOF while parsing a value | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+error 1:1 EOF while parsing a value | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+error 1:4 EOF while parsing a value | validate=true strings=true value=true output=true document=true
+error 2:1 EOF while parsing a value | validate=true strings=true value=true output=true document=true
+error 1:5 EOF while parsing a value | validate=true strings=true value=true output=true document=true
+error 2:1 EOF while parsing a value | validate=true strings=true value=true output=true document=true
+error 1:1 number out of range | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+error 1:1 number out of range | validate=true strings=true value=true output=true document=true
+error 2:12 number out of range | validate=true strings=true value=true output=true document=true
+error 1:14 number out of range | validate=true strings=true value=true output=true document=true
+error 1:6 number out of range | validate=true strings=true value=true output=true document=true
+error 1:2 number out of range | validate=true strings=true value=true output=true document=true
+error 1:2 expected value | validate=true strings=true value=true output=true document=true
+error 1:2 EOF while parsing a list | validate=true strings=true value=true output=true document=true
+error 1:2 EOF while parsing an object | validate=true strings=true value=true output=true document=true
+error 1:5 EOF while parsing an object | validate=true strings=true value=true output=true document=true
+error 1:6 expected `:` | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+error 1:2 key must be a string | validate=true strings=true value=true output=true document=true
+error 1:8 expected `,` or `}` | validate=true strings=true value=true output=true document=true
+error 1:8 trailing comma | validate=true strings=true value=true output=true document=true
+error 1:4 expected ident | validate=true strings=true value=true output=true document=true
+error 1:4 EOF while parsing a value | validate=true strings=true value=true output=true document=true
+error 1:1 expected value | validate=true strings=true value=true output=true document=true
+error 1:3 invalid escape | validate=true strings=true value=true output=true document=true
+error 1:7 invalid escape | validate=true strings=true value=true output=true document=true
+error 1:7 lone leading surrogate in hex escape | validate=true strings=true value=true output=true document=true
+error 1:8 unexpected end of hex escape | Bvalue=true Boutput=true | validate=true strings=true value=true output=true document=true
+error 1:9 unexpected end of hex escape | validate=true strings=true value=true output=true document=true
+error 1:13 lone leading surrogate in hex escape | validate=true strings=true value=true output=true document=true
+error 1:3 control character (\u0000-\u001F) found while parsing a string | validate=true strings=true value=true output=true document=true
+error 2:1 control character (\u0000-\u001F) found while parsing a string | validate=true strings=true value=true output=true document=true
+error 1:7 EOF while parsing a string | validate=true strings=true value=true output=true document=true
+error 1:3 EOF while parsing a value | validate=true strings=true value=true output=true document=true
+error 1:3 EOF while parsing a value | validate=true strings=true value=true output=true document=true
+error 1:2 EOF while parsing a value | validate=true strings=true value=true output=true document=true
+error 1:8 EOF while parsing a string | validate=true strings=true value=true output=true document=true
+error 1:9 EOF while parsing a string | validate=true strings=true value=true output=true document=true
+ok [1] | validate=true strings=true value=true output=true document=true
+error 1:6 expected value | validate=true strings=true value=true output=true document=true
+error 1:7 invalid escape | validate=true strings=true value=true output=true document=true
+ok [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[0]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] | validate=true strings=true value=true output=true document=true
+error 1:128 recursion limit exceeded | validate=true strings=true value=true output=true document=true
+error 1:128 recursion limit exceeded | validate=true strings=true value=true output=true document=true
+deep 128 A=[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[null]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] | compact=true pretty=true
+non-finite A=[null,null,null] | compact=true pretty=true
+nested members A={"a":{"x":null},"z":[{"a":[],"b":{}}]} | compact=true pretty=true
+pointer "" A=Option.Some("{\"\":[],\"a/b\":{\"~key\":[null,-0.0,{\"x\":2}]},\"tilde~1\":true}") len=Option.Some(3) | get=true len=true
+pointer "/" A=Option.Some("[]") len=Option.Some(0) | get=true len=true
+pointer "/a~1b" A=Option.Some("{\"~key\":[null,-0.0,{\"x\":2}]}") len=Option.Some(1) | get=true len=true
+pointer "/a~1b/~0key" A=Option.Some("[null,-0.0,{\"x\":2}]") len=Option.Some(3) | get=true len=true
+pointer "/a~1b/~0key/0" A=Option.Some("null") len=Option.None | get=true len=true
+pointer "/a~1b/~0key/1" A=Option.Some("-0.0") len=Option.None | get=true len=true
+pointer "/a~1b/~0key/2" A=Option.Some("{\"x\":2}") len=Option.Some(1) | get=true len=true
+pointer "/a~1b/~0key/2/x" A=Option.Some("2") len=Option.None | get=true len=true
+pointer "/tilde~01" A=Option.Some("true") len=Option.None | get=true len=true
+pointer "/missing" A=Option.None len=Option.None | get=true len=true
+pointer "/a~1b/~0key/01" A=Option.None len=Option.None | get=true len=true
+pointer "/a~1b/~0key/-1" A=Option.None len=Option.None | get=true len=true
+pointer "/a~1b/~0key/+1" A=Option.None len=Option.None | get=true len=true
+pointer "/a~1b/~0key/3" A=Option.None len=Option.None | get=true len=true
+pointer "/a~1b/~0key/-" A=Option.None len=Option.None | get=true len=true
+pointer "/a~1b/~0key/1/x" A=Option.None len=Option.None | get=true len=true
+pointer "/a~2b" A=Option.None len=Option.None | get=true len=true
+pointer "/a~" A=Option.None len=Option.None | get=true len=true
+pointer "a/b" A=Option.None len=Option.None | get=true len=true

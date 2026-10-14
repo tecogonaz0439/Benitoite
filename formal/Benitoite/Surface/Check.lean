@@ -203,6 +203,10 @@ mutual
     | .negInt _ => pure (.base .integer, emptyEff)
     | .negFloat _ => pure (.base .float, emptyEff)
     | .negDecimal _ _ => pure (.base .decimal, emptyEff)
+    | .negInteger8 _ => pure (.base .integer8, emptyEff)
+    | .negInteger16 _ => pure (.base .integer16, emptyEff)
+    | .negInteger32 _ => pure (.base .integer32, emptyEff)
+    | .negFloat32 _ => pure (.base .float32, emptyEff)
     | .unit => pure (.base .unit, emptyEff)
     | .paren e => checkExprR q mode C Γ R p (child path 0) e
     | .conCall c ts args => do
@@ -283,6 +287,7 @@ mutual
         let εargs ← checkHoleArgsR q mode C (hideConts Γ) (some r) (child path 0) 0 args (substParams ts [] cd.args)
         pure (.fn args.holeTypes r εargs, emptyEff)
     | .binary o t lhs rhs => do
+        require path "binary operator type is not allowed" ((Operator.binary o).allowed t)
         let (b, ts) ← lookup path "operator has no primitive" (q.opPrim (.binary o) t)
         let s ← lookup path "unknown operator primitive" (q.B.sig b)
         require path "operator type argument count mismatch" (ts.length == s.ntys)
@@ -295,6 +300,7 @@ mutual
         let εr ← accept q (child path 1) t (← checkExprR q mode C Γ R .other (child path 1) rhs)
         pure (r, union q εl εr)
     | .neg t e => do
+        require path "negation type is not allowed" (Operator.neg.allowed t)
         let (b, ts) ← lookup path "negation has no primitive" (q.opPrim .neg t)
         require path "negation has type arguments" ts.isEmpty
         let s ← lookup path "unknown negation primitive" (q.B.sig b)

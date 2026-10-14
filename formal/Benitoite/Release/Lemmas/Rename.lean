@@ -16,7 +16,7 @@ mutual
   theorem PatTy.length_eq {p a δ} : PatTy P p a δ → δ.length = p.binders
     | .P_Wild => by simp [Pat.binders]
     | .P_Var => by simp [Pat.binders]
-    | .P_Const _ _ _ _ => by simp [Pat.binders]
+    | .P_Const _ => by simp [Pat.binders]
     | .P_Con _ _ h => by simp only [Pat.binders]; exact PatTys.length_eq h
     | .P_RangeInt => by simp [Pat.binders]
     | .P_RangeChar => by simp [Pat.binders]

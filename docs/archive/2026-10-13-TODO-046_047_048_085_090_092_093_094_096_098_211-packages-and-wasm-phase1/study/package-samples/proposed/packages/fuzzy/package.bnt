@@ -1,0 +1,9 @@
+// パッケージ Fuzzy の根の設定（提案の形）。
+// Benitoite のソースと、ビルド済みの WASM のコンポーネント（wasm/fuzzy.wasm）を含む。
+// パッケージに含めるのは .bnt のソース、WASM のコンポーネント、この設定、使用許諾と説明の文書だけで、
+// rust/ と wit/ はコンポーネントを作るための元のソースとして同梱する（中身のハッシュの対象に含めるかは改造で決める）。
+
+package Fuzzy
+  language ">= 0.2, < 0.3"
+  license "MIT"
+end package

@@ -113,6 +113,26 @@ pub enum TokenKind {
     Eof,
 }
 
+/// 整数リテラルの符号と幅を指定する接尾辞。
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub enum IntegerSuffix {
+    S8,
+    S16,
+    S32,
+    S64,
+    U8,
+    U16,
+    U32,
+    U64,
+}
+
+/// 浮動小数リテラルの幅を指定する接尾辞。
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub enum FloatSuffix {
+    F32,
+    F64,
+}
+
 /// 字句が持つ値（02-03「字句」の表）。
 #[derive(Clone, PartialEq, Debug)]
 pub enum TokenValue {
@@ -126,6 +146,17 @@ pub enum TokenValue {
     },
     /// `_` を除いた字面
     Float(String),
+    /// 接尾辞付きの整数。数字列は接頭辞・下線・接尾辞を含まない。
+    WidthInt {
+        radix: u32,
+        digits: String,
+        suffix: IntegerSuffix,
+    },
+    /// 接尾辞付きの浮動小数。字面は下線・接尾辞を含まない。
+    WidthFloat {
+        text: String,
+        suffix: FloatSuffix,
+    },
     /// `_` と接尾辞 `m` を除いた字面
     Decimal(String),
     /// エスケープを解いた後の文字列。複数行の文字列は字下げを除き行末の `\` を処理した後、

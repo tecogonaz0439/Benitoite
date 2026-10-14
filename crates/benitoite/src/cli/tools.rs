@@ -1,28 +1,43 @@
 //! CLI の補助のコマンド（設計書 06-01「サブコマンドの振る舞い」）。
 
-//! `test`・`fmt`・`skill` と `--licenses` の入口。
+//! `test`・`fmt`・`skill`・`package` と `--licenses` の入口。
 
 use std::ffi::OsString;
 
 use super::{CliEnv, DiagFormat, ToolCommand};
 
-/// `benitoite test|fmt|skill` の後の引数を解釈して実行し、終了状態を返す（06-01 の「`test` のコマンドライン」
-/// 「`fmt` のコマンドライン」「`skill` のコマンドライン」の終了状態）。
+/// `benitoite test|fmt|skill|package` の後の引数を解釈して実行し、終了状態を返す（06-01 の「`test` のコマンドライン」
+/// 「`fmt` のコマンドライン」「`skill` のコマンドライン」「`package` のコマンドライン」の終了状態）。
 pub fn run_tool(tool: ToolCommand, args: Vec<OsString>, env: CliEnv) -> u8 {
     match tool {
-        ToolCommand::Test => match args::parse_path_args(args::PathTool::Test, args) {
-            Ok(parsed) => run_body(
-                test_runner::text::STAGE_TEST,
-                parsed.diagnostics,
-                env,
-                |env| test_runner::run_test_command(parsed, env),
-            ),
+        ToolCommand::Test => match args::parse_test_args(args) {
+            Ok((parsed, wasm)) => {
+                let execution = wasm.execution();
+                let stderr = env.stderr.clone();
+                let code = run_body(
+                    test_runner::text::STAGE_TEST,
+                    parsed.diagnostics,
+                    env,
+                    |env| test_runner::run_test_with_externals(parsed, env, execution.clone()),
+                );
+                wasm.report(&execution, &stderr);
+                code
+            }
             Err(detail) => super::usage_error(&env, &detail),
         },
         ToolCommand::Fmt => match args::parse_path_args(args::PathTool::Fmt, args) {
             Ok(parsed) => run_body(formatter::text::STAGE_FMT, parsed.diagnostics, env, |env| {
                 formatter::run_fmt(parsed, env)
             }),
+            Err(detail) => super::usage_error(&env, &detail),
+        },
+        ToolCommand::Package => match package::parse_args(args) {
+            Ok(parsed) => run_body(
+                package::text::STAGE_PACKAGE,
+                parsed.diagnostics,
+                env,
+                |env| package::run(parsed, env),
+            ),
             Err(detail) => super::usage_error(&env, &detail),
         },
         ToolCommand::Skill => run_body(skill::text::STAGE_SKILL, DiagFormat::Text, env, |env| {
@@ -72,3 +87,5 @@ pub mod test_runner;
 
 pub mod licenses;
 pub mod skill;
+
+mod package;

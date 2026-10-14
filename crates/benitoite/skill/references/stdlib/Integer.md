@@ -6,6 +6,14 @@ Refer to its declarations as `Integer.<name>`, for example `Integer.toString`.
 
 Functions on `Integer`, the 64-bit signed integer type.
 
+## Type
+
+Type: `Integer`. Canonical name: `Integer64`. Displayed as `Integer`.
+
+Accepted aliases for this type: `Integer`. These names denote the same type; they do not require a conversion.
+
+This is a distinct numeric type. There are no implicit conversions between numeric types.
+
 ```benitoite
 public function toString(n: Integer) -> String
 ```

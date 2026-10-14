@@ -1,0 +1,77 @@
+//! JSON の入力を UTF-8 のバイトで走査する（設計書 03-08「Json」）。
+import Benitoite.Unofficial.Json
+
+/// 入力と一度だけ符号化した UTF-8 のバイト。
+public(package) record Input
+  source: String
+  bytes: Bytes
+  length: Integer
+end record
+
+/// 入力を走査のための形にする。
+public(package) function input(source: String) -> Input
+  return Input(source: source, bytes: String.toUTF8(source), length: String.byteLength(source))
+end function
+
+// 入力の終わりはバイトの範囲外の値で表し、各読み取りで境界を確かめる。
+/// 指定したバイトを読み、終端では -1 を返す。
+public(package) function byte(input: Input, position: Integer) -> Integer
+  return match Bytes.get(Input.bytes(input), position) with
+    case Option.Some(b) -> Byte.toInteger(b)
+    case Option.None -> -1
+  end match
+end function
+
+/// UTF-8 の境界で区間を切り出す。
+public(package) function slice(input: Input, start: Integer, stop: Integer) -> String
+  return Option.unwrapOr(String.byteSlice(Input.source(input), start, stop), "")
+end function
+
+/// JSON が許す四つの空白だけを飛ばす。
+public(package) function whitespace(input: Input, position: Integer) -> Integer
+  bind b <- byte(input, position)
+  return if b = 32 or b = 9 or b = 10 or b = 13 then
+    whitespace(input, position + 1)
+  else
+    position
+  end if
+end function
+
+/// ASCII の十進の数字かを判定する。
+public(package) function digit(b: Integer) -> Boolean
+  return b >= 48 and b <= 57
+end function
+
+/// 連続する十進の数字の直後を返す。
+public(package) function digits(input: Input, position: Integer) -> Integer
+  return if digit(byte(input, position)) then digits(input, position + 1) else position end if
+end function
+
+// serde_json の consumed/peek の位置に合わせ、読んだバイト数を受け取る。
+// UTF-8 の途中でも文字の開始だけを数える。LF の直後の列は 1 にする。
+/// 最後に読んだバイトまでから診断の位置を求める。
+public(package) function error(input: Input, consumed: Integer, message: String) -> Json.ParseError
+  return position(input, 0, Integer.minimum(consumed, Input.length(input)), 1, 0, message, false)
+end function
+
+/// 入力の最後の文字の直後を指す。
+public(package) function eof(input: Input, message: String) -> Json.ParseError
+  return position(input, 0, Input.length(input), 1, 0, message, true)
+end function
+
+/// 数の字面の開始位置を指す。
+public(package) function numberError(input: Input, start: Integer, message: String) -> Json.ParseError
+  return position(input, 0, start, 1, 0, message, true)
+end function
+
+function position(input: Input, i: Integer, stop: Integer, line: Integer, column: Integer, message: String, after: Boolean) -> Json.ParseError
+  if i = stop then
+    return Json.ParseError(line: line, column: if after then column + 1 else Integer.maximum(column, 1) end if, message: message)
+  end if
+  bind b <- byte(input, i)
+  return if b = 10 then
+    position(input, i + 1, stop, line + 1, 0, message, after)
+  else
+    position(input, i + 1, stop, line, if b < 128 or b >= 192 then column + 1 else column end if, message, after)
+  end if
+end function

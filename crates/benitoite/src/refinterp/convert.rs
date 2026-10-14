@@ -33,6 +33,8 @@ pub(super) enum BuiltinOutcome {
 
 /// 組み込みの関数との境目でだけ使う、実行ごとの一時ヒープ。
 pub(super) struct BuiltinBridge {
+    externals: Option<crate::external::ExternalRuntime>,
+    external_table: crate::bytecode::program::ExternalTable,
     heap: Heap,
     roots: RootStack,
     generation: u64,
@@ -58,6 +60,8 @@ impl BuiltinBridge {
     /// 実行ごとに作る。VM やほかの実行のヒープは借りない。
     pub(super) fn new() -> Self {
         Self {
+            externals: None,
+            external_table: Default::default(),
             heap: Heap::new(HeapConfig::default()),
             roots: RootStack::new(),
             generation: 0,
@@ -79,6 +83,87 @@ impl BuiltinBridge {
             return BuiltinOutcome::Stopped(Stop::Internal("unknown builtin number".into()));
         };
         self.call_decl(decl, args, io, state)
+    }
+
+    pub(super) fn external(
+        &mut self,
+        spec: &std::sync::Arc<crate::external::ExternalSpec>,
+        args: &[Value],
+    ) -> Result<Value, Stop> {
+        use crate::bytecode::program::ExternalRef;
+        let index = match self
+            .external_table
+            .functions
+            .iter()
+            .position(|r| r.spec.id == spec.id)
+        {
+            Some(i) => i,
+            None => {
+                let component = match self
+                    .external_table
+                    .components
+                    .iter()
+                    .position(|s| std::sync::Arc::ptr_eq(s, &spec.component))
+                {
+                    Some(i) => i,
+                    None => {
+                        let i = self.external_table.components.len();
+                        self.external_table
+                            .components
+                            .push(std::sync::Arc::clone(&spec.component));
+                        i
+                    }
+                };
+                let i = self.external_table.functions.len();
+                self.external_table.functions.push(ExternalRef {
+                    spec: std::sync::Arc::clone(spec),
+                    component: u32::try_from(component).map_err(|_| invalid_conversion())?,
+                    arity: u16::try_from(spec.params.len()).map_err(|_| invalid_conversion())?,
+                });
+                i
+            }
+        };
+        if self.externals.is_none() {
+            self.externals = Some(crate::external::ExternalRuntime::new(None)?);
+        }
+        let runtime = self.externals.as_mut().ok_or_else(invalid_conversion)?;
+        let table = &self.external_table;
+        let result = self.heap.epoch(|ctx| {
+            let args = args
+                .iter()
+                .map(|v| {
+                    to_heap_with(
+                        ctx,
+                        v,
+                        "external argument",
+                        &self.roots,
+                        &mut vec![],
+                        self.generation,
+                    )
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let value = crate::external::call(
+                runtime,
+                table,
+                u32::try_from(index).map_err(|_| invalid_conversion())?,
+                ctx,
+                &args,
+            )
+            .map_err(|e| match e {
+                crate::external::ExternalFailure::Stop(stop) => stop,
+                crate::external::ExternalFailure::Interrupted => {
+                    Stop::Internal("reference external call interrupted without a source".into())
+                }
+            })?;
+            from_heap_with(ctx, value, &mut |_| Err(invalid_conversion()))
+        });
+        if self.heap.collect_requested() {
+            self.heap.collect(&self.roots);
+        }
+        if let Some(fault) = self.heap.take_fault() {
+            return Err(Stop::Internal(fault.detail));
+        }
+        result
     }
 
     pub(super) fn declaration(&self, id: BuiltinId) -> Option<&'static BuiltinDecl> {
@@ -235,6 +320,13 @@ fn to_heap_with<'e>(
                 }
                 Value::Dict { .. } => return Err(invalid_conversion()),
                 Value::Int(n) => ready.push(HeapValue::Int(*n)),
+                Value::Int8(n) => ready.push(HeapValue::Int8(*n)),
+                Value::Int16(n) => ready.push(HeapValue::Int16(*n)),
+                Value::Int32(n) => ready.push(HeapValue::Int32(*n)),
+                Value::UInt16(n) => ready.push(HeapValue::UInt16(*n)),
+                Value::UInt32(n) => ready.push(HeapValue::UInt32(*n)),
+                Value::UInt64(n) => ready.push(HeapValue::UInt64(*n)),
+                Value::Float32(n) => ready.push(HeapValue::Float32(*n)),
                 Value::Float(x) => ready.push(HeapValue::Float(*x)),
                 Value::Byte(b) => ready.push(HeapValue::Byte(*b)),
                 Value::Bool(b) => ready.push(HeapValue::Bool(*b)),
@@ -345,6 +437,13 @@ fn from_heap_with<'e>(
         match step {
             FromHeap::Visit(value) => match value {
                 HeapValue::Int(n) => ready.push(Value::Int(n)),
+                HeapValue::Int8(n) => ready.push(Value::Int8(n)),
+                HeapValue::Int16(n) => ready.push(Value::Int16(n)),
+                HeapValue::Int32(n) => ready.push(Value::Int32(n)),
+                HeapValue::UInt16(n) => ready.push(Value::UInt16(n)),
+                HeapValue::UInt32(n) => ready.push(Value::UInt32(n)),
+                HeapValue::UInt64(n) => ready.push(Value::UInt64(n)),
+                HeapValue::Float32(n) => ready.push(Value::Float32(n)),
                 HeapValue::Float(x) => ready.push(Value::Float(x)),
                 HeapValue::Byte(b) => ready.push(Value::Byte(b)),
                 HeapValue::Bool(b) => ready.push(Value::Bool(b)),
@@ -523,6 +622,13 @@ mod tests {
             Value::Float(-0.0),
             Value::Float(f64::INFINITY),
             Value::Byte(255),
+            Value::ctor(
+                42,
+                vec![
+                    Value::UInt64(u64::MAX),
+                    Value::list(vec![Value::Float32(0.1)]),
+                ],
+            ),
             Value::Bool(true),
             Value::Char('あ'),
             Value::Unit,
@@ -565,6 +671,38 @@ mod tests {
                 to_heap(ctx, &Value::list(vec![]), "test").unwrap(),
                 HeapValue::EmptyList
             ));
+            // 片方向ずつ独立した値と照合し、両側で同じ幅を取り違える往復も検出する。
+            macro_rules! scalar {
+                ($variant:ident, $reader:ident, $values:expr) => {
+                    for n in $values {
+                        let value = to_heap(ctx, &Value::$variant(n), "test").unwrap();
+                        assert_eq!(value.$reader(), Some(n));
+                        assert!(matches!(from_heap(ctx, HeapValue::$variant(n)).unwrap(),
+                            Value::$variant(actual) if actual == n));
+                    }
+                };
+            }
+            scalar!(Int8, as_int8, [i8::MIN, i8::MAX]);
+            scalar!(Int16, as_int16, [i16::MIN, i16::MAX]);
+            scalar!(Int32, as_int32, [i32::MIN, i32::MAX]);
+            scalar!(UInt16, as_uint16, [0, u16::MAX]);
+            scalar!(UInt32, as_uint32, [0, u32::MAX]);
+            scalar!(UInt64, as_uint64, [0, 1_u64 << 63, u64::MAX]);
+            for n in [
+                0.1_f32,
+                0.0,
+                -0.0,
+                f32::from_bits(1),
+                f32::MAX,
+                f32::INFINITY,
+                f32::NEG_INFINITY,
+                f32::from_bits(0x7fc0_1234),
+            ] {
+                let value = to_heap(ctx, &Value::Float32(n), "test").unwrap();
+                assert_eq!(value.as_float32().unwrap().to_bits(), n.to_bits());
+                assert!(matches!(from_heap(ctx, HeapValue::Float32(n)).unwrap(),
+                    Value::Float32(actual) if actual.to_bits() == n.to_bits()));
+            }
             let nan = to_heap(ctx, &Value::Float(f64::NAN), "test").unwrap();
             assert!(matches!(from_heap(ctx, nan).unwrap(), Value::Float(x) if x.is_nan()));
         });

@@ -70,6 +70,14 @@ pub const FILES: &[SkillFile] = &[
         text: include_str!("../../../../skill/references/stdlib/Float.md"),
     },
     SkillFile {
+        path: "references/stdlib/Float32.md",
+        text: include_str!("../../../../skill/references/stdlib/Float32.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/Float64.md",
+        text: include_str!("../../../../skill/references/stdlib/Float64.md"),
+    },
+    SkillFile {
         path: "references/stdlib/Hash.md",
         text: include_str!("../../../../skill/references/stdlib/Hash.md"),
     },
@@ -108,6 +116,22 @@ pub const FILES: &[SkillFile] = &[
     SkillFile {
         path: "references/stdlib/Integer.md",
         text: include_str!("../../../../skill/references/stdlib/Integer.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/Integer16.md",
+        text: include_str!("../../../../skill/references/stdlib/Integer16.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/Integer32.md",
+        text: include_str!("../../../../skill/references/stdlib/Integer32.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/Integer64.md",
+        text: include_str!("../../../../skill/references/stdlib/Integer64.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/Integer8.md",
+        text: include_str!("../../../../skill/references/stdlib/Integer8.md"),
     },
     SkillFile {
         path: "references/stdlib/Json.md",
@@ -192,6 +216,26 @@ pub const FILES: &[SkillFile] = &[
     SkillFile {
         path: "references/stdlib/Triple.md",
         text: include_str!("../../../../skill/references/stdlib/Triple.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/UnsignedInteger.md",
+        text: include_str!("../../../../skill/references/stdlib/UnsignedInteger.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/UnsignedInteger16.md",
+        text: include_str!("../../../../skill/references/stdlib/UnsignedInteger16.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/UnsignedInteger32.md",
+        text: include_str!("../../../../skill/references/stdlib/UnsignedInteger32.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/UnsignedInteger64.md",
+        text: include_str!("../../../../skill/references/stdlib/UnsignedInteger64.md"),
+    },
+    SkillFile {
+        path: "references/stdlib/UnsignedInteger8.md",
+        text: include_str!("../../../../skill/references/stdlib/UnsignedInteger8.md"),
     },
     SkillFile {
         path: "references/stdlib/index.md",

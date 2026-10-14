@@ -1,0 +1,41 @@
+// spec: 01-02 外部の関数の宣言
+import Benitoite.Unofficial.IO.Console
+@external("wasm", "x.wasm", "integer")
+function integer(v: Integer) -> Integer
+@external("wasm", "x.wasm", "float")
+function float(v: Float) -> Float
+@external("wasm", "x.wasm", "boolean")
+function boolean(v: Boolean) -> Boolean
+@external("wasm", "x.wasm", "character")
+function character(v: Character) -> Character
+@external("wasm", "x.wasm", "byte")
+function byte(v: Byte) -> Byte
+@external("wasm", "x.wasm", "string")
+function string(v: String) -> String
+@external("wasm", "x.wasm", "bytes")
+function bytes(v: Bytes) -> Bytes
+@external("wasm", "x.wasm", "list")
+function list(v: List[Integer]) -> List[Integer]
+@external("wasm", "x.wasm", "option")
+function option(v: Option[Integer]) -> Option[Integer]
+@external("wasm", "x.wasm", "result")
+function result(v: Result[Unit, String]) -> Result[Unit, String]
+@external("wasm", "x.wasm", "pair")
+function pair(v: Pair[Integer, Boolean]) -> Pair[Integer, Boolean]
+@external("wasm", "x.wasm", "triple")
+function triple(v: Triple[Byte, Character, String]) -> Triple[Byte, Character, String]
+function main() -> Unit uses Console.Write
+  Console.writeLine("${integer(-42)} ${float(1.25)} ${boolean(true)} ${character('字')}")
+  Console.writeLine(string("日本語🦀"))
+  Console.writeLine("${List.fold(list([1, 2, 3]), 0, lambda(a: Integer, b: Integer) -> Integer return a + b end lambda)}")
+  Console.writeLine("${option(Option.Some(7)) = Option.Some(7)} ${option(Option.None) = Option.None}")
+  Console.writeLine("${result(Result.Ok(())) = Result.Ok(())} ${result(Result.Error("error")) = Result.Error("error")}")
+  Console.writeLine("${pair(Pair(42, true)) = Pair(42, true)}")
+  match Byte.fromInteger(255) with
+    case Option.Some(b) ->
+      Console.writeLine("${byte(b) = b}")
+      Console.writeLine(Bytes.toHex(bytes(Bytes.fromList([b]))))
+      Console.writeLine("${triple(Triple(b, '🦀', "text")) = Triple(b, '🦀', "text")}")
+    case Option.None -> ()
+  end match
+end function

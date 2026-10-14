@@ -1,4 +1,5 @@
 //! import の束縛と修正案の位置（設計書 02-04「import の宣言の誤り」）。
+use super::Level;
 
 use std::collections::BTreeMap;
 
@@ -174,7 +175,7 @@ impl Resolver<'_> {
                         import.id,
                         name,
                         BindingKind::Module(target),
-                        false,
+                        Level::Private,
                         None,
                     )
                 });

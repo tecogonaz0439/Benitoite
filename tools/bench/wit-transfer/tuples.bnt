@@ -1,0 +1,37 @@
+//! 欄ごとの変更を照合する、直接と間接の tuple の比較入力。
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+data Marker
+  Unused
+end data
+
+data One
+  Item(Integer)
+end data
+
+@external("wasm", "guests/tuples.wasm", "tuple1")
+function tuple1(v: One) -> One
+data Four
+  Item(Integer, Integer, Integer, Integer)
+end data
+
+@external("wasm", "guests/tuples.wasm", "tuple4")
+function tuple4(v: Four) -> Four
+data Seventeen
+  Item(Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer)
+end data
+
+@external("wasm", "guests/tuples.wasm", "tuple17")
+function tuple17(v: Seventeen) -> Seventeen
+function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+  bind Pair(n, rounds) <- try Runner.settings()
+
+  return Runner.verify(rounds, lambda() -> Boolean
+    bind c0 <- tuple1(One.Item(n)) = One.Item(n + 11)
+    bind c1 <- tuple4(Four.Item(n, n + 1, n + 2, n + 3)) = Four.Item(n + 11, n + 13, n + 15, n + 17)
+    bind c2 <- tuple17(Seventeen.Item(n, n + 1, n + 2, n + 3, n + 4, n + 5, n + 6, n + 7, n + 8, n + 9, n + 10, n + 11, n + 12, n + 13, n + 14, n + 15, n + 16)) = Seventeen.Item(n + 11, n + 13, n + 15, n + 17, n + 19, n + 21, n + 23, n + 25, n + 27, n + 29, n + 31, n + 33, n + 35, n + 37, n + 39, n + 41, n + 43)
+    return c0 and c1 and c2
+  end lambda)
+end function

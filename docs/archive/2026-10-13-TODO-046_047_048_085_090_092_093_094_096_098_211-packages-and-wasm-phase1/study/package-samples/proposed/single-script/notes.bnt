@@ -1,0 +1,40 @@
+//! メモを 1 行ずつファイルに足し、似た語で探す単体のスクリプト（提案の形）。
+//! 単体のスクリプトなので、依存の記述をこのファイルの先頭に書く。同じディレクトリに project.bnt があれば誤りになる。
+//!
+//!   benitoite run notes.bnt add "WASM の fuel を調べる"
+//!   benitoite run notes.bnt find "fule"
+
+language "0.2"
+
+dependency Fuzzy
+  source "https://github.com/example/benitoite-fuzzy"
+  version "1.0.0"
+  commit "4e3d2c1b0a99887766554433221100ffeeddccbb"
+  hash "sha256:1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014"
+end dependency
+
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+import Fuzzy.Distance
+
+function main() -> Result[Unit, String] uses Console.Write, File.Read, File.Write, Process.Environment
+  bind path <- Process.scriptDirectory() + "/notes.txt"
+  return match Process.arguments() with
+    case ["add", note] ->
+      bind _ <- try File.appendText(path, note + "\n") |> Result.mapError(_, IOError.message)
+      Result.Ok(())
+    case ["find", word] ->
+      bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+      bind words <- List.fold(String.lines(text), [], lambda(acc: List[String], line: String) -> List[String]
+        return List.concatenate(acc, String.split(line, " "))
+      end lambda)
+      match Distance.closest(word, words, 2) with
+        case Option.Some(found) ->
+          List.forEach(List.filter(String.lines(text), String.contains(_, found)), Console.writeLine)
+          Result.Ok(())
+        case Option.None -> Result.Error("no note like \"${word}\"")
+      end match
+    case _ -> Result.Error("usage: notes.bnt add NOTE | find WORD")
+  end match
+end function

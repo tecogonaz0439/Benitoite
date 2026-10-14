@@ -1,0 +1,56 @@
+//! 三つのパッケージのテスト。benitoite test tests.bnt で実行する。
+//! Fuzzy.Distance の期待値は、WASM の版（proposed/packages/fuzzy/）を作ったときに同じ結果を返すかを比べるのにも使う。
+
+import Benitoite.Unofficial.IO.File
+import Textkit.Slug
+import Todo.Store
+import Fuzzy.Distance
+
+@test("slug makes a lowercase name joined by hyphens")
+function slugJoinsWords() -> Unit uses Assert.Check
+  Assert.equal(Slug.slug("  Hello   World "), "hello-world")
+  Assert.equal(Slug.slug(""), "")
+end function
+
+@test("truncate cuts long text by characters")
+function truncateCuts() -> Unit uses Assert.Check
+  Assert.equal(Slug.truncate("こんにちは世界", 5), "こんにちは...")
+  Assert.equal(Slug.truncate("short", 10), "short")
+end function
+
+@test("distance counts insertions, deletions, and substitutions")
+function distanceCounts() -> Unit uses Assert.Check
+  Assert.equal(Distance.distance("kitten", "sitting"), 3)
+  Assert.equal(Distance.distance("", "abc"), 3)
+  Assert.equal(Distance.distance("abc", ""), 3)
+  Assert.equal(Distance.distance("same", "same"), 0)
+  Assert.equal(Distance.distance("ねこ", "ねご"), 1)
+end function
+
+@test("closest picks the nearest candidate within the limit")
+function closestPicks() -> Unit uses Assert.Check
+  Assert.equal(Distance.closest("buy mlk", ["Read book", "Buy milk"], 3), Option.Some("Buy milk"))
+  Assert.equal(Distance.closest("zzz", ["Read book", "Buy milk"], 3), Option.None)
+end function
+
+@test("load reads tasks and skips other lines, without touching the disk")
+function loadReadsTasks() -> Unit uses Assert.Check, File.Read
+  bind result <- handle
+    Store.load("todo.txt")
+  with
+    case File.readText(path) ->
+      Assert.equal(path, "todo.txt")
+      resume(Result.Ok("[x] Buy milk\nnot a task\n[ ] Read book\n"))
+  end handle
+  // IOError は比べられない型なので、Result のまま比べず、中身を取り出して比べる。
+  Assert.equal(Result.unwrapOr(result, []), [
+    Store.Item(done: true, title: "Buy milk"),
+    Store.Item(done: false, title: "Read book")
+  ])
+end function
+
+@test("complete marks only the matching task")
+function completeMarks() -> Unit uses Assert.Check
+  bind items <- [Store.Item(done: false, title: "a"), Store.Item(done: false, title: "b")]
+  Assert.equal(Store.complete(items, "b"), [Store.Item(done: false, title: "a"), Store.Item(done: true, title: "b")])
+end function

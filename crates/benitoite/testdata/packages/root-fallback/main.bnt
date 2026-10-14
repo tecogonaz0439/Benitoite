@@ -1,0 +1,10 @@
+// spec: 01-03 依存のパッケージの取り込み
+dependency Textkit
+  path "deps/textkit"
+end dependency
+import Benitoite.Unofficial.IO.Console
+import Textkit
+import Textkit.Local
+function main() -> Unit uses Console.Write
+  Console.writeLine(Textkit.name() + Local.name())
+end function

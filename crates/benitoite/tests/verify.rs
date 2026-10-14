@@ -90,6 +90,7 @@ fn copy(p: &CompiledProgram) -> CompiledProgram {
         impls: p.impls.clone(),
         ops: p.ops.clone(),
         builtins: p.builtins.clone(),
+        externals: p.externals.clone(),
         handlers: p.handlers.clone(),
         main: p.main,
         main_kind: p.main_kind,

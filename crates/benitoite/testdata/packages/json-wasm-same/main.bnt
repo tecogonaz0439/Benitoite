@@ -1,0 +1,203 @@
+// spec: 01-02 外部の関数の宣言
+// 関門: 三つの越え方を実際のパッケージで使い、組み込み版と CLI で比較する。
+// ゲストの診断・数の分類・木の組み直し・JSON Pointer を型変換の往復だけでは確かめられない。
+dependency WasmJson
+  path "../libraries.files/wasm-json"
+end dependency
+
+dependency PureJson
+  path "../libraries.files/pure-json"
+end dependency
+
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Trait
+import PureJson.Parser
+import WasmJson.Codec
+
+function description(result: Result[Json.Value, Json.ParseError]) -> String
+  return match result with
+    case Result.Ok(value) -> "ok " + Json.stringify(value)
+    case Result.Error(error) -> "error ${Json.ParseError.line(error)}:${Json.ParseError.column(error)} " + Json.ParseError.message(error)
+  end match
+end function
+
+function length(value: Json.Value) -> Option[Integer]
+  return match value with
+    case Json.Value.Array(items) -> Option.Some(List.length(items))
+    case Json.Value.Object(items) -> Option.Some(Map.size(items))
+    case _ -> Option.None
+  end match
+end function
+
+function compare(source: String) -> Result[Unit, String] uses State, Console.Write
+  bind a <- Json.parse(source)
+  // B の診断の全表と深さは専用のケースで確かめ、三者の比較は短い代表に限る。
+  // 注文の実データは acceptance/json_summary.files/orders.json と同じ入力で三者を比較する。
+  bind withB <- List.contains([
+    "[\n  {\"id\": 1, \"category\": \"book\", \"amount\": 1200},\n  {\"id\": 2, \"category\": \"food\", \"amount\": 350},\n  {\"id\": 3, \"category\": \"book\", \"amount\": 800},\n  {\"id\": 4, \"category\": \"tool\", \"amount\": 4300},\n  {\"id\": 5, \"category\": \"food\", \"amount\": 150}\n]\n",
+    "[-0,-0.0,1.0,1e2]",
+    "{\"z\":1,\"a\":[true,null,{\"é\":\"😀\"}],\"z\":2}",
+    "\"\\u00e9\\ud83d\\ude00\"",
+    "[1e15,1e16,1e17,1e-5,1e-6,5e-324,1.7976931348623157e308,-0.0]",
+    "[\"é😀\",]",
+    "{\"a\" 1}",
+    "\"\\uD800x\"",
+    "1e400",
+    "[1,",
+    ""
+  ], source)
+  bind b <- if withB then Parser.parse(source) else a end if
+  bind bOutput <- if withB then match Pair(a, b) with
+    case Pair(Result.Ok(x), Result.Ok(y)) -> Json.stringify(x) = Parser.stringify(y) and Json.stringifyPretty(x) = Parser.stringifyPretty(y)
+    case Pair(Result.Error(_), Result.Error(_)) -> true
+    case _ -> false
+  end match else true end if
+  bind c <- Codec.parse(source)
+  bind validate <- Codec.validate(source) = Result.map(a, lambda(_value: Json.Value) -> Unit return () end lambda)
+  bind strings <- Codec.minify(source) = Result.map(a, Json.stringify) and Codec.pretty(source) = Result.map(a, Json.stringifyPretty)
+  bind document <- Codec.document(source)
+  bind same <- match Pair(a, document) with
+    case Pair(Result.Error(x), Result.Error(y)) -> x = y
+    case Pair(Result.Ok(value), Result.Ok(doc)) -> Codec.get(doc, "") = Option.Some(Json.stringify(value)) and Codec.len(doc, "") = length(value)
+    case _ -> false
+  end match
+  bind output <- match Pair(a, c) with
+    case Pair(Result.Ok(x), Result.Ok(y)) -> Codec.stringify(y) = Result.Ok(Json.stringify(x)) and Codec.stringifyPretty(y) = Result.Ok(Json.stringifyPretty(x))
+    case Pair(Result.Error(_), Result.Error(_)) -> true
+    case _ -> false
+  end match
+  Console.writeLine(description(a) + (if withB then " | Bvalue=${a = b} Boutput=${bOutput}" else "" end if) + " | validate=${validate} strings=${strings} value=${a = c} output=${output} document=${same}")
+  return if a = b and bOutput and validate and strings and a = c and output and same then Result.Ok(()) else Result.Error("A=" + description(a) + " B=" + description(b) + " C=" + description(c)) end if
+end function
+
+function deep(n: Integer, value: Json.Value) -> Json.Value
+  return if n = 0 then value else deep(n - 1, Json.Value.Array([value])) end if
+end function
+
+function pointers() -> Result[Unit, String] uses State, Console.Write
+  bind source <- "{\"a/b\":{\"~key\":[null,-0.0,{\"x\":2}]},\"\":[],\"tilde~1\":true}"
+  bind a <- Result.unwrapOr(Json.parse(source), Json.Value.Null)
+  bind doc <- try Result.mapError(Codec.document(source), Json.ParseError.message)
+  bind object <- Option.unwrapOr(Json.get(a, "a/b"), Json.Value.Null)
+  bind array <- Option.unwrapOr(Json.get(object, "~key"), Json.Value.Null)
+  bind cases <- [Pair("", Option.Some(a)), Pair("/", Json.get(a, "")), Pair("/a~1b", Json.get(a, "a/b")), Pair("/a~1b/~0key", Json.get(object, "~key")), Pair("/a~1b/~0key/0", Json.at(array, 0)), Pair("/a~1b/~0key/1", Json.at(array, 1)), Pair("/a~1b/~0key/2", Json.at(array, 2)), Pair("/a~1b/~0key/2/x", Json.get(Option.unwrapOr(Json.at(array, 2), Json.Value.Null), "x")), Pair("/tilde~01", Json.get(a, "tilde~1")), Pair("/missing", Option.None), Pair("/a~1b/~0key/01", Option.None), Pair("/a~1b/~0key/-1", Option.None), Pair("/a~1b/~0key/+1", Option.None), Pair("/a~1b/~0key/3", Option.None), Pair("/a~1b/~0key/-", Option.None), Pair("/a~1b/~0key/1/x", Option.None), Pair("/a~2b", Option.None), Pair("/a~", Option.None), Pair("a/b", Option.None)]
+  return List.fold(cases, Result.Ok(()), lambda(acc: Result[Unit, String], pair: Pair[String, Option[Json.Value]]) -> Result[Unit, String] uses State, Console.Write
+    bind _ <- try acc
+    bind path <- Pair.first(pair)
+    bind value <- Pair.second(pair)
+    bind expected <- Option.map(value, Json.stringify)
+    bind count <- Option.andThen(value, length)
+    bind actual <- Codec.get(doc, path)
+    bind size <- Codec.len(doc, path)
+    Console.writeLine("pointer " + Json.stringify(Json.Value.String(path)) + " A=" + Trait.Show.show(expected) + " len=" + Trait.Show.show(count) + " | get=${actual = expected} len=${size = count}")
+    return if actual = expected and size = count then Result.Ok(()) else Result.Error("JSON Pointer mismatch: " + path) end if
+  end lambda)
+end function
+
+function main() -> Result[Unit, String] uses State, Console.Write
+  bind sources <- [
+    "[\n  {\"id\": 1, \"category\": \"book\", \"amount\": 1200},\n  {\"id\": 2, \"category\": \"food\", \"amount\": 350},\n  {\"id\": 3, \"category\": \"book\", \"amount\": 800},\n  {\"id\": 4, \"category\": \"tool\", \"amount\": 4300},\n  {\"id\": 5, \"category\": \"food\", \"amount\": 150}\n]\n",
+    "[-0,-0.0,1.0,1e2]",
+    "{\"z\":1,\"a\":true,\"z\":2}",
+    " \n null\t ",
+    "true",
+    "false",
+    "\"\\u00e9\\ud83d\\ude00\"",
+    "\"\\\"\\\\\\b\\f\\n\\r\\t\\u0000\\u001f/\"",
+    "\"\u{7f}\"",
+    "[]",
+    "{}",
+    "{\"z\":1,\"a\":[true,null,{\"é\":\"😀\"}],\"z\":2}",
+    "[1,-2,3.0,\"text\",false]",
+    "[-0, -0.0, -0e3, -0]",
+    "{\"a\":-0.0,\"a\":-0}",
+    "{\"a\":-0,\"a\":-0.0,\"b\":-0}",
+    "{\"n\":\"1e400 and \\\"-1e400\\\"\"}",
+    "{\"$serde_json::private::Number\":\"123\"}",
+    "{\"\\u0024serde_json::private::Number\":\"1e9999\"}",
+    "{\"b\":{},\"a\":[1,{\"x\":[]},2]}",
+    "[-140268391805775.625,140268391805775.625]",
+    "[1e15,1e16,1e17,1e-5,1e-6,5e-324,1.7976931348623157e308,-0.0]",
+    "[9223372036854775807,-9223372036854775808,9223372036854775808,18446744073709551616,-9223372036854775809,1e300,-0.0025]",
+    "\"\\/\\uD800\\uDC00\\uDBFF\\uDFFF\"",
+    "{\"é\":1,\"😀\":2,\"a\":3}",
+    "[1e-9999,0e9999,-0e9999]",
+    "[1,]",
+    "[1-2]",
+    "[1+2]",
+    "[1.5.5]",
+    "{\"a\":1e5e5}",
+    "[1,2-]",
+    "[1E+2-3]",
+    "[\"\\\\\",1-2]",
+    "[01]",
+    "[-]",
+    "[1.]",
+    "[1.0e]",
+    "1 2",
+    "[\n1,\n]",
+    "[\"é😀\",]",
+    "\"é",
+    "[1,",
+    "",
+    "   ",
+    "[1,\r\n",
+    "[1,\r",
+    "[1,\n",
+    "1e400",
+    "-1e400",
+    "{\n \"é😀\": [0, -1e400]\n}",
+    "[\"1e400\\\"\",2,1e400]",
+    "{\"a\":1e400,\"a\":0}",
+    "[1e400,}",
+    "[},1e400]",
+    "[",
+    "{",
+    "{\"a\"",
+    "{\"a\" 1}",
+    "{1:2}",
+    "{\"a\":1 \"b\":2}",
+    "{\"a\":1,}",
+    "nulX",
+    "tru",
+    "?",
+    "\"\\q\"",
+    "\"\\uZZZZ\"",
+    "\"\\uDC00\"",
+    "\"\\uD800x\"",
+    "\"\\uD800\\n\"",
+    "\"\\uD800\\u0041\"",
+    "\"a\u{1}b\"",
+    "\"a\nb\"",
+    "\"\\u123",
+    "1.",
+    "1e",
+    "-",
+    "\"\\uD800",
+    "\"\\uD800\\",
+    "[1]",
+    "{\"a\":}",
+    "\"\\uZZZZx\""
+  ]
+  bind _ <- try List.fold(sources, Result.Ok(()), lambda(acc: Result[Unit, String], source: String) -> Result[Unit, String] uses State, Console.Write
+    bind _ <- try acc
+    return compare(source)
+  end lambda)
+  bind _ <- try List.fold([127, 128, 1000], Result.Ok(()), lambda(acc: Result[Unit, String], n: Integer) -> Result[Unit, String] uses State, Console.Write
+    bind _ <- try acc
+    return compare(String.repeat("[", n) + "0" + String.repeat("]", n))
+  end lambda)
+  // gc-stress で 10 秒以内に収めるため書き出す値は 128 段にする。
+  // ゲストの変換・書き出し・解放が明示の積み重ねで辿ることはコードを読んで確かめた。
+  bind values <- [Pair("deep 128", deep(128, Json.Value.Null)), Pair("non-finite", Json.Value.Array([Json.Value.Float(0.0 / 0.0), Json.Value.Float(1.0 / 0.0), Json.Value.Float(-1.0 / 0.0)])), Pair("nested members", Json.Value.Object(Map.fromList([Pair("z", Json.Value.Array([Json.Value.Object(Map.fromList([Pair("a", Json.Value.Array([])), Pair("b", Json.Value.Object(Map.empty()))]))])), Pair("a", Json.Value.Object(Map.fromList([Pair("x", Json.Value.Null)])))])))]
+  bind _ <- try List.fold(values, Result.Ok(()), lambda(acc: Result[Unit, String], pair: Pair[String, Json.Value]) -> Result[Unit, String] uses Console.Write
+    bind _ <- try acc
+    bind value <- Pair.second(pair)
+    bind same <- Codec.stringify(value) = Result.Ok(Json.stringify(value))
+    bind pretty <- Codec.stringifyPretty(value) = Result.Ok(Json.stringifyPretty(value))
+    Console.writeLine(Pair.first(pair) + " A=" + Json.stringify(value) + " | compact=${same} pretty=${pretty}")
+    return if same and pretty then Result.Ok(()) else Result.Error("JSON writing mismatch") end if
+  end lambda)
+  return pointers()
+end function

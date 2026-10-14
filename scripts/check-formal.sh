@@ -89,6 +89,11 @@ printf '%s\n' '== formal: lake build surfaceCheckAll'
 (cd formal && lake build surfaceCheckAll)
 printf 'lake build surfaceCheckAll: %ss\n' "$((SECONDS - surface_build_start))"
 
+width_exchange_start=$SECONDS
+printf '%s\n' '== formal: width exchange'
+python3 -I formal/tests/test_width_exchange.py
+printf 'width exchange: %ss; reports: target/p3a-gate/width-exchange/\n' "$((SECONDS - width_exchange_start))"
+
 export_start=$SECONDS
 printf '%s\n' '== formal: Rust export'
 cargo test --test desugar_export -- --include-ignored --nocapture

@@ -1,0 +1,50 @@
+// spec: 01-02 外部の関数の宣言
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Trait
+record Point
+  byteStart: Integer
+  y: Integer
+end record
+data Shape
+  Circle(Integer)
+  Rect(Point)
+  Empty
+end data
+data Color
+  Red
+  Green
+  BlueIsh
+end data
+data Plain
+  On
+  Off
+end data
+data MyError
+  NotFound(Integer)
+  Empty
+end data
+@external("wasm", "x.wasm", "move-point")
+function move(p: Point) -> Point
+@external("wasm", "x.wasm", "bnt:test/shapes#echo-shape")
+function shape(s: Shape) -> Shape
+@external("wasm", "x.wasm", "bnt:test/shapes#next-color")
+function nextColor(c: Color) -> Color
+@external("wasm", "x.wasm", "bnt:test/shapes#flip-plain")
+function flip(p: Plain) -> Plain
+@external("wasm", "x.wasm", "bnt:test/shapes#result")
+function result(r: Result[Integer, MyError]) -> Result[Integer, MyError]
+@external("wasm", "x.wasm", "bnt:test/shapes#option")
+function option(o: Option[Point]) -> Option[Point]
+@external("wasm", "x.wasm", "bnt:test/shapes#echo-ordering")
+function ordering(o: Trait.Ordering) -> Trait.Ordering
+function main() -> Unit uses Console.Write
+  bind p <- Point(byteStart: -42, y: 7)
+  bind moved <- move(p)
+  Console.writeLine("${Point.byteStart(moved)} ${Point.y(moved)}")
+  Console.writeLine("${shape(Shape.Circle(42)) = Shape.Circle(42)} ${shape(Shape.Rect(p)) = Shape.Rect(p)} ${shape(Shape.Empty) = Shape.Empty}")
+  Console.writeLine("${nextColor(Color.Red) = Color.Green} ${nextColor(Color.Green) = Color.BlueIsh} ${nextColor(Color.BlueIsh) = Color.Red}")
+  Console.writeLine("${flip(Plain.On) = Plain.Off} ${flip(Plain.Off) = Plain.On}")
+  Console.writeLine("${result(Result.Ok(42)) = Result.Ok(42)} ${result(Result.Error(MyError.NotFound(9))) = Result.Error(MyError.NotFound(9))} ${result(Result.Error(MyError.Empty)) = Result.Error(MyError.Empty)}")
+  Console.writeLine("${option(Option.Some(p)) = Option.Some(p)} ${option(Option.None) = Option.None}")
+  Console.writeLine("${ordering(Trait.Ordering.Less) = Trait.Ordering.Equal} ${ordering(Trait.Ordering.Equal) = Trait.Ordering.Greater} ${ordering(Trait.Ordering.Greater) = Trait.Ordering.Less}")
+end function

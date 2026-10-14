@@ -1,0 +1,58 @@
+{
+  "literals": [
+    {"name":"old-integer", "type":"Integer", "value":{"integer":{"value":-9223372036854775808}}},
+    {"name":"integer64", "type":"Integer64", "value":{"integer":{"value":42}}},
+    {"name":"old-float", "type":"Float", "value":{"float":{"bits":"4609434218613702656"}}},
+    {"name":"float64", "type":"Float64", "value":{"float":{"bits":"9223372036854775808"}}},
+    {"name":"byte", "type":"Byte", "value":{"byte":{"value":255}}},
+    {"name":"unsigned8", "type":"UnsignedInteger8", "value":{"byte":{"value":0}}},
+    {"name":"integer8", "type":"Integer8", "value":{"integer8":{"value":127}}},
+    {"name":"integer16", "type":"Integer16", "value":{"integer16":{"value":32767}}},
+    {"name":"integer32", "type":"Integer32", "value":{"integer32":{"value":2147483647}}},
+    {"name":"negative-integer8", "type":"Integer8", "value":{"integer8":{"value":-128}}},
+    {"name":"unsigned16", "type":"UnsignedInteger16", "value":{"unsignedInteger16":{"value":65535}}},
+    {"name":"unsigned32", "type":"UnsignedInteger32", "value":{"unsignedInteger32":{"value":4294967295}}},
+    {"name":"unsigned64", "type":"UnsignedInteger64", "value":{"unsignedInteger64":{"value":18446744073709551615}}},
+    {"name":"unsigned-alias", "type":"UnsignedInteger", "value":{"unsignedInteger64":{"value":9223372036854775808}}},
+    {"name":"float32", "type":"Float32", "value":{"float32":{"bits":1069547520}}},
+    {"name":"float32-nan", "type":"Float32", "value":{"float32":{"bits":2143289345}}}
+  ],
+  "directNegations": [
+    {"name":"minimum-integer8", "type":"Integer8", "surface":{"negInteger8":{"magnitude":128}}, "value":{"integer8":{"value":-128}}},
+    {"name":"minimum-integer16", "type":"Integer16", "surface":{"negInteger16":{"magnitude":32768}}, "value":{"integer16":{"value":-32768}}},
+    {"name":"minimum-integer32", "type":"Integer32", "surface":{"negInteger32":{"magnitude":2147483648}}, "value":{"integer32":{"value":-2147483648}}},
+    {"name":"float32-negative-zero", "type":"Float32", "surface":{"negFloat32":{"bits":2147483648}}, "value":{"float32":{"bits":2147483648}}},
+    {"name":"float32-negative", "type":"Float32", "surface":{"negFloat32":{"bits":3217031168}}, "value":{"float32":{"bits":3217031168}}},
+    {"name":"float32-negative-nan", "type":"Float32", "surface":{"negFloat32":{"bits":4290772993}}, "value":{"float32":{"bits":4290772993}}}
+  ],
+  "operators": [
+    {"op":"add", "operand":{"base":{"name":"Integer8"}}, "name":"Integer8.add"},
+    {"op":"sub", "operand":{"base":{"name":"Integer16"}}, "name":"Integer16.subtract"},
+    {"op":"mul", "operand":{"base":{"name":"Integer32"}}, "name":"Integer32.multiply"},
+    {"op":"intDiv", "operand":{"base":{"name":"UnsignedInteger16"}}, "name":"UnsignedInteger16.divide"},
+    {"op":"mod", "operand":{"base":{"name":"UnsignedInteger32"}}, "name":"UnsignedInteger32.modulo"},
+    {"op":"add", "operand":{"base":{"name":"UnsignedInteger"}}, "name":"UnsignedInteger64.add"},
+    {"op":"div", "operand":{"base":{"name":"Float32"}}, "name":"Float32.divide"},
+    {"op":"neg", "operand":{"base":{"name":"Integer32"}}, "name":"Integer32.negate"},
+    {"op":"neg", "operand":{"base":{"name":"Float32"}}, "name":"Float32.negate"},
+    {"op":"neg", "operand":{"base":{"name":"Integer64"}}, "name":"Integer.negate"}
+  ],
+  "binaryCore": {
+    "letIn":{"bound":{"ret":{"value":{"var":{"index":1}}}}, "body":{
+      "letIn":{"bound":{"ret":{"value":{"var":{"index":1}}}}, "body":{
+        "app":{"callee":{"prim":{"name":"$primitive", "tys":[], "effs":[]}}, "args":[{"var":{"index":1}},{"var":{"index":0}}]}
+      }}
+    }}
+  },
+  "negCore": {
+    "letIn":{"bound":{"ret":{"value":{"var":{"index":0}}}}, "body":{
+      "app":{"callee":{"prim":{"name":"$primitive", "tys":[], "effs":[]}}, "args":[{"var":{"index":0}}]}
+    }}
+  },
+  "interpolationCore": {
+    "letIn":{"bound":{"ret":{"value":{"var":{"index":0}}}}, "body":{
+      "letIn":{"bound":{"app":{"callee":{"prim":{"name":"$primitive", "tys":[], "effs":[]}}, "args":[{"var":{"index":0}}]}},
+        "body":{"ret":{"value":{"var":{"index":0}}}}}
+    }}
+  }
+}

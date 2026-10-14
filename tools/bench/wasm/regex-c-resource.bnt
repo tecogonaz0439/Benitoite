@@ -1,0 +1,31 @@
+//! 正規表現の保持と作り直しの費用を比較する（設計書 07-02「測る項目」）。
+dependency WasmRegex
+  path "../../../crates/benitoite/testdata/packages/libraries.files/wasm-regex"
+end dependency
+
+import WasmRegex.Pattern
+import Benitoite.Unofficial.Regex
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Clock
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Runner
+
+function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write, Process.Environment
+  bind task <- try Runner.argument(0)
+  bind path <- try Runner.argument(1)
+  bind count <- try Runner.rounds(2)
+  bind source <- "[a-z]+[0-9]+"
+  bind input <- try Result.mapError(File.readText(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
+  bind pattern <- try Pattern.compile(source)
+  if task = "match" then
+    return Runner.measure(count, lambda() -> Result[Boolean, String] uses State return Result.Ok(Pattern.isMatch(pattern, input)) end lambda, lambda(b: Boolean) -> String return if b then "true" else "false" end if end lambda)
+  end if
+  if task = "count" then
+    return Runner.measure(count, lambda() -> Result[Integer, String] uses State return Result.Ok(Pattern.count(pattern, input)) end lambda, Integer.toString)
+  end if
+  if task = "find-all" then
+    return Runner.measure(count, lambda() -> Result[Integer, String] uses State return Result.Ok(List.length(Pattern.findAll(pattern, input))) end lambda, Integer.toString)
+  end if
+  return Result.Error("unknown Regex task")
+end function

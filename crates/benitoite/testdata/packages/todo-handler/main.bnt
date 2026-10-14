@@ -1,0 +1,23 @@
+// spec: 01-03 依存のパッケージの取り込み
+dependency Todo
+  path "deps/todo"
+end dependency
+import Benitoite.Unofficial.IO.File
+import Todo.Store
+
+@test("load reads tasks and skips other lines, without touching the disk")
+function loadReadsTasks() -> Unit uses Assert.Check, File.Read
+  bind result <- handle
+    Store.load("todo.txt")
+  with
+    case File.readText(path) ->
+      Assert.equal(path, "todo.txt")
+      resume(Result.Ok("[x] Buy milk\nnot a task\n[ ] Read book\n"))
+  end handle
+  // IOError は比べられない型なので、Result のまま比べず、中身を取り出して比べる。
+  Assert.equal(Result.unwrapOr(result, []), [
+    Store.Item(done: true, title: "Buy milk"),
+    Store.Item(done: false, title: "Read book")
+  ])
+end function
+

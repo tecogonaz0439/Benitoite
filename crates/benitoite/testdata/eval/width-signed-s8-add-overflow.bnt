@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.Console
+function calculate(a: Integer8, b: Integer8) -> Integer8
+  return a + b
+end function
+function main() -> Unit uses Console.Write
+  bind _ <- calculate(127s8, 1s8)
+  Console.writeLine("unreachable")
+end function

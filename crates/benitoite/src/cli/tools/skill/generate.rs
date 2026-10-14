@@ -1,7 +1,8 @@
 //! 同梱の Agent Skill の参照の文書の生成（設計書 06-06「同梱の Agent Skill の構成」）。
 //! 生成の道具（`examples/gen_skill.rs`）と、生成物が古くないことのテスト（`tests/skill_docs.rs`）が呼ぶ。
 //!
-//! 生成物は、構文の章・標準ライブラリのソース・診断の表だけから決まる。実行の日時や環境を読まない（設計書 06-06「同梱の Agent Skill の構成」）。
+//! 生成物は、構文の章・標準ライブラリのソース・組み込みの型名の表・診断の表から決まる。
+//! 実行の日時や環境を読まない（設計書 06-06「同梱の Agent Skill の構成」）。
 
 use crate::base::{FileId, IdGen, SourceKind, Span};
 use crate::diag::codes::ALL;
@@ -12,6 +13,7 @@ use crate::syntax::ast::{Item, TopDecl};
 use crate::syntax::lexer::lex;
 use crate::syntax::newline::resolve_newlines;
 use crate::syntax::parser::parse;
+use crate::types::builtin::NUMBER_TYPE_NAMES;
 
 /// 生成する文書一つ。
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -48,6 +50,15 @@ in this directory. Unofficial modules may change; their import name changes when
 `import Benitoite.{name}`.";
     pub const LINE_QUALIFY: &str =
         "Refer to its declarations as `{last}.<name>`, for example `{last}.{example}`.";
+    pub const TYPE_DESCRIPTION: &str = "The `{name}` numeric type.";
+    pub const LINE_TYPE_NAME: &str =
+        "Type: `{name}`. Canonical name: `{canonical}`. Displayed as `{display}`.";
+    pub const LINE_TYPE_ALIASES: &str = "Accepted aliases for this type: {aliases}.";
+    pub const TYPE_HEADING: &str = "## Type";
+    pub const LINE_TYPE_IDENTITY: &str =
+        "These names denote the same type; they do not require a conversion.";
+    pub const LINE_TYPE_DISTINCT: &str =
+        "This is a distinct numeric type. There are no implicit conversions between numeric types.";
     pub const KIND_CHECK: &str = "check";
     pub const KIND_LIMIT: &str = "limit";
     pub const KIND_RUNTIME: &str = "runtime";
@@ -237,12 +248,22 @@ fn module_reference(module: &StdlibModuleSource, name: &str) -> Result<(String, 
     if !lexed.diagnostics.is_empty() || !parsed.diagnostics.is_empty() {
         return Err(format!("{}: {name}", text::PARSE_FAILED));
     }
+    let number_names = NUMBER_TYPE_NAMES.iter().find(|names| {
+        module.path == [names.canonical]
+            || names.aliases.iter().any(|alias| module.path == [*alias])
+    });
     let doc = parsed
         .module
         .doc
         .as_ref()
         .map(|d| doc_text(&d.text))
-        .unwrap_or_default();
+        .unwrap_or_else(|| {
+            if number_names.is_some() {
+                text::TYPE_DESCRIPTION.replace("{name}", name)
+            } else {
+                String::new()
+            }
+        });
     let status = if module.unofficial {
         text::LINE_UNOFFICIAL
     } else if module.prelude {
@@ -256,7 +277,7 @@ fn module_reference(module: &StdlibModuleSource, name: &str) -> Result<(String, 
         .module
         .decls
         .iter()
-        .filter(|d| d.public.is_some())
+        .filter(|d| d.public.is_some() && d.package.is_none())
         .find_map(|d| decl_name(&d.item));
     if let Some(example) = example {
         let last = module.path.last().copied().unwrap_or(name);
@@ -270,7 +291,35 @@ fn module_reference(module: &StdlibModuleSource, name: &str) -> Result<(String, 
     if !doc.is_empty() {
         out.push_str(&format!("\n{doc}\n"));
     }
+    // ソースに宣言のない組み込みの型も、名前解決と同じ表から同一性を説明する。
+    if let Some(names) = number_names {
+        out.push_str(&format!(
+            "\n{}\n\n{}\n",
+            text::TYPE_HEADING,
+            text::LINE_TYPE_NAME
+                .replace("{name}", name)
+                .replace("{canonical}", names.canonical)
+                .replace("{display}", names.display)
+        ));
+        if !names.aliases.is_empty() {
+            let aliases = names
+                .aliases
+                .iter()
+                .map(|alias| format!("`{alias}`"))
+                .collect::<Vec<_>>()
+                .join(", ");
+            out.push_str(&format!(
+                "\n{} {}\n",
+                text::LINE_TYPE_ALIASES.replace("{aliases}", &aliases),
+                text::LINE_TYPE_IDENTITY
+            ));
+        }
+        out.push_str(&format!("\n{}\n", text::LINE_TYPE_DISTINCT));
+    }
     for decl in &parsed.module.decls {
+        if decl.package.is_some() {
+            continue;
+        }
         let Some(public) = decl.public else {
             continue;
         };
@@ -297,6 +346,7 @@ fn decl_head(source: &str, public: Span, decl: &TopDecl) -> Option<String> {
         Item::Const(c) => c.ty.span().end,
         Item::Data(d) => d.span.end,
         Item::Alias(a) => a.span.end,
+        Item::ExternalType(d) => d.span.end,
         Item::Record(r) => r.span.end,
         Item::Trait(t) => t.span.end,
         Item::Effect(e) => e.span.end,
@@ -314,6 +364,7 @@ fn decl_name(item: &Item) -> Option<&str> {
         Item::Const(c) => &c.name,
         Item::Data(d) => &d.name,
         Item::Alias(a) => &a.name,
+        Item::ExternalType(d) => &d.name,
         Item::Record(r) => &r.name,
         Item::Trait(t) => &t.name,
         Item::Effect(e) => &e.name,

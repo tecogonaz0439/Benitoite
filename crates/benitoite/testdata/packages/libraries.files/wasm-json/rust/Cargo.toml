@@ -1,0 +1,30 @@
+[package]
+name = "bnt-wasm-json"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wit-bindgen = "=0.62.0"
+serde_json = { version = "=1.0.151", features = ["float_roundtrip"] }
+# 数の書式と本体の依存の版を揃えるため、間接の依存も固定する。
+serde_core = "=1.0.229"
+zmij = "=1.0.23"
+
+[profile.release]
+opt-level = "s"
+panic = "abort"
+lto = true
+codegen-units = 1
+strip = true
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+indexing_slicing = "deny"
+panic = "deny"
+
+[workspace]

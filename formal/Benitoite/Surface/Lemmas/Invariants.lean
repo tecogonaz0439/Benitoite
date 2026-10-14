@@ -148,7 +148,7 @@ mutual
     match h with
     | .P_Wild => trivial
     | .P_Var => exact ⟨ha, trivial⟩
-    | .P_Const _ _ _ _ => trivial
+    | .P_Const _ => trivial
     | .P_RangeInt => trivial
     | .P_RangeChar => trivial
     | .P_List (rest := rest) (a := t) hb ht _ =>
@@ -329,20 +329,24 @@ mutual
     | .E_NegInt => trivial
     | .E_NegFloat => trivial
     | .E_NegDecimal => trivial
+    | .E_NegInteger8 => trivial
+    | .E_NegInteger16 => trivial
+    | .E_NegInteger32 => trivial
+    | .E_NegFloat32 => trivial
     | .E_Unit => trivial
     | .E_Paren h => exact HasType.clean hwf hsig h sc hΓ hR
     | .E_ConCall _ _ _ => exact scopedList_clean sc.1
     | .E_Record _ _ _ _ => exact scopedList_clean sc.1
     | .E_RecordUpdate _ _ _ _ _ _ _ _ _ => exact scopedList_clean sc.1
     | .E_Call hf _ => exact (HasType.clean hwf hsig hf sc.1 hΓ hR).2.1
-    | .E_Binary (o := o) (ts := ts) (s := sg) _ hts hs ht _ _ heq _ _ =>
+    | .E_Binary (o := o) (ts := ts) (s := sg) _ _ hts hs ht _ _ heq _ _ =>
         have ss := hsig _ _ hs
         have hh := fnTy_clean (n := C.length) (ε := sg.eff) (ts := ts) (es := [])
           (by rw [hts]; cases o <;> simp [Operator.typeArgs, Ty.VarsInList]; all_goals exact scoped_clean sc.1)
           (by rw [ht]; exact scopedList_clean ss.1)
           (by rw [ht]; exact scoped_clean ss.2.1)
         rw [heq] at hh; exact hh.2.1
-    | .E_Neg _ _ _ _ _ _ _ _ => exact scoped_clean sc.1
+    | .E_Neg _ _ _ _ _ _ _ _ _ => exact scoped_clean sc.1
     | .E_Not _ => trivial
     | .E_And _ _ => trivial
     | .E_Or _ _ => trivial

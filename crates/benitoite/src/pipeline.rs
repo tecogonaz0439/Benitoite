@@ -249,6 +249,17 @@ pub(super) fn on_large_stack<T: Send>(f: impl FnOnce() -> T + Send) -> std::io::
 fn check_stages(entry: &EntrySpec, fs: &dyn ModuleFs, opts: CheckOptions) -> CheckResult {
     let mut ids = crate::base::IdGen::new();
     let loaded = crate::modules::load_program(entry, crate::prelude::STDLIB, fs, &mut ids);
+    let hidden_warnings: std::collections::BTreeSet<_> = loaded
+        .modules
+        .iter()
+        .filter(|module| {
+            matches!(
+                module.kind,
+                crate::modules::ModuleKind::Package | crate::modules::ModuleKind::PackageConfig
+            )
+        })
+        .map(|module| module.id.file())
+        .collect();
     let sources = Arc::new(loaded.sources);
     let entry_file = sources
         .get(FileId(0))
@@ -260,11 +271,15 @@ fn check_stages(entry: &EntrySpec, fs: &dyn ModuleFs, opts: CheckOptions) -> Che
         diagnostics: Vec::new(),
         program: None,
     };
-    append_stage(&mut result, loaded.diagnostics);
+    append_stage(&mut result, loaded.diagnostics, &hidden_warnings);
     if !result.diagnostics.iter().any(Diagnostic::is_error) {
         let mut resolved =
             crate::resolve::resolve(&loaded.modules, &loaded.asts, &result.sources, &mut ids);
-        append_stage(&mut result, std::mem::take(&mut resolved.diagnostics));
+        append_stage(
+            &mut result,
+            std::mem::take(&mut resolved.diagnostics),
+            &hidden_warnings,
+        );
         if !result.diagnostics.iter().any(Diagnostic::is_error) {
             let (types, diagnostics) = crate::typeck::typecheck(
                 &loaded.modules,
@@ -273,7 +288,19 @@ fn check_stages(entry: &EntrySpec, fs: &dyn ModuleFs, opts: CheckOptions) -> Che
                 &resolved,
                 opts.require_main,
             );
-            append_stage(&mut result, diagnostics);
+            append_stage(&mut result, diagnostics, &hidden_warnings);
+            if !result.diagnostics.iter().any(Diagnostic::is_error) {
+                let diagnostics = crate::external::check_externals(
+                    entry,
+                    fs,
+                    &loaded.modules,
+                    &loaded.asts,
+                    &result.sources,
+                    &mut resolved,
+                    &types,
+                );
+                append_stage(&mut result, diagnostics, &hidden_warnings);
+            }
             if !result.diagnostics.iter().any(Diagnostic::is_error) {
                 result.program = Some(CheckedProgram {
                     modules: loaded.modules,
@@ -285,7 +312,7 @@ fn check_stages(entry: &EntrySpec, fs: &dyn ModuleFs, opts: CheckOptions) -> Che
             }
         }
     }
-    // 標準ライブラリの警告を除いた後に deny を適用する（設計書 02-10「警告の扱い」）。
+    // 標準ライブラリと依存の警告を除いた後に deny を適用する（設計書 02-10「警告の扱い」）。
     if opts.deny_warnings {
         for diag in &mut result.diagnostics {
             if diag.is_warning() {
@@ -299,14 +326,19 @@ fn check_stages(entry: &EntrySpec, fs: &dyn ModuleFs, opts: CheckOptions) -> Che
     result
 }
 
-fn append_stage(result: &mut CheckResult, mut diagnostics: Vec<Diagnostic>) {
+fn append_stage(
+    result: &mut CheckResult,
+    mut diagnostics: Vec<Diagnostic>,
+    hidden_warnings: &std::collections::BTreeSet<FileId>,
+) {
     diagnostics.retain(|diag| {
         !diag.is_warning()
             || !diag.primary.as_ref().is_some_and(|label| {
-                result
-                    .sources
-                    .get(label.span.file)
-                    .is_some_and(|s| s.kind() == crate::base::SourceKind::Prelude)
+                hidden_warnings.contains(&label.span.file)
+                    || result
+                        .sources
+                        .get(label.span.file)
+                        .is_some_and(|s| s.kind() == crate::base::SourceKind::Prelude)
             })
     });
     diagnostics.sort_by_key(|diag| {

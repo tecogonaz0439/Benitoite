@@ -129,6 +129,82 @@ fn all_stdlib_sources_resolve() {
 }
 
 #[test]
+fn width_type_names_share_identity_through_modules_and_imports() {
+    // 名前の表だけの検査では、prelude・修飾名・import の採集漏れを捕まえられない。
+    // 本物の名前解決と型検査をつなぎ、別名を独立した型にする退行も検出する。
+    use crate::types::builtin::BuiltinTypeId;
+    let cases = [
+        ("Integer", "Integer64", BuiltinTypeId::INTEGER),
+        ("Integer64", "Integer", BuiltinTypeId::INTEGER),
+        ("Float", "Float64", BuiltinTypeId::FLOAT),
+        ("Float64", "Float", BuiltinTypeId::FLOAT),
+        ("Byte", "UnsignedInteger8", BuiltinTypeId::BYTE),
+        ("UnsignedInteger8", "Byte", BuiltinTypeId::BYTE),
+        (
+            "UnsignedInteger",
+            "UnsignedInteger64",
+            BuiltinTypeId::UNSIGNED_INTEGER64,
+        ),
+        (
+            "UnsignedInteger64",
+            "UnsignedInteger",
+            BuiltinTypeId::UNSIGNED_INTEGER64,
+        ),
+        ("Integer8", "Integer8", BuiltinTypeId::INTEGER8),
+        ("Integer16", "Integer16", BuiltinTypeId::INTEGER16),
+        ("Integer32", "Integer32", BuiltinTypeId::INTEGER32),
+        (
+            "UnsignedInteger16",
+            "UnsignedInteger16",
+            BuiltinTypeId::UNSIGNED_INTEGER16,
+        ),
+        (
+            "UnsignedInteger32",
+            "UnsignedInteger32",
+            BuiltinTypeId::UNSIGNED_INTEGER32,
+        ),
+        ("Float32", "Float32", BuiltinTypeId::FLOAT32),
+    ];
+    let mut source = String::new();
+    for (index, (name, _, _)) in cases.iter().enumerate() {
+        source.push_str(&format!("import Benitoite.{name} as Width{index}\n"));
+    }
+    for (index, (name, equivalent, _)) in cases.iter().enumerate() {
+        source.push_str(&format!(
+            "function f{index}(x: {name}, y: {name}.{name}, z: Benitoite.{name}, w: Benitoite.{name}.{name}, v: Width{index}.{name}) -> {equivalent}\n return x\nend function\n"
+        ));
+    }
+    let (load, out, _) = resolve_files(&[("main.bnt", &source)]);
+    clean(&out);
+    for (index, (name, _, ty)) in cases.iter().enumerate() {
+        let binding = out.stdlib(&format!("Benitoite.{name}.{name}")).unwrap();
+        assert_eq!(
+            out.bindings.get(binding).unwrap().kind,
+            BindingKind::BuiltinType(*ty)
+        );
+        let f = function(&load, &format!("f{index}"));
+        for expr in f
+            .params
+            .iter()
+            .map(|param| param.ty.as_ref().unwrap())
+            .chain([&f.ret])
+        {
+            let TypeExpr::Named(named) = expr else {
+                panic!()
+            };
+            let referenced = *out.refs.get(named.id).unwrap();
+            assert_eq!(
+                out.bindings.get(referenced).unwrap().kind,
+                BindingKind::BuiltinType(*ty)
+            );
+        }
+    }
+    let (_, diagnostics) =
+        crate::typeck::typecheck(&load.modules, &load.asts, &load.sources, &out, false);
+    assert!(diagnostics.is_empty(), "{diagnostics:?}");
+}
+
+#[test]
 fn rename_targets_resolve_in_the_current_standard_library() {
     // 表が古くなって存在しない名前を案内する退行を、本物の読み込みと名前解決で捕まえる。
     let mut source = String::from(
@@ -345,6 +421,7 @@ fn stdlib_source_and_table_contracts() {
                 | Item::Record(_)
                 | Item::Trait(_)
                 | Item::Impl(_)
+                | Item::ExternalType(_)
                 | Item::Error(_) => {}
             }
         }
@@ -1214,37 +1291,65 @@ fn declaration_collisions_and_parameter_names() {
     assert_eq!(primary(&load, &out, DiagCode::E0326), "Log");
 }
 
+// spec: 01-03 公開（初回リリース版）
 #[test]
 fn public_contracts_include_nested_types_effects_and_supertraits() {
-    for (source, segment, public_decl) in [
+    for (source, segment, public_decl, message, help) in [
         (
             "data Hidden\n H\nend data\npublic function f(x: Hidden) -> Unit\nend function",
             "Hidden",
             "public data Hidden",
+            "the public function `f` uses the non-public type `Hidden`",
+            "mark `Hidden` as `public`",
+        ),
+        (
+            "data Hidden\n H\nend data\npublic(package) function f(x: Hidden) -> Unit\nend function",
+            "Hidden",
+            "public(package) data Hidden",
+            "the `public(package)` function `f` uses the non-public type `Hidden`",
+            "mark `Hidden` as `public(package)`",
+        ),
+        (
+            "public(package) data Hidden\n H\nend data\npublic function f(x: Hidden) -> Unit\nend function",
+            "Hidden",
+            "public data Hidden",
+            "the public function `f` uses the `public(package)` type `Hidden`",
+            "mark `Hidden` as `public`",
         ),
         (
             "data Hidden\n H\nend data\npublic function f(x: function(Hidden) -> Unit) -> Unit\nend function",
             "Hidden",
             "public data Hidden",
+            "the public function `f` uses the non-public type `Hidden`",
+            "mark `Hidden` as `public`",
         ),
         (
             "effect Secret\n function write() -> Unit\nend effect\npublic function f() -> Unit uses Secret\nend function",
             "Secret",
             "public effect Secret",
+            "the public function `f` uses the non-public effect `Secret`",
+            "mark `Secret` as `public`",
         ),
         (
             "trait Hidden[T]\nend trait\npublic trait C[T: Hidden]\nend trait",
             "Hidden",
             "public trait Hidden",
+            "the public trait `C` uses the non-public trait `Hidden`",
+            "mark `Hidden` as `public`",
         ),
         (
             "/// description\n@deprecated(\"old\")\ndata Hidden\n H\nend data\npublic function f(x: Hidden) -> Unit\nend function",
             "Hidden",
             "@deprecated(\"old\")\npublic data Hidden",
+            "the public function `f` uses the non-public type `Hidden`",
+            "mark `Hidden` as `public`",
         ),
     ] {
         let (load, out, _) = resolve_files(&[("main.bnt", source)]);
         assert_eq!(primary(&load, &out, DiagCode::E0329), segment);
+        let diag = diagnostic(&out, DiagCode::E0329);
+        assert_eq!(diag.message, message);
+        assert_eq!(diag.helps[0].message, help);
         let fixed = apply(source, diagnostic(&out, DiagCode::E0329));
         assert!(fixed.contains(public_decl), "{fixed}");
         let (_, fixed, _) = resolve_files(&[("main.bnt", &fixed)]);
@@ -1253,6 +1358,29 @@ fn public_contracts_include_nested_types_effects_and_supertraits() {
             "{:?}",
             fixed.diagnostics
         );
+    }
+}
+
+// 同じパッケージの別モジュールの型を、外に見える契約へ漏らす退行を捕まえる。
+// spec: 01-03 公開（初回リリース版）
+#[test]
+fn contract_visibility_applies_across_modules() {
+    let hidden = "public(package) data Hidden\n H\nend data";
+    for visibility in ["", "public(package) ", "public "] {
+        let source = format!(
+            "import Lib.Types\n{visibility}function f(x: Types.Hidden) -> Unit\nend function"
+        );
+        let (load, out, _) = resolve_files(&[("main.bnt", &source), ("Lib/Types.bnt", hidden)]);
+        if visibility == "public " {
+            assert_eq!(out.diagnostics.len(), 1);
+            assert_eq!(primary(&load, &out, DiagCode::E0329), "Types.Hidden");
+            let fixed = apply(hidden, diagnostic(&out, DiagCode::E0329));
+            assert_eq!(fixed, "public data Hidden\n H\nend data");
+            let (_, out, _) = resolve_files(&[("main.bnt", &source), ("Lib/Types.bnt", &fixed)]);
+            assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
+        } else {
+            assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
+        }
     }
 }
 
@@ -1740,8 +1868,8 @@ fn qualified_typo_candidates_follow_the_segment_position() {
             "public data Shape\n Circle(Float)\nend data",
         ),
         (
-            "function f(x: Benitoite.Integeer) -> Unit\nend function",
-            "Integeer",
+            "function f(x: Benitoite.Strng) -> Unit\nend function",
+            "Strng",
             "",
         ),
     ] {
@@ -1751,6 +1879,17 @@ fn qualified_typo_candidates_follow_the_segment_position() {
         let (_, out, _) = resolve_files(&[("main.bnt", &fixed), ("Lib/Geo.bnt", other)]);
         clean(&out);
     }
+    // 幅付きの名前も候補になるので、一意に選べない綴りは自動で書き換えない。
+    let (_, out, _) = resolve_files(&[(
+        "main.bnt",
+        "function f(x: Benitoite.Integeer) -> Unit\nend function",
+    )]);
+    let diag = diagnostic(&out, DiagCode::E0303);
+    assert_eq!(
+        diag.helps[0].message,
+        "a similar name exists: `Integer`, `Integer8`"
+    );
+    assert!(diag.helps[0].edits.is_empty());
 }
 
 #[test]

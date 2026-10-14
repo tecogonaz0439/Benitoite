@@ -3,25 +3,37 @@
 The complete grammar of Benitoite in EBNF. `{ ... }` means zero or more repetitions, `[ ... ]` means optional, and `|` separates alternatives. `NL` is a line break that separates items. `CommaList(X)` is a comma-separated list of `X` that may be empty and may end with a comma; `LineList(X)` is a list of `X` separated by line breaks.
 
 ```text
-Program     = [ NL ] [ Items [ NL ] ] .
+Program     = [ NL ] [ ProgramBody [ NL ] ] .
+ProgramBody = Header [ NL Items ]
+            | Items .
+Header      = HeaderItem { NL HeaderItem } .
+HeaderItem  = "language" StringLit
+            | "dependency" UpperIdent NL { HeaderField NL } "end" "dependency"
+            | "package" UpperIdent NL { HeaderField NL } "end" "package" .
+HeaderField = LowerIdent StringLit .
 Items       = ImportDecl [ NL Items ]
             | Decls .
 Decls       = AttrDecl { NL AttrDecl } .
 AttrDecl    = { Attribute [ NL ] } Decl .
 Attribute   = "@" LowerIdent [ "(" CommaList(StringLit) ")" ] .
-Decl        = [ "public" ] FnDecl
-            | [ "public" ] ConstDecl
-            | [ "public" ] DataDecl
-            | [ "public" ] AliasDecl
-            | [ "public" ] RecordDecl
-            | [ "public" ] TraitDecl
-            | [ "public" ] EffectDecl
+Visibility  = "public" [ "(" "package" ")" ] .
+Decl        = [ Visibility ] FnDecl
+            | [ Visibility ] ExternalFnDecl
+            | [ Visibility ] ExternalTypeDecl
+            | [ Visibility ] ConstDecl
+            | [ Visibility ] DataDecl
+            | [ Visibility ] AliasDecl
+            | [ Visibility ] RecordDecl
+            | [ Visibility ] TraitDecl
+            | [ Visibility ] EffectDecl
             | ImplDecl .
 
 ImportDecl  = "import" UpperIdent { "." UpperIdent } [ "as" UpperIdent ] .
 
 FnDecl      = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")"
               "->" Type [ Uses ] Body "end" "function" .
+ExternalFnDecl = "function" LowerIdent "(" CommaList(Param) ")" "->" Type [ Uses ] .
+ExternalTypeDecl = "type" UpperIdent .
 FnTypeParams = "[" FnTypeParam { "," FnTypeParam } [ "," ] "]" .
 FnTypeParam = "effect" UpperIdent
             | TypeParamDecl [ ":" Constraint { "&" Constraint } ] .

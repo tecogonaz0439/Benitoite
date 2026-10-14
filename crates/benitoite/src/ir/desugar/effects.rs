@@ -141,6 +141,7 @@ impl State<'_> {
             | BindingKind::Data
             | BindingKind::BuiltinType(_)
             | BindingKind::Alias
+            | BindingKind::ExternalType
             | BindingKind::Record
             | BindingKind::Field { .. }
             | BindingKind::Trait

@@ -122,6 +122,15 @@ mutual
     -- 01-06「演算子の型付け」と Decimal の基本型。直接の - は定数に含める。
     | E_NegDecimal {C Γ R p n scale} :
         HasType D B opPrim C Γ R p (.negDecimal n scale) (.base .decimal) Eff.empty
+    -- 01-12「名前とリテラル」: 幅付きの直接の負号も、空のエフェクトの定数である。
+    | E_NegInteger8 {C Γ R p n} :
+        HasType D B opPrim C Γ R p (.negInteger8 n) (.base .integer8) Eff.empty
+    | E_NegInteger16 {C Γ R p n} :
+        HasType D B opPrim C Γ R p (.negInteger16 n) (.base .integer16) Eff.empty
+    | E_NegInteger32 {C Γ R p n} :
+        HasType D B opPrim C Γ R p (.negInteger32 n) (.base .integer32) Eff.empty
+    | E_NegFloat32 {C Γ R p bits} :
+        HasType D B opPrim C Γ R p (.negFloat32 bits) (.base .float32) Eff.empty
     -- 01-12「名前とリテラル」: ()。01-06「式と文の型」: Unit。
     | E_Unit {C Γ R p} : HasType D B opPrim C Γ R p .unit (.base .unit) Eff.empty
     -- 01-12「名前とリテラル」: (e)。01-08「末尾呼び出し」: 位置を引き継ぐ。
@@ -198,9 +207,10 @@ mutual
         HasType D B opPrim C Γ R p (.partialCon c ts args)
           (.fn args.holeTypes r εargs) Eff.empty
     -- 01-12「演算子」: e1 ⊕ e2。01-06「演算子の型付け」「等値の型」。
-    -- 型の集まりは B.sig の admits、結果型は fnTy で検査する。02-06 に従い eq/ne だけ [T]。
+    -- 算術と比較の型の集まりは Operator.allowed、等値の制約は B.sig の admits、結果型は fnTy で検査する。02-06 に従い eq/ne だけ [T]。
     -- 算術は (T,T)→T、比較と等値は (T,T)→Boolean という表を B.sig に与える。
     | E_Binary {C Γ R p o t b ts s lhs rhs a εl εr} :
+        (Operator.binary o).allowed t = true →
         opPrim (.binary o) t = some (b, ts) → ts = (Operator.binary o).typeArgs t →
         B.sig b = some s → ts.length = s.ntys → s.neffs = 0 → s.admits C ts →
         fnTy s.params s.ret s.eff ts [] = .fn [t, t] a Eff.empty →
@@ -208,6 +218,7 @@ mutual
         HasType D B opPrim C Γ R p (.binary o t lhs rhs) a (Eff.union εl εr)
     -- 01-12「演算子」: -e（直接の整数・Float リテラルを除く）。01-06「演算子の型付け」: (T)→T。
     | E_Neg {C Γ R p t b ts s e ε} :
+        Operator.neg.allowed t = true →
         opPrim .neg t = some (b, ts) → ts = [] → B.sig b = some s →
         ts.length = s.ntys → s.neffs = 0 → s.admits C ts →
         fnTy s.params s.ret s.eff ts [] = .fn [t] t Eff.empty →
@@ -239,7 +250,7 @@ mutual
         HasEach D B opPrim C Γ R after a εa →
         HasType D B opPrim C Γ R p (.listSpread a f before spread after) (.list a)
           (Eff.union εb (Eff.union εs εa))
-    -- 01-06「演算子の型付け」: 七つの基本型だけを補間し、結果は String。
+    -- 01-06「演算子の型付け」: 幅付きの七種を含む基本型を補間し、結果は String。
     -- 01-12「文字列補間」: String の式の変換関数は持たず、str_T は純粋な直接の頭。
     | E_Interpolation {C Γ R p parts es fs ε} :
         InterpPart.Allowed parts → HasTypes D B opPrim C Γ R es (InterpPart.exprTypes parts) ε →
