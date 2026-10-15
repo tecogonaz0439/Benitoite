@@ -34,7 +34,7 @@ function compare(source: String) -> Result[Unit, String] uses State, Console.Wri
   bind a <- Json.parse(source)
   // B の診断の全表と深さは専用のケースで確かめ、三者の比較は短い代表に限る。
   // 注文の実データは acceptance/json_summary.files/orders.json と同じ入力で三者を比較する。
-  bind withB <- List.contains([
+  bind withB <- List.contains(xs: [
     "[\n  {\"id\": 1, \"category\": \"book\", \"amount\": 1200},\n  {\"id\": 2, \"category\": \"food\", \"amount\": 350},\n  {\"id\": 3, \"category\": \"book\", \"amount\": 800},\n  {\"id\": 4, \"category\": \"tool\", \"amount\": 4300},\n  {\"id\": 5, \"category\": \"food\", \"amount\": 150}\n]\n",
     "[-0,-0.0,1.0,1e2]",
     "{\"z\":1,\"a\":[true,null,{\"é\":\"😀\"}],\"z\":2}",
@@ -46,7 +46,7 @@ function compare(source: String) -> Result[Unit, String] uses State, Console.Wri
     "1e400",
     "[1,",
     ""
-  ], source)
+  ], x: source)
   bind b <- if withB then Parser.parse(source) else a end if
   bind bOutput <- if withB then match Pair(a, b) with
     case Pair(Result.Ok(x), Result.Ok(y)) -> Json.stringify(x) = Parser.stringify(y) and Json.stringifyPretty(x) = Parser.stringifyPretty(y)
@@ -54,12 +54,12 @@ function compare(source: String) -> Result[Unit, String] uses State, Console.Wri
     case _ -> false
   end match else true end if
   bind c <- Codec.parse(source)
-  bind validate <- Codec.validate(source) = Result.map(a, lambda(_value: Json.Value) -> Unit return () end lambda)
-  bind strings <- Codec.minify(source) = Result.map(a, Json.stringify) and Codec.pretty(source) = Result.map(a, Json.stringifyPretty)
+  bind validate <- Codec.validate(source) = Result.map(r: a, f: lambda(value: Json.Value) -> Unit return () end lambda)
+  bind strings <- Codec.minify(source) = Result.map(r: a, f: Json.stringify) and Codec.pretty(source) = Result.map(r: a, f: Json.stringifyPretty)
   bind document <- Codec.document(source)
   bind same <- match Pair(a, document) with
     case Pair(Result.Error(x), Result.Error(y)) -> x = y
-    case Pair(Result.Ok(value), Result.Ok(doc)) -> Codec.get(doc, "") = Option.Some(Json.stringify(value)) and Codec.len(doc, "") = length(value)
+    case Pair(Result.Ok(value), Result.Ok(doc)) -> Codec.get(document: doc, pointer: "") = Option.Some(Json.stringify(value)) and Codec.len(document: doc, pointer: "") = length(value)
     case _ -> false
   end match
   bind output <- match Pair(a, c) with
@@ -72,24 +72,24 @@ function compare(source: String) -> Result[Unit, String] uses State, Console.Wri
 end function
 
 function deep(n: Integer, value: Json.Value) -> Json.Value
-  return if n = 0 then value else deep(n - 1, Json.Value.Array([value])) end if
+  return if n = 0 then value else deep(n: n - 1, value: Json.Value.Array([value])) end if
 end function
 
 function pointers() -> Result[Unit, String] uses State, Console.Write
   bind source <- "{\"a/b\":{\"~key\":[null,-0.0,{\"x\":2}]},\"\":[],\"tilde~1\":true}"
-  bind a <- Result.unwrapOr(Json.parse(source), Json.Value.Null)
-  bind doc <- try Result.mapError(Codec.document(source), Json.ParseError.message)
-  bind object <- Option.unwrapOr(Json.get(a, "a/b"), Json.Value.Null)
-  bind array <- Option.unwrapOr(Json.get(object, "~key"), Json.Value.Null)
-  bind cases <- [Pair("", Option.Some(a)), Pair("/", Json.get(a, "")), Pair("/a~1b", Json.get(a, "a/b")), Pair("/a~1b/~0key", Json.get(object, "~key")), Pair("/a~1b/~0key/0", Json.at(array, 0)), Pair("/a~1b/~0key/1", Json.at(array, 1)), Pair("/a~1b/~0key/2", Json.at(array, 2)), Pair("/a~1b/~0key/2/x", Json.get(Option.unwrapOr(Json.at(array, 2), Json.Value.Null), "x")), Pair("/tilde~01", Json.get(a, "tilde~1")), Pair("/missing", Option.None), Pair("/a~1b/~0key/01", Option.None), Pair("/a~1b/~0key/-1", Option.None), Pair("/a~1b/~0key/+1", Option.None), Pair("/a~1b/~0key/3", Option.None), Pair("/a~1b/~0key/-", Option.None), Pair("/a~1b/~0key/1/x", Option.None), Pair("/a~2b", Option.None), Pair("/a~", Option.None), Pair("a/b", Option.None)]
-  return List.fold(cases, Result.Ok(()), lambda(acc: Result[Unit, String], pair: Pair[String, Option[Json.Value]]) -> Result[Unit, String] uses State, Console.Write
+  bind a <- Result.unwrapOr(r: Json.parse(source), fallback: Json.Value.Null)
+  bind doc <- try Result.mapError(r: Codec.document(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+  bind object <- Option.unwrapOr(o: Json.get(value: a, k: "a/b"), fallback: Json.Value.Null)
+  bind array <- Option.unwrapOr(o: Json.get(value: object, k: "~key"), fallback: Json.Value.Null)
+  bind cases <- [Pair("", Option.Some(a)), Pair("/", Json.get(value: a, k: "")), Pair("/a~1b", Json.get(value: a, k: "a/b")), Pair("/a~1b/~0key", Json.get(value: object, k: "~key")), Pair("/a~1b/~0key/0", Json.at(value: array, index: 0)), Pair("/a~1b/~0key/1", Json.at(value: array, index: 1)), Pair("/a~1b/~0key/2", Json.at(value: array, index: 2)), Pair("/a~1b/~0key/2/x", Json.get(value: Option.unwrapOr(o: Json.at(value: array, index: 2), fallback: Json.Value.Null), k: "x")), Pair("/tilde~01", Json.get(value: a, k: "tilde~1")), Pair("/missing", Option.None), Pair("/a~1b/~0key/01", Option.None), Pair("/a~1b/~0key/-1", Option.None), Pair("/a~1b/~0key/+1", Option.None), Pair("/a~1b/~0key/3", Option.None), Pair("/a~1b/~0key/-", Option.None), Pair("/a~1b/~0key/1/x", Option.None), Pair("/a~2b", Option.None), Pair("/a~", Option.None), Pair("a/b", Option.None)]
+  return List.fold(xs: cases, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: Pair[String, Option[Json.Value]]) -> Result[Unit, String] uses State, Console.Write
     bind _ <- try acc
-    bind path <- Pair.first(pair)
-    bind value <- Pair.second(pair)
-    bind expected <- Option.map(value, Json.stringify)
-    bind count <- Option.andThen(value, length)
-    bind actual <- Codec.get(doc, path)
-    bind size <- Codec.len(doc, path)
+    bind path <- Pair.first(value)
+    bind item <- Pair.second(value)
+    bind expected <- Option.map(o: item, f: Json.stringify)
+    bind count <- Option.andThen(o: item, f: length)
+    bind actual <- Codec.get(document: doc, pointer: path)
+    bind size <- Codec.len(document: doc, pointer: path)
     Console.writeLine("pointer " + Json.stringify(Json.Value.String(path)) + " A=" + Trait.Show.show(expected) + " len=" + Trait.Show.show(count) + " | get=${actual = expected} len=${size = count}")
     return if actual = expected and size = count then Result.Ok(()) else Result.Error("JSON Pointer mismatch: " + path) end if
   end lambda)
@@ -180,23 +180,23 @@ function main() -> Result[Unit, String] uses State, Console.Write
     "{\"a\":}",
     "\"\\uZZZZx\""
   ]
-  bind _ <- try List.fold(sources, Result.Ok(()), lambda(acc: Result[Unit, String], source: String) -> Result[Unit, String] uses State, Console.Write
+  bind _ <- try List.fold(xs: sources, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: String) -> Result[Unit, String] uses State, Console.Write
     bind _ <- try acc
-    return compare(source)
+    return compare(value)
   end lambda)
-  bind _ <- try List.fold([127, 128, 1000], Result.Ok(()), lambda(acc: Result[Unit, String], n: Integer) -> Result[Unit, String] uses State, Console.Write
+  bind _ <- try List.fold(xs: [127, 128, 1000], initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: Integer) -> Result[Unit, String] uses State, Console.Write
     bind _ <- try acc
-    return compare(String.repeat("[", n) + "0" + String.repeat("]", n))
+    return compare(String.repeat(s: "[", n: value) + "0" + String.repeat(s: "]", n: value))
   end lambda)
   // gc-stress で 10 秒以内に収めるため書き出す値は 128 段にする。
   // ゲストの変換・書き出し・解放が明示の積み重ねで辿ることはコードを読んで確かめた。
-  bind values <- [Pair("deep 128", deep(128, Json.Value.Null)), Pair("non-finite", Json.Value.Array([Json.Value.Float(0.0 / 0.0), Json.Value.Float(1.0 / 0.0), Json.Value.Float(-1.0 / 0.0)])), Pair("nested members", Json.Value.Object(Map.fromList([Pair("z", Json.Value.Array([Json.Value.Object(Map.fromList([Pair("a", Json.Value.Array([])), Pair("b", Json.Value.Object(Map.empty()))]))])), Pair("a", Json.Value.Object(Map.fromList([Pair("x", Json.Value.Null)])))])))]
-  bind _ <- try List.fold(values, Result.Ok(()), lambda(acc: Result[Unit, String], pair: Pair[String, Json.Value]) -> Result[Unit, String] uses Console.Write
+  bind values <- [Pair("deep 128", deep(n: 128, value: Json.Value.Null)), Pair("non-finite", Json.Value.Array([Json.Value.Float(0.0 / 0.0), Json.Value.Float(1.0 / 0.0), Json.Value.Float(-1.0 / 0.0)])), Pair("nested members", Json.Value.Object(Map.fromList([Pair("z", Json.Value.Array([Json.Value.Object(Map.fromList([Pair("a", Json.Value.Array([])), Pair("b", Json.Value.Object(Map.empty()))]))])), Pair("a", Json.Value.Object(Map.fromList([Pair("x", Json.Value.Null)])))])))]
+  bind _ <- try List.fold(xs: values, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: Pair[String, Json.Value]) -> Result[Unit, String] uses Console.Write
     bind _ <- try acc
-    bind value <- Pair.second(pair)
-    bind same <- Codec.stringify(value) = Result.Ok(Json.stringify(value))
-    bind pretty <- Codec.stringifyPretty(value) = Result.Ok(Json.stringifyPretty(value))
-    Console.writeLine(Pair.first(pair) + " A=" + Json.stringify(value) + " | compact=${same} pretty=${pretty}")
+    bind item <- Pair.second(value)
+    bind same <- Codec.stringify(item) = Result.Ok(Json.stringify(item))
+    bind pretty <- Codec.stringifyPretty(item) = Result.Ok(Json.stringifyPretty(item))
+    Console.writeLine(Pair.first(value) + " A=" + Json.stringify(item) + " | compact=${same} pretty=${pretty}")
     return if same and pretty then Result.Ok(()) else Result.Error("JSON writing mismatch") end if
   end lambda)
   return pointers()

@@ -1,6 +1,6 @@
 # Benitoite でよくある誤り
 
-> この文書は、`crates/benitoite/skill/references/common-mistakes.md` の日本語の訳である。訳した元は、Benitoite 0.0.4 の版の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/common-mistakes.md` の日本語の訳である。翻訳元は Benitoite 0.0.5 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -32,6 +32,7 @@
 - [`return` のない最後の式](#return-のない最後の式)
 - [`for` と `while` の繰り返し](#for-と-while-の繰り返し)
 - [キーワードを名前に使う](#キーワードを名前に使う)
+- [契約と異なるコールバックのパラメータ名](#契約と異なるコールバックのパラメータ名)
 - [ラムダの引数としての `_`](#ラムダの引数としての-_)
 
 ## `bind` の代わりの `let`
@@ -66,7 +67,7 @@ end function
 
 ## 同じ名前を二度束縛する
 
-`bind` は、すでに局所の名前になっている名前を使い直せない。古い名前を意図して隠すなら `shadow` を使い、そうでなければ新しい名前を選ぶ。
+`bind` は、既に局所の名前であるものを再び使えない。新しい値の意味を表す別の名前を推奨する。`shadow` は明示的に古い名前を隠せるが、意図的な隠蔽であっても推奨しない。有効な構文として残り、警告は出ない。
 
 ```benitoite error
 function next(n: Integer) -> Integer
@@ -89,8 +90,8 @@ import Benitoite.Unofficial.IO.Console
 
 function next(n: Integer) -> Integer
   bind x <- n
-  shadow x <- x + 1
-  return x
+  bind increased <- x + 1
+  return increased
 end function
 
 function main() -> Unit uses Console.Write
@@ -104,7 +105,7 @@ end function
 
 ## ブロックの波括弧
 
-ブロックは、`end` と、ブロックを始めたキーワードで終える。`end function`、`end if`、`end match`、`end lambda`、`end handle`、`end with`、`end data`、`end record` である。
+短いラムダ（`grammar.md` を参照する）を除き、ブロックは、`end` とブロックを開いたキーワードで終わる。`end function`、`end if`、`end match`、`end lambda`、`end handle`、`end with`、`end data`、`end record` である。
 
 ```benitoite error
 import Benitoite.Unofficial.IO.Console
@@ -122,11 +123,10 @@ error[E0212]: blocks are not written with braces
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  if 1 < 2 then
-    Console.writeLine("hi")
-  else
-    Console.writeLine("bye")
-  end if
+  match 1 < 2 with
+    case true -> Console.writeLine("hi")
+    case false -> Console.writeLine("bye")
+  end match
   return ()
 end function
 ```
@@ -175,7 +175,10 @@ function inRange(n: Integer) -> Boolean
 end function
 
 function main() -> Unit uses Console.Write
-  return Console.writeLine(if inRange(3) then "yes" else "no" end if)
+  return Console.writeLine(match inRange(3) with
+    case true -> "yes"
+    case false -> "no"
+  end match)
 end function
 ```
 
@@ -346,7 +349,7 @@ Hello, Ada!
 import Benitoite.Unofficial.IO.File
 
 function main() -> Unit uses File.Write
-  File.writeText("out.txt", "data")
+  File.writeText(path: "out.txt", text: "data")
   return ()
 end function
 ```
@@ -360,7 +363,7 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function main() -> Result[Unit, String] uses File.Write, Console.Write
-  bind _ <- try File.writeText("out.txt", "data") |> Result.mapError(_, IOError.message)
+  bind _ <- try File.writeText(path: "out.txt", text: "data") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   Console.writeLine("written")
   return Result.Ok(())
 end function
@@ -396,8 +399,8 @@ function next(n: Integer) -> Integer
 end function
 
 function main() -> Unit uses Console.Write
-  bind doubled <- List.map([1, 2], lambda(x) return x * 2 end lambda)
-  return Console.writeLine("${next(1)} ${String.join(List.map(doubled, Integer.toString), ",")}")
+  bind doubled <- List.map(xs: [1, 2], f: lambda(value) return value * 2)
+  return Console.writeLine("${next(1)} ${String.join(xs: List.map(xs: doubled, f: lambda(value) return Integer.toString(value)), separator: ",")}")
 end function
 ```
 
@@ -428,8 +431,8 @@ error[E0201]: expected a newline or the end of the block, found `x`
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  List.forEach([1, 2, 3], lambda(x)
-    Console.writeLine(Integer.toString(x))
+  List.forEach(xs: [1, 2, 3], f: lambda(value)
+    Console.writeLine(Integer.toString(value))
   end lambda)
   return ()
 end function
@@ -459,13 +462,30 @@ end function
 error[E0216]: `handle` is a keyword and cannot be used as a name
 ```
 
+## 契約と異なるコールバックのパラメータ名
+
+`List.map` が期待する型は `function(value: T) -> U` である。ラムダのパラメータを `x` と名付けると、その契約が変わる。暗黙に `value` へ改名されることはない。一引数のコールバックでも名前は一致しなければならず、複数のパラメータを持つコールバックでは順序も一致しなければならない。
+
+```benitoite error
+function main() -> Unit
+  bind _ <- List.map(xs: [1, 2], f: lambda(x) return x * 2)
+  return ()
+end function
+```
+
+```diagnostic
+error[E0454]: function parameter names do not match
+```
+
+パラメータと束縛された参照を一緒に改名し、`List.map(xs: [1, 2], f: lambda(value) return value * 2)` とする。パラメータが `n` である `Integer.toString` などの既存の関数を渡すには、`lambda(value) return Integer.toString(value)` で包む。意味を表す局所名が必要なら、複数行のラムダ内で別名を束縛する。未使用のパラメータも必要な名前を保つ。完全な例は `idioms.md` を参照する。
+
 ## ラムダの引数としての `_`
 
-`_` だけではラムダの引数にできない。使わない引数には、`_key` のように `_` で始まる名前を使う。
+`_` だけではラムダのパラメータにできない。未使用でも、コールバックの契約が求めるパラメータ名を保つ。`Map.filter` が求める名前は `key, value` なので、使わないキーも `key` と名付ける。期待する契約のない独立したラムダでは、`_key` などの識別子も有効だが、その識別子が関数型の一部となる。
 
 ```benitoite error
 function evens(m: Map[String, Integer]) -> Map[String, Integer]
-  return Map.filter(m, lambda(_, n) return n mod 2 = 0 end lambda)
+  return Map.filter(m: m, p: lambda(_, value) return value mod 2 = 0 end lambda)
 end function
 
 function main() -> Unit
@@ -481,11 +501,11 @@ error[E0210]: `_` cannot be a lambda parameter
 import Benitoite.Unofficial.IO.Console
 
 function evens(m: Map[String, Integer]) -> Map[String, Integer]
-  return Map.filter(m, lambda(_key, n) return n mod 2 = 0 end lambda)
+  return Map.filter(m: m, p: lambda(key, value) return value mod 2 = 0 end lambda)
 end function
 
 function main() -> Unit uses Console.Write
-  return Console.writeLine(String.join(Map.keys(evens(Map.fromList([Pair("a", 1), Pair("b", 2)]))), ","))
+  return Console.writeLine(String.join(xs: Map.keys(evens(Map.fromList([Pair("a", 1), Pair("b", 2)]))), separator: ","))
 end function
 ```
 

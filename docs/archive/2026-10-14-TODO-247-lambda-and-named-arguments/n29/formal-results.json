@@ -1,0 +1,117 @@
+{
+  "lake_build": {
+    "status": "passed",
+    "targets": 238,
+    "sorry": false,
+    "lean_definitions_changed": false
+  },
+  "check_formal_script": {
+    "output": "target/desugar-diff/n29-final",
+    "coverage_output": "target/coverage-diff/n29-final",
+    "status": "all_export_and_legacy_stages_passed; final_validation_reexecuted_after_manifest_preparation",
+    "initial_final_stage_error": "N29/exchange-manifest.json had not yet been prepared",
+    "final_validation_exit": 0
+  },
+  "routing": {
+    "inputs": 1726,
+    "named_inputs": 1210,
+    "random_definitions": 72778,
+    "old_random_surface_checks": 50218,
+    "new_random_surface_checks": 50778,
+    "random_implementations": 10000,
+    "random_coverage": {
+      "matches": 16235,
+      "bindings": 6000
+    },
+    "golden_routing_unchanged": true,
+    "random_scope_delta_equals_factory_definitions": true,
+    "random_coverage_unchanged": true
+  },
+  "named": {
+    "desugar": {
+      "golden": {
+        "programs": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 210,
+          "excluded": 0
+        },
+        "definitions": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 694,
+          "excluded": 0
+        }
+      },
+      "random": {
+        "programs": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 1000,
+          "excluded": 0
+        },
+        "definitions": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 72778,
+          "excluded": 0
+        }
+      }
+    },
+    "builtin": {
+      "checkedInputs": 1210,
+      "errors": []
+    },
+    "surface": {
+      "inputs": 1210,
+      "fullyCheckedInputs": 1194,
+      "implementations": 10010,
+      "counts": {
+        "q11": 1,
+        "preparationFailure": 0,
+        "outOfScope": 19,
+        "mismatched": 0,
+        "matched": 51415,
+        "lazyRestriction": 0
+      },
+      "q11Agrees": true,
+      "mismatchClasses": {
+        "requiresReview": 0,
+        "leanFalseRejection": 0,
+        "exporter": 0
+      },
+      "mismatchExamples": [],
+      "preparationErrors": []
+    },
+    "coverage": {
+      "inputs": 1210,
+      "cases": 22379,
+      "matched": 22379,
+      "mismatched": 0,
+      "outOfScope": 0,
+      "fuelExhausted": 0,
+      "matches": {
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 16355,
+        "fuelExhausted": 0,
+        "cases": 16355
+      },
+      "bindings": {
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 6024,
+        "fuelExhausted": 0,
+        "cases": 6024
+      }
+    },
+    "mutations": {
+      "contracts": 3,
+      "checked_hole_and_pipe": 6,
+      "additional_label_position_and_order": 6,
+      "all_rejected_for_intended_reason": true
+    }
+  },
+  "legacy_reports_and_classification": "matched N29 exchange-manifest, with golden identifiers/reasons unchanged and 1000 generated inputs moved to corpus 8",
+  "validation_stdout": "versioned routing: 1726 inputs, identifiers, exclusions, scopes and coverage agree\nlegacy reports: all six entries retain their counts and classification reasons\nnamed programs: 1210 inputs, 73472 definitions, 22379 coverage entries agree\nnamed special export: three contract mutations rejected for the intended reason\nnamed checked programs: six hole/pipe mutations rejected for the intended reason\nnamed export: six mutations rejected for the intended reason\nnamed export: manifest agrees; corpus 8, tables 2 and coverage 2 match all six entries\n"
+}

@@ -38,7 +38,7 @@ pub(super) fn parse_interp(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
             end: BytePos(closing.span.start.0.saturating_add(1)),
         };
         opening = closing.span;
-        push_segment(&mut segments, span, expr, string_value(closing.value));
+        push_segment(&mut segments, span, *expr, string_value(closing.value));
         if end {
             break;
         }
@@ -52,12 +52,8 @@ fn string_value(value: TokenValue) -> String {
         String::new()
     }
 }
-fn push_segment(out: &mut Vec<InterpSegment>, span: Span, expr: Box<Expr>, tail: String) {
-    out.push(InterpSegment {
-        span,
-        expr: *expr,
-        tail,
-    });
+fn push_segment(out: &mut Vec<InterpSegment>, span: Span, expr: Expr, tail: String) {
+    out.push(InterpSegment { span, expr, tail });
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]

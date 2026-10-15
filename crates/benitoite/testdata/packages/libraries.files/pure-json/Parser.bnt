@@ -9,19 +9,19 @@ import Writer
 /// JSON を読み、行・文字の列・理由を分けた誤りを返す。
 public function parse(source: String) -> Result[Json.Value, Json.ParseError]
   bind input <- Scan.input(source)
-  bind Pair(value, stop) <- try readValue(input, 0, 0, Frame.Root)
-  bind next <- Scan.whitespace(input, stop)
-  return if next = Scan.Input.length(input) then Result.Ok(value) else Result.Error(Scan.error(input, next + 1, Text.trailing)) end if
+  bind Pair(value, stop) <- try readValue(input: input, position: 0, depth: 0, frame: Frame.Root)
+  bind next <- Scan.whitespace(input: input, position: stop)
+  return if next = Scan.Input.length(input) then Result.Ok(value) else Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.trailing)) end if
 end function
 
 /// 鍵を昇順に並べ、空白なしで JSON を書く。
 public function stringify(value: Json.Value) -> String
-  return Writer.write(value, false)
+  return Writer.write(value: value, pretty: false)
 end function
 
 /// 改行と二つの空白による字下げで JSON を書く。
 public function stringifyPretty(value: Json.Value) -> String
-  return Writer.write(value, true)
+  return Writer.write(value: value, pretty: true)
 end function
 
 // 継続を値で持ち、入れ子の数で言語の呼び出しの枠を増やさない。
@@ -32,79 +32,79 @@ data Frame
 end data
 
 function readValue(input: Scan.Input, position: Integer, depth: Integer, frame: Frame) -> Result[Pair[Json.Value, Integer], Json.ParseError]
-  bind i <- Scan.whitespace(input, position)
-  bind b <- Scan.byte(input, i)
-  if b = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
+  bind i <- Scan.whitespace(input: input, position: position)
+  bind b <- Scan.byte(input: input, position: i)
+  if b = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
   if b = 110 then
-    bind Pair(value, next) <- try ident(input, i + 1, "ull", 0, Json.Value.Null)
-    return accept(input, value, next, depth, frame)
+    bind Pair(value, next) <- try ident(input: input, i: i + 1, expected: "ull", j: 0, value: Json.Value.Null)
+    return accept(input: input, value: value, stop: next, depth: depth, frame: frame)
   end if
   if b = 116 then
-    bind Pair(value, next) <- try ident(input, i + 1, "rue", 0, Json.Value.Boolean(true))
-    return accept(input, value, next, depth, frame)
+    bind Pair(value, next) <- try ident(input: input, i: i + 1, expected: "rue", j: 0, value: Json.Value.Boolean(true))
+    return accept(input: input, value: value, stop: next, depth: depth, frame: frame)
   end if
   if b = 102 then
-    bind Pair(value, next) <- try ident(input, i + 1, "alse", 0, Json.Value.Boolean(false))
-    return accept(input, value, next, depth, frame)
+    bind Pair(value, next) <- try ident(input: input, i: i + 1, expected: "alse", j: 0, value: Json.Value.Boolean(false))
+    return accept(input: input, value: value, stop: next, depth: depth, frame: frame)
   end if
   if b = 45 or Scan.digit(b) then
-    bind Pair(value, next) <- try Numbers.read(input, i)
-    return accept(input, value, next, depth, frame)
+    bind Pair(value, next) <- try Numbers.read(input: input, start: i)
+    return accept(input: input, value: value, stop: next, depth: depth, frame: frame)
   end if
   if b = 34 then
-    bind Pair(s, next) <- try Strings.read(input, i + 1)
-    return accept(input, Json.Value.String(s), next, depth, frame)
+    bind Pair(s, next) <- try Strings.read(input: input, start: i + 1)
+    return accept(input: input, value: Json.Value.String(s), stop: next, depth: depth, frame: frame)
   end if
   if b = 91 or b = 123 then
-    if depth = 127 then return Result.Error(Scan.error(input, i + 1, Text.depth)) end if
-    return if b = 91 then array(input, i + 1, depth + 1, [], frame, true) else object(input, i + 1, depth + 1, Map.empty(), frame, true) end if
+    if depth = 127 then return Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.depth)) end if
+    return if b = 91 then array(input: input, position: i + 1, depth: depth + 1, items: [], frame: frame, first: true) else object(input: input, position: i + 1, depth: depth + 1, members: Map.empty(), frame: frame, first: true) end if
   end if
-  return Result.Error(Scan.error(input, i + 1, Text.value))
+  return Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.value))
 end function
 
 function ident(input: Scan.Input, i: Integer, expected: String, j: Integer, value: Json.Value) -> Result[Pair[Json.Value, Integer], Json.ParseError]
   if j = String.byteLength(expected) then return Result.Ok(Pair(value, i)) end if
-  if Scan.byte(input, i) = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
-  return if Scan.slice(input, i, i + 1) = Option.unwrapOr(String.byteSlice(expected, j, j + 1), "") then
-    ident(input, i + 1, expected, j + 1, value)
+  if Scan.byte(input: input, position: i) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
+  return if Scan.slice(input: input, start: i, stop: i + 1) = Option.unwrapOr(o: String.byteSlice(s: expected, start: j, stop: j + 1), fallback: "") then
+    ident(input: input, i: i + 1, expected: expected, j: j + 1, value: value)
   else
-    Result.Error(Scan.error(input, i + 1, Text.ident))
+    Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.ident))
   end if
 end function
 
 function accept(input: Scan.Input, value: Json.Value, stop: Integer, depth: Integer, frame: Frame) -> Result[Pair[Json.Value, Integer], Json.ParseError]
   return match frame with
     case Frame.Root -> Result.Ok(Pair(value, stop))
-    case Frame.Array(items, parent) -> array(input, stop, depth, List.append(items, value), parent, false)
-    case Frame.Object(members, key, parent) -> object(input, stop, depth, Map.set(members, key, value), parent, false)
+    case Frame.Array(items, parent) -> array(input: input, position: stop, depth: depth, items: List.append(xs: items, x: value), frame: parent, first: false)
+    case Frame.Object(members, key, parent) -> object(input: input, position: stop, depth: depth, members: Map.set(m: members, k: key, value: value), frame: parent, first: false)
   end match
 end function
 
 // 要素の並びと入れ子の両方を末尾呼び出しで読む。
 function array(input: Scan.Input, position: Integer, depth: Integer, items: List[Json.Value], frame: Frame, first: Boolean) -> Result[Pair[Json.Value, Integer], Json.ParseError]
-  bind i <- Scan.whitespace(input, position)
-  bind b <- Scan.byte(input, i)
-  if b = -1 then return Result.Error(Scan.eof(input, Text.eofList)) end if
-  if b = 93 then return accept(input, Json.Value.Array(items), i + 1, depth - 1, frame) end if
-  if not first and b <> 44 then return Result.Error(Scan.error(input, i + 1, Text.listEnd)) end if
-  bind next <- if first then i else Scan.whitespace(input, i + 1) end if
-  if not first and Scan.byte(input, next) = 93 then return Result.Error(Scan.error(input, next + 1, Text.comma)) end if
-  return readValue(input, next, depth, Frame.Array(items, frame))
+  bind i <- Scan.whitespace(input: input, position: position)
+  bind b <- Scan.byte(input: input, position: i)
+  if b = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofList)) end if
+  if b = 93 then return accept(input: input, value: Json.Value.Array(items), stop: i + 1, depth: depth - 1, frame: frame) end if
+  if not first and b <> 44 then return Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.listEnd)) end if
+  bind next <- if first then i else Scan.whitespace(input: input, position: i + 1) end if
+  if not first and Scan.byte(input: input, position: next) = 93 then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.comma)) end if
+  return readValue(input: input, position: next, depth: depth, frame: Frame.Array(items, frame))
 end function
 
 function object(input: Scan.Input, position: Integer, depth: Integer, members: Map[String, Json.Value], frame: Frame, first: Boolean) -> Result[Pair[Json.Value, Integer], Json.ParseError]
-  bind i <- Scan.whitespace(input, position)
-  bind b <- Scan.byte(input, i)
-  if b = -1 then return Result.Error(Scan.eof(input, Text.eofObject)) end if
-  if b = 125 then return accept(input, Json.Value.Object(members), i + 1, depth - 1, frame) end if
-  if not first and b <> 44 then return Result.Error(Scan.error(input, i + 1, Text.objectEnd)) end if
-  bind next <- if first then i else Scan.whitespace(input, i + 1) end if
-  if not first and Scan.byte(input, next) = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
-  if not first and Scan.byte(input, next) = 125 then return Result.Error(Scan.error(input, next + 1, Text.comma)) end if
-  if Scan.byte(input, next) <> 34 then return Result.Error(Scan.error(input, next + 1, Text.key)) end if
-  bind Pair(key, stop) <- try Strings.read(input, next + 1)
-  bind colon <- Scan.whitespace(input, stop)
-  if Scan.byte(input, colon) = -1 then return Result.Error(Scan.eof(input, Text.eofObject)) end if
-  if Scan.byte(input, colon) <> 58 then return Result.Error(Scan.error(input, colon + 1, Text.colon)) end if
-  return readValue(input, colon + 1, depth, Frame.Object(members, key, frame))
+  bind i <- Scan.whitespace(input: input, position: position)
+  bind b <- Scan.byte(input: input, position: i)
+  if b = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofObject)) end if
+  if b = 125 then return accept(input: input, value: Json.Value.Object(members), stop: i + 1, depth: depth - 1, frame: frame) end if
+  if not first and b <> 44 then return Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.objectEnd)) end if
+  bind next <- if first then i else Scan.whitespace(input: input, position: i + 1) end if
+  if not first and Scan.byte(input: input, position: next) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
+  if not first and Scan.byte(input: input, position: next) = 125 then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.comma)) end if
+  if Scan.byte(input: input, position: next) <> 34 then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.key)) end if
+  bind Pair(key, stop) <- try Strings.read(input: input, start: next + 1)
+  bind colon <- Scan.whitespace(input: input, position: stop)
+  if Scan.byte(input: input, position: colon) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofObject)) end if
+  if Scan.byte(input: input, position: colon) <> 58 then return Result.Error(Scan.error(input: input, consumed: colon + 1, message: Text.colon)) end if
+  return readValue(input: input, position: colon + 1, depth: depth, frame: Frame.Object(members, key, frame))
 end function

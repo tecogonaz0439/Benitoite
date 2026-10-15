@@ -2,39 +2,39 @@
 import Benitoite.Unofficial.IO.Console
 
 function show_strings(values: List[String]) -> String
-  return String.join(values, "|")
+  return String.join(xs: values, separator: "|")
 end function
 
 function main() -> Unit uses Console.Write
-  Console.writeLine(show_strings(String.split("a,,b", ",")))
-  Console.writeLine(Integer.toString(List.length(String.split("", ","))))
-  Console.writeLine(show_strings(String.split("ab", "")))
-  Console.writeLine(Integer.toString(List.length(String.split("", ""))))
+  Console.writeLine(show_strings(String.split(s: "a,,b", separator: ",")))
+  Console.writeLine(Integer.toString(List.length(String.split(s: "", separator: ","))))
+  Console.writeLine(show_strings(String.split(s: "ab", separator: "")))
+  Console.writeLine(Integer.toString(List.length(String.split(s: "", separator: ""))))
   Console.writeLine(show_strings(String.lines("a\r\nb\n")))
   Console.writeLine(show_strings(String.lines("a\n\nb")))
   Console.writeLine(Integer.toString(List.length(String.lines(""))))
-  Console.writeLine(String.join(["a", "b"], ","))
+  Console.writeLine(String.join(xs: ["a", "b"], separator: ","))
   Console.writeLine(String.trim(" \t hello \r\n"))
-  Console.writeLine(String.replace("abc", "", "x"))
-  Console.writeLine(String.replace("aba", "a", "x"))
-  Console.writeLine(String.repeat("ab", 0))
-  Console.writeLine(String.repeat("ab", -2))
-  Console.writeLine(show_strings(List.map(String.characters("aé"), lambda(character) return Character.toString(character) end lambda)))
+  Console.writeLine(String.replace(s: "abc", old: "", new: "x"))
+  Console.writeLine(String.replace(s: "aba", old: "a", new: "x"))
+  Console.writeLine(String.repeat(s: "ab", n: 0))
+  Console.writeLine(String.repeat(s: "ab", n: -2))
+  Console.writeLine(show_strings(List.map(xs: String.characters("aé"), f: lambda(value) return Character.toString(value) end lambda)))
   Console.writeLine(String.fromCharacters(String.characters("aé")))
-  Console.writeLine(if String.contains("abc", "") then "true" else "false" end if)
-  Console.writeLine(if String.startsWith("abc", "ab") then "true" else "false" end if)
-  Console.writeLine(if String.endsWith("abc", "bc") then "true" else "false" end if)
+  Console.writeLine(if String.contains(s: "abc", part: "") then "true" else "false" end if)
+  Console.writeLine(if String.startsWith(s: "abc", prefix: "ab") then "true" else "false" end if)
+  Console.writeLine(if String.endsWith(s: "abc", suffix: "bc") then "true" else "false" end if)
   Console.writeLine(if String.isEmpty("") then "true" else "false" end if)
   Console.writeLine(if String.isEmpty("x") then "true" else "false" end if)
-  Console.writeLine(match String.byteIndexOf("aéa", "é") with
+  Console.writeLine(match String.byteIndexOf(s: "aéa", part: "é") with
     case Option.Some(index) -> Integer.toString(index)
     case Option.None -> "None"
   end match)
-  Console.writeLine(match String.byteIndexOf("abc", "") with
+  Console.writeLine(match String.byteIndexOf(s: "abc", part: "") with
     case Option.Some(index) -> Integer.toString(index)
     case Option.None -> "None"
   end match)
-  return Console.writeLine(match String.byteIndexOf("abc", "z") with
+  return Console.writeLine(match String.byteIndexOf(s: "abc", part: "z") with
     case Option.Some(index) -> Integer.toString(index)
     case Option.None -> "None"
   end match)

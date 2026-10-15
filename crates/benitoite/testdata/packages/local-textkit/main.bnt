@@ -6,5 +6,5 @@ import Benitoite.Unofficial.IO.Console
 import Textkit.Slug
 function main() -> Unit uses Console.Write
   Console.writeLine(Slug.slug("  Hello   World "))
-  Console.writeLine(Slug.truncate("こんにちは世界", 5))
+  Console.writeLine(Slug.truncate(text: "こんにちは世界", width: 5))
 end function

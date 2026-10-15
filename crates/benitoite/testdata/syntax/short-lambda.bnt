@@ -1,0 +1,17 @@
+// spec: 01-02 ラムダ
+import Benitoite.Unofficial.IO.Console
+function add(x: Integer, y: Integer) -> Integer
+  return x + y
+end function
+function apply(f: function(value: Integer) -> Integer, x: Integer) -> Integer
+  return f(x)
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(apply(f: lambda(value) return add(x: value, y: 2), x: 3)))
+  bind outer <- lambda(x: Integer) return (lambda(y: Integer) return x + y)
+  Console.writeLine(Integer.toString(outer(3)(4)))
+  bind choose <- lambda(x: Integer) return if x > 0 then 1 else 2 end if
+  Console.writeLine(Integer.toString(choose(0)))
+  bind identity <- lambda(x: Integer) return match x with case value -> value end match
+  Console.writeLine(Integer.toString(identity(9)))
+end function

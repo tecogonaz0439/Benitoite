@@ -33,11 +33,11 @@ fn header_edit_keeps_body_comments_and_line_endings() {
     for prefix in [
         "",
         "\u{feff}",
-        "\u{feff}language \"0.0.3\"\n\n",
+        "\u{feff}language \"0.0.5\"\n\n",
         "//! module\n\n",
         "//! module\n \n\n",
         "#!/usr/bin/env benitoite\n\n",
-        "//! module\n\n// header description\nlanguage \"0.0.3\" // trailing\n\n",
+        "//! module\n\n// header description\nlanguage \"0.0.5\" // trailing\n\n",
     ] {
         for nl in ["\n", "\r\n"] {
             let source = format!("{prefix}{body}").replace('\n', nl);
@@ -88,11 +88,11 @@ fn header_edit_keeps_body_comments_and_line_endings() {
         let edited = edit::splice(
             source,
             edit::range(source, &ast),
-            "language \"0.0.3\"\n",
+            "language \"0.0.5\"\n",
             FileId(0),
         )
         .unwrap();
-        assert!(edited.ends_with("language \"0.0.3\"\n"));
+        assert!(edited.ends_with("language \"0.0.5\"\n"));
         assert_eq!(
             super::super::formatter::format_source(FileId(0), SourceKind::User, edited.as_bytes())
                 .unwrap()
@@ -147,7 +147,7 @@ fn update_replaces_quoted_values_and_adds_missing_fields_without_changing_the_bo
 #[test]
 fn public_contracts_include_nested_function_types_and_trait_methods() {
     let ast = module(
-        "import Benitoite.Unofficial.IO.File\nimport Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.Clock\nimport Benitoite.Unofficial.IO.Random\nimport Benitoite.Unofficial.IO.Process\n\npublic type Timer = function() -> Unit uses Clock.Time\n\npublic data Action[T]\n  Run(T, List[function(String) -> Unit uses Console.Read])\n  Stop\nend data\n\ndata Hidden\n  Run(function() -> Unit uses Process.Environment)\nend data\n\npublic record Generator\n  generate: function() -> Unit uses Random.Generate\nend record\n\npublic function apply[effect E](f: function(Integer) -> Unit uses File.Write, E) -> Unit uses State, IO.All, Console.Write\n  ()\nend function\n\nfunction hidden() -> Unit uses Process.Run\n  ()\nend function\n\npublic trait Source[T]\n  function read(value: T) -> (function() -> Unit uses File.Read)\nend trait\n",
+        "import Benitoite.Unofficial.IO.File\nimport Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.Clock\nimport Benitoite.Unofficial.IO.Random\nimport Benitoite.Unofficial.IO.Process\n\npublic type Timer = function() -> Unit uses Clock.Time\n\npublic data Action[T]\n  Run(T, List[function(text: String) -> Unit uses Console.Read])\n  Stop\nend data\n\ndata Hidden\n  Run(function() -> Unit uses Process.Environment)\nend data\n\npublic record Generator\n  generate: function() -> Unit uses Random.Generate\nend record\n\npublic function apply[effect E](f: function(value: Integer) -> Unit uses File.Write, E) -> Unit uses State, IO.All, Console.Write\n  ()\nend function\n\nfunction hidden() -> Unit uses Process.Run\n  ()\nend function\n\npublic trait Source[T]\n  function read(value: T) -> (function() -> Unit uses File.Read)\nend trait\n",
     );
     let mut summary = effects::Summary::default();
     summary.collect(&ast);

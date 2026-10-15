@@ -1,0 +1,239 @@
+{
+  "version": 2,
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-named",
+      "prims": [
+        {
+          "name": "List.map",
+          "tparams": [],
+          "neffs": 0,
+          "names": [
+            "xs",
+            "f"
+          ],
+          "params": [
+            {
+              "list": {
+                "elem": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              }
+            },
+            {
+              "fn": {
+                "names": [
+                  "value"
+                ],
+                "params": [
+                  {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  }
+                ],
+                "ret": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "eff": []
+              }
+            }
+          ],
+          "ret": {
+            "list": {
+              "elem": {
+                "base": {
+                  "name": "Integer"
+                }
+              }
+            }
+          },
+          "eff": [],
+          "kind": "pure",
+          "opEff": null,
+          "classConstraints": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "name": "%eq",
+          "tparams": [
+            {
+              "equality": true,
+              "key": false,
+              "ordered": false
+            }
+          ],
+          "neffs": 0,
+          "names": [
+            "left",
+            "right"
+          ],
+          "params": [
+            {
+              "tvar": {
+                "index": 0
+              }
+            },
+            {
+              "tvar": {
+                "index": 0
+              }
+            }
+          ],
+          "ret": {
+            "base": {
+              "name": "Boolean"
+            }
+          },
+          "eff": [],
+          "kind": "pure",
+          "opEff": null,
+          "classConstraints": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "name": "Console.writeLine",
+          "tparams": [],
+          "neffs": 0,
+          "names": [
+            "text"
+          ],
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "base": {
+              "name": "Unit"
+            }
+          },
+          "eff": [
+            {
+              "name": {
+                "value": "Console"
+              }
+            }
+          ],
+          "kind": "io",
+          "opEff": "Console",
+          "classConstraints": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "Console",
+          "ops": [
+            "Console.writeLine"
+          ]
+        }
+      ],
+      "resources": [],
+      "dataDecls": [
+        {
+          "name": "PosPair",
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "PosPair",
+              "fields": null,
+              "args": [
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Pair",
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Pair",
+              "fields": [
+                "left",
+                "right"
+              ],
+              "args": [
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "summaries": [
+        {
+          "name": "PosPair",
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          }
+        },
+        {
+          "name": "Pair",
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          }
+        }
+      ],
+      "statePure": [],
+      "supplementalData": [],
+      "supplementalPrims": []
+    },
+    {
+      "group": "golden",
+      "name": "implementation-dictionaries",
+      "prims": [],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        }
+      ],
+      "resources": [],
+      "dataDecls": [],
+      "summaries": [],
+      "statePure": [],
+      "supplementalData": [],
+      "supplementalPrims": []
+    }
+  ]
+}

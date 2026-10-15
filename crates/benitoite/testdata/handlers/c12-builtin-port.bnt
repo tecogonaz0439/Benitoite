@@ -6,8 +6,8 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function readPort(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
 end function
 
 function main() -> Unit uses File.Read, Console.Write

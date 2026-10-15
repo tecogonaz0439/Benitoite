@@ -5,13 +5,13 @@ end dependency
 import Benitoite.Unofficial.IO.Console
 import Fuzzy.Distance
 function main() -> Unit uses Console.Write
-  Console.writeLine(match Distance.closest("buy mlk", ["wash dishes", "buy milk", "send mail"], 3) with
+  Console.writeLine(match Distance.closest(word: "buy mlk", candidates: ["wash dishes", "buy milk", "send mail"], limit: 3) with
     case Option.Some(s) -> s
     case Option.None -> "none"
   end match)
-  Console.writeLine(match Distance.closest("xyz", ["abc"], 1) with
+  Console.writeLine(match Distance.closest(word: "xyz", candidates: ["abc"], limit: 1) with
     case Option.Some(s) -> s
     case Option.None -> "none"
   end match)
-  Console.writeLine("${Distance.distance("日本語🦀", "日本🦀")}")
+  Console.writeLine("${Distance.distance(a: "日本語🦀", b: "日本🦀")}")
 end function

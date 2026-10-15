@@ -9,7 +9,7 @@ function fingerprint(text: String) -> String
   return Hash.sha256(String.toUTF8(text)) |> Bytes.toHex(_)
 end function
 function main() -> Result[Unit, String] uses Console.Write
-  bind bytes <- Bytes.fromHex("fbff") |> Option.unwrapOr(_, Bytes.empty())
+  bind bytes <- Bytes.fromHex("fbff") |> Option.unwrapOr(o: _, fallback: Bytes.empty())
   Console.writeLine(Encoding.base64Encode(bytes))
   Console.writeLine(Encoding.base64UrlEncode(bytes))
   bind decoded <- try Encoding.base64Decode("+/8=")

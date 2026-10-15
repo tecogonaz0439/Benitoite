@@ -1,0 +1,41 @@
+// spec: 01-08 評価順序
+import Benitoite.Unofficial.IO.Console
+trait Measure[T]
+ function measure(value: T) -> Integer
+end trait
+implement Measure[String]
+ function measure(value: String) -> Integer
+  return String.characterCount(s: value)
+ end function
+end implement
+trait Combine[T]
+ function combine[U: Measure](left: T, right: U) -> T
+end trait
+implement Combine[Integer]
+ function combine[U: Measure](left: Integer, right: U) -> Integer
+  return left * 100 + Measure.measure(value: right)
+ end function
+end implement
+function invoke[T: Combine, U: Measure](left: T, right: U) -> T
+ return Combine.combine(right: right, left: left)
+end function
+function mark(label: String, value: String) -> String uses Console.Write
+ Console.writeLine(text: label)
+ return value + "!"
+end function
+function left() -> Integer uses Console.Write
+ Console.writeLine(text: "left")
+ return 17
+end function
+function main() -> Unit uses Console.Write
+ bind direct <- Combine.combine(right: mark(label: "right", value: "ab"), left: left())
+ bind action: function(left: Integer, right: String) -> Integer <- Combine.combine
+ bind alias <- action(right: "abcd", left: 3)
+ bind partial <- Combine.combine(right: _, left: 5)
+ bind fromPartial <- partial(right: "abcdef")
+ bind piped <- 7 |> invoke(right: "abcdefgh")
+ Console.writeLine(text: Integer.toString(n: direct))
+ Console.writeLine(text: Integer.toString(n: alias))
+ Console.writeLine(text: Integer.toString(n: fromPartial))
+ Console.writeLine(text: Integer.toString(n: piped))
+end function

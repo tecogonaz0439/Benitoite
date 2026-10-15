@@ -69,21 +69,21 @@ public function pathSegments(path: String) -> List[String]
 
 /// Listens on `port` of `host` and runs `handler` in a new task for each request.
 /// Returns `Result.Error` when listening cannot start or accepting fails.
-public function serve[effect E](host: String, port: Integer, handler: function(Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
-  with listener = try listen(host, port),
+public function serve[effect E](host: String, port: Integer, handler: function(request: Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
+  with listener = try listen(host: host, port: port),
     group = TaskGroup.open() do
-    return serveLoop(listener, group, handler)
+    return serveLoop(listener: listener, group: group, handler: handler)
   end with
 end function
 
-function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: function(Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
+function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: function(request: Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
   bind exchange <- try accept(listener)
-  bind _ <- TaskGroup.spawn(group, lambda()
+  bind _ <- TaskGroup.spawn(group: group, action: lambda()
     with current = exchange do
-      return respond(current, handler(requestOf(current)))
+      return respond(exchange: current, response: handler(requestOf(current)))
     end with
   end lambda)
-  return serveLoop(listener, group, handler)
+  return serveLoop(listener: listener, group: group, handler: handler)
 end function
 
 /// Returns a response whose body is `s` as plain text.
@@ -104,7 +104,7 @@ end function
 /// Returns the value of the first header whose name equals `name`, ignoring case.
 public function header(headers: List[Pair[String, String]], name: String) -> Option[String]
   bind wanted <- String.toLowercase(name)
-  return match List.find(headers, lambda(h) return String.toLowercase(Pair.first(h)) = wanted end lambda) with
+  return match List.find(xs: headers, p: lambda(value) return String.toLowercase(Pair.first(value)) = wanted end lambda) with
     case Option.Some(h) -> Option.Some(Pair.second(h))
     case Option.None -> Option.None
   end match
@@ -115,7 +115,7 @@ public function clientRequest(method: String, url: String) -> ClientRequest
   return ClientRequest(method: method, url: url, headers: [], body: Bytes.empty(), timeoutMilliseconds: 30000)
 end function
 
-/// Sends a GET request to `url`, as `Http.send(Http.clientRequest("GET", url))`.
+/// Sends a GET request to `url`, as `Http.send(Http.clientRequest(method: "GET", url: url))`.
 public function get(url: String) -> Result[Response, NetworkError] uses Connect
-  return send(clientRequest("GET", url))
+  return send(clientRequest(method: "GET", url: url))
 end function

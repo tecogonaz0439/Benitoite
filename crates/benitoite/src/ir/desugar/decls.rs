@@ -105,6 +105,7 @@ pub(super) fn program(
                     .ok_or_else(|| error("empty operation module path"))?,
             };
             out.ops.push(OpDef {
+                param_names: s.param_names.clone(),
                 binding: *id,
                 effect: effect.name,
                 name: format!("{prefix}.{}", b.name),
@@ -214,11 +215,7 @@ fn definition(
                         def: binding,
                         spec: std::sync::Arc::clone(spec),
                     },
-                    function(
-                        scheme.params.clone(),
-                        scheme.ret.clone(),
-                        scheme.effects.clone(),
-                    ),
+                    scheme.fn_ty(),
                     f.span,
                 ),
                 dicts: vec![],
@@ -231,6 +228,7 @@ fn definition(
     };
     let public = state.binding(binding)?.public;
     Ok(Def {
+        param_names: scheme.param_names.clone(),
         binding,
         name: match implementation {
             Some((prefix, _)) => format!("{prefix}.{}", f.name.text),
@@ -316,6 +314,7 @@ fn getters(
         };
         let public = state.binding(binding)?.public;
         out.defs.push(Def {
+            param_names: scheme.param_names.clone(),
             binding,
             name: name(
                 module,
@@ -418,6 +417,7 @@ fn implementation(
         .ok_or_else(|| error("missing implementation class"))?;
     let name = format!("{}[{target}]", class.name);
     let scheme = Scheme {
+        param_names: Vec::new(),
         type_params: info.type_params.clone(),
         class_constraints: info.class_constraints.clone(),
         effect_params: vec![],

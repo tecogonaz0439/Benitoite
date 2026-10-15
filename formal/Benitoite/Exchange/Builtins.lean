@@ -1,8 +1,8 @@
 import Benitoite.Exchange.Convert
 import Benitoite.Release.BuiltinTable
 
-/-! E2a-1a: 入力ごとの組み込み・データ型の宣言。版 7 の Corpus の原子を増やさない。
-E2a-1b: 宣言から求めた要約と制約の判定を使い、具体的な Builtins を作る。 -/
+/-! 契約名とソース順を保持する独立した交換の入口。
+設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
 namespace Benitoite.Exchange
 open Lean
 
@@ -16,6 +16,7 @@ structure BuiltinEntry where
   name : String
   tparams : List PrimConstraint
   neffs : Nat
+  names : List String
   params : List Ty
   ret : Ty
   eff : Eff
@@ -26,6 +27,7 @@ structure BuiltinEntry where
   deriving ToJson, FromJson
 
 structure DataCtorEntry where
+  fields : Option (List String)
   name : String
   args : List Ty
   deriving ToJson, FromJson
@@ -74,26 +76,8 @@ def primKind : String → Except String Benitoite.Release.PrimKind
   | n => throw s!"unknown primitive kind: {n}"
 
 /-- ordered の位置は等値・鍵の制約とともに保持し、admits で検査する。 -/
-structure PrimMaterial where
-  constraints : List PrimConstraint
-  neffs : Nat
-  params : List Benitoite.Release.Ty
-  ret : Benitoite.Release.Ty
-  eff : Benitoite.Release.Eff
-  kind : Benitoite.Release.PrimKind
-  opEff : Option Benitoite.Release.EffName
-
-def PrimMaterial.toPrimSig (m : PrimMaterial)
-    (admits : List Benitoite.Release.TParam → List Benitoite.Release.Ty → Prop) :
-    Benitoite.Release.PrimSig where
-  tparams := m.constraints.map (fun c => ⟨c.equality, c.key⟩)
-  neffs := m.neffs
-  params := m.params
-  ret := m.ret
-  eff := m.eff
-  admits := admits
-  kind := m.kind
-  opEff := m.opEff
+abbrev PrimMaterial := Benitoite.Surface.CheckTables.PrimMaterial
+abbrev DataMaterial := Benitoite.Surface.CheckTables.DataMaterial
 
 /-- opaque の型引数を文字列に埋め込む旧交換形式は、型の置き換えに対応しない。 -/
 partial def Ty.hasOpaqueArguments : Ty → Except String Bool
@@ -106,7 +90,7 @@ partial def Ty.hasOpaqueArguments : Ty → Except String Bool
       return !ts.isEmpty
   | .data _ ts | .tapp _ ts => do
       return (← ts.mapM Ty.hasOpaqueArguments).any id
-  | .fn ps r _ => do
+  | .fn _ ps r _ => do
       return (← r.hasOpaqueArguments) || (← ps.mapM Ty.hasOpaqueArguments).any id
   | .list t | .reference t | .lazyT t | .set t | .dict _ t => t.hasOpaqueArguments
   | .map k v => do return (← k.hasOpaqueArguments) || (← v.hasOpaqueArguments)
@@ -124,17 +108,19 @@ partial def Ty.checkDataNames (ds : List DataEntry) : Ty → Except String Unit
   | .ctor (.data n) =>
       if ds.any (fun d => d.name == n) then pure () else throw s!"missing data constructor type: {n}"
   | .tapp _ ts => ts.forM (Ty.checkDataNames ds)
-  | .fn ps r _ => do ps.forM (Ty.checkDataNames ds); r.checkDataNames ds
+  | .fn _ ps r _ => do ps.forM (Ty.checkDataNames ds); r.checkDataNames ds
   | .list t | .reference t | .lazyT t | .set t | .dict _ t => t.checkDataNames ds
   | .map k v => do k.checkDataNames ds; v.checkDataNames ds
   | _ => pure ()
 
 /-- 対象外の印を信頼して、変換できない型を黙って通さない。 -/
 def BuiltinEntry.toMaterial (b : BuiltinEntry) : Except String PrimMaterial := do
+  checkNames b.names b.params.length
   if !b.classConstraints.isEmpty then throw s!"typeclass constraints: {b.name}"
   if (← b.hasOpaqueArguments) then throw s!"opaque type arguments: {b.name}"
   return {
-    constraints := b.tparams
+    constraints := b.tparams.map (fun c => ⟨c.equality, c.key, c.ordered⟩)
+    names := b.names
     neffs := b.neffs
     params := ← b.params.mapM Ty.toRelease
     ret := ← b.ret.toRelease
@@ -142,23 +128,24 @@ def BuiltinEntry.toMaterial (b : BuiltinEntry) : Except String PrimMaterial := d
     kind := ← primKind b.kind
     opEff := b.opEff }
 
-structure DataMaterial where
-  name : Benitoite.Release.DataName
-  ntys : Nat
-  ctors : List (Benitoite.Release.ConName × Benitoite.Release.ConDecl)
-
 def DataEntry.toMaterial (d : DataEntry) : Except String DataMaterial := do
   return { name := d.name, ntys := d.ntys, ctors := ← d.ctors.mapM (fun c => do
+    if let some fs := c.fields then checkNames fs c.args.length
     return (c.name, { data := d.name, ntys := d.ntys, args := ← c.args.mapM Ty.toRelease })) }
 
-/-- 宣言順を保存し、E1c の型からの列挙と Program.cons の材料を同じ表から得る。 -/
+/-- 宣言順を保存し、網羅性の型からの列挙と Program.cons の材料を同じ表から得る。 -/
 def dataConstructors (ds : List DataMaterial) (name : Benitoite.Release.DataName) :
     List Benitoite.Release.ConName :=
   ((ds.find? (fun d => d.name == name)).map (fun d => d.ctors.map Prod.fst)).getD []
 
 def constructorDecl (ds : List DataMaterial) (name : Benitoite.Release.ConName) :
     Option Benitoite.Release.ConDecl :=
-  ((ds.flatMap DataMaterial.ctors).find? (fun c => c.1 == name)).map Prod.snd
+  ((ds.flatMap (fun d => d.ctors)).find? (fun c => c.1 == name)).map Prod.snd
+
+def BuiltinInput.toBuiltinMaterial (b : BuiltinInput) : Benitoite.Surface.CheckTables.BuiltinMaterial :=
+  ⟨b.effects.map (fun e => (e.name,e.ops)), b.resources,
+    ((b.prims.find? (fun p => p.kind == "refGet")).map BuiltinEntry.name).getD "Reference.get",
+    ((b.prims.find? (fun p => p.kind == "refSet")).map BuiltinEntry.name).getD "Reference.set"⟩
 
 def BuiltinInput.effectOps (b : BuiltinInput) (name : Benitoite.Release.EffName) :
     Option (List Benitoite.Release.PrimName) :=
@@ -171,14 +158,14 @@ def BuiltinInput.isResource (b : BuiltinInput) (name : Benitoite.Release.OpaqueN
   | none => false
 
 /-- JSON に依存しない要約の宣言へ、同じ入力の名前のままで移す。 -/
-def DataMaterial.toBuiltinDataDecl (d : DataMaterial) : Benitoite.Release.BuiltinDataDecl :=
+def toBuiltinDataDecl (d : DataMaterial) : Benitoite.Release.BuiltinDataDecl :=
   ⟨d.name, d.ntys, d.ctors.map (fun c => c.2.args)⟩
 
 /-- 書き出した summaries はここでは使わず、宣言の型を変換する。 -/
 def BuiltinInput.summaryDecls (b : BuiltinInput) : Except String (List Benitoite.Release.BuiltinDataDecl) := do
-  return (← b.dataDecls.mapM DataEntry.toMaterial).map DataMaterial.toBuiltinDataDecl
+  return (← b.dataDecls.mapM DataEntry.toMaterial).map toBuiltinDataDecl
 
-/-- E2 の検査でも直接使える、Lean で計算した要約の表。 -/
+/-- 宣言の検査でも直接使える、Lean で計算した要約の表。 -/
 def BuiltinInput.summaryTable (b : BuiltinInput) : Except String Benitoite.Release.SummaryTable := do
   return Benitoite.Release.dataSummaries (← b.summaryDecls)
 
@@ -194,11 +181,11 @@ def BuiltinInput.primSignatures (b : BuiltinInput) (S : Benitoite.Release.Summar
   for p in b.prims do
     if p.unconvertibleTypes.isEmpty && p.classConstraints.isEmpty then
       let m ← p.toMaterial
-      let cs := m.constraints.map PrimConstraint.toBuiltinConstraint
+      let cs := m.constraints
       sigs := sigs ++ [(p.name, m.toPrimSig (fun C ts => Benitoite.Release.admitsB S cs C ts = true))]
   return sigs
 
-/-- 入力ごとの具体的な組み込みの表。実行の欄は E2 で使わない。
+/-- 入力ごとの具体的な組み込みの表。宣言の検査では実行の欄を使わない。
 Reference.get/set は IO の操作ではないので、使われない入力では sig が none になりうる。 -/
 def mkBuiltins (b : BuiltinInput) : Except String Benitoite.Release.Builtins := do
   let S ← b.summaryTable

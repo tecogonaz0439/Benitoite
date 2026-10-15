@@ -15,8 +15,9 @@ enum Infix {
     Binary(BinOp),
     Pipe,
 }
+const PIPE_POWER: u8 = 10;
 const OPERATORS: &[(TokenKind, Infix, u8)] = &[
-    (TokenKind::PipeGt, Infix::Pipe, 10),
+    (TokenKind::PipeGt, Infix::Pipe, PIPE_POWER),
     (TokenKind::KwOr, Infix::Binary(BinOp::Or), 20),
     (TokenKind::KwAnd, Infix::Binary(BinOp::And), 30),
     (TokenKind::Eq, Infix::Binary(BinOp::Eq), 40),
@@ -490,27 +491,48 @@ fn parse_args(p: &mut Parser, depth: u32) -> PResult<Vec<Arg>> {
             allow_empty: true,
             indexed: true,
         },
-        push_arg,
+        |p, depth, out| {
+            if p.at(TokenKind::LowerIdent) && p.peek_nth_kind(1) == TokenKind::Colon {
+                out.push(Arg::Named(parse_named_arg(p, depth)?));
+                Ok(())
+            } else {
+                push_arg(p, depth, out)
+            }
+        },
         |out, node| out.push(Arg::Expr(Expr::Error(node))),
     )
 }
 fn push_arg(p: &mut Parser, depth: u32, out: &mut Vec<Arg>) -> PResult<()> {
+    out.push(match *parse_arg_value(p, depth)? {
+        ArgValue::Expr(e) => Arg::Expr(e),
+        ArgValue::Placeholder(p) => Arg::Placeholder(p),
+    });
+    Ok(())
+}
+
+fn parse_arg_value(p: &mut Parser, depth: u32) -> PResult<Box<ArgValue>> {
     p.enter(depth)?;
     if p.at(TokenKind::Underscore)
         && matches!(p.peek_nth_kind(1), TokenKind::Comma | TokenKind::RParen)
     {
         let span = p.bump().span;
-        out.push(Arg::Placeholder(PlaceholderArg {
+        Ok(Box::new(ArgValue::Placeholder(PlaceholderArg {
             id: p.node_id(),
             span,
-        }));
+        })))
     } else {
-        let Ok(expr) = parse_expr(p, depth) else {
-            return Err(Fail);
-        };
-        out.push(Arg::Expr(*expr));
+        Ok(Box::new(ArgValue::Expr(*parse_expr(p, depth)?)))
     }
-    Ok(())
+}
+
+fn parse_named_arg(p: &mut Parser, depth: u32) -> PResult<Box<NamedArg>> {
+    p.enter(depth)?;
+    let name = p.expect_name(TokenKind::LowerIdent, text::LOWER_NAME)?;
+    p.expect(TokenKind::Colon)?;
+    Ok(Box::new(NamedArg {
+        name,
+        value: *parse_arg_value(p, depth)?,
+    }))
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
@@ -733,11 +755,11 @@ fn push_expr_statement(p: &mut Parser, depth: u32, out: &mut Vec<Stmt>) -> PResu
     let Ok(expr) = parse_expr(p, depth) else {
         return Err(Fail);
     };
-    push_expr(out, expr);
+    push_expr(out, *expr);
     Ok(())
 }
-fn push_expr(out: &mut Vec<Stmt>, expr: Box<Expr>) {
-    out.push(Stmt::Expr(*expr));
+fn push_expr(out: &mut Vec<Stmt>, expr: Expr) {
+    out.push(Stmt::Expr(expr));
 }
 fn recover_statement(p: &mut Parser, start: usize, out: &mut Vec<Stmt>) {
     p.recover(start, Recovery::Line);
@@ -824,7 +846,7 @@ fn push_bind(p: &mut Parser, depth: u32, out: &mut Vec<Stmt>) -> PResult<()> {
                 .build(),
         );
     }
-    finish_bind(p, start, (mode, keyword_span), *pattern, ty, value, out);
+    finish_bind(p, start, (mode, keyword_span), *pattern, ty, *value, out);
     Ok(())
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
@@ -835,7 +857,7 @@ fn finish_bind(
     header: (BindMode, Span),
     pattern: Pattern,
     ty: Option<Box<TypeExpr>>,
-    value: Box<Expr>,
+    value: Expr,
     out: &mut Vec<Stmt>,
 ) {
     out.push(Stmt::Bind(Box::new(BindStmt {
@@ -845,7 +867,7 @@ fn finish_bind(
         keyword_span: header.1,
         pattern,
         ty: ty.map(|t| *t),
-        value: *value,
+        value,
     })));
 }
 
@@ -889,7 +911,7 @@ fn parse_else(p: &mut Parser, depth: u32) -> PResult<Option<Box<ElseBranch>>> {
         let Ok(branch) = parse_if(p, child(depth), false) else {
             return Err(Fail);
         };
-        return Ok(Some(finish_else_if(branch)?));
+        return Ok(Some(finish_else_if(*branch)?));
     }
     if p.symbol("{") {
         p.bump();
@@ -901,8 +923,8 @@ fn parse_else(p: &mut Parser, depth: u32) -> PResult<Option<Box<ElseBranch>>> {
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
-fn finish_else_if(expr: Box<Expr>) -> PResult<Box<ElseBranch>> {
-    let Expr::If(branch) = *expr else {
+fn finish_else_if(expr: Expr) -> PResult<Box<ElseBranch>> {
+    let Expr::If(branch) = expr else {
         return Err(Fail);
     };
     Ok(Box::new(ElseBranch::If(Box::new(branch))))
@@ -928,6 +950,8 @@ fn finish_if(
 #[inline(never)]
 fn parse_lambda(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     let start = p.pos;
+    let bound = p.lambda_bounds.get(p.peek());
+    let first_line = p.peek().start_line;
     let opened = p.bump().span;
     if p.at(TokenKind::LowerIdent) {
         return foreign_lambda(p, start, depth);
@@ -953,14 +977,167 @@ fn parse_lambda(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
     }
     p.ctx.escape = EscapeContext::Allowed;
     p.ctx.in_arm_head = false;
-    p.open_block(TokenKind::KwLambda, opened);
-    let body = parse_block(p, child(depth), BlockEnd::End);
+    let explicit = bound.is_none_or(|b| b.explicit);
+    if explicit {
+        p.open_block(TokenKind::KwLambda, opened);
+    }
+    let diagnostics_before_body = p.diagnostics.len();
+    let body = if explicit {
+        parse_block(p, child(depth), BlockEnd::End)
+    } else {
+        parse_short_body(p, child(depth))
+    };
     p.ctx = saved;
     let Ok(body) = body else {
         return Err(Fail);
     };
-    p.close_block(TokenKind::KwLambda);
-    Ok(finish_lambda(p, start, params, ret, uses, *body))
+    let ending = if explicit {
+        let end_start = p.peek().span;
+        LambdaEnding::Explicit {
+            end_span: end_start.to(p.close_block(TokenKind::KwLambda)),
+        }
+    } else {
+        if p.tokens
+            .get(p.pos.saturating_sub(1))
+            .is_some_and(|t| t.end_line > first_line)
+        {
+            report_multiline_lambda(p, start, first_line, opened);
+        }
+        LambdaEnding::Omitted {
+            body_end: body.span.end,
+        }
+    };
+    check_direct_lambdas(
+        p,
+        &body,
+        ending,
+        p.diagnostics.len() == diagnostics_before_body,
+    );
+    Ok(finish_lambda(p, start, params, ret, uses, *body, ending))
+}
+#[cold]
+#[inline(never)]
+fn report_multiline_lambda(p: &mut Parser, start: usize, first_line: u32, opened: Span) {
+    let mut d = DiagBuilder::new(DiagCode::E0254)
+        .primary(opened)
+        .help("end");
+    if let Some(crossed) = p
+        .tokens
+        .get(start..p.pos)
+        .unwrap_or_default()
+        .iter()
+        .find(|t| t.end_line > first_line)
+    {
+        d = d.secondary(crossed.span, "crossed");
+    }
+    p.report(d.build());
+}
+
+// 単文は通常の文の解析を使い、外側の区切りを消費しない（設計書 01-02「ラムダ」）。
+#[inline(never)]
+fn parse_short_body(p: &mut Parser, depth: u32) -> PResult<Box<Block>> {
+    let start = p.pos;
+    let mut stmts = Vec::new();
+    p.enter(depth)?;
+    push_stmt(p, child(depth), &mut stmts)?;
+    let same_line = p
+        .tokens
+        .get(p.pos.saturating_sub(1))
+        .is_some_and(|t| t.end_line == p.peek().start_line);
+    if same_line
+        && !block_end(p, BlockEnd::WithCase)
+        && !matches!(
+            p.peek_kind(),
+            TokenKind::Newline
+                | TokenKind::KwEnd
+                | TokenKind::Eof
+                | TokenKind::RParen
+                | TokenKind::RBracket
+                | TokenKind::Comma
+                | TokenKind::KwCase
+                | TokenKind::KwElse
+                | TokenKind::KwDo
+                | TokenKind::KwThen
+                | TokenKind::StrMid
+                | TokenKind::StrEnd
+        )
+    {
+        p.unexpected(text::NEWLINE_OR_END);
+        p.recover(p.pos, Recovery::Line);
+    }
+    Ok(finish_block(p, start, stmts))
+}
+
+// 括弧と引数・束縛の境界は直接の入れ子に含めない（設計書 01-02「ラムダ」）。
+#[inline(never)]
+fn check_direct_lambdas(p: &mut Parser, body: &Block, ending: LambdaEnding, edits_safe: bool) {
+    let mut pending = Vec::new();
+    for stmt in &body.stmts {
+        if let Stmt::Expr(e) = stmt {
+            pending.push(e);
+        }
+    }
+    while let Some(e) = pending.pop() {
+        match e {
+            Expr::Lambda(inner) => {
+                if matches!(ending, LambdaEnding::Omitted { .. })
+                    || matches!(inner.ending, LambdaEnding::Omitted { .. })
+                {
+                    let d = DiagBuilder::new(DiagCode::E0256).primary(inner.span);
+                    let d = if edits_safe {
+                        d.help_edits(
+                            "paren",
+                            vec![
+                                Edit {
+                                    span: Span {
+                                        end: inner.span.start,
+                                        ..inner.span
+                                    },
+                                    replacement: "(".into(),
+                                },
+                                Edit {
+                                    span: Span {
+                                        start: inner.span.end,
+                                        ..inner.span
+                                    },
+                                    replacement: ")".into(),
+                                },
+                            ],
+                        )
+                    } else {
+                        d.help("paren")
+                    };
+                    p.report(d.build());
+                }
+            }
+            Expr::Return(e) => pending.push(&e.value),
+            Expr::Try(e) => pending.push(&e.value),
+            Expr::Unary(e) => pending.push(&e.operand),
+            Expr::Binary(e) => {
+                pending.push(&e.lhs);
+                pending.push(&e.rhs);
+            }
+            Expr::Pipe(e) => {
+                pending.push(&e.lhs);
+                pending.push(&e.rhs);
+            }
+            Expr::Call(e) => pending.push(&e.callee),
+            Expr::Lit(_)
+            | Expr::Interp(_)
+            | Expr::Name(_)
+            | Expr::Unit(_)
+            | Expr::Paren(_)
+            | Expr::List(_)
+            | Expr::Record(_)
+            | Expr::If(_)
+            | Expr::Match(_)
+            | Expr::Lazy(_)
+            | Expr::With(_)
+            | Expr::Handle(_)
+            | Expr::Resume(_)
+            | Expr::Error(_) => {}
+        }
+    }
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
@@ -971,15 +1148,17 @@ fn finish_lambda(
     ret: Option<Box<TypeExpr>>,
     uses: Option<UsesList>,
     body: Block,
+    ending: LambdaEnding,
 ) -> Box<Expr> {
-    Box::new(Expr::Lambda(LambdaExpr {
+    Box::new(Expr::Lambda(Box::new(LambdaExpr {
         id: p.node_id(),
         span: p.span_from(start),
         params,
         ret: ret.map(|t| *t),
         uses,
         body,
-    }))
+        ending,
+    })))
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
@@ -1252,7 +1431,20 @@ fn foreign_lambda(p: &mut Parser, start: usize, depth: u32) -> PResult<Box<Expr>
             .build(),
     );
     let body = foreign_lambda_body(p, value);
-    Ok(finish_lambda(p, start, params, None, None, *body))
+    let end_span = Span {
+        file: p.file,
+        start: body.span.end,
+        end: body.span.end,
+    };
+    Ok(finish_lambda(
+        p,
+        start,
+        params,
+        None,
+        None,
+        *body,
+        LambdaEnding::Explicit { end_span },
+    ))
 }
 fn foreign_lambda_body(p: &mut Parser, value: Box<Expr>) -> Box<Block> {
     let span = span_of(&value);
@@ -1304,5 +1496,180 @@ pub(super) fn pattern_span(pattern: &Pattern) -> Span {
         Pattern::Range(p) => p.span,
         Pattern::List(p) => p.span,
         Pattern::Error(p) => p.span,
+    }
+}
+
+#[cfg(test)]
+mod named_argument_tests {
+    // テストの失敗は panic で表す（AGENTS.md「`#[allow]` を書いてよい箇所」）。
+    #![allow(clippy::unwrap_used, clippy::panic, clippy::indexing_slicing)]
+    use super::*;
+    use crate::base::{FileId, IdGen, SourceKind};
+    use crate::cli::tools::formatter::{print, roles};
+    use crate::syntax::{lexer::lex, newline::resolve_newlines};
+
+    fn parser(source: &str) -> Parser<'_> {
+        let lexed = lex(FileId(0), source.as_bytes());
+        assert!(lexed.diagnostics.is_empty(), "{:?}", lexed.diagnostics);
+        Parser::new(
+            FileId(0),
+            SourceKind::User,
+            source.as_bytes(),
+            resolve_newlines(lexed.tokens),
+            &[],
+            IdGen::new(),
+        )
+    }
+
+    #[test]
+    fn named_values_and_holes_keep_separate_label_and_value_spans() {
+        for (source, label, value, hole) in [
+            ("item: 1 + value)", "item", "1 + value", false),
+            ("item: _)", "item", "_", true),
+            ("item: (value))", "item", "(value)", false),
+            ("item: lambda(x) x)", "item", "lambda(x) x", false),
+        ] {
+            let source = format!("f({source}");
+            let mut p = parser(&source);
+            p.bump();
+            p.expect(TokenKind::LParen).unwrap();
+            let a = parse_named_arg(&mut p, 0)
+                .unwrap_or_else(|_| panic!("{source}: {:?}", p.diagnostics));
+            assert!(p.diagnostics.is_empty(), "{source}: {:?}", p.diagnostics);
+            assert!(p.at(TokenKind::RParen), "{source}");
+            assert_eq!(a.name.text, label);
+            assert_eq!(p.snippet(a.name.span), label);
+            let span = match &a.value {
+                ArgValue::Expr(e) => {
+                    assert!(!hole);
+                    e.span()
+                }
+                ArgValue::Placeholder(h) => {
+                    assert!(hole);
+                    h.span
+                }
+            };
+            assert_eq!(p.snippet(span), value);
+            assert!(a.name.span.end < span.start);
+        }
+    }
+
+    #[test]
+    fn invalid_named_labels_keep_normal_syntax_diagnostics() {
+        for (source, code) in [
+            ("_: 1)", DiagCode::E0201),
+            ("Upper: 1)", DiagCode::E0201),
+            ("Module.item: 1)", DiagCode::E0201),
+            ("item.other: 1)", DiagCode::E0201),
+            ("if: 1)", DiagCode::E0216),
+            ("item: ..base)", DiagCode::E0201),
+        ] {
+            let mut p = parser(source);
+            drop(parse_named_arg(&mut p, 0));
+            assert_eq!(
+                p.diagnostics
+                    .iter()
+                    .filter_map(|d| d.code)
+                    .collect::<Vec<_>>(),
+                [code],
+                "{source}"
+            );
+        }
+    }
+
+    #[test]
+    fn prepared_named_arguments_format_labels_comments_and_nested_values() {
+        let source = "function main() -> Unit\n target(\n item : [\n 1,\n 2\n ], // keep\n hole : _\n )\nend function\n";
+        // 旧入口が解析できる同じ位置の AST に、解析補助が作った引数を入れる。
+        // 新しい一般の解析モードやフォーマッタの入口は公開しない。
+        let skeleton = source
+            .replace("item :", "      ")
+            .replace("hole :", "      ");
+        let (mut out, lexical) =
+            super::super::test_support::parse_source(&skeleton, SourceKind::User);
+        assert!(lexical.is_empty());
+        assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
+        let mut p = parser(source);
+        p.pos = p
+            .tokens
+            .iter()
+            .position(|t| p.snippet(t.span) == "item")
+            .unwrap();
+        let args = comma_list(
+            &mut p,
+            0,
+            CommaList {
+                close: TokenKind::RParen,
+                element: text::EXPRESSION,
+                separator: text::COMMA_OR_RPAREN,
+                allow_empty: true,
+                indexed: true,
+            },
+            |p, d, args| {
+                args.push(Arg::Named(parse_named_arg(p, d)?));
+                Ok(())
+            },
+            |args, error| args.push(Arg::Expr(Expr::Error(error))),
+        )
+        .unwrap();
+        assert!(p.diagnostics.is_empty(), "{:?}", p.diagnostics);
+        let Item::Fn(f) = &mut out.module.decls[0].item else {
+            panic!("function")
+        };
+        let Stmt::Expr(Expr::Call(c)) = &mut f.body.as_mut().unwrap().stmts[0] else {
+            panic!("call")
+        };
+        c.args = args;
+        let lexed = lex(FileId(0), source.as_bytes());
+        let roles = roles::build_roles(&out.module, &lexed.tokens, source.as_bytes());
+        let formatted = print::print(&print::PrintInput {
+            text: source.as_bytes(),
+            tokens: &lexed.tokens,
+            comments: &lexed.comments,
+            roles: &roles,
+        });
+        assert_eq!(
+            String::from_utf8(formatted).unwrap(),
+            "function main() -> Unit\n  target(\n    item: [\n      1,\n      2\n    ], // keep\n    hole: _\n  )\nend function\n"
+        );
+    }
+
+    #[test]
+    fn ordinary_input_parses_named_holes_and_pipe_arguments() {
+        for source in [
+            "function main() -> Unit\n 1 |> f(item: 1)\nend function",
+            "function main() -> Unit\n f(item: _)\nend function",
+        ] {
+            let (out, lex) = super::super::test_support::parse_source(source, SourceKind::User);
+            assert!(lex.is_empty());
+            assert_eq!(
+                super::super::test_support::codes(&out),
+                [],
+                "{source}: {:?}",
+                out.diagnostics
+            );
+            let Item::Fn(f) = &out.module.decls[0].item else {
+                panic!("function")
+            };
+            let Stmt::Expr(expr) = &f.body.as_ref().unwrap().stmts[0] else {
+                panic!("expression")
+            };
+            let (call, pipe) = if let Expr::Pipe(p) = expr {
+                let Expr::Call(c) = p.rhs.as_ref() else {
+                    panic!("pipe call")
+                };
+                (c, true)
+            } else {
+                let Expr::Call(c) = expr else { panic!("call") };
+                (c, false)
+            };
+            let Arg::Named(arg) = &call.args[0] else {
+                panic!("named argument")
+            };
+            assert_eq!(arg.name.span.end.0 as usize, source.find(':').unwrap());
+            assert_eq!(arg.name.text, "item");
+            assert_eq!(call.args.len(), 1);
+            assert_eq!(call.args[0].placeholder().is_some(), !pipe);
+        }
     }
 }

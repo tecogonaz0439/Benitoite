@@ -742,7 +742,7 @@ fn oversized_sparse_bytes_and_too_many_lines_stop_before_building_values() {
         ));
     });
     let program = compile(
-        "import Benitoite.Unofficial.IO.File\nfunction main() -> Result[Unit,String] uses File.Read,File.Write\n return File.copy(\"large\",\"target\") |> Result.mapError(_, IOError.message)\nend function\n",
+        "import Benitoite.Unofficial.IO.File\nfunction main() -> Result[Unit,String] uses File.Read,File.Write\n return File.copy(from: \"large\",to: \"target\") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)\nend function\n",
     );
     for mode in [ExecMode::Direct, ExecMode::Request] {
         let script = ScheduleHandle::new([], false);
@@ -782,11 +782,11 @@ fn source_copy_and_info_records_work_with_both_io_modes() {
         r#"import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.Time
 function main() -> Result[Unit,String] uses File.Read,File.Write
- bind _ <- try File.copy("from", "to") |> Result.mapError(_, IOError.message)
- bind _ <- try File.copy("from", "new-copy") |> Result.mapError(_, IOError.message)
- bind info <- try File.info("to") |> Result.mapError(_, IOError.message)
- bind source <- try File.info("from") |> Result.mapError(_, IOError.message)
- bind bad <- File.copy(".", "bad")
+ bind _ <- try File.copy(from: "from", to: "to") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+ bind _ <- try File.copy(from: "from", to: "new-copy") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+ bind info <- try File.info("to") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+ bind source <- try File.info("from") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+ bind bad <- File.copy(from: ".", to: "bad")
  bind kind <- match bad with
   case Result.Error(e) -> IOError.kind(e)
   case Result.Ok(_) -> IOErrorKind.Other

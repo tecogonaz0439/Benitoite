@@ -3,5 +3,5 @@ function single[K: key, V](k: K, v: V) -> Map[K, V]
   return Map.fromList([Pair(k, v)])
 end function
 function main() -> Unit
-  bind _ <- single("one", 1)
+  bind _ <- single(k: "one", v: 1)
 end function

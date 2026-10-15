@@ -1,0 +1,94 @@
+{
+  "commands": [
+    {
+      "command": "cargo test -p benitoite --lib",
+      "exit_code": 0,
+      "output_sha256": "eb557a692f35ac3c06fb238d71c05c3bbf0a0f38626107e6e371ba357a2ba3ab",
+      "result_lines": [
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.00s",
+        "test result: ok. 1128 passed; 0 failed; 21 ignored; 0 measured; 0 filtered out; finished in 74.35s"
+      ],
+      "ignored": [
+        "test pipeline::tests::deep_patterns_check_at_the_parser_depth_limit ... ignored, long: 構文の上限直前のリストと構成子のパターンを検査する（約26秒）",
+        "test pipeline::tests::stages_fit_the_measured_stack_for_flat_sequences ... ignored, long: wide expressions require repeated type and liveness traversal",
+        "test pipeline::tests::stages_fit_the_measured_stack_through_deep_blocks ... ignored, long: nested Lazy types require repeated traversal",
+        "test pipeline::tests::stages_fit_the_measured_stack_through_deep_records ... ignored, long: nested record types require repeated traversal",
+        "test pipeline::tests::stages_fit_the_measured_stack_through_nested_lists ... ignored, long: nested list types and pattern coverage are expensive",
+        "test pipeline::tests::stages_fit_the_measured_stack_through_nested_patterns ... ignored, long: nested pattern coverage is expensive",
+        "test refinterp::convert::tests::million_element_lists_and_million_deep_constructors_round_trip_and_drop ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test runtime::equal::tests::million_element_lists_and_million_deep_trees_do_not_recurse ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test runtime::heap::core::mode::tests::million_linked_and_nested_fields_use_bounded_rust_stack ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test runtime::heap::ctx::r04_tests::r04_million_linked_and_nested_objects_free_without_recursion ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test runtime::list::tests::hundred_thousand_short_concatenations_match_vec ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test runtime::list::tests::million_appends_gets_and_repeated_splits_do_not_recurse ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test runtime::list::tests::repeated_cuts_of_joined_lists_preserve_sequences ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test runtime::list::tests::ten_million_elements_are_traversed_without_rust_recursion ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test runtime::map::tests::million_element_trees_support_updates_and_union_shares_the_large_input ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test vm::dispatch::handlers::tests::dropping_one_hundred_thousand_continuations_does_not_accumulate_stack ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test vm::dispatch::handlers::tests::million_completed_handlers_use_constant_space_but_pending_resumes_grow ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test vm::dispatch::lazy::tests::a_hundred_thousand_lazies_stop_at_the_vm_stack_limit ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test vm::dispatch::tasks::tests::a_million_inherited_tail_resumes_fit_a_small_stack ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test vm::dispatch::traits::tests::tail_methods_repeat_a_million_times_and_resize_windows ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる",
+        "test vm::tests::deep_returns_collect_requested_allocations_without_rust_recursion ... ignored, long: 大きさで確かめるテスト。全体の検査（scripts/check.sh --full）で走らせる"
+      ]
+    },
+    {
+      "command": "cargo test -p benitoite --test golden --test random_programs --test reference_examples --test skill_examples",
+      "exit_code": 0,
+      "output_sha256": "2ef10453c5c2f8f67695f947f434ef26f83454240539169fe0d1ec60c36d3794",
+      "result_lines": [
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.96s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 51.48s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 41.61s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.22s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.62s"
+      ],
+      "ignored": []
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": [],
+      "ignored": []
+    },
+    {
+      "command": "cargo clippy --all-targets",
+      "exit_code": 0,
+      "output_sha256": "63a6e3069e3464894562a019d63a3494321d64648bb6a7841f908fc8b0c605b0",
+      "result_lines": [
+        "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.79s"
+      ],
+      "ignored": []
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --no-default-features --features gc-mark-sweep,heap-verify,alloc-stats",
+      "exit_code": 0,
+      "output_sha256": "77a483d7e445f92b1dd18053218f58b63e6c064dc8dc3d0fa8118bf0fb336923",
+      "result_lines": [
+        "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.94s"
+      ],
+      "ignored": []
+    },
+    {
+      "command": "cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep",
+      "exit_code": 0,
+      "output_sha256": "a050d17c664f5d79dfb7c3bb0d834d20d42178704368f9d7666fdaff5e465926",
+      "result_lines": [
+        "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.51s"
+      ],
+      "ignored": []
+    }
+  ],
+  "overrides": {
+    "BENITOITE_BLESS": null,
+    "BENITOITE_GOLDEN_FILTER": null,
+    "BENITOITE_RANDOM_PROGRAMS": null,
+    "BENITOITE_RANDOM_SEED": null,
+    "RUSTFLAGS": null
+  },
+  "skipped_by_request": [
+    "scripts/check.sh (including --dry-run)",
+    "gc-stress configuration"
+  ]
+}

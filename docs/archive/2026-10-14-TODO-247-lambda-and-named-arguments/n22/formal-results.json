@@ -1,0 +1,60 @@
+{
+  "outputs": "target/desugar-diff/n22-verified",
+  "coverageOutputs": "target/coverage-diff/n22-verified",
+  "log": "target/n22-verified-check-formal.log",
+  "exitCode": 0,
+  "namedPrograms": {
+    "programs": {
+      "outside": 0,
+      "mismatched": 0,
+      "matched": 5,
+      "excluded": 0
+    },
+    "definitions": {
+      "outside": 0,
+      "mismatched": 0,
+      "matched": 19,
+      "excluded": 0
+    },
+    "surface": {
+      "q11": 0,
+      "preparationFailure": 0,
+      "outOfScope": 0,
+      "mismatched": 0,
+      "matched": 19,
+      "lazyRestriction": 0
+    },
+    "coverage": {
+      "matched": 2,
+      "mismatched": 0,
+      "outOfScope": 0,
+      "fuelExhausted": 0
+    }
+  },
+  "legacySurface": {
+    "counts": {
+      "q11": 1,
+      "preparationFailure": 0,
+      "outOfScope": 19,
+      "mismatched": 0,
+      "matched": 51036,
+      "lazyRestriction": 0
+    },
+    "inputs": 1337,
+    "fullyCheckedInputs": 1321,
+    "definitions": 41047,
+    "implementations": 10009,
+    "excludedInputs": 378,
+    "tailMatches": 7109,
+    "replacements": 1,
+    "q11Agrees": true,
+    "preparationErrors": [],
+    "mismatchExamples": []
+  },
+  "legacyProgramCoverage": {
+    "matched": 22430,
+    "mismatched": 0,
+    "outOfScope": 0,
+    "fuelExhausted": 0
+  }
+}

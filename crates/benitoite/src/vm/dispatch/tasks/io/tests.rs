@@ -166,7 +166,8 @@ function spin(n:Integer) -> Result[String, IOError]
 end function
 function main() -> Result[Unit,String] uses File.Read
  bind values <- Task.all([lambda() return File.readText("heap" + " arg") end lambda,lambda() return spin(40) end lambda])
- bind texts <- List.map(values, lambda(r) return match r with case Result.Ok(t) -> t
+ bind texts <- List.map(xs: values, f: lambda(value)
+ return match value with case Result.Ok(t) -> t
  case Result.Error(_) -> "error" end match end lambda)
  if texts = ["heap arg:job","B"] then return Result.Ok(()) else return Result.Error("delivery") end if
 end function
@@ -277,7 +278,8 @@ function busy(n:Integer) -> Result[String,IOError]
 end function
 function main() -> Result[Unit,String] uses File.Read
  bind values <- Task.all([lambda() return File.readText("{prefix}" + " one") end lambda,lambda() return File.readText("{prefix}" + " two") end lambda,lambda() return busy(20) end lambda])
- bind texts <- List.map(values, lambda(r) return match r with case Result.Ok(t) -> t
+ bind texts <- List.map(xs: values, f: lambda(value)
+ return match value with case Result.Ok(t) -> t
  case Result.Error(_) -> "error" end match end lambda)
  if texts = ["{prefix} one:{suffix1}","{prefix} two:{suffix2}","busy"] then return Result.Ok(()) else return Result.Error("lend results") end if
 end function
@@ -636,10 +638,12 @@ fn cancellation_of_lend_wait_discards_the_saved_work_for_resource_and_stdin() {
             r#"{IMPORTS}
 function main() -> Result[Unit,String] uses File.Read,Clock.Time,State
  bind values <- Task.all([
- lambda() bind _ <- File.readText("{prefix} first")
+ lambda()
+ bind _ <- File.readText("{prefix} first")
  return 1 end lambda,
  lambda()
-  bind answer <- Task.race([lambda() bind _ <- File.readText("{prefix} cancelled")
+  bind answer <- Task.race([lambda()
+ bind _ <- File.readText("{prefix} cancelled")
  return 2 end lambda,lambda() return 42 end lambda])
   return match answer with case Option.Some(x) -> x
   case Option.None -> 0 end match
@@ -701,18 +705,18 @@ fn detached_unfinished_stdin_does_not_delay_ending_or_mask_a_later_deadlock() {
  bind a <- Reference.new(Option.None)
  bind b <- Reference.new(Option.None)
  with group = TaskGroup.open() do
-  bind ta <- TaskGroup.spawn(group,lambda()
+  bind ta <- TaskGroup.spawn(group: group,action: lambda()
    match Reference.get(b) with case Option.Some(t) -> Task.await(t)
    case Option.None -> () end match
    return ()
   end lambda)
-  bind tb <- TaskGroup.spawn(group,lambda()
+  bind tb <- TaskGroup.spawn(group: group,action: lambda()
    match Reference.get(a) with case Option.Some(t) -> Task.await(t)
    case Option.None -> () end match
    return ()
   end lambda)
-  Reference.set(a,Option.Some(ta))
-  Reference.set(b,Option.Some(tb))
+  Reference.set(reference: a,value: Option.Some(ta))
+  Reference.set(reference: b,value: Option.Some(tb))
  end with
 "#
         } else {
@@ -721,7 +725,8 @@ fn detached_unfinished_stdin_does_not_delay_ending_or_mask_a_later_deadlock() {
         let program = compile(&format!(
             r#"{IMPORTS}
 function main() -> Unit uses File.Read,State,Clock.Time
- bind _ <- Task.race([lambda() bind _ <- File.readText("stdin unfinished")
+ bind _ <- Task.race([lambda()
+ bind _ <- File.readText("stdin unfinished")
  return () end lambda,lambda() return () end lambda])
  {rest}
  return ()
@@ -952,14 +957,16 @@ function main() -> Result[Unit,String] uses File.Read,State,Clock.Time
   with resource = TaskGroup.open() do
    pause(2)
    bind _ <- File.readText("resource" + " owner")
-   Reference.set(changed,true)
+   Reference.set(reference: changed,value: true)
    return 1
   end with
  end lambda,
- lambda() bind _ <- File.readText("resource borrower")
+ lambda()
+ bind _ <- File.readText("resource borrower")
   return 2
  end lambda,
- lambda() pause(20)
+ lambda()
+ pause(20)
   {ending}
  end lambda])
  if answer = Option.Some(42) and not Reference.get(changed) then return Result.Ok(()) else return Result.Error("cancelled owner continued") end if
@@ -1256,22 +1263,22 @@ function main() -> Unit uses State,File.Read
  bind a <- Reference.new(Option.None)
  bind b <- Reference.new(Option.None)
  with group = TaskGroup.open() do
-  bind _ <- TaskGroup.spawn(group,lambda()
+  bind _ <- TaskGroup.spawn(group: group,action: lambda()
    bind _ <- File.readText("work")
    return ()
   end lambda)
-  bind ta <- TaskGroup.spawn(group,lambda()
+  bind ta <- TaskGroup.spawn(group: group,action: lambda()
    match Reference.get(b) with case Option.Some(t) -> Task.await(t)
    case Option.None -> () end match
    return ()
   end lambda)
-  bind tb <- TaskGroup.spawn(group,lambda()
+  bind tb <- TaskGroup.spawn(group: group,action: lambda()
    match Reference.get(a) with case Option.Some(t) -> Task.await(t)
    case Option.None -> () end match
    return ()
   end lambda)
-  Reference.set(a,Option.Some(ta))
-  Reference.set(b,Option.Some(tb))
+  Reference.set(reference: a,value: Option.Some(ta))
+  Reference.set(reference: b,value: Option.Some(tb))
  end with
  return ()
 end function

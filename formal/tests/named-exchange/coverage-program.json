@@ -1,0 +1,74 @@
+{
+  "version": 2,
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-named",
+      "matches": [
+        {
+          "node": 1,
+          "scrutineeTy": {
+            "fn": {
+              "names": [
+                "value"
+              ],
+              "params": [
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "ret": {
+                "base": {
+                  "name": "Integer"
+                }
+              },
+              "eff": []
+            }
+          },
+          "arms": [
+            {
+              "alts": [
+                "wild"
+              ],
+              "guarded": false
+            }
+          ]
+        }
+      ],
+      "bindings": [
+        {
+          "node": 2,
+          "kind": "bind",
+          "ty": {
+            "data": {
+              "name": "Pair",
+              "args": []
+            }
+          },
+          "pattern": {
+            "record": {
+              "name": "Pair",
+              "n": 2,
+              "positions": [
+                1,
+                0
+              ],
+              "args": [
+                "var",
+                "wild"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "group": "golden",
+      "name": "implementation-dictionaries",
+      "matches": [],
+      "bindings": []
+    }
+  ]
+}

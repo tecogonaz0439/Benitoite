@@ -12,7 +12,7 @@ end function
 function main() -> Unit uses State
   bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
   with group = TaskGroup.open() do
-    bind task <- TaskGroup.spawn(group, lambda() return awaitSaved(saved) end lambda)
-    Reference.set(saved, Option.Some(task))
+    bind task <- TaskGroup.spawn(group: group, action: lambda() return awaitSaved(saved) end lambda)
+    Reference.set(reference: saved, value: Option.Some(task))
   end with
 end function

@@ -65,7 +65,11 @@ pub(super) fn method(ctx: &mut Body<'_, '_>, name: &NameExpr) -> ITy {
     ctx.instantiate(name.id, name.span, binding).0
 }
 pub(super) fn solve_classes(ctx: &mut Body<'_, '_>) {
-    solve::solve_classes(ctx);
+    solve::solve_classes(ctx, true);
+}
+
+pub(super) fn solve_ready_classes(ctx: &mut Body<'_, '_>) {
+    solve::solve_classes(ctx, false);
 }
 
 /// 修正案の判定は推論に制約を加えずに行う（設計書 02-10「修正案」）。

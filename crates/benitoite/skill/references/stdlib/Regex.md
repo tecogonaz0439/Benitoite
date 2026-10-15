@@ -80,7 +80,7 @@ public function split(pattern: Pattern, text: String) -> List[String]
 Splits `text` at each match.
 
 ```benitoite
-public function replaceAllWith[effect E](pattern: Pattern, text: String, f: function(Match) -> String uses E) -> String uses E
+public function replaceAllWith[effect E](pattern: Pattern, text: String, f: function(matched: Match) -> String uses E) -> String uses E
 ```
 
 Replaces every match with `f` applied to it. `f` is called for each match from the left.

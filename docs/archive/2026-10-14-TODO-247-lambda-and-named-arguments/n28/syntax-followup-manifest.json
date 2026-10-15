@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "inputs": [
+    {
+      "path": "crates/benitoite/testdata/syntax/uses_then_bracket.bnt",
+      "source_sha256": "d66b71d28b88b2150fa7b30d767d60cd7a7f3f6e04a32152a5bb6da867e92dfa"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "uses-list-keeps-original-error",
+      "path": "crates/benitoite/testdata/syntax/uses_then_bracket.bnt",
+      "source_sha256": "d66b71d28b88b2150fa7b30d767d60cd7a7f3f6e04a32152a5bb6da867e92dfa",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 141,
+          "end": 162,
+          "before": "values: List[Integer]",
+          "after": "List[Integer]"
+        }
+      ],
+      "review_reason": "List[Integer] は外側の正常な引数ではなく、誤って uses の列に入った型である。ラベルを付けると正常な引数に変わるため、誤りを表す元の字句を維持する。"
+    }
+  ]
+}

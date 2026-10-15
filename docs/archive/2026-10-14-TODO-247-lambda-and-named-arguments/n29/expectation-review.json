@@ -1,0 +1,75 @@
+[
+  {
+    "path": "crates/benitoite/src/typeck/tests.rs",
+    "test": "constant_failures_dependencies_and_duplicate_keys",
+    "code": "E0433",
+    "before": [
+      1,
+      49
+    ],
+    "after": [
+      1,
+      55
+    ],
+    "reason": "function(arg1: Integer) の名前の追加 6 bytes"
+  },
+  {
+    "path": "crates/benitoite/src/typeck/tests.rs",
+    "test": "effect_inference_names_and_stubs",
+    "code": "E0501",
+    "before": [
+      6,
+      67
+    ],
+    "after": [
+      6,
+      80
+    ],
+    "reason": "unused: と act: のラベルの追加 13 bytes"
+  },
+  {
+    "path": "crates/benitoite/src/typeck/tests.rs",
+    "test": "return_call_keeps_argument_position_diagnostics",
+    "code": "E0401",
+    "before": [
+      2,
+      39
+    ],
+    "after": [
+      2,
+      50
+    ],
+    "reason": "xs: と f: のラベルと n から value への改名による 11 bytes"
+  },
+  {
+    "path": "crates/benitoite/tests/test_command.rs",
+    "test": "json_lines_have_the_fields_in_order",
+    "before": {
+      "line": 13,
+      "start": 3,
+      "end": 21
+    },
+    "after": {
+      "line": 13,
+      "start": 3,
+      "end": 39
+    },
+    "reason": "actual: と expected: のラベルにより呼び出しの末尾を 18 bytes 延長。報告のキー順・値・出力・失敗理由の厳密な比較は維持"
+  },
+  {
+    "path": "crates/benitoite/src/external/tests.rs",
+    "test": "unsupported_types_are_rejected_at_the_declared_type",
+    "code": "E1010",
+    "before": "function(Integer) -> Integer",
+    "after": "function(value: Integer) -> Integer",
+    "reason": "関数型の実名を表示する。入力の型・診断内の同じ型・拒否コードを対応させる"
+  },
+  {
+    "path": "crates/benitoite/src/resolve/tests.rs",
+    "test": "binding_keywords_and_implicit_binders",
+    "code": "E0338",
+    "before": "outer sum / lambda(sum, x)",
+    "after": "outer acc / lambda(acc, value)",
+    "reason": "fold の期待名に揃え、元の外側の束縛の隠蔽を維持"
+  }
+]

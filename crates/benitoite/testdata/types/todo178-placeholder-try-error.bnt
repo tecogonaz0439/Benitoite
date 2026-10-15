@@ -4,7 +4,7 @@ function add(a: Integer, b: Integer) -> Integer
   return a + b
 end function
 function probe() -> Option[Integer]
-  bind f <- add(try Option.None, _)
+  bind f <- add(a: try Option.None, b: _)
   bind _ <- Integer.toString(f(1))
   return Option.Some(1)
 end function

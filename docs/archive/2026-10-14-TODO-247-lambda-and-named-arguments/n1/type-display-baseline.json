@@ -1,0 +1,543 @@
+[
+  {
+    "path": "crates/benitoite/testdata/effects/effect_var_rigid.diag.json",
+    "sha256": "47bb8a63db12c43c55566cba6eb49be0a5c0f774686fb4c89fb401fec4949989",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0401",
+        "message": "mismatched types",
+        "primary": {
+          "file": "testdata/effects/effect_var_rigid.bnt",
+          "start": {
+            "line": 3,
+            "column": 48,
+            "offset": 216
+          },
+          "end": {
+            "line": 3,
+            "column": 57,
+            "offset": 225
+          },
+          "label": "expected `function() -> Unit uses E`, found `function() -> Unit uses IO.All`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/effects/effect_var_rigid.bnt",
+            "start": {
+              "line": 3,
+              "column": 19,
+              "offset": 187
+            },
+            "end": {
+              "line": 3,
+              "column": 44,
+              "offset": 212
+            },
+            "label": "expected because of this"
+          }
+        ],
+        "notes": [
+          "the value must match the type annotation"
+        ],
+        "helps": []
+      }
+    ],
+    "display_classification": "zero_parameter_display_unchanged"
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/outermost_only.diag.json",
+    "sha256": "8dde727f27264eb6e8f41014790b84b34c894045a80d3fd81d1e7729775a1dd6",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0501",
+        "message": "`uses IO.All` allows more effects than this function performs",
+        "primary": {
+          "file": "testdata/effects/outermost_only.bnt",
+          "start": {
+            "line": 2,
+            "column": 77,
+            "offset": 116
+          },
+          "end": {
+            "line": 2,
+            "column": 83,
+            "offset": 122
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "remove `uses IO.All`; this function performs no effects",
+            "edits": [
+              {
+                "file": "testdata/effects/outermost_only.bnt",
+                "start": {
+                  "line": 2,
+                  "column": 72,
+                  "offset": 111
+                },
+                "end": {
+                  "line": 2,
+                  "column": 83,
+                  "offset": 122
+                },
+                "replacement": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0401",
+        "message": "mismatched types",
+        "primary": {
+          "file": "testdata/effects/outermost_only.bnt",
+          "start": {
+            "line": 8,
+            "column": 12,
+            "offset": 273
+          },
+          "end": {
+            "line": 8,
+            "column": 16,
+            "offset": 277
+          },
+          "label": "expected `List[function() -> Unit uses IO.All]`, found `List[function() -> Unit]`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/effects/outermost_only.bnt",
+            "start": {
+              "line": 2,
+              "column": 26,
+              "offset": 65
+            },
+            "end": {
+              "line": 2,
+              "column": 62,
+              "offset": 101
+            },
+            "label": "expected because of this"
+          }
+        ],
+        "notes": [
+          "argument 1 must match the parameter type of the called function"
+        ],
+        "helps": []
+      }
+    ],
+    "display_classification": "zero_parameter_display_unchanged"
+  },
+  {
+    "path": "crates/benitoite/testdata/names/uses_not_effect_later.diag.json",
+    "sha256": "dee3e2dc0a2efce98c4ee773466791bdae019ead2b1e24edc40cdd4e45d5fc36",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0316",
+        "message": "`Integer` is not an effect",
+        "primary": {
+          "file": "testdata/names/uses_not_effect_later.bnt",
+          "start": {
+            "line": 4,
+            "column": 48,
+            "offset": 133
+          },
+          "end": {
+            "line": 4,
+            "column": 55,
+            "offset": 140
+          },
+          "label": "read as part of the `uses` list"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "if `Integer` belongs to the surrounding list, parenthesize the function type that has `uses`, such as `function((function() -> Unit uses Console.Write), Integer) -> Unit`",
+            "edits": []
+          }
+        ]
+      }
+    ],
+    "display_classification": "nonzero_parameter_display_or_help_candidate"
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/uses_then_bracket.diag.json",
+    "sha256": "fc090e2acdc0244755c53f2e9badb3d6aaf0e94e9c189e70c2807e238cd05ca2",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0209",
+        "message": "a function type with `uses` must be parenthesized here",
+        "primary": {
+          "file": "testdata/syntax/uses_then_bracket.bnt",
+          "start": {
+            "line": 4,
+            "column": 72,
+            "offset": 133
+          },
+          "end": {
+            "line": 4,
+            "column": 85,
+            "offset": 146
+          },
+          "label": "read as part of the `uses` list"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "write the function type in parentheses, such as `function((function() -> Unit uses Console.Write), List[Integer]) -> Unit`",
+            "edits": [
+              {
+                "file": "testdata/syntax/uses_then_bracket.bnt",
+                "start": {
+                  "line": 4,
+                  "column": 33,
+                  "offset": 94
+                },
+                "end": {
+                  "line": 4,
+                  "column": 33,
+                  "offset": 94
+                },
+                "replacement": "("
+              },
+              {
+                "file": "testdata/syntax/uses_then_bracket.bnt",
+                "start": {
+                  "line": 4,
+                  "column": 70,
+                  "offset": 131
+                },
+                "end": {
+                  "line": 4,
+                  "column": 70,
+                  "offset": 131
+                },
+                "replacement": ")"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "display_classification": "nonzero_parameter_display_or_help_candidate"
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-method-no-cascade.diag.json",
+    "sha256": "2607702fb50072c842e26cb57827a4c2b5ff8d5a2ce7af29394250ed7a753f5d",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0711",
+        "message": "the method `echo` does not match its declaration in `Echo`",
+        "primary": {
+          "file": "testdata/traits/c11-method-no-cascade.bnt",
+          "start": {
+            "line": 6,
+            "column": 12,
+            "offset": 141
+          },
+          "end": {
+            "line": 6,
+            "column": 16,
+            "offset": 145
+          },
+          "label": "expected `function(Integer) -> Integer`, found `function(Integer) -> String`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/traits/c11-method-no-cascade.bnt",
+            "start": {
+              "line": 3,
+              "column": 12,
+              "offset": 80
+            },
+            "end": {
+              "line": 3,
+              "column": 16,
+              "offset": 84
+            },
+            "label": "declared here"
+          }
+        ],
+        "notes": [],
+        "helps": []
+      }
+    ],
+    "display_classification": "nonzero_parameter_display_or_help_candidate"
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-e0711-parameter-names.diag.json",
+    "sha256": "ee2dbde5bea634278c27f67238c3e7e057b65a3fb25c6e425a1173c4d296b85f",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0711",
+        "message": "the method `wrap` does not match its declaration in `Wrap`",
+        "primary": {
+          "file": "testdata/traits/todo178-e0711-parameter-names.bnt",
+          "start": {
+            "line": 9,
+            "column": 12,
+            "offset": 194
+          },
+          "end": {
+            "line": 9,
+            "column": 16,
+            "offset": 198
+          },
+          "label": "expected `function(Box, A, B) -> B`, found `function(Box, Integer, Q) -> Q`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/traits/todo178-e0711-parameter-names.bnt",
+            "start": {
+              "line": 6,
+              "column": 12,
+              "offset": 119
+            },
+            "end": {
+              "line": 6,
+              "column": 16,
+              "offset": 123
+            },
+            "label": "declared here"
+          }
+        ],
+        "notes": [],
+        "helps": []
+      }
+    ],
+    "display_classification": "nonzero_parameter_display_or_help_candidate"
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-impl-target-cascade.diag.json",
+    "sha256": "c047e038f3224954043fbaf7917a400ad61de5298954e4549a288034569a3e15",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0712",
+        "message": "cannot implement a trait for `function(Integer) -> Integer`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-cascade.bnt",
+          "start": {
+            "line": 5,
+            "column": 17,
+            "offset": 130
+          },
+          "end": {
+            "line": 5,
+            "column": 45,
+            "offset": 158
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "implement it for a type name with distinct type parameters, such as `Option[T]`",
+            "edits": []
+          }
+        ]
+      }
+    ],
+    "display_classification": "nonzero_parameter_display_or_help_candidate"
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-impl-target-independent.diag.json",
+    "sha256": "6a8aebcf86ddc76483ca3c3208ec45b456de1de9306f4d154cb36b6b0b7fde1e",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0712",
+        "message": "cannot implement a trait for `function(Integer) -> Integer`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-independent.bnt",
+          "start": {
+            "line": 5,
+            "column": 17,
+            "offset": 130
+          },
+          "end": {
+            "line": 5,
+            "column": 45,
+            "offset": 158
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "implement it for a type name with distinct type parameters, such as `Option[T]`",
+            "edits": []
+          }
+        ]
+      },
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0705",
+        "message": "`Integer` does not implement `Score`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-independent.bnt",
+          "start": {
+            "line": 14,
+            "column": 13,
+            "offset": 388
+          },
+          "end": {
+            "line": 14,
+            "column": 24,
+            "offset": 399
+          },
+          "label": "`Score` is required here"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": []
+      },
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0705",
+        "message": "`function(Integer) -> Integer` does not implement `Other`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-independent.bnt",
+          "start": {
+            "line": 15,
+            "column": 13,
+            "offset": 415
+          },
+          "end": {
+            "line": 15,
+            "column": 24,
+            "offset": 426
+          },
+          "label": "`Other` is required here"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": []
+      }
+    ],
+    "display_classification": "nonzero_parameter_display_or_help_candidate"
+  },
+  {
+    "path": "crates/benitoite/testdata/types/equality_function.diag.json",
+    "sha256": "fe5fff1d6441bd9e62290483e097ca270d0c862dd058085aa801fc1eff2249ef",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0406",
+        "message": "values of type `function() -> Integer` cannot be compared with `=`",
+        "primary": {
+          "file": "testdata/types/equality_function.bnt",
+          "start": {
+            "line": 7,
+            "column": 15,
+            "offset": 121
+          },
+          "end": {
+            "line": 7,
+            "column": 28,
+            "offset": 134
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [
+          "types that contain functions, `IOError`, or other opaque types cannot be compared with `=` or `<>`"
+        ],
+        "helps": []
+      }
+    ],
+    "display_classification": "zero_parameter_display_unchanged"
+  },
+  {
+    "path": "crates/benitoite/testdata/types/equality_summary.diag.json",
+    "sha256": "4b5ef048ce61fc422616994b38ffeeed11773ff78739d64a8655f01bc272fd8f",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0406",
+        "message": "values of type `Nest[function() -> Unit]` cannot be compared with `=`",
+        "primary": {
+          "file": "testdata/types/equality_summary.bnt",
+          "start": {
+            "line": 12,
+            "column": 15,
+            "offset": 268
+          },
+          "end": {
+            "line": 12,
+            "column": 34,
+            "offset": 287
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [
+          "types that contain functions, `IOError`, or other opaque types cannot be compared with `=` or `<>`"
+        ],
+        "helps": []
+      }
+    ],
+    "display_classification": "zero_parameter_display_unchanged"
+  },
+  {
+    "path": "crates/benitoite/testdata/types/f20-interpolation-no-show.diag.json",
+    "sha256": "182598bc00784abaf875bad45e54b5681b9363a4d154000ccb25a5de5647c9ed",
+    "diagnostics": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0422",
+        "message": "a value of type `function(Integer) -> Integer` cannot be interpolated into a string",
+        "primary": {
+          "file": "testdata/types/f20-interpolation-no-show.bnt",
+          "start": {
+            "line": 4,
+            "column": 16,
+            "offset": 99
+          },
+          "end": {
+            "line": 4,
+            "column": 54,
+            "offset": 137
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "convert the value to a `String` before interpolating it",
+            "edits": []
+          }
+        ]
+      }
+    ],
+    "display_classification": "nonzero_parameter_display_or_help_candidate"
+  }
+]

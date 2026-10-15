@@ -27,7 +27,7 @@ function triple(v: Triple[Byte, Character, String]) -> Triple[Byte, Character, S
 function main() -> Unit uses Console.Write
   Console.writeLine("${integer(-42)} ${float(1.25)} ${boolean(true)} ${character('字')}")
   Console.writeLine(string("日本語🦀"))
-  Console.writeLine("${List.fold(list([1, 2, 3]), 0, lambda(a: Integer, b: Integer) -> Integer return a + b end lambda)}")
+  Console.writeLine("${List.fold(xs: list([1, 2, 3]), initial: 0, f: lambda(acc: Integer, value: Integer) -> Integer return acc + value end lambda)}")
   Console.writeLine("${option(Option.Some(7)) = Option.Some(7)} ${option(Option.None) = Option.None}")
   Console.writeLine("${result(Result.Ok(())) = Result.Ok(())} ${result(Result.Error("error")) = Result.Error("error")}")
   Console.writeLine("${pair(Pair(42, true)) = Pair(42, true)}")

@@ -2,6 +2,8 @@
 
 The modules of the standard library. Each module has its own file in this directory. Unofficial modules may change; their import name changes when they become standard.
 
+Parameter names in these declarations are part of the function contract. Label every argument of an ordinary call with two or more parameters, including calls through function values. Callback names and their order must match the nested function type, even for one parameter. For example, List.map expects `value`, List.fold expects `acc, value`, and Result.mapError expects `error`. An existing function with different names needs an explicit lambda wrapper. See [Idioms](../idioms.md#calls-callback-contracts-holes-and-pipes) for examples.
+
 | Module | Status | Import | Description |
 |---|---|---|---|
 | [Integer](Integer.md) | standard (prelude) | not needed | Functions on `Integer`, the 64-bit signed integer type. |

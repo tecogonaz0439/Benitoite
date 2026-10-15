@@ -1,7 +1,9 @@
-import Benitoite.Exchange.Builtins
+import Benitoite.Release.BuiltinTable
 import Benitoite.Surface.Check
 
-/-! 有限の宣言の材料から、実行用の表と判定を同時に作る。 -/
+/-! 有限の宣言の材料から、実行用の表と判定を同時に作る。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+-/
 namespace Benitoite.Surface.CheckTables
 open Benitoite.Release Benitoite.Surface Benitoite.Surface.CheckTools
 
@@ -28,6 +30,55 @@ theorem lookup_none {xs : List (String × α)} {name}
   | none => rfl
   | some x => exact False.elim (h (List.mem_map.mpr ⟨(name,x), lookup_mem he, rfl⟩))
 
+/-- 交換形式とは独立した、契約名を必須とする組み込みの材料。 -/
+structure PrimMaterial where
+  constraints : List BuiltinConstraint
+  names : List String
+  neffs : Nat
+  params : List Ty
+  ret : Ty
+  eff : Eff
+  kind : PrimKind
+  opEff : Option EffName
+
+/-- 制約の判定を同じ材料から束縛し、契約名を保つ。 -/
+def PrimMaterial.toPrimSig (m : PrimMaterial)
+    (admits : List TParam → List Ty → Prop) : PrimSig :=
+  { tparams := m.constraints.map (fun c => ⟨c.equality, c.key⟩), neffs := m.neffs,
+    names := m.names, params := m.params, ret := m.ret, eff := m.eff,
+    admits := admits, kind := m.kind, opEff := m.opEff }
+
+/-- 型の JSON に依存しない組み込みの実行環境の材料。 -/
+structure BuiltinMaterial where
+  effects : List (EffName × List PrimName)
+  resources : List Nat
+  refGet : PrimName
+  refSet : PrimName
+
+/-- 有限のエフェクト表から操作名を取り出す。 -/
+def BuiltinMaterial.effectOps (b : BuiltinMaterial) (name : EffName) : Option (List PrimName) :=
+  lookup b.effects name
+
+/-- 不透明な型の名前の先頭にあるリソース識別子を照合する。 -/
+def BuiltinMaterial.isResource (b : BuiltinMaterial) (name : OpaqueName) : Bool :=
+  match (name.splitOn ":").head?.bind String.toNat? with
+  | some id => b.resources.contains id
+  | none => false
+
+/-- 構成子の型と列挙を同じ宣言から構築するための材料。 -/
+structure DataMaterial where
+  name : DataName
+  ntys : Nat
+  ctors : List (ConName × ConDecl)
+
+/-- データ型の宣言順で構成子を列挙する。 -/
+def dataConstructors (ds : List DataMaterial) (name : DataName) : List ConName :=
+  ((ds.find? (fun d => d.name == name)).map (fun d => d.ctors.map Prod.fst)).getD []
+
+/-- 構成子の宣言を有限の材料から探索する。 -/
+def constructorDecl (ds : List DataMaterial) (name : ConName) : Option ConDecl :=
+  lookup (ds.flatMap DataMaterial.ctors) name
+
 structure PrimEntry where
   name : PrimName
   signature : PrimSig
@@ -35,16 +86,16 @@ structure PrimEntry where
 
 /-- admits を同じ材料で束縛し直す。任意の Prop から判定を復元しない。 -/
 def primEntries (S : SummaryTable)
-    (xs : List (PrimName × Benitoite.Exchange.PrimMaterial)) : List PrimEntry :=
+    (xs : List (PrimName × PrimMaterial)) : List PrimEntry :=
   xs.map fun (name, m) =>
-    let cs := m.constraints.map Benitoite.Exchange.PrimConstraint.toBuiltinConstraint
+    let cs := m.constraints
     ⟨name, m.toPrimSig (fun C ts => admitsB S cs C ts = true), cs⟩
 
 def primLookup (xs : List PrimEntry) (name : PrimName) : Option PrimEntry :=
   xs.find? (fun x => x.name == name)
 
 def builtins (S : SummaryTable) (xs : List PrimEntry)
-    (b : Benitoite.Exchange.BuiltinInput) : Builtins :=
+    (b : BuiltinMaterial) : Builtins :=
   { sig := fun n => (primLookup xs n).map PrimEntry.signature
     delta := fun _ _ _ _ => none
     ioResponse := fun _ _ _ _ _ => False
@@ -52,13 +103,18 @@ def builtins (S : SummaryTable) (xs : List PrimEntry)
     isResource := b.isResource
     effects := b.effectOps
     sat := fun C t p => satB S C t p = true
-    refGet := ((b.prims.find? (fun p => p.kind == "refGet")).map (·.name)).getD "Reference.get"
-    refSet := ((b.prims.find? (fun p => p.kind == "refSet")).map (·.name)).getD "Reference.set" }
+    refGet := b.refGet
+    refSet := b.refSet }
 
 def admitsDec (S : SummaryTable) (xs : List PrimEntry) : AdmitsDec := fun n C ts =>
   match primLookup xs n with
   | none => false
   | some x => admitsB S x.constraints C ts
+
+/-- 演算子に対応する組み込み名だけを選び、型引数は規則から構築する。
+交換形式の変換後も同じ入口を使い、型引数の規則を外部の仮定にしない。 -/
+def makeOpPrim (select : Operator → Ty → Option PrimName) : OpPrim :=
+  fun op ty => (select op ty).map (fun name => (name, op.typeArgs ty))
 
 structure ClassMaterial where
   supers : List ClassName
@@ -70,15 +126,20 @@ def ClassMaterial.decl (c : ClassMaterial) : ClassDecl :=
 structure ImplMaterial where
   signature : ImplSig
   supers : List (ClassName × DictEv)
-  methods : List (MethName × Block)
+  methods : List (MethName × Check.MethodInput)
 
-def ImplMaterial.decl (i : ImplMaterial) : ImplDecl :=
+/-- 実装メソッドの実名と本体を保持した検査入力を作る。 -/
+def ImplMaterial.input (i : ImplMaterial) : Check.ImplInput :=
   { i.signature with supers := lookup i.supers, methods := lookup i.methods }
+
+/-- 型付き表層には検査入力の本体を射影する。 -/
+def ImplMaterial.decl (i : ImplMaterial) : ImplDecl := i.input.decl
 
 structure Materials where
   defs : List (FunName × Def)
+  conFields : List (ConName × List String)
   accessors : List (FunName × (ConName × Nat))
-  data : List Benitoite.Exchange.DataMaterial
+  data : List DataMaterial
   ops : List (OpName × OpDecl)
   effects : List (EffName × List OpName)
   classes : List (ClassName × ClassMaterial)
@@ -88,8 +149,8 @@ structure Materials where
 
 /-- cons は取得関数に現れないデータ型も含む。 -/
 def Materials.program (m : Materials) : Program :=
-  { defs := lookup m.defs, cons := Benitoite.Exchange.constructorDecl m.data
-    accessors := lookup m.accessors, ops := lookup m.ops, effects := lookup m.effects
+  { defs := lookup m.defs, cons := constructorDecl m.data
+    conFields := lookup m.conFields, accessors := lookup m.accessors, ops := lookup m.ops, effects := lookup m.effects
     classes := lookup (m.classes.map fun (n,c) => (n,c.decl))
     impls := lookup (m.impls.map fun (n,i) => (n,i.decl)) }
 
@@ -106,12 +167,12 @@ def constructorsOk (m : Materials) : Bool :=
   let names := m.data.map (·.name)
   (names.eraseDups.length == names.length) &&
   (m.data.flatMap (·.ctors)).all (fun (n,cd) =>
-    (Benitoite.Exchange.dataConstructors m.data cd.data).contains n)
+    (dataConstructors m.data cd.data).contains n)
 
 /-- 外部の RecordConDecl は表の材料と照合するだけで cons に上書きしない。 -/
-def recordOk (atoms : List Atom) (ds : List Benitoite.Exchange.DataMaterial)
+def recordOk (atoms : List Atom) (ds : List DataMaterial)
     (name : ConName) (cd : ConDecl) : Bool :=
-  match Benitoite.Exchange.constructorDecl ds name with
+  match constructorDecl ds name with
   | none => false
   | some actual => (actual.data == cd.data) && (actual.ntys == cd.ntys) &&
       tysEq atoms actual.args cd.args
@@ -139,7 +200,7 @@ def Materials.names (m : Materials) : Names :=
 
 def Materials.input (m : Materials) (B : Builtins) (sat : SatDec) (admits : AdmitsDec)
     (op : OpPrim) (atoms : List Atom) : Check.Input :=
-  ⟨m.declarations, B, sat, admits, op, Benitoite.Exchange.dataConstructors m.data, atoms⟩
+  ⟨m.declarations, B, sat, admits, op, dataConstructors m.data, atoms⟩
 
 /-- 各位置を検査し、最初の失敗の元の経路を返す。 -/
 def checkNamed (table : String → Option α) (check : List Nat → α → Check.Result Unit)
@@ -151,9 +212,11 @@ def checkNamed (table : String → Option α) (check : List Nat → α → Check
     | some x => check (path ++ [index]) x
     checkNamed table check path ns (index + 1)
 
-def checkProgram (q : Check.Input) (p : Program) (names : Names) : Check.Result Unit := do
+/-- 元の材料に残したメソッドの実名を含めて本体を検査する。 -/
+def checkProgram (q : Check.Input) (m : Materials) (names : Names) : Check.Result Unit := do
+  let p := m.program
   checkNamed p.defs (Check.checkDef q) [0] names.defs 0
-  checkNamed p.impls (Check.checkImpl q names.methods names.supers) [1] names.impls 0
+  checkNamed (lookup (m.impls.map fun (n,i) => (n,i.input))) (Check.checkImpl q names.methods names.supers) [1] names.impls 0
   -- 操作の並びの値ではなく名前を使って、組み込みの表との重なりを調べる。
   checkNamed (fun n => (p.effects n).map (fun _ => n))
     (fun path n => Check.require path "effect name overlaps a builtin effect" (q.B.effects n).isNone)

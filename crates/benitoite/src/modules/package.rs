@@ -159,7 +159,10 @@ struct BreakingChange {
 }
 
 // 今まで誤りだった書き方を加える変更は、既存のコードの互換性を壊さない。
-const BREAKING_CHANGES: &[BreakingChange] = &[];
+const BREAKING_CHANGES: &[BreakingChange] = &[BreakingChange {
+    version: Version(0, 0, 5),
+    summary: text::NAMED_ARGUMENTS_CHANGE,
+}];
 
 pub(crate) use crate::syntax::header::keyword;
 
@@ -288,12 +291,13 @@ fn check_language(
             .arg("summary", change.summary)
             .primary(decl.version.span)
             .note("change")
+            .help("migrate")
             .build(),
     )
 }
 
 #[cfg(test)]
-// 空の互換性の表では届かない比較の契約を確かめる。実際の比較が受け取る表だけを差し替える。
+// 互換性の表の並びに依存しない比較を確かめるため、比較が受け取る表だけを差し替える。
 // テストの失敗は panic で表す（AGENTS.md「`#[allow]` を書いてよい箇所」）。
 #[allow(
     clippy::unwrap_used,
@@ -368,6 +372,11 @@ mod tests {
         assert_eq!(diag.code, Some(DiagCode::E0908));
         assert!(diag.message.contains("in 0.0.4"));
         assert_eq!(diag.notes, vec!["first change"]);
+        assert_eq!(
+            diag.helps[0].message,
+            "see docs/reference/benitoite.md for named arguments and named function types"
+        );
+        assert!(diag.helps[0].edits.is_empty());
         assert_eq!(diag.primary.unwrap().span, decl.version.span);
         assert_eq!(
             check_language(decl, Version(0, 0, 2), &changes)

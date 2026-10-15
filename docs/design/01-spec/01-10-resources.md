@@ -32,10 +32,10 @@
 import Benitoite.Unofficial.IO.File
 
 function copyHeader(src: String, dst: String) -> Result[Unit, String] uses File.Read, File.Write, State
-  with input = try File.openReader(src) |> Result.mapError(_, IOError.message),
-    output = try File.openWriter(dst, File.WriteMode.Replace) |> Result.mapError(_, IOError.message) do
-    bind line <- try File.readLine(input) |> Result.mapError(_, IOError.message)
-    return File.writeLine(output, Option.unwrapOr(line, "")) |> Result.mapError(_, IOError.message)
+  with input = try File.openReader(src) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)),
+    output = try File.openWriter(path: dst, mode: File.WriteMode.Replace) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) do
+    bind line <- try File.readLine(input) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+    return File.writeLine(writer: output, text: Option.unwrapOr(o: line, fallback: "")) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   end with
 end function
 ```

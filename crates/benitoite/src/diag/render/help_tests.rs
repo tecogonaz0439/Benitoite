@@ -156,7 +156,7 @@ fn syntax_repairs_remove_the_original_code_when_reparsed() {
     let cases = [
         (
             DiagCode::E0201,
-            "function f() -> Unit\n bind m <- Map.empty[String, List[Integer]]()\n bind _ <- Map.set(m, \"x\", [1])\nend function",
+            "function f() -> Unit\n bind m <- Map.empty[String, List[Integer]]()\n bind _ <- Map.set(m: m, k: \"x\", value: [1])\nend function",
         ),
         (
             DiagCode::E0106,
@@ -293,7 +293,7 @@ fn resolver_repairs_remove_the_original_code_when_reloaded() {
         ),
         (
             DiagCode::E0339,
-            "import Benitoite.Unofficial.IO.File as Console\nfunction main() -> Result[Unit, String] uses Console.Write\n return Console.writeText(\"output.txt\", \"hello\") |> Result.mapError(_, IOError.message)\nend function",
+            "import Benitoite.Unofficial.IO.File as Console\nfunction main() -> Result[Unit, String] uses Console.Write\n return Console.writeText(path: \"output.txt\", text: \"hello\") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)\nend function",
         ),
         (
             DiagCode::E0303,
@@ -362,7 +362,7 @@ fn resolver_repairs_remove_the_original_code_when_reloaded() {
         ),
         (
             DiagCode::E0316,
-            "type F = function(function() -> Unit uses State, Integer) -> Unit",
+            "type F = Pair[function() -> Unit uses State, Integer]",
         ),
         (
             DiagCode::E0334,
@@ -677,16 +677,24 @@ fn qualified_keyword_repairs_rename_the_module_and_member() {
     // 作成時の関門: キーワードの旧名は名前解決に届かない。編集を読み直して
     // 構文の受理と名前の解決の両方を確かめる（設計書 02-10「修正案」）。
     for (reference, replacement, key) in [
-        ("Int.mod(5, 2)", "Integer.floorModulo(5, 2)", "renamed"),
-        ("Integer.mod(5, 2)", "Integer.floorModulo(5, 2)", "renamed"),
         (
-            "Benitoite.Int.mod(5, 2)",
-            "Benitoite.Integer.floorModulo(5, 2)",
+            "Int.mod(a: 5, b: 2)",
+            "Integer.floorModulo(a: 5, b: 2)",
             "renamed",
         ),
         (
-            "Option.bind(Option.Some(1), Option.Some)",
-            "Option.andThen(Option.Some(1), Option.Some)",
+            "Integer.mod(a: 5, b: 2)",
+            "Integer.floorModulo(a: 5, b: 2)",
+            "renamed",
+        ),
+        (
+            "Benitoite.Int.mod(a: 5, b: 2)",
+            "Benitoite.Integer.floorModulo(a: 5, b: 2)",
+            "renamed",
+        ),
+        (
+            "Option.bind(o: Option.Some(1), f: Option.Some)",
+            "Option.andThen(o: Option.Some(1), f: Option.Some)",
             "alias",
         ),
     ] {

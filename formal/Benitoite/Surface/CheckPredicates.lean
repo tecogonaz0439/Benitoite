@@ -1,14 +1,46 @@
 import Benitoite.Surface.CheckTools
 
-/-! 表層の規則の、型付けの判断以外の前提の判定。 -/
+/-! 表層の規則の、型付けの判断以外の前提の判定。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+-/
 namespace Benitoite.Surface.CheckTools
 open Benitoite.Release
+
+/-- 型付けの名前の整形式と同じ条件を有限の一覧で検査する。 -/
+def namesWF (names : List String) (params : List Ty) : Bool :=
+  decide (names.length = params.length) && decide names.Nodup
+
+theorem namesWF_spec (names : List String) (params : List Ty) :
+    namesWF names params = true ↔ NamesWF names params := by simp [namesWF, NamesWF]
+
+/-- Rust の位置情報を、契約名とソース順のラベルから独立に検査する。 -/
+def callOk (names : List String) (params : List Ty) (inserted : Bool)
+    (labels : List (Option String)) (positions : List Nat) : Bool :=
+  namesWF names params && decide (labels.length = positions.length) &&
+    decide (((if inserted then [0] else []) ++ positions).Perm (List.range params.length)) &&
+    ((decide (labels = []) && decide (positions = [])) ||
+      (decide (inserted = false) && decide (params.length = 1) &&
+        decide (labels = [none]) && decide (positions = [0])) ||
+      (decide (labels = positions.map (fun i => names[i]?)) && labels.all Option.isSome))
+
+theorem callOk_spec (names : List String) (params : List Ty) (inserted : Bool)
+    (labels : List (Option String)) (positions : List Nat) :
+    callOk names params inserted labels positions = true ↔ CallOk names params inserted labels positions := by
+  simp [callOk, CallOk, namesWF_spec, List.all_eq_true, and_assoc, or_assoc]
+
+/-- 直接の構成子の穴はラベルなしの宣言順に限る。 -/
+def constructorHolesOk (args : HoleArgs) (n : Nat) : Bool :=
+  decide (args.labels = List.replicate n none) && decide (args.positions = List.range n)
+
+theorem constructorHolesOk_spec (args : HoleArgs) (n : Nat) :
+    constructorHolesOk args n = true ↔ args.ConstructorOk n := by
+  simp [constructorHolesOk, HoleArgs.ConstructorOk]
 
 mutual
   def wfTy (n : Nat) : Ty → Bool
     | .data _ ts => wfTys n ts
     | .list t | .reference t | .lazy t | .set t | .dict _ t => wfTy n t
-    | .fn ps r _ => wfTys n ps && wfTy n r
+    | .fn names ps r _ => namesWF names ps && wfTys n ps && wfTy n r
     | .tvar i => decide (i < n)
     | .cont b t _ | .map b t => wfTy n b && wfTy n t
     | .tapp i ts => decide (i < n) && wfTys n ts
@@ -24,7 +56,7 @@ mutual
     | .opaque o => by simp [wfTy, Ty.WF]
     | .data d ts => by simp [wfTy, Ty.WF, wfTys_spec n ts]
     | .list t => by simp [wfTy, Ty.WF, wfTy_spec n t]
-    | .fn ps r e => by simp [wfTy, Ty.WF, wfTys_spec n ps, wfTy_spec n r]
+    | .fn names ps r e => by simp [wfTy, Ty.WF, namesWF_spec, wfTys_spec n ps, wfTy_spec n r, and_assoc]
     | .tvar i => by simp [wfTy, Ty.WF]
     | .reference t => by simp [wfTy, Ty.WF, wfTy_spec n t]
     | .lazy t => by simp [wfTy, Ty.WF, wfTy_spec n t]
@@ -70,12 +102,12 @@ mutual
     | .local _ => by simp [exprExits, Expr.Exits]
     | .constE _ _ => by simp [exprExits, Expr.Exits]
     | .funName _ _ _ => by simp [exprExits, Expr.Exits]
-    | .funDicts _ _ _ _ _ => by simp [exprExits, Expr.Exits]
-    | .methName _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
+    | .funDicts _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
+    | .methName _ _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .primName _ _ _ => by simp [exprExits, Expr.Exits]
     | .opName _ _ => by simp [exprExits, Expr.Exits]
     | .nullCon _ _ => by simp [exprExits, Expr.Exits]
-    | .conValue _ _ _ => by simp [exprExits, Expr.Exits]
+    | .conValue _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .literal _ => by simp [exprExits, Expr.Exits]
     | .negInt _ => by simp [exprExits, Expr.Exits]
     | .negFloat _ => by simp [exprExits, Expr.Exits]
@@ -88,9 +120,9 @@ mutual
     | .conCall _ _ _ => by simp [exprExits, Expr.Exits]
     | .record _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .recordUpdate _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
-    | .call _ _ => by simp [exprExits, Expr.Exits]
+    | .call _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .pipe _ _ => by simp [exprExits, Expr.Exits]
-    | .partialCall _ _ _ _ => by simp [exprExits, Expr.Exits]
+    | .partialCall _ _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .partialCon _ _ _ => by simp [exprExits, Expr.Exits]
     | .binary _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .neg _ _ => by simp [exprExits, Expr.Exits]
@@ -100,7 +132,7 @@ mutual
     | .list _ _ => by simp [exprExits, Expr.Exits]
     | .listSpread _ _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .interpolation _ _ _ => by simp [exprExits, Expr.Exits]
-    | .lam _ _ _ _ => by simp [exprExits, Expr.Exits]
+    | .lam _ _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .ifOnly _ _ => by simp [exprExits, Expr.Exits]
     | .tryResult _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .tryOption _ _ _ _ => by simp [exprExits, Expr.Exits]
@@ -177,12 +209,12 @@ theorem isIf_spec : (e : Expr) → (isIf e = true ↔ IsIf e)
   | .local _ => by constructor <;> intro h <;> cases h
   | .constE _ _ => by constructor <;> intro h <;> cases h
   | .funName _ _ _ => by constructor <;> intro h <;> cases h
-  | .funDicts _ _ _ _ _ => by constructor <;> intro h <;> cases h
-  | .methName _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
+  | .funDicts _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
+  | .methName _ _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
   | .primName _ _ _ => by constructor <;> intro h <;> cases h
   | .opName _ _ => by constructor <;> intro h <;> cases h
   | .nullCon _ _ => by constructor <;> intro h <;> cases h
-  | .conValue _ _ _ => by constructor <;> intro h <;> cases h
+  | .conValue _ _ _ _ => by constructor <;> intro h <;> cases h
   | .literal _ => by constructor <;> intro h <;> cases h
   | .negInt _ => by constructor <;> intro h <;> cases h
   | .negFloat _ => by constructor <;> intro h <;> cases h
@@ -196,9 +228,9 @@ theorem isIf_spec : (e : Expr) → (isIf e = true ↔ IsIf e)
   | .conCall _ _ _ => by constructor <;> intro h <;> cases h
   | .record _ _ _ _ => by constructor <;> intro h <;> cases h
   | .recordUpdate _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
-  | .call _ _ => by constructor <;> intro h <;> cases h
+  | .call _ _ _ _ => by constructor <;> intro h <;> cases h
   | .pipe _ _ => by constructor <;> intro h <;> cases h
-  | .partialCall _ _ _ _ => by constructor <;> intro h <;> cases h
+  | .partialCall _ _ _ _ _ => by constructor <;> intro h <;> cases h
   | .partialCon _ _ _ => by constructor <;> intro h <;> cases h
   | .binary _ _ _ _ => by constructor <;> intro h <;> cases h
   | .neg _ _ => by constructor <;> intro h <;> cases h
@@ -208,7 +240,7 @@ theorem isIf_spec : (e : Expr) → (isIf e = true ↔ IsIf e)
   | .list _ _ => by constructor <;> intro h <;> cases h
   | .listSpread _ _ _ _ _ => by constructor <;> intro h <;> cases h
   | .interpolation _ _ _ => by constructor <;> intro h <;> cases h
-  | .lam _ _ _ _ => by constructor <;> intro h <;> cases h
+  | .lam _ _ _ _ _ => by constructor <;> intro h <;> cases h
   | .matchE _ _ _ => by constructor <;> intro h <;> cases h
   | .returnE _ _ => by constructor <;> intro h <;> cases h
   | .tryResult _ _ _ _ => by constructor <;> intro h <;> cases h
@@ -226,7 +258,7 @@ theorem nontrivial_spec (p : Pattern) : nontrivial p = true ↔ p.Nontrivial := 
   cases p <;> simp [nontrivial, Pattern.Nontrivial]
 
 def pipeValue : Expr → Bool
-  | .call _ _ | .conCall _ _ _ | .conValue _ _ _ => false
+  | .call _ _ _ _ | .conCall _ _ _ | .conValue _ _ _ _ => false
   | _ => true
 
 theorem pipeValue_spec (e : Expr) : pipeValue e = true ↔ e.PipeValue := by
@@ -333,12 +365,12 @@ def stringAddOk (atoms : List Atom) (B : Builtins) (op : OpPrim)
   | some (b, ts) => match B.sig b with
       | none => false
       | some s => ts.isEmpty && decide (ts.length = s.ntys) && decide (s.neffs = 0) &&
-          admitsDec b C ts && tyEq atoms (fnTyCheck s.params s.ret s.eff ts [])
-            (.fn [.base .string, .base .string] (.base .string) Eff.empty)
+          admitsDec b C ts && tyEq atoms (fnTyCheck s.names s.params s.ret s.eff ts [])
+            (.fn ["left", "right"] [.base .string, .base .string] (.base .string) Eff.empty)
 
 theorem stringAddOk_sound {atoms B op admitsDec C}
     (had : AdmitsDecSound B admitsDec)
-    (ha : ∀ b s, B.sig b = some s → Ty.AtomsIn atoms (.fn s.params s.ret s.eff))
+    (ha : ∀ b s, B.sig b = some s → Ty.AtomsIn atoms (.fn s.names s.params s.ret s.eff))
     (h : stringAddOk atoms B op admitsDec C = true) : StringAddOk B op C := by
   cases ho : op (.binary .add) (.base .string) with
   | none => simp [stringAddOk, ho] at h
@@ -351,10 +383,10 @@ theorem stringAddOk_sound {atoms B op admitsDec C}
           rcases h with ⟨⟨⟨⟨hts, hlen⟩, heffs⟩, hadmits⟩, heq⟩
           have hnil : ts = [] := by simpa using hts
           subst ts
-          have hat : Ty.AtomsIn atoms (fnTyCheck s.params s.ret s.eff [] []) :=
+          have hat : Ty.AtomsIn atoms (fnTyCheck s.names s.params s.ret s.eff [] []) :=
             substTy_atoms (ha b s hs) (by trivial) (by simp)
           have htarget : Ty.AtomsIn atoms
-              (.fn [.base .string, .base .string] (.base .string) Eff.empty) := by
+              (.fn ["left", "right"] [.base .string, .base .string] (.base .string) Eff.empty) := by
             simp [Ty.AtomsIn, Tys.AtomsIn, Eff.AtomsIn, Eff.empty]
           have ht := tyEq_sound hat htarget heq
           refine ⟨b, [], s, ho, rfl, hs, of_decide_eq_true hlen,

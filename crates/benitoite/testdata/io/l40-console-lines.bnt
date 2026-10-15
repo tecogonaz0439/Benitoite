@@ -5,9 +5,9 @@
 import Benitoite.Trait
 import Benitoite.Unofficial.IO.Console
 function main() -> Result[Unit, String] uses Console.Read, Console.Write
-  bind first <- try Console.readLine() |> Result.mapError(_, IOError.message)
-  bind rest <- try Console.readAllLines() |> Result.mapError(_, IOError.message)
-  bind eof <- try Console.readAllLines() |> Result.mapError(_, IOError.message)
+  bind first <- try Console.readLine() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  bind rest <- try Console.readAllLines() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  bind eof <- try Console.readAllLines() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.writeLine(Trait.Show.show(first))
   Console.writeLine(Trait.Show.show(rest))
   Console.writeLine(Trait.Show.show(eof))

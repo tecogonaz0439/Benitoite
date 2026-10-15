@@ -1,0 +1,117 @@
+--- a/docs/design/01-spec/01-02-syntax.md
++++ b/docs/design/01-spec/01-02-syntax.md
+@@ -66,7 +66,6 @@
+ 
+ (* 型 *)
+ Type        = UpperIdent [ "[" Type { "," Type } [ "," ] "]" ]
+-            | "function" "(" CommaList(Type) ")" "->" Type [ Uses ]
+             | "function" "(" CommaList(NamedType) ")" "->" Type [ Uses ]
+             | "(" Type ")" .
+ 
+@@ -124,14 +123,14 @@
+ 
+ `Uses` に書く `UpperIdent` は、エフェクトの名前か、関数の型パラメータの並びで `effect` を付けて宣言したエフェクト変数である。エフェクトの名前は[エフェクト](01-07-effects.md)で定める。型の宣言の型パラメータには `effect` を付けられない。エフェクト変数の規則は[型システム](01-06-type-system.md)で定める。
+ 
+-【決定】型は括弧で囲める。括弧で囲んだ型は、囲まない型と同じ型を表す。`uses` は、その直前にある最も内側の関数の型に付き、`uses` の後のコンマ区切りの並びはできるだけ長く読む（最長一致、longest match）。この並びにエフェクトでない名前（`Integer` など）が来たときは、構文エラーではなく名前解決の誤りとし、診断は関数の型を括弧で囲む書き方を修正案として示す。並びの 2 番目以降の名前の直後に `[` が続くとき（`List[Integer]` など、型引数を伴う名前）は、`uses` の並びに書けない形なので構文エラーとし、診断は同じく関数の型を括弧で囲む書き方を修正案として示す。
+-
+-```text
+-function((function() -> Unit uses Console.Write), Integer) -> Unit        // function(function() -> Unit uses Console.Write, Integer) -> Unit は誤り
++【決定】型は括弧で囲める。括弧で囲んだ型は、囲まない型と同じ型を表す。`uses` は、その直前にある最も内側の関数の型に付き、`uses` の後のコンマ区切りの並びはできるだけ長く読む（最長一致、longest match）。この並びにエフェクトでない大文字の名前が来たときは、名前解決の誤りとする。関数型の次のパラメータの小文字名の前では `uses` の並びを閉じる。並びの 2 番目以降の名前の直後に `[` が続くとき（`List[Integer]` など、型引数を伴う名前）は、`uses` の並びに書けない形なので構文エラーとし、診断は同じく関数の型を括弧で囲む書き方を修正案として示す。
++
++```text
++function(action: (function() -> Unit uses Console.Write), count: Integer) -> Unit // 関数型の例
+ function f() -> (function() -> Integer uses Console.Write) uses Console.Write ... end function // 戻り値の型が uses を持つ関数の型のとき
+ ```
+ 
+-1 行目の括弧を外すと、`Integer` を `uses` の並びの一部として読む。2 行目の戻り値の型の括弧を外すと、`function f() -> function() -> Integer uses Console.Write ... end function` の `uses Console.Write` は戻り値の型（内側の関数の型）に付き、`f` 自身は純粋な関数になる。
++1 行目は関数型のパラメータに名前を付け、内側の関数型を括弧で示した例である。2 行目の戻り値の型の括弧を外すと、`function f() -> function() -> Integer uses Console.Write ... end function` の `uses Console.Write` は戻り値の型（内側の関数の型）に付き、`f` 自身は純粋な関数になる。
+ 
+ ### プログラムと宣言
+ 
+@@ -278,9 +277,11 @@
+ 
+ ### 名前付き引数と関数型
+ 
++【決定】二つ以上のパラメータを持つ通常の関数では、すべての明示引数を名前付きにしなければならない。複数の位置指定は E0449、位置指定と名前指定の混在は E0450 とする。一引数の位置指定でも、渡す関数値の契約名の一致を検査する。既定値、引数の展開、引数不足からの自動の部分適用は加えない。
++
+ 【決定】呼び出しの引数には `f(b: readB(), a: readA())` のようにパラメータ名を付けられる。指定順は宣言順と異なってよい。呼ぶ値の関数型の名前で対応付け、未知の名前、同じ位置の重複、指定漏れ、位置指定と名前指定の混在は誤りとする。引数がなければ `f()`、一つなら `f(e)` と `f(value: e)` のどちらも使える。名前付き引数のラベルは通常のパラメータと同じ小文字識別子であり、`_`・予約語・修飾名は書けない。ラベルは局所の値への参照ではない。
+ 
+-【決定】名前を持つ関数型は `function(a: Integer, b: Integer) -> Integer` と書く。名前は型の契約の一部であり、型内で重複させない。型内の名前は局所の値を束縛しない。名前の検査と推論は[型システム](01-06-type-system.md)に従う。
++【決定】関数型は `function(a: Integer, b: Integer) -> Integer` のように、すべてのパラメータに名前を書く。名前のない旧表記は E0257 とし、名前を持つ型注釈への移行を案内する。名前は型の契約の一部であり、型内で重複させない。型内の名前は局所の値を束縛しない。名前の検査と推論は[型システム](01-06-type-system.md)に従う。
+ 
+ 【決定】関数の宣言、組み込み、ラムダ、局所の関数値、型クラスのメソッド、エフェクトの操作、外部の関数は、関数型の名前で対応付ける。データ構成子の直接の構築とパターンは位置指定であり、直接の構築に名前を付けると E0456 となる。レコードの構築・更新・パターンはフィールドの規則に従い、関数の引数の展開に `..base` は使えない。属性、ハンドラの節の引数束縛、`resume` はそれぞれの専用の構文を使う。
+ 
+@@ -418,7 +419,6 @@
+ ImportDecl  = "import" UpperIdent { "." UpperIdent } [ "as" UpperIdent ] .
+ 
+ Type        = QualUpper [ "[" Type { "," Type } [ "," ] "]" ]
+-            | "function" "(" CommaList(Type) ")" "->" Type [ Uses ]
+             | "function" "(" CommaList(NamedType) ")" "->" Type [ Uses ]
+             | "(" Type ")" .
+ QualUpper   = UpperIdent { "." UpperIdent } .
+@@ -906,7 +906,6 @@
+ 
+ (* 型 *)
+ Type        = QualUpper [ "[" Type { "," Type } [ "," ] "]" ]
+-            | "function" "(" CommaList(Type) ")" "->" Type [ Uses ]
+             | "function" "(" CommaList(NamedType) ")" "->" Type [ Uses ]
+             | "(" Type ")" .
+ QualUpper   = UpperIdent { "." UpperIdent } .
+--- a/crates/benitoite/tests/spec_examples.rs
++++ b/crates/benitoite/tests/spec_examples.rs
+@@ -33,7 +33,7 @@
+     ("01-01-lexical.md", "..  &"),
+     (
+         "01-02-syntax.md",
+-        "function((function() -> Unit uses Console.Write), Integer) -> Unit        // function(function() -> Unit uses Console.Write, Integer) -> Unit は誤り",
++        "function(action: (function() -> Unit uses Console.Write), count: Integer) -> Unit // 関数型の例",
+     ),
+     (
+         "01-03-names-modules.md",
+--- a/docs/design/01-spec/01-06-type-system.md
++++ b/docs/design/01-spec/01-06-type-system.md
+@@ -36,7 +36,7 @@
+ 【方針】二つの型は、次の場合に等しい。
+ 
+ - 中身を見せない prelude の型、外部の型、代数的データ型は、型の名前が同じで、対応する型引数がすべて等しいときに等しい（`Reference[Integer]` と `Reference[String]` は等しくない）。構成子が同じ形でも、名前の違う型は等しくない。レコードの型も、代数的データ型と同じく扱う。
+-- 関数の型は、引数の個数が同じで、対応する引数の型、戻り値の型、エフェクトの集合がすべて等しいときに等しい。名前を持つ関数型では、位置ごとのパラメータ名も等しくなければならない。エフェクトの集合は、書く順序によらない。
++- 関数の型は、引数の個数が同じで、対応する引数の型、戻り値の型、エフェクトの集合がすべて等しいときに等しい。位置ごとのパラメータ名も等しくなければならない。エフェクトの集合は、書く順序によらない。
+ - 型パラメータは、同じ宣言の同じ型パラメータとだけ等しい。
+ - 型構成子を表す型パラメータの適用 `F[A1, ..., An]` は、`F` が同じ宣言の同じ型パラメータで、対応する型引数がすべて等しいときに等しい。
+ 
+@@ -48,9 +48,9 @@
+ 
+ ### 名前を持つ関数型の適合と推論
+ 
+-【決定】名前を持つ関数型どうしを比べるときは、個数と位置ごとの名前の一致を検査し、その後で引数型・戻り値型・エフェクトの規則を適用する。名前と宣言順を保持し、名前の alpha 変換は行わない。型パラメータの置き換え、型の別名の展開、エフェクトの包含でも名前を失わない。
+-
+-【決定】名前付きの高階呼び出しで要求される関数型と、渡すラムダの実際のパラメータ名は一致しなければならない。例えば `List.map(xs: xs, f: lambda(value) return value * 2)` の内側の契約は `value` である。別の名前を持つ関数は、`lambda(value) return old(value)` のように明示のラムダで合わせる。期待型からラムダの束縛名を読み替えない。
++【決定】関数型どうしを比べるときは、個数と位置ごとの名前の一致を検査し、その後で引数型・戻り値型・エフェクトの規則を適用する。名前と宣言順を保持し、名前の alpha 変換は行わない。型パラメータの置き換え、型の別名の展開、エフェクトの包含でも名前を失わない。
++
++【決定】位置指定・名前指定の別や個数によらず、高階呼び出しで要求される関数型と、渡すラムダの実際のパラメータ名は一致しなければならない。例えば `List.map(xs: xs, f: lambda(value) return value * 2)` の内側の契約は `value` である。別の名前を持つ関数は、`lambda(value) return old(value)` のように明示のラムダで合わせる。期待型からラムダの束縛名を読み替えない。
+ 
+ 【決定】未確定の関数値への呼び出しでは、ラベルを書いた順から宣言順を作らない。宣言、ラムダ、名前を持つ型注釈、同じ本体の制約から契約を得て対応付ける。最後まで名前と順が決まらなければ E0455 とし、名前を持つ型注釈を求める。未使用のラムダや一引数の位置指定でも契約を創作せず、契約名の変数を一般化しない。検査済みの別の関数の契約を呼び出し元から後で確定する方式は取らない。型とエフェクトの通常の多相性は維持する。
+ 
+--- a/docs/design/02-impl/02-10-diagnostics.md
++++ b/docs/design/02-impl/02-10-diagnostics.md
+@@ -32,7 +32,7 @@
+ 
+ CLI の文章と JSON、テストの実行器は、どれもこの表現から出力を作る。
+ 
+-【決定】パイプの自動挿入または穴を含む呼び出しでは、複数引数の位置指定を E0449 とする。名前付き呼び出しでは、混在を E0450、未知を E0451、重複を E0452、不足を E0453、既知の契約名の不一致を E0454、未確定の契約を E0455、直接のデータ構成子への名前指定を E0456 とする。解析の誤りと呼べない値を先に扱い、対応付けの誤りから不足や型不一致を連鎖させない。ラベルの誤りはラベル位置、契約名の不一致は期待と実際の名前・順を示す。修正案は式の評価順を保ち、契約と個数から一意に決まるラベル挿入に限って編集を付ける。改名・穴・混在・未確定の対応では安全を確認できなければ文だけを示す。
++【決定】複数引数の位置指定を E0449、名前のない関数型を E0257 とする。名前付き呼び出しでは、混在を E0450、未知を E0451、重複を E0452、不足を E0453、既知の契約名の不一致を E0454、未確定の契約を E0455、直接のデータ構成子への名前指定を E0456 とする。解析の誤りと呼べない値を先に扱い、対応付けの誤りから不足や型不一致を連鎖させない。ラベルの誤りはラベル位置、契約名の不一致は期待と実際の名前・順を示す。修正案は式の評価順を保ち、契約と個数から一意に決まるラベル挿入に限って編集を付ける。改名・穴・混在・未確定の対応では安全を確認できなければ文だけを示す。
+ 
+ ### 修正案
+ 
+--- a/crates/benitoite/src/cli/tools/skill/generate.rs
++++ b/crates/benitoite/src/cli/tools/skill/generate.rs
+@@ -52,6 +52,9 @@
+ an ordinary binding name such as `other` or `otherCode` that does not collide with outer local names \
+ or visible constants, and put no unreachable branch after it. `case _ ->` remains valid. This advice \
+ does not apply to `_` inside constructors, discarded bindings, or partial applications.\n\n\
++Function types require a name for every parameter. Ordinary functions with two or more parameters \
++require named arguments; single-parameter functions accept either positional or named arguments. \
++Parameter names must match even for a single positional higher-order argument. \
+ Ordinary calls accept named values such as `f(b: readB(), a: readA())`. Labels name parameters; \
+ they do not refer to local variables. The callee is evaluated first, then argument expressions \
+ in source order; only the saved values are placed in declaration order. Unknown, repeated, missing, \

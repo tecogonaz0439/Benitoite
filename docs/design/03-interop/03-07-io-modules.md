@@ -14,6 +14,8 @@ IO を行う関数の振る舞いと IO の失敗は[エフェクト](../01-spec
 
 ## 仕様
 
+関数一覧の表の `f(a, b)` は、関数とパラメータを示す記法である。実際のコードでは、複数の引数を取る通常の関数は宣言のパラメータ名を付けて名前付きで呼ぶ。
+
 ### モジュールとエフェクト
 
 【決定】IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各モジュールは組み込みのエフェクトを宣言し、IO の関数はそのエフェクトの操作である。ただし、リソースを解放する関数（`File.closeReader`・`File.closeWriter`）は、操作ではなく `State` を型に持つ組み込みの関数である。各関数の型と振る舞いは本章で定め、標準ライブラリのソースの関数とする `File.copy` と `Process.command` を除き、組み込みで実装する。IO が起きる時期と順序、IO の失敗の扱いは[エフェクト](../01-spec/01-07-effects.md)で、`Clock.sleep` がタスクを止める意味は[並行処理](../01-spec/01-11-concurrency.md)で定める。
@@ -65,10 +67,10 @@ IO を行う関数の振る舞いと IO の失敗は[エフェクト](../01-spec
 
 | 関数 | 型 | 振る舞い |
 |---|---|---|
-| `Console.write(s)` | `function(String) -> Unit uses Console.Write` | `s` を標準出力に書く |
-| `Console.writeLine(s)` | `function(String) -> Unit uses Console.Write` | `s` と LF を標準出力に書く |
-| `Console.writeError(s)` | `function(String) -> Unit uses Console.Write` | `s` を標準エラー出力に書く |
-| `Console.writeErrorLine(s)` | `function(String) -> Unit uses Console.Write` | `s` と LF を標準エラー出力に書く |
+| `Console.write(text)` | `function(text: String) -> Unit uses Console.Write` | `text` を標準出力に書く |
+| `Console.writeLine(text)` | `function(text: String) -> Unit uses Console.Write` | `text` と LF を標準出力に書く |
+| `Console.writeError(text)` | `function(text: String) -> Unit uses Console.Write` | `text` を標準エラー出力に書く |
+| `Console.writeErrorLine(text)` | `function(text: String) -> Unit uses Console.Write` | `text` と LF を標準エラー出力に書く |
 | `Console.readLine()` | `function() -> Result[Option[String], IOError] uses Console.Read` | 標準入力から一行を読む。入力の終わりに達していれば `Option.None` |
 | `Console.readAll()` | `function() -> Result[String, IOError] uses Console.Read` | 標準入力の残りをすべて読む |
 | `Console.readAllLines()` | `function() -> Result[List[String], IOError] uses Console.Read` | 標準入力の残りをすべて読み、行に分ける |
@@ -84,23 +86,23 @@ IO を行う関数の振る舞いと IO の失敗は[エフェクト](../01-spec
 
 | 関数 | 型 | 振る舞い |
 |---|---|---|
-| `File.readText(path)` | `function(String) -> Result[String, IOError] uses File.Read` | ファイルの内容全体を文字列として読む |
-| `File.readBytes(path)` | `function(String) -> Result[Bytes, IOError] uses File.Read` | ファイルの内容全体を、文字コードを解釈せずに読む |
-| `File.readLines(path)` | `function(String) -> Result[List[String], IOError] uses File.Read` | ファイルの内容全体を読み、行に分ける |
-| `File.exists(path)` | `function(String) -> Result[Boolean, IOError] uses File.Read` | パスが指すものがあるか。ないときだけ `false`。調べられないときは `Result.Error` |
-| `File.info(path)` | `function(String) -> Result[File.Info, IOError] uses File.Read` | ファイルの情報。最後の構成要素がシンボリックリンクなら、リンクそのものの情報を返す |
-| `File.listDirectory(path)` | `function(String) -> Result[List[String], IOError] uses File.Read` | ディレクトリの中の名前（パスではない）を並べたリスト。`.` と `..` を含まない。名前を UTF-8 のバイト列として比べた辞書式の順に並べる |
-| `File.walk(path)` | `function(String) -> Result[List[String], IOError] uses File.Read` | ディレクトリの下のすべてのファイルとディレクトリを、`path` からの相対パスで並べたリスト。ディレクトリを指すシンボリックリンクの先は辿らない |
-| `File.canonicalize(path)` | `function(String) -> Result[String, IOError] uses File.Read` | シンボリックリンクを解決した絶対パス |
-| `File.writeText(path, text)` | `function(String, String) -> Result[Unit, IOError] uses File.Write` | ファイルを作るか置き換え、内容を `text` にする |
-| `File.writeBytes(path, data)` | `function(String, Bytes) -> Result[Unit, IOError] uses File.Write` | ファイルを作るか置き換え、内容を `data` にする |
-| `File.appendText(path, text)` | `function(String, String) -> Result[Unit, IOError] uses File.Write` | ファイルの末尾に `text` を加える。ファイルがなければ作る |
-| `File.appendBytes(path, data)` | `function(String, Bytes) -> Result[Unit, IOError] uses File.Write` | ファイルの末尾に `data` を加える。ファイルがなければ作る |
-| `File.createDirectory(path)` | `function(String) -> Result[Unit, IOError] uses File.Write` | ディレクトリを作る。途中のディレクトリがなければ作る。既にディレクトリがあれば何もしない |
-| `File.remove(path)` | `function(String) -> Result[Unit, IOError] uses File.Write` | ファイル、シンボリックリンク、空のディレクトリを削除する |
-| `File.removeTree(path)` | `function(String) -> Result[Unit, IOError] uses File.Write` | ディレクトリとその下をすべて削除する。シンボリックリンクの先は削除しない |
-| `File.rename(from, to)` | `function(String, String) -> Result[Unit, IOError] uses File.Write` | `from` を `to` に移す。`to` にファイルがあれば置き換える |
-| `File.copy(from, to)` | `function(String, String) -> Result[Unit, IOError] uses File.Read, File.Write` | 普通のファイル `from` の内容を `to` に写す。`to` があれば置き換える |
+| `File.readText(path)` | `function(path: String) -> Result[String, IOError] uses File.Read` | ファイルの内容全体を文字列として読む |
+| `File.readBytes(path)` | `function(path: String) -> Result[Bytes, IOError] uses File.Read` | ファイルの内容全体を、文字コードを解釈せずに読む |
+| `File.readLines(path)` | `function(path: String) -> Result[List[String], IOError] uses File.Read` | ファイルの内容全体を読み、行に分ける |
+| `File.exists(path)` | `function(path: String) -> Result[Boolean, IOError] uses File.Read` | パスが指すものがあるか。ないときだけ `false`。調べられないときは `Result.Error` |
+| `File.info(path)` | `function(path: String) -> Result[File.Info, IOError] uses File.Read` | ファイルの情報。最後の構成要素がシンボリックリンクなら、リンクそのものの情報を返す |
+| `File.listDirectory(path)` | `function(path: String) -> Result[List[String], IOError] uses File.Read` | ディレクトリの中の名前（パスではない）を並べたリスト。`.` と `..` を含まない。名前を UTF-8 のバイト列として比べた辞書式の順に並べる |
+| `File.walk(path)` | `function(path: String) -> Result[List[String], IOError] uses File.Read` | ディレクトリの下のすべてのファイルとディレクトリを、`path` からの相対パスで並べたリスト。ディレクトリを指すシンボリックリンクの先は辿らない |
+| `File.canonicalize(path)` | `function(path: String) -> Result[String, IOError] uses File.Read` | シンボリックリンクを解決した絶対パス |
+| `File.writeText(path, text)` | `function(path: String, text: String) -> Result[Unit, IOError] uses File.Write` | ファイルを作るか置き換え、内容を `text` にする |
+| `File.writeBytes(path, content)` | `function(path: String, content: Bytes) -> Result[Unit, IOError] uses File.Write` | ファイルを作るか置き換え、内容を `content` にする |
+| `File.appendText(path, text)` | `function(path: String, text: String) -> Result[Unit, IOError] uses File.Write` | ファイルの末尾に `text` を加える。ファイルがなければ作る |
+| `File.appendBytes(path, content)` | `function(path: String, content: Bytes) -> Result[Unit, IOError] uses File.Write` | ファイルの末尾に `content` を加える。ファイルがなければ作る |
+| `File.createDirectory(path)` | `function(path: String) -> Result[Unit, IOError] uses File.Write` | ディレクトリを作る。途中のディレクトリがなければ作る。既にディレクトリがあれば何もしない |
+| `File.remove(path)` | `function(path: String) -> Result[Unit, IOError] uses File.Write` | ファイル、シンボリックリンク、空のディレクトリを削除する |
+| `File.removeTree(path)` | `function(path: String) -> Result[Unit, IOError] uses File.Write` | ディレクトリとその下をすべて削除する。シンボリックリンクの先は削除しない |
+| `File.rename(from, to)` | `function(from: String, to: String) -> Result[Unit, IOError] uses File.Write` | `from` を `to` に移す。`to` にファイルがあれば置き換える |
+| `File.copy(from, to)` | `function(from: String, to: String) -> Result[Unit, IOError] uses File.Read, File.Write` | 普通のファイル `from` の内容を `to` に写す。`to` があれば置き換える |
 
 ```text
 record Info
@@ -126,15 +128,15 @@ end data
 
 | 関数 | 型 | 振る舞い |
 |---|---|---|
-| `File.openReader(path)` | `function(String) -> Result[File.Reader, IOError] uses File.Read` | ファイルを読むために開く |
-| `File.readLine(reader)` | `function(File.Reader) -> Result[Option[String], IOError] uses File.Read` | 一行を読む。ファイルの終わりに達していれば `Option.None` |
-| `File.readChunk(reader, maximumBytes)` | `function(File.Reader, Integer) -> Result[Option[Bytes], IOError] uses File.Read` | 最大 `maximumBytes` バイトを読む。ファイルの終わりに達していれば `Option.None` |
-| `File.closeReader(reader)` | `function(File.Reader) -> Result[Unit, IOError] uses State` | 閉じる |
-| `File.openWriter(path, mode)` | `function(String, File.WriteMode) -> Result[File.Writer, IOError] uses File.Write` | ファイルを書くために開く。`WriteMode.Replace` なら作るか空にし、`WriteMode.Append` なら末尾に加える |
-| `File.write(writer, text)` | `function(File.Writer, String) -> Result[Unit, IOError] uses File.Write` | `text` を書く |
-| `File.writeLine(writer, text)` | `function(File.Writer, String) -> Result[Unit, IOError] uses File.Write` | `text` と LF を書く |
-| `File.writeChunk(writer, data)` | `function(File.Writer, Bytes) -> Result[Unit, IOError] uses File.Write` | `data` を書く |
-| `File.closeWriter(writer)` | `function(File.Writer) -> Result[Unit, IOError] uses State` | 書いた内容を書き出してから閉じる |
+| `File.openReader(path)` | `function(path: String) -> Result[File.Reader, IOError] uses File.Read` | ファイルを読むために開く |
+| `File.readLine(reader)` | `function(reader: File.Reader) -> Result[Option[String], IOError] uses File.Read` | 一行を読む。ファイルの終わりに達していれば `Option.None` |
+| `File.readChunk(reader, maximumBytes)` | `function(reader: File.Reader, maximumBytes: Integer) -> Result[Option[Bytes], IOError] uses File.Read` | 最大 `maximumBytes` バイトを読む。ファイルの終わりに達していれば `Option.None` |
+| `File.closeReader(reader)` | `function(reader: File.Reader) -> Result[Unit, IOError] uses State` | 閉じる |
+| `File.openWriter(path, mode)` | `function(path: String, mode: File.WriteMode) -> Result[File.Writer, IOError] uses File.Write` | ファイルを書くために開く。`WriteMode.Replace` なら作るか空にし、`WriteMode.Append` なら末尾に加える |
+| `File.write(writer, text)` | `function(writer: File.Writer, text: String) -> Result[Unit, IOError] uses File.Write` | `text` を書く |
+| `File.writeLine(writer, text)` | `function(writer: File.Writer, text: String) -> Result[Unit, IOError] uses File.Write` | `text` と LF を書く |
+| `File.writeChunk(writer, content)` | `function(writer: File.Writer, content: Bytes) -> Result[Unit, IOError] uses File.Write` | `content` を書く |
+| `File.closeWriter(writer)` | `function(writer: File.Writer) -> Result[Unit, IOError] uses State` | 書いた内容を書き出してから閉じる |
 
 ```text
 data WriteMode
@@ -155,13 +157,13 @@ import Benitoite.Unofficial.IO.File
 
 function countLines(path: String) -> Result[Integer, IOError] uses File.Read, State
   with reader = try File.openReader(path) do
-    return countFrom(reader, 0)
+    return countFrom(reader: reader, count: 0)
   end with
 end function
 
 function countFrom(reader: File.Reader, count: Integer) -> Result[Integer, IOError] uses File.Read
   return match try File.readLine(reader) with
-    case Option.Some(_) -> countFrom(reader, count + 1)
+    case Option.Some(_) -> countFrom(reader: reader, count: count + 1)
     case Option.None -> Result.Ok(count)
   end match
 end function
@@ -175,13 +177,13 @@ end function
 |---|---|---|
 | `Process.arguments()` | `function() -> List[String] uses Process.Environment` | コマンドライン引数の並び（[エフェクト](../01-spec/01-07-effects.md)） |
 | `Process.scriptDirectory()` | `function() -> String uses Process.Environment` | 実行を始めるスクリプトのディレクトリの絶対パス |
-| `Process.environmentVariable(name)` | `function(String) -> Result[Option[String], IOError] uses Process.Environment` | 環境変数の値。定義されていなければ `Option.None` |
+| `Process.environmentVariable(name)` | `function(name: String) -> Result[Option[String], IOError] uses Process.Environment` | 環境変数の値。定義されていなければ `Option.None` |
 | `Process.workingDirectory()` | `function() -> Result[String, IOError] uses Process.Environment` | 作業ディレクトリの絶対パス |
-| `Process.command(program, arguments)` | `function(String, List[String]) -> Process.Command` | 後述の既定の値を入れた `Process.Command` を作る。純粋な関数である |
-| `Process.run(command)` | `function(Process.Command) -> Result[Process.Output, IOError] uses Process.Run` | コマンドを起動し、終わるのを待ち、標準出力と標準エラー出力を集めて返す |
-| `Process.runAttached(command)` | `function(Process.Command) -> Result[Integer, IOError] uses Process.Run` | コマンドを起動し、標準入力・標準出力・標準エラー出力をスクリプトのものにつないで、終わるのを待つ。終了状態を返す |
-| `Process.shell(commandLine)` | `function(String) -> Result[Process.Output, IOError] uses Process.Run` | 文字列をシェルに渡して実行し、`Process.run` と同じく結果を返す |
-| `Process.exit(code)` | `function[T](Integer) -> T uses Process.Exit` | 終了状態を `code` にして実行を終える。呼び出し元へは戻らない |
+| `Process.command(program: program, arguments: arguments)` | `function(program: String, arguments: List[String]) -> Process.Command` | 後述の既定の値を入れた `Process.Command` を作る。純粋な関数である |
+| `Process.run(command)` | `function(command: Process.Command) -> Result[Process.Output, IOError] uses Process.Run` | コマンドを起動し、終わるのを待ち、標準出力と標準エラー出力を集めて返す |
+| `Process.runAttached(command)` | `function(command: Process.Command) -> Result[Integer, IOError] uses Process.Run` | コマンドを起動し、標準入力・標準出力・標準エラー出力をスクリプトのものにつないで、終わるのを待つ。終了状態を返す |
+| `Process.shell(commandLine)` | `function(commandLine: String) -> Result[Process.Output, IOError] uses Process.Run` | 文字列をシェルに渡して実行し、`Process.run` と同じく結果を返す |
+| `Process.exit(code)` | `function[T](code: Integer) -> T uses Process.Exit` | 終了状態を `code` にして実行を終える。呼び出し元へは戻らない |
 
 ```text
 record Command
@@ -199,7 +201,7 @@ record Output
 end record
 ```
 
-- `Process.command(program, arguments)` は、`workingDirectory` を `Option.None`（基準のディレクトリを使う）、`environment` を空のマップ（スクリプトの環境変数をそのまま渡す）、`input` を `Option.None`（標準入力に何も渡さない）にする。ほかの値にするときは、レコードの更新（`Process.Command(..cmd, workingDirectory: Option.Some("./sub"))`）で変える。
+- `Process.command(program: program, arguments: arguments)` は、`workingDirectory` を `Option.None`（基準のディレクトリを使う）、`environment` を空のマップ（スクリプトの環境変数をそのまま渡す）、`input` を `Option.None`（標準入力に何も渡さない）にする。ほかの値にするときは、レコードの更新（`Process.Command(..cmd, workingDirectory: Option.Some("./sub"))`）で変える。
 - 基準のディレクトリは、前述の「共通の規則」のとおりである。`workingDirectory` に相対パスを指定したときは、基準のディレクトリから辿る。
 - `program` が `/` を含む相対パス（`./tool` など）のときは、子の作業ディレクトリ（`workingDirectory` を解決したもの。`Option.None` なら基準のディレクトリ）から辿って絶対パスにしてから起動する。シェルで `cd dir && ./tool` と書いたときと同じ場所のファイルを起動する。`/` を含まない名前は、環境変数 `PATH` から探す。
 - `environment` の組は、スクリプトの環境変数に加えるか、同じ名前の変数を置き換える。起動したコマンドは、スクリプトの環境変数をすべて受け取る。初回リリース版は、子に渡す環境変数をスクリプトのものから切り離す方法と、API キーやパスワードなどの秘密の情報を区別して扱う型を持たない。
@@ -223,7 +225,7 @@ end record
 | `Clock.now()` | `function() -> Time.Instant uses Clock.Time` | 現在の時刻。精度はミリ秒であり、`unixNanoseconds` の下 6 桁は 0 である |
 | `Clock.localOffsetMinutes()` | `function() -> Integer uses Clock.Time` | 現在の時刻での、地方時の UTC からの差（東を正とする分の数） |
 | `Clock.monotonicMilliseconds()` | `function() -> Integer uses Clock.Time` | 経過時間を計るための値。起点は定めず、一回の実行の中で減らない |
-| `Clock.sleep(milliseconds)` | `function(Integer) -> Unit uses Clock.Time` | 呼び出したタスクを止める（[並行処理](../01-spec/01-11-concurrency.md)） |
+| `Clock.sleep(milliseconds)` | `function(milliseconds: Integer) -> Unit uses Clock.Time` | 呼び出したタスクを止める（[並行処理](../01-spec/01-11-concurrency.md)） |
 
 - `Time.Instant` は `Benitoite.Time` の型である（[テキストとデータの処理](03-08-text-and-data.md)）。
 - OS から地方時の UTC からの差を得られないとき（タイムゾーンの設定を持たない最小のコンテナなど）、`Clock.localOffsetMinutes` は 0 を返す。実行時エラーにも `IOError` にもしない。
@@ -236,15 +238,15 @@ end record
 
 | 関数 | 型 | 振る舞い |
 |---|---|---|
-| `Random.integer(low, high)` | `function(Integer, Integer) -> Integer uses Random.Generate` | `low` 以上 `high` 未満の整数 |
+| `Random.integer(low, high)` | `function(low: Integer, high: Integer) -> Integer uses Random.Generate` | `low` 以上 `high` 未満の整数 |
 | `Random.float()` | `function() -> Float uses Random.Generate` | 0.0 以上 1.0 未満の浮動小数 |
 | `Random.boolean()` | `function() -> Boolean uses Random.Generate` | `true` か `false` |
-| `Random.shuffle(xs)` | `function[T](List[T]) -> List[T] uses Random.Generate` | 要素を並べ替えたリスト |
-| `Random.choose(xs)` | `function[T](List[T]) -> Option[T] uses Random.Generate` | 要素の一つ。空なら `Option.None` |
-| `Random.fromSeed(seed)` | `function(Integer) -> Random.Generator` | 種から生成器を作る。純粋な関数である |
-| `Random.nextInteger(generator, low, high)` | `function(Random.Generator, Integer, Integer) -> Pair[Integer, Random.Generator]` | `low` 以上 `high` 未満の整数と、次の生成器 |
-| `Random.nextFloat(generator)` | `function(Random.Generator) -> Pair[Float, Random.Generator]` | 0.0 以上 1.0 未満の浮動小数と、次の生成器 |
-| `Random.shuffleWith(generator, xs)` | `function[T](Random.Generator, List[T]) -> Pair[List[T], Random.Generator]` | 要素を並べ替えたリストと、次の生成器 |
+| `Random.shuffle(xs)` | `function[T](xs: List[T]) -> List[T] uses Random.Generate` | 要素を並べ替えたリスト |
+| `Random.choose(xs)` | `function[T](xs: List[T]) -> Option[T] uses Random.Generate` | 要素の一つ。空なら `Option.None` |
+| `Random.fromSeed(seed)` | `function(seed: Integer) -> Random.Generator` | 種から生成器を作る。純粋な関数である |
+| `Random.nextInteger(generator, low, high)` | `function(generator: Random.Generator, low: Integer, high: Integer) -> Pair[Integer, Random.Generator]` | `low` 以上 `high` 未満の整数と、次の生成器 |
+| `Random.nextFloat(generator)` | `function(generator: Random.Generator) -> Pair[Float, Random.Generator]` | 0.0 以上 1.0 未満の浮動小数と、次の生成器 |
+| `Random.shuffleWith(generator, xs)` | `function[T](generator: Random.Generator, xs: List[T]) -> Pair[List[T], Random.Generator]` | 要素を並べ替えたリストと、次の生成器 |
 
 - `Random.integer` と `Random.nextInteger` は、`high` が `low` 以下なら実行時エラーとする。
 - `Random.Generator` は中身を見せない型であり、等値の型ではない。生成器の関数は、エフェクトを持たない純粋な関数であり、同じ生成器からは同じ値を返す。

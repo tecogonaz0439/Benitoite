@@ -66,6 +66,16 @@ function main() -> Result[Unit, String]
 end function
 "#
     );
+    compile_source(&source)
+}
+
+fn compile_named(n: u32, answer: u32) -> CompiledProgram {
+    compile_source(&format!(
+        "function count(n: Integer, acc: Integer) -> Integer\n return if n = 0 then acc else count(acc: acc + 1, n: n - 1) end if\nend function\nfunction main() -> Result[Unit, String]\n return if count(acc: 0, n: {n}) = {answer} then Result.Ok(()) else Result.Error(\"wrong count\") end if\nend function"
+    ))
+}
+
+fn compile_source(source: &str) -> CompiledProgram {
     let checked = pipeline::check_text(
         "allocations.bnt",
         source.as_bytes(),
@@ -120,5 +130,14 @@ fn ordinary_calls_and_returns_allocate_only_for_capacity_growth() {
     assert!(
         a.abs_diff(b) <= 16,
         "ordinary calls allocated in proportion to their count: {a} -> {b}"
+    );
+    let small = compile_named(100, 100);
+    let large = compile_named(10000, 10000);
+    allocations(&small);
+    let a = allocations(&small);
+    let b = allocations(&large);
+    assert!(
+        a.abs_diff(b) <= 16,
+        "named tail calls allocated in proportion to their count: {a} -> {b}"
     );
 }

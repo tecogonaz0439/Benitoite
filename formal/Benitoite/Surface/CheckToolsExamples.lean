@@ -1,7 +1,9 @@
-import Benitoite.Surface.CheckPatterns
+import Benitoite.Surface.CheckTables
 import Benitoite.Release.BuiltinTable
 
-/-! 判定と構造的な再帰の写しの評価例。 -/
+/-! 判定と構造的な再帰の写しの評価例。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+-/
 namespace Benitoite.Surface.CheckTools.Examples
 open Benitoite.Release
 
@@ -30,26 +32,26 @@ example : Eff.substRho [ioEff] (fun a => a == .rho 2) (.rho 2) = true := by deci
 
 -- 型の全構成、並行した型リスト、外側だけのエフェクトの包含。
 private def richTypes : List Ty := [intTy, .opaque "O", .data "D" [intTy], .list intTy,
-  .fn [intTy] boolTy ioEff, .tvar 1, .reference intTy, .lazy intTy,
+  .fn ["value"] [intTy] boolTy ioEff, .tvar 1, .reference intTy, .lazy intTy,
   .cont intTy boolTy rhoEff, .map intTy boolTy, .set intTy, .bytes,
   .dict "Eq" intTy, .tapp 0 [intTy], .ctor (.data "D"), .ctor .list,
   .ctor .set, .ctor .map, .ctor .reference, .ctor .lazy]
 example : tysEq atoms richTypes richTypes = true := by decide
 example : tyEq atoms intTy boolTy = false := by decide
-example : tyEq atoms (.fn [intTy] boolTy emptyEff) (.fn [intTy] boolTy ioEff) = false := by decide
+example : tyEq atoms (.fn ["value"] [intTy] boolTy emptyEff) (.fn ["value"] [intTy] boolTy ioEff) = false := by decide
 example : tysEq atoms [intTy] [] = false := by decide
 example : tyConEq (.data "D") (.data "E") = false := by decide
 example : tyConEq .list .map = false := by decide
-example : tyLe atoms (.fn [intTy] boolTy emptyEff) (.fn [intTy] boolTy ioEff) = true := by decide
-example : tyLe atoms (.fn [intTy] boolTy ioEff) (.fn [intTy] boolTy emptyEff) = false := by decide
-example : tyLe atoms (.list (.fn [] intTy emptyEff)) (.list (.fn [] intTy ioEff)) = false := by decide
+example : tyLe atoms (.fn ["value"] [intTy] boolTy emptyEff) (.fn ["value"] [intTy] boolTy ioEff) = true := by decide
+example : tyLe atoms (.fn ["value"] [intTy] boolTy ioEff) (.fn ["value"] [intTy] boolTy emptyEff) = false := by decide
+example : tyLe atoms (.list (.fn [] [] intTy emptyEff)) (.list (.fn [] [] intTy ioEff)) = false := by decide
 example : tyLe atoms intTy intTy = true := by decide
 
 -- shift はエフェクトに触れず、subst はエフェクト変数も具体化する。
-example : tyEq atoms (shiftTy 2 1 (.fn [.tvar 0, .tvar 1] (.tapp 2 [.tvar 0]) rhoEff))
-    (.fn [.tvar 0, .tvar 3] (.tapp 4 [.tvar 0]) rhoEff) = true := by decide
-example : tyEq atoms (substTyAt 1 [intTy] [ioEff] (.fn [.tvar 0, .tvar 1, .tvar 2] (.tvar 1) rhoEff))
-    (.fn [.tvar 0, intTy, .tvar 1] intTy ioEff) = true := by decide
+example : tyEq atoms (shiftTy 2 1 (.fn ["a", "b"] [.tvar 0, .tvar 1] (.tapp 2 [.tvar 0]) rhoEff))
+    (.fn ["a", "b"] [.tvar 0, .tvar 3] (.tapp 4 [.tvar 0]) rhoEff) = true := by decide
+example : tyEq atoms (substTyAt 1 [intTy] [ioEff] (.fn ["a", "b", "c"] [.tvar 0, .tvar 1, .tvar 2] (.tvar 1) rhoEff))
+    (.fn ["a", "b", "c"] [.tvar 0, intTy, .tvar 1] intTy ioEff) = true := by decide
 example : tyEq atoms (substTyAt 1 [.tvar 0] [] (.tvar 1)) (.tvar 1) = true := by decide
 example : tyEq atoms (substTy [.ctor .list] [] (.tapp 0 [intTy])) (.list intTy) = true := by decide
 example : tyEq atoms (substTyAt 1 [intTy] [] (.tapp 0 [.tvar 1])) (.tapp 0 [intTy]) = true := by decide
@@ -58,8 +60,8 @@ example : tyEq atoms (applyToTy (.ctor .map) [intTy, boolTy]) (.map intTy boolTy
 example : tyEq atoms (applyToTy (.ctor .map) []) (.map (.base .unit) (.base .unit)) = true := by decide
 example : tyEq atoms (applyToTy (.tvar 2) [intTy]) (.tapp 2 [intTy]) = true := by decide
 example : tyEq atoms (applyToTy intTy [boolTy]) intTy = true := by decide
-example : tyEq atoms (fnTyCheck [.tvar 0] (.tvar 0) rhoEff [intTy] [ioEff])
-    (.fn [intTy] intTy ioEff) = true := by decide
+example : tyEq atoms (fnTyCheck ["value"] [.tvar 0] (.tvar 0) rhoEff [intTy] [ioEff])
+    (.fn ["value"] [intTy] intTy ioEff) = true := by decide
 
 -- 既存の整礎再帰の式は、その等式補題で展開してから比較する。
 example : shiftTy 2 0 (.list (.tvar 0)) = Ty.shift 2 0 (.list (.tvar 0)) := by
@@ -96,8 +98,8 @@ example : isIf (.elseIf .unit .empty (.ifOnly .unit .empty)) = true := by decide
 example : isIf (.elseIf .unit .empty (.paren (.ifOnly .unit .empty))) = false := by decide
 example : nontrivial .var = false := by decide
 example : nontrivial (.boolean true) = true := by decide
-example : pipeValue (.call .unit .nil) = false := by decide
-example : pipeValue (.paren (.call .unit .nil)) = true := by decide
+example : pipeValue (.call .unit [] [] .nil) = false := by decide
+example : pipeValue (.paren (.call .unit [] [] .nil)) = true := by decide
 example : isDirect (.funName "f" [] []) = true := by decide
 example : isDirect (.paren (.funName "f" [] [])) = false := by decide
 example : allDirect (.cons (.funName "f" [] []) (.cons (.primName "p" [] []) .nil)) = true := by decide
@@ -194,7 +196,7 @@ example : recordUpdateExhaustive decls ctors
 
 -- 補間の連結演算子は、一般の admitsDec と有限の型比較で判定する。
 private def stringAddSig : PrimSig :=
-  { tparams := [], neffs := 0, params := [.base .string, .base .string],
+  { tparams := [], neffs := 0, names := ["left", "right"], params := [.base .string, .base .string],
     ret := .base .string, eff := emptyEff, admits := fun _ _ => True,
     kind := .pure, opEff := none }
 private def stringBuiltins : Builtins :=
@@ -219,6 +221,176 @@ example : satAll (fun _ _ _ => true) [] [intTy] [{}] = true := by decide
 example : satAll (fun _ _ _ => true) [] [intTy] [] = false := by decide
 example : satAll (fun _ _ _ => false) [] [intTy] [{}] = false := by decide
 example : satAll (satB []) [] [intTy] [{ equality := true }] = true := by decide
-example : satAll (satB []) [] [.fn [] intTy emptyEff] [{ equality := true }] = false := by decide
+example : satAll (satB []) [] [.fn [] [] intTy emptyEff] [{ equality := true }] = false := by decide
+
+namespace Checker
+open Benitoite.Surface Check
+
+private def signature : MethSig :=
+  { tparams := [], neffs := 0, names := ["a", "b"], params := [intTy, boolTy],
+    ret := intTy, eff := emptyEff }
+private def classDecl : ClassDecl :=
+  { supers := [], methods := fun m => if m == "combine" then some signature else none }
+private def q : Input :=
+  { D := { decls with
+      cons := fun c => if c == "PosPair" then decls.cons "Pair" else decls.cons c,
+      conFields := fun c => if c == "Pair" then some ["first", "second"] else none,
+      ops := fun o => if o == "ask" then some
+        { eff := "Ask", tparams := [], names := ["a", "b"], params := [intTy, boolTy], ret := intTy }
+        else none,
+      classes := fun c => if c == "Combine" then some classDecl else none },
+    B := stringBuiltins, satDec := fun _ _ _ => true, admitsDec := fun _ _ _ => true,
+    opPrim := stringOp, ctors := ctors, atoms := .name "Ask" :: atoms }
+private def fn : Ty := .fn ["a", "b"] [intTy, boolTy] intTy emptyEff
+private def reversed : Exprs := .cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil)
+private def reversedHoles : HoleArgs := .hole (some "b") 1 boolTy (.hole (some "a") 0 intTy .nil)
+private def run (env : List (Option Ty)) (e : Expr) : Result Inferred :=
+  checkExpr q .strict [] env none .other [] e
+private def got (result : Result Inferred) (t : Ty) (ε : Eff := emptyEff) : Bool :=
+  match result with
+  | .ok (actual, eff) => tyEq q.atoms actual t && effEq q.atoms eff ε
+  | .error _ => false
+
+-- 異なる引数型を逆順に指定し、ソース順の期待型を実際に使うことを確かめる。
+example : got (run [some fn] (.call (.local 0) [some "b", some "a"] [1, 0] reversed)) intTy = true := by rfl
+example : got (run [some (.fn ["value"] [intTy] intTy emptyEff)]
+    (.call (.local 0) [none] [0] (.cons (.literal (.integer 7)) .nil))) intTy = true := by rfl
+example : got (run [some (.fn [] [] intTy emptyEff)] (.call (.local 0) [] [] .nil)) intTy = true := by rfl
+
+-- ラベルの誤りは型の検査に進む前に、呼び出しそのものの経路で拒否する。
+example : (run [some fn] (.call (.local 0) [some "other", some "a"] [1, 0] reversed)).map (fun _ => ()) =
+    .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
+example : (run [some fn] (.call (.local 0) [some "b", some "a"] [0, 1] reversed)).map (fun _ => ()) =
+    .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
+example : (run [some fn] (.call (.local 0) [some "a", some "a"] [0, 0] reversed)).map (fun _ => ()) =
+    .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
+example : (run [some fn] (.call (.local 0) [some "a"] [0] (.cons (.literal (.integer 7)) .nil))).map (fun _ => ()) =
+    .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
+example : (run [some fn] (.call (.local 0) [some "a", some "b"] [0, 2] reversed)).map (fun _ => ()) =
+    .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
+example : (run [some fn] (.call (.local 0) [some "a", none] [0, 1] reversed)).map (fun _ => ()) =
+    .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
+example : (run [some fn] (.call (.local 0) [none, none] [0, 1] reversed)).map (fun _ => ()) =
+    .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
+example : (run [some fn] (.call (.local 0) [some "b", some "a"] [1] reversed)).map (fun _ => ()) =
+    .error ⟨[], "call labels and positions do not match the contract"⟩ := by rfl
+example : (run [some fn] (.call (.local 0) [some "b", some "a"] [1, 0] .nil)).map (fun _ => ()) =
+    .error ⟨[1], "argument count mismatch"⟩ := by rfl
+-- 対応は正しいが型が違う場合は、そのソース引数の位置を報告する。
+example : (run [some fn] (.call (.local 0) [some "a", some "b"] [0, 1] reversed)).map (fun _ => ()) =
+    .error ⟨[1, 0], "type is not included in the expected type"⟩ := by rfl
+
+-- 穴から生成する契約は宣言順へ戻さず、穴が現れた順を保つ。
+example : got (run [some fn] (.partialCall (.local 0) ["a", "b"] reversedHoles intTy emptyEff))
+    (.fn ["b", "a"] [boolTy, intTy] intTy emptyEff) = true := by rfl
+example : (run [some fn] (.partialCall (.local 0) ["b", "a"] reversedHoles intTy emptyEff)).map (fun _ => ()) =
+    .error ⟨[], "partial call contract annotation mismatch"⟩ := by rfl
+example : (run [some fn] (.partialCall (.local 0) ["a", "b"]
+    (.hole (some "b") 0 boolTy (.hole (some "a") 1 intTy .nil)) intTy emptyEff)).map (fun _ => ()) =
+    .error ⟨[], "partial call labels and positions do not match the contract"⟩ := by rfl
+example : got (run [] (.partialCon "PosPair" [intTy]
+    (.hole none 0 intTy (.expr none 1 (.literal (.boolean true)) .nil))))
+    (.fn ["arg1"] [intTy] (.data "PairTy" [intTy]) emptyEff) = true := by rfl
+-- 直接のレコードの穴は、型と位置が正しくても拒否する。
+example : (run [] (.partialCon "Pair" [intTy]
+    (.hole none 0 intTy (.expr none 1 (.literal (.boolean true)) .nil)))).map (fun _ => ()) =
+    .error ⟨[], "record construction cannot contain holes"⟩ := by rfl
+example : (run [] (.partialCon "PosPair" [intTy]
+    (.hole (some "first") 0 intTy (.expr none 1 (.literal (.boolean true)) .nil)))).map (fun _ => ()) =
+    .error ⟨[], "partial constructor labels or positions are invalid"⟩ := by rfl
+example : (run [] (.partialCon "PosPair" [intTy]
+    (.hole none 1 boolTy (.hole none 0 intTy .nil)))).map (fun _ => ()) =
+    .error ⟨[], "partial constructor labels or positions are invalid"⟩ := by rfl
+
+-- パイプ挿入は位置 0 を占める。括弧付きの穴は生成された一引数関数への適用になる。
+example : got (run [some fn] (.pipe (.literal (.integer 7))
+    (.call (.local 0) [some "b"] [1] (.cons (.literal (.boolean true)) .nil)))) intTy = true := by rfl
+example : (run [some fn] (.pipe (.literal (.integer 7))
+    (.call (.local 0) [some "a"] [0] (.cons (.literal (.integer 8)) .nil)))).map (fun _ => ()) =
+    .error ⟨[1], "pipe labels and positions do not match the contract"⟩ := by rfl
+example : (run [some fn] (.pipe (.literal (.integer 7))
+    (.call (.local 0) [none] [1] (.cons (.literal (.boolean true)) .nil)))).map (fun _ => ()) =
+    .error ⟨[1], "pipe labels and positions do not match the contract"⟩ := by rfl
+example : got (run [some fn] (.pipe (.literal (.boolean true))
+    (.paren (.partialCall (.local 0) ["a", "b"]
+      (.hole (some "b") 1 boolTy (.expr (some "a") 0 (.literal (.integer 7)) .nil)) intTy emptyEff)))) intTy = true := by rfl
+
+-- ラムダの整形式、高階の期待名、レコード構成子の関数値の名前を検査する。
+example : got (run [] (.lam ["value"] [intTy] intTy emptyEff (.last (.returnE intTy (.local 0)))))
+    (.fn ["value"] [intTy] intTy emptyEff) = true := by rfl
+example : (run [] (.lam ["value", "value"] [intTy, intTy] (.base .unit) emptyEff .empty)).map (fun _ => ()) =
+    .error ⟨[], "lambda contract names are not well formed"⟩ := by rfl
+example : (run [] (.lam [] [intTy] (.base .unit) emptyEff .empty)).map (fun _ => ()) =
+    .error ⟨[], "lambda contract names are not well formed"⟩ := by rfl
+example : (run [some (.fn ["f"] [.fn ["value"] [intTy] intTy emptyEff] intTy emptyEff)]
+    (.call (.local 0) [some "f"] [0]
+      (.cons (.lam ["x"] [intTy] intTy emptyEff (.last (.returnE intTy (.local 0)))) .nil))).map (fun _ => ()) =
+    .error ⟨[1, 0], "type is not included in the expected type"⟩ := by rfl
+example : got (run [] (.conValue "Pair" [intTy] ["first", "second"] [intTy, boolTy]))
+    (.fn ["first", "second"] [intTy, boolTy] (.data "PairTy" [intTy]) emptyEff) = true := by rfl
+example : (run [] (.conValue "Pair" [intTy] ["arg1", "arg2"] [intTy, boolTy])).map (fun _ => ()) =
+    .error ⟨[], "constructor contract annotation mismatch"⟩ := by rfl
+
+-- 操作と辞書を通るメソッドも、同じ逆順呼び出しを受け入れる。
+example : got (run [] (.call (.opName "ask" []) [some "b", some "a"] [1, 0] reversed))
+    intTy (Eff.single "Ask") = true := by rfl
+example : got (run [some (.dict "Combine" intTy)]
+    (.call (.methName (.local 0) "combine" [] [] [] ["a", "b"] [intTy, boolTy])
+      [some "b", some "a"] [1, 0] reversed)) intTy = true := by rfl
+example : (run [some (.dict "Combine" intTy)]
+    (.methName (.local 0) "combine" [] [] [] ["b", "a"] [intTy, boolTy])).map (fun _ => ()) =
+    .error ⟨[], "method contract annotation mismatch"⟩ := by rfl
+
+-- 本体を位置で表した後では実名を復元できない。同じ型の二引数でも並び全体を比較する。
+private def unitSig : MethSig :=
+  { tparams := [], neffs := 0, names := ["a", "b"], params := [intTy, intTy],
+    ret := .base .unit, eff := emptyEff }
+private def unitClass : ClassDecl :=
+  { supers := [], methods := fun m => if m == "method" then some unitSig else none }
+private def unitQ : Input := { q with D := { q.D with classes := fun _ => some unitClass } }
+private def impl (names : List String) : ImplInput :=
+  { tparams := [], dictParams := [], cls := "UnitClass", target := intTy,
+    supers := fun _ => none, methods := fun m => if m == "method" then some ⟨names, .empty⟩ else none }
+example : checkImpl unitQ ["method"] [] [] (impl ["a", "b"]) = .ok () := by rfl
+example : checkImpl unitQ ["method"] [] [] (impl ["b", "a"]) =
+    .error ⟨[0, 0], "implementation method parameter names mismatch"⟩ := by rfl
+example : checkImpl unitQ ["method"] [] [] (impl []) =
+    .error ⟨[0, 0], "implementation method parameter names mismatch"⟩ := by rfl
+
+private def materials (names : List String) : CheckTables.Materials :=
+  { defs := [], conFields := [], accessors := [], data := [], ops := [], effects := [],
+    classes := [("UnitClass", ⟨[], [("method", unitSig)]⟩)],
+    impls := [("impl", ⟨⟨[], [], "UnitClass", intTy⟩, [], [("method", ⟨names, .empty⟩)]⟩)],
+    trustedFuns := [], trustedImpls := [] }
+private def materialQ (m : CheckTables.Materials) : Input :=
+  m.input stringBuiltins (fun _ _ _ => true) (fun _ _ _ => true) stringOp atoms
+example : CheckTables.checkProgram (materialQ (materials ["a", "b"]))
+    (materials ["a", "b"]) (materials ["a", "b"]).names = .ok () := by rfl
+example : CheckTables.checkProgram (materialQ (materials ["b", "a"]))
+    (materials ["b", "a"]) (materials ["b", "a"]).names =
+    .error ⟨[1, 0, 0, 0], "implementation method parameter names mismatch"⟩ := by rfl
+
+-- 分岐の合流と入れ子の型の整形式も、契約名を比較・検査する。
+example : (run [some (.fn ["a"] [intTy] intTy emptyEff), some (.fn ["b"] [intTy] intTy emptyEff)]
+    (.ite (.literal (.boolean true)) (.last (.local 0)) (.last (.local 1)))).map (fun _ => ()) =
+    .error ⟨[], "branch types have no join"⟩ := by rfl
+example : (run [] (.list (.fn ["x", "x"] [intTy, intTy] intTy emptyEff) .nil)).map (fun _ => ()) =
+    .error ⟨[], "list element type is not well formed"⟩ := by rfl
+
+private def polyDecl : FunDecl :=
+  { tparams := [{}], neffs := 0, names := ["value"], params := [.tvar 0], ret := .tvar 0,
+    eff := emptyEff, dictParams := [("C", 0)] }
+private def polyQ : Input :=
+  { q with D := { q.D with funs := fun _ => some polyDecl } }
+example : got (checkExpr polyQ .strict [] [some (.dict "C" intTy)] none .other []
+    (.funDicts "poly" [intTy] [] [.local 0] ["value"] [intTy]))
+    (.fn ["value"] [intTy] intTy emptyEff) = true := by rfl
+example : (checkExpr polyQ .strict [] [some (.dict "C" intTy)] none .other []
+    (.funDicts "poly" [intTy] [] [.local 0] ["other"] [intTy])).map (fun _ => ()) =
+    .error ⟨[], "function contract annotation mismatch"⟩ := by rfl
+example : got (run [] (.primName "String.add" [] []))
+    (.fn ["left", "right"] [.base .string, .base .string] (.base .string) emptyEff) = true := by rfl
+
+end Checker
 
 end Benitoite.Surface.CheckTools.Examples

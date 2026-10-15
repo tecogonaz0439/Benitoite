@@ -245,7 +245,7 @@ fn scripts_handle_random_operations_and_both_run_entries_seed_the_generator() {
 import Benitoite.Unofficial.IO.Random
 function main() -> Result[Unit, String] uses Random.Generate
   bind values <- handle
-    Pair(Random.integer(0, 1000000), Pair(Random.float(), Random.boolean()))
+    Pair(Random.integer(low: 0, high: 1000000), Pair(Random.float(), Random.boolean()))
   with
     case Random.integer(_, _) -> resume(7)
     case Random.float() -> resume(0.5)
@@ -272,14 +272,14 @@ end function
 import Benitoite.Unofficial.IO.Random
 import Benitoite.Unofficial.IO.Console
 function main() -> Unit uses Random.Generate, Console.Write
-  List.forEach([1, 2, 3, 4, 5, 6, 7, 8], lambda(_unused)
-    Console.writeLine(Integer.toString(Random.integer(0, 1000000)))
+  List.forEach(xs: [1, 2, 3, 4, 5, 6, 7, 8], f: lambda(value)
+    Console.writeLine(Integer.toString(Random.integer(low: 0, high: 1000000)))
   end lambda)
 end function
 @test
 function randomIsSeeded() -> Unit uses Random.Generate, Assert.Check
-  bind xs <- List.map([1, 2, 3, 4, 5, 6, 7, 8], lambda(_unused) return Random.integer(0, 1000000) end lambda)
-  Assert.isTrue(xs <> [0, 0, 0, 0, 0, 0, 0, 0], "hidden generator was not seeded")
+  bind xs <- List.map(xs: [1, 2, 3, 4, 5, 6, 7, 8], f: lambda(value) return Random.integer(low: 0, high: 1000000) end lambda)
+  Assert.isTrue(condition: xs <> [0, 0, 0, 0, 0, 0, 0, 0], message: "hidden generator was not seeded")
 end function
 "#,
     );

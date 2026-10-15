@@ -1,0 +1,20 @@
+// spec: 01-08 評価順序
+import Benitoite.Unofficial.IO.Console
+type Callback = function(a: Integer, b: Integer) -> Integer
+function factory() -> Callback uses Console.Write
+ Console.writeLine(text: "callee")
+ return lambda(a: Integer, b: Integer) return a * 100 + b
+end function
+function readB() -> Integer uses Console.Write
+ Console.writeLine(text: "b")
+ return 29
+end function
+function readA() -> Integer uses Console.Write
+ Console.writeLine(text: "a")
+ return 17
+end function
+function main() -> Unit uses Console.Write
+ bind action <- lambda(a: Integer, b: Integer) return a * 100 + b
+ Console.writeLine(text: Integer.toString(n: factory()(b: readB(), a: readA())))
+ Console.writeLine(text: Integer.toString(n: action(b: 2, a: 3)))
+end function

@@ -13,11 +13,11 @@ function main() -> Unit uses State, Clock.Time, Console.Write
   bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
   bind _ <- handle
     with group = TaskGroup.open() do
-      bind task <- TaskGroup.spawn(group, lambda()
+      bind task <- TaskGroup.spawn(group: group, action: lambda()
         Clock.sleep(3600000)
         return 1
       end lambda)
-      Reference.set(saved, Option.Some(task))
+      Reference.set(reference: saved, value: Option.Some(task))
       abort()
     end with
   with

@@ -42,37 +42,37 @@ end function
 
 /// Returns the smaller of `a` and `b`.
 public function minimum(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
-  return UnsignedInteger64.minimum(a, b)
+  return UnsignedInteger64.minimum(a: a, b: b)
 end function
 
 /// Returns the larger of `a` and `b`.
 public function maximum(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
-  return UnsignedInteger64.maximum(a, b)
+  return UnsignedInteger64.maximum(a: a, b: b)
 end function
 
 /// Divides and rounds the quotient toward negative infinity. Stops the program when the divisor is 0.
 public function floorDivide(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
-  return UnsignedInteger64.floorDivide(a, b)
+  return UnsignedInteger64.floorDivide(a: a, b: b)
 end function
 
 /// Returns the remainder. Stops the program when the divisor is 0.
 public function floorModulo(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
-  return UnsignedInteger64.floorModulo(a, b)
+  return UnsignedInteger64.floorModulo(a: a, b: b)
 end function
 
 /// Calls `UnsignedInteger64.bitwiseAnd` with the same result and stopping conditions.
 public function bitwiseAnd(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
-  return UnsignedInteger64.bitwiseAnd(a, b)
+  return UnsignedInteger64.bitwiseAnd(a: a, b: b)
 end function
 
 /// Calls `UnsignedInteger64.bitwiseOr` with the same result and stopping conditions.
 public function bitwiseOr(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
-  return UnsignedInteger64.bitwiseOr(a, b)
+  return UnsignedInteger64.bitwiseOr(a: a, b: b)
 end function
 
 /// Calls `UnsignedInteger64.bitwiseExclusiveOr` with the same result and stopping conditions.
 public function bitwiseExclusiveOr(a: UnsignedInteger, b: UnsignedInteger) -> UnsignedInteger
-  return UnsignedInteger64.bitwiseExclusiveOr(a, b)
+  return UnsignedInteger64.bitwiseExclusiveOr(a: a, b: b)
 end function
 
 /// Calls `UnsignedInteger64.bitwiseNot` with the same result and stopping conditions.
@@ -82,10 +82,10 @@ end function
 
 /// Calls `UnsignedInteger64.shiftLeft` with the same result and stopping conditions.
 public function shiftLeft(a: UnsignedInteger, n: Integer) -> UnsignedInteger
-  return UnsignedInteger64.shiftLeft(a, n)
+  return UnsignedInteger64.shiftLeft(a: a, n: n)
 end function
 
 /// Calls `UnsignedInteger64.shiftRight` with the same result and stopping conditions.
 public function shiftRight(a: UnsignedInteger, n: Integer) -> UnsignedInteger
-  return UnsignedInteger64.shiftRight(a, n)
+  return UnsignedInteger64.shiftRight(a: a, n: n)
 end function

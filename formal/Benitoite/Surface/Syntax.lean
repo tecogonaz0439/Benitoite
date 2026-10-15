@@ -7,7 +7,7 @@ import Benitoite.Release.BuiltinTable
 局所変数は de Bruijn の番号であり、引数の最後が番号 0 である。
 `bind`・`shadow` は続きを一つ束縛し、`bind _` と式文は束縛しない。
 リストと通常の引数は `Exprs`、穴を含む引数は `HoleArgs`、分岐は `Arms`、ハンドラの節は `Clauses` で表し、
-脱糖の相互再帰を構造的にする。パターンの束縛の番号は Release の `binds` に合わせる。
+脱糖の相互再帰を構造的にする。通常呼び出しと穴には、ソース順のラベルと契約上の位置を持たせる。パターンの束縛の番号は Release の `binds` に合わせる。
 -/
 
 namespace Benitoite.Surface
@@ -219,9 +219,19 @@ def InterpPart.exprTypes : List InterpPart → List Ty
   | .stringExpr :: ps => .base .string :: exprTypes ps
   | .converted t :: ps => t :: exprTypes ps
 
+/-- 公開の変換関数は宣言の実名を保ち、内部の Boolean の変換には value を使う。 -/
+def InterpPart.converterName : Ty → String
+  | .base .integer | .base .integer8 | .base .integer16 | .base .integer32
+  | .base .unsignedInteger16 | .base .unsignedInteger32 | .base .unsignedInteger64
+  | .base .float32 => "n"
+  | .base .float | .base .decimal => "x"
+  | .base .character => "c"
+  | .base .byte => "b"
+  | _ => "value"
+
 def InterpPart.converterTypes : List InterpPart → List Ty
   | [] => []
-  | .converted t :: ps => .fn [t] (.base .string) Eff.empty :: converterTypes ps
+  | .converted t :: ps => .fn [converterName t] [t] (.base .string) Eff.empty :: converterTypes ps
   | _ :: ps => converterTypes ps
 
 /-- 01-06「演算子の型付け」の補間に許す型。補間の制約を持つ型変数は型パラメータと等しくなれず、
@@ -241,6 +251,30 @@ def InterpPart.count : List InterpPart → Nat
   | .text s :: ps => (if s = "" then 0 else 1) + count ps
   | _ :: ps => 1 + count ps
 
+/-- 位置フィールドの契約名。宣言中の位置から arg1, arg2, … を作る。 -/
+def positionalNames (n : Nat) : List String :=
+  (List.range n).map fun i => "arg" ++ toString (i + 1)
+
+/-- 辞書の内部名。% は表層の識別子に含まれない（設計書 01-01「識別子」）。 -/
+def internalNames (n : Nat) : List String :=
+  (List.range n).map fun i => "%dict" ++ toString (i + 1)
+
+/-- ラベルはソース順で位置と対応する。通常呼び出しの位置指定は一引数だけである。
+パイプ挿入は位置 0 を先に占め、明示引数からの重複も Perm で排除する。 -/
+def CallOk (names : List String) (params : List Ty) (inserted : Bool)
+    (labels : List (Option String)) (positions : List Nat) : Prop :=
+  NamesWF names params ∧ labels.length = positions.length ∧
+    ((if inserted then [0] else []) ++ positions).Perm (List.range params.length) ∧
+    ((labels = [] ∧ positions = []) ∨
+      (inserted = false ∧ params.length = 1 ∧ labels = [none] ∧ positions = [0]) ∨
+      (labels = positions.map (fun i => names[i]?) ∧
+        ∀ label ∈ labels, label.isSome = true))
+
+/-- 宣言順の型から、明示引数のソース順の期待型を取り出す。
+範囲外の既定値は CallOk が排除する。 -/
+def sourceTypes (params : List Ty) (positions : List Nat) : List Ty :=
+  positions.map fun i => params[i]?.getD (.base .unit)
+
 mutual
   inductive Expr where
     | local (i : Nat)
@@ -250,14 +284,14 @@ mutual
     | funName (f : FunName) (tys : List Ty) (effs : List Eff)
     /-- 01-12「型クラス」の表の第 4 行。params は具体化した値の引数の型。 -/
     | funDicts (f : FunName) (tys : List Ty) (effs : List Eff)
-        (dicts : List DictEv) (params : List Ty)
+        (dicts : List DictEv) (names : List String) (params : List Ty)
     /-- 同表の第 2 行。dicts はメソッド自身の制約、params は辞書を除いた引数型。 -/
     | methName (dict : DictEv) (m : MethName) (tys : List Ty) (effs : List Eff)
-        (dicts : List DictEv) (params : List Ty)
+        (dicts : List DictEv) (names : List String) (params : List Ty)
     | primName (b : PrimName) (tys : List Ty) (effs : List Eff)
     | opName (o : OpName) (tys : List Ty)
     | nullCon (c : ConName) (tys : List Ty)
-    | conValue (c : ConName) (tys params : List Ty)
+    | conValue (c : ConName) (tys : List Ty) (names : List String) (params : List Ty)
     | literal (l : Literal)
     | negInt (n : Nat)
     /-- 括弧を挟まず Float リテラル x に適用した単項の -。x は符号反転前の値。 -/
@@ -279,10 +313,12 @@ mutual
     /-- n は全フィールド数、tys は base の型引数。positions と args は書いた順。 -/
     | recordUpdate (c : ConName) (tys : List Ty) (n : Nat) (positions : List Nat)
         (base : Expr) (args : Exprs)
-    | call (callee : Expr) (args : Exprs)
+    /-- labels と positions は明示引数のソース順。callee の契約との対応は CallOk が検査する。 -/
+    | call (callee : Expr) (labels : List (Option String)) (positions : List Nat) (args : Exprs)
     | pipe (lhs rhs : Expr)
-    /-- 一つ以上の穴を持つ呼び出し。戻り値・エフェクトは展開後のラムダの情報。 -/
-    | partialCall (callee : Expr) (args : HoleArgs) (ret : Ty) (eff : Eff)
+    /-- 一つ以上の穴を持つ呼び出し。names は callee の型と一致する元の契約。
+    戻り値・エフェクトは展開後のラムダの情報。ラベルのない穴も names から実名を取る。 -/
+    | partialCall (callee : Expr) (names : List String) (args : HoleArgs) (ret : Ty) (eff : Eff)
     | partialCon (c : ConName) (tys : List Ty) (args : HoleArgs)
     | binary (op : BinOp) (operandTy : Ty) (lhs rhs : Expr)
     | neg (operandTy : Ty) (e : Expr)
@@ -294,7 +330,7 @@ mutual
     | listSpread (elemTy : Ty) (concat : Expr) (before : Exprs) (spread : Expr) (after : Exprs)
     /-- parts の式の部分と es、converted の部分と converters がそれぞれ対応する。 -/
     | interpolation (parts : List InterpPart) (es converters : Exprs)
-    | lam (params : List Ty) (ret : Ty) (eff : Eff) (body : Block)
+    | lam (names : List String) (params : List Ty) (ret : Ty) (eff : Eff) (body : Block)
     | ite (cond : Expr) (yes no : Block)
     /-- `no` は `else if` 以下を閉じた式。括弧やブロックの合成で消さない。 -/
     | elseIf (cond : Expr) (yes : Block) (no : Expr)
@@ -323,11 +359,12 @@ mutual
     | nil
     | cons (head : Expr) (tail : Exprs)
 
-  /-- 穴は呼び出しの直接の引数だけに置ける。非穴の式には新しい引数が見えない。 -/
+  /-- 穴は呼び出しの直接の引数だけに置ける。各要素はソース順のラベルと契約位置を持つ。
+  非穴の式には新しい引数が見えない。 -/
   inductive HoleArgs where
     | nil
-    | expr (head : Expr) (tail : HoleArgs)
-    | hole (ty : Ty) (tail : HoleArgs)
+    | expr (label : Option String) (position : Nat) (head : Expr) (tail : HoleArgs)
+    | hole (label : Option String) (position : Nat) (ty : Ty) (tail : HoleArgs)
 
   inductive Arms where
     | nil
@@ -350,10 +387,29 @@ mutual
     | bindPat (kind : BindKind) (pattern : Pattern) (boundTy : Ty) (e : Expr) (rest : Block)
 end
 
+/-- 穴の型だけをソース順に集める。契約位置順への並べ替えは行わない。 -/
 def HoleArgs.holeTypes : HoleArgs → List Ty
   | .nil => []
-  | .expr _ rest => rest.holeTypes
-  | .hole t rest => t :: rest.holeTypes
+  | .expr _ _ _ rest => rest.holeTypes
+  | .hole _ _ t rest => t :: rest.holeTypes
+
+def HoleArgs.labels : HoleArgs → List (Option String)
+  | .nil => []
+  | .expr label _ _ rest | .hole label _ _ rest => label :: rest.labels
+
+def HoleArgs.positions : HoleArgs → List Nat
+  | .nil => []
+  | .expr _ i _ rest | .hole _ i _ rest => i :: rest.positions
+
+/-- 穴の名前は元の契約から取り出し、穴を書いた順を維持する。 -/
+def HoleArgs.holeNames (names : List String) : HoleArgs → List String
+  | .nil => []
+  | .expr _ _ _ rest => rest.holeNames names
+  | .hole _ i _ rest => names[i]?.getD "" :: rest.holeNames names
+
+/-- 直接の構成子の穴にはラベルを許さず、宣言の位置順を保つ。 -/
+def HoleArgs.ConstructorOk (args : HoleArgs) (n : Nat) : Prop :=
+  args.labels = List.replicate n none ∧ args.positions = List.range n
 
 /-- 単一選択肢・恒等対応・ガードなしの分岐の短縮形。 -/
 def Arms.single (pat : Pattern) (body : Block) (rest : Arms) : Arms :=
@@ -372,7 +428,7 @@ def Clauses.skeleton : Clauses → List Release.Clause
 
 /-- パイプの規則 2。呼び出しと裸の構成子の名前は別の規則で型付けする。 -/
 def Expr.PipeValue : Expr → Prop
-  | .call _ _ | .conCall _ _ _ | .conValue _ _ _ => False
+  | .call _ _ _ _ | .conCall _ _ _ | .conValue _ _ _ _ => False
   | _ => True
 
 def Exprs.length : Exprs → Nat
@@ -409,6 +465,7 @@ end
 structure FunDecl where
   tparams : List TParam
   neffs : Nat
+  names : List String
   params : List Ty
   ret : Ty
   eff : Eff
@@ -417,6 +474,10 @@ structure FunDecl where
 /-- 01-12「型クラス」: 制約ごとの辞書の引数を値の引数の前に置く。 -/
 def FunDecl.dictTys (d : FunDecl) : List Ty :=
   d.dictParams.map fun p => .dict p.1 (.tvar p.2)
+
+/-- コアの引数名は内部辞書と利用者の契約をこの順に持つ。 -/
+def FunDecl.coreNames (d : FunDecl) : List String :=
+  internalNames d.dictParams.length ++ d.names
 
 /-- 表層の辞書の型付けが読む、実装の本体を含まないシグネチャ。 -/
 structure ImplSig where
@@ -431,6 +492,8 @@ def ImplSig.dictTys (id : ImplSig) : List Ty :=
 structure Declarations where
   funs : FunName → Option FunDecl
   cons : ConName → Option ConDecl
+  /-- レコード構成子だけが持つ宣言順のフィールド名。 -/
+  conFields : ConName → Option (List String) := fun _ => none
   ops : OpName → Option OpDecl := fun _ => none
   effects : EffName → Option (List OpName) := fun _ => none
   classes : ClassName → Option Release.ClassDecl := fun _ => none
@@ -440,6 +503,9 @@ structure Declarations where
 def Declarations.patternProgram (D : Declarations) : Release.Program :=
   { defs := fun _ => none, cons := D.cons, ops := D.ops,
     effects := D.effects, classes := D.classes, impls := fun _ => none }
+
+def Declarations.constructorNames (D : Declarations) (c : ConName) (cd : ConDecl) : List String :=
+  (D.conFields c).getD (positionalNames cd.args.length)
 
 structure Def extends FunDecl where
   body : Block
@@ -455,12 +521,14 @@ def ImplDecl.methTy (id : ImplDecl) (ms : MethSig) (t : Ty) : Ty :=
 /-- 01-05 の型パラメータは無制約。番号は構成子の宣言と同じ。 -/
 def accessorDecl (cd : ConDecl) (k : Nat) : FunDecl :=
   { tparams := List.replicate cd.ntys {}, neffs := 0,
-    params := [.data cd.data ((List.range cd.ntys).map Ty.tvar)],
+    names := ["value"], params := [.data cd.data ((List.range cd.ntys).map Ty.tvar)],
     ret := (cd.args[k]?).getD (.base .unit), eff := Eff.empty }
 
 structure Program where
   defs : FunName → Option Def
   cons : ConName → Option ConDecl
+  /-- レコード構成子だけが持つ宣言順のフィールド名。 -/
+  conFields : ConName → Option (List String) := fun _ => none
   ops : OpName → Option OpDecl := fun _ => none
   effects : EffName → Option (List OpName) := fun _ => none
   classes : ClassName → Option Release.ClassDecl := fun _ => none
@@ -481,7 +549,7 @@ def Program.lookupFun {α : Type} (p : Program) (ordinary : Def → α)
       | some (c, k) => (p.cons c).map fun cd => accessor c cd k
 
 def Program.declarations (p : Program) : Declarations :=
-  { funs := p.lookupFun Def.toFunDecl (fun _ cd k => accessorDecl cd k), cons := p.cons,
+  { funs := p.lookupFun Def.toFunDecl (fun _ cd k => accessorDecl cd k), cons := p.cons, conFields := p.conFields,
     ops := p.ops, effects := p.effects, classes := p.classes,
     impls := fun i => (p.impls i).map ImplDecl.toImplSig }
 

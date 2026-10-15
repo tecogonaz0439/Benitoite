@@ -432,7 +432,7 @@ fn normal(end: &RunEnd) {
 fn open_062_r01_pure_all_values_agree_and_stops_are_runtime_errors() {
     let allok = r#"function main() -> Result[Unit,String]
  bind result <- Task.allOk([lambda() return Result.Error("first") end lambda,lambda() return Result.Ok(1 div 0) end lambda])
- return Result.map(result,lambda(_values) return () end lambda)
+ return Result.map(r: result,f: lambda(value) return () end lambda)
 end function"#;
     let all = r#"function main() -> Unit
  bind _ <- Task.all([lambda() return 1 div 0 end lambda,lambda() return 9223372036854775807 + 1 end lambda])
@@ -440,7 +440,7 @@ end function"#;
     // 値の比較が空のまま通らないよう、実行時エラーのない二つの順序でも結果を確かめる。
     let allok_values = r#"function main() -> Result[Unit,String]
  bind result <- Task.allOk([lambda() return Result.Error("first") end lambda,lambda() return Result.Error("second") end lambda])
- return Result.map(result,lambda(_values) return () end lambda)
+ return Result.map(r: result,f: lambda(value) return () end lambda)
 end function"#;
     let all_values = r#"function main() -> Result[Unit,String]
  bind values <- Task.all([lambda() return 11 end lambda,lambda() return 22 end lambda])
@@ -571,7 +571,7 @@ function main() -> Result[Unit,String] uses State,File.Read
  bind results <- Task.all([
  lambda()
  bind result <- File.readText("Cargo.toml")
- Reference.set(done,true)
+ Reference.set(reference: done,value: true)
  return result
  end lambda,
  lambda()
@@ -609,10 +609,10 @@ effect Test
 end effect
 function main() -> Result[Unit,String] uses State,Console.Write,File.Read
  with group = TaskGroup.open() do
- bind _ <- TaskGroup.spawn(group,lambda() return () end lambda)
+ bind _ <- TaskGroup.spawn(group: group,action: lambda() return () end lambda)
  bind _ <- handle
- bind parent <- TaskGroup.spawn(group,lambda()
-  bind _ <- TaskGroup.spawn(group,lambda()
+ bind parent <- TaskGroup.spawn(group: group,action: lambda()
+  bind _ <- TaskGroup.spawn(group: group,action: lambda()
    bind _ <- File.readText("Cargo.toml")
    Console.write("B")
   end lambda)
@@ -681,13 +681,13 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Clock
 function main() -> Result[Unit,String] uses State,File.Read,Clock.Time,Console.Write
  with group = TaskGroup.open() do
- bind _ <- TaskGroup.spawn(group,lambda() return () end lambda)
+ bind _ <- TaskGroup.spawn(group: group,action: lambda() return () end lambda)
  bind continued <- Reference.new(false)
  bind winner <- Task.race([
  lambda()
  with reader = try File.openReader("Cargo.toml") do
  bind _ <- try File.readLine(reader)
- Reference.set(continued,true)
+ Reference.set(reference: continued,value: true)
  Clock.sleep(10)
  return Result.Ok(1)
  end with
@@ -741,9 +741,9 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Clock
 function main() -> Result[Unit,String] uses State,File.Read,Clock.Time,Console.Write
  with group = TaskGroup.open() do
- bind _ <- TaskGroup.spawn(group,lambda() Console.write("") end lambda)
- with reader = try File.openReader("Cargo.toml") |> Result.mapError(_,IOError.message) do
- bind _ <- TaskGroup.spawn(group,lambda() Console.write("") end lambda)
+ bind _ <- TaskGroup.spawn(group: group,action: lambda() Console.write("") end lambda)
+ with reader = try File.openReader("Cargo.toml") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do
+ bind _ <- TaskGroup.spawn(group: group,action: lambda() Console.write("") end lambda)
  bind winner <- Task.race([
  lambda()
  bind _ <- File.readLine(reader)
@@ -755,7 +755,7 @@ function main() -> Result[Unit,String] uses State,File.Read,Clock.Time,Console.W
  Clock.sleep(1)
  return 2
  end lambda])
- bind next <- TaskGroup.spawn(group,lambda() return File.readLine(reader) end lambda)
+ bind next <- TaskGroup.spawn(group: group,action: lambda() return File.readLine(reader) end lambda)
  bind line <- Task.await(next)
  Console.write("reused")
  return match line with
@@ -905,9 +905,9 @@ function marker(n: Integer) -> Unit
 end function
 function main() -> Result[Unit,String] uses State,Console.Write,Console.Read
  with group = TaskGroup.open() do
- bind _ <- TaskGroup.spawn(group,lambda() marker(COMPUTE) end lambda)
+ bind _ <- TaskGroup.spawn(group: group,action: lambda() marker(COMPUTE) end lambda)
  Console.write("Name: ")
- bind name <- try Console.readLine() |> Result.mapError(_,IOError.message)
+ bind name <- try Console.readLine() |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
  return if name = Option.Some("Ada") then Result.Ok(()) else Result.Error("unexpected input") end if
  end with
 end function
@@ -995,14 +995,14 @@ function main() -> Result[Unit,String] uses State,File.Read,Console.Write,Clock.
  lambda()
  with reader = try File.openReader("Cargo.toml") do
  bind _ <- try File.readLine(reader)
- Console.write(String.repeat("x",1048577))
+ Console.write(String.repeat(s: "x",n: 1048577))
  Console.write("capacity")
  return Result.Ok(())
  end with
  end lambda,
  lambda()
  Clock.sleep(10)
- Console.writeError(String.repeat("t",65537))
+ Console.writeError(String.repeat(s: "t",n: 65537))
  spin()
  return Result.Ok(())
  end lambda,

@@ -529,6 +529,87 @@ fn count_kinds(j: &Value, stats: &mut BTreeMap<String, usize>) {
         Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => {}
     }
 }
+
+// 旧生成器へ名前付きの型を混ぜず、網羅性 2 の型を再帰的に書き出す。
+fn named_ty_json(ty: &Ty) -> Value {
+    match ty {
+        Ty::Fn(f) => {
+            assert_eq!(
+                f.param_names
+                    .iter()
+                    .collect::<std::collections::BTreeSet<_>>()
+                    .len(),
+                f.params.len()
+            );
+            assert_eq!(f.param_names.len(), f.params.len());
+            assert_eq!(
+                f.param_names
+                    .iter()
+                    .collect::<std::collections::BTreeSet<_>>()
+                    .len(),
+                f.params.len()
+            );
+            assert!(f.effects.names.is_empty() && f.effects.vars.is_empty());
+            json!({"kind":"function","names":f.param_names,"params":f.params.iter().map(named_ty_json).collect::<Vec<_>>(),"ret":named_ty_json(&f.ret),"eff":[]})
+        }
+        Ty::Con(TyCon::Builtin(b), args) => {
+            json!({"kind":b.def().unwrap().name.to_lowercase(),"args":args.iter().map(named_ty_json).collect::<Vec<_>>()})
+        }
+        Ty::Con(TyCon::Adt(_), _)
+        | Ty::Con(TyCon::External(_), _)
+        | Ty::Param(_)
+        | Ty::App(_, _)
+        | Ty::Rigid { .. } => panic!("unsupported independent named coverage type"),
+    }
+}
+
+#[test]
+fn export_named_coverage() {
+    let checked = benitoite::pipeline::check_text("named-coverage.bnt", b"function keep(callback: function(value: Integer) -> Integer) -> function(value: Integer) -> Integer\n return callback\nend function", benitoite::pipeline::CheckOptions { require_main:false, deny_warnings:false });
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let p = checked.program.unwrap();
+    let callback = p
+        .types
+        .decl_types
+        .iter()
+        .find(|(id, _)| p.resolved.bindings.get(*id).unwrap().name == "keep")
+        .unwrap()
+        .1
+        .params[0]
+        .clone();
+    let mut budget = BudgetStats::default();
+    let table = AdtTable::default();
+    let mut cases = vec![];
+    for (name, ty) in [
+        ("function-contract", callback.clone()),
+        ("nested-function-contract", list(callback)),
+    ] {
+        let arms = vec![arm(Pat::Wild), arm(Pat::Wild)];
+        let binding = check_binding(&ty, &Pat::Wild, &table).unwrap();
+        cases.push(json!({"name":name,"decls":[],"ty":named_ty_json(&ty),"arms":arms.iter().map(|a| json!({"guarded":a.guarded,"alts":a.alts.iter().map(pat_json).collect::<Vec<_>>()})).collect::<Vec<_>>(),"pattern":pat_json(&Pat::Wild),"expected":result(&ty,&arms,&table,&mut budget),"irrefutable":binding.witness.is_none(),"irrefutableWitness":binding.witness}));
+    }
+    assert_eq!(budget.stopped, 0);
+    assert_eq!(cases[0]["ty"]["names"], json!(["value"]));
+    assert_eq!(cases[1]["ty"]["args"][0], cases[0]["ty"]);
+    assert_eq!(
+        cases[0]["expected"],
+        json!({"exhaustive":true,"uncovered":null,"unreachable":[{"arm":1,"alt":0,"coveredBy":[0]}]})
+    );
+    let repo = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../..")
+        .canonicalize()
+        .unwrap();
+    let dir = std::env::var_os("BENITOITE_COVERAGE_DIFF_DIR")
+        .map_or_else(|| repo.join("target/coverage-diff/named"), PathBuf::from);
+    fs::create_dir_all(&dir).unwrap();
+    let dir = dir.canonicalize().unwrap();
+    assert!(
+        dir.starts_with(&repo) && dir != repo,
+        "output directory must be inside the repository"
+    );
+    fs::write(dir.join("named-corpus.json"), serde_json::to_vec_pretty(&json!({"version":2,"seedXor":0,"randomCases":0,"boundaryCases":cases.len(),"kinds":{},"cases":cases})).unwrap()).unwrap();
+}
+
 #[test]
 #[ignore = "formal: scripts/check-formal.sh が走らせる"]
 fn export_coverage() {
@@ -589,11 +670,11 @@ fn export_coverage() {
         budget.stopped, 0,
         "coverage export must stay within the work budget"
     );
-    let corpus = json!({"budget":{"stopped":budget.stopped,"maxWork":budget.max_work},"version":1,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":boundary_count,"kinds":stats,"cases":cases});
+    let corpus = json!({"budget":{"stopped":budget.stopped,"maxWork":budget.max_work},"version":2,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":boundary_count,"kinds":stats,"cases":cases});
     let bytes = serde_json::to_vec(&corpus).unwrap();
     let roundtrip: Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(roundtrip, corpus, "JSON must preserve i64 boundaries");
-    fs::write(dir.join("corpus.json"), bytes).unwrap();
+    fs::write(dir.join("named-all-corpus.json"), bytes).unwrap();
     println!(
         "coverage export: {} cases ({} boundary, {} random), {:.3}s, budget stopped: {}, max work per check: {}",
         cases.len(),

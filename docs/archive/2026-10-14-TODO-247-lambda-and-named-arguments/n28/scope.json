@@ -1,0 +1,2930 @@
+[
+  {
+    "path": "crates/benitoite/testdata/acceptance/count_lines_missing.bnt",
+    "case": "crates/benitoite/testdata/acceptance/count_lines_missing",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/acceptance/effect_violation.bnt",
+    "case": "crates/benitoite/testdata/acceptance/effect_violation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/acceptance/nonexhaustive.bnt",
+    "case": "crates/benitoite/testdata/acceptance/nonexhaustive",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/acceptance/syntax_error.bnt",
+    "case": "crates/benitoite/testdata/acceptance/syntax_error",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/acceptance/type_error_check.bnt",
+    "case": "crates/benitoite/testdata/acceptance/type_error_check",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/acceptance/type_error_run.bnt",
+    "case": "crates/benitoite/testdata/acceptance/type_error_run",
+    "mode": "run",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/concurrency/c12-cancelled-await.bnt",
+    "case": "crates/benitoite/testdata/concurrency/c12-cancelled-await",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/concurrency/c12-cancelled-reader.bnt",
+    "case": "crates/benitoite/testdata/concurrency/c12-cancelled-reader",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/concurrency/c12-deadlock.bnt",
+    "case": "crates/benitoite/testdata/concurrency/c12-deadlock",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/concurrency/c12-group-released.bnt",
+    "case": "crates/benitoite/testdata/concurrency/c12-group-released",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/concurrency/inherited_operation_task_location.bnt",
+    "case": "crates/benitoite/testdata/concurrency/inherited_operation_task_location",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/concurrency/r41-inherited-non-tail.bnt",
+    "case": "crates/benitoite/testdata/concurrency/r41-inherited-non-tail",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/concurrency/r41-task-error.bnt",
+    "case": "crates/benitoite/testdata/concurrency/r41-task-error",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-handler-incomplete.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-handler-incomplete",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-high-impact-missing.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-high-impact-missing",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-lazy-effect.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-lazy-effect",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-lazy-return.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-lazy-return",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-nonoperation.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-nonoperation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-reference-equality.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-reference-equality",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-resume-outside.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-resume-outside",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-resume-type.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-resume-type",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-state-no-cascade.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-state-no-cascade",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-taskgroup-outside-with.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-taskgroup-outside-with",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-try-not-result.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-try-not-result",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-unhandled-main.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-unhandled-main",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/c11-with-not-resource.bnt",
+    "case": "crates/benitoite/testdata/effects/c11-with-not-resource",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/choose_io_violation.bnt",
+    "case": "crates/benitoite/testdata/effects/choose_io_violation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/effect_var_rigid.bnt",
+    "case": "crates/benitoite/testdata/effects/effect_var_rigid",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/lambda_uses_violation.bnt",
+    "case": "crates/benitoite/testdata/effects/lambda_uses_violation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/map_with_io_pure_violation.bnt",
+    "case": "crates/benitoite/testdata/effects/map_with_io_pure_violation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/outermost_only.bnt",
+    "case": "crates/benitoite/testdata/effects/outermost_only",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/pure_calls_io.bnt",
+    "case": "crates/benitoite/testdata/effects/pure_calls_io",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/r41-task-state-required.bnt",
+    "case": "crates/benitoite/testdata/effects/r41-task-state-required",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/c12-lazy-force-error.bnt",
+    "case": "crates/benitoite/testdata/eval/c12-lazy-force-error",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/call_stack_limit.bnt",
+    "case": "crates/benitoite/testdata/eval/call_stack_limit",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/div_by_zero_tail.bnt",
+    "case": "crates/benitoite/testdata/eval/div_by_zero_tail",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/div_by_zero_trace.bnt",
+    "case": "crates/benitoite/testdata/eval/div_by_zero_trace",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/int_overflow_abs.bnt",
+    "case": "crates/benitoite/testdata/eval/int_overflow_abs",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/int_overflow_add.bnt",
+    "case": "crates/benitoite/testdata/eval/int_overflow_add",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/int_overflow_div.bnt",
+    "case": "crates/benitoite/testdata/eval/int_overflow_div",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/int_overflow_floor_div.bnt",
+    "case": "crates/benitoite/testdata/eval/int_overflow_floor_div",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/int_overflow_mul.bnt",
+    "case": "crates/benitoite/testdata/eval/int_overflow_mul",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/int_overflow_neg.bnt",
+    "case": "crates/benitoite/testdata/eval/int_overflow_neg",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/int_overflow_sub.bnt",
+    "case": "crates/benitoite/testdata/eval/int_overflow_sub",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/named_failure.bnt",
+    "case": "crates/benitoite/testdata/eval/named_failure",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/r41-main-tail-error.bnt",
+    "case": "crates/benitoite/testdata/eval/r41-main-tail-error",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/trace_truncated.bnt",
+    "case": "crates/benitoite/testdata/eval/trace_truncated",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/value_too_large.bnt",
+    "case": "crates/benitoite/testdata/eval/value_too_large",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s16-add-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s16-add-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s16-divide-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s16-divide-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s16-divide-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s16-divide-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s16-modulo-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s16-modulo-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s16-multiply-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s16-multiply-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s16-negate-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s16-negate-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s16-subtract-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s16-subtract-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s32-add-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s32-add-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s32-divide-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s32-divide-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s32-divide-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s32-divide-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s32-modulo-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s32-modulo-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s32-multiply-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s32-multiply-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s32-negate-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s32-negate-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s32-subtract-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s32-subtract-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s8-add-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s8-add-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s8-divide-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s8-divide-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s8-divide-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s8-divide-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s8-modulo-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s8-modulo-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s8-multiply-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s8-multiply-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s8-negate-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s8-negate-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-signed-s8-subtract-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-signed-s8-subtract-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u16-add-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u16-add-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u16-divide-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u16-divide-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u16-modulo-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u16-modulo-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u16-multiply-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u16-multiply-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u16-subtract-underflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u16-subtract-underflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u32-add-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u32-add-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u32-divide-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u32-divide-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u32-modulo-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u32-modulo-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u32-multiply-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u32-multiply-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u32-subtract-underflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u32-subtract-underflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u64-add-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u64-add-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u64-divide-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u64-divide-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u64-modulo-zero.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u64-modulo-zero",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u64-multiply-overflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u64-multiply-overflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/eval/width-unsigned-u64-subtract-underflow.bnt",
+    "case": "crates/benitoite/testdata/eval/width-unsigned-u64-subtract-underflow",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/external/aliased-result/main.bnt",
+    "case": "crates/benitoite/testdata/external/aliased-result",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/external/argument-type/main.bnt",
+    "case": "crates/benitoite/testdata/external/argument-type",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/bad-character/main.bnt",
+    "case": "crates/benitoite/testdata/external/bad-character",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/external/bad-option/main.bnt",
+    "case": "crates/benitoite/testdata/external/bad-option",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/external/bad-pointer/main.bnt",
+    "case": "crates/benitoite/testdata/external/bad-pointer",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/external/bad-utf8/main.bnt",
+    "case": "crates/benitoite/testdata/external/bad-utf8",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/external/diagnostics/main.bnt",
+    "case": "crates/benitoite/testdata/external/diagnostics",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/imports/main.bnt",
+    "case": "crates/benitoite/testdata/external/imports",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/interface-diagnostics/main.bnt",
+    "case": "crates/benitoite/testdata/external/interface-diagnostics",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/large-table/main.bnt",
+    "case": "crates/benitoite/testdata/external/large-table",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/external/memory/main.bnt",
+    "case": "crates/benitoite/testdata/external/memory",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/external/missing/main.bnt",
+    "case": "crates/benitoite/testdata/external/missing",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/record-mismatch/main.bnt",
+    "case": "crates/benitoite/testdata/external/record-mismatch",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/resource-effect/main.bnt",
+    "case": "crates/benitoite/testdata/external/resource-effect",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/self-package-outside/Calc.bnt",
+    "case": "crates/benitoite/testdata/external/self-package-outside",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/self-package-outside/main.bnt",
+    "case": "crates/benitoite/testdata/external/self-package-outside",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+    "case": "crates/benitoite/testdata/external/self-package-outside",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/trap/main.bnt",
+    "case": "crates/benitoite/testdata/external/trap",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/external/unsupported-inner/main.bnt",
+    "case": "crates/benitoite/testdata/external/unsupported-inner",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/wit-generic-recursive.bnt",
+    "case": "crates/benitoite/testdata/external/wit-generic-recursive",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/external/wit-numbers-mismatch/main.bnt",
+    "case": "crates/benitoite/testdata/external/wit-numbers-mismatch",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/fmt/check_changed.bnt",
+    "case": "crates/benitoite/testdata/fmt/check_changed",
+    "mode": "fmt-check",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/fmt/syntax_error.bnt",
+    "case": "crates/benitoite/testdata/fmt/syntax_error",
+    "mode": "fmt",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/c12-discard-reader.bnt",
+    "case": "crates/benitoite/testdata/handlers/c12-discard-reader",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/c12-resume-twice.bnt",
+    "case": "crates/benitoite/testdata/handlers/c12-resume-twice",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/secf1-captured-local.bnt",
+    "case": "crates/benitoite/testdata/handlers/secf1-captured-local",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/secf1-closure.bnt",
+    "case": "crates/benitoite/testdata/handlers/secf1-closure",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/secf1-deferred-alias.bnt",
+    "case": "crates/benitoite/testdata/handlers/secf1-deferred-alias",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/secf1-early-return.bnt",
+    "case": "crates/benitoite/testdata/handlers/secf1-early-return",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/secf1-effect-confusion.bnt",
+    "case": "crates/benitoite/testdata/handlers/secf1-effect-confusion",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/secf1-nested-escape.bnt",
+    "case": "crates/benitoite/testdata/handlers/secf1-nested-escape",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/secf1-outer-type-param.bnt",
+    "case": "crates/benitoite/testdata/handlers/secf1-outer-type-param",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/secf1-result.bnt",
+    "case": "crates/benitoite/testdata/handlers/secf1-result",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/secf1-value-confusion.bnt",
+    "case": "crates/benitoite/testdata/handlers/secf1-value-confusion",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+    "case": "crates/benitoite/testdata/handlers/todo178-placeholder-resume-error",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/handlers/todo190-guard-resume.bnt",
+    "case": "crates/benitoite/testdata/handlers/todo190-guard-resume",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/io/c12-process-exit-flush.bnt",
+    "case": "crates/benitoite/testdata/io/c12-process-exit-flush",
+    "mode": "run",
+    "exit": 7
+  },
+  {
+    "path": "crates/benitoite/testdata/io/c12-with-reader-release.bnt",
+    "case": "crates/benitoite/testdata/io/c12-with-reader-release",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/io/c12-with-return-release.bnt",
+    "case": "crates/benitoite/testdata/io/c12-with-return-release",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/io/c12-with-try-release.bnt",
+    "case": "crates/benitoite/testdata/io/c12-with-try-release",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/io/main_err.bnt",
+    "case": "crates/benitoite/testdata/io/main_err",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/io/runtime_error_flushes.bnt",
+    "case": "crates/benitoite/testdata/io/runtime_error_flushes",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/bad_escape.bnt",
+    "case": "crates/benitoite/testdata/lexical/bad_escape",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/bidi_in_comment.bnt",
+    "case": "crates/benitoite/testdata/lexical/bidi_in_comment",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/bidi_in_string.bnt",
+    "case": "crates/benitoite/testdata/lexical/bidi_in_string",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/bom_at_start.bnt",
+    "case": "crates/benitoite/testdata/lexical/bom_at_start",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/bom_in_middle.bnt",
+    "case": "crates/benitoite/testdata/lexical/bom_in_middle",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/c11-decimal-exponent.bnt",
+    "case": "crates/benitoite/testdata/lexical/c11-decimal-exponent",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/c11-decimal-suffix.bnt",
+    "case": "crates/benitoite/testdata/lexical/c11-decimal-suffix",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/c11-multiline-indent.bnt",
+    "case": "crates/benitoite/testdata/lexical/c11-multiline-indent",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/c11-multiline-open.bnt",
+    "case": "crates/benitoite/testdata/lexical/c11-multiline-open",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/c11-shebang-position.bnt",
+    "case": "crates/benitoite/testdata/lexical/c11-shebang-position",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/control_in_literal.bnt",
+    "case": "crates/benitoite/testdata/lexical/control_in_literal",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/empty_char.bnt",
+    "case": "crates/benitoite/testdata/lexical/empty_char",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/float_malformed.bnt",
+    "case": "crates/benitoite/testdata/lexical/float_malformed",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/fullwidth_space.bnt",
+    "case": "crates/benitoite/testdata/lexical/fullwidth_space",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/int_malformed.bnt",
+    "case": "crates/benitoite/testdata/lexical/int_malformed",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/invalid_utf8.bnt",
+    "case": "crates/benitoite/testdata/lexical/invalid_utf8",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/lone_cr.bnt",
+    "case": "crates/benitoite/testdata/lexical/lone_cr",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/multi_char.bnt",
+    "case": "crates/benitoite/testdata/lexical/multi_char",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/nbsp_outside.bnt",
+    "case": "crates/benitoite/testdata/lexical/nbsp_outside",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/reserved_loop.bnt",
+    "case": "crates/benitoite/testdata/lexical/reserved_loop",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/reserved_other.bnt",
+    "case": "crates/benitoite/testdata/lexical/reserved_other",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/reserved_return.bnt",
+    "case": "crates/benitoite/testdata/lexical/reserved_return",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/semicolon.bnt",
+    "case": "crates/benitoite/testdata/lexical/semicolon",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/todo194-control-escape.bnt",
+    "case": "crates/benitoite/testdata/lexical/todo194-control-escape",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/unknown_symbol.bnt",
+    "case": "crates/benitoite/testdata/lexical/unknown_symbol",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/unterminated_char.bnt",
+    "case": "crates/benitoite/testdata/lexical/unterminated_char",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/unterminated_string.bnt",
+    "case": "crates/benitoite/testdata/lexical/unterminated_string",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/width-float-needs-point.bnt",
+    "case": "crates/benitoite/testdata/lexical/width-float-needs-point",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/lexical/width-invalid-suffix.bnt",
+    "case": "crates/benitoite/testdata/lexical/width-invalid-suffix",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-collision/A/Text.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-collision",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-collision/B/Text.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-collision",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-collision/main.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-collision",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-cycle/A.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-cycle",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-cycle/B.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-cycle",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-cycle/main.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-cycle",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-declaration-collision/Lib.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-declaration-collision",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-declaration-collision/main.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-declaration-collision",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-duplicate/Lib.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-duplicate",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-duplicate/main.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-duplicate",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-missing/main.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-missing",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-no-main/Other.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-no-main",
+    "mode": "run",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-not-reexported/A.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-not-reexported",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-not-reexported/B.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-not-reexported",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-not-reexported/main.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-not-reexported",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-orphan/Classes.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-orphan",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-orphan/Types.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-orphan",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-orphan/main.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-orphan",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-private/Lib.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-private",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-private/main.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-private",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/c11-public-contract.bnt",
+    "case": "crates/benitoite/testdata/modules/c11-public-contract",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/effect_alias_references.bnt",
+    "case": "crates/benitoite/testdata/modules/effect_alias_references",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/f20-similar-import.bnt",
+    "case": "crates/benitoite/testdata/modules/f20-similar-import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/f20-standard-import.bnt",
+    "case": "crates/benitoite/testdata/modules/f20-standard-import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/f20-unofficial-import.bnt",
+    "case": "crates/benitoite/testdata/modules/f20-unofficial-import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/import_last_segment.bnt",
+    "case": "crates/benitoite/testdata/modules/import_last_segment",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt",
+    "case": "crates/benitoite/testdata/modules/todo177-effect-module-alias",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/alias_member.bnt",
+    "case": "crates/benitoite/testdata/names/alias_member",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/aliased_string_length.bnt",
+    "case": "crates/benitoite/testdata/names/aliased_string_length",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/available_members.bnt",
+    "case": "crates/benitoite/testdata/names/available_members",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/c11-bind-visible.bnt",
+    "case": "crates/benitoite/testdata/names/c11-bind-visible",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/c11-lambda-hides.bnt",
+    "case": "crates/benitoite/testdata/names/c11-lambda-hides",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/c11-legacy-io.bnt",
+    "case": "crates/benitoite/testdata/names/c11-legacy-io",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/c11-missing-import.bnt",
+    "case": "crates/benitoite/testdata/names/c11-missing-import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/c11-mixed-pattern.bnt",
+    "case": "crates/benitoite/testdata/names/c11-mixed-pattern",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/c11-shadow-empty.bnt",
+    "case": "crates/benitoite/testdata/names/c11-shadow-empty",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/c11-shadow-new.bnt",
+    "case": "crates/benitoite/testdata/names/c11-shadow-new",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/duplicate_ctor.bnt",
+    "case": "crates/benitoite/testdata/names/duplicate_ctor",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/duplicate_fn.bnt",
+    "case": "crates/benitoite/testdata/names/duplicate_fn",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/duplicate_param.bnt",
+    "case": "crates/benitoite/testdata/names/duplicate_param",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/duplicate_pattern_var.bnt",
+    "case": "crates/benitoite/testdata/names/duplicate_pattern_var",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/duplicate_type.bnt",
+    "case": "crates/benitoite/testdata/names/duplicate_type",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/duplicate_type_param.bnt",
+    "case": "crates/benitoite/testdata/names/duplicate_type_param",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/effect_as_type.bnt",
+    "case": "crates/benitoite/testdata/names/effect_as_type",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/option_unwrap.bnt",
+    "case": "crates/benitoite/testdata/names/option_unwrap",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/prelude_only_hidden.bnt",
+    "case": "crates/benitoite/testdata/names/prelude_only_hidden",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/prelude_shadowed_member.bnt",
+    "case": "crates/benitoite/testdata/names/prelude_shadowed_member",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/qualified_missing_import.bnt",
+    "case": "crates/benitoite/testdata/names/qualified_missing_import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/qualified_some.bnt",
+    "case": "crates/benitoite/testdata/names/qualified_some",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/record-construction.bnt",
+    "case": "crates/benitoite/testdata/names/record-construction",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/renamed_member.bnt",
+    "case": "crates/benitoite/testdata/names/renamed_member",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/renamed_module.bnt",
+    "case": "crates/benitoite/testdata/names/renamed_module",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/string_length.bnt",
+    "case": "crates/benitoite/testdata/names/string_length",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/type_param_toplevel.bnt",
+    "case": "crates/benitoite/testdata/names/type_param_toplevel",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/unknown_member.bnt",
+    "case": "crates/benitoite/testdata/names/unknown_member",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/unknown_module.bnt",
+    "case": "crates/benitoite/testdata/names/unknown_module",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/unknown_name.bnt",
+    "case": "crates/benitoite/testdata/names/unknown_name",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/uses_not_effect_first.bnt",
+    "case": "crates/benitoite/testdata/names/uses_not_effect_first",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/uses_not_effect_later.bnt",
+    "case": "crates/benitoite/testdata/names/uses_not_effect_later",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/names/wrong_kind.bnt",
+    "case": "crates/benitoite/testdata/names/wrong_kind",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/network/respond-twice.bnt",
+    "case": "crates/benitoite/testdata/network/respond-twice",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/network/status-above-range.bnt",
+    "case": "crates/benitoite/testdata/network/status-above-range",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/network/status-below-range.bnt",
+    "case": "crates/benitoite/testdata/network/status-below-range",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/network/status-informational.bnt",
+    "case": "crates/benitoite/testdata/network/status-informational",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/alias-only/deps/textkit/Slug.bnt",
+    "case": "crates/benitoite/testdata/packages/alias-only",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/alias-only",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/alias-only/main.bnt",
+    "case": "crates/benitoite/testdata/packages/alias-only",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/config-declaration/main.bnt",
+    "case": "crates/benitoite/testdata/packages/config-declaration",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/config-declaration/package.bnt",
+    "case": "crates/benitoite/testdata/packages/config-declaration",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-collision/Textkit/Slug.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-collision",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-collision/deps/textkit/Slug.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-collision",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-collision",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-collision/main.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-collision",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-config-declaration",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-config-declaration/main.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-config-declaration",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-missing/main.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-missing",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-no-block",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-no-block/main.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-no-block",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-no-config/deps/textkit/Slug.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-no-config",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-no-config/main.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-no-config",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-import/Helper.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-root-import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/Helper.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-root-import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/Slug.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-root-import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-root-import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-import/main.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-root-import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-overlap/Slug.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-root-overlap",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-overlap/main.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-root-overlap",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-root-overlap",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-settings/deps/future/package.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-settings",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-settings/deps/nolanguage/package.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-settings",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-settings",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-settings/main.bnt",
+    "case": "crates/benitoite/testdata/packages/dependency-settings",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/hash-mismatch/main.bnt",
+    "case": "crates/benitoite/testdata/packages/hash-mismatch",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/header-overlap",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header-overlap/main.bnt",
+    "case": "crates/benitoite/testdata/packages/header-overlap",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header-overlap/package.bnt",
+    "case": "crates/benitoite/testdata/packages/header-overlap",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/imported-header/Helper.bnt",
+    "case": "crates/benitoite/testdata/packages/imported-header",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/imported-header",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/imported-header/main.bnt",
+    "case": "crates/benitoite/testdata/packages/imported-header",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/newer-config/main.bnt",
+    "case": "crates/benitoite/testdata/packages/newer-config",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/newer-config/package.bnt",
+    "case": "crates/benitoite/testdata/packages/newer-config",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/newer-language/main.bnt",
+    "case": "crates/benitoite/testdata/packages/newer-language",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/package-dependencies",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-dependencies/main.bnt",
+    "case": "crates/benitoite/testdata/packages/package-dependencies",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-dependencies/package.bnt",
+    "case": "crates/benitoite/testdata/packages/package-dependencies",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-error/deps/textkit/Slug.bnt",
+    "case": "crates/benitoite/testdata/packages/package-error",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/package-error",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-error/main.bnt",
+    "case": "crates/benitoite/testdata/packages/package-error",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+    "case": "crates/benitoite/testdata/packages/package-header",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/package-header",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-header/main.bnt",
+    "case": "crates/benitoite/testdata/packages/package-header",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-in-entry/main.bnt",
+    "case": "crates/benitoite/testdata/packages/package-in-entry",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/RootOnly.bnt",
+    "case": "crates/benitoite/testdata/packages/package-isolation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/deps/other/Module.bnt",
+    "case": "crates/benitoite/testdata/packages/package-isolation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt",
+    "case": "crates/benitoite/testdata/packages/package-isolation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/deps/textkit/Other.bnt",
+    "case": "crates/benitoite/testdata/packages/package-isolation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/deps/textkit/Slug.bnt",
+    "case": "crates/benitoite/testdata/packages/package-isolation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/package-isolation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/main.bnt",
+    "case": "crates/benitoite/testdata/packages/package-isolation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-language-required/main.bnt",
+    "case": "crates/benitoite/testdata/packages/package-language-required",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-language-required/package.bnt",
+    "case": "crates/benitoite/testdata/packages/package-language-required",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-private-name/deps/textkit/Slug.bnt",
+    "case": "crates/benitoite/testdata/packages/package-private-name",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/package-private-name",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-private-name/main.bnt",
+    "case": "crates/benitoite/testdata/packages/package-private-name",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/Internal.bnt",
+    "case": "crates/benitoite/testdata/packages/package-visibility-hidden",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt",
+    "case": "crates/benitoite/testdata/packages/package-visibility-hidden",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-visibility-hidden/main.bnt",
+    "case": "crates/benitoite/testdata/packages/package-visibility-hidden",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/c11-alternative-variables.bnt",
+    "case": "crates/benitoite/testdata/patterns/c11-alternative-variables",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/c11-constant-name.bnt",
+    "case": "crates/benitoite/testdata/patterns/c11-constant-name",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/c11-empty-range.bnt",
+    "case": "crates/benitoite/testdata/patterns/c11-empty-range",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/c11-guard-effect.bnt",
+    "case": "crates/benitoite/testdata/patterns/c11-guard-effect",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/c11-refutable-bind.bnt",
+    "case": "crates/benitoite/testdata/patterns/c11-refutable-bind",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/f20-alternative-empty.bnt",
+    "case": "crates/benitoite/testdata/patterns/f20-alternative-empty",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/match_on_error_type.bnt",
+    "case": "crates/benitoite/testdata/patterns/match_on_error_type",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/nonexhaustive_adt.bnt",
+    "case": "crates/benitoite/testdata/patterns/nonexhaustive_adt",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/nonexhaustive_literals.bnt",
+    "case": "crates/benitoite/testdata/patterns/nonexhaustive_literals",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/nonexhaustive_option.bnt",
+    "case": "crates/benitoite/testdata/patterns/nonexhaustive_option",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/pattern_arity.bnt",
+    "case": "crates/benitoite/testdata/patterns/pattern_arity",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/todo178-guarded-alternative-duplicate.bnt",
+    "case": "crates/benitoite/testdata/patterns/todo178-guarded-alternative-duplicate",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/todo195-coverage-budget.bnt",
+    "case": "crates/benitoite/testdata/patterns/todo195-coverage-budget",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/todo195-decision-tree-budget.bnt",
+    "case": "crates/benitoite/testdata/patterns/todo195-decision-tree-budget",
+    "mode": "run",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/unreachable_after_wild.bnt",
+    "case": "crates/benitoite/testdata/patterns/unreachable_after_wild",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/patterns/unreachable_covering_many.bnt",
+    "case": "crates/benitoite/testdata/patterns/unreachable_covering_many",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/runner/check-error.bnt",
+    "case": "crates/benitoite/testdata/runner/check-error",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/runner/run-error.bnt",
+    "case": "crates/benitoite/testdata/runner/run-error",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/runner/run-stopped.bnt",
+    "case": "crates/benitoite/testdata/runner/run-stopped",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/runner/usage-error.bnt",
+    "case": "crates/benitoite/testdata/runner/usage-error",
+    "mode": "run",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/runner/warning-denied.bnt",
+    "case": "crates/benitoite/testdata/runner/warning-denied",
+    "mode": "run",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/stdlib/bytes_l03_no_show.bnt",
+    "case": "crates/benitoite/testdata/stdlib/bytes_l03_no_show",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/stdlib/l40-csv-invalid-delimiter.bnt",
+    "case": "crates/benitoite/testdata/stdlib/l40-csv-invalid-delimiter",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/stdlib/l40-import-bytes.bnt",
+    "case": "crates/benitoite/testdata/stdlib/l40-import-bytes",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/stdlib/l40-import-json.bnt",
+    "case": "crates/benitoite/testdata/stdlib/l40-import-json",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/stdlib/l40-path-invalid-extension.bnt",
+    "case": "crates/benitoite/testdata/stdlib/l40-path-invalid-extension",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/stdlib/l40-time-invalid-offset.bnt",
+    "case": "crates/benitoite/testdata/stdlib/l40-time-invalid-offset",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/stdlib/width-bits-s8-invalid.bnt",
+    "case": "crates/benitoite/testdata/stdlib/width-bits-s8-invalid",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/stdlib/width-bits-u64-invalid.bnt",
+    "case": "crates/benitoite/testdata/stdlib/width-bits-u64-invalid",
+    "mode": "run",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/brace_next_line.bnt",
+    "case": "crates/benitoite/testdata/syntax/brace_next_line",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-alias-bar.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-alias-bar",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-alias-elm.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-alias-elm",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-alias-kotlin.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-alias-kotlin",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-alternatives-bar.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-alternatives-bar",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-attribute-fsharp.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-attribute-fsharp",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-attribute-interpolation.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-attribute-interpolation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-attribute-repeat.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-attribute-repeat",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-attribute-rust.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-attribute-rust",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-attribute-unknown.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-attribute-unknown",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-attribute-upper.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-attribute-upper",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-braces.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-braces",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-break.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-break",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-builtin-supertrait.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-builtin-supertrait",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-case-of.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-case-of",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-constraint-ordered.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-constraint-ordered",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-data-type.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-data-type",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-default.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-default",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-deprecated-empty.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-deprecated-empty",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-docs-attribute.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-docs-attribute",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-docs-foreign.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-docs-foreign",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-docs-haskell.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-docs-haskell",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-docs-module-position.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-docs-module-position",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-docs-ocaml.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-docs-ocaml",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-docs-unattached.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-docs-unattached",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-end-kind.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-end-kind",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-fat-arrow.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-fat-arrow",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-guard-when.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-guard-when",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-guard-where.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-guard-where",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-implement-no-trait.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-implement-no-trait",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-import-from.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-import-from",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-import-path.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-import-path",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-lambda-colon.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-lambda-colon",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-let.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-let",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-match-newline.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-match-newline",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-missing-case.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-missing-case",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-range-dots.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-range-dots",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-range-exclusive.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-range-exclusive",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-range-inclusive.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-range-inclusive",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-record-pattern-empty.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-record-pattern-empty",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-record-update-empty.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-record-update-empty",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-return-colon.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-return-colon",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-spread-js.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-spread-js",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-spread-python.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-spread-python",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-spread-two.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-spread-two",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-switch.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-switch",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-trait-public.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-trait-public",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-try-catch.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-try-catch",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-tuple-pair.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-tuple-pair",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-tuple-record.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-tuple-record",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-tuple-triple.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-tuple-triple",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-when-arm.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-when-arm",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/c11-with-handler.bnt",
+    "case": "crates/benitoite/testdata/syntax/c11-with-handler",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/call-type-arguments.bnt",
+    "case": "crates/benitoite/testdata/syntax/call-type-arguments",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/chained_comparison.bnt",
+    "case": "crates/benitoite/testdata/syntax/chained_comparison",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/ctor_decl_parens.bnt",
+    "case": "crates/benitoite/testdata/syntax/ctor_decl_parens",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/dot_after_value.bnt",
+    "case": "crates/benitoite/testdata/syntax/dot_after_value",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/f20-fn-declaration-recovery.bnt",
+    "case": "crates/benitoite/testdata/syntax/f20-fn-declaration-recovery",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/f20-fn-declaration.bnt",
+    "case": "crates/benitoite/testdata/syntax/f20-fn-declaration",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/f20-fn-lambda.bnt",
+    "case": "crates/benitoite/testdata/syntax/f20-fn-lambda",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/lambda_underscore_param.bnt",
+    "case": "crates/benitoite/testdata/syntax/lambda_underscore_param",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/placeholder_misplaced.bnt",
+    "case": "crates/benitoite/testdata/syntax/placeholder_misplaced",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/qualified_fn_decl.bnt",
+    "case": "crates/benitoite/testdata/syntax/qualified_fn_decl",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/recovery_many.bnt",
+    "case": "crates/benitoite/testdata/syntax/recovery_many",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/too_deep.bnt",
+    "case": "crates/benitoite/testdata/syntax/too_deep",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/unexpected_token.bnt",
+    "case": "crates/benitoite/testdata/syntax/unexpected_token",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/uses_then_bracket.bnt",
+    "case": "crates/benitoite/testdata/syntax/uses_then_bracket",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/test/assert_equal.bnt",
+    "case": "crates/benitoite/testdata/test/assert_equal",
+    "mode": "test",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/test/assert_fail.bnt",
+    "case": "crates/benitoite/testdata/test/assert_fail",
+    "mode": "test",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/test/assert_is_true.bnt",
+    "case": "crates/benitoite/testdata/test/assert_is_true",
+    "mode": "test",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/test/assert_not_equal.bnt",
+    "case": "crates/benitoite/testdata/test/assert_not_equal",
+    "mode": "test",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/test/captured_output.bnt",
+    "case": "crates/benitoite/testdata/test/captured_output",
+    "mode": "test",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/test/check_error/a_broken.bnt",
+    "case": "crates/benitoite/testdata/test/check_error",
+    "mode": "test",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/test/check_error/b_good.bnt",
+    "case": "crates/benitoite/testdata/test/check_error",
+    "mode": "test",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/test/deny_warnings.bnt",
+    "case": "crates/benitoite/testdata/test/deny_warnings",
+    "mode": "test",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/test/exit.bnt",
+    "case": "crates/benitoite/testdata/test/exit",
+    "mode": "test",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/test/result_error.bnt",
+    "case": "crates/benitoite/testdata/test/result_error",
+    "mode": "test",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/test/runtime_error.bnt",
+    "case": "crates/benitoite/testdata/test/runtime_error",
+    "mode": "test",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/test/task_assert.bnt",
+    "case": "crates/benitoite/testdata/test/task_assert",
+    "mode": "test",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/test/values.bnt",
+    "case": "crates/benitoite/testdata/test/values",
+    "mode": "test",
+    "exit": 1
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-builtin-constraint.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-builtin-constraint",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-builtin-propagation.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-builtin-propagation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-constraint-missing.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-constraint-missing",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-hk-arity.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-hk-arity",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-key-float.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-key-float",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-key-strength.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-key-strength",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-method-missing.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-method-missing",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-method-no-cascade.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-method-no-cascade",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-method-no-parameter.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-method-no-parameter",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-method-typo.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-method-typo",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-no-instance.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-no-instance",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-overlap.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-overlap",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-supertrait-cycle.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-supertrait-cycle",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-supertrait-missing.bnt",
+    "case": "crates/benitoite/testdata/traits/c11-supertrait-missing",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-alias-impl-target.bnt",
+    "case": "crates/benitoite/testdata/traits/todo178-alias-impl-target",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-e0711-parameter-names.bnt",
+    "case": "crates/benitoite/testdata/traits/todo178-e0711-parameter-names",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-impl-target-cascade.bnt",
+    "case": "crates/benitoite/testdata/traits/todo178-impl-target-cascade",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-impl-target-independent.bnt",
+    "case": "crates/benitoite/testdata/traits/todo178-impl-target-independent",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-orphan-standard.bnt",
+    "case": "crates/benitoite/testdata/traits/todo178-orphan-standard",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo195-dictionary-budget.bnt",
+    "case": "crates/benitoite/testdata/traits/todo195-dictionary-budget",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/width-trait-alias-duplicate.bnt",
+    "case": "crates/benitoite/testdata/traits/width-trait-alias-duplicate",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/arity.bnt",
+    "case": "crates/benitoite/testdata/types/arity",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-alias-cycle.bnt",
+    "case": "crates/benitoite/testdata/types/c11-alias-cycle",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-alias-not-module.bnt",
+    "case": "crates/benitoite/testdata/types/c11-alias-not-module",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-alias-unused.bnt",
+    "case": "crates/benitoite/testdata/types/c11-alias-unused",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-byte-arithmetic.bnt",
+    "case": "crates/benitoite/testdata/types/c11-byte-arithmetic",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-byte-no-conversion.bnt",
+    "case": "crates/benitoite/testdata/types/c11-byte-no-conversion",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-constant-call.bnt",
+    "case": "crates/benitoite/testdata/types/c11-constant-call",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-constant-cycle.bnt",
+    "case": "crates/benitoite/testdata/types/c11-constant-cycle",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-constant-duplicate.bnt",
+    "case": "crates/benitoite/testdata/types/c11-constant-duplicate",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-constant-fails.bnt",
+    "case": "crates/benitoite/testdata/types/c11-constant-fails",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-constant-runtime.bnt",
+    "case": "crates/benitoite/testdata/types/c11-constant-runtime",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-decimal-div.bnt",
+    "case": "crates/benitoite/testdata/types/c11-decimal-div",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-decimal-range.bnt",
+    "case": "crates/benitoite/testdata/types/c11-decimal-range",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-decimal-scale.bnt",
+    "case": "crates/benitoite/testdata/types/c11-decimal-scale",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-record-duplicate.bnt",
+    "case": "crates/benitoite/testdata/types/c11-record-duplicate",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-record-missing.bnt",
+    "case": "crates/benitoite/testdata/types/c11-record-missing",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/c11-record-update-type.bnt",
+    "case": "crates/benitoite/testdata/types/c11-record-update-type",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/condition_not_bool.bnt",
+    "case": "crates/benitoite/testdata/types/condition_not_bool",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/discarded_value.bnt",
+    "case": "crates/benitoite/testdata/types/discarded_value",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/duplicate_in_uses.bnt",
+    "case": "crates/benitoite/testdata/types/duplicate_in_uses",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/effect_var_unused.bnt",
+    "case": "crates/benitoite/testdata/types/effect_var_unused",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/equality_function.bnt",
+    "case": "crates/benitoite/testdata/types/equality_function",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/equality_ioerror.bnt",
+    "case": "crates/benitoite/testdata/types/equality_ioerror",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/equality_summary.bnt",
+    "case": "crates/benitoite/testdata/types/equality_summary",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/errors_across_functions.bnt",
+    "case": "crates/benitoite/testdata/types/errors_across_functions",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/f20-interpolation-no-import.bnt",
+    "case": "crates/benitoite/testdata/types/f20-interpolation-no-import",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/f20-interpolation-no-show.bnt",
+    "case": "crates/benitoite/testdata/types/f20-interpolation-no-show",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/f20-interpolation-show-alias.bnt",
+    "case": "crates/benitoite/testdata/types/f20-interpolation-show-alias",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/f20-interpolation-show.bnt",
+    "case": "crates/benitoite/testdata/types/f20-interpolation-show",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/f20-record-unknown-field.bnt",
+    "case": "crates/benitoite/testdata/types/f20-record-unknown-field",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/final-expression-reassign.bnt",
+    "case": "crates/benitoite/testdata/types/final-expression-reassign",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/final-expression-return.bnt",
+    "case": "crates/benitoite/testdata/types/final-expression-return",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/float_literal_help.bnt",
+    "case": "crates/benitoite/testdata/types/float_literal_help",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/float_literal_range.bnt",
+    "case": "crates/benitoite/testdata/types/float_literal_range",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/if_without_else_not_unit.bnt",
+    "case": "crates/benitoite/testdata/types/if_without_else_not_unit",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/independent_errors.bnt",
+    "case": "crates/benitoite/testdata/types/independent_errors",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/infinite_type.bnt",
+    "case": "crates/benitoite/testdata/types/infinite_type",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/int_literal_range.bnt",
+    "case": "crates/benitoite/testdata/types/int_literal_range",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/main_signature_effect.bnt",
+    "case": "crates/benitoite/testdata/types/main_signature_effect",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/main_signature_int.bnt",
+    "case": "crates/benitoite/testdata/types/main_signature_int",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/main_signature_params.bnt",
+    "case": "crates/benitoite/testdata/types/main_signature_params",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/main_signature_result.bnt",
+    "case": "crates/benitoite/testdata/types/main_signature_result",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/main_signature_type_params.bnt",
+    "case": "crates/benitoite/testdata/types/main_signature_type_params",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/mismatch_call_arg.bnt",
+    "case": "crates/benitoite/testdata/types/mismatch_call_arg",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/mismatch_call_arg_undetermined.bnt",
+    "case": "crates/benitoite/testdata/types/mismatch_call_arg_undetermined",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/mismatch_if_branches.bnt",
+    "case": "crates/benitoite/testdata/types/mismatch_if_branches",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/mismatch_let_annotation.bnt",
+    "case": "crates/benitoite/testdata/types/mismatch_let_annotation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/missing_main.bnt",
+    "case": "crates/benitoite/testdata/types/missing_main",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/no_cascade.bnt",
+    "case": "crates/benitoite/testdata/types/no_cascade",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/no_let_polymorphism.bnt",
+    "case": "crates/benitoite/testdata/types/no_let_polymorphism",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/not_a_function.bnt",
+    "case": "crates/benitoite/testdata/types/not_a_function",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/nullary_ctor_parens.bnt",
+    "case": "crates/benitoite/testdata/types/nullary_ctor_parens",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/operator_on_type_param.bnt",
+    "case": "crates/benitoite/testdata/types/operator_on_type_param",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/operator_set.bnt",
+    "case": "crates/benitoite/testdata/types/operator_set",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/prelude_shadowed_type.bnt",
+    "case": "crates/benitoite/testdata/types/prelude_shadowed_type",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/rem_operands.bnt",
+    "case": "crates/benitoite/testdata/types/rem_operands",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/returned-binding-mismatch.bnt",
+    "case": "crates/benitoite/testdata/types/returned-binding-mismatch",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/string_plus_int.bnt",
+    "case": "crates/benitoite/testdata/types/string_plus_int",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-alias-after.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-alias-after",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-alias-annotation.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-alias-annotation",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-alias-before.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-alias-before",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-alias-independent.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-alias-independent",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-const-budget.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-const-budget",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-e0439-handle-body.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-e0439-handle-body",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-e0439-handle-clause.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-e0439-handle-clause",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-e0439-once.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-e0439-once",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-e0439-try-match.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-e0439-try-match",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-placeholder-return-error.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-placeholder-return-error",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/todo178-placeholder-try-error.bnt",
+    "case": "crates/benitoite/testdata/types/todo178-placeholder-try-error",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/too_many_effect_vars.bnt",
+    "case": "crates/benitoite/testdata/types/too_many_effect_vars",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/type_arg_count.bnt",
+    "case": "crates/benitoite/testdata/types/type_arg_count",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/type_no_ctors.bnt",
+    "case": "crates/benitoite/testdata/types/type_no_ctors",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/undetermined.bnt",
+    "case": "crates/benitoite/testdata/types/undetermined",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/types/width-constant-arithmetic.bnt",
+    "case": "crates/benitoite/testdata/types/width-constant-arithmetic",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/warnings/c11-check-denied.bnt",
+    "case": "crates/benitoite/testdata/warnings/c11-check-denied",
+    "mode": "check",
+    "exit": 2
+  },
+  {
+    "path": "crates/benitoite/testdata/warnings/c11-mixed-count.bnt",
+    "case": "crates/benitoite/testdata/warnings/c11-mixed-count",
+    "mode": "check",
+    "exit": 2
+  }
+]

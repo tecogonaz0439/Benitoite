@@ -12,9 +12,9 @@ mutual
     | .const _, _ => trivial
     | .fnRef _ _ _, h => h
     | .prim _ _ _, h => h
-    | .lam ps body, h => by
+    | .lam names ps body, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
-        exact ⟨h.1, Comp.VarsIn.renameScoped _ body h.2⟩
+        exact ⟨h.1, h.2.1, Comp.VarsIn.renameScoped _ body h.2.2⟩
     | .con _ _ args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
         exact ⟨h.1, Val.VarsInList.renameScoped ξ args h.2⟩

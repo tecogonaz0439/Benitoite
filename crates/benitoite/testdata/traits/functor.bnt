@@ -1,15 +1,26 @@
 // spec: 01-06 高カインド型（初回リリース版）
 import Benitoite.Trait
 trait Functor[F[_]]
-  function map[A, B, effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+  function map[A, B, effect E](x: F[A], f: function(value: A) -> B uses E) -> F[B] uses E
 end trait
 implement Functor[Option]
-  function map[A, B, effect E](x: Option[A], f: function(A) -> B uses E) -> Option[B] uses E
-    return Option.map(x, f)
+  function map[A, B, effect E](x: Option[A], f: function(value: A) -> B uses E) -> Option[B] uses E
+    return Option.map(o: x, f: f)
+  end function
+end implement
+data Box[A]
+  Box(A)
+end data
+implement Trait.Functor[Box]
+  function map[A, B, effect E](x: Box[A], f: function(value: A) -> B uses E) -> Box[B] uses E
+    return match x with
+    case Box.Box(value) -> Box.Box(f(value))
+    end match
   end function
 end implement
 function main() -> Unit
-  bind _ <- Functor.map(Option.Some(1), Integer.toString)
-  bind _ <- Trait.Functor.map(Option.Some(2), Integer.toString)
-  bind _ <- Trait.Functor.map([3], Integer.toString)
+  bind _ <- Functor.map(x: Option.Some(1), f: lambda(value) return Integer.toString(value) end lambda)
+  bind _ <- Trait.Functor.map(x: Option.Some(2), f: lambda(value) return Integer.toString(value) end lambda)
+  bind _ <- Trait.Functor.map(x: [3], f: lambda(value) return Integer.toString(value) end lambda)
+  bind _ <- Trait.Functor.map(x: Box.Box(4), f: lambda(value) return Integer.toString(value) end lambda)
 end function

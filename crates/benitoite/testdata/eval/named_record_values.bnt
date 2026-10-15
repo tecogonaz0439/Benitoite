@@ -1,0 +1,16 @@
+// spec: 01-02 部分適用のプレースホルダ
+import Benitoite.Unofficial.IO.Console
+record Point
+ left: Integer
+ right: Integer
+end record
+function factory() -> function(left: Integer, right: Integer) -> Point
+ return Point
+end function
+function main() -> Unit uses Console.Write
+ bind ctor <- factory()
+ bind action <- ctor(right: _, left: 1)
+ bind point <- action(right: 2)
+ Console.writeLine(text: Integer.toString(n: Point.left(value: point)))
+ Console.writeLine(text: Integer.toString(n: Point.right(value: point)))
+end function

@@ -14,7 +14,7 @@ function main() -> Unit uses State
   with
     case store(x) ->
       bind prev <- Reference.get(cell)
-      Reference.set(cell, Option.Some(x))
+      Reference.set(reference: cell, value: Option.Some(x))
       match prev with
         case Option.Some(p) -> resume(p)
         case Option.None -> resume(x)

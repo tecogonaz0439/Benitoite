@@ -53,6 +53,7 @@ pub(super) fn basic(id: B) -> Ty {
 }
 pub(super) fn scheme(params: Vec<Ty>, ret: Ty) -> Scheme {
     Scheme {
+        param_names: crate::base::parameter_names::positional_names(params.len()),
         type_params: vec![],
         effect_params: vec![],
         class_constraints: vec![],
@@ -343,6 +344,7 @@ impl Decls<'_> {
                 }
                 let (effects, _) = self.uses(f.uses.as_ref(), scope);
                 Ty::Fn(Box::new(FnTy {
+                    param_names: f.param_names.iter().map(|n| n.text.clone()).collect(),
                     params,
                     ret,
                     effects,
@@ -508,6 +510,7 @@ impl Decls<'_> {
             return s;
         }
         s.params.clear();
+        s.param_names.clear();
         // 個々の引数が上限以内でも、関数型として合わせると超えることがある。
         // 具体化で大きな関数型を作る前に、宣言の段で合計を制限する（02-03）。
         for p in &f.params {
@@ -516,6 +519,7 @@ impl Decls<'_> {
                 return s;
             }
             s.params.push(ty);
+            s.param_names.push(p.name.text.clone());
         }
         s.ret = self.ty(&f.ret, &scope);
         if !self.type_child(&mut budget, &s.ret, f.ret.span()) {
@@ -804,6 +808,8 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                                 fields.push(ty);
                             }
                             let mut ctor = s.clone();
+                            ctor.param_names =
+                                crate::base::parameter_names::positional_names(fields.len());
                             ctor.params = fields.clone();
                             ctor.ret = ret.clone();
                             d.out.decl_types.insert(id, ctor);
@@ -849,6 +855,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                                 return;
                             }
                             let mut access = s.clone();
+                            access.param_names = vec![crate::base::parameter_names::VALUE.into()];
                             access.params = vec![ret.clone()];
                             access.ret = ty.clone();
                             d.out.decl_types.insert(id, access);
@@ -859,6 +866,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                             tys.push(ty);
                         }
                     }
+                    s.param_names = fields.iter().map(|f| f.name.clone()).collect();
                     s.params = tys.clone();
                     s.ret = ret;
                     d.out.decl_types.insert(binding, s);

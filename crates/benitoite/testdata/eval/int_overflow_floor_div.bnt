@@ -2,5 +2,5 @@
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  return Console.writeLine(Integer.toString(Integer.floorDivide(-9223372036854775808, -1)))
+  return Console.writeLine(Integer.toString(Integer.floorDivide(a: -9223372036854775808, b: -1)))
 end function

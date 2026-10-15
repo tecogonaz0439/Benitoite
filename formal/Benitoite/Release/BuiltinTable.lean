@@ -55,7 +55,7 @@ mutual
             let s := if key then d.key else d.eq
             if s.always then ⟨true, []⟩
             else summarizeArgs S key (some s.dependsOn) 0 ts
-    | .fn _ _ _ | .opaque _ | .reference _ | .lazy _ | .tapp _ _
+    | .fn _ _ _ _ | .opaque _ | .reference _ | .lazy _ | .tapp _ _
       | .cont _ _ _ | .dict _ _ | .ctor _ => ⟨!key, []⟩
 
   /-- 番号を数えながら依存する型引数を辿る。none は全引数を選ぶ。
@@ -110,7 +110,7 @@ mutual
             s.eq.dependsOn.all (· < ts.length) && satArgs S C false s.eq.dependsOn 0 ts &&
             (!key || (!s.key.always && s.key.dependsOn.all (· < ts.length) &&
               satArgs S C true s.key.dependsOn 0 ts))
-    | .fn _ _ _ | .opaque _ | .reference _ | .lazy _ | .cont _ _ _
+    | .fn _ _ _ _ | .opaque _ | .reference _ | .lazy _ | .cont _ _ _
       | .dict _ _ | .ctor _ | .tapp _ _ => false
 
   /-- 欠けた依存の位置は呼び出し元で拒否し、ここでは要素に直接再帰する。 -/
@@ -188,15 +188,15 @@ private def sampleS : SummaryTable := dataSummaries sampleDecls
 
 example : satB [] [] (.base .integer) eqC = true ∧
     satB [] [] (.base .string) eqC = true ∧
-    satB [] [] (.fn [] (.base .unit) Eff.empty) eqC = false := by decide
-example : satB [] [] (.fn [] (.base .unit) Eff.empty) ⟨false, false⟩ = true ∧
+    satB [] [] (.fn [] [] (.base .unit) Eff.empty) eqC = false := by decide
+example : satB [] [] (.fn [] [] (.base .unit) Eff.empty) ⟨false, false⟩ = true ∧
     satB [] [] (.tvar 10) ⟨false, false⟩ = true := by decide
 example : satB [] [] (.base .float) eqC = true ∧
     satB [] [] (.base .float) keyC = false ∧
     satB [] [] (.list (.base .integer)) keyC = true := by decide
 example : satB [] [] (.map (.base .string) (.base .float)) eqC = true ∧
     satB [] [] (.map (.base .string) (.base .float)) keyC = false ∧
-    satB [] [] (.map (.fn [] (.base .unit) Eff.empty) (.base .integer)) eqC = false := by decide
+    satB [] [] (.map (.fn [] [] (.base .unit) Eff.empty) (.base .integer)) eqC = false := by decide
 example : satB [] [keyC, eqC, ⟨false, false⟩] (.tvar 0) eqC = true ∧
     satB [] [keyC, eqC] (.tvar 0) keyC = true ∧
     satB [] [keyC, eqC] (.tvar 1) eqC = true ∧
@@ -229,7 +229,7 @@ example : dataSummaries [
      ⟨"I", 0, ⟨true, []⟩, ⟨false, []⟩⟩] := by decide
 -- 関数などの中の Float と型パラメータは、要約の依存や鍵の条件に加えない。
 example : dataSummaries [⟨"Hidden", 1, [[
-    .fn [.tvar 0] (.base .float) Eff.empty, .reference (.base .float),
+    .fn ["value"] [.tvar 0] (.base .float) Eff.empty, .reference (.base .float),
     .lazy (.tvar 0), .tapp 0 [.base .float]]]⟩] =
     [⟨"Hidden", 1, ⟨true, []⟩, ⟨false, []⟩⟩] := by decide
 example : [Ty.opaque "IOError", .reference (.base .integer), .lazy (.base .integer),

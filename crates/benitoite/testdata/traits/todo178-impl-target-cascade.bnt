@@ -2,12 +2,12 @@
 trait Score[T]
   function score(x: T) -> Integer
 end trait
-implement Score[function(Integer) -> Integer]
-  function score(x: function(Integer) -> Integer) -> Integer
+implement Score[function(value: Integer) -> Integer]
+  function score(x: function(value: Integer) -> Integer) -> Integer
     return 0
   end function
 end implement
-function use(f: function(Integer) -> Integer) -> Unit
+function use(f: function(value: Integer) -> Integer) -> Unit
   bind _ <- Score.score(f)
   bind _ <- Score.score(f)
   bind _ <- Score.score(f)

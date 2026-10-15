@@ -12,6 +12,11 @@ import Benitoite.Release.Syntax
 
 namespace Benitoite.Release
 
+/-- 型を変換しても引数の個数と契約名の一意性は変わらない。 -/
+theorem NamesWF.map {names : List String} {ps : List Ty} (h : NamesWF names ps)
+    (f : Ty → Ty) : NamesWF names (ps.map f) := by
+  simpa only [NamesWF, List.length_map] using h
+
 mutual
   def Pat.binders : Pat → Nat
     | .wild => 0
@@ -61,7 +66,7 @@ def Ty.shift (k c : Nat) : Ty → Ty
   | .opaque o => .opaque o
   | .data d args => .data d (args.map (Ty.shift k c))
   | .list a => .list (Ty.shift k c a)
-  | .fn params ret eff => .fn (params.map (Ty.shift k c)) (Ty.shift k c ret) eff
+  | .fn names params ret eff => .fn names (params.map (Ty.shift k c)) (Ty.shift k c ret) eff
   | .tvar i => if i < c then .tvar i else .tvar (i + k)
   | .reference a => .reference (Ty.shift k c a)
   | .lazy a => .lazy (Ty.shift k c a)
@@ -78,8 +83,8 @@ def Ty.substAt (c : Nat) (ts : List Ty) (es : List Eff) : Ty → Ty
   | .opaque o => .opaque o
   | .data d args => .data d (args.map (Ty.substAt c ts es))
   | .list a => .list (Ty.substAt c ts es a)
-  | .fn params ret eff =>
-      .fn (params.map (Ty.substAt c ts es)) (Ty.substAt c ts es ret) (Eff.substRho es eff)
+  | .fn names params ret eff =>
+      .fn names (params.map (Ty.substAt c ts es)) (Ty.substAt c ts es ret) (Eff.substRho es eff)
   | .tvar i =>
       if i < c then .tvar i
       else if i - c < ts.length then ((ts[i - c]?).getD (.tvar i)).shift c 0
@@ -107,7 +112,7 @@ mutual
     | .const k => .const k
     | .fnRef f tys effs => .fnRef f (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substRho es))
     | .prim b tys effs => .prim b (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substRho es))
-    | .lam params body => .lam (params.map (Ty.substAt c ts es)) (Comp.substTyAt c ts es body)
+    | .lam names params body => .lam names (params.map (Ty.substAt c ts es)) (Comp.substTyAt c ts es body)
     | .con k tys args => .con k (tys.map (Ty.substAt c ts es)) (Val.substTyAtList c ts es args)
     | .list elems => .list (Val.substTyAtList c ts es elems)
     | .op o tys => .op o (tys.map (Ty.substAt c ts es))
@@ -166,7 +171,7 @@ mutual
     | .const c => .const c
     | .fnRef f tys effs => .fnRef f tys effs
     | .prim b tys effs => .prim b tys effs
-    | .lam params body => .lam params (Comp.rename (upRen params.length ξ) body)
+    | .lam names params body => .lam names params (Comp.rename (upRen params.length ξ) body)
     | .con c tys args => .con c tys (Val.renameList ξ args)
     | .list elems => .list (Val.renameList ξ elems)
     | .op o tys => .op o tys
@@ -216,7 +221,7 @@ mutual
     | .const c => .const c
     | .fnRef f tys effs => .fnRef f tys effs
     | .prim b tys effs => .prim b tys effs
-    | .lam params body => .lam params (Comp.subst (upSubst params.length σ) body)
+    | .lam names params body => .lam names params (Comp.subst (upSubst params.length σ) body)
     | .con c tys args => .con c tys (Val.substList σ args)
     | .list elems => .list (Val.substList σ elems)
     | .op o tys => .op o tys
@@ -267,7 +272,7 @@ def Comp.instantiate (ws : List Val) (m : Comp) : Comp :=
 def Val.instantiate (ws : List Val) (v : Val) : Val :=
   Val.subst (instSubst ws) v
 
-/-! ## パターンの照合と分岐の選択（C7 で範囲・リスト・選択肢を加えた） -/
+/-! ## パターンの照合と分岐の選択 -/
 
 /-- 範囲は Integer または Character の両端を含む。ほかの組合せは照合しない。 -/
 def Const.inRange : Const → Const → Const → Bool

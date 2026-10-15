@@ -1,10 +1,11 @@
-import Benitoite.Release.Lemmas.EffectSound
+import Benitoite.Release.Lemmas.Progress
 
 /-!
-# 遷移を計算する関数の健全性（段階 B）
+# 遷移を計算する関数の健全性（契約名を持つコア）
 
 `step` が返す遷移は `Step` の遷移である。IO の応答と解放の応答は、起こりうる応答があるときに `oracle` と
 `rel` が選ぶ応答であり、応答があることは状態の型付けから分かる。
+契約名を含む型付きの状態を対象にする（設計書 01-12「確かめる性質」）。
 -/
 
 namespace Benitoite.Release
@@ -178,8 +179,8 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
               obtain ⟨v', hv', rfl, rfl⟩ := h
               exact .E_Super hv'
       | app f ws =>
-          obtain ⟨_, _, _, hf, _⟩ := hm.inv_app rfl
-          rcases hf.canonical_fn with ⟨ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rfl⟩ | ⟨o, ts, rfl⟩
+          obtain ⟨_, _, _, _, hf, _⟩ := hm.inv_app rfl
+          rcases hf.canonical_fn with ⟨names, ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rfl⟩ | ⟨o, ts, rfl⟩
           · simp only [step] at h
             split at h
             · rename_i e; simp only [Option.some.injEq, Prod.mk.injEq] at h

@@ -3,34 +3,35 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function field(row: Map[String, String], name: String) -> Result[Integer, String]
-  return match Option.andThen(Map.get(row, name), Integer.parse) with
+  return match Option.andThen(o: Map.get(m: row, k: name), f: lambda(value) return Integer.parse(value) end lambda) with
     case Option.Some(n) -> Result.Ok(n)
     case Option.None -> Result.Error("a row has no number in ${name}")
   end match
 end function
 
 function addRow(totals: Map[String, Pair[Integer, Integer]], row: Map[String, String]) -> Result[Map[String, Pair[Integer, Integer]], String]
-  bind region <- try Option.okOr(Map.get(row, "region"), "a row has no region")
-  bind quantity <- try field(row, "quantity")
-  bind price <- try field(row, "unit_price")
-  bind current <- Map.get(totals, region) |> Option.unwrapOr(_, Pair(0, 0))
-  return Result.Ok(Map.set(totals, region, Pair(Pair.first(current) + 1, Pair.second(current) + quantity * price)))
+  bind region <- try Option.okOr(o: Map.get(m: row, k: "region"), error: "a row has no region")
+  bind quantity <- try field(row: row, name: "quantity")
+  bind price <- try field(row: row, name: "unit_price")
+  bind current <- Map.get(m: totals, k: region) |> Option.unwrapOr(o: _, fallback: Pair(0, 0))
+  return Result.Ok(Map.set(m: totals, k: region, value: Pair(Pair.first(current) + 1, Pair.second(current) + quantity * price)))
 end function
 
 function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
-  bind text <- try File.readText("sales.csv") |> Result.mapError(_, IOError.message)
-  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(_, Csv.ParseError.message)
-  bind totals <- try List.fold(rows, Result.Ok(Map.empty()), lambda(acc, row)
-    return Result.andThen(acc, lambda(m) return addRow(m, row) end lambda)
+  bind text <- try File.readText("sales.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda)
+  bind totals <- try List.fold(xs: rows, initial: Result.Ok(Map.empty()), f: lambda(acc, value)
+    bind current <- try acc
+    return addRow(totals: current, row: value)
   end lambda)
   bind entries <- Map.toList(totals)
-  bind table <- List.map(entries, lambda(entry)
-    return [Pair.first(entry), Integer.toString(Pair.first(Pair.second(entry))), Integer.toString(Pair.second(Pair.second(entry)))]
+  bind table <- List.map(xs: entries, f: lambda(value)
+    return [Pair.first(value), Integer.toString(Pair.first(Pair.second(value))), Integer.toString(Pair.second(Pair.second(value)))]
   end lambda)
-  bind _ <- try File.writeText("summary.csv", Csv.format(List.prepend(table, ["region", "orders", "revenue"]))) |> Result.mapError(_, IOError.message)
-  List.forEach(entries, lambda(entry)
-    Console.writeLine("${Pair.first(entry)}: ${Pair.first(Pair.second(entry))} orders, revenue ${Pair.second(Pair.second(entry))}")
+  bind _ <- try File.writeText(path: "summary.csv", text: Csv.format(List.prepend(xs: table, x: ["region", "orders", "revenue"]))) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  List.forEach(xs: entries, f: lambda(value)
+    Console.writeLine("${Pair.first(value)}: ${Pair.first(Pair.second(value))} orders, revenue ${Pair.second(Pair.second(value))}")
   end lambda)
-  Console.writeLine("total revenue: ${List.fold(entries, 0, lambda(sum, entry) return sum + Pair.second(Pair.second(entry)) end lambda)}")
+  Console.writeLine("total revenue: ${List.fold(xs: entries, initial: 0, f: lambda(acc, value) return acc + Pair.second(Pair.second(value)) end lambda)}")
   return Result.Ok(())
 end function

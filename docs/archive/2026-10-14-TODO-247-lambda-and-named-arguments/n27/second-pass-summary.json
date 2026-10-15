@@ -1,0 +1,588 @@
+{
+  "inputs": 355,
+  "typed": 319,
+  "candidates": 562,
+  "edits": 0,
+  "diff_bytes": 0,
+  "held": 363,
+  "hold_reasons": {
+    "public_contract": 18,
+    "pipe_requires_review": 173,
+    "callee_contract_unresolved": 165,
+    "component_not_determined": 3,
+    "arity_mismatch": 10,
+    "annotation_contract_unresolved": 5,
+    "constructor_holes_require_review": 1,
+    "input_not_typed_successfully": 30,
+    "conflicting_expectations": 2,
+    "nested_or_unresolved_contract": 2
+  },
+  "input_notes": [
+    {
+      "path": "crates/benitoite/testdata/external/self-package/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/external/self-package/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/blank_lines.bnt",
+      "diagnostics": [
+        {
+          "code": "E0321",
+          "error": true,
+          "message": "`Benitoite.IO.Console` is not a standard library module"
+        },
+        {
+          "code": "E0321",
+          "error": true,
+          "message": "`Benitoite.IO.File` is not a standard library module"
+        },
+        {
+          "code": "E0321",
+          "error": true,
+          "message": "`Benitoite.Text` is not a standard library module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/blank_lines_comments.bnt",
+      "diagnostics": [
+        {
+          "code": "E0301",
+          "error": true,
+          "message": "cannot find `Bool` in this scope"
+        },
+        {
+          "code": "E0301",
+          "error": true,
+          "message": "cannot find `Bool` in this scope"
+        },
+        {
+          "code": "E0332",
+          "error": true,
+          "message": "the module `File` is not imported"
+        },
+        {
+          "code": "E0301",
+          "error": true,
+          "message": "cannot find `f` in this scope"
+        },
+        {
+          "code": "E0302",
+          "error": true,
+          "message": "cannot find `Ask`"
+        },
+        {
+          "code": "E0302",
+          "error": true,
+          "message": "cannot find `Ask`"
+        },
+        {
+          "code": "E0332",
+          "error": true,
+          "message": "the module `File` is not imported"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/check_canonical.bnt",
+      "diagnostics": [
+        {
+          "code": "E0321",
+          "error": true,
+          "message": "`Benitoite.IO.Console` is not a standard library module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/comments.bnt",
+      "diagnostics": [
+        {
+          "code": "E0321",
+          "error": true,
+          "message": "`Benitoite.IO.Console` is not a standard library module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/directory/main.bnt",
+      "diagnostics": [
+        {
+          "code": "E0332",
+          "error": true,
+          "message": "the module `Console` is not imported"
+        },
+        {
+          "code": "E0332",
+          "error": true,
+          "message": "the module `Console` is not imported"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/example.bnt",
+      "diagnostics": [
+        {
+          "code": "E0321",
+          "error": true,
+          "message": "`Benitoite.IO.Console` is not a standard library module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/header.bnt",
+      "diagnostics": [
+        {
+          "code": "E0910",
+          "error": true,
+          "message": "a `package` block can be written only in `package.bnt`"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/indent.bnt",
+      "diagnostics": [
+        {
+          "code": "E0321",
+          "error": true,
+          "message": "`Benitoite.IO.Console` is not a standard library module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/line_ends.bnt",
+      "diagnostics": [
+        {
+          "code": "E0321",
+          "error": true,
+          "message": "`Benitoite.IO.Console` is not a standard library module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/multiline_string.bnt",
+      "diagnostics": [
+        {
+          "code": "E0321",
+          "error": true,
+          "message": "`Benitoite.IO.Console` is not a standard library module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/spaces.bnt",
+      "diagnostics": [
+        {
+          "code": "E0321",
+          "error": true,
+          "message": "`Benitoite.IO.Console` is not a standard library module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/fmt/width-literals.bnt",
+      "diagnostics": [
+        {
+          "code": "E0401",
+          "error": true,
+          "message": "mismatched types"
+        },
+        {
+          "code": "E0401",
+          "error": true,
+          "message": "mismatched types"
+        },
+        {
+          "code": "E0401",
+          "error": true,
+          "message": "mismatched types"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/modules/c11-directory-public/Lib/Use.bnt",
+      "diagnostics": [
+        {
+          "code": "E0318",
+          "error": true,
+          "message": "cannot find module `Lib.Data`"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/config-textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/config-textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/hash-match/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/hash-match/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header/deps/textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/header/deps/textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-as-root/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/package-as-root/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-config/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/root-config/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt",
+      "diagnostics": [
+        {
+          "code": "E0913",
+          "error": true,
+          "message": "`crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt` is a settings file and cannot be checked, run, or tested"
+        },
+        {
+          "code": null,
+          "error": true,
+          "message": "resolver requires a prelude module"
+        }
+      ],
+      "reason": "整形だけを検査する入力・settings ファイル・補助モジュールは単独の型検査の成功を求めず、所有する golden ケースで観測結果を検査。"
+    }
+  ]
+}

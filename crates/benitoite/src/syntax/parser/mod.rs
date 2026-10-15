@@ -166,6 +166,7 @@ pub(super) struct Parser<'a> {
     pub(super) blocks: Vec<OpenBlock>,
     pub(super) reported_symbols: BTreeSet<usize>,
     pub(super) ctx: Context,
+    pub(super) lambda_bounds: super::lambda_bounds::Bounds,
     docs: items::DocStore<'a>,
 }
 
@@ -178,7 +179,8 @@ impl<'a> Parser<'a> {
         comments: &'a [Comment],
         ids: IdGen,
     ) -> Self {
-        let end = tokens.last().map_or(BytePos(0), |t| t.span.end);
+        let end = BytePos(u32::try_from(text.len()).unwrap_or(u32::MAX));
+        let end_line = physical_line(text, end);
         let eof = Token {
             kind: TokenKind::Eof,
             span: Span {
@@ -186,12 +188,16 @@ impl<'a> Parser<'a> {
                 start: end,
                 end,
             },
+            start_line: end_line,
+            end_line,
             value: TokenValue::None,
         };
         if tokens.last().is_none_or(|t| t.kind != TokenKind::Eof) {
             tokens.push(eof.clone());
         }
+        let lambda_bounds = super::lambda_bounds::Bounds::new(&tokens);
         Self {
+            lambda_bounds,
             file,
             kind,
             text,
@@ -420,13 +426,58 @@ impl<'a> Parser<'a> {
             self.suppressed = true;
             return Fail;
         }
-        let diagnostic = DiagBuilder::new(DiagCode::E0201)
+        let mut diagnostic = DiagBuilder::new(DiagCode::E0201)
             .arg("expected", expected)
             .arg("found", text::describe(token))
-            .primary(token.span)
-            .build();
-        self.report(diagnostic);
+            .primary(token.span);
+        if self.same_line_lambda_before_end() {
+            diagnostic = diagnostic.help("lambda_line");
+        }
+        self.report(diagnostic.build());
         Fail
+    }
+
+    // 本体が終わり得る字句の後の旧終端に限って移行を案内する。
+    // 演算子のオペランド不足などは終端の移行では直らない
+    // （設計書 01-02「ラムダ」）。
+    #[cold]
+    #[inline(never)]
+    fn same_line_lambda_before_end(&self) -> bool {
+        self.at(TokenKind::KwEnd)
+            && self.peek_nth_kind(1) == TokenKind::KwLambda
+            && self
+                .lambda_bounds
+                .short_body_ends_at(self.peek().span.start)
+            && self
+                .tokens
+                .get(..self.pos)
+                .unwrap_or_default()
+                .iter()
+                .rev()
+                .find(|t| t.kind != TokenKind::Newline)
+                .is_some_and(|t| {
+                    matches!(
+                        t.kind,
+                        TokenKind::LowerIdent
+                            | TokenKind::UpperIdent
+                            | TokenKind::IntLit
+                            | TokenKind::FloatLit
+                            | TokenKind::DecimalLit
+                            | TokenKind::StringLit
+                            | TokenKind::CharLit
+                            | TokenKind::KwTrue
+                            | TokenKind::KwFalse
+                            | TokenKind::RParen
+                            | TokenKind::RBracket
+                            | TokenKind::StrEnd
+                            | TokenKind::KwLambda
+                            | TokenKind::KwIf
+                            | TokenKind::KwMatch
+                            | TokenKind::KwHandle
+                            | TokenKind::KwWith
+                            | TokenKind::KwLazy
+                    )
+                })
     }
 
     // ---------------- 入れ子の深さ ----------------
@@ -492,6 +543,20 @@ impl<'a> Parser<'a> {
                 .is_none_or(|t| t.kind == TokenKind::Newline),
         }
     }
+}
+
+/// EOF と回復用の字句にも、ソースの物理行を付ける（設計書 02-03「字句」）。
+fn physical_line(text: &[u8], pos: BytePos) -> u32 {
+    let end = usize::try_from(pos.0).unwrap_or(usize::MAX).min(text.len());
+    u32::try_from(
+        text.get(..end)
+            .unwrap_or_default()
+            .iter()
+            .filter(|byte| **byte == b'\n')
+            .count(),
+    )
+    .unwrap_or(u32::MAX)
+    .saturating_add(1)
 }
 
 /// 丸括弧・角括弧の中のコンマ区切りの並び（01-02 の `CommaList`）の読み方。
@@ -833,6 +898,7 @@ impl Parser<'_> {
                 );
                 return at;
             }
+            let lambda_line = self.same_line_lambda_before_end();
             self.bump();
             let last = if !self.at(TokenKind::Eof) {
                 self.advance().span
@@ -840,24 +906,25 @@ impl Parser<'_> {
                 self.empty_span()
             };
             let expected = text::keyword(kind).unwrap_or_default();
-            self.report(
-                DiagBuilder::new(DiagCode::E0213)
-                    .arg(
-                        "found",
-                        text::keyword(found).unwrap_or_else(|| text::token_name(found)),
-                    )
-                    .arg("expected", expected)
-                    .primary(at.to(last))
-                    .secondary(opened.span, "opened")
-                    .help_edits(
-                        "replace",
-                        vec![crate::diag::Edit {
-                            span: last,
-                            replacement: expected.to_owned(),
-                        }],
-                    )
-                    .build(),
-            );
+            let mut diagnostic = DiagBuilder::new(DiagCode::E0213)
+                .arg(
+                    "found",
+                    text::keyword(found).unwrap_or_else(|| text::token_name(found)),
+                )
+                .arg("expected", expected)
+                .primary(at.to(last))
+                .secondary(opened.span, "opened")
+                .help_edits(
+                    "replace",
+                    vec![crate::diag::Edit {
+                        span: last,
+                        replacement: expected.to_owned(),
+                    }],
+                );
+            if lambda_line {
+                diagnostic = diagnostic.help("lambda_line");
+            }
+            self.report(diagnostic.build());
             return last;
         }
         self.report(
@@ -928,6 +995,401 @@ mod tests {
         };
         e
     }
+
+    #[test]
+    fn lambda_endings_preserve_explicit_spans_and_recovery() {
+        for (statement, ending_text) in [
+            ("lambda(x) return x end lambda", "end lambda"),
+            ("lambda(x)\r\nreturn x\r\nend lambda", "end lambda"),
+            (
+                "lambda(x: Integer) -> Integer uses Console.Write return x end \t lambda",
+                "end \t lambda",
+            ),
+            (
+                "lambda(x)\nreturn lambda(y) return y end lambda\nend lambda",
+                "end lambda",
+            ),
+        ] {
+            let source = body(statement);
+            let out = user(&source);
+            assert_eq!(out.diagnostics, [], "{source}");
+            let Expr::Lambda(lambda) = expr(&out) else {
+                panic!()
+            };
+            let start = BytePos(u32::try_from(source.rfind(ending_text).unwrap()).unwrap());
+            assert_eq!(
+                lambda.ending,
+                LambdaEnding::Explicit {
+                    end_span: Span {
+                        file: FileId(0),
+                        start,
+                        end: lambda.span.end
+                    }
+                }
+            );
+            assert_eq!(
+                &source[usize::try_from(start.0).unwrap()
+                    ..usize::try_from(lambda.span.end.0).unwrap()],
+                ending_text
+            );
+            let Stmt::Expr(Expr::Return(ret)) = &lambda.body.stmts[0] else {
+                panic!()
+            };
+            if let Expr::Lambda(inner) = ret.value.as_ref() {
+                let start = position(&source, "end lambda").unwrap();
+                assert_eq!(
+                    inner.ending,
+                    LambdaEnding::Explicit {
+                        end_span: Span {
+                            file: FileId(0),
+                            start,
+                            end: inner.span.end
+                        }
+                    }
+                );
+                let Stmt::Expr(Expr::Return(ret)) = &inner.body.stmts[0] else {
+                    panic!()
+                };
+                assert_eq!(shape(&ret.value), "y");
+            } else {
+                assert_eq!(shape(&ret.value), "x");
+            }
+        }
+        let source = body("lambda x: x + 1");
+        let out = user(&source);
+        assert_eq!(codes(&out), [DiagCode::E0243]);
+        let Expr::Lambda(lambda) = expr(&out) else {
+            panic!()
+        };
+        assert_eq!(
+            lambda.ending,
+            LambdaEnding::Explicit {
+                end_span: Span {
+                    file: FileId(0),
+                    start: lambda.body.span.end,
+                    end: lambda.body.span.end
+                }
+            }
+        );
+        let Stmt::Expr(Expr::Return(ret)) = &lambda.body.stmts[0] else {
+            panic!()
+        };
+        assert_eq!(shape(&ret.value), "(Add x 1)");
+    }
+
+    #[test]
+    fn short_lambdas_preserve_boundaries_and_explicit_endings() {
+        for source in [
+            "lambda(x) return x + 1",
+            "lambda(x) return g(x, 2)",
+            "lambda(x) return [x, 2]",
+            "lambda(x) return x + 1 |> increment",
+            "lambda(x) return if x then 1 else 2 end if",
+            "lambda(x) return match x with case n if (lambda() return if true then true else false end if end lambda)() -> n end match",
+            "lambda() return handle () with case op() -> resume(()) end handle",
+            "lambda() with r = open() do () end with",
+            "lambda() return lazy () end lazy",
+            "lambda(x) return match x with case other -> other end match",
+            "lambda(x) return (lambda(y) return x + y)",
+            "lambda(x) return (lambda(y) return x + y end lambda)",
+            "lambda(x) bind y <- x",
+            "lambda() ()",
+            "lambda() -> (function(value: Integer, xs: List[Integer]) -> Unit uses Console.Write) ()",
+            "lambda() -> Unit uses Console.Write, File.Read ()",
+            "lambda(x) return \"${g(x, 2)}\"",
+        ] {
+            let out = user(&body(source));
+            assert!(
+                out.diagnostics.is_empty(),
+                "{source}: {:?}",
+                out.diagnostics
+            );
+            let Expr::Lambda(lam) = expr(&out) else {
+                panic!("{source}");
+            };
+            assert_eq!(lam.body.stmts.len(), 1, "{source}");
+            assert_eq!(
+                lam.ending,
+                LambdaEnding::Omitted {
+                    body_end: lam.body.span.end
+                }
+            );
+            assert_eq!(lam.span.end, lam.body.span.end);
+            assert_eq!(
+                lam.span.end,
+                BytePos(
+                    position(&body(source), source).unwrap().0
+                        + u32::try_from(source.len()).unwrap()
+                )
+            );
+        }
+        for (source, count) in [
+            ("bind f <- lambda(x) return x // tail\nreturn f(1)", 2),
+            ("bind f <- lambda(x) return x\r\nreturn f(1)", 2),
+            ("bind f <- lambda(x) return g(x, 2)\n()", 2),
+            ("f(lambda(x) return g(x, 2), 3)", 1),
+            (
+                "f(lambda(x) return x,\n lambda(y)\n return y\n end lambda)",
+                1,
+            ),
+            ("[lambda(x) return x, lambda(y) return y]", 1),
+            (
+                "handle lambda(x) return x with case op() -> resume(()) end handle",
+                1,
+            ),
+            (
+                "match x with case a -> lambda(y) return y\ncase b -> ()\nend match",
+                1,
+            ),
+            ("if true then lambda(x) return x else () end if", 1),
+            ("with r = lambda() return x do () end with", 1),
+            ("if lambda() return x then () end if", 1),
+            (
+                "match x with case a -> lambda(y) return y\ncase b if ready -> lambda(z) return z\nend match",
+                1,
+            ),
+            (
+                "lambda()\n return match x with case a -> lambda(y) return y\ncase b if ready -> lambda(z) return z\nend match\nend lambda",
+                1,
+            ),
+            ("(lambda(x) return x)(3)", 1),
+            (
+                "lambda(y)\n bind f <- lambda(x) return x + 1\n return f(y)\nend lambda",
+                1,
+            ),
+            ("lambda(x)\n bind f <- lambda(y) return y\nend lambda", 1),
+            ("lambda(x) return (lambda(y) return y) end lambda", 1),
+            ("lambda()\n return lambda() () end lambda\nend lambda", 1),
+        ] {
+            let out = user(&body(source));
+            assert!(
+                out.diagnostics.is_empty(),
+                "{source}: {:?}",
+                out.diagnostics
+            );
+            assert_eq!(
+                function(&out).body.as_ref().unwrap().stmts.len(),
+                count,
+                "{source}"
+            );
+        }
+        for source in [
+            "lambda(x) return x end lambda",
+            "lambda(x,\n y) return x + y end lambda",
+            "lambda(x)\nreturn x\nend lambda",
+            "lambda(x)\nreturn x // tail\n end lambda",
+        ] {
+            let out = user(&body(source));
+            assert!(
+                out.diagnostics.is_empty(),
+                "{source}: {:?}",
+                out.diagnostics
+            );
+            assert!(
+                matches!(expr(&out), Expr::Lambda(lam) if matches!(lam.ending, LambdaEnding::Explicit { .. }))
+            );
+        }
+    }
+
+    #[test]
+    fn short_lambdas_leave_outer_endings_independent_of_spacing() {
+        for gap in ["\n", "\r\n", "\n\n\n", " // tail\n", "\n // comment\n"] {
+            let source = body(&format!(
+                "lambda(y)\n bind f <- lambda(x) return x + 1{gap}end lambda"
+            ));
+            let out = user(&source);
+            assert_eq!(out.diagnostics, [], "{source}");
+            let Expr::Lambda(outer) = expr(&out) else {
+                panic!()
+            };
+            assert!(matches!(outer.ending, LambdaEnding::Explicit { .. }));
+            assert_eq!(outer.body.stmts.len(), 1);
+            let Stmt::Bind(binding) = &outer.body.stmts[0] else {
+                panic!()
+            };
+            let Expr::Lambda(inner) = &binding.value else {
+                panic!()
+            };
+            assert!(matches!(inner.ending, LambdaEnding::Omitted { .. }));
+            assert_eq!(inner.body.stmts.len(), 1);
+            let Stmt::Expr(Expr::Return(ret)) = &inner.body.stmts[0] else {
+                panic!()
+            };
+            assert_eq!(shape(&ret.value), "(Add x 1)");
+        }
+    }
+
+    #[test]
+    fn two_line_inline_lambda_endings_explain_the_migration() {
+        for (source, code) in [
+            ("lambda(x) return x\nend lambda", DiagCode::E0213),
+            ("lambda(x) return x // tail\r\nend lambda", DiagCode::E0213),
+            ("lambda(x) return x\n\nend lambda", DiagCode::E0213),
+            ("accept(lambda(x) return x\nend lambda)", DiagCode::E0201),
+        ] {
+            let out = user(&body(source));
+            let d = &out.diagnostics[0];
+            assert_eq!(d.code, Some(code), "{source}: {:?}", out.diagnostics);
+            let help = d.helps.last().unwrap();
+            assert_eq!(
+                help.message,
+                "put `end lambda` on the same physical line as the body, or start the body on the line after the lambda header"
+            );
+            assert!(help.edits.is_empty());
+        }
+        for source in [
+            "lambda(x)\nreturn x\nend lambda",
+            "lambda(x) return x end lambda",
+        ] {
+            assert_eq!(user(&body(source)).diagnostics, []);
+        }
+    }
+
+    #[test]
+    fn incomplete_short_lambda_bodies_do_not_suggest_moving_the_outer_end() {
+        for (tail, code) in [
+            ("x +", DiagCode::E0201),
+            ("x *", DiagCode::E0201),
+            ("x and", DiagCode::E0201),
+            ("x |>", DiagCode::E0201),
+            ("not", DiagCode::E0201),
+            ("g.", DiagCode::E0203),
+            ("g(", DiagCode::E0201),
+        ] {
+            let source = body(&format!(
+                "lambda()\n bind f <- lambda(x) return {tail}\nend lambda"
+            ));
+            let out = user(&source);
+            assert_eq!(out.diagnostics[0].code, Some(code), "{source}");
+            assert!(
+                out.diagnostics.iter().flat_map(|d| &d.helps).all(|help| {
+                    help.message != "put `end lambda` on the same physical line as the body, or start the body on the line after the lambda header"
+                }),
+                "{source}: {:?}",
+                out.diagnostics
+            );
+        }
+    }
+
+    #[test]
+    fn short_lambda_diagnostics_keep_syntax_errors_and_outer_recovery() {
+        for (source, expected) in [
+            ("lambda(x) return x +\n 1", vec![DiagCode::E0254]),
+            ("lambda(x) return x\n + 1", vec![DiagCode::E0254]),
+            ("f(lambda(x) return x\n + 1, 2)", vec![DiagCode::E0254]),
+            ("lambda(x\n) return x", vec![DiagCode::E0254]),
+            ("lambda(x) ->\n Integer return x", vec![DiagCode::E0254]),
+            (
+                "lambda() return \"\"\"\ntext\n\"\"\"",
+                vec![DiagCode::E0254],
+            ),
+            (
+                "lambda(x) return if x then\n 1\nelse\n 2\nend if",
+                vec![DiagCode::E0254],
+            ),
+            (
+                "lambda() return \"\"\"\n\"\"\" end lambda",
+                vec![DiagCode::E0254, DiagCode::E0213, DiagCode::E0201],
+            ),
+            ("lambda(x) return x return x", vec![DiagCode::E0201]),
+            ("lambda(x) return x; return x", vec![DiagCode::E0106]),
+            (
+                "lambda(x) return match x with case a -> a case b -> b end match",
+                vec![DiagCode::E0201],
+            ),
+            (
+                "lambda(x) return x\n\nend lambda",
+                vec![DiagCode::E0213, DiagCode::E0201],
+            ),
+            (
+                "lambda(x) // header comment\nreturn x",
+                vec![DiagCode::E0214],
+            ),
+            ("lambda(x) return g(x, 2", vec![DiagCode::E0201]),
+            ("lambda(x) -> 1 return x", vec![DiagCode::E0201]),
+            (
+                "lambda() -> Unit uses Console.Write, List[Integer]\n () end lambda",
+                vec![DiagCode::E0209],
+            ),
+            ("lambda(x) return lambda(y) return y", vec![DiagCode::E0256]),
+            (
+                "lambda(x) return lambda(y) return y end lambda",
+                vec![DiagCode::E0256],
+            ),
+            (
+                "lambda(x)\n return lambda(y) return y\n ()\nend lambda",
+                vec![DiagCode::E0256],
+            ),
+            (
+                "lambda(x) return x\nend lambda",
+                vec![DiagCode::E0213, DiagCode::E0201],
+            ),
+        ] {
+            let out = user(&body(source));
+            assert_eq!(codes(&out), expected, "{source}: {:?}", out.diagnostics);
+        }
+        let source = body("lambda(x) return x\n + 1");
+        let out = user(&source);
+        let d = &out.diagnostics[0];
+        assert_eq!(d.code, Some(DiagCode::E0254));
+        assert_eq!(
+            d.primary.as_ref().unwrap().span.start,
+            position(&source, "lambda").unwrap()
+        );
+        assert_eq!(d.secondary.len(), 1);
+        assert_eq!(d.secondary[0].span.start, position(&source, "+ 1").unwrap());
+        assert!(d.helps[0].edits.is_empty());
+        let source = body("lambda(x) return lambda(y) return y");
+        let out = user(&source);
+        let d = &out.diagnostics[0];
+        let fixed = apply_edit(&source, &d.helps[0].edits);
+        assert_eq!(fixed, body("lambda(x) return (lambda(y) return y)"));
+        assert!(user(&fixed).diagnostics.is_empty());
+        let out = user(
+            "function f() -> Unit\n bind f <- lambda(x)\n ()\nend function\nfunction after() -> Unit\n()\nend function",
+        );
+        assert_eq!(codes(&out), [DiagCode::E0214]);
+        assert!(
+            matches!(&out.module.decls.last().unwrap().item, Item::Fn(f) if f.name.text == "after")
+        );
+    }
+
+    #[test]
+    fn eof_without_a_token_still_identifies_the_source_end() {
+        for source in [
+            "",
+            "// comment\r\n",
+            "function f() -> Unit\n() // tail\r\n\n  ",
+        ] {
+            let lexed = crate::syntax::lexer::lex(FileId(0), source.as_bytes());
+            assert_eq!(lexed.diagnostics, []);
+            let mut tokens = crate::syntax::newline::resolve_newlines(lexed.tokens);
+            assert_eq!(tokens.pop().unwrap().kind, TokenKind::Eof);
+            let out = parse(
+                FileId(0),
+                SourceKind::User,
+                source.as_bytes(),
+                tokens,
+                lexed.comments,
+                &mut IdGen::new(),
+            );
+            if source.starts_with("function") {
+                assert_eq!(codes(&out), [DiagCode::E0214]);
+                let at = BytePos(u32::try_from(source.len()).unwrap());
+                assert_eq!(
+                    out.diagnostics[0].primary.as_ref().unwrap().span,
+                    Span {
+                        file: FileId(0),
+                        start: at,
+                        end: at
+                    }
+                );
+            } else {
+                assert_eq!(out.diagnostics, []);
+                assert!(out.module.decls.is_empty());
+            }
+        }
+    }
     fn shape(e: &Expr) -> String {
         match e {
             Expr::Name(n) => n
@@ -963,6 +1425,14 @@ mod tests {
                     .map(|a| match a {
                         Arg::Expr(e) => shape(e),
                         Arg::Placeholder(_) => "_".to_owned(),
+                        Arg::Named(a) => format!(
+                            "{}: {}",
+                            a.name.text,
+                            match &a.value {
+                                crate::syntax::ast::ArgValue::Expr(e) => shape(e),
+                                crate::syntax::ast::ArgValue::Placeholder(_) => "_".to_owned(),
+                            }
+                        ),
                     })
                     .collect::<Vec<_>>()
                     .join(" ")
@@ -1062,7 +1532,7 @@ mod tests {
     #[test]
     fn specification_examples_and_golden_programs_parse() {
         let examples = spec_examples();
-        assert_eq!(examples.len(), 11);
+        assert_eq!(examples.len(), 14);
         for source in &examples {
             let out = user(source);
             assert!(
@@ -1071,7 +1541,7 @@ mod tests {
                 out.diagnostics
             );
         }
-        let shape = user(&examples[8]);
+        let shape = user(&examples[11]);
         let Item::Fn(area) = &shape.module.decls[1].item else {
             panic!();
         };
@@ -1250,6 +1720,12 @@ mod tests {
                         match arg {
                             Arg::Expr(arg) => self.expr(arg, e.span),
                             Arg::Placeholder(a) => self.node(a.id, a.span, e.span),
+                            Arg::Named(a) => match &a.value {
+                                crate::syntax::ast::ArgValue::Expr(arg) => self.expr(arg, e.span),
+                                crate::syntax::ast::ArgValue::Placeholder(p) => {
+                                    self.node(p.id, p.span, e.span)
+                                }
+                            },
                         }
                     }
                 }
@@ -1306,7 +1782,7 @@ mod tests {
     #[test]
     fn nodes_cover_their_tokens_and_have_distinct_ids_across_files() {
         let mut sources = spec_examples();
-        sources.push("data Tree[T]\nLeaf\nNode(Tree[T], T, Tree[T])\nend data\nfunction f[T: M.Show & equality, F[_, _], effect E](x: (function(T) -> T uses E)) -> Unit\nbind Pair(a, b): Pair[Integer, Integer] <- Pair(-1, 2)\nshadow a <- 3\nbind _ <- f(_, 1)\nbind _ <- [1.2m, 'あ', \"文字\", true]\nmatch x with\ncase C(-1, 'a', \"x\", true, (), _) -> ()\ncase C() -> ()\nend match\nend function".to_owned());
+        sources.push("data Tree[T]\nLeaf\nNode(Tree[T], T, Tree[T])\nend data\nfunction f[T: M.Show & equality, F[_, _], effect E](x: (function(value: T) -> T uses E)) -> Unit\nbind Pair(a, b): Pair[Integer, Integer] <- Pair(-1, 2)\nshadow a <- 3\nbind _ <- f(_, 1)\nbind _ <- [1.2m, 'あ', \"文字\", true]\nmatch x with\ncase C(-1, 'a', \"x\", true, (), _) -> ()\ncase C() -> ()\nend match\nend function".to_owned());
         let mut ids = IdGen::new();
         let mut seen = BTreeSet::new();
         for (index, source) in sources.iter().enumerate() {
@@ -1423,7 +1899,7 @@ mod tests {
     fn uses_attaches_to_the_innermost_type_and_reads_longest_list() {
         for (ty, effects, outer_params) in [
             (
-                "function(function() -> Unit uses Console.Write, E) -> Unit",
+                "function(action: function() -> Unit uses Console.Write, E) -> Unit",
                 vec!["Console.Write", "E"],
                 1,
             ),
@@ -1433,7 +1909,7 @@ mod tests {
                 0,
             ),
             (
-                "function((function() -> Unit uses A), List[Integer]) -> Unit",
+                "function(action: (function() -> Unit uses A), values: List[Integer]) -> Unit",
                 vec!["A"],
                 2,
             ),
@@ -1476,7 +1952,7 @@ mod tests {
             );
         }
         let out = user(
-            "function f(x: function(function() -> Unit uses A, List[Integer]) -> Unit) -> Unit\n()\nend function",
+            "function f(x: Pair[function() -> Unit uses A, List[Integer]]) -> Unit\n()\nend function",
         );
         assert_eq!(codes(&out), [DiagCode::E0209]);
     }
@@ -1628,7 +2104,9 @@ mod tests {
                 body("lambda x, y: x + y"),
                 DiagCode::E0243,
                 "lambda x, y: x + y",
-                vec!["lambda(x, y) return x + y end lambda"],
+                vec![
+                    "write `lambda(x, y) return x + y`; keep the entire lambda on one physical line, or start the body on the next line and add `end lambda`",
+                ],
             ),
             (
                 body("p.name"),
@@ -1742,7 +2220,7 @@ mod tests {
     fn uses_before_type_arguments_can_be_repaired_with_parentheses() {
         for next in ["List[Integer]", "Map[String, List[Integer]]"] {
             let source = format!(
-                "function f(callback: function(function() -> Unit uses Console.Write, {next}) -> Unit) -> Unit\nend function\n"
+                "function f(callback: Pair[function() -> Unit uses Console.Write, {next}]) -> Unit\nend function\n"
             );
             let out = user(&source);
             let d = out
@@ -1763,7 +2241,7 @@ mod tests {
         for source in [
             "function f() -> Unit uses Console.Write, List[Integer]\nend function\n",
             "function f() -> Unit\n bind _ <- lambda() -> Unit uses Console.Write, List[Integer]\n () end lambda\nend function\n",
-            "function f(callback: function(function() -> Unit uses Console.Write, List[Integer) -> Unit) -> Unit\nend function\n",
+            "function f(callback: Pair[function() -> Unit uses Console.Write, List[Integer) -> Unit\nend function\n",
         ] {
             let out = user(source);
             let d = out
@@ -1948,6 +2426,11 @@ mod tests {
                     "lambda() ".repeat(1001),
                     " end lambda".repeat(1001)
                 )),
+            ),
+            (
+                "short lambda",
+                wrap(format!("{}()", "lambda() bind _ <- ".repeat(332))),
+                wrap(format!("{}()", "lambda() bind _ <- ".repeat(333))),
             ),
             (
                 "statements",

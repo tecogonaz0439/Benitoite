@@ -19,8 +19,8 @@ function compare(bytes: Bytes) -> Result[Unit, String] uses Console.Write
 end function
 
 function main() -> Result[Unit, String] uses Console.Write
-  return List.fold([Bytes.empty(), String.toUTF8("abc"), String.toUTF8("日本語😀"), Option.unwrapOr(Bytes.fromHex("00ff807f"), Bytes.empty()), String.toUTF8(String.repeat("a", 1048576))], Result.Ok(()), lambda(acc: Result[Unit, String], bytes: Bytes) -> Result[Unit, String] uses Console.Write
+  return List.fold(xs: [Bytes.empty(), String.toUTF8("abc"), String.toUTF8("日本語😀"), Option.unwrapOr(o: Bytes.fromHex("00ff807f"), fallback: Bytes.empty()), String.toUTF8(String.repeat(s: "a", n: 1048576))], initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: Bytes) -> Result[Unit, String] uses Console.Write
     bind _ <- try acc
-    return compare(bytes)
+    return compare(value)
   end lambda)
 end function

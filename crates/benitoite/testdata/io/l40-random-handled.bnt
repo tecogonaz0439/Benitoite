@@ -6,7 +6,7 @@ import Benitoite.Trait
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Random
 function sample() -> Pair[Integer, Pair[Float, Boolean]] uses Random.Generate
-  return Pair(Random.integer(0, 10), Pair(Random.float(), Random.boolean()))
+  return Pair(Random.integer(low: 0, high: 10), Pair(Random.float(), Random.boolean()))
 end function
 function main() -> Unit uses Console.Write
   bind fixed <- handle sample() with

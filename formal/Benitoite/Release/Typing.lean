@@ -43,6 +43,7 @@ inductive PrimKind where
 structure PrimSig where
   tparams : List TParam
   neffs : Nat
+  names : List String
   params : List Ty
   ret : Ty
   eff : Eff
@@ -73,8 +74,8 @@ structure Builtins where
   refGet : PrimName
   refSet : PrimName
 
-def fnTy (params : List Ty) (ret : Ty) (eff : Eff) (ts : List Ty) (es : List Eff) : Ty :=
-  Ty.subst ts es (.fn params ret eff)
+def fnTy (names : List String) (params : List Ty) (ret : Ty) (eff : Eff) (ts : List Ty) (es : List Eff) : Ty :=
+  Ty.subst ts es (.fn names params ret eff)
 
 /-- 型引数 `ts` が、型パラメータの制約 `tps` を、制約の並び `C` のもとで満たす。制約の並びは、型の変数の番号の
 順（内側から）に並べる。 -/
@@ -86,17 +87,18 @@ def SatAll (B : Builtins) (C : List TParam) (ts : List Ty) (tps : List TParam) :
 /-- 操作の型 `∀ᾱ. (Ā) → B ! {L}`。 -/
 structure OpSig where
   tparams : List TParam
+  names : List String
   params : List Ty
   ret : Ty
   eff : EffName
 
 def opSig (P : Program) (B : Builtins) : OpRef → Option OpSig
-  | .user o => (P.ops o).map fun od => ⟨od.tparams, od.params, od.ret, od.eff⟩
+  | .user o => (P.ops o).map fun od => ⟨od.tparams, od.names, od.params, od.ret, od.eff⟩
   | .prim b =>
       match B.sig b with
       | some s =>
           match s.opEff with
-          | some l => some ⟨s.tparams, s.params, s.ret, l⟩
+          | some l => some ⟨s.tparams, s.names, s.params, s.ret, l⟩
           | none => none
       | none => none
 
@@ -127,7 +129,7 @@ mutual
     | .opaque _ => True
     | .data _ args => Ty.WFList n args
     | .list a => Ty.WF n a
-    | .fn params ret _ => Ty.WFList n params ∧ Ty.WF n ret
+    | .fn names params ret _ => NamesWF names params ∧ Ty.WFList n params ∧ Ty.WF n ret
     | .tvar i => i < n
     | .reference a => Ty.WF n a
     | .lazy a => Ty.WF n a
@@ -147,7 +149,7 @@ end
 /-! ## 型の包含 -/
 
 def Ty.Le (a a' : Ty) : Prop :=
-  a = a' ∨ ∃ ps r ε ε', a = .fn ps r ε ∧ a' = .fn ps r ε' ∧ Eff.Sub ε ε'
+  a = a' ∨ ∃ names ps r ε ε', a = .fn names ps r ε ∧ a' = .fn names ps r ε' ∧ Eff.Sub ε ε'
 
 /-! ## ストアの型付けと環境 -/
 
@@ -217,7 +219,7 @@ mutual
         InhabitsAll P (cd.args.map (Ty.subst ts [])) args →
         Inhabits P (.data cd.data ts) (.con c tys' args)
     | list {a elems} : InhabitsEach P a elems → Inhabits P (.list a) (.list elems)
-    | fn {ps r ε v} : Inhabits P (.fn ps r ε) v
+    | fn {names ps r ε v} : Inhabits P (.fn names ps r ε) v
     | tvar {i v} : Inhabits P (.tvar i) v
     | reference {a v} : Inhabits P (.reference a) v
     | lazy {a v} : Inhabits P (.lazy a) v
@@ -268,17 +270,17 @@ mutual
         HasTypeV P B Ψ C Γ (.var i) a
     | V_Const {Γ c} : HasTypeV P B Ψ C Γ (.const c) c.type
     | V_Fun {Γ f d ts es} :
-        P.defs f = some d → SatAll B C ts d.tparams → es.length = d.neffs →
-        HasTypeV P B Ψ C Γ (.fnRef f ts es) (fnTy d.params d.ret d.eff ts es)
+        P.defs f = some d → NamesWF d.names d.params → SatAll B C ts d.tparams → es.length = d.neffs →
+        HasTypeV P B Ψ C Γ (.fnRef f ts es) (fnTy d.names d.params d.ret d.eff ts es)
     | V_Prim {Γ b s ts es} :
-        B.sig b = some s → ts.length = s.ntys → es.length = s.neffs → s.admits C ts →
-        HasTypeV P B Ψ C Γ (.prim b ts es) (fnTy s.params s.ret s.eff ts es)
+        B.sig b = some s → NamesWF s.names s.params → ts.length = s.ntys → es.length = s.neffs → s.admits C ts →
+        HasTypeV P B Ψ C Γ (.prim b ts es) (fnTy s.names s.params s.ret s.eff ts es)
     | V_Op {Γ o od ts} :
-        P.ops o = some od → SatAll B C ts od.tparams →
-        HasTypeV P B Ψ C Γ (.op o ts) (fnTy od.params od.ret (Eff.single od.eff) ts [])
-    | V_Lam {Γ ps body r ε} :
-        HasTypeC P B Ψ C (binds ps ++ hideConts Γ) (some r) body r ε →
-        HasTypeV P B Ψ C Γ (.lam ps body) (.fn ps r ε)
+        P.ops o = some od → NamesWF od.names od.params → SatAll B C ts od.tparams →
+        HasTypeV P B Ψ C Γ (.op o ts) (fnTy od.names od.params od.ret (Eff.single od.eff) ts [])
+    | V_Lam {Γ names ps body r ε} :
+        NamesWF names ps → HasTypeC P B Ψ C (binds ps ++ hideConts Γ) (some r) body r ε →
+        HasTypeV P B Ψ C Γ (.lam names ps body) (.fn names ps r ε)
     | V_Con {Γ c ts args cd} :
         P.cons c = some cd → ts.length = cd.ntys →
         HasTypeVs P B Ψ C Γ args (cd.args.map (Ty.subst ts [])) →
@@ -331,8 +333,8 @@ mutual
     | C_Let {Γ R m n a b ε} :
         HasTypeC P B Ψ C Γ R m a ε → HasTypeC P B Ψ C (some a :: Γ) R n b ε →
         HasTypeC P B Ψ C Γ R (.letIn m n) b ε
-    | C_App {Γ R f args as b ε} :
-        HasTypeV P B Ψ C Γ f (.fn as b ε) → HasTypeVs P B Ψ C Γ args as →
+    | C_App {Γ R f args names as b ε} :
+        HasTypeV P B Ψ C Γ f (.fn names as b ε) → HasTypeVs P B Ψ C Γ args as →
         HasTypeC P B Ψ C Γ R (.app f args) b ε
     | C_If {Γ R v m n a ε} :
         HasTypeV P B Ψ C Γ v (.base .boolean) → HasTypeC P B Ψ C Γ R m a ε →
@@ -370,7 +372,7 @@ mutual
     番号 g を τ に置き換える。メソッドの型パラメータの制約を、型引数 S̄ が満たす。 -/
     | C_Meth {Γ R v cl τ cd m ms ss es ws} :
         HasTypeV P B Ψ C Γ v (.dict cl τ) → P.classes cl = some cd → cd.methods m = some ms →
-        SatAll B C ss ms.tparams → es.length = ms.neffs →
+        NamesWF ms.names ms.params → SatAll B C ss ms.tparams → es.length = ms.neffs →
         HasTypeVs P B Ψ C Γ ws (ms.params.map (Ty.subst (ss ++ [τ]) es)) →
         HasTypeC P B Ψ C Γ R (.meth v m ss es ws) (ms.ret.subst (ss ++ [τ]) es) (Eff.substRho es ms.eff)
 
@@ -395,7 +397,7 @@ mutual
       List TParam → List (Option Ty) → Option Ty → List Clause → Ty → Eff → Prop
     | nil {Γ R t ε} : HasTypeClauses P B Ψ C Γ R [] t ε
     | cons {Γ R o n k body cs t ε sg} :
-        opSig P B o = some sg → n = sg.params.length → k = sg.tparams.length →
+        opSig P B o = some sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length →
         HasTypeC P B Ψ (sg.tparams ++ C)
           (some (.cont sg.ret (t.shift k 0) ε) :: (binds sg.params ++ shiftEnv k Γ))
           (R.map (Ty.shift k 0)) body (t.shift k 0) ε →
@@ -410,7 +412,8 @@ def StoreTy.empty : StoreTy := fun _ => none
 
 /-- 定義に型が付く。`x1:A1, …, xn:An; B ⊢c M : B ! ε`（R := B）。 -/
 def Def.WellTyped (P : Program) (B : Builtins) (d : Def) : Prop :=
-  HasTypeC P B StoreTy.empty d.tparams (binds d.params) (some d.ret) d.body d.ret d.eff
+  NamesWF d.names d.params ∧
+    HasTypeC P B StoreTy.empty d.tparams (binds d.params) (some d.ret) d.body d.ret d.eff
 
 /-- D-Impl のメソッドの型 `Ājθ`・`Bjθ`（θ = [τ/P]）。型クラスの引数 P の番号 g（メソッドの型パラメータの
 個数）を、実装の対象 τ に置き換える。 -/
@@ -425,7 +428,7 @@ def ImplDecl.WellTyped (P : Program) (B : Builtins) (id : ImplDecl) : Prop :=
   ∃ cd, P.classes id.cls = some cd ∧
     (∀ m, (id.methods m).isSome = (cd.methods m).isSome) ∧
     (∀ s, (id.supers s).isSome = decide (s ∈ cd.supers)) ∧
-    (∀ m ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧
+    (∀ m ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧ NamesWF ms.names ms.params ∧
       HasTypeC P B StoreTy.empty (ms.tparams ++ id.tparams)
         (binds (id.dictTys.map (Ty.shift ms.tparams.length 0) ++ ms.params.map (id.methTy ms)))
         (some (id.methTy ms ms.ret)) body (id.methTy ms ms.ret) ms.eff) ∧

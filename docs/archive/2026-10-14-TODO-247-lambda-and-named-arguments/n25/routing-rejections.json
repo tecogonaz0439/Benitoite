@@ -1,0 +1,37 @@
+[
+  {
+    "mutation": "missing",
+    "rejected": true,
+    "reason": "routing identifiers: missing [('golden', 'testdata/eval/named_tail.bnt')], extra []"
+  },
+  {
+    "mutation": "replacement",
+    "rejected": true,
+    "reason": "routing identifiers: missing [('golden', 'testdata/acceptance/adt_list_sum.bnt')], extra [('golden', 'replacement.bnt')]"
+  },
+  {
+    "mutation": "duplicate",
+    "rejected": true,
+    "reason": "duplicate input identifiers: name"
+  },
+  {
+    "mutation": "version",
+    "rejected": true,
+    "reason": "('golden', 'testdata/acceptance/adt_list_sum.bnt'): routing classification: {'group': 'golden', 'name': 'testdata/acceptance/adt_list_sum.bnt', 'version': 8, 'excluded': [], 'scopes': {'inScope': 2}, 'coverage': {'matches': 1, 'bindings': 0}} != {'coverage': {'bindings': 0, 'matches': 1}, 'excluded': [], 'group': 'golden', 'name': 'testdata/acceptance/adt_list_sum.bnt', 'scopes': {'inScope': 2}, 'version': 7}"
+  },
+  {
+    "mutation": "scope",
+    "rejected": true,
+    "reason": "('golden', 'testdata/acceptance/adt_list_sum.bnt'): routing classification: {'group': 'golden', 'name': 'testdata/acceptance/adt_list_sum.bnt', 'version': 7, 'excluded': [], 'scopes': {'inScope': 1, 'outside:unsupported': 1}, 'coverage': {'matches': 1, 'bindings': 0}} != {'coverage': {'bindings': 0, 'matches': 1}, 'excluded': [], 'group': 'golden', 'name': 'testdata/acceptance/adt_list_sum.bnt', 'scopes': {'inScope': 2}, 'version': 7}"
+  },
+  {
+    "mutation": "excluded",
+    "rejected": true,
+    "reason": "('golden', 'testdata/acceptance/effect_violation.bnt'): routing classification: {'group': 'golden', 'name': 'testdata/acceptance/effect_violation.bnt', 'version': 7, 'excluded': ['fake error'], 'scopes': {}, 'coverage': None} != {'coverage': None, 'excluded': ['Some(E0501)'], 'group': 'golden', 'name': 'testdata/acceptance/effect_violation.bnt', 'scopes': {}, 'version': 7}"
+  },
+  {
+    "mutation": "coverage",
+    "rejected": true,
+    "reason": "('golden', 'testdata/acceptance/adt_list_sum.bnt'): routing classification: {'group': 'golden', 'name': 'testdata/acceptance/adt_list_sum.bnt', 'version': 7, 'excluded': [], 'scopes': {'inScope': 2}, 'coverage': {'matches': 2, 'bindings': 0}} != {'coverage': {'bindings': 0, 'matches': 1}, 'excluded': [], 'group': 'golden', 'name': 'testdata/acceptance/adt_list_sum.bnt', 'scopes': {'inScope': 2}, 'version': 7}"
+  }
+]

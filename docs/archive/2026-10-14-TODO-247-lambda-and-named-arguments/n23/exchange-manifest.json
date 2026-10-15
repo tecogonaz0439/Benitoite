@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "legacy": {
+    "corpusVersion": 7,
+    "tableVersion": 1,
+    "coverageVersion": 1,
+    "golden": 337,
+    "random": 1000,
+    "excluded": 378,
+    "outside": 0
+  },
+  "named": [
+    {
+      "stem": "named-types",
+      "definitions": 1,
+      "origin": "independent-type",
+      "coverage": null
+    },
+    {
+      "stem": "named-declarations",
+      "definitions": 2,
+      "origin": "checked-program",
+      "coverage": null
+    },
+    {
+      "stem": "named-calls",
+      "definitions": 5,
+      "origin": "general-parser-checked-program",
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    {
+      "stem": "named-static-calls",
+      "definitions": 3,
+      "origin": "independent-static-call-plan",
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "stem": "named-positional-holes",
+      "definitions": 1,
+      "origin": "general-parser-checked-positional-constructor-holes",
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    }
+  ],
+  "namedVersions": {
+    "corpus": 8,
+    "table": 2,
+    "coverage": 2
+  },
+  "namedCoverageCases": 2,
+  "namedExcluded": [],
+  "namedOutside": [],
+  "generalNamedCallRouting": "program-unit",
+  "programs": [
+    {
+      "name": "testdata/eval/named_order.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_escape.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_tail.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_failure.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_contracts.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_partials.bnt",
+      "group": "golden",
+      "definitions": 9,
+      "coverage": {
+        "matches": 4,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_record_values.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 2,
+        "accessor": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    }
+  ]
+}

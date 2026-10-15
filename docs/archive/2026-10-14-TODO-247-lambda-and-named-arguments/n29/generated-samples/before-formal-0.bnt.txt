@@ -1,0 +1,581 @@
+import Benitoite.Unofficial.IO.Console
+function errorResult(text: String) -> Result[Integer, String] return Result.Error(text) end function
+data Packet
+  Empty
+  Item(Integer, Option[Integer])
+end data
+function formalOption(input: Option[Integer]) -> Option[String]
+ bind n <- try input
+ return Option.Some(Integer.toString(n))
+end function
+function formalResult(input: Result[Integer, String]) -> Result[String, String]
+ bind n <- try input
+ return Result.Ok(Integer.toString(n))
+end function
+function formalWith(n: Integer) -> Integer uses State
+ with group = TaskGroup.open() do
+ match Option.Some(n) with
+ case Option.Some(x) -> return x
+ case Option.None -> return 0
+ end match
+ end with
+end function
+function formalLazy(n: Integer) -> Integer
+ bind delayed <- lazy
+ bind f <- lambda(x: Integer) return x + n end lambda
+ f((match Packet.Empty with
+case Packet.Item(v3, _) -> v3
+case Packet.Empty -> 0
+end match))
+ end lazy
+ return Lazy.force(delayed)
+end function
+
+effect FormalAsk
+  function formalAsk(left: Integer, right: Integer) -> Integer
+end effect
+effect FormalEcho
+  function formalEcho[A](value: A) -> A
+end effect
+effect FormalPick
+  function formalPick[A, B](first: A, second: B, ignored: Integer) -> B
+end effect
+function formalAdd(left: Integer, right: Integer) -> Integer
+  return left + right
+end function
+function formalHandle(n: Integer) -> Integer
+  return handle
+    bind operation <- formalAsk
+    bind part <- formalAsk(n, _)
+    bind x <- operation(n, part(2))
+    n |> formalAsk(x)
+  with
+    case formalAsk(x, _) ->
+      bind f <- lambda(z: Integer) return z + n end lambda
+      bind _ <- f(1)
+      x + n
+  end handle
+end function
+function formalNested(n: Integer) -> Integer
+  return handle formalAsk(n, 1) with
+    case formalAsk(x, _) ->
+      bind saved <- n + 2
+      handle
+        bind _ <- formalAsk(x, saved)
+        resume(x)
+      with
+        case formalAsk(_, y) -> resume(y + saved)
+      end handle
+  end handle
+end function
+function formalPoly[A](input: Option[A]) -> Option[A]
+  return handle formalEcho(input) with
+    case formalEcho(x) ->
+      bind _ <- try input
+      resume(x)
+  end handle
+end function
+function formalPolyResult[A, B](input: Result[A, B]) -> Result[A, B]
+  return handle formalEcho(input) with
+    case formalEcho(x) ->
+      bind _ <- try input
+      match input with
+        case Result.Ok(y) -> return Result.Ok(y)
+        case Result.Error(e) -> resume(x)
+      end match
+  end handle
+end function
+function formalRigid[A](input: Option[A]) -> Option[A]
+  return handle formalEcho(input) with
+    case formalEcho(x) ->
+      bind saved <- x
+      handle
+        bind _ <- formalPick(x, input, 0)
+        resume(saved)
+      with
+        case formalPick(_, second, _) ->
+          bind capture <- lambda(value) return value end lambda
+          bind _ <- capture(saved)
+          bind definition <- lambda(value) return value end lambda
+          bind _ <- definition(input)
+          bind keep <- lambda(value) return value end lambda
+          resume(keep(second))
+      end handle
+  end handle
+end function
+function formalPlaceholder(n: Integer) -> Integer
+  bind f <- formalAdd(handle formalAsk(n, 0) with
+    case formalAsk(x, _) -> resume(x)
+  end handle, _)
+  return f(2)
+end function
+
+function formalPlaceholderReturn(n: Integer) -> String
+  bind f <- formalAdd(return n, _)
+  return Integer.toString(f(11))
+end function
+function formalPlaceholderWrap(a: Integer, b: Integer) -> Option[Integer]
+  return Option.Some(a + b)
+end function
+function formalPlaceholderTry(input: Option[Integer]) -> String
+  bind f <- formalPlaceholderWrap(try input, _)
+  return match f(11) with
+    case Option.Some(value) -> Integer.toString(value)
+    case Option.None -> "none"
+  end match
+end function
+
+trait FormalIdentity[T]
+  function echo(x: T) -> T
+end trait
+trait FormalStrong[T: FormalIdentity]
+  function strong(x: T) -> T
+end trait
+trait FormalStronger[T: FormalStrong]
+  function stronger(x: T) -> T
+end trait
+trait FormalChoose[T]
+  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: T, y: A, z: B, f: function(A) -> A uses E) -> B uses E
+end trait
+implement FormalIdentity[Integer]
+  function echo(x: Integer) -> Integer return x + 0 end function
+end implement
+implement FormalIdentity[String]
+  function echo(x: String) -> String return x end function
+end implement
+implement[A: FormalIdentity] FormalIdentity[Option[A]]
+  function echo(x: Option[A]) -> Option[A]
+    bind f <- FormalIdentity.echo
+    return Option.map(x, f)
+  end function
+end implement
+implement[A: FormalIdentity, B: FormalIdentity] FormalIdentity[Pair[A,B]]
+  function echo(x: Pair[A,B]) -> Pair[A,B]
+    return match x with
+      case Pair(a,b) ->
+        bind left <- FormalIdentity.echo
+        bind right <- FormalIdentity.echo
+        return Pair(left(a),right(b))
+    end match
+  end function
+end implement
+implement[A: FormalIdentity] FormalStrong[Option[A]]
+  function strong(x: Option[A]) -> Option[A]
+    bind f <- FormalIdentity.echo
+    return f(x)
+  end function
+end implement
+implement[A: FormalIdentity] FormalStronger[Option[A]]
+  function stronger(x: Option[A]) -> Option[A]
+    return x
+  end function
+end implement
+implement[T: FormalIdentity] FormalChoose[Option[T]]
+  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: Option[T], y: A, z: B, f: function(A) -> A uses E) -> B uses E
+    bind outer <- FormalIdentity.echo
+    bind _ <- outer(x)
+    bind own <- FormalIdentity.echo
+    bind _ <- own(f(y))
+    bind result <- FormalIdentity.echo
+    return result(z)
+  end function
+end implement
+implement[T: FormalIdentity, U: FormalIdentity] FormalChoose[Pair[T,U]]
+  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: Pair[T,U], y: A, z: B, f: function(A) -> A uses E) -> B uses E
+    bind outer <- FormalIdentity.echo
+    bind _ <- outer(x)
+    bind own <- FormalIdentity.echo
+    bind _ <- own(f(y))
+    bind result <- FormalIdentity.echo
+    return result(z)
+  end function
+end implement
+function formalBoth[A: FormalIdentity, B: FormalIdentity](x: A, y: B) -> B
+  bind left <- FormalIdentity.echo
+  bind _ <- left(x)
+  bind right <- FormalIdentity.echo
+  return right(y)
+end function
+function formalCapture[A: FormalIdentity, B: FormalIdentity](x: A, y: B) -> B
+  bind f <- formalBoth
+  return f(x,y)
+end function
+function formalSuper[A: FormalStronger](x: A) -> A
+  bind f <- FormalIdentity.echo
+  bind g <- lambda(y: A)
+    bind nested <- FormalIdentity.echo
+    return nested(y)
+  end lambda
+  return g(f(x))
+end function
+function formalClassUse(x: Option[Option[Integer]], y: Option[String]) -> Option[String]
+  bind f <- formalBoth
+  bind _ <- f(x,y)
+  bind paired <- Pair(x,y)
+  bind pairFunction <- formalBoth
+  bind _ <- pairFunction(paired,y)
+  bind pairMethod <- FormalChoose.choose
+  bind _ <- pairMethod(paired,y,x,lambda(v: Option[String]) return v end lambda)
+  bind swapped <- formalBoth
+  bind _ <- swapped(y,x)
+  bind local <- formalCapture
+  bind _ <- local(x,y)
+  bind echo <- FormalIdentity.echo
+  bind _ <- echo(x)
+  bind choose <- FormalChoose.choose
+  bind _ <- choose(x,y,x,lambda(v: Option[String]) return v end lambda)
+  bind part <- (FormalChoose.choose)(x,y,_,lambda(v: Option[String]) return v end lambda)
+  bind _ <- part(x)
+  bind _ <- (formalBoth)(x,y)
+  bind _ <- x |> (FormalIdentity.echo)
+  return y
+end function
+function formalClassEffects[A: FormalIdentity, B: FormalIdentity](x: A, y: B) -> B
+  return handle formalPick(x,y,0) with
+    case formalPick(first, second, _) ->
+      bind f <- formalBoth
+      bind _ <- f(x,y)
+      bind g <- lambda(v: A) return v end lambda
+      bind _ <- g(x)
+      resume(second)
+  end handle
+end function
+trait FormalFunctor[F[_]]
+  function map[A,B,effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+end trait
+implement FormalFunctor[Option]
+  function map[A,B,effect E](x: Option[A], f: function(A) -> B uses E) -> Option[B] uses E
+    return Option.map(x,f)
+  end function
+end implement
+function formalHigher[F[_]: FormalFunctor,A,B,effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+  bind map <- FormalFunctor.map
+  return map(x,f)
+end function
+function formalHigherUse(x: Option[String], f: function(String) -> Integer) -> Option[Integer]
+  bind map <- formalHigher
+  return map(x,f)
+end function
+
+trait FormalRelay[T]
+  function relay[A: FormalIdentity](x: Pair[T,A]) -> Pair[T,A]
+end trait
+implement[T: FormalIdentity] FormalRelay[Option[T]]
+  function relay[A: FormalIdentity](x: Pair[Option[T],A]) -> Pair[Option[T],A]
+    return FormalIdentity.echo(x)
+  end function
+end implement
+function formalRender[A: FormalIdentity & FormalStrong](x: A) -> A
+  bind _ <- FormalIdentity.echo(x)
+  return FormalStrong.strong(x)
+end function
+function formalDirect[A: FormalIdentity & FormalStrong & FormalChoose & FormalRelay, B: FormalIdentity, effect E](x: A, y: B, identity: function(B) -> B uses E) -> A uses E
+  bind paired <- Pair(x,y)
+  bind _ <- formalBoth(x,y)
+bind _ <- x |> formalBoth(y)
+bind _ <- (formalBoth)(x,y)
+bind _ <- x |> (formalBoth)(y)
+bind part0 <- formalBoth(_,y)
+bind _ <- part0(x)
+bind _ <- x |> formalBoth(_,y)
+bind parenPart0 <- (formalBoth)(_,y)
+bind _ <- parenPart0(x)
+bind _ <- x |> (formalBoth)(_,y)
+bind _ <- FormalChoose.choose(x,y,x,identity)
+bind _ <- x |> FormalChoose.choose(y,x,identity)
+bind _ <- (FormalChoose.choose)(x,y,x,identity)
+bind _ <- x |> (FormalChoose.choose)(y,x,identity)
+bind part1 <- FormalChoose.choose(_,y,x,identity)
+bind _ <- part1(x)
+bind _ <- x |> FormalChoose.choose(_,y,x,identity)
+bind parenPart1 <- (FormalChoose.choose)(_,y,x,identity)
+bind _ <- parenPart1(x)
+bind _ <- x |> (FormalChoose.choose)(_,y,x,identity)
+bind _ <- FormalIdentity.echo(x)
+bind _ <- x |> FormalIdentity.echo()
+bind _ <- (FormalIdentity.echo)(x)
+bind _ <- x |> (FormalIdentity.echo)()
+bind part2 <- FormalIdentity.echo(_)
+bind _ <- part2(x)
+bind _ <- x |> FormalIdentity.echo(_)
+bind parenPart2 <- (FormalIdentity.echo)(_)
+bind _ <- parenPart2(x)
+bind _ <- x |> (FormalIdentity.echo)(_)
+bind _ <- x |> FormalIdentity.echo
+bind _ <- x |> (FormalIdentity.echo)
+bind _ <- formalRender(x)
+bind _ <- x |> formalRender()
+bind _ <- (formalRender)(x)
+bind _ <- x |> (formalRender)()
+bind part3 <- formalRender(_)
+bind _ <- part3(x)
+bind _ <- x |> formalRender(_)
+bind parenPart3 <- (formalRender)(_)
+bind _ <- parenPart3(x)
+bind _ <- x |> (formalRender)(_)
+bind _ <- x |> formalRender
+bind _ <- x |> (formalRender)
+bind _ <- FormalRelay.relay(paired)
+bind _ <- paired |> FormalRelay.relay()
+bind _ <- (FormalRelay.relay)(paired)
+bind _ <- paired |> (FormalRelay.relay)()
+bind part4 <- FormalRelay.relay(_)
+bind _ <- part4(paired)
+bind _ <- paired |> FormalRelay.relay(_)
+bind parenPart4 <- (FormalRelay.relay)(_)
+bind _ <- parenPart4(paired)
+bind _ <- paired |> (FormalRelay.relay)(_)
+bind _ <- paired |> FormalRelay.relay
+bind _ <- paired |> (FormalRelay.relay)
+
+  return x
+end function
+function formalDirectUse() -> Option[Integer]
+  bind x <- Option.Some(3)
+  bind y <- Option.Some("direct")
+  return formalDirect(x,y,lambda(v: Option[String]) return v end lambda)
+end function
+
+function formalExtensions(n: Integer, xs: List[Integer]) -> String
+  bind decimal <- 1.03m
+  bind negative <- -1.03m
+  bind zero <- -0.0m
+  bind large <- 79228162514264337593543950335m
+  bind smallest <- -79228162514264337593543950335m
+  bind _ <- -(1.50m)
+  bind _ <- [..xs, n, n + 1]
+bind _ <- [n + 2, n, ..xs, n + 3]
+bind _ <- [n, ..xs]
+bind _ <- [..xs]
+bind _ <- [(lambda(x: Integer) return x + n end lambda)(n), ..xs]
+
+  bind s <- "formal"
+  bind _ <- "${s}"
+  bind _ <- "${n}"
+  bind _ <- "${n}${s}${negative}"
+  bind _ <- "head${n}middle${s}tail"
+  bind _ <- "${(lambda(x: Integer) return x + n end lambda)(n)}"
+  bind _ <- "${(lambda(x: Integer) -> Integer return x end lambda)(n)}${(lambda(x: String) -> String return x end lambda)(s)}"
+  return match Byte.fromInteger(170) with
+    case Option.Some(b) -> "${s}${n}${1.25}${'x'}${false}${b}${decimal}"
+    case Option.None -> "${zero}"
+  end match
+end function
+function formalExtensionsUse() -> String
+  return formalExtensions(1, [1, 1 + 1])
+end function
+
+record FormalRow[T]
+  first: T
+  second: Integer
+  third: Option[T]
+end record
+record FormalOuter[T]
+  inner: FormalRow[T]
+  tail: Integer
+end record
+record FormalCallbacks
+  stateful: function(Integer) -> Integer uses State
+  pure: function(Integer) -> Integer
+end record
+function formalRecordChange[A](value: A, other: A) -> A
+  bind row <- FormalRow(third: Option.Some(value), first: other, second: 21)
+  bind updated <- FormalRow(..row, first: value)
+  bind FormalRow(third: saved, first: changed, second: count) <- updated
+  bind _ <- count
+  bind _ <- saved
+  return FormalRow.first(FormalRow(..updated, third: Option.Some(changed), second: 26, first: other))
+end function
+function formalRecordUse(n: Integer) -> Integer uses State
+  bind original <- FormalRow(first: n, second: 21, third: Option.Some(26))
+  bind partial <- FormalRow(..original, second: 26)
+  bind all <- FormalRow(..partial, third: Option.Some(n), second: 26, first: n + 21)
+  bind FormalRow(third: some, first: first, second: second) <- all
+  bind FormalRow(second: only, ..) <- partial
+  bind outer <- FormalOuter(tail: only, inner: all)
+  bind matched <- match outer with
+    case FormalOuter(tail: t, inner: FormalRow(third: Option.Some(z), second: y, first: x)) -> x + y + z + t + first + second
+    case FormalOuter(inner: FormalRow(first: fallback, ..), ..) -> fallback + only
+  end match
+  bind _ <- FormalRow.first(all)
+  bind getter <- (FormalRow.first)
+  bind _ <- getter(all)
+  bind _ <- (FormalRow.first)(all)
+  bind _ <- all |> FormalRow.first
+  bind _ <- all |> FormalRow.first()
+  bind _ <- all |> (FormalRow.first)
+  bind _ <- all |> (FormalRow.first)()
+  bind hole <- FormalRow.first(_)
+  bind _ <- hole(all)
+  bind parenHole <- (FormalRow.first)(_)
+  bind _ <- parenHole(all)
+  bind _ <- all |> FormalRow.first(_)
+  bind _ <- all |> (FormalRow.first)(_)
+  bind callbacks <- FormalCallbacks(
+    pure: lambda(x: Integer) return x + n end lambda,
+    stateful: lambda(x: Integer) -> Integer uses State
+      bind cell <- Reference.new(x + matched)
+      return Reference.get(cell)
+    end lambda)
+  bind updatedCallbacks <- FormalCallbacks(..callbacks,
+    stateful: lambda(x: Integer) -> Integer uses State
+      bind cell <- Reference.new(x + only)
+      return Reference.get(cell)
+    end lambda,
+    pure: lambda(x: Integer) return x + first end lambda)
+  bind FormalCallbacks(pure: pure, stateful: stateful) <- updatedCallbacks
+  bind _ <- pure(n)
+  return stateful(n)
+end function
+
+const formalConstBase: Integer = 19 + 14
+const formalConstNext: Integer = formalConstBase + 14
+const formalConstAlias: Integer = formalConstNext
+const formalConstBool: Boolean = true
+const formalConstFloat: Float = -19.5
+const formalConstDecimal: Decimal = -14.25m
+const formalConstString: String = "constant-19"
+const formalConstChar: Character = 'k'
+const formalConstUnit: Unit = ()
+const formalConstList: List[Integer] = [formalConstBase, formalConstNext, formalConstAlias]
+const formalConstRow: FormalRow[Integer] = FormalRow(second: formalConstNext, first: formalConstBase, third: Option.Some(formalConstNext))
+const formalConstRows: List[FormalRow[Integer]] = [formalConstRow, formalConstRow]
+function formalConstantUse(n: Integer) -> Integer
+  bind local <- n + 1
+  bind _ <- formalConstBool
+  bind _ <- formalConstFloat
+  bind _ <- formalConstDecimal
+  bind _ <- formalConstString
+  bind _ <- formalConstChar
+  bind _ <- formalConstUnit
+  bind _ <- formalConstList
+  bind _ <- formalConstRows
+  bind _ <- Integer.toString(formalConstAlias)
+  bind _ <- Option.Some(formalConstNext)
+  bind _ <- [local, formalConstAlias, formalConstBase]
+  bind row <- FormalRow(..formalConstRow, second: formalConstNext, first: local)
+  bind f <- lambda(x: Integer) return x + local + formalConstAlias end lambda
+  bind g <- lambda(x: Integer) -> Integer uses State
+    bind cell <- Reference.new(formalConstNext + x)
+    return Reference.get(cell)
+  end lambda
+  bind _ <- g
+  return f(FormalRow.first(row))
+end function
+function formalConstantPoly[A](value: A) -> A
+  bind _ <- formalConstRow
+  bind _ <- formalConstList
+  return value
+end function
+
+data FormalPattern
+  A(Integer, Integer)
+  B(Integer, Integer)
+end data
+record FormalPatternRow
+  left: Integer
+  right: Integer
+  flag: Boolean
+end record
+record FormalPatternList
+  items: List[Integer]
+  flag: Boolean
+end record
+effect FormalPatternBool
+  function formalPatternBool(value: Boolean) -> Boolean
+end effect
+function formalPatternChoice(input: FormalPattern, outer: Integer, enabled: Boolean) -> Integer
+  return match input with
+    case FormalPattern.A(x, y), FormalPattern.B(y, x) if enabled and x + outer > y ->
+      bind f <- lambda(z: Integer) return z + x - y + outer end lambda
+      f(7)
+    case FormalPattern.A(x, y), FormalPattern.B(y, x) -> x - y + outer
+  end match
+end function
+function formalPatternRecords(row: FormalPatternRow, outer: Integer) -> Integer
+  return match row with
+    case FormalPatternRow(right: y, left: x, flag: true), FormalPatternRow(left: y, right: x, flag: false) if (lambda(z: Integer) return z + outer > y end lambda)(x) -> x - y
+    case FormalPatternRow(right: y, left: x, ..) -> outer + x - y
+  end match
+end function
+function formalPatternRanges(n: Integer, c: Character) -> Integer
+  bind integer <- match n with
+    case -12..-2 -> 1
+    case -1..4 -> 2
+    case _ -> 3
+  end match
+  return integer + match c with
+    case 'a'..'z' -> 10
+    case _ -> 20
+  end match
+end function
+function formalPatternLists(xs: List[Integer], outer: Integer) -> Integer
+  bind [..] <- xs
+  bind [..saved] <- xs
+  bind exact <- match saved with
+    case [x, y] if true -> x - y + outer
+    case [] -> outer
+    case _ -> 0
+  end match
+  bind skip <- match xs with
+    case [x, .., y] if false -> x - y
+    case [.., y] -> y + outer
+    case [] -> 0
+  end match
+  bind named <- match xs with
+    case [x, 0, ..rest, y], [y, ..rest, 0, x] if x + outer > y ->
+      x - y + List.length(rest) + outer
+    case [..rest] -> List.length(rest)
+  end match
+  return exact + skip + named
+end function
+function formalPatternNested(row: FormalPatternList, outer: Integer) -> Integer
+  return match row with
+    case FormalPatternList(flag: true, items: [x, ..rest, y]),
+         FormalPatternList(items: [y, ..rest, x], flag: false) if x + outer > y ->
+      x - y + List.length(rest)
+    case FormalPatternList(items: [..rest], ..) -> List.length(rest) + outer
+  end match
+end function
+function formalPatternGuardLocal(enabled: Boolean) -> Boolean
+  return match enabled with
+    case flag if handle formalPatternBool(flag) with
+      case formalPatternBool(x) -> resume(x)
+    end handle -> true
+    case _ -> false
+  end match
+end function
+function formalPatternUse() -> Integer
+  bind _ <- formalPatternGuardLocal(true)
+  bind a <- formalPatternChoice(FormalPattern.A(7, 4), 3, true)
+  bind b <- formalPatternChoice(FormalPattern.A(4, 7), 2, false)
+  bind c <- formalPatternRecords(FormalPatternRow(right: 4, left: 7, flag: true), 2)
+  bind d <- formalPatternRanges(-12, 'b')
+  bind e <- formalPatternLists([7, 3, 4], 2)
+  bind f <- formalPatternNested(FormalPatternList(flag: true, items: [7, 4]), 3)
+  return a + b + c + d + e + f
+end function
+function main() -> Unit uses Console.Write, State
+bind v0: Integer <- -32
+Console.writeLine(Integer.toString(v0))
+bind v2: Integer <- (match errorResult("empty") with
+case Result.Ok(v1) -> v1
+case Result.Error(_) -> -1
+end match)
+Console.writeLine(Integer.toString(v2))
+bind _ <- formalOption(Option.Some(7))
+bind _ <- formalResult(Result.Error("failure"))
+bind _ <- formalWith(3)
+bind _ <- formalLazy(5)
+bind _ <- formalRecordUse(3)
+bind _ <- formalHandle(3)
+bind _ <- formalNested(4)
+bind _ <- formalPoly(Option.Some(5))
+bind result: Result[Integer, String] <- Result.Ok(6)
+bind _ <- formalPolyResult(result)
+bind _ <- formalRigid(Option.Some(7))
+bind _ <- formalPlaceholder(8)
+bind _ <- formalPlaceholderReturn(9)
+bind _ <- formalPlaceholderTry(Option.None)
+bind _ <- formalPlaceholderTry(Option.Some(10))
+end function

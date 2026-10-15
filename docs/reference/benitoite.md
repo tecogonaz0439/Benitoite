@@ -13,9 +13,9 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.4`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). Changes since `0.0.1`, the first release, are listed in the [CHANGELOG](../../CHANGELOG.md). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.5`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
-To install `benitoite`, see [Installing Benitoite](install.md). For the earlier minimal implementation (`0.0.0`), see [benitoite-minimal.md](benitoite-minimal.md); the changes between the two are listed in the [CHANGELOG](../../CHANGELOG.md).
+To install `benitoite`, see [Installing Benitoite](install.md).
 
 Benitoite is a statically typed functional scripting language. A script is a `.bnt` file. Before anything runs, `benitoite` checks the types of the script and the effects it uses: what each function may do outside the program, such as writing files or starting commands. The checks guarantee only that the script follows these rules. They do not guarantee that the script does what you intended, that an outside operation succeeds, or that the script finishes.
 
@@ -94,7 +94,7 @@ benitoite --licenses
 | `skill` | Writes the bundled Agent Skill to the places where coding agents read skills, or removes it. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.4`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.5`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
 `<script>` is a file, or a directory that contains `main.bnt`. The file name and its extension are not checked, except that `package.bnt` is a settings file and cannot be the starting file. The directory of the script is the *root directory*: the script can import modules from the root directory and below it, from the standard library ([Modules](#12-modules)), and from declared local dependencies (see [section 21](#21-experimental-packages-and-external-functions)). `benitoite` reads `package.bnt` in the root directory itself as a settings file; it does not search parent directories or the working directory.
@@ -144,12 +144,12 @@ A program starts at the function `main` in the script file. `main` takes no para
 
 The top level of a file contains, in this order, `import` declarations and then declarations: functions, constants, data types, type aliases, records, type classes, implementations, and effects. Code that runs is written only inside functions.
 
-Blocks are closed with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end trait`, `end implement`, `end effect`, `end handle`, `end with`, `end lazy`. There are no braces, and indentation has no meaning. Statements are separated by line breaks; there are no semicolons.
+Except for a short lambda (see [Functions and lambdas](#6-functions-and-lambdas)), blocks are closed with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end trait`, `end implement`, `end effect`, `end handle`, `end with`, `end lazy`. There are no braces, and indentation has no meaning. Statements are separated by line breaks; there are no semicolons.
 
 Inside a block:
 
 - `bind name <- expression` gives a name to a value. Names cannot be reassigned.
-- `shadow name <- expression` binds a name that hides a local name already visible. `bind` with a name that is already visible as a local name is an error, so hiding is always explicit.
+- `shadow name <- expression` binds a name that hides a local name already visible. `bind` with a name that is already visible as a local name is an error, so hiding is always explicit. `shadow` is valid but discouraged; prefer a new name that describes the new value, even when hiding the old name is intentional. This is documentation advice and does not add a warning.
 - `return expression` ends the function and returns the value.
 - An expression on its own line is a statement. When it is not the last statement of its block, or when it is the last statement of a function or lambda body, its value must be `Unit`; write `bind _ <- expression` to discard any other value.
 
@@ -172,9 +172,12 @@ end function
 
 function main() -> Unit uses Console.Write
   bind total <- 10
-  shadow total <- total + larger(3, 7)
-  bind label <- if total > 15 then "big" else "small" end if
-  Console.writeLine("${label}: ${total}")
+  bind increased <- total + larger(a: 3, b: 7)
+  bind label <- match increased > 15 with
+    case true -> "big"
+    case false -> "small"
+  end match
+  Console.writeLine("${label}: ${increased}")
 end function
 ```
 
@@ -183,6 +186,47 @@ big: 17
 ```
 
 There are no loop statements, no `null`, and no exceptions. Use recursion or list functions instead of loops, `Option` instead of `null`, and `Result` with `try` instead of exceptions.
+
+Prefer `match` for selecting a value or action. Use `if` without `else` for a conditional action or an early return, as in `larger` above. `else` and `else if` are valid but discouraged; the checker adds no warning for them. When rewriting a selection, preserve the number and order of condition evaluations, evaluate only the selected branch, and keep `return` in the same function or lambda. Conditions with effects cannot be match guards; nest matches on their boolean results instead.
+
+This example evaluates the second condition only when the first is false. Each `return` ends `choose`, and only the selected result is returned.
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+
+function condition(label: String, value: Boolean) -> Boolean uses Console.Write
+  Console.writeLine(label)
+  return value
+end function
+
+function choose(first: Boolean, second: Boolean) -> String uses Console.Write
+  match condition(label: "first", value: first) with
+    case true -> return "first selected"
+    case false ->
+      match condition(label: "second", value: second) with
+        case true -> return "second selected"
+        case false -> return "neither selected"
+      end match
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(choose(first: true, second: true))
+  Console.writeLine(choose(first: false, second: true))
+  Console.writeLine(choose(first: false, second: false))
+end function
+```
+
+```output
+first
+first selected
+first
+second
+second selected
+first
+second
+neither selected
+```
 
 ## 4. Basic types and literals
 
@@ -206,7 +250,7 @@ Every integer type with arithmetic stops with a runtime error on overflow or `di
 
 ### Numeric type names and suffixes
 
-Width-qualified names are the canonical names. The existing names `Integer`, `Float`, and `Byte` remain the main names in this reference, diagnostics, and displayed signatures. The names in each row below denote one type; switching between them requires no conversion. All these types and their standard modules are in the prelude.
+Width-qualified names are the canonical names. The aliases `Integer`, `Float`, and `Byte` are the main names in this reference, diagnostics, and displayed signatures. The names in each row below denote one type; switching between them requires no conversion. All these types and their standard modules are in the prelude.
 
 | Canonical name | Alias | Default display | Integer range or floating-point format |
 |---|---|---|---|
@@ -221,13 +265,13 @@ Width-qualified names are the canonical names. The existing names `Integer`, `Fl
 | `Float32` | — | `Float32` | binary32 |
 | `Float64` | `Float` | `Float` | binary64 |
 
-`Integer8`, `Integer16`, `Integer32`, `UnsignedInteger16`, `UnsignedInteger32`, `UnsignedInteger64`, and `Float32` are seven distinct types. A literal without a suffix keeps its original type: `1` is always `Integer`, and `1.0` is always `Float`, even when the surrounding code expects another width. Binary arithmetic, equality, and comparisons require the same type on both sides after expanding aliases. Use `1s32 + 2s32` for `Integer32` arithmetic, or an explicit conversion for a computed value.
+`Integer8`, `Integer16`, `Integer32`, `UnsignedInteger16`, `UnsignedInteger32`, `UnsignedInteger64`, and `Float32` are seven distinct types. A literal without a suffix has a fixed type: `1` is always `Integer`, and `1.0` is always `Float`, even when the surrounding code expects another width. Binary arithmetic, equality, and comparisons require the same type on both sides after expanding aliases. Use `1s32 + 2s32` for `Integer32` arithmetic, or an explicit conversion for a computed value.
 
 The integer suffixes are lowercase `s8`, `s16`, `s32`, `s64`, `u8`, `u16`, `u32`, and `u64`; the floating-point suffixes are `f32` and `f64`. **This suffix syntax is provisional and may change when the language syntax is revised.** The ordinary compatibility policy still applies. `1s64` is an `Integer`, `1.0f64` is a `Float`, and `255u8` is a `Byte`. Integer suffixes retain hexadecimal, octal, binary, and underscores between digits: `0xffu8`, `0o177s8`, `0b1010u16`, `1_000s32`. A floating-point suffix needs a decimal point or exponent: use `1.0f32`, not `1f32`. In hexadecimal, `0xfff32` remains an unsuffixed integer because `f32` consists of hexadecimal digits. Decimal's `m` suffix cannot be combined with another suffix.
 
-Out-of-range literals are static errors. A minus sign directly on a signed literal includes the sign in range checking, so `-128s8` is valid; `-(128s8)` contains an out-of-range positive literal. Unary minus is forbidden for unsigned types, including `-0u16` and `-1u8`. New widths and `Byte` do not support constant or range patterns; bind the value and compare in a guard instead. Constant overflow and division by zero are errors in `const` expressions and warnings in ordinary expressions.
+Out-of-range literals are static errors. A minus sign directly on a signed literal includes the sign in range checking, so `-128s8` is valid; `-(128s8)` contains an out-of-range positive literal. Unary minus is forbidden for unsigned types, including `-0u16` and `-1u8`. `Integer8`, `Integer16`, `Integer32`, the unsigned integer types, `Byte`, and `Float32` do not support constant or range patterns; bind the value and compare in a guard instead. Constant overflow and division by zero are errors in `const` expressions and warnings in ordinary expressions.
 
-`Float32` rounds at value creation and after each arithmetic operation to binary32, using nearest rounding with ties to even. Operations are not combined into a fused multiply-add. Infinity, NaN, signed zero, and comparisons follow `Float`; NaN payload bits are not preserved as a contract. `toString`, interpolation, and `Trait.Show` use decimal integers and the shortest decimal representation that reads back to the same floating-point width, without a suffix. New integers support equality, `ordered`, and map/set keys; `Float32` supports equality and `ordered`, but cannot be a key. `Trait.Show` and `Trait.Order` have standard implementations for all seven types; `Trait.Order` treats all NaNs as equal and greater than other values, and treats positive and negative zero as equal.
+`Float32` rounds at value creation and after each arithmetic operation to binary32, using nearest rounding with ties to even. Operations are not combined into a fused multiply-add. Infinity, NaN, signed zero, and comparisons follow `Float`; NaN payload bits are not preserved as a contract. `toString`, interpolation, and `Trait.Show` use decimal integers and the shortest decimal representation that reads back to the same floating-point width, without a suffix. All integer types support equality, `ordered`, and map/set keys; `Float32` supports equality and `ordered`, but cannot be a key. `Trait.Show` and `Trait.Order` have standard implementations for all seven types; `Trait.Order` treats all NaNs as equal and greater than other values, and treats positive and negative zero as equal.
 
 ### Numeric conversions and standard functions
 
@@ -238,11 +282,11 @@ Conversion functions return `Option` when the value can be outside the destinati
 | `Integer8`, `Integer16`, `Integer32`, `UnsignedInteger16`, `UnsignedInteger32` | `fromInteger`, `toInteger` | `fromInteger` returns `Option[T]`; `toInteger` is exact and returns `Integer` |
 | `UnsignedInteger64` | `fromInteger`, `toInteger` | Both return `Option`; negative input or a result above `Integer`'s maximum gives `None` |
 | `UnsignedInteger64` | `fromDecimal`, `toDecimal` | Exact over the full range; `fromDecimal` accepts only integral values in range (including `1.0m`) and returns `Option` |
-| All six new integer modules | `parse`, `toString`, `toFloat` | Decimal parsing returns `Option` and rejects whitespace, base prefixes, underscores, out-of-range values, and negative unsigned values; `toFloat` rounds to binary64 |
-| All six new integer modules | `absolute`, `minimum`, `maximum`, `floorDivide`, `floorModulo` | Same-width results; signed minimum `absolute` overflows; unsigned `absolute` is the identity |
-| All six new integer modules | `bitwiseAnd`, `bitwiseOr`, `bitwiseExclusiveOr`, `bitwiseNot`, `shiftLeft`, `shiftRight` | Shift counts are `Integer` in 0 through width−1; left shifts discard bits beyond the width; signed right shifts extend the sign, unsigned right shifts fill with zero |
-| New signed integer modules | `shiftRightUnsigned` | Right shift with zero fill |
-| `Float32` | `fromFloat`, `toFloat` | `fromFloat` returns `Option`, rounds to binary32, and rejects finite values that become infinite; existing infinities and NaNs give `Some`; `toFloat` widens finite values exactly |
+| Signed 8/16/32-bit and unsigned 16/32/64-bit integer modules | `parse`, `toString`, `toFloat` | Decimal parsing returns `Option` and rejects whitespace, base prefixes, underscores, out-of-range values, and negative unsigned values; `toFloat` rounds to binary64 |
+| Signed 8/16/32-bit and unsigned 16/32/64-bit integer modules | `absolute`, `minimum`, `maximum`, `floorDivide`, `floorModulo` | Same-width results; signed minimum `absolute` overflows; unsigned `absolute` is the identity |
+| Signed 8/16/32-bit and unsigned 16/32/64-bit integer modules | `bitwiseAnd`, `bitwiseOr`, `bitwiseExclusiveOr`, `bitwiseNot`, `shiftLeft`, `shiftRight` | Shift counts are `Integer` in 0 through width−1; left shifts discard bits beyond the width; signed right shifts extend the sign, unsigned right shifts fill with zero |
+| `Integer8`, `Integer16`, `Integer32` | `shiftRightUnsigned` | Right shift with zero fill |
+| `Float32` | `fromFloat`, `toFloat` | `fromFloat` returns `Option`, rounds to binary32, and rejects finite values that become infinite; infinite and NaN inputs give `Some`; `toFloat` widens finite values exactly |
 | `Float32` | `parse`, `toString`, `truncate` | Parse directly to binary32 using `Float`'s decimal spelling, returning `Some` only for finite values; `truncate` returns `Option[Integer]`, rounding toward zero and rejecting NaN, infinity, and out-of-range values |
 | `Float32` | `absolute`, `floor`, `ceiling`, `round`, `squareRoot`, `isNaN`, `isInfinite` | Same behavior as `Float` at binary32 precision; `round` takes halfway values away from zero; negative square roots give NaN |
 
@@ -252,9 +296,9 @@ For `Float32` to a narrow integer, combine `truncate` and `fromInteger`. There i
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  bind small <- Option.unwrapOr(Integer8.fromInteger(42), 0s8)
+  bind small <- Option.unwrapOr(o: Integer8.fromInteger(42), fallback: 0s8)
   bind maximum <- 18446744073709551615u64
-  bind narrowed <- Option.unwrapOr(Float32.fromFloat(0.1), 0.0f32)
+  bind narrowed <- Option.unwrapOr(o: Float32.fromFloat(0.1), fallback: 0.0f32)
   bind same: Integer64 <- Integer8.toInteger(small)
   Console.writeLine("${small + 1s8} ${same} ${Integer8.fromInteger(128) = Option.None}")
   Console.writeLine("${UnsignedInteger64.toInteger(maximum) = Option.None} ${UnsignedInteger64.toDecimal(maximum)}")
@@ -287,7 +331,7 @@ function main() -> Unit uses Console.Write
   Console.write(page)
   Console.writeLine(r"\d+ and ${not interpolated}")
   Console.writeLine("${String.characterCount("héllo")} characters, ${String.byteLength("héllo")} bytes")
-  Console.writeLine(Decimal.toString(Decimal.round(2.675m, 2, RoundingMode.HalfToEven)))
+  Console.writeLine(Decimal.toString(Decimal.round(x: 2.675m, places: 2, mode: RoundingMode.HalfToEven)))
 end function
 ```
 
@@ -307,7 +351,7 @@ From lowest to highest precedence:
 
 | Operators | Meaning | Associativity |
 |---|---|---|
-| `|>` | Pipe: `x |> f(a)` is `f(x, a)` | Left |
+| `|>` | Pipe: supply the first parameter, as in `xs |> List.map(f: action)` | Left |
 | `or` | Logical or (short-circuit) | Left |
 | `and` | Logical and (short-circuit) | Left |
 | `=` `<>` `<` `<=` `>` `>=` | Comparison | None (`a < b < c` is an error) |
@@ -332,9 +376,35 @@ function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2
 end function
 ```
 
-Calls are not curried: give every argument. A *lambda* is a function value; its parameter and return types may be left out. Like a function, a lambda returns its value with `return`; a lambda that returns `Unit` can end with a statement instead.
+Calls are not curried: give every argument. For an ordinary function with two or more parameters, write every argument with its parameter name: `between(low: 2, value: 3, high: 4)`. A one-parameter function can be called with or without its name, and a zero-parameter function uses `f()`. Do not mix named and positional arguments. Named arguments can be written in any order, but each parameter must be supplied exactly once. A label names a parameter, not a local variable: `value: input` passes the local value `input` to the parameter `value`. The callee is evaluated first, then the argument expressions once each in source order, even when labels are written in a different order from the declaration.
 
-`_` as a direct argument of a call makes a function of the missing argument: `Integer.maximum(_, 0)` is `lambda(x) return Integer.maximum(x, 0) end lambda`. The pipe `x |> f(a, b)` passes `x` as the first argument, `f(x, a, b)`; when the call on the right has a `_`, the pipe fills that position instead.
+These calling rules apply to declared functions, built-ins, function values, lambdas, type-class methods, effect operations, and external functions. Direct data construction and data patterns use positional fields, such as `Pair(1, "one")`; records use named fields (see [Data types and records](#7-data-types-records-and-pattern-matching)). Attributes, handler-clause bindings, and `resume(value)` have their own syntax.
+
+A *lambda* is a function value; its parameter and return types may be left out. Like a function, a lambda returns its value with `return`; a lambda that returns `Unit` can end with a statement instead.
+
+Prefer a short lambda for a one-statement body. Explicit terminators are valid, and the formatter preserves the chosen form. A lambda containing one statement can omit `end lambda` when its entire header and body fit on one physical line, for example `lambda(x) return x + 1`. When the body starts on the last line of the header, only an `end lambda` on that same physical line closes it. An `end lambda` on a later line can close an outer lambda; blank lines do not change that correspondence. To write a multiline lambda, start its body on the line after the header and close it with `end lambda`.
+
+A short lambda needs `return` to return a non-`Unit` value. The pipe in `lambda(x) return x + 1 |> increment` belongs to its body; write `(lambda(x) return x + 1)(3)` to call the lambda itself. If either lambda in a directly nested pair omits its terminator, put parentheses around the entire inner lambda: `lambda(x) return (lambda(y) return x + y)`. A call argument or a binding statement provides an independent boundary. Before adding a second statement to a short body, move the body to the line after the header and add `end lambda`.
+
+### Function contracts and callbacks
+
+Write a function type with a name for each parameter: `function(value: Integer) -> Integer`, or `function(acc: Integer, value: Integer) -> Integer`. Names in a type do not bind local values. Parameter names and their order are part of the contract, together with types and effects. They must match at every position, even for a one-parameter callback; the checker does not rename a lambda to fit an expected type. Calling a function with labels in a different order does not change its contract order.
+
+`List.map` expects `function(value: T) -> U`, so write `List.map(xs: xs, f: lambda(value) return value * 2)`. See [The standard library](#19-the-standard-library) for common callback contracts and the complete declarations. Keep the expected name even when the parameter is unused; do not replace it with `_unused`. To use a descriptive local name, add a `bind` in a multiline body.
+
+To pass a function with a different contract, wrap it in a lambda with the required names. For example, `Integer.toString` takes `n`, so pass `lambda(value) return Integer.toString(value)` to `List.map`. Constructor function values and record accessors also have named contracts, described in [Data types and records](#7-data-types-records-and-pattern-matching).
+
+A call through an unannotated function parameter does not determine contract order from its labels. If constraints in the same function body do not establish the contract, add a type annotation, for example `g: function(a: Integer, b: Integer) -> Integer`. Otherwise the checker reports `E0455`, also for an unused lambda or a call with one positional argument. A caller cannot later supply the missing contract of an already checked function.
+
+### Holes and pipes
+
+`_` as a direct argument of a call makes a function of the missing argument: `Integer.maximum(a: _, b: 0)` has type `function(a: Integer) -> Integer`. Each hole inherits the name of its target parameter, and multiple holes are ordered as written: `between(high: _, value: 3, low: _)` takes `high, low`, not `low, high`. A direct positional constructor hole inherits its original position name: `Pair(_, "one")` takes `arg1`. The callee and fixed argument expressions are evaluated when the generated function is called, not when it is created. `return` and `try` inside those expressions target the generated function; `resume` cannot cross that boundary.
+
+Without direct holes, a call on the right of a pipe receives the left value as its first declared parameter: `xs |> List.map(f: action)`. Label every remaining explicit argument when the function has two or more parameters. Explicitly supplying the first parameter again is a duplicate; the pipe does not search for some other free parameter. Evaluation is the left side once, then the right callee, then explicit arguments in source order.
+
+With direct holes, as in `xs |> List.map(xs: _, f: action)`, the pipe instead calls the generated function with one argument. A parenthesized right side also receives a single argument as a function value. Two holes require two arguments; a pipe does not automatically partially apply that function again.
+
+### Type and effect parameters
 
 Type parameters are written in brackets after the name: `function first[T](xs: List[T]) -> Option[T]`. Type arguments also use brackets: `List[Integer]`, `Map[String, Integer]`. An *effect variable* is a type parameter that stands for a set of effects; it lets a function take a function argument with any effects and pass them on.
 
@@ -345,22 +415,22 @@ function between(low: Integer, value: Integer, high: Integer) -> Boolean
   return low <= value and value <= high
 end function
 
-function twice[T, effect E](x: T, f: function(T) -> T uses E) -> T uses E
+function twice[T, effect E](x: T, f: function(value: T) -> T uses E) -> T uses E
   return f(f(x))
 end function
 
 function main() -> Unit uses Console.Write
   bind text <- [1, 2, 3, 4, 5]
-    |> List.filter(_, between(2, _, 4))
-    |> List.map(_, Integer.toString)
-    |> String.join(_, ",")
+    |> List.filter(p: between(low: 2, value: _, high: 4))
+    |> List.map(f: lambda(value) return Integer.toString(value))
+    |> String.join(separator: ",")
   Console.writeLine(text)
-  Console.writeLine(Integer.toString(twice(5, lambda(n) return n * 3 end lambda)))
-  bind shout <- lambda(s: String) -> String
-    Console.writeLine("shouting ${s}")
-    return String.toUppercase(s)
+  Console.writeLine(Integer.toString(twice(x: 5, f: lambda(value) return value * 3)))
+  bind shout <- lambda(value: String) -> String
+    Console.writeLine("shouting ${value}")
+    return String.toUppercase(value)
   end lambda
-  Console.writeLine(twice("hi", shout))
+  Console.writeLine(twice(x: "hi", f: shout))
 end function
 ```
 
@@ -380,11 +450,15 @@ A call in tail position (`return f(...)`) does not grow the call stack, also bet
 
 ### Data types
 
-A data type lists its constructors, one per line. Constructors are always written with the type name, in expressions and in patterns: `Shape.Circle(1.0)`, `Option.Some(x)`, `Result.Error(e)`. A type whose only constructor has the same name as the type, such as `Pair` and `Triple`, is written without the type name: `Pair(1, "one")`.
+A data type lists its constructors, one per line. Constructors are written with the type name, in expressions and in patterns: `Shape.Circle(1.0)`, `Option.Some(x)`, `Result.Error(e)`. A type whose only constructor has the same name as the type, such as `Pair` and `Triple`, is written without the type name: `Pair(1, "one")`.
+
+A constructor with fields can also be used as a function value. Its parameters are `arg1`, `arg2`, and so on, in field order: after `bind make <- Pair`, call `make(arg1: 1, arg2: "one")`. A direct constructor call such as `Pair(1, "one")` uses positional fields; labels in that direct call report `E0456`.
 
 ### Records
 
 A record has named fields. Build one with named arguments, read a field with `Type.field(value)`, and make a copy with some fields changed with `Type(..value, field: newValue)`. `value.field` is not valid.
+
+A record accessor such as `Item.price` has the parameter name `value`. A record constructor used as a function value takes the field names in declaration order. These names must match any expected callback contract, as described in [Function contracts and callbacks](#function-contracts-and-callbacks).
 
 ### Pattern matching
 
@@ -400,6 +474,8 @@ Patterns can be:
 - followed by a guard, `case n if n > 0 ->`.
 
 A list literal can contain one spread, `[first, ..rest]`, which inserts the elements of another list. `bind` and `shadow` accept a pattern that always matches, such as `bind Pair(a, b) <- pair`.
+
+For a final catch-all branch, prefer an ordinary name such as `case other ->` or `case otherCode ->`. These names bind the matched value and are not keywords. Choose a name that does not collide with an outer local name or a visible constant; put no unreachable branch after an unguarded catch-all. `case _ ->` is valid and produces no warning. This recommendation does not apply to `_` inside a constructor pattern, in a discarded binding, or as a partial-application placeholder.
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -436,13 +512,13 @@ function grade(score: Integer) -> String
     case 90..100 -> "A"
     case 70..89 -> "B"
     case 0, 1 -> "almost nothing"
-    case _ -> "C"
+    case otherScore -> "C"
   end match
 end function
 
 function main() -> Unit uses Console.Write
-  List.forEach([Shape.Circle(1.0), Shape.Rectangle(2.0, 3.5)], lambda(s)
-    Console.writeLine(Float.toString(area(s)))
+  List.forEach(xs: [Shape.Circle(1.0), Shape.Rectangle(2.0, 3.5)], f: lambda(value)
+    Console.writeLine(Float.toString(area(value)))
   end lambda)
   bind item <- Item(name: "pen", price: 120, quantity: 3)
   bind more <- Item(..item, quantity: 10)
@@ -481,7 +557,7 @@ const banner: String = "listening on ${defaultPort}"
 const statusNames: Map[Integer, String] = Map.fromList([Pair(200, "OK"), Pair(404, "Not Found")])
 
 function lookup(id: UserId) -> String
-  return Option.unwrapOr(Map.get(statusNames, id), "unknown")
+  return Option.unwrapOr(o: Map.get(m: statusNames, k: id), fallback: "unknown")
 end function
 
 function main() -> Unit uses Console.Write
@@ -499,7 +575,9 @@ Not Found
 
 An operation that may have no value returns `Option[T]` (`Option.Some(x)` or `Option.None`). An operation that may fail returns `Result[T, E]` (`Result.Ok(x)` or `Result.Error(e)`). IO operations return `Result[T, IOError]`; a missing file is a value, not a crash.
 
-`try e` evaluates `e`. If it is `Result.Error` (or `Option.None`), the function returns it at once; otherwise `try` gives the value inside. `try` applies to the whole expression on its right, including pipes, and can only be used in a function that returns `Result` (or `Option`). When the error types differ, convert first, usually with `Result.mapError`.
+`try e` evaluates `e`. If it is `Result.Error` (or `Option.None`), the function returns it at once; otherwise `try` gives the value inside. `try` applies to the whole expression on its right, including pipes, and can only be used in a function that returns `Result` (or `Option`). When the error types differ, convert first with `Result.mapError(r: result, f: lambda(error) return IOError.message(error))`, for example when a function returns `Result[T, String]` and `result` contains an `IOError`. The callback parameter is named `error`.
+
+For a pipeline, write `try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))`. Here `try` unwraps the result of the whole pipeline. Inside a lambda, `try` returns from that lambda. Inside the callee or fixed arguments of a call with `_` holes, it returns from the generated function, so it does not return from the surrounding function. See [Holes and pipes](#holes-and-pipes).
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -507,7 +585,7 @@ import Benitoite.Unofficial.IO.Console
 function parsePort(text: String) -> Result[Integer, String]
   return match Integer.parse(text) with
     case Option.Some(n) if n > 0 and n < 65536 -> Result.Ok(n)
-    case _ -> Result.Error("not a port: ${text}")
+    case otherPort -> Result.Error("not a port: ${text}")
   end match
 end function
 
@@ -574,7 +652,7 @@ error[E0501]
 
 Adding `uses Console.Write` to `greet` fixes the error.
 
-An effect is part of the type of a function value: `function(String) -> Unit uses Console.Write`.
+An effect is part of the type of a function value: `function(text: String) -> Unit uses Console.Write`.
 
 ## 11. Effect handlers
 
@@ -589,7 +667,7 @@ end effect
 
 function sumPrices(items: List[Integer]) -> Integer uses Log
   write("items: ${List.length(items)}")
-  return List.fold(items, 0, lambda(acc, x) return acc + x end lambda)
+  return List.fold(xs: items, initial: 0, f: lambda(acc, value) return acc + value)
 end function
 
 function main() -> Unit uses Console.Write
@@ -621,7 +699,7 @@ Each file is a module. Its name is its path from the root directory, with `/` re
 name: Lib/Text.bnt
 /// Turns "Hello World" into "hello-world".
 public function slug(text: String) -> String
-  return String.toLowercase(String.replace(String.trim(text), " ", "-"))
+  return String.toLowercase(String.replace(s: String.trim(text), old: " ", new: "-"))
 end function
 ```
 
@@ -656,7 +734,11 @@ For importing modules from a local dependency, see [Experimental: packages and e
 
 ## 13. Type classes
 
-A *type class* (`trait`) declares functions that several types implement. `implement` gives the implementation for one type. A type parameter can be constrained with `[T: Show]`; several constraints are joined with `&`. The built-in constraints `equality` (values can be compared with `=`) and `key` (values can be keys of `Map` and elements of `Set`) can be used in the same place. Methods are called through the class name: `Describe.describe(x)`.
+A *type class* (`trait`) declares functions that several types implement. `implement` gives the implementation for one type. A type parameter can be constrained with `[T: Show]`; several constraints are joined with `&`. The built-in constraints `equality` (values can be compared with `=`) and `key` (values can be keys of `Map` and elements of `Set`) can be used in the same place.
+
+Methods are called through the class name: `Describe.describe(x)`. Methods with two or more parameters require named arguments.
+
+Each implementation must use the parameter names and order declared by the class, including names in nested function types; a mismatch reports `E0454`. Standard methods follow the same rule: the callback of `Functor.map` takes `value`, and that of `Foldable.fold` takes `acc, value`.
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -672,18 +754,21 @@ implement Describe[Integer]
 end implement
 
 implement[T: Describe] Describe[List[T]]
-  function describe(xs: List[T]) -> String
-    return "[" + String.join(List.map(xs, Describe.describe), ", ") + "]"
+  function describe(x: List[T]) -> String
+    return "[" + String.join(xs: List.map(xs: x, f: lambda(value) return Describe.describe(value)), separator: ", ") + "]"
   end function
 end implement
 
 function describeIfSame[T: Describe & equality](a: T, b: T) -> String
-  return if a = b then Describe.describe(a) else "different" end if
+  return match a = b with
+    case true -> Describe.describe(a)
+    case false -> "different"
+  end match
 end function
 
 function main() -> Unit uses Console.Write
   Console.writeLine(Describe.describe([1, 2]))
-  Console.writeLine(describeIfSame(3, 3))
+  Console.writeLine(describeIfSame(a: 3, b: 3))
 end function
 ```
 
@@ -702,11 +787,14 @@ An implementation applies to the whole program. An implementation must be in the
 import Benitoite.Unofficial.IO.Console
 
 function choose(useFirst: Boolean, first: Lazy[Integer], second: Lazy[Integer]) -> Integer
-  return if useFirst then Lazy.force(first) else Lazy.force(second) end if
+  return match useFirst with
+    case true -> Lazy.force(first)
+    case false -> Lazy.force(second)
+  end match
 end function
 
 function main() -> Unit uses Console.Write
-  bind result <- choose(true, lazy 42 end lazy, lazy 100 div String.characterCount("") end lazy)
+  bind result <- choose(useFirst: true, first: lazy 42 end lazy, second: lazy 100 div String.characterCount("") end lazy)
   Console.writeLine("${result}")
 end function
 ```
@@ -729,7 +817,7 @@ A `Reference` is a mutable cell. `Reference.new`, `Reference.get`, and `Referenc
 
 ### Tasks
 
-Tasks run concurrently within one program. `TaskGroup.open()` opens a group as a resource; `TaskGroup.spawn(group, lambda() ... end lambda)` starts a task in it, and `Task.await(task)` waits for its result. Releasing the group at `end with` waits for all its tasks. `Task.all` runs a list of functions as tasks and returns their results in order; `Task.race` returns the first result and cancels the other tasks. `Task.withTimeout(milliseconds, action)` returns `Option.Some` with the result when the task finishes before the time has passed, and otherwise cancels the task and returns `Option.None`; a task that finishes just before the deadline can still give `Option.None`, because the deadline is checked when `benitoite` next switches tasks. Operations that wait, such as reading a file, an HTTP request, or `Clock.sleep`, let other tasks run.
+Tasks run concurrently within one program. `TaskGroup.open()` opens a group as a resource; `TaskGroup.spawn(group: group, action: lambda() ...)` starts a task in it, and `Task.await(task)` waits for its result. Releasing the group at `end with` waits for all its tasks. `Task.all` runs a list of functions as tasks and returns their results in order; `Task.race` returns the first result and cancels the other tasks. `Task.withTimeout(milliseconds: milliseconds, action: action)` returns `Option.Some` with the result when the task finishes before the time has passed, and otherwise cancels the task and returns `Option.None`; a task that finishes just before the deadline can still give `Option.None`, because the deadline is checked when `benitoite` next switches tasks. Operations that wait, such as reading a file, an HTTP request, or `Clock.sleep`, let other tasks run.
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -737,16 +825,16 @@ import Benitoite.Unofficial.IO.Console
 function main() -> Unit uses Console.Write, State
   bind counter <- Reference.new(0)
   bind squares <- with group = TaskGroup.open() do
-    bind tasks <- List.map([1, 2, 3], lambda(n)
-      return TaskGroup.spawn(group, lambda()
-        Reference.set(counter, Reference.get(counter) + 1)
-        return n * n
+    bind tasks <- List.map(xs: [1, 2, 3], f: lambda(value)
+      return TaskGroup.spawn(group: group, action: lambda()
+        Reference.set(reference: counter, value: Reference.get(counter) + 1)
+        return value * value
       end lambda)
     end lambda)
-    List.map(tasks, lambda(task) return Task.await(task) end lambda)
+    List.map(xs: tasks, f: lambda(value) return Task.await(value))
   end with
-  Console.writeLine("${String.join(List.map(squares, Integer.toString), " ")} after ${Reference.get(counter)} tasks")
-  Console.writeLine(String.join(List.map(Task.all([lambda() return "a" end lambda, lambda() return "b" end lambda]), lambda(s) return s end lambda), ""))
+  Console.writeLine("${String.join(xs: List.map(xs: squares, f: lambda(value) return Integer.toString(value)), separator: " ")} after ${Reference.get(counter)} tasks")
+  Console.writeLine(String.join(xs: List.map(xs: Task.all([lambda() return "a", lambda() return "b"]), f: lambda(value) return value), separator: ""))
 end function
 ```
 
@@ -759,14 +847,14 @@ When a task stops with a runtime error, the program stops. When the program is i
 
 ## 16. Tests
 
-A test is a function with the attribute `@test("description")`, no parameters, and the return type `Unit` or `Result[Unit, String]`. Check values with `Assert.equal(actual, expected)` and `Assert.isTrue(condition, message)`, which need the effect `Assert.Check`. A failed check stops that test; returning `Result.Error(message)` also fails it. Each test runs on its own, so a failure or a runtime error in one test does not stop the others.
+A test is a function with the attribute `@test("description")`, no parameters, and the return type `Unit` or `Result[Unit, String]`. Check values with `Assert.equal(actual: actual, expected: expected)` and `Assert.isTrue(condition: condition, message: message)`, which need the effect `Assert.Check`. A failed check stops that test; returning `Result.Error(message)` also fails it. Each test runs on its own, so a failure or a runtime error in one test does not stop the others.
 
 ```benitoite test
 import Benitoite.Unofficial.IO.File
 
 function countWords(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  return Result.Ok(List.length(List.filter(String.split(text, " "), lambda(w) return w <> "" end lambda)))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  return Result.Ok(List.length(List.filter(xs: String.split(s: text, separator: " "), p: lambda(value) return value <> "")))
 end function
 
 @test("countWords counts words separated by spaces")
@@ -775,16 +863,16 @@ function countWordsCounts() -> Unit uses Assert.Check, File.Read
     countWords("notes.txt")
   with
     case File.readText(path) ->
-      Assert.equal(path, "notes.txt")
+      Assert.equal(actual: path, expected: "notes.txt")
       resume(Result.Ok("one two  three"))
   end handle
-  Assert.equal(result, Result.Ok(3))
+  Assert.equal(actual: result, expected: Result.Ok(3))
 end function
 ```
 
 The handler replaces `File.readText`, so the test reads no file. The test still lists `File.Read`, because the handler handles only `File.readText`, one of the operations of `File.Read`, and an effect is removed only when all its operations are handled.
 
-Run tests with `benitoite test`. For a file `t.bnt` with one passing test and one test that checks `Assert.equal(double(2), 5)`, the report is:
+Run tests with `benitoite test`. For a file `t.bnt` with one passing test and one test that checks `Assert.equal(actual: double(2), expected: 5)`, the report is:
 
 ```sh
 benitoite test t.bnt
@@ -853,6 +941,24 @@ With `--diagnostics=json`, each diagnostic is one JSON object on its own line of
 
 Tell diagnostics apart by `code` and the JSON fields, not by the message: messages and the contents of helps may change even in patch versions. A code that has been removed is never reused with another meaning.
 
+### Calls, function contracts, and lambdas
+
+| Code | Meaning and correction |
+|---|---|
+| `E0254` | A lambda without `end lambda` crosses a physical line. Put the body after the header line and add `end lambda` for a multiline body. |
+| `E0256` | Directly nested lambdas need parentheses around the inner lambda when either omits `end lambda`. |
+| `E0257` | A function-type parameter has no name. Write each parameter as `name: Type`, using the expected contract's names. |
+| `E0449` | A function with two or more parameters requires named arguments. Use the declared names while preserving expression order. |
+| `E0450` | A call mixes named and positional arguments. Use one form consistently. |
+| `E0451` | A label does not name a parameter. Read the available names in declaration order. |
+| `E0452` | A parameter is supplied more than once, including a pipe's implicit first argument. Supply it once. |
+| `E0453` | Named arguments omit required parameters. Supply the missing names listed by the diagnostic. |
+| `E0454` | Function parameter names or their order differ from the expected contract, including in an implementation method. Match the contract or use a wrapper with the required names. |
+| `E0455` | A function's parameter names and order cannot be determined. Add a named function-type annotation. Call-label order does not establish a contract. |
+| `E0456` | A direct data constructor call uses labels. Use positional fields, or bind the constructor to a function value and use that value's parameter names. |
+
+`E0402` reports positional argument-count errors, including direct constructor calls. `E0453` reports missing named arguments at the call site and lists their names. Apply suggested edits after checking the target declaration; reordering effectful expressions can change the program's behavior.
+
 The meaning of every code is listed in the bundled Agent Skill (`references/diagnostics.md`, installed by `benitoite skill install`).
 
 ## 19. The standard library
@@ -884,6 +990,26 @@ Modules in the prelude need no import. The others are imported with the name in 
 | `Hash` | `import Benitoite.Unofficial.Hash` | SHA-256 hash values of bytes |
 | `Network.Http` | `import Benitoite.Unofficial.Network.Http` | HTTP/1.1 servers without TLS, and clients for `http` and `https` |
 
+### Parameter names in library calls
+
+Read parameter names from the declarations in the [standard library reference](../../crates/benitoite/skill/references/stdlib/index.md). For example, `List.map` takes outer arguments `xs, f`; its `f` argument has the contract `function(value: T) -> U uses E`. These are separate sets of names: write `List.map(xs: items, f: lambda(value) return value * 2)`.
+
+Common callback contracts are:
+
+| Functions | Callback parameter names, in order |
+|---|---|
+| `List.map`, `List.filter`, `List.forEach`, `Set.map`, `Set.filter`, `Set.forEach`, `Option.map`, `Result.map` | `value` |
+| `List.fold`, `Set.fold` | `acc, value` |
+| `Map.map`, `Map.filter`, `Map.forEach` | `key, value` |
+| `Map.fold` | `acc, key, value` |
+| `Result.mapError` | `error` |
+| `Trait.Functor.map` | `value` |
+| `Trait.Foldable.fold` | `acc, value` |
+
+Keep these names even for unused parameters. When passing a function with different parameter names, use the wrappers described in [Function contracts and callbacks](#function-contracts-and-callbacks).
+
+### IO and network behavior
+
 A few behaviors worth knowing:
 
 - After a write to a `File.Writer` fails, including a write that flushes the buffer, the writer discards the buffered data and keeps the error. Later `File.write`, `File.writeLine`, and `File.writeChunk` return the same error without writing anything. `File.closeWriter` closes without writing and returns the same message with `IOErrorKind.Other`. Leaving a `with` block that holds the writer is a release failure (a runtime error), even if you handled the write error. To handle the release error, call `File.closeWriter` at the end of the block and check its result. Stop writing at the first error and open the file again to retry.
@@ -913,24 +1039,24 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.Json
 
 function amountOf(order: Json.Value) -> Option[Pair[String, Integer]]
-  bind category <- try Option.andThen(Json.get(order, "category"), Json.asString)
-  bind amount <- try Option.andThen(Json.get(order, "amount"), Json.asInteger)
+  bind category <- try Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString)
+  bind amount <- try Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger)
   return Option.Some(Pair(category, amount))
 end function
 
 function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind text <- try File.readText("orders.json") |> Result.mapError(_, IOError.message)
-  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
-  bind orders <- try Option.okOr(Json.asArray(value), "orders.json is not an array")
-  bind totals <- List.fold(orders, Map.empty(), lambda(m, order)
-    return match amountOf(order) with
+  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
+  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array")
+  bind totals <- List.fold(xs: orders, initial: Map.empty(), f: lambda(acc, value)
+    return match amountOf(value) with
       case Option.Some(Pair(category, amount)) ->
-        Map.set(m, category, Option.unwrapOr(Map.get(m, category), 0) + amount)
-      case Option.None -> m
+        Map.set(m: acc, k: category, value: Option.unwrapOr(o: Map.get(m: acc, k: category), fallback: 0) + amount)
+      case Option.None -> acc
     end match
   end lambda)
-  Map.forEach(totals, lambda(category, total)
-    Console.writeLine("${category}: ${total}")
+  Map.forEach(m: totals, f: lambda(key, value)
+    Console.writeLine("${key}: ${value}")
   end lambda)
   return Result.Ok(())
 end function
@@ -943,6 +1069,8 @@ food: 300
 
 ## 20. Compatibility
 
+### Version policy
+
 While the major version is 0:
 
 - A minor version (`0.1.0` to `0.2.0`) may change the language, the standard library, the command line, and diagnostics in incompatible ways. Each incompatible change is listed in the [CHANGELOG](../../CHANGELOG.md) with how to migrate.
@@ -950,7 +1078,7 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: `0.0.4`, like `0.0.1`, `0.0.2` and `0.0.3`, is a source-only release; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: Releases `0.0.1` through `0.0.5` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
 
 ## 21. Experimental: packages and external functions
 
@@ -962,7 +1090,7 @@ A package is a directory with a `package.bnt` settings file and modules that oth
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.4"
+language "0.0.5"
 
 package Textkit
   license "MIT"
@@ -972,7 +1100,7 @@ end package
 ```files
 name: packages/textkit/Slug.bnt
 public function slug(text: String) -> String
-  return String.toLowercase(String.replace(String.trim(text), " ", "-"))
+  return String.toLowercase(String.replace(s: String.trim(text), old: " ", new: "-"))
 end function
 ```
 
@@ -980,7 +1108,7 @@ Declare the dependency before imports and declarations in the starting script:
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.4"
+language "0.0.5"
 
 dependency Textkit
   path "packages/textkit"
@@ -1012,7 +1140,7 @@ For example, a root settings file can record the language version while the star
 
 ```files
 name: package.bnt
-language "0.0.4"
+language "0.0.5"
 ```
 
 ```benitoite check
@@ -1023,7 +1151,7 @@ end function
 
 Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
 
-`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. A version newer than the interpreter is rejected. Older versions are compared with the interpreter's table of incompatible language changes; that table is currently empty. The declaration is optional in the starting script and root settings, and required in a package's settings. Root and dependency versions are not compared with each other.
+`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.5`, a declaration of `0.0.5` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
 
 `package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
 
@@ -1196,16 +1324,16 @@ The checker selects a transfer route before execution. It calls the original gue
 |---|---|---|
 | `stateful` | A parameter or result contains an external resource type | Dynamic WIT values, retaining the component instance |
 | `typed` | No resources; zero to three parameters and one result; all types are `Integer`, `Float`, `String`, `Bytes`, `List[Byte]`, `List[Integer]`, or `List[Float]`; numeric-list parameters require at most two parameters | Numbers cost zero, bytes one per element, numeric lists eight per element, argument strings their UTF-8 byte length |
-| `adapter` | Other supported, nonrecursive values, including new numeric widths, nested lists, maps, flags, general tuples, variants, and functions without a result | Actual packed bytes, including the 32-byte header and padding; a separate construction budget uses the same configured limit |
+| `adapter` | Other supported, nonrecursive values, including numeric widths outside the `typed` route, nested lists, maps, flags, general tuples, variants, and functions without a result | Actual packed bytes, including the 32-byte header and padding; a separate construction budget uses the same configured limit |
 | `dynamic` | The adapter would exceed its 16 MiB generated-code limit or memory32 layout range, or the conservative core-instance estimate (including three adapter instances) would exceed 16 | Dynamic WIT values; the decision happens before the guest is called |
 
-Aliases preserve route selection: `Integer64`, `Float64`, and `UnsignedInteger8` denote the same types as `Integer`, `Float`, and `Byte`. Adapters are composed per function, so adding a declaration for another function does not change its composition or instance-count estimate. Compiled components and generated adapters are reused within checking or one execution; there is no persistent cache. The adapter's memory, core instances, and tables count toward the same Store limits as the guest, and its instructions consume the same fuel and respond to the same interruption requests. Each adapter adds three core instances for memory, conversion, and fusion. The defaults do not increase to accommodate the adapter. Multiple copies can make adapter linear-memory use approximately three to four times the transfer size, so a value accepted on a previous route may reach the default 64 MiB memory limit. Original guest string encodings, including UTF-16, are handled by the Component Model; the adapter's packed strings are UTF-8. Guest post-return cleanup runs through the Component Model after values have been copied, and the host does not call it a second time.
+Aliases preserve route selection: `Integer64`, `Float64`, and `UnsignedInteger8` denote the same types as `Integer`, `Float`, and `Byte`. Adapters are composed per function, so adding a declaration for another function does not change its composition or instance-count estimate. Compiled components and generated adapters are reused within checking or one execution; there is no persistent cache. The adapter's memory, core instances, and tables count toward the same Store limits as the guest, and its instructions consume the same fuel and respond to the same interruption requests. Each adapter adds three core instances for memory, conversion, and fusion. The defaults do not increase to accommodate the adapter. Multiple copies can make adapter linear-memory use approximately three to four times the transfer size, so a value whose transfer size is below the transfer budget may reach the default 64 MiB memory limit. Original guest string encodings, including UTF-16, are handled by the Component Model; the adapter's packed strings are UTF-8. Guest post-return cleanup runs through the Component Model after values have been copied, and the host does not call it a second time.
 
 For the adapter route, the transfer budget limits the complete packed argument and result byte sequences independently. A second budget limits the logical construction cost in each direction to the same `--wasm-transfer` value: 16 bytes per occurrence of a Benitoite value, plus string and `Bytes` contents. List elements, constructor fields, every map key/value, and selected flags constructors count as occurrences. A `Bytes` element does not add a separate 16 bytes; a `List[Byte]` element does. ABI-only root records, map-entry tuples, and tuples used to group a constructor's arguments do not add a Benitoite value. Duplicate map entries are counted and validated before normalization. Even zero-size ABI values count toward construction. This is logical construction cost, not allocated heap bytes or total process memory.
 
 Dynamic routes count each list element as a host `Val` (40 bytes on supported platforms), including each byte of `Bytes`; maps count both key and value representations. Record fields include their WIT names and child representations; variants include the selected name and a representation for a present payload; enums and selected flags include name bytes. Children add their own costs. Scalars and resource handles cost zero. On the typed route, result strings are charged their guest-encoded byte length during lifting, while statistics report UTF-8 bytes. Thus the same value can reach the transfer limit differently depending on the signature and route. `Bytes` and `List[Byte]` keep distinct Benitoite result types. Arguments are checked and prepared before execution-time compilation or instantiation; returned lists are built directly into small leaves, without an intermediate array of Benitoite values for the whole list.
 
-Existing value-size limits still apply before construction: strings and `Bytes` at most 2^30 bytes, and lists at most 2^24 elements. Map and Set do not gain a language-wide element-count limit. The transfer and construction budgets, fuel, and Store limits are checked even without statistics.
+Value-size limits apply before construction: strings and `Bytes` at most 2^30 bytes, and lists at most 2^24 elements. Map and Set have no language-wide element-count limit. The transfer and construction budgets, fuel, and Store limits are checked even without statistics.
 
 `run` and `test` accept `--wasm-memory=<size>`, `--wasm-fuel=<count>`, and `--wasm-transfer=<size>` to change these limits. Sizes are byte counts or integers with a `KiB`, `MiB`, or `GiB` suffix, from 1 MiB through 4 GiB. Fuel is a decimal integer from 1 through 2^64−1. Invalid or duplicate settings are usage errors (exit status 2). For `run`, put these options before the script path; `test` also accepts them between paths. Every test function uses the same configured limits.
 

@@ -29,18 +29,18 @@ end function
 function main() -> Unit uses Console.Write
   bind values <- [
     rounded, product, quotient, negativeZero, infinity, nan,
-    subtract(add(16777216.0f32, 1.0f32), 16777216.0f32),
-    add(16777218.0f32, 1.0f32),
-    multiply(1.0000001192092896f32, 1.0000001192092896f32),
-    divide(1.0f32, 3.0f32),
-    add(-0.0f32, -0.0f32), subtract(-0.0f32, 0.0f32),
-    multiply(-0.0f32, 2.0f32), divide(0.0f32, -2.0f32),
+    subtract(a: add(a: 16777216.0f32, b: 1.0f32), b: 16777216.0f32),
+    add(a: 16777218.0f32, b: 1.0f32),
+    multiply(a: 1.0000001192092896f32, b: 1.0000001192092896f32),
+    divide(a: 1.0f32, b: 3.0f32),
+    add(a: -0.0f32, b: -0.0f32), subtract(a: -0.0f32, b: 0.0f32),
+    multiply(a: -0.0f32, b: 2.0f32), divide(a: 0.0f32, b: -2.0f32),
     negate(0.0f32), negate(-0.0f32),
-    divide(1.0f32, 0.0f32), divide(1.0f32, -0.0f32),
-    multiply(3.4028234663852886e38f32, 2.0f32),
-    divide(0.0f32, 0.0f32), add(nan, 1.0f32),
-    subtract(infinity, infinity), multiply(0.0f32, infinity),
-    divide(infinity, infinity), negate(nan)
+    divide(a: 1.0f32, b: 0.0f32), divide(a: 1.0f32, b: -0.0f32),
+    multiply(a: 3.4028234663852886e38f32, b: 2.0f32),
+    divide(a: 0.0f32, b: 0.0f32), add(a: nan, b: 1.0f32),
+    subtract(a: infinity, b: infinity), multiply(a: 0.0f32, b: infinity),
+    divide(a: infinity, b: infinity), negate(nan)
   ]
   Console.writeLine(Integer.toString(List.length(values)))
 end function

@@ -41,7 +41,7 @@ function joined(v: Joined) -> Joined
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   bind Pair(n, rounds) <- try Runner.settings()
 
-  return Runner.verify(rounds, lambda() -> Boolean
+  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
     bind c0 <- one(One.Value(Pair(n, n + 4))) = One.Value(Pair(n + 11, n + 26))
     bind c1 <- two(Two.Value(n, n + 4)) = Two.Value(n + 11, n + 26)
     bind c2 <- one(One.Empty) = One.Empty

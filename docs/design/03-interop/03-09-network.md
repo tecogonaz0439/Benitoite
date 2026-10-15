@@ -12,6 +12,8 @@
 
 ## 仕様
 
+関数一覧の表の `f(a, b)` は、関数とパラメータを示す記法である。実際のコードでは、複数の引数を取る通常の関数は宣言のパラメータ名を付けて名前付きで呼ぶ。
+
 ### モジュールとエフェクト
 
 【決定】ネットワークの操作を行うモジュールは、`Benitoite.IO` ではなく `Benitoite.Network` の下に置き、import しなければ使えない。`Benitoite.Network.Http` は、次の二つの組み込みのエフェクトを宣言する。
@@ -75,14 +77,14 @@ end record
 
 | 関数 | 型 | 振る舞い |
 |---|---|---|
-| `Http.serve(host, port, handler)` | `function[effect E](String, Integer, function(Http.Request) -> Http.Response uses E) -> Result[Unit, NetworkError] uses Http.Listen, State, E` | `host` の `port` で待ち受け、受け付けた要求ごとにタスクを起動して `handler` を呼び、その値を応答として返す。待ち受けを始められないとき、または `Http.accept` が失敗を返したとき（待ち受けを続けられないとき）に `Result.Error` を返して終わる |
-| `Http.listen(host, port)` | `function(String, Integer) -> Result[Http.Listener, NetworkError] uses Http.Listen` | `host` の `port` で待ち受けを始める |
-| `Http.listenerPort(listener)` | `function(Http.Listener) -> Integer uses Http.Listen` | 待ち受けているポートの番号 |
-| `Http.accept(listener)` | `function(Http.Listener) -> Result[Http.Exchange, NetworkError] uses Http.Listen` | 次の要求を待ち、受け付ける。待つ間は、ほかのタスクを進める（[並行処理](../01-spec/01-11-concurrency.md)）。一つの接続だけの失敗と資源の不足では失敗を返さない（後述の「失敗の種類」） |
-| `Http.requestOf(exchange)` | `function(Http.Exchange) -> Http.Request` | 受け付けた要求。純粋な関数である |
-| `Http.respond(exchange, response)` | `function(Http.Exchange, Http.Response) -> Result[Unit, NetworkError] uses Http.Listen` | 応答を送る |
-| `Http.closeListener(listener)` | `function(Http.Listener) -> Result[Unit, NetworkError] uses State` | 待ち受けをやめる |
-| `Http.closeExchange(exchange)` | `function(Http.Exchange) -> Result[Unit, NetworkError] uses State` | 応答を一バイトも送っていなければ、総時間 3 秒を上限として状態コード 500 の応答を送ってから接続を閉じる。応答を書きかけていれば、続きを送らずに接続を閉じる。書き込みや接続を閉じる処理が失敗すれば、`Result.Error` を返しうる |
+| `Http.serve(host, port, handler)` | `function[effect E](host: String, port: Integer, handler: function(request: Http.Request) -> Http.Response uses E) -> Result[Unit, NetworkError] uses Http.Listen, State, E` | `host` の `port` で待ち受け、受け付けた要求ごとにタスクを起動して `handler` を呼び、その値を応答として返す。待ち受けを始められないとき、または `Http.accept` が失敗を返したとき（待ち受けを続けられないとき）に `Result.Error` を返して終わる |
+| `Http.listen(host, port)` | `function(host: String, port: Integer) -> Result[Http.Listener, NetworkError] uses Http.Listen` | `host` の `port` で待ち受けを始める |
+| `Http.listenerPort(listener)` | `function(listener: Http.Listener) -> Integer uses Http.Listen` | 待ち受けているポートの番号 |
+| `Http.accept(listener)` | `function(listener: Http.Listener) -> Result[Http.Exchange, NetworkError] uses Http.Listen` | 次の要求を待ち、受け付ける。待つ間は、ほかのタスクを進める（[並行処理](../01-spec/01-11-concurrency.md)）。一つの接続だけの失敗と資源の不足では失敗を返さない（後述の「失敗の種類」） |
+| `Http.requestOf(exchange)` | `function(exchange: Http.Exchange) -> Http.Request` | 受け付けた要求。純粋な関数である |
+| `Http.respond(exchange, response)` | `function(exchange: Http.Exchange, response: Http.Response) -> Result[Unit, NetworkError] uses Http.Listen` | 応答を送る |
+| `Http.closeListener(listener)` | `function(listener: Http.Listener) -> Result[Unit, NetworkError] uses State` | 待ち受けをやめる |
+| `Http.closeExchange(exchange)` | `function(exchange: Http.Exchange) -> Result[Unit, NetworkError] uses State` | 応答を一バイトも送っていなければ、総時間 3 秒を上限として状態コード 500 の応答を送ってから接続を閉じる。応答を書きかけていれば、続きを送らずに接続を閉じる。書き込みや接続を閉じる処理が失敗すれば、`Result.Error` を返しうる |
 
 - `Http.Listener` と `Http.Exchange` はリソースの型である（[リソース管理](../01-spec/01-10-resources.md)）。`with` で束縛したときの解放は、それぞれ `Http.closeListener` と `Http.closeExchange` と同じ処理である。この二つの関数は、`Http.Listen` の操作ではなく、`State` を型に持つ組み込みの関数であり、ハンドラで処理できない。解放のエフェクトは `State` である。
 - 【方針】`Http.Exchange` の解放では、応答を一バイトも送っていないときだけ状態コード 500 を送る。書き込みの総時間の上限は 3 秒とし、部分書き込みや中断された書き込みをやり直しても期限を延ばさない。期限を超えるか書き込みに失敗したときは、接続を閉じる。応答を書きかけているときは、続きを送らずに接続を shutdown して閉じる。実行時エラーや中断の要求などの止める手順では、500 の送信も、既に始めた解放の完了の待ちも行わず、接続を shutdown して閉じる（[ランタイム](../02-impl/02-09-runtime.md)の「リソースの追跡」）。
@@ -98,21 +100,21 @@ end record
 【方針】`Http.serve` は、標準ライブラリのソースで、次のように書く。受け付けを繰り返し、要求ごとに `TaskGroup.spawn` でタスクを起動する。`TaskGroup.open()` は `with` の束縛の式としてだけ書ける。受け付けに失敗すると `try` で `serveLoop` を終え、`with` を抜けるときに、起動したタスクがすべて終わるのを待つ。
 
 ```text
-public function serve[effect E](host: String, port: Integer, handler: function(Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
-  with listener = try listen(host, port),
+public function serve[effect E](host: String, port: Integer, handler: function(request: Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
+  with listener = try listen(host: host, port: port),
     group = TaskGroup.open() do
-    return serveLoop(listener, group, handler)
+    return serveLoop(listener: listener, group: group, handler: handler)
   end with
 end function
 
-function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: function(Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
+function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: function(request: Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
   bind exchange <- try accept(listener)
-  bind _ <- TaskGroup.spawn(group, lambda()
+  bind _ <- TaskGroup.spawn(group: group, action: lambda()
     with current = exchange do
-      return respond(current, handler(requestOf(current)))
+      return respond(exchange: current, response: handler(requestOf(current)))
     end with
   end lambda)
-  return serveLoop(listener, group, handler)
+  return serveLoop(listener: listener, group: group, handler: handler)
 end function
 ```
 
@@ -154,11 +156,11 @@ end function
 
 | 関数 | 型 | 振る舞い |
 |---|---|---|
-| `Http.text(status, s)` | `function(Integer, String) -> Http.Response` | 本体を `s` の UTF-8、`content-type` を `text/plain; charset=utf-8` とした応答 |
-| `Http.html(status, s)` | `function(Integer, String) -> Http.Response` | 本体を `s` の UTF-8、`content-type` を `text/html; charset=utf-8` とした応答 |
-| `Http.json(status, value)` | `function(Integer, Json.Value) -> Http.Response` | 本体を `Json.stringify(value)` の UTF-8、`content-type` を `application/json` とした応答 |
-| `Http.pathSegments(path)` | `function(String) -> List[String]` | `path` を `/` で区切り、空の要素を除き、各要素のパーセント符号化を戻した並び。戻した結果が正しい UTF-8 でない要素と、`%` の後が 16 進の 2 桁でない箇所を含む要素は、要素全体を戻さずに残す |
-| `Http.header(headers, name)` | `function(List[Pair[String, String]], String) -> Option[String]` | 名前が `name` と大文字と小文字を区別せずに一致する、最初の組の値 |
+| `Http.text(status, s)` | `function(status: Integer, s: String) -> Http.Response` | 本体を `s` の UTF-8、`content-type` を `text/plain; charset=utf-8` とした応答 |
+| `Http.html(status, s)` | `function(status: Integer, s: String) -> Http.Response` | 本体を `s` の UTF-8、`content-type` を `text/html; charset=utf-8` とした応答 |
+| `Http.json(status, value)` | `function(status: Integer, value: Json.Value) -> Http.Response` | 本体を `Json.stringify(value)` の UTF-8、`content-type` を `application/json` とした応答 |
+| `Http.pathSegments(path)` | `function(path: String) -> List[String]` | `path` を `/` で区切り、空の要素を除き、各要素のパーセント符号化を戻した並び。戻した結果が正しい UTF-8 でない要素と、`%` の後が 16 進の 2 桁でない箇所を含む要素は、要素全体を戻さずに残す |
+| `Http.header(headers, name)` | `function(headers: List[Pair[String, String]], name: String) -> Option[String]` | 名前が `name` と大文字と小文字を区別せずに一致する、最初の組の値 |
 
 経路の振り分けは組み込まず、`Http.pathSegments` の値をリストのパターンで照合して振り分ける（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)の「パターンの拡張（初回リリース版）」）。
 
@@ -169,14 +171,14 @@ import Benitoite.Unofficial.Json
 function route(request: Http.Request) -> Http.Response
   bind segments <- Http.pathSegments(Http.Request.path(request))
   return match Pair(Http.Request.method(request), segments) with
-    case Pair("GET", []) -> Http.html(200, "<h1>Hello</h1>")
-    case Pair("GET", ["items", id]) -> Http.json(200, Json.Value.Object(Map.fromList([Pair("id", Json.Value.String(id))])))
-    case _ -> Http.text(404, "not found")
+    case Pair("GET", []) -> Http.html(status: 200, s: "<h1>Hello</h1>")
+    case Pair("GET", ["items", id]) -> Http.json(status: 200, value: Json.Value.Object(Map.fromList([Pair("id", Json.Value.String(id))])))
+    case otherPath -> Http.text(status: 404, s: "not found")
   end match
 end function
 
 function main() -> Result[Unit, String] uses Http.Listen, State
-  return Http.serve("127.0.0.1", 8080, route) |> Result.mapError(_, NetworkError.message)
+  return Http.serve(host: "127.0.0.1", port: 8080, handler: route) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
 end function
 ```
 
@@ -186,12 +188,12 @@ end function
 
 | 関数 | 型 | 振る舞い |
 |---|---|---|
-| `Http.get(url)` | `function(String) -> Result[Http.Response, NetworkError] uses Http.Connect` | `url` に `GET` の要求を送り、応答を返す。`Http.send(Http.clientRequest("GET", url))` と同じ |
-| `Http.clientRequest(method, url)` | `function(String, String) -> Http.ClientRequest` | 後述の既定の値を入れた `Http.ClientRequest` を作る。純粋な関数である |
-| `Http.send(request)` | `function(Http.ClientRequest) -> Result[Http.Response, NetworkError] uses Http.Connect` | 要求を送り、応答を返す |
+| `Http.get(url)` | `function(url: String) -> Result[Http.Response, NetworkError] uses Http.Connect` | `url` に `GET` の要求を送り、応答を返す。`Http.send(Http.clientRequest(method: "GET", url: url))` と同じ |
+| `Http.clientRequest(method: method, url: url)` | `function(method: String, url: String) -> Http.ClientRequest` | 後述の既定の値を入れた `Http.ClientRequest` を作る。純粋な関数である |
+| `Http.send(request)` | `function(request: Http.ClientRequest) -> Result[Http.Response, NetworkError] uses Http.Connect` | 要求を送り、応答を返す |
 
 - 【決定】`Http.send` の要求の `headers` も、`Http.respond` と同じく、名前が token の文字以外を含むか値が制御文字（水平タブを除く 0x00〜0x1F と 0x7F）を含むときは、送る前に実行時エラーとする。
-- `Http.clientRequest(method, url)` は、`headers` を空のリスト、`body` を空のバイト列、`timeoutMilliseconds` を 30000 にする。ほかの値にするときは、レコードの更新で変える。
+- `Http.clientRequest(method: method, url: url)` は、`headers` を空のリスト、`body` を空のバイト列、`timeoutMilliseconds` を 30000 にする。ほかの値にするときは、レコードの更新で変える。
 - 状態コードが 4xx や 5xx の応答でも `Result.Ok` を返す。`Result.Error` は、名前を解決できない、接続できない、時間切れになるなど、応答を得られなかったときに返す。
 - `timeoutMilliseconds` は、要求を送り始めてから応答の本体を読み終えるまでの時間の上限である。1 未満なら実行時エラーとする。【方針】2^40 ミリ秒を超える値は 2^40 ミリ秒（約 34.8 年）として扱う。理由: 期限は現在の時刻に上限を足して計算するので、足し算が溢れない大きさに収めるためである。約 34.8 年を超える上限は、実行の時間として区別できない。
 - `url` の形式が正しくないとき、または `http` と `https` 以外の形式のときは、`NetworkErrorKind.InvalidInput` を返す。

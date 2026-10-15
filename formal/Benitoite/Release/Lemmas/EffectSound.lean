@@ -1,7 +1,8 @@
 import Benitoite.Release.Lemmas.Progress
+import Benitoite.Release.Lemmas.Names
 
 /-!
-# エフェクトの健全性（段階 B）
+# エフェクトの健全性（契約名を持つコア）
 
 継続の末尾で許すエフェクト Eb が空の状態は、事象を伴う遷移をせず、どの `handle` の枠も処理しない操作を
 呼ばない。保存の定理は Eb を変えないので、`⟨M, [], ∅⟩` から到達するどの状態でも Eb は空である。
@@ -94,10 +95,12 @@ theorem no_unhandledOp (hdecl : P.EffectsOk B) {Eb : Eff} {s : State} (hs : Stat
       | _ => exact (show False from hu)
   | _ => exact (show False from hu)
 
-/-- 実行を始める状態の型付け。 -/
-theorem stateTyE_init (hwf : P.WellFormed) (hb : B.Assumptions P) {m : Comp} {a : Ty}
-    (hm : HasTypeC P B StoreTy.empty [] [] none m a Eff.empty) (hc : m.ClosedNoEffVars) :
+/-- 実行を始める状態のラムダ名は、型付けから導く。 -/
+theorem stateTyE_init_noLamNames (hwf : P.WellFormed) (hb : B.Assumptions P) {m : Comp} {a : Ty}
+    (hm : HasTypeC P B StoreTy.empty [] [] none m a Eff.empty)
+    (hc : Comp.VarsInNoLamNames 0 (fun _ => False) m) :
     StateTyE P B Eff.empty (.run m [] Store.empty) := by
+  have hc := (hm.varsIn_iff_noLamNames 0 (fun _ => False)).mpr hc
   have hmc : Comp.VarsIn 0 (fun _ => True) m := Comp.VarsIn.toTrue m hc
   have hΨ : StoreTy.WF StoreTy.empty := fun l x h => by simp [StoreTy.empty] at h
   have hw : Ty.WF 0 a := HasTypeC.wf hwf hb hm (envWF_nil 0) hΨ hmc
@@ -105,6 +108,12 @@ theorem stateTyE_init (hwf : P.WellFormed) (hb : B.Assumptions P) {m : Comp} {a 
     .K_Empty (Eff.Sub.refl _) hw, hmc, fun f hf => by simp at hf, fun l c h => by simp [Store.empty] at h⟩
   refine ⟨⟨0, fun l _ => rfl⟩, fun l x h => ?_, fun l x h => ?_, fun l c h => ?_⟩ <;>
     simp [StoreTy.empty, Store.empty] at h
+
+/-- 既存の閉じた項の前提でも、ラムダ名の条件は型付けから導いて初期状態を作る。 -/
+theorem stateTyE_init (hwf : P.WellFormed) (hb : B.Assumptions P) {m : Comp} {a : Ty}
+    (hm : HasTypeC P B StoreTy.empty [] [] none m a Eff.empty) (hc : m.ClosedNoEffVars) :
+    StateTyE P B Eff.empty (.run m [] Store.empty) :=
+  stateTyE_init_noLamNames hwf hb hm ((hm.varsIn_iff_noLamNames 0 (fun _ => False)).mp hc)
 
 theorem steps_preserve (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.EffectsOk B)
     (hb : B.Assumptions P) {Eb : Eff} {s s' : State} (hsteps : Steps P B s s') (hs : StateTyE P B Eb s) :

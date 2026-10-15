@@ -11,7 +11,7 @@ function main() -> Unit uses Console.Write, State
   bind number <- handle store(42) with
     case store(x) ->
       bind cell <- Reference.new(Option.None)
-      Reference.set(cell, Option.Some(x))
+      Reference.set(reference: cell, value: Option.Some(x))
       bind same <- lambda(value) return value end lambda
       bind unwrap <- lambda(value)
         bind v <- try value

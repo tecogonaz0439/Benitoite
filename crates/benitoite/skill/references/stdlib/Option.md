@@ -16,13 +16,13 @@ end data
 A value that may be absent: `Option.Some(x)` holds `x`, and `Option.None` holds nothing.
 
 ```benitoite
-public function map[T, U, effect E](o: Option[T], f: function(T) -> U uses E) -> Option[U] uses E
+public function map[T, U, effect E](o: Option[T], f: function(value: T) -> U uses E) -> Option[U] uses E
 ```
 
 Applies `f` to the value inside `Option.Some`.
 
 ```benitoite
-public function andThen[T, U, effect E](o: Option[T], f: function(T) -> Option[U] uses E) -> Option[U] uses E
+public function andThen[T, U, effect E](o: Option[T], f: function(value: T) -> Option[U] uses E) -> Option[U] uses E
 ```
 
 Applies `f` to the value inside `Option.Some` and returns its result.

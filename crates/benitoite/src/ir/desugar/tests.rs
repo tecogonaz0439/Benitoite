@@ -436,19 +436,51 @@ end function
 function identity(x: Integer) -> Integer
  return x
 end function
-function g(y: Integer) -> function(Integer) -> Integer
+function g(y: Integer) -> function(x: Integer) -> Integer
  return lambda(x) return x + y end lambda
 end function
 function clamp(lo: Integer, x: Integer, hi: Integer) -> Integer
  return if x < lo then lo else if x > hi then hi else x end if
 end function
+function mapIdentity(xs: List[Integer], f: function(x: Integer) -> Integer) -> List[Integer]
+ return List.map(xs: xs, f: lambda(value) return f(value) end lambda)
+end function
 function pipes(xs: List[Integer], x: Integer) -> List[Integer]
  bind _ <- x |> (g(1))
- bind _ <- clamp(0, _, 100)
- return xs |> List.map(_, identity)
+ bind _ <- clamp(lo: 0, x: _, hi: 100)
+ return xs |> mapIdentity(xs: _, f: identity)
 end function
 "#;
     let p = compile(source);
+    assert_eq!(def(&p, "g").param_names, ["y"]);
+    let CompKind::Return(value) = &terminal(&def(&p, "g").body).kind else {
+        panic!("expected lambda return")
+    };
+    let ValKind::Lambda(lambda) = &value.kind else {
+        panic!("expected lambda")
+    };
+    assert_eq!(lambda.param_names, ["x"]);
+    // 局所名を変えても契約名を変えず、下位 IR は両方を保持する。
+    let mut copied = p.clone();
+    copied
+        .defs
+        .iter_mut()
+        .find(|d| d.name == "g")
+        .unwrap()
+        .params[0]
+        .name = Some("local_only".into());
+    let lower = crate::ir::decision::lower_program(&copied).unwrap();
+    let g = lower.defs.iter().find(|d| d.name == "g").unwrap();
+    assert_eq!(g.param_names, ["y"]);
+    assert_eq!(g.params[0].name.as_deref(), Some("local_only"));
+    let crate::ir::lower_ir::LCompKind::Return(value) = &g.body.kind else {
+        panic!("expected lower return")
+    };
+    let ValKind::Lambda(lambda) = &value.kind else {
+        panic!("expected lower lambda")
+    };
+    assert_eq!(lambda.param_names, ["x"]);
+    assert_eq!(lambda.params[0].name.as_deref(), Some("x"));
     let calls: Vec<_> = nodes(&def(&p, "calls").body)
         .0
         .into_iter()
@@ -496,10 +528,13 @@ end function
         .collect();
     assert_eq!(lambdas.len(), 2);
     assert_ne!(lambdas[0].id, lambdas[1].id);
-    assert_eq!(source_span(source, lambdas[0].span), "clamp(0, _, 100)");
+    assert_eq!(
+        source_span(source, lambdas[0].span),
+        "clamp(lo: 0, x: _, hi: 100)"
+    );
     assert_eq!(
         source_span(source, lambdas[1].span),
-        "List.map(_, identity)"
+        "mapIdentity(xs: _, f: identity)"
     );
     assert!(comps.iter().any(|c| matches!(
         &c.kind,
@@ -515,7 +550,7 @@ end function
     let nested = comps
         .iter()
         .find(|c| {
-            source_span(source, c.origin) == "xs |> List.map(_, identity)"
+            source_span(source, c.origin) == "xs |> mapIdentity(xs: _, f: identity)"
                 && matches!(&c.kind, CompKind::Let { .. })
         })
         .unwrap();
@@ -827,7 +862,7 @@ effect Ping
 end effect
 function sumPrices(items: List[Integer]) -> Integer uses Log
  write("items: ${List.length(items)}")
- return List.fold(items, 0, lambda(acc, x) return acc + x end lambda)
+ return List.fold(xs: items, initial: 0, f: lambda(acc, value) return acc + value end lambda)
 end function
 function total(items: List[Integer]) -> Integer uses Console.Write
  return handle sumPrices(items) with
@@ -936,11 +971,14 @@ function rendered() -> String
  return render(1)
 end function
 function superior[T: Trait.Monoid](x: T) -> T
- return Trait.Semigroup.combine(x, x)
+ return Trait.Semigroup.combine(x: x, y: x)
+end function
+function mapForEta[T, U, effect E](xs: List[T], f: function(x: T) -> U uses E) -> List[U] uses E
+ return List.map(xs: xs, f: lambda(value) return f(value) end lambda)
 end function
 function mapped(xs: List[Integer]) -> List[String]
- bind _ <- List.map(xs, Trait.Show.show)
- return List.map(xs, render)
+ bind _ <- mapForEta(xs: xs, f: Trait.Show.show)
+ return mapForEta(xs: xs, f: render)
 end function
 trait Describe[T]
  function describe(x: T) -> String
@@ -948,11 +986,11 @@ trait Describe[T]
 end trait
 implement[T: Trait.Show] Describe[List[T]]
  function extra[U: Trait.Show](x: List[T], y: U) -> String
-  bind _ <- List.map(x, Trait.Show.show)
+  bind _ <- mapForEta(xs: x, f: Trait.Show.show)
   return Trait.Show.show(y)
  end function
  function describe(x: List[T]) -> String
-  return String.join(List.map(x, Trait.Show.show), ",")
+  return String.join(xs: mapForEta(xs: x, f: Trait.Show.show), separator: ",")
  end function
 end implement
 trait Detailed[T: Trait.Show]
@@ -1259,8 +1297,11 @@ end function
 function negate(x: Boolean) -> Boolean
  return not x
 end function
+function mapConstructor(xs: List[Integer], f: function(arg1: Integer) -> Option[Integer]) -> List[Option[Integer]]
+ return List.map(xs: xs, f: lambda(value) return f(value) end lambda)
+end function
 function wrap(xs: List[Integer]) -> List[Option[Integer]]
- return List.map(xs, Option.Some)
+ return mapConstructor(xs: xs, f: Option.Some)
 end function
 "#,
     );
@@ -1325,4 +1366,122 @@ fn nested_expressions_and_long_list_literals_pass_with_the_normal_stack() {
         matches!(&terminal(&def(&p, "many").body).kind, CompKind::Return(Val { kind: ValKind::List(xs), .. }) if xs.len() == 256)
     );
     assert_eq!(def(&p, "many").var_count, 256);
+}
+
+#[test]
+fn named_argument_without_a_plan_cannot_be_lowered_as_positional() {
+    use crate::syntax::ast::{Arg, ArgValue, Expr, Item, Name, NamedArg, Stmt};
+    let source = "function f(value: Integer) -> Unit\n ()\nend function\nfunction g() -> Unit\n f(1)\nend function";
+    let (mut load, resolved, types, _) = desugar_files(&[("main.bnt", source)], false);
+    let g = load
+        .asts
+        .iter_mut()
+        .flat_map(|a| &mut a.decls)
+        .find_map(|d| {
+            let Item::Fn(f) = &mut d.item else {
+                return None;
+            };
+            (f.name.text == "g").then_some(f)
+        })
+        .unwrap();
+    let Stmt::Expr(Expr::Call(c)) = &mut g.body.as_mut().unwrap().stmts[0] else {
+        panic!("call")
+    };
+    let Arg::Expr(value) = c.args.remove(0) else {
+        panic!("value")
+    };
+    c.args.push(Arg::Named(Box::new(NamedArg {
+        name: Name {
+            text: "unknown".into(),
+            span: value.span(),
+        },
+        value: ArgValue::Expr(value),
+    })));
+    let error = desugar(&load.modules, &load.asts, &resolved, &types).unwrap_err();
+    assert_eq!(error.stage, "desugar");
+    assert_eq!(error.message, "named call has no argument plan");
+}
+
+#[test]
+fn prepared_named_call_lowering_preserves_callee_then_source_order_and_argument_values() {
+    let source = "function factory() -> function(a: Integer, b: Integer) -> Integer\n return lambda(a: Integer, b: Integer) return a\nend function\nfunction readB() -> Integer\n return 29\nend function\nfunction readA() -> Integer\n return 17\nend function\nfunction sample() -> Integer\n return factory()(readB(), readA())\nend function";
+    let (mut load, mut ids) = crate::modules::memfs::load_files(&[("main.bnt", source)]);
+    assert!(load.diagnostics.is_empty());
+    let node = crate::typeck::test_support::name_call_arguments(
+        &mut load,
+        "sample",
+        &[Some("b"), Some("a")],
+    );
+    let resolved = crate::resolve::resolve(&load.modules, &load.asts, &load.sources, &mut ids);
+    assert!(
+        resolved.diagnostics.is_empty(),
+        "{:?}",
+        resolved.diagnostics
+    );
+    let (mut types, diagnostics) =
+        crate::typeck::typecheck(&load.modules, &load.asts, &load.sources, &resolved, false);
+    assert!(
+        !diagnostics.iter().any(crate::diag::Diagnostic::is_error),
+        "{diagnostics:#?}"
+    );
+    let core = desugar(&load.modules, &load.asts, &resolved, &types).unwrap();
+    assert!(super::super::check::check_program(&core).is_empty());
+    let sample = def(&core, "sample");
+    let mut current = &sample.body;
+    let mut evaluated = vec![];
+    let mut results = vec![];
+    while let CompKind::Let { var, bound, body } = &current.kind {
+        if let CompKind::App {
+            func:
+                Val {
+                    kind: ValKind::TopFn { def: binding, .. },
+                    ..
+                },
+            args,
+            ..
+        } = &bound.kind
+        {
+            assert!(args.is_empty());
+            evaluated.push(resolved.bindings.get(*binding).unwrap().name.as_str());
+            results.push(var.id);
+        }
+        current = body;
+    }
+    assert_eq!(evaluated, ["factory", "readB", "readA"]);
+    let CompKind::App { func, args, .. } = &current.kind else {
+        panic!("terminal call")
+    };
+    assert!(matches!(func.kind, ValKind::Var(id) if id == results[0]));
+    assert_eq!(
+        args.iter()
+            .map(|v| {
+                let ValKind::Var(id) = v.kind else {
+                    panic!("saved argument")
+                };
+                id
+            })
+            .collect::<Vec<_>>(),
+        [results[2], results[1]]
+    );
+    // 対応表を丸ごと欠いた入力は、宣言位置を推測して実行へ進めない。
+    let valid_plans = std::mem::take(&mut types.call_plans);
+    assert_eq!(
+        desugar(&load.modules, &load.asts, &resolved, &types)
+            .unwrap_err()
+            .stage,
+        "desugar"
+    );
+    types.call_plans = valid_plans;
+    // 検査後に表が壊れた場合は、ラベルを捨てて実行へ進めない。
+    for bad in [vec![0, 0], vec![2, 0], vec![0], vec![0, 1]] {
+        let mut plan = types.call_plans.get(node).unwrap().clone();
+        plan.source_to_param = bad;
+        types.call_plans.insert(node, plan);
+        assert_eq!(
+            desugar(&load.modules, &load.asts, &resolved, &types)
+                .unwrap_err()
+                .stage,
+            "desugar"
+        );
+    }
 }

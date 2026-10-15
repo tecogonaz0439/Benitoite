@@ -1,7 +1,7 @@
 import Benitoite.Release.Semantics
 
 /-!
-# 抽象機械の実行の例（段階 B）
+# 抽象機械の実行の例（契約名を持つコア）
 
 小さなコア計算のプログラムを `run` で実行し、01-12 の初回リリース版の規則から期待する結果と比べる。
 期待と食い違うと `decide` が失敗し、`lake build` が止まる。
@@ -15,24 +15,25 @@ def intTy : Ty := .base .integer
 def unitTy : Ty := .base .unit
 def int (n : Int) : Val := .const (.integer n)
 
-def sig (tps : List TParam) (ps : List Ty) (r : Ty) (e : Eff) (k : PrimKind)
+def sig (tps : List TParam) (names : List String) (ps : List Ty) (r : Ty) (e : Eff) (k : PrimKind)
     (op : Option EffName := none) : PrimSig :=
-  { tparams := tps, neffs := 0, params := ps, ret := r, eff := e, admits := fun _ ts => ts.length = tps.length,
+  { tparams := tps, neffs := 0, names := names, params := ps, ret := r, eff := e,
+    admits := fun _ ts => ts.length = tps.length,
     kind := k, opEff := op }
 
 /-- 例の組み込みの関数。`add` は IO を行わず、`print` は組み込みのエフェクト `Console.Write` の操作、
 `open`・`close` はリソースを扱う。`new`・`get`・`set`・`update`・`force` はストアの操作である。 -/
 def builtins : Builtins where
   sig
-    | "add" => some (sig [] [intTy, intTy] intTy Eff.empty .pure)
-    | "print" => some (sig [] [intTy] unitTy (Eff.single "Console.Write") .io (some "Console.Write"))
-    | "exit" => some (sig [] [intTy] unitTy (Eff.single "Process.Exit") .exit (some "Process.Exit"))
-    | "new" => some (sig [{}] [.tvar 0] (.reference (.tvar 0)) (Eff.single stateEff) .refNew)
-    | "get" => some (sig [{}] [.reference (.tvar 0)] (.tvar 0) (Eff.single stateEff) .refGet)
-    | "set" => some (sig [{}] [.reference (.tvar 0), .tvar 0] unitTy (Eff.single stateEff) .refSet)
-    | "update" => some (sig [{}] [.reference (.tvar 0), .fn [.tvar 0] (.tvar 0) Eff.empty] unitTy
+    | "add" => some (sig [] ["left", "right"] [intTy, intTy] intTy Eff.empty .pure)
+    | "print" => some (sig [] ["text"] [intTy] unitTy (Eff.single "Console.Write") .io (some "Console.Write"))
+    | "exit" => some (sig [] ["code"] [intTy] unitTy (Eff.single "Process.Exit") .exit (some "Process.Exit"))
+    | "new" => some (sig [{}] ["value"] [.tvar 0] (.reference (.tvar 0)) (Eff.single stateEff) .refNew)
+    | "get" => some (sig [{}] ["reference"] [.reference (.tvar 0)] (.tvar 0) (Eff.single stateEff) .refGet)
+    | "set" => some (sig [{}] ["reference", "value"] [.reference (.tvar 0), .tvar 0] unitTy (Eff.single stateEff) .refSet)
+    | "update" => some (sig [{}] ["reference", "f"] [.reference (.tvar 0), .fn ["value"] [.tvar 0] (.tvar 0) Eff.empty] unitTy
         (Eff.single stateEff) .refUpdate)
-    | "force" => some (sig [{}] [.lazy (.tvar 0)] (.tvar 0) Eff.empty .force)
+    | "force" => some (sig [{}] ["value"] [.lazy (.tvar 0)] (.tvar 0) Eff.empty .force)
     | _ => none
   delta
     | "add", _, _, [.const (.integer a), .const (.integer b)] =>
@@ -64,12 +65,12 @@ def fresh (σ : Store) : Nat :=
   ((List.range 100).find? fun l => match σ l with | none => true | some _ => false).getD 100
 
 def semigroupMeths : MethName → Option MethSig
-  | "combine" => some { tparams := [], neffs := 0, params := [.tvar 0, .tvar 0], ret := .tvar 0,
+  | "combine" => some { tparams := [], neffs := 0, names := ["x", "y"], params := [.tvar 0, .tvar 0], ret := .tvar 0,
                         eff := Eff.empty }
   | _ => none
 
 def monoidMeths : MethName → Option MethSig
-  | "empty" => some { tparams := [], neffs := 0, params := [], ret := .tvar 0, eff := Eff.empty }
+  | "empty" => some { tparams := [], neffs := 0, names := [], params := [], ret := .tvar 0, eff := Eff.empty }
   | _ => none
 
 def noSupers : ClassName → Option Val := fun _ => none
@@ -130,15 +131,15 @@ def semigroupBox : ImplDecl where
 - `SemigroupBox[T](d : Dict[Semigroup, T]) : Semigroup[Box[T]]`（`combine` は中身を d の `combine` で合わせる） -/
 def program : Program where
   defs
-    | "f" => some { tparams := [], neffs := 0, params := [], ret := intTy, eff := Eff.empty,
+    | "f" => some { tparams := [], neffs := 0, names := [], params := [], ret := intTy, eff := Eff.empty,
                     body := .letIn (.escape (int 7)) (.ret (int 1)) }
     | _ => none
   cons
     | "Box" => some { data := "Box", ntys := 1, args := [.tvar 0] }
     | _ => none
   ops
-    | "fail" => some { eff := "Abort", tparams := [{}], params := [.base .string], ret := .tvar 0 }
-    | "ask" => some { eff := "Ask", tparams := [], params := [], ret := intTy }
+    | "fail" => some { eff := "Abort", tparams := [{}], names := ["message"], params := [.base .string], ret := .tvar 0 }
+    | "ask" => some { eff := "Ask", tparams := [], names := [], params := [], ret := intTy }
     | _ => none
   effects
     | "Abort" => some ["fail"]
@@ -211,7 +212,7 @@ example : exec (.letIn (.app (.prim "new" [intTy] []) [int 1])
 
 /-- `Reference.update` は、読んだ値に関数を適用して書き戻す（E-RefUpdate）。 -/
 example : exec (.letIn (.app (.prim "new" [intTy] []) [int 1])
-    (.letIn (.app (.prim "update" [intTy] []) [.var 0, .lam [intTy] (add (.var 0) (int 10))])
+    (.letIn (.app (.prim "update" [intTy] []) [.var 0, .lam ["value"] [intTy] (add (.var 0) (int 10))])
       (.app (.prim "get" [intTy] []) [.var 1]))) = (.returned 11, 0) := by decide
 
 /-- `let l ⇐ lazy add(1, 2) in let _ ⇐ force(l) in force(l)` は 3 を返す。二度目の `force` は、一度目に

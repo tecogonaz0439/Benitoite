@@ -1,9 +1,10 @@
 import Benitoite.Release.Lemmas.Dict
 
 /-!
-# 保存の定理の本体（段階 B）
+# 保存の定理の本体（契約名を持つコア）
 
 遷移の規則ごとに、遷移した先の状態の型付けを作る。継続の末尾で許すエフェクト Eb は変わらない。
+契約名を含む型の保存を証明する（設計書 01-12「確かめる性質」）。
 -/
 
 namespace Benitoite.Release
@@ -37,10 +38,10 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
         hs2, hk', Comp.VarsIn.instantiate ⟨hmc, trivial⟩ hkc'.1, hkc'.2, hσc⟩
   | E_Lam hlen =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
-      obtain ⟨as, b', ε', hf, hargs, hle, hs'⟩ := hm.inv_app rfl
-      obtain ⟨r, ε'', hbody, hle2⟩ := hf.inv_lam rfl
-      obtain ⟨hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2
-      subst hps hr
+      obtain ⟨names, as, b', ε', hf, hargs, hle, hs'⟩ := hm.inv_app rfl
+      obtain ⟨r, ε'', hnames, hbody, hle2⟩ := hf.inv_lam rfl
+      obtain ⟨hnames', hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2
+      subst hnames' hps hr
       simp only [Comp.VarsIn] at hmc
       have hlc := hmc.1
       simp only [Val.VarsIn] at hlc
@@ -50,40 +51,40 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       simp only [hideConts, List.map_nil, List.append_nil] at hbody'
       exact ⟨Ψ, some r, r, b, ε, ε'', hσ,
         hbody'.instantiate (InstOk.of_values hb hargs (hargs.wf_all hwf hb hσ.wf hmc.2) hmc.2),
-        hs2.trans (hs'.trans hε), hk.markPush hle hw.2, Comp.VarsIn.instantiate hmc.2 hlc.2, hkc.markPush,
+        hs2.trans (hs'.trans hε), hk.markPush hle hw.2.2, Comp.VarsIn.instantiate hmc.2 hlc.2.2, hkc.markPush,
         hσc⟩
   | @E_Fun f ts es ws k σ d hd hwl htl hel =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
-      obtain ⟨as, b', ε', hf, hargs, hle, hs'⟩ := hm.inv_app rfl
-      obtain ⟨d', hd', hsat, hesl, hle2⟩ := hf.inv_fnRef rfl
+      obtain ⟨names, as, b', ε', hf, hargs, hle, hs'⟩ := hm.inv_app rfl
+      obtain ⟨d', hd', hsat, hesl, hnames, hle2⟩ := hf.inv_fnRef rfl
       rw [hd] at hd'; cases hd'
       rw [fnTy_eq] at hle2
-      obtain ⟨hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2
-      subst hps hr
+      obtain ⟨hnames', hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2
+      subst hnames' hps hr
       simp only [Comp.VarsIn] at hmc
       have hfc := hmc.1
       simp only [Val.VarsIn] at hfc
       have htsC : ClosedArgs ts := closedArgs_of hfc.1
       have hsc := hwf.1 f d hd
-      have hθ := HasTypeC.substTy (c := 0) hwf hb (hwt.1 f d hd) (Nat.zero_le _) htsC (by simpa using hsat)
+      have hθ := HasTypeC.substTy (c := 0) hwf hb (hwt.1 f d hd).2 (Nat.zero_le _) htsC (by simpa using hsat)
         (StoreFix.empty ts es)
       simp only [List.take_zero, Option.map_some, envSubst] at hθ
       rw [← binds_map] at hθ
       have hθ' := hθ.store (Ψ' := Ψ) (fun l x h => by simp [StoreTy.empty] at h)
       have hlen : ts.length = d.tparams.length := hsat.1
       have hretw : Ty.WF 0 (Ty.subst ts es d.ret) :=
-        Ty.subst_wf0 es htsC (by rw [hlen]; exact Ty.VarsIn.wf _ hsc.2.1)
+        Ty.subst_wf0 es htsC (by rw [hlen]; exact Ty.VarsIn.wf _ hsc.2.2.1)
       refine ⟨Ψ, some (Ty.subst ts es d.ret), Ty.subst ts es d.ret, b, ε, Eff.substRho es d.eff, hσ,
         hθ'.instantiate (InstOk.of_values hb hargs (hargs.wf_all hwf hb hσ.wf hmc.2) hmc.2),
         hs2.trans (hs'.trans hε), hk.markPush hle hretw, ?_, hkc.markPush, hσc⟩
       refine Comp.VarsIn.instantiate hmc.2 (Comp.VarsIn.substTyAt (c := 0) es
         (fun u hu => varsInList_mem hfc.1 hu) d.body ?_)
       rw [Nat.zero_add, hlen]
-      exact Comp.VarsIn.toTrue _ hsc.2.2.2
+      exact Comp.VarsIn.toTrue _ hsc.2.2.2.2
   | @E_Meth i ts vs m ss es ws k σ id body cd ms hi hbody hcd hms hwl hvl htl hsl hel =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
       have hmc0 := hmc
-      obtain ⟨cl, τ, cd', ms', hv, hcl, hms', hsat, hesl, hws, hle, hs'⟩ := hm.inv_meth rfl
+      obtain ⟨cl, τ, cd', ms', hv, hcl, hms', hsat, hesl, hnames, hws, hle, hs'⟩ := hm.inv_meth rfl
       obtain ⟨id', hi', hsatI, hvs, he⟩ := hv.inv_dict rfl
       rw [hi] at hi'; cases hi'
       simp only [Ty.dict.injEq] at he
@@ -102,7 +103,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       rw [hbody] at hbody'; cases hbody'
       have hsc := hwf.impl hi
       have hmsc := hwf.meth hcd hms
-      have hθ := HasTypeC.substTy (c := 0) (es' := es) hwf hb hbt (Nat.zero_le _) htsC
+      have hθ := HasTypeC.substTy (c := 0) (es' := es) hwf hb hbt.2 (Nat.zero_le _) htsC
         (by simpa using SatAll.append hsat hsatI) (StoreFix.empty _ es)
       simp only [List.take_zero, Option.map_some, envSubst] at hθ
       rw [← binds_map, List.map_append] at hθ
@@ -127,10 +128,10 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       exact Comp.VarsIn.toTrue _ (hsc.2.2.2 cd m ms body hcd hms hbody)
   | E_Super hsup =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
-      obtain ⟨cl, τ, cd, ms, hv, hcl, hms, hsat, hesl, hws, hle, hs'⟩ := hm.inv_meth rfl
+      obtain ⟨cl, τ, cd, ms, hv, hcl, hms, hsat, hesl, hnames, hws, hle, hs'⟩ := hm.inv_meth rfl
       simp only [Comp.VarsIn] at hmc
       obtain ⟨hv', hvc'⟩ := superStep_typed hwf hwt hb hσ.wf hsup hv hmc.1
-      exact ⟨Ψ, R, a, b, ε, ε1, hσ, .C_Sub (.C_Meth hv' hcl hms hsat hesl hws) hle hs', hε, hk,
+      exact ⟨Ψ, R, a, b, ε, ε1, hσ, .C_Sub (.C_Meth hv' hcl hms hnames hsat hesl hws) hle hs', hε, hk,
         ⟨hvc', hmc.2⟩, hkc, hσc⟩
   | E_IfT =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
@@ -228,7 +229,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       obtain ⟨t, rfl, rfl, hargs, hle, _⟩ := store_prim_inv hb hsig (by simp [hkind]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkind] at hsh
-      obtain ⟨_, _, hps, hret, _⟩ := hsh
+      obtain ⟨_, _, _, hps, hret, _⟩ := hsh
       rw [hps] at hargs; rw [hret] at hle
       simp only [List.map_cons, List.map_nil, Ty.subst_tvar0] at hargs
       simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hle
@@ -246,7 +247,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       obtain ⟨t, rfl, rfl, hargs, hle, _⟩ := store_prim_inv hb hsig (by simp [hkind]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkind] at hsh
-      obtain ⟨_, _, hps, hret, _⟩ := hsh
+      obtain ⟨_, _, _, hps, hret, _⟩ := hsh
       rw [hps] at hargs; rw [hret, Ty.subst_tvar0] at hle
       simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs
       rcases hargs with _ | ⟨hl, _⟩
@@ -260,7 +261,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       obtain ⟨t, rfl, rfl, hargs, hle, _⟩ := store_prim_inv hb hsig (by simp [hkind]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkind] at hsh
-      obtain ⟨_, _, hps, hret, _⟩ := hsh
+      obtain ⟨_, _, _, hps, hret, _⟩ := hsh
       rw [hps] at hargs; rw [hret] at hle
       simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs hle
       rcases hargs with _ | ⟨hl, _ | ⟨hv, _⟩⟩
@@ -274,7 +275,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       obtain ⟨t, rfl, rfl, hargs, hle, hsub⟩ := store_prim_inv hb hsig (by simp [hkind]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkind] at hsh
-      obtain ⟨_, _, hps, hret, heff⟩ := hsh
+      obtain ⟨_, _, _, hps, hret, heff⟩ := hsh
       rw [hps] at hargs; rw [hret] at hle; rw [heff] at hsub
       simp [Ty.subst, Ty.substAt, Ty.shift_zero, Eff.substRho_nil] at hargs hle
       rcases hargs with _ | ⟨hl, _ | ⟨hf, _⟩⟩
@@ -307,7 +308,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       obtain ⟨t, rfl, rfl, hargs, hle, _⟩ := store_prim_inv hb hsig (by simp [hkind]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkind] at hsh
-      obtain ⟨_, _, hps, hret, _⟩ := hsh
+      obtain ⟨_, _, _, hps, hret, _⟩ := hsh
       rw [hps] at hargs; rw [hret, Ty.subst_tvar0] at hle
       simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs
       rcases hargs with _ | ⟨hl, _⟩
@@ -321,7 +322,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       obtain ⟨t, rfl, rfl, hargs, hle, _⟩ := store_prim_inv hb hsig (by simp [hkind]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkind] at hsh
-      obtain ⟨_, _, hps, hret, _⟩ := hsh
+      obtain ⟨_, _, _, hps, hret, _⟩ := hsh
       rw [hps] at hargs; rw [hret, Ty.subst_tvar0] at hle
       simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs
       rcases hargs with _ | ⟨hl, _⟩
@@ -457,7 +458,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       simp only [Comp.VarsIn] at hmc
       have hvc := hmc.1
       simp only [Val.VarsIn] at hvc
-      exact pres_op_common hwf hb hσ hk hvc hmc.2 hkc hσc (sg := ⟨od.tparams, od.params, od.ret, od.eff⟩)
+      exact pres_op_common hwf hb hσ hk hvc hmc.2 hkc hσc (sg := ⟨od.tparams, od.names, od.params, od.ret, od.eff⟩)
         (by simp [opSig, hod]) hsat hargs hle hsplit hc hκ
   | @E_OpPrim b0 ts es ws k σ s0 k1 h k2 c κ hsig hkind hsplit hc hκ =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
@@ -469,7 +470,7 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
       simp only [Comp.VarsIn] at hmc
       have hvc := hmc.1
       simp only [Val.VarsIn] at hvc
-      exact pres_op_common hwf hb hσ hk hvc.1 hmc.2 hkc hσc (sg := ⟨s0.tparams, s0.params, s0.ret, l⟩)
+      exact pres_op_common hwf hb hσ hk hvc.1 hmc.2 hkc hσc (sg := ⟨s0.tparams, s0.names, s0.params, s0.ret, l⟩)
         (by simp [opSig, hsig, hop]) (hb.admits_sat b0 s0 [] ts hsig had) hargs hle hsplit hc hκ
   | E_Resume hσκ =>
       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs

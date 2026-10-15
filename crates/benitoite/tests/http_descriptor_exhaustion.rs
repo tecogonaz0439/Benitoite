@@ -21,9 +21,9 @@ const SOURCE: &str = r#"
 import Benitoite.Unofficial.Network.Http
 import Benitoite.Unofficial.IO.Console
 function one(listener: Http.Listener) -> Result[Boolean, String] uses Http.Listen, State
- with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+ with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
   bind done <- Http.Request.path(Http.requestOf(exchange)) = "/done"
-  bind _ <- try Http.respond(exchange, Http.Response(status: 200, headers: [], body: String.toUTF8("ok"))) |> Result.mapError(_, NetworkError.message)
+  bind _ <- try Http.respond(exchange: exchange, response: Http.Response(status: 200, headers: [], body: String.toUTF8("ok"))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
   return Result.Ok(done)
  end with
 end function
@@ -33,7 +33,7 @@ function serve(listener: Http.Listener) -> Result[Unit, String] uses Http.Listen
  return serve(listener)
 end function
 function main() -> Result[Unit, String] uses Http.Listen, Console.Write, State
- with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message) do
+ with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
   Console.writeLine(Integer.toString(Http.listenerPort(listener)))
   return serve(listener)
  end with

@@ -41,51 +41,65 @@ function flipU64List(v: List[UnsignedInteger64]) -> List[UnsignedInteger64]
 function negateF32List(v: List[Float32]) -> List[Float32]
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   bind Pair(n, rounds) <- try Runner.settings()
-  bind indexes <- List.range(0, n)
-  bind sourceS8 <- List.map(indexes, lambda(i: Integer) -> Integer8 return
-    if i mod 3 = 0 then -128s8 else if i mod 3 = 1 then 127s8 else 0s8 end if
+  bind indexes <- List.range(start: 0, stop: n)
+  bind sourceS8 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer8
+ return
+    if value mod 3 = 0 then -128s8 else if value mod 3 = 1 then 127s8 else 0s8 end if
   end lambda)
-  bind expectedS8 <- List.map(indexes, lambda(i: Integer) -> Integer8 return
-    if i mod 3 = 0 then -127s8 else if i mod 3 = 1 then 126s8 else 1s8 end if
+  bind expectedS8 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer8
+ return
+    if value mod 3 = 0 then -127s8 else if value mod 3 = 1 then 126s8 else 1s8 end if
   end lambda)
-  bind sourceS16 <- List.map(indexes, lambda(i: Integer) -> Integer16 return
-    if i mod 3 = 0 then -32768s16 else if i mod 3 = 1 then 32767s16 else 0s16 end if
+  bind sourceS16 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer16
+ return
+    if value mod 3 = 0 then -32768s16 else if value mod 3 = 1 then 32767s16 else 0s16 end if
   end lambda)
-  bind expectedS16 <- List.map(indexes, lambda(i: Integer) -> Integer16 return
-    if i mod 3 = 0 then -32767s16 else if i mod 3 = 1 then 32766s16 else 1s16 end if
+  bind expectedS16 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer16
+ return
+    if value mod 3 = 0 then -32767s16 else if value mod 3 = 1 then 32766s16 else 1s16 end if
   end lambda)
-  bind sourceS32 <- List.map(indexes, lambda(i: Integer) -> Integer32 return
-    if i mod 3 = 0 then -2147483648s32 else if i mod 3 = 1 then 2147483647s32 else 0s32 end if
+  bind sourceS32 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer32
+ return
+    if value mod 3 = 0 then -2147483648s32 else if value mod 3 = 1 then 2147483647s32 else 0s32 end if
   end lambda)
-  bind expectedS32 <- List.map(indexes, lambda(i: Integer) -> Integer32 return
-    if i mod 3 = 0 then -2147483647s32 else if i mod 3 = 1 then 2147483646s32 else 1s32 end if
+  bind expectedS32 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer32
+ return
+    if value mod 3 = 0 then -2147483647s32 else if value mod 3 = 1 then 2147483646s32 else 1s32 end if
   end lambda)
-  bind sourceU16 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger16 return
-    if i mod 3 = 0 then 0u16 else if i mod 3 = 1 then 65535u16 else 256u16 end if
+  bind sourceU16 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger16
+ return
+    if value mod 3 = 0 then 0u16 else if value mod 3 = 1 then 65535u16 else 256u16 end if
   end lambda)
-  bind expectedU16 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger16 return
-    if i mod 3 = 0 then 1u16 else if i mod 3 = 1 then 65534u16 else 257u16 end if
+  bind expectedU16 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger16
+ return
+    if value mod 3 = 0 then 1u16 else if value mod 3 = 1 then 65534u16 else 257u16 end if
   end lambda)
-  bind sourceU32 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger32 return
-    if i mod 3 = 0 then 0u32 else if i mod 3 = 1 then 4294967295u32 else 65536u32 end if
+  bind sourceU32 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger32
+ return
+    if value mod 3 = 0 then 0u32 else if value mod 3 = 1 then 4294967295u32 else 65536u32 end if
   end lambda)
-  bind expectedU32 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger32 return
-    if i mod 3 = 0 then 1u32 else if i mod 3 = 1 then 4294967294u32 else 65537u32 end if
+  bind expectedU32 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger32
+ return
+    if value mod 3 = 0 then 1u32 else if value mod 3 = 1 then 4294967294u32 else 65537u32 end if
   end lambda)
-  bind sourceU64 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger64 return
-    if i mod 3 = 0 then 0u64 else if i mod 3 = 1 then 9223372036854775808u64 else 18446744073709551615u64 end if
+  bind sourceU64 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger64
+ return
+    if value mod 3 = 0 then 0u64 else if value mod 3 = 1 then 9223372036854775808u64 else 18446744073709551615u64 end if
   end lambda)
-  bind expectedU64 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger64 return
-    if i mod 3 = 0 then 1u64 else if i mod 3 = 1 then 9223372036854775809u64 else 18446744073709551614u64 end if
+  bind expectedU64 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger64
+ return
+    if value mod 3 = 0 then 1u64 else if value mod 3 = 1 then 9223372036854775809u64 else 18446744073709551614u64 end if
   end lambda)
-  bind sourceF32 <- List.map(indexes, lambda(i: Integer) -> Float32 return
-    if i mod 3 = 0 then 0.1f32 else if i mod 3 = 1 then 16777217.0f32 else -1.25f32 end if
+  bind sourceF32 <- List.map(xs: indexes, f: lambda(value: Integer) -> Float32
+ return
+    if value mod 3 = 0 then 0.1f32 else if value mod 3 = 1 then 16777217.0f32 else -1.25f32 end if
   end lambda)
-  bind expectedF32 <- List.map(indexes, lambda(i: Integer) -> Float32 return
-    if i mod 3 = 0 then -0.1f32 else if i mod 3 = 1 then -16777216.0f32 else 1.25f32 end if
+  bind expectedF32 <- List.map(xs: indexes, f: lambda(value: Integer) -> Float32
+ return
+    if value mod 3 = 0 then -0.1f32 else if value mod 3 = 1 then -16777216.0f32 else 1.25f32 end if
   end lambda)
 
-  return Runner.verify(rounds, lambda() -> Boolean
+  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
     bind c0 <- flipS8(-128s8) = -127s8
     bind c1 <- flipS16(-32768s16) = -32767s16
     bind c2 <- flipS32(-2147483648s32) = -2147483647s32

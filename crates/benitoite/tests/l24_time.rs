@@ -66,7 +66,7 @@ function main() -> Result[Unit, String]
   if Time.Instant.unixNanoseconds(t) <> 1_790_566_496_789_000_000 then
     return Result.Error("Instant field")
   end if
-  bind dt <- Time.toDateTime(t, 540)
+  bind dt <- Time.toDateTime(t: t, offsetMinutes: 540)
   if Time.DateTime.year(dt) <> 2026 or Time.DateTime.month(dt) <> 9
     or Time.DateTime.day(dt) <> 28 or Time.DateTime.hour(dt) <> 12
     or Time.DateTime.minute(dt) <> 34 or Time.DateTime.second(dt) <> 56
@@ -76,8 +76,8 @@ function main() -> Result[Unit, String]
   end if
   bind other <- Time.Instant(unixNanoseconds: 1_790_566_496_789_000_001)
   bind instants <- Map.fromList([Pair(other, "next"), Pair(t, "instant")])
-  if Map.size(instants) <> 2 or Map.get(instants, t) <> Option.Some("instant")
-    or Map.get(instants, other) <> Option.Some("next") then
+  if Map.size(instants) <> 2 or Map.get(m: instants, k: t) <> Option.Some("instant")
+    or Map.get(m: instants, k: other) <> Option.Some("next") then
     return Result.Error("Instant keys")
   end if
   bind same <- Time.DateTime(year: 2026, month: 9, day: 28, hour: 12,
@@ -87,8 +87,8 @@ function main() -> Result[Unit, String]
   end if
   bind changed <- Time.DateTime(..same, nanosecond: 789_000_001)
   bind dates <- Map.fromList([Pair(changed, "next"), Pair(dt, "date")])
-  if Map.size(dates) <> 2 or Map.get(dates, same) <> Option.Some("date")
-    or Map.get(dates, changed) <> Option.Some("next") then
+  if Map.size(dates) <> 2 or Map.get(m: dates, k: same) <> Option.Some("date")
+    or Map.get(m: dates, k: changed) <> Option.Some("next") then
     return Result.Error("DateTime keys")
   end if
   return Result.Ok(())

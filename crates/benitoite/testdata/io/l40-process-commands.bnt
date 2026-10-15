@@ -5,15 +5,15 @@ import Benitoite.Trait
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 function main() -> Result[Unit, String] uses Process.Run, Console.Write
-  bind command <- Process.command("/bin/sh", ["-c", "test -f marker.txt || exit 99; read line; printf '%s:%s\\n' \"\$L40_VALUE\" \"\$line\"; printf 'err\\n' >&2; exit 7"])
+  bind command <- Process.command(program: "/bin/sh", arguments: ["-c", "test -f marker.txt || exit 99; read line; printf '%s:%s\\n' \"\$L40_VALUE\" \"\$line\"; printf 'err\\n' >&2; exit 7"])
   bind configured <- Process.Command(..command, workingDirectory: Option.Some("sub"), environment: Map.fromList([Pair("L40_VALUE", "value")]), input: Option.Some("input\n"))
-  bind output <- try Process.run(configured) |> Result.mapError(_, IOError.message)
+  bind output <- try Process.run(configured) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.writeLine(Integer.toString(Process.Output.exitCode(output)))
   Console.write(Process.Output.standardOutput(output))
   Console.write(Process.Output.standardError(output))
-  bind shell <- try Process.shell("printf 'shell\\n'") |> Result.mapError(_, IOError.message)
+  bind shell <- try Process.shell("printf 'shell\\n'") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.write(Process.Output.standardOutput(shell))
-  bind invalid <- match Process.run(Process.command("/bin/sh", ["-c", "printf '\\377'"])) with
+  bind invalid <- match Process.run(Process.command(program: "/bin/sh", arguments: ["-c", "printf '\\377'"])) with
     case Result.Error(e) -> IOError.kind(e) = IOErrorKind.InvalidUTF8
     case Result.Ok(_) -> false
   end match

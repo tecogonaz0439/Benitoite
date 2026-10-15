@@ -53,6 +53,10 @@ fn record_construction_assists_preserve_field_order_and_qualification() {
             "record Point\n z: Integer\n a: Integer\nend record\nfunction f() -> Unit\n bind _ <- {expr}\nend function"
         );
         let (_, out, _) = resolve_files(&[("main.bnt", &source)]);
+        if expr == "Point" {
+            assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
+            continue;
+        }
         let diag = out
             .diagnostics
             .iter()
@@ -627,7 +631,7 @@ fn lookup_modules_constructors_and_prelude_shadowing() {
     let (load, out, _) = resolve_files(&[
         (
             "main.bnt",
-            "import Lib.Text\nimport Lib.Geometry.Shape as GShape\nimport Benitoite.Unofficial.IO.Console\ndata Option\n Mine\nend data\nfunction main(x: Option, y: Benitoite.Option[Integer], zs: List[Integer]) -> Unit uses Console.Write\n Text.slug(\"Hello\")\n GShape.Shape.Circle(1.0)\n Benitoite.Option.Some(1)\n List.map(zs, lambda(z) return z end lambda)\nend function",
+            "import Lib.Text\nimport Lib.Geometry.Shape as GShape\nimport Benitoite.Unofficial.IO.Console\ndata Option\n Mine\nend data\nfunction main(x: Option, y: Benitoite.Option[Integer], zs: List[Integer]) -> Unit uses Console.Write\n Text.slug(\"Hello\")\n GShape.Shape.Circle(1.0)\n Benitoite.Option.Some(1)\n List.map(xs: zs, f: lambda(value) return value end lambda)\nend function",
         ),
         (
             "Lib/Text.bnt",
@@ -813,7 +817,7 @@ fn hidden_standard_library_name_has_no_make_public_help() {
     let (load, out, _) = resolve_files(&[(
         "main.bnt",
         "function main() -> Unit
- bind _ <- List.mapFrom([1], lambda(v) return v end lambda, 0, [])
+ bind _ <- List.mapFrom(xs: [1], f: lambda(v) return v end lambda, i: 0, acc: [])
  return ()
 end function",
     )]);
@@ -1193,7 +1197,7 @@ fn repairs_for_missing_imports_constructors_and_uses_resolve() {
             "Integer",
         ),
         (
-            "import Benitoite.Unofficial.IO.Console\nfunction f(x: function(function() -> Unit uses Console.Write, Integer) -> Unit) -> Unit\nend function",
+            "import Benitoite.Unofficial.IO.Console\nfunction f(x: Pair[function() -> Unit uses Console.Write, Integer]) -> Unit\nend function",
             DiagCode::E0316,
             "Integer",
         ),
@@ -1317,7 +1321,7 @@ fn public_contracts_include_nested_types_effects_and_supertraits() {
             "mark `Hidden` as `public`",
         ),
         (
-            "data Hidden\n H\nend data\npublic function f(x: function(Hidden) -> Unit) -> Unit\nend function",
+            "data Hidden\n H\nend data\npublic function f(x: function(value: Hidden) -> Unit) -> Unit\nend function",
             "Hidden",
             "public data Hidden",
             "the public function `f` uses the non-public type `Hidden`",
@@ -1412,10 +1416,10 @@ fn binding_keywords_and_implicit_binders() {
             "",
         ),
         (
-            "function total(items: List[Integer]) -> Integer\n bind sum <- 0\n return List.fold(items, sum, lambda(sum, x) return sum + x end lambda)\nend function",
+            "function total(items: List[Integer]) -> Integer\n bind acc <- 0\n return List.fold(xs: items, initial: acc, f: lambda(acc, value) return acc + value end lambda)\nend function",
             DiagCode::E0338,
-            "sum",
-            "sum",
+            "acc",
+            "acc",
         ),
         (
             "function f() -> Unit\n with r = 1, r = 2 do\n r\n end with\nend function",
@@ -1452,7 +1456,7 @@ fn binding_keywords_and_implicit_binders() {
         }
     }
     for source in [
-        "function normalize(text: String) -> String\n shadow text <- String.trim(text)\n shadow text <- String.replace(text, \"\\t\", \" \")\n bind words <- String.split(text, \" \")\n return String.join(words, \" \")\nend function",
+        "function normalize(text: String) -> String\n shadow text <- String.trim(text)\n shadow text <- String.replace(s: text, old: \"\\t\", new: \" \")\n bind words <- String.split(s: text, separator: \" \")\n return String.join(xs: words, separator: \" \")\nend function",
         "function helper() -> Unit\nend function\nfunction f() -> Unit\n bind helper <- 1\nend function",
         "function _helper(_x: Integer) -> Integer\n shadow _x <- _x + 1\n return _x\nend function\nfunction main() -> Unit\n bind _ <- _helper(1)\nend function",
         "const maxRetries: Integer = 3\nfunction f(maxRetries: Integer) -> Unit\nend function\nfunction g() -> Unit\n bind maxRetries <- 2\nend function",
@@ -1838,14 +1842,14 @@ fn typo_edits_require_a_unique_candidate() {
 fn uses_repair_only_closes_a_valid_effect_prefix_in_a_type_list() {
     for source in [
         "type Bad = function() -> Unit uses State, Integer",
-        "type Bad = function((function() -> Unit uses State, Integer)) -> Unit",
-        "type Bad = function(function() -> Unit uses Integer, String) -> Unit",
+        "type Bad = Pair[(function() -> Unit uses State, Integer)]",
+        "type Bad = Pair[function() -> Unit uses Integer, String]",
     ] {
         let (_, out, _) = resolve_files(&[("main.bnt", source)]);
         let d = diagnostic(&out, DiagCode::E0316);
         assert!(d.helps.iter().all(|h| h.edits.is_empty()), "{source}");
     }
-    let source = "type Bad = function(function() -> Unit uses State, Integer, String) -> Unit";
+    let source = "type Bad = Pair[function() -> Unit uses State, Integer, String]";
     let (_, out, _) = resolve_files(&[("main.bnt", source)]);
     let ds: Vec<_> = out
         .diagnostics
@@ -1989,4 +1993,218 @@ fn member_assists_respect_module_identity() {
         ("MyApp/IO.bnt", ""),
     ]);
     assert!(diagnostic(&out, DiagCode::E0303).helps.is_empty());
+}
+
+#[test]
+fn prepared_named_labels_are_not_value_references_or_bindings() {
+    use crate::syntax::ast::{Arg, ArgValue, Item, Name, NamedArg, Stmt};
+    let source = "function f(value: Integer) -> Integer\n value\nend function\nfunction g(value: Integer) -> Integer\n f(value)\nend function";
+    let (mut load, mut ids) = crate::modules::memfs::load_files(&[("main.bnt", source)]);
+    assert!(load.diagnostics.is_empty(), "{:?}", load.diagnostics);
+    let g = load
+        .asts
+        .iter_mut()
+        .flat_map(|a| &mut a.decls)
+        .find_map(|d| {
+            let Item::Fn(f) = &mut d.item else {
+                return None;
+            };
+            (f.name.text == "g").then_some(f)
+        })
+        .unwrap();
+    let Stmt::Expr(Expr::Call(c)) = &mut g.body.as_mut().unwrap().stmts[0] else {
+        panic!("call")
+    };
+    let Arg::Expr(value) = c.args.remove(0) else {
+        panic!("value")
+    };
+    let value_id = value.id();
+    c.args.push(Arg::Named(Box::new(NamedArg {
+        name: Name {
+            text: "unbound_label".into(),
+            span: value.span(),
+        },
+        value: ArgValue::Expr(value),
+    })));
+    let resolved = super::resolve(&load.modules, &load.asts, &load.sources, &mut ids);
+    assert!(
+        resolved.diagnostics.is_empty(),
+        "{:?}",
+        resolved.diagnostics
+    );
+    let binding = resolved.refs.get(value_id).unwrap();
+    assert_eq!(resolved.bindings.get(*binding).unwrap().name, "value");
+    assert!(
+        !resolved
+            .bindings
+            .iter()
+            .any(|(_, binding)| binding.name == "unbound_label")
+    );
+}
+
+#[test]
+fn prepared_function_type_names_are_unique_without_binding_values() {
+    use crate::syntax::ast::{Item, Name, TypeExpr};
+    for duplicate in [false, true] {
+        let source = "type F = function(item: Integer, other: Integer) -> Integer";
+        let (mut load, mut ids) = crate::modules::memfs::load_files(&[("main.bnt", source)]);
+        assert!(load.diagnostics.is_empty());
+        let alias = load
+            .asts
+            .iter_mut()
+            .flat_map(|a| &mut a.decls)
+            .find_map(|d| {
+                let Item::Alias(a) = &mut d.item else {
+                    return None;
+                };
+                (a.name.text == "F").then_some(a)
+            })
+            .unwrap();
+        let TypeExpr::Fn(f) = &mut alias.ty else {
+            panic!("function type")
+        };
+        f.param_names = f
+            .params
+            .iter()
+            .enumerate()
+            .map(|(i, t)| Name {
+                text: if duplicate || i == 0 { "item" } else { "other" }.into(),
+                span: t.span(),
+            })
+            .collect();
+        let spans = f.param_names.iter().map(|n| n.span).collect::<Vec<_>>();
+        let resolved = super::resolve(&load.modules, &load.asts, &load.sources, &mut ids);
+        let expected = if duplicate {
+            vec![DiagCode::E0310]
+        } else {
+            vec![]
+        };
+        assert_eq!(
+            resolved
+                .diagnostics
+                .iter()
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected,
+            "{:?}",
+            resolved.diagnostics
+        );
+        if duplicate {
+            let d = &resolved.diagnostics[0];
+            assert_eq!(d.primary.as_ref().unwrap().span, spans[1]);
+            assert_eq!(d.secondary[0].span, spans[0]);
+        }
+    }
+}
+
+#[test]
+fn prepared_record_calls_distinguish_constructor_bindings_and_preserve_name_errors() {
+    for (declaration, path, expected) in [
+        (
+            "data Pair\n Pair\nend data",
+            "Pair.Pair",
+            Some(DiagCode::E0456),
+        ),
+        (
+            "data Pair\n Pair(Integer, Integer)\nend data",
+            "Pair.Pair",
+            Some(DiagCode::E0456),
+        ),
+        (
+            "data Pair\n Pair(Integer, Integer)\nend data",
+            "Pair.Piar",
+            Some(DiagCode::E0303),
+        ),
+        (
+            "record Pair\n arg1: Integer\n arg2: Integer\nend record",
+            "Pair",
+            None,
+        ),
+    ] {
+        let source = format!(
+            "{declaration}\nfunction sample() -> Unit\n {path}(arg1: 1, arg2: 2)\nend function"
+        );
+        let (load, mut ids) = crate::modules::memfs::load_files(&[("main.bnt", &source)]);
+        assert!(load.diagnostics.is_empty());
+        let (owner, record) = load
+            .asts
+            .iter()
+            .flat_map(|m| &m.decls)
+            .find_map(|d| {
+                let Item::Fn(f) = &d.item else { return None };
+                if f.name.text != "sample" {
+                    return None;
+                }
+                let Stmt::Expr(Expr::Record(e)) = &f.body.as_ref()?.stmts[0] else {
+                    panic!("record expression")
+                };
+                Some((f.id, e))
+            })
+            .unwrap();
+        let mut resolver =
+            super::collect::Resolver::new(&load.modules, &load.asts, &load.sources, &mut ids);
+        resolver.collect();
+        resolver.imports();
+        resolver.signatures();
+        resolver.check_declarations();
+        let mut ctx = resolver.contexts.get(owner).unwrap().clone();
+        resolver.resolve_named_record(&mut ctx, record);
+        assert_eq!(
+            resolver
+                .out
+                .diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .map(|d| d.code.unwrap())
+                .collect::<Vec<_>>(),
+            expected.into_iter().collect::<Vec<_>>(),
+            "{:?}",
+            resolver.out.diagnostics
+        );
+        if expected == Some(DiagCode::E0456) {
+            assert_eq!(
+                diagnostic(&resolver.out, DiagCode::E0456)
+                    .primary
+                    .as_ref()
+                    .unwrap()
+                    .span,
+                record.fields[0].name.span
+            );
+        }
+        if expected.is_none() {
+            assert_eq!(
+                resolver
+                    .out
+                    .bindings
+                    .get(*resolver.out.refs.get(record.id).unwrap())
+                    .unwrap()
+                    .kind,
+                BindingKind::Record
+            );
+            for field in &record.fields {
+                assert!(resolver.out.refs.get(field.id).is_some());
+            }
+        }
+    }
+}
+
+// 名前付き注釈によるレコード構成子値の受理は、文の順序に依存しない。
+// 既存の名前付き呼び出しの例には、局所・入れ子の注釈だけの境界がない。
+#[test]
+fn record_values_with_named_annotations_do_not_depend_on_statement_order() {
+    for annotation in [
+        "bind action: function(value: Integer) -> Integer <- lambda(value) return value",
+        "bind action <- lambda(callback: function(value: Integer) -> Integer) return callback",
+    ] {
+        for body in [
+            format!("bind p <- Point\n {annotation}"),
+            format!("{annotation}\n bind p <- Point"),
+        ] {
+            let source = format!(
+                "record Point\n value: Integer\nend record\nfunction sample() -> Unit\n {body}\n ()\nend function"
+            );
+            let (_, out, _) = resolve_files(&[("main.bnt", &source)]);
+            assert!(out.diagnostics.is_empty(), "{body}: {:?}", out.diagnostics);
+        }
+    }
 }

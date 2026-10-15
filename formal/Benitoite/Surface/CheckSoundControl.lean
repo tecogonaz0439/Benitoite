@@ -1,14 +1,17 @@
 import Benitoite.Surface.CheckSoundCalls
+import Benitoite.Surface.CheckSoundCollections
 
-/-! 制御構文とハンドラの節の検査の健全性。 -/
+/-! 制御構文とハンドラの節の検査の健全性。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。 -/
 namespace Benitoite.Surface.Check
 open Benitoite.Release Benitoite.Surface.CheckTools
 
-theorem lam_case {q ps r eff body} : CaseSound q (.expr (.lam ps r eff body)) := by
+theorem lam_case {q names ps r eff body} : CaseSound q (.expr (.lam names ps r eff body)) := by
   intro ih
   have ihb := lam_case_ih ih
   intro C Γ R p path s s' a ε hq he hΓ hR h
   simp only [Expr.AtomsIn] at he
+  obtain ⟨uNames, hnames, h⟩ := checking_lift_bind_ok h
   obtain ⟨u1, hexit, h⟩ := checking_lift_bind_ok h
   obtain ⟨εb, mid, hb, hbAtoms, h⟩ := checking_accept_block_ok
     (fun _ _ _ _ h => ihb _ _ _ _ _ _ _ _ _ hq he.2.2.2
@@ -17,7 +20,7 @@ theorem lam_case {q ps r eff body} : CaseSound q (.expr (.lam ps r eff body)) :=
   obtain ⟨u2, heff, h⟩ := checking_lift_bind_ok h
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  exact ⟨.E_Lam ((lamBodyOk_spec _ _).mp (require_ok hexit).1)
+  exact ⟨.E_Lam ((namesWF_spec _ _).mp (require_ok hnames).1) ((lamBodyOk_spec _ _).mp (require_ok hexit).1)
     (.B_Sub hb (Or.inl rfl) (acceptEff_sound hbAtoms heff)),
     ⟨he.1, he.2.1, he.2.2.1⟩, emptyEff_atoms _⟩
 
@@ -176,6 +179,7 @@ theorem clauses_cons_case {q o n ntys body rest} :
   intro C Γ R path t ε s s' actual hq hc hΓ hR ht hε h
   simp only [Clauses.AtomsIn] at hc
   obtain ⟨sg, hsg, h⟩ := checking_lift_bind_ok h
+  obtain ⟨uNames, hnames, h⟩ := checking_lift_bind_ok h
   obtain ⟨u1, hn, h⟩ := checking_lift_bind_ok h
   obtain ⟨u2, hntys, h⟩ := checking_lift_bind_ok h
   have sgAtoms := opSig_atoms hq.declarations hq.builtins (lookup_ok hsg)
@@ -194,7 +198,7 @@ theorem clauses_cons_case {q o n ntys body rest} :
   have hbSub := acceptEff_sound hbAtoms heff
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  refine ⟨.cons (lookup_ok hsg) (by simpa using (require_ok hn).1)
+  refine ⟨.cons (lookup_ok hsg) ((namesWF_spec _ _).mp (require_ok hnames).1) (by simpa using (require_ok hn).1)
     (by simpa using (require_ok hntys).1) ?_ rs.1, ?_, union_atoms _ _ _⟩
   · simpa only [shiftTy_eq, shiftTy_fun_eq, shiftEnv] using
       (HasBlock.B_Sub hb (Or.inl rfl) hbSub)

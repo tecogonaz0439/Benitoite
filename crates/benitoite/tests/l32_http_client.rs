@@ -121,47 +121,47 @@ function server(listener: Http.Listener, statuses: List[Integer]) -> Result[Unit
  match statuses with
   case [] -> return Result.Ok(())
   case [status, ..rest] ->
-   with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+   with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
     bind req <- Http.requestOf(exchange)
     bind body <- if status = 500 then
-     if Http.Request.method(req) <> "POST" or Http.header(Http.Request.headers(req), "x-request") <> Option.Some("雪") then
+     if Http.Request.method(req) <> "POST" or Http.header(headers: Http.Request.headers(req), name: "x-request") <> Option.Some("雪") then
       return Result.Error("request method or header")
      end if
      Http.Request.body(req)
     else String.toUTF8("ok") end if
-    bind _ <- try Http.respond(exchange, Http.Response(status: status,
-      headers: [Pair("X-A", "1"), Pair("X-B", "2"), Pair("x-a", "3"), Pair("X-Unicode", "雪")], body: body)) |> Result.mapError(_, NetworkError.message)
+    bind _ <- try Http.respond(exchange: exchange, response: Http.Response(status: status,
+      headers: [Pair("X-A", "1"), Pair("X-B", "2"), Pair("x-a", "3"), Pair("X-Unicode", "雪")], body: body)) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
    end with
-   return server(listener, rest)
+   return server(listener: listener, statuses: rest)
  end match
 end function
 function checkResponse(response: Http.Response, status: Integer, body: String) -> Result[Unit, String] uses Console.Write
  bind headers <- Http.Response.headers(response)
  if Http.Response.status(response) <> status or Http.Response.body(response) <> String.toUTF8(body)
-  or List.filter(headers, lambda(h) return Pair.first(h) = "x-a" end lambda) <> [Pair("x-a", "1"), Pair("x-a", "3")]
-  or Http.header(headers, "x-b") <> Option.Some("2") or Http.header(headers, "x-unicode") <> Option.Some("雪")
-  or List.any(headers, lambda(h) return Pair.first(h) <> String.toLowercase(Pair.first(h)) end lambda) then
+  or List.filter(xs: headers, p: lambda(value) return Pair.first(value) = "x-a" end lambda) <> [Pair("x-a", "1"), Pair("x-a", "3")]
+  or Http.header(headers: headers, name: "x-b") <> Option.Some("2") or Http.header(headers: headers, name: "x-unicode") <> Option.Some("雪")
+  or List.any(xs: headers, p: lambda(value) return Pair.first(value) <> String.toLowercase(Pair.first(value)) end lambda) then
   return Result.Error("response fields")
  end if
  if status = 200 then
-  List.forEach(headers, lambda(h) Console.writeLine(Pair.first(h) + ":" + Pair.second(h)) end lambda)
+  List.forEach(xs: headers, f: lambda(value) Console.writeLine(Pair.first(value) + ":" + Pair.second(value)) end lambda)
  end if
  return Result.Ok(())
 end function
 function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
- with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+ with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
   bind url <- "http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/post"
-  bind request <- Http.clientRequest("POST", url)
+  bind request <- Http.clientRequest(method: "POST", url: url)
   if Http.ClientRequest.method(request) <> "POST" or Http.ClientRequest.url(request) <> url
    or Http.ClientRequest.headers(request) <> [] or Http.ClientRequest.body(request) <> Bytes.empty()
    or Http.ClientRequest.timeoutMilliseconds(request) <> 30000 then return Result.Error("clientRequest defaults") end if
-  bind task <- TaskGroup.spawn(group, lambda() return server(listener, [200, 404, 500]) end lambda)
-  bind first <- try Http.get(url) |> Result.mapError(_, NetworkError.message)
-  bind _ <- try checkResponse(first, 200, "ok")
-  bind second <- try Http.get(url) |> Result.mapError(_, NetworkError.message)
-  bind _ <- try checkResponse(second, 404, "ok")
-  bind third <- try Http.send(Http.ClientRequest(..request, headers: [Pair("X-Request", "雪")], body: String.toUTF8("posted"))) |> Result.mapError(_, NetworkError.message)
-  bind _ <- try checkResponse(third, 500, "posted")
+  bind task <- TaskGroup.spawn(group: group, action: lambda() return server(listener: listener, statuses: [200, 404, 500]) end lambda)
+  bind first <- try Http.get(url) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+  bind _ <- try checkResponse(response: first, status: 200, body: "ok")
+  bind second <- try Http.get(url) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+  bind _ <- try checkResponse(response: second, status: 404, body: "ok")
+  bind third <- try Http.send(Http.ClientRequest(..request, headers: [Pair("X-Request", "雪")], body: String.toUTF8("posted"))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+  bind _ <- try checkResponse(response: third, status: 500, body: "posted")
   return Task.await(task)
  end with
 end function
@@ -191,21 +191,21 @@ fn redirects_follow_ten_and_return_other_on_eleventh() {
                 r#"
 function server(listener: Http.Listener, url: String, n: Integer) -> Result[Unit,String] uses Http.Listen, State
  if n = 0 then return Result.Ok(()) end if
- with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+ with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
   bind status <- if n = 1 and {redirects} = 10 then 200 else 302 end if
-  bind _ <- try Http.respond(exchange, Http.Response(status: status, headers: [Pair("location", url)], body: String.toUTF8("ok"))) |> Result.mapError(_, NetworkError.message)
+  bind _ <- try Http.respond(exchange: exchange, response: Http.Response(status: status, headers: [Pair("location", url)], body: String.toUTF8("ok"))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
  end with
- return server(listener, url, n - 1)
+ return server(listener: listener, url: url, n: n - 1)
 end function
 function main() -> Result[Unit,String] uses Http.Listen, Http.Connect, State
- with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+ with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
   bind url <- "http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/redirect"
-  bind task <- TaskGroup.spawn(group, lambda() return server(listener, url, 11) end lambda)
+  bind task <- TaskGroup.spawn(group: group, action: lambda() return server(listener: listener, url: url, n: 11) end lambda)
   bind result <- Http.get(url)
   bind _ <- try Task.await(task)
   return match result with
    case Result.Ok(response) -> if {redirects} = 10 and Http.Response.status(response) = 200 then Result.Ok(()) else Result.Error("redirect count") end if
-   case Result.Error(error) -> if {redirects} = 11 and NetworkError.kind(error) = NetworkErrorKind.Other and String.contains(NetworkError.message(error), "redirect") then Result.Ok(()) else Result.Error(NetworkError.message(error)) end if
+   case Result.Error(error) -> if {redirects} = 11 and NetworkError.kind(error) = NetworkErrorKind.Other and String.contains(s: NetworkError.message(error), part: "redirect") then Result.Ok(()) else Result.Error(NetworkError.message(error)) end if
   end match
  end with
 end function
@@ -302,7 +302,7 @@ fn maximum_integer_timeout_receives_response() {
         let source = format!(
             r#"
 function main() -> Result[Unit, String] uses Http.Connect, Console.Write
-  return match Http.send(Http.ClientRequest(..Http.clientRequest("GET", "http://127.0.0.1:{port}/"), timeoutMilliseconds: 9223372036854775807)) with
+  return match Http.send(Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://127.0.0.1:{port}/"), timeoutMilliseconds: 9223372036854775807)) with
     case Result.Ok(response) ->
       Console.writeLine(Integer.toString(Http.Response.status(response)))
       Result.Ok(())
@@ -320,7 +320,7 @@ fn redirect_client(url: &str, method: &str, body: &str) -> String {
     format!(
         r#"
 function main() -> Result[Unit,String] uses Http.Connect, Console.Write
- bind request <- Http.ClientRequest(..Http.clientRequest("{method}", "{url}"),
+ bind request <- Http.ClientRequest(..Http.clientRequest(method: "{method}", url: "{url}"),
   headers: [Pair("Authorization", "Bearer secret"), Pair("Cookie", "secret=1"), Pair("X-Custom", "kept")], body: String.toUTF8("{body}"))
  return match Http.send(request) with
   case Result.Ok(response) ->
@@ -505,16 +505,16 @@ fn invalid_request_body_and_methods_return_invalid_input() {
     let source = r#"
 function main() -> Result[Unit,String] uses Http.Connect
  bind requests <- [
-  Http.ClientRequest(..Http.clientRequest("GET", "http://127.0.0.1:1/"), body: String.toUTF8("body")),
-  Http.ClientRequest(..Http.clientRequest("HEAD", "http://127.0.0.1:1/"), body: String.toUTF8("body")),
-  Http.ClientRequest(..Http.clientRequest("GET", "http://127.0.0.1:1/"), headers: [Pair("Content-Length", "0")], body: String.toUTF8("body")),
-  Http.ClientRequest(..Http.clientRequest("POST", "http://127.0.0.1:1/"), headers: [Pair("Content-Length", "bad")]),
-  Http.ClientRequest(..Http.clientRequest("GET", "http://127.0.0.1:1/"), headers: [Pair("Host", "one"), Pair("Host", "two")]),
-  Http.clientRequest("PURGE", "http://127.0.0.1:1/"),
-  Http.clientRequest("get", "http://127.0.0.1:1/")]
- return List.fold(requests, Result.Ok(()), lambda(result, request)
-  bind _ <- try result
-  return match Http.send(request) with
+  Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://127.0.0.1:1/"), body: String.toUTF8("body")),
+  Http.ClientRequest(..Http.clientRequest(method: "HEAD", url: "http://127.0.0.1:1/"), body: String.toUTF8("body")),
+  Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://127.0.0.1:1/"), headers: [Pair("Content-Length", "0")], body: String.toUTF8("body")),
+  Http.ClientRequest(..Http.clientRequest(method: "POST", url: "http://127.0.0.1:1/"), headers: [Pair("Content-Length", "bad")]),
+  Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://127.0.0.1:1/"), headers: [Pair("Host", "one"), Pair("Host", "two")]),
+  Http.clientRequest(method: "PURGE", url: "http://127.0.0.1:1/"),
+  Http.clientRequest(method: "get", url: "http://127.0.0.1:1/")]
+ return List.fold(xs: requests, initial: Result.Ok(()), f: lambda(acc, value)
+  bind _ <- try acc
+  return match Http.send(value) with
    case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.InvalidInput then Result.Ok(()) else Result.Error(NetworkError.message(error)) end if
    case Result.Ok(_) -> Result.Error("invalid request succeeded")
   end match
@@ -536,10 +536,10 @@ end function
 fn real_timeout_returns_timed_out_without_server_response() {
     let source = r#"
 function main() -> Result[Unit,String] uses Http.Listen, Http.Connect, State
- with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+ with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
   bind url <- "http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/timeout"
-  bind task <- TaskGroup.spawn(group, lambda()
-   return Http.send(Http.ClientRequest(..Http.clientRequest("GET", url), timeoutMilliseconds: 100))
+  bind task <- TaskGroup.spawn(group: group, action: lambda()
+   return Http.send(Http.ClientRequest(..Http.clientRequest(method: "GET", url: url), timeoutMilliseconds: 100))
   end lambda)
   return match Task.await(task) with
    case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.TimedOut then Result.Ok(()) else Result.Error(NetworkError.message(error)) end if
@@ -559,9 +559,9 @@ end function
 fn closed_listener_port_returns_connection_refused() {
     let source = r#"
 function main() -> Result[Unit,String] uses Http.Listen, Http.Connect, State
- with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message) do
+ with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
   bind port <- Http.listenerPort(listener)
-  bind _ <- try Http.closeListener(listener) |> Result.mapError(_, NetworkError.message)
+  bind _ <- try Http.closeListener(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
   return match Http.get("http://127.0.0.1:" + Integer.toString(port) + "/") with
    case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.ConnectionRefused then Result.Ok(()) else Result.Error(NetworkError.message(error)) end if
    case Result.Ok(_) -> Result.Error("closed port connected")

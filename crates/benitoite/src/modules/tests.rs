@@ -22,6 +22,74 @@ const MAIN: &str = "function main() -> Unit\n  return ()\nend function\n";
 
 // spec: 01-03 依存の記述と `package.bnt`
 #[test]
+fn language_versions_check_the_release_boundary_in_each_header_location() {
+    for location in ["entry", "config", "dependency"] {
+        for (version, expected) in [
+            ("0.0.0", Some(DiagCode::E0908)),
+            ("0.0.3", Some(DiagCode::E0908)),
+            ("0.0.4", Some(DiagCode::E0908)),
+            ("0.0.5", None),
+            ("0.0.6", Some(DiagCode::E0907)),
+        ] {
+            let header = format!("language \"{version}\"\n");
+            let entry_source = format!("{header}{MAIN}");
+            let dependency_source = format!("{header}package Library\nend package\n");
+            let files = match location {
+                "entry" => vec![("main.bnt", entry_source.as_str())],
+                "config" => vec![("main.bnt", MAIN), ("package.bnt", header.as_str())],
+                _ => vec![
+                    (
+                        "main.bnt",
+                        "dependency Library\npath \"deps/library\"\nend dependency\nfunction main() -> Unit\nreturn ()\nend function\n",
+                    ),
+                    ("deps/library/package.bnt", dependency_source.as_str()),
+                ],
+            };
+            let (output, _) = load_files(&files);
+            assert_eq!(
+                codes(&output),
+                expected.into_iter().collect::<Vec<_>>(),
+                "{location}: {version}"
+            );
+            assert_aligned(&output);
+            let Some(code) = expected else {
+                continue;
+            };
+            let diagnostic = &output.diagnostics[0];
+            assert_eq!(primary_text(&output, diagnostic), format!("\"{version}\""));
+            if code == DiagCode::E0908 {
+                assert_eq!(
+                    diagnostic.message,
+                    format!(
+                        "this file was written for Benitoite {version}, and the language changed incompatibly in 0.0.5"
+                    )
+                );
+                assert_eq!(
+                    diagnostic.notes,
+                    [
+                        "calls with two or more parameters require named arguments; function types and higher-order contracts require parameter names, and function values must match those names in order"
+                    ]
+                );
+                assert_eq!(diagnostic.helps.len(), 1);
+                assert_eq!(
+                    diagnostic.helps[0].message,
+                    "see docs/reference/benitoite.md for named arguments and named function types"
+                );
+                assert!(diagnostic.helps[0].edits.is_empty());
+            } else {
+                assert_eq!(
+                    diagnostic.message,
+                    "this file needs Benitoite 0.0.6 or later, but this is Benitoite 0.0.5"
+                );
+                assert!(diagnostic.notes.is_empty());
+                assert!(diagnostic.helps.is_empty());
+            }
+        }
+    }
+}
+
+// spec: 01-03 依存の記述と `package.bnt`
+#[test]
 fn dependency_without_path_reports_only_the_missing_field() {
     let source = format!(
         "dependency Fuzzy\n  hash \"sha256:{}\"\nend dependency\n{MAIN}",
@@ -782,7 +850,7 @@ fn root_settings_do_not_come_from_parent_directories() {
 #[test]
 fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
     for config_name in ["package.bnt", "Package.bnt"] {
-        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.3\"\n")]);
+        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.5\"\n")]);
         assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
         assert_aligned(&output);
         if config_name == "package.bnt" {
@@ -802,7 +870,7 @@ fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
 
 #[test]
 fn config_cannot_be_a_starting_file() {
-    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.3\"\n")]);
+    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.5\"\n")]);
     let entry = EntrySpec {
         path: "/root/package.bnt".into(),
         display_name: "package.bnt".into(),
@@ -826,19 +894,19 @@ fn dependency_configs_precede_prelude_and_imported_modules() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.3\"\npackage Textkit\nend package\n",
+            "language \"0.0.5\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", "import Internal.Helper\n"),
         ("/library/Internal/Helper.bnt", ""),
         (
             "/second/package.bnt",
-            "language \"0.0.3\"\npackage Textkit\nend package\n",
+            "language \"0.0.5\"\npackage Textkit\nend package\n",
         ),
         ("/second/Slug.bnt", "import Internal.Helper\n"),
         ("/second/Internal/Helper.bnt", ""),
         (
             "/unused/package.bnt",
-            "language \"0.0.3\"\npackage Unused\nend package\n",
+            "language \"0.0.5\"\npackage Unused\nend package\n",
         ),
         ("/unused/Unread.bnt", "this is deliberately not a module"),
     ]);
@@ -911,7 +979,7 @@ fn package_imports_keep_their_canonical_root_and_reject_the_entry() {
             ("main.bnt", main),
             (
                 "deps/library/package.bnt",
-                "language \"0.0.3\"\npackage Library\nend package\n",
+                "language \"0.0.5\"\npackage Library\nend package\n",
             ),
             ("/outside/Target.bnt", ""),
         ]);
@@ -946,7 +1014,7 @@ fn root_link_to_the_dependency_imports_the_package() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.3\"\npackage Textkit\nend package\n",
+            "language \"0.0.5\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", ""),
     ]);
@@ -982,11 +1050,11 @@ fn overlapping_dependency_roots_are_rejected_before_imports() {
             ("main.bnt", &main),
             (
                 "/libs/package.bnt",
-                "language \"0.0.3\"\npackage Libs\nend package\n",
+                "language \"0.0.5\"\npackage Libs\nend package\n",
             ),
             (
                 "/libs/Nested/package.bnt",
-                "language \"0.0.3\"\npackage Nested\nend package\n",
+                "language \"0.0.5\"\npackage Nested\nend package\n",
             ),
             ("/libs/Value.bnt", ""),
             ("/libs/Nested/Value.bnt", ""),
@@ -1021,7 +1089,7 @@ fn dependency_import_edits_only_use_valid_module_names() {
             ),
             (
                 "/library/package.bnt",
-                "language \"0.0.3\"\npackage Library\nend package\n",
+                "language \"0.0.5\"\npackage Library\nend package\n",
             ),
         ]);
         fs.add_file(format!("/library/{tail}"), vec![]);
@@ -1057,7 +1125,7 @@ fn duplicate_dependency_locations_do_not_also_report_root_overlap() {
         ),
         (
             "deps/lib/package.bnt",
-            "language \"0.0.3\"\npackage Library\nend package\n",
+            "language \"0.0.5\"\npackage Library\nend package\n",
         ),
         ("deps/lib/Value.bnt", ""),
     ]);

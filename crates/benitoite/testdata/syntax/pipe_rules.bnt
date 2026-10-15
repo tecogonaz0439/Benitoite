@@ -9,22 +9,22 @@ function clamp(low: Integer, value: Integer, high: Integer) -> Integer
   return if value < low then low else if value > high then high else value end if
 end function
 
-function makeOffset(offset: Integer) -> function(Integer) -> Integer
+function makeOffset(offset: Integer) -> function(value: Integer) -> Integer
   return lambda(value: Integer) return value + offset end lambda
 end function
 
-function makeAdder(seed: Integer) -> function(Integer, Integer, Integer, Integer) -> Integer
+function makeAdder(seed: Integer) -> function(a: Integer, b: Integer, c: Integer, d: Integer) -> Integer
   return lambda(a: Integer, b: Integer, c: Integer, d: Integer) return seed + a + b + c + d end lambda
 end function
 
 function main() -> Unit uses Console.Write
   bind lines <- ["", "x", "y"]
-  bind filtered <- lines |> List.filter(nonEmpty)
+  bind filtered <- lines |> List.filter(p: nonEmpty)
   bind count <- lines |> List.length
-  bind middle <- 7 |> clamp(0, _, 100)
+  bind middle <- 7 |> clamp(low: 0, value: _, high: 100)
   bind doubled <- 3 |> lambda(value: Integer) return value * 2 end lambda
   bind parenthesized <- 3 |> (makeOffset(4))
-  bind nested <- 1 |> makeAdder(2)(3, 4, 5)
+  bind nested <- 1 |> makeAdder(2)(b: 3, c: 4, d: 5)
   bind total <- List.length(filtered) + count + middle + doubled + parenthesized + nested
   return Console.writeLine(Integer.toString(total))
 end function

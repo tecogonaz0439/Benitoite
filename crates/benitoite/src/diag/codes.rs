@@ -180,7 +180,8 @@ diag_codes! {
 
     // ---- E02: 構文 ----
     E0201 Check "expected {expected}, found {found}" "unexpected {found}"
-        [type_arguments: "call functions without type arguments, such as `Map.empty()`; write the type on the binding, such as `bind m: Map[String, Integer] <- Map.empty()`, and use `List.get` to read list elements"]
+        [lambda_line: "put `end lambda` on the same physical line as the body, or start the body on the line after the lambda header",
+         type_arguments: "call functions without type arguments, such as `Map.empty()`; write the type on the binding, such as `bind m: Map[String, Integer] <- Map.empty()`, and use `List.get` to read list elements"]
         fix [type_arguments]
         "The parser found a token that cannot appear here.";
     E0202 Check "comparison operators cannot be chained" "second comparison"
@@ -188,12 +189,12 @@ diag_codes! {
         fix [and]
         "Comparison operators are non-associative.";
     E0203 Check "`.` cannot follow a value" "method-call syntax is not supported"
-        [pipe: "pass the value with a pipe, such as `xs |> List.map(f)`",
+        [pipe: "pass the value with a pipe, such as `xs |> List.map(f: f)`",
          field: "read a record field with its field function, such as `Person.name(p)` or `p |> Person.name`"]
         "A dot is only used after a module, type, record, trait, or effect name, such as `List.map` or `Shape.Circle`.";
     E0204 Check "`_` can only be a direct argument of a call" "not a call argument"
         [record: "a record construction is not a call; write a lambda instead"]
-        "The placeholder `_` builds a function from a call, such as `clamp(0, _, 100)`.";
+        "The placeholder `_` builds a function from a call, such as `clamp(lo: 0, value: _, hi: 100)`.";
     E0206 Check "constructor `{name}` without fields must not have parentheses" ""
         [remove: "remove `()`"]
         fix [remove]
@@ -228,7 +229,8 @@ diag_codes! {
          open: "start the block with the keyword of the construct; it ends with `end` and the construct name, such as `end function` or `end if`"]
         "Blocks start with a keyword and end with `end` followed by the name of the construct.";
     E0213 Check "`end {found}` does not close `{expected}`" "expected `end {expected}`"
-        [opened: "the `{expected}` block starts here",
+        [lambda_line: "put `end lambda` on the same physical line as the body, or start the body on the line after the lambda header",
+         opened: "the `{expected}` block starts here",
          replace: "write `end {expected}`"]
         fix [replace]
         "A block is closed by `end` followed by the name of the construct that opened it.";
@@ -345,9 +347,9 @@ diag_codes! {
         [range: "write `{low}..{high}`; both ends are included"]
         fix [range]
         "Range patterns include both ends and are written with `..` only.";
-    E0243 Check "a lambda is written with parentheses and `end lambda`" ""
-        [lambda: "write `lambda({params}) return {body} end lambda`"]
-        "Lambdas are written `lambda(x) return x + 1 end lambda`.";
+    E0243 Check "a lambda is written as `lambda(parameters)` followed by a body" ""
+        [lambda: "write `lambda({params}) return {body}`; keep the entire lambda on one physical line, or start the body on the next line and add `end lambda`"]
+        "For one statement, prefer a short lambda: `lambda(x) return x + 1`.";
     E0244 Check "modules are imported by name" ""
         [by_name: "write `import {module}`, a module name relative to the directory of the starting file"]
         "`import` names a module, such as `import Lib.Text` for the file `Lib/Text.bnt`.";
@@ -385,6 +387,20 @@ diag_codes! {
         [package: "write `package` inside the parentheses"]
         fix [package]
         "Use `public(package)` to share a declaration only within its package.";
+
+    E0254 Check "a lambda without `end lambda` must fit on one physical line" ""
+        [crossed: "the lambda continues on another physical line",
+         end: "start the body on the next line and add `end lambda` to use a multiline body"]
+        "A lambda without its terminator contains one statement and fits on one physical line.";
+
+    E0256 Check "parenthesize the inner lambda when either lambda omits `end lambda`" ""
+        [paren: "enclose the inner lambda in parentheses"]
+        fix [paren]
+        "A directly nested lambda needs parentheses when either lambda omits its terminator.";
+
+    E0257 Check "each function-type parameter must have a name" ""
+        [named: "write `function(name: Type) -> Result`"]
+        "Function-type parameter names are part of the contract. Use the names required by the surrounding contract.";
 
     // ---- E03: 名前、import、公開 ----
     E0301 Check "cannot find `{name}` in this scope" "not found"
@@ -436,7 +452,7 @@ diag_codes! {
         "Constructor names must be unique within a type.";
     E0310 Check "the parameter `{name}` is declared more than once" "redeclared here"
         [first: "first declared here"]
-        "Parameter names must be unique within a function or lambda.";
+        "Parameter names must be unique within a function, lambda, or function type.";
     E0311 Check "`{name}` is bound more than once in the same pattern" "bound again here"
         [first: "first bound here"]
         "A pattern cannot bind the same variable twice.";
@@ -758,6 +774,35 @@ diag_codes! {
     E0447 Check "integer literal is out of range for `{ty}`" ""
         [range: "`{ty}` values range from {minimum} to {maximum}"]
         "A suffixed integer literal must fit in its declared width, including a directly applied minus sign.";
+    E0449 Check "this function requires named arguments" ""
+        [available: "available parameters, in declaration order: {names}",
+         named: "add the parameter names in declaration order"]
+        fix [named]
+        "Use parameter names when calling a function with two or more parameters.";
+    E0450 Check "named and positional arguments cannot be mixed" ""
+        [first: "the first argument uses the other form"]
+        "Use named arguments consistently in a call.";
+    E0451 Check "this function has no parameter named `{name}`" ""
+        [available: "available parameters, in declaration order: {names}"]
+        "An argument label must name a parameter of the function contract.";
+    E0452 Check "the parameter `{name}` is supplied more than once" ""
+        [first: "first supplied here"]
+        "Each parameter must be supplied exactly once.";
+    E0453 Check "missing arguments for parameters: {names}" "" []
+        "Supply each parameter of the function contract.";
+    E0456 Check "direct constructor calls use positional fields" ""
+        [bind: "use positional fields, or bind the constructor to a function value before using named arguments"]
+        "Direct data construction uses positional fields; constructor function values have parameter contracts.";
+    E0454 Check "function parameter names do not match" ""
+        [declared: "method declared here",
+         contracts: "expected `{expected}`, found `{found}`",
+         first_name: "parameter {index}: expected `{expected_name}`, found `{found_name}`"]
+        "Function types must have the same parameter names in the same order.";
+    E0455 Check "the parameter names and order of this function cannot be determined" ""
+        [annotation: "add a function-type annotation with parameter names",
+         bind: "bind the callee to a value with an explicit named function type before using a pipe or placeholders"]
+        "The function contract must be determined before type checking finishes.";
+
     E0448 Check "floating-point literal is too large for `Float32`" "" []
         "The literal rounds to infinity in binary32.";
 
@@ -965,7 +1010,8 @@ diag_codes! {
     E0907 Check "this file needs Benitoite {version} or later, but this is Benitoite {current}" "" []
         "The declared language version is newer than the interpreter. Use an interpreter at least as new as the declaration.";
     E0908 Check "this file was written for Benitoite {version}, and the language changed incompatibly in {changed}" ""
-        [change: "{summary}"]
+        [change: "{summary}",
+         migrate: "see docs/reference/benitoite.md for named arguments and named function types"]
         "The interpreter reports the earliest incompatible language change after the declared version and no later than its own version.";
     E0909 Check "`{item}` can be written only at the start of the starting file or in `package.bnt`" "" []
         "Imported modules cannot have `language` or `dependency` headers. A `package` block can be written only in `package.bnt`.";

@@ -14,6 +14,6 @@ import Runner
 function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write, Process.Environment
   bind path <- try Runner.argument(0)
   bind count <- try Runner.rounds(1)
-  bind bytes <- try Result.mapError(File.readBytes(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
-  return Runner.measure(count, lambda() -> Result[Bytes, String] uses State return Result.Ok(Digest.sha256(bytes)) end lambda, Bytes.toHex)
+  bind bytes <- try Result.mapError(r: File.readBytes(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
+  return Runner.measure(count: count, work: lambda() -> Result[Bytes, String] uses State return Result.Ok(Digest.sha256(bytes)) end lambda, render: lambda(value) -> String return Bytes.toHex(value) end lambda)
 end function

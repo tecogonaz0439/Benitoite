@@ -2,18 +2,19 @@ import Benitoite.Surface.Lemmas.Program
 import Benitoite.Release.Theorems
 
 /-!
-# 脱糖の型の保存と表層からのエフェクトの健全性（C1・C2・C4・C5b-1）
+# 脱糖の型の保存と表層からのエフェクトの健全性
 
 性質 1 は、表層の型付けと番号の範囲条件、組み込みのシグネチャの範囲条件を前提にする。
 組み込みの関数の動作の仮定は、型の保存には不要である。
-辞書・値として使う形・実装の定義を含む。言明と前提は C4 のままである。
+操作・ハンドラ・型クラス・コレクション・レコードを含む全表層を扱う。
+契約名と位置対応は入力の型付けと範囲条件から得て、別の外部仮定を加えない。
 -/
 
 namespace Benitoite.Surface
 
 open Benitoite.Release
 
-/-- 01-12「確かめる性質」の性質 1。対象は C1・C2・C4・C5b-1 の構文であり、型の範囲を別の述語で狭めない。 -/
+/-- 01-12「確かめる性質」の性質 1。型付けと範囲条件が扱う全構文を対象とする。 -/
 theorem desugar_typed {p : Program} {B : Builtins} {opPrim : OpPrim}
     (hwf : p.WellFormed) (hwt : p.WellTyped B opPrim)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) :

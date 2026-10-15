@@ -1,0 +1,80 @@
+--- a/crates/benitoite/testdata/acceptance/fmt_comments.formatted
++++ b/crates/benitoite/testdata/acceptance/fmt_comments.formatted
+@@ -14,8 +14,8 @@
+ function main() -> Unit uses Console.Write
+   // print one line per price
+   bind prices <- [100, 250] // sample prices
+-  List.forEach(prices, lambda(price)
+-    Console.writeLine(Integer.toString(withTax(price, 10))) // with 10 percent
++  List.forEach(xs: prices, f: lambda(value)
++    Console.writeLine(Integer.toString(withTax(price: value, rate: 10))) // with 10 percent
+   end lambda)
+   // the last comment
+ end function
+--- a/crates/benitoite/testdata/fmt/example.formatted
++++ b/crates/benitoite/testdata/fmt/example.formatted
+@@ -18,7 +18,7 @@
+   bind shapes <- [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
+   // total area
+   bind total <- shapes
+-    |> List.map(area)
+-    |> List.fold(0.0, lambda(acc, a) return acc + a end lambda)
++    |> List.map(f: lambda(value) return area(value) end lambda)
++    |> List.fold(initial: 0.0, f: lambda(acc, value) return acc + value end lambda)
+   Console.writeLine("total: ${total}")
+ end function
+--- a/crates/benitoite/testdata/fmt/indent.formatted
++++ b/crates/benitoite/testdata/fmt/indent.formatted
+@@ -18,8 +18,8 @@
+ end function
+ 
+ function main() -> Unit uses Console.Write
+-  List.forEach([1, 2], lambda(item)
+-    Console.writeLine(classify(item))
++  List.forEach(xs: [1, 2], f: lambda(value)
++    Console.writeLine(classify(value))
+   end lambda)
+   bind total <- 1
+     + 2
+--- a/crates/benitoite/testdata/fmt/spaces.formatted
++++ b/crates/benitoite/testdata/fmt/spaces.formatted
+@@ -19,8 +19,8 @@
+   bind q <- Person(..p, age: 2)
+   bind xs <- [1, 2, 3]
+   bind n: Integer <- -(1 + 1)
+-  bind inc <- lambda(x: Integer) return x + 1 end lambda
+-  bind ys <- xs |> List.map(inc)
++  bind inc <- lambda(value: Integer) return value + 1 end lambda
++  bind ys <- xs |> List.map(f: inc)
+   bind ok <- not (n > 0 and n < 10)
+   Console.writeLine("n=${n} ok=${ok} ys=${ys}")
+ end function
+--- a/crates/benitoite/testdata/packages/libraries.files/json-checks/Check.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/json-checks/Check.bnt
+@@ -10,7 +10,7 @@
+ end function
+ 
+ /// 独立した A と値・二つの出力を比較する。
+-public function compare(source: String, parse: function(String) -> Result[Json.Value, Json.ParseError], stringify: function(Json.Value) -> String, writePretty: function(Json.Value) -> String) -> Result[Unit, String] uses Console.Write
++public function compare(source: String, parse: function(source: String) -> Result[Json.Value, Json.ParseError], stringify: function(value: Json.Value) -> String, writePretty: function(value: Json.Value) -> String) -> Result[Unit, String] uses Console.Write
+   bind a <- Json.parse(source)
+   bind b <- parse(source)
+   bind equal <- a = b
+@@ -28,7 +28,7 @@
+ 
+ // 深さの境界は解析の値と診断だけで確かめ、出力の契約は別の表に任せる。
+ /// 解析の境界を値と誤りで比較する。
+-public function compareDepth(source: String, parse: function(String) -> Result[Json.Value, Json.ParseError]) -> Result[Unit, String] uses Console.Write
++public function compareDepth(source: String, parse: function(source: String) -> Result[Json.Value, Json.ParseError]) -> Result[Unit, String] uses Console.Write
+   bind a <- Json.parse(source)
+   bind b <- parse(source)
+   bind equal <- a = b
+@@ -37,7 +37,7 @@
+ end function
+ 
+ /// 解析で作れない値の二つの出力を比較する。
+-public function writeValue(label: String, value: Json.Value, stringify: function(Json.Value) -> String, writePretty: function(Json.Value) -> String) -> Result[Unit, String] uses Console.Write
++public function writeValue(label: String, value: Json.Value, stringify: function(value: Json.Value) -> String, writePretty: function(value: Json.Value) -> String) -> Result[Unit, String] uses Console.Write
+   bind compact <- Json.stringify(value) = stringify(value)
+   bind pretty <- Json.stringifyPretty(value) = writePretty(value)
+   Console.writeLine("${label} | compact=${compact} pretty=${pretty} bytes=${String.byteLength(Json.stringify(value))}")

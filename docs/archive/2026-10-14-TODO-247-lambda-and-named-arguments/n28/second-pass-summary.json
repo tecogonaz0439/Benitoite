@@ -1,0 +1,313 @@
+{
+  "inputs": 490,
+  "candidates": 160,
+  "candidates_with_edits": 0,
+  "diff_bytes": 0,
+  "holds": {
+    "negative_input_requires_diagnostic_review": 136,
+    "pipe_requires_review": 25,
+    "input_not_typed_successfully": 104,
+    "component_not_determined": 8,
+    "callee_contract_unresolved": 59,
+    "annotation_contract_unresolved": 1,
+    "local_name_collision": 1,
+    "arity_mismatch": 3
+  },
+  "preserved_unknown_calls": [
+    {
+      "path": "crates/benitoite/testdata/effects/effect_var_rigid.bnt",
+      "before": "action()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/eval/named_failure.bnt",
+      "before": "factory()(b: 1 div zero(), a: later())",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/handlers/secf1-effect-confusion.bnt",
+      "before": "g()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+      "before": "f(1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+      "before": "f(1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/handlers/todo190-guard-resume.bnt",
+      "before": "flip(true)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/modules/c11-missing/main.bnt",
+      "before": "Missing.first()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/modules/c11-missing/main.bnt",
+      "before": "Missing.second()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/modules/c11-not-reexported/main.bnt",
+      "before": "A.B.value()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/modules/c11-private/main.bnt",
+      "before": "Lib.hidden()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/modules/effect_alias_references.bnt",
+      "before": "C.writeLine(\"ok\")",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt",
+      "before": "Console.writeText(path: \"output.txt\", text: \"hello\")",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt",
+      "before": "Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt",
+      "before": "IOError.message(error)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/alias_member.bnt",
+      "before": "Map.insert(Map.empty(), \"x\", 1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/alias_member.bnt",
+      "before": "Map.empty()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/aliased_string_length.bnt",
+      "before": "S.length(\"abc\")",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/available_members.bnt",
+      "before": "Map.noSuchMember(Map.empty())",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/available_members.bnt",
+      "before": "Map.empty()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/c11-missing-import.bnt",
+      "before": "Console.writeLine(\"hi\")",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/c11-mixed-pattern.bnt",
+      "before": "Pair(2, 3)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/duplicate_pattern_var.bnt",
+      "before": "Shape.Rect(1, 2)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/option_unwrap.bnt",
+      "before": "Option.unwrap(Option.Some(1))",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/option_unwrap.bnt",
+      "before": "Option.Some(1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/option_unwrap.bnt",
+      "before": "Result.expect(Result.Ok(1))",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/option_unwrap.bnt",
+      "before": "Result.Ok(1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/prelude_only_hidden.bnt",
+      "before": "List.mapFrom([1], lambda(value) return value end lambda, 0, [])",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/prelude_shadowed_member.bnt",
+      "before": "Task.all([])",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/qualified_missing_import.bnt",
+      "before": "IO.Console.writeLine(\"ok\")",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/qualified_some.bnt",
+      "before": "Some(1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/record-construction.bnt",
+      "before": "Point(1, 2)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/record-construction.bnt",
+      "before": "Point.new(1, 2)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/renamed_member.bnt",
+      "before": "String.charCount(\"abc\")",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/renamed_module.bnt",
+      "before": "Int.abs(-1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/string_length.bnt",
+      "before": "String.length(\"abc\")",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/string_length.bnt",
+      "before": "String.substring(\"abc\", 0, 1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/string_length.bnt",
+      "before": "String.indexOf(\"abc\", \"b\")",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/unknown_member.bnt",
+      "before": "List.mapp([1], lambda(value: Integer) return value end lambda)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/unknown_module.bnt",
+      "before": "Lst.map([1], lambda(value: Integer) return value end lambda)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/unknown_name.bnt",
+      "before": "printe()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/names/wrong_kind.bnt",
+      "before": "Circle(1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/Slug.bnt",
+      "before": "Box.n(b)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "before": "String.split(s: String.toLowercase(String.trim(text)), separator: \" \")",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "before": "String.toLowercase(String.trim(text))",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "before": "String.trim(text)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "before": "List.filter(xs: _, p: lambda(value) return value <> \"\" end lambda)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "before": "String.join(xs: words, separator: \"-\")",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "before": "String.characterCount(text)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "before": "Option.unwrapOr(o: String.characterSlice(s: text, start: 0, stop: width), fallback: text)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "before": "String.characterSlice(s: text, start: 0, stop: width)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-private-name/main.bnt",
+      "before": "Slug.hidden()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-visibility-hidden/main.bnt",
+      "before": "Internal.answer()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/syntax/call-type-arguments.bnt",
+      "before": "Map.set(m: m, key: \"x\", value: 1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/types/c11-alias-not-module.bnt",
+      "before": "UserId.toString(1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/types/c11-constant-call.bnt",
+      "before": "n()",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/types/infinite_type.bnt",
+      "before": "f(f)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/types/not_a_function.bnt",
+      "before": "value(2)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/types/todo178-placeholder-return-error.bnt",
+      "before": "g(1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    },
+    {
+      "path": "crates/benitoite/testdata/types/todo178-placeholder-try-error.bnt",
+      "before": "f(1)",
+      "reason": "元の未知・非公開・種類違いの名前の診断を維持するため契約を創作しない。"
+    }
+  ]
+}

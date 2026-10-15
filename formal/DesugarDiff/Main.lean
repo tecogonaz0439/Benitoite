@@ -84,7 +84,7 @@ partial def callFeatures (j : Json) (pipeRhs : Bool := false) : List String :=
         own ++ xs.toArray.toList.flatMap (fun (_,v) => callFeatures v)
   | _ => []
 
-/-- C6 の件数は比較した定義の表層から数える。空の text は有効な部分に数えない。 -/
+/-- 構文ごとの件数は比較した定義の表層から数える。空の text は有効な部分に数えない。 -/
 def extensionNames : List String := [
   "guard", "alternatives", "alternative", "alternative: reordered binders", "guarded alternatives",
   "range pattern", "range pattern: negative Integer", "range pattern: Character",
@@ -418,7 +418,7 @@ def run (args : List String) : IO UInt32 := do
   let raw ← IO.FS.readFile file
   let json ← IO.ofExcept (Json.parse raw)
   let corpus ← IO.ofExcept (fromJson? json : Except String Corpus)
-  if corpus.version != 7 then throw (IO.userError "unsupported exchange version")
+  if corpus.version != 8 then throw (IO.userError "unsupported exchange version")
   let atoms := (collectAtoms json).eraseDups
   let initial : Summary := {
     constructions := extensionNames.map (fun n => (n, 0))

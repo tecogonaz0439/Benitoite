@@ -285,7 +285,7 @@ fn close_failures_and_exchange_implicit_release_follow_vm_scopes() {
     use crate::vm::{MainOutcome, Vm, VmConfig, VmStep};
     let explicit_listener = r#"
 function main() -> Result[Unit, String] uses Http.Listen, State
- with listener = try Http.listen("fails", 0) |> Result.mapError(_, NetworkError.message) do
+ with listener = try Http.listen(host: "fails", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
   return match Http.closeListener(listener) with
    case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.Other and NetworkError.message(error) = "fake close failure" then Result.Ok(()) else Result.Error("close error") end if
    case Result.Ok(_) -> Result.Error("missing failure")
@@ -300,15 +300,15 @@ end function
             r#"
 function requests(listener: Http.Listener, n: Integer) -> Result[Unit,String] uses Http.Listen, State
  if n = 0 then return Result.Ok(()) end if
- with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+ with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
   bind req <- Http.requestOf(exchange)
   if Http.Request.path(req) <> "/" or Http.Request.query(req) <> [] then return Result.Error("request") end if
  end with
- return requests(listener, n - 1)
+ return requests(listener: listener, n: n - 1)
 end function
 function main() -> Result[Unit,String] uses Http.Listen, State
- with listener = try Http.listen("good", 0) |> Result.mapError(_, NetworkError.message) do
-  bind result <- requests(listener, {repeat})
+ with listener = try Http.listen(host: "good", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+  bind result <- requests(listener: listener, n: {repeat})
   bind _ <- Http.listenerPort(listener)
   return result
  end with

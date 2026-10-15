@@ -356,13 +356,13 @@ fn concurrent_file_operations_collect_results_in_action_order() {
     let result = compare(
         r#"
 function fileWork(path: String, text: String) -> Result[String,String] uses File.Write,File.Read
- bind _ <- try File.writeText(path,text) |> Result.mapError(_,IOError.message)
- bind _ <- try File.appendText(path,"!") |> Result.mapError(_,IOError.message)
- return File.readText(path) |> Result.mapError(_,IOError.message)
+ bind _ <- try File.writeText(path: path,text: text) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
+ bind _ <- try File.appendText(path: path,text: "!") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
+ return File.readText(path) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
 end function
 function main() -> Result[Unit,String] uses File.Write,File.Read,Console.Write
- bind values <- Task.all([lambda() return fileWork("a.txt","A") end lambda,
-                          lambda() return fileWork("b.txt","B") end lambda])
+ bind values <- Task.all([lambda() return fileWork(path: "a.txt",text: "A") end lambda,
+                          lambda() return fileWork(path: "b.txt",text: "B") end lambda])
  if values <> [Result.Ok("A!"),Result.Ok("B!")] then return Result.Error("values") end if
  Console.writeLine("A!,B!")
  return Result.Ok(())
@@ -383,18 +383,18 @@ fn reader_waits_alongside_computation() {
     compare(
         r#"
 function sum(n: Integer, total: Integer) -> Integer
- return if n = 0 then total else sum(n - 1,total + n) end if
+ return if n = 0 then total else sum(n: n - 1,total: total + n) end if
 end function
 function read() -> Result[String,String] uses File.Read,State
- with reader = try File.openReader("input.txt") |> Result.mapError(_,IOError.message) do
-  bind a <- try File.readLine(reader) |> Result.mapError(_,IOError.message)
-  bind b <- try File.readLine(reader) |> Result.mapError(_,IOError.message)
+ with reader = try File.openReader("input.txt") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do
+  bind a <- try File.readLine(reader) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
+  bind b <- try File.readLine(reader) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
   return Result.Ok(if a = Option.Some("first") and b = Option.Some("second") then "lines" else "bad" end if)
  end with
 end function
 function main() -> Result[Unit,String] uses File.Read,State,Console.Write
  bind values <- Task.all([lambda() return read() end lambda,
-                          lambda() return Result.Ok(Integer.toString(sum(100,0))) end lambda])
+                          lambda() return Result.Ok(Integer.toString(sum(n: 100,total: 0))) end lambda])
  if values <> [Result.Ok("lines"),Result.Ok("5050")] then return Result.Error("values") end if
  Console.writeLine("lines,5050")
  return Result.Ok(())
@@ -416,9 +416,9 @@ fn stdin_prompts_are_transferred_before_each_read() {
 function read() -> Result[String,String] uses Console.Read,Console.Write
  Console.write("line> ")
  Console.writeError("err> ")
- bind line <- try Console.readLine() |> Result.mapError(_,IOError.message)
+ bind line <- try Console.readLine() |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
  Console.write("rest> ")
- bind rest <- try Console.readAll() |> Result.mapError(_,IOError.message)
+ bind rest <- try Console.readAll() |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
  return Result.Ok(if line = Option.Some("Ada") and rest = "remaining\n" then "input" else "bad" end if)
 end function
 function main() -> Result[Unit,String] uses Console.Read,Console.Write
@@ -439,9 +439,10 @@ fn virtual_sleep_and_file_write_complete_in_either_order() {
     let result = compare(
         r#"
 function main() -> Result[Unit,String] uses Clock.Time,File.Write,Console.Write
- bind values <- Task.all([lambda() Clock.sleep(10)
+ bind values <- Task.all([lambda()
+ Clock.sleep(10)
                           return Result.Ok("slept") end lambda,
-                          lambda() return File.writeText("timer.txt","written") |> Result.mapError(_,IOError.message) |> Result.map(_,lambda(_unit) return "written" end lambda) end lambda])
+                          lambda() return File.writeText(path: "timer.txt",text: "written") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) |> Result.map(r: _,f: lambda(value) return "written" end lambda) end lambda])
  if values <> [Result.Ok("slept"),Result.Ok("written")] then return Result.Error("values") end if
  Console.writeLine("slept,written")
  return Result.Ok(())
@@ -466,8 +467,9 @@ fn runtime_error_during_reader_io_has_the_same_stop_report() {
     compare(
         r#"
 function main() -> Result[Unit,String] uses File.Read,State
- with reader = try File.openReader("input.txt") |> Result.mapError(_,IOError.message) do
-  bind _ <- Task.all([lambda() bind _ <- File.readLine(reader)
+ with reader = try File.openReader("input.txt") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do
+  bind _ <- Task.all([lambda()
+ bind _ <- File.readLine(reader)
                              return 1 end lambda,
                      lambda() return 1 div 0 end lambda])
   return Result.Ok(())
@@ -496,7 +498,8 @@ effect Probe
 end effect
 function main() -> Unit uses Console.Write
  handle
-  bind _ <- Task.all([lambda() Console.writeLine("visible")
+  bind _ <- Task.all([lambda()
+ Console.writeLine("visible")
                       return () end lambda,lambda() return () end lambda])
   ()
  with

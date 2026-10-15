@@ -11,7 +11,7 @@ function add(left: Integer, right: Integer) -> Integer
 end function
 
 function main() -> Unit uses Console.Write
-  bind add_ten <- add(mark("fixed", 10), _)
-  Console.writeLine(Integer.toString(add_ten(mark("argument-1", 1))))
-  return Console.writeLine(Integer.toString(add_ten(mark("argument-2", 2))))
+  bind add_ten <- add(left: mark(label: "fixed", value: 10), right: _)
+  Console.writeLine(Integer.toString(add_ten(mark(label: "argument-1", value: 1))))
+  return Console.writeLine(Integer.toString(add_ten(mark(label: "argument-2", value: 2))))
 end function

@@ -4,12 +4,12 @@ record Config
   port: Integer
 end record
 function parseConfig(text: String) -> Result[Config, String]
-  bind port <- try Integer.parse(text) |> Option.okOr(_, "not a number")
+  bind port <- try Integer.parse(text) |> Option.okOr(o: _, error: "not a number")
   return Result.Ok(Config(port: port))
 end function
 
 function loadConfig(path: String) -> Result[Config, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   bind config <- try parseConfig(text)
   return Result.Ok(config)
 end function

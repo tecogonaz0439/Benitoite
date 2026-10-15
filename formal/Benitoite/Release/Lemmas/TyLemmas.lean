@@ -3,6 +3,9 @@ import Benitoite.Release.WellFormed
 
 /-!
 # 型の正しさ、ずらし、置き換えの補題（段階 B）
+
+型とエフェクトの変数を変換しても、関数型の契約名とその整形式を保持する。
+型構成子の適用と置換の合成も扱う（設計書 01-12「型パラメータの組み込みの制約」）。
 -/
 
 namespace Benitoite.Release
@@ -165,8 +168,8 @@ mutual
     | .opaque _, _ => trivial
     | .data _ args, w => by simp only [Ty.WF] at w ⊢; exact Ty.WFList.mono h args w
     | .list a, w => by simp only [Ty.WF] at w ⊢; exact Ty.WF.mono h a w
-    | .fn ps r _, w => by
-        simp only [Ty.WF] at w ⊢; exact ⟨Ty.WFList.mono h ps w.1, Ty.WF.mono h r w.2⟩
+    | .fn names ps r _, w => by
+        simp only [Ty.WF] at w ⊢; exact ⟨w.1, Ty.WFList.mono h ps w.2.1, Ty.WF.mono h r w.2.2⟩
     | .tvar i, w => by simp only [Ty.WF] at w ⊢; omega
     | .reference a, w => by simp only [Ty.WF] at w ⊢; exact Ty.WF.mono h a w
     | .lazy a, w => by simp only [Ty.WF] at w ⊢; exact Ty.WF.mono h a w
@@ -208,8 +211,8 @@ mutual
     | .opaque _, _ => trivial
     | .data _ args, w => by simp only [Ty.VarsIn, Ty.WF] at w ⊢; exact Ty.VarsInList.wf args w
     | .list a, w => by simp only [Ty.VarsIn, Ty.WF] at w ⊢; exact Ty.VarsIn.wf a w
-    | .fn ps r _, w => by
-        simp only [Ty.VarsIn, Ty.WF] at w ⊢; exact ⟨Ty.VarsInList.wf ps w.1, Ty.VarsIn.wf r w.2.1⟩
+    | .fn names ps r _, w => by
+        simp only [Ty.VarsIn, Ty.WF] at w ⊢; exact ⟨w.1, Ty.VarsInList.wf ps w.2.1, Ty.VarsIn.wf r w.2.2.1⟩
     | .tvar i, w => by simp only [Ty.VarsIn, Ty.WF] at w ⊢; exact w
     | .reference a, w => by simp only [Ty.VarsIn, Ty.WF] at w ⊢; exact Ty.VarsIn.wf a w
     | .lazy a, w => by simp only [Ty.VarsIn, Ty.WF] at w ⊢; exact Ty.VarsIn.wf a w
@@ -238,7 +241,7 @@ mutual
     | .opaque _ => by simp [Ty.shift]
     | .data d args => by simp only [Ty.shift]; rw [Ty.shiftList_zero c args]
     | .list a => by simp only [Ty.shift]; rw [Ty.shift_zero c a]
-    | .fn ps r e => by simp only [Ty.shift]; rw [Ty.shiftList_zero c ps, Ty.shift_zero c r]
+    | .fn names ps r e => by simp only [Ty.shift]; rw [Ty.shiftList_zero c ps, Ty.shift_zero c r]
     | .tvar i => by simp [Ty.shift]
     | .reference a => by simp only [Ty.shift]; rw [Ty.shift_zero c a]
     | .lazy a => by simp only [Ty.shift]; rw [Ty.shift_zero c a]
@@ -263,9 +266,9 @@ mutual
     | .data d args, w => by
         simp only [Ty.WF] at w; simp only [Ty.shift]; rw [Ty.shiftList_of_wf k args w]
     | .list a, w => by simp only [Ty.WF] at w; simp only [Ty.shift]; rw [Ty.shift_of_wf k a w]
-    | .fn ps r e, w => by
+    | .fn names ps r e, w => by
         simp only [Ty.WF] at w; simp only [Ty.shift]
-        rw [Ty.shiftList_of_wf k ps w.1, Ty.shift_of_wf k r w.2]
+        rw [Ty.shiftList_of_wf k ps w.2.1, Ty.shift_of_wf k r w.2.2]
     | .tvar i, w => by simp only [Ty.WF] at w; simp [Ty.shift, w]
     | .reference a, w => by simp only [Ty.WF] at w; simp only [Ty.shift]; rw [Ty.shift_of_wf k a w]
     | .lazy a, w => by simp only [Ty.WF] at w; simp only [Ty.shift]; rw [Ty.shift_of_wf k a w]
@@ -297,9 +300,9 @@ mutual
     | .data _ args, w => by
         simp only [Ty.WF] at w; simp only [Ty.shift, Ty.WF]; exact Ty.shiftList_wf k args w
     | .list a, w => by simp only [Ty.WF] at w; simp only [Ty.shift, Ty.WF]; exact Ty.shift_wf k a w
-    | .fn ps r _, w => by
+    | .fn names ps r _, w => by
         simp only [Ty.WF] at w; simp only [Ty.shift, Ty.WF]
-        exact ⟨Ty.shiftList_wf k ps w.1, Ty.shift_wf k r w.2⟩
+        exact ⟨w.1.map _, Ty.shiftList_wf k ps w.2.1, Ty.shift_wf k r w.2.2⟩
     | .tvar i, w => by simp only [Ty.WF] at w; simp [Ty.shift, Ty.WF]; omega
     | .reference a, w => by simp only [Ty.WF] at w; simp only [Ty.shift, Ty.WF]; exact Ty.shift_wf k a w
     | .lazy a, w => by simp only [Ty.WF] at w; simp only [Ty.shift, Ty.WF]; exact Ty.shift_wf k a w
@@ -337,9 +340,9 @@ mutual
         simp only [Ty.WF] at w; simp only [Ty.substAt, Ty.WF]; exact Ty.substAtList_wf es hts args w
     | .list a, w => by
         simp only [Ty.WF] at w; simp only [Ty.substAt, Ty.WF]; exact Ty.substAt_wf es hts a w
-    | .fn ps r _, w => by
+    | .fn names ps r _, w => by
         simp only [Ty.WF] at w; simp only [Ty.substAt, Ty.WF]
-        exact ⟨Ty.substAtList_wf es hts ps w.1, Ty.substAt_wf es hts r w.2⟩
+        exact ⟨w.1.map _, Ty.substAtList_wf es hts ps w.2.1, Ty.substAt_wf es hts r w.2.2⟩
     | .tvar i, w => by
         simp only [Ty.WF] at w
         simp only [Ty.substAt]
@@ -398,9 +401,9 @@ mutual
         simp only [Ty.VarsIn] at w; simp only [Ty.substAt]; rw [Ty.substAtList_of_closed ts es args w]
     | .list a, w => by
         simp only [Ty.VarsIn] at w; simp only [Ty.substAt]; rw [Ty.substAt_of_closed ts es a w]
-    | .fn ps r e, w => by
+    | .fn names ps r e, w => by
         simp only [Ty.VarsIn] at w; simp only [Ty.substAt]
-        rw [Ty.substAtList_of_closed ts es ps w.1, Ty.substAt_of_closed ts es r w.2.1]
+        rw [Ty.substAtList_of_closed ts es ps w.2.1, Ty.substAt_of_closed ts es r w.2.2.1]
         have : Eff.substRho es e = e := by
           funext x
           cases x with
@@ -411,20 +414,20 @@ mutual
               constructor
               · rintro (h | ⟨x, _, hx, _⟩)
                 · exact h
-                · exact absurd (w.2.2 x hx) id
+                · exact absurd (w.2.2.2 x hx) id
               · intro h; exact Or.inl h
           | rho j =>
               have hj : e (.rho j) = false := by
                 cases h : e (.rho j)
                 · rfl
-                · exact absurd (w.2.2 j h) id
+                · exact absurd (w.2.2.2 j h) id
               apply Bool.eq_iff_iff.mpr
               simp only [Eff.substRho, Bool.or_eq_true, List.any_eq_true, List.mem_range,
                 Bool.and_eq_true, hj]
               constructor
               · rintro (h | ⟨x, _, hx, _⟩)
                 · split at h <;> simp_all
-                · exact absurd (w.2.2 x hx) id
+                · exact absurd (w.2.2.2 x hx) id
               · intro h; cases h
         rw [this]
     | .tvar i, w => by simp only [Ty.VarsIn] at w; simp [Ty.substAt, w]
@@ -464,7 +467,7 @@ mutual
         simp only [Ty.shift, Ty.substAt]
         rw [Ty.shiftList_substAt es hts args]
     | .list a => by simp only [Ty.shift, Ty.substAt]; rw [Ty.shift_substAt es hts a]
-    | .fn ps r e => by
+    | .fn names ps r e => by
         simp only [Ty.shift, Ty.substAt]
         rw [Ty.shift_substAt es hts r]
         have := Ty.shiftList_substAt (c := c) (k := k) es hts ps
@@ -543,12 +546,12 @@ mutual
         have := Ty.subst_comp c ts' es' a h
         simp only [Ty.subst] at this ⊢
         simp only [Ty.substAt]; rw [this]
-    | .fn ps r ε, h => by
+    | .fn names ps r ε, h => by
         simp only [Ty.VarsIn] at h
-        have h1 := Ty.subst_comp_list c ts' es' ps h.1
-        have h2 := Ty.subst_comp c ts' es' r h.2.1
+        have h1 := Ty.subst_comp_list c ts' es' ps h.2.1
+        have h2 := Ty.subst_comp c ts' es' r h.2.2.1
         simp only [Ty.subst] at h1 h2 ⊢
-        simp only [Ty.substAt]; rw [h1, h2, Eff.substRho_comp h.2.2]
+        simp only [Ty.substAt]; rw [h1, h2, Eff.substRho_comp h.2.2.2]
     | .tvar i, h => by
         simp only [Ty.VarsIn] at h
         have h' : i < (ts.map (Ty.substAt c ts' es')).length := by simpa using h
@@ -602,5 +605,41 @@ mutual
         rw [Ty.subst_comp c ts' es' a h.1, Ty.subst_comp_list c ts' es' as h.2]
 end
 
+
+/-! ## 変数の範囲の単調性 -/
+
+theorem Eff.RhosIn.mono {pe pe' : Nat → Prop} (hpe : ∀ i, pe i → pe' i) {ε : Eff}
+    (h : Eff.RhosIn pe ε) : Eff.RhosIn pe' ε := fun i hi => hpe i (h i hi)
+
+mutual
+  theorem Ty.VarsIn.mono {n n' : Nat} {pe pe' : Nat → Prop} (hn : n ≤ n') (hpe : ∀ i, pe i → pe' i) :
+      (a : Ty) → Ty.VarsIn n pe a → Ty.VarsIn n' pe' a
+    | .base _, _ => trivial
+    | .opaque _, _ => trivial
+    | .data _ args, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsInList.mono hn hpe args h
+    | .list a, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsIn.mono hn hpe a h
+    | .fn names ps r ε, h => by
+        simp only [Ty.VarsIn] at h ⊢
+        exact ⟨h.1, Ty.VarsInList.mono hn hpe ps h.2.1, Ty.VarsIn.mono hn hpe r h.2.2.1, Eff.RhosIn.mono hpe h.2.2.2⟩
+    | .tvar i, h => by simp only [Ty.VarsIn] at h ⊢; omega
+    | .reference a, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsIn.mono hn hpe a h
+    | .lazy a, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsIn.mono hn hpe a h
+    | .cont _ _ _, h => by simp only [Ty.VarsIn] at h
+    | .map a b, h => by
+        simp only [Ty.VarsIn] at h ⊢; exact ⟨Ty.VarsIn.mono hn hpe a h.1, Ty.VarsIn.mono hn hpe b h.2⟩
+    | .set a, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsIn.mono hn hpe a h
+    | .bytes, _ => by simp [Ty.VarsIn]
+    | .dict _ τ, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsIn.mono hn hpe τ h
+    | .tapp i args, h => by
+        simp only [Ty.VarsIn] at h ⊢; exact ⟨by omega, Ty.VarsInList.mono hn hpe args h.2⟩
+    | .ctor _, _ => by simp [Ty.VarsIn]
+
+  theorem Ty.VarsInList.mono {n n' : Nat} {pe pe' : Nat → Prop} (hn : n ≤ n') (hpe : ∀ i, pe i → pe' i) :
+      (as : List Ty) → Ty.VarsInList n pe as → Ty.VarsInList n' pe' as
+    | [], _ => trivial
+    | a :: as, h => by
+        simp only [Ty.VarsInList] at h ⊢
+        exact ⟨Ty.VarsIn.mono hn hpe a h.1, Ty.VarsInList.mono hn hpe as h.2⟩
+end
 
 end Benitoite.Release

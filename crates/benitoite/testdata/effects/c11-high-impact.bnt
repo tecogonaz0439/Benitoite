@@ -2,7 +2,7 @@
 import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.IO.Process
 function save(path: String, text: String) -> Result[Unit, IOError] uses File.Write
-  return File.writeText(path, text)
+  return File.writeText(path: path, text: text)
 end function
 function finish() -> Unit uses Process.Exit
   Process.exit(0)

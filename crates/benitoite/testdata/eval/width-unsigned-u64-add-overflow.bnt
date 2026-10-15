@@ -3,6 +3,6 @@ function calculate(a: UnsignedInteger64, b: UnsignedInteger64) -> UnsignedIntege
   return a + b
 end function
 function main() -> Unit uses Console.Write
-  bind _ <- calculate(18446744073709551615u64, 1u64)
+  bind _ <- calculate(a: 18446744073709551615u64, b: 1u64)
   Console.writeLine("unreachable")
 end function

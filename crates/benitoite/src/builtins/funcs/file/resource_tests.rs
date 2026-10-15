@@ -541,14 +541,14 @@ fn with_flushes_writer_on_return_and_division_by_zero_in_both_io_modes() {
         let program = compile(&format!(
             r#"{IMPORTS}
 function writeFile() -> Result[Unit,String] uses File.Write,State
- with w = try File.openWriter("output", File.WriteMode.Replace) |> Result.mapError(_,IOError.message) do
-  bind _ <- try File.write(w,"buffered") |> Result.mapError(_,IOError.message)
+ with w = try File.openWriter(path: "output", mode: File.WriteMode.Replace) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do
+  bind _ <- try File.write(writer: w,text: "buffered") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
   {body}
  end with
 end function
 function main() -> Result[Unit,String] uses File.Read,File.Write,State
  bind _ <- try writeFile()
- bind content <- try File.readText("output") |> Result.mapError(_,IOError.message)
+ bind content <- try File.readText("output") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
  return if content = "buffered" then Result.Ok(()) else Result.Error("with did not flush") end if
 end function
 "#
@@ -582,10 +582,10 @@ fn writing_after_close_stops_with_released_resource_used() {
     let program = compile(&format!(
         r#"{IMPORTS}
 function main() -> Result[Unit,String] uses File.Write,State
- with w = try File.openWriter("output",File.WriteMode.Replace) |> Result.mapError(_,IOError.message) do
-  bind _ <- try File.closeWriter(w) |> Result.mapError(_,IOError.message)
-  bind _ <- try File.closeWriter(w) |> Result.mapError(_,IOError.message)
-  bind _ <- try File.write(w,"late") |> Result.mapError(_,IOError.message)
+ with w = try File.openWriter(path: "output",mode: File.WriteMode.Replace) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do
+  bind _ <- try File.closeWriter(w) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
+  bind _ <- try File.closeWriter(w) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
+  bind _ <- try File.write(writer: w,text: "late") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
   return Result.Ok(())
  end with
 end function
@@ -669,8 +669,8 @@ fn with_failed_writer_reports_release_failure_unless_explicitly_closed() {
         let program = compile(&format!(
             r#"{IMPORTS}
 function main() -> Result[Unit,String] uses File.Write,State
- with w = try File.openWriter("readonly",File.WriteMode.Replace) |> Result.mapError(_,IOError.message) do
-  bind reason <- match File.write(w,String.repeat("x",20000)) with
+ with w = try File.openWriter(path: "readonly",mode: File.WriteMode.Replace) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do
+  bind reason <- match File.write(writer: w,text: String.repeat(s: "x",n: 20000)) with
    case Result.Error(e) -> IOError.message(e)
    case _ -> return Result.Error("write succeeded")
   end match
@@ -736,7 +736,7 @@ fn with_reports_release_failure_unless_close_has_already_returned_it() {
         let program = compile(&format!(
             r#"{IMPORTS}
 function main() -> Result[Unit,String] uses File.Write,State
- with w = try File.openWriter("unused",File.WriteMode.Replace) |> Result.mapError(_,IOError.message) do
+ with w = try File.openWriter(path: "unused",mode: File.WriteMode.Replace) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do
  {body}
  end with
 end function
@@ -876,9 +876,9 @@ function main() -> Result[Unit,String] uses File.Write,State,Clock.Time,Console.
  bind continued <- Reference.new(false)
  bind winner <- Task.race([
   lambda()
-   with w = try File.openWriter("output",File.WriteMode.Replace) do
-    bind _ <- try File.write(w,"written after cancellation")
-    Reference.set(continued,true)
+   with w = try File.openWriter(path: "output",mode: File.WriteMode.Replace) do
+    bind _ <- try File.write(writer: w,text: "written after cancellation")
+    Reference.set(reference: continued,value: true)
     Console.write("continued")
     return Result.Ok(1)
    end with
@@ -977,19 +977,19 @@ fn cancelled_close_failure_is_discarded_only_for_unbound_starter_in_both_io_mode
     let rows = [
         (
             "parent bind: later close succeeds",
-            r#"bind w <- try File.openWriter("unused",File.WriteMode.Replace) |> Result.mapError(_,IOError.message)"#,
+            r#"bind w <- try File.openWriter(path: "unused",mode: File.WriteMode.Replace) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)"#,
             r#"bind _ <- File.closeWriter(w)
-   Reference.set(continued,true)
+   Reference.set(reference: continued,value: true)
    return Result.Ok(1)"#,
-            "return File.closeWriter(w) |> Result.mapError(_,IOError.message)",
+            "return File.closeWriter(w) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)",
             vec![0, 1, 2],
             Some(MainOutcome::Ok),
         ),
         (
             "parent with: block reports failure",
-            r#"with w = try File.openWriter("unused",File.WriteMode.Replace) |> Result.mapError(_,IOError.message) do"#,
+            r#"with w = try File.openWriter(path: "unused",mode: File.WriteMode.Replace) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do"#,
             r#"bind _ <- File.closeWriter(w)
-   Reference.set(continued,true)
+   Reference.set(reference: continued,value: true)
    return Result.Ok(1)"#,
             "return Result.Ok(())\n end with",
             vec![0, 1, 2],
@@ -997,11 +997,11 @@ fn cancelled_close_failure_is_discarded_only_for_unbound_starter_in_both_io_mode
         ),
         (
             "parent with: later close receives failure once",
-            r#"with w = try File.openWriter("unused",File.WriteMode.Replace) |> Result.mapError(_,IOError.message) do"#,
+            r#"with w = try File.openWriter(path: "unused",mode: File.WriteMode.Replace) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do"#,
             r#"bind _ <- File.closeWriter(w)
-   Reference.set(continued,true)
+   Reference.set(reference: continued,value: true)
    return Result.Ok(1)"#,
-            r#"bind r <- File.closeWriter(w) |> Result.mapError(_,IOError.message)
+            r#"bind r <- File.closeWriter(w) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
  return r
  end with"#,
             vec![0, 1, 2],
@@ -1010,9 +1010,9 @@ fn cancelled_close_failure_is_discarded_only_for_unbound_starter_in_both_io_mode
         (
             "child bind: cancellation discards failure",
             "",
-            r#"bind w <- try File.openWriter("unused",File.WriteMode.Replace)
+            r#"bind w <- try File.openWriter(path: "unused",mode: File.WriteMode.Replace)
    bind _ <- File.closeWriter(w)
-   Reference.set(continued,true)
+   Reference.set(reference: continued,value: true)
    return Result.Ok(1)"#,
             "return Result.Ok(())",
             vec![1, 1, 2],
@@ -1021,9 +1021,9 @@ fn cancelled_close_failure_is_discarded_only_for_unbound_starter_in_both_io_mode
         (
             "child with: cancellation reports failure",
             "",
-            r#"with w = try File.openWriter("unused",File.WriteMode.Replace) do
+            r#"with w = try File.openWriter(path: "unused",mode: File.WriteMode.Replace) do
     bind _ <- File.closeWriter(w)
-    Reference.set(continued,true)
+    Reference.set(reference: continued,value: true)
     return Result.Ok(1)
    end with"#,
             "return Result.Ok(())",
@@ -1032,37 +1032,37 @@ fn cancelled_close_failure_is_discarded_only_for_unbound_starter_in_both_io_mode
         ),
         (
             "cancelled waiter preserves surviving starter failure",
-            r#"bind w <- try File.openWriter("unused",File.WriteMode.Replace) |> Result.mapError(_,IOError.message)
+            r#"bind w <- try File.openWriter(path: "unused",mode: File.WriteMode.Replace) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
  with group = TaskGroup.open() do
- bind b <- TaskGroup.spawn(group,lambda() return File.closeWriter(w) end lambda)"#,
+ bind b <- TaskGroup.spawn(group: group,action: lambda() return File.closeWriter(w) end lambda)"#,
             r#"bind _ <- File.closeWriter(w)
-   Reference.set(continued,true)
+   Reference.set(reference: continued,value: true)
    return Result.Ok(1)"#,
-            "return Task.await(b) |> Result.mapError(_,IOError.message)\n end with",
+            "return Task.await(b) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)\n end with",
             vec![0, 1, 2, 3, 2],
             Some(MainOutcome::Error("fake flush failure".into())),
         ),
         (
             "cancelled starter discards failure before surviving waiter",
-            r#"bind w <- try File.openWriter("unused",File.WriteMode.Replace) |> Result.mapError(_,IOError.message)
+            r#"bind w <- try File.openWriter(path: "unused",mode: File.WriteMode.Replace) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
  with group = TaskGroup.open() do
- bind b <- TaskGroup.spawn(group,lambda() return File.closeWriter(w) end lambda)"#,
+ bind b <- TaskGroup.spawn(group: group,action: lambda() return File.closeWriter(w) end lambda)"#,
             r#"bind _ <- File.closeWriter(w)
-   Reference.set(continued,true)
+   Reference.set(reference: continued,value: true)
    return Result.Ok(1)"#,
-            "return Task.await(b) |> Result.mapError(_,IOError.message)\n end with",
+            "return Task.await(b) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)\n end with",
             vec![0, 2, 1, 3, 2],
             Some(MainOutcome::Ok),
         ),
         (
             "surviving waiter receives failure before cancelled starter",
-            r#"bind w <- try File.openWriter("unused",File.WriteMode.Replace) |> Result.mapError(_,IOError.message)
+            r#"bind w <- try File.openWriter(path: "unused",mode: File.WriteMode.Replace) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
  with group = TaskGroup.open() do
- bind b <- TaskGroup.spawn(group,lambda() return File.closeWriter(w) end lambda)"#,
+ bind b <- TaskGroup.spawn(group: group,action: lambda() return File.closeWriter(w) end lambda)"#,
             r#"bind _ <- File.closeWriter(w)
-   Reference.set(continued,true)
+   Reference.set(reference: continued,value: true)
    return Result.Ok(1)"#,
-            "return Task.await(b) |> Result.mapError(_,IOError.message)\n end with",
+            "return Task.await(b) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)\n end with",
             vec![0, 2, 1, 3, 1],
             Some(MainOutcome::Error("fake flush failure".into())),
         ),

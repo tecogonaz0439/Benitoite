@@ -11,6 +11,6 @@ function main() -> Unit uses Console.Write
   bind second <- fresh(false)
   bind third <- fresh(false)
   Console.writeLine("${first} ${second} ${third}")
-  Console.writeLine(utf16(false, "A日😀"))
-  Console.writeLine("empty=${utf16(false, "")}")
+  Console.writeLine(utf16(ignored: false, text: "A日😀"))
+  Console.writeLine("empty=${utf16(ignored: false, text: "")}")
 end function

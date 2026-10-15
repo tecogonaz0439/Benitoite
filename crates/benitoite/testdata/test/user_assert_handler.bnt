@@ -2,7 +2,7 @@
 // 06-04「期待の確認」: 利用者のハンドラが Assert.Check を処理すると、失敗する確認はテストを失敗させない。
 
 function checkPositive(n: Integer) -> Unit uses Assert.Check
-  Assert.isTrue(n > 0, "not positive")
+  Assert.isTrue(condition: n > 0, message: "not positive")
 end function
 
 @test
@@ -12,8 +12,8 @@ function helperReportsFailure() -> Unit uses Assert.Check, State
     checkPositive(0 - 1)
   with
     case Assert.isTrue(condition, message) ->
-      Reference.set(messages, List.append(Reference.get(messages), message))
+      Reference.set(reference: messages, value: List.append(xs: Reference.get(messages), x: message))
       resume(())
   end handle
-  Assert.equal(Reference.get(messages), ["not positive"])
+  Assert.equal(actual: Reference.get(messages), expected: ["not positive"])
 end function

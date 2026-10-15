@@ -1,6 +1,7 @@
 //! 改行の判定（設計書 01-01「改行による区切り」、02-03「処理の流れ」の工程 2）。
 //! 閉じ方の誤りでは一致する開きまで戻し、診断は構文解析器に委ねる。
 
+use super::lambda_bounds::Bounds;
 use super::token::{Token, TokenKind};
 
 #[derive(Clone, Copy)]
@@ -9,12 +10,14 @@ struct Opening {
     depth: usize,
     /// 分岐の頭の括弧の深さ。内側の式の `if` とガードを区別する。
     guard: Option<usize>,
+    short_line: Option<(u32, crate::base::BytePos)>,
 }
 
 /// 改行の印ごとに、NEWLINE を置くか空白として捨てるかを決める（01-01「改行による区切り」）。
 /// 入力は `lex` の字句の列。出力は `LineBreak` を含まない。連続する NEWLINE は一つにまとめる。
 pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
     use TokenKind as K;
+    let bounds = Bounds::new(&tokens);
     let mut output: Vec<Token> = Vec::with_capacity(tokens.len());
     let mut stack: Vec<Opening> = Vec::new();
     let mut previous = None;
@@ -24,6 +27,16 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
     while let Some(token) = input.next() {
         let mut token = token.clone();
         let kind = token.kind;
+        if let Some(i) = stack.iter().position(|o| {
+            o.short_line.is_some_and(|(line, boundary)| {
+                token.span.start >= boundary
+                    || token.start_line > line
+                    || kind == K::LineBreak && token.end_line > line
+            })
+        }) {
+            stack.truncate(i);
+            depth = stack.last().map_or(0, |o| o.depth);
+        }
         if kind == K::LineBreak {
             while input.peek().is_some_and(|t| t.kind == K::LineBreak) {
                 input.next();
@@ -52,6 +65,7 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
                     kind,
                     depth,
                     guard: None,
+                    short_line: None,
                 });
             } else if kind == K::RParen {
                 close(&mut stack, K::LParen, &mut depth);
@@ -75,6 +89,7 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
                         kind,
                         depth,
                         guard: None,
+                        short_line: None,
                     });
                 }
             } else if kind == K::KwWith {
@@ -87,6 +102,7 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
                         kind,
                         depth,
                         guard: None,
+                        short_line: None,
                     });
                 }
             } else if matches!(kind, K::KwLambda | K::KwMatch | K::KwLazy | K::KwHandle) {
@@ -94,6 +110,10 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
                     kind,
                     depth,
                     guard: None,
+                    short_line: bounds
+                        .get(&token)
+                        .filter(|b| !b.explicit)
+                        .map(|b| (b.line, b.boundary)),
                 });
             }
         }
@@ -320,7 +340,7 @@ mod tests {
         let cases: &[(&str, &[usize])] = &[
             ("bind total <- price\n  * quantity\n", &[2]),
             (
-                "bind n <- lines\n  |> List.filter(lambda(l) return l <> \"\" end lambda)\n  |> List.length\n",
+                "bind n <- lines\n  |> List.filter(p: lambda(value) return value <> \"\" end lambda)\n  |> List.length\n",
                 &[3],
             ),
             (
@@ -332,7 +352,7 @@ mod tests {
                 &[2, 4, 5, 6],
             ),
             (
-                "List.forEach(items, lambda(item)\n  bind name <- Item.name(item)\n  Console.writeLine(name)\nend lambda)\n",
+                "List.forEach(xs: items, f: lambda(value)\n  bind name <- Item.name(value)\n  Console.writeLine(name)\nend lambda)\n",
                 &[1, 2, 3, 4],
             ),
             (

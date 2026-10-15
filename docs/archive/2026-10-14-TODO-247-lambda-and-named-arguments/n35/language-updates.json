@@ -1,0 +1,917 @@
+[
+  {
+    "path": "crates/benitoite/src/cli/tools/formatter/tests.rs",
+    "beforeSha256": "881dc68f68b9221019e7b2104d06ef54d03be160799e3c9f485d652c8ad81051",
+    "afterSha256": "0fc8dfc70aa9a69f55306147caaa163fae50a44c8bd1244b3011bccaf7f8afb1",
+    "changes": [
+      {
+        "line": 402,
+        "before": "        \"function main() -> Unit\\n()\\nend function\\nlanguage \\\"0.0.3\\\"\\n\",",
+        "after": "        \"function main() -> Unit\\n()\\nend function\\nlanguage \\\"0.0.5\\\"\\n\","
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/cli/tools/package/tests.rs",
+    "beforeSha256": "324f3f1c2bc7c991a58c0120da67426899c3a4e2d786da244f845bcf69fe5105",
+    "afterSha256": "329049bbda2ed90f22721f2412d8c5f45d2e999dc3a9f4d70e127bcd3e92aa08",
+    "changes": [
+      {
+        "line": 36,
+        "before": "        \"\\u{feff}language \\\"0.0.3\\\"\\n\\n\",",
+        "after": "        \"\\u{feff}language \\\"0.0.5\\\"\\n\\n\","
+      },
+      {
+        "line": 40,
+        "before": "        \"//! module\\n\\n// header description\\nlanguage \\\"0.0.3\\\" // trailing\\n\\n\",",
+        "after": "        \"//! module\\n\\n// header description\\nlanguage \\\"0.0.5\\\" // trailing\\n\\n\","
+      },
+      {
+        "line": 91,
+        "before": "            \"language \\\"0.0.3\\\"\\n\",",
+        "after": "            \"language \\\"0.0.5\\\"\\n\","
+      },
+      {
+        "line": 95,
+        "before": "        assert!(edited.ends_with(\"language \\\"0.0.3\\\"\\n\"));",
+        "after": "        assert!(edited.ends_with(\"language \\\"0.0.5\\\"\\n\"));"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/external/tests.rs",
+    "beforeSha256": "357cdc42b98ef3cd9337f660e97497ec7ba2105cae751c162d086b4d859d6f47",
+    "afterSha256": "7cf2c856e9504e3971f7684632e0bccf7ceb2addc64aebec765276c419b36532",
+    "changes": [
+      {
+        "line": 1612,
+        "before": "                    \"language \\\"0.0.3\\\"\\npackage Library\\nend package\\n\",",
+        "after": "                    \"language \\\"0.0.5\\\"\\npackage Library\\nend package\\n\","
+      },
+      {
+        "line": 1754,
+        "before": "            (\"package.bnt\", b\"language \\\"0.0.3\\\"\\n\"),",
+        "after": "            (\"package.bnt\", b\"language \\\"0.0.5\\\"\\n\"),"
+      },
+      {
+        "line": 1778,
+        "before": "        let config = \"language \\\"0.0.3\\\"\\npackage Fuzzy\\nlicense \\\"MIT\\\"\\nend package\\n\";",
+        "after": "        let config = \"language \\\"0.0.5\\\"\\npackage Fuzzy\\nlicense \\\"MIT\\\"\\nend package\\n\";"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/modules/tests.rs",
+    "beforeSha256": "6a2a9fd084c3b5f6b01f5ea7de32d2e24c458d1f379602326c2ec7ac3aed25ba",
+    "afterSha256": "de511df8d9d5928bbef3b637dc8a53541bbf6b79d753504fc6d9a7ec31102c25",
+    "changes": [
+      {
+        "line": 785,
+        "before": "        let (output, _) = load_files(&[(\"main.bnt\", MAIN), (config_name, \"language \\\"0.0.3\\\"\\n\")]);",
+        "after": "        let (output, _) = load_files(&[(\"main.bnt\", MAIN), (config_name, \"language \\\"0.0.5\\\"\\n\")]);"
+      },
+      {
+        "line": 805,
+        "before": "    let fs = MemFs::new(&[(\"/root/package.bnt\", \"language \\\"0.0.3\\\"\\n\")]);",
+        "after": "    let fs = MemFs::new(&[(\"/root/package.bnt\", \"language \\\"0.0.5\\\"\\n\")]);"
+      },
+      {
+        "line": 829,
+        "before": "            \"language \\\"0.0.3\\\"\\npackage Textkit\\nend package\\n\",",
+        "after": "            \"language \\\"0.0.5\\\"\\npackage Textkit\\nend package\\n\","
+      },
+      {
+        "line": 835,
+        "before": "            \"language \\\"0.0.3\\\"\\npackage Textkit\\nend package\\n\",",
+        "after": "            \"language \\\"0.0.5\\\"\\npackage Textkit\\nend package\\n\","
+      },
+      {
+        "line": 841,
+        "before": "            \"language \\\"0.0.3\\\"\\npackage Unused\\nend package\\n\",",
+        "after": "            \"language \\\"0.0.5\\\"\\npackage Unused\\nend package\\n\","
+      },
+      {
+        "line": 914,
+        "before": "                \"language \\\"0.0.3\\\"\\npackage Library\\nend package\\n\",",
+        "after": "                \"language \\\"0.0.5\\\"\\npackage Library\\nend package\\n\","
+      },
+      {
+        "line": 949,
+        "before": "            \"language \\\"0.0.3\\\"\\npackage Textkit\\nend package\\n\",",
+        "after": "            \"language \\\"0.0.5\\\"\\npackage Textkit\\nend package\\n\","
+      },
+      {
+        "line": 985,
+        "before": "                \"language \\\"0.0.3\\\"\\npackage Libs\\nend package\\n\",",
+        "after": "                \"language \\\"0.0.5\\\"\\npackage Libs\\nend package\\n\","
+      },
+      {
+        "line": 989,
+        "before": "                \"language \\\"0.0.3\\\"\\npackage Nested\\nend package\\n\",",
+        "after": "                \"language \\\"0.0.5\\\"\\npackage Nested\\nend package\\n\","
+      },
+      {
+        "line": 1024,
+        "before": "                \"language \\\"0.0.3\\\"\\npackage Library\\nend package\\n\",",
+        "after": "                \"language \\\"0.0.5\\\"\\npackage Library\\nend package\\n\","
+      },
+      {
+        "line": 1060,
+        "before": "            \"language \\\"0.0.3\\\"\\npackage Library\\nend package\\n\",",
+        "after": "            \"language \\\"0.0.5\\\"\\npackage Library\\nend package\\n\","
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/syntax/parser/header.rs",
+    "beforeSha256": "509201b32d2370446595f07b6e1be291f69010bc43a2370618ad0df61786aa5c",
+    "afterSha256": "7aa918604273b121334de7c8b4e172c03ba086ae0f7f24746186cb7480caf7c6",
+    "changes": [
+      {
+        "line": 350,
+        "before": "            \"//! module\\nlanguage \\\"0.0.3\\\"\\ndependency Textkit\\nhash \\\"{hash}\\\"\\npath \\\"../textkit\\\"\\nend dependency\\npackage Textkit\\nlicense \\\"\\\"\\nend package\\n\"",
+        "after": "            \"//! module\\nlanguage \\\"0.0.5\\\"\\ndependency Textkit\\nhash \\\"{hash}\\\"\\npath \\\"../textkit\\\"\\nend dependency\\npackage Textkit\\nlicense \\\"\\\"\\nend package\\n\""
+      },
+      {
+        "line": 397,
+        "before": "                \"language \\\"0.0.3\\\"\\nlanguage \\\"0.0.2\\\"\",",
+        "after": "                \"language \\\"0.0.5\\\"\\nlanguage \\\"0.0.2\\\"\","
+      },
+      {
+        "line": 434,
+        "before": "                \"package A\\nlanguage \\\"0.0.3\\\"\\nend package\",",
+        "after": "                \"package A\\nlanguage \\\"0.0.5\\\"\\nend package\","
+      },
+      {
+        "line": 438,
+        "before": "                \"dependency A\\npath \\\"a\\\"\\nlanguage \\\"0.0.3\\\"\\nend dependency\",",
+        "after": "                \"dependency A\\npath \\\"a\\\"\\nlanguage \\\"0.0.5\\\"\\nend dependency\","
+      },
+      {
+        "line": 448,
+        "before": "                \"dependency A\\npath \\\"a\\\"\\nlanguage \\\"0.0.3\\\"\",",
+        "after": "                \"dependency A\\npath \\\"a\\\"\\nlanguage \\\"0.0.5\\\"\","
+      },
+      {
+        "line": 478,
+        "before": "            (\"language \\\"0.0.3\\\"\", 2, 0),",
+        "after": "            (\"language \\\"0.0.5\\\"\", 2, 0),"
+      },
+      {
+        "line": 480,
+        "before": "                \"language \\\"0.0.3\\\"\\nfunction after() -> Unit\\n()\\nend function\",",
+        "after": "                \"language \\\"0.0.5\\\"\\nfunction after() -> Unit\\n()\\nend function\","
+      },
+      {
+        "line": 485,
+        "before": "                \"language \\\"0.0.3\\\"\\ndependency B\\npath \\\"b\\\"\\nend dependency\",",
+        "after": "                \"language \\\"0.0.5\\\"\\ndependency B\\npath \\\"b\\\"\\nend dependency\","
+      },
+      {
+        "line": 514,
+        "before": "                \"package A\\nlanguage \\\"0.0.3\\\"\\nend package\",",
+        "after": "                \"package A\\nlanguage \\\"0.0.5\\\"\\nend package\","
+      },
+      {
+        "line": 527,
+        "before": "            (\"language \\\"0.0.3\\\"\\nlanguage \\\"0.0.2\\\"\", \"language\"),",
+        "after": "            (\"language \\\"0.0.5\\\"\\nlanguage \\\"0.0.2\\\"\", \"language\"),"
+      },
+      {
+        "line": 544,
+        "before": "                \"language \\\"0.0.3\\\"\",",
+        "after": "                \"language \\\"0.0.5\\\"\","
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+    "beforeSha256": "e30ad0b3393e5d5f013d365f646d3052674cb5ed47120d50780f691021270077",
+    "afterSha256": "d4b0968241124717f67325d50515996c0d09940e67f42f3ffd2bd11d6b74cfca",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/external/self-package/package.bnt",
+    "beforeSha256": "e30ad0b3393e5d5f013d365f646d3052674cb5ed47120d50780f691021270077",
+    "afterSha256": "d4b0968241124717f67325d50515996c0d09940e67f42f3ffd2bd11d6b74cfca",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/fmt/header.bnt",
+    "beforeSha256": "f396f1bd45553e87328cbe771f4790ac41fea164508b264e50eaf58072661362",
+    "afterSha256": "861b40146cc2a4f6aecbe20513a8955209ab0954b78f2ebee95278b9e57008cc",
+    "changes": [
+      {
+        "line": 2,
+        "before": "language    \"0.0.3\"",
+        "after": "language    \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/fmt/header.formatted",
+    "beforeSha256": "c3949884f44bdc4f4e6e3d3ab132bacd4152568a7b540450d1d39564be4ce1c8",
+    "afterSha256": "d274d8b7c506c048058b95dad068d89fa50fe36350e7e01ddce6efa897b5f60b",
+    "changes": [
+      {
+        "line": 2,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/config-declaration/package.bnt",
+    "beforeSha256": "e7c5c939aeddcf3f72e4e81cca838a60c721eea83ee782f914f4a1f2e78c965c",
+    "afterSha256": "80bbd8b0063a67ad4c1aac211002971a2db8104277b36080d07a87845756cd20",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt",
+    "beforeSha256": "34bb0acdd4ac699845aa429720f6e800eccfdf09f44313cf3767cda6b9cdb9fc",
+    "afterSha256": "7e24ed4a8a6b496d84b0fe9f9534dc3fefe8829cb6ebd6a2966a4780451472e3",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt",
+    "beforeSha256": "6e1ffae0d5566a02a29b2f5c4d5f135c91e67865621d9444efa573fc37660b89",
+    "afterSha256": "88b35d99d026f01c7fe10d6e1a0d57a6d3ff98b6c96299f4248e1d3a7ae28900",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt",
+    "beforeSha256": "a19ab8eee3867de7c36bd169e234c0bec772d44c50a4eaff90e5f3cc38d5473c",
+    "afterSha256": "f2f0a8590188331e121a0326c860fd61a292ebc373b4e0e38f5bea1f25057ac6",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt",
+    "beforeSha256": "1901c99d96ee6deaa988eae090f7c3c045d10bf06768c35b90b7c524b925c6cd",
+    "afterSha256": "93a066206454fd5e6ae7d503b68f27344f9999fc5ae15a4e889a4e93a576977c",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt",
+    "beforeSha256": "9f48ea4d68d3e49ab698ebb6ff8cedd457ebcbae2958fd91c300e8f14ea3896b",
+    "afterSha256": "d8a9d5275c20e4dec45e6be62ba8fe92909b2d96c564ff26cdb9a5dac3cd341b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt",
+    "beforeSha256": "d402f61f735dbf142cee5d0ddfe9f3ecfb49d5d318e355907af0581a191bd362",
+    "afterSha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header-overlap/main.bnt",
+    "beforeSha256": "d0f1d15a1415d7f5d3ee41cae8ee0cc39ae75d27e95ed6560b91d8b943798f1d",
+    "afterSha256": "40f923142f9ad3a90bfdf668c2585d6dcfa4ef83ad8eae25fe1079101657acc6",
+    "changes": [
+      {
+        "line": 3,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header-overlap/package.bnt",
+    "beforeSha256": "2198b975752fbe46aca2c2a3ad316397e7ea033c49dc43606359a318f940d6a4",
+    "afterSha256": "602f2bdc5329ed2033ad395b1bf168cd77eecb9ac0cbabcb57c9f2ed12b1ce4c",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header/deps/textkit/package.bnt",
+    "beforeSha256": "d402f61f735dbf142cee5d0ddfe9f3ecfb49d5d318e355907af0581a191bd362",
+    "afterSha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header/main.bnt",
+    "beforeSha256": "d0f1d15a1415d7f5d3ee41cae8ee0cc39ae75d27e95ed6560b91d8b943798f1d",
+    "afterSha256": "40f923142f9ad3a90bfdf668c2585d6dcfa4ef83ad8eae25fe1079101657acc6",
+    "changes": [
+      {
+        "line": 3,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/imported-header/Helper.bnt",
+    "beforeSha256": "7e77bedc7f7d900199ac601e992b69b17c77bec906f9fc9654f53ac1a0d3a50f",
+    "afterSha256": "5017727ba3cdc10fcedd25e850c9d5109e5cd863c874782de02d882fa93632a9",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt",
+    "beforeSha256": "d402f61f735dbf142cee5d0ddfe9f3ecfb49d5d318e355907af0581a191bd362",
+    "afterSha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt",
+    "beforeSha256": "3dc351fe61ce47c833911a687ba3d7649f2c554eeaf137f91140776c484a028c",
+    "afterSha256": "a1af455307bcdeb35a765fb9e79e8267f1983d7dc16b4cb6e6a57a9a52e2792f",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt",
+    "beforeSha256": "bfbc70995e564421f0abe54d14c1d5c84802016bc70cb0ca6f0096e7b6512b96",
+    "afterSha256": "b763652c355c790447d4bd8f44e1f05d577131b41c255299f6a1cc80297e6958",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt",
+    "beforeSha256": "d0755b887362a953604be899c3dc9fd2eac2d6dd56be7654a925bc595c9cee7e",
+    "afterSha256": "47cef55d9a3a2ced7dc733d4b1fa5a54225a6ecdd34ac0956b900b5fab64ad56",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt",
+    "beforeSha256": "4ff753251a691a053e89c28c154ee1a77712c27eb2d8c3e333ef284ddbb79f12",
+    "afterSha256": "ffde1e46bedc87661a288b811a1407ac59d3b0486211f0a75787a78cb1c6cabb",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt",
+    "beforeSha256": "20054a6b7f56d3a9875bbfd95cce50d763f4524064a11cde4deb81fcc34f0de7",
+    "afterSha256": "a76f8b2117f035ca97f94d6613e7e071edf018d21fc7486e95f48ff2dd2fe4cd",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt",
+    "beforeSha256": "8ff4e0ac42da9d93e60de15b9fd888f2698e00cf582b1c80102fcf30df84bd41",
+    "afterSha256": "8d1b26fa88480ce33199cf2cb376472652f621e51843b2328d4b38de680dc2d3",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-as-root/package.bnt",
+    "beforeSha256": "d402f61f735dbf142cee5d0ddfe9f3ecfb49d5d318e355907af0581a191bd362",
+    "afterSha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt",
+    "beforeSha256": "d402f61f735dbf142cee5d0ddfe9f3ecfb49d5d318e355907af0581a191bd362",
+    "afterSha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-dependencies/package.bnt",
+    "beforeSha256": "7bf69fed363f8fd496cd5ae495234de7ebf33f10ff783208871aecd6c4ceb4e4",
+    "afterSha256": "b7f6ff45fc2a4be32bb457e4c7cbf94a5c372b796508615fd46f9e66a1c718e3",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+    "beforeSha256": "6673267f44a219ccc2866ce59979addc6875f437d5100c81cd05634bfb50016c",
+    "afterSha256": "d5b4e8442199b5b9532700c423865208581a42f700ced7165cadd3246c7bdf18",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt",
+    "beforeSha256": "4b533283185e1a653a70a332b7be3b649826b2d4158d95f9e80c24e3589f816d",
+    "afterSha256": "2d2bb8a211a8c69af3870d0d25abd216073c7b8605ba6d0138dde87755d1dbdc",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt",
+    "beforeSha256": "d402f61f735dbf142cee5d0ddfe9f3ecfb49d5d318e355907af0581a191bd362",
+    "afterSha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/root-config/package.bnt",
+    "beforeSha256": "52a5763f6bd9eb3e0ac63f3fb959d47385cd313e61c3113c212be52ae18fe352",
+    "afterSha256": "6cfaac05218eaf6d460afb98e6a63736b3b283a1d7b0e945178ea5d9c2655c74",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt",
+    "beforeSha256": "0e04bf185ae3c0f5e725e10c732b9714b61cc79b18f9bbc7b06dfd94eeccb851",
+    "afterSha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt",
+    "beforeSha256": "0bede682f0b187779bf2cfd08e4c3418b87c7f0f09df46bc2110f387e8b66d83",
+    "afterSha256": "ef381f28c96d1deddb9e44c101c6d62e074257cabf90dd5a148c4e2c07b6c531",
+    "changes": [
+      {
+        "line": 1,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/fmt_command.rs",
+    "beforeSha256": "20219ca6ee4e4342ce6f98f94fbdc7ed65e1e7054f6c1866ba14bcc7501382df",
+    "afterSha256": "e6a69f17cc853678ba6497d1fd5ab59eccb36b7a261b5db6ff31104f97861ac4",
+    "changes": [
+      {
+        "line": 428,
+        "before": "        \"language    \\\"0.0.3\\\"\\npackage Textkit\\n       license   \\\"MIT\\\"\\nend package\\n\",",
+        "after": "        \"language    \\\"0.0.5\\\"\\npackage Textkit\\n       license   \\\"MIT\\\"\\nend package\\n\","
+      },
+      {
+        "line": 434,
+        "before": "        \"language \\\"0.0.3\\\"\\n\\npackage Textkit\\n  license \\\"MIT\\\"\\nend package\\n\"",
+        "after": "        \"language \\\"0.0.5\\\"\\n\\npackage Textkit\\n  license \\\"MIT\\\"\\nend package\\n\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/package_command.rs",
+    "beforeSha256": "9cb5f1aa58cfe0f3c9ed7d367e6de08af1c5e07163235e6ed27c54dd5346b1d8",
+    "afterSha256": "58f6e2ca44d6f24228ccf3edd9eae12c3cd28c9d158cb2ba3d958fbbc8800710",
+    "changes": [
+      {
+        "line": 18,
+        "before": "const CONFIG: &str = \"language \\\"0.0.3\\\"\\n\\npackage Words\\nend package\\n\";",
+        "after": "const CONFIG: &str = \"language \\\"0.0.5\\\"\\n\\npackage Words\\nend package\\n\";"
+      },
+      {
+        "line": 192,
+        "before": "        \"//! main\\n\\n// version\\nlanguage \\\"0.0.3\\\" // keep\\n\\ndependency Text\\n  path \\\"deps/words\\\"\\nend dependency\\n\\n{MAIN}\"",
+        "after": "        \"//! main\\n\\n// version\\nlanguage \\\"0.0.5\\\" // keep\\n\\ndependency Text\\n  path \\\"deps/words\\\"\\nend dependency\\n\\n{MAIN}\""
+      },
+      {
+        "line": 219,
+        "before": "        \"// version\\nlanguage \\\"0.0.3\\\" // keep\\n\\ndependency Text\\n  path \\\"deps/words\\\"\\nend dependency\\n\"",
+        "after": "        \"// version\\nlanguage \\\"0.0.5\\\" // keep\\n\\ndependency Text\\n  path \\\"deps/words\\\"\\nend dependency\\n\""
+      },
+      {
+        "line": 274,
+        "before": "            format!(\"language \\\"0.0.3\\\"\\n{MAIN}\"),",
+        "after": "            format!(\"language \\\"0.0.5\\\"\\n{MAIN}\"),"
+      },
+      {
+        "line": 275,
+        "before": "            Some(\"language \\\"0.0.3\\\"\\n\"),",
+        "after": "            Some(\"language \\\"0.0.5\\\"\\n\"),"
+      },
+      {
+        "line": 400,
+        "before": "            \"language \\\"0.0.3\\\"\\n\\ndependency Text\\n  path \\\"deps/words\\\"\\nend dependency\\n\\n{MAIN}\"",
+        "after": "            \"language \\\"0.0.5\\\"\\n\\ndependency Text\\n  path \\\"deps/words\\\"\\nend dependency\\n\\n{MAIN}\""
+      },
+      {
+        "line": 405,
+        "before": "    dir.write(\"main.bnt\", &format!(\"language \\\"0.0.3\\\"\\n\\n{MAIN}\"));",
+        "after": "    dir.write(\"main.bnt\", &format!(\"language \\\"0.0.5\\\"\\n\\n{MAIN}\"));"
+      },
+      {
+        "line": 407,
+        "before": "    assert!(dir.read(\"package.bnt\").contains(\"language \\\"0.0.3\\\"\"));",
+        "after": "    assert!(dir.read(\"package.bnt\").contains(\"language \\\"0.0.5\\\"\"));"
+      },
+      {
+        "line": 452,
+        "before": "        dir.write(\"main.bnt\", &format!(\"language \\\"0.0.3\\\"\\n\\n{MAIN}\"));",
+        "after": "        dir.write(\"main.bnt\", &format!(\"language \\\"0.0.5\\\"\\n\\n{MAIN}\"));"
+      },
+      {
+        "line": 463,
+        "before": "                \"{}{nl}{nl}language \\\"0.0.3\\\"{nl}\",",
+        "after": "                \"{}{nl}{nl}language \\\"0.0.5\\\"{nl}\","
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/spec_examples.rs",
+    "beforeSha256": "736b8c4e146771ad3dc81e587c2cd496c5fd98bf725c109c8ee983d30dc714f5",
+    "afterSha256": "f4483256c27b9a4a777c29c77ccaf6fc68a4f9daf254311578f2614b341dee2b",
+    "changes": [
+      {
+        "line": 454,
+        "before": "                format!(\"language \\\"0.0.3\\\"\\npackage {alias}\\nend package\\n\").into_bytes(),",
+        "after": "                format!(\"language \\\"0.0.5\\\"\\npackage {alias}\\nend package\\n\").into_bytes(),"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/test_command.rs",
+    "beforeSha256": "c8e3c11b916e5338277751858805c7a6ce4b048a890a832b8c2a100c16e5ead0",
+    "afterSha256": "bfb3dc2a3b16b465fdcf591573f39b5430124351e2c10d69ffaf45d87900a456",
+    "changes": [
+      {
+        "line": 767,
+        "before": "    dir.write(\"package.bnt\", \"language \\\"0.0.3\\\"\\n\");",
+        "after": "    dir.write(\"package.bnt\", \"language \\\"0.0.5\\\"\\n\");"
+      },
+      {
+        "line": 778,
+        "before": "        \"language \\\"0.0.3\\\"\\npackage Textkit\\nend package\\n\",",
+        "after": "        \"language \\\"0.0.5\\\"\\npackage Textkit\\nend package\\n\","
+      }
+    ]
+  },
+  {
+    "path": "docs/design/01-spec/01-02-syntax.md",
+    "beforeSha256": "b229b8f03d3070fdd7ad1a4407d55a2fd0b60d14169d65bcf8610f409647b609",
+    "afterSha256": "c5f76c557db0beb538441692f0c4256c87765514a35f8f41f52e6217025aff91",
+    "changes": [
+      {
+        "line": 452,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "docs/design/06-tooling/06-09-packages.md",
+    "beforeSha256": "229699d7b5b90910be415b2e155c0126a823b0dea47f75057e1acf6f140c32d1",
+    "afterSha256": "5872703a27e92704532a33562f329ad27de7e1c055dfff1bd4852f52639d7a8d",
+    "changes": [
+      {
+        "line": 20,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      },
+      {
+        "line": 32,
+        "before": "language \"0.0.3\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "docs/reference/benitoite.md",
+    "beforeSha256": "5fb67c15035cdc10394743330b2449f224ad01df63c8e470b66d287adc36c0bb",
+    "afterSha256": "2500abf4ef589d371d86a35fbd0f58588a7c9f43aa0c73b5e76e2f9ce4d0ed6c",
+    "changes": [
+      {
+        "line": 1057,
+        "before": "language \"0.0.4\"",
+        "after": "language \"0.0.5\""
+      },
+      {
+        "line": 1075,
+        "before": "language \"0.0.4\"",
+        "after": "language \"0.0.5\""
+      },
+      {
+        "line": 1107,
+        "before": "language \"0.0.4\"",
+        "after": "language \"0.0.5\""
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/modules/hash.rs",
+    "beforeSha256": "56a367e9a28c5de6270b169f47ce87981ca8b53c7860b7fc8294234c21b12fc0",
+    "afterSha256": "b074f3df60383a72391d76f450f1d42a2e64bdad1f04901ce4d7ec66bf5707be",
+    "changes": [
+      {
+        "line": 222,
+        "before": "    const CONFIG: &str = \"language \\\"0.0.3\\\"\\npackage Textkit\\nend package\\n\";",
+        "after": "    const CONFIG: &str = \"language \\\"0.0.5\\\"\\npackage Textkit\\nend package\\n\";"
+      }
+    ]
+  }
+]

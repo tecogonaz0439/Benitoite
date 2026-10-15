@@ -2,11 +2,12 @@ import Benitoite.Release.Typing
 import Benitoite.Release.Lemmas.TySubst
 
 /-!
-# 網羅性の検査の手順と健全性（TODO-162、E1a-1・E1a-2・E1b-1）
+# 契約名を持つ型の網羅性判定と健全性
 
-02-05「本体の後の検査」の有用性の手順を、Q3・Q4 の決定に従って定義する。
+設計書 02-05「本体の後の検査」の有用性の手順を定義し、照合・区間・リストの補題から判定の健全性を証明する。
+型の置換では関数型の契約名を保持し、パターン照合の意味と位置による判定を維持する。
 `none` だけを健全性の主張に使う。反例は、実在する値とは限らない（残りの値や空の型の構成子も含む）。
-任意の燃料について健全性を証明する。既存の型付け・照合・実行の定義は変更しない。
+網羅性・束縛の左辺・選ばれない選択肢の保証を、既存と同じ前提・結論で保持する。
 -/
 
 namespace Benitoite.Release
@@ -51,7 +52,7 @@ mutual
     | .opaque o => .opaque o
     | .data d args => .data d (substTys ts args)
     | .list a => .list (substTy ts a)
-    | .fn ps r eff => .fn (substTys ts ps) (substTy ts r) eff
+    | .fn names ps r eff => .fn names (substTys ts ps) (substTy ts r) eff
     | .tvar i => if i < ts.length then (ts[i]?).getD (.tvar i) else .tvar (i - ts.length)
     | .reference a => .reference (substTy ts a)
     | .lazy a => .lazy (substTy ts a)
@@ -76,7 +77,7 @@ mutual
     | .opaque _ => by simp [substTy, Ty.subst, Ty.substAt]
     | .data _ as => by simp [substTy, Ty.subst, Ty.substAt, substTys_eq]
     | .list a => by simp [substTy, Ty.subst, Ty.substAt, substTy_eq ts a]
-    | .fn ps r e => by
+    | .fn names ps r e => by
         simp [substTy, Ty.subst, Ty.substAt, substTys_eq, substTy_eq ts r, Eff.substRho_nil]
     | .tvar i => by simp [substTy, Ty.subst, Ty.substAt, Ty.shift_zero]
     | .reference a => by simp [substTy, Ty.subst, Ty.substAt, substTy_eq ts a]
@@ -1299,7 +1300,7 @@ def useful (P : Program) (ctors : DataName → List ConName) (tys : List Ty)
     (rows : List (List Pat)) (q : List Pat) : Option (List CoverageWitness) :=
   (usefulReport P ctors tys rows q).witness
 
-/-- Q3 の行列を位置付きで集める。前の分岐はガードなし、同じ分岐はガードを問わない。 -/
+/-- 設計書 02-05「本体の後の検査」の行列を位置付きで集める。前の分岐はガードなし、同じ分岐はガードを問わない。 -/
 def precedingAlternatives (arms : List Arm) (i j : Nat) : List ((Nat × Nat) × Pat) :=
   (arms.take i).zipIdx.flatMap (fun (arm, k) =>
     if arm.guard.isNone then arm.alts.zipIdx.map (fun (alt, l) => ((k, l), alt.pat)) else []) ++
@@ -1316,7 +1317,7 @@ def overlaps (P : Program) (ctors : DataName → List ConName) (ty : Ty) (a b : 
   Coverage.overlapsFuel P ctors (Coverage.nodes a + Coverage.nodes b + 1) ty a b
 
 /-- 単独で覆う最初の選択肢を優先する。なければ覆う最小の接頭辞の中で重なるものを選ぶ。
-位置と順は処理系の covering_alternatives と同じ。前の行の集め方だけ Q3 に従う。 -/
+位置と順は処理系の covering_alternatives と同じ。前の行はガードなしの分岐と同じ分岐の前の選択肢から集める。 -/
 def coveringAlternatives (P : Program) (ctors : DataName → List ConName) (ty : Ty)
     (arms : List Arm) (i j : Nat) : List (Nat × Nat) :=
   match (arms[i]?).bind (fun arm => (arm.alts[j]?).map Alt.pat) with
@@ -1363,7 +1364,7 @@ def irrefutable (P : Program) (ctors : DataName → List ConName) (a : Ty) (p : 
 
 /-- slots の整合を仮定しない、パターンの照合だけによる選択。
 前のガード付き分岐は、ガードが偽になる可能性があるので条件から外す。
-firstAlt と実行の規則への接続は、slots が整うという前提のもとで E1b 以降に行う。 -/
+firstAlt と実行の規則への接続には、slots が整うという前提が必要である。 -/
 def AlternativeSelected (arms : List Arm) (i j : Nat) (v : Val) : Prop :=
   ∃ arm alt, arms[i]? = some arm ∧ arm.alts[j]? = some alt ∧
     (∀ p ∈ unguardedPats (arms.take i), ¬ (Pat.matchVal p v).isSome) ∧
@@ -1666,7 +1667,7 @@ example : inspect (.list boolTy)
     [plain [.list [] none []], plain [.list [.wild] (some .skip) []]] =
     (none, [], false) := by decide
 
-/-- 同じ分岐の重複はガードの有無によらず選ばれない（Q3）。 -/
+/-- 同じ分岐の重複はガードの有無によらず選ばれない。 -/
 example : [plain [int 1, int 1], guarded [int 1, int 1]].map
     (fun arm => inspect intTy [arm]) =
     [(some [.other], [(0, 1)], false), (some [.wild], [(0, 1)], false)] := by decide
@@ -1753,7 +1754,7 @@ example : ([.const (.integer 97), .range (.integer 0) (.integer 127)] : List Pat
     (fun p => (useful program ctors [charTy] [[p]] [.const (.character 'a')]).isSome) =
     [true, true] := by decide
 
-/-- 型の列が尽きた、宣言と引数数が違う、型パラメータの非ワイルドカードの問い（Q4）。 -/
+/-- 型の列が尽きた、宣言と引数数が違う、型パラメータの非ワイルドカードの問い。 -/
 example : [(useful program ctors [] [[.wild]] [.wild]).isSome,
     (useful program ctors [.data "Choice" [boolTy]] [[.wild]] [.con "L" []]).isSome,
     (useful program ctors [.data "Choice" []] [[.wild]] [.con "L" [.wild]]).isSome,

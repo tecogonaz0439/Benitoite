@@ -5,5 +5,5 @@ import Lib.Text
 
 @test
 function usesLib() -> Unit uses Assert.Check
-  Assert.equal(Text.message(), "hello")
+  Assert.equal(actual: Text.message(), expected: "hello")
 end function

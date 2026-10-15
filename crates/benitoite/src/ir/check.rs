@@ -91,11 +91,35 @@ fn constant_type(c: &Const) -> Ty {
     builtin(id, vec![])
 }
 
+// 名前を含む構造上の一致だけでは、不正な名前表どうしの一致を排除できない。
+// コアの型付けでも個数と一意性を要求する（設計書 02-06「コア IR の検査器」）。
+fn valid_contracts(ty: &Ty) -> bool {
+    let mut pending = vec![ty];
+    while let Some(ty) = pending.pop() {
+        match ty {
+            Ty::Fn(f) => {
+                if !f.valid_contract() {
+                    return false;
+                }
+                pending.extend(&f.params);
+                pending.push(&f.ret);
+            }
+            Ty::Con(_, args) | Ty::App(_, args) => pending.extend(args),
+            Ty::Param(_) | Ty::Rigid { .. } => {}
+        }
+    }
+    true
+}
+
 /// V-Sub・C-Sub。関数の内側やコレクションの型引数には包含を適用しない。
 fn accepts(actual: &Ty, expected: &Ty) -> bool {
-    actual == expected
-        || matches!((actual, expected), (Ty::Fn(a), Ty::Fn(b))
-        if a.params == b.params && a.ret == b.ret && a.effects.is_subset(&b.effects))
+    valid_contracts(actual)
+        && valid_contracts(expected)
+        && (actual == expected
+            || matches!((actual, expected), (Ty::Fn(a), Ty::Fn(b))
+        if a.valid_contract() && b.valid_contract() && a.param_names == b.param_names
+        && a.params.len() == b.params.len() && a.params.iter().zip(&b.params).all(|(a,b)| a == b)
+        && a.ret == b.ret && a.effects.is_subset(&b.effects)))
 }
 
 /// V-Dict・C-Meth の同時置換。型構成子の頭も置き換える。
@@ -128,7 +152,7 @@ impl Checker<'_> {
     }
 
     fn equal(&mut self, origin: Span, actual: &Ty, expected: &Ty) {
-        if actual != expected {
+        if actual != expected || !valid_contracts(actual) || !valid_contracts(expected) {
             self.error(origin, format!("expected {expected:?}, found {actual:?}"));
         }
     }
@@ -174,6 +198,7 @@ impl Checker<'_> {
                 self.equal(
                     def.span,
                     &Ty::Fn(Box::new(FnTy {
+                        param_names: def.param_names.clone(),
                         params: def.params.iter().map(|v| v.ty.clone()).collect(),
                         ret: def.ret.clone(),
                         effects: def.eff.clone(),
@@ -480,6 +505,7 @@ impl Checker<'_> {
             }
         };
         Ty::Fn(Box::new(FnTy {
+            param_names: lambda.param_names.clone(),
             params: lambda.params.iter().map(|p| p.ty.clone()).collect(),
             ret: lambda.body.ty.clone(),
             effects,
@@ -947,7 +973,9 @@ impl Checker<'_> {
                 if let Ty::Fn(f) = expected {
                     let actual_params: Vec<_> =
                         method.params.iter().map(|p| p.ty.clone()).collect();
-                    if actual_params != f.params
+                    if method.param_names != f.param_names
+                        || actual_params.len() != f.params.len()
+                        || !actual_params.iter().zip(&f.params).all(|(a, b)| a == b)
                         || method.ret != f.ret
                         || !method.eff.is_subset(&f.effects)
                     {
@@ -1306,6 +1334,7 @@ mod tests {
     }
     fn fn_ty(params: Vec<Ty>, ret: Ty, effects: EffectSet) -> Ty {
         Ty::Fn(Box::new(FnTy {
+            param_names: (1..=params.len()).map(|i| format!("arg{i}")).collect(),
             params,
             ret,
             effects,
@@ -1368,6 +1397,7 @@ mod tests {
     }
     fn scheme(params: Vec<Ty>, ret: Ty, effects: EffectSet) -> Scheme {
         Scheme {
+            param_names: (1..=params.len()).map(|i| format!("arg{i}")).collect(),
             type_params: vec![],
             effect_params: vec![],
             class_constraints: vec![],
@@ -1385,6 +1415,7 @@ mod tests {
         body: Comp,
     ) -> CoreDef {
         Def {
+            param_names: (1..=params.len()).map(|i| format!("arg{i}")).collect(),
             binding,
             name: format!("f{}", binding.0),
             origin: DefOrigin::User,
@@ -1565,6 +1596,7 @@ mod tests {
         );
         val(
             ValKind::Lambda(Box::new(Lambda {
+                param_names: (1..=params.len()).map(|i| format!("arg{i}")).collect(),
                 id: BodyId(0),
                 params,
                 body,
@@ -1920,6 +1952,7 @@ mod tests {
         }
         p.schemes.insert(OP, s);
         p.ops.push(OpDef {
+            param_names: (1..=1).map(|i| format!("arg{i}")).collect(),
             binding: OP,
             effect: EffectName::User(BindingId(42)),
             name: "Log.echo".into(),
@@ -2710,6 +2743,67 @@ mod tests {
         one(&p, 11, "Dict");
     }
 
+    #[test]
+    fn method_arguments_preserve_parameter_contracts() {
+        let source = "import Benitoite.Trait\nfunction f(cb: function(value: Integer) -> Integer) -> List[Integer]\n return Trait.Functor.map(x: [], f: cb)\nend function";
+        let (_, _, _, mut p) =
+            crate::ir::desugar::test_support::desugar_files(&[("main.bnt", source)], false);
+        good(&p);
+        let d = p.defs.iter_mut().find(|d| d.name == "f").unwrap();
+        let Ty::Fn(parameter) = &mut d.params[0].ty else {
+            panic!()
+        };
+        parameter.param_names = vec!["other".into()];
+        let mut scheme = p.schemes.get(d.binding).unwrap().clone();
+        scheme.params[0] = d.params[0].ty.clone();
+        p.schemes.insert(d.binding, scheme);
+        let mut body = &mut d.body;
+        let origin = loop {
+            match &mut body.kind {
+                CompKind::Let {
+                    var,
+                    bound,
+                    body: inner,
+                } => {
+                    if let Ty::Fn(ty) = &mut var.ty {
+                        ty.param_names = vec!["other".into()];
+                    }
+                    if let Ty::Fn(ty) = &mut bound.ty {
+                        ty.param_names = vec!["other".into()];
+                    }
+                    if let CompKind::Return(value) = &mut bound.kind
+                        && let Ty::Fn(ty) = &mut value.ty
+                    {
+                        ty.param_names = vec!["other".into()];
+                    }
+                    body = inner;
+                }
+                CompKind::Method(call) => {
+                    let arg = &mut call.args[1];
+                    let Ty::Fn(ty) = &mut arg.ty else { panic!() };
+                    assert_eq!(ty.param_names.len(), ty.params.len());
+                    ty.param_names = vec!["other".into()];
+                    break arg.origin;
+                }
+                CompKind::Return(_)
+                | CompKind::App { .. }
+                | CompKind::If { .. }
+                | CompKind::Match { .. }
+                | CompKind::Escape(_)
+                | CompKind::Use { .. }
+                | CompKind::Lazy { .. }
+                | CompKind::Handle(_)
+                | CompKind::Resume { .. } => panic!(),
+            }
+        };
+        let errors = check_program(&p);
+        assert_eq!(errors.len(), 1, "{errors:?}");
+        assert_eq!(errors[0].origin, origin);
+        assert!(errors[0].message.contains("expected a type accepted by"));
+        assert!(errors[0].message.contains("\"value\""));
+        assert!(errors[0].message.contains("\"other\""));
+    }
+
     fn match_program(ty: Ty, value: CoreVal, rows: Vec<CorePat>, vars: Vec<Var>) -> CoreProgram {
         let body = comp(
             CompKind::Match {
@@ -3080,6 +3174,7 @@ mod tests {
         let mut p = handled_program(false);
         let effect_name = EffectName::User(BindingId(42));
         p.ops.push(OpDef {
+            param_names: Vec::new(),
             binding: BindingId(41),
             effect: effect_name,
             name: "Log.other".into(),

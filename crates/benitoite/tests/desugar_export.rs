@@ -11,6 +11,8 @@
 mod exchange;
 #[path = "random_programs/generator.rs"]
 pub mod generator;
+#[path = "desugar_export/named.rs"]
+mod named;
 
 use benitoite::pipeline::{self, CheckOptions};
 use serde_json::{Value, json};
@@ -24,7 +26,8 @@ use std::time::Instant;
 #[test]
 fn export_width_smoke() {
     let start = Instant::now();
-    let output = export_directory("width-smoke");
+    let output = export_directory("width-smoke").join("width-smoke");
+    fs::create_dir_all(&output).unwrap();
     let stdlib = exchange::complete_stdlib();
     let mut inputs = vec![];
     let mut builtin_inputs = vec![];
@@ -65,7 +68,7 @@ fn export_width_smoke() {
             let standard = if *ty == "Float32" {
                 "Float32.squareRoot(x + y)".to_owned()
             } else {
-                format!("{ty}.minimum(x, y)")
+                format!("{ty}.minimum(a: x, b: y)")
             };
             source.push_str(&format!(
                 "function arithmetic{index}(x: {ty}, y: {ty}) -> {ty}\n\
@@ -96,13 +99,12 @@ fn export_width_smoke() {
             "{name}: {:?}",
             checked.diagnostics
         );
-        let input = export(
-            "golden",
-            &name,
-            checked,
-            Some((&mut builtin_inputs, &mut stdlib_inputs, &stdlib)),
-            &mut coverage_inputs,
-        );
+        let mut named = named::Export::new();
+        named.push("golden", &name, checked.program.as_ref().unwrap(), &stdlib);
+        let input = named.inputs.pop().unwrap();
+        builtin_inputs.extend(named.tables);
+        stdlib_inputs.extend(named.declarations);
+        coverage_inputs.extend(named.coverage);
         assert_eq!(input["excluded"], json!([]));
         let definitions = input["definitions"].as_array().unwrap();
         assert_eq!(
@@ -139,6 +141,11 @@ fn export_width_smoke() {
     }
     let annotations = export_annotations(&inputs);
     write_exchange(&output, inputs, builtin_inputs, stdlib_inputs, annotations);
+    fs::write(
+        output.join("coverage.json"),
+        exchange::to_vec(&json!({"version":2,"inputs":coverage_inputs})).unwrap(),
+    )
+    .unwrap();
     // メモリ上の表だけでなく、Lean が読むファイルにも境界値とビットが残ることを確かめる。
     let corpus: Value =
         serde_json::from_slice(&fs::read(output.join("corpus.json")).unwrap()).unwrap();
@@ -242,9 +249,9 @@ fn export(
         return json!({"group":group,"name":name,"excluded":["external function"],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
     }
     let core = pipeline::desugar_checked(&program).unwrap_or_else(|e| panic!("{name}: {e:?}"));
-    let tables = exchange::operation_tables(&program, &core);
-    let classes = exchange::class_tables(&program, &core);
-    let (definitions, constants, coverage) = exchange::definitions(&program, &core);
+    let tables = exchange::named_operation_tables(&program, &core);
+    let classes = exchange::named_class_tables(&program, &core);
+    let (definitions, constants, coverage) = exchange::named_program_parts(&program, &core);
     coverage_inputs.push(json!({"group":group,"name":name,
         "matches":coverage.matches,"bindings":coverage.bindings}));
     let input = json!({"group":group,"name":name,"excluded":[],
@@ -252,8 +259,8 @@ fn export(
         "classes":classes["classes"],"impls":classes["impls"],
         "definitions":definitions,"constants":constants});
     if let Some((inputs, declarations, stdlib)) = builtin_inputs {
-        declarations.push(exchange::stdlib_declarations(&program, &core, &input));
-        inputs.push(exchange::builtin_tables(&program, &input, stdlib));
+        declarations.push(exchange::named_stdlib_declarations(&program, &core, &input));
+        inputs.push(exchange::named_builtin_tables(&program, &input, stdlib));
     }
     input
 }
@@ -306,7 +313,7 @@ fn export_annotations(inputs: &[Value]) -> std::collections::BTreeMap<String, [u
     annotations
 }
 
-// 三つの Lean の実行器へ渡す版と宣言表を、全 corpus と短い入力で共有する。
+// 名前付きの標準関数を含む幅付きの入力は、新形式の型と対応表を保つ。
 fn write_exchange(
     output: &Path,
     inputs: Vec<Value>,
@@ -314,24 +321,121 @@ fn write_exchange(
     stdlib_inputs: Vec<Value>,
     annotations: std::collections::BTreeMap<String, [usize; 2]>,
 ) -> Value {
-    let corpus = json!({"version":7,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
+    let corpus = json!({"version":8,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
     fs::write(
         output.join("corpus.json"),
         exchange::to_vec(&corpus).unwrap(),
     )
     .unwrap();
-    // corpus の原子の収集に新しい表を混ぜず、版 7 のバイト列を保存する。
+    // 新しい契約名を型表にも保持する。
     fs::write(
         output.join("builtins.json"),
-        exchange::to_vec(&json!({"version":1,"inputs":builtin_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":2,"inputs":builtin_inputs})).unwrap(),
     )
     .unwrap();
     fs::write(
         output.join("stdlib-decls.json"),
-        exchange::to_vec(&json!({"version":1,"inputs":stdlib_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":2,"inputs":stdlib_inputs})).unwrap(),
     )
     .unwrap();
     corpus
+}
+
+// corpus と各表は同じ入力順で直ちに書き、注釈と分類の件数だけを保持する。
+struct CorpusStream {
+    inputs: exchange::InputStream,
+    builtins: exchange::InputStream,
+    declarations: exchange::InputStream,
+    coverage: exchange::InputStream,
+    annotations: std::collections::BTreeMap<String, [usize; 2]>,
+    counts: [usize; 3],
+}
+
+impl CorpusStream {
+    fn new(output: &Path, prefix: &str) -> Self {
+        Self {
+            inputs: exchange::InputStream::new(output, &format!("{prefix}corpus")),
+            builtins: exchange::InputStream::new(output, &format!("{prefix}builtins")),
+            declarations: exchange::InputStream::new(output, &format!("{prefix}stdlib")),
+            coverage: exchange::InputStream::new(output, &format!("{prefix}coverage")),
+            annotations: export_annotations(&[]),
+            counts: [0; 3],
+        }
+    }
+
+    fn push(
+        &mut self,
+        input: Value,
+        tables: Vec<Value>,
+        declarations: Vec<Value>,
+        coverage: Vec<Value>,
+    ) {
+        let class =
+            if !input["excluded"].as_array().unwrap().is_empty() {
+                2
+            } else if input["definitions"].as_array().unwrap().iter().any(|d| {
+                d["scope"].get("inScope").is_some() || d["scope"].get("accessor").is_some()
+            }) {
+                0
+            } else {
+                1
+            };
+        self.counts[class] += 1;
+        for (kind, counts) in export_annotations(std::slice::from_ref(&input)) {
+            let total = self.annotations.entry(kind).or_default();
+            total[0] += counts[0];
+            total[1] += counts[1];
+        }
+        self.inputs.push(&input);
+        for table in tables {
+            self.builtins.push(&table);
+        }
+        for declaration in declarations {
+            self.declarations.push(&declaration);
+        }
+        for item in coverage {
+            self.coverage.push(&item);
+        }
+    }
+
+    fn export(
+        &mut self,
+        group: &str,
+        name: &str,
+        checked: pipeline::CheckResult,
+        stdlib: &pipeline::CheckedProgram,
+    ) {
+        let mut tables = vec![];
+        let mut declarations = vec![];
+        let mut coverage = vec![];
+        let input = export(
+            group,
+            name,
+            checked,
+            Some((&mut tables, &mut declarations, stdlib)),
+            &mut coverage,
+        );
+        self.push(input, tables, declarations, coverage);
+    }
+
+    fn finish(self, output: &Path, stem: &str) {
+        self.inputs.finish(
+            &output.join(format!("{stem}-corpus.json")),
+            json!({"version":8,"operators":exchange::operators(),"annotations":self.annotations}),
+        );
+        self.builtins.finish(
+            &output.join(format!("{stem}-builtins.json")),
+            json!({"version":2}),
+        );
+        self.declarations.finish(
+            &output.join(format!("{stem}-stdlib.json")),
+            json!({"version":2}),
+        );
+        self.coverage.finish(
+            &output.join(format!("{stem}-coverage.json")),
+            json!({"version":2}),
+        );
+    }
 }
 
 // 関門: 公開の脱糖が、独立して証明した Lean の脱糖に対応するという契約を守る。
@@ -347,11 +451,8 @@ fn write_exchange(
 fn export_desugar_corpus() {
     let start = Instant::now();
     let output = export_directory("desugar-diff");
-    let mut inputs = Vec::new();
-    let mut builtin_inputs = Vec::new();
-    let mut stdlib_inputs = Vec::new();
-    let mut coverage_inputs = Vec::new();
     let stdlib = exchange::complete_stdlib();
+    let mut named_stream = CorpusStream::new(&output, "named-programs-");
     for path in discover(
         Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("testdata")
@@ -369,12 +470,10 @@ fn export_desugar_corpus() {
             deny_warnings: false,
         };
         match pipeline::check_path(&path, options) {
-            Ok(checked) => inputs.push(export(
-                "golden", &relative.display().to_string(), checked, Some((&mut builtin_inputs, &mut stdlib_inputs, &stdlib)), &mut coverage_inputs,
-            )),
-            Err(error) => inputs.push(
+            Ok(checked) => named_stream.export("golden", &relative.display().to_string(), checked, &stdlib),
+            Err(error) => named_stream.push(
                 json!({"group":"golden","name":relative.display().to_string(),
-                "excluded":[format!("entry: {error:?}")],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]}),
+                "excluded":[format!("entry: {error:?}")],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]}), vec![], vec![], vec![],
             ),
         }
     }
@@ -397,48 +496,54 @@ fn export_desugar_corpus() {
             "{name}: generated program failed check: {:?}",
             checked.diagnostics
         );
-        inputs.push(export(
-            "random",
-            &name,
-            checked,
-            Some((&mut builtin_inputs, &mut stdlib_inputs, &stdlib)),
-            &mut coverage_inputs,
-        ));
+        let program = checked.program.as_ref().unwrap();
+        assert!(named::contracts_well_formed(program));
+        let mut named_programs = named::Export::new();
+        named_programs.push("random", &name, program, &stdlib);
+        let input = named_programs.inputs.pop().unwrap();
+        named_stream.push(
+            input,
+            named_programs.tables,
+            named_programs.declarations,
+            named_programs.coverage,
+        );
     }
-    let mut exported = 0;
-    let mut outside = 0;
-    let mut excluded = 0;
-    for input in &inputs {
-        if !input["excluded"].as_array().unwrap().is_empty() {
-            excluded += 1;
-        } else if input["definitions"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|d| d["scope"].get("inScope").is_some() || d["scope"].get("accessor").is_some())
-        {
-            exported += 1;
-        } else {
-            outside += 1;
-        }
-    }
-    assert_eq!(exported + outside + excluded, inputs.len());
+    let [exported, outside, excluded] = named_stream.counts;
+    let total = named_stream.inputs.count;
+    assert_eq!(exported + outside + excluded, total);
     assert!(exported > 0, "empty comparison corpus");
-    let annotations = export_annotations(&inputs);
-    eprintln!("desugar annotations [positions, different from R]: {annotations:?}");
-    let corpus = write_exchange(&output, inputs, builtin_inputs, stdlib_inputs, annotations);
-    // 同じ型検査済み AST の走査で得た照合だけを別のファイルへ書く。
-    fs::write(
-        output.join("coverage-matches.json"),
-        exchange::to_vec(&json!({"version":1,"inputs":coverage_inputs})).unwrap(),
-    )
-    .unwrap();
+    eprintln!(
+        "desugar annotations [positions, different from R]: {:?}",
+        named_stream.annotations
+    );
+    named_stream.finish(&output, "named-programs");
     eprintln!(
         "desugar export: {exported} exported, {outside} out of scope, {excluded} excluded (check error); {} inputs; {:.3}s; {}",
-        corpus["inputs"].as_array().unwrap().len(),
+        total,
         start.elapsed().as_secs_f64(),
         output.display()
     );
+}
+
+// 関門: 独立した非空の入力で、脱糖・型検査・網羅性を同じ出力へ接続する。
+// 全件と識別子を分け、六つの正式入口で同じ契約を検査する。
+#[test]
+fn export_independent_program_exchange() {
+    let output = export_directory("independent-program");
+    let stdlib = exchange::complete_stdlib();
+    let mut independent = CorpusStream::new(&output, "independent-program-");
+    // 呼び出しを含まない本体も、名前を保持して比較する（設計書 07-04「証明する性質」）。
+    let checked = pipeline::check_text(
+        "independent-program",
+        b"function identity(x: Integer) -> Integer\n return match x with\n case _ -> x\n end match\nend function\n",
+        CheckOptions {
+            require_main: false,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    independent.export("golden", "independent-program", checked, &stdlib);
+    independent.finish(&output, "independent-program");
 }
 
 // 関門: 交換形式は Return 直下の ConstRef だけを計算へ置き換える。
@@ -553,7 +658,14 @@ fn export_accepts_generated_guard_local_handler() {
         },
     );
     assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
-    let input = export("random", "guard-scope.bnt", checked, None, &mut Vec::new());
+    let mut exports = named::Export::new();
+    exports.push(
+        "random",
+        "guard-scope.bnt",
+        checked.program.as_ref().unwrap(),
+        &exchange::complete_stdlib(),
+    );
+    let input = exports.inputs.pop().unwrap();
     let definitions = input["definitions"].as_array().unwrap();
     let definition = definitions
         .iter()
@@ -582,13 +694,14 @@ fn export_accepts_generated_placeholder_escapes() {
         },
     );
     assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
-    let input = export(
+    let mut exports = named::Export::new();
+    exports.push(
         "random",
         "placeholder-escapes.bnt",
-        checked,
-        None,
-        &mut Vec::new(),
+        checked.program.as_ref().unwrap(),
+        &exchange::complete_stdlib(),
     );
+    let input = exports.inputs.pop().unwrap();
     let definitions = input["definitions"].as_array().unwrap();
     for name in ["formalPlaceholderReturn", "formalPlaceholderTry"] {
         let definition = definitions
@@ -602,4 +715,107 @@ fn export_accepts_generated_placeholder_escapes() {
             .unwrap();
         assert!(definition["scope"].get("inScope").is_some(), "{definition}");
     }
+}
+
+// 型注釈の出力だけを、独立した新形式の表層・期待コアへ渡す。
+// 宣言とラムダの新形式への接続は、契約の出どころを確定した後に行う。
+#[test]
+fn export_named_types_smoke() {
+    let output = export_directory("named-types");
+    let source = "type Callback[T] = function(value: T) -> T\nfunction identity(callback: Callback[Integer]) -> Callback[Integer]\n return callback\nend function";
+    let checked = pipeline::check_text(
+        "named-types.bnt",
+        source.as_bytes(),
+        CheckOptions {
+            require_main: false,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let p = checked.program.unwrap();
+    let scheme = p
+        .types
+        .decl_types
+        .iter()
+        .find(|(id, _)| p.resolved.bindings.get(*id).unwrap().name == "identity")
+        .unwrap()
+        .1;
+    let ty = exchange::named_type(&p, &scheme.params[0]);
+    let integer = json!({"base":{"name":"Integer"}});
+    let expected = json!({"fn":{"names":["value"],"params":[integer],"ret":integer,"eff":[]}});
+    assert_eq!(ty, expected);
+    assert_eq!(exchange::named_type(&p, &scheme.ret), expected);
+    let header = |ty: Value| json!({"tparams":[],"neffs":0,"names":["callback"],"params":[ty],"ret":ty,"eff":[]});
+    let surface = json!({"header":header(ty.clone()),"dictParams":[],"body":{"last":{"expr":{"returnE":{"ret":ty,"inner":{"local":{"index":0}}}}}},"implementation":null,"method":null,"supers":[]});
+    // この期待コアは脱糖の出力を使わず、独立した型と変数の規則から書く。
+    let core = json!({"header":header(expected),"body":{"ret":{"value":{"var":{"index":0}}}},"lambdaEffects":[],"supers":[]});
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../formal/tests/named-exchange");
+    let mut corpus: Value =
+        serde_json::from_slice(&fs::read(root.join("corpus.json")).unwrap()).unwrap();
+    let mut input = corpus["inputs"][0].clone();
+    input["name"] = json!("named-types");
+    input["definitions"] =
+        json!([{"name":"identity (fn:1)","scope":{"inScope":{"surface":surface,"core":core}}}]);
+    for key in ["constants", "ops", "effects", "primOps", "classes", "impls"] {
+        input[key] = json!([]);
+    }
+    corpus["inputs"] = json!([input]);
+    fs::write(
+        output.join("named-types-corpus.json"),
+        serde_json::to_vec_pretty(&corpus).unwrap(),
+    )
+    .unwrap();
+    named::write_tables(&output, "named-types", &p, &corpus["inputs"][0]);
+}
+
+// 型だけを独立入力へ差し込む検査と異なり、宣言・ラムダの表層とコアを両方 Rust から得る。
+#[test]
+fn export_named_declarations_smoke() {
+    let output = export_directory("named-declarations");
+    let checked = pipeline::check_text(
+        "named-declarations.bnt",
+        b"function identity(actual: Integer) -> Integer\n return actual\nend function\nfunction make(captured: Integer) -> function(value: Integer) -> Integer\n return lambda(value) return captured\nend function",
+        CheckOptions { require_main: false, deny_warnings: false },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let p = checked.program.unwrap();
+    let core = pipeline::desugar_checked(&p).unwrap();
+    let definitions = exchange::named_definitions(&p, &core);
+    assert_eq!(definitions.len(), 2);
+    let identity = &definitions
+        .iter()
+        .find(|d| d["name"].as_str().unwrap().starts_with("identity ("))
+        .unwrap()["scope"]["inScope"];
+    assert_eq!(identity["surface"]["header"]["names"], json!(["actual"]));
+    assert_eq!(identity["core"]["header"]["names"], json!(["actual"]));
+    let make = &definitions
+        .iter()
+        .find(|d| d["name"].as_str().unwrap().starts_with("make ("))
+        .unwrap()["scope"]["inScope"];
+    let integer = json!({"base":{"name":"Integer"}});
+    assert_eq!(
+        make["surface"]["header"]["ret"],
+        json!({"fn":{"names":["value"],"params":[integer],"ret":integer,"eff":[]}})
+    );
+    assert!(contains_json(&make["surface"]["body"], &json!(["value"])));
+    assert_eq!(
+        make["core"]["body"],
+        json!({"ret":{"value":{"lam":{"names":["value"],"params":[integer],"body":{"ret":{"value":{"var":{"index":1}}}}}}}})
+    );
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../formal/tests/named-exchange");
+    let mut corpus: Value =
+        serde_json::from_slice(&fs::read(root.join("corpus.json")).unwrap()).unwrap();
+    let mut input = corpus["inputs"][0].clone();
+    input["name"] = json!("named-declarations");
+    input["definitions"] = json!(definitions);
+    for key in ["constants", "ops", "effects", "primOps", "classes", "impls"] {
+        input[key] = json!([]);
+    }
+    corpus["inputs"] = json!([input]);
+    fs::write(
+        output.join("named-declarations-corpus.json"),
+        serde_json::to_vec_pretty(&corpus).unwrap(),
+    )
+    .unwrap();
+    named::write_tables(&output, "named-declarations", &p, &corpus["inputs"][0]);
 }

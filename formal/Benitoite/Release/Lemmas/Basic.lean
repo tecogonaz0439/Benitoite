@@ -2,6 +2,9 @@ import Benitoite.Release.Typing
 
 /-!
 # エフェクトの集合と型の包含の基本の補題
+
+契約名を持つ関数型について、包含・置換・変数移動で同じ名前の並びを保持する。
+型付けの基礎となる包含の性質を示す（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
@@ -60,54 +63,54 @@ namespace Ty.Le
 theorem refl (a : Ty) : Ty.Le a a := Or.inl rfl
 
 theorem trans {a b c : Ty} (h₁ : Ty.Le a b) (h₂ : Ty.Le b c) : Ty.Le a c := by
-  rcases h₁ with rfl | ⟨ps, r, ε, ε', rfl, rfl, hs⟩
+  rcases h₁ with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, hs⟩
   · exact h₂
-  · rcases h₂ with rfl | ⟨ps', r', ε₁, ε₂, h, rfl, hs'⟩
-    · exact Or.inr ⟨ps, r, ε, ε', rfl, rfl, hs⟩
+  · rcases h₂ with rfl | ⟨names', ps', r', ε₁, ε₂, h, rfl, hs'⟩
+    · exact Or.inr ⟨names, ps, r, ε, ε', rfl, rfl, hs⟩
     · cases h
-      exact Or.inr ⟨ps, r, ε, ε₂, rfl, rfl, hs.trans hs'⟩
+      exact Or.inr ⟨names, ps, r, ε, ε₂, rfl, rfl, hs.trans hs'⟩
 
-/-- 関数の型から広げた型は、引数と結果が同じで、エフェクトだけが広い関数の型である。 -/
-theorem fn_left {ps r ε t} (h : Ty.Le (.fn ps r ε) t) :
-    ∃ ε', t = .fn ps r ε' ∧ Eff.Sub ε ε' := by
-  rcases h with rfl | ⟨ps', r', ε₁, ε₂, h, rfl, hs⟩
+/-- 関数の型から広げた型は、契約名・引数・結果が同じで、エフェクトだけが広い関数の型である。 -/
+theorem fn_left {names ps r ε t} (h : Ty.Le (.fn names ps r ε) t) :
+    ∃ ε', t = .fn names ps r ε' ∧ Eff.Sub ε ε' := by
+  rcases h with rfl | ⟨names', ps', r', ε₁, ε₂, h, rfl, hs⟩
   · exact ⟨ε, rfl, Eff.Sub.refl ε⟩
   · cases h; exact ⟨ε₂, rfl, hs⟩
 
-/-- 関数の型に広げた元の型は、引数と結果が同じで、エフェクトだけが狭い関数の型である。 -/
-theorem fn_right {a ps r ε} (h : Ty.Le a (.fn ps r ε)) :
-    ∃ ε', a = .fn ps r ε' ∧ Eff.Sub ε' ε := by
-  rcases h with rfl | ⟨ps', r', ε₁, ε₂, rfl, h, hs⟩
+/-- 関数の型に広げた元の型は、契約名・引数・結果が同じで、エフェクトだけが狭い関数の型である。 -/
+theorem fn_right {a names ps r ε} (h : Ty.Le a (.fn names ps r ε)) :
+    ∃ ε', a = .fn names ps r ε' ∧ Eff.Sub ε' ε := by
+  rcases h with rfl | ⟨names', ps', r', ε₁, ε₂, rfl, h, hs⟩
   · exact ⟨ε, rfl, Eff.Sub.refl ε⟩
   · cases h; exact ⟨ε₁, rfl, hs⟩
 
 /-- 関数の型でない型への包含は、等しさである。 -/
-theorem eq_of_not_fn {a t : Ty} (h : Ty.Le a t) (ht : ∀ ps r ε, t ≠ .fn ps r ε) : a = t := by
-  rcases h with rfl | ⟨ps, r, ε, ε', rfl, rfl, _⟩
+theorem eq_of_not_fn {a t : Ty} (h : Ty.Le a t) (ht : ∀ names ps r ε, t ≠ .fn names ps r ε) : a = t := by
+  rcases h with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, _⟩
   · rfl
-  · exact absurd rfl (ht ps r ε')
+  · exact absurd rfl (ht names ps r ε')
 
 /-- 関数の型でない型からの包含は、等しさである。 -/
-theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ ps r ε, a ≠ .fn ps r ε) : a = t := by
-  rcases h with rfl | ⟨ps, r, ε, ε', rfl, rfl, _⟩
+theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ names ps r ε, a ≠ .fn names ps r ε) : a = t := by
+  rcases h with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, _⟩
   · rfl
-  · exact absurd rfl (ha ps r ε)
+  · exact absurd rfl (ha names ps r ε)
 
 theorem substAt {a b : Ty} (c : Nat) (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :
     Ty.Le (a.substAt c ts es) (b.substAt c ts es) := by
-  rcases h with rfl | ⟨ps, r, ε, ε', rfl, rfl, hs⟩
+  rcases h with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, hs⟩
   · exact refl _
   · simp only [Ty.substAt]
-    exact Or.inr ⟨_, _, _, _, rfl, rfl, Eff.substRho_mono es hs⟩
+    exact Or.inr ⟨_, _, _, _, _, rfl, rfl, Eff.substRho_mono es hs⟩
 
 theorem subst {a b : Ty} (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :
     Ty.Le (a.subst ts es) (b.subst ts es) := substAt 0 ts es h
 
 theorem shift {a b : Ty} (k c : Nat) (h : Ty.Le a b) : Ty.Le (a.shift k c) (b.shift k c) := by
-  rcases h with rfl | ⟨ps, r, ε, ε', rfl, rfl, hs⟩
+  rcases h with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, hs⟩
   · exact refl _
   · simp only [Ty.shift]
-    exact Or.inr ⟨_, _, _, _, rfl, rfl, hs⟩
+    exact Or.inr ⟨_, _, _, _, _, rfl, rfl, hs⟩
 
 end Ty.Le
 

@@ -266,15 +266,15 @@ end function
 function route(request: Http.Request) -> Http.Response
   bind segments <- Http.pathSegments(Http.Request.path(request))
   return match Pair(Http.Request.method(request), segments) with
-    case Pair("GET", []) -> Http.html(200, "<h1>Hello</h1>")
-    case Pair("GET", ["items", id]) -> Http.json(200, Json.Value.Object(Map.fromList([Pair("id", Json.Value.String(id))])))
+    case Pair("GET", []) -> Http.html(status: 200, s: "<h1>Hello</h1>")
+    case Pair("GET", ["items", id]) -> Http.json(status: 200, value: Json.Value.Object(Map.fromList([Pair("id", Json.Value.String(id))])))
     case Pair("GET", ["headers"]) ->
-      if Http.header([Pair("X-MiXeD", "first"), Pair("x-mixed", "second")], "x-MIXED") = Option.Some("first")
-        and Http.header([], "missing") = Option.None
-        and Http.header([Pair("other", "value")], "missing") = Option.None then
-        Http.text(200, "headers ok")
-      else Http.text(500, "headers wrong") end if
-    case _ -> Http.text(404, "not found")
+      if Http.header(headers: [Pair("X-MiXeD", "first"), Pair("x-mixed", "second")], name: "x-MIXED") = Option.Some("first")
+        and Http.header(headers: [], name: "missing") = Option.None
+        and Http.header(headers: [Pair("other", "value")], name: "missing") = Option.None then
+        Http.text(status: 200, s: "headers ok")
+      else Http.text(status: 500, s: "headers wrong") end if
+    case _ -> Http.text(status: 404, s: "not found")
   end match
 end function
 
@@ -286,14 +286,14 @@ end function
 "#;
 
 const LISTEN_LOOP: &str = r#"
-function listenLoop(listener: Http.Listener, group: TaskGroup, handler: function(Http.Request) -> Http.Response uses State) -> Result[Unit, NetworkError] uses Http.Listen, State
+function listenLoop(listener: Http.Listener, group: TaskGroup, handler: function(request: Http.Request) -> Http.Response uses State) -> Result[Unit, NetworkError] uses Http.Listen, State
   bind exchange <- try Http.accept(listener)
-  bind _ <- TaskGroup.spawn(group, lambda()
+  bind _ <- TaskGroup.spawn(group: group, action: lambda()
     with current = exchange do
-      return Http.respond(current, handler(Http.requestOf(current)))
+      return Http.respond(exchange: current, response: handler(Http.requestOf(current)))
     end with
   end lambda)
-  return listenLoop(listener, group, handler)
+  return listenLoop(listener: listener, group: group, handler: handler)
 end function
 "#;
 
@@ -306,8 +306,8 @@ fn main_source(extra: &str, body: &str) -> String {
 fn route_source(port: Option<u16>) -> String {
     let handler = r#"lambda(request)
       if Http.Request.method(request) = "GET" and Http.Request.path(request) = "/stop" then
-        Reference.set(stopped, true)
-        return Http.text(200, "stopped")
+        Reference.set(reference: stopped, value: true)
+        return Http.text(status: 200, s: "stopped")
       end if
       return route(request)
     end lambda"#;
@@ -318,7 +318,7 @@ fn route_source(port: Option<u16>) -> String {
         lambda() return {action} end lambda,
         lambda() return waitStop(stopped) end lambda])
       return match winner with
-        case Option.Some(result) -> Result.mapError(result, serveError)
+        case Option.Some(result) -> Result.mapError(r: result, f: serveError)
         case Option.None -> Result.Error("race had no result")
       end match"#
         )
@@ -328,7 +328,9 @@ fn route_source(port: Option<u16>) -> String {
             "",
             &format!(
                 "bind stopped <- Reference.new(false)\nbind handler <- {handler}\n{}",
-                race(&format!("Http.serve(\"127.0.0.1\", {port}, handler)"))
+                race(&format!(
+                    "Http.serve(host: \"127.0.0.1\", port: {port}, handler: handler)"
+                ))
             ),
         ),
         None => main_source(
@@ -337,11 +339,11 @@ fn route_source(port: Option<u16>) -> String {
                 r#"
             bind stopped <- Reference.new(false)
             bind handler <- {handler}
-            with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+            with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
               Console.writeLine(Integer.toString(Http.listenerPort(listener)))
               {}
             end with"#,
-                race("listenLoop(listener, group, handler)")
+                race("listenLoop(listener: listener, group: group, handler: handler)")
             ),
         ),
     }
@@ -391,9 +393,9 @@ fn computation_source(port: u16, limit: u32) -> String {
     main_source(
         r#"
 function spin(mark: Reference[Boolean], remaining: Integer) -> Http.Response uses State
-  if Reference.get(mark) then return Http.text(200, "released") end if
-  if remaining = 0 then return Http.text(500, "iteration limit") end if
-  return spin(mark, remaining - 1)
+  if Reference.get(mark) then return Http.text(status: 200, s: "released") end if
+  if remaining = 0 then return Http.text(status: 500, s: "iteration limit") end if
+  return spin(mark: mark, remaining: remaining - 1)
 end function
 "#,
         &format!(
@@ -404,21 +406,21 @@ end function
       return match Http.Request.path(request) with
         case "/spin" ->
           Console.writeLine("spinning")
-          spin(mark, {limit})
+          spin(mark: mark, remaining: {limit})
         case "/release" ->
-          Reference.set(mark, true)
-          Http.text(200, "release")
+          Reference.set(reference: mark, value: true)
+          Http.text(status: 200, s: "release")
         case "/stop" ->
-          Reference.set(stopped, true)
-          Http.text(200, "stopped")
+          Reference.set(reference: stopped, value: true)
+          Http.text(status: 200, s: "stopped")
         case _ -> route(request)
       end match
     end lambda
     bind winner <- Task.race([
-      lambda() return Http.serve("127.0.0.1", {port}, handler) end lambda,
+      lambda() return Http.serve(host: "127.0.0.1", port: {port}, handler: handler) end lambda,
       lambda() return waitStop(stopped) end lambda])
     return match winner with
-      case Option.Some(result) -> Result.mapError(result, serveError)
+      case Option.Some(result) -> Result.mapError(r: result, f: serveError)
       case Option.None -> Result.Error("race had no result")
     end match"#
         ),
@@ -447,14 +449,14 @@ fn computing_handler_allows_another_request_to_run() {
 }
 
 fn error_source(port: u16, handler: &str, clause: Option<&str>) -> String {
-    let serve = format!("Http.serve(\"127.0.0.1\", {port}, {handler})");
+    let serve = format!("Http.serve(host: \"127.0.0.1\", port: {port}, handler: {handler})");
     let action = match clause {
         Some(clause) => format!("handle\n{serve}\nwith\ncase answer() ->\n{clause}\nend handle"),
         None => serve,
     };
     main_source(
         "effect Answer\nfunction answer() -> String\nend effect\n",
-        &format!("return {action} |> Result.mapError(_, serveError)"),
+        &format!("return {action} |> Result.mapError(r: _, f: serveError)"),
     )
 }
 
@@ -463,12 +465,12 @@ fn handler_runtime_error_and_non_tail_inherited_clause_stop_every_task() {
     for mode in [ExecMode::Direct, ExecMode::Request] {
         for (handler, clause, code) in [
             (
-                "lambda(request) return Http.text(200, Integer.toString(1 div 0)) end lambda",
+                "lambda(request) return Http.text(status: 200, s: Integer.toString(1 div 0)) end lambda",
                 None,
                 DiagCode::R0101,
             ),
             (
-                "lambda(request) return Http.text(200, answer()) end lambda",
+                "lambda(request) return Http.text(status: 200, s: answer()) end lambda",
                 Some("bind _ <- resume(\"bad\")\nResult.Ok(())"),
                 DiagCode::R0502,
             ),
@@ -490,7 +492,7 @@ fn serve_inherits_tail_resuming_handler() {
     for mode in [ExecMode::Direct, ExecMode::Request] {
         let (server, port) = start_on_vacant_port(
             |port| {
-                route_source(Some(port)).replace("return route(request)", "return Http.text(200, answer())")
+                route_source(Some(port)).replace("return route(request)", "return Http.text(status: 200, s: answer())")
             .replace("function main()", "effect Answer\nfunction answer() -> String\nend effect\nfunction main()")
             .replace("bind winner <- Task.race([", "bind winner <- handle\nTask.race([")
             .replace("lambda() return waitStop(stopped) end lambda])", "lambda() return waitStop(stopped) end lambda])\nwith\ncase answer() -> resume(\"inherited\")\nend handle")
@@ -515,7 +517,7 @@ fn serve_returns_network_error_when_port_is_in_use() {
         "",
         &format!(
             r#"
-        return match Http.serve("127.0.0.1", {port}, route) with
+        return match Http.serve(host: "127.0.0.1", port: {port}, handler: route) with
           case Result.Error(error) ->
             if NetworkError.kind(error) = NetworkErrorKind.AddressInUse then Result.Ok(())
             else Result.Error(NetworkError.message(error)) end if

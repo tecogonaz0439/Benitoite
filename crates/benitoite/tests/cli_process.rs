@@ -267,7 +267,7 @@ fn expanded_type_limits() {
         (
             "temporary-function",
             large_signature(
-                "function take[T](x: T, y: T12) -> T12\n return y\nend function\nfunction mismatch(x: T12) -> Integer\n return take(x, x)\nend function\n",
+                "function take[T](x: T, y: T12) -> T12\n return y\nend function\nfunction mismatch(x: T12) -> Integer\n return take(x: x, y: x)\nend function\n",
             ),
         ),
         ("inferred-doubling", doubled_bindings(18)),
@@ -351,7 +351,11 @@ fn doubled_parameter_aliases(count: usize) -> String {
 fn doubled_function_aliases(count: usize) -> String {
     let mut source = String::from("type T0 = Integer\n");
     for i in 1..=count {
-        source.push_str(&format!("type T{i} = function(T{}) -> T{}\n", i - 1, i - 1));
+        source.push_str(&format!(
+            "type T{i} = function(value: T{}) -> T{}\n",
+            i - 1,
+            i - 1
+        ));
     }
     source.push_str("function main() -> Unit\nend function\n");
     source

@@ -168,10 +168,15 @@ pub enum TokenValue {
     Symbol(String),
 }
 
+/// 字句の種類・範囲・物理行・値（設計書 02-03「字句」）。
 #[derive(Clone, PartialEq, Debug)]
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
+    /// `span.start` が属する物理行。1 起点。
+    pub start_line: u32,
+    /// 排他的な `span.end` が属する物理行。1 起点。
+    pub end_line: u32,
     pub value: TokenValue,
 }
 

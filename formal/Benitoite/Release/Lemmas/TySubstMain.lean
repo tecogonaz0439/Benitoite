@@ -1,7 +1,10 @@
 import Benitoite.Release.Lemmas.TySubst
 
 /-!
-# 型とエフェクトの置き換えで型付けが保たれること：本体（段階 B）
+# 型とエフェクトの置き換えで型付けが保たれること：本体（契約名を持つコア）
+
+型・エフェクトの置換でも、関数・ラムダ・操作・メソッドの同じ契約名を残す
+（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
@@ -23,15 +26,20 @@ theorem ConDecl.args_substAt {cd : ConDecl} (hcd : cd.Scoped) {ts : List Ty} (ht
   rfl
 
 /-- 関数の型の置き換えの合成（V-Fun・V-Prim・V-Op の型に θ を施したもの）。 -/
-theorem fnTy_substAt {ps : List Ty} {r : Ty} {ε : Eff} {nt ne : Nat}
+theorem fnTy_substAt {names : List String} {ps : List Ty} {r : Ty} {ε : Eff} {nt ne : Nat}
     (hs : Ty.VarsInList nt (· < ne) ps ∧ Ty.VarsIn nt (· < ne) r ∧ Eff.RhosIn (· < ne) ε)
     {ts : List Ty} {es : List Eff} (hts : ts.length = nt) (hes : es.length = ne)
     (c : Nat) (ts' : List Ty) (es' : List Eff) :
-    (fnTy ps r ε ts es).substAt c ts' es' =
-      fnTy ps r ε (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substRho es')) := by
+    (fnTy names ps r ε ts es).substAt c ts' es' =
+      fnTy names ps r ε (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substRho es')) := by
   unfold fnTy
   subst hts hes
-  exact Ty.subst_comp c ts' es' (.fn ps r ε) (by simp only [Ty.VarsIn]; exact hs)
+  -- 合成の等式自体に外側の名前の整形式は不要なので、引数・結果・エフェクトごとに合成を使う。
+  have hp := Ty.subst_comp_list c ts' es' ps hs.1
+  have hr := Ty.subst_comp c ts' es' r hs.2.1
+  simp only [Ty.subst] at hp hr
+  simp only [Ty.subst, Ty.substAt]
+  rw [hp, hr, Eff.substRho_comp hs.2.2]
 
 /-! ## パターン -/
 
@@ -87,7 +95,7 @@ mutual
         | «opaque» o => simp [Ty.substAt] at hu; rw [← hu]; exact .const
         | data d args => cases k <;> simp [Const.type, Ty.substAt] at hu
         | list a => cases k <;> simp [Const.type, Ty.substAt] at hu
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -107,7 +115,7 @@ mutual
             refine .con hc hlen.symm ?_
             rw [← ConDecl.args_substAt (hwf.2.1 _ _ hc) hlen] at hargs
             exact InhabitsAll.of_substAt hwf c ts' es' hargs _ rfl
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -127,7 +135,7 @@ mutual
             simp only [Ty.substAt, Ty.list.injEq] at hu
             subst hu
             exact .list (InhabitsEach.of_substAt hwf c ts' es' he a0 rfl)
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -143,7 +151,7 @@ mutual
     | .fn, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -157,7 +165,7 @@ mutual
     | .tvar, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -171,7 +179,7 @@ mutual
     | .reference, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -185,7 +193,7 @@ mutual
     | .lazy, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -199,7 +207,7 @@ mutual
     | .cont, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -213,7 +221,7 @@ mutual
     | .map, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -227,7 +235,7 @@ mutual
     | .set, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -241,7 +249,7 @@ mutual
     | .bytes, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -255,7 +263,7 @@ mutual
     | .dict, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -269,7 +277,7 @@ mutual
     | .tapp, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -283,7 +291,7 @@ mutual
     | .ctor, t, _ => by
         cases t with
         | tvar i => exact .tvar
-        | fn ps r ε => exact .fn
+        | fn names ps r ε => exact .fn
         | reference a => exact .reference
         | lazy a => exact .lazy
         | cont b t ε => exact .cont
@@ -327,6 +335,7 @@ def envSubst (c : Nat) (ts : List Ty) (es : List Eff) (Γ : List (Option Ty)) : 
   Γ.map (Option.map (Ty.substAt c ts es))
 
 theorem opSig_scoped (hwf : P.WellFormed) (hb : B.Assumptions P) {o sg} (h : opSig P B o = some sg) :
+    NamesWF sg.names sg.params ∧
     Ty.VarsInList sg.tparams.length (fun _ => False) sg.params ∧
       Ty.VarsIn sg.tparams.length (fun _ => False) sg.ret := by
   cases o with
@@ -347,8 +356,8 @@ theorem opSig_scoped (hwf : P.WellFormed) (hb : B.Assumptions P) {o sg} (h : opS
           have hsc := hb.sig_scoped _ _ hs
           unfold PrimSig.Scoped at hsc
           rw [hne] at hsc
-          exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun i hi => by omega) _ hsc.1,
-            Ty.VarsIn.mono (Nat.le_refl _) (fun i hi => by omega) _ hsc.2.1⟩
+          exact ⟨hsc.1, Ty.VarsInList.mono (Nat.le_refl _) (fun i hi => by omega) _ hsc.2.1,
+            Ty.VarsIn.mono (Nat.le_refl _) (fun i hi => by omega) _ hsc.2.2.1⟩
         · cases h
       · cases h
 
@@ -433,38 +442,38 @@ mutual
         simp only [Val.substTyAt]
         exact .V_Var (envSubst_get hi) (Ty.substAt_notCont hts hc')
     | .V_Const => simp only [Val.substTyAt]; rw [Const.type_substAt]; exact .V_Const
-    | .V_Fun hd hsat' hes =>
+    | .V_Fun hd hnames hsat' hes =>
         simp only [Val.substTyAt]
         have hsc := hwf.1 _ _ hd
         unfold Def.Scoped at hsc
-        rw [fnTy_substAt ⟨hsc.1, hsc.2.1, hsc.2.2.1⟩ (by exact hsat'.1) hes]
+        rw [fnTy_substAt ⟨hsc.2.1, hsc.2.2.1, hsc.2.2.2.1⟩ (by exact hsat'.1) hes]
         rw [hCsplit] at hsat'
         have := SatAll.substAt (es' := es') hb hts hsat hsat'
         rw [htc] at this
-        exact .V_Fun hd this (by simpa using hes)
-    | .V_Prim hs hts' hes had =>
+        exact .V_Fun hd hnames this (by simpa using hes)
+    | .V_Prim hs hnames hts' hes had =>
         simp only [Val.substTyAt]
         have hsc := hb.sig_scoped _ _ hs
         unfold PrimSig.Scoped at hsc
-        rw [fnTy_substAt hsc hts' hes]
+        rw [fnTy_substAt hsc.2 hts' hes]
         rw [hCsplit] at had
         have := hb.admits_subst _ _ _ _ _ _ es' hs had ⟨fun t ht => (hts t ht).1, hsat.closed hb hts _⟩ hsat.1
         rw [htc] at this
-        exact .V_Prim hs (by simpa using hts') (by simpa using hes) this
-    | .V_Op hod hsat' =>
+        exact .V_Prim hs hnames (by simpa using hts') (by simpa using hes) this
+    | .V_Op hod hnames hsat' =>
         simp only [Val.substTyAt]
         have hsc := hwf.2.2.1 _ _ hod
         unfold OpDecl.Scoped at hsc
-        rw [fnTy_substAt (ne := 0) ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ h => h.elim) _ hsc.1,
-          Ty.VarsIn.mono (Nat.le_refl _) (fun _ h => h.elim) _ hsc.2,
+        rw [fnTy_substAt (ne := 0) ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ h => h.elim) _ hsc.2.1,
+          Ty.VarsIn.mono (Nat.le_refl _) (fun _ h => h.elim) _ hsc.2.2,
           fun i hi => by unfold Eff.single at hi; simp at hi⟩ hsat'.1 rfl]
         rw [hCsplit] at hsat'
         have := SatAll.substAt (es' := es') hb hts hsat hsat'
         rw [htc] at this
-        exact .V_Op hod this
-    | .V_Lam (ps := ps) (r := r) hbody =>
+        exact .V_Op hod hnames this
+    | .V_Lam (ps := ps) (r := r) hnames hbody =>
         simp only [Val.substTyAt, Ty.substAt]
-        refine .V_Lam ?_
+        refine .V_Lam (hnames.map _) ?_
         have := HasTypeC.substTy hwf hb hbody hc hts hsat hΨ
         rw [envSubst_binds] at this
         simp only [envSubst, Option.map_some] at this ⊢
@@ -624,15 +633,15 @@ mutual
         rw [hb'] at this
         rw [hr']
         exact .C_ResumeL hl this
-    | .C_Meth (τ := τ) (ms := ms) (ss := ss) (es := es) hv hcl hmeth hsat' hes hws =>
+    | .C_Meth (τ := τ) (ms := ms) (ss := ss) (es := es) hv hcl hmeth hnames hsat' hes hws =>
         simp only [Comp.substTyAt]
         have hCsplit : C = C.take c ++ C.drop c := (List.take_append_drop c C).symm
         have hsc := hwf.2.2.2.1 _ _ hcl _ _ hmeth
         have hlen : (ss ++ [τ]).length = ms.tparams.length + 1 := by simp [hsat'.1]
-        have hF := fnTy_substAt (ps := ms.params) (r := ms.ret) (ε := ms.eff) hsc hlen hes c ts' es'
+        have hF := fnTy_substAt (names := ms.names) (ps := ms.params) (r := ms.ret) (ε := ms.eff) hsc.2 hlen hes c ts' es'
         unfold fnTy at hF
         simp only [Ty.subst, Ty.substAt] at hF
-        obtain ⟨h1, h2, h3⟩ := Ty.fn.inj hF
+        obtain ⟨_, h1, h2, h3⟩ := Ty.fn.inj hF
         have hv' := HasTypeV.substTy hwf hb hv hc hts hsat hΨ
         simp only [Ty.substAt] at hv'
         have hws' := HasTypeVs.substTy hwf hb hws hc hts hsat hΨ
@@ -642,7 +651,7 @@ mutual
         have hsat'' := SatAll.substAt (es' := es') hb hts hsat hsat'
         rw [htc] at hsat''
         have := HasTypeC.C_Meth (R := R.map (Ty.substAt c ts' es')) (es := es.map (Eff.substRho es'))
-          hv' hcl hmeth hsat''
+          hv' hcl hmeth hnames hsat''
           (by simpa using hes) (by simpa [Ty.subst] using hws')
         simp only [Ty.subst] at this ⊢
         rw [h2, h3]
@@ -691,9 +700,9 @@ mutual
         (Clause.substTyAtList c ts' es' h) (t.substAt c ts' es') (Eff.substRho es' ε) := by
     match hcl with
     | .nil => simp only [Clause.substTyAtList]; exact .nil
-    | .cons (sg := sg) (k := k) hsg hn hk hbody hrest =>
+    | .cons (sg := sg) (k := k) hsg hnames hn hk hbody hrest =>
         simp only [Clause.substTyAtList]
-        refine .cons hsg hn hk ?_ (HasTypeClauses.substTy hwf hb hrest hc hts hsat hΨ)
+        refine .cons hsg hnames hn hk ?_ (HasTypeClauses.substTy hwf hb hrest hc hts hsat hΨ)
         have hsc := opSig_scoped hwf hb hsg
         have hc' : c + k ≤ (sg.tparams ++ C).length := by simp; omega
         have hdrop : (sg.tparams ++ C).drop (c + k) = C.drop c := by
@@ -704,12 +713,12 @@ mutual
         have := HasTypeC.substTy (c := c + k) hwf hb hbody hc' hts (by rw [hdrop]; exact hsat) hΨ
         rw [htake] at this
         simp only [envSubst, List.map_cons, Option.map_some, Ty.substAt] at this
-        rw [Ty.substAt_of_closed _ _ _ (Ty.VarsIn.mono (by omega) (fun _ h => h) _ (hk ▸ hsc.2)),
+        rw [Ty.substAt_of_closed _ _ _ (Ty.VarsIn.mono (by omega) (fun _ h => h) _ (hk ▸ hsc.2.2)),
           Ty.shift_substAt es' (fun t ht => (hts t ht).1)] at this
         have hbinds : (binds sg.params).map (Option.map (Ty.substAt (c + k) ts' es')) =
             binds sg.params := by
           rw [← binds_map, Ty.substAtList_of_closed _ _ _
-            (Ty.VarsInList.mono (by omega) (fun _ h => h) _ (hk ▸ hsc.1))]
+            (Ty.VarsInList.mono (by omega) (fun _ h => h) _ (hk ▸ hsc.2.1))]
         rw [List.map_append, hbinds, shiftEnv_substAt hts] at this
         have hR : (R.map (Ty.shift k 0)).map (Ty.substAt (c + k) ts' es') =
             (R.map (Ty.substAt c ts' es')).map (Ty.shift k 0) := by

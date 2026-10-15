@@ -26,10 +26,20 @@ fn lex_bytes(src: &[u8]) -> LexOutput {
     let mut end = 0;
     for token in &out.tokens {
         check_span(token.span);
+        assert_eq!(
+            token.start_line,
+            expected_line(src, token.span.start.0),
+            "{src:?}: {token:?}"
+        );
+        assert_eq!(
+            token.end_line,
+            expected_line(src, token.span.end.0),
+            "{src:?}: {token:?}"
+        );
         assert!(end <= token.span.start.0, "{src:?}: {token:?}");
         end = token.span.end.0;
     }
-    assert_eq!(out.tokens.last().unwrap(), &eof(len));
+    assert_eq!(out.tokens.last().unwrap(), &eof(src));
     for comment in &out.comments {
         check_span(comment.span);
     }
@@ -47,6 +57,15 @@ fn lex_bytes(src: &[u8]) -> LexOutput {
         }
     }
     out
+}
+
+fn expected_line(src: &[u8], pos: u32) -> u32 {
+    u32::try_from(
+        src[..usize::try_from(pos).unwrap()]
+            .split(|b| *b == b'\n')
+            .count(),
+    )
+    .unwrap()
 }
 
 fn lex_str(src: &str) -> LexOutput {
@@ -77,6 +96,77 @@ fn assert_clean_kinds(src: &str, expected: &[TokenKind]) {
 }
 
 #[test]
+fn physical_lines_include_literal_contents_and_skipped_text() {
+    type TokenLines = (TokenKind, u32, u32);
+    let cases: &[(&str, &[TokenLines])] = &[
+        ("", &[(K::Eof, 1, 1)]),
+        (
+            "x\n",
+            &[(K::LowerIdent, 1, 1), (K::LineBreak, 1, 2), (K::Eof, 2, 2)],
+        ),
+        (
+            "x\r\ny",
+            &[
+                (K::LowerIdent, 1, 1),
+                (K::LineBreak, 1, 2),
+                (K::LowerIdent, 2, 2),
+                (K::Eof, 2, 2),
+            ],
+        ),
+        (
+            "\u{feff}#!bin\r\n// comment\n  x",
+            &[
+                (K::LineBreak, 1, 2),
+                (K::LineBreak, 2, 3),
+                (K::LowerIdent, 3, 3),
+                (K::Eof, 3, 3),
+            ],
+        ),
+        (
+            "\"\"\"\n  a\n  \"\"\"",
+            &[(K::StringLit, 1, 3), (K::Eof, 3, 3)],
+        ),
+        (
+            "r\"\"\"\r\n  a\r\n  \"\"\"\r\n",
+            &[(K::StringLit, 1, 3), (K::LineBreak, 3, 4), (K::Eof, 4, 4)],
+        ),
+        (
+            "\"\"\"\n  ${\"x\"}\n  ${y}\n  \"\"\"",
+            &[
+                (K::StrStart, 1, 2),
+                (K::StringLit, 2, 2),
+                (K::StrMid, 2, 3),
+                (K::LowerIdent, 3, 3),
+                (K::StrEnd, 3, 4),
+                (K::Eof, 4, 4),
+            ],
+        ),
+    ];
+    for &(src, expected) in cases {
+        let out = lex_str(src);
+        assert_eq!(out.diagnostics, [], "{src:?}");
+        assert_eq!(
+            out.tokens
+                .iter()
+                .map(|t| (t.kind, t.start_line, t.end_line))
+                .collect::<Vec<_>>(),
+            expected,
+            "{src:?}"
+        );
+    }
+    let out = lex_str("x\ry");
+    assert_eq!(out.diagnostics.len(), 1);
+    assert_eq!(out.diagnostics[0].code, Some(DiagCode::E0107));
+    assert_eq!(
+        out.tokens
+            .iter()
+            .map(|t| (t.kind, t.start_line, t.end_line))
+            .collect::<Vec<_>>(),
+        [(K::LowerIdent, 1, 1), (K::LowerIdent, 1, 1), (K::Eof, 1, 1)]
+    );
+}
+
+#[test]
 fn identifier_values() {
     let cases = [
         ("_", K::Underscore, TokenValue::None),
@@ -95,6 +185,8 @@ fn identifier_values() {
         let expected = Token {
             kind,
             span: sp(0, len32(src)),
+            start_line: 1,
+            end_line: expected_line(src.as_bytes(), len32(src)),
             value,
         };
         assert_eq!(out.tokens[0], expected, "src: {src:?}");
@@ -122,19 +214,29 @@ fn integer_literals() {
         let expected = Token {
             kind: K::IntLit,
             span: sp(0, len32(src)),
+            start_line: 1,
+            end_line: expected_line(src.as_bytes(), len32(src)),
             value: TokenValue::Int {
                 radix,
                 digits: digits.to_string(),
             },
         };
-        assert_eq!(out.tokens, vec![expected, eof(len32(src))], "src: {src:?}");
+        assert_eq!(
+            out.tokens,
+            vec![expected, eof(src.as_bytes())],
+            "src: {src:?}"
+        );
     }
 }
 
-fn eof(at: u32) -> Token {
+fn eof(src: &[u8]) -> Token {
+    let at = u32::try_from(src.len()).unwrap();
+    let line = expected_line(src, at);
     Token {
         kind: K::Eof,
         span: sp(at, at),
+        start_line: line,
+        end_line: line,
         value: TokenValue::None,
     }
 }
@@ -159,9 +261,15 @@ fn float_literals() {
         let expected = Token {
             kind: K::FloatLit,
             span: sp(0, len32(src)),
+            start_line: 1,
+            end_line: expected_line(src.as_bytes(), len32(src)),
             value: TokenValue::Float(text.to_string()),
         };
-        assert_eq!(out.tokens, vec![expected, eof(len32(src))], "src: {src:?}");
+        assert_eq!(
+            out.tokens,
+            vec![expected, eof(src.as_bytes())],
+            "src: {src:?}"
+        );
     }
 }
 
@@ -266,9 +374,15 @@ fn string_literals() {
         let expected = Token {
             kind: K::StringLit,
             span: sp(0, len32(src)),
+            start_line: 1,
+            end_line: expected_line(src.as_bytes(), len32(src)),
             value: TokenValue::Str(value.to_string()),
         };
-        assert_eq!(out.tokens, vec![expected, eof(len32(src))], "src: {src:?}");
+        assert_eq!(
+            out.tokens,
+            vec![expected, eof(src.as_bytes())],
+            "src: {src:?}"
+        );
     }
 }
 
@@ -348,9 +462,11 @@ fn string_errors() {
             Token {
                 kind: K::Error,
                 span: sp(0, len32(src)),
+                start_line: 1,
+                end_line: expected_line(src.as_bytes(), len32(src)),
                 value: TokenValue::None,
             },
-            eof(len32(src)),
+            eof(src.as_bytes()),
         ];
         assert_eq!(out.tokens, expected_tokens, "src: {src:?}");
     }
@@ -407,9 +523,15 @@ fn char_literals() {
         let expected = Token {
             kind: K::CharLit,
             span: sp(0, len32(src)),
+            start_line: 1,
+            end_line: expected_line(src.as_bytes(), len32(src)),
             value: TokenValue::Char(c),
         };
-        assert_eq!(out.tokens, vec![expected, eof(len32(src))], "src: {src:?}");
+        assert_eq!(
+            out.tokens,
+            vec![expected, eof(src.as_bytes())],
+            "src: {src:?}"
+        );
     }
 }
 
@@ -762,7 +884,7 @@ fn spans_stay_in_source_and_end_with_empty_eof() {
             assert!(previous_end <= start.0, "overlap in {src:?}: {token:?}");
             previous_end = end.0;
         }
-        assert_eq!(out.tokens.last().unwrap(), &eof(len), "src: {src:?}");
+        assert_eq!(out.tokens.last().unwrap(), &eof(src), "src: {src:?}");
         let eof_count = out.tokens.iter().filter(|t| t.kind == K::Eof).count();
         assert_eq!(eof_count, 1, "src: {src:?}");
         for d in &out.diagnostics {
@@ -906,9 +1028,11 @@ fn decimal_literals_and_errors() {
                 Token {
                     kind: K::DecimalLit,
                     span: sp(0, len32(src)),
+                    start_line: 1,
+                    end_line: expected_line(src.as_bytes(), len32(src)),
                     value: TokenValue::Decimal(value.into())
                 },
-                eof(len32(src))
+                eof(src.as_bytes())
             ]
         );
     }
@@ -1092,9 +1216,11 @@ fn multiline_and_raw_values() {
                 Token {
                     kind: K::StringLit,
                     span: sp(0, len32(src)),
+                    start_line: 1,
+                    end_line: expected_line(src.as_bytes(), len32(src)),
                     value: TokenValue::Str(value.into())
                 },
-                eof(len32(src))
+                eof(src.as_bytes())
             ]
         );
     }
@@ -1263,13 +1389,15 @@ fn width_literal_values_and_separate_minus() {
                 Token {
                     kind: K::IntLit,
                     span: sp(0, len32(source)),
+                    start_line: 1,
+                    end_line: 1,
                     value: TokenValue::WidthInt {
                         radix,
                         digits: digits.into(),
                         suffix
                     },
                 },
-                eof(len32(source))
+                eof(source.as_bytes())
             ]
         );
     }
@@ -1290,12 +1418,14 @@ fn width_literal_values_and_separate_minus() {
                 Token {
                     kind: K::FloatLit,
                     span: sp(0, len32(source)),
+                    start_line: 1,
+                    end_line: 1,
                     value: TokenValue::WidthFloat {
                         text: text.into(),
                         suffix
                     },
                 },
-                eof(len32(source))
+                eof(source.as_bytes())
             ]
         );
     }

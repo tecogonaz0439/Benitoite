@@ -14,7 +14,7 @@ import PureJson.Parser
 import JsonChecks.Check
 
 function main() -> Result[Unit, String] uses Console.Write
-  bind _ <- try Check.compareDepth(String.repeat("[", 127) + "0" + String.repeat("]", 127), Parser.parse)
-  bind _ <- try Check.compareDepth(String.repeat("[", 128) + "0" + String.repeat("]", 128), Parser.parse)
+  bind _ <- try Check.compareDepth(source: String.repeat(s: "[", n: 127) + "0" + String.repeat(s: "]", n: 127), parse: Parser.parse)
+  bind _ <- try Check.compareDepth(source: String.repeat(s: "[", n: 128) + "0" + String.repeat(s: "]", n: 128), parse: Parser.parse)
   return Result.Ok(())
 end function

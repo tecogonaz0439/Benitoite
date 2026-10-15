@@ -23,9 +23,9 @@ end function
 function main() -> Unit uses Console.Write
  Console.writeLine(Integer.toString(ends([4, 5, 6])))
  Console.writeLine(Integer.toString(ends([])))
- Console.writeLine(Integer.toString(guarded(1, true)))
- Console.writeLine(Integer.toString(guarded(2, true)))
- Console.writeLine(Integer.toString(guarded(1, false)))
- Console.writeLine(Integer.toString(guarded(2, false)))
- Console.writeLine(Integer.toString(guarded(8, true)))
+ Console.writeLine(Integer.toString(guarded(x: 1, enabled: true)))
+ Console.writeLine(Integer.toString(guarded(x: 2, enabled: true)))
+ Console.writeLine(Integer.toString(guarded(x: 1, enabled: false)))
+ Console.writeLine(Integer.toString(guarded(x: 2, enabled: false)))
+ Console.writeLine(Integer.toString(guarded(x: 8, enabled: true)))
 end function

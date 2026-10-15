@@ -5,10 +5,10 @@ end effect
 
 function parseAll(texts: List[String]) -> Result[List[Integer], String]
   return handle
-    Result.Ok(List.map(texts, lambda(t)
-      return match Integer.parse(t) with
+    Result.Ok(List.map(xs: texts, f: lambda(value)
+      return match Integer.parse(value) with
         case Option.Some(n) -> n
-        case Option.None -> fail("bad: " + t)
+        case Option.None -> fail("bad: " + value)
       end match
     end lambda))
   with

@@ -1,0 +1,9 @@
+// spec: 01-06 関数の型とエフェクト
+// 作成時の関門: 一引数の関数の個数の誤りを E0402 として CLI で確かめる。
+function identity(value: Integer) -> Integer
+  return value
+end function
+function main() -> Unit
+  bind _ <- identity()
+  ()
+end function

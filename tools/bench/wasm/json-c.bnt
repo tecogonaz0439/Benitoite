@@ -15,37 +15,37 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
   bind task <- try Runner.argument(0)
   bind path <- try Runner.argument(1)
   bind count <- try Runner.rounds(2)
-  bind source <- try Result.mapError(File.readText(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
+  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
   if task = "parse" then
-    return Runner.measure(count, lambda() -> Result[Json.Value, String] uses State return Result.mapError(Codec.parse(source), Json.ParseError.message) end lambda, Json.stringify)
+    return Runner.measure(count: count, work: lambda() -> Result[Json.Value, String] uses State return Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) end lambda, render: lambda(value) -> String return Json.stringify(value) end lambda)
   end if
   if task = "stringify" then
-    bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
-    return Runner.measure(count, lambda() -> Result[String, String] uses State return Codec.stringify(value) end lambda, lambda(s: String) -> String return s end lambda)
+    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+    return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State return Codec.stringify(parsed) end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   if task = "read" then
-    return Runner.measure(count, lambda() -> Result[String, String] uses State
-      bind doc <- try Result.mapError(Codec.document(source), Json.ParseError.message)
-      return Result.Ok("[" + String.join(List.map(["/0/id", "/0/label", "/0/nested"], lambda(pointer: String) -> String uses State
-        return Option.unwrapOr(Codec.get(doc, pointer), "null")
-      end lambda), ",") + "]")
-    end lambda, lambda(s: String) -> String return s end lambda)
+    return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State
+      bind doc <- try Result.mapError(r: Codec.document(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+      return Result.Ok("[" + String.join(xs: List.map(xs: ["/0/id", "/0/label", "/0/nested"], f: lambda(value: String) -> String uses State
+        return Option.unwrapOr(o: Codec.get(document: doc, pointer: value), fallback: "null")
+      end lambda), separator: ",") + "]")
+    end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   if task = "pretty" then
-    return Runner.measure(count, lambda() -> Result[String, String] uses State return Result.mapError(Codec.pretty(source), Json.ParseError.message) end lambda, lambda(s: String) -> String return s end lambda)
+    return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State return Result.mapError(r: Codec.pretty(source), f: lambda(error) return Json.ParseError.message(error) end lambda) end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   if task = "validate" then
-    return Runner.measure(count, lambda() -> Result[Unit, String] uses State return Result.mapError(Codec.validate(source), Json.ParseError.message) end lambda, lambda(_value: Unit) -> String return "valid" end lambda)
+    return Runner.measure(count: count, work: lambda() -> Result[Unit, String] uses State return Result.mapError(r: Codec.validate(source), f: lambda(error) return Json.ParseError.message(error) end lambda) end lambda, render: lambda(value: Unit) -> String return "valid" end lambda)
   end if
   if task = "canonical" then
-    bind value <- try Result.mapError(Codec.parse(source), Json.ParseError.message)
-    Console.writeLine(try Codec.stringify(value))
+    bind parsed <- try Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+    Console.writeLine(try Codec.stringify(parsed))
     return Result.Ok(())
   end if
   if task = "verify" then
-    bind value <- try Result.mapError(Codec.parse(source), Json.ParseError.message)
-    bind output <- try Codec.stringify(value)
-    return Runner.measure(1, lambda() -> Result[String, String] uses State return Result.Ok(output) end lambda, lambda(s: String) -> String return s end lambda)
+    bind parsed <- try Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+    bind output <- try Codec.stringify(parsed)
+    return Runner.measure(count: 1, work: lambda() -> Result[String, String] uses State return Result.Ok(output) end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   return Result.Error("unknown JSON task")
 end function

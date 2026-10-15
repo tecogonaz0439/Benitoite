@@ -6,6 +6,7 @@
 pub mod decimal;
 pub(crate) mod file_read;
 pub(crate) mod literal;
+pub(crate) mod parameter_names;
 pub mod prim;
 pub mod source;
 

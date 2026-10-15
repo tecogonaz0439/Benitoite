@@ -1,0 +1,577 @@
+//! 移行前の AST と型情報を読む一回限りの調査用プログラム。
+use benitoite::{
+    base::*,
+    pipeline::{self, CheckOptions, CheckedProgram},
+    syntax::{ast::*, lexer, newline, parser},
+    types::Ty,
+};
+use serde_json::{Value, json};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    io::{self, Read},
+    path::Path,
+};
+fn contains_fn(t: &Ty) -> bool {
+    match t {
+        Ty::Fn(_) => true,
+        Ty::Con(_, ts) | Ty::App(_, ts) => ts.iter().any(contains_fn),
+        _ => false,
+    }
+}
+struct Scan<'a> {
+    source: &'a Source,
+    checked: Option<&'a CheckedProgram>,
+    rows: Vec<Value>,
+    decls: Vec<Value>,
+    locals: BTreeMap<NodeId, &'a Expr>,
+    params: BTreeMap<NodeId, Vec<String>>,
+}
+impl<'a> Scan<'a> {
+    fn pos(&self, s: Span) -> Value {
+        let lc = self.source.line_col(s.start);
+        json!({"line":lc.line,"column":lc.column,"start":s.start.0,"end":s.end.0})
+    }
+    fn text(&self, s: Span) -> String {
+        String::from_utf8_lossy(
+            self.source
+                .text()
+                .get(s.start.0 as usize..s.end.0 as usize)
+                .unwrap_or_default(),
+        )
+        .into_owned()
+    }
+    fn ty(&self, e: &Expr) -> Option<&Ty> {
+        self.checked?.types.expr_types.get(e.id())
+    }
+    fn names(&self, e: &Expr, seen: &mut BTreeSet<NodeId>) -> Vec<Value> {
+        if !seen.insert(e.id()) {
+            return vec![];
+        }
+        match e {
+            Expr::Lambda(l) => vec![
+                json!({"names":l.params.iter().map(|p|&p.name.text).collect::<Vec<_>>(),"origin":self.pos(l.span),"kind":"lambda"}),
+            ],
+            Expr::Name(n) => {
+                let Some(p) = self.checked else { return vec![] };
+                let Some(b) = p
+                    .resolved
+                    .refs
+                    .get(n.id)
+                    .and_then(|id| p.resolved.bindings.get(*id))
+                else {
+                    return vec![];
+                };
+                if let benitoite::resolve::DeclSite::Node(id) = b.decl {
+                    if let Some(v) = self.locals.get(&id) {
+                        return self.names(v, seen);
+                    }
+                    if let Some(names) = self.params.get(&id) {
+                        return vec![
+                            json!({"names":names,"kind":"declaration","name":b.name,"span":format!("{:?}",b.span)}),
+                        ];
+                    }
+                }
+                vec![
+                    json!({"kind":"resolved_binding","name":b.name,"binding_kind":format!("{:?}",b.kind),"module":p.modules.modules.get(b.module.0 as usize).map(|m|m.name.dotted()),"span":format!("{:?}",b.span),"needs_contract_table":true}),
+                ]
+            }
+            Expr::Paren(p) => self.names(&p.inner, seen),
+            Expr::If(i) => {
+                let mut ns = self.block_names(&i.then_block, seen);
+                if let Some(b) = &i.else_branch {
+                    match b {
+                        ElseBranch::Block(b) => ns.extend(self.block_names(b, seen)),
+                        ElseBranch::If(i) => ns.extend(self.names(&Expr::If((**i).clone()), seen)),
+                    }
+                };
+                ns
+            }
+            Expr::Match(m) => m
+                .arms
+                .iter()
+                .flat_map(|a| self.block_names(&a.body, seen))
+                .collect(),
+            Expr::List(l) => l
+                .elems
+                .iter()
+                .flat_map(|v| match v {
+                    ListElem::Expr(e) => self.names(e, seen),
+                    ListElem::Spread(s) => self.names(&s.expr, seen),
+                })
+                .collect(),
+            Expr::Record(r) => r
+                .fields
+                .iter()
+                .flat_map(|f| self.names(&f.value, seen))
+                .collect(),
+            _ => vec![],
+        }
+    }
+    fn block_names(&self, b: &Block, seen: &mut BTreeSet<NodeId>) -> Vec<Value> {
+        match b.stmts.last() {
+            Some(Stmt::Expr(e)) => self.names(e, seen),
+            _ => vec![],
+        }
+    }
+    fn row(&mut self, kind: &str, e: &Expr, values: Vec<&Expr>, owner: &str) {
+        let typed = (kind != "return" && self.ty(e).is_some_and(contains_fn))
+            || values.iter().any(|v| self.ty(v).is_some_and(contains_fn));
+        if !typed {
+            return;
+        }
+        let mut ns = Vec::new();
+        for v in &values {
+            ns.extend(self.names(v, &mut BTreeSet::new()))
+        }
+        ns.sort_by_key(|n| {
+            n.get("origin")
+                .and_then(|p| p.get("start"))
+                .and_then(Value::as_u64)
+                .unwrap_or(u64::MAX)
+        });
+        ns.dedup();
+        self.rows.push(json!({"kind":kind,"position":self.pos(e.span()),"owner":owner,"type":format!("{:?}",self.ty(e)),"value_types":values.iter().map(|v|format!("{:?}",self.ty(v))).collect::<Vec<_>>(),"contract_sources":ns,"sample":self.text(e.span())}));
+    }
+    fn types(&self, t: &TypeExpr, slot: &str, out: &mut Vec<Value>) {
+        match t {
+            TypeExpr::Fn(f) => {
+                out.push(json!({"slot":slot,"arity":f.params.len(),"position":self.pos(f.span),"type":self.text(f.span)}));
+                for (i, t) in f.params.iter().enumerate() {
+                    self.types(t, &format!("{slot}.param{}", i + 1), out)
+                }
+                self.types(&f.ret, &format!("{slot}.return"), out)
+            }
+            TypeExpr::Named(n) => {
+                for (i, t) in n.args.iter().enumerate() {
+                    self.types(t, &format!("{slot}.type_arg{}", i + 1), out)
+                }
+            }
+            TypeExpr::Paren(p) => self.types(&p.inner, slot, out),
+            _ => {}
+        }
+    }
+    fn decl(&mut self, id: NodeId, name: &str, params: &[Param], ret: &TypeExpr, kind: &str) {
+        let mut inner = vec![];
+        for p in params {
+            if let Some(t) = &p.ty {
+                self.types(t, &p.name.text, &mut inner)
+            }
+        }
+        self.types(ret, "return", &mut inner);
+        self.params
+            .insert(id, params.iter().map(|p| p.name.text.clone()).collect());
+        self.decls.push(json!({"name":name,"kind":kind,"params":params.iter().map(|p|&p.name.text).collect::<Vec<_>>(),"position":self.pos(ret.span()),"inner_function_types":inner}));
+    }
+    fn collect_locals(&mut self, b: &'a Block) {
+        for s in &b.stmts {
+            if let Stmt::Bind(v) = s {
+                if let Pattern::Var(p) = &v.pattern {
+                    self.locals.insert(p.id, &v.value);
+                }
+            }
+        }
+    }
+    fn block(&mut self, b: &'a Block, owner: &str) {
+        self.collect_locals(b);
+        for s in &b.stmts {
+            match s {
+                Stmt::Bind(v) => self.expr(&v.value, owner),
+                Stmt::Expr(e) => self.expr(e, owner),
+                _ => {}
+            }
+        }
+    }
+    fn expr(&mut self, e: &'a Expr, owner: &str) {
+        match e {
+            Expr::If(i) => self.if_walk(i, owner),
+            Expr::Match(m) => {
+                let vs = m
+                    .arms
+                    .iter()
+                    .filter_map(|a| match a.body.stmts.last() {
+                        Some(Stmt::Expr(v)) => Some(v),
+                        _ => None,
+                    })
+                    .collect();
+                self.row("match", e, vs, owner);
+                self.expr(&m.scrutinee, owner);
+                for a in &m.arms {
+                    if let Some(g) = &a.guard {
+                        self.expr(g, owner)
+                    }
+                    self.block(&a.body, owner)
+                }
+            }
+            Expr::List(l) => {
+                let vs = l
+                    .elems
+                    .iter()
+                    .map(|v| match v {
+                        ListElem::Expr(e) => e,
+                        ListElem::Spread(s) => &s.expr,
+                    })
+                    .collect();
+                self.row("list", e, vs, owner);
+                for v in &l.elems {
+                    match v {
+                        ListElem::Expr(e) => self.expr(e, owner),
+                        ListElem::Spread(s) => self.expr(&s.expr, owner),
+                    }
+                }
+            }
+            Expr::Record(r) => {
+                for f in &r.fields {
+                    self.row("record_field", &f.value, vec![&f.value], owner);
+                    self.expr(&f.value, owner)
+                }
+                if let Some(b) = &r.base {
+                    self.expr(b, owner)
+                }
+            }
+            Expr::Return(r) => {
+                self.row("return", e, vec![&r.value], owner);
+                self.expr(&r.value, owner)
+            }
+            Expr::Call(c) => {
+                if let Expr::Name(n) = c.callee.as_ref() {
+                    if let Some(p) = self.checked {
+                        if let Some(b) = p
+                            .resolved
+                            .refs
+                            .get(n.id)
+                            .and_then(|id| p.resolved.bindings.get(*id))
+                        {
+                            if b.name == "set"
+                                && p.modules
+                                    .modules
+                                    .get(b.module.0 as usize)
+                                    .is_some_and(|m| m.name.dotted() == "Benitoite.Reference")
+                            {
+                                self.row(
+                                    "reference_set",
+                                    e,
+                                    c.args
+                                        .iter()
+                                        .filter_map(|a| match a {
+                                            Arg::Expr(v) => Some(v),
+                                            _ => None,
+                                        })
+                                        .collect(),
+                                    owner,
+                                )
+                            }
+                        }
+                    }
+                }
+                self.expr(&c.callee, owner);
+                for a in &c.args {
+                    if let Arg::Expr(v) = a {
+                        self.expr(v, owner)
+                    }
+                }
+            }
+            Expr::Lambda(l) => self.block(
+                &l.body,
+                &format!("{owner}/lambda@{}", self.source.line_col(l.span.start).line),
+            ),
+            Expr::Paren(p) => self.expr(&p.inner, owner),
+            Expr::Binary(b) => {
+                self.expr(&b.lhs, owner);
+                self.expr(&b.rhs, owner)
+            }
+            Expr::Pipe(p) => {
+                self.expr(&p.lhs, owner);
+                self.expr(&p.rhs, owner)
+            }
+            Expr::Unary(u) => self.expr(&u.operand, owner),
+            Expr::Try(t) => self.expr(&t.value, owner),
+            Expr::Resume(r) => self.expr(&r.value, owner),
+            Expr::Lazy(l) => self.block(&l.body, owner),
+            Expr::With(w) => {
+                for b in &w.binds {
+                    self.expr(&b.value, owner)
+                }
+                self.block(&w.body, owner)
+            }
+            Expr::Handle(h) => {
+                self.block(&h.body, owner);
+                for c in &h.clauses {
+                    self.block(&c.body, owner)
+                }
+            }
+            Expr::Interp(i) => {
+                for s in &i.segments {
+                    self.expr(&s.expr, owner)
+                }
+            }
+            _ => {}
+        }
+    }
+    fn if_walk(&mut self, i: &'a IfExpr, owner: &str) {
+        let mut vs = vec![];
+        if let Some(Stmt::Expr(v)) = i.then_block.stmts.last() {
+            vs.push(v)
+        }
+        if let Some(ElseBranch::Block(b)) = &i.else_branch {
+            if let Some(Stmt::Expr(v)) = b.stmts.last() {
+                vs.push(v)
+            }
+        }
+        let e = Expr::If(i.clone());
+        self.row("if", &e, vs, owner);
+        self.expr(&i.cond, owner);
+        self.block(&i.then_block, owner);
+        if let Some(b) = &i.else_branch {
+            match b {
+                ElseBranch::Block(b) => self.block(b, owner),
+                ElseBranch::If(i) => self.if_walk(i, owner),
+            }
+        }
+    }
+    fn module(&mut self, m: &'a Module) {
+        for d in &m.decls {
+            match &d.item {
+                Item::Fn(f) => self.decl(f.id, &f.name.text, &f.params, &f.ret, "function"),
+                Item::Trait(t) => {
+                    for f in &t.methods {
+                        self.decl(
+                            f.id,
+                            &format!("{}.{}", t.name.text, f.name.text),
+                            &f.params,
+                            &f.ret,
+                            "method",
+                        )
+                    }
+                }
+                Item::Impl(i) => {
+                    for f in &i.fns {
+                        self.decl(
+                            f.decl.id,
+                            &format!("implement.{}", f.decl.name.text),
+                            &f.decl.params,
+                            &f.decl.ret,
+                            "implementation",
+                        )
+                    }
+                }
+                Item::Effect(t) => {
+                    for f in &t.ops {
+                        self.decl(
+                            f.id,
+                            &format!("{}.{}", t.name.text, f.name.text),
+                            &f.params,
+                            &f.ret,
+                            "operation",
+                        )
+                    }
+                }
+                _ => {}
+            }
+        }
+        for d in &m.decls {
+            match &d.item {
+                Item::Fn(f) => {
+                    if let Some(b) = &f.body {
+                        self.block(b, &f.name.text)
+                    }
+                }
+                Item::Impl(i) => {
+                    for f in &i.fns {
+                        if let Some(b) = &f.decl.body {
+                            self.block(b, &format!("implement.{}", f.decl.name.text))
+                        }
+                    }
+                }
+                Item::Const(c) => self.expr(&c.value, &c.name.text),
+                _ => {}
+            }
+        }
+    }
+}
+struct OneFile {
+    path: std::path::PathBuf,
+    text: Vec<u8>,
+}
+impl benitoite::modules::ModuleFs for OneFile {
+    fn read_file(&self, p: &Path) -> io::Result<Vec<u8>> {
+        if p == self.path {
+            Ok(self.text.clone())
+        } else {
+            Err(io::ErrorKind::NotFound.into())
+        }
+    }
+    fn list_dir(&self, _: &Path) -> io::Result<Vec<benitoite::modules::DirEntryName>> {
+        Ok(vec![])
+    }
+    fn canonicalize(&self, p: &Path) -> io::Result<std::path::PathBuf> {
+        Ok(p.into())
+    }
+}
+fn recover(path: &str, text: &str, direct: bool) -> Result<(CheckedProgram, Vec<String>), String> {
+    let virtual_fs = OneFile {
+        path: Path::new("/root/main.bnt").into(),
+        text: text.as_bytes().to_vec(),
+    };
+    let entry = if direct {
+        pipeline::entry_spec(Path::new(path)).map_err(|e| format!("{e:?}"))?
+    } else {
+        benitoite::modules::EntrySpec {
+            path: virtual_fs.path.clone(),
+            root: Path::new("/root").into(),
+            display_name: path.into(),
+        }
+    };
+    let fs: &dyn benitoite::modules::ModuleFs = if direct {
+        &benitoite::modules::RealFs
+    } else {
+        &virtual_fs
+    };
+    let mut ids = IdGen::new();
+    let loaded = benitoite::modules::load_program(&entry, benitoite::prelude::STDLIB, fs, &mut ids);
+    if loaded.diagnostics.iter().any(|d| d.is_error()) {
+        return Err("load errors: no type information".into());
+    }
+    let resolved =
+        benitoite::resolve::resolve(&loaded.modules, &loaded.asts, &loaded.sources, &mut ids);
+    if resolved.diagnostics.iter().any(|d| d.is_error()) {
+        return Err("resolve errors: no type information".into());
+    }
+    let (types, ds) = benitoite::typeck::typecheck(
+        &loaded.modules,
+        &loaded.asts,
+        &loaded.sources,
+        &resolved,
+        false,
+    );
+    Ok((
+        CheckedProgram {
+            modules: loaded.modules,
+            asts: loaded.asts,
+            comments: loaded.comments,
+            resolved,
+            types,
+        },
+        ds.iter()
+            .filter_map(|d| d.code.map(|c| format!("{c:?}")))
+            .collect(),
+    ))
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input)?;
+    let inputs: Vec<Value> = serde_json::from_str(&input)?;
+    for r in inputs {
+        let path = r["path"].as_str().ok_or("path")?;
+        let text = r["source"].as_str().ok_or("source")?;
+        let stdlib = path.starts_with("crates/benitoite/src/prelude/stdlib/");
+        let kind = if stdlib {
+            SourceKind::Prelude
+        } else {
+            SourceKind::User
+        };
+        let source = Source::new(path.into(), kind, text.as_bytes().to_vec());
+        let lx = lexer::lex(FileId(0), text.as_bytes());
+        let parsed = parser::parse(
+            FileId(0),
+            kind,
+            text.as_bytes(),
+            newline::resolve_newlines(lx.tokens),
+            lx.comments,
+            &mut IdGen::new(),
+        );
+        let parse_errors = lx
+            .diagnostics
+            .iter()
+            .chain(&parsed.diagnostics)
+            .filter(|d| d.severity == benitoite::diag::Severity::Error)
+            .count();
+        let mut scan = Scan {
+            source: &source,
+            checked: None,
+            rows: vec![],
+            decls: vec![],
+            locals: BTreeMap::new(),
+            params: BTreeMap::new(),
+        };
+        scan.module(&parsed.module);
+        let decls = std::mem::take(&mut scan.decls);
+        drop(scan);
+        let check = if !stdlib && parse_errors == 0 {
+            Some(if r["direct"] == true {
+                pipeline::check_path(
+                    Path::new(path),
+                    CheckOptions {
+                        require_main: false,
+                        deny_warnings: false,
+                    },
+                )
+                .map_err(|e| format!("{e:?}"))
+            } else {
+                Ok(pipeline::check_text(
+                    path,
+                    text.as_bytes(),
+                    CheckOptions {
+                        require_main: false,
+                        deny_warnings: false,
+                    },
+                ))
+            })
+        } else {
+            None
+        };
+        let mut rows = vec![];
+        let mut check_codes = vec![];
+        let mut checked = false;
+        if let Some(Ok(c)) = &check {
+            check_codes = c
+                .diagnostics
+                .iter()
+                .map(|d| format!("{:?}", d.code))
+                .collect();
+            if let Some(p) = &c.program {
+                checked = true;
+                if let Some(ast) = p.asts.first() {
+                    let mut scan = Scan {
+                        source: &source,
+                        checked: Some(p),
+                        rows: vec![],
+                        decls: vec![],
+                        locals: BTreeMap::new(),
+                        params: BTreeMap::new(),
+                    };
+                    scan.module(ast);
+                    rows = scan.rows;
+                }
+            }
+        }
+        let mut recovered = false;
+        let mut recovery_error = None;
+        if !checked && !stdlib && parse_errors == 0 {
+            match recover(path, text, r["direct"] == true) {
+                Ok((p, codes)) => {
+                    check_codes = codes;
+                    if let Some(ast) = p.asts.first() {
+                        let mut scan = Scan {
+                            source: &source,
+                            checked: Some(&p),
+                            rows: vec![],
+                            decls: vec![],
+                            locals: BTreeMap::new(),
+                            params: BTreeMap::new(),
+                        };
+                        scan.module(ast);
+                        rows = scan.rows;
+                        recovered = true;
+                    }
+                }
+                Err(e) => recovery_error = Some(e),
+            }
+        }
+        println!(
+            "{}",
+            json!({"path":path,"snippet":r["snippet"],"base_line":r["base_line"],"scope":r["scope"],"intent":r["intent"],"parse_errors":parse_errors,"typed":checked,"recovered_error_types":recovered,"recovery_error":recovery_error,"check_codes":check_codes,"entry_error":check.as_ref().and_then(|c|c.as_ref().err()),"declarations":decls,"joins":rows})
+        );
+    }
+    Ok(())
+}

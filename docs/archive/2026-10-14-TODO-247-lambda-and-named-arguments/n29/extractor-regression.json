@@ -1,0 +1,6 @@
+{
+  "test": "MigrationTests.test_format_generated_input_is_recorded_without_edits",
+  "before_exit": 1,
+  "before_output": "F\n======================================================================\nFAIL: test_format_generated_input_is_recorded_without_edits (__main__.MigrationTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/tecogonaz/src/Benitoite/tools/named-arguments-migrate/test_migrate.py\", line 117, in test_format_generated_input_is_recorded_without_edits\n    self.assertEqual(len(m['inputs']),3)\nAssertionError: 1 != 3\n\n----------------------------------------------------------------------\nRan 1 test in 0.168s\n\nFAILED (failures=1)\n",
+  "expected_failure": "old extractor returns one input instead of three, omitting both call-only fragments"
+}

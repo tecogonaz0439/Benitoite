@@ -19,10 +19,10 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   return match readCount() with
     case Result.Error(message) -> Result.Error(message)
     case Result.Ok(count) ->
-      bind values <- List.range(0, count)
-      bind mapped <- List.map(values, lambda(value) return value * 3 end lambda)
-      bind filtered <- List.filter(mapped, lambda(value) return Integer.floorModulo(value, 2) = 0 end lambda)
-      bind total <- List.fold(filtered, 0, lambda(accumulator, value) return accumulator + value end lambda)
+      bind values <- List.range(start: 0, stop: count)
+      bind mapped <- List.map(xs: values, f: lambda(value) return value * 3 end lambda)
+      bind filtered <- List.filter(xs: mapped, p: lambda(value) return Integer.floorModulo(a: value, b: 2) = 0 end lambda)
+      bind total <- List.fold(xs: filtered, initial: 0, f: lambda(acc, value) return acc + value end lambda)
       Console.writeLine(Integer.toString(total))
       Result.Ok(())
   end match

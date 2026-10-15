@@ -7,7 +7,7 @@ function raceOnly() -> Option[Integer] uses Clock.Time
 end function
 
 function timeoutOnly() -> Option[Integer] uses Clock.Time
-  return Task.withTimeout(10, lambda() return 1 end lambda)
+  return Task.withTimeout(milliseconds: 10, action: lambda() return 1 end lambda)
 end function
 
 function main() -> Unit uses Clock.Time

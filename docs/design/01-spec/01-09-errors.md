@@ -49,7 +49,7 @@
 import Benitoite.Unofficial.IO.File
 
 function loadConfig(path: String) -> Result[Config, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   bind config <- try parseConfig(text)
   return Result.Ok(config)
 end function
@@ -57,7 +57,7 @@ end function
 
 構文と優先順位は次のとおりとする。
 
-- `try` は式の先頭に書き、右の式全体（パイプを含む）にかかる。どの演算子よりも弱く結び付く。`try x |> f(a)` は `try f(x, a)` である。`try f(x) + 1` は `try (f(x) + 1)` なので、`f(x)` の結果に 1 を足すときは `(try f(x)) + 1` と書くか、`bind` で束縛してから足す。
+- `try` は式の先頭に書き、右の式全体（パイプを含む）にかかる。どの演算子よりも弱く結び付く。`try x |> f(b: a)` は `try f(a: x, b: a)` である。`try f(x) + 1` は `try (f(x) + 1)` なので、`f(x)` の結果に 1 を足すときは `(try f(x)) + 1` と書くか、`bind` で束縛してから足す。
 - 関数の引数の中に書いた `try` は、その引数の式にかかる（`g(try f(x))`）。
 - `try` の直後に `{` を書くことは誤りとする（[構文](01-02-syntax.md)の「`Result.Error` と `Option.None` を呼び出し元へ返す構文（初回リリース版）」）。LLM が例外を捕らえる構文のつもりで `try { ... } catch` と書いたときに、例外がないことを示す診断を出すためである。
 - 後置の `?` は設けない。`e?` と書いたときは、`try e` と書くよう診断で示す。
@@ -70,7 +70,7 @@ end function
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `IOError.kind(e)` | `function(IOError) -> IOErrorKind` | 失敗の種類 |
+| `IOError.kind(e)` | `function(e: IOError) -> IOErrorKind` | 失敗の種類 |
 
 【決定】`IOErrorKind` の構成子は次の 9 個とする。各関数が返しうる構成子は[IO のモジュール](../03-interop/03-07-io-modules.md)の「IOErrorKind と関数の対応」で示す。
 
@@ -95,7 +95,7 @@ function readOrEmpty(path: String) -> String uses File.Read, Console.Write
     case Result.Ok(text) -> text
     case Result.Error(e) -> match IOError.kind(e) with
       case IOErrorKind.NotFound -> ""
-      case _ ->
+      case otherKind ->
         Console.writeErrorLine(IOError.message(e))
         ""
     end match
@@ -113,8 +113,8 @@ end function
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `NetworkError.kind(e)` | `function(NetworkError) -> NetworkErrorKind` | 失敗の種類 |
-| `NetworkError.message(e)` | `function(NetworkError) -> String` | 失敗の理由を、人間が読める形で表す文字列。文面は定めない |
+| `NetworkError.kind(e)` | `function(e: NetworkError) -> NetworkErrorKind` | 失敗の種類 |
+| `NetworkError.message(e)` | `function(e: NetworkError) -> String` | 失敗の理由を、人間が読める形で表す文字列。文面は定めない |
 
 【決定】`NetworkErrorKind` は、構成子を公開する prelude の代数的データ型であり、等値の型である。構成子は次の 9 個とする。構成子を加えることと `Other` の扱いは、`IOErrorKind` と同じである。
 

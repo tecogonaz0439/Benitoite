@@ -54,7 +54,7 @@ inductive IsIf : Expr → Prop
 def StringAddOk (B : Builtins) (op : OpPrim) (C : List TParam) : Prop :=
   ∃ b ts s, op (.binary .add) (.base .string) = some (b, ts) ∧ ts = [] ∧
     B.sig b = some s ∧ ts.length = s.ntys ∧ s.neffs = 0 ∧ s.admits C ts ∧
-    fnTy s.params s.ret s.eff ts [] = .fn [.base .string, .base .string] (.base .string) Eff.empty
+    fnTy s.names s.params s.ret s.eff ts [] = .fn ["left", "right"] [.base .string, .base .string] (.base .string) Eff.empty
 
 mutual
   inductive HasType (D : Declarations) (B : Builtins) (opPrim : OpPrim) :
@@ -72,44 +72,47 @@ mutual
     -- 01-12「名前とリテラル」: トップレベルの関数 f。01-06「多相」「エフェクト変数の具体化」。
     -- 01-12「型クラス」第 4 行との区別: この規則は辞書の引数を持たない f に限る。
     | E_Fun {C Γ R p f d ts es} :
-        D.funs f = some d → SatAll B C ts d.tparams → es.length = d.neffs → d.dictParams = [] →
-        HasType D B opPrim C Γ R p (.funName f ts es) (fnTy d.params d.ret d.eff ts es) Eff.empty
+        D.funs f = some d → NamesWF d.names d.params →
+        NamesWF d.coreNames (d.dictTys ++ d.params) → SatAll B C ts d.tparams → es.length = d.neffs → d.dictParams = [] →
+        HasType D B opPrim C Γ R p (.funName f ts es) (fnTy d.names d.params d.ret d.eff ts es) Eff.empty
     -- 01-12「型クラス」第 4 行: return λ(ȳ:Ā). f[T̄; Ē](Ū, ȳ)。Ā は値の引数だけ。
-    | E_FunDicts {C Γ R p f d ts es ds ps} :
-        D.funs f = some d → SatAll B C ts d.tparams → es.length = d.neffs →
-        d.dictParams ≠ [] → ps = d.params.map (Ty.subst ts es) →
+    | E_FunDicts {C Γ R p f d ts es ds names ps} :
+        D.funs f = some d → NamesWF d.names d.params →
+        NamesWF d.coreNames (d.dictTys ++ d.params) → SatAll B C ts d.tparams → es.length = d.neffs →
+        d.dictParams ≠ [] → names = d.names → ps = d.params.map (Ty.subst ts es) →
         DictEv.HasTypes D B C Γ ds (d.dictTys.map (Ty.subst ts [])) →
-        HasType D B opPrim C Γ R p (.funDicts f ts es ds ps)
-          (fnTy d.params d.ret d.eff ts es) Eff.empty
+        HasType D B opPrim C Γ R p (.funDicts f ts es ds names ps)
+          (fnTy d.names d.params d.ret d.eff ts es) Eff.empty
     -- 同表第 2 行: return λ(ȳ:Ā). V.m[S̄; Ē](Ū, ȳ)。C-Meth の θ = subst (ss ++ [τ]) es。
     -- MethSig は辞書数を持たないため、us.length で分け、値引数の先頭が辞書型でないことを検査する。
-    | E_MethName {C Γ R p d cl τ cd m ms ss es us ps} :
-        DictEv.HasType D B C Γ d (.dict cl τ) → D.classes cl = some cd → cd.methods m = some ms →
-        SatAll B C ss ms.tparams → es.length = ms.neffs →
+    | E_MethName {C Γ R p d cl τ cd m ms ss es us names ps} :
+        DictEv.HasType D B C Γ d (.dict cl τ) → D.classes cl = some cd → cd.methods m = some ms → NamesWF ms.names ms.params →
+        names = ms.names.drop us.length → SatAll B C ss ms.tparams → es.length = ms.neffs →
         DictEv.HasTypes D B C Γ us ((ms.params.map (Ty.subst (ss ++ [τ]) es)).take us.length) →
         ps = (ms.params.map (Ty.subst (ss ++ [τ]) es)).drop us.length →
         (∀ a ∈ ps.head?, ∀ cl t, a ≠ .dict cl t) →
-        HasType D B opPrim C Γ R p (.methName d m ss es us ps)
-          (.fn ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substRho es ms.eff)) Eff.empty
+        HasType D B opPrim C Γ R p (.methName d m ss es us names ps)
+          (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substRho es ms.eff)) Eff.empty
     -- 01-12「名前とリテラル」: prelude の関数 M.g。V-Prim と同じ admits を検査する。
     | E_Prim {C Γ R p b s ts es} :
-        B.sig b = some s → ts.length = s.ntys → es.length = s.neffs → s.admits C ts →
-        HasType D B opPrim C Γ R p (.primName b ts es) (fnTy s.params s.ret s.eff ts es) Eff.empty
+        B.sig b = some s → NamesWF s.names s.params → ts.length = s.ntys → es.length = s.neffs → s.admits C ts →
+        HasType D B opPrim C Γ R p (.primName b ts es) (fnTy s.names s.params s.ret s.eff ts es) Eff.empty
     -- 01-12「ハンドラ」: 操作を値として使う。V-Op と同じ宣言と制約を検査する。
     | E_Op {C Γ R p o od ts} :
-        D.ops o = some od → SatAll B C ts od.tparams →
+        D.ops o = some od → NamesWF od.names od.params → SatAll B C ts od.tparams →
         HasType D B opPrim C Γ R p (.opName o ts)
-          (fnTy od.params od.ret (Eff.single od.eff) ts []) Eff.empty
+          (fnTy od.names od.params od.ret (Eff.single od.eff) ts []) Eff.empty
     -- 01-12「名前とリテラル」: 引数のない構成子。01-05「値の構築」。
     | E_NullCon {C Γ R p c cd ts} :
         D.cons c = some cd → ts.length = cd.ntys → cd.args = [] →
         HasType D B opPrim C Γ R p (.nullCon c ts) (.data cd.data ts) Eff.empty
     -- 01-12「名前とリテラル」: 引数を持つ構成子を値として使う。
-    | E_ConValue {C Γ R p c cd ts ps} :
+    | E_ConValue {C Γ R p c cd ts names ps} :
         D.cons c = some cd → ts.length = cd.ntys →
+        names = D.constructorNames c cd → NamesWF names ps →
         ps = cd.args.map (Ty.subst ts []) → ps ≠ [] →
-        HasType D B opPrim C Γ R p (.conValue c ts ps)
-          (.fn ps (.data cd.data ts) Eff.empty) Eff.empty
+        HasType D B opPrim C Γ R p (.conValue c ts names ps)
+          (.fn names ps (.data cd.data ts) Eff.empty) Eff.empty
     -- 01-12「名前とリテラル」: リテラル。01-06「式と文の型」: 基本型の各行。
     | E_Literal {C Γ R p l} :
         HasType D B opPrim C Γ R p (.literal l) l.toConst.type Eff.empty
@@ -160,16 +163,18 @@ mutual
         HasTypes D B opPrim C Γ R args (cd.args.map (Ty.subst ts [])) ε →
         HasType D B opPrim C Γ R p (.conCall c ts args) (.data cd.data ts) ε
     -- 01-12「呼び出し」: そのほかの呼び出し。01-06「式のエフェクト」: 関数・引数・呼び出しの和。
-    | E_Call {C Γ R p f args ps a εf εargs εcall} :
-        HasType D B opPrim C Γ R .other f (.fn ps a εcall) εf →
-        HasTypes D B opPrim C Γ R args ps εargs →
-        HasType D B opPrim C Γ R p (.call f args) a (Eff.union εf (Eff.union εargs εcall))
-    -- 01-02「パイプ」規則 1: 左辺は、第 1 引数として一度だけ評価する。
-    | E_PipeCall {C Γ R p lhs f args t ps a εl εf εargs εcall} :
+    | E_Call {C Γ R p f labels positions args names ps a εf εargs εcall} :
+        HasType D B opPrim C Γ R .other f (.fn names ps a εcall) εf →
+        CallOk names ps false labels positions →
+        HasTypes D B opPrim C Γ R args (sourceTypes ps positions) εargs →
+        HasType D B opPrim C Γ R p (.call f labels positions args) a (Eff.union εf (Eff.union εargs εcall))
+    -- 01-02「パイプ」: 左辺を位置 0 に挿入し、残る引数をソース順で検査する。
+    | E_PipeCall {C Γ R p lhs f labels positions args names t ps a εl εf εargs εcall} :
         HasType D B opPrim C Γ R .other lhs t εl →
-        HasType D B opPrim C Γ R .other f (.fn (t :: ps) a εcall) εf →
-        HasTypes D B opPrim C Γ R args ps εargs →
-        HasType D B opPrim C Γ R p (.pipe lhs (.call f args)) a
+        HasType D B opPrim C Γ R .other f (.fn names (t :: ps) a εcall) εf →
+        CallOk names (t :: ps) true labels positions →
+        HasTypes D B opPrim C Γ R args (sourceTypes (t :: ps) positions) εargs →
+        HasType D B opPrim C Γ R p (.pipe lhs (.call f labels positions args)) a
           (Eff.union εl (Eff.union εf (Eff.union εargs εcall)))
     -- 同規則の構成子の呼び出し。右辺の式自体は呼び出さない。
     | E_PipeConCall {C Γ R p lhs c cd ts args t ps εl εargs} :
@@ -180,40 +185,45 @@ mutual
         HasType D B opPrim C Γ R p (.pipe lhs (.conCall c ts args))
           (.data cd.data ts) (Eff.union εl εargs)
     -- 規則 2 の裸の構成子名: 一引数の構成子を呼ぶ。
-    | E_PipeConValue {C Γ R p lhs c cd ts ps t εl} :
+    | E_PipeConValue {C Γ R p lhs c cd ts names ps t εl} :
         D.cons c = some cd → ts.length = cd.ntys →
+        names = D.constructorNames c cd → NamesWF names ps →
         ps = cd.args.map (Ty.subst ts []) → ps = [t] →
         HasType D B opPrim C Γ R .other lhs t εl →
-        HasType D B opPrim C Γ R p (.pipe lhs (.conValue c ts ps)) (.data cd.data ts) εl
+        HasType D B opPrim C Γ R p (.pipe lhs (.conValue c ts names ps)) (.data cd.data ts) εl
     -- 規則 2。括弧・プレースホルダの呼び出しもここに属する。
-    | E_PipeApply {C Γ R p lhs rhs t a εl εf εcall} :
+    | E_PipeApply {C Γ R p lhs rhs name t a εl εf εcall} :
         rhs.PipeValue → HasType D B opPrim C Γ R .other lhs t εl →
-        HasType D B opPrim C Γ R .other rhs (.fn [t] a εcall) εf →
+        HasType D B opPrim C Γ R .other rhs (.fn [name] [t] a εcall) εf →
         HasType D B opPrim C Γ R p (.pipe lhs rhs) a (Eff.union εl (Eff.union εf εcall))
     -- 01-06「式と文の型」: 展開したラムダの本体として検査する。
     -- 新しい引数はソースに見えないので Γ に加えない。番号は脱糖の出力でずらす。
-    | E_PartialCall {C Γ R p f args ps r0 r ε εf εargs εcall} :
+    | E_PartialCall {C Γ R p f names args ps r0 r ε εf εargs εcall} :
         args.holeTypes ≠ [] →
-        HasType D B opPrim C (hideConts Γ) (some r) .other f (.fn ps r0 εcall) εf →
-        HasHoleArgs D B opPrim C (hideConts Γ) (some r) args ps εargs →
+        HasType D B opPrim C (hideConts Γ) (some r) .other f (.fn names ps r0 εcall) εf →
+        CallOk names ps false args.labels args.positions →
+        NamesWF (args.holeNames names) args.holeTypes →
+        HasHoleArgs D B opPrim C (hideConts Γ) (some r) args (sourceTypes ps args.positions) εargs →
         Ty.Le r0 r → Eff.Sub (Eff.union εf (Eff.union εargs εcall)) ε →
-        HasType D B opPrim C Γ R p (.partialCall f args r ε) (.fn args.holeTypes r ε) Eff.empty
+        HasType D B opPrim C Γ R p (.partialCall f names args r ε) (.fn (args.holeNames names) args.holeTypes r ε) Eff.empty
     -- 同じ展開の構成子版。戻り値型は構成子の属する型。
     | E_PartialCon {C Γ R p c cd ts args r εargs} :
-        D.cons c = some cd → ts.length = cd.ntys → args.holeTypes ≠ [] →
+        D.conFields c = none → D.cons c = some cd → ts.length = cd.ntys → args.holeTypes ≠ [] →
+        args.ConstructorOk cd.args.length →
+        NamesWF (args.holeNames (positionalNames args.positions.length)) args.holeTypes →
         HasHoleArgs D B opPrim C (hideConts Γ) (some r) args
           (cd.args.map (Ty.subst ts [])) εargs →
         Ty.Le (.data cd.data ts) r →
         HasType D B opPrim C Γ R p (.partialCon c ts args)
-          (.fn args.holeTypes r εargs) Eff.empty
+          (.fn (args.holeNames (positionalNames args.positions.length)) args.holeTypes r εargs) Eff.empty
     -- 01-12「演算子」: e1 ⊕ e2。01-06「演算子の型付け」「等値の型」。
     -- 算術と比較の型の集まりは Operator.allowed、等値の制約は B.sig の admits、結果型は fnTy で検査する。02-06 に従い eq/ne だけ [T]。
     -- 算術は (T,T)→T、比較と等値は (T,T)→Boolean という表を B.sig に与える。
     | E_Binary {C Γ R p o t b ts s lhs rhs a εl εr} :
         (Operator.binary o).allowed t = true →
         opPrim (.binary o) t = some (b, ts) → ts = (Operator.binary o).typeArgs t →
-        B.sig b = some s → ts.length = s.ntys → s.neffs = 0 → s.admits C ts →
-        fnTy s.params s.ret s.eff ts [] = .fn [t, t] a Eff.empty →
+        B.sig b = some s → NamesWF s.names s.params → ts.length = s.ntys → s.neffs = 0 → s.admits C ts →
+        fnTy s.names s.params s.ret s.eff ts [] = .fn ["left", "right"] [t, t] a Eff.empty →
         HasType D B opPrim C Γ R .other lhs t εl → HasType D B opPrim C Γ R .other rhs t εr →
         HasType D B opPrim C Γ R p (.binary o t lhs rhs) a (Eff.union εl εr)
     -- 01-12「演算子」: -e（直接の整数・Float リテラルを除く）。01-06「演算子の型付け」: (T)→T。
@@ -221,7 +231,7 @@ mutual
         Operator.neg.allowed t = true →
         opPrim .neg t = some (b, ts) → ts = [] → B.sig b = some s →
         ts.length = s.ntys → s.neffs = 0 → s.admits C ts →
-        fnTy s.params s.ret s.eff ts [] = .fn [t] t Eff.empty →
+        fnTy s.names s.params s.ret s.eff ts [] = .fn ["value"] [t] t Eff.empty →
         HasType D B opPrim C Γ R .other e t ε → HasType D B opPrim C Γ R p (.neg t e) t ε
     -- 01-12「演算子」: not e。01-06「式と文の型」: Boolean。
     | E_Not {C Γ R p e ε} :
@@ -244,7 +254,7 @@ mutual
     -- 01-06「式と文の型」: 要素は T、展開の式は List[T]。concat_T は純粋な直接の頭。
     | E_ListSpread {C Γ R p a f h before spread after εb εs εa} :
         Ty.WF C.length a → directCallee f = some h →
-        HasType D B opPrim C Γ R .other f (.fn [.list a, .list a] (.list a) Eff.empty) Eff.empty →
+        HasType D B opPrim C Γ R .other f (.fn ["xs", "ys"] [.list a, .list a] (.list a) Eff.empty) Eff.empty →
         HasEach D B opPrim C Γ R before a εb →
         HasType D B opPrim C Γ R .other spread (.list a) εs →
         HasEach D B opPrim C Γ R after a εa →
@@ -258,10 +268,10 @@ mutual
         (2 ≤ InterpPart.count parts → StringAddOk B opPrim C) →
         HasType D B opPrim C Γ R p (.interpolation parts es fs) (.base .string) ε
     -- 01-12「リスト、ラムダ、条件分岐、match」: lambda(x̄) B。01-06「必ず抜ける文」、01-12「関数の境界と escape」。
-    | E_Lam {C Γ R p ps r ε body} :
-        (body.Exits ∨ r = .base .unit) →
+    | E_Lam {C Γ R p names ps r ε body} :
+        NamesWF names ps → (body.Exits ∨ r = .base .unit) →
         HasBlock D B opPrim C (binds ps ++ hideConts Γ) (some r) .tail body r ε →
-        HasType D B opPrim C Γ R p (.lam ps r ε body) (.fn ps r ε) Eff.empty
+        HasType D B opPrim C Γ R p (.lam names ps r ε body) (.fn names ps r ε) Eff.empty
     -- 01-12 同節: if e then B1 else B2。01-06「式と文の型」「エフェクトの包含」。
     | E_If {C Γ R p cond yes no a εc εy εn} :
         HasType D B opPrim C Γ R .other cond (.base .boolean) εc →
@@ -359,12 +369,12 @@ mutual
   inductive HasHoleArgs (D : Declarations) (B : Builtins) (opPrim : OpPrim) :
       List TParam → List (Option Ty) → Option Ty → HoleArgs → List Ty → Eff → Prop
     | nil {C Γ R} : HasHoleArgs D B opPrim C Γ R .nil [] Eff.empty
-    | expr {C Γ R e args a as ε εs} :
+    | expr {C Γ R label position e args a as ε εs} :
         HasType D B opPrim C Γ R .other e a ε → HasHoleArgs D B opPrim C Γ R args as εs →
-        HasHoleArgs D B opPrim C Γ R (.expr e args) (a :: as) (Eff.union ε εs)
-    | hole {C Γ R t a args as ε} :
+        HasHoleArgs D B opPrim C Γ R (.expr label position e args) (a :: as) (Eff.union ε εs)
+    | hole {C Γ R label position t a args as ε} :
         Ty.Le t a → HasHoleArgs D B opPrim C Γ R args as ε →
-        HasHoleArgs D B opPrim C Γ R (.hole t args) (a :: as) ε
+        HasHoleArgs D B opPrim C Γ R (.hole label position t args) (a :: as) ε
 
   inductive HasArms (D : Declarations) (B : Builtins) (opPrim : OpPrim) :
       List TParam → List (Option Ty) → Option Ty → Position → Arms → Ty → Ty → Eff → Prop
@@ -388,7 +398,7 @@ mutual
       List TParam → List (Option Ty) → Option Ty → Clauses → Ty → Eff → Prop
     | nil {C Γ R t ε} : HasClauses D B opPrim C Γ R .nil t ε
     | cons {C Γ R o n ntys body cs t ε sg} :
-        opSig D.patternProgram B o = some sg → n = sg.params.length → ntys = sg.tparams.length →
+        opSig D.patternProgram B o = some sg → NamesWF sg.names sg.params → n = sg.params.length → ntys = sg.tparams.length →
         HasBlock D B opPrim (sg.tparams ++ C)
           (some (.cont sg.ret (t.shift ntys 0) ε) :: (binds sg.params ++ shiftEnv ntys Γ))
           (R.map (Ty.shift ntys 0)) .other body (t.shift ntys 0) ε →
@@ -446,6 +456,7 @@ end
 -- 01-12「トップレベルの関数」「型クラス」、01-06「式のエフェクト」「必ず抜ける文」。
 -- 辞書の引数 d̄ と値の引数 x̄ をこの順で束縛し、R := B とする。
 def Def.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (d : Def) : Prop :=
+  NamesWF d.names d.params ∧
   (d.body.Exits ∨ d.ret = .base .unit) ∧
     HasBlock D B opPrim d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail d.body d.ret d.eff
 
@@ -476,7 +487,158 @@ def MainReturn (a : Ty) : Prop :=
 /-- 01-07 の入口の条件を表す。定義だけの型の保存には要求しない。
 01-07 の許すエフェクトの名前は表の外で定めるため、集合 allowed を引数とする。 -/
 def Program.HasMain (p : Program) (allowed : Eff) : Prop :=
-  ∃ d, p.defs "main" = some d ∧ d.tparams = [] ∧ d.neffs = 0 ∧ d.params = [] ∧
+  ∃ d, p.defs "main" = some d ∧ d.tparams = [] ∧ d.neffs = 0 ∧ d.names = [] ∧ d.params = [] ∧
     MainReturn d.ret ∧ Eff.Sub d.eff allowed
+
+/-! 型付けの境界で、ソース順と契約順が異なる具体入力を検査する。 -/
+namespace DefinitionExamples
+
+private def intTy : Ty := .base .integer
+private def boolTy : Ty := .base .boolean
+private def askDecl : OpDecl :=
+  { eff := "Ask", tparams := [], names := ["a", "b"], params := [intTy, boolTy], ret := intTy }
+private def combineSig : MethSig :=
+  { tparams := [], neffs := 0, names := ["a", "b"], params := [intTy, boolTy],
+    ret := intTy, eff := Eff.empty }
+private def combineClass : ClassDecl :=
+  { supers := [], methods := fun m => if m = "combine" then some combineSig else none }
+private def decls : Declarations :=
+  { funs := fun _ => none,
+    cons := fun c => if c = "Pair" then some ⟨"Pair", 0, [intTy, boolTy]⟩
+      else if c = "Tuple" then some ⟨"Tuple", 0, [intTy, boolTy]⟩ else none,
+    conFields := fun c => if c = "Pair" then some ["first", "second"] else none,
+    ops := fun o => if o = "ask" then some askDecl else none,
+    classes := fun c => if c = "Combine" then some combineClass else none }
+
+private def reversed : Exprs := .cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil)
+private def holes : HoleArgs := .hole (some "b") 1 boolTy (.hole (some "a") 0 intTy .nil)
+
+-- 通常・穴・パイプの判断は同じ型付き callee を使う。引数の型はソース順に Boolean, Integer。
+example (B : Builtins) (op : OpPrim) :
+    HasType decls B op [] [some (.fn ["a", "b"] [intTy, boolTy] intTy Eff.empty)] none .other
+      (.call (.local 0) [some "b", some "a"] [1, 0] reversed) intTy Eff.empty := by
+  apply HasType.E_Call (names := ["a", "b"]) (ps := [intTy, boolTy])
+    (εf := Eff.empty) (εargs := Eff.empty) (εcall := Eff.empty)
+  · apply HasType.E_Local rfl
+    intro b t ε h; cases h
+  · dsimp [CallOk, NamesWF]
+    decide
+  · exact HasTypes.cons HasType.E_Literal (HasTypes.cons HasType.E_Literal HasTypes.nil)
+
+example (B : Builtins) (op : OpPrim) :
+    HasType decls B op [] [some (.fn ["a", "b"] [intTy, boolTy] intTy Eff.empty)] none .other
+      (.partialCall (.local 0) ["a", "b"] holes intTy Eff.empty)
+      (.fn ["b", "a"] [boolTy, intTy] intTy Eff.empty) Eff.empty := by
+  apply HasType.E_PartialCall (ps := [intTy, boolTy]) (r0 := intTy)
+    (εf := Eff.empty) (εargs := Eff.empty) (εcall := Eff.empty)
+  · dsimp [holes, HoleArgs.holeTypes]
+    decide
+  · apply HasType.E_Local rfl
+    intro b t ε h; cases h
+  · dsimp [holes, HoleArgs.labels, HoleArgs.positions, CallOk, NamesWF]
+    decide
+  · dsimp [holes, HoleArgs.holeNames, HoleArgs.holeTypes, NamesWF]
+    decide
+  · exact HasHoleArgs.hole (Or.inl rfl) (HasHoleArgs.hole (Or.inl rfl) HasHoleArgs.nil)
+  · exact Or.inl rfl
+  · exact fun _ h => h
+
+example (B : Builtins) (op : OpPrim) :
+    HasType decls B op [] [some (.fn ["a", "b"] [intTy, boolTy] intTy Eff.empty)] none .other
+      (.pipe (.literal (.integer 7))
+        (.call (.local 0) [some "b"] [1] (.cons (.literal (.boolean true)) .nil))) intTy Eff.empty := by
+  apply HasType.E_PipeCall (names := ["a", "b"]) (ps := [boolTy])
+    (εl := Eff.empty) (εf := Eff.empty) (εargs := Eff.empty) (εcall := Eff.empty)
+  · exact HasType.E_Literal
+  · apply HasType.E_Local rfl
+    intro b t ε h; cases h
+  · dsimp [CallOk, NamesWF]
+    decide
+  · exact HasTypes.cons HasType.E_Literal HasTypes.nil
+
+-- 操作も同じラベル検査を通り、開始するエフェクトだけが異なる。
+example (B : Builtins) (op : OpPrim) :
+    HasType decls B op [] [] none .other
+      (.call (.opName "ask" []) [some "b", some "a"] [1, 0] reversed) intTy (Eff.single "Ask") := by
+  apply HasType.E_Call (names := ["a", "b"]) (ps := [intTy, boolTy])
+    (εf := Eff.empty) (εargs := Eff.empty) (εcall := Eff.single "Ask")
+  · have h := HasType.E_Op (D := decls) (B := B) (opPrim := op) (C := []) (Γ := [])
+        (R := none) (p := .other) (o := "ask") (ts := []) (od := askDecl) rfl
+        (by unfold NamesWF askDecl; decide) ⟨rfl, by intro i t p h; simp at h⟩
+    have he : Eff.substRho [] (Eff.single "Ask") = Eff.single "Ask" := by
+      funext a; cases a <;> simp [Eff.substRho]
+    simpa only [fnTy, askDecl, List.map_cons, List.map_nil, intTy, boolTy, Ty.subst, Ty.substAt, he] using h
+  · dsimp [CallOk, NamesWF]
+    decide
+  · exact HasTypes.cons HasType.E_Literal (HasTypes.cons HasType.E_Literal HasTypes.nil)
+
+-- 辞書の local は呼び出しラベルには含まれない。
+example (B : Builtins) (op : OpPrim) :
+    HasType decls B op [] [some (.dict "Combine" intTy)] none .other
+      (.call (.methName (.local 0) "combine" [] [] [] ["a", "b"] [intTy, boolTy])
+        [some "b", some "a"] [1, 0] reversed) intTy Eff.empty := by
+  apply HasType.E_Call (names := ["a", "b"]) (ps := [intTy, boolTy])
+    (εf := Eff.empty) (εargs := Eff.empty) (εcall := Eff.empty)
+  · have h := HasType.E_MethName (D := decls) (B := B) (opPrim := op) (C := [])
+        (Γ := [some (.dict "Combine" intTy)]) (R := none) (p := .other)
+        (d := .local 0) (m := "combine") (ss := []) (es := []) (us := [])
+        (names := ["a", "b"]) (ps := [intTy, boolTy])
+        (cl := "Combine") (τ := intTy) (cd := combineClass) (ms := combineSig)
+        (DictEv.HasType.local rfl) rfl rfl (by unfold NamesWF combineSig; decide) rfl
+        ⟨rfl, by intro i t p h; simp at h⟩ rfl DictEv.HasTypes.nil
+        (by simp [combineSig, intTy, boolTy, Ty.subst, Ty.substAt])
+        (by intro a h cl t; simp only [List.head?_cons, Option.mem_def, Option.some.injEq] at h
+            subst a; intro h; cases h)
+    have he : Eff.substRho [] Eff.empty = Eff.empty := by
+      funext a; cases a <;> simp [Eff.substRho, Eff.empty]
+    simpa only [combineSig, intTy, Ty.subst, Ty.substAt, he] using h
+  · dsimp [CallOk, NamesWF]
+    decide
+  · exact HasTypes.cons HasType.E_Literal (HasTypes.cons HasType.E_Literal HasTypes.nil)
+
+-- 直接の構成子の穴は argN、構成子の関数値はレコードのフィールド名を使う。
+example (B : Builtins) (op : OpPrim) :
+    HasType decls B op [] [] none .other
+      (.partialCon "Tuple" [] (.hole none 0 intTy (.expr none 1 (.literal (.boolean true)) .nil)))
+      (.fn ["arg1"] [intTy] (.data "Tuple" []) Eff.empty) Eff.empty := by
+  apply HasType.E_PartialCon (cd := ⟨"Tuple", 0, [intTy, boolTy]⟩) (r := .data "Tuple" []) (εargs := Eff.empty) rfl rfl rfl
+  · dsimp [HoleArgs.holeTypes]
+    decide
+  · dsimp [HoleArgs.ConstructorOk, HoleArgs.labels, HoleArgs.positions]; decide
+  · dsimp [NamesWF, HoleArgs.holeNames, HoleArgs.holeTypes, HoleArgs.positions, positionalNames]
+    decide
+  · simpa only [intTy, boolTy, Ty.subst, Ty.substAt, List.map_cons, List.map_nil, Literal.toConst, Const.type, Eff.union, Eff.empty] using
+      (HasHoleArgs.hole (D := decls) (B := B) (opPrim := op) (C := []) (Γ := hideConts [])
+        (R := some (.data "Tuple" [])) (label := none) (position := 0) (t := intTy)
+        (a := intTy) (ε := Eff.empty) (Or.inl rfl)
+        (HasHoleArgs.expr (label := none) (position := 1) (a := boolTy)
+          (ε := Eff.empty) (εs := Eff.empty) (HasType.E_Literal (l := .boolean true)) HasHoleArgs.nil))
+  · exact Or.inl rfl
+
+example (B : Builtins) (op : OpPrim) :
+    HasType decls B op [] [] none .other (.conValue "Pair" [] ["first", "second"] [intTy, boolTy])
+      (.fn ["first", "second"] [intTy, boolTy] (.data "Pair" []) Eff.empty) Eff.empty := by
+  apply HasType.E_ConValue (cd := ⟨"Pair", 0, [intTy, boolTy]⟩) rfl rfl rfl
+  · unfold NamesWF; decide
+  · simp [intTy, boolTy, Ty.subst, Ty.substAt]
+  · decide
+
+-- 誤った位置・重複・漏れ・混在・位置 0 の二重指定を、ラベル検査の境界で拒否する。
+example : ¬ CallOk ["a", "b"] [intTy, boolTy] false [some "b", some "a"] [0, 1] := by unfold CallOk NamesWF; decide
+example : ¬ CallOk ["a", "b"] [intTy, boolTy] false [some "a", some "a"] [0, 0] := by unfold CallOk NamesWF; decide
+example : ¬ CallOk ["a", "b"] [intTy, boolTy] false [some "a"] [0] := by unfold CallOk NamesWF; decide
+example : ¬ CallOk ["a", "b"] [intTy, boolTy] false [some "a", none] [0, 1] := by unfold CallOk NamesWF; decide
+example : ¬ CallOk ["a", "b"] [intTy, boolTy] true [some "a"] [0] := by unfold CallOk NamesWF; decide
+example : ¬ CallOk ["a", "b"] [intTy, boolTy] true [none] [1] := by unfold CallOk NamesWF; decide
+example : ¬ CallOk ["a", "b"] [intTy, boolTy] false [some "a", some "other"] [0, 1] := by unfold CallOk NamesWF; decide
+example : ¬ ([0, 2] : List Nat).Perm (List.range 2) := by decide
+example : ¬ CallOk ["a", "a"] [intTy, boolTy] false [some "a", some "a"] [0, 1] := by unfold CallOk NamesWF; decide
+example : ¬ HoleArgs.ConstructorOk (.hole (some "arg1") 0 intTy .nil) 1 := by
+  unfold HoleArgs.ConstructorOk HoleArgs.labels HoleArgs.positions; decide
+example : CallOk ["value"] [intTy] false [none] [0] := by unfold CallOk NamesWF; decide
+example : CallOk [] [] false [] [] := by unfold CallOk NamesWF; decide
+example : CallOk ["value"] [intTy] true [] [] := by unfold CallOk NamesWF; decide
+
+end DefinitionExamples
 
 end Benitoite.Surface

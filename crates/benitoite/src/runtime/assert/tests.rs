@@ -326,12 +326,12 @@ fn failed_equality_renders_both_values_in_show_form() {
     let mut source = String::from(TYPES);
     for (i, (ty, actual, expected, _, _)) in cases.iter().enumerate() {
         source.push_str(&format!(
-            "@test\nfunction case{i}() -> Unit uses Assert.Check\n  bind a: {ty} <- {actual}\n  bind b: {ty} <- {expected}\n  Assert.equal(a, b)\nend function\n"
+            "@test\nfunction case{i}() -> Unit uses Assert.Check\n  bind a: {ty} <- {actual}\n  bind b: {ty} <- {expected}\n  Assert.equal(actual: a, expected: b)\nend function\n"
         ));
     }
     // `Unit` は等しいので `notEqual` で失敗させる。
     source.push_str(
-        "@test\nfunction unitCase() -> Unit uses Assert.Check\n  Assert.notEqual((), ())\nend function\n",
+        "@test\nfunction unitCase() -> Unit uses Assert.Check\n  Assert.notEqual(actual: (), expected: ())\nend function\n",
     );
     let prepared = prepare(&source);
     for (i, (ty, _, _, left, right)) in cases.iter().enumerate() {
@@ -371,125 +371,125 @@ record Point
 end record
 
 function checkSame[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  Assert.equal(a, b)
+  Assert.equal(actual: a, expected: b)
 end function
 
 function checkList[T: equality](a: List[T], b: List[T]) -> Unit uses Assert.Check
-  Assert.equal(a, b)
+  Assert.equal(actual: a, expected: b)
 end function
 
 function checkTwice[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  checkSame(a, b)
-  checkSame(a, b)
+  checkSame(a: a, b: b)
+  checkSame(a: a, b: b)
 end function
 
 function checkTail[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  checkSame(a, b)
+  checkSame(a: a, b: b)
 end function
 
 function checkPair[T: equality](p: Pair[T, T]) -> Unit uses Assert.Check
-  Assert.equal(Pair.first(p), Pair.second(p))
+  Assert.equal(actual: Pair.first(p), expected: Pair.second(p))
 end function
 
 function checkEach[T: equality](xs: List[T], y: T) -> Unit uses Assert.Check
-  List.forEach(xs, lambda(x) Assert.equal(x, y) end lambda)
+  List.forEach(xs: xs, f: lambda(value) Assert.equal(actual: value, expected: y) end lambda)
 end function
 
 @test
 function lambdaForEach() -> Unit uses Assert.Check
-  List.forEach([Pair(Color.Red, Color.Green)], lambda(p)
-    Assert.equal(Pair.first(p), Pair.second(p))
+  List.forEach(xs: [Pair(Color.Red, Color.Green)], f: lambda(value)
+    Assert.equal(actual: Pair.first(value), expected: Pair.second(value))
   end lambda)
 end function
 
 @test
 function callback() -> Unit uses Assert.Check
-  List.forEach([Pair(Color.Red, Color.Green)], checkPair)
+  List.forEach(xs: [Pair(Color.Red, Color.Green)], f: lambda(value) return checkPair(value) end lambda)
 end function
 
 @test
 function genericLambda() -> Unit uses Assert.Check
-  checkEach([Color.Red], Color.Green)
+  checkEach(xs: [Color.Red], y: Color.Green)
 end function
 "#
     );
     let cases = [
         (
             "direct",
-            "Assert.equal(Color.Red, Color.Green)",
+            "Assert.equal(actual: Color.Red, expected: Color.Green)",
             "Color.Red",
             "Color.Green",
         ),
         (
             "nullary",
-            "checkSame(Color.Red, Color.Green)",
+            "checkSame(a: Color.Red, b: Color.Green)",
             "Color.Red",
             "Color.Green",
         ),
         (
             "fields",
-            "checkSame(Shape.Circle(1), Shape.Square(2, 3))",
+            "checkSame(a: Shape.Circle(1), b: Shape.Square(2, 3))",
             "Shape.Circle(1)",
             "Shape.Square(2, 3)",
         ),
         (
             "recordCase",
-            "checkSame(Point(x: 1, y: 2), Point(x: 1, y: 3))",
+            "checkSame(a: Point(x: 1, y: 2), b: Point(x: 1, y: 3))",
             "Point(x: 1, y: 2)",
             "Point(x: 1, y: 3)",
         ),
         (
             "option",
-            "checkSame(Option.Some(Color.Green), Option.None)",
+            "checkSame(a: Option.Some(Color.Green), b: Option.None)",
             "Option.Some(Color.Green)",
             "Option.None",
         ),
         (
             "list",
-            "checkList([Color.Red], [Color.Green])",
+            "checkList(a: [Color.Red], b: [Color.Green])",
             "[Color.Red]",
             "[Color.Green]",
         ),
         (
             "nonTail",
-            "checkSame(Color.Red, Color.Green)\n  Assert.isTrue(true, \"after\")",
+            "checkSame(a: Color.Red, b: Color.Green)\n  Assert.isTrue(condition: true, message: \"after\")",
             "Color.Red",
             "Color.Green",
         ),
         (
             "twoLevels",
-            "checkTwice(Option.Some(Color.Red), Option.Some(Color.Green))\n  Assert.isTrue(true, \"after\")",
+            "checkTwice(a: Option.Some(Color.Red), b: Option.Some(Color.Green))\n  Assert.isTrue(condition: true, message: \"after\")",
             "Option.Some(Color.Red)",
             "Option.Some(Color.Green)",
         ),
         (
             "twoTails",
-            "checkTail(Color.Red, Color.Green)",
+            "checkTail(a: Color.Red, b: Color.Green)",
             "Color.Red",
             "Color.Green",
         ),
         // 左だけでは二つの型が同じタグに合うので、右の引数の形も照合しなければ名前が決まらない。
         (
             "numberChoice",
-            "checkTail(ChoiceNumber.Empty, ChoiceNumber.Value(1))",
+            "checkTail(a: ChoiceNumber.Empty, b: ChoiceNumber.Value(1))",
             "ChoiceNumber.Empty",
             "ChoiceNumber.Value(1)",
         ),
         (
             "textChoice",
-            r#"checkTail(ChoiceText.Empty, ChoiceText.Value("a"))"#,
+            r#"checkTail(a: ChoiceText.Empty, b: ChoiceText.Value("a"))"#,
             "ChoiceText.Empty",
             r#"ChoiceText.Value("a")"#,
         ),
         (
             "pipedHelper",
-            "Color.Red |> checkSame(Color.Green)",
+            "Color.Red |> checkSame(b: Color.Green)",
             "Color.Red",
             "Color.Green",
         ),
         (
             "parenHelper",
-            "(checkSame)(Color.Red, Color.Green)",
+            "(checkSame)(a: Color.Red, b: Color.Green)",
             "Color.Red",
             "Color.Green",
         ),
@@ -526,33 +526,33 @@ data Dir
 end data
 
 function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
-  Assert.equal(actual, expected)
+  Assert.equal(actual: actual, expected: expected)
 end function
 
 function checkTwice[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  checkSame(a, b)
-  checkSame(a, b)
+  checkSame(actual: a, expected: b)
+  checkSame(actual: a, expected: b)
 end function
 
 function outer[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  checkTwice(a, b)
-  Assert.isTrue(true, "after")
+  checkTwice(a: a, b: b)
+  Assert.isTrue(condition: true, message: "after")
 end function
 
 @test
 function color() -> Unit uses Assert.Check
-  outer(Color.Red, Color.Green)
-  Assert.isTrue(true, "after")
+  outer(a: Color.Red, b: Color.Green)
+  Assert.isTrue(condition: true, message: "after")
 end function
 
 @test
 function dir() -> Unit uses Assert.Check
-  outer(Dir.Up, Dir.Down)
+  outer(a: Dir.Up, b: Dir.Down)
 end function
 
 @test
 function fromLambda() -> Unit uses Assert.Check
-  List.forEach([1], lambda(i) outer(Dir.Up, Dir.Down) end lambda)
+  List.forEach(xs: [1], f: lambda(value) outer(a: Dir.Up, b: Dir.Down) end lambda)
 end function
 "#
     );
@@ -585,49 +585,49 @@ data B
 end data
 
 function check[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  Assert.equal(a, b)
+  Assert.equal(actual: a, expected: b)
 end function
 
 function checkTail[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  check(a, b)
+  check(a: a, b: b)
 end function
 
 function checkOption[T: equality](a: Option[T], b: Option[T]) -> Unit uses Assert.Check
-  Assert.equal(a, b)
+  Assert.equal(actual: a, expected: b)
 end function
 
 function optionTail[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  checkOption(Option.Some(a), Option.Some(b))
+  checkOption(a: Option.Some(a), b: Option.Some(b))
 end function
 
 @test
 function genericA() -> Unit uses Assert.Check
-  checkTail(A.A1, A.A2)
+  checkTail(a: A.A1, b: A.A2)
 end function
 
 @test
 function genericB() -> Unit uses Assert.Check
-  checkTail(B.B1, B.B2)
+  checkTail(a: B.B1, b: B.B2)
 end function
 
 @test
 function optionA() -> Unit uses Assert.Check
-  optionTail(A.A1, A.A2)
+  optionTail(a: A.A1, b: A.A2)
 end function
 
 @test
 function optionB() -> Unit uses Assert.Check
-  optionTail(B.B1, B.B2)
+  optionTail(a: B.B1, b: B.B2)
 end function
 
 @test
 function piped() -> Unit uses Assert.Check
-  Option.Some(5) |> Assert.equal(_, Option.Some(3))
+  Option.Some(5) |> Assert.equal(actual: _, expected: Option.Some(3))
 end function
 
 @test
 function pipedFirst() -> Unit uses Assert.Check
-  Option.Some(5) |> Assert.equal(Option.Some(3))
+  Option.Some(5) |> Assert.equal(expected: Option.Some(3))
 end function
 "#
     );
@@ -682,49 +682,49 @@ fn long_values_are_cut_at_4_kib_with_an_ellipsis() {
     let cases = [
         (
             "String",
-            r#"String.repeat("a", 4094)"#,
+            r#"String.repeat(s: "a", n: 4094)"#,
             r#""""#,
             format!("\"{}\"", "a".repeat(4094)),
             r#""""#,
         ),
         (
             "String",
-            r#"String.repeat("a", 4095)"#,
+            r#"String.repeat(s: "a", n: 4095)"#,
             r#""""#,
             format!("\"{}…", "a".repeat(4092)),
             r#""""#,
         ),
         (
             "String",
-            r#""a" + String.repeat("あ", 1400)"#,
+            r#""a" + String.repeat(s: "あ", n: 1400)"#,
             r#""""#,
             format!("\"a{}…", "あ".repeat(1363)),
             r#""""#,
         ),
         (
             "String",
-            r#"String.repeat("\u{202e}", 600)"#,
+            r#"String.repeat(s: "\u{202e}", n: 600)"#,
             r#""""#,
             cut_expected(&format!("\"{}\"", r#"\u{202e}"#.repeat(600))),
             r#""""#,
         ),
         (
             "List[Integer]",
-            "List.range(0, 1000)",
+            "List.range(start: 0, stop: 1000)",
             "[]",
             cut_expected(&format!("[{numbers}]")),
             "[]",
         ),
         (
             "Set[Integer]",
-            "Set.fromList(List.range(0, 1000))",
+            "Set.fromList(List.range(start: 0, stop: 1000))",
             "Set.fromList([])",
             cut_expected(&format!("Set.fromList([{numbers}])")),
             "Set.fromList([])",
         ),
         (
             "Map[Integer, String]",
-            r#"Map.fromList(List.map(List.range(0, 8), lambda(n) return Pair(n, String.repeat("a", 600)) end lambda))"#,
+            r#"Map.fromList(List.map(xs: List.range(start: 0, stop: 8), f: lambda(value) return Pair(value, String.repeat(s: "a", n: 600)) end lambda))"#,
             "Map.fromList([])",
             cut_expected(&format!("Map.fromList([{pairs}])")),
             "Map.fromList([])",
@@ -740,11 +740,11 @@ fn long_values_are_cut_at_4_kib_with_an_ellipsis() {
     let mut source = format!(
         r#"{TYPES}
 function check[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  Assert.equal(a, b)
+  Assert.equal(actual: a, expected: b)
 end function
 
 function bytes(n: Integer) -> Bytes
-  match Bytes.fromHex(String.repeat("00", n)) with
+  match Bytes.fromHex(String.repeat(s: "00", n: n)) with
   case Option.Some(bs) -> return bs
   case Option.None -> return bytes(0)
   end match
@@ -752,25 +752,28 @@ end function
 
 function nest(n: Integer, acc: Nested) -> Nested
   if n = 0 then return acc end if
-  return nest(n - 1, Nested.Node([acc]))
+  return nest(n: n - 1, acc: Nested.Node([acc]))
 end function
 
 @test
 function deep() -> Unit uses Assert.Check
-  Assert.equal(nest(320, Nested.Leaf), Nested.Leaf)
+  Assert.equal(actual: nest(n: 320, acc: Nested.Leaf), expected: Nested.Leaf)
 end function
 
 @test
 function notEqual() -> Unit uses Assert.Check
-  bind s <- String.repeat("a", 4095)
-  Assert.notEqual(s, s)
+  bind s <- String.repeat(s: "a", n: 4095)
+  Assert.notEqual(actual: s, expected: s)
 end function
 "#
     );
     for (i, (ty, actual, expected, _, _)) in cases.iter().enumerate() {
-        for (prefix, call) in [("typed", "Assert.equal"), ("generic", "check")] {
+        for (prefix, call, labels) in [
+            ("typed", "Assert.equal", "actual: a, expected: b"),
+            ("generic", "check", "a: a, b: b"),
+        ] {
             source.push_str(&format!(
-                "@test\nfunction {prefix}{i}() -> Unit uses Assert.Check\n  bind a: {ty} <- {actual}\n  bind b: {ty} <- {expected}\n  {call}(a, b)\nend function\n"
+                "@test\nfunction {prefix}{i}() -> Unit uses Assert.Check\n  bind a: {ty} <- {actual}\n  bind b: {ty} <- {expected}\n  {call}({labels})\nend function\n"
             ));
         }
     }
@@ -827,35 +830,35 @@ end data
 
 function grow(n: Integer, t: Tree) -> Tree
   if n = 0 then return t end if
-  return grow(n - 1, Tree.Node(t, t))
+  return grow(n: n - 1, t: Tree.Node(t, t))
 end function
 
 function check[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  Assert.equal(a, b)
+  Assert.equal(actual: a, expected: b)
 end function
 
 function checkTail[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  check(a, b)
+  check(a: a, b: b)
 end function
 
 @test
 function sharedUnknown() -> Unit uses Assert.Check
-  checkTail(grow(64, Tree.Leaf), Tree.Leaf)
+  checkTail(a: grow(n: 64, t: Tree.Leaf), b: Tree.Leaf)
 end function
 
 @test
 function otherTree() -> Unit uses Assert.Check
-  checkTail(OtherTree.Node(OtherTree.Leaf, OtherTree.Leaf), OtherTree.Leaf)
+  checkTail(a: OtherTree.Node(OtherTree.Leaf, OtherTree.Leaf), b: OtherTree.Leaf)
 end function
 
 @test
 function shared() -> Unit uses Assert.Check
-  Assert.equal(grow(64, Tree.Leaf), Tree.Leaf)
+  Assert.equal(actual: grow(n: 64, t: Tree.Leaf), expected: Tree.Leaf)
 end function
 
 @test
 function sharedGeneric() -> Unit uses Assert.Check
-  check(grow(64, Tree.Leaf), Tree.Leaf)
+  check(a: grow(n: 64, t: Tree.Leaf), b: Tree.Leaf)
 end function
 "#,
     );
@@ -885,16 +888,16 @@ fn message_operations_report_the_message_and_passing_checks_continue() {
     let source = r#"
 @test
 function isTrueFails() -> Unit uses Assert.Check
-  Assert.isTrue(true, "unused")
-  Assert.isTrue(1 = 2, "one is not two")
+  Assert.isTrue(condition: true, message: "unused")
+  Assert.isTrue(condition: 1 = 2, message: "one is not two")
 end function
 
 @test
 function failFails() -> Unit uses Assert.Check
-  Assert.equal(1, 1)
-  Assert.notEqual(1, 2)
+  Assert.equal(actual: 1, expected: 1)
+  Assert.notEqual(actual: 1, expected: 2)
   bind n: Integer <- Assert.fail("stop here")
-  Assert.equal(n, 0)
+  Assert.equal(actual: n, expected: 0)
 end function
 "#;
     let prepared = prepare(source);
@@ -926,18 +929,18 @@ data Dir
 end data
 
 function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
-  Assert.equal(actual, expected)
+  Assert.equal(actual: actual, expected: expected)
 end function
 
 function viaTail[T: equality](a: T, b: T, k: function() -> Unit uses Assert.Check) -> Unit uses Assert.Check
   k()
-  checkSame(a, b)
+  checkSame(actual: a, expected: b)
 end function
 
 @test("tail call inside an outer instance")
 function nested() -> Unit uses Assert.Check
-  viaTail(Dir.Up, Dir.Up, lambda()
-    viaTail(Color.Red, Color.Green, lambda() return () end lambda)
+  viaTail(a: Dir.Up, b: Dir.Up, k: lambda()
+    viaTail(a: Color.Red, b: Color.Green, k: lambda() return () end lambda)
   end lambda)
 end function
 "#,
@@ -969,13 +972,13 @@ end data
 
 function each[T: equality](a: T, b: T, k: function() -> Unit uses Assert.Check) -> Unit uses Assert.Check
   k()
-  List.forEach([a], lambda(x) Assert.equal(x, b) end lambda)
+  List.forEach(xs: [a], f: lambda(value) Assert.equal(actual: value, expected: b) end lambda)
 end function
 
 @test("lambda after a tail call inside an outer instance")
 function nested() -> Unit uses Assert.Check
-  each(Dir.Up, Dir.Up, lambda()
-    each(Color.Red, Color.Green, lambda() return () end lambda)
+  each(a: Dir.Up, b: Dir.Up, k: lambda()
+    each(a: Color.Red, b: Color.Green, k: lambda() return () end lambda)
   end lambda)
 end function
 
@@ -1006,19 +1009,19 @@ data Dir
   Down
 end data
 
-function keep[T: equality](a: T, g: function() -> Unit uses Assert.Check) -> (function(T) -> Unit uses Assert.Check) uses Assert.Check
+function keep[T: equality](a: T, g: function() -> Unit uses Assert.Check) -> (function(x: T) -> Unit uses Assert.Check) uses Assert.Check
   g()
-  return lambda(x) Assert.equal(a, x) end lambda
+  return lambda(x) Assert.equal(actual: a, expected: x) end lambda
 end function
 
 @test("escaped closure called inside another instance of its function")
 function escaped() -> Unit uses Assert.Check
-  bind f <- keep(Color.Red, lambda() return () end lambda)
-  bind ignored <- keep(Dir.Up, lambda()
+  bind f <- keep(a: Color.Red, g: lambda() return () end lambda)
+  bind ignored <- keep(a: Dir.Up, g: lambda()
     f(Color.Green)
-    Assert.isTrue(true, "after")
+    Assert.isTrue(condition: true, message: "after")
   end lambda)
-  Assert.isTrue(true, "end")
+  Assert.isTrue(condition: true, message: "end")
 end function
 "#,
     );
@@ -1053,26 +1056,26 @@ end trait
 
 implement[T: equality] Check[Option[T]]
   function check(a: Option[T], b: Option[T]) -> Unit uses Assert.Check
-    twoStep(a, b)
+    twoStep(actual: a, expected: b)
   end function
 end implement
 
 function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
-  Assert.equal(actual, expected)
+  Assert.equal(actual: actual, expected: expected)
 end function
 
 function twoStep[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
-  checkSame(actual, expected)
+  checkSame(actual: actual, expected: expected)
 end function
 
 @test("passing use with Color")
 function colors() -> Unit uses Assert.Check
-  twoStep(Option.Some(Color.Red), Option.Some(Color.Red))
+  twoStep(actual: Option.Some(Color.Red), expected: Option.Some(Color.Red))
 end function
 
 @test("failing use through an implementation with Dir")
 function dirs() -> Unit uses Assert.Check
-  Check.check(Option.Some(Dir.Up), Option.Some(Dir.Down))
+  Check.check(a: Option.Some(Dir.Up), b: Option.Some(Dir.Down))
 end function
 "#,
     );
@@ -1097,22 +1100,22 @@ data Color
 end data
 
 function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
-  Assert.equal(actual, expected)
+  Assert.equal(actual: actual, expected: expected)
 end function
 
 function twoStep[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
-  checkSame(actual, expected)
+  checkSame(actual: actual, expected: expected)
 end function
 
 @test("fails")
 function fails() -> Unit uses Assert.Check
-  twoStep(Color.Red, Color.Green)
+  twoStep(actual: Color.Red, expected: Color.Green)
 end function
 
 @test("passes")
 function passes() -> Unit uses Assert.Check
-  twoStep(Color.Red, Color.Red)
-  Assert.isTrue(true, "x")
+  twoStep(actual: Color.Red, expected: Color.Red)
+  Assert.isTrue(condition: true, message: "x")
 end function
 "#
     .replace(
@@ -1153,25 +1156,25 @@ data Dir
 end data
 
 function checkSame[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  Assert.equal(a, b)
+  Assert.equal(actual: a, expected: b)
 end function
 
 function twoStep[T: equality](a: T, b: T) -> Unit uses Assert.Check
-  checkSame(a, b)
+  checkSame(a: a, b: b)
 end function
 
 function higher[F[_], T: equality](marker: F[Integer], a: T, b: T) -> Unit uses Assert.Check
-  twoStep(a, b)
+  twoStep(a: a, b: b)
 end function
 
 @test
 function colors() -> Unit uses Assert.Check
-  twoStep(Color.Red, Color.Red)
+  twoStep(a: Color.Red, b: Color.Red)
 end function
 
 @test
 function dirs() -> Unit uses Assert.Check
-  higher(Option.Some(1), Dir.Up, Dir.Down)
+  higher(marker: Option.Some(1), a: Dir.Up, b: Dir.Down)
 end function
 "#,
     );

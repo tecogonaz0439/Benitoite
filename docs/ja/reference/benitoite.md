@@ -1,6 +1,6 @@
 # Benitoite 言語リファレンス
 
-> この文書は、`docs/reference/benitoite.md` の日本語の訳である。訳した元は、Benitoite 0.0.4 の版の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.5 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（crates/benitoite/tests/reference_examples.rs）:
@@ -16,9 +16,9 @@
 この訳のコードの例は検査しない。検査するのは英語の版である。
 -->
 
-このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.4` を説明する。最初のリリースである `0.0.1` からの変更は、[CHANGELOG](../../../CHANGELOG.md) に挙げてある。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
+このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.5` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
 
-`benitoite` のインストールは、[Benitoite のインストール](install.md)を参照する。以前の最小の実装（`0.0.0`）は [benitoite-minimal.md](../../reference/benitoite-minimal.md) を参照する。両者の違いは [CHANGELOG](../../../CHANGELOG.md) に挙げてある。
+`benitoite` のインストールは、[Benitoite のインストール](install.md)を参照する。
 
 Benitoite は、静的に型付けされた関数型のスクリプト言語である。スクリプトは `.bnt` のファイルである。何かを実行する前に、`benitoite` はスクリプトの型と、スクリプトが使うエフェクト（ファイルの書き込みやコマンドの起動など、各関数がプログラムの外で行ってよいこと）を検査する。検査が保証するのは、スクリプトがこれらの規則に従っていることだけである。スクリプトが意図どおりに動くこと、外部の操作が成功すること、スクリプトが終わることは保証しない。
 
@@ -97,7 +97,7 @@ benitoite --licenses
 | `skill` | 同梱の Agent Skill を、コーディングエージェントがスキルを読む場所に書き出す、または取り除く。[Benitoite のインストール](install.md#3-agent-skill-をインストールする)を参照する。 |
 | `package` | 実験的な機能。局所の依存の宣言を追加・更新・移動する。[パッケージのコマンド](#パッケージのコマンド)を参照する。 |
 | `--help` | 使い方を出力する。 |
-| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.4`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
+| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.5`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
 | `--licenses` | 実行ファイルに含まれる第三者のソフトウェアのライセンスを出力する。ソースからのビルドはこの一覧を含まず、そのことを出力する。 |
 
 `<script>` は、ファイルか、`main.bnt` を含むディレクトリである。ファイル名と拡張子は確かめない。ただし、`package.bnt` は設定ファイルであり、起点のファイルにはできない。スクリプトのディレクトリが*根のディレクトリ*である。スクリプトは、根のディレクトリとその下、標準ライブラリ（[モジュール](#12-モジュール)）、宣言した局所の依存からモジュールを取り込める（[第 21 節](#21-実験的な機能-パッケージと外部の関数)）。`benitoite` は、根のディレクトリそのものにある `package.bnt` を設定ファイルとして読む。親のディレクトリや作業ディレクトリは探さない。
@@ -147,12 +147,12 @@ Linux では `#!/usr/bin/env benitoite run` と書かない。Linux はインタ
 
 ファイルのトップレベルには、`import` の宣言、その後に宣言（関数、定数、データ型、型の別名、レコード、型クラス、実装、エフェクト）をこの順に置く。実行するコードは関数の中にだけ書く。
 
-ブロックは、`end` とブロックを開いたキーワードで閉じる。`end function`、`end if`、`end match`、`end lambda`、`end data`、`end record`、`end trait`、`end implement`、`end effect`、`end handle`、`end with`、`end lazy` である。波括弧はなく、字下げに意味はない。文は改行で区切る。セミコロンはない。
+短いラムダ（[関数とラムダ](#6-関数とラムダ)を参照する）を除き、ブロックは、`end` とブロックを開いたキーワードで閉じる。`end function`、`end if`、`end match`、`end lambda`、`end data`、`end record`、`end trait`、`end implement`、`end effect`、`end handle`、`end with`、`end lazy` である。波括弧はなく、字下げに意味はない。文は改行で区切る。セミコロンはない。
 
 ブロックの中では次のように書く。
 
 - `bind name <- expression` は値に名前を付ける。名前に再び代入することはできない。
-- `shadow name <- expression` は、既に見えている局所の名前を隠す名前を束縛する。既に局所の名前として見えている名前での `bind` は誤りなので、隠すことは常に明示する。
+- `shadow name <- expression` は、既に見えている局所の名前を隠す名前を束縛する。既に局所の名前として見えている名前での `bind` は誤りなので、隠すことは常に明示する。`shadow` は有効な構文だが、推奨しない。意図して古い名前を隠す場合も、新しい値の意味を表す別の名前を使う。これは文書上の助言であり、警告は加えない。
 - `return expression` は関数を終え、値を返す。
 - 1 行に単独で書いた式は文である。その文がブロックの最後の文でないとき、または関数かラムダの本体の最後の文であるときは、その値は `Unit` でなければならない。ほかの値を捨てるには `bind _ <- expression` と書く。
 
@@ -175,9 +175,12 @@ end function
 
 function main() -> Unit uses Console.Write
   bind total <- 10
-  shadow total <- total + larger(3, 7)
-  bind label <- if total > 15 then "big" else "small" end if
-  Console.writeLine("${label}: ${total}")
+  bind increased <- total + larger(a: 3, b: 7)
+  bind label <- match increased > 15 with
+    case true -> "big"
+    case false -> "small"
+  end match
+  Console.writeLine("${label}: ${increased}")
 end function
 ```
 
@@ -186,6 +189,47 @@ big: 17
 ```
 
 ループの文、`null`、例外はない。ループの代わりに再帰かリストの関数を、`null` の代わりに `Option` を、例外の代わりに `Result` と `try` を使う。
+
+値や処理の選択には `match` を推奨する。条件成立時だけの処理や早期リターンには、上の `larger` のように `else` のない `if` を使う。`else` と `else if` は有効な構文だが、推奨しない。検査器はこれらに警告を加えない。選択を書き換えるときは、条件の評価回数と順序を保ち、選ばれた分岐だけを評価し、`return` の作用先を同じ関数かラムダに保つ。エフェクトを含む条件は match のガードにできないので、その真偽値に対する match を入れ子にする。
+
+この例は、最初の条件が偽のときにだけ二つ目の条件を評価する。各 `return` は `choose` を終え、選ばれた結果だけを返す。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+
+function condition(label: String, value: Boolean) -> Boolean uses Console.Write
+  Console.writeLine(label)
+  return value
+end function
+
+function choose(first: Boolean, second: Boolean) -> String uses Console.Write
+  match condition(label: "first", value: first) with
+    case true -> return "first selected"
+    case false ->
+      match condition(label: "second", value: second) with
+        case true -> return "second selected"
+        case false -> return "neither selected"
+      end match
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(choose(first: true, second: true))
+  Console.writeLine(choose(first: false, second: true))
+  Console.writeLine(choose(first: false, second: false))
+end function
+```
+
+```output
+first
+first selected
+first
+second
+second selected
+first
+second
+neither selected
+```
 
 ## 4. 基本型とリテラル
 
@@ -209,7 +253,7 @@ big: 17
 
 ### 数値型の名前と接尾辞
 
-ビット幅を含む名前が正式な名前である。このリファレンス、診断、表示するシグネチャでは、既存の名前 `Integer`、`Float`、`Byte` を主に使う。次の表の各行の名前は同じ型を表し、名前を使い分けるための変換は要らない。これらの型と標準のモジュールは、すべて prelude にある。
+ビット幅を含む名前が正式な名前である。このリファレンス、診断、表示するシグネチャでは、別名の `Integer`、`Float`、`Byte` を主に使う。次の表の各行の名前は同じ型を表し、名前を使い分けるための変換は要らない。これらの型と標準のモジュールは、すべて prelude にある。
 
 | 正式な名前 | 別名 | 既定の表示 | 整数の範囲または浮動小数点の形式 |
 |---|---|---|---|
@@ -224,13 +268,13 @@ big: 17
 | `Float32` | — | `Float32` | binary32 |
 | `Float64` | `Float` | `Float` | binary64 |
 
-`Integer8`、`Integer16`、`Integer32`、`UnsignedInteger16`、`UnsignedInteger32`、`UnsignedInteger64`、`Float32` は、それぞれ異なる七つの型である。接尾辞のないリテラルは元の型を保つ。周囲のコードが別のビット幅を期待していても、`1` は常に `Integer`、`1.0` は常に `Float` である。二項の算術演算、等値の比較、大小の比較では、別名を展開した後の両辺の型が同じでなければならない。`Integer32` の算術演算には `1s32 + 2s32` を使い、計算で得た値には明示的な変換を使う。
+`Integer8`、`Integer16`、`Integer32`、`UnsignedInteger16`、`UnsignedInteger32`、`UnsignedInteger64`、`Float32` は、それぞれ異なる七つの型である。接尾辞のないリテラルの型は固定である。周囲のコードが別のビット幅を期待していても、`1` は常に `Integer`、`1.0` は常に `Float` である。二項の算術演算、等値の比較、大小の比較では、別名を展開した後の両辺の型が同じでなければならない。`Integer32` の算術演算には `1s32 + 2s32` を使い、計算で得た値には明示的な変換を使う。
 
 整数の接尾辞は小文字の `s8`、`s16`、`s32`、`s64`、`u8`、`u16`、`u32`、`u64`、浮動小数点の接尾辞は `f32` と `f64` である。**この接尾辞の構文は暫定であり、言語の構文を見直すときに変わることがある。**通常の互換性の方針は引き続き適用される。`1s64` は `Integer`、`1.0f64` は `Float`、`255u8` は `Byte` である。整数の接尾辞は、十六進・八進・二進の表記と数字の間のアンダースコアを保つ。`0xffu8`、`0o177s8`、`0b1010u16`、`1_000s32` のように書ける。浮動小数点の接尾辞には小数点か指数が要る。`1f32` ではなく `1.0f32` と書く。十六進の `0xfff32` は、`f32` が十六進の数字からなるため、接尾辞のない整数のままである。`Decimal` の接尾辞 `m` は、ほかの接尾辞と組み合わせられない。
 
-範囲外のリテラルは静的な誤りである。符号付きのリテラルに直接付けた負号は、範囲の検査に符号を含めるので、`-128s8` は有効である。一方、`-(128s8)` は範囲外の正のリテラルを含む。符号なしの型では、`-0u16` や `-1u8` を含めて、単項の負号を使えない。新しいビット幅の型と `Byte` は、定数のパターンも範囲のパターンも使えない。代わりに値を束縛し、ガードで比べる。定数の桁あふれと 0 による除算は、`const` の式では誤り、通常の式では警告になる。
+範囲外のリテラルは静的な誤りである。符号付きのリテラルに直接付けた負号は、範囲の検査に符号を含めるので、`-128s8` は有効である。一方、`-(128s8)` は範囲外の正のリテラルを含む。符号なしの型では、`-0u16` や `-1u8` を含めて、単項の負号を使えない。`Integer8`、`Integer16`、`Integer32`、符号なし整数の型、`Byte`、`Float32` は、定数のパターンも範囲のパターンも使えない。代わりに値を束縛し、ガードで比べる。定数の桁あふれと 0 による除算は、`const` の式では誤り、通常の式では警告になる。
 
-`Float32` は、値を作るときと各算術演算の後に、最も近い binary32 の値へ丸める。ちょうど中間なら偶数側に丸める。演算を融合積和演算にまとめることはない。無限大、NaN、符号付きの 0、比較は `Float` に従う。NaN のペイロードのビットは、契約として保存を保証しない。`toString`、文字列補間、`Trait.Show` は、整数には十進の表記を、浮動小数点には同じビット幅で読み直したときに同じ値になる最短の十進の表記を使い、接尾辞は付けない。新しい整数は、等値の比較、`ordered`、マップと集合のキーに対応する。`Float32` は等値の比較と `ordered` に対応するが、キーにはできない。七つの型すべてに `Trait.Show` と `Trait.Order` の標準の実装がある。`Trait.Order` は、すべての NaN を互いに等しく、ほかの値より大きいものとして扱い、正と負の 0 を等しいものとして扱う。
+`Float32` は、値を作るときと各算術演算の後に、最も近い binary32 の値へ丸める。ちょうど中間なら偶数側に丸める。演算を融合積和演算にまとめることはない。無限大、NaN、符号付きの 0、比較は `Float` に従う。NaN のペイロードのビットは、契約として保存を保証しない。`toString`、文字列補間、`Trait.Show` は、整数には十進の表記を、浮動小数点には同じビット幅で読み直したときに同じ値になる最短の十進の表記を使い、接尾辞は付けない。整数の型はすべて、等値の比較、`ordered`、マップと集合のキーに対応する。`Float32` は等値の比較と `ordered` に対応するが、キーにはできない。七つの型すべてに `Trait.Show` と `Trait.Order` の標準の実装がある。`Trait.Order` は、すべての NaN を互いに等しく、ほかの値より大きいものとして扱い、正と負の 0 を等しいものとして扱う。
 
 ### 数値の変換と標準の関数
 
@@ -241,11 +285,11 @@ big: 17
 | `Integer8`, `Integer16`, `Integer32`, `UnsignedInteger16`, `UnsignedInteger32` | `fromInteger`, `toInteger` | `fromInteger` は `Option[T]` を返す。`toInteger` は正確に変換し、`Integer` を返す |
 | `UnsignedInteger64` | `fromInteger`, `toInteger` | 両方とも `Option` を返す。入力が負か、結果が `Integer` の最大値を超えると `None` になる |
 | `UnsignedInteger64` | `fromDecimal`, `toDecimal` | 全範囲で正確に変換する。`fromDecimal` は、範囲内で小数部分が 0 の値（`1.0m` を含む）だけを受け取り、`Option` を返す |
-| 新しい整数のモジュール六つすべて | `parse`, `toString`, `toFloat` | 十進の解析は `Option` を返し、空白、基数の接頭辞、アンダースコア、範囲外の値、符号なしの型の負の値を拒む。`toFloat` は binary64 に丸める |
-| 新しい整数のモジュール六つすべて | `absolute`, `minimum`, `maximum`, `floorDivide`, `floorModulo` | 結果は同じビット幅である。符号付きの最小値の `absolute` は桁あふれになり、符号なしの `absolute` は元の値を返す |
-| 新しい整数のモジュール六つすべて | `bitwiseAnd`, `bitwiseOr`, `bitwiseExclusiveOr`, `bitwiseNot`, `shiftLeft`, `shiftRight` | シフトの量は 0 からビット幅−1 までの `Integer` である。左シフトはビット幅を超えたビットを捨てる。符号付きの右シフトは符号を拡張し、符号なしの右シフトは 0 で埋める |
-| 新しい符号付き整数のモジュール | `shiftRightUnsigned` | 0 で埋める右シフト |
-| `Float32` | `fromFloat`, `toFloat` | `fromFloat` は `Option` を返し、binary32 に丸め、有限の値が無限大になる場合は拒む。元から無限大や NaN の値は `Some` になる。`toFloat` は有限の値を正確に広い型へ変換する |
+| 符号付き 8/16/32 ビットと符号なし 16/32/64 ビットの整数のモジュール | `parse`, `toString`, `toFloat` | 十進の解析は `Option` を返し、空白、基数の接頭辞、アンダースコア、範囲外の値、符号なしの型の負の値を拒む。`toFloat` は binary64 に丸める |
+| 符号付き 8/16/32 ビットと符号なし 16/32/64 ビットの整数のモジュール | `absolute`, `minimum`, `maximum`, `floorDivide`, `floorModulo` | 結果は同じビット幅である。符号付きの最小値の `absolute` は桁あふれになり、符号なしの `absolute` は元の値を返す |
+| 符号付き 8/16/32 ビットと符号なし 16/32/64 ビットの整数のモジュール | `bitwiseAnd`, `bitwiseOr`, `bitwiseExclusiveOr`, `bitwiseNot`, `shiftLeft`, `shiftRight` | シフトの量は 0 からビット幅−1 までの `Integer` である。左シフトはビット幅を超えたビットを捨てる。符号付きの右シフトは符号を拡張し、符号なしの右シフトは 0 で埋める |
+| `Integer8`, `Integer16`, `Integer32` | `shiftRightUnsigned` | 0 で埋める右シフト |
+| `Float32` | `fromFloat`, `toFloat` | `fromFloat` は `Option` を返し、binary32 に丸め、有限の値が無限大になる場合は拒む。無限大や NaN の入力は `Some` になる。`toFloat` は有限の値を正確に広い型へ変換する |
 | `Float32` | `parse`, `toString`, `truncate` | `Float` の十進の表記を直接 binary32 として解析し、有限の値だけ `Some` を返す。`truncate` は 0 の方向に丸めて `Option[Integer]` を返し、NaN、無限大、範囲外の値を拒む |
 | `Float32` | `absolute`, `floor`, `ceiling`, `round`, `squareRoot`, `isNaN`, `isInfinite` | binary32 の精度で `Float` と同じように動く。`round` はちょうど中間の値を 0 から遠い側に丸める。負の数の平方根は NaN になる |
 
@@ -255,9 +299,9 @@ big: 17
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  bind small <- Option.unwrapOr(Integer8.fromInteger(42), 0s8)
+  bind small <- Option.unwrapOr(o: Integer8.fromInteger(42), fallback: 0s8)
   bind maximum <- 18446744073709551615u64
-  bind narrowed <- Option.unwrapOr(Float32.fromFloat(0.1), 0.0f32)
+  bind narrowed <- Option.unwrapOr(o: Float32.fromFloat(0.1), fallback: 0.0f32)
   bind same: Integer64 <- Integer8.toInteger(small)
   Console.writeLine("${small + 1s8} ${same} ${Integer8.fromInteger(128) = Option.None}")
   Console.writeLine("${UnsignedInteger64.toInteger(maximum) = Option.None} ${UnsignedInteger64.toDecimal(maximum)}")
@@ -290,7 +334,7 @@ function main() -> Unit uses Console.Write
   Console.write(page)
   Console.writeLine(r"\d+ and ${not interpolated}")
   Console.writeLine("${String.characterCount("héllo")} characters, ${String.byteLength("héllo")} bytes")
-  Console.writeLine(Decimal.toString(Decimal.round(2.675m, 2, RoundingMode.HalfToEven)))
+  Console.writeLine(Decimal.toString(Decimal.round(x: 2.675m, places: 2, mode: RoundingMode.HalfToEven)))
 end function
 ```
 
@@ -310,7 +354,7 @@ end function
 
 | 演算子 | 意味 | 結合 |
 |---|---|---|
-| `|>` | パイプ: `x |> f(a)` は `f(x, a)` | 左 |
+| `|>` | パイプ: `xs |> List.map(f: action)` のように最初のパラメータを満たす | 左 |
 | `or` | 論理和（短絡） | 左 |
 | `and` | 論理積（短絡） | 左 |
 | `=` `<>` `<` `<=` `>` `>=` | 比較 | なし（`a < b < c` は誤り） |
@@ -335,9 +379,35 @@ function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2
 end function
 ```
 
-呼び出しはカリー化しない。すべての引数を与える。*ラムダ*は関数の値であり、引数と戻り値の型を省いてよい。関数と同じく、ラムダは `return` で値を返す。`Unit` を返すラムダは、代わりに文で終わってよい。
+呼び出しはカリー化されない。引数をすべて渡す。二つ以上のパラメータを持つ通常の関数では、各引数にパラメータ名を付けて `between(low: 2, value: 3, high: 4)` と書く。一引数の関数は名前を付けても省いても呼べる。引数がゼロなら `f()` と書く。名前付き引数と位置引数を混在させない。名前付き引数は任意の順に書けるが、各パラメータをちょうど一度ずつ指定する。ラベルは局所変数ではなくパラメータの名前である。`value: input` は局所の値 `input` をパラメータ `value` へ渡す。ラベルの記述順が宣言順と違っていても、呼ぶ関数の式を最初に評価し、次に引数の式をソースの記述順に一度ずつ評価する。
 
-呼び出しの直接の引数としての `_` は、欠けた引数を受け取る関数を作る。`Integer.maximum(_, 0)` は `lambda(x) return Integer.maximum(x, 0) end lambda` である。パイプ `x |> f(a, b)` は、`x` を第 1 引数として渡し、`f(x, a, b)` となる。右の呼び出しに `_` があるときは、パイプは代わりにその位置を埋める。
+この呼び出しの規則は、宣言した関数、組み込みの関数、関数値、ラムダ、型クラスのメソッド、エフェクトの操作、外部の関数に適用する。直接のデータ構築とデータのパターンは、`Pair(1, "one")` のような位置フィールドを使う。レコードは名前付きのフィールドを使う（[データ型とレコード](#7-データ型レコードパターンマッチ)を参照）。属性、ハンドラの節の束縛、`resume(value)` には、それぞれ専用の構文がある。
+
+*ラムダ*は関数値であり、パラメータと戻り値の型を省いてよい。関数と同じく `return` で値を返す。`Unit` を返すラムダは、代わりに文で終えてもよい。
+
+本体が一文なら短いラムダを推奨する。明示の終端も有効であり、フォーマッタは選んだ形を保つ。見出しと本体の全体が同じ物理行に収まる一文のラムダは、`lambda(x) return x + 1` のように `end lambda` を省ける。本体を見出しの最後の行に始める場合は、その同じ物理行の `end lambda` だけがそのラムダを閉じる。後の行の `end lambda` は外側のラムダを閉じることがあり、空行を挟んでもこの対応は変わらない。複数行のラムダは、見出しの次の行に本体を始め、`end lambda` で閉じる。
+
+短いラムダも、`Unit` 以外の値を返すには `return` を要する。`lambda(x) return x + 1 |> increment` のパイプは本体に属する。ラムダ自体を呼ぶには `(lambda(x) return x + 1)(3)` と書く。直接に入れ子になった二つのラムダのどちらかで終端を省く場合は、内側のラムダ全体を括弧で囲み、`lambda(x) return (lambda(y) return x + y)` と書く。呼び出しの引数と束縛文は、それぞれ独立した区切りとなる。短い本体に二文目を加える前に、本体を見出しの次の行へ移し、`end lambda` を加える。
+
+### 関数の契約とコールバック
+
+関数型は、`function(value: Integer) -> Integer` や `function(acc: Integer, value: Integer) -> Integer` のように、各パラメータに名前を付けて書く。型の中の名前は局所の値を束縛しない。パラメータ名とその順序は、型とエフェクトとともに契約の一部である。一引数のコールバックでも、各位置で名前が一致しなければならない。検査器は期待する型に合わせてラムダを改名しない。呼び出しでラベルを別の順に書いても、契約の順序は変わらない。
+
+`List.map` が期待する型は `function(value: T) -> U` なので、`List.map(xs: xs, f: lambda(value) return value * 2)` と書く。主なコールバックの契約と宣言全体については、[標準ライブラリ](#19-標準ライブラリ)を参照する。パラメータが未使用でも期待する名前を保ち、`_unused` などに置き換えない。意味を表す局所名を使いたい場合は、複数行の本体に `bind` を加える。
+
+異なる契約を持つ関数を渡すには、必要な名前のラムダで包む。例えば、`Integer.toString` は `n` を取るので、`List.map` へは `lambda(value) return Integer.toString(value)` を渡す。構成子の関数値とレコードの取り出す関数も、パラメータ名を含む契約がある。[データ型とレコード](#7-データ型レコードパターンマッチ)で説明する。
+
+型注釈のない関数パラメータを呼ぶとき、そのラベルから契約順を決めることはしない。同じ関数の本体内の制約で契約が確定しなければ、`g: function(a: Integer, b: Integer) -> Integer` などの型注釈を加える。注釈がなければ検査器は `E0455` を報告する。未使用のラムダや、一つの位置引数を渡す呼び出しでも同じである。検査済みの関数で不足している契約を、呼び出し元から後で補うことはできない。
+
+### 穴とパイプ
+
+呼び出しの直接の引数の `_` は、不足する引数を取る関数を作る。`Integer.maximum(a: _, b: 0)` の型は `function(a: Integer) -> Integer` である。各穴は対応するパラメータ名を引き継ぎ、複数の穴は記述順に並ぶ。`between(high: _, value: 3, low: _)` は `low, high` ではなく `high, low` を取る。位置構成子の直接の穴は、元の位置の名前を引き継ぐ。`Pair(_, "one")` は `arg1` を取る。呼ぶ関数の式と固定した引数の式を評価するのは、生成した関数を作るときではなく、その関数を呼ぶときである。これらの式の中の `return` と `try` は生成した関数に作用する。`resume` はこの境界を越えられない。
+
+直接の穴がない場合、パイプの右辺の呼び出しは、左の値を宣言上の最初のパラメータとして受け取る。`xs |> List.map(f: action)` がその例である。関数のパラメータが二つ以上なら、残りの明示引数すべてにラベルを付ける。最初のパラメータを明示的に再び指定すると重複となる。パイプが別の空いたパラメータを探すことはない。評価順は、左辺を一度、次に右辺の呼ぶ関数の式、次に明示引数をソースの記述順である。
+
+`xs |> List.map(xs: _, f: action)` のように直接の穴がある場合は、パイプは生成した関数を一引数で呼ぶ。括弧で囲んだ右辺も、関数値として一引数を受け取る。二つの穴には二つの引数が必要であり、パイプがその関数を自動で再び部分適用することはない。
+
+### 型とエフェクトのパラメータ
 
 型パラメータは、名前の後の角括弧に書く。`function first[T](xs: List[T]) -> Option[T]` のように書く。型引数も角括弧を使う。`List[Integer]`、`Map[String, Integer]` のように書く。*エフェクト変数*は、エフェクトの集合を表す型パラメータである。エフェクト変数を使うと、関数は任意のエフェクトを持つ関数を引数に取り、そのエフェクトをそのまま自分のエフェクトにできる。
 
@@ -348,22 +418,22 @@ function between(low: Integer, value: Integer, high: Integer) -> Boolean
   return low <= value and value <= high
 end function
 
-function twice[T, effect E](x: T, f: function(T) -> T uses E) -> T uses E
+function twice[T, effect E](x: T, f: function(value: T) -> T uses E) -> T uses E
   return f(f(x))
 end function
 
 function main() -> Unit uses Console.Write
   bind text <- [1, 2, 3, 4, 5]
-    |> List.filter(_, between(2, _, 4))
-    |> List.map(_, Integer.toString)
-    |> String.join(_, ",")
+    |> List.filter(p: between(low: 2, value: _, high: 4))
+    |> List.map(f: lambda(value) return Integer.toString(value))
+    |> String.join(separator: ",")
   Console.writeLine(text)
-  Console.writeLine(Integer.toString(twice(5, lambda(n) return n * 3 end lambda)))
-  bind shout <- lambda(s: String) -> String
-    Console.writeLine("shouting ${s}")
-    return String.toUppercase(s)
+  Console.writeLine(Integer.toString(twice(x: 5, f: lambda(value) return value * 3)))
+  bind shout <- lambda(value: String) -> String
+    Console.writeLine("shouting ${value}")
+    return String.toUppercase(value)
   end lambda
-  Console.writeLine(twice("hi", shout))
+  Console.writeLine(twice(x: "hi", f: shout))
 end function
 ```
 
@@ -385,9 +455,13 @@ HI
 
 データ型は、その構成子を 1 行に一つずつ挙げる。構成子は、式でもパターンでも、常に型の名前を付けて書く。`Shape.Circle(1.0)`、`Option.Some(x)`、`Result.Error(e)` のように書く。`Pair` や `Triple` のように、唯一の構成子が型と同じ名前を持つ型は、型の名前を付けずに書く。`Pair(1, "one")` のように書く。
 
+フィールドを持つ構成子は、関数値としても使える。そのパラメータはフィールド順に `arg1`、`arg2`、…となる。`bind make <- Pair` の後は、`make(arg1: 1, arg2: "one")` と呼ぶ。`Pair(1, "one")` のような直接の構成子の呼び出しは位置フィールドを使い、そこでラベルを付けると `E0456` になる。
+
 ### レコード
 
 レコードは名前の付いたフィールドを持つ。名前付きの引数で作り、フィールドを `Type.field(value)` で読み、一部のフィールドを変えた写しを `Type(..value, field: newValue)` で作る。`value.field` は正しくない。
+
+`Item.price` などのレコードの取り出す関数のパラメータ名は `value` である。レコード構成子を関数値として使うときは、宣言順のフィールド名を取る。これらの名前も、[関数の契約とコールバック](#関数の契約とコールバック)で説明した、期待するコールバックの契約と一致しなければならない。
 
 ### パターンマッチ
 
@@ -403,6 +477,8 @@ HI
 - ガードを後に続けたもの `case n if n > 0 ->`。
 
 リストのリテラルは、別のリストの要素を差し込む展開 `[first, ..rest]` を一つ含められる。`bind` と `shadow` は、`bind Pair(a, b) <- pair` のように、必ず照合するパターンを受け付ける。
+
+包括的な最後の分岐には、`case other ->` や `case otherCode ->` のような通常の名前を推奨する。これらの名前は照合した値を束縛し、予約語ではない。外側の局所名や見えている定数と衝突しない名前を選び、ガードのない包括的な分岐の後に到達しない分岐を置かない。`case _ ->` も有効であり、警告は出ない。この推奨は、構成子パターン内の `_`、捨てる束縛、部分適用のプレースホルダには適用しない。
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -439,13 +515,13 @@ function grade(score: Integer) -> String
     case 90..100 -> "A"
     case 70..89 -> "B"
     case 0, 1 -> "almost nothing"
-    case _ -> "C"
+    case otherScore -> "C"
   end match
 end function
 
 function main() -> Unit uses Console.Write
-  List.forEach([Shape.Circle(1.0), Shape.Rectangle(2.0, 3.5)], lambda(s)
-    Console.writeLine(Float.toString(area(s)))
+  List.forEach(xs: [Shape.Circle(1.0), Shape.Rectangle(2.0, 3.5)], f: lambda(value)
+    Console.writeLine(Float.toString(area(value)))
   end lambda)
   bind item <- Item(name: "pen", price: 120, quantity: 3)
   bind more <- Item(..item, quantity: 10)
@@ -484,7 +560,7 @@ const banner: String = "listening on ${defaultPort}"
 const statusNames: Map[Integer, String] = Map.fromList([Pair(200, "OK"), Pair(404, "Not Found")])
 
 function lookup(id: UserId) -> String
-  return Option.unwrapOr(Map.get(statusNames, id), "unknown")
+  return Option.unwrapOr(o: Map.get(m: statusNames, k: id), fallback: "unknown")
 end function
 
 function main() -> Unit uses Console.Write
@@ -502,7 +578,9 @@ Not Found
 
 値がないことがある操作は `Option[T]`（`Option.Some(x)` か `Option.None`）を返す。失敗することがある操作は `Result[T, E]`（`Result.Ok(x)` か `Result.Error(e)`）を返す。IO の操作は `Result[T, IOError]` を返す。ファイルがないことは値であり、異常終了ではない。
 
-`try e` は `e` を評価する。それが `Result.Error`（または `Option.None`）なら、関数は直ちにそれを返す。そうでなければ、`try` は中の値を与える。`try` は、パイプを含め、右側の式の全体に掛かり、`Result`（または `Option`）を返す関数の中でだけ使える。エラーの型が違うときは、先に変換する。ふつうは `Result.mapError` を使う。
+`try e` は `e` を評価する。`Result.Error`（または `Option.None`）なら、関数はその値をすぐに返す。それ以外なら、`try` は中身の値を取り出す。`try` はパイプを含めた右側の式全体に作用し、`Result`（または `Option`）を返す関数の中でだけ使える。エラーの型が異なるときは、先に `Result.mapError` で変換する。例えば、関数が `Result[T, String]` を返し、`result` が `IOError` を含む場合は、`Result.mapError(r: result, f: lambda(error) return IOError.message(error))` と書く。コールバックのパラメータ名は `error` である。
+
+パイプでは、`try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))` と書く。この `try` は、パイプ全体の結果を取り出す。ラムダ内の `try` はそのラムダから戻る。`_` の穴を持つ呼び出しの、呼ぶ関数の式や固定した引数の中では、`try` は生成した関数から戻り、周囲の関数からは戻らない。[穴とパイプ](#穴とパイプ)を参照する。
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -510,7 +588,7 @@ import Benitoite.Unofficial.IO.Console
 function parsePort(text: String) -> Result[Integer, String]
   return match Integer.parse(text) with
     case Option.Some(n) if n > 0 and n < 65536 -> Result.Ok(n)
-    case _ -> Result.Error("not a port: ${text}")
+    case otherPort -> Result.Error("not a port: ${text}")
   end match
 end function
 
@@ -577,7 +655,7 @@ error[E0501]
 
 `greet` に `uses Console.Write` を加えると、誤りは直る。
 
-エフェクトは関数の値の型の一部である。`function(String) -> Unit uses Console.Write` のように書く。
+エフェクトは関数の値の型の一部である。`function(text: String) -> Unit uses Console.Write` のように書く。
 
 ## 11. エフェクトハンドラ
 
@@ -592,7 +670,7 @@ end effect
 
 function sumPrices(items: List[Integer]) -> Integer uses Log
   write("items: ${List.length(items)}")
-  return List.fold(items, 0, lambda(acc, x) return acc + x end lambda)
+  return List.fold(xs: items, initial: 0, f: lambda(acc, value) return acc + value)
 end function
 
 function main() -> Unit uses Console.Write
@@ -624,7 +702,7 @@ total: 500
 name: Lib/Text.bnt
 /// Turns "Hello World" into "hello-world".
 public function slug(text: String) -> String
-  return String.toLowercase(String.replace(String.trim(text), " ", "-"))
+  return String.toLowercase(String.replace(s: String.trim(text), old: " ", new: "-"))
 end function
 ```
 
@@ -659,7 +737,11 @@ prelude の外のモジュールは、`uses` にだけ現れるときも、す�
 
 ## 13. 型クラス
 
-*型クラス*（`trait`）は、複数の型が実装する関数を宣言する。`implement` は一つの型についての実装を与える。型パラメータは `[T: Show]` で制約でき、複数の制約は `&` でつなぐ。組み込みの制約 `equality`（値を `=` で比べられる）と `key`（値を `Map` のキーと `Set` の要素にできる）も、同じ場所で使える。メソッドはクラスの名前を通して呼ぶ。`Describe.describe(x)` のように書く。
+*型クラス*（`trait`）は、複数の型が実装する関数を宣言する。`implement` は一つの型についての実装を与える。型パラメータは `[T: Show]` で制約でき、複数の制約は `&` でつなぐ。組み込みの制約 `equality`（値を `=` で比べられる）と `key`（値を `Map` のキーと `Set` の要素にできる）も、同じ場所で使える。
+
+メソッドはクラスの名前を通して呼ぶ。`Describe.describe(x)` のように書く。二つ以上のパラメータを持つメソッドでは、名前付き引数が必須である。
+
+各実装は、入れ子の関数型の名前も含め、クラスが宣言したパラメータ名と順序を使わなければならず、不一致は `E0454` になる。標準のメソッドにも同じ規則を適用する。`Functor.map` のコールバックは `value`、`Foldable.fold` のコールバックは `acc, value` を取る。
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -675,18 +757,21 @@ implement Describe[Integer]
 end implement
 
 implement[T: Describe] Describe[List[T]]
-  function describe(xs: List[T]) -> String
-    return "[" + String.join(List.map(xs, Describe.describe), ", ") + "]"
+  function describe(x: List[T]) -> String
+    return "[" + String.join(xs: List.map(xs: x, f: lambda(value) return Describe.describe(value)), separator: ", ") + "]"
   end function
 end implement
 
 function describeIfSame[T: Describe & equality](a: T, b: T) -> String
-  return if a = b then Describe.describe(a) else "different" end if
+  return match a = b with
+    case true -> Describe.describe(a)
+    case false -> "different"
+  end match
 end function
 
 function main() -> Unit uses Console.Write
   Console.writeLine(Describe.describe([1, 2]))
-  Console.writeLine(describeIfSame(3, 3))
+  Console.writeLine(describeIfSame(a: 3, b: 3))
 end function
 ```
 
@@ -705,11 +790,14 @@ the number 3
 import Benitoite.Unofficial.IO.Console
 
 function choose(useFirst: Boolean, first: Lazy[Integer], second: Lazy[Integer]) -> Integer
-  return if useFirst then Lazy.force(first) else Lazy.force(second) end if
+  return match useFirst with
+    case true -> Lazy.force(first)
+    case false -> Lazy.force(second)
+  end match
 end function
 
 function main() -> Unit uses Console.Write
-  bind result <- choose(true, lazy 42 end lazy, lazy 100 div String.characterCount("") end lazy)
+  bind result <- choose(useFirst: true, first: lazy 42 end lazy, second: lazy 100 div String.characterCount("") end lazy)
   Console.writeLine("${result}")
 end function
 ```
@@ -732,7 +820,7 @@ end function
 
 ### タスク
 
-タスクは、一つのプログラムの中で並行に動く。`TaskGroup.open()` は集まりをリソースとして開く。`TaskGroup.spawn(group, lambda() ... end lambda)` はその中でタスクを起動し、`Task.await(task)` はその結果を待つ。`end with` で集まりを解放すると、そのすべてのタスクを待つ。`Task.all` は関数のリストをタスクとして実行し、その結果を順に返す。`Task.race` は最初の結果を返し、ほかのタスクを取り消す。`Task.withTimeout(milliseconds, action)` は、時間が経つ前にタスクが終われば、その結果を持つ `Option.Some` を返し、そうでなければタスクを取り消して `Option.None` を返す。期限は `benitoite` が次にタスクを切り替えるときに確かめるので、期限の直前に終わったタスクでも `Option.None` になることがある。ファイルの読み込み、HTTP の要求、`Clock.sleep` など、待つ操作の間は、ほかのタスクが動ける。
+タスクは、一つのプログラムの中で並行に動く。`TaskGroup.open()` は集まりをリソースとして開く。`TaskGroup.spawn(group: group, action: lambda() ...)` はその中でタスクを起動し、`Task.await(task)` はその結果を待つ。`end with` で集まりを解放すると、そのすべてのタスクを待つ。`Task.all` は関数のリストをタスクとして実行し、その結果を順に返す。`Task.race` は最初の結果を返し、ほかのタスクを取り消す。`Task.withTimeout(milliseconds: milliseconds, action: action)` は、時間が経つ前にタスクが終われば、その結果を持つ `Option.Some` を返し、そうでなければタスクを取り消して `Option.None` を返す。期限は `benitoite` が次にタスクを切り替えるときに確かめるので、期限の直前に終わったタスクでも `Option.None` になることがある。ファイルの読み込み、HTTP の要求、`Clock.sleep` など、待つ操作の間は、ほかのタスクが動ける。
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -740,16 +828,16 @@ import Benitoite.Unofficial.IO.Console
 function main() -> Unit uses Console.Write, State
   bind counter <- Reference.new(0)
   bind squares <- with group = TaskGroup.open() do
-    bind tasks <- List.map([1, 2, 3], lambda(n)
-      return TaskGroup.spawn(group, lambda()
-        Reference.set(counter, Reference.get(counter) + 1)
-        return n * n
+    bind tasks <- List.map(xs: [1, 2, 3], f: lambda(value)
+      return TaskGroup.spawn(group: group, action: lambda()
+        Reference.set(reference: counter, value: Reference.get(counter) + 1)
+        return value * value
       end lambda)
     end lambda)
-    List.map(tasks, lambda(task) return Task.await(task) end lambda)
+    List.map(xs: tasks, f: lambda(value) return Task.await(value))
   end with
-  Console.writeLine("${String.join(List.map(squares, Integer.toString), " ")} after ${Reference.get(counter)} tasks")
-  Console.writeLine(String.join(List.map(Task.all([lambda() return "a" end lambda, lambda() return "b" end lambda]), lambda(s) return s end lambda), ""))
+  Console.writeLine("${String.join(xs: List.map(xs: squares, f: lambda(value) return Integer.toString(value)), separator: " ")} after ${Reference.get(counter)} tasks")
+  Console.writeLine(String.join(xs: List.map(xs: Task.all([lambda() return "a", lambda() return "b"]), f: lambda(value) return value), separator: ""))
 end function
 ```
 
@@ -762,14 +850,14 @@ ab
 
 ## 16. テスト
 
-テストは、属性 `@test("description")` を付け、引数がなく、戻り値の型が `Unit` か `Result[Unit, String]` の関数である。値は `Assert.equal(actual, expected)` と `Assert.isTrue(condition, message)` で確かめる。これらはエフェクト `Assert.Check` を要する。確かめが失敗すると、そのテストは止まる。`Result.Error(message)` を返しても失敗する。各テストは単独で動くので、一つのテストの失敗や実行時エラーはほかのテストを止めない。
+テストは、属性 `@test("description")` を付け、引数がなく、戻り値の型が `Unit` か `Result[Unit, String]` の関数である。値は `Assert.equal(actual: actual, expected: expected)` と `Assert.isTrue(condition: condition, message: message)` で確かめる。これらはエフェクト `Assert.Check` を要する。確かめが失敗すると、そのテストは止まる。`Result.Error(message)` を返しても失敗する。各テストは単独で動くので、一つのテストの失敗や実行時エラーはほかのテストを止めない。
 
 ```benitoite test
 import Benitoite.Unofficial.IO.File
 
 function countWords(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  return Result.Ok(List.length(List.filter(String.split(text, " "), lambda(w) return w <> "" end lambda)))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  return Result.Ok(List.length(List.filter(xs: String.split(s: text, separator: " "), p: lambda(value) return value <> "")))
 end function
 
 @test("countWords counts words separated by spaces")
@@ -778,16 +866,16 @@ function countWordsCounts() -> Unit uses Assert.Check, File.Read
     countWords("notes.txt")
   with
     case File.readText(path) ->
-      Assert.equal(path, "notes.txt")
+      Assert.equal(actual: path, expected: "notes.txt")
       resume(Result.Ok("one two  three"))
   end handle
-  Assert.equal(result, Result.Ok(3))
+  Assert.equal(actual: result, expected: Result.Ok(3))
 end function
 ```
 
 ハンドラが `File.readText` を置き換えるので、テストはファイルを読まない。それでもテストは `File.Read` を挙げる。ハンドラが処理するのは `File.Read` の操作の一つである `File.readText` だけであり、エフェクトは、その操作をすべて処理したときにだけ取り除かれるからである。
 
-テストは `benitoite test` で実行する。通るテストを一つと、`Assert.equal(double(2), 5)` を確かめるテストを一つ含むファイル `t.bnt` では、報告は次のようになる。
+テストは `benitoite test` で実行する。通るテストを一つと、`Assert.equal(actual: double(2), expected: 5)` を確かめるテストを一つ含むファイル `t.bnt` では、報告は次のようになる。
 
 ```sh
 benitoite test t.bnt
@@ -856,6 +944,24 @@ error[E0230]: `let` is not used to bind names
 
 診断は、メッセージではなく `code` と JSON の欄で区別する。メッセージと修正案の中身は、パッチ版でも変わることがある。取り除いたコードを、別の意味で再び使うことはない。
 
+### 呼び出し、関数の契約、ラムダ
+
+| コード | 意味と修正 |
+|---|---|
+| `E0254` | `end lambda` を省いたラムダが物理行をまたいでいる。複数行の本体は見出しの次の行に始め、`end lambda` を加える。 |
+| `E0256` | 直接に入れ子になったラムダのどちらかで `end lambda` を省く場合は、内側のラムダを括弧で囲む。 |
+| `E0257` | 関数型のパラメータに名前がない。期待する契約の名前を使い、各パラメータを `name: Type` と書く。 |
+| `E0449` | 二つ以上のパラメータを持つ関数には名前付き引数が必要である。式の順序を保って、宣言された名前を使う。 |
+| `E0450` | 名前付き引数と位置引数が混在している。一つの呼び出しで形式を揃える。 |
+| `E0451` | ラベルがパラメータの名前ではない。宣言順に示された、使える名前を読む。 |
+| `E0452` | パラメータが複数回指定されている。パイプが暗黙に渡す最初の引数も含む。一度だけ指定する。 |
+| `E0453` | 名前付き引数で必須のパラメータが抜けている。診断に挙げた不足名を指定する。 |
+| `E0454` | 関数のパラメータ名か順序が期待する契約と異なる。実装のメソッドも含む。契約に合わせるか、必要な名前のラムダで包む。 |
+| `E0455` | 関数のパラメータ名と順序を決められない。名前付きの関数型の注釈を加える。呼び出しのラベル順からは契約を決めない。 |
+| `E0456` | 直接のデータ構成子の呼び出しにラベルがある。位置フィールドを使うか、構成子を関数値として束縛し、その値のパラメータ名を使う。 |
+
+`E0402` は、直接の構成子の呼び出しを含む、位置引数の個数の誤りを報告する。`E0453` は、名前付き引数の不足を呼び出し位置で報告し、不足する名前を挙げる。修正案は対象の宣言を確認してから適用する。エフェクトを持つ式の順序を変えると、プログラムの振る舞いも変わることがある。
+
 各コードの意味は、同梱の Agent Skill（`references/diagnostics.md`。`benitoite skill install` でインストールされる）に挙げてある。
 
 ## 19. 標準ライブラリ
@@ -887,6 +993,26 @@ prelude のモジュールは取り込みが要らない。ほかのモジュー
 | `Hash` | `import Benitoite.Unofficial.Hash` | バイト列の SHA-256 のハッシュ値 |
 | `Network.Http` | `import Benitoite.Unofficial.Network.Http` | TLS のない HTTP/1.1 のサーバと、`http` と `https` のクライアント |
 
+### ライブラリの呼び出しのパラメータ名
+
+パラメータ名は、[標準ライブラリのリファレンス](../../../crates/benitoite/skill/references/stdlib/index.md)の宣言で調べる。例えば、`List.map` の外側の引数は `xs, f` であり、引数 `f` の契約は `function(value: T) -> U uses E` である。この二組の名前を区別し、`List.map(xs: items, f: lambda(value) return value * 2)` と書く。
+
+主なコールバックの契約は次のとおりである。
+
+| 関数 | コールバックのパラメータ名（順序どおり） |
+|---|---|
+| `List.map`, `List.filter`, `List.forEach`, `Set.map`, `Set.filter`, `Set.forEach`, `Option.map`, `Result.map` | `value` |
+| `List.fold`, `Set.fold` | `acc, value` |
+| `Map.map`, `Map.filter`, `Map.forEach` | `key, value` |
+| `Map.fold` | `acc, key, value` |
+| `Result.mapError` | `error` |
+| `Trait.Functor.map` | `value` |
+| `Trait.Foldable.fold` | `acc, value` |
+
+パラメータを使わない場合も、これらの名前を保つ。異なるパラメータ名を持つ関数を渡すときは、[関数の契約とコールバック](#関数の契約とコールバック)で説明した、ラムダで包む方法を使う。
+
+### IO とネットワークの振る舞い
+
 知っておくとよい振る舞いをいくつか挙げる。
 
 - `File.Writer` への書き込み（バッファを書き出す書き込みを含む）が失敗すると、その書き手はバッファの中のデータを捨て、エラーを保持する。その後の `File.write`、`File.writeLine`、`File.writeChunk` は、何も書かずに同じエラーを返す。`File.closeWriter` は、何も書かずに閉じ、同じメッセージを `IOErrorKind.Other` とともに返す。書き手を保持する `with` のブロックを抜けると、書き込みのエラーを処理していても、解放の失敗（実行時エラー）になる。解放のエラーを処理するには、ブロックの終わりで `File.closeWriter` を呼び、その結果を確かめる。最初のエラーで書くのをやめ、やり直すときはファイルを開き直す。
@@ -916,24 +1042,24 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.Json
 
 function amountOf(order: Json.Value) -> Option[Pair[String, Integer]]
-  bind category <- try Option.andThen(Json.get(order, "category"), Json.asString)
-  bind amount <- try Option.andThen(Json.get(order, "amount"), Json.asInteger)
+  bind category <- try Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString)
+  bind amount <- try Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger)
   return Option.Some(Pair(category, amount))
 end function
 
 function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind text <- try File.readText("orders.json") |> Result.mapError(_, IOError.message)
-  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
-  bind orders <- try Option.okOr(Json.asArray(value), "orders.json is not an array")
-  bind totals <- List.fold(orders, Map.empty(), lambda(m, order)
-    return match amountOf(order) with
+  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
+  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array")
+  bind totals <- List.fold(xs: orders, initial: Map.empty(), f: lambda(acc, value)
+    return match amountOf(value) with
       case Option.Some(Pair(category, amount)) ->
-        Map.set(m, category, Option.unwrapOr(Map.get(m, category), 0) + amount)
-      case Option.None -> m
+        Map.set(m: acc, k: category, value: Option.unwrapOr(o: Map.get(m: acc, k: category), fallback: 0) + amount)
+      case Option.None -> acc
     end match
   end lambda)
-  Map.forEach(totals, lambda(category, total)
-    Console.writeLine("${category}: ${total}")
+  Map.forEach(m: totals, f: lambda(key, value)
+    Console.writeLine("${key}: ${value}")
   end lambda)
   return Result.Ok(())
 end function
@@ -946,6 +1072,8 @@ food: 300
 
 ## 20. 互換性
 
+### 版の方針
+
 メジャー版が 0 の間は、次のとおりとする。
 
 - マイナー版（`0.1.0` から `0.2.0`）は、言語、標準ライブラリ、コマンドライン、診断を、互換性のない形で変えることがある。互換性のない変更は、それぞれ移行の方法とともに [CHANGELOG](../../../CHANGELOG.md) に挙げる。
@@ -953,7 +1081,7 @@ food: 300
 - 非公式のモジュールを標準ライブラリへ移すと、その取り込みの名前が変わる。これはマイナー版でだけ行う。
 - 同梱の Agent Skill は、一緒に配られた版の `benitoite` だけを説明する。更新した後は `benitoite skill install` を再び実行する。
 
-> 注記: `0.0.4` は、`0.0.1`・`0.0.2`・`0.0.3` と同じく、ソースコードだけのリリースであり、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
+> 注記: `0.0.1` から `0.0.5` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
 
 ## 21. 実験的な機能: パッケージと外部の関数
 
@@ -965,7 +1093,7 @@ food: 300
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.4"
+language "0.0.5"
 
 package Textkit
   license "MIT"
@@ -975,7 +1103,7 @@ end package
 ```files
 name: packages/textkit/Slug.bnt
 public function slug(text: String) -> String
-  return String.toLowercase(String.replace(String.trim(text), " ", "-"))
+  return String.toLowercase(String.replace(s: String.trim(text), old: " ", new: "-"))
 end function
 ```
 
@@ -983,7 +1111,7 @@ end function
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.4"
+language "0.0.5"
 
 dependency Textkit
   path "packages/textkit"
@@ -1015,7 +1143,7 @@ hello-packages
 
 ```files
 name: package.bnt
-language "0.0.4"
+language "0.0.5"
 ```
 
 ```benitoite check
@@ -1026,7 +1154,7 @@ end function
 
 依存のブロックも、その根の設定ファイルへ移せる。依存は一か所にまとめる。起点のスクリプトと `package.bnt` の両方で依存を宣言すると誤りになる。両方で `language` を宣言しても誤りになる。
 
-`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。処理系より新しい版は拒む。古い版は、処理系が持つ互換性のない言語の変更の表と比べる。この表は現在は空である。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。根の版と依存の版は互いに比べない。
+`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.5` では、`0.0.5` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
 
 `package.bnt` には、設定（`language`、`dependency`、`package` のブロック）だけを書き、取り込みや宣言は書かない。`package` ブロックはこのファイルにだけ書け、依存と組み合わせられない。その名前は大文字で始まる識別子であり、メタデータの欄は、省略可能な `license` だけである。欄の値は通常の文字列リテラルであり、文字列補間は使えない。欄の順序は自由だが、重複する欄や未知の欄は誤りになる。
 
@@ -1199,16 +1327,16 @@ public function bump(self: Cell, by: Integer) -> Integer uses State
 |---|---|---|
 | `stateful` | 引数か戻り値に外部のリソース型を含む | 動的な WIT の値を使い、コンポーネントのインスタンスを保持する |
 | `typed` | リソースを含まず、引数が 0〜3 個、結果が一つで、すべての型が `Integer`、`Float`、`String`、`Bytes`、`List[Byte]`、`List[Integer]`、`List[Float]` のいずれか。数値のリストを引数に持つ場合は引数が最大二つ | 数値は 0、バイト列は要素ごとに 1、数値のリストは要素ごとに 8、引数の文字列は UTF-8 のバイト数 |
-| `adapter` | 新しい数値のビット幅、入れ子のリスト、マップ、flags、一般のタプル、variant、結果のない関数など、ほかの対応する再帰のない値 | 詰めて格納した実際のバイト数。32 バイトのヘッダと詰め物も含む。別の構築量の上限にも同じ設定値を使う |
+| `adapter` | `typed` の経路に含まれないビット幅の数値、入れ子のリスト、マップ、flags、一般のタプル、variant、結果のない関数など、ほかの対応する再帰のない値 | 詰めて格納した実際のバイト数。32 バイトのヘッダと詰め物も含む。別の構築量の上限にも同じ設定値を使う |
 | `dynamic` | アダプタが生成コードの上限 16 MiB、memory32 の配置の範囲、または保守的に見積もったコアのインスタンス数（アダプタの三つのインスタンスを含む）の上限 16 を超える場合 | 動的な WIT の値を使う。ゲストを呼ぶ前に決める |
 
-別名は経路の選択を変えない。`Integer64`、`Float64`、`UnsignedInteger8` は、`Integer`、`Float`、`Byte` と同じ型を表す。アダプタは関数ごとに組み合わせるので、別の関数の宣言を加えても、その組み合わせとインスタンス数の見積もりは変わらない。コンパイル済みのコンポーネントと生成したアダプタは、一回の検査または実行の中で再利用する。永続的なキャッシュはない。アダプタのメモリ、コアのインスタンス、テーブルは、ゲストと同じ Store の上限に数え、その命令は同じ燃料を消費し、同じ中断の要求に応じる。各アダプタは、メモリ、変換、融合のために、コアのインスタンスを三つ加える。アダプタに合わせて既定の上限を増やすことはない。複数の写しにより、アダプタの線形メモリの使用量が転送量の約 3〜4 倍になることがある。そのため、以前の経路で受け付けた値が、既定のメモリの上限 64 MiB に達することがある。UTF-16 を含む元のゲストの文字列の符号化は Component Model が扱い、アダプタが詰めて格納する文字列は UTF-8 である。値を写した後、ゲストの戻り後の片付けは Component Model を通して実行し、ホストから二度目に呼ぶことはない。
+別名は経路の選択を変えない。`Integer64`、`Float64`、`UnsignedInteger8` は、`Integer`、`Float`、`Byte` と同じ型を表す。アダプタは関数ごとに組み合わせるので、別の関数の宣言を加えても、その組み合わせとインスタンス数の見積もりは変わらない。コンパイル済みのコンポーネントと生成したアダプタは、一回の検査または実行の中で再利用する。永続的なキャッシュはない。アダプタのメモリ、コアのインスタンス、テーブルは、ゲストと同じ Store の上限に数え、その命令は同じ燃料を消費し、同じ中断の要求に応じる。各アダプタは、メモリ、変換、融合のために、コアのインスタンスを三つ加える。アダプタに合わせて既定の上限を増やすことはない。複数の写しにより、アダプタの線形メモリの使用量が転送量の約 3〜4 倍になることがある。そのため、転送量の上限より小さい値でも、既定のメモリの上限 64 MiB に達することがある。UTF-16 を含む元のゲストの文字列の符号化は Component Model が扱い、アダプタが詰めて格納する文字列は UTF-8 である。値を写した後、ゲストの戻り後の片付けは Component Model を通して実行し、ホストから二度目に呼ぶことはない。
 
 アダプタの経路では、転送量の上限は、詰めて格納した引数と結果のバイト列全体を、それぞれ独立に制限する。第二の上限は、方向ごとの論理的な構築量を、同じ `--wasm-transfer` の値に制限する。Benitoite の値が現れるごとに 16 バイトを数え、文字列と `Bytes` の内容を加える。リストの要素、構成子のフィールド、マップのすべてのキーと値、選択した flags の構成子も、それぞれ値が現れる箇所として数える。`Bytes` の要素には別の 16 バイトを加えないが、`List[Byte]` の要素には加える。ABI のためだけの根のレコード、マップの項目のタプル、構成子の引数をまとめるタプルは、Benitoite の値を加えない。重複するマップの項目は、正規化の前に数えて検証する。ABI 上の大きさが 0 の値も、構築量に数える。これは論理的な構築量であり、確保したヒープのバイト数やプロセスのメモリ全体ではない。
 
 動的な経路では、`Bytes` の各バイトを含め、リストの各要素をホストの `Val`（対応するプラットフォームでは 40 バイト）として数える。マップはキーと値の両方の表現を数える。レコードのフィールドは WIT の名前と子の表現を含み、variant は選択した名前と、ペイロードがあればその表現を含む。enum と選択した flags は名前のバイト数を含む。子はそれぞれ自身の量を加える。スカラー値とリソースのハンドルは 0 と数える。`typed` の経路では、戻り値の文字列はゲストの値をホスト側の表現へ変換するときに、ゲストの符号化でのバイト数を計上するが、統計では UTF-8 のバイト数を報告する。このため、同じ値でもシグネチャと経路によって転送量の上限への達し方が異なる。`Bytes` と `List[Byte]` は、Benitoite の戻り値の型として区別を保つ。引数は、実行時のコンパイルやインスタンス化の前に検査し、準備する。戻り値のリストは小さな葉に直接構築し、リスト全体の Benitoite の値の中間配列は作らない。
 
-既存の値の大きさの上限は、構築の前に引き続き適用する。文字列と `Bytes` は最大 2^30 バイト、リストは最大 2^24 要素である。Map と Set には、言語全体の要素数の上限は加わらない。転送量と構築量の上限、燃料、Store の上限は、統計を取らない場合も検査する。
+値の大きさの上限は、構築の前に適用する。文字列と `Bytes` は最大 2^30 バイト、リストは最大 2^24 要素である。Map と Set には、言語全体の要素数の上限はない。転送量と構築量の上限、燃料、Store の上限は、統計を取らない場合も検査する。
 
 `run` と `test` は、これらの上限を変えるために `--wasm-memory=<size>`、`--wasm-fuel=<count>`、`--wasm-transfer=<size>` を受け付ける。大きさはバイト数、または整数に `KiB`、`MiB`、`GiB` の接尾辞を付けた値であり、範囲は 1 MiB から 4 GiB である。燃料は 1 から 2^64−1 までの十進整数である。不正な設定や重複した設定は、使い方の誤りになる（終了状態 2）。`run` では、これらのオプションをスクリプトのパスの前に置く。`test` はパスの間でも受け付ける。各テストの関数は、同じ設定の上限を使う。
 

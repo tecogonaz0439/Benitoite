@@ -1,0 +1,3099 @@
+[
+  {
+    "id": "eefd601bbcc6ed1c1dfb",
+    "path": "tools/bench/programs/http.bnt",
+    "source_sha256": "088d07d268e8f1f81f3688dd57a539e49f13d0a03c3e0bb8ca8cf2289f2ff8e4",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1403,
+        "end": 1403,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1406,
+        "end": 1406,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "57b0acbc370d9173fbd9",
+    "path": "tools/bench/programs/http.bnt",
+    "source_sha256": "088d07d268e8f1f81f3688dd57a539e49f13d0a03c3e0bb8ca8cf2289f2ff8e4",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1634,
+        "end": 1634,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1637,
+        "end": 1637,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "f8afee0a1079d5b9a677",
+    "path": "tools/bench/programs/http.bnt",
+    "source_sha256": "088d07d268e8f1f81f3688dd57a539e49f13d0a03c3e0bb8ca8cf2289f2ff8e4",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 2065,
+        "end": 2065,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 2068,
+        "end": 2068,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "5c1e96bfc5f1b67f1178",
+    "path": "tools/bench/programs/map.bnt",
+    "source_sha256": "2ff2293c6efede505bbd8242596844e52a218895af9fe5905f18bbe4b4f5aff8",
+    "callee": "Option.unwrapOr",
+    "names": [
+      "o",
+      "fallback"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 937,
+        "end": 937,
+        "before": "",
+        "decoded_before": "",
+        "after": "o: "
+      },
+      {
+        "start": 940,
+        "end": 940,
+        "before": "",
+        "decoded_before": "",
+        "after": "fallback: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "21fc885c36587c794fe7",
+    "path": "tools/bench/wasm/json-a.bnt",
+    "source_sha256": "875ac6181a968c22a8986a25617aa42b582e4194a1457b5ec663aca70950a466",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "nested_or_unresolved_contract"
+    ],
+    "edits": [
+      {
+        "start": 927,
+        "end": 927,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 948,
+        "end": 948,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "f2ff777cf6ec8fc1f65e",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Option.unwrapOr",
+    "names": [
+      "o",
+      "fallback"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 507,
+        "end": 507,
+        "before": "",
+        "decoded_before": "",
+        "after": "o: "
+      },
+      {
+        "start": 526,
+        "end": 526,
+        "before": "",
+        "decoded_before": "",
+        "after": "fallback: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "71c89cf502846ac777c3",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Json.at",
+    "names": [
+      "value",
+      "index"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 515,
+        "end": 515,
+        "before": "",
+        "decoded_before": "",
+        "after": "value: "
+      },
+      {
+        "start": 522,
+        "end": 522,
+        "before": "",
+        "decoded_before": "",
+        "after": "index: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "04ad4463e6a21a1a9090",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "List.map",
+    "names": [
+      "xs",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 593,
+        "end": 593,
+        "before": "",
+        "decoded_before": "",
+        "after": "xs: "
+      },
+      {
+        "start": 620,
+        "end": 620,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "4de7f70f677b4f735fe0",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Option.unwrapOr",
+    "names": [
+      "o",
+      "fallback"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 681,
+        "end": 681,
+        "before": "",
+        "decoded_before": "",
+        "after": "o: "
+      },
+      {
+        "start": 701,
+        "end": 701,
+        "before": "",
+        "decoded_before": "",
+        "after": "fallback: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "252141656b48bf8dcf37",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Json.get",
+    "names": [
+      "value",
+      "k"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 690,
+        "end": 690,
+        "before": "",
+        "decoded_before": "",
+        "after": "value: "
+      },
+      {
+        "start": 695,
+        "end": 695,
+        "before": "",
+        "decoded_before": "",
+        "after": "k: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "2f63011e2eee7b3de39e",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "nested_or_unresolved_contract"
+    ],
+    "edits": [
+      {
+        "start": 1008,
+        "end": 1008,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1029,
+        "end": 1029,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "8d3aa48a9c36eb113dd9",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "List.fold",
+    "names": [
+      "xs",
+      "initial",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1148,
+        "end": 1148,
+        "before": "",
+        "decoded_before": "",
+        "after": "xs: "
+      },
+      {
+        "start": 1169,
+        "end": 1169,
+        "before": "",
+        "decoded_before": "",
+        "after": "initial: "
+      },
+      {
+        "start": 1186,
+        "end": 1186,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "4d30963a7779e9325b50",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "List.range",
+    "names": [
+      "start",
+      "stop"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1159,
+        "end": 1159,
+        "before": "",
+        "decoded_before": "",
+        "after": "start: "
+      },
+      {
+        "start": 1162,
+        "end": 1162,
+        "before": "",
+        "decoded_before": "",
+        "after": "stop: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "4f566c2b9eda25afffeb",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1302,
+        "end": 1302,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1305,
+        "end": 1305,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1405,
+        "end": 1405,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "91e57ae1bb35a38bfe60",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1514,
+        "end": 1514,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1521,
+        "end": 1521,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1653,
+        "end": 1653,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "0fcd90f027a9ad929b02",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1594,
+        "end": 1594,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1616,
+        "end": 1616,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "8909468575f42ba0a56d",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1745,
+        "end": 1745,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1765,
+        "end": 1765,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "2b9978a3321c7f365bbd",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1816,
+        "end": 1816,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1823,
+        "end": 1823,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1923,
+        "end": 1923,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "bc900a140c6c18a5edde",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2031,
+        "end": 2031,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 2038,
+        "end": 2038,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 2223,
+        "end": 2223,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "67c05bc0391dd5ba7ad2",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2124,
+        "end": 2124,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 2146,
+        "end": 2146,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "fee4cd740aaeced9e6c3",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2333,
+        "end": 2333,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 2340,
+        "end": 2340,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 2543,
+        "end": 2543,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "d91d359e63c122e27104",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2426,
+        "end": 2426,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 2448,
+        "end": 2448,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "8107b6564e1a2ea1c508",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2655,
+        "end": 2655,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 2662,
+        "end": 2662,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 2857,
+        "end": 2857,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "cb459c395c9d4b267348",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Result.map",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2724,
+        "end": 2724,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 2788,
+        "end": 2788,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "63e8c3beab4a818ee2eb",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2740,
+        "end": 2740,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 2762,
+        "end": 2762,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "09b144f55fb26742ed75",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2991,
+        "end": 2991,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 3013,
+        "end": 3013,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "36cdafdca0038cf58c22",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 3183,
+        "end": 3183,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 3205,
+        "end": 3205,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "19ddb6345268d904781d",
+    "path": "tools/bench/wasm/json-b.bnt",
+    "source_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 3256,
+        "end": 3256,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 3259,
+        "end": 3259,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 3359,
+        "end": 3359,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "afa48005ed459c8253d9",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "nested_or_unresolved_contract"
+    ],
+    "edits": [
+      {
+        "start": 693,
+        "end": 693,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 714,
+        "end": 714,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "2bf10bfd87d02bb4258a",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 832,
+        "end": 832,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 839,
+        "end": 839,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 970,
+        "end": 970,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "780b62bb7123821fc198",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 912,
+        "end": 912,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 933,
+        "end": 933,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "272f9f557cd89d1b1357",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1062,
+        "end": 1062,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1082,
+        "end": 1082,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "0485f6d5347c6607732f",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1133,
+        "end": 1133,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1140,
+        "end": 1140,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1228,
+        "end": 1228,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "27ec0ac8c15e49f755d5",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1336,
+        "end": 1336,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1343,
+        "end": 1343,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1718,
+        "end": 1718,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "52e29b92b7d1a6cf6e95",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1427,
+        "end": 1427,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1451,
+        "end": 1451,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "048659b7875d31e01c4b",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "String.join",
+    "names": [
+      "xs",
+      "separator"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1517,
+        "end": 1517,
+        "before": "",
+        "decoded_before": "",
+        "after": "xs: "
+      },
+      {
+        "start": 1690,
+        "end": 1690,
+        "before": "",
+        "decoded_before": "",
+        "after": "separator: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "9afa16bc36e682923cf2",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "List.map",
+    "names": [
+      "xs",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1526,
+        "end": 1526,
+        "before": "",
+        "decoded_before": "",
+        "after": "xs: "
+      },
+      {
+        "start": 1562,
+        "end": 1562,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "f68f2c5f9fb5f2e3c5a5",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Option.unwrapOr",
+    "names": [
+      "o",
+      "fallback"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1638,
+        "end": 1638,
+        "before": "",
+        "decoded_before": "",
+        "after": "o: "
+      },
+      {
+        "start": 1663,
+        "end": 1663,
+        "before": "",
+        "decoded_before": "",
+        "after": "fallback: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "a7024ebeac77933793e4",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Codec.get",
+    "names": [
+      "document",
+      "pointer"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1648,
+        "end": 1648,
+        "before": "",
+        "decoded_before": "",
+        "after": "document: "
+      },
+      {
+        "start": 1653,
+        "end": 1653,
+        "before": "",
+        "decoded_before": "",
+        "after": "pointer: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "0f74be631680a710b6d3",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1828,
+        "end": 1828,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1835,
+        "end": 1835,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1963,
+        "end": 1963,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "b7e5c128130a4d9511b6",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1904,
+        "end": 1904,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1926,
+        "end": 1926,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "46d4dd161be556768de5",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2075,
+        "end": 2075,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 2082,
+        "end": 2082,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 2210,
+        "end": 2210,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "6eee1b11388dfd945334",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2149,
+        "end": 2149,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 2173,
+        "end": 2173,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "6c9013d6dd18ec13304b",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2344,
+        "end": 2344,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 2365,
+        "end": 2365,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "d2d0fd3be83311c7b7f1",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2538,
+        "end": 2538,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 2559,
+        "end": 2559,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "7c3f9fad31df0e6b010b",
+    "path": "tools/bench/wasm/json-c.bnt",
+    "source_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 2656,
+        "end": 2656,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 2659,
+        "end": 2659,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 2742,
+        "end": 2742,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "7c1f21fa07fff8216a1f",
+    "path": "tools/bench/wasm/regex-a.bnt",
+    "source_sha256": "19e7bfd9af743b38dc19394b95cf27dd7dbf38fd5efe4b8ffa2ae0627a067c26",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "public_contract"
+    ],
+    "edits": [
+      {
+        "start": 795,
+        "end": 795,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 802,
+        "end": 802,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 924,
+        "end": 924,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "188a13c11aa30b10e6f8",
+    "path": "tools/bench/wasm/regex-a.bnt",
+    "source_sha256": "19e7bfd9af743b38dc19394b95cf27dd7dbf38fd5efe4b8ffa2ae0627a067c26",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "public_contract"
+    ],
+    "edits": [
+      {
+        "start": 1069,
+        "end": 1069,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1076,
+        "end": 1076,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1211,
+        "end": 1211,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "96423092eaf526a5dc54",
+    "path": "tools/bench/wasm/regex-a.bnt",
+    "source_sha256": "19e7bfd9af743b38dc19394b95cf27dd7dbf38fd5efe4b8ffa2ae0627a067c26",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "public_contract"
+    ],
+    "edits": [
+      {
+        "start": 1292,
+        "end": 1292,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1299,
+        "end": 1299,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1434,
+        "end": 1434,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "bb99204b33ce02fd0017",
+    "path": "tools/bench/wasm/regex-c-once.bnt",
+    "source_sha256": "237e9085d689e108dbbdddf0a919fa383c8eedf5e865d7815f9e736ff0bedd5e",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 740,
+        "end": 740,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 761,
+        "end": 761,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "d07e86d42c8b661088a2",
+    "path": "tools/bench/wasm/regex-c-once.bnt",
+    "source_sha256": "237e9085d689e108dbbdddf0a919fa383c8eedf5e865d7815f9e736ff0bedd5e",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "public_contract"
+    ],
+    "edits": [
+      {
+        "start": 879,
+        "end": 879,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 886,
+        "end": 886,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 987,
+        "end": 987,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "f6228df9823d0e1481b7",
+    "path": "tools/bench/wasm/regex-c-once.bnt",
+    "source_sha256": "237e9085d689e108dbbdddf0a919fa383c8eedf5e865d7815f9e736ff0bedd5e",
+    "callee": "Pattern.isMatchOnce",
+    "names": [
+      "source",
+      "text"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 960,
+        "end": 960,
+        "before": "",
+        "decoded_before": "",
+        "after": "source: "
+      },
+      {
+        "start": 968,
+        "end": 968,
+        "before": "",
+        "decoded_before": "",
+        "after": "text: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "1a0755e6bf884be2d480",
+    "path": "tools/bench/wasm/regex-c-once.bnt",
+    "source_sha256": "237e9085d689e108dbbdddf0a919fa383c8eedf5e865d7815f9e736ff0bedd5e",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "public_contract"
+    ],
+    "edits": [
+      {
+        "start": 1132,
+        "end": 1132,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1139,
+        "end": 1139,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1238,
+        "end": 1238,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "1ad03ecc58f90db3ce29",
+    "path": "tools/bench/wasm/regex-c-once.bnt",
+    "source_sha256": "237e9085d689e108dbbdddf0a919fa383c8eedf5e865d7815f9e736ff0bedd5e",
+    "callee": "Pattern.countOnce",
+    "names": [
+      "source",
+      "text"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1211,
+        "end": 1211,
+        "before": "",
+        "decoded_before": "",
+        "after": "source: "
+      },
+      {
+        "start": 1219,
+        "end": 1219,
+        "before": "",
+        "decoded_before": "",
+        "after": "text: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "70a8f374265188a38488",
+    "path": "tools/bench/wasm/regex-c-once.bnt",
+    "source_sha256": "237e9085d689e108dbbdddf0a919fa383c8eedf5e865d7815f9e736ff0bedd5e",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "public_contract"
+    ],
+    "edits": [
+      {
+        "start": 1319,
+        "end": 1319,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1326,
+        "end": 1326,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1452,
+        "end": 1452,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "899ddd9b8e4d939ebda0",
+    "path": "tools/bench/wasm/regex-c-once.bnt",
+    "source_sha256": "237e9085d689e108dbbdddf0a919fa383c8eedf5e865d7815f9e736ff0bedd5e",
+    "callee": "Result.map",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1391,
+        "end": 1391,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1427,
+        "end": 1427,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "13fc2d8f31c4154da6c0",
+    "path": "tools/bench/wasm/regex-c-once.bnt",
+    "source_sha256": "237e9085d689e108dbbdddf0a919fa383c8eedf5e865d7815f9e736ff0bedd5e",
+    "callee": "Pattern.findAllOnce",
+    "names": [
+      "source",
+      "text"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1411,
+        "end": 1411,
+        "before": "",
+        "decoded_before": "",
+        "after": "source: "
+      },
+      {
+        "start": 1419,
+        "end": 1419,
+        "before": "",
+        "decoded_before": "",
+        "after": "text: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "42817af9c02293f6cfa5",
+    "path": "tools/bench/wasm/regex-c-resource.bnt",
+    "source_sha256": "42616b83e4dafa07a134dab1781be6f4c9f6dc5f82b8f0274cca218506d0cc14",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 740,
+        "end": 740,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 761,
+        "end": 761,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "94a9c0f2e29d3858477e",
+    "path": "tools/bench/wasm/regex-c-resource.bnt",
+    "source_sha256": "42616b83e4dafa07a134dab1781be6f4c9f6dc5f82b8f0274cca218506d0cc14",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "public_contract"
+    ],
+    "edits": [
+      {
+        "start": 925,
+        "end": 925,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 932,
+        "end": 932,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1041,
+        "end": 1041,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "b644e9e71f3204670438",
+    "path": "tools/bench/wasm/regex-c-resource.bnt",
+    "source_sha256": "42616b83e4dafa07a134dab1781be6f4c9f6dc5f82b8f0274cca218506d0cc14",
+    "callee": "Pattern.isMatch",
+    "names": [
+      "pattern",
+      "text"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1012,
+        "end": 1012,
+        "before": "",
+        "decoded_before": "",
+        "after": "pattern: "
+      },
+      {
+        "start": 1021,
+        "end": 1021,
+        "before": "",
+        "decoded_before": "",
+        "after": "text: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "58bdde1f735c936204c0",
+    "path": "tools/bench/wasm/regex-c-resource.bnt",
+    "source_sha256": "42616b83e4dafa07a134dab1781be6f4c9f6dc5f82b8f0274cca218506d0cc14",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "public_contract"
+    ],
+    "edits": [
+      {
+        "start": 1186,
+        "end": 1186,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1193,
+        "end": 1193,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1300,
+        "end": 1300,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "6b01e8e00149f06d66da",
+    "path": "tools/bench/wasm/regex-c-resource.bnt",
+    "source_sha256": "42616b83e4dafa07a134dab1781be6f4c9f6dc5f82b8f0274cca218506d0cc14",
+    "callee": "Pattern.count",
+    "names": [
+      "pattern",
+      "text"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1271,
+        "end": 1271,
+        "before": "",
+        "decoded_before": "",
+        "after": "pattern: "
+      },
+      {
+        "start": 1280,
+        "end": 1280,
+        "before": "",
+        "decoded_before": "",
+        "after": "text: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "5685d242b3fe925a48f8",
+    "path": "tools/bench/wasm/regex-c-resource.bnt",
+    "source_sha256": "42616b83e4dafa07a134dab1781be6f4c9f6dc5f82b8f0274cca218506d0cc14",
+    "callee": "Runner.measure",
+    "names": [
+      "count",
+      "work",
+      "render"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "public_contract"
+    ],
+    "edits": [
+      {
+        "start": 1381,
+        "end": 1381,
+        "before": "",
+        "decoded_before": "",
+        "after": "count: "
+      },
+      {
+        "start": 1388,
+        "end": 1388,
+        "before": "",
+        "decoded_before": "",
+        "after": "work: "
+      },
+      {
+        "start": 1510,
+        "end": 1510,
+        "before": "",
+        "decoded_before": "",
+        "after": "render: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "40452d9349b24d1442b1",
+    "path": "tools/bench/wasm/regex-c-resource.bnt",
+    "source_sha256": "42616b83e4dafa07a134dab1781be6f4c9f6dc5f82b8f0274cca218506d0cc14",
+    "callee": "Pattern.findAll",
+    "names": [
+      "pattern",
+      "text"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully"
+    ],
+    "edits": [
+      {
+        "start": 1480,
+        "end": 1480,
+        "before": "",
+        "decoded_before": "",
+        "after": "pattern: "
+      },
+      {
+        "start": 1489,
+        "end": 1489,
+        "before": "",
+        "decoded_before": "",
+        "after": "text: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "363d41fbc6b95ba2e17b",
+    "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+    "source_sha256": "d183fd3e28474f3bd34282a58bbbbbfd3df07994f0a4756c545982b075c81c59",
+    "callee": "Option.unwrapOr",
+    "names": [
+      "o",
+      "fallback"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 827,
+        "end": 827,
+        "before": "",
+        "decoded_before": "",
+        "after": "o: "
+      },
+      {
+        "start": 830,
+        "end": 830,
+        "before": "",
+        "decoded_before": "",
+        "after": "fallback: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "afecaa401a29b274132b",
+    "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+    "source_sha256": "d183fd3e28474f3bd34282a58bbbbbfd3df07994f0a4756c545982b075c81c59",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1132,
+        "end": 1132,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1135,
+        "end": 1135,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "efc0b31df33cb6221c7b",
+    "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+    "source_sha256": "d183fd3e28474f3bd34282a58bbbbbfd3df07994f0a4756c545982b075c81c59",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1216,
+        "end": 1216,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1219,
+        "end": 1219,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "88d5bc015a0dfd603d3a",
+    "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+    "source_sha256": "d183fd3e28474f3bd34282a58bbbbbfd3df07994f0a4756c545982b075c81c59",
+    "callee": "List.fold",
+    "names": [
+      "xs",
+      "initial",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "simultaneous_rename_capture"
+    ],
+    "edits": [
+      {
+        "start": 1274,
+        "end": 1274,
+        "before": "",
+        "decoded_before": "",
+        "after": "xs: "
+      },
+      {
+        "start": 1280,
+        "end": 1280,
+        "before": "",
+        "decoded_before": "",
+        "after": "initial: "
+      },
+      {
+        "start": 1304,
+        "end": 1304,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "de5bfe45a7c1eda58257",
+    "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+    "source_sha256": "d183fd3e28474f3bd34282a58bbbbbfd3df07994f0a4756c545982b075c81c59",
+    "callee": "Result.andThen",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "simultaneous_rename_capture"
+    ],
+    "edits": [
+      {
+        "start": 1347,
+        "end": 1347,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1352,
+        "end": 1352,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "702b15997216913bfa27",
+    "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+    "source_sha256": "d183fd3e28474f3bd34282a58bbbbbfd3df07994f0a4756c545982b075c81c59",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1811,
+        "end": 1811,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1814,
+        "end": 1814,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "1c0828b31cfade5160dd",
+    "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+    "source_sha256": "d183fd3e28474f3bd34282a58bbbbbfd3df07994f0a4756c545982b075c81c59",
+    "callee": "List.fold",
+    "names": [
+      "xs",
+      "initial",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "simultaneous_rename_capture"
+    ],
+    "edits": [
+      {
+        "start": 2070,
+        "end": 2070,
+        "before": "",
+        "decoded_before": "",
+        "after": "xs: "
+      },
+      {
+        "start": 2079,
+        "end": 2079,
+        "before": "",
+        "decoded_before": "",
+        "after": "initial: "
+      },
+      {
+        "start": 2082,
+        "end": 2082,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "916ac55080ff584c06d8",
+    "path": "tools/skill-eval/tasks/dir_walk/reference.bnt",
+    "source_sha256": "4e6248867c609c91b4951f637deef610d1377a5af1043cdea9c2ea5c835c1b43",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 222,
+        "end": 222,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 225,
+        "end": 225,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "b86e07fda0b5bdeace07",
+    "path": "tools/skill-eval/tasks/dir_walk/reference.bnt",
+    "source_sha256": "4e6248867c609c91b4951f637deef610d1377a5af1043cdea9c2ea5c835c1b43",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 524,
+        "end": 524,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 527,
+        "end": 527,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "a4eb65018005d0e0f0c5",
+    "path": "tools/skill-eval/tasks/dir_walk/reference.bnt",
+    "source_sha256": "4e6248867c609c91b4951f637deef610d1377a5af1043cdea9c2ea5c835c1b43",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1356,
+        "end": 1356,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1359,
+        "end": 1359,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "933746ceb29d0b76c7b6",
+    "path": "tools/skill-eval/tasks/error_handling/reference.bnt",
+    "source_sha256": "30ba6f192fbab7cef29ac40e6bc6b118fec0d3fcbb4b093252f78fe970edbf4d",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 736,
+        "end": 736,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 739,
+        "end": 739,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "42d9bbf12c1f4bbdb970",
+    "path": "tools/skill-eval/tasks/file_process/reference.bnt",
+    "source_sha256": "7ba4f4ef41163203655d88d62860a23059ebed8f26c0806ae74b5ee75aa845bf",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 520,
+        "end": 520,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 523,
+        "end": 523,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "8699daaff8f494619a48",
+    "path": "tools/skill-eval/tasks/file_process/reference.bnt",
+    "source_sha256": "7ba4f4ef41163203655d88d62860a23059ebed8f26c0806ae74b5ee75aa845bf",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 848,
+        "end": 848,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 851,
+        "end": 851,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "def2ece90621d373f6ff",
+    "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+    "source_sha256": "4739120ceae08c547a3b1fdfa89ed162cd189bf36ebc4b75a7b2ab528f68bb3d",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1139,
+        "end": 1139,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1142,
+        "end": 1142,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "24b2ab387a2ec73c2ff3",
+    "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+    "source_sha256": "4739120ceae08c547a3b1fdfa89ed162cd189bf36ebc4b75a7b2ab528f68bb3d",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1269,
+        "end": 1269,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1272,
+        "end": 1272,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "20c7cd213423ef2eb38c",
+    "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+    "source_sha256": "4739120ceae08c547a3b1fdfa89ed162cd189bf36ebc4b75a7b2ab528f68bb3d",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1418,
+        "end": 1418,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1421,
+        "end": 1421,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "b1f7d0f33f76ee358a8e",
+    "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+    "source_sha256": "4739120ceae08c547a3b1fdfa89ed162cd189bf36ebc4b75a7b2ab528f68bb3d",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1514,
+        "end": 1514,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1517,
+        "end": 1517,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "6f938046888bdaacc905",
+    "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+    "source_sha256": "4739120ceae08c547a3b1fdfa89ed162cd189bf36ebc4b75a7b2ab528f68bb3d",
+    "callee": "Result.map",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1906,
+        "end": 1906,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1909,
+        "end": 1909,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "267ca22813193f252b94",
+    "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+    "source_sha256": "4739120ceae08c547a3b1fdfa89ed162cd189bf36ebc4b75a7b2ab528f68bb3d",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 2663,
+        "end": 2663,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 2666,
+        "end": 2666,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "238b5749f44568bce993",
+    "path": "tools/skill-eval/tasks/json_convert/reference.bnt",
+    "source_sha256": "1de0485c867889b78a6581327a0606aa69387dd9dc1f8230eae1f7d3119523c2",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 595,
+        "end": 595,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 598,
+        "end": 598,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "dfcb8a2d68a17bfd7535",
+    "path": "tools/skill-eval/tasks/json_convert/reference.bnt",
+    "source_sha256": "1de0485c867889b78a6581327a0606aa69387dd9dc1f8230eae1f7d3119523c2",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 679,
+        "end": 679,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 682,
+        "end": 682,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "d546e0ae870d9f2fe1af",
+    "path": "tools/skill-eval/tasks/json_convert/reference.bnt",
+    "source_sha256": "1de0485c867889b78a6581327a0606aa69387dd9dc1f8230eae1f7d3119523c2",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1282,
+        "end": 1282,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1285,
+        "end": 1285,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "b067f0b90b89968d5d54",
+    "path": "tools/skill-eval/tasks/json_summary/reference.bnt",
+    "source_sha256": "6647d5f0b511d2f68fffacea6e52b319a64ebdad06f576f8e6347c94c2f4f42d",
+    "callee": "Option.unwrapOr",
+    "names": [
+      "o",
+      "fallback"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1026,
+        "end": 1026,
+        "before": "",
+        "decoded_before": "",
+        "after": "o: "
+      },
+      {
+        "start": 1029,
+        "end": 1029,
+        "before": "",
+        "decoded_before": "",
+        "after": "fallback: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "956c4de1f966f9bb76ab",
+    "path": "tools/skill-eval/tasks/json_summary/reference.bnt",
+    "source_sha256": "6647d5f0b511d2f68fffacea6e52b319a64ebdad06f576f8e6347c94c2f4f42d",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1313,
+        "end": 1313,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1316,
+        "end": 1316,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "e901ef65616403897712",
+    "path": "tools/skill-eval/tasks/json_summary/reference.bnt",
+    "source_sha256": "6647d5f0b511d2f68fffacea6e52b319a64ebdad06f576f8e6347c94c2f4f42d",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 1389,
+        "end": 1389,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 1392,
+        "end": 1392,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "8d1dd98198de17722274",
+    "path": "tools/skill-eval/tasks/process_run/reference.bnt",
+    "source_sha256": "340da8ecc4f0329481a7b2db3a1b26bfb683490cc0b8f9e7bf7c7fdc52f71130",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 264,
+        "end": 264,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 267,
+        "end": 267,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "f8cb2e8434b3522649a7",
+    "path": "tools/skill-eval/tasks/process_run/reference.bnt",
+    "source_sha256": "340da8ecc4f0329481a7b2db3a1b26bfb683490cc0b8f9e7bf7c7fdc52f71130",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 510,
+        "end": 510,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 513,
+        "end": 513,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "f3beefd6fea07339b872",
+    "path": "tools/skill-eval/tasks/process_shell/reference.bnt",
+    "source_sha256": "6837a27d03245dbc990f54c49deba2c961dcab926d6e4ff471faaa6d7f3c7fa4",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 268,
+        "end": 268,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 271,
+        "end": 271,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "7cfdf0cfc4ccb5a49548",
+    "path": "tools/skill-eval/tasks/process_shell/reference.bnt",
+    "source_sha256": "6837a27d03245dbc990f54c49deba2c961dcab926d6e4ff471faaa6d7f3c7fa4",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 602,
+        "end": 602,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 605,
+        "end": 605,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "22f8dae27a8e5124db7b",
+    "path": "tools/skill-eval/tasks/regex_text/reference.bnt",
+    "source_sha256": "fbf782afe78904a91861b5fb968abccd62981d8addb1e84d60400dc67b6623d3",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 248,
+        "end": 248,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 251,
+        "end": 251,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  },
+  {
+    "id": "ad859e96f44b375f26a8",
+    "path": "tools/skill-eval/tasks/write_tests/reference.bnt",
+    "source_sha256": "b01f6e96d46412c058a431c7050f4932395a8736ca8f1860565d46dae4d2f7cd",
+    "callee": "Result.mapError",
+    "names": [
+      "r",
+      "f"
+    ],
+    "original_hold_reasons": [
+      "input_not_typed_successfully",
+      "pipe_requires_review"
+    ],
+    "edits": [
+      {
+        "start": 639,
+        "end": 639,
+        "before": "",
+        "decoded_before": "",
+        "after": "r: "
+      },
+      {
+        "start": 642,
+        "end": 642,
+        "before": "",
+        "decoded_before": "",
+        "after": "f: "
+      }
+    ],
+    "resolution": "既知の宣言の契約名を元の位置に挿入。穴・パイプの評価順を維持。関数値の適合は別途確認。"
+  }
+]

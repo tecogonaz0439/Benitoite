@@ -20,5 +20,5 @@ end function
 
 @test
 function stillRuns() -> Unit uses Assert.Check
-  Assert.equal(divide(5), 2)
+  Assert.equal(actual: divide(5), expected: 2)
 end function

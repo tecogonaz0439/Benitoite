@@ -4,10 +4,10 @@
 import Benitoite.Trait
 import Benitoite.Unofficial.IO.Console
 function main() -> Result[Unit, String] uses Console.Read, Console.Write
-  bind bytes <- try Console.readAllBytes() |> Result.mapError(_, IOError.message)
+  bind bytes <- try Console.readAllBytes() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.writeLine(Bytes.toHex(bytes))
   Console.writeLine(Trait.Show.show(String.fromUTF8(bytes)))
-  bind eof <- try Console.readAllBytes() |> Result.mapError(_, IOError.message)
+  bind eof <- try Console.readAllBytes() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.writeLine(Integer.toString(Bytes.length(eof)))
   return Result.Ok(())
 end function

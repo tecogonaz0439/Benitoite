@@ -1,6 +1,7 @@
-import Benitoite.Surface.CheckSoundControl
+import Benitoite.Surface.CheckSoundDicts
 
-/-! 厳密な検査から宣言的な型付けを導く契約。探索の収束は前提にしない。 -/
+/-! 厳密な検査から宣言的な型付けを導く契約。探索の収束は前提にしない。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。 -/
 namespace Benitoite.Surface.Check
 open Benitoite.Release Benitoite.Surface.CheckTools
 
@@ -76,10 +77,10 @@ theorem checkDef_sound {q path d} (hq : q.Sound) (hd : d.AtomsIn q.atoms)
   exact checkDef_of_mutual (mutualSoundness q) hq hd h
 
 theorem checkImpl_sound {q methods supers path id}
-    (hq : q.Sound) (hi : id.AtomsIn q.atoms)
+    (hq : q.Sound) (hi : id.decl.AtomsIn q.atoms)
     (hn : ImplNamesComplete q id methods supers)
     (h : checkImpl q methods supers path id = .ok ()) :
-    ImplDecl.WellTyped q.D q.B q.opPrim id := by
+    ImplDecl.WellTyped q.D q.B q.opPrim id.decl := by
   exact checkImpl_of_checker (checkerSoundness q) hq hi hn h
 
 end Benitoite.Surface.Check

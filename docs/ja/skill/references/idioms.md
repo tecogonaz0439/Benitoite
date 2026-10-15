@@ -1,6 +1,6 @@
 # Benitoite の定番の書き方
 
-> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。訳した元は、Benitoite 0.0.4 の版の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.5 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -22,6 +22,7 @@
 ## 目次
 
 - [プログラムの形と誤りの扱い](#プログラムの形と誤りの扱い)
+- [呼び出し、コールバックの契約、穴、パイプ](#呼び出しコールバックの契約穴パイプ)
 - [ファイルの読み書き](#ファイルの読み書き)
 - [JSON](#json)
 - [CSV](#csv)
@@ -44,7 +45,7 @@ import Benitoite.Unofficial.IO.Console
 function parsePort(text: String) -> Result[Integer, String]
   return match Integer.parse(text) with
     case Option.Some(n) if n > 0 and n < 65536 -> Result.Ok(n)
-    case _ -> Result.Error("not a port: ${text}")
+    case otherPort -> Result.Error("not a port: ${text}")
   end match
 end function
 
@@ -68,6 +69,42 @@ not a port: http
 
 `Process.exit(code)`（エフェクト `Process.Exit`）は、特定の終了コードが必要なときにだけ使う。
 
+## 呼び出し、コールバックの契約、穴、パイプ
+
+二つ以上のパラメータを持つ通常の呼び出しでは、各引数に宣言の名前でラベルを付ける。一引数の呼び出しはラベルを省いてよく、引数がゼロなら `f()` と書く。ラベルは任意の順に書ける。呼ぶ関数の式を最初に評価し、次に各引数をソースの記述順に一度ずつ評価する。
+
+パラメータ名は関数型の一部である。コールバックは、未使用のパラメータも含めて、期待する名前と順序が正確に一致しなければならない。`List.map` は `value` を期待する一方、`Integer.toString` は `n` を宣言しているので、明示のラムダで包んで合わせる。`List.fold` は `acc, value` を期待する。Map のコールバックは多くの場合 `key, value` を期待する。宣言全体は `stdlib/<Module>.md` で読む。複数行のラムダ内で意味を表す別名を束縛すれば、契約を変えずに済む。
+
+穴は、対応するパラメータ名を記述順に保つ。直接の穴のないパイプは、宣言上の最初のパラメータを満たし、残りの引数にはラベルを要する。直接の穴がある場合や、右辺を括弧で囲んだ場合は、その結果の関数を一引数で呼ぶ。構成子の関数値は `arg1`、`arg2`、…の位置名を使う。レコード構成子の関数値はフィールド名を使い、レコードの取り出す関数は `value` を取る。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+
+function subtract(a: Integer, b: Integer) -> Integer
+  return a - b
+end function
+
+function main() -> Unit uses Console.Write
+  bind xs <- [1, 2, 3]
+  bind doubled <- List.map(xs: xs, f: lambda(value) return value * 2)
+  bind labels <- doubled |> List.map(f: lambda(value) return Integer.toString(value))
+  Console.writeLine(labels |> String.join(separator: ","))
+  bind swapped: function(b: Integer, a: Integer) -> Integer <- subtract(b: _, a: _)
+  Console.writeLine("${swapped(b: 2, a: 9)}")
+  bind make <- Pair
+  bind pair <- make(arg1: 4, arg2: "four")
+  Console.writeLine("${Pair.first(pair)} ${Pair.second(pair)}")
+end function
+```
+
+```output
+2,4,6
+7
+4 four
+```
+
+E0454 では、コールバックの名前を位置ごとに比べる。E0455 では、関数パラメータに名前を持つ関数型の注釈を付ける。呼び出しのラベル順から契約を決めることはできない。直接の構成子、パターン、属性、ハンドラの束縛、`resume` は、それぞれ専用の構文を保つ。
+
 ## ファイルの読み書き
 
 `File.readText` はファイル全体を読み、`File.readLines` は行の並びとして読む。相対パスは、`benitoite` を起動したディレクトリを基準に解決する。
@@ -84,17 +121,17 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
-  bind lines <- try File.readLines("input.txt") |> Result.mapError(_, IOError.message)
-  bind total <- List.fold(lines, 0, lambda(sum, line)
-    return match String.split(line, " ") with
-      case [_, count] -> sum + Option.unwrapOr(Integer.parse(count), 0)
-      case _ -> sum
+  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind total <- List.fold(xs: lines, initial: 0, f: lambda(acc, value)
+    return match String.split(s: value, separator: " ") with
+      case [_, count] -> acc + Option.unwrapOr(o: Integer.parse(count), fallback: 0)
+      case otherFields -> acc
     end match
   end lambda)
   bind report <- "lines: ${List.length(lines)}\ntotal: ${total}\n"
-  bind _ <- try File.writeText("report.txt", report) |> Result.mapError(_, IOError.message)
-  bind _ <- try File.appendText("report.txt", "done\n") |> Result.mapError(_, IOError.message)
-  Console.write(try File.readText("report.txt") |> Result.mapError(_, IOError.message))
+  bind _ <- try File.writeText(path: "report.txt", text: report) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind _ <- try File.appendText(path: "report.txt", text: "done\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  Console.write(try File.readText("report.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)))
   return Result.Ok(())
 end function
 ```
@@ -115,11 +152,10 @@ function main() -> Unit uses File.Read, Console.Write
   return match File.readText("missing.txt") with
     case Result.Ok(text) -> Console.write(text)
     case Result.Error(error) ->
-      if IOError.kind(error) = IOErrorKind.NotFound then
-        Console.writeLine("missing.txt does not exist")
-      else
-        Console.writeLine("could not read: ${IOError.message(error)}")
-      end if
+      match IOError.kind(error) with
+        case IOErrorKind.NotFound -> Console.writeLine("missing.txt does not exist")
+        case otherKind -> Console.writeLine("could not read: ${IOError.message(error)}")
+      end match
   end match
 end function
 ```
@@ -140,11 +176,14 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
-  bind _ <- try File.createDirectory("out") |> Result.mapError(_, IOError.message)
-  bind names <- try File.listDirectory(".") |> Result.mapError(_, IOError.message)
-  List.forEach(List.sort(names), lambda(name) Console.writeLine(name) end lambda)
-  bind found <- try File.exists("notes.md") |> Result.mapError(_, IOError.message)
-  Console.writeLine(if found then "notes.md exists" else "no notes.md" end if)
+  bind _ <- try File.createDirectory("out") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind names <- try File.listDirectory(".") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  List.forEach(xs: List.sort(names), f: lambda(value) Console.writeLine(value))
+  bind found <- try File.exists("notes.md") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  Console.writeLine(match found with
+    case true -> "notes.md exists"
+    case false -> "no notes.md"
+  end match)
   return Result.Ok(())
 end function
 ```
@@ -175,28 +214,26 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.Json
 
 function amountOf(order: Json.Value) -> Result[Pair[String, Integer], String]
-  bind category <- Option.andThen(Json.get(order, "category"), Json.asString)
-  bind amount <- Option.andThen(Json.get(order, "amount"), Json.asInteger)
+  bind category <- Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString)
+  bind amount <- Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger)
   return match Pair(category, amount) with
     case Pair(Option.Some(c), Option.Some(a)) -> Result.Ok(Pair(c, a))
-    case _ -> Result.Error("an order needs a category and an amount")
+    case otherFields -> Result.Error("an order needs a category and an amount")
   end match
 end function
 
 function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind text <- try File.readText("orders.json") |> Result.mapError(_, IOError.message)
-  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
-  bind orders <- try Option.okOr(Json.asArray(value), "orders.json is not an array")
-  bind totals <- List.fold(orders, Result.Ok(Map.empty()), lambda(acc, order)
-    return Result.andThen(acc, lambda(m)
-      return Result.map(amountOf(order), lambda(entry)
-        bind current <- Map.get(m, Pair.first(entry)) |> Option.unwrapOr(_, 0)
-        return Map.set(m, Pair.first(entry), current + Pair.second(entry))
-      end lambda)
-    end lambda)
+  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
+  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array")
+  bind totals <- List.fold(xs: orders, initial: Result.Ok(Map.empty()), f: lambda(acc, value)
+    bind totalsMap <- try acc
+    bind entry <- try amountOf(value)
+    bind current <- Map.get(m: totalsMap, k: Pair.first(entry)) |> Option.unwrapOr(fallback: 0)
+    return Result.Ok(Map.set(m: totalsMap, k: Pair.first(entry), value: current + Pair.second(entry)))
   end lambda)
-  Map.forEach(try totals, lambda(category, total)
-    Console.writeLine("${category}: ${total}")
+  Map.forEach(m: try totals, f: lambda(key, value)
+    Console.writeLine("${key}: ${value}")
   end lambda)
   return Result.Ok(())
 end function
@@ -247,18 +284,18 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function scoreOf(row: Map[String, String]) -> Integer
-  return Option.andThen(Map.get(row, "score"), Integer.parse) |> Option.unwrapOr(_, 0)
+  return Option.andThen(o: Map.get(m: row, k: "score"), f: lambda(value) return Integer.parse(value)) |> Option.unwrapOr(fallback: 0)
 end function
 
 function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
-  bind text <- try File.readText("scores.csv") |> Result.mapError(_, IOError.message)
-  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(_, Csv.ParseError.message)
-  bind passed <- List.filter(rows, lambda(row) return scoreOf(row) >= 80 end lambda)
-  bind output <- List.map(passed, lambda(row)
-    return [Option.unwrapOr(Map.get(row, "name"), ""), Integer.toString(scoreOf(row))]
+  bind text <- try File.readText("scores.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error))
+  bind passed <- List.filter(xs: rows, p: lambda(value) return scoreOf(value) >= 80)
+  bind output <- List.map(xs: passed, f: lambda(value)
+    return [Option.unwrapOr(o: Map.get(m: value, k: "name"), fallback: ""), Integer.toString(scoreOf(value))]
   end lambda)
-  bind csv <- Csv.format(List.prepend(output, ["name", "score"]))
-  bind _ <- try File.writeText("passed.csv", csv) |> Result.mapError(_, IOError.message)
+  bind csv <- Csv.format(List.prepend(xs: output, x: ["name", "score"]))
+  bind _ <- try File.writeText(path: "passed.csv", text: csv) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   Console.write(csv)
   Console.write(Csv.format([["Bob, Jr.", "75"]]))
   return Result.Ok(())
@@ -281,12 +318,12 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 
 function main() -> Result[Unit, String] uses Process.Run, Console.Write
-  bind printed <- try Process.run(Process.command("echo", ["hello", "$HOME"])) |> Result.mapError(_, IOError.message)
+  bind printed <- try Process.run(Process.command(program: "echo", arguments: ["hello", "$HOME"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   Console.write(Process.Output.standardOutput(printed))
-  bind sort <- Process.Command(..Process.command("sort", []), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some("pear\napple\n"))
-  bind sorted <- try Process.run(sort) |> Result.mapError(_, IOError.message)
+  bind sort <- Process.Command(..Process.command(program: "sort", arguments: []), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some("pear\napple\n"))
+  bind sorted <- try Process.run(sort) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   Console.write(Process.Output.standardOutput(sorted))
-  bind failed <- try Process.run(Process.command("sh", ["-c", "exit 3"])) |> Result.mapError(_, IOError.message)
+  bind failed <- try Process.run(Process.command(program: "sh", arguments: ["-c", "exit 3"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   Console.writeLine("exit code: ${Process.Output.exitCode(failed)}")
   return Result.Ok(())
 end function
@@ -306,9 +343,9 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 
 function main() -> Result[Unit, String] uses Process.Run, Console.Write
-  bind piped <- try Process.shell("printf 'b\\na\\nc\\n' | LC_ALL=C sort | tr 'a-z' 'A-Z'") |> Result.mapError(_, IOError.message)
+  bind piped <- try Process.shell("printf 'b\\na\\nc\\n' | LC_ALL=C sort | tr 'a-z' 'A-Z'") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   Console.write(Process.Output.standardOutput(piped))
-  bind checked <- try Process.shell("if [ -d / ]; then echo root; fi; echo oops >&2; exit 2") |> Result.mapError(_, IOError.message)
+  bind checked <- try Process.shell("if [ -d / ]; then echo root; fi; echo oops >&2; exit 2") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   Console.write(Process.Output.standardOutput(checked))
   Console.write("stderr: ${Process.Output.standardError(checked)}")
   Console.writeLine("exit code: ${Process.Output.exitCode(checked)}")
@@ -341,8 +378,8 @@ function main() -> Result[Unit, String] uses Process.Environment, Console.Write
     case [] -> "world"
   end match
   Console.writeLine("Hello, ${name}!")
-  bind unset <- try Process.environmentVariable("BENITOITE_SKILL_EXAMPLE_UNSET") |> Result.mapError(_, IOError.message)
-  Console.writeLine(Option.unwrapOr(unset, "(not set)"))
+  bind unset <- try Process.environmentVariable("BENITOITE_SKILL_EXAMPLE_UNSET") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  Console.writeLine(Option.unwrapOr(o: unset, fallback: "(not set)"))
   return Result.Ok(())
 end function
 ```
@@ -364,36 +401,36 @@ import Benitoite.Unofficial.Network.Http
 
 function route(request: Http.Request) -> Http.Response
   return match Pair(Http.Request.method(request), Http.pathSegments(Http.Request.path(request))) with
-    case Pair("GET", ["hello", name]) -> Http.text(200, "Hello, ${name}!")
-    case Pair("GET", ["items"]) -> Http.json(200, Json.Value.Array([Json.Value.Integer(1), Json.Value.Integer(2)]))
-    case _ -> Http.text(404, "not found")
+    case Pair("GET", ["hello", name]) -> Http.text(status: 200, s: "Hello, ${name}!")
+    case Pair("GET", ["items"]) -> Http.json(status: 200, value: Json.Value.Array([Json.Value.Integer(1), Json.Value.Integer(2)]))
+    case otherPath -> Http.text(status: 404, s: "not found")
   end match
 end function
 
 function serveLoop(listener: Http.Listener, remaining: Integer) -> Result[Unit, String] uses Http.Listen, State
   if remaining = 0 then return Result.Ok(()) end if
-  bind exchange <- try Http.accept(listener) |> Result.mapError(_, NetworkError.message)
-  bind _ <- try Http.respond(exchange, route(Http.requestOf(exchange))) |> Result.mapError(_, NetworkError.message)
-  bind _ <- try Http.closeExchange(exchange) |> Result.mapError(_, NetworkError.message)
-  return serveLoop(listener, remaining - 1)
+  bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+  bind _ <- try Http.respond(exchange: exchange, response: route(Http.requestOf(exchange))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+  bind _ <- try Http.closeExchange(exchange) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+  return serveLoop(listener: listener, remaining: remaining - 1)
 end function
 
 function show(response: Http.Response) -> Unit uses Console.Write
-  bind body <- Option.unwrapOr(String.fromUTF8(Http.Response.body(response)), "(not UTF-8)")
+  bind body <- Option.unwrapOr(o: String.fromUTF8(Http.Response.body(response)), fallback: "(not UTF-8)")
   return Console.writeLine("${Http.Response.status(response)} ${body}")
 end function
 
 function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message),
+  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)),
     group = TaskGroup.open() do
     bind base <- "http://127.0.0.1:${Http.listenerPort(listener)}"
-    bind server <- TaskGroup.spawn(group, lambda() return serveLoop(listener, 3) end lambda)
-    bind hello <- try Http.get(base + "/hello/Ada") |> Result.mapError(_, NetworkError.message)
-    bind items <- try Http.get(base + "/items") |> Result.mapError(_, NetworkError.message)
-    bind request <- Http.ClientRequest(..Http.clientRequest("POST", base + "/upload"), body: String.toUTF8("data"))
-    bind missing <- try Http.send(request) |> Result.mapError(_, NetworkError.message)
+    bind server <- TaskGroup.spawn(group: group, action: lambda() return serveLoop(listener: listener, remaining: 3))
+    bind hello <- try Http.get(base + "/hello/Ada") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+    bind items <- try Http.get(base + "/items") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+    bind request <- Http.ClientRequest(..Http.clientRequest(method: "POST", url: base + "/upload"), body: String.toUTF8("data"))
+    bind missing <- try Http.send(request) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
     bind _ <- try Task.await(server)
-    List.forEach([hello, items, missing], show)
+    List.forEach(xs: [hello, items, missing], f: lambda(value) show(value))
     return Result.Ok(())
   end with
 end function
@@ -412,14 +449,14 @@ import Benitoite.Unofficial.Network.Http
 
 function respondTo(request: Http.Request) -> Http.Response
   return match Http.pathSegments(Http.Request.path(request)) with
-    case [] -> Http.html(200, "<h1>Home</h1>")
-    case ["health"] -> Http.text(200, "ok")
-    case _ -> Http.text(404, "not found")
+    case [] -> Http.html(status: 200, s: "<h1>Home</h1>")
+    case ["health"] -> Http.text(status: 200, s: "ok")
+    case otherPath -> Http.text(status: 404, s: "not found")
   end match
 end function
 
 function main() -> Result[Unit, String] uses Http.Listen, State
-  return Http.serve("127.0.0.1", 8080, respondTo) |> Result.mapError(_, NetworkError.message)
+  return Http.serve(host: "127.0.0.1", port: 8080, handler: respondTo) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
 end function
 ```
 
@@ -431,17 +468,17 @@ end function
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  bind numbers <- List.range(1, 6)
-  bind squares <- List.map(numbers, lambda(n) return n * n end lambda)
-  bind even <- List.filter(squares, lambda(n) return n mod 2 = 0 end lambda)
-  Console.writeLine("${List.length(numbers)} numbers, sum ${List.fold(numbers, 0, lambda(a, n) return a + n end lambda)}")
-  Console.writeLine(String.join(List.map(even, Integer.toString), ", "))
-  bind words <- String.split("the cat saw the dog", " ")
-  bind counts <- List.fold(words, Map.empty(), lambda(m, w)
-    return Map.set(m, w, Option.unwrapOr(Map.get(m, w), 0) + 1)
+  bind numbers <- List.range(start: 1, stop: 6)
+  bind squares <- List.map(xs: numbers, f: lambda(value) return value * value)
+  bind even <- List.filter(xs: squares, p: lambda(value) return value mod 2 = 0)
+  Console.writeLine("${List.length(numbers)} numbers, sum ${List.fold(xs: numbers, initial: 0, f: lambda(acc, value) return acc + value)}")
+  Console.writeLine(String.join(xs: List.map(xs: even, f: lambda(value) return Integer.toString(value)), separator: ", "))
+  bind words <- String.split(s: "the cat saw the dog", separator: " ")
+  bind counts <- List.fold(xs: words, initial: Map.empty(), f: lambda(acc, value)
+    return Map.set(m: acc, k: value, value: Option.unwrapOr(o: Map.get(m: acc, k: value), fallback: 0) + 1)
   end lambda)
-  Map.forEach(counts, lambda(word, count) Console.writeLine("${word}=${count}") end lambda)
-  Console.writeLine(String.join(Set.toList(Set.fromList(words)), " "))
+  Map.forEach(m: counts, f: lambda(key, value) Console.writeLine("${key}=${value}"))
+  Console.writeLine(String.join(xs: Set.toList(Set.fromList(words)), separator: " "))
   return ()
 end function
 ```
@@ -456,7 +493,7 @@ the=2
 cat dog saw the
 ```
 
-`List.range(start, stop)` は `stop` の手前で止まる。リストに添字の演算子はない。`List.get(xs, i)` を使う。これは `Option` を返す。
+`List.range(start: start, stop: stop)` は `stop` の手前で止まる。リストに添字の演算子はない。`List.get(xs: xs, i: i)` を使う。これは `Option` を返す。
 
 繰り返しは、再帰か、`List.forEach`・`List.map`・`List.fold` で書く。最後に自身を呼ぶ関数（`return f(...)`）は、スタックを伸ばさない。
 
@@ -465,11 +502,11 @@ import Benitoite.Unofficial.IO.Console
 
 function countDown(n: Integer, acc: List[String]) -> List[String]
   if n = 0 then return List.reverse(acc) end if
-  return countDown(n - 1, List.prepend(acc, Integer.toString(n)))
+  return countDown(n: n - 1, acc: List.prepend(xs: acc, x: Integer.toString(n)))
 end function
 
 function main() -> Unit uses Console.Write
-  return Console.writeLine(String.join(countDown(5, []), " "))
+  return Console.writeLine(String.join(xs: countDown(n: 5, acc: []), separator: " "))
 end function
 ```
 
@@ -484,7 +521,7 @@ import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write, State
   bind counter <- Reference.new(0)
-  List.forEach([3, 4, 5], lambda(n) Reference.set(counter, Reference.get(counter) + n) end lambda)
+  List.forEach(xs: [3, 4, 5], f: lambda(value) Reference.set(reference: counter, value: Reference.get(counter) + value))
   return Console.writeLine("total ${Reference.get(counter)}")
 end function
 ```
@@ -523,7 +560,7 @@ function main() -> Unit uses Console.Write
   bind more <- Item(..item, quantity: 10)
   Console.writeLine("${Item.name(more)}: ${Item.price(more) * Item.quantity(more)}")
   bind shapes <- [Shape.Circle(1.0), Shape.Rectangle(2.0, 3.5)]
-  List.forEach(shapes, lambda(s) Console.writeLine(Float.toString(area(s))) end lambda)
+  List.forEach(xs: shapes, f: lambda(value) Console.writeLine(Float.toString(area(value))))
   return ()
 end function
 ```
@@ -536,17 +573,17 @@ pen: 1200
 
 ## テストの書き方
 
-テストは、`@test("description")` を付けた関数であり、引数を取らず、`Unit` か `Result[Unit, String]` を返す。`try` を使うテストは `Result[Unit, String]` を返し、`Result.Error(message)` を返すとテストは失敗する。結果は `Assert.equal(actual, expected)` と `Assert.isTrue(condition, message)`（エフェクト `Assert.Check`）で確かめる。ファイルは `benitoite test file.bnt` で実行する。`main` のないテストのファイルに `benitoite check` を実行しない。
+テストは、`@test("description")` を付けた関数であり、引数を取らず、`Unit` か `Result[Unit, String]` を返す。`try` を使うテストは `Result[Unit, String]` を返し、`Result.Error(message)` を返すとテストは失敗する。結果は `Assert.equal(actual: actual, expected: expected)` と `Assert.isTrue(condition: condition, message: message)`（エフェクト `Assert.Check`）で確かめる。ファイルは `benitoite test file.bnt` で実行する。`main` のないテストのファイルに `benitoite check` を実行しない。
 
 ```benitoite test
 function slugify(title: String) -> String
-  return String.join(String.split(String.toLowercase(String.trim(title)), " "), "-")
+  return String.join(xs: String.split(s: String.toLowercase(String.trim(title)), separator: " "), separator: "-")
 end function
 
 @test("slugify lowercases and joins words")
 function slugifyJoins() -> Unit uses Assert.Check
-  Assert.equal(slugify(" Hello World "), "hello-world")
-  Assert.isTrue(String.contains(slugify("A B"), "-"), "the words are joined with -")
+  Assert.equal(actual: slugify(" Hello World "), expected: "hello-world")
+  Assert.isTrue(condition: String.contains(s: slugify("A B"), part: "-"), message: "the words are joined with -")
 end function
 ```
 
@@ -557,12 +594,12 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.IO.Process
 
 function countWords(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  return Result.Ok(List.length(List.filter(String.split(text, " "), lambda(w) return w <> "" end lambda)))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  return Result.Ok(List.length(List.filter(xs: String.split(s: text, separator: " "), p: lambda(value) return value <> "")))
 end function
 
 function gitBranch() -> Result[String, String] uses Process.Run
-  bind output <- try Process.run(Process.command("git", ["branch", "--show-current"])) |> Result.mapError(_, IOError.message)
+  bind output <- try Process.run(Process.command(program: "git", arguments: ["branch", "--show-current"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   return Result.Ok(String.trim(Process.Output.standardOutput(output)))
 end function
 
@@ -572,10 +609,10 @@ function countWordsReadsFile() -> Unit uses Assert.Check, File.Read
     countWords("notes.txt")
   with
     case File.readText(path) ->
-      Assert.equal(path, "notes.txt")
+      Assert.equal(actual: path, expected: "notes.txt")
       resume(Result.Ok("one two  three"))
   end handle
-  Assert.equal(result, Result.Ok(3))
+  Assert.equal(actual: result, expected: Result.Ok(3))
 end function
 
 @test("gitBranch runs git without starting it")
@@ -584,18 +621,18 @@ function gitBranchRunsGit() -> Unit uses Assert.Check, Process.Run
     gitBranch()
   with
     case Process.run(command) ->
-      Assert.equal(Process.Command.program(command), "git")
+      Assert.equal(actual: Process.Command.program(command), expected: "git")
       resume(Result.Ok(Process.Output(exitCode: 0, standardOutput: "main\n", standardError: "")))
   end handle
-  Assert.equal(result, Result.Ok("main"))
+  Assert.equal(actual: result, expected: Result.Ok("main"))
 end function
 ```
 
 ## 数値のビット幅と変換
 
-既存の型には `Integer`、`Float`、`Byte` を使う。それぞれの正式な名前は `Integer64`、`Float64`、`UnsignedInteger8` であり、`UnsignedInteger` は `UnsignedInteger64` の別名である。別名は同じ型を表す。追加した七つの型（`Integer8`、`Integer16`、`Integer32`、`UnsignedInteger16`、`UnsignedInteger32`、`UnsignedInteger64`、`Float32`）は、それぞれ異なる型である。数値の型とモジュールはすべて prelude にあり、取り込みは要らない。
+通常の名前には、別名の `Integer`、`Float`、`Byte` を使う。それぞれの正式な名前は `Integer64`、`Float64`、`UnsignedInteger8` であり、`UnsignedInteger` は `UnsignedInteger64` の別名である。別名は同じ型を表す。七つの型（`Integer8`、`Integer16`、`Integer32`、`UnsignedInteger16`、`UnsignedInteger32`、`UnsignedInteger64`、`Float32`）は、それぞれ異なる型である。数値の型とモジュールはすべて prelude にあり、取り込みは要らない。
 
-接尾辞でビット幅を明示的に選ぶ。`42s16`、`0xffu8`、`65535u16`、`18446744073709551615u64`、`1.5f32` のように書く。接尾辞のない値は `Integer` か `Float` のままであり、期待する型によって変わることはない。接尾辞の表記は暫定であり、構文の見直しで変わることがある。浮動小数点の接尾辞には小数点か指数が要る（`1f32` ではなく `1.0f32`）。符号付きリテラルの範囲の検査に符号を含めるのは、直接付けた負号だけである。`-128s8` は使えるが、`-(128s8)` は使えない。符号なしの型では、0 であっても単項の負号を使えない。`Byte` に算術演算はない。新しい数値のビット幅の型と `Byte` は、定数のパターンにも範囲のパターンにもできない。束縛した名前とガードを使う。
+接尾辞でビット幅を明示的に選ぶ。`42s16`、`0xffu8`、`65535u16`、`18446744073709551615u64`、`1.5f32` のように書く。接尾辞のない値は `Integer` か `Float` のままであり、期待する型によって変わることはない。接尾辞の表記は暫定であり、構文の見直しで変わることがある。浮動小数点の接尾辞には小数点か指数が要る（`1f32` ではなく `1.0f32`）。符号付きリテラルの範囲の検査に符号を含めるのは、直接付けた負号だけである。`-128s8` は使えるが、`-(128s8)` は使えない。符号なしの型では、0 であっても単項の負号を使えない。`Byte` に算術演算はない。`Integer8`、`Integer16`、`Integer32`、符号なし整数の型、`Byte`、`Float32` は、定数のパターンにも範囲のパターンにもできない。束縛した名前とガードを使う。
 
 範囲を検査する変換は `Option` を返し、整数の算術演算の桁あふれと 0 による除算は実行を止める。狭い整数のモジュールは、`Integer` を通して変換する。`UnsignedInteger64.toInteger` は、その範囲の上半分が収まらないため `Option` を返す。`toDecimal` は全範囲で正確に変換する。`Float32.fromFloat` は丸めを行い、有限の入力が無限大になると `None` を返す。`Float32.toFloat` は、有限の値を正確に広い型へ変換する。算術演算は各演算の後に binary32 に丸める。各関数のシグネチャは、対応する生成のモジュールの参照文書で読む。
 
@@ -608,7 +645,7 @@ function smallInteger(text: String) -> Option[Integer16]
 end function
 
 function main() -> Unit uses Console.Write
-  bind value <- Option.unwrapOr(smallInteger("42"), 0s16)
+  bind value <- Option.unwrapOr(o: smallInteger("42"), fallback: 0s16)
   bind wide: UnsignedInteger <- 18446744073709551615u64
   Console.writeLine("${value + 1s16} ${smallInteger("32768") = Option.None}")
   Console.writeLine("${UnsignedInteger64.toDecimal(wide)} ${UnsignedInteger64.toInteger(wide) = Option.None}")
@@ -676,8 +713,8 @@ function two(v: Two) -> Two
 
 WIT の形は、`value: s64` を持つレコード、入れ子のレコード、結果がタプルの `flags { f1 }`、`map<string, s64>`、4 要素の `tuple<s64, s64, s64, s64>`、`variant { value(tuple<s64, s64>), empty }` である。例のゲストは、`box(Box(value: 35))` から 42、`nested(Box(value: Box(value: -7)))` の内側の値として 0、`f1(Set.empty())` から `Pair(Set.fromList([D1.F1]), 0)`、`tuple4(Four.Item(1, 2, 3, 4))` から `Four.Item(12, 14, 16, 18)`、`two(Two.Value(3, 7))` から `Two.Value(14, 29)` を返す。例の `Map.toList(result(Map.empty()))` は `[Pair("a", 2), Pair("z", 3)]` である。返された各項目は正規化の前にすべて検査し、キーが重複すれば最後の値を残し、最終的なマップはキーの順に並ぶ。これらの数値の変換は、例のゲストの動作である。
 
-検査器は実行の前に `typed`、`adapter`、`dynamic`、`stateful` のいずれかを選び、失敗の後に試し直すことはない。既存の型付きの組み合わせは、バイト数と要素数の計数を保つ。ほかの対応する値は生成したアダプタを使い、外部のリソース型は状態を持つ動的な経路を使う。アダプタの生成や配置の上限によって、呼び出し前に動的な経路を選ぶことがある。生成したコードとコンパイル済みのコードは一回の実行の中で共有するが、純粋な呼び出しは毎回新しい Store を使う。
+検査器は実行の前に `typed`、`adapter`、`dynamic`、`stateful` のいずれかを選び、失敗の後に試し直すことはない。`typed` の経路は、バイト数と要素数を数える。ほかの対応する値は生成したアダプタを使い、外部のリソース型は状態を持つ動的な経路を使う。アダプタの生成や配置の上限によって、呼び出し前に動的な経路を選ぶことがある。生成したコードとコンパイル済みのコードは一回の実行の中で共有するが、純粋な呼び出しは毎回新しい Store を使う。
 
-既定の上限は、引き続き燃料 10^10、ゲストとアダプタの線形メモリの合計 64 MiB、コアのインスタンス・メモリ・テーブル各 16 個、テーブルごとに 10,000 要素、方向ごとに転送量 256 MiB である。アダプタは、32 バイトのヘッダと詰め物を含め、詰めて格納した引数と結果の列全体を数える。それとは別に、同じ `--wasm-transfer` の値で、方向ごとの論理的な構築量も制限する。言語の値が現れるごとに 16 バイトを数え、文字列と Bytes の内容を加える。Bytes の要素は別の値として数えないが、List[Byte] の要素は数える。キーの重複の正規化で捨てる Map の項目も数える。ABI のためだけの、値をまとめるタプルは言語の値を加えない。これらの上限はプロセスのメモリ全体を制限しない。アダプタの命令は燃料を消費し、SIGINT/SIGTERM に応じる。`Task.withTimeout` は外部呼び出しを取り消せない。文字列、Bytes、リストの既存の大きさの上限も引き続き適用する。
+既定の上限は、燃料 10^10、ゲストとアダプタの線形メモリの合計 64 MiB、コアのインスタンス・メモリ・テーブル各 16 個、テーブルごとに 10,000 要素、方向ごとに転送量 256 MiB である。アダプタは、32 バイトのヘッダと詰め物を含め、詰めて格納した引数と結果の列全体を数える。それとは別に、同じ `--wasm-transfer` の値で、方向ごとの論理的な構築量も制限する。言語の値が現れるごとに 16 バイトを数え、文字列と Bytes の内容を加える。Bytes の要素は別の値として数えないが、List[Byte] の要素は数える。キーの重複の正規化で捨てる Map の項目も数える。ABI のためだけの、値をまとめるタプルは言語の値を加えない。これらの上限はプロセスのメモリ全体を制限しない。アダプタの命令は燃料を消費し、SIGINT/SIGTERM に応じる。`Task.withTimeout` は外部呼び出しを取り消せない。文字列、Bytes、リストの大きさの上限も適用する。
 
 `run` と `test` の `--wasm-stats` を使って、経路、代替の経路を選んだ理由、転送量、`construction_bytes`（両方向の合計）、アダプタの失敗を調べる。`--wasm-memory`、`--wasm-fuel`、`--wasm-transfer` は、関数の契約を変えずに上限を変える。燃料の枯渇は R0904、転送量・構築量・メモリの枯渇は R0905、対象数の上限は R0906、戻り値の大きさの上限は R0902 を報告する。トラップとゲストの ABI 違反は R0601 を報告し、宣言した `Result.Error` は通常の値である。これらの実行時の失敗は `match` や `try` で捕えられない。

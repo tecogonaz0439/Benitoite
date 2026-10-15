@@ -5,13 +5,13 @@ import Benitoite.Trait
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.Path
 function main() -> Unit uses Console.Write
-  Console.writeLine(Trait.Show.show(List.map([Pair("a", ""), Pair("", "a"), Pair("a/", "b"), Pair("a", "/b")], lambda(p) return Path.join(Pair.first(p), Pair.second(p)) end lambda)))
+  Console.writeLine(Trait.Show.show(List.map(xs: [Pair("a", ""), Pair("", "a"), Pair("a/", "b"), Pair("a", "/b")], f: lambda(value) return Path.join(base: Pair.first(value), child: Pair.second(value)) end lambda)))
   bind path <- Path.joinAll(["data", "./tmp", "..", "report.csv"]) |> Path.normalize(_)
   Console.writeLine(path)
   Console.writeLine(Trait.Show.show(Pair(Path.parent(path), Path.fileName(path))))
   Console.writeLine(Trait.Show.show(Pair(Path.stem(path), Path.extension(path))))
-  Console.writeLine(Path.withExtension(path, "json"))
-  Console.writeLine(Path.withExtension(".config", ""))
+  Console.writeLine(Path.withExtension(p: path, extension: "json"))
+  Console.writeLine(Path.withExtension(p: ".config", extension: ""))
   Console.writeLine(Trait.Show.show(Path.components("/a//./b/../c")))
   Console.writeLine(Trait.Show.show(Path.isAbsolute(Path.normalize("/../../a"))))
   Console.writeLine(Path.normalize("a/..") + "/" + Path.normalize("../a/../b"))

@@ -1,10 +1,13 @@
 import Benitoite.Release.Lemmas.StepSound
+import Benitoite.Release.Lemmas.EffectSound
 
 /-!
-# 段階 B の定理
+# コアの最終定理（契約名を持つコア）
 
 設計書 01-12「確かめる性質」の性質 2（進行と保存）と性質 3（エフェクトの健全性）の、初回リリース版の
 読み替えの形を、段階 B の範囲で言明し、証明する（段階 B2 で、型クラスとコレクションの構成を加えた）。証明の補題は `Lemmas/` に置く。
+
+共有型と型付けは契約名を含むコアの定義を使う。宣言・値の名前の整形式は、型付けと整形式の判断から導く。
 
 段階 A と違い、遷移を計算する関数 `step` と遷移の関係の一致は、`step` が返す遷移が関係の遷移であること
 （`step_sound`）だけを言明する。`step` は例の実行を調べる道具であり、新しい場所と応答の選び方を固定するので、
@@ -53,6 +56,17 @@ theorem effect_soundness (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.E
       (∀ ev s', ¬ Step P B s (some ev) s') ∧ ¬ UnhandledOp s := by
   intro hm hc s hsteps
   have hs := steps_preserve hwf hwt hdecl hb hsteps (stateTyE_init hwf hb hm hc)
+  exact ⟨no_event hdecl hb hs, no_unhandledOp hdecl hs builtinOnly_empty⟩
+
+/-- ラムダ名の整形式を外部の前提から除いた、同じエフェクト健全性の保証。 -/
+theorem effect_soundness_noLamNames (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.EffectsOk B)
+    (hb : B.Assumptions P) {m : Comp} {a : Ty} :
+    HasTypeC P B StoreTy.empty [] [] none m a Eff.empty →
+    Comp.VarsInNoLamNames 0 (fun _ => False) m →
+    ∀ s, Steps P B (.run m [] Store.empty) s →
+      (∀ ev s', ¬ Step P B s (some ev) s') ∧ ¬ UnhandledOp s := by
+  intro hm hc s hsteps
+  have hs := steps_preserve hwf hwt hdecl hb hsteps (stateTyE_init_noLamNames hwf hb hm hc)
   exact ⟨no_event hdecl hb hs, no_unhandledOp hdecl hs builtinOnly_empty⟩
 
 end Benitoite.Release

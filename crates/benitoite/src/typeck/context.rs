@@ -56,6 +56,11 @@ pub(super) struct Body<'a, 'd> {
     pub constraints: Vec<Constraint>,
     pub locals: BindingMap<ITy>,
     pub expr_types: NodeMap<ITy>,
+    pub expr_spans: HashMap<NodeId, Span>,
+    pub call_plans: NodeMap<super::CallPlan>,
+    pub named_calls: Vec<super::calls::PendingCall>,
+    /// 位置呼び出しでも、未知の契約を出力前に拒否するための呼ぶ値と位置。
+    pub call_contracts: Vec<(ITy, Span, Span)>,
     pub type_args: NodeMap<(Vec<IArg>, Vec<IEffect>)>,
     pub operand_types: NodeMap<ITy>,
     pub interp_types: NodeMap<ITy>,
@@ -105,6 +110,10 @@ impl<'a, 'd> Body<'a, 'd> {
             constraints: vec![],
             locals: BindingMap::default(),
             expr_types: NodeMap::default(),
+            expr_spans: HashMap::new(),
+            call_plans: NodeMap::default(),
+            named_calls: vec![],
+            call_contracts: vec![],
             type_args: NodeMap::default(),
             operand_types: NodeMap::default(),
             interp_types: NodeMap::default(),
@@ -305,7 +314,6 @@ impl<'a, 'd> Body<'a, 'd> {
         let constraints = std::mem::take(&mut self.constraints);
         solver.solve(self, constraints);
         self.solver = solver;
-        super::traits::solve_classes(self);
         super::pattern_ext::check_body(self);
         super::effects::check_body(self);
     }
@@ -318,19 +326,29 @@ impl<'a, 'd> Body<'a, 'd> {
         let types = self
             .expr_types
             .iter()
-            .map(|(_, t)| t)
-            .chain(self.operand_types.iter().map(|(_, t)| t))
-            .chain(self.interp_types.iter().map(|(_, t)| t))
-            .chain(self.try_kinds.iter().map(|(_, (_, t))| t))
-            .chain(self.type_args.iter().flat_map(|(_, (args, _))| {
-                args.iter().filter_map(|a| match a {
-                    IArg::Ty(t) => Some(t),
+            .chain(self.operand_types.iter())
+            .chain(self.interp_types.iter())
+            .chain(self.try_kinds.iter().map(|(node, (_, t))| (node, t)))
+            .chain(self.type_args.iter().flat_map(|(node, (args, _))| {
+                args.iter().filter_map(move |a| match a {
+                    IArg::Ty(t) => Some((node, t)),
                     IArg::Head(_) => None,
                 })
             }));
-        for ty in types {
+        for (node, ty) in types {
             if let Err(limit) = self.solver.zonk_checked(ty) {
                 self.diagnostics.push(limit.diagnostic(span));
+                break;
+            }
+            if !self.diagnostics.iter().any(Diagnostic::is_error)
+                && self.solver.invalid_contract(ty)
+            {
+                self.diagnostics.push(
+                    crate::diag::DiagBuilder::new(crate::diag::DiagCode::E0455)
+                        .primary(self.expr_spans.get(&node).copied().unwrap_or(span))
+                        .help("annotation")
+                        .build(),
+                );
                 break;
             }
         }
@@ -343,6 +361,9 @@ impl<'a, 'd> Body<'a, 'd> {
         {
             self.decls.diagnostics.append(&mut self.diagnostics);
             return;
+        }
+        for (node, plan) in self.call_plans.iter() {
+            self.decls.out.call_plans.insert(node, plan.clone());
         }
         for (node, t) in self.expr_types.iter() {
             self.decls
@@ -481,6 +502,7 @@ impl<'a, 'd> Body<'a, 'd> {
         let effect = substitute_effect(&s.effects, &effs);
         (
             ITy::Fn(Box::new(IFnTy {
+                contract: IContract::Known(s.param_names.clone()),
                 params: params.clone(),
                 ret: ret.clone(),
                 effect,
@@ -524,6 +546,7 @@ pub(super) fn substitute(t: &Ty, args: &[IArg], effs: &[IEffect]) -> ITy {
         ),
         Ty::Con(c, ts) => ITy::Con(*c, ts.iter().map(|t| substitute(t, args, effs)).collect()),
         Ty::Fn(f) => ITy::Fn(Box::new(IFnTy {
+            contract: IContract::Known(f.param_names.clone()),
             params: f.params.iter().map(|t| substitute(t, args, effs)).collect(),
             ret: substitute(&f.ret, args, effs),
             effect: substitute_effect(&f.effects, effs),

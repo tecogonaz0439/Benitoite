@@ -1,11 +1,14 @@
 /-!
-# コア計算の構文（段階 B）
+# 契約名を持つコア計算の構文
 
 設計書 01-12「コア計算と脱糖」の「初回リリース版の拡張」のうち、コア計算に構成を加えるものを書き写す。
 段階 B1 は、制御の構成（ストア、`escape`、`with`、プロセスの終了、エフェクトの名前、ハンドラ）と、型パラメータの
 組み込みの制約（01-12「型パラメータの組み込みの制約」）を加えた。段階 B2 は、`Map`・`Set`・`Bytes` と、型クラスの辞書
 （高カインド型を含む）を加える（設計書 07-04「進め方」）。段階 A（`Benitoite.Core`）の定義は最小実行版の
 ものとして残し、段階 B は別の名前空間に写して広げる。段階 B2 は、段階 B1 の定義を同じ名前空間で広げる。
+
+契約名は関数型・ラムダ・関数と操作の宣言・メソッドのシグネチャの静的な注釈として保持する。
+既存のコアの規則（設計書 01-12「コア計算と脱糖」）から、値の束縛と位置による実行を引き継ぐ。
 
 段階 A からの表現の違い（設計書 07-04「01-12 との対応」の表に記す）:
 
@@ -99,7 +102,7 @@ inductive Ty where
   | opaque (o : OpaqueName)
   | data (d : DataName) (args : List Ty)
   | list (a : Ty)
-  | fn (params : List Ty) (ret : Ty) (eff : Eff)
+  | fn (names : List String) (params : List Ty) (ret : Ty) (eff : Eff)
   | tvar (i : Nat)
   | reference (a : Ty)
   | lazy (a : Ty)
@@ -110,6 +113,11 @@ inductive Ty where
   | dict (cl : ClassName) (τ : Ty)
   | tapp (i : Nat) (args : List Ty)
   | ctor (φ : TyCon)
+
+/-- 契約名は引数型と同じ個数であり、重複しない。
+名前は宣言順に対応し、de Bruijn の局所変数とは区別する。 -/
+def NamesWF (names : List String) (params : List Ty) : Prop :=
+  names.length = params.length ∧ names.Nodup
 
 /-- 型パラメータに付けた組み込みの制約（01-06「組み込みの制約（初回リリース版）」、01-12「型パラメータの組み込みの制約」）。 -/
 structure TParam where
@@ -213,7 +221,7 @@ mutual
     | const (c : Const)
     | fnRef (f : FunName) (tys : List Ty) (effs : List Eff)
     | prim (b : PrimName) (tys : List Ty) (effs : List Eff)
-    | lam (params : List Ty) (body : Comp)
+    | lam (names : List String) (params : List Ty) (body : Comp)
     | con (c : ConName) (tys : List Ty) (args : List Val)
     | list (elems : List Val)
     /-- 利用者が宣言したエフェクトの操作 `op[T̄]`。 -/
@@ -287,6 +295,7 @@ def Clause.body : Clause → Comp
 structure Def where
   tparams : List TParam
   neffs : Nat
+  names : List String
   params : List Ty
   ret : Ty
   eff : Eff
@@ -304,6 +313,7 @@ structure ConDecl where
 structure OpDecl where
   eff : EffName
   tparams : List TParam
+  names : List String
   params : List Ty
   ret : Ty
 
@@ -313,6 +323,7 @@ structure OpDecl where
 structure MethSig where
   tparams : List TParam
   neffs : Nat
+  names : List String
   params : List Ty
   ret : Ty
   eff : Eff

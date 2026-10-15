@@ -25,6 +25,8 @@
 
 ## 仕様
 
+関数一覧の表の `f(a, b)` は、関数とパラメータを示す記法である。実際のコードでは、複数の引数を取る通常の関数は宣言のパラメータ名を付けて名前付きで呼ぶ。
+
 ### 型の一覧
 
 【決定】数の型の正の名前、別名と既定の表示名は、次のとおりである。別名は同じ型を表し、演算の規則も同じである。
@@ -79,9 +81,9 @@
 | 関数 | 値 | 実行時エラーになる条件 |
 |---|---|---|
 | `Integer.floorDivide(a, b)` | 商を負の無限大の方向に丸めた値 | `b` が 0。`a` が −2^63 で `b` が −1 |
-| `Integer.floorModulo(a, b)` | 数学の整数として計算した `a − q × b`。`q` は、`a` を `b` で割った商を負の無限大の方向に丸めた整数。結果の符号は `b` と同じか 0 | `b` が 0 |
+| `Integer.floorModulo(a: a, b: b)` | 数学の整数として計算した `a − q × b`。`q` は、`a` を `b` で割った商を負の無限大の方向に丸めた整数。結果の符号は `b` と同じか 0 | `b` が 0 |
 
-例えば、`Integer.floorDivide(-7, 2)` は `-4`、`Integer.floorModulo(-7, 2)` は `1` である。`a` が −2^63 で `b` が −1 のとき、`Integer.floorModulo(a, b)` は `0` である。
+例えば、`Integer.floorDivide(a: -7, b: 2)` は `-4`、`Integer.floorModulo(a: -7, b: 2)` は `1` である。`a` が −2^63 で `b` が −1 のとき、`Integer.floorModulo(a: a, b: b)` は `0` である。
 
 【方針】`Integer` の比較演算子（`=`・`<>`・`<`・`<=`・`>`・`>=`）は、数の大小と等しさで判定する。
 
@@ -113,7 +115,7 @@ function main() -> Unit uses Console.Write
   bind h: UnsignedInteger <- 18446744073709551615u64
   Console.writeLine("${a}, ${b}, ${c}, ${Integer.toString(d)}")
   Console.writeLine("${Byte.toString(e)}, ${f}, ${g}, ${UnsignedInteger64.toString(h)}")
-  Console.writeLine("${(-128s8) mod -1s8}, ${Integer8.floorModulo(-128s8, -1s8)}")
+  Console.writeLine("${(-128s8) mod -1s8}, ${Integer8.floorModulo(a: -128s8, b: -1s8)}")
 end function
 ```
 
@@ -236,17 +238,17 @@ true, true
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `String.byteLength(s)` | `function(String) -> Integer` | `s` のバイト数 |
-| `String.byteSlice(s, start, stop)` | `function(String, Integer, Integer) -> Option[String]` | バイト位置 `start` から `stop` までの部分文字列 |
-| `String.characterCount(s)` | `function(String) -> Integer` | `s` のスカラー値の個数 |
-| `String.characterAt(s, i)` | `function(String, Integer) -> Option[Character]` | 文字位置 `i` のスカラー値 |
-| `String.characterSlice(s, start, stop)` | `function(String, Integer, Integer) -> Option[String]` | 文字位置 `start` から `stop` までの部分文字列 |
+| `String.byteLength(s)` | `function(s: String) -> Integer` | `s` のバイト数 |
+| `String.byteSlice(s: s, start: start, stop: stop)` | `function(s: String, start: Integer, stop: Integer) -> Option[String]` | バイト位置 `start` から `stop` までの部分文字列 |
+| `String.characterCount(s)` | `function(s: String) -> Integer` | `s` のスカラー値の個数 |
+| `String.characterAt(s: s, i: i)` | `function(s: String, i: Integer) -> Option[Character]` | 文字位置 `i` のスカラー値 |
+| `String.characterSlice(s: s, start: start, stop: stop)` | `function(s: String, start: Integer, stop: Integer) -> Option[String]` | 文字位置 `start` から `stop` までの部分文字列 |
 
 【決定】位置を指定する関数は、位置が正しくないときに実行時エラーにせず `Option.None` を返す。正しくない位置とは、次のいずれかに当たるものである。
 
-- `String.characterAt(s, i)`: `i < 0` または `i >= String.characterCount(s)`。
-- `String.byteSlice(s, start, stop)`: `start < 0`、`stop < start`、`stop > String.byteLength(s)`、または `start` か `stop` が境界の位置でない。
-- `String.characterSlice(s, start, stop)`: `start < 0`、`stop < start`、`stop > String.characterCount(s)`。
+- `String.characterAt(s: s, i: i)`: `i < 0` または `i >= String.characterCount(s)`。
+- `String.byteSlice(s: s, start: start, stop: stop)`: `start < 0`、`stop < start`、`stop > String.byteLength(s)`、または `start` か `stop` が境界の位置でない。
+- `String.characterSlice(s: s, start: start, stop: stop)`: `start < 0`、`stop < start`、`stop > String.characterCount(s)`。
 
 【決定】`String.byteLength` は、文字列の長さによらない時間で値を返さなければならない。`character` を名前に含む関数は、文字列の長さに比例する時間がかかってよい。
 
@@ -266,9 +268,9 @@ true, true
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Character.toInteger(c)` | `function(Character) -> Integer` | スカラー値の値 |
-| `Character.fromInteger(n)` | `function(Integer) -> Option[Character]` | 値 `n` のスカラー値。`n` がスカラー値の範囲にないときは `Option.None` |
-| `Character.toString(c)` | `function(Character) -> String` | `c` だけからなる文字列 |
+| `Character.toInteger(c)` | `function(c: Character) -> Integer` | スカラー値の値 |
+| `Character.fromInteger(n)` | `function(n: Integer) -> Option[Character]` | 値 `n` のスカラー値。`n` がスカラー値の範囲にないときは `Option.None` |
+| `Character.toString(c)` | `function(c: Character) -> String` | `c` だけからなる文字列 |
 
 ### Boolean
 
@@ -298,9 +300,9 @@ true, true
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Byte.fromInteger(n)` | `function(Integer) -> Option[Byte]` | `n` が 0 以上 255 以下なら、その値の `Byte`。そうでなければ `Option.None` |
-| `Byte.toInteger(b)` | `function(Byte) -> Integer` | `b` の値 |
-| `Byte.toString(b)` | `function(Byte) -> String` | `b` の値の 10 進表記 |
+| `Byte.fromInteger(n)` | `function(n: Integer) -> Option[Byte]` | `n` が 0 以上 255 以下なら、その値の `Byte`。そうでなければ `Option.None` |
+| `Byte.toInteger(b)` | `function(b: Byte) -> Integer` | `b` の値 |
+| `Byte.toString(b)` | `function(b: Byte) -> String` | `b` の値の 10 進表記 |
 
 ### Decimal（初回リリース版）
 
@@ -336,8 +338,8 @@ true, true
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Decimal.round(x, places, mode)` | `function(Decimal, Integer, RoundingMode) -> Decimal` | `x` を小数の桁数 `places` の値に、`mode` の丸め方で丸めた値。`x` の小数の桁数が `places` より少なければ、末尾に 0 を補う（`Decimal.round(1.5m, 2, mode)` は `1.50m`） |
-| `Decimal.absolute(x)` | `function(Decimal) -> Decimal` | 絶対値。小数の桁数は `x` と同じ |
+| `Decimal.round(x, places, mode)` | `function(x: Decimal, places: Integer, mode: RoundingMode) -> Decimal` | `x` を小数の桁数 `places` の値に、`mode` の丸め方で丸めた値。`x` の小数の桁数が `places` より少なければ、末尾に 0 を補う（`Decimal.round(x: 1.5m, places: 2, mode: mode)` は `1.50m`） |
+| `Decimal.absolute(x)` | `function(x: Decimal) -> Decimal` | 絶対値。小数の桁数は `x` と同じ |
 
 | `RoundingMode` の構成子 | 丸め方 |
 |---|---|
@@ -355,13 +357,13 @@ true, true
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Integer.bitwiseAnd(a, b)` | `function(Integer, Integer) -> Integer` | ビットごとの論理積 |
-| `Integer.bitwiseOr(a, b)` | `function(Integer, Integer) -> Integer` | ビットごとの論理和 |
-| `Integer.bitwiseExclusiveOr(a, b)` | `function(Integer, Integer) -> Integer` | ビットごとの排他的論理和 |
-| `Integer.bitwiseNot(a)` | `function(Integer) -> Integer` | すべてのビットを反転した値 |
-| `Integer.shiftLeft(a, n)` | `function(Integer, Integer) -> Integer` | 左へ `n` ビットずらした値。上位からはみ出たビットは捨て、下位を 0 で埋める |
-| `Integer.shiftRight(a, n)` | `function(Integer, Integer) -> Integer` | 右へ `n` ビットずらした値。上位を符号のビットで埋める（算術シフト） |
-| `Integer.shiftRightUnsigned(a, n)` | `function(Integer, Integer) -> Integer` | 右へ `n` ビットずらした値。上位を 0 で埋める（論理シフト） |
+| `Integer.bitwiseAnd(a, b)` | `function(a: Integer, b: Integer) -> Integer` | ビットごとの論理積 |
+| `Integer.bitwiseOr(a, b)` | `function(a: Integer, b: Integer) -> Integer` | ビットごとの論理和 |
+| `Integer.bitwiseExclusiveOr(a, b)` | `function(a: Integer, b: Integer) -> Integer` | ビットごとの排他的論理和 |
+| `Integer.bitwiseNot(a)` | `function(a: Integer) -> Integer` | すべてのビットを反転した値 |
+| `Integer.shiftLeft(a, n)` | `function(a: Integer, n: Integer) -> Integer` | 左へ `n` ビットずらした値。上位からはみ出たビットは捨て、下位を 0 で埋める |
+| `Integer.shiftRight(a, n)` | `function(a: Integer, n: Integer) -> Integer` | 右へ `n` ビットずらした値。上位を符号のビットで埋める（算術シフト） |
+| `Integer.shiftRightUnsigned(a, n)` | `function(a: Integer, n: Integer) -> Integer` | 右へ `n` ビットずらした値。上位を 0 で埋める（論理シフト） |
 
 【決定】`Integer` のシフトで、ずらす量 `n` が 0 以上 63 以下でなければ、実行時エラーとする。`shiftLeft` で上位からはみ出たビットは捨て、溢れの実行時エラーにはしない。
 
@@ -369,14 +371,14 @@ true, true
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Byte.bitwiseAnd(a, b)`・`Byte.bitwiseOr(a, b)`・`Byte.bitwiseExclusiveOr(a, b)` | `function(Byte, Byte) -> Byte` | `Integer` の同じ名前の関数と同じ |
-| `Byte.bitwiseNot(a)` | `function(Byte) -> Byte` | 8 bit のすべてを反転した値 |
-| `Byte.shiftLeft(a, n)` | `function(Byte, Integer) -> Byte` | 左へ `n` ビットずらした値。8 bit からはみ出たビットは捨てる |
-| `Byte.shiftRight(a, n)` | `function(Byte, Integer) -> Byte` | 右へ `n` ビットずらした値。上位を 0 で埋める |
+| `Byte.bitwiseAnd(a, b)`・`Byte.bitwiseOr(a, b)`・`Byte.bitwiseExclusiveOr(a, b)` | `function(a: Byte, b: Byte) -> Byte` | `Integer` の同じ名前の関数と同じ |
+| `Byte.bitwiseNot(a)` | `function(a: Byte) -> Byte` | 8 bit のすべてを反転した値 |
+| `Byte.shiftLeft(a, n)` | `function(a: Byte, n: Integer) -> Byte` | 左へ `n` ビットずらした値。8 bit からはみ出たビットは捨てる |
+| `Byte.shiftRight(a, n)` | `function(a: Byte, n: Integer) -> Byte` | 右へ `n` ビットずらした値。上位を 0 で埋める |
 
 【決定】`Byte` のシフトで、ずらす量 `n` が 0 以上 7 以下でなければ、実行時エラーとする。
 
-【決定】新しい整数六種にも `bitwiseAnd`・`bitwiseOr`・`bitwiseExclusiveOr`・`bitwiseNot`・`shiftLeft`・`shiftRight` を設け、符号付き三種には `shiftRightUnsigned` も設ける。二項のビット演算の型は `function(T, T) -> T`、反転は `function(T) -> T`、シフトは `function(T, Integer) -> T` である。T は各整数型であり、シフト量は `Integer` で渡す。
+【決定】新しい整数六種にも `bitwiseAnd`・`bitwiseOr`・`bitwiseExclusiveOr`・`bitwiseNot`・`shiftLeft`・`shiftRight` を設け、符号付き三種には `shiftRightUnsigned` も設ける。二項のビット演算の型は `function(a: T, b: T) -> T`、反転は `function(a: T) -> T`、シフトは `function(a: T, n: Integer) -> T` である。T は各整数型であり、シフト量は `Integer` で渡す。
 
 幅 w のシフト量は 0 以上 w−1 以下に限り、範囲外は実行時エラーとする。左シフトは幅からはみ出たビットを捨て、下位に零を入れる。右シフトは符号付きでは符号ビット、符号なしと `shiftRightUnsigned` では零を入れる。符号付きの値は、その幅の 2 の補数のビット列として扱う。理由: ビット列の切り捨てを、算術の溢れとは区別する。
 
@@ -386,37 +388,37 @@ true, true
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Integer.toFloat(n)` | `function(Integer) -> Float` | `n` に最も近い `Float` の値（最近接偶数丸め） |
-| `Float.truncate(x)` | `function(Float) -> Option[Integer]` | `x` を 0 の方向に切り捨てた整数。`x` が NaN・無限大か、結果が `Integer` の範囲を超えるときは `Option.None` |
-| `Integer.toString(n)` | `function(Integer) -> String` | `n` の 10 進表記。負の数は先頭に `-` を付ける |
-| `Float.toString(x)` | `function(Float) -> String` | 下の規則による表記 |
-| `Integer.parse(s)` | `function(String) -> Option[Integer]` | 10 進の整数の表記を読んだ値。表記が正しくないか範囲を超えるときは `Option.None` |
-| `Float.parse(s)` | `function(String) -> Option[Float]` | 10 進の数の表記を読み、浮動小数リテラルと同じ規則で丸めた値。表記が正しくないときと、浮動小数リテラルなら型検査の誤りになる値（丸めると無限大になるもの）のときは `Option.None` |
-| `Decimal.fromInteger(n)` | `function(Integer) -> Decimal` | `n` と等しい値。小数の桁数は 0 |
-| `Decimal.truncate(x)` | `function(Decimal) -> Option[Integer]` | `x` を 0 の方向に切り捨てた整数。結果が `Integer` の範囲を超えるときは `Option.None` |
-| `Decimal.toFloat(x)` | `function(Decimal) -> Float` | `x` に最も近い `Float` の値（最近接偶数丸め） |
-| `Decimal.fromFloat(x)` | `function(Float) -> Option[Decimal]` | `Float.toString(x)` の表記が表す数を、`Decimal` の値として読んだもの。小数の桁数は、表記の指数を展開した後の小数点の後の桁数である（`Decimal.fromFloat(1.0e21)` の中身は小数の桁数 0 の `1000000000000000000000`、`Decimal.fromFloat(1.5e-7)` の中身は 8 の `0.00000015`、`Decimal.fromFloat(0.1)` の中身は 1 の `0.1`）。小数点の後が 29 桁以上になるときは、小数の桁数 28 に最近接偶数丸めで丸める。`x` が NaN・無限大か、絶対値が `Decimal` の範囲を超えるときは `Option.None` |
-| `Decimal.toString(x)` | `function(Decimal) -> String` | 下の規則による表記 |
-| `Decimal.parse(s)` | `function(String) -> Option[Decimal]` | 10 進の数の表記を読んだ値。表記が正しくないときと、`Decimal` のリテラルなら型検査の誤りになる値のときは `Option.None` |
+| `Integer.toFloat(n)` | `function(n: Integer) -> Float` | `n` に最も近い `Float` の値（最近接偶数丸め） |
+| `Float.truncate(x)` | `function(x: Float) -> Option[Integer]` | `x` を 0 の方向に切り捨てた整数。`x` が NaN・無限大か、結果が `Integer` の範囲を超えるときは `Option.None` |
+| `Integer.toString(n)` | `function(n: Integer) -> String` | `n` の 10 進表記。負の数は先頭に `-` を付ける |
+| `Float.toString(x)` | `function(x: Float) -> String` | 下の規則による表記 |
+| `Integer.parse(s)` | `function(s: String) -> Option[Integer]` | 10 進の整数の表記を読んだ値。表記が正しくないか範囲を超えるときは `Option.None` |
+| `Float.parse(s)` | `function(s: String) -> Option[Float]` | 10 進の数の表記を読み、浮動小数リテラルと同じ規則で丸めた値。表記が正しくないときと、浮動小数リテラルなら型検査の誤りになる値（丸めると無限大になるもの）のときは `Option.None` |
+| `Decimal.fromInteger(n)` | `function(n: Integer) -> Decimal` | `n` と等しい値。小数の桁数は 0 |
+| `Decimal.truncate(x)` | `function(x: Decimal) -> Option[Integer]` | `x` を 0 の方向に切り捨てた整数。結果が `Integer` の範囲を超えるときは `Option.None` |
+| `Decimal.toFloat(x)` | `function(x: Decimal) -> Float` | `x` に最も近い `Float` の値（最近接偶数丸め） |
+| `Decimal.fromFloat(x)` | `function(x: Float) -> Option[Decimal]` | `Float.toString(x)` の表記が表す数を、`Decimal` の値として読んだもの。小数の桁数は、表記の指数を展開した後の小数点の後の桁数である（`Decimal.fromFloat(1.0e21)` の中身は小数の桁数 0 の `1000000000000000000000`、`Decimal.fromFloat(1.5e-7)` の中身は 8 の `0.00000015`、`Decimal.fromFloat(0.1)` の中身は 1 の `0.1`）。小数点の後が 29 桁以上になるときは、小数の桁数 28 に最近接偶数丸めで丸める。`x` が NaN・無限大か、絶対値が `Decimal` の範囲を超えるときは `Option.None` |
+| `Decimal.toString(x)` | `function(x: Decimal) -> String` | 下の規則による表記 |
+| `Decimal.parse(s)` | `function(s: String) -> Option[Decimal]` | 10 進の数の表記を読んだ値。表記が正しくないときと、`Decimal` のリテラルなら型検査の誤りになる値のときは `Option.None` |
 
 【決定】新しい数の変換は次のとおりである。表の T は `Integer8`・`Integer16`・`Integer32`・`UnsignedInteger16`・`UnsignedInteger32`、U はそれらと `UnsignedInteger64` の六種を表す。関数は各型と同名のモジュールに置き、すべて純粋である。
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `T.fromInteger(n)` | `function(Integer) -> Option[T]` | T の値域に収まれば `Some`、範囲外は `None` |
-| `T.toInteger(n)` | `function(T) -> Integer` | 全域で正確な値 |
-| `U.parse(s)` | `function(String) -> Option[U]` | `Integer.parse` と同じ十進の字句。符号なしは負号を拒否し、範囲外は `None` |
-| `U.toString(n)` | `function(U) -> String` | 十進表記。負値は先頭に `-`。接尾辞を付けない |
-| `U.toFloat(n)` | `function(U) -> Float` | 最近接偶数丸めによる binary64 の値。T の五種では全域で正確 |
-| `UnsignedInteger64.fromInteger(n)` | `function(Integer) -> Option[UnsignedInteger64]` | 負値は `None`、それ以外は正確な値 |
-| `UnsignedInteger64.toInteger(n)` | `function(UnsignedInteger64) -> Option[Integer]` | 2^63 以上は `None`、それ以外は正確な値 |
-| `UnsignedInteger64.toDecimal(n)` | `function(UnsignedInteger64) -> Decimal` | 全域で正確な値。小数の桁数は 0 |
-| `UnsignedInteger64.fromDecimal(x)` | `function(Decimal) -> Option[UnsignedInteger64]` | 数学的に整数で、0 以上 2^64 − 1 以下なら `Some`。`1.0m` も認める。それ以外は `None` |
-| `Float32.fromFloat(x)` | `function(Float) -> Option[Float32]` | 最近接偶数丸めで縮小。有限値が無限大になる場合は `None`。元からの無限大・NaN は `Some`。零への丸めと零の符号を保つ |
-| `Float32.toFloat(x)` | `function(Float32) -> Float` | 有限値を正確に拡大し、零の符号を保つ |
-| `Float32.parse(s)` | `function(String) -> Option[Float32]` | `Float.parse` と同じ字句を直接 binary32 に丸める。不正な表記と無限大になる値は `None` |
-| `Float32.toString(x)` | `function(Float32) -> String` | 下の規則による表記 |
-| `Float32.truncate(x)` | `function(Float32) -> Option[Integer]` | 0 の方向に切り捨てる。NaN・無限大・`Integer` の範囲外は `None` |
+| `T.fromInteger(n)` | `function(n: Integer) -> Option[T]` | T の値域に収まれば `Some`、範囲外は `None` |
+| `T.toInteger(n)` | `function(n: T) -> Integer` | 全域で正確な値 |
+| `U.parse(s)` | `function(s: String) -> Option[U]` | `Integer.parse` と同じ十進の字句。符号なしは負号を拒否し、範囲外は `None` |
+| `U.toString(n)` | `function(n: U) -> String` | 十進表記。負値は先頭に `-`。接尾辞を付けない |
+| `U.toFloat(n)` | `function(n: U) -> Float` | 最近接偶数丸めによる binary64 の値。T の五種では全域で正確 |
+| `UnsignedInteger64.fromInteger(n)` | `function(n: Integer) -> Option[UnsignedInteger64]` | 負値は `None`、それ以外は正確な値 |
+| `UnsignedInteger64.toInteger(n)` | `function(n: UnsignedInteger64) -> Option[Integer]` | 2^63 以上は `None`、それ以外は正確な値 |
+| `UnsignedInteger64.toDecimal(n)` | `function(n: UnsignedInteger64) -> Decimal` | 全域で正確な値。小数の桁数は 0 |
+| `UnsignedInteger64.fromDecimal(x)` | `function(x: Decimal) -> Option[UnsignedInteger64]` | 数学的に整数で、0 以上 2^64 − 1 以下なら `Some`。`1.0m` も認める。それ以外は `None` |
+| `Float32.fromFloat(n)` | `function(n: Float) -> Option[Float32]` | 最近接偶数丸めで縮小。有限値が無限大になる場合は `None`。元からの無限大・NaN は `Some`。零への丸めと零の符号を保つ |
+| `Float32.toFloat(n)` | `function(n: Float32) -> Float` | 有限値を正確に拡大し、零の符号を保つ |
+| `Float32.parse(s)` | `function(s: String) -> Option[Float32]` | `Float.parse` と同じ字句を直接 binary32 に丸める。不正な表記と無限大になる値は `None` |
+| `Float32.toString(n)` | `function(n: Float32) -> String` | 下の規則による表記 |
+| `Float32.truncate(n)` | `function(n: Float32) -> Option[Integer]` | 0 の方向に切り捨てる。NaN・無限大・`Integer` の範囲外は `None` |
 
 理由: 変換の失敗を `Option` で返し、算術の停止と区別する。幅どうしの直接の変換を全組み合わせで設けず、`Integer` と、u64 の全域では `Decimal` を介す。
 

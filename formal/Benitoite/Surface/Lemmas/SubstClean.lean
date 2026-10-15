@@ -12,9 +12,9 @@ mutual
     | .data _ as, h => by
         simpa [TyOK, Ty.substAt, Ty.VarsIn] using substAtList_clean c es hts as h
     | .list a, h => by simpa [TyOK, Ty.substAt, Ty.VarsIn] using substAt_clean c es hts a h
-    | .fn ps r _, h => by
+    | .fn names ps r _, h => by
         simp only [TyOK, Ty.substAt, Ty.VarsIn] at h ⊢
-        exact ⟨substAtList_clean c es hts ps h.1, substAt_clean c es hts r h.2.1, fun _ _ => trivial⟩
+        exact ⟨by simpa only [NamesWF, List.length_map] using h.1, substAtList_clean c es hts ps h.2.1, substAt_clean c es hts r h.2.2.1, fun _ _ => trivial⟩
     | .tvar i, h => by
         simp only [TyOK, Ty.VarsIn] at h
         by_cases hi : i < c

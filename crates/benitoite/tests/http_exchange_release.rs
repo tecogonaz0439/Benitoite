@@ -25,18 +25,18 @@ import Benitoite.Unofficial.IO.Clock
 const CANCEL: &str = r#"
 function serve(listener: Http.Listener, group: TaskGroup, body: String, count: Integer) -> Result[Unit, String] uses Http.Listen, Console.Read, Console.Write, File.Read, Clock.Time, State
  if count = 0 then
-  with gate = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
-   bind text <- try File.readText("input.txt") |> Result.mapError(_, IOError.message)
+  with gate = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+   bind text <- try File.readText("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
    Console.writeLine(text)
    return Result.Ok(())
   end with
  end if
- bind exchange <- try Http.accept(listener) |> Result.mapError(_, NetworkError.message)
- bind _ <- TaskGroup.spawn(group, lambda()
+ bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+ bind _ <- TaskGroup.spawn(group: group, action: lambda()
   with current = exchange do
    bind winner <- Task.race([
     lambda()
-     bind _ <- Http.respond(current, Http.text(200, body))
+     bind _ <- Http.respond(exchange: current, response: Http.text(status: 200, s: body))
      return "responded"
     end lambda,
     lambda()
@@ -44,29 +44,29 @@ function serve(listener: Http.Listener, group: TaskGroup, body: String, count: I
      return "cancelled"
     end lambda
    ])
-   Console.writeLine(Option.unwrapOr(winner, "empty"))
+   Console.writeLine(Option.unwrapOr(o: winner, fallback: "empty"))
   end with
   Console.writeLine("released")
  end lambda)
- return serve(listener, group, body, count - 1)
+ return serve(listener: listener, group: group, body: body, count: count - 1)
 end function
 function main() -> Result[Unit, String] uses Http.Listen, Console.Read, Console.Write, File.Read, Clock.Time, State
- bind body <- String.repeat("x", 67108864)
- with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+ bind body <- String.repeat(s: "x", n: 67108864)
+ with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
   Console.writeLine(Integer.toString(Http.listenerPort(listener)))
-  return serve(listener, group, body, 64)
+  return serve(listener: listener, group: group, body: body, count: 64)
  end with
 end function
 "#;
 const STOP: &str = r#"
 function main() -> Result[Unit, String] uses Http.Listen, Console.Read, Console.Write, State
- bind body <- String.repeat("x", 67108864)
- with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+ bind body <- String.repeat(s: "x", n: 67108864)
+ with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
   Console.writeLine(Integer.toString(Http.listenerPort(listener)))
-  with current = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
-   bind _ <- TaskGroup.spawn(group, lambda() return Http.respond(current, Http.text(200, body)) end lambda)
+  with current = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+   bind _ <- TaskGroup.spawn(group: group, action: lambda() return Http.respond(exchange: current, response: Http.text(status: 200, s: body)) end lambda)
    bind _ <- Console.readLine()
-   bind _ <- Http.respond(current, Http.text(700, "invalid status"))
+   bind _ <- Http.respond(exchange: current, response: Http.text(status: 700, s: "invalid status"))
    return Result.Ok(())
   end with
  end with

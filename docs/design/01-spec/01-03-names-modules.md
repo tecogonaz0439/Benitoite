@@ -128,9 +128,13 @@ end function
 
 【方針】一つの関数またはラムダの引数の並びに、同じ名前を二度書くと誤りとする。一つのパターンの中で同じ名前を二度束縛することも誤りとする（[代数的データ型とパターンマッチ](01-05-data-types.md)）。
 
+【決定】呼び出しの `name:` と関数型内のパラメータ名は、局所の参照でも束縛でもなく、値の名前解決の表に加えない。関数型内では名前の一意性を検査し、重複は E0310 とする。関数・ラムダの実際のパラメータの束縛と、ハンドラの節の局所名は、従来どおりスコープを持つ。
+
 ### シャドーイング
 
 本節で局所の名前と呼ぶのは、関数とラムダの引数、先の束縛の文で束縛した名前、`match` の分岐のパターンの変数、`handle` の節の引数と `with` の束縛のうち、その位置で有効なもの（前節）である。トップレベルの関数と定数は、局所の名前に数えない。
+
+【方針】`shadow` は有効だが非推奨とし、一般には値の意味を表す別名で一度ずつ `bind` する。意図した名前の再利用も避け、変更前後の値と参照先を名前から区別できるようにする。処理系の警告は加えない。
 
 【決定】局所の名前を隠す束縛（シャドーイング）は、束縛の文の `shadow` でだけ書ける。規則は次のとおりである。
 
@@ -144,19 +148,21 @@ end function
 
 ```text
 function normalize(text: String) -> String
-  shadow text <- String.trim(text)
-  shadow text <- String.replace(text, "\t", " ")
-  bind words <- String.split(text, " ")
-  return String.join(words, " ")
+  bind trimmed <- String.trim(text)
+  bind spaced <- String.replace(s: trimmed, old: "\t", new: " ")
+  bind words <- String.split(s: spaced, separator: " ")
+  return String.join(xs: words, separator: " ")
 end function
 ```
+
+この例は別名で束縛する推奨の書き方である。前節の `shadow x <- x + 1` は、同じ名前を意図して隠す構文と有効範囲の説明として残す。
 
 この例のライブラリの関数（`String.trim` など）は[標準ライブラリ](../03-interop/03-06-stdlib.md)で定める。次の例は、ラムダの引数 `sum` が外側の局所の名前 `sum` を隠すので誤りである。
 
 ```text
 function total(items: List[Integer]) -> Integer
   bind sum <- 0
-  return List.fold(items, sum, lambda(sum, x) return sum + x end lambda)
+  return List.fold(xs: items, initial: sum, f: lambda(sum, x) return sum + x end lambda)
 end function
 ```
 
@@ -267,7 +273,7 @@ end function
 
 【決定】`package` のブロックは、`package.bnt` にだけ書ける。このブロックを持つ設定ファイルでは、`language` が必須であり、`dependency` は書けない。根として開発中のパッケージを検査する場合にも、同じ規則を適用する。理由: パッケージの設定の規則を、利用する側と開発する側で揃えるためである。
 
-【決定】`language` は、そのファイルを書いた時点の Benitoite の版を一つ宣言する。宣言が処理系の版より新しければ誤りとする。古ければ、宣言より後、処理系の版以前に互換性を壊した変更があるかを照合し、あれば最も古い変更の版と内容を誤りとして示す。互換性を壊した版の表は、現在は空である。入口と、`package` のブロックを持たない根の設定ファイルでは宣言を省略できる。理由: 作者に将来の対応範囲の予測を求めず、互換性を壊した変更の知識を処理系で管理するためである。
+【決定】`language` は、そのファイルを書いた時点の Benitoite の版を一つ宣言する。宣言が処理系の版より新しければ誤りとする。古ければ、宣言より後、処理系の版以前に互換性を壊した変更があるかを照合し、あれば最も古い変更の版と内容を誤りとして示す。互換性を壊した版の表には、名前付き呼び出し・名前必須の関数型・関数値の名前と順の適合・高階の契約名への変更を `0.0.5` の一件として登録する。入口と、`package` のブロックを持たない根の設定ファイルでは宣言を省略できる。理由: 作者に将来の対応範囲の予測を求めず、互換性を壊した変更の知識を処理系で管理するためである。
 
 依存の記述は、読み込みで検査し、import の解決に使う。`hash` を書いた依存は、読み込みのたびに中身を確かめる。設定ファイルの例、ツールの扱い、中身のハッシュの規則は、[パッケージ](../06-tooling/06-09-packages.md)で定める。
 

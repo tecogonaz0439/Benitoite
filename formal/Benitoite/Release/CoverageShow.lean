@@ -1,6 +1,7 @@
 import Benitoite.Release.Coverage
 
-/-! E1c-1: 診断に使う反例の表示。表示名とフィールド名は宣言側から受け取る。 -/
+/-! 設計書 02-05「本体の後の検査」に対応する反例の表示。
+表示名とフィールド名は宣言側から受け取る。 -/
 namespace Benitoite.Release
 
 structure CoverageDisplay where

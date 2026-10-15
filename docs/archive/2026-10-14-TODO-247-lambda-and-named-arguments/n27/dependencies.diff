@@ -1,0 +1,820 @@
+--- a/crates/benitoite/testdata/packages/libraries.files/fuzzy/Distance.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/fuzzy/Distance.bnt
+@@ -3,13 +3,13 @@
+ 
+ /// 距離が上限以内で最も近い候補を返す。同じ距離なら先の候補を選ぶ。
+ public function closest(word: String, candidates: List[String], limit: Integer) -> Option[String]
+-  bind best <- List.fold(candidates, Option.None, lambda(acc: Option[Pair[Integer, String]], candidate: String) -> Option[Pair[Integer, String]]
+-    bind d <- distance(word, candidate)
++  bind best <- List.fold(xs: candidates, initial: Option.None, f: lambda(acc: Option[Pair[Integer, String]], value: String) -> Option[Pair[Integer, String]]
++    bind d <- distance(a: word, b: value)
+     return match acc with
+       case Option.Some(Pair(bestDistance, _)) if bestDistance <= d -> acc
+-      case _ if d <= limit -> Option.Some(Pair(d, candidate))
++      case _ if d <= limit -> Option.Some(Pair(d, value))
+       case _ -> acc
+     end match
+   end lambda)
+-  return Option.map(best, lambda(p) return Pair.second(p) end lambda)
++  return Option.map(o: best, f: lambda(value) return Pair.second(value) end lambda)
+ end function
+--- a/crates/benitoite/testdata/packages/libraries.files/json-checks/Check.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/json-checks/Check.bnt
+@@ -46,5 +46,5 @@
+ 
+ /// 出力する深い値を末尾呼び出しで組み立てる。
+ public function deep(n: Integer, value: Json.Value) -> Json.Value
+-  return if n = 0 then value else deep(n - 1, Json.Value.Array([value])) end if
++  return if n = 0 then value else deep(n: n - 1, value: Json.Value.Array([value])) end if
+ end function
+--- a/crates/benitoite/testdata/packages/libraries.files/pure-json/Numbers.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/pure-json/Numbers.bnt
+@@ -5,15 +5,15 @@
+ 
+ /// 文法を確かめ、字面で数の種類を決める。
+ public(package) function read(input: Scan.Input, start: Integer) -> Result[Pair[Json.Value, Integer], Json.ParseError]
+-  bind first <- if Scan.byte(input, start) = 45 then start + 1 else start end if
+-  bind b <- Scan.byte(input, first)
+-  if b = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
+-  if not Scan.digit(b) then return Result.Error(Scan.error(input, first + 1, Text.number)) end if
+-  bind stop <- if b = 48 then first + 1 else Scan.digits(input, first + 1) end if
+-  if b = 48 and Scan.digit(Scan.byte(input, stop)) then return Result.Error(Scan.error(input, stop + 1, Text.number)) end if
+-  bind fraction <- try decimal(input, stop)
+-  bind next <- try exponent(input, fraction)
+-  bind source <- Scan.slice(input, start, next)
++  bind first <- if Scan.byte(input: input, position: start) = 45 then start + 1 else start end if
++  bind b <- Scan.byte(input: input, position: first)
++  if b = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
++  if not Scan.digit(b) then return Result.Error(Scan.error(input: input, consumed: first + 1, message: Text.number)) end if
++  bind stop <- if b = 48 then first + 1 else Scan.digits(input: input, position: first + 1) end if
++  if b = 48 and Scan.digit(Scan.byte(input: input, position: stop)) then return Result.Error(Scan.error(input: input, consumed: stop + 1, message: Text.number)) end if
++  bind fraction <- try decimal(input: input, i: stop)
++  bind next <- try exponent(input: input, i: fraction)
++  bind source <- Scan.slice(input: input, start: start, stop: next)
+   if fraction = stop and next = fraction then
+     match Integer.parse(source) with
+       case Option.Some(n) -> return Result.Ok(Pair(Json.Value.Integer(n), next))
+@@ -22,26 +22,26 @@
+   end if
+   return match Float.parse(source) with
+     case Option.Some(n) -> Result.Ok(Pair(Json.Value.Float(n), next))
+-    case Option.None -> Result.Error(Scan.numberError(input, start, Text.range))
++    case Option.None -> Result.Error(Scan.numberError(input: input, start: start, message: Text.range))
+   end match
+ end function
+ 
+ function decimal(input: Scan.Input, i: Integer) -> Result[Integer, Json.ParseError]
+-  if Scan.byte(input, i) <> 46 then return Result.Ok(i) end if
++  if Scan.byte(input: input, position: i) <> 46 then return Result.Ok(i) end if
+   bind next <- i + 1
+-  if Scan.byte(input, next) = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
+-  if not Scan.digit(Scan.byte(input, next)) then return Result.Error(Scan.error(input, next + 1, Text.number)) end if
+-  return Result.Ok(Scan.digits(input, next + 1))
++  if Scan.byte(input: input, position: next) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
++  if not Scan.digit(Scan.byte(input: input, position: next)) then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.number)) end if
++  return Result.Ok(Scan.digits(input: input, position: next + 1))
+ end function
+ 
+ function exponent(input: Scan.Input, i: Integer) -> Result[Integer, Json.ParseError]
+-  bind b <- Scan.byte(input, i)
++  bind b <- Scan.byte(input: input, position: i)
+   if b <> 101 and b <> 69 then return Result.Ok(i) end if
+-  bind sign <- Scan.byte(input, i + 1)
++  bind sign <- Scan.byte(input: input, position: i + 1)
+   bind next <- if sign = 43 or sign = 45 then i + 2 else i + 1 end if
+-  if Scan.byte(input, next) = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
+-  if not Scan.digit(Scan.byte(input, next)) then return Result.Error(Scan.error(input, next + 1, Text.number)) end if
+-  return Result.Ok(Scan.digits(input, next + 1))
++  if Scan.byte(input: input, position: next) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
++  if not Scan.digit(Scan.byte(input: input, position: next)) then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.number)) end if
++  return Result.Ok(Scan.digits(input: input, position: next + 1))
+ end function
+ 
+ // Float.toString の最短の数字を使い、zmij 1.0.23 の f64 の切替範囲 -5..=15
+@@ -50,45 +50,45 @@
+ public(package) function written(n: Float) -> String
+   bind source <- Float.toString(n)
+   if source = "NaN" or source = "Infinity" or source = "-Infinity" then return "null" end if
+-  bind negative <- String.startsWith(source, "-")
+-  bind unsigned <- if negative then piece(source, 1, String.byteLength(source)) else source end if
+-  bind exponentParts <- String.split(unsigned, "e")
+-  bind mantissa <- Option.unwrapOr(List.get(exponentParts, 0), "0")
+-  bind exponentText <- Option.unwrapOr(List.get(exponentParts, 1), "0")
+-  bind signedExponent <- if String.startsWith(exponentText, "+") then piece(exponentText, 1, String.byteLength(exponentText)) else exponentText end if
+-  bind explicitExponent <- Option.unwrapOr(Integer.parse(signedExponent), 0)
+-  bind dot <- Option.unwrapOr(String.byteIndexOf(mantissa, "."), String.byteLength(mantissa))
+-  bind digits <- String.replace(mantissa, ".", "")
+-  bind leading <- firstNonzero(digits, 0)
++  bind negative <- String.startsWith(s: source, prefix: "-")
++  bind unsigned <- if negative then piece(s: source, start: 1, stop: String.byteLength(source)) else source end if
++  bind exponentParts <- String.split(s: unsigned, separator: "e")
++  bind mantissa <- Option.unwrapOr(o: List.get(xs: exponentParts, i: 0), fallback: "0")
++  bind exponentText <- Option.unwrapOr(o: List.get(xs: exponentParts, i: 1), fallback: "0")
++  bind signedExponent <- if String.startsWith(s: exponentText, prefix: "+") then piece(s: exponentText, start: 1, stop: String.byteLength(exponentText)) else exponentText end if
++  bind explicitExponent <- Option.unwrapOr(o: Integer.parse(signedExponent), fallback: 0)
++  bind dot <- Option.unwrapOr(o: String.byteIndexOf(s: mantissa, part: "."), fallback: String.byteLength(mantissa))
++  bind digits <- String.replace(s: mantissa, old: ".", new: "")
++  bind leading <- firstNonzero(s: digits, i: 0)
+   if leading = String.byteLength(digits) then return if negative then "-0.0" else "0.0" end if end if
+-  bind shortest <- trimZeros(piece(digits, leading, String.byteLength(digits)))
++  bind shortest <- trimZeros(piece(s: digits, start: leading, stop: String.byteLength(digits)))
+   bind power <- explicitExponent + dot - leading - 1
+-  bind significant <- canonicalDigits(Float.absolute(n), shortest, power - String.byteLength(shortest) + 1)
++  bind significant <- canonicalDigits(n: Float.absolute(n), digits: shortest, exponent: power - String.byteLength(shortest) + 1)
+   bind signText <- if negative then "-" else "" end if
+   if power < -5 or power > 15 then
+-    bind tail <- piece(significant, 1, String.byteLength(significant))
+-    return signText + piece(significant, 0, 1) + (if tail = "" then "" else "." + tail end if) + "e" + (if power >= 0 then "+" else "" end if) + Integer.toString(power)
++    bind tail <- piece(s: significant, start: 1, stop: String.byteLength(significant))
++    return signText + piece(s: significant, start: 0, stop: 1) + (if tail = "" then "" else "." + tail end if) + "e" + (if power >= 0 then "+" else "" end if) + Integer.toString(power)
+   end if
+-  if power < 0 then return signText + "0." + String.repeat("0", -power - 1) + significant end if
++  if power < 0 then return signText + "0." + String.repeat(s: "0", n: -power - 1) + significant end if
+   bind point <- power + 1
+   bind length <- String.byteLength(significant)
+   return if point >= length then
+-    signText + significant + String.repeat("0", point - length) + ".0"
++    signText + significant + String.repeat(s: "0", n: point - length) + ".0"
+   else
+-    signText + piece(significant, 0, point) + "." + piece(significant, point, length)
++    signText + piece(s: significant, start: 0, stop: point) + "." + piece(s: significant, start: point, stop: length)
+   end if
+ end function
+ 
+ function piece(s: String, start: Integer, stop: Integer) -> String
+-  return Option.unwrapOr(String.byteSlice(s, start, stop), "")
++  return Option.unwrapOr(o: String.byteSlice(s: s, start: start, stop: stop), fallback: "")
+ end function
+ 
+ function firstNonzero(s: String, i: Integer) -> Integer
+-  return if piece(s, i, i + 1) = "0" then firstNonzero(s, i + 1) else i end if
++  return if piece(s: s, start: i, stop: i + 1) = "0" then firstNonzero(s: s, i: i + 1) else i end if
+ end function
+ 
+ function trimZeros(s: String) -> String
+-  return if String.endsWith(s, "0") then trimZeros(piece(s, 0, String.byteLength(s) - 1)) else s end if
++  return if String.endsWith(s: s, suffix: "0") then trimZeros(piece(s: s, start: 0, stop: String.byteLength(s) - 1)) else s end if
+ end function
+ 
+ // Rust の最短表記が十進の中点を切り上げたときだけ、zmij の偶数丸めに直す。
+@@ -96,8 +96,8 @@
+ // 分ける。二進の仮数が 53 bit に収まることも確かめ、近似計算で中点を判定しない。
+ // 二の冪では隣の値までの間隔が左右で違うため、偶数側も元の値へ戻るときだけ選ぶ。
+ function canonicalDigits(n: Float, digits: String, exponent: Integer) -> String
+-  bind significand <- Option.unwrapOr(Integer.parse(digits), 0)
+-  return if significand mod 2 = 1 and midpoint(n, significand * 2 - 1, exponent) and Float.parse(Integer.toString(significand - 1) + "e" + Integer.toString(exponent)) = Option.Some(n) then
++  bind significand <- Option.unwrapOr(o: Integer.parse(digits), fallback: 0)
++  return if significand mod 2 = 1 and midpoint(n: n, odd: significand * 2 - 1, exponent: exponent) and Float.parse(Integer.toString(significand - 1) + "e" + Integer.toString(exponent)) = Option.Some(n) then
+     trimZeros(Integer.toString(significand - 1))
+   else
+     digits
+@@ -105,23 +105,23 @@
+ end function
+ 
+ function midpoint(n: Float, odd: Integer, exponent: Integer) -> Boolean
+-  bind reduced <- factorsOfFive(odd, exponent)
++  bind reduced <- factorsOfFive(n: odd, exponent: exponent)
+   return match reduced with
+     case Option.None -> false
+     case Option.Some(significand) ->
+-      significand <= 9007199254740991 and scaleTwo(Integer.toFloat(significand), exponent - 1) = n
++      significand <= 9007199254740991 and scaleTwo(n: Integer.toFloat(significand), exponent: exponent - 1) = n
+   end match
+ end function
+ 
+ function factorsOfFive(n: Integer, exponent: Integer) -> Option[Integer]
+   if exponent = 0 then return Option.Some(n) end if
+   if exponent < 0 then
+-    return if n mod 5 = 0 then factorsOfFive(n div 5, exponent + 1) else Option.None end if
++    return if n mod 5 = 0 then factorsOfFive(n: n div 5, exponent: exponent + 1) else Option.None end if
+   end if
+-  return if n <= 1801439850948198 then factorsOfFive(n * 5, exponent - 1) else Option.None end if
++  return if n <= 1801439850948198 then factorsOfFive(n: n * 5, exponent: exponent - 1) else Option.None end if
+ end function
+ 
+ function scaleTwo(n: Float, exponent: Integer) -> Float
+   if exponent = 0 then return n end if
+-  return if exponent < 0 then scaleTwo(n / 2.0, exponent + 1) else scaleTwo(n * 2.0, exponent - 1) end if
++  return if exponent < 0 then scaleTwo(n: n / 2.0, exponent: exponent + 1) else scaleTwo(n: n * 2.0, exponent: exponent - 1) end if
+ end function
+--- a/crates/benitoite/testdata/packages/libraries.files/pure-json/Parser.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/pure-json/Parser.bnt
+@@ -9,19 +9,19 @@
+ /// JSON を読み、行・文字の列・理由を分けた誤りを返す。
+ public function parse(source: String) -> Result[Json.Value, Json.ParseError]
+   bind input <- Scan.input(source)
+-  bind Pair(value, stop) <- try readValue(input, 0, 0, Frame.Root)
+-  bind next <- Scan.whitespace(input, stop)
+-  return if next = Scan.Input.length(input) then Result.Ok(value) else Result.Error(Scan.error(input, next + 1, Text.trailing)) end if
++  bind Pair(value, stop) <- try readValue(input: input, position: 0, depth: 0, frame: Frame.Root)
++  bind next <- Scan.whitespace(input: input, position: stop)
++  return if next = Scan.Input.length(input) then Result.Ok(value) else Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.trailing)) end if
+ end function
+ 
+ /// 鍵を昇順に並べ、空白なしで JSON を書く。
+ public function stringify(value: Json.Value) -> String
+-  return Writer.write(value, false)
++  return Writer.write(value: value, pretty: false)
+ end function
+ 
+ /// 改行と二つの空白による字下げで JSON を書く。
+ public function stringifyPretty(value: Json.Value) -> String
+-  return Writer.write(value, true)
++  return Writer.write(value: value, pretty: true)
+ end function
+ 
+ // 継続を値で持ち、入れ子の数で言語の呼び出しの枠を増やさない。
+@@ -32,79 +32,79 @@
+ end data
+ 
+ function readValue(input: Scan.Input, position: Integer, depth: Integer, frame: Frame) -> Result[Pair[Json.Value, Integer], Json.ParseError]
+-  bind i <- Scan.whitespace(input, position)
+-  bind b <- Scan.byte(input, i)
+-  if b = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
++  bind i <- Scan.whitespace(input: input, position: position)
++  bind b <- Scan.byte(input: input, position: i)
++  if b = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
+   if b = 110 then
+-    bind Pair(value, next) <- try ident(input, i + 1, "ull", 0, Json.Value.Null)
+-    return accept(input, value, next, depth, frame)
++    bind Pair(value, next) <- try ident(input: input, i: i + 1, expected: "ull", j: 0, value: Json.Value.Null)
++    return accept(input: input, value: value, stop: next, depth: depth, frame: frame)
+   end if
+   if b = 116 then
+-    bind Pair(value, next) <- try ident(input, i + 1, "rue", 0, Json.Value.Boolean(true))
+-    return accept(input, value, next, depth, frame)
++    bind Pair(value, next) <- try ident(input: input, i: i + 1, expected: "rue", j: 0, value: Json.Value.Boolean(true))
++    return accept(input: input, value: value, stop: next, depth: depth, frame: frame)
+   end if
+   if b = 102 then
+-    bind Pair(value, next) <- try ident(input, i + 1, "alse", 0, Json.Value.Boolean(false))
+-    return accept(input, value, next, depth, frame)
++    bind Pair(value, next) <- try ident(input: input, i: i + 1, expected: "alse", j: 0, value: Json.Value.Boolean(false))
++    return accept(input: input, value: value, stop: next, depth: depth, frame: frame)
+   end if
+   if b = 45 or Scan.digit(b) then
+-    bind Pair(value, next) <- try Numbers.read(input, i)
+-    return accept(input, value, next, depth, frame)
++    bind Pair(value, next) <- try Numbers.read(input: input, start: i)
++    return accept(input: input, value: value, stop: next, depth: depth, frame: frame)
+   end if
+   if b = 34 then
+-    bind Pair(s, next) <- try Strings.read(input, i + 1)
+-    return accept(input, Json.Value.String(s), next, depth, frame)
++    bind Pair(s, next) <- try Strings.read(input: input, start: i + 1)
++    return accept(input: input, value: Json.Value.String(s), stop: next, depth: depth, frame: frame)
+   end if
+   if b = 91 or b = 123 then
+-    if depth = 127 then return Result.Error(Scan.error(input, i + 1, Text.depth)) end if
+-    return if b = 91 then array(input, i + 1, depth + 1, [], frame, true) else object(input, i + 1, depth + 1, Map.empty(), frame, true) end if
++    if depth = 127 then return Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.depth)) end if
++    return if b = 91 then array(input: input, position: i + 1, depth: depth + 1, items: [], frame: frame, first: true) else object(input: input, position: i + 1, depth: depth + 1, members: Map.empty(), frame: frame, first: true) end if
+   end if
+-  return Result.Error(Scan.error(input, i + 1, Text.value))
++  return Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.value))
+ end function
+ 
+ function ident(input: Scan.Input, i: Integer, expected: String, j: Integer, value: Json.Value) -> Result[Pair[Json.Value, Integer], Json.ParseError]
+   if j = String.byteLength(expected) then return Result.Ok(Pair(value, i)) end if
+-  if Scan.byte(input, i) = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
+-  return if Scan.slice(input, i, i + 1) = Option.unwrapOr(String.byteSlice(expected, j, j + 1), "") then
+-    ident(input, i + 1, expected, j + 1, value)
++  if Scan.byte(input: input, position: i) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
++  return if Scan.slice(input: input, start: i, stop: i + 1) = Option.unwrapOr(o: String.byteSlice(s: expected, start: j, stop: j + 1), fallback: "") then
++    ident(input: input, i: i + 1, expected: expected, j: j + 1, value: value)
+   else
+-    Result.Error(Scan.error(input, i + 1, Text.ident))
++    Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.ident))
+   end if
+ end function
+ 
+ function accept(input: Scan.Input, value: Json.Value, stop: Integer, depth: Integer, frame: Frame) -> Result[Pair[Json.Value, Integer], Json.ParseError]
+   return match frame with
+     case Frame.Root -> Result.Ok(Pair(value, stop))
+-    case Frame.Array(items, parent) -> array(input, stop, depth, List.append(items, value), parent, false)
+-    case Frame.Object(members, key, parent) -> object(input, stop, depth, Map.set(members, key, value), parent, false)
++    case Frame.Array(items, parent) -> array(input: input, position: stop, depth: depth, items: List.append(xs: items, x: value), frame: parent, first: false)
++    case Frame.Object(members, key, parent) -> object(input: input, position: stop, depth: depth, members: Map.set(m: members, k: key, value: value), frame: parent, first: false)
+   end match
+ end function
+ 
+ // 要素の並びと入れ子の両方を末尾呼び出しで読む。
+ function array(input: Scan.Input, position: Integer, depth: Integer, items: List[Json.Value], frame: Frame, first: Boolean) -> Result[Pair[Json.Value, Integer], Json.ParseError]
+-  bind i <- Scan.whitespace(input, position)
+-  bind b <- Scan.byte(input, i)
+-  if b = -1 then return Result.Error(Scan.eof(input, Text.eofList)) end if
+-  if b = 93 then return accept(input, Json.Value.Array(items), i + 1, depth - 1, frame) end if
+-  if not first and b <> 44 then return Result.Error(Scan.error(input, i + 1, Text.listEnd)) end if
+-  bind next <- if first then i else Scan.whitespace(input, i + 1) end if
+-  if not first and Scan.byte(input, next) = 93 then return Result.Error(Scan.error(input, next + 1, Text.comma)) end if
+-  return readValue(input, next, depth, Frame.Array(items, frame))
++  bind i <- Scan.whitespace(input: input, position: position)
++  bind b <- Scan.byte(input: input, position: i)
++  if b = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofList)) end if
++  if b = 93 then return accept(input: input, value: Json.Value.Array(items), stop: i + 1, depth: depth - 1, frame: frame) end if
++  if not first and b <> 44 then return Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.listEnd)) end if
++  bind next <- if first then i else Scan.whitespace(input: input, position: i + 1) end if
++  if not first and Scan.byte(input: input, position: next) = 93 then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.comma)) end if
++  return readValue(input: input, position: next, depth: depth, frame: Frame.Array(items, frame))
+ end function
+ 
+ function object(input: Scan.Input, position: Integer, depth: Integer, members: Map[String, Json.Value], frame: Frame, first: Boolean) -> Result[Pair[Json.Value, Integer], Json.ParseError]
+-  bind i <- Scan.whitespace(input, position)
+-  bind b <- Scan.byte(input, i)
+-  if b = -1 then return Result.Error(Scan.eof(input, Text.eofObject)) end if
+-  if b = 125 then return accept(input, Json.Value.Object(members), i + 1, depth - 1, frame) end if
+-  if not first and b <> 44 then return Result.Error(Scan.error(input, i + 1, Text.objectEnd)) end if
+-  bind next <- if first then i else Scan.whitespace(input, i + 1) end if
+-  if not first and Scan.byte(input, next) = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
+-  if not first and Scan.byte(input, next) = 125 then return Result.Error(Scan.error(input, next + 1, Text.comma)) end if
+-  if Scan.byte(input, next) <> 34 then return Result.Error(Scan.error(input, next + 1, Text.key)) end if
+-  bind Pair(key, stop) <- try Strings.read(input, next + 1)
+-  bind colon <- Scan.whitespace(input, stop)
+-  if Scan.byte(input, colon) = -1 then return Result.Error(Scan.eof(input, Text.eofObject)) end if
+-  if Scan.byte(input, colon) <> 58 then return Result.Error(Scan.error(input, colon + 1, Text.colon)) end if
+-  return readValue(input, colon + 1, depth, Frame.Object(members, key, frame))
++  bind i <- Scan.whitespace(input: input, position: position)
++  bind b <- Scan.byte(input: input, position: i)
++  if b = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofObject)) end if
++  if b = 125 then return accept(input: input, value: Json.Value.Object(members), stop: i + 1, depth: depth - 1, frame: frame) end if
++  if not first and b <> 44 then return Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.objectEnd)) end if
++  bind next <- if first then i else Scan.whitespace(input: input, position: i + 1) end if
++  if not first and Scan.byte(input: input, position: next) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
++  if not first and Scan.byte(input: input, position: next) = 125 then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.comma)) end if
++  if Scan.byte(input: input, position: next) <> 34 then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.key)) end if
++  bind Pair(key, stop) <- try Strings.read(input: input, start: next + 1)
++  bind colon <- Scan.whitespace(input: input, position: stop)
++  if Scan.byte(input: input, position: colon) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofObject)) end if
++  if Scan.byte(input: input, position: colon) <> 58 then return Result.Error(Scan.error(input: input, consumed: colon + 1, message: Text.colon)) end if
++  return readValue(input: input, position: colon + 1, depth: depth, frame: Frame.Object(members, key, frame))
+ end function
+--- a/crates/benitoite/testdata/packages/libraries.files/pure-json/Parts.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/pure-json/Parts.bnt
+@@ -17,7 +17,7 @@
+ public(package) function append(parts: Buffer, part: String) -> Buffer
+   bind next <- [..Buffer.pending(parts), part]
+   return if Buffer.count(parts) = 63 then
+-    Buffer(pending: [], chunks: [..Buffer.chunks(parts), String.join(next, "")], count: 0)
++    Buffer(pending: [], chunks: [..Buffer.chunks(parts), String.join(xs: next, separator: "")], count: 0)
+   else
+     Buffer(pending: next, chunks: Buffer.chunks(parts), count: Buffer.count(parts) + 1)
+   end if
+@@ -25,5 +25,5 @@
+ 
+ /// 全体を一度で結合する。
+ public(package) function finish(parts: Buffer) -> String
+-  return String.join([..Buffer.chunks(parts), String.join(Buffer.pending(parts), "")], "")
++  return String.join(xs: [..Buffer.chunks(parts), String.join(xs: Buffer.pending(parts), separator: "")], separator: "")
+ end function
+--- a/crates/benitoite/testdata/packages/libraries.files/pure-json/Scan.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/pure-json/Scan.bnt
+@@ -16,7 +16,7 @@
+ // 入力の終わりはバイトの範囲外の値で表し、各読み取りで境界を確かめる。
+ /// 指定したバイトを読み、終端では -1 を返す。
+ public(package) function byte(input: Input, position: Integer) -> Integer
+-  return match Bytes.get(Input.bytes(input), position) with
++  return match Bytes.get(b: Input.bytes(input), i: position) with
+     case Option.Some(b) -> Byte.toInteger(b)
+     case Option.None -> -1
+   end match
+@@ -24,14 +24,14 @@
+ 
+ /// UTF-8 の境界で区間を切り出す。
+ public(package) function slice(input: Input, start: Integer, stop: Integer) -> String
+-  return Option.unwrapOr(String.byteSlice(Input.source(input), start, stop), "")
++  return Option.unwrapOr(o: String.byteSlice(s: Input.source(input), start: start, stop: stop), fallback: "")
+ end function
+ 
+ /// JSON が許す四つの空白だけを飛ばす。
+ public(package) function whitespace(input: Input, position: Integer) -> Integer
+-  bind b <- byte(input, position)
++  bind b <- byte(input: input, position: position)
+   return if b = 32 or b = 9 or b = 10 or b = 13 then
+-    whitespace(input, position + 1)
++    whitespace(input: input, position: position + 1)
+   else
+     position
+   end if
+@@ -44,34 +44,34 @@
+ 
+ /// 連続する十進の数字の直後を返す。
+ public(package) function digits(input: Input, position: Integer) -> Integer
+-  return if digit(byte(input, position)) then digits(input, position + 1) else position end if
++  return if digit(byte(input: input, position: position)) then digits(input: input, position: position + 1) else position end if
+ end function
+ 
+ // serde_json の consumed/peek の位置に合わせ、読んだバイト数を受け取る。
+ // UTF-8 の途中でも文字の開始だけを数える。LF の直後の列は 1 にする。
+ /// 最後に読んだバイトまでから診断の位置を求める。
+ public(package) function error(input: Input, consumed: Integer, message: String) -> Json.ParseError
+-  return position(input, 0, Integer.minimum(consumed, Input.length(input)), 1, 0, message, false)
++  return position(input: input, i: 0, stop: Integer.minimum(a: consumed, b: Input.length(input)), line: 1, column: 0, message: message, after: false)
+ end function
+ 
+ /// 入力の最後の文字の直後を指す。
+ public(package) function eof(input: Input, message: String) -> Json.ParseError
+-  return position(input, 0, Input.length(input), 1, 0, message, true)
++  return position(input: input, i: 0, stop: Input.length(input), line: 1, column: 0, message: message, after: true)
+ end function
+ 
+ /// 数の字面の開始位置を指す。
+ public(package) function numberError(input: Input, start: Integer, message: String) -> Json.ParseError
+-  return position(input, 0, start, 1, 0, message, true)
++  return position(input: input, i: 0, stop: start, line: 1, column: 0, message: message, after: true)
+ end function
+ 
+ function position(input: Input, i: Integer, stop: Integer, line: Integer, column: Integer, message: String, after: Boolean) -> Json.ParseError
+   if i = stop then
+-    return Json.ParseError(line: line, column: if after then column + 1 else Integer.maximum(column, 1) end if, message: message)
++    return Json.ParseError(line: line, column: if after then column + 1 else Integer.maximum(a: column, b: 1) end if, message: message)
+   end if
+-  bind b <- byte(input, i)
++  bind b <- byte(input: input, position: i)
+   return if b = 10 then
+-    position(input, i + 1, stop, line + 1, 0, message, after)
++    position(input: input, i: i + 1, stop: stop, line: line + 1, column: 0, message: message, after: after)
+   else
+-    position(input, i + 1, stop, line, if b < 128 or b >= 192 then column + 1 else column end if, message, after)
++    position(input: input, i: i + 1, stop: stop, line: line, column: if b < 128 or b >= 192 then column + 1 else column end if, message: message, after: after)
+   end if
+ end function
+--- a/crates/benitoite/testdata/packages/libraries.files/pure-json/Strings.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/pure-json/Strings.bnt
+@@ -6,27 +6,27 @@
+ 
+ /// 引用符の中身を復号し、閉じる引用符の直後を返す。
+ public(package) function read(input: Scan.Input, start: Integer) -> Result[Pair[String, Integer], Json.ParseError]
+-  return readFrom(input, start, start, Parts.empty())
++  return readFrom(input: input, start: start, i: start, parts: Parts.empty())
+ end function
+ 
+ // エスケープのない区間は一度で切り出し、非 ASCII のバイトを一文字ずつ復号しない。
+ function readFrom(input: Scan.Input, start: Integer, i: Integer, parts: Parts.Buffer) -> Result[Pair[String, Integer], Json.ParseError]
+-  bind b <- Scan.byte(input, i)
+-  if b = -1 then return Result.Error(Scan.eof(input, Text.eofString)) end if
++  bind b <- Scan.byte(input: input, position: i)
++  if b = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofString)) end if
+   if b = 34 then
+-    return Result.Ok(Pair(Parts.finish(Parts.append(parts, Scan.slice(input, start, i))), i + 1))
++    return Result.Ok(Pair(Parts.finish(Parts.append(parts: parts, part: Scan.slice(input: input, start: start, stop: i))), i + 1))
+   end if
+-  if b < 32 then return Result.Error(Scan.error(input, i + 1, Text.control)) end if
++  if b < 32 then return Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.control)) end if
+   if b = 92 then
+-    bind Pair(part, next) <- try escape(input, i + 1)
+-    return readFrom(input, next, next, Parts.append(Parts.append(parts, Scan.slice(input, start, i)), part))
++    bind Pair(part, next) <- try escape(input: input, i: i + 1)
++    return readFrom(input: input, start: next, i: next, parts: Parts.append(parts: Parts.append(parts: parts, part: Scan.slice(input: input, start: start, stop: i)), part: part))
+   end if
+-  return readFrom(input, start, i + 1, parts)
++  return readFrom(input: input, start: start, i: i + 1, parts: parts)
+ end function
+ 
+ function escape(input: Scan.Input, i: Integer) -> Result[Pair[String, Integer], Json.ParseError]
+-  return match Scan.byte(input, i) with
+-    case -1 -> Result.Error(Scan.eof(input, Text.eofString))
++  return match Scan.byte(input: input, position: i) with
++    case -1 -> Result.Error(Scan.eof(input: input, message: Text.eofString))
+     case 34 -> Result.Ok(Pair("\"", i + 1))
+     case 92 -> Result.Ok(Pair("\\", i + 1))
+     case 47 -> Result.Ok(Pair("/", i + 1))
+@@ -35,8 +35,8 @@
+     case 110 -> Result.Ok(Pair("\n", i + 1))
+     case 114 -> Result.Ok(Pair("\r", i + 1))
+     case 116 -> Result.Ok(Pair("\t", i + 1))
+-    case 117 -> unicode(input, i + 1)
+-    case _ -> Result.Error(Scan.error(input, i + 1, Text.escape))
++    case 117 -> unicode(input: input, i: i + 1)
++    case _ -> Result.Error(Scan.error(input: input, consumed: i + 1, message: Text.escape))
+   end match
+ end function
+ 
+@@ -45,47 +45,47 @@
+ end function
+ 
+ function fourHex(input: Scan.Input, i: Integer) -> Result[Integer, Json.ParseError]
+-  if i + 4 > Scan.Input.length(input) then return Result.Error(Scan.eof(input, Text.eofString)) end if
+-  bind a <- hex(Scan.byte(input, i))
+-  bind b <- hex(Scan.byte(input, i + 1))
+-  bind c <- hex(Scan.byte(input, i + 2))
+-  bind d <- hex(Scan.byte(input, i + 3))
++  if i + 4 > Scan.Input.length(input) then return Result.Error(Scan.eof(input: input, message: Text.eofString)) end if
++  bind a <- hex(Scan.byte(input: input, position: i))
++  bind b <- hex(Scan.byte(input: input, position: i + 1))
++  bind c <- hex(Scan.byte(input: input, position: i + 2))
++  bind d <- hex(Scan.byte(input: input, position: i + 3))
+   return if a < 0 or b < 0 or c < 0 or d < 0 then
+-    Result.Error(Scan.error(input, i + 4, Text.escape))
++    Result.Error(Scan.error(input: input, consumed: i + 4, message: Text.escape))
+   else
+     Result.Ok(a * 4096 + b * 256 + c * 16 + d)
+   end if
+ end function
+ 
+ function unicode(input: Scan.Input, i: Integer) -> Result[Pair[String, Integer], Json.ParseError]
+-  bind n <- try fourHex(input, i)
+-  if n >= 56320 and n <= 57343 then return Result.Error(Scan.error(input, i + 4, Text.surrogate)) end if
+-  if n < 55296 or n > 56319 then return scalar(input, n, i + 4) end if
++  bind n <- try fourHex(input: input, i: i)
++  if n >= 56320 and n <= 57343 then return Result.Error(Scan.error(input: input, consumed: i + 4, message: Text.surrogate)) end if
++  if n < 55296 or n > 56319 then return scalar(input: input, n: n, next: i + 4) end if
+   bind next <- i + 4
+-  if Scan.byte(input, next) = -1 then return Result.Error(Scan.eof(input, Text.eofString)) end if
+-  if Scan.byte(input, next) <> 92 then return Result.Error(Scan.error(input, next + 1, Text.hexEnd)) end if
+-  if Scan.byte(input, next + 1) = -1 then return Result.Error(Scan.eof(input, Text.eofString)) end if
+-  if Scan.byte(input, next + 1) <> 117 then return Result.Error(Scan.error(input, next + 2, Text.hexEnd)) end if
+-  bind low <- try fourHex(input, next + 2)
+-  if low < 56320 or low > 57343 then return Result.Error(Scan.error(input, next + 6, Text.surrogate)) end if
+-  return scalar(input, (n - 55296) * 1024 + low - 56320 + 65536, next + 6)
++  if Scan.byte(input: input, position: next) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofString)) end if
++  if Scan.byte(input: input, position: next) <> 92 then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.hexEnd)) end if
++  if Scan.byte(input: input, position: next + 1) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofString)) end if
++  if Scan.byte(input: input, position: next + 1) <> 117 then return Result.Error(Scan.error(input: input, consumed: next + 2, message: Text.hexEnd)) end if
++  bind low <- try fourHex(input: input, i: next + 2)
++  if low < 56320 or low > 57343 then return Result.Error(Scan.error(input: input, consumed: next + 6, message: Text.surrogate)) end if
++  return scalar(input: input, n: (n - 55296) * 1024 + low - 56320 + 65536, next: next + 6)
+ end function
+ 
+ function scalar(input: Scan.Input, n: Integer, next: Integer) -> Result[Pair[String, Integer], Json.ParseError]
+   return match Character.fromInteger(n) with
+     case Option.Some(c) -> Result.Ok(Pair(Character.toString(c), next))
+-    case Option.None -> Result.Error(Scan.error(input, next, Text.unicode))
++    case Option.None -> Result.Error(Scan.error(input: input, consumed: next, message: Text.unicode))
+   end match
+ end function
+ 
+ /// JSON の引用符とエスケープを付ける。
+ public(package) function quoted(source: String) -> String
+-  return quoteFrom(Scan.input(source), 0, 0, Parts.append(Parts.empty(), "\""))
++  return quoteFrom(input: Scan.input(source), start: 0, i: 0, parts: Parts.append(parts: Parts.empty(), part: "\""))
+ end function
+ 
+ function quoteFrom(input: Scan.Input, start: Integer, i: Integer, parts: Parts.Buffer) -> String
+-  bind b <- Scan.byte(input, i)
+-  if b = -1 then return Parts.finish(Parts.append(Parts.append(parts, Scan.slice(input, start, i)), "\"")) end if
++  bind b <- Scan.byte(input: input, position: i)
++  if b = -1 then return Parts.finish(Parts.append(parts: Parts.append(parts: parts, part: Scan.slice(input: input, start: start, stop: i)), part: "\"")) end if
+   if b = 34 or b = 92 or b < 32 then
+     bind escaped <- match b with
+       case 34 -> "\\\""
+@@ -97,11 +97,11 @@
+       case 9 -> "\\t"
+       case _ -> "\\u00" + hexDigit(b div 16) + hexDigit(b mod 16)
+     end match
+-    return quoteFrom(input, i + 1, i + 1, Parts.append(Parts.append(parts, Scan.slice(input, start, i)), escaped))
++    return quoteFrom(input: input, start: i + 1, i: i + 1, parts: Parts.append(parts: Parts.append(parts: parts, part: Scan.slice(input: input, start: start, stop: i)), part: escaped))
+   end if
+-  return quoteFrom(input, start, i + 1, parts)
++  return quoteFrom(input: input, start: start, i: i + 1, parts: parts)
+ end function
+ 
+ function hexDigit(n: Integer) -> String
+-  return Option.unwrapOr(String.byteSlice("0123456789abcdef", n, n + 1), "")
++  return Option.unwrapOr(o: String.byteSlice(s: "0123456789abcdef", start: n, stop: n + 1), fallback: "")
+ end function
+--- a/crates/benitoite/testdata/packages/libraries.files/pure-json/Writer.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/pure-json/Writer.bnt
+@@ -14,11 +14,11 @@
+ 
+ /// 明示の作業列で JSON を書く。
+ public(package) function write(value: Json.Value, pretty: Boolean) -> String
+-  return writeFrom(Work.Visit(value, 0, Work.Done), Parts.empty(), pretty)
++  return writeFrom(work: Work.Visit(value, 0, Work.Done), parts: Parts.empty(), pretty: pretty)
+ end function
+ 
+ function indent(depth: Integer, pretty: Boolean) -> String
+-  return if pretty then "\n" + String.repeat("  ", depth) else "" end if
++  return if pretty then "\n" + String.repeat(s: "  ", n: depth) else "" end if
+ end function
+ 
+ function writeFrom(work: Work, parts: Parts.Buffer, pretty: Boolean) -> String
+@@ -26,35 +26,35 @@
+     case Work.Done -> Parts.finish(parts)
+     case Work.Items(items, first, depth, rest) ->
+       match items with
+-        case [] -> writeFrom(rest, Parts.append(parts, indent(depth - 1, pretty) + "]"), pretty)
++        case [] -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: indent(depth: depth - 1, pretty: pretty) + "]"), pretty: pretty)
+         case [value, ..remaining] ->
+-          bind before <- (if first then "" else "," end if) + indent(depth, pretty)
+-          writeFrom(Work.Visit(value, depth, Work.Items(remaining, false, depth, rest)), Parts.append(parts, before), pretty)
++          bind before <- (if first then "" else "," end if) + indent(depth: depth, pretty: pretty)
++          writeFrom(work: Work.Visit(value, depth, Work.Items(remaining, false, depth, rest)), parts: Parts.append(parts: parts, part: before), pretty: pretty)
+       end match
+     case Work.Members(members, i, depth, rest) ->
+-      match List.get(members, i) with
+-        case Option.None -> writeFrom(rest, Parts.append(parts, indent(depth - 1, pretty) + "}"), pretty)
++      match List.get(xs: members, i: i) with
++        case Option.None -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: indent(depth: depth - 1, pretty: pretty) + "}"), pretty: pretty)
+         case Option.Some(Pair(key, value)) ->
+-          bind before <- (if i = 0 then "" else "," end if) + indent(depth, pretty) + Strings.quoted(key) + (if pretty then ": " else ":" end if)
+-          writeFrom(Work.Visit(value, depth, Work.Members(members, i + 1, depth, rest)), Parts.append(parts, before), pretty)
++          bind before <- (if i = 0 then "" else "," end if) + indent(depth: depth, pretty: pretty) + Strings.quoted(key) + (if pretty then ": " else ":" end if)
++          writeFrom(work: Work.Visit(value, depth, Work.Members(members, i + 1, depth, rest)), parts: Parts.append(parts: parts, part: before), pretty: pretty)
+       end match
+     case Work.Visit(value, depth, rest) ->
+       match value with
+-        case Json.Value.Null -> writeFrom(rest, Parts.append(parts, "null"), pretty)
+-        case Json.Value.Boolean(b) -> writeFrom(rest, Parts.append(parts, if b then "true" else "false" end if), pretty)
+-        case Json.Value.Integer(n) -> writeFrom(rest, Parts.append(parts, Integer.toString(n)), pretty)
+-        case Json.Value.Float(n) -> writeFrom(rest, Parts.append(parts, Numbers.written(n)), pretty)
+-        case Json.Value.String(s) -> writeFrom(rest, Parts.append(parts, Strings.quoted(s)), pretty)
++        case Json.Value.Null -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: "null"), pretty: pretty)
++        case Json.Value.Boolean(b) -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: if b then "true" else "false" end if), pretty: pretty)
++        case Json.Value.Integer(n) -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: Integer.toString(n)), pretty: pretty)
++        case Json.Value.Float(n) -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: Numbers.written(n)), pretty: pretty)
++        case Json.Value.String(s) -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: Strings.quoted(s)), pretty: pretty)
+         case Json.Value.Array(items) ->
+           match items with
+-            case [] -> writeFrom(rest, Parts.append(parts, "[]"), pretty)
+-            case _ -> writeFrom(Work.Items(items, true, depth + 1, rest), Parts.append(parts, "["), pretty)
++            case [] -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: "[]"), pretty: pretty)
++            case _ -> writeFrom(work: Work.Items(items, true, depth + 1, rest), parts: Parts.append(parts: parts, part: "["), pretty: pretty)
+           end match
+         case Json.Value.Object(members) ->
+           if Map.size(members) = 0 then
+-            writeFrom(rest, Parts.append(parts, "{}"), pretty)
++            writeFrom(work: rest, parts: Parts.append(parts: parts, part: "{}"), pretty: pretty)
+           else
+-            writeFrom(Work.Members(Map.toList(members), 0, depth + 1, rest), Parts.append(parts, "{"), pretty)
++            writeFrom(work: Work.Members(Map.toList(members), 0, depth + 1, rest), parts: Parts.append(parts: parts, part: "{"), pretty: pretty)
+           end if
+       end match
+   end match
+--- a/crates/benitoite/testdata/packages/libraries.files/textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/textkit/Slug.bnt
+@@ -1,8 +1,8 @@
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+-  bind words <- String.split(String.toLowercase(String.trim(text)), " ")
+-    |> List.filter(_, lambda(w) return w <> "" end lambda)
+-  return String.join(words, "-")
++  bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
++    |> List.filter(_, lambda(value) return value <> "" end lambda)
++  return String.join(xs: words, separator: "-")
+ end function
+ 
+ /// 文字数が width を超えるときは、width 文字で切って "..." を付ける。
+@@ -10,5 +10,5 @@
+   if String.characterCount(text) <= width then
+     return text
+   end if
+-  return Option.unwrapOr(String.characterSlice(text, 0, width), text) + "..."
++  return Option.unwrapOr(o: String.characterSlice(s: text, start: 0, stop: width), fallback: text) + "..."
+ end function
+--- a/crates/benitoite/testdata/packages/libraries.files/wasm-json/Nodes.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/wasm-json/Nodes.bnt
+@@ -32,32 +32,32 @@
+ 
+ /// 木を前順の表へ変換する。深さに比例する呼び出しの枠を作らない。
+ public(package) function flatten(value: Json.Value) -> List[Node]
+-  return flattenFrom([Visit.Value(value)], [])
++  return flattenFrom(work: [Visit.Value(value)], nodes: [])
+ end function
+ 
+ function flattenFrom(work: List[Visit], nodes: List[Node]) -> List[Node]
+   return match List.head(work) with
+     case Option.None -> nodes
+     case Option.Some(step) ->
+-      bind rest <- Option.unwrapOr(List.tail(work), [])
++      bind rest <- Option.unwrapOr(o: List.tail(work), fallback: [])
+       match step with
+-        case Visit.Key(k) -> flattenFrom(rest, List.append(nodes, Node.Key(k)))
++        case Visit.Key(k) -> flattenFrom(work: rest, nodes: List.append(xs: nodes, x: Node.Key(k)))
+         case Visit.Value(v) -> match v with
+-          case Json.Value.Null -> flattenFrom(rest, List.append(nodes, Node.Null))
+-          case Json.Value.Boolean(b) -> flattenFrom(rest, List.append(nodes, Node.Boolean(b)))
+-          case Json.Value.Integer(i) -> flattenFrom(rest, List.append(nodes, Node.Integer(i)))
+-          case Json.Value.Float(f) -> flattenFrom(rest, List.append(nodes, Node.Float(f)))
+-          case Json.Value.String(s) -> flattenFrom(rest, List.append(nodes, Node.Text(s)))
++          case Json.Value.Null -> flattenFrom(work: rest, nodes: List.append(xs: nodes, x: Node.Null))
++          case Json.Value.Boolean(b) -> flattenFrom(work: rest, nodes: List.append(xs: nodes, x: Node.Boolean(b)))
++          case Json.Value.Integer(i) -> flattenFrom(work: rest, nodes: List.append(xs: nodes, x: Node.Integer(i)))
++          case Json.Value.Float(f) -> flattenFrom(work: rest, nodes: List.append(xs: nodes, x: Node.Float(f)))
++          case Json.Value.String(s) -> flattenFrom(work: rest, nodes: List.append(xs: nodes, x: Node.Text(s)))
+           case Json.Value.Array(items) ->
+-            bind next <- List.fold(List.reverse(items), rest, lambda(acc: List[Visit], child: Json.Value) -> List[Visit]
+-              return List.prepend(acc, Visit.Value(child))
++            bind next <- List.fold(xs: List.reverse(items), initial: rest, f: lambda(acc: List[Visit], value: Json.Value) -> List[Visit]
++              return List.prepend(xs: acc, x: Visit.Value(value))
+             end lambda)
+-            flattenFrom(next, List.append(nodes, Node.Array(List.length(items))))
++            flattenFrom(work: next, nodes: List.append(xs: nodes, x: Node.Array(List.length(items))))
+           case Json.Value.Object(items) ->
+-            bind next <- List.fold(List.reverse(Map.toList(items)), rest, lambda(acc: List[Visit], pair: Pair[String, Json.Value]) -> List[Visit]
+-              return List.prepend(List.prepend(acc, Visit.Value(Pair.second(pair))), Visit.Key(Pair.first(pair)))
++            bind next <- List.fold(xs: List.reverse(Map.toList(items)), initial: rest, f: lambda(acc: List[Visit], value: Pair[String, Json.Value]) -> List[Visit]
++              return List.prepend(xs: List.prepend(xs: acc, x: Visit.Value(Pair.second(value))), x: Visit.Key(Pair.first(value)))
+             end lambda)
+-            flattenFrom(next, List.append(nodes, Node.Object(Map.size(items))))
++            flattenFrom(work: next, nodes: List.append(xs: nodes, x: Node.Object(Map.size(items))))
+         end match
+       end match
+   end match
+@@ -71,28 +71,28 @@
+ 
+ /// 前順の表から木を組み直す。ゲストの正しい表だけを受け取る。
+ public(package) function rebuild(nodes: List[Node]) -> Result[Json.Value, String]
+-  return readNode(nodes, 0, Frame.Root)
++  return readNode(nodes: nodes, i: 0, frame: Frame.Root)
+ end function
+ 
+ function readNode(nodes: List[Node], i: Integer, frame: Frame) -> Result[Json.Value, String]
+-  return match List.get(nodes, i) with
++  return match List.get(xs: nodes, i: i) with
+     case Option.None -> Result.Error("incomplete JSON node table")
+     case Option.Some(node) -> match node with
+-      case Node.Null -> accept(nodes, i + 1, Json.Value.Null, frame)
+-      case Node.Boolean(b) -> accept(nodes, i + 1, Json.Value.Boolean(b), frame)
+-      case Node.Integer(n) -> accept(nodes, i + 1, Json.Value.Integer(n), frame)
+-      case Node.Float(n) -> accept(nodes, i + 1, Json.Value.Float(n), frame)
+-      case Node.Text(s) -> accept(nodes, i + 1, Json.Value.String(s), frame)
+-      case Node.Array(n) -> if n = 0 then accept(nodes, i + 1, Json.Value.Array([]), frame) else if n > 0 then readNode(nodes, i + 1, Frame.Array(n, [], frame)) else Result.Error("negative JSON child count") end if
+-      case Node.Object(n) -> if n = 0 then accept(nodes, i + 1, Json.Value.Object(Map.empty()), frame) else if n > 0 then readKey(nodes, i + 1, n, Map.empty(), frame) else Result.Error("negative JSON child count") end if
++      case Node.Null -> accept(nodes: nodes, i: i + 1, value: Json.Value.Null, frame: frame)
++      case Node.Boolean(b) -> accept(nodes: nodes, i: i + 1, value: Json.Value.Boolean(b), frame: frame)
++      case Node.Integer(n) -> accept(nodes: nodes, i: i + 1, value: Json.Value.Integer(n), frame: frame)
++      case Node.Float(n) -> accept(nodes: nodes, i: i + 1, value: Json.Value.Float(n), frame: frame)
++      case Node.Text(s) -> accept(nodes: nodes, i: i + 1, value: Json.Value.String(s), frame: frame)
++      case Node.Array(n) -> if n = 0 then accept(nodes: nodes, i: i + 1, value: Json.Value.Array([]), frame: frame) else if n > 0 then readNode(nodes: nodes, i: i + 1, frame: Frame.Array(n, [], frame)) else Result.Error("negative JSON child count") end if
++      case Node.Object(n) -> if n = 0 then accept(nodes: nodes, i: i + 1, value: Json.Value.Object(Map.empty()), frame: frame) else if n > 0 then readKey(nodes: nodes, i: i + 1, n: n, members: Map.empty(), frame: frame) else Result.Error("negative JSON child count") end if
+       case Node.Key(_) -> Result.Error("unexpected JSON key")
+     end match
+   end match
+ end function
+ 
+ function readKey(nodes: List[Node], i: Integer, n: Integer, members: Map[String, Json.Value], frame: Frame) -> Result[Json.Value, String]
+-  return match List.get(nodes, i) with
+-    case Option.Some(Node.Key(k)) -> readNode(nodes, i + 1, Frame.Member(n, members, k, frame))
++  return match List.get(xs: nodes, i: i) with
++    case Option.Some(Node.Key(k)) -> readNode(nodes: nodes, i: i + 1, frame: Frame.Member(n, members, k, frame))
+     case _ -> Result.Error("missing JSON key")
+   end match
+ end function
+@@ -101,10 +101,10 @@
+   return match frame with
+     case Frame.Root -> if i = List.length(nodes) then Result.Ok(value) else Result.Error("trailing JSON nodes") end if
+     case Frame.Array(n, items, parent) ->
+-      bind next <- List.append(items, value)
+-      if n = 1 then accept(nodes, i, Json.Value.Array(next), parent) else readNode(nodes, i, Frame.Array(n - 1, next, parent)) end if
++      bind next <- List.append(xs: items, x: value)
++      if n = 1 then accept(nodes: nodes, i: i, value: Json.Value.Array(next), frame: parent) else readNode(nodes: nodes, i: i, frame: Frame.Array(n - 1, next, parent)) end if
+     case Frame.Member(n, members, key, parent) ->
+-      bind next <- Map.set(members, key, value)
+-      if n = 1 then accept(nodes, i, Json.Value.Object(next), parent) else readKey(nodes, i, n - 1, next, parent) end if
++      bind next <- Map.set(m: members, k: key, value: value)
++      if n = 1 then accept(nodes: nodes, i: i, value: Json.Value.Object(next), frame: parent) else readKey(nodes: nodes, i: i, n: n - 1, members: next, frame: parent) end if
+   end match
+ end function
+--- a/crates/benitoite/testdata/packages/libraries.files/wasm-regex/Pattern.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/wasm-regex/Pattern.bnt
+@@ -14,42 +14,42 @@
+ 
+ /// [method]pattern.is-match の検証用の入口。
+ public function isMatch(pattern: Pattern, text: String) -> Boolean uses State
+-  return Raw.isMatch(pattern, text)
++  return Raw.isMatch(pattern: pattern, text: text)
+ end function
+ 
+ /// [method]pattern.find の検証用の入口。
+ public function find(pattern: Pattern, text: String) -> Option[Found] uses State
+-  return Raw.find(pattern, text)
++  return Raw.find(pattern: pattern, text: text)
+ end function
+ 
+ /// [method]pattern.find-all の検証用の入口。
+ public function findAll(pattern: Pattern, text: String) -> List[Found] uses State
+-  return Raw.findAll(pattern, text)
++  return Raw.findAll(pattern: pattern, text: text)
+ end function
+ 
+ /// [method]pattern.replace-all の検証用の入口。
+ public function replaceAll(pattern: Pattern, text: String, replacement: String) -> String uses State
+-  return Raw.replaceAll(pattern, text, replacement)
++  return Raw.replaceAll(pattern: pattern, text: text, replacement: replacement)
+ end function
+ 
+ /// [method]pattern.count の検証用の入口。
+ public function count(pattern: Pattern, text: String) -> Integer uses State
+-  return Raw.count(pattern, text)
++  return Raw.count(pattern: pattern, text: text)
+ end function
+ 
+ /// is-match-once の検証用の入口。
+ public function isMatchOnce(source: String, text: String) -> Result[Boolean, String]
+-  return Raw.isMatchOnce(source, text)
++  return Raw.isMatchOnce(source: source, text: text)
+ end function
+ 
+ /// find-all-once の検証用の入口。
+ public function findAllOnce(source: String, text: String) -> Result[List[Found], String]
+-  return Raw.findAllOnce(source, text)
++  return Raw.findAllOnce(source: source, text: text)
+ end function
+ 
+ /// count-once の検証用の入口。
+ public function countOnce(source: String, text: String) -> Result[Integer, String]
+-  return Raw.countOnce(source, text)
++  return Raw.countOnce(source: source, text: text)
+ end function
+ 
+ /// 一致の text を返す。

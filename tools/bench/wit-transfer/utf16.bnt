@@ -10,12 +10,12 @@ function runAdapter(ignored: Boolean, v: String) -> String
 
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   bind Pair(n, rounds) <- try Runner.settings()
-  bind source <- String.repeat("A日😀", n)
-  bind expected <- String.repeat("日😀!", n)
+  bind source <- String.repeat(s: "A日😀", n: n)
+  bind expected <- String.repeat(s: "日😀!", n: n)
 
-  return Runner.verify(rounds, lambda() -> Boolean
+  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
     bind c0 <- run(source) = expected
-    bind c1 <- runAdapter(false, source) = expected
+    bind c1 <- runAdapter(ignored: false, v: source) = expected
     return c0 and c1
   end lambda)
 end function

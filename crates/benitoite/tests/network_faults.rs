@@ -159,7 +159,7 @@ fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
         for host in hosts {
             for call in [
                 format!("Http.get(\"http://{host}/\")"),
-                format!("Http.send(Http.clientRequest(\"POST\", \"http://{host}/\"))"),
+                format!("Http.send(Http.clientRequest(method: \"POST\", url: \"http://{host}/\"))"),
             ] {
                 body.push_str(&format!(r#"
   Console.writeLine(match {call} with
@@ -185,13 +185,13 @@ fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
 fn listen_and_serve_return_host_not_found_before_listening() {
     let source = r#"
 function main() -> Result[Unit, String] uses Http.Listen, State, Console.Write
-  Console.writeLine(match Http.listen("MiSsInG.InVaLiD", 0) with
+  Console.writeLine(match Http.listen(host: "MiSsInG.InVaLiD", port: 0) with
     case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.HostNotFound then "listen HostNotFound" else "wrong kind" end if
     case Result.Ok(listener) ->
       bind _ <- Http.closeListener(listener)
       "unexpected success"
   end match)
-  Console.writeLine(match Http.serve("MISSING.INVALID", 0, lambda(_request) return Http.text(200, "unused") end lambda) with
+  Console.writeLine(match Http.serve(host: "MISSING.INVALID", port: 0, handler: lambda(request) return Http.text(status: 200, s: "unused") end lambda) with
     case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.HostNotFound then "serve HostNotFound" else "wrong kind" end if
     case Result.Ok(_) -> "unexpected success"
   end match)
@@ -217,17 +217,17 @@ fn an_unmatched_host_reaches_the_loopback_server() {
 function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State, Console.Write
   bind failed <- Http.get("http://MISSING.INVALID/")
   if not Result.isError(failed) then return Result.Error("missing injection") end if
-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
-    bind server <- TaskGroup.spawn(group, lambda()
-      with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+    bind server <- TaskGroup.spawn(group: group, action: lambda()
+      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
         bind request <- Http.requestOf(exchange)
-        return Http.respond(exchange, Http.text(200, Http.Request.path(request))) |> Result.mapError(_, NetworkError.message)
+        return Http.respond(exchange: exchange, response: Http.text(status: 200, s: Http.Request.path(request))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
       end with
     end lambda)
-    bind response <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/unmatched") |> Result.mapError(_, NetworkError.message)
+    bind response <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/unmatched") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
     bind _ <- try Task.await(server)
     Console.writeLine(Integer.toString(Http.Response.status(response)))
-    Console.writeLine(Option.unwrapOr(String.fromUTF8(Http.Response.body(response)), "invalid UTF-8"))
+    Console.writeLine(Option.unwrapOr(o: String.fromUTF8(Http.Response.body(response)), fallback: "invalid UTF-8"))
     return Result.Ok(())
   end with
 end function

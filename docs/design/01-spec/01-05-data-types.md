@@ -42,6 +42,8 @@ end data
 
 ### 値の構築
 
+【決定】位置フィールドを持つデータ構成子を関数値に束縛すると、契約名は宣言位置から `arg1`、`arg2`、… となる。直接の構築とパターンの位置指定とは区別する。レコード構成子を関数値にした場合は、宣言順のフィールド名を使う。レコードのフィールドを取り出す関数の一引数の契約名は `value` である。
+
 【決定】構成子は、式の中で型名で修飾して書く。prelude の `Option` と `Result` の構成子も同じである。
 
 【方針】引数を持つ構成子 `T.C` は、引数の型を引数にとり、型 `T` の値を返す関数として使える。引数を持たない構成子 `T.C` は、型 `T` の値そのものである。
@@ -49,12 +51,12 @@ end data
 ```text
 bind s <- Shape.Circle(1.0)
 bind t <- Tree.Node(Tree.Leaf, 3, Tree.Leaf)
-bind f <- Shape.Rect(_, 2.0)         // lambda(p1) return Shape.Rect(p1, 2.0) end lambda
-bind circles <- List.map(radii, Shape.Circle)
+bind f <- Shape.Rect(_, 2.0)         // function(arg1: Float) -> Shape
+bind circles <- List.map(xs: radii, f: lambda(value) return Shape.Circle(value))
 ```
 
 - 引数を持つ構成子を呼び出すときは、宣言の引数の個数と同じ個数の引数を与えなければならない。足りない場合は、部分適用のプレースホルダを使う（[構文](01-02-syntax.md)）。
-- 引数を持たない構成子に括弧を付ける（`Tree.Leaf()`）と誤りとする。引数を持つ構成子を括弧なしで書くと、関数の値になる（`Shape.Circle` の型は `function(Float) -> Shape`）。
+- 引数を持たない構成子に括弧を付ける（`Tree.Leaf()`）と誤りとする。引数を持つ構成子を括弧なしで書くと、関数の値になる（`Shape.Circle` の型は `function(arg1: Float) -> Shape`）。
 - 型パラメータを持つ型の値の型引数は、推論する（`Tree.Leaf` の型は、使われ方から `Tree[Integer]` などに決まる）。
 
 代数的データ型の値は変更できない。
@@ -148,7 +150,7 @@ function describe(count: Integer) -> String
   return match count with
     case 0 -> "none"
     case n if n = maxRetries -> "limit"      // case maxRetries -> は誤り
-    case _ -> "some"
+    case otherCount -> "some"
   end match
 end function
 ```
@@ -163,15 +165,15 @@ end function
 match command with
   case ["help"], ["--help"], [] -> showUsage()
   case ["add", name] -> add(name)
-  case ["remove", first, ..rest] -> removeAll(first, rest)
-  case _ -> showUsage()
+  case ["remove", first, ..rest] -> removeAll(first: first, rest: rest)
+  case otherCommand -> showUsage()
 end match
 
 match score with
   case n if n < 0 -> "invalid"
   case 90..100 -> "A"
   case 70..89 -> "B"
-  case _ -> "C"
+  case otherScore -> "C"
 end match
 ```
 
@@ -248,7 +250,7 @@ end match
 ```text
 match n with
   case x if x > 0 -> "positive"
-  case _ -> "other"      // よい: 前の分岐はガードが付いているので、覆うものに数えない
+  case otherNumber -> "other"      // よい: 前の分岐はガードが付いているので、覆うものに数えない
 end match
 ```
 
@@ -262,7 +264,7 @@ end match
 
 - フィールドは一つ以上なければならない。一つのレコードの中で、二つのフィールドに同じ名前を付けてはならない。
 - 型パラメータ、再帰、相互再帰、型の名前の制限は、型の宣言と同じである。
-- レコードの型の名前は、同じ名前のモジュールを兼ねる。そのモジュールには、フィールドごとに、同じ名前の関数（`Person.name : function(Person) -> String`）が入る。型パラメータを持つレコードでは、この関数も型パラメータを持つ（フィールド `value: T` を持つ `record Box[T]` では `Box.value : function(Box[T]) -> T`）。
+- レコードの型の名前は、同じ名前のモジュールを兼ねる。そのモジュールには、フィールドごとに、同じ名前の関数（`Person.name : function(value: Person) -> String`）が入る。型パラメータを持つレコードでは、この関数も型パラメータを持つ（フィールド `value: T` を持つ `record Box[T]` では `Box.value : function(value: Box[T]) -> T`）。
 
 【方針】`T(f1: e1, ..., fn: en)` は、レコード `T` の値を作る。宣言したフィールドをすべて一度ずつ書かなければならない。書かないフィールド、宣言にないフィールド、二度書いたフィールドは誤りとする。書く順序は宣言の順序と違ってよい。各フィールドの式の型は、関数の呼び出しの引数と同じく、フィールドの型と等しいか、包含の規則でその位置に置けるものでなければならない（[型システム](01-06-type-system.md)）。レコードの型の名前は、`Pair` の構成子と同じく、式の中で修飾せずにこの形で使える（[名前・スコープ・モジュール](01-03-names-modules.md)の「修飾しない名前の解決」。取り込んだモジュールのレコードは `M.T(...)`）。
 

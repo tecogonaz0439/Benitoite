@@ -1,0 +1,70 @@
+{
+  "head": "10effc6d19a13faa1d51306b74087a6372a32fbe",
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+  "call_classifications": {
+    "generated_input": 1342,
+    "success": 2456,
+    "intended_failure": 191,
+    "history_or_excluded": 1604
+  },
+  "call_current_by_kind": {
+    "constructor_or_pattern": 543,
+    "function": 3278,
+    "named_record_or_call": 168
+  },
+  "lexical_bnt_multi": 2046,
+  "lexical_bnt_pipe": 12,
+  "joins": {
+    "list": 45,
+    "return": 127,
+    "if": 22
+  },
+  "joins_typed_success": {
+    "list": 42,
+    "return": 120,
+    "if": 22
+  },
+  "joins_recovered_errors": {
+    "return": 7,
+    "list": 3
+  },
+  "input_count": 4024,
+  "standalone_typed": 982,
+  "parse_error_inputs": 2179,
+  "recovered_error_type_inputs": 335,
+  "golden_count": 715,
+  "golden_exits": {
+    "0": 282,
+    "1": 95,
+    "2": 337,
+    "7": 1
+  },
+  "q10_appendix_exact_match": true,
+  "stdlib_declarations": 563,
+  "stdlib_groups": 235,
+  "stdlib_inner_types": 55,
+  "language_by_purpose": {
+    "format_preservation": 4,
+    "module_package_header_or_execution": 30,
+    "hash_bytes": 1,
+    "E0907_E0908_boundary": 1,
+    "future_version_or_search_isolation": 4,
+    "header_syntax": 16,
+    "module_package_fixture": 45,
+    "fixture_generator": 1,
+    "historical": 6,
+    "ordinary_example": 5
+  },
+  "language_by_version": {
+    "0.0.3": 97,
+    "99.0.0": 4,
+    "0.0.2": 2,
+    "01.2.3": 1,
+    "${1}": 1,
+    "{}": 1,
+    ">= 0.2, < 0.3": 3,
+    "0.2": 2,
+    "0.0.4": 2
+  }
+}

@@ -4,5 +4,5 @@
 @test("positive")
 function positive() -> Unit uses Assert.Check
   bind n <- 0 - 3
-  Assert.isTrue(n > 0, "n must be positive")
+  Assert.isTrue(condition: n > 0, message: "n must be positive")
 end function

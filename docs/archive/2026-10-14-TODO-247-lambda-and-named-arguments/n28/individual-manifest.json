@@ -1,0 +1,688 @@
+{
+  "version": 1,
+  "inputs": [
+    {
+      "path": "crates/benitoite/testdata/concurrency/c12-cancelled-reader.bnt",
+      "source_sha256": "4dfad39589087360f2a6e2cc4fd1f69356ad7ffa364b65014a25a5b1a69288fb"
+    },
+    {
+      "path": "crates/benitoite/testdata/handlers/c12-discard-reader.bnt",
+      "source_sha256": "12ab901fa5587434abdb59c16182b1240f856d80246117f5680fed470d0f94af"
+    },
+    {
+      "path": "crates/benitoite/testdata/io/c12-process-exit-flush.bnt",
+      "source_sha256": "b890748fe3fbbac5b4008b6d537d318eb8e878db9e5620754ee8195d16834654"
+    },
+    {
+      "path": "crates/benitoite/testdata/io/c12-with-reader-release.bnt",
+      "source_sha256": "2d52134547ccd7b4c41e2e5819809e828b7f0770a1ef29a95bc22ec9412fe82a"
+    },
+    {
+      "path": "crates/benitoite/testdata/io/c12-with-return-release.bnt",
+      "source_sha256": "b4d5f6d8cd413d57c18e25368538a46b350db43ad55b10cc60e17bc0cbff66ad"
+    },
+    {
+      "path": "crates/benitoite/testdata/io/c12-with-try-release.bnt",
+      "source_sha256": "1693bca18918ccb806a10e8dbcb2a1b23138fac9f0d8c5e3598e5b1e59453aad"
+    },
+    {
+      "path": "crates/benitoite/testdata/network/respond-twice.bnt",
+      "source_sha256": "8b59cfbcf4a695d78150e855dc66baf1183c18bcbe13db331987b0d317d9a283"
+    },
+    {
+      "path": "crates/benitoite/testdata/network/status-above-range.bnt",
+      "source_sha256": "b26c11ad53382794d493c20a26d516df064687a62c424499a1904a0ee20dec02"
+    },
+    {
+      "path": "crates/benitoite/testdata/network/status-below-range.bnt",
+      "source_sha256": "3c1b24b05f180e24eef05fb9233e1c2066b79a2c9de82efb819b7b92ff155d35"
+    },
+    {
+      "path": "crates/benitoite/testdata/network/status-informational.bnt",
+      "source_sha256": "d0f046c4ce0d40d3e4fa5746474e416bd6427d09c351c8081ff00f1ab717243b"
+    },
+    {
+      "path": "crates/benitoite/testdata/traits/todo178-impl-target-cascade.bnt",
+      "source_sha256": "35f0dad418dafb87836620f45e29caeeaa33bedf559ed9ac5e9488324bb9cf31"
+    },
+    {
+      "path": "crates/benitoite/testdata/traits/todo178-impl-target-independent.bnt",
+      "source_sha256": "e914a73b76bf44b70920f385ca7f6f25b95c3a5ccc2551676aa0881fd9c79e63"
+    },
+    {
+      "path": "crates/benitoite/testdata/traits/c11-hk-arity.bnt",
+      "source_sha256": "d73342452ce223e498c07eab627d1487df92c9324f1fa8436143c372b24453bd"
+    },
+    {
+      "path": "crates/benitoite/testdata/syntax/uses_then_bracket.bnt",
+      "source_sha256": "cfeaf481d3d32631808cde141b394b0a82845a003d2627b307b10f78bce87d91"
+    },
+    {
+      "path": "crates/benitoite/testdata/types/arity.bnt",
+      "source_sha256": "6f81e61717d48a74608cc3c2a80894c46f1ce3b80d1e2a2781b3f480d37b339d"
+    },
+    {
+      "path": "crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt",
+      "source_sha256": "2ec2012a066e3ef8381e89f2122c2b3dad87af430185f7f76a523cc4962bc650"
+    },
+    {
+      "path": "crates/benitoite/testdata/syntax/call-type-arguments.bnt",
+      "source_sha256": "1d76397641e4b17d4a0575621e1ba5625809e29b8427971fd7f5d3acbd44600e"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "source_sha256": "7a1659113be6d678f9c95eacb8fd09d5109f10ced95ee08de1a5d5b5a8e030d4"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "crates/benitoite/testdata/concurrency/c12-cancelled-reader.bnt:0",
+      "path": "crates/benitoite/testdata/concurrency/c12-cancelled-reader.bnt",
+      "source_sha256": "4dfad39589087360f2a6e2cc4fd1f69356ad7ffa364b65014a25a5b1a69288fb",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 1078,
+          "end": 1096,
+          "before": "f: IOError.message",
+          "after": "f: lambda(error) return IOError.message(error) end lambda"
+        }
+      ],
+      "before": "f: IOError.message",
+      "after": "f: lambda(error) return IOError.message(error) end lambda",
+      "review_reason": "Result.mapError の error と公開の変換関数の e を明示のラムダで接続する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 1,
+        "diagnostics": [
+          "R0402"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/handlers/c12-discard-reader.bnt:0",
+      "path": "crates/benitoite/testdata/handlers/c12-discard-reader.bnt",
+      "source_sha256": "12ab901fa5587434abdb59c16182b1240f856d80246117f5680fed470d0f94af",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 931,
+          "end": 949,
+          "before": "f: IOError.message",
+          "after": "f: lambda(error) return IOError.message(error) end lambda"
+        }
+      ],
+      "before": "f: IOError.message",
+      "after": "f: lambda(error) return IOError.message(error) end lambda",
+      "review_reason": "Result.mapError の error と公開の変換関数の e を明示のラムダで接続する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 1,
+        "diagnostics": [
+          "R0402"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/io/c12-process-exit-flush.bnt:0",
+      "path": "crates/benitoite/testdata/io/c12-process-exit-flush.bnt",
+      "source_sha256": "b890748fe3fbbac5b4008b6d537d318eb8e878db9e5620754ee8195d16834654",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 674,
+          "end": 692,
+          "before": "f: IOError.message",
+          "after": "f: lambda(error) return IOError.message(error) end lambda"
+        },
+        {
+          "start": 785,
+          "end": 803,
+          "before": "f: IOError.message",
+          "after": "f: lambda(error) return IOError.message(error) end lambda"
+        }
+      ],
+      "before": "f: IOError.message",
+      "after": "f: lambda(error) return IOError.message(error) end lambda",
+      "review_reason": "Result.mapError の error と公開の変換関数の e を明示のラムダで接続する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 7,
+        "diagnostics": []
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/io/c12-with-reader-release.bnt:0",
+      "path": "crates/benitoite/testdata/io/c12-with-reader-release.bnt",
+      "source_sha256": "2d52134547ccd7b4c41e2e5819809e828b7f0770a1ef29a95bc22ec9412fe82a",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 736,
+          "end": 754,
+          "before": "f: IOError.message",
+          "after": "f: lambda(error) return IOError.message(error) end lambda"
+        },
+        {
+          "start": 915,
+          "end": 933,
+          "before": "f: IOError.message",
+          "after": "f: lambda(error) return IOError.message(error) end lambda"
+        }
+      ],
+      "before": "f: IOError.message",
+      "after": "f: lambda(error) return IOError.message(error) end lambda",
+      "review_reason": "Result.mapError の error と公開の変換関数の e を明示のラムダで接続する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 1,
+        "diagnostics": [
+          "R0402"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/io/c12-with-return-release.bnt:0",
+      "path": "crates/benitoite/testdata/io/c12-with-return-release.bnt",
+      "source_sha256": "b4d5f6d8cd413d57c18e25368538a46b350db43ad55b10cc60e17bc0cbff66ad",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 647,
+          "end": 665,
+          "before": "f: IOError.message",
+          "after": "f: lambda(error) return IOError.message(error) end lambda"
+        }
+      ],
+      "before": "f: IOError.message",
+      "after": "f: lambda(error) return IOError.message(error) end lambda",
+      "review_reason": "Result.mapError の error と公開の変換関数の e を明示のラムダで接続する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 1,
+        "diagnostics": [
+          "R0402"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/io/c12-with-try-release.bnt:0",
+      "path": "crates/benitoite/testdata/io/c12-with-try-release.bnt",
+      "source_sha256": "1693bca18918ccb806a10e8dbcb2a1b23138fac9f0d8c5e3598e5b1e59453aad",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 644,
+          "end": 662,
+          "before": "f: IOError.message",
+          "after": "f: lambda(error) return IOError.message(error) end lambda"
+        }
+      ],
+      "before": "f: IOError.message",
+      "after": "f: lambda(error) return IOError.message(error) end lambda",
+      "review_reason": "Result.mapError の error と公開の変換関数の e を明示のラムダで接続する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 1,
+        "diagnostics": [
+          "R0402"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/network/respond-twice.bnt:0",
+      "path": "crates/benitoite/testdata/network/respond-twice.bnt",
+      "source_sha256": "8b59cfbcf4a695d78150e855dc66baf1183c18bcbe13db331987b0d317d9a283",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 435,
+          "end": 458,
+          "before": "f: NetworkError.message",
+          "after": "f: lambda(error) return NetworkError.message(error) end lambda"
+        },
+        {
+          "start": 628,
+          "end": 651,
+          "before": "f: NetworkError.message",
+          "after": "f: lambda(error) return NetworkError.message(error) end lambda"
+        },
+        {
+          "start": 782,
+          "end": 805,
+          "before": "f: NetworkError.message",
+          "after": "f: lambda(error) return NetworkError.message(error) end lambda"
+        }
+      ],
+      "before": "f: NetworkError.message",
+      "after": "f: lambda(error) return NetworkError.message(error) end lambda",
+      "review_reason": "Result.mapError の error と公開の変換関数の e を明示のラムダで接続する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 1,
+        "diagnostics": [
+          "R0801"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/network/status-above-range.bnt:0",
+      "path": "crates/benitoite/testdata/network/status-above-range.bnt",
+      "source_sha256": "b26c11ad53382794d493c20a26d516df064687a62c424499a1904a0ee20dec02",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 435,
+          "end": 458,
+          "before": "f: NetworkError.message",
+          "after": "f: lambda(error) return NetworkError.message(error) end lambda"
+        },
+        {
+          "start": 628,
+          "end": 651,
+          "before": "f: NetworkError.message",
+          "after": "f: lambda(error) return NetworkError.message(error) end lambda"
+        }
+      ],
+      "before": "f: NetworkError.message",
+      "after": "f: lambda(error) return NetworkError.message(error) end lambda",
+      "review_reason": "Result.mapError の error と公開の変換関数の e を明示のラムダで接続する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 1,
+        "diagnostics": [
+          "R0701"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/network/status-below-range.bnt:0",
+      "path": "crates/benitoite/testdata/network/status-below-range.bnt",
+      "source_sha256": "3c1b24b05f180e24eef05fb9233e1c2066b79a2c9de82efb819b7b92ff155d35",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 435,
+          "end": 458,
+          "before": "f: NetworkError.message",
+          "after": "f: lambda(error) return NetworkError.message(error) end lambda"
+        },
+        {
+          "start": 628,
+          "end": 651,
+          "before": "f: NetworkError.message",
+          "after": "f: lambda(error) return NetworkError.message(error) end lambda"
+        }
+      ],
+      "before": "f: NetworkError.message",
+      "after": "f: lambda(error) return NetworkError.message(error) end lambda",
+      "review_reason": "Result.mapError の error と公開の変換関数の e を明示のラムダで接続する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 1,
+        "diagnostics": [
+          "R0701"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/network/status-informational.bnt:0",
+      "path": "crates/benitoite/testdata/network/status-informational.bnt",
+      "source_sha256": "d0f046c4ce0d40d3e4fa5746474e416bd6427d09c351c8081ff00f1ab717243b",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 435,
+          "end": 458,
+          "before": "f: NetworkError.message",
+          "after": "f: lambda(error) return NetworkError.message(error) end lambda"
+        },
+        {
+          "start": 628,
+          "end": 651,
+          "before": "f: NetworkError.message",
+          "after": "f: lambda(error) return NetworkError.message(error) end lambda"
+        }
+      ],
+      "before": "f: NetworkError.message",
+      "after": "f: lambda(error) return NetworkError.message(error) end lambda",
+      "review_reason": "Result.mapError の error と公開の変換関数の e を明示のラムダで接続する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 1,
+        "diagnostics": [
+          "R0701"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/todo178-impl-target-cascade.bnt:0",
+      "path": "crates/benitoite/testdata/traits/todo178-impl-target-cascade.bnt",
+      "source_sha256": "35f0dad418dafb87836620f45e29caeeaa33bedf559ed9ac5e9488324bb9cf31",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 130,
+          "end": 147,
+          "before": "function(Integer)",
+          "after": "function(value: Integer)"
+        },
+        {
+          "start": 180,
+          "end": 197,
+          "before": "function(Integer)",
+          "after": "function(value: Integer)"
+        },
+        {
+          "start": 279,
+          "end": 296,
+          "before": "function(Integer)",
+          "after": "function(value: Integer)"
+        }
+      ],
+      "before": "function(Integer)",
+      "after": "function(value: Integer)",
+      "review_reason": "成分にラムダがないため単一値の value を明示し、関数型の実装禁止と独立した型クラスの誤りを保つ。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 2,
+        "diagnostics": [
+          "E0712"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/todo178-impl-target-independent.bnt:0",
+      "path": "crates/benitoite/testdata/traits/todo178-impl-target-independent.bnt",
+      "source_sha256": "e914a73b76bf44b70920f385ca7f6f25b95c3a5ccc2551676aa0881fd9c79e63",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 130,
+          "end": 147,
+          "before": "function(Integer)",
+          "after": "function(value: Integer)"
+        },
+        {
+          "start": 180,
+          "end": 197,
+          "before": "function(Integer)",
+          "after": "function(value: Integer)"
+        },
+        {
+          "start": 338,
+          "end": 355,
+          "before": "function(Integer)",
+          "after": "function(value: Integer)"
+        }
+      ],
+      "before": "function(Integer)",
+      "after": "function(value: Integer)",
+      "review_reason": "成分にラムダがないため単一値の value を明示し、関数型の実装禁止と独立した型クラスの誤りを保つ。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 2,
+        "diagnostics": [
+          "E0712",
+          "E0705",
+          "E0705"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/traits/c11-hk-arity.bnt:0",
+      "path": "crates/benitoite/testdata/traits/c11-hk-arity.bnt",
+      "source_sha256": "d73342452ce223e498c07eab627d1487df92c9324f1fa8436143c372b24453bd",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 169,
+          "end": 180,
+          "before": "function(A)",
+          "after": "function(value: A)"
+        }
+      ],
+      "before": "function(A)",
+      "after": "function(value: A)",
+      "review_reason": "宣言と実装のコールバック名を value に揃え、Result のカインドの誤りを保つ。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 2,
+        "diagnostics": [
+          "E0427"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/syntax/uses_then_bracket.bnt:0",
+      "path": "crates/benitoite/testdata/syntax/uses_then_bracket.bnt",
+      "source_sha256": "cfeaf481d3d32631808cde141b394b0a82845a003d2627b307b10f78bce87d91",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 85,
+          "end": 147,
+          "before": "function(function() -> Unit uses Console.Write, List[Integer])",
+          "after": "function(action: function() -> Unit uses Console.Write, values: List[Integer])"
+        }
+      ],
+      "before": "function(function() -> Unit uses Console.Write, List[Integer])",
+      "after": "function(action: function() -> Unit uses Console.Write, values: List[Integer])",
+      "review_reason": "uses のリストの区切りの誤りを保ち、外側の型だけに名前を付ける。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 2,
+        "diagnostics": [
+          "E0209"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/types/arity.bnt:0",
+      "path": "crates/benitoite/testdata/types/arity.bnt",
+      "source_sha256": "6f81e61717d48a74608cc3c2a80894c46f1ce3b80d1e2a2781b3f480d37b339d",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 207,
+          "end": 213,
+          "before": "add(1)",
+          "after": "add(left: 1)"
+        }
+      ],
+      "before": "add(1)",
+      "after": "add(left: 1)",
+      "review_reason": "design.md と N1 の旧→新表どおり、名前付きの不足を E0453 にし、構成子の E0402 は維持する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 2,
+        "diagnostics": [
+          "E0402",
+          "E0402"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt:0",
+      "path": "crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt",
+      "source_sha256": "2ec2012a066e3ef8381e89f2122c2b3dad87af430185f7f76a523cc4962bc650",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 184,
+          "end": 224,
+          "before": "Console.writeText(\"output.txt\", \"hello\")",
+          "after": "Console.writeText(path: \"output.txt\", text: \"hello\")"
+        }
+      ],
+      "before": "Console.writeText(\"output.txt\", \"hello\")",
+      "after": "Console.writeText(path: \"output.txt\", text: \"hello\")",
+      "review_reason": "File の別名を確認し、元のエフェクト名の誤りを維持する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 2,
+        "diagnostics": [
+          "E0339"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt:1",
+      "path": "crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt",
+      "source_sha256": "2ec2012a066e3ef8381e89f2122c2b3dad87af430185f7f76a523cc4962bc650",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 232,
+          "end": 267,
+          "before": "Result.mapError(_, IOError.message)",
+          "after": "Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)"
+        }
+      ],
+      "before": "Result.mapError(_, IOError.message)",
+      "after": "Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)",
+      "review_reason": "error の契約を明示し、元の名前解決の誤りを維持する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 2,
+        "diagnostics": [
+          "E0339"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/syntax/call-type-arguments.bnt:0",
+      "path": "crates/benitoite/testdata/syntax/call-type-arguments.bnt",
+      "source_sha256": "1d76397641e4b17d4a0575621e1ba5625809e29b8427971fd7f5d3acbd44600e",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 111,
+          "end": 129,
+          "before": "Map.set(m, \"x\", 1)",
+          "after": "Map.set(m: m, key: \"x\", value: 1)"
+        }
+      ],
+      "before": "Map.set(m, \"x\", 1)",
+      "after": "Map.set(m: m, key: \"x\", value: 1)",
+      "review_reason": "旧型引数を拒否する元の構文の誤りを維持する。",
+      "expected_diagnostics": {
+        "classification": "intended_failure",
+        "exit": 2,
+        "diagnostics": [
+          "E0201"
+        ]
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt:0",
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "source_sha256": "7a1659113be6d678f9c95eacb8fd09d5109f10ced95ee08de1a5d5b5a8e030d4",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 213,
+          "end": 269,
+          "before": "String.split(String.toLowercase(String.trim(text)), \" \")",
+          "after": "String.split(s: String.toLowercase(String.trim(text)), separator: \" \")"
+        }
+      ],
+      "before": "String.split(String.toLowercase(String.trim(text)), \" \")",
+      "after": "String.split(s: String.toLowercase(String.trim(text)), separator: \" \")",
+      "review_reason": "package 宣言の誤りを維持し、共通の Slug の宣言・束縛を照合した。",
+      "expected_diagnostics": {
+        "classification": "unclassified",
+        "exit": null,
+        "diagnostics": []
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt:1",
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "source_sha256": "7a1659113be6d678f9c95eacb8fd09d5109f10ced95ee08de1a5d5b5a8e030d4",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 277,
+          "end": 328,
+          "before": "List.filter(_, lambda(w) return w <> \"\" end lambda)",
+          "after": "List.filter(xs: _, p: lambda(value) return value <> \"\" end lambda)"
+        }
+      ],
+      "before": "List.filter(_, lambda(w) return w <> \"\" end lambda)",
+      "after": "List.filter(xs: _, p: lambda(value) return value <> \"\" end lambda)",
+      "review_reason": "package 宣言の誤りを維持し、共通の Slug の宣言・束縛を照合した。",
+      "expected_diagnostics": {
+        "classification": "unclassified",
+        "exit": null,
+        "diagnostics": []
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt:2",
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "source_sha256": "7a1659113be6d678f9c95eacb8fd09d5109f10ced95ee08de1a5d5b5a8e030d4",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 338,
+          "end": 361,
+          "before": "String.join(words, \"-\")",
+          "after": "String.join(xs: words, separator: \"-\")"
+        }
+      ],
+      "before": "String.join(words, \"-\")",
+      "after": "String.join(xs: words, separator: \"-\")",
+      "review_reason": "package 宣言の誤りを維持し、共通の Slug の宣言・束縛を照合した。",
+      "expected_diagnostics": {
+        "classification": "unclassified",
+        "exit": null,
+        "diagnostics": []
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt:3",
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "source_sha256": "7a1659113be6d678f9c95eacb8fd09d5109f10ced95ee08de1a5d5b5a8e030d4",
+      "review": "approved",
+      "hold_reasons": [],
+      "edits": [
+        {
+          "start": 616,
+          "end": 676,
+          "before": "Option.unwrapOr(String.characterSlice(text, 0, width), text)",
+          "after": "Option.unwrapOr(o: String.characterSlice(s: text, start: 0, stop: width), fallback: text)"
+        }
+      ],
+      "before": "Option.unwrapOr(String.characterSlice(text, 0, width), text)",
+      "after": "Option.unwrapOr(o: String.characterSlice(s: text, start: 0, stop: width), fallback: text)",
+      "review_reason": "package 宣言の誤りを維持し、共通の Slug の宣言・束縛を照合した。",
+      "expected_diagnostics": {
+        "classification": "unclassified",
+        "exit": null,
+        "diagnostics": []
+      }
+    }
+  ]
+}

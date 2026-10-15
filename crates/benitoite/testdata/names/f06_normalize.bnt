@@ -1,9 +1,9 @@
 // spec: 01-03 シャドーイング
 function normalize(text: String) -> String
   shadow text <- String.trim(text)
-  shadow text <- String.replace(text, "\t", " ")
-  bind words <- String.split(text, " ")
-  return String.join(words, " ")
+  shadow text <- String.replace(s: text, old: "\t", new: " ")
+  bind words <- String.split(s: text, separator: " ")
+  return String.join(xs: words, separator: " ")
 end function
 
 function main() -> Unit

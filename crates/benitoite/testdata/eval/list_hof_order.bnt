@@ -3,31 +3,31 @@ import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
   bind values <- [1, 2, 3]
-  bind mapped <- List.map(values, lambda(value)
+  bind mapped <- List.map(xs: values, f: lambda(value)
     Console.writeLine("map " + Integer.toString(value))
     return value * 2
   end lambda)
-  Console.writeLine(String.join(List.map(mapped, lambda(value) return Integer.toString(value) end lambda), ","))
-  bind filtered <- List.filter(values, lambda(value)
+  Console.writeLine(String.join(xs: List.map(xs: mapped, f: lambda(value) return Integer.toString(value) end lambda), separator: ","))
+  bind filtered <- List.filter(xs: values, p: lambda(value)
     Console.writeLine("filter " + Integer.toString(value))
     return value <> 2
   end lambda)
-  Console.writeLine(String.join(List.map(filtered, lambda(value) return Integer.toString(value) end lambda), ","))
-  bind total <- List.fold(values, 0, lambda(acc, value)
+  Console.writeLine(String.join(xs: List.map(xs: filtered, f: lambda(value) return Integer.toString(value) end lambda), separator: ","))
+  bind total <- List.fold(xs: values, initial: 0, f: lambda(acc, value)
     Console.writeLine("fold " + Integer.toString(acc) + " " + Integer.toString(value))
     return acc + value
   end lambda)
   Console.writeLine(Integer.toString(total))
-  List.forEach(values, lambda(value) return Console.writeLine("each " + Integer.toString(value)) end lambda)
-  Console.writeLine(if List.any(values, lambda(value)
+  List.forEach(xs: values, f: lambda(value) return Console.writeLine("each " + Integer.toString(value)) end lambda)
+  Console.writeLine(if List.any(xs: values, p: lambda(value)
     Console.writeLine("any " + Integer.toString(value))
     return value = 2
   end lambda) then "true" else "false" end if)
-  Console.writeLine(if List.all(values, lambda(value)
+  Console.writeLine(if List.all(xs: values, p: lambda(value)
     Console.writeLine("all " + Integer.toString(value))
     return value < 2
   end lambda) then "true" else "false" end if)
-  bind found <- List.find(values, lambda(value)
+  bind found <- List.find(xs: values, p: lambda(value)
     Console.writeLine("find " + Integer.toString(value))
     return value = 2
   end lambda)

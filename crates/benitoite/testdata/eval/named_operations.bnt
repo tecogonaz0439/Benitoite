@@ -1,0 +1,24 @@
+// spec: 01-08 評価順序
+import Benitoite.Unofficial.IO.Console
+effect Select
+ function select(left: Integer, right: Integer) -> Integer
+end effect
+function mark(label: String, value: Integer) -> Integer uses Console.Write
+ Console.writeLine(text: label)
+ return value
+end function
+function main() -> Unit uses Console.Write
+ bind result <- handle
+  bind direct <- select(right: mark(label: "right", value: 29), left: mark(label: "left", value: 17))
+  bind piped <- mark(label: "pipe", value: 3) |> select(right: mark(label: "pipe-right", value: 4))
+  bind action <- select(right: _, left: mark(label: "fixed", value: 5))
+  Console.writeLine(text: "created")
+  bind partial <- action(right: 6)
+  bind operation <- select
+  bind viaValue <- operation(right: 8, left: 7)
+  direct + piped + partial + viaValue
+ with
+ case select(localLeft, localRight) -> resume(localLeft * 100 + localRight)
+ end handle
+ Console.writeLine(text: Integer.toString(n: result))
+end function

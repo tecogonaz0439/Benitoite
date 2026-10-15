@@ -1,11 +1,15 @@
+import Benitoite.Release.Lemmas.Inversion
 import Benitoite.Release.Lemmas.Rename
 import Benitoite.Release.Lemmas.TyLemmas
 import Benitoite.Release.Assumptions
 
 /-!
-# 型の正しさの伝播（段階 B）
+# 型の正しさの伝播（契約名を持つコア）
 
 環境・ストアの型付け・項の型が正しいとき、型付けの導出の結果の型も正しい。
+
+関数型の名前の整形式を、環境・宣言・型付けの証拠から導く。型の置換は名前を変更しない
+（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
@@ -20,12 +24,12 @@ def EnvWF (n : Nat) (Γ : List (Option Ty)) : Prop :=
 def StoreTy.WF (Ψ : StoreTy) : Prop := ∀ l x, Ψ l = some x → x.WF
 
 theorem Ty.Le.wf {n a b} (h : Ty.Le a b) (w : Ty.WF n a) : Ty.WF n b := by
-  rcases h with rfl | ⟨ps, r, ε, ε', rfl, rfl, _⟩
+  rcases h with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, _⟩
   · exact w
   · simpa [Ty.WF] using w
 
 theorem Ty.Le.wf_rev {n a b} (h : Ty.Le a b) (w : Ty.WF n b) : Ty.WF n a := by
-  rcases h with rfl | ⟨ps, r, ε, ε', rfl, rfl, _⟩
+  rcases h with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, _⟩
   · exact w
   · simpa [Ty.WF] using w
 
@@ -43,11 +47,11 @@ mutual
         simp only [Ty.WF] at w
         have := Ty.subst_wf es hts a w
         simp only [Ty.subst] at this ⊢; simp only [Ty.substAt, Ty.WF]; exact this
-    | .fn ps r _, w => by
+    | .fn names ps r _, w => by
         simp only [Ty.WF] at w
-        have h1 := Ty.substList_wf es hts ps w.1
-        have h2 := Ty.subst_wf es hts r w.2
-        simp only [Ty.subst] at h1 h2 ⊢; simp only [Ty.substAt, Ty.WF]; exact ⟨h1, h2⟩
+        have h1 := Ty.substList_wf es hts ps w.2.1
+        have h2 := Ty.subst_wf es hts r w.2.2
+        simp only [Ty.subst] at h1 h2 ⊢; simp only [Ty.substAt, Ty.WF]; exact ⟨NamesWF.map w.1 _, h1, h2⟩
     | .tvar i, w => by
         simp only [Ty.WF] at w
         simp only [Ty.subst, Ty.substAt, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero, w,
@@ -98,11 +102,11 @@ mutual
         exact ⟨Ty.subst_wf es hts a w.1, Ty.substList_wf es hts as w.2⟩
 end
 
-theorem fnTy_wf {n ps r ε ts es} (hts : ∀ t ∈ ts, Ty.WF n t) (hps : Ty.WFList ts.length ps)
-    (hr : Ty.WF ts.length r) : Ty.WF n (fnTy ps r ε ts es) := by
+theorem fnTy_wf {n names ps r ε ts es} (hts : ∀ t ∈ ts, Ty.WF n t) (hps : Ty.WFList ts.length ps)
+    (hr : Ty.WF ts.length r) (hnames : NamesWF names ps) : Ty.WF n (fnTy names ps r ε ts es) := by
   rw [fnTy_eq]
   simp only [Ty.WF]
-  exact ⟨by simpa [Ty.subst] using Ty.substList_wf es hts ps hps, Ty.subst_wf es hts r hr⟩
+  exact ⟨NamesWF.map hnames _, by simpa [Ty.subst] using Ty.substList_wf es hts ps hps, Ty.subst_wf es hts r hr⟩
 
 theorem EnvWF.binds' {n as Γ} (has : ∀ a ∈ as, Ty.WF n a) (hΓ : EnvWF n Γ) :
     EnvWF n (Release.binds as ++ Γ) := by
@@ -206,35 +210,38 @@ mutual
     match h with
     | .V_Var hi _ => exact hΓ _ _ hi
     | .V_Const => exact Const.type_wf _ _
-    | .V_Fun hd hts _ =>
+    | .V_Fun hd hnames hts _ =>
         simp only [Val.VarsIn] at hv
         have hsc := hwf.1 _ _ hd
         unfold Def.Scoped at hsc
+        obtain ⟨_, hsc⟩ := hsc
         have hl : _ = _ := hts.1
-        refine fnTy_wf (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1)) ?_ ?_
+        refine fnTy_wf (hnames := hnames) (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1)) ?_ ?_
         · rw [hl]; exact Ty.VarsInList.wf _ hsc.1
         · rw [hl]; exact Ty.VarsIn.wf _ hsc.2.1
-    | .V_Prim hs hts _ _ =>
+    | .V_Prim hs hnames hts _ _ =>
         simp only [Val.VarsIn] at hv
         have hsc := hb.sig_scoped _ _ hs
         unfold PrimSig.Scoped at hsc
-        refine fnTy_wf (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1)) ?_ ?_
+        obtain ⟨_, hsc⟩ := hsc
+        refine fnTy_wf (hnames := hnames) (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1)) ?_ ?_
         · rw [hts]; exact Ty.VarsInList.wf _ hsc.1
         · rw [hts]; exact Ty.VarsIn.wf _ hsc.2.1
-    | .V_Op hod hts =>
+    | .V_Op hod hnames hts =>
         simp only [Val.VarsIn] at hv
         have hsc := hwf.2.2.1 _ _ hod
         unfold OpDecl.Scoped at hsc
+        obtain ⟨_, hsc⟩ := hsc
         have hl : _ = _ := hts.1
-        refine fnTy_wf (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv)) ?_ ?_
+        refine fnTy_wf (hnames := hnames) (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv)) ?_ ?_
         · rw [hl]; exact Ty.VarsInList.wf _ hsc.1
         · rw [hl]; exact Ty.VarsIn.wf _ hsc.2
-    | .V_Lam (ps := ps) hbody =>
+    | .V_Lam (ps := ps) hnames hbody =>
         simp only [Val.VarsIn] at hv
-        have hps := Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1)
-        have := HasTypeC.wf hwf hb hbody (EnvWF.binds' hps hΓ.hide) hΨ hv.2
+        have hps := Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.2.1)
+        have := HasTypeC.wf hwf hb hbody (EnvWF.binds' hps hΓ.hide) hΨ hv.2.2
         simp only [Ty.WF]
-        exact ⟨Ty.WFList.iff.mpr hps, this⟩
+        exact ⟨hnames, Ty.WFList.iff.mpr hps, this⟩
     | .V_Con hc hts _ =>
         simp only [Val.VarsIn] at hv
         simp only [Ty.WF]; exact Ty.VarsInList.wf _ hv.1
@@ -273,7 +280,7 @@ mutual
     | .C_App hf _ =>
         simp only [Comp.VarsIn] at hm
         have := HasTypeV.wf hwf hb hf hΓ hΨ hm.1
-        simp only [Ty.WF] at this; exact this.2
+        simp only [Ty.WF] at this; exact this.2.2
     | .C_If _ hm' _ => simp only [Comp.VarsIn] at hm; exact HasTypeC.wf hwf hb hm' hΓ hΨ hm.2.1
     | .C_Match hv harms _ =>
         simp only [Comp.VarsIn] at hm
@@ -288,7 +295,7 @@ mutual
         have := hΓ _ _ hi
         simp only [Ty.WF] at this; exact this.2
     | .C_ResumeL hl _ => exact LocTy.WF.contT hΨ hl C.length
-    | .C_Meth (τ := τ) (ms := ms) hv hc hmeth hts _ _ =>
+    | .C_Meth (τ := τ) (ms := ms) hv hc hmeth hnames hts _ _ =>
         simp only [Comp.VarsIn] at hm
         have hτ : Ty.WF C.length τ := by
           have := HasTypeV.wf hwf hb hv hΓ hΨ hm.1
@@ -301,7 +308,7 @@ mutual
           · exact Ty.WFList.iff.mp (Ty.VarsInList.wf _ hm.2.1) t ht
           · simp at ht; rw [ht]; exact hτ
         · simp only [List.length_append, List.length_singleton, hl]
-          exact Ty.VarsIn.wf _ hsc.2.1
+          exact Ty.VarsIn.wf _ hsc.2.2.1
 
   theorem HasTypeArms.wf (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ R arms a b ε}
       (h : HasTypeArms P B Ψ C Γ R arms a b ε) (ha : Ty.WF C.length a) (hΓ : EnvWF C.length Γ)

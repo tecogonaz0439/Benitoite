@@ -4,6 +4,6 @@
 // 専用の差し込み口は不要である。
 import Benitoite.Unofficial.Path
 function main() -> Unit
-  bind _ <- Path.withExtension("a", "b/c")
+  bind _ <- Path.withExtension(p: "a", extension: "b/c")
   return ()
 end function

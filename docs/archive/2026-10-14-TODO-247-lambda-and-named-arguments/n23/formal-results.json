@@ -1,0 +1,289 @@
+{
+  "checkFormalExit": 0,
+  "log": "target/n23-verified-check-formal.log",
+  "lakeBuildJobs": 238,
+  "sorryWarnings": 0,
+  "legacy": {
+    "golden": {
+      "programs": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 337,
+        "excluded": 378
+      },
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 910,
+        "excluded": 0
+      }
+    },
+    "random": {
+      "programs": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 1000,
+        "excluded": 0
+      },
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 72218,
+        "excluded": 0
+      }
+    }
+  },
+  "legacyBuiltin": {
+    "summaryComparisons": 71914,
+    "summaryMismatchCount": 0,
+    "nonconvergedCount": 0,
+    "errors": []
+  },
+  "legacySurface": {
+    "q11": 1,
+    "preparationFailure": 0,
+    "outOfScope": 19,
+    "mismatched": 0,
+    "matched": 51036,
+    "lazyRestriction": 0
+  },
+  "legacyCoverage": {
+    "matched": 22430,
+    "mismatched": 0,
+    "outOfScope": 0,
+    "fuelExhausted": 0
+  },
+  "independentCoverage": {
+    "matched": 10020,
+    "mismatched": 0,
+    "fuelExhausted": 0
+  },
+  "namedPrograms": {
+    "programs": {
+      "outside": 0,
+      "mismatched": 0,
+      "matched": 7,
+      "excluded": 0
+    },
+    "definitions": {
+      "outside": 0,
+      "mismatched": 0,
+      "matched": 32,
+      "excluded": 0
+    },
+    "surface": {
+      "q11": 0,
+      "preparationFailure": 0,
+      "outOfScope": 0,
+      "mismatched": 0,
+      "matched": 30,
+      "lazyRestriction": 0
+    },
+    "builtinErrors": [],
+    "coverage": {
+      "matched": 6,
+      "mismatched": 0,
+      "outOfScope": 0,
+      "fuelExhausted": 0
+    }
+  },
+  "namedAdditional": [
+    {
+      "stem": "named-types",
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 1,
+        "excluded": 0
+      },
+      "surface": {
+        "q11": 0,
+        "preparationFailure": 0,
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 1,
+        "lazyRestriction": 0
+      },
+      "builtinErrors": []
+    },
+    {
+      "stem": "named-declarations",
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 2,
+        "excluded": 0
+      },
+      "surface": {
+        "q11": 0,
+        "preparationFailure": 0,
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 2,
+        "lazyRestriction": 0
+      },
+      "builtinErrors": []
+    },
+    {
+      "stem": "named-calls",
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 5,
+        "excluded": 0
+      },
+      "surface": {
+        "q11": 0,
+        "preparationFailure": 0,
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 5,
+        "lazyRestriction": 0
+      },
+      "builtinErrors": []
+    },
+    {
+      "stem": "named-static-calls",
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 3,
+        "excluded": 0
+      },
+      "surface": {
+        "q11": 0,
+        "preparationFailure": 0,
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 3,
+        "lazyRestriction": 0
+      },
+      "builtinErrors": []
+    },
+    {
+      "stem": "named-positional-holes",
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 1,
+        "excluded": 0
+      },
+      "surface": {
+        "q11": 0,
+        "preparationFailure": 0,
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 1,
+        "lazyRestriction": 0
+      },
+      "builtinErrors": []
+    }
+  ],
+  "namedIndependentCoverage": {
+    "randomCases": 0,
+    "mismatches": [],
+    "mismatched": 0,
+    "matched": 2,
+    "kinds": {},
+    "fuelExhausted": 0,
+    "fuelExamples": [],
+    "fuel": {
+      "overlaps": 0,
+      "matchChecks": 0,
+      "irrefutable": 0,
+      "coveringSingletons": 0,
+      "coveringPrefixes": 0
+    },
+    "cases": 2,
+    "boundaryResults": [
+      {
+        "name": "function-contract",
+        "leanIrrefutableWitness": null,
+        "leanIrrefutable": true,
+        "lean": {
+          "unreachable": [
+            {
+              "coveredBy": [
+                0
+              ],
+              "arm": 1,
+              "alt": 0
+            }
+          ],
+          "uncovered": null,
+          "exhaustive": true
+        },
+        "fuel": {
+          "overlaps": 0,
+          "matchChecks": 0,
+          "irrefutable": 0,
+          "coveringSingletons": 0,
+          "coveringPrefixes": 0
+        },
+        "extraUnreachable": [],
+        "expectedIrrefutableWitness": null,
+        "expectedIrrefutable": true,
+        "expected": {
+          "unreachable": [
+            {
+              "coveredBy": [
+                0
+              ],
+              "arm": 1,
+              "alt": 0
+            }
+          ],
+          "uncovered": null,
+          "exhaustive": true
+        },
+        "classification": "matched",
+        "changedCoveredBy": []
+      },
+      {
+        "name": "nested-function-contract",
+        "leanIrrefutableWitness": null,
+        "leanIrrefutable": true,
+        "lean": {
+          "unreachable": [
+            {
+              "coveredBy": [
+                0
+              ],
+              "arm": 1,
+              "alt": 0
+            }
+          ],
+          "uncovered": null,
+          "exhaustive": true
+        },
+        "fuel": {
+          "overlaps": 0,
+          "matchChecks": 0,
+          "irrefutable": 0,
+          "coveringSingletons": 0,
+          "coveringPrefixes": 0
+        },
+        "extraUnreachable": [],
+        "expectedIrrefutableWitness": null,
+        "expectedIrrefutable": true,
+        "expected": {
+          "unreachable": [
+            {
+              "coveredBy": [
+                0
+              ],
+              "arm": 1,
+              "alt": 0
+            }
+          ],
+          "uncovered": null,
+          "exhaustive": true
+        },
+        "classification": "matched",
+        "changedCoveredBy": []
+      }
+    ],
+    "boundaryCases": 2
+  },
+  "legacyBytesUnchanged": true
+}

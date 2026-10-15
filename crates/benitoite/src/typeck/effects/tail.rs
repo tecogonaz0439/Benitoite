@@ -69,12 +69,7 @@ fn escape(e: &Expr) -> bool {
             ListElem::Expr(e) => escape(e),
             ListElem::Spread(s) => escape(&s.expr),
         }),
-        Expr::Call(e) => {
-            escape(&e.callee)
-                || e.args
-                    .iter()
-                    .any(|a| matches!(a, Arg::Expr(e) if escape(e)))
-        }
+        Expr::Call(e) => escape(&e.callee) || e.args.iter().any(|a| a.expr().is_some_and(escape)),
         Expr::Record(e) => {
             e.base.as_ref().is_some_and(|e| escape(e)) || e.fields.iter().any(|f| escape(&f.value))
         }

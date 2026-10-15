@@ -1,0 +1,93 @@
+{
+  "appliedPatchFiles": 103,
+  "mechanicalMovesVerified": 95,
+  "theoremDeclarations": 793,
+  "stageACoreFilesUnchanged": 16,
+  "namedImportsAndTargetsRegistered": 0,
+  "axioms": {
+    "Benitoite.Release.progress": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.preservation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.step_sound": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.effect_soundness": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.effect_soundness_noLamNames": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.desugar_typed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.surface_effect_soundness": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkExpr_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkBlock_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkImpl_contracts": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.CheckTables.checkProgram_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.CheckTables.checkProgram_contracts": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.checkMatch_exhaustive_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.checkMatch_unreachable_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.irrefutable_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.CallOk.recordFields_source": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "independentChanges": [
+    "R101: retain cross-version identifier disjointness assertion",
+    "update independent fixture and check script descriptions",
+    "trim trailing blank lines in lakefile.toml"
+  ]
+}

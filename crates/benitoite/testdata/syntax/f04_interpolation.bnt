@@ -4,6 +4,6 @@ function format(name: String, count: Integer) -> String
 end function
 
 function main() -> Unit
-  bind _ <- format("Benitoite", 3)
+  bind _ <- format(name: "Benitoite", count: 3)
   ()
 end function

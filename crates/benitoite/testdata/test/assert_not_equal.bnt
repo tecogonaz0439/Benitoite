@@ -3,5 +3,5 @@
 
 @test
 function differ() -> Unit uses Assert.Check
-  Assert.notEqual([1, 2], [1, 2])
+  Assert.notEqual(actual: [1, 2], expected: [1, 2])
 end function

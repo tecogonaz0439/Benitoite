@@ -5,10 +5,10 @@ import Benitoite.Unofficial.IO.Process
 /// 入力の大きさと、一回以上の呼び出し回数を読む。
 public function settings() -> Result[Pair[Integer, Integer], String] uses Process.Environment
   bind arguments <- Process.arguments()
-  bind text <- try Option.okOr(List.get(arguments, 0), "missing input size")
-  bind count <- try Option.okOr(Integer.parse(text), "invalid input size")
-  bind roundsText <- try Option.okOr(List.get(arguments, 1), "missing repeat count")
-  bind rounds <- try Option.okOr(Integer.parse(roundsText), "invalid repeat count")
+  bind text <- try Option.okOr(o: List.get(xs: arguments, i: 0), error: "missing input size")
+  bind count <- try Option.okOr(o: Integer.parse(text), error: "invalid input size")
+  bind roundsText <- try Option.okOr(o: List.get(xs: arguments, i: 1), error: "missing repeat count")
+  bind rounds <- try Option.okOr(o: Integer.parse(roundsText), error: "invalid repeat count")
   return if List.length(arguments) = 2 and count >= 0 and rounds > 0 then
     Result.Ok(Pair(count, rounds))
   else
@@ -20,13 +20,13 @@ function repeat(remaining: Integer, work: function() -> Boolean, correct: Boolea
   return if remaining = 0 then correct else
     // 結果が違っても呼び出しを省かず、指定した回数を一つの実行内で行う。
     bind next <- work()
-    repeat(remaining - 1, work, correct and next)
+    repeat(remaining: remaining - 1, work: work, correct: correct and next)
   end if
 end function
 
 /// 独立した期待値との一致を出力し、不一致は終了状態にも反映する。
 public function verify(rounds: Integer, work: function() -> Boolean) -> Result[Unit, String] uses Console.Write
-  bind correct <- repeat(rounds, work, true)
+  bind correct <- repeat(remaining: rounds, work: work, correct: true)
   Console.writeLine(if correct then "ok" else "failed" end if)
   return if correct then Result.Ok(()) else Result.Error("unexpected guest result") end if
 end function

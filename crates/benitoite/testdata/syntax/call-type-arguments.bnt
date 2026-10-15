@@ -1,5 +1,5 @@
 // spec: 01-02 ブロックと文
 function main() -> Unit
   bind m <- Map.empty[String, Integer]()
-  bind _ <- Map.set(m, "x", 1)
+  bind _ <- Map.set(m: m, key: "x", value: 1)
 end function

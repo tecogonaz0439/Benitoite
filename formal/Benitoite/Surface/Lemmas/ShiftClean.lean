@@ -15,9 +15,9 @@ mutual
     | .list a, h => by
         simp only [Ty.shift, TyOK, Ty.VarsIn] at h ⊢
         exact shift_clean ntys a h
-    | .fn ps r _, h => by
+    | .fn names ps r _, h => by
         simp only [Ty.shift, TyOK, Ty.VarsIn] at h ⊢
-        exact ⟨shiftList_clean ntys ps h.1, shift_clean ntys r h.2.1, h.2.2⟩
+        exact ⟨by simpa only [NamesWF, List.length_map] using h.1, shiftList_clean ntys ps h.2.1, shift_clean ntys r h.2.2.1, h.2.2.2⟩
     | .tvar i, h => by
         simp only [TyOK, Ty.VarsIn] at h
         simp only [Ty.shift, TyOK, Ty.VarsIn, Nat.not_lt_zero, ↓reduceIte]

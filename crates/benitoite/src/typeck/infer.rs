@@ -43,6 +43,7 @@ pub enum ITy {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct IFnTy {
+    pub contract: IContract,
     pub params: Vec<ITy>,
     pub ret: ITy,
     pub effect: IEffect,
@@ -232,4 +233,14 @@ pub enum Constraint {
         sup: IEffect,
         reason: Reason,
     },
+}
+
+/// 型とエフェクトの変数から独立した関数の契約の変数。
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub struct ContractId(pub u32);
+
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+pub enum IContract {
+    Known(Vec<String>),
+    Var(ContractId),
 }

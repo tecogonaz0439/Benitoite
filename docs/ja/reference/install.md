@@ -1,8 +1,8 @@
 # Benitoite のインストール
 
-> この文書は、`docs/reference/install.md` の日本語の訳である。訳した元は、Benitoite 0.0.4 の版の英語の版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/install.md` の日本語の訳である。翻訳元は Benitoite 0.0.5 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
-この文書では、`benitoite` `0.0.4` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。
+この文書では、`benitoite` `0.0.5` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。
 
 ## 対応するシステム
 
@@ -30,20 +30,20 @@ Benitoite のリポジトリの GitHub Releases のページにある各リリ�
 ```sh
 RELEASE=<download address of the release>
 TARGET=aarch64-apple-darwin
-curl -LO "$RELEASE/benitoite-0.0.4-$TARGET.tar.gz"
+curl -LO "$RELEASE/benitoite-0.0.5-$TARGET.tar.gz"
 curl -LO "$RELEASE/SHA256SUMS"
 ```
 
 ハッシュを確かめる。macOS では次のとおりである。
 
 ```sh
-grep "benitoite-0.0.4-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
+grep "benitoite-0.0.5-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
 ```
 
 Linux では次のとおりである。
 
 ```sh
-grep "benitoite-0.0.4-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
+grep "benitoite-0.0.5-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 ```
 
 ハッシュが一致すると、コマンドはファイル名の後に `OK` を表示する。一致しないときは、アーカイブをダウンロードし直し、そのアーカイブは使わない。
@@ -55,16 +55,16 @@ grep "benitoite-0.0.4-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
 アーカイブを新しいディレクトリに展開し、展開した `benitoite` を、`~/.local/bin` など `PATH` にあるディレクトリへ移す。
 
 ```sh
-mkdir benitoite-0.0.4
-tar -xzf "benitoite-0.0.4-$TARGET.tar.gz" -C benitoite-0.0.4
+mkdir benitoite-0.0.5
+tar -xzf "benitoite-0.0.5-$TARGET.tar.gz" -C benitoite-0.0.5
 mkdir -p ~/.local/bin
-find benitoite-0.0.4 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
+find benitoite-0.0.5 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
 benitoite --version
 ```
 
 `benitoite` を再配布するときは、アーカイブの `LICENSE-MIT`、`LICENSE-APACHE`、`THIRD_PARTY_LICENSES` を残しておく。`benitoite --licenses` は、同じ `THIRD_PARTY_LICENSES` を表示する。
 
-`benitoite --version` は、最初の行に `benitoite 0.0.4` を表示する。シェルが `benitoite` を見つけられないときは、シェルの起動ファイルで、そのディレクトリを `PATH` に加える（例: `export PATH="$HOME/.local/bin:$PATH"`）。
+`benitoite --version` は、最初の行に `benitoite 0.0.5` を表示する。シェルが `benitoite` を見つけられないときは、シェルの起動ファイルで、そのディレクトリを `PATH` に加える（例: `export PATH="$HOME/.local/bin:$PATH"`）。
 
 #### macOS が `benitoite` を止めたとき
 
@@ -114,6 +114,8 @@ benitoite skill install
 
 Skill が説明するのは、一緒に配られた版の `benitoite` だけである。版が異なるとき、Skill はエージェントに、`benitoite skill install` を再び実行するよう利用者に頼むことを指示する。新しいマイナーの版へ更新する前（例: `0.1.x` から `0.2.0` へ）には、[CHANGELOG](../../../CHANGELOG.md)（英語）を読む。マイナーの版は互換性のない変更を含むことがある。
 
+呼び出しの規則と関数の契約は、[関数とラムダ](benitoite.md#6-関数とラムダ)を参照する。同じ実行ファイルからインストールした Skill で、パラメータ名とコールバックの契約を調べる。
+
 ## ソースからのビルド
 
 `cargo` を含む Rust のツールチェインが必要である（最低の版は、リポジトリの `Cargo.toml` の `rust-version` を参照する）。
@@ -144,4 +146,4 @@ rm ~/.local/bin/benitoite
 
 インストールのときに `--project` や `--agent` を使ったときは、`uninstall` にも同じオプションを渡す。
 
-> 注記: `0.0.4` は、`0.0.1`・`0.0.2`・`0.0.3` と同じく、ソースコードだけのリリースであり、実行ファイルは配らない。実行ファイルは `0.1.0` から配る。
+> 注記: `0.0.1` から `0.0.5` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配る。

@@ -157,12 +157,11 @@ impl Drop for Server {
 const IMPORTS: &str = "import Benitoite.Unofficial.Network.Http\nimport Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.Clock\n";
 fn source(body: &str) -> String {
     format!(
-        "{IMPORTS}function main() -> Result[Unit, String] uses Http.Listen, Console.Write, Clock.Time, State\n with listener = try Http.listen(\"127.0.0.1\", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do\n  Console.writeLine(Integer.toString(Http.listenerPort(listener)))\n {body}\n end with\nend function\n"
+        "{IMPORTS}function main() -> Result[Unit, String] uses Http.Listen, Console.Write, Clock.Time, State\n with listener = try Http.listen(host: \"127.0.0.1\", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do\n  Console.writeLine(Integer.toString(Http.listenerPort(listener)))\n {body}\n end with\nend function\n"
     )
 }
-const EXCHANGE: &str =
-    "with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do";
-const RESPOND: &str = "bind _ <- try Http.respond(exchange, Http.Response(status: 200, headers: [Pair(\"Content-Length\", \"999\"), Pair(\"CONNECTION\", \"keep-alive\")], body: String.toUTF8(\"ok\"))) |> Result.mapError(_, NetworkError.message)";
+const EXCHANGE: &str = "with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do";
+const RESPOND: &str = "bind _ <- try Http.respond(exchange: exchange, response: Http.Response(status: 200, headers: [Pair(\"Content-Length\", \"999\"), Pair(\"CONNECTION\", \"keep-alive\")], body: String.toUTF8(\"ok\"))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)";
 fn normal_source() -> String {
     source(&format!(
         "{EXCHANGE}\n {RESPOND}\n return Result.Ok(())\nend with"
@@ -189,7 +188,7 @@ fn roundtrip_source(query: &str) -> String {
  bind req <- Http.requestOf(exchange)
  if Http.Request.method(req) <> "POST" or Http.Request.path(req) <> "/path"
    or Http.Request.query(req) <> {query}
-   or List.take(Http.Request.headers(req), 2) <> [Pair("x-test", "one"), Pair("x-test", "two")]
+   or List.take(xs: Http.Request.headers(req), n: 2) <> [Pair("x-test", "one"), Pair("x-test", "two")]
    or Http.Request.body(req) <> String.toUTF8("abc") then
    return Result.Error("request fields")
  end if
@@ -347,7 +346,7 @@ fn exchange_scope_sends_500_and_explicit_close_returns_success() {
     for mode in [ExecMode::Direct, ExecMode::Request] {
         for close in [false, true] {
             let body = if close {
-                "bind _ <- try Http.closeExchange(exchange) |> Result.mapError(_, NetworkError.message)"
+                "bind _ <- try Http.closeExchange(exchange) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)"
             } else {
                 ""
             };
@@ -381,11 +380,11 @@ fn error_actions() -> Vec<(String, benitoite::diag::DiagCode)> {
             benitoite::diag::DiagCode::R0402,
         ),
         (
-            "bind _ <- Http.respond(exchange, Http.text(99, \"bad\"))".into(),
+            "bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 99, s: \"bad\"))".into(),
             benitoite::diag::DiagCode::R0701,
         ),
         (
-            "bind _ <- Http.respond(exchange, Http.text(100, \"bad\"))".into(),
+            "bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 100, s: \"bad\"))".into(),
             benitoite::diag::DiagCode::R0701,
         ),
     ]
@@ -414,8 +413,8 @@ fn accepting_allows_computation_and_sleep_and_can_be_interrupted() {
     for mode in [ExecMode::Direct, ExecMode::Request] {
         let script = source(
             r#"
- bind child <- TaskGroup.spawn(group, lambda()
-   bind values <- List.map([1, 2, 3], lambda(x) return x + 1 end lambda)
+ bind child <- TaskGroup.spawn(group: group, action: lambda()
+   bind values <- List.map(xs: [1, 2, 3], f: lambda(value) return value + 1 end lambda)
    Clock.sleep(1)
    Console.writeLine("child")
    return values
@@ -441,7 +440,7 @@ fn closing_listener_wakes_its_waiting_accept() {
         let server = Server::start(
             source(
                 r#"
- bind child <- TaskGroup.spawn(group, lambda()
+ bind child <- TaskGroup.spawn(group: group, action: lambda()
    Clock.sleep(1)
    return Http.closeListener(listener)
  end lambda)
@@ -487,7 +486,7 @@ fn disconnected_exchange_release_does_not_stop_the_program() {
     let script = source(&format!(
         r#"{EXCHANGE}
  Console.writeLine("accepted")
- with gate = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+ with gate = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
   return Result.Ok(())
  end with
 end with"#
@@ -567,7 +566,7 @@ const RESPONSE_CASES: &[(&str, u16, &str, &[u8])] = &[
 fn framing_source(status: u16, body: &str) -> String {
     source(&format!(
         r#"{EXCHANGE}
- bind _ <- try Http.respond(exchange, Http.Response(status: {status}, headers: [], body: String.toUTF8({body:?}))) |> Result.mapError(_, NetworkError.message)
+ bind _ <- try Http.respond(exchange: exchange, response: Http.Response(status: {status}, headers: [], body: String.toUTF8({body:?}))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
  return Result.Ok(())
 end with"#
     ))
@@ -595,11 +594,11 @@ fn relay_source(url: &str) -> String {
     format!(
         r#"{IMPORTS}
 function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
- with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message) do
+ with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
   Console.writeLine(Integer.toString(Http.listenerPort(listener)))
   {EXCHANGE}
-   bind response <- try Http.get({url:?}) |> Result.mapError(_, NetworkError.message)
-   bind _ <- try Http.respond(exchange, response) |> Result.mapError(_, NetworkError.message)
+   bind response <- try Http.get({url:?}) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+   bind _ <- try Http.respond(exchange: exchange, response: response) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
    return Result.Ok(())
   end with
  end with

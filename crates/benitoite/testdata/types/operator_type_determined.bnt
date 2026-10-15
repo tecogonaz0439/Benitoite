@@ -3,6 +3,6 @@ import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
     bind add <- lambda(left, right) return left + right end lambda
-    Console.writeLine(Integer.toString(add(1, 2)))
-    return Console.writeLine(Integer.toString(add(3, 4)))
+    Console.writeLine(Integer.toString(add(left: 1, right: 2)))
+    return Console.writeLine(Integer.toString(add(left: 3, right: 4)))
 end function

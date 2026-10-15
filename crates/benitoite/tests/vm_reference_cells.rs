@@ -21,13 +21,13 @@ end function
 function main() -> Unit uses State
  bind r <- Reference.new(1)
  with group = TaskGroup.open() do
-  bind _ <- TaskGroup.spawn(group, lambda()
-   Reference.set(r, 0)
+  bind _ <- TaskGroup.spawn(group: group, action: lambda()
+   Reference.set(reference: r, value: 0)
    return ()
   end lambda)
-  Reference.update(r, lambda(x: Integer) -> Integer
+  Reference.update(reference: r, f: lambda(value: Integer) -> Integer
    bind _ <- busy(100000)
-   return 10 div x
+   return 10 div value
   end lambda)
  end with
  return ()
@@ -92,21 +92,21 @@ fn scripts_update_values_return_unit_and_release_frames_and_cycles() {
         (
             "update result",
             "",
-            "bind r <- Reference.new(3)\n bind u <- Reference.update(r, lambda(n: Integer) -> Integer return n + 7 end lambda)\n Reference.set(r, Reference.get(r) * 2)\n return if u = () and Reference.get(r) = 20 then Result.Ok(()) else Result.Error(\"update\") end if",
+            "bind r <- Reference.new(3)\n bind u <- Reference.update(reference: r, f: lambda(value: Integer) -> Integer return value + 7 end lambda)\n Reference.set(reference: r, value: Reference.get(r) * 2)\n return if u = () and Reference.get(r) = 20 then Result.Ok(()) else Result.Error(\"update\") end if",
         ),
         (
             "large allocated result",
-            "function grow(xs: List[Integer], n: Integer) -> List[Integer]\n if n = 0 then return xs end if\n return grow(List.append(xs, n), n - 1)\nend function\n",
-            "bind r <- Reference.new([0])\n bind u <- Reference.update(r, lambda(xs: List[Integer]) -> List[Integer] return grow(xs, 2048) end lambda)\n return if u = () and List.length(Reference.get(r)) = 2049 then Result.Ok(()) else Result.Error(\"list\") end if",
+            "function grow(xs: List[Integer], n: Integer) -> List[Integer]\n if n = 0 then return xs end if\n return grow(xs: List.append(xs: xs, x: n), n: n - 1)\nend function\n",
+            "bind r <- Reference.new([0])\n bind u <- Reference.update(reference: r, f: lambda(value: List[Integer]) -> List[Integer] return grow(xs: value, n: 2048) end lambda)\n return if u = () and List.length(Reference.get(r)) = 2049 then Result.Ok(()) else Result.Error(\"list\") end if",
         ),
         (
             "100000 updates",
-            "function repeat(r: Reference[Integer], n: Integer) -> Unit uses State\n if n = 0 then return () end if\n Reference.update(r, lambda(x: Integer) -> Integer return x + 1 end lambda)\n return repeat(r, n - 1)\nend function\n",
-            "bind r <- Reference.new(0)\n repeat(r, 100000)\n return if Reference.get(r) = 100000 then Result.Ok(()) else Result.Error(\"frames\") end if",
+            "function repeat(r: Reference[Integer], n: Integer) -> Unit uses State\n if n = 0 then return () end if\n Reference.update(reference: r, f: lambda(value: Integer) -> Integer return value + 1 end lambda)\n return repeat(r: r, n: n - 1)\nend function\n",
+            "bind r <- Reference.new(0)\n repeat(r: r, n: 100000)\n return if Reference.get(r) = 100000 then Result.Ok(()) else Result.Error(\"frames\") end if",
         ),
         (
             "discarded cycles",
-            "data Node\n Link(Reference[Option[Node]])\nend data\nfunction cycles(n: Integer) -> Unit uses State\n if n = 0 then return () end if\n bind r <- Reference.new(Option.None)\n bind v <- Node.Link(r)\n Reference.set(r, Option.Some(v))\n return cycles(n - 1)\nend function\n",
+            "data Node\n Link(Reference[Option[Node]])\nend data\nfunction cycles(n: Integer) -> Unit uses State\n if n = 0 then return () end if\n bind r <- Reference.new(Option.None)\n bind v <- Node.Link(r)\n Reference.set(reference: r, value: Option.Some(v))\n return cycles(n - 1)\nend function\n",
             "cycles(10000)\n return Result.Ok(())",
         ),
     ];

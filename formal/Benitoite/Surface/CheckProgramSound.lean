@@ -1,6 +1,7 @@
 import Benitoite.Surface.CheckTablesSound
 
-/-! 信頼するシグネチャを補った宣言表のもとで、利用者の本体の型付けを結論する。 -/
+/-! 信頼するシグネチャを補った宣言表のもとで、利用者の本体の型付けを結論する。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。 -/
 namespace Benitoite.Surface.CheckTables
 open Benitoite.Release Benitoite.Surface Benitoite.Surface.CheckTools
 
@@ -8,10 +9,11 @@ open Benitoite.Release Benitoite.Surface Benitoite.Surface.CheckTools
 def Extends (D base : Declarations) : Prop :=
   (∀ n d, base.funs n = some d → D.funs n = some d) ∧
   (∀ n d, base.impls n = some d → D.impls n = some d) ∧
-  D.cons = base.cons ∧ D.ops = base.ops ∧ D.effects = base.effects ∧ D.classes = base.classes
+  D.cons = base.cons ∧ D.conFields = base.conFields ∧
+  D.ops = base.ops ∧ D.effects = base.effects ∧ D.classes = base.classes
 
 theorem declarations_extend (m : Materials) : Extends m.declarations m.program.declarations := by
-  refine ⟨?_, ?_, rfl, rfl, rfl, rfl⟩
+  refine ⟨?_, ?_, rfl, rfl, rfl, rfl, rfl⟩
   · intro n d h; change (m.program.declarations.funs n).or _ = some d; simp [h]
   · intro n d h; change (m.program.declarations.impls n).or _ = some d; simp [h]
 
@@ -61,6 +63,21 @@ theorem checkNamed_sound {table : String → Option α} {check path names index}
         exact ⟨path ++ [index], hh.1⟩
       · exact ih hh.2 n hn x hx
 
+/-- 同じ有限の材料から作った実名付き入力と、本体の射影を対応させる。 -/
+theorem program_impl_input {m : Materials} {n id}
+    (h : m.program.impls n = some id) :
+    ∃ input, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some input ∧ input.decl = id := by
+  have map_lookup {α β : Type} (xs : List (String × α)) (f : α → β) (key : String) :
+      lookup (xs.map fun (n,x) => (n,f x)) key = (lookup xs key).map f := by
+    simp only [lookup, List.find?_map, Function.comp_def, Option.map_map]
+  change lookup (m.impls.map fun (n,i) => (n,i.decl)) n = some id at h
+  rw [map_lookup] at h
+  cases hi : lookup m.impls n with
+  | none => simp [hi] at h
+  | some i =>
+    simp only [hi, Option.map_some, Option.some.injEq] at h
+    exact ⟨i.input, by rw [map_lookup, hi]; rfl, h⟩
+
 /-- この結論は、信頼する標準ライブラリの本体を型付けしたとは主張しない。 -/
 def CheckedUnder (p : Program) (q : Check.Input) : Prop :=
   (∀ n d, p.defs n = some d → d.WellTyped q.D q.B q.opPrim) ∧
@@ -68,13 +85,13 @@ def CheckedUnder (p : Program) (q : Check.Input) : Prop :=
   (∀ l os, p.effects l = some os → q.B.effects l = none) ∧
   (∀ n id, p.impls n = some id → id.WellTyped q.D q.B q.opPrim)
 
-theorem checkProgram_under {q : Check.Input} {p : Program} {names : Names}
-    (hq : q.Sound) (hn : NamesComplete p names)
-    (hd : ∀ n d, p.defs n = some d → d.AtomsIn q.atoms)
-    (hi : ∀ n id, p.impls n = some id → id.AtomsIn q.atoms)
-    (him : ∀ n id, p.impls n = some id → Check.ImplNamesComplete q id names.methods names.supers)
-    (hext : Extends q.D p.declarations)
-    (h : checkProgram q p names = .ok ()) : CheckedUnder p q := by
+theorem checkProgram_under {q : Check.Input} {m : Materials} {names : Names}
+    (hq : q.Sound) (hn : NamesComplete m.program names)
+    (hd : ∀ n d, m.program.defs n = some d → d.AtomsIn q.atoms)
+    (hi : ∀ n id, m.program.impls n = some id → id.AtomsIn q.atoms)
+    (him : ∀ n id, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some id → Check.ImplNamesComplete q id names.methods names.supers)
+    (hext : Extends q.D m.program.declarations)
+    (h : checkProgram q m names = .ok ()) : CheckedUnder m.program q := by
   have steps := bind_ok h
   have more := bind_ok steps.2
   refine ⟨?_, hext, ?_, ?_⟩
@@ -82,15 +99,34 @@ theorem checkProgram_under {q : Check.Input} {p : Program} {names : Names}
     obtain ⟨path, hp⟩ := checkNamed_sound steps.1 n (hn.1 n d hget) d hget
     exact Check.checkDef_sound hq (hd n d hget) hp
   · intro l os hget
-    have hmap : (p.effects l).map (fun _ => l) = some l := by simp [hget]
+    have hmap : (m.program.effects l).map (fun _ => l) = some l := by simp [hget]
     obtain ⟨path, hp⟩ := checkNamed_sound more.2 l (hn.2.2 l os hget) l hmap
     unfold Check.require at hp
     split at hp
     · simpa using ‹(q.B.effects l).isNone = true›
     · cases hp
   · intro n id hget
-    obtain ⟨path, hp⟩ := checkNamed_sound more.1 n (hn.2.1 n id hget) id hget
-    exact Check.checkImpl_sound hq (hi n id hget) (him n id hget) hp
+    obtain ⟨input, hinput, hdecl⟩ := program_impl_input hget
+    obtain ⟨path, hp⟩ := checkNamed_sound more.1 n (hn.2.1 n id hget) input hinput
+    rw [← hdecl]
+    exact Check.checkImpl_sound hq (by rw [hdecl]; exact hi n id hget) (him n input hinput) hp
+
+/-- 実装の本体へ射影する前の、全プログラムの引数名の保証。 -/
+theorem checkProgram_contracts {m : Materials} {B sat admits op atoms}
+    (hn : implNamesOk m m.names.methods m.names.supers = true)
+    (h : checkProgram (m.input B sat admits op atoms) m m.names = .ok ()) :
+    ∀ n id, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some id →
+      id.ContractsMatch m.declarations := by
+  have steps := bind_ok h
+  have more := bind_ok steps.2
+  intro n id hget
+  have hmem := lookup_mem hget
+  obtain ⟨⟨name,i⟩, hi, he⟩ := List.mem_map.mp hmem
+  simp only [Prod.mk.injEq] at he
+  obtain ⟨rfl, rfl⟩ := he
+  have hname : name ∈ m.names.impls := List.mem_map.mpr ⟨(name,i), hi, rfl⟩
+  obtain ⟨path, hp⟩ := checkNamed_sound more.1 name hname i.input hget
+  exact Check.checkImpl_contracts (implNames_sound hn hget) hp
 
 /-- 実装の本体側の注釈。対象の型と辞書の型は宣言表から導く。 -/
 def ImplBodiesAtoms (atoms : List Atom) (id : ImplDecl) : Prop :=
@@ -114,7 +150,7 @@ private theorem impl_atoms {m : Materials} {atoms n id}
   exact ⟨ha.1, ha.2, hb⟩
 
 /-- Q9 の原子集合だけを信頼し、表の有限性と判定の接続は証明から得る。 -/
-theorem checkProgram_sound {m : Materials} {S raw b opAtoms entries atoms}
+theorem checkProgram_sound {m : Materials} {S raw b select atoms}
     (hd : m.declarations.AtomsIn atoms)
     (hb : (builtins S (primEntries S raw) b).AtomsIn atoms)
     (hdefs : ∀ n d, m.program.defs n = some d → d.body.AtomsIn atoms)
@@ -123,10 +159,10 @@ theorem checkProgram_sound {m : Materials} {S raw b opAtoms entries atoms}
     (hn : implNamesOk m m.names.methods m.names.supers = true)
     (h : checkProgram
       (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw))
-        (Benitoite.Exchange.makeOpPrim opAtoms entries) atoms) m.program m.names = .ok ()) :
+        (makeOpPrim select) atoms) m m.names = .ok ()) :
     CheckedUnder m.program
       (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw))
-        (Benitoite.Exchange.makeOpPrim opAtoms entries) atoms) := by
+        (makeOpPrim select) atoms) := by
   apply checkProgram_under (input_sound hd hb hc) (names_complete m)
   · intro n d hget; exact def_atoms hd hget (hdefs n d hget)
   · intro n id hget; exact impl_atoms hd hget (himpls n id hget)
@@ -134,7 +170,7 @@ theorem checkProgram_sound {m : Materials} {S raw b opAtoms entries atoms}
   · exact declarations_extend m
   · exact h
 
-theorem checkProgram_empty {m : Materials} {S raw b opAtoms entries atoms}
+theorem checkProgram_empty {m : Materials} {S raw b select atoms}
     (hf : m.trustedFuns = []) (hi : m.trustedImpls = [])
     (hd : m.declarations.AtomsIn atoms)
     (hb : (builtins S (primEntries S raw) b).AtomsIn atoms)
@@ -144,9 +180,9 @@ theorem checkProgram_empty {m : Materials} {S raw b opAtoms entries atoms}
     (hn : implNamesOk m m.names.methods m.names.supers = true)
     (h : checkProgram
       (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw))
-        (Benitoite.Exchange.makeOpPrim opAtoms entries) atoms) m.program m.names = .ok ()) :
+        (makeOpPrim select) atoms) m m.names = .ok ()) :
     m.program.WellTyped (builtins S (primEntries S raw) b)
-      (Benitoite.Exchange.makeOpPrim opAtoms entries) := by
+      (makeOpPrim select) := by
   have hD : m.declarations = m.program.declarations := by
     have hor : ∀ {α : Type} (x : Option α), x.or none = x := by
       intro α x; cases x <;> rfl
@@ -154,4 +190,40 @@ theorem checkProgram_empty {m : Materials} {S raw b opAtoms entries atoms}
   have checked := checkProgram_sound hd hb hdefs himpls hc hn h
   exact ⟨by simpa only [Materials.input, hD] using checked.1,
     checked.2.2.1, by simpa only [Materials.input, hD] using checked.2.2.2⟩
+
+/-- 型付けと、射影前の実装の実名一致を同じ検査成功から得る。 -/
+theorem checkProgram_sound_contracts {m : Materials} {S raw b select atoms}
+    (hd : m.declarations.AtomsIn atoms)
+    (hb : (builtins S (primEntries S raw) b).AtomsIn atoms)
+    (hdefs : ∀ n d, m.program.defs n = some d → d.body.AtomsIn atoms)
+    (himpls : ∀ n id, m.program.impls n = some id → ImplBodiesAtoms atoms id)
+    (hc : constructorsOk m = true)
+    (hn : implNamesOk m m.names.methods m.names.supers = true)
+    (h : checkProgram
+      (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw))
+        (makeOpPrim select) atoms) m m.names = .ok ()) :
+    CheckedUnder m.program
+      (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw))
+        (makeOpPrim select) atoms) ∧
+    (∀ n id, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some id →
+      id.ContractsMatch m.declarations) := by
+  exact ⟨checkProgram_sound hd hb hdefs himpls hc hn h, checkProgram_contracts hn h⟩
+
+/-- 信頼する宣言が空の場合も、型付けと実名一致を同時に保証する。 -/
+theorem checkProgram_empty_contracts {m : Materials} {S raw b select atoms}
+    (hf : m.trustedFuns = []) (hi : m.trustedImpls = [])
+    (hd : m.declarations.AtomsIn atoms)
+    (hb : (builtins S (primEntries S raw) b).AtomsIn atoms)
+    (hdefs : ∀ n d, m.program.defs n = some d → d.body.AtomsIn atoms)
+    (himpls : ∀ n id, m.program.impls n = some id → ImplBodiesAtoms atoms id)
+    (hc : constructorsOk m = true)
+    (hn : implNamesOk m m.names.methods m.names.supers = true)
+    (h : checkProgram
+      (m.input (builtins S (primEntries S raw) b) (satB S) (admitsDec S (primEntries S raw))
+        (makeOpPrim select) atoms) m m.names = .ok ()) :
+    m.program.WellTyped (builtins S (primEntries S raw) b)
+      (makeOpPrim select) ∧
+    (∀ n id, lookup (m.impls.map fun (n,i) => (n,i.input)) n = some id →
+      id.ContractsMatch m.declarations) := by
+  exact ⟨checkProgram_empty hf hi hd hb hdefs himpls hc hn h, checkProgram_contracts hn h⟩
 end Benitoite.Surface.CheckTables

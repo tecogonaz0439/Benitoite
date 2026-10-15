@@ -4,5 +4,5 @@ end function
 
 @test
 function libTest() -> Unit uses Assert.Check
-  Assert.equal(message(), "hello")
+  Assert.equal(actual: message(), expected: "hello")
 end function

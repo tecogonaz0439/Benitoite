@@ -16,7 +16,11 @@ use std::collections::{BTreeMap, BTreeSet};
 
 #[path = "builtins.rs"]
 mod builtin_export;
-pub use builtin_export::{builtin_tables, complete_stdlib};
+pub use builtin_export::{complete_stdlib, named_builtin_tables};
+
+#[path = "named_calls.rs"]
+mod named_calls;
+pub use named_calls::call_fields;
 
 // arbitrary_precision なしの Value は Decimal の 96 ビットの仮数を保持できない。
 // 材料では文字列に保持し、交換形式の書き出し時だけ i128 の整数として書く。
@@ -59,6 +63,61 @@ impl Serialize for ExchangeJson<'_> {
 /// Decimal の仮数を整数のまま書く、交換形式のバイト列。
 pub(super) fn to_vec(value: &Value) -> serde_json::Result<Vec<u8>> {
     serde_json::to_vec(&ExchangeJson(value))
+}
+
+// 一件ずつ交換形式へ変換し、全入力の Value と最終 JSON の複製を保持しない。
+// 集計が必要な欄は最後に揃え、Value の BTreeMap と同じ鍵順で出す。
+pub(super) struct InputStream {
+    path: std::path::PathBuf,
+    writer: std::io::BufWriter<std::fs::File>,
+    pub count: usize,
+}
+
+impl InputStream {
+    pub fn new(output: &std::path::Path, name: &str) -> Self {
+        let path = output.join(format!("{name}.inputs.tmp"));
+        let writer = std::io::BufWriter::new(std::fs::File::create(&path).unwrap());
+        Self {
+            path,
+            writer,
+            count: 0,
+        }
+    }
+
+    pub fn push(&mut self, input: &Value) {
+        use std::io::Write;
+        if self.count != 0 {
+            self.writer.write_all(b",").unwrap();
+        }
+        serde_json::to_writer(&mut self.writer, &ExchangeJson(input)).unwrap();
+        self.count += 1;
+    }
+
+    pub fn finish(mut self, output: &std::path::Path, mut envelope: Value) {
+        use std::io::Write;
+        self.writer.flush().unwrap();
+        drop(self.writer);
+        envelope["inputs"] = Value::Null;
+        let mut writer = std::io::BufWriter::new(std::fs::File::create(output).unwrap());
+        writer.write_all(b"{").unwrap();
+        for (index, (key, value)) in envelope.as_object().unwrap().iter().enumerate() {
+            if index != 0 {
+                writer.write_all(b",").unwrap();
+            }
+            serde_json::to_writer(&mut writer, key).unwrap();
+            writer.write_all(b":").unwrap();
+            if key == "inputs" {
+                writer.write_all(b"[").unwrap();
+                std::io::copy(&mut std::fs::File::open(&self.path).unwrap(), &mut writer).unwrap();
+                writer.write_all(b"]").unwrap();
+            } else {
+                serde_json::to_writer(&mut writer, &ExchangeJson(value)).unwrap();
+            }
+        }
+        writer.write_all(b"}").unwrap();
+        writer.flush().unwrap();
+        std::fs::remove_file(self.path).unwrap();
+    }
 }
 
 fn tagged(tag: &str, fields: Value) -> Value {
@@ -373,10 +432,18 @@ impl Surface<'_> {
             Ty::Fn(f) => {
                 let params: Vec<_> = f.params.iter().map(|p| self.ty(p)).collect();
                 let ret = self.ty(&f.ret);
-                tagged(
-                    "fn",
-                    json!({"params":params,"ret":ret,"eff":eff(&f.effects)}),
-                )
+                let mut fields = json!({"params":params,"ret":ret,"eff":eff(&f.effects)});
+                assert_eq!(
+                    f.param_names.iter().collect::<BTreeSet<_>>().len(),
+                    f.params.len()
+                );
+                assert_eq!(f.param_names.len(), f.params.len());
+                assert_eq!(
+                    f.param_names.iter().collect::<BTreeSet<_>>().len(),
+                    f.params.len()
+                );
+                fields["names"] = json!(f.param_names);
+                tagged("fn", fields)
             }
             Ty::Con(con, args) => {
                 let args: Vec<_> = args.iter().map(|t| self.ty(t)).collect();
@@ -492,8 +559,22 @@ impl Surface<'_> {
             })
             .collect();
         let params: Vec<_> = s.params.iter().map(|p| self.ty(p)).collect();
-        json!({"tparams":tparams,"neffs":s.effect_params.len(),"params":params,
-            "ret":self.ty(&s.ret),"eff":eff(&s.effects)})
+        let mut header = json!({"tparams":tparams,"neffs":s.effect_params.len(),"params":params,
+            "ret":self.ty(&s.ret),"eff":eff(&s.effects)});
+        assert_eq!(
+            s.param_names
+                .iter()
+                .collect::<std::collections::BTreeSet<_>>()
+                .len(),
+            s.params.len()
+        );
+        assert_eq!(s.param_names.len(), s.params.len());
+        assert_eq!(
+            s.param_names.iter().collect::<BTreeSet<_>>().len(),
+            s.params.len()
+        );
+        header["names"] = json!(s.param_names);
+        header
     }
     fn declaration(&self, id: NodeId) -> BindingId {
         *self.p.resolved.decls.get(id).unwrap()
@@ -722,39 +803,13 @@ impl Surface<'_> {
                     tagged(tag, json!({"name":name,"tys":tys,"effs":effs}))
                 }
             }
-            BindingKind::Ctor { data, tag } => {
-                if self.p.types.adts.get(data).unwrap().record.is_some() {
-                    self.outside("record");
-                }
-                let (tys, _) = self.targs(n.id, id);
-                let args = self
-                    .p
-                    .types
-                    .type_args
-                    .get(n.id)
-                    .cloned()
-                    .unwrap_or_default();
-                let s = self.p.types.decl_types.get(id).unwrap();
-                let instantiated = s.fn_ty().subst(&args.tys, &args.effects);
-                let Ty::Fn(f) = instantiated else {
-                    panic!("ctor type")
-                };
-                if f.params.is_empty() {
-                    tagged("nullCon", json!({"name":con_name(data,tag),"tys":tys}))
-                } else {
-                    let params: Vec<_> = f.params.iter().map(|t| self.ty(t)).collect();
-                    tagged(
-                        "conValue",
-                        json!({"name":con_name(data,tag),"tys":tys,"params":params}),
-                    )
-                }
-            }
+            BindingKind::Ctor { data, tag } => self.constructor_value(n, env, id, data, tag),
+            BindingKind::Record => self.constructor_value(n, env, id, id, 0),
             BindingKind::ImplFn { .. }
             | BindingKind::Data
             | BindingKind::BuiltinType(_)
             | BindingKind::Alias
             | BindingKind::ExternalType
-            | BindingKind::Record
             | BindingKind::Trait
             | BindingKind::Effect
             | BindingKind::BuiltinEffect(_)
@@ -766,15 +821,7 @@ impl Surface<'_> {
     }
     fn dictionary_name(&mut self, n: &a::NameExpr, id: BindingId, env: &[SurfaceSlot]) -> Value {
         let (mut tys, effs) = self.targs(n.id, id);
-        let args = self
-            .p
-            .types
-            .type_args
-            .get(n.id)
-            .cloned()
-            .unwrap_or_default();
-        let scheme = self.p.types.decl_types.get(id).unwrap();
-        let Ty::Fn(f) = scheme.fn_ty().subst(&args.tys, &args.effects) else {
+        let Ty::Fn(f) = self.p.types.expr_types.get(n.id).unwrap() else {
             panic!("dictionary name type")
         };
         let params: Vec<_> = f.params.iter().map(|t| self.ty(t)).collect();
@@ -787,23 +834,51 @@ impl Surface<'_> {
             .iter()
             .map(|d| self.dictionary(d, env))
             .collect();
-        if matches!(
+        let (tag, mut fields) = if matches!(
             self.p.resolved.bindings.get(id).unwrap().kind,
             BindingKind::Method { .. }
         ) {
             assert!(!tys.is_empty() && !dicts.is_empty());
             tys.remove(0);
-            tagged(
+            (
                 "methName",
                 json!({"dict":dicts[0],"name":method_name(id),"tys":tys,"effs":effs,"dicts":dicts[1..],"params":params,"eff":eff(&f.effects)}),
             )
         } else {
-            tagged(
+            (
                 "funDicts",
                 json!({"name":fun_name(id),"tys":tys,"effs":effs,"dicts":dicts,"params":params,"eff":eff(&f.effects)}),
             )
+        };
+        assert_eq!(f.param_names.len(), f.params.len());
+        fields["names"] = json!(f.param_names);
+        tagged(tag, fields)
+    }
+
+    fn constructor_value(
+        &mut self,
+        n: &a::NameExpr,
+        _env: &[SurfaceSlot],
+        id: BindingId,
+        data: BindingId,
+        tag: u32,
+    ) -> Value {
+        let (tys, _) = self.targs(n.id, id);
+        let instantiated = self.p.types.expr_types.get(n.id).unwrap().clone();
+        let Ty::Fn(f) = instantiated else {
+            return tagged("nullCon", json!({"name":con_name(data, tag), "tys":tys}));
+        };
+        if f.params.is_empty() {
+            tagged("nullCon", json!({"name":con_name(data, tag), "tys":tys}))
+        } else {
+            let params: Vec<_> = f.params.iter().map(|t| self.ty(t)).collect();
+            let mut fields = json!({"name":con_name(data,tag),"tys":tys,"params":params});
+            assert_eq!(f.param_names.len(), f.params.len());
+            fields["names"] = json!(f.param_names);
+            tagged("conValue", fields)
         }
     }
+
     fn expr(&mut self, e: &a::Expr, env: &[SurfaceSlot]) -> Value {
         self.expr_at(e, env, Position::Other)
     }
@@ -988,10 +1063,10 @@ impl Surface<'_> {
                 }
                 let body = self.block(&v.body, &local, Position::Tail);
                 self.return_ty = saved_ret;
-                tagged(
-                    "lam",
-                    json!({"params":params,"ret":ret,"eff":eff(effects),"body":body}),
-                )
+                let mut fields = json!({"params":params,"ret":ret,"eff":eff(effects),"body":body});
+                assert_eq!(f.param_names.len(), f.params.len());
+                fields["names"] = json!(f.param_names);
+                tagged("lam", fields)
             }
             a::Expr::If(v) => self.if_expr(v, env, position),
             a::Expr::Match(v) => {
@@ -1244,56 +1319,7 @@ impl Surface<'_> {
                 ctor = Some((con_name(data, tag), tys));
             }
         }
-        let holes = v.args.iter().any(|a| matches!(a, a::Arg::Placeholder(_)));
-        let saved_ret = self.return_ty.clone();
-        if holes {
-            let Ty::Fn(f) = self.p.types.expr_types.get(v.id).unwrap() else {
-                panic!("partial type")
-            };
-            self.return_ty = Some(f.ret.clone());
-        }
-        let callee = if ctor.is_none() {
-            self.expr(&v.callee, env)
-        } else {
-            self.node_ty(v.callee.id());
-            json!("unit")
-        };
-        let args: Vec<_> = v
-            .args
-            .iter()
-            .map(|a| match a {
-                a::Arg::Expr(e) => {
-                    let inner = self.expr(e, env);
-                    if holes {
-                        tagged("expr", json!({"inner":inner}))
-                    } else {
-                        inner
-                    }
-                }
-                a::Arg::Placeholder(p) => tagged("hole", json!({"ty":self.node_ty(p.id)})),
-            })
-            .collect();
-        self.return_ty = saved_ret;
-        match (ctor, holes) {
-            (Some((name, tys)), false) => {
-                tagged("conCall", json!({"name":name,"tys":tys,"args":args}))
-            }
-            (Some((name, tys)), true) => {
-                tagged("partialCon", json!({"name":name,"tys":tys,"args":args}))
-            }
-            (None, false) => tagged("call", json!({"callee":callee,"args":args})),
-            (None, true) => {
-                let Ty::Fn(f) = self.p.types.expr_types.get(v.id).unwrap() else {
-                    panic!("partial type")
-                };
-                let ret = self.ty(&f.ret);
-                let e = self.p.types.lambda_effects.get(v.id).unwrap();
-                tagged(
-                    "partialCall",
-                    json!({"callee":callee,"args":args,"ret":ret,"eff":eff(e)}),
-                )
-            }
-        }
+        self.named_call(v, env, ctor)
     }
     fn if_expr(&mut self, v: &a::IfExpr, env: &[SurfaceSlot], position: Position) -> Value {
         self.node_ty(v.id);
@@ -1556,7 +1582,11 @@ impl Core<'_> {
                 let mut local = env.to_vec();
                 local.extend(l.params.iter().map(|p| CoreSlot::Local(p.id)));
                 let body = self.comp(&l.body, &local);
-                tagged("lam", json!({"params":params,"body":body}))
+                let mut fields = json!({"params":params,"body":body});
+                assert_eq!(l.param_names, f.param_names);
+                assert_eq!(f.param_names.len(), f.params.len());
+                fields["names"] = json!(l.param_names);
+                tagged("lam", fields)
             }
             c::ValKind::Ctor {
                 adt,
@@ -1830,6 +1860,7 @@ fn definition(
     };
     let mut s = Surface::new(p, Some(d.ret.clone()), type_order);
     s.constants = Some(constants);
+    assert_eq!(d.param_names, scheme.param_names);
     if let Some((i, _)) = implementation
         && let Some(reason) = unsupported_target(&i.target)
     {
@@ -1896,6 +1927,8 @@ fn core_definition(
         .collect();
     params.extend(header["params"].as_array().unwrap().clone());
     header["params"] = json!(params);
+    assert_eq!(d.param_names, actual_scheme.param_names);
+    header["names"] = json!(internal_names(d.dict_params.len(), &d.param_names));
     let mut env: Vec<_> = (0..impl_count).map(CoreSlot::ImplDictionary).collect();
     env.extend(d.dict_params.iter().map(|d| CoreSlot::Local(d.var)));
     env.extend(d.params.iter().map(|p| CoreSlot::Local(p.id)));
@@ -1943,7 +1976,8 @@ fn getter_definition(
     assert_eq!(fields[usize::try_from(index).unwrap()].binding, d.binding);
     assert!(d.dict_params.is_empty());
     let args: Vec<_> = constructor.fields.iter().map(|t| s.ty(t)).collect();
-    let decl = json!({"data":data_name(record),"ntys":adt.type_params.len(),"args":args});
+    let mut decl = json!({"data":data_name(record),"ntys":adt.type_params.len(),"args":args});
+    decl["fields"] = json!(fields.iter().map(|f| &f.name).collect::<Vec<_>>());
     let name = format!("{} ({})", d.name, fun_name(d.binding));
     if !s.outside.is_empty() {
         return json!({"name":name,"annotations":s.annotations,"scope":tagged("outOfScope",json!({"elements":s.outside}))});
@@ -2013,6 +2047,7 @@ fn constant_table(
     table
 }
 
+/// 表層とコアの定義、定数、網羅性の入力を最終形式で書き出す。
 pub fn definitions(
     p: &CheckedProgram,
     core: &c::CoreProgram,
@@ -2028,6 +2063,7 @@ pub fn definitions(
             result.push(getter_definition(p, core, d, record, index));
             continue;
         }
+        assert_eq!(d.kind, c::DefKind::Fn);
         if d.kind != c::DefKind::Fn {
             continue;
         }
@@ -2097,6 +2133,7 @@ pub fn definitions(
             s.outside(reason);
         }
         let scheme = Scheme {
+            param_names: Vec::new(),
             type_params: info.type_params.clone(),
             effect_params: Vec::new(),
             class_constraints: Vec::new(),
@@ -2154,7 +2191,7 @@ pub fn definitions(
 
 /// 表は一度だけ出す。コアの表は型検査の写しなので、写した対応はここで確かめる。
 /// 標準ライブラリがソースで宣言した利用者のエフェクトも含む。
-pub fn operation_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
+pub fn named_operation_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
     let mut surface = Surface::new(p, None, Vec::new());
     let mut ops = Vec::new();
     let mut prim_ops = BTreeMap::new();
@@ -2178,11 +2215,13 @@ pub fn operation_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
         );
         if let Some(b) = op.builtin {
             let name = builtins::builtin_decl(b).unwrap().name;
-            prim_ops.insert(
-                name.to_owned(),
-                json!({"name":name,"arity":scheme.params.len(),"ntys":scheme.type_params.len()}),
-            );
+            let mut entry =
+                json!({"name":name,"arity":scheme.params.len(),"ntys":scheme.type_params.len()});
+            assert_eq!(op.param_names, scheme.param_names);
+            entry["names"] = json!(op.param_names);
+            prim_ops.insert(name.to_owned(), entry);
         } else {
+            assert_eq!(op.param_names, scheme.param_names);
             let EffectName::User(effect) = op.effect else {
                 panic!("non-builtin operation in builtin effect");
             };
@@ -2202,8 +2241,15 @@ pub fn operation_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
     json!({"ops":ops,"effects":effects,"primOps":prim_ops.into_values().collect::<Vec<_>>()})
 }
 
-/// 型クラス・実装の宣言表。二重の比較の代わりに Rust の写しの整合を検査する。
-pub fn class_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
+fn internal_names(dicts: usize, names: &[String]) -> Vec<String> {
+    (1..=dicts)
+        .map(|i| format!("%dict{i}"))
+        .chain(names.iter().cloned())
+        .collect()
+}
+
+/// 型クラス・実装の宣言表。メソッドの実名と内部の辞書名を保持する。
+pub fn named_class_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
     let mut s = Surface::new(p, None, Vec::new());
     let mut classes = Vec::new();
     for (id, cl) in p.types.traits.iter() {
@@ -2232,11 +2278,16 @@ pub fn class_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
                 .collect();
             params.extend(header["params"].as_array().unwrap().clone());
             header["params"] = json!(params);
+            header["names"] = json!(internal_names(
+                scheme.class_constraints.len() - 1,
+                &scheme.param_names
+            ));
             methods.push(json!({"name":method_name(*m),"header":header}));
         }
         classes.push(json!({"name":class_name(id),"supers":cl.supers.iter().map(|id| class_name(*id)).collect::<Vec<_>>(),"methods":methods}));
     }
     s.type_order.clear();
+
     let mut impls = Vec::new();
     for i in &core.impls {
         let info = p.types.impls.get(i.impl_decl).unwrap();
@@ -2268,6 +2319,7 @@ pub fn class_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
             continue;
         }
         let scheme = Scheme {
+            param_names: Vec::new(),
             type_params: info.type_params.clone(),
             effect_params: Vec::new(),
             class_constraints: Vec::new(),
@@ -2287,7 +2339,11 @@ pub fn class_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
 }
 
 /// E2c: 本体を持たない標準ライブラリの宣言。入力内の束縛番号を保存する。
-pub fn stdlib_declarations(p: &CheckedProgram, core: &c::CoreProgram, input: &Value) -> Value {
+pub fn named_stdlib_declarations(
+    p: &CheckedProgram,
+    core: &c::CoreProgram,
+    input: &Value,
+) -> Value {
     fn references(value: &Value, names: &mut BTreeSet<String>) {
         match value {
             Value::Array(xs) => xs.iter().for_each(|x| references(x, names)),
@@ -2332,6 +2388,7 @@ pub fn stdlib_declarations(p: &CheckedProgram, core: &c::CoreProgram, input: &Va
                 .expect("missing stdlib implementation");
             let cl = p.types.traits.get(i.class).expect("missing stdlib class");
             let scheme = Scheme {
+                param_names: Vec::new(),
                 type_params: info.type_params.clone(),
                 effect_params: Vec::new(),
                 class_constraints: Vec::new(),
@@ -2370,4 +2427,45 @@ pub fn stdlib_declarations(p: &CheckedProgram, core: &c::CoreProgram, input: &Va
         "function reference without a declaration"
     );
     json!({"group":input["group"],"name":input["name"],"functions":functions,"impls":impls})
+}
+
+/// corpus 8 の型。静的な契約名を必須の欄として保持する。
+pub fn named_type(p: &CheckedProgram, ty: &Ty) -> Value {
+    let mut s = Surface::new(p, None, Vec::new());
+    let ty = s.ty(ty);
+    assert!(
+        s.outside.is_empty(),
+        "unsupported named type: {:?}",
+        s.outside
+    );
+    ty
+}
+
+/// 宣言・ラムダを、実際の AST・型表・コアから書き出す。
+pub fn named_definitions(p: &CheckedProgram, core: &c::CoreProgram) -> Vec<Value> {
+    named_definitions_with_coverage(p, core).0
+}
+
+/// 新形式の本体と同じ走査で、名前を持つ網羅性の入力も集める。
+pub fn named_definitions_with_coverage(
+    p: &CheckedProgram,
+    core: &c::CoreProgram,
+) -> (Vec<Value>, CoverageExport) {
+    let (definitions, _, coverage) = named_program_parts(p, core);
+    (definitions, coverage)
+}
+
+/// 新形式の定義が参照する定数も、同じ型付きの走査で保持する。
+pub fn named_program_parts(
+    p: &CheckedProgram,
+    core: &c::CoreProgram,
+) -> (Vec<Value>, Value, CoverageExport) {
+    let (definitions, constants, coverage) = definitions(p, core);
+    assert!(
+        definitions
+            .iter()
+            .all(|d| d["scope"].get("inScope").is_some() || d["scope"].get("accessor").is_some()),
+        "named definitions outside scope: {definitions:?}"
+    );
+    (definitions, constants, coverage)
 }

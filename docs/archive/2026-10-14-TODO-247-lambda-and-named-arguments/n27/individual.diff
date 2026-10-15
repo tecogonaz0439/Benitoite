@@ -1,0 +1,1232 @@
+--- a/crates/benitoite/testdata/acceptance/json_summary.bnt
++++ b/crates/benitoite/testdata/acceptance/json_summary.bnt
+@@ -15,23 +15,26 @@
+     case Option.Some(n) -> n
+     case Option.None -> return Result.Error("an order has no amount")
+   end match
+-  bind current <- Map.get(m: totals, k: category) |> Option.unwrapOr(_, Pair(0, 0))
++  bind current <- Map.get(m: totals, k: category) |> Option.unwrapOr(o: _, fallback: Pair(0, 0))
+   return Result.Ok(Map.set(m: totals, k: category, value: Pair(Pair.first(current) + 1, Pair.second(current) + amount)))
+ end function
+ 
+ function main() -> Result[Unit, String] uses File.Read, Console.Write
+-  bind text <- try File.readText("orders.json") |> Result.mapError(_, IOError.message)
+-  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
+-  bind orders <- match Json.asArray(value) with
++  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: IOError.message)
++  bind document <- try Json.parse(text) |> Result.mapError(r: _, f: Json.ParseError.message)
++  bind orders <- match Json.asArray(document) with
+     case Option.Some(items) -> items
+     case Option.None -> return Result.Error("orders.json is not an array")
+   end match
+-  bind totals <- try List.fold(orders, Result.Ok(Map.empty()), lambda(acc, order)
+-    return Result.andThen(acc, lambda(m) return addOrder(totals: m, order: order) end lambda)
++  bind totals <- try List.fold(xs: orders, initial: Result.Ok(Map.empty()), f: lambda(acc, value)
++    return match acc with
++      case Result.Ok(current) -> addOrder(totals: current, order: value)
++      case Result.Error(error) -> Result.Error(error)
++    end match
+   end lambda)
+   Map.forEach(m: totals, f: lambda(key, value)
+     Console.writeLine("${key}: ${Pair.first(value)} orders, ${Pair.second(value)}")
+   end lambda)
+-  Console.writeLine("total: ${List.length(orders)} orders, ${List.fold(Map.values(totals), 0, lambda(sum, entry) return sum + Pair.second(entry) end lambda)}")
++  Console.writeLine("total: ${List.length(orders)} orders, ${List.fold(xs: Map.values(totals), initial: 0, f: lambda(acc, value) return acc + Pair.second(value) end lambda)}")
+   return Result.Ok(())
+ end function
+--- a/crates/benitoite/testdata/acceptance/process_run.bnt
++++ b/crates/benitoite/testdata/acceptance/process_run.bnt
+@@ -6,12 +6,12 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function main() -> Result[Unit, String] uses Process.Run, Console.Write
+-  bind printed <- try Process.run(Process.command(program: "printf", arguments: ["%s|%s\\n", "two words", "$HOME"])) |> Result.mapError(_, IOError.message)
++  bind printed <- try Process.run(Process.command(program: "printf", arguments: ["%s|%s\\n", "two words", "$HOME"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.write(Process.Output.standardOutput(printed))
+   bind sortCommand <- Process.Command(..Process.command(program: "sort", arguments: []), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some("pear\nApple\nbanana\n"))
+-  bind sorted <- try Process.run(sortCommand) |> Result.mapError(_, IOError.message)
++  bind sorted <- try Process.run(sortCommand) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.write(Process.Output.standardOutput(sorted))
+-  bind failed <- try Process.run(Process.command(program: "sh", arguments: ["-c", "exit 3"])) |> Result.mapError(_, IOError.message)
++  bind failed <- try Process.run(Process.command(program: "sh", arguments: ["-c", "exit 3"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine("exit code: ${Process.Output.exitCode(failed)}")
+   return Result.Ok(())
+ end function
+--- a/crates/benitoite/testdata/acceptance/process_shell.bnt
++++ b/crates/benitoite/testdata/acceptance/process_shell.bnt
+@@ -6,9 +6,9 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function main() -> Result[Unit, String] uses Process.Run, Console.Write
+-  bind piped <- try Process.shell("printf 'cherry\\napple\\nbanana\\n' | LC_ALL=C sort | LC_ALL=C tr 'a-z' 'A-Z'") |> Result.mapError(_, IOError.message)
++  bind piped <- try Process.shell("printf 'cherry\\napple\\nbanana\\n' | LC_ALL=C sort | LC_ALL=C tr 'a-z' 'A-Z'") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.write(Process.Output.standardOutput(piped))
+-  bind mixed <- try Process.shell("name=shell; printf 'out:%s\\n' \"$name\"; printf 'err\\n' >&2; exit 4") |> Result.mapError(_, IOError.message)
++  bind mixed <- try Process.shell("name=shell; printf 'out:%s\\n' \"$name\"; printf 'err\\n' >&2; exit 4") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.write(Process.Output.standardOutput(mixed))
+   Console.write("stderr: ${Process.Output.standardError(mixed)}")
+   Console.writeLine("exit code: ${Process.Output.exitCode(mixed)}")
+--- a/crates/benitoite/testdata/acceptance/test_replaces_effects.bnt
++++ b/crates/benitoite/testdata/acceptance/test_replaces_effects.bnt
+@@ -6,7 +6,7 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function deploy(target: String) -> Result[Integer, String] uses Process.Run
+-  bind output <- try Process.run(Process.command(program: "deploy-tool", arguments: ["--target", target])) |> Result.mapError(_, IOError.message)
++  bind output <- try Process.run(Process.command(program: "deploy-tool", arguments: ["--target", target])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   return Result.Ok(Process.Output.exitCode(output))
+ end function
+ 
+@@ -15,7 +15,7 @@
+ end function
+ 
+ function saveReport(path: String, lines: List[String]) -> Result[Unit, String] uses File.Write
+-  return File.writeText(path: path, text: String.join(xs: lines, separator: "\n")) |> Result.mapError(_, IOError.message)
++  return File.writeText(path: path, text: String.join(xs: lines, separator: "\n")) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+ end function
+ 
+ @test("Process.run is replaced by the handler")
+@@ -52,5 +52,5 @@
+       resume(Result.Ok(()))
+   end handle
+   Assert.equal(actual: result, expected: Result.Ok(()))
+-  Assert.equal(actual: File.exists("acceptance-report.txt") |> Result.mapError(_, IOError.message), expected: Result.Ok(false))
++  Assert.equal(actual: File.exists("acceptance-report.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda), expected: Result.Ok(false))
+ end function
+--- a/crates/benitoite/testdata/effects/f04_resources.bnt
++++ b/crates/benitoite/testdata/effects/f04_resources.bnt
+@@ -2,10 +2,10 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function headers(src: String, dst: String) -> Result[Pair[String, String], String] uses File.Read, State
+-  with input = try File.openReader(src) |> Result.mapError(_, IOError.message),
+-       other = try File.openReader(dst) |> Result.mapError(_, IOError.message) do
+-    bind first <- try File.readLine(input) |> Result.mapError(_, IOError.message)
+-    bind second <- try File.readLine(other) |> Result.mapError(_, IOError.message)
++  with input = try File.openReader(src) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda),
++       other = try File.openReader(dst) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
++    bind first <- try File.readLine(input) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++    bind second <- try File.readLine(other) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+     return Result.Ok(Pair(Option.unwrapOr(o: first, fallback: ""), Option.unwrapOr(o: second, fallback: "")))
+   end with
+ end function
+--- a/crates/benitoite/testdata/effects/first-release-try.bnt
++++ b/crates/benitoite/testdata/effects/first-release-try.bnt
+@@ -4,12 +4,12 @@
+   port: Integer
+ end record
+ function parseConfig(text: String) -> Result[Config, String]
+-  bind port <- try Integer.parse(text) |> Option.okOr(_, "not a number")
++  bind port <- try Integer.parse(text) |> Option.okOr(o: _, error: "not a number")
+   return Result.Ok(Config(port: port))
+ end function
+ 
+ function loadConfig(path: String) -> Result[Config, String] uses File.Read
+-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   bind config <- try parseConfig(text)
+   return Result.Ok(config)
+ end function
+--- a/crates/benitoite/testdata/effects/first-release-with.bnt
++++ b/crates/benitoite/testdata/effects/first-release-with.bnt
+@@ -1,8 +1,8 @@
+ // spec: 01-10 `with` の構文
+ import Benitoite.Unofficial.IO.File
+ function firstLine(path: String) -> Result[Option[String], String] uses File.Read, State
+-  with reader = try File.openReader(path) |> Result.mapError(_, IOError.message) do
+-    bind line <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
++  with reader = try File.openReader(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
++    bind line <- try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+     return Result.Ok(line)
+   end with
+ end function
+--- a/crates/benitoite/testdata/eval/f15_nested_capture_and_long_list.bnt
++++ b/crates/benitoite/testdata/eval/f15_nested_capture_and_long_list.bnt
+@@ -37,7 +37,7 @@
+  if true then
+  x else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if
+ end function
+-function curry(x: Integer) -> function() -> function(Integer) -> Integer
++function curry(x: Integer) -> function() -> function(y: Integer) -> Integer
+  return lambda() return lambda(y: Integer) return x + y end lambda end lambda
+ end function
+ function main() -> Unit uses Console.Write
+--- a/crates/benitoite/testdata/eval/list_functions.bnt
++++ b/crates/benitoite/testdata/eval/list_functions.bnt
+@@ -17,8 +17,8 @@
+   Console.writeLine(if List.isEmpty([]) then "true" else "false" end if)
+   Console.writeLine(show_option_int(List.head([])))
+   Console.writeLine(show_option_int(List.head([8, 9])))
+-  Console.writeLine(show_ints(List.tail([8, 9]) |> Option.unwrapOr([])))
+-  Console.writeLine(show_option_int(List.tail([]) |> Option.map(lambda(values) return List.length(values) end lambda)))
++  Console.writeLine(show_ints(List.tail([8, 9]) |> Option.unwrapOr(fallback: [])))
++  Console.writeLine(show_option_int(List.tail([]) |> Option.map(f: lambda(values) return List.length(values) end lambda)))
+   Console.writeLine(show_option_int(List.get(xs: [10, 20, 30], i: -1)))
+   Console.writeLine(show_option_int(List.get(xs: [10, 20, 30], i: 3)))
+   Console.writeLine(show_ints(List.take(xs: [1, 2, 3], n: -1)))
+--- a/crates/benitoite/testdata/eval/order_pipe.bnt
++++ b/crates/benitoite/testdata/eval/order_pipe.bnt
+@@ -12,6 +12,6 @@
+ end function
+ 
+ function main() -> Unit uses Console.Write
+-  bind filtered <- read() |> List.filter(keep_nonempty)
++  bind filtered <- read() |> List.filter(p: keep_nonempty)
+   return Console.writeLine(Integer.toString(List.length(filtered)))
+ end function
+--- a/crates/benitoite/testdata/external/interface/main.bnt
++++ b/crates/benitoite/testdata/external/interface/main.bnt
+@@ -5,6 +5,6 @@
+ @external("wasm", "x.wasm", "top")
+ function top() -> Integer
+ function main() -> Unit uses Console.Write
+-  Console.writeLine("${add(20, 22)}")
+-  Console.writeLine("${List.fold(xs: [1, 2, 3], initial: top(), f: add)}")
++  Console.writeLine("${add(a: 20, b: 22)}")
++  Console.writeLine("${List.fold(xs: [1, 2, 3], initial: top(), f: lambda(acc, value) return add(a: acc, b: value) end lambda)}")
+ end function
+--- a/crates/benitoite/testdata/external/root/main.bnt
++++ b/crates/benitoite/testdata/external/root/main.bnt
+@@ -4,15 +4,15 @@
+ @external("wasm", "wasm/x.wasm", "add")
+ public function add(first: Integer, second: Integer) -> Integer
+ function sum(a: Integer) -> Integer
+-  return add(a, 10)
++  return add(first: a, second: 10)
+ end function
+ function descend(n: Integer) -> Integer
+-  if n = 0 then return add(20, 22) end if
++  if n = 0 then return add(first: 20, second: 22) end if
+   return descend(n - 1) + 1
+ end function
+ function main() -> Unit uses Console.Write
+-  Console.writeLine("${add(1, 2)}")
+-  Console.writeLine("${List.fold(xs: List.map(xs: [1, 2, 3], f: sum), initial: 0, f: add)}")
+-  Console.writeLine("${List.fold(xs: [1, 2, 3], initial: 0, f: add)}")
++  Console.writeLine("${add(first: 1, second: 2)}")
++  Console.writeLine("${List.fold(xs: List.map(xs: [1, 2, 3], f: lambda(value) return sum(value) end lambda), initial: 0, f: lambda(acc, value) return add(first: acc, second: value) end lambda)}")
++  Console.writeLine("${List.fold(xs: [1, 2, 3], initial: 0, f: lambda(acc, value) return add(first: acc, second: value) end lambda)}")
+   Console.writeLine("${descend(10000)}")
+ end function
+--- a/crates/benitoite/testdata/fmt/example.bnt
++++ b/crates/benitoite/testdata/fmt/example.bnt
+@@ -17,7 +17,7 @@
+     bind shapes<-[ Shape.Circle(1.0), Shape.Rect(2.0,3.0) ]
+     // total area
+     bind total <- shapes
+-    |> List.map(area)
+-    |> List.fold(0.0, lambda (acc, a) return acc+a end lambda)
++    |> List.map(f: lambda(value) return area(value) end lambda)
++    |> List.fold(initial: 0.0, f: lambda (acc, value) return acc+value end lambda)
+     Console.writeLine("total: ${ total }")
+ end function
+--- a/crates/benitoite/testdata/fmt/indent.bnt
++++ b/crates/benitoite/testdata/fmt/indent.bnt
+@@ -18,8 +18,8 @@
+ end function
+ 
+ function main() -> Unit uses Console.Write
+-List.forEach([1, 2], lambda(item)
+-      Console.writeLine(classify(item))
++List.forEach(xs: [1, 2], f: lambda(value)
++      Console.writeLine(classify(value))
+         end lambda)
+       bind total <- 1
+   + 2
+--- a/crates/benitoite/testdata/fmt/spaces.bnt
++++ b/crates/benitoite/testdata/fmt/spaces.bnt
+@@ -19,8 +19,8 @@
+   bind q <- Person( .. p , age : 2 )
+   bind xs <- [ 1 , 2 , 3 ]
+   bind n : Integer <- - ( 1 + 1 )
+-  bind inc <- lambda (x : Integer) return x+1 end lambda
+-  bind ys <- xs |> List . map( inc )
++  bind inc <- lambda (value : Integer) return value+1 end lambda
++  bind ys <- xs |> List . map( f: inc )
+   bind ok <- not ( n > 0 and n<10 )
+   Console . writeLine( "n=${ n } ok=${ ok } ys=${ ys }" )
+ end function
+--- a/crates/benitoite/testdata/handlers/c12-builtin-port.bnt
++++ b/crates/benitoite/testdata/handlers/c12-builtin-port.bnt
+@@ -6,8 +6,8 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function readPort(path: String) -> Result[Integer, String] uses File.Read
+-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+-  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
+ end function
+ 
+ function main() -> Unit uses File.Read, Console.Write
+--- a/crates/benitoite/testdata/handlers/first-release-port.bnt
++++ b/crates/benitoite/testdata/handlers/first-release-port.bnt
+@@ -2,8 +2,8 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function readPort(path: String) -> Result[Integer, String] uses File.Read
+-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+-  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
+ end function
+ 
+ function portIsRead() -> Boolean uses File.Read
+--- a/crates/benitoite/testdata/io/c12-close-reader-twice.bnt
++++ b/crates/benitoite/testdata/io/c12-close-reader-twice.bnt
+@@ -7,7 +7,7 @@
+ 
+ function main() -> Result[Unit, String] uses File.Read, State, Console.Write
+   bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+-  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
++  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+     Reference.set(reference: saved, value: Option.Some(reader))
+     bind closed <- File.closeReader(reader)
+     Console.writeLine(match closed with
+--- a/crates/benitoite/testdata/io/c12-reader-lines.bnt
++++ b/crates/benitoite/testdata/io/c12-reader-lines.bnt
+@@ -6,11 +6,11 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function main() -> Result[Unit, String] uses File.Read, State, Console.Write
+-  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+-    bind first <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
+-    bind second <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
+-    bind last <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
+-    bind eof <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
++  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
++    bind first <- try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++    bind second <- try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++    bind last <- try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++    bind eof <- try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+     Console.writeLine(Option.unwrapOr(o: first, fallback: "eof"))
+     Console.writeLine("[${Option.unwrapOr(o: second, fallback: "eof")}]")
+     Console.writeLine(Option.unwrapOr(o: last, fallback: "eof"))
+--- a/crates/benitoite/testdata/io/c12-stdin-lines.bnt
++++ b/crates/benitoite/testdata/io/c12-stdin-lines.bnt
+@@ -5,10 +5,10 @@
+ import Benitoite.Unofficial.IO.Console
+ 
+ function main() -> Result[Unit, String] uses Console.Read, Console.Write
+-  bind first <- try Console.readLine() |> Result.mapError(_, IOError.message)
+-  bind second <- try Console.readLine() |> Result.mapError(_, IOError.message)
+-  bind third <- try Console.readLine() |> Result.mapError(_, IOError.message)
+-  bind eof <- try Console.readLine() |> Result.mapError(_, IOError.message)
++  bind first <- try Console.readLine() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind second <- try Console.readLine() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind third <- try Console.readLine() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind eof <- try Console.readLine() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Option.unwrapOr(o: first, fallback: "eof"))
+   Console.writeLine("[${Option.unwrapOr(o: second, fallback: "eof")}]")
+   Console.writeLine(Option.unwrapOr(o: third, fallback: "eof"))
+--- a/crates/benitoite/testdata/io/c12-stdin-remaining.bnt
++++ b/crates/benitoite/testdata/io/c12-stdin-remaining.bnt
+@@ -5,11 +5,11 @@
+ 
+ function main() -> Result[Unit, String] uses Console.Read, Console.Write
+   Console.write("prompt> ")
+-  bind line <- try Console.readLine() |> Result.mapError(_, IOError.message)
++  bind line <- try Console.readLine() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Option.unwrapOr(o: line, fallback: "eof"))
+-  bind rest <- try Console.readAll() |> Result.mapError(_, IOError.message)
++  bind rest <- try Console.readAll() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.write(rest)
+-  bind empty <- try Console.readAll() |> Result.mapError(_, IOError.message)
++  bind empty <- try Console.readAll() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(if empty = "" then "eof" else "extra input" end if)
+   return Result.Ok(())
+ end function
+--- a/crates/benitoite/testdata/io/c12-write-append.bnt
++++ b/crates/benitoite/testdata/io/c12-write-append.bnt
+@@ -6,9 +6,9 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+-  bind _ <- try File.writeText(path: "output.txt", text: "first\n") |> Result.mapError(_, IOError.message)
+-  bind _ <- try File.appendText(path: "output.txt", text: "second\n") |> Result.mapError(_, IOError.message)
+-  bind text <- try File.readText("output.txt") |> Result.mapError(_, IOError.message)
++  bind _ <- try File.writeText(path: "output.txt", text: "first\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind _ <- try File.appendText(path: "output.txt", text: "second\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind text <- try File.readText("output.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.write(text)
+   return Result.Ok(())
+ end function
+--- a/crates/benitoite/testdata/io/l40-console-bytes.bnt
++++ b/crates/benitoite/testdata/io/l40-console-bytes.bnt
+@@ -4,10 +4,10 @@
+ import Benitoite.Trait
+ import Benitoite.Unofficial.IO.Console
+ function main() -> Result[Unit, String] uses Console.Read, Console.Write
+-  bind bytes <- try Console.readAllBytes() |> Result.mapError(_, IOError.message)
++  bind bytes <- try Console.readAllBytes() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Bytes.toHex(bytes))
+   Console.writeLine(Trait.Show.show(String.fromUTF8(bytes)))
+-  bind eof <- try Console.readAllBytes() |> Result.mapError(_, IOError.message)
++  bind eof <- try Console.readAllBytes() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Integer.toString(Bytes.length(eof)))
+   return Result.Ok(())
+ end function
+--- a/crates/benitoite/testdata/io/l40-console-lines.bnt
++++ b/crates/benitoite/testdata/io/l40-console-lines.bnt
+@@ -5,9 +5,9 @@
+ import Benitoite.Trait
+ import Benitoite.Unofficial.IO.Console
+ function main() -> Result[Unit, String] uses Console.Read, Console.Write
+-  bind first <- try Console.readLine() |> Result.mapError(_, IOError.message)
+-  bind rest <- try Console.readAllLines() |> Result.mapError(_, IOError.message)
+-  bind eof <- try Console.readAllLines() |> Result.mapError(_, IOError.message)
++  bind first <- try Console.readLine() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind rest <- try Console.readAllLines() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind eof <- try Console.readAllLines() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(first))
+   Console.writeLine(Trait.Show.show(rest))
+   Console.writeLine(Trait.Show.show(eof))
+--- a/crates/benitoite/testdata/io/l40-file-paths.bnt
++++ b/crates/benitoite/testdata/io/l40-file-paths.bnt
+@@ -7,25 +7,25 @@
+ import Benitoite.Unofficial.IO.File
+ import Benitoite.Unofficial.Path
+ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+-  bind names <- try File.listDirectory("input") |> Result.mapError(_, IOError.message)
+-  bind paths <- try File.walk("input") |> Result.mapError(_, IOError.message)
++  bind names <- try File.listDirectory("input") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind paths <- try File.walk("input") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(names))
+   Console.writeLine(Trait.Show.show(paths))
+-  bind lines <- try File.readLines("input/z.txt") |> Result.mapError(_, IOError.message)
++  bind lines <- try File.readLines("input/z.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(lines))
+-  bind info <- try File.info("input/z.txt") |> Result.mapError(_, IOError.message)
++  bind info <- try File.info("input/z.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(File.Info.kind(info) = File.EntryKind.RegularFile and File.Info.size(info) = 5))
+-  bind absolute <- try File.canonicalize("input/z.txt") |> Result.mapError(_, IOError.message)
++  bind absolute <- try File.canonicalize("input/z.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(Path.fileName(absolute)))
+-  bind _ <- try File.createDirectory("work/sub") |> Result.mapError(_, IOError.message)
+-  bind _ <- try File.createDirectory("work/sub") |> Result.mapError(_, IOError.message)
+-  bind directory <- try File.info("work/sub") |> Result.mapError(_, IOError.message)
++  bind _ <- try File.createDirectory("work/sub") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind _ <- try File.createDirectory("work/sub") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind directory <- try File.info("work/sub") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(File.Info.kind(directory) = File.EntryKind.Directory))
+-  bind _ <- try File.copy(from: "input/z.txt", to: "work/copy.txt") |> Result.mapError(_, IOError.message)
+-  bind _ <- try File.rename(from: "work/copy.txt", to: "work/moved.txt") |> Result.mapError(_, IOError.message)
+-  bind _ <- try File.writeBytes(path: "work/bytes.bin", content: String.toUTF8("é")) |> Result.mapError(_, IOError.message)
+-  bind _ <- try File.appendBytes(path: "work/bytes.bin", content: String.toUTF8("!")) |> Result.mapError(_, IOError.message)
+-  bind contents <- try File.readBytes("work/bytes.bin") |> Result.mapError(_, IOError.message)
++  bind _ <- try File.copy(from: "input/z.txt", to: "work/copy.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind _ <- try File.rename(from: "work/copy.txt", to: "work/moved.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind _ <- try File.writeBytes(path: "work/bytes.bin", content: String.toUTF8("é")) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind _ <- try File.appendBytes(path: "work/bytes.bin", content: String.toUTF8("!")) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind contents <- try File.readBytes("work/bytes.bin") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Bytes.toHex(contents))
+   bind kind <- match File.remove("work") with
+     case Result.Error(e) -> IOError.kind(e) = IOErrorKind.DirectoryNotEmpty
+@@ -37,9 +37,9 @@
+     case Result.Ok(_) -> false
+   end match
+   Console.writeLine(Trait.Show.show(conflict))
+-  bind _ <- try File.remove("work/moved.txt") |> Result.mapError(_, IOError.message)
+-  bind _ <- try File.removeTree("work") |> Result.mapError(_, IOError.message)
+-  bind gone <- try File.exists("work") |> Result.mapError(_, IOError.message)
++  bind _ <- try File.remove("work/moved.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind _ <- try File.removeTree("work") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind gone <- try File.exists("work") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(gone))
+   return Result.Ok(())
+ end function
+--- a/crates/benitoite/testdata/io/l40-file-resources.bnt
++++ b/crates/benitoite/testdata/io/l40-file-resources.bnt
+@@ -17,25 +17,25 @@
+   end match
+ end function
+ function main() -> Result[Unit, String] uses File.Read, File.Write, State, Console.Write
+-  bind count <- try countLines("lines.txt") |> Result.mapError(_, IOError.message)
++  bind count <- try countLines("lines.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Integer.toString(count))
+-  with writer = try File.openWriter(path: "output.txt", mode: File.WriteMode.Replace) |> Result.mapError(_, IOError.message) do
+-    bind _ <- try File.write(writer: writer, text: "a") |> Result.mapError(_, IOError.message)
+-    bind _ <- try File.writeLine(writer: writer, text: "b") |> Result.mapError(_, IOError.message)
+-    bind _ <- try File.writeChunk(writer: writer, content: String.toUTF8("é")) |> Result.mapError(_, IOError.message)
+-    bind _ <- try File.closeWriter(writer) |> Result.mapError(_, IOError.message)
++  with writer = try File.openWriter(path: "output.txt", mode: File.WriteMode.Replace) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
++    bind _ <- try File.write(writer: writer, text: "a") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++    bind _ <- try File.writeLine(writer: writer, text: "b") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++    bind _ <- try File.writeChunk(writer: writer, content: String.toUTF8("é")) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++    bind _ <- try File.closeWriter(writer) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   end with
+-  with writer = try File.openWriter(path: "output.txt", mode: File.WriteMode.Append) |> Result.mapError(_, IOError.message) do
+-    bind _ <- try File.writeLine(writer: writer, text: "!") |> Result.mapError(_, IOError.message)
++  with writer = try File.openWriter(path: "output.txt", mode: File.WriteMode.Append) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
++    bind _ <- try File.writeLine(writer: writer, text: "!") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   end with
+-  bind text <- try File.readText("output.txt") |> Result.mapError(_, IOError.message)
++  bind text <- try File.readText("output.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.write(text)
+-  with reader = try File.openReader("output.txt") |> Result.mapError(_, IOError.message) do
+-    bind chunk <- try File.readChunk(reader: reader, maximumBytes: 3) |> Result.mapError(_, IOError.message)
+-    Console.writeLine(Trait.Show.show(Option.map(o: chunk, f: Bytes.toHex)))
+-    bind remaining <- try File.readChunk(reader: reader, maximumBytes: 16) |> Result.mapError(_, IOError.message)
+-    Console.writeLine(Trait.Show.show(Option.map(o: remaining, f: Bytes.toHex)))
+-    bind eof <- try File.readChunk(reader: reader, maximumBytes: 1) |> Result.mapError(_, IOError.message)
++  with reader = try File.openReader("output.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
++    bind chunk <- try File.readChunk(reader: reader, maximumBytes: 3) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++    Console.writeLine(Trait.Show.show(Option.map(o: chunk, f: lambda(value) return Bytes.toHex(value) end lambda)))
++    bind remaining <- try File.readChunk(reader: reader, maximumBytes: 16) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++    Console.writeLine(Trait.Show.show(Option.map(o: remaining, f: lambda(value) return Bytes.toHex(value) end lambda)))
++    bind eof <- try File.readChunk(reader: reader, maximumBytes: 1) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+     Console.writeLine(Trait.Show.show(Option.isNone(eof)))
+   end with
+   return Result.Ok(())
+--- a/crates/benitoite/testdata/io/l40-json-total.bnt
++++ b/crates/benitoite/testdata/io/l40-json-total.bnt
+@@ -5,9 +5,9 @@
+ import Benitoite.Unofficial.IO.File
+ import Benitoite.Unofficial.Json
+ function totalAmount(path: String) -> Result[Integer, String] uses File.Read
+-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+-  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
+-  bind items <- Json.asArray(value) |> Option.unwrapOr(_, [])
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: IOError.message)
++  bind document <- try Json.parse(text) |> Result.mapError(r: _, f: Json.ParseError.message)
++  bind items <- Json.asArray(document) |> Option.unwrapOr(o: _, fallback: [])
+   return Result.Ok(List.fold(xs: items, initial: 0, f: lambda(acc, value)
+     return match Json.get(value: value, k: "amount") with
+       case Option.Some(Json.Value.Integer(n)) -> acc + n
+--- a/crates/benitoite/testdata/io/l40-process-attached.bnt
++++ b/crates/benitoite/testdata/io/l40-process-attached.bnt
+@@ -5,7 +5,7 @@
+ import Benitoite.Unofficial.IO.Process
+ function main() -> Result[Unit, String] uses Process.Run, Console.Write
+   bind command <- Process.command(program: "/bin/sh", arguments: ["-c", "read line; printf 'attached:%s\\n' \"\$line\"; printf '\\377\\n'; printf 'attached-error\\n' >&2; exit 3"])
+-  bind code <- try Process.runAttached(Process.Command(..command, input: Option.Some("specified\n"))) |> Result.mapError(_, IOError.message)
++  bind code <- try Process.runAttached(Process.Command(..command, input: Option.Some("specified\n"))) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Integer.toString(code))
+   return Result.Ok(())
+ end function
+--- a/crates/benitoite/testdata/io/l40-process-commands.bnt
++++ b/crates/benitoite/testdata/io/l40-process-commands.bnt
+@@ -7,11 +7,11 @@
+ function main() -> Result[Unit, String] uses Process.Run, Console.Write
+   bind command <- Process.command(program: "/bin/sh", arguments: ["-c", "test -f marker.txt || exit 99; read line; printf '%s:%s\\n' \"\$L40_VALUE\" \"\$line\"; printf 'err\\n' >&2; exit 7"])
+   bind configured <- Process.Command(..command, workingDirectory: Option.Some("sub"), environment: Map.fromList([Pair("L40_VALUE", "value")]), input: Option.Some("input\n"))
+-  bind output <- try Process.run(configured) |> Result.mapError(_, IOError.message)
++  bind output <- try Process.run(configured) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Integer.toString(Process.Output.exitCode(output)))
+   Console.write(Process.Output.standardOutput(output))
+   Console.write(Process.Output.standardError(output))
+-  bind shell <- try Process.shell("printf 'shell\\n'") |> Result.mapError(_, IOError.message)
++  bind shell <- try Process.shell("printf 'shell\\n'") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.write(Process.Output.standardOutput(shell))
+   bind invalid <- match Process.run(Process.command(program: "/bin/sh", arguments: ["-c", "printf '\\377'"])) with
+     case Result.Error(e) -> IOError.kind(e) = IOErrorKind.InvalidUTF8
+--- a/crates/benitoite/testdata/io/l40-process-environment.bnt
++++ b/crates/benitoite/testdata/io/l40-process-environment.bnt
+@@ -7,11 +7,11 @@
+ import Benitoite.Unofficial.IO.File
+ import Benitoite.Unofficial.Path
+ function main() -> Result[Unit, String] uses Process.Environment, File.Read, Console.Write
+-  bind unset <- try Process.environmentVariable("BENITOITE_GOLDEN_UNSET_L40_8F3B927A") |> Result.mapError(_, IOError.message)
++  bind unset <- try Process.environmentVariable("BENITOITE_GOLDEN_UNSET_L40_8F3B927A") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(unset))
+   Console.writeLine(Trait.Show.show(Path.fileName(Process.scriptDirectory())))
+-  bind working <- try Process.workingDirectory() |> Result.mapError(_, IOError.message)
+-  bind absolute <- try File.canonicalize(Path.join(base: working, child: "marker.txt")) |> Result.mapError(_, IOError.message)
++  bind working <- try Process.workingDirectory() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind absolute <- try File.canonicalize(Path.join(base: working, child: "marker.txt")) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(Path.fileName(absolute)))
+   Console.writeLine(Trait.Show.show(Process.arguments()))
+   return Result.Ok(())
+--- a/crates/benitoite/testdata/names/helper_name_clash.bnt
++++ b/crates/benitoite/testdata/names/helper_name_clash.bnt
+@@ -7,7 +7,7 @@
+ end function
+ 
+ function main() -> Unit uses Console.Write
+-  bind values <- [1, 2] |> List.map(lambda(value) return value + 1 end lambda)
++  bind values <- [1, 2] |> List.map(f: lambda(value) return value + 1 end lambda)
+   bind result <- mapFrom(1) + List.length(values)
+   return Console.writeLine(Integer.toString(result))
+ end function
+--- a/crates/benitoite/testdata/network/address-in-use.bnt
++++ b/crates/benitoite/testdata/network/address-in-use.bnt
+@@ -5,7 +5,7 @@
+ import Benitoite.Unofficial.IO.Console
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Console.Write, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(_, NetworkError.message) do
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+     bind port <- Http.listenerPort(listener)
+     Console.writeLine(match Http.listen(host: "127.0.0.1", port: port) with
+       case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.AddressInUse then "true" else "false" end if
+--- a/crates/benitoite/testdata/network/redirect.bnt
++++ b/crates/benitoite/testdata/network/redirect.bnt
+@@ -6,19 +6,19 @@
+ import Benitoite.Unofficial.IO.Console
+ 
+ function server(listener: Http.Listener) -> Result[Unit, String] uses Http.Listen, State
+-  with first = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+-    bind _ <- try Http.respond(exchange: first, response: Http.Response(status: 302, headers: [Pair("Location", "/final")], body: Bytes.empty())) |> Result.mapError(_, NetworkError.message)
++  with first = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
++    bind _ <- try Http.respond(exchange: first, response: Http.Response(status: 302, headers: [Pair("Location", "/final")], body: Bytes.empty())) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+   end with
+-  with last = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
++  with last = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+     bind request <- Http.requestOf(last)
+-    return Http.respond(exchange: last, response: Http.text(status: 200, s: Http.Request.path(request))) |> Result.mapError(_, NetworkError.message)
++    return Http.respond(exchange: last, response: Http.text(status: 200, s: Http.Request.path(request))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+   end with
+ end function
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+     bind task <- TaskGroup.spawn(group: group, action: lambda() return server(listener) end lambda)
+-    bind result <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/start") |> Result.mapError(_, NetworkError.message)
++    bind result <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/start") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+     bind _ <- try Task.await(task)
+     Console.writeLine(Integer.toString(Http.Response.status(result)))
+     Console.writeLine(try Option.okOr(o: String.fromUTF8(Http.Response.body(result)), error: "UTF-8"))
+--- a/crates/benitoite/testdata/network/routes-and-post.bnt
++++ b/crates/benitoite/testdata/network/routes-and-post.bnt
+@@ -21,10 +21,10 @@
+ 
+ function serveLoop(listener: Http.Listener, group: TaskGroup, remaining: Integer) -> Result[Unit, String] uses Http.Listen, State
+   if remaining = 0 then return Result.Ok(()) end if
+-  bind exchange <- try Http.accept(listener) |> Result.mapError(_, NetworkError.message)
++  bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+   bind _ <- TaskGroup.spawn(group: group, action: lambda()
+     with current = exchange do
+-      return Http.respond(exchange: current, response: route(Http.requestOf(current))) |> Result.mapError(_, NetworkError.message)
++      return Http.respond(exchange: current, response: route(Http.requestOf(current))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+     end with
+   end lambda)
+   return serveLoop(listener: listener, group: group, remaining: remaining - 1)
+@@ -41,18 +41,18 @@
+ end function
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(_, NetworkError.message),
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda),
+     group = TaskGroup.open() do
+     bind base <- "http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener))
+     bind server <- TaskGroup.spawn(group: group, action: lambda() return serveLoop(listener: listener, group: group, remaining: 5) end lambda)
+-    bind html <- try Http.get(base + "/") |> Result.mapError(_, NetworkError.message)
+-    bind json <- try Http.get(base + "/items/%E9%9B%AA") |> Result.mapError(_, NetworkError.message)
++    bind html <- try Http.get(base + "/") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
++    bind json <- try Http.get(base + "/items/%E9%9B%AA") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+     bind request <- Http.clientRequest(method: "POST", url: base + "/echo")
+-    bind post <- try Http.send(Http.ClientRequest(..request, headers: [Pair("X-Input", "雪")], body: String.toUTF8("posted 雪"))) |> Result.mapError(_, NetworkError.message)
+-    bind missing <- try Http.get(base + "/missing") |> Result.mapError(_, NetworkError.message)
+-    bind failed <- try Http.get(base + "/fail") |> Result.mapError(_, NetworkError.message)
++    bind post <- try Http.send(Http.ClientRequest(..request, headers: [Pair("X-Input", "雪")], body: String.toUTF8("posted 雪"))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
++    bind missing <- try Http.get(base + "/missing") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
++    bind failed <- try Http.get(base + "/fail") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+     bind _ <- try Task.await(server)
+-    List.forEach(xs: [html, json, post, missing, failed], f: show)
++    List.forEach(xs: [html, json, post, missing, failed], f: lambda(value) return show(value) end lambda)
+     Console.writeLine(boolText(Http.header(headers: [Pair("X-Test", "first"), Pair("x-test", "second")], name: "x-TEST") = Option.Some("first")))
+     Console.writeLine(boolText(Http.header(headers: [], name: "absent") = Option.None))
+     return Result.Ok(())
+--- a/crates/benitoite/testdata/network/todo194-json-parse-server.bnt
++++ b/crates/benitoite/testdata/network/todo194-json-parse-server.bnt
+@@ -19,10 +19,10 @@
+ 
+ function serveLoop(listener: Http.Listener, group: TaskGroup, remaining: Integer) -> Result[Unit, String] uses Http.Listen, State
+   if remaining = 0 then return Result.Ok(()) end if
+-  bind exchange <- try Http.accept(listener) |> Result.mapError(_, NetworkError.message)
++  bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+   bind _ <- TaskGroup.spawn(group: group, action: lambda()
+     with current = exchange do
+-      return Http.respond(exchange: current, response: route(Http.requestOf(current))) |> Result.mapError(_, NetworkError.message)
++      return Http.respond(exchange: current, response: route(Http.requestOf(current))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+     end with
+   end lambda)
+   return serveLoop(listener: listener, group: group, remaining: remaining - 1)
+@@ -30,14 +30,14 @@
+ 
+ function post(base: String, body: String) -> Result[Unit, String] uses Http.Connect, Console.Write
+   bind request <- Http.clientRequest(method: "POST", url: base + "/")
+-  bind response <- try Http.send(Http.ClientRequest(..request, body: String.toUTF8(body))) |> Result.mapError(_, NetworkError.message)
++  bind response <- try Http.send(Http.ClientRequest(..request, body: String.toUTF8(body))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+   Console.writeLine(Integer.toString(Http.Response.status(response)))
+   Console.writeLine(Option.unwrapOr(o: String.fromUTF8(Http.Response.body(response)), fallback: "invalid UTF-8"))
+   return Result.Ok(())
+ end function
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(_, NetworkError.message),
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda),
+     group = TaskGroup.open() do
+     bind base <- "http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener))
+     bind server <- TaskGroup.spawn(group: group, action: lambda() return serveLoop(listener: listener, group: group, remaining: 4) end lambda)
+--- a/crates/benitoite/testdata/network/todo198-cancelled-accept-reregisters.bnt
++++ b/crates/benitoite/testdata/network/todo198-cancelled-accept-reregisters.bnt
+@@ -17,17 +17,17 @@
+ end function
+ 
+ function server(listener: Http.Listener) -> Result[Unit, String] uses Http.Listen, State
+-  with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+-    return Http.respond(exchange: exchange, response: Http.text(status: 200, s: "accepted after cancellations")) |> Result.mapError(_, NetworkError.message)
++  with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
++    return Http.respond(exchange: exchange, response: Http.text(status: 200, s: "accepted after cancellations")) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+   end with
+ end function
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Clock.Time, Console.Write, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+     bind _ <- try cancelAccepts(listener: listener, remaining: 30)
+     bind live <- TaskGroup.spawn(group: group, action: lambda() return server(listener) end lambda)
+     bind _ <- try cancelAccepts(listener: listener, remaining: 30)
+-    bind response <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/") |> Result.mapError(_, NetworkError.message)
++    bind response <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+     bind _ <- try Task.await(live)
+     Console.writeLine(Integer.toString(Http.Response.status(response)))
+     Console.writeLine(try Option.okOr(o: String.fromUTF8(Http.Response.body(response)), error: "UTF-8"))
+--- a/crates/benitoite/testdata/network/unanswered-exchange.bnt
++++ b/crates/benitoite/testdata/network/unanswered-exchange.bnt
+@@ -5,13 +5,13 @@
+ import Benitoite.Unofficial.IO.Console
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+     bind server <- TaskGroup.spawn(group: group, action: lambda()
+-      with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
++      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+         return Result.Ok(())
+       end with
+     end lambda)
+-    bind response <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/") |> Result.mapError(_, NetworkError.message)
++    bind response <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+     bind _ <- try Task.await(server)
+     Console.writeLine(Integer.toString(Http.Response.status(response)))
+     return Result.Ok(())
+--- a/crates/benitoite/testdata/packages/config-textkit/deps/textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/config-textkit/deps/textkit/Slug.bnt
+@@ -1,7 +1,7 @@
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+   bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
+-    |> List.filter(_, lambda(value) return value <> "" end lambda)
++    |> List.filter(xs: _, p: lambda(value) return value <> "" end lambda)
+   return String.join(xs: words, separator: "-")
+ end function
+ 
+--- a/crates/benitoite/testdata/packages/copied-textkit/Textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/copied-textkit/Textkit/Slug.bnt
+@@ -1,7 +1,7 @@
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+   bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
+-    |> List.filter(_, lambda(value) return value <> "" end lambda)
++    |> List.filter(xs: _, p: lambda(value) return value <> "" end lambda)
+   return String.join(xs: words, separator: "-")
+ end function
+ 
+--- a/crates/benitoite/testdata/packages/distinct-modules/deps/textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/distinct-modules/deps/textkit/Slug.bnt
+@@ -1,7 +1,7 @@
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+   bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
+-    |> List.filter(_, lambda(value) return value <> "" end lambda)
++    |> List.filter(xs: _, p: lambda(value) return value <> "" end lambda)
+   return String.join(xs: words, separator: "-")
+ end function
+ 
+--- a/crates/benitoite/testdata/packages/json-wasm-same/main.bnt
++++ b/crates/benitoite/testdata/packages/json-wasm-same/main.bnt
+@@ -54,8 +54,8 @@
+     case _ -> false
+   end match else true end if
+   bind c <- Codec.parse(source)
+-  bind validate <- Codec.validate(source) = Result.map(a, lambda(_value: Json.Value) -> Unit return () end lambda)
+-  bind strings <- Codec.minify(source) = Result.map(a, Json.stringify) and Codec.pretty(source) = Result.map(a, Json.stringifyPretty)
++  bind validate <- Codec.validate(source) = Result.map(r: a, f: lambda(value: Json.Value) -> Unit return () end lambda)
++  bind strings <- Codec.minify(source) = Result.map(r: a, f: Json.stringify) and Codec.pretty(source) = Result.map(r: a, f: Json.stringifyPretty)
+   bind document <- Codec.document(source)
+   bind same <- match Pair(a, document) with
+     case Pair(Result.Error(x), Result.Error(y)) -> x = y
+@@ -82,11 +82,11 @@
+   bind object <- Option.unwrapOr(o: Json.get(value: a, k: "a/b"), fallback: Json.Value.Null)
+   bind array <- Option.unwrapOr(o: Json.get(value: object, k: "~key"), fallback: Json.Value.Null)
+   bind cases <- [Pair("", Option.Some(a)), Pair("/", Json.get(value: a, k: "")), Pair("/a~1b", Json.get(value: a, k: "a/b")), Pair("/a~1b/~0key", Json.get(value: object, k: "~key")), Pair("/a~1b/~0key/0", Json.at(value: array, index: 0)), Pair("/a~1b/~0key/1", Json.at(value: array, index: 1)), Pair("/a~1b/~0key/2", Json.at(value: array, index: 2)), Pair("/a~1b/~0key/2/x", Json.get(value: Option.unwrapOr(o: Json.at(value: array, index: 2), fallback: Json.Value.Null), k: "x")), Pair("/tilde~01", Json.get(value: a, k: "tilde~1")), Pair("/missing", Option.None), Pair("/a~1b/~0key/01", Option.None), Pair("/a~1b/~0key/-1", Option.None), Pair("/a~1b/~0key/+1", Option.None), Pair("/a~1b/~0key/3", Option.None), Pair("/a~1b/~0key/-", Option.None), Pair("/a~1b/~0key/1/x", Option.None), Pair("/a~2b", Option.None), Pair("/a~", Option.None), Pair("a/b", Option.None)]
+-  return List.fold(cases, Result.Ok(()), lambda(acc: Result[Unit, String], pair: Pair[String, Option[Json.Value]]) -> Result[Unit, String] uses State, Console.Write
++  return List.fold(xs: cases, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], pair: Pair[String, Option[Json.Value]]) -> Result[Unit, String] uses State, Console.Write
+     bind _ <- try acc
+     bind path <- Pair.first(pair)
+     bind value <- Pair.second(pair)
+-    bind expected <- Option.map(value, Json.stringify)
++    bind expected <- Option.map(o: value, f: Json.stringify)
+     bind count <- Option.andThen(o: value, f: length)
+     bind actual <- Codec.get(document: doc, pointer: path)
+     bind size <- Codec.len(document: doc, pointer: path)
+@@ -180,18 +180,18 @@
+     "{\"a\":}",
+     "\"\\uZZZZx\""
+   ]
+-  bind _ <- try List.fold(sources, Result.Ok(()), lambda(acc: Result[Unit, String], source: String) -> Result[Unit, String] uses State, Console.Write
++  bind _ <- try List.fold(xs: sources, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], source: String) -> Result[Unit, String] uses State, Console.Write
+     bind _ <- try acc
+     return compare(source)
+   end lambda)
+-  bind _ <- try List.fold([127, 128, 1000], Result.Ok(()), lambda(acc: Result[Unit, String], n: Integer) -> Result[Unit, String] uses State, Console.Write
++  bind _ <- try List.fold(xs: [127, 128, 1000], initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], n: Integer) -> Result[Unit, String] uses State, Console.Write
+     bind _ <- try acc
+     return compare(String.repeat(s: "[", n: n) + "0" + String.repeat(s: "]", n: n))
+   end lambda)
+   // gc-stress で 10 秒以内に収めるため書き出す値は 128 段にする。
+   // ゲストの変換・書き出し・解放が明示の積み重ねで辿ることはコードを読んで確かめた。
+   bind values <- [Pair("deep 128", deep(n: 128, value: Json.Value.Null)), Pair("non-finite", Json.Value.Array([Json.Value.Float(0.0 / 0.0), Json.Value.Float(1.0 / 0.0), Json.Value.Float(-1.0 / 0.0)])), Pair("nested members", Json.Value.Object(Map.fromList([Pair("z", Json.Value.Array([Json.Value.Object(Map.fromList([Pair("a", Json.Value.Array([])), Pair("b", Json.Value.Object(Map.empty()))]))])), Pair("a", Json.Value.Object(Map.fromList([Pair("x", Json.Value.Null)])))])))]
+-  bind _ <- try List.fold(values, Result.Ok(()), lambda(acc: Result[Unit, String], pair: Pair[String, Json.Value]) -> Result[Unit, String] uses Console.Write
++  bind _ <- try List.fold(xs: values, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], pair: Pair[String, Json.Value]) -> Result[Unit, String] uses Console.Write
+     bind _ <- try acc
+     bind value <- Pair.second(pair)
+     bind same <- Codec.stringify(value) = Result.Ok(Json.stringify(value))
+--- a/crates/benitoite/testdata/packages/local-textkit/deps/textkit/Internal/Words.bnt
++++ b/crates/benitoite/testdata/packages/local-textkit/deps/textkit/Internal/Words.bnt
+@@ -1,4 +1,4 @@
+ public function split(text: String) -> List[String]
+   return String.split(s: String.toLowercase(String.trim(text)), separator: " ")
+-    |> List.filter(_, lambda(value) return value <> "" end lambda)
++    |> List.filter(xs: _, p: lambda(value) return value <> "" end lambda)
+ end function
+--- a/crates/benitoite/testdata/packages/todo-handler/deps/todo/Store.bnt
++++ b/crates/benitoite/testdata/packages/todo-handler/deps/todo/Store.bnt
+@@ -20,7 +20,7 @@
+ 
+ /// 作業の一覧をファイルに書く。
+ public function save(path: String, items: List[Item]) -> Result[Unit, IOError] uses File.Write
+-  bind text <- String.join(xs: List.map(xs: items, f: formatLine), separator: "\n") + "\n"
++  bind text <- String.join(xs: List.map(xs: items, f: lambda(value) return formatLine(value) end lambda), separator: "\n") + "\n"
+   return File.writeText(path: path, text: text)
+ end function
+ 
+--- a/crates/benitoite/testdata/packages/wasm-regex-same/main.bnt
++++ b/crates/benitoite/testdata/packages/wasm-regex-same/main.bnt
+@@ -32,12 +32,12 @@
+       if x = y and pure then Result.Ok(()) else Result.Error("compile mismatch") end if
+     case Pair(Result.Ok(x), Result.Ok(y)) ->
+       bind am <- Regex.isMatch(pattern: x, text: text)
+-      bind first <- Option.map(o: Regex.find(pattern: x, text: text), f: native)
+-      bind all <- List.map(xs: Regex.findAll(pattern: x, text: text), f: native)
++      bind first <- Option.map(o: Regex.find(pattern: x, text: text), f: lambda(value) return native(value) end lambda)
++      bind all <- List.map(xs: Regex.findAll(pattern: x, text: text), f: lambda(value) return native(value) end lambda)
+       bind replacement <- Regex.replaceAll(pattern: x, text: text, replacement: "$1\\literal")
+-      bind resource <- Pattern.isMatch(pattern: y, text: text) = am and Option.map(o: Pattern.find(pattern: y, text: text), f: guest) = first and List.map(xs: Pattern.findAll(pattern: y, text: text), f: guest) = all and Pattern.replaceAll(pattern: y, text: text, replacement: "$1\\literal") = replacement and Pattern.count(pattern: y, text: text) = List.length(all)
+-      bind reused <- Pattern.isMatch(pattern: y, text: text) = am and List.map(xs: Pattern.findAll(pattern: y, text: text), f: guest) = all
+-      bind pure <- Pattern.isMatchOnce(source: source, text: text) = Result.Ok(am) and Result.map(r: Pattern.findAllOnce(source: source, text: text), f: lambda(value: List[Pattern.Found]) -> List[Triple[String, Integer, Integer]] return List.map(xs: value, f: guest) end lambda) = Result.Ok(all) and Pattern.countOnce(source: source, text: text) = Result.Ok(List.length(all))
++      bind resource <- Pattern.isMatch(pattern: y, text: text) = am and Option.map(o: Pattern.find(pattern: y, text: text), f: lambda(value) return guest(value) end lambda) = first and List.map(xs: Pattern.findAll(pattern: y, text: text), f: lambda(value) return guest(value) end lambda) = all and Pattern.replaceAll(pattern: y, text: text, replacement: "$1\\literal") = replacement and Pattern.count(pattern: y, text: text) = List.length(all)
++      bind reused <- Pattern.isMatch(pattern: y, text: text) = am and List.map(xs: Pattern.findAll(pattern: y, text: text), f: lambda(value) return guest(value) end lambda) = all
++      bind pure <- Pattern.isMatchOnce(source: source, text: text) = Result.Ok(am) and Result.map(r: Pattern.findAllOnce(source: source, text: text), f: lambda(value: List[Pattern.Found]) -> List[Triple[String, Integer, Integer]] return List.map(xs: value, f: lambda(value) return guest(value) end lambda) end lambda) = Result.Ok(all) and Pattern.countOnce(source: source, text: text) = Result.Ok(List.length(all))
+       Console.writeLine(quoted(source) + " " + quoted(text) + " | A=${am} first=${Trait.Show.show(first)} all=${Trait.Show.show(all)} replace=" + quoted(replacement) + " | resource=${resource} reused=${reused} pure=${pure}")
+       if resource and reused and pure then Result.Ok(()) else Result.Error("match mismatch") end if
+     case _ -> Result.Error("compile status mismatch")
+--- a/crates/benitoite/testdata/stdlib/bytes_l03_contracts.bnt
++++ b/crates/benitoite/testdata/stdlib/bytes_l03_contracts.bnt
+@@ -5,20 +5,20 @@
+ import Benitoite.Trait
+ import Benitoite.Unofficial.IO.Console
+ function main() -> Unit uses Console.Write
+-  bind bytes <- Bytes.fromHex("0102") |> Option.unwrapOr(_, Bytes.empty())
+-  bind binary <- Bytes.fromBinary("00000001 00000010") |> Option.unwrapOr(_, Bytes.empty())
+-  bind integers <- Bytes.fromIntegers([1, 2]) |> Option.unwrapOr(_, Bytes.empty())
++  bind bytes <- Bytes.fromHex("0102") |> Option.unwrapOr(o: _, fallback: Bytes.empty())
++  bind binary <- Bytes.fromBinary("00000001 00000010") |> Option.unwrapOr(o: _, fallback: Bytes.empty())
++  bind integers <- Bytes.fromIntegers([1, 2]) |> Option.unwrapOr(o: _, fallback: Bytes.empty())
+   bind copied <- Bytes.fromList(Bytes.toList(bytes))
+   Console.writeLine(Trait.Show.show(bytes = binary and binary = integers and copied = bytes and bytes <> Bytes.empty()))
+-  bind one <- Bytes.fromHex("01") |> Option.unwrapOr(_, Bytes.empty())
+-  bind two <- Bytes.fromHex("02") |> Option.unwrapOr(_, Bytes.empty())
+-  bind zero <- Bytes.fromHex("00ff") |> Option.unwrapOr(_, Bytes.empty())
+-  bind high <- Bytes.fromHex("ff") |> Option.unwrapOr(_, Bytes.empty())
++  bind one <- Bytes.fromHex("01") |> Option.unwrapOr(o: _, fallback: Bytes.empty())
++  bind two <- Bytes.fromHex("02") |> Option.unwrapOr(o: _, fallback: Bytes.empty())
++  bind zero <- Bytes.fromHex("00ff") |> Option.unwrapOr(o: _, fallback: Bytes.empty())
++  bind high <- Bytes.fromHex("ff") |> Option.unwrapOr(o: _, fallback: Bytes.empty())
+   bind m <- Map.fromList([Pair(high, 9), Pair(bytes, 2), Pair(two, 3), Pair(one, 1), Pair(zero, 0), Pair(Bytes.empty(), -1), Pair(binary, 20)])
+-  Console.writeLine(String.join(xs: List.map(xs: Map.keys(m), f: Bytes.toHex), separator: ","))
++  Console.writeLine(String.join(xs: List.map(xs: Map.keys(m), f: lambda(value) return Bytes.toHex(value) end lambda), separator: ","))
+   Console.writeLine(Trait.Show.show(Map.values(m) = [-1, 0, 1, 20, 3, 9] and Map.get(m: m, k: integers) = Option.Some(20)))
+-  bind encoded <- Bytes.fromSigned(n: -129, count: 2, order: ByteOrder.LittleEndian) |> Option.unwrapOr(_, Bytes.empty())
+-  bind unsigned <- Bytes.fromUnsigned(n: 258, count: 2, order: ByteOrder.BigEndian) |> Option.unwrapOr(_, Bytes.empty())
++  bind encoded <- Bytes.fromSigned(n: -129, count: 2, order: ByteOrder.LittleEndian) |> Option.unwrapOr(o: _, fallback: Bytes.empty())
++  bind unsigned <- Bytes.fromUnsigned(n: 258, count: 2, order: ByteOrder.BigEndian) |> Option.unwrapOr(o: _, fallback: Bytes.empty())
+   bind utf8 <- String.toUTF8("é")
+   Console.writeLine(Trait.Show.show(Bytes.readSigned(b: encoded, offset: 0, count: 2, order: ByteOrder.LittleEndian) = Option.Some(-129) and Bytes.toHex(encoded) = "7fff" and Bytes.readUnsigned(b: unsigned, offset: 0, count: 2, order: ByteOrder.BigEndian) = Option.Some(258) and Bytes.toBinary(one) = "00000001" and Bytes.get(b: bytes, i: 1) = Byte.fromInteger(2) and Bytes.slice(b: bytes, start: 1, stop: 2) = Option.Some(two) and Bytes.concatenate(a: one, b: two) = bytes and Bytes.length(utf8) = 2 and String.fromUTF8(utf8) = Option.Some("é")))
+ end function
+--- a/crates/benitoite/testdata/stdlib/l40-collections.bnt
++++ b/crates/benitoite/testdata/stdlib/l40-collections.bnt
+@@ -6,7 +6,7 @@
+ import Benitoite.Unofficial.IO.Console
+ function main() -> Unit uses Console.Write
+   bind original <- Map.fromList([Pair("b", 2), Pair("a", 1), Pair("c", 3)])
+-  bind changed <- Map.set(m: original, k: "b", value: 20) |> Map.remove(_, "c")
++  bind changed <- Map.set(m: original, k: "b", value: 20) |> Map.remove(m: _, k: "c")
+   Console.writeLine(Trait.Show.show(original))
+   Console.writeLine(Trait.Show.show(Map.keys(changed)))
+   Console.writeLine(Trait.Show.show(Map.values(changed)))
+--- a/crates/benitoite/testdata/stdlib/l40-csv.bnt
++++ b/crates/benitoite/testdata/stdlib/l40-csv.bnt
+@@ -5,15 +5,15 @@
+ import Benitoite.Unofficial.IO.Console
+ import Benitoite.Unofficial.Csv
+ function main() -> Result[Unit, String] uses Console.Write
+-  bind rows <- try Csv.parse("name,note\r\nAda,\"one,two\"\r\nBob,\"a\"\"b\"\n") |> Result.mapError(_, Csv.ParseError.message)
++  bind rows <- try Csv.parse("name,note\r\nAda,\"one,two\"\r\nBob,\"a\"\"b\"\n") |> Result.mapError(r: _, f: Csv.ParseError.message)
+   Console.writeLine(Trait.Show.show(rows))
+   Console.write(Csv.format(rows))
+-  bind header <- try Csv.parseWithHeader("name,amount\nAda,12\nBob,3\n") |> Result.mapError(_, Csv.ParseError.message)
++  bind header <- try Csv.parseWithHeader("name,amount\nAda,12\nBob,3\n") |> Result.mapError(r: _, f: Csv.ParseError.message)
+   Console.writeLine(Trait.Show.show(List.map(xs: header, f: lambda(value) return Map.get(m: value, k: "amount") end lambda)))
+-  bind tabbed <- try Csv.parseWith(text: "a\tb\n1\t2\n", delimiter: '\t') |> Result.mapError(_, Csv.ParseError.message)
++  bind tabbed <- try Csv.parseWith(text: "a\tb\n1\t2\n", delimiter: '\t') |> Result.mapError(r: _, f: Csv.ParseError.message)
+   Console.write(Csv.formatWith(rows: tabbed, delimiter: ';'))
+   Console.writeLine(Trait.Show.show(Csv.format([[""]]) = "\"\"\n"))
+-  bind single <- try Csv.parse(Csv.format([[""]])) |> Result.mapError(_, Csv.ParseError.message)
++  bind single <- try Csv.parse(Csv.format([[""]])) |> Result.mapError(r: _, f: Csv.ParseError.message)
+   Console.writeLine(Trait.Show.show(single))
+   Console.writeLine(Trait.Show.show(Csv.format([[]]) = "\n"))
+   bind errorLine <- match Csv.parse("ok\n\"open\nmore") with
+--- a/crates/benitoite/testdata/stdlib/l40-encoding-hash.bnt
++++ b/crates/benitoite/testdata/stdlib/l40-encoding-hash.bnt
+@@ -9,7 +9,7 @@
+   return Hash.sha256(String.toUTF8(text)) |> Bytes.toHex(_)
+ end function
+ function main() -> Result[Unit, String] uses Console.Write
+-  bind bytes <- Bytes.fromHex("fbff") |> Option.unwrapOr(_, Bytes.empty())
++  bind bytes <- Bytes.fromHex("fbff") |> Option.unwrapOr(o: _, fallback: Bytes.empty())
+   Console.writeLine(Encoding.base64Encode(bytes))
+   Console.writeLine(Encoding.base64UrlEncode(bytes))
+   bind decoded <- try Encoding.base64Decode("+/8=")
+--- a/crates/benitoite/testdata/stdlib/l40-json.bnt
++++ b/crates/benitoite/testdata/stdlib/l40-json.bnt
+@@ -5,16 +5,16 @@
+ import Benitoite.Unofficial.IO.Console
+ import Benitoite.Unofficial.Json
+ function main() -> Result[Unit, String] uses Console.Write
+-  bind value <- try Json.parse(r"[-0,-0.0,1.0,1e2]") |> Result.mapError(_, Json.ParseError.message)
++  bind value <- try Json.parse(r"[-0,-0.0,1.0,1e2]") |> Result.mapError(r: _, f: Json.ParseError.message)
+   Console.writeLine(Json.stringify(value))
+   Console.writeLine(Trait.Show.show(Option.andThen(o: Json.at(value: value, index: 0), f: Json.asInteger)))
+   Console.writeLine(Trait.Show.show(Option.andThen(o: Json.at(value: value, index: 2), f: Json.asInteger)))
+   Console.writeLine(Trait.Show.show(Option.andThen(o: Json.at(value: value, index: 3), f: Json.asFloat)))
+-  bind object <- try Json.parse("{\"z\":1,\"a\":true,\"z\":2}") |> Result.mapError(_, Json.ParseError.message)
++  bind object <- try Json.parse("{\"z\":1,\"a\":true,\"z\":2}") |> Result.mapError(r: _, f: Json.ParseError.message)
+   Console.writeLine(Json.stringifyPretty(object))
+   Console.writeLine(Trait.Show.show(Option.andThen(o: Json.get(value: object, k: "a"), f: Json.asBoolean)))
+   Console.writeLine(Trait.Show.show(Json.get(value: object, k: "missing") = Option.None and Json.at(value: value, index: 4) = Option.None))
+-  bind again <- try Json.parse(Json.stringify(value)) |> Result.mapError(_, Json.ParseError.message)
++  bind again <- try Json.parse(Json.stringify(value)) |> Result.mapError(r: _, f: Json.ParseError.message)
+   Console.writeLine(Trait.Show.show(value = again))
+   return Result.Ok(())
+ end function
+--- a/crates/benitoite/testdata/stdlib/l40-regex.bnt
++++ b/crates/benitoite/testdata/stdlib/l40-regex.bnt
+@@ -6,7 +6,7 @@
+ import Benitoite.Unofficial.Regex
+ function extractDates(text: String) -> Result[List[String], String]
+   bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
+-  return Result.Ok(Regex.findAll(pattern: pattern, text: text) |> List.map(_, Regex.matchText))
++  return Result.Ok(Regex.findAll(pattern: pattern, text: text) |> List.map(xs: _, f: lambda(value) return Regex.matchText(value) end lambda))
+ end function
+ function main() -> Result[Unit, String] uses Console.Write
+   bind dates <- try extractDates("日付 2026-09-28 と 2026-10-08")
+--- a/crates/benitoite/testdata/stdlib/l40-unicode.bnt
++++ b/crates/benitoite/testdata/stdlib/l40-unicode.bnt
+@@ -4,8 +4,8 @@
+ import Benitoite.Trait
+ import Benitoite.Unofficial.IO.Console
+ function main() -> Unit uses Console.Write
+-  Console.writeLine(Trait.Show.show(List.map(xs: ['é', '3', 'Ⅷ', ' ', 'Ω', 'ß'], f: Character.isAlphabetic)))
+-  Console.writeLine(Trait.Show.show(List.map(xs: ['3', 'Ⅷ', '½', 'a'], f: Character.isNumeric)))
++  Console.writeLine(Trait.Show.show(List.map(xs: ['é', '3', 'Ⅷ', ' ', 'Ω', 'ß'], f: lambda(value) return Character.isAlphabetic(value) end lambda)))
++  Console.writeLine(Trait.Show.show(List.map(xs: ['3', 'Ⅷ', '½', 'a'], f: lambda(value) return Character.isNumeric(value) end lambda)))
+   Console.writeLine(Trait.Show.show(Character.isWhitespace('　') and not Character.isASCIIWhitespace('　')))
+   Console.writeLine(Trait.Show.show(Character.isUppercase('Ω') and Character.isLowercase('ß')))
+   Console.writeLine(Character.toUppercase('ß') + "/" + Character.toLowercase('Σ'))
+--- a/crates/benitoite/testdata/stdlib/width-convert-narrow.bnt
++++ b/crates/benitoite/testdata/stdlib/width-convert-narrow.bnt
+@@ -3,19 +3,19 @@
+ // 実行器の二方式と参照実行器で同じ出力を確かめ、差し込み口は加えない。
+ import Benitoite.Unofficial.IO.Console
+ function main() -> Unit uses Console.Write
+-  Console.writeLine(Integer8.toString(Integer8.fromInteger(-128) |> Option.unwrapOr(_, 0s8)))
+-  Console.writeLine(Integer8.toString(Integer8.fromInteger(0) |> Option.unwrapOr(_, 0s8)))
+-  Console.writeLine(Integer8.toString(Integer8.fromInteger(127) |> Option.unwrapOr(_, 0s8)))
+-  Console.writeLine(Integer16.toString(Integer16.fromInteger(-32768) |> Option.unwrapOr(_, 0s16)))
+-  Console.writeLine(Integer16.toString(Integer16.fromInteger(0) |> Option.unwrapOr(_, 0s16)))
+-  Console.writeLine(Integer16.toString(Integer16.fromInteger(32767) |> Option.unwrapOr(_, 0s16)))
+-  Console.writeLine(Integer32.toString(Integer32.fromInteger(-2147483648) |> Option.unwrapOr(_, 0s32)))
+-  Console.writeLine(Integer32.toString(Integer32.fromInteger(0) |> Option.unwrapOr(_, 0s32)))
+-  Console.writeLine(Integer32.toString(Integer32.fromInteger(2147483647) |> Option.unwrapOr(_, 0s32)))
+-  Console.writeLine(UnsignedInteger16.toString(UnsignedInteger16.fromInteger(0) |> Option.unwrapOr(_, 0u16)))
+-  Console.writeLine(UnsignedInteger16.toString(UnsignedInteger16.fromInteger(0) |> Option.unwrapOr(_, 0u16)))
+-  Console.writeLine(UnsignedInteger16.toString(UnsignedInteger16.fromInteger(65535) |> Option.unwrapOr(_, 0u16)))
+-  Console.writeLine(UnsignedInteger32.toString(UnsignedInteger32.fromInteger(0) |> Option.unwrapOr(_, 0u32)))
+-  Console.writeLine(UnsignedInteger32.toString(UnsignedInteger32.fromInteger(0) |> Option.unwrapOr(_, 0u32)))
+-  Console.writeLine(UnsignedInteger32.toString(UnsignedInteger32.fromInteger(4294967295) |> Option.unwrapOr(_, 0u32)))
++  Console.writeLine(Integer8.toString(Integer8.fromInteger(-128) |> Option.unwrapOr(o: _, fallback: 0s8)))
++  Console.writeLine(Integer8.toString(Integer8.fromInteger(0) |> Option.unwrapOr(o: _, fallback: 0s8)))
++  Console.writeLine(Integer8.toString(Integer8.fromInteger(127) |> Option.unwrapOr(o: _, fallback: 0s8)))
++  Console.writeLine(Integer16.toString(Integer16.fromInteger(-32768) |> Option.unwrapOr(o: _, fallback: 0s16)))
++  Console.writeLine(Integer16.toString(Integer16.fromInteger(0) |> Option.unwrapOr(o: _, fallback: 0s16)))
++  Console.writeLine(Integer16.toString(Integer16.fromInteger(32767) |> Option.unwrapOr(o: _, fallback: 0s16)))
++  Console.writeLine(Integer32.toString(Integer32.fromInteger(-2147483648) |> Option.unwrapOr(o: _, fallback: 0s32)))
++  Console.writeLine(Integer32.toString(Integer32.fromInteger(0) |> Option.unwrapOr(o: _, fallback: 0s32)))
++  Console.writeLine(Integer32.toString(Integer32.fromInteger(2147483647) |> Option.unwrapOr(o: _, fallback: 0s32)))
++  Console.writeLine(UnsignedInteger16.toString(UnsignedInteger16.fromInteger(0) |> Option.unwrapOr(o: _, fallback: 0u16)))
++  Console.writeLine(UnsignedInteger16.toString(UnsignedInteger16.fromInteger(0) |> Option.unwrapOr(o: _, fallback: 0u16)))
++  Console.writeLine(UnsignedInteger16.toString(UnsignedInteger16.fromInteger(65535) |> Option.unwrapOr(o: _, fallback: 0u16)))
++  Console.writeLine(UnsignedInteger32.toString(UnsignedInteger32.fromInteger(0) |> Option.unwrapOr(o: _, fallback: 0u32)))
++  Console.writeLine(UnsignedInteger32.toString(UnsignedInteger32.fromInteger(0) |> Option.unwrapOr(o: _, fallback: 0u32)))
++  Console.writeLine(UnsignedInteger32.toString(UnsignedInteger32.fromInteger(4294967295) |> Option.unwrapOr(o: _, fallback: 0u32)))
+ end function
+--- a/crates/benitoite/testdata/syntax/example_shapes.bnt
++++ b/crates/benitoite/testdata/syntax/example_shapes.bnt
+@@ -17,8 +17,8 @@
+ 
+ function totalArea(shapes: List[Shape]) -> Float
+   return shapes
+-    |> List.map(area)
+-    |> List.fold(0.0, lambda(acc, value) return acc + value end lambda)
++    |> List.map(f: lambda(value) return area(value) end lambda)
++    |> List.fold(initial: 0.0, f: lambda(acc, value) return acc + value end lambda)
+ end function
+ 
+ function main() -> Unit uses Console.Write
+--- a/crates/benitoite/testdata/syntax/f02_pipe.bnt
++++ b/crates/benitoite/testdata/syntax/f02_pipe.bnt
+@@ -6,7 +6,7 @@
+ 
+ function main() -> Unit
+   bind result <- 1
+-    |> add(_, 2)
+-    |> add(_, 3)
++    |> add(x: _, y: 2)
++    |> add(x: _, y: 3)
+   bind _ <- result
+ end function
+--- a/crates/benitoite/testdata/syntax/f03_constants_aliases.bnt
++++ b/crates/benitoite/testdata/syntax/f03_constants_aliases.bnt
+@@ -1,7 +1,7 @@
+ // spec: 01-02 定数（初回リリース版）
+ // spec: 01-02 型の別名（初回リリース版）
+ type UserId = Integer
+-type Validator[T] = function(T) -> Result[T, String]
++type Validator[T] = function(x: T) -> Result[T, String]
+ 
+ data Color
+   Red
+--- a/crates/benitoite/testdata/syntax/f04_try.bnt
++++ b/crates/benitoite/testdata/syntax/f04_try.bnt
+@@ -1,6 +1,6 @@
+ // spec: 01-02 `Result.Error` と `Option.None` を呼び出し元へ返す構文（初回リリース版）
+ function parseAndIncrement(text: String) -> Result[Integer, String]
+-  bind value <- try Integer.parse(text) |> Option.okOr(_, "invalid integer")
++  bind value <- try Integer.parse(text) |> Option.okOr(o: _, error: "invalid integer")
+   return Result.Ok(value + 1)
+ end function
+ 
+--- a/crates/benitoite/testdata/syntax/newline_continuation.bnt
++++ b/crates/benitoite/testdata/syntax/newline_continuation.bnt
+@@ -9,7 +9,7 @@
+     * quantity
+ 
+   bind count <- [1, 2, 3]
+-    |> List.filter(lambda(value: Integer) return value > 1 end lambda)
++    |> List.filter(p: lambda(value: Integer) return value > 1 end lambda)
+     |> List.length
+ 
+   return if true then
+--- a/crates/benitoite/testdata/syntax/pipe_rules.bnt
++++ b/crates/benitoite/testdata/syntax/pipe_rules.bnt
+@@ -19,12 +19,12 @@
+ 
+ function main() -> Unit uses Console.Write
+   bind lines <- ["", "x", "y"]
+-  bind filtered <- lines |> List.filter(nonEmpty)
++  bind filtered <- lines |> List.filter(p: nonEmpty)
+   bind count <- lines |> List.length
+-  bind middle <- 7 |> clamp(0, _, 100)
++  bind middle <- 7 |> clamp(low: 0, value: _, high: 100)
+   bind doubled <- 3 |> lambda(value: Integer) return value * 2 end lambda
+   bind parenthesized <- 3 |> (makeOffset(4))
+-  bind nested <- 1 |> makeAdder(2)(3, 4, 5)
++  bind nested <- 1 |> makeAdder(2)(b: 3, c: 4, d: 5)
+   bind total <- List.length(filtered) + count + middle + doubled + parenthesized + nested
+   return Console.writeLine(Integer.toString(total))
+ end function
+--- a/crates/benitoite/testdata/syntax/placeholder_rules.bnt
++++ b/crates/benitoite/testdata/syntax/placeholder_rules.bnt
+@@ -9,19 +9,19 @@
+   return value >= low and value <= high
+ end function
+ 
+-function applyToNine(callback: function(Integer) -> Integer) -> Integer
++function applyToNine(callback: function(value: Integer) -> Integer) -> Integer
+   return callback(9)
+ end function
+-function useFunction(f: function(function(Integer) -> Integer) -> Integer, g: function(value: Integer) -> Integer) -> Integer
++function useFunction(f: function(callback: function(value: Integer) -> Integer) -> Integer, g: function(value: Integer) -> Integer) -> Integer
+   return f(g(_))
+ end function
+ 
+ function main() -> Unit uses Console.Write
+   bind clampMiddle <- clamp(low: 0, value: _, high: 100)
+   bind inRange <- between(low: _, value: 5, high: _)
+-  bind nested <- useFunction(applyToNine, lambda(value: Integer) return value + 1 end lambda)
++  bind nested <- useFunction(f: applyToNine, g: lambda(value: Integer) return value + 1 end lambda)
+   Console.writeLine(Integer.toString(clampMiddle(80) + nested))
+-  return if inRange(3, 8) then
++  return if inRange(low: 3, high: 8) then
+     Console.writeLine("true")
+   else
+     Console.writeLine("false")
+--- a/crates/benitoite/testdata/syntax/uses_longest_match.bnt
++++ b/crates/benitoite/testdata/syntax/uses_longest_match.bnt
+@@ -1,7 +1,7 @@
+ // spec: 01-02 文法
+ import Benitoite.Unofficial.IO.Console
+ 
+-function accepts(callback: function((function() -> Unit uses Console.Write), Integer) -> Unit) -> Unit
++function accepts(callback: function(action: (function() -> Unit uses Console.Write), value: Integer) -> Unit) -> Unit
+   return ()
+ end function
+ 
+--- a/crates/benitoite/testdata/test/handler_replacement.bnt
++++ b/crates/benitoite/testdata/test/handler_replacement.bnt
+@@ -3,8 +3,8 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function readPort(path: String) -> Result[Integer, String] uses File.Read
+-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
+-  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
+ end function
+ 
+ @test("readPort reads the number in the file")
+--- a/crates/benitoite/testdata/traits/c11-dictionary-run.bnt
++++ b/crates/benitoite/testdata/traits/c11-dictionary-run.bnt
+@@ -10,7 +10,7 @@
+ end implement
+ implement[T: Echo] Echo[Option[T]]
+   function echo(x: Option[T]) -> Option[T]
+-    return Option.map(o: x, f: Echo.echo)
++    return Option.map(o: x, f: lambda(value) return Echo.echo(value) end lambda)
+   end function
+ end implement
+ function repeated[T: Echo & equality](x: T) -> Boolean
+--- a/crates/benitoite/testdata/traits/c11-standard-run.bnt
++++ b/crates/benitoite/testdata/traits/c11-standard-run.bnt
+@@ -3,7 +3,7 @@
+ import Benitoite.Trait
+ import Benitoite.Unofficial.IO.Console
+ function combine[T: Trait.Monoid](xs: List[T]) -> T
+-  return List.fold(xs: xs, initial: Trait.Monoid.empty(), f: Trait.Semigroup.combine)
++  return List.fold(xs: xs, initial: Trait.Monoid.empty(), f: lambda(acc, value) return Trait.Semigroup.combine(x: acc, y: value) end lambda)
+ end function
+ function main() -> Unit uses Console.Write
+   bind result: String <- combine(["a", "b"])
+--- a/crates/benitoite/testdata/traits/combine-all.bnt
++++ b/crates/benitoite/testdata/traits/combine-all.bnt
+@@ -1,7 +1,7 @@
+ // spec: 01-06 標準の型クラス（初回リリース版）
+ import Benitoite.Trait
+ function combineAll[T: Trait.Monoid](xs: List[T]) -> T
+-  return List.fold(xs: xs, initial: Trait.Monoid.empty(), f: Trait.Semigroup.combine)
++  return List.fold(xs: xs, initial: Trait.Monoid.empty(), f: lambda(acc, value) return Trait.Semigroup.combine(x: acc, y: value) end lambda)
+ end function
+ function main() -> Unit
+   bind s: String <- Trait.Monoid.empty()
+--- a/crates/benitoite/testdata/traits/functor.bnt
++++ b/crates/benitoite/testdata/traits/functor.bnt
+@@ -1,7 +1,7 @@
+ // spec: 01-06 高カインド型（初回リリース版）
+ import Benitoite.Trait
+ trait Functor[F[_]]
+-  function map[A, B, effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
++  function map[A, B, effect E](x: F[A], f: function(value: A) -> B uses E) -> F[B] uses E
+ end trait
+ implement Functor[Option]
+   function map[A, B, effect E](x: Option[A], f: function(value: A) -> B uses E) -> Option[B] uses E
+@@ -12,15 +12,15 @@
+   Box(A)
+ end data
+ implement Trait.Functor[Box]
+-  function map[A, B, effect E](xs: Box[A], f: function(A) -> B uses E) -> Box[B] uses E
+-    return match xs with
++  function map[A, B, effect E](x: Box[A], f: function(value: A) -> B uses E) -> Box[B] uses E
++    return match x with
+     case Box.Box(value) -> Box.Box(f(value))
+     end match
+   end function
+ end implement
+ function main() -> Unit
+-  bind _ <- Functor.map(x: Option.Some(1), f: Integer.toString)
+-  bind _ <- Trait.Functor.map(x: Option.Some(2), f: Integer.toString)
+-  bind _ <- Trait.Functor.map(x: [3], f: Integer.toString)
+-  bind _ <- Trait.Functor.map(x: Box.Box(4), f: Integer.toString)
++  bind _ <- Functor.map(x: Option.Some(1), f: lambda(value) return Integer.toString(value) end lambda)
++  bind _ <- Trait.Functor.map(x: Option.Some(2), f: lambda(value) return Integer.toString(value) end lambda)
++  bind _ <- Trait.Functor.map(x: [3], f: lambda(value) return Integer.toString(value) end lambda)
++  bind _ <- Trait.Functor.map(x: Box.Box(4), f: lambda(value) return Integer.toString(value) end lambda)
+ end function
+--- a/crates/benitoite/testdata/traits/show.bnt
++++ b/crates/benitoite/testdata/traits/show.bnt
+@@ -19,7 +19,7 @@
+   end function
+ end implement
+ function describeAll[T: Show](xs: List[T]) -> String
+-  return List.map(xs: xs, f: Show.show) |> String.join(_, ", ")
++  return List.map(xs: xs, f: lambda(value) return Show.show(value) end lambda) |> String.join(xs: _, separator: ", ")
+ end function
+ function main() -> Unit
+   bind people <- [Person(name: "Ada")]
+--- a/crates/benitoite/testdata/traits/standard-traits.bnt
++++ b/crates/benitoite/testdata/traits/standard-traits.bnt
+@@ -1,8 +1,8 @@
+ // spec: 01-06 標準の型クラス（初回リリース版）
+ import Benitoite.Trait
+ function pairUp[F[_]: Trait.Monad, A, B](xs: F[A], ys: F[B]) -> F[Pair[A, B]]
+-  return Trait.Monad.flatMap(xs, lambda(x)
+-    return Trait.Functor.map(ys, lambda(y) return Pair(x, y) end lambda)
++  return Trait.Monad.flatMap(x: xs, f: lambda(x)
++    return Trait.Functor.map(x: ys, f: lambda(y) return Pair(x, y) end lambda)
+   end lambda)
+ end function
+ function main() -> Unit
+--- a/crates/benitoite/testdata/types/c11-collection-constants.bnt
++++ b/crates/benitoite/testdata/types/c11-collection-constants.bnt
+@@ -9,6 +9,6 @@
+ const empty: Map[Integer, String] = Map.empty()
+ function main() -> Unit uses Console.Write
+   Console.writeLine(String.join(xs: List.map(xs: Map.toList(mapping), f: lambda(p) return "${Pair.first(p)}=${Pair.second(p)}" end lambda), separator: ","))
+-  Console.writeLine(String.join(xs: List.map(xs: Set.toList(members), f: Integer.toString), separator: ","))
++  Console.writeLine(String.join(xs: List.map(xs: Set.toList(members), f: lambda(value) return Integer.toString(value) end lambda), separator: ","))
+   Console.writeLine("${List.length(Map.toList(empty))}")
+ end function
+--- a/crates/benitoite/testdata/types/first-release-aliases.bnt
++++ b/crates/benitoite/testdata/types/first-release-aliases.bnt
+@@ -1,6 +1,6 @@
+ // spec: 01-06 型の別名（初回リリース版）
+ type UserId = Integer
+-type Validator[T] = function(T) -> Result[T, String]
++type Validator[T] = function(x: T) -> Result[T, String]
+ 
+ function validate(v: Validator[Integer], user: UserId) -> Result[Integer, String]
+   return v(user)
+--- a/crates/benitoite/testdata/types/todo178-placeholder-return-run.bnt
++++ b/crates/benitoite/testdata/types/todo178-placeholder-return-run.bnt
+@@ -10,7 +10,7 @@
+   return Integer.toString(g(1)) + "," + Integer.toString(h(1))
+ end function
+ function piped() -> String
+-  bind n <- 1 |> add(return 9, _)
++  bind n <- 1 |> add(a: return 9, b: _)
+   return Integer.toString(n)
+ end function
+ function main() -> Unit uses Console.Write

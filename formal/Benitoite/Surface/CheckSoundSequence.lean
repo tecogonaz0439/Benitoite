@@ -1,6 +1,7 @@
-import Benitoite.Surface.CheckSoundDicts
+import Benitoite.Surface.CheckDictSupport
 
-/-! 引数・要素・穴の並びとブロックの検査の健全性。 -/
+/-! 対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+引数・要素・穴の並びとブロックの検査の健全性。 -/
 namespace Benitoite.Surface.Check
 open Benitoite.Release Benitoite.Surface.CheckTools
 
@@ -57,7 +58,7 @@ theorem holes_nil_case {q} : CaseSound q (.holes .nil) := by
       exact ⟨.nil, emptyEff_atoms _⟩
   | cons t ts => contradiction
 
-theorem holes_expr_case {q e args} : CaseSound q (.holes (.expr e args)) := by
+theorem holes_expr_case {q label position e args} : CaseSound q (.holes (.expr label position e args)) := by
   intro ih
   have ihe : ExprSound q e := ih (.expr e) (by simp [CheckNode.size] <;> omega)
   have ihargs : HoleArgsSound q args := ih (.holes args) (by simp [CheckNode.size] <;> omega)
@@ -75,7 +76,7 @@ theorem holes_expr_case {q e args} : CaseSound q (.holes (.expr e args)) := by
       rw [union_eq hae htail.2]
       exact ⟨.expr ht htail.1, CheckTools.union_atoms hae htail.2⟩
 
-theorem holes_hole_case {q t args} : CaseSound q (.holes (.hole t args)) := by
+theorem holes_hole_case {q label position t args} : CaseSound q (.holes (.hole label position t args)) := by
   intro ih
   have ihargs : HoleArgsSound q args := ih (.holes args) (by simp [CheckNode.size] <;> omega)
   intro C Γ R path index ts s s' ε hq he hΓ hR hts h

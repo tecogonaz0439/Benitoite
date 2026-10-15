@@ -1,3 +1,4 @@
+import Benitoite.Release.Lemmas.Rename
 import Benitoite.Surface.Desugar
 import Benitoite.Surface.Lemmas.Invariants
 import Benitoite.Surface.Lemmas.ScopedRename

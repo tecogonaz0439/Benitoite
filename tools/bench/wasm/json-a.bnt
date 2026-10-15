@@ -6,10 +6,10 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 import Runner
 
-function read(value: Json.Value) -> String
-  bind row <- Option.unwrapOr(Json.at(value, 0), Json.Value.Null)
-  return Json.stringify(Json.Value.Array(List.map(["id", "label", "nested"], lambda(key: String) -> Json.Value
-    return Option.unwrapOr(Json.get(row, key), Json.Value.Null)
+function read(document: Json.Value) -> String
+  bind row <- Option.unwrapOr(o: Json.at(value: document, index: 0), fallback: Json.Value.Null)
+  return Json.stringify(Json.Value.Array(List.map(xs: ["id", "label", "nested"], f: lambda(value: String) -> Json.Value
+    return Option.unwrapOr(o: Json.get(value: row, k: value), fallback: Json.Value.Null)
   end lambda)))
 end function
 
@@ -17,41 +17,41 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
   bind task <- try Runner.argument(0)
   bind path <- try Runner.argument(1)
   bind count <- try Runner.rounds(2)
-  bind source <- try Result.mapError(File.readText(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
+  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
   if task = "deep" then
-    bind value <- List.fold(List.range(0, 1000), Json.Value.Null, lambda(v: Json.Value, _i: Integer) -> Json.Value return Json.Value.Array([v]) end lambda)
-    return Runner.measure(1, lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(value)) end lambda, lambda(s: String) -> String return s end lambda)
+    bind parsed <- List.fold(xs: List.range(start: 0, stop: 1000), initial: Json.Value.Null, f: lambda(acc: Json.Value, value: Integer) -> Json.Value return Json.Value.Array([acc]) end lambda)
+    return Runner.measure(count: 1, work: lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(parsed)) end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   if task = "parse" then
-    return Runner.measure(count, lambda() -> Result[Json.Value, String] uses State return Result.mapError(Json.parse(source), Json.ParseError.message) end lambda, Json.stringify)
+    return Runner.measure(count: count, work: lambda() -> Result[Json.Value, String] uses State return Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) end lambda, render: lambda(value) -> String return Json.stringify(value) end lambda)
   end if
   if task = "stringify" then
-    bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
-    return Runner.measure(count, lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(value)) end lambda, lambda(s: String) -> String return s end lambda)
+    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+    return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(parsed)) end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   if task = "read" then
-    return Runner.measure(count, lambda() -> Result[String, String] uses State
-      bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
-      return Result.Ok(read(value))
-    end lambda, lambda(s: String) -> String return s end lambda)
+    return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State
+      bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+      return Result.Ok(read(parsed))
+    end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   if task = "pretty" then
-    return Runner.measure(count, lambda() -> Result[String, String] uses State
-      bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
-      return Result.Ok(Json.stringifyPretty(value))
-    end lambda, lambda(s: String) -> String return s end lambda)
+    return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State
+      bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+      return Result.Ok(Json.stringifyPretty(parsed))
+    end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   if task = "validate" then
-    return Runner.measure(count, lambda() -> Result[Unit, String] uses State return Result.map(Result.mapError(Json.parse(source), Json.ParseError.message), lambda(_value: Json.Value) -> Unit return () end lambda) end lambda, lambda(_value: Unit) -> String return "valid" end lambda)
+    return Runner.measure(count: count, work: lambda() -> Result[Unit, String] uses State return Result.map(r: Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda), f: lambda(value: Json.Value) -> Unit return () end lambda) end lambda, render: lambda(value: Unit) -> String return "valid" end lambda)
   end if
   if task = "canonical" then
-    bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
-    Console.writeLine(Json.stringify(value))
+    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+    Console.writeLine(Json.stringify(parsed))
     return Result.Ok(())
   end if
   if task = "verify" then
-    bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
-    return Runner.measure(1, lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(value)) end lambda, lambda(s: String) -> String return s end lambda)
+    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+    return Runner.measure(count: 1, work: lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(parsed)) end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   return Result.Error("unknown JSON task")
 end function

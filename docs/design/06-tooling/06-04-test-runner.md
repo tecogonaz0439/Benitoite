@@ -13,6 +13,8 @@
 
 ## 仕様
 
+関数一覧の表の `f(a, b)` は、関数とパラメータを示す記法である。実際のコードでは、複数の引数を取る通常の関数は宣言のパラメータ名を付けて名前付きで呼ぶ。
+
 ### テストの関数
 
 【決定】テストは、`@test` を付けたトップレベルの関数である。
@@ -24,8 +26,8 @@ end function
 
 @test("add sums two numbers")
 function addSumsTwoNumbers() -> Unit uses Assert.Check
-  Assert.equal(add(2, 3), 5)
-  Assert.equal(add(-1, 1), 0)
+  Assert.equal(actual: add(a: 2, b: 3), expected: 5)
+  Assert.equal(actual: add(a: -1, b: 1), expected: 0)
 end function
 ```
 
@@ -45,10 +47,10 @@ end function
 
 | 操作 | 型 | 失敗する条件 |
 |---|---|---|
-| `Assert.equal(actual, expected)` | `function[T: equality](T, T) -> Unit uses Assert.Check` | `actual = expected` が `false` |
-| `Assert.notEqual(actual, expected)` | `function[T: equality](T, T) -> Unit uses Assert.Check` | `actual = expected` が `true` |
-| `Assert.isTrue(condition, message)` | `function(Boolean, String) -> Unit uses Assert.Check` | `condition` が `false` |
-| `Assert.fail(message)` | `function[T](String) -> T uses Assert.Check` | 常に失敗する |
+| `Assert.equal(actual, expected)` | `function[T: equality](actual: T, expected: T) -> Unit uses Assert.Check` | `actual = expected` が `false` |
+| `Assert.notEqual(actual, expected)` | `function[T: equality](actual: T, expected: T) -> Unit uses Assert.Check` | `actual = expected` が `true` |
+| `Assert.isTrue(condition, message)` | `function(condition: Boolean, message: String) -> Unit uses Assert.Check` | `condition` が `false` |
+| `Assert.fail(message)` | `function[T](message: String) -> T uses Assert.Check` | 常に失敗する |
 
 - 確認が失敗すると、そのテストは失敗として終わる。以後の文は評価しない。テストの中で開いていた `with` のリソースは、内側のスコープから順に解放する（[エフェクト](../01-spec/01-07-effects.md)の「利用者が定義するエフェクトとハンドラ（初回リリース版）」）。
 - 補助の関数の中でも確認できる。補助の関数は `uses Assert.Check` を持つ。
@@ -63,8 +65,8 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.IO.Process
 
 function readPort(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
 end function
 
 @test("readPort reads the number in the file")
@@ -73,14 +75,14 @@ function readPortReadsNumber() -> Unit uses Assert.Check, File.Read
     readPort("app.conf")
   with
     case File.readText(path) ->
-      Assert.equal(path, "app.conf")
+      Assert.equal(actual: path, expected: "app.conf")
       resume(Result.Ok("8080\n"))
   end handle
-  Assert.equal(result, Result.Ok(8080))
+  Assert.equal(actual: result, expected: Result.Ok(8080))
 end function
 
 function tagRelease(tag: String) -> Result[Unit, String] uses Process.Run
-  bind output <- try Process.run(Process.command("git", ["tag", tag])) |> Result.mapError(_, IOError.message)
+  bind output <- try Process.run(Process.command(program: "git", arguments: ["tag", tag])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   return if Process.Output.exitCode(output) = 0 then Result.Ok(()) else Result.Error(Process.Output.standardError(output)) end if
 end function
 
@@ -91,11 +93,11 @@ function tagReleaseRunsGit() -> Unit uses Assert.Check, State, Process.Run
     tagRelease("v1.0")
   with
     case Process.run(command) ->
-      Reference.set(calls, List.append(Reference.get(calls), Process.Command.arguments(command)))
+      Reference.set(reference: calls, value: List.append(xs: Reference.get(calls), x: Process.Command.arguments(command)))
       resume(Result.Ok(Process.Output(exitCode: 0, standardOutput: "", standardError: "")))
   end handle
-  Assert.equal(result, Result.Ok(()))
-  Assert.equal(Reference.get(calls), [["tag", "v1.0"]])
+  Assert.equal(actual: result, expected: Result.Ok(()))
+  Assert.equal(actual: Reference.get(calls), expected: [["tag", "v1.0"]])
 end function
 ```
 
@@ -108,8 +110,8 @@ end function
 ```text
 @test("add handles several cases")
 function addCases() -> Unit uses Assert.Check
-  List.forEach([Triple(1, 2, 3), Triple(0, 0, 0), Triple(-1, 1, 0)], lambda(c)
-    Assert.equal(add(Triple.first(c), Triple.second(c)), Triple.third(c))
+  List.forEach(xs: [Triple(1, 2, 3), Triple(0, 0, 0), Triple(-1, 1, 0)], f: lambda(value)
+    Assert.equal(actual: add(a: Triple.first(value), b: Triple.second(value)), expected: Triple.third(value))
   end lambda)
 end function
 ```

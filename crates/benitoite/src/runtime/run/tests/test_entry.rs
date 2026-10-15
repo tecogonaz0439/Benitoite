@@ -29,7 +29,7 @@ fn test_functions_end_as_the_runner_table_requires() {
 import Benitoite.Unofficial.IO.Process
 @test
 function unitOk() -> Unit uses Assert.Check
-  Assert.equal(1, 1)
+  Assert.equal(actual: 1, expected: 1)
   return ()
 end function
 @test
@@ -93,7 +93,7 @@ import Benitoite.Unofficial.IO.Console
 function helper() -> Unit uses Console.Write, Assert.Check
   Console.writeLine("before")
   Console.writeErrorLine("to stderr")
-  Assert.equal(1, 2)
+  Assert.equal(actual: 1, expected: 2)
   Console.writeLine("after")
 end function
 @test
@@ -114,7 +114,10 @@ end function
         assert_eq!(failure.left.as_deref(), Some("1"));
         assert_eq!(failure.right.as_deref(), Some("2"));
         let span = report::instr_span(&prepared.program, failure.at).unwrap();
-        assert_eq!(span_text(&prepared.program, span), "Assert.equal(1, 2)");
+        assert_eq!(
+            span_text(&prepared.program, span),
+            "Assert.equal(actual: 1, expected: 2)"
+        );
         // 内側から外側の順。外側の枠はテストの関数で、呼び出した命令を持たない。
         assert_eq!(failure.frames.len(), 2, "{:?}", failure.frames);
         assert_eq!(failure.frames[0].proto, failure.at.proto);
@@ -167,8 +170,8 @@ fn failed_check_releases_resources_innermost_first() {
 import Benitoite.Unofficial.IO.File
 @test
 function resources() -> Result[Unit, String] uses File.Read, State, Assert.Check
-  with first = try File.openReader("first") |> Result.mapError(_, IOError.message),
-       second = try File.openReader("second") |> Result.mapError(_, IOError.message) do
+  with first = try File.openReader("first") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda),
+       second = try File.openReader("second") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
     return Assert.fail("stop")
   end with
 end function
@@ -234,12 +237,12 @@ fn spawned_tasks_fail_checks_and_user_handlers_take_precedence() {
     let source = r#"
 @test
 function spawned() -> Unit uses Assert.Check
-  bind _ <- Task.all([lambda() return () end lambda, lambda() return Assert.equal(1, 2) end lambda])
+  bind _ <- Task.all([lambda() return () end lambda, lambda() return Assert.equal(actual: 1, expected: 2) end lambda])
   return ()
 end function
 @test
 function handled() -> Unit uses Assert.Check
-  return handle Assert.equal(1, 2) with case Assert.equal(_, _) -> resume(()) end handle
+  return handle Assert.equal(actual: 1, expected: 2) with case Assert.equal(_, _) -> resume(()) end handle
 end function
 "#;
     let prepared = prepare(source);
@@ -319,7 +322,7 @@ end function
 @test
 function interrupted() -> Unit uses Assert.Check
   step()
-  Assert.equal(1, 1)
+  Assert.equal(actual: 1, expected: 1)
 end function
 "#;
     let prepared = prepare(source);

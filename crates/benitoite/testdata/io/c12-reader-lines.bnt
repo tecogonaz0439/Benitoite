@@ -6,14 +6,14 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function main() -> Result[Unit, String] uses File.Read, State, Console.Write
-  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
-    bind first <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
-    bind second <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
-    bind last <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
-    bind eof <- try File.readLine(reader) |> Result.mapError(_, IOError.message)
-    Console.writeLine(Option.unwrapOr(first, "eof"))
-    Console.writeLine("[${Option.unwrapOr(second, "eof")}]")
-    Console.writeLine(Option.unwrapOr(last, "eof"))
+  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+    bind first <- try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    bind second <- try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    bind last <- try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    bind eof <- try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    Console.writeLine(Option.unwrapOr(o: first, fallback: "eof"))
+    Console.writeLine("[${Option.unwrapOr(o: second, fallback: "eof")}]")
+    Console.writeLine(Option.unwrapOr(o: last, fallback: "eof"))
     Console.writeLine(if eof = Option.None then "eof" else "extra line" end if)
   end with
   return Result.Ok(())

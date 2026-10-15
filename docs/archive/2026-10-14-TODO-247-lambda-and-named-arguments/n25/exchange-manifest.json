@@ -1,0 +1,1521 @@
+{
+  "version": 1,
+  "legacy": {
+    "corpusVersion": 7,
+    "tableVersion": 1,
+    "coverageVersion": 1,
+    "golden": 337,
+    "random": 1000,
+    "excluded": 378,
+    "outside": 0
+  },
+  "named": [
+    {
+      "stem": "named-types",
+      "definitions": 1,
+      "origin": "independent-type",
+      "coverage": null
+    },
+    {
+      "stem": "named-declarations",
+      "definitions": 2,
+      "origin": "checked-program",
+      "coverage": null
+    },
+    {
+      "stem": "named-calls",
+      "definitions": 5,
+      "origin": "general-parser-checked-program",
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    {
+      "stem": "named-static-calls",
+      "definitions": 3,
+      "origin": "independent-static-call-plan",
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "stem": "named-positional-holes",
+      "definitions": 1,
+      "origin": "general-parser-checked-positional-constructor-holes",
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    }
+  ],
+  "namedVersions": {
+    "corpus": 8,
+    "table": 2,
+    "coverage": 2
+  },
+  "namedCoverageCases": 2,
+  "namedExcluded": [],
+  "namedOutside": [],
+  "generalNamedCallRouting": "program-unit",
+  "programs": [
+    {
+      "name": "testdata/eval/named_order.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_escape.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_tail.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_failure.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_contracts.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_partials.bnt",
+      "group": "golden",
+      "definitions": 9,
+      "coverage": {
+        "matches": 4,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_record_values.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 2,
+        "accessor": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_operations.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "name": "testdata/eval/named_methods.bnt",
+      "group": "golden",
+      "definitions": 8,
+      "surfaceChecks": 6,
+      "implementations": 2,
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    }
+  ],
+  "routingManifest": "routing-manifest.json",
+  "legacyReports": {
+    "desugar": {
+      "golden": {
+        "programs": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 337,
+          "excluded": 378
+        },
+        "definitions": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 912,
+          "excluded": 0
+        }
+      },
+      "random": {
+        "programs": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 1000,
+          "excluded": 0
+        },
+        "definitions": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 72218,
+          "excluded": 0
+        }
+      }
+    },
+    "builtin": {
+      "checkedInputs": 1337,
+      "errors": [],
+      "summaryMismatchCount": 0,
+      "nonconvergedCount": 0
+    },
+    "coverage": {
+      "matched": 10020,
+      "mismatched": 0,
+      "fuelExhausted": 0
+    },
+    "programCoverage": {
+      "inputs": 1337,
+      "cases": 22431,
+      "matched": 22431,
+      "mismatched": 0,
+      "outOfScope": 0,
+      "fuelExhausted": 0,
+      "matches": {
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 16398,
+        "fuelExhausted": 0,
+        "cases": 16398
+      },
+      "bindings": {
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 6033,
+        "fuelExhausted": 0,
+        "cases": 6033
+      }
+    },
+    "surface": {
+      "inputs": 1337,
+      "excludedInputs": 378,
+      "fullyCheckedInputs": 1321,
+      "implementations": 10010,
+      "counts": {
+        "q11": 1,
+        "preparationFailure": 0,
+        "outOfScope": 19,
+        "mismatched": 0,
+        "matched": 51037,
+        "lazyRestriction": 0
+      },
+      "q11Agrees": true
+    },
+    "surfaceOutcomes": [
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/respond-twice.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/status-above-range.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/status-below-range.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/status-informational.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/unanswered-exchange.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-deadlock.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            1,
+            2,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "returnE",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "matchE",
+              "path": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                0,
+                1,
+                2,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                0,
+                1,
+                2,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-group-released.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "matchE",
+              "path": [
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-group-join-await.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/redirect.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:42",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-deadlock.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:42",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/routes-and-post.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:42",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/todo194-json-parse-server.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:42",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/inherited_operation_task_location.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:43",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/r41-inherited-non-tail.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:43",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/todo198-cancelled-accept-reregisters.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:43",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-cancelled-await.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:43",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-inherited-handler.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                0,
+                1,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:43",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/todo194-json-parse-server.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:44",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/routes-and-post.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:45",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [],
+        "q11Paths": [
+          [
+            0,
+            0
+          ]
+        ],
+        "q11OriginalError": {
+          "reason": "type is not included in the expected type",
+          "path": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/syntax/f04_list_spread.bnt",
+        "group": "golden",
+        "error": null,
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "q11"
+      }
+    ]
+  },
+  "coverageExports": {
+    "": {
+      "version": 1,
+      "boundaryCases": 20,
+      "randomCases": 10000,
+      "seedXor": 57793,
+      "boundaryNames": [
+        "golden/integer",
+        "golden/string",
+        "golden/character",
+        "golden/after-wild",
+        "golden/refutable-bind",
+        "golden/option",
+        "golden/tree",
+        "golden/covering-many",
+        "golden/toggle",
+        "boundary/i64",
+        "boundary/surrogate",
+        "boundary/list-0",
+        "boundary/list-1",
+        "boundary/list-2",
+        "boundary/list-3",
+        "boundary/front-back",
+        "q3/duplicate",
+        "q3/union",
+        "q3/wild",
+        "q3/covered-by"
+      ]
+    },
+    "named-": {
+      "version": 2,
+      "boundaryCases": 2,
+      "randomCases": 0,
+      "seedXor": 0,
+      "boundaryNames": [
+        "function-contract",
+        "nested-function-contract"
+      ]
+    }
+  }
+}

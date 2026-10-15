@@ -94,7 +94,7 @@ function spin() -> Unit
         format!(
             r#"{body}{function} -> Unit uses File.Write
   warmup()
-  bind _ready <- File.writeText("ready", "ready")
+  bind _ready <- File.writeText(path: "ready", text: "ready")
   spin()
 end function
 "#

@@ -1,6 +1,7 @@
 import Benitoite.Surface.Check
 
-/-! 成功経路の分解と、型付けの相互帰納法で共有する原子集合の補題。 -/
+/-! 対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+成功経路の分解と、型付けの相互帰納法で共有する原子集合の補題。 -/
 namespace Benitoite.Surface.Check
 open Benitoite.Release Benitoite.Surface.CheckTools
 
@@ -15,13 +16,6 @@ structure Input.Sound (q : Input) : Prop where
 
 abbrev ReturnAtoms (atoms : List Atom) (R : Option Ty) : Prop :=
   ∀ t, R = some t → t.AtomsIn atoms
-
-/-- 無限の名前空間で量化する元の判断を、有限の一覧の検査に接続する条件。 -/
-def ImplNamesComplete (q : Input) (id : ImplDecl)
-    (methods : List MethName) (supers : List ClassName) : Prop :=
-  (∀ cd, q.D.classes id.cls = some cd → ∀ m, m ∉ methods → cd.methods m = none) ∧
-  (∀ m, m ∉ methods → id.methods m = none) ∧
-  (∀ s, s ∉ supers → id.supers s = none)
 
 theorem bind_ok {α β : Type} {x : Result α} {f : α → Result β} {b : β}
     (h : (x >>= f) = .ok b) : ∃ a, x = .ok a ∧ f a = .ok b := by
@@ -72,9 +66,23 @@ theorem join_sound {q path a b j} (ha : a.AtomsIn q.atoms) (hb : b.AtomsIn q.ato
     (h : join q path a b = .ok j) : Ty.Le a j ∧ Ty.Le b j :=
   tyJoin_sound ha hb (join_ok h)
 
-theorem fnView_ok {path a ps r ε} (h : fnView path a = .ok (ps, r, ε)) :
-    a = .fn ps r ε := by
+theorem fnView_ok {path a names ps r ε} (h : fnView path a = .ok (names, ps, r, ε)) :
+    a = .fn names ps r ε := by
   cases a <;> simp_all [fnView, pure, Except.pure]
+
+/-- 型引数の具体化は契約名と引数の個数を変えない。 -/
+theorem fnTyCheck_namesWF {names ps r ε ts es otherNames qs t δ}
+    (h : fnTyCheck names ps r ε ts es = .fn otherNames qs t δ)
+    (hn : NamesWF otherNames qs) : NamesWF names ps := by
+  have he := Ty.fn.inj h
+  rcases he with ⟨heNames, heParams, _, _⟩
+  rw [← heNames, ← heParams] at hn
+  simpa only [NamesWF, substTysAt_eq, List.length_map] using hn
+
+/-- 対応表に沿って取り出しても原子集合の条件は保たれる。 -/
+theorem sourceTypes_atoms {atoms ps positions} (hp : Tys.AtomsIn atoms ps) :
+    Tys.AtomsIn atoms (sourceTypes ps positions) :=
+  tysAtoms_map_mem (fun _ _ => tysAtoms_getD hp (by trivial))
 
 theorem dictView_ok {path a cl t} (h : dictView path a = .ok (cl, t)) :
     a = .dict cl t := by
@@ -114,7 +122,7 @@ theorem opSig_atoms {q : Input} {o sg} (hd : q.D.AtomsIn q.atoms) (hb : q.B.Atom
       cases ho : q.D.ops o with
       | none => simp [opSig, Declarations.patternProgram, ho] at h
       | some od =>
-          have he : sg = ⟨od.tparams, od.params, od.ret, od.eff⟩ := by
+          have he : sg = ⟨od.tparams, od.names, od.params, od.ret, od.eff⟩ := by
             simpa [opSig, Declarations.patternProgram, ho] using h.symm
           subst sg; exact hd.2.2.1 o od ho
   | prim b =>
@@ -124,7 +132,7 @@ theorem opSig_atoms {q : Input} {o sg} (hd : q.D.AtomsIn q.atoms) (hb : q.B.Atom
           cases he : bs.opEff with
           | none => simp [opSig, hs, he] at h
           | some l =>
-              have eqs : sg = ⟨bs.tparams, bs.params, bs.ret, l⟩ := by
+              have eqs : sg = ⟨bs.tparams, bs.names, bs.params, bs.ret, l⟩ := by
                 simpa [opSig, hs, he] using h.symm
               subst sg
               exact ⟨(hb b bs hs).1, (hb b bs hs).2.1⟩
@@ -224,8 +232,8 @@ theorem substTyAt_rule {P : Ty → Prop} {c ts es a} (h : P (substTyAt c ts es a
 theorem substTy_rule {P : Ty → Prop} {ts es a} (h : P (substTy ts es a)) :
     P (a.subst ts es) := by simpa only [substTy_eq] using h
 
-theorem fnTyCheck_rule {P : Ty → Prop} {ps r ε ts es} (h : P (fnTyCheck ps r ε ts es)) :
-    P (fnTy ps r ε ts es) := by simpa only [fnTyCheck_eq] using h
+theorem fnTyCheck_rule {P : Ty → Prop} {names ps r ε ts es} (h : P (fnTyCheck names ps r ε ts es)) :
+    P (fnTy names ps r ε ts es) := by simpa only [fnTyCheck_eq] using h
 
 theorem substParams_eq (ts : List Ty) (es : List Eff) (ps : List Ty) :
     substParams ts es ps = ps.map (Ty.subst ts es) := substTysAt_eq 0 ts es ps
@@ -288,6 +296,7 @@ theorem inferClauseTypesR_atoms {q C Γ R path cs t ε out s s'} (ht : t.AtomsIn
       obtain ⟨sg, s1, hsg, h⟩ := checking_bind_ok h
       obtain ⟨u1, s2, hu1, h⟩ := checking_bind_ok h
       obtain ⟨u2, s3, hu2, h⟩ := checking_bind_ok h
+      obtain ⟨uNames, sNames, huNames, h⟩ := checking_bind_ok h
       obtain ⟨v, s4, hv, h⟩ := checking_bind_ok h
       obtain ⟨u3, s5, hu3, h⟩ := checking_bind_ok h
       obtain ⟨joined, s6, hj, h⟩ := checking_bind_ok h
@@ -324,82 +333,6 @@ theorem substParams_atoms {atoms ts es ps} (ht : Tys.AtomsIn atoms ts)
 theorem fieldTypes_atoms {atoms ps positions} (hp : Tys.AtomsIn atoms ps) :
     Tys.AtomsIn atoms (fieldTypes ps positions) :=
   tysAtoms_map_mem (fun _ _ => tysAtoms_getD hp (by trivial))
-
-/-- 一つのメソッドの成功経路。型付けの証明はブロックの契約に任せる。 -/
-def MethodChecked (q : Input) (id : ImplDecl) (ms : MethSig) (body : Block) : Prop :=
-  ∃ path a ε out,
-    lamBodyOk body (substTyAt ms.tparams.length [id.target] [] ms.ret) = true ∧
-    checkBlock q .strict (ms.tparams ++ id.tparams)
-      (binds (id.dictTys.map (shiftTy ms.tparams.length 0) ++
-        ms.params.map (substTyAt ms.tparams.length [id.target] [])))
-      (some (substTyAt ms.tparams.length [id.target] [] ms.ret)) .tail path body = .ok (a, ε) ∧
-    accept q path (substTyAt ms.tparams.length [id.target] [] ms.ret) (a, ε) = .ok out ∧
-    acceptEff q path ms.eff out = .ok ()
-
-theorem checkMethods_entry {q path id cd names index}
-    (h : checkMethods q path id cd names index = .ok ()) :
-    ∀ m ∈ names, (id.methods m).isSome = (cd.methods m).isSome ∧
-      ∀ ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧ MethodChecked q id ms body := by
-  induction names generalizing index with
-  | nil => intro m hm; cases hm
-  | cons m names ih =>
-      simp only [checkMethods] at h
-      have hh : checkMethods q path id cd names (index + 1) = .ok () ∧
-          (id.methods m).isSome = (cd.methods m).isSome ∧
-          (∀ ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧ MethodChecked q id ms body) := by
-        cases hms : cd.methods m with
-        | none =>
-            cases hbody : id.methods m with
-            | none => exact ⟨by simpa [hms, hbody] using h, by simp⟩
-            | some body => simp [hms, hbody, Bind.bind, Except.bind] at h
-        | some ms =>
-            cases hbody : id.methods m with
-            | none => simp [hms, hbody, Bind.bind, Except.bind] at h
-            | some body =>
-                simp only [hms, hbody] at h
-                obtain ⟨v, hv, h⟩ := bind_ok h
-                obtain ⟨⟨a, ε⟩, hb, h⟩ := bind_ok h
-                obtain ⟨out, ha, h⟩ := bind_ok h
-                obtain ⟨u, hf, hrest⟩ := bind_ok h
-                refine ⟨hrest, rfl, ?_⟩
-                intro ms' he
-                have eqms : ms = ms' := by simpa [hms] using he
-                subst ms'
-                refine ⟨body, rfl, child path index, a, ε, out, (require_ok hv).1, hb, ha, ?_⟩
-                cases u; exact hf
-      intro k hk
-      rcases List.mem_cons.mp hk with rfl | hk
-      · exact hh.2
-      · exact ih hh.1 k hk
-
-theorem checkSuperFlags_entry {path id cd names index}
-    (h : checkSuperFlags path id cd names index = .ok ()) :
-    ∀ s ∈ names, (id.supers s).isSome = decide (s ∈ cd.supers) := by
-  induction names generalizing index with
-  | nil => intro s hs; cases hs
-  | cons s names ih =>
-      obtain ⟨u, hu, hrest⟩ := bind_ok h
-      intro k hk
-      rcases List.mem_cons.mp hk with rfl | hk
-      · have he := eq_of_beq (require_ok hu).1
-        simpa using he
-      · exact ih hrest k hk
-
-theorem checkSuperDicts_entry {q path id names index}
-    (h : checkSuperDicts q path id names index = .ok ()) :
-    ∀ s ∈ names, ∃ d dictPath a, id.supers s = some d ∧
-      checkDict q id.tparams (binds id.dictTys) dictPath d = .ok a ∧
-      tyEq q.atoms a (.dict s id.target) = true := by
-  induction names generalizing index with
-  | nil => intro s hs; cases hs
-  | cons s names ih =>
-      obtain ⟨d, hd, h⟩ := bind_ok h
-      obtain ⟨a, ha, h⟩ := bind_ok h
-      obtain ⟨u, hu, hrest⟩ := bind_ok h
-      intro k hk
-      rcases List.mem_cons.mp hk with rfl | hk
-      · exact ⟨d, child path index, a, lookup_ok hd, ha, (require_ok hu).1⟩
-      · exact ih hrest k hk
 
 theorem shiftTy_fun_eq (k c : Nat) : shiftTy k c = Ty.shift k c :=
   funext (shiftTy_eq k c)

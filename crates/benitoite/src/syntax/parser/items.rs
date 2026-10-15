@@ -769,6 +769,8 @@ fn restore_newline(p: &mut Parser) {
             Token {
                 kind: TokenKind::Newline,
                 span,
+                start_line: super::physical_line(p.text, span.start),
+                end_line: super::physical_line(p.text, span.end),
                 value: TokenValue::None,
             },
         );
@@ -1267,7 +1269,7 @@ mod tests {
 
     #[test]
     fn aliases_constants_and_record_declarations_build_their_ast() {
-        let src = "type UserId = Integer\ntype Validator[T] = function(T) -> Result[T, String]\nrecord Person\nname: String\nage: Integer\nend record";
+        let src = "type UserId = Integer\ntype Validator[T] = function(value: T) -> Result[T, String]\nrecord Person\nname: String\nage: Integer\nend record";
         let out = user(src);
         assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
         assert!(

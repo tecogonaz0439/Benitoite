@@ -225,7 +225,7 @@ fn seed_reproduces_source() {
 // 構文・型の誤りを反例として採用しないことと、不要な宣言・文を落とすことを確認する。
 #[test]
 fn detects_and_shrinks_changed_output() {
-    let source = "import Benitoite.Unofficial.IO.Console\nconst unused: Integer = 17\nfunction main() -> Unit uses Console.Write\nbind unusedValue <- 99\nConsole.writeLine(\"hello\")\nConsole.writeLine(\"world\")\nend function\n";
+    let source = "import Benitoite.Unofficial.IO.Console\nconst unused: Integer = 17\nfunction append(left: String, right: String) -> String\n return left + right\nend function\nfunction main() -> Unit uses Console.Write\nbind unusedValue <- 99\nbind action: function(right: String) -> String <- append(left: \"\", right: _)\nConsole.writeLine(\"hello\" |> action)\nConsole.writeLine(\"world\" |> action)\nend function\n";
     assert!(evaluate(0, source).is_ok());
     let failure = injected_difference(source).expect_err("one changed byte must be detected");
     let report = counterexample(0, source, &failure, injected_difference);
@@ -236,6 +236,16 @@ fn detects_and_shrinks_changed_output() {
     assert!(
         evaluate(0, minimized).is_ok(),
         "shrink must retain a valid program"
+    );
+    let checked = pipeline::check_text("minimized.bnt", minimized.as_bytes(), options());
+    let program = checked.program.unwrap();
+    assert!(
+        program
+            .types
+            .call_plans
+            .iter()
+            .any(|(_, plan)| plan.hole_names == ["right"]),
+        "shrink must retain the named hole used by the output"
     );
     assert_eq!(
         injected_difference(minimized).unwrap_err().signature,

@@ -14,7 +14,7 @@ use crate::syntax::ast;
 use crate::syntax::ast::Module;
 use crate::typeck::TypeckOutput;
 use crate::types::builtin::{BuiltinEffectId, BuiltinTypeId};
-use crate::types::{ConstValue, EffectSet, FnTy, Scheme, Ty, TyCon, TypeArg, TypeArgs};
+use crate::types::{ConstValue, EffectSet, Scheme, Ty, TyCon, TypeArg, TypeArgs};
 
 use super::InternalError;
 use super::core_ir::*;
@@ -60,13 +60,6 @@ fn fresh(n: &mut u32) -> Result<u32, InternalError> {
 
 fn basic(id: BuiltinTypeId) -> Ty {
     Ty::Con(TyCon::Builtin(id), vec![])
-}
-fn function(params: Vec<Ty>, ret: Ty, effects: EffectSet) -> Ty {
-    Ty::Fn(Box::new(FnTy {
-        params,
-        ret,
-        effects,
-    }))
 }
 fn value(kind: ValKind<Comp>, ty: Ty, origin: Span) -> CoreVal {
     Val { kind, ty, origin }

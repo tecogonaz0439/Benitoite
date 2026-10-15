@@ -5,12 +5,12 @@ function add(a: Integer, b: Integer) -> Integer
   return a + b
 end function
 function make() -> String
-  bind g <- add(return 5, _)
-  bind h <- add(_, return 7)
+  bind g <- add(a: return 5, b: _)
+  bind h <- add(a: _, b: return 7)
   return Integer.toString(g(1)) + "," + Integer.toString(h(1))
 end function
 function piped() -> String
-  bind n <- 1 |> add(return 9, _)
+  bind n <- 1 |> add(a: return 9, b: _)
   return Integer.toString(n)
 end function
 function main() -> Unit uses Console.Write

@@ -8,7 +8,7 @@ function add(left: Integer, right: Integer) -> Integer
 end function
 
 function main() -> Unit
-    bind _ <- add(1)
+    bind _ <- add(left: 1)
     bind _ <- Shape.Rect(1)
     return ()
 end function

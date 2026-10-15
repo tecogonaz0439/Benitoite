@@ -2,7 +2,7 @@
 import Benitoite.Unofficial.IO.Console
 
 function show_ints(values: List[Integer]) -> String
-  return String.join(List.map(values, lambda(value) return Integer.toString(value) end lambda), ",")
+  return String.join(xs: List.map(xs: values, f: lambda(value) return Integer.toString(value) end lambda), separator: ",")
 end function
 
 function show_option_int(value: Option[Integer]) -> String
@@ -17,19 +17,19 @@ function main() -> Unit uses Console.Write
   Console.writeLine(if List.isEmpty([]) then "true" else "false" end if)
   Console.writeLine(show_option_int(List.head([])))
   Console.writeLine(show_option_int(List.head([8, 9])))
-  Console.writeLine(show_ints(List.tail([8, 9]) |> Option.unwrapOr([])))
-  Console.writeLine(show_option_int(List.tail([]) |> Option.map(lambda(values) return List.length(values) end lambda)))
-  Console.writeLine(show_option_int(List.get([10, 20, 30], -1)))
-  Console.writeLine(show_option_int(List.get([10, 20, 30], 3)))
-  Console.writeLine(show_ints(List.take([1, 2, 3], -1)))
-  Console.writeLine(show_ints(List.take([1, 2, 3], 9)))
-  Console.writeLine(show_ints(List.drop([1, 2, 3], -1)))
-  Console.writeLine(show_ints(List.drop([1, 2, 3], 9)))
-  Console.writeLine(show_ints(List.range(4, 2)))
-  Console.writeLine(show_ints(List.range(2, 5)))
-  Console.writeLine(if List.contains([1, 2, 3], 2) then "true" else "false" end if)
-  Console.writeLine(show_ints(List.concatenate([1, 2], [3, 4])))
+  Console.writeLine(show_ints(List.tail([8, 9]) |> Option.unwrapOr(fallback: [])))
+  Console.writeLine(show_option_int(List.tail([]) |> Option.map(f: lambda(value) return List.length(value) end lambda)))
+  Console.writeLine(show_option_int(List.get(xs: [10, 20, 30], i: -1)))
+  Console.writeLine(show_option_int(List.get(xs: [10, 20, 30], i: 3)))
+  Console.writeLine(show_ints(List.take(xs: [1, 2, 3], n: -1)))
+  Console.writeLine(show_ints(List.take(xs: [1, 2, 3], n: 9)))
+  Console.writeLine(show_ints(List.drop(xs: [1, 2, 3], n: -1)))
+  Console.writeLine(show_ints(List.drop(xs: [1, 2, 3], n: 9)))
+  Console.writeLine(show_ints(List.range(start: 4, stop: 2)))
+  Console.writeLine(show_ints(List.range(start: 2, stop: 5)))
+  Console.writeLine(if List.contains(xs: [1, 2, 3], x: 2) then "true" else "false" end if)
+  Console.writeLine(show_ints(List.concatenate(xs: [1, 2], ys: [3, 4])))
   Console.writeLine(show_ints(List.reverse([1, 2, 3])))
-  Console.writeLine(show_ints(List.prepend([2, 3], 1)))
-  return Console.writeLine(show_ints(List.append([1, 2], 3)))
+  Console.writeLine(show_ints(List.prepend(xs: [2, 3], x: 1)))
+  return Console.writeLine(show_ints(List.append(xs: [1, 2], x: 3)))
 end function

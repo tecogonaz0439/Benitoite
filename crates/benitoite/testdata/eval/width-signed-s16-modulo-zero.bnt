@@ -3,6 +3,6 @@ function calculate(a: Integer16, b: Integer16) -> Integer16
   return a mod b
 end function
 function main() -> Unit uses Console.Write
-  bind _ <- calculate(7s16, 0s16)
+  bind _ <- calculate(a: 7s16, b: 0s16)
   Console.writeLine("unreachable")
 end function

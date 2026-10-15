@@ -6,13 +6,13 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Random
 function main() -> Unit uses Console.Write
   bind generator <- Random.fromSeed(42)
-  bind first <- Random.nextInteger(generator, -10, 10)
-  bind second <- Random.nextInteger(Pair.second(first), -10, 10)
-  bind third <- Random.nextInteger(Pair.second(second), -10, 10)
+  bind first <- Random.nextInteger(generator: generator, low: -10, high: 10)
+  bind second <- Random.nextInteger(generator: Pair.second(first), low: -10, high: 10)
+  bind third <- Random.nextInteger(generator: Pair.second(second), low: -10, high: 10)
   Console.writeLine(Trait.Show.show([Pair.first(first), Pair.first(second), Pair.first(third)]))
   bind fraction <- Random.nextFloat(Pair.second(third))
   Console.writeLine(Trait.Show.show(Pair.first(fraction) = 0.9246929453253876))
-  bind shuffled <- Random.shuffleWith(Pair.second(fraction), [1, 2, 3, 4])
+  bind shuffled <- Random.shuffleWith(generator: Pair.second(fraction), xs: [1, 2, 3, 4])
   Console.writeLine(Trait.Show.show(Pair.first(shuffled)))
-  Console.writeLine(Integer.toString(Pair.first(Random.nextInteger(generator, -10, 10))))
+  Console.writeLine(Integer.toString(Pair.first(Random.nextInteger(generator: generator, low: -10, high: 10))))
 end function

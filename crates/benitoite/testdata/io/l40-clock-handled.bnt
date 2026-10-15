@@ -18,6 +18,6 @@ function main() -> Unit uses Console.Write
       Console.writeLine("slept ${Integer.toString(ms)}")
       resume(())
   end handle
-  Console.writeLine(Time.formatISO8601(Pair.first(fixed), Pair.first(Pair.second(fixed))))
+  Console.writeLine(Time.formatISO8601(t: Pair.first(fixed), offsetMinutes: Pair.first(Pair.second(fixed))))
   Console.writeLine(Integer.toString(Pair.second(Pair.second(fixed))))
 end function

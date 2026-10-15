@@ -97,7 +97,7 @@ end function
 function second() -> Integer
  return answer
 end function
-function apply(f: function(Integer) -> Integer, x: Integer) -> Integer
+function apply(f: function(x: Integer) -> Integer, x: Integer) -> Integer
  return f(x)
 end function
 function main() -> Unit uses Console.Write
@@ -105,7 +105,7 @@ function main() -> Unit uses Console.Write
  Console.writeLine("b")
  bind n <- first()
  bind f <- lambda(x) return n + x end lambda
- Console.writeLine("${apply(f, second())}")
+ Console.writeLine("${apply(f: f, x: second())}")
 end function
 "#
         ),
@@ -199,8 +199,8 @@ function main() -> Unit uses State, Console.Write
  bind b <- Lazy.force(delayed)
  Console.writeLine("${a = b}")
  bind cell <- Reference.new(1)
- Reference.set(cell, 10)
- Reference.update(cell, lambda(n) return n + 3 end lambda)
+ Reference.set(reference: cell, value: 10)
+ Reference.update(reference: cell, f: lambda(value) return value + 3 end lambda)
  Console.writeLine("${Reference.get(cell)}")
 end function
 "#
@@ -676,7 +676,7 @@ fn external_call_after_deep_language_calls_fits_the_test_stack() {
     let source = r#"@external("wasm", "add.wasm", "add")
 function add(a: Integer, b: Integer) -> Integer
 function count(n: Integer) -> Integer
-  if n = 0 then return add(20, 22) end if
+  if n = 0 then return add(a: 20, b: 22) end if
   return 1 + count(n - 1)
 end function
 function main() -> Result[Unit, String]

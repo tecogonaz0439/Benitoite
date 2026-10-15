@@ -41,21 +41,21 @@ public function intersection[T: key](a: Set[T], b: Set[T]) -> Set[T]
 public function difference[T: key](a: Set[T], b: Set[T]) -> Set[T]
 
 /// Returns the set of `f` applied to each element. Equal results become one element.
-public function map[T: key, U: key, effect E](s: Set[T], f: function(T) -> U uses E) -> Set[U] uses E
-  return fromList(List.map(toList(s), f))
+public function map[T: key, U: key, effect E](s: Set[T], f: function(value: T) -> U uses E) -> Set[U] uses E
+  return fromList(List.map(xs: toList(s), f: f))
 end function
 
 /// Returns the elements for which `p` returns `true`.
-public function filter[T: key, effect E](s: Set[T], p: function(T) -> Boolean uses E) -> Set[T] uses E
-  return fromList(List.filter(toList(s), p))
+public function filter[T: key, effect E](s: Set[T], p: function(value: T) -> Boolean uses E) -> Set[T] uses E
+  return fromList(List.filter(xs: toList(s), p: p))
 end function
 
 /// Combines the elements in order with `f`, starting from `initial`.
-public function fold[T: key, A, effect E](s: Set[T], initial: A, f: function(A, T) -> A uses E) -> A uses E
-  return List.fold(toList(s), initial, f)
+public function fold[T: key, A, effect E](s: Set[T], initial: A, f: function(acc: A, value: T) -> A uses E) -> A uses E
+  return List.fold(xs: toList(s), initial: initial, f: f)
 end function
 
 /// Calls `f` with each element in order.
-public function forEach[T: key, effect E](s: Set[T], f: function(T) -> Unit uses E) -> Unit uses E
-  return List.forEach(toList(s), f)
+public function forEach[T: key, effect E](s: Set[T], f: function(value: T) -> Unit uses E) -> Unit uses E
+  return List.forEach(xs: toList(s), f: f)
 end function

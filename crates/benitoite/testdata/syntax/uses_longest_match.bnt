@@ -1,7 +1,7 @@
 // spec: 01-02 文法
 import Benitoite.Unofficial.IO.Console
 
-function accepts(callback: function((function() -> Unit uses Console.Write), Integer) -> Unit) -> Unit
+function accepts(callback: function(action: (function() -> Unit uses Console.Write), value: Integer) -> Unit) -> Unit
   return ()
 end function
 

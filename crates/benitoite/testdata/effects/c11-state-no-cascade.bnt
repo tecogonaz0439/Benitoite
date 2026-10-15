@@ -2,7 +2,7 @@
 // spec: 01-07 可変のセル（初回リリース版）
 function bad() -> Integer
   bind r <- Reference.new(0)
-  Reference.set(r, 1)
+  Reference.set(reference: r, value: 1)
   return Reference.get(r)
 end function
 function main() -> Unit

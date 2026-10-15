@@ -11,6 +11,6 @@ function getOr[T](value: Option[T], fallback: T) -> T
 end function
 
 function main() -> Unit uses Console.Write
-    Console.writeLine(Integer.toString(getOr(Option.Some(7), 0)))
-    return Console.writeLine(getOr(Option.Some("ready"), "fallback"))
+    Console.writeLine(Integer.toString(getOr(value: Option.Some(7), fallback: 0)))
+    return Console.writeLine(getOr(value: Option.Some("ready"), fallback: "fallback"))
 end function

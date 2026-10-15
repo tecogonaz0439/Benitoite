@@ -39,7 +39,7 @@ end function
 function getOr [A] (opt : Option [A], default : A) -> A
 return default
 end function
-function apply(f: function (Integer) -> Integer) -> Integer
+function apply(f: function (value: Integer) -> Integer) -> Integer
 return f (1)
 end function
 @ test
@@ -95,7 +95,7 @@ function getOr[A](opt: Option[A], default: A) -> A
   return default
 end function
 
-function apply(f: function(Integer) -> Integer) -> Integer
+function apply(f: function(value: Integer) -> Integer) -> Integer
   return f(1)
 end function
 
@@ -167,7 +167,7 @@ bind a<-1+2*3-4/5
 shadow abc    <- a div 2 mod 3
 bind c<-a=b and c<>d or e<=f
 bind d  <-  a<b or a>b or a>=b
-bind e<-xs|>List.map(f)
+bind e<-xs|>List.map(f: f)
 bind f<-lambda(x)->Integer return x end lambda
 end function
 ";
@@ -178,7 +178,7 @@ function main() -> Unit
   shadow abc <- a div 2 mod 3
   bind c <- a = b and c <> d or e <= f
   bind d <- a < b or a > b or a >= b
-  bind e <- xs |> List.map(f)
+  bind e <- xs |> List.map(f: f)
   bind f <- lambda(x) -> Integer return x end lambda
 end function
 ";
@@ -341,10 +341,10 @@ function main() -> Unit
 bind total <- price
 * quantity
 bind n <- lines
-|> List.filter(lambda(l) return l <> \"\" end lambda)
+|> List.filter(p: lambda(value) return value <> \"\" end lambda)
 |> List.length
-List.forEach(items, lambda(item)
-bind name <- Item.name(item)
+List.forEach(xs: items, f: lambda(value)
+bind name <- Item.name(value)
 Console.writeLine(name)
 end lambda)
 f(a,
@@ -363,10 +363,10 @@ function main() -> Unit
   bind total <- price
     * quantity
   bind n <- lines
-    |> List.filter(lambda(l) return l <> \"\" end lambda)
+    |> List.filter(p: lambda(value) return value <> \"\" end lambda)
     |> List.length
-  List.forEach(items, lambda(item)
-    bind name <- Item.name(item)
+  List.forEach(xs: items, f: lambda(value)
+    bind name <- Item.name(value)
     Console.writeLine(name)
   end lambda)
   f(a,

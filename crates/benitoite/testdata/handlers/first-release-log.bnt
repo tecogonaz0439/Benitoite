@@ -6,7 +6,7 @@ effect Log
 end effect
 
 function process(items: List[String]) -> Integer uses Log
-  List.forEach(items, lambda(item) write("item: " + item) end lambda)
+  List.forEach(xs: items, f: lambda(value) write("item: " + value) end lambda)
   return List.length(items)
 end function
 

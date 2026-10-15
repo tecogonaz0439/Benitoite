@@ -1,4 +1,4 @@
-//! E2 の宣言表。入力ごとの束縛の番号を保ち、版 7 の corpus とは別に書き出す。
+//! E2 の宣言表。入力ごとの束縛の番号を保ち、corpus と同じ契約名を保持する。
 use super::*;
 use benitoite::builtins::BuiltinId;
 use benitoite::builtins::iface::Capability;
@@ -90,6 +90,7 @@ fn remap_ty(ty: &Ty, names: &BTreeMap<BindingId, BindingId>) -> Ty {
             args.iter().map(|t| remap_ty(t, names)).collect(),
         ),
         Ty::Fn(f) => Ty::Fn(Box::new(types::FnTy {
+            param_names: f.param_names.clone(),
             params: f.params.iter().map(|t| remap_ty(t, names)).collect(),
             ret: remap_ty(&f.ret, names),
             effects: f.effects.clone(),
@@ -108,7 +109,7 @@ fn qualified_data(p: &CheckedProgram, adt: &types::AdtDef) -> String {
 }
 
 /// 使用する prim と組み込みの操作全体、データ型の宣言と要約を入力の識別子とともに返す。
-pub fn builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedProgram) -> Value {
+pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedProgram) -> Value {
     let mut names = BTreeMap::new();
     let mut supplemental_data = Vec::new();
     let mut next = p
@@ -152,6 +153,7 @@ pub fn builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedProgram
     let mut state_pure = Vec::new();
     let mut supplemental_prims = Vec::new();
     let mut surface = Surface::new(p, None, Vec::new());
+
     for index in 0..=u16::MAX {
         let id = BuiltinId(index);
         let Some(decl) = builtins::builtin_decl(id) else {
@@ -243,10 +245,21 @@ pub fn builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedProgram
             state_pure.push(decl.name);
         }
         let params: Vec<_> = scheme.params.iter().map(|t| surface.ty(t)).collect();
-        prims.push(json!({"name":decl.name,"tparams":tparams,"neffs":scheme.effect_params.len(),
+        let mut prim = json!({"name":decl.name,"tparams":tparams,"neffs":scheme.effect_params.len(),
             "params":params,"ret":surface.ty(&scheme.ret),"eff":eff(&scheme.effects),
             "kind":kind,"opEff":op_eff,"classConstraints":surface.dict_params(&scheme.class_constraints),
-            "unconvertibleTypes":unconvertible}));
+            "unconvertibleTypes":unconvertible});
+        assert_eq!(
+            scheme
+                .param_names
+                .iter()
+                .collect::<std::collections::BTreeSet<_>>()
+                .len(),
+            scheme.params.len()
+        );
+        assert_eq!(scheme.param_names.len(), scheme.params.len());
+        prim["names"] = json!(scheme.param_names);
+        prims.push(prim);
     }
     let effects: Vec<_> = BUILTIN_EFFECTS
         .iter()
@@ -310,7 +323,13 @@ pub fn builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedProgram
             .map(|(tag, c)| {
                 assert_eq!(u32::try_from(tag).unwrap(), c.tag);
                 let args: Vec<_> = c.fields.iter().map(|t| surface.ty(t)).collect();
-                json!({"name":con_name(id, c.tag),"args":args})
+                let mut ctor = json!({"name":con_name(id, c.tag),"args":args});
+                ctor["fields"] = json!(
+                    adt.record
+                        .as_ref()
+                        .map(|fs| fs.iter().map(|f| f.name.clone()).collect::<Vec<_>>())
+                );
+                ctor
             })
             .collect();
         data_decls.push(json!({"name":data_name(id),"ntys":adt.type_params.len(),"ctors":ctors}));

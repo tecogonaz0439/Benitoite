@@ -14,8 +14,8 @@ end function
 function main() -> Unit uses Console.Write
   // print one line per price
   bind prices <- [100, 250] // sample prices
-  List.forEach(prices, lambda(price)
-    Console.writeLine(Integer.toString(withTax(price, 10))) // with 10 percent
+  List.forEach(xs: prices, f: lambda(value)
+    Console.writeLine(Integer.toString(withTax(price: value, rate: 10))) // with 10 percent
   end lambda)
   // the last comment
 end function

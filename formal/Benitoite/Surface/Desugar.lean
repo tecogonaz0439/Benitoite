@@ -47,9 +47,9 @@ def CallHead.apply : CallHead → List Val → Comp
 def directCallee : Expr → Option CallHead
   | .funName f ts es => some (.app (.fnRef f ts es) [])
   -- 01-12「型クラス」第 3 行: 制約を持つ関数の呼び出し。
-  | .funDicts f ts es ds _ => some (.app (.fnRef f ts es) (DictEv.toValList ds))
+  | .funDicts f ts es ds _ _ => some (.app (.fnRef f ts es) (DictEv.toValList ds))
   -- 同表第 1 行: メソッドの呼び出し。
-  | .methName d m ss es us _ => some (.meth d.toVal m ss es (DictEv.toValList us))
+  | .methName d m ss es us _ _ => some (.meth d.toVal m ss es (DictEv.toValList us))
   | .primName b ts es => some (.app (.prim b ts es) [])
   -- 01-12「ハンドラ」: 利用者の操作を直接呼ぶ op(e1,…,en)。
   | .opName o ts => some (.app (.op o ts) [])
@@ -106,17 +106,20 @@ def interpolate (op : OpPrim) : List InterpPart → List Val → List CallHead �
 
 /-- 呼び出しの共通の組み立て。callee は元の環境で脱糖済みである。
 shift は元の自由変数の移動量、inserted はすでに評価した挿入引数である。
+positions は ms のソース順に対応する契約位置であり、全 let の後で参照だけを並べる。
 ms は挿入引数を束縛する前の環境で計算し、穴の引数だけはラムダ引数の下で計算する。 -/
 def callComp (shift : Nat) (inserted : List Val) (f : Expr) (callee : Comp)
-    (ms : List Comp) : Comp :=
+    (positions : List Nat) (ms : List Comp) : Comp :=
+  let ordered := fun vs => recordFields (inserted.length + ms.length)
+    ((List.range inserted.length) ++ positions) vs (.const .unit)
   match directCallee f with
   | some h => letChain inserted.length ms
       ((h.rename (· + (shift + ms.length))).apply
-        (Val.renameList (· + ms.length) inserted ++ boundVars ms.length))
+        (ordered (Val.renameList (· + ms.length) inserted ++ boundVars ms.length)))
   | none => .letIn (callee.rename (· + shift))
       (letChain (inserted.length + 1) ms
         (.app (.var ms.length)
-          (Val.renameList (· + (ms.length + 1)) inserted ++ boundVars ms.length)))
+          (ordered (Val.renameList (· + (ms.length + 1)) inserted ++ boundVars ms.length))))
 
 /-- パターンの束縛数だけ書いた値をずらし、残すフィールドの番号を右から数える。 -/
 def recordUpdateValues (c : ConName) (n : Nat) (positions : List Nat) (vs : List Val) : List Val :=
@@ -142,11 +145,11 @@ mutual
     -- 01-12「型クラス」第 4 行: return λ(ȳ:Ā). f[T̄; Ē](Ū, ȳ)。
     -- 処理系は名前の変数なのでずらさない。de Bruijn の番号ではラムダ引数の下へ移すため、
     -- 値引数の個数だけずらす（意味は Rust dictionary_lambda と同じ）。
-    | .funDicts f ts es ds ps => .ret (.lam ps
+    | .funDicts f ts es ds names ps => .ret (.lam names ps
         (.app (.fnRef f ts es)
           (Val.renameList (· + ps.length) (DictEv.toValList ds) ++ boundVars ps.length)))
     -- 同表第 2 行: return λ(ȳ:Ā). V.m[S̄; Ē](Ū, ȳ)。V と Ū の両方をずらす。
-    | .methName d m ss es us ps => .ret (.lam ps
+    | .methName d m ss es us names ps => .ret (.lam names ps
         (.meth (d.toVal.rename (· + ps.length)) m ss es
           (Val.renameList (· + ps.length) (DictEv.toValList us) ++ boundVars ps.length)))
     -- 同節: prelude の関数 M.g | return b[T̄; Ē]（Σ にあるものは関数の名前）
@@ -157,7 +160,7 @@ mutual
     | .nullCon c ts => .ret (.con c ts [])
     -- 同節: 引数を持つ構成子 T.C を値として使う
     -- | return λ(y1:A1,…,yn:An). return C[T̄](y1,…,yn)
-    | .conValue c ts ps => .ret (.lam ps (.ret (.con c ts (boundVars ps.length))))
+    | .conValue c ts names ps => .ret (.lam names ps (.ret (.con c ts (boundVars ps.length))))
     -- 同節: リテラル | return c（c はリテラルが表す値）
     -- 01-12「基本型とコレクションの型」: Decimal のリテラル（1.25m など）は return c に移す。
     | .literal l => .ret (.const l.toConst)
@@ -202,7 +205,7 @@ mutual
     -- | let x1 ⇐ ⟦e1⟧ in … let xn ⇐ ⟦en⟧ in f[T̄; Ē](Ū,x1,…,xn)（頭は束縛しない）
     -- 01-12「ハンドラ」: 利用者の操作を直接呼ぶ op(e1,…,en)
     -- | let x1 ⇐ ⟦e1⟧ in … let xn ⇐ ⟦en⟧ in op[T̄](x1,…,xn)
-    | .call f args => callComp 0 [] f (desugarExpr opPrim .other f) (desugarExprs opPrim args)
+    | .call f _ positions args => callComp 0 [] f (desugarExpr opPrim .other f) positions (desugarExprs opPrim args)
     -- 同節: パイプ e1 |> e2 | let t ⇐ ⟦e1⟧ in ⟦e'⟧
     -- e' は 01-02 の展開。表層を作らず、各形から直接コアへ移す。
     -- 同表の注記どおり、展開で差し込んだ t は let x ⇐ return t で束縛し直さない。
@@ -210,18 +213,18 @@ mutual
         | .conCall c ts args =>
             let ms := desugarExprs opPrim args
             letChain 1 ms (.ret (.con c ts (.var ms.length :: boundVars ms.length)))
-        | .call f args => callComp 1 [.var 0] f
-            (desugarExpr opPrim .other f) (desugarExprs opPrim args)
-        | .conValue c ts _ => .ret (.con c ts [.var 0])
-        | other => callComp 1 [.var 0] other (desugarExpr opPrim .other other) [])
+        | .call f _ positions args => callComp 1 [.var 0] f
+            (desugarExpr opPrim .other f) positions (desugarExprs opPrim args)
+        | .conValue c ts _ _ => .ret (.con c ts [.var 0])
+        | other => callComp 1 [.var 0] other (desugarExpr opPrim .other other) [] [])
     -- 01-12「表層からの脱糖」の前段: プレースホルダをラムダに展開してから移す。
     -- 01-12「リスト、ラムダ、条件分岐、match」のラムダの行: return λ(p̄). ⟦B⟧。
     -- 非穴の式と callee はラムダの本体で評価する。穴も let x ⇐ return p で束縛する。
-    | .partialCall f args _ _ => .ret (.lam args.holeTypes
-        (callComp args.holeTypes.length [] f (desugarExpr opPrim .other f)
+    | .partialCall f names args _ _ => .ret (.lam (args.holeNames names) args.holeTypes
+        (callComp args.holeTypes.length [] f (desugarExpr opPrim .other f) args.positions
           (desugarHoleArgs opPrim args.holeTypes.length args)))
     -- 同前段: T.C(a1,…,_,…,an) | return λ(p̄). ⟦T.C(a1,…,p,…,an)⟧
-    | .partialCon c ts args => .ret (.lam args.holeTypes
+    | .partialCon c ts args => .ret (.lam (args.holeNames (positionalNames args.positions.length)) args.holeTypes
         (sequence (desugarHoleArgs opPrim args.holeTypes.length args)
           (fun vs => .ret (.con c ts vs))))
     -- 01-12「演算子」: e1 ⊕ e2 | let x ⇐ ⟦e1⟧ in let y ⇐ ⟦e2⟧ in ⊕_T(x,y)
@@ -267,7 +270,7 @@ mutual
         sequence ms (fun vs => interpolate opPrim parts vs
           ((directHeads fs).map (CallHead.rename (· + ms.length))) [])
     -- 01-12「リスト、ラムダ、条件分岐、match」: lambda(x1,…,xn) B end lambda | return λ(x1:A1,…,xn:An). ⟦B⟧
-    | .lam ps _ _ body => .ret (.lam ps (desugarBlock opPrim .tail body))
+    | .lam names ps _ _ body => .ret (.lam names ps (desugarBlock opPrim .tail body))
     -- 同節: if e then B1 else B2 end if | let x ⇐ ⟦e⟧ in if x then ⟦B1⟧ else ⟦B2⟧
     | .ite c yes no => .letIn (desugarExpr opPrim .other c)
         (.ite (.var 0) ((desugarBlock opPrim p yes).rename (· + 1))
@@ -327,9 +330,9 @@ mutual
   穴の値も計算にして letChain に渡すので、Rust placeholder と同じ再束縛になる。 -/
   def desugarHoleArgs (opPrim : OpPrim) (n : Nat) : HoleArgs → List Comp
     | .nil => []
-    | .expr e rest => (desugarExpr opPrim .other e).rename (· + n) ::
+    | .expr _ _ e rest => (desugarExpr opPrim .other e).rename (· + n) ::
         desugarHoleArgs opPrim n rest
-    | .hole _ rest => .ret (.var rest.holeTypes.length) :: desugarHoleArgs opPrim n rest
+    | .hole _ _ _ rest => .ret (.var rest.holeTypes.length) :: desugarHoleArgs opPrim n rest
 
   /-- 選択肢・ガード・本体を一つの Arm に移す。照合対象の let の下でも、
   最初の選択肢の束縛を保護する。ガードは常に非末尾位置で脱糖する。 -/
@@ -383,7 +386,7 @@ end
 -- | fn f[ᾱ;ρ̄](x̄:Ā):B ! ε = ⟦B0⟧。型パラメータの制約はそのまま写す。
 def desugarDef (opPrim : OpPrim) (d : Def) : Release.Def :=
   -- 01-12「型クラス」: 制約ごとの Dict[Cl, α] の引数を値の引数の前に持つ。
-  { tparams := d.tparams, neffs := d.neffs, params := d.dictTys ++ d.params, ret := d.ret, eff := d.eff,
+  { tparams := d.tparams, neffs := d.neffs, names := d.coreNames, params := d.dictTys ++ d.params, ret := d.ret, eff := d.eff,
     body := desugarBlock opPrim .tail d.body }
 
 -- 01-12「型クラス」D-Impl: 上位の辞書 Ui は値、メソッド Mj は末尾位置で移す。
@@ -397,12 +400,99 @@ def desugarImpl (opPrim : OpPrim) (id : ImplDecl) : Release.ImplDecl :=
 -- match r { C_R(q1,…,qn) ⇒ return z }（qi は変数 z、そのほかは _。Rust getters と同じ）。
 def accessorDef (c : ConName) (cd : ConDecl) (k : Nat) : Release.Def :=
   let d := accessorDecl cd k
-  { tparams := d.tparams, neffs := d.neffs, params := d.params, ret := d.ret, eff := d.eff,
+  { tparams := d.tparams, neffs := d.neffs, names := d.names, params := d.params, ret := d.ret, eff := d.eff,
     body := .match (.var 0) [mkArm (accessorPattern c cd.args.length k) (.ret (.var 0))] }
 
 def desugarProgram (opPrim : OpPrim) (p : Program) : Release.Program :=
   { defs := p.lookupFun (desugarDef opPrim) accessorDef, cons := p.cons,
     ops := p.ops, effects := p.effects, classes := p.classes,
     impls := fun i => (p.impls i).map (desugarImpl opPrim) }
+
+/-! ソース順の計算と最後の位置順の参照を、独立したコアの期待結果で確認する。 -/
+namespace DefinitionExamples
+
+-- ラベルのない一引数の穴も、元の関数型の実名を失わない。
+example (op : OpPrim) :
+    desugarExpr op .other
+      (.partialCall (.local 0) ["input"] (.hole none 0 (.base .integer) .nil)
+        (.base .integer) Eff.empty) =
+      .ret (.lam ["input"] [.base .integer]
+        (.letIn (.ret (.var 1))
+          (.letIn (.ret (.var 1)) (.app (.var 1) [.var 0])))) := by rfl
+
+-- callee の計算、b の計算、a の計算の順を保つ。最後の app だけが a, b の順になる。
+example (op : OpPrim) :
+    desugarExpr op .other
+      (.call (.call (.opName "makeFunction" []) [] [] .nil) [some "b", some "a"] [1, 0]
+        (.cons (.call (.opName "readB" []) [] [] .nil)
+          (.cons (.call (.opName "readA" []) [] [] .nil) .nil))) =
+      .letIn (.app (.op "makeFunction" []) [])
+        (.letIn (.app (.op "readB" []) [])
+          (.letIn (.app (.op "readA" []) []) (.app (.var 2) [.var 0, .var 1]))) := by rfl
+
+-- callee と固定式はラムダの中で評価し、穴は b, a のソース順の契約を持つ。
+example (op : OpPrim) :
+    desugarExpr op .other
+      (.partialCall (.local 0) ["a", "b", "c"]
+        (.hole (some "b") 1 (.base .boolean)
+          (.expr (some "c") 2 (.call (.opName "fixed" []) [] [] .nil)
+            (.hole (some "a") 0 (.base .integer) .nil))) (.base .integer) Eff.empty) =
+      .ret (.lam ["b", "a"] [.base .boolean, .base .integer]
+        (.letIn (.ret (.var 2))
+          (.letIn (.ret (.var 2))
+            (.letIn (.app (.op "fixed" []) [])
+              (.letIn (.ret (.var 3)) (.app (.var 3) [.var 0, .var 2, .var 1])))))) := by rfl
+
+-- パイプ左辺を最初に束縛し、次に callee と明示引数を評価する。
+example (op : OpPrim) :
+    desugarExpr op .other
+      (.pipe (.call (.opName "left" []) [] [] .nil)
+        (.call (.call (.opName "makeFunction" []) [] [] .nil) [some "b"] [1]
+          (.cons (.call (.opName "readB" []) [] [] .nil) .nil))) =
+      .letIn (.app (.op "left" []) [])
+        (.letIn (.app (.op "makeFunction" []) [])
+          (.letIn (.app (.op "readB" []) []) (.app (.var 1) [.var 2, .var 0]))) := by rfl
+
+-- 操作の直接呼び出しでは頭を束縛せず、引数の計算をソース順に置く。
+example (op : OpPrim) :
+    desugarExpr op .other
+      (.call (.opName "ask" []) [some "b", some "a"] [1, 0]
+        (.cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil))) =
+      .letIn (.ret (.const (.boolean true)))
+        (.letIn (.ret (.const (.integer 7))) (.app (.op "ask" []) [.var 0, .var 1])) := by rfl
+
+-- メソッドの辞書と、メソッド自身の制約の辞書を let の下へ移す。
+example (op : OpPrim) :
+    desugarExpr op .other
+      (.call (.methName (.local 0) "combine" [] [] [.local 1] ["a", "b"]
+        [.base .integer, .base .boolean]) [some "b", some "a"] [1, 0]
+        (.cons (.literal (.boolean true)) (.cons (.literal (.integer 7)) .nil))) =
+      .letIn (.ret (.const (.boolean true)))
+        (.letIn (.ret (.const (.integer 7)))
+          (.meth (.var 2) "combine" [] [] [.var 3, .var 0, .var 1])) := by rfl
+
+example (op : OpPrim) :
+    desugarExpr op .other
+      (.partialCon "Pair" []
+        (.expr none 0 (.literal (.integer 7)) (.hole none 1 (.base .boolean) .nil))) =
+      .ret (.lam ["arg2"] [.base .boolean]
+        (.letIn (.ret (.const (.integer 7)))
+          (.letIn (.ret (.var 1)) (.ret (.con "Pair" [] [.var 1, .var 0]))))) := by rfl
+
+-- 構成子の関数値と取り出す関数はそれぞれ宣言上のフィールド名と value を維持する。
+example (op : OpPrim) :
+    desugarExpr op .other (.conValue "Pair" [] ["first", "second"] [.base .integer, .base .boolean]) =
+      .ret (.lam ["first", "second"] [.base .integer, .base .boolean]
+        (.ret (.con "Pair" [] [.var 1, .var 0]))) := by rfl
+
+example : (accessorDef "Pair" ⟨"Pair", 0, [.base .integer, .base .boolean]⟩ 0).names = ["value"] := by rfl
+
+private def dictDef : Def :=
+  { tparams := [{}], neffs := 0, names := ["value"], params := [.tvar 0],
+    ret := .base .unit, eff := Eff.empty, dictParams := [("Show", 0)], body := .empty }
+
+example (op : OpPrim) : (desugarDef op dictDef).names = ["%dict1", "value"] := by rfl
+
+end DefinitionExamples
 
 end Benitoite.Surface

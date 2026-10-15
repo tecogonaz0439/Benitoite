@@ -22,16 +22,16 @@ def ClosedSat (B : Builtins) (C0 C1 : List TParam) (ts : List Ty) : Prop :=
 /-- 可変のセルと明示遅延の組み込みの関数の型（01-07「可変のセル（初回リリース版）」、01-06「明示遅延の型（初回リリース版）」）。 -/
 def PrimSig.StoreShape (s : PrimSig) : Prop :=
   match s.kind with
-  | .refNew => s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.tvar 0] ∧ s.ret = .reference (.tvar 0) ∧
+  | .refNew => s.names = ["value"] ∧ s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.tvar 0] ∧ s.ret = .reference (.tvar 0) ∧
       s.eff = Eff.single stateEff
-  | .refGet => s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.reference (.tvar 0)] ∧ s.ret = .tvar 0 ∧
+  | .refGet => s.names = ["reference"] ∧ s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.reference (.tvar 0)] ∧ s.ret = .tvar 0 ∧
       s.eff = Eff.single stateEff
-  | .refSet => s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.reference (.tvar 0), .tvar 0] ∧
+  | .refSet => s.names = ["reference", "value"] ∧ s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.reference (.tvar 0), .tvar 0] ∧
       s.ret = .base .unit ∧ s.eff = Eff.single stateEff
-  | .refUpdate => s.ntys = 1 ∧ s.neffs = 0 ∧
-      s.params = [.reference (.tvar 0), .fn [.tvar 0] (.tvar 0) Eff.empty] ∧
+  | .refUpdate => s.names = ["reference", "f"] ∧ s.ntys = 1 ∧ s.neffs = 0 ∧
+      s.params = [.reference (.tvar 0), .fn ["value"] [.tvar 0] (.tvar 0) Eff.empty] ∧
       s.ret = .base .unit ∧ s.eff = Eff.single stateEff
-  | .force => s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.lazy (.tvar 0)] ∧ s.ret = .tvar 0 ∧
+  | .force => s.names = ["value"] ∧ s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.lazy (.tvar 0)] ∧ s.ret = .tvar 0 ∧
       s.eff = Eff.empty
   | .pure => True
   | .io => True

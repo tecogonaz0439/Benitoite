@@ -11,11 +11,11 @@ function echo(v: Map[String, Integer]) -> Map[String, Integer]
 function first(v: Map[String, Integer]) -> Integer
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   bind Pair(n, rounds) <- try Runner.settings()
-  bind indexes <- List.range(0, n)
-  bind source <- Map.fromList(List.map(indexes, lambda(i: Integer) -> Pair[String, Integer] return Pair(Integer.toString(i), i) end lambda))
-  bind expected <- Map.fromList(List.map(indexes, lambda(i: Integer) -> Pair[String, Integer] return Pair(Integer.toString(i), i + 7) end lambda))
+  bind indexes <- List.range(start: 0, stop: n)
+  bind source <- Map.fromList(List.map(xs: indexes, f: lambda(value: Integer) -> Pair[String, Integer] return Pair(Integer.toString(value), value) end lambda))
+  bind expected <- Map.fromList(List.map(xs: indexes, f: lambda(value: Integer) -> Pair[String, Integer] return Pair(Integer.toString(value), value + 7) end lambda))
 
-  return Runner.verify(rounds, lambda() -> Boolean
+  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
     bind c0 <- echo(source) = expected
     bind c1 <- result(source) = Map.fromList([Pair("a", 2), Pair("z", 3)])
     bind c2 <- first(source) = (if n = 0 then -1 else 48 end if)

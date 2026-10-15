@@ -7,13 +7,13 @@ end function
 
 @test("add sums two numbers")
 function addSums() -> Unit uses Assert.Check
-  Assert.equal(add(1, 2), 3)
+  Assert.equal(actual: add(left: 1, right: 2), expected: 3)
 end function
 
 @test
 function addIsCommutative() -> Unit uses Assert.Check
-  Assert.notEqual(add(1, 2), 4)
-  Assert.isTrue(add(2, 5) = add(5, 2), "add is commutative")
+  Assert.notEqual(actual: add(left: 1, right: 2), expected: 4)
+  Assert.isTrue(condition: add(left: 2, right: 5) = add(left: 5, right: 2), message: "add is commutative")
 end function
 
 @test

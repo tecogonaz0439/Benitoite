@@ -3,10 +3,10 @@
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  bind values <- List.range(0, 50000)
-  bind mapped <- List.map(values, lambda(value) return value end lambda)
-  bind filtered <- List.filter(mapped, lambda(value) return value < 0 end lambda)
-  bind total <- List.fold(mapped, 0, lambda(acc, value) return acc + value end lambda)
+  bind values <- List.range(start: 0, stop: 50000)
+  bind mapped <- List.map(xs: values, f: lambda(value) return value end lambda)
+  bind filtered <- List.filter(xs: mapped, p: lambda(value) return value < 0 end lambda)
+  bind total <- List.fold(xs: mapped, initial: 0, f: lambda(acc, value) return acc + value end lambda)
   Console.writeLine(Integer.toString(List.length(mapped)))
   Console.writeLine(Integer.toString(List.length(filtered)))
   return Console.writeLine(Integer.toString(total))

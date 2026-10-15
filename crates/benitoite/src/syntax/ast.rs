@@ -2,7 +2,7 @@
 //! 形は 01-02「初回リリース版の文法の全体」をそのまま表す。
 
 use super::token::{FloatSuffix, IntegerSuffix};
-use crate::base::{FileId, NodeId, Span};
+use crate::base::{BytePos, FileId, NodeId, Span};
 
 /// 名前の綴りと位置。ノードではない。
 #[derive(Clone, PartialEq, Debug)]
@@ -354,12 +354,14 @@ pub struct NamedType {
     pub args: Vec<TypeExpr>,
 }
 
-/// `function(A, B) -> R uses E`。
+/// `function(name: A, other: B) -> R uses E`。
 #[derive(Clone, PartialEq, Debug)]
 pub struct FnType {
     pub id: NodeId,
     pub span: Span,
     pub params: Vec<TypeExpr>,
+    /// `params` と同じ長さで、宣言順の契約名を保持する。
+    pub param_names: Vec<Name>,
     pub ret: Box<TypeExpr>,
     pub uses: Option<UsesList>,
 }
@@ -442,7 +444,8 @@ pub enum Expr {
     Pipe(PipeExpr),
     If(IfExpr),
     Match(MatchExpr),
-    Lambda(LambdaExpr),
+    /// 終端情報を含むラムダで式全体の大きさを増やさない（設計書 02-03「AST」）。
+    Lambda(Box<LambdaExpr>),
     Return(ReturnExpr),
     Try(TryExpr),
     Lazy(LazyExpr),
@@ -566,6 +569,45 @@ pub struct CallExpr {
 pub enum Arg {
     Expr(Expr),
     Placeholder(PlaceholderArg),
+    Named(Box<NamedArg>),
+}
+
+/// 名前付きの呼び出し引数。ラベルは値への参照ではない。
+#[derive(Clone, PartialEq, Debug)]
+pub struct NamedArg {
+    pub name: Name,
+    pub value: ArgValue,
+}
+
+/// 呼び出し引数の値または直接の穴。
+#[derive(Clone, PartialEq, Debug)]
+pub enum ArgValue {
+    Expr(Expr),
+    Placeholder(PlaceholderArg),
+}
+
+impl Arg {
+    pub(crate) fn expr(&self) -> Option<&Expr> {
+        match self {
+            Self::Expr(e) => Some(e),
+            Self::Placeholder(_) => None,
+            Self::Named(a) => match &a.value {
+                ArgValue::Expr(e) => Some(e),
+                ArgValue::Placeholder(_) => None,
+            },
+        }
+    }
+
+    pub(crate) fn placeholder(&self) -> Option<&PlaceholderArg> {
+        match self {
+            Self::Expr(_) => None,
+            Self::Placeholder(p) => Some(p),
+            Self::Named(a) => match &a.value {
+                ArgValue::Expr(_) => None,
+                ArgValue::Placeholder(p) => Some(p),
+            },
+        }
+    }
 }
 
 /// 呼び出しの直接の引数に書いた `_`。
@@ -699,6 +741,15 @@ pub struct MatchArm {
     pub body: Block,
 }
 
+/// ラムダの終わりの表現（設計書 02-03「AST」）。
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum LambdaEnding {
+    /// 明示の終端。範囲は `end` から `lambda` の末尾まで。
+    Explicit { end_span: Span },
+    /// 終端を省略した形。本体の排他的な末尾の位置。
+    Omitted { body_end: BytePos },
+}
+
 /// `lambda(x, y: T) -> R uses E … end lambda`。
 #[derive(Clone, PartialEq, Debug)]
 pub struct LambdaExpr {
@@ -708,6 +759,8 @@ pub struct LambdaExpr {
     pub ret: Option<TypeExpr>,
     pub uses: Option<UsesList>,
     pub body: Block,
+    /// 整形で書き手が選んだ終端を保持するための情報。
+    pub ending: LambdaEnding,
 }
 
 /// `return e`。

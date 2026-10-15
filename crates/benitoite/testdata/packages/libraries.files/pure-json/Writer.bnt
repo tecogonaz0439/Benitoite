@@ -14,11 +14,11 @@ end data
 
 /// 明示の作業列で JSON を書く。
 public(package) function write(value: Json.Value, pretty: Boolean) -> String
-  return writeFrom(Work.Visit(value, 0, Work.Done), Parts.empty(), pretty)
+  return writeFrom(work: Work.Visit(value, 0, Work.Done), parts: Parts.empty(), pretty: pretty)
 end function
 
 function indent(depth: Integer, pretty: Boolean) -> String
-  return if pretty then "\n" + String.repeat("  ", depth) else "" end if
+  return if pretty then "\n" + String.repeat(s: "  ", n: depth) else "" end if
 end function
 
 function writeFrom(work: Work, parts: Parts.Buffer, pretty: Boolean) -> String
@@ -26,35 +26,35 @@ function writeFrom(work: Work, parts: Parts.Buffer, pretty: Boolean) -> String
     case Work.Done -> Parts.finish(parts)
     case Work.Items(items, first, depth, rest) ->
       match items with
-        case [] -> writeFrom(rest, Parts.append(parts, indent(depth - 1, pretty) + "]"), pretty)
+        case [] -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: indent(depth: depth - 1, pretty: pretty) + "]"), pretty: pretty)
         case [value, ..remaining] ->
-          bind before <- (if first then "" else "," end if) + indent(depth, pretty)
-          writeFrom(Work.Visit(value, depth, Work.Items(remaining, false, depth, rest)), Parts.append(parts, before), pretty)
+          bind before <- (if first then "" else "," end if) + indent(depth: depth, pretty: pretty)
+          writeFrom(work: Work.Visit(value, depth, Work.Items(remaining, false, depth, rest)), parts: Parts.append(parts: parts, part: before), pretty: pretty)
       end match
     case Work.Members(members, i, depth, rest) ->
-      match List.get(members, i) with
-        case Option.None -> writeFrom(rest, Parts.append(parts, indent(depth - 1, pretty) + "}"), pretty)
+      match List.get(xs: members, i: i) with
+        case Option.None -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: indent(depth: depth - 1, pretty: pretty) + "}"), pretty: pretty)
         case Option.Some(Pair(key, value)) ->
-          bind before <- (if i = 0 then "" else "," end if) + indent(depth, pretty) + Strings.quoted(key) + (if pretty then ": " else ":" end if)
-          writeFrom(Work.Visit(value, depth, Work.Members(members, i + 1, depth, rest)), Parts.append(parts, before), pretty)
+          bind before <- (if i = 0 then "" else "," end if) + indent(depth: depth, pretty: pretty) + Strings.quoted(key) + (if pretty then ": " else ":" end if)
+          writeFrom(work: Work.Visit(value, depth, Work.Members(members, i + 1, depth, rest)), parts: Parts.append(parts: parts, part: before), pretty: pretty)
       end match
     case Work.Visit(value, depth, rest) ->
       match value with
-        case Json.Value.Null -> writeFrom(rest, Parts.append(parts, "null"), pretty)
-        case Json.Value.Boolean(b) -> writeFrom(rest, Parts.append(parts, if b then "true" else "false" end if), pretty)
-        case Json.Value.Integer(n) -> writeFrom(rest, Parts.append(parts, Integer.toString(n)), pretty)
-        case Json.Value.Float(n) -> writeFrom(rest, Parts.append(parts, Numbers.written(n)), pretty)
-        case Json.Value.String(s) -> writeFrom(rest, Parts.append(parts, Strings.quoted(s)), pretty)
+        case Json.Value.Null -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: "null"), pretty: pretty)
+        case Json.Value.Boolean(b) -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: if b then "true" else "false" end if), pretty: pretty)
+        case Json.Value.Integer(n) -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: Integer.toString(n)), pretty: pretty)
+        case Json.Value.Float(n) -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: Numbers.written(n)), pretty: pretty)
+        case Json.Value.String(s) -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: Strings.quoted(s)), pretty: pretty)
         case Json.Value.Array(items) ->
           match items with
-            case [] -> writeFrom(rest, Parts.append(parts, "[]"), pretty)
-            case _ -> writeFrom(Work.Items(items, true, depth + 1, rest), Parts.append(parts, "["), pretty)
+            case [] -> writeFrom(work: rest, parts: Parts.append(parts: parts, part: "[]"), pretty: pretty)
+            case _ -> writeFrom(work: Work.Items(items, true, depth + 1, rest), parts: Parts.append(parts: parts, part: "["), pretty: pretty)
           end match
         case Json.Value.Object(members) ->
           if Map.size(members) = 0 then
-            writeFrom(rest, Parts.append(parts, "{}"), pretty)
+            writeFrom(work: rest, parts: Parts.append(parts: parts, part: "{}"), pretty: pretty)
           else
-            writeFrom(Work.Members(Map.toList(members), 0, depth + 1, rest), Parts.append(parts, "{"), pretty)
+            writeFrom(work: Work.Members(Map.toList(members), 0, depth + 1, rest), parts: Parts.append(parts: parts, part: "{"), pretty: pretty)
           end if
       end match
   end match

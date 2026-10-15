@@ -11,13 +11,13 @@ end effect
 function main() -> Unit uses Console.Write, State
   bind cell <- Reference.new(Option.None)
   handle
-    bind _ <- store(lambda() bind _ <- File.writeText("out.txt", "wrote via effect confusion") end lambda)
+    bind _ <- store(lambda() bind _ <- File.writeText(path: "out.txt", text: "wrote via effect confusion") end lambda)
     bind g <- store(lambda() Console.writeLine("harmless") end lambda)
     g()
   with
     case store(x) ->
       bind prev <- Reference.get(cell)
-      Reference.set(cell, Option.Some(x))
+      Reference.set(reference: cell, value: Option.Some(x))
       match prev with
         case Option.Some(p) -> resume(p)
         case Option.None -> resume(x)

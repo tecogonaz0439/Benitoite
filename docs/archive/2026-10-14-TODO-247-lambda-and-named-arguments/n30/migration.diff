@@ -1,0 +1,1336 @@
+--- a/tools/bench/programs/cycle.bnt
++++ b/tools/bench/programs/cycle.bnt
+@@ -2,7 +2,7 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+-  return match List.get(Process.arguments(), index) with
++  return match List.get(xs: Process.arguments(), i: index) with
+     case Option.None -> Result.Error("expected non-negative integer arguments")
+     case Option.Some(argument) -> match Integer.parse(argument) with
+       case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+@@ -19,7 +19,7 @@
+ function discard(count: Integer) -> Integer uses State
+   return if count = 0 then 0 else
+     bind cell <- Reference.new(Node.Empty)
+-    Reference.set(cell, Node.Link(cell))
++    Reference.set(reference: cell, value: Node.Link(cell))
+     discard(count - 1)
+   end if
+ end function
+--- a/tools/bench/programs/eval.bnt
++++ b/tools/bench/programs/eval.bnt
+@@ -27,7 +27,7 @@
+     Expr.Lit(1)
+   else
+     bind smaller <- buildExpression(depth - 1)
+-    match Integer.floorModulo(depth, 3) with
++    match Integer.floorModulo(a: depth, b: 3) with
+       case 0 -> Expr.Add(smaller, Expr.Lit(depth))
+       case 1 -> Expr.Inc(smaller)
+       case _ -> Expr.Scale(smaller, 1)
+@@ -49,7 +49,7 @@
+   return if count = 0 then
+     total
+   else
+-    repeatEvaluate(expression, count - 1, total + evaluate(expression))
++    repeatEvaluate(expression: expression, count: count - 1, total: total + evaluate(expression))
+   end if
+ end function
+ 
+@@ -57,7 +57,7 @@
+   return match readCount() with
+     case Result.Error(message) -> Result.Error(message)
+     case Result.Ok(count) ->
+-      Console.writeLine(Integer.toString(repeatEvaluate(buildExpression(500), count, 0)))
++      Console.writeLine(Integer.toString(repeatEvaluate(expression: buildExpression(500), count: count, total: 0)))
+       Result.Ok(())
+   end match
+ end function
+--- a/tools/bench/programs/handler.bnt
++++ b/tools/bench/programs/handler.bnt
+@@ -2,7 +2,7 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+-  return match List.get(Process.arguments(), index) with
++  return match List.get(xs: Process.arguments(), i: index) with
+     case Option.None -> Result.Error("expected non-negative integer arguments")
+     case Option.Some(argument) -> match Integer.parse(argument) with
+       case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+@@ -16,17 +16,17 @@
+ end effect
+ 
+ function repeat(count: Integer, value: Integer) -> Integer uses Step
+-  return if count = 0 then value else repeat(count - 1, step(value)) end if
++  return if count = 0 then value else repeat(count: count - 1, value: step(value)) end if
+ end function
+ 
+ function runTail(count: Integer) -> Integer
+-  return handle repeat(count, 1) with
++  return handle repeat(count: count, value: 1) with
+     case step(value) -> resume((value * 17 + 11) mod 65521)
+   end handle
+ end function
+ 
+ function runSaved(count: Integer) -> Integer
+-  return handle repeat(count, 1) with
++  return handle repeat(count: count, value: 1) with
+     case step(value) ->
+       // 再開の後に加算を残し、末尾でない再開の区画の保存を測る。
+       bind result <- resume((value * 17 + 11) mod 65521)
+@@ -39,12 +39,12 @@
+ function runMany(count: Integer, mode: String, rounds: Integer, total: Integer) -> Integer
+   return if rounds = 0 then total else
+     bind value <- if mode = "tail" then runTail(count) else runSaved(count) end if
+-    runMany(count, mode, rounds - 1, total + value)
++    runMany(count: count, mode: mode, rounds: rounds - 1, total: total + value)
+   end if
+ end function
+ 
+ function readRounds() -> Result[Integer, String] uses Process.Environment
+-  return match List.get(Process.arguments(), 2) with
++  return match List.get(xs: Process.arguments(), i: 2) with
+     case Option.None -> Result.Ok(1)
+     case Option.Some(_) -> readInteger(2)
+   end match
+@@ -55,12 +55,12 @@
+     case Result.Error(message) -> Result.Error(message)
+     case Result.Ok(count) -> match readRounds() with
+       case Result.Error(message) -> Result.Error(message)
+-      case Result.Ok(rounds) -> match List.get(Process.arguments(), 1) with
++      case Result.Ok(rounds) -> match List.get(xs: Process.arguments(), i: 1) with
+         case Option.Some("tail") ->
+-          Console.writeLine(Integer.toString(runMany(count, "tail", rounds, 0)))
++          Console.writeLine(Integer.toString(runMany(count: count, mode: "tail", rounds: rounds, total: 0)))
+           Result.Ok(())
+         case Option.Some("saved") ->
+-          Console.writeLine(Integer.toString(runMany(count, "saved", rounds, 0)))
++          Console.writeLine(Integer.toString(runMany(count: count, mode: "saved", rounds: rounds, total: 0)))
+           Result.Ok(())
+         case _ -> Result.Error("expected handler mode: tail or saved")
+       end match
+--- a/tools/bench/programs/http.bnt
++++ b/tools/bench/programs/http.bnt
+@@ -3,7 +3,7 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+-  return match List.get(Process.arguments(), index) with
++  return match List.get(xs: Process.arguments(), i: index) with
+     case Option.None -> Result.Error("expected non-negative integer arguments")
+     case Option.Some(argument) -> match Integer.parse(argument) with
+       case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+@@ -14,37 +14,37 @@
+ 
+ function compute(done: Reference[Boolean], value: Integer) -> Unit uses State
+   // 終了の印を読むまでは計算し続け、呼び出しの予算による切り替えを測る（設計書 07-02）。
+-  return if Reference.get(done) then () else compute(done, (value * 17 + 11) mod 65521) end if
++  return if Reference.get(done) then () else compute(done: done, value: (value * 17 + 11) mod 65521) end if
+ end function
+ 
+ function serve(listener: Http.Listener, group: TaskGroup, count: Integer, tasks: List[Task[Result[Unit, String]]]) -> Result[Unit, String] uses Http.Listen, State
+   return if count = 0 then
+-    List.fold(tasks, Result.Ok(()), lambda(acc, task)
++    List.fold(xs: tasks, initial: Result.Ok(()), f: lambda(acc, value)
+       bind _ <- try acc
+-      return Task.await(task)
++      return Task.await(value)
+     end lambda)
+   else
+     bind exchange <- try Http.accept(listener) |> Result.mapError(_, NetworkError.message)
+-    bind task <- TaskGroup.spawn(group, lambda()
++    bind task <- TaskGroup.spawn(group: group, action: lambda()
+       with current = exchange do
+-        return Http.respond(current, Http.text(200, "ok")) |> Result.mapError(_, NetworkError.message)
++        return Http.respond(exchange: current, response: Http.text(status: 200, s: "ok")) |> Result.mapError(_, NetworkError.message)
+       end with
+     end lambda)
+-    serve(listener, group, count - 1, List.append(tasks, task))
++    serve(listener: listener, group: group, count: count - 1, tasks: List.append(xs: tasks, x: task))
+   end if
+ end function
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Console.Write, Process.Environment, State
+   bind count <- try readInteger(0)
+   bind busy <- try readInteger(1)
+-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+     bind done <- Reference.new(false)
+-    bind worker <- TaskGroup.spawn(group, lambda()
+-      return if busy = 0 then () else compute(done, 1) end if
++    bind worker <- TaskGroup.spawn(group: group, action: lambda()
++      return if busy = 0 then () else compute(done: done, value: 1) end if
+     end lambda)
+     Console.writeLine(Integer.toString(Http.listenerPort(listener)))
+-    bind result <- serve(listener, group, count, [])
+-    Reference.set(done, true)
++    bind result <- serve(listener: listener, group: group, count: count, tasks: [])
++    Reference.set(reference: done, value: true)
+     Task.await(worker)
+     return result
+   end with
+--- a/tools/bench/programs/list.bnt
++++ b/tools/bench/programs/list.bnt
+@@ -19,10 +19,10 @@
+   return match readCount() with
+     case Result.Error(message) -> Result.Error(message)
+     case Result.Ok(count) ->
+-      bind values <- List.range(0, count)
+-      bind mapped <- List.map(values, lambda(value) return value * 3 end lambda)
+-      bind filtered <- List.filter(mapped, lambda(value) return Integer.floorModulo(value, 2) = 0 end lambda)
+-      bind total <- List.fold(filtered, 0, lambda(accumulator, value) return accumulator + value end lambda)
++      bind values <- List.range(start: 0, stop: count)
++      bind mapped <- List.map(xs: values, f: lambda(value) return value * 3 end lambda)
++      bind filtered <- List.filter(xs: mapped, p: lambda(value) return Integer.floorModulo(a: value, b: 2) = 0 end lambda)
++      bind total <- List.fold(xs: filtered, initial: 0, f: lambda(acc, value) return acc + value end lambda)
+       Console.writeLine(Integer.toString(total))
+       Result.Ok(())
+   end match
+--- a/tools/bench/programs/listget.bnt
++++ b/tools/bench/programs/listget.bnt
+@@ -2,7 +2,7 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+-  return match List.get(Process.arguments(), index) with
++  return match List.get(xs: Process.arguments(), i: index) with
+     case Option.None -> Result.Error("expected non-negative integer arguments")
+     case Option.Some(argument) -> match Integer.parse(argument) with
+       case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+@@ -15,11 +15,11 @@
+   return if count = 0 then total else
+     // 種は 2147483647 未満に保ち、掛け算も Integer の範囲に収める。
+     bind next <- (seed * 48271 + 11) mod 2147483647
+-    bind value <- match List.get(values, next mod length) with
++    bind value <- match List.get(xs: values, i: next mod length) with
+       case Option.Some(x) -> x
+       case Option.None -> 0
+     end match
+-    lookup(values, length, count - 1, next, total + value)
++    lookup(values: values, length: length, count: count - 1, seed: next, total: total + value)
+   end if
+ end function
+ 
+@@ -30,8 +30,8 @@
+       match readInteger(1) with
+         case Result.Error(message) -> Result.Error(message)
+         case Result.Ok(count) ->
+-          bind values <- List.range(0, length)
+-          Console.writeLine(Integer.toString(lookup(values, length, count, 1, 0)))
++          bind values <- List.range(start: 0, stop: length)
++          Console.writeLine(Integer.toString(lookup(values: values, length: length, count: count, seed: 1, total: 0)))
+           Result.Ok(())
+       end match
+     end if
+--- a/tools/bench/programs/loop.bnt
++++ b/tools/bench/programs/loop.bnt
+@@ -17,7 +17,7 @@
+ 
+ function countUp(current: Integer, limit: Integer, total: Integer) -> Integer
+   return if current < limit then
+-    countUp(current + 1, limit, total + current)
++    countUp(current: current + 1, limit: limit, total: total + current)
+   else
+     total
+   end if
+@@ -27,7 +27,7 @@
+   return match readCount() with
+     case Result.Error(message) -> Result.Error(message)
+     case Result.Ok(count) ->
+-      Console.writeLine(Integer.toString(countUp(0, count, 0)))
++      Console.writeLine(Integer.toString(countUp(current: 0, limit: count, total: 0)))
+       Result.Ok(())
+   end match
+ end function
+--- a/tools/bench/programs/map.bnt
++++ b/tools/bench/programs/map.bnt
+@@ -4,32 +4,32 @@
+ function keys(count: Integer, seed: Integer, values: List[Integer]) -> List[Integer]
+   return if count = 0 then values else
+     bind next <- (seed * 48271 + 11) mod 2147483647
+-    keys(count - 1, next, List.append(values, next))
++    keys(count: count - 1, seed: next, values: List.append(xs: values, x: next))
+   end if
+ end function
+ 
+ function removeKeys(values: List[Integer], index: Integer, m: Map[Integer, Integer], s: Set[Integer]) -> Pair[Map[Integer, Integer], Set[Integer]]
+-  return match List.get(values, index) with
++  return match List.get(xs: values, i: index) with
+     case Option.None -> Pair(m, s)
+-    case Option.Some(key) -> removeKeys(values, index + 2, Map.remove(m, key), Set.remove(s, key))
++    case Option.Some(key) -> removeKeys(values: values, index: index + 2, m: Map.remove(m: m, k: key), s: Set.remove(s: s, x: key))
+   end match
+ end function
+ 
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  return match Option.map(List.get(Process.arguments(), 0), Integer.parse) |> Option.unwrapOr(_, Option.None) with
++  return match Option.map(o: List.get(xs: Process.arguments(), i: 0), f: Integer.parse) |> Option.unwrapOr(_, Option.None) with
+     case Option.None -> Result.Error("expected a non-negative key count")
+     case Option.Some(count) -> if count < 0 then Result.Error("expected a non-negative key count") else
+-      bind values <- keys(count, 1, [])
+-      bind m <- List.fold(values, Map.empty(), lambda(acc, key) return Map.set(acc, key, key) end lambda)
+-      bind s <- List.fold(values, Set.empty(), lambda(acc, key) return Set.add(acc, key) end lambda)
+-      bind mapFound <- List.fold(values, 0, lambda(acc, key)
+-        return acc + match Map.get(m, key) with
++      bind values <- keys(count: count, seed: 1, values: [])
++      bind m <- List.fold(xs: values, initial: Map.empty(), f: lambda(acc, value) return Map.set(m: acc, k: value, value: value) end lambda)
++      bind s <- List.fold(xs: values, initial: Set.empty(), f: lambda(acc, value) return Set.add(s: acc, x: value) end lambda)
++      bind mapFound <- List.fold(xs: values, initial: 0, f: lambda(acc, value)
++        return acc + match Map.get(m: m, k: value) with
+           case Option.Some(_) -> 1
+           case Option.None -> 0
+         end match
+       end lambda)
+-      bind setFound <- List.fold(values, 0, lambda(acc, key) return acc + if Set.contains(s, key) then 1 else 0 end if end lambda)
+-      bind remaining <- removeKeys(values, 0, m, s)
++      bind setFound <- List.fold(xs: values, initial: 0, f: lambda(acc, value) return acc + if Set.contains(s: s, x: value) then 1 else 0 end if end lambda)
++      bind remaining <- removeKeys(values: values, index: 0, m: m, s: s)
+       Console.writeLine(Integer.toString(Map.size(Pair.first(remaining))))
+       Console.writeLine(Integer.toString(Set.size(Pair.second(remaining))))
+       Console.writeLine(Integer.toString(mapFound))
+--- a/tools/bench/programs/println.bnt
++++ b/tools/bench/programs/println.bnt
+@@ -18,7 +18,7 @@
+ function printLines(current: Integer, limit: Integer) -> Unit uses Console.Write
+   return if current < limit then
+     Console.writeLine("line " + Integer.toString(current))
+-    printLines(current + 1, limit)
++    printLines(current: current + 1, limit: limit)
+   else
+     ()
+   end if
+@@ -28,7 +28,7 @@
+   return match readCount() with
+     case Result.Error(message) -> Result.Error(message)
+     case Result.Ok(count) ->
+-      printLines(0, count)
++      printLines(current: 0, limit: count)
+       Console.writeLine("done " + Integer.toString(count))
+       Result.Ok(())
+   end match
+--- a/tools/bench/programs/string.bnt
++++ b/tools/bench/programs/string.bnt
+@@ -19,9 +19,9 @@
+   return match readCount() with
+     case Result.Error(message) -> Result.Error(message)
+     case Result.Ok(count) ->
+-      bind repeated <- String.repeat("x,", count)
++      bind repeated <- String.repeat(s: "x,", n: count)
+       bind text <- "start," + repeated + "end"
+-      Console.writeLine(Integer.toString(List.length(String.split(text, ","))))
++      Console.writeLine(Integer.toString(List.length(String.split(s: text, separator: ","))))
+       Result.Ok(())
+   end match
+ end function
+--- a/tools/bench/programs/tasks.bnt
++++ b/tools/bench/programs/tasks.bnt
+@@ -2,7 +2,7 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+-  return match List.get(Process.arguments(), index) with
++  return match List.get(xs: Process.arguments(), i: index) with
+     case Option.None -> Result.Error("expected non-negative integer arguments")
+     case Option.Some(argument) -> match Integer.parse(argument) with
+       case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+@@ -12,7 +12,7 @@
+ end function
+ 
+ function compute(count: Integer, value: Integer) -> Integer
+-  return if count = 0 then value else compute(count - 1, (value * 17 + 11) mod 65521) end if
++  return if count = 0 then value else compute(count: count - 1, value: (value * 17 + 11) mod 65521) end if
+ end function
+ 
+ function waitGate(open: Reference[Boolean]) -> Unit uses State
+@@ -21,11 +21,11 @@
+ 
+ function spawnTasks(group: TaskGroup, gate: Task[Unit], count: Integer, work: Integer, tasks: List[Task[Integer]]) -> List[Task[Integer]] uses State
+   return if count = 0 then tasks else
+-    bind task <- TaskGroup.spawn(group, lambda()
++    bind task <- TaskGroup.spawn(group: group, action: lambda()
+       Task.await(gate)
+-      return compute(work, 1)
++      return compute(count: work, value: 1)
+     end lambda)
+-    spawnTasks(group, gate, count - 1, work, List.append(tasks, task))
++    spawnTasks(group: group, gate: gate, count: count - 1, work: work, tasks: List.append(xs: tasks, x: task))
+   end if
+ end function
+ 
+@@ -37,11 +37,11 @@
+       case Result.Ok(work) ->
+         bind open <- Reference.new(false)
+         bind total <- with group = TaskGroup.open() do
+-          bind gate <- TaskGroup.spawn(group, lambda() return waitGate(open) end lambda)
+-          bind tasks <- spawnTasks(group, gate, count, work, [])
++          bind gate <- TaskGroup.spawn(group: group, action: lambda() return waitGate(open) end lambda)
++          bind tasks <- spawnTasks(group: group, gate: gate, count: count, work: work, tasks: [])
+           // 全タスクを起動してから計算へ進め、同時に存在する数を入力と揃える（設計書 07-02）。
+-          Reference.set(open, true)
+-          List.fold(tasks, 0, lambda(acc, task) return acc + Task.await(task) end lambda)
++          Reference.set(reference: open, value: true)
++          List.fold(xs: tasks, initial: 0, f: lambda(acc, value) return acc + Task.await(value) end lambda)
+         end with
+         Console.writeLine(Integer.toString(total))
+         Result.Ok(())
+--- a/tools/bench/programs/trait.bnt
++++ b/tools/bench/programs/trait.bnt
+@@ -2,7 +2,7 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function readInteger(index: Integer) -> Result[Integer, String] uses Process.Environment
+-  return match List.get(Process.arguments(), index) with
++  return match List.get(xs: Process.arguments(), i: index) with
+     case Option.None -> Result.Error("expected non-negative integer arguments")
+     case Option.Some(argument) -> match Integer.parse(argument) with
+       case Option.Some(n) -> if n >= 0 then Result.Ok(n) else Result.Error("expected non-negative integer arguments") end if
+@@ -22,14 +22,14 @@
+ end implement
+ 
+ function repeat[T: Step](count: Integer, value: T) -> T
+-  return if count = 0 then value else repeat(count - 1, Step.step(value)) end if
++  return if count = 0 then value else repeat(count: count - 1, value: Step.step(value)) end if
+ end function
+ 
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   return match readInteger(0) with
+     case Result.Error(message) -> Result.Error(message)
+     case Result.Ok(count) ->
+-      Console.writeLine(Integer.toString(repeat(count, 1)))
++      Console.writeLine(Integer.toString(repeat(count: count, value: 1)))
+       Result.Ok(())
+   end match
+ end function
+--- a/tools/bench/wasm/Runner.bnt
++++ b/tools/bench/wasm/Runner.bnt
+@@ -6,20 +6,20 @@
+ 
+ /// 引数を読み、欠けていれば失敗する。
+ public function argument(index: Integer) -> Result[String, String] uses Process.Environment
+-  return Option.okOr(List.get(Process.arguments(), index), "missing argument")
++  return Option.okOr(o: List.get(xs: Process.arguments(), i: index), error: "missing argument")
+ end function
+ 
+ /// 一回以上の反復数を読む。
+ public function rounds(index: Integer) -> Result[Integer, String] uses Process.Environment
+   bind text <- try argument(index)
+-  bind count <- try Option.okOr(Integer.parse(text), "invalid repeat count")
++  bind count <- try Option.okOr(o: Integer.parse(text), error: "invalid repeat count")
+   return if count > 0 then Result.Ok(count) else Result.Error("repeat count must be positive") end if
+ end function
+ 
+ function repeat[A](remaining: Integer, last: A, work: function() -> Result[A, String] uses State) -> Result[A, String] uses State
+   return if remaining = 0 then Result.Ok(last) else
+     bind next <- try work()
+-    repeat(remaining - 1, next, work)
++    repeat(remaining: remaining - 1, last: next, work: work)
+   end if
+ end function
+ 
+@@ -28,7 +28,7 @@
+   bind start <- Clock.monotonicMilliseconds()
+   bind first <- try work()
+   bind boundary <- Clock.monotonicMilliseconds()
+-  bind last <- try repeat(count - 1, first, work)
++  bind last <- try repeat(remaining: count - 1, last: first, work: work)
+   bind stop <- Clock.monotonicMilliseconds()
+   bind output <- render(last)
+   Console.writeLine("first_ms=${boundary - start} rest_ms=${stop - boundary} rounds=${count} digest=" + Bytes.toHex(Hash.sha256(String.toUTF8(output))))
+--- a/tools/bench/wasm/hash-a.bnt
++++ b/tools/bench/wasm/hash-a.bnt
+@@ -9,6 +9,6 @@
+ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write, Process.Environment
+   bind path <- try Runner.argument(0)
+   bind count <- try Runner.rounds(1)
+-  bind bytes <- try Result.mapError(File.readBytes(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
+-  return Runner.measure(count, lambda() -> Result[Bytes, String] uses State return Result.Ok(Hash.sha256(bytes)) end lambda, Bytes.toHex)
++  bind bytes <- try Result.mapError(r: File.readBytes(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
++  return Runner.measure(count: count, work: lambda() -> Result[Bytes, String] uses State return Result.Ok(Hash.sha256(bytes)) end lambda, render: Bytes.toHex)
+ end function
+--- a/tools/bench/wasm/hash-c-fast.bnt
++++ b/tools/bench/wasm/hash-c-fast.bnt
+@@ -14,6 +14,6 @@
+ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write, Process.Environment
+   bind path <- try Runner.argument(0)
+   bind count <- try Runner.rounds(1)
+-  bind bytes <- try Result.mapError(File.readBytes(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
+-  return Runner.measure(count, lambda() -> Result[Bytes, String] uses State return Result.Ok(Digest.sha256(bytes)) end lambda, Bytes.toHex)
++  bind bytes <- try Result.mapError(r: File.readBytes(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
++  return Runner.measure(count: count, work: lambda() -> Result[Bytes, String] uses State return Result.Ok(Digest.sha256(bytes)) end lambda, render: Bytes.toHex)
+ end function
+--- a/tools/bench/wasm/hash-c-list.bnt
++++ b/tools/bench/wasm/hash-c-list.bnt
+@@ -14,7 +14,7 @@
+ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write, Process.Environment
+   bind path <- try Runner.argument(0)
+   bind count <- try Runner.rounds(1)
+-  bind bytes <- try Result.mapError(File.readBytes(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
++  bind bytes <- try Result.mapError(r: File.readBytes(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
+   bind items <- Bytes.toList(bytes)
+-  return Runner.measure(count, lambda() -> Result[List[Byte], String] uses State return Result.Ok(Digest.sha256List(items)) end lambda, lambda(value: List[Byte]) -> String return Bytes.toHex(Bytes.fromList(value)) end lambda)
++  return Runner.measure(count: count, work: lambda() -> Result[List[Byte], String] uses State return Result.Ok(Digest.sha256List(items)) end lambda, render: lambda(value: List[Byte]) -> String return Bytes.toHex(Bytes.fromList(value)) end lambda)
+ end function
+--- a/tools/bench/wasm/json-a.bnt
++++ b/tools/bench/wasm/json-a.bnt
+@@ -7,9 +7,9 @@
+ import Runner
+ 
+ function read(value: Json.Value) -> String
+-  bind row <- Option.unwrapOr(Json.at(value, 0), Json.Value.Null)
+-  return Json.stringify(Json.Value.Array(List.map(["id", "label", "nested"], lambda(key: String) -> Json.Value
+-    return Option.unwrapOr(Json.get(row, key), Json.Value.Null)
++  bind row <- Option.unwrapOr(o: Json.at(value: value, index: 0), fallback: Json.Value.Null)
++  return Json.stringify(Json.Value.Array(List.map(xs: ["id", "label", "nested"], f: lambda(key: String) -> Json.Value
++    return Option.unwrapOr(o: Json.get(value: row, k: key), fallback: Json.Value.Null)
+   end lambda)))
+ end function
+ 
+@@ -19,39 +19,39 @@
+   bind count <- try Runner.rounds(2)
+   bind source <- try Result.mapError(File.readText(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
+   if task = "deep" then
+-    bind value <- List.fold(List.range(0, 1000), Json.Value.Null, lambda(v: Json.Value, _i: Integer) -> Json.Value return Json.Value.Array([v]) end lambda)
+-    return Runner.measure(1, lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(value)) end lambda, lambda(s: String) -> String return s end lambda)
++    bind value <- List.fold(xs: List.range(start: 0, stop: 1000), initial: Json.Value.Null, f: lambda(v: Json.Value, _i: Integer) -> Json.Value return Json.Value.Array([v]) end lambda)
++    return Runner.measure(count: 1, work: lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(value)) end lambda, render: lambda(s: String) -> String return s end lambda)
+   end if
+   if task = "parse" then
+-    return Runner.measure(count, lambda() -> Result[Json.Value, String] uses State return Result.mapError(Json.parse(source), Json.ParseError.message) end lambda, Json.stringify)
++    return Runner.measure(count: count, work: lambda() -> Result[Json.Value, String] uses State return Result.mapError(r: Json.parse(source), f: Json.ParseError.message) end lambda, render: Json.stringify)
+   end if
+   if task = "stringify" then
+-    bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
+-    return Runner.measure(count, lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(value)) end lambda, lambda(s: String) -> String return s end lambda)
++    bind value <- try Result.mapError(r: Json.parse(source), f: Json.ParseError.message)
++    return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(value)) end lambda, render: lambda(s: String) -> String return s end lambda)
+   end if
+   if task = "read" then
+-    return Runner.measure(count, lambda() -> Result[String, String] uses State
+-      bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
++    return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State
++      bind value <- try Result.mapError(r: Json.parse(source), f: Json.ParseError.message)
+       return Result.Ok(read(value))
+-    end lambda, lambda(s: String) -> String return s end lambda)
++    end lambda, render: lambda(s: String) -> String return s end lambda)
+   end if
+   if task = "pretty" then
+-    return Runner.measure(count, lambda() -> Result[String, String] uses State
+-      bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
++    return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State
++      bind value <- try Result.mapError(r: Json.parse(source), f: Json.ParseError.message)
+       return Result.Ok(Json.stringifyPretty(value))
+-    end lambda, lambda(s: String) -> String return s end lambda)
++    end lambda, render: lambda(s: String) -> String return s end lambda)
+   end if
+   if task = "validate" then
+-    return Runner.measure(count, lambda() -> Result[Unit, String] uses State return Result.map(Result.mapError(Json.parse(source), Json.ParseError.message), lambda(_value: Json.Value) -> Unit return () end lambda) end lambda, lambda(_value: Unit) -> String return "valid" end lambda)
++    return Runner.measure(count: count, work: lambda() -> Result[Unit, String] uses State return Result.map(r: Result.mapError(r: Json.parse(source), f: Json.ParseError.message), f: lambda(_value: Json.Value) -> Unit return () end lambda) end lambda, render: lambda(_value: Unit) -> String return "valid" end lambda)
+   end if
+   if task = "canonical" then
+-    bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
++    bind value <- try Result.mapError(r: Json.parse(source), f: Json.ParseError.message)
+     Console.writeLine(Json.stringify(value))
+     return Result.Ok(())
+   end if
+   if task = "verify" then
+-    bind value <- try Result.mapError(Json.parse(source), Json.ParseError.message)
+-    return Runner.measure(1, lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(value)) end lambda, lambda(s: String) -> String return s end lambda)
++    bind value <- try Result.mapError(r: Json.parse(source), f: Json.ParseError.message)
++    return Runner.measure(count: 1, work: lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(value)) end lambda, render: lambda(s: String) -> String return s end lambda)
+   end if
+   return Result.Error("unknown JSON task")
+ end function
+--- a/tools/bench/wasm/regex-a.bnt
++++ b/tools/bench/wasm/regex-a.bnt
+@@ -11,16 +11,16 @@
+   bind path <- try Runner.argument(1)
+   bind count <- try Runner.rounds(2)
+   bind source <- "[a-z]+[0-9]+"
+-  bind input <- try Result.mapError(File.readText(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
++  bind input <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
+   bind pattern <- try Regex.compile(source)
+   if task = "match" then
+-    return Runner.measure(count, lambda() -> Result[Boolean, String] uses State return Result.Ok(Regex.isMatch(pattern, input)) end lambda, lambda(b: Boolean) -> String return if b then "true" else "false" end if end lambda)
++    return Runner.measure(count, lambda() -> Result[Boolean, String] uses State return Result.Ok(Regex.isMatch(pattern: pattern, text: input)) end lambda, lambda(b: Boolean) -> String return if b then "true" else "false" end if end lambda)
+   end if
+   if task = "count" then
+-    return Runner.measure(count, lambda() -> Result[Integer, String] uses State return Result.Ok(List.length(Regex.findAll(pattern, input))) end lambda, Integer.toString)
++    return Runner.measure(count, lambda() -> Result[Integer, String] uses State return Result.Ok(List.length(Regex.findAll(pattern: pattern, text: input))) end lambda, Integer.toString)
+   end if
+   if task = "find-all" then
+-    return Runner.measure(count, lambda() -> Result[Integer, String] uses State return Result.Ok(List.length(Regex.findAll(pattern, input))) end lambda, Integer.toString)
++    return Runner.measure(count, lambda() -> Result[Integer, String] uses State return Result.Ok(List.length(Regex.findAll(pattern: pattern, text: input))) end lambda, Integer.toString)
+   end if
+   return Result.Error("unknown Regex task")
+ end function
+--- a/tools/bench/wit-transfer/Runner.bnt
++++ b/tools/bench/wit-transfer/Runner.bnt
+@@ -5,10 +5,10 @@
+ /// 入力の大きさと、一回以上の呼び出し回数を読む。
+ public function settings() -> Result[Pair[Integer, Integer], String] uses Process.Environment
+   bind arguments <- Process.arguments()
+-  bind text <- try Option.okOr(List.get(arguments, 0), "missing input size")
+-  bind count <- try Option.okOr(Integer.parse(text), "invalid input size")
+-  bind roundsText <- try Option.okOr(List.get(arguments, 1), "missing repeat count")
+-  bind rounds <- try Option.okOr(Integer.parse(roundsText), "invalid repeat count")
++  bind text <- try Option.okOr(o: List.get(xs: arguments, i: 0), error: "missing input size")
++  bind count <- try Option.okOr(o: Integer.parse(text), error: "invalid input size")
++  bind roundsText <- try Option.okOr(o: List.get(xs: arguments, i: 1), error: "missing repeat count")
++  bind rounds <- try Option.okOr(o: Integer.parse(roundsText), error: "invalid repeat count")
+   return if List.length(arguments) = 2 and count >= 0 and rounds > 0 then
+     Result.Ok(Pair(count, rounds))
+   else
+@@ -20,13 +20,13 @@
+   return if remaining = 0 then correct else
+     // 結果が違っても呼び出しを省かず、指定した回数を一つの実行内で行う。
+     bind next <- work()
+-    repeat(remaining - 1, work, correct and next)
++    repeat(remaining: remaining - 1, work: work, correct: correct and next)
+   end if
+ end function
+ 
+ /// 独立した期待値との一致を出力し、不一致は終了状態にも反映する。
+ public function verify(rounds: Integer, work: function() -> Boolean) -> Result[Unit, String] uses Console.Write
+-  bind correct <- repeat(rounds, work, true)
++  bind correct <- repeat(remaining: rounds, work: work, correct: true)
+   Console.writeLine(if correct then "ok" else "failed" end if)
+   return if correct then Result.Ok(()) else Result.Error("unexpected guest result") end if
+ end function
+--- a/tools/bench/wit-transfer/flags.bnt
++++ b/tools/bench/wit-transfer/flags.bnt
+@@ -120,20 +120,20 @@
+ function clear(v: Set[D32]) -> Set[D32]
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind source1 <- Set.fromList(List.take([D1.F1], n))
+-  bind expected1 <- Pair(Set.fromList([D1.F1]), Integer.shiftLeft(1, Integer.minimum(n, 1)) - 1)
+-  bind source8 <- Set.fromList(List.take([D8.F1, D8.F2, D8.F3, D8.F4, D8.F5, D8.F6, D8.F7, D8.F8], n))
+-  bind expected8 <- Pair(Set.fromList([D8.F1, D8.F2, D8.F3, D8.F4, D8.F5, D8.F6, D8.F7, D8.F8]), Integer.shiftLeft(1, Integer.minimum(n, 8)) - 1)
+-  bind source9 <- Set.fromList(List.take([D9.F1, D9.F2, D9.F3, D9.F4, D9.F5, D9.F6, D9.F7, D9.F8, D9.F9], n))
+-  bind expected9 <- Pair(Set.fromList([D9.F1, D9.F2, D9.F3, D9.F4, D9.F5, D9.F6, D9.F7, D9.F8, D9.F9]), Integer.shiftLeft(1, Integer.minimum(n, 9)) - 1)
+-  bind source16 <- Set.fromList(List.take([D16.F1, D16.F2, D16.F3, D16.F4, D16.F5, D16.F6, D16.F7, D16.F8, D16.F9, D16.F10, D16.F11, D16.F12, D16.F13, D16.F14, D16.F15, D16.F16], n))
+-  bind expected16 <- Pair(Set.fromList([D16.F1, D16.F2, D16.F3, D16.F4, D16.F5, D16.F6, D16.F7, D16.F8, D16.F9, D16.F10, D16.F11, D16.F12, D16.F13, D16.F14, D16.F15, D16.F16]), Integer.shiftLeft(1, Integer.minimum(n, 16)) - 1)
+-  bind source17 <- Set.fromList(List.take([D17.F1, D17.F2, D17.F3, D17.F4, D17.F5, D17.F6, D17.F7, D17.F8, D17.F9, D17.F10, D17.F11, D17.F12, D17.F13, D17.F14, D17.F15, D17.F16, D17.F17], n))
+-  bind expected17 <- Pair(Set.fromList([D17.F1, D17.F2, D17.F3, D17.F4, D17.F5, D17.F6, D17.F7, D17.F8, D17.F9, D17.F10, D17.F11, D17.F12, D17.F13, D17.F14, D17.F15, D17.F16, D17.F17]), Integer.shiftLeft(1, Integer.minimum(n, 17)) - 1)
+-  bind source32 <- Set.fromList(List.take([D32.F1, D32.F2, D32.F3, D32.F4, D32.F5, D32.F6, D32.F7, D32.F8, D32.F9, D32.F10, D32.F11, D32.F12, D32.F13, D32.F14, D32.F15, D32.F16, D32.F17, D32.F18, D32.F19, D32.F20, D32.F21, D32.F22, D32.F23, D32.F24, D32.F25, D32.F26, D32.F27, D32.F28, D32.F29, D32.F30, D32.F31, D32.F32], n))
+-  bind expected32 <- Pair(Set.fromList([D32.F1, D32.F2, D32.F3, D32.F4, D32.F5, D32.F6, D32.F7, D32.F8, D32.F9, D32.F10, D32.F11, D32.F12, D32.F13, D32.F14, D32.F15, D32.F16, D32.F17, D32.F18, D32.F19, D32.F20, D32.F21, D32.F22, D32.F23, D32.F24, D32.F25, D32.F26, D32.F27, D32.F28, D32.F29, D32.F30, D32.F31, D32.F32]), Integer.shiftLeft(1, Integer.minimum(n, 32)) - 1)
++  bind source1 <- Set.fromList(List.take(xs: [D1.F1], n: n))
++  bind expected1 <- Pair(Set.fromList([D1.F1]), Integer.shiftLeft(a: 1, n: Integer.minimum(a: n, b: 1)) - 1)
++  bind source8 <- Set.fromList(List.take(xs: [D8.F1, D8.F2, D8.F3, D8.F4, D8.F5, D8.F6, D8.F7, D8.F8], n: n))
++  bind expected8 <- Pair(Set.fromList([D8.F1, D8.F2, D8.F3, D8.F4, D8.F5, D8.F6, D8.F7, D8.F8]), Integer.shiftLeft(a: 1, n: Integer.minimum(a: n, b: 8)) - 1)
++  bind source9 <- Set.fromList(List.take(xs: [D9.F1, D9.F2, D9.F3, D9.F4, D9.F5, D9.F6, D9.F7, D9.F8, D9.F9], n: n))
++  bind expected9 <- Pair(Set.fromList([D9.F1, D9.F2, D9.F3, D9.F4, D9.F5, D9.F6, D9.F7, D9.F8, D9.F9]), Integer.shiftLeft(a: 1, n: Integer.minimum(a: n, b: 9)) - 1)
++  bind source16 <- Set.fromList(List.take(xs: [D16.F1, D16.F2, D16.F3, D16.F4, D16.F5, D16.F6, D16.F7, D16.F8, D16.F9, D16.F10, D16.F11, D16.F12, D16.F13, D16.F14, D16.F15, D16.F16], n: n))
++  bind expected16 <- Pair(Set.fromList([D16.F1, D16.F2, D16.F3, D16.F4, D16.F5, D16.F6, D16.F7, D16.F8, D16.F9, D16.F10, D16.F11, D16.F12, D16.F13, D16.F14, D16.F15, D16.F16]), Integer.shiftLeft(a: 1, n: Integer.minimum(a: n, b: 16)) - 1)
++  bind source17 <- Set.fromList(List.take(xs: [D17.F1, D17.F2, D17.F3, D17.F4, D17.F5, D17.F6, D17.F7, D17.F8, D17.F9, D17.F10, D17.F11, D17.F12, D17.F13, D17.F14, D17.F15, D17.F16, D17.F17], n: n))
++  bind expected17 <- Pair(Set.fromList([D17.F1, D17.F2, D17.F3, D17.F4, D17.F5, D17.F6, D17.F7, D17.F8, D17.F9, D17.F10, D17.F11, D17.F12, D17.F13, D17.F14, D17.F15, D17.F16, D17.F17]), Integer.shiftLeft(a: 1, n: Integer.minimum(a: n, b: 17)) - 1)
++  bind source32 <- Set.fromList(List.take(xs: [D32.F1, D32.F2, D32.F3, D32.F4, D32.F5, D32.F6, D32.F7, D32.F8, D32.F9, D32.F10, D32.F11, D32.F12, D32.F13, D32.F14, D32.F15, D32.F16, D32.F17, D32.F18, D32.F19, D32.F20, D32.F21, D32.F22, D32.F23, D32.F24, D32.F25, D32.F26, D32.F27, D32.F28, D32.F29, D32.F30, D32.F31, D32.F32], n: n))
++  bind expected32 <- Pair(Set.fromList([D32.F1, D32.F2, D32.F3, D32.F4, D32.F5, D32.F6, D32.F7, D32.F8, D32.F9, D32.F10, D32.F11, D32.F12, D32.F13, D32.F14, D32.F15, D32.F16, D32.F17, D32.F18, D32.F19, D32.F20, D32.F21, D32.F22, D32.F23, D32.F24, D32.F25, D32.F26, D32.F27, D32.F28, D32.F29, D32.F30, D32.F31, D32.F32]), Integer.shiftLeft(a: 1, n: Integer.minimum(a: n, b: 32)) - 1)
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind c0 <- f1(source1) = expected1
+     bind c1 <- f8(source8) = expected8
+     bind c2 <- f9(source9) = expected9
+--- a/tools/bench/wit-transfer/large-bytes-adapter.bnt
++++ b/tools/bench/wit-transfer/large-bytes-adapter.bnt
+@@ -8,17 +8,17 @@
+ 
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind source <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte
++  bind source <- Bytes.fromList(List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> Byte
+  return
+-    if i mod 3 = 0 then 0u8 else if i mod 3 = 1 then 128u8 else 255u8 end if
++    if value mod 3 = 0 then 0u8 else if value mod 3 = 1 then 128u8 else 255u8 end if
+   end lambda))
+-  bind expected <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte
++  bind expected <- Bytes.fromList(List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> Byte
+  return
+-    if i mod 3 = 0 then 255u8 else if i mod 3 = 1 then 127u8 else 0u8 end if
++    if value mod 3 = 0 then 255u8 else if value mod 3 = 1 then 127u8 else 0u8 end if
+   end lambda))
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
+-    bind adapter <- bytesAdapter(false, source)
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
++    bind adapter <- bytesAdapter(ignored: false, v: source)
+     return adapter = expected
+   end lambda)
+ end function
+--- a/tools/bench/wit-transfer/large-bytes-typed.bnt
++++ b/tools/bench/wit-transfer/large-bytes-typed.bnt
+@@ -8,20 +8,20 @@
+ 
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind low <- try Option.okOr(Byte.fromInteger(0), "byte out of range")
+-  bind middle <- try Option.okOr(Byte.fromInteger(128), "byte out of range")
+-  bind high <- try Option.okOr(Byte.fromInteger(255), "byte out of range")
+-  bind flippedMiddle <- try Option.okOr(Byte.fromInteger(127), "byte out of range")
+-  bind source <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte
++  bind low <- try Option.okOr(o: Byte.fromInteger(0), error: "byte out of range")
++  bind middle <- try Option.okOr(o: Byte.fromInteger(128), error: "byte out of range")
++  bind high <- try Option.okOr(o: Byte.fromInteger(255), error: "byte out of range")
++  bind flippedMiddle <- try Option.okOr(o: Byte.fromInteger(127), error: "byte out of range")
++  bind source <- Bytes.fromList(List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> Byte
+  return
+-    if i mod 3 = 0 then low else if i mod 3 = 1 then middle else high end if
++    if value mod 3 = 0 then low else if value mod 3 = 1 then middle else high end if
+   end lambda))
+-  bind expected <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte
++  bind expected <- Bytes.fromList(List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> Byte
+  return
+-    if i mod 3 = 0 then high else if i mod 3 = 1 then flippedMiddle else low end if
++    if value mod 3 = 0 then high else if value mod 3 = 1 then flippedMiddle else low end if
+   end lambda))
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind typed <- bytes(source)
+     return typed = expected
+   end lambda)
+--- a/tools/bench/wit-transfer/large-bytes.bnt
++++ b/tools/bench/wit-transfer/large-bytes.bnt
+@@ -10,18 +10,18 @@
+ 
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind source <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte
++  bind source <- Bytes.fromList(List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> Byte
+  return
+-    if i mod 3 = 0 then 0u8 else if i mod 3 = 1 then 128u8 else 255u8 end if
++    if value mod 3 = 0 then 0u8 else if value mod 3 = 1 then 128u8 else 255u8 end if
+   end lambda))
+-  bind expected <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte
++  bind expected <- Bytes.fromList(List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> Byte
+  return
+-    if i mod 3 = 0 then 255u8 else if i mod 3 = 1 then 127u8 else 0u8 end if
++    if value mod 3 = 0 then 255u8 else if value mod 3 = 1 then 127u8 else 0u8 end if
+   end lambda))
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind typed <- bytes(source)
+-    bind adapter <- bytesAdapter(false, source)
++    bind adapter <- bytesAdapter(ignored: false, v: source)
+     return typed = expected and adapter = expected
+   end lambda)
+ end function
+--- a/tools/bench/wit-transfer/maps.bnt
++++ b/tools/bench/wit-transfer/maps.bnt
+@@ -11,11 +11,11 @@
+ function first(v: Map[String, Integer]) -> Integer
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind indexes <- List.range(0, n)
+-  bind source <- Map.fromList(List.map(indexes, lambda(i: Integer) -> Pair[String, Integer] return Pair(Integer.toString(i), i) end lambda))
+-  bind expected <- Map.fromList(List.map(indexes, lambda(i: Integer) -> Pair[String, Integer] return Pair(Integer.toString(i), i + 7) end lambda))
++  bind indexes <- List.range(start: 0, stop: n)
++  bind source <- Map.fromList(List.map(xs: indexes, f: lambda(value: Integer) -> Pair[String, Integer] return Pair(Integer.toString(value), value) end lambda))
++  bind expected <- Map.fromList(List.map(xs: indexes, f: lambda(value: Integer) -> Pair[String, Integer] return Pair(Integer.toString(value), value + 7) end lambda))
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind c0 <- echo(source) = expected
+     bind c1 <- result(source) = Map.fromList([Pair("a", 2), Pair("z", 3)])
+     bind c2 <- first(source) = (if n = 0 then -1 else 48 end if)
+--- a/tools/bench/wit-transfer/nested.bnt
++++ b/tools/bench/wit-transfer/nested.bnt
+@@ -8,16 +8,16 @@
+ 
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind source <- List.map(List.range(0, n), lambda(i: Integer) -> List[UnsignedInteger16]
++  bind source <- List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> List[UnsignedInteger16]
+  return
+-    if i mod 3 = 0 then [10u16, 20u16] else if i mod 3 = 1 then [] else [30u16] end if
++    if value mod 3 = 0 then [10u16, 20u16] else if value mod 3 = 1 then [] else [30u16] end if
+   end lambda)
+-  bind expected <- List.map(List.range(0, n), lambda(i: Integer) -> List[UnsignedInteger16]
++  bind expected <- List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> List[UnsignedInteger16]
+  return
+-    if i mod 3 = 0 then [11u16, 21u16] else if i mod 3 = 1 then [] else [31u16] end if
++    if value mod 3 = 0 then [11u16, 21u16] else if value mod 3 = 1 then [] else [31u16] end if
+   end lambda)
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind c0 <- run(source) = expected
+     return c0
+   end lambda)
+--- a/tools/bench/wit-transfer/numbers.bnt
++++ b/tools/bench/wit-transfer/numbers.bnt
+@@ -41,65 +41,65 @@
+ function negateF32List(v: List[Float32]) -> List[Float32]
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind indexes <- List.range(0, n)
+-  bind sourceS8 <- List.map(indexes, lambda(i: Integer) -> Integer8
++  bind indexes <- List.range(start: 0, stop: n)
++  bind sourceS8 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer8
+  return
+-    if i mod 3 = 0 then -128s8 else if i mod 3 = 1 then 127s8 else 0s8 end if
++    if value mod 3 = 0 then -128s8 else if value mod 3 = 1 then 127s8 else 0s8 end if
+   end lambda)
+-  bind expectedS8 <- List.map(indexes, lambda(i: Integer) -> Integer8
++  bind expectedS8 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer8
+  return
+-    if i mod 3 = 0 then -127s8 else if i mod 3 = 1 then 126s8 else 1s8 end if
++    if value mod 3 = 0 then -127s8 else if value mod 3 = 1 then 126s8 else 1s8 end if
+   end lambda)
+-  bind sourceS16 <- List.map(indexes, lambda(i: Integer) -> Integer16
++  bind sourceS16 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer16
+  return
+-    if i mod 3 = 0 then -32768s16 else if i mod 3 = 1 then 32767s16 else 0s16 end if
++    if value mod 3 = 0 then -32768s16 else if value mod 3 = 1 then 32767s16 else 0s16 end if
+   end lambda)
+-  bind expectedS16 <- List.map(indexes, lambda(i: Integer) -> Integer16
++  bind expectedS16 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer16
+  return
+-    if i mod 3 = 0 then -32767s16 else if i mod 3 = 1 then 32766s16 else 1s16 end if
++    if value mod 3 = 0 then -32767s16 else if value mod 3 = 1 then 32766s16 else 1s16 end if
+   end lambda)
+-  bind sourceS32 <- List.map(indexes, lambda(i: Integer) -> Integer32
++  bind sourceS32 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer32
+  return
+-    if i mod 3 = 0 then -2147483648s32 else if i mod 3 = 1 then 2147483647s32 else 0s32 end if
++    if value mod 3 = 0 then -2147483648s32 else if value mod 3 = 1 then 2147483647s32 else 0s32 end if
+   end lambda)
+-  bind expectedS32 <- List.map(indexes, lambda(i: Integer) -> Integer32
++  bind expectedS32 <- List.map(xs: indexes, f: lambda(value: Integer) -> Integer32
+  return
+-    if i mod 3 = 0 then -2147483647s32 else if i mod 3 = 1 then 2147483646s32 else 1s32 end if
++    if value mod 3 = 0 then -2147483647s32 else if value mod 3 = 1 then 2147483646s32 else 1s32 end if
+   end lambda)
+-  bind sourceU16 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger16
++  bind sourceU16 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger16
+  return
+-    if i mod 3 = 0 then 0u16 else if i mod 3 = 1 then 65535u16 else 256u16 end if
++    if value mod 3 = 0 then 0u16 else if value mod 3 = 1 then 65535u16 else 256u16 end if
+   end lambda)
+-  bind expectedU16 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger16
++  bind expectedU16 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger16
+  return
+-    if i mod 3 = 0 then 1u16 else if i mod 3 = 1 then 65534u16 else 257u16 end if
++    if value mod 3 = 0 then 1u16 else if value mod 3 = 1 then 65534u16 else 257u16 end if
+   end lambda)
+-  bind sourceU32 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger32
++  bind sourceU32 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger32
+  return
+-    if i mod 3 = 0 then 0u32 else if i mod 3 = 1 then 4294967295u32 else 65536u32 end if
++    if value mod 3 = 0 then 0u32 else if value mod 3 = 1 then 4294967295u32 else 65536u32 end if
+   end lambda)
+-  bind expectedU32 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger32
++  bind expectedU32 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger32
+  return
+-    if i mod 3 = 0 then 1u32 else if i mod 3 = 1 then 4294967294u32 else 65537u32 end if
++    if value mod 3 = 0 then 1u32 else if value mod 3 = 1 then 4294967294u32 else 65537u32 end if
+   end lambda)
+-  bind sourceU64 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger64
++  bind sourceU64 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger64
+  return
+-    if i mod 3 = 0 then 0u64 else if i mod 3 = 1 then 9223372036854775808u64 else 18446744073709551615u64 end if
++    if value mod 3 = 0 then 0u64 else if value mod 3 = 1 then 9223372036854775808u64 else 18446744073709551615u64 end if
+   end lambda)
+-  bind expectedU64 <- List.map(indexes, lambda(i: Integer) -> UnsignedInteger64
++  bind expectedU64 <- List.map(xs: indexes, f: lambda(value: Integer) -> UnsignedInteger64
+  return
+-    if i mod 3 = 0 then 1u64 else if i mod 3 = 1 then 9223372036854775809u64 else 18446744073709551614u64 end if
++    if value mod 3 = 0 then 1u64 else if value mod 3 = 1 then 9223372036854775809u64 else 18446744073709551614u64 end if
+   end lambda)
+-  bind sourceF32 <- List.map(indexes, lambda(i: Integer) -> Float32
++  bind sourceF32 <- List.map(xs: indexes, f: lambda(value: Integer) -> Float32
+  return
+-    if i mod 3 = 0 then 0.1f32 else if i mod 3 = 1 then 16777217.0f32 else -1.25f32 end if
++    if value mod 3 = 0 then 0.1f32 else if value mod 3 = 1 then 16777217.0f32 else -1.25f32 end if
+   end lambda)
+-  bind expectedF32 <- List.map(indexes, lambda(i: Integer) -> Float32
++  bind expectedF32 <- List.map(xs: indexes, f: lambda(value: Integer) -> Float32
+  return
+-    if i mod 3 = 0 then -0.1f32 else if i mod 3 = 1 then -16777216.0f32 else 1.25f32 end if
++    if value mod 3 = 0 then -0.1f32 else if value mod 3 = 1 then -16777216.0f32 else 1.25f32 end if
+   end lambda)
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind c0 <- flipS8(-128s8) = -127s8
+     bind c1 <- flipS16(-32768s16) = -32767s16
+     bind c2 <- flipS32(-2147483648s32) = -2147483647s32
+--- a/tools/bench/wit-transfer/primitives.bnt
++++ b/tools/bench/wit-transfer/primitives.bnt
+@@ -16,23 +16,23 @@
+ 
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind text <- String.repeat("A日😀", Integer.minimum(n, 4096))
+-  bind source <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte
++  bind text <- String.repeat(s: "A日😀", n: Integer.minimum(a: n, b: 4096))
++  bind source <- Bytes.fromList(List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> Byte
+  return
+-    if i mod 3 = 0 then 0u8 else if i mod 3 = 1 then 128u8 else 255u8 end if
++    if value mod 3 = 0 then 0u8 else if value mod 3 = 1 then 128u8 else 255u8 end if
+   end lambda))
+-  bind expected <- Bytes.fromList(List.map(List.range(0, n), lambda(i: Integer) -> Byte
++  bind expected <- Bytes.fromList(List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> Byte
+  return
+-    if i mod 3 = 0 then 255u8 else if i mod 3 = 1 then 127u8 else 0u8 end if
++    if value mod 3 = 0 then 255u8 else if value mod 3 = 1 then 127u8 else 0u8 end if
+   end lambda))
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind c0 <- invert(true) = false
+     bind c1 <- invert(false) = true
+     bind c2 <- next('😀') = '😁'
+     bind c3 <- append(text) = text + "!"
+     bind c4 <- bytes(source) = expected
+-    bind c5 <- bytesAdapter(false, source) = expected
++    bind c5 <- bytesAdapter(ignored: false, v: source) = expected
+     return c0 and c1 and c2 and c3 and c4 and c5
+   end lambda)
+ end function
+--- a/tools/bench/wit-transfer/records.bnt
++++ b/tools/bench/wit-transfer/records.bnt
+@@ -29,7 +29,7 @@
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind c0 <- box(Box(value: n)) = Box(value: n + 7)
+     bind c1 <- nested(Box(value: Box(value: n))) = Box(value: Box(value: n + 7))
+     bind c2 <- envelope(Envelope.Wrapped(n)) = Envelope.Wrapped(n + 9)
+--- a/tools/bench/wit-transfer/short-numbers-adapter.bnt
++++ b/tools/bench/wit-transfer/short-numbers-adapter.bnt
+@@ -8,10 +8,10 @@
+ 
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind wide <- try Option.okOr(UnsignedInteger64.fromInteger(n), "number out of range")
++  bind wide <- try Option.okOr(o: UnsignedInteger64.fromInteger(n), error: "number out of range")
+   bind expected <- if n mod 2 = 0 then n + 1 else n - 1 end if
+-  bind expectedWide <- try Option.okOr(UnsignedInteger64.fromInteger(expected), "number out of range")
+-  return Runner.verify(rounds, lambda() -> Boolean
++  bind expectedWide <- try Option.okOr(o: UnsignedInteger64.fromInteger(expected), error: "number out of range")
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind b <- adapter(wide)
+     return b = expectedWide
+   end lambda)
+--- a/tools/bench/wit-transfer/short-numbers-typed.bnt
++++ b/tools/bench/wit-transfer/short-numbers-typed.bnt
+@@ -9,7 +9,7 @@
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+   bind expected <- if n mod 2 = 0 then n + 1 else n - 1 end if
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind a <- typed(n)
+     return a = expected
+   end lambda)
+--- a/tools/bench/wit-transfer/short-numbers.bnt
++++ b/tools/bench/wit-transfer/short-numbers.bnt
+@@ -10,10 +10,10 @@
+ 
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind wide <- try Option.okOr(UnsignedInteger64.fromInteger(n), "number out of range")
++  bind wide <- try Option.okOr(o: UnsignedInteger64.fromInteger(n), error: "number out of range")
+   bind expected <- if n mod 2 = 0 then n + 1 else n - 1 end if
+-  bind expectedWide <- try Option.okOr(UnsignedInteger64.fromInteger(expected), "number out of range")
+-  return Runner.verify(rounds, lambda() -> Boolean
++  bind expectedWide <- try Option.okOr(o: UnsignedInteger64.fromInteger(expected), error: "number out of range")
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind a <- typed(n)
+     bind b <- adapter(wide)
+     return a = expected and b = expectedWide
+--- a/tools/bench/wit-transfer/tuples.bnt
++++ b/tools/bench/wit-transfer/tuples.bnt
+@@ -28,7 +28,7 @@
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind c0 <- tuple1(One.Item(n)) = One.Item(n + 11)
+     bind c1 <- tuple4(Four.Item(n, n + 1, n + 2, n + 3)) = Four.Item(n + 11, n + 13, n + 15, n + 17)
+     bind c2 <- tuple17(Seventeen.Item(n, n + 1, n + 2, n + 3, n + 4, n + 5, n + 6, n + 7, n + 8, n + 9, n + 10, n + 11, n + 12, n + 13, n + 14, n + 15, n + 16)) = Seventeen.Item(n + 11, n + 13, n + 15, n + 17, n + 19, n + 21, n + 23, n + 25, n + 27, n + 29, n + 31, n + 33, n + 35, n + 37, n + 39, n + 41, n + 43)
+--- a/tools/bench/wit-transfer/utf16.bnt
++++ b/tools/bench/wit-transfer/utf16.bnt
+@@ -10,12 +10,12 @@
+ 
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+-  bind source <- String.repeat("A日😀", n)
+-  bind expected <- String.repeat("日😀!", n)
++  bind source <- String.repeat(s: "A日😀", n: n)
++  bind expected <- String.repeat(s: "日😀!", n: n)
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind c0 <- run(source) = expected
+-    bind c1 <- runAdapter(false, source) = expected
++    bind c1 <- runAdapter(ignored: false, v: source) = expected
+     return c0 and c1
+   end lambda)
+ end function
+--- a/tools/bench/wit-transfer/variants.bnt
++++ b/tools/bench/wit-transfer/variants.bnt
+@@ -41,7 +41,7 @@
+ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+   bind Pair(n, rounds) <- try Runner.settings()
+ 
+-  return Runner.verify(rounds, lambda() -> Boolean
++  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
+     bind c0 <- one(One.Value(Pair(n, n + 4))) = One.Value(Pair(n + 11, n + 26))
+     bind c1 <- two(Two.Value(n, n + 4)) = Two.Value(n + 11, n + 26)
+     bind c2 <- one(One.Empty) = One.Empty
+--- a/tools/skill-eval/tasks/csv_report/reference.bnt
++++ b/tools/skill-eval/tasks/csv_report/reference.bnt
+@@ -3,33 +3,33 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function field(row: Map[String, String], name: String) -> Result[Integer, String]
+-  return match Option.andThen(Map.get(row, name), Integer.parse) with
++  return match Option.andThen(o: Map.get(m: row, k: name), f: Integer.parse) with
+     case Option.Some(n) -> Result.Ok(n)
+     case Option.None -> Result.Error("a row has no number in ${name}")
+   end match
+ end function
+ 
+ function addRow(totals: Map[String, Pair[Integer, Integer]], row: Map[String, String]) -> Result[Map[String, Pair[Integer, Integer]], String]
+-  bind region <- try Option.okOr(Map.get(row, "region"), "a row has no region")
+-  bind quantity <- try field(row, "quantity")
+-  bind price <- try field(row, "unit_price")
+-  bind current <- Map.get(totals, region) |> Option.unwrapOr(_, Pair(0, 0))
+-  return Result.Ok(Map.set(totals, region, Pair(Pair.first(current) + 1, Pair.second(current) + quantity * price)))
++  bind region <- try Option.okOr(o: Map.get(m: row, k: "region"), error: "a row has no region")
++  bind quantity <- try field(row: row, name: "quantity")
++  bind price <- try field(row: row, name: "unit_price")
++  bind current <- Map.get(m: totals, k: region) |> Option.unwrapOr(_, Pair(0, 0))
++  return Result.Ok(Map.set(m: totals, k: region, value: Pair(Pair.first(current) + 1, Pair.second(current) + quantity * price)))
+ end function
+ 
+ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+   bind text <- try File.readText("sales.csv") |> Result.mapError(_, IOError.message)
+   bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(_, Csv.ParseError.message)
+   bind totals <- try List.fold(rows, Result.Ok(Map.empty()), lambda(acc, row)
+-    return Result.andThen(acc, lambda(m) return addRow(m, row) end lambda)
++    return Result.andThen(acc, lambda(m) return addRow(totals: m, row: row) end lambda)
+   end lambda)
+   bind entries <- Map.toList(totals)
+-  bind table <- List.map(entries, lambda(entry)
+-    return [Pair.first(entry), Integer.toString(Pair.first(Pair.second(entry))), Integer.toString(Pair.second(Pair.second(entry)))]
++  bind table <- List.map(xs: entries, f: lambda(value)
++    return [Pair.first(value), Integer.toString(Pair.first(Pair.second(value))), Integer.toString(Pair.second(Pair.second(value)))]
+   end lambda)
+-  bind _ <- try File.writeText("summary.csv", Csv.format(List.prepend(table, ["region", "orders", "revenue"]))) |> Result.mapError(_, IOError.message)
+-  List.forEach(entries, lambda(entry)
+-    Console.writeLine("${Pair.first(entry)}: ${Pair.first(Pair.second(entry))} orders, revenue ${Pair.second(Pair.second(entry))}")
++  bind _ <- try File.writeText(path: "summary.csv", text: Csv.format(List.prepend(xs: table, x: ["region", "orders", "revenue"]))) |> Result.mapError(_, IOError.message)
++  List.forEach(xs: entries, f: lambda(value)
++    Console.writeLine("${Pair.first(value)}: ${Pair.first(Pair.second(value))} orders, revenue ${Pair.second(Pair.second(value))}")
+   end lambda)
+   Console.writeLine("total revenue: ${List.fold(entries, 0, lambda(sum, entry) return sum + Pair.second(Pair.second(entry)) end lambda)}")
+   return Result.Ok(())
+--- a/tools/skill-eval/tasks/dir_walk/reference.bnt
++++ b/tools/skill-eval/tasks/dir_walk/reference.bnt
+@@ -7,7 +7,7 @@
+ end function
+ 
+ function isMarkdownFile(path: String) -> Result[Boolean, String] uses File.Read
+-  if not String.endsWith(path, ".md") then return Result.Ok(false) end if
++  if not String.endsWith(s: path, suffix: ".md") then return Result.Ok(false) end if
+   bind info <- try File.info("docs/" + path) |> Result.mapError(_, IOError.message)
+   return Result.Ok(File.Info.kind(info) = File.EntryKind.RegularFile)
+ end function
+@@ -19,14 +19,14 @@
+       Result.Ok(())
+     case [path, ..rest] ->
+       bind markdown <- try isMarkdownFile(path)
+-      if not markdown then return report(rest, files, total) end if
++      if not markdown then return report(paths: rest, files: files, total: total) end if
+       bind count <- try countLines(path)
+       Console.writeLine("${path}: ${count} lines")
+-      report(rest, files + 1, total + count)
++      report(paths: rest, files: files + 1, total: total + count)
+   end match
+ end function
+ 
+ function main() -> Result[Unit, String] uses File.Read, Console.Write
+   bind paths <- try File.walk("docs") |> Result.mapError(_, IOError.message)
+-  return report(paths, 0, 0)
++  return report(paths: paths, files: 0, total: 0)
+ end function
+--- a/tools/skill-eval/tasks/error_handling/reference.bnt
++++ b/tools/skill-eval/tasks/error_handling/reference.bnt
+@@ -14,7 +14,7 @@
+ 
+ function main() -> Result[Unit, String] uses File.Read, Console.Write
+   bind paths <- try File.readLines("files.txt") |> Result.mapError(_, IOError.message)
+-  bind done <- List.fold(paths, Pair(0, 0), lambda(acc, path) return check(path, acc) end lambda)
++  bind done <- List.fold(xs: paths, initial: Pair(0, 0), f: lambda(acc, value) return check(path: value, done: acc) end lambda)
+   Console.writeLine("read ${Pair.first(done)} of ${List.length(paths)} files, ${Pair.second(done)} lines")
+   return Result.Ok(())
+ end function
+--- a/tools/skill-eval/tasks/file_process/reference.bnt
++++ b/tools/skill-eval/tasks/file_process/reference.bnt
+@@ -4,15 +4,15 @@
+ function numbered(items: List[String], index: Integer, acc: List[String]) -> List[String]
+   return match items with
+     case [] -> List.reverse(acc)
+-    case [first, ..rest] -> numbered(rest, index + 1, List.prepend(acc, "${index}. ${first}"))
++    case [first, ..rest] -> numbered(items: rest, index: index + 1, acc: List.prepend(xs: acc, x: "${index}. ${first}"))
+   end match
+ end function
+ 
+ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+   bind lines <- try File.readLines("todo.txt") |> Result.mapError(_, IOError.message)
+-  bind items <- List.filter(List.map(lines, String.trim), lambda(line) return line <> "" end lambda)
+-  bind output <- String.join(numbered(items, 1, []), "\n") + "\n"
+-  bind _ <- try File.writeText("todo-numbered.txt", output) |> Result.mapError(_, IOError.message)
++  bind items <- List.filter(xs: List.map(xs: lines, f: String.trim), p: lambda(value) return value <> "" end lambda)
++  bind output <- String.join(xs: numbered(items: items, index: 1, acc: []), separator: "\n") + "\n"
++  bind _ <- try File.writeText(path: "todo-numbered.txt", text: output) |> Result.mapError(_, IOError.message)
+   Console.writeLine("wrote ${List.length(items)} items to todo-numbered.txt")
+   return Result.Ok(())
+ end function
+--- a/tools/skill-eval/tasks/http_client/reference.bnt
++++ b/tools/skill-eval/tasks/http_client/reference.bnt
+@@ -10,31 +10,31 @@
+ end record
+ 
+ function itemOf(value: Json.Value) -> Result[Item, String]
+-  bind name <- try Option.okOr(Option.andThen(Json.get(value, "name"), Json.asString), "an item has no name")
+-  bind stock <- try Option.okOr(Option.andThen(Json.get(value, "stock"), Json.asInteger), "an item has no stock")
+-  bind price <- try Option.okOr(Option.andThen(Json.get(value, "price"), Json.asInteger), "an item has no price")
++  bind name <- try Option.okOr(o: Option.andThen(o: Json.get(value: value, k: "name"), f: Json.asString), error: "an item has no name")
++  bind stock <- try Option.okOr(o: Option.andThen(o: Json.get(value: value, k: "stock"), f: Json.asInteger), error: "an item has no stock")
++  bind price <- try Option.okOr(o: Option.andThen(o: Json.get(value: value, k: "price"), f: Json.asInteger), error: "an item has no price")
+   return Result.Ok(Item(name: name, stock: stock, price: price))
+ end function
+ 
+ function bodyText(response: Http.Response) -> String
+-  return Option.unwrapOr(String.fromUTF8(Http.Response.body(response)), "")
++  return Option.unwrapOr(o: String.fromUTF8(Http.Response.body(response)), fallback: "")
+ end function
+ 
+ function main() -> Result[Unit, String] uses Process.Environment, Http.Connect, Console.Write
+-  bind base <- try Option.okOr(try Process.environmentVariable("SKILL_EVAL_HTTP_BASE") |> Result.mapError(_, IOError.message), "SKILL_EVAL_HTTP_BASE is not set")
++  bind base <- try Option.okOr(o: try Process.environmentVariable("SKILL_EVAL_HTTP_BASE") |> Result.mapError(_, IOError.message), error: "SKILL_EVAL_HTTP_BASE is not set")
+   bind status <- try Http.get(base + "/status") |> Result.mapError(_, NetworkError.message)
+   Console.writeLine("status: ${bodyText(status)}")
+   bind inventory <- try Http.get(base + "/inventory") |> Result.mapError(_, NetworkError.message)
+   bind value <- try Json.parse(bodyText(inventory)) |> Result.mapError(_, Json.ParseError.message)
+-  bind array <- try Option.okOr(Json.asArray(value), "the inventory is not an array")
+-  bind items <- try List.fold(array, Result.Ok([]), lambda(acc, v)
+-    return Result.andThen(acc, lambda(xs) return Result.map(itemOf(v), lambda(item) return List.prepend(xs, item) end lambda) end lambda)
++  bind array <- try Option.okOr(o: Json.asArray(value), error: "the inventory is not an array")
++  bind items <- try List.fold(xs: array, initial: Result.Ok([]), f: lambda(acc, v)
++    return Result.andThen(r: acc, f: lambda(xs) return Result.map(r: itemOf(v), f: lambda(item) return List.prepend(xs: xs, x: item) end lambda) end lambda)
+   end lambda) |> Result.map(_, List.reverse)
+-  bind low <- List.filter(items, lambda(item) return Item.stock(item) < 5 end lambda)
+-  Console.writeLine("low stock: ${String.join(List.map(low, lambda(item) return "${Item.name(item)} (${Item.stock(item)})" end lambda), ", ")}")
+-  Console.writeLine("inventory value: ${List.fold(items, 0, lambda(sum, item) return sum + Item.stock(item) * Item.price(item) end lambda)}")
+-  bind names <- Json.Value.Array(List.map(low, lambda(item) return Json.Value.String(Item.name(item)) end lambda))
+-  bind request <- Http.ClientRequest(..Http.clientRequest("POST", base + "/report"), body: String.toUTF8(Json.stringify(names)))
++  bind low <- List.filter(xs: items, p: lambda(item) return Item.stock(item) < 5 end lambda)
++  Console.writeLine("low stock: ${String.join(xs: List.map(xs: low, f: lambda(item) return "${Item.name(item)} (${Item.stock(item)})" end lambda), separator: ", ")}")
++  Console.writeLine("inventory value: ${List.fold(xs: items, initial: 0, f: lambda(sum, item) return sum + Item.stock(item) * Item.price(item) end lambda)}")
++  bind names <- Json.Value.Array(List.map(xs: low, f: lambda(item) return Json.Value.String(Item.name(item)) end lambda))
++  bind request <- Http.ClientRequest(..Http.clientRequest(method: "POST", url: base + "/report"), body: String.toUTF8(Json.stringify(names)))
+   bind reply <- try Http.send(request) |> Result.mapError(_, NetworkError.message)
+   Console.writeLine("report: ${Http.Response.status(reply)} ${bodyText(reply)}")
+   return Result.Ok(())
+--- a/tools/skill-eval/tasks/json_convert/reference.bnt
++++ b/tools/skill-eval/tasks/json_convert/reference.bnt
+@@ -4,27 +4,27 @@
+ import Benitoite.Unofficial.Json
+ 
+ function column(row: Map[String, String], name: String) -> String
+-  return Option.unwrapOr(Map.get(row, name), "")
++  return Option.unwrapOr(o: Map.get(m: row, k: name), fallback: "")
+ end function
+ 
+ function yearOf(row: Map[String, String]) -> Integer
+-  return Option.unwrapOr(Integer.parse(column(row, "joined")), 0)
++  return Option.unwrapOr(o: Integer.parse(column(row: row, name: "joined")), fallback: 0)
+ end function
+ 
+ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+   bind text <- try File.readText("members.csv") |> Result.mapError(_, IOError.message)
+   bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(_, Csv.ParseError.message)
+-  bind teams <- List.fold(rows, Map.empty(), lambda(m, row)
+-    bind team <- column(row, "team")
+-    return Map.set(m, team, List.append(Option.unwrapOr(Map.get(m, team), []), column(row, "name")))
++  bind teams <- List.fold(xs: rows, initial: Map.empty(), f: lambda(acc, value)
++    bind team <- column(row: value, name: "team")
++    return Map.set(m: acc, k: team, value: List.append(xs: Option.unwrapOr(o: Map.get(m: acc, k: team), fallback: []), x: column(row: value, name: "name")))
+   end lambda)
+-  bind json <- Json.Value.Object(Map.map(teams, lambda(_team, names)
+-    return Json.Value.Array(List.map(List.sort(names), Json.Value.String))
++  bind json <- Json.Value.Object(Map.map(m: teams, f: lambda(key, value)
++    return Json.Value.Array(List.map(xs: List.sort(value), f: Json.Value.String))
+   end lambda))
+-  bind _ <- try File.writeText("teams.json", Json.stringify(json) + "\n") |> Result.mapError(_, IOError.message)
++  bind _ <- try File.writeText(path: "teams.json", text: Json.stringify(json) + "\n") |> Result.mapError(_, IOError.message)
+   Console.writeLine("teams: ${Map.size(teams)}, members: ${List.length(rows)}")
+-  bind first <- try Option.okOr(List.head(rows), "members.csv has no rows")
+-  bind oldest <- List.fold(rows, first, lambda(best, row) return if yearOf(row) < yearOf(best) then row else best end if end lambda)
+-  Console.writeLine("oldest member: ${column(oldest, "name")} (${yearOf(oldest)})")
++  bind first <- try Option.okOr(o: List.head(rows), error: "members.csv has no rows")
++  bind oldest <- List.fold(xs: rows, initial: first, f: lambda(acc, value) return if yearOf(value) < yearOf(acc) then value else acc end if end lambda)
++  Console.writeLine("oldest member: ${column(row: oldest, name: "name")} (${yearOf(oldest)})")
+   return Result.Ok(())
+ end function
+--- a/tools/skill-eval/tasks/json_summary/reference.bnt
++++ b/tools/skill-eval/tasks/json_summary/reference.bnt
+@@ -5,16 +5,16 @@
+ import Benitoite.Unofficial.Json
+ 
+ function addOrder(totals: Map[String, Pair[Integer, Integer]], order: Json.Value) -> Result[Map[String, Pair[Integer, Integer]], String]
+-  bind category <- match Option.andThen(Json.get(order, "category"), Json.asString) with
++  bind category <- match Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString) with
+     case Option.Some(name) -> name
+     case Option.None -> return Result.Error("an order has no category")
+   end match
+-  bind amount <- match Option.andThen(Json.get(order, "amount"), Json.asInteger) with
++  bind amount <- match Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger) with
+     case Option.Some(n) -> n
+     case Option.None -> return Result.Error("an order has no amount")
+   end match
+-  bind current <- Map.get(totals, category) |> Option.unwrapOr(_, Pair(0, 0))
+-  return Result.Ok(Map.set(totals, category, Pair(Pair.first(current) + 1, Pair.second(current) + amount)))
++  bind current <- Map.get(m: totals, k: category) |> Option.unwrapOr(_, Pair(0, 0))
++  return Result.Ok(Map.set(m: totals, k: category, value: Pair(Pair.first(current) + 1, Pair.second(current) + amount)))
+ end function
+ 
+ function main() -> Result[Unit, String] uses File.Read, Console.Write
+@@ -24,12 +24,12 @@
+     case Option.Some(items) -> items
+     case Option.None -> return Result.Error("orders.json is not an array")
+   end match
+-  bind totals <- try List.fold(orders, Result.Ok(Map.empty()), lambda(acc, order)
+-    return Result.andThen(acc, lambda(m) return addOrder(m, order) end lambda)
++  bind totals <- try List.fold(xs: orders, initial: Result.Ok(Map.empty()), f: lambda(acc, order)
++    return Result.andThen(r: acc, f: lambda(m) return addOrder(totals: m, order: order) end lambda)
+   end lambda)
+-  Map.forEach(totals, lambda(category, entry)
++  Map.forEach(m: totals, f: lambda(category, entry)
+     Console.writeLine("${category}: ${Pair.first(entry)} orders, ${Pair.second(entry)}")
+   end lambda)
+-  Console.writeLine("total: ${List.length(orders)} orders, ${List.fold(Map.values(totals), 0, lambda(sum, entry) return sum + Pair.second(entry) end lambda)}")
++  Console.writeLine("total: ${List.length(orders)} orders, ${List.fold(xs: Map.values(totals), initial: 0, f: lambda(sum, entry) return sum + Pair.second(entry) end lambda)}")
+   return Result.Ok(())
+ end function
+--- a/tools/skill-eval/tasks/process_run/reference.bnt
++++ b/tools/skill-eval/tasks/process_run/reference.bnt
+@@ -4,10 +4,10 @@
+ 
+ function main() -> Result[Unit, String] uses File.Read, Process.Run, Console.Write
+   bind text <- try File.readText("fruits.txt") |> Result.mapError(_, IOError.message)
+-  bind command <- Process.Command(..Process.command("sort", ["-u"]), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some(text))
++  bind command <- Process.Command(..Process.command(program: "sort", arguments: ["-u"]), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some(text))
+   bind output <- try Process.run(command) |> Result.mapError(_, IOError.message)
+   bind lines <- String.lines(Process.Output.standardOutput(output))
+-  List.forEach(lines, lambda(line) Console.writeLine(line) end lambda)
++  List.forEach(xs: lines, f: lambda(value) Console.writeLine(value) end lambda)
+   Console.writeLine("unique: ${List.length(lines)}")
+   Console.writeLine("sort exit code: ${Process.Output.exitCode(output)}")
+   return Result.Ok(())
+--- a/tools/skill-eval/tasks/process_shell/reference.bnt
++++ b/tools/skill-eval/tasks/process_shell/reference.bnt
+@@ -4,7 +4,7 @@
+ function main() -> Result[Unit, String] uses Process.Run, Console.Write
+   bind errors <- try Process.shell("grep ' ERROR ' app.log | cut -d ' ' -f 3 | LC_ALL=C sort -u") |> Result.mapError(_, IOError.message)
+   bind components <- String.lines(Process.Output.standardOutput(errors))
+-  List.forEach(components, lambda(name) Console.writeLine(name) end lambda)
++  List.forEach(xs: components, f: lambda(value) Console.writeLine(value) end lambda)
+   Console.writeLine("components with errors: ${List.length(components)}")
+   bind fatal <- try Process.shell("grep -q ' FATAL ' app.log") |> Result.mapError(_, IOError.message)
+   bind code <- Process.Output.exitCode(fatal)
+--- a/tools/skill-eval/tasks/regex_text/reference.bnt
++++ b/tools/skill-eval/tasks/regex_text/reference.bnt
+@@ -6,13 +6,13 @@
+   bind text <- try File.readText("messages.txt") |> Result.mapError(_, IOError.message)
+   bind email <- try Regex.compile(r"[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.[A-Za-z]+)")
+   bind date <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
+-  bind found <- Regex.findAll(email, text)
+-  bind domains <- List.map(found, lambda(m) return String.toLowercase(Option.unwrapOr(Regex.group(m, 1), "")) end lambda)
+-  bind counts <- List.fold(domains, Map.empty(), lambda(m, d)
+-    return Map.set(m, d, Option.unwrapOr(Map.get(m, d), 0) + 1)
++  bind found <- Regex.findAll(pattern: email, text: text)
++  bind domains <- List.map(xs: found, f: lambda(m) return String.toLowercase(Option.unwrapOr(o: Regex.group(m: m, index: 1), fallback: "")) end lambda)
++  bind counts <- List.fold(xs: domains, initial: Map.empty(), f: lambda(acc, value)
++    return Map.set(m: acc, k: value, value: Option.unwrapOr(o: Map.get(m: acc, k: value), fallback: 0) + 1)
+   end lambda)
+   Console.writeLine("addresses: ${List.length(found)}")
+-  Map.forEach(counts, lambda(domain, count) Console.writeLine("${domain}: ${count}") end lambda)
+-  Console.writeLine("dates: ${String.join(List.map(Regex.findAll(date, text), Regex.matchText), ", ")}")
++  Map.forEach(m: counts, f: lambda(key, value) Console.writeLine("${key}: ${value}") end lambda)
++  Console.writeLine("dates: ${String.join(xs: List.map(xs: Regex.findAll(pattern: date, text: text), f: Regex.matchText), separator: ", ")}")
+   return Result.Ok(())
+ end function
+--- a/tools/skill-eval/tasks/write_tests/reference.bnt
++++ b/tools/skill-eval/tasks/write_tests/reference.bnt
+@@ -2,37 +2,37 @@
+ 
+ function parseSetting(line: String) -> Option[Pair[String, String]]
+   bind trimmed <- String.trim(line)
+-  if trimmed = "" or String.startsWith(trimmed, "#") then return Option.None end if
+-  return match String.split(trimmed, "=") with
+-    case [key, ..rest] if String.trim(key) <> "" -> Option.Some(Pair(String.trim(key), String.trim(String.join(rest, "="))))
++  if trimmed = "" or String.startsWith(s: trimmed, prefix: "#") then return Option.None end if
++  return match String.split(s: trimmed, separator: "=") with
++    case [key, ..rest] if String.trim(key) <> "" -> Option.Some(Pair(String.trim(key), String.trim(String.join(xs: rest, separator: "="))))
+     case _ -> Option.None
+   end match
+ end function
+ 
+ function loadSettings(path: String) -> Result[Map[String, String], String] uses File.Read
+   bind lines <- try File.readLines(path) |> Result.mapError(_, IOError.message)
+-  return Result.Ok(List.fold(lines, Map.empty(), lambda(m, line)
+-    return match parseSetting(line) with
+-      case Option.Some(entry) -> Map.set(m, Pair.first(entry), Pair.second(entry))
+-      case Option.None -> m
++  return Result.Ok(List.fold(xs: lines, initial: Map.empty(), f: lambda(acc, value)
++    return match parseSetting(value) with
++      case Option.Some(entry) -> Map.set(m: acc, k: Pair.first(entry), value: Pair.second(entry))
++      case Option.None -> acc
+     end match
+   end lambda))
+ end function
+ 
+ @test("parseSetting reads a key and a value")
+ function parsesKeyValue() -> Unit uses Assert.Check
+-  Assert.equal(parseSetting(" port = 8080 "), Option.Some(Pair("port", "8080")))
++  Assert.equal(actual: parseSetting(" port = 8080 "), expected: Option.Some(Pair("port", "8080")))
+ end function
+ 
+ @test("parseSetting keeps = in the value")
+ function keepsEquals() -> Unit uses Assert.Check
+-  Assert.equal(parseSetting("query=a=b"), Option.Some(Pair("query", "a=b")))
++  Assert.equal(actual: parseSetting("query=a=b"), expected: Option.Some(Pair("query", "a=b")))
+ end function
+ 
+ @test("parseSetting skips comments and blank lines")
+ function skipsComments() -> Unit uses Assert.Check
+-  Assert.equal(parseSetting("# note"), Option.None)
+-  Assert.equal(parseSetting("   "), Option.None)
++  Assert.equal(actual: parseSetting("# note"), expected: Option.None)
++  Assert.equal(actual: parseSetting("   "), expected: Option.None)
+ end function
+ 
+ @test("loadSettings reads the file through File.readLines")
+@@ -41,8 +41,8 @@
+     loadSettings("app.conf")
+   with
+     case File.readLines(path) ->
+-      Assert.equal(path, "app.conf")
++      Assert.equal(actual: path, expected: "app.conf")
+       resume(Result.Ok(["# server", "host = example.org", "port=80"]))
+   end handle
+-  Assert.equal(result, Result.Ok(Map.fromList([Pair("host", "example.org"), Pair("port", "80")])))
++  Assert.equal(actual: result, expected: Result.Ok(Map.fromList([Pair("host", "example.org"), Pair("port", "80")])))
+ end function

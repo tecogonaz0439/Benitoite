@@ -1,7 +1,9 @@
 import Benitoite.Surface.Typing
 import Benitoite.Release.Coverage
 
-/-! 判定の有限の原子集合と、カーネルで評価できる型の操作。 -/
+/-! 判定の有限の原子集合と、カーネルで評価できる型の操作。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+-/
 namespace Benitoite.Release
 
 def Eff.AtomsIn (atoms : List Atom) (ε : Eff) : Prop :=
@@ -11,7 +13,7 @@ mutual
   def Ty.AtomsIn (atoms : List Atom) : Ty → Prop
     | .data _ ts | .tapp _ ts => Tys.AtomsIn atoms ts
     | .list t | .reference t | .lazy t | .set t | .dict _ t => t.AtomsIn atoms
-    | .fn ps r ε => Tys.AtomsIn atoms ps ∧ r.AtomsIn atoms ∧ ε.AtomsIn atoms
+    | .fn _ ps r ε => Tys.AtomsIn atoms ps ∧ r.AtomsIn atoms ∧ ε.AtomsIn atoms
     | .cont b t ε => b.AtomsIn atoms ∧ t.AtomsIn atoms ∧ ε.AtomsIn atoms
     | .map a b => a.AtomsIn atoms ∧ b.AtomsIn atoms
     | _ => True
@@ -105,7 +107,7 @@ mutual
     | .data a ts, .data b us => (a == b) && tysEq atoms ts us
     | .list a, .list b | .reference a, .reference b | .lazy a, .lazy b
       | .set a, .set b => tyEq atoms a b
-    | .fn ps r ε, .fn qs s ε' => tysEq atoms ps qs && tyEq atoms r s && effEq atoms ε ε'
+    | .fn names ps r ε, .fn otherNames qs s ε' => (names == otherNames) && tysEq atoms ps qs && tyEq atoms r s && effEq atoms ε ε'
     | .cont b t ε, .cont b' t' ε' => tyEq atoms b b' && tyEq atoms t t' && effEq atoms ε ε'
     | .map a b, .map a' b' => tyEq atoms a a' && tyEq atoms b b'
     | .tvar i, .tvar j => i == j
@@ -170,11 +172,12 @@ mutual
         have he₁ := tyEq_soundAux atoms _ _ ha.1 hb.1 h₁
         have he₂ := tyEq_soundAux atoms _ _ ha.2 hb.2 h₂
         subst_vars; rfl
-    | .fn ps r ε, t, ha, hb, h => by
+    | .fn names ps r ε, t, ha, hb, h => by
         cases t <;> simp only [tyEq] at h <;> try contradiction
-        rename_i qs s ε'
-        have ⟨⟨hp, hr⟩, he⟩ : (tysEq atoms ps qs = true ∧ tyEq atoms r s = true) ∧
-            effEq atoms ε ε' = true := by simpa using h
+        rename_i otherNames qs s ε'
+        simp only [Bool.and_eq_true_iff] at h
+        rcases h with ⟨⟨⟨hn, hp⟩, hr⟩, he⟩
+        have he₀ := eq_of_beq hn
         have he₁ := tysEq_soundAux atoms _ _ ha.1 hb.1 hp
         have he₂ := tyEq_soundAux atoms _ _ ha.2.1 hb.2.1 hr
         have he₃ := effEq_sound ha.2.2 hb.2.2 he
@@ -209,19 +212,20 @@ theorem tysEq_sound {atoms ts us} (ha : Tys.AtomsIn atoms ts) (hb : Tys.AtomsIn 
 
 def tyLe (atoms : List Atom) (a b : Ty) : Bool :=
   match a, b with
-  | .fn ps r ε, .fn qs s ε' => tysEq atoms ps qs && tyEq atoms r s && effSub atoms ε ε'
+  | .fn names ps r ε, .fn otherNames qs s ε' => (names == otherNames) && tysEq atoms ps qs && tyEq atoms r s && effSub atoms ε ε'
   | _, _ => tyEq atoms a b
 
 theorem tyLe_sound {atoms a b} (ha : Ty.AtomsIn atoms a) (hb : Ty.AtomsIn atoms b)
     (h : tyLe atoms a b = true) : Ty.Le a b := by
   cases a <;> cases b <;> try exact Or.inl (tyEq_sound ha hb h)
-  rename_i ps r ε qs s ε'
-  have ⟨⟨hp, hr⟩, he⟩ : (tysEq atoms ps qs = true ∧ tyEq atoms r s = true) ∧
-      effSub atoms ε ε' = true := by simpa [tyLe] using h
+  rename_i names ps r ε otherNames qs s ε'
+  simp only [tyLe, Bool.and_eq_true_iff] at h
+  rcases h with ⟨⟨⟨hn, hp⟩, hr⟩, he⟩
+  have hnames := eq_of_beq hn
   have hps := tysEq_sound ha.1 hb.1 hp
   have hrs := tyEq_sound ha.2.1 hb.2.1 hr
-  subst qs; subst s
-  exact Or.inr ⟨ps, r, ε, ε', rfl, rfl, effSub_sound ha.2.2 he⟩
+  subst otherNames; subst qs; subst s
+  exact Or.inr ⟨names, ps, r, ε, ε', rfl, rfl, effSub_sound ha.2.2 he⟩
 
 /-- 適用は再帰を必要としない。型引数を再び辿らず、そのまま挿入する。 -/
 def applyToTy (t : Ty) (args : List Ty) : Ty :=
@@ -238,7 +242,7 @@ mutual
     | .opaque o => .opaque o
     | .data d args => .data d (shiftTys k c args)
     | .list a => .list (shiftTy k c a)
-    | .fn ps r eff => .fn (shiftTys k c ps) (shiftTy k c r) eff
+    | .fn names ps r eff => .fn names (shiftTys k c ps) (shiftTy k c r) eff
     | .tvar i => if i < c then .tvar i else .tvar (i + k)
     | .reference a => .reference (shiftTy k c a)
     | .lazy a => .lazy (shiftTy k c a)
@@ -260,7 +264,7 @@ mutual
     | .opaque o => by simp only [shiftTy, Ty.shift]
     | .data d args => by simp only [shiftTy, Ty.shift, shiftTys_eq]
     | .list a => by simp only [shiftTy, Ty.shift, shiftTy_eq k c a]
-    | .fn ps r eff => by simp only [shiftTy, Ty.shift, shiftTys_eq, shiftTy_eq k c r]
+    | .fn names ps r eff => by simp only [shiftTy, Ty.shift, shiftTys_eq, shiftTy_eq k c r]
     | .tvar i => by simp only [shiftTy, Ty.shift]
     | .reference a => by simp only [shiftTy, Ty.shift, shiftTy_eq k c a]
     | .lazy a => by simp only [shiftTy, Ty.shift, shiftTy_eq k c a]
@@ -282,7 +286,7 @@ mutual
     | .opaque o => .opaque o
     | .data d args => .data d (substTysAt c ts es args)
     | .list a => .list (substTyAt c ts es a)
-    | .fn ps r eff => .fn (substTysAt c ts es ps) (substTyAt c ts es r) (Eff.substRho es eff)
+    | .fn names ps r eff => .fn names (substTysAt c ts es ps) (substTyAt c ts es r) (Eff.substRho es eff)
     | .tvar i => if i < c then .tvar i else if i - c < ts.length then shiftTy c 0 ((ts[i - c]?).getD (.tvar i)) else .tvar (i - ts.length)
     | .reference a => .reference (substTyAt c ts es a)
     | .lazy a => .lazy (substTyAt c ts es a)
@@ -304,7 +308,7 @@ mutual
     | .opaque o => by simp only [substTyAt, Ty.substAt]
     | .data d args => by simp only [substTyAt, Ty.substAt, substTysAt_eq]
     | .list a => by simp only [substTyAt, Ty.substAt, substTyAt_eq c ts es a]
-    | .fn ps r eff => by simp only [substTyAt, Ty.substAt, substTysAt_eq, substTyAt_eq c ts es r]
+    | .fn names ps r eff => by simp only [substTyAt, Ty.substAt, substTysAt_eq, substTyAt_eq c ts es r]
     | .tvar i => by simp only [substTyAt, Ty.substAt, shiftTy_eq]
     | .reference a => by simp only [substTyAt, Ty.substAt, substTyAt_eq c ts es a]
     | .lazy a => by simp only [substTyAt, Ty.substAt, substTyAt_eq c ts es a]
@@ -325,11 +329,11 @@ def substTy (ts : List Ty) (es : List Eff) (a : Ty) : Ty := substTyAt 0 ts es a
 theorem substTy_eq (ts : List Ty) (es : List Eff) (a : Ty) :
     substTy ts es a = a.subst ts es := substTyAt_eq 0 ts es a
 
-def fnTyCheck (params : List Ty) (ret : Ty) (eff : Eff) (ts : List Ty) (es : List Eff) : Ty :=
-  substTy ts es (.fn params ret eff)
+def fnTyCheck (names : List String) (params : List Ty) (ret : Ty) (eff : Eff) (ts : List Ty) (es : List Eff) : Ty :=
+  substTy ts es (.fn names params ret eff)
 
-theorem fnTyCheck_eq (params : List Ty) (ret : Ty) (eff : Eff) (ts : List Ty) (es : List Eff) :
-    fnTyCheck params ret eff ts es = fnTy params ret eff ts es := substTy_eq ts es _
+theorem fnTyCheck_eq (names : List String) (params : List Ty) (ret : Ty) (eff : Eff) (ts : List Ty) (es : List Eff) :
+    fnTyCheck names params ret eff ts es = fnTy names params ret eff ts es := substTy_eq ts es _
 
 theorem substRho_atoms {atoms es ε} (ha : Eff.AtomsIn atoms ε)
     (he : ∀ e ∈ es, Eff.AtomsIn atoms e) : Eff.AtomsIn atoms (Eff.substRho es ε) := by
@@ -365,7 +369,7 @@ mutual
     | .data _ ts, h | .tapp _ ts, h => shiftTys_atomsAux k c ts h
     | .list a, h | .reference a, h | .lazy a, h | .set a, h | .dict _ a, h =>
         shiftTy_atomsAux k c a h
-    | .fn ps r _, h => ⟨shiftTys_atomsAux k c ps h.1, shiftTy_atomsAux k c r h.2.1, h.2.2⟩
+    | .fn names ps r _, h => ⟨shiftTys_atomsAux k c ps h.1, shiftTy_atomsAux k c r h.2.1, h.2.2⟩
     | .cont b t _, h => ⟨shiftTy_atomsAux k c b h.1, shiftTy_atomsAux k c t h.2.1, h.2.2⟩
     | .map a b, h => ⟨shiftTy_atomsAux k c a h.1, shiftTy_atomsAux k c b h.2⟩
   private theorem shiftTys_atomsAux {atoms} (k c : Nat) : (ts : List Ty) →
@@ -404,7 +408,7 @@ mutual
     | .data _ as, h => substTysAt_atomsAux ht he c as h
     | .list a, h | .reference a, h | .lazy a, h | .set a, h | .dict _ a, h =>
         substTyAt_atomsAux ht he c a h
-    | .fn ps r ε, h => ⟨substTysAt_atomsAux ht he c ps h.1,
+    | .fn names ps r ε, h => ⟨substTysAt_atomsAux ht he c ps h.1,
         substTyAt_atomsAux ht he c r h.2.1, substRho_atoms h.2.2 he⟩
     | .cont b t ε, h => ⟨substTyAt_atomsAux ht he c b h.1,
         substTyAt_atomsAux ht he c t h.2.1, substRho_atoms h.2.2 he⟩
@@ -453,10 +457,10 @@ theorem substTy_atoms {atoms a ts es} (ha : Ty.AtomsIn atoms a)
     (ht : Tys.AtomsIn atoms ts) (he : ∀ e ∈ es, Eff.AtomsIn atoms e) :
     Ty.AtomsIn atoms (substTy ts es a) := substTyAt_atoms ha ht he 0
 
-theorem fnTyCheck_atoms {atoms params ret eff ts es}
+theorem fnTyCheck_atoms {atoms names params ret eff ts es}
     (hp : Tys.AtomsIn atoms params) (hr : Ty.AtomsIn atoms ret) (he : Eff.AtomsIn atoms eff)
     (ht : Tys.AtomsIn atoms ts) (hes : ∀ e ∈ es, Eff.AtomsIn atoms e) :
-    Ty.AtomsIn atoms (fnTyCheck params ret eff ts es) := substTy_atoms ⟨hp, hr, he⟩ ht hes
+    Ty.AtomsIn atoms (fnTyCheck names params ret eff ts es) := substTy_atoms ⟨hp, hr, he⟩ ht hes
 
 theorem shiftTys_atoms {atoms ts} (ht : Tys.AtomsIn atoms ts) (k c : Nat) :
     Tys.AtomsIn atoms (shiftTys k c ts) := by

@@ -6,21 +6,21 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.Regex
 function extractDates(text: String) -> Result[List[String], String]
   bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
-  return Result.Ok(Regex.findAll(pattern, text) |> List.map(_, Regex.matchText))
+  return Result.Ok(Regex.findAll(pattern: pattern, text: text) |> List.map(xs: _, f: lambda(value) return Regex.matchText(value) end lambda))
 end function
 function main() -> Result[Unit, String] uses Console.Write
   bind dates <- try extractDates("日付 2026-09-28 と 2026-10-08")
   Console.writeLine(Trait.Show.show(dates))
   bind pattern <- try Regex.compile(r"(?P<word>[a-z]+)=(\d+)")
   bind text <- "é a=12,b=3!"
-  bind replaced <- Regex.replaceAllWith(pattern, text, lambda(m)
-    Console.writeLine(Integer.toString(Regex.matchByteStart(m)) + ":" + Integer.toString(Regex.matchByteEnd(m)))
-    return Option.unwrapOr(Regex.namedGroup(m, "word"), "?") + ":" + Option.unwrapOr(Regex.group(m, 2), "?")
+  bind replaced <- Regex.replaceAllWith(pattern: pattern, text: text, f: lambda(matched)
+    Console.writeLine(Integer.toString(Regex.matchByteStart(matched)) + ":" + Integer.toString(Regex.matchByteEnd(matched)))
+    return Option.unwrapOr(o: Regex.namedGroup(m: matched, name: "word"), fallback: "?") + ":" + Option.unwrapOr(o: Regex.group(m: matched, index: 2), fallback: "?")
   end lambda)
   Console.writeLine(replaced)
-  Console.writeLine(Regex.replaceFirst(pattern, text, r"$1"))
-  Console.writeLine(Regex.replaceAll(pattern, text, "X"))
-  Console.writeLine(Trait.Show.show(Regex.split(pattern, text)))
-  Console.writeLine(Trait.Show.show(Regex.isMatch(pattern, text) and Result.isError(Regex.compile("["))))
+  Console.writeLine(Regex.replaceFirst(pattern: pattern, text: text, replacement: r"$1"))
+  Console.writeLine(Regex.replaceAll(pattern: pattern, text: text, replacement: "X"))
+  Console.writeLine(Trait.Show.show(Regex.split(pattern: pattern, text: text)))
+  Console.writeLine(Trait.Show.show(Regex.isMatch(pattern: pattern, text: text) and Result.isError(Regex.compile("["))))
   return Result.Ok(())
 end function

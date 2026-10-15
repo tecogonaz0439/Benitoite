@@ -585,8 +585,8 @@ fn unsupported_types_are_rejected_at_the_declared_type() {
         ("Pair[Integer, Unit]", "Unit"),
         ("Task[Integer]", "Task[Integer]"),
         (
-            "(function(Integer) -> Integer)",
-            "function(Integer) -> Integer",
+            "(function(value: Integer) -> Integer)",
+            "function(value: Integer) -> Integer",
         ),
     ] {
         let source = declaration(&format!("a: {ty}"), "Integer", "add");
@@ -1609,7 +1609,7 @@ fn directories_lost_after_loading_are_component_read_errors() {
                 ),
                 (
                     "deps/lib/package.bnt",
-                    "language \"0.0.3\"\npackage Library\nend package\n",
+                    "language \"0.0.5\"\npackage Library\nend package\n",
                 ),
                 ("deps/lib/Calc.bnt", &declaration),
             ])
@@ -1751,7 +1751,7 @@ fn module_roots_and_package_wasm_boundaries() {
                 "Lib/Nested.bnt",
                 nested.replace("wasm/x.wasm", "x.wasm").as_bytes(),
             ),
-            ("package.bnt", b"language \"0.0.3\"\n"),
+            ("package.bnt", b"language \"0.0.5\"\n"),
             ("x.wasm", &bytes),
         ],
         options,
@@ -1775,7 +1775,7 @@ fn module_roots_and_package_wasm_boundaries() {
         ("x.wasm", Some(DiagCode::E1003)),
     ] {
         let main = "dependency Alias\npath \"deps/fuzzy\"\nend dependency\nimport Alias.Distance\nfunction main() -> Unit\n()\nend function\n";
-        let config = "language \"0.0.3\"\npackage Fuzzy\nlicense \"MIT\"\nend package\n";
+        let config = "language \"0.0.5\"\npackage Fuzzy\nlicense \"MIT\"\nend package\n";
         let module = nested.replace("wasm/x.wasm", path);
         let result = pipeline::check_files(
             &[
@@ -1943,7 +1943,7 @@ fn external_types_and_effects_match_component_contracts() {
     let counter = "bnt:test/counter@0.1.0";
     // 呼び出し側にエフェクトを足す前に、外部の宣言の誤りを報告しなければならない。
     // 既存の表は、宣言を呼ばないため検査の段の順序の退行を捕まえない。
-    let source = "import Benitoite.Unofficial.IO.Console\n@external(\"wasm\", \"wasm/x.wasm\", \"add\")\nfunction add(a: Integer, b: Integer) -> Integer uses Console.Write\nfunction main() -> Unit\nbind _ <- add(1, 2)\n()\nend function\n";
+    let source = "import Benitoite.Unofficial.IO.Console\n@external(\"wasm\", \"wasm/x.wasm\", \"add\")\nfunction add(a: Integer, b: Integer) -> Integer uses Console.Write\nfunction main() -> Unit\nbind _ <- add(a: 1, b: 2)\n()\nend function\n";
     assert!(codes(&check(source, &wat::parse_str(ADD).unwrap())).contains(&DiagCode::E0812));
     for (type_decl, params, ret, export, effects, expected, forward) in [
         (
@@ -2185,7 +2185,7 @@ fn external_types_and_effects_match_component_contracts() {
         ("a <> a", DiagCode::E0406),
         ("Map.fromList([Pair(a, 1)])", DiagCode::E0423),
         ("Set.fromList([a])", DiagCode::E0423),
-        ("Assert.equal(a, a)", DiagCode::E0406),
+        ("Assert.equal(actual: a, expected: a)", DiagCode::E0406),
         ("\"${a}\"", DiagCode::E0422),
         ("a < a", DiagCode::E0405),
         ("with x = a do () end with", DiagCode::E0443),
@@ -2214,7 +2214,7 @@ fn external_types_and_effects_match_component_contracts() {
         );
     }
     let source = format!(
-        "import Benitoite.Trait\n{cell}implement Trait.Show[Cell]\nfunction show(a: Cell) -> String\nreturn \"cell\"\nend function\nend implement\nfunction stringify(a: Cell) -> String\nreturn Trait.Show.show(a)\nend function\nfunction main() -> Unit\n()\nend function\n"
+        "import Benitoite.Trait\n{cell}implement Trait.Show[Cell]\nfunction show(x: Cell) -> String\nreturn \"cell\"\nend function\nend implement\nfunction stringify(a: Cell) -> String\nreturn Trait.Show.show(a)\nend function\nfunction main() -> Unit\n()\nend function\n"
     );
     let result = check(&source, &bytes);
     assert!(codes(&result).is_empty(), "{:?}", result.diagnostics);
@@ -2308,6 +2308,70 @@ fn map_program(source: &str, wat: &str) -> crate::bytecode::program::CompiledPro
     assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
     let core = pipeline::desugar_checked(&result.program.unwrap()).unwrap();
     pipeline::compile(&core, Arc::clone(&result.sources)).unwrap()
+}
+
+// 関門: Benitoite の名前から宣言位置へ写し、異なる WIT 名には位置で渡す。
+// 宣言だけの照合や ABI の単体検査では、CallPlan・コード生成を通る並べ替えを捕まえない。
+#[test]
+fn named_external_calls_keep_positions_independent_of_wit_names() {
+    use crate::runtime::heap::HeapConfig;
+    use crate::runtime::io::services::RunInput;
+    use crate::runtime::run::{self, EndKind, NoInterrupt, OutputTarget, RunEnv, StdinSource};
+    use crate::vm::{ExecMode, VmConfig};
+    use std::sync::Mutex;
+
+    let component = ADD.replace("i64.add", "i64.sub");
+    let declaration = "@external(\"wasm\", \"wasm/x.wasm\", \"add\")\nfunction externalFn(left: Integer, right: Integer) -> Integer\n";
+    let source = format!(
+        r#"
+import Benitoite.Unofficial.IO.Console
+{declaration}
+function main() -> Unit uses Console.Write
+ bind direct <- externalFn(right: 2, left: 17)
+ bind action: function(left: Integer, right: Integer) -> Integer <- externalFn
+ bind viaValue <- action(right: 2, left: 17)
+ bind partial <- externalFn(right: _, left: 17)
+ bind viaPartial <- partial(right: 2)
+ bind piped <- 17 |> externalFn(right: 2)
+ Console.writeLine(text: Integer.toString(n: direct + viaValue + viaPartial + piped))
+end function
+"#
+    );
+    let program = map_program(&source, &component);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let stdout = Arc::new(Mutex::new(Vec::new()));
+        let stderr = Arc::new(Mutex::new(Vec::new()));
+        let result = run::run_program(
+            &program,
+            RunEnv {
+                input: RunInput {
+                    arguments: vec![],
+                    working_directory: "/".into(),
+                    script_directory: "/".into(),
+                },
+                stdin: StdinSource::Bytes(vec![]),
+                stdout: OutputTarget::Capture(Arc::clone(&stdout)),
+                stderr: OutputTarget::Capture(Arc::clone(&stderr)),
+                interrupt: Box::new(NoInterrupt),
+                parts: None,
+                mode,
+                vm: VmConfig::default(),
+                heap: HeapConfig::default(),
+                dev_panic_after_first_write: false,
+            },
+        );
+        assert_eq!(result.end, EndKind::Returned, "{result:?}");
+        assert_eq!(result.exit_code, 0, "{result:?}");
+        assert!(result.main_error.is_none(), "{result:?}");
+        assert!(result.reports.is_empty(), "{result:?}");
+        assert_eq!(*stdout.lock().unwrap(), b"60\n");
+        assert!(stderr.lock().unwrap().is_empty());
+    }
+    let bad = format!(
+        "{declaration}\nfunction main() -> Unit\n bind value <- externalFn(a: 17, right: 2)\n ()\nend function"
+    );
+    let result = check(&bad, &wat::parse_str(&component).unwrap());
+    assert_eq!(codes(&result), [DiagCode::E0451]);
 }
 
 // 関門: 消える組も Wasmtime の予算と ABI の検査に含める。

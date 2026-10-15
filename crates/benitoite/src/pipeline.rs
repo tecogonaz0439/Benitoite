@@ -793,7 +793,14 @@ end function
             // 括弧一つで一段増え、葉は 4 + n。
             ("parentheses", "(", "1", ")", 1, 4),
             // ラムダのブロック、bind、その値で三段増え、葉は 4 + 3n。
-            ("lambda", "lambda() bind _ <- ", "()", "\nend lambda", 3, 4),
+            (
+                "lambda",
+                "lambda()\n bind _ <- ",
+                "()",
+                "\nend lambda",
+                3,
+                4,
+            ),
             // if のブロックと最初の文で二段増え、葉は 4 + 2n。
             ("if", "if true then ", "1", " else 0 end if", 2, 4),
             // 最初の分岐、ブロック、文で三段増える。最後の match は深さ

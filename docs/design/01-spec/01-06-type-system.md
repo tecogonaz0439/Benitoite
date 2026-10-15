@@ -25,18 +25,18 @@
 | リストとコレクション | `List[T]`、 `Map[K, V]`・`Set[T]`・`Bytes` | `List[Integer]`、`Map[String, Integer]` |
 | 中身を見せない prelude の型（opaque type） | 型の名前と型引数 | `IOError`（[エフェクト](01-07-effects.md)）、 `Reference[Integer]`、`Lazy[String]` |
 | 外部の型 | 型の名前 | `@external` で宣言した型（[構文](01-02-syntax.md#外部の関数の宣言)） |
-| 関数の型 | `function(引数の型, ...) -> 戻り値の型` と、任意の `uses` | `function(Integer) -> Integer`、`function(String) -> Unit uses Console.Write` |
+| 関数の型 | `function(名前: 引数の型, ...) -> 戻り値の型` と、任意の `uses` | `function(x: Integer) -> Integer`、`function(text: String) -> Unit uses Console.Write` |
 | 型パラメータ | 関数の宣言または型の宣言（[代数的データ型とパターンマッチ](01-05-data-types.md)）で宣言した名前 | `T` |
 | 型構成子を表す型パラメータの適用（初回リリース版） | 型構成子を表す型パラメータと型引数 | `F[A]`（後述の「高カインド型（初回リリース版）」） |
 
 推論の途中では、まだ決まっていない型を表す型変数が現れる。型変数は利用者が書く型には現れない。
 
-本章で多相な名前の型を示すときは、`function[T: Show](T) -> String` のように、`function` の後に型パラメータの並びを書く。これは多相な名前の型を説明するための記法であり、利用者が型として書くことはできない。
+本章で多相な名前の型を示すときは、`function[T: Show](x: T) -> String` のように、`function` の後に型パラメータの並びを書く。これは多相な名前の型を説明するための記法であり、利用者が型として書くことはできない。
 
 【方針】二つの型は、次の場合に等しい。
 
 - 中身を見せない prelude の型、外部の型、代数的データ型は、型の名前が同じで、対応する型引数がすべて等しいときに等しい（`Reference[Integer]` と `Reference[String]` は等しくない）。構成子が同じ形でも、名前の違う型は等しくない。レコードの型も、代数的データ型と同じく扱う。
-- 関数の型は、引数の個数が同じで、対応する引数の型、戻り値の型、エフェクトの集合がすべて等しいときに等しい。エフェクトの集合は、書く順序によらない。
+- 関数の型は、引数の個数が同じで、対応する引数の型、戻り値の型、エフェクトの集合がすべて等しいときに等しい。位置ごとのパラメータ名も等しくなければならない。エフェクトの集合は、書く順序によらない。
 - 型パラメータは、同じ宣言の同じ型パラメータとだけ等しい。
 - 型構成子を表す型パラメータの適用 `F[A1, ..., An]` は、`F` が同じ宣言の同じ型パラメータで、対応する型引数がすべて等しいときに等しい。
 
@@ -45,6 +45,14 @@
 【決定】数の正の名前と別名の同一性は、[基本型の意味論](01-04-types-basic.md)の「型の一覧」の表に従う。`Integer64` と `Integer`、`Float64` と `Float`、`UnsignedInteger8` と `Byte`、`UnsignedInteger` と `UnsignedInteger64` は、それぞれ同じ型である。異なる幅・符号の型は等しくない。診断の既定の表示は `Integer`・`Float`・`Byte` と、新しい七種の正の名前を使う。理由: 別名を使っても、型の契約と既存の表示を保つ。
 
 型のあいだにサブタイピングはない。関数の型のエフェクトについてだけ、後述の「エフェクトの包含」の規則が働く。
+
+### 名前を持つ関数型の適合と推論
+
+【決定】関数型どうしを比べるときは、個数と位置ごとの名前の一致を検査し、その後で引数型・戻り値型・エフェクトの規則を適用する。名前と宣言順を保持し、名前の alpha 変換は行わない。型パラメータの置き換え、型の別名の展開、エフェクトの包含でも名前を失わない。
+
+【決定】位置指定・名前指定の別や個数によらず、高階呼び出しで要求される関数型と、渡すラムダの実際のパラメータ名は一致しなければならない。例えば `List.map(xs: xs, f: lambda(value) return value * 2)` の内側の契約は `value` である。別の名前を持つ関数は、`lambda(value) return old(value)` のように明示のラムダで合わせる。期待型からラムダの束縛名を読み替えない。
+
+【決定】未確定の関数値への呼び出しでは、ラベルを書いた順から宣言順を作らない。宣言、ラムダ、名前を持つ型注釈、同じ本体の制約から契約を得て対応付ける。最後まで名前と順が決まらなければ E0455 とし、名前を持つ型注釈を求める。未使用のラムダや一引数の位置指定でも契約を創作せず、契約名の変数を一般化しない。検査済みの別の関数の契約を呼び出し元から後で確定する方式は取らない。型とエフェクトの通常の多相性は維持する。
 
 ### 関数の型とエフェクト
 
@@ -57,12 +65,12 @@
 【決定】エフェクト変数は、トップレベルの関数の型パラメータの並びで、`effect` を前に付けて宣言する。型クラスと実装のメソッドの型パラメータの並びにも宣言できる（後述の「型クラス（初回リリース版）」）。
 
 ```text
-function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E) -> List[U] uses E   // 本体は省略
+function map[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E) -> List[U] uses E   // 本体は省略
 function twice[effect E](act: function() -> Unit uses E) -> Unit uses E
   act()
   act()
 end function
-function logEach[T, effect E](xs: List[T], show: function(T) -> String uses E) -> Unit uses Console.Write, E   // 本体は省略
+function logEach[T, effect E](xs: List[T], show: function(value: T) -> String uses E) -> Unit uses Console.Write, E   // 本体は省略
 ```
 
 - エフェクト変数は `uses` の後にだけ書ける。型を書く位置にエフェクト変数を、`uses` の後に型パラメータを書くと誤りとする。
@@ -75,7 +83,7 @@ function logEach[T, effect E](xs: List[T], show: function(T) -> String uses E) -
 
 【方針】式を評価したときに起こりうるエフェクトの集合を、式のエフェクトと呼ぶ。式のエフェクトは次のように決まる。
 
-- 関数の呼び出し `f(a1, ..., an)` のエフェクトは、`f` と各引数の式のエフェクトに、`f` の型のエフェクトを加えた和集合である。
+- 関数の呼び出し `f(a1: e1, ..., an: en)` のエフェクトは、`f` と各引数の式のエフェクトに、`f` の型のエフェクトを加えた和集合である。
 - ラムダの式そのもののエフェクトは空集合である。ラムダの本体のエフェクトは、ラムダの型のエフェクトになる。
 - `if`・`match`・ブロック・演算子などの式のエフェクトは、それを構成する式（条件、対象、すべての分岐、すべての文、オペランド）のエフェクトの和集合である。
 - 名前とリテラルのエフェクトは空集合である。
@@ -98,7 +106,7 @@ end function
 
 ### エフェクトの包含
 
-【決定】関数の型 `function(A1, ..., An) -> R uses X` を持つ式は、`X` を含む集合 `Y` について、型 `function(A1, ..., An) -> R uses Y` が求められる位置に使ってよい。
+【決定】関数の型 `function(a1: A1, ..., an: An) -> R uses X` を持つ式は、`X` を含む集合 `Y` について、型 `function(a1: A1, ..., an: An) -> R uses Y` が求められる位置に使ってよい。
 
 【決定】包含の規則は、値がある型の位置に流れ込む次のすべての箇所で働く。
 
@@ -115,7 +123,7 @@ end function
 ```text
 function runAll(actions: List[function() -> Unit uses Console.Write]) -> Unit uses Console.Write   // 本体は省略
 
-runAll([lambda() Console.writeLine("a") end lambda, lambda() () end lambda])   // 純粋なラムダも要素にできる
+runAll([lambda() Console.writeLine("a"), lambda() ()])   // 純粋なラムダも要素にできる
 bind f: function() -> Unit uses Console.Write <- lambda() () end lambda             // 型注釈にも包含が働く
 ```
 
@@ -127,8 +135,8 @@ bind f: function() -> Unit uses Console.Write <- lambda() () end lambda         
 【方針】エフェクト変数を持つ関数を呼び出したり値として使ったりするたびに、その関数の各エフェクト変数を、エフェクトの集合で置き換える。置き換える集合は、引数の型とエフェクトの包含の規則を満たすように推論する。
 
 ```text
-bind ys <- map(xs, lambda(x) return x + 1 end lambda)                 // E は空集合。この呼び出しは純粋
-bind zs <- map(xs, lambda(x) return File.readText(x) end lambda)      // E は {File.Read}。呼び出しはファイルを読む
+bind ys <- map(xs: xs, f: lambda(value) return value + 1 end lambda)                 // E は空集合。この呼び出しは純粋
+bind zs <- map(xs: xs, f: lambda(value) return File.readText(value) end lambda)      // E は {File.Read}。呼び出しはファイルを読む
 ```
 
 `uses Console.Write, E` の `E` を `{File.Read}` で置き換えた集合は `{Console.Write, File.Read}` である。置き換える集合が推論で一つに決まらない場合は、条件を満たす最小の集合をとる。
@@ -155,7 +163,7 @@ bind zs <- map(xs, lambda(x) return File.readText(x) end lambda)      // E は {
 function example() -> Unit
   bind id <- lambda(x) return x end lambda
   bind a <- id(1)
-  bind b <- id("one")      // 誤り: id の型は function(Integer) -> Integer に決まっている
+  bind b <- id("one")      // 誤り: id の型は function(x: Integer) -> Integer に決まっている
 end function
 ```
 
@@ -292,7 +300,7 @@ end function
 
 function g() -> Integer
   bind add <- lambda(a, b) return a + b end lambda
-  return add(1, 2)                          // よい: a と b は Integer に決まる
+  return add(a: 1, b: 2)                          // よい: a と b は Integer に決まる
 end function
 ```
 
@@ -344,10 +352,10 @@ end function
 【決定】利用者は、関数の型パラメータに、組み込みの制約 `equality`（等値の型である）と `key`（鍵の型である）を付けられる（`[T: equality]`、`[K: key]`）。構文は[構文](01-02-syntax.md)の「型クラス（初回リリース版）」で定める。
 
 ```text
-function countBy[T, K: key](xs: List[T], keyOf: function(T) -> K) -> Map[K, Integer]
-  return List.fold(xs, Map.empty(), lambda(m, x)
-    bind k <- keyOf(x)
-    return Map.set(m, k, Option.unwrapOr(Map.get(m, k), 0) + 1)
+function countBy[T, K: key](xs: List[T], keyOf: function(value: T) -> K) -> Map[K, Integer]
+  return List.fold(xs: xs, initial: Map.empty(), f: lambda(acc, value)
+    bind k <- keyOf(value)
+    return Map.set(m: acc, k: k, value: Option.unwrapOr(o: Map.get(m: acc, k: k), fallback: 0) + 1)
   end lambda)
 end function
 ```
@@ -385,7 +393,7 @@ implement[T: Show] Show[Option[T]]
 end implement
 
 function describeAll[T: Show](xs: List[T]) -> String
-  return List.map(xs, Show.show) |> String.join(_, ", ")
+  return List.map(xs: xs, f: lambda(value) return Show.show(value)) |> String.join(xs: _, separator: ", ")
 end function
 ```
 
@@ -395,12 +403,12 @@ end function
 
 ```text
 trait Functor[F[_]]
-  function map[A, B, effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+  function map[A, B, effect E](x: F[A], f: function(value: A) -> B uses E) -> F[B] uses E
 end trait
 
 implement Functor[Option]
-  function map[A, B, effect E](x: Option[A], f: function(A) -> B uses E) -> Option[B] uses E
-    return Option.map(x, f)
+  function map[A, B, effect E](x: Option[A], f: function(value: A) -> B uses E) -> Option[B] uses E
+    return Option.map(o: x, f: f)
   end function
 end implement
 ```
@@ -428,7 +436,7 @@ end implement
 - 上位の型クラスの関係が循環すると誤りとする（`trait A[T: B]` と `trait B[T: A]`）。
 - 上位の型クラスには、[名前・スコープ・モジュール](01-03-names-modules.md)の「公開（初回リリース版）」で定める公開の段階の規則を当てる。
 - 型構成子を引数にとる型クラスの上位の型クラスは、型構成子を引数にとる型クラスでなければならない（`trait Monad[F[_]: Applicative]`）。値の型を引数にとる型クラスも同じく、値の型を引数にとる型クラスだけを上位に持てる。
-- 型クラスの名前は、型・モジュール・エフェクトと同じ大文字の名前空間に入り、同じ名前のモジュールを兼ねる。そのモジュールには、メソッドが入る。`Show.show` の型は `function[T: Show](T) -> String` である。
+- 型クラスの名前は、型・モジュール・エフェクトと同じ大文字の名前空間に入り、同じ名前のモジュールを兼ねる。そのモジュールには、メソッドが入る。`Show.show` の型は `function[T: Show](x: T) -> String` である。
 
 【方針】型クラスの実装には、次の規則がある。
 
@@ -459,13 +467,13 @@ end implement
 
 #### 標準の型クラス（初回リリース版）
 
-【決定】標準ライブラリは、標準の型クラスをモジュール `Benitoite.Trait` に置く。`Benitoite.Trait` は prelude に含まれないので、使うには `import Benitoite.Trait` と書く。型クラスは `Trait.Monad`、メソッドは `Trait.Monad.flatMap(x, f)` のように、モジュールの名前で修飾して書く。型クラスとメソッドの一覧、比較の結果の型 `Ordering`、標準ライブラリの型への実装は[標準ライブラリ](../03-interop/03-06-stdlib.md)で定める。
+【決定】標準ライブラリは、標準の型クラスをモジュール `Benitoite.Trait` に置く。`Benitoite.Trait` は prelude に含まれないので、使うには `import Benitoite.Trait` と書く。型クラスは `Trait.Monad`、メソッドは `Trait.Monad.flatMap(x: x, f: f)` のように、モジュールの名前で修飾して書く。型クラスとメソッドの一覧、比較の結果の型 `Ordering`、標準ライブラリの型への実装は[標準ライブラリ](../03-interop/03-06-stdlib.md)で定める。
 
 ```text
 import Benitoite.Trait
 
 function combineAll[T: Trait.Monoid](xs: List[T]) -> T
-  return List.fold(xs, Trait.Monoid.empty(), Trait.Semigroup.combine)
+  return List.fold(xs: xs, initial: Trait.Monoid.empty(), f: lambda(acc, value) return Trait.Semigroup.combine(x: acc, y: value))
 end function
 ```
 
@@ -477,7 +485,7 @@ end function
 
 ### 明示遅延の型（初回リリース版）
 
-【決定】`lazy b end lazy` の型は、`b` の型を `T` として `Lazy[T]` である。`b` はエフェクトを持たない式でなければならない。エフェクトを持つ式を書くと誤りとし、診断は引数のないラムダを使う書き方を修正案として示す。`Lazy.force` の型は `function[T](Lazy[T]) -> T` であり、エフェクトを持たない。
+【決定】`lazy b end lazy` の型は、`b` の型を `T` として `Lazy[T]` である。`b` はエフェクトを持たない式でなければならない。エフェクトを持つ式を書くと誤りとし、診断は引数のないラムダを使う書き方を修正案として示す。`Lazy.force` の型は `function[T](l: Lazy[T]) -> T` であり、エフェクトを持たない。
 
 【方針】`Lazy[T]` は中身を見せない prelude の型であり、等値の型ではない。
 
@@ -493,7 +501,7 @@ end function
 
 【決定】利用者が宣言したエフェクトの操作と、ハンドラは次のように型付けする。構文は[構文](01-02-syntax.md)の「エフェクトの宣言とハンドラ（初回リリース版）」で、意味は[エフェクト](01-07-effects.md)で定める。
 
-- エフェクト `L` の操作 `function op[ᾱ](x1: A1, …, xn: An) -> B` は、`L` を宣言したモジュールの関数 `op` として、型 `function[ᾱ](A1, …, An) -> B uses L` を持つ。組み込みのエフェクトの操作は、標準ライブラリが定める関数の型をそのまま持つ。`State` は操作を持たず、`State` を型に持つ関数はハンドラで処理できない（[エフェクト](01-07-effects.md)）。
+- エフェクト `L` の操作 `function op[ᾱ](x1: A1, …, xn: An) -> B` は、`L` を宣言したモジュールの関数 `op` として、型 `function[ᾱ](x1: A1, …, xn: An) -> B uses L` を持つ。組み込みのエフェクトの操作は、標準ライブラリが定める関数の型をそのまま持つ。`State` は操作を持たず、`State` を型に持つ関数はハンドラで処理できない（[エフェクト](01-07-effects.md)）。
 - `handle` の式を、本体 `b` と節の並びとする。`b` の型を `T`、エフェクトを `ε` とする。節の本体は、`T` 型でなければならない。節の本体の中の `resume(v)` は、`v` が節の操作の戻り値の型を持つときに型が付き、その型は `T` である。
 - 操作の型パラメータは値の型の型パラメータに限る（型構成子を表す型パラメータは宣言できない）。操作の型パラメータの制約は組み込みの制約に限る（型クラスの制約は書けない）。操作が型パラメータを持つとき、節の中では、その型パラメータを、宣言した組み込みの制約を持つほかの何とも等しくない型として扱う。したがって、`function fail[T](message: String) -> T` のように、T の値を引数に受け取らず、T の値を得るほかの手段もない操作の節は、`resume` に渡す値を作れず、`resume` を呼ばずに終わる。`function identity[T](value: T) -> T` のように T の値を引数に受け取る操作の節では、受け取った値を渡す `resume(value)` に型が付く。
 - エフェクト `L` のすべての操作の節を持つ `handle` を、`L` を処理するハンドラと呼ぶ。`handle` の式のエフェクトは、`ε` から、処理する `L` をすべて除き、各節の本体のエフェクトを加えた集合である。一部の操作の節だけを持つエフェクトは、`ε` から除かない。
@@ -507,10 +515,10 @@ end effect
 
 function parseAll(texts: List[String]) -> Result[List[Integer], String]
   return handle
-    Result.Ok(List.map(texts, lambda(t)
-      return match Integer.parse(t) with
+    Result.Ok(List.map(xs: texts, f: lambda(value)
+      return match Integer.parse(value) with
         case Option.Some(n) -> n
-        case Option.None -> fail("bad: " + t)
+        case Option.None -> fail("bad: " + value)
       end match
     end lambda))
   with

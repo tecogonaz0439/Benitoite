@@ -18,8 +18,8 @@ function classify(n: Integer) -> String
 end function
 
 function main() -> Unit uses Console.Write
-  List.forEach([1, 2], lambda(item)
-    Console.writeLine(classify(item))
+  List.forEach(xs: [1, 2], f: lambda(value)
+    Console.writeLine(classify(value))
   end lambda)
   bind total <- 1
     + 2

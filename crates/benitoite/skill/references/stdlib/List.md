@@ -91,43 +91,43 @@ public function sort[T: ordered](xs: List[T]) -> List[T]
 Returns the elements in ascending order by `<`. Equal elements keep their order. NaN goes last.
 
 ```benitoite
-public function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E) -> List[U] uses E
+public function map[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E) -> List[U] uses E
 ```
 
 Returns the list of `f` applied to each element.
 
 ```benitoite
-public function filter[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> List[T] uses E
+public function filter[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> List[T] uses E
 ```
 
 Returns the elements for which `p` returns `true`, in order.
 
 ```benitoite
-public function fold[T, A, effect E](xs: List[T], initial: A, f: function(A, T) -> A uses E) -> A uses E
+public function fold[T, A, effect E](xs: List[T], initial: A, f: function(acc: A, value: T) -> A uses E) -> A uses E
 ```
 
 Combines the elements from the first with `f`, starting from `initial`.
 
 ```benitoite
-public function forEach[T, effect E](xs: List[T], f: function(T) -> Unit uses E) -> Unit uses E
+public function forEach[T, effect E](xs: List[T], f: function(value: T) -> Unit uses E) -> Unit uses E
 ```
 
 Calls `f` with each element in order.
 
 ```benitoite
-public function any[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> Boolean uses E
+public function any[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Boolean uses E
 ```
 
 Returns whether `p` returns `true` for some element. Stops calling `p` at the first `true`.
 
 ```benitoite
-public function all[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> Boolean uses E
+public function all[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Boolean uses E
 ```
 
 Returns whether `p` returns `true` for every element. Stops calling `p` at the first `false`.
 
 ```benitoite
-public function find[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> Option[T] uses E
+public function find[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Option[T] uses E
 ```
 
 Returns the first element for which `p` returns `true`, or `Option.None` when there is none.

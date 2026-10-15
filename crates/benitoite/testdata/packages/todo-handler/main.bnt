@@ -11,11 +11,11 @@ function loadReadsTasks() -> Unit uses Assert.Check, File.Read
     Store.load("todo.txt")
   with
     case File.readText(path) ->
-      Assert.equal(path, "todo.txt")
+      Assert.equal(actual: path, expected: "todo.txt")
       resume(Result.Ok("[x] Buy milk\nnot a task\n[ ] Read book\n"))
   end handle
   // IOError は比べられない型なので、Result のまま比べず、中身を取り出して比べる。
-  Assert.equal(Result.unwrapOr(result, []), [
+  Assert.equal(actual: Result.unwrapOr(r: result, fallback: []), expected: [
     Store.Item(done: true, title: "Buy milk"),
     Store.Item(done: false, title: "Read book")
   ])

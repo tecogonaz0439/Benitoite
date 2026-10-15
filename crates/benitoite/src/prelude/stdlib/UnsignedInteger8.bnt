@@ -17,17 +17,17 @@ end function
 
 /// Calls `Byte.bitwiseAnd` with the same result and stopping conditions.
 public function bitwiseAnd(a: UnsignedInteger8, b: UnsignedInteger8) -> UnsignedInteger8
-  return Byte.bitwiseAnd(a, b)
+  return Byte.bitwiseAnd(a: a, b: b)
 end function
 
 /// Calls `Byte.bitwiseOr` with the same result and stopping conditions.
 public function bitwiseOr(a: UnsignedInteger8, b: UnsignedInteger8) -> UnsignedInteger8
-  return Byte.bitwiseOr(a, b)
+  return Byte.bitwiseOr(a: a, b: b)
 end function
 
 /// Calls `Byte.bitwiseExclusiveOr` with the same result and stopping conditions.
 public function bitwiseExclusiveOr(a: UnsignedInteger8, b: UnsignedInteger8) -> UnsignedInteger8
-  return Byte.bitwiseExclusiveOr(a, b)
+  return Byte.bitwiseExclusiveOr(a: a, b: b)
 end function
 
 /// Calls `Byte.bitwiseNot` with the same result and stopping conditions.
@@ -37,10 +37,10 @@ end function
 
 /// Calls `Byte.shiftLeft` with the same result and stopping conditions.
 public function shiftLeft(a: UnsignedInteger8, n: Integer) -> UnsignedInteger8
-  return Byte.shiftLeft(a, n)
+  return Byte.shiftLeft(a: a, n: n)
 end function
 
 /// Calls `Byte.shiftRight` with the same result and stopping conditions.
 public function shiftRight(a: UnsignedInteger8, n: Integer) -> UnsignedInteger8
-  return Byte.shiftRight(a, n)
+  return Byte.shiftRight(a: a, n: n)
 end function

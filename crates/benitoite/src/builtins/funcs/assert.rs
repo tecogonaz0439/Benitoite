@@ -55,7 +55,7 @@ mod tests {
         // 接続を公開の検査の入口で確かめる。
         let result = check_text(
             "assert.bnt",
-            b"@test\nfunction equalValues() -> Unit uses Assert.Check\n  checkEqual()\nend function\n\nfunction checkEqual() -> Unit uses Assert.Check\n  Assert.equal(1, 1)\nend function\n",
+            b"@test\nfunction equalValues() -> Unit uses Assert.Check\n  checkEqual()\nend function\n\nfunction checkEqual() -> Unit uses Assert.Check\n  Assert.equal(actual: 1, expected: 1)\nend function\n",
             CheckOptions {
                 require_main: false,
                 deny_warnings: false,

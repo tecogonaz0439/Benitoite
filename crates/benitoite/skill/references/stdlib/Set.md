@@ -67,25 +67,25 @@ public function difference[T: key](a: Set[T], b: Set[T]) -> Set[T]
 Returns the elements in `a` and not in `b`. Each element keeps its form from `a`.
 
 ```benitoite
-public function map[T: key, U: key, effect E](s: Set[T], f: function(T) -> U uses E) -> Set[U] uses E
+public function map[T: key, U: key, effect E](s: Set[T], f: function(value: T) -> U uses E) -> Set[U] uses E
 ```
 
 Returns the set of `f` applied to each element. Equal results become one element.
 
 ```benitoite
-public function filter[T: key, effect E](s: Set[T], p: function(T) -> Boolean uses E) -> Set[T] uses E
+public function filter[T: key, effect E](s: Set[T], p: function(value: T) -> Boolean uses E) -> Set[T] uses E
 ```
 
 Returns the elements for which `p` returns `true`.
 
 ```benitoite
-public function fold[T: key, A, effect E](s: Set[T], initial: A, f: function(A, T) -> A uses E) -> A uses E
+public function fold[T: key, A, effect E](s: Set[T], initial: A, f: function(acc: A, value: T) -> A uses E) -> A uses E
 ```
 
 Combines the elements in order with `f`, starting from `initial`.
 
 ```benitoite
-public function forEach[T: key, effect E](s: Set[T], f: function(T) -> Unit uses E) -> Unit uses E
+public function forEach[T: key, effect E](s: Set[T], f: function(value: T) -> Unit uses E) -> Unit uses E
 ```
 
 Calls `f` with each element in order.

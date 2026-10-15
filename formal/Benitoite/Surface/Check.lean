@@ -11,6 +11,7 @@ Exprs・HoleArgs・辞書引数は、並びの経路に平らな添字を一つ�
 実装のメソッドは [0, i]、上位の所属検査は [1, i]、辞書は [2, i] とする。
 全体の条件はその構文の経路、子の検査後の型・エフェクトの条件は子の経路で報告する。
 handle の探索中は resume の引数のエフェクトを継続ごとの要求として保持する。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
 -/
 namespace Benitoite.Surface.Check
 open Benitoite.Release Benitoite.Surface.CheckTools
@@ -56,8 +57,8 @@ def acceptEff (q : Input) (path : List Nat) (expected actual : Eff) : Result Uni
 def join (q : Input) (path : List Nat) (a b : Ty) : Result Ty :=
   lookup path "branch types have no join" (tyJoin q.atoms a b)
 
-def fnView (path : List Nat) : Ty → Result (List Ty × Ty × Eff)
-  | .fn ps r ε => pure (ps, r, ε)
+def fnView (path : List Nat) : Ty → Result (List String × List Ty × Ty × Eff)
+  | .fn names ps r ε => pure (names, ps, r, ε)
   | _ => throw ⟨path, "expected a function type"⟩
 
 def dictView (path : List Nat) : Ty → Result (ClassName × Ty)
@@ -154,51 +155,62 @@ mutual
         pure (a, emptyEff)
     | .funName f ts es => do
         let d ← lookup path "unknown function" (q.D.funs f)
+        require path "function contract names are not well formed" (namesWF d.names d.params)
+        require path "function core names are not well formed" (namesWF d.coreNames (d.dictTys ++ d.params))
         require path "function type arguments fail constraints" (satAll q.satDec C ts d.tparams)
         require path "function effect argument count mismatch" (es.length == d.neffs)
         require path "function needs dictionaries" d.dictParams.isEmpty
-        pure (fnTyCheck d.params d.ret d.eff ts es, emptyEff)
-    | .funDicts f ts es ds ps => do
+        pure (fnTyCheck d.names d.params d.ret d.eff ts es, emptyEff)
+    | .funDicts f ts es ds names ps => do
         let d ← lookup path "unknown function" (q.D.funs f)
+        require path "function contract names are not well formed" (namesWF d.names d.params)
+        require path "function core names are not well formed" (namesWF d.coreNames (d.dictTys ++ d.params))
         require path "function type arguments fail constraints" (satAll q.satDec C ts d.tparams)
         require path "function effect argument count mismatch" (es.length == d.neffs)
         require path "function does not take dictionaries" (nonemptyList d.dictParams)
+        require path "function contract annotation mismatch" (names == d.names)
         require path "function parameter annotation mismatch" (tysEq q.atoms ps (substParams ts es d.params))
         checkDicts q C Γ (child path 0) ds (substParams ts [] d.dictTys)
-        pure (fnTyCheck d.params d.ret d.eff ts es, emptyEff)
-    | .methName d m ts es ds ps => do
+        pure (fnTyCheck d.names d.params d.ret d.eff ts es, emptyEff)
+    | .methName d m ts es ds names ps => do
         let (cl, τ) ← dictView (child path 0) (← checkDict q C Γ (child path 0) d)
         let cd ← lookup path "unknown class" (q.D.classes cl)
         let ms ← lookup path "unknown method" (cd.methods m)
+        require path "method contract names are not well formed" (namesWF ms.names ms.params)
+        require path "method contract annotation mismatch" (names == ms.names.drop ds.length)
         require path "method type arguments fail constraints" (satAll q.satDec C ts ms.tparams)
         require path "method effect argument count mismatch" (es.length == ms.neffs)
         let params := substParams (ts ++ [τ]) es ms.params
         checkDicts q C Γ (child path 1) ds (params.take ds.length)
         require path "method parameter annotation mismatch" (tysEq q.atoms ps (params.drop ds.length))
         require path "method still has dictionary parameters" (headNotDict ps)
-        pure (.fn ps (substTy (ts ++ [τ]) es ms.ret) (Eff.substRho es ms.eff), emptyEff)
+        pure (.fn names ps (substTy (ts ++ [τ]) es ms.ret) (Eff.substRho es ms.eff), emptyEff)
     | .primName b ts es => do
         let s ← lookup path "unknown primitive" (q.B.sig b)
+        require path "primitive contract names are not well formed" (namesWF s.names s.params)
         require path "primitive type argument count mismatch" (ts.length == s.ntys)
         require path "primitive effect argument count mismatch" (es.length == s.neffs)
         require path "primitive type arguments are not admitted" (q.admitsDec b C ts)
-        pure (fnTyCheck s.params s.ret s.eff ts es, emptyEff)
+        pure (fnTyCheck s.names s.params s.ret s.eff ts es, emptyEff)
     | .opName o ts => do
         let od ← lookup path "unknown operation" (q.D.ops o)
+        require path "operation contract names are not well formed" (namesWF od.names od.params)
         require path "operation type arguments fail constraints" (satAll q.satDec C ts od.tparams)
         require path "operation effect is outside atoms" (q.atoms.contains (.name od.eff))
-        pure (fnTyCheck od.params od.ret (singleEff q.atoms (.name od.eff)) ts [], emptyEff)
+        pure (fnTyCheck od.names od.params od.ret (singleEff q.atoms (.name od.eff)) ts [], emptyEff)
     | .nullCon c ts => do
         let cd ← lookup path "unknown constructor" (q.D.cons c)
         require path "constructor type argument count mismatch" (ts.length == cd.ntys)
         require path "constructor takes arguments" cd.args.isEmpty
         pure (.data cd.data ts, emptyEff)
-    | .conValue c ts ps => do
+    | .conValue c ts names ps => do
         let cd ← lookup path "unknown constructor" (q.D.cons c)
         require path "constructor type argument count mismatch" (ts.length == cd.ntys)
+        require path "constructor contract annotation mismatch" (names == q.D.constructorNames c cd)
+        require path "constructor contract names are not well formed" (namesWF names ps)
         require path "constructor parameter annotation mismatch" (tysEq q.atoms ps (substParams ts [] cd.args))
         require path "nullary constructor is not a function" (nonemptyList ps)
-        pure (.fn ps (.data cd.data ts) emptyEff, emptyEff)
+        pure (.fn names ps (.data cd.data ts) emptyEff, emptyEff)
     | .literal l => pure (l.toConst.type, emptyEff)
     | .negInt _ => pure (.base .integer, emptyEff)
     | .negFloat _ => pure (.base .float, emptyEff)
@@ -233,19 +245,21 @@ mutual
         require path "record update pattern is not exhaustive"
           (recordUpdateExhaustive q.D q.ctors cd ts c n positions)
         pure (a, union q εb εa)
-    | .call f args => do
+    | .call f labels positions args => do
         let (a, εf) ← checkExprR q mode C Γ R .other (child path 0) f
-        let (ps, r, εcall) ← fnView (child path 0) a
-        let εargs ← checkTypesR q mode C Γ R (child path 1) 0 args ps
+        let (names, ps, r, εcall) ← fnView (child path 0) a
+        require path "call labels and positions do not match the contract" (callOk names ps false labels positions)
+        let εargs ← checkTypesR q mode C Γ R (child path 1) 0 args (sourceTypes ps positions)
         pure (r, union q εf (union q εargs εcall))
     | .pipe lhs rhs =>
         match rhs with
-        | .call f args => do
+        | .call f labels positions args => do
             let (a, εf) ← checkExprR q mode C Γ R .other (child (child path 1) 0) f
-            let (params, r, εcall) ← fnView (child (child path 1) 0) a
+            let (names, params, r, εcall) ← fnView (child (child path 1) 0) a
             let t ← lookup (child (child path 1) 0) "pipe call has no first parameter" params.head?
             let εl ← accept q (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
-            let εargs ← checkTypesR q mode C Γ R (child (child path 1) 1) 0 args params.tail
+            require (child path 1) "pipe labels and positions do not match the contract" (callOk names params true labels positions)
+            let εargs ← checkTypesR q mode C Γ R (child (child path 1) 1) 0 args (sourceTypes params positions)
             pure (r, union q εl (union q εf (union q εargs εcall)))
         | .conCall c ts args => do
             let cd ← lookup (child path 1) "unknown pipe constructor" (q.D.cons c)
@@ -255,9 +269,11 @@ mutual
             let εl ← accept q (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
             let εargs ← checkTypesR q mode C Γ R (child (child path 1) 0) 0 args ps.tail
             pure (.data cd.data ts, union q εl εargs)
-        | .conValue c ts ps => do
+        | .conValue c ts names ps => do
             let cd ← lookup (child path 1) "unknown pipe constructor" (q.D.cons c)
             require (child path 1) "constructor type argument count mismatch" (ts.length == cd.ntys)
+            require (child path 1) "constructor contract annotation mismatch" (names == q.D.constructorNames c cd)
+            require (child path 1) "constructor contract names are not well formed" (namesWF names ps)
             require (child path 1) "constructor parameter annotation mismatch" (tysEq q.atoms ps (substParams ts [] cd.args))
             require (child path 1) "bare pipe constructor must be unary" (ps.length == 1)
             let t ← lookup (child path 1) "pipe constructor has no parameter" ps.head?
@@ -266,26 +282,35 @@ mutual
         | rhs => do
             require (child path 1) "invalid pipe value" (pipeValue rhs)
             let (a, εf) ← checkExprR q mode C Γ R .other (child path 1) rhs
-            let (ps, r, εcall) ← fnView (child path 1) a
-            require (child path 1) "pipe value must be unary" (ps.length == 1)
+            let (names, ps, r, εcall) ← fnView (child path 1) a
+            require (child path 1) "pipe value must have one parameter and one name"
+              ((ps.length == 1) && (names.length == 1))
             let t ← lookup (child path 1) "pipe value has no parameter" ps.head?
             let εl ← accept q (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
             pure (r, union q εl (union q εf εcall))
-    | .partialCall f args r ε => do
+    | .partialCall f names args r ε => do
         require path "partial call has no holes" (nonemptyList args.holeTypes)
         let (a, εf) ← checkExprR q mode C (hideConts Γ) (some r) .other (child path 0) f
-        let (ps, r0, εcall) ← fnView (child path 0) a
-        let εargs ← checkHoleArgsR q mode C (hideConts Γ) (some r) (child path 1) 0 args ps
+        let (calleeNames, ps, r0, εcall) ← fnView (child path 0) a
+        require path "partial call contract annotation mismatch" (names == calleeNames)
+        require path "partial call labels and positions do not match the contract"
+          (callOk names ps false args.labels args.positions)
+        require path "partial call hole names are not well formed" (namesWF (args.holeNames names) args.holeTypes)
+        let εargs ← checkHoleArgsR q mode C (hideConts Γ) (some r) (child path 1) 0 args (sourceTypes ps args.positions)
         require path "partial call result type mismatch" (tyLe q.atoms r0 r)
         acceptEff q path ε (union q εf (union q εargs εcall))
-        pure (.fn args.holeTypes r ε, emptyEff)
+        pure (.fn (args.holeNames names) args.holeTypes r ε, emptyEff)
     | .partialCon c ts args => do
         let cd ← lookup path "unknown partial constructor" (q.D.cons c)
         require path "constructor type argument count mismatch" (ts.length == cd.ntys)
         require path "partial constructor has no holes" (nonemptyList args.holeTypes)
+        require path "partial constructor labels or positions are invalid" (constructorHolesOk args cd.args.length)
+        require path "record construction cannot contain holes" (q.D.conFields c).isNone
+        let names := args.holeNames (positionalNames args.positions.length)
+        require path "partial constructor hole names are not well formed" (namesWF names args.holeTypes)
         let r := Ty.data cd.data ts
         let εargs ← checkHoleArgsR q mode C (hideConts Γ) (some r) (child path 0) 0 args (substParams ts [] cd.args)
-        pure (.fn args.holeTypes r εargs, emptyEff)
+        pure (.fn names args.holeTypes r εargs, emptyEff)
     | .binary o t lhs rhs => do
         require path "binary operator type is not allowed" ((Operator.binary o).allowed t)
         let (b, ts) ← lookup path "operator has no primitive" (q.opPrim (.binary o) t)
@@ -293,7 +318,8 @@ mutual
         require path "operator type argument count mismatch" (ts.length == s.ntys)
         require path "operator takes effect arguments" (s.neffs == 0)
         require path "operator type arguments are not admitted" (q.admitsDec b C ts)
-        let (ps, r, ε) ← fnView path (fnTyCheck s.params s.ret s.eff ts [])
+        let (names, ps, r, ε) ← fnView path (fnTyCheck s.names s.params s.ret s.eff ts [])
+        require path "binary operator parameter names mismatch" (names == ["left", "right"])
         require path "binary operator parameter types mismatch" (tysEq q.atoms ps [t, t])
         acceptEff q path emptyEff ε
         let εl ← accept q (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) lhs)
@@ -308,7 +334,7 @@ mutual
         require path "negation takes effect arguments" (s.neffs == 0)
         require path "negation type arguments are not admitted" (q.admitsDec b C ts)
         require path "negation primitive type mismatch"
-          (tyEq q.atoms (fnTyCheck s.params s.ret s.eff ts []) (.fn [t] t emptyEff))
+          (tyEq q.atoms (fnTyCheck s.names s.params s.ret s.eff ts []) (.fn ["value"] [t] t emptyEff))
         let ε ← accept q (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) e)
         pure (t, ε)
     | .not e => do
@@ -325,7 +351,7 @@ mutual
     | .listSpread a f before spread after => do
         require path "list element type is not well formed" (wfTy C.length a)
         require (child path 0) "list concatenation is not a direct callee" (isDirect f)
-        let εf ← accept q (child path 0) (.fn [.list a, .list a] (.list a) emptyEff)
+        let εf ← accept q (child path 0) (.fn ["xs", "ys"] [.list a, .list a] (.list a) emptyEff)
           (← checkExprR q mode C Γ R .other (child path 0) f)
         acceptEff q (child path 0) emptyEff εf
         let εb ← checkEachR q mode C Γ R (child path 1) 0 before a
@@ -341,12 +367,13 @@ mutual
         require path "interpolation string addition is invalid"
           (decide (InterpPart.count parts < 2) || stringAddOk q.atoms q.B q.opPrim q.admitsDec C)
         pure (.base .string, ε)
-    | .lam ps r ε body => do
+    | .lam names ps r ε body => do
+        require path "lambda contract names are not well formed" (namesWF names ps)
         require path "lambda body does not exit" (lamBodyOk body r)
         let εb ← accept q (child path 0) r
           (← checkBlockR q mode C (binds ps ++ hideConts Γ) (some r) .tail (child path 0) body)
         acceptEff q (child path 0) ε εb
-        pure (.fn ps r ε, emptyEff)
+        pure (.fn names ps r ε, emptyEff)
     | .ite cond yes no => do
         let εc ← accept q (child path 0) (.base .boolean) (← checkExprR q mode C Γ R .other (child path 0) cond)
         let (ay, εy) ← checkBlockR q mode C Γ R p (child path 1) yes
@@ -515,11 +542,11 @@ mutual
   def checkHoleArgsR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (path : List Nat) (index : Nat) : HoleArgs → List Ty → Checking Eff
     | .nil, [] => pure emptyEff
-    | .expr e args, a :: as => do
+    | .expr _ _ e args, a :: as => do
         let ε ← accept q (child path index) a (← checkExprR q mode C Γ R .other (child path index) e)
         let εs ← checkHoleArgsR q mode C Γ R path (index + 1) args as
         pure (union q ε εs)
-    | .hole t args, a :: as => do
+    | .hole _ _ t args, a :: as => do
         require (child path index) "hole annotation type mismatch" (tyLe q.atoms t a)
         checkHoleArgsR q mode C Γ R path (index + 1) args as
     | _, _ => throw ⟨path, "hole argument count mismatch"⟩
@@ -549,6 +576,7 @@ mutual
     | .nil, _, _ => pure emptyEff
     | .cons o n ntys body rest, t, ε => do
         let sg ← lookup path "unknown handler operation" (opSig q.D.patternProgram q.B o)
+        require path "handler operation names are not well formed" (namesWF sg.names sg.params)
         require path "handler operation arity mismatch" (n == sg.params.length)
         require path "handler operation type parameter count mismatch" (ntys == sg.tparams.length)
         let result := shiftTy ntys 0 t
@@ -568,6 +596,7 @@ mutual
     | .nil, t, _ => pure t
     | .cons o n ntys body rest, t, ε => do
         let sg ← lookup path "unknown handler operation" (opSig q.D.patternProgram q.B o)
+        require path "handler operation names are not well formed" (namesWF sg.names sg.params)
         require path "handler operation arity mismatch" (n == sg.params.length)
         require path "handler operation type parameter count mismatch" (ntys == sg.tparams.length)
         let result := shiftTy ntys 0 t
@@ -616,20 +645,38 @@ def inferClauseTypes (q : Input) (C : List TParam) (Γ : List (Option Ty))
 
 /-- 定義の宣言した戻り値型とエフェクトで本体を受け入れる。 -/
 def checkDef (q : Input) (path : List Nat) (d : Def) : Result Unit := do
+  require path "function contract names are not well formed" (namesWF d.names d.params)
   require path "function body does not exit" (lamBodyOk d.body d.ret)
   let ε ← accept q (child path 0) d.ret
     (← checkBlock q .strict d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail (child path 0) d.body)
   acceptEff q (child path 0) d.eff ε
 
+/-- 実装の実名は位置による局所束縛へ変換する前に保持する。 -/
+structure MethodInput where
+  names : List String
+  body : Block
+
+/-- checker の入力は、型付き表層からは消えるメソッドの実名も持つ。 -/
+structure ImplInput extends ImplSig where
+  supers : ClassName → Option DictEv
+  methods : MethName → Option MethodInput
+
+/-- 名前を検査する入口と、性質 1 が使う本体の射影を区別する。 -/
+def ImplInput.decl (id : ImplInput) : ImplDecl :=
+  { id.toImplSig with supers := id.supers, methods := fun m => (id.methods m).map MethodInput.body }
+
 /-- 添字は一覧の位置であり、名前が重複しても各位置を検査する。 -/
-def checkMethods (q : Input) (path : List Nat) (id : ImplDecl) (cd : ClassDecl) :
+def checkMethods (q : Input) (path : List Nat) (id : ImplInput) (cd : ClassDecl) :
     List MethName → Nat → Result Unit
   | [], _ => pure ()
   | m :: rest, index => do
       let methodPath := child path index
       match cd.methods m, id.methods m with
       | none, none => pure ()
-      | some ms, some body =>
+      | some ms, some method =>
+          require methodPath "implementation method parameter names mismatch" (method.names == ms.names)
+          require methodPath "implementation method contract names are not well formed" (namesWF ms.names ms.params)
+          let body := method.body
           let result := substTyAt ms.tparams.length [id.target] [] ms.ret
           let params := ms.params.map (substTyAt ms.tparams.length [id.target] [])
           require methodPath "implementation method body does not exit" (lamBodyOk body result)
@@ -641,7 +688,7 @@ def checkMethods (q : Input) (path : List Nat) (id : ImplDecl) (cd : ClassDecl) 
       | _, _ => throw ⟨methodPath, "implementation method set mismatch"⟩
       checkMethods q path id cd rest (index + 1)
 
-def checkSuperFlags (path : List Nat) (id : ImplDecl) (cd : ClassDecl) :
+def checkSuperFlags (path : List Nat) (id : ImplInput) (cd : ClassDecl) :
     List ClassName → Nat → Result Unit
   | [], _ => pure ()
   | s :: rest, index => do
@@ -649,7 +696,7 @@ def checkSuperFlags (path : List Nat) (id : ImplDecl) (cd : ClassDecl) :
         ((id.supers s).isSome == cd.supers.contains s)
       checkSuperFlags path id cd rest (index + 1)
 
-def checkSuperDicts (q : Input) (path : List Nat) (id : ImplDecl) :
+def checkSuperDicts (q : Input) (path : List Nat) (id : ImplInput) :
     List ClassName → Nat → Result Unit
   | [], _ => pure ()
   | s :: rest, index => do
@@ -661,7 +708,7 @@ def checkSuperDicts (q : Input) (path : List Nat) (id : ImplDecl) :
 
 /-- 一覧の外の表の空欄は健全性の前提で保証する。 -/
 def checkImpl (q : Input) (methodNames : List MethName) (superNames : List ClassName)
-    (path : List Nat) (id : ImplDecl) : Result Unit := do
+    (path : List Nat) (id : ImplInput) : Result Unit := do
   let cd ← lookup path "unknown implementation class" (q.D.classes id.cls)
   checkMethods q (child path 0) id cd methodNames 0
   checkSuperFlags (child path 1) id cd superNames 0

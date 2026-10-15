@@ -2,7 +2,7 @@
 // spec: 01-06 組み込みの制約（初回リリース版）
 function same[T: equality](a: T, b: T) -> Boolean return a = b end function
 function bad[T](x: T) -> Boolean
-  return same(x, x)
+  return same(a: x, b: x)
 end function
 function main() -> Unit
   ()

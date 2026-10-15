@@ -794,7 +794,7 @@ mod tests {
         for (prefix, leaf, suffix, depth) in [
             ("(1 + ", "1", ")", 450),
             ("(", "1", ")", 900),
-            ("lambda() bind _ <- ", "()", "\nend lambda", 300),
+            ("lambda()\n bind _ <- ", "()", "\nend lambda", 300),
             ("if true then ", "1", " else 0 end if", 450),
             (
                 "match true with\n case true -> ",

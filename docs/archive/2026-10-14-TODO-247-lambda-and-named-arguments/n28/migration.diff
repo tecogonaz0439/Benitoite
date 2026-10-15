@@ -1,0 +1,1030 @@
+--- a/crates/benitoite/testdata/concurrency/c12-cancelled-await.bnt
++++ b/crates/benitoite/testdata/concurrency/c12-cancelled-await.bnt
+@@ -13,11 +13,11 @@
+   bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
+   bind _ <- handle
+     with group = TaskGroup.open() do
+-      bind task <- TaskGroup.spawn(group, lambda()
++      bind task <- TaskGroup.spawn(group: group, action: lambda()
+         Clock.sleep(3600000)
+         return 1
+       end lambda)
+-      Reference.set(saved, Option.Some(task))
++      Reference.set(reference: saved, value: Option.Some(task))
+       abort()
+     end with
+   with
+--- a/crates/benitoite/testdata/concurrency/c12-cancelled-reader.bnt
++++ b/crates/benitoite/testdata/concurrency/c12-cancelled-reader.bnt
+@@ -19,8 +19,8 @@
+   bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+   bind winner <- Task.race([
+     lambda()
+-      with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+-        Reference.set(saved, Option.Some(reader))
++      with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++        Reference.set(reference: saved, value: Option.Some(reader))
+         Clock.sleep(3600000)
+         return Result.Ok(1)
+       end with
+--- a/crates/benitoite/testdata/concurrency/c12-deadlock.bnt
++++ b/crates/benitoite/testdata/concurrency/c12-deadlock.bnt
+@@ -12,7 +12,7 @@
+ function main() -> Unit uses State
+   bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
+   with group = TaskGroup.open() do
+-    bind task <- TaskGroup.spawn(group, lambda() return awaitSaved(saved) end lambda)
+-    Reference.set(saved, Option.Some(task))
++    bind task <- TaskGroup.spawn(group: group, action: lambda() return awaitSaved(saved) end lambda)
++    Reference.set(reference: saved, value: Option.Some(task))
+   end with
+ end function
+--- a/crates/benitoite/testdata/concurrency/c12-group-released.bnt
++++ b/crates/benitoite/testdata/concurrency/c12-group-released.bnt
+@@ -7,11 +7,11 @@
+ function main() -> Unit uses State, Console.Write
+   bind saved: Reference[Option[TaskGroup]] <- Reference.new(Option.None)
+   with group = TaskGroup.open() do
+-    Reference.set(saved, Option.Some(group))
++    Reference.set(reference: saved, value: Option.Some(group))
+   end with
+   match Reference.get(saved) with
+     case Option.Some(group) ->
+-      bind _ <- TaskGroup.spawn(group, lambda() Console.writeLine("unreachable") end lambda)
++      bind _ <- TaskGroup.spawn(group: group, action: lambda() Console.writeLine("unreachable") end lambda)
+       ()
+     case Option.None -> ()
+   end match
+--- a/crates/benitoite/testdata/concurrency/inherited_operation_task_location.bnt
++++ b/crates/benitoite/testdata/concurrency/inherited_operation_task_location.bnt
+@@ -7,7 +7,7 @@
+ function main() -> Unit uses State
+   with group = TaskGroup.open() do
+     bind _ <- handle
+-      bind task <- TaskGroup.spawn(group, ask)
++      bind task <- TaskGroup.spawn(group: group, action: ask)
+       Task.await(task)
+     with
+       case ask() -> 1
+--- a/crates/benitoite/testdata/concurrency/r41-inherited-non-tail.bnt
++++ b/crates/benitoite/testdata/concurrency/r41-inherited-non-tail.bnt
+@@ -7,7 +7,7 @@
+ function main() -> Unit uses State
+   with group = TaskGroup.open() do
+     bind _ <- handle
+-      bind _ <- TaskGroup.spawn(group, lambda() return ask(1) end lambda)
++      bind _ <- TaskGroup.spawn(group: group, action: lambda() return ask(1) end lambda)
+       0
+     with
+       case ask(n) -> n
+--- a/crates/benitoite/testdata/effects/c11-high-impact-missing.bnt
++++ b/crates/benitoite/testdata/effects/c11-high-impact-missing.bnt
+@@ -2,7 +2,7 @@
+ import Benitoite.Unofficial.IO.File
+ import Benitoite.Unofficial.IO.Process
+ function save(path: String, text: String) -> Result[Unit, IOError]
+-  return File.writeText(path, text)
++  return File.writeText(path: path, text: text)
+ end function
+ function finish() -> Unit
+   Process.exit(0)
+--- a/crates/benitoite/testdata/effects/c11-state-no-cascade.bnt
++++ b/crates/benitoite/testdata/effects/c11-state-no-cascade.bnt
+@@ -2,7 +2,7 @@
+ // spec: 01-07 可変のセル（初回リリース版）
+ function bad() -> Integer
+   bind r <- Reference.new(0)
+-  Reference.set(r, 1)
++  Reference.set(reference: r, value: 1)
+   return Reference.get(r)
+ end function
+ function main() -> Unit
+--- a/crates/benitoite/testdata/effects/choose_io_violation.bnt
++++ b/crates/benitoite/testdata/effects/choose_io_violation.bnt
+@@ -6,6 +6,6 @@
+ end function
+ 
+ function main() -> Unit
+-    choose(lambda() return () end lambda, lambda() return Console.writeLine("used") end lambda)
++    choose(unused: lambda() return () end lambda, action: lambda() return Console.writeLine("used") end lambda)
+     return ()
+ end function
+--- a/crates/benitoite/testdata/effects/map_with_io_pure_violation.bnt
++++ b/crates/benitoite/testdata/effects/map_with_io_pure_violation.bnt
+@@ -2,7 +2,7 @@
+ import Benitoite.Unofficial.IO.Console
+ 
+ function map_and_print(values: List[Integer]) -> List[Integer]
+-    return List.map(values, lambda(value)
++    return List.map(xs: values, f: lambda(value)
+         Console.writeLine(Integer.toString(value))
+         return value
+     end lambda)
+--- a/crates/benitoite/testdata/effects/r41-task-state-required.bnt
++++ b/crates/benitoite/testdata/effects/r41-task-state-required.bnt
+@@ -7,7 +7,7 @@
+ end function
+ 
+ function timeoutOnly() -> Option[Integer] uses Clock.Time
+-  return Task.withTimeout(10, lambda() return 1 end lambda)
++  return Task.withTimeout(milliseconds: 10, action: lambda() return 1 end lambda)
+ end function
+ 
+ function main() -> Unit uses Clock.Time
+--- a/crates/benitoite/testdata/eval/div_by_zero_tail.bnt
++++ b/crates/benitoite/testdata/eval/div_by_zero_tail.bnt
+@@ -8,6 +8,6 @@
+ function main() -> Unit uses Console.Write
+   bind values <- [10]
+   bind divisor <- 0
+-  bind ratios <- List.map(values, lambda(value) return ratio(value, divisor) end lambda)
++  bind ratios <- List.map(xs: values, f: lambda(value) return ratio(a: value, b: divisor) end lambda)
+   return Console.writeLine(Integer.toString(List.length(ratios)))
+ end function
+--- a/crates/benitoite/testdata/eval/div_by_zero_trace.bnt
++++ b/crates/benitoite/testdata/eval/div_by_zero_trace.bnt
+@@ -8,6 +8,6 @@
+ function main() -> Unit uses Console.Write
+   bind values <- [10, 20, 30]
+   bind divisor <- 0
+-  bind ratios <- List.map(values, lambda(value) return ratio(value, divisor) + 1 end lambda)
++  bind ratios <- List.map(xs: values, f: lambda(value) return ratio(a: value, b: divisor) + 1 end lambda)
+   return Console.writeLine(Integer.toString(List.length(ratios)))
+ end function
+--- a/crates/benitoite/testdata/eval/int_overflow_floor_div.bnt
++++ b/crates/benitoite/testdata/eval/int_overflow_floor_div.bnt
+@@ -2,5 +2,5 @@
+ import Benitoite.Unofficial.IO.Console
+ 
+ function main() -> Unit uses Console.Write
+-  return Console.writeLine(Integer.toString(Integer.floorDivide(-9223372036854775808, -1)))
++  return Console.writeLine(Integer.toString(Integer.floorDivide(a: -9223372036854775808, b: -1)))
+ end function
+--- a/crates/benitoite/testdata/eval/value_too_large.bnt
++++ b/crates/benitoite/testdata/eval/value_too_large.bnt
+@@ -3,5 +3,5 @@
+ import Benitoite.Unofficial.IO.Console
+ 
+ function main() -> Unit uses Console.Write
+-  return Console.writeLine(Integer.toString(String.byteLength(String.repeat("ab", 1000000000))))
++  return Console.writeLine(Integer.toString(String.byteLength(String.repeat(s: "ab", n: 1000000000))))
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s16-add-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s16-add-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a + b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(32767s16, 1s16)
++  bind _ <- calculate(a: 32767s16, b: 1s16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s16-divide-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s16-divide-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a div b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(-32768s16, -1s16)
++  bind _ <- calculate(a: -32768s16, b: -1s16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s16-divide-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s16-divide-zero.bnt
+@@ -3,6 +3,6 @@
+   return a div b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(7s16, 0s16)
++  bind _ <- calculate(a: 7s16, b: 0s16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s16-modulo-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s16-modulo-zero.bnt
+@@ -3,6 +3,6 @@
+   return a mod b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(7s16, 0s16)
++  bind _ <- calculate(a: 7s16, b: 0s16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s16-multiply-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s16-multiply-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a * b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(32767s16, 2s16)
++  bind _ <- calculate(a: 32767s16, b: 2s16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s16-negate-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s16-negate-overflow.bnt
+@@ -3,6 +3,6 @@
+   return -a
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(-32768s16, 0s16)
++  bind _ <- calculate(a: -32768s16, b: 0s16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s16-subtract-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s16-subtract-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a - b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(-32768s16, 1s16)
++  bind _ <- calculate(a: -32768s16, b: 1s16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s32-add-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s32-add-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a + b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(2147483647s32, 1s32)
++  bind _ <- calculate(a: 2147483647s32, b: 1s32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s32-divide-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s32-divide-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a div b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(-2147483648s32, -1s32)
++  bind _ <- calculate(a: -2147483648s32, b: -1s32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s32-divide-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s32-divide-zero.bnt
+@@ -3,6 +3,6 @@
+   return a div b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(7s32, 0s32)
++  bind _ <- calculate(a: 7s32, b: 0s32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s32-modulo-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s32-modulo-zero.bnt
+@@ -3,6 +3,6 @@
+   return a mod b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(7s32, 0s32)
++  bind _ <- calculate(a: 7s32, b: 0s32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s32-multiply-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s32-multiply-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a * b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(2147483647s32, 2s32)
++  bind _ <- calculate(a: 2147483647s32, b: 2s32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s32-negate-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s32-negate-overflow.bnt
+@@ -3,6 +3,6 @@
+   return -a
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(-2147483648s32, 0s32)
++  bind _ <- calculate(a: -2147483648s32, b: 0s32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s32-subtract-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s32-subtract-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a - b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(-2147483648s32, 1s32)
++  bind _ <- calculate(a: -2147483648s32, b: 1s32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s8-add-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s8-add-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a + b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(127s8, 1s8)
++  bind _ <- calculate(a: 127s8, b: 1s8)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s8-divide-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s8-divide-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a div b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(-128s8, -1s8)
++  bind _ <- calculate(a: -128s8, b: -1s8)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s8-divide-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s8-divide-zero.bnt
+@@ -3,6 +3,6 @@
+   return a div b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(7s8, 0s8)
++  bind _ <- calculate(a: 7s8, b: 0s8)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s8-modulo-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s8-modulo-zero.bnt
+@@ -3,6 +3,6 @@
+   return a mod b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(7s8, 0s8)
++  bind _ <- calculate(a: 7s8, b: 0s8)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s8-multiply-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s8-multiply-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a * b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(127s8, 2s8)
++  bind _ <- calculate(a: 127s8, b: 2s8)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s8-negate-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s8-negate-overflow.bnt
+@@ -3,6 +3,6 @@
+   return -a
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(-128s8, 0s8)
++  bind _ <- calculate(a: -128s8, b: 0s8)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-signed-s8-subtract-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-signed-s8-subtract-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a - b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(-128s8, 1s8)
++  bind _ <- calculate(a: -128s8, b: 1s8)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u16-add-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u16-add-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a + b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(65535u16, 1u16)
++  bind _ <- calculate(a: 65535u16, b: 1u16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u16-divide-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u16-divide-zero.bnt
+@@ -3,6 +3,6 @@
+   return a div b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(65535u16, 0u16)
++  bind _ <- calculate(a: 65535u16, b: 0u16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u16-modulo-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u16-modulo-zero.bnt
+@@ -3,6 +3,6 @@
+   return a mod b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(65535u16, 0u16)
++  bind _ <- calculate(a: 65535u16, b: 0u16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u16-multiply-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u16-multiply-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a * b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(65535u16, 2u16)
++  bind _ <- calculate(a: 65535u16, b: 2u16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u16-subtract-underflow.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u16-subtract-underflow.bnt
+@@ -3,6 +3,6 @@
+   return a - b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(0u16, 1u16)
++  bind _ <- calculate(a: 0u16, b: 1u16)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u32-add-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u32-add-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a + b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(4294967295u32, 1u32)
++  bind _ <- calculate(a: 4294967295u32, b: 1u32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u32-divide-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u32-divide-zero.bnt
+@@ -3,6 +3,6 @@
+   return a div b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(4294967295u32, 0u32)
++  bind _ <- calculate(a: 4294967295u32, b: 0u32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u32-modulo-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u32-modulo-zero.bnt
+@@ -3,6 +3,6 @@
+   return a mod b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(4294967295u32, 0u32)
++  bind _ <- calculate(a: 4294967295u32, b: 0u32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u32-multiply-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u32-multiply-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a * b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(4294967295u32, 2u32)
++  bind _ <- calculate(a: 4294967295u32, b: 2u32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u32-subtract-underflow.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u32-subtract-underflow.bnt
+@@ -3,6 +3,6 @@
+   return a - b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(0u32, 1u32)
++  bind _ <- calculate(a: 0u32, b: 1u32)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u64-add-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u64-add-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a + b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(18446744073709551615u64, 1u64)
++  bind _ <- calculate(a: 18446744073709551615u64, b: 1u64)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u64-divide-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u64-divide-zero.bnt
+@@ -3,6 +3,6 @@
+   return a div b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(18446744073709551615u64, 0u64)
++  bind _ <- calculate(a: 18446744073709551615u64, b: 0u64)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u64-modulo-zero.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u64-modulo-zero.bnt
+@@ -3,6 +3,6 @@
+   return a mod b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(18446744073709551615u64, 0u64)
++  bind _ <- calculate(a: 18446744073709551615u64, b: 0u64)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u64-multiply-overflow.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u64-multiply-overflow.bnt
+@@ -3,6 +3,6 @@
+   return a * b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(18446744073709551615u64, 2u64)
++  bind _ <- calculate(a: 18446744073709551615u64, b: 2u64)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/eval/width-unsigned-u64-subtract-underflow.bnt
++++ b/crates/benitoite/testdata/eval/width-unsigned-u64-subtract-underflow.bnt
+@@ -3,6 +3,6 @@
+   return a - b
+ end function
+ function main() -> Unit uses Console.Write
+-  bind _ <- calculate(0u64, 1u64)
++  bind _ <- calculate(a: 0u64, b: 1u64)
+   Console.writeLine("unreachable")
+ end function
+--- a/crates/benitoite/testdata/handlers/c12-discard-reader.bnt
++++ b/crates/benitoite/testdata/handlers/c12-discard-reader.bnt
+@@ -13,8 +13,8 @@
+ function main() -> Result[Unit, String] uses File.Read, State, Console.Write
+   bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+   bind _ <- handle
+-    with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+-      Reference.set(saved, Option.Some(reader))
++    with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++      Reference.set(reference: saved, value: Option.Some(reader))
+       abort()
+       Console.writeLine("unreachable")
+     end with
+--- a/crates/benitoite/testdata/handlers/secf1-effect-confusion.bnt
++++ b/crates/benitoite/testdata/handlers/secf1-effect-confusion.bnt
+@@ -11,13 +11,13 @@
+ function main() -> Unit uses Console.Write, State
+   bind cell <- Reference.new(Option.None)
+   handle
+-    bind _ <- store(lambda() bind _ <- File.writeText("out.txt", "wrote via effect confusion") end lambda)
++    bind _ <- store(lambda() bind _ <- File.writeText(path: "out.txt", text: "wrote via effect confusion") end lambda)
+     bind g <- store(lambda() Console.writeLine("harmless") end lambda)
+     g()
+   with
+     case store(x) ->
+       bind prev <- Reference.get(cell)
+-      Reference.set(cell, Option.Some(x))
++      Reference.set(reference: cell, value: Option.Some(x))
+       match prev with
+         case Option.Some(p) -> resume(p)
+         case Option.None -> resume(x)
+--- a/crates/benitoite/testdata/handlers/secf1-nested-escape.bnt
++++ b/crates/benitoite/testdata/handlers/secf1-nested-escape.bnt
+@@ -15,7 +15,7 @@
+         bind _ <- store("inner")
+       with
+         case store(y) ->
+-          Reference.set(cell, Option.Some(y))
++          Reference.set(reference: cell, value: Option.Some(y))
+           resume(y)
+       end handle
+       resume(x)
+--- a/crates/benitoite/testdata/handlers/secf1-value-confusion.bnt
++++ b/crates/benitoite/testdata/handlers/secf1-value-confusion.bnt
+@@ -14,7 +14,7 @@
+   with
+     case store(x) ->
+       bind prev <- Reference.get(cell)
+-      Reference.set(cell, Option.Some(x))
++      Reference.set(reference: cell, value: Option.Some(x))
+       match prev with
+         case Option.Some(p) -> resume(p)
+         case Option.None -> resume(x)
+--- a/crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt
++++ b/crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt
+@@ -9,14 +9,14 @@
+ function first() -> Integer
+   return handle ask() + 2 with
+     case ask() ->
+-      bind f <- add(resume(10), _)
++      bind f <- add(a: resume(10), b: _)
+       f(1)
+   end handle
+ end function
+ function second() -> Integer
+   return handle ask() + 2 with
+     case ask() ->
+-      bind f <- add(_, resume(10))
++      bind f <- add(a: _, b: resume(10))
+       f(1)
+   end handle
+ end function
+--- a/crates/benitoite/testdata/io/c12-process-exit-flush.bnt
++++ b/crates/benitoite/testdata/io/c12-process-exit-flush.bnt
+@@ -7,8 +7,8 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function main() -> Result[Unit, String] uses File.Read, State, Console.Write, Process.Exit
+-  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+-    Console.write(Option.unwrapOr(try File.readLine(reader) |> Result.mapError(_, IOError.message), "eof"))
++  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++    Console.write(Option.unwrapOr(o: try File.readLine(reader) |> Result.mapError(r: _, f: IOError.message), fallback: "eof"))
+     Console.writeErrorLine("before exit")
+     Process.exit(7)
+     Console.writeLine("unreachable")
+--- a/crates/benitoite/testdata/io/c12-with-reader-release.bnt
++++ b/crates/benitoite/testdata/io/c12-with-reader-release.bnt
+@@ -9,9 +9,9 @@
+ 
+ function main() -> Result[Unit, String] uses File.Read, State, Console.Write
+   bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+-  bind value <- with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+-    Reference.set(saved, Option.Some(reader))
+-    Console.writeLine(Option.unwrapOr(try File.readLine(reader) |> Result.mapError(_, IOError.message), "eof"))
++  bind value <- with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++    Reference.set(reference: saved, value: Option.Some(reader))
++    Console.writeLine(Option.unwrapOr(o: try File.readLine(reader) |> Result.mapError(r: _, f: IOError.message), fallback: "eof"))
+     42
+   end with
+   Console.writeLine(Integer.toString(value))
+--- a/crates/benitoite/testdata/io/c12-with-return-release.bnt
++++ b/crates/benitoite/testdata/io/c12-with-return-release.bnt
+@@ -7,8 +7,8 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function leave(saved: Reference[Option[File.Reader]]) -> Result[Unit, String] uses File.Read, State
+-  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+-    Reference.set(saved, Option.Some(reader))
++  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++    Reference.set(reference: saved, value: Option.Some(reader))
+     return Result.Ok(())
+   end with
+ end function
+--- a/crates/benitoite/testdata/io/c12-with-try-release.bnt
++++ b/crates/benitoite/testdata/io/c12-with-try-release.bnt
+@@ -7,8 +7,8 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function leave(saved: Reference[Option[File.Reader]]) -> Result[Unit, String] uses File.Read, State
+-  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
+-    Reference.set(saved, Option.Some(reader))
++  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++    Reference.set(reference: saved, value: Option.Some(reader))
+     bind _ <- try Result.Error("early")
+     return Result.Ok(())
+   end with
+--- a/crates/benitoite/testdata/network/respond-twice.bnt
++++ b/crates/benitoite/testdata/network/respond-twice.bnt
+@@ -5,11 +5,11 @@
+ import Benitoite.Unofficial.Network.Http
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State
+-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+-    bind server <- TaskGroup.spawn(group, lambda()
+-      with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+-        bind _ <- try Http.respond(exchange, Http.text(200, "first")) |> Result.mapError(_, NetworkError.message)
+-        bind _ <- Http.respond(exchange, Http.text(200, "second"))
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: NetworkError.message), group = TaskGroup.open() do
++    bind server <- TaskGroup.spawn(group: group, action: lambda()
++      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: NetworkError.message) do
++        bind _ <- try Http.respond(exchange: exchange, response: Http.text(status: 200, s: "first")) |> Result.mapError(r: _, f: NetworkError.message)
++        bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 200, s: "second"))
+         return Result.Ok(())
+       end with
+     end lambda)
+--- a/crates/benitoite/testdata/network/status-above-range.bnt
++++ b/crates/benitoite/testdata/network/status-above-range.bnt
+@@ -5,10 +5,10 @@
+ import Benitoite.Unofficial.Network.Http
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State
+-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+-    bind server <- TaskGroup.spawn(group, lambda()
+-      with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+-        bind _ <- Http.respond(exchange, Http.text(600, "invalid"))
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: NetworkError.message), group = TaskGroup.open() do
++    bind server <- TaskGroup.spawn(group: group, action: lambda()
++      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: NetworkError.message) do
++        bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 600, s: "invalid"))
+         return Result.Ok(())
+       end with
+     end lambda)
+--- a/crates/benitoite/testdata/network/status-below-range.bnt
++++ b/crates/benitoite/testdata/network/status-below-range.bnt
+@@ -5,10 +5,10 @@
+ import Benitoite.Unofficial.Network.Http
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State
+-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+-    bind server <- TaskGroup.spawn(group, lambda()
+-      with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+-        bind _ <- Http.respond(exchange, Http.text(99, "invalid"))
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: NetworkError.message), group = TaskGroup.open() do
++    bind server <- TaskGroup.spawn(group: group, action: lambda()
++      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: NetworkError.message) do
++        bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 99, s: "invalid"))
+         return Result.Ok(())
+       end with
+     end lambda)
+--- a/crates/benitoite/testdata/network/status-informational.bnt
++++ b/crates/benitoite/testdata/network/status-informational.bnt
+@@ -5,10 +5,10 @@
+ import Benitoite.Unofficial.Network.Http
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State
+-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+-    bind server <- TaskGroup.spawn(group, lambda()
+-      with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+-        bind _ <- Http.respond(exchange, Http.text(100, "invalid"))
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: NetworkError.message), group = TaskGroup.open() do
++    bind server <- TaskGroup.spawn(group: group, action: lambda()
++      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: NetworkError.message) do
++        bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 100, s: "invalid"))
+         return Result.Ok(())
+       end with
+     end lambda)
+--- a/crates/benitoite/testdata/packages/alias-only/deps/textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/alias-only/deps/textkit/Slug.bnt
+@@ -1,8 +1,8 @@
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+-  bind words <- String.split(String.toLowercase(String.trim(text)), " ")
+-    |> List.filter(_, lambda(w) return w <> "" end lambda)
+-  return String.join(words, "-")
++  bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
++    |> List.filter(xs: _, p: lambda(value) return value <> "" end lambda)
++  return String.join(xs: words, separator: "-")
+ end function
+ 
+ /// 文字数が width を超えるときは、width 文字で切って "..." を付ける。
+@@ -10,5 +10,5 @@
+   if String.characterCount(text) <= width then
+     return text
+   end if
+-  return Option.unwrapOr(String.characterSlice(text, 0, width), text) + "..."
++  return Option.unwrapOr(o: String.characterSlice(s: text, start: 0, stop: width), fallback: text) + "..."
+ end function
+--- a/crates/benitoite/testdata/packages/dependency-collision/Textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/dependency-collision/Textkit/Slug.bnt
+@@ -1,8 +1,8 @@
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+-  bind words <- String.split(String.toLowercase(String.trim(text)), " ")
+-    |> List.filter(_, lambda(w) return w <> "" end lambda)
+-  return String.join(words, "-")
++  bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
++    |> List.filter(xs: _, p: lambda(value) return value <> "" end lambda)
++  return String.join(xs: words, separator: "-")
+ end function
+ 
+ /// 文字数が width を超えるときは、width 文字で切って "..." を付ける。
+@@ -10,5 +10,5 @@
+   if String.characterCount(text) <= width then
+     return text
+   end if
+-  return Option.unwrapOr(String.characterSlice(text, 0, width), text) + "..."
++  return Option.unwrapOr(o: String.characterSlice(s: text, start: 0, stop: width), fallback: text) + "..."
+ end function
+--- a/crates/benitoite/testdata/packages/dependency-collision/deps/textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/dependency-collision/deps/textkit/Slug.bnt
+@@ -1,8 +1,8 @@
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+-  bind words <- String.split(String.toLowercase(String.trim(text)), " ")
+-    |> List.filter(_, lambda(w) return w <> "" end lambda)
+-  return String.join(words, "-")
++  bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
++    |> List.filter(xs: _, p: lambda(value) return value <> "" end lambda)
++  return String.join(xs: words, separator: "-")
+ end function
+ 
+ /// 文字数が width を超えるときは、width 文字で切って "..." を付ける。
+@@ -10,5 +10,5 @@
+   if String.characterCount(text) <= width then
+     return text
+   end if
+-  return Option.unwrapOr(String.characterSlice(text, 0, width), text) + "..."
++  return Option.unwrapOr(o: String.characterSlice(s: text, start: 0, stop: width), fallback: text) + "..."
+ end function
+--- a/crates/benitoite/testdata/packages/dependency-no-config/deps/textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/dependency-no-config/deps/textkit/Slug.bnt
+@@ -1,8 +1,8 @@
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+-  bind words <- String.split(String.toLowercase(String.trim(text)), " ")
+-    |> List.filter(_, lambda(w) return w <> "" end lambda)
+-  return String.join(words, "-")
++  bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
++    |> List.filter(xs: _, p: lambda(value) return value <> "" end lambda)
++  return String.join(xs: words, separator: "-")
+ end function
+ 
+ /// 文字数が width を超えるときは、width 文字で切って "..." を付ける。
+@@ -10,5 +10,5 @@
+   if String.characterCount(text) <= width then
+     return text
+   end if
+-  return Option.unwrapOr(String.characterSlice(text, 0, width), text) + "..."
++  return Option.unwrapOr(o: String.characterSlice(s: text, start: 0, stop: width), fallback: text) + "..."
+ end function
+--- a/crates/benitoite/testdata/stdlib/l40-csv-invalid-delimiter.bnt
++++ b/crates/benitoite/testdata/stdlib/l40-csv-invalid-delimiter.bnt
+@@ -4,6 +4,6 @@
+ // 専用の差し込み口は不要である。
+ import Benitoite.Unofficial.Csv
+ function main() -> Unit
+-  bind _ <- Csv.parseWith("a,b", 'é')
++  bind _ <- Csv.parseWith(text: "a,b", delimiter: 'é')
+   return ()
+ end function
+--- a/crates/benitoite/testdata/stdlib/l40-path-invalid-extension.bnt
++++ b/crates/benitoite/testdata/stdlib/l40-path-invalid-extension.bnt
+@@ -4,6 +4,6 @@
+ // 専用の差し込み口は不要である。
+ import Benitoite.Unofficial.Path
+ function main() -> Unit
+-  bind _ <- Path.withExtension("a", "b/c")
++  bind _ <- Path.withExtension(p: "a", extension: "b/c")
+   return ()
+ end function
+--- a/crates/benitoite/testdata/stdlib/width-bits-s8-invalid.bnt
++++ b/crates/benitoite/testdata/stdlib/width-bits-s8-invalid.bnt
+@@ -1,5 +1,5 @@
+ // 作成時の関門: 範囲外のシフトの停止が CLI の既存の診断で報告されることを守る。
+ function main() -> Unit
+-  bind _ <- Integer8.shiftRightUnsigned(1s8, -1)
++  bind _ <- Integer8.shiftRightUnsigned(a: 1s8, n: -1)
+   ()
+ end function
+--- a/crates/benitoite/testdata/stdlib/width-bits-u64-invalid.bnt
++++ b/crates/benitoite/testdata/stdlib/width-bits-u64-invalid.bnt
+@@ -1,5 +1,5 @@
+ // 作成時の関門: 範囲外のシフトの停止が CLI の既存の診断で報告されることを守る。
+ function main() -> Unit
+-  bind _ <- UnsignedInteger64.shiftLeft(1u64, 64)
++  bind _ <- UnsignedInteger64.shiftLeft(a: 1u64, n: 64)
+   ()
+ end function
+--- a/crates/benitoite/testdata/test/assert_equal.bnt
++++ b/crates/benitoite/testdata/test/assert_equal.bnt
+@@ -2,16 +2,16 @@
+ // 06-04「期待の確認」「結果の報告」: Assert.equal の失敗は両方の値と位置・呼び出しの履歴を示す。
+ 
+ function checkSum(values: List[Integer], expected: Integer) -> Unit uses Assert.Check
+-  Assert.equal(List.fold(values, 0, lambda(acc, v) return acc + v end lambda), expected)
++  Assert.equal(actual: List.fold(xs: values, initial: 0, f: lambda(acc, value) return acc + value end lambda), expected: expected)
+ end function
+ 
+ @test("sum of a list")
+ function sumOfList() -> Unit uses Assert.Check
+-  checkSum([1, 2, 3], 7)
++  checkSum(values: [1, 2, 3], expected: 7)
+ end function
+ 
+ @test
+ function strings() -> Unit uses Assert.Check
+-  Assert.equal("abc", "ab\"c")
+-  Assert.equal(1, 1)
++  Assert.equal(actual: "abc", expected: "ab\"c")
++  Assert.equal(actual: 1, expected: 1)
+ end function
+--- a/crates/benitoite/testdata/test/assert_is_true.bnt
++++ b/crates/benitoite/testdata/test/assert_is_true.bnt
+@@ -4,5 +4,5 @@
+ @test("positive")
+ function positive() -> Unit uses Assert.Check
+   bind n <- 0 - 3
+-  Assert.isTrue(n > 0, "n must be positive")
++  Assert.isTrue(condition: n > 0, message: "n must be positive")
+ end function
+--- a/crates/benitoite/testdata/test/assert_not_equal.bnt
++++ b/crates/benitoite/testdata/test/assert_not_equal.bnt
+@@ -3,5 +3,5 @@
+ 
+ @test
+ function differ() -> Unit uses Assert.Check
+-  Assert.notEqual([1, 2], [1, 2])
++  Assert.notEqual(actual: [1, 2], expected: [1, 2])
+ end function
+--- a/crates/benitoite/testdata/test/captured_output.bnt
++++ b/crates/benitoite/testdata/test/captured_output.bnt
+@@ -7,7 +7,7 @@
+   Console.writeLine("first out")
+   Console.writeErrorLine("an err line")
+   Console.write("no newline")
+-  Assert.equal(1, 2)
++  Assert.equal(actual: 1, expected: 2)
+ end function
+ 
+ @test
+--- a/crates/benitoite/testdata/test/exit.bnt
++++ b/crates/benitoite/testdata/test/exit.bnt
+@@ -9,5 +9,5 @@
+ 
+ @test
+ function after() -> Unit uses Assert.Check, Process.Environment
+-  Assert.equal(Process.arguments(), [])
++  Assert.equal(actual: Process.arguments(), expected: [])
+ end function
+--- a/crates/benitoite/testdata/test/result_error.bnt
++++ b/crates/benitoite/testdata/test/result_error.bnt
+@@ -2,7 +2,7 @@
+ // 06-04「テストの関数」「結果の報告」: Result.Error を返したテストは失敗し、message を示す。
+ 
+ function parsePort(text: String) -> Result[Integer, String]
+-  return Integer.parse(text) |> Option.okOr(_, "not a number: ${text}")
++  return Integer.parse(text) |> Option.okOr(o: _, error: "not a number: ${text}")
+ end function
+ 
+ @test("parsePort rejects words")
+--- a/crates/benitoite/testdata/test/runtime_error.bnt
++++ b/crates/benitoite/testdata/test/runtime_error.bnt
+@@ -20,5 +20,5 @@
+ 
+ @test
+ function stillRuns() -> Unit uses Assert.Check
+-  Assert.equal(divide(5), 2)
++  Assert.equal(actual: divide(5), expected: 2)
+ end function
+--- a/crates/benitoite/testdata/test/task_assert.bnt
++++ b/crates/benitoite/testdata/test/task_assert.bnt
+@@ -2,7 +2,7 @@
+ // 06-04「結果の報告」: 起動したタスクの中の確認の失敗。taskOrigins の最後の段はテストの関数である（ADR 0324）。
+ 
+ function check(n: Integer) -> Integer uses Assert.Check
+-  Assert.equal(n, 1)
++  Assert.equal(actual: n, expected: 1)
+   return n
+ end function
+ 
+--- a/crates/benitoite/testdata/test/values.bnt
++++ b/crates/benitoite/testdata/test/values.bnt
+@@ -14,35 +14,35 @@
+ 
+ @test
+ function standard() -> Unit uses Assert.Check
+-  Assert.equal(Pair(1, Option.Some([1.5, -2.0])), Pair(1, Option.None))
++  Assert.equal(actual: Pair(1, Option.Some([1.5, -2.0])), expected: Pair(1, Option.None))
+ end function
+ 
+ @test
+ function strings() -> Unit uses Assert.Check
+-  Assert.equal(Result.Ok("tab\tquote\"nl\n"), Result.Error('x'))
++  Assert.equal(actual: Result.Ok("tab\tquote\"nl\n"), expected: Result.Error('x'))
+ end function
+ 
+ @test
+ function userData() -> Unit uses Assert.Check
+-  Assert.equal([Shape.Circle(1), Shape.Rect(2, 3)], [Shape.Empty])
++  Assert.equal(actual: [Shape.Circle(1), Shape.Rect(2, 3)], expected: [Shape.Empty])
+ end function
+ 
+ @test
+ function records() -> Unit uses Assert.Check
+-  Assert.equal(Person(name: "Ada", age: 36), Person(name: "Bob", age: 7))
++  Assert.equal(actual: Person(name: "Ada", age: 36), expected: Person(name: "Bob", age: 7))
+ end function
+ 
+ @test
+ function maps() -> Unit uses Assert.Check
+-  Assert.equal(Map.fromList([Pair(2, "two"), Pair(1, "one")]), Map.empty())
++  Assert.equal(actual: Map.fromList([Pair(2, "two"), Pair(1, "one")]), expected: Map.empty())
+ end function
+ 
+ @test
+ function sets() -> Unit uses Assert.Check
+-  Assert.notEqual(Set.fromList([3, 1, 2]), Set.fromList([1, 2, 3]))
++  Assert.notEqual(actual: Set.fromList([3, 1, 2]), expected: Set.fromList([1, 2, 3]))
+ end function
+ 
+ @test
+ function units() -> Unit uses Assert.Check
+-  Assert.equal(Triple(true, (), 10), Triple(false, (), -10))
++  Assert.equal(actual: Triple(true, (), 10), expected: Triple(false, (), -10))
+ end function
+--- a/crates/benitoite/testdata/traits/c11-builtin-propagation.bnt
++++ b/crates/benitoite/testdata/traits/c11-builtin-propagation.bnt
+@@ -2,7 +2,7 @@
+ // spec: 01-06 組み込みの制約（初回リリース版）
+ function same[T: equality](a: T, b: T) -> Boolean return a = b end function
+ function bad[T](x: T) -> Boolean
+-  return same(x, x)
++  return same(a: x, b: x)
+ end function
+ function main() -> Unit
+   ()
+--- a/crates/benitoite/testdata/traits/c11-hk-arity.bnt
++++ b/crates/benitoite/testdata/traits/c11-hk-arity.bnt
+@@ -4,7 +4,7 @@
+   function map[A, B](x: F[A], f: function(A) -> B) -> F[B]
+ end trait
+ implement Functor[Result]
+-  function map[A, B](x: Result[A, String], f: function(A) -> B) -> Result[B, String] return Result.map(x, f) end function
++  function map[A, B](x: Result[A, String], f: function(value: A) -> B) -> Result[B, String] return Result.map(r: x, f: f) end function
+ end implement
+ function main() -> Unit
+   ()
+--- a/crates/benitoite/testdata/types/todo178-placeholder-return-error.bnt
++++ b/crates/benitoite/testdata/types/todo178-placeholder-return-error.bnt
+@@ -4,7 +4,7 @@
+   return a + b
+ end function
+ function make() -> String
+-  bind g <- add(return "escaped", _)
++  bind g <- add(a: return "escaped", b: _)
+   return Integer.toString(g(1))
+ end function
+ function main() -> Unit
+--- a/crates/benitoite/testdata/types/todo178-placeholder-try-error.bnt
++++ b/crates/benitoite/testdata/types/todo178-placeholder-try-error.bnt
+@@ -4,7 +4,7 @@
+   return a + b
+ end function
+ function probe() -> Option[Integer]
+-  bind f <- add(try Option.None, _)
++  bind f <- add(a: try Option.None, b: _)
+   bind _ <- Integer.toString(f(1))
+   return Option.Some(1)
+ end function

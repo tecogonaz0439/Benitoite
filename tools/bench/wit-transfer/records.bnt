@@ -29,7 +29,7 @@ function mixed(v: Mixed) -> Mixed
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   bind Pair(n, rounds) <- try Runner.settings()
 
-  return Runner.verify(rounds, lambda() -> Boolean
+  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
     bind c0 <- box(Box(value: n)) = Box(value: n + 7)
     bind c1 <- nested(Box(value: Box(value: n))) = Box(value: Box(value: n + 7))
     bind c2 <- envelope(Envelope.Wrapped(n)) = Envelope.Wrapped(n + 9)

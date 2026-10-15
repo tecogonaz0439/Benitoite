@@ -12,5 +12,5 @@ function main() -> Unit uses Console.Write
     lambda() return List.length(Task.all([lambda() return 1 end lambda, lambda() return 2 end lambda])) end lambda,
     lambda() return 30 end lambda
   ])
-  List.forEach(results, lambda(value) Console.writeLine(Integer.toString(value)) end lambda)
+  List.forEach(xs: results, f: lambda(value) Console.writeLine(Integer.toString(value)) end lambda)
 end function

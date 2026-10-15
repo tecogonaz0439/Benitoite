@@ -10,7 +10,7 @@ function description(result: Result[Json.Value, Json.ParseError]) -> String
 end function
 
 /// 独立した A と値・二つの出力を比較する。
-public function compare(source: String, parse: function(String) -> Result[Json.Value, Json.ParseError], stringify: function(Json.Value) -> String, writePretty: function(Json.Value) -> String) -> Result[Unit, String] uses Console.Write
+public function compare(source: String, parse: function(source: String) -> Result[Json.Value, Json.ParseError], stringify: function(value: Json.Value) -> String, writePretty: function(value: Json.Value) -> String) -> Result[Unit, String] uses Console.Write
   bind a <- Json.parse(source)
   bind b <- parse(source)
   bind equal <- a = b
@@ -28,7 +28,7 @@ end function
 
 // 深さの境界は解析の値と診断だけで確かめ、出力の契約は別の表に任せる。
 /// 解析の境界を値と誤りで比較する。
-public function compareDepth(source: String, parse: function(String) -> Result[Json.Value, Json.ParseError]) -> Result[Unit, String] uses Console.Write
+public function compareDepth(source: String, parse: function(source: String) -> Result[Json.Value, Json.ParseError]) -> Result[Unit, String] uses Console.Write
   bind a <- Json.parse(source)
   bind b <- parse(source)
   bind equal <- a = b
@@ -37,7 +37,7 @@ public function compareDepth(source: String, parse: function(String) -> Result[J
 end function
 
 /// 解析で作れない値の二つの出力を比較する。
-public function writeValue(label: String, value: Json.Value, stringify: function(Json.Value) -> String, writePretty: function(Json.Value) -> String) -> Result[Unit, String] uses Console.Write
+public function writeValue(label: String, value: Json.Value, stringify: function(value: Json.Value) -> String, writePretty: function(value: Json.Value) -> String) -> Result[Unit, String] uses Console.Write
   bind compact <- Json.stringify(value) = stringify(value)
   bind pretty <- Json.stringifyPretty(value) = writePretty(value)
   Console.writeLine("${label} | compact=${compact} pretty=${pretty} bytes=${String.byteLength(Json.stringify(value))}")
@@ -46,5 +46,5 @@ end function
 
 /// 出力する深い値を末尾呼び出しで組み立てる。
 public function deep(n: Integer, value: Json.Value) -> Json.Value
-  return if n = 0 then value else deep(n - 1, Json.Value.Array([value])) end if
+  return if n = 0 then value else deep(n: n - 1, value: Json.Value.Array([value])) end if
 end function

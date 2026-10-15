@@ -14,5 +14,5 @@ end function
 
 function main() -> Unit uses Console.Write
   bind values <- [3, 4,]
-  return Console.writeLine(Integer.toString(add(identity(1,), identity(2,),) + count(values)))
+  return Console.writeLine(Integer.toString(add(left: identity(1,), right: identity(2,),) + count(values)))
 end function

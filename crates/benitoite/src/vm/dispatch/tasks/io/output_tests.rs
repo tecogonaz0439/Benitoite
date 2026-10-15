@@ -134,12 +134,12 @@ impl std::io::Write for ArrivalRecorder {
 }
 const CHUNKS: &str = r#"
 function chunk(n: Integer, text: String) -> String
- if n = 0 then return text else return chunk(n - 1, text + text) end if
+ if n = 0 then return text else return chunk(n: n - 1, text: text + text) end if
 end function
 function writes(n: Integer, text: String) -> Unit uses Console.Write
  if n > 0 then
   Console.write(text)
-  writes(n - 1, text)
+  writes(n: n - 1, text: text)
  end if
 end function
 "#;
@@ -150,7 +150,7 @@ fn stalled_stdout_preserves_capacity_frame_and_allows_stderr_and_virtual_timer()
         r#"{IMPORTS}{CHUNKS}
 function main() -> Unit uses Console.Write,Clock.Time
  bind _ <- Task.all([
- lambda() return writes(32, chunk(16, "x")) end lambda,
+ lambda() return writes(n: 32, text: chunk(n: 16, text: "x")) end lambda,
  lambda()
   Clock.sleep(10)
   Console.writeError("other")
@@ -434,7 +434,7 @@ fn transfer_only_prevents_deadlock_when_a_task_waits_for_it() {
             "Console.writeError(\"err\")"
         };
         let third = if flush {
-            "bind _ <- TaskGroup.spawn(group,lambda() bind _ <- File.readText(\"input\")\n return () end lambda)"
+            "bind _ <- TaskGroup.spawn(group: group,action: lambda()\n bind _ <- File.readText(\"input\")\n return () end lambda)"
         } else {
             ""
         };
@@ -444,13 +444,13 @@ function main() -> Unit uses State,Console.Write,File.Read
  bind a <- Reference.new(Option.None)
  bind b <- Reference.new(Option.None)
  with group = TaskGroup.open() do
-  bind ta <- TaskGroup.spawn(group,lambda()
+  bind ta <- TaskGroup.spawn(group: group,action: lambda()
    Console.write("one")
    match Reference.get(b) with case Option.Some(t) -> Task.await(t)
    case Option.None -> () end match
    return ()
   end lambda)
-  bind tb <- TaskGroup.spawn(group,lambda()
+  bind tb <- TaskGroup.spawn(group: group,action: lambda()
    Console.write("two")
    {second_output}
    match Reference.get(a) with case Option.Some(t) -> Task.await(t)
@@ -458,8 +458,8 @@ function main() -> Unit uses State,Console.Write,File.Read
    return ()
   end lambda)
   {third}
-  Reference.set(a,Option.Some(ta))
-  Reference.set(b,Option.Some(tb))
+  Reference.set(reference: a,value: Option.Some(ta))
+  Reference.set(reference: b,value: Option.Some(tb))
  end with
  return ()
 end function
@@ -554,8 +554,10 @@ fn writer_failure_or_panic_stops_capacity_and_flush_waiters_without_delivering_d
             &format!(
                 r#"{IMPORTS}{CHUNKS}
 function main() -> Unit uses Console.Write,File.Read
- bind _ <- Task.all([lambda() writes({count},chunk(16,"x")) return () end lambda,
- lambda() bind _ <- File.readText("input") return () end lambda])
+ bind _ <- Task.all([lambda()
+ writes(n: {count},text: chunk(n: 16,text: "x")) return () end lambda,
+ lambda()
+ bind _ <- File.readText("input") return () end lambda])
  return ()
 end function
 "#
@@ -637,7 +639,7 @@ fn recorded_writer_failure_is_seen_by_the_next_write_instruction() {
     let program = compile(&format!(
         r#"{IMPORTS}{CHUNKS}
 function main() -> Unit uses Console.Write
- Console.write(chunk(16,"x"))
+ Console.write(chunk(n: 16,text: "x"))
  Console.write("later")
  return ()
 end function
@@ -687,7 +689,7 @@ end function
 fn cancelling_output_wait_keeps_accepted_bytes_and_discards_pending_write_or_work() {
     for capacity in [true, false] {
         let action = if capacity {
-            "writes(17,chunk(16,\"x\"))"
+            "writes(n: 17,text: chunk(n: 16,text: \"x\"))"
         } else {
             "Console.write(\"accepted\")\n bind _ <- File.readText(\"input\")"
         };

@@ -8,8 +8,8 @@ function main() -> Unit uses State, Console.Write
   bind cell <- Reference.new("initial")
   bind alias <- cell
   Console.writeLine(Reference.get(alias))
-  Reference.set(cell, "changed")
+  Reference.set(reference: cell, value: "changed")
   Console.writeLine(Reference.get(alias))
-  Reference.update(alias, lambda(value) return value + "!" end lambda)
+  Reference.update(reference: alias, f: lambda(value) return value + "!" end lambda)
   Console.writeLine(Reference.get(cell))
 end function

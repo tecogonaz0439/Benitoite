@@ -243,7 +243,7 @@ fn clause_parameters_include_wildcards_and_rigid_types() {
 
 #[test]
 fn declared_operation_bounds_are_available_in_clauses() {
-    let same = "effect Compare\n function same[T: equality](a: T, b: T) -> Boolean\nend effect\nfunction f() -> Boolean\n return handle same(1, 2) with case same(a, b) -> resume(a = b) end handle\nend function\n";
+    let same = "effect Compare\n function same[T: equality](a: T, b: T) -> Boolean\nend effect\nfunction f() -> Boolean\n return handle same(a: 1, b: 2) with case same(a, b) -> resume(a = b) end handle\nend function\n";
     clean(same);
     let d = expect(&same.replace("T: equality", "T"), &[(C::E0406, "a = b", 0)]);
     assert!(d[0].message.contains("T"));
@@ -259,7 +259,7 @@ fn invalid_clauses_and_effects_have_precise_diagnostics() {
     let source = "function f() -> Unit\n handle () with case Reference.set(r, v) -> () end handle\nend function\n";
     let d = expect(source, &[(C::E0507, "Reference.set", 0)]);
     assert!(d[0].notes.iter().any(|n| n.contains("State")));
-    let source = "function bump(r: Reference[Integer]) -> Unit uses State\n Reference.set(r, 1)\nend function\nfunction f() -> Unit\n handle () with case bump(r) -> () end handle\nend function\n";
+    let source = "function bump(r: Reference[Integer]) -> Unit uses State\n Reference.set(reference: r, value: 1)\nend function\nfunction f() -> Unit\n handle () with case bump(r) -> () end handle\nend function\n";
     let d = expect(source, &[(C::E0507, "bump(r)", 0)]);
     assert!(d[0].notes.is_empty(), "{:?}", d[0]);
     let source = "effect Ping\n function ping() -> Unit\nend effect\nfunction f() -> Unit\n handle ping() with\n case ping() -> resume(())\n case ping() -> resume(())\n end handle\nend function\n";
@@ -438,7 +438,7 @@ fn lazy_resources_and_taskgroup_placement() {
         &[(C::E0443, "1 do", 0)],
     );
     clean(
-        "function f() -> Unit uses State\n with g = TaskGroup.open() do\n bind t <- TaskGroup.spawn(g, lambda() return 1 end lambda)\n bind _ <- Task.await(t)\n end with\nend function\n",
+        "function f() -> Unit uses State\n with g = TaskGroup.open() do\n bind t <- TaskGroup.spawn(group: g, action: lambda() return 1 end lambda)\n bind _ <- Task.await(t)\n end with\nend function\n",
     );
     for expr in ["TaskGroup.open()", "TaskGroup.open", "(TaskGroup.open())"] {
         let source = format!("function f() -> Unit uses State\n bind _ <- {expr}\nend function\n");
@@ -446,7 +446,7 @@ fn lazy_resources_and_taskgroup_placement() {
         assert!(d[0].helps[0].message.contains("with"));
     }
     expect(
-        "function f() -> Unit uses State\n bind _ <- List.map([()], TaskGroup.open)\nend function\n",
+        "function f() -> Unit uses State\n bind _ <- List.map(xs: [()], f: lambda(value) return TaskGroup.open(value) end lambda)\nend function\n",
         &[
             (C::E0505, "TaskGroup.open", 0),
             (C::E0402, "TaskGroup.open", 0),
@@ -540,28 +540,28 @@ fn try_notes_follow_lambda_and_placeholder_return_boundaries() {
             None,
         ),
         (
-            "function add(x: Integer, y: Integer) -> Integer\n return x + y\nend function\nfunction f() -> Unit\n bind _ <- add(try Option.None, _)\nend function",
+            "function add(x: Integer, y: Integer) -> Integer\n return x + y\nend function\nfunction f() -> Unit\n bind _ <- add(x: try Option.None, y: _)\nend function",
             C::E0441,
             "the function made by `_` in this call returns `Integer`",
-            Some("add(try Option.None, _)"),
+            Some("add(x: try Option.None, y: _)"),
         ),
         (
-            "function add(x: Integer, y: Integer) -> Result[Integer, String]\n return Result.Ok(x + y)\nend function\nfunction f(x: Result[Integer, Integer]) -> Unit\n bind _ <- add(try x, _)\nend function",
+            "function add(x: Integer, y: Integer) -> Result[Integer, String]\n return Result.Ok(x + y)\nend function\nfunction f(x: Result[Integer, Integer]) -> Unit\n bind _ <- add(x: try x, y: _)\nend function",
             C::E0442,
             "the function made by `_` in this call returns `Result[Integer, String]`",
-            Some("add(try x, _)"),
+            Some("add(x: try x, y: _)"),
         ),
         (
-            "function use(g: function() -> Integer, n: Integer) -> Unit\nend function\nfunction f(x: Option[Integer]) -> Unit\n bind _ <- use(lambda() -> Integer return try x end lambda, _)\nend function",
+            "function use(g: function() -> Integer, n: Integer) -> Unit\nend function\nfunction f(x: Option[Integer]) -> Unit\n bind _ <- use(g: lambda() -> Integer return try x end lambda, n: _)\nend function",
             C::E0441,
             "the lambda returns `Integer`",
             None,
         ),
         (
-            "function add(x: Integer, y: Integer) -> Integer\n return x + y\nend function\nfunction f() -> Unit\n bind _ <- lambda()\n  bind _ <- add(try Option.None, _)\n  return ()\n end lambda\nend function",
+            "function add(x: Integer, y: Integer) -> Integer\n return x + y\nend function\nfunction f() -> Unit\n bind _ <- lambda()\n  bind _ <- add(x: try Option.None, y: _)\n  return ()\n end lambda\nend function",
             C::E0441,
             "the function made by `_` in this call returns `Integer`",
-            Some("add(try Option.None, _)"),
+            Some("add(x: try Option.None, y: _)"),
         ),
     ] {
         let (load, _, _, diagnostics) = check(source);

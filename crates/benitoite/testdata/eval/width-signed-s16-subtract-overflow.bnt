@@ -3,6 +3,6 @@ function calculate(a: Integer16, b: Integer16) -> Integer16
   return a - b
 end function
 function main() -> Unit uses Console.Write
-  bind _ <- calculate(-32768s16, 1s16)
+  bind _ <- calculate(a: -32768s16, b: 1s16)
   Console.writeLine("unreachable")
 end function

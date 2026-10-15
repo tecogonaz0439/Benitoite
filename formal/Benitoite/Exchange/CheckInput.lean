@@ -1,6 +1,8 @@
 import Benitoite.Surface.CheckTables
+import Benitoite.Exchange.Builtins
 
-/-! E2c の sidecar を読み、元の corpus を変えずに検査の材料を作る。 -/
+/-! 契約名とソース順を保持する独立した交換の入口。
+設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
 namespace Benitoite.Exchange.CheckInput
 open Lean Benitoite.Surface.CheckTables
 
@@ -38,9 +40,10 @@ def functionKey (display : String) : Except String String := do
   else throw s!"invalid function suffix: {display}"
 
 def FunEntry.convert (f : FunEntry) : Except String Benitoite.Surface.FunDecl := do
+  checkNames f.header.names f.header.params.length
   return {
     tparams := f.header.tparams.map (fun (e,k) => ⟨e,k⟩)
-    neffs := f.header.neffs, params := ← f.header.params.mapM Ty.toRelease
+    neffs := f.header.neffs, names := f.header.names, params := ← f.header.params.mapM Ty.toRelease
     ret := ← f.header.ret.toRelease
     eff := f.header.eff.toRelease, dictParams := f.dictParams }
 
@@ -52,8 +55,10 @@ def ImplEntry.convert (i : ImplEntry) : Except String Benitoite.Surface.ImplSig 
 
 def ClassEntry.convert (c : ClassEntry) : Except String ClassMaterial := do
   let methods ← c.methods.mapM fun m => do
+    checkNames m.header.names m.header.params.length
     let sg : Benitoite.Release.MethSig := {
       tparams := m.header.tparams.map (fun (e,k) => ⟨e,k⟩), neffs := m.header.neffs
+      names := m.header.names
       params := ← m.header.params.mapM Ty.toRelease
       ret := ← m.header.ret.toRelease, eff := m.header.eff.toRelease }
     return (m.name, sg)
@@ -113,6 +118,9 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
       if (← functionKey display) != name then throw "accessor binding name mismatch"
       let cd : Benitoite.Release.ConDecl := {
         data := decl.data, ntys := decl.ntys, args := ← decl.args.mapM Ty.toRelease }
+      checkNames decl.fields decl.args.length
+      let actualFields := b.dataDecls.flatMap (fun d => d.ctors) |>.find? (fun c => c.name == con)
+      if actualFields.bind (·.fields) != some decl.fields then throw "record fields mismatch"
       return (k < cd.args.length) && recordOk (atoms.map Atom.toRelease) data con cd
   let ops ← input.ops.mapM fun o => do return (o.name, ← o.toRelease)
   let classes ← input.classes.mapM fun c => do return (c.name, ← ClassEntry.convert c)
@@ -131,13 +139,16 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
     let bodies := input.definitions.filterMap fun d => match d.scope with
       | .inScope surface _ => if surface.implementation == some i.name then some surface else none
       | _ => none
-    let methods ← (bodies.filterMap fun d => d.method.map (fun name => (name,d.body))).mapM
-      fun (name,body) => do return (name, ← body.toSurface cache)
+    -- メソッド宣言は辞書込みの契約を持つ。実装自身の辞書数から内部名を作り、
+    -- 利用者の実名を宣言から転記せずに比較する（設計書 01-12「型クラス」）。
+    let methods ← (bodies.filterMap fun d => d.method.map (fun name =>
+      (name, Benitoite.Surface.internalNames d.dictParams.length ++ d.header.names, d.body))).mapM
+      fun (name,names,body) => do return (name, ({ names, body := ← body.toSurface cache } : Benitoite.Surface.Check.MethodInput))
     let supers ← (bodies.flatMap (·.supers)).mapM fun (name,d) => do return (name, ← d.toSurface)
     return (i.name, ({ signature := ← ImplEntry.convert i, methods := methods, supers := supers } : ImplMaterial))
   let trustedFuns ← s.functions.mapM fun f => do return (f.name, ← f.convert)
   let m : Materials := {
-    defs, accessors, data, ops, effects := input.effects.map fun e => (e.name,e.ops)
+    defs, conFields := b.dataDecls.flatMap (fun d => d.ctors.filterMap (fun c => c.fields.map (fun fs => (c.name,fs)))), accessors, data, ops, effects := input.effects.map fun e => (e.name,e.ops)
     classes, impls, trustedFuns, trustedImpls }
   if !uniqueKeys m.defs || !uniqueKeys m.accessors || !uniqueKeys m.ops ||
       !uniqueKeys m.effects || !uniqueKeys m.classes || !uniqueKeys m.impls ||
@@ -150,7 +161,7 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
   if !uniqueKeys raw then throw "duplicate primitive name"
   let S ← b.summaryTable
   let entries := primEntries S raw
-  let B := builtins S entries b
+  let B := builtins S entries b.toBuiltinMaterial
   let q := m.input B (Benitoite.Release.satB S) (admitsDec S entries)
     (makeOpPrim atoms operators) (atoms.map Atom.toRelease)
   return ⟨m, q, constructorsOk m, recordChecks.all id,

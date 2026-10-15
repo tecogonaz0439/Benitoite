@@ -375,7 +375,7 @@ function rendered() -> String
  return render(1)
 end function
 function superior[T: Trait.Monoid](x: T) -> T
- return Trait.Semigroup.combine(x, x)
+ return Trait.Semigroup.combine(x: x, y: x)
 end function
 trait Describe[T]
  function describe(x: T) -> String
@@ -383,7 +383,7 @@ trait Describe[T]
 end trait
 implement[T: Trait.Show] Describe[List[T]]
  function describe(x: List[T]) -> String
-  return String.join(List.map(x, Trait.Show.show), ",")
+  return String.join(xs: List.map(xs: x, f: lambda(value) return Trait.Show.show(value) end lambda), separator: ",")
  end function
  function extra[U: Trait.Show](x: List[T], y: U) -> String
   bind _ <- Trait.Show.show(List.head(x))
@@ -567,7 +567,7 @@ function forced(x: Integer) -> Integer
  return Lazy.force(lazy x + 1 end lazy)
 end function
 function updated(ref: Reference[Integer]) -> Unit uses State
- return Reference.update(ref, lambda(x) return x + 1 end lambda)
+ return Reference.update(reference: ref, f: lambda(value) return value + 1 end lambda)
 end function
 function write() -> Unit uses Console.Write
  bind first <- Console.writeLine
@@ -711,7 +711,7 @@ end function
                 "Report.bnt",
                 r#"
 public function format(xs: List[Integer]) -> List[String]
- return List.map(xs, lambda(x) return Integer.toString(x) end lambda)
+ return List.map(xs: xs, f: lambda(value) return Integer.toString(value) end lambda)
 end function
 "#,
             ),
@@ -917,14 +917,18 @@ fn builtin_value_prototypes_respect_type_dependent_instructions() {
         let mut source = String::from("function first() -> Unit\n");
         for (binding, ty) in [("a", "Integer"), ("b", "String")] {
             let (params, result, value) = if intrinsic == Intrinsic::Force {
-                (format!("Lazy[{ty}]"), ty, "Lazy.force(x)")
+                (format!("value: Lazy[{ty}]"), ty, "Lazy.force(value)")
             } else {
-                (format!("{ty}, {ty}"), "Boolean", "x = y")
+                (
+                    format!("left: {ty}, right: {ty}"),
+                    "Boolean",
+                    "left = right",
+                )
             };
             let lambda_params = if intrinsic == Intrinsic::Force {
-                "x"
+                "value"
             } else {
-                "x, y"
+                "left, right"
             };
             source.push_str(&format!(
                 " bind {binding}: function({params}) -> {result} <- lambda({lambda_params}) return {value} end lambda\n"

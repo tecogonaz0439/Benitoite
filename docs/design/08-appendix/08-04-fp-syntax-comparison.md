@@ -63,11 +63,11 @@ Roc は構文を変えている途中であり、言語リファレンスも作�
 | Flix | `def add(x: Int32, y: Int32): Int32 = …` | トップレベルでは必須 | 引数の後の `:` | `add(1, 2)` | 本体の式の値 |
 | Scala 3 | `def add(x: Int, y: Int): Int = …` | 引数の型は必須。戻り値の型は省略できる | 引数の後の `:` | `add(1, 2)` | 本体の式の値 |
 | Roc | 型注釈 `add : I64, I64 -> I64` と `add = \|a, b\| …` | 省略できる | 注釈の `->` の後 | `add(1, 2)` | 本体の式の値 |
-| Benitoite | `function add(x: Integer, y: Integer) -> Integer … end function` | トップレベルでは必須 | `->` の後 | `add(1, 2)` | `return` |
+| Benitoite | `function add(x: Integer, y: Integer) -> Integer … end function` | トップレベルでは必須 | `->` の後 | `add(x: 1, y: 2)` | `return` |
 
 - 引数を空白で並べて適用する言語は、ML 系（OCaml、F#）と Haskell 系（Haskell、Elm）である。ほかの言語は、括弧とコンマで引数を並べる。
 - Roc は、関数をラムダを名前に束縛して定義する（言語リファレンスの functions）。
-- Benitoite は、関数の宣言の戻り値の型を、関数の型（`function(Integer, Integer) -> Integer`）と同じく `->` の後に書く。宣言で `->` を使うのは、Gleam と Rust と同じである。
+- Benitoite は、関数の宣言の戻り値の型を、関数の型（`function(x: Integer, y: Integer) -> Integer`）と同じく `->` の後に書く。宣言で `->` を使うのは、Gleam と Rust と同じである。
 - Benitoite は、戻り値の型が Unit でない関数を、本体のどの道筋でも `return` で抜けなければならないとする（[構文](../01-spec/01-02-syntax.md)の「`return`」）。
 
 **OCaml**
@@ -156,7 +156,7 @@ function add(x: Integer, y: Integer) -> Integer
 end function
 
 function three() -> Integer
-  return add(1, 2)
+  return add(x: 1, y: 2)
 end function
 ```
 
@@ -480,7 +480,7 @@ end match
 | Flix | `x -> x + 1` | `(x, y) -> …` | する | `add(1)` |
 | Scala 3 | `x => x + 1`（`_ + 1` とも書ける） | `(x, y) => …` | しない（複数の引数リストで宣言すればできる） | `add(1, _)` |
 | Roc | `\|x\| x + 1` | `\|x, y\| …` | しない（未確認） | ラムダで書く（`\|y\| add(1, y)`） |
-| Benitoite | `lambda(x) return x + 1 end lambda` | `lambda(x, y) … end lambda` | しない | プレースホルダ `add(1, _)` |
+| Benitoite | `lambda(x) return x + 1 end lambda` | `lambda(x, y) … end lambda` | しない | プレースホルダ `add(x: 1, y: _)` |
 
 - Flix は、引数を括弧とコンマで並べる書き方でも、関数をカリー化する（Flix の本の functions）。
 - Benitoite は、引数が足りない呼び出しを部分適用とせず、型検査の誤りとする。`_` は呼び出しの直接の引数にだけ書け、`_ + 1` は構文エラーである（[構文](../01-spec/01-02-syntax.md)の「部分適用のプレースホルダ」）。Gleam の関数の捕捉と Scala 3 の `add(1, _)` も、`_` の位置に引数をとる関数を作る。
@@ -552,7 +552,7 @@ add1 = |y| add(1, y)
 
 ```text
 bind inc <- lambda(x) return x + 1 end lambda
-bind add1 <- add(1, _)
+bind add1 <- add(x: 1, y: _)
 ```
 
 ### パイプ
@@ -641,7 +641,7 @@ xs |> List.keep_if(is_positive) |> List.map(double)
 **Benitoite**
 
 ```text
-bind ys <- xs |> List.filter(isPositive) |> List.map(double)
+bind ys <- xs |> List.filter(p: lambda(value) return isPositive(value)) |> List.map(f: lambda(value) return double(value))
 ```
 
 ### 代数的データ型と構成子の修飾

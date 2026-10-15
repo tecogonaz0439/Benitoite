@@ -134,10 +134,7 @@ impl State<'_> {
             .next()
             .ok_or_else(|| error(format!("missing method dictionary for {:?}", name.id)))?;
         let targs = self.targs(name.id, binding)?;
-        let ty = self
-            .declared(binding)?
-            .fn_ty()
-            .subst(&targs.tys, &targs.effects);
+        let ty = self.ty(name.id)?;
         let Ty::Fn(f) = ty else {
             return Err(error("method scheme is not a function"));
         };
@@ -164,11 +161,7 @@ impl State<'_> {
         name: &ast::NameExpr,
     ) -> Result<Comp, InternalError> {
         let binding = self.reference(name.id)?;
-        let targs = self.targs(name.id, binding)?;
-        let ty = self
-            .declared(binding)?
-            .fn_ty()
-            .subst(&targs.tys, &targs.effects);
+        let ty = self.ty(name.id)?;
         let Ty::Fn(f) = &ty else {
             return Err(error("dictionary lambda has no function type"));
         };
@@ -191,6 +184,7 @@ impl State<'_> {
         };
         Ok(returned(value(
             ValKind::Lambda(Box::new(Lambda {
+                param_names: f.param_names.clone(),
                 id,
                 params,
                 body,

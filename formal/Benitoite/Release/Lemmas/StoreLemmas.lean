@@ -1,7 +1,10 @@
 import Benitoite.Release.Lemmas.ContLemmas
+import Benitoite.Release.Lemmas.TySubst
 
 /-!
-# ストアの更新と、状態の型付けの補助の補題（段階 B）
+# ストアの更新と、状態の型付けの補助の補題（契約名を持つコア）
+
+契約名を含む型のまま補題を示す（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
@@ -86,10 +89,10 @@ theorem HasTypeV.notCont {Ψ C Γ v a} (h : HasTypeV P B Ψ C Γ v a) : a.NotCon
   match h with
   | .V_Var _ hc => exact hc
   | .V_Const (c := c) => intro b t ε e; cases c <;> simp [Const.type] at e
-  | .V_Fun _ _ _ => intro b t ε e; rw [fnTy_eq] at e; cases e
-  | .V_Prim _ _ _ _ => intro b t ε e; rw [fnTy_eq] at e; cases e
-  | .V_Op _ _ => intro b t ε e; rw [fnTy_eq] at e; cases e
-  | .V_Lam _ => intro b t ε e; cases e
+  | .V_Fun _ _ _ _ => intro b t ε e; rw [fnTy_eq] at e; cases e
+  | .V_Prim _ _ _ _ _ => intro b t ε e; rw [fnTy_eq] at e; cases e
+  | .V_Op _ _ _ => intro b t ε e; rw [fnTy_eq] at e; cases e
+  | .V_Lam _ _ => intro b t ε e; cases e
   | .V_Con _ _ _ => intro b t ε e; cases e
   | .V_List _ _ => intro b t ε e; cases e
   | .V_LocRef _ => intro b t ε e; cases e
@@ -100,7 +103,7 @@ theorem HasTypeV.notCont {Ψ C Γ v a} (h : HasTypeV P B Ψ C Γ v a) : a.NotCon
   | .V_Dict _ _ _ => intro b t ε e; cases e
   | .V_Super _ _ _ => intro b t ε e; cases e
   | .V_Sub h hle =>
-      rcases hle with rfl | ⟨_, _, _, _, _, rfl, _⟩
+      rcases hle with rfl | ⟨_, _, _, _, _, _, rfl, _⟩
       · exact HasTypeV.notCont h
       · intro b t ε e; cases e
 

@@ -3,6 +3,6 @@ function calculate(a: Integer32, b: Integer32) -> Integer32
   return -a
 end function
 function main() -> Unit uses Console.Write
-  bind _ <- calculate(-2147483648s32, 0s32)
+  bind _ <- calculate(a: -2147483648s32, b: 0s32)
   Console.writeLine("unreachable")
 end function

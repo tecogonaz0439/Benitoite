@@ -4,6 +4,6 @@
 // 専用の差し込み口は不要である。
 import Benitoite.Unofficial.Csv
 function main() -> Unit
-  bind _ <- Csv.parseWith("a,b", 'é')
+  bind _ <- Csv.parseWith(text: "a,b", delimiter: 'é')
   return ()
 end function

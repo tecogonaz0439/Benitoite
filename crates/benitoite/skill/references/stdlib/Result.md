@@ -16,19 +16,19 @@ end data
 The result of an operation: `Result.Ok(x)` on success, `Result.Error(e)` on failure.
 
 ```benitoite
-public function map[T, U, X, effect E](r: Result[T, X], f: function(T) -> U uses E) -> Result[U, X] uses E
+public function map[T, U, X, effect E](r: Result[T, X], f: function(value: T) -> U uses E) -> Result[U, X] uses E
 ```
 
 Applies `f` to the value inside `Result.Ok`.
 
 ```benitoite
-public function mapError[T, X, Y, effect E](r: Result[T, X], f: function(X) -> Y uses E) -> Result[T, Y] uses E
+public function mapError[T, X, Y, effect E](r: Result[T, X], f: function(error: X) -> Y uses E) -> Result[T, Y] uses E
 ```
 
 Applies `f` to the value inside `Result.Error`.
 
 ```benitoite
-public function andThen[T, U, X, effect E](r: Result[T, X], f: function(T) -> Result[U, X] uses E) -> Result[U, X] uses E
+public function andThen[T, U, X, effect E](r: Result[T, X], f: function(value: T) -> Result[U, X] uses E) -> Result[U, X] uses E
 ```
 
 Applies `f` to the value inside `Result.Ok` and returns its result.

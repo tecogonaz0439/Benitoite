@@ -153,6 +153,8 @@ pub(super) fn check_function(d: &mut Decls<'_>, f: &FnDecl) {
 
 #[inline(never)]
 pub(super) fn expr(ctx: &mut Body<'_, '_>, e: &Expr) -> ITy {
+    // 解決後の契約の診断でも、囲む関数の名前ではなく元の式を示す（設計書 02-10「診断の内部の表現」）。
+    ctx.expr_spans.insert(e.id(), e.span());
     let ty = match e {
         Expr::Lit(e) => literal(ctx, e.id, e.span, &e.lit, false),
         Expr::Unit(_) => basic(B::UNIT),
@@ -237,14 +239,14 @@ pub(super) fn call(ctx: &mut Body<'_, '_>, e: &CallExpr, insert: Option<&Expr>) 
             let t = ctx.expr(&e.callee);
             report_value_call(ctx, e, n, kind, t);
             for a in &e.args {
-                if let Arg::Expr(a) = a {
+                if let Some(a) = a.expr() {
                     ctx.expr(a);
                 }
             }
             return ITy::Error;
         }
     }
-    let partial = e.args.iter().any(|a| matches!(a, Arg::Placeholder(_)));
+    let partial = e.args.iter().any(|a| a.placeholder().is_some());
     if !partial {
         return call_body(ctx, e, insert, None);
     }
@@ -327,104 +329,9 @@ fn call_body(
     insert: Option<&Expr>,
     partial_ret: Option<ITy>,
 ) -> ITy {
-    let callee = ctx.expr(&e.callee);
-    let partial = partial_ret.is_some();
-    // 展開後の戻り値型を引数の return より先に呼ばれる関数の型と結ぶ。
-    let signature = partial_ret.map(|ret| {
-        call_constraint(
-            ctx,
-            e,
-            callee.clone(),
-            e.args.len().saturating_add(usize::from(insert.is_some())),
-            Some(ret),
-        )
-    });
-    let mut args = vec![];
-    let mut slots = vec![];
-    if let Some(e) = insert {
-        args.push((ctx.expr(e), Some(e)));
-    }
-    for arg in &e.args {
-        match arg {
-            Arg::Expr(e) => args.push((ctx.expr(e), Some(e))),
-            Arg::Placeholder(p) => {
-                let t = ctx.fresh_ty();
-                ctx.record_type(p.id, t.clone());
-                slots.push(t.clone());
-                args.push((t, None));
-            }
-        }
-    }
-    let (params, ret, eff) =
-        signature.unwrap_or_else(|| call_constraint(ctx, e, callee, args.len(), None));
-    let parameter_spans = declaration_params(ctx, &e.callee);
-    for (i, ((t, arg), p)) in args.into_iter().zip(params).enumerate() {
-        let rkind = ReasonKind::CallArg {
-            index: u32::try_from(i).unwrap_or(u32::MAX).saturating_add(1),
-        };
-        if let Some(arg) = arg {
-            flow(
-                ctx,
-                t,
-                p,
-                arg,
-                rkind,
-                parameter_spans.get(i).copied().flatten(),
-                false,
-            );
-        } else {
-            equal(ctx, p, t, e.span, rkind);
-        }
-    }
-    ctx.add(Constraint::EffSub {
-        sub: eff,
-        sup: ctx.effect.clone(),
-        reason: reason(e.span, ReasonKind::CallEffect),
-    });
-    if partial {
-        let latent = ctx.effect.clone();
-        ctx.lambda_effects.insert(e.id, latent.clone());
-        ITy::Fn(Box::new(IFnTy {
-            params: slots,
-            ret,
-            effect: latent,
-        }))
-    } else {
-        ret
-    }
+    super::calls::generate(ctx, e, insert, partial_ret, None)
 }
-fn call_constraint(
-    ctx: &mut Body<'_, '_>,
-    e: &CallExpr,
-    callee: ITy,
-    arity: usize,
-    ret: Option<ITy>,
-) -> (Vec<ITy>, ITy, IEffect) {
-    let partial = ret.is_some();
-    let params = (0..arity).map(|_| ctx.fresh_ty()).collect::<Vec<_>>();
-    let ret = ret.unwrap_or_else(|| ctx.fresh_ty());
-    let eff = ctx.fresh_effect();
-    let expected = ITy::Fn(Box::new(IFnTy {
-        params: params.clone(),
-        ret: ret.clone(),
-        effect: eff.clone(),
-    }));
-    let mut r = reason(e.span, ReasonKind::Call);
-    if partial {
-        // return の Flow と同じ優先群で、追加した順に解く。
-        r.priority = Priority::Declared;
-    }
-    if let Expr::Name(n) = e.callee.as_ref() {
-        r.related = ctx.decls.resolved.binding_of_ref(n.id).and_then(|b| b.span);
-    }
-    ctx.add(Constraint::Equal {
-        expected,
-        found: callee,
-        reason: r,
-    });
-    (params, ret, eff)
-}
-fn declaration_params(ctx: &Body<'_, '_>, callee: &Expr) -> Vec<Option<Span>> {
+pub(super) fn declaration_params(ctx: &Body<'_, '_>, callee: &Expr) -> Vec<Option<Span>> {
     let Expr::Name(n) = callee else {
         return vec![];
     };
@@ -497,9 +404,16 @@ fn apply(
     let params = (0..args.len()).map(|_| ctx.fresh_ty()).collect::<Vec<_>>();
     let ret = ctx.fresh_ty();
     let effect = ctx.fresh_effect();
+    let contract = if params.is_empty() {
+        IContract::Known(vec![])
+    } else {
+        ctx.solver.fresh_contract()
+    };
+    ctx.call_contracts.push((callee.clone(), span, span));
     equal(
         ctx,
         ITy::Fn(Box::new(IFnTy {
+            contract,
             params: params.clone(),
             ret: ret.clone(),
             effect: effect.clone(),
@@ -757,6 +671,7 @@ fn lambda_result(
     // 本体の走査中に後検査を移すと、制約の解決後に出す診断の順序が変わる。
     ctx.lambda_returns.push((e.body.clone(), ret.clone()));
     ITy::Fn(Box::new(IFnTy {
+        contract: IContract::Known(e.params.iter().map(|p| p.name.text.clone()).collect()),
         params,
         ret,
         effect: exposed,
@@ -1147,7 +1062,7 @@ fn reach_expr(ctx: &mut Body<'_, '_>, e: &Expr) {
         Expr::Call(c) => {
             reach_expr(ctx, &c.callee);
             for a in &c.args {
-                if let Arg::Expr(e) = a {
+                if let Some(e) = a.expr() {
                     reach_expr(ctx, e);
                 }
             }
@@ -1306,7 +1221,7 @@ fn unary(ctx: &mut Body<'_, '_>, e: &UnaryExpr) -> ITy {
 #[inline(never)]
 fn pipe(ctx: &mut Body<'_, '_>, p: &PipeExpr) -> ITy {
     if let Expr::Call(c) = p.rhs.as_ref()
-        && !c.args.iter().any(|a| matches!(a, Arg::Placeholder(_)))
+        && !c.args.iter().any(|a| a.placeholder().is_some())
     {
         let ty = call(ctx, c, Some(&p.lhs));
         ctx.record_type(c.id, ty.clone());
@@ -1446,9 +1361,10 @@ fn pattern_path(p: &CtorPat) -> String {
 
 #[inline(never)]
 fn bind_stmt(ctx: &mut Body<'_, '_>, bind: &BindStmt) {
+    let annotation = bind.ty.as_ref().map(|ann| ctx.annotation(ann));
     let t = ctx.expr(&bind.value);
     let target = if let Some(ann) = &bind.ty {
-        let annotation = ctx.annotation(ann);
+        let annotation = annotation.unwrap_or(ITy::Error);
         let a = ctx.solver.known(annotation);
         flow(
             ctx,

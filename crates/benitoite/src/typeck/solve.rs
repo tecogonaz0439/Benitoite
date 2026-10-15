@@ -38,6 +38,11 @@ struct Var {
     // （設計書 01-12「型パラメータの組み込みの制約」の Δ）。
     clauses: Vec<NodeId>,
 }
+#[derive(Default)]
+struct ContractState {
+    parent: u32,
+    binding: Option<IContract>,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum Elem {
     Name(EffectName),
@@ -56,6 +61,7 @@ type EffectConstraint = (IEffect, IEffect, Reason, Option<(ITy, ITy)>);
 #[derive(Default)]
 pub(super) struct Solver {
     vars: Vec<Var>,
+    contracts: Vec<ContractState>,
     clauses: Vec<NodeId>,
     // 現在の単一化の失敗の出どころ。報告を保留するときは失敗とともに保存する。
     escaped: Option<Escape>,
@@ -79,6 +85,87 @@ pub(super) struct Solver {
     dependent_late: Vec<LateFailure>,
 }
 impl Solver {
+    pub fn fresh_contract(&mut self) -> IContract {
+        let id = u32::try_from(self.contracts.len()).unwrap_or(u32::MAX);
+        self.contracts.push(ContractState {
+            parent: id,
+            binding: None,
+        });
+        IContract::Var(ContractId(id))
+    }
+    fn contract_root(&self, id: ContractId) -> ContractId {
+        let mut id = id;
+        while let Some(state) = usize::try_from(id.0)
+            .ok()
+            .and_then(|i| self.contracts.get(i))
+        {
+            if state.parent == id.0 {
+                break;
+            }
+            id = ContractId(state.parent);
+        }
+        id
+    }
+    pub(super) fn resolve_contract(&self, contract: &IContract) -> IContract {
+        match contract {
+            IContract::Var(id) => {
+                let id = self.contract_root(*id);
+                usize::try_from(id.0)
+                    .ok()
+                    .and_then(|i| self.contracts.get(i))
+                    .and_then(|s| s.binding.clone())
+                    .unwrap_or(IContract::Var(id))
+            }
+            IContract::Known(_) => contract.clone(),
+        }
+    }
+    pub(super) fn contract_names(&self, contract: &IContract) -> Option<Vec<String>> {
+        match self.resolve_contract(contract) {
+            IContract::Known(names) => Some(names),
+            IContract::Var(_) => None,
+        }
+    }
+    fn equal_contracts(
+        &mut self,
+        a: &IContract,
+        b: &IContract,
+        arity: usize,
+    ) -> Result<(), DiagCode> {
+        let a = self.resolve_contract(a);
+        let b = self.resolve_contract(b);
+        for contract in [&a, &b] {
+            if let IContract::Known(names) = contract
+                && (names.len() != arity || names.iter().collect::<BTreeSet<_>>().len() != arity)
+            {
+                return Err(DiagCode::E0455);
+            }
+        }
+        match (&a, &b) {
+            (IContract::Var(a), IContract::Var(b)) => {
+                if a != b
+                    && let Some(s) = usize::try_from(a.0)
+                        .ok()
+                        .and_then(|i| self.contracts.get_mut(i))
+                {
+                    s.parent = b.0;
+                }
+                Ok(())
+            }
+            (IContract::Var(id), contract) | (contract, IContract::Var(id)) => {
+                if let Some(s) = usize::try_from(id.0)
+                    .ok()
+                    .and_then(|i| self.contracts.get_mut(i))
+                {
+                    s.binding = Some(contract.clone());
+                    Ok(())
+                } else {
+                    Err(DiagCode::E0455)
+                }
+            }
+            (IContract::Known(a), IContract::Known(b)) if a != b => Err(DiagCode::E0454),
+            _ => Ok(()),
+        }
+    }
     pub fn fresh_ty(&mut self) -> ITy {
         let n = u32::try_from(self.vars.len()).unwrap_or(u32::MAX);
         self.vars.push(Var {
@@ -237,6 +324,7 @@ impl Solver {
                 }
                 ZonkStep::Return(f, params) => {
                     result = ITy::Fn(Box::new(IFnTy {
+                        contract: self.resolve_contract(&f.contract),
                         params,
                         ret: result,
                         effect: f.effect.clone(),
@@ -260,11 +348,40 @@ impl Solver {
             ))
         })
     }
+    pub(super) fn invalid_contract(&self, ty: &ITy) -> bool {
+        let mut pending = vec![self.zonk(ty)];
+        while let Some(ty) = pending.pop() {
+            match ty {
+                ITy::Fn(f) => {
+                    if self.contract_names(&f.contract).is_none_or(|names| {
+                        names.len() != f.params.len()
+                            || names.iter().collect::<BTreeSet<_>>().len() != names.len()
+                    }) {
+                        return true;
+                    }
+                    pending.extend(f.params);
+                    pending.push(f.ret);
+                }
+                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
+                ITy::Var(_) | ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
+            }
+        }
+        false
+    }
     pub fn finalize(&self, t: &ITy, r: &ResolveOutput) -> Ty {
         match self.zonk(t) {
             ITy::Var(_) | ITy::Error => super::decls::unit(),
             ITy::Con(c, a) => Ty::Con(c, a.iter().map(|t| self.finalize(t, r)).collect()),
+            ITy::Fn(f)
+                if self.contract_names(&f.contract).is_none_or(|names| {
+                    names.len() != f.params.len()
+                        || names.iter().collect::<BTreeSet<_>>().len() != names.len()
+                }) =>
+            {
+                super::decls::unit()
+            }
             ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
+                param_names: self.contract_names(&f.contract).unwrap_or_default(),
                 params: f.params.iter().map(|t| self.finalize(t, r)).collect(),
                 ret: self.finalize(&f.ret, r),
                 effects: self.finalize_effect(&f.effect),
@@ -415,6 +532,7 @@ impl Solver {
                 if x.params.len() != y.params.len() {
                     return Err(DiagCode::E0402);
                 }
+                self.equal_contracts(&x.contract, &y.contract, x.params.len())?;
                 for (a, b) in x.params.iter().zip(&y.params) {
                     self.equal_with_outer(a, b, reason, expected, found)?;
                 }
@@ -482,6 +600,7 @@ impl Solver {
             (ITy::Fn(x), ITy::Var(v)) | (ITy::Var(v), ITy::Fn(x)) => {
                 let e = self.fresh_effect();
                 let shape = ITy::Fn(Box::new(IFnTy {
+                    contract: x.contract.clone(),
                     params: x.params.clone(),
                     ret: x.ret.clone(),
                     effect: e.clone(),
@@ -499,6 +618,7 @@ impl Solver {
                 if x.params.len() != y.params.len() {
                     return Err(DiagCode::E0402);
                 }
+                self.equal_contracts(&x.contract, &y.contract, x.params.len())?;
                 for (a, b) in x.params.iter().zip(&y.params) {
                     self.equal(a, b, r)?;
                 }
@@ -546,6 +666,7 @@ impl Solver {
             return false;
         };
         let shape = ITy::Fn(Box::new(IFnTy {
+            contract: x.contract.clone(),
             params: x.params.clone(),
             ret: y.ret.clone(),
             effect: x.effect.clone(),
@@ -592,6 +713,7 @@ impl Solver {
             ITy::Var(_) | ITy::Error => Ty::Param(u32::MAX),
             ITy::Con(c, a) => Ty::Con(c, a.iter().map(|t| self.diagnostic_type(t)).collect()),
             ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
+                param_names: self.contract_names(&f.contract).unwrap_or_default(),
                 params: f.params.iter().map(|t| self.diagnostic_type(t)).collect(),
                 ret: self.diagnostic_type(&f.ret),
                 effects: self.finalize_effect(&f.effect),
@@ -618,6 +740,34 @@ impl Solver {
     ) {
         let escaped = self.escaped.take();
         self.failure_with_escape(ctx, code, expected, found, r, escaped);
+    }
+    fn contract_difference(&self, expected: &ITy, found: &ITy) -> Option<(usize, String, String)> {
+        let expected = self.zonk(expected);
+        let found = self.zonk(found);
+        let mut pending = vec![(&expected, &found)];
+        while let Some((expected, found)) = pending.pop() {
+            match (expected, found) {
+                (ITy::Fn(e), ITy::Fn(f)) => {
+                    let e_contract = self.resolve_contract(&e.contract);
+                    let f_contract = self.resolve_contract(&f.contract);
+                    if let (Some(es), Some(fs)) = (
+                        self.contract_names(&e_contract),
+                        self.contract_names(&f_contract),
+                    ) && let Some((index, (e, f))) =
+                        es.iter().zip(&fs).enumerate().find(|(_, (e, f))| e != f)
+                    {
+                        return Some((index.saturating_add(1), e.clone(), f.clone()));
+                    }
+                    pending.push((&e.ret, &f.ret));
+                    pending.extend(e.params.iter().zip(&f.params).rev());
+                }
+                (ITy::Con(_, es), ITy::Con(_, fs)) | (ITy::App(_, es), ITy::App(_, fs)) => {
+                    pending.extend(es.iter().zip(fs).rev())
+                }
+                _ => {}
+            }
+        }
+        None
     }
     #[cold]
     #[inline(never)]
@@ -693,6 +843,24 @@ impl Solver {
             .arg("ty", &f)
             .arg("op", op)
             .primary(r.span);
+        if code == DiagCode::E0454 {
+            d = d.note("contracts");
+            if let Some((index, expected_name, found_name)) =
+                self.contract_difference(expected, found)
+            {
+                d = d
+                    .arg("index", index.to_string())
+                    .arg("expected_name", expected_name)
+                    .arg("found_name", found_name)
+                    .note("first_name");
+            }
+            if let Some(span) = r.related {
+                d = d.secondary(span, "");
+            }
+        }
+        if code == DiagCode::E0455 {
+            d = d.help("annotation");
+        }
         if code == DiagCode::E0402
             && let Some(span) = r.related
         {
@@ -888,10 +1056,26 @@ impl Solver {
         let mut declared = vec![];
         let mut normal = vec![];
         let mut bounds = vec![];
+        let mut call_statements = vec![];
+        let call_results: BTreeSet<_> = ctx
+            .named_calls
+            .iter()
+            .filter_map(super::calls::PendingCall::result_var)
+            .map(|v| v.0)
+            .collect();
         for c in constraints {
             match c {
                 Constraint::EffSub { sub, sup, reason } => {
                     self.effects.push((sub, sup, reason, None))
+                }
+                Constraint::Equal {
+                    ref found,
+                    ref reason,
+                    ..
+                } if matches!(reason.kind, ReasonKind::ExprStmt | ReasonKind::FnBody)
+                    && matches!(found, ITy::Var(v) if call_results.contains(&v.0)) =>
+                {
+                    call_statements.push(c)
                 }
                 Constraint::Equal { ref reason, .. } | Constraint::Flow { ref reason, .. }
                     if reason.priority == Priority::Declared =>
@@ -922,53 +1106,86 @@ impl Solver {
             }
             bounds = self.bounds(ctx, bounds, false);
         }
+        let mut calls = std::mem::take(&mut ctx.named_calls);
+        for call in &calls {
+            if let Some(constraints) = super::calls::prepare(self, call) {
+                for c in constraints {
+                    self.solve_pair(ctx, c, &mut deferred);
+                }
+            }
+        }
+        // 呼び出しの Flow と試行がほかの呼び出しの契約を定める場合も再訪する。
+        // 未確定の位置の等しさへの切り替えは、既知の情報を使い切ってから行う
+        // （設計書 02-05「制約の解決」）。
         loop {
+            let before = (calls.len(), deferred.len());
+            let mut waiting = vec![];
+            for call in calls {
+                if super::calls::ready(self, &call) {
+                    for c in super::calls::resolve(ctx, self, call) {
+                        self.solve_pair(ctx, c, &mut deferred);
+                    }
+                } else {
+                    waiting.push(call);
+                }
+            }
+            calls = waiting;
             let mut remaining = vec![];
-            let n = deferred.len();
             for c in deferred {
                 self.solve_pair(ctx, c, &mut remaining);
             }
-            if remaining.len() == n {
-                for c in remaining {
+            deferred = remaining;
+            bounds = self.bounds(ctx, bounds, false);
+            let special_before = ctx
+                .constraints
+                .iter()
+                .filter(|c| matches!(c, Constraint::Try { .. } | Constraint::Resource { .. }))
+                .count();
+            ctx.solver = std::mem::take(self);
+            super::effects::solve_ready(ctx);
+            *self = std::mem::take(&mut ctx.solver);
+            let mut special_after = 0usize;
+            for c in std::mem::take(&mut ctx.constraints) {
+                match c {
+                    Constraint::EffSub { sub, sup, reason } => {
+                        self.effects.push((sub, sup, reason, None));
+                    }
+                    Constraint::Equal { .. } | Constraint::Flow { .. } => {
+                        self.solve_pair(ctx, c, &mut deferred);
+                    }
+                    Constraint::OneOf { .. }
+                    | Constraint::Equality { .. }
+                    | Constraint::Key { .. } => {
+                        bounds.push(c);
+                    }
+                    Constraint::Try { .. } | Constraint::Resource { .. } => {
+                        special_after = special_after.saturating_add(1);
+                        ctx.add(c);
+                    }
+                    Constraint::Class { .. } => ctx.add(c),
+                }
+            }
+            if before == (calls.len(), deferred.len()) && special_before == special_after {
+                if deferred.is_empty() {
+                    break;
+                }
+                for c in std::mem::take(&mut deferred) {
                     if let Constraint::Flow { from, to, reason } = c
                         && let Err(code) = self.equal(&to, &from, &reason)
                     {
                         self.pair_failure(ctx, code, &to, &from, &reason);
                     }
                 }
-                break;
             }
-            deferred = remaining;
         }
-        bounds = self.bounds(ctx, bounds, false);
-        // 試行とリソースの検査がこの状態に制約を足せるように移して戻す。
+        // 保留した呼び出しの結果が決まってから Unit との一致を調べる。
+        // 捨てた値を関数型全体の不一致へ付け替えない（設計書 02-05「誤りの報告と検査の継続」）。
+        for c in call_statements {
+            self.solve_pair(ctx, c, &mut deferred);
+        }
         ctx.solver = std::mem::take(self);
         super::effects::solve_special(ctx);
         *self = std::mem::take(&mut ctx.solver);
-        let mut deferred = vec![];
-        for c in std::mem::take(&mut ctx.constraints) {
-            match c {
-                Constraint::EffSub { sub, sup, reason } => {
-                    self.effects.push((sub, sup, reason, None))
-                }
-                Constraint::Equal { .. } | Constraint::Flow { .. } => {
-                    self.solve_pair(ctx, c, &mut deferred)
-                }
-                Constraint::OneOf { .. } | Constraint::Equality { .. } | Constraint::Key { .. } => {
-                    bounds.push(c)
-                }
-                Constraint::Class { .. } | Constraint::Try { .. } | Constraint::Resource { .. } => {
-                    ctx.add(c)
-                }
-            }
-        }
-        for c in deferred {
-            if let Constraint::Flow { from, to, reason } = c
-                && let Err(code) = self.equal(&to, &from, &reason)
-            {
-                self.pair_failure(ctx, code, &to, &from, &reason);
-            }
-        }
         for (code, expected, found, reason, escaped) in std::mem::take(&mut self.late) {
             self.failure_with_escape(ctx, code, &expected, &found, &reason, escaped);
         }
@@ -976,8 +1193,38 @@ impl Solver {
             // 移し替えた報告から伝わった誤りの型は、両辺を調べる failure_with_escape が抑える。
             self.failure_with_escape(ctx, code, &expected, &found, &reason, escaped);
         }
-        self.bounds(ctx, bounds, true);
+        bounds = self.bounds(ctx, bounds, false);
         self.solve_effects(ctx);
+        // 型クラスの失敗による誤りの伝播も済ませてから、未確定の契約を報告する。
+        // 辞書の解決は型を推測せず、確定した型を検査する（設計書 02-05「型クラスの制約の解決」）。
+        ctx.solver = std::mem::take(self);
+        super::traits::solve_ready_classes(ctx);
+        *self = std::mem::take(&mut ctx.solver);
+        for call in calls {
+            super::calls::unresolved(ctx, self, call);
+        }
+        for (callee, span, call_span) in std::mem::take(&mut ctx.call_contracts) {
+            if let ITy::Fn(f) = self.zonk(&callee)
+                && !self.contains_error(&callee)
+                && matches!(self.resolve_contract(&f.contract), IContract::Var(_))
+            {
+                if !super::calls::has_child_error(ctx, call_span) {
+                    ctx.diagnostic(
+                        DiagBuilder::new(DiagCode::E0455)
+                            .primary(span)
+                            .help("annotation")
+                            .build(),
+                    );
+                }
+                self.poison(std::slice::from_ref(&callee));
+            }
+        }
+        // 未確定の契約から派生した型変数を誤りとして回復した後でだけ、
+        // 型の曖昧さを報告する（設計書 02-05「誤りの報告と検査の継続」）。
+        self.bounds(ctx, bounds, true);
+        ctx.solver = std::mem::take(self);
+        super::traits::solve_classes(ctx);
+        *self = std::mem::take(&mut ctx.solver);
     }
     fn solve_pair(
         &mut self,
@@ -1430,6 +1677,7 @@ impl Solver {
                 let shown = self.show(
                     ctx,
                     &ITy::Fn(Box::new(IFnTy {
+                        contract: IContract::Known(Vec::new()),
                         params: vec![],
                         ret: super::context::lift(&super::decls::unit()),
                         effect: fixed(set),

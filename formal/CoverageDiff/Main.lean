@@ -1,11 +1,9 @@
 import Benitoite.Release.CoverageShow
+import Benitoite.Exchange.Convert
 import Lean
 
-/-!
-E1c-1: 型から作ったパターンについて、処理系の公開 API と網羅性の手順を比較する。
-前提: ctors は各データ型の構成子を宣言順にちょうど含む（欠け・余分・重複なし）。
-交換形式の検査でこの前提と、型引数・構成子の引数数・文字の符号位置を確認する。
--/
+/-! 契約名とソース順を保持する独立した交換の入口。
+設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
 open Lean Benitoite.Release
 namespace CoverageDiff
 
@@ -82,6 +80,13 @@ partial def readTy (ds : List RawDecl) (params : Nat) (j : Json) : Except String
       let args ← (← array j "args").mapM (readTy ds params)
       if args.length != d.ntys then throw "data type argument count"
       return .data name args
+  | "function" =>
+      let names : List String ← get j "names"
+      let ps ← (← array j "params").mapM (readTy ds params)
+      Benitoite.Exchange.checkNames names ps.length
+      let r ← readTy ds params (← field j "ret")
+      let eff : Benitoite.Exchange.Eff ← get j "eff"
+      return .fn names ps r eff.toRelease
   | "list" =>
       let [a] ← (← array j "args").mapM (readTy ds params) | throw "list arity"
       return .list a
@@ -281,7 +286,7 @@ def run (args : List String) : IO UInt32 := do
     let v ← IO.ofExcept (Json.parse ((toJson (n : Int)).compress) >>= readInt)
     if v != n then throw (IO.userError "i64 JSON roundtrip")
   let corpus ← IO.ofExcept ((Json.parse (← IO.FS.readFile corpusFile)) >>= fromJson? : Except String Corpus)
-  if corpus.version != 1 then throw (IO.userError "unsupported coverage version")
+  if corpus.version != 2 then throw (IO.userError "unsupported coverage version")
   if corpus.cases.length != corpus.randomCases + corpus.boundaryCases || duplicate (corpus.cases.map Input.name) then
     throw (IO.userError "case count/names")
   let mut matched := 0

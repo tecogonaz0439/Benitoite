@@ -1,0 +1,53 @@
+import Benitoite.Unofficial.IO.Console
+function booleanText(value: Boolean) -> String return if value then "true" else "false" end if end function
+const fixed: Integer = (-27) + 7
+function emptyList() -> List[Integer] return [] end function
+function errorResult(text: String) -> Result[Integer, String] return Result.Error(text) end function
+function optionText(value: Option[Integer]) -> String
+  return match value with
+    case Option.Some(n) -> "some:" + Integer.toString(n)
+    case Option.None -> "none"
+  end match
+end function
+record Row
+  number: Integer
+  text: String
+end record
+function maybe(x: Option[Integer]) -> Option[Integer]
+  bind n <- try x
+  return Option.Some(n + 1)
+end function
+function checked(x: Result[Integer, String]) -> Result[Integer, String]
+  bind n <- try x
+  return Result.Ok(n - 1)
+end function
+function main() -> Unit uses Console.Write
+bind v0: Option[Integer] <- Option.Some(Row.number(Row(number: 0, text: "")))
+Console.writeLine(optionText(v0))
+bind v3: List[Integer] <- emptyList()
+Console.writeLine("[" + String.join(List.map(v3, Integer.toString), ",") + "]")
+bind r <- Row(..Row(..Row(number: 0, text: ""), number: -2), number: Row.number(Row(number: 0, text: "")))
+bind Row(number: n, ..) <- Row(..r, number: ((9 mod 97) - ((if true then
+1
+else
+16
+end if) mod 97)))
+bind Pair(a, s) <- Pair(0, "")
+bind Triple(b, flag, text) <- Triple((match v0 with
+case Option.Some(v6) -> v6
+case Option.None -> 0
+end match), (v3 = emptyList()), ("\"\\" + "abc"))
+Console.writeLine("${n}:${a}:${s}:${b}:${flag}:${text}")
+bind v8: Option[Integer] <- maybe(Option.Some((match v0 with
+case Option.Some(v7) -> v7
+case Option.None -> 0
+end match)))
+Console.writeLine(optionText(v8))
+bind v11: Result[Integer, String] <- checked(errorResult(booleanText(true)))
+Console.writeLine(match v11 with
+case Result.Ok(v12) -> "ok:" + Integer.toString(v12)
+case Result.Error(v13) -> "error:" + v13
+end match)
+bind v14: Integer <- fixed
+Console.writeLine("${v14}")
+end function

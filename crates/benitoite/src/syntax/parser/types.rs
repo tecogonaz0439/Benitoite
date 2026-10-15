@@ -128,7 +128,7 @@ fn push_type(p: &mut Parser, depth: u32, out: &mut Vec<TypeExpr>) -> PResult<()>
 fn parse_paren(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
     let start = p.pos;
     p.bump();
-    let Ok(inner) = parse_type(p, child(depth)) else {
+    let Ok(inner) = parse_type_in(p, child(depth), false) else {
         return Err(Fail);
     };
     let mut count = 1_usize;
@@ -138,7 +138,7 @@ fn parse_paren(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
         if p.at(TokenKind::RParen) {
             break;
         }
-        drop(parse_type(p, child(depth))?);
+        drop(parse_type_in(p, child(depth), false)?);
         count = count.saturating_add(1);
     }
     if has_comma {
@@ -160,7 +160,7 @@ fn parse_fn(p: &mut Parser, depth: u32, in_list: bool) -> PResult<Box<TypeExpr>>
     let start = p.pos;
     p.bump();
     p.expect(TokenKind::LParen)?;
-    let params = comma_list(
+    let entries = comma_list(
         p,
         depth,
         CommaList {
@@ -170,29 +170,67 @@ fn parse_fn(p: &mut Parser, depth: u32, in_list: bool) -> PResult<Box<TypeExpr>>
             allow_empty: true,
             indexed: false,
         },
-        push_type,
-        |out, error| out.push(TypeExpr::Error(error)),
+        push_fn_param,
+        |out, error| {
+            out.push((None, TypeExpr::Error(error)));
+        },
     )?;
     p.expect(TokenKind::Arrow)?;
-    let Ok(ret) = parse_type(p, child(depth)) else {
+    let Ok(ret) = parse_type_in(p, child(depth), false) else {
         return Err(Fail);
     };
     let uses = parse_uses(p, depth, in_list.then_some(start))?;
-    Ok(finish_fn(p, start, params, ret, uses))
+    Ok(finish_fn(p, start, entries, ret, uses))
 }
+fn push_fn_param(
+    p: &mut Parser,
+    depth: u32,
+    out: &mut Vec<(Option<Name>, TypeExpr)>,
+) -> PResult<()> {
+    let name = if p.at(TokenKind::LowerIdent) {
+        let name = p.expect_name(TokenKind::LowerIdent, text::LOWER_NAME)?;
+        p.expect(TokenKind::Colon)?;
+        Some(name)
+    } else {
+        // 同じ関数型では最初の無名パラメータだけを報告する。入れ子の型は別の並びを持つ。
+        if !out.iter().any(|(name, _)| name.is_none()) {
+            p.diagnostics.push(
+                DiagBuilder::new(DiagCode::E0257)
+                    .primary(p.peek().span)
+                    .help("named")
+                    .build(),
+            );
+        }
+        None
+    };
+    let ty = parse_type_in(p, depth, true)?;
+    out.push((name, *ty));
+    Ok(())
+}
+
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
 fn finish_fn(
     p: &mut Parser,
     start: usize,
-    params: Vec<TypeExpr>,
+    entries: Vec<(Option<Name>, TypeExpr)>,
     ret: Box<TypeExpr>,
     uses: Option<UsesList>,
 ) -> Box<TypeExpr> {
+    let mut params = Vec::with_capacity(entries.len());
+    let mut param_names = Vec::with_capacity(entries.len());
+    for (name, ty) in entries {
+        let Some(name) = name else {
+            return Box::new(TypeExpr::Error(p.error_node_from(start)));
+        };
+        param_names.push(name);
+        params.push(ty);
+    }
     Box::new(TypeExpr::Fn(FnType {
         id: p.node_id(),
         span: p.span_from(start),
         params,
+        param_names,
         ret,
         uses,
     }))
@@ -480,6 +518,217 @@ mod tests {
             );
             assert!(params.iter().all(|p| p.constraints.is_empty()));
             assert!(matches!(&out.module.decls[1].item, Item::Fn(f) if f.name.text == "after"));
+        }
+    }
+}
+
+#[cfg(test)]
+mod named_type_tests {
+    // テストの失敗は panic で表す（AGENTS.md「`#[allow]` を書いてよい箇所」）。
+    #![allow(clippy::unwrap_used, clippy::panic, clippy::indexing_slicing)]
+    use super::*;
+    use crate::base::{FileId, IdGen, SourceKind};
+    use crate::syntax::{lexer::lex, newline::resolve_newlines};
+
+    fn prepared_type(source: &str) -> (Box<TypeExpr>, Vec<crate::diag::Diagnostic>) {
+        let lexed = lex(FileId(0), source.as_bytes());
+        assert!(lexed.diagnostics.is_empty());
+        let mut p = Parser::new(
+            FileId(0),
+            SourceKind::User,
+            source.as_bytes(),
+            resolve_newlines(lexed.tokens),
+            &[],
+            IdGen::new(),
+        );
+        let ty = parse_type_in(&mut p, 0, false).unwrap();
+        assert!(p.at(TokenKind::Eof), "{source}: {:?}", p.diagnostics);
+        (ty, p.diagnostics)
+    }
+
+    fn check_names(ty: &TypeExpr, expected: &[&str], source: &str) {
+        let TypeExpr::Fn(f) = ty else {
+            panic!("function type")
+        };
+        assert_eq!(
+            f.param_names
+                .iter()
+                .map(|n| &n.text)
+                .collect::<std::collections::BTreeSet<_>>()
+                .len(),
+            f.params.len()
+        );
+        assert_eq!(f.param_names.len(), f.params.len());
+        assert_eq!(
+            f.param_names
+                .iter()
+                .map(|n| n.text.as_str())
+                .collect::<Vec<_>>(),
+            expected
+        );
+        for (name, ty) in f.param_names.iter().zip(&f.params) {
+            assert_eq!(
+                &source[name.span.start.0 as usize..name.span.end.0 as usize],
+                name.text
+            );
+            assert!(name.span.end.0 <= ty.span().start.0);
+        }
+    }
+
+    #[test]
+    fn function_types_keep_names_and_nested_types() {
+        for (source, expected) in [
+            ("function() -> Unit", vec![]),
+            (
+                "function(arg1: Integer, arg2: String) -> Unit",
+                vec!["arg1", "arg2"],
+            ),
+            ("function() -> Unit", vec![]),
+            ("function(value: Integer) -> Unit", vec!["value"]),
+            (
+                "function(left: Integer, right: String) -> Unit",
+                vec!["left", "right"],
+            ),
+            (
+                "function(cb: List[(function(item: Integer) -> Integer uses E)]) -> function(result: String) -> Unit",
+                vec!["cb"],
+            ),
+        ] {
+            let (ty, diagnostics) = prepared_type(source);
+            assert!(diagnostics.is_empty(), "{source}: {diagnostics:?}");
+            check_names(&ty, &expected, source);
+            if source.contains("cb:") {
+                let TypeExpr::Fn(f) = ty.as_ref() else {
+                    panic!("function")
+                };
+                let TypeExpr::Named(list) = &f.params[0] else {
+                    panic!("list")
+                };
+                let TypeExpr::Paren(paren) = &list.args[0] else {
+                    panic!("paren")
+                };
+                check_names(&paren.inner, &["item"], source);
+                check_names(&f.ret, &["result"], source);
+            }
+        }
+    }
+
+    #[test]
+    fn prepared_named_function_type_formats_from_each_label() {
+        use crate::cli::tools::formatter::{print, roles};
+        let source = "type F = function(\n cb : function(\n item : Integer\n ) -> Integer,\n value : String\n) -> Unit\n";
+        let skeleton = source;
+        let (mut out, lexical) =
+            super::super::test_support::parse_source(skeleton, SourceKind::User);
+        assert!(lexical.is_empty());
+        assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
+        let lexed = lex(FileId(0), source.as_bytes());
+        let mut p = Parser::new(
+            FileId(0),
+            SourceKind::User,
+            source.as_bytes(),
+            resolve_newlines(lexed.tokens.clone()),
+            &[],
+            IdGen::new(),
+        );
+        p.pos = p
+            .tokens
+            .iter()
+            .position(|t| t.kind == TokenKind::KwFunction)
+            .unwrap();
+        let ty = parse_type_in(&mut p, 0, false).unwrap();
+        assert!(p.diagnostics.is_empty(), "{:?}", p.diagnostics);
+        let Item::Alias(a) = &mut out.module.decls[0].item else {
+            panic!("alias")
+        };
+        a.ty = *ty;
+        let roles = roles::build_roles(&out.module, &lexed.tokens, source.as_bytes());
+        let bytes = print::print(&print::PrintInput {
+            text: source.as_bytes(),
+            tokens: &lexed.tokens,
+            comments: &lexed.comments,
+            roles: &roles,
+        });
+        assert_eq!(
+            String::from_utf8(bytes).unwrap(),
+            "type F = function(\n  cb: function(\n    item: Integer\n  ) -> Integer,\n  value: String\n) -> Unit\n"
+        );
+    }
+
+    #[test]
+    fn ordinary_input_accepts_named_function_types() {
+        let (out, lexical) = super::super::test_support::parse_source(
+            "type F = function(value: Integer) -> Unit",
+            SourceKind::User,
+        );
+        assert!(lexical.is_empty());
+        assert_eq!(super::super::test_support::codes(&out), []);
+        let Item::Alias(alias) = &out.module.decls[0].item else {
+            panic!("expected alias")
+        };
+        check_names(
+            &alias.ty,
+            &["value"],
+            "type F = function(value: Integer) -> Unit",
+        );
+    }
+}
+
+#[cfg(test)]
+mod final_type_tests {
+    // テストの失敗は panic で表す（AGENTS.md「`#[allow]` を書いてよい箇所」）。
+    #![allow(clippy::unwrap_used)]
+    use super::*;
+    use crate::base::SourceKind;
+    use crate::syntax::parser::test_support::parse_source;
+
+    #[test]
+    fn unnamed_function_types_report_the_parameter_without_inventing_names() {
+        for (ty, parameter) in [
+            ("function(Integer) -> Unit", "Integer"),
+            ("function(Integer, Integer) -> Unit", "Integer"),
+            (
+                "function(value: Integer, String, Integer) -> Unit",
+                "String",
+            ),
+            ("function(value: Integer, String) -> Unit", "String"),
+            (
+                "function(callback: function(Integer) -> Unit) -> Unit",
+                "Integer",
+            ),
+        ] {
+            let source = format!("type Bad = {ty}\nfunction after() -> Unit\nend function");
+            let (out, lexical) = parse_source(&source, SourceKind::User);
+            assert!(lexical.is_empty());
+            let diagnostics = &out.diagnostics;
+            assert_eq!(
+                diagnostics.iter().map(|d| d.code).collect::<Vec<_>>(),
+                [Some(DiagCode::E0257)],
+                "{source}: {diagnostics:?}"
+            );
+            let span = diagnostics.first().unwrap().primary.as_ref().unwrap().span;
+            assert_eq!(
+                source.get(span.start.0 as usize..span.end.0 as usize),
+                Some(parameter)
+            );
+            assert_eq!(
+                diagnostics.first().unwrap().helps.first().unwrap().message,
+                "write `function(name: Type) -> Result`"
+            );
+            assert!(
+                diagnostics
+                    .first()
+                    .unwrap()
+                    .helps
+                    .iter()
+                    .all(|h| h.edits.is_empty())
+            );
+            assert!(
+                out.module
+                    .decls
+                    .iter()
+                    .any(|d| matches!(&d.item, Item::Fn(f) if f.name.text == "after"))
+            );
         }
     }
 }

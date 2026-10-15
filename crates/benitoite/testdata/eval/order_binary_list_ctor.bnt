@@ -11,12 +11,12 @@ function mark(label: String, value: Integer) -> Integer uses Console.Write
 end function
 
 function main() -> Unit uses Console.Write
-  bind total <- mark("binary-left", 1) + mark("binary-right", 2)
-  bind values <- [mark("list-1", 3), mark("list-2", 4)]
-  bind pair <- Pair(mark("constructor-1", 5), mark("constructor-2", 6))
+  bind total <- mark(label: "binary-left", value: 1) + mark(label: "binary-right", value: 2)
+  bind values <- [mark(label: "list-1", value: 3), mark(label: "list-2", value: 4)]
+  bind pair <- Pair(mark(label: "constructor-1", value: 5), mark(label: "constructor-2", value: 6))
   return match pair with
     case Pair(left, right) ->
-      Console.writeLine(Integer.toString(total + Option.unwrapOr(List.get(values, 1), 0) + left + right))
+      Console.writeLine(Integer.toString(total + Option.unwrapOr(o: List.get(xs: values, i: 1), fallback: 0) + left + right))
 
   end match
 end function

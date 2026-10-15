@@ -9,10 +9,10 @@ function main() -> Unit uses Console.Write
   Console.writeLine("${1.0m = 1.00m} ${-0.0m} ${1.20m * 2.0m}")
   match Byte.fromInteger(255) with
     case Option.Some(b) ->
-      Console.writeLine("${b} ${Byte.toInteger(Byte.shiftLeft(b, 1))} ${Byte.toInteger(Byte.bitwiseNot(b))}")
-      Console.writeLine("${b > Byte.shiftRight(b, 1)}")
+      Console.writeLine("${b} ${Byte.toInteger(Byte.shiftLeft(a: b, n: 1))} ${Byte.toInteger(Byte.bitwiseNot(b))}")
+      Console.writeLine("${b > Byte.shiftRight(a: b, n: 1)}")
     case Option.None -> Console.writeLine("bad byte")
   end match
   Console.writeLine("${Byte.fromInteger(-1) = Option.None} ${Byte.fromInteger(256) = Option.None}")
-  Console.writeLine("${Integer.bitwiseAnd(6, 3)} ${Integer.shiftRight(-8, 1)} ${Integer.shiftRightUnsigned(-1, 63)}")
+  Console.writeLine("${Integer.bitwiseAnd(a: 6, b: 3)} ${Integer.shiftRight(a: -8, n: 1)} ${Integer.shiftRightUnsigned(a: -1, n: 63)}")
 end function

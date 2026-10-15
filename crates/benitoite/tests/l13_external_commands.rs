@@ -115,18 +115,18 @@ fn captured_attached_output_follows_console_and_uses_command_input() {
 import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.IO.Console
 function main() -> Result[Unit,String] uses Process.Run,Console.Write
- bind output <- try Process.run(Process.command("sh", ["-c", "printf out; printf err >&2; exit 7"])) |> Result.mapError(_, IOError.message)
+ bind output <- try Process.run(Process.command(program: "sh", arguments: ["-c", "printf out; printf err >&2; exit 7"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
  if Process.Output.exitCode(output) <> 7 or Process.Output.standardOutput(output) <> "out"
     or Process.Output.standardError(output) <> "err" then
   return Result.Error("output fields")
  end if
  Console.write("before ")
- bind empty <- try Process.runAttached(Process.command("cat", [])) |> Result.mapError(_, IOError.message)
+ bind empty <- try Process.runAttached(Process.command(program: "cat", arguments: [])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
  if empty <> 0 then return Result.Error("empty input") end if
- bind cmd <- Process.Command(..Process.command("cat", []), input: Option.Some("payload "))
- bind status <- try Process.runAttached(cmd) |> Result.mapError(_, IOError.message)
+ bind cmd <- Process.Command(..Process.command(program: "cat", arguments: []), input: Option.Some("payload "))
+ bind status <- try Process.runAttached(cmd) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
  if status <> 0 then return Result.Error("command input") end if
- bind invalid <- try Process.runAttached(Process.command("sh", ["-c", "printf '\\377'; printf 'err\\377' >&2; exit 7"])) |> Result.mapError(_, IOError.message)
+ bind invalid <- try Process.runAttached(Process.command(program: "sh", arguments: ["-c", "printf '\\377'; printf 'err\\377' >&2; exit 7"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
  if invalid <> 7 then return Result.Error("attached nonzero exit") end if
  Console.write(" after")
  return Result.Ok(())
@@ -150,7 +150,7 @@ import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.IO.Console
 function main() -> Result[Unit,String] uses Process.Run,Console.Write
  Console.write("before ")
- bind status <- try Process.runAttached(Process.command("sh", ["-c", "i=0; while [ \"$i\" -lt 131072 ]; do printf abcdefghABCDEFGH; i=$((i+1)); done"])) |> Result.mapError(_, IOError.message)
+ bind status <- try Process.runAttached(Process.command(program: "sh", arguments: ["-c", "i=0; while [ \"$i\" -lt 131072 ]; do printf abcdefghABCDEFGH; i=$((i+1)); done"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
  if status <> 0 then return Result.Error("child failed") end if
  Console.write(" after")
  return Result.Ok(())
@@ -182,8 +182,8 @@ import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.IO.Console
 function main() -> Result[Unit,String] uses Process.Run,Console.Write
  Console.write("before ")
- bind cmd <- Process.Command(..Process.command("sh", ["-c", "cat; printf child-error >&2"]), input: {input})
- bind status <- try Process.runAttached(cmd) |> Result.mapError(_, IOError.message)
+ bind cmd <- Process.Command(..Process.command(program: "sh", arguments: ["-c", "cat; printf child-error >&2"]), input: {input})
+ bind status <- try Process.runAttached(cmd) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
  if status <> 0 then return Result.Error("child failed") end if
  Console.write(" after")
  return Result.Ok(())
@@ -221,8 +221,8 @@ fn cli_survives_child_closing_input_early() {
 import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.IO.Console
 function main() -> Result[Unit,String] uses Process.Run,Console.Write
- bind cmd <- Process.Command(..Process.command("sh", ["-c", "exit 0"]), input: Option.Some(String.repeat("x",1048576)))
- bind output <- try Process.run(cmd) |> Result.mapError(_, IOError.message)
+ bind cmd <- Process.Command(..Process.command(program: "sh", arguments: ["-c", "exit 0"]), input: Option.Some(String.repeat(s: "x",n: 1048576)))
+ bind output <- try Process.run(cmd) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
  if Process.Output.exitCode(output) <> 0 then return Result.Error("child failed") end if
  Console.write("continued")
  return Result.Ok(())
@@ -252,8 +252,8 @@ import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Clock
 function main() -> Result[Unit,String] uses Process.Run,Console.Write,Clock.Time,State
- bind result <- Task.withTimeout(100, lambda()
-  return Process.run(Process.command("sh", ["-c", "printf started > started; sleep 3; printf survived > finished"]))
+ bind result <- Task.withTimeout(milliseconds: 100, action: lambda()
+  return Process.run(Process.command(program: "sh", arguments: ["-c", "printf started > started; sleep 3; printf survived > finished"]))
  end lambda)
  match result with
  case Option.None -> Console.write("continued")

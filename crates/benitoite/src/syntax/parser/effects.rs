@@ -673,7 +673,7 @@ mod tests {
                 Some("lambda or a `lazy` body"),
             ),
             (
-                "lambda() match 1 with case k if resume(true) -> k\ncase k -> k\nend match end lambda",
+                "lambda()\n match 1 with case k if resume(true) -> k\ncase k -> k\nend match end lambda",
                 Some(DiagCode::E0509),
                 Some("lambda or a `lazy` body"),
             ),
@@ -843,7 +843,7 @@ mod tests {
                 );
             }
         }
-        let out = user(&body("try parse(s) |> Result.mapError(_, f)"));
+        let out = user(&body("try parse(s) |> Result.mapError(r: _, f: f)"));
         assert!(out.diagnostics.is_empty());
         assert!(matches!(expr(&out), Expr::Try(t) if matches!(t.value.as_ref(), Expr::Pipe(_))));
         for source in [

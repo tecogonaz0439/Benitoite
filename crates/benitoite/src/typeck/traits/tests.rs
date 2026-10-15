@@ -134,6 +134,10 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(NodeId, crate::base::Span)) {
                 match a {
                     Arg::Expr(e) => visit_expr(e, f),
                     Arg::Placeholder(p) => f(p.id, p.span),
+                    Arg::Named(a) => match &a.value {
+                        crate::syntax::ast::ArgValue::Expr(e) => visit_expr(e, f),
+                        crate::syntax::ast::ArgValue::Placeholder(p) => f(p.id, p.span),
+                    },
                 }
             }
         }
@@ -359,7 +363,7 @@ fn builtin_constraints_and_standard_trait_examples() {
         assert!(d.is_empty(), "{d:#?}");
     }
     clean(
-        "function same[T: equality](a: T, b: T) -> Boolean\n return a = b\nend function\nfunction f[T: key](a: T) -> Boolean\n return same(a, a)\nend function\n",
+        "function same[T: equality](a: T, b: T) -> Boolean\n return a = b\nend function\nfunction f[T: key](a: T) -> Boolean\n return same(a: a, b: a)\nend function\n",
     );
     clean("function f() -> Unit\n bind _ <- List.sort([1, 2])\nend function\n");
 }
@@ -438,10 +442,10 @@ fn declaration_and_implementation_rules_report_codes_and_positions() {
         "trait A[T]\n function f(x: T) -> T\nend trait\ntrait B[F[_]: A]\n function f[T](x: F[T]) -> F[T]\nend trait\n",
         &[(C::E0714, "A]", 0)],
     );
-    let functor = "trait Functor[F[_]]\n function map[A, B](x: F[A], f: function(A) -> B) -> F[B]\nend trait\n";
+    let functor = "trait Functor[F[_]]\n function map[A, B](x: F[A], f: function(value: A) -> B) -> F[B]\nend trait\n";
     for (target, code) in [("Integer", C::E0714), ("Result", C::E0427)] {
         let s = format!(
-            "{functor}implement Functor[{target}]\n function map[A, B](x: Option[A], f: function(A) -> B) -> Option[B] return Option.map(x, f) end function\nend implement\n"
+            "{functor}implement Functor[{target}]\n function map[A, B](x: Option[A], f: function(value: A) -> B) -> Option[B] return Option.map(o: x, f: f) end function\nend implement\n"
         );
         expect(&s, &[(code, target, 0)]);
     }
@@ -533,8 +537,8 @@ fn builtin_parameter_bounds_and_strength() {
     let s = "function same[T](a: T, b: T) -> Boolean\n return a = b\nend function\n";
     let d = expect(s, &[(C::E0406, "a = b", 0)]);
     assert_eq!(d[0].helps[0].edits[0].replacement, ": equality");
-    let s = "function same[T: equality](a: T, b: T) -> Boolean return a = b end function\nfunction f[T](a: T) -> Boolean\n return same(a, a)\nend function\n";
-    expect(s, &[(C::E0424, "same(a,", 0)]);
+    let s = "function same[T: equality](a: T, b: T) -> Boolean return a = b end function\nfunction f[T](a: T) -> Boolean\n return same(a: a, b: a)\nend function\n";
+    expect(s, &[(C::E0424, "same(a: a, b: a)", 0)]);
     let s = "function key[T: key](x: T) -> T return x end function\nfunction f[T: equality](x: T) -> T\n return key(x)\nend function\n";
     let d = expect(s, &[(C::E0424, "key(x)", 0)]);
     assert_eq!(d[0].helps[0].edits[0].replacement, " & key");
@@ -553,7 +557,7 @@ fn builtin_parameter_bounds_and_strength() {
 
 #[test]
 fn implementation_and_method_constraints_keep_separate_indices() {
-    let s = "trait Show[T]\n function show(x: T) -> String\n function render[U: Show](x: T, y: U) -> String\nend trait\nimplement[T: Show] Show[List[T]]\n function render[U: Show](x: List[T], y: U) -> String\n  bind _ <- List.map(x, Show.show)\n  return Show.show(y)\n end function\n function show(x: List[T]) -> String\n  return String.join(List.map(x, Show.show), \",\")\n end function\nend implement\n";
+    let s = "trait Show[T]\n function show(x: T) -> String\n function render[U: Show](x: T, y: U) -> String\nend trait\nimplement[T: Show] Show[List[T]]\n function render[U: Show](x: List[T], y: U) -> String\n  bind _ <- List.map(xs: x, f: lambda(value) return Show.show(value) end lambda)\n  return Show.show(y)\n end function\n function show(x: List[T]) -> String\n  return String.join(xs: List.map(xs: x, f: lambda(value) return Show.show(value) end lambda), separator: \",\")\n end function\nend implement\n";
     let (l, r, t) = clean(s);
     assert_eq!(
         dict(&l, &t, s, "Show.show", 0),
@@ -632,7 +636,7 @@ fn parameter_dictionary_selection_prefers_exact_shortest_then_first() {
 
 #[test]
 fn constructor_parameter_constraint_fixes_preserve_the_kind_and_qualification() {
-    let s = "import Benitoite.Trait\nfunction f[F[_], A](xs: F[A]) -> F[A]\n return Trait.Functor.map(xs, lambda(x) return x end lambda)\nend function\n";
+    let s = "import Benitoite.Trait\nfunction f[F[_], A](xs: F[A]) -> F[A]\n return Trait.Functor.map(x: xs, f: lambda(value) return value end lambda)\nend function\n";
     let d = expect(s, &[(C::E0706, "Trait.Functor.map", 0)]);
     let edit = &d[0].helps[0].edits[0];
     assert_eq!(edit.replacement, ": Trait.Functor");
@@ -702,7 +706,7 @@ fn invalid_declarations_do_not_produce_secondary_errors() {
 #[test]
 fn permuted_implementation_arguments_and_method_dictionaries_keep_their_order() {
     let s = format!(
-        "{SHOW}trait Render[T]\n function render[U: Show](x: T, y: U) -> String\nend trait\nimplement[A: Show, B: Show] Render[Pair[B, A]]\n function render[U: Show](x: Pair[B, A], y: U) -> String return Show.show(y) end function\nend implement\nimplement Show[Integer]\n function show(x: Integer) -> String return \"integer\" end function\nend implement\nimplement Show[String]\n function show(x: String) -> String return x end function\nend implement\nfunction f() -> String\n return Render.render(Pair(1, \"a\"), 2)\nend function\n"
+        "{SHOW}trait Render[T]\n function render[U: Show](x: T, y: U) -> String\nend trait\nimplement[A: Show, B: Show] Render[Pair[B, A]]\n function render[U: Show](x: Pair[B, A], y: U) -> String return Show.show(y) end function\nend implement\nimplement Show[Integer]\n function show(x: Integer) -> String return \"integer\" end function\nend implement\nimplement Show[String]\n function show(x: String) -> String return x end function\nend implement\nfunction f() -> String\n return Render.render(x: Pair(1, \"a\"), y: 2)\nend function\n"
     );
     let (l, r, t) = clean(&s);
     let show = id(&r, "Show");

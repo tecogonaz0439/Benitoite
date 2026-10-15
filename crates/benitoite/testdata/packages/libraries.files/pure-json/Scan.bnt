@@ -16,7 +16,7 @@ end function
 // 入力の終わりはバイトの範囲外の値で表し、各読み取りで境界を確かめる。
 /// 指定したバイトを読み、終端では -1 を返す。
 public(package) function byte(input: Input, position: Integer) -> Integer
-  return match Bytes.get(Input.bytes(input), position) with
+  return match Bytes.get(b: Input.bytes(input), i: position) with
     case Option.Some(b) -> Byte.toInteger(b)
     case Option.None -> -1
   end match
@@ -24,14 +24,14 @@ end function
 
 /// UTF-8 の境界で区間を切り出す。
 public(package) function slice(input: Input, start: Integer, stop: Integer) -> String
-  return Option.unwrapOr(String.byteSlice(Input.source(input), start, stop), "")
+  return Option.unwrapOr(o: String.byteSlice(s: Input.source(input), start: start, stop: stop), fallback: "")
 end function
 
 /// JSON が許す四つの空白だけを飛ばす。
 public(package) function whitespace(input: Input, position: Integer) -> Integer
-  bind b <- byte(input, position)
+  bind b <- byte(input: input, position: position)
   return if b = 32 or b = 9 or b = 10 or b = 13 then
-    whitespace(input, position + 1)
+    whitespace(input: input, position: position + 1)
   else
     position
   end if
@@ -44,34 +44,34 @@ end function
 
 /// 連続する十進の数字の直後を返す。
 public(package) function digits(input: Input, position: Integer) -> Integer
-  return if digit(byte(input, position)) then digits(input, position + 1) else position end if
+  return if digit(byte(input: input, position: position)) then digits(input: input, position: position + 1) else position end if
 end function
 
 // serde_json の consumed/peek の位置に合わせ、読んだバイト数を受け取る。
 // UTF-8 の途中でも文字の開始だけを数える。LF の直後の列は 1 にする。
 /// 最後に読んだバイトまでから診断の位置を求める。
 public(package) function error(input: Input, consumed: Integer, message: String) -> Json.ParseError
-  return position(input, 0, Integer.minimum(consumed, Input.length(input)), 1, 0, message, false)
+  return position(input: input, i: 0, stop: Integer.minimum(a: consumed, b: Input.length(input)), line: 1, column: 0, message: message, after: false)
 end function
 
 /// 入力の最後の文字の直後を指す。
 public(package) function eof(input: Input, message: String) -> Json.ParseError
-  return position(input, 0, Input.length(input), 1, 0, message, true)
+  return position(input: input, i: 0, stop: Input.length(input), line: 1, column: 0, message: message, after: true)
 end function
 
 /// 数の字面の開始位置を指す。
 public(package) function numberError(input: Input, start: Integer, message: String) -> Json.ParseError
-  return position(input, 0, start, 1, 0, message, true)
+  return position(input: input, i: 0, stop: start, line: 1, column: 0, message: message, after: true)
 end function
 
 function position(input: Input, i: Integer, stop: Integer, line: Integer, column: Integer, message: String, after: Boolean) -> Json.ParseError
   if i = stop then
-    return Json.ParseError(line: line, column: if after then column + 1 else Integer.maximum(column, 1) end if, message: message)
+    return Json.ParseError(line: line, column: if after then column + 1 else Integer.maximum(a: column, b: 1) end if, message: message)
   end if
-  bind b <- byte(input, i)
+  bind b <- byte(input: input, position: i)
   return if b = 10 then
-    position(input, i + 1, stop, line + 1, 0, message, after)
+    position(input: input, i: i + 1, stop: stop, line: line + 1, column: 0, message: message, after: after)
   else
-    position(input, i + 1, stop, line, if b < 128 or b >= 192 then column + 1 else column end if, message, after)
+    position(input: input, i: i + 1, stop: stop, line: line, column: if b < 128 or b >= 192 then column + 1 else column end if, message: message, after: after)
   end if
 end function

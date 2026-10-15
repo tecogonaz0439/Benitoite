@@ -3,6 +3,7 @@
 
 pub mod ast;
 pub(crate) mod header;
+mod lambda_bounds;
 pub mod lexer;
 pub mod newline;
 pub mod parser;

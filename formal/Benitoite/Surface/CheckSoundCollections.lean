@@ -1,7 +1,8 @@
 import Benitoite.Surface.CheckSoundBasicExpr
 import Benitoite.Surface.CheckSoundSequence
 
-/-! コレクション・レコード・分岐の検査の健全性。 -/
+/-! コレクション・レコード・分岐の検査の健全性。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。 -/
 namespace Benitoite.Surface.Check
 open Benitoite.Release Benitoite.Surface.CheckTools
 
@@ -43,7 +44,7 @@ theorem listSpread_case {q t f before spread after} :
   simp only [Expr.AtomsIn] at he
   obtain ⟨u1, hwf, h⟩ := checking_lift_bind_ok h
   obtain ⟨u2, hdirect, h⟩ := checking_lift_bind_ok h
-  have hft : Ty.AtomsIn q.atoms (.fn [.list t, .list t] (.list t) emptyEff) :=
+  have hft : Ty.AtomsIn q.atoms (.fn ["xs", "ys"] [.list t, .list t] (.list t) emptyEff) :=
     ⟨⟨he.1, he.1, trivial⟩, he.1, emptyEff_atoms _⟩
   obtain ⟨εf, mid, hf, haf, h⟩ := checking_accept_expr_ok
     (fun _ _ _ _ hc => ihf _ _ _ _ _ _ _ _ _ hq he.2.1 hΓ hR hc) hft h

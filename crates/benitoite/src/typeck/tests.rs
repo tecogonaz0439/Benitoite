@@ -61,12 +61,12 @@ fn prelude_type_shadowing_in_nested_types_and_type_arity() {
             "",
         ),
         (
-            "record Unit\n value: Integer\nend record\nfunction f(x: function(Unit) -> Integer) -> Integer\n return x\nend function",
+            "record Unit\n value: Integer\nend record\nfunction f(x: function(value: Unit) -> Integer) -> Integer\n return x\nend function",
             C::E0401,
             "",
         ),
         (
-            "record Unit\n value: Integer\nend record\nfunction f(x: function(Unit) -> Integer) -> function(Benitoite.Unit) -> Integer\n return x\nend function",
+            "record Unit\n value: Integer\nend record\nfunction f(x: function(value: Unit) -> Integer) -> function(value: Benitoite.Unit) -> Integer\n return x\nend function",
             C::E0401,
             "Unit",
         ),
@@ -286,7 +286,7 @@ record Box[T]
  value: T
 end record
 type UserId = Integer
-type Validator[T] = function(T) -> Result[T, String]
+type Validator[T] = function(value: T) -> Result[T, String]
 const maxRetries: Integer = 3
 const defaultPort: Integer = 8000 + 80
 const greeting: String = "hello, ${defaultPort}"
@@ -344,7 +344,7 @@ fn record_errors_and_alias_spelling() {
         &[(C::E0401, 5, 28)],
     );
     expect(
-        "type Unused[T] = Integer\ntype Validator[T] = function(T) -> T\nfunction f(x: Validator[Integer, String], y: Validator) -> Unit\nend function\n",
+        "type Unused[T] = Integer\ntype Validator[T] = function(value: T) -> T\nfunction f(x: Validator[Integer, String], y: Validator) -> Unit\nend function\n",
         &[(C::E0432, 1, 6), (C::E0410, 3, 15), (C::E0410, 3, 46)],
     );
     let d = expect(
@@ -391,8 +391,8 @@ fn constant_failures_dependencies_and_duplicate_keys() {
         &[(C::E0433, 4, 20), (C::E0435, 5, 20), (C::E0435, 7, 20)],
     );
     expect(
-        "const f: function(Integer) -> Option[Integer] = Option.Some\n",
-        &[(C::E0433, 1, 49)],
+        "const f: function(arg1: Integer) -> Option[Integer] = Option.Some\n",
+        &[(C::E0433, 1, 55)],
     );
     expect(
         "import Benitoite.Map\nconst a: Map[Integer, String] = Map.fromList([Pair(1, \"a\"), Pair(1, \"b\")])\n",
@@ -419,6 +419,117 @@ fn constant_failures_dependencies_and_duplicate_keys() {
         "()"
     );
 }
+#[test]
+fn named_collection_constants_are_evaluated() {
+    // 関門: 型検査の公開の入口で名前付き fromList の定数値を確かめる。
+    // 位置指定だけの既存例では、形の検査・評価がラベルを拒む退行を捕まえられない。
+    let (_, r, t) = clean(
+        "import Benitoite.Map\nimport Benitoite.Set\nconst pair: Pair[Integer, String] = Pair(2, \"b\")\nconst m: Map[Integer, String] = Map.fromList(pairs: [pair, Pair(1, \"a\")])\nconst s: Option[Set[Integer]] = Option.Some(Set.fromList(xs: [2, 1]))\n",
+    );
+    assert!(matches!(constant(&r, &t, "m"), V::Map(entries)
+        if matches!(entries.as_slice(), [(V::Integer(1), V::String(a)), (V::Integer(2), V::String(b))] if a == "a" && b == "b")));
+    assert!(matches!(constant(&r, &t, "s"), V::Ctor { args, .. }
+        if matches!(args.as_slice(), [V::Set(values)] if matches!(values.as_slice(), [V::Integer(1), V::Integer(2)]))));
+}
+
+#[test]
+fn named_collection_duplicate_diagnostics_keep_key_positions() {
+    // 関門: 名前付きでも重複の拒否・警告と二つの鍵位置を保つ。
+    // 既存の位置指定のテストでは fromList の引数選択の漏れを検出できない。
+    for (expression, ty) in [
+        (
+            "Map.fromList(pairs: [Pair(7, 1), Pair(7, 2)])",
+            "Map[Integer, Integer]",
+        ),
+        ("Set.fromList(xs: [7, 7])", "Set[Integer]"),
+    ] {
+        for (declaration, code) in [
+            (
+                format!("function f() -> Unit\n bind _ <- {expression}\nend function\n"),
+                C::W0403,
+            ),
+            (format!("const c: {ty} = {expression}\n"), C::E0436),
+        ] {
+            let source = format!("import Benitoite.Map\nimport Benitoite.Set\n{declaration}");
+            let (_, _, _, diagnostics) = check(&source);
+            assert_eq!(diagnostics.len(), 1, "{diagnostics:#?}");
+            let diagnostic = &diagnostics[0];
+            assert_eq!(diagnostic.code, Some(code), "{diagnostic:#?}");
+            let first = source.find('7').unwrap();
+            let second = source.rfind('7').unwrap();
+            let primary = diagnostic.primary.as_ref().unwrap().span;
+            assert_eq!(
+                (primary.start.0 as usize, primary.end.0 as usize),
+                (second, second + 1)
+            );
+            assert_eq!(diagnostic.secondary.len(), 1);
+            let secondary = diagnostic.secondary[0].span;
+            assert_eq!(
+                (secondary.start.0 as usize, secondary.end.0 as usize),
+                (first, first + 1)
+            );
+        }
+    }
+}
+
+#[test]
+fn named_constant_arguments_check_values_and_constructor_rules() {
+    // 関門: ラベルを値の検査の代わりに拒否せず、構成子の E0456 は維持する。
+    // 定数以外の構成子の検査は bad_shape による早期の拒否を通らない。
+    for (declaration, code, primary) in [
+        (
+            "const c: Set[Integer] = Set.fromList(xs: _)\n",
+            C::E0433,
+            "_",
+        ),
+        (
+            "const c: Set[Integer] = Set.fromList(xs: Integer.absolute(1))\n",
+            C::E0433,
+            "Integer.absolute(1)",
+        ),
+        (
+            "const c: Option[Integer] = Option.Some(arg1: 1)\n",
+            C::E0456,
+            "arg1",
+        ),
+    ] {
+        let source = format!("import Benitoite.Set\n{declaration}");
+        let diagnostics = expect(
+            &source,
+            &[(code, 2, declaration.find(primary).unwrap() + 1)],
+        );
+        let span = diagnostics[0].primary.as_ref().unwrap().span;
+        assert_eq!(&source[span.start.0 as usize..span.end.0 as usize], primary);
+    }
+}
+
+#[test]
+fn named_numeric_warnings_use_the_declared_argument() {
+    // 関門: 警告の対象と位置を名前付きでも保つ。逆順の除数と被除数を取り違える退行は、
+    // 位置指定だけの既存の警告の検査では捕まらない。型検査の公開の入口で確かめる。
+    for (expression, code, primary) in [
+        ("Integer.floorDivide(b: 0, a: 7)", C::W0401, "0"),
+        ("Integer.floorModulo(b: 0, a: 7)", C::W0401, "0"),
+        (
+            "Integer.floorDivide(b: -1, a: -9223372036854775808)",
+            C::W0402,
+            "Integer.floorDivide(b: -1, a: -9223372036854775808)",
+        ),
+        (
+            "Integer.absolute(n: -9223372036854775808)",
+            C::W0402,
+            "Integer.absolute(n: -9223372036854775808)",
+        ),
+    ] {
+        let source = format!("function f() -> Unit\n bind _ <- {expression}\nend function\n");
+        let start = source.find(primary).unwrap();
+        let diagnostics = expect(&source, &[(code, 2, start - source.find('\n').unwrap())]);
+        let span = diagnostics[0].primary.as_ref().unwrap().span;
+        assert_eq!(&source[span.start.0 as usize..span.end.0 as usize], primary);
+    }
+    clean("function f() -> Unit\n bind _ <- Integer.floorDivide(b: 7, a: 0)\nend function\n");
+}
+
 #[test]
 fn operators_warnings_and_fixes() {
     expect(
@@ -456,7 +567,7 @@ fn operators_warnings_and_fixes() {
         &[(C::E0401, 2, 9)],
     );
     clean(
-        "function f() -> Unit\n bind divide <- lambda(a, b) return a div b end lambda\n bind modulo <- lambda(a, b) return a mod b end lambda\n bind _ <- divide(5, 2) + modulo(5, 2)\nend function\n",
+        "function f() -> Unit\n bind divide <- lambda(a, b) return a div b end lambda\n bind modulo <- lambda(a, b) return a mod b end lambda\n bind _ <- divide(a: 5, b: 2) + modulo(a: 5, b: 2)\nend function\n",
     );
     expect(
         "function f() -> Unit\n bind _ <- 1.5m div 2m\nend function\n",
@@ -828,13 +939,13 @@ fn unreachable_statements_are_reported_once_per_block() {
 }
 #[test]
 fn effect_inference_names_and_stubs() {
-    let choose = "import Benitoite.Unofficial.IO.Console\nfunction choose[effect E](unused: function() -> Unit uses Console.Write, E, act: function() -> Unit uses E) -> Unit uses E\n act()\nend function\nfunction main() -> Unit\n choose(lambda() Console.writeLine(\"unused\") end lambda, lambda() () end lambda)\nend function\n";
+    let choose = "import Benitoite.Unofficial.IO.Console\nfunction choose[effect E](unused: function() -> Unit uses Console.Write, E, act: function() -> Unit uses E) -> Unit uses E\n act()\nend function\nfunction main() -> Unit\n choose(unused: lambda() Console.writeLine(\"unused\") end lambda, act: lambda() () end lambda)\nend function\n";
     clean(choose);
     let effectful = choose.replace(
         "lambda() () end lambda",
         "lambda() Console.writeLine(\"called\") end lambda",
     );
-    expect(&effectful, &[(C::E0501, 6, 67)]);
+    expect(&effectful, &[(C::E0501, 6, 80)]);
     let (l, r, t, d) = check(
         "import Benitoite.Unofficial.IO.Console\nfunction f() -> Unit uses IO.All\n Console.writeLine(\"hi\")\nend function\n",
     );
@@ -971,6 +1082,10 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(NodeId, crate::base::Span)) {
                 match a {
                     Arg::Expr(e) => visit_expr(e, f),
                     Arg::Placeholder(p) => f(p.id, p.span),
+                    Arg::Named(a) => match &a.value {
+                        crate::syntax::ast::ArgValue::Expr(e) => visit_expr(e, f),
+                        crate::syntax::ast::ArgValue::Placeholder(p) => f(p.id, p.span),
+                    },
                 }
             }
         }
@@ -1034,7 +1149,7 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(NodeId, crate::base::Span)) {
 
 #[test]
 fn higher_kinded_instantiation_and_equatable_declaration_summaries() {
-    let s = "function transform[F[_], A](x: F[A], f: function(F[A]) -> F[A]) -> F[A]\n return f(x)\nend function\nfunction main() -> Unit\n bind n <- transform(Option.Some(1), lambda(x) return x end lambda)\nend function\n";
+    let s = "function transform[F[_], A](x: F[A], f: function(x: F[A]) -> F[A]) -> F[A]\n return f(x)\nend function\nfunction main() -> Unit\n bind n <- transform(x: Option.Some(1), f: lambda(x) return x end lambda)\nend function\n";
     let (l, r, t) = clean(s);
     let call = s.rfind("transform(").unwrap();
     let node = node_at(&l, call);
@@ -1193,7 +1308,7 @@ fn effect_flow_direction_call_errors_and_float_fix() {
 #[test]
 fn placeholder_callee_return_uses_generated_function_boundary() {
     clean(
-        "function add(a: Integer, b: Integer) -> Integer\n return a + b\nend function\nfunction make() -> String\n bind f <- (if true then return 5 else add end if)(_, 1)\n return Integer.toString(f(2))\nend function\n",
+        "function add(a: Integer, b: Integer) -> Integer\n return a + b\nend function\nfunction make() -> String\n bind f <- (if true then return 5 else add end if)(a: _, b: 1)\n return Integer.toString(f(2))\nend function\n",
     );
 }
 
@@ -1256,8 +1371,8 @@ fn return_call_keeps_argument_position_diagnostics() {
     );
     assert!(!d[0].helps.is_empty(), "{:?}", d[0]);
     expect(
-        "function j(xs: List[Integer]) -> List[String]\n return List.map(xs, lambda(n) return n + 1 end lambda)\nend function\n",
-        &[(C::E0401, 2, 39)],
+        "function j(xs: List[Integer]) -> List[String]\n return List.map(xs: xs, f: lambda(value) return value + 1 end lambda)\nend function\n",
+        &[(C::E0401, 2, 50)],
     );
     expect(
         "function g() -> Unit\n bind o: Option[String] <- Option.Some(1)\nend function\n",
@@ -1493,7 +1608,7 @@ fn width_integer_division_waits_for_operands_and_defaults_unconstrained_lambdas(
     for op in ["div", "mod"] {
         for suffix in ["s8", "s16", "s32", "u16", "u32", "u64", ""] {
             let source = format!(
-                "function f() -> Unit\n bind calculate <- lambda(a, b) return a {op} b end lambda\n bind _ <- calculate(5{suffix}, 2{suffix})\nend function\n"
+                "function f() -> Unit\n bind calculate <- lambda(a, b) return a {op} b end lambda\n bind _ <- calculate(a: 5{suffix}, b: 2{suffix})\nend function\n"
             );
             clean(&source);
         }
@@ -1667,5 +1782,253 @@ fn width_keys_reject_float32_and_accept_integers_and_interpolation() {
         let source = format!("function f(a: {name}) -> String\n return \"${{a}}\"\nend function\n");
         let (_, _, _, diagnostics) = check(&source);
         assert!(diagnostics.is_empty(), "{source}: {diagnostics:?}");
+    }
+}
+
+#[test]
+fn named_function_annotations_compare_names_in_nested_types() {
+    for (left, right, expected) in [
+        (
+            "function(value: Integer) -> Integer",
+            "function(value: Integer) -> Integer",
+            None,
+        ),
+        (
+            "function(left: Integer, right: Integer) -> Integer",
+            "function(right: Integer, left: Integer) -> Integer",
+            Some(C::E0454),
+        ),
+        (
+            "List[function(value: Integer) -> Integer]",
+            "List[function(other: Integer) -> Integer]",
+            Some(C::E0454),
+        ),
+        (
+            "function(value: Integer) -> Integer",
+            "function(value: String) -> Integer",
+            Some(C::E0401),
+        ),
+    ] {
+        let source = format!("function identity(x: {left}) -> {right}\n return x\nend function");
+        let (_, _, _, diagnostics) = check(&source);
+        if expected == Some(C::E0454) {
+            assert_eq!(
+                diagnostics[0].notes.last().unwrap(),
+                if left.starts_with("List") {
+                    "parameter 1: expected `other`, found `value`"
+                } else {
+                    "parameter 1: expected `right`, found `left`"
+                }
+            );
+        }
+        assert_eq!(
+            diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            expected.into_iter().collect::<Vec<_>>(),
+            "{source}: {diagnostics:?}"
+        );
+    }
+}
+
+#[test]
+fn contracts_come_from_declarations_and_written_lambda_parameters() {
+    let source = "data LocalPair\n LocalPair(Integer, String)\nend data\nrecord LocalRecord\n second: String\n first: Integer\nend record\neffect Ask\n function ask(question: String) -> Integer\nend effect\nfunction make() -> function(value: Integer) -> Integer\n return lambda(value) return value\nend function\nfunction identity(actual: Integer) -> Integer\n return actual\nend function";
+    let (load, resolved, out, diagnostics) = check(source);
+    assert!(diagnostics.is_empty(), "{diagnostics:?}");
+    for (name, names) in [
+        ("identity", vec!["actual"]),
+        ("LocalPair", vec!["arg1", "arg2"]),
+        ("LocalRecord", vec!["second", "first"]),
+        ("second", vec!["value"]),
+        ("ask", vec!["question"]),
+    ] {
+        let s = out
+            .decl_types
+            .iter()
+            .find(|(id, _)| {
+                let b = resolved.bindings.get(*id).unwrap();
+                b.name == name && b.module == crate::base::ModuleId(0)
+            })
+            .unwrap()
+            .1;
+        assert_eq!(s.param_names, names);
+        assert_eq!(s.params.len(), names.len());
+        assert_eq!(s.param_names.len(), s.params.len());
+    }
+    let Item::Fn(f) = &load.asts[0]
+        .decls
+        .iter()
+        .find(|d| matches!(&d.item, Item::Fn(f) if f.name.text == "make"))
+        .unwrap()
+        .item
+    else {
+        panic!()
+    };
+    let Stmt::Expr(Expr::Return(r)) = &f.body.as_ref().unwrap().stmts[0] else {
+        panic!()
+    };
+    let Ty::Fn(lambda) = out.expr_types.get(r.value.id()).unwrap() else {
+        panic!()
+    };
+    assert_eq!(lambda.param_names, ["value"]);
+    assert_eq!(lambda.params, [Ty::Con(TyCon::Builtin(B::INTEGER), vec![])]);
+    assert_eq!(lambda.ret, Ty::Con(TyCon::Builtin(B::INTEGER), vec![]));
+    assert_eq!(lambda.param_names.len(), lambda.params.len());
+    for value in ["lambda(other) return other", "identity"] {
+        let source = format!(
+            "function identity(actual: Integer) -> Integer\n return actual\nend function\nfunction make() -> function(value: Integer) -> Integer\n return {value}\nend function"
+        );
+        let (_, _, _, diagnostics) = check(&source);
+        assert_eq!(
+            diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .filter_map(|d| d.code)
+                .collect::<Vec<_>>(),
+            [C::E0454]
+        );
+    }
+}
+
+#[test]
+fn prepared_named_calls_map_known_contracts_and_report_only_the_primary_cause() {
+    use super::test_support::name_call_arguments;
+    for (params, values, labels, expected) in [
+        (
+            "a: Integer, b: String",
+            "\"two\", 1",
+            vec![Some("b"), Some("a")],
+            vec![],
+        ),
+        (
+            "a: Integer, b: String",
+            "false, false",
+            vec![Some("unknown"), Some("a")],
+            vec![C::E0451],
+        ),
+        (
+            "a: Integer, b: String",
+            "1 + true, 1",
+            vec![Some("unknown"), Some("a")],
+            vec![C::E0401, C::E0451],
+        ),
+        (
+            "a: Integer, b: String",
+            "false, false",
+            vec![Some("b"), Some("b")],
+            vec![C::E0452],
+        ),
+        (
+            "a: Integer, b: String",
+            "1",
+            vec![Some("a")],
+            vec![C::E0453],
+        ),
+        (
+            "a: Integer, b: String",
+            "1, \"two\"",
+            vec![Some("a"), None],
+            vec![C::E0450],
+        ),
+        (
+            "a: Integer, b: String",
+            "\"two\", false",
+            vec![Some("b"), Some("a")],
+            vec![C::E0401],
+        ),
+        ("a: Integer", "1", vec![Some("a")], vec![]),
+    ] {
+        let source = format!(
+            "function target({params}) -> Unit\n ()\nend function\nfunction sample() -> Unit\n target({values})\nend function"
+        );
+        let (mut load, mut ids) = crate::modules::memfs::load_files(&[("main.bnt", &source)]);
+        assert!(load.diagnostics.is_empty(), "{:?}", load.diagnostics);
+        let node = name_call_arguments(&mut load, "sample", &labels);
+        let resolved = crate::resolve::resolve(&load.modules, &load.asts, &load.sources, &mut ids);
+        assert!(
+            resolved.diagnostics.is_empty(),
+            "{:?}",
+            resolved.diagnostics
+        );
+        let (out, diagnostics) =
+            super::typecheck(&load.modules, &load.asts, &load.sources, &resolved, false);
+        assert_eq!(
+            diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .map(|d| d.code.unwrap())
+                .collect::<Vec<_>>(),
+            expected,
+            "{labels:?}: {diagnostics:#?}"
+        );
+        if expected.is_empty() {
+            let plan = out.call_plans.get(node).unwrap();
+            assert_eq!(plan.arity as usize, labels.len());
+            assert_eq!(
+                plan.source_to_param,
+                if labels.len() == 2 {
+                    vec![1, 0]
+                } else {
+                    vec![0]
+                }
+            );
+            assert!(!plan.inserted_first);
+            assert!(plan.hole_names.is_empty());
+        } else if expected != [C::E0401] {
+            assert!(out.call_plans.get(node).is_none());
+        }
+        if expected == [C::E0451] {
+            let d = diagnostics
+                .iter()
+                .find(|d| d.code == Some(C::E0451))
+                .unwrap();
+            assert_eq!(
+                d.notes,
+                ["available parameters, in declaration order: `a`, `b`"]
+            );
+            assert!(d.helps.is_empty());
+        }
+        if expected == [C::E0453] {
+            assert_eq!(
+                diagnostics
+                    .iter()
+                    .find(|d| d.code == Some(C::E0453))
+                    .unwrap()
+                    .message,
+                "missing arguments for parameters: `b`"
+            );
+        }
+    }
+}
+
+#[test]
+fn prepared_named_call_arguments_keep_higher_order_contracts_strict() {
+    for (name, expected) in [("value", vec![]), ("different", vec![C::E0454])] {
+        let source = format!(
+            "function target(action: function(value: Integer) -> Integer) -> Unit\n ()\nend function\nfunction sample() -> Unit\n target(lambda({name}) return {name})\nend function"
+        );
+        let (mut load, mut ids) = crate::modules::memfs::load_files(&[("main.bnt", &source)]);
+        assert!(load.diagnostics.is_empty());
+        super::test_support::name_call_arguments(&mut load, "sample", &[Some("action")]);
+        let resolved = crate::resolve::resolve(&load.modules, &load.asts, &load.sources, &mut ids);
+        assert!(
+            resolved.diagnostics.is_empty(),
+            "{:?}",
+            resolved.diagnostics
+        );
+        let (_, diagnostics) =
+            super::typecheck(&load.modules, &load.asts, &load.sources, &resolved, false);
+        assert_eq!(
+            diagnostics
+                .iter()
+                .filter(|d| d.is_error())
+                .map(|d| d.code.unwrap())
+                .collect::<Vec<_>>(),
+            expected,
+            "{diagnostics:#?}"
+        );
     }
 }

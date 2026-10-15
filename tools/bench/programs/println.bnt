@@ -18,7 +18,7 @@ end function
 function printLines(current: Integer, limit: Integer) -> Unit uses Console.Write
   return if current < limit then
     Console.writeLine("line " + Integer.toString(current))
-    printLines(current + 1, limit)
+    printLines(current: current + 1, limit: limit)
   else
     ()
   end if
@@ -28,7 +28,7 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   return match readCount() with
     case Result.Error(message) -> Result.Error(message)
     case Result.Ok(count) ->
-      printLines(0, count)
+      printLines(current: 0, limit: count)
       Console.writeLine("done " + Integer.toString(count))
       Result.Ok(())
   end match

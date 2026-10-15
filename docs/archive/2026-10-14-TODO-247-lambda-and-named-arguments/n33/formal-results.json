@@ -1,0 +1,140 @@
+{
+  "export_directory": "target/desugar-diff/run-44207",
+  "coverage_directory": "target/coverage-diff/run-44207",
+  "routing_inputs": 1726,
+  "named_inputs": 1327,
+  "named_definitions": 73683,
+  "named_surface_checks": 51632,
+  "named_surface_counts": {
+    "q11": 1,
+    "preparationFailure": 0,
+    "outOfScope": 19,
+    "mismatched": 0,
+    "matched": 51612,
+    "lazyRestriction": 0
+  },
+  "named_desugar_definitions": {
+    "golden": {
+      "outside": 0,
+      "mismatched": 0,
+      "matched": 905,
+      "excluded": 0
+    },
+    "random": {
+      "outside": 0,
+      "mismatched": 0,
+      "matched": 72778,
+      "excluded": 0
+    }
+  },
+  "named_coverage": {
+    "matched": 22436,
+    "mismatched": 0,
+    "outOfScope": 0,
+    "fuelExhausted": 0
+  },
+  "legacy": {
+    "corpusVersion": 7,
+    "tableVersion": 1,
+    "coverageVersion": 1,
+    "golden": 19,
+    "random": 0,
+    "excluded": 380,
+    "outside": 0,
+    "singleSurfaceInput": "testdata/effects/c11-lazy-pure.bnt"
+  },
+  "mutation_results": [
+    {
+      "mutation": "hole-label",
+      "tool": "namedSurfaceCheck",
+      "error": {
+        "reason": "partial call labels and positions do not match the contract",
+        "path": [
+          0,
+          4,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "mutation": "hole-position",
+      "tool": "namedSurfaceCheck",
+      "error": {
+        "reason": "partial call labels and positions do not match the contract",
+        "path": [
+          0,
+          4,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "mutation": "hole-contract",
+      "tool": "namedSurfaceCheck",
+      "error": {
+        "reason": "partial call contract annotation mismatch",
+        "path": [
+          0,
+          4,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "mutation": "hole-order",
+      "tool": "namedDesugarDiff",
+      "mismatches": 1
+    },
+    {
+      "mutation": "pipe-label",
+      "tool": "namedSurfaceCheck",
+      "error": {
+        "reason": "pipe labels and positions do not match the contract",
+        "path": [
+          0,
+          8,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "mutation": "pipe-position",
+      "tool": "namedSurfaceCheck",
+      "error": {
+        "reason": "pipe labels and positions do not match the contract",
+        "path": [
+          0,
+          8,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1
+        ]
+      }
+    }
+  ],
+  "lake_build": "passed; no Lean changes and no sorry",
+  "script": "scripts/check-formal.sh completed generation and old entries; stopped on the previous manifest; final stage rerun with the same corpus after the manifest and copying fix",
+  "resume_command": "python3 -u -I crates/benitoite/tests/desugar_export/check_named.py target/desugar-diff/run-44207 target/coverage-diff/run-44207",
+  "resume_exit_code": 0
+}

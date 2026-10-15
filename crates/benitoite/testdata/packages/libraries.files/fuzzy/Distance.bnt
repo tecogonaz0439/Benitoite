@@ -3,13 +3,13 @@ public function distance(a: String, b: String) -> Integer
 
 /// 距離が上限以内で最も近い候補を返す。同じ距離なら先の候補を選ぶ。
 public function closest(word: String, candidates: List[String], limit: Integer) -> Option[String]
-  bind best <- List.fold(candidates, Option.None, lambda(acc: Option[Pair[Integer, String]], candidate: String) -> Option[Pair[Integer, String]]
-    bind d <- distance(word, candidate)
+  bind best <- List.fold(xs: candidates, initial: Option.None, f: lambda(acc: Option[Pair[Integer, String]], value: String) -> Option[Pair[Integer, String]]
+    bind d <- distance(a: word, b: value)
     return match acc with
       case Option.Some(Pair(bestDistance, _)) if bestDistance <= d -> acc
-      case _ if d <= limit -> Option.Some(Pair(d, candidate))
+      case _ if d <= limit -> Option.Some(Pair(d, value))
       case _ -> acc
     end match
   end lambda)
-  return Option.map(best, lambda(p) return Pair.second(p) end lambda)
+  return Option.map(o: best, f: lambda(value) return Pair.second(value) end lambda)
 end function

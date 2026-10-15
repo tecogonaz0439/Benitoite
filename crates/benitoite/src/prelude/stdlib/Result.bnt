@@ -7,7 +7,7 @@ public data Result[T, E]
 end data
 
 /// Applies `f` to the value inside `Result.Ok`.
-public function map[T, U, X, effect E](r: Result[T, X], f: function(T) -> U uses E) -> Result[U, X] uses E
+public function map[T, U, X, effect E](r: Result[T, X], f: function(value: T) -> U uses E) -> Result[U, X] uses E
   return match r with
     case Result.Ok(x) -> Result.Ok(f(x))
     case Result.Error(e) -> Result.Error(e)
@@ -15,7 +15,7 @@ public function map[T, U, X, effect E](r: Result[T, X], f: function(T) -> U uses
 end function
 
 /// Applies `f` to the value inside `Result.Error`.
-public function mapError[T, X, Y, effect E](r: Result[T, X], f: function(X) -> Y uses E) -> Result[T, Y] uses E
+public function mapError[T, X, Y, effect E](r: Result[T, X], f: function(error: X) -> Y uses E) -> Result[T, Y] uses E
   return match r with
     case Result.Ok(x) -> Result.Ok(x)
     case Result.Error(e) -> Result.Error(f(e))
@@ -23,7 +23,7 @@ public function mapError[T, X, Y, effect E](r: Result[T, X], f: function(X) -> Y
 end function
 
 /// Applies `f` to the value inside `Result.Ok` and returns its result.
-public function andThen[T, U, X, effect E](r: Result[T, X], f: function(T) -> Result[U, X] uses E) -> Result[U, X] uses E
+public function andThen[T, U, X, effect E](r: Result[T, X], f: function(value: T) -> Result[U, X] uses E) -> Result[U, X] uses E
   return match r with
     case Result.Ok(x) -> f(x)
     case Result.Error(e) -> Result.Error(e)

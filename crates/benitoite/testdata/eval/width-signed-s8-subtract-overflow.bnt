@@ -3,6 +3,6 @@ function calculate(a: Integer8, b: Integer8) -> Integer8
   return a - b
 end function
 function main() -> Unit uses Console.Write
-  bind _ <- calculate(-128s8, 1s8)
+  bind _ <- calculate(a: -128s8, b: 1s8)
   Console.writeLine("unreachable")
 end function

@@ -112,9 +112,9 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State �
   | E_Let {m n k σ} : Step P B (.run (.letIn m n) k σ) none (.run m (.letF n :: k) σ)
   | E_Return {v n k σ} :
       Step P B (.run (.ret v) (.letF n :: k) σ) none (.run (n.instantiate [v]) k σ)
-  | E_Lam {ps body ws k σ} :
+  | E_Lam {names ps body ws k σ} :
       ws.length = ps.length →
-      Step P B (.run (.app (.lam ps body) ws) k σ) none (.run (body.instantiate ws) (markPush k) σ)
+      Step P B (.run (.app (.lam names ps body) ws) k σ) none (.run (body.instantiate ws) (markPush k) σ)
   | E_Fun {f ts es ws k σ d} :
       P.defs f = some d →
       ws.length = d.params.length → ts.length = d.ntys → es.length = d.neffs →
@@ -332,7 +332,7 @@ def releaseStep (rel : Val → Option ErrKind) (v : Val) (ok : State) (err : Err
   | some r => some (some (.release v (some r)), err r)
 
 /-- 一歩の遷移を計算する関数。IO の応答は `oracle`、解放の応答は `rel`、新しい場所は `fresh` から得る。
-`step_sound`（`Theorems.lean`）で、`oracle`・`rel`・`fresh` が条件を満たすとき `Step` の遷移であることを示す。 -/
+位置による実行の遷移関係を `Step` に定義する（設計書 01-12「実行の規則」）。 -/
 def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option ErrKind)
     (fresh : Store → Nat) : State → Option (Option Event × State)
   | .run (.letIn m n) k σ => some (none, .run m (.letF n :: k) σ)
@@ -352,7 +352,7 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
       some (none, .matchRun v arms next k σ)
   | .run (.ret _) (.guardF _ _ _ _ :: _) _ => none
   | .run (.ret _) [] _ => none
-  | .run (.app (.lam ps body) ws) k σ =>
+  | .run (.app (.lam _names ps body) ws) k σ =>
       if ws.length = ps.length then some (none, .run (body.instantiate ws) (markPush k) σ) else none
   | .run (.app (.fnRef f ts es) ws) k σ =>
       match P.defs f with

@@ -1,0 +1,1029 @@
+[
+  {
+    "path": "crates/benitoite/testdata/effects/effect_var_rigid.diag.json",
+    "n1_display_classification": "zero_parameter_display_unchanged",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0401",
+        "message": "mismatched types",
+        "primary": {
+          "file": "testdata/effects/effect_var_rigid.bnt",
+          "start": {
+            "line": 3,
+            "column": 48,
+            "offset": 216
+          },
+          "end": {
+            "line": 3,
+            "column": 57,
+            "offset": 225
+          },
+          "label": "expected `function() -> Unit uses E`, found `function() -> Unit uses IO.All`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/effects/effect_var_rigid.bnt",
+            "start": {
+              "line": 3,
+              "column": 19,
+              "offset": 187
+            },
+            "end": {
+              "line": 3,
+              "column": 44,
+              "offset": 212
+            },
+            "label": "expected because of this"
+          }
+        ],
+        "notes": [
+          "the value must match the type annotation"
+        ],
+        "helps": []
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0401",
+        "message": "mismatched types",
+        "primary": {
+          "file": "testdata/effects/effect_var_rigid.bnt",
+          "start": {
+            "line": 3,
+            "column": 48,
+            "offset": 216
+          },
+          "end": {
+            "line": 3,
+            "column": 57,
+            "offset": 225
+          },
+          "label": "expected `function() -> Unit uses E`, found `function() -> Unit uses IO.All`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/effects/effect_var_rigid.bnt",
+            "start": {
+              "line": 3,
+              "column": 19,
+              "offset": 187
+            },
+            "end": {
+              "line": 3,
+              "column": 44,
+              "offset": 212
+            },
+            "label": "expected because of this"
+          }
+        ],
+        "notes": [
+          "the value must match the type annotation"
+        ],
+        "helps": []
+      }
+    ],
+    "reason": "元の表示・ヘルプを維持。移行に伴う位置だけを同じ範囲から確認。最終の Legacy の除去による表示の確認は N33 で行う。"
+  },
+  {
+    "path": "crates/benitoite/testdata/effects/outermost_only.diag.json",
+    "n1_display_classification": "zero_parameter_display_unchanged",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0501",
+        "message": "`uses IO.All` allows more effects than this function performs",
+        "primary": {
+          "file": "testdata/effects/outermost_only.bnt",
+          "start": {
+            "line": 2,
+            "column": 77,
+            "offset": 116
+          },
+          "end": {
+            "line": 2,
+            "column": 83,
+            "offset": 122
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "remove `uses IO.All`; this function performs no effects",
+            "edits": [
+              {
+                "file": "testdata/effects/outermost_only.bnt",
+                "start": {
+                  "line": 2,
+                  "column": 72,
+                  "offset": 111
+                },
+                "end": {
+                  "line": 2,
+                  "column": 83,
+                  "offset": 122
+                },
+                "replacement": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0401",
+        "message": "mismatched types",
+        "primary": {
+          "file": "testdata/effects/outermost_only.bnt",
+          "start": {
+            "line": 8,
+            "column": 12,
+            "offset": 273
+          },
+          "end": {
+            "line": 8,
+            "column": 16,
+            "offset": 277
+          },
+          "label": "expected `List[function() -> Unit uses IO.All]`, found `List[function() -> Unit]`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/effects/outermost_only.bnt",
+            "start": {
+              "line": 2,
+              "column": 26,
+              "offset": 65
+            },
+            "end": {
+              "line": 2,
+              "column": 62,
+              "offset": 101
+            },
+            "label": "expected because of this"
+          }
+        ],
+        "notes": [
+          "argument 1 must match the parameter type of the called function"
+        ],
+        "helps": []
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "warning",
+        "code": "W0501",
+        "message": "`uses IO.All` allows more effects than this function performs",
+        "primary": {
+          "file": "testdata/effects/outermost_only.bnt",
+          "start": {
+            "line": 2,
+            "column": 77,
+            "offset": 116
+          },
+          "end": {
+            "line": 2,
+            "column": 83,
+            "offset": 122
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "remove `uses IO.All`; this function performs no effects",
+            "edits": [
+              {
+                "file": "testdata/effects/outermost_only.bnt",
+                "start": {
+                  "line": 2,
+                  "column": 72,
+                  "offset": 111
+                },
+                "end": {
+                  "line": 2,
+                  "column": 83,
+                  "offset": 122
+                },
+                "replacement": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0401",
+        "message": "mismatched types",
+        "primary": {
+          "file": "testdata/effects/outermost_only.bnt",
+          "start": {
+            "line": 8,
+            "column": 12,
+            "offset": 273
+          },
+          "end": {
+            "line": 8,
+            "column": 16,
+            "offset": 277
+          },
+          "label": "expected `List[function() -> Unit uses IO.All]`, found `List[function() -> Unit]`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/effects/outermost_only.bnt",
+            "start": {
+              "line": 2,
+              "column": 26,
+              "offset": 65
+            },
+            "end": {
+              "line": 2,
+              "column": 62,
+              "offset": 101
+            },
+            "label": "expected because of this"
+          }
+        ],
+        "notes": [
+          "argument 1 must match the parameter type of the called function"
+        ],
+        "helps": []
+      }
+    ],
+    "reason": "元の表示・ヘルプを維持。移行に伴う位置だけを同じ範囲から確認。最終の Legacy の除去による表示の確認は N33 で行う。"
+  },
+  {
+    "path": "crates/benitoite/testdata/names/uses_not_effect_later.diag.json",
+    "n1_display_classification": "nonzero_parameter_display_or_help_candidate",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0316",
+        "message": "`Integer` is not an effect",
+        "primary": {
+          "file": "testdata/names/uses_not_effect_later.bnt",
+          "start": {
+            "line": 4,
+            "column": 48,
+            "offset": 133
+          },
+          "end": {
+            "line": 4,
+            "column": 55,
+            "offset": 140
+          },
+          "label": "read as part of the `uses` list"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "if `Integer` belongs to the surrounding list, parenthesize the function type that has `uses`, such as `function((function() -> Unit uses Console.Write), Integer) -> Unit`",
+            "edits": []
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0316",
+        "message": "`Integer` is not an effect",
+        "primary": {
+          "file": "testdata/names/uses_not_effect_later.bnt",
+          "start": {
+            "line": 4,
+            "column": 48,
+            "offset": 133
+          },
+          "end": {
+            "line": 4,
+            "column": 55,
+            "offset": 140
+          },
+          "label": "read as part of the `uses` list"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "if `Integer` belongs to the surrounding list, parenthesize the function type that has `uses`, such as `function((function() -> Unit uses Console.Write), Integer) -> Unit`",
+            "edits": []
+          }
+        ]
+      }
+    ],
+    "reason": "元の表示・ヘルプを維持。移行に伴う位置だけを同じ範囲から確認。最終の Legacy の除去による表示の確認は N33 で行う。"
+  },
+  {
+    "path": "crates/benitoite/testdata/syntax/uses_then_bracket.diag.json",
+    "n1_display_classification": "nonzero_parameter_display_or_help_candidate",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0209",
+        "message": "a function type with `uses` must be parenthesized here",
+        "primary": {
+          "file": "testdata/syntax/uses_then_bracket.bnt",
+          "start": {
+            "line": 4,
+            "column": 72,
+            "offset": 133
+          },
+          "end": {
+            "line": 4,
+            "column": 85,
+            "offset": 146
+          },
+          "label": "read as part of the `uses` list"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "write the function type in parentheses, such as `function((function() -> Unit uses Console.Write), List[Integer]) -> Unit`",
+            "edits": [
+              {
+                "file": "testdata/syntax/uses_then_bracket.bnt",
+                "start": {
+                  "line": 4,
+                  "column": 33,
+                  "offset": 94
+                },
+                "end": {
+                  "line": 4,
+                  "column": 33,
+                  "offset": 94
+                },
+                "replacement": "("
+              },
+              {
+                "file": "testdata/syntax/uses_then_bracket.bnt",
+                "start": {
+                  "line": 4,
+                  "column": 70,
+                  "offset": 131
+                },
+                "end": {
+                  "line": 4,
+                  "column": 70,
+                  "offset": 131
+                },
+                "replacement": ")"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0209",
+        "message": "a function type with `uses` must be parenthesized here",
+        "primary": {
+          "file": "testdata/syntax/uses_then_bracket.bnt",
+          "start": {
+            "line": 4,
+            "column": 80,
+            "offset": 141
+          },
+          "end": {
+            "line": 4,
+            "column": 93,
+            "offset": 154
+          },
+          "label": "read as part of the `uses` list"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "write the function type in parentheses, such as `function((function() -> Unit uses Console.Write), List[Integer]) -> Unit`",
+            "edits": [
+              {
+                "file": "testdata/syntax/uses_then_bracket.bnt",
+                "start": {
+                  "line": 4,
+                  "column": 41,
+                  "offset": 102
+                },
+                "end": {
+                  "line": 4,
+                  "column": 41,
+                  "offset": 102
+                },
+                "replacement": "("
+              },
+              {
+                "file": "testdata/syntax/uses_then_bracket.bnt",
+                "start": {
+                  "line": 4,
+                  "column": 78,
+                  "offset": 139
+                },
+                "end": {
+                  "line": 4,
+                  "column": 78,
+                  "offset": 139
+                },
+                "replacement": ")"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "reason": "元の表示・ヘルプを維持。移行に伴う位置だけを同じ範囲から確認。最終の Legacy の除去による表示の確認は N33 で行う。"
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/c11-method-no-cascade.diag.json",
+    "n1_display_classification": "nonzero_parameter_display_or_help_candidate",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0711",
+        "message": "the method `echo` does not match its declaration in `Echo`",
+        "primary": {
+          "file": "testdata/traits/c11-method-no-cascade.bnt",
+          "start": {
+            "line": 6,
+            "column": 12,
+            "offset": 141
+          },
+          "end": {
+            "line": 6,
+            "column": 16,
+            "offset": 145
+          },
+          "label": "expected `function(x: Integer) -> Integer`, found `function(x: Integer) -> String`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/traits/c11-method-no-cascade.bnt",
+            "start": {
+              "line": 3,
+              "column": 12,
+              "offset": 80
+            },
+            "end": {
+              "line": 3,
+              "column": 16,
+              "offset": 84
+            },
+            "label": "declared here"
+          }
+        ],
+        "notes": [],
+        "helps": []
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0711",
+        "message": "the method `echo` does not match its declaration in `Echo`",
+        "primary": {
+          "file": "testdata/traits/c11-method-no-cascade.bnt",
+          "start": {
+            "line": 6,
+            "column": 12,
+            "offset": 141
+          },
+          "end": {
+            "line": 6,
+            "column": 16,
+            "offset": 145
+          },
+          "label": "expected `function(x: Integer) -> Integer`, found `function(x: Integer) -> String`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/traits/c11-method-no-cascade.bnt",
+            "start": {
+              "line": 3,
+              "column": 12,
+              "offset": 80
+            },
+            "end": {
+              "line": 3,
+              "column": 16,
+              "offset": 84
+            },
+            "label": "declared here"
+          }
+        ],
+        "notes": [],
+        "helps": []
+      }
+    ],
+    "reason": "元の表示・ヘルプを維持。移行に伴う位置だけを同じ範囲から確認。最終の Legacy の除去による表示の確認は N33 で行う。"
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-e0711-parameter-names.diag.json",
+    "n1_display_classification": "nonzero_parameter_display_or_help_candidate",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0711",
+        "message": "the method `wrap` does not match its declaration in `Wrap`",
+        "primary": {
+          "file": "testdata/traits/todo178-e0711-parameter-names.bnt",
+          "start": {
+            "line": 9,
+            "column": 12,
+            "offset": 194
+          },
+          "end": {
+            "line": 9,
+            "column": 16,
+            "offset": 198
+          },
+          "label": "expected `function(x: Box, a: A, b: B) -> B`, found `function(x: Box, a: Integer, b: Q) -> Q`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/traits/todo178-e0711-parameter-names.bnt",
+            "start": {
+              "line": 6,
+              "column": 12,
+              "offset": 119
+            },
+            "end": {
+              "line": 6,
+              "column": 16,
+              "offset": 123
+            },
+            "label": "declared here"
+          }
+        ],
+        "notes": [],
+        "helps": []
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0711",
+        "message": "the method `wrap` does not match its declaration in `Wrap`",
+        "primary": {
+          "file": "testdata/traits/todo178-e0711-parameter-names.bnt",
+          "start": {
+            "line": 9,
+            "column": 12,
+            "offset": 194
+          },
+          "end": {
+            "line": 9,
+            "column": 16,
+            "offset": 198
+          },
+          "label": "expected `function(x: Box, a: A, b: B) -> B`, found `function(x: Box, a: Integer, b: Q) -> Q`"
+        },
+        "secondary": [
+          {
+            "file": "testdata/traits/todo178-e0711-parameter-names.bnt",
+            "start": {
+              "line": 6,
+              "column": 12,
+              "offset": 119
+            },
+            "end": {
+              "line": 6,
+              "column": 16,
+              "offset": 123
+            },
+            "label": "declared here"
+          }
+        ],
+        "notes": [],
+        "helps": []
+      }
+    ],
+    "reason": "元の表示・ヘルプを維持。移行に伴う位置だけを同じ範囲から確認。最終の Legacy の除去による表示の確認は N33 で行う。"
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-impl-target-cascade.diag.json",
+    "n1_display_classification": "nonzero_parameter_display_or_help_candidate",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0712",
+        "message": "cannot implement a trait for `function(Integer) -> Integer`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-cascade.bnt",
+          "start": {
+            "line": 5,
+            "column": 17,
+            "offset": 130
+          },
+          "end": {
+            "line": 5,
+            "column": 45,
+            "offset": 158
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "implement it for a type name with distinct type parameters, such as `Option[T]`",
+            "edits": []
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0712",
+        "message": "cannot implement a trait for `function(value: Integer) -> Integer`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-cascade.bnt",
+          "start": {
+            "line": 5,
+            "column": 17,
+            "offset": 130
+          },
+          "end": {
+            "line": 5,
+            "column": 52,
+            "offset": 165
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "implement it for a type name with distinct type parameters, such as `Option[T]`",
+            "edits": []
+          }
+        ]
+      }
+    ],
+    "reason": "型を value の明示の契約へ移行し、型表示・位置を確認。"
+  },
+  {
+    "path": "crates/benitoite/testdata/traits/todo178-impl-target-independent.diag.json",
+    "n1_display_classification": "nonzero_parameter_display_or_help_candidate",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0712",
+        "message": "cannot implement a trait for `function(Integer) -> Integer`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-independent.bnt",
+          "start": {
+            "line": 5,
+            "column": 17,
+            "offset": 130
+          },
+          "end": {
+            "line": 5,
+            "column": 45,
+            "offset": 158
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "implement it for a type name with distinct type parameters, such as `Option[T]`",
+            "edits": []
+          }
+        ]
+      },
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0705",
+        "message": "`Integer` does not implement `Score`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-independent.bnt",
+          "start": {
+            "line": 14,
+            "column": 13,
+            "offset": 388
+          },
+          "end": {
+            "line": 14,
+            "column": 24,
+            "offset": 399
+          },
+          "label": "`Score` is required here"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": []
+      },
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0705",
+        "message": "`function(Integer) -> Integer` does not implement `Other`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-independent.bnt",
+          "start": {
+            "line": 15,
+            "column": 13,
+            "offset": 415
+          },
+          "end": {
+            "line": 15,
+            "column": 24,
+            "offset": 426
+          },
+          "label": "`Other` is required here"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": []
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0712",
+        "message": "cannot implement a trait for `function(value: Integer) -> Integer`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-independent.bnt",
+          "start": {
+            "line": 5,
+            "column": 17,
+            "offset": 130
+          },
+          "end": {
+            "line": 5,
+            "column": 52,
+            "offset": 165
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "implement it for a type name with distinct type parameters, such as `Option[T]`",
+            "edits": []
+          }
+        ]
+      },
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0705",
+        "message": "`Integer` does not implement `Score`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-independent.bnt",
+          "start": {
+            "line": 14,
+            "column": 13,
+            "offset": 409
+          },
+          "end": {
+            "line": 14,
+            "column": 24,
+            "offset": 420
+          },
+          "label": "`Score` is required here"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": []
+      },
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0705",
+        "message": "`function(value: Integer) -> Integer` does not implement `Other`",
+        "primary": {
+          "file": "testdata/traits/todo178-impl-target-independent.bnt",
+          "start": {
+            "line": 15,
+            "column": 13,
+            "offset": 436
+          },
+          "end": {
+            "line": 15,
+            "column": 24,
+            "offset": 447
+          },
+          "label": "`Other` is required here"
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": []
+      }
+    ],
+    "reason": "型を value の明示の契約へ移行し、型表示・位置を確認。"
+  },
+  {
+    "path": "crates/benitoite/testdata/types/equality_function.diag.json",
+    "n1_display_classification": "zero_parameter_display_unchanged",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0406",
+        "message": "values of type `function() -> Integer` cannot be compared with `=`",
+        "primary": {
+          "file": "testdata/types/equality_function.bnt",
+          "start": {
+            "line": 7,
+            "column": 15,
+            "offset": 121
+          },
+          "end": {
+            "line": 7,
+            "column": 28,
+            "offset": 134
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [
+          "types that contain functions, `IOError`, or other opaque types cannot be compared with `=` or `<>`"
+        ],
+        "helps": []
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0406",
+        "message": "values of type `function() -> Integer` cannot be compared with `=`",
+        "primary": {
+          "file": "testdata/types/equality_function.bnt",
+          "start": {
+            "line": 7,
+            "column": 15,
+            "offset": 121
+          },
+          "end": {
+            "line": 7,
+            "column": 28,
+            "offset": 134
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [
+          "types that contain functions, `IOError`, or other opaque types cannot be compared with `=` or `<>`"
+        ],
+        "helps": []
+      }
+    ],
+    "reason": "元の表示・ヘルプを維持。移行に伴う位置だけを同じ範囲から確認。最終の Legacy の除去による表示の確認は N33 で行う。"
+  },
+  {
+    "path": "crates/benitoite/testdata/types/equality_summary.diag.json",
+    "n1_display_classification": "zero_parameter_display_unchanged",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0406",
+        "message": "values of type `Nest[function() -> Unit]` cannot be compared with `=`",
+        "primary": {
+          "file": "testdata/types/equality_summary.bnt",
+          "start": {
+            "line": 12,
+            "column": 15,
+            "offset": 268
+          },
+          "end": {
+            "line": 12,
+            "column": 34,
+            "offset": 287
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [
+          "types that contain functions, `IOError`, or other opaque types cannot be compared with `=` or `<>`"
+        ],
+        "helps": []
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0406",
+        "message": "values of type `Nest[function() -> Unit]` cannot be compared with `=`",
+        "primary": {
+          "file": "testdata/types/equality_summary.bnt",
+          "start": {
+            "line": 12,
+            "column": 15,
+            "offset": 268
+          },
+          "end": {
+            "line": 12,
+            "column": 34,
+            "offset": 287
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [
+          "types that contain functions, `IOError`, or other opaque types cannot be compared with `=` or `<>`"
+        ],
+        "helps": []
+      }
+    ],
+    "reason": "元の表示・ヘルプを維持。移行に伴う位置だけを同じ範囲から確認。最終の Legacy の除去による表示の確認は N33 で行う。"
+  },
+  {
+    "path": "crates/benitoite/testdata/types/f20-interpolation-no-show.diag.json",
+    "n1_display_classification": "nonzero_parameter_display_or_help_candidate",
+    "before": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0422",
+        "message": "a value of type `function(Integer) -> Integer` cannot be interpolated into a string",
+        "primary": {
+          "file": "testdata/types/f20-interpolation-no-show.bnt",
+          "start": {
+            "line": 4,
+            "column": 16,
+            "offset": 99
+          },
+          "end": {
+            "line": 4,
+            "column": 54,
+            "offset": 137
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "convert the value to a `String` before interpolating it",
+            "edits": []
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "kind": "check",
+        "severity": "error",
+        "code": "E0422",
+        "message": "a value of type `function(Integer) -> Integer` cannot be interpolated into a string",
+        "primary": {
+          "file": "testdata/types/f20-interpolation-no-show.bnt",
+          "start": {
+            "line": 4,
+            "column": 16,
+            "offset": 99
+          },
+          "end": {
+            "line": 4,
+            "column": 54,
+            "offset": 137
+          },
+          "label": ""
+        },
+        "secondary": [],
+        "notes": [],
+        "helps": [
+          {
+            "message": "convert the value to a `String` before interpolating it",
+            "edits": []
+          }
+        ]
+      }
+    ],
+    "reason": "元の表示・ヘルプを維持。移行に伴う位置だけを同じ範囲から確認。最終の Legacy の除去による表示の確認は N33 で行う。"
+  }
+]

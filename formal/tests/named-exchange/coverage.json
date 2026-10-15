@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "seedXor": 0,
+  "randomCases": 0,
+  "boundaryCases": 2,
+  "kinds": {},
+  "cases": [
+    {
+      "name": "function-contract",
+      "decls": [],
+      "ty": {
+        "kind": "function",
+        "names": [
+          "value"
+        ],
+        "params": [
+          {
+            "kind": "integer",
+            "args": []
+          }
+        ],
+        "ret": {
+          "kind": "integer",
+          "args": []
+        },
+        "eff": []
+      },
+      "arms": [
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "wild"
+            }
+          ]
+        }
+      ],
+      "pattern": {
+        "kind": "wild"
+      },
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null
+    },
+    {
+      "name": "integer",
+      "decls": [],
+      "ty": {
+        "kind": "integer",
+        "args": []
+      },
+      "arms": [
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "wild"
+            }
+          ]
+        }
+      ],
+      "pattern": {
+        "kind": "wild"
+      },
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null
+    }
+  ]
+}

@@ -33,7 +33,7 @@ const EXPECTED_FAILURES: &[(&str, &str)] = &[
     ("01-01-lexical.md", "..  &"),
     (
         "01-02-syntax.md",
-        "function((function() -> Unit uses Console.Write), Integer) -> Unit        // function(function() -> Unit uses Console.Write, Integer) -> Unit は誤り",
+        "function(action: (function() -> Unit uses Console.Write), count: Integer) -> Unit // 関数型の例",
     ),
     (
         "01-03-names-modules.md",
@@ -41,7 +41,7 @@ const EXPECTED_FAILURES: &[(&str, &str)] = &[
     ),
     (
         "01-06-type-system.md",
-        "function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E) -> List[U] uses E   // 本体は省略",
+        "function map[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E) -> List[U] uses E   // 本体は省略",
     ),
     (
         "01-06-type-system.md",
@@ -451,7 +451,7 @@ fn check_local_bindings(
             // 外部のファイルだけを補い、依存の解決も本物の読み込みと名前解決を通す。
             (
                 format!("{path}/package.bnt"),
-                format!("language \"0.0.3\"\npackage {alias}\nend package\n").into_bytes(),
+                format!("language \"0.0.5\"\npackage {alias}\nend package\n").into_bytes(),
             )
         })
         .collect();

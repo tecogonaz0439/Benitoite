@@ -1,7 +1,10 @@
 import Benitoite.Release.Lemmas.TySubstMain
 
 /-!
-# 閉じた値の形と、パターンの照合（段階 B）
+# 閉じた値の形と、パターンの照合（契約名を持つコア）
+
+名前を含む型で、閉じた値の形とパターン照合の型付けを導く
+（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
@@ -15,10 +18,10 @@ mutual
     match h with
     | .V_Var hi _ => subst hΓ; simp at hi
     | .V_Const => exact .const
-    | .V_Fun _ _ _ => rw [fnTy_eq]; exact .fn
-    | .V_Prim _ _ _ _ => rw [fnTy_eq]; exact .fn
-    | .V_Op _ _ => rw [fnTy_eq]; exact .fn
-    | .V_Lam _ => exact .fn
+    | .V_Fun _ hnames _ _ => rw [fnTy_eq]; exact .fn
+    | .V_Prim _ hnames _ _ _ => rw [fnTy_eq]; exact .fn
+    | .V_Op _ hnames _ => rw [fnTy_eq]; exact .fn
+    | .V_Lam hnames _ => exact .fn
     | .V_Con hc hts hargs => exact .con hc hts.symm (HasTypeVs.inhabits' hargs hΓ)
     | .V_List he _ => exact .list (HasTypeEach.inhabits' he hΓ)
     | .V_LocRef _ => exact .reference
@@ -29,7 +32,7 @@ mutual
     | .V_Dict _ _ _ => exact .dict
     | .V_Super _ _ _ => exact .dict
     | .V_Sub h hle =>
-        rcases hle with rfl | ⟨_, _, _, _, _, rfl, _⟩
+        rcases hle with rfl | ⟨_, _, _, _, _, _, rfl, _⟩
         · exact HasTypeV.inhabits' h hΓ
         · exact .fn
 
@@ -52,7 +55,7 @@ theorem HasTypeV.inhabits {Ψ C v a} (h : HasTypeV P B Ψ C [] v a) : Inhabits P
 
 theorem HasTypeV.canonical_boolean {Ψ C v} (h : HasTypeV P B Ψ C [] v (.base .boolean)) :
     ∃ b, v = .const (.boolean b) := by
-  have hnf : ∀ ps r ε, (Ty.base .boolean) ≠ .fn ps r ε := by intros; simp
+  have hnf : ∀ names ps r ε, (Ty.base .boolean) ≠ .fn names ps r ε := by intros; simp
   cases v with
   | var i => obtain ⟨_, hi, _⟩ := h.inv_var rfl; simp at hi
   | const c =>
@@ -60,16 +63,16 @@ theorem HasTypeV.canonical_boolean {Ψ C v} (h : HasTypeV P B Ψ C [] v (.base .
       cases c <;> simp [Const.type] at this
       exact ⟨_, rfl⟩
   | fnRef f ts es =>
-      obtain ⟨_, _, _, _, hle⟩ := h.inv_fnRef rfl
+      obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
   | prim b ts es =>
-      obtain ⟨_, _, _, _, _, hle⟩ := h.inv_prim rfl
+      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
   | op o ts =>
-      obtain ⟨_, _, _, hle⟩ := h.inv_op rfl
+      obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
-  | lam ps body =>
-      obtain ⟨_, _, _, hle⟩ := h.inv_lam rfl
+  | lam names ps body =>
+      obtain ⟨_, _, _, _, hle⟩ := h.inv_lam rfl
       have := hle.eq_of_not_fn hnf; simp at this
   | con c ts args => obtain ⟨_, _, _, _, h'⟩ := h.inv_con rfl; simp at h'
   | list elems => obtain ⟨_, _, h'⟩ := h.inv_list rfl; simp at h'
@@ -83,21 +86,21 @@ theorem HasTypeV.canonical_boolean {Ψ C v} (h : HasTypeV P B Ψ C [] v (.base .
 /-- `Reference[A]` の型の閉じた値は、可変のセルの場所である。 -/
 theorem HasTypeV.canonical_ref {Ψ C v a} (h : HasTypeV P B Ψ C [] v (.reference a)) :
     ∃ l, v = .loc l ∧ Ψ l = some (.ref a) := by
-  have hnf : ∀ ps r ε, (Ty.reference a) ≠ .fn ps r ε := by intros; simp
+  have hnf : ∀ names ps r ε, (Ty.reference a) ≠ .fn names ps r ε := by intros; simp
   cases v with
   | var i => obtain ⟨_, hi, _⟩ := h.inv_var rfl; simp at hi
   | const c => have := (h.inv_const rfl).eq_of_not_fn hnf; cases c <;> simp [Const.type] at this
   | fnRef f ts es =>
-      obtain ⟨_, _, _, _, hle⟩ := h.inv_fnRef rfl
+      obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
   | prim b ts es =>
-      obtain ⟨_, _, _, _, _, hle⟩ := h.inv_prim rfl
+      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
   | op o ts =>
-      obtain ⟨_, _, _, hle⟩ := h.inv_op rfl
+      obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
-  | lam ps body =>
-      obtain ⟨_, _, _, hle⟩ := h.inv_lam rfl
+  | lam names ps body =>
+      obtain ⟨_, _, _, _, hle⟩ := h.inv_lam rfl
       have := hle.eq_of_not_fn hnf; simp at this
   | con c ts args => obtain ⟨_, _, _, _, h'⟩ := h.inv_con rfl; simp at h'
   | list elems => obtain ⟨_, _, h'⟩ := h.inv_list rfl; simp at h'
@@ -114,21 +117,21 @@ theorem HasTypeV.canonical_ref {Ψ C v a} (h : HasTypeV P B Ψ C [] v (.referenc
 /-- `Lazy[A]` の型の閉じた値は、明示遅延の場所である。 -/
 theorem HasTypeV.canonical_lazy {Ψ C v a} (h : HasTypeV P B Ψ C [] v (.lazy a)) :
     ∃ l, v = .loc l ∧ Ψ l = some (.lazy a) := by
-  have hnf : ∀ ps r ε, (Ty.lazy a) ≠ .fn ps r ε := by intros; simp
+  have hnf : ∀ names ps r ε, (Ty.lazy a) ≠ .fn names ps r ε := by intros; simp
   cases v with
   | var i => obtain ⟨_, hi, _⟩ := h.inv_var rfl; simp at hi
   | const c => have := (h.inv_const rfl).eq_of_not_fn hnf; cases c <;> simp [Const.type] at this
   | fnRef f ts es =>
-      obtain ⟨_, _, _, _, hle⟩ := h.inv_fnRef rfl
+      obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
   | prim b ts es =>
-      obtain ⟨_, _, _, _, _, hle⟩ := h.inv_prim rfl
+      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
   | op o ts =>
-      obtain ⟨_, _, _, hle⟩ := h.inv_op rfl
+      obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
-  | lam ps body =>
-      obtain ⟨_, _, _, hle⟩ := h.inv_lam rfl
+  | lam names ps body =>
+      obtain ⟨_, _, _, _, hle⟩ := h.inv_lam rfl
       have := hle.eq_of_not_fn hnf; simp at this
   | con c ts args => obtain ⟨_, _, _, _, h'⟩ := h.inv_con rfl; simp at h'
   | list elems => obtain ⟨_, _, h'⟩ := h.inv_list rfl; simp at h'
@@ -208,10 +211,10 @@ theorem HasTypeV.inv_list_wf {C Γ v T elems} (h : HasTypeV P B Ψ C Γ v T) (hv
       exact ⟨a, he, hw, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
   | .V_Var _ _ => cases hv
   | .V_Const => cases hv
-  | .V_Fun _ _ _ => cases hv
-  | .V_Prim _ _ _ _ => cases hv
-  | .V_Op _ _ => cases hv
-  | .V_Lam _ => cases hv
+  | .V_Fun _ _ _ _ => cases hv
+  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Op _ _ _ => cases hv
+  | .V_Lam _ _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_LocRef _ => cases hv
   | .V_LocLazy _ => cases hv
@@ -390,11 +393,11 @@ mutual
                       | some r => cases r <;> simpa only [List.append_assoc] using (hb.append hmids).append ha
             · rw [ite_eq_right hlen] at hm; cases hm
         | _ => simp [Pat.matchVal] at hm
-    | .const _, .var _ | .const _, .fnRef _ _ _ | .const _, .prim _ _ _ | .const _, .lam _ _
+    | .const _, .var _ | .const _, .fnRef _ _ _ | .const _, .prim _ _ _ | .const _, .lam _ _ _
     | .const _, .con _ _ _ | .const _, .list _ | .const _, .op _ _ | .const _, .loc _ =>
         simp [Pat.matchVal] at hm
     | .con _ _, .var _ | .con _ _, .const _ | .con _ _, .fnRef _ _ _ | .con _ _, .prim _ _ _
-    | .con _ _, .lam _ _ | .con _ _, .list _ | .con _ _, .op _ _ | .con _ _, .loc _ =>
+    | .con _ _, .lam _ _ _ | .con _ _, .list _ | .con _ _, .op _ _ | .con _ _, .loc _ =>
         simp [Pat.matchVal] at hm
 
   theorem Pat.matchList_closed {ps vs ws} (hv : Val.VarsInList 0 (fun _ => True) vs)

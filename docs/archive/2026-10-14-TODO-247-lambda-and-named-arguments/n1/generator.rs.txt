@@ -1,0 +1,6 @@
+#[path = "/Users/tecogonaz/src/Benitoite/crates/benitoite/tests/random_programs/generator.rs"]
+mod generator;
+fn main() {
+    let rows:Vec<_>=(0..300).map(|seed|{let g=generator::generate(seed,6);serde_json::json!({"path":format!("generated/random-{seed}.bnt"),"snippet":0,"base_line":1,"scope":"generated_input","intent":"success","source":g.source,"direct":false})}).collect();
+    println!("{}", serde_json::json!(rows));
+}

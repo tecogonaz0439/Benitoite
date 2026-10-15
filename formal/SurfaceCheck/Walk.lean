@@ -1,6 +1,7 @@
 import Benitoite.Exchange.CheckInput
 
-/-! 検査と同じ位置と経路で Q11 を適用し、分類に使う構文を保存する。 -/
+/-! 末尾の照合の結果型を検査と同じ位置で補正し、分類に使う構文を保存する。
+設計書 01-12「型の情報を付けた表層の構文と型付け」に対応する。 -/
 namespace SurfaceCheck
 open Benitoite.Release Benitoite.Surface Benitoite.Surface.Check Benitoite.Surface.CheckTools
 structure Node where
@@ -27,10 +28,10 @@ mutual
     | .record c ts pos args => return .record c ts pos (← walkExprs q R (child path 0) 0 args)
     | .recordUpdate c ts n pos base args =>
       return .recordUpdate c ts n pos (← walkExpr q R .other (child path 0) none base) (← walkExprs q R (child path 1) 0 args)
-    | .call f args => return .call (← walkExpr q R .other (child path 0) none f) (← walkExprs q R (child path 1) 0 args)
+    | .call f labels positions args => return .call (← walkExpr q R .other (child path 0) none f) labels positions (← walkExprs q R (child path 1) 0 args)
     | .pipe a b => return .pipe (← walkExpr q R .other (child path 0) none a) (← walkExpr q R .other (child path 1) none b)
-    | .partialCall f args r eff =>
-      return .partialCall (← walkExpr q (some r) .other (child path 0) none f) (← walkHoles q (some r) (child path 1) 0 args) r eff
+    | .partialCall f names args r eff =>
+      return .partialCall (← walkExpr q (some r) .other (child path 0) none f) names (← walkHoles q (some r) (child path 1) 0 args) r eff
     | .partialCon c ts args =>
       let r := (q.D.cons c).map fun d => Ty.data d.data ts
       return .partialCon c ts (← walkHoles q r (child path 0) 0 args)
@@ -51,7 +52,7 @@ mutual
     | .listSpread t f before spread after =>
       return .listSpread t (← walkExpr q R .other (child path 0) none f) (← walkExprs q R (child path 1) 0 before) (← walkExpr q R .other (child path 2) none spread) (← walkExprs q R (child path 3) 0 after)
     | .interpolation parts es fs => return .interpolation parts (← walkExprs q R (child path 0) 0 es) (← walkExprs q R (child path 1) 0 fs)
-    | .lam ps r eff body => return .lam ps r eff (← walkBlock q (some r) .tail (child path 0) (some r) body)
+    | .lam names ps r eff body => return .lam names ps r eff (← walkBlock q (some r) .tail (child path 0) (some r) body)
     | .ite c y n => return .ite (← walkExpr q R .other (child path 0) none c) (← walkBlock q R p (child path 1) expected y) (← walkBlock q R p (child path 2) expected n)
     | .elseIf c y n => return .elseIf (← walkExpr q R .other (child path 0) none c) (← walkBlock q R p (child path 1) expected y) (← walkExpr q R p (child path 2) expected n)
     | .ifOnly c y => return .ifOnly (← walkExpr q R .other (child path 0) none c) (← walkBlock q R p (child path 1) (some (.base .unit)) y)
@@ -89,8 +90,8 @@ mutual
     | .cons e es => return .cons (← walkExpr q R .other (child path i) none e) (← walkExprs q R path (i+1) es)
   def walkHoles (q : Input) (R : Option Ty) (path : List Nat) (i : Nat) : HoleArgs → Walk HoleArgs
     | .nil => pure .nil
-    | .hole t rest => return .hole t (← walkHoles q R path (i+1) rest)
-    | .expr e rest => return .expr (← walkExpr q R .other (child path i) none e) (← walkHoles q R path (i+1) rest)
+    | .hole label position t rest => return .hole label position t (← walkHoles q R path (i+1) rest)
+    | .expr label position e rest => return .expr label position (← walkExpr q R .other (child path i) none e) (← walkHoles q R path (i+1) rest)
   def walkArms (q : Input) (R : Option Ty) (p : Position) (path : List Nat)
       (t : Ty) : Arms → Walk Arms
     | .nil => pure .nil

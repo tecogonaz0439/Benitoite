@@ -31,7 +31,7 @@ fn picks(record: &crate::runtime::sched::testing::ScheduleRecord) -> Vec<u64> {
 fn all_ok_selects_the_first_error_in_input_order_and_cancels_only_later_children() {
     for (actions, expected, order) in [
         (
-            "[lambda() return Result.Error(1) end lambda, lambda() pause(10000)
+            "[lambda() return Result.Error(1) end lambda, lambda()\n pause(10000)
  return Result.Ok(2) end lambda, lambda() return Result.Error(3) end lambda]",
             "Result.Error(1)",
             vec![3, 1, 2, 0],
@@ -77,12 +77,13 @@ function main() -> Result[Unit, String] uses State, Clock.Time
  bind result <- Task.race([
   lambda()
    with group = TaskGroup.open() do
-    bind _ <- TaskGroup.spawn(group, lambda() pause(10000)
- Reference.set(changed, true)
+    bind _ <- TaskGroup.spawn(group: group, action: lambda()
+ pause(10000)
+ Reference.set(reference: changed, value: true)
  return 9 end lambda)
     ()
    end with
-   Reference.set(changed, true)
+   Reference.set(reference: changed, value: true)
    return 1
   end lambda,
   lambda() return 42 end lambda
@@ -110,8 +111,11 @@ fn cancelling_a_spawn_wait_keeps_the_parent_parked_until_both_children_finish() 
 {PAUSE}
 function main() -> Result[Unit, String] uses Clock.Time, State
  bind result <- Task.race([
-  lambda() bind _ <- Task.all([lambda() pause(10000)
- return 1 end lambda, lambda() pause(10000)
+  lambda()
+ bind _ <- Task.all([lambda()
+ pause(10000)
+ return 1 end lambda, lambda()
+ pause(10000)
  return 2 end lambda])
  return 1 end lambda,
   lambda() return 42 end lambda
@@ -276,11 +280,11 @@ fn timeouts_wait_for_cancellation_and_remove_obsolete_timers() {
         let before_advance = expected == "Option.Some(42)";
         let after_result = if before_advance { "pause(10000)" } else { "" };
         let source = format!(
-            "import Benitoite.Unofficial.IO.Clock\n{PAUSE}\nfunction main() -> Result[Unit, String] uses Clock.Time, State\n bind result <- Task.withTimeout({millis},lambda() {action} end lambda)\n {after_result}\n if result = {expected} then return Result.Ok(()) else return Result.Error(\"timeout\") end if\nend function"
+            "import Benitoite.Unofficial.IO.Clock\n{PAUSE}\nfunction main() -> Result[Unit, String] uses Clock.Time, State\n bind result <- Task.withTimeout(milliseconds: {millis},action: lambda()\n {action} end lambda)\n {after_result}\n if result = {expected} then return Result.Ok(()) else return Result.Error(\"timeout\") end if\nend function"
         );
         check(&source, steps, &order, before_advance);
     }
-    let source=format!("import Benitoite.Unofficial.IO.Clock\n{PAUSE}\nfunction main() -> Result[Unit, String] uses Clock.Time, State\n bind result <- Task.race([lambda() bind _ <- Task.withTimeout(10,lambda() pause(10000)
+    let source=format!("import Benitoite.Unofficial.IO.Clock\n{PAUSE}\nfunction main() -> Result[Unit, String] uses Clock.Time, State\n bind result <- Task.race([lambda()\n bind _ <- Task.withTimeout(milliseconds: 10,action: lambda()\n pause(10000)
  return 1 end lambda)
  return 1 end lambda,lambda() return 42 end lambda])\n if result = Option.Some(42) then return Result.Ok(()) else return Result.Error(\"parent timeout\") end if\nend function");
     check(
@@ -349,7 +353,7 @@ fn check_timeout_after_child_runs(source: &str, waiting_parents: usize, millis: 
 fn timeout_discards_a_child_result_completed_at_or_after_the_deadline() {
     let source = r#"import Benitoite.Unofficial.IO.Clock
 function main() -> Result[Unit, String] uses Clock.Time, State
- bind result <- Task.withTimeout(10, lambda() return 42 end lambda)
+ bind result <- Task.withTimeout(milliseconds: 10, action: lambda() return 42 end lambda)
  if result = Option.None then return Result.Ok(()) else return Result.Error("late result") end if
 end function"#;
     for millis in [20, 10] {
@@ -365,9 +369,9 @@ fn outer_timeout_cancels_a_parent_waiting_for_its_timeout_decision() {
     let source = r#"import Benitoite.Unofficial.IO.Clock
 function main() -> Result[Unit, String] uses Clock.Time, State
  bind changed <- Reference.new(false)
- bind result <- Task.withTimeout(10, lambda()
-  bind _ <- Task.withTimeout(100, lambda() return 1 end lambda)
-  Reference.set(changed, true)
+ bind result <- Task.withTimeout(milliseconds: 10, action: lambda()
+  bind _ <- Task.withTimeout(milliseconds: 100, action: lambda() return 1 end lambda)
+  Reference.set(reference: changed, value: true)
   return 2
  end lambda)
  if result = Option.None and not Reference.get(changed) then
@@ -399,11 +403,11 @@ function main() -> Unit uses State, Clock.Time
   bind _ <- Task.race([
    lambda()
     with group = TaskGroup.open() do
-     bind child <- TaskGroup.spawn(group,lambda()
+     bind child <- TaskGroup.spawn(group: group,action: lambda()
       pause(10000)
       return 7
      end lambda)
-     Reference.set(saved,Option.Some(child))
+     Reference.set(reference: saved,value: Option.Some(child))
      pause(10000)
     end with
     return 1
@@ -415,7 +419,7 @@ function main() -> Unit uses State, Clock.Time
  return ()
 end function"#,
             before = if waiting {
-                "bind _ <- TaskGroup.spawn(outer,lambda() return waitSaved(saved) end lambda)"
+                "bind _ <- TaskGroup.spawn(group: outer,action: lambda() return waitSaved(saved) end lambda)"
             } else {
                 ""
             },
@@ -468,8 +472,8 @@ function main() -> Result[Unit, String] uses State
   42
  end lazy
  with group = TaskGroup.open() do
-  bind a <- TaskGroup.spawn(group,lambda() return Lazy.force(value) end lambda)
-  bind b <- TaskGroup.spawn(group,lambda() return Lazy.force(value) end lambda)
+  bind a <- TaskGroup.spawn(group: group,action: lambda() return Lazy.force(value) end lambda)
+  bind b <- TaskGroup.spawn(group: group,action: lambda() return Lazy.force(value) end lambda)
   bind result <- Task.await({target})
   if result = 42 then return Result.Ok(()) else return Result.Error("lazy cancellation") end if
  end with
@@ -539,9 +543,9 @@ end function"#,
 fn cancellation_preserves_release_waits_and_drop_traversal_and_releases_each_resource_once() {
     for (drop_rel, fail) in [(false, false), (false, true), (true, false)] {
         let body = if drop_rel {
-            "bind _ <- handle\n with inner = TaskGroup.open() do\n pause(1000)\n bind _ <- ask(0)\n ()\n end with\n with case ask(n) -> () end handle\n Reference.set(changed,true)"
+            "bind _ <- handle\n with inner = TaskGroup.open() do\n pause(1000)\n bind _ <- ask(0)\n ()\n end with\n with case ask(n) -> () end handle\n Reference.set(reference: changed,value: true)"
         } else {
-            "with inner = TaskGroup.open() do\n pause(10000)\n end with\n Reference.set(changed,true)"
+            "with inner = TaskGroup.open() do\n pause(10000)\n end with\n Reference.set(reference: changed,value: true)"
         };
         let source = format!(
             r#"import Benitoite.Unofficial.IO.Clock
@@ -554,7 +558,7 @@ function main() -> Result[Unit, String] uses State, Clock.Time
    with outer = TaskGroup.open() do
     {body}
    end with
-   Reference.set(changed,true)
+   Reference.set(reference: changed,value: true)
    return 1
   end lambda,
   lambda() return 42 end lambda
@@ -690,15 +694,16 @@ fn cancelling_an_awaiter_detaches_it_and_late_completion_cannot_resume_it() {
 function main() -> Result[Unit, String] uses State, Clock.Time
  bind changed <- Reference.new(false)
  with outer = TaskGroup.open() do
-  bind target <- TaskGroup.spawn(outer,lambda() pause(10000)
+  bind target <- TaskGroup.spawn(group: outer,action: lambda()
+ pause(10000)
    return 7
   end lambda)
   bind result <- Task.race([
    lambda()
     with inner = TaskGroup.open() do
-     bind _ <- TaskGroup.spawn(inner,lambda()
+     bind _ <- TaskGroup.spawn(group: inner,action: lambda()
       bind _ <- Task.await(target)
-      Reference.set(changed,true)
+      Reference.set(reference: changed,value: true)
       return 1
      end lambda)
      pause(10000)
@@ -737,13 +742,13 @@ function main() -> Unit uses State, Clock.Time
  bind a: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
  bind b: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
  with outer = TaskGroup.open() do
-  bind other <- TaskGroup.spawn(outer,lambda() return waitSaved(b) end lambda)
-  Reference.set(a,Option.Some(other))
-  bind result <- Task.withTimeout(10,lambda()
+  bind other <- TaskGroup.spawn(group: outer,action: lambda() return waitSaved(b) end lambda)
+  Reference.set(reference: a,value: Option.Some(other))
+  bind result <- Task.withTimeout(milliseconds: 10,action: lambda()
    with inner = TaskGroup.open() do
-    bind child <- TaskGroup.spawn(inner,lambda() return waitSaved(a) end lambda)
-    Reference.set(b,Option.Some(child))
-    bind _ <- TaskGroup.spawn(inner,lambda() return 0 end lambda)
+    bind child <- TaskGroup.spawn(group: inner,action: lambda() return waitSaved(a) end lambda)
+    Reference.set(reference: b,value: Option.Some(child))
+    bind _ <- TaskGroup.spawn(group: inner,action: lambda() return 0 end lambda)
     return Task.await(child)
    end with
   end lambda)
@@ -930,19 +935,19 @@ fn global_stop_does_not_deliver_cancelling_spawn_results_before_the_parent_finis
     for (name, expression, order, first_fifo) in [
         (
             "allOk",
-            "Task.allOk([lambda() pause(10000)\n return Result.Ok(1) end lambda, lambda() return Result.Ok(1 div 0) end lambda])",
+            "Task.allOk([lambda()\n pause(10000)\n return Result.Ok(1) end lambda, lambda() return Result.Ok(1 div 0) end lambda])",
             vec![1, 2],
             1,
         ),
         (
             "race",
-            "Task.race([lambda() pause(10000)\n return 1 end lambda, lambda() return 1 div 0 end lambda])",
+            "Task.race([lambda()\n pause(10000)\n return 1 end lambda, lambda() return 1 div 0 end lambda])",
             vec![1, 2],
             1,
         ),
         (
             "withTimeout",
-            "Task.all([lambda() bind _ <- Task.withTimeout(10, lambda() pause(10000)\n return 1 end lambda)\n return 1 end lambda, lambda() return 1 div 0 end lambda])",
+            "Task.all([lambda()\n bind _ <- Task.withTimeout(milliseconds: 10, action: lambda()\n pause(10000)\n return 1 end lambda)\n return 1 end lambda, lambda() return 1 div 0 end lambda])",
             vec![1, 3, 2],
             3,
         ),
@@ -1055,9 +1060,11 @@ fn global_stop_escalates_cancel_and_drop_waits_and_keeps_prior_release_failures(
         let source = format!(
             r#"{PAUSE}
 function main() -> Unit
- bind _ <- Task.all([lambda() pause(10000)
+ bind _ <- Task.all([lambda()
+ pause(10000)
   return 1
- end lambda,lambda() return 1 div 0 end lambda,lambda() pause(10000)
+ end lambda,lambda() return 1 div 0 end lambda,lambda()
+ pause(10000)
   return 3
  end lambda])
  return ()
@@ -1394,18 +1401,18 @@ function main() -> Unit uses State, Clock.Time
  bind a <- Reference.new(Option.None)
  bind b <- Reference.new(Option.None)
  with group = TaskGroup.open() do
-  bind ta <- TaskGroup.spawn(group,lambda()
+  bind ta <- TaskGroup.spawn(group: group,action: lambda()
    match Reference.get(b) with case Option.Some(t) -> Task.await(t)
    case Option.None -> () end match
    return ()
   end lambda)
-  bind tb <- TaskGroup.spawn(group,lambda()
+  bind tb <- TaskGroup.spawn(group: group,action: lambda()
    match Reference.get(a) with case Option.Some(t) -> Task.await(t)
    case Option.None -> () end match
    return ()
   end lambda)
-  Reference.set(a,Option.Some(ta))
-  Reference.set(b,Option.Some(tb))
+  Reference.set(reference: a,value: Option.Some(ta))
+  Reference.set(reference: b,value: Option.Some(tb))
   bind _ <- Task.{mode}([lambda()
    Task.await(ta)
    return {returned}
@@ -1452,9 +1459,9 @@ function main() -> Result[Unit, String] uses State
  bind changed <- Reference.new(false)
  with group = TaskGroup.open() do
   bind result <- handle
-   bind _ <- TaskGroup.spawn(group,lambda()
+   bind _ <- TaskGroup.spawn(group: group,action: lambda()
     pause(10000)
-    Reference.set(changed,true)
+    Reference.set(reference: changed,value: true)
     return ()
    end lambda)
    ask(0)
@@ -1659,11 +1666,11 @@ import Benitoite.Unofficial.Regex
 import Benitoite.Unofficial.IO.Clock
 function main() -> Result[Unit, String] uses Clock.Time, State
   bind p <- try Regex.compile("a")
-  bind input <- String.repeat("a", 20000)
+  bind input <- String.repeat(s: "a", n: 20000)
   bind finished <- Reference.new(false)
-  bind result <- Task.withTimeout(10, lambda()
-    bind n <- List.length(Regex.findAll(p, input))
-    Reference.set(finished, true)
+  bind result <- Task.withTimeout(milliseconds: 10, action: lambda()
+    bind n <- List.length(Regex.findAll(pattern: p, text: input))
+    Reference.set(reference: finished, value: true)
     return n
   end lambda)
   if result <> Option.None then return Result.Error("regex did not time out") end if

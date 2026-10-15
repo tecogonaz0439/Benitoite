@@ -54,6 +54,8 @@ public function newCell(start: Integer) -> Cell uses State
 
 ### 照合
 
+【決定】Benitoite 内の外部関数の呼び出しは、宣言したパラメータ名を契約として対応付ける。ソース順に評価した値を宣言位置へ配置してから外部へ渡す。WIT の関数との照合は位置ごとの型を使い、WIT の引数名との一致を要求しない。Benitoite の静的な契約と、外部の ABI の照合は区別する。
+
 【決定】型検査の後、`check`・`run`・`test` の共通の経路で照合する。外部の宣言がなければ Wasmtime の `Engine` を作らない。同じ正規化したパスは、検査の間に一度だけ読み、一度だけコンパイルする。`fmt` は照合しない。
 
 1. バイナリがコンポーネントの magic とバージョンを持つことを確かめる。コアのモジュールとテキスト形式は受け付けない。
@@ -181,8 +183,8 @@ function two(v: Two) -> Two
 
 | 例と入力 | 結果 | ケース |
 |---|---|---|
-| world の直下: `distance("kitten", "sitting")` | `3` | `external/wit-docs-declarations` |
-| インターフェース: `add(20, 22)` | `42` | 同上 |
+| world の直下: `distance(a: "kitten", b: "sitting")` | `3` | `external/wit-docs-declarations` |
+| インターフェース: `add(a: 20, b: 22)` | `42` | 同上 |
 | resource: `newCell(10)` を `[method]cell.get` で読む | `10` | 同上 |
 | 型引数: `box(Box(value: 35))`、`nested(Box(value: Box(value: -7)))` の value | `42`、内側は `0` | `external/wit-docs-values` |
 | flags: `f1(Set.fromList([D1.F1]))`、`f1(Set.empty())` | 戻る選択は両方とも F1 のみ。入力のビット値は `1`、`0` | 同上 |

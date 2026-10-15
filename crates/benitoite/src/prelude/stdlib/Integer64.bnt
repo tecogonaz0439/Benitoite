@@ -17,12 +17,12 @@ end function
 
 /// Calls `Integer.floorDivide` with the same result and stopping conditions.
 public function floorDivide(a: Integer64, b: Integer64) -> Integer64
-  return Integer.floorDivide(a, b)
+  return Integer.floorDivide(a: a, b: b)
 end function
 
 /// Calls `Integer.floorModulo` with the same result and stopping conditions.
 public function floorModulo(a: Integer64, b: Integer64) -> Integer64
-  return Integer.floorModulo(a, b)
+  return Integer.floorModulo(a: a, b: b)
 end function
 
 /// Calls `Integer.absolute` with the same result and stopping conditions.
@@ -32,27 +32,27 @@ end function
 
 /// Calls `Integer.minimum` with the same result and stopping conditions.
 public function minimum(a: Integer64, b: Integer64) -> Integer64
-  return Integer.minimum(a, b)
+  return Integer.minimum(a: a, b: b)
 end function
 
 /// Calls `Integer.maximum` with the same result and stopping conditions.
 public function maximum(a: Integer64, b: Integer64) -> Integer64
-  return Integer.maximum(a, b)
+  return Integer.maximum(a: a, b: b)
 end function
 
 /// Calls `Integer.bitwiseAnd` with the same result and stopping conditions.
 public function bitwiseAnd(a: Integer64, b: Integer64) -> Integer64
-  return Integer.bitwiseAnd(a, b)
+  return Integer.bitwiseAnd(a: a, b: b)
 end function
 
 /// Calls `Integer.bitwiseOr` with the same result and stopping conditions.
 public function bitwiseOr(a: Integer64, b: Integer64) -> Integer64
-  return Integer.bitwiseOr(a, b)
+  return Integer.bitwiseOr(a: a, b: b)
 end function
 
 /// Calls `Integer.bitwiseExclusiveOr` with the same result and stopping conditions.
 public function bitwiseExclusiveOr(a: Integer64, b: Integer64) -> Integer64
-  return Integer.bitwiseExclusiveOr(a, b)
+  return Integer.bitwiseExclusiveOr(a: a, b: b)
 end function
 
 /// Calls `Integer.bitwiseNot` with the same result and stopping conditions.
@@ -62,15 +62,15 @@ end function
 
 /// Calls `Integer.shiftLeft` with the same result and stopping conditions.
 public function shiftLeft(a: Integer64, n: Integer) -> Integer64
-  return Integer.shiftLeft(a, n)
+  return Integer.shiftLeft(a: a, n: n)
 end function
 
 /// Calls `Integer.shiftRight` with the same result and stopping conditions.
 public function shiftRight(a: Integer64, n: Integer) -> Integer64
-  return Integer.shiftRight(a, n)
+  return Integer.shiftRight(a: a, n: n)
 end function
 
 /// Calls `Integer.shiftRightUnsigned` with the same result and stopping conditions.
 public function shiftRightUnsigned(a: Integer64, n: Integer) -> Integer64
-  return Integer.shiftRightUnsigned(a, n)
+  return Integer.shiftRightUnsigned(a: a, n: n)
 end function

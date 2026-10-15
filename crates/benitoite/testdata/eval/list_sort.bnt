@@ -3,10 +3,10 @@
 import Benitoite.Unofficial.IO.Console
 
 function show_floats(values: List[Float]) -> String
-  return String.join(List.map(values, lambda(value) return Float.toString(value) end lambda), ",")
+  return String.join(xs: List.map(xs: values, f: lambda(value) return Float.toString(value) end lambda), separator: ",")
 end function
 
 function main() -> Unit uses Console.Write
-  Console.writeLine(String.join(List.map(List.sort(["b", "a", "a"]), lambda(value) return value end lambda), ","))
+  Console.writeLine(String.join(xs: List.map(xs: List.sort(["b", "a", "a"]), f: lambda(value) return value end lambda), separator: ","))
   return Console.writeLine(show_floats(List.sort([0.0, -0.0, -1.0, 1.0, 0.0 / 0.0, 2.0, 0.0 / 0.0])))
 end function

@@ -14,42 +14,42 @@ end function
 
 /// [method]pattern.is-match の検証用の入口。
 public function isMatch(pattern: Pattern, text: String) -> Boolean uses State
-  return Raw.isMatch(pattern, text)
+  return Raw.isMatch(pattern: pattern, text: text)
 end function
 
 /// [method]pattern.find の検証用の入口。
 public function find(pattern: Pattern, text: String) -> Option[Found] uses State
-  return Raw.find(pattern, text)
+  return Raw.find(pattern: pattern, text: text)
 end function
 
 /// [method]pattern.find-all の検証用の入口。
 public function findAll(pattern: Pattern, text: String) -> List[Found] uses State
-  return Raw.findAll(pattern, text)
+  return Raw.findAll(pattern: pattern, text: text)
 end function
 
 /// [method]pattern.replace-all の検証用の入口。
 public function replaceAll(pattern: Pattern, text: String, replacement: String) -> String uses State
-  return Raw.replaceAll(pattern, text, replacement)
+  return Raw.replaceAll(pattern: pattern, text: text, replacement: replacement)
 end function
 
 /// [method]pattern.count の検証用の入口。
 public function count(pattern: Pattern, text: String) -> Integer uses State
-  return Raw.count(pattern, text)
+  return Raw.count(pattern: pattern, text: text)
 end function
 
 /// is-match-once の検証用の入口。
 public function isMatchOnce(source: String, text: String) -> Result[Boolean, String]
-  return Raw.isMatchOnce(source, text)
+  return Raw.isMatchOnce(source: source, text: text)
 end function
 
 /// find-all-once の検証用の入口。
 public function findAllOnce(source: String, text: String) -> Result[List[Found], String]
-  return Raw.findAllOnce(source, text)
+  return Raw.findAllOnce(source: source, text: text)
 end function
 
 /// count-once の検証用の入口。
 public function countOnce(source: String, text: String) -> Result[Integer, String]
-  return Raw.countOnce(source, text)
+  return Raw.countOnce(source: source, text: text)
 end function
 
 /// 一致の text を返す。

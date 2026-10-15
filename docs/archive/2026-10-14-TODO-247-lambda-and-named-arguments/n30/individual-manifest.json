@@ -1,0 +1,3780 @@
+{
+  "application": "direct_edits_verified_by_in_memory_replay",
+  "files": [
+    {
+      "path": "tools/bench/programs/cycle.bnt",
+      "original_sha256": "307d3ca4181c1bb0376f9b7d7b033a1d9a0d72ad42ee3ce13555c671111d4db5",
+      "after_initial_manifest_sha256": "8d9087459431946895388cb13b30111a4977337393501346caeb92df873a0f0e",
+      "final_sha256": "8d9087459431946895388cb13b30111a4977337393501346caeb92df873a0f0e",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/depth.bnt",
+      "original_sha256": "e09c9ad102cfb2f55db554ba6e42130090e45580501608321624be6bebe3444b",
+      "after_initial_manifest_sha256": "e09c9ad102cfb2f55db554ba6e42130090e45580501608321624be6bebe3444b",
+      "final_sha256": "e09c9ad102cfb2f55db554ba6e42130090e45580501608321624be6bebe3444b",
+      "edits": [],
+      "replay_matches": true,
+      "changed": false
+    },
+    {
+      "path": "tools/bench/programs/eval.bnt",
+      "original_sha256": "47994aa85f6d67ee7124eae8f8010881abe0b46f8b7caa575774b67be542b7fb",
+      "after_initial_manifest_sha256": "6c7ca5e22bf7f3620aa3f4ee2e06335eaef941f1439d7cadd9425b0088e96e09",
+      "final_sha256": "6c7ca5e22bf7f3620aa3f4ee2e06335eaef941f1439d7cadd9425b0088e96e09",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/fib.bnt",
+      "original_sha256": "f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c",
+      "after_initial_manifest_sha256": "f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c",
+      "final_sha256": "f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c",
+      "edits": [],
+      "replay_matches": true,
+      "changed": false
+    },
+    {
+      "path": "tools/bench/programs/handler.bnt",
+      "original_sha256": "5d9429cbc3d42df58708b5d67ab97de84f0900e5898cfd08c0aa2e665085e3f0",
+      "after_initial_manifest_sha256": "60025d46efbb8482b1b86bb00ca0321dc0a11fc7df72c0b4a41c7c529595d1e5",
+      "final_sha256": "60025d46efbb8482b1b86bb00ca0321dc0a11fc7df72c0b4a41c7c529595d1e5",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/http.bnt",
+      "original_sha256": "b3af62454c296f6ef8d4330818b1fb2b840ba97636046782a4dde1e688eafda5",
+      "after_initial_manifest_sha256": "088d07d268e8f1f81f3688dd57a539e49f13d0a03c3e0bb8ca8cf2289f2ff8e4",
+      "final_sha256": "2d575080d3fbf04c1a1d6a2ab0d530e79392d7e6c6d28a27d51fa4ae95fa5c7a",
+      "edits": [
+        {
+          "start": 1403,
+          "end": 1403,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1405,
+          "end": 1405,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1426,
+          "end": 1426,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1634,
+          "end": 1634,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1636,
+          "end": 1636,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1657,
+          "end": 1657,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2065,
+          "end": 2065,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 2067,
+          "end": 2067,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 2088,
+          "end": 2088,
+          "before": "",
+          "after": "(error) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/lines.bnt",
+      "original_sha256": "995fdf9120e686cf118db453c84a1028b7fb89e84e0f1d38b792e3a9c7eb92c7",
+      "after_initial_manifest_sha256": "995fdf9120e686cf118db453c84a1028b7fb89e84e0f1d38b792e3a9c7eb92c7",
+      "final_sha256": "995fdf9120e686cf118db453c84a1028b7fb89e84e0f1d38b792e3a9c7eb92c7",
+      "edits": [],
+      "replay_matches": true,
+      "changed": false
+    },
+    {
+      "path": "tools/bench/programs/list.bnt",
+      "original_sha256": "5300af350b085901c9197e76cd892c1f90e11e3743c7354b36e290a9a44f6efc",
+      "after_initial_manifest_sha256": "f84a237340f469bee95272237ee5b7233c7f7ae8de02ac59f1f5c149191b14f5",
+      "final_sha256": "f84a237340f469bee95272237ee5b7233c7f7ae8de02ac59f1f5c149191b14f5",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/listget.bnt",
+      "original_sha256": "ad00b46032e383c9bb152bdb2911369592dbd8eab82f422f41151a4155f50629",
+      "after_initial_manifest_sha256": "51cea915b4855edb75dfbcc9c2aee417ae0d7459b4527eb406ef817da56532db",
+      "final_sha256": "51cea915b4855edb75dfbcc9c2aee417ae0d7459b4527eb406ef817da56532db",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/loop.bnt",
+      "original_sha256": "64c380f6eface80d69adf358c25251041304075c53e3879806688246720ee9b3",
+      "after_initial_manifest_sha256": "a7cd1dc714feb25889dfed33eb88a36b2f6f732e72e11dac3e843f644dc3f3a5",
+      "final_sha256": "a7cd1dc714feb25889dfed33eb88a36b2f6f732e72e11dac3e843f644dc3f3a5",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/map.bnt",
+      "original_sha256": "9fcb36d3aa50defa05a9778c0ef6d84c80c1bdeb6273843cc891cf2cac315ebc",
+      "after_initial_manifest_sha256": "2ff2293c6efede505bbd8242596844e52a218895af9fe5905f18bbe4b4f5aff8",
+      "final_sha256": "4d13a5b57ecb69ae68b1b003184d73a0fafb3bfe35faf7a7962aee61b8ba77a6",
+      "edits": [
+        {
+          "start": 903,
+          "end": 903,
+          "before": "",
+          "after": "lambda(value) return "
+        },
+        {
+          "start": 916,
+          "end": 916,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 937,
+          "end": 937,
+          "before": "",
+          "after": "o: "
+        },
+        {
+          "start": 939,
+          "end": 939,
+          "before": "",
+          "after": " fallback:"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/println.bnt",
+      "original_sha256": "89f685191c42c49434ff72fa0e60777ad07233ed4e853b02f4c16f79cccb78bc",
+      "after_initial_manifest_sha256": "bf35910498d5868f80f1b6bbba8a7a784b29dab22dce0099de6d583f99e1b6ec",
+      "final_sha256": "bf35910498d5868f80f1b6bbba8a7a784b29dab22dce0099de6d583f99e1b6ec",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/string.bnt",
+      "original_sha256": "2859b4dd7634a616e0d3f62f6e3de2399573a01ea3d68a7b1ff623fad6f67ec4",
+      "after_initial_manifest_sha256": "0826574035e12ba27ca3b9aaa8835f4d2503011c6d3c196bcfbc31a0f740c845",
+      "final_sha256": "0826574035e12ba27ca3b9aaa8835f4d2503011c6d3c196bcfbc31a0f740c845",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/tasks.bnt",
+      "original_sha256": "4ba42d9fa965f2db3a898c4a3b2f5930022c44139ffcfe98a19f0fd6258ee8c6",
+      "after_initial_manifest_sha256": "c49af86aaed241b0799f212254bd4e82ce70a64916b5e21a7dc1e14a9914a61f",
+      "final_sha256": "c49af86aaed241b0799f212254bd4e82ce70a64916b5e21a7dc1e14a9914a61f",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/trait.bnt",
+      "original_sha256": "bb4b80a5a2c236be01cd5265ad593511a4849a169d420d933e2312ce0669f17f",
+      "after_initial_manifest_sha256": "70f639d0149dc0b4e9dda705e8e0c29dec1e51691d0cd18a58f9521ee88f4a55",
+      "final_sha256": "70f639d0149dc0b4e9dda705e8e0c29dec1e51691d0cd18a58f9521ee88f4a55",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/programs/tree.bnt",
+      "original_sha256": "332ce8521ad9bc39bbb98a4d2751756762b0605df659993b91877a5a4eaefa27",
+      "after_initial_manifest_sha256": "332ce8521ad9bc39bbb98a4d2751756762b0605df659993b91877a5a4eaefa27",
+      "final_sha256": "332ce8521ad9bc39bbb98a4d2751756762b0605df659993b91877a5a4eaefa27",
+      "edits": [],
+      "replay_matches": true,
+      "changed": false
+    },
+    {
+      "path": "tools/bench/wasm/Runner.bnt",
+      "original_sha256": "a4b000ec9c4aaea9018fea531cc3bc5cfa315164dcb317e5e137a15046da4bd9",
+      "after_initial_manifest_sha256": "ff61509a89ff97a03bac95e0088f8649d6b98328502bfa4fc0f2aa1265e01baf",
+      "final_sha256": "a2f76d4d2cd00894b2b593cf9dda6996f3aa44a3dd62cb30c22dcda1ccd5be29",
+      "edits": [
+        {
+          "start": 1383,
+          "end": 1383,
+          "before": "",
+          "after": "value: "
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wasm/hash-a.bnt",
+      "original_sha256": "7185ac250f82110c257f89f4530aed665000b7467037b7896a4f019bfa6958f5",
+      "after_initial_manifest_sha256": "a05fa9f670c16973058866dd4f208a8aef29c40617c33749a14337f60ce68827",
+      "final_sha256": "0487d125c415039d841dcec3a9f1b331dc1126802c84d1636b55051136d4fdff",
+      "edits": [
+        {
+          "start": 757,
+          "end": 757,
+          "before": "",
+          "after": "lambda(value) -> String return "
+        },
+        {
+          "start": 768,
+          "end": 768,
+          "before": "",
+          "after": "(value) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wasm/hash-c-fast.bnt",
+      "original_sha256": "6f548be5d77e8f6a22c517131f3c3dd329f1dfb6468a8334ce57ac8be1ed6c7e",
+      "after_initial_manifest_sha256": "0b75514fdca68599bee6a33ff377309eca3c23f34a7063607ed1c8d2b36086de",
+      "final_sha256": "0e5acb60420ec79c575c3417919bda5d72751a59b430ee1db2d87f389274313c",
+      "edits": [
+        {
+          "start": 897,
+          "end": 897,
+          "before": "",
+          "after": "lambda(value) -> String return "
+        },
+        {
+          "start": 908,
+          "end": 908,
+          "before": "",
+          "after": "(value) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wasm/hash-c-list.bnt",
+      "original_sha256": "c8537f0e12facad4999387e287c58fe54eee2ddebceea16a21c2a752f2e76ede",
+      "after_initial_manifest_sha256": "209868fa66227b6bc413c4fd3d597b2f6de60eff946f92095c0a1a3d8453625c",
+      "final_sha256": "209868fa66227b6bc413c4fd3d597b2f6de60eff946f92095c0a1a3d8453625c",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wasm/json-a.bnt",
+      "original_sha256": "63051523e71c4b5cc7d49b1df91cce6f23bf030630640e53798ea1643970648e",
+      "after_initial_manifest_sha256": "875ac6181a968c22a8986a25617aa42b582e4194a1457b5ec663aca70950a466",
+      "final_sha256": "b1edbb7c5bb1e02049f64e1efc986b0d65af5fd24c7371e2dc660e853d83e6c0",
+      "edits": [
+        {
+          "start": 310,
+          "end": 313,
+          "before": "val",
+          "after": "doc"
+        },
+        {
+          "start": 314,
+          "end": 314,
+          "before": "",
+          "after": "m"
+        },
+        {
+          "start": 315,
+          "end": 315,
+          "before": "",
+          "after": "nt"
+        },
+        {
+          "start": 387,
+          "end": 390,
+          "before": "val",
+          "after": "doc"
+        },
+        {
+          "start": 391,
+          "end": 391,
+          "before": "",
+          "after": "m"
+        },
+        {
+          "start": 392,
+          "end": 392,
+          "before": "",
+          "after": "nt"
+        },
+        {
+          "start": 523,
+          "end": 524,
+          "before": "k",
+          "after": "valu"
+        },
+        {
+          "start": 525,
+          "end": 526,
+          "before": "y",
+          "after": ""
+        },
+        {
+          "start": 604,
+          "end": 605,
+          "before": "k",
+          "after": "valu"
+        },
+        {
+          "start": 606,
+          "end": 607,
+          "before": "y",
+          "after": ""
+        },
+        {
+          "start": 927,
+          "end": 927,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 948,
+          "end": 948,
+          "before": "",
+          "after": "f: "
+        },
+        {
+          "start": 956,
+          "end": 956,
+          "before": "",
+          "after": "rror"
+        },
+        {
+          "start": 1001,
+          "end": 1001,
+          "before": "",
+          "after": "rror"
+        },
+        {
+          "start": 1048,
+          "end": 1049,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1050,
+          "end": 1052,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1053,
+          "end": 1053,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1141,
+          "end": 1142,
+          "before": "v",
+          "after": "acc"
+        },
+        {
+          "start": 1156,
+          "end": 1158,
+          "before": "_i",
+          "after": "value"
+        },
+        {
+          "start": 1208,
+          "end": 1209,
+          "before": "v",
+          "after": "acc"
+        },
+        {
+          "start": 1344,
+          "end": 1345,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1346,
+          "end": 1348,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1349,
+          "end": 1349,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1379,
+          "end": 1380,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1407,
+          "end": 1408,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1600,
+          "end": 1600,
+          "before": "",
+          "after": "lambda(error) return "
+        },
+        {
+          "start": 1623,
+          "end": 1623,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1645,
+          "end": 1645,
+          "before": "",
+          "after": "lambda(value) -> String return "
+        },
+        {
+          "start": 1659,
+          "end": 1659,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 1708,
+          "end": 1709,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1710,
+          "end": 1712,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1713,
+          "end": 1713,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1763,
+          "end": 1763,
+          "before": "",
+          "after": "lambda(error) return "
+        },
+        {
+          "start": 1786,
+          "end": 1786,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1912,
+          "end": 1913,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1914,
+          "end": 1916,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1917,
+          "end": 1917,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1947,
+          "end": 1948,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1975,
+          "end": 1976,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2125,
+          "end": 2126,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2127,
+          "end": 2129,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2130,
+          "end": 2130,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2180,
+          "end": 2180,
+          "before": "",
+          "after": "lambda(error) return "
+        },
+        {
+          "start": 2203,
+          "end": 2203,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2233,
+          "end": 2234,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2235,
+          "end": 2237,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2238,
+          "end": 2238,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2272,
+          "end": 2273,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2300,
+          "end": 2301,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2452,
+          "end": 2453,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2454,
+          "end": 2456,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2457,
+          "end": 2457,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2507,
+          "end": 2507,
+          "before": "",
+          "after": "lambda(error) return "
+        },
+        {
+          "start": 2530,
+          "end": 2530,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2576,
+          "end": 2577,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2578,
+          "end": 2580,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2581,
+          "end": 2581,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2615,
+          "end": 2616,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2643,
+          "end": 2644,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2847,
+          "end": 2847,
+          "before": "",
+          "after": "lambda(error) return "
+        },
+        {
+          "start": 2870,
+          "end": 2870,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2883,
+          "end": 2884,
+          "before": "_",
+          "after": ""
+        },
+        {
+          "start": 2960,
+          "end": 2961,
+          "before": "_",
+          "after": ""
+        },
+        {
+          "start": 3058,
+          "end": 3059,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 3060,
+          "end": 3062,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 3063,
+          "end": 3063,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 3113,
+          "end": 3113,
+          "before": "",
+          "after": "lambda(error) return "
+        },
+        {
+          "start": 3136,
+          "end": 3136,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 3175,
+          "end": 3176,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 3177,
+          "end": 3179,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 3180,
+          "end": 3180,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 3252,
+          "end": 3253,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 3254,
+          "end": 3256,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 3257,
+          "end": 3257,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 3307,
+          "end": 3307,
+          "before": "",
+          "after": "lambda(error) return "
+        },
+        {
+          "start": 3330,
+          "end": 3330,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 3452,
+          "end": 3453,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 3454,
+          "end": 3456,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 3457,
+          "end": 3457,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 3487,
+          "end": 3488,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 3515,
+          "end": 3516,
+          "before": "s",
+          "after": "value"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wasm/json-b.bnt",
+      "original_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+      "after_initial_manifest_sha256": "d20fc1072b5102977a0afca5b2d6542f0dbb44796030095b5dca59163645af64",
+      "final_sha256": "66c9f953bfc6cfd40da2d38ef89f7e646006a0e64e3235ea6c94c95acbbf4315",
+      "edits": [
+        {
+          "start": 448,
+          "end": 451,
+          "before": "val",
+          "after": "doc"
+        },
+        {
+          "start": 452,
+          "end": 452,
+          "before": "",
+          "after": "m"
+        },
+        {
+          "start": 453,
+          "end": 453,
+          "before": "",
+          "after": "nt"
+        },
+        {
+          "start": 507,
+          "end": 507,
+          "before": "",
+          "after": "o: "
+        },
+        {
+          "start": 520,
+          "end": 520,
+          "before": "",
+          "after": ": document"
+        },
+        {
+          "start": 521,
+          "end": 521,
+          "before": "",
+          "after": " index:"
+        },
+        {
+          "start": 525,
+          "end": 525,
+          "before": "",
+          "after": " fallback:"
+        },
+        {
+          "start": 593,
+          "end": 593,
+          "before": "",
+          "after": "xs: "
+        },
+        {
+          "start": 620,
+          "end": 620,
+          "before": "",
+          "after": "f: "
+        },
+        {
+          "start": 627,
+          "end": 628,
+          "before": "k",
+          "after": "valu"
+        },
+        {
+          "start": 629,
+          "end": 630,
+          "before": "y",
+          "after": ""
+        },
+        {
+          "start": 681,
+          "end": 681,
+          "before": "",
+          "after": "o: "
+        },
+        {
+          "start": 690,
+          "end": 690,
+          "before": "",
+          "after": "value: "
+        },
+        {
+          "start": 696,
+          "end": 696,
+          "before": "",
+          "after": ": valu"
+        },
+        {
+          "start": 697,
+          "end": 698,
+          "before": "y",
+          "after": ""
+        },
+        {
+          "start": 700,
+          "end": 700,
+          "before": "",
+          "after": " fallback:"
+        },
+        {
+          "start": 1008,
+          "end": 1008,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1029,
+          "end": 1029,
+          "before": "",
+          "after": "f: "
+        },
+        {
+          "start": 1037,
+          "end": 1037,
+          "before": "",
+          "after": "rror"
+        },
+        {
+          "start": 1082,
+          "end": 1082,
+          "before": "",
+          "after": "rror"
+        },
+        {
+          "start": 1129,
+          "end": 1130,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1131,
+          "end": 1133,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1134,
+          "end": 1134,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1148,
+          "end": 1148,
+          "before": "",
+          "after": "xs: "
+        },
+        {
+          "start": 1159,
+          "end": 1159,
+          "before": "",
+          "after": "start: "
+        },
+        {
+          "start": 1161,
+          "end": 1161,
+          "before": "",
+          "after": " stop:"
+        },
+        {
+          "start": 1168,
+          "end": 1168,
+          "before": "",
+          "after": " initial:"
+        },
+        {
+          "start": 1186,
+          "end": 1186,
+          "before": "",
+          "after": "f: "
+        },
+        {
+          "start": 1193,
+          "end": 1194,
+          "before": "v",
+          "after": "acc"
+        },
+        {
+          "start": 1208,
+          "end": 1210,
+          "before": "_i",
+          "after": "value"
+        },
+        {
+          "start": 1260,
+          "end": 1261,
+          "before": "v",
+          "after": "acc"
+        },
+        {
+          "start": 1302,
+          "end": 1302,
+          "before": "",
+          "after": "count: "
+        },
+        {
+          "start": 1304,
+          "end": 1304,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1385,
+          "end": 1386,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1387,
+          "end": 1389,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1390,
+          "end": 1390,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1405,
+          "end": 1405,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 1412,
+          "end": 1413,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1440,
+          "end": 1441,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1519,
+          "end": 1519,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1520,
+          "end": 1520,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1594,
+          "end": 1594,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1615,
+          "end": 1615,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1639,
+          "end": 1639,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1652,
+          "end": 1652,
+          "before": "",
+          "after": " render: lambda(value) -> String return"
+        },
+        {
+          "start": 1667,
+          "end": 1667,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 1716,
+          "end": 1717,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1718,
+          "end": 1720,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1721,
+          "end": 1721,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1745,
+          "end": 1745,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1764,
+          "end": 1764,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1788,
+          "end": 1788,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1821,
+          "end": 1821,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1822,
+          "end": 1822,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1903,
+          "end": 1904,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1905,
+          "end": 1907,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1908,
+          "end": 1908,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1923,
+          "end": 1923,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 1930,
+          "end": 1931,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1958,
+          "end": 1959,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2036,
+          "end": 2036,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 2037,
+          "end": 2037,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 2095,
+          "end": 2096,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2097,
+          "end": 2099,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2100,
+          "end": 2100,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2124,
+          "end": 2124,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 2145,
+          "end": 2145,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 2169,
+          "end": 2169,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2199,
+          "end": 2200,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2201,
+          "end": 2203,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2204,
+          "end": 2204,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2223,
+          "end": 2223,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 2230,
+          "end": 2231,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2258,
+          "end": 2259,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2338,
+          "end": 2338,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 2339,
+          "end": 2339,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 2397,
+          "end": 2398,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2399,
+          "end": 2401,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2402,
+          "end": 2402,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2426,
+          "end": 2426,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 2447,
+          "end": 2447,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 2471,
+          "end": 2471,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2519,
+          "end": 2520,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2521,
+          "end": 2523,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2524,
+          "end": 2524,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2543,
+          "end": 2543,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 2550,
+          "end": 2551,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2578,
+          "end": 2579,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2660,
+          "end": 2660,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 2661,
+          "end": 2661,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 2724,
+          "end": 2724,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 2740,
+          "end": 2740,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 2761,
+          "end": 2761,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 2785,
+          "end": 2785,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2787,
+          "end": 2787,
+          "before": "",
+          "after": " f:"
+        },
+        {
+          "start": 2795,
+          "end": 2796,
+          "before": "_",
+          "after": ""
+        },
+        {
+          "start": 2857,
+          "end": 2857,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 2864,
+          "end": 2865,
+          "before": "_",
+          "after": ""
+        },
+        {
+          "start": 2962,
+          "end": 2963,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2964,
+          "end": 2966,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2967,
+          "end": 2967,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2991,
+          "end": 2991,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 3012,
+          "end": 3012,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 3036,
+          "end": 3036,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 3077,
+          "end": 3078,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 3079,
+          "end": 3081,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 3082,
+          "end": 3082,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 3154,
+          "end": 3155,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 3156,
+          "end": 3158,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 3159,
+          "end": 3159,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 3183,
+          "end": 3183,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 3204,
+          "end": 3204,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 3228,
+          "end": 3228,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 3256,
+          "end": 3256,
+          "before": "",
+          "after": "count: "
+        },
+        {
+          "start": 3258,
+          "end": 3258,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 3339,
+          "end": 3340,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 3341,
+          "end": 3343,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 3344,
+          "end": 3344,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 3359,
+          "end": 3359,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 3366,
+          "end": 3367,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 3394,
+          "end": 3395,
+          "before": "s",
+          "after": "value"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wasm/json-c.bnt",
+      "original_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+      "after_initial_manifest_sha256": "e12ae24a874805c4737594b8764380df7c9696c102a8a3fbb94493df0b9aae6c",
+      "final_sha256": "cc16048444c2a31c86fa9ee3a5c7e2b7c73e2b1309bf936c3e5573c8368e439e",
+      "edits": [
+        {
+          "start": 693,
+          "end": 693,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 714,
+          "end": 714,
+          "before": "",
+          "after": "f: "
+        },
+        {
+          "start": 722,
+          "end": 722,
+          "before": "",
+          "after": "rror"
+        },
+        {
+          "start": 767,
+          "end": 767,
+          "before": "",
+          "after": "rror"
+        },
+        {
+          "start": 837,
+          "end": 837,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 838,
+          "end": 838,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 912,
+          "end": 912,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 932,
+          "end": 932,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 956,
+          "end": 956,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 969,
+          "end": 969,
+          "before": "",
+          "after": " render: lambda(value) -> String return"
+        },
+        {
+          "start": 984,
+          "end": 984,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 1033,
+          "end": 1034,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1035,
+          "end": 1037,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1038,
+          "end": 1038,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1062,
+          "end": 1062,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1081,
+          "end": 1081,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1105,
+          "end": 1105,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1138,
+          "end": 1138,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1139,
+          "end": 1139,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1209,
+          "end": 1210,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1211,
+          "end": 1213,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1214,
+          "end": 1214,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1228,
+          "end": 1228,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 1235,
+          "end": 1236,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1263,
+          "end": 1264,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1341,
+          "end": 1341,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1342,
+          "end": 1342,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1427,
+          "end": 1427,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1451,
+          "end": 1451,
+          "before": "",
+          "after": "f: lambda(error) return "
+        },
+        {
+          "start": 1474,
+          "end": 1474,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1517,
+          "end": 1517,
+          "before": "",
+          "after": "xs: "
+        },
+        {
+          "start": 1526,
+          "end": 1526,
+          "before": "",
+          "after": "xs: "
+        },
+        {
+          "start": 1562,
+          "end": 1562,
+          "before": "",
+          "after": "f: "
+        },
+        {
+          "start": 1569,
+          "end": 1574,
+          "before": "point",
+          "after": "valu"
+        },
+        {
+          "start": 1575,
+          "end": 1576,
+          "before": "r",
+          "after": ""
+        },
+        {
+          "start": 1638,
+          "end": 1638,
+          "before": "",
+          "after": "o: "
+        },
+        {
+          "start": 1651,
+          "end": 1651,
+          "before": "",
+          "after": "ument: doc"
+        },
+        {
+          "start": 1660,
+          "end": 1660,
+          "before": "",
+          "after": ": value"
+        },
+        {
+          "start": 1662,
+          "end": 1662,
+          "before": "",
+          "after": " fallback:"
+        },
+        {
+          "start": 1689,
+          "end": 1689,
+          "before": "",
+          "after": " separator:"
+        },
+        {
+          "start": 1718,
+          "end": 1718,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 1725,
+          "end": 1726,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1753,
+          "end": 1754,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1833,
+          "end": 1833,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1834,
+          "end": 1834,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1904,
+          "end": 1904,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1925,
+          "end": 1925,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1949,
+          "end": 1949,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1963,
+          "end": 1963,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 1970,
+          "end": 1971,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 1998,
+          "end": 1999,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2080,
+          "end": 2080,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 2081,
+          "end": 2081,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 2149,
+          "end": 2149,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 2173,
+          "end": 2173,
+          "before": "",
+          "after": "f: lambda(error) return "
+        },
+        {
+          "start": 2196,
+          "end": 2196,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2210,
+          "end": 2210,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 2217,
+          "end": 2218,
+          "before": "_",
+          "after": ""
+        },
+        {
+          "start": 2315,
+          "end": 2316,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2317,
+          "end": 2319,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2320,
+          "end": 2320,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2344,
+          "end": 2344,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 2364,
+          "end": 2364,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 2388,
+          "end": 2388,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2432,
+          "end": 2433,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2434,
+          "end": 2436,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2437,
+          "end": 2437,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2509,
+          "end": 2510,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2511,
+          "end": 2513,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2514,
+          "end": 2514,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2538,
+          "end": 2538,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 2558,
+          "end": 2558,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 2582,
+          "end": 2582,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2623,
+          "end": 2624,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 2625,
+          "end": 2627,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 2628,
+          "end": 2628,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 2656,
+          "end": 2656,
+          "before": "",
+          "after": "count: "
+        },
+        {
+          "start": 2658,
+          "end": 2658,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 2742,
+          "end": 2742,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 2749,
+          "end": 2750,
+          "before": "s",
+          "after": "value"
+        },
+        {
+          "start": 2777,
+          "end": 2778,
+          "before": "s",
+          "after": "value"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wasm/regex-a.bnt",
+      "original_sha256": "b6c31319b9a002dc4c152ed2c7046c946a7bd2e8e88bc6e43afea6b149e34817",
+      "after_initial_manifest_sha256": "19e7bfd9af743b38dc19394b95cf27dd7dbf38fd5efe4b8ffa2ae0627a067c26",
+      "final_sha256": "150cb0453ed700e8360ece404e052157eef48eb4d32a6faf6370edeefe062c7c",
+      "edits": [
+        {
+          "start": 800,
+          "end": 800,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 801,
+          "end": 801,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 924,
+          "end": 924,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 931,
+          "end": 932,
+          "before": "b",
+          "after": "value"
+        },
+        {
+          "start": 963,
+          "end": 964,
+          "before": "b",
+          "after": "value"
+        },
+        {
+          "start": 1074,
+          "end": 1074,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1075,
+          "end": 1075,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1211,
+          "end": 1211,
+          "before": "",
+          "after": "render: lambda(value) -> String return "
+        },
+        {
+          "start": 1227,
+          "end": 1227,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 1297,
+          "end": 1297,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1298,
+          "end": 1298,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1434,
+          "end": 1434,
+          "before": "",
+          "after": "render: lambda(value) -> String return "
+        },
+        {
+          "start": 1450,
+          "end": 1450,
+          "before": "",
+          "after": "(value) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wasm/regex-c-once.bnt",
+      "original_sha256": "237e9085d689e108dbbdddf0a919fa383c8eedf5e865d7815f9e736ff0bedd5e",
+      "after_initial_manifest_sha256": "237e9085d689e108dbbdddf0a919fa383c8eedf5e865d7815f9e736ff0bedd5e",
+      "final_sha256": "2a49cd81ea4e8a8d49c4202c9d3503f2bff63ca22f6f41a855c9f0c8983d3de7",
+      "edits": [
+        {
+          "start": 740,
+          "end": 740,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 761,
+          "end": 761,
+          "before": "",
+          "after": "f: "
+        },
+        {
+          "start": 769,
+          "end": 769,
+          "before": "",
+          "after": "rror"
+        },
+        {
+          "start": 814,
+          "end": 814,
+          "before": "",
+          "after": "rror"
+        },
+        {
+          "start": 884,
+          "end": 884,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 885,
+          "end": 885,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 966,
+          "end": 966,
+          "before": "",
+          "after": ": source"
+        },
+        {
+          "start": 967,
+          "end": 967,
+          "before": "",
+          "after": " text:"
+        },
+        {
+          "start": 987,
+          "end": 987,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 994,
+          "end": 995,
+          "before": "b",
+          "after": "value"
+        },
+        {
+          "start": 1026,
+          "end": 1027,
+          "before": "b",
+          "after": "value"
+        },
+        {
+          "start": 1137,
+          "end": 1137,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1138,
+          "end": 1138,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1217,
+          "end": 1217,
+          "before": "",
+          "after": ": source"
+        },
+        {
+          "start": 1218,
+          "end": 1218,
+          "before": "",
+          "after": " text:"
+        },
+        {
+          "start": 1238,
+          "end": 1238,
+          "before": "",
+          "after": "render: lambda(value) -> String return "
+        },
+        {
+          "start": 1254,
+          "end": 1254,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 1324,
+          "end": 1324,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1325,
+          "end": 1325,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1391,
+          "end": 1391,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1417,
+          "end": 1417,
+          "before": "",
+          "after": ": source"
+        },
+        {
+          "start": 1418,
+          "end": 1418,
+          "before": "",
+          "after": " text:"
+        },
+        {
+          "start": 1426,
+          "end": 1426,
+          "before": "",
+          "after": " f: lambda(value) return"
+        },
+        {
+          "start": 1438,
+          "end": 1438,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 1451,
+          "end": 1451,
+          "before": "",
+          "after": " render: lambda(value) -> String return"
+        },
+        {
+          "start": 1468,
+          "end": 1468,
+          "before": "",
+          "after": "(value) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wasm/regex-c-resource.bnt",
+      "original_sha256": "42616b83e4dafa07a134dab1781be6f4c9f6dc5f82b8f0274cca218506d0cc14",
+      "after_initial_manifest_sha256": "42616b83e4dafa07a134dab1781be6f4c9f6dc5f82b8f0274cca218506d0cc14",
+      "final_sha256": "d59bff625ae3b50c410c0b36de19ff64284aabbbff70a36f9ce2f4a7b8dd278e",
+      "edits": [
+        {
+          "start": 740,
+          "end": 740,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 761,
+          "end": 761,
+          "before": "",
+          "after": "f: "
+        },
+        {
+          "start": 769,
+          "end": 769,
+          "before": "",
+          "after": "rror"
+        },
+        {
+          "start": 814,
+          "end": 814,
+          "before": "",
+          "after": "rror"
+        },
+        {
+          "start": 930,
+          "end": 930,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 931,
+          "end": 931,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1019,
+          "end": 1019,
+          "before": "",
+          "after": ": pattern"
+        },
+        {
+          "start": 1020,
+          "end": 1020,
+          "before": "",
+          "after": " text:"
+        },
+        {
+          "start": 1041,
+          "end": 1041,
+          "before": "",
+          "after": "render: "
+        },
+        {
+          "start": 1048,
+          "end": 1049,
+          "before": "b",
+          "after": "value"
+        },
+        {
+          "start": 1080,
+          "end": 1081,
+          "before": "b",
+          "after": "value"
+        },
+        {
+          "start": 1191,
+          "end": 1191,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1192,
+          "end": 1192,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1278,
+          "end": 1278,
+          "before": "",
+          "after": ": pattern"
+        },
+        {
+          "start": 1279,
+          "end": 1279,
+          "before": "",
+          "after": " text:"
+        },
+        {
+          "start": 1300,
+          "end": 1300,
+          "before": "",
+          "after": "render: lambda(value) -> String return "
+        },
+        {
+          "start": 1316,
+          "end": 1316,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 1386,
+          "end": 1386,
+          "before": "",
+          "after": ": count"
+        },
+        {
+          "start": 1387,
+          "end": 1387,
+          "before": "",
+          "after": " work:"
+        },
+        {
+          "start": 1487,
+          "end": 1487,
+          "before": "",
+          "after": ": pattern"
+        },
+        {
+          "start": 1488,
+          "end": 1488,
+          "before": "",
+          "after": " text:"
+        },
+        {
+          "start": 1510,
+          "end": 1510,
+          "before": "",
+          "after": "render: lambda(value) -> String return "
+        },
+        {
+          "start": 1526,
+          "end": 1526,
+          "before": "",
+          "after": "(value) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/Runner.bnt",
+      "original_sha256": "a2ea11fd451da8ebb4f181f91393f7f0704e4986530e8bc790ccac99e4daedca",
+      "after_initial_manifest_sha256": "4688aa1d6dd93a0d5afab89722e15a108a4d24834b588b3e60a256645acd1fac",
+      "final_sha256": "4688aa1d6dd93a0d5afab89722e15a108a4d24834b588b3e60a256645acd1fac",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/flags.bnt",
+      "original_sha256": "32ae649e9c0125c7934a1b646782da7be7b5b8ae8dcdfb148d2b28eea3e81daa",
+      "after_initial_manifest_sha256": "6fa6991b8be4b956d6e6ebd7e3c1fa7296efcd869de879f6df572d3f8b8306bd",
+      "final_sha256": "6fa6991b8be4b956d6e6ebd7e3c1fa7296efcd869de879f6df572d3f8b8306bd",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/large-bytes-adapter.bnt",
+      "original_sha256": "636237fc9b34a29129413b4ed969d3185032183dc1400e520f21d995acf617d7",
+      "after_initial_manifest_sha256": "a7588fd9529e68fa39b6c37995052cca1046e60e1d65b8eee66f1a0fa36ad062",
+      "final_sha256": "a7588fd9529e68fa39b6c37995052cca1046e60e1d65b8eee66f1a0fa36ad062",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/large-bytes-typed.bnt",
+      "original_sha256": "10fb18a1d5d5528f3fa4d7491afed91e140b1e0c9ffe096c448118a9ad516dd7",
+      "after_initial_manifest_sha256": "19d2b133abc726788ec0dc6ad65d28b3dc5b6648cd055b654622fd1fbfd3f73d",
+      "final_sha256": "19d2b133abc726788ec0dc6ad65d28b3dc5b6648cd055b654622fd1fbfd3f73d",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/large-bytes.bnt",
+      "original_sha256": "9ed25fd094d653294fde52a32fa22be9bc31f5b3c4d8744b7d2ae76f93f7142b",
+      "after_initial_manifest_sha256": "4156e2f059d39da01f68781566d68bae57b922abd1ce51cb07319169adfb2e26",
+      "final_sha256": "4156e2f059d39da01f68781566d68bae57b922abd1ce51cb07319169adfb2e26",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/maps.bnt",
+      "original_sha256": "f987f06d3b9650b8e6d732434fd92dcde6e48f0611260784f45452f5e4547188",
+      "after_initial_manifest_sha256": "63506619538a00303694af591c09769bb8de89b991135479cab442e61835a7df",
+      "final_sha256": "63506619538a00303694af591c09769bb8de89b991135479cab442e61835a7df",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/nested.bnt",
+      "original_sha256": "64f2f7bf224209b4fd8cd6a51badd3d3a50b9cf692925f95697a9be54b6981e2",
+      "after_initial_manifest_sha256": "077284f5fd142340c4ab3ead3c4f495f9e5e3dce1fb56040987b090f57face40",
+      "final_sha256": "077284f5fd142340c4ab3ead3c4f495f9e5e3dce1fb56040987b090f57face40",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "original_sha256": "a4f24b83f6035d59299915c7667680544fcf76982e42b04029ebd464b764b306",
+      "after_initial_manifest_sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "final_sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/primitives.bnt",
+      "original_sha256": "2863bdfff678e58afc6cf7ae539c4e33299824095bafc614d2a70bfdd3f83da6",
+      "after_initial_manifest_sha256": "17b0275577a39f4f5a4e8d1c47594970e7567aa71d01aaea5f4757e6561747b9",
+      "final_sha256": "17b0275577a39f4f5a4e8d1c47594970e7567aa71d01aaea5f4757e6561747b9",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/records.bnt",
+      "original_sha256": "2525bc59eba1ba5f571b1c00f4da21b7e6abe47ffe6050fb2b50660ff55b79e4",
+      "after_initial_manifest_sha256": "77c2252d5d0076cd93ca54a3eaa2dad8c8be3b68120b488322ead5803fa9cde3",
+      "final_sha256": "77c2252d5d0076cd93ca54a3eaa2dad8c8be3b68120b488322ead5803fa9cde3",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/short-numbers-adapter.bnt",
+      "original_sha256": "79e5ba33119c6ca614256bdff79f9409da79fad94c922456ffbbe1632728c2ef",
+      "after_initial_manifest_sha256": "9f2a06ad7ef998bbd5ace910ac65f8d38645ccda8816757d059a1cea134ac9b5",
+      "final_sha256": "9f2a06ad7ef998bbd5ace910ac65f8d38645ccda8816757d059a1cea134ac9b5",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/short-numbers-typed.bnt",
+      "original_sha256": "5397761b81b38200c36f726972a167b1607cadb0cf2037436ae63c8e89b8628c",
+      "after_initial_manifest_sha256": "98ff885356cf843f5131280ccb06a100154c3e6346b60444a74b62a4778fc030",
+      "final_sha256": "98ff885356cf843f5131280ccb06a100154c3e6346b60444a74b62a4778fc030",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/short-numbers.bnt",
+      "original_sha256": "ae3b4eb5019e7ca9ae26a135860588fb4181ddd7038de984d0f801901cea4fcd",
+      "after_initial_manifest_sha256": "f3e0b075088d5fea1bba1b9fa1e4e75bba6c96f4d5c0013d694d0f0ddd4d4835",
+      "final_sha256": "f3e0b075088d5fea1bba1b9fa1e4e75bba6c96f4d5c0013d694d0f0ddd4d4835",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/tuples.bnt",
+      "original_sha256": "bccc508c6ff0104429aa395b0631e094076c58b8383af07dd3b56873416eed8b",
+      "after_initial_manifest_sha256": "1595d9523ceb277e3dc39d750ac18fb0ef8a83001873bbbd30f031e379367a7c",
+      "final_sha256": "1595d9523ceb277e3dc39d750ac18fb0ef8a83001873bbbd30f031e379367a7c",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/utf16.bnt",
+      "original_sha256": "e93b808eec1aa281ece6f9cb11fcca1e4c3144cc28322f19d28d777e387f99d1",
+      "after_initial_manifest_sha256": "48c00c623feebd469fb8a13f02d220d3ca02741afac928f0223c9473bccb9423",
+      "final_sha256": "48c00c623feebd469fb8a13f02d220d3ca02741afac928f0223c9473bccb9423",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/bench/wit-transfer/variants.bnt",
+      "original_sha256": "b9e79a579f25c1fef0a083482f13e7fb5c3364a8b55b51e68930189e83d8a928",
+      "after_initial_manifest_sha256": "44302a834558e2855c5d8b0333b543e89311da1ba9eeb044b0c25b53f3f7625b",
+      "final_sha256": "44302a834558e2855c5d8b0333b543e89311da1ba9eeb044b0c25b53f3f7625b",
+      "edits": [],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+      "original_sha256": "4368862e0f856190522ef2500df6ff6d9752bf36e3738acaca191469677c77cc",
+      "after_initial_manifest_sha256": "d183fd3e28474f3bd34282a58bbbbbfd3df07994f0a4756c545982b075c81c59",
+      "final_sha256": "aa629fc01138b04aaf11724649cd66c26c895c15dcb13bf64160473d30948e43",
+      "edits": [
+        {
+          "start": 252,
+          "end": 252,
+          "before": "",
+          "after": "lambda(value) return "
+        },
+        {
+          "start": 265,
+          "end": 265,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 827,
+          "end": 827,
+          "before": "",
+          "after": "o: "
+        },
+        {
+          "start": 829,
+          "end": 829,
+          "before": "",
+          "after": " fallback:"
+        },
+        {
+          "start": 1132,
+          "end": 1132,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1134,
+          "end": 1134,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1150,
+          "end": 1150,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1216,
+          "end": 1216,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1218,
+          "end": 1218,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1241,
+          "end": 1241,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1274,
+          "end": 1274,
+          "before": "",
+          "after": "xs: "
+        },
+        {
+          "start": 1279,
+          "end": 1279,
+          "before": "",
+          "after": " initial:"
+        },
+        {
+          "start": 1304,
+          "end": 1304,
+          "before": "",
+          "after": "f: "
+        },
+        {
+          "start": 1316,
+          "end": 1319,
+          "before": "row",
+          "after": "value"
+        },
+        {
+          "start": 1325,
+          "end": 1325,
+          "before": "",
+          "after": "bind cur"
+        },
+        {
+          "start": 1327,
+          "end": 1327,
+          "before": "",
+          "after": "n"
+        },
+        {
+          "start": 1328,
+          "end": 1329,
+          "before": "u",
+          "after": " <- t"
+        },
+        {
+          "start": 1330,
+          "end": 1331,
+          "before": "n",
+          "after": "y"
+        },
+        {
+          "start": 1332,
+          "end": 1347,
+          "before": "Result.andThen(",
+          "after": ""
+        },
+        {
+          "start": 1350,
+          "end": 1351,
+          "before": ",",
+          "after": "\n"
+        },
+        {
+          "start": 1352,
+          "end": 1361,
+          "before": "lambda(m)",
+          "after": "  "
+        },
+        {
+          "start": 1384,
+          "end": 1385,
+          "before": "m",
+          "after": "current"
+        },
+        {
+          "start": 1392,
+          "end": 1397,
+          "before": "row) ",
+          "after": "valu"
+        },
+        {
+          "start": 1398,
+          "end": 1407,
+          "before": "nd lambda",
+          "after": ""
+        },
+        {
+          "start": 1811,
+          "end": 1811,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1813,
+          "end": 1813,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1829,
+          "end": 1829,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 2070,
+          "end": 2070,
+          "before": "",
+          "after": "xs: "
+        },
+        {
+          "start": 2079,
+          "end": 2079,
+          "before": "",
+          "after": "initial: "
+        },
+        {
+          "start": 2081,
+          "end": 2081,
+          "before": "",
+          "after": " f:"
+        },
+        {
+          "start": 2089,
+          "end": 2092,
+          "before": "sum",
+          "after": "acc"
+        },
+        {
+          "start": 2094,
+          "end": 2094,
+          "before": "",
+          "after": "valu"
+        },
+        {
+          "start": 2095,
+          "end": 2099,
+          "before": "ntry",
+          "after": ""
+        },
+        {
+          "start": 2108,
+          "end": 2111,
+          "before": "sum",
+          "after": "acc"
+        },
+        {
+          "start": 2138,
+          "end": 2138,
+          "before": "",
+          "after": "valu"
+        },
+        {
+          "start": 2139,
+          "end": 2143,
+          "before": "ntry",
+          "after": ""
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/dir_walk/reference.bnt",
+      "original_sha256": "b0ec86bbc9b1efc5d1440c1092d940c03462b1dbf9041e80f09fd666bb2c2024",
+      "after_initial_manifest_sha256": "4e6248867c609c91b4951f637deef610d1377a5af1043cdea9c2ea5c835c1b43",
+      "final_sha256": "b3185302c4849efd5021dff57a20ace18a9bd57aff6ce61d9bb779fdd53f0673",
+      "edits": [
+        {
+          "start": 222,
+          "end": 222,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 224,
+          "end": 224,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 240,
+          "end": 240,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 524,
+          "end": 524,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 526,
+          "end": 526,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 542,
+          "end": 542,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1356,
+          "end": 1356,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1358,
+          "end": 1358,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1374,
+          "end": 1374,
+          "before": "",
+          "after": "(error) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/error_handling/reference.bnt",
+      "original_sha256": "6d094312ea50c3080c17f4cee203119c4b05f13f3ae1d42f85bd16243b215285",
+      "after_initial_manifest_sha256": "30ba6f192fbab7cef29ac40e6bc6b118fec0d3fcbb4b093252f78fe970edbf4d",
+      "final_sha256": "1ef5aac3fc7697bb47be8a6eacff4253661f8ba4552bd3ac339a985342a2c831",
+      "edits": [
+        {
+          "start": 736,
+          "end": 736,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 738,
+          "end": 738,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 754,
+          "end": 754,
+          "before": "",
+          "after": "(error) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/file_process/reference.bnt",
+      "original_sha256": "05f383f0971dd5967455f926ad28828fd106e0c95e06b2bc0957d24f67b50c55",
+      "after_initial_manifest_sha256": "7ba4f4ef41163203655d88d62860a23059ebed8f26c0806ae74b5ee75aa845bf",
+      "final_sha256": "23908cc729502402ed797c946a8d3bf56965fd009235a05e60bc9d1ab7e523a8",
+      "edits": [
+        {
+          "start": 520,
+          "end": 520,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 522,
+          "end": 522,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 538,
+          "end": 538,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 595,
+          "end": 595,
+          "before": "",
+          "after": "lambda(value) return "
+        },
+        {
+          "start": 606,
+          "end": 606,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 848,
+          "end": 848,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 850,
+          "end": 850,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 866,
+          "end": 866,
+          "before": "",
+          "after": "(error) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "original_sha256": "5f2616341a625fb5814f5d7a0bd3739d54ceff359b2d2d937bba6cb72c22dfb3",
+      "after_initial_manifest_sha256": "4739120ceae08c547a3b1fdfa89ed162cd189bf36ebc4b75a7b2ab528f68bb3d",
+      "final_sha256": "e6503adf70ecc5904037ca7fee3e26161a14e231b2f497a0122892c899dad965",
+      "edits": [
+        {
+          "start": 1139,
+          "end": 1139,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1141,
+          "end": 1141,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1157,
+          "end": 1157,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1269,
+          "end": 1269,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1271,
+          "end": 1271,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1292,
+          "end": 1292,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1418,
+          "end": 1418,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1420,
+          "end": 1420,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1441,
+          "end": 1441,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1450,
+          "end": 1451,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1452,
+          "end": 1454,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1455,
+          "end": 1455,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1514,
+          "end": 1514,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1516,
+          "end": 1516,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1540,
+          "end": 1540,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1590,
+          "end": 1591,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1592,
+          "end": 1594,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1595,
+          "end": 1595,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1719,
+          "end": 1719,
+          "before": "",
+          "after": "alue)\n    bind collected <- try acc\n    bind item <- try itemOf(value"
+        },
+        {
+          "start": 1739,
+          "end": 1746,
+          "before": "andThen",
+          "after": "Ok"
+        },
+        {
+          "start": 1747,
+          "end": 1824,
+          "before": "r: acc, f: lambda(xs) return Result.map(r: itemOf(v), f: lambda(item) return ",
+          "after": ""
+        },
+        {
+          "start": 1841,
+          "end": 1843,
+          "before": "xs",
+          "after": "collected"
+        },
+        {
+          "start": 1853,
+          "end": 1876,
+          "before": " end lambda) end lambda",
+          "after": ""
+        },
+        {
+          "start": 1906,
+          "end": 1906,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1908,
+          "end": 1908,
+          "before": "",
+          "after": " f: lambda(value) return"
+        },
+        {
+          "start": 1921,
+          "end": 1921,
+          "before": "",
+          "after": "(value) end lambda"
+        },
+        {
+          "start": 1970,
+          "end": 1972,
+          "before": "it",
+          "after": "valu"
+        },
+        {
+          "start": 1973,
+          "end": 1974,
+          "before": "m",
+          "after": ""
+        },
+        {
+          "start": 1994,
+          "end": 1996,
+          "before": "it",
+          "after": "valu"
+        },
+        {
+          "start": 1997,
+          "end": 1998,
+          "before": "m",
+          "after": ""
+        },
+        {
+          "start": 2094,
+          "end": 2096,
+          "before": "it",
+          "after": "valu"
+        },
+        {
+          "start": 2097,
+          "end": 2098,
+          "before": "m",
+          "after": ""
+        },
+        {
+          "start": 2120,
+          "end": 2122,
+          "before": "it",
+          "after": "valu"
+        },
+        {
+          "start": 2123,
+          "end": 2124,
+          "before": "m",
+          "after": ""
+        },
+        {
+          "start": 2141,
+          "end": 2143,
+          "before": "it",
+          "after": "valu"
+        },
+        {
+          "start": 2144,
+          "end": 2145,
+          "before": "m",
+          "after": ""
+        },
+        {
+          "start": 2266,
+          "end": 2269,
+          "before": "sum",
+          "after": "acc"
+        },
+        {
+          "start": 2271,
+          "end": 2273,
+          "before": "it",
+          "after": "valu"
+        },
+        {
+          "start": 2274,
+          "end": 2275,
+          "before": "m",
+          "after": ""
+        },
+        {
+          "start": 2284,
+          "end": 2287,
+          "before": "sum",
+          "after": "acc"
+        },
+        {
+          "start": 2301,
+          "end": 2303,
+          "before": "it",
+          "after": "valu"
+        },
+        {
+          "start": 2304,
+          "end": 2305,
+          "before": "m",
+          "after": ""
+        },
+        {
+          "start": 2320,
+          "end": 2322,
+          "before": "it",
+          "after": "valu"
+        },
+        {
+          "start": 2323,
+          "end": 2324,
+          "before": "m",
+          "after": ""
+        },
+        {
+          "start": 2402,
+          "end": 2404,
+          "before": "it",
+          "after": "valu"
+        },
+        {
+          "start": 2405,
+          "end": 2406,
+          "before": "m",
+          "after": ""
+        },
+        {
+          "start": 2443,
+          "end": 2445,
+          "before": "it",
+          "after": "valu"
+        },
+        {
+          "start": 2446,
+          "end": 2447,
+          "before": "m",
+          "after": ""
+        },
+        {
+          "start": 2663,
+          "end": 2663,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 2665,
+          "end": 2665,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 2686,
+          "end": 2686,
+          "before": "",
+          "after": "(error) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/json_convert/reference.bnt",
+      "original_sha256": "eb6c530c2c69d09658869296797fdab285b3cb05438261d387fa89221a0089ac",
+      "after_initial_manifest_sha256": "1de0485c867889b78a6581327a0606aa69387dd9dc1f8230eae1f7d3119523c2",
+      "final_sha256": "18b5274909e58aeb896a42ab152d5a9d2c9ba77ecf4b5806475e68a87edcaf2a",
+      "edits": [
+        {
+          "start": 455,
+          "end": 455,
+          "before": "",
+          "after": "jsonString(value: String) -> Json.Value\n  return Json.Value.String(value)\nend function\n\nfunction "
+        },
+        {
+          "start": 595,
+          "end": 595,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 597,
+          "end": 597,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 613,
+          "end": 613,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 679,
+          "end": 679,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 681,
+          "end": 681,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 704,
+          "end": 704,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1142,
+          "end": 1143,
+          "before": "J",
+          "after": "j"
+        },
+        {
+          "start": 1146,
+          "end": 1153,
+          "before": ".Value.",
+          "after": ""
+        },
+        {
+          "start": 1282,
+          "end": 1282,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1284,
+          "end": 1284,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1300,
+          "end": 1300,
+          "before": "",
+          "after": "(error) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/json_summary/reference.bnt",
+      "original_sha256": "1bc621096103a6fb78ceb65dc20bad02fed8c5115dda48a9c3eab73afcb83440",
+      "after_initial_manifest_sha256": "6647d5f0b511d2f68fffacea6e52b319a64ebdad06f576f8e6347c94c2f4f42d",
+      "final_sha256": "288e1446476929cf0280711c9b31f141bfb77e41118ff1780fc017c8e3946295",
+      "edits": [
+        {
+          "start": 1026,
+          "end": 1026,
+          "before": "",
+          "after": "o: "
+        },
+        {
+          "start": 1028,
+          "end": 1028,
+          "before": "",
+          "after": " fallback:"
+        },
+        {
+          "start": 1313,
+          "end": 1313,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1315,
+          "end": 1315,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1331,
+          "end": 1331,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1340,
+          "end": 1341,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1342,
+          "end": 1344,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1345,
+          "end": 1345,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1389,
+          "end": 1389,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 1391,
+          "end": 1391,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 1415,
+          "end": 1415,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 1453,
+          "end": 1454,
+          "before": "v",
+          "after": "p"
+        },
+        {
+          "start": 1455,
+          "end": 1457,
+          "before": "lu",
+          "after": "rs"
+        },
+        {
+          "start": 1458,
+          "end": 1458,
+          "before": "",
+          "after": "d"
+        },
+        {
+          "start": 1680,
+          "end": 1683,
+          "before": "ord",
+          "after": "valu"
+        },
+        {
+          "start": 1684,
+          "end": 1685,
+          "before": "r",
+          "after": ""
+        },
+        {
+          "start": 1691,
+          "end": 1691,
+          "before": "",
+          "after": "bind cur"
+        },
+        {
+          "start": 1693,
+          "end": 1693,
+          "before": "",
+          "after": "n"
+        },
+        {
+          "start": 1694,
+          "end": 1695,
+          "before": "u",
+          "after": " <- t"
+        },
+        {
+          "start": 1696,
+          "end": 1715,
+          "before": "n Result.andThen(r:",
+          "after": "y"
+        },
+        {
+          "start": 1719,
+          "end": 1720,
+          "before": ",",
+          "after": "\n"
+        },
+        {
+          "start": 1721,
+          "end": 1723,
+          "before": "f:",
+          "after": ""
+        },
+        {
+          "start": 1724,
+          "end": 1733,
+          "before": "lambda(m)",
+          "after": " "
+        },
+        {
+          "start": 1758,
+          "end": 1759,
+          "before": "m",
+          "after": "current"
+        },
+        {
+          "start": 1768,
+          "end": 1771,
+          "before": "ord",
+          "after": "valu"
+        },
+        {
+          "start": 1772,
+          "end": 1785,
+          "before": "r) end lambda",
+          "after": ""
+        },
+        {
+          "start": 1836,
+          "end": 1839,
+          "before": "cat",
+          "after": "k"
+        },
+        {
+          "start": 1840,
+          "end": 1843,
+          "before": "gor",
+          "after": ""
+        },
+        {
+          "start": 1846,
+          "end": 1846,
+          "before": "",
+          "after": "valu"
+        },
+        {
+          "start": 1847,
+          "end": 1851,
+          "before": "ntry",
+          "after": ""
+        },
+        {
+          "start": 1878,
+          "end": 1881,
+          "before": "cat",
+          "after": "k"
+        },
+        {
+          "start": 1882,
+          "end": 1885,
+          "before": "gor",
+          "after": ""
+        },
+        {
+          "start": 1902,
+          "end": 1902,
+          "before": "",
+          "after": "valu"
+        },
+        {
+          "start": 1903,
+          "end": 1907,
+          "before": "ntry",
+          "after": ""
+        },
+        {
+          "start": 1932,
+          "end": 1932,
+          "before": "",
+          "after": "valu"
+        },
+        {
+          "start": 1933,
+          "end": 1937,
+          "before": "ntry",
+          "after": ""
+        },
+        {
+          "start": 2073,
+          "end": 2076,
+          "before": "sum",
+          "after": "acc"
+        },
+        {
+          "start": 2078,
+          "end": 2078,
+          "before": "",
+          "after": "valu"
+        },
+        {
+          "start": 2079,
+          "end": 2083,
+          "before": "ntry",
+          "after": ""
+        },
+        {
+          "start": 2092,
+          "end": 2095,
+          "before": "sum",
+          "after": "acc"
+        },
+        {
+          "start": 2110,
+          "end": 2110,
+          "before": "",
+          "after": "valu"
+        },
+        {
+          "start": 2111,
+          "end": 2115,
+          "before": "ntry",
+          "after": ""
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/process_run/reference.bnt",
+      "original_sha256": "b4b09ff9cfe54009ffaff883781d38f175534b3dc25dd672df5817c2db7c6080",
+      "after_initial_manifest_sha256": "340da8ecc4f0329481a7b2db3a1b26bfb683490cc0b8f9e7bf7c7fdc52f71130",
+      "final_sha256": "40697ffff7e4e61aeaeb81c0d99fcdfe438e488f259af23f9b357ffbe34f0306",
+      "edits": [
+        {
+          "start": 264,
+          "end": 264,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 266,
+          "end": 266,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 282,
+          "end": 282,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 510,
+          "end": 510,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 512,
+          "end": 512,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 528,
+          "end": 528,
+          "before": "",
+          "after": "(error) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/process_shell/reference.bnt",
+      "original_sha256": "b9a004627378ef1e708b17868557efc9a08463d5dec60a5ce491c873c8a06aee",
+      "after_initial_manifest_sha256": "6837a27d03245dbc990f54c49deba2c961dcab926d6e4ff471faaa6d7f3c7fa4",
+      "final_sha256": "27f14a2f7723de5f04431f2481f4215c16f39bfc440c8b2ec23f8973d81d0ed2",
+      "edits": [
+        {
+          "start": 268,
+          "end": 268,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 270,
+          "end": 270,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 286,
+          "end": 286,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 602,
+          "end": 602,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 604,
+          "end": 604,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 620,
+          "end": 620,
+          "before": "",
+          "after": "(error) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/regex_text/reference.bnt",
+      "original_sha256": "2d69ececc4f02827a0aaafadbd4b9a69d0cbfc0f805b9c244dfeffa80e1ce6bd",
+      "after_initial_manifest_sha256": "fbf782afe78904a91861b5fb968abccd62981d8addb1e84d60400dc67b6623d3",
+      "final_sha256": "58b2689c64faa75ad12872595c1aacd58ab9de7c235094881df16dd524fdb023",
+      "edits": [
+        {
+          "start": 248,
+          "end": 248,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 250,
+          "end": 250,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 266,
+          "end": 266,
+          "before": "",
+          "after": "(error) end lambda"
+        },
+        {
+          "start": 513,
+          "end": 514,
+          "before": "m",
+          "after": "value"
+        },
+        {
+          "start": 576,
+          "end": 577,
+          "before": "m",
+          "after": "value"
+        },
+        {
+          "start": 1080,
+          "end": 1080,
+          "before": "",
+          "after": "lambda(value) return "
+        },
+        {
+          "start": 1095,
+          "end": 1095,
+          "before": "",
+          "after": "(value) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    },
+    {
+      "path": "tools/skill-eval/tasks/write_tests/reference.bnt",
+      "original_sha256": "501ee99ebc3724ed4b8ea64b630a3cc1cb9ee32d4f0c37b2ca755f183eec6162",
+      "after_initial_manifest_sha256": "b01f6e96d46412c058a431c7050f4932395a8736ca8f1860565d46dae4d2f7cd",
+      "final_sha256": "52abd1a8b740d7ba90b00d0580db1148e2842a8ab91c4c2f6ba4ee58b1230324",
+      "edits": [
+        {
+          "start": 639,
+          "end": 639,
+          "before": "",
+          "after": "r: "
+        },
+        {
+          "start": 641,
+          "end": 641,
+          "before": "",
+          "after": " f: lambda(error) return"
+        },
+        {
+          "start": 657,
+          "end": 657,
+          "before": "",
+          "after": "(error) end lambda"
+        }
+      ],
+      "replay_matches": true,
+      "changed": true
+    }
+  ]
+}

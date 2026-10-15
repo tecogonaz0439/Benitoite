@@ -8,6 +8,6 @@ end function
 function main() -> Unit uses Console.Write
   bind values <- [10, 20, 30]
   bind divisor <- 0
-  bind ratios <- List.map(values, lambda(value) return ratio(value, divisor) + 1 end lambda)
+  bind ratios <- List.map(xs: values, f: lambda(value) return ratio(a: value, b: divisor) + 1 end lambda)
   return Console.writeLine(Integer.toString(List.length(ratios)))
 end function

@@ -1,0 +1,10 @@
+--- a/crates/benitoite/testdata/syntax/uses_then_bracket.bnt
++++ b/crates/benitoite/testdata/syntax/uses_then_bracket.bnt
+@@ -1,6 +1,6 @@
+ // spec: 01-02 文法
+ import Benitoite.Unofficial.IO.Console
+ 
+-function bad(callback: function(action: function() -> Unit uses Console.Write, values: List[Integer]) -> Unit) -> Unit
++function bad(callback: function(action: function() -> Unit uses Console.Write, List[Integer]) -> Unit) -> Unit
+   return ()
+ end function

@@ -1,0 +1,20 @@
+[
+  {
+    "path": "crates/benitoite/testdata/syntax/dot_after_value.diag.json",
+    "reason": "E0203 の案内を最終の名前付き呼び出しにする。位置・コード・終了状態は不変。",
+    "before": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0203\",\"message\":\"`.` cannot follow a value\",\"primary\":{\"file\":\"testdata/syntax/dot_after_value.bnt\",\"start\":{\"line\":8,\"column\":15,\"offset\":157},\"end\":{\"line\":8,\"column\":19,\"offset\":161},\"label\":\"method-call syntax is not supported\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"pass the value with a pipe, such as `xs |> List.map(f)`\",\"edits\":[]},{\"message\":\"read a record field with its field function, such as `Person.name(p)` or `p |> Person.name`\",\"edits\":[]}]}\n",
+    "after": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0203\",\"message\":\"`.` cannot follow a value\",\"primary\":{\"file\":\"testdata/syntax/dot_after_value.bnt\",\"start\":{\"line\":8,\"column\":15,\"offset\":157},\"end\":{\"line\":8,\"column\":19,\"offset\":161},\"label\":\"method-call syntax is not supported\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"pass the value with a pipe, such as `xs |> List.map(f: f)`\",\"edits\":[]},{\"message\":\"read a record field with its field function, such as `Person.name(p)` or `p |> Person.name`\",\"edits\":[]}]}\n"
+  },
+  {
+    "path": "crates/benitoite/testdata/types/f20-interpolation-no-show.diag.json",
+    "reason": "関数型の表示に実名 x を必ず含める。元の E0422・位置・終了状態を維持する。",
+    "before": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0422\",\"message\":\"a value of type `function(Integer) -> Integer` cannot be interpolated into a string\",\"primary\":{\"file\":\"testdata/types/f20-interpolation-no-show.bnt\",\"start\":{\"line\":4,\"column\":16,\"offset\":99},\"end\":{\"line\":4,\"column\":54,\"offset\":137},\"label\":\"\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"convert the value to a `String` before interpolating it\",\"edits\":[]}]}\n",
+    "after": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0422\",\"message\":\"a value of type `function(x: Integer) -> Integer` cannot be interpolated into a string\",\"primary\":{\"file\":\"testdata/types/f20-interpolation-no-show.bnt\",\"start\":{\"line\":4,\"column\":16,\"offset\":99},\"end\":{\"line\":4,\"column\":54,\"offset\":137},\"label\":\"\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"convert the value to a `String` before interpolating it\",\"edits\":[]}]}\n"
+  },
+  {
+    "path": "crates/benitoite/testdata/types/named-required-pipe.diag.json",
+    "reason": "既知の契約と個数から一意に決まる right の挿入を追加する。引数式・評価順を変えず、厳密な編集位置を検査する。",
+    "before": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0449\",\"message\":\"this function requires named arguments\",\"primary\":{\"file\":\"testdata/types/named-required-pipe.bnt\",\"start\":{\"line\":9,\"column\":25,\"offset\":356},\"end\":{\"line\":9,\"column\":26,\"offset\":357},\"label\":\"\"},\"secondary\":[],\"notes\":[\"available parameters, in declaration order: `left`, `right`\"],\"helps\":[]}\n",
+    "after": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0449\",\"message\":\"this function requires named arguments\",\"primary\":{\"file\":\"testdata/types/named-required-pipe.bnt\",\"start\":{\"line\":9,\"column\":25,\"offset\":356},\"end\":{\"line\":9,\"column\":26,\"offset\":357},\"label\":\"\"},\"secondary\":[],\"notes\":[\"available parameters, in declaration order: `left`, `right`\"],\"helps\":[{\"message\":\"add the parameter names in declaration order\",\"edits\":[{\"file\":\"testdata/types/named-required-pipe.bnt\",\"start\":{\"line\":9,\"column\":25,\"offset\":356},\"end\":{\"line\":9,\"column\":25,\"offset\":356},\"replacement\":\"right: \"}]}]}\n"
+  }
+]

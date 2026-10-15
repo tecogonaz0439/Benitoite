@@ -16,16 +16,16 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
   bind path <- try Runner.argument(1)
   bind count <- try Runner.rounds(2)
   bind source <- "[a-z]+[0-9]+"
-  bind input <- try Result.mapError(File.readText(path), lambda(e: IOError) -> String return IOError.message(e) end lambda)
+  bind input <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
   bind pattern <- try Pattern.compile(source)
   if task = "match" then
-    return Runner.measure(count, lambda() -> Result[Boolean, String] uses State return Result.Ok(Pattern.isMatch(pattern, input)) end lambda, lambda(b: Boolean) -> String return if b then "true" else "false" end if end lambda)
+    return Runner.measure(count: count, work: lambda() -> Result[Boolean, String] uses State return Result.Ok(Pattern.isMatch(pattern: pattern, text: input)) end lambda, render: lambda(value: Boolean) -> String return if value then "true" else "false" end if end lambda)
   end if
   if task = "count" then
-    return Runner.measure(count, lambda() -> Result[Integer, String] uses State return Result.Ok(Pattern.count(pattern, input)) end lambda, Integer.toString)
+    return Runner.measure(count: count, work: lambda() -> Result[Integer, String] uses State return Result.Ok(Pattern.count(pattern: pattern, text: input)) end lambda, render: lambda(value) -> String return Integer.toString(value) end lambda)
   end if
   if task = "find-all" then
-    return Runner.measure(count, lambda() -> Result[Integer, String] uses State return Result.Ok(List.length(Pattern.findAll(pattern, input))) end lambda, Integer.toString)
+    return Runner.measure(count: count, work: lambda() -> Result[Integer, String] uses State return Result.Ok(List.length(Pattern.findAll(pattern: pattern, text: input))) end lambda, render: lambda(value) -> String return Integer.toString(value) end lambda)
   end if
   return Result.Error("unknown Regex task")
 end function

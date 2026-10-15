@@ -57,99 +57,99 @@ public function contains[T: equality](xs: List[T], x: T) -> Boolean
 public function sort[T: ordered](xs: List[T]) -> List[T]
 
 /// Returns the list of `f` applied to each element.
-public function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E) -> List[U] uses E
-  return mapFrom(xs, f, 0, [])
+public function map[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E) -> List[U] uses E
+  return mapFrom(xs: xs, f: f, i: 0, acc: [])
 end function
 
-function mapFrom[T, U, effect E](xs: List[T], f: function(T) -> U uses E, i: Integer, acc: List[U]) -> List[U] uses E
-  return match get(xs, i) with
+function mapFrom[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E, i: Integer, acc: List[U]) -> List[U] uses E
+  return match get(xs: xs, i: i) with
     case Option.None -> acc
     case Option.Some(x) ->
       bind y <- f(x)
-      mapFrom(xs, f, i + 1, append(acc, y))
+      mapFrom(xs: xs, f: f, i: i + 1, acc: append(xs: acc, x: y))
   end match
 end function
 
 /// Returns the elements for which `p` returns `true`, in order.
-public function filter[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> List[T] uses E
-  return filterFrom(xs, p, 0, [])
+public function filter[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> List[T] uses E
+  return filterFrom(xs: xs, p: p, i: 0, acc: [])
 end function
 
-function filterFrom[T, effect E](xs: List[T], p: function(T) -> Boolean uses E, i: Integer, acc: List[T]) -> List[T] uses E
-  return match get(xs, i) with
+function filterFrom[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E, i: Integer, acc: List[T]) -> List[T] uses E
+  return match get(xs: xs, i: i) with
     case Option.None -> acc
     case Option.Some(x) ->
       if p(x) then
-        filterFrom(xs, p, i + 1, append(acc, x))
+        filterFrom(xs: xs, p: p, i: i + 1, acc: append(xs: acc, x: x))
       else
-        filterFrom(xs, p, i + 1, acc)
+        filterFrom(xs: xs, p: p, i: i + 1, acc: acc)
       end if
   end match
 end function
 
 /// Combines the elements from the first with `f`, starting from `initial`.
-public function fold[T, A, effect E](xs: List[T], initial: A, f: function(A, T) -> A uses E) -> A uses E
-  return foldFrom(xs, initial, f, 0)
+public function fold[T, A, effect E](xs: List[T], initial: A, f: function(acc: A, value: T) -> A uses E) -> A uses E
+  return foldFrom(xs: xs, acc: initial, f: f, i: 0)
 end function
 
-function foldFrom[T, A, effect E](xs: List[T], acc: A, f: function(A, T) -> A uses E, i: Integer) -> A uses E
-  return match get(xs, i) with
+function foldFrom[T, A, effect E](xs: List[T], acc: A, f: function(acc: A, value: T) -> A uses E, i: Integer) -> A uses E
+  return match get(xs: xs, i: i) with
     case Option.None -> acc
-    case Option.Some(x) -> foldFrom(xs, f(acc, x), f, i + 1)
+    case Option.Some(x) -> foldFrom(xs: xs, acc: f(acc: acc, value: x), f: f, i: i + 1)
   end match
 end function
 
 /// Calls `f` with each element in order.
-public function forEach[T, effect E](xs: List[T], f: function(T) -> Unit uses E) -> Unit uses E
-  return forEachFrom(xs, f, 0)
+public function forEach[T, effect E](xs: List[T], f: function(value: T) -> Unit uses E) -> Unit uses E
+  return forEachFrom(xs: xs, f: f, i: 0)
 end function
 
-function forEachFrom[T, effect E](xs: List[T], f: function(T) -> Unit uses E, i: Integer) -> Unit uses E
-  return match get(xs, i) with
+function forEachFrom[T, effect E](xs: List[T], f: function(value: T) -> Unit uses E, i: Integer) -> Unit uses E
+  return match get(xs: xs, i: i) with
     case Option.None -> ()
     case Option.Some(x) ->
       f(x)
-      forEachFrom(xs, f, i + 1)
+      forEachFrom(xs: xs, f: f, i: i + 1)
   end match
 end function
 
 /// Returns whether `p` returns `true` for some element. Stops calling `p` at the first `true`.
-public function any[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> Boolean uses E
-  return anyFrom(xs, p, 0)
+public function any[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Boolean uses E
+  return anyFrom(xs: xs, p: p, i: 0)
 end function
 
-function anyFrom[T, effect E](xs: List[T], p: function(T) -> Boolean uses E, i: Integer) -> Boolean uses E
-  return match get(xs, i) with
+function anyFrom[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E, i: Integer) -> Boolean uses E
+  return match get(xs: xs, i: i) with
     case Option.None -> false
-    case Option.Some(x) -> p(x) or anyFrom(xs, p, i + 1)
+    case Option.Some(x) -> p(x) or anyFrom(xs: xs, p: p, i: i + 1)
   end match
 end function
 
 /// Returns whether `p` returns `true` for every element. Stops calling `p` at the first `false`.
-public function all[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> Boolean uses E
-  return allFrom(xs, p, 0)
+public function all[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Boolean uses E
+  return allFrom(xs: xs, p: p, i: 0)
 end function
 
-function allFrom[T, effect E](xs: List[T], p: function(T) -> Boolean uses E, i: Integer) -> Boolean uses E
-  return match get(xs, i) with
+function allFrom[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E, i: Integer) -> Boolean uses E
+  return match get(xs: xs, i: i) with
     case Option.None -> true
-    case Option.Some(x) -> p(x) and allFrom(xs, p, i + 1)
+    case Option.Some(x) -> p(x) and allFrom(xs: xs, p: p, i: i + 1)
   end match
 end function
 
 /// Returns the first element for which `p` returns `true`, or `Option.None` when there is none.
-public function find[T, effect E](xs: List[T], p: function(T) -> Boolean uses E) -> Option[T] uses E
-  return findFrom(xs, p, 0)
+public function find[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Option[T] uses E
+  return findFrom(xs: xs, p: p, i: 0)
 end function
 
-function findFrom[T, effect E](xs: List[T], p: function(T) -> Boolean uses E, i: Integer) -> Option[T] uses E
-  return match get(xs, i) with
+function findFrom[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E, i: Integer) -> Option[T] uses E
+  return match get(xs: xs, i: i) with
     case Option.None -> Option.None
     case Option.Some(x) ->
       if p(x) then
         Option.Some(x)
       else
-        findFrom(xs, p, i + 1)
+        findFrom(xs: xs, p: p, i: i + 1)
       end if
   end match
 end function

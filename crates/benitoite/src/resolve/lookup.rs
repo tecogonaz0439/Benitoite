@@ -17,6 +17,7 @@ pub(super) struct Ctx {
     pub(super) types: BTreeMap<String, BindingId>,
     pub(super) scopes: Vec<BTreeMap<String, BindingId>>,
     pub(super) used: Vec<(BindingId, Span)>,
+    pub(super) record_values: bool,
 }
 
 impl Ctx {
@@ -27,6 +28,7 @@ impl Ctx {
             types: BTreeMap::new(),
             scopes: Vec::new(),
             used: Vec::new(),
+            record_values: true,
         }
     }
     pub(super) fn local(&self, name: &str) -> Option<BindingId> {
@@ -290,8 +292,23 @@ impl Resolver<'_> {
         position: Position,
     ) -> Option<BindingId> {
         let id = self.raw_name(ctx, node, path, position)?;
+        self.checked_name(ctx, node, path, position, id)
+    }
+
+    fn checked_name(
+        &mut self,
+        ctx: &mut Ctx,
+        node: NodeId,
+        path: &[Name],
+        position: Position,
+        id: BindingId,
+    ) -> Option<BindingId> {
         let binding = self.out.bindings.get(id)?;
-        if !position.accepts(binding.kind) {
+        if !position.accepts(binding.kind)
+            && !(ctx.record_values
+                && position == Position::Value
+                && binding.kind == BindingKind::Record)
+        {
             let code = if position == Position::Type
                 && matches!(
                     binding.kind,
@@ -323,6 +340,34 @@ impl Resolver<'_> {
         }
         self.record_ref(ctx, node, id, path.first()?.span.to(path.last()?.span));
         Some(id)
+    }
+
+    /// レコードと直接のデータ構成子は束縛の種類で区別する（設計書 02-04「名前の引き方」）。
+    pub(super) fn record_call_name(
+        &mut self,
+        ctx: &mut Ctx,
+        node: NodeId,
+        path: &[Name],
+        label: Option<Span>,
+    ) -> Option<BindingId> {
+        let raw = self.raw_name(ctx, node, path, Position::Record)?;
+        let id = self.final_name(raw, Position::Ctor);
+        if self
+            .out
+            .bindings
+            .get(id)
+            .is_some_and(|b| matches!(b.kind, BindingKind::Ctor { .. }))
+            && let Some(span) = label
+        {
+            self.out.diagnostics.push(
+                DiagBuilder::new(DiagCode::E0456)
+                    .primary(span)
+                    .help("bind")
+                    .build(),
+            );
+            return None;
+        }
+        self.checked_name(ctx, node, path, Position::Record, raw)
     }
 
     fn raw_name(

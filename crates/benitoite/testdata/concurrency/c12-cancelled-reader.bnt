@@ -19,8 +19,8 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
   bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
   bind winner <- Task.race([
     lambda()
-      with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
-        Reference.set(saved, Option.Some(reader))
+      with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+        Reference.set(reference: saved, value: Option.Some(reader))
         Clock.sleep(3600000)
         return Result.Ok(1)
       end with

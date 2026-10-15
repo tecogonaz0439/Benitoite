@@ -19,8 +19,8 @@ function main ( ) -> Unit uses Console.Write
   bind q <- Person( .. p , age : 2 )
   bind xs <- [ 1 , 2 , 3 ]
   bind n : Integer <- - ( 1 + 1 )
-  bind inc <- lambda (x : Integer) return x+1 end lambda
-  bind ys <- xs |> List . map( inc )
+  bind inc <- lambda (value : Integer) return value+1 end lambda
+  bind ys <- xs |> List . map( f: inc )
   bind ok <- not ( n > 0 and n<10 )
   Console . writeLine( "n=${ n } ok=${ ok } ys=${ ys }" )
 end function

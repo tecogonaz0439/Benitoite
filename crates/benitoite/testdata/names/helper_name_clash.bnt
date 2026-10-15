@@ -7,7 +7,7 @@ function mapFrom(value: Integer) -> Integer
 end function
 
 function main() -> Unit uses Console.Write
-  bind values <- [1, 2] |> List.map(lambda(value) return value + 1 end lambda)
+  bind values <- [1, 2] |> List.map(f: lambda(value) return value + 1 end lambda)
   bind result <- mapFrom(1) + List.length(values)
   return Console.writeLine(Integer.toString(result))
 end function

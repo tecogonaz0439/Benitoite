@@ -118,7 +118,7 @@ function checkpoint() -> Unit
 end function
 function main() -> Result[Unit, String] uses State
  bind task <- with group = TaskGroup.open() do
-  TaskGroup.spawn(group, work)
+  TaskGroup.spawn(group: group, action: work)
  end with
  checkpoint()
  bind text <- Task.await(task)
@@ -134,7 +134,7 @@ end function
     let closed = r#"
 function main() -> Unit uses State
  bind closed <- with group = TaskGroup.open() do group end with
- bind _ <- TaskGroup.spawn(closed, lambda() return () end lambda)
+ bind _ <- TaskGroup.spawn(group: closed, action: lambda() return () end lambda)
  return ()
 end function
 "#;
@@ -167,12 +167,12 @@ function main() -> Result[Unit, String] uses State
  bind r <- Reference.new(0)
  with group = TaskGroup.open() do
   bind text <- handle
-   bind first <- TaskGroup.spawn(group, lambda()
-    bind second <- TaskGroup.spawn(group, lambda()
-     Reference.set(r, ask(wrapped()))
+   bind first <- TaskGroup.spawn(group: group, action: lambda()
+    bind second <- TaskGroup.spawn(group: group, action: lambda()
+     Reference.set(reference: r, value: ask(wrapped()))
      return ()
     end lambda)
-    Reference.set(r, ask(1))
+    Reference.set(reference: r, value: ask(1))
     return ()
    end lambda)
    "saved" + " return"
@@ -206,7 +206,7 @@ fn inherited_non_tail_clause_stops_before_executing_it() {
 function main() -> Unit uses State
  with group = TaskGroup.open() do
   bind _ <- handle
-   bind child <- TaskGroup.spawn(group, lambda() return ask(1) end lambda)
+   bind child <- TaskGroup.spawn(group: group, action: lambda() return ask(1) end lambda)
    0
   with case ask(n) -> n end handle
  end with
@@ -308,7 +308,7 @@ function pause(n: Integer) -> Integer
 end function
 function main() -> Result[Unit, String] uses State
  bind r <- Reference.new(0)
- bind _ <- Task.all([lambda() return Reference.update(r, lambda(n: Integer) return n + pause(5) end lambda) end lambda, lambda() return Reference.set(r, 100) end lambda])
+ bind _ <- Task.all([lambda() return Reference.update(reference: r, f: lambda(value: Integer) return value + pause(5) end lambda) end lambda, lambda() return Reference.set(reference: r, value: 100) end lambda])
  bind n <- Reference.get(r)
  if n = 101 then return Result.Ok(()) else return Result.Error(Integer.toString(n)) end if
 end function
@@ -334,20 +334,20 @@ function main() -> Unit uses State
  bind a <- Reference.new(Option.None)
  bind b <- Reference.new(Option.None)
  with group = TaskGroup.open() do
-  bind ta <- TaskGroup.spawn(group, lambda()
+  bind ta <- TaskGroup.spawn(group: group, action: lambda()
    bind other <- Reference.get(b)
    match other with case Option.Some(t) -> Task.await(t) 
    case Option.None -> () end match
    return ()
   end lambda)
-  bind tb <- TaskGroup.spawn(group, lambda()
+  bind tb <- TaskGroup.spawn(group: group, action: lambda()
    bind other <- Reference.get(a)
    match other with case Option.Some(t) -> Task.await(t) 
    case Option.None -> () end match
    return ()
   end lambda)
-  Reference.set(a, Option.Some(ta))
-  Reference.set(b, Option.Some(tb))
+  Reference.set(reference: a, value: Option.Some(ta))
+  Reference.set(reference: b, value: Option.Some(tb))
  end with
  return ()
 end function
@@ -390,12 +390,12 @@ function count(n: Integer) -> Integer
 end function
 function main() -> Result[Unit, String] uses State
  with group = TaskGroup.open() do
-  bind first <- TaskGroup.spawn(group, lambda()
+  bind first <- TaskGroup.spawn(group: group, action: lambda()
    checkpoint()
-   bind _ <- TaskGroup.spawn(group, lambda() return count(6) end lambda)
+   bind _ <- TaskGroup.spawn(group: group, action: lambda() return count(6) end lambda)
    return count(6)
   end lambda)
-  bind second <- TaskGroup.spawn(group, lambda() return count(6) end lambda)
+  bind second <- TaskGroup.spawn(group: group, action: lambda() return count(6) end lambda)
   bind _ <- Task.await(first)
  end with
  return Result.Ok(())
@@ -492,7 +492,7 @@ end function
 function main() -> Result[Unit, String] uses State
  with group = TaskGroup.open() do
   bind task <- handle
-   TaskGroup.spawn(group, lambda() return repeat({count}) end lambda)
+   TaskGroup.spawn(group: group, action: lambda() return repeat({count}) end lambda)
   with case ask(n) -> resume(n) end handle
   bind n <- Task.await(task)
   if n = 42 then return Result.Ok(()) else return Result.Error("resume") end if
@@ -528,8 +528,8 @@ end function
 function main() -> Unit uses State
  with group = TaskGroup.open() do
   bind _ <- handle
-   bind first <- TaskGroup.spawn(group, lambda() return 1 div 0 end lambda)
-   bind second <- TaskGroup.spawn(group, lambda() return busy(100000) end lambda)
+   bind first <- TaskGroup.spawn(group: group, action: lambda() return 1 div 0 end lambda)
+   bind second <- TaskGroup.spawn(group: group, action: lambda() return busy(100000) end lambda)
    ()
   with case ask(n) -> resume(n) end handle
  end with
@@ -1009,7 +1009,7 @@ function main() -> Unit uses State
         pause(50)
         0
        end lazy
-       Reference.set(saved, Option.Some(value))
+       Reference.set(reference: saved, value: Option.Some(value))
        bind _ <- Lazy.force(value)
        ask(0)
       end with
@@ -1249,7 +1249,7 @@ function checkpoint() -> Unit
 end function
 function main() -> Result[Unit, String] uses State
  with group = TaskGroup.open() do
-  bind task <- TaskGroup.spawn(group, lambda() return "await" + " result" end lambda)
+  bind task <- TaskGroup.spawn(group: group, action: lambda() return "await" + " result" end lambda)
   bind value <- Task.await(task)
   checkpoint()
   if value = "await result" then return Result.Ok(()) else return Result.Error(value) end if
@@ -1367,7 +1367,7 @@ fn completed_children_do_not_accumulate_in_groups_or_spawners() {
         "function main() -> Result[Unit, String] uses State\n with group = TaskGroup.open() do\n",
     );
     for n in 0..64 {
-        source.push_str(&format!("  bind task{n} <- TaskGroup.spawn(group, lambda() return 42 end lambda)\n  bind value{n} <- Task.await(task{n})\n  if value{n} <> 42 then return Result.Error(\"result\") end if\n"));
+        source.push_str(&format!("  bind task{n} <- TaskGroup.spawn(group: group, action: lambda() return 42 end lambda)\n  bind value{n} <- Task.await(task{n})\n  if value{n} <> 42 then return Result.Error(\"result\") end if\n"));
     }
     source.push_str(" end with\n return Result.Ok(())\nend function\n");
     let program = compile(&source);

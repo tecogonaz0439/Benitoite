@@ -122,7 +122,7 @@ fn injected_parts_wait_for_output_before_reading_stdin() {
 import Benitoite.Unofficial.IO.Console
 function main() -> Result[Unit,String] uses Console.Write,Console.Read
  Console.write("Name: ")
- bind name <- try Console.readLine() |> Result.mapError(_,IOError.message)
+ bind name <- try Console.readLine() |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
  return if name = Option.Some("Ada") then Result.Ok(()) else Result.Error("unexpected input") end if
 end function
 "#,
@@ -185,8 +185,8 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.IO.File
 function main() -> Result[Unit,String] uses File.Read,State,Console.Write,Process.Exit
- with reader = try File.openReader("Cargo.toml") |> Result.mapError(_,IOError.message) do
-  bind _ <- try File.readLine(reader) |> Result.mapError(_,IOError.message)
+ with reader = try File.openReader("Cargo.toml") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do
+  bind _ <- try File.readLine(reader) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
   Console.write("before exit")
   Process.exit(3)
   Console.write("after exit")
@@ -224,42 +224,42 @@ fn map_and_set_source_functions_call_in_key_order_once_and_use_the_results() {
     let cases = [
         (
             "Map.map",
-            "Map.map(m, lambda(k, v) record_visit(log, k * 100 + v)\nreturn k + v end lambda)",
+            "Map.map(m: m, f: lambda(key, value)\n record_visit(log: log, n: key * 100 + value)\nreturn key + value end lambda)",
             "Map.toList(result) = mapped",
         ),
         (
             "Map.filter",
-            "Map.filter(m, lambda(k, v) record_visit(log, k * 100 + v)\nreturn k <> 2 end lambda)",
+            "Map.filter(m: m, p: lambda(key, value)\n record_visit(log: log, n: key * 100 + value)\nreturn key <> 2 end lambda)",
             "Map.toList(result) = filteredMap",
         ),
         (
             "Map.fold",
-            "Map.fold(m, 7, lambda(acc, k, v) record_visit(log, k * 100 + v)\nreturn acc + k + v end lambda)",
+            "Map.fold(m: m, initial: 7, f: lambda(acc, key, value)\n record_visit(log: log, n: key * 100 + value)\nreturn acc + key + value end lambda)",
             "result = foldedMap",
         ),
         (
             "Map.forEach",
-            "Map.forEach(m, lambda(k, v) return record_visit(log, k * 100 + v) end lambda)",
+            "Map.forEach(m: m, f: lambda(key, value) return record_visit(log: log, n: key * 100 + value) end lambda)",
             "result = ()",
         ),
         (
             "Set.map",
-            "Set.map(s, lambda(k) record_visit(log, k * 110)\nreturn 1 end lambda)",
+            "Set.map(s: s, f: lambda(value)\n record_visit(log: log, n: value * 110)\nreturn 1 end lambda)",
             "Set.toList(result) = mappedSet",
         ),
         (
             "Set.filter",
-            "Set.filter(s, lambda(k) record_visit(log, k * 110)\nreturn k <> 2 end lambda)",
+            "Set.filter(s: s, p: lambda(value)\n record_visit(log: log, n: value * 110)\nreturn value <> 2 end lambda)",
             "Set.toList(result) = filteredSet",
         ),
         (
             "Set.fold",
-            "Set.fold(s, 7, lambda(acc, k) record_visit(log, k * 110)\nreturn acc * 10 + k end lambda)",
+            "Set.fold(s: s, initial: 7, f: lambda(acc, value)\n record_visit(log: log, n: value * 110)\nreturn acc * 10 + value end lambda)",
             "result = foldedSet",
         ),
         (
             "Set.forEach",
-            "Set.forEach(s, lambda(k) return record_visit(log, k * 110) end lambda)",
+            "Set.forEach(s: s, f: lambda(value) return record_visit(log: log, n: value * 110) end lambda)",
             "result = ()",
         ),
     ];
@@ -298,7 +298,7 @@ fn map_and_set_source_functions_call_in_key_order_once_and_use_the_results() {
             let source = format!(
                 r#"
 function record_visit(log: Reference[List[Integer]], n: Integer) -> Unit uses State
-  return Reference.set(log, List.append(Reference.get(log), n))
+  return Reference.set(reference: log, value: List.append(xs: Reference.get(log), x: n))
 end function
 function main() -> Result[Unit, String] uses State
   bind m: Map[Integer, Integer] <- Map.fromList([{pairs}])
@@ -349,15 +349,15 @@ function main() -> Result[Unit, String] uses Console.Write
   bind s <- Set.fromList([2, 1])
   Console.writeLine(Trait.Show.show(m))
   Console.writeLine(Trait.Show.show(s))
-  Console.writeLine(Trait.Show.show(Trait.Semigroup.combine(m, Map.fromList([Pair(1, "new"), Pair(3, "c")]))))
-  Console.writeLine(Trait.Show.show(Trait.Semigroup.combine(s, Set.fromList([3, 2]))))
+  Console.writeLine(Trait.Show.show(Trait.Semigroup.combine(x: m, y: Map.fromList([Pair(1, "new"), Pair(3, "c")]))))
+  Console.writeLine(Trait.Show.show(Trait.Semigroup.combine(x: s, y: Set.fromList([3, 2]))))
   bind emptyMap: Map[Integer, String] <- Trait.Monoid.empty()
   bind emptySet: Set[Integer] <- Trait.Monoid.empty()
   Console.writeLine(Trait.Show.show(emptyMap))
   Console.writeLine(Trait.Show.show(emptySet))
-  bind d <- Trait.Semigroup.combine(Map.fromList([Pair(1.0m, "old")]), Map.fromList([Pair(1.00m, "new")]))
-  bind preserved <- Decimal.toString(List.head(Map.keys(d)) |> Option.unwrapOr(_, 0m)) = "1.0" and Map.get(d, 1.00m) = Option.Some("new")
-  return if preserved and Map.toList(Trait.Semigroup.combine(emptyMap, m)) = Map.toList(m) and Map.toList(Trait.Semigroup.combine(m, emptyMap)) = Map.toList(m) and Set.toList(Trait.Semigroup.combine(emptySet, s)) = Set.toList(s) and Set.toList(Trait.Semigroup.combine(s, emptySet)) = Set.toList(s) and Map.toList(m) = [Pair(1, "a"), Pair(2, "b")] and Set.toList(s) = [1, 2] then
+  bind d <- Trait.Semigroup.combine(x: Map.fromList([Pair(1.0m, "old")]), y: Map.fromList([Pair(1.00m, "new")]))
+  bind preserved <- Decimal.toString(List.head(Map.keys(d)) |> Option.unwrapOr(o: _, fallback: 0m)) = "1.0" and Map.get(m: d, k: 1.00m) = Option.Some("new")
+  return if preserved and Map.toList(Trait.Semigroup.combine(x: emptyMap, y: m)) = Map.toList(m) and Map.toList(Trait.Semigroup.combine(x: m, y: emptyMap)) = Map.toList(m) and Set.toList(Trait.Semigroup.combine(x: emptySet, y: s)) = Set.toList(s) and Set.toList(Trait.Semigroup.combine(x: s, y: emptySet)) = Set.toList(s) and Map.toList(m) = [Pair(1, "a"), Pair(2, "b")] and Set.toList(s) = [1, 2] then
     Result.Ok(())
   else
     Result.Error("collection traits")
@@ -456,32 +456,32 @@ fn narrow_integer_standard_functions_keep_floor_and_truncation_distinct() {
         ("UnsignedInteger32", "u32", 0, 4294967295),
     ] {
         let mut checks = vec![
-            format!("{module}.minimum({low}{suffix}, {high}{suffix}) = {low}{suffix}"),
-            format!("{module}.minimum({high}{suffix}, {low}{suffix}) = {low}{suffix}"),
-            format!("{module}.maximum({low}{suffix}, {high}{suffix}) = {high}{suffix}"),
-            format!("{module}.maximum({high}{suffix}, {low}{suffix}) = {high}{suffix}"),
+            format!("{module}.minimum(a: {low}{suffix}, b: {high}{suffix}) = {low}{suffix}"),
+            format!("{module}.minimum(a: {high}{suffix}, b: {low}{suffix}) = {low}{suffix}"),
+            format!("{module}.maximum(a: {low}{suffix}, b: {high}{suffix}) = {high}{suffix}"),
+            format!("{module}.maximum(a: {high}{suffix}, b: {low}{suffix}) = {high}{suffix}"),
             format!("{module}.absolute({high}{suffix}) = {high}{suffix}"),
             format!("{module}.absolute(0{suffix}) = 0{suffix}"),
-            format!("{module}.floorDivide({low}{suffix}, 1{suffix}) = {low}{suffix}"),
-            format!("{module}.floorModulo({low}{suffix}, 1{suffix}) = 0{suffix}"),
+            format!("{module}.floorDivide(a: {low}{suffix}, b: 1{suffix}) = {low}{suffix}"),
+            format!("{module}.floorModulo(a: {low}{suffix}, b: 1{suffix}) = 0{suffix}"),
         ];
         let mut divisions = vec![(7, 3, 2, 1, 2, 1), (6, 3, 2, 0, 2, 0), (0, 3, 0, 0, 0, 0)];
         if low < 0 {
             checks.push(format!("{module}.absolute(-7{suffix}) = 7{suffix}"));
             checks.push(format!(
-                "{module}.floorModulo({low}{suffix}, -1{suffix}) = 0{suffix}"
+                "{module}.floorModulo(a: {low}{suffix}, b: -1{suffix}) = 0{suffix}"
             ));
             checks.push(format!(
-                "{module}.floorDivide({high}{suffix}, {low}{suffix}) = -1{suffix}"
+                "{module}.floorDivide(a: {high}{suffix}, b: {low}{suffix}) = -1{suffix}"
             ));
             checks.push(format!(
-                "{module}.floorModulo({high}{suffix}, {low}{suffix}) = -1{suffix}"
+                "{module}.floorModulo(a: {high}{suffix}, b: {low}{suffix}) = -1{suffix}"
             ));
             checks.push(format!(
-                "{module}.floorDivide({low}{suffix}, {high}{suffix}) = -2{suffix}"
+                "{module}.floorDivide(a: {low}{suffix}, b: {high}{suffix}) = -2{suffix}"
             ));
             checks.push(format!(
-                "{module}.floorModulo({low}{suffix}, {high}{suffix}) = {}{suffix}",
+                "{module}.floorModulo(a: {low}{suffix}, b: {high}{suffix}) = {}{suffix}",
                 high - 1
             ));
             divisions.extend([
@@ -495,8 +495,8 @@ fn narrow_integer_standard_functions_keep_floor_and_truncation_distinct() {
         }
         for (a, b, q, r, trunc_q, trunc_r) in divisions {
             checks.extend([
-                format!("{module}.floorDivide({a}{suffix}, {b}{suffix}) = {q}{suffix}"),
-                format!("{module}.floorModulo({a}{suffix}, {b}{suffix}) = {r}{suffix}"),
+                format!("{module}.floorDivide(a: {a}{suffix}, b: {b}{suffix}) = {q}{suffix}"),
+                format!("{module}.floorModulo(a: {a}{suffix}, b: {b}{suffix}) = {r}{suffix}"),
                 format!("({a}{suffix} div {b}{suffix}) = {trunc_q}{suffix}"),
                 format!("({a}{suffix} mod {b}{suffix}) = {trunc_r}{suffix}"),
             ]);
@@ -530,11 +530,11 @@ fn fixed_width_integer_standard_functions_report_overflow_and_zero_divisors() {
     ] {
         let mut cases = vec![
             (
-                format!("{module}.floorDivide(1{suffix}, 0{suffix})"),
+                format!("{module}.floorDivide(a: 1{suffix}, b: 0{suffix})"),
                 DiagCode::R0101,
             ),
             (
-                format!("{module}.floorModulo(1{suffix}, 0{suffix})"),
+                format!("{module}.floorModulo(a: 1{suffix}, b: 0{suffix})"),
                 DiagCode::R0101,
             ),
         ];
@@ -542,7 +542,7 @@ fn fixed_width_integer_standard_functions_report_overflow_and_zero_divisors() {
             cases.extend([
                 (format!("{module}.absolute({low}{suffix})"), DiagCode::R0102),
                 (
-                    format!("{module}.floorDivide({low}{suffix}, -1{suffix})"),
+                    format!("{module}.floorDivide(a: {low}{suffix}, b: -1{suffix})"),
                     DiagCode::R0102,
                 ),
             ]);

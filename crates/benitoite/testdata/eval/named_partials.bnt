@@ -1,0 +1,64 @@
+// spec: 01-02 部分適用のプレースホルダ
+// spec: 01-08 評価順序
+import Benitoite.Unofficial.IO.Console
+data Pair
+ Pair(Integer, Integer)
+end data
+function target(a: Integer, b: Integer) -> Integer
+ return a * 100 + b
+end function
+type Callback = function(a: Integer, b: Integer) -> Integer
+function factory() -> Callback uses Console.Write
+ Console.writeLine(text: "callee")
+ return target
+end function
+function left() -> Integer uses Console.Write
+ Console.writeLine(text: "left")
+ return 17
+end function
+function fixed() -> Integer uses Console.Write
+ Console.writeLine(text: "fixed")
+ return 29
+end function
+function early() -> String uses Console.Write
+ bind action <- factory()(b: _, a: (return 71))
+ return Integer.toString(n: action(2))
+end function
+function calleeReturn() -> String uses Console.Write
+ bind action <- (if true then return 73 else factory() end if)(b: _, a: fixed())
+ return Integer.toString(n: action(2))
+end function
+function optional(a: Integer, b: Integer) -> Option[Integer]
+ bind wrap <- Option.Some
+ return wrap(arg1: a + b)
+end function
+function tried() -> String
+ bind action <- optional(b: _, a: try Option.None)
+ return match action(2) with
+  case Option.Some(value) -> Integer.toString(n: value)
+  case Option.None -> "none"
+ end match
+end function
+function main() -> Unit uses Console.Write
+ bind action <- factory()(b: _, a: fixed())
+ Console.writeLine(text: "created")
+ Console.writeLine(text: Integer.toString(n: action(2)))
+ Console.writeLine(text: Integer.toString(n: action(3)))
+ Console.writeLine(text: Integer.toString(n: left() |> factory()(b: fixed())))
+ Console.writeLine(text: Integer.toString(n: left() |> factory()(b: fixed(), a: _)))
+ bind reversed <- target(b: _, a: _)
+ Console.writeLine(text: Integer.toString(n: reversed(a: 1, b: 2)))
+ Console.writeLine(text: Integer.toString(n: 7 |> (Integer.absolute)))
+ Console.writeLine(text: early())
+ Console.writeLine(text: calleeReturn())
+ Console.writeLine(text: tried())
+ bind ctor <- Pair.Pair
+ bind makePair <- ctor(arg2: _, arg1: _)
+ bind direct: function(arg2: Integer) -> Pair <- Pair.Pair(1, _)
+ bind first <- makePair(arg1: 1, arg2: 2)
+ bind second <- 3 |> Pair.Pair(4)
+ bind third <- direct(arg2: 5)
+ Console.writeLine(text: match first with case Pair.Pair(a, b) -> Integer.toString(n: a * 10 + b) end match)
+ Console.writeLine(text: match second with case Pair.Pair(a, b) -> Integer.toString(n: a * 10 + b) end match)
+ Console.writeLine(text: match third with case Pair.Pair(a, b) -> Integer.toString(n: a * 10 + b) end match)
+end function

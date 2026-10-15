@@ -2,6 +2,8 @@
 
 Each diagnostic code with its message template and explanation. Words in braces such as `{name}` are filled in when the diagnostic is reported.
 
+For argument-label errors, compare the available parameter names in declaration order, but keep argument expressions in source order when adding labels. For E0454, match callback names at every position or use an explicit lambda wrapper. For E0455, add a function-type annotation with names; the order of call labels does not define a contract. See [Common mistakes](common-mistakes.md) and [Idioms](idioms.md#calls-callback-contracts-holes-and-pipes) for examples.
+
 ## E0101
 
 - Kind: check (error)
@@ -239,6 +241,7 @@ Integer suffixes can follow decimal, hexadecimal, octal, or binary integers. Flo
 - Kind: check (error)
 - Message: expected {expected}, found {found}
 - Label: unexpected {found}
+- `lambda_line`: put `end lambda` on the same physical line as the body, or start the body on the line after the lambda header
 - `type_arguments`: call functions without type arguments, such as `Map.empty()`; write the type on the binding, such as `bind m: Map[String, Integer] <- Map.empty()`, and use `List.get` to read list elements
 
 The parser found a token that cannot appear here.
@@ -257,7 +260,7 @@ Comparison operators are non-associative.
 - Kind: check (error)
 - Message: `.` cannot follow a value
 - Label: method-call syntax is not supported
-- `pipe`: pass the value with a pipe, such as `xs |> List.map(f)`
+- `pipe`: pass the value with a pipe, such as `xs |> List.map(f: f)`
 - `field`: read a record field with its field function, such as `Person.name(p)` or `p |> Person.name`
 
 A dot is only used after a module, type, record, trait, or effect name, such as `List.map` or `Shape.Circle`.
@@ -269,7 +272,7 @@ A dot is only used after a module, type, record, trait, or effect name, such as 
 - Label: not a call argument
 - `record`: a record construction is not a call; write a lambda instead
 
-The placeholder `_` builds a function from a call, such as `clamp(0, _, 100)`.
+The placeholder `_` builds a function from a call, such as `clamp(lo: 0, value: _, hi: 100)`.
 
 ## E0206
 
@@ -343,6 +346,7 @@ Blocks start with a keyword and end with `end` followed by the name of the const
 - Kind: check (error)
 - Message: `end {found}` does not close `{expected}`
 - Label: expected `end {expected}`
+- `lambda_line`: put `end lambda` on the same physical line as the body, or start the body on the line after the lambda header
 - `opened`: the `{expected}` block starts here
 - `replace`: write `end {expected}`
 
@@ -600,10 +604,10 @@ Range patterns include both ends and are written with `..` only.
 ## E0243
 
 - Kind: check (error)
-- Message: a lambda is written with parentheses and `end lambda`
-- `lambda`: write `lambda({params}) return {body} end lambda`
+- Message: a lambda is written as `lambda(parameters)` followed by a body
+- `lambda`: write `lambda({params}) return {body}`; keep the entire lambda on one physical line, or start the body on the next line and add `end lambda`
 
-Lambdas are written `lambda(x) return x + 1 end lambda`.
+For one statement, prefer a short lambda: `lambda(x) return x + 1`.
 
 ## E0244
 
@@ -689,6 +693,31 @@ Write `language`, `dependency`, and `package` before the first `import` or decla
 - `package`: write `package` inside the parentheses
 
 Use `public(package)` to share a declaration only within its package.
+
+## E0254
+
+- Kind: check (error)
+- Message: a lambda without `end lambda` must fit on one physical line
+- `crossed`: the lambda continues on another physical line
+- `end`: start the body on the next line and add `end lambda` to use a multiline body
+
+A lambda without its terminator contains one statement and fits on one physical line.
+
+## E0256
+
+- Kind: check (error)
+- Message: parenthesize the inner lambda when either lambda omits `end lambda`
+- `paren`: enclose the inner lambda in parentheses
+
+A directly nested lambda needs parentheses when either lambda omits its terminator.
+
+## E0257
+
+- Kind: check (error)
+- Message: each function-type parameter must have a name
+- `named`: write `function(name: Type) -> Result`
+
+Function-type parameter names are part of the contract. Use the names required by the surrounding contract.
 
 ## E0301
 
@@ -781,7 +810,7 @@ Constructor names must be unique within a type.
 - Label: redeclared here
 - `first`: first declared here
 
-Parameter names must be unique within a function or lambda.
+Parameter names must be unique within a function, lambda, or function type.
 
 ## E0311
 
@@ -1471,6 +1500,73 @@ The suffix `u8` denotes `Byte`. Byte literals are checked before execution and c
 
 A suffixed integer literal must fit in its declared width, including a directly applied minus sign.
 
+## E0449
+
+- Kind: check (error)
+- Message: this function requires named arguments
+- `available`: available parameters, in declaration order: {names}
+- `named`: add the parameter names in declaration order
+
+Use parameter names when calling a function with two or more parameters.
+
+## E0450
+
+- Kind: check (error)
+- Message: named and positional arguments cannot be mixed
+- `first`: the first argument uses the other form
+
+Use named arguments consistently in a call.
+
+## E0451
+
+- Kind: check (error)
+- Message: this function has no parameter named `{name}`
+- `available`: available parameters, in declaration order: {names}
+
+An argument label must name a parameter of the function contract.
+
+## E0452
+
+- Kind: check (error)
+- Message: the parameter `{name}` is supplied more than once
+- `first`: first supplied here
+
+Each parameter must be supplied exactly once.
+
+## E0453
+
+- Kind: check (error)
+- Message: missing arguments for parameters: {names}
+
+Supply each parameter of the function contract.
+
+## E0456
+
+- Kind: check (error)
+- Message: direct constructor calls use positional fields
+- `bind`: use positional fields, or bind the constructor to a function value before using named arguments
+
+Direct data construction uses positional fields; constructor function values have parameter contracts.
+
+## E0454
+
+- Kind: check (error)
+- Message: function parameter names do not match
+- `declared`: method declared here
+- `contracts`: expected `{expected}`, found `{found}`
+- `first_name`: parameter {index}: expected `{expected_name}`, found `{found_name}`
+
+Function types must have the same parameter names in the same order.
+
+## E0455
+
+- Kind: check (error)
+- Message: the parameter names and order of this function cannot be determined
+- `annotation`: add a function-type annotation with parameter names
+- `bind`: bind the callee to a value with an explicit named function type before using a pipe or placeholders
+
+The function contract must be determined before type checking finishes.
+
 ## E0448
 
 - Kind: check (error)
@@ -1977,6 +2073,7 @@ The declared language version is newer than the interpreter. Use an interpreter 
 - Kind: check (error)
 - Message: this file was written for Benitoite {version}, and the language changed incompatibly in {changed}
 - `change`: {summary}
+- `migrate`: see docs/reference/benitoite.md for named arguments and named function types
 
 The interpreter reports the earliest incompatible language change after the declared version and no later than its own version.
 

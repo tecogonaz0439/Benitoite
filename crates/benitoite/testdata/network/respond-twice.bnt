@@ -5,11 +5,11 @@
 import Benitoite.Unofficial.Network.Http
 
 function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State
-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
-    bind server <- TaskGroup.spawn(group, lambda()
-      with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
-        bind _ <- try Http.respond(exchange, Http.text(200, "first")) |> Result.mapError(_, NetworkError.message)
-        bind _ <- Http.respond(exchange, Http.text(200, "second"))
+  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+    bind server <- TaskGroup.spawn(group: group, action: lambda()
+      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+        bind _ <- try Http.respond(exchange: exchange, response: Http.text(status: 200, s: "first")) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+        bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 200, s: "second"))
         return Result.Ok(())
       end with
     end lambda)

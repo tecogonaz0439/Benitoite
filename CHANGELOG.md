@@ -2,6 +2,56 @@
 
 All notable changes to Benitoite are recorded in this file. Versions follow the policy in [Compatibility](docs/reference/benitoite.md#20-compatibility): while the major version is 0, a minor version may contain incompatible changes, and a patch version contains only bug fixes. Until `0.1.0`, any release may contain incompatible changes. Every incompatible change is listed with how to migrate.
 
+## 0.0.5 (San Benito)
+
+A source-only release; no executables are provided. `benitoite --version` prints `benitoite 0.0.5`. This release changes calls, function types, and callback contracts together. Scripts written for `0.0.4` or earlier need the migration below.
+
+### Incompatible changes and migration
+
+| Previous form or behavior | `0.0.5` | How to migrate |
+|---|---|---|
+| Ordinary calls could pass two or more arguments by position, such as `List.map(xs, action)`. | Functions with two or more parameters require every explicit argument to be named (`E0449`); labels can appear in any order, and expressions run in source order. | Write `List.map(xs: xs, f: action)`. Use the declared names and preserve the original expression order. Zero-parameter calls use `f()`; one-parameter calls can still use `f(value)`. Direct data construction, patterns, attributes, handler bindings, and `resume` keep their existing rules. |
+| Function types omitted parameter names, such as `function(Integer) -> String`. | Every function-type parameter needs a name (`E0257`), including nested callback types. Function values must match the contract's names and order (`E0454`). | Use the required contract, for example `function(value: Integer) -> String`, and rename a lambda and its bound references together, checking for capture. Use an explicit wrapper when an existing function has a different contract, for example `lambda(value) return Integer.toString(value)`. |
+| Higher-order callbacks could differ in parameter names. | Names remain part of the contract through inference, annotations, and higher-order calls. An unresolved calling contract reports `E0455`. | Follow the callback declaration's names, including unused parameters; add a named function-type annotation when needed. Do not invent numbered names for ordinary function parameters. Existing outer parameter names in the standard library are unchanged. Main nested callback names are `value` for `List.map`, `acc, value` for `List.fold`, `key, value` for `Map.map`, and `error` for `Result.mapError`; the installed Skill lists every declaration. |
+| Pipes and calls with `_` holes could use multiple positional arguments. | A pipe supplies the first parameter; remaining explicit arguments use labels. Holes use the target parameters' names, in source order, as the generated function's contract. | Write `xs \|> List.map(f: action)` and `Integer.subtract(a: _, b: 1)`. Check the generated contract against its expected type. Keep fixed expressions inside the call so they still run when the generated function is called. Constructor function values use `arg1`, `arg2`, … for positional data fields, and field names for records; direct constructor calls and patterns keep their existing rules. |
+| A lambda whose body began on the header line could continue onto another line. | A body beginning on the header line must finish on that physical line. A lambda whose body is one statement on the header line can omit `end lambda`. | Keep `lambda(value) return value` on one line, or start the body on the next line and close it with `end lambda`. An explicit `end lambda` is still allowed on the same line. The formatter preserves the chosen ending. |
+| Older `language` declarations passed the compatibility check. | Declarations before `0.0.5` report `E0908` with this migration's subject; future versions report `E0907`. Omitting `language` uses the current rules. | Migrate the code, then change the declaration to `language "0.0.5"` in the starting script or root settings, and in each dependency's `package.bnt`. Recompute recorded package hashes with `benitoite package update` after changing dependency files. Changing the version alone does not migrate syntax. |
+
+The following diagnostic codes are added. Tools that read JSON diagnostics should use these codes and fields rather than match message text.
+
+| New code | Meaning or replacement |
+|---|---|
+| `E0254` | A lambda without `end lambda` crosses a physical line. |
+| `E0256` | Directly nested lambdas need parentheses around the inner lambda when either omits its terminator. |
+| `E0257` | A function-type parameter has no name. |
+| `E0449` | An ordinary function with two or more parameters requires named arguments. |
+| `E0450` | A call mixes named and positional arguments. |
+| `E0451` | An argument label does not name a parameter. |
+| `E0452` | A parameter is supplied more than once, including a pipe's implicit first argument. |
+| `E0453` | A named call omits required arguments. Missing named arguments use this code instead of `E0402`; the report identifies the call site and the missing names in declaration order, without the `function declared here` secondary location. |
+| `E0454` | Function parameter names or order do not match the expected contract, including implementation methods and nested function types. |
+| `E0455` | A function's parameter names and order cannot be determined. |
+| `E0456` | A direct data constructor call uses named arguments. |
+
+The approved diagnostic mapping changes `add(1)` with parameters `left, right` from `E0402` to `E0453` after migration to `add(left: 1)`; `right` is the missing name. Positional argument-count errors for a one-parameter function and direct data constructors continue to use `E0402`. Calls left in the multiple-positional form report `E0449` first; an extra label in a migrated call reports `E0451`.
+
+To migrate a script:
+
+1. Install the matching Skill with `benitoite skill install`, then look up each declaration. Add labels without moving argument expressions. Preserve the separate syntax of direct constructors, patterns, attributes, handler bindings, and `resume`.
+2. Give every function-type parameter its intended contract name. Rename callback parameters and their bound references together, checking for capture by inner bindings. Keep required names even for unused parameters; use explicit wrappers for functions with another contract. Do not infer contract order from call-label order or invent numbered names for ordinary function parameters.
+3. Label the explicit arguments remaining after a pipe's first parameter. For holes, check the generated parameter names and their source order against the expected function type. Keep the callee and fixed expressions inside the generated function so that their execution time does not change.
+4. Keep a one-statement lambda on its header line, or start the body on the next line and end it with `end lambda`. For example, change `List.map(xs, lambda(x) return Integer.toString(x) end lambda)` to `List.map(xs: xs, f: lambda(value) return Integer.toString(value))`.
+5. Update `language` declarations only after updating the code, including each dependency's `package.bnt`. Run `benitoite package update` to recompute changed dependency hashes and review the reported effects.
+6. Run `benitoite check` on scripts and `benitoite test` on tests, and confirm output and effect declarations. `benitoite fmt` preserves argument order and the chosen lambda ending; it does not migrate calls or rename callback parameters.
+
+For `E0451`–`E0453`, read the available or missing parameter names. For `E0454`, compare names position by position and use a wrapper when necessary. For `E0455`, add a named function-type annotation. Check each suggested edit's target declaration before applying it. See [Functions and lambdas](docs/reference/benitoite.md#6-functions-and-lambdas) for the current rules.
+
+### Changed
+
+- Prefer `match` for selecting a value or action and `if` without `else` for a conditional action or early return. `else`, `else if`, and `shadow` remain valid and produce no warning; prefer descriptive fresh names over `shadow`.
+- Prefer a fresh binding such as `case other ->` or `case otherCode ->` for a final catch-all branch. These are ordinary names, not keywords. `case _ ->` remains valid without a warning; `_` inside constructor patterns, discarded bindings, and partial applications is unaffected.
+- The formal model, proofs of type preservation and soundness, and differential checks now include parameter names and named calls, including pipes and holes. The release uses one set of language rules; declaring an old version does not select an old grammar.
+
 ## 0.0.4 (San Benito)
 
 A source-only release; no executables are provided. `benitoite --version` prints `benitoite 0.0.4`. Some scripts that `0.0.3` accepted are now rejected; they are listed below with how to migrate.

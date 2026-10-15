@@ -1,6 +1,8 @@
 import Benitoite.Surface.CheckPredicates
 
-/-! パターンの束縛型の計算と、表層の各規則に対応する網羅性の包み。 -/
+/-! パターンの束縛型の計算と、表層の各規則に対応する網羅性の包み。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+-/
 namespace Benitoite.Surface.CheckTools
 open Benitoite.Release
 

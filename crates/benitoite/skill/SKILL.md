@@ -74,25 +74,32 @@ A script that passes `check` performs no built-in operation outside the `uses` o
 
 ## Language rules that differ from other languages
 
-- Blocks end with `end` and the keyword: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end handle`, `end with`. There are no braces and no indentation rules.
-- Bind a local name with `bind x <- e`, not `let`. Use `shadow x <- e` only to hide a local name that is already visible. Names cannot be reassigned.
+- Except for a short lambda, blocks end with `end` and the keyword: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end handle`, `end with`. There are no braces and no indentation rules.
+- Bind a local name with `bind x <- e`, not `let`. `shadow x <- e` can hide a local name that is already visible, but is discouraged. Prefer a new name describing the new value, even when the hiding is intentional. Names cannot be reassigned.
 - A function is `function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2` ... `end function`. The return type follows `->`, never `:`. Return values with `return`.
+- Prefer `match` for selecting a value or action. Use `if` without `else` for a conditional action or an early return. `else` and `else if` are valid but are discouraged; this advice adds no warning. Preserve condition evaluation count and order, evaluate only the selected branch, and keep `return` in the same function or lambda. For effectful conditions, nest matches on booleans instead of moving the conditions into guards.
+- For a final catch-all branch, prefer a fresh name such as `case other ->` or `case otherCode ->`. It is an ordinary binding, not a keyword; avoid collisions with outer local names and put no unreachable branch after it. `case _ ->` is valid. This advice does not apply to `_` inside constructors, discarded bindings, or partial applications.
+- Prefer a short lambda for one statement: `List.map(xs: xs, f: lambda(value) return value * 2)`. Its whole header and body must fit on one physical line; a non-`Unit` result still needs `return`. A body starting on the header's last line takes `end lambda` only immediately after its statement on that same physical line. A terminator on a later line closes the corresponding outer lambda; blank or comment lines do not change that correspondence. For a multiline body, start on the line after the header and add `end lambda`. Before adding a second statement, switch to the multiline form. The formatter preserves the chosen ending.
+- Parenthesize the inner lambda in a directly nested pair if either omits its terminator: `lambda(x) return (lambda(y) return x + y)`. Call arguments and binding statements provide independent boundaries. A pipe in `lambda(x) return x + 1 |> increment` belongs to the body; `(lambda(x) return x + 1)(3)` calls the lambda itself.
 - Match patterns with `match value with`, then one `case pattern -> body` per line, then `end match`. A handler is `handle body with` / `case Module.operation(arguments) -> clause` / `end handle`.
 - Declare data types with `data Name` ... `end data` and records with `record Name` ... `end record`.
 - Constructors are written with their type name, in expressions and in patterns: `Option.Some(x)`, `Option.None`, `Result.Ok(x)`, `Result.Error(e)`, `Shape.Circle(r)`.
 - Operators: `=` and `<>` compare; `and`, `or`, `not` are logical; `div` and `mod` divide integers; `+` also joins strings. `==`, `!=`, `&&`, `||`, `!` do not exist.
-- `try e` applies to the whole expression on its right, including pipes: `try File.readText(p) |> Result.mapError(_, IOError.message)`. Use `try` only in a function that returns `Result` (or `Option`); when the error types differ, convert with `Result.mapError` first.
-- `x |> f(a)` passes `x` as the first argument: `f(x, a)`. `_` makes a partial application only as a direct argument of a call: `Result.mapError(_, IOError.message)`.
-- `return` is used in function and lambda bodies. The value of an `if`, a `match` arm, or a handler clause is its last expression; a `return` inside a `case` body returns from the whole function. A function or lambda that produces a value must end with `return`, also when its last expression is a `match` or an `if`: `lambda(acc, x) return acc + x end lambda`. A `lazy` body and a `match` guard cannot contain `return` or `try`, except inside a `lambda ... end lambda` written there (not inside a call with `_`).
+- `try e` applies to the whole expression on its right, including pipes: `try File.readText(p) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))`. Use `try` only in a function that returns `Result` (or `Option`); when the error types differ, convert with `Result.mapError` first.
+- For an ordinary call with two or more parameters, label every argument: `List.map(xs: xs, f: action)`. Do not mix named and positional arguments. A one-parameter function accepts `f(value)` or `f(name: value)`; use `f()` for zero parameters. Labels can be written in any order, but evaluation is the callee first, then argument expressions once each in source order. Labels refer to parameters, not local values. These rules also apply to built-ins, function values, methods, effect operations, and external functions. Direct data constructors and patterns, attributes, handler bindings, and `resume` keep their own syntax.
+- Function types include names: `function(value: T) -> U`. Names and their order must match every callback contract, even for a single parameter. `List.map` takes `value`, `List.fold` takes `acc, value`, `Map.map` takes `key, value`, and `Result.mapError` takes `error`. Keep expected names even for unused parameters; use a local `bind` for a descriptive alias. Wrap a function with another contract: `lambda(value) return Integer.toString(value)`. Do not invent a contract from call-label order; add a named function-type annotation when E0455 says the contract is unknown.
+- Without direct holes, `xs |> List.map(f: action)` supplies the first declared parameter. Label the remaining arguments and do not supply the first parameter twice. Evaluation is the left side once, then the right callee, then explicit arguments in source order. With direct holes, or a parenthesized right side, the pipe calls the resulting function with one argument; two holes do not trigger automatic partial application.
+- `_` makes a partial application only as a direct argument of a call: `Result.mapError(r: _, f: lambda(error) return IOError.message(error))`. Holes inherit target parameter names in source order: `f(b: _, a: _)` takes `b, a`. The callee and fixed expressions run when that generated function is called. Positional constructor values and direct constructor holes use original position names `arg1`, `arg2`, etc.; record constructor values use field names, and record accessors take `value`. See `references/idioms.md` for examples of adapting contracts.
+- `return` is used in function and lambda bodies. The value of an `if`, a `match` arm, or a handler clause is its last expression; a `return` inside a `case` body returns from the whole function. A function or lambda that produces a value must end with `return`, also when its last expression is a `match` or an `if`: `lambda(acc, value) return acc + value`. A `lazy` body and a `match` guard cannot contain `return` or `try`, except inside a lambda written there (not inside a call with `_`).
 - The value of type `Unit` is written `()`: `Result.Ok(())`.
 - Records are built with named arguments and read with the type name: `bind item <- Item(name: "pen", price: 120)`, `Item.price(item)`, and copied with changes as `Item(..item, price: 100)`. `item.price`, `Item { ... }`, and `Item(price = 100)` are errors.
-- Calls take no type arguments: write `Map.empty()`, not `Map.empty[String, Integer]()`. Add an entry to a map with `Map.set(m, key, value)`; there is no `Map.insert`. Parsing functions such as `Integer.parse` return `Option`.
+- Calls take no type arguments: write `Map.empty()`, not `Map.empty[String, Integer]()`. Add an entry to a map with `Map.set(m: m, k: key, value: value)`; there is no `Map.insert`. Parsing functions such as `Integer.parse` return `Option`.
 - Type arguments use brackets: `List[Integer]`, `Map[String, Integer]`, `Result[Unit, String]`. `List<Integer>` is not valid.
-- `with r = acquire() do ... end with` releases its resources in reverse order when the block ends. `TaskGroup.spawn(group, lambda() ... end lambda)` starts a task in a group opened with `TaskGroup.open()`, and `Task.await(task)` waits for its result; releasing the group waits for all its tasks.
+- `with r = acquire() do ... end with` releases its resources in reverse order when the block ends. `TaskGroup.spawn(group: group, action: lambda() ... end lambda)` starts a task in a group opened with `TaskGroup.open()`, and `Task.await(task)` waits for its result; releasing the group waits for all its tasks.
 - A handler that handles only some operations of an effect does not remove the effect from the type. Functions whose type has `State` (`Reference`, `TaskGroup`, `Task.await`, `close...`) cannot be handled.
 - Maps and sets are ordered by key, not by insertion.
 - Numeric widths are distinct types with no implicit conversion. Unsuffixed `1` is always `Integer`; use `1s32` for `Integer32` and `1.0f32` for `Float32`. Suffixes (`s8`–`s64`, `u8`–`u64`, `f32`/`f64`) are provisional and may change as the syntax is revised. `Integer64` = `Integer`, `Float64` = `Float`, `UnsignedInteger8` = `Byte`, and `UnsignedInteger` = `UnsignedInteger64`. Keep `Integer`, `Float`, and `Byte` as the usual names. `Byte` has no arithmetic, and unsigned types have no unary minus.
-- New integer arithmetic stops on overflow (including unsigned subtraction below zero) or division by zero. Failed numeric conversions return `Option.None`; check the per-module signatures. `Float32` rounds after each operation. See the numeric conversion examples in `references/idioms.md`.
+- Integer arithmetic stops on overflow (including unsigned subtraction below zero) or division by zero. Failed numeric conversions return `Option.None`; check the per-module signatures. `Float32` rounds after each operation. See the numeric conversion examples in `references/idioms.md`.
 - Experimental `@external("wasm", "path.wasm", "export")` functions use a binary import-free Component Model component and have no body or `end function`. Concrete records/data, flags as `Set` of argument-free constructors, and `Map` with WIT-compatible keys can cross the boundary. External resource types require `uses State`; other external calls are pure. The generated adapter counts packed bytes and separately limits logical value construction with the same `--wasm-transfer` value. See the WIT examples and limits in `references/idioms.md`.
 - Strings interpolate with `"${expression}"`. Comments start with `//`.
 - There is no `null`, no exception, and no loop statement. Use `Option`, `Result` with `try`, and `List.map`, `List.fold`, `List.forEach`, or recursion.
@@ -115,10 +122,8 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind lines <- try File.readLines("input.txt") |> Result.mapError(_, IOError.message)
-  List.forEach(lines, lambda(line)
-    Console.writeLine("${String.characterCount(line)} ${line}")
-  end lambda)
+  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  List.forEach(xs: lines, f: lambda(value) Console.writeLine("${String.characterCount(value)} ${value}"))
   return match List.head(lines) with
     case Option.Some(first) -> Result.Ok(Console.writeLine("first: ${first}"))
     case Option.None -> Result.Error("input.txt is empty")
@@ -135,14 +140,14 @@ first: one
 
 ## Tests
 
-A test is a function with `@test("description")`, no parameters, and the return type `Unit` or `Result[Unit, String]` (use the latter when the test uses `try`). Check with `Assert.equal(actual, expected)`. Replace an operation such as `File.readText` or `Process.run` with a handler so that the test does not touch the outside world; more examples are in `references/idioms.md`. Checks in generic helpers recover constructor names when the caller's types can be determined; otherwise, a type may remain unknown. If a report shows `<constructor #n of an unknown type>` (the zero-based constructor position), compare values with a concrete type in the check to show their names.
+A test is a function with `@test("description")`, no parameters, and the return type `Unit` or `Result[Unit, String]` (use the latter when the test uses `try`). Check with `Assert.equal(actual: actual, expected: expected)`. Replace an operation such as `File.readText` or `Process.run` with a handler so that the test does not touch the outside world; more examples are in `references/idioms.md`. Checks in generic helpers recover constructor names when the caller's types can be determined; otherwise, a type may remain unknown. If a report shows `<constructor #n of an unknown type>` (the zero-based constructor position), compare values with a concrete type in the check to show their names.
 
 ```benitoite test
 import Benitoite.Unofficial.IO.File
 
 function firstLine(path: String) -> Result[String, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  return Option.okOr(List.head(String.lines(text)), "empty file")
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  return Option.okOr(o: List.head(String.lines(text)), error: "empty file")
 end function
 
 @test("firstLine returns the first line")
@@ -152,7 +157,7 @@ function firstLineWorks() -> Unit uses Assert.Check, File.Read
   with
     case File.readText(_) -> resume(Result.Ok("alpha\nbeta\n"))
   end handle
-  Assert.equal(result, Result.Ok("alpha"))
+  Assert.equal(actual: result, expected: Result.Ok("alpha"))
 end function
 ```
 

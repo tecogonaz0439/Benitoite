@@ -1,0 +1,11 @@
+// spec: 01-02 パイプ
+// spec: 01-02 名前付き引数と関数型
+// 作成時の関門: CLI の名前必須の診断・位置・編集案・終了状態を確かめる。
+function target(left: Integer, right: Integer) -> Integer
+  return left + right
+end function
+function main() -> Unit
+  bind _ <- target(left: 0, right: 0)
+  bind _ <- 1 |> target(2)
+  ()
+end function

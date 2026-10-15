@@ -5,6 +5,6 @@ function add(a: Integer, b: Integer) -> Integer
 @external("wasm", "x.wasm", "top")
 function top() -> Integer
 function main() -> Unit uses Console.Write
-  Console.writeLine("${add(20, 22)}")
-  Console.writeLine("${List.fold([1, 2, 3], top(), add)}")
+  Console.writeLine("${add(a: 20, b: 22)}")
+  Console.writeLine("${List.fold(xs: [1, 2, 3], initial: top(), f: lambda(acc, value) return add(a: acc, b: value) end lambda)}")
 end function

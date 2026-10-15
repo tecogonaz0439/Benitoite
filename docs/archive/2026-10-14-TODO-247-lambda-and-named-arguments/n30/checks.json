@@ -1,0 +1,196 @@
+{
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "benitoite",
+        "--example",
+        "named_arguments_inventory",
+        "--bin",
+        "benitoite"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "benitoite",
+        "--lib"
+      ],
+      "exit": 0,
+      "passed": 1150,
+      "ignored": 21
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "benitoite",
+        "--test",
+        "golden"
+      ],
+      "exit": 0,
+      "passed": 2
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--all-targets"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--no-default-features",
+        "--features",
+        "gc-mark-sweep,heap-verify,alloc-stats"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "benitoite",
+        "--lib",
+        "--tests",
+        "--no-default-features",
+        "--features",
+        "gc-mark-sweep"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tools/skill-eval/skill_eval.py",
+        "--self-test",
+        "--benitoite",
+        "target/debug/benitoite"
+      ],
+      "before_exit": 0,
+      "after_exit": 0,
+      "passed": 12,
+      "uses_llm": false
+    },
+    {
+      "command": [
+        "python3",
+        "tools/bench/wit-transfer/verify.py",
+        "--sample",
+        "zero",
+        "--sample",
+        "small",
+        "--sample",
+        "repeat"
+      ],
+      "before_exit": 0,
+      "after_exit": 0,
+      "passed": 33,
+      "measures_performance": false
+    },
+    {
+      "command": [
+        "python3",
+        "tools/named-arguments-migrate/migrate.py",
+        "inventory",
+        "--helper",
+        "target/debug/examples/named_arguments_inventory",
+        "--output",
+        "/tmp/benitoite-n30-final-pass",
+        "tools/bench/programs/cycle.bnt",
+        "tools/bench/programs/depth.bnt",
+        "tools/bench/programs/eval.bnt",
+        "tools/bench/programs/fib.bnt",
+        "tools/bench/programs/handler.bnt",
+        "tools/bench/programs/http.bnt",
+        "tools/bench/programs/lines.bnt",
+        "tools/bench/programs/list.bnt",
+        "tools/bench/programs/listget.bnt",
+        "tools/bench/programs/loop.bnt",
+        "tools/bench/programs/map.bnt",
+        "tools/bench/programs/println.bnt",
+        "tools/bench/programs/string.bnt",
+        "tools/bench/programs/tasks.bnt",
+        "tools/bench/programs/trait.bnt",
+        "tools/bench/programs/tree.bnt",
+        "tools/bench/wasm/Runner.bnt",
+        "tools/bench/wasm/hash-a.bnt",
+        "tools/bench/wasm/hash-c-fast.bnt",
+        "tools/bench/wasm/hash-c-list.bnt",
+        "tools/bench/wasm/json-a.bnt",
+        "tools/bench/wasm/json-b.bnt",
+        "tools/bench/wasm/json-c.bnt",
+        "tools/bench/wasm/regex-a.bnt",
+        "tools/bench/wasm/regex-c-once.bnt",
+        "tools/bench/wasm/regex-c-resource.bnt",
+        "tools/bench/wit-transfer/Runner.bnt",
+        "tools/bench/wit-transfer/flags.bnt",
+        "tools/bench/wit-transfer/large-bytes-adapter.bnt",
+        "tools/bench/wit-transfer/large-bytes-typed.bnt",
+        "tools/bench/wit-transfer/large-bytes.bnt",
+        "tools/bench/wit-transfer/maps.bnt",
+        "tools/bench/wit-transfer/nested.bnt",
+        "tools/bench/wit-transfer/numbers.bnt",
+        "tools/bench/wit-transfer/primitives.bnt",
+        "tools/bench/wit-transfer/records.bnt",
+        "tools/bench/wit-transfer/short-numbers-adapter.bnt",
+        "tools/bench/wit-transfer/short-numbers-typed.bnt",
+        "tools/bench/wit-transfer/short-numbers.bnt",
+        "tools/bench/wit-transfer/tuples.bnt",
+        "tools/bench/wit-transfer/utf16.bnt",
+        "tools/bench/wit-transfer/variants.bnt",
+        "tools/skill-eval/tasks/csv_report/reference.bnt",
+        "tools/skill-eval/tasks/dir_walk/reference.bnt",
+        "tools/skill-eval/tasks/error_handling/reference.bnt",
+        "tools/skill-eval/tasks/file_process/reference.bnt",
+        "tools/skill-eval/tasks/http_client/reference.bnt",
+        "tools/skill-eval/tasks/json_convert/reference.bnt",
+        "tools/skill-eval/tasks/json_summary/reference.bnt",
+        "tools/skill-eval/tasks/process_run/reference.bnt",
+        "tools/skill-eval/tasks/process_shell/reference.bnt",
+        "tools/skill-eval/tasks/regex_text/reference.bnt",
+        "tools/skill-eval/tasks/write_tests/reference.bnt"
+      ],
+      "exit": 0,
+      "typed": 53,
+      "edit_candidates": 0,
+      "diff_bytes": 0
+    }
+  ],
+  "input_cli_results": "input-checks.json",
+  "small_input_comparisons": "compared-runs.json",
+  "skipped_by_user": [
+    "scripts/check.sh (including --dry-run)",
+    "gc-stress"
+  ],
+  "formal_unchanged": true
+}

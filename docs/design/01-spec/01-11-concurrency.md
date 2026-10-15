@@ -48,10 +48,10 @@
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Task.all(actions)` | `function[T, effect E](List[function() -> T uses E]) -> List[T] uses E` | `actions` の各関数をタスクとして起動し、すべてが終わるのを待って、結果を `actions` と同じ順に並べたリスト |
-| `Task.allOk(actions)` | `function[T, X, effect E](List[function() -> Result[T, X] uses E]) -> Result[List[T], X] uses E` | すべてのタスクが `Result.Ok` を返したら、値を `actions` と同じ順に並べたリストの `Result.Ok`。どれかが `Result.Error` を返したら、`Result.Error` を返したタスクのうち `actions` の中で最も前にあるものの `Result.Error`（後述） |
-| `Task.race(actions)` | `function[T, effect E](List[function() -> T uses E]) -> Option[T] uses Clock.Time, State, E` | 最初に終わったタスクの結果の `Option.Some`。そのほかのタスクは取り消す。`actions` が空なら `Option.None` |
-| `Task.withTimeout(milliseconds, action)` | `function[T, effect E](Integer, function() -> T uses E) -> Option[T] uses Clock.Time, State, E` | `action` を起動し、`milliseconds` ミリ秒が過ぎる前に終われば結果の `Option.Some`。そうでなければ `Option.None`。期限までに終わらなければタスクを取り消し、期限の時刻以後に終わったときは結果を捨てる。`milliseconds` が 0 以下なら、0 として扱う |
+| `Task.all(actions)` | `function[T, effect E](actions: List[function() -> T uses E]) -> List[T] uses E` | `actions` の各関数をタスクとして起動し、すべてが終わるのを待って、結果を `actions` と同じ順に並べたリスト |
+| `Task.allOk(actions)` | `function[T, X, effect E](actions: List[function() -> Result[T, X] uses E]) -> Result[List[T], X] uses E` | すべてのタスクが `Result.Ok` を返したら、値を `actions` と同じ順に並べたリストの `Result.Ok`。どれかが `Result.Error` を返したら、`Result.Error` を返したタスクのうち `actions` の中で最も前にあるものの `Result.Error`（後述） |
+| `Task.race(actions)` | `function[T, effect E](actions: List[function() -> T uses E]) -> Option[T] uses Clock.Time, State, E` | 最初に終わったタスクの結果の `Option.Some`。そのほかのタスクは取り消す。`actions` が空なら `Option.None` |
+| `Task.withTimeout(milliseconds: milliseconds, action: action)` | `function[T, effect E](milliseconds: Integer, action: function() -> T uses E) -> Option[T] uses Clock.Time, State, E` | `action` を起動し、`milliseconds` ミリ秒が過ぎる前に終われば結果の `Option.Some`。そうでなければ `Option.None`。期限までに終わらなければタスクを取り消し、期限の時刻以後に終わったときは結果を捨てる。`milliseconds` が 0 以下なら、0 として扱う |
 
 【方針】`Task.withTimeout` で、`action` のタスクが期限の前に終わったかは、処理系がタスクの終わりの後に時刻を読んだ時点で判定してよい。このため、期限の直前に終わったタスクも `Option.None` になりうる。
 
@@ -61,7 +61,7 @@
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Clock.sleep(milliseconds)` | `function(Integer) -> Unit uses Clock.Time` | 呼び出したタスクを、少なくとも `milliseconds` ミリ秒止める。その間、ほかのタスクを進める。`milliseconds` が 0 以下なら、止めずに戻る |
+| `Clock.sleep(milliseconds)` | `function(milliseconds: Integer) -> Unit uses Clock.Time` | 呼び出したタスクを、少なくとも `milliseconds` ミリ秒止める。その間、ほかのタスクを進める。`milliseconds` が 0 以下なら、止めずに戻る |
 
 ### タスクの集まり
 
@@ -72,8 +72,8 @@
 | 関数 | 型 | 値 |
 |---|---|---|
 | `TaskGroup.open()` | `function() -> TaskGroup uses State` | 空のタスクの集まり |
-| `TaskGroup.spawn(group, action)` | `function[T, effect E](TaskGroup, function() -> T uses E) -> Task[T] uses State, E` | `action` をタスクとして起動し、`group` に加える。起動したタスクの終わりを待たずに戻る |
-| `Task.await(task)` | `function[T](Task[T]) -> T uses State` | `task` が終わるのを待ち、その結果を返す。終わっていれば、すぐに結果を返す。`task` が取り消したタスクなら実行時エラー（後述の「取り消し」） |
+| `TaskGroup.spawn(group: group, action: action)` | `function[T, effect E](group: TaskGroup, action: function() -> T uses E) -> Task[T] uses State, E` | `action` をタスクとして起動し、`group` に加える。起動したタスクの終わりを待たずに戻る |
+| `Task.await(task)` | `function[T](task: Task[T]) -> T uses State` | `task` が終わるのを待ち、その結果を返す。終わっていれば、すぐに結果を返す。`task` が取り消したタスクなら実行時エラー（後述の「取り消し」） |
 
 【方針】`TaskGroup` の解放（`with` を抜けるとき）は、その集まりで起動したすべてのタスクが終わるのを待つ。タスクを取り消しはしない。`Task.await` で待たなかったタスクの結果は捨てる。解放した `TaskGroup` に `TaskGroup.spawn` でタスクを加えると、実行時エラー（解放したリソースの使用）とする。
 
@@ -111,7 +111,7 @@
 
 ```text
 handle
-  Task.all([lambda() return File.readText("a.txt") end lambda])
+  Task.all([lambda() return File.readText("a.txt")])
 with
   case File.readText(path) ->
     resume(Result.Ok("text"))       // よい: 末尾で再開する節
@@ -137,29 +137,29 @@ end handle
 ```text
 function serve(listener: Http.Listener, group: TaskGroup) -> Result[Unit, NetworkError] uses Http.Listen, State
   bind exchange <- try Http.accept(listener)
-  bind _ <- TaskGroup.spawn(group, lambda()
+  bind _ <- TaskGroup.spawn(group: group, action: lambda()
     with current = exchange do
-      return Http.respond(current, respondTo(Http.requestOf(current)))
+      return Http.respond(exchange: current, response: respondTo(Http.requestOf(current)))
     end with
   end lambda)
-  return serve(listener, group)
+  return serve(listener: listener, group: group)
 end function
 
 function main() -> Result[Unit, String] uses Http.Listen, State
-  with listener = try Http.listen("127.0.0.1", 8080) |> Result.mapError(_, NetworkError.message),
+  with listener = try Http.listen(host: "127.0.0.1", port: 8080) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)),
     group = TaskGroup.open() do
-    return serve(listener, group) |> Result.mapError(_, NetworkError.message)
+    return serve(listener: listener, group: group) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
   end with
 end function
 ```
 
-同じ振る舞いのサーバは、`Http.serve("127.0.0.1", 8080, respondTo)` の一回の呼び出しでも書ける。`Http.accept` が次の要求を待つ間も、処理系は起動済みの要求の処理を進める。一つの要求の処理が長い計算を続けても、ほかの要求の処理と受け付けは止まらない。クライアントが接続を切っても、`with` を抜けるときの `Http.Exchange` の解放の失敗は実行時エラーにならないので、サーバは止まらない（[ネットワークのモジュール](../03-interop/03-09-network.md)）。
+同じ振る舞いのサーバは、`Http.serve(host: "127.0.0.1", port: 8080, handler: lambda(request) return respondTo(request))` の一回の呼び出しでも書ける。`Http.accept` が次の要求を待つ間も、処理系は起動済みの要求の処理を進める。一つの要求の処理が長い計算を続けても、ほかの要求の処理と受け付けは止まらない。クライアントが接続を切っても、`with` を抜けるときの `Http.Exchange` の解放の失敗は実行時エラーにならないので、サーバは止まらない（[ネットワークのモジュール](../03-interop/03-09-network.md)）。
 
 次の例は、二つのコマンドを並行に実行し、両方の結果を待つ。`Process.run` と `Process.command` は、`Benitoite.IO.Process` の関数である（[IO のモジュール](../03-interop/03-07-io-modules.md)の「Process」）。この式のエフェクトは `Process.Run` であり、ファイルに `import Benitoite.Unofficial.IO.Process` が要る。
 
 ```text
 bind outputs <- Task.all([
-  lambda() return Process.run(Process.command("git", ["status"])) end lambda,
-  lambda() return Process.run(Process.command("git", ["log", "-1"])) end lambda
+  lambda() return Process.run(Process.command(program: "git", arguments: ["status"])),
+  lambda() return Process.run(Process.command(program: "git", arguments: ["log", "-1"]))
 ])
 ```

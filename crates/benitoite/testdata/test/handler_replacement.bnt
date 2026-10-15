@@ -3,8 +3,8 @@
 import Benitoite.Unofficial.IO.File
 
 function readPort(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
 end function
 
 @test("readPort reads the number in the file")
@@ -13,8 +13,8 @@ function readPortReadsNumber() -> Unit uses Assert.Check, File.Read
     readPort("app.conf")
   with
     case File.readText(path) ->
-      Assert.equal(path, "app.conf")
+      Assert.equal(actual: path, expected: "app.conf")
       resume(Result.Ok("8080\n"))
   end handle
-  Assert.equal(result, Result.Ok(8080))
+  Assert.equal(actual: result, expected: Result.Ok(8080))
 end function

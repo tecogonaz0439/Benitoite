@@ -9,28 +9,28 @@ import Benitoite.Unofficial.IO.Console
 function cancelAccepts(listener: Http.Listener, remaining: Integer) -> Result[Unit, String] uses Http.Listen, Clock.Time, State
   if remaining = 0 then return Result.Ok(()) end if
   // この段階ではクライアントが接続しないため、accept は期限まで完了しない。
-  bind result <- Task.withTimeout(1, lambda() return Http.accept(listener) end lambda)
+  bind result <- Task.withTimeout(milliseconds: 1, action: lambda() return Http.accept(listener) end lambda)
   return match result with
-    case Option.None -> cancelAccepts(listener, remaining - 1)
+    case Option.None -> cancelAccepts(listener: listener, remaining: remaining - 1)
     case Option.Some(_) -> Result.Error("accept did not time out")
   end match
 end function
 
 function server(listener: Http.Listener) -> Result[Unit, String] uses Http.Listen, State
-  with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
-    return Http.respond(exchange, Http.text(200, "accepted after cancellations")) |> Result.mapError(_, NetworkError.message)
+  with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+    return Http.respond(exchange: exchange, response: Http.text(status: 200, s: "accepted after cancellations")) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
   end with
 end function
 
 function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Clock.Time, Console.Write, State
-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
-    bind _ <- try cancelAccepts(listener, 30)
-    bind live <- TaskGroup.spawn(group, lambda() return server(listener) end lambda)
-    bind _ <- try cancelAccepts(listener, 30)
-    bind response <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/") |> Result.mapError(_, NetworkError.message)
+  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+    bind _ <- try cancelAccepts(listener: listener, remaining: 30)
+    bind live <- TaskGroup.spawn(group: group, action: lambda() return server(listener) end lambda)
+    bind _ <- try cancelAccepts(listener: listener, remaining: 30)
+    bind response <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
     bind _ <- try Task.await(live)
     Console.writeLine(Integer.toString(Http.Response.status(response)))
-    Console.writeLine(try Option.okOr(String.fromUTF8(Http.Response.body(response)), "UTF-8"))
+    Console.writeLine(try Option.okOr(o: String.fromUTF8(Http.Response.body(response)), error: "UTF-8"))
     return Result.Ok(())
   end with
 end function

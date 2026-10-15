@@ -1,10 +1,13 @@
 import Benitoite.Release.Lemmas.SubstTyping
 
 /-!
-# 型とエフェクトの置き換えで型付けが保たれること（段階 B）
+# 型とエフェクトの置き換えで型付けが保たれること（契約名を持つコア）
 
 E-Fun は定義の本体に、E-Op は節の本体に、閉じた型引数の置き換えを施す。置き換える型パラメータの
 並び `C0` は、置き換える位置の内側で束縛された型パラメータの並び `C1` の外側にある。
+
+型・エフェクトの置換は契約名を変更せず、閉じた型の性質を保持する
+（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
@@ -163,42 +166,6 @@ theorem handled_substRho (es : List Eff) (h : List Clause) :
       simp only [handled]
       simp
 
-/-! ## 変数の範囲の単調性 -/
-
-theorem Eff.RhosIn.mono {pe pe' : Nat → Prop} (hpe : ∀ i, pe i → pe' i) {ε : Eff}
-    (h : Eff.RhosIn pe ε) : Eff.RhosIn pe' ε := fun i hi => hpe i (h i hi)
-
-mutual
-  theorem Ty.VarsIn.mono {n n' : Nat} {pe pe' : Nat → Prop} (hn : n ≤ n') (hpe : ∀ i, pe i → pe' i) :
-      (a : Ty) → Ty.VarsIn n pe a → Ty.VarsIn n' pe' a
-    | .base _, _ => trivial
-    | .opaque _, _ => trivial
-    | .data _ args, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsInList.mono hn hpe args h
-    | .list a, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsIn.mono hn hpe a h
-    | .fn ps r ε, h => by
-        simp only [Ty.VarsIn] at h ⊢
-        exact ⟨Ty.VarsInList.mono hn hpe ps h.1, Ty.VarsIn.mono hn hpe r h.2.1, Eff.RhosIn.mono hpe h.2.2⟩
-    | .tvar i, h => by simp only [Ty.VarsIn] at h ⊢; omega
-    | .reference a, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsIn.mono hn hpe a h
-    | .lazy a, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsIn.mono hn hpe a h
-    | .cont _ _ _, h => by simp only [Ty.VarsIn] at h
-    | .map a b, h => by
-        simp only [Ty.VarsIn] at h ⊢; exact ⟨Ty.VarsIn.mono hn hpe a h.1, Ty.VarsIn.mono hn hpe b h.2⟩
-    | .set a, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsIn.mono hn hpe a h
-    | .bytes, _ => by simp [Ty.VarsIn]
-    | .dict _ τ, h => by simp only [Ty.VarsIn] at h ⊢; exact Ty.VarsIn.mono hn hpe τ h
-    | .tapp i args, h => by
-        simp only [Ty.VarsIn] at h ⊢; exact ⟨by omega, Ty.VarsInList.mono hn hpe args h.2⟩
-    | .ctor _, _ => by simp [Ty.VarsIn]
-
-  theorem Ty.VarsInList.mono {n n' : Nat} {pe pe' : Nat → Prop} (hn : n ≤ n') (hpe : ∀ i, pe i → pe' i) :
-      (as : List Ty) → Ty.VarsInList n pe as → Ty.VarsInList n' pe' as
-    | [], _ => trivial
-    | a :: as, h => by
-        simp only [Ty.VarsInList] at h ⊢
-        exact ⟨Ty.VarsIn.mono hn hpe a h.1, Ty.VarsInList.mono hn hpe as h.2⟩
-end
-
 /-! ## 閉じた型を保つストア -/
 
 /-- ストアの型付けの型が、置き換えで変わらない。 -/
@@ -223,9 +190,9 @@ mutual
     | .data d args, w => by
         simp only [Ty.WF] at w; simp only [Ty.substAt]; rw [Ty.substAtList_nil_of_wf ts args w]
     | .list a, w => by simp only [Ty.WF] at w; simp only [Ty.substAt]; rw [Ty.substAt_nil_of_wf ts a w]
-    | .fn ps r e, w => by
+    | .fn names ps r e, w => by
         simp only [Ty.WF] at w; simp only [Ty.substAt]
-        rw [Ty.substAtList_nil_of_wf ts ps w.1, Ty.substAt_nil_of_wf ts r w.2, Eff.substRho_nil]
+        rw [Ty.substAtList_nil_of_wf ts ps w.2.1, Ty.substAt_nil_of_wf ts r w.2.2, Eff.substRho_nil]
     | .tvar i, w => by simp only [Ty.WF] at w; simp [Ty.substAt, w]
     | .reference a, w => by
         simp only [Ty.WF] at w; simp only [Ty.substAt]; rw [Ty.substAt_nil_of_wf ts a w]

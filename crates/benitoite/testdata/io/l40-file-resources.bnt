@@ -7,35 +7,35 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 function countLines(path: String) -> Result[Integer, IOError] uses File.Read, State
   with reader = try File.openReader(path) do
-    return countFrom(reader, 0)
+    return countFrom(reader: reader, count: 0)
   end with
 end function
 function countFrom(reader: File.Reader, count: Integer) -> Result[Integer, IOError] uses File.Read
   return match try File.readLine(reader) with
-    case Option.Some(_) -> countFrom(reader, count + 1)
+    case Option.Some(_) -> countFrom(reader: reader, count: count + 1)
     case Option.None -> Result.Ok(count)
   end match
 end function
 function main() -> Result[Unit, String] uses File.Read, File.Write, State, Console.Write
-  bind count <- try countLines("lines.txt") |> Result.mapError(_, IOError.message)
+  bind count <- try countLines("lines.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.writeLine(Integer.toString(count))
-  with writer = try File.openWriter("output.txt", File.WriteMode.Replace) |> Result.mapError(_, IOError.message) do
-    bind _ <- try File.write(writer, "a") |> Result.mapError(_, IOError.message)
-    bind _ <- try File.writeLine(writer, "b") |> Result.mapError(_, IOError.message)
-    bind _ <- try File.writeChunk(writer, String.toUTF8("é")) |> Result.mapError(_, IOError.message)
-    bind _ <- try File.closeWriter(writer) |> Result.mapError(_, IOError.message)
+  with writer = try File.openWriter(path: "output.txt", mode: File.WriteMode.Replace) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+    bind _ <- try File.write(writer: writer, text: "a") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    bind _ <- try File.writeLine(writer: writer, text: "b") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    bind _ <- try File.writeChunk(writer: writer, content: String.toUTF8("é")) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    bind _ <- try File.closeWriter(writer) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   end with
-  with writer = try File.openWriter("output.txt", File.WriteMode.Append) |> Result.mapError(_, IOError.message) do
-    bind _ <- try File.writeLine(writer, "!") |> Result.mapError(_, IOError.message)
+  with writer = try File.openWriter(path: "output.txt", mode: File.WriteMode.Append) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+    bind _ <- try File.writeLine(writer: writer, text: "!") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   end with
-  bind text <- try File.readText("output.txt") |> Result.mapError(_, IOError.message)
+  bind text <- try File.readText("output.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.write(text)
-  with reader = try File.openReader("output.txt") |> Result.mapError(_, IOError.message) do
-    bind chunk <- try File.readChunk(reader, 3) |> Result.mapError(_, IOError.message)
-    Console.writeLine(Trait.Show.show(Option.map(chunk, Bytes.toHex)))
-    bind remaining <- try File.readChunk(reader, 16) |> Result.mapError(_, IOError.message)
-    Console.writeLine(Trait.Show.show(Option.map(remaining, Bytes.toHex)))
-    bind eof <- try File.readChunk(reader, 1) |> Result.mapError(_, IOError.message)
+  with reader = try File.openReader("output.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+    bind chunk <- try File.readChunk(reader: reader, maximumBytes: 3) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    Console.writeLine(Trait.Show.show(Option.map(o: chunk, f: lambda(value) return Bytes.toHex(value) end lambda)))
+    bind remaining <- try File.readChunk(reader: reader, maximumBytes: 16) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    Console.writeLine(Trait.Show.show(Option.map(o: remaining, f: lambda(value) return Bytes.toHex(value) end lambda)))
+    bind eof <- try File.readChunk(reader: reader, maximumBytes: 1) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
     Console.writeLine(Trait.Show.show(Option.isNone(eof)))
   end with
   return Result.Ok(())

@@ -1,8 +1,12 @@
 import Benitoite.Release.Lemmas.Closed
+import Benitoite.Release.Lemmas.Rename
+import Benitoite.Release.Assumptions
 import Benitoite.Release.Semantics
 
 /-!
-# 継続の型付けの補題（段階 B）
+# 継続の型付けの補題（契約名を持つコア）
+
+契約名を含む型のまま補題を示す（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release

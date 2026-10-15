@@ -18,7 +18,7 @@ function main() -> Unit uses Console.Write
   bind shapes <- [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
   // total area
   bind total <- shapes
-    |> List.map(area)
-    |> List.fold(0.0, lambda(acc, a) return acc + a end lambda)
+    |> List.map(f: lambda(value) return area(value) end lambda)
+    |> List.fold(initial: 0.0, f: lambda(acc, value) return acc + value end lambda)
   Console.writeLine("total: ${total}")
 end function

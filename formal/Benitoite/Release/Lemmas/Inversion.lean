@@ -1,17 +1,20 @@
 import Benitoite.Release.Lemmas.Basic
 
 /-!
-# 型付けの逆転の補題（段階 B）
+# 型付けの逆転の補題（契約名を持つコア）
 
 段階 A の逆転の補題を、段階 B の構成に広げる。
+
+名前の整形式と契約名を型付けの導出から取り出す。包含を経由しても同じ名前の並びを保持する
+（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
 
 variable {P : Program} {B : Builtins} {Ψ : StoreTy}
 
-theorem fnTy_eq (ps : List Ty) (r : Ty) (ε : Eff) (ts : List Ty) (es : List Eff) :
-    fnTy ps r ε ts es = .fn (ps.map (Ty.subst ts es)) (Ty.subst ts es r) (Eff.substRho es ε) := by
+theorem fnTy_eq (names : List String) (ps : List Ty) (r : Ty) (ε : Eff) (ts : List Ty) (es : List Eff) :
+    fnTy names ps r ε ts es = .fn names (ps.map (Ty.subst ts es)) (Ty.subst ts es r) (Eff.substRho es ε) := by
   simp [fnTy, Ty.subst, Ty.substAt]
 
 /-! ## 値 -/
@@ -24,10 +27,10 @@ theorem HasTypeV.inv_var {C Γ v T i} (h : HasTypeV P B Ψ C Γ v T) (hv : v = .
       obtain ⟨a, hi, hc, hle'⟩ := inv_var h hv
       exact ⟨a, hi, hc, hle'.trans hle⟩
   | .V_Const => cases hv
-  | .V_Fun _ _ _ => cases hv
-  | .V_Prim _ _ _ _ => cases hv
-  | .V_Op _ _ => cases hv
-  | .V_Lam _ => cases hv
+  | .V_Fun _ _ _ _ => cases hv
+  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Op _ _ _ => cases hv
+  | .V_Lam _ _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_List _ _ => cases hv
   | .V_LocRef _ => cases hv
@@ -39,81 +42,81 @@ theorem HasTypeV.inv_const {C Γ v T c} (h : HasTypeV P B Ψ C Γ v T) (hv : v =
   | .V_Const => cases hv; exact Ty.Le.refl _
   | .V_Sub h hle => exact (inv_const h hv).trans hle
   | .V_Var _ _ => cases hv
-  | .V_Fun _ _ _ => cases hv
-  | .V_Prim _ _ _ _ => cases hv
-  | .V_Op _ _ => cases hv
-  | .V_Lam _ => cases hv
+  | .V_Fun _ _ _ _ => cases hv
+  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Op _ _ _ => cases hv
+  | .V_Lam _ _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_List _ _ => cases hv
   | .V_LocRef _ => cases hv
   | .V_LocLazy _ => cases hv
 
 theorem HasTypeV.inv_fnRef {C Γ v T f ts es} (h : HasTypeV P B Ψ C Γ v T) (hv : v = .fnRef f ts es) :
-    ∃ d, P.defs f = some d ∧ SatAll B C ts d.tparams ∧ es.length = d.neffs ∧
-      Ty.Le (fnTy d.params d.ret d.eff ts es) T := by
+    ∃ d, P.defs f = some d ∧ SatAll B C ts d.tparams ∧ es.length = d.neffs ∧ NamesWF d.names d.params ∧
+      Ty.Le (fnTy d.names d.params d.ret d.eff ts es) T := by
   match h with
-  | .V_Fun hd hts hes => cases hv; exact ⟨_, hd, hts, hes, Ty.Le.refl _⟩
+  | .V_Fun hd hnames hts hes => cases hv; exact ⟨_, hd, hts, hes, hnames, Ty.Le.refl _⟩
   | .V_Sub h hle =>
-      obtain ⟨d, hd, hts, hes, hle'⟩ := inv_fnRef h hv
-      exact ⟨d, hd, hts, hes, hle'.trans hle⟩
+      obtain ⟨d, hd, hts, hes, hnames, hle'⟩ := inv_fnRef h hv
+      exact ⟨d, hd, hts, hes, hnames, hle'.trans hle⟩
   | .V_Var _ _ => cases hv
   | .V_Const => cases hv
-  | .V_Prim _ _ _ _ => cases hv
-  | .V_Op _ _ => cases hv
-  | .V_Lam _ => cases hv
+  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Op _ _ _ => cases hv
+  | .V_Lam _ _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_List _ _ => cases hv
   | .V_LocRef _ => cases hv
   | .V_LocLazy _ => cases hv
 
 theorem HasTypeV.inv_prim {C Γ v T b ts es} (h : HasTypeV P B Ψ C Γ v T) (hv : v = .prim b ts es) :
-    ∃ s, B.sig b = some s ∧ ts.length = s.ntys ∧ es.length = s.neffs ∧ s.admits C ts ∧
-      Ty.Le (fnTy s.params s.ret s.eff ts es) T := by
+    ∃ s, B.sig b = some s ∧ ts.length = s.ntys ∧ es.length = s.neffs ∧ s.admits C ts ∧ NamesWF s.names s.params ∧
+      Ty.Le (fnTy s.names s.params s.ret s.eff ts es) T := by
   match h with
-  | .V_Prim hs hts hes had => cases hv; exact ⟨_, hs, hts, hes, had, Ty.Le.refl _⟩
+  | .V_Prim hs hnames hts hes had => cases hv; exact ⟨_, hs, hts, hes, had, hnames, Ty.Le.refl _⟩
   | .V_Sub h hle =>
-      obtain ⟨s, hs, hts, hes, had, hle'⟩ := inv_prim h hv
-      exact ⟨s, hs, hts, hes, had, hle'.trans hle⟩
+      obtain ⟨s, hs, hts, hes, had, hnames, hle'⟩ := inv_prim h hv
+      exact ⟨s, hs, hts, hes, had, hnames, hle'.trans hle⟩
   | .V_Var _ _ => cases hv
   | .V_Const => cases hv
-  | .V_Fun _ _ _ => cases hv
-  | .V_Op _ _ => cases hv
-  | .V_Lam _ => cases hv
+  | .V_Fun _ _ _ _ => cases hv
+  | .V_Op _ _ _ => cases hv
+  | .V_Lam _ _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_List _ _ => cases hv
   | .V_LocRef _ => cases hv
   | .V_LocLazy _ => cases hv
 
 theorem HasTypeV.inv_op {C Γ v T o ts} (h : HasTypeV P B Ψ C Γ v T) (hv : v = .op o ts) :
-    ∃ od, P.ops o = some od ∧ SatAll B C ts od.tparams ∧
-      Ty.Le (fnTy od.params od.ret (Eff.single od.eff) ts []) T := by
+    ∃ od, P.ops o = some od ∧ SatAll B C ts od.tparams ∧ NamesWF od.names od.params ∧
+      Ty.Le (fnTy od.names od.params od.ret (Eff.single od.eff) ts []) T := by
   match h with
-  | .V_Op hod hts => cases hv; exact ⟨_, hod, hts, Ty.Le.refl _⟩
+  | .V_Op hod hnames hts => cases hv; exact ⟨_, hod, hts, hnames, Ty.Le.refl _⟩
   | .V_Sub h hle =>
-      obtain ⟨od, hod, hts, hle'⟩ := inv_op h hv
-      exact ⟨od, hod, hts, hle'.trans hle⟩
+      obtain ⟨od, hod, hts, hnames, hle'⟩ := inv_op h hv
+      exact ⟨od, hod, hts, hnames, hle'.trans hle⟩
   | .V_Var _ _ => cases hv
   | .V_Const => cases hv
-  | .V_Fun _ _ _ => cases hv
-  | .V_Prim _ _ _ _ => cases hv
-  | .V_Lam _ => cases hv
+  | .V_Fun _ _ _ _ => cases hv
+  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Lam _ _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_List _ _ => cases hv
   | .V_LocRef _ => cases hv
   | .V_LocLazy _ => cases hv
 
-theorem HasTypeV.inv_lam {C Γ v T ps body} (h : HasTypeV P B Ψ C Γ v T) (hv : v = .lam ps body) :
-    ∃ r ε, HasTypeC P B Ψ C (binds ps ++ hideConts Γ) (some r) body r ε ∧ Ty.Le (.fn ps r ε) T := by
+theorem HasTypeV.inv_lam {C Γ v T names ps body} (h : HasTypeV P B Ψ C Γ v T) (hv : v = .lam names ps body) :
+    ∃ r ε, NamesWF names ps ∧ HasTypeC P B Ψ C (binds ps ++ hideConts Γ) (some r) body r ε ∧ Ty.Le (.fn names ps r ε) T := by
   match h with
-  | .V_Lam h => cases hv; exact ⟨_, _, h, Ty.Le.refl _⟩
+  | .V_Lam hnames h => cases hv; exact ⟨_, _, hnames, h, Ty.Le.refl _⟩
   | .V_Sub h hle =>
-      obtain ⟨r, ε, hb, hle'⟩ := inv_lam h hv
-      exact ⟨r, ε, hb, hle'.trans hle⟩
+      obtain ⟨r, ε, hnames, hb, hle'⟩ := inv_lam h hv
+      exact ⟨r, ε, hnames, hb, hle'.trans hle⟩
   | .V_Var _ _ => cases hv
   | .V_Const => cases hv
-  | .V_Fun _ _ _ => cases hv
-  | .V_Prim _ _ _ _ => cases hv
-  | .V_Op _ _ => cases hv
+  | .V_Fun _ _ _ _ => cases hv
+  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Op _ _ _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_List _ _ => cases hv
   | .V_LocRef _ => cases hv
@@ -129,10 +132,10 @@ theorem HasTypeV.inv_con {C Γ v T c ts args} (h : HasTypeV P B Ψ C Γ v T) (hv
       exact ⟨cd, hc, hts, hargs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
   | .V_Var _ _ => cases hv
   | .V_Const => cases hv
-  | .V_Fun _ _ _ => cases hv
-  | .V_Prim _ _ _ _ => cases hv
-  | .V_Op _ _ => cases hv
-  | .V_Lam _ => cases hv
+  | .V_Fun _ _ _ _ => cases hv
+  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Op _ _ _ => cases hv
+  | .V_Lam _ _ => cases hv
   | .V_List _ _ => cases hv
   | .V_LocRef _ => cases hv
   | .V_LocLazy _ => cases hv
@@ -146,10 +149,10 @@ theorem HasTypeV.inv_list {C Γ v T elems} (h : HasTypeV P B Ψ C Γ v T) (hv : 
       exact ⟨a, he, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
   | .V_Var _ _ => cases hv
   | .V_Const => cases hv
-  | .V_Fun _ _ _ => cases hv
-  | .V_Prim _ _ _ _ => cases hv
-  | .V_Op _ _ => cases hv
-  | .V_Lam _ => cases hv
+  | .V_Fun _ _ _ _ => cases hv
+  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Op _ _ _ => cases hv
+  | .V_Lam _ _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_LocRef _ => cases hv
   | .V_LocLazy _ => cases hv
@@ -165,10 +168,10 @@ theorem HasTypeV.inv_loc {C Γ v T l} (h : HasTypeV P B Ψ C Γ v T) (hv : v = .
       · exact Or.inr ⟨a, hl, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
   | .V_Var _ _ => cases hv
   | .V_Const => cases hv
-  | .V_Fun _ _ _ => cases hv
-  | .V_Prim _ _ _ _ => cases hv
-  | .V_Op _ _ => cases hv
-  | .V_Lam _ => cases hv
+  | .V_Fun _ _ _ _ => cases hv
+  | .V_Prim _ _ _ _ _ => cases hv
+  | .V_Op _ _ _ => cases hv
+  | .V_Lam _ _ => cases hv
   | .V_Con _ _ _ => cases hv
   | .V_List _ _ => cases hv
 
@@ -214,13 +217,13 @@ theorem HasTypeC.inv_let {C Γ R m' T ε m n} (h : HasTypeC P B Ψ C Γ R m' T �
   | .C_ResumeL _ _ => cases hm
 
 theorem HasTypeC.inv_app {C Γ R m T ε f args} (h : HasTypeC P B Ψ C Γ R m T ε) (hm : m = .app f args) :
-    ∃ as b ε', HasTypeV P B Ψ C Γ f (.fn as b ε') ∧ HasTypeVs P B Ψ C Γ args as ∧ Ty.Le b T ∧
+    ∃ names as b ε', HasTypeV P B Ψ C Γ f (.fn names as b ε') ∧ HasTypeVs P B Ψ C Γ args as ∧ Ty.Le b T ∧
       Eff.Sub ε' ε := by
   match h with
-  | .C_App hf hargs => cases hm; exact ⟨_, _, _, hf, hargs, Ty.Le.refl _, Eff.Sub.refl _⟩
+  | .C_App hf hargs => cases hm; exact ⟨_, _, _, _, hf, hargs, Ty.Le.refl _, Eff.Sub.refl _⟩
   | .C_Sub h hle hs =>
-      obtain ⟨as, b, ε', h1, h2, hle', hs'⟩ := inv_app h hm
-      exact ⟨as, b, ε', h1, h2, hle'.trans hle, hs'.trans hs⟩
+      obtain ⟨names, as, b, ε', h1, h2, hle', hs'⟩ := inv_app h hm
+      exact ⟨names, as, b, ε', h1, h2, hle'.trans hle, hs'.trans hs⟩
   | .C_Return _ => cases hm
   | .C_Let _ _ => cases hm
   | .C_If _ _ _ => cases hm
@@ -262,7 +265,7 @@ theorem HasTypeC.inv_match {C Γ R m T ε v arms} (h : HasTypeC P B Ψ C Γ R m 
       exact ⟨a, b, ε', hv, harms, hex, hle'.trans hle, hs'.trans hs⟩
   | .C_Return _ | .C_Let _ _ | .C_App _ _ | .C_If _ _ _ | .C_Lazy _
   | .C_Escape _ _ | .C_Use _ _ _ _ | .C_Handle _ _ _ | .C_Resume _ _ | .C_ResumeL _ _
-  | .C_Meth _ _ _ _ _ _ => cases hm
+  | .C_Meth _ _ _ _ _ _ _ => cases hm
 
 theorem HasTypeC.inv_lazy {C Γ R m' T ε m} (h : HasTypeC P B Ψ C Γ R m' T ε) (hm : m' = .lazyC m) :
     ∃ a, HasTypeC P B Ψ C (hideConts Γ) none m a Eff.empty ∧ T = .lazy a := by
@@ -424,14 +427,14 @@ theorem HasTypeV.inv_super {C Γ v T w s} (h : HasTypeV P B Ψ C Γ v T) (hv : v
 theorem HasTypeC.inv_meth {C Γ R m' T ε v m ss es ws} (h : HasTypeC P B Ψ C Γ R m' T ε)
     (hm : m' = .meth v m ss es ws) :
     ∃ cl τ cd ms, HasTypeV P B Ψ C Γ v (.dict cl τ) ∧ P.classes cl = some cd ∧ cd.methods m = some ms ∧
-      SatAll B C ss ms.tparams ∧ es.length = ms.neffs ∧
+      SatAll B C ss ms.tparams ∧ es.length = ms.neffs ∧ NamesWF ms.names ms.params ∧
       HasTypeVs P B Ψ C Γ ws (ms.params.map (Ty.subst (ss ++ [τ]) es)) ∧
       Ty.Le (ms.ret.subst (ss ++ [τ]) es) T ∧ Eff.Sub (Eff.substRho es ms.eff) ε := by
   match h with
-  | .C_Meth hv hc hms hsat hes hws =>
-      cases hm; exact ⟨_, _, _, _, hv, hc, hms, hsat, hes, hws, Ty.Le.refl _, Eff.Sub.refl _⟩
+  | .C_Meth hv hc hms hnames hsat hes hws =>
+      cases hm; exact ⟨_, _, _, _, hv, hc, hms, hsat, hes, hnames, hws, Ty.Le.refl _, Eff.Sub.refl _⟩
   | .C_Sub h hle hs =>
-      obtain ⟨cl, τ, cd, ms, hv, hc, hms, hsat, hes, hws, hle', hs'⟩ := inv_meth h hm
-      exact ⟨cl, τ, cd, ms, hv, hc, hms, hsat, hes, hws, hle'.trans hle, hs'.trans hs⟩
+      obtain ⟨cl, τ, cd, ms, hv, hc, hms, hsat, hes, hnames, hws, hle', hs'⟩ := inv_meth h hm
+      exact ⟨cl, τ, cd, ms, hv, hc, hms, hsat, hes, hnames, hws, hle'.trans hle, hs'.trans hs⟩
 
 end Benitoite.Release

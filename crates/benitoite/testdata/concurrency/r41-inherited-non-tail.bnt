@@ -7,7 +7,7 @@ end effect
 function main() -> Unit uses State
   with group = TaskGroup.open() do
     bind _ <- handle
-      bind _ <- TaskGroup.spawn(group, lambda() return ask(1) end lambda)
+      bind _ <- TaskGroup.spawn(group: group, action: lambda() return ask(1) end lambda)
       0
     with
       case ask(n) -> n

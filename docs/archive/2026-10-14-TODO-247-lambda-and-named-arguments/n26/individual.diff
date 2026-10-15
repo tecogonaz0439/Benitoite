@@ -1,0 +1,26 @@
+--- a/crates/benitoite/src/prelude/stdlib/Map.bnt
++++ b/crates/benitoite/src/prelude/stdlib/Map.bnt
+@@ -52,7 +52,11 @@
+ 
+ /// Combines the pairs in the order of their keys with `f`, starting from `initial`.
+ public function fold[K: key, V, A, effect E](m: Map[K, V], initial: A, f: function(acc: A, key: K, value: V) -> A uses E) -> A uses E
+-  return List.fold(xs: toList(m), initial: initial, f: lambda(acc, value) return f(acc: acc, key: Pair.first(value), value: Pair.second(value)) end lambda)
++  return List.fold(xs: toList(m), initial: initial, f: lambda(acc, value)
++    bind key <- Pair.first(value)
++    bind element <- Pair.second(value)
++    return f(acc: acc, key: key, value: element)
++  end lambda)
+ end function
+ 
+ /// Calls `f` with each key and value in the order of the keys.
+--- a/crates/benitoite/src/prelude/stdlib/Network/Http.bnt
++++ b/crates/benitoite/src/prelude/stdlib/Network/Http.bnt
+@@ -115,7 +115,7 @@
+   return ClientRequest(method: method, url: url, headers: [], body: Bytes.empty(), timeoutMilliseconds: 30000)
+ end function
+ 
+-/// Sends a GET request to `url`, as `Http.send(Http.clientRequest("GET", url))`.
++/// Sends a GET request to `url`, as `Http.send(Http.clientRequest(method: "GET", url: url))`.
+ public function get(url: String) -> Result[Response, NetworkError] uses Connect
+   return send(clientRequest(method: "GET", url: url))
+ end function

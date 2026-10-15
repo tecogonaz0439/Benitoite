@@ -1,0 +1,34 @@
+// spec: 01-06 型の推論と型注釈
+import Benitoite.Unofficial.IO.Console
+function apply[T, effect E](g: function(value: T) -> T uses E, x: T) -> T uses E
+ return g(value: x)
+end function
+function factory() -> Option[function(a: Integer, b: Integer) -> Integer]
+ return Option.Some(lambda(a: Integer, b: Integer) return a * 10 + b)
+end function
+function viaTry() -> Option[Integer]
+ bind get <- lambda(source) return source()
+ bind callback <- try get(source: factory)
+ return Option.Some(callback(b: 4, a: 3))
+end function
+function main() -> Unit uses Console.Write
+ bind run <- lambda(g) return g(b: 2, a: 1)
+ bind forward <- lambda(callback) return run(g: callback)
+ bind alias <- forward
+ bind answer <- alias(callback: lambda(a: Integer, b: Integer) return a * 10 + b)
+ Console.writeLine(text: Integer.toString(n: answer))
+ bind single <- lambda(action) return action(7)
+ bind identity <- lambda(value: Integer) return value
+ Console.writeLine(text: Integer.toString(n: single(action: identity)))
+ bind tried <- match viaTry() with
+  case Option.Some(value) -> value
+  case Option.None -> -1
+ end match
+ Console.writeLine(text: Integer.toString(n: tried))
+ Console.writeLine(text: Integer.toString(n: apply(x: 9, g: lambda(value) return value)))
+ bind text <- apply(x: "hello", g: lambda(value)
+  Console.writeLine(text: value)
+  return value
+ end lambda)
+ Console.writeLine(text: text)
+end function

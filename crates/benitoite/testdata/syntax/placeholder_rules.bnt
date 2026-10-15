@@ -9,19 +9,19 @@ function between(low: Integer, value: Integer, high: Integer) -> Boolean
   return value >= low and value <= high
 end function
 
-function applyToNine(callback: function(Integer) -> Integer) -> Integer
+function applyToNine(callback: function(value: Integer) -> Integer) -> Integer
   return callback(9)
 end function
-function useFunction(f: function(function(Integer) -> Integer) -> Integer, g: function(Integer) -> Integer) -> Integer
+function useFunction(f: function(callback: function(value: Integer) -> Integer) -> Integer, g: function(value: Integer) -> Integer) -> Integer
   return f(g(_))
 end function
 
 function main() -> Unit uses Console.Write
-  bind clampMiddle <- clamp(0, _, 100)
-  bind inRange <- between(_, 5, _)
-  bind nested <- useFunction(applyToNine, lambda(value: Integer) return value + 1 end lambda)
+  bind clampMiddle <- clamp(low: 0, value: _, high: 100)
+  bind inRange <- between(low: _, value: 5, high: _)
+  bind nested <- useFunction(f: applyToNine, g: lambda(value: Integer) return value + 1 end lambda)
   Console.writeLine(Integer.toString(clampMiddle(80) + nested))
-  return if inRange(3, 8) then
+  return if inRange(low: 3, high: 8) then
     Console.writeLine("true")
   else
     Console.writeLine("false")

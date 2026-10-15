@@ -17,7 +17,7 @@ end function
 
 function countUp(current: Integer, limit: Integer, total: Integer) -> Integer
   return if current < limit then
-    countUp(current + 1, limit, total + current)
+    countUp(current: current + 1, limit: limit, total: total + current)
   else
     total
   end if
@@ -27,7 +27,7 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   return match readCount() with
     case Result.Error(message) -> Result.Error(message)
     case Result.Ok(count) ->
-      Console.writeLine(Integer.toString(countUp(0, count, 0)))
+      Console.writeLine(Integer.toString(countUp(current: 0, limit: count, total: 0)))
       Result.Ok(())
   end match
 end function

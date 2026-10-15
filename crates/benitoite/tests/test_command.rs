@@ -125,19 +125,19 @@ import Benitoite.Unofficial.IO.Process
 
 @test("adds \"two\" numbers")
 function adds() -> Unit uses Assert.Check
-  Assert.equal(1 + 2, 3)
+  Assert.equal(actual: 1 + 2, expected: 3)
 end function
 
 @test
 function sumOfEmpty() -> Unit uses Assert.Check, Console.Write
   Console.writeLine("out line")
   Console.writeErrorLine("err line")
-  Assert.equal(3, 4)
+  Assert.equal(actual: 3, expected: 4)
 end function
 
 @test
 function truth() -> Unit uses Assert.Check
-  Assert.isTrue(false, "should hold")
+  Assert.isTrue(condition: false, message: "should hold")
 end function
 
 @test
@@ -254,7 +254,7 @@ fn json_lines_have_the_fields_in_order() {
         format!(
             "{{\"kind\":\"test\",\"file\":\"<dir>/sum.bnt\",\"name\":\"sumOfEmpty\",\"function\":\"sumOfEmpty\",\"location\":{},\"outcome\":\"failed\",\"failure\":{{\"reason\":\"assert\",\"message\":\"assertion failed: Assert.equal\",\"primary\":{},\"notes\":[\"functions left by tail calls are not shown\"],\"trace\":[{{\"function\":\"sumOfEmpty\",\"location\":null}}],\"traceOmitted\":0,\"taskOrigins\":[],\"left\":\"3\",\"right\":\"4\"}},\"stdout\":\"out line\\n\",\"stderr\":\"err line\\n\"}}",
             loc(10, 10, 20, offset("sumOfEmpty()")),
-            loc(13, 3, 21, offset("Assert.equal(3, 4)"))
+            loc(13, 3, 39, offset("Assert.equal(actual: 3, expected: 4)"))
         )
     );
     assert!(
@@ -303,7 +303,7 @@ fn all_passing_tests_end_with_ok_and_no_failures_section() {
     let dir = Directory::new("ok");
     let file = dir.write(
         "ok.bnt",
-        "@test\nfunction one() -> Unit uses Assert.Check\n  Assert.notEqual(1, 2)\nend function\n\n@test(\"second\")\nfunction two() -> Result[Unit, String]\n  return Result.Ok(())\nend function\n",
+        "@test\nfunction one() -> Unit uses Assert.Check\n  Assert.notEqual(actual: 1, expected: 2)\nend function\n\n@test(\"second\")\nfunction two() -> Result[Unit, String]\n  return Result.Ok(())\nend function\n",
     );
     let out = run(&dir, &[&file]);
     assert_eq!(out.exit, 0, "{}", out.stderr);
@@ -336,7 +336,7 @@ fn a_directory_is_expanded_in_path_order_with_itself_as_the_root() {
     );
     dir.write(
         "suite/b/second.bnt",
-        "import Lib.Text\n\n@test\nfunction usesLib() -> Unit uses Assert.Check\n  Assert.equal(Text.message(), \"hello\")\nend function\n",
+        "import Lib.Text\n\n@test\nfunction usesLib() -> Unit uses Assert.Check\n  Assert.equal(actual: Text.message(), expected: \"hello\")\nend function\n",
     );
     dir.write(
         "suite/a.bnt",
@@ -360,7 +360,7 @@ fn tests_of_imported_modules_run_only_when_their_file_is_given() {
     );
     let main = dir.write(
         "main_test.bnt",
-        "import Lib.Text\n\n@test\nfunction usesLib() -> Unit uses Assert.Check\n  Assert.equal(Text.message(), \"hello\")\nend function\n",
+        "import Lib.Text\n\n@test\nfunction usesLib() -> Unit uses Assert.Check\n  Assert.equal(actual: Text.message(), expected: \"hello\")\nend function\n",
     );
     let out = run(&dir, &[&main]);
     assert_eq!(out.exit, 0, "{}", out.stderr);
@@ -430,7 +430,7 @@ fn max_call_stack_limits_each_test() {
     let dir = Directory::new("stack");
     let file = dir.write(
         "deep.bnt",
-        "function depth(n: Integer) -> Integer\n  if n = 0 then\n    return 0\n  end if\n  return 1 + depth(n - 1)\nend function\n\n@test\nfunction deep() -> Unit uses Assert.Check\n  Assert.equal(depth(1000), 1000)\nend function\n",
+        "function depth(n: Integer) -> Integer\n  if n = 0 then\n    return 0\n  end if\n  return 1 + depth(n - 1)\nend function\n\n@test\nfunction deep() -> Unit uses Assert.Check\n  Assert.equal(actual: depth(1000), expected: 1000)\nend function\n",
     );
     let roomy = run(&dir, &[&file]);
     assert_eq!(roomy.exit, 0, "{}{}", roomy.stdout, roomy.stderr);
@@ -535,7 +535,7 @@ fn deadlock_reports_name_the_first_task_after_the_test_function() {
     let dir = Directory::new("deadlock");
     let file = dir.write(
         "deadlock.bnt",
-        "function awaitSaved(cell: Reference[Option[Task[Integer]]]) -> Integer uses State\n  return match Reference.get(cell) with\n    case Option.None -> awaitSaved(cell)\n    case Option.Some(task) -> Task.await(task)\n  end match\nend function\n\n@test\nfunction stuck() -> Unit uses State\n  bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)\n  with group = TaskGroup.open() do\n    bind task <- TaskGroup.spawn(group, lambda() return awaitSaved(saved) end lambda)\n    Reference.set(saved, Option.Some(task))\n  end with\nend function\n",
+        "function awaitSaved(cell: Reference[Option[Task[Integer]]]) -> Integer uses State\n  return match Reference.get(cell) with\n    case Option.None -> awaitSaved(cell)\n    case Option.Some(task) -> Task.await(task)\n  end match\nend function\n\n@test\nfunction stuck() -> Unit uses State\n  bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)\n  with group = TaskGroup.open() do\n    bind task <- TaskGroup.spawn(group: group, action: lambda() return awaitSaved(saved) end lambda)\n    Reference.set(reference: saved, value: Option.Some(task))\n  end with\nend function\n",
     );
     let out = run(&dir, &[&file]);
     assert_eq!(out.exit, 1, "{}", out.stderr);
@@ -764,7 +764,7 @@ fn result_lines_escape_file_names_only_in_text_output() {
 #[test]
 fn directory_walk_skips_settings_and_nested_package_roots() {
     let dir = Directory::new("package-roots");
-    dir.write("package.bnt", "language \"0.0.3\"\n");
+    dir.write("package.bnt", "language \"0.0.5\"\n");
     dir.write(
         "tests.bnt",
         "@test\nfunction rootTest() -> Unit\n()\nend function\n",
@@ -775,7 +775,7 @@ fn directory_walk_skips_settings_and_nested_package_roots() {
     );
     dir.write(
         "deps/textkit/package.bnt",
-        "language \"0.0.3\"\npackage Textkit\nend package\n",
+        "language \"0.0.5\"\npackage Textkit\nend package\n",
     );
     dir.write(
         "deps/textkit/tests.bnt",

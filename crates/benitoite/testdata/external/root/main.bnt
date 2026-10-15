@@ -4,15 +4,15 @@ import Benitoite.Unofficial.IO.Console
 @external("wasm", "wasm/x.wasm", "add")
 public function add(first: Integer, second: Integer) -> Integer
 function sum(a: Integer) -> Integer
-  return add(a, 10)
+  return add(first: a, second: 10)
 end function
 function descend(n: Integer) -> Integer
-  if n = 0 then return add(20, 22) end if
+  if n = 0 then return add(first: 20, second: 22) end if
   return descend(n - 1) + 1
 end function
 function main() -> Unit uses Console.Write
-  Console.writeLine("${add(1, 2)}")
-  Console.writeLine("${List.fold(List.map([1, 2, 3], sum), 0, add)}")
-  Console.writeLine("${List.fold([1, 2, 3], 0, add)}")
+  Console.writeLine("${add(first: 1, second: 2)}")
+  Console.writeLine("${List.fold(xs: List.map(xs: [1, 2, 3], f: lambda(value) return sum(value) end lambda), initial: 0, f: lambda(acc, value) return add(first: acc, second: value) end lambda)}")
+  Console.writeLine("${List.fold(xs: [1, 2, 3], initial: 0, f: lambda(acc, value) return add(first: acc, second: value) end lambda)}")
   Console.writeLine("${descend(10000)}")
 end function

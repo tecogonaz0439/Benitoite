@@ -1,0 +1,170 @@
+{
+  "production": {
+    "added": 132,
+    "removed": 20,
+    "files": [
+      {
+        "file": "crates/benitoite/src/cli/tools/skill/generate.rs",
+        "added": 12,
+        "removed": 2
+      },
+      {
+        "file": "crates/benitoite/src/resolve/lookup.rs",
+        "added": 0,
+        "removed": 1
+      },
+      {
+        "file": "crates/benitoite/src/resolve/walk.rs",
+        "added": 1,
+        "removed": 8
+      },
+      {
+        "file": "crates/benitoite/src/syntax/parser/exprs.rs",
+        "added": 21,
+        "removed": 9
+      },
+      {
+        "file": "crates/benitoite/src/typeck/calls.rs",
+        "added": 97,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/src/typeck/generate.rs",
+        "added": 1,
+        "removed": 0
+      }
+    ]
+  },
+  "tests": {
+    "added": 567,
+    "removed": 34,
+    "files": [
+      {
+        "file": "crates/benitoite/tests/call_allocations.rs",
+        "added": 19,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/tests/desugar_export.rs",
+        "added": 5,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/tests/desugar_export/check_named.py",
+        "added": 57,
+        "removed": 1
+      },
+      {
+        "file": "crates/benitoite/tests/desugar_export/exchange.rs",
+        "added": 17,
+        "removed": 4
+      },
+      {
+        "file": "crates/benitoite/tests/desugar_export/named.rs",
+        "added": 214,
+        "removed": 29
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_escape.bnt",
+        "added": 24,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_escape.exit",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_escape.mode",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_escape.stdout",
+        "added": 4,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_failure.bnt",
+        "added": 19,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_failure.diag.json",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_failure.exit",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_failure.mode",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_failure.stdout",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_order.bnt",
+        "added": 20,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_order.exit",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_order.mode",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_order.stdout",
+        "added": 5,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_tail.bnt",
+        "added": 8,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_tail.exit",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_tail.mode",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_tail.stdout",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/tests/named_arguments.rs",
+        "added": 164,
+        "removed": 0
+      }
+    ]
+  },
+  "scripts": {
+    "added": 3,
+    "removed": 1,
+    "files": [
+      {
+        "file": "scripts/check-formal.sh",
+        "added": 3,
+        "removed": 1
+      }
+    ]
+  }
+}

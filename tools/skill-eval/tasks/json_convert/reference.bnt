@@ -4,27 +4,31 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.Json
 
 function column(row: Map[String, String], name: String) -> String
-  return Option.unwrapOr(Map.get(row, name), "")
+  return Option.unwrapOr(o: Map.get(m: row, k: name), fallback: "")
 end function
 
 function yearOf(row: Map[String, String]) -> Integer
-  return Option.unwrapOr(Integer.parse(column(row, "joined")), 0)
+  return Option.unwrapOr(o: Integer.parse(column(row: row, name: "joined")), fallback: 0)
+end function
+
+function jsonString(value: String) -> Json.Value
+  return Json.Value.String(value)
 end function
 
 function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
-  bind text <- try File.readText("members.csv") |> Result.mapError(_, IOError.message)
-  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(_, Csv.ParseError.message)
-  bind teams <- List.fold(rows, Map.empty(), lambda(m, row)
-    bind team <- column(row, "team")
-    return Map.set(m, team, List.append(Option.unwrapOr(Map.get(m, team), []), column(row, "name")))
+  bind text <- try File.readText("members.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda)
+  bind teams <- List.fold(xs: rows, initial: Map.empty(), f: lambda(acc, value)
+    bind team <- column(row: value, name: "team")
+    return Map.set(m: acc, k: team, value: List.append(xs: Option.unwrapOr(o: Map.get(m: acc, k: team), fallback: []), x: column(row: value, name: "name")))
   end lambda)
-  bind json <- Json.Value.Object(Map.map(teams, lambda(_team, names)
-    return Json.Value.Array(List.map(List.sort(names), Json.Value.String))
+  bind json <- Json.Value.Object(Map.map(m: teams, f: lambda(key, value)
+    return Json.Value.Array(List.map(xs: List.sort(value), f: jsonString))
   end lambda))
-  bind _ <- try File.writeText("teams.json", Json.stringify(json) + "\n") |> Result.mapError(_, IOError.message)
+  bind _ <- try File.writeText(path: "teams.json", text: Json.stringify(json) + "\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.writeLine("teams: ${Map.size(teams)}, members: ${List.length(rows)}")
-  bind first <- try Option.okOr(List.head(rows), "members.csv has no rows")
-  bind oldest <- List.fold(rows, first, lambda(best, row) return if yearOf(row) < yearOf(best) then row else best end if end lambda)
-  Console.writeLine("oldest member: ${column(oldest, "name")} (${yearOf(oldest)})")
+  bind first <- try Option.okOr(o: List.head(rows), error: "members.csv has no rows")
+  bind oldest <- List.fold(xs: rows, initial: first, f: lambda(acc, value) return if yearOf(value) < yearOf(acc) then value else acc end if end lambda)
+  Console.writeLine("oldest member: ${column(row: oldest, name: "name")} (${yearOf(oldest)})")
   return Result.Ok(())
 end function

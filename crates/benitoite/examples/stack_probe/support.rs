@@ -84,7 +84,11 @@ pub fn source(shape: &str, n: usize) -> Result<String, String> {
                 .collect::<Vec<_>>()
                 .join(",");
             declarations = format!("function f({params}) -> Unit\n ()\nend function\n");
-            format!("f({})", vec!["1 + 1"; n].join(","))
+            let args = (0..n)
+                .map(|i| format!("x{i}: 1 + 1"))
+                .collect::<Vec<_>>()
+                .join(",");
+            format!("f({args})")
         }
         "fields" => {
             let fields = (0..n)
@@ -150,10 +154,10 @@ pub fn source(shape: &str, n: usize) -> Result<String, String> {
             declarations = "record R\n f: Integer\nend record\n".into();
             nest("R(..", "R(f: 0)", ", f: 0)", n)
         }
-        "lambda" => nest("lambda() bind _ <- ", "()", "\nend lambda", n),
+        "lambda" => nest("lambda()\n bind _ <- ", "()", "\nend lambda", n),
         "with" => {
-            declarations = "import Benitoite.Unofficial.IO.File\n".into();
-            format!("{}(){}", (0..n).map(|i| format!("with r{i} = try File.openReader(\"input\") |> Result.mapError(_, IOError.message) do ")).collect::<String>(), " end with".repeat(n))
+            declarations = "import Benitoite.Unofficial.IO.File\nfunction ioMessage(error: IOError) -> String\n return IOError.message(error)\nend function\n".into();
+            format!("{}(){}", (0..n).map(|i| format!("with r{i} = try File.openReader(\"input\") |> Result.mapError(r: _, f: ioMessage) do ")).collect::<String>(), " end with".repeat(n))
         }
         "lazy" => nest("lazy ", "()", " end lazy", n),
         "handle" => {

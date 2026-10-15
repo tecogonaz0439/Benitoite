@@ -19,7 +19,7 @@ implement[T: Show] Show[Option[T]]
   end function
 end implement
 function describeAll[T: Show](xs: List[T]) -> String
-  return List.map(xs, Show.show) |> String.join(_, ", ")
+  return List.map(xs: xs, f: lambda(value) return Show.show(value) end lambda) |> String.join(xs: _, separator: ", ")
 end function
 function main() -> Unit
   bind people <- [Person(name: "Ada")]

@@ -258,12 +258,12 @@ fn server(source: &str, mode: ExecMode, budget: u32, stopper: Stopper) -> Server
 
 const ACCEPT_QUERY: &str = r#"
 function main() -> Result[Unit, String] uses Http.Listen, Console.Write, State
-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message) do
+  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
     Console.writeErrorLine(Integer.toString(Http.listenerPort(listener)))
-    with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+    with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
       bind query <- Http.Request.query(Http.requestOf(exchange))
       bind body <- if query = [Pair("q", "%G0")] then "%G0" else "wrong query" end if
-      return Http.respond(exchange, Http.text(200, body)) |> Result.mapError(_, NetworkError.message)
+      return Http.respond(exchange: exchange, response: Http.text(status: 200, s: body)) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
     end with
   end with
 end function
@@ -389,22 +389,22 @@ function waitFilled(filled: Reference[Boolean]) -> Unit uses State
   return waitFilled(filled)
 end function
 function main() -> Result[Unit, String] uses Http.Listen, Console.Write, State
-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
+  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
     Console.writeErrorLine(Integer.toString(Http.listenerPort(listener)))
     bind filled <- Reference.new(false)
     bind done <- Reference.new(false)
-    bind writer <- TaskGroup.spawn(group, lambda()
-      Console.write(String.repeat("x", 1048577))
-      Reference.set(filled, true)
+    bind writer <- TaskGroup.spawn(group: group, action: lambda()
+      Console.write(String.repeat(s: "x", n: 1048577))
+      Reference.set(reference: filled, value: true)
       Console.writeErrorLine("filled")
       Console.write("capacity")
-      Reference.set(done, true)
+      Reference.set(reference: done, value: true)
       return ()
     end lambda)
     waitFilled(filled)
-    with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+    with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
       bind status <- if Reference.get(done) then 500 else 200 end if
-      bind _ <- try Http.respond(exchange, Http.text(status, "accepted while stdout blocked")) |> Result.mapError(_, NetworkError.message)
+      bind _ <- try Http.respond(exchange: exchange, response: Http.text(status: status, s: "accepted while stdout blocked")) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
     end with
     Task.await(writer)
     return Result.Ok(())

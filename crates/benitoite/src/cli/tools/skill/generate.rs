@@ -27,16 +27,70 @@ pub struct GeneratedFile {
 mod text {
     pub const GRAMMAR_HEADING: &str = "初回リリース版の文法の全体";
     pub const GRAMMAR_TITLE: &str = "# Benitoite grammar";
-    pub const GRAMMAR_INTRO: &str = "The complete grammar of Benitoite in EBNF. \
+    pub const GRAMMAR_INTRO: &str = "The base grammar of Benitoite in EBNF. \
 `{ ... }` means zero or more repetitions, `[ ... ]` means optional, and `|` separates alternatives. \
 `NL` is a line break that separates items. `CommaList(X)` is a comma-separated list of `X` that may be \
-empty and may end with a comma; `LineList(X)` is a list of `X` separated by line breaks.";
+empty and may end with a comma; `LineList(X)` is a list of `X` separated by line breaks.\n\n\
+A short lambda contains exactly one statement, and the entire lambda (including its header and \
+any nested syntax) must fit on one physical line. Its expression uses the ordinary precedence; \
+outer commas, closing delimiters, branch/block boundaries, and the end of the line or file end it. \
+Use `return` to return a value. For a multiline body, start the body on the line after the header \
+and close it with `end lambda`. A body starting on the header's last line takes an explicit \
+`end lambda` only immediately after its statement on that same physical line. It never takes a terminator \
+on a later line; blank lines do not affect which lambda a terminator closes. \
+When either lambda in a directly nested pair omits its terminator, parenthesize the inner lambda. \
+Call arguments and binding statements provide independent boundaries. \
+Prefer the short form for a one-statement body; explicit terminators are valid and the formatter \
+preserves the chosen form. Before adding another statement, start the body after the header and add \
+`end lambda`.\n\n\
+For selecting a value or action, prefer `match`. Use `if` without `else` for conditional work or \
+an early return. `else`, `else if`, and `shadow` are valid but are discouraged; these recommendations \
+add no warnings. Prefer a fresh `bind` name for each new value. Preserve condition evaluation count \
+and order, evaluate only the selected branch, and keep the target of `return`; nest boolean matches \
+for effectful conditions instead of moving them into guards. For a final catch-all branch, prefer \
+an ordinary binding name such as `other` or `otherCode` that does not collide with outer local names \
+or visible constants, and put no unreachable branch after it. `case _ ->` is valid. This advice \
+does not apply to `_` inside constructors, discarded bindings, or partial applications.\n\n\
+Function types require a name for every parameter. Ordinary functions with two or more parameters \
+require named arguments; single-parameter functions accept either positional or named arguments. \
+Parameter names must match even for a single positional higher-order argument. \
+Ordinary calls accept named values such as `f(b: readB(), a: readA())`. Labels name parameters; \
+they do not refer to local variables. The callee is evaluated first, then argument expressions \
+in source order; only the saved values are placed in declaration order. Unknown, repeated, missing, \
+or mixed named/positional arguments are errors. Function-type parameter names and lambda parameter \
+names must match the contract; names are never inferred from the order of call labels. Direct data \
+constructors use positional fields, while record construction uses named fields. \
+Calls through an unannotated parameter wait for a known contract from constraints in the same \
+function body. If the names and order remain unknown, E0455 requires a function-type annotation \
+with parameter names, even for an unused lambda or a single positional argument. Contracts are \
+not generalized or supplied later by callers of an already checked function. \
+Named holes preserve the original parameter names in source order: `f(b: _, a: _)` creates a \
+`function(b: B, a: A) -> R`. The callee and fixed arguments run inside that generated function, \
+when it is called; `return` and `try` target it, and `resume` cannot cross its boundary. A pipe \
+first evaluates its left side once, then its right callee and explicit arguments. Without direct \
+holes it supplies parameter 0: `xs |> List.map(f: action)`. Explicitly supplying that parameter \
+is a duplicate; remaining parameters require labels. With direct holes, or a parenthesized right \
+side, the pipe instead calls the resulting function with one argument. It never fills an arbitrary \
+free position or automatically partially applies a function. Constructor values use `arg1`, `arg2`, \
+etc.; record constructor values use field names. Direct constructor holes keep their original \
+position names.";
     pub const DIAG_TITLE: &str = "# Benitoite diagnostic codes";
     pub const DIAG_INTRO: &str = "Each diagnostic code with its message template and explanation. \
-Words in braces such as `{name}` are filled in when the diagnostic is reported.";
+Words in braces such as `{name}` are filled in when the diagnostic is reported.\n\n\
+For argument-label errors, compare the available parameter names in declaration order, but keep \
+argument expressions in source order when adding labels. For E0454, match callback names at every \
+position or use an explicit lambda wrapper. For E0455, add a function-type annotation with names; \
+the order of call labels does not define a contract. See [Common mistakes](common-mistakes.md) \
+and [Idioms](idioms.md#calls-callback-contracts-holes-and-pipes) for examples.";
     pub const INDEX_TITLE: &str = "# Benitoite standard library";
     pub const INDEX_INTRO: &str = "The modules of the standard library. Each module has its own file \
-in this directory. Unofficial modules may change; their import name changes when they become standard.";
+in this directory. Unofficial modules may change; their import name changes when they become standard.\n\n\
+Parameter names in these declarations are part of the function contract. Label every argument of an \
+ordinary call with two or more parameters, including calls through function values. Callback names \
+and their order must match the nested function type, even for one parameter. For example, List.map \
+expects `value`, List.fold expects `acc, value`, and Result.mapError expects `error`. An existing \
+function with different names needs an explicit lambda wrapper. See \
+[Idioms](../idioms.md#calls-callback-contracts-holes-and-pipes) for examples.";
     pub const INDEX_HEADER: &str = "| Module | Status | Import | Description |\n|---|---|---|---|";
     pub const STATUS_PRELUDE: &str = "standard (prelude)";
     pub const STATUS_STANDARD: &str = "standard";

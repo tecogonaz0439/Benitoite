@@ -6,22 +6,22 @@ import Benitoite.Unofficial.Network.Http
 import Benitoite.Unofficial.IO.Console
 
 function server(listener: Http.Listener) -> Result[Unit, String] uses Http.Listen, State
-  with first = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
-    bind _ <- try Http.respond(first, Http.Response(status: 302, headers: [Pair("Location", "/final")], body: Bytes.empty())) |> Result.mapError(_, NetworkError.message)
+  with first = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+    bind _ <- try Http.respond(exchange: first, response: Http.Response(status: 302, headers: [Pair("Location", "/final")], body: Bytes.empty())) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
   end with
-  with last = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+  with last = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
     bind request <- Http.requestOf(last)
-    return Http.respond(last, Http.text(200, Http.Request.path(request))) |> Result.mapError(_, NetworkError.message)
+    return Http.respond(exchange: last, response: Http.text(status: 200, s: Http.Request.path(request))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
   end with
 end function
 
 function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
-  with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
-    bind task <- TaskGroup.spawn(group, lambda() return server(listener) end lambda)
-    bind result <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/start") |> Result.mapError(_, NetworkError.message)
+  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+    bind task <- TaskGroup.spawn(group: group, action: lambda() return server(listener) end lambda)
+    bind result <- try Http.get("http://127.0.0.1:" + Integer.toString(Http.listenerPort(listener)) + "/start") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
     bind _ <- try Task.await(task)
     Console.writeLine(Integer.toString(Http.Response.status(result)))
-    Console.writeLine(try Option.okOr(String.fromUTF8(Http.Response.body(result)), "UTF-8"))
+    Console.writeLine(try Option.okOr(o: String.fromUTF8(Http.Response.body(result)), error: "UTF-8"))
     return Result.Ok(())
   end with
 end function

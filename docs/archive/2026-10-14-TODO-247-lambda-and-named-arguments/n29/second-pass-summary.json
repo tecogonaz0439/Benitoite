@@ -1,0 +1,633 @@
+{
+  "inputs": 5402,
+  "rust_inputs": 5350,
+  "candidates": 2074,
+  "editable_candidates_after_inventory": 6,
+  "followup_resolved": 3,
+  "retained_legacy": 3,
+  "remaining_edit_candidates": [
+    {
+      "kind": "call",
+      "position": {
+        "column": 9,
+        "end": 125,
+        "file": 0,
+        "line": 3,
+        "start": 100
+      },
+      "callee": "Trait.Functor.map",
+      "contract_sources": [
+        {
+          "file": 39,
+          "inner": [
+            {
+              "function_types": [],
+              "id": 3639,
+              "name": "x"
+            },
+            {
+              "function_types": [
+                {
+                  "arity": 1,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "end": 958,
+                      "file": 39,
+                      "start": 957
+                    }
+                  ],
+                  "position": {
+                    "end": 971,
+                    "file": 39,
+                    "start": 941
+                  }
+                }
+              ],
+              "id": 3644,
+              "name": "f"
+            }
+          ],
+          "kind": "declaration",
+          "name": "Functor.map",
+          "names": [
+            "x",
+            "f"
+          ],
+          "public": true,
+          "source_path": "<benitoite>/Trait.bnt"
+        }
+      ],
+      "names": [
+        "x",
+        "f"
+      ],
+      "name_origin": "resolved_declaration_or_component",
+      "hold_reasons": [],
+      "depends_on": [],
+      "edits": [
+        {
+          "start": 98004,
+          "end": 98004,
+          "before": "",
+          "decoded_before": "",
+          "after": "x: "
+        },
+        {
+          "start": 98008,
+          "end": 98008,
+          "before": "",
+          "decoded_before": "",
+          "after": "f: "
+        }
+      ],
+      "source_range": [
+        97986,
+        98011
+      ],
+      "before": "Trait.Functor.map([], cb)",
+      "after": "Trait.Functor.map(x: [], f: cb)",
+      "path": "crates/benitoite/src/ir/check.rs",
+      "snippet": 8,
+      "source_sha256": "6b5b4b22e1877232b52c45ccee03d01553d120ea95df5180c03dd99efa942a93",
+      "old_result": {
+        "typed": true,
+        "parse_errors": 0,
+        "diagnostics": []
+      },
+      "expected_diagnostics": {
+        "classification": "unclassified",
+        "exit": null,
+        "diagnostics": []
+      },
+      "diagnostic_change": {
+        "classification": "none",
+        "old": [],
+        "new": null
+      },
+      "review": "pending",
+      "id": "80bfa27f0827372f5b51",
+      "disposition": "resolved_by_followup_named_trait_call",
+      "reason": "実名のラベルとコールバック名へ直し、元の検査の成功を確認した。"
+    },
+    {
+      "kind": "component",
+      "position": {
+        "column": 31,
+        "end": 120,
+        "file": 0,
+        "line": 3,
+        "start": 91
+      },
+      "contract_sources": [
+        {
+          "kind": "lambda",
+          "origin": {
+            "column": 31,
+            "end": 120,
+            "file": 0,
+            "line": 3,
+            "start": 91
+          },
+          "names": [
+            "x"
+          ],
+          "public": false
+        },
+        {
+          "kind": "annotation",
+          "origin": {
+            "end": 971,
+            "file": 39,
+            "start": 941
+          },
+          "arity": 1,
+          "names": [
+            "value"
+          ],
+          "name": "Functor.map",
+          "slot": "f",
+          "public": false
+        }
+      ],
+      "names": [
+        "value"
+      ],
+      "name_origin": "declaration_expectation",
+      "hold_reasons": [
+        "input_not_typed_successfully"
+      ],
+      "members": [
+        "0:91:120",
+        "39:941:971"
+      ],
+      "edits": [
+        {
+          "start": 23447,
+          "end": 23448,
+          "before": "x",
+          "decoded_before": "x",
+          "after": "value"
+        },
+        {
+          "start": 23457,
+          "end": 23458,
+          "before": "x",
+          "decoded_before": "x",
+          "after": "value"
+        }
+      ],
+      "source_range": [
+        23440,
+        23469
+      ],
+      "before": "lambda(x) return x end lambda",
+      "after": "lambda(value) return value end lambda",
+      "path": "crates/benitoite/src/typeck/traits/tests.rs",
+      "snippet": 65,
+      "source_sha256": "ba43290639f57731a7b99ce319c2d0296e1ca3240c7cd7144e83a01d3dcccb60",
+      "old_result": {
+        "typed": false,
+        "parse_errors": 0,
+        "diagnostics": [
+          {
+            "code": "E0706",
+            "error": true,
+            "message": "the type parameter `F` needs the constraint `Trait.Functor`"
+          }
+        ]
+      },
+      "expected_diagnostics": {
+        "classification": "unclassified",
+        "exit": null,
+        "diagnostics": []
+      },
+      "diagnostic_change": {
+        "classification": "none",
+        "old": [],
+        "new": null
+      },
+      "review": "pending",
+      "id": "957ff79e9b326674d672",
+      "disposition": "resolved_by_followup_named_trait_call",
+      "reason": "実名のラベルとコールバック名へ直し、元の検査の成功を確認した。"
+    },
+    {
+      "kind": "call",
+      "position": {
+        "column": 9,
+        "end": 121,
+        "file": 0,
+        "line": 3,
+        "start": 69
+      },
+      "callee": "Trait.Functor.map",
+      "contract_sources": [
+        {
+          "file": 39,
+          "inner": [
+            {
+              "function_types": [],
+              "id": 3644,
+              "name": "x"
+            },
+            {
+              "function_types": [
+                {
+                  "arity": 1,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "end": 958,
+                      "file": 39,
+                      "start": 957
+                    }
+                  ],
+                  "position": {
+                    "end": 971,
+                    "file": 39,
+                    "start": 941
+                  }
+                }
+              ],
+              "id": 3649,
+              "name": "f"
+            }
+          ],
+          "kind": "declaration",
+          "name": "Functor.map",
+          "names": [
+            "x",
+            "f"
+          ],
+          "public": true,
+          "source_path": "<benitoite>/Trait.bnt"
+        }
+      ],
+      "names": [
+        "x",
+        "f"
+      ],
+      "name_origin": "resolved_declaration_or_component",
+      "hold_reasons": [
+        "input_not_typed_successfully"
+      ],
+      "depends_on": [
+        "957ff79e9b326674d672"
+      ],
+      "edits": [
+        {
+          "start": 23436,
+          "end": 23436,
+          "before": "",
+          "decoded_before": "",
+          "after": "x: "
+        },
+        {
+          "start": 23440,
+          "end": 23440,
+          "before": "",
+          "decoded_before": "",
+          "after": "f: "
+        }
+      ],
+      "source_range": [
+        23418,
+        23470
+      ],
+      "before": "Trait.Functor.map(xs, lambda(x) return x end lambda)",
+      "after": "Trait.Functor.map(x: xs, f: lambda(x) return x end lambda)",
+      "path": "crates/benitoite/src/typeck/traits/tests.rs",
+      "snippet": 65,
+      "source_sha256": "ba43290639f57731a7b99ce319c2d0296e1ca3240c7cd7144e83a01d3dcccb60",
+      "old_result": {
+        "typed": false,
+        "parse_errors": 0,
+        "diagnostics": [
+          {
+            "code": "E0706",
+            "error": true,
+            "message": "the type parameter `F` needs the constraint `Trait.Functor`"
+          }
+        ]
+      },
+      "expected_diagnostics": {
+        "classification": "unclassified",
+        "exit": null,
+        "diagnostics": []
+      },
+      "diagnostic_change": {
+        "classification": "none",
+        "old": [],
+        "new": null
+      },
+      "review": "pending",
+      "id": "2766fd239302e0fe5f44",
+      "disposition": "resolved_by_followup_named_trait_call",
+      "reason": "実名のラベルとコールバック名へ直し、元の検査の成功を確認した。"
+    },
+    {
+      "kind": "component",
+      "position": {
+        "column": 23,
+        "end": 79,
+        "file": 0,
+        "line": 2,
+        "start": 57
+      },
+      "contract_sources": [
+        {
+          "kind": "lambda",
+          "origin": {
+            "column": 23,
+            "end": 79,
+            "file": 0,
+            "line": 2,
+            "start": 57
+          },
+          "names": [
+            "n"
+          ],
+          "public": false
+        },
+        {
+          "kind": "annotation",
+          "origin": {
+            "end": 2247,
+            "file": 9,
+            "start": 2217
+          },
+          "arity": 1,
+          "names": [
+            "value"
+          ],
+          "name": "map",
+          "slot": "f",
+          "public": false
+        }
+      ],
+      "names": [
+        "value"
+      ],
+      "name_origin": "declaration_expectation",
+      "hold_reasons": [],
+      "members": [
+        "0:57:79",
+        "9:2217:2247"
+      ],
+      "edits": [
+        {
+          "start": 11056,
+          "end": 11057,
+          "before": "n",
+          "decoded_before": "n",
+          "after": "value"
+        },
+        {
+          "start": 11066,
+          "end": 11067,
+          "before": "n",
+          "decoded_before": "n",
+          "after": "value"
+        }
+      ],
+      "source_range": [
+        11049,
+        11071
+      ],
+      "before": "lambda(n) return n + 1",
+      "after": "lambda(value) return value + 1",
+      "path": "crates/benitoite/tests/desugar_export/named.rs",
+      "snippet": 6,
+      "source_sha256": "e3320c8aa5d217819038881bce5934534ff5fb30e350ae8b7faeb8e150e4994a",
+      "old_result": {
+        "typed": true,
+        "parse_errors": 0,
+        "diagnostics": []
+      },
+      "expected_diagnostics": {
+        "classification": "unclassified",
+        "exit": null,
+        "diagnostics": []
+      },
+      "diagnostic_change": {
+        "classification": "none",
+        "old": [],
+        "new": null
+      },
+      "review": "pending",
+      "id": "9c1f55bbd5af253caa99",
+      "disposition": "retained_until_N33",
+      "reason": "標準宣言の名前によって旧入力が誤って新形式へ移らないことを検査する対照入力。"
+    },
+    {
+      "kind": "call",
+      "position": {
+        "column": 9,
+        "end": 80,
+        "file": 0,
+        "line": 2,
+        "start": 43
+      },
+      "callee": "List.map",
+      "contract_sources": [
+        {
+          "file": 9,
+          "inner": [
+            {
+              "function_types": [],
+              "id": 616,
+              "name": "xs"
+            },
+            {
+              "function_types": [
+                {
+                  "arity": 1,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "end": 2234,
+                      "file": 9,
+                      "start": 2233
+                    }
+                  ],
+                  "position": {
+                    "end": 2247,
+                    "file": 9,
+                    "start": 2217
+                  }
+                }
+              ],
+              "id": 621,
+              "name": "f"
+            }
+          ],
+          "kind": "declaration",
+          "name": "map",
+          "names": [
+            "xs",
+            "f"
+          ],
+          "public": true,
+          "source_path": "<benitoite>/List.bnt"
+        }
+      ],
+      "names": [
+        "xs",
+        "f"
+      ],
+      "name_origin": "resolved_declaration_or_component",
+      "hold_reasons": [],
+      "depends_on": [
+        "9c1f55bbd5af253caa99"
+      ],
+      "edits": [
+        {
+          "start": 11044,
+          "end": 11044,
+          "before": "",
+          "decoded_before": "",
+          "after": "xs: "
+        },
+        {
+          "start": 11049,
+          "end": 11049,
+          "before": "",
+          "decoded_before": "",
+          "after": "f: "
+        }
+      ],
+      "source_range": [
+        11035,
+        11072
+      ],
+      "before": "List.map([1], lambda(n) return n + 1)",
+      "after": "List.map(xs: [1], f: lambda(n) return n + 1)",
+      "path": "crates/benitoite/tests/desugar_export/named.rs",
+      "snippet": 6,
+      "source_sha256": "e3320c8aa5d217819038881bce5934534ff5fb30e350ae8b7faeb8e150e4994a",
+      "old_result": {
+        "typed": true,
+        "parse_errors": 0,
+        "diagnostics": []
+      },
+      "expected_diagnostics": {
+        "classification": "unclassified",
+        "exit": null,
+        "diagnostics": []
+      },
+      "diagnostic_change": {
+        "classification": "none",
+        "old": [],
+        "new": null
+      },
+      "review": "pending",
+      "id": "99540dc884b94667135b",
+      "disposition": "retained_until_N33",
+      "reason": "標準宣言の名前によって旧入力が誤って新形式へ移らないことを検査する対照入力。"
+    },
+    {
+      "kind": "component",
+      "position": {
+        "column": 9,
+        "end": 85,
+        "file": 0,
+        "line": 2,
+        "start": 58
+      },
+      "contract_sources": [
+        {
+          "kind": "lambda",
+          "origin": {
+            "column": 9,
+            "end": 85,
+            "file": 0,
+            "line": 2,
+            "start": 58
+          },
+          "names": [
+            "x"
+          ],
+          "public": false
+        },
+        {
+          "kind": "annotation",
+          "origin": {
+            "column": 22,
+            "end": 49,
+            "file": 0,
+            "line": 1,
+            "start": 21
+          },
+          "arity": 1,
+          "names": null,
+          "name": "legacy",
+          "slot": "return",
+          "public": false
+        }
+      ],
+      "names": [
+        "x"
+      ],
+      "name_origin": "first_source_lambda",
+      "hold_reasons": [
+        "input_not_typed_successfully"
+      ],
+      "members": [
+        "0:58:85",
+        "0:21:49"
+      ],
+      "edits": [
+        {
+          "start": 26893,
+          "end": 26893,
+          "before": "",
+          "decoded_before": "",
+          "after": "x: "
+        }
+      ],
+      "source_range": [
+        26922,
+        26949
+      ],
+      "before": "lambda(x: Integer) return x",
+      "after": "lambda(x: Integer) return x",
+      "path": "crates/benitoite/tests/named_arguments.rs",
+      "snippet": 83,
+      "source_sha256": "f307b878864b8e3ce107fa70c19707920ce13b13049c508148fcb81f799e7aba",
+      "old_result": {
+        "typed": false,
+        "parse_errors": 0,
+        "diagnostics": [
+          {
+            "code": "E0454",
+            "error": true,
+            "message": "function parameter names do not match"
+          }
+        ]
+      },
+      "expected_diagnostics": {
+        "classification": "unclassified",
+        "exit": null,
+        "diagnostics": []
+      },
+      "diagnostic_change": {
+        "classification": "none",
+        "old": [],
+        "new": null
+      },
+      "review": "pending",
+      "id": "586586c07f0debbc0536",
+      "disposition": "retained_until_N33",
+      "reason": "Legacy と厳密な実名の適合を試す負の入力。N33 で最終の診断へ切り替える。"
+    }
+  ],
+  "ordinary_source_edits_remaining": 0,
+  "ordinary_source_edits_validation": "residual-review.json の読み取り専用の呼び出し走査と、最終の個別の検査で確認。意図した旧入力と診断の案内の切り替えは別に記録する。"
+}

@@ -9,14 +9,14 @@ end effect
 function first() -> Integer
   return handle ask() + 2 with
     case ask() ->
-      bind f <- add(resume(10), _)
+      bind f <- add(a: resume(10), b: _)
       f(1)
   end handle
 end function
 function second() -> Integer
   return handle ask() + 2 with
     case ask() ->
-      bind f <- add(_, resume(10))
+      bind f <- add(a: _, b: resume(10))
       f(1)
   end handle
 end function

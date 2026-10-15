@@ -4,5 +4,5 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 
 function main() -> Unit uses Console.Write, Process.Environment
-  return Console.writeLine(String.join(Process.arguments(), "|"))
+  return Console.writeLine(String.join(xs: Process.arguments(), separator: "|"))
 end function

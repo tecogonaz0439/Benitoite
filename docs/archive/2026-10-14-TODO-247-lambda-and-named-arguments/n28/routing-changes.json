@@ -1,0 +1,2171 @@
+[
+  {
+    "group": "golden",
+    "name": "testdata/types/arity-single.bnt",
+    "before": null,
+    "after": {
+      "group": "golden",
+      "name": "testdata/types/arity-single.bnt",
+      "version": 7,
+      "excluded": [
+        "Some(E0402)"
+      ],
+      "scopes": {},
+      "coverage": null
+    },
+    "reason": "N28 の新しい負の golden。型検査の誤りとして除外し、CLI で具体的な診断と終了状態を検査する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/types/arity.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/types/arity.bnt",
+      "version": 7,
+      "excluded": [
+        "Some(E0402)",
+        "Some(E0402)"
+      ],
+      "scopes": {},
+      "coverage": null
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/types/arity.bnt",
+      "version": 7,
+      "excluded": [
+        "Some(E0453)",
+        "Some(E0402)"
+      ],
+      "scopes": {},
+      "coverage": null
+    },
+    "reason": "design.md の旧→新表どおり不足の E0402 だけを E0453 へ変更。同じ構成子の E0402 と型検査の失敗の分類を維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/types/named-required-pipe.bnt",
+    "before": null,
+    "after": {
+      "group": "golden",
+      "name": "testdata/types/named-required-pipe.bnt",
+      "version": 7,
+      "excluded": [
+        "Some(E0449)"
+      ],
+      "scopes": {},
+      "coverage": null
+    },
+    "reason": "N28 の新しい負の golden。型検査の誤りとして除外し、CLI で具体的な診断と終了状態を検査する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/concurrency/c12-cancelled-await.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/concurrency/c12-cancelled-await.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/concurrency/c12-cancelled-await.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/concurrency/c12-cancelled-reader.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/concurrency/c12-cancelled-reader.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/concurrency/c12-cancelled-reader.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/concurrency/c12-deadlock.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/concurrency/c12-deadlock.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/concurrency/c12-deadlock.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/concurrency/c12-group-released.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/concurrency/c12-group-released.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/concurrency/c12-group-released.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/concurrency/inherited_operation_task_location.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/concurrency/inherited_operation_task_location.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/concurrency/inherited_operation_task_location.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/concurrency/r41-inherited-non-tail.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/concurrency/r41-inherited-non-tail.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/concurrency/r41-inherited-non-tail.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/div_by_zero_tail.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/div_by_zero_tail.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/div_by_zero_tail.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/div_by_zero_trace.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/div_by_zero_trace.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/div_by_zero_trace.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/int_overflow_floor_div.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/int_overflow_floor_div.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/int_overflow_floor_div.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/value_too_large.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/value_too_large.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/value_too_large.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s16-add-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-add-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-add-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s16-divide-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-divide-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-divide-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s16-divide-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-divide-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-divide-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s16-modulo-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-modulo-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-modulo-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s16-multiply-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-multiply-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-multiply-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s16-negate-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-negate-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-negate-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s16-subtract-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-subtract-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s16-subtract-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s32-add-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-add-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-add-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s32-divide-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-divide-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-divide-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s32-divide-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-divide-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-divide-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s32-modulo-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-modulo-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-modulo-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s32-multiply-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-multiply-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-multiply-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s32-negate-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-negate-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-negate-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s32-subtract-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-subtract-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s32-subtract-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s8-add-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-add-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-add-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s8-divide-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-divide-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-divide-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s8-divide-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-divide-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-divide-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s8-modulo-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-modulo-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-modulo-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s8-multiply-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-multiply-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-multiply-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s8-negate-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-negate-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-negate-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-signed-s8-subtract-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-subtract-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-signed-s8-subtract-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u16-add-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u16-add-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u16-add-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u16-divide-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u16-divide-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u16-divide-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u16-modulo-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u16-modulo-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u16-modulo-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u16-multiply-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u16-multiply-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u16-multiply-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u16-subtract-underflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u16-subtract-underflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u16-subtract-underflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u32-add-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u32-add-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u32-add-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u32-divide-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u32-divide-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u32-divide-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u32-modulo-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u32-modulo-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u32-modulo-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u32-multiply-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u32-multiply-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u32-multiply-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u32-subtract-underflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u32-subtract-underflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u32-subtract-underflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u64-add-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u64-add-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u64-add-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u64-divide-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u64-divide-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u64-divide-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u64-modulo-zero.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u64-modulo-zero.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u64-modulo-zero.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u64-multiply-overflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u64-multiply-overflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u64-multiply-overflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/eval/width-unsigned-u64-subtract-underflow.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u64-subtract-underflow.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/eval/width-unsigned-u64-subtract-underflow.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/handlers/c12-discard-reader.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/handlers/c12-discard-reader.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/handlers/c12-discard-reader.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/io/c12-process-exit-flush.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/io/c12-process-exit-flush.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/io/c12-process-exit-flush.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/io/c12-with-reader-release.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/io/c12-with-reader-release.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/io/c12-with-reader-release.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/io/c12-with-return-release.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/io/c12-with-return-release.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/io/c12-with-return-release.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/io/c12-with-try-release.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/io/c12-with-try-release.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/io/c12-with-try-release.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/network/respond-twice.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/network/respond-twice.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/network/respond-twice.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/network/status-above-range.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/network/status-above-range.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/network/status-above-range.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/network/status-below-range.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/network/status-below-range.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/network/status-below-range.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/network/status-informational.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/network/status-informational.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/network/status-informational.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/stdlib/l40-csv-invalid-delimiter.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/stdlib/l40-csv-invalid-delimiter.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/stdlib/l40-csv-invalid-delimiter.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/stdlib/l40-path-invalid-extension.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/stdlib/l40-path-invalid-extension.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/stdlib/l40-path-invalid-extension.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/stdlib/width-bits-s8-invalid.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/stdlib/width-bits-s8-invalid.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/stdlib/width-bits-s8-invalid.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/stdlib/width-bits-u64-invalid.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/stdlib/width-bits-u64-invalid.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/stdlib/width-bits-u64-invalid.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/test/assert_equal.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/test/assert_equal.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/test/assert_equal.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/test/assert_is_true.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/test/assert_is_true.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/test/assert_is_true.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/test/assert_not_equal.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/test/assert_not_equal.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/test/assert_not_equal.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/test/captured_output.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/test/captured_output.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/test/captured_output.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/test/exit.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/test/exit.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/test/exit.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/test/result_error.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/test/result_error.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/test/result_error.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/test/runtime_error.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/test/runtime_error.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/test/runtime_error.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/test/task_assert.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/test/task_assert.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/test/task_assert.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  },
+  {
+    "group": "golden",
+    "name": "testdata/test/values.bnt",
+    "before": {
+      "group": "golden",
+      "name": "testdata/test/values.bnt",
+      "version": 7,
+      "excluded": [],
+      "scopes": {
+        "accessor": 2,
+        "inScope": 7
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "after": {
+      "group": "golden",
+      "name": "testdata/test/values.bnt",
+      "version": 8,
+      "excluded": [],
+      "scopes": {
+        "accessor": 2,
+        "inScope": 7
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    "reason": "確認済みの負の入力の名前付きへの移行。定義の対象内外・除外の理由・網羅性の対象はすべて維持する。"
+  }
+]

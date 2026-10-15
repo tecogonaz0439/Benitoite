@@ -1,0 +1,836 @@
+[
+  {
+    "path": "crates/benitoite/examples/stack_probe/support.rs",
+    "source_sha256": "c961b3df135c3a6ef5341afa192b6da31b477b1c205e3c3773b4d9aebba39190",
+    "edits": [
+      {
+        "start": 6776,
+        "end": 6791,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/builtins/funcs/console/tests.rs",
+    "source_sha256": "aa49bc697218b8536c91b44e80993bc137a7a858116205eda709aff476b274d0",
+    "edits": [
+      {
+        "start": 7050,
+        "end": 7065,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/builtins/funcs/file/path_tests.rs",
+    "source_sha256": "6652b977d73c8c29e137a9108929f3d42180cf62baaf6aa2b0ce03d1e3848278",
+    "edits": [
+      {
+        "start": 30325,
+        "end": 30340,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 32078,
+        "end": 32093,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 32178,
+        "end": 32193,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 32257,
+        "end": 32272,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 32340,
+        "end": 32355,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/builtins/funcs/file/resource_tests.rs",
+    "source_sha256": "16adfbbb8beb776ccee2de50928ecd1a2a308ba02f7b443b5abffb3cb98df111",
+    "edits": [
+      {
+        "start": 22269,
+        "end": 22284,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 22357,
+        "end": 22372,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 22576,
+        "end": 22591,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 24055,
+        "end": 24070,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 24138,
+        "end": 24153,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 24218,
+        "end": 24233,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 24299,
+        "end": 24314,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 27701,
+        "end": 27716,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 30383,
+        "end": 30398,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 39880,
+        "end": 39895,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 40089,
+        "end": 40104,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 40345,
+        "end": 40360,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 40769,
+        "end": 40784,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 40986,
+        "end": 41001,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 42073,
+        "end": 42088,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 42406,
+        "end": 42421,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 42736,
+        "end": 42751,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 43069,
+        "end": 43084,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 43367,
+        "end": 43382,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 43700,
+        "end": 43715,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/builtins/funcs/file/tests.rs",
+    "source_sha256": "625c29b136f25c2effb678b9aed9031bbcd3a5861d8f91fe703472f2f9448f60",
+    "edits": [
+      {
+        "start": 16543,
+        "end": 16558,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 16628,
+        "end": 16643,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 18585,
+        "end": 18600,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 18673,
+        "end": 18688,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 18758,
+        "end": 18773,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 18840,
+        "end": 18855,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/builtins/funcs/http_server/tests.rs",
+    "source_sha256": "3157fb6ae4c412ced0b96a1c01da4a6d7138751fd01a4df5f91788af139b2a7f",
+    "edits": [
+      {
+        "start": 11135,
+        "end": 11155,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 11874,
+        "end": 11894,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 12254,
+        "end": 12274,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/builtins/funcs/regex/tests.rs",
+    "source_sha256": "e236178a0cce438c61afb5fec0fe7d8702773f69837ef3825d80fa1c957d7c49",
+    "edits": [
+      {
+        "start": 14743,
+        "end": 14758,
+        "before": "Regex.matchText",
+        "after": "lambda(value) return Regex.matchText(value) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/diag/render/help_tests.rs",
+    "source_sha256": "0b433a58e32cf8b7b6b808cea3b446798d005ae27755dfefdf83e764544f208c",
+    "edits": [
+      {
+        "start": 10856,
+        "end": 10871,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/runtime/io/http/tests.rs",
+    "source_sha256": "0987bc2e2cdd8cb918b246824e3c7db556cd888dd9b12169741733b361bc9ec3",
+    "edits": [
+      {
+        "start": 39479,
+        "end": 39499,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 47127,
+        "end": 47147,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/runtime/run/tests/test_entry.rs",
+    "source_sha256": "16c62672a3f02f26806c0a5cc9e83645a3ae2477e0611d8f81e6f1fcb36f2c3c",
+    "edits": [
+      {
+        "start": 7368,
+        "end": 7383,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 7460,
+        "end": 7475,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/typeck/effects/tests.rs",
+    "source_sha256": "5cc97f4ee55b77a41e80c2857beb6da5cab2dc357fdbd6e73df9a03ad2833871",
+    "edits": [
+      {
+        "start": 18273,
+        "end": 18287,
+        "before": "TaskGroup.open",
+        "after": "lambda(value) return TaskGroup.open(value) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/src/typeck/traits/tests.rs",
+    "source_sha256": "02c5fff1fee98babcc095e752b4e06291a69e9e44c3c675f0343de76129c1d5b",
+    "edits": [
+      {
+        "start": 20841,
+        "end": 20850,
+        "before": "Show.show",
+        "after": "lambda(value) return Show.show(value) end lambda"
+      },
+      {
+        "start": 20973,
+        "end": 20982,
+        "before": "Show.show",
+        "after": "lambda(value) return Show.show(value) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/http_descriptor_exhaustion.rs",
+    "source_sha256": "c8b28c9f30fddb0c39ec1895a8328c57a0c1e334d440602895c4493381458772",
+    "edits": [
+      {
+        "start": 1090,
+        "end": 1110,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 1339,
+        "end": 1359,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 1776,
+        "end": 1796,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/http_exchange_release.rs",
+    "source_sha256": "9f2a74109974295bdc8acf28269bed80584c5ffb1aae461ad838987685fc9690",
+    "edits": [
+      {
+        "start": 1381,
+        "end": 1401,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 1481,
+        "end": 1496,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 1640,
+        "end": 1660,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 2440,
+        "end": 2460,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 2899,
+        "end": 2919,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 3088,
+        "end": 3108,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/interrupt_process.rs",
+    "source_sha256": "5d9f010de44d2993d2dd4836b7948ee6015e266f223eb2831afaa646a0bc32d2",
+    "edits": [
+      {
+        "start": 13086,
+        "end": 13101,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 13171,
+        "end": 13186,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/io_modes.rs",
+    "source_sha256": "c198077c00f0c5819bd6b641c74caf89f9789270e7cbe0ab11824ba78c58ed5c",
+    "edits": [
+      {
+        "start": 13521,
+        "end": 13536,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 13606,
+        "end": 13621,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 13678,
+        "end": 13693,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 14697,
+        "end": 14712,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 14782,
+        "end": 14797,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 14864,
+        "end": 14879,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 15896,
+        "end": 15911,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 16001,
+        "end": 16016,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 16965,
+        "end": 16980,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 17794,
+        "end": 17809,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/l13_external_commands.rs",
+    "source_sha256": "56979934fcc89325f1ff5fe8f47f9e6ae6f12950637bec43564d563b9360cbe7",
+    "edits": [
+      {
+        "start": 4935,
+        "end": 4950,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 5289,
+        "end": 5304,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 5552,
+        "end": 5567,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 5803,
+        "end": 5818,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 6974,
+        "end": 6989,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 8335,
+        "end": 8350,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 10139,
+        "end": 10154,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/l21_json.rs",
+    "source_sha256": "abadbcf683aa89e39e81a1017fa911e2bdd2cce61bc59be10e0adb0865b7acea",
+    "edits": [
+      {
+        "start": 2959,
+        "end": 2982,
+        "before": "Json.ParseError.message",
+        "after": "lambda(error) return Json.ParseError.message(error) end lambda"
+      },
+      {
+        "start": 5210,
+        "end": 5233,
+        "before": "Json.ParseError.message",
+        "after": "lambda(error) return Json.ParseError.message(error) end lambda"
+      },
+      {
+        "start": 5349,
+        "end": 5372,
+        "before": "Json.ParseError.message",
+        "after": "lambda(error) return Json.ParseError.message(error) end lambda"
+      },
+      {
+        "start": 5760,
+        "end": 5783,
+        "before": "Json.ParseError.message",
+        "after": "lambda(error) return Json.ParseError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/l30_http_server.rs",
+    "source_sha256": "998845915ec2a7a324582c3e9fc9e434120a7ef81edd0df4bb284ee9b2a2bcf1",
+    "edits": [
+      {
+        "start": 6401,
+        "end": 6421,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 6663,
+        "end": 6683,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 6919,
+        "end": 6939,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 14626,
+        "end": 14646,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 19268,
+        "end": 19288,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 21563,
+        "end": 21583,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 22618,
+        "end": 22638,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 22793,
+        "end": 22813,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 22893,
+        "end": 22913,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/l31_http_serve_and_helpers.rs",
+    "source_sha256": "4f19edc2e5362b03ec5d5d72f664c9fb233725c5217eb06d862b8bec90f12857",
+    "edits": [
+      {
+        "start": 13120,
+        "end": 13140,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/l32_http_client.rs",
+    "source_sha256": "de207d06c0050483ca9b53c7c324d9914e97589690d5acbba764e98a5ef0e321",
+    "edits": [
+      {
+        "start": 5009,
+        "end": 5029,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 5577,
+        "end": 5597,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 6703,
+        "end": 6723,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 7407,
+        "end": 7427,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 7564,
+        "end": 7584,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 7816,
+        "end": 7836,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 9186,
+        "end": 9206,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 9442,
+        "end": 9462,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 9696,
+        "end": 9716,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 26845,
+        "end": 26865,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 28032,
+        "end": 28052,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 28173,
+        "end": 28193,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/network_faults.rs",
+    "source_sha256": "0913d2cd3905896cf7de6a9963254d3210844d5365e02dc1ed501bf1a4eca1db",
+    "edits": [
+      {
+        "start": 9400,
+        "end": 9420,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 9593,
+        "end": 9613,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 9777,
+        "end": 9797,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 9976,
+        "end": 9996,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/open_062.rs",
+    "source_sha256": "53934c0095ad0afb8234a74766f0d034d599a09c6ae232932f7bb48cca05bb65",
+    "edits": [
+      {
+        "start": 28161,
+        "end": 28176,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 34558,
+        "end": 34573,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/open_062_http.rs",
+    "source_sha256": "1762c0003c0e7d924e319c1a8be7159670a01a23169f2214d254abf234e60702",
+    "edits": [
+      {
+        "start": 9643,
+        "end": 9663,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 9816,
+        "end": 9836,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 10078,
+        "end": 10098,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 15819,
+        "end": 15839,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 16445,
+        "end": 16465,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      },
+      {
+        "start": 16662,
+        "end": 16682,
+        "before": "NetworkError.message",
+        "after": "lambda(error) return NetworkError.message(error) end lambda"
+      }
+    ]
+  },
+  {
+    "path": "crates/benitoite/tests/runtime_builtins.rs",
+    "source_sha256": "66fd330ad83b9ed601dc8ca783983e15c70a6f6f379cbe9188f2fbac78a52119",
+    "edits": [
+      {
+        "start": 4851,
+        "end": 4866,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 7630,
+        "end": 7645,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      },
+      {
+        "start": 7715,
+        "end": 7730,
+        "before": "IOError.message",
+        "after": "lambda(error) return IOError.message(error) end lambda"
+      }
+    ]
+  }
+]

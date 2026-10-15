@@ -9,7 +9,7 @@ use crate::diag::{DiagBuilder, DiagCode};
 use crate::types::TyCon;
 use crate::types::builtin::BuiltinTypeClass;
 
-pub(super) fn solve(ctx: &mut Body<'_, '_>) {
+pub(super) fn solve(ctx: &mut Body<'_, '_>, final_pass: bool) {
     let mut pending = vec![];
     for c in std::mem::take(&mut ctx.constraints) {
         if matches!(c, Constraint::Try { .. } | Constraint::Resource { .. }) {
@@ -74,6 +74,10 @@ pub(super) fn solve(ctx: &mut Body<'_, '_>) {
             }
         }
         if waiting.len() == before {
+            if !final_pass {
+                ctx.constraints.extend(waiting);
+                break;
+            }
             for c in waiting {
                 match c {
                     Constraint::Try { target, reason, .. }

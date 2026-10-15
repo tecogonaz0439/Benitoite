@@ -53,8 +53,25 @@ pub struct RoleTable {
     pub top: Vec<TopRange>,
 }
 
+use crate::base::Span;
+use crate::syntax::ast::LambdaEnding;
 use crate::syntax::ast::Module;
 use crate::syntax::token::Token;
+
+/// 検証で字句番号に直す前のラムダの範囲（06-03「整形後の検証」）。
+#[derive(Clone, Copy)]
+pub(super) struct LambdaSpans {
+    pub span: Span,
+    pub body: Span,
+    pub ending: LambdaEnding,
+}
+
+/// 役割と同じ AST の走査で、入れ子を含むすべてのラムダを集める。
+pub(super) fn lambda_spans(module: &Module, tokens: &[Token]) -> Vec<LambdaSpans> {
+    let mut walker = walk::Walker::new(tokens);
+    walker.module(module);
+    walker.lambda_spans()
+}
 
 /// AST と `lex` の字句の列から役割の表を作る（本章「役割の表」）。`module` は誤りのノードを含まない。
 /// `text` はソースのバイト列で、複数行の文字列の字句の行を数えるために読む。

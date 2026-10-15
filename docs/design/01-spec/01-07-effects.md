@@ -12,6 +12,8 @@
 
 ## 仕様
 
+【決定】操作を関数として呼ぶ場合も、宣言のパラメータ名で対応付ける。明示引数はソース順に評価し、その値を操作の宣言位置へ配置してから操作を開始する。ハンドラの節に書く引数名は、その節の局所束縛であり、操作の契約名と同じ綴りにする必要はない。`resume` は専用の一引数の構文を維持する。
+
 ### エフェクトの型と権限制御の区別
 
 【方針】エフェクトの型は、関数を呼んだときにどの種類の操作が起こりうるかを、実行の前に検査するための情報である。実行のときに、どの操作を許すかを決める権限制御とは別の機構である。
@@ -89,7 +91,7 @@
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `IOError.message(e)` | `function(IOError) -> String` | 失敗の理由を、人間が読める形で表す文字列 |
+| `IOError.message(e)` | `function(e: IOError) -> String` | 失敗の理由を、人間が読める形で表す文字列 |
 
 `message` の文字列の具体的な文面は定めない。文面は処理系の版によって変わりうるので、失敗の種類を判定する手段にはならない。失敗の種類は `IOError.kind` で取り出す（[エラー処理](01-09-errors.md)）。
 
@@ -148,10 +150,10 @@ end function
 
 | 関数 | 型 | 振る舞い |
 |---|---|---|
-| `Console.write(s)` | `function(String) -> Unit uses Console.Write` | `s` を標準出力に書く |
-| `Console.writeLine(s)` | `function(String) -> Unit uses Console.Write` | `s` と改行を標準出力に書く |
-| `Console.writeErrorLine(s)` | `function(String) -> Unit uses Console.Write` | `s` と改行を標準エラー出力に書く |
-| `File.readText(path)` | `function(String) -> Result[String, IOError] uses File.Read` | `path` のファイルの内容全体を UTF-8 の文字列として読む |
+| `Console.write(text)` | `function(text: String) -> Unit uses Console.Write` | `text` を標準出力に書く |
+| `Console.writeLine(text)` | `function(text: String) -> Unit uses Console.Write` | `text` と改行を標準出力に書く |
+| `Console.writeErrorLine(text)` | `function(text: String) -> Unit uses Console.Write` | `text` と改行を標準エラー出力に書く |
+| `File.readText(path)` | `function(path: String) -> Result[String, IOError] uses File.Read` | `path` のファイルの内容全体を UTF-8 の文字列として読む |
 | `Process.arguments()` | `function() -> List[String] uses Process.Environment` | コマンドライン引数の並びを返す |
 
 - 改行は U+000A 一文字である。
@@ -173,8 +175,8 @@ end function
 
 | 関数 | 型 | 振る舞い |
 |---|---|---|
-| `File.readBytes(path)` | `function(String) -> Result[Bytes, IOError] uses File.Read` | `path` のファイルの内容全体を、文字コードを解釈せずにバイト列として読む |
-| `File.writeBytes(path, data)` | `function(String, Bytes) -> Result[Unit, IOError] uses File.Write` | `path` のファイルを作るか置き換え、内容を `data` にする |
+| `File.readBytes(path)` | `function(path: String) -> Result[Bytes, IOError] uses File.Read` | `path` のファイルの内容全体を、文字コードを解釈せずにバイト列として読む |
+| `File.writeBytes(path: path, content: content)` | `function(path: String, content: Bytes) -> Result[Unit, IOError] uses File.Write` | `path` のファイルを作るか置き換え、内容を `content` にする |
 
 - `File.readBytes` の失敗は、内容の文字コードを除き、`File.readText` と同じである。
 
@@ -186,10 +188,10 @@ IO のモジュールの関数（標準入力の読み取り、ファイルと�
 
 | 関数 | 型 | 振る舞い |
 |---|---|---|
-| `Reference.new(v)` | `function[T](T) -> Reference[T] uses State` | `v` を入れた新しいセルを作る |
-| `Reference.get(r)` | `function[T](Reference[T]) -> T uses State` | `r` に入っている値を返す |
-| `Reference.set(r, v)` | `function[T](Reference[T], T) -> Unit uses State` | `r` に入っている値を `v` に変える |
-| `Reference.update(r, f)` | `function[T](Reference[T], function(T) -> T) -> Unit uses State` | `r` に入っている値を、それに `f` を適用した値に変える。`f` はエフェクトを持たない |
+| `Reference.new(value)` | `function[T](value: T) -> Reference[T] uses State` | `value` を入れた新しいセルを作る |
+| `Reference.get(reference)` | `function[T](reference: Reference[T]) -> T uses State` | `reference` に入っている値を返す |
+| `Reference.set(reference: reference, value: value)` | `function[T](reference: Reference[T], value: T) -> Unit uses State` | `reference` に入っている値を `value` に変える |
+| `Reference.update(reference: reference, f: f)` | `function[T](reference: Reference[T], f: function(value: T) -> T) -> Unit uses State` | `reference` に入っている値を、それに `f` を適用した値に変える。`f` はエフェクトを持たない |
 
 - セルは値として渡せる。同じセルを指す値はどれも同じセルを指し、一方から書き換えた値は、他方から読んでも見える。
 - `Reference.get` は、それまでに最後に `Reference.set` で書いた値（書いていなければ `Reference.new` に渡した値）を返す。
@@ -200,8 +202,8 @@ IO のモジュールの関数（標準入力の読み取り、ファイルと�
 ```text
 function countNonEmpty(lines: List[String]) -> Integer uses State
   bind n <- Reference.new(0)
-  List.forEach(lines, lambda(line)
-    if String.trim(line) <> "" then Reference.set(n, Reference.get(n) + 1) end if
+  List.forEach(xs: lines, f: lambda(value)
+    if String.trim(value) <> "" then Reference.set(reference: n, value: Reference.get(n) + 1) end if
   end lambda)
   return Reference.get(n)
 end function
@@ -220,8 +222,11 @@ end function
 import Benitoite.Unofficial.IO.Process
 
 function tagRelease(tag: String) -> Result[Unit, String] uses Process.Run
-  bind output <- try Process.run(Process.command("git", ["tag", tag])) |> Result.mapError(_, IOError.message)
-  return if Process.Output.exitCode(output) = 0 then Result.Ok(()) else Result.Error(Process.Output.standardError(output)) end if
+  bind output <- try Process.run(Process.command(program: "git", arguments: ["tag", tag])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  return match Process.Output.exitCode(output) with
+    case 0 -> Result.Ok(())
+    case otherCode -> Result.Error(Process.Output.standardError(output))
+  end match
 end function
 
 function main() -> Result[Unit, String] uses Process.Run
@@ -245,7 +250,7 @@ effect Log
 end effect
 
 function process(items: List[String]) -> Integer uses Log
-  List.forEach(items, lambda(item) write("item: " + item) end lambda)
+  List.forEach(xs: items, f: lambda(value) write("item: " + value))
   return List.length(items)
 end function
 
@@ -293,8 +298,8 @@ end function
 import Benitoite.Unofficial.IO.File
 
 function readPort(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
 end function
 
 function portIsRead() -> Boolean uses File.Read

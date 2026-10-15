@@ -2,11 +2,11 @@
 // spec: 01-08 関数の呼び出し
 // spec: 01-02 ラムダ
 import Benitoite.Unofficial.IO.Console
-function apply(next: function(Integer) -> Integer, value: Integer) -> Integer
+function apply(next: function(value: Integer) -> Integer, value: Integer) -> Integer
  return next(value)
 end function
 function through_lambda(n: Integer) -> Integer
- return if n = 0 then 42 else apply(lambda(value: Integer) return through_lambda(value) end lambda, n - 1) end if
+ return if n = 0 then 42 else apply(next: lambda(value: Integer) return through_lambda(value) end lambda, value: n - 1) end if
 end function
 function option_after_tail(n: Integer) -> Option[Integer]
  return if n = 0 then Option.Some(17) else option_after_tail(n - 1) end if

@@ -69,3 +69,12 @@ pub(super) const FUNCTION: &str = "function";
 pub(super) const LAMBDA: &str = "lambda";
 
 pub(super) const USES_STATE: &str = " uses State";
+
+/// 契約の宣言順を、診断の名前の一覧でも維持する。
+pub(super) fn parameter_names(names: &[String]) -> String {
+    names
+        .iter()
+        .map(|n| format!("`{n}`"))
+        .collect::<Vec<_>>()
+        .join(", ")
+}

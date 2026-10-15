@@ -17,6 +17,6 @@ function main() -> Unit uses Console.Write
   Console.writeLine("${f(12u32)}")
   bind value <- void()
   Console.writeLine("${value = ()}")
-  Console.writeLine("${tailInts(1, [7, -42, 99], 0.5) = [-42, 99]}")
-  Console.writeLine("${tailFloats(1, [7.0, -0.0, 1.5], 0.5) = [-0.0, 1.5]}")
+  Console.writeLine("${tailInts(n: 1, xs: [7, -42, 99], extra: 0.5) = [-42, 99]}")
+  Console.writeLine("${tailFloats(n: 1, xs: [7.0, -0.0, 1.5], extra: 0.5) = [-0.0, 1.5]}")
 end function

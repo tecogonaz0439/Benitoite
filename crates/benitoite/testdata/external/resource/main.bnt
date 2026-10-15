@@ -16,16 +16,16 @@ function count() -> Integer
 function createMany(n: Integer, total: Integer) -> Integer uses State
   if n = 0 then return total end if
   bind c <- newCell(n)
-  return createMany(n - 1, total + get(c))
+  return createMany(n: n - 1, total: total + get(c))
 end function
 function main() -> Unit uses State, Console.Write
   bind a <- newCell(10)
   Console.writeLine("${count()}")
-  Console.writeLine("${bump(a, 2)}")
-  Console.writeLine("${bump(a, 3)}")
+  Console.writeLine("${bump(self: a, by: 2)}")
+  Console.writeLine("${bump(self: a, by: 3)}")
   match make(20) with
-    case Option.Some(b) -> Console.writeLine("${pair(a, b)}")
+    case Option.Some(b) -> Console.writeLine("${pair(self: a, other: b)}")
     case Option.None -> Console.writeLine("missing")
   end match
-  Console.writeLine("${createMany(1500, 0)}")
+  Console.writeLine("${createMany(n: 1500, total: 0)}")
 end function

@@ -6,6 +6,6 @@ function choose[effect E](unused: function() -> Unit uses IO.All, E, action: fun
 end function
 
 function main() -> Unit
-    choose(lambda() return () end lambda, lambda() return Console.writeLine("used") end lambda)
+    choose(unused: lambda() return () end lambda, action: lambda() return Console.writeLine("used") end lambda)
     return ()
 end function

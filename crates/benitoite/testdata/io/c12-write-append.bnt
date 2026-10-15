@@ -6,9 +6,9 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
-  bind _ <- try File.writeText("output.txt", "first\n") |> Result.mapError(_, IOError.message)
-  bind _ <- try File.appendText("output.txt", "second\n") |> Result.mapError(_, IOError.message)
-  bind text <- try File.readText("output.txt") |> Result.mapError(_, IOError.message)
+  bind _ <- try File.writeText(path: "output.txt", text: "first\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  bind _ <- try File.appendText(path: "output.txt", text: "second\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  bind text <- try File.readText("output.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.write(text)
   return Result.Ok(())
 end function

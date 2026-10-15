@@ -9,19 +9,19 @@ function main() -> Unit uses State, Console.Write
   bind count <- Reference.new(0)
   bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
   with group = TaskGroup.open() do
-    bind first <- TaskGroup.spawn(group, lambda()
+    bind first <- TaskGroup.spawn(group: group, action: lambda()
       Console.writeLine("child")
       return 42
     end lambda)
     Console.writeLine("awaited: ${Task.await(first)}")
-    Reference.set(saved, Option.Some(first))
-    bind _ <- TaskGroup.spawn(group, lambda()
-      Reference.update(count, lambda(n) return n + 1 end lambda)
+    Reference.set(reference: saved, value: Option.Some(first))
+    bind _ <- TaskGroup.spawn(group: group, action: lambda()
+      Reference.update(reference: count, f: lambda(value) return value + 1 end lambda)
     end lambda)
-    bind _ <- TaskGroup.spawn(group, lambda()
+    bind _ <- TaskGroup.spawn(group: group, action: lambda()
       with nested = TaskGroup.open() do
-        bind _ <- TaskGroup.spawn(nested, lambda()
-          Reference.update(count, lambda(n) return n + 1 end lambda)
+        bind _ <- TaskGroup.spawn(group: nested, action: lambda()
+          Reference.update(reference: count, f: lambda(value) return value + 1 end lambda)
         end lambda)
       end with
     end lambda)

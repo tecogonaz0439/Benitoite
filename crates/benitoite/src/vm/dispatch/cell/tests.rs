@@ -329,7 +329,7 @@ fn retry_reloads_version_and_argument_after_collecting_and_returns_to_same_desti
 #[test]
 fn division_by_zero_in_update_stops_without_writing_cell() {
     use crate::pipeline::{self, CheckOptions};
-    let source = b"function main() -> Unit uses State\n bind r <- Reference.new(7)\n Reference.update(r, lambda(n: Integer) return n div 0 end lambda)\n return ()\nend function\n";
+    let source = b"function main() -> Unit uses State\n bind r <- Reference.new(7)\n Reference.update(reference: r, f: lambda(value: Integer) return value div 0 end lambda)\n return ()\nend function\n";
     let checked = pipeline::check_text(
         "stopped-cell.bnt",
         source,

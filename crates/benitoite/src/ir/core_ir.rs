@@ -176,6 +176,8 @@ pub enum ValKind<C> {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Lambda<C> {
+    /// 利用者のパラメータの契約名。局所名と辞書の引数は含めない。
+    pub param_names: Vec<String>,
     pub id: BodyId,
     pub params: Vec<Var>,
     pub body: C,
@@ -398,6 +400,8 @@ pub struct DictParam {
 /// 関数の定義 `fn f[ᾱ; ρ̄](d̄, x̄:Ā) : B ! ε = M`。
 #[derive(Clone, PartialEq, Debug)]
 pub struct Def<C> {
+    /// 利用者のパラメータの契約名。局所名と辞書の引数は含めない。
+    pub param_names: Vec<String>,
     /// 関数・フィールド・実装の中の関数の束縛の番号
     pub binding: BindingId,
     /// 表示のための名前（02-07「原型の名前と由来の種類」の名前。`main`、`Report.format`、`List.map`、`Show[Person].show`）
@@ -456,6 +460,8 @@ pub struct ConstDef<C> {
 /// エフェクトの操作の表の項目（設計書 02-07「コンパイル済みプログラム」の操作の表の元）。
 #[derive(Clone, PartialEq, Debug)]
 pub struct OpDef {
+    /// 利用者のパラメータの契約名。局所名と辞書の引数は含めない。
+    pub param_names: Vec<String>,
     pub binding: BindingId,
     pub effect: EffectName,
     /// エフェクトで修飾した名前（`Log.write`、`Console.writeLine`）

@@ -12,7 +12,7 @@
 
 字句は[字句構造](01-01-lexical.md)に従う。文法の中の `NL` は、字句構造の「改行による区切り」で置かれる改行字句 NEWLINE を表す。
 
-表層構文の骨格の四点は【決定】である。ドットはモジュールと型名による修飾に限り、値に続くドットを認めない。トップレベルの関数は型シグネチャを必ず書く。文は改行で区切る。関数は `f(x, y)` の形で適用し、カリー化しない。外部に作用する処理を直接形式で書き、関数の型に `uses` でエフェクトを書くことも【決定】である。ブロックを `end` と構文の名前で閉じる形、`lambda`、`if … then`、演算子の書き方、戻り値の型の `->`、`bind` と `shadow`、`data`、`match … with` も【決定】である。基本の文法のそれ以外の具体的な規則は【方針】である。見出しに「（初回リリース版）」を付けた節の書き方は、各節に付けた確度に従う。
+表層構文の骨格の四点は【決定】である。ドットはモジュールと型名による修飾に限り、値に続くドットを認めない。トップレベルの関数は型シグネチャを必ず書く。文は改行で区切る。関数は `f(x: x, y: y)` の形で適用し、カリー化しない。外部に作用する処理を直接形式で書き、関数の型に `uses` でエフェクトを書くことも【決定】である。ブロックを `end` と構文の名前で閉じる形、`lambda`、`if … then`、演算子の書き方、戻り値の型の `->`、`bind` と `shadow`、`data`、`match … with` も【決定】である。基本の文法のそれ以外の具体的な規則は【方針】である。見出しに「（初回リリース版）」を付けた節の書き方は、各節に付けた確度に従う。
 
 ## 仕様
 
@@ -66,7 +66,7 @@ Variant     = UpperIdent [ "(" CommaList(Type) ")" ] .
 
 (* 型 *)
 Type        = UpperIdent [ "[" Type { "," Type } [ "," ] "]" ]
-            | "function" "(" CommaList(Type) ")" "->" Type [ Uses ]
+            | "function" "(" CommaList(NamedType) ")" "->" Type [ Uses ]
             | "(" Type ")" .
 
 (* 文の並びと文 *)
@@ -86,7 +86,8 @@ AddExpr     = MulExpr { ( "+" | "-" ) MulExpr } .
 MulExpr     = UnaryExpr { ( "*" | "/" | "div" | "mod" ) UnaryExpr } .
 UnaryExpr   = ( "-" | "not" ) UnaryExpr | CallExpr .
 CallExpr    = Primary { "(" CommaList(Arg) ")" } .
-Arg         = Expr | "_" .
+Arg         = [ LowerIdent ":" ] ( Expr | "_" ) .
+NamedType   = LowerIdent ":" Type .
 Primary     = Literal
             | Name
             | "(" ")"
@@ -104,7 +105,9 @@ IfExpr      = "if" Expr "then" Body { "else" "if" Expr "then" Body } [ "else" Bo
 MatchExpr   = "match" Expr "with" [ NL ] Arm { NL Arm } [ NL ] "end" "match" .
 Arm         = "case" Pattern "->" ArmBody .
 ArmBody     = Stmt { NL Stmt } .
-Lambda      = "lambda" "(" CommaList(LambdaParam) ")" [ "->" Type [ Uses ] ] Body "end" "lambda" .
+Lambda      = LambdaHeader ( Body "end" "lambda" | ShortBody ) .
+LambdaHeader = "lambda" "(" CommaList(LambdaParam) ")" [ "->" Type [ Uses ] ] .
+ShortBody   = Stmt . (* ラムダ全体を同じ物理行に収め、外側の区切りを残す *)
 LambdaParam = LowerIdent [ ":" Type ] .
 
 (* パターン *)
@@ -120,20 +123,20 @@ Pattern     = "_"
 
 `Uses` に書く `UpperIdent` は、エフェクトの名前か、関数の型パラメータの並びで `effect` を付けて宣言したエフェクト変数である。エフェクトの名前は[エフェクト](01-07-effects.md)で定める。型の宣言の型パラメータには `effect` を付けられない。エフェクト変数の規則は[型システム](01-06-type-system.md)で定める。
 
-【決定】型は括弧で囲める。括弧で囲んだ型は、囲まない型と同じ型を表す。`uses` は、その直前にある最も内側の関数の型に付き、`uses` の後のコンマ区切りの並びはできるだけ長く読む（最長一致、longest match）。この並びにエフェクトでない名前（`Integer` など）が来たときは、構文エラーではなく名前解決の誤りとし、診断は関数の型を括弧で囲む書き方を修正案として示す。並びの 2 番目以降の名前の直後に `[` が続くとき（`List[Integer]` など、型引数を伴う名前）は、`uses` の並びに書けない形なので構文エラーとし、診断は同じく関数の型を括弧で囲む書き方を修正案として示す。
+【決定】型は括弧で囲める。括弧で囲んだ型は、囲まない型と同じ型を表す。`uses` は、その直前にある最も内側の関数の型に付き、`uses` の後のコンマ区切りの並びはできるだけ長く読む（最長一致、longest match）。この並びにエフェクトでない大文字の名前が来たときは、名前解決の誤りとする。関数型の次のパラメータの小文字名の前では `uses` の並びを閉じる。並びの 2 番目以降の名前の直後に `[` が続くとき（`List[Integer]` など、型引数を伴う名前）は、`uses` の並びに書けない形なので構文エラーとし、診断は同じく関数の型を括弧で囲む書き方を修正案として示す。
 
 ```text
-function((function() -> Unit uses Console.Write), Integer) -> Unit        // function(function() -> Unit uses Console.Write, Integer) -> Unit は誤り
+function(action: (function() -> Unit uses Console.Write), count: Integer) -> Unit // 関数型の例
 function f() -> (function() -> Integer uses Console.Write) uses Console.Write ... end function // 戻り値の型が uses を持つ関数の型のとき
 ```
 
-1 行目の括弧を外すと、`Integer` を `uses` の並びの一部として読む。2 行目の戻り値の型の括弧を外すと、`function f() -> function() -> Integer uses Console.Write ... end function` の `uses Console.Write` は戻り値の型（内側の関数の型）に付き、`f` 自身は純粋な関数になる。
+1 行目は関数型のパラメータに名前を付け、内側の関数型を括弧で示した例である。2 行目の戻り値の型の括弧を外すと、`function f() -> function() -> Integer uses Console.Write ... end function` の `uses Console.Write` は戻り値の型（内側の関数の型）に付き、`f` 自身は純粋な関数になる。
 
 ### プログラムと宣言
 
 【方針】基本の文法では、プログラムは一つのソースファイルであり、トップレベルには関数の宣言と型の宣言を置く。複数のファイルからなるプログラムを書く構文と、トップレベルに置けるほかの宣言は、後述の「モジュールと import（初回リリース版）」以降の節で定める。トップレベルに式や `bind`・`shadow` を置くことはできない。プログラムの実行を始める関数（エントリポイント）は[評価意味論](01-08-evaluation.md)で定める。名前の有効範囲（トップレベルの宣言どうしの参照、局所束縛のシャドーイングなど）は[名前・スコープ・モジュール](01-03-names-modules.md)で定める。
 
-【決定】トップレベルの関数の宣言は、すべての引数の型と戻り値の型を書かなければならない。戻り値の型は、引数の並びの後の `->` に続けて書く。戻り値がない関数も `-> Unit` と書く。関数の型も、同じく `->` の後に戻り値の型を書く（`function(Integer) -> Integer`）。戻り値の型を `:` の後に書いた宣言（`function double(x: Integer): Integer`）は構文エラーとし、診断は `->` と書く修正案を示す。外部に作用する関数は、戻り値の型の後に `uses` とエフェクトの名前を書く。`uses` を書かない関数は純粋である。
+【決定】トップレベルの関数の宣言は、すべての引数の型と戻り値の型を書かなければならない。戻り値の型は、引数の並びの後の `->` に続けて書く。戻り値がない関数も `-> Unit` と書く。関数の型も、同じく `->` の後に戻り値の型を書く（`function(x: Integer) -> Integer`）。戻り値の型を `:` の後に書いた宣言（`function double(x: Integer): Integer`）は構文エラーとし、診断は `->` と書く修正案を示す。外部に作用する関数は、戻り値の型の後に `uses` とエフェクトの名前を書く。`uses` を書かない関数は純粋である。
 
 【方針】C 系の波括弧の書き方 `fn f(x: Integer) -> Integer { … }` で書いた関数の宣言は構文エラーとし、診断は `function f(x: Integer) -> Integer … end function` の形を修正案として示す（ラムダの `fn(x) { … }` は「ラムダ」）。
 
@@ -213,7 +216,10 @@ function sign(x: Integer) -> Integer
   if x < 0 then
     return -1
   end if
-  return if x = 0 then 0 else 1 end if
+  return match x = 0 with
+    case true -> 0
+    case false -> 1
+  end match
 end function
 ```
 
@@ -226,6 +232,21 @@ end function
 - 分岐には、一つの式も、改行で区切った複数の文も書ける（`return if x = 0 then 0 else 1 end if`）。
 - `else` の直後の `if` は、同じ `if` の続きの分岐として読み、`end if` は一つで閉じる（`if a then … else if b then … else … end if`）。`else` の分岐に別の `if` を入れ子にしたいときは、`else` の後で改行してから `if` を書いても同じく続きとして読むので、入れ子の `if` を括弧で囲む（`else (if b then … end if)`）。
 - `then` の直後と `else` の前後の改行は空白として扱う（[字句構造](01-01-lexical.md)の「改行による区切り」の規則 2・3）。
+
+【方針】値や処理の選択には `match` を推奨する。条件成立時だけの処理や早期リターンには、`else` のない `if` を推奨する。`else`・`else if` は有効だが非推奨とし、使っても警告は出さない。理由: 選択を分岐の並びで示し、条件成立時だけの処理と区別できるためである。
+
+`if` から `match` へ書き直すときは、条件の評価回数と順序、選ばれた分岐だけを評価すること、`return` の作用先を保つ。作用を持つ条件はガードに移さず、真偽値の `match` を入れ子にする。例えば次の形は、`first()` が偽のときだけ `second()` を評価する。
+
+```text
+match first() with
+  case true -> onFirst()
+  case false ->
+    match second() with
+      case true -> onSecond()
+      case false -> onNeither()
+    end match
+end match
+```
 
 `else` を省略した `if` は、Unit 型の式である。`else` のない `if` の分岐は Unit 型でなければならない。これも型検査で検査する。
 
@@ -252,13 +273,54 @@ end match
 
 パターンの中の小文字識別子は新しい変数の束縛であり、大文字識別子はデータ構成子との照合である。データ構成子は、式の中と同じく型名で修飾して書く。浮動小数のリテラルはパターンに書けない。接尾辞付きの整数では `s64` だけを定数・範囲パターンに使える。`s8`・`s16`・`s32` と `u8`・`u16`・`u32`・`u64` は使えず、束縛・ワイルドカードとガードで分岐する。パターンの意味と、網羅性・到達不能の検査は[代数的データ型とパターンマッチ](01-05-data-types.md)で定める。
 
+【方針】最後の包括的な分岐には、`case other ->` や `case otherCode ->` のような、外側の局所名や見えている定数と衝突しない通常の名前を推奨する。これらは予約語ではなく、対象の値を束縛する変数である。ガードのない包括的な分岐の後には、到達しない分岐を置かない。`case _ ->` も有効で、警告は出さない。この推奨は、構成子内の `_`、捨てる束縛の `_`、部分適用の `_` には適用しない。
+
+### 名前付き引数と関数型
+
+【決定】二つ以上のパラメータを持つ通常の関数では、すべての明示引数を名前付きにしなければならない。複数の位置指定は E0449、位置指定と名前指定の混在は E0450 とする。一引数の位置指定でも、渡す関数値の契約名の一致を検査する。既定値、引数の展開、引数不足からの自動の部分適用は加えない。
+
+【決定】呼び出しの引数には `f(b: readB(), a: readA())` のようにパラメータ名を付けられる。指定順は宣言順と異なってよい。呼ぶ値の関数型の名前で対応付け、未知の名前、同じ位置の重複、指定漏れ、位置指定と名前指定の混在は誤りとする。引数がなければ `f()`、一つなら `f(e)` と `f(value: e)` のどちらも使える。名前付き引数のラベルは通常のパラメータと同じ小文字識別子であり、`_`・予約語・修飾名は書けない。ラベルは局所の値への参照ではない。
+
+【決定】関数型は `function(a: Integer, b: Integer) -> Integer` のように、すべてのパラメータに名前を書く。名前のない旧表記は E0257 とし、名前を持つ型注釈への移行を案内する。名前は型の契約の一部であり、型内で重複させない。型内の名前は局所の値を束縛しない。名前の検査と推論は[型システム](01-06-type-system.md)に従う。
+
+【決定】関数の宣言、組み込み、ラムダ、局所の関数値、型クラスのメソッド、エフェクトの操作、外部の関数は、関数型の名前で対応付ける。データ構成子の直接の構築とパターンは位置指定であり、直接の構築に名前を付けると E0456 となる。レコードの構築・更新・パターンはフィールドの規則に従い、関数の引数の展開に `..base` は使えない。属性、ハンドラの節の引数束縛、`resume` はそれぞれの専用の構文を使う。
+
 ### ラムダ
 
-【決定】ラムダ（無名関数）は、`lambda` の後に引数の並びと本体を書き、`end lambda` で閉じる。`function` は、関数の宣言と関数の型に使う。関数の宣言と違い、引数の型と戻り値の型は省略でき、省略すると推論する。戻り値の型は、関数の宣言と同じく `->` の後に書く。`uses` は、戻り値の型を書いたときだけ、その後に書ける。`uses` を書かなければ、エフェクトを本体から推論する（[型システム](01-06-type-system.md)）。本体は、関数の宣言と同じく `return` で値を返す。
+【決定】ラムダ（無名関数）は、`lambda` の後に引数の並びと本体を書く。終端付きの形は `end lambda` で閉じる。短い形は、ラムダ全体を一物理行に収め、本体を一文に限るときに終端を省略できる。`function` は、関数の宣言と関数の型に使う。関数の宣言と違い、引数の型と戻り値の型は省略でき、省略すると推論する。戻り値の型は、関数の宣言と同じく `->` の後に書く。`uses` は、戻り値の型を書いたときだけ、その後に書ける。`uses` を書かなければ、エフェクトを本体から推論する（[型システム](01-06-type-system.md)）。本体は、関数の宣言と同じく `return` で値を返す。
+
+【方針】一文で済むラムダは短い形を推奨する。終端付きの形も有効であり、整形器は終端を自動で増減しない。次の例では、最初は短い形、次は同じ行で閉じた終端付き、最後は次の行から本体を始める終端付きである。
+
+```text
+bind doubled <- List.map(xs: [1, 2, 3], f: lambda(value) return value * 2)
+bind tripled <- List.map(xs: [1, 2, 3], f: lambda(value) return value * 3 end lambda)
+bind makeAdder: function(x: Integer) -> function(y: Integer) -> Integer <- lambda(x)
+  bind add <- lambda(y) return x + y
+  return add
+end lambda
+```
+
+外側の最後の文で短いラムダを作る場合も、次の行の終端は外側を閉じる。空行やコメント行を挟んでも対応は変わらない。
+
+```text
+bind wrap: function(x: Integer) -> Unit <- lambda(x)
+  bind add <- lambda(y: Integer) return x + y
+end lambda
+```
 
 ラムダの引数には `_` を書けない（`lambda(_, x) return x end lambda` は構文エラー）。使わない引数には、`_unused` のように `_` で始まる名前を付ける（[字句構造](01-01-lexical.md)）。
 
-本体の文を複数の行に書くときも、`lambda` のブロックの中の改行は文の区切りとして働く。関数の呼び出しの丸括弧の中に書いたときも同じである（[字句構造](01-01-lexical.md)の「改行による区切り」）。LLM が Python の形で `lambda x: x + 1` と書いたときは、`lambda(x) return x + 1 end lambda` の形を修正案として示す。C 系の波括弧の書き方 `fn(x) { … }` で書いたときは、`lambda(x) … end lambda` の形を修正案として示す。
+本体を見出しの最後の字句より後の物理行から始めるときは、対応する `end lambda` が必要である。本体の文を複数の行に書くときも、`lambda` のブロックの中の改行は文の区切りとして働く。関数の呼び出しの丸括弧の中に書いたときも同じである（[字句構造](01-01-lexical.md)の「改行による区切り」）。LLM が Python の形で `lambda x: x + 1` と書いたときは、`lambda(x) return x + 1` の短い形を修正案として示す。全体を同じ物理行に収めるか、本体を見出しの次の行から始めて `end lambda` を付けるよう案内する。C 系の波括弧の書き方 `fn(x) { … }` で書いたときは、`lambda(x) … end lambda` の形を修正案として示す。
+
+【決定】見出しと同じ行に本体を始めたときは、その一文の直後の同じ物理行に対応する `end lambda` がある場合だけ終端付きとする。次の行以降の終端、外側の区切りを越えた終端は取らない。候補がなければ一行で完結する短いラムダとして読む。空行は終端の対応に影響しない。複数文・継続行・複数行のブロックを含む本体は、見出しの次の行から始める。理由: 外側の終端を内側の短いラムダが取ることを防ぎ、空行の追加や除去で本体の範囲が変わらないようにするためである。
+
+見出しの行に本体を書き、次の行にそのラムダを閉じるつもりで `end lambda` を置く二行の形は受け付けない。本体を見出しの次の行へ移すか、終端まで同じ行へまとめる。外側に対応するラムダがない終端には、終端の不一致や予期しない字句の診断と、この直し方を示す。
+
+【決定】短い形の一行条件は、`lambda` の先頭から本体の最後の字句の末尾までに適用する。LF と CRLF、文字列・コメント・補間・型注釈内の改行、空白として捨てた改行も数える。末尾の行コメントと、その後の改行は本体の外側である。本体の式は通常の優先順位で読み、内側の呼び出し・リスト・型・ブロックを消費し、外側のコンマ・閉じ括弧・分岐境界・ブロック境界・行末・EOF を残す。`lambda(x) return x + 1 |> increment` のパイプは本体に入る。ラムダ自体の呼び出しは `(lambda(x) return x + 1)(3)` とする。一行で閉じた `if` や、一分岐の `match` も一つの式として書ける。複数分岐の `match` は、従来どおり分岐の間に改行が必要である。
+
+短い形も通常の文として型検査する。暗黙の戻り値は加えず、`return`・`try` の作用先、Unit の本体の終わりの扱い、`resume`・ガード・`lazy` の制限を維持する。正常な短い形の後の独立した行は外側の文である。本体に文を追加するときは、先に本体の開始を次の行へ移し、終端を付ける。改行を越える省略候補は E0254、同じ行の二文の並置は従来の文の区切りの診断になる。
+
+【決定】直接の入れ子で外側か内側が短い形なら、内側のラムダ全体を括弧で囲まなければならない。直接の入れ子は、外側の式文の `return`・演算などに裸のラムダが含まれ、括弧・呼び出しの引数・束縛文などの独立した区切りで隔てられていない形である。両方が終端付きなら裸の入れ子を認める。違反は E0256 とし、内側へ括弧を付ける修正案を示す。理由: 終端の属するラムダを、括弧によって明示するためである。
 
 ```text
 lambda(x) return x + 1 end lambda
@@ -301,7 +363,7 @@ lambda(line: String) -> Unit uses IO Console.writeLine(line) end lambda
 
 修飾に使えるモジュールは、標準ライブラリのモジュールと、import で取り込んだモジュールである（後述の「モジュールと import（初回リリース版）」、[名前・スコープ・モジュール](01-03-names-modules.md)）。
 
-値に続けてドットを書く形（`xs.map(f)`、`s.length`）は構文エラーである。このとき、診断は `|>` を使った書き方（`xs |> List.map(f)`）を修正案として示さなければならない。レコードのフィールドも、ドットではなく型のモジュールの関数で取り出す。
+値に続けてドットを書く形（`xs.map(f)`、`s.length`）は構文エラーである。このとき、診断は `|>` を使った書き方（`xs |> List.map(f: f)`）を修正案として示さなければならない。レコードのフィールドも、ドットではなく型のモジュールの関数で取り出す。
 
 ### パイプ
 
@@ -309,37 +371,41 @@ lambda(line: String) -> Unit uses IO Console.writeLine(line) end lambda
 
 【方針】`x |> e` は、右辺 `e` の形によって次のように展開する。
 
-1. `e` が関数の呼び出し `f(a1, ..., an)` であり、その直接の引数 `a1, ..., an` のどれもプレースホルダ `_` でなければ、`x` を第 1 引数に加えた `f(x, a1, ..., an)` に展開する。引数の中に入れ子になった呼び出しのプレースホルダは数えない（`x |> f(g(_))` は `f(x, g(_))` に展開する）。`e` が呼び出しを重ねた形（`g(a)(b)`）であれば、最も外側（最後）の呼び出しに加える。
+1. `e` が関数の呼び出しであり、その直接の引数のどれもプレースホルダ `_` でなければ、`x` を宣言位置 0 に補う。引数の中に入れ子になった呼び出しのプレースホルダは数えない。例えば `x |> f(action: g(_))` は `f` の位置 0 に `x` を渡し、`action` には `g(_)` から作る関数を渡す。`e` が呼び出しを重ねた形（`g(a)(b)`）であれば、最も外側（最後）の呼び出しに加える。
 2. それ以外であれば、`e` を関数として `x` に適用した `e(x)` に展開する。`e` の直接の引数にプレースホルダを含む呼び出しの場合もこの規則による。次節の展開によって `e` は関数になるので、`x` はプレースホルダの位置に入る。
 
 【決定】右辺 `e` が括弧で囲んだ式であれば、中身によらず規則 2 により `e(x)` に展開する。`x |> (f(a))` は `(f(a))(x)` になる。関数を返す呼び出しの結果に `x` を渡すときは、このように右辺を括弧で囲む。
 
 ```text
-lines |> List.filter(nonEmpty)    // List.filter(lines, nonEmpty)
+lines |> List.filter(p: nonEmpty)    // List.filter(xs: lines, p: nonEmpty)
 lines |> List.length              // List.length(lines)
-x |> clamp(0, _, 100)             // clamp(0, x, 100)
+x |> clamp(lo: 0, value: _, hi: 100) // clamp(lo: 0, value: x, hi: 100)
 x |> lambda(v) return v * 2 end lambda              // (lambda(v) return v * 2 end lambda)(x)
 x |> (makeHandler(config))        // (makeHandler(config))(x)
 ```
 
-`try` は右の式全体にかかるので、パイプの結果にかけるときは、パイプの先頭に書く（`try x |> f(a)` は `try f(x, a)`）。
+`try` は右の式全体にかかるので、パイプの結果にかけるときは、パイプの先頭に書く（`try x |> f(next: a)` は、`x` を位置 0 に補う呼び出し全体に `try` を適用する）。
 
 `x` と `e` をどの順に評価するかは[評価意味論](01-08-evaluation.md)で定める。
+
+【決定】直接の穴がない通常の関数呼び出しへのパイプは、左辺を宣言位置 0 に補う。残りの明示引数は名前で指定する。`xs |> List.map(f: action)` は位置 0 の `xs` と `f` を渡し、`xs |> List.map(xs: ys, f: action)` は位置 0 の重複となる。空いている位置を探索しない。直接の穴がある右辺と括弧で囲んだ右辺は、先に作る関数へ一引数で適用する。穴が二つあっても自動で再部分適用しない。直接のデータ構成子への挿入は位置指定を保つ。
 
 ### 部分適用のプレースホルダ
 
 【決定】部分適用は、プレースホルダ `_` を使って明示する。関数はカリー化しないので、引数が足りない呼び出しは部分適用にならず、型検査の誤りになる。
 
-【方針】関数の呼び出し `f(a1, ..., an)` の引数のうち、`_` そのものであるものをプレースホルダと呼ぶ。プレースホルダを一つ以上含む呼び出しは、プレースホルダを左から順に新しい引数に置き換えたラムダに展開する。展開で使う引数の名前は、ソースのどこにも現れない新しい名前である。下の例の `p1`・`p2` は説明のための表記であり、`f(_, p1)` のようにソースに同じ名前があっても、その名前と取り違えることはない。
+【方針】関数の呼び出し `f(a1: e1, ..., an: en)` の引数のうち、`_` そのものであるものをプレースホルダと呼ぶ。プレースホルダを一つ以上含む呼び出しは、プレースホルダを左から順に新しい引数に置き換えたラムダに展開する。展開で使う局所変数の名前は、ソースのどこにも現れない新しい名前である。生成する関数型の契約名は元のパラメータ名を穴のソース順に並べる。局所変数の名前と契約名は区別する。合成した局所変数は既存の束縛を捕獲しない。
 
 ```text
-clamp(0, _, 100)    // lambda(p1) return clamp(0, p1, 100) end lambda
-between(_, lo, _)   // lambda(p1, p2) return between(p1, lo, p2) end lambda
+clamp(lo: 0, value: _, hi: 100) // function(value: Integer) -> Integer
+between(value: _, lo: lo, hi: _) // 穴の契約名は value, hi の順
 ```
 
-- プレースホルダが属するのは、それを直接の引数とする呼び出しだけである。`f(g(_))` は `f(lambda(p1) return g(p1) end lambda)` と展開する。
+- プレースホルダが属するのは、それを直接の引数とする呼び出しだけである。`f(g(_))` で関数になるのは内側の `g(_)` だけであり、その契約名は `g` の元のパラメータから取る。
 - 呼び出しの直接の引数以外の位置（`_ + 1` など）に `_` を書くと、構文エラーとする。
 - 展開後のラムダの本体には、呼び出される関数 `f` と、プレースホルダでない引数の式がそのまま入る。これらの式を評価する時期は、展開後のラムダに従う（[評価意味論](01-08-evaluation.md)）。これらの式の中の `return` と `try` は展開後のラムダから抜け、その戻り値の型で検査する。ただし、`lazy` の本体と `match` のガードの中（内側の `lambda … end lambda` の本体の中を除く）に書いたプレースホルダを含む呼び出しでは、これらの式の中に `return` と `try` を書けない（本章の「`return`」、[エラー処理](01-09-errors.md)の「`Result.Error` と `Option.None` を呼び出し元へ返す構文 `try`」）。これらの式の中には、外側の `handle` の節の続きを再開する `resume` を書けない（ラムダの本体の中と同じ）。
+
+【決定】`f(b: _, a: _)` の関数型は、元の契約が `a: A, b: B` なら `function(b: B, a: A) -> R` となる。穴の順を元の宣言順へ並べ直さない。直接の位置フィールドの構成子の穴は、元のフィールド位置から `arg1`、`arg2`、… の契約名を作る。
 
 ### モジュールと import（初回リリース版）
 
@@ -353,7 +419,7 @@ TopItem     = ImportDecl | [ Visibility ] FnDecl | [ Visibility ] DataDecl .
 ImportDecl  = "import" UpperIdent { "." UpperIdent } [ "as" UpperIdent ] .
 
 Type        = QualUpper [ "[" Type { "," Type } [ "," ] "]" ]
-            | "function" "(" CommaList(Type) ")" "->" Type [ Uses ]
+            | "function" "(" CommaList(NamedType) ")" "->" Type [ Uses ]
             | "(" Type ")" .
 QualUpper   = UpperIdent { "." UpperIdent } .
 Name        = { UpperIdent "." } ( LowerIdent | UpperIdent ) .
@@ -383,7 +449,7 @@ end function
 【決定】ファイルの先頭の `//!` の後、最初の import か宣言の前に、言語の版、依存の記述、パッケージの名前を書ける。項目の順序は問わない。`language`・`dependency`・`package` と欄の名前は、予約語ではなく、この位置で意味を持つ語である。理由: 通常の識別子としての用途を保ち、同じ設定を入口と設定ファイルで同じ構文で書くためである。
 
 ```text
-language "0.0.3"
+language "0.0.5"
 
 dependency Textkit
   path "../packages/textkit"
@@ -592,7 +658,7 @@ function insertByCount(pair: Pair[String, Integer], xs: List[Pair[String, Intege
   match xs with
     case [] -> return [pair]
     case [first, ..rest] if Pair.second(first) >= Pair.second(pair) ->
-      return [first, ..insertByCount(pair, rest)]
+      return [first, ..insertByCount(pair: pair, xs: rest)]
     case _ -> return [pair, ..xs]
   end match
 end function
@@ -633,7 +699,7 @@ end effect
 
 function sumPrices(items: List[Integer]) -> Integer uses Log
   write("items: ${List.length(items)}")
-  return List.fold(items, 0, lambda(acc, x) return acc + x end lambda)
+  return List.fold(xs: items, initial: 0, f: lambda(acc, value) return acc + value end lambda)
 end function
 
 function total(items: List[Integer]) -> Integer uses Console.Write
@@ -684,7 +750,7 @@ Decl        = [ Visibility ] FnDecl
 ```text
 @deprecated("use String.split instead")
 public function splitWords(s: String) -> List[String]
-  return String.split(s, " ")
+  return String.split(s: s, separator: " ")
 end function
 ```
 
@@ -732,7 +798,7 @@ AliasDecl   = "type" UpperIdent [ TypeParams ] "=" Type .
 
 ```text
 type UserId = Integer
-type Validator[T] = function(T) -> Result[T, String]
+type Validator[T] = function(value: T) -> Result[T, String]
 ```
 
 - `type` は型の別名だけに使う。代数的データ型は `data` で宣言する。`type 名前` の後に `=` を書かずに構成子を並べたとき（`type Shape … end type`）は、構文エラーとし、診断は `data` と書く修正案を示す。
@@ -753,8 +819,8 @@ import Benitoite.Unofficial.IO.File
 ///
 /// Returns `Result.Error` when the file does not contain a number.
 public function readPort(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  return Integer.parse(String.trim(text)) |> Option.okOr(_, "not a number")
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
 end function
 
 record Server
@@ -840,7 +906,7 @@ OpSig       = "function" LowerIdent [ FnTypeParams ] "(" CommaList(Param) ")" "-
 
 (* 型 *)
 Type        = QualUpper [ "[" Type { "," Type } [ "," ] "]" ]
-            | "function" "(" CommaList(Type) ")" "->" Type [ Uses ]
+            | "function" "(" CommaList(NamedType) ")" "->" Type [ Uses ]
             | "(" Type ")" .
 QualUpper   = UpperIdent { "." UpperIdent } .
 
@@ -862,7 +928,8 @@ AddExpr     = MulExpr { ( "+" | "-" ) MulExpr } .
 MulExpr     = UnaryExpr { ( "*" | "/" | "div" | "mod" ) UnaryExpr } .
 UnaryExpr   = ( "-" | "not" ) UnaryExpr | CallExpr .
 CallExpr    = Primary { "(" CommaList(Arg) ")" } .
-Arg         = Expr | "_" .
+Arg         = [ LowerIdent ":" ] ( Expr | "_" ) .
+NamedType   = LowerIdent ":" Type .
 Primary     = Literal
             | InterpString
             | Name
@@ -887,7 +954,9 @@ IfExpr      = "if" Expr "then" Body { "else" "if" Expr "then" Body } [ "else" Bo
 MatchExpr   = "match" Expr "with" [ NL ] Arm { NL Arm } [ NL ] "end" "match" .
 Arm         = "case" Pattern { "," Pattern } [ "if" Expr ] "->" ArmBody .
 ArmBody     = Stmt { NL Stmt } .
-Lambda      = "lambda" "(" CommaList(LambdaParam) ")" [ "->" Type [ Uses ] ] Body "end" "lambda" .
+Lambda      = LambdaHeader ( Body "end" "lambda" | ShortBody ) .
+LambdaHeader = "lambda" "(" CommaList(LambdaParam) ")" [ "->" Type [ Uses ] ] .
+ShortBody   = Stmt . (* ラムダ全体を同じ物理行に収め、外側の区切りを残す *)
 LambdaParam = LowerIdent [ ":" Type ] .
 WithExpr    = "with" WithBind { "," WithBind } "do" Body "end" "with" .
 WithBind    = LowerIdent "=" Expr .
@@ -958,8 +1027,8 @@ end function
 
 function totalArea(shapes: List[Shape]) -> Float
   return shapes
-    |> List.map(area)
-    |> List.fold(0.0, lambda(acc, a) return acc + a end lambda)
+    |> List.map(f: lambda(value) return area(value))
+    |> List.fold(initial: 0.0, f: lambda(acc, value) return acc + value end lambda)
 end function
 
 function main() -> Unit uses IO

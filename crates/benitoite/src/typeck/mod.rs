@@ -84,9 +84,23 @@ pub struct HandleInfo {
     pub handled: EffectSet,
 }
 
+/// 明示引数のソース順から宣言の位置への対応（02-05「出力」）。
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct CallPlan {
+    /// 呼ぶ関数のパラメータの個数。
+    pub arity: u32,
+    /// 明示引数ごとの宣言位置。挿入引数は含めない。
+    pub source_to_param: Vec<u32>,
+    /// パイプの左辺を位置 0 に補ったか。
+    pub inserted_first: bool,
+    /// 穴のソース順の契約名。
+    pub hole_names: Vec<String>,
+}
+
 /// 型検査の出力（02-05「出力」）。表に書く型は型変数を含まない。各段へ渡す表は設計書 02-05「出力」で定める。
 #[derive(Debug, Default)]
 pub struct TypeckOutput {
+    pub call_plans: NodeMap<CallPlan>,
     pub expr_types: NodeMap<Ty>,
     pub type_args: NodeMap<TypeArgs>,
     pub operand_types: NodeMap<Ty>,
@@ -128,6 +142,7 @@ pub fn typecheck(
     decls::check(modules, asts, sources, resolved, require_main)
 }
 
+mod calls;
 mod consts;
 mod context;
 mod decls;

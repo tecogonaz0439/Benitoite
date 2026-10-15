@@ -1,6 +1,7 @@
 import Benitoite.Exchange.CheckInput
 
-/-! 一つの入力または一つの関数の短い検査。証明のモジュールは import しない。 -/
+/-! 契約名とソース順を保持する独立した交換の入口。
+設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
 open Lean Benitoite.Exchange Benitoite.Exchange.CheckInput Benitoite.Surface.CheckTables
 
 def errorJson (e : Benitoite.Surface.Check.Error) : Json :=
@@ -23,13 +24,13 @@ def selectInput (j : Json) (group name : String) : Except String Json := do
 
 /-- IO を挟んで計算し、同じ純粋な検査結果の共有を計測に混ぜない。 -/
 @[noinline] def timedCheck (q : Benitoite.Surface.Check.Input)
-    (p : Benitoite.Surface.Program) (names : Names) (selected : Option String) :
+    (m : Materials) (names : Names) (selected : Option String) :
     IO (Benitoite.Surface.Check.Result Unit × Nat) := do
   let start ← IO.monoNanosNow
   let outcome ← match selected with
-    | none => pure (checkProgram q p names)
+    | none => pure (checkProgram q m names)
     | some name =>
-      let some d := p.defs name | throw (IO.userError s!"not an ordinary definition: {name}")
+      let some d := m.program.defs name | throw (IO.userError s!"not an ordinary definition: {name}")
       pure (Benitoite.Surface.Check.checkDef q [] d)
   -- 結果のタグを評価してから時計を読む。
   let encoded := (resultJson outcome).compress
@@ -50,14 +51,14 @@ def run (args : List String) : IO UInt32 := do
   let start ← IO.monoNanosNow
   let corpus ← readJson corpusFile
   let version ← IO.ofExcept (corpus.getObjValAs? Nat "version")
-  if version != 7 then throw (IO.userError "unsupported corpus version")
+  if version != 8 then throw (IO.userError "unsupported corpus version")
   let inputJson ← IO.ofExcept (selectInput corpus group name)
   let input ← IO.ofExcept (fromJson? inputJson : Except String Input)
   let operators ← IO.ofExcept (corpus.getObjValAs? (List OperatorEntry) "operators")
   let bj ← readJson builtinFile
   let sj ← readJson stdlibFile
-  if (← IO.ofExcept (bj.getObjValAs? Nat "version")) != 1 ||
-      (← IO.ofExcept (sj.getObjValAs? Nat "version")) != 1 then
+  if (← IO.ofExcept (bj.getObjValAs? Nat "version")) != 2 ||
+      (← IO.ofExcept (sj.getObjValAs? Nat "version")) != 2 then
     throw (IO.userError "unsupported sidecar version")
   let b ← IO.ofExcept ((selectInput bj group name).bind (fromJson? · : Json → Except String BuiltinInput))
   let s ← IO.ofExcept ((selectInput sj group name).bind (fromJson? · : Json → Except String StdlibInput))
@@ -70,7 +71,7 @@ def run (args : List String) : IO UInt32 := do
   let mut times : List Nat := []
   let mut result : Benitoite.Surface.Check.Result Unit := .ok ()
   for _ in List.range repetitions do
-    let (outcome, ns) ← timedCheck prepared.input prepared.materials.program prepared.materials.names selected
+    let (outcome, ns) ← timedCheck prepared.input prepared.materials prepared.materials.names selected
     result := outcome
     times := times ++ [ns]
   let output := Json.mkObj [

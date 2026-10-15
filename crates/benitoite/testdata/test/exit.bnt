@@ -9,5 +9,5 @@ end function
 
 @test
 function after() -> Unit uses Assert.Check, Process.Environment
-  Assert.equal(Process.arguments(), [])
+  Assert.equal(actual: Process.arguments(), expected: [])
 end function

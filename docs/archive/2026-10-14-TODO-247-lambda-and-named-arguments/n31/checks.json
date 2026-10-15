@@ -1,0 +1,51 @@
+{
+  "checks": [
+    {
+      "command": "cargo test -p benitoite --lib",
+      "exit": 0,
+      "passed": 1150,
+      "ignored": 21
+    },
+    {
+      "command": "cargo test -p benitoite --test spec_examples --test skill_docs",
+      "exit": 0,
+      "passed": 15,
+      "suites": 2
+    },
+    {
+      "command": "cargo run -p benitoite --example gen_skill",
+      "exit": 0,
+      "stable": true
+    },
+    {
+      "command": "cargo clippy --all-targets",
+      "exit": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --no-default-features --features gc-mark-sweep,heap-verify,alloc-stats",
+      "exit": 0
+    },
+    {
+      "command": "cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep",
+      "exit": 0
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    },
+    {
+      "command": "git apply --check docs/2026-10-14-TODO-247-lambda-and-named-arguments/n31/n33-final-design.patch",
+      "exit": 0
+    }
+  ],
+  "omitted": [
+    "scripts/check.sh (including --dry-run)",
+    "gc-stress configurations",
+    "scripts/check-formal.sh (no syntax/type/lowering changes)",
+    "lake build (no formal changes)"
+  ]
+}

@@ -31,7 +31,7 @@ function main() -> Unit uses Console.Write
   Console.writeLine("${Box.value(box(Box(value: 35)))}")
   Console.writeLine("${Box.value(Box.value(nested(Box(value: Box(value: -7)))))}")
   bind flags <- f1(Set.fromList([D1.F1]))
-  Console.writeLine("${Set.size(Pair.first(flags))} ${Set.contains(Pair.first(flags), D1.F1)} ${Pair.second(flags)}")
+  Console.writeLine("${Set.size(Pair.first(flags))} ${Set.contains(s: Pair.first(flags), x: D1.F1)} ${Pair.second(flags)}")
   bind empty <- f1(Set.empty())
   Console.writeLine("${Set.size(Pair.first(empty))} ${Pair.second(empty)}")
   Console.writeLine("${Trait.Show.show(Map.toList(result(Map.empty())))}")

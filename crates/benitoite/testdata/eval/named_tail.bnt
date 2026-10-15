@@ -1,0 +1,8 @@
+// spec: 01-08 末尾呼び出し
+import Benitoite.Unofficial.IO.Console
+function sum(n: Integer, acc: Integer) -> Integer
+ return if n = 0 then acc else sum(acc: acc + n, n: n - 1) end if
+end function
+function main() -> Unit uses Console.Write
+ Console.writeLine(text: Integer.toString(n: sum(acc: 0, n: 100000)))
+end function

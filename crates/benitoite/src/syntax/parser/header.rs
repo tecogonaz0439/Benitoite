@@ -347,7 +347,7 @@ mod tests {
     fn header_preserves_order_names_and_values() {
         let hash = format!("sha256:{}", "0123456789abcdef".repeat(4));
         let source = format!(
-            "//! module\nlanguage \"0.0.3\"\ndependency Textkit\nhash \"{hash}\"\npath \"../textkit\"\nend dependency\npackage Textkit\nlicense \"\"\nend package\n"
+            "//! module\nlanguage \"0.0.5\"\ndependency Textkit\nhash \"{hash}\"\npath \"../textkit\"\nend dependency\npackage Textkit\nlicense \"\"\nend package\n"
         );
         let (out, lex) = parse_source(&source, SourceKind::User);
         assert!(lex.is_empty());
@@ -357,7 +357,7 @@ mod tests {
         let HeaderItem::Language(language) = &out.module.header[0] else {
             panic!()
         };
-        assert_eq!(language.version.value, "0.0.3");
+        assert_eq!(language.version.value, "0.0.5");
         let HeaderItem::Dependency(block) = &out.module.header[1] else {
             panic!()
         };
@@ -394,7 +394,7 @@ mod tests {
                 vec![DiagCode::E0902],
             ),
             (
-                "language \"0.0.3\"\nlanguage \"0.0.2\"",
+                "language \"0.0.5\"\nlanguage \"0.0.2\"",
                 vec![DiagCode::E0902],
             ),
             (
@@ -431,11 +431,11 @@ mod tests {
             ("package A\nend dependency", vec![DiagCode::E0213]),
             ("package A", vec![DiagCode::E0214]),
             (
-                "package A\nlanguage \"0.0.3\"\nend package",
+                "package A\nlanguage \"0.0.5\"\nend package",
                 vec![DiagCode::E0901],
             ),
             (
-                "dependency A\npath \"a\"\nlanguage \"0.0.3\"\nend dependency",
+                "dependency A\npath \"a\"\nlanguage \"0.0.5\"\nend dependency",
                 vec![DiagCode::E0901],
             ),
             ("language 1", vec![DiagCode::E0201]),
@@ -445,7 +445,7 @@ mod tests {
                 vec![DiagCode::E0214],
             ),
             (
-                "dependency A\npath \"a\"\nlanguage \"0.0.3\"",
+                "dependency A\npath \"a\"\nlanguage \"0.0.5\"",
                 vec![DiagCode::E0214],
             ),
         ] {
@@ -475,14 +475,14 @@ mod tests {
         for (next, headers, declarations) in [
             ("dependency B\npath \"b\"\nend dependency", 2, 0),
             ("package B\nend package", 2, 0),
-            ("language \"0.0.3\"", 2, 0),
+            ("language \"0.0.5\"", 2, 0),
             (
-                "language \"0.0.3\"\nfunction after() -> Unit\n()\nend function",
+                "language \"0.0.5\"\nfunction after() -> Unit\n()\nend function",
                 2,
                 1,
             ),
             (
-                "language \"0.0.3\"\ndependency B\npath \"b\"\nend dependency",
+                "language \"0.0.5\"\ndependency B\npath \"b\"\nend dependency",
                 3,
                 0,
             ),
@@ -511,7 +511,7 @@ mod tests {
                 "the fields of `dependency` are `path`, `hash`, `effects`",
             ),
             (
-                "package A\nlanguage \"0.0.3\"\nend package",
+                "package A\nlanguage \"0.0.5\"\nend package",
                 "the fields of `package` are `license`",
             ),
         ] {
@@ -524,7 +524,7 @@ mod tests {
     #[test]
     fn duplicate_header_items_point_at_the_keyword() {
         for (source, word) in [
-            ("language \"0.0.3\"\nlanguage \"0.0.2\"", "language"),
+            ("language \"0.0.5\"\nlanguage \"0.0.2\"", "language"),
             ("package A\nend package\npackage B\nend package", "package"),
         ] {
             let (out, _) = parse_source(source, SourceKind::User);
@@ -541,7 +541,7 @@ mod tests {
             "function before() -> Unit\n()\nend function",
         ] {
             for item in [
-                "language \"0.0.3\"",
+                "language \"0.0.5\"",
                 "dependency A\npath \"a\"\nend dependency",
                 "package A\nend package",
             ] {

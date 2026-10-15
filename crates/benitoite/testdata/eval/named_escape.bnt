@@ -1,0 +1,24 @@
+// spec: 01-08 評価順序
+import Benitoite.Unofficial.IO.Console
+type Callback = function(a: Integer, b: Integer) -> Integer
+function factory() -> Callback uses Console.Write
+ Console.writeLine(text: "callee")
+ return lambda(a: Integer, b: Integer) return a + b
+end function
+function later() -> Integer uses Console.Write
+ Console.writeLine(text: "later must not run")
+ return 0
+end function
+function earlyReturn() -> Integer uses Console.Write
+ return factory()(b: (return 41), a: later())
+end function
+function earlyTry() -> Result[Integer, String] uses Console.Write
+ return Result.Ok(factory()(b: (try Result.Error("stop")), a: later()))
+end function
+function main() -> Unit uses Console.Write
+ Console.writeLine(text: Integer.toString(n: earlyReturn()))
+ match earlyTry() with
+ case Result.Error(message) -> Console.writeLine(text: message)
+ case Result.Ok(value) -> Console.writeLine(text: "unexpected")
+ end match
+end function

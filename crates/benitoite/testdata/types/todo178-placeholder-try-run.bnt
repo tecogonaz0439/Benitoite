@@ -5,7 +5,7 @@ function wrap(a: Integer, b: Integer) -> Option[Integer]
   return Option.Some(a + b)
 end function
 function probe(o: Option[Integer]) -> String
-  bind f <- wrap(try o, _)
+  bind f <- wrap(a: try o, b: _)
   return match f(1) with
     case Option.Some(n) -> Integer.toString(n)
     case Option.None -> "none"

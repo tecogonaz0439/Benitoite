@@ -1,8 +1,10 @@
 import Benitoite.Release.Lemmas.StoreLemmas
-import Benitoite.Release.Assumptions
+import Benitoite.Release.Lemmas.SubstTyping
 
 /-!
-# 保存の証明の補助（段階 B）
+# 保存の証明の補助（契約名を持つコア）
+
+状態と継続の型付けを扱う（設計書 01-12「型付け規則」「確かめる性質」）。
 -/
 
 namespace Benitoite.Release
@@ -125,7 +127,7 @@ theorem HasTypeClauses.find {Ψ C Γ R hs t ε o c} (h : HasTypeClauses P B Ψ C
         (R.map (Ty.shift c.ntys 0)) c.body (t.shift c.ntys 0) ε := by
   match h with
   | .nil => simp [findClause] at hc
-  | .cons (o := o') (n := n) (k := k) (body := body) hsg hn hk hbody hrest =>
+  | .cons (o := o') (n := n) (k := k) (body := body) hsg hnames hn hk hbody hrest =>
       simp only [findClause, List.find?_cons] at hc
       split at hc
       · rename_i heq

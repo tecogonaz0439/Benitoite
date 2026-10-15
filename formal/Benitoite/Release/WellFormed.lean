@@ -25,7 +25,8 @@ mutual
     | .opaque _ => True
     | .data _ args => Ty.VarsInList n pe args
     | .list a => Ty.VarsIn n pe a
-    | .fn params ret eff => Ty.VarsInList n pe params ∧ Ty.VarsIn n pe ret ∧ Eff.RhosIn pe eff
+    | .fn names params ret eff =>
+        NamesWF names params ∧ Ty.VarsInList n pe params ∧ Ty.VarsIn n pe ret ∧ Eff.RhosIn pe eff
     | .tvar i => i < n
     | .reference a => Ty.VarsIn n pe a
     | .lazy a => Ty.VarsIn n pe a
@@ -53,7 +54,7 @@ mutual
     | .const _ => True
     | .fnRef _ tys effs => Ty.VarsInList n pe tys ∧ Eff.RhosInList pe effs
     | .prim _ tys effs => Ty.VarsInList n pe tys ∧ Eff.RhosInList pe effs
-    | .lam params body => Ty.VarsInList n pe params ∧ Comp.VarsIn n pe body
+    | .lam names params body => NamesWF names params ∧ Ty.VarsInList n pe params ∧ Comp.VarsIn n pe body
     | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInList n pe args
     | .list elems => Val.VarsInList n pe elems
     | .op _ tys => Ty.VarsInList n pe tys
@@ -99,24 +100,28 @@ end
 /-- 関数の定義の型（引数、戻り値、エフェクト）と本体は、宣言した型パラメータとエフェクト変数だけを使う。
 本体の範囲は、E-Fun の後の状態が型の変数を含まないことに要る。 -/
 def Def.Scoped (d : Def) : Prop :=
-  Ty.VarsInList d.ntys (· < d.neffs) d.params ∧ Ty.VarsIn d.ntys (· < d.neffs) d.ret ∧
+  NamesWF d.names d.params ∧
+    Ty.VarsInList d.ntys (· < d.neffs) d.params ∧ Ty.VarsIn d.ntys (· < d.neffs) d.ret ∧
     Eff.RhosIn (· < d.neffs) d.eff ∧ Comp.VarsIn d.ntys (· < d.neffs) d.body
 
 def ConDecl.Scoped (cd : ConDecl) : Prop :=
   Ty.VarsInList cd.ntys (fun _ => False) cd.args
 
 def OpDecl.Scoped (od : OpDecl) : Prop :=
-  Ty.VarsInList od.tparams.length (fun _ => False) od.params ∧
+  NamesWF od.names od.params ∧
+    Ty.VarsInList od.tparams.length (fun _ => False) od.params ∧
     Ty.VarsIn od.tparams.length (fun _ => False) od.ret
 
 def PrimSig.Scoped (s : PrimSig) : Prop :=
-  Ty.VarsInList s.ntys (· < s.neffs) s.params ∧ Ty.VarsIn s.ntys (· < s.neffs) s.ret ∧
+  NamesWF s.names s.params ∧
+    Ty.VarsInList s.ntys (· < s.neffs) s.params ∧ Ty.VarsIn s.ntys (· < s.neffs) s.ret ∧
     Eff.RhosIn (· < s.neffs) s.eff
 
 /-- メソッドの型は、メソッドの型パラメータ（番号 `0..g-1`）と型クラスの引数（番号 g）と、メソッドのエフェクト変数
 だけを使う。 -/
 def MethSig.Scoped (ms : MethSig) : Prop :=
-  Ty.VarsInList (ms.tparams.length + 1) (· < ms.neffs) ms.params ∧
+  NamesWF ms.names ms.params ∧
+    Ty.VarsInList (ms.tparams.length + 1) (· < ms.neffs) ms.params ∧
     Ty.VarsIn (ms.tparams.length + 1) (· < ms.neffs) ms.ret ∧ Eff.RhosIn (· < ms.neffs) ms.eff
 
 def ClassDecl.Scoped (cd : ClassDecl) : Prop :=

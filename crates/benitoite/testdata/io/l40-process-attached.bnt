@@ -4,8 +4,8 @@
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 function main() -> Result[Unit, String] uses Process.Run, Console.Write
-  bind command <- Process.command("/bin/sh", ["-c", "read line; printf 'attached:%s\\n' \"\$line\"; printf '\\377\\n'; printf 'attached-error\\n' >&2; exit 3"])
-  bind code <- try Process.runAttached(Process.Command(..command, input: Option.Some("specified\n"))) |> Result.mapError(_, IOError.message)
+  bind command <- Process.command(program: "/bin/sh", arguments: ["-c", "read line; printf 'attached:%s\\n' \"\$line\"; printf '\\377\\n'; printf 'attached-error\\n' >&2; exit 3"])
+  bind code <- try Process.runAttached(Process.Command(..command, input: Option.Some("specified\n"))) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.writeLine(Integer.toString(code))
   return Result.Ok(())
 end function

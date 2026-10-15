@@ -5,11 +5,11 @@ import Benitoite.Unofficial.IO.Console
 
 function main() -> Result[Unit, String] uses Console.Read, Console.Write
   Console.write("prompt> ")
-  bind line <- try Console.readLine() |> Result.mapError(_, IOError.message)
-  Console.writeLine(Option.unwrapOr(line, "eof"))
-  bind rest <- try Console.readAll() |> Result.mapError(_, IOError.message)
+  bind line <- try Console.readLine() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  Console.writeLine(Option.unwrapOr(o: line, fallback: "eof"))
+  bind rest <- try Console.readAll() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.write(rest)
-  bind empty <- try Console.readAll() |> Result.mapError(_, IOError.message)
+  bind empty <- try Console.readAll() |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.writeLine(if empty = "" then "eof" else "extra input" end if)
   return Result.Ok(())
 end function

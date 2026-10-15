@@ -75,7 +75,7 @@ printf 'Rust coverage export (including cargo): %ss\n' "$((SECONDS - coverage_ex
 coverage_diff_start=$SECONDS
 printf '%s\n' '== formal: coverageDiff'
 coverage_status=0
-formal/.lake/build/bin/coverageDiff "$coverage_dir/corpus.json" "$coverage_dir/report.json" || coverage_status=$?
+formal/.lake/build/bin/coverageDiff "$coverage_dir/named-all-corpus.json" "$coverage_dir/report.json" || coverage_status=$?
 printf 'coverageDiff: %ss; report: %s/report.json\n' "$((SECONDS - coverage_diff_start))" "$coverage_dir"
 printf 'coverage stages: %ss\n' "$((SECONDS - coverage_build_start))"
 
@@ -85,6 +85,8 @@ printf '%s\n' '== formal: lake build coverageProgramDiff'
 printf 'lake build coverageProgramDiff: %ss\n' "$((SECONDS - program_coverage_build_start))"
 
 surface_build_start=$SECONDS
+printf '%s\n' '== formal: lake build surfaceCheck'
+(cd formal && lake build surfaceCheck)
 printf '%s\n' '== formal: lake build surfaceCheckAll'
 (cd formal && lake build surfaceCheckAll)
 printf 'lake build surfaceCheckAll: %ss\n' "$((SECONDS - surface_build_start))"
@@ -94,6 +96,11 @@ printf '%s\n' '== formal: width exchange'
 python3 -I formal/tests/test_width_exchange.py
 printf 'width exchange: %ss; reports: target/p3a-gate/width-exchange/\n' "$((SECONDS - width_exchange_start))"
 
+named_exchange_start=$SECONDS
+printf '%s\n' '== formal: named exchange'
+python3 -I formal/tests/test_named_exchange.py
+printf 'named exchange: %ss\n' "$((SECONDS - named_exchange_start))"
+
 export_start=$SECONDS
 printf '%s\n' '== formal: Rust export'
 cargo test --test desugar_export -- --include-ignored --nocapture
@@ -102,22 +109,28 @@ printf 'Rust export (including cargo): %ss\n' "$((SECONDS - export_start))"
 diff_start=$SECONDS
 printf '%s\n' '== formal: desugarDiff'
 status=$coverage_status
-formal/.lake/build/bin/desugarDiff "$output_dir/corpus.json" "$output_dir/report.json" || status=$?
+formal/.lake/build/bin/desugarDiff "$output_dir/named-programs-corpus.json" "$output_dir/report.json" || status=$?
 printf 'desugarDiff: %ss; report: %s/report.json\n' "$((SECONDS - diff_start))" "$output_dir"
 table_start=$SECONDS
 printf '%s\n' '== formal: builtinCheck'
-formal/.lake/build/bin/builtinCheck "$output_dir/corpus.json" "$output_dir/builtins.json" "$output_dir/builtin-report.json" || status=$?
+formal/.lake/build/bin/builtinCheck "$output_dir/named-programs-corpus.json" "$output_dir/named-programs-builtins.json" "$output_dir/builtin-report.json" || status=$?
 printf 'builtinCheck: %ss; report: %s/builtin-report.json\n' "$((SECONDS - table_start))" "$output_dir"
 program_coverage_start=$SECONDS
 printf '%s\n' '== formal: coverageProgramDiff'
 # 既存の脱糖と E1c-1 の report を上書きせず、別のディレクトリへ保存する。
 mkdir -p "$output_dir/coverage"
-formal/.lake/build/bin/coverageProgramDiff "$output_dir/coverage-matches.json" "$output_dir/builtins.json" "$output_dir/coverage/report.json" || status=$?
+formal/.lake/build/bin/coverageProgramDiff "$output_dir/named-programs-coverage.json" "$output_dir/named-programs-builtins.json" "$output_dir/coverage/report.json" || status=$?
 printf 'coverageProgramDiff: %ss; report: %s/coverage/report.json\n' "$((SECONDS - program_coverage_start))" "$output_dir"
 surface_check_start=$SECONDS
 printf '%s\n' '== formal: surfaceCheckAll'
 # 型検査の成功・対象外を区別し、不一致は 1、準備の失敗は 2 で止める。
 mkdir -p "$output_dir/surface-check"
-formal/.lake/build/bin/surfaceCheckAll "$output_dir/corpus.json" "$output_dir/builtins.json" "$output_dir/stdlib-decls.json" "$output_dir/surface-check/report.json" || status=$?
+formal/.lake/build/bin/surfaceCheckAll "$output_dir/named-programs-corpus.json" "$output_dir/named-programs-builtins.json" "$output_dir/named-programs-stdlib.json" "$output_dir/surface-check/report.json" || status=$?
 printf 'surfaceCheckAll: %ss; report: %s/surface-check/report.json\n' "$((SECONDS - surface_check_start))" "$output_dir"
+
+named_export_start=$SECONDS
+printf '%s\n' '== formal: per-program final Rust exports'
+# 全件の報告が揃ってから、入力の対応と六入口の件数も照合する。
+python3 -I crates/benitoite/tests/desugar_export/check_named.py "$output_dir" "$coverage_dir"
+printf 'final exports: %ss; reports: %s/named-*-report.json\n' "$((SECONDS - named_export_start))" "$output_dir"
 exit "$status"

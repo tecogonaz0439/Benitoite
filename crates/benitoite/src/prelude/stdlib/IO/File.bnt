@@ -66,7 +66,7 @@ public function closeReader(reader: Reader) -> Result[Unit, IOError] uses State
 /// Copies the content of the regular file `from` to `to`, replacing `to` when it exists.
 public function copy(from: String, to: String) -> Result[Unit, IOError] uses Read, Write
   bind content <- try readBytes(from)
-  return writeBytes(to, content)
+  return writeBytes(path: to, content: content)
 end function
 
 /// Writes out what was written and closes the writer. A `with` binding closes it in the same way.

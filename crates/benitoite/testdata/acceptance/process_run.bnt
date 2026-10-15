@@ -6,12 +6,12 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 
 function main() -> Result[Unit, String] uses Process.Run, Console.Write
-  bind printed <- try Process.run(Process.command("printf", ["%s|%s\\n", "two words", "$HOME"])) |> Result.mapError(_, IOError.message)
+  bind printed <- try Process.run(Process.command(program: "printf", arguments: ["%s|%s\\n", "two words", "$HOME"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.write(Process.Output.standardOutput(printed))
-  bind sortCommand <- Process.Command(..Process.command("sort", []), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some("pear\nApple\nbanana\n"))
-  bind sorted <- try Process.run(sortCommand) |> Result.mapError(_, IOError.message)
+  bind sortCommand <- Process.Command(..Process.command(program: "sort", arguments: []), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some("pear\nApple\nbanana\n"))
+  bind sorted <- try Process.run(sortCommand) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.write(Process.Output.standardOutput(sorted))
-  bind failed <- try Process.run(Process.command("sh", ["-c", "exit 3"])) |> Result.mapError(_, IOError.message)
+  bind failed <- try Process.run(Process.command(program: "sh", arguments: ["-c", "exit 3"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   Console.writeLine("exit code: ${Process.Output.exitCode(failed)}")
   return Result.Ok(())
 end function

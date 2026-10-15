@@ -2,9 +2,9 @@
 import Benitoite.Unofficial.IO.Console
 
 function sum_to(n: Integer, acc: Integer) -> Integer
-  return if n = 0 then acc else sum_to(n - 1, acc + n) end if
+  return if n = 0 then acc else sum_to(n: n - 1, acc: acc + n) end if
 end function
 
 function main() -> Unit uses Console.Write
-  return Console.writeLine(Integer.toString(sum_to(1000000, 0)))
+  return Console.writeLine(Integer.toString(sum_to(n: 1000000, acc: 0)))
 end function

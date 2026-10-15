@@ -2,6 +2,6 @@
 import Benitoite.Unofficial.IO.File as Console
 
 function main() -> Result[Unit, String] uses Console.Write
-  return Console.writeText("output.txt", "hello")
-    |> Result.mapError(_, IOError.message)
+  return Console.writeText(path: "output.txt", text: "hello")
+    |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
 end function

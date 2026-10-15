@@ -1,9 +1,11 @@
-import Benitoite.Release.Lemmas.Inversion
+import Benitoite.Release.Lemmas.Basic
 
 /-!
 # 環境とストアの型付けの弱化（段階 B）
 
 番号の付け替え、ストアの型付けの拡大（Ψ ⊆ Ψ'）、`hideConts` についての補題。
+契約名の整形式の証拠を保持し、環境とストアだけを変える
+（設計書 01-12「型付け規則」「ハンドラ」）。
 -/
 
 namespace Benitoite.Release
@@ -175,12 +177,12 @@ mutual
     match h with
     | .V_Var hi hc => simp only [Val.rename]; exact .V_Var (hξ _ _ hi) hc
     | .V_Const => simp only [Val.rename]; exact .V_Const
-    | .V_Fun hd hts hes => simp only [Val.rename]; exact .V_Fun hd hts hes
-    | .V_Prim hs hts hes had => simp only [Val.rename]; exact .V_Prim hs hts hes had
-    | .V_Op hod hts => simp only [Val.rename]; exact .V_Op hod hts
-    | .V_Lam (ps := ps) hb =>
+    | .V_Fun hd hn hts hes => simp only [Val.rename]; exact .V_Fun hd hn hts hes
+    | .V_Prim hs hn hts hes had => simp only [Val.rename]; exact .V_Prim hs hn hts hes had
+    | .V_Op hod hn hts => simp only [Val.rename]; exact .V_Op hod hn hts
+    | .V_Lam (ps := ps) hn hb =>
         simp only [Val.rename]
-        refine .V_Lam ?_
+        refine .V_Lam hn ?_
         have := hξ.hide.up (binds ps)
         rw [binds_length] at this
         exact HasTypeC.rename hb this
@@ -241,9 +243,9 @@ mutual
         simp only [Comp.rename, Val.rename]; exact .C_Resume (hξ _ _ hi) (HasTypeV.rename hv hξ)
     | .C_ResumeL hl hv =>
         simp only [Comp.rename, Val.rename]; exact .C_ResumeL hl (HasTypeV.rename hv hξ)
-    | .C_Meth hv hc hm hts hes hws =>
+    | .C_Meth hv hc hm hnames hts hes hws =>
         simp only [Comp.rename]
-        exact .C_Meth (HasTypeV.rename hv hξ) hc hm hts hes (HasTypeVs.rename hws hξ)
+        exact .C_Meth (HasTypeV.rename hv hξ) hc hm hnames hts hes (HasTypeVs.rename hws hξ)
 
   theorem HasTypeArms.rename {Ψ C Γ Δ ξ R arms a b ε} (h : HasTypeArms P B Ψ C Γ R arms a b ε)
       (hξ : RenOk Γ Δ ξ) : HasTypeArms P B Ψ C Δ R (Arm.renameList ξ arms) a b ε := by
@@ -264,9 +266,9 @@ mutual
       (hξ : RenOk Γ Δ ξ) : HasTypeClauses P B Ψ C Δ R (Clause.renameList ξ h) t ε := by
     match hc with
     | .nil => simp only [Clause.renameList]; exact .nil
-    | .cons (sg := sg) (k := k) hsg hn hk hbody hrest =>
+    | .cons (sg := sg) (k := k) hsg hnames hn hk hbody hrest =>
         simp only [Clause.renameList]
-        refine .cons hsg hn hk ?_ (HasTypeClauses.rename hrest hξ)
+        refine .cons hsg hnames hn hk ?_ (HasTypeClauses.rename hrest hξ)
         have := RenOk.clause (some (.cont sg.ret (t.shift k 0) ε)) sg.params k hξ
         rw [← hn] at this
         exact HasTypeC.rename hbody this
@@ -288,10 +290,10 @@ mutual
     match h with
     | .V_Var hi hc => exact .V_Var hi hc
     | .V_Const => exact .V_Const
-    | .V_Fun hd hts hes => exact .V_Fun hd hts hes
-    | .V_Prim hs hts hes had => exact .V_Prim hs hts hes had
-    | .V_Op hod hts => exact .V_Op hod hts
-    | .V_Lam hb => exact .V_Lam (HasTypeC.store hb hΨ)
+    | .V_Fun hd hn hts hes => exact .V_Fun hd hn hts hes
+    | .V_Prim hs hn hts hes had => exact .V_Prim hs hn hts hes had
+    | .V_Op hod hn hts => exact .V_Op hod hn hts
+    | .V_Lam hn hb => exact .V_Lam hn (HasTypeC.store hb hΨ)
     | .V_Con hc hts hargs => exact .V_Con hc hts (HasTypeVs.store hargs hΨ)
     | .V_List he hw => exact .V_List (HasTypeEach.store he hΨ) hw
     | .V_LocRef hl => exact .V_LocRef (hΨ _ _ hl)
@@ -332,8 +334,8 @@ mutual
     | .C_Handle hm hs hc => exact .C_Handle (HasTypeC.store hm hΨ) hs (HasTypeClauses.store hc hΨ)
     | .C_Resume hi hv => exact .C_Resume hi (HasTypeV.store hv hΨ)
     | .C_ResumeL hl hv => exact .C_ResumeL (hΨ _ _ hl) (HasTypeV.store hv hΨ)
-    | .C_Meth hv hc hm hts hes hws =>
-        exact .C_Meth (HasTypeV.store hv hΨ) hc hm hts hes (HasTypeVs.store hws hΨ)
+    | .C_Meth hv hc hm hnames hts hes hws =>
+        exact .C_Meth (HasTypeV.store hv hΨ) hc hm hnames hts hes (HasTypeVs.store hws hΨ)
 
   theorem HasTypeArms.store {Ψ Ψ' C Γ R arms a b ε} (h : HasTypeArms P B Ψ C Γ R arms a b ε)
       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeArms P B Ψ' C Γ R arms a b ε := by
@@ -347,8 +349,8 @@ mutual
       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClauses P B Ψ' C Γ R h t ε := by
     match hc with
     | .nil => exact .nil
-    | .cons hsg hn hk hbody hrest =>
-        exact .cons hsg hn hk (HasTypeC.store hbody hΨ) (HasTypeClauses.store hrest hΨ)
+    | .cons hsg hnames hn hk hbody hrest =>
+        exact .cons hsg hnames hn hk (HasTypeC.store hbody hΨ) (HasTypeClauses.store hrest hΨ)
 end
 
 /-! ## 値の型付けは、継続の型の変数を使わない -/
@@ -359,10 +361,10 @@ mutual
     match h with
     | .V_Var hi hc => exact .V_Var (hideConts_get.mpr ⟨hi, hc⟩) hc
     | .V_Const => exact .V_Const
-    | .V_Fun hd hts hes => exact .V_Fun hd hts hes
-    | .V_Prim hs hts hes had => exact .V_Prim hs hts hes had
-    | .V_Op hod hts => exact .V_Op hod hts
-    | .V_Lam hb => refine .V_Lam ?_; rw [hideConts_hideConts]; exact hb
+    | .V_Fun hd hn hts hes => exact .V_Fun hd hn hts hes
+    | .V_Prim hs hn hts hes had => exact .V_Prim hs hn hts hes had
+    | .V_Op hod hn hts => exact .V_Op hod hn hts
+    | .V_Lam hn hb => refine .V_Lam hn ?_; rw [hideConts_hideConts]; exact hb
     | .V_Con hc hts hargs => exact .V_Con hc hts (HasTypeVs.hide hargs)
     | .V_List he hw => exact .V_List (HasTypeEach.hide he) hw
     | .V_LocRef hl => exact .V_LocRef hl

@@ -6,13 +6,13 @@
 //! 括弧の閉じの字句は、AST から決めた開きの括弧から、字句の列の括弧の対応で求める。誤りのない AST だけを
 //! 受け取る（設計書 06-03「入力表現」）ので、括弧は必ず対応する。
 
-use super::{BlankBefore, RoleTable, TokenRole, TopKind, TopRange};
+use super::{BlankBefore, LambdaSpans, RoleTable, TokenRole, TopKind, TopRange};
 use crate::base::{BytePos, Span};
 use crate::syntax::ast::{
     Arg, Attribute, Block, DataDecl, EffectDecl, ElseBranch, Expr, FnDecl, FnType, HandleExpr,
-    HeaderItem, IfExpr, ImplDecl, Item, LambdaExpr, ListElem, MatchExpr, MethodSig, Module, Name,
-    OpSig, Param, Pattern, RecordDecl, RecordExpr, Stmt, TopDecl, TraitDecl, TypeExpr,
-    TypeParamDecl, TypeParamKind, UnOp, WithExpr,
+    HeaderItem, IfExpr, ImplDecl, Item, LambdaEnding, LambdaExpr, ListElem, MatchExpr, MethodSig,
+    Module, Name, OpSig, Param, Pattern, RecordDecl, RecordExpr, Stmt, TopDecl, TraitDecl,
+    TypeExpr, TypeParamDecl, TypeParamKind, UnOp, WithExpr,
 };
 use crate::syntax::token::{Token, TokenKind};
 
@@ -61,6 +61,7 @@ pub(super) struct Walker<'a> {
     /// その行の直前の空の行だけを除く字句（設計書 06-03「空の行」）
     direct_blank: Vec<bool>,
     top: Vec<TopRange>,
+    lambdas: Vec<LambdaSpans>,
 }
 
 impl<'a> Walker<'a> {
@@ -111,6 +112,7 @@ impl<'a> Walker<'a> {
             leading_blank: vec![false; len],
             direct_blank: vec![false; len],
             top: Vec::new(),
+            lambdas: Vec::new(),
         }
     }
 
@@ -627,8 +629,12 @@ impl<'a> Walker<'a> {
             && let Some(open) = self.next_is(keyword, TokenKind::LParen)
             && self.open_bracket(open, true).is_some()
         {
-            for param in &t.params {
-                self.element(param.span(), Place::Deeper(open));
+            for (index, param) in t.params.iter().enumerate() {
+                let span = t
+                    .param_names
+                    .get(index)
+                    .map_or(param.span(), |name| name.span.to(param.span()));
+                self.element(span, Place::Deeper(open));
                 self.ty(param);
             }
         }
@@ -748,6 +754,18 @@ impl<'a> Walker<'a> {
                         self.element(p.span, Place::Deeper(open));
                     }
                 }
+                Arg::Named(a) => {
+                    let span = match &a.value {
+                        crate::syntax::ast::ArgValue::Expr(e) => a.name.span.to(e.span()),
+                        crate::syntax::ast::ArgValue::Placeholder(p) => a.name.span.to(p.span),
+                    };
+                    if opened {
+                        self.element(span, Place::Deeper(open));
+                    }
+                    if let crate::syntax::ast::ArgValue::Expr(e) = &a.value {
+                        self.expr(e);
+                    }
+                }
             }
         }
     }
@@ -859,10 +877,17 @@ impl<'a> Walker<'a> {
     }
 
     fn lambda(&mut self, e: &LambdaExpr) {
+        self.lambdas.push(LambdaSpans {
+            span: e.span,
+            body: e.body.span,
+            ending: e.ending,
+        });
         let Some(open) = self.first(e.span) else {
             return;
         };
-        self.open_end(open, e.span);
+        if matches!(e.ending, LambdaEnding::Explicit { .. }) {
+            self.open_end(open, e.span);
+        }
         if let Some(paren) = self.next_is(open, TokenKind::LParen)
             && self.open_bracket(paren, true).is_some()
         {
@@ -871,7 +896,20 @@ impl<'a> Walker<'a> {
         if let Some(ret) = &e.ret {
             self.ty(ret);
         }
-        self.block(&e.body, open);
+        match e.ending {
+            LambdaEnding::Explicit { .. } => self.block(&e.body, open),
+            LambdaEnding::Omitted { .. } => {
+                // 短い形は同じ物理行の一文であり、ブロックの字下げ・空行の役割を付けない
+                // （設計書 06-03「字下げ」）。文の内側の呼び出し・括弧などは通常どおり辿る。
+                for stmt in &e.body.stmts {
+                    self.stmt(stmt);
+                }
+            }
+        }
+    }
+
+    pub(super) fn lambda_spans(self) -> Vec<LambdaSpans> {
+        self.lambdas
     }
 
     fn with_expr(&mut self, e: &WithExpr) {

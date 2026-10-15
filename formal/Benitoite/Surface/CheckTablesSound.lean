@@ -1,7 +1,8 @@
 import Benitoite.Surface.CheckTables
 import Benitoite.Surface.CheckSound
 
-/-! 有限の表の判定を宣言的な契約に接続する。実行ファイルはこのモジュールを読まない。 -/
+/-! 有限の表の判定を宣言的な契約に接続する。実行ファイルはこのモジュールを読まない。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。 -/
 namespace Benitoite.Surface.CheckTables
 open Benitoite.Release Benitoite.Surface Benitoite.Surface.CheckTools
 
@@ -25,35 +26,27 @@ theorem admits_sound (S raw b) :
     subst sg
     exact had
 
-/-- 変換した operand の値には触れず、成功の戻り値の形だけを使う。 -/
-theorem opPrim_sound (atoms entries) :
-    OpPrimTypeArgs (Benitoite.Exchange.makeOpPrim atoms entries) := by
+/-- 選択の結果によらず、型引数は演算子の規則に一致する。 -/
+theorem opPrim_sound (select) : OpPrimTypeArgs (makeOpPrim select) := by
   intro op ty b ts h
-  unfold Benitoite.Exchange.makeOpPrim at h
-  induction entries with
-  | nil => simp at h
-  | cons entry rest ih =>
-    by_cases hn : (entry.op != Benitoite.Exchange.operatorName op) = true
-    · simp only [List.findSome?_cons, hn, ite_true] at h
-      exact ih h
-    · by_cases ht : (entry.operand.isNone || (Benitoite.Exchange.fromTy atoms ty).toOption ==
-          entry.operand.bind (fun t => (t.toRelease >>= Benitoite.Exchange.fromTy atoms).toOption)) = true
-      · simp only [List.findSome?_cons, hn, ht, Bool.false_eq_true, ite_false, ite_true, Option.some.injEq, Prod.mk.injEq] at h
-        exact h.2.symm
-      · simp only [List.findSome?_cons, hn, ht, Bool.false_eq_true, ite_false] at h
-        exact ih h
+  unfold makeOpPrim at h
+  cases hs : select op ty with
+  | none => simp [hs] at h
+  | some name =>
+    simp only [hs, Option.map_some, Option.some.injEq, Prod.mk.injEq] at h
+    exact h.2.symm
 
 theorem constructors_sound {m : Materials} (h : constructorsOk m = true) :
-    CtorsComplete m.declarations.patternProgram (Benitoite.Exchange.dataConstructors m.data) := by
+    CtorsComplete m.declarations.patternProgram (dataConstructors m.data) := by
   intro c cd hc
   have hall := (Bool.and_eq_true_iff.mp h).2
-  change Benitoite.Exchange.constructorDecl m.data c = some cd at hc
+  change constructorDecl m.data c = some cd at hc
   have hm : (c,cd) ∈ m.data.flatMap (·.ctors) := lookup_mem hc
   exact List.mem_of_elem_eq_true ((List.all_eq_true.mp hall) (c,cd) hm)
 
 theorem record_sound {atoms ds name cd actual}
     (ha : Tys.AtomsIn atoms actual.args) (hc : Tys.AtomsIn atoms cd.args)
-    (hget : Benitoite.Exchange.constructorDecl ds name = some actual)
+    (hget : constructorDecl ds name = some actual)
     (h : recordOk atoms ds name cd = true) :
     actual = cd := by
   simp only [recordOk, hget] at h
@@ -67,7 +60,7 @@ theorem record_sound {atoms ds name cd actual}
 
 theorem implNames_sound {m : Materials} {B sat admits op atoms}
     {methods supers : List String} (h : implNamesOk m methods supers = true)
-    {name id} (hi : m.program.impls name = some id) :
+    {name id} (hi : lookup (m.impls.map fun (n,i) => (n,i.input)) name = some id) :
     Check.ImplNamesComplete (m.input B sat admits op atoms) id methods supers := by
   have ⟨hm, hs⟩ := Bool.and_eq_true_iff.mp h
   have ⟨hc, hi'⟩ := Bool.and_eq_true_iff.mp hm
@@ -99,12 +92,12 @@ theorem implNames_sound {m : Materials} {B sat admits op atoms}
         (List.mem_flatMap.mpr ⟨(n,i), him, hin⟩)))
 
 /-- 橋は原子集合を証明しない。変換した宣言と注釈の契約を明示して受け取る。 -/
-theorem input_sound {m : Materials} {S raw b opAtoms entries atoms}
+theorem input_sound {m : Materials} {S raw b select atoms}
     (hd : m.declarations.AtomsIn atoms)
     (hb : (builtins S (primEntries S raw) b).AtomsIn atoms)
     (hc : constructorsOk m = true) :
     (m.input (builtins S (primEntries S raw) b) (satB S)
       (admitsDec S (primEntries S raw))
-      (Benitoite.Exchange.makeOpPrim opAtoms entries) atoms).Sound :=
-  ⟨hd, hb, sat_sound _ _ _, admits_sound _ _ _, opPrim_sound _ _, constructors_sound hc⟩
+      (makeOpPrim select) atoms).Sound :=
+  ⟨hd, hb, sat_sound _ _ _, admits_sound _ _ _, opPrim_sound _, constructors_sound hc⟩
 end Benitoite.Surface.CheckTables

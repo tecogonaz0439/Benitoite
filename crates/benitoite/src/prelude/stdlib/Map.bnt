@@ -41,21 +41,25 @@ public function keys[K: key, V](m: Map[K, V]) -> List[K]
 public function values[K: key, V](m: Map[K, V]) -> List[V]
 
 /// Returns the map whose values are `f` applied to each key and value. The keys stay the same.
-public function map[K: key, V, U, effect E](m: Map[K, V], f: function(K, V) -> U uses E) -> Map[K, U] uses E
-  return fromList(List.map(toList(m), lambda(pair) return Pair(Pair.first(pair), f(Pair.first(pair), Pair.second(pair))) end lambda))
+public function map[K: key, V, U, effect E](m: Map[K, V], f: function(key: K, value: V) -> U uses E) -> Map[K, U] uses E
+  return fromList(List.map(xs: toList(m), f: lambda(value) return Pair(Pair.first(value), f(key: Pair.first(value), value: Pair.second(value))) end lambda))
 end function
 
 /// Returns the pairs for which `p` returns `true`.
-public function filter[K: key, V, effect E](m: Map[K, V], p: function(K, V) -> Boolean uses E) -> Map[K, V] uses E
-  return fromList(List.filter(toList(m), lambda(pair) return p(Pair.first(pair), Pair.second(pair)) end lambda))
+public function filter[K: key, V, effect E](m: Map[K, V], p: function(key: K, value: V) -> Boolean uses E) -> Map[K, V] uses E
+  return fromList(List.filter(xs: toList(m), p: lambda(value) return p(key: Pair.first(value), value: Pair.second(value)) end lambda))
 end function
 
 /// Combines the pairs in the order of their keys with `f`, starting from `initial`.
-public function fold[K: key, V, A, effect E](m: Map[K, V], initial: A, f: function(A, K, V) -> A uses E) -> A uses E
-  return List.fold(toList(m), initial, lambda(acc, pair) return f(acc, Pair.first(pair), Pair.second(pair)) end lambda)
+public function fold[K: key, V, A, effect E](m: Map[K, V], initial: A, f: function(acc: A, key: K, value: V) -> A uses E) -> A uses E
+  return List.fold(xs: toList(m), initial: initial, f: lambda(acc, value)
+    bind key <- Pair.first(value)
+    bind element <- Pair.second(value)
+    return f(acc: acc, key: key, value: element)
+  end lambda)
 end function
 
 /// Calls `f` with each key and value in the order of the keys.
-public function forEach[K: key, V, effect E](m: Map[K, V], f: function(K, V) -> Unit uses E) -> Unit uses E
-  return List.forEach(toList(m), lambda(pair) return f(Pair.first(pair), Pair.second(pair)) end lambda)
+public function forEach[K: key, V, effect E](m: Map[K, V], f: function(key: K, value: V) -> Unit uses E) -> Unit uses E
+  return List.forEach(xs: toList(m), f: lambda(value) return f(key: Pair.first(value), value: Pair.second(value)) end lambda)
 end function

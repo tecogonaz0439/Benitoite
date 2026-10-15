@@ -9,9 +9,9 @@ end record
 /// ファイルを読み、作業の一覧を返す。形の合わない行は読み飛ばす。
 public function load(path: String) -> Result[List[Item], IOError] uses File.Read
   bind text <- try File.readText(path)
-  bind items <- List.fold(String.lines(text), [], lambda(acc: List[Item], line: String) -> List[Item]
-    return match parseLine(line) with
-      case Option.Some(item) -> List.append(acc, item)
+  bind items <- List.fold(xs: String.lines(text), initial: [], f: lambda(acc: List[Item], value: String) -> List[Item]
+    return match parseLine(value) with
+      case Option.Some(item) -> List.append(xs: acc, x: item)
       case Option.None -> acc
     end match
   end lambda)
@@ -20,26 +20,26 @@ end function
 
 /// 作業の一覧をファイルに書く。
 public function save(path: String, items: List[Item]) -> Result[Unit, IOError] uses File.Write
-  bind text <- String.join(List.map(items, formatLine), "\n") + "\n"
-  return File.writeText(path, text)
+  bind text <- String.join(xs: List.map(xs: items, f: lambda(value) return formatLine(value) end lambda), separator: "\n") + "\n"
+  return File.writeText(path: path, text: text)
 end function
 
 /// title の作業を済みにした一覧を返す。
 public function complete(items: List[Item], title: String) -> List[Item]
-  return List.map(items, lambda(item)
-    if Item.title(item) = title then
-      return Item(..item, done: true)
+  return List.map(xs: items, f: lambda(value)
+    if Item.title(value) = title then
+      return Item(..value, done: true)
     end if
-    return item
+    return value
   end lambda)
 end function
 
 function parseLine(line: String) -> Option[Item]
-  bind rest <- Option.unwrapOr(String.characterSlice(line, 4, String.characterCount(line)), "")
-  if String.startsWith(line, "[x] ") then
+  bind rest <- Option.unwrapOr(o: String.characterSlice(s: line, start: 4, stop: String.characterCount(line)), fallback: "")
+  if String.startsWith(s: line, prefix: "[x] ") then
     return Option.Some(Item(done: true, title: rest))
   end if
-  if String.startsWith(line, "[ ] ") then
+  if String.startsWith(s: line, prefix: "[ ] ") then
     return Option.Some(Item(done: false, title: rest))
   end if
   return Option.None

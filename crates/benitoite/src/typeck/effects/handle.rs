@@ -8,6 +8,7 @@ use crate::diag::{DiagBuilder, DiagCode};
 use crate::modules::ModuleKind;
 use crate::resolve::BindingKind;
 use crate::syntax::ast::HandleExpr;
+use crate::typeck::infer::IContract;
 use crate::types::builtin::BuiltinEffectId;
 use crate::types::{EffectName, EffectSet};
 use std::collections::BTreeMap;
@@ -134,11 +135,17 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
             let unit = super::super::generate::basic(crate::types::builtin::BuiltinTypeId::UNIT);
             ctx.unify(
                 &ITy::Fn(Box::new(IFnTy {
+                    contract: IContract::Known(crate::base::parameter_names::positional_names(
+                        params.len(),
+                    )),
                     params: vec![unit.clone(); params.len()],
                     ret: unit.clone(),
                     effect: IEffect::default(),
                 })),
                 &ITy::Fn(Box::new(IFnTy {
+                    contract: IContract::Known(crate::base::parameter_names::positional_names(
+                        clause.params.len(),
+                    )),
                     params: vec![unit.clone(); clause.params.len()],
                     ret: unit,
                     effect: IEffect::default(),

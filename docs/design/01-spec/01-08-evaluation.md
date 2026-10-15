@@ -21,7 +21,7 @@
 評価を遅らせたいときは、引数のないラムダで包み、必要になったときに呼び出す。ラムダは呼び出すたびに本体を評価する。一度だけ評価して値を使い回すときは、明示遅延（次節）を使う。
 
 ```text
-bind later <- lambda() return expensive(x) end lambda   // expensive はまだ呼ばれない
+bind later <- lambda() return expensive(x)   // expensive はまだ呼ばれない
 later()                             // ここで呼ばれる
 ```
 
@@ -57,7 +57,7 @@ Lazy.force(table)                              // 覚えた値を返す
 
 | 式 | 評価の順序 |
 |---|---|
-| 関数の呼び出し `e0(e1, …, en)` | `e0`、`e1`、…、`en` の順に評価し、その後で呼び出す |
+| 関数の呼び出し（名前付き引数を含む） | 呼ぶ式を先に、明示引数の式をソース順に一度ずつ評価する。得た値を対応する宣言位置へ渡して呼び出す |
 | 構成子の呼び出し `T.C(e1, …, en)` | `e1`、…、`en` の順に評価し、その後で値を作る |
 | レコードの構築 `T(f1: e1, …, fn: en)` | 書いた順に `e1`、…、`en` を評価し、その後で値を作る |
 | 一部を変えたレコード `T(..e, f1: e1, …)` | `e`、`e1`、… の順に評価し、その後で値を作る |
@@ -79,11 +79,13 @@ Lazy.force(table)                              // 覚えた値を返す
 | `match` | 対象の式を一度だけ評価し、選んだ分岐の本体だけを評価する（[代数的データ型とパターンマッチ](01-05-data-types.md)） |
 | 名前、リテラル、`()` | 名前が束縛する値、またはリテラルが表す値になる |
 
-例えば、`f(Console.writeLine("a"), g(Console.writeLine("b")))` は、`a` の後に `b` を出力する。可変のセル（[エフェクト](01-07-effects.md)）の読み書きも、この順序で起きる。`read() |> List.filter(nonEmpty)` は、`read()` を評価してから `List.filter` と `nonEmpty` を評価する。
+例えば、`f(first: Console.writeLine("a"), second: g(Console.writeLine("b")))` は、`a` の後に `b` を出力する。可変のセル（[エフェクト](01-07-effects.md)）の読み書きも、この順序で起きる。`read() |> List.filter(p: nonEmpty)` は、`read()` を評価してから `List.filter` と `nonEmpty` を評価する。
 
 評価の途中で実行時エラーが起きたときは、残りの部分を評価しない（後述の「実行時エラーによる停止」）。
 
 処理系は、観測できる振る舞い（外部に作用する操作の順序と内容、終わり方）が変わらない場合に限り、評価の順序を変えてよい。
+
+【決定】宣言のパラメータ名が `a, b` の場合、`makeFunction()(b: readB(), a: readA())` は `makeFunction()`、`readB()`、`readA()` の順に評価し、値だけを `a, b` の位置へ渡す。評価の途中で停止・`return`・`try` が起きれば、それより後の式と呼び出しは実行しない。パイプは左辺を最初に一度評価し、次に右辺の呼ぶ式、明示引数のソース順で評価する。部分適用を作る時点では呼ぶ式と固定引数を評価せず、生成した関数を呼ぶたびにこの順で評価する。
 
 ### 関数の呼び出し
 
@@ -113,11 +115,17 @@ Lazy.force(table)                              // 覚えた値を返す
 
 ```text
 function sumTo(n: Integer, acc: Integer) -> Integer
-  return if n = 0 then acc else sumTo(n - 1, acc + n) end if   // 末尾呼び出し
+  return match n = 0 with
+    case true -> acc
+    case false -> sumTo(n: n - 1, acc: acc + n)   // 末尾呼び出し
+  end match
 end function
 
 function isEven(n: Integer) -> Boolean
-  return if n = 0 then true else isOdd(n - 1) end if           // 末尾呼び出し（相互再帰）
+  return match n = 0 with
+    case true -> true
+    case false -> isOdd(n - 1)           // 末尾呼び出し（相互再帰）
+  end match
 end function
 
 function isOdd(n: Integer) -> Boolean
@@ -125,14 +133,17 @@ function isOdd(n: Integer) -> Boolean
 end function
 
 function length(n: Integer) -> Integer
-  return if n = 0 then 0 else 1 + length(n - 1) end if          // 末尾呼び出しではない
+  return match n = 0 with
+    case true -> 0
+    case false -> 1 + length(n - 1)     // 末尾呼び出しではない
+  end match
 end function
 
 function countDown(n: Integer, acc: Integer) -> Integer
   if n = 0 then
     return acc                                                // 最後でない文の中の return
   end if
-  return countDown(n - 1, acc + 1)                            // 末尾呼び出し
+  return countDown(n: n - 1, acc: acc + 1)                            // 末尾呼び出し
 end function
 ```
 

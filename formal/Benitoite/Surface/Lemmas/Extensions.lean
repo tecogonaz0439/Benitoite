@@ -1,6 +1,6 @@
 import Benitoite.Surface.Lemmas.CallHead
 
-/-! C6a-1 の追加の let と、並行した断片・式・呼ぶ値の型付け。 -/
+/-! リストの展開と文字列補間の型保存（設計書 01-12「リストの展開」「文字列補間」）。 -/
 namespace Benitoite.Surface
 open Benitoite.Release
 
@@ -29,7 +29,7 @@ theorem HasTypeVs.takeDrop {vs as} (h : HasTypeVs P B StoreTy.empty C Γ vs as) 
       | cons hv ht => exact ⟨.cons hv (ih ht).1, (ih ht).2⟩
 
 theorem spreadFinish_typed {R h before s after a}
-    (hh : CallHead.HasType P B C Γ h [.list a, .list a] (.list a) Eff.empty)
+    (hh : CallHead.HasType P B C Γ h ["xs", "ys"] [.list a, .list a] (.list a) Eff.empty)
     (hb : HasTypeEach P B StoreTy.empty C Γ before a)
     (hs : HasTypeV P B StoreTy.empty C Γ s (.list a))
     (ha : HasTypeEach P B StoreTy.empty C Γ after a) (hw : Ty.WF C.length a) :
@@ -44,7 +44,7 @@ theorem spreadFinish_typed {R h before s after a}
         (.cons (.V_List (ha.rename (RenOk.shift [some (.list a)] Γ)) hw) .nil))
 
 theorem spreadValues_typed {R h vs a n k}
-    (hh : CallHead.HasType P B C Γ h [.list a, .list a] (.list a) Eff.empty)
+    (hh : CallHead.HasType P B C Γ h ["xs", "ys"] [.list a, .list a] (.list a) Eff.empty)
     (hv : HasTypeVs P B StoreTy.empty C Γ vs
       (List.replicate n a ++ .list a :: List.replicate k a)) (hw : Ty.WF C.length a) :
     HasTypeC P B StoreTy.empty C Γ R (spreadValues h n vs) (.list a) Eff.empty := by
@@ -63,9 +63,9 @@ theorem spreadValues_typed {R h vs a n k}
 inductive StrHeadsTyped (P : Release.Program) (B : Builtins) (C : List TParam)
     (Γ : List (Option Ty)) : List CallHead → List Ty → Prop
   | nil : StrHeadsTyped P B C Γ [] []
-  | cons {h hs t ts} : CallHead.HasType P B C Γ h [t] (.base .string) Eff.empty →
+  | cons {h hs name t ts} : CallHead.HasType P B C Γ h [name] [t] (.base .string) Eff.empty →
       StrHeadsTyped P B C Γ hs ts →
-      StrHeadsTyped P B C Γ (h :: hs) (.fn [t] (.base .string) Eff.empty :: ts)
+      StrHeadsTyped P B C Γ (h :: hs) (.fn [name] [t] (.base .string) Eff.empty :: ts)
 
 theorem StrHeadsTyped.rename {hs ts Δ ξ} (h : StrHeadsTyped P B C Γ hs ts)
     (hr : RenOk Γ Δ ξ) : StrHeadsTyped P B C Δ (hs.map (CallHead.rename ξ)) ts := by
@@ -77,7 +77,7 @@ theorem directHeads_typed {p : Program} {op C Γ R fs ts ε δ}
     (h : HasTypes p.declarations B op C Γ R fs ts ε)
     (hm : CompTypes (desugarProgram op p) B C Γ R δ (desugarExprs op fs) ts)
     (hd : fs.AllDirect)
-    (ht : ∀ t ∈ ts, ∃ a, t = .fn [a] (.base .string) Eff.empty) :
+    (ht : ∀ t ∈ ts, ∃ a, t = .fn [InterpPart.converterName a] [a] (.base .string) Eff.empty) :
     StrHeadsTyped (desugarProgram op p) B C Γ (directHeads fs) ts := by
   match h with
   | .nil => exact .nil
@@ -91,7 +91,7 @@ theorem directHeads_typed {p : Program} {op C Γ R fs ts ε δ}
             (directHeads_typed hfs hms hd.2 (fun t hm => ht t (by simp [hm])))
 
 theorem converterTypes_fn (parts : List InterpPart) :
-    ∀ t ∈ InterpPart.converterTypes parts, ∃ a, t = .fn [a] (.base .string) Eff.empty := by
+    ∀ t ∈ InterpPart.converterTypes parts, ∃ a, t = .fn [InterpPart.converterName a] [a] (.base .string) Eff.empty := by
   induction parts with
   | nil => simp [InterpPart.converterTypes]
   | cons p ps ih =>
@@ -108,8 +108,19 @@ theorem stringAdd_typed {op R v w} (h : StringAddOk B op C)
     ∃ b ts, op (.binary .add) (.base .string) = some (b, ts) ∧
       HasTypeC P B StoreTy.empty C Γ R (.app (.prim b ts []) [v,w]) (.base .string) Eff.empty := by
   obtain ⟨b, ts, s, hop, _, hs, ht, he, ha, hfn⟩ := h
-  refine ⟨b, ts, hop, HasTypeC.C_App ?_ (.cons hv (.cons hw .nil))⟩
-  rw [← hfn]; exact .V_Prim hs ht (by simpa using he.symm) ha
+  refine ⟨b, ts, hop, HasTypeC.C_App (names := ["left", "right"]) ?_ (.cons hv (.cons hw .nil))⟩
+  have hn : NamesWF s.names s.params := by
+    have hf := hfn
+    rw [fnTy_eq] at hf
+    have heq := Ty.fn.inj hf
+    refine ⟨?_, ?_⟩
+    · have hp := congrArg List.length heq.2.1
+      rw [List.length_map] at hp
+      rw [heq.1]
+      exact hp.symm
+    · rw [heq.1]
+      decide
+  rw [← hfn]; exact .V_Prim hs hn ht (by simpa using he.symm) ha
 
 theorem joinStringFrom_typed {op R left rest depth} (xs : List (Option Ty))
     (hd : xs.length = depth)

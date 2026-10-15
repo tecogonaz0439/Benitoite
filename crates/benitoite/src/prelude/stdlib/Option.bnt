@@ -7,7 +7,7 @@ public data Option[T]
 end data
 
 /// Applies `f` to the value inside `Option.Some`.
-public function map[T, U, effect E](o: Option[T], f: function(T) -> U uses E) -> Option[U] uses E
+public function map[T, U, effect E](o: Option[T], f: function(value: T) -> U uses E) -> Option[U] uses E
   return match o with
     case Option.Some(x) -> Option.Some(f(x))
     case Option.None -> Option.None
@@ -15,7 +15,7 @@ public function map[T, U, effect E](o: Option[T], f: function(T) -> U uses E) ->
 end function
 
 /// Applies `f` to the value inside `Option.Some` and returns its result.
-public function andThen[T, U, effect E](o: Option[T], f: function(T) -> Option[U] uses E) -> Option[U] uses E
+public function andThen[T, U, effect E](o: Option[T], f: function(value: T) -> Option[U] uses E) -> Option[U] uses E
   return match o with
     case Option.Some(x) -> f(x)
     case Option.None -> Option.None

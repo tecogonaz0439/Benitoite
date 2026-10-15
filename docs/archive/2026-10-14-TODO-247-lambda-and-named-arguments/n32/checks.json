@@ -1,0 +1,67 @@
+{
+  "checks": [
+    {
+      "command": "cargo test -p benitoite --test reference_examples --test skill_examples",
+      "phase": "before",
+      "exit_code": 0,
+      "passed": 4
+    },
+    {
+      "command": "cargo build -p benitoite --example named_arguments_inventory",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo run -p benitoite --example gen_skill",
+      "exit_code": 0,
+      "runs": 2,
+      "stable_files": 56
+    },
+    {
+      "command": "cargo test -p benitoite --lib",
+      "exit_code": 0,
+      "passed": 1150,
+      "ignored": 21,
+      "new_ignored": 0
+    },
+    {
+      "command": "cargo test -p benitoite --test reference_examples --test skill_examples --test skill_docs --test spec_examples",
+      "exit_code": 0,
+      "passed": 19,
+      "suites": 4
+    },
+    {
+      "command": "cargo clippy --all-targets",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --no-default-features --features gc-mark-sweep,heap-verify,alloc-stats",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git apply --check docs/2026-10-14-TODO-247-lambda-and-named-arguments/n31/n33-final-design.patch",
+      "exit_code": 0
+    }
+  ],
+  "not_run": [
+    "scripts/check.sh (including --dry-run): explicit task instruction",
+    "gc-stress: explicit task instruction",
+    "lake build and scripts/check-formal.sh: no formal rules or compiler semantics changed"
+  ],
+  "intermediate_failure": {
+    "check": "skill_examples",
+    "cause": "String.contains was labelled sub instead of declared part",
+    "resolution": "corrected the call label to part; all final suites passed"
+  }
+}

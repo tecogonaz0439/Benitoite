@@ -116,12 +116,12 @@ impl State<'_> {
             | BindingKind::Field { .. }
             | BindingKind::Op { .. } => Ok(returned(self.direct_name(n)?)),
             BindingKind::Ctor { data, tag } => self.constructor_name(n, id, data, tag),
+            BindingKind::Record => self.constructor_name(n, id, id, 0),
             BindingKind::ImplFn { .. }
             | BindingKind::Data
             | BindingKind::BuiltinType(_)
             | BindingKind::Alias
             | BindingKind::ExternalType
-            | BindingKind::Record
             | BindingKind::Trait
             | BindingKind::Effect
             | BindingKind::BuiltinEffect(_)
@@ -138,8 +138,8 @@ impl State<'_> {
     pub(super) fn direct_name(&self, n: &ast::NameExpr) -> Result<CoreVal, InternalError> {
         let id = self.reference(n.id)?;
         let args = self.targs(n.id, id)?;
-        let ty = self.declared(id)?.fn_ty().subst(&args.tys, &args.effects);
-        match self.binding(id)?.kind {
+        let ty = self.ty(n.id)?;
+        let mut result = match self.binding(id)?.kind {
             BindingKind::Fn | BindingKind::Field { .. } => Ok(value(
                 ValKind::TopFn {
                     def: id,
@@ -183,7 +183,10 @@ impl State<'_> {
                 "invalid bindings kind for direct callee at {:?}",
                 n.id
             ))),
-        }
+        }?;
+        // 名前・型・エフェクトは検査済みの参照の型から保持する（設計書 02-05「出力」）。
+        result.ty = self.ty(n.id)?;
+        Ok(result)
     }
 
     /// 01-12「名前とリテラル」の、構成子を呼ばずに値として使う二つの行。
@@ -196,11 +199,15 @@ impl State<'_> {
     ) -> Result<Comp, InternalError> {
         let args = self.targs(n.id, binding)?;
         let tys = value_types(&args)?;
-        let Ty::Fn(f) = self
-            .declared(binding)?
-            .fn_ty()
-            .subst(&args.tys, &args.effects)
-        else {
+        let ty = self.ty(n.id)?;
+        let ty = if matches!(ty, Ty::Fn(_)) {
+            ty
+        } else {
+            self.declared(binding)?
+                .fn_ty()
+                .subst(&args.tys, &args.effects)
+        };
+        let Ty::Fn(f) = ty else {
             return Err(error("constructor scheme is not a function"));
         };
         if f.params.is_empty() {
@@ -233,6 +240,7 @@ impl State<'_> {
         ));
         Ok(returned(value(
             ValKind::Lambda(Box::new(Lambda {
+                param_names: f.param_names.clone(),
                 id,
                 params,
                 body,
@@ -325,33 +333,92 @@ impl State<'_> {
         inserted: Option<CoreVal>,
         span: Span,
     ) -> Result<Comp, InternalError> {
-        if e.args.iter().any(|a| matches!(a, ast::Arg::Placeholder(_))) {
+        let plan = self.call_plan(e, inserted.is_some())?;
+        if e.args.iter().any(|a| a.placeholder().is_some()) {
             return self.placeholder(e, span);
         }
         let mut pending = vec![];
         let callee = self.prepare(&e.callee, &mut pending, span)?;
-        let mut args: Vec<_> = inserted.into_iter().collect();
+        let mut source = vec![];
         for arg in &e.args {
-            let ast::Arg::Expr(arg) = arg else {
+            let Some(arg) = arg.expr() else {
                 return Err(error("unexpanded placeholder"));
             };
-            args.push(self.eval(arg, &mut pending)?);
+            source.push(self.eval(arg, &mut pending)?);
         }
+        let args = planned_arguments(&plan, inserted, source)?;
         Ok(finish(pending, self.invoke(callee, args, span)?, span))
+    }
+
+    /// 対応表は検査済みの出力であり、欠落や不正を位置指定で補わない（設計書 02-06「脱糖」）。
+    fn call_plan(
+        &self,
+        e: &ast::CallExpr,
+        inserted: bool,
+    ) -> Result<crate::typeck::CallPlan, InternalError> {
+        let named = e.args.iter().any(|a| matches!(a, ast::Arg::Named(_)));
+        let plan = self.types.call_plans.get(e.id).ok_or_else(|| {
+            error(if named {
+                "named call has no argument plan"
+            } else {
+                "call has no argument plan"
+            })
+        })?;
+        let Ty::Fn(f) = self.ty(e.callee.id())? else {
+            return Err(error("call callee has no function type"));
+        };
+        if usize::try_from(plan.arity).ok() != Some(f.params.len())
+            || plan.inserted_first != inserted
+            || plan.source_to_param.len() != e.args.len()
+            || plan.hole_names.len() != e.args.iter().filter(|a| a.placeholder().is_some()).count()
+        {
+            return Err(error("invalid call argument plan"));
+        }
+        let mut occupied = vec![false; f.params.len()];
+        if inserted {
+            let slot = occupied
+                .first_mut()
+                .ok_or_else(|| error("inserted argument has no parameter"))?;
+            *slot = true;
+        }
+        for (arg, position) in e.args.iter().zip(&plan.source_to_param) {
+            let i =
+                usize::try_from(*position).map_err(|_| error("argument position exceeds usize"))?;
+            let slot = occupied
+                .get_mut(i)
+                .ok_or_else(|| error("argument position out of range"))?;
+            if *slot {
+                return Err(error("duplicate argument position"));
+            }
+            *slot = true;
+            if let ast::Arg::Named(a) = arg
+                && f.param_names.get(i) != Some(&a.name.text)
+            {
+                return Err(error("named call has no argument plan"));
+            }
+        }
+        if occupied.iter().any(|present| !present) {
+            return Err(error("missing argument position"));
+        }
+        Ok(plan.clone())
     }
 
     /// 01-12「呼び出し」の前段にあるプレースホルダの展開（設計書 01-02「部分適用のプレースホルダ」）。
     fn placeholder(&mut self, e: &ast::CallExpr, span: Span) -> Result<Comp, InternalError> {
+        let plan = self.call_plan(e, false)?;
         let id = self.body_id()?;
         let mut params = vec![];
         for arg in &e.args {
-            if let ast::Arg::Placeholder(p) = arg {
+            if let Some(p) = arg.placeholder() {
                 params.push(self.var(None, self.ty(p.id)?)?);
             }
         }
         let Ty::Fn(ty) = self.ty(e.id)? else {
             return Err(error("placeholder call does not have a function type"));
         };
+        if ty.param_names != plan.hole_names {
+            return Err(error("placeholder names do not match argument plan"));
+        }
         let conts = std::mem::take(&mut self.conts);
         let return_ty = self.return_ty.replace(ty.ret);
         let body = (|| {
@@ -360,16 +427,18 @@ impl State<'_> {
             let callee = self.prepare(&e.callee, &mut pending, span)?;
             let mut args = vec![];
             for arg in &e.args {
-                args.push(match arg {
-                    ast::Arg::Expr(e) => self.eval(e, &mut pending)?,
-                    ast::Arg::Placeholder(p) => {
-                        let v = parameters
-                            .next()
-                            .ok_or_else(|| error("missing placeholder parameter"))?;
-                        bind(self, returned(variable(v, p.span)), &mut pending)?
-                    }
+                args.push(if let Some(e) = arg.expr() {
+                    self.eval(e, &mut pending)?
+                } else if let Some(p) = arg.placeholder() {
+                    let v = parameters
+                        .next()
+                        .ok_or_else(|| error("missing placeholder parameter"))?;
+                    bind(self, returned(variable(v, p.span)), &mut pending)?
+                } else {
+                    return Err(error("invalid placeholder argument"));
                 });
             }
+            let args = planned_arguments(&plan, None, args)?;
             let body = finish(pending, self.invoke(callee, args, span)?, span);
             Ok::<_, InternalError>(body)
         })();
@@ -382,13 +451,17 @@ impl State<'_> {
             .get(e.id)
             .cloned()
             .ok_or_else(|| error(format!("missing lambda_effects for {:?}", e.id)))?;
-        let ty = function(
-            params.iter().map(|p| p.ty.clone()).collect(),
-            body.ty.clone(),
-            effects,
-        );
+        let ty = self.ty(e.id)?;
+        if !matches!(&ty, Ty::Fn(f) if f.effects == effects && f.params == params.iter().map(|p| p.ty.clone()).collect::<Vec<_>>())
+        {
+            return Err(error("placeholder signature does not match inferred type"));
+        }
         Ok(returned(value(
             ValKind::Lambda(Box::new(Lambda {
+                param_names: match &ty {
+                    Ty::Fn(f) => f.param_names.clone(),
+                    Ty::Con(..) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => Vec::new(),
+                },
                 id,
                 params,
                 body,
@@ -406,7 +479,7 @@ impl State<'_> {
         let mut pending = vec![];
         let left = self.eval(&p.lhs, &mut pending)?;
         let body = if let ast::Expr::Call(c) = p.rhs.as_ref()
-            && !c.args.iter().any(|a| matches!(a, ast::Arg::Placeholder(_)))
+            && !c.args.iter().any(|a| a.placeholder().is_some())
         {
             self.call(c, Some(left), p.span)?
         } else {
@@ -591,13 +664,18 @@ impl State<'_> {
             .get(e.id)
             .cloned()
             .ok_or_else(|| error(format!("missing lambda_effects for {:?}", e.id)))?;
-        let ty = function(
-            params.iter().map(|p| p.ty.clone()).collect(),
-            body.ty.clone(),
-            eff,
-        );
+        let ty = Ty::Fn(Box::new(crate::types::FnTy {
+            param_names: ty.param_names,
+            params: params.iter().map(|p| p.ty.clone()).collect(),
+            ret: body.ty.clone(),
+            effects: eff,
+        }));
         Ok(returned(value(
             ValKind::Lambda(Box::new(Lambda {
+                param_names: match &ty {
+                    Ty::Fn(f) => f.param_names.clone(),
+                    Ty::Con(..) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => Vec::new(),
+                },
                 id,
                 params,
                 body,
@@ -1148,4 +1226,35 @@ fn branching(cond: CoreVal, then_branch: Comp, else_branch: Comp, ty: Ty, origin
             else_branch: Box::new(else_branch),
         },
     }
+}
+
+/// 式はすでにソース順に束縛してあり、ここで並べるのは保存した値の参照だけである。
+fn planned_arguments(
+    plan: &crate::typeck::CallPlan,
+    inserted: Option<CoreVal>,
+    source: Vec<CoreVal>,
+) -> Result<Vec<CoreVal>, InternalError> {
+    let arity = usize::try_from(plan.arity).map_err(|_| error("call arity exceeds usize"))?;
+    if source.len() != plan.source_to_param.len() || inserted.is_some() != plan.inserted_first {
+        return Err(error("argument plan does not match source arguments"));
+    }
+    let mut args = vec![None; arity];
+    if let Some(value) = inserted {
+        *args
+            .first_mut()
+            .ok_or_else(|| error("inserted argument has no parameter"))? = Some(value);
+    }
+    for (value, position) in source.into_iter().zip(&plan.source_to_param) {
+        let i = usize::try_from(*position).map_err(|_| error("argument position exceeds usize"))?;
+        let slot = args
+            .get_mut(i)
+            .ok_or_else(|| error("argument position out of range"))?;
+        if slot.is_some() {
+            return Err(error("duplicate argument position"));
+        }
+        *slot = Some(value);
+    }
+    args.into_iter()
+        .map(|v| v.ok_or_else(|| error("missing argument position")))
+        .collect()
 }

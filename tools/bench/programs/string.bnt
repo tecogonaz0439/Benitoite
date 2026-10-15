@@ -19,9 +19,9 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   return match readCount() with
     case Result.Error(message) -> Result.Error(message)
     case Result.Ok(count) ->
-      bind repeated <- String.repeat("x,", count)
+      bind repeated <- String.repeat(s: "x,", n: count)
       bind text <- "start," + repeated + "end"
-      Console.writeLine(Integer.toString(List.length(String.split(text, ","))))
+      Console.writeLine(Integer.toString(List.length(String.split(s: text, separator: ","))))
       Result.Ok(())
   end match
 end function

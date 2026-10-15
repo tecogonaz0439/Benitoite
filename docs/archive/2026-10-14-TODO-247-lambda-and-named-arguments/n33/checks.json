@@ -1,0 +1,90 @@
+[
+  {
+    "command": "cargo test -p benitoite --lib",
+    "result": "passed: 1154; existing ignored: 21",
+    "log": "/tmp/n33-lib-final3.log"
+  },
+  {
+    "command": "cargo test -p benitoite --test named_arguments",
+    "result": "passed: 17",
+    "log": "/tmp/n33-named-final3.log"
+  },
+  {
+    "command": "cargo test -p benitoite --test golden",
+    "result": "passed: 2; SEC-F1 expectations unchanged",
+    "log": "/tmp/n33-golden-final3.log"
+  },
+  {
+    "command": "cargo test -p benitoite --test random_programs",
+    "result": "passed: 3; 300 programs, no counterexamples; 49.72 seconds",
+    "log": "/tmp/n33-random-final.log"
+  },
+  {
+    "command": "cargo test -p benitoite --test reference_examples",
+    "result": "passed: 1",
+    "log": "/tmp/n33-final-integrations2.log"
+  },
+  {
+    "command": "cargo test -p benitoite --test skill_examples",
+    "result": "passed: 3; original E0416 expectation retained",
+    "log": "/tmp/n33-skill-final2.log"
+  },
+  {
+    "command": "cargo test -p benitoite --test spec_examples --test skill_docs",
+    "result": "passed: 15 across 2 suites",
+    "log": "/tmp/n33-docs-final2.log"
+  },
+  {
+    "command": "cargo test -p benitoite --test fmt_command --test package_command",
+    "result": "passed: 15 and 13",
+    "log": "/tmp/n33-integration3.log"
+  },
+  {
+    "command": "cargo test -p benitoite --test desugar_export -- --include-ignored --nocapture",
+    "result": "passed: 14; includes full corpus export",
+    "log": "/tmp/n33-formal4.log"
+  },
+  {
+    "command": "cargo test -p benitoite --test coverage_export -- --include-ignored --nocapture",
+    "result": "passed: 2",
+    "log": "/tmp/n33-formal4.log"
+  },
+  {
+    "command": "cargo run -p benitoite --example gen_skill",
+    "result": "passed; regenerated grammar and diagnostics",
+    "log": "/tmp/n33-gen-skill2.log"
+  },
+  {
+    "command": "cargo clippy --all-targets",
+    "result": "passed; no issues",
+    "log": "/tmp/n33-clippy-final4.log"
+  },
+  {
+    "command": "cargo clippy --workspace --all-targets --no-default-features --features gc-mark-sweep,heap-verify,alloc-stats",
+    "result": "passed; no issues",
+    "log": "/tmp/n33-clippy-features-final2.log"
+  },
+  {
+    "command": "cargo clippy -p benitoite --lib --tests --no-default-features --features gc-mark-sweep",
+    "result": "passed; no issues",
+    "log": "/tmp/n33-clippy-marksweep-final2.log"
+  },
+  {
+    "command": "cargo fmt --all --check",
+    "result": "passed"
+  },
+  {
+    "command": "lake build (formal/)",
+    "result": "passed: 238 jobs",
+    "log": "/tmp/n33-lake.log"
+  },
+  {
+    "command": "python3 -u -I crates/benitoite/tests/desugar_export/check_named.py target/desugar-diff/run-44207 target/coverage-diff/run-44207",
+    "result": "passed; all six versioned entries and mutation rejections",
+    "log": "/tmp/n33-formal-resume3.log"
+  },
+  {
+    "command": "git diff --check",
+    "result": "passed"
+  }
+]

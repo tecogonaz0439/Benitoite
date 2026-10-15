@@ -3,9 +3,9 @@
 import Benitoite.Unofficial.IO.Console
 
 function count_down(n: Integer, count: Integer) -> Integer
-  return if n = 0 then count else count_down(n - 1, count + 1) end if
+  return if n = 0 then count else count_down(n: n - 1, count: count + 1) end if
 end function
 
 function main() -> Unit uses Console.Write
-  return Console.writeLine(Integer.toString(count_down(1000000, 0)))
+  return Console.writeLine(Integer.toString(count_down(n: 1000000, count: 0)))
 end function

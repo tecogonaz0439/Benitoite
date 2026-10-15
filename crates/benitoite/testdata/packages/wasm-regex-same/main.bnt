@@ -10,12 +10,12 @@ import Benitoite.Unofficial.Json
 import Benitoite.Unofficial.IO.Console
 import WasmRegex.Pattern
 
-function native(m: Regex.Match) -> Triple[String, Integer, Integer]
-  return Triple(Regex.matchText(m), Regex.matchByteStart(m), Regex.matchByteEnd(m))
+function native(value: Regex.Match) -> Triple[String, Integer, Integer]
+  return Triple(Regex.matchText(value), Regex.matchByteStart(value), Regex.matchByteEnd(value))
 end function
 
-function guest(m: Pattern.Found) -> Triple[String, Integer, Integer]
-  return Triple(Pattern.matchText(m), Pattern.matchByteStart(m), Pattern.matchByteEnd(m))
+function guest(value: Pattern.Found) -> Triple[String, Integer, Integer]
+  return Triple(Pattern.matchText(value), Pattern.matchByteStart(value), Pattern.matchByteEnd(value))
 end function
 
 function quoted(s: String) -> String
@@ -27,17 +27,17 @@ function compare(source: String, text: String) -> Result[Unit, String] uses Stat
   bind c <- Pattern.compile(source)
   return match Pair(a, c) with
     case Pair(Result.Error(x), Result.Error(y)) ->
-      bind pure <- Pattern.isMatchOnce(source, text) = Result.Error(x) and Pattern.findAllOnce(source, text) = Result.Error(x) and Pattern.countOnce(source, text) = Result.Error(x)
+      bind pure <- Pattern.isMatchOnce(source: source, text: text) = Result.Error(x) and Pattern.findAllOnce(source: source, text: text) = Result.Error(x) and Pattern.countOnce(source: source, text: text) = Result.Error(x)
       Console.writeLine("error " + quoted(x) + " | resource=${x = y} pure=${pure}")
       if x = y and pure then Result.Ok(()) else Result.Error("compile mismatch") end if
     case Pair(Result.Ok(x), Result.Ok(y)) ->
-      bind am <- Regex.isMatch(x, text)
-      bind first <- Option.map(Regex.find(x, text), native)
-      bind all <- List.map(Regex.findAll(x, text), native)
-      bind replacement <- Regex.replaceAll(x, text, "$1\\literal")
-      bind resource <- Pattern.isMatch(y, text) = am and Option.map(Pattern.find(y, text), guest) = first and List.map(Pattern.findAll(y, text), guest) = all and Pattern.replaceAll(y, text, "$1\\literal") = replacement and Pattern.count(y, text) = List.length(all)
-      bind reused <- Pattern.isMatch(y, text) = am and List.map(Pattern.findAll(y, text), guest) = all
-      bind pure <- Pattern.isMatchOnce(source, text) = Result.Ok(am) and Result.map(Pattern.findAllOnce(source, text), lambda(matches: List[Pattern.Found]) -> List[Triple[String, Integer, Integer]] return List.map(matches, guest) end lambda) = Result.Ok(all) and Pattern.countOnce(source, text) = Result.Ok(List.length(all))
+      bind am <- Regex.isMatch(pattern: x, text: text)
+      bind first <- Option.map(o: Regex.find(pattern: x, text: text), f: native)
+      bind all <- List.map(xs: Regex.findAll(pattern: x, text: text), f: native)
+      bind replacement <- Regex.replaceAll(pattern: x, text: text, replacement: "$1\\literal")
+      bind resource <- Pattern.isMatch(pattern: y, text: text) = am and Option.map(o: Pattern.find(pattern: y, text: text), f: guest) = first and List.map(xs: Pattern.findAll(pattern: y, text: text), f: guest) = all and Pattern.replaceAll(pattern: y, text: text, replacement: "$1\\literal") = replacement and Pattern.count(pattern: y, text: text) = List.length(all)
+      bind reused <- Pattern.isMatch(pattern: y, text: text) = am and List.map(xs: Pattern.findAll(pattern: y, text: text), f: guest) = all
+      bind pure <- Pattern.isMatchOnce(source: source, text: text) = Result.Ok(am) and Result.map(r: Pattern.findAllOnce(source: source, text: text), f: lambda(value: List[Pattern.Found]) -> List[Triple[String, Integer, Integer]] return List.map(xs: value, f: guest) end lambda) = Result.Ok(all) and Pattern.countOnce(source: source, text: text) = Result.Ok(List.length(all))
       Console.writeLine(quoted(source) + " " + quoted(text) + " | A=${am} first=${Trait.Show.show(first)} all=${Trait.Show.show(all)} replace=" + quoted(replacement) + " | resource=${resource} reused=${reused} pure=${pure}")
       if resource and reused and pure then Result.Ok(()) else Result.Error("match mismatch") end if
     case _ -> Result.Error("compile status mismatch")
@@ -45,9 +45,9 @@ function compare(source: String, text: String) -> Result[Unit, String] uses Stat
 end function
 
 function main() -> Result[Unit, String] uses State, Console.Write
-  bind cases <- [Pair("[a-z]+", "one 12 two"), Pair("a*", "aa日b"), Pair("\\b", "é 日"), Pair("", "é😀"), Pair("(.)", "é😀"), Pair("\\w+", "日本語 café"), Pair("z+", "abc"), Pair("a*", ""), Pair("(", "x"), Pair("[", "x"), Pair(String.repeat("é", 2100) + "(", "x")]
-  return List.fold(cases, Result.Ok(()), lambda(acc: Result[Unit, String], pair: Pair[String, String]) -> Result[Unit, String] uses State, Console.Write
+  bind cases <- [Pair("[a-z]+", "one 12 two"), Pair("a*", "aa日b"), Pair("\\b", "é 日"), Pair("", "é😀"), Pair("(.)", "é😀"), Pair("\\w+", "日本語 café"), Pair("z+", "abc"), Pair("a*", ""), Pair("(", "x"), Pair("[", "x"), Pair(String.repeat(s: "é", n: 2100) + "(", "x")]
+  return List.fold(xs: cases, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: Pair[String, String]) -> Result[Unit, String] uses State, Console.Write
     bind _ <- try acc
-    return compare(Pair.first(pair), Pair.second(pair))
+    return compare(source: Pair.first(value), text: Pair.second(value))
   end lambda)
 end function

@@ -1,9 +1,8 @@
 import Lean
 import Benitoite.Surface.Desugar
 
-/-! C3〜C7c の交換形式。導出した JSON は構成子名を鍵、引数名を欄名にする。
-型・表層・コアを別の型にし、範囲外のコアは unsupported として保持する。
-エフェクトだけは順序によらず比較し、Float は UInt64 のビットで比較する。 -/
+/-! 契約名とソース順を保持する独立した交換の入口。
+設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
 namespace Benitoite.Exchange
 open Lean
 
@@ -23,7 +22,7 @@ inductive Ty where
   | opaque (name : String)
   | data (name : String) (args : List Ty)
   | list (elem : Ty)
-  | fn (params : List Ty) (ret : Ty) (eff : Eff)
+  | fn (names : List String) (params : List Ty) (ret : Ty) (eff : Eff)
   | tvar (index : Nat)
   | reference (elem : Ty)
   | lazyT (elem : Ty)
@@ -97,13 +96,13 @@ mutual
     | constName (name : String)
     | funName (name : String) (tys : List Ty) (effs : List Eff)
     | funDicts (name : String) (tys : List Ty) (effs : List Eff)
-        (dicts : List DictEv) (params : List Ty) (eff : Eff)
+        (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff)
     | methName (dict : DictEv) (name : String) (tys : List Ty) (effs : List Eff)
-        (dicts : List DictEv) (params : List Ty) (eff : Eff)
+        (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff)
     | primName (name : String) (tys : List Ty) (effs : List Eff)
     | opName (name : String) (tys : List Ty)
     | nullCon (name : String) (tys : List Ty)
-    | conValue (name : String) (tys params : List Ty)
+    | conValue (name : String) (tys : List Ty) (names : List String) (params : List Ty)
     | literal (value : Const)
     /-- 型検査が記録した符号反転後の Float のビット。 -/
     | negFloat (bits : UInt64)
@@ -118,9 +117,9 @@ mutual
     | record (name : String) (tys : List Ty) (positions : List Nat) (args : List Expr)
     | recordUpdate (name : String) (tys : List Ty) (n : Nat) (positions : List Nat) (base : Expr) (args : List Expr)
     | conCall (name : String) (tys : List Ty) (args : List Expr)
-    | call (callee : Expr) (args : List Expr)
+    | call (callee : Expr) (labels : List (Option String)) (positions : List Nat) (args : List Expr)
     | pipe (lhs rhs : Expr)
-    | partialCall (callee : Expr) (args : List HoleArg) (ret : Ty) (eff : Eff)
+    | partialCall (callee : Expr) (names : List String) (args : List HoleArg) (ret : Ty) (eff : Eff)
     | partialCon (name : String) (tys : List Ty) (args : List HoleArg)
     | binary (op : String) (operand : Ty) (lhs rhs : Expr)
     | neg (operand : Ty) (inner : Expr)
@@ -130,7 +129,7 @@ mutual
     | list (elem : Ty) (elems : List Expr)
     | listSpread (elem : Ty) (concat : Expr) (before : List Expr) (spread : Expr) (after : List Expr)
     | interpolation (parts : List InterpPart) (es converters : List Expr)
-    | lam (params : List Ty) (ret : Ty) (eff : Eff) (body : Block)
+    | lam (names : List String) (params : List Ty) (ret : Ty) (eff : Eff) (body : Block)
     | ite (cond : Expr) (yes no : Block)
     | elseIf (cond : Expr) (yes : Block) (no : Expr)
     | ifOnly (cond : Expr) (yes : Block)
@@ -145,8 +144,8 @@ mutual
   inductive SurfaceClause where
     | mk (op : OpRef) (arity ntys : Nat) (body : Block)
   inductive HoleArg where
-    | expr (inner : Expr)
-    | hole (ty : Ty)
+    | expr (label : Option String) (position : Nat) (inner : Expr)
+    | hole (label : Option String) (position : Nat) (ty : Ty)
   inductive Arm where
     | mk (alts : List Alternative) (guard : Option Expr) (body : Block)
   inductive Block where
@@ -164,13 +163,13 @@ end
 mutual
   partial def encodeExpr : Expr → Json
     | .constName name => Json.mkObj [("constName", Json.mkObj [("name", toJson name)])]
-    | .funDicts name tys effs dicts params eff => Json.mkObj [("funDicts", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("dicts", toJson dicts), ("params", toJson params), ("eff", toJson eff)])]
-    | .methName dict name tys effs dicts params eff => Json.mkObj [("methName", Json.mkObj [("dict", toJson dict), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("dicts", toJson dicts), ("params", toJson params), ("eff", toJson eff)])]
+    | .funDicts name tys effs dicts names params eff => Json.mkObj [("funDicts", Json.mkObj [("names", toJson names), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("dicts", toJson dicts), ("params", toJson params), ("eff", toJson eff)])]
+    | .methName dict name tys effs dicts names params eff => Json.mkObj [("methName", Json.mkObj [("names", toJson names), ("dict", toJson dict), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("dicts", toJson dicts), ("params", toJson params), ("eff", toJson eff)])]
     | .local index => Json.mkObj [("local", Json.mkObj [("index", toJson index)])]
     | .funName name tys effs => Json.mkObj [("funName", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs)])]
     | .primName name tys effs => Json.mkObj [("primName", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs)])]
     | .nullCon name tys => Json.mkObj [("nullCon", Json.mkObj [("name", toJson name), ("tys", toJson tys)])]
-    | .conValue name tys params => Json.mkObj [("conValue", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("params", toJson params)])]
+    | .conValue name tys names params => Json.mkObj [("conValue", Json.mkObj [("names", toJson names), ("name", toJson name), ("tys", toJson tys), ("params", toJson params)])]
     | .literal value => Json.mkObj [("literal", Json.mkObj [("value", toJson value)])]
     | .negFloat bits => Json.mkObj [("negFloat", Json.mkObj [("bits", toJson bits)])]
     | .negDecimal mantissa scale => Json.mkObj [("negDecimal", Json.mkObj [("mantissa", toJson mantissa), ("scale", toJson scale)])]
@@ -185,9 +184,9 @@ mutual
     | .record name tys positions args => Json.mkObj [("record", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("positions", toJson positions), ("args", Json.arr (args.map encodeExpr).toArray)])]
     | .recordUpdate name tys n positions base args => Json.mkObj [("recordUpdate", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("n", toJson n), ("positions", toJson positions), ("base", encodeExpr base), ("args", Json.arr (args.map encodeExpr).toArray)])]
     | .conCall name tys args => Json.mkObj [("conCall", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("args", Json.arr (args.map encodeExpr).toArray)])]
-    | .call callee args => Json.mkObj [("call", Json.mkObj [("callee", encodeExpr callee), ("args", Json.arr (args.map encodeExpr).toArray)])]
+    | .call callee labels positions args => Json.mkObj [("call", Json.mkObj [("labels", toJson labels), ("positions", toJson positions), ("callee", encodeExpr callee), ("args", Json.arr (args.map encodeExpr).toArray)])]
     | .pipe lhs rhs => Json.mkObj [("pipe", Json.mkObj [("lhs", encodeExpr lhs), ("rhs", encodeExpr rhs)])]
-    | .partialCall callee args ret eff => Json.mkObj [("partialCall", Json.mkObj [("callee", encodeExpr callee), ("args", Json.arr (args.map encodeHoleArg).toArray), ("ret", toJson ret), ("eff", toJson eff)])]
+    | .partialCall callee names args ret eff => Json.mkObj [("partialCall", Json.mkObj [("names", toJson names), ("callee", encodeExpr callee), ("args", Json.arr (args.map encodeHoleArg).toArray), ("ret", toJson ret), ("eff", toJson eff)])]
     | .partialCon name tys args => Json.mkObj [("partialCon", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("args", Json.arr (args.map encodeHoleArg).toArray)])]
     | .binary op operand lhs rhs => Json.mkObj [("binary", Json.mkObj [("op", toJson op), ("operand", toJson operand), ("lhs", encodeExpr lhs), ("rhs", encodeExpr rhs)])]
     | .neg operand inner => Json.mkObj [("neg", Json.mkObj [("operand", toJson operand), ("inner", encodeExpr inner)])]
@@ -195,7 +194,7 @@ mutual
     | .and lhs rhs => Json.mkObj [("and", Json.mkObj [("lhs", encodeExpr lhs), ("rhs", encodeExpr rhs)])]
     | .or lhs rhs => Json.mkObj [("or", Json.mkObj [("lhs", encodeExpr lhs), ("rhs", encodeExpr rhs)])]
     | .list elem elems => Json.mkObj [("list", Json.mkObj [("elem", toJson elem), ("elems", Json.arr (elems.map encodeExpr).toArray)])]
-    | .lam params ret eff body => Json.mkObj [("lam", Json.mkObj [("params", toJson params), ("ret", toJson ret), ("eff", toJson eff), ("body", encodeBlock body)])]
+    | .lam names params ret eff body => Json.mkObj [("lam", Json.mkObj [("names", toJson names), ("params", toJson params), ("ret", toJson ret), ("eff", toJson eff), ("body", encodeBlock body)])]
     | .ite cond yes no => Json.mkObj [("ite", Json.mkObj [("cond", encodeExpr cond), ("yes", encodeBlock yes), ("no", encodeBlock no)])]
     | .elseIf cond yes no => Json.mkObj [("elseIf", Json.mkObj [("cond", encodeExpr cond), ("yes", encodeBlock yes), ("no", encodeExpr no)])]
     | .ifOnly cond yes => Json.mkObj [("ifOnly", Json.mkObj [("cond", encodeExpr cond), ("yes", encodeBlock yes)])]
@@ -211,8 +210,8 @@ mutual
   partial def encodeSurfaceClause : SurfaceClause → Json
     | .mk op arity ntys body => Json.mkObj [("op", toJson op), ("arity", toJson arity), ("ntys", toJson ntys), ("body", encodeBlock body)]
   partial def encodeHoleArg : HoleArg → Json
-    | .expr inner => Json.mkObj [("expr", Json.mkObj [("inner", encodeExpr inner)])]
-    | .hole ty => Json.mkObj [("hole", Json.mkObj [("ty", toJson ty)])]
+    | .expr label position inner => Json.mkObj [("expr", Json.mkObj [("label", toJson label), ("position", toJson position), ("inner", encodeExpr inner)])]
+    | .hole label position ty => Json.mkObj [("hole", Json.mkObj [("label", toJson label), ("position", toJson position), ("ty", toJson ty)])]
   partial def encodeArm : Arm → Json
     | .mk alts guard body => Json.mkObj [("mk", Json.mkObj [("alts", toJson alts), ("guard", guard.map encodeExpr |>.getD Json.null), ("body", encodeBlock body)])]
   partial def encodeBlock : Block → Json
@@ -231,9 +230,9 @@ mutual
     if let .ok o := j.getObjVal? "constName" then
       return .constName (← fromJson? (← o.getObjVal? "name"))
     if let .ok o := j.getObjVal? "funDicts" then
-      return .funDicts (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← fromJson? (← o.getObjVal? "dicts")) (← fromJson? (← o.getObjVal? "params")) (← fromJson? (← o.getObjVal? "eff"))
+      return .funDicts (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← fromJson? (← o.getObjVal? "dicts")) (← fromJson? (← o.getObjVal? "names")) (← fromJson? (← o.getObjVal? "params")) (← fromJson? (← o.getObjVal? "eff"))
     if let .ok o := j.getObjVal? "methName" then
-      return .methName (← fromJson? (← o.getObjVal? "dict")) (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← fromJson? (← o.getObjVal? "dicts")) (← fromJson? (← o.getObjVal? "params")) (← fromJson? (← o.getObjVal? "eff"))
+      return .methName (← fromJson? (← o.getObjVal? "dict")) (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← fromJson? (← o.getObjVal? "dicts")) (← fromJson? (← o.getObjVal? "names")) (← fromJson? (← o.getObjVal? "params")) (← fromJson? (← o.getObjVal? "eff"))
     if let .ok o := j.getObjVal? "local" then
       return .local (← fromJson? (← o.getObjVal? "index"))
     if let .ok o := j.getObjVal? "funName" then
@@ -243,7 +242,7 @@ mutual
     if let .ok o := j.getObjVal? "nullCon" then
       return .nullCon (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys"))
     if let .ok o := j.getObjVal? "conValue" then
-      return .conValue (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "params"))
+      return .conValue (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "names")) (← fromJson? (← o.getObjVal? "params"))
     if let .ok o := j.getObjVal? "literal" then
       return .literal (← fromJson? (← o.getObjVal? "value"))
     if let .ok o := j.getObjVal? "negFloat" then
@@ -272,11 +271,11 @@ mutual
     if let .ok o := j.getObjVal? "conCall" then
       return .conCall (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeExpr)
     if let .ok o := j.getObjVal? "call" then
-      return .call (← decodeExpr (← o.getObjVal? "callee")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeExpr)
+      return .call (← decodeExpr (← o.getObjVal? "callee")) (← fromJson? (← o.getObjVal? "labels")) (← fromJson? (← o.getObjVal? "positions")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeExpr)
     if let .ok o := j.getObjVal? "pipe" then
       return .pipe (← decodeExpr (← o.getObjVal? "lhs")) (← decodeExpr (← o.getObjVal? "rhs"))
     if let .ok o := j.getObjVal? "partialCall" then
-      return .partialCall (← decodeExpr (← o.getObjVal? "callee")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeHoleArg) (← fromJson? (← o.getObjVal? "ret")) (← fromJson? (← o.getObjVal? "eff"))
+      return .partialCall (← decodeExpr (← o.getObjVal? "callee")) (← fromJson? (← o.getObjVal? "names")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeHoleArg) (← fromJson? (← o.getObjVal? "ret")) (← fromJson? (← o.getObjVal? "eff"))
     if let .ok o := j.getObjVal? "partialCon" then
       return .partialCon (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeHoleArg)
     if let .ok o := j.getObjVal? "binary" then
@@ -292,7 +291,7 @@ mutual
     if let .ok o := j.getObjVal? "list" then
       return .list (← fromJson? (← o.getObjVal? "elem")) (← (← (← o.getObjVal? "elems").getArr?).toList.mapM decodeExpr)
     if let .ok o := j.getObjVal? "lam" then
-      return .lam (← fromJson? (← o.getObjVal? "params")) (← fromJson? (← o.getObjVal? "ret")) (← fromJson? (← o.getObjVal? "eff")) (← decodeBlock (← o.getObjVal? "body"))
+      return .lam (← fromJson? (← o.getObjVal? "names")) (← fromJson? (← o.getObjVal? "params")) (← fromJson? (← o.getObjVal? "ret")) (← fromJson? (← o.getObjVal? "eff")) (← decodeBlock (← o.getObjVal? "body"))
     if let .ok o := j.getObjVal? "ite" then
       return .ite (← decodeExpr (← o.getObjVal? "cond")) (← decodeBlock (← o.getObjVal? "yes")) (← decodeBlock (← o.getObjVal? "no"))
     if let .ok o := j.getObjVal? "elseIf" then
@@ -322,9 +321,9 @@ mutual
     return .mk (← fromJson? (← j.getObjVal? "op")) (← fromJson? (← j.getObjVal? "arity")) (← fromJson? (← j.getObjVal? "ntys")) (← decodeBlock (← j.getObjVal? "body"))
   partial def decodeHoleArg (j : Json) : Except String HoleArg := do
     if let .ok o := j.getObjVal? "expr" then
-      return .expr (← decodeExpr (← o.getObjVal? "inner"))
+      return .expr (← fromJson? (← o.getObjVal? "label")) (← fromJson? (← o.getObjVal? "position")) (← decodeExpr (← o.getObjVal? "inner"))
     if let .ok o := j.getObjVal? "hole" then
-      return .hole (← fromJson? (← o.getObjVal? "ty"))
+      return .hole (← fromJson? (← o.getObjVal? "label")) (← fromJson? (← o.getObjVal? "position")) (← fromJson? (← o.getObjVal? "ty"))
     throw "unknown HoleArg constructor"
   partial def decodeArm (j : Json) : Except String Arm := do
     if let .ok o := j.getObjVal? "mk" then
@@ -367,7 +366,7 @@ mutual
     | fnRef (name : String) (tys : List Ty) (effs : List Eff)
     | prim (name : String) (tys : List Ty) (effs : List Eff)
     | op (name : String) (tys : List Ty)
-    | lam (params : List Ty) (body : Comp)
+    | lam (names : List String) (params : List Ty) (body : Comp)
     | con (name : String) (tys : List Ty) (args : List Val)
     | list (elems : List Val)
     | dict (name : String) (tys : List Ty) (args : List Val)
@@ -400,7 +399,7 @@ mutual
     | .const value => Json.mkObj [("const", Json.mkObj [("value", toJson value)])]
     | .fnRef name tys effs => Json.mkObj [("fnRef", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs)])]
     | .prim name tys effs => Json.mkObj [("prim", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs)])]
-    | .lam params body => Json.mkObj [("lam", Json.mkObj [("params", toJson params), ("body", encodeComp body)])]
+    | .lam names params body => Json.mkObj [("lam", Json.mkObj [("names", toJson names), ("params", toJson params), ("body", encodeComp body)])]
     | .con name tys args => Json.mkObj [("con", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("args", Json.arr (args.map encodeVal).toArray)])]
     | .list elems => Json.mkObj [("list", Json.mkObj [("elems", Json.arr (elems.map encodeVal).toArray)])]
     | .unsupported name => Json.mkObj [("unsupported", Json.mkObj [("name", toJson name)])]
@@ -438,7 +437,7 @@ mutual
     if let .ok o := j.getObjVal? "prim" then
       return .prim (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs"))
     if let .ok o := j.getObjVal? "lam" then
-      return .lam (← fromJson? (← o.getObjVal? "params")) (← decodeComp (← o.getObjVal? "body"))
+      return .lam (← fromJson? (← o.getObjVal? "names")) (← fromJson? (← o.getObjVal? "params")) (← decodeComp (← o.getObjVal? "body"))
     if let .ok o := j.getObjVal? "con" then
       return .con (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeVal)
     if let .ok o := j.getObjVal? "list" then
@@ -489,6 +488,7 @@ instance : FromJson Comp := ⟨decodeComp⟩
 structure Header where
   tparams : List (Bool × Bool)
   neffs : Nat
+  names : List String
   params : List Ty
   ret : Ty
   eff : Eff
@@ -510,6 +510,7 @@ structure CoreDef where
   deriving BEq, ToJson, FromJson
 /-- 取得関数には表層の本体がない。構成子の宣言から Program が生成する。 -/
 structure RecordConDecl where
+  fields : List String
   data : String
   ntys : Nat
   args : List Ty
@@ -534,6 +535,7 @@ structure EffectEntry where
   deriving ToJson, FromJson
 /-- 組み込みの操作は利用者の表に含めず、節の束縛数の検査に必要な部分だけ持つ。 -/
 structure PrimOpEntry where
+  names : List String
   name : String
   arity : Nat
   ntys : Nat
@@ -566,9 +568,9 @@ structure Input where
   excluded : List String
   definitions : List Definition
   constants : List ConstantEntry
-  ops : List OpEntry := []
-  effects : List EffectEntry := []
-  primOps : List PrimOpEntry := []
+  ops : List OpEntry
+  effects : List EffectEntry
+  primOps : List PrimOpEntry
   classes : List ClassEntry
   impls : List ImplEntry
   deriving ToJson, FromJson

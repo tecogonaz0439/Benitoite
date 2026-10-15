@@ -1,0 +1,1763 @@
+{
+  "files": 53,
+  "candidates": [
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "line": 397,
+      "call": "f(a1: e1, ..., an: en)",
+      "classification": "省略記号を含む名前付きの一般形"
+    },
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "line": 744,
+      "call": "external(\"wasm\", \"パス\", \"名前\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "line": 765,
+      "call": "external(\"wasm\", \"パス\", \"書き出しの名前\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 28,
+      "call": "f(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 83,
+      "call": "Integer.floorDivide(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 341,
+      "call": "Decimal.round(x, places, mode)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 360,
+      "call": "Integer.bitwiseAnd(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 361,
+      "call": "Integer.bitwiseOr(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 362,
+      "call": "Integer.bitwiseExclusiveOr(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 364,
+      "call": "Integer.shiftLeft(a, n)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 365,
+      "call": "Integer.shiftRight(a, n)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 366,
+      "call": "Integer.shiftRightUnsigned(a, n)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 374,
+      "call": "Byte.bitwiseAnd(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 374,
+      "call": "Byte.bitwiseOr(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 374,
+      "call": "Byte.bitwiseExclusiveOr(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 376,
+      "call": "Byte.shiftLeft(a, n)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "line": 377,
+      "call": "Byte.shiftRight(a, n)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/01-spec/01-06-type-system.md",
+      "line": 86,
+      "call": "f(a1: e1, ..., an: en)",
+      "classification": "省略記号を含む名前付きの一般形"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 234,
+      "call": "sel(V, ā, i, K)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 237,
+      "call": "guard(V, ā, i, N)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 242,
+      "call": "sel(V, ā, i, K)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 242,
+      "call": "guard(V, ā, i, N)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 254,
+      "call": "sel(V, ā, 1, K)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 255,
+      "call": "sel(V, ā, i, K)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 255,
+      "call": "sel(V, ā, i+1, K)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 256,
+      "call": "alts(ai, V)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 257,
+      "call": "sel(V, ā, i, K)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 258,
+      "call": "alts(ai, V)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 259,
+      "call": "sel(V, ā, i, K)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 259,
+      "call": "guard(V, ā, i+1, Mi σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 260,
+      "call": "alts(ai, V)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 261,
+      "call": "guard(V, ā, j, N)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 262,
+      "call": "guard(V, ā, j, N)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 262,
+      "call": "sel(V, ā, j, K)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 275,
+      "call": "match(p, V)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 275,
+      "call": "alts(a, V)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 275,
+      "call": "match(pj, V)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 278,
+      "call": "match(_, V)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 279,
+      "call": "match(x, V)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 280,
+      "call": "match(c, c')",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 281,
+      "call": "match(C(p1, …, pn), C[T̄](V1, …, Vn))",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 281,
+      "call": "match(pi, Vi)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 282,
+      "call": "match(c1..c2, c)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 283,
+      "call": "match([p1, …, pm], [V1, …, Vm])",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 283,
+      "call": "match(pi, Vi)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 284,
+      "call": "match([p1, …, pm, .., q1, …, ql], [V1, …, Vn])",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 285,
+      "call": "match(pi, Vi)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 285,
+      "call": "match(qj, Vn−l+j)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 286,
+      "call": "match([p1, …, pm, ..x, q1, …, ql], [V1, …, Vn])",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 353,
+      "call": "f(n1: e1, …, nn: en)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 354,
+      "call": "e0(n1: e1, …, nn: en)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 354,
+      "call": "y(x1, …, xn)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 363,
+      "call": "_T(x, y)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 531,
+      "call": "bytes(k1, …, kn)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 543,
+      "call": "bytes(k1, …, kn)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 558,
+      "call": "concat_T([x1, …, xk], s)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 558,
+      "call": "concat_T(y, [xk+1, …, xn])",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 559,
+      "call": "concat_T(s, [x1, …, xn])",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 560,
+      "call": "concat_T([x1, …, xn], s)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 586,
+      "call": "_String(u1, u2)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 586,
+      "call": "_String(w1, u3)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 586,
+      "call": "_String(wm−2, um)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 586,
+      "call": "_String(u1, u2)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 648,
+      "call": "Cl.m(n1: e1, …, nn: en)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 650,
+      "call": "f(n1: e1, …, nn: en)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 674,
+      "call": "sel(V, ā, i, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 741,
+      "call": "sel(V, ā, i, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 741,
+      "call": "error(r̄, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 745,
+      "call": "error(r, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 747,
+      "call": "error(r, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 748,
+      "call": "error(r̄, F :: K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 748,
+      "call": "error(r̄, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 749,
+      "call": "error(r̄, (release V) :: K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 749,
+      "call": "error(r̄, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 750,
+      "call": "error(r̄, (release V) :: K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 750,
+      "call": "error(r̄ r, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 753,
+      "call": "error(r, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 753,
+      "call": "error(r̄, [], σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 771,
+      "call": "exit(n, r̄, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 773,
+      "call": "exit(n, ·, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 774,
+      "call": "exit(n, r̄, F :: K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 774,
+      "call": "exit(n, r̄, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 775,
+      "call": "exit(n, r̄, (release V) :: K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 775,
+      "call": "exit(n, r̄, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 776,
+      "call": "exit(n, r̄, (release V) :: K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 776,
+      "call": "exit(n, r̄ r, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 780,
+      "call": "exit(n, r̄, [], σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 822,
+      "call": "op(n1: e1, …, nn: en)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 825,
+      "call": "handles(H, op)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 850,
+      "call": "error(r_resume, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 933,
+      "call": "error(r̄, [], σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 933,
+      "call": "exit(n, r̄, [], σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 947,
+      "call": "guard(V, ā, j, N)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 950,
+      "call": "sel(V, ā, i, K)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 998,
+      "call": "guard(V, ā, j, N)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 1011,
+      "call": "sel(V, ā, i, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 1011,
+      "call": "error(r̄, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 1011,
+      "call": "exit(n, r̄, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/02-impl/02-05-typechecker.md",
+      "line": 216,
+      "call": "f(n1: a1, …, nn: an)",
+      "classification": "省略記号を含む名前付きの一般形"
+    },
+    {
+      "path": "docs/design/02-impl/02-06-ir-and-lowering.md",
+      "line": 128,
+      "call": "Cl.m(n1: e1, …, nn: en)",
+      "classification": "省略記号を含む名前付きの一般形"
+    },
+    {
+      "path": "docs/design/02-impl/02-07-bytecode.md",
+      "line": 134,
+      "call": "_T(V, W)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/02-impl/02-07-bytecode.md",
+      "line": 136,
+      "call": "Reference.update(V, W)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/02-impl/02-08-vm.md",
+      "line": 420,
+      "call": "error(r̄, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/02-impl/02-08-vm.md",
+      "line": 420,
+      "call": "exit(n, r̄, K, σ)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/02-impl/02-09-runtime.md",
+      "line": 31,
+      "call": "max(4 MiB, k × L)",
+      "classification": "コア・下位 IR・数式の記法"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 17,
+      "call": "f(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 115,
+      "call": "Integer.floorDivide(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 116,
+      "call": "Integer.floorModulo(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 118,
+      "call": "Integer.minimum(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 119,
+      "call": "Integer.maximum(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 136,
+      "call": "U.minimum(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 136,
+      "call": "U.maximum(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 137,
+      "call": "U.floorDivide(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 138,
+      "call": "U.floorModulo(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 206,
+      "call": "String.contains(s, part)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 207,
+      "call": "String.startsWith(s, prefix)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 208,
+      "call": "String.endsWith(s, suffix)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 209,
+      "call": "String.byteIndexOf(s, part)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 210,
+      "call": "String.split(s, separator)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 212,
+      "call": "String.join(xs, separator)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 214,
+      "call": "String.replace(s, old, new)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 215,
+      "call": "String.repeat(s, n)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 238,
+      "call": "List.get(xs, i)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 239,
+      "call": "List.prepend(xs, x)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 240,
+      "call": "List.append(xs, x)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 241,
+      "call": "List.concatenate(xs, ys)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 243,
+      "call": "List.take(xs, n)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 244,
+      "call": "List.drop(xs, n)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 245,
+      "call": "List.range(start, stop)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 246,
+      "call": "List.contains(xs, x)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 248,
+      "call": "List.map(xs, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 249,
+      "call": "List.filter(xs, p)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 250,
+      "call": "List.fold(xs, initial, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 251,
+      "call": "List.forEach(xs, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 252,
+      "call": "List.any(xs, p)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 253,
+      "call": "List.all(xs, p)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 254,
+      "call": "List.find(xs, p)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 272,
+      "call": "Option.map(o, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 273,
+      "call": "Option.andThen(o, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 274,
+      "call": "Option.unwrapOr(o, fallback)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 277,
+      "call": "Option.okOr(o, error)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 285,
+      "call": "Result.map(r, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 286,
+      "call": "Result.mapError(r, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 287,
+      "call": "Result.andThen(r, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 288,
+      "call": "Result.unwrapOr(r, fallback)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 336,
+      "call": "Map.get(m, k)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 337,
+      "call": "Map.set(m, k, value)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 338,
+      "call": "Map.remove(m, k)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 339,
+      "call": "Map.contains(m, k)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 349,
+      "call": "Set.contains(s, x)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 350,
+      "call": "Set.add(s, x)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 351,
+      "call": "Set.remove(s, x)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 353,
+      "call": "Set.union(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 353,
+      "call": "Set.intersection(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 353,
+      "call": "Set.difference(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 361,
+      "call": "Map.map(m, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 362,
+      "call": "Map.filter(m, p)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 363,
+      "call": "Map.fold(m, initial, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 364,
+      "call": "Map.forEach(m, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 365,
+      "call": "Set.map(s, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 366,
+      "call": "Set.filter(s, p)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 367,
+      "call": "Set.fold(s, initial, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 368,
+      "call": "Set.forEach(s, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 398,
+      "call": "Bytes.get(b, i)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 399,
+      "call": "Bytes.slice(b, start, stop)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 400,
+      "call": "Bytes.concatenate(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 401,
+      "call": "Bytes.readUnsigned(b, offset, count, order)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 402,
+      "call": "Bytes.readSigned(b, offset, count, order)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 403,
+      "call": "Bytes.fromUnsigned(n, count, order)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 404,
+      "call": "Bytes.fromSigned(n, count, order)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 438,
+      "call": "f(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 484,
+      "call": "combine(x, y)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 495,
+      "call": "Functor.map(x, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 497,
+      "call": "Applicative.apply(fs, x)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 498,
+      "call": "Monad.flatMap(x, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 499,
+      "call": "Foldable.fold(x, initial, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "line": 500,
+      "call": "Traversable.traverse(x, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 17,
+      "call": "f(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 97,
+      "call": "File.writeText(path, text)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 98,
+      "call": "File.writeBytes(path, content)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 99,
+      "call": "File.appendText(path, text)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 100,
+      "call": "File.appendBytes(path, content)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 104,
+      "call": "File.rename(from, to)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 105,
+      "call": "File.copy(from, to)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 133,
+      "call": "File.readChunk(reader, maximumBytes)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 135,
+      "call": "File.openWriter(path, mode)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 136,
+      "call": "File.write(writer, text)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 137,
+      "call": "File.writeLine(writer, text)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 138,
+      "call": "File.writeChunk(writer, content)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 241,
+      "call": "Random.integer(low, high)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 247,
+      "call": "Random.nextInteger(generator, low, high)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "line": 249,
+      "call": "Random.shuffleWith(generator, xs)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 15,
+      "call": "f(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 54,
+      "call": "Path.join(base, child)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 60,
+      "call": "Path.withExtension(p, extension)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 102,
+      "call": "Json.get(value, k)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 103,
+      "call": "Json.at(value, index)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 140,
+      "call": "Regex.isMatch(pattern, text)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 141,
+      "call": "Regex.find(pattern, text)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 142,
+      "call": "Regex.findAll(pattern, text)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 146,
+      "call": "Regex.group(m, index)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 147,
+      "call": "Regex.namedGroup(m, name)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 148,
+      "call": "Regex.replaceFirst(pattern, text, replacement)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 149,
+      "call": "Regex.replaceAll(pattern, text, replacement)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 150,
+      "call": "Regex.replaceAllWith(pattern, text, f)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 151,
+      "call": "Regex.split(pattern, text)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 188,
+      "call": "Csv.parseWith(text, delimiter)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 191,
+      "call": "Csv.formatWith(rows, delimiter)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 232,
+      "call": "Time.addMilliseconds(t, milliseconds)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 233,
+      "call": "Time.differenceMilliseconds(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 234,
+      "call": "Time.toDateTime(t, offsetMinutes)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 236,
+      "call": "Time.formatISO8601(t, offsetMinutes)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "line": 238,
+      "call": "Time.format(t, offsetMinutes, pattern)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "line": 15,
+      "call": "f(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "line": 80,
+      "call": "Http.serve(host, port, handler)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "line": 81,
+      "call": "Http.listen(host, port)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "line": 85,
+      "call": "Http.respond(exchange, response)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "line": 159,
+      "call": "Http.text(status, s)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "line": 160,
+      "call": "Http.html(status, s)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "line": 161,
+      "call": "Http.json(status, value)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "line": 163,
+      "call": "Http.header(headers, name)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 21,
+      "call": "external(\"wasm\", \"コンポーネントのパス\", \"関数の名前\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 24,
+      "call": "external(\"wasm\", \"wasm/fuzzy.wasm\", \"distance\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 31,
+      "call": "external(\"wasm\", \"wasm/calc.wasm\", \"bnt:test/api@1.2.0#add\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 35,
+      "call": "external(\"wasm\", \"パス\", \"インターフェース#resource\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 38,
+      "call": "external(\"wasm\", \"wasm/counter.wasm\", \"bnt:test/counter@0.1.0#cell\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 40,
+      "call": "external(\"wasm\", \"wasm/counter.wasm\", \"bnt:test/counter@0.1.0#[constructor]cell\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 138,
+      "call": "external(\"wasm\", \"generic.wasm\", \"box\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 140,
+      "call": "external(\"wasm\", \"generic.wasm\", \"nested\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 150,
+      "call": "external(\"wasm\", \"flags.wasm\", \"f1\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 157,
+      "call": "external(\"wasm\", \"maps.wasm\", \"result\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 167,
+      "call": "external(\"wasm\", \"tuples.wasm\", \"tuple4\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "line": 178,
+      "call": "external(\"wasm\", \"variants.wasm\", \"fields\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/06-tooling/06-04-test-runner.md",
+      "line": 16,
+      "call": "f(a, b)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/06-tooling/06-04-test-runner.md",
+      "line": 50,
+      "call": "Assert.equal(actual, expected)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/06-tooling/06-04-test-runner.md",
+      "line": 51,
+      "call": "Assert.notEqual(actual, expected)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/06-tooling/06-04-test-runner.md",
+      "line": 52,
+      "call": "Assert.isTrue(condition, message)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/design/07-quality/07-03-compiler-testing.md",
+      "line": 291,
+      "call": "cfg_attr(not(miri), ignore = \"long: ...\")",
+      "classification": "Rust の属性"
+    },
+    {
+      "path": "docs/design/08-appendix/08-03-language-surveys.md",
+      "line": 24,
+      "call": "m(e, args)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-03-language-surveys.md",
+      "line": 239,
+      "call": "Deno.test(\"name\", fn)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-03-language-surveys.md",
+      "line": 1193,
+      "call": "external(erlang, \"m\", \"f\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/design/08-appendix/08-03-language-surveys.md",
+      "line": 1202,
+      "call": "Deno.dlopen(path, {…})",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 61,
+      "call": "add(1, 2)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 62,
+      "call": "add(1, 2)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 63,
+      "call": "add(1, 2)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 64,
+      "call": "add(1, 2)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 65,
+      "call": "add(1, 2)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 478,
+      "call": "fn(x, y)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 478,
+      "call": "add(1, _)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 479,
+      "call": "add(1, y)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 481,
+      "call": "add(1, _)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 482,
+      "call": "add(1, y)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "line": 486,
+      "call": "add(1, _)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "docs/design/README.md",
+      "line": 19,
+      "call": "String.split(s, separator)",
+      "classification": "関数一覧の略記（名前付きで呼ぶ旨を明記）"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1028,
+      "call": "List.map(xs, action)",
+      "classification": "移行前を明示した例"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1187,
+      "call": "external(\"wasm\", \"wasm/fuzzy.wasm\", \"distance\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1234,
+      "call": "external(\"wasm\", \"generic.wasm\", \"box\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1236,
+      "call": "external(\"wasm\", \"generic.wasm\", \"nested\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1242,
+      "call": "external(\"wasm\", \"flags.wasm\", \"f1\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1245,
+      "call": "external(\"wasm\", \"maps.wasm\", \"result\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1251,
+      "call": "external(\"wasm\", \"tuples.wasm\", \"tuple4\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1258,
+      "call": "external(\"wasm\", \"variants.wasm\", \"fields\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1262,
+      "call": "value(tuple<s64, s64>)",
+      "classification": "WIT の記法"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1269,
+      "call": "external(\"wasm\", \"wasm/counter.wasm\", \"bnt:test/counter@0.1.0#cell\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1271,
+      "call": "external(\"wasm\", \"wasm/counter.wasm\", \"bnt:test/counter@0.1.0#[constructor]cell\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1273,
+      "call": "external(\"wasm\", \"wasm/counter.wasm\", \"bnt:test/counter@0.1.0#[method]cell.bump\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "line": 103,
+      "call": "external(\"wasm\", \"path.wasm\", \"export\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "line": 683,
+      "call": "external(\"wasm\", \"generic.wasm\", \"box\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "line": 685,
+      "call": "external(\"wasm\", \"generic.wasm\", \"nested\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "line": 691,
+      "call": "external(\"wasm\", \"flags.wasm\", \"f1\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "line": 694,
+      "call": "external(\"wasm\", \"maps.wasm\", \"result\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "line": 700,
+      "call": "external(\"wasm\", \"tuples.wasm\", \"tuple4\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "line": 707,
+      "call": "external(\"wasm\", \"variants.wasm\", \"fields\")",
+      "classification": "属性（名前付き呼び出しの対象外）"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "line": 711,
+      "call": "value(tuple<s64, s64>)",
+      "classification": "WIT の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/common-mistakes.md",
+      "line": 400,
+      "call": "Console.writeLine(\"${next(1)} ${String.join(xs: List.map(xs: doubled, f: lambda(value) return Integer.toString(value)), separator: \",\")}\")",
+      "classification": "文字列補間内のコンマによる候補（通常呼び出しは一引数）"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 41,
+      "call": "math.fmod(7, 2)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 52,
+      "call": "dataclasses.replace(p, age=3)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 67,
+      "call": "range(0, 20)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 117,
+      "call": "print(s, end=\"\")",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 129,
+      "call": "functools.reduce(f, xs, init)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 129,
+      "call": "xs.reduce(f, init)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 131,
+      "call": "range(a, b)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 139,
+      "call": "m.set(k, v)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 139,
+      "call": "m.insert(k, v)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 141,
+      "call": "fs.readFileSync(p, \"utf8\")",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 142,
+      "call": "open(p, \"w\")",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 142,
+      "call": "fs.writeFileSync(p, s)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 142,
+      "call": "write(p, s)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 147,
+      "call": "execFileSync(\"ls\", [\"-l\"])",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 148,
+      "call": "subprocess.run(s, shell=True)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 153,
+      "call": "random.randint(1, 6)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 156,
+      "call": "assert.equal(a, b)",
+      "classification": "比較用の他言語の記法"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 172,
+      "call": "counts.get(word, 0)",
+      "classification": "比較用の他言語の記法"
+    }
+  ]
+}

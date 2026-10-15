@@ -1,0 +1,25 @@
+{
+  "path": "crates/benitoite/tests/desugar_export/check_named.py",
+  "require_calls_before": 65,
+  "require_calls_after": 65,
+  "require_arguments_unchanged": true,
+  "mutation_modes_unchanged": {
+    "check_program_rejections": [
+      [
+        "hole-label",
+        "hole-position",
+        "hole-contract",
+        "hole-order",
+        "pipe-label",
+        "pipe-position"
+      ]
+    ],
+    "check_special_rejections": [
+      [
+        "method-user",
+        "method-dictionary",
+        "operation"
+      ]
+    ]
+  }
+}

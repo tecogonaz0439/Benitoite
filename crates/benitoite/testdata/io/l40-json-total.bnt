@@ -5,13 +5,13 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.Json
 function totalAmount(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
-  bind items <- Json.asArray(value) |> Option.unwrapOr(_, [])
-  return Result.Ok(List.fold(items, 0, lambda(sum, item)
-    return match Json.get(item, "amount") with
-      case Option.Some(Json.Value.Integer(n)) -> sum + n
-      case _ -> sum
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  bind document <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+  bind items <- Json.asArray(document) |> Option.unwrapOr(o: _, fallback: [])
+  return Result.Ok(List.fold(xs: items, initial: 0, f: lambda(acc, value)
+    return match Json.get(value: value, k: "amount") with
+      case Option.Some(Json.Value.Integer(n)) -> acc + n
+      case _ -> acc
     end match
   end lambda))
 end function

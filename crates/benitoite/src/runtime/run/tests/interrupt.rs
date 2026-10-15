@@ -84,7 +84,7 @@ fn implicit_calls_observe_the_flag_before_running_the_body() {
         "function f() -> Unit\n return ()\nend function\nfunction main() -> Unit\n f()\n return ()\nend function\n",
         "function f() -> Unit\n return ()\nend function\nfunction main() -> Unit\n return f()\nend function\n",
         "function main() -> Unit\n bind v <- lazy () end lazy\n return Lazy.force(v)\nend function\n",
-        "function main() -> Unit uses State\n bind c <- Reference.new(0)\n bind _ <- Reference.update(c, lambda(n) return n + 1 end lambda)\n return ()\nend function\n",
+        "function main() -> Unit uses State\n bind c <- Reference.new(0)\n bind _ <- Reference.update(reference: c, f: lambda(value) return value + 1 end lambda)\n return ()\nend function\n",
         "effect Probe\n function ask() -> Unit\nend effect\nfunction main() -> Unit\n return handle ask() with case ask() -> resume(()) end handle\nend function\n",
     ];
     for source in sources {

@@ -114,9 +114,23 @@ pub enum Ty {
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct FnTy {
+    /// params と同じ長さで、一意な契約名を宣言順に並べる。
+    pub param_names: Vec<String>,
     pub params: Vec<Ty>,
     pub ret: Ty,
     pub effects: EffectSet,
+}
+
+impl FnTy {
+    pub(crate) fn valid_contract(&self) -> bool {
+        self.param_names.len() == self.params.len()
+            && self
+                .param_names
+                .iter()
+                .collect::<std::collections::BTreeSet<_>>()
+                .len()
+                == self.param_names.len()
+    }
 }
 
 /// 多相な名前の型パラメータに与える引数一つ。
@@ -137,7 +151,7 @@ pub struct TypeArgs {
 }
 
 /// 型パラメータの形（01-06「高カインド型（初回リリース版）」）。
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum ParamKind {
     /// 値の型
     Value,
@@ -146,7 +160,7 @@ pub enum ParamKind {
 }
 
 /// 型パラメータの情報。
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct TypeParamInfo {
     pub name: String,
     pub kind: ParamKind,
@@ -156,7 +170,7 @@ pub struct TypeParamInfo {
 }
 
 /// 型クラスの制約一つ（`[T: Show]`）。辞書の引数一つに当たる。
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct ClassConstraint {
     /// 制約を付けた型パラメータの番号
     pub param: u32,
@@ -165,8 +179,10 @@ pub struct ClassConstraint {
 }
 
 /// 多相な名前の宣言の型（02-05「出力」の「宣言の型」）。
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct Scheme {
+    /// params と同じ長さで、一意な契約名を宣言順に並べる。
+    pub param_names: Vec<String>,
     pub type_params: Vec<TypeParamInfo>,
     /// エフェクト変数の名前（番号の順）
     pub effect_params: Vec<String>,
@@ -183,6 +199,7 @@ impl Scheme {
     /// 関数の型として見た型（型パラメータは置き換えない）。
     pub fn fn_ty(&self) -> Ty {
         Ty::Fn(Box::new(FnTy {
+            param_names: self.param_names.clone(),
             params: self.params.clone(),
             ret: self.ret.clone(),
             effects: self.effects.clone(),
@@ -446,6 +463,7 @@ impl Ty {
         match self {
             Ty::Con(con, args) => Ty::Con(*con, args.iter().map(|t| t.subst(tys, effs)).collect()),
             Ty::Fn(f) => Ty::Fn(Box::new(FnTy {
+                param_names: f.param_names.clone(),
                 params: f.params.iter().map(|t| t.subst(tys, effs)).collect(),
                 ret: f.ret.subst(tys, effs),
                 effects: f.effects.subst(effs),
@@ -466,7 +484,7 @@ impl Ty {
             Ty::Rigid { .. } => self.clone(),
         }
     }
-    /// 型を診断に示す形にする（`List[Integer]`、`function(Integer) -> Integer uses Console.Write`）。
+    /// 型を診断に示す形にする（`List[Integer]`、`function(value: Integer) -> Integer uses Console.Write`）。
     pub fn show(&self, names: &TyNames<'_>) -> String {
         let mut out = String::new();
         show_ty(self, names, &mut out);
@@ -562,6 +580,8 @@ fn show_ty(ty: &Ty, names: &TyNames<'_>, out: &mut String) {
                 if i != 0 {
                     out.push_str(", ");
                 }
+                out.push_str(f.param_names.get(i).map_or("_", String::as_str));
+                out.push_str(": ");
                 show_ty(ty, names, out);
             }
             out.push_str(") -> ");
@@ -718,6 +738,7 @@ mod tests {
 
     fn show_effects(effects: EffectSet) -> String {
         Ty::Fn(Box::new(FnTy {
+            param_names: Vec::new(),
             params: vec![],
             ret: integer(),
             effects,
@@ -758,6 +779,7 @@ mod tests {
         }
         assert_eq!(effects.subst(&effs), expected);
         let ty = Ty::Fn(Box::new(FnTy {
+            param_names: vec!["value".into(), "items".into(), "extra".into()],
             params: vec![
                 Ty::Param(0),
                 Ty::App(1, vec![Ty::Param(2)]),
@@ -787,6 +809,7 @@ mod tests {
             assert_eq!(
                 result,
                 Ty::Fn(Box::new(FnTy {
+                    param_names: vec!["value".into(), "items".into(), "extra".into()],
                     params: vec![Ty::Param(2), applied, Ty::App(4, vec![Ty::Param(2)])],
                     ret: Ty::Rigid {
                         clause: NodeId(8),
@@ -797,6 +820,42 @@ mod tests {
             );
         }
         assert_eq!(Ty::Param(9).subst(&[], &[]), Ty::Param(9));
+    }
+
+    #[test]
+    fn function_contracts_affect_structure_hash_and_display() {
+        use std::collections::HashSet;
+        let f = FnTy {
+            param_names: vec!["left".into(), "right".into()],
+            params: vec![integer(), integer()],
+            ret: integer(),
+            effects: EffectSet::empty(),
+        };
+        let mut reversed = f.clone();
+        reversed.param_names.reverse();
+        let mut third = f.clone();
+        third.param_names = vec!["left".into(), "other".into()];
+        let mut renamed = third.clone();
+        renamed.param_names = vec!["a".into(), "b".into()];
+        let types: HashSet<_> = [f.clone(), reversed, third, renamed]
+            .into_iter()
+            .map(|f| Ty::Fn(Box::new(f)))
+            .collect();
+        assert_eq!(types.len(), 4);
+        let bindings = BindingMap::default();
+        let effects = BindingMap::default();
+        let adts = AdtTable::default();
+        let names = TyNames {
+            bindings: &bindings,
+            effects: &effects,
+            adts: &adts,
+            type_params: &[],
+            effect_params: &[],
+        };
+        assert_eq!(
+            Ty::Fn(Box::new(f)).show(&names),
+            "function(left: Integer, right: Integer) -> Integer"
+        );
     }
 
     #[test]

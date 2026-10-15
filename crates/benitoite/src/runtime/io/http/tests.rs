@@ -1099,8 +1099,8 @@ import Benitoite.Unofficial.Network.Http
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Clock
 function main() -> Result[Unit, String] uses Http.Listen, Console.Write, Clock.Time, State
-  with listener = try Result.mapError(Http.listen("fake", 0), NetworkError.message), group = TaskGroup.open() do
-    bind child <- TaskGroup.spawn(group, lambda()
+  with listener = try Result.mapError(r: Http.listen(host: "fake", port: 0), f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+    bind child <- TaskGroup.spawn(group: group, action: lambda()
       bind _ <- Clock.sleep(1)
       bind _ <- Console.writeLine("child")
       return ()
@@ -1290,8 +1290,8 @@ fn closing_listener_wakes_parked_accept_without_waiting_for_retry_deadline() {
 import Benitoite.Unofficial.Network.Http
 import Benitoite.Unofficial.IO.Clock
 function main() -> Result[Unit, String] uses Http.Listen, Clock.Time, State
- with listener = try Http.listen("fake", 0) |> Result.mapError(_, NetworkError.message), group = TaskGroup.open() do
-  bind _ <- TaskGroup.spawn(group, lambda()
+ with listener = try Http.listen(host: "fake", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+  bind _ <- TaskGroup.spawn(group: group, action: lambda()
    Clock.sleep(1)
    bind _ <- Http.closeListener(listener)
    return ()

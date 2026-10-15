@@ -5,16 +5,16 @@ import Benitoite.Trait
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.Json
 function main() -> Result[Unit, String] uses Console.Write
-  bind value <- try Json.parse(r"[-0,-0.0,1.0,1e2]") |> Result.mapError(_, Json.ParseError.message)
+  bind value <- try Json.parse(r"[-0,-0.0,1.0,1e2]") |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
   Console.writeLine(Json.stringify(value))
-  Console.writeLine(Trait.Show.show(Option.andThen(Json.at(value, 0), Json.asInteger)))
-  Console.writeLine(Trait.Show.show(Option.andThen(Json.at(value, 2), Json.asInteger)))
-  Console.writeLine(Trait.Show.show(Option.andThen(Json.at(value, 3), Json.asFloat)))
-  bind object <- try Json.parse("{\"z\":1,\"a\":true,\"z\":2}") |> Result.mapError(_, Json.ParseError.message)
+  Console.writeLine(Trait.Show.show(Option.andThen(o: Json.at(value: value, index: 0), f: Json.asInteger)))
+  Console.writeLine(Trait.Show.show(Option.andThen(o: Json.at(value: value, index: 2), f: Json.asInteger)))
+  Console.writeLine(Trait.Show.show(Option.andThen(o: Json.at(value: value, index: 3), f: Json.asFloat)))
+  bind object <- try Json.parse("{\"z\":1,\"a\":true,\"z\":2}") |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
   Console.writeLine(Json.stringifyPretty(object))
-  Console.writeLine(Trait.Show.show(Option.andThen(Json.get(object, "a"), Json.asBoolean)))
-  Console.writeLine(Trait.Show.show(Json.get(object, "missing") = Option.None and Json.at(value, 4) = Option.None))
-  bind again <- try Json.parse(Json.stringify(value)) |> Result.mapError(_, Json.ParseError.message)
+  Console.writeLine(Trait.Show.show(Option.andThen(o: Json.get(value: object, k: "a"), f: Json.asBoolean)))
+  Console.writeLine(Trait.Show.show(Json.get(value: object, k: "missing") = Option.None and Json.at(value: value, index: 4) = Option.None))
+  bind again <- try Json.parse(Json.stringify(value)) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
   Console.writeLine(Trait.Show.show(value = again))
   return Result.Ok(())
 end function

@@ -104,7 +104,7 @@ impl Ty {
             Self::Pair => "Pair[Integer, String]",
             Self::Triple => "Triple[Integer, Boolean, String]",
             Self::Lazy => "Lazy[Integer]",
-            Self::Function => "function(Integer) -> Integer",
+            Self::Function => "function(value: Integer) -> Integer",
         }
     }
 }
@@ -130,7 +130,7 @@ impl Random {
 struct Generator {
     random: Random,
     coverage: Coverage,
-    declarations: BTreeMap<&'static str, String>,
+    declarations: BTreeMap<String, String>,
     bindings: Vec<(String, Ty)>,
     next_name: usize,
     nodes: usize,
@@ -150,9 +150,9 @@ impl Generator {
         self.hit("integer");
         (i64::try_from(self.random.below(65)).unwrap() - 32).to_string()
     }
-    fn declaration(&mut self, key: &'static str, source: &str) {
+    fn declaration(&mut self, key: &str, source: &str) {
         self.declarations
-            .entry(key)
+            .entry(key.into())
             .or_insert_with(|| source.into());
     }
     fn error_result(&mut self) {
@@ -176,7 +176,7 @@ impl Generator {
     fn recursion(&mut self) {
         self.hit("function");
         self.hit("recursion");
-        self.declaration("recur", "function recur(fuel: Integer, value: Integer) -> Integer\n  if fuel <= 0 then return value end if\n  return recur(fuel - 1, (value + fuel) mod 97)\nend function\n");
+        self.declaration("recur", "function recur(fuel: Integer, value: Integer) -> Integer\n  if fuel <= 0 then return value end if\n  return recur(fuel: fuel - 1, value: (value + fuel) mod 97)\nend function\n");
         self.declaration("unwind", "function unwind(fuel: Integer) -> Integer\n  if fuel <= 0 then return 0 end if\n  return 1 + unwind(fuel - 1)\nend function\n");
     }
     fn constant(&mut self) -> String {
@@ -269,8 +269,9 @@ impl Generator {
             Ty::Function => {
                 self.hit("lambda");
                 {
-                    let x = self.fresh();
-                    format!("lambda({x}: Integer) -> Integer return {x} end lambda")
+                    let _ = self.fresh();
+                    self.declaration("identity", "function makeIdentity() -> function(value: Integer) -> Integer\n return lambda(value: Integer) -> Integer return value end lambda\nend function\n");
+                    "makeIdentity()".into()
                 }
             }
         }
@@ -425,15 +426,34 @@ impl Generator {
                 self.hit("lambda");
                 self.hit("closure");
                 let captured = self.expr(Ty::Integer, depth);
+                let environment = self.bindings.clone();
                 let name = self.fresh();
                 self.bindings.push((name.clone(), Ty::Integer));
                 let body = self.expr(Ty::Integer, depth);
                 self.bindings.pop();
                 {
                     let capture = self.fresh();
-                    format!(
-                        "(lambda({capture}: Integer) -> function(Integer) -> Integer\nreturn lambda({name}: Integer) -> Integer\nreturn ({body} + {capture}) mod 101\nend lambda\nend lambda)({captured})"
-                    )
+                    // 関数型の契約名を揃えつつ、入れ子のラムダの同名隠蔽を避ける。
+                    // 自由変数を生成関数へ渡し、戻したラムダで捕捉する（設計書 01-02「ラムダ」）。
+                    let factory = format!("make{capture}");
+                    let mut params = environment
+                        .iter()
+                        .map(|(name, ty)| format!("{name}: {}", ty.name()))
+                        .collect::<Vec<_>>();
+                    params.push(format!("{capture}: Integer"));
+                    self.declaration(&factory, &format!(
+                        "function {factory}({}) -> function(value: Integer) -> Integer\nreturn lambda(value: Integer) -> Integer\nbind {name} <- value\nreturn ({body} + {capture}) mod 101\nend lambda\nend function\n", params.join(", ")
+                    ));
+                    if environment.is_empty() {
+                        format!("{factory}({captured})")
+                    } else {
+                        let mut args = environment
+                            .iter()
+                            .map(|(name, _)| format!("{name}: {name}"))
+                            .collect::<Vec<_>>();
+                        args.push(format!("{capture}: {captured}"));
+                        format!("{factory}({})", args.join(", "))
+                    }
                 }
             }
         }
@@ -467,7 +487,7 @@ impl Generator {
                 let fuel = self.random.below(MAX_FUEL + 1);
                 let a = self.expr(Ty::Integer, depth);
                 if self.random.below(2) == 0 {
-                    format!("recur({fuel}, {a})")
+                    format!("recur(fuel: {fuel}, value: {a})")
                 } else {
                     format!("unwind({fuel})")
                 }
@@ -528,7 +548,9 @@ impl Generator {
         let text = match ty {
             Ty::Integer | Ty::Boolean | Ty::String => format!("\"${{{name}}}\""),
             Ty::List => {
-                format!("\"[\" + String.join(List.map({name}, Integer.toString), \",\") + \"]\"")
+                format!(
+                    "\"[\" + String.join(xs: List.map(xs: {name}, f: lambda(value) return Integer.toString(value) end lambda), separator: \",\") + \"]\""
+                )
             }
             Ty::Option => {
                 self.option_text();
@@ -654,7 +676,7 @@ impl Generator {
                 self.hit("handler-state");
                 self.hit("reference-set");
                 self.hit("reference-get");
-                format!("Reference.set(cell, Reference.get(cell) + {amount})\n")
+                format!("Reference.set(reference: cell, value: Reference.get(cell) + {amount})\n")
             } else {
                 String::new()
             };
@@ -684,7 +706,7 @@ impl Generator {
         let value = self.expr(Ty::Integer, 2);
         let update = self.expr(Ty::Integer, 2);
         let mut out = format!(
-            "bind delayed <- lazy {value} end lazy\nbind cell <- Reference.new(Lazy.force(delayed))\nbind alias <- cell\nConsole.writeLine(Integer.toString(Reference.get(alias)))\nReference.update(cell, lambda(x: Integer) -> Integer return (x + {update}) mod 97 end lambda)\nConsole.writeLine(Integer.toString(Reference.get(alias)))\nReference.set(alias, Lazy.force(delayed))\nConsole.writeLine(Integer.toString(Reference.get(cell)))\n"
+            "bind delayed <- lazy {value} end lazy\nbind cell <- Reference.new(Lazy.force(delayed))\nbind alias <- cell\nConsole.writeLine(Integer.toString(Reference.get(alias)))\nReference.update(reference: cell, f: lambda(value: Integer) -> Integer\n return (value + {update}) mod 97 end lambda)\nConsole.writeLine(Integer.toString(Reference.get(alias)))\nReference.set(reference: alias, value: Lazy.force(delayed))\nConsole.writeLine(Integer.toString(Reference.get(cell)))\n"
         );
         out.push_str(&self.handlers(true));
         out.push_str("Console.writeLine(Integer.toString(Reference.get(alias)))\n");
@@ -939,7 +961,7 @@ function formalExtensions(n: Integer, xs: List[Integer]) -> String
   end match
 end function
 function formalExtensionsUse() -> String
-  return formalExtensions({n}, [{n}, {n} + 1])
+  return formalExtensions(n: {n}, xs: [{n}, {n} + 1])
 end function
 "#
     )
@@ -952,8 +974,13 @@ fn formal_direct_calls(seed: u64, coverage: &mut Coverage) -> String {
     let amount = random.below(19);
     let mut calls = String::new();
     for (index, (head, args, rest, input)) in [
-        ("formalBoth", "x,y", "y", "x"),
-        ("FormalChoose.choose", "x,y,x,identity", "y,x,identity", "x"),
+        ("formalBoth", "x: x,y: y", "y: y", "x"),
+        (
+            "FormalChoose.choose",
+            "x: x,y: y,z: x,f: identity",
+            "y: y,z: x,f: identity",
+            "x",
+        ),
         ("FormalIdentity.echo", "x", "", "x"),
         ("formalRender", "x", "", "x"),
         ("FormalRelay.relay", "paired", "", "paired"),
@@ -970,7 +997,7 @@ fn formal_direct_calls(seed: u64, coverage: &mut Coverage) -> String {
         let hole_args = if rest.is_empty() {
             "_".to_owned()
         } else {
-            format!("_,{rest}")
+            format!("x: _,{rest}")
         };
         calls.push_str(&format!("bind part{index} <- {head}({hole_args})\nbind _ <- part{index}({input})\nbind _ <- {input} |> {head}({hole_args})\n"));
         calls.push_str(&format!("bind parenPart{index} <- ({head})({hole_args})\nbind _ <- parenPart{index}({input})\nbind _ <- {input} |> ({head})({hole_args})\n"));
@@ -1005,7 +1032,7 @@ function formalRender[A: FormalIdentity & FormalStrong](x: A) -> A
   bind _ <- FormalIdentity.echo(x)
   return FormalStrong.strong(x)
 end function
-function formalDirect[A: FormalIdentity & FormalStrong & FormalChoose & FormalRelay, B: FormalIdentity, effect E](x: A, y: B, identity: function(B) -> B uses E) -> A uses E
+function formalDirect[A: FormalIdentity & FormalStrong & FormalChoose & FormalRelay, B: FormalIdentity, effect E](x: A, y: B, identity: function(value: B) -> B uses E) -> A uses E
   bind paired <- Pair(x,y)
   {calls}
   return x
@@ -1013,7 +1040,7 @@ end function
 function formalDirectUse() -> Option[Integer]
   bind x <- Option.Some({amount})
   bind y <- Option.Some("direct")
-  return formalDirect(x,y,lambda(v: Option[String]) return v end lambda)
+  return formalDirect(x: x,y: y,identity: lambda(value: Option[String]) return value end lambda)
 end function
 "#
     )
@@ -1069,9 +1096,9 @@ end function
 function formalHandle(n: Integer) -> Integer
   return handle
     bind operation <- formalAsk
-    bind part <- formalAsk(n, _)
-    bind x <- operation(n, part(2))
-    n |> formalAsk(x)
+    bind part <- formalAsk(left: n, right: _)
+    bind x <- operation(left: n, right: part(2))
+    n |> formalAsk(right: x)
   with
     case formalAsk(x, _) ->
       bind f <- lambda(z: Integer) return z + n end lambda
@@ -1080,11 +1107,11 @@ function formalHandle(n: Integer) -> Integer
   end handle
 end function
 function formalNested(n: Integer) -> Integer
-  return handle formalAsk(n, 1) with
+  return handle formalAsk(left: n, right: 1) with
     case formalAsk(x, _) ->
       bind saved <- n + {amount}
       handle
-        bind _ <- formalAsk(x, saved)
+        bind _ <- formalAsk(left: x, right: saved)
         resume(x)
       with
         case formalAsk(_, y) -> resume(y + saved)
@@ -1113,7 +1140,7 @@ function formalRigid[A](input: Option[A]) -> Option[A]
     case formalEcho(x) ->
       bind saved <- x
       handle
-        bind _ <- formalPick(x, input, 0)
+        bind _ <- formalPick(first: x, second: input, ignored: 0)
         resume(saved)
       with
         case formalPick(_, second, _) ->
@@ -1127,9 +1154,9 @@ function formalRigid[A](input: Option[A]) -> Option[A]
   end handle
 end function
 function formalPlaceholder(n: Integer) -> Integer
-  bind f <- formalAdd(handle formalAsk(n, 0) with
+  bind f <- formalAdd(left: handle formalAsk(left: n, right: 0) with
     case formalAsk(x, _) -> resume(x)
-  end handle, _)
+  end handle, right: _)
   return f({amount})
 end function
 "#
@@ -1145,14 +1172,14 @@ fn formal_placeholder_escapes(seed: u64, coverage: &mut Coverage) -> String {
     format!(
         r#"
 function formalPlaceholderReturn(n: Integer) -> String
-  bind f <- formalAdd(return n, _)
+  bind f <- formalAdd(left: return n, right: _)
   return Integer.toString(f({n}))
 end function
 function formalPlaceholderWrap(a: Integer, b: Integer) -> Option[Integer]
   return Option.Some(a + b)
 end function
 function formalPlaceholderTry(input: Option[Integer]) -> String
-  bind f <- formalPlaceholderWrap(try input, _)
+  bind f <- formalPlaceholderWrap(a: try input, b: _)
   return match f({n}) with
     case Option.Some(value) -> Integer.toString(value)
     case Option.None -> "none"
@@ -1193,7 +1220,7 @@ trait FormalStronger[T: FormalStrong]
   function stronger(x: T) -> T
 end trait
 trait FormalChoose[T]
-  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: T, y: A, z: B, f: function(A) -> A uses E) -> B uses E
+  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: T, y: A, z: B, f: function(value: A) -> A uses E) -> B uses E
 end trait
 implement FormalIdentity[Integer]
   function echo(x: Integer) -> Integer return x + {amount} end function
@@ -1204,7 +1231,7 @@ end implement
 implement[A: FormalIdentity] FormalIdentity[Option[A]]
   function echo(x: Option[A]) -> Option[A]
     bind f <- FormalIdentity.echo
-    return Option.map(x, f)
+    return Option.map(o: x, f: lambda(value) return f(value) end lambda)
   end function
 end implement
 implement[A: FormalIdentity, B: FormalIdentity] FormalIdentity[Pair[A,B]]
@@ -1229,7 +1256,7 @@ implement[A: FormalIdentity] FormalStronger[Option[A]]
   end function
 end implement
 implement[T: FormalIdentity] FormalChoose[Option[T]]
-  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: Option[T], y: A, z: B, f: function(A) -> A uses E) -> B uses E
+  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: Option[T], y: A, z: B, f: function(value: A) -> A uses E) -> B uses E
     bind outer <- FormalIdentity.echo
     bind _ <- outer(x)
     bind own <- FormalIdentity.echo
@@ -1239,7 +1266,7 @@ implement[T: FormalIdentity] FormalChoose[Option[T]]
   end function
 end implement
 implement[T: FormalIdentity, U: FormalIdentity] FormalChoose[Pair[T,U]]
-  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: Pair[T,U], y: A, z: B, f: function(A) -> A uses E) -> B uses E
+  function choose[A: FormalIdentity, B: FormalIdentity, effect E](x: Pair[T,U], y: A, z: B, f: function(value: A) -> A uses E) -> B uses E
     bind outer <- FormalIdentity.echo
     bind _ <- outer(x)
     bind own <- FormalIdentity.echo
@@ -1256,7 +1283,7 @@ function formalBoth[A: FormalIdentity, B: FormalIdentity](x: A, y: B) -> B
 end function
 function formalCapture[A: FormalIdentity, B: FormalIdentity](x: A, y: B) -> B
   bind f <- formalBoth
-  return f(x,y)
+  return f(x: x,y: y)
 end function
 function formalSuper[A: FormalStronger](x: A) -> A
   bind f <- FormalIdentity.echo
@@ -1268,51 +1295,51 @@ function formalSuper[A: FormalStronger](x: A) -> A
 end function
 function formalClassUse(x: Option[Option[Integer]], y: Option[String]) -> Option[String]
   bind f <- formalBoth
-  bind _ <- f(x,y)
+  bind _ <- f(x: x,y: y)
   bind paired <- Pair(x,y)
   bind pairFunction <- formalBoth
-  bind _ <- pairFunction(paired,y)
+  bind _ <- pairFunction(x: paired,y: y)
   bind pairMethod <- FormalChoose.choose
-  bind _ <- pairMethod(paired,y,x,lambda(v: Option[String]) return v end lambda)
+  bind _ <- pairMethod(x: paired,y: y,z: x,f: lambda(value: Option[String]) return value end lambda)
   bind swapped <- formalBoth
-  bind _ <- swapped(y,x)
+  bind _ <- swapped(x: y,y: x)
   bind local <- formalCapture
-  bind _ <- local(x,y)
+  bind _ <- local(x: x,y: y)
   bind echo <- FormalIdentity.echo
   bind _ <- echo(x)
   bind choose <- FormalChoose.choose
-  bind _ <- choose(x,y,x,lambda(v: Option[String]) return v end lambda)
-  bind part <- (FormalChoose.choose)(x,y,_,lambda(v: Option[String]) return v end lambda)
+  bind _ <- choose(x: x,y: y,z: x,f: lambda(value: Option[String]) return value end lambda)
+  bind part <- (FormalChoose.choose)(x: x,y: y,z: _,f: lambda(value: Option[String]) return value end lambda)
   bind _ <- part(x)
-  bind _ <- (formalBoth)(x,y)
+  bind _ <- (formalBoth)(x: x,y: y)
   bind _ <- x |> (FormalIdentity.echo)
   return y
 end function
 function formalClassEffects[A: FormalIdentity, B: FormalIdentity](x: A, y: B) -> B
-  return handle formalPick(x,y,0) with
+  return handle formalPick(first: x,second: y,ignored: 0) with
     case formalPick(first, second, _) ->
       bind f <- formalBoth
-      bind _ <- f(x,y)
+      bind _ <- f(x: x,y: y)
       bind g <- lambda(v: A) return v end lambda
       bind _ <- g(x)
       resume(second)
   end handle
 end function
 trait FormalFunctor[F[_]]
-  function map[A,B,effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+  function map[A,B,effect E](x: F[A], f: function(value: A) -> B uses E) -> F[B] uses E
 end trait
 implement FormalFunctor[Option]
-  function map[A,B,effect E](x: Option[A], f: function(A) -> B uses E) -> Option[B] uses E
-    return Option.map(x,f)
+  function map[A,B,effect E](x: Option[A], f: function(value: A) -> B uses E) -> Option[B] uses E
+    return Option.map(o: x,f: f)
   end function
 end implement
-function formalHigher[F[_]: FormalFunctor,A,B,effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+function formalHigher[F[_]: FormalFunctor,A,B,effect E](x: F[A], f: function(value: A) -> B uses E) -> F[B] uses E
   bind map <- FormalFunctor.map
-  return map(x,f)
+  return map(x: x,f: f)
 end function
-function formalHigherUse(x: Option[{first}], f: function({first}) -> {second}) -> Option[{second}]
+function formalHigherUse(x: Option[{first}], f: function(value: {first}) -> {second}) -> Option[{second}]
   bind map <- formalHigher
-  return map(x,f)
+  return map(x: x,f: f)
 end function
 "#
     )
@@ -1365,8 +1392,8 @@ record FormalOuter[T]
   tail: Integer
 end record
 record FormalCallbacks
-  stateful: function(Integer) -> Integer uses State
-  pure: function(Integer) -> Integer
+  stateful: function(x: Integer) -> Integer uses State
+  pure: function(x: Integer) -> Integer
 end record
 function formalRecordChange[A](value: A, other: A) -> A
   bind row <- FormalRow(third: Option.Some(value), first: other, second: {a})
@@ -1603,12 +1630,12 @@ function formalPatternGuardLocal(enabled: Boolean) -> Boolean
 end function
 function formalPatternUse() -> Integer
   bind _ <- formalPatternGuardLocal({enabled})
-  bind a <- formalPatternChoice(FormalPattern.{packet}({offset}, 4), 3, true)
-  bind b <- formalPatternChoice(FormalPattern.{packet}(4, {offset}), 2, false)
-  bind c <- formalPatternRecords(FormalPatternRow(right: 4, left: {offset}, flag: {enabled}), 2)
-  bind d <- formalPatternRanges(-{lower}, 'b')
-  bind e <- formalPatternLists([{offset}, 3, 4], 2)
-  bind f <- formalPatternNested(FormalPatternList(flag: true, items: [{offset}, 4]), 3)
+  bind a <- formalPatternChoice(input: FormalPattern.{packet}({offset}, 4), outer: 3, enabled: true)
+  bind b <- formalPatternChoice(input: FormalPattern.{packet}(4, {offset}), outer: 2, enabled: false)
+  bind c <- formalPatternRecords(row: FormalPatternRow(right: 4, left: {offset}, flag: {enabled}), outer: 2)
+  bind d <- formalPatternRanges(n: -{lower}, c: 'b')
+  bind e <- formalPatternLists(xs: [{offset}, 3, 4], outer: 2)
+  bind f <- formalPatternNested(row: FormalPatternList(flag: true, items: [{offset}, 4]), outer: 3)
   return a + b + c + d + e + f
 end function
 "#

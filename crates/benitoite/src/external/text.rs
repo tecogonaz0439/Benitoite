@@ -140,7 +140,7 @@ pub(super) fn applied_type(name: &str, args: &str) -> String {
     format!("{name}[{args}]")
 }
 pub(super) fn argument_name(position: usize) -> String {
-    format!("arg{position}")
+    crate::base::parameter_names::positional(position)
 }
 
 /// 外部の型の照合で示す WIT の型。

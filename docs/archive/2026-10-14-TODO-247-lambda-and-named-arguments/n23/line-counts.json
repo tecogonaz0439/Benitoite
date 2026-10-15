@@ -1,0 +1,129 @@
+{
+  "production": {
+    "added": 303,
+    "removed": 180,
+    "files": [
+      {
+        "file": "crates/benitoite/src/cli/tools/skill/generate.rs",
+        "added": 11,
+        "removed": 3
+      },
+      {
+        "file": "crates/benitoite/src/diag/codes.rs",
+        "added": 3,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/src/ir/desugar.rs",
+        "added": 1,
+        "removed": 10
+      },
+      {
+        "file": "crates/benitoite/src/ir/desugar/exprs.rs",
+        "added": 16,
+        "removed": 16
+      },
+      {
+        "file": "crates/benitoite/src/resolve/lookup.rs",
+        "added": 7,
+        "removed": 1
+      },
+      {
+        "file": "crates/benitoite/src/resolve/walk.rs",
+        "added": 9,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/src/syntax/ast.rs",
+        "added": 102,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/src/syntax/parser/exprs.rs",
+        "added": 4,
+        "removed": 10
+      },
+      {
+        "file": "crates/benitoite/src/typeck/calls.rs",
+        "added": 146,
+        "removed": 138
+      },
+      {
+        "file": "crates/benitoite/src/typeck/generate.rs",
+        "added": 4,
+        "removed": 2
+      }
+    ]
+  },
+  "tests": {
+    "added": 526,
+    "removed": 40,
+    "files": [
+      {
+        "file": "crates/benitoite/tests/desugar_export/check_named.py",
+        "added": 10,
+        "removed": 3
+      },
+      {
+        "file": "crates/benitoite/tests/desugar_export/exchange.rs",
+        "added": 55,
+        "removed": 29
+      },
+      {
+        "file": "crates/benitoite/tests/desugar_export/named.rs",
+        "added": 47,
+        "removed": 2
+      },
+      {
+        "file": "crates/benitoite/tests/named_arguments.rs",
+        "added": 280,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_partials.bnt",
+        "added": 64,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_partials.exit",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_partials.mode",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_partials.stdout",
+        "added": 24,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_record_values.bnt",
+        "added": 16,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_record_values.exit",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_record_values.mode",
+        "added": 1,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/testdata/eval/named_record_values.stdout",
+        "added": 2,
+        "removed": 0
+      },
+      {
+        "file": "crates/benitoite/src/syntax/parser/exprs.rs (named_argument_tests)",
+        "added": 24,
+        "removed": 6
+      }
+    ]
+  }
+}

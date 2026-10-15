@@ -1,0 +1,32 @@
+{
+  "inputs": 52,
+  "allTyped": true,
+  "candidateCount": 52,
+  "editCount": 0,
+  "unchangedHeld": [
+    {
+      "path": "crates/benitoite/src/prelude/stdlib/Trait.bnt",
+      "kind": "component",
+      "before": "function(value: A) -> B uses E",
+      "reasons": [
+        "nested_or_unresolved_contract"
+      ]
+    },
+    {
+      "path": "crates/benitoite/src/prelude/stdlib/Trait.bnt",
+      "kind": "component",
+      "before": "lambda(value) return Show.show(value) end lambda",
+      "reasons": [
+        "nested_or_unresolved_contract"
+      ]
+    },
+    {
+      "path": "crates/benitoite/src/prelude/stdlib/Trait.bnt",
+      "kind": "call",
+      "before": "f(v)",
+      "reasons": [
+        "callee_contract_unresolved"
+      ]
+    }
+  ]
+}

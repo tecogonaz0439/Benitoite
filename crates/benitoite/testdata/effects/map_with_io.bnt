@@ -4,9 +4,9 @@
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-    bind pure_values <- List.map([1, 2], lambda(value) return value + 1 end lambda)
+    bind pure_values <- List.map(xs: [1, 2], f: lambda(value) return value + 1 end lambda)
     Console.writeLine(Integer.toString(List.length(pure_values)))
-    bind _ <- List.map([1, 2], lambda(value)
+    bind _ <- List.map(xs: [1, 2], f: lambda(value)
         Console.writeLine(Integer.toString(value))
         return value
     end lambda)

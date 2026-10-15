@@ -75,6 +75,20 @@ impl Resolver<'_> {
                 }
             }
             TypeExpr::Fn(t) => {
+                let mut seen = BTreeMap::new();
+                for name in &t.param_names {
+                    if let Some(first) = seen.get(&name.text).copied() {
+                        self.out.diagnostics.push(
+                            DiagBuilder::new(DiagCode::E0310)
+                                .arg("name", &name.text)
+                                .primary(name.span)
+                                .secondary(first, "first")
+                                .build(),
+                        );
+                    } else {
+                        seen.insert(&name.text, name.span);
+                    }
+                }
                 for param in &t.params {
                     self.ty_in_list(ctx, param, true);
                 }
@@ -330,15 +344,27 @@ impl Resolver<'_> {
                 }
             }
             Expr::Call(e) => {
+                // レコード名の直接呼び出しには、従来のフィールド指定の規則を保つ。
+                // 関数値への束縛は別に許す（設計書 02-04「名前の引き方」）。
+                let record_values = ctx.record_values;
+                if matches!(e.callee.as_ref(), Expr::Name(_)) {
+                    ctx.record_values = false;
+                }
                 self.expr(ctx, &e.callee);
+                ctx.record_values = record_values;
                 for arg in &e.args {
                     match arg {
                         Arg::Expr(e) => self.expr(ctx, e),
                         Arg::Placeholder(_) => {}
+                        Arg::Named(a) => {
+                            if let ArgValue::Expr(e) = &a.value {
+                                self.expr(ctx, e);
+                            }
+                        }
                     }
                 }
             }
-            Expr::Record(e) => self.resolve_record(ctx, e),
+            Expr::Record(e) => self.resolve_named_record(ctx, e),
             Expr::Binary(e) => {
                 self.expr(ctx, &e.lhs);
                 self.expr(ctx, &e.rhs);
@@ -367,8 +393,18 @@ impl Resolver<'_> {
     }
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
-    fn resolve_record(&mut self, ctx: &mut Ctx, e: &RecordExpr) {
-        let record = self.name(ctx, e.id, &e.path, Position::Record);
+    pub(super) fn resolve_named_record(&mut self, ctx: &mut Ctx, e: &RecordExpr) {
+        let record =
+            self.record_call_name(ctx, e.id, &e.path, e.fields.first().map(|f| f.name.span));
+        self.record_values(ctx, e, record);
+    }
+
+    fn record_values(
+        &mut self,
+        ctx: &mut Ctx,
+        e: &RecordExpr,
+        record: Option<crate::base::BindingId>,
+    ) {
         if let Some(base) = &e.base {
             self.expr(ctx, base);
         }

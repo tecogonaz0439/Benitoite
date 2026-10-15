@@ -3,6 +3,6 @@ function calculate(a: Integer32, b: Integer32) -> Integer32
   return a div b
 end function
 function main() -> Unit uses Console.Write
-  bind _ <- calculate(7s32, 0s32)
+  bind _ <- calculate(a: 7s32, b: 0s32)
   Console.writeLine("unreachable")
 end function

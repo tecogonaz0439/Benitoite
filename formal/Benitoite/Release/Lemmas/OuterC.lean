@@ -1,10 +1,13 @@
 import Benitoite.Release.Lemmas.Regularity
 
 /-!
-# 外側の型パラメータの並びを加える弱化（段階 B）
+# 外側の型パラメータの並びを加える弱化（契約名を持つコア）
 
 型パラメータの並び `C1` の型の変数だけを使う項は、`C1` の外側に型パラメータの並び `C0` を加えても、
 同じ型が付く。閉じた値（`C1 = []`）が、どの型パラメータの並びのもとでも型が付くことに使う。
+
+型パラメータの範囲の弱化は契約名を変更せず、型付けの名前の整形式を保持する
+（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
@@ -21,19 +24,19 @@ mutual
     match h with
     | .V_Var hi hc => exact .V_Var hi hc
     | .V_Const => exact .V_Const
-    | .V_Fun hd hts hes =>
+    | .V_Fun hd hnames hts hes =>
         simp only [Val.VarsIn] at hv
-        exact .V_Fun hd (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1))) hes
-    | .V_Prim hs hts hes had =>
+        exact .V_Fun hd hnames (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1))) hes
+    | .V_Prim hs hnames hts hes had =>
         simp only [Val.VarsIn] at hv
-        exact .V_Prim hs hts hes
+        exact .V_Prim hs hnames hts hes
           (hb.admits_local _ _ _ _ _ hs (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1)) had)
-    | .V_Op hod hts =>
+    | .V_Op hod hnames hts =>
         simp only [Val.VarsIn] at hv
-        exact .V_Op hod (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv)))
-    | .V_Lam hbody =>
+        exact .V_Op hod hnames (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv)))
+    | .V_Lam hnames hbody =>
         simp only [Val.VarsIn] at hv
-        exact .V_Lam (HasTypeC.outer hb hbody hv.2)
+        exact .V_Lam hnames (HasTypeC.outer hb hbody hv.2.2)
     | .V_Con hc hts hargs =>
         simp only [Val.VarsIn] at hv
         exact .V_Con hc hts (HasTypeVs.outer hb hargs hv.2)
@@ -107,9 +110,9 @@ mutual
     | .C_ResumeL hl hv =>
         simp only [Comp.VarsIn] at hm
         exact .C_ResumeL hl (HasTypeV.outer hb hv hm.2)
-    | .C_Meth hv hc hmeth hts hes hws =>
+    | .C_Meth hv hc hmeth hnames hts hes hws =>
         simp only [Comp.VarsIn] at hm
-        exact .C_Meth (HasTypeV.outer hb hv hm.1) hc hmeth
+        exact .C_Meth (HasTypeV.outer hb hv hm.1) hc hmeth hnames
           (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hm.2.1))) hes (HasTypeVs.outer hb hws hm.2.2.2)
 
   theorem HasTypeArms.outer (hb : B.Assumptions P) {Ψ C1 C0 Γ R arms a b ε}
@@ -129,9 +132,9 @@ mutual
       (hc : HasTypeClauses P B Ψ C1 Γ R h t ε) (hm : Clause.VarsInList C1.length (fun _ => True) h) :
       HasTypeClauses P B Ψ (C1 ++ C0) Γ R h t ε := by
     match hc with
-    | .cons (sg := sg) hsg hn hk hbody hrest =>
+    | .cons (sg := sg) hsg hnames hn hk hbody hrest =>
         simp only [Clause.VarsInList] at hm
-        refine .cons hsg hn hk ?_ (HasTypeClauses.outer hb hrest hm.2)
+        refine .cons hsg hnames hn hk ?_ (HasTypeClauses.outer hb hrest hm.2)
         have := HasTypeC.outer (C0 := C0) hb hbody (by
           simp only [List.length_append]; rw [hk] at hm; simpa [Nat.add_comm] using hm.1)
         simpa [List.append_assoc] using this

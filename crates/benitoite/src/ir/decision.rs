@@ -113,6 +113,7 @@ fn lower_def(def: &CoreDef, adts: &AdtTable, body_count: &mut u32) -> Result<Low
     let mut ctx = Lowerer::new(adts, def.var_count, body_count, &def.name, def.span);
     let body = ctx.comp(&def.body, false)?;
     Ok(Def {
+        param_names: def.param_names.clone(),
         binding: def.binding,
         name: def.name.clone(),
         origin: def.origin,
@@ -233,6 +234,7 @@ impl<'a> Lowerer<'a> {
         };
         Ok(Val {
             kind: ValKind::Lambda(Box::new(Lambda {
+                param_names: lam.param_names.clone(),
                 id: self.body_id(lam.id, renew)?,
                 params: lam.params.clone(),
                 body: self.comp(&lam.body, renew)?,
@@ -1836,6 +1838,7 @@ mod tests {
     fn program(body: Comp) -> CoreProgram {
         Program {
             defs: vec![Def {
+                param_names: Vec::new(),
                 binding: BindingId(0),
                 name: "main".into(),
                 origin: DefOrigin::User,
@@ -2477,6 +2480,7 @@ mod tests {
                         },
                     },
                     Ty::Fn(Box::new(FnTy {
+                        param_names: (1..=2).map(|i| format!("arg{i}")).collect(),
                         params: vec![int_ty(), int_ty()],
                         ret: bool_ty(),
                         effects: EffectSet::empty(),
@@ -2831,12 +2835,14 @@ mod tests {
 
     fn lambda(id: u32, body: Comp) -> CoreVal {
         let ty = Ty::Fn(Box::new(FnTy {
+            param_names: Vec::new(),
             params: vec![],
             ret: body.ty.clone(),
             effects: body.eff.clone(),
         }));
         val(
             ValKind::Lambda(Box::new(Lambda {
+                param_names: Vec::new(),
                 id: BodyId(id),
                 params: vec![],
                 body,
@@ -3126,6 +3132,7 @@ mod tests {
                         },
                     },
                     Ty::Fn(Box::new(FnTy {
+                        param_names: Vec::new(),
                         params: vec![],
                         ret: int_ty(),
                         effects: io.clone(),
@@ -3255,6 +3262,7 @@ mod tests {
             var_count: 0,
         });
         p.ops.push(OpDef {
+            param_names: Vec::new(),
             binding: BindingId(60),
             effect: EffectName::User(BindingId(61)),
             name: "E.op".into(),

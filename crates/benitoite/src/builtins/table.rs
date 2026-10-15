@@ -5,6 +5,7 @@ use super::BuiltinId;
 use super::iface::BuiltinDecl;
 #[cfg(test)]
 use super::iface::{Lend, Lent, WorkerWait};
+use crate::base::parameter_names;
 
 use super::iface::{CallCtx, Capability, IoServices, Reply, StateServices};
 use crate::runtime::Stop;
@@ -784,7 +785,28 @@ pub fn builtin_scheme(id: BuiltinId) -> Option<Scheme> {
         }
         EntryKind::Interpolation { operand } => (vec![basic(operand)], string),
     };
+    let param_names = match builtin_kind(id)? {
+        EntryKind::Operator {
+            op: OperatorKind::Neg,
+            ..
+        }
+        | EntryKind::Interpolation { .. } => vec![parameter_names::VALUE],
+        EntryKind::Operator { .. } | EntryKind::Equality { .. } => {
+            vec![parameter_names::LEFT, parameter_names::RIGHT]
+        }
+        EntryKind::ListPattern(ListPatternOp::Length) => vec![parameter_names::XS],
+        EntryKind::ListPattern(ListPatternOp::Get(_)) => {
+            vec![parameter_names::XS, parameter_names::INDEX]
+        }
+        EntryKind::ListPattern(ListPatternOp::Slice) => vec![
+            parameter_names::XS,
+            parameter_names::FRONT,
+            parameter_names::BACK,
+        ],
+        EntryKind::Declared | EntryKind::EffectOp => return None,
+    };
     Some(Scheme {
+        param_names: param_names.into_iter().map(String::from).collect(),
         type_params,
         effect_params: Vec::new(),
         class_constraints: Vec::new(),
@@ -871,6 +893,22 @@ mod tests {
             assert_eq!(scheme.is_some(), decl.name.starts_with('%'));
             if let Some(scheme) = scheme {
                 assert_eq!(scheme.params.len(), usize::from(decl.arity));
+                let expected_names = match kind {
+                    EntryKind::Operator {
+                        op: OperatorKind::Neg,
+                        ..
+                    }
+                    | EntryKind::Interpolation { .. } => vec!["value"],
+                    EntryKind::Operator { .. } | EntryKind::Equality { .. } => {
+                        vec!["left", "right"]
+                    }
+                    EntryKind::ListPattern(ListPatternOp::Length) => vec!["xs"],
+                    EntryKind::ListPattern(ListPatternOp::Get(_)) => vec!["xs", "index"],
+                    EntryKind::ListPattern(ListPatternOp::Slice) => vec!["xs", "front", "back"],
+                    EntryKind::Declared | EntryKind::EffectOp => panic!("source declaration"),
+                };
+                assert_eq!(scheme.param_names, expected_names);
+                assert_eq!(scheme.param_names.len(), scheme.params.len());
                 assert!(scheme.effects.is_empty());
                 assert!(scheme.effect_params.is_empty());
                 assert!(scheme.class_constraints.is_empty());

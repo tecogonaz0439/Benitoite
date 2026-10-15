@@ -2,7 +2,8 @@
 
 use super::is_syntax_error;
 use crate::base::SourceKind;
-use crate::base::{FileId, IdGen};
+use crate::base::{BytePos, FileId, IdGen};
+use crate::syntax::ast::LambdaEnding;
 use crate::syntax::lexer::{LexOutput, lex};
 use crate::syntax::newline::resolve_newlines;
 use crate::syntax::parser::parse;
@@ -14,7 +15,7 @@ use crate::syntax::token::{Token, TokenKind, TokenValue};
 pub fn verify(before: &[u8], after: &[u8], kind: SourceKind) -> Result<(), String> {
     let lexed_before = lex(FileId(0), before);
     let lexed_after = lex(FileId(0), after);
-    let tokens_before = resolve_newlines(lexed_before.tokens);
+    let tokens_before = resolve_newlines(lexed_before.tokens.clone());
     let tokens_after = resolve_newlines(lexed_after.tokens.clone());
     compare_tokens(
         before,
@@ -43,32 +44,99 @@ pub fn verify(before: &[u8], after: &[u8], kind: SourceKind) -> Result<(), Strin
         }
     }
     // ドキュメントコメントと宣言の結び付きは行の隣り合いで決まるので、構文解析で確かめる。
-    check_syntax(after, kind, lexed_after, tokens_after)
+    let before_lambdas = check_syntax(before, kind, lexed_before, tokens_before, "before")?;
+    let after_lambdas = check_syntax(after, kind, lexed_after, tokens_after, "after")?;
+    let count = before_lambdas.len().max(after_lambdas.len());
+    for i in 0..count {
+        if before_lambdas.get(i) != after_lambdas.get(i) {
+            return Err(format!(
+                "lambda {i} differs: before {:?}, after {:?}",
+                before_lambdas.get(i),
+                after_lambdas.get(i),
+            ));
+        }
+    }
+    Ok(())
+}
+
+/// 改行を除いた字句の通し番号による、ラムダの木の対応と本体・終端の範囲。
+/// 絶対のバイト位置や行番号は整形で変わるので比較しない（06-03「整形後の検証」）。
+#[derive(Debug, PartialEq, Eq)]
+struct LambdaLayout {
+    range: std::ops::Range<usize>,
+    body: std::ops::Range<usize>,
+    ending: Ending,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+enum Ending {
+    Explicit(std::ops::Range<usize>),
+    Omitted(usize),
 }
 
 fn check_syntax(
-    after: &[u8],
+    text: &[u8],
     kind: SourceKind,
     lexed: LexOutput,
     tokens: Vec<Token>,
-) -> Result<(), String> {
+    side: &str,
+) -> Result<Vec<LambdaLayout>, String> {
     // 字句と構文の誤り（E01nn・E02nn）だけを失敗にする。そのほかの診断は整形の前のソースにもあったもの
     // である（設計書 06-03「整形後の検証」、設計書 06-03「構文の誤りがあるファイル」）。
     if let Some(d) = lexed.diagnostics.iter().find(|d| is_syntax_error(d)) {
-        return Err(format!("lexical error after formatting: {}", d.message));
+        return Err(format!("lexical error {side} formatting: {}", d.message));
     }
     let parsed = parse(
         FileId(0),
         kind,
-        after,
+        text,
         tokens,
         lexed.comments,
         &mut IdGen::new(),
     );
-    match parsed.diagnostics.iter().find(|d| is_syntax_error(d)) {
-        Some(d) => Err(format!("syntax error after formatting: {}", d.message)),
-        None => Ok(()),
+    if let Some(d) = parsed.diagnostics.iter().find(|d| is_syntax_error(d)) {
+        return Err(format!("syntax error {side} formatting: {}", d.message));
     }
+    let tokens: Vec<_> = lexed
+        .tokens
+        .iter()
+        .filter(|t| {
+            !matches!(
+                t.kind,
+                TokenKind::LineBreak | TokenKind::Newline | TokenKind::Eof
+            )
+        })
+        .collect();
+    let ordinal = |pos: BytePos| tokens.partition_point(|t| t.span.start < pos);
+    let range = |span: crate::base::Span| ordinal(span.start)..ordinal(span.end);
+    let mut layouts = Vec::new();
+    for lambda in super::roles::lambda_spans(&parsed.module, &lexed.tokens) {
+        let lambda_range = range(lambda.span);
+        let ending = match lambda.ending {
+            LambdaEnding::Explicit { end_span } => Ending::Explicit(range(end_span)),
+            LambdaEnding::Omitted { body_end } => {
+                let first = tokens
+                    .get(lambda_range.start)
+                    .ok_or_else(|| format!("missing lambda token {side} formatting"))?;
+                if tokens.get(lambda_range.clone()).is_none_or(|ts| {
+                    ts.iter()
+                        .any(|t| t.start_line != first.start_line || t.end_line != first.start_line)
+                }) {
+                    return Err(format!(
+                        "short lambda spans physical lines {side} formatting"
+                    ));
+                }
+                Ending::Omitted(ordinal(body_end))
+            }
+        };
+        layouts.push(LambdaLayout {
+            range: lambda_range,
+            body: range(lambda.body),
+            ending,
+        });
+    }
+    layouts.sort_unstable_by_key(|l| l.range.start);
+    Ok(layouts)
 }
 
 /// `Eof` の直前の NEWLINE を除いた列。整形はファイルを改行一つで終える（06-03「行末と文字」）ので、最後の行に

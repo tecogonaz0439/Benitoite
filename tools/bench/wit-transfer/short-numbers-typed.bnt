@@ -9,7 +9,7 @@ function typed(v: Integer) -> Integer
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   bind Pair(n, rounds) <- try Runner.settings()
   bind expected <- if n mod 2 = 0 then n + 1 else n - 1 end if
-  return Runner.verify(rounds, lambda() -> Boolean
+  return Runner.verify(rounds: rounds, work: lambda() -> Boolean
     bind a <- typed(n)
     return a = expected
   end lambda)

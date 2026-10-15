@@ -1,0 +1,19 @@
+// spec: 01-08 評価順序
+// spec: 01-08 実行時エラーによる停止
+import Benitoite.Unofficial.IO.Console
+type Callback = function(a: Integer, b: Integer) -> Integer
+function factory() -> Callback uses Console.Write
+ Console.writeLine(text: "callee")
+ return lambda(a: Integer, b: Integer) return a + b
+end function
+function later() -> Integer uses Console.Write
+ Console.writeLine(text: "later must not run")
+ return 0
+end function
+function zero() -> Integer
+ return 0
+end function
+function main() -> Unit uses Console.Write
+ bind result <- factory()(b: 1 div zero(), a: later())
+ Console.writeLine(text: "invoke must not finish")
+end function

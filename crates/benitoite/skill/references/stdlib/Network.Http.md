@@ -95,7 +95,7 @@ public function pathSegments(path: String) -> List[String]
 Splits `path` at `/`, drops empty parts, and decodes percent-encoding where the result is valid UTF-8.
 
 ```benitoite
-public function serve[effect E](host: String, port: Integer, handler: function(Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
+public function serve[effect E](host: String, port: Integer, handler: function(request: Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
 ```
 
 Listens on `port` of `host` and runs `handler` in a new task for each request.
@@ -135,4 +135,4 @@ Returns a request with no headers, an empty body, and a timeout of 30000 millise
 public function get(url: String) -> Result[Response, NetworkError] uses Connect
 ```
 
-Sends a GET request to `url`, as `Http.send(Http.clientRequest("GET", url))`.
+Sends a GET request to `url`, as `Http.send(Http.clientRequest(method: "GET", url: url))`.

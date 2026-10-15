@@ -272,16 +272,19 @@ fn check_methods(d: &mut Decls<'_>, source: &ImplDecl, i: &ImplDef) {
         let valid = same_params
             && same_constraints
             && found.effect_params.len() == expected.effect_params.len()
-            && params == found.params
+            && params.len() == found.params.len()
+            && params.iter().zip(&found.params).all(|(a, b)| a == b)
             && ret == found.ret
             && found.effects.is_subset(&expected.effects);
-        if !valid {
+        let same_names = found.param_names == expected.param_names;
+        if !valid || !same_names {
             let span = source
                 .fns
                 .iter()
                 .find(|f| d.binding(f.decl.id) == Some(*implementation))
                 .map_or(source.span, |f| f.decl.name.span);
             let expected_ty = Ty::Fn(Box::new(FnTy {
+                param_names: expected.param_names.clone(),
                 params,
                 ret,
                 effects: expected.effects,
@@ -295,12 +298,34 @@ fn check_methods(d: &mut Decls<'_>, source: &ImplDecl, i: &ImplDef) {
                 .chain(expected.type_params.iter().skip(1))
                 .cloned()
                 .collect();
-            let mut diag = DiagBuilder::new(DiagCode::E0711)
-                .arg("name", class_name(d, *method))
-                .arg("trait_name", &t.name)
-                .arg("expected", show(d, &expected_names, &expected_ty))
-                .arg("found", show(d, &found, &found.fn_ty()))
-                .primary(span);
+            let mut diag = DiagBuilder::new(if valid {
+                DiagCode::E0454
+            } else {
+                DiagCode::E0711
+            })
+            .arg("name", class_name(d, *method))
+            .arg("trait_name", &t.name)
+            .arg("expected", show(d, &expected_names, &expected_ty))
+            .arg("found", show(d, &found, &found.fn_ty()))
+            .primary(span);
+            if valid {
+                // 実装も呼ぶ側と同じ契約を満たす。局所名への読み替えは行わない
+                // （設計書 02-05「実装の検査」）。
+                diag = diag.note("contracts");
+                if let Some((index, (expected, found))) = expected
+                    .param_names
+                    .iter()
+                    .zip(&found.param_names)
+                    .enumerate()
+                    .find(|(_, (a, b))| a != b)
+                {
+                    diag = diag
+                        .arg("index", index.saturating_add(1).to_string())
+                        .arg("expected_name", expected)
+                        .arg("found_name", found)
+                        .note("first_name");
+                }
+            }
             if let Some(declared) = binding_span(d, *method) {
                 diag = diag.secondary(declared, "declared");
             }
@@ -308,6 +333,7 @@ fn check_methods(d: &mut Decls<'_>, source: &ImplDecl, i: &ImplDef) {
         }
     }
 }
+
 fn binding_span(d: &Decls<'_>, id: BindingId) -> Option<Span> {
     d.resolved.bindings.get(id).and_then(|b| b.span)
 }

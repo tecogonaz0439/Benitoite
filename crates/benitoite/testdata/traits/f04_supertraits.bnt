@@ -25,6 +25,6 @@ end implement
 
 function main() -> Unit
   bind initial: Total <- Empty.empty()
-  bind _ <- Combine.combine(initial, Total(value: 3))
+  bind _ <- Combine.combine(a: initial, b: Total(value: 3))
   ()
 end function

@@ -1,0 +1,87 @@
+import Benitoite.Unofficial.IO.Console
+effect Ask
+  function ask(value: Integer) -> Integer
+end effect
+function none() -> Option[Integer] return Option.None end function
+function optionText(value: Option[Integer]) -> String
+  return match value with
+    case Option.Some(n) -> "some:" + Integer.toString(n)
+    case Option.None -> "none"
+  end match
+end function
+data Packet
+  Empty
+  Item(Integer, Option[Integer])
+end data
+function recur(fuel: Integer, value: Integer) -> Integer
+  if fuel <= 0 then return value end if
+  return recur(fuel - 1, (value + fuel) mod 97)
+end function
+function unwind(fuel: Integer) -> Integer
+  if fuel <= 0 then return 0 end if
+  return 1 + unwind(fuel - 1)
+end function
+function main() -> Unit uses Console.Write, State
+bind v1: Integer <- (match none() with
+case Option.Some(v0) -> v0
+case Option.None -> 0
+end match)
+Console.writeLine("${v1}")
+bind v4: Packet <- Packet.Item(((if false then
+29
+else
+-14
+end if) div 11), Option.Some((if false then
+-1
+else
+-1
+end if)))
+Console.writeLine(match v4 with
+case Packet.Empty -> "empty"
+case Packet.Item(v5, v6) -> "item:" + Integer.toString(v5) + ":" + optionText(v6)
+end match)
+bind delayed <- lazy -7 end lazy
+bind cell <- Reference.new(Lazy.force(delayed))
+bind alias <- cell
+Console.writeLine(Integer.toString(Reference.get(alias)))
+Reference.update(cell, lambda(x: Integer) -> Integer
+ return (x + ((lambda(v8: Integer) -> function(Integer) -> Integer
+return lambda(v7: Integer) -> Integer
+return (v1 + v8) mod 101
+end lambda
+end lambda)(-14))((lambda(v9: Integer) -> Integer return v9 end lambda)(v1))) mod 97 end lambda)
+Console.writeLine(Integer.toString(Reference.get(alias)))
+Reference.set(alias, Lazy.force(delayed))
+Console.writeLine(Integer.toString(Reference.get(cell)))
+bind v17: Integer <- handle
+bind v15 <- ask(4)
+(handle
+bind v13 <- ask(4)
+(handle
+bind answer <- ask(unwind(32))
+answer + (match (if true then
+Packet.Empty
+else
+Packet.Empty
+end if) with
+case Packet.Item(v11, _) -> v11
+case Packet.Empty -> 0
+end match)
+with
+case ask(v12) ->
+Reference.set(cell, Reference.get(cell) + 4)
+resume(v12 + 4)
+end handle) + v13
+with
+case ask(v14) ->
+Reference.set(cell, Reference.get(cell) + 4)
+resume(v14 + 4)
+end handle) + v15
+with
+case ask(v16) ->
+Reference.set(cell, Reference.get(cell) + 4)
+resume(v16 + 4)
+end handle
+Console.writeLine("${v17}")
+Console.writeLine(Integer.toString(Reference.get(alias)))
+end function

@@ -7,8 +7,8 @@ import Benitoite.Unofficial.IO.File
 
 function main() -> Result[Unit, String] uses File.Read, State, Console.Write
   bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
-  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
-    Reference.set(saved, Option.Some(reader))
+  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+    Reference.set(reference: saved, value: Option.Some(reader))
     bind closed <- File.closeReader(reader)
     Console.writeLine(match closed with
       case Result.Ok(_) -> "closed"

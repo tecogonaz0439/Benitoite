@@ -6,8 +6,8 @@ record Person
 end record
 
 implement Trait.Show[Person]
-  function show(person: Person) -> String
-    return Person.name(person)
+  function show(x: Person) -> String
+    return Person.name(x)
   end function
 end implement
 

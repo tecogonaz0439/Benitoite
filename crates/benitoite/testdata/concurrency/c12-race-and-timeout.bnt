@@ -11,11 +11,12 @@ function main() -> Unit uses Clock.Time, State, Console.Write
   bind single <- Task.race([lambda() return 7 end lambda])
   Console.writeLine(if single = Option.Some(7) then "single" else "wrong single" end if)
   bind winner <- Task.race([
-    lambda() Clock.sleep(3600000)
+    lambda()
+ Clock.sleep(3600000)
       return 1 end lambda,
     lambda() return 42 end lambda
   ])
   Console.writeLine(if winner = Option.Some(42) then "winner" else "wrong winner" end if)
-  bind timely <- Task.withTimeout(3600000, lambda() return 8 end lambda)
+  bind timely <- Task.withTimeout(milliseconds: 3600000, action: lambda() return 8 end lambda)
   Console.writeLine(if timely = Option.Some(8) then "within timeout" else "wrong timeout" end if)
 end function

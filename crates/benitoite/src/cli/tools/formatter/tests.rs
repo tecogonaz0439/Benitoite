@@ -53,8 +53,8 @@ function main() -> Unit uses Console.Write
     bind shapes<-[ Shape.Circle(1.0), Shape.Rect(2.0,3.0) ]
     // total area
     bind total <- shapes
-    |> List.map(area)
-    |> List.fold(0.0, lambda (acc, a) return acc+a end lambda)
+    |> List.map(f: lambda(value) return area(value) end lambda)
+    |> List.fold(initial: 0.0, f: lambda (acc, value) return acc+value end lambda)
     Console.writeLine(\"total: ${ total }\")
 end function
 ";
@@ -79,8 +79,8 @@ function main() -> Unit uses Console.Write
   bind shapes <- [Shape.Circle(1.0), Shape.Rect(2.0, 3.0)]
   // total area
   bind total <- shapes
-    |> List.map(area)
-    |> List.fold(0.0, lambda(acc, a) return acc + a end lambda)
+    |> List.map(f: lambda(value) return area(value) end lambda)
+    |> List.fold(initial: 0.0, f: lambda(acc, value) return acc + value end lambda)
   Console.writeLine(\"total: ${total}\")
 end function
 ";
@@ -90,6 +90,40 @@ fn formats_the_example_of_the_design() {
     check("example", EXAMPLE_BEFORE, EXAMPLE_AFTER);
     let first = format_source(FileId(0), SourceKind::User, EXAMPLE_BEFORE.as_bytes()).unwrap();
     assert!(first.changed);
+}
+
+#[test]
+fn preserves_short_lambdas_and_their_boundaries() {
+    let cases = [
+        (
+            "short and explicit, nested calls, comments and CRLF",
+            "function f() -> Unit\r\n  // before\r\n bind a<-lambda (x) return g( x, h(1, 2) ) // tail\r\n bind b<-lambda (x) return x end lambda\r\n bind c<-lambda (x)->Integer uses E return x+1\r\n ()\r\nend function",
+            "function f() -> Unit\n  // before\n  bind a <- lambda(x) return g(x, h(1, 2)) // tail\n  bind b <- lambda(x) return x end lambda\n  bind c <- lambda(x) -> Integer uses E return x + 1\n  ()\nend function\n",
+        ),
+        (
+            "parenthesized mixed nesting and inline blocks",
+            "function f() -> Unit\n bind a<-lambda(x) return (lambda(y) return x+y) end lambda\n bind b<-lambda(x) return (lambda(y) return x+y end lambda)\n bind c<-lambda(x) return if x then 1 else 2 end if\n bind d<-lambda(x) return match x with case y -> y end match\n bind e<-lambda() ()\n ()\nend function\n",
+            "function f() -> Unit\n  bind a <- lambda(x) return (lambda(y) return x + y) end lambda\n  bind b <- lambda(x) return (lambda(y) return x + y end lambda)\n  bind c <- lambda(x) return if x then 1 else 2 end if\n  bind d <- lambda(x) return match x with case y -> y end match\n  bind e <- lambda() ()\n  ()\nend function\n",
+        ),
+        (
+            "blank lines before the outer ending are removed",
+            "function f() -> Unit\n bind outer<-lambda()\n bind inner<-lambda(x) return x\n\n\n end lambda\n ()\nend function\n",
+            "function f() -> Unit\n  bind outer <- lambda()\n    bind inner <- lambda(x) return x\n  end lambda\n  ()\nend function\n",
+        ),
+        (
+            "adjacent outer ending stays outside the short lambda",
+            "function f() -> Unit\n bind outer<-lambda()\n bind inner<-lambda(x) return x\n end lambda\n ()\nend function\n",
+            "function f() -> Unit\n  bind outer <- lambda()\n    bind inner <- lambda(x) return x\n  end lambda\n  ()\nend function\n",
+        ),
+        (
+            "comment before the outer ending",
+            "function f() -> Unit\n bind outer<-lambda()\n bind inner<-lambda(x) return x // inner\n // outer\n end lambda\n ()\nend function\n",
+            "function f() -> Unit\n  bind outer <- lambda()\n    bind inner <- lambda(x) return x // inner\n    // outer\n  end lambda\n  ()\nend function\n",
+        ),
+    ];
+    for (name, input, expected) in cases {
+        check(name, input, expected);
+    }
 }
 
 #[test]
@@ -365,7 +399,7 @@ fn only_lexical_and_syntax_errors_refuse_formatting() {
     }
     for src in [
         "function f( -> Unit\nend function\n",
-        "function main() -> Unit\n()\nend function\nlanguage \"0.0.3\"\n",
+        "function main() -> Unit\n()\nend function\nlanguage \"0.0.5\"\n",
     ] {
         match format_source(FileId(0), SourceKind::User, src.as_bytes()) {
             Err(FormatError::Syntax(diags)) => assert!(

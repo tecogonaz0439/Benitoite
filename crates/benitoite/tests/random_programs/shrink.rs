@@ -125,6 +125,11 @@ fn expression(expr: &Expr, spans: &mut Vec<Span>) {
                 match arg {
                     Arg::Expr(expr) => expression(expr, spans),
                     Arg::Placeholder(_) => {}
+                    Arg::Named(a) => {
+                        if let benitoite::syntax::ast::ArgValue::Expr(e) = &a.value {
+                            expression(e, spans);
+                        }
+                    }
                 }
             }
         }

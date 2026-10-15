@@ -1,0 +1,243 @@
+[
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/cycle.bnt",
+      "100"
+    ],
+    "exit": 0,
+    "stdout": "100\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "100\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/eval.bnt",
+      "3"
+    ],
+    "exit": 0,
+    "stdout": "125253\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "125253\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/fib.bnt",
+      "10"
+    ],
+    "exit": 0,
+    "stdout": "55\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "55\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/handler.bnt",
+      "100",
+      "saved"
+    ],
+    "exit": 0,
+    "stdout": "39680\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "39680\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/lines.bnt",
+      "tools/bench/programs/lines-small.txt"
+    ],
+    "exit": 0,
+    "stdout": "3\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "3\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/list.bnt",
+      "12"
+    ],
+    "exit": 0,
+    "stdout": "90\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "90\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/listget.bnt",
+      "1000",
+      "1000"
+    ],
+    "exit": 0,
+    "stdout": "492512\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "492512\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/loop.bnt",
+      "10"
+    ],
+    "exit": 0,
+    "stdout": "45\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "45\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/map.bnt",
+      "32"
+    ],
+    "exit": 0,
+    "stdout": "16\n16\n32\n32\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "16\n16\n32\n32\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/println.bnt",
+      "5"
+    ],
+    "exit": 0,
+    "stdout": "line 0\nline 1\nline 2\nline 3\nline 4\ndone 5\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "line 0\nline 1\nline 2\nline 3\nline 4\ndone 5\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/string.bnt",
+      "10"
+    ],
+    "exit": 0,
+    "stdout": "12\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "12\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/tasks.bnt",
+      "10",
+      "100"
+    ],
+    "exit": 0,
+    "stdout": "396800\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "396800\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/trait.bnt",
+      "1000"
+    ],
+    "exit": 0,
+    "stdout": "59625\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "59625\n",
+      "stderr": ""
+    },
+    "equal": true
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "tools/bench/programs/tree.bnt",
+      "4"
+    ],
+    "exit": 0,
+    "stdout": "16\n",
+    "stderr": "",
+    "after": {
+      "exit": 0,
+      "stdout": "16\n",
+      "stderr": ""
+    },
+    "equal": true
+  }
+]

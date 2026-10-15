@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "inputs": [
+    {"path":"crates/benitoite/src/prelude/stdlib/Map.bnt","source_sha256":"40bbc376a0eaab02b09f644656473798b261512bacdb3c6de888285a6ab5cc2b"},
+    {"path":"crates/benitoite/src/prelude/stdlib/Network/Http.bnt","source_sha256":"65ab956995b81983dc7d39e1826f01271d0440baa6445fd0a0481cc26c568b75"}
+  ],
+  "candidates": [
+    {"id":"Map.bnt","path":"crates/benitoite/src/prelude/stdlib/Map.bnt","source_sha256":"40bbc376a0eaab02b09f644656473798b261512bacdb3c6de888285a6ab5cc2b","kind":"individual_review","source_range":[2459,2558],"before":"lambda(acc, value) return f(acc: acc, key: Pair.first(value), value: Pair.second(value)) end lambda","after":"lambda(acc, value)\n    bind key <- Pair.first(value)\n    bind element <- Pair.second(value)\n    return f(acc: acc, key: key, value: element)\n  end lambda","hold_reasons":[],"review":"approved","reason":"Q10 に従い、List.fold の value から Map の key と value を取り出す。後者には衝突しない局所名 element を使う。","edits":[{"start":2459,"end":2558,"before":"lambda(acc, value) return f(acc: acc, key: Pair.first(value), value: Pair.second(value)) end lambda","after":"lambda(acc, value)\n    bind key <- Pair.first(value)\n    bind element <- Pair.second(value)\n    return f(acc: acc, key: key, value: element)\n  end lambda"}]},
+    {"id":"Network/Http.bnt","path":"crates/benitoite/src/prelude/stdlib/Network/Http.bnt","source_sha256":"65ab956995b81983dc7d39e1826f01271d0440baa6445fd0a0481cc26c568b75","kind":"individual_review","source_range":[5611,5652],"before":"Http.send(Http.clientRequest(\"GET\", url))","after":"Http.send(Http.clientRequest(method: \"GET\", url: url))","hold_reasons":[],"review":"approved","reason":"生成参照文書の公開例を本体と同じ契約名へ揃える。","edits":[{"start":5611,"end":5652,"before":"Http.send(Http.clientRequest(\"GET\", url))","after":"Http.send(Http.clientRequest(method: \"GET\", url: url))"}]}
+  ]
+}

@@ -100,12 +100,12 @@ function main() -> Result[Unit, String] uses Console.Write
     "{\"a\":}",
     "\"\\uZZZZx\""
   ]
-  bind _ <- try List.fold(sources, Result.Ok(()), lambda(acc: Result[Unit, String], source: String) -> Result[Unit, String] uses Console.Write
+  bind _ <- try List.fold(xs: sources, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: String) -> Result[Unit, String] uses Console.Write
     bind _ <- try acc
-    return Check.compare(source, Parser.parse, Parser.stringify, Parser.stringifyPretty)
+    return Check.compare(source: value, parse: Parser.parse, stringify: Parser.stringify, writePretty: Parser.stringifyPretty)
   end lambda)
-  bind _ <- try Check.writeValue("deep 32", Check.deep(32, Json.Value.Null), Parser.stringify, Parser.stringifyPretty)
-  bind _ <- try Check.writeValue("chunks and controls", Json.Value.String(String.repeat("\n\u{01}", 34)), Parser.stringify, Parser.stringifyPretty)
-  bind _ <- try Check.writeValue("non-finite", Json.Value.Array([Json.Value.Float(0.0 / 0.0), Json.Value.Float(1.0 / 0.0), Json.Value.Float(-1.0 / 0.0)]), Parser.stringify, Parser.stringifyPretty)
+  bind _ <- try Check.writeValue(label: "deep 32", value: Check.deep(n: 32, value: Json.Value.Null), stringify: Parser.stringify, writePretty: Parser.stringifyPretty)
+  bind _ <- try Check.writeValue(label: "chunks and controls", value: Json.Value.String(String.repeat(s: "\n\u{01}", n: 34)), stringify: Parser.stringify, writePretty: Parser.stringifyPretty)
+  bind _ <- try Check.writeValue(label: "non-finite", value: Json.Value.Array([Json.Value.Float(0.0 / 0.0), Json.Value.Float(1.0 / 0.0), Json.Value.Float(-1.0 / 0.0)]), stringify: Parser.stringify, writePretty: Parser.stringifyPretty)
   return Result.Ok(())
 end function

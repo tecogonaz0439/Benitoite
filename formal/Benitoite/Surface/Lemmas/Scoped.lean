@@ -1,6 +1,5 @@
-import Benitoite.Surface.Lemmas.Calls
+import Benitoite.Surface.Lemmas.ScopedSupport
 import Benitoite.Surface.Lemmas.ExtensionsScoped
-import Benitoite.Surface.Lemmas.Records
 
 /-! 脱糖の出力は、入力の型変数とエフェクト変数の範囲を保つ。 -/
 namespace Benitoite.Surface
@@ -58,23 +57,23 @@ mutual
     | .E_Local _ _ => trivial
     | .E_Const (body := body) h =>
         simpa only [desugarExpr] using HasType.desugar_scoped (e := body) h sc.2
-    | .E_Fun _ _ _ _ => exact sc
-    | .E_FunDicts (ps := ps) (ds := ds) _ _ _ _ _ _ =>
-        exact ⟨sc.2.2.2, ⟨sc.1, sc.2.1⟩,
+    | .E_Fun _ _ _ _ _ _ => exact sc
+    | .E_FunDicts (ps := ps) (ds := ds) _ _ _ _ _ _ _ _ _ =>
+        exact ⟨sc.2.2.2.1, sc.2.2.2.2, ⟨sc.1, sc.2.1⟩,
           Val.VarsInList.append
             (Val.VarsInList.renameScoped _ _ (DictEv.toValList_scoped ds sc.2.2.1))
             (boundVars_scoped ps.length nt pe)⟩
-    | .E_MethName (ps := ps) (d := d) (us := us) _ _ _ _ _ _ _ _ =>
-        exact ⟨sc.2.2.2.2,
+    | .E_MethName (ps := ps) (d := d) (us := us) _ _ _ _ _ _ _ _ _ _ =>
+        exact ⟨sc.2.2.2.2.1, sc.2.2.2.2.2,
           Val.VarsIn.renameScoped _ _ (DictEv.toVal_scoped d sc.1), sc.2.1, sc.2.2.1,
           Val.VarsInList.append
             (Val.VarsInList.renameScoped _ _ (DictEv.toValList_scoped us sc.2.2.2.1))
             (boundVars_scoped ps.length nt pe)⟩
-    | .E_Prim _ _ _ _ => exact sc
-    | .E_Op _ _ => exact sc
+    | .E_Prim _ _ _ _ _ => exact sc
+    | .E_Op _ _ _ => exact sc
     | .E_NullCon _ _ _ => exact ⟨sc, trivial⟩
-    | .E_ConValue (ps := ps) _ _ _ _ => exact ⟨sc.2, sc.1, boundVars_scoped ps.length nt pe⟩
-    | .E_PipeCall _ hf hs =>
+    | .E_ConValue (ps := ps) _ _ _ _ _ _ => exact ⟨sc.2.1, sc.2.2, sc.1, boundVars_scoped ps.length nt pe⟩
+    | .E_PipeCall _ hf _ hs =>
         exact ⟨HasType.desugar_scoped (by assumption) sc.1,
           callComp_scoped (HasType.desugar_scoped hf sc.2.1)
             (fun _ hd => directCallee_scoped hd sc.2.1) ⟨trivial, trivial⟩
@@ -83,20 +82,20 @@ mutual
         refine ⟨HasType.desugar_scoped hl sc.1, ?_⟩
         apply letChain_scoped (HasTypes.desugar_scoped hs sc.2.2)
         exact ⟨sc.2.1, trivial, boundVars_scoped _ _ _⟩
-    | .E_PipeConValue _ _ _ _ hl => exact ⟨HasType.desugar_scoped hl sc.1, sc.2.1, trivial, trivial⟩
+    | .E_PipeConValue _ _ _ _ _ _ hl => exact ⟨HasType.desugar_scoped hl sc.1, sc.2.1, trivial, trivial⟩
     | .E_PipeApply hp hl hf =>
         rw [desugarPipeValue hp]
         exact ⟨HasType.desugar_scoped hl sc.1,
           callComp_scoped (HasType.desugar_scoped hf sc.2)
             (fun _ hd => directCallee_scoped hd sc.2) ⟨trivial, trivial⟩
             (by intro m hm; cases hm)⟩
-    | .E_PartialCall _ hf hs _ _ =>
-        exact ⟨HoleArgs.holeTypes_scoped _ sc.2.1,
+    | .E_PartialCall _ hf _ hn hs _ _ =>
+        exact ⟨hn, HoleArgs.holeTypes_scoped _ sc.2.1,
           callComp_scoped (HasType.desugar_scoped hf sc.1)
             (fun _ hd => directCallee_scoped hd sc.1) trivial
             (HasHoleArgs.desugar_scoped hs sc.2.1 _)⟩
-    | .E_PartialCon _ _ _ hs _ =>
-        refine ⟨HoleArgs.holeTypes_scoped _ sc.2, ?_⟩
+    | .E_PartialCon _ _ _ _ _ hn hs _ =>
+        refine ⟨hn, HoleArgs.holeTypes_scoped _ sc.2, ?_⟩
         apply sequence_scoped (HasHoleArgs.desugar_scoped hs sc.2 _)
         intro vs hv; exact ⟨sc.1, hv⟩
     | .E_Match _ he hs _ =>
@@ -122,10 +121,10 @@ mutual
     | .E_ConCall _ _ hs =>
         apply sequence_scoped (HasTypes.desugar_scoped hs sc.2)
         intro vs hv; exact ⟨sc.1, hv⟩
-    | .E_Call hf hs =>
+    | .E_Call hf _ hs =>
         exact callComp_scoped (HasType.desugar_scoped hf sc.1)
           (fun _ hd => directCallee_scoped hd sc.1) trivial (HasTypes.desugar_scoped hs sc.2)
-    | .E_Binary _ hop hts _ _ _ _ _ hl hr =>
+    | .E_Binary _ hop hts _ _ _ _ _ _ hl hr =>
         simp only [desugarExpr, hop]
         apply sequence_scoped ?_
         · intro vs hv; exact ⟨by rw [hts]; exact ⟨operator_typeArgs_scoped sc.1 _, trivial⟩, hv⟩
@@ -165,7 +164,7 @@ mutual
         intro hn
         obtain ⟨b, ts, s, hb, ht, _⟩ := hop (by simpa using hn)
         exact ⟨b, by simpa [ht] using hb⟩
-    | .E_Lam _ hb => exact ⟨sc.1, HasBlock.desugar_scoped hb sc.2.2.2⟩
+    | .E_Lam hn _ hb => exact ⟨hn, sc.2.1, HasBlock.desugar_scoped hb sc.2.2.2.2⟩
     | .E_If hc hy hn => exact ⟨HasType.desugar_scoped hc sc.1, trivial,
         Comp.VarsIn.renameScoped _ _ (HasBlock.desugar_scoped hy sc.2.1),
         Comp.VarsIn.renameScoped _ _ (HasBlock.desugar_scoped hn sc.2.2)⟩
@@ -244,7 +243,7 @@ mutual
       Clause.VarsInList nt pe (desugarClauses op cs) := by
     match h with
     | .nil => trivial
-    | .cons _ _ _ hb hs =>
+    | .cons _ _ _ _ hb hs =>
         exact ⟨HasBlock.desugar_scoped hb sc.1, HasClauses.desugar_scoped hs sc.2⟩
 
   theorem HasBlock.desugar_scoped {C Γ R pos body a ε nt pe nv}

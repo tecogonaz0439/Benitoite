@@ -7,7 +7,7 @@ function noisyFailure() -> Unit uses Assert.Check, Console.Write
   Console.writeLine("first out")
   Console.writeErrorLine("an err line")
   Console.write("no newline")
-  Assert.equal(1, 2)
+  Assert.equal(actual: 1, expected: 2)
 end function
 
 @test

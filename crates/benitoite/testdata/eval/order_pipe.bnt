@@ -12,6 +12,6 @@ function keep_nonempty(value: String) -> Boolean uses Console.Write
 end function
 
 function main() -> Unit uses Console.Write
-  bind filtered <- read() |> List.filter(keep_nonempty)
+  bind filtered <- read() |> List.filter(p: keep_nonempty)
   return Console.writeLine(Integer.toString(List.length(filtered)))
 end function

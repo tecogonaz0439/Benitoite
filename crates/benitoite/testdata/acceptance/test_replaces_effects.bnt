@@ -6,7 +6,7 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.IO.Process
 
 function deploy(target: String) -> Result[Integer, String] uses Process.Run
-  bind output <- try Process.run(Process.command("deploy-tool", ["--target", target])) |> Result.mapError(_, IOError.message)
+  bind output <- try Process.run(Process.command(program: "deploy-tool", arguments: ["--target", target])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
   return Result.Ok(Process.Output.exitCode(output))
 end function
 
@@ -15,7 +15,7 @@ function failHard(message: String) -> Integer uses Process.Exit
 end function
 
 function saveReport(path: String, lines: List[String]) -> Result[Unit, String] uses File.Write
-  return File.writeText(path, String.join(lines, "\n")) |> Result.mapError(_, IOError.message)
+  return File.writeText(path: path, text: String.join(xs: lines, separator: "\n")) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
 end function
 
 @test("Process.run is replaced by the handler")
@@ -24,11 +24,11 @@ function runIsReplaced() -> Unit uses Assert.Check, Process.Run
     deploy("staging")
   with
     case Process.run(command) ->
-      Assert.equal(Process.Command.program(command), "deploy-tool")
-      Assert.equal(Process.Command.arguments(command), ["--target", "staging"])
+      Assert.equal(actual: Process.Command.program(command), expected: "deploy-tool")
+      Assert.equal(actual: Process.Command.arguments(command), expected: ["--target", "staging"])
       resume(Result.Ok(Process.Output(exitCode: 0, standardOutput: "done\n", standardError: "")))
   end handle
-  Assert.equal(result, Result.Ok(0))
+  Assert.equal(actual: result, expected: Result.Ok(0))
 end function
 
 @test("Process.exit is replaced by the handler")
@@ -38,19 +38,19 @@ function exitIsReplaced() -> Unit uses Assert.Check
   with
     case Process.exit(status) -> status + 100
   end handle
-  Assert.equal(code, 102)
+  Assert.equal(actual: code, expected: 102)
 end function
 
 @test("File.writeText is replaced by the handler")
 function writeIsReplaced() -> Unit uses Assert.Check, File.Read, File.Write
   bind result <- handle
-    saveReport("acceptance-report.txt", ["a", "b"])
+    saveReport(path: "acceptance-report.txt", lines: ["a", "b"])
   with
     case File.writeText(path, text) ->
-      Assert.equal(path, "acceptance-report.txt")
-      Assert.equal(text, "a\nb")
+      Assert.equal(actual: path, expected: "acceptance-report.txt")
+      Assert.equal(actual: text, expected: "a\nb")
       resume(Result.Ok(()))
   end handle
-  Assert.equal(result, Result.Ok(()))
-  Assert.equal(File.exists("acceptance-report.txt") |> Result.mapError(_, IOError.message), Result.Ok(false))
+  Assert.equal(actual: result, expected: Result.Ok(()))
+  Assert.equal(actual: File.exists("acceptance-report.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda), expected: Result.Ok(false))
 end function

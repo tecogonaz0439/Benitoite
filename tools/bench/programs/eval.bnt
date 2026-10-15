@@ -27,7 +27,7 @@ function buildExpression(depth: Integer) -> Expr
     Expr.Lit(1)
   else
     bind smaller <- buildExpression(depth - 1)
-    match Integer.floorModulo(depth, 3) with
+    match Integer.floorModulo(a: depth, b: 3) with
       case 0 -> Expr.Add(smaller, Expr.Lit(depth))
       case 1 -> Expr.Inc(smaller)
       case _ -> Expr.Scale(smaller, 1)
@@ -49,7 +49,7 @@ function repeatEvaluate(expression: Expr, count: Integer, total: Integer) -> Int
   return if count = 0 then
     total
   else
-    repeatEvaluate(expression, count - 1, total + evaluate(expression))
+    repeatEvaluate(expression: expression, count: count - 1, total: total + evaluate(expression))
   end if
 end function
 
@@ -57,7 +57,7 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
   return match readCount() with
     case Result.Error(message) -> Result.Error(message)
     case Result.Ok(count) ->
-      Console.writeLine(Integer.toString(repeatEvaluate(buildExpression(500), count, 0)))
+      Console.writeLine(Integer.toString(repeatEvaluate(expression: buildExpression(500), count: count, total: 0)))
       Result.Ok(())
   end match
 end function

@@ -178,7 +178,7 @@ fn prompt_reaches_output_before_stdin_work_starts() {
 import Benitoite.Unofficial.IO.Console
 function main() -> Result[Unit,String] uses Console.Read,Console.Write
  Console.write("Name: ")
- bind name <- try Console.readLine() |> Result.mapError(_,IOError.message)
+ bind name <- try Console.readLine() |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
  return if name = Option.Some("Ada") then Result.Ok(()) else Result.Error("wrong input") end if
 end function
 "#,

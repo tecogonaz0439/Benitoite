@@ -2,7 +2,7 @@
 import Benitoite.Unofficial.IO.Console
 
 function applyAll(actions: List[function() -> Unit uses IO.All]) -> Unit uses IO.All
-    bind _ <- List.map(actions, lambda(action) return action() end lambda)
+    bind _ <- List.map(xs: actions, f: lambda(value) return value() end lambda)
     return ()
 end function
 

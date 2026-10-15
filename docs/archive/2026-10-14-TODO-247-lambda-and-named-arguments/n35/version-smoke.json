@@ -1,0 +1,55 @@
+[
+  {
+    "case": "none",
+    "source": "function main() -> Unit\n  return ()\nend function\n",
+    "exit": 0,
+    "codes": []
+  },
+  {
+    "case": "current",
+    "source": "language \"0.0.5\"\nfunction main() -> Unit\n  return ()\nend function\n",
+    "exit": 0,
+    "codes": []
+  },
+  {
+    "case": "old",
+    "source": "language \"0.0.4\"\nfunction main() -> Unit\n  return ()\nend function\n",
+    "exit": 2,
+    "codes": [
+      "E0908"
+    ]
+  },
+  {
+    "case": "future",
+    "source": "language \"0.0.6\"\nfunction main() -> Unit\n  return ()\nend function\n",
+    "exit": 2,
+    "codes": [
+      "E0907"
+    ]
+  },
+  {
+    "case": "positional",
+    "source": "function add(a: Integer, b: Integer) -> Integer\n  return a + b\nend function\nfunction main() -> Unit\n  bind _ <- add(1, 2)\nend function\n",
+    "exit": 2,
+    "codes": [
+      "E0449"
+    ]
+  },
+  {
+    "case": "unnamed-type",
+    "source": "function render(f: function(Integer) -> String) -> String\n  return f(1)\nend function\nfunction main() -> Unit\n  return ()\nend function\n",
+    "exit": 2,
+    "codes": [
+      "E0257"
+    ]
+  },
+  {
+    "case": "old-unnamed-type",
+    "source": "language \"0.0.4\"\nfunction render(f: function(Integer) -> String) -> String\n  return f(1)\nend function\nfunction main() -> Unit\n  return ()\nend function\n",
+    "exit": 2,
+    "codes": [
+      "E0908",
+      "E0257"
+    ]
+  }
+]

@@ -119,6 +119,24 @@ fn rewrites_changed_files_and_leaves_canonical_files_untouched() {
 }
 
 #[test]
+fn saves_short_lambdas_on_their_original_line() {
+    let dir = TestDirectory::new("saves_short_lambdas_on_their_original_line");
+    dir.write("short.bnt", "function main() -> Unit\r\n bind f<-lambda (x) return x+1 // keep\r\n bind g<-lambda(x) return x end lambda\r\n ()\r\nend function");
+    let output = fmt(&dir, &["short.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    assert!(output.stdout.is_empty());
+    assert!(output.stderr.is_empty(), "{}", stderr(&output));
+    assert_eq!(
+        dir.read("short.bnt"),
+        "function main() -> Unit\n  bind f <- lambda(x) return x + 1 // keep\n  bind g <- lambda(x) return x end lambda\n  ()\nend function\n"
+    );
+    let output = fmt(&dir, &["--check", "short.bnt"]);
+    assert_eq!(code(&output), 0, "{}", stderr(&output));
+    assert!(output.stdout.is_empty());
+    assert!(output.stderr.is_empty(), "{}", stderr(&output));
+}
+
+#[test]
 fn check_reports_without_rewriting() {
     let dir = TestDirectory::new("check_reports_without_rewriting");
     dir.write("a.bnt", UNFORMATTED);
@@ -407,13 +425,13 @@ fn directory_walk_formats_package_settings() {
     let dir = TestDirectory::new("package-settings");
     dir.write(
         "package.bnt",
-        "language    \"0.0.3\"\npackage Textkit\n       license   \"MIT\"\nend package\n",
+        "language    \"0.0.5\"\npackage Textkit\n       license   \"MIT\"\nend package\n",
     );
     let output = fmt(&dir, &["."]);
     assert_eq!(code(&output), 0, "{}", stderr(&output));
     assert_eq!(
         dir.read("package.bnt"),
-        "language \"0.0.3\"\n\npackage Textkit\n  license \"MIT\"\nend package\n"
+        "language \"0.0.5\"\n\npackage Textkit\n  license \"MIT\"\nend package\n"
     );
     let output = fmt(&dir, &["--check", "."]);
     assert_eq!(code(&output), 0, "{}", stderr(&output));

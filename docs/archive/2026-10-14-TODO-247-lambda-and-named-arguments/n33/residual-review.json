@@ -1,0 +1,156 @@
+[
+  {
+    "path": "crates/benitoite/src/diag/codes.rs",
+    "snippet": 5,
+    "source": "pass the value with a pipe, such as `xs |> List.map(f)`",
+    "proposals": [
+      [
+        52,
+        "f: "
+      ]
+    ],
+    "host_range": [
+      12461,
+      12516
+    ],
+    "reason": "N33 の診断の仕上げで生成 Skill と同時に切り替える案内の文字列・修正案の比較。",
+    "disposition": "resolved_in_N33",
+    "resolution": "E0203 の案内を xs |> List.map(f: f) に移した。"
+  },
+  {
+    "path": "crates/benitoite/src/diag/render/help_tests.rs",
+    "snippet": 99,
+    "source": "Integer.floorModulo(5, 2)",
+    "proposals": [
+      [
+        20,
+        "a: "
+      ],
+      [
+        23,
+        "b: "
+      ]
+    ],
+    "host_range": [
+      23846,
+      23871
+    ],
+    "reason": "N33 の診断の仕上げで生成 Skill と同時に切り替える案内の文字列・修正案の比較。",
+    "disposition": "resolved_in_N33",
+    "resolution": "旧名の修正案の入力と期待結果の両方に a・b のラベルを付け、改名だけの編集の比較を維持した。"
+  },
+  {
+    "path": "crates/benitoite/src/diag/render/help_tests.rs",
+    "snippet": 101,
+    "source": "Integer.floorModulo(5, 2)",
+    "proposals": [
+      [
+        20,
+        "a: "
+      ],
+      [
+        23,
+        "b: "
+      ]
+    ],
+    "host_range": [
+      23917,
+      23942
+    ],
+    "reason": "N33 の診断の仕上げで生成 Skill と同時に切り替える案内の文字列・修正案の比較。",
+    "disposition": "resolved_in_N33",
+    "resolution": "同上。"
+  },
+  {
+    "path": "crates/benitoite/src/diag/render/help_tests.rs",
+    "snippet": 105,
+    "source": "Option.andThen(Option.Some(1), Option.Some)",
+    "proposals": [
+      [
+        15,
+        "o: "
+      ],
+      [
+        31,
+        "f: "
+      ]
+    ],
+    "host_range": [
+      24170,
+      24213
+    ],
+    "reason": "N33 の診断の仕上げで生成 Skill と同時に切り替える案内の文字列・修正案の比較。",
+    "disposition": "resolved_in_N33",
+    "resolution": "旧名の修正案の入力と期待結果の両方に o・f のラベルを付け、改名だけの編集の比較を維持した。"
+  },
+  {
+    "path": "crates/benitoite/tests/desugar_export/named.rs",
+    "snippet": 6,
+    "source": "function sample() -> List[Integer]\n return List.map([1], lambda(n) return n + 1)\nend function\n",
+    "proposals": [
+      [
+        52,
+        "xs: "
+      ],
+      [
+        57,
+        "f: "
+      ]
+    ],
+    "host_range": [
+      10991,
+      11088
+    ],
+    "reason": "N33 までの旧入力の受理または版別の振り分けを明示的に試す検査。",
+    "disposition": "resolved_in_N33",
+    "resolution": "旧受理の専用入力は E0449 と program の欠落を検査する負の入力へ切り替えた。"
+  },
+  {
+    "path": "crates/benitoite/tests/named_arguments.rs",
+    "snippet": 51,
+    "source": "bind mark <- target(a: 0, b: 0)\n bind result <- 1 |> target(2)",
+    "proposals": [
+      [
+        60,
+        "b: "
+      ]
+    ],
+    "host_range": [
+      17745,
+      17808
+    ],
+    "reason": "N33 までの旧入力の受理または版別の振り分けを明示的に試す検査。",
+    "disposition": "resolved_in_N33",
+    "resolution": "最終規則のパイプの E0449 と安全なラベルの挿入を検査する意図した負の入力として維持した。"
+  },
+  {
+    "path": "crates/benitoite/tests/named_arguments.rs",
+    "snippet": 52,
+    "source": "bind mark <- target(a: 0, b: 0)\n bind add1 <- target(_, 1)\n bind result <- List.map([1], add1)",
+    "proposals": [
+      [
+        53,
+        "a: "
+      ],
+      [
+        56,
+        "b: "
+      ],
+      [
+        84,
+        "xs: "
+      ],
+      [
+        89,
+        "f: "
+      ]
+    ],
+    "host_range": [
+      17917,
+      18013
+    ],
+    "reason": "N33 までの旧入力の受理または版別の振り分けを明示的に試す検査。",
+    "disposition": "resolved_in_N33",
+    "resolution": "穴の複数位置指定は E0449 の負の入力として維持し、後続の List.map だけを名前付きへ移した。"
+  }
+]

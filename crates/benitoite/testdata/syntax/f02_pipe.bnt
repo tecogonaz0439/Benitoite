@@ -6,7 +6,7 @@ end function
 
 function main() -> Unit
   bind result <- 1
-    |> add(_, 2)
-    |> add(_, 3)
+    |> add(x: _, y: 2)
+    |> add(x: _, y: 3)
   bind _ <- result
 end function

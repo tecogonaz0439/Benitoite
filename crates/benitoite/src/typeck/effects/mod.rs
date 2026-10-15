@@ -10,7 +10,7 @@ use super::{
     context::{Body, fixed, reason},
     decls::{Decls, Scope},
     generate,
-    infer::{Constraint, IFnTy, ITy, Reason, ReasonKind},
+    infer::{Constraint, ITy, Reason, ReasonKind},
 };
 use crate::base::Span;
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
@@ -117,7 +117,7 @@ fn with(ctx: &mut Body<'_, '_>, e: &WithExpr) -> ITy {
                 .decls
                 .reference(name.id)
                 .is_some_and(|id| Some(id) == ctx.decls.resolved.stdlib("Benitoite.TaskGroup.open"))
-            && !call.args.iter().any(|a| matches!(a, Arg::Placeholder(_)))
+            && !call.args.iter().any(|a| a.placeholder().is_some())
         {
             direct_open(ctx, call, name)
         } else {
@@ -148,41 +148,7 @@ fn direct_open(ctx: &mut Body<'_, '_>, call: &CallExpr, name: &NameExpr) -> ITy 
     // （設計書 02-05「書く位置の検査」）。
     let callee = generate::name(ctx, name, true);
     ctx.record_type(name.id, callee.clone());
-    let params: Vec<_> = call.args.iter().map(|_| ctx.fresh_ty()).collect();
-    let ret = ctx.fresh_ty();
-    let effect = ctx.fresh_effect();
-    generate::equal(
-        ctx,
-        ITy::Fn(Box::new(IFnTy {
-            params: params.clone(),
-            ret: ret.clone(),
-            effect: effect.clone(),
-        })),
-        callee,
-        call.span,
-        ReasonKind::Call,
-    );
-    for (i, (arg, param)) in call.args.iter().zip(params).enumerate() {
-        if let Arg::Expr(arg) = arg {
-            let ty = ctx.expr(arg);
-            generate::flow(
-                ctx,
-                ty,
-                param,
-                arg,
-                ReasonKind::CallArg {
-                    index: u32::try_from(i).unwrap_or(u32::MAX).saturating_add(1),
-                },
-                None,
-                false,
-            );
-        }
-    }
-    ctx.add(Constraint::EffSub {
-        sub: effect,
-        sup: ctx.effect.clone(),
-        reason: reason(call.span, ReasonKind::CallEffect),
-    });
+    let ret = super::calls::generate(ctx, call, None, None, Some(callee));
     ctx.record_type(call.id, ret.clone());
     ret
 }
@@ -203,7 +169,10 @@ pub(super) fn name(ctx: &mut Body<'_, '_>, name: &NameExpr, direct_with: bool) {
     }
 }
 pub(super) fn solve_special(ctx: &mut Body<'_, '_>) {
-    special::solve(ctx);
+    special::solve(ctx, true);
+}
+pub(super) fn solve_ready(ctx: &mut Body<'_, '_>) {
+    special::solve(ctx, false);
 }
 pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
     declarations::check_body(ctx);

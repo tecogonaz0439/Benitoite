@@ -10,5 +10,5 @@ function nest(value: Unit) -> Unit
 end function
 
 function main() -> Unit uses Console.Write
-  return consume(Console.writeLine("a"), nest(Console.writeLine("b")))
+  return consume(_first: Console.writeLine("a"), _second: nest(Console.writeLine("b")))
 end function

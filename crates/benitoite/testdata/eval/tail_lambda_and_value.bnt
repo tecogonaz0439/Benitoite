@@ -2,7 +2,7 @@
 // spec: 01-12 末尾呼び出しの保証
 import Benitoite.Unofficial.IO.Console
 
-function apply(next: function(Integer) -> Integer, value: Integer) -> Integer
+function apply(next: function(value: Integer) -> Integer, value: Integer) -> Integer
   return next(value)
 end function
 
@@ -10,7 +10,7 @@ function through_lambda(n: Integer) -> Integer
   return if n = 0 then
     42
   else
-    apply(lambda(value: Integer) return through_lambda(value) end lambda, n - 1)
+    apply(next: lambda(value: Integer) return through_lambda(value) end lambda, value: n - 1)
   end if
 end function
 

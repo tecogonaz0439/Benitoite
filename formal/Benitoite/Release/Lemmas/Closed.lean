@@ -1,10 +1,11 @@
-import Benitoite.Release.Lemmas.Canonical
+import Benitoite.Release.Lemmas.TyLemmas
 
 /-!
 # 項が閉じていることの保存（段階 B）
 
 状態の型付けは、状態の中の項が型の変数を含まないことを求める（`StateTy`）。値の置き換え、型の置き換え、
 番号の付け替えで、この性質が保たれることを示す。エフェクト変数の条件は問わない（`fun _ => True`）。
+ラムダの契約名とその整形式も保持する（設計書 01-12「初回リリース版の拡張」）。
 -/
 
 namespace Benitoite.Release
@@ -33,9 +34,9 @@ mutual
         exact Ty.VarsInList.substAt es hts args h
     | .list a, h => by
         simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.VarsIn]; exact Ty.VarsIn.substAt es hts a h
-    | .fn ps r _, h => by
+    | .fn names ps r _, h => by
         simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.VarsIn]
-        exact ⟨Ty.VarsInList.substAt es hts ps h.1, Ty.VarsIn.substAt es hts r h.2.1, fun _ _ => trivial⟩
+        exact ⟨h.1.map _, Ty.VarsInList.substAt es hts ps h.2.1, Ty.VarsIn.substAt es hts r h.2.2.1, fun _ _ => trivial⟩
     | .tvar i, h => by
         simp only [Ty.VarsIn] at h
         simp only [Ty.substAt]
@@ -100,9 +101,9 @@ mutual
     | .prim _ tys _, h => by
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
         exact ⟨Ty.VarsInList.substAt es hts tys h.1, Eff.RhosInList.true _⟩
-    | .lam ps body, h => by
+    | .lam names ps body, h => by
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
-        exact ⟨Ty.VarsInList.substAt es hts ps h.1, Comp.VarsIn.substTyAt es hts body h.2⟩
+        exact ⟨h.1.map _, Ty.VarsInList.substAt es hts ps h.2.1, Comp.VarsIn.substTyAt es hts body h.2.2⟩
     | .con _ tys args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
         exact ⟨Ty.VarsInList.substAt es hts tys h.1, Val.VarsInList.substTyAt es hts args h.2⟩
@@ -211,9 +212,9 @@ mutual
         simp only [Val.VarsIn] at h ⊢; exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, h.2⟩
     | .prim _ tys _, h => by
         simp only [Val.VarsIn] at h ⊢; exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, h.2⟩
-    | .lam ps body, h => by
+    | .lam names ps body, h => by
         simp only [Val.VarsIn] at h ⊢
-        exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Comp.VarsIn.mono hn body h.2⟩
+        exact ⟨h.1, Ty.VarsInList.mono hn (fun _ h => h) _ h.2.1, Comp.VarsIn.mono hn body h.2.2⟩
     | .con _ tys args, h => by
         simp only [Val.VarsIn] at h ⊢
         exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Val.VarsInList.mono hn args h.2⟩
@@ -284,9 +285,9 @@ mutual
     | .const _, _ => trivial
     | .fnRef _ _ _, h => h
     | .prim _ _ _, h => h
-    | .lam ps body, h => by
+    | .lam names ps body, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
-        exact ⟨h.1, Comp.VarsIn.rename _ body h.2⟩
+        exact ⟨h.1, h.2.1, Comp.VarsIn.rename _ body h.2.2⟩
     | .con _ _ args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
         exact ⟨h.1, Val.VarsInList.rename ξ args h.2⟩
@@ -381,9 +382,9 @@ mutual
     | .const _, _ => trivial
     | .fnRef _ _ _, h => h
     | .prim _ _ _, h => h
-    | .lam ps body, h => by
+    | .lam names ps body, h => by
         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]
-        exact ⟨h.1, Comp.VarsIn.subst (hσ.up _) body h.2⟩
+        exact ⟨h.1, h.2.1, Comp.VarsIn.subst (hσ.up _) body h.2.2⟩
     | .con _ _ args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]
         exact ⟨h.1, Val.VarsInList.subst hσ args h.2⟩

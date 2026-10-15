@@ -1,7 +1,7 @@
 import Benitoite.Release.Lemmas.PresMain
 
 /-!
-# 進行（段階 B）
+# 進行（契約名を持つコア）
 
 型が付いた状態は、実行を終えた状態であるか、遷移できる。継続の末尾で許すエフェクト Eb が組み込みの
 エフェクトの名前だけであることから、どの `handle` の枠も処理しない利用者の操作の呼び出しは起きない。
@@ -14,8 +14,8 @@ variable {P : Program} {B : Builtins}
 /-! ## 閉じた値の形 -/
 
 /-- 関数の型の閉じた値は、`λ`、関数の名前、組み込みの関数、操作のいずれかである。 -/
-theorem HasTypeV.canonical_fn {Ψ C v ps r ε} (h : HasTypeV P B Ψ C [] v (.fn ps r ε)) :
-    (∃ qs body, v = .lam qs body) ∨ (∃ f ts es, v = .fnRef f ts es) ∨ (∃ b ts es, v = .prim b ts es) ∨
+theorem HasTypeV.canonical_fn {Ψ C v names ps r ε} (h : HasTypeV P B Ψ C [] v (.fn names ps r ε)) :
+    (∃ ns qs body, v = .lam ns qs body) ∨ (∃ f ts es, v = .fnRef f ts es) ∨ (∃ b ts es, v = .prim b ts es) ∨
       (∃ o ts, v = .op o ts) := by
   cases v with
   | var i => obtain ⟨_, hi, _⟩ := h.inv_var rfl; simp at hi
@@ -25,7 +25,7 @@ theorem HasTypeV.canonical_fn {Ψ C v ps r ε} (h : HasTypeV P B Ψ C [] v (.fn 
   | fnRef f ts es => exact Or.inr (Or.inl ⟨_, _, _, rfl⟩)
   | prim b ts es => exact Or.inr (Or.inr (Or.inl ⟨_, _, _, rfl⟩))
   | op o ts => exact Or.inr (Or.inr (Or.inr ⟨_, _, rfl⟩))
-  | lam qs body => exact Or.inl ⟨_, _, rfl⟩
+  | lam ns qs body => exact Or.inl ⟨_, _, _, rfl⟩
   | con c ts args => obtain ⟨_, _, _, _, h'⟩ := h.inv_con rfl; simp at h'
   | list elems => obtain ⟨_, _, h'⟩ := h.inv_list rfl; simp at h'
   | loc l => rcases h.inv_loc rfl with ⟨_, _, h'⟩ | ⟨_, _, h'⟩ <;> simp at h'
@@ -59,16 +59,16 @@ theorem HasTypeV.canonical_dict (hwt : P.WellTyped B) {Ψ C} :
       have := (h.inv_const rfl).eq_of_not_fn (by intros; simp)
       cases c <;> simp [Const.type] at this
   | .fnRef _ _ _, _, _, h => by
-      obtain ⟨_, _, _, _, hle⟩ := h.inv_fnRef rfl
+      obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
   | .prim _ _ _, _, _, h => by
-      obtain ⟨_, _, _, _, _, hle⟩ := h.inv_prim rfl
+      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
   | .op _ _, _, _, h => by
-      obtain ⟨_, _, _, hle⟩ := h.inv_op rfl
+      obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
-  | .lam _ _, _, _, h => by
-      obtain ⟨_, _, _, hle⟩ := h.inv_lam rfl
+  | .lam _ _ _, _, _, h => by
+      obtain ⟨_, _, _, _, hle⟩ := h.inv_lam rfl
       have := hle.eq_of_not_fn (by intros; simp); simp at this
   | .con _ _ _, _, _, h => by obtain ⟨_, _, _, _, h'⟩ := h.inv_con rfl; simp at h'
   | .list _, _, _, h => by obtain ⟨_, _, h'⟩ := h.inv_list rfl; simp at h'
@@ -81,14 +81,14 @@ theorem HasTypeV.canonical_dict (hwt : P.WellTyped B) {Ψ C} :
 theorem progress_meth (hwt : P.WellTyped B) {Ψ σ R a ε v m ss es ws k}
     (hm : HasTypeC P B Ψ [] [] R (.meth v m ss es ws) a ε) :
     ∃ l s', Step P B (.run (.meth v m ss es ws) k σ) l s' := by
-  obtain ⟨cl, τ, cd, ms, hv, hcl, hms, hsat, hesl, hws, _, _⟩ := hm.inv_meth rfl
+  obtain ⟨cl, τ, cd, ms, hv, hcl, hms, hsat, hesl, _, hws, _, _⟩ := hm.inv_meth rfl
   rcases HasTypeV.canonical_dict hwt v hv with ⟨i, ts, vs, rfl⟩ | ⟨v', hv'⟩
   · obtain ⟨id, hi, hsatI, hvs, he⟩ := hv.inv_dict rfl
     simp only [Ty.dict.injEq] at he
     obtain ⟨rfl, rfl⟩ := he
     obtain ⟨cd', hcd, _, _, hmeths, _⟩ := hwt.impl hi
     rw [hcl] at hcd; cases hcd
-    obtain ⟨body, hbody, _⟩ := hmeths m ms hms
+    obtain ⟨body, hbody, _, _⟩ := hmeths m ms hms
     exact ⟨_, _, .E_Meth hi hbody hcl hms (by rw [hws.length_eq, List.length_map])
       (by rw [hvs.length_eq, List.length_map]) hsatI.1 hsat.1 hesl⟩
   · exact ⟨_, _, .E_Super hv'⟩
@@ -341,7 +341,7 @@ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ 
       obtain ⟨t, rfl, rfl, hargs', _, _⟩ := store_prim_inv hb hsig (by simp [hkd]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkd] at hsh
-      obtain ⟨_, _, hps, _, _⟩ := hsh
+      obtain ⟨_, _, _, hps, _, _⟩ := hsh
       have hl := hargs'.length_eq
       rw [hps] at hl; simp at hl
       obtain ⟨v, rfl⟩ := single_of_length hl
@@ -351,7 +351,7 @@ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ 
       obtain ⟨t, rfl, rfl, hargs', _, _⟩ := store_prim_inv hb hsig (by simp [hkd]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkd] at hsh
-      obtain ⟨_, _, hps, _, _⟩ := hsh
+      obtain ⟨_, _, _, hps, _, _⟩ := hsh
       rw [hps] at hargs'
       simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs'
       rcases hargs' with _ | ⟨hw, _ | _⟩
@@ -362,7 +362,7 @@ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ 
       obtain ⟨t, rfl, rfl, hargs', _, _⟩ := store_prim_inv hb hsig (by simp [hkd]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkd] at hsh
-      obtain ⟨_, _, hps, _, _⟩ := hsh
+      obtain ⟨_, _, _, hps, _, _⟩ := hsh
       rw [hps] at hargs'
       simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs'
       rcases hargs' with _ | ⟨hw, _ | ⟨_, _ | _⟩⟩
@@ -372,7 +372,7 @@ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ 
       obtain ⟨t, rfl, rfl, hargs', _, _⟩ := store_prim_inv hb hsig (by simp [hkd]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkd] at hsh
-      obtain ⟨_, _, hps, _, _⟩ := hsh
+      obtain ⟨_, _, _, hps, _, _⟩ := hsh
       rw [hps] at hargs'
       simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs'
       rcases hargs' with _ | ⟨hw, _ | ⟨_, _ | _⟩⟩
@@ -382,7 +382,7 @@ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ 
       obtain ⟨t, rfl, rfl, hargs', _, _⟩ := store_prim_inv hb hsig (by simp [hkd]) hm
       have hsh := hb.store_shape _ _ hsig
       unfold PrimSig.StoreShape at hsh; rw [hkd] at hsh
-      obtain ⟨_, _, hps, _, _⟩ := hsh
+      obtain ⟨_, _, _, hps, _, _⟩ := hsh
       rw [hps] at hargs'
       simp [Ty.subst, Ty.substAt, Ty.shift_zero] at hargs'
       rcases hargs' with _ | ⟨hw, _ | _⟩
@@ -396,14 +396,14 @@ theorem progress_app (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ σ R a b
     (hσ : StoreOk P B Ψ σ) (hm : HasTypeC P B Ψ [] [] R (.app f ws) a ε1) (hε : Eff.Sub ε1 ε)
     (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) :
     ∃ l s', Step P B (.run (.app f ws) k σ) l s' := by
-  obtain ⟨as, b', ε', hf, hargs, _, _⟩ := hm.inv_app rfl
-  rcases hf.canonical_fn with ⟨ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rfl⟩ | ⟨o, ts, rfl⟩
-  · obtain ⟨r, ε'', _, hle⟩ := hf.inv_lam rfl
-    obtain ⟨hps, _, _⟩ := Ty.Le.fn_fn' hle
+  obtain ⟨names, as, b', ε', hf, hargs, _, _⟩ := hm.inv_app rfl
+  rcases hf.canonical_fn with ⟨ns, ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rfl⟩ | ⟨o, ts, rfl⟩
+  · obtain ⟨r, ε'', _, _, hle⟩ := hf.inv_lam rfl
+    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle
     exact ⟨_, _, .E_Lam (by rw [hargs.length_eq, hps])⟩
-  · obtain ⟨d, hd, hsat, hes, hle⟩ := hf.inv_fnRef rfl
+  · obtain ⟨d, hd, hsat, hes, _, hle⟩ := hf.inv_fnRef rfl
     rw [fnTy_eq] at hle
-    obtain ⟨hps, _, _⟩ := Ty.Le.fn_fn' hle
+    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle
     have hwl : ws.length = d.params.length := by rw [hargs.length_eq, ← hps, List.length_map]
     exact ⟨_, _, .E_Fun hd hwl hsat.1 hes⟩
   · exact progress_prim hb hσ hm

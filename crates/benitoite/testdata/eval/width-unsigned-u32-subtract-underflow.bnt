@@ -3,6 +3,6 @@ function calculate(a: UnsignedInteger32, b: UnsignedInteger32) -> UnsignedIntege
   return a - b
 end function
 function main() -> Unit uses Console.Write
-  bind _ <- calculate(0u32, 1u32)
+  bind _ <- calculate(a: 0u32, b: 1u32)
   Console.writeLine("unreachable")
 end function

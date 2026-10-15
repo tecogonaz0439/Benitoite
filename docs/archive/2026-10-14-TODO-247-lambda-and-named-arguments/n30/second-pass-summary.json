@@ -1,0 +1,1021 @@
+{
+  "inputs": 53,
+  "typed": 53,
+  "candidates": 178,
+  "candidates_with_edits": [],
+  "proposed_diff_bytes": 0,
+  "remaining_holds": [
+    {
+      "id": "466e3a70d3b032e9560f",
+      "path": "tools/bench/programs/http.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "9016c1cf6c5eeceac55d",
+      "path": "tools/bench/programs/http.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "8a710b024a7c9dfa056b",
+      "path": "tools/bench/programs/http.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "d8bc4a164b54be9e46a1",
+      "path": "tools/bench/programs/map.bnt",
+      "kind": "call",
+      "names": [
+        "o",
+        "fallback"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "8349ca858cc2578ba832",
+      "path": "tools/bench/wasm/Runner.bnt",
+      "kind": "component",
+      "names": null,
+      "hold_reasons": [
+        "component_not_determined"
+      ]
+    },
+    {
+      "id": "7a36937251217b81d6f8",
+      "path": "tools/bench/wasm/Runner.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved",
+        "component_not_determined"
+      ]
+    },
+    {
+      "id": "87fbcc1e78c2924c1a69",
+      "path": "tools/bench/wasm/Runner.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved",
+        "component_not_determined"
+      ]
+    },
+    {
+      "id": "01e0efaf3c1fe9531236",
+      "path": "tools/bench/wasm/hash-a.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "d4f515981384a006f0ef",
+      "path": "tools/bench/wasm/hash-c-fast.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "6896644de4d9520b736b",
+      "path": "tools/bench/wasm/hash-c-list.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "72bd2ce6ad1282b0ad66",
+      "path": "tools/bench/wasm/json-a.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "532c230bbbda612fa41c",
+      "path": "tools/bench/wasm/json-a.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "35203a33cf056a1fd6f7",
+      "path": "tools/bench/wasm/json-a.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "d7f98d8e2a155c30c996",
+      "path": "tools/bench/wasm/json-a.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "310dc792ec88e64e48cb",
+      "path": "tools/bench/wasm/json-a.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "eccc8e52ff4bc7748f32",
+      "path": "tools/bench/wasm/json-a.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "18b9ee424101640b7104",
+      "path": "tools/bench/wasm/json-a.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "bb9741b688900b95728d",
+      "path": "tools/bench/wasm/json-a.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "332d804028a240d1032e",
+      "path": "tools/bench/wasm/json-b.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "318cc200637a5e519592",
+      "path": "tools/bench/wasm/json-b.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "c86b497dbb5271a3f4ef",
+      "path": "tools/bench/wasm/json-b.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "dc6918c0b425ce912ecf",
+      "path": "tools/bench/wasm/json-b.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "28c00ef08833a62f6c07",
+      "path": "tools/bench/wasm/json-b.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "4336aab09ef7705212c0",
+      "path": "tools/bench/wasm/json-b.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "fb8b6a7a2418ac59a634",
+      "path": "tools/bench/wasm/json-b.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "1dd85c905c307137c4bf",
+      "path": "tools/bench/wasm/json-b.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "8431ce9608570c3400de",
+      "path": "tools/bench/wasm/json-c.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "3f721ea942926cba75cb",
+      "path": "tools/bench/wasm/json-c.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "572909e9c19c1a044772",
+      "path": "tools/bench/wasm/json-c.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "a64b2fdfa6ecef85c028",
+      "path": "tools/bench/wasm/json-c.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "f07e4c74a599a5e5fe02",
+      "path": "tools/bench/wasm/json-c.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "18cd099bdcf0e513c77a",
+      "path": "tools/bench/wasm/json-c.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "3af12880ecef3b3c12d2",
+      "path": "tools/bench/wasm/json-c.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "a3d7ba2caadc3c1bdd4a",
+      "path": "tools/bench/wasm/json-c.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "d8989f6c451fb4e9a423",
+      "path": "tools/bench/wasm/regex-a.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "e4009ea9b828d611a1b7",
+      "path": "tools/bench/wasm/regex-c-once.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "4c2dc75d3e10c9edbc44",
+      "path": "tools/bench/wasm/regex-c-resource.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "50e2ac67b3bd70cec1bb",
+      "path": "tools/bench/wit-transfer/Runner.bnt",
+      "kind": "component",
+      "names": null,
+      "hold_reasons": [
+        "component_not_determined"
+      ]
+    },
+    {
+      "id": "f3f7f7f3a921a976eb70",
+      "path": "tools/bench/wit-transfer/Runner.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved",
+        "component_not_determined"
+      ]
+    },
+    {
+      "id": "467ca6749d07e413d11c",
+      "path": "tools/bench/wit-transfer/flags.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "081fa198f7ba5d51bb3e",
+      "path": "tools/bench/wit-transfer/large-bytes-adapter.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "b860241ff1d9ad4c3f0a",
+      "path": "tools/bench/wit-transfer/large-bytes-typed.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "ad6e733020914d621d8b",
+      "path": "tools/bench/wit-transfer/large-bytes.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "132656e4febef0aac282",
+      "path": "tools/bench/wit-transfer/maps.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "cc0f3bbcd3d56276907e",
+      "path": "tools/bench/wit-transfer/nested.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "a0b636712f39fb3ce191",
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "902690ea6d60f1dbb891",
+      "path": "tools/bench/wit-transfer/primitives.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "c110df0e42fa83d4cfbf",
+      "path": "tools/bench/wit-transfer/records.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "9def776ef1cacc73c9b1",
+      "path": "tools/bench/wit-transfer/short-numbers-adapter.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "63db90a24d9eb53dabac",
+      "path": "tools/bench/wit-transfer/short-numbers-typed.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "9263842a27b02b00fd00",
+      "path": "tools/bench/wit-transfer/short-numbers.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "7a5f612631efcfe2e4a4",
+      "path": "tools/bench/wit-transfer/tuples.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "c414f08912053f414d46",
+      "path": "tools/bench/wit-transfer/utf16.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "92a211056c89fb2ecfd4",
+      "path": "tools/bench/wit-transfer/variants.bnt",
+      "kind": "component",
+      "names": [],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "e6f49f81397baecd2499",
+      "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+      "kind": "call",
+      "names": [
+        "o",
+        "fallback"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "11aa6479a4b8f7c5b543",
+      "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "dace7523681fe0b2747f",
+      "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "cbf72fc1071bf0f5584d",
+      "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "0a3c84947388a4615c6a",
+      "path": "tools/skill-eval/tasks/csv_report/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "f8809713294a441886b6",
+      "path": "tools/skill-eval/tasks/dir_walk/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "409196d7c3fdae0e1de7",
+      "path": "tools/skill-eval/tasks/dir_walk/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "0b167b7cfea72c68a572",
+      "path": "tools/skill-eval/tasks/dir_walk/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "8aca27e1836a52b9eba8",
+      "path": "tools/skill-eval/tasks/dir_walk/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "e9732dd2e0fd4f6ab397",
+      "path": "tools/skill-eval/tasks/error_handling/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "825d3b2efdc9147c1b29",
+      "path": "tools/skill-eval/tasks/file_process/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "f34b8a3184a2c4de2010",
+      "path": "tools/skill-eval/tasks/file_process/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "3d03dfdc825a17de21a1",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "component",
+      "names": [
+        "value"
+      ],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "dbb6d62ed6920c5117d7",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "2fad1267cfaa314116b0",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "17abccd54f234ff5bb6d",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "2858f709155d3174eac2",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "1263341d936217cbe8b2",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "9f9abc36f19bea2eb3a6",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "4dabfbf18745dd648e44",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "9b2e6455857ac4628cba",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "f9bd19d841805c93a6b8",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "2209d2b460c25d0e6c83",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "cf81830761ef33bc4a8f",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "3f22b141d3959d588575",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "1defc0550ce47a576df6",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "f65e925dec4b38b9974a",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "29e072622b7291c3b9d8",
+      "path": "tools/skill-eval/tasks/http_client/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "f88417de72b7d443e43d",
+      "path": "tools/skill-eval/tasks/json_convert/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "8608d44a437bfb8a8c11",
+      "path": "tools/skill-eval/tasks/json_convert/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "544cd131c434ca2b79d2",
+      "path": "tools/skill-eval/tasks/json_convert/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "95e56403c4ed0148c609",
+      "path": "tools/skill-eval/tasks/json_convert/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "89c9b2c4e5e6ceff14f6",
+      "path": "tools/skill-eval/tasks/json_summary/reference.bnt",
+      "kind": "component",
+      "names": [
+        "value"
+      ],
+      "hold_reasons": [
+        "public_contract"
+      ]
+    },
+    {
+      "id": "d21f8057abe0d51293cc",
+      "path": "tools/skill-eval/tasks/json_summary/reference.bnt",
+      "kind": "call",
+      "names": [
+        "o",
+        "fallback"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "99a03d0e26889a168460",
+      "path": "tools/skill-eval/tasks/json_summary/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "d27bd8cc453edea4c15f",
+      "path": "tools/skill-eval/tasks/json_summary/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "cb8982b982cd66ed0f23",
+      "path": "tools/skill-eval/tasks/json_summary/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "e22c909031ed937ad729",
+      "path": "tools/skill-eval/tasks/process_run/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "10f4feb149fd836ae8fb",
+      "path": "tools/skill-eval/tasks/process_run/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "4360c84d0330c26757cd",
+      "path": "tools/skill-eval/tasks/process_run/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "2051545f8d0581e58d0d",
+      "path": "tools/skill-eval/tasks/process_run/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "77d520bca307ffd73f7b",
+      "path": "tools/skill-eval/tasks/process_shell/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "580011ccf0e7db234444",
+      "path": "tools/skill-eval/tasks/process_shell/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "0a5a7d9c003da614597a",
+      "path": "tools/skill-eval/tasks/process_shell/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "8c3fa2cc9b9439f5ce1f",
+      "path": "tools/skill-eval/tasks/process_shell/reference.bnt",
+      "kind": "call",
+      "names": null,
+      "hold_reasons": [
+        "callee_contract_unresolved"
+      ]
+    },
+    {
+      "id": "0acaa499a6b60ba3699e",
+      "path": "tools/skill-eval/tasks/regex_text/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    },
+    {
+      "id": "e8204d6f61672b33af4f",
+      "path": "tools/skill-eval/tasks/write_tests/reference.bnt",
+      "kind": "call",
+      "names": [
+        "r",
+        "f"
+      ],
+      "hold_reasons": [
+        "pipe_requires_review"
+      ]
+    }
+  ]
+}

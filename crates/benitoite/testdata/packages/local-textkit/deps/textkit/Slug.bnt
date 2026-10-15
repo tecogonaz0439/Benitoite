@@ -3,7 +3,7 @@ import Internal.Words
 /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
 public function slug(text: String) -> String
   bind words <- Words.split(text)
-  return String.join(words, "-")
+  return String.join(xs: words, separator: "-")
 end function
 
 /// 文字数が width を超えるときは、width 文字で切って "..." を付ける。
@@ -11,5 +11,5 @@ public function truncate(text: String, width: Integer) -> String
   if String.characterCount(text) <= width then
     return text
   end if
-  return Option.unwrapOr(String.characterSlice(text, 0, width), text) + "..."
+  return Option.unwrapOr(o: String.characterSlice(s: text, start: 0, stop: width), fallback: text) + "..."
 end function

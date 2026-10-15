@@ -15,7 +15,7 @@ function main() -> Unit uses State
         bind _ <- store("inner")
       with
         case store(y) ->
-          Reference.set(cell, Option.Some(y))
+          Reference.set(reference: cell, value: Option.Some(y))
           resume(y)
       end handle
       resume(x)

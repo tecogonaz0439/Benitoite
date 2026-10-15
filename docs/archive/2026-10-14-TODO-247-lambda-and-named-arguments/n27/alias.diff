@@ -1,0 +1,20 @@
+--- a/crates/benitoite/testdata/syntax/f03_constants_aliases.bnt
++++ b/crates/benitoite/testdata/syntax/f03_constants_aliases.bnt
+@@ -1,7 +1,7 @@
+ // spec: 01-02 定数（初回リリース版）
+ // spec: 01-02 型の別名（初回リリース版）
+ type UserId = Integer
+-type Validator[T] = function(x: T) -> Result[T, String]
++type Validator[T] = function(id: T) -> Result[T, String]
+ 
+ data Color
+   Red
+@@ -20,7 +20,7 @@
+ end function
+ 
+ function main() -> Unit
+-  bind _ <- validate(v: lambda(x) return Result.Ok(x) end lambda, id: defaultPort)
++  bind _ <- validate(v: lambda(id) return Result.Ok(id) end lambda, id: defaultPort)
+   bind _ <- maxRetries
+   bind _ <- greeting
+   bind _ <- primaryColors

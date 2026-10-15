@@ -7,11 +7,11 @@ import Benitoite.Unofficial.IO.Console
 function main() -> Unit uses State, Console.Write
   bind saved: Reference[Option[TaskGroup]] <- Reference.new(Option.None)
   with group = TaskGroup.open() do
-    Reference.set(saved, Option.Some(group))
+    Reference.set(reference: saved, value: Option.Some(group))
   end with
   match Reference.get(saved) with
     case Option.Some(group) ->
-      bind _ <- TaskGroup.spawn(group, lambda() Console.writeLine("unreachable") end lambda)
+      bind _ <- TaskGroup.spawn(group: group, action: lambda() Console.writeLine("unreachable") end lambda)
       ()
     case Option.None -> ()
   end match

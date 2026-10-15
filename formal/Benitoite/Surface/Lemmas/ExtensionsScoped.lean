@@ -1,4 +1,4 @@
-import Benitoite.Surface.Lemmas.Extensions
+import Benitoite.Surface.Lemmas.ScopedSupport
 
 /-! リストの展開と文字列補間の、型変数・エフェクト変数の範囲保存。 -/
 namespace Benitoite.Surface

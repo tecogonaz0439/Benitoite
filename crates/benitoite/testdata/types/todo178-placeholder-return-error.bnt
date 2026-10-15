@@ -4,7 +4,7 @@ function add(a: Integer, b: Integer) -> Integer
   return a + b
 end function
 function make() -> String
-  bind g <- add(return "escaped", _)
+  bind g <- add(a: return "escaped", b: _)
   return Integer.toString(g(1))
 end function
 function main() -> Unit

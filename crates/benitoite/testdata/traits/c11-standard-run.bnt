@@ -3,11 +3,11 @@
 import Benitoite.Trait
 import Benitoite.Unofficial.IO.Console
 function combine[T: Trait.Monoid](xs: List[T]) -> T
-  return List.fold(xs, Trait.Monoid.empty(), Trait.Semigroup.combine)
+  return List.fold(xs: xs, initial: Trait.Monoid.empty(), f: lambda(acc, value) return Trait.Semigroup.combine(x: acc, y: value) end lambda)
 end function
 function main() -> Unit uses Console.Write
   bind result: String <- combine(["a", "b"])
   Console.writeLine(Trait.Show.show(result))
-  bind xs: List[Integer] <- Trait.Functor.map([1, 2], lambda(n) return n + 1 end lambda)
+  bind xs: List[Integer] <- Trait.Functor.map(x: [1, 2], f: lambda(value) return value + 1 end lambda)
   Console.writeLine("${List.length(xs)}")
 end function

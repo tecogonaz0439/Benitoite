@@ -2,11 +2,11 @@
 import Benitoite.Unofficial.IO.File
 
 function headers(src: String, dst: String) -> Result[Pair[String, String], String] uses File.Read, State
-  with input = try File.openReader(src) |> Result.mapError(_, IOError.message),
-       other = try File.openReader(dst) |> Result.mapError(_, IOError.message) do
-    bind first <- try File.readLine(input) |> Result.mapError(_, IOError.message)
-    bind second <- try File.readLine(other) |> Result.mapError(_, IOError.message)
-    return Result.Ok(Pair(Option.unwrapOr(first, ""), Option.unwrapOr(second, "")))
+  with input = try File.openReader(src) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda),
+       other = try File.openReader(dst) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+    bind first <- try File.readLine(input) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    bind second <- try File.readLine(other) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+    return Result.Ok(Pair(Option.unwrapOr(o: first, fallback: ""), Option.unwrapOr(o: second, fallback: "")))
   end with
 end function
 

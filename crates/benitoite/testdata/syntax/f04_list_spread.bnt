@@ -3,12 +3,12 @@ function insertByCount(pair: Pair[String, Integer], xs: List[Pair[String, Intege
   match xs with
     case [] -> return [pair]
     case [first, ..rest] if Pair.second(first) >= Pair.second(pair) ->
-      return [first, ..insertByCount(pair, rest)]
+      return [first, ..insertByCount(pair: pair, xs: rest)]
     case _ -> return [pair, ..xs]
   end match
 end function
 
 function main() -> Unit
-  bind _ <- insertByCount(Pair("a", 2), [Pair("b", 3)])
+  bind _ <- insertByCount(pair: Pair("a", 2), xs: [Pair("b", 3)])
   ()
 end function

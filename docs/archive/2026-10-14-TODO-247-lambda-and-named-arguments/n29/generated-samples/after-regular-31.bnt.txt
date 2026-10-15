@@ -1,0 +1,46 @@
+import Benitoite.Unofficial.IO.Console
+effect Ask
+  function ask(value: Integer) -> Integer
+end effect
+function emptyList() -> List[Integer] return [] end function
+function none() -> Option[Integer] return Option.None end function
+data Packet
+  Empty
+  Item(Integer, Option[Integer])
+end data
+function main() -> Result[Unit, String] uses Console.Write
+bind v1: Integer <- (match Option.Some(List.length(emptyList())) with
+case Option.Some(v0) -> v0
+case Option.None -> 0
+end match)
+Console.writeLine("${v1}")
+bind v4: String <- "abc"
+Console.writeLine("${v4}")
+bind v16: Integer <- handle
+bind v13 <- ask(0)
+(handle
+bind v10 <- ask(0)
+(handle
+bind answer <- ask((match Packet.Item(11, none()) with
+case Packet.Item(v7, _) -> v7
+case Packet.Empty -> 0
+end match))
+answer + List.length(emptyList())
+with
+case ask(v8) ->
+bind v9 <- resume(v8 + 0)
+v9 + 0
+end handle) + v10
+with
+case ask(v11) ->
+bind v12 <- resume(v11 + 0)
+v12 + 0
+end handle) + v13
+with
+case ask(v14) ->
+bind v15 <- resume(v14 + 0)
+v15 + 0
+end handle
+Console.writeLine("${v16}")
+return Result.Error("generated main error")
+end function

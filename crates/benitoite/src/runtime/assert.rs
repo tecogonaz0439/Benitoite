@@ -369,7 +369,7 @@ use std::rc::Rc;
 use crate::base::BindingId;
 use crate::modules::ModuleKind;
 use crate::runtime::heap::{FieldsKind, ObjKind};
-use crate::syntax::ast::{self, Arg, ElseBranch, Expr, ListElem, Stmt};
+use crate::syntax::ast::{self, ElseBranch, Expr, ListElem, Stmt};
 use crate::types::builtin::{BuiltinTypeClass, BuiltinTypeId};
 use crate::types::{TyCon, TypeArg};
 
@@ -566,7 +566,7 @@ impl Collector<'_> {
                 self.call(&call.callee, call.span);
                 self.expr(&call.callee);
                 for arg in &call.args {
-                    if let Arg::Expr(x) = arg {
+                    if let Some(x) = arg.expr() {
                         self.expr(x);
                     }
                 }
@@ -955,6 +955,7 @@ fn substitute(ty: &Ty, args: &[Ty]) -> Ty {
     match ty {
         Ty::Con(con, xs) => Ty::Con(*con, xs.iter().map(|x| substitute(x, args)).collect()),
         Ty::Fn(f) => Ty::Fn(Box::new(crate::types::FnTy {
+            param_names: f.param_names.clone(),
             params: f.params.iter().map(|x| substitute(x, args)).collect(),
             ret: substitute(&f.ret, args),
             effects: f.effects.clone(),

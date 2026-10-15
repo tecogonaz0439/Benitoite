@@ -73,7 +73,7 @@ function main() -> Result[Unit,String] uses Clock.Time,State
   return if Reference.get(progressed) then Clock.monotonicMilliseconds() else -1 end if
  end lambda,
  lambda()
-  Reference.set(progressed,true)
+  Reference.set(reference: progressed,value: true)
   bind started <- Clock.monotonicMilliseconds()
   Clock.sleep(9)
   return if started = 0 then Clock.monotonicMilliseconds() else -1 end if

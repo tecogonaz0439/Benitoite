@@ -12,7 +12,7 @@ public function newCell(start: Integer) -> Cell uses State
 @external("wasm", "wasm/counter.wasm", "bnt:test/counter@0.1.0#[method]cell.get")
 function get(self: Cell) -> Integer uses State
 function main() -> Unit uses State, Console.Write
-  Console.writeLine("${distance("kitten", "sitting")}")
-  Console.writeLine("${add(20, 22)}")
+  Console.writeLine("${distance(a: "kitten", b: "sitting")}")
+  Console.writeLine("${add(a: 20, b: 22)}")
   Console.writeLine("${get(newCell(10))}")
 end function

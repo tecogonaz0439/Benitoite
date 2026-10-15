@@ -9,7 +9,7 @@ function main() -> Unit uses Console.Write
     * quantity
 
   bind count <- [1, 2, 3]
-    |> List.filter(lambda(value: Integer) return value > 1 end lambda)
+    |> List.filter(p: lambda(value: Integer) return value > 1 end lambda)
     |> List.length
 
   return if true then

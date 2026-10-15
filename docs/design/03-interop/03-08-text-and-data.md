@@ -12,6 +12,8 @@
 
 ## 仕様
 
+関数一覧の表の `f(a, b)` は、関数とパラメータを示す記法である。実際のコードでは、複数の引数を取る通常の関数は宣言のパラメータ名を付けて名前付きで呼ぶ。
+
 ### 各モジュールの範囲
 
 初回リリース版では、本章のモジュールはどれも非公式のモジュールであり、`import Benitoite.Unofficial.Json` の形で取り込む（[標準ライブラリ](03-06-stdlib.md)の「標準のモジュールと非公式のモジュール（初回リリース版）」）。本章は、`Unofficial` を挟まない名前（`Benitoite.Json`）で書く。
@@ -49,19 +51,19 @@
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Path.join(base, child)` | `function(String, String) -> String` | `base` の後に区切りを挟んで `child` を続けたパス。`base` が区切りで終わるときは区切りを重ねない。`base` が空なら `child`。`child` が絶対パスなら `child` |
-| `Path.joinAll(parts)` | `function(List[String]) -> String` | `parts` を先頭から順に `Path.join` でつないだパス。空のリストなら `""` |
-| `Path.parent(p)` | `function(String) -> Option[String]` | 最後の構成要素を除いたパス。根だけのパスと空のパスなら `Option.None` |
-| `Path.fileName(p)` | `function(String) -> Option[String]` | 最後の構成要素。最後が `..` のとき、`.` だけのとき、根だけのとき、空のときは `Option.None` |
-| `Path.stem(p)` | `function(String) -> Option[String]` | `Path.fileName(p)` から、最後の `.` とその後を除いた部分。`.` で始まり、ほかに `.` を含まない名前（`.bashrc`）は、名前全体 |
-| `Path.extension(p)` | `function(String) -> Option[String]` | `Path.fileName(p)` の最後の `.` より後の部分（`.` を含まない）。拡張子がなければ `Option.None` |
-| `Path.withExtension(p, extension)` | `function(String, String) -> String` | 拡張子を `extension` に替えたパス。`extension` が `""` なら拡張子を除く。ファイルの名前がないパス（空、根、`.`、最後が `..`）は、そのまま返す。`extension` が区切りを含むときは、実行時エラー（引数が定義域の外） |
-| `Path.isAbsolute(p)` | `function(String) -> Boolean` | 絶対パスか |
-| `Path.components(p)` | `function(String) -> List[String]` | 構成要素の並び。絶対パスでは、先頭に根（Unix では `/`）を置く。`.` の構成要素と、重なった区切りは除く |
-| `Path.normalize(p)` | `function(String) -> String` | `.` の構成要素を除き、`..` を直前の構成要素と打ち消したパス。打ち消す構成要素がない `..` は、相対パスでは残し、絶対パスでは除く。結果が空なら `"."` |
+| `Path.join(base, child)` | `function(base: String, child: String) -> String` | `base` の後に区切りを挟んで `child` を続けたパス。`base` が区切りで終わるときは区切りを重ねない。`base` が空なら `child`。`child` が絶対パスなら `child` |
+| `Path.joinAll(parts)` | `function(parts: List[String]) -> String` | `parts` を先頭から順に `Path.join` でつないだパス。空のリストなら `""` |
+| `Path.parent(p)` | `function(p: String) -> Option[String]` | 最後の構成要素を除いたパス。根だけのパスと空のパスなら `Option.None` |
+| `Path.fileName(p)` | `function(p: String) -> Option[String]` | 最後の構成要素。最後が `..` のとき、`.` だけのとき、根だけのとき、空のときは `Option.None` |
+| `Path.stem(p)` | `function(p: String) -> Option[String]` | `Path.fileName(p)` から、最後の `.` とその後を除いた部分。`.` で始まり、ほかに `.` を含まない名前（`.bashrc`）は、名前全体 |
+| `Path.extension(p)` | `function(p: String) -> Option[String]` | `Path.fileName(p)` の最後の `.` より後の部分（`.` を含まない）。拡張子がなければ `Option.None` |
+| `Path.withExtension(p, extension)` | `function(p: String, extension: String) -> String` | 拡張子を `extension` に替えたパス。`extension` が `""` なら拡張子を除く。ファイルの名前がないパス（空、根、`.`、最後が `..`）は、そのまま返す。`extension` が区切りを含むときは、実行時エラー（引数が定義域の外） |
+| `Path.isAbsolute(p)` | `function(p: String) -> Boolean` | 絶対パスか |
+| `Path.components(p)` | `function(p: String) -> List[String]` | 構成要素の並び。絶対パスでは、先頭に根（Unix では `/`）を置く。`.` の構成要素と、重なった区切りは除く |
+| `Path.normalize(p)` | `function(p: String) -> String` | `.` の構成要素を除き、`..` を直前の構成要素と打ち消したパス。打ち消す構成要素がない `..` は、相対パスでは残し、絶対パスでは除く。結果が空なら `"."` |
 
 - `Path.normalize` は字面だけで打ち消すので、シンボリックリンクを含むパスでは、ファイルシステムの上の同じ場所を指すとは限らない。シンボリックリンクを解決した絶対パスは `File.canonicalize`（[IO のモジュール](03-07-io-modules.md)）で得る。
-- `Path.join` は、`child` が空なら `base` の後に区切りを付けたパスを返す（`Path.join("a", "")` は `"a/"`。`base` が空か区切りで終わるときは `base` のまま）。
+- `Path.join` は、`child` が空なら `base` の後に区切りを付けたパスを返す（`Path.join(base: "a", child: "")` は `"a/"`。`base` が空か区切りで終わるときは `base` のまま）。
 - 相対パスを絶対パスにするには、`Process.workingDirectory`（[IO のモジュール](03-07-io-modules.md)）と `Path.join` を組み合わせる。
 
 ### Json
@@ -94,17 +96,17 @@ end record
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Json.parse(text)` | `function(String) -> Result[Json.Value, Json.ParseError]` | `text` を JSON として読んだ値。前後の空白を許す |
-| `Json.stringify(value)` | `function(Json.Value) -> String` | 空白を入れない JSON の文字列 |
-| `Json.stringifyPretty(value)` | `function(Json.Value) -> String` | 改行を入れ、入れ子ごとに 2 個の空白で字下げした JSON の文字列 |
-| `Json.get(value, key)` | `function(Json.Value, String) -> Option[Json.Value]` | `value` がオブジェクトなら、`key` のメンバの値。オブジェクトでないか、`key` がなければ `Option.None` |
-| `Json.at(value, index)` | `function(Json.Value, Integer) -> Option[Json.Value]` | `value` が配列なら、位置 `index`（0 から数える）の要素。配列でないか、範囲の外なら `Option.None` |
-| `Json.asString(value)` | `function(Json.Value) -> Option[String]` | `Json.Value.String` の中身 |
-| `Json.asInteger(value)` | `function(Json.Value) -> Option[Integer]` | `Json.Value.Integer` の中身 |
-| `Json.asFloat(value)` | `function(Json.Value) -> Option[Float]` | `Json.Value.Float` の中身。`Json.Value.Integer` なら `Float` に変換した値 |
-| `Json.asBoolean(value)` | `function(Json.Value) -> Option[Boolean]` | `Json.Value.Boolean` の中身 |
-| `Json.asArray(value)` | `function(Json.Value) -> Option[List[Json.Value]]` | `Json.Value.Array` の中身 |
-| `Json.asObject(value)` | `function(Json.Value) -> Option[Map[String, Json.Value]]` | `Json.Value.Object` の中身 |
+| `Json.parse(text)` | `function(text: String) -> Result[Json.Value, Json.ParseError]` | `text` を JSON として読んだ値。前後の空白を許す |
+| `Json.stringify(value)` | `function(value: Json.Value) -> String` | 空白を入れない JSON の文字列 |
+| `Json.stringifyPretty(value)` | `function(value: Json.Value) -> String` | 改行を入れ、入れ子ごとに 2 個の空白で字下げした JSON の文字列 |
+| `Json.get(value, k)` | `function(value: Json.Value, k: String) -> Option[Json.Value]` | `value` がオブジェクトなら、`k` のメンバの値。オブジェクトでないか、`k` がなければ `Option.None` |
+| `Json.at(value, index)` | `function(value: Json.Value, index: Integer) -> Option[Json.Value]` | `value` が配列なら、位置 `index`（0 から数える）の要素。配列でないか、範囲の外なら `Option.None` |
+| `Json.asString(value)` | `function(value: Json.Value) -> Option[String]` | `Json.Value.String` の中身 |
+| `Json.asInteger(value)` | `function(value: Json.Value) -> Option[Integer]` | `Json.Value.Integer` の中身 |
+| `Json.asFloat(value)` | `function(value: Json.Value) -> Option[Float]` | `Json.Value.Float` の中身。`Json.Value.Integer` なら `Float` に変換した値 |
+| `Json.asBoolean(value)` | `function(value: Json.Value) -> Option[Boolean]` | `Json.Value.Boolean` の中身 |
+| `Json.asArray(value)` | `function(value: Json.Value) -> Option[List[Json.Value]]` | `Json.Value.Array` の中身 |
+| `Json.asObject(value)` | `function(value: Json.Value) -> Option[Map[String, Json.Value]]` | `Json.Value.Object` の中身 |
 
 - `Json.stringify` と `Json.stringifyPretty` は、メンバを鍵の順序で書くので、同じ値からは同じ文字列を作る。文字列の中の制御文字、`"`、`\` はエスケープする。それ以外の文字は、エスケープせずにそのまま書く。
 - `Json.stringify` と `Json.stringifyPretty` は、有限の `Float` を、必ず小数点（`.`）か指数を含む形で書く（`1.0`、`-0.0`、`1e+300` など）。書いた文字列を読み直すと、同じ `Json.Value.Float` になる。
@@ -116,13 +118,13 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.Json
 
 function totalAmount(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(_, IOError.message)
-  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
-  bind items <- Json.asArray(value) |> Option.unwrapOr(_, [])
-  return Result.Ok(List.fold(items, 0, lambda(sum, item)
-    return match Json.get(item, "amount") with
-      case Option.Some(Json.Value.Integer(n)) -> sum + n
-      case _ -> sum
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
+  bind items <- Json.asArray(parsed) |> Option.unwrapOr(o: _, fallback: [])
+  return Result.Ok(List.fold(xs: items, initial: 0, f: lambda(acc, value)
+    return match Json.get(value: value, k: "amount") with
+      case Option.Some(Json.Value.Integer(n)) -> acc + n
+      case otherFields -> acc
     end match
   end lambda))
 end function
@@ -134,19 +136,19 @@ end function
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Regex.compile(source)` | `function(String) -> Result[Regex.Pattern, String]` | `source` を組み立てた正規表現。構文が正しくなければ、理由の文字列の `Result.Error` |
-| `Regex.isMatch(pattern, text)` | `function(Regex.Pattern, String) -> Boolean` | `text` のどこかに一致する部分があるか |
-| `Regex.find(pattern, text)` | `function(Regex.Pattern, String) -> Option[Regex.Match]` | 最も左で始まる一致 |
-| `Regex.findAll(pattern, text)` | `function(Regex.Pattern, String) -> List[Regex.Match]` | 重ならない一致を、左から順に並べたリスト |
-| `Regex.matchText(match)` | `function(Regex.Match) -> String` | 一致した部分の文字列 |
-| `Regex.matchByteStart(match)` | `function(Regex.Match) -> Integer` | 一致した部分の始まりのバイト位置 |
-| `Regex.matchByteEnd(match)` | `function(Regex.Match) -> Integer` | 一致した部分の終わりのバイト位置 |
-| `Regex.group(match, index)` | `function(Regex.Match, Integer) -> Option[String]` | 番号 `index` の捕獲グループに一致した部分。0 は一致の全体。グループがないか、一致に加わらなかったときは `Option.None` |
-| `Regex.namedGroup(match, name)` | `function(Regex.Match, String) -> Option[String]` | 名前 `name` の捕獲グループ（`(?P<name>…)`）に一致した部分 |
-| `Regex.replaceFirst(pattern, text, replacement)` | `function(Regex.Pattern, String, String) -> String` | 最初の一致を `replacement` に置き換えた文字列 |
-| `Regex.replaceAll(pattern, text, replacement)` | `function(Regex.Pattern, String, String) -> String` | すべての一致を `replacement` に置き換えた文字列 |
-| `Regex.replaceAllWith(pattern, text, f)` | `function[effect E](Regex.Pattern, String, function(Regex.Match) -> String uses E) -> String uses E` | すべての一致を、その一致を `f` に渡した値に置き換えた文字列 |
-| `Regex.split(pattern, text)` | `function(Regex.Pattern, String) -> List[String]` | 一致を区切りとして分けた部分のリスト |
+| `Regex.compile(source)` | `function(source: String) -> Result[Regex.Pattern, String]` | `source` を組み立てた正規表現。構文が正しくなければ、理由の文字列の `Result.Error` |
+| `Regex.isMatch(pattern, text)` | `function(pattern: Regex.Pattern, text: String) -> Boolean` | `text` のどこかに一致する部分があるか |
+| `Regex.find(pattern, text)` | `function(pattern: Regex.Pattern, text: String) -> Option[Regex.Match]` | 最も左で始まる一致 |
+| `Regex.findAll(pattern, text)` | `function(pattern: Regex.Pattern, text: String) -> List[Regex.Match]` | 重ならない一致を、左から順に並べたリスト |
+| `Regex.matchText(m)` | `function(m: Regex.Match) -> String` | 一致した部分の文字列 |
+| `Regex.matchByteStart(m)` | `function(m: Regex.Match) -> Integer` | 一致した部分の始まりのバイト位置 |
+| `Regex.matchByteEnd(m)` | `function(m: Regex.Match) -> Integer` | 一致した部分の終わりのバイト位置 |
+| `Regex.group(m, index)` | `function(m: Regex.Match, index: Integer) -> Option[String]` | 番号 `index` の捕獲グループに一致した部分。0 は一致の全体。グループがないか、一致に加わらなかったときは `Option.None` |
+| `Regex.namedGroup(m, name)` | `function(m: Regex.Match, name: String) -> Option[String]` | 名前 `name` の捕獲グループ（`(?P<name>…)`）に一致した部分 |
+| `Regex.replaceFirst(pattern, text, replacement)` | `function(pattern: Regex.Pattern, text: String, replacement: String) -> String` | 最初の一致を `replacement` に置き換えた文字列 |
+| `Regex.replaceAll(pattern, text, replacement)` | `function(pattern: Regex.Pattern, text: String, replacement: String) -> String` | すべての一致を `replacement` に置き換えた文字列 |
+| `Regex.replaceAllWith(pattern, text, f)` | `function[effect E](pattern: Regex.Pattern, text: String, f: function(matched: Regex.Match) -> String uses E) -> String uses E` | すべての一致を、その一致を `f` に渡した値に置き換えた文字列 |
+| `Regex.split(pattern, text)` | `function(pattern: Regex.Pattern, text: String) -> List[String]` | 一致を区切りとして分けた部分のリスト |
 
 - `Regex.matchByteStart` と `Regex.matchByteEnd` は、照合した文字列の中のバイト位置（[基本型の意味論](../01-spec/01-04-types-basic.md)）であり、一致した部分は半開区間 `[matchByteStart, matchByteEnd)` である。`String.byteSlice` にそのまま渡せる。
 - 正規表現の構文は `regex` クレートの構文である。先読み・後読みと後方参照は書けない。大文字と小文字を区別しない照合などは、`(?i)` のような正規表現の中の指定で行う。
@@ -165,7 +167,7 @@ import Benitoite.Unofficial.Regex
 
 function extractDates(text: String) -> Result[List[String], String]
   bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
-  return Result.Ok(Regex.findAll(pattern, text) |> List.map(_, Regex.matchText))
+  return Result.Ok(Regex.findAll(pattern: pattern, text: text) |> List.map(xs: _, f: lambda(value) return Regex.matchText(value)))
 end function
 ```
 
@@ -182,11 +184,11 @@ end record
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Csv.parse(text)` | `function(String) -> Result[List[List[String]], Csv.ParseError]` | 行のリスト。各行はフィールドのリスト |
-| `Csv.parseWith(text, delimiter)` | `function(String, Character) -> Result[List[List[String]], Csv.ParseError]` | 区切りを `delimiter`（`'\t'` など）とした `Csv.parse` |
-| `Csv.parseWithHeader(text)` | `function(String) -> Result[List[Map[String, String]], Csv.ParseError]` | 最初の行を見出しとし、残りの各行を、見出しの名前からフィールドへのマップにしたリスト |
-| `Csv.format(rows)` | `function(List[List[String]]) -> String` | `rows` を CSV の文字列にしたもの |
-| `Csv.formatWith(rows, delimiter)` | `function(List[List[String]], Character) -> String` | 区切りを `delimiter` とした `Csv.format` |
+| `Csv.parse(text)` | `function(text: String) -> Result[List[List[String]], Csv.ParseError]` | 行のリスト。各行はフィールドのリスト |
+| `Csv.parseWith(text, delimiter)` | `function(text: String, delimiter: Character) -> Result[List[List[String]], Csv.ParseError]` | 区切りを `delimiter`（`'\t'` など）とした `Csv.parse` |
+| `Csv.parseWithHeader(text)` | `function(text: String) -> Result[List[Map[String, String]], Csv.ParseError]` | 最初の行を見出しとし、残りの各行を、見出しの名前からフィールドへのマップにしたリスト |
+| `Csv.format(rows)` | `function(rows: List[List[String]]) -> String` | `rows` を CSV の文字列にしたもの |
+| `Csv.formatWith(rows, delimiter)` | `function(rows: List[List[String]], delimiter: Character) -> String` | 区切りを `delimiter` とした `Csv.format` |
 
 - 行の終わりは、LF、CR LF、CR 単独のどれも受け付ける。入力の先頭の BOM（U+FEFF）は一つだけ読み飛ばす。最後の行の後の改行はあってもなくてもよい。引用符で囲んだフィールドの中の改行と、`""`（引用符一つ）を受け付ける。
 - 解析は、RFC 4180 に合わない次の入力も誤りにせず受け付ける。引用符で始まらないフィールドの中の引用符は、そのまま文字として読む（`a"b` は `a"b`）。閉じた引用符の後に、区切り・行の終わり・引用符のどれでもない文字が来るときは、その文字から後をフィールドに加える（後の引用符もそのまま文字として読む。`"abc"x` は `abcx`、`"a"b"c` は `ab"c`）。引用符の使い方で誤りにするのは、閉じていない引用符だけである。理由: 実装に使う `csv-core`（0.1.13）の解析の振る舞いに合わせる（`csv_core::Reader` の状態遷移。csv-core 0.1.13 の `src/reader.rs` の `transition_nfa`）。
@@ -223,17 +225,17 @@ end record
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Time.fromUnixSeconds(seconds)` | `function(Integer) -> Time.Instant` | 1970-01-01T00:00:00Z から `seconds` 秒後の時刻 |
-| `Time.fromUnixMilliseconds(milliseconds)` | `function(Integer) -> Time.Instant` | 同じく `milliseconds` ミリ秒後の時刻 |
-| `Time.toUnixSeconds(t)` | `function(Time.Instant) -> Integer` | 経過の秒数（負の無限大の向きへ切り捨てる） |
-| `Time.toUnixMilliseconds(t)` | `function(Time.Instant) -> Integer` | 経過のミリ秒数（負の無限大の向きへ切り捨てる） |
-| `Time.addMilliseconds(t, milliseconds)` | `function(Time.Instant, Integer) -> Time.Instant` | `t` の `milliseconds` ミリ秒後の時刻 |
-| `Time.differenceMilliseconds(a, b)` | `function(Time.Instant, Time.Instant) -> Integer` | `a` から `b` を引いた経過のミリ秒数（負の無限大の向きへ切り捨てる） |
-| `Time.toDateTime(t, offsetMinutes)` | `function(Time.Instant, Integer) -> Time.DateTime` | 時差 `offsetMinutes` 分の地域で見た `t` の日付と時刻 |
-| `Time.fromDateTime(dt)` | `function(Time.DateTime) -> Result[Time.Instant, String]` | `dt` が表す時刻。存在しない日付（2 月 30 日など）や範囲の外の値は `Result.Error`。ただし `offsetMinutes` の範囲の外は実行時エラー（下の箇条） |
-| `Time.formatISO8601(t, offsetMinutes)` | `function(Time.Instant, Integer) -> String` | ISO 8601 の形の文字列（`2026-09-28T12:34:56.789+09:00`）。時差が 0 なら末尾を `Z` にする。秒の端数は、0 でなければ必要な桁まで書く |
-| `Time.parseISO8601(text)` | `function(String) -> Result[Time.Instant, String]` | ISO 8601 の形の文字列が表す時刻。時差（`+09:00` など）か `Z` を必須とする。受け付ける形は下の箇条 |
-| `Time.format(t, offsetMinutes, pattern)` | `function(Time.Instant, Integer, String) -> Result[String, String]` | `pattern` の指定に従って書いた文字列。`pattern` に知らない指定があれば `Result.Error` |
+| `Time.fromUnixSeconds(seconds)` | `function(seconds: Integer) -> Time.Instant` | 1970-01-01T00:00:00Z から `seconds` 秒後の時刻 |
+| `Time.fromUnixMilliseconds(milliseconds)` | `function(milliseconds: Integer) -> Time.Instant` | 同じく `milliseconds` ミリ秒後の時刻 |
+| `Time.toUnixSeconds(t)` | `function(t: Time.Instant) -> Integer` | 経過の秒数（負の無限大の向きへ切り捨てる） |
+| `Time.toUnixMilliseconds(t)` | `function(t: Time.Instant) -> Integer` | 経過のミリ秒数（負の無限大の向きへ切り捨てる） |
+| `Time.addMilliseconds(t, milliseconds)` | `function(t: Time.Instant, milliseconds: Integer) -> Time.Instant` | `t` の `milliseconds` ミリ秒後の時刻 |
+| `Time.differenceMilliseconds(a, b)` | `function(a: Time.Instant, b: Time.Instant) -> Integer` | `a` から `b` を引いた経過のミリ秒数（負の無限大の向きへ切り捨てる） |
+| `Time.toDateTime(t, offsetMinutes)` | `function(t: Time.Instant, offsetMinutes: Integer) -> Time.DateTime` | 時差 `offsetMinutes` 分の地域で見た `t` の日付と時刻 |
+| `Time.fromDateTime(dt)` | `function(dt: Time.DateTime) -> Result[Time.Instant, String]` | `dt` が表す時刻。存在しない日付（2 月 30 日など）や範囲の外の値は `Result.Error`。ただし `offsetMinutes` の範囲の外は実行時エラー（下の箇条） |
+| `Time.formatISO8601(t, offsetMinutes)` | `function(t: Time.Instant, offsetMinutes: Integer) -> String` | ISO 8601 の形の文字列（`2026-09-28T12:34:56.789+09:00`）。時差が 0 なら末尾を `Z` にする。秒の端数は、0 でなければ必要な桁まで書く |
+| `Time.parseISO8601(text)` | `function(text: String) -> Result[Time.Instant, String]` | ISO 8601 の形の文字列が表す時刻。時差（`+09:00` など）か `Z` を必須とする。受け付ける形は下の箇条 |
+| `Time.format(t, offsetMinutes, pattern)` | `function(t: Time.Instant, offsetMinutes: Integer, pattern: String) -> Result[String, String]` | `pattern` の指定に従って書いた文字列。`pattern` に知らない指定があれば `Result.Error` |
 
 - `Time.addMilliseconds` などの計算の結果が `Time.Instant` の範囲を超えたときは、実行時エラーとする（`Integer` の溢れと同じ扱い。[基本型の意味論](../01-spec/01-04-types-basic.md)）。
 - `offsetMinutes` は、-1439 以上 1439 以下でなければならない。範囲の外の値を渡すと実行時エラーとする。`Time.fromDateTime` に渡す `Time.DateTime` の `offsetMinutes` も同じである。
@@ -262,10 +264,10 @@ end record
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Encoding.base64Encode(data)` | `function(Bytes) -> String` | 標準の文字の表（RFC 4648 の 4 節）で、`=` の詰め物を付けた Base64 の文字列 |
-| `Encoding.base64Decode(text)` | `function(String) -> Result[Bytes, String]` | 標準の文字の表の Base64 を読んだバイト列。`=` の詰め物を必須とする。空白や改行を含むか、形が正しくなければ `Result.Error` |
-| `Encoding.base64UrlEncode(data)` | `function(Bytes) -> String` | URL とファイルの名前に使える文字の表（RFC 4648 の 5 節）で、詰め物を付けない Base64 の文字列 |
-| `Encoding.base64UrlDecode(text)` | `function(String) -> Result[Bytes, String]` | URL 用の文字の表の、詰め物のない Base64 を読んだバイト列 |
+| `Encoding.base64Encode(b)` | `function(b: Bytes) -> String` | 標準の文字の表（RFC 4648 の 4 節）で、`=` の詰め物を付けた Base64 の文字列 |
+| `Encoding.base64Decode(text)` | `function(text: String) -> Result[Bytes, String]` | 標準の文字の表の Base64 を読んだバイト列。`=` の詰め物を必須とする。空白や改行を含むか、形が正しくなければ `Result.Error` |
+| `Encoding.base64UrlEncode(b)` | `function(b: Bytes) -> String` | URL とファイルの名前に使える文字の表（RFC 4648 の 5 節）で、詰め物を付けない Base64 の文字列 |
+| `Encoding.base64UrlDecode(text)` | `function(text: String) -> Result[Bytes, String]` | URL 用の文字の表の、詰め物のない Base64 を読んだバイト列 |
 
 ### Hash
 
@@ -273,7 +275,7 @@ end record
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Hash.sha256(data)` | `function(Bytes) -> Bytes` | `data` の SHA-256 のハッシュ値（32 バイト） |
+| `Hash.sha256(b)` | `function(b: Bytes) -> Bytes` | `b` の SHA-256 のハッシュ値（32 バイト） |
 
 `Hash.sha256` は `Bytes` を受け取るので、ファイルのハッシュを求めるにはファイル全体を一つの値に読む。そのため、1 GiB を超えるファイルには使えない（[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」）。初回リリース版は、少しずつ計算するハッシュの関数を持たない。
 

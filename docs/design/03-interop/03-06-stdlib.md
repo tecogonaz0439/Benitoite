@@ -14,6 +14,10 @@ IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール]
 
 ## 仕様
 
+関数一覧の表の `f(a, b)` は、関数とパラメータを示す記法である。実際のコードでは、複数の引数を取る通常の関数は宣言のパラメータ名を付けて名前付きで呼ぶ。
+
+【決定】標準関数の外側の契約名は、標準ライブラリの `.bnt` の宣言を正とする。型の内側のコールバックは、単一の値に `value`、畳み込みに `acc, value`、Map に `key, value` または `acc, key, value`、失敗の値に `error`、HTTP に `request`、Regex に `matched` を使う。レコードの取り出す関数は `value` とする。既存の `Integer.toString(n)` や型クラスの `show(x)` などの公開名は維持し、高階の契約名が異なる場合は明示のラムダで合わせる。
+
 ### 範囲と名前の付け方
 
 【決定】prelude には、文字列とリストのよく使う操作と、`Option`・`Result` をつなぐ関数を入れる。文字を分類する関数のうち ASCII の範囲だけを扱うものは、名前にそれを示す（`Character.isASCIIDigit`）。Unicode の文字の性質に依る関数は、後述の「Character」で定める。
@@ -26,7 +30,7 @@ IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール]
 
 【方針】関数の引数は、操作の対象（文字列、リスト、`Option` など）を第 1 引数に置く。パイプ（`xs |> List.map(f)`）で対象を渡せるようにするためである。
 
-【方針】以下の表の型の欄の `function[T, effect E](A1, …) -> B uses E` は、型パラメータとエフェクト変数を持つ関数の型を表す本章の表記である。関数の宣言の型パラメータの並び（[構文](../01-spec/01-02-syntax.md)）と同じ意味を持つ。
+【方針】以下の表の型の欄の `function[T, effect E](a1: A1, …) -> B uses E` は、型パラメータとエフェクト変数を持つ関数の型を表す本章の表記である。関数の宣言の型パラメータの並び（[構文](../01-spec/01-02-syntax.md)）と同じ意味を持つ。
 
 【方針】以下の表の「実装」の欄は、関数を組み込みの関数（Rust）として実装する（「組み込み」）か、標準ライブラリのソース（言語）で定める（「ソース」）かを示す。この区別は利用者からは見えない。「実行時エラー」の欄が空の関数は、実行時エラーを起こさない。
 
@@ -54,7 +58,7 @@ IO を行うモジュール（`Benitoite.IO` の下）は[IO のモジュール]
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  bind doubled <- List.map([1, 2, 3], lambda(x) return x * 2 end lambda)
+  bind doubled <- List.map(xs: [1, 2, 3], f: lambda(value) return value * 2)
   Console.writeLine(Integer.toString(List.length(doubled)))
 end function
 ```
@@ -105,14 +109,14 @@ end function
 
 | 関数 | 型 | 値 | 実行時エラー | 実装 |
 |---|---|---|---|---|
-| `Integer.toString(n)` | `function(Integer) -> String` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「型の変換」 | | 組み込み |
-| `Integer.parse(s)` | `function(String) -> Option[Integer]` | 同上 | | 組み込み |
-| `Integer.toFloat(n)` | `function(Integer) -> Float` | 同上 | | 組み込み |
-| `Integer.floorDivide(a, b)` | `function(Integer, Integer) -> Integer` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「Integer」 | 同左 | 組み込み |
-| `Integer.floorModulo(a, b)` | `function(Integer, Integer) -> Integer` | 同上 | 同左 | 組み込み |
-| `Integer.absolute(n)` | `function(Integer) -> Integer` | `n` の絶対値 | `n` が −2^63 | 組み込み |
-| `Integer.minimum(a, b)` | `function(Integer, Integer) -> Integer` | 小さいほう | | 組み込み |
-| `Integer.maximum(a, b)` | `function(Integer, Integer) -> Integer` | 大きいほう | | 組み込み |
+| `Integer.toString(n)` | `function(n: Integer) -> String` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「型の変換」 | | 組み込み |
+| `Integer.parse(s)` | `function(s: String) -> Option[Integer]` | 同上 | | 組み込み |
+| `Integer.toFloat(n)` | `function(n: Integer) -> Float` | 同上 | | 組み込み |
+| `Integer.floorDivide(a, b)` | `function(a: Integer, b: Integer) -> Integer` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「Integer」 | 同左 | 組み込み |
+| `Integer.floorModulo(a, b)` | `function(a: Integer, b: Integer) -> Integer` | 同上 | 同左 | 組み込み |
+| `Integer.absolute(n)` | `function(n: Integer) -> Integer` | `n` の絶対値 | `n` が −2^63 | 組み込み |
+| `Integer.minimum(a, b)` | `function(a: Integer, b: Integer) -> Integer` | 小さいほう | | 組み込み |
+| `Integer.maximum(a, b)` | `function(a: Integer, b: Integer) -> Integer` | 大きいほう | | 組み込み |
 
 ビット演算の関数（`Integer.bitwiseAnd`・`bitwiseOr`・`bitwiseExclusiveOr`・`bitwiseNot`・`shiftLeft`・`shiftRight`・`shiftRightUnsigned`）を置く。意味は[基本型の意味論](../01-spec/01-04-types-basic.md)の「ビット演算（初回リリース版）」で定め、すべて組み込みで実装する。
 
@@ -120,22 +124,22 @@ end function
 
 | 関数 | 型 | 値 | 実行時エラー |
 |---|---|---|---|
-| `U.fromInteger(n)` | `function(Integer) -> Option[U]` | 範囲検査付きの変換（01-04「型の変換」） | |
-| `T.toInteger(n)` | `function(T) -> Integer` | 全域で正確な変換 | |
-| `UnsignedInteger64.toInteger(n)` | `function(UnsignedInteger64) -> Option[Integer]` | 範囲外は `None` | |
-| `U.parse(s)` | `function(String) -> Option[U]` | 01-04「型の変換」の十進の字句。接尾辞を受け付けず、符号なしは負号を拒否する | |
-| `U.toString(n)` | `function(U) -> String` | 接尾辞なしの十進表記 | |
-| `U.toFloat(n)` | `function(U) -> Float` | 最近接の binary64 の値。T では全域で正確 | |
-| `UnsignedInteger64.toDecimal(n)` | `function(UnsignedInteger64) -> Decimal` | 全域で正確な値 | |
-| `UnsignedInteger64.fromDecimal(x)` | `function(Decimal) -> Option[UnsignedInteger64]` | 数学的に整数で範囲内なら `Some`、それ以外は `None` | |
-| `U.absolute(n)` | `function(U) -> U` | 絶対値。符号なしでは元の値 | 符号付きの最小値 |
-| `U.minimum(a, b)`・`U.maximum(a, b)` | `function(U, U) -> U` | 小さいほう・大きいほう | |
-| `U.floorDivide(a, b)` | `function(U, U) -> U` | 負の無限大の方向の商。符号なしでは `div` と同じ | 除数 0、符号付きの最小値を −1 で割る場合 |
-| `U.floorModulo(a, b)` | `function(U, U) -> U` | 除数と同符号か 0 の剰余。符号なしでは `mod` と同じ | 除数 0。符号付きの最小値と −1 の場合は 0 を返す |
-| `U.bitwiseAnd`・`U.bitwiseOr`・`U.bitwiseExclusiveOr` | `function(U, U) -> U` | 各幅のビット演算（01-04「ビット演算（初回リリース版）」） | |
-| `U.bitwiseNot` | `function(U) -> U` | 各幅のすべてのビットを反転 | |
-| `U.shiftLeft`・`U.shiftRight` | `function(U, Integer) -> U` | 各幅のシフト | シフト量が負、または幅以上 |
-| 符号付き三種の `shiftRightUnsigned` | `function(T, Integer) -> T`（T は符号付き三種） | 上位を零で埋める右シフト | シフト量が負、または幅以上 |
+| `U.fromInteger(n)` | `function(n: Integer) -> Option[U]` | 範囲検査付きの変換（01-04「型の変換」） | |
+| `T.toInteger(n)` | `function(n: T) -> Integer` | 全域で正確な変換 | |
+| `UnsignedInteger64.toInteger(n)` | `function(n: UnsignedInteger64) -> Option[Integer]` | 範囲外は `None` | |
+| `U.parse(s)` | `function(s: String) -> Option[U]` | 01-04「型の変換」の十進の字句。接尾辞を受け付けず、符号なしは負号を拒否する | |
+| `U.toString(n)` | `function(n: U) -> String` | 接尾辞なしの十進表記 | |
+| `U.toFloat(n)` | `function(n: U) -> Float` | 最近接の binary64 の値。T では全域で正確 | |
+| `UnsignedInteger64.toDecimal(n)` | `function(n: UnsignedInteger64) -> Decimal` | 全域で正確な値 | |
+| `UnsignedInteger64.fromDecimal(x)` | `function(x: Decimal) -> Option[UnsignedInteger64]` | 数学的に整数で範囲内なら `Some`、それ以外は `None` | |
+| `U.absolute(n)` | `function(n: U) -> U` | 絶対値。符号なしでは元の値 | 符号付きの最小値 |
+| `U.minimum(a, b)`・`U.maximum(a, b)` | `function(a: U, b: U) -> U` | 小さいほう・大きいほう | |
+| `U.floorDivide(a, b)` | `function(a: U, b: U) -> U` | 負の無限大の方向の商。符号なしでは `div` と同じ | 除数 0、符号付きの最小値を −1 で割る場合 |
+| `U.floorModulo(a, b)` | `function(a: U, b: U) -> U` | 除数と同符号か 0 の剰余。符号なしでは `mod` と同じ | 除数 0。符号付きの最小値と −1 の場合は 0 を返す |
+| `U.bitwiseAnd`・`U.bitwiseOr`・`U.bitwiseExclusiveOr` | `function(a: U, b: U) -> U` | 各幅のビット演算（01-04「ビット演算（初回リリース版）」） | |
+| `U.bitwiseNot` | `function(a: U) -> U` | 各幅のすべてのビットを反転 | |
+| `U.shiftLeft`・`U.shiftRight` | `function(a: U, n: Integer) -> U` | 各幅のシフト | シフト量が負、または幅以上 |
+| 符号付き三種の `shiftRightUnsigned` | `function(a: T, n: Integer) -> T`（T は符号付き三種） | 上位を零で埋める右シフト | シフト量が負、または幅以上 |
 
 変換の `None` と、算術・シフトの実行時エラーは区別する。除算・最小値・シフトの規則は、[基本型の意味論](../01-spec/01-04-types-basic.md)と[評価意味論](../01-spec/01-08-evaluation.md)でも定める。
 
@@ -143,30 +147,30 @@ end function
 
 | 関数 | 型 | 値 | 実行時エラー | 実装 |
 |---|---|---|---|---|
-| `Float.toString(x)` | `function(Float) -> String` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「型の変換」 | | 組み込み |
-| `Float.parse(s)` | `function(String) -> Option[Float]` | 同上 | | 組み込み |
-| `Float.truncate(x)` | `function(Float) -> Option[Integer]` | 同上 | | 組み込み |
-| `Float.isNaN(x)` | `function(Float) -> Boolean` | `x` が NaN か | | 組み込み |
-| `Float.absolute(x)` | `function(Float) -> Float` | 符号を正にした値。NaN は NaN | | 組み込み |
-| `Float.floor(x)` | `function(Float) -> Float` | `x` 以下の最大の整数値。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ | | 組み込み |
-| `Float.ceiling(x)` | `function(Float) -> Float` | `x` 以上の最小の整数値。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ（`Float.ceiling(-0.5)` は `-0.0`） | | 組み込み |
-| `Float.round(x)` | `function(Float) -> Float` | 最も近い整数値。ちょうど中間なら 0 から遠いほう。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ（`Float.round(-0.4)` は `-0.0`） | | 組み込み |
-| `Float.squareRoot(x)` | `function(Float) -> Float` | IEEE 754 の平方根。負の数は NaN | | 組み込み |
+| `Float.toString(x)` | `function(x: Float) -> String` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「型の変換」 | | 組み込み |
+| `Float.parse(s)` | `function(s: String) -> Option[Float]` | 同上 | | 組み込み |
+| `Float.truncate(x)` | `function(x: Float) -> Option[Integer]` | 同上 | | 組み込み |
+| `Float.isNaN(x)` | `function(x: Float) -> Boolean` | `x` が NaN か | | 組み込み |
+| `Float.absolute(x)` | `function(x: Float) -> Float` | 符号を正にした値。NaN は NaN | | 組み込み |
+| `Float.floor(x)` | `function(x: Float) -> Float` | `x` 以下の最大の整数値。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ | | 組み込み |
+| `Float.ceiling(x)` | `function(x: Float) -> Float` | `x` 以上の最小の整数値。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ（`Float.ceiling(-0.5)` は `-0.0`） | | 組み込み |
+| `Float.round(x)` | `function(x: Float) -> Float` | 最も近い整数値。ちょうど中間なら 0 から遠いほう。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ（`Float.round(-0.4)` は `-0.0`） | | 組み込み |
+| `Float.squareRoot(x)` | `function(x: Float) -> Float` | IEEE 754 の平方根。負の数は NaN | | 組み込み |
 
 【決定】`Float32` の標準関数は次のとおりであり、すべて純粋な組み込みの関数である。
 
 | 関数 | 型 | 値 | 実行時エラー |
 |---|---|---|---|
-| `Float32.fromFloat(x)` | `function(Float) -> Option[Float32]` | 最近接偶数丸めで縮小。有限値が無限大になる場合だけ `None`（01-04「型の変換」） | |
-| `Float32.toFloat(x)` | `function(Float32) -> Float` | 有限値の正確な拡大。零の符号を保つ | |
-| `Float32.parse(s)` | `function(String) -> Option[Float32]` | `Float.parse` と同じ字句を直接 binary32 で読む。不正な表記と無限大になる値は `None` | |
-| `Float32.toString(x)` | `function(Float32) -> String` | binary32 へ読み戻せる最短表記（01-04「型の変換」） | |
-| `Float32.truncate(x)` | `function(Float32) -> Option[Integer]` | 0 の方向へ切り捨てる。特殊値と範囲外は `None` | |
-| `Float32.isNaN(x)`・`Float32.isInfinite(x)` | `function(Float32) -> Boolean` | NaN・正負の無限大の判定 | |
-| `Float32.absolute(x)` | `function(Float32) -> Float32` | 符号を正にした値。NaN は NaN | |
-| `Float32.floor(x)`・`Float32.ceiling(x)` | `function(Float32) -> Float32` | 負・正の無限大の方向へ丸めた整数値。NaN・無限大・±0 はそのまま。結果が零なら元の符号を保つ | |
-| `Float32.round(x)` | `function(Float32) -> Float32` | 最も近い整数値。ちょうど半分なら零から遠い側。特殊値と零の符号の扱いは `Float.round` と同じ | |
-| `Float32.squareRoot(x)` | `function(Float32) -> Float32` | 単精度の平方根。負値は NaN | |
+| `Float32.fromFloat(n)` | `function(n: Float) -> Option[Float32]` | 最近接偶数丸めで縮小。有限値が無限大になる場合だけ `None`（01-04「型の変換」） | |
+| `Float32.toFloat(n)` | `function(n: Float32) -> Float` | 有限値の正確な拡大。零の符号を保つ | |
+| `Float32.parse(s)` | `function(s: String) -> Option[Float32]` | `Float.parse` と同じ字句を直接 binary32 で読む。不正な表記と無限大になる値は `None` | |
+| `Float32.toString(n)` | `function(n: Float32) -> String` | binary32 へ読み戻せる最短表記（01-04「型の変換」） | |
+| `Float32.truncate(n)` | `function(n: Float32) -> Option[Integer]` | 0 の方向へ切り捨てる。特殊値と範囲外は `None` | |
+| `Float32.isNaN(n)`・`Float32.isInfinite(n)` | `function(n: Float32) -> Boolean` | NaN・正負の無限大の判定 | |
+| `Float32.absolute(n)` | `function(n: Float32) -> Float32` | 符号を正にした値。NaN は NaN | |
+| `Float32.floor(n)`・`Float32.ceiling(n)` | `function(n: Float32) -> Float32` | 負・正の無限大の方向へ丸めた整数値。NaN・無限大・±0 はそのまま。結果が零なら元の符号を保つ | |
+| `Float32.round(n)` | `function(n: Float32) -> Float32` | 最も近い整数値。ちょうど半分なら零から遠い側。特殊値と零の符号の扱いは `Float.round` と同じ | |
+| `Float32.squareRoot(n)` | `function(n: Float32) -> Float32` | 単精度の平方根。負値は NaN | |
 
 丸め・平方根は binary32 の値に対して行い、倍精度の計算結果の縮小で代用しない。
 
@@ -174,18 +178,18 @@ end function
 
 | 関数 | 型 | 値 | 実行時エラー | 実装 |
 |---|---|---|---|---|
-| `Character.toInteger(c)` | `function(Character) -> Integer` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「Character」 | | 組み込み |
-| `Character.fromInteger(n)` | `function(Integer) -> Option[Character]` | 同上 | | 組み込み |
-| `Character.toString(c)` | `function(Character) -> String` | 同上 | | 組み込み |
-| `Character.isASCIIDigit(c)` | `function(Character) -> Boolean` | `c` が `'0'`〜`'9'` か | | 組み込み |
-| `Character.isASCIIWhitespace(c)` | `function(Character) -> Boolean` | `c` が ASCII の空白（U+0020、U+0009、U+000A、U+000D）か | | 組み込み |
-| `Character.isAlphabetic(c)` | `function(Character) -> Boolean` | `c` が Unicode の Alphabetic の性質を持つか | | 組み込み |
-| `Character.isNumeric(c)` | `function(Character) -> Boolean` | `c` の Unicode の一般カテゴリが Nd・Nl・No のどれかか | | 組み込み |
-| `Character.isWhitespace(c)` | `function(Character) -> Boolean` | `c` が Unicode の White_Space の性質を持つか | | 組み込み |
-| `Character.isUppercase(c)` | `function(Character) -> Boolean` | `c` が Unicode の Uppercase の性質を持つか | | 組み込み |
-| `Character.isLowercase(c)` | `function(Character) -> Boolean` | `c` が Unicode の Lowercase の性質を持つか | | 組み込み |
-| `Character.toUppercase(c)` | `function(Character) -> String` | `c` を大文字にした文字列（後述） | | 組み込み |
-| `Character.toLowercase(c)` | `function(Character) -> String` | `c` を小文字にした文字列（後述） | | 組み込み |
+| `Character.toInteger(c)` | `function(c: Character) -> Integer` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「Character」 | | 組み込み |
+| `Character.fromInteger(n)` | `function(n: Integer) -> Option[Character]` | 同上 | | 組み込み |
+| `Character.toString(c)` | `function(c: Character) -> String` | 同上 | | 組み込み |
+| `Character.isASCIIDigit(c)` | `function(c: Character) -> Boolean` | `c` が `'0'`〜`'9'` か | | 組み込み |
+| `Character.isASCIIWhitespace(c)` | `function(c: Character) -> Boolean` | `c` が ASCII の空白（U+0020、U+0009、U+000A、U+000D）か | | 組み込み |
+| `Character.isAlphabetic(c)` | `function(c: Character) -> Boolean` | `c` が Unicode の Alphabetic の性質を持つか | | 組み込み |
+| `Character.isNumeric(c)` | `function(c: Character) -> Boolean` | `c` の Unicode の一般カテゴリが Nd・Nl・No のどれかか | | 組み込み |
+| `Character.isWhitespace(c)` | `function(c: Character) -> Boolean` | `c` が Unicode の White_Space の性質を持つか | | 組み込み |
+| `Character.isUppercase(c)` | `function(c: Character) -> Boolean` | `c` が Unicode の Uppercase の性質を持つか | | 組み込み |
+| `Character.isLowercase(c)` | `function(c: Character) -> Boolean` | `c` が Unicode の Lowercase の性質を持つか | | 組み込み |
+| `Character.toUppercase(c)` | `function(c: Character) -> String` | `c` を大文字にした文字列（後述） | | 組み込み |
+| `Character.toLowercase(c)` | `function(c: Character) -> String` | `c` を小文字にした文字列（後述） | | 組み込み |
 
 【決定】Unicode の文字の性質に依る分類と変換の関数は、次の規則に従う。
 
@@ -198,25 +202,25 @@ end function
 
 | 関数 | 型 | 値 | 実装 |
 |---|---|---|---|
-| `String.isEmpty(s)` | `function(String) -> Boolean` | `s` が空文字列か | 組み込み |
-| `String.contains(s, sub)` | `function(String, String) -> Boolean` | `s` が `sub` を部分文字列として含むか。`sub` が空なら `true` | 組み込み |
-| `String.startsWith(s, prefix)` | `function(String, String) -> Boolean` | `s` が `prefix` で始まるか | 組み込み |
-| `String.endsWith(s, suffix)` | `function(String, String) -> Boolean` | `s` が `suffix` で終わるか | 組み込み |
-| `String.byteIndexOf(s, sub)` | `function(String, String) -> Option[Integer]` | `sub` が最初に現れるバイト位置。現れなければ `Option.None`。`sub` が空なら `Option.Some(0)` | 組み込み |
-| `String.split(s, sep)` | `function(String, String) -> List[String]` | 後述 | 組み込み |
-| `String.lines(s)` | `function(String) -> List[String]` | 後述 | 組み込み |
-| `String.join(xs, sep)` | `function(List[String], String) -> String` | `xs` の要素を、間に `sep` を挟んで順に連結した文字列。`xs` が空なら空文字列 | 組み込み |
-| `String.trim(s)` | `function(String) -> String` | 先頭と末尾の ASCII の空白（`Character.isASCIIWhitespace`）を取り除いた文字列 | 組み込み |
-| `String.replace(s, old, new)` | `function(String, String, String) -> String` | `s` の中の `old` の出現を、先頭から重ならないように順にすべて `new` に置き換えた文字列。`old` が空なら `s` | 組み込み |
-| `String.repeat(s, n)` | `function(String, Integer) -> String` | `s` を `n` 回連結した文字列。`n` が 0 以下なら空文字列 | 組み込み |
-| `String.characters(s)` | `function(String) -> List[Character]` | `s` のスカラー値を順に並べたリスト | 組み込み |
-| `String.fromCharacters(cs)` | `function(List[Character]) -> String` | `cs` の文字を順に連結した文字列 | 組み込み |
-| `String.toUppercase(s)` | `function(String) -> String` | `s` の各文字を `Character.toUppercase` で変換して連結した文字列 | 組み込み |
-| `String.toLowercase(s)` | `function(String) -> String` | `s` を小文字にした文字列。ギリシャ文字のシグマは、語の終わりでは `ς` にする | 組み込み |
+| `String.isEmpty(s)` | `function(s: String) -> Boolean` | `s` が空文字列か | 組み込み |
+| `String.contains(s, part)` | `function(s: String, part: String) -> Boolean` | `s` が `part` を部分文字列として含むか。`part` が空なら `true` | 組み込み |
+| `String.startsWith(s, prefix)` | `function(s: String, prefix: String) -> Boolean` | `s` が `prefix` で始まるか | 組み込み |
+| `String.endsWith(s, suffix)` | `function(s: String, suffix: String) -> Boolean` | `s` が `suffix` で終わるか | 組み込み |
+| `String.byteIndexOf(s, part)` | `function(s: String, part: String) -> Option[Integer]` | `part` が最初に現れるバイト位置。現れなければ `Option.None`。`part` が空なら `Option.Some(0)` | 組み込み |
+| `String.split(s, separator)` | `function(s: String, separator: String) -> List[String]` | 後述 | 組み込み |
+| `String.lines(s)` | `function(s: String) -> List[String]` | 後述 | 組み込み |
+| `String.join(xs, separator)` | `function(xs: List[String], separator: String) -> String` | `xs` の要素を、間に `separator` を挟んで順に連結した文字列。`xs` が空なら空文字列 | 組み込み |
+| `String.trim(s)` | `function(s: String) -> String` | 先頭と末尾の ASCII の空白（`Character.isASCIIWhitespace`）を取り除いた文字列 | 組み込み |
+| `String.replace(s, old, new)` | `function(s: String, old: String, new: String) -> String` | `s` の中の `old` の出現を、先頭から重ならないように順にすべて `new` に置き換えた文字列。`old` が空なら `s` | 組み込み |
+| `String.repeat(s, n)` | `function(s: String, n: Integer) -> String` | `s` を `n` 回連結した文字列。`n` が 0 以下なら空文字列 | 組み込み |
+| `String.characters(s)` | `function(s: String) -> List[Character]` | `s` のスカラー値を順に並べたリスト | 組み込み |
+| `String.fromCharacters(cs)` | `function(cs: List[Character]) -> String` | `cs` の文字を順に連結した文字列 | 組み込み |
+| `String.toUppercase(s)` | `function(s: String) -> String` | `s` の各文字を `Character.toUppercase` で変換して連結した文字列 | 組み込み |
+| `String.toLowercase(s)` | `function(s: String) -> String` | `s` を小文字にした文字列。ギリシャ文字のシグマは、語の終わりでは `ς` にする | 組み込み |
 
-【方針】`String.split(s, sep)` は次の値を返す。
+【方針】`String.split(s: s, separator: sep)` は次の値を返す。
 
-- `sep` が空でなければ、`s` を `sep` の出現（先頭から重ならないように探す）で区切った部分文字列の並び。区切りの前後や連続する区切りの間は空文字列になる。要素は常に 1 個以上であり、`s` が空なら `[""]` である（`String.split("a,,b", ",")` は `["a", "", "b"]`）。
+- `sep` が空でなければ、`s` を `sep` の出現（先頭から重ならないように探す）で区切った部分文字列の並び。区切りの前後や連続する区切りの間は空文字列になる。要素は常に 1 個以上であり、`s` が空なら `[""]` である（`String.split(s: "a,,b", separator: ",")` は `["a", "", "b"]`）。
 - `sep` が空なら、`s` の各スカラー値を 1 文字の文字列にした並び。`s` が空なら `[]` である。
 
 【方針】`String.lines(s)` は、`s` を行に分けた並びを返す。行は LF（U+000A）で区切り、各行の末尾に CR（U+000D）が一つあれば取り除く。`s` が LF で終わるとき、その後の空の行は含めない。`s` が空なら `[]` である（`String.lines("a\r\nb\n")` は `["a", "b"]`、`String.lines("a\n\nb")` は `["a", "", "b"]`）。
@@ -227,27 +231,27 @@ end function
 
 | 関数 | 型 | 値 | 計算量 | 実装 |
 |---|---|---|---|---|
-| `List.length(xs)` | `function[T](List[T]) -> Integer` | 要素の数 | O(1) | 組み込み |
-| `List.isEmpty(xs)` | `function[T](List[T]) -> Boolean` | 空か | O(1) | 組み込み |
-| `List.head(xs)` | `function[T](List[T]) -> Option[T]` | 先頭の要素。空なら `Option.None` | O(log n) | 組み込み |
-| `List.tail(xs)` | `function[T](List[T]) -> Option[List[T]]` | 先頭を除いたリスト。空なら `Option.None` | O(log n) | 組み込み |
-| `List.get(xs, i)` | `function[T](List[T], Integer) -> Option[T]` | 位置 `i`（0 から数える）の要素。`i` が範囲の外なら `Option.None` | O(log n) | 組み込み |
-| `List.prepend(xs, x)` | `function[T](List[T], T) -> List[T]` | 先頭に `x` を加えたリスト | O(log n) | 組み込み |
-| `List.append(xs, x)` | `function[T](List[T], T) -> List[T]` | 末尾に `x` を加えたリスト | O(log n) | 組み込み |
-| `List.concatenate(xs, ys)` | `function[T](List[T], List[T]) -> List[T]` | `xs` の後に `ys` を続けたリスト | O(log n) | 組み込み |
-| `List.reverse(xs)` | `function[T](List[T]) -> List[T]` | 逆順のリスト | O(n) | 組み込み |
-| `List.take(xs, n)` | `function[T](List[T], Integer) -> List[T]` | 先頭から `n` 個。`n` が 0 以下なら `[]`、長さ以上なら `xs` | O(log n) | 組み込み |
-| `List.drop(xs, n)` | `function[T](List[T], Integer) -> List[T]` | 先頭の `n` 個を除いたリスト。`n` が 0 以下なら `xs`、長さ以上なら `[]` | O(log n) | 組み込み |
-| `List.range(start, stop)` | `function(Integer, Integer) -> List[Integer]` | `start` 以上 `stop` 未満の整数を昇順に並べたリスト。`stop` が `start` 以下なら `[]` | O(stop − start) | 組み込み |
-| `List.contains(xs, x)` | `function[T: equality](List[T], T) -> Boolean` | `x` と `=` で等しい要素があるか | O(n) | 組み込み |
-| `List.sort(xs)` | `function[T: ordered](List[T]) -> List[T]` | 昇順に並べ替えたリスト（後述） | O(n log n) | 組み込み |
-| `List.map(xs, f)` | `function[T, U, effect E](List[T], function(T) -> U uses E) -> List[U] uses E` | 各要素に `f` を適用した値のリスト | O(n) | ソース |
-| `List.filter(xs, p)` | `function[T, effect E](List[T], function(T) -> Boolean uses E) -> List[T] uses E` | `p` が `true` を返す要素だけを、順序を保って並べたリスト | O(n) | ソース |
-| `List.fold(xs, init, f)` | `function[T, A, effect E](List[T], A, function(A, T) -> A uses E) -> A uses E` | `init` から始め、先頭の要素から順に `f(acc, x)` で畳み込んだ値 | O(n) | ソース |
-| `List.forEach(xs, f)` | `function[T, effect E](List[T], function(T) -> Unit uses E) -> Unit uses E` | 各要素に `f` を適用する | O(n) | ソース |
-| `List.any(xs, p)` | `function[T, effect E](List[T], function(T) -> Boolean uses E) -> Boolean uses E` | `p` が `true` を返す要素があるか | O(n) | ソース |
-| `List.all(xs, p)` | `function[T, effect E](List[T], function(T) -> Boolean uses E) -> Boolean uses E` | すべての要素で `p` が `true` を返すか。空なら `true` | O(n) | ソース |
-| `List.find(xs, p)` | `function[T, effect E](List[T], function(T) -> Boolean uses E) -> Option[T] uses E` | `p` が `true` を返す最初の要素 | O(n) | ソース |
+| `List.length(xs)` | `function[T](xs: List[T]) -> Integer` | 要素の数 | O(1) | 組み込み |
+| `List.isEmpty(xs)` | `function[T](xs: List[T]) -> Boolean` | 空か | O(1) | 組み込み |
+| `List.head(xs)` | `function[T](xs: List[T]) -> Option[T]` | 先頭の要素。空なら `Option.None` | O(log n) | 組み込み |
+| `List.tail(xs)` | `function[T](xs: List[T]) -> Option[List[T]]` | 先頭を除いたリスト。空なら `Option.None` | O(log n) | 組み込み |
+| `List.get(xs, i)` | `function[T](xs: List[T], i: Integer) -> Option[T]` | 位置 `i`（0 から数える）の要素。`i` が範囲の外なら `Option.None` | O(log n) | 組み込み |
+| `List.prepend(xs, x)` | `function[T](xs: List[T], x: T) -> List[T]` | 先頭に `x` を加えたリスト | O(log n) | 組み込み |
+| `List.append(xs, x)` | `function[T](xs: List[T], x: T) -> List[T]` | 末尾に `x` を加えたリスト | O(log n) | 組み込み |
+| `List.concatenate(xs, ys)` | `function[T](xs: List[T], ys: List[T]) -> List[T]` | `xs` の後に `ys` を続けたリスト | O(log n) | 組み込み |
+| `List.reverse(xs)` | `function[T](xs: List[T]) -> List[T]` | 逆順のリスト | O(n) | 組み込み |
+| `List.take(xs, n)` | `function[T](xs: List[T], n: Integer) -> List[T]` | 先頭から `n` 個。`n` が 0 以下なら `[]`、長さ以上なら `xs` | O(log n) | 組み込み |
+| `List.drop(xs, n)` | `function[T](xs: List[T], n: Integer) -> List[T]` | 先頭の `n` 個を除いたリスト。`n` が 0 以下なら `xs`、長さ以上なら `[]` | O(log n) | 組み込み |
+| `List.range(start, stop)` | `function(start: Integer, stop: Integer) -> List[Integer]` | `start` 以上 `stop` 未満の整数を昇順に並べたリスト。`stop` が `start` 以下なら `[]` | O(stop − start) | 組み込み |
+| `List.contains(xs, x)` | `function[T: equality](xs: List[T], x: T) -> Boolean` | `x` と `=` で等しい要素があるか | O(n) | 組み込み |
+| `List.sort(xs)` | `function[T: ordered](xs: List[T]) -> List[T]` | 昇順に並べ替えたリスト（後述） | O(n log n) | 組み込み |
+| `List.map(xs, f)` | `function[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E) -> List[U] uses E` | 各要素に `f` を適用した値のリスト | O(n) | ソース |
+| `List.filter(xs, p)` | `function[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> List[T] uses E` | `p` が `true` を返す要素だけを、順序を保って並べたリスト | O(n) | ソース |
+| `List.fold(xs, initial, f)` | `function[T, A, effect E](xs: List[T], initial: A, f: function(acc: A, value: T) -> A uses E) -> A uses E` | `initial` から始め、先頭の要素から順に `f(acc: acc, value: x)` で畳み込んだ値 | O(n) | ソース |
+| `List.forEach(xs, f)` | `function[T, effect E](xs: List[T], f: function(value: T) -> Unit uses E) -> Unit uses E` | 各要素に `f` を適用する | O(n) | ソース |
+| `List.any(xs, p)` | `function[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Boolean uses E` | `p` が `true` を返す要素があるか | O(n) | ソース |
+| `List.all(xs, p)` | `function[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Boolean uses E` | すべての要素で `p` が `true` を返すか。空なら `true` | O(n) | ソース |
+| `List.find(xs, p)` | `function[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Option[T] uses E` | `p` が `true` を返す最初の要素 | O(n) | ソース |
 
 計算量の n は `xs` の長さ（`List.concatenate` では二つのリストの長さの和）である。O(log n) の対数の底は木の分岐の数（32）であり、実用上の長さでは小さい定数になる。関数を引数にとる関数の計算量は、受け取った関数の呼び出しを 1 と数えたものである。
 
@@ -265,12 +269,12 @@ end function
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Option.map(o, f)` | `function[T, U, effect E](Option[T], function(T) -> U uses E) -> Option[U] uses E` | `Option.Some(x)` なら `Option.Some(f(x))`、`Option.None` なら `Option.None` |
-| `Option.andThen(o, f)` | `function[T, U, effect E](Option[T], function(T) -> Option[U] uses E) -> Option[U] uses E` | `Option.Some(x)` なら `f(x)`、`Option.None` なら `Option.None` |
-| `Option.unwrapOr(o, d)` | `function[T](Option[T], T) -> T` | `Option.Some(x)` なら `x`、`Option.None` なら `d` |
-| `Option.isSome(o)` | `function[T](Option[T]) -> Boolean` | `Option.Some` か |
-| `Option.isNone(o)` | `function[T](Option[T]) -> Boolean` | `Option.None` か |
-| `Option.okOr(o, e)` | `function[T, X](Option[T], X) -> Result[T, X]` | `Option.Some(x)` なら `Result.Ok(x)`、`Option.None` なら `Result.Error(e)` |
+| `Option.map(o, f)` | `function[T, U, effect E](o: Option[T], f: function(value: T) -> U uses E) -> Option[U] uses E` | `Option.Some(x)` なら `Option.Some(f(x))`、`Option.None` なら `Option.None` |
+| `Option.andThen(o, f)` | `function[T, U, effect E](o: Option[T], f: function(value: T) -> Option[U] uses E) -> Option[U] uses E` | `Option.Some(x)` なら `f(x)`、`Option.None` なら `Option.None` |
+| `Option.unwrapOr(o, fallback)` | `function[T](o: Option[T], fallback: T) -> T` | `Option.Some(x)` なら `x`、`Option.None` なら `fallback` |
+| `Option.isSome(o)` | `function[T](o: Option[T]) -> Boolean` | `Option.Some` か |
+| `Option.isNone(o)` | `function[T](o: Option[T]) -> Boolean` | `Option.None` か |
+| `Option.okOr(o, error)` | `function[T, X](o: Option[T], error: X) -> Result[T, X]` | `Option.Some(x)` なら `Result.Ok(x)`、`Option.None` なら `Result.Error(error)` |
 
 ### Result
 
@@ -278,13 +282,13 @@ end function
 
 | 関数 | 型 | 値 |
 |---|---|---|
-| `Result.map(r, f)` | `function[T, U, X, effect E](Result[T, X], function(T) -> U uses E) -> Result[U, X] uses E` | `Result.Ok(x)` なら `Result.Ok(f(x))`、`Result.Error(e)` なら `Result.Error(e)` |
-| `Result.mapError(r, f)` | `function[T, X, Y, effect E](Result[T, X], function(X) -> Y uses E) -> Result[T, Y] uses E` | `Result.Ok(x)` なら `Result.Ok(x)`、`Result.Error(e)` なら `Result.Error(f(e))` |
-| `Result.andThen(r, f)` | `function[T, U, X, effect E](Result[T, X], function(T) -> Result[U, X] uses E) -> Result[U, X] uses E` | `Result.Ok(x)` なら `f(x)`、`Result.Error(e)` なら `Result.Error(e)` |
-| `Result.unwrapOr(r, d)` | `function[T, X](Result[T, X], T) -> T` | `Result.Ok(x)` なら `x`、`Result.Error` なら `d` |
-| `Result.isOk(r)` | `function[T, X](Result[T, X]) -> Boolean` | `Result.Ok` か |
-| `Result.isError(r)` | `function[T, X](Result[T, X]) -> Boolean` | `Result.Error` か |
-| `Result.ok(r)` | `function[T, X](Result[T, X]) -> Option[T]` | `Result.Ok(x)` なら `Option.Some(x)`、`Result.Error` なら `Option.None` |
+| `Result.map(r, f)` | `function[T, U, X, effect E](r: Result[T, X], f: function(value: T) -> U uses E) -> Result[U, X] uses E` | `Result.Ok(x)` なら `Result.Ok(f(x))`、`Result.Error(e)` なら `Result.Error(e)` |
+| `Result.mapError(r, f)` | `function[T, X, Y, effect E](r: Result[T, X], f: function(error: X) -> Y uses E) -> Result[T, Y] uses E` | `Result.Ok(x)` なら `Result.Ok(x)`、`Result.Error(e)` なら `Result.Error(f(e))` |
+| `Result.andThen(r, f)` | `function[T, U, X, effect E](r: Result[T, X], f: function(value: T) -> Result[U, X] uses E) -> Result[U, X] uses E` | `Result.Ok(x)` なら `f(x)`、`Result.Error(e)` なら `Result.Error(e)` |
+| `Result.unwrapOr(r, fallback)` | `function[T, X](r: Result[T, X], fallback: T) -> T` | `Result.Ok(x)` なら `x`、`Result.Error` なら `fallback` |
+| `Result.isOk(r)` | `function[T, X](r: Result[T, X]) -> Boolean` | `Result.Ok` か |
+| `Result.isError(r)` | `function[T, X](r: Result[T, X]) -> Boolean` | `Result.Error` か |
+| `Result.ok(r)` | `function[T, X](r: Result[T, X]) -> Option[T]` | `Result.Ok(x)` なら `Option.Some(x)`、`Result.Error` なら `Option.None` |
 
 ### Assert（初回リリース版）
 
@@ -314,11 +318,11 @@ end function
 
 | 関数 | 型 | 値 | 実装 |
 |---|---|---|---|
-| `Pair.first(p)` | `function[A, B](Pair[A, B]) -> A` | 1 番目の要素 | ソース |
-| `Pair.second(p)` | `function[A, B](Pair[A, B]) -> B` | 2 番目の要素 | ソース |
-| `Triple.first(t)` | `function[A, B, C](Triple[A, B, C]) -> A` | 1 番目の要素 | ソース |
-| `Triple.second(t)` | `function[A, B, C](Triple[A, B, C]) -> B` | 2 番目の要素 | ソース |
-| `Triple.third(t)` | `function[A, B, C](Triple[A, B, C]) -> C` | 3 番目の要素 | ソース |
+| `Pair.first(p)` | `function[A, B](p: Pair[A, B]) -> A` | 1 番目の要素 | ソース |
+| `Pair.second(p)` | `function[A, B](p: Pair[A, B]) -> B` | 2 番目の要素 | ソース |
+| `Triple.first(t)` | `function[A, B, C](t: Triple[A, B, C]) -> A` | 1 番目の要素 | ソース |
+| `Triple.second(t)` | `function[A, B, C](t: Triple[A, B, C]) -> B` | 2 番目の要素 | ソース |
+| `Triple.third(t)` | `function[A, B, C](t: Triple[A, B, C]) -> C` | 3 番目の要素 | ソース |
 
 ### Map と Set（初回リリース版）
 
@@ -327,41 +331,41 @@ end function
 | 関数 | 型 | 値 | 計算量 |
 |---|---|---|---|
 | `Map.empty()` | `function[K: key, V]() -> Map[K, V]` | 空のマップ | O(1) |
-| `Map.fromList(ps)` | `function[K: key, V](List[Pair[K, V]]) -> Map[K, V]` | 組を順に加えたマップ。同じ鍵があれば後の組の値を使う | O(n log n) |
-| `Map.toList(m)` | `function[K: key, V](Map[K, V]) -> List[Pair[K, V]]` | 鍵の順序で並べた組のリスト | O(n) |
-| `Map.get(m, k)` | `function[K: key, V](Map[K, V], K) -> Option[V]` | `k` の値。なければ `Option.None` | O(log n) |
-| `Map.set(m, k, v)` | `function[K: key, V](Map[K, V], K, V) -> Map[K, V]` | `k` の値を `v` にしたマップ | O(log n) |
-| `Map.remove(m, k)` | `function[K: key, V](Map[K, V], K) -> Map[K, V]` | `k` を除いたマップ。`k` がなければ `m` と等しい | O(log n) |
-| `Map.contains(m, k)` | `function[K: key, V](Map[K, V], K) -> Boolean` | `k` があるか | O(log n) |
-| `Map.size(m)` | `function[K: key, V](Map[K, V]) -> Integer` | 組の数 | O(1) |
-| `Map.keys(m)` | `function[K: key, V](Map[K, V]) -> List[K]` | 鍵の順序で並べた鍵のリスト | O(n) |
-| `Map.values(m)` | `function[K: key, V](Map[K, V]) -> List[V]` | 鍵の順序で並べた値のリスト | O(n) |
+| `Map.fromList(pairs)` | `function[K: key, V](pairs: List[Pair[K, V]]) -> Map[K, V]` | 組を順に加えたマップ。同じ鍵があれば後の組の値を使う | O(n log n) |
+| `Map.toList(m)` | `function[K: key, V](m: Map[K, V]) -> List[Pair[K, V]]` | 鍵の順序で並べた組のリスト | O(n) |
+| `Map.get(m, k)` | `function[K: key, V](m: Map[K, V], k: K) -> Option[V]` | `k` の値。なければ `Option.None` | O(log n) |
+| `Map.set(m, k, value)` | `function[K: key, V](m: Map[K, V], k: K, value: V) -> Map[K, V]` | `k` の値を `value` にしたマップ | O(log n) |
+| `Map.remove(m, k)` | `function[K: key, V](m: Map[K, V], k: K) -> Map[K, V]` | `k` を除いたマップ。`k` がなければ `m` と等しい | O(log n) |
+| `Map.contains(m, k)` | `function[K: key, V](m: Map[K, V], k: K) -> Boolean` | `k` があるか | O(log n) |
+| `Map.size(m)` | `function[K: key, V](m: Map[K, V]) -> Integer` | 組の数 | O(1) |
+| `Map.keys(m)` | `function[K: key, V](m: Map[K, V]) -> List[K]` | 鍵の順序で並べた鍵のリスト | O(n) |
+| `Map.values(m)` | `function[K: key, V](m: Map[K, V]) -> List[V]` | 鍵の順序で並べた値のリスト | O(n) |
 
 | 関数 | 型 | 値 | 計算量 |
 |---|---|---|---|
 | `Set.empty()` | `function[T: key]() -> Set[T]` | 空の集合 | O(1) |
-| `Set.fromList(xs)` | `function[T: key](List[T]) -> Set[T]` | `xs` の要素の集合 | O(n log n) |
-| `Set.toList(s)` | `function[T: key](Set[T]) -> List[T]` | 鍵の順序で並べた要素のリスト | O(n) |
-| `Set.contains(s, x)` | `function[T: key](Set[T], T) -> Boolean` | `x` を含むか | O(log n) |
-| `Set.add(s, x)` | `function[T: key](Set[T], T) -> Set[T]` | `x` を加えた集合 | O(log n) |
-| `Set.remove(s, x)` | `function[T: key](Set[T], T) -> Set[T]` | `x` を除いた集合 | O(log n) |
-| `Set.size(s)` | `function[T: key](Set[T]) -> Integer` | 要素の数 | O(1) |
-| `Set.union(a, b)`・`Set.intersection(a, b)`・`Set.difference(a, b)` | `function[T: key](Set[T], Set[T]) -> Set[T]` | 和集合・共通部分・差集合 | O(m log(n/m + 1))。m と n は小さいほうと大きいほうの要素の数 |
+| `Set.fromList(xs)` | `function[T: key](xs: List[T]) -> Set[T]` | `xs` の要素の集合 | O(n log n) |
+| `Set.toList(s)` | `function[T: key](s: Set[T]) -> List[T]` | 鍵の順序で並べた要素のリスト | O(n) |
+| `Set.contains(s, x)` | `function[T: key](s: Set[T], x: T) -> Boolean` | `x` を含むか | O(log n) |
+| `Set.add(s, x)` | `function[T: key](s: Set[T], x: T) -> Set[T]` | `x` を加えた集合 | O(log n) |
+| `Set.remove(s, x)` | `function[T: key](s: Set[T], x: T) -> Set[T]` | `x` を除いた集合 | O(log n) |
+| `Set.size(s)` | `function[T: key](s: Set[T]) -> Integer` | 要素の数 | O(1) |
+| `Set.union(a, b)`・`Set.intersection(a, b)`・`Set.difference(a, b)` | `function[T: key](a: Set[T], b: Set[T]) -> Set[T]` | 和集合・共通部分・差集合 | O(m log(n/m + 1))。m と n は小さいほうと大きいほうの要素の数 |
 
-表の型の `key` は、`K` と `T` が鍵の型であるという組み込みの制約である。利用者も関数の型に書けるので、`Map` と `Set` を使う汎用の関数（`function countBy[T, K: key](xs: List[T], f: function(T) -> K) -> Map[K, Integer]` など）を書ける（[型システム](../01-spec/01-06-type-system.md)）。
+表の型の `key` は、`K` と `T` が鍵の型であるという組み込みの制約である。利用者も関数の型に書けるので、`Map` と `Set` を使う汎用の関数（`function countBy[T, K: key](xs: List[T], f: function(value: T) -> K) -> Map[K, Integer]` など）を書ける（[型システム](../01-spec/01-06-type-system.md)）。
 
 【決定】`Map` と `Set` の関数を引数にとる関数は、次のとおりとする。どれも標準ライブラリのソースで書き、受け取った関数を鍵の順序で呼ぶ（前述の「関数を引数にとる関数の共通の規則」）。計算量は、受け取った関数の呼び出しを 1 と数えたものである。
 
 | 関数 | 型 | 値 | 計算量 |
 |---|---|---|---|
-| `Map.map(m, f)` | `function[K: key, V, U, effect E](Map[K, V], function(K, V) -> U uses E) -> Map[K, U] uses E` | 各組の値を `f(k, v)` に替えたマップ。鍵は変えない | O(n) |
-| `Map.filter(m, p)` | `function[K: key, V, effect E](Map[K, V], function(K, V) -> Boolean uses E) -> Map[K, V] uses E` | `p(k, v)` が `true` を返す組だけのマップ | O(n) |
-| `Map.fold(m, initial, f)` | `function[K: key, V, A, effect E](Map[K, V], A, function(A, K, V) -> A uses E) -> A uses E` | `initial` から始め、鍵の順に `f(acc, k, v)` で畳み込んだ値 | O(n) |
-| `Map.forEach(m, f)` | `function[K: key, V, effect E](Map[K, V], function(K, V) -> Unit uses E) -> Unit uses E` | 各組に `f` を適用する | O(n) |
-| `Set.map(s, f)` | `function[T: key, U: key, effect E](Set[T], function(T) -> U uses E) -> Set[U] uses E` | 各要素に `f` を適用した値の集合。同じ値になった要素は一つにまとめる | O(n log n) |
-| `Set.filter(s, p)` | `function[T: key, effect E](Set[T], function(T) -> Boolean uses E) -> Set[T] uses E` | `p` が `true` を返す要素だけの集合 | O(n) |
-| `Set.fold(s, initial, f)` | `function[T: key, A, effect E](Set[T], A, function(A, T) -> A uses E) -> A uses E` | `initial` から始め、鍵の順に `f(acc, x)` で畳み込んだ値 | O(n) |
-| `Set.forEach(s, f)` | `function[T: key, effect E](Set[T], function(T) -> Unit uses E) -> Unit uses E` | 各要素に `f` を適用する | O(n) |
+| `Map.map(m, f)` | `function[K: key, V, U, effect E](m: Map[K, V], f: function(key: K, value: V) -> U uses E) -> Map[K, U] uses E` | 各組の値を `f(key: k, value: v)` に替えたマップ。鍵は変えない | O(n) |
+| `Map.filter(m, p)` | `function[K: key, V, effect E](m: Map[K, V], p: function(key: K, value: V) -> Boolean uses E) -> Map[K, V] uses E` | `p(key: k, value: v)` が `true` を返す組だけのマップ | O(n) |
+| `Map.fold(m, initial, f)` | `function[K: key, V, A, effect E](m: Map[K, V], initial: A, f: function(acc: A, key: K, value: V) -> A uses E) -> A uses E` | `initial` から始め、鍵の順に `f(acc: acc, key: k, value: v)` で畳み込んだ値 | O(n) |
+| `Map.forEach(m, f)` | `function[K: key, V, effect E](m: Map[K, V], f: function(key: K, value: V) -> Unit uses E) -> Unit uses E` | 各組に `f` を適用する | O(n) |
+| `Set.map(s, f)` | `function[T: key, U: key, effect E](s: Set[T], f: function(value: T) -> U uses E) -> Set[U] uses E` | 各要素に `f` を適用した値の集合。同じ値になった要素は一つにまとめる | O(n log n) |
+| `Set.filter(s, p)` | `function[T: key, effect E](s: Set[T], p: function(value: T) -> Boolean uses E) -> Set[T] uses E` | `p` が `true` を返す要素だけの集合 | O(n) |
+| `Set.fold(s, initial, f)` | `function[T: key, A, effect E](s: Set[T], initial: A, f: function(acc: A, value: T) -> A uses E) -> A uses E` | `initial` から始め、鍵の順に `f(acc: acc, value: x)` で畳み込んだ値 | O(n) |
+| `Set.forEach(s, f)` | `function[T: key, effect E](s: Set[T], f: function(value: T) -> Unit uses E) -> Unit uses E` | 各要素に `f` を適用する | O(n) |
 
 【決定】`Map` と `Set` のリテラルの構文はない。`Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` は、定数式に書ける（[構文](../01-spec/01-02-syntax.md)の「定数（初回リリース版）」）。定数式の外で、`Map.fromList` の引数のリストのリテラルに、鍵が定数式で同じ値になる組が二つ以上あるときは、処理系は警告を出す。`Set.fromList` の要素も同じである。警告は検査と実行を止めず、値は表のとおり後の組の値を使う。定数式の中では誤りとする。
 
@@ -383,23 +387,23 @@ end function
 | 関数 | 型 | 値 | 計算量 |
 |---|---|---|---|
 | `Bytes.empty()` | `function() -> Bytes` | 空のバイト列 | O(1) |
-| `Bytes.fromList(bs)` | `function(List[Byte]) -> Bytes` | `bs` を並べたバイト列 | O(n) |
-| `Bytes.fromIntegers(ns)` | `function(List[Integer]) -> Option[Bytes]` | `ns` の各値を `Byte` にして並べたバイト列。0〜255 の外の値があれば `Option.None` | O(n) |
-| `Bytes.fromHex(s)` | `function(String) -> Option[Bytes]` | 16 進の表記を 2 桁ずつ 1 バイトとして読んだバイト列。後述の規則に合わなければ `Option.None` | O(n) |
-| `Bytes.fromBinary(s)` | `function(String) -> Option[Bytes]` | 2 進の表記を 8 桁ずつ 1 バイトとして読んだバイト列。後述の規則に合わなければ `Option.None` | O(n) |
-| `Bytes.toList(b)` | `function(Bytes) -> List[Byte]` | 要素のリスト | O(n) |
-| `Bytes.toHex(b)` | `function(Bytes) -> String` | 各バイトを小文字の 16 進 2 桁で表し、区切りなしで並べた文字列 | O(n) |
-| `Bytes.toBinary(b)` | `function(Bytes) -> String` | 各バイトを 2 進 8 桁で表し、区切りなしで並べた文字列 | O(n) |
-| `Bytes.length(b)` | `function(Bytes) -> Integer` | バイト数 | O(1) |
-| `Bytes.get(b, i)` | `function(Bytes, Integer) -> Option[Byte]` | 位置 `i` のバイト | O(1) |
-| `Bytes.slice(b, start, stop)` | `function(Bytes, Integer, Integer) -> Option[Bytes]` | 位置 `start` から `stop` の手前までのバイト列 | O(n) |
-| `Bytes.concatenate(a, b)` | `function(Bytes, Bytes) -> Bytes` | `a` の後に `b` を続けたバイト列 | O(n) |
-| `Bytes.readUnsigned(b, offset, count, order)` | `function(Bytes, Integer, Integer, ByteOrder) -> Option[Integer]` | `offset` から `count` バイトを、符号なしの整数として `order` のバイト順で読んだ値 | O(count) |
-| `Bytes.readSigned(b, offset, count, order)` | `function(Bytes, Integer, Integer, ByteOrder) -> Option[Integer]` | 同じく、2 の補数の符号付きの整数として読んだ値 | O(count) |
-| `Bytes.fromUnsigned(n, count, order)` | `function(Integer, Integer, ByteOrder) -> Option[Bytes]` | `n` を符号なしの `count` バイトで表したバイト列。収まらなければ `Option.None` | O(count) |
-| `Bytes.fromSigned(n, count, order)` | `function(Integer, Integer, ByteOrder) -> Option[Bytes]` | `n` を 2 の補数の符号付きの `count` バイトで表したバイト列。収まらなければ `Option.None` | O(count) |
-| `String.toUTF8(s)` | `function(String) -> Bytes` | `s` を UTF-8 で表したバイト列 | O(n) |
-| `String.fromUTF8(b)` | `function(Bytes) -> Option[String]` | `b` を UTF-8 として読んだ文字列。正しくない UTF-8 なら `Option.None` | O(n) |
+| `Bytes.fromList(bs)` | `function(bs: List[Byte]) -> Bytes` | `bs` を並べたバイト列 | O(n) |
+| `Bytes.fromIntegers(ns)` | `function(ns: List[Integer]) -> Option[Bytes]` | `ns` の各値を `Byte` にして並べたバイト列。0〜255 の外の値があれば `Option.None` | O(n) |
+| `Bytes.fromHex(s)` | `function(s: String) -> Option[Bytes]` | 16 進の表記を 2 桁ずつ 1 バイトとして読んだバイト列。後述の規則に合わなければ `Option.None` | O(n) |
+| `Bytes.fromBinary(s)` | `function(s: String) -> Option[Bytes]` | 2 進の表記を 8 桁ずつ 1 バイトとして読んだバイト列。後述の規則に合わなければ `Option.None` | O(n) |
+| `Bytes.toList(b)` | `function(b: Bytes) -> List[Byte]` | 要素のリスト | O(n) |
+| `Bytes.toHex(b)` | `function(b: Bytes) -> String` | 各バイトを小文字の 16 進 2 桁で表し、区切りなしで並べた文字列 | O(n) |
+| `Bytes.toBinary(b)` | `function(b: Bytes) -> String` | 各バイトを 2 進 8 桁で表し、区切りなしで並べた文字列 | O(n) |
+| `Bytes.length(b)` | `function(b: Bytes) -> Integer` | バイト数 | O(1) |
+| `Bytes.get(b, i)` | `function(b: Bytes, i: Integer) -> Option[Byte]` | 位置 `i` のバイト | O(1) |
+| `Bytes.slice(b, start, stop)` | `function(b: Bytes, start: Integer, stop: Integer) -> Option[Bytes]` | 位置 `start` から `stop` の手前までのバイト列 | O(n) |
+| `Bytes.concatenate(a, b)` | `function(a: Bytes, b: Bytes) -> Bytes` | `a` の後に `b` を続けたバイト列 | O(n) |
+| `Bytes.readUnsigned(b, offset, count, order)` | `function(b: Bytes, offset: Integer, count: Integer, order: ByteOrder) -> Option[Integer]` | `offset` から `count` バイトを、符号なしの整数として `order` のバイト順で読んだ値 | O(count) |
+| `Bytes.readSigned(b, offset, count, order)` | `function(b: Bytes, offset: Integer, count: Integer, order: ByteOrder) -> Option[Integer]` | 同じく、2 の補数の符号付きの整数として読んだ値 | O(count) |
+| `Bytes.fromUnsigned(n, count, order)` | `function(n: Integer, count: Integer, order: ByteOrder) -> Option[Bytes]` | `n` を符号なしの `count` バイトで表したバイト列。収まらなければ `Option.None` | O(count) |
+| `Bytes.fromSigned(n, count, order)` | `function(n: Integer, count: Integer, order: ByteOrder) -> Option[Bytes]` | `n` を 2 の補数の符号付きの `count` バイトで表したバイト列。収まらなければ `Option.None` | O(count) |
+| `String.toUTF8(s)` | `function(s: String) -> Bytes` | `s` を UTF-8 で表したバイト列 | O(n) |
+| `String.fromUTF8(b)` | `function(b: Bytes) -> Option[String]` | `b` を UTF-8 として読んだ文字列。正しくない UTF-8 なら `Option.None` | O(n) |
 
 - `count` は 1 以上 8 以下でなければならず、外なら `Option.None` を返す。`Bytes.readUnsigned` の `count` が 8 で、値が `Integer` の範囲を超えるときも `Option.None` を返す。
 - `Bytes.fromHex` と `Bytes.fromBinary` は、区切りとして `_` と空白（U+0020）を読み飛ばす。16 進の数字は大文字と小文字のどちらも受け付ける。区切りを除いた桁の数が、16 進では 2 の倍数、2 進では 8 の倍数でなければならない。
@@ -411,7 +415,7 @@ end function
 
 ### 標準の型クラス（初回リリース版）
 
-【決定】標準ライブラリのモジュール `Benitoite.Trait` に、標準の型クラスと、比較の結果を表す型 `Ordering` を置く。`Benitoite.Trait` は prelude に入らない。使うには `import Benitoite.Trait` と書き、型クラスは `Trait.Monad`、メソッドは `Trait.Monad.flatMap(x, f)`、制約は `[F: Trait.Monad]` と書く。型クラスの宣言と実装の規則（上位の型クラス、戻り値の型で実装を選ぶメソッドを含む）は、[型システム](../01-spec/01-06-type-system.md)の「型クラス（初回リリース版）」で定める。
+【決定】標準ライブラリのモジュール `Benitoite.Trait` に、標準の型クラスと、比較の結果を表す型 `Ordering` を置く。`Benitoite.Trait` は prelude に入らない。使うには `import Benitoite.Trait` と書き、型クラスは `Trait.Monad`、メソッドは `Trait.Monad.flatMap(x: x, f: f)`、制約は `[F: Trait.Monad]` と書く。型クラスの宣言と実装の規則（上位の型クラス、戻り値の型で実装を選ぶメソッドを含む）は、[型システム](../01-spec/01-06-type-system.md)の「型クラス（初回リリース版）」で定める。
 
 【決定】標準の型クラスのメソッドは、既存の関数と同じ役割を持つ（`Trait.Functor.map` と `Option.map`・`List.map`、`Trait.Foldable.fold` と `List.fold` など）。これは、学習の目的のために設けた原則 5（[目的と設計原則](../00-overview/00-01-goals.md)）の例外である。重複する既存の関数も残し、隠さない。
 
@@ -419,15 +423,19 @@ end function
 import Benitoite.Trait
 
 function pairUp[F[_]: Trait.Monad, A, B](xs: F[A], ys: F[B]) -> F[Pair[A, B]]
-  return Trait.Monad.flatMap(xs, lambda(x)
-    return Trait.Functor.map(ys, lambda(y) return Pair(x, y) end lambda)
-  end lambda)
+  return Trait.Monad.flatMap(x: xs, f: lambda(value) return pairWith(left: value, ys: ys))
+end function
+
+function pairWith[F[_]: Trait.Functor, A, B](left: A, ys: F[B]) -> F[Pair[A, B]]
+  return Trait.Functor.map(x: ys, f: lambda(value) return Pair(left, value))
 end function
 ```
 
-`pairUp` の本体は、`F` の `Trait.Monad` の制約から、上位の型クラス `Trait.Functor` の制約も使える。`pairUp([1, 2], ["a", "b"])` の値は、4 つの組のリストである。
+`pairUp` の本体は、`F` の `Trait.Monad` の制約から、上位の型クラス `Trait.Functor` の制約も使える。`pairUp(xs: [1, 2], ys: ["a", "b"])` の値は、4 つの組のリストである。
 
 `Ordering` は、構成子 `Ordering.Less`・`Ordering.Equal`・`Ordering.Greater` を、この順に宣言した代数的データ型である。
+
+表の関数欄の `f(a, b)` は、宣言のパラメータ名と順を示す表記である。呼び出しの引数式の表記とは区別する。
 
 以下の表と説明では、`Benitoite.Trait` の中の名前を、`Trait.` を省いて書く（`Show.show`、`Ordering.Less`）。利用者のプログラムでは、`import Benitoite.Trait` と書いたうえで、`Trait.Show.show`、`Trait.Ordering.Less` のように `Trait.` を付けて書く。
 
@@ -437,11 +445,11 @@ end function
 | `Order[T]` | — | `function compare(x: T, y: T) -> Ordering` |
 | `Semigroup[T]` | — | `function combine(x: T, y: T) -> T` |
 | `Monoid[T]` | `Semigroup` | `function empty() -> T` |
-| `Functor[F[_]]` | — | `function map[A, B, effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E` |
-| `Applicative[F[_]]` | `Functor` | `function pure[A](x: A) -> F[A]`<br>`function apply[A, B, effect E](fs: F[function(A) -> B uses E], x: F[A]) -> F[B] uses E` |
-| `Monad[F[_]]` | `Applicative` | `function flatMap[A, B, effect E](x: F[A], f: function(A) -> F[B] uses E) -> F[B] uses E` |
-| `Foldable[F[_]]` | — | `function fold[A, B, effect E](x: F[A], initial: B, f: function(B, A) -> B uses E) -> B uses E` |
-| `Traversable[F[_]]` | `Functor`、`Foldable` | `function traverse[G[_]: Applicative, A, B, effect E](x: F[A], f: function(A) -> G[B] uses E) -> G[F[B]] uses E` |
+| `Functor[F[_]]` | — | `function map[A, B, effect E](x: F[A], f: function(value: A) -> B uses E) -> F[B] uses E` |
+| `Applicative[F[_]]` | `Functor` | `function pure[A](x: A) -> F[A]`<br>`function apply[A, B, effect E](fs: F[function(value: A) -> B uses E], x: F[A]) -> F[B] uses E` |
+| `Monad[F[_]]` | `Applicative` | `function flatMap[A, B, effect E](x: F[A], f: function(value: A) -> F[B] uses E) -> F[B] uses E` |
+| `Foldable[F[_]]` | — | `function fold[A, B, effect E](x: F[A], initial: B, f: function(acc: B, value: A) -> B uses E) -> B uses E` |
+| `Traversable[F[_]]` | `Functor`、`Foldable` | `function traverse[G[_]: Applicative, A, B, effect E](x: F[A], f: function(value: A) -> G[B] uses E) -> G[F[B]] uses E` |
 
 `Monoid.empty` と `Applicative.pure` は、型クラスの引数を戻り値の型にだけ含むので、呼び出した位置で求める型から実装を選ぶ。等値の型クラスは置かない。等値は `=` と組み込みの制約 `equality` で扱う（[型システム](../01-spec/01-06-type-system.md)）。
 
@@ -476,19 +484,19 @@ end function
 | 型 | `combine(x, y)` | `empty()` |
 |---|---|---|
 | `String` | `x` の後に `y` を続けた文字列（`x + y`） | `""` |
-| `List[T]` | `List.concatenate(x, y)` | `[]` |
+| `List[T]` | `List.concatenate(xs: x, ys: y)` | `[]` |
 | `Map[K, V]` | 両方の組を合わせたマップ。同じ鍵があれば `y` の値を使う | `Map.empty()` |
-| `Set[T]` | `Set.union(x, y)` | `Set.empty()` |
+| `Set[T]` | `Set.union(a: x, b: y)` | `Set.empty()` |
 
 【方針】`Option` と `List` の、型構成子を引数にとる型クラスのメソッドは、次のとおりとする。
 
 | メソッド | `Option` | `List` |
 |---|---|---|
-| `Functor.map(x, f)` | `Option.map(x, f)` | `List.map(x, f)` |
+| `Functor.map(x, f)` | `Option.map(o: x, f: f)` | `List.map(xs: x, f: f)` |
 | `Applicative.pure(v)` | `Option.Some(v)` | `[v]` |
 | `Applicative.apply(fs, x)` | `fs` と `x` がどちらも `Option.Some` なら、関数を値に適用した値の `Option.Some`。そうでなければ `Option.None` | `fs` の各関数を、`x` の各要素に適用した値のリスト。`fs` の前の関数から順に、各関数について `x` の前の要素から順に並べる |
-| `Monad.flatMap(x, f)` | `Option.andThen(x, f)` | 各要素に `f` を適用したリストを、要素の順に連結したリスト |
-| `Foldable.fold(x, initial, f)` | `Option.Some(v)` なら `f(initial, v)`、`Option.None` なら `initial` | `List.fold(x, initial, f)` |
+| `Monad.flatMap(x, f)` | `Option.andThen(o: x, f: f)` | 各要素に `f` を適用したリストを、要素の順に連結したリスト |
+| `Foldable.fold(x, initial, f)` | `Option.Some(v)` なら `f(acc: initial, value: v)`、`Option.None` なら `initial` | `List.fold(xs: x, initial: initial, f: f)` |
 | `Traversable.traverse(x, f)` | `Option.None` なら `Applicative.pure(Option.None)`。`Option.Some(v)` なら、`f(v)` の値の中身を `Functor.map` で `Option.Some` に包んだ値 | 要素を前から順に `f` に渡し、`Applicative.apply` で結果を前から順に組み合わせる |
 
 関数を引数にとるメソッドは、受け取った関数を、表の値を作るのに必要な順に呼ぶ。`List` のメソッドは、要素を前から順に処理する。
@@ -535,16 +543,16 @@ IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各�
 
 ```text
 /// リストの各要素に f を適用したリストを返す。
-public function map[T, U, effect E](xs: List[T], f: function(T) -> U uses E) -> List[U] uses E
-  return mapFrom(xs, f, 0, [])
+public function map[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E) -> List[U] uses E
+  return mapFrom(xs: xs, f: f, i: 0, acc: [])
 end function
 
-function mapFrom[T, U, effect E](xs: List[T], f: function(T) -> U uses E, i: Integer, acc: List[U]) -> List[U] uses E
-  return match get(xs, i) with
+function mapFrom[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E, i: Integer, acc: List[U]) -> List[U] uses E
+  return match get(xs: xs, i: i) with
     case Option.None -> acc
     case Option.Some(x) ->
       bind y <- f(x)
-      mapFrom(xs, f, i + 1, append(acc, y))
+      mapFrom(xs: xs, f: f, i: i + 1, acc: append(xs: acc, x: y))
   end match
 end function
 

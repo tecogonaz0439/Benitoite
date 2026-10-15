@@ -355,7 +355,7 @@ fn with_releases_the_opened_reader_once_on_return_error_and_exit() {
         ("return Process.exit(3)", 3),
     ] {
         let program = compile(&format!(
-            "{IMPORTS}\nfunction main() -> Result[Unit,String] uses File.Read,State,Console.Write,Process.Exit\n with reader = try File.openReader(\"text\") |> Result.mapError(_,IOError.message) do\n bind _ <- try File.readLine(reader) |> Result.mapError(_,IOError.message)\n Console.write(\"before\")\n {body}\n end with\nend function\n"
+            "{IMPORTS}\nfunction main() -> Result[Unit,String] uses File.Read,State,Console.Write,Process.Exit\n with reader = try File.openReader(\"text\") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do\n bind _ <- try File.readLine(reader) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)\n Console.write(\"before\")\n {body}\n end with\nend function\n"
         ));
         for mode in [ExecMode::Direct, ExecMode::Request] {
             let script = ScheduleHandle::new([], false);
@@ -397,7 +397,7 @@ fn reading_a_closed_reader_stops_with_released_resource_used() {
     let dir = TempDir::new();
     std::fs::write(dir.0.join("text"), "line\n").unwrap();
     let program = compile(&format!(
-        "{IMPORTS}\nfunction main() -> Result[Unit,String] uses File.Read,State\n with reader = try File.openReader(\"text\") |> Result.mapError(_,IOError.message) do\n bind _ <- try File.closeReader(reader) |> Result.mapError(_,IOError.message)\n bind _ <- try File.closeReader(reader) |> Result.mapError(_,IOError.message)\n bind _ <- try File.readLine(reader) |> Result.mapError(_,IOError.message)\n return Result.Ok(())\n end with\nend function\n"
+        "{IMPORTS}\nfunction main() -> Result[Unit,String] uses File.Read,State\n with reader = try File.openReader(\"text\") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do\n bind _ <- try File.closeReader(reader) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)\n bind _ <- try File.closeReader(reader) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)\n bind _ <- try File.readLine(reader) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)\n return Result.Ok(())\n end with\nend function\n"
     ));
     for mode in [ExecMode::Direct, ExecMode::Request] {
         let script = ScheduleHandle::new([], false);
@@ -433,7 +433,7 @@ function main() -> Result[Unit,String] uses File.Read,State,Clock.Time,Console.W
   lambda()
    with reader = try File.openReader("text") do
     bind _ <- try File.readLine(reader)
-    Reference.set(continued,true)
+    Reference.set(reference: continued,value: true)
     Console.write("continued")
     return Result.Ok(1)
    end with

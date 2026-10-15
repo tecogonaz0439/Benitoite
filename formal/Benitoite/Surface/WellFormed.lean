@@ -35,16 +35,16 @@ mutual
     | .funName _ ts es | .primName _ ts es =>
         Ty.VarsInList nt pe ts ∧ Eff.RhosInList pe es
     -- 01-12「型クラス」第 4 行: 型引数・エフェクト引数・Ū・ラムダの値引数型。
-    | .funDicts _ ts es ds ps =>
+    | .funDicts _ ts es ds names ps =>
         Ty.VarsInList nt pe ts ∧ Eff.RhosInList pe es ∧
-          DictEv.ScopedList nt pe nv ds ∧ Ty.VarsInList nt pe ps
+          DictEv.ScopedList nt pe nv ds ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
     -- 同表第 2 行: V と Ū は、ラムダに入る前の Γ で指す。
-    | .methName d _ ss es us ps =>
+    | .methName d _ ss es us names ps =>
         d.Scoped nt pe nv ∧ Ty.VarsInList nt pe ss ∧ Eff.RhosInList pe es ∧
-          DictEv.ScopedList nt pe nv us ∧ Ty.VarsInList nt pe ps
+          DictEv.ScopedList nt pe nv us ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
     | .nullCon _ ts => Ty.VarsInList nt pe ts
     | .opName _ ts => Ty.VarsInList nt pe ts
-    | .conValue _ ts ps => Ty.VarsInList nt pe ts ∧ Ty.VarsInList nt pe ps
+    | .conValue _ ts names ps => Ty.VarsInList nt pe ts ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
     | .literal _ | .negInt _ | .negFloat _ | .negDecimal _ _ |
       .negInteger8 _ | .negInteger16 _ | .negInteger32 _ | .negFloat32 _ | .unit => True
     | .paren e => e.Scoped nt pe nv
@@ -52,9 +52,9 @@ mutual
     | .recordUpdate _ ts _ _ base es =>
         Ty.VarsInList nt pe ts ∧ base.Scoped nt pe nv ∧ es.Scoped nt pe nv
     | .conCall _ ts es => Ty.VarsInList nt pe ts ∧ es.Scoped nt pe nv
-    | .call f es => f.Scoped nt pe nv ∧ es.Scoped nt pe nv
+    | .call f _ _ es => f.Scoped nt pe nv ∧ es.Scoped nt pe nv
     | .pipe lhs rhs => lhs.Scoped nt pe nv ∧ rhs.Scoped nt pe nv
-    | .partialCall f args r ε =>
+    | .partialCall f _ args r ε =>
         f.Scoped nt pe nv ∧ args.Scoped nt pe nv ∧ Ty.VarsIn nt pe r ∧ Eff.RhosIn pe ε
     | .partialCon _ ts args => Ty.VarsInList nt pe ts ∧ args.Scoped nt pe nv
     | .binary _ t lhs rhs => Ty.VarsIn nt pe t ∧ lhs.Scoped nt pe nv ∧ rhs.Scoped nt pe nv
@@ -67,8 +67,8 @@ mutual
           s.Scoped nt pe nv ∧ after.Scoped nt pe nv
     | .interpolation parts es fs =>
         Ty.VarsInList nt pe (InterpPart.exprTypes parts) ∧ es.Scoped nt pe nv ∧ fs.Scoped nt pe nv
-    | .lam ps r ε body =>
-        Ty.VarsInList nt pe ps ∧ Ty.VarsIn nt pe r ∧ Eff.RhosIn pe ε ∧
+    | .lam names ps r ε body =>
+        NamesWF names ps ∧ Ty.VarsInList nt pe ps ∧ Ty.VarsIn nt pe r ∧ Eff.RhosIn pe ε ∧
           body.Scoped nt pe (ps.length + nv)
     | .ite c yes no => c.Scoped nt pe nv ∧ yes.Scoped nt pe nv ∧ no.Scoped nt pe nv
     | .elseIf c yes no => c.Scoped nt pe nv ∧ yes.Scoped nt pe nv ∧ no.Scoped nt pe nv
@@ -88,8 +88,8 @@ mutual
 
   def HoleArgs.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : HoleArgs → Prop
     | .nil => True
-    | .expr e rest => e.Scoped nt pe nv ∧ rest.Scoped nt pe nv
-    | .hole t rest => Ty.VarsIn nt pe t ∧ rest.Scoped nt pe nv
+    | .expr _ _ e rest => e.Scoped nt pe nv ∧ rest.Scoped nt pe nv
+    | .hole _ _ t rest => Ty.VarsIn nt pe t ∧ rest.Scoped nt pe nv
 
   /-- 選択肢には型注釈や自由変数がない。slots の範囲は AltsTy が検査する。 -/
   def Arms.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : Arms → Prop
@@ -119,6 +119,7 @@ end
 -- 01-12「型クラス」: 辞書の型 Dict[Cl, α] の α は宣言の型パラメータを指す。
 -- 本体は辞書の引数と値の引数の両方を束縛した環境に置く。
 def Def.Scoped (d : Def) : Prop :=
+  NamesWF d.names d.params ∧ NamesWF d.coreNames (d.dictTys ++ d.params) ∧
   Ty.VarsInList d.tparams.length (· < d.neffs) d.params ∧
     Ty.VarsIn d.tparams.length (· < d.neffs) d.ret ∧ Eff.RhosIn (· < d.neffs) d.eff ∧
     (∀ p ∈ d.dictParams, p.2 < d.tparams.length) ∧
@@ -141,6 +142,8 @@ def Program.RecordsOk (p : Program) : Prop :=
       (∀ c' cd', p.cons c' = some cd' → cd'.data = cd.data → c' = c)
 
 def Program.WellFormed (p : Program) : Prop :=
+  (∀ c names, p.conFields c = some names → ∃ cd, p.cons c = some cd ∧
+    NamesWF names cd.args ∧ (∀ c' cd', p.cons c' = some cd' → cd'.data = cd.data → c' = c)) ∧
   (∀ f d, p.defs f = some d → d.Scoped) ∧ (∀ c cd, p.cons c = some cd → cd.Scoped) ∧
     (∀ o od, p.ops o = some od → od.Scoped) ∧
     (∀ l os o, p.effects l = some os → o ∈ os → ∃ od, p.ops o = some od ∧ od.eff = l) ∧

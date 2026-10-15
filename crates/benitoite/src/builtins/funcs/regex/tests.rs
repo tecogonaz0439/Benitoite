@@ -149,8 +149,8 @@ fn find_all_keeps_nonoverlapping_matches_and_empty_matches_at_utf8_boundaries() 
         checks.push_str(&format!(
             r#"
   bind p{i} <- try Regex.compile(r"{source}")
-  bind actual{i} <- List.map(Regex.findAll(p{i}, r"{input}"), lambda(m)
-    return Pair(Regex.matchText(m), Pair(Regex.matchByteStart(m), Regex.matchByteEnd(m)))
+  bind actual{i} <- List.map(xs: Regex.findAll(pattern: p{i}, text: r"{input}"), f: lambda(value)
+    return Pair(Regex.matchText(value), Pair(Regex.matchByteStart(value), Regex.matchByteEnd(value)))
   end lambda)
   if actual{i} <> [{expected}] then return Result.Error("findAll: {source} / {input}") end if
 "#
@@ -158,7 +158,7 @@ fn find_all_keeps_nonoverlapping_matches_and_empty_matches_at_utf8_boundaries() 
     }
     checks.push_str(r#"
   bind capturePattern <- try Regex.compile(r"(?P<letter>[ab])")
-  bind actual <- List.map(Regex.findAll(capturePattern, "aba"), lambda(m) return Regex.namedGroup(m, "letter") end lambda)
+  bind actual <- List.map(xs: Regex.findAll(pattern: capturePattern, text: "aba"), f: lambda(value) return Regex.namedGroup(m: value, name: "letter") end lambda)
   if actual <> [Option.Some("a"), Option.Some("b"), Option.Some("a")] then return Result.Error("named captures") end if
 "#);
     run_script(&format!(
@@ -208,7 +208,7 @@ fn replacements_are_literal_and_preserve_unmatched_text() {
     for (i, &(source, input, replacement, _, all)) in REPLACEMENTS.iter().enumerate() {
         checks.push_str(&format!(r#"
   bind p{i} <- try Regex.compile(r"{source}")
-  if Regex.replaceAll(p{i}, r"{input}", r"{replacement}") <> r"{all}" then return Result.Error(r"replaceAll: {source} / {input} / {replacement}") end if
+  if Regex.replaceAll(pattern: p{i}, text: r"{input}", replacement: r"{replacement}") <> r"{all}" then return Result.Error(r"replaceAll: {source} / {input} / {replacement}") end if
 "#));
     }
     run_script(&format!(
@@ -241,7 +241,7 @@ fn split_preserves_empty_parts_and_skips_empty_matches_next_to_nonempty_matches(
             .join(", ");
         checks.push_str(&format!(r#"
   bind p{i} <- try Regex.compile(r"{source}")
-  if Regex.split(p{i}, r"{input}") <> [{expected}] then return Result.Error("split: {source} / {input}") end if
+  if Regex.split(pattern: p{i}, text: r"{input}") <> [{expected}] then return Result.Error("split: {source} / {input}") end if
 "#));
     }
     run_script(&format!(
@@ -323,17 +323,17 @@ import Benitoite.Unofficial.Regex
 function main() -> Result[Unit, String] uses State
   bind pattern <- try Regex.compile(r"(?P<digit>\d)")
   bind order <- Reference.new([])
-  bind result <- Regex.replaceAllWith(pattern, "日1é2-3!", lambda(m)
-    Reference.set(order, List.append(Reference.get(order), Regex.matchByteStart(m)))
-    return String.join(["[", Option.unwrapOr(Regex.group(m, 1), "?"), "]"], "")
+  bind result <- Regex.replaceAllWith(pattern: pattern, text: "日1é2-3!", f: lambda(matched)
+    Reference.set(reference: order, value: List.append(xs: Reference.get(order), x: Regex.matchByteStart(matched)))
+    return String.join(xs: ["[", Option.unwrapOr(o: Regex.group(m: matched, index: 1), fallback: "?"), "]"], separator: "")
   end lambda)
-  bind absent <- Regex.replaceAllWith(pattern, "abc", lambda(m)
-    Reference.set(order, List.append(Reference.get(order), -1))
-    return Regex.matchText(m)
+  bind absent <- Regex.replaceAllWith(pattern: pattern, text: "abc", f: lambda(matched)
+    Reference.set(reference: order, value: List.append(xs: Reference.get(order), x: -1))
+    return Regex.matchText(matched)
   end lambda)
   bind empty <- try Regex.compile("a*")
-  bind emptyResult <- Regex.replaceAllWith(empty, "baaa", lambda(m)
-    Reference.set(order, List.append(Reference.get(order), Regex.matchByteStart(m)))
+  bind emptyResult <- Regex.replaceAllWith(pattern: empty, text: "baaa", f: lambda(matched)
+    Reference.set(reference: order, value: List.append(xs: Reference.get(order), x: Regex.matchByteStart(matched)))
     return "X"
   end lambda)
   return if result = "日[1]é[2]-[3]!" and absent = "abc" and emptyResult = "XbX" and Reference.get(order) = [3, 6, 8, 0, 1]
@@ -352,7 +352,7 @@ fn scripts_accept_invalid_pattern_literals_and_extract_dates_and_literal_replace
 import Benitoite.Unofficial.Regex
 function extractDates(text: String) -> Result[List[String], String]
   bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
-  return Result.Ok(Regex.findAll(pattern, text) |> List.map(_, Regex.matchText))
+  return Result.Ok(Regex.findAll(pattern: pattern, text: text) |> List.map(xs: _, f: lambda(value) return Regex.matchText(value) end lambda))
 end function
 function invalid() -> Result[Regex.Pattern, String]
   return Regex.compile(r"[")
@@ -365,9 +365,9 @@ function main() -> Result[Unit, String]
   bind dates <- try extractDates("日2026-10-07, 2027-01-02; none")
   bind pattern <- try Regex.compile(r"(?P<name>a)")
   return if rejected and dates = ["2026-10-07", "2027-01-02"]
-    and Regex.replaceFirst(pattern, "aba", r"$1") = "$1ba"
-    and Regex.replaceAll(pattern, "aba", r"${1}") = r"${1}b${1}"
-    and Regex.replaceAll(pattern, "aba", r"${name}") = r"${name}b${name}"
+    and Regex.replaceFirst(pattern: pattern, text: "aba", replacement: r"$1") = "$1ba"
+    and Regex.replaceAll(pattern: pattern, text: "aba", replacement: r"${1}") = r"${1}b${1}"
+    and Regex.replaceAll(pattern: pattern, text: "aba", replacement: r"${name}") = r"${name}b${name}"
     then Result.Ok(()) else Result.Error("regex script") end if
 end function
 "#,
@@ -480,10 +480,10 @@ fn regex_replacements_join_multiple_chunks() {
 import Benitoite.Unofficial.Regex
 function main() -> Result[Unit, String]
   bind p <- try Regex.compile("a")
-  bind input <- String.repeat("éa", 2050) + "日"
-  bind expected <- String.repeat("éX", 2050) + "日"
-  if Regex.replaceAll(p, input, "X") <> expected then return Result.Error("replaceAll chunks") end if
-  if Regex.replaceAllWith(p, input, lambda(m) return "X" end lambda) <> expected then return Result.Error("replaceAllWith chunks") end if
+  bind input <- String.repeat(s: "éa", n: 2050) + "日"
+  bind expected <- String.repeat(s: "éX", n: 2050) + "日"
+  if Regex.replaceAll(pattern: p, text: input, replacement: "X") <> expected then return Result.Error("replaceAll chunks") end if
+  if Regex.replaceAllWith(pattern: p, text: input, f: lambda(matched) return "X" end lambda) <> expected then return Result.Error("replaceAllWith chunks") end if
   return Result.Ok(())
 end function
 "#,

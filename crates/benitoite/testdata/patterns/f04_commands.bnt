@@ -17,7 +17,7 @@ function dispatch(command: List[String]) -> Unit
   match command with
     case ["help"], ["--help"], [] -> showUsage()
     case ["add", name] -> add(name)
-    case ["remove", first, ..rest] -> removeAll(first, rest)
+    case ["remove", first, ..rest] -> removeAll(first: first, rest: rest)
     case _ -> showUsage()
   end match
 end function

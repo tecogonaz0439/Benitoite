@@ -2,16 +2,16 @@
 // 06-04「期待の確認」「結果の報告」: Assert.equal の失敗は両方の値と位置・呼び出しの履歴を示す。
 
 function checkSum(values: List[Integer], expected: Integer) -> Unit uses Assert.Check
-  Assert.equal(List.fold(values, 0, lambda(acc, v) return acc + v end lambda), expected)
+  Assert.equal(actual: List.fold(xs: values, initial: 0, f: lambda(acc, value) return acc + value end lambda), expected: expected)
 end function
 
 @test("sum of a list")
 function sumOfList() -> Unit uses Assert.Check
-  checkSum([1, 2, 3], 7)
+  checkSum(values: [1, 2, 3], expected: 7)
 end function
 
 @test
 function strings() -> Unit uses Assert.Check
-  Assert.equal("abc", "ab\"c")
-  Assert.equal(1, 1)
+  Assert.equal(actual: "abc", expected: "ab\"c")
+  Assert.equal(actual: 1, expected: 1)
 end function

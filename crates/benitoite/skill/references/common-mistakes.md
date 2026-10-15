@@ -29,6 +29,7 @@ Habits from other languages that `benitoite check` rejects, with the first line 
 - [A last expression without `return`](#a-last-expression-without-return)
 - [`for` and `while` loops](#for-and-while-loops)
 - [Keywords as names](#keywords-as-names)
+- [Callback parameter names that differ from the contract](#callback-parameter-names-that-differ-from-the-contract)
 - [`_` as a lambda parameter](#_-as-a-lambda-parameter)
 
 ## `let` instead of `bind`
@@ -63,7 +64,7 @@ end function
 
 ## Binding the same name twice
 
-`bind` cannot reuse a name that is already a local name. Use `shadow` to hide the old one on purpose, or pick a new name.
+`bind` cannot reuse a name that is already a local name. Prefer a new name that describes the new value. `shadow` can hide the old name explicitly, but is discouraged, even for intentional hiding; it remains valid and produces no warning.
 
 ```benitoite error
 function next(n: Integer) -> Integer
@@ -86,8 +87,8 @@ import Benitoite.Unofficial.IO.Console
 
 function next(n: Integer) -> Integer
   bind x <- n
-  shadow x <- x + 1
-  return x
+  bind increased <- x + 1
+  return increased
 end function
 
 function main() -> Unit uses Console.Write
@@ -101,7 +102,7 @@ end function
 
 ## Braces for blocks
 
-Blocks end with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end handle`, `end with`, `end data`, `end record`.
+Except for short lambdas (see `grammar.md`), blocks end with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end handle`, `end with`, `end data`, `end record`.
 
 ```benitoite error
 import Benitoite.Unofficial.IO.Console
@@ -119,11 +120,10 @@ error[E0212]: blocks are not written with braces
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  if 1 < 2 then
-    Console.writeLine("hi")
-  else
-    Console.writeLine("bye")
-  end if
+  match 1 < 2 with
+    case true -> Console.writeLine("hi")
+    case false -> Console.writeLine("bye")
+  end match
   return ()
 end function
 ```
@@ -172,7 +172,10 @@ function inRange(n: Integer) -> Boolean
 end function
 
 function main() -> Unit uses Console.Write
-  return Console.writeLine(if inRange(3) then "yes" else "no" end if)
+  return Console.writeLine(match inRange(3) with
+    case true -> "yes"
+    case false -> "no"
+  end match)
 end function
 ```
 
@@ -343,7 +346,7 @@ A statement whose value is not `Unit` is an error. IO functions that can fail re
 import Benitoite.Unofficial.IO.File
 
 function main() -> Unit uses File.Write
-  File.writeText("out.txt", "data")
+  File.writeText(path: "out.txt", text: "data")
   return ()
 end function
 ```
@@ -357,7 +360,7 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function main() -> Result[Unit, String] uses File.Write, Console.Write
-  bind _ <- try File.writeText("out.txt", "data") |> Result.mapError(_, IOError.message)
+  bind _ <- try File.writeText(path: "out.txt", text: "data") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
   Console.writeLine("written")
   return Result.Ok(())
 end function
@@ -393,8 +396,8 @@ function next(n: Integer) -> Integer
 end function
 
 function main() -> Unit uses Console.Write
-  bind doubled <- List.map([1, 2], lambda(x) return x * 2 end lambda)
-  return Console.writeLine("${next(1)} ${String.join(List.map(doubled, Integer.toString), ",")}")
+  bind doubled <- List.map(xs: [1, 2], f: lambda(value) return value * 2)
+  return Console.writeLine("${next(1)} ${String.join(xs: List.map(xs: doubled, f: lambda(value) return Integer.toString(value)), separator: ",")}")
 end function
 ```
 
@@ -425,8 +428,8 @@ error[E0201]: expected a newline or the end of the block, found `x`
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  List.forEach([1, 2, 3], lambda(x)
-    Console.writeLine(Integer.toString(x))
+  List.forEach(xs: [1, 2, 3], f: lambda(value)
+    Console.writeLine(Integer.toString(value))
   end lambda)
   return ()
 end function
@@ -456,13 +459,30 @@ end function
 error[E0216]: `handle` is a keyword and cannot be used as a name
 ```
 
+## Callback parameter names that differ from the contract
+
+`List.map` expects `function(value: T) -> U`. Naming a lambda parameter `x` changes its contract; it is not silently renamed to `value`. Names must match even for a one-parameter callback, and their order must also match for callbacks with several parameters.
+
+```benitoite error
+function main() -> Unit
+  bind _ <- List.map(xs: [1, 2], f: lambda(x) return x * 2)
+  return ()
+end function
+```
+
+```diagnostic
+error[E0454]: function parameter names do not match
+```
+
+Rename the parameter and its bound references together: `List.map(xs: [1, 2], f: lambda(value) return value * 2)`. To pass an existing function such as `Integer.toString`, whose parameter is `n`, wrap it as `lambda(value) return Integer.toString(value)`. If a descriptive local name is needed, bind an alias inside a multiline lambda. Keep required names even for unused parameters. See `idioms.md` for a complete example.
+
 ## `_` as a lambda parameter
 
-`_` alone cannot be a lambda parameter. For an unused parameter, use a name that starts with `_`, such as `_key`.
+`_` alone cannot be a lambda parameter. Keep the parameter names required by a callback contract even when a parameter is unused: `Map.filter` requires `key, value`, so an unused key is still named `key`. In a standalone lambda without an expected contract, an identifier such as `_key` is valid, but that identifier then becomes part of its function type.
 
 ```benitoite error
 function evens(m: Map[String, Integer]) -> Map[String, Integer]
-  return Map.filter(m, lambda(_, n) return n mod 2 = 0 end lambda)
+  return Map.filter(m: m, p: lambda(_, value) return value mod 2 = 0 end lambda)
 end function
 
 function main() -> Unit
@@ -478,11 +498,11 @@ error[E0210]: `_` cannot be a lambda parameter
 import Benitoite.Unofficial.IO.Console
 
 function evens(m: Map[String, Integer]) -> Map[String, Integer]
-  return Map.filter(m, lambda(_key, n) return n mod 2 = 0 end lambda)
+  return Map.filter(m: m, p: lambda(key, value) return value mod 2 = 0 end lambda)
 end function
 
 function main() -> Unit uses Console.Write
-  return Console.writeLine(String.join(Map.keys(evens(Map.fromList([Pair("a", 1), Pair("b", 2)]))), ","))
+  return Console.writeLine(String.join(xs: Map.keys(evens(Map.fromList([Pair("a", 1), Pair("b", 2)]))), separator: ","))
 end function
 ```
 

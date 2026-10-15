@@ -21,7 +21,7 @@ import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.IO.Clock
 import Benitoite.Unofficial.Time
 function main() -> Result[Unit,String] uses Clock.Time
- bind cmd <- Process.command("git", ["status"])
+ bind cmd <- Process.command(program: "git", arguments: ["status"])
  if Process.Command.program(cmd) <> "git" or Process.Command.arguments(cmd) <> ["status"]
     or Process.Command.workingDirectory(cmd) <> Option.None
     or Process.Command.environment(cmd) <> Map.empty()

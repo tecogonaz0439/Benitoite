@@ -3,6 +3,6 @@ function calculate(a: UnsignedInteger32, b: UnsignedInteger32) -> UnsignedIntege
   return a mod b
 end function
 function main() -> Unit uses Console.Write
-  bind _ <- calculate(4294967295u32, 0u32)
+  bind _ <- calculate(a: 4294967295u32, b: 0u32)
   Console.writeLine("unreachable")
 end function

@@ -93,7 +93,7 @@ fn push_field_arg(p: &mut Parser, depth: u32, out: &mut Vec<FieldArg>) -> PResul
     } else {
         exprs::parse_expr(p, child(depth))?
     };
-    finish_field_arg(p, start, name, value, out);
+    finish_field_arg(p, start, name, *value, out);
     Ok(())
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
@@ -102,7 +102,7 @@ fn finish_field_arg(
     p: &mut Parser,
     start: usize,
     name: Name,
-    value: Box<Expr>,
+    value: Expr,
     out: &mut Vec<FieldArg>,
 ) {
     // 大きな Expr を持つノードは再帰から戻った後に別の枠で組み立てる（設計書 02-03「入れ子の深さ」）。
@@ -110,7 +110,7 @@ fn finish_field_arg(
         id: p.node_id(),
         span: p.span_from(start),
         name,
-        value: *value,
+        value,
     });
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。

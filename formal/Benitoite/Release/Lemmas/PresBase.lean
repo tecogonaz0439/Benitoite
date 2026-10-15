@@ -1,16 +1,15 @@
 import Benitoite.Release.Lemmas.Preservation
 
 /-!
-# 保存の定理の補助の補題（段階 B）
+# 保存の定理の補助の補題（契約名を持つコア）
 
-保存の定理の本体（`PresMain.lean`）と、辞書とメソッドの呼び出しの補題（`Dict.lean`）が使う補題。
+保存の定理の本体と辞書の型付けで使い、契約名の綴り・順序と整形式を保持する
+（設計書 01-12「型付け規則」「確かめる性質」）。
 -/
 
 namespace Benitoite.Release
 
 variable {P : Program} {B : Builtins}
-
-/-! ## 補助の補題 -/
 
 mutual
   /-- エフェクト変数の範囲の条件を外す。 -/
@@ -24,9 +23,9 @@ mutual
     | .prim _ _ es, h => by
         simp only [Val.VarsIn] at h ⊢
         exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Eff.RhosInList.true es⟩
-    | .lam _ body, h => by
+    | .lam _ _ body, h => by
         simp only [Val.VarsIn] at h ⊢
-        exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Comp.VarsIn.toTrue body h.2⟩
+        exact ⟨h.1, Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.2.1, Comp.VarsIn.toTrue body h.2.2⟩
     | .con _ _ args, h => by
         simp only [Val.VarsIn] at h ⊢
         exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Val.VarsInList.toTrue args h.2⟩
@@ -170,7 +169,7 @@ theorem store_prim_inv (hb : B.Assumptions P) {Ψ R b ts es ws a ε1 s} (hsig : 
     cases e : s.kind <;> rw [e] at hsh hkd
     all_goals first
       | exact absurd rfl hkd.1 | exact absurd rfl hkd.2.1 | exact absurd rfl hkd.2.2
-      | exact ⟨hsh.1, hsh.2.1⟩
+      | exact ⟨hsh.2.1, hsh.2.2.1⟩
   obtain ⟨t, rfl⟩ := single_of_length (htl.trans h1.1)
   have : es = [] := List.eq_nil_of_length_eq_zero (hel.trans h1.2)
   subst this
@@ -183,7 +182,7 @@ theorem ClosedArgs.single {t : Ty} {es : List Eff} (h : Val.VarsIn 0 (fun _ => T
 
 /-- `Reference.update` の遷移した先の計算の型付け。 -/
 theorem refUpdate_typed (hb : B.Assumptions P) {Ψ R l t f}
-    (hl : Ψ l = some (.ref t)) (hf : HasTypeV P B Ψ [] [] f (.fn [t] t Eff.empty)) (ht : ClosedArgs [t]) :
+    (hl : Ψ l = some (.ref t)) (hf : HasTypeV P B Ψ [] [] f (.fn ["value"] [t] t Eff.empty)) (ht : ClosedArgs [t]) :
     HasTypeC P B Ψ [] [] R (.letIn (.app (.prim B.refGet [t] []) [.loc l])
       (.letIn (.app (f.rename (· + 1)) [.var 0]) (.app (.prim B.refSet [t] []) [.loc l, .var 0])))
       (.base .unit) (Eff.single stateEff) := by
@@ -191,13 +190,13 @@ theorem refUpdate_typed (hb : B.Assumptions P) {Ψ R l t f}
   obtain ⟨ss, hss, hks⟩ := hb.ref_set
   have hshg := hb.store_shape _ _ hsg
   unfold PrimSig.StoreShape at hshg; rw [hkg] at hshg
-  obtain ⟨hg1, hg2, hg3, hg4, hg5⟩ := hshg
+  obtain ⟨hgn, hg1, hg2, hg3, hg4, hg5⟩ := hshg
   have hshs := hb.store_shape _ _ hss
   unfold PrimSig.StoreShape at hshs; rw [hks] at hshs
-  obtain ⟨hs1, hs2, hs3, hs4, hs5⟩ := hshs
+  obtain ⟨hsn, hs1, hs2, hs3, hs4, hs5⟩ := hshs
   have htn : ∀ b' t' ε', t ≠ .cont b' t' ε' := (ht t (by simp)).2
   refine .C_Let (a := t) ?_ (.C_Let (a := t) ?_ ?_)
-  · have hv := HasTypeV.V_Prim (P := P) (Ψ := Ψ) (C := []) (Γ := []) (ts := [t]) (es := []) hsg
+  · have hv := HasTypeV.V_Prim (P := P) (Ψ := Ψ) (C := []) (Γ := []) (ts := [t]) (es := []) hsg (hb.sig_scoped _ _ hsg).1
       (by simp [hg1]) (by simp [hg2])
       (hb.store_admits _ _ [] [t] hsg (by rw [hkg]; decide) (by rw [hkg]; decide) (by rw [hkg]; decide)
         (by simp [hg1]))
@@ -207,7 +206,7 @@ theorem refUpdate_typed (hb : B.Assumptions P) {Ψ R l t f}
     exact .C_App hv (.cons (.V_LocRef hl) .nil)
   · have hf' := hf.rename (RenOk.shift [some t] [])
     exact .C_Sub (.C_App hf' (.cons (.V_Var (by simp) htn) .nil)) (Ty.Le.refl _) (Eff.empty_sub _)
-  · have hv := HasTypeV.V_Prim (P := P) (Ψ := Ψ) (C := []) (Γ := [some t, some t]) (ts := [t]) (es := []) hss
+  · have hv := HasTypeV.V_Prim (P := P) (Ψ := Ψ) (C := []) (Γ := [some t, some t]) (ts := [t]) (es := []) hss (hb.sig_scoped _ _ hss).1
       (by simp [hs1]) (by simp [hs2])
       (hb.store_admits _ _ [] [t] hss (by rw [hks]; decide) (by rw [hks]; decide) (by rw [hks]; decide)
         (by simp [hs1]))

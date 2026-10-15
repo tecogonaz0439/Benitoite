@@ -1,0 +1,4706 @@
+{
+  "version": 1,
+  "legacy": {
+    "corpusVersion": 7,
+    "tableVersion": 1,
+    "coverageVersion": 1,
+    "golden": 136,
+    "random": 1000,
+    "excluded": 380,
+    "outside": 0,
+    "singleSurfaceInput": "testdata/eval/adt_recursive.bnt"
+  },
+  "named": [
+    {
+      "stem": "named-types",
+      "definitions": 1,
+      "origin": "independent-type",
+      "coverage": null
+    },
+    {
+      "stem": "named-declarations",
+      "definitions": 2,
+      "origin": "checked-program",
+      "coverage": null
+    },
+    {
+      "stem": "named-calls",
+      "definitions": 5,
+      "origin": "general-parser-checked-program",
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
+    },
+    {
+      "stem": "named-static-calls",
+      "definitions": 3,
+      "origin": "independent-static-call-plan",
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "stem": "named-positional-holes",
+      "definitions": 1,
+      "origin": "general-parser-checked-positional-constructor-holes",
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    },
+    {
+      "stem": "named-annotation-only",
+      "definitions": 2,
+      "origin": "general-parser-checked-local-annotation-only",
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      }
+    }
+  ],
+  "namedVersions": {
+    "corpus": 8,
+    "table": 2,
+    "coverage": 2
+  },
+  "namedCoverageCases": 2,
+  "namedExcluded": [],
+  "namedOutside": [],
+  "generalNamedCallRouting": "program-unit",
+  "programs": [
+    {
+      "name": "testdata/acceptance/deep_tail_recursion.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/acceptance/fmt_comments.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/acceptance/fmt_comments_check.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/acceptance/json_summary.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 4,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/acceptance/process_run.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/acceptance/process_shell.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/acceptance/test_replaces_effects.bnt",
+      "group": "golden",
+      "definitions": 6,
+      "scopes": {
+        "inScope": 6
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 6
+    },
+    {
+      "name": "testdata/concurrency/c12-all-results.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/concurrency/c12-cancelled-await.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/concurrency/c12-cancelled-reader.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/concurrency/c12-deadlock.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/concurrency/c12-group-join-await.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/concurrency/c12-group-released.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/concurrency/c12-inherited-handler.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/concurrency/c12-race-and-timeout.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/concurrency/inherited_operation_task_location.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/concurrency/r41-inherited-non-tail.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/effects/c11-high-impact.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/effects/choose_example.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/effects/f04_resources.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/effects/first-release-cells.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/effects/first-release-try.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "accessor": 1,
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/effects/first-release-with.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/effects/list_element_order.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/effects/map_with_io.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/effects/run_all_subsumption.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/c12-constant-values.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/c12-reference-alias-update.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/eval/div_by_zero_tail.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/div_by_zero_trace.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/f15_copied_guard_and_list_patterns.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 4,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/eval/f15_int_division.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/eval/f15_list_functions.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/eval/f15_nested_capture_and_long_list.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/eval/f15_order_call_args.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/eval/f15_tail_lambda_and_value.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "scopes": {
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 5
+    },
+    {
+      "name": "testdata/eval/int_division.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/eval/int_overflow_floor_div.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/eval/list_functions.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/eval/list_hof_long.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/eval/list_hof_order.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/eval/list_sort.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/named_contracts.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/eval/named_escape.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "scopes": {
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 5
+    },
+    {
+      "name": "testdata/eval/named_failure.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/eval/named_methods.bnt",
+      "group": "golden",
+      "definitions": 8,
+      "scopes": {
+        "inScope": 8
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 2,
+      "surfaceChecks": 6
+    },
+    {
+      "name": "testdata/eval/named_operations.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/named_order.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/eval/named_partials.bnt",
+      "group": "golden",
+      "definitions": 9,
+      "scopes": {
+        "inScope": 9
+      },
+      "coverage": {
+        "matches": 4,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 9
+    },
+    {
+      "name": "testdata/eval/named_record_values.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "accessor": 2,
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/named_tail.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/option_result_functions.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 4,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/eval/order_binary_list_ctor.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/order_call_args.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/eval/order_pipe.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/eval/placeholder_delays.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/eval/string_functions.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 3,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/string_positions.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/eval/tail_lambda_and_value.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "scopes": {
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 5
+    },
+    {
+      "name": "testdata/eval/tail_self.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/value_too_large.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/eval/width-display-numbers.bnt",
+      "group": "golden",
+      "definitions": 8,
+      "scopes": {
+        "inScope": 8
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 8
+    },
+    {
+      "name": "testdata/eval/width-float-arithmetic.bnt",
+      "group": "golden",
+      "definitions": 6,
+      "scopes": {
+        "inScope": 6
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 6
+    },
+    {
+      "name": "testdata/eval/width-signed-arithmetic.bnt",
+      "group": "golden",
+      "definitions": 22,
+      "scopes": {
+        "inScope": 22
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 22
+    },
+    {
+      "name": "testdata/eval/width-signed-s16-add-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s16-divide-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s16-divide-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s16-modulo-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s16-multiply-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s16-negate-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s16-subtract-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s32-add-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s32-divide-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s32-divide-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s32-modulo-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s32-multiply-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s32-negate-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s32-subtract-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s8-add-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s8-divide-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s8-divide-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s8-modulo-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s8-multiply-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s8-negate-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-signed-s8-subtract-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-arithmetic.bnt",
+      "group": "golden",
+      "definitions": 19,
+      "scopes": {
+        "inScope": 19
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 19
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u16-add-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u16-divide-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u16-modulo-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u16-multiply-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u16-subtract-underflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u32-add-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u32-divide-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u32-modulo-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u32-multiply-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u32-subtract-underflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u64-add-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u64-divide-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u64-modulo-zero.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u64-multiply-overflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/eval/width-unsigned-u64-subtract-underflow.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/handlers/c12-builtin-port.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/handlers/c12-discard-reader.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/handlers/f04_log.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/handlers/first-release-log.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/handlers/first-release-parse-all.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/handlers/first-release-port.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/handlers/secf1-clause-local.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/c12-close-reader-twice.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 3,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/c12-process-exit-flush.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/c12-reader-lines.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/c12-stdin-lines.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/c12-stdin-remaining.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/c12-with-reader-release.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/c12-with-return-release.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/io/c12-with-try-release.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/io/c12-write-append.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/l40-clock-handled.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/io/l40-console-bytes.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/l40-console-lines.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/l40-file-paths.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/l40-file-resources.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/io/l40-json-total.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/io/l40-process-attached.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/l40-process-commands.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/l40-process-environment.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/l40-random-handled.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/io/l40-random-seeded.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/io/process_args.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/modules/f05_imports",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/names/f06_normalize.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/names/f06_public_import",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/names/helper_name_clash.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/network/address-in-use.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/network/redirect.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/network/respond-twice.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/network/routes-and-post.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "scopes": {
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 5,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/network/status-above-range.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/network/status-below-range.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/network/status-informational.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/network/todo194-json-parse-server.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/network/todo198-cancelled-accept-reregisters.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            2,
+            0,
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/network/unanswered-exchange.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/packages/config-textkit",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/packages/copied-textkit",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/packages/distinct-modules",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/packages/json-pure-depth-array",
+      "group": "golden",
+      "definitions": 57,
+      "scopes": {
+        "inScope": 51,
+        "accessor": 6
+      },
+      "coverage": {
+        "matches": 16,
+        "bindings": 8
+      },
+      "implementations": 0,
+      "surfaceChecks": 51
+    },
+    {
+      "name": "testdata/packages/json-pure-depth-object",
+      "group": "golden",
+      "definitions": 57,
+      "scopes": {
+        "inScope": 51,
+        "accessor": 6
+      },
+      "coverage": {
+        "matches": 16,
+        "bindings": 8
+      },
+      "implementations": 0,
+      "surfaceChecks": 51
+    },
+    {
+      "name": "testdata/packages/json-pure-same",
+      "group": "golden",
+      "definitions": 57,
+      "scopes": {
+        "inScope": 51,
+        "accessor": 6
+      },
+      "coverage": {
+        "matches": 16,
+        "bindings": 8
+      },
+      "implementations": 0,
+      "surfaceChecks": 51
+    },
+    {
+      "name": "testdata/packages/local-textkit",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/packages/outside-textkit",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/packages/todo-handler",
+      "group": "golden",
+      "definitions": 8,
+      "scopes": {
+        "inScope": 6,
+        "accessor": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 6
+    },
+    {
+      "name": "testdata/patterns/f04_commands.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "scopes": {
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 5
+    },
+    {
+      "name": "testdata/stdlib/bytes_l03_contracts.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/l40-collections.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/l40-csv-invalid-delimiter.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/l40-csv.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/l40-encoding-hash.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/stdlib/l40-json.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/l40-path-invalid-extension.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/l40-path.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/l40-regex.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/stdlib/l40-time.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/l40-unicode.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/width-bits-s8-invalid.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/width-bits-u64-invalid.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/width-bits.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/width-convert-narrow.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/stdlib/width-trait-aliases.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "scopes": {
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 5
+    },
+    {
+      "name": "testdata/stdlib/width-trait.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/stdlib/width-u64-convert.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 2,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/syntax/example_shapes.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/syntax/f02_pipe.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/syntax/f03_constants_aliases.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/syntax/f04_interpolation.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/syntax/f04_list_spread.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2,
+      "singleSurfaceFailure": {
+        "ok": false,
+        "error": {
+          "reason": "type is not included in the expected type",
+          "path": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "testdata/syntax/f04_try.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/syntax/newline_continuation.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/syntax/pipe_rules.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "scopes": {
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 5
+    },
+    {
+      "name": "testdata/syntax/placeholder_rules.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "scopes": {
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 5
+    },
+    {
+      "name": "testdata/syntax/short-lambda.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/syntax/trailing_commas.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/syntax/uses_longest_match.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/test/assert_equal.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/test/assert_is_true.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/test/assert_not_equal.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/test/captured_output.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/test/exit.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/test/handler_replacement.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/test/passing.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/test/result_error.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/test/runtime_error.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/test/task_assert.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/test/user_assert_handler.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/test/values.bnt",
+      "group": "golden",
+      "definitions": 9,
+      "scopes": {
+        "accessor": 2,
+        "inScope": 7
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 7
+    },
+    {
+      "name": "testdata/traits/c11-dictionary-run.bnt",
+      "group": "golden",
+      "definitions": 6,
+      "scopes": {
+        "inScope": 6
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 2,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/traits/c11-standard-run.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/traits/combine-all.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/traits/f04_supertraits.bnt",
+      "group": "golden",
+      "definitions": 6,
+      "scopes": {
+        "accessor": 1,
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 2,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/traits/functor.bnt",
+      "group": "golden",
+      "definitions": 5,
+      "scopes": {
+        "inScope": 5
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 2,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/traits/show.bnt",
+      "group": "golden",
+      "definitions": 7,
+      "scopes": {
+        "accessor": 1,
+        "inScope": 6
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 2,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/traits/single.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/traits/standard-traits.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "name": "testdata/types/c11-collection-constants.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/types/c11-numbers.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/types/first-release-aliases.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/types/generic_functions.bnt",
+      "group": "golden",
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "name": "testdata/types/operator_type_determined.bnt",
+      "group": "golden",
+      "definitions": 1,
+      "scopes": {
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "name": "testdata/types/todo178-placeholder-return-run.bnt",
+      "group": "golden",
+      "definitions": 4,
+      "scopes": {
+        "inScope": 4
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 4
+    },
+    {
+      "name": "testdata/types/todo178-placeholder-try-run.bnt",
+      "group": "golden",
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    }
+  ],
+  "routingManifest": "routing-manifest.json",
+  "legacyReports": {
+    "desugar": {
+      "golden": {
+        "programs": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 136,
+          "excluded": 380
+        },
+        "definitions": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 261,
+          "excluded": 0
+        }
+      },
+      "random": {
+        "programs": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 1000,
+          "excluded": 0
+        },
+        "definitions": {
+          "outside": 0,
+          "mismatched": 0,
+          "matched": 72218,
+          "excluded": 0
+        }
+      }
+    },
+    "builtin": {
+      "checkedInputs": 1136,
+      "errors": [],
+      "summaryMismatchCount": 0,
+      "nonconvergedCount": 0
+    },
+    "coverage": {
+      "matched": 10020,
+      "mismatched": 0,
+      "fuelExhausted": 0
+    },
+    "programCoverage": {
+      "inputs": 1136,
+      "cases": 22294,
+      "matched": 22294,
+      "mismatched": 0,
+      "outOfScope": 0,
+      "fuelExhausted": 0,
+      "matches": {
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 16285,
+        "fuelExhausted": 0,
+        "cases": 16285
+      },
+      "bindings": {
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 6009,
+        "fuelExhausted": 0,
+        "cases": 6009
+      }
+    },
+    "surface": {
+      "inputs": 1136,
+      "excludedInputs": 380,
+      "fullyCheckedInputs": 1136,
+      "implementations": 10002,
+      "counts": {
+        "q11": 0,
+        "preparationFailure": 0,
+        "outOfScope": 0,
+        "mismatched": 0,
+        "matched": 50439,
+        "lazyRestriction": 0
+      },
+      "q11Agrees": true
+    },
+    "surfaceOutcomes": []
+  },
+  "coverageExports": {
+    "": {
+      "version": 1,
+      "boundaryCases": 20,
+      "randomCases": 10000,
+      "seedXor": 57793,
+      "boundaryNames": [
+        "golden/integer",
+        "golden/string",
+        "golden/character",
+        "golden/after-wild",
+        "golden/refutable-bind",
+        "golden/option",
+        "golden/tree",
+        "golden/covering-many",
+        "golden/toggle",
+        "boundary/i64",
+        "boundary/surrogate",
+        "boundary/list-0",
+        "boundary/list-1",
+        "boundary/list-2",
+        "boundary/list-3",
+        "boundary/front-back",
+        "q3/duplicate",
+        "q3/union",
+        "q3/wild",
+        "q3/covered-by"
+      ]
+    },
+    "named-": {
+      "version": 2,
+      "boundaryCases": 2,
+      "randomCases": 0,
+      "seedXor": 0,
+      "boundaryNames": [
+        "function-contract",
+        "nested-function-contract"
+      ]
+    }
+  },
+  "programReports": {
+    "desugarDefinitions": {
+      "outside": 0,
+      "mismatched": 0,
+      "matched": 694,
+      "excluded": 0
+    },
+    "surfaceCounts": {
+      "q11": 1,
+      "preparationFailure": 0,
+      "outOfScope": 19,
+      "mismatched": 0,
+      "matched": 637,
+      "lazyRestriction": 0
+    },
+    "surfaceOutcomes": [
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/respond-twice.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/status-above-range.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/status-below-range.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/status-informational.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/unanswered-exchange.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-deadlock.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            0,
+            1,
+            2,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "returnE",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "matchE",
+              "path": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                0,
+                1,
+                2,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                0,
+                1,
+                2,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-group-released.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "matchE",
+              "path": [
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-group-join-await.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/redirect.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:42",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-deadlock.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:42",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/routes-and-post.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:42",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/todo194-json-parse-server.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:42",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/inherited_operation_task_location.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:43",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/r41-inherited-non-tail.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:43",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/todo198-cancelled-accept-reregisters.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:43",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-cancelled-await.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:43",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/concurrency/c12-inherited-handler.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                1,
+                0,
+                1,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                1,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:43",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/todo194-json-parse-server.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:44",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [
+          "Task.await",
+          "TaskGroup.spawn"
+        ],
+        "q11Paths": [],
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/network/routes-and-post.bnt",
+        "group": "golden",
+        "error": {
+          "reason": "unknown primitive",
+          "path": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "ancestors": [
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "call",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ]
+            },
+            {
+              "tag": "other",
+              "path": [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "diagnosis": "classified",
+        "definition": "fn:45",
+        "category": "outOfScope"
+      },
+      {
+        "unconvertiblePrims": [],
+        "q11Paths": [
+          [
+            0,
+            0
+          ]
+        ],
+        "q11OriginalError": {
+          "reason": "type is not included in the expected type",
+          "path": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "nonUnitReplacements": 0,
+        "kind": "definition",
+        "input": "testdata/syntax/f04_list_spread.bnt",
+        "group": "golden",
+        "error": null,
+        "diagnosis": "classified",
+        "definition": "fn:41",
+        "category": "q11"
+      }
+    ],
+    "coverage": {
+      "matched": 144,
+      "mismatched": 0,
+      "outOfScope": 0,
+      "fuelExhausted": 0
+    },
+    "definitions": 694,
+    "surfaceChecks": 657,
+    "coverageEntries": 144
+  }
+}

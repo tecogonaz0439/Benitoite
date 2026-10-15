@@ -10,7 +10,7 @@ implement Echo[Integer]
 end implement
 implement[T: Echo] Echo[Option[T]]
   function echo(x: Option[T]) -> Option[T]
-    return Option.map(x, Echo.echo)
+    return Option.map(o: x, f: lambda(value) return Echo.echo(value) end lambda)
   end function
 end implement
 function repeated[T: Echo & equality](x: T) -> Boolean

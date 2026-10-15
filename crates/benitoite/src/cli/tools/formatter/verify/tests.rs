@@ -55,3 +55,43 @@ fn rejects_syntax_errors_with_the_same_tokens() {
         &BEFORE.replace("/// adds\n", "/// adds\n\n"),
     );
 }
+
+#[test]
+fn preserves_lambda_layouts_across_whitespace_changes() {
+    for body in [
+        "bind f <- lambda(x) return call(x, 1)",
+        "bind f <- lambda(x) return (lambda(y) return x + y) end lambda",
+        "bind f <- lambda(x) return (lambda(y) return x + y end lambda)",
+        "bind f <- lambda(x)\n    return x // body\n  end lambda",
+        "bind f <- lambda()\n    bind g <- lambda(x) return x\n\n  end lambda",
+        "bind f <- lambda()\n  end lambda",
+    ] {
+        let before = format!("function f() -> Unit\n  {body}\n  ()\nend function");
+        let after = before.replace("bind ", "bind   ").replace('\n', "\r\n");
+        verify(before.as_bytes(), after.as_bytes(), SourceKind::User).unwrap();
+    }
+}
+
+#[test]
+fn rejects_changed_lambda_boundaries() {
+    let before = "function f() -> Unit\n  use(lambda(x) return call(x, 1)) // tail\nend function\n";
+    for after in [
+        before.replace("return call", "return\n call"),
+        before.replace("call(x, 1)", "call(x,\n 1)"),
+        before.replace("lambda(x)", "lambda(\nx)"),
+        before.replace("call(x, 1))", "call(x, 1) end lambda)"),
+        before.replace("// tail", "// changed"),
+    ] {
+        assert!(
+            verify(before.as_bytes(), after.as_bytes(), SourceKind::User).is_err(),
+            "{after}"
+        );
+    }
+}
+
+#[test]
+fn accepts_removed_blank_lines_before_outer_lambda_ending() {
+    let before = "function f() -> Unit\n  bind f <- lambda()\n    bind g <- lambda(x) return x\n\n  end lambda\nend function\n";
+    let after = before.replace("\n\n", "\n");
+    assert!(verify(before.as_bytes(), after.as_bytes(), SourceKind::User).is_ok());
+}

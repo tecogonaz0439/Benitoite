@@ -1,0 +1,2902 @@
+{
+  "version": 8,
+  "operators": [
+    {
+      "op": "eq",
+      "operand": null,
+      "name": "%eq"
+    }
+  ],
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-named",
+      "excluded": [],
+      "definitions": [
+        {
+          "name": "choose (fn:1)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "left",
+                    "right"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "local": {
+                            "index": 1
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "left",
+                    "right"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "var": {
+                        "index": 1
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "reordered (fn:2)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "call": {
+                            "callee": {
+                              "funName": {
+                                "name": "fn:1",
+                                "tys": [],
+                                "effs": []
+                              }
+                            },
+                            "labels": [
+                              "right",
+                              "left"
+                            ],
+                            "positions": [
+                              1,
+                              0
+                            ],
+                            "args": [
+                              {
+                                "literal": {
+                                  "value": {
+                                    "integer": {
+                                      "value": 2
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "literal": {
+                                  "value": {
+                                    "integer": {
+                                      "value": 1
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": {
+                              "integer": {
+                                "value": 2
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "integer": {
+                                    "value": 1
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "app": {
+                            "callee": {
+                              "fnRef": {
+                                "name": "fn:1",
+                                "tys": [],
+                                "effs": []
+                              }
+                            },
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              },
+                              {
+                                "var": {
+                                  "index": 1
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "identity (fn:3)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "value"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "fn": {
+                            "names": [
+                              "value"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "eff": []
+                          }
+                        },
+                        "inner": {
+                          "lam": {
+                            "names": [
+                              "value"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "eff": [],
+                            "body": {
+                              "last": {
+                                "expr": {
+                                  "returnE": {
+                                    "ret": {
+                                      "base": {
+                                        "name": "Integer"
+                                      }
+                                    },
+                                    "inner": {
+                                      "local": {
+                                        "index": 0
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "value"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "lam": {
+                        "names": [
+                          "value"
+                        ],
+                        "params": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ],
+                        "body": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 0
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [
+                  []
+                ],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "partial (fn:4)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "right"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "fn": {
+                            "names": [
+                              "right"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "eff": []
+                          }
+                        },
+                        "inner": {
+                          "partialCall": {
+                            "callee": {
+                              "funName": {
+                                "name": "fn:1",
+                                "tys": [],
+                                "effs": []
+                              }
+                            },
+                            "names": [
+                              "left",
+                              "right"
+                            ],
+                            "args": [
+                              {
+                                "hole": {
+                                  "label": "right",
+                                  "position": 1,
+                                  "ty": {
+                                    "base": {
+                                      "name": "Integer"
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "expr": {
+                                  "label": "left",
+                                  "position": 0,
+                                  "inner": {
+                                    "literal": {
+                                      "value": {
+                                        "integer": {
+                                          "value": 1
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "eff": []
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "right"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "lam": {
+                        "names": [
+                          "right"
+                        ],
+                        "params": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ],
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 0
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "letIn": {
+                                "bound": {
+                                  "ret": {
+                                    "value": {
+                                      "const": {
+                                        "value": {
+                                          "integer": {
+                                            "value": 1
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "body": {
+                                  "app": {
+                                    "callee": {
+                                      "fnRef": {
+                                        "name": "fn:1",
+                                        "tys": [],
+                                        "effs": []
+                                      }
+                                    },
+                                    "args": [
+                                      {
+                                        "var": {
+                                          "index": 0
+                                        }
+                                      },
+                                      {
+                                        "var": {
+                                          "index": 1
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [
+                  []
+                ],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "pipe (fn:5)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "pipe": {
+                            "lhs": {
+                              "literal": {
+                                "value": {
+                                  "integer": {
+                                    "value": 1
+                                  }
+                                }
+                              }
+                            },
+                            "rhs": {
+                              "call": {
+                                "callee": {
+                                  "funName": {
+                                    "name": "fn:1",
+                                    "tys": [],
+                                    "effs": []
+                                  }
+                                },
+                                "labels": [
+                                  "right"
+                                ],
+                                "positions": [
+                                  1
+                                ],
+                                "args": [
+                                  {
+                                    "literal": {
+                                      "value": {
+                                        "integer": {
+                                          "value": 2
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": {
+                              "integer": {
+                                "value": 1
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "integer": {
+                                    "value": 2
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "app": {
+                            "callee": {
+                              "fnRef": {
+                                "name": "fn:1",
+                                "tys": [],
+                                "effs": []
+                              }
+                            },
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 1
+                                }
+                              },
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "callback (fn:6)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "list": {
+                      "elem": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      }
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "list": {
+                            "elem": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            }
+                          }
+                        },
+                        "inner": {
+                          "call": {
+                            "callee": {
+                              "primName": {
+                                "name": "List.map",
+                                "tys": [],
+                                "effs": []
+                              }
+                            },
+                            "labels": [
+                              "f",
+                              "xs"
+                            ],
+                            "positions": [
+                              1,
+                              0
+                            ],
+                            "args": [
+                              {
+                                "lam": {
+                                  "names": [
+                                    "value"
+                                  ],
+                                  "params": [
+                                    {
+                                      "base": {
+                                        "name": "Integer"
+                                      }
+                                    }
+                                  ],
+                                  "ret": {
+                                    "base": {
+                                      "name": "Integer"
+                                    }
+                                  },
+                                  "eff": [],
+                                  "body": {
+                                    "last": {
+                                      "expr": {
+                                        "returnE": {
+                                          "ret": {
+                                            "base": {
+                                              "name": "Integer"
+                                            }
+                                          },
+                                          "inner": {
+                                            "local": {
+                                              "index": 0
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "list": {
+                                  "elem": {
+                                    "base": {
+                                      "name": "Integer"
+                                    }
+                                  },
+                                  "elems": [
+                                    {
+                                      "literal": {
+                                        "value": {
+                                          "integer": {
+                                            "value": 2
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "list": {
+                      "elem": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      }
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "lam": {
+                            "names": [
+                              "value"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "body": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 0
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "letIn": {
+                        "bound": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "const": {
+                                    "value": {
+                                      "integer": {
+                                        "value": 2
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "ret": {
+                                "value": {
+                                  "list": {
+                                    "elems": [
+                                      {
+                                        "var": {
+                                          "index": 0
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "app": {
+                            "callee": {
+                              "prim": {
+                                "name": "List.map",
+                                "tys": [],
+                                "effs": []
+                              }
+                            },
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              },
+                              {
+                                "var": {
+                                  "index": 1
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [
+                  []
+                ],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "operation (fn:7)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Ask"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "call": {
+                            "callee": {
+                              "opName": {
+                                "name": "ask",
+                                "tys": []
+                              }
+                            },
+                            "labels": [
+                              null
+                            ],
+                            "positions": [
+                              0
+                            ],
+                            "args": [
+                              {
+                                "literal": {
+                                  "value": {
+                                    "integer": {
+                                      "value": 3
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Ask"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": {
+                              "integer": {
+                                "value": 3
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "app": {
+                        "callee": {
+                          "op": {
+                            "name": "ask",
+                            "tys": []
+                          }
+                        },
+                        "args": [
+                          {
+                            "var": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "implementation (fn:8)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "x"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "local": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": "ShowInt",
+                "method": "show",
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "x"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "Integer"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "var": {
+                        "index": 0
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "methodValue (fn:9)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "x"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "fn": {
+                            "names": [
+                              "x"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "eff": []
+                          }
+                        },
+                        "inner": {
+                          "methName": {
+                            "dict": {
+                              "impl": {
+                                "name": "ShowInt",
+                                "tys": [],
+                                "args": []
+                              }
+                            },
+                            "name": "show",
+                            "tys": [],
+                            "effs": [],
+                            "dicts": [],
+                            "names": [
+                              "x"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "eff": []
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "x"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "lam": {
+                        "names": [
+                          "x"
+                        ],
+                        "params": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ],
+                        "body": {
+                          "meth": {
+                            "dict": {
+                              "dict": {
+                                "name": "ShowInt",
+                                "tys": [],
+                                "args": []
+                              }
+                            },
+                            "name": "show",
+                            "tys": [],
+                            "effs": [],
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [
+                  []
+                ],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "PosPairValue (fn:10)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "arg1",
+                        "arg2"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "data": {
+                          "name": "PosPair",
+                          "args": []
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "fn": {
+                            "names": [
+                              "arg1",
+                              "arg2"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "data": {
+                                "name": "PosPair",
+                                "args": []
+                              }
+                            },
+                            "eff": []
+                          }
+                        },
+                        "inner": {
+                          "conValue": {
+                            "name": "PosPair",
+                            "tys": [],
+                            "names": [
+                              "arg1",
+                              "arg2"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "arg1",
+                        "arg2"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "data": {
+                          "name": "PosPair",
+                          "args": []
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "lam": {
+                        "names": [
+                          "arg1",
+                          "arg2"
+                        ],
+                        "params": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ],
+                        "body": {
+                          "ret": {
+                            "value": {
+                              "con": {
+                                "name": "PosPair",
+                                "tys": [],
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [
+                  []
+                ],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "PairValue (fn:11)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "left",
+                        "right"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "data": {
+                          "name": "Pair",
+                          "args": []
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "fn": {
+                            "names": [
+                              "left",
+                              "right"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "data": {
+                                "name": "Pair",
+                                "args": []
+                              }
+                            },
+                            "eff": []
+                          }
+                        },
+                        "inner": {
+                          "conValue": {
+                            "name": "Pair",
+                            "tys": [],
+                            "names": [
+                              "left",
+                              "right"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "left",
+                        "right"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "data": {
+                          "name": "Pair",
+                          "args": []
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "lam": {
+                        "names": [
+                          "left",
+                          "right"
+                        ],
+                        "params": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ],
+                        "body": {
+                          "ret": {
+                            "value": {
+                              "con": {
+                                "name": "Pair",
+                                "tys": [],
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [
+                  []
+                ],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "Pair.left (fn:12)",
+          "scope": {
+            "accessor": {
+              "name": "fn:12",
+              "con": "Pair",
+              "k": 0,
+              "decl": {
+                "fields": [
+                  "left",
+                  "right"
+                ],
+                "data": "Pair",
+                "ntys": 0,
+                "args": [
+                  {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  }
+                ]
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Pair",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "matchC": {
+                    "scrutinee": {
+                      "var": {
+                        "index": 0
+                      }
+                    },
+                    "arms": [
+                      {
+                        "mk": {
+                          "alts": [
+                            {
+                              "pat": {
+                                "con": {
+                                  "name": "Pair",
+                                  "args": [
+                                    "var",
+                                    "wild"
+                                  ]
+                                }
+                              },
+                              "slots": [
+                                0
+                              ]
+                            }
+                          ],
+                          "guard": null,
+                          "body": {
+                            "ret": {
+                              "value": {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "equality (fn:13)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Boolean"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Boolean"
+                          }
+                        },
+                        "inner": {
+                          "binary": {
+                            "op": "eq",
+                            "operand": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "lhs": {
+                              "literal": {
+                                "value": {
+                                  "integer": {
+                                    "value": 1
+                                  }
+                                }
+                              }
+                            },
+                            "rhs": {
+                              "literal": {
+                                "value": {
+                                  "integer": {
+                                    "value": 2
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Boolean"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": {
+                              "integer": {
+                                "value": 1
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "integer": {
+                                    "value": 2
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "app": {
+                            "callee": {
+                              "prim": {
+                                "name": "%eq",
+                                "tys": [
+                                  {
+                                    "base": {
+                                      "name": "Integer"
+                                    }
+                                  }
+                                ],
+                                "effs": []
+                              }
+                            },
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 1
+                                }
+                              },
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "generic (fn:14)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "tvar": {
+                        "index": 0
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "tvar": {
+                      "index": 0
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "tvar": {
+                            "index": 0
+                          }
+                        },
+                        "inner": {
+                          "local": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [
+                  [
+                    "Show",
+                    0
+                  ]
+                ],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "%dict1",
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "dict": {
+                        "cls": "Show",
+                        "arg": {
+                          "tvar": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "tvar": {
+                        "index": 0
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "tvar": {
+                      "index": 0
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "var": {
+                        "index": 0
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "dictionaryValue (fn:15)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "value"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "fn": {
+                            "names": [
+                              "value"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "eff": []
+                          }
+                        },
+                        "inner": {
+                          "funDicts": {
+                            "name": "fn:14",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "effs": [],
+                            "dicts": [
+                              {
+                                "impl": {
+                                  "name": "ShowInt",
+                                  "tys": [],
+                                  "args": []
+                                }
+                              }
+                            ],
+                            "names": [
+                              "value"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "eff": []
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "value"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "lam": {
+                        "names": [
+                          "value"
+                        ],
+                        "params": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ],
+                        "body": {
+                          "app": {
+                            "callee": {
+                              "fnRef": {
+                                "name": "fn:14",
+                                "tys": [
+                                  {
+                                    "base": {
+                                      "name": "Integer"
+                                    }
+                                  }
+                                ],
+                                "effs": []
+                              }
+                            },
+                            "args": [
+                              {
+                                "dict": {
+                                  "name": "ShowInt",
+                                  "tys": [],
+                                  "args": []
+                                }
+                              },
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [
+                  []
+                ],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "stdlibValue (fn:16)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "value"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "fn": {
+                            "names": [
+                              "value"
+                            ],
+                            "params": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "ret": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "eff": []
+                          }
+                        },
+                        "inner": {
+                          "funName": {
+                            "name": "stdlib:identity",
+                            "tys": [],
+                            "effs": []
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "fn": {
+                      "names": [
+                        "value"
+                      ],
+                      "params": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ],
+                      "ret": {
+                        "base": {
+                          "name": "Integer"
+                        }
+                      },
+                      "eff": []
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "fnRef": {
+                        "name": "stdlib:identity",
+                        "tys": [],
+                        "effs": []
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "builtinOperation (fn:17)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Console"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        },
+                        "inner": {
+                          "call": {
+                            "callee": {
+                              "primName": {
+                                "name": "Console.writeLine",
+                                "tys": [],
+                                "effs": []
+                              }
+                            },
+                            "labels": [
+                              "text"
+                            ],
+                            "positions": [
+                              0
+                            ],
+                            "args": [
+                              {
+                                "literal": {
+                                  "value": {
+                                    "string": {
+                                      "value": "hello"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [],
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Console"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": {
+                              "string": {
+                                "value": "hello"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "app": {
+                        "callee": {
+                          "prim": {
+                            "name": "Console.writeLine",
+                            "tys": [],
+                            "effs": []
+                          }
+                        },
+                        "args": [
+                          {
+                            "var": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "constants": [],
+      "ops": [
+        {
+          "name": "ask",
+          "eff": "Ask",
+          "header": {
+            "tparams": [],
+            "neffs": 0,
+            "names": [
+              "question"
+            ],
+            "params": [
+              {
+                "base": {
+                  "name": "Integer"
+                }
+              }
+            ],
+            "ret": {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            "eff": [
+              {
+                "name": {
+                  "value": "Ask"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "effects": [
+        {
+          "name": "Ask",
+          "ops": [
+            "ask"
+          ]
+        }
+      ],
+      "primOps": [
+        {
+          "name": "Console.writeLine",
+          "names": [
+            "text"
+          ],
+          "arity": 1,
+          "ntys": 0
+        }
+      ],
+      "classes": [
+        {
+          "name": "Show",
+          "supers": [],
+          "methods": [
+            {
+              "name": "show",
+              "header": {
+                "tparams": [],
+                "neffs": 0,
+                "names": [
+                  "x"
+                ],
+                "params": [
+                  {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  }
+                ],
+                "ret": {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                "eff": []
+              }
+            }
+          ]
+        }
+      ],
+      "impls": [
+        {
+          "name": "ShowInt",
+          "tparams": [],
+          "dictParams": [],
+          "cls": "Show",
+          "target": {
+            "base": {
+              "name": "Integer"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "group": "golden",
+      "name": "implementation-dictionaries",
+      "excluded": [],
+      "constants": [],
+      "ops": [],
+      "effects": [],
+      "primOps": [],
+      "classes": [
+        {
+          "name": "Show",
+          "supers": [],
+          "methods": [
+            {
+              "name": "show",
+              "header": {
+                "tparams": [
+                  [
+                    false,
+                    false
+                  ]
+                ],
+                "neffs": 0,
+                "names": [
+                  "%dict1",
+                  "x"
+                ],
+                "params": [
+                  {
+                    "dict": {
+                      "cls": "Show",
+                      "arg": {
+                        "tvar": {
+                          "index": 0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "tvar": {
+                      "index": 1
+                    }
+                  }
+                ],
+                "ret": {
+                  "tvar": {
+                    "index": 1
+                  }
+                },
+                "eff": []
+              }
+            }
+          ]
+        }
+      ],
+      "impls": [
+        {
+          "name": "ShowList",
+          "tparams": [
+            [
+              false,
+              false
+            ]
+          ],
+          "dictParams": [
+            [
+              "Show",
+              0
+            ]
+          ],
+          "cls": "Show",
+          "target": {
+            "list": {
+              "elem": {
+                "tvar": {
+                  "index": 0
+                }
+              }
+            }
+          }
+        }
+      ],
+      "definitions": [
+        {
+          "name": "implementation (fn:1)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ],
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "x"
+                  ],
+                  "params": [
+                    {
+                      "list": {
+                        "elem": {
+                          "tvar": {
+                            "index": 1
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "list": {
+                      "elem": {
+                        "tvar": {
+                          "index": 1
+                        }
+                      }
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "list": {
+                            "elem": {
+                              "tvar": {
+                                "index": 1
+                              }
+                            }
+                          }
+                        },
+                        "inner": {
+                          "local": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [
+                  [
+                    "Show",
+                    0
+                  ]
+                ],
+                "implementation": "ShowList",
+                "method": "show",
+                "supers": []
+              },
+              "core": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ],
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "%dict1",
+                    "x"
+                  ],
+                  "params": [
+                    {
+                      "dict": {
+                        "cls": "Show",
+                        "arg": {
+                          "tvar": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "list": {
+                        "elem": {
+                          "tvar": {
+                            "index": 1
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "list": {
+                      "elem": {
+                        "tvar": {
+                          "index": 1
+                        }
+                      }
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "ret": {
+                    "value": {
+                      "var": {
+                        "index": 0
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "annotations": {
+    "tailMatch": [
+      0,
+      0
+    ]
+  }
+}

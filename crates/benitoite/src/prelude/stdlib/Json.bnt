@@ -33,7 +33,7 @@ public function stringifyPretty(value: Value) -> String
 /// Returns the member `k` of an object, or `Option.None` for other values and missing members.
 public function get(value: Value, k: String) -> Option[Value]
   return match value with
-    case Value.Object(members) -> Map.get(members, k)
+    case Value.Object(members) -> Map.get(m: members, k: k)
     case _ -> Option.None
   end match
 end function
@@ -41,7 +41,7 @@ end function
 /// Returns the element at `index` of an array, or `Option.None` for other values and positions out of range.
 public function at(value: Value, index: Integer) -> Option[Value]
   return match value with
-    case Value.Array(items) -> List.get(items, index)
+    case Value.Array(items) -> List.get(xs: items, i: index)
     case _ -> Option.None
   end match
 end function

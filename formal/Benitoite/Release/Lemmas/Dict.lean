@@ -1,12 +1,14 @@
 import Benitoite.Release.Lemmas.PresBase
 
 /-!
-# 辞書とメソッドの呼び出しの補題（段階 B2）
+# 辞書とメソッドの呼び出しの補題（契約名を持つコア）
 
 E-Meth は、実装のメソッドの本体に、メソッドの型引数 S̄ と実装の型引数 T̄ を並べた `S̄ ++ T̄` の置き換えを施す。
 本体の型は、D-Impl が型クラスの引数 P を実装の対象 τ に置き換えた型（`ImplDecl.methTy`）なので、置き換えの後の
 型は、C-Meth の `θ = [τ[T̄/β̄]/P, S̄/γ̄, Ē/ρ̄]` を施した型と等しい。E-Super は、実装の定義の上位の型クラスの辞書に
 `[T̄/β̄][V̄/d̄]` を施す。
+
+契約名を含む型のまま補題を示す（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
@@ -17,10 +19,12 @@ variable {P : Program} {B : Builtins}
 
 theorem Eff.substRho_of_noRho (es : List Eff) {e : Eff} (h : Eff.RhosIn (fun _ => False) e) :
     Eff.substRho es e = e := by
-  have : Ty.substAt 0 [] es (.fn [] (.base .unit) e) = .fn [] (.base .unit) e :=
-    Ty.substAt_of_closed [] es _ (by simp only [Ty.VarsIn, Ty.VarsInList]; exact ⟨trivial, trivial, h⟩)
+  have : Ty.substAt 0 [] es (.fn [] [] (.base .unit) e) = .fn [] [] (.base .unit) e :=
+    Ty.substAt_of_closed [] es _ (by
+      simp only [Ty.VarsIn, Ty.VarsInList]
+      exact ⟨⟨rfl, by simp⟩, trivial, trivial, h⟩)
   simp only [Ty.substAt, List.map_nil] at this
-  exact (Ty.fn.inj this).2.2
+  exact (Ty.fn.inj this).2.2.2
 
 mutual
   /-- 型の変数の番号を g ずらしてから `S̄ ++ T̄`（S̄ の長さが g）で置き換えるのは、T̄ で置き換えるのと同じである
@@ -36,10 +40,10 @@ mutual
     | .list a, h => by
         simp only [Ty.VarsIn] at h; simp only [Ty.shift, Ty.substAt]
         rw [Ty.shift_subst_append es hss a h]
-    | .fn ps r e, h => by
+    | .fn names ps r e, h => by
         simp only [Ty.VarsIn] at h; simp only [Ty.shift, Ty.substAt]
-        rw [List.map_map, Ty.shiftList_subst_append es hss ps h.1, Ty.shift_subst_append es hss r h.2.1,
-          Eff.substRho_of_noRho es h.2.2, Eff.substRho_of_noRho [] h.2.2]
+        rw [List.map_map, Ty.shiftList_subst_append es hss ps h.2.1, Ty.shift_subst_append es hss r h.2.2.1,
+          Eff.substRho_of_noRho es h.2.2.2, Eff.substRho_of_noRho [] h.2.2.2]
     | .tvar j, h => by
         simp only [Ty.VarsIn] at h
         have h1 : j + g < (ss ++ ts).length := by simp; omega
@@ -101,9 +105,9 @@ mutual
     | .list a, h => by
         simp only [Ty.VarsIn] at h; simp only [Ty.substAt]
         rw [Ty.methTy_subst u es hss a h]
-    | .fn ps r e, h => by
+    | .fn names ps r e, h => by
         simp only [Ty.VarsIn] at h; simp only [Ty.substAt]
-        rw [List.map_map, Ty.methTyList_subst (ts := ts) u es hss ps h.1, Ty.methTy_subst u es hss r h.2.1,
+        rw [List.map_map, Ty.methTyList_subst (ts := ts) u es hss ps h.2.1, Ty.methTy_subst u es hss r h.2.2.1,
           Eff.substRho_nil]
     | .tvar i, h => by
         simp only [Ty.VarsIn] at h
@@ -182,9 +186,9 @@ theorem ImplDecl.methTy_subst {id : ImplDecl} (hsc : id.Scoped P) {ms : MethSig}
   simp only [Ty.subst] at ht ⊢
   rw [e]
   constructor
-  · have := Ty.methTyList_subst (ts := ts) id.target es hss ms.params hms.1
+  · have := Ty.methTyList_subst (ts := ts) id.target es hss ms.params hms.2.1
     rw [List.map_map, this, ht]
-  · have := Ty.methTy_subst (ts := ts) id.target es hss ms.ret hms.2.1
+  · have := Ty.methTy_subst (ts := ts) id.target es hss ms.ret hms.2.2.1
     rw [this, ht]
 
 /-- E-Meth の後の辞書の引数の型。 -/
@@ -287,7 +291,7 @@ theorem superStep_super_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B
   | .const _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .fnRef _ _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .prim _ _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
-  | .lam _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
+  | .lam _ _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .con _ _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .list _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .op _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h

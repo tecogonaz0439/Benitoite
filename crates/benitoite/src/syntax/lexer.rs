@@ -32,6 +32,14 @@ pub fn lex(file: FileId, text: &[u8]) -> LexOutput {
         comments: Vec::new(),
         diagnostics: Vec::new(),
         line_limit: None,
+        line_starts: std::iter::once(0)
+            .chain(
+                text.iter()
+                    .enumerate()
+                    .filter(|(_, byte)| **byte == b'\n')
+                    .map(|(i, _)| add(i, 1)),
+            )
+            .collect(),
     };
     lexer.run();
     lexer
@@ -74,6 +82,9 @@ struct Lexer<'a> {
     comments: Vec<Comment>,
     diagnostics: Vec<Diagnostic>,
     line_limit: Option<(usize, usize)>,
+    /// 文字列の切り出しが改行を字句にしない場合も、物理行を保持するための表
+    /// （設計書 02-03「字句」）。LF の直後を行の先頭とし、CRLF は一改行とする。
+    line_starts: Vec<usize>,
 }
 
 impl Lexer<'_> {
@@ -153,7 +164,17 @@ impl Lexer<'_> {
 
     fn push(&mut self, kind: TokenKind, start: usize, end: usize, value: TokenValue) {
         let span = self.span(start, end);
-        self.tokens.push(Token { kind, span, value });
+        self.tokens.push(Token {
+            kind,
+            span,
+            start_line: self.line_at(start),
+            end_line: self.line_at(end),
+            value,
+        });
+    }
+
+    fn line_at(&self, pos: usize) -> u32 {
+        u32::try_from(self.line_starts.partition_point(|start| *start <= pos)).unwrap_or(u32::MAX)
     }
 
     fn report(&mut self, builder: DiagBuilder) {

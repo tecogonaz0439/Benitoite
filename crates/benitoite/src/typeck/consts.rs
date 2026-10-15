@@ -215,6 +215,14 @@ fn bad_shape(d: &Decls<'_>, e: &Expr) -> Option<Span> {
                         }
                     }
                     Arg::Placeholder(p) => return Some(p.span),
+                    Arg::Named(a) => match &a.value {
+                        ArgValue::Expr(e) => {
+                            if let Some(span) = bad_shape(d, e) {
+                                return Some(span);
+                            }
+                        }
+                        ArgValue::Placeholder(p) => return Some(p.span),
+                    },
                 }
             }
             None
@@ -422,9 +430,8 @@ fn eval_call(d: &Decls<'_>, c: &CallExpr, budget: &mut EvalBudget) -> EvalResult
         budget.slots(c.args.len(), c.span)?;
         let mut args = Vec::with_capacity(c.args.len());
         for arg in &c.args {
-            let Arg::Expr(e) = arg else {
-                return Err(EvalError::Unavailable);
-            };
+            // 直接の構成子の名前指定は、評価前の型検査が E0456 で拒否する。
+            let e = arg.expr().ok_or(EvalError::Unavailable)?;
             args.push(eval(d, e, budget)?);
         }
         return Ok(V::Ctor {
@@ -442,7 +449,7 @@ fn eval_call(d: &Decls<'_>, c: &CallExpr, budget: &mut EvalBudget) -> EvalResult
     let map = std_call(d, &c.callee, "Benitoite.Map.fromList");
     let set = std_call(d, &c.callee, "Benitoite.Set.fromList");
     if map || set {
-        let Some(Arg::Expr(list)) = c.args.first() else {
+        let Some(list) = standard_argument(c, 0, if map { "pairs" } else { "xs" }) else {
             return Err(EvalError::Unavailable);
         };
         let V::List(values) = eval(d, list, budget)? else {
@@ -506,30 +513,38 @@ fn eval_call(d: &Decls<'_>, c: &CallExpr, budget: &mut EvalBudget) -> EvalResult
     }
     // 警告だけに使う標準関数も、名前の綴りでなく束縛を照合する（02-05「警告」）。
     budget.slots(c.args.len(), c.span)?;
-    let mut values = Vec::with_capacity(c.args.len());
-    for arg in &c.args {
-        let Arg::Expr(e) = arg else {
-            return Err(EvalError::Unavailable);
-        };
-        values.push(eval(d, e, budget)?);
-    }
     if std_call(d, &c.callee, "Benitoite.Integer.absolute")
-        && let Some(V::Integer(n)) = values.first()
+        && c.args.len() == 1
+        && let Some(e) = standard_argument(c, 0, "n")
+        && let V::Integer(n) = eval(d, e, budget)?
     {
         return n
             .checked_abs()
             .map(V::Integer)
             .ok_or(EvalError::Arithmetic(c.span, super::text::INTEGER_OVERFLOW));
     }
-    if let [V::Integer(a), V::Integer(b)] = values.as_slice() {
-        if std_call(d, &c.callee, "Benitoite.Integer.floorDivide") {
-            return int_div(*a, *b, true, false, c.span);
-        }
-        if std_call(d, &c.callee, "Benitoite.Integer.floorModulo") {
-            return int_div(*a, *b, true, true, c.span);
-        }
+    let divide = std_call(d, &c.callee, "Benitoite.Integer.floorDivide");
+    let modulo = std_call(d, &c.callee, "Benitoite.Integer.floorModulo");
+    if (divide || modulo)
+        && c.args.len() == 2
+        && let (Some(a), Some(b)) = (standard_argument(c, 0, "a"), standard_argument(c, 1, "b"))
+        && let (V::Integer(a), V::Integer(b)) = (eval(d, a, budget)?, eval(d, b, budget)?)
+    {
+        return int_div(a, b, true, modulo, c.span);
     }
     Err(EvalError::Unavailable)
+}
+// 名前付きのソース順から引数の位置を推測しない。標準の束縛を照合した呼び出しだけで
+// 宣言の名前を使う（設計書 02-05「定数の検査と評価」「警告」）。
+fn standard_argument<'a>(c: &'a CallExpr, index: usize, name: &str) -> Option<&'a Expr> {
+    if c.args.iter().any(|a| matches!(a, Arg::Named(_))) {
+        c.args
+            .iter()
+            .find(|a| matches!(a, Arg::Named(a) if a.name.text == name))
+            .and_then(Arg::expr)
+    } else {
+        c.args.get(index).and_then(Arg::expr)
+    }
 }
 fn int_div(a: i64, b: i64, floor: bool, modulo: bool, span: Span) -> EvalResult {
     if b == 0 {
@@ -968,7 +983,7 @@ fn arithmetic_candidate(d: &Decls<'_>, e: &Expr) -> bool {
                 || std_call(d, &c.callee, "Benitoite.Integer.floorDivide"))
                 && c.args
                     .iter()
-                    .all(|a| matches!(a, Arg::Expr(e) if bad_shape(d, e).is_none()))
+                    .all(|a| a.expr().is_some_and(|e| bad_shape(d, e).is_none()))
         }
         Expr::Lit(_)
         | Expr::Interp(_)
@@ -1024,10 +1039,7 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
                 if std_call(ctx.decls, &c.callee, "Benitoite.Integer.floorDivide")
                     || std_call(ctx.decls, &c.callee, "Benitoite.Integer.floorModulo") =>
             {
-                match c.args.get(1) {
-                    Some(Arg::Expr(e)) => Some(e),
-                    _ => None,
-                }
+                standard_argument(c, 1, "b")
             }
             Expr::Lit(_)
             | Expr::Interp(_)
@@ -1101,7 +1113,7 @@ pub(super) fn warnings(ctx: &mut Body<'_, '_>, block: &Block) {
                 || std_call(ctx.decls, &c.callee, "Benitoite.Set.fromList"))
         {
             let map = std_call(ctx.decls, &c.callee, "Benitoite.Map.fromList");
-            if let Some(Arg::Expr(Expr::List(l))) = c.args.first() {
+            if let Some(Expr::List(l)) = standard_argument(c, 0, if map { "pairs" } else { "xs" }) {
                 // 予算の単位は「警告を調べる一つの式」。fromList の全ての鍵で共有し、
                 // 保持する鍵の総量も制限する。上限に達した鍵には警告せず、残りを調べない。
                 let mut budget = EvalBudget::default();
@@ -1151,7 +1163,7 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(&Expr)) {
         Expr::Call(c) => {
             visit_expr(&c.callee, f);
             for a in &c.args {
-                if let Arg::Expr(e) = a {
+                if let Some(e) = a.expr() {
                     visit_expr(e, f);
                 }
             }

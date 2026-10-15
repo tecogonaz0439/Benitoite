@@ -55,7 +55,7 @@ Values that can be combined and have an empty value.
 ```benitoite
 public trait Functor[F[_]]
   /// Applies `f` to each value inside `x`.
-  function map[A, B, effect E](x: F[A], f: function(A) -> B uses E) -> F[B] uses E
+  function map[A, B, effect E](x: F[A], f: function(value: A) -> B uses E) -> F[B] uses E
 end trait
 ```
 
@@ -66,7 +66,7 @@ public trait Applicative[F[_]: Functor]
   /// Wraps `x`.
   function pure[A](x: A) -> F[A]
   /// Applies the functions in `fs` to the values in `x`.
-  function apply[A, B, effect E](fs: F[function(A) -> B uses E], x: F[A]) -> F[B] uses E
+  function apply[A, B, effect E](fs: F[function(value: A) -> B uses E], x: F[A]) -> F[B] uses E
 end trait
 ```
 
@@ -75,7 +75,7 @@ Functors that can wrap a value and apply wrapped functions.
 ```benitoite
 public trait Monad[F[_]: Applicative]
   /// Applies `f` to each value inside `x` and flattens the results.
-  function flatMap[A, B, effect E](x: F[A], f: function(A) -> F[B] uses E) -> F[B] uses E
+  function flatMap[A, B, effect E](x: F[A], f: function(value: A) -> F[B] uses E) -> F[B] uses E
 end trait
 ```
 
@@ -84,7 +84,7 @@ Applicatives whose computations can depend on earlier values.
 ```benitoite
 public trait Foldable[F[_]]
   /// Combines the values from the first with `f`, starting from `initial`.
-  function fold[A, B, effect E](x: F[A], initial: B, f: function(B, A) -> B uses E) -> B uses E
+  function fold[A, B, effect E](x: F[A], initial: B, f: function(acc: B, value: A) -> B uses E) -> B uses E
 end trait
 ```
 
@@ -93,7 +93,7 @@ Containers whose values can be combined in order.
 ```benitoite
 public trait Traversable[F[_]: Functor & Foldable]
   /// Applies `f` to each value in order and collects the results inside `G`.
-  function traverse[G[_]: Applicative, A, B, effect E](x: F[A], f: function(A) -> G[B] uses E) -> G[F[B]] uses E
+  function traverse[G[_]: Applicative, A, B, effect E](x: F[A], f: function(value: A) -> G[B] uses E) -> G[F[B]] uses E
 end trait
 ```
 

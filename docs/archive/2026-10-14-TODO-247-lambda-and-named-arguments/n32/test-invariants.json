@@ -1,0 +1,206 @@
+[
+  {
+    "path": "docs/reference/benitoite.md",
+    "expected_blocks": {
+      "output": {
+        "before": 16,
+        "after": 16,
+        "old_blocks_preserved": true
+      },
+      "stderr": {
+        "before": 1,
+        "after": 1,
+        "old_blocks_preserved": true
+      },
+      "diagnostic": {
+        "before": 2,
+        "after": 2,
+        "old_blocks_preserved": true
+      }
+    },
+    "fixtures": {
+      "count": 5,
+      "paths_preserved": true,
+      "non_source_bytes_preserved": true,
+      "source_change": "Only slug .bnt modules: add String.replace labels"
+    },
+    "Assert.equal": {
+      "before": 4,
+      "after": 4
+    },
+    "Assert.isTrue": {
+      "before": 1,
+      "after": 1
+    }
+  },
+  {
+    "path": "docs/reference/install.md",
+    "expected_blocks": {
+      "output": {
+        "before": 0,
+        "after": 0,
+        "old_blocks_preserved": true
+      },
+      "stderr": {
+        "before": 0,
+        "after": 0,
+        "old_blocks_preserved": true
+      },
+      "diagnostic": {
+        "before": 0,
+        "after": 0,
+        "old_blocks_preserved": true
+      }
+    },
+    "fixtures": {
+      "count": 0,
+      "paths_preserved": true,
+      "non_source_bytes_preserved": true,
+      "source_change": null
+    },
+    "Assert.equal": {
+      "before": 0,
+      "after": 0
+    },
+    "Assert.isTrue": {
+      "before": 0,
+      "after": 0
+    }
+  },
+  {
+    "path": "crates/benitoite/skill/SKILL.md",
+    "expected_blocks": {
+      "output": {
+        "before": 1,
+        "after": 1,
+        "old_blocks_preserved": true
+      },
+      "stderr": {
+        "before": 0,
+        "after": 0,
+        "old_blocks_preserved": true
+      },
+      "diagnostic": {
+        "before": 0,
+        "after": 0,
+        "old_blocks_preserved": true
+      }
+    },
+    "fixtures": {
+      "count": 1,
+      "paths_preserved": true,
+      "non_source_bytes_preserved": true,
+      "source_change": null
+    },
+    "Assert.equal": {
+      "before": 2,
+      "after": 2
+    },
+    "Assert.isTrue": {
+      "before": 0,
+      "after": 0
+    }
+  },
+  {
+    "path": "crates/benitoite/skill/references/idioms.md",
+    "expected_blocks": {
+      "output": {
+        "before": 16,
+        "after": 17,
+        "old_blocks_preserved": true
+      },
+      "stderr": {
+        "before": 1,
+        "after": 1,
+        "old_blocks_preserved": true
+      },
+      "diagnostic": {
+        "before": 0,
+        "after": 0,
+        "old_blocks_preserved": true
+      }
+    },
+    "fixtures": {
+      "count": 4,
+      "paths_preserved": true,
+      "non_source_bytes_preserved": true,
+      "source_change": null
+    },
+    "Assert.equal": {
+      "before": 6,
+      "after": 6
+    },
+    "Assert.isTrue": {
+      "before": 2,
+      "after": 2
+    }
+  },
+  {
+    "path": "crates/benitoite/skill/references/common-mistakes.md",
+    "expected_blocks": {
+      "output": {
+        "before": 12,
+        "after": 12,
+        "old_blocks_preserved": true
+      },
+      "stderr": {
+        "before": 0,
+        "after": 0,
+        "old_blocks_preserved": true
+      },
+      "diagnostic": {
+        "before": 15,
+        "after": 16,
+        "old_blocks_preserved": true
+      }
+    },
+    "fixtures": {
+      "count": 0,
+      "paths_preserved": true,
+      "non_source_bytes_preserved": true,
+      "source_change": null
+    },
+    "Assert.equal": {
+      "before": 0,
+      "after": 0
+    },
+    "Assert.isTrue": {
+      "before": 0,
+      "after": 0
+    }
+  },
+  {
+    "path": "crates/benitoite/skill/references/language-comparison.md",
+    "expected_blocks": {
+      "output": {
+        "before": 2,
+        "after": 2,
+        "old_blocks_preserved": true
+      },
+      "stderr": {
+        "before": 0,
+        "after": 0,
+        "old_blocks_preserved": true
+      },
+      "diagnostic": {
+        "before": 0,
+        "after": 0,
+        "old_blocks_preserved": true
+      }
+    },
+    "fixtures": {
+      "count": 1,
+      "paths_preserved": true,
+      "non_source_bytes_preserved": true,
+      "source_change": null
+    },
+    "Assert.equal": {
+      "before": 1,
+      "after": 1
+    },
+    "Assert.isTrue": {
+      "before": 0,
+      "after": 0
+    }
+  }
+]

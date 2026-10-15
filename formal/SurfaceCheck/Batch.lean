@@ -39,12 +39,12 @@ def tag : Benitoite.Surface.Expr → String
   | .returnE _ _ => "returnE"
   | .resume _ _ => "resume"
   | .constE _ _ => "constE"
-  | .lam _ _ _ _ => "lam"
-  | .methName _ _ _ _ _ _ => "methName"
-  | .funDicts _ _ _ _ _ => "funDicts"
-  | .partialCall _ _ _ _ => "partialCall"
+  | .lam _ _ _ _ _ => "lam"
+  | .methName _ _ _ _ _ _ _ => "methName"
+  | .funDicts _ _ _ _ _ _ => "funDicts"
+  | .partialCall _ _ _ _ _ => "partialCall"
   | .matchE _ _ _ => "matchE"
-  | .call _ _ => "call"
+  | .call _ _ _ _ => "call"
   | _ => "other"
 
 def ancestors (w : WalkState) (path : List Nat) : Array Node :=
@@ -57,10 +57,10 @@ def lazyDifference (q : Benitoite.Surface.Check.Input) (w : WalkState)
   let some n := (ancestors w e.path).back? | return false
   if n.path != e.path then return false
   let .lazyE body := n.expr | return false
-  let some (.lazy (.fn ps r eff)) := n.expected | return false
-  let .ok (.fn ps' r' eff', _) := Benitoite.Surface.Check.checkBlock q .strict [] [] none .other [] body
+  let some (.lazy (.fn names ps r eff)) := n.expected | return false
+  let .ok (.fn names' ps' r' eff', _) := Benitoite.Surface.Check.checkBlock q .strict [] [] none .other [] body
     | return false
-  return tysEq q.atoms ps ps' && tyEq q.atoms r r' && !effEq q.atoms eff eff'
+  return names == names' && tysEq q.atoms ps ps' && tyEq q.atoms r r' && !effEq q.atoms eff eff'
 
 def category (q : Benitoite.Surface.Check.Input) (w : WalkState) (badPrims : List String)
     (result : Benitoite.Surface.Check.Result Unit) : String :=
@@ -96,12 +96,12 @@ def normalize (p : Prepared) : Materials × List (String × WalkState) := Id.run
     ((n,{ d with body }), (n,w))
   let walks := defs.map Prod.snd
   let impls := p.materials.impls.map fun (n,i) => Id.run do
-    let (methods,w) := (i.methods.mapM fun (method,body) => do
+    let (methods,w) := (i.methods.mapM fun (method,(mi : Check.MethodInput)) => do
       let ms : Option MethSig := (p.input.D.classes i.signature.cls).bind (fun c => c.methods method)
       let result := ms.map fun (m : MethSig) => substTyAt m.tparams.length [i.signature.target] [] m.ret
       let index := p.materials.names.methods.idxOf method
-      let body' ← walkBlock p.input result .tail [0,index] result body
-      pure (method,body')).run {}
+      let body' ← walkBlock p.input result .tail [0,index] result mi.body
+      pure (method,{ mi with body := body' })).run {}
     return ((n,{ i with methods }), (n,w))
   return ({ p.materials with defs := defs.map Prod.fst, impls := impls.map Prod.fst }, walks ++ impls.map Prod.snd)
 
@@ -129,7 +129,7 @@ def checkInput (r : Report) (input : Benitoite.Exchange.Input)
         | _ => j }
   for (n,i) in m.impls do
     let w := (Benitoite.Surface.CheckTables.lookup ws n).getD {}
-    let result := Benitoite.Surface.Check.checkImpl q m.names.methods m.names.supers [] i.decl
+    let result := Benitoite.Surface.Check.checkImpl q m.names.methods m.names.supers [] i.input
     r := record q r input.group input.name n "implementation" w bad result
   for (n,reasons) in p.outside do
     r := { r with counts := bump r.counts "outOfScope", outcomes := r.outcomes.push (Json.mkObj [("group",toJson input.group),("input",toJson input.name),("definition",toJson n),
@@ -148,7 +148,7 @@ def run (args : List String) : IO UInt32 := do
   let corpus ← readJson corpusFile
   let bj ← readJson builtinFile
   let sj ← readJson stdlibFile
-  for (j,v) in [(corpus,7),(bj,1),(sj,1)] do
+  for (j,v) in [(corpus,8),(bj,2),(sj,2)] do
     if (← IO.ofExcept (j.getObjValAs? Nat "version")) != v then throw (IO.userError "unsupported version")
   let inputs ← IO.ofExcept ((corpus.getObjVal? "inputs").bind Json.getArr?)
   let bs ← IO.ofExcept ((bj.getObjVal? "inputs").bind Json.getArr?)

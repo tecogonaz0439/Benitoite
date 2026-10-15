@@ -15,5 +15,5 @@ function main() -> Unit uses Console.Write
   Console.writeLine(fromFunction())
   bind delayed <- lazy greeting end lazy
   Console.writeLine(Lazy.force(delayed))
-  Console.writeLine(Integer.toString(Option.unwrapOr(List.get(values, 0), 0) + Option.unwrapOr(List.get(values, 1), 0)))
+  Console.writeLine(Integer.toString(Option.unwrapOr(o: List.get(xs: values, i: 0), fallback: 0) + Option.unwrapOr(o: List.get(xs: values, i: 1), fallback: 0)))
 end function

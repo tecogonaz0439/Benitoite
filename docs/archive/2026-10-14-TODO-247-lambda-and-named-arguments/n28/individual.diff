@@ -1,0 +1,242 @@
+--- a/crates/benitoite/testdata/concurrency/c12-cancelled-reader.bnt
++++ b/crates/benitoite/testdata/concurrency/c12-cancelled-reader.bnt
+@@ -19,7 +19,7 @@
+   bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+   bind winner <- Task.race([
+     lambda()
+-      with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++      with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+         Reference.set(reference: saved, value: Option.Some(reader))
+         Clock.sleep(3600000)
+         return Result.Ok(1)
+--- a/crates/benitoite/testdata/handlers/c12-discard-reader.bnt
++++ b/crates/benitoite/testdata/handlers/c12-discard-reader.bnt
+@@ -13,7 +13,7 @@
+ function main() -> Result[Unit, String] uses File.Read, State, Console.Write
+   bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+   bind _ <- handle
+-    with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++    with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+       Reference.set(reference: saved, value: Option.Some(reader))
+       abort()
+       Console.writeLine("unreachable")
+--- a/crates/benitoite/testdata/io/c12-process-exit-flush.bnt
++++ b/crates/benitoite/testdata/io/c12-process-exit-flush.bnt
+@@ -7,8 +7,8 @@
+ import Benitoite.Unofficial.IO.Process
+ 
+ function main() -> Result[Unit, String] uses File.Read, State, Console.Write, Process.Exit
+-  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
+-    Console.write(Option.unwrapOr(o: try File.readLine(reader) |> Result.mapError(r: _, f: IOError.message), fallback: "eof"))
++  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
++    Console.write(Option.unwrapOr(o: try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda), fallback: "eof"))
+     Console.writeErrorLine("before exit")
+     Process.exit(7)
+     Console.writeLine("unreachable")
+--- a/crates/benitoite/testdata/io/c12-with-reader-release.bnt
++++ b/crates/benitoite/testdata/io/c12-with-reader-release.bnt
+@@ -9,9 +9,9 @@
+ 
+ function main() -> Result[Unit, String] uses File.Read, State, Console.Write
+   bind saved: Reference[Option[File.Reader]] <- Reference.new(Option.None)
+-  bind value <- with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++  bind value <- with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+     Reference.set(reference: saved, value: Option.Some(reader))
+-    Console.writeLine(Option.unwrapOr(o: try File.readLine(reader) |> Result.mapError(r: _, f: IOError.message), fallback: "eof"))
++    Console.writeLine(Option.unwrapOr(o: try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda), fallback: "eof"))
+     42
+   end with
+   Console.writeLine(Integer.toString(value))
+--- a/crates/benitoite/testdata/io/c12-with-return-release.bnt
++++ b/crates/benitoite/testdata/io/c12-with-return-release.bnt
+@@ -7,7 +7,7 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function leave(saved: Reference[Option[File.Reader]]) -> Result[Unit, String] uses File.Read, State
+-  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+     Reference.set(reference: saved, value: Option.Some(reader))
+     return Result.Ok(())
+   end with
+--- a/crates/benitoite/testdata/io/c12-with-try-release.bnt
++++ b/crates/benitoite/testdata/io/c12-with-try-release.bnt
+@@ -7,7 +7,7 @@
+ import Benitoite.Unofficial.IO.File
+ 
+ function leave(saved: Reference[Option[File.Reader]]) -> Result[Unit, String] uses File.Read, State
+-  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: IOError.message) do
++  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+     Reference.set(reference: saved, value: Option.Some(reader))
+     bind _ <- try Result.Error("early")
+     return Result.Ok(())
+--- a/crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt
++++ b/crates/benitoite/testdata/modules/todo177-effect-module-alias.bnt
+@@ -2,6 +2,6 @@
+ import Benitoite.Unofficial.IO.File as Console
+ 
+ function main() -> Result[Unit, String] uses Console.Write
+-  return Console.writeText("output.txt", "hello")
+-    |> Result.mapError(_, IOError.message)
++  return Console.writeText(path: "output.txt", text: "hello")
++    |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+ end function
+--- a/crates/benitoite/testdata/network/respond-twice.bnt
++++ b/crates/benitoite/testdata/network/respond-twice.bnt
+@@ -5,10 +5,10 @@
+ import Benitoite.Unofficial.Network.Http
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: NetworkError.message), group = TaskGroup.open() do
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+     bind server <- TaskGroup.spawn(group: group, action: lambda()
+-      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: NetworkError.message) do
+-        bind _ <- try Http.respond(exchange: exchange, response: Http.text(status: 200, s: "first")) |> Result.mapError(r: _, f: NetworkError.message)
++      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
++        bind _ <- try Http.respond(exchange: exchange, response: Http.text(status: 200, s: "first")) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+         bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 200, s: "second"))
+         return Result.Ok(())
+       end with
+--- a/crates/benitoite/testdata/network/status-above-range.bnt
++++ b/crates/benitoite/testdata/network/status-above-range.bnt
+@@ -5,9 +5,9 @@
+ import Benitoite.Unofficial.Network.Http
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: NetworkError.message), group = TaskGroup.open() do
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+     bind server <- TaskGroup.spawn(group: group, action: lambda()
+-      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: NetworkError.message) do
++      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+         bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 600, s: "invalid"))
+         return Result.Ok(())
+       end with
+--- a/crates/benitoite/testdata/network/status-below-range.bnt
++++ b/crates/benitoite/testdata/network/status-below-range.bnt
+@@ -5,9 +5,9 @@
+ import Benitoite.Unofficial.Network.Http
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: NetworkError.message), group = TaskGroup.open() do
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+     bind server <- TaskGroup.spawn(group: group, action: lambda()
+-      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: NetworkError.message) do
++      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+         bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 99, s: "invalid"))
+         return Result.Ok(())
+       end with
+--- a/crates/benitoite/testdata/network/status-informational.bnt
++++ b/crates/benitoite/testdata/network/status-informational.bnt
+@@ -5,9 +5,9 @@
+ import Benitoite.Unofficial.Network.Http
+ 
+ function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: NetworkError.message), group = TaskGroup.open() do
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+     bind server <- TaskGroup.spawn(group: group, action: lambda()
+-      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: NetworkError.message) do
++      with exchange = try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) do
+         bind _ <- Http.respond(exchange: exchange, response: Http.text(status: 100, s: "invalid"))
+         return Result.Ok(())
+       end with
+--- a/crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt
+@@ -1,9 +1,9 @@
+ language "0.0.3"
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+-  bind words <- String.split(String.toLowercase(String.trim(text)), " ")
+-    |> List.filter(_, lambda(w) return w <> "" end lambda)
+-  return String.join(words, "-")
++  bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
++    |> List.filter(xs: _, p: lambda(value) return value <> "" end lambda)
++  return String.join(xs: words, separator: "-")
+ end function
+ 
+ /// 文字数が width を超えるときは、width 文字で切って "..." を付ける。
+@@ -11,5 +11,5 @@
+   if String.characterCount(text) <= width then
+     return text
+   end if
+-  return Option.unwrapOr(String.characterSlice(text, 0, width), text) + "..."
++  return Option.unwrapOr(o: String.characterSlice(s: text, start: 0, stop: width), fallback: text) + "..."
+ end function
+--- a/crates/benitoite/testdata/syntax/call-type-arguments.bnt
++++ b/crates/benitoite/testdata/syntax/call-type-arguments.bnt
+@@ -1,5 +1,5 @@
+ // spec: 01-02 ブロックと文
+ function main() -> Unit
+   bind m <- Map.empty[String, Integer]()
+-  bind _ <- Map.set(m, "x", 1)
++  bind _ <- Map.set(m: m, key: "x", value: 1)
+ end function
+--- a/crates/benitoite/testdata/syntax/uses_then_bracket.bnt
++++ b/crates/benitoite/testdata/syntax/uses_then_bracket.bnt
+@@ -1,6 +1,6 @@
+ // spec: 01-02 文法
+ import Benitoite.Unofficial.IO.Console
+ 
+-function bad(callback: function(function() -> Unit uses Console.Write, List[Integer]) -> Unit) -> Unit
++function bad(callback: function(action: function() -> Unit uses Console.Write, values: List[Integer]) -> Unit) -> Unit
+   return ()
+ end function
+--- a/crates/benitoite/testdata/traits/c11-hk-arity.bnt
++++ b/crates/benitoite/testdata/traits/c11-hk-arity.bnt
+@@ -1,7 +1,7 @@
+ // spec: 01-06 型クラス（初回リリース版）
+ // spec: 01-06 高カインド型（初回リリース版）
+ trait Functor[F[_]]
+-  function map[A, B](x: F[A], f: function(A) -> B) -> F[B]
++  function map[A, B](x: F[A], f: function(value: A) -> B) -> F[B]
+ end trait
+ implement Functor[Result]
+   function map[A, B](x: Result[A, String], f: function(value: A) -> B) -> Result[B, String] return Result.map(r: x, f: f) end function
+--- a/crates/benitoite/testdata/traits/todo178-impl-target-cascade.bnt
++++ b/crates/benitoite/testdata/traits/todo178-impl-target-cascade.bnt
+@@ -2,12 +2,12 @@
+ trait Score[T]
+   function score(x: T) -> Integer
+ end trait
+-implement Score[function(Integer) -> Integer]
+-  function score(x: function(Integer) -> Integer) -> Integer
++implement Score[function(value: Integer) -> Integer]
++  function score(x: function(value: Integer) -> Integer) -> Integer
+     return 0
+   end function
+ end implement
+-function use(f: function(Integer) -> Integer) -> Unit
++function use(f: function(value: Integer) -> Integer) -> Unit
+   bind _ <- Score.score(f)
+   bind _ <- Score.score(f)
+   bind _ <- Score.score(f)
+--- a/crates/benitoite/testdata/traits/todo178-impl-target-independent.bnt
++++ b/crates/benitoite/testdata/traits/todo178-impl-target-independent.bnt
+@@ -2,15 +2,15 @@
+ trait Score[T]
+   function score(x: T) -> Integer
+ end trait
+-implement Score[function(Integer) -> Integer]
+-  function score(x: function(Integer) -> Integer) -> Integer
++implement Score[function(value: Integer) -> Integer]
++  function score(x: function(value: Integer) -> Integer) -> Integer
+     return 0
+   end function
+ end implement
+ trait Other[T]
+   function score(x: T) -> Integer
+ end trait
+-function use(f: function(Integer) -> Integer) -> Unit
++function use(f: function(value: Integer) -> Integer) -> Unit
+   bind _ <- Score.score(1)
+   bind _ <- Other.score(f)
+ end function
+--- a/crates/benitoite/testdata/types/arity.bnt
++++ b/crates/benitoite/testdata/types/arity.bnt
+@@ -8,7 +8,7 @@
+ end function
+ 
+ function main() -> Unit
+-    bind _ <- add(1)
++    bind _ <- add(left: 1)
+     bind _ <- Shape.Rect(1)
+     return ()
+ end function

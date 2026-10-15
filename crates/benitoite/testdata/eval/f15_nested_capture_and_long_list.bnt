@@ -37,7 +37,7 @@ function deep(x: Integer) -> Integer
  if true then
  x else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if else 0 end if
 end function
-function curry(x: Integer) -> function() -> function(Integer) -> Integer
+function curry(x: Integer) -> function() -> function(y: Integer) -> Integer
  return lambda() return lambda(y: Integer) return x + y end lambda end lambda
 end function
 function main() -> Unit uses Console.Write
@@ -45,5 +45,5 @@ function main() -> Unit uses Console.Write
  bind outer <- curry(3)
  bind inner <- outer()
  Console.writeLine(Integer.toString(inner(4)))
- Console.writeLine(Integer.toString(List.fold(List.map(List.range(0, 512), lambda(x) return x + 1 end lambda), 0, lambda(acc, x) return acc + x end lambda)))
+ Console.writeLine(Integer.toString(List.fold(xs: List.map(xs: List.range(start: 0, stop: 512), f: lambda(value) return value + 1 end lambda), initial: 0, f: lambda(acc, value) return acc + value end lambda)))
 end function

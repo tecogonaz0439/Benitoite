@@ -1,7 +1,7 @@
 import Benitoite.Exchange.Builtins
 
-/-! E2a-1 の交換の境界と、宣言から求めた Lean の要約を検査する。
-既存の脱糖の比較と report.json は変更しない。 -/
+/-! 契約名とソース順を保持する独立した交換の入口。
+設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
 open Lean Benitoite.Exchange
 
 /-- 表層・コアの交換形式の参照を辿る。型の data 名は構成子名と混同しない。 -/
@@ -94,7 +94,7 @@ def validate (input : Input) (b : BuiltinInput) : InputReport := Id.run do
     match b.prims.find? (fun p => p.name == op.name) with
     | none => errors := errors ++ [s!"missing builtin operation: {op.name}"]
     | some p =>
-      if p.opEff.isNone || p.params.length != op.arity || p.tparams.length != op.ntys then
+      if p.names != op.names || p.opEff.isNone || p.params.length != op.arity || p.tparams.length != op.ntys then
         errors := errors ++ [s!"{op.name}: operation signature mismatch"]
   if duplicateNames b.statePure ||
       b.statePure.any (fun n => !b.prims.any (fun p => p.name == n && p.kind == "pure")) then
@@ -113,7 +113,7 @@ def validate (input : Input) (b : BuiltinInput) : InputReport := Id.run do
     let n := ((b.dataDecls.find? (fun d => d.name == s.name)).map DataEntry.ntys).getD 0
     if (s.eq.dependsOn ++ s.key.dependsOn).any (· >= n) then
       errors := errors ++ [s!"{s.name}: summary parameter outside declaration"]
-  let decls := ds.map DataMaterial.toBuiltinDataDecl
+  let decls := ds.map toBuiltinDataDecl
   let S := Benitoite.Release.dataSummaries decls
   let converged := Benitoite.Release.summariesConverged decls S
   let mut comparisons := 0
@@ -139,7 +139,7 @@ def validate (input : Input) (b : BuiltinInput) : InputReport := Id.run do
   let missingConstructors := (cons ++ accessors).eraseDups.filter (fun n => (constructorDecl ds n).isNone)
   return {
     group := input.group, name := input.name, prims := b.prims.length,
-    converted := converted, dataDecls := ds.length, constructors := (ds.flatMap DataMaterial.ctors).length,
+    converted := converted, dataDecls := ds.length, constructors := (ds.flatMap (fun d => d.ctors)).length,
     missingPrims := missingPrims, missingConstructors := missingConstructors,
     unconvertible := unconvertible, typeclassExcluded := typeclassExcluded,
     statePure := b.statePure, summaryComparisons := comparisons, summaryMismatches := mismatches,
@@ -150,7 +150,7 @@ def run (args : List String) : IO UInt32 := do
     throw (IO.userError "usage: builtinCheck corpus.json builtins.json builtin-report.json")
   let corpus ← IO.ofExcept ((Json.parse (← IO.FS.readFile corpusFile)) >>= fromJson? : Except String Corpus)
   let tables ← IO.ofExcept ((Json.parse (← IO.FS.readFile tableFile)) >>= fromJson? : Except String BuiltinCorpus)
-  if corpus.version != 7 || tables.version != 1 then throw (IO.userError "unsupported exchange version")
+  if corpus.version != 8 || tables.version != 2 then throw (IO.userError "unsupported exchange version")
   if duplicateNames (tables.inputs.map (fun b => s!"{b.group}/{b.name}")) then
     throw (IO.userError "duplicate input table")
   let checked := corpus.inputs.filter (fun i => i.excluded.isEmpty)

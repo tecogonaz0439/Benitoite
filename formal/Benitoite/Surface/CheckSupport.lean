@@ -1,14 +1,16 @@
 import Benitoite.Surface.CheckPatterns
 
-/-! 検査全体の原子集合の前提と、型の結び・エフェクトの差。 -/
+/-! 検査全体の原子集合の前提と、型の結び・エフェクトの差。
+対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+-/
 namespace Benitoite.Surface.CheckTools
 open Benitoite.Release
 
 def tyJoin (atoms : List Atom) (a b : Ty) : Option Ty :=
   match a, b with
-  | .fn ps r ε, .fn qs s ε' =>
-      if tysEq atoms ps qs && tyEq atoms r s then
-        some (.fn ps r (unionEff atoms ε ε')) else none
+  | .fn names ps r ε, .fn otherNames qs s ε' =>
+      if (names == otherNames) && tysEq atoms ps qs && tyEq atoms r s then
+        some (.fn names ps r (unionEff atoms ε ε')) else none
   | _, _ => if tyEq atoms a b then some a else none
 
 theorem tyJoin_sound {atoms a b j} (ha : Ty.AtomsIn atoms a)
@@ -17,16 +19,18 @@ theorem tyJoin_sound {atoms a b j} (ha : Ty.AtomsIn atoms a)
   cases a <;> cases b <;> simp only [tyJoin] at h
     <;> split at h <;> simp only [Option.some.injEq, reduceCtorEq] at h
     <;> try (subst j; exact ⟨Or.inl rfl, Or.inl (tyEq_sound ha hb ‹_›).symm⟩)
-  rename_i ps r ε qs s ε' hh
-  have ⟨hp, hr⟩ := Bool.and_eq_true_iff.mp hh
+  rename_i names ps r ε otherNames qs s ε' hh
+  simp only [Bool.and_eq_true_iff] at hh
+  rcases hh with ⟨⟨hn, hp⟩, hr⟩
+  have hnames := eq_of_beq hn
   have ep := tysEq_sound ha.1 hb.1 hp
   have er := tyEq_sound ha.2.1 hb.2.1 hr
-  subst qs; subst s; subst j
+  subst otherNames; subst qs; subst s; subst j
   rw [unionEff_eq ha.2.2 hb.2.2]
   constructor
-  · exact Or.inr ⟨ps, r, ε, Eff.union ε ε', rfl, rfl, by
+  · exact Or.inr ⟨names, ps, r, ε, Eff.union ε ε', rfl, rfl, by
       intro a he; simp [Eff.union, he]⟩
-  · exact Or.inr ⟨ps, r, ε', Eff.union ε ε', rfl, rfl, by
+  · exact Or.inr ⟨names, ps, r, ε', Eff.union ε ε', rfl, rfl, by
       intro a he; simp [Eff.union, he]⟩
 
 theorem tyJoin_atoms {atoms a b j} (ha : Ty.AtomsIn atoms a)
@@ -114,7 +118,7 @@ theorem Env.atoms_shiftEnv {atoms Γ} (h : Env.AtomsIn atoms Γ) (n : Nat) :
               subst t; exact shift_atoms (h u ho) n 0
 
 def Builtins.AtomsIn (atoms : List Atom) (B : Builtins) : Prop :=
-  ∀ b s, B.sig b = some s → Ty.AtomsIn atoms (.fn s.params s.ret s.eff)
+  ∀ b s, B.sig b = some s → Ty.AtomsIn atoms (.fn s.names s.params s.ret s.eff)
 end Benitoite.Release
 
 namespace Benitoite.Surface
@@ -122,11 +126,11 @@ open Benitoite.Release
 
 def Declarations.AtomsIn (atoms : List Atom) (D : Declarations) : Prop :=
   (∀ f d, D.funs f = some d →
-    Ty.AtomsIn atoms (.fn d.params d.ret d.eff) ∧ Tys.AtomsIn atoms d.dictTys) ∧
+    Ty.AtomsIn atoms (.fn d.names d.params d.ret d.eff) ∧ Tys.AtomsIn atoms d.dictTys) ∧
   (∀ c cd, D.cons c = some cd → Tys.AtomsIn atoms cd.args) ∧
   (∀ o od, D.ops o = some od → Tys.AtomsIn atoms od.params ∧ Ty.AtomsIn atoms od.ret) ∧
   (∀ cl cd m ms, D.classes cl = some cd → cd.methods m = some ms →
-    Ty.AtomsIn atoms (.fn ms.params ms.ret ms.eff)) ∧
+    Ty.AtomsIn atoms (.fn ms.names ms.params ms.ret ms.eff)) ∧
   (∀ i id, D.impls i = some id → Ty.AtomsIn atoms id.target ∧ Tys.AtomsIn atoms id.dictTys)
 
 mutual
@@ -147,18 +151,18 @@ mutual
     | .constE t e => t.AtomsIn atoms ∧ e.AtomsIn atoms
     | .funName _ ts es | .primName _ ts es =>
         Tys.AtomsIn atoms ts ∧ ∀ ε ∈ es, ε.AtomsIn atoms
-    | .funDicts _ ts es ds ps => Tys.AtomsIn atoms ts ∧
+    | .funDicts _ ts es ds _ ps => Tys.AtomsIn atoms ts ∧
         (∀ ε ∈ es, ε.AtomsIn atoms) ∧ DictEvs.AtomsIn atoms ds ∧ Tys.AtomsIn atoms ps
-    | .methName d _ ts es ds ps => d.AtomsIn atoms ∧ Tys.AtomsIn atoms ts ∧
+    | .methName d _ ts es ds _ ps => d.AtomsIn atoms ∧ Tys.AtomsIn atoms ts ∧
         (∀ ε ∈ es, ε.AtomsIn atoms) ∧ DictEvs.AtomsIn atoms ds ∧ Tys.AtomsIn atoms ps
     | .opName _ ts | .nullCon _ ts => Tys.AtomsIn atoms ts
-    | .conValue _ ts ps => Tys.AtomsIn atoms ts ∧ Tys.AtomsIn atoms ps
+    | .conValue _ ts _ ps => Tys.AtomsIn atoms ts ∧ Tys.AtomsIn atoms ps
     | .paren e | .not e | .resume _ e => e.AtomsIn atoms
     | .conCall _ ts es | .record _ ts _ es => Tys.AtomsIn atoms ts ∧ es.AtomsIn atoms
     | .recordUpdate _ ts _ _ e es => Tys.AtomsIn atoms ts ∧ e.AtomsIn atoms ∧ es.AtomsIn atoms
-    | .call f es => f.AtomsIn atoms ∧ es.AtomsIn atoms
+    | .call f _ _ es => f.AtomsIn atoms ∧ es.AtomsIn atoms
     | .pipe a b | .and a b | .or a b => a.AtomsIn atoms ∧ b.AtomsIn atoms
-    | .partialCall f args r ε => f.AtomsIn atoms ∧ args.AtomsIn atoms ∧
+    | .partialCall f _ args r ε => f.AtomsIn atoms ∧ args.AtomsIn atoms ∧
         r.AtomsIn atoms ∧ ε.AtomsIn atoms
     | .partialCon _ ts args => Tys.AtomsIn atoms ts ∧ args.AtomsIn atoms
     | .binary _ t a b => t.AtomsIn atoms ∧ a.AtomsIn atoms ∧ b.AtomsIn atoms
@@ -167,7 +171,7 @@ mutual
     | .listSpread t f before e after => t.AtomsIn atoms ∧ f.AtomsIn atoms ∧
         before.AtomsIn atoms ∧ e.AtomsIn atoms ∧ after.AtomsIn atoms
     | .interpolation parts es fs => InterpParts.AtomsIn atoms parts ∧ es.AtomsIn atoms ∧ fs.AtomsIn atoms
-    | .lam ps r ε b => Tys.AtomsIn atoms ps ∧ r.AtomsIn atoms ∧ ε.AtomsIn atoms ∧ b.AtomsIn atoms
+    | .lam _ ps r ε b => Tys.AtomsIn atoms ps ∧ r.AtomsIn atoms ∧ ε.AtomsIn atoms ∧ b.AtomsIn atoms
     | .ite c y n => c.AtomsIn atoms ∧ y.AtomsIn atoms ∧ n.AtomsIn atoms
     | .elseIf c y n => c.AtomsIn atoms ∧ y.AtomsIn atoms ∧ n.AtomsIn atoms
     | .ifOnly c y => c.AtomsIn atoms ∧ y.AtomsIn atoms
@@ -182,8 +186,8 @@ mutual
     | .cons e es => e.AtomsIn atoms ∧ es.AtomsIn atoms
   def HoleArgs.AtomsIn (atoms : List Atom) : HoleArgs → Prop
     | .nil => True
-    | .expr e es => e.AtomsIn atoms ∧ es.AtomsIn atoms
-    | .hole t es => t.AtomsIn atoms ∧ es.AtomsIn atoms
+    | .expr _ _ e es => e.AtomsIn atoms ∧ es.AtomsIn atoms
+    | .hole _ _ t es => t.AtomsIn atoms ∧ es.AtomsIn atoms
   def Block.AtomsIn (atoms : List Atom) : Block → Prop
     | .empty => True
     | .last e | .lastDiscard e => e.AtomsIn atoms
@@ -199,7 +203,7 @@ mutual
 end
 
 def Def.AtomsIn (atoms : List Atom) (d : Def) : Prop :=
-  Ty.AtomsIn atoms (.fn (d.dictTys ++ d.params) d.ret d.eff) ∧ d.body.AtomsIn atoms
+  Ty.AtomsIn atoms (.fn d.coreNames (d.dictTys ++ d.params) d.ret d.eff) ∧ d.body.AtomsIn atoms
 
 def ImplDecl.AtomsIn (atoms : List Atom) (id : ImplDecl) : Prop :=
   id.target.AtomsIn atoms ∧ Tys.AtomsIn atoms id.dictTys ∧

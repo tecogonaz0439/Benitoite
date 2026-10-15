@@ -2,8 +2,8 @@ import Benitoite.Exchange.Builtins
 import Benitoite.Release.CoverageShow
 import Lean
 
-/-! E1c-2: 型検査を通った入力の表層の照合を、Lean の網羅性判定で検査する。
-try とレコードの更新が脱糖で作る照合は含めない。 -/
+/-! 契約名とソース順を保持する独立した交換の入口。
+設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
 open Lean Benitoite.Release
 namespace CoverageProgramDiff
 open Benitoite.Exchange
@@ -79,7 +79,9 @@ structure Outcome where
 def compareMatch (P : Program) (ctors : DataName → List ConName) (m : RawMatch) :
     Except String Outcome := do
   let t ← match m.scrutineeTy.toRelease with
-    | .error e => return ⟨"outOfScope", 0, toJson e⟩
+    | .error e =>
+        if e == "invalid parameter names" then throw e
+        return ⟨"outOfScope", 0, toJson e⟩
     | .ok t => pure t
   let as ← arms m.arms
   let r := checkMatch P ctors t as
@@ -91,7 +93,9 @@ def compareMatch (P : Program) (ctors : DataName → List ConName) (m : RawMatch
 def compareBinding (P : Program) (ctors : DataName → List ConName) (b : RawBinding) :
     Except String Outcome := do
   let t ← match b.ty.toRelease with
-    | .error e => return ⟨"outOfScope", 0, toJson e⟩
+    | .error e =>
+        if e == "invalid parameter names" then throw e
+        return ⟨"outOfScope", 0, toJson e⟩
     | .ok t => pure t
   let p ← pattern b.pattern
   let r := usefulReport P ctors [t] [[p]] [.wild]
@@ -117,7 +121,7 @@ def run (args : List String) : IO UInt32 := do
     | throw (IO.userError "usage: coverageProgramDiff coverage-matches.json builtins.json report.json")
   let corpus : Corpus ← read corpusFile
   let builtins : BuiltinCorpus ← read builtinFile
-  if corpus.version != 1 || builtins.version != 1 then throw (IO.userError "unsupported version")
+  if corpus.version != 2 || builtins.version != 2 then throw (IO.userError "unsupported version")
   if corpus.inputs.length != builtins.inputs.length then throw (IO.userError "input count mismatch")
   let mut matchCounts : Counts := {}
   let mut bindings : Counts := {}

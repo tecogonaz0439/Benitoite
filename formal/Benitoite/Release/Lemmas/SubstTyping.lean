@@ -1,12 +1,15 @@
 import Benitoite.Release.Lemmas.OuterC
 
 /-!
-# 値の置き換えで型付けが保たれること（段階 B）
+# 値の置き換えで型付けが保たれること（契約名を持つコア）
 
 実行中の置き換え（E-Return・E-Lam・E-Fun・E-MatchXBody・E-MatchXGuard・E-Op の `M[W̄/x̄]`）は、閉じた値か継続の場所で
 変数を置き換える。閉じた値は、どの型パラメータの並びと環境のもとでも同じ型が付くので、節や
-ラムダの内側へ運んでも型が付く。継続の場所は、`resume` の第一引数に現れ、κ を作った節の R と、
+ラムダの内側へ挿入しても型が付く。継続の場所は、`resume` の第一引数に現れ、κ を作った節の R と、
 置き換える位置の R が等しい。
+
+値変数の置換では、契約名の綴り・宣言順と名前の整形式を保持する
+（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
@@ -26,7 +29,7 @@ mutual
     | .const _ => rfl
     | .fnRef _ _ _ => rfl
     | .prim _ _ _ => rfl
-    | .lam ps body => by simp only [Val.rename, upRen_id, Comp.rename_id]
+    | .lam names ps body => by simp only [Val.rename, upRen_id, Comp.rename_id]
     | .con c ts args => by simp only [Val.rename, Val.renameList_id]
     | .list elems => by simp only [Val.rename, Val.renameList_id]
     | .op _ _ => rfl
@@ -177,12 +180,12 @@ mutual
         · exact hcl C Δ
         · exact absurd hx (hc b t ε)
     | .V_Const => simp only [Val.subst]; exact .V_Const
-    | .V_Fun hd hts hes => simp only [Val.subst]; exact .V_Fun hd hts hes
-    | .V_Prim hs hts hes had => simp only [Val.subst]; exact .V_Prim hs hts hes had
-    | .V_Op hod hts => simp only [Val.subst]; exact .V_Op hod hts
-    | .V_Lam (ps := ps) (r := r) hbody =>
+    | .V_Fun hd hnames hts hes => simp only [Val.subst]; exact .V_Fun hd hnames hts hes
+    | .V_Prim hs hnames hts hes had => simp only [Val.subst]; exact .V_Prim hs hnames hts hes had
+    | .V_Op hod hnames hts => simp only [Val.subst]; exact .V_Op hod hnames hts
+    | .V_Lam (ps := ps) (r := r) hnames hbody =>
         simp only [Val.subst]
-        refine .V_Lam ?_
+        refine .V_Lam hnames ?_
         have := (hσ.hide (some r)).up (binds ps)
         rw [binds_length] at this
         exact HasTypeC.subst hbody this
@@ -247,9 +250,9 @@ mutual
         · cases hx; rw [hl]; exact .C_ResumeL hΨ (HasTypeV.subst hv hσ)
     | .C_ResumeL hl hv =>
         simp only [Comp.subst, Val.subst]; exact .C_ResumeL hl (HasTypeV.subst hv hσ)
-    | .C_Meth hv hc hmeth hts hes hws =>
+    | .C_Meth hv hc hmeth hnames hts hes hws =>
         simp only [Comp.subst]
-        exact .C_Meth (HasTypeV.subst hv hσ) hc hmeth hts hes (HasTypeVs.subst hws hσ)
+        exact .C_Meth (HasTypeV.subst hv hσ) hc hmeth hnames hts hes (HasTypeVs.subst hws hσ)
 
   theorem HasTypeArms.subst {Ψ C Γ Δ R σ arms a b ε} (h : HasTypeArms P B Ψ C Γ R arms a b ε)
       (hσ : SubstOk P B Ψ Γ Δ R σ) : HasTypeArms P B Ψ C Δ R (Arm.substList σ arms) a b ε := by
@@ -271,9 +274,9 @@ mutual
       (hσ : SubstOk P B Ψ Γ Δ R σ) : HasTypeClauses P B Ψ C Δ R (Clause.substList σ h) t ε := by
     match hc with
     | .nil => simp only [Clause.substList]; exact .nil
-    | .cons (sg := sg) (k := k) hsg hn hk hbody hrest =>
+    | .cons (sg := sg) (k := k) hsg hnames hn hk hbody hrest =>
         simp only [Clause.substList]
-        refine .cons hsg hn hk ?_ (HasTypeClauses.subst hrest hσ)
+        refine .cons hsg hnames hn hk ?_ (HasTypeClauses.subst hrest hσ)
         have := hσ.clause (some (.cont sg.ret (t.shift k 0) ε)) sg.params k
         rw [← hn] at this
         exact HasTypeC.subst hbody this

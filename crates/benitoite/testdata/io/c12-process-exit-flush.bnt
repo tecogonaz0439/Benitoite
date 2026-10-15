@@ -7,8 +7,8 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.IO.Process
 
 function main() -> Result[Unit, String] uses File.Read, State, Console.Write, Process.Exit
-  with reader = try File.openReader("input.txt") |> Result.mapError(_, IOError.message) do
-    Console.write(Option.unwrapOr(try File.readLine(reader) |> Result.mapError(_, IOError.message), "eof"))
+  with reader = try File.openReader("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) do
+    Console.write(Option.unwrapOr(o: try File.readLine(reader) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda), fallback: "eof"))
     Console.writeErrorLine("before exit")
     Process.exit(7)
     Console.writeLine("unreachable")

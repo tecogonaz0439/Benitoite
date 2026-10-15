@@ -1,0 +1,62 @@
+[
+  {
+    "path": "crates/benitoite/testdata/packages/newer-language.diag.json",
+    "line": 1,
+    "code": "E0907",
+    "field": "message",
+    "before": "this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.4",
+    "after": "this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.5",
+    "reason": "interpreter version is now 0.0.5; diagnostic code, locations, other fields, and exit status unchanged"
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/newer-config.diag.json",
+    "line": 1,
+    "code": "E0907",
+    "field": "message",
+    "before": "this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.4",
+    "after": "this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.5",
+    "reason": "interpreter version is now 0.0.5; diagnostic code, locations, other fields, and exit status unchanged"
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-settings.diag.json",
+    "line": 3,
+    "code": "E0907",
+    "field": "message",
+    "before": "this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.4",
+    "after": "this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.5",
+    "reason": "interpreter version is now 0.0.5; diagnostic code, locations, other fields, and exit status unchanged"
+  },
+  {
+    "paths": [
+      "crates/benitoite/testdata/packages/hash-match/package.bnt",
+      "crates/benitoite/testdata/packages/hash-mismatch.diag.json"
+    ],
+    "before": "sha256:8e94a7a4614e7abbe3089c9747892b9c699d390541450a983febf64e884ada02",
+    "after": "sha256:ddac9d07ae2a12288b1ef3e5a4cbe36ae1d44a3991a1fc3f3b9e5d44a57da584",
+    "reason": "package.bnt language 0.0.3 -> 0.0.5; Value.bnt unchanged; independent calculation also reproduces old expected hash; assertions unchanged"
+  },
+  {
+    "paths": [
+      "crates/benitoite/src/modules/hash.rs"
+    ],
+    "before": "sha256:0b4805396eb846fae7e96f7cdea9f3e4475ef2a543cef851416c9f1cf9c45377",
+    "after": "sha256:a1b90227fd78ffd9f1ce24c6969a96511416e6f18571e480713a16e92f7b503f",
+    "reason": "shared CONFIG language 0.0.3 -> 0.0.5; other bytes unchanged; independent calculation also reproduces old expected hash; assertions unchanged"
+  },
+  {
+    "paths": [
+      "crates/benitoite/tests/package_command.rs"
+    ],
+    "before": "sha256:69e107094dbeac2e2275c386dfe72aecd1d04725c1c59adc68ed104c67b1f4ed",
+    "after": "sha256:eee08f30ef130c609237874eefd93d59e3338d58438294fb47dc24ec917cef4e",
+    "reason": "CONFIG language 0.0.3 -> 0.0.5; Value.bnt unchanged; independent calculation also reproduces old expected hash; assertions unchanged"
+  },
+  {
+    "path": "crates/benitoite/src/syntax/parser/header.rs",
+    "test": "header_preserves_order_names_and_values",
+    "field": "language.version.value",
+    "before": "0.0.3",
+    "after": "0.0.5",
+    "reason": "input declaration updated to 0.0.5; exact parsed value assertion retained"
+  }
+]

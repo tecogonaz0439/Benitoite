@@ -1,7 +1,7 @@
-"""手書きの JSON を交換形式の実行器へ渡し、数の追加と旧形式の互換を検査する。
+"""手書きの JSON を最終交換形式の実行器へ渡し、幅付きの数を検査する。
 
-各幅の脱糖・型検査が交換の境界で抜ける退行を捕まえる。既存の Rust の
-出力には新しい数がまだ含まれないため、この入力で接続を独立に検査する。
+各幅の脱糖・型検査が交換の境界で抜ける退行を捕まえる。Rust の出力に
+依存しない手書きの入力で接続を独立に検査する。
 期待するコアは JSON の固定した束縛の形であり、Lean の脱糖から生成しない。
 """
 
@@ -22,11 +22,11 @@ def base(name):
 
 
 def header(ret, params=()):
-    return {"tparams": [], "neffs": 0, "params": list(params), "ret": ret, "eff": []}
+    return {"tparams": [], "neffs": 0, "names": ["x"] if len(params) == 1 else ["left", "right"] if len(params) == 2 else [], "params": list(params), "ret": ret, "eff": []}
 
 
 def primitive(name, params, ret):
-    return {"name": name, **header(ret, params), "kind": "pure", "opEff": None,
+    return {"name": name, **header(ret, params), "names": (["b"] if name.startswith("UnsignedInteger8.") else ["n"]) if name.endswith(".toString") else ["value"] if len(params) == 1 else ["left", "right"] if len(params) == 2 else [], "kind": "pure", "opEff": None,
             "classConstraints": [], "unconvertibleTypes": []}
 
 
@@ -69,13 +69,13 @@ def inputs():
         defs.append(definition(len(defs), name, base("String"), expr, core, [base(ty)]))
         prims.append(primitive(name, [base(ty)], base("String")))
     identity = {"group": "golden", "name": "width-exchange"}
-    corpus = {"version": 7, "operators": fixture["operators"], "annotations": {"tailMatch": [0, 0]},
+    corpus = {"version": 8, "operators": fixture["operators"], "annotations": {"tailMatch": [0, 0]},
               "inputs": [{**identity, "excluded": [], "definitions": defs, "constants": [],
                           "ops": [], "effects": [], "primOps": [], "classes": [], "impls": []}]}
-    builtins = {"version": 1, "inputs": [{**identity, "prims": prims,
+    builtins = {"version": 2, "inputs": [{**identity, "prims": prims,
                 "effects": [{"name": "State", "ops": []}], "resources": [], "dataDecls": [],
                 "summaries": [], "statePure": [], "supplementalData": [], "supplementalPrims": []}]}
-    stdlib = {"version": 1, "inputs": [{**identity, "functions": [], "impls": []}]}
+    stdlib = {"version": 2, "inputs": [{**identity, "functions": [], "impls": []}]}
     return corpus, builtins, stdlib
 
 

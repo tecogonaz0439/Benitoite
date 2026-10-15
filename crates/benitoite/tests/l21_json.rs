@@ -62,19 +62,19 @@ fn source_queries_and_value_equality() {
         r#"
 import Benitoite.Unofficial.Json
 function main() -> Result[Unit, String]
-  bind value <- try Json.parse("{\"title\":\"é😀\",\"items\":[7,1.5,true,null]}") |> Result.mapError(_, Json.ParseError.message)
-  if Json.get(value, "title") <> Option.Some(Json.Value.String("é😀"))
-    or Json.get(value, "missing") <> Option.None
-    or Json.get(Json.Value.Null, "title") <> Option.None then
+  bind value <- try Json.parse("{\"title\":\"é😀\",\"items\":[7,1.5,true,null]}") |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+  if Json.get(value: value, k: "title") <> Option.Some(Json.Value.String("é😀"))
+    or Json.get(value: value, k: "missing") <> Option.None
+    or Json.get(value: Json.Value.Null, k: "title") <> Option.None then
     return Result.Error("get")
   end if
-  bind items <- Json.get(value, "items") |> Option.unwrapOr(_, Json.Value.Null)
-  if Json.at(items, 0) <> Option.Some(Json.Value.Integer(7))
-    or Json.at(items, 1) <> Option.Some(Json.Value.Float(1.5))
-    or Json.at(items, 3) <> Option.Some(Json.Value.Null)
-    or Json.at(items, -1) <> Option.None
-    or Json.at(items, 4) <> Option.None
-    or Json.at(Json.Value.Null, 0) <> Option.None then
+  bind items <- Json.get(value: value, k: "items") |> Option.unwrapOr(o: _, fallback: Json.Value.Null)
+  if Json.at(value: items, index: 0) <> Option.Some(Json.Value.Integer(7))
+    or Json.at(value: items, index: 1) <> Option.Some(Json.Value.Float(1.5))
+    or Json.at(value: items, index: 3) <> Option.Some(Json.Value.Null)
+    or Json.at(value: items, index: -1) <> Option.None
+    or Json.at(value: items, index: 4) <> Option.None
+    or Json.at(value: Json.Value.Null, index: 0) <> Option.None then
     return Result.Error("at")
   end if
   if Json.asString(Json.Value.String("é😀")) <> Option.Some("é😀")
@@ -96,12 +96,12 @@ function main() -> Result[Unit, String]
     or Json.asObject(items) <> Option.None then
     return Result.Error("wrong kinds")
   end if
-  bind object <- Json.asObject(value) |> Option.unwrapOr(_, Map.empty())
-  if Map.get(object, "title") <> Option.Some(Json.Value.String("é😀")) then
+  bind object <- Json.asObject(value) |> Option.unwrapOr(o: _, fallback: Map.empty())
+  if Map.get(m: object, k: "title") <> Option.Some(Json.Value.String("é😀")) then
     return Result.Error("asObject")
   end if
-  bind same <- try Json.parse("{\"items\":[7,1.5,true,null],\"title\":\"é😀\"}") |> Result.mapError(_, Json.ParseError.message)
-  bind changed <- try Json.parse("{\"items\":[7,1.5,true,null],\"title\":\"other\"}") |> Result.mapError(_, Json.ParseError.message)
+  bind same <- try Json.parse("{\"items\":[7,1.5,true,null],\"title\":\"é😀\"}") |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+  bind changed <- try Json.parse("{\"items\":[7,1.5,true,null],\"title\":\"other\"}") |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
   if value <> same or value = changed then
     return Result.Error("value equality")
   end if
@@ -117,12 +117,12 @@ fn total_amount_and_parse_error_accessors() {
         r#"
 import Benitoite.Unofficial.Json
 function totalAmount(text: String) -> Result[Integer, String]
-  bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
-  bind items <- Json.asArray(value) |> Option.unwrapOr(_, [])
-  return Result.Ok(List.fold(items, 0, lambda(sum, item)
-    return match Json.get(item, "amount") with
-      case Option.Some(Json.Value.Integer(n)) -> sum + n
-      case _ -> sum
+  bind document <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+  bind items <- Json.asArray(document) |> Option.unwrapOr(o: _, fallback: [])
+  return Result.Ok(List.fold(xs: items, initial: 0, f: lambda(acc, value)
+    return match Json.get(value: value, k: "amount") with
+      case Option.Some(Json.Value.Integer(n)) -> acc + n
+      case _ -> acc
     end match
   end lambda))
 end function

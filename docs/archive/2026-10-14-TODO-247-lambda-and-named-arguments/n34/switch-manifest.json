@@ -1,0 +1,1093 @@
+{
+  "files": [
+    {
+      "path": "crates/benitoite/tests/desugar_export/check_named.py",
+      "beforeSha256": "590c42e031b81b7fc28602ff77788c762642aa877bba4204ee2e67ad230146bb",
+      "afterSha256": "d360f295454d3d2e672ed1eec9a9d771c0190675bf4c27e71feb9c6dde914e6d"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "beforeSha256": "22f739ab8eaad3552113f59db423d821578f914f146d5a63cc02c1e51072ad29",
+      "afterSha256": "e680b63cb7eb9b5ee79bdfba45e3063b85d780d72b36ef7803cee8c6d3cc333a"
+    },
+    {
+      "path": "docs/design/07-quality/07-03-compiler-testing.md",
+      "beforeSha256": "3f8d254dfee914efa533db09eabc18caa60b33780c9aae60111b6b3bfdb82574",
+      "afterSha256": "4067802b70ece92bfdf738b4c3ec6bf82064972a29de03a806581ed6507dd017"
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "beforeSha256": "7d426c73e16ba4cbf463bcaea70ffd6b9c7a0f987f9efaff82e2d6d80d32fe45",
+      "afterSha256": "c7c626714be662f80e487bb12d1aa7925f24c1d82c98d1c9de450afe6040c191"
+    },
+    {
+      "path": "formal/Benitoite.lean",
+      "beforeSha256": "74972f4008cee8d86c455e134aa2a6198edb96d4917a548a6bfd2bf4fd8ea8cb",
+      "afterSha256": "149247f1ed12936f940bd2bdaafbde4f6eba8101854b6acaabdda4aaf6e85194"
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Builtins.lean",
+      "beforeSha256": "2f6ebd9049310bc95f97db5cfd14de2bab0ae3a1030bf06023b472ccdd60bef0",
+      "afterSha256": "c3e900c932bd3e84c3e39473779f5f2424ef5aca13d97ea9a9d12d81ec2b6d53"
+    },
+    {
+      "path": "formal/Benitoite/Exchange/CheckInput.lean",
+      "beforeSha256": "3dbb9f5e9a15f05a42c8e39a88aff0aa67bb2e5ad014450c38d3000e11cc5653",
+      "afterSha256": "3d47eb13ba886cc65104af3b6ffb8875e8e4d55a6851d475aaeb444330fc1e31"
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Convert.lean",
+      "beforeSha256": "046ce0fb5e096706ba055de8c6634c8da5fb8632fdc08c89131c314fe44fd80b",
+      "afterSha256": "4f2dd53b1a579e31c04a5fd5a347508eb6a79525f54f45a51ba6977944d443e9"
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Syntax.lean",
+      "beforeSha256": "31292fa3f2e78f0e9ee75be446eca4eed42ae717f589a1f8f6a3a01c60ed54dd",
+      "afterSha256": "98ab293938c138aeb51040b6796bae0d686efd0e0b565ba82f7c098a68adb184"
+    },
+    {
+      "path": "formal/Benitoite/Release/Assumptions.lean",
+      "beforeSha256": "e4ab7b049b6619bd1f0dfd95239b65c3e86f40255300dc6fccae6c0b491d2799",
+      "afterSha256": "3f9c85d168678a8488829101b8b43f5a0a7f3f2956b02f760d3d6dcfec8a3cd6"
+    },
+    {
+      "path": "formal/Benitoite/Release/BuiltinTable.lean",
+      "beforeSha256": "e4f05fe6438a53d15281548fefe9d601d3c4d5695524e8f147471b7ecd317408",
+      "afterSha256": "5909139425f1a4cbe5474ff54fcc239e8a6c0dc692ec66edb6261f74b12857a7"
+    },
+    {
+      "path": "formal/Benitoite/Release/Coverage.lean",
+      "beforeSha256": "a8abbae56fdaab5e4b8e3f04ec23b2364970ec111cd09dfb992e2794ec56a32d",
+      "afterSha256": "5e9f366911c725a05c844f4f674fdd31c532842c1d1b2fd5afc00bd36e8fb6d1"
+    },
+    {
+      "path": "formal/Benitoite/Release/CoverageShow.lean",
+      "beforeSha256": "f0393e17111d08814aa619ba57d54cd74701032e759998a681687608c2f74efd",
+      "afterSha256": "d405e8aa8d920885c9dd4f529af9892b23f8ac3014d9913f3d9337ba2195a49a"
+    },
+    {
+      "path": "formal/Benitoite/Release/Examples.lean",
+      "beforeSha256": "3a7bb83d7b7460ee6b6dfc97fc7c8bf59019233b93e9650e04b5cbf30070e139",
+      "afterSha256": "49881428c11ae31c23b60edf851dabe39cb6b37b5cf284cd5c5266b9976e09c2"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+      "beforeSha256": "fc63302ba22617e5254e6ce048d372f55c2c97d3e90fa1127da55ebcbe368049",
+      "afterSha256": "53de43ab9e94558cce75540b0f6f3b573f19181672c92fe5a6d3ce273ba8494e"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+      "beforeSha256": "7410442b26c653518b844e375765f07bf8c8ddab2e5687c3e48d72fc3c72b142",
+      "afterSha256": "232e1b935d89710914a4c613abe5d042b9c40dc034459f3ed024352e398d2381"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Closed.lean",
+      "beforeSha256": "fe62787cda34a20c7043b87eca5e3693566dbad3120409115b59794857263b4d",
+      "afterSha256": "dc2e28c6c90a4e516b1a051d2a5dd65f5947899620acd7757c6862f7eb2c31d5"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+      "beforeSha256": "8c35ed28f51ce400e03386943b047698de187073037fc5a971c1abc07448b3b5",
+      "afterSha256": "bb4e1b20df2434257d587b06c7d15dd3ee2bed9bc6abcad93f5b81810b873f79"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/CoverageRuntime.lean",
+      "beforeSha256": "12e8024bd9d9c0af6b614243adbd1518020a804b110882dafefea99bb24f2116",
+      "afterSha256": "eeb9a6b186d69c7ae79938eab7c4d2429a1b6a2239d67f126ffad4e26e4c6d1a"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Dict.lean",
+      "beforeSha256": "2eeab9c453dc4e136eeda9b49b93e456a937d0ba122b1e107a12bc1d0096fa40",
+      "afterSha256": "96bb9ce079a4d753dc065c51e490b559bad1a5356ad40624ace70fa9795a8196"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+      "beforeSha256": "c4a19008c05373f2b30d3b67346ab649870dc871b7492831ed26ad352811bc6e",
+      "afterSha256": "a952ca41e656afb7e4131b19f310511a9e099f7bc2535f84195afda9edb665e4"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+      "beforeSha256": "a3d9da2d26cc12d969a5b0506bba19876a08a457b6d0c873e9230b9ee3b954be",
+      "afterSha256": "04b2bc1ef62b7ddaa7b9ccc9d3e285b91dda0105e5b12db0394f7887e68ed381"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Names.lean",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "88bad88a504efe21f67666bbbf5b16ac9f0fcf577a7fd4f8b6c0d81288ce7cba"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/OuterC.lean",
+      "beforeSha256": "5753f6605754ffea14dfd6a2f934f26d6ee6f21d644410eab407a3b1c3f835c0",
+      "afterSha256": "999e47ab78e34afb4764376a2da4ac235abf402fab92c72845fcc9447e0013bf"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PresBase.lean",
+      "beforeSha256": "f282cd9a8054d5b38bb0f242782e90e7fca99b6021fcdb9dfc4adb6b14d579c4",
+      "afterSha256": "b74985908255590bda8ade90df38ea11ad1e1287d34af80b41e748dcae1b7f7c"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PresHelpers.lean",
+      "beforeSha256": "fb52f8aac087dd42647b6f0cf3c51fbd70bca35b0304f225290d11f6b3a649af",
+      "afterSha256": "501a4272b9f143e7ac662ece341968ee2c82a74ab3522ab2acca3b731b89d239"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+      "beforeSha256": "f11fb4ce2b4806bae091d4a2a3f4418a7b4ca4f5054473763e574d4f3e7265ff",
+      "afterSha256": "d9784bbec475a5bb81bdffb5d300d536369878038da7d77ccdefd11e23617d32"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+      "beforeSha256": "561e241c03d91312a2356c09db2a905e8a1c1d0ae515fd74d908f53c6fff4855",
+      "afterSha256": "a5ea42c7649627c85f4ff3b346fcae7cce80d98e4345761e5e7f22699db4f1b8"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+      "beforeSha256": "02b3121d87967322e872e5a4c252a7d6f8c40e4644ceea7f1d70e30937e2947f",
+      "afterSha256": "cb5a442fe150a2c9cbcd443bee2f2c6897c961980f2b6b8f0b956de7384f26f0"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Regularity.lean",
+      "beforeSha256": "3a7ff20fb44997a937e765946f1159e16fe876c9211a53f35e74a7d99f570ee4",
+      "afterSha256": "ff163a1168797983c72820f486221cbc57aca630cf9af53cfcd85617802ad1f9"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Rename.lean",
+      "beforeSha256": "8ab252de77625866fdac73099a5541cb6f110d6656784893246e22b55016330e",
+      "afterSha256": "d93fffb7c10933ce2b8f42e607f7b776db07888376b95f2b46d2a6c17ff770c4"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/StepSound.lean",
+      "beforeSha256": "cddaf21c384dff690707cd9ac1d5a3baa2dc8fbf389c78f238d0a23ce6c7fb69",
+      "afterSha256": "3bb038f5ddd6d8683cffa2e7cd31d4bc40c05248b715faedca5898df3d3936eb"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/StoreLemmas.lean",
+      "beforeSha256": "248f4a7e02ca596c4829ee6156db4c8dba1ae263462eb12f258ba2e1aeb88494",
+      "afterSha256": "1f59362d9411982bed908976184b0a9b8a07149a6b9e2033479ab74f739f8a88"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/SubstTyping.lean",
+      "beforeSha256": "8d9b4a8abb2c248d69d7f4ed4bf72b98b47849af87c7f666c5d761e7c483b2fe",
+      "afterSha256": "ef4ea6389fd78d6ef34fdcc987e01e4625c0a5f6a1dad2930c7aec7bbd0ed91d"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TyLemmas.lean",
+      "beforeSha256": "3344d1ac94a251e56916f8e1f59b929eaa97ea4e08d47bfe7c4ee4b8af2b8d8b",
+      "afterSha256": "ab8d6115bef827ef40cbf31e60c7e59c38a0ee84e3aaa507ea2ea4feee9426f2"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TySubst.lean",
+      "beforeSha256": "b73eae6c9d4701bf3fc015195d7025e1ccc978a5e1cacaf4664f8a4f09f47c48",
+      "afterSha256": "70256fba0d4f7a190807e00197b408fd38345f29da3630c0a32c7929a663f912"
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TySubstMain.lean",
+      "beforeSha256": "7fb0e7fc528fd762ca3cf3e7861d41a82b7703204f0d1a76b72ba67442c3fbc3",
+      "afterSha256": "c3edaa11a0358ccbde5b66d4d9b922f4e96532189e64ce5c37c53d9c547bc2be"
+    },
+    {
+      "path": "formal/Benitoite/Release/Model.lean",
+      "beforeSha256": "0d91a3137d33d386e9858255587c48de0b45b4e211a71d099ded64a469096298",
+      "afterSha256": "efcbb8d3d2cb5a81fce0aebff6c46a0f27e63a52999c23bd81e3da4b83e87d03"
+    },
+    {
+      "path": "formal/Benitoite/Release/Semantics.lean",
+      "beforeSha256": "c625881e30c10407c3ce1c77eb54b4ae8d6b3f9e3b87f91dfcd8f81fce94fb32",
+      "afterSha256": "a4a2855b9caae7fc256839d09362d8288fd32edab06a1e38753d0100acd67006"
+    },
+    {
+      "path": "formal/Benitoite/Release/Subst.lean",
+      "beforeSha256": "981c9fb4c0efd6f4bb94d6f1c16d061f626d5ba271e28a9c51c646a9363c6e41",
+      "afterSha256": "2b756a0b68030a70ecb289e2918551d456afee48d6e1ae4446c77ccce6a20464"
+    },
+    {
+      "path": "formal/Benitoite/Release/Syntax.lean",
+      "beforeSha256": "267fd53f2d03b3019129ae2ef45e15dc6ceda0414ee5476613ab7539f3e25542",
+      "afterSha256": "71fc33844faa5cfff06d4fe1b3c008c1abdc5b7de22a9831a041a85f12389bea"
+    },
+    {
+      "path": "formal/Benitoite/Release/Theorems.lean",
+      "beforeSha256": "ffdc97d4be54ae62e682447a27d507a19e36dea71c6a53e1232f6eed1981f592",
+      "afterSha256": "9d99ca03debaceb3c71dc86808b21a1278fb9a5550e66a411339378936681a12"
+    },
+    {
+      "path": "formal/Benitoite/Release/Typing.lean",
+      "beforeSha256": "dd0fab0e4ab3ef9042883105bb4ea8b2259e7579f9224b8091539dddbe6e581b",
+      "afterSha256": "36165b9673ff806ec8e3190f6617af9dead70251f003950b47bfe8b1f2b90edd"
+    },
+    {
+      "path": "formal/Benitoite/Release/WellFormed.lean",
+      "beforeSha256": "e6a10a85096b1ec3b7de212946e525ead177a39fb2a03a63b5f07381948e5f02",
+      "afterSha256": "666c13320dce3965c1e44549056c797a58a530b8bd94cd76444bed0d4ef5654c"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Check.lean",
+      "beforeSha256": "16ccc97d816f67d241643381fe18e963136cf7191ebd0f0fb0b8280c3acad2fd",
+      "afterSha256": "37324fdb16959ebddf3199504b435471a25bf1f64fc23034e766c70a873bf84b"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckCounterexamples.lean",
+      "beforeSha256": "8edb1863865eeeb26e265d6dc1f96eca2619089c3dfd89b900592eebfca8804b",
+      "afterSha256": "b1e832b8adeef92f2a20159d435bc71400a2b892b109dbdb1f56b802316bcf2a"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckDictSupport.lean",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "1c823f1462e9848883e5e51d19dd0dfb0c1553a82c70f2a1aa47dff89cf0cfad"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckExamples.lean",
+      "beforeSha256": "ae57169ab2b0f8c2fa2c6d3b92bca79e139e5bd88916ebba7e3b5c21a04d5aa0",
+      "afterSha256": "0ae824c9f6c616c0a7d007c91d46fabd754cf926bbb9918b5f8de362ba862156"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckInduction.lean",
+      "beforeSha256": "a02855a6a580d54c9c0ad10f918227040db5f5eac47182b7eb6e672263bbaa42",
+      "afterSha256": "f5762b88669b1bd34294e8e4b0a4e7e4d10e3b5546313fb8a15d6801beaeb0ef"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+      "beforeSha256": "db29f830ff7c52e22b729b90da0691b7e7fa086c83beb2989b946b9230146828",
+      "afterSha256": "972bb4828c015d693a9f52ea7590ddfbf5b4c434a24c95101f2d40f7cd2b64e1"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckPatterns.lean",
+      "beforeSha256": "0603b59b7093e344fed7c10bedb47a7a9f3187fd5fac42a67e948f68679887e0",
+      "afterSha256": "c852fe1d6239e3355fb203f8dbc83970c65b7e9131292a7320725c82503be659"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckPredicates.lean",
+      "beforeSha256": "6f91aa6aac22bf561cb7d13d174f9160ca7c5b22b71d036fb666e6f865a64efe",
+      "afterSha256": "f2ede98f43b4ea6bd3e971891e7485d2b134ff8eb04f9922dd7e595cefc8a5d7"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckProgramSound.lean",
+      "beforeSha256": "68dfc65550cf401707bd07f96f77fe5a52ceb95ab6517a6c09a6515a7065adb9",
+      "afterSha256": "e6b2cc1b810a1d3448204c896f0497e60f6eb35fdd295f9d76159c61d2ef5326"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSound.lean",
+      "beforeSha256": "2000d1ea7d77933c9b6095a599655cf682451a768cf697936fbb6b96af24b0cd",
+      "afterSha256": "d8eb9704e2b8058fa35010a80c975a89d78291c3d7e32a9b96223b472097a4ef"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundBasicExpr.lean",
+      "beforeSha256": "50e95a59c9b26920a3881953d00e827c49ab7a2768e41bce67e01d7544f3050a",
+      "afterSha256": "c60e862a6ef1d607565d93fd4973a4b298bfcfdbf0c3d29b4149a741527cd207"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundCalls.lean",
+      "beforeSha256": "75ba4828de3b11c9e64b984ab25450e4f11310e1c029d6d7df66e5c9f1fc5f91",
+      "afterSha256": "801259b5ab9432d3cf539b9a7f44046a94b3cf7ea1f83deaa78ff42864d7b2a4"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundCollections.lean",
+      "beforeSha256": "71a1ba1b95601dbeace20d5c6cae3cbaab62b866ba66b4e439ae9a187f6a7488",
+      "afterSha256": "5d369b541913f4e9aac2d831a9f86974c601b0d14f3dccbc521ce5aec2ac4fb4"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundControl.lean",
+      "beforeSha256": "411d6d97740c9f582df457a3751caaf347c5c6658637666e2e7dac1bb9c80afb",
+      "afterSha256": "a98d6ab22d3238325363706c4046c3f0dd82d8ae1a8bdc6717fc09a0673d2098"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundDicts.lean",
+      "beforeSha256": "f695c7016e370809036e598203fff27a31239308c106012f5d898cb6ecd09bb8",
+      "afterSha256": "f574a818400136c1a8bd33bbddb36f9eac142ecf358df885483183ed963615b0"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundSequence.lean",
+      "beforeSha256": "b19be9bb4f7cb42f5b6503aa57bfbdd66e58a30053566b3c8052a7400ae46d8b",
+      "afterSha256": "43c5365b93d843d8c7684c146c94651f6d487d49ca2b3706a60967585b107161"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSupport.lean",
+      "beforeSha256": "07ebb37929cac329630d59f817e85e566bc220ddaf9a1eff792e95e07e547d76",
+      "afterSha256": "50416d6b206ac7235f34af412daa072e7e6a0a13dbcd6907958dcac83a426063"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTables.lean",
+      "beforeSha256": "057f2a4de0ddaf3a44e985548801b45a361b9db50209c0e13a461098fcc7f3d9",
+      "afterSha256": "102cb9ac91cc60aac9fb9b82f69c39875ff3d39599b6fa8fb85964f9ee06749e"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTablesSound.lean",
+      "beforeSha256": "b64ae141cf259b5322ef66bc3bc51ca34516fbc2278fc8726127ff212344fe3b",
+      "afterSha256": "81c0873370df1462c45f2913d9a82c7f14de550df2e62842794f04a5f01ff9eb"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTools.lean",
+      "beforeSha256": "2ae2488d17d84e34c0818b2e34e50928a5d56a46c3ccd6558a190d1136a2139c",
+      "afterSha256": "5ed9e608751b6431c67c7f118602faccadca5d147ea5c869d6b5a21fcd812ded"
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckToolsExamples.lean",
+      "beforeSha256": "ac582858aa9df4e4cef59638a97f083b46ea56a1f4e691bb410630714287289e",
+      "afterSha256": "eb1f621c5e5e646a912dec2ba0e2605df6d49fa3521c62cb5dab7a28241f75fc"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Desugar.lean",
+      "beforeSha256": "8d5c9fc1c385027e18f6c2c5708091e7301ae17a11e4292626012fc622f39d52",
+      "afterSha256": "978049a0eab1776cdaff5af6fb9793a743b058943bb98474f2551f412a262eb6"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Examples.lean",
+      "beforeSha256": "740b78c70ffc0ecbb720173bb937d4a4e73ae4761a489c80c55f5d73c753dd61",
+      "afterSha256": "27a3ac45e490bdf57f691af435be44fd66ee964ea2a1ca8d3cc57e7d5d9acea8"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/BlockSequence.lean",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "e157770e3150851ec7de26b17902d952f8f1221c3da2de6e8118d6608701b817"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+      "beforeSha256": "118af09d956504aa4f8a59d0bbd13c04cd5f350771c1ebc1f14825b9b00e7e4e",
+      "afterSha256": "31cfd85518b801c5e56ed8d1f7d6446d9d93d986befbf8a74f3535427dc3affd"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Calls.lean",
+      "beforeSha256": "949c94a7d46a0591e856a7636362e8dcb7a9b02e27b290d5105722fa0d0083cb",
+      "afterSha256": "79092ea011269db7aba9d9c8923e6cdc4e76cd338557741f463963ad1dcf7410"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Dict.lean",
+      "beforeSha256": "cd5228e52bd3500caad370c19619a138b687baa9ff18ecf71d4b10e3e391d4da",
+      "afterSha256": "e4d992544a373e76db9d3b0696de02be082539b1f4667c38afb76279c249a9fc"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/DictSupport.lean",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "e296e32177e6f79bfdc58d42fa944e5a4ec6e5f4b69fb3f7b0c769834b6b62a2"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Extensions.lean",
+      "beforeSha256": "0cddd61f5623e4f0b89d51e703d8c6c0293618a2b10a94061959e8be76d8c02a",
+      "afterSha256": "d2b260cb3e262a82b8cb1c453b5d793f93b53eac933013e4198916a838362f0f"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ExtensionsScoped.lean",
+      "beforeSha256": "d82f246c8cd319c8dcbc96005b7cdf3b21144305c2b94afe5c6cbaeea161dd19",
+      "afterSha256": "b2ccc50460a223f78354b9743b643c97f4a5b6fc3e3e98bc315153862a42a85b"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+      "beforeSha256": "bf7b21e0e9528ff47b8cae027c0f239027782232b0cd99ec2f4436475cb5298f",
+      "afterSha256": "91d6cc46ad64e668d518131562ba51d7c8e219403d0ad142534f08d754e514d8"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/PatternSupport.lean",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "aebc30f5d0a99c129eb715a5e7d6c7a1fe63903ce337e53dd87de96ebb9d988c"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Patterns.lean",
+      "beforeSha256": "e0fe69f46abf6246cf90afa34825dcde24fe11336e54c6d108d10cd3bb3b99f4",
+      "afterSha256": "56dbbdd5bc3ec3bafcf36eca1df5b5c207b0f16405c7bc36121f2016b27f964a"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Program.lean",
+      "beforeSha256": "1ce35eb49586e17811c31bd4977bb0dd35234acf363d4fb01cc75da766fde6cf",
+      "afterSha256": "abe38c06b24487055a103bacee1b3682c990d9073c7834c544b25545085b2424"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Records.lean",
+      "beforeSha256": "bf366e54bd1cebf0ec1445b2e6e893b1ebc23d0f7e02ae0fa04ecae0fb801ba6",
+      "afterSha256": "70a51d6f3c9753fd5d41970b17398775bb88af69092039ce16ddd7c4290df490"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ReturnTry.lean",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "6463f89cb4f338daa116bc5c201bd5fb38ad5cec1216e57ebaf20da3d74cfa5d"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Scoped.lean",
+      "beforeSha256": "368d3575ab52614b36821cff1973f124cfe1b33ec67fdb1fe4a6c95cc4a3864c",
+      "afterSha256": "d64cb1b007e6c08a3b7125ae5735e06360d93adc4d463e6d0a7ff3f231242087"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ScopedRename.lean",
+      "beforeSha256": "1d69038cf63f7b322a75dee8e205bc168719691cfc562d2b378d5def59b89b9b",
+      "afterSha256": "d70b700d9c9b28e95bea1a40ce0d4b57398c5093c5aaa06178250a46e2f36a4e"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ScopedSupport.lean",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "7734432e81fa339bf0c3d8d2052170cb3463987b6555b5e981b841675bdd344b"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Sequence.lean",
+      "beforeSha256": "1a540d8aec23d417b33d09d39f2fc5c363c9c36beb16389057e9fa4f0f00542a",
+      "afterSha256": "d7a474641884d3d7c7d7e9661fc5ac0938fc9d43e116e67e895f27a0a7459c1a"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ShiftClean.lean",
+      "beforeSha256": "d2a9eeb066a73603ade85d524ca984b7208feea6c4ded7c505212b4f82501e6f",
+      "afterSha256": "ebdeec8227a31d3d8cf33ad994cf4e41d1e18a1e1917464088a1c21a545a6360"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/SubstClean.lean",
+      "beforeSha256": "add02006481e02c36ff24badd01df3b4ea78f75a46c611fb474cc7bf9d5bead8",
+      "afterSha256": "3bc03ad0fe0bc166e3c012d38932997591545abf923599eebc65a99516a741eb"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+      "beforeSha256": "ddd3ef5930928e571eb169cebd5f0ad5af58534a797a8412acad18a8f9a2ff57",
+      "afterSha256": "8688a05d9b970149468c0013ee47587b4a7b81a6df60f5ea7f9c67d080efb2db"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Syntax.lean",
+      "beforeSha256": "91feffed5fc32284197294dd22bac6d0ebb3b4e9717ccef48fd238d69d4bc04d",
+      "afterSha256": "662688512526e83d9f62b33de57ea36bcff1c941192fbd24e15846378f88c05d"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Theorems.lean",
+      "beforeSha256": "bc0d705b0534280794fc586791cd6eb5aae3d6ce807a4a48f90ec1c6411a0f7a",
+      "afterSha256": "70adb57e2d03432449b13f5d9f4a1f5f3a9d0c4a0f223ff49515ca7879033d9f"
+    },
+    {
+      "path": "formal/Benitoite/Surface/Typing.lean",
+      "beforeSha256": "f56c127dd7eb6e39724ca0ed8975cd18fc6cc92c6343ad95a09457ac8073ab1b",
+      "afterSha256": "60f1eebc53c28ab102a617daf58850722f51cb262d3e1c3fb120793fb08d7c37"
+    },
+    {
+      "path": "formal/Benitoite/Surface/WellFormed.lean",
+      "beforeSha256": "2705b381a543dd963dcdffa6a4518dc5693d8b26a935d5526f34430973a9e681",
+      "afterSha256": "f6acd0b454cf4189bf6b4aed38296564cbe32617de17af98730f21dbfad724bb"
+    },
+    {
+      "path": "formal/BuiltinCheck/Main.lean",
+      "beforeSha256": "1057438731c0d2a9b303b1c70375523e82d3c40289c97ff9a75222c96a5fdc23",
+      "afterSha256": "0f92a7b4bfd9bb60f23dc08ca2e67334dd97b2eb86cc4e4242deca63c81ba7a7"
+    },
+    {
+      "path": "formal/CoverageDiff/Main.lean",
+      "beforeSha256": "2e5903c52440afcffda45993df745f88dcd4fa9439bef111332401ebd2014c5b",
+      "afterSha256": "3340ab56dc10d721a31787ae7983514fb61621bcefcb39b9dae82547989efb13"
+    },
+    {
+      "path": "formal/CoverageProgramDiff/Main.lean",
+      "beforeSha256": "2b247e611776f8a3d05b14aa813a4d2c0902fbac9f0dc846862bf96e560a49ac",
+      "afterSha256": "00f3c3fe4325e46325e159966d3cbf159126973507efd0da345e9e335fcd204a"
+    },
+    {
+      "path": "formal/DesugarDiff/Main.lean",
+      "beforeSha256": "d1d8f62d5df0b3907362bd714fc314a9e5bdf7079d962e87b046796a6e4923c7",
+      "afterSha256": "bd8c40203362d304573b996281087e29a2ed6abb12da49e59434a3f77f1b7af2"
+    },
+    {
+      "path": "formal/SurfaceCheck/Batch.lean",
+      "beforeSha256": "26f02828f7704ecc92439157df961b162cc9b5070fb037a3f6c6a58f8a0e7009",
+      "afterSha256": "ce3bff57483415e0de20d3b0972ea80f3f63d85a077496a87df7f07db4b53e4f"
+    },
+    {
+      "path": "formal/SurfaceCheck/Main.lean",
+      "beforeSha256": "ad571ac80a57638f2153f3cb76ddf6a5a798382707d97b3376db2b4af69d0f0e",
+      "afterSha256": "1c47593fb7e9a6814ad36848a22b552c6d434ceae75920e9f4364d47713bfe6e"
+    },
+    {
+      "path": "formal/SurfaceCheck/Validation.lean",
+      "beforeSha256": "602faf4155919e46094beff8f817ee51fe29e3bb8dd9a4826882da6b16878091",
+      "afterSha256": "fd592537f3e6106d5c3a8edb743c1c293c741ad03a962657e6c69bcd485424ee"
+    },
+    {
+      "path": "formal/SurfaceCheck/Walk.lean",
+      "beforeSha256": "6a3e9b11345667912865e21d87e1775124fd44fc92e0fe2251b65e2450386797",
+      "afterSha256": "589890b48de53b9a35c04b3536e12f5a4b4f9677e437d8a8b45001019cb408ee"
+    },
+    {
+      "path": "formal/lakefile.toml",
+      "beforeSha256": "d33c7ce7baf57ef6c7a2210f56c3ea3efbd235b376bded79a0956d7c050a7b74",
+      "afterSha256": "655b8e6b8bd6dcfefec815ef6d37c115d04952f792be360513d111f54feb67e7"
+    },
+    {
+      "path": "formal/tests/test_named_exchange.py",
+      "beforeSha256": "4efc3bc286e3251385f042681618541895177758f3e2fa0445c75fae64776e55",
+      "afterSha256": "bec9d060fa227d34e4450fa58d7d52a09b902b752dd13665ebe5319ac6e0a6c7"
+    },
+    {
+      "path": "formal/tests/test_width_exchange.py",
+      "beforeSha256": "16c9fee5585a831be2aa6446430b58aab35830031b071c11d08dafccfcf56b16",
+      "afterSha256": "4496082b3110e189b294d1b369b8f0594e851a20d3c7bb3fe2fee064a47f5430"
+    },
+    {
+      "path": "scripts/check-formal.sh",
+      "beforeSha256": "c6f0ab82ea43cf7998144b147cd29d1d56a50ef87fbf683e8af3db0c4eb4f478",
+      "afterSha256": "f9e099865e9b68a436ea644a40f88b133b9d8a836dff2f335f0a39d1ff0b9434"
+    }
+  ],
+  "moves": [
+    {
+      "source": "formal/Benitoite/NamedRelease/Assumptions.lean",
+      "destination": "formal/Benitoite/Release/Assumptions.lean",
+      "sourceSha256": "cfc7587e361ba5f9abfe9f5e8efaad5c7f1bd9c5b79cb2afc988d0c213ffb39d",
+      "promotedSha256": "3f9c85d168678a8488829101b8b43f5a0a7f3f2956b02f760d3d6dcfec8a3cd6"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/BuiltinTable.lean",
+      "destination": "formal/Benitoite/Release/BuiltinTable.lean",
+      "sourceSha256": "b95758be9a30c79a650062d27fff1991035489fd53761e763da1514c23478495",
+      "promotedSha256": "5909139425f1a4cbe5474ff54fcc239e8a6c0dc692ec66edb6261f74b12857a7"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Coverage.lean",
+      "destination": "formal/Benitoite/Release/Coverage.lean",
+      "sourceSha256": "9bf42663272da3657a3469e2a2dbba302a47dd6c1288f0417b528a606ede96b4",
+      "promotedSha256": "5e9f366911c725a05c844f4f674fdd31c532842c1d1b2fd5afc00bd36e8fb6d1"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/CoverageShow.lean",
+      "destination": "formal/Benitoite/Release/CoverageShow.lean",
+      "sourceSha256": "969789b34b9406b57d5af75936e48155d7c6338ab1f095d99f6b7a57834c84af",
+      "promotedSha256": "d405e8aa8d920885c9dd4f529af9892b23f8ac3014d9913f3d9337ba2195a49a"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Examples.lean",
+      "destination": "formal/Benitoite/Release/Examples.lean",
+      "sourceSha256": "e8353ec2d6999c8c6b4ef1a9142741f110629a728e304510b29718a2fac60330",
+      "promotedSha256": "49881428c11ae31c23b60edf851dabe39cb6b37b5cf284cd5c5266b9976e09c2"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/Basic.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/Basic.lean",
+      "sourceSha256": "b6fba5d5b128fed0a572081d74a971dcb303f19146090d330eb860da32ba4de4",
+      "promotedSha256": "53de43ab9e94558cce75540b0f6f3b573f19181672c92fe5a6d3ce273ba8494e"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/Canonical.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+      "sourceSha256": "10c5a075dd954ceb605dddbeb7693d1ef86125e09dc422b21d45cd6c6e3d69d0",
+      "promotedSha256": "232e1b935d89710914a4c613abe5d042b9c40dc034459f3ed024352e398d2381"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/Closed.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/Closed.lean",
+      "sourceSha256": "4b0976f2d560c7e9fd92f346151e99567ef9005294c681ffececccf3adc4924c",
+      "promotedSha256": "dc2e28c6c90a4e516b1a051d2a5dd65f5947899620acd7757c6862f7eb2c31d5"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/ContLemmas.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+      "sourceSha256": "1f0da8d35c6936ed87de14d6ce63bc7ddeb4dbd26f257bf276f4ca906765607d",
+      "promotedSha256": "bb4e1b20df2434257d587b06c7d15dd3ee2bed9bc6abcad93f5b81810b873f79"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/CoverageRuntime.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/CoverageRuntime.lean",
+      "sourceSha256": "a2132c9514905c563ed1e297f41935041364bdb70de9a9d7b92f77c0207245d2",
+      "promotedSha256": "eeb9a6b186d69c7ae79938eab7c4d2429a1b6a2239d67f126ffad4e26e4c6d1a"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/Dict.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/Dict.lean",
+      "sourceSha256": "707351db0c5d41de10c10109ad0d735575fbaa2b760fbc891d88be8d42b382f0",
+      "promotedSha256": "96bb9ce079a4d753dc065c51e490b559bad1a5356ad40624ace70fa9795a8196"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/EffectSound.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+      "sourceSha256": "42f73175676dbc40a09058d6eea2b2c090d23eccccd9b5a3a6daf3d961d67e0c",
+      "promotedSha256": "a952ca41e656afb7e4131b19f310511a9e099f7bc2535f84195afda9edb665e4"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/Inversion.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+      "sourceSha256": "bf75cef625fcaec4d0b510d4eebcb73de4a0dc72b7751f19e48e10c0a4817f7f",
+      "promotedSha256": "04b2bc1ef62b7ddaa7b9ccc9d3e285b91dda0105e5b12db0394f7887e68ed381"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/Names.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/Names.lean",
+      "sourceSha256": "cfc69ea9b5652885fe9790f444512490bf54fdc214ffda25b8987041f16ebeb2",
+      "promotedSha256": "88bad88a504efe21f67666bbbf5b16ac9f0fcf577a7fd4f8b6c0d81288ce7cba"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/OuterC.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/OuterC.lean",
+      "sourceSha256": "4d046fd8b7968819b04ffc4b1ab5b1402eac03fb3adfb10b15890b73b15589e2",
+      "promotedSha256": "999e47ab78e34afb4764376a2da4ac235abf402fab92c72845fcc9447e0013bf"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/PresBase.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/PresBase.lean",
+      "sourceSha256": "22d631c800f9d69d3bb2c0dcbd397b9175558223817f8958df98407fc0be20c3",
+      "promotedSha256": "b74985908255590bda8ade90df38ea11ad1e1287d34af80b41e748dcae1b7f7c"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/PresHelpers.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/PresHelpers.lean",
+      "sourceSha256": "1a09dbb2c1334bb87c3884fb956900a048c3df132b3d626cbe49371b9f27f037",
+      "promotedSha256": "501a4272b9f143e7ac662ece341968ee2c82a74ab3522ab2acca3b731b89d239"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/PresMain.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+      "sourceSha256": "c64cd3f0b4d907f14555396abb8c30afd98938d87830f5abb143d6b1dd3913af",
+      "promotedSha256": "d9784bbec475a5bb81bdffb5d300d536369878038da7d77ccdefd11e23617d32"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/Preservation.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+      "sourceSha256": "ad6ada8e5fb0737e0c77e1ba727319442c677b3a14e58207ca72f2e1dc4fa748",
+      "promotedSha256": "a5ea42c7649627c85f4ff3b346fcae7cce80d98e4345761e5e7f22699db4f1b8"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/Progress.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/Progress.lean",
+      "sourceSha256": "f4071676372f02ac046f562b14faf17d2cba0f5b26c5ed356bcc89a1a1209026",
+      "promotedSha256": "cb5a442fe150a2c9cbcd443bee2f2c6897c961980f2b6b8f0b956de7384f26f0"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/Regularity.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/Regularity.lean",
+      "sourceSha256": "decfa4a37c0df54469934d33c78d59c53680a420fed01e0325e76f721a55af80",
+      "promotedSha256": "ff163a1168797983c72820f486221cbc57aca630cf9af53cfcd85617802ad1f9"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/Rename.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/Rename.lean",
+      "sourceSha256": "1d67455474033bbab87fa75813d95e15d26c0f9bd6438b8910d3bd4cf03bc1cd",
+      "promotedSha256": "d93fffb7c10933ce2b8f42e607f7b776db07888376b95f2b46d2a6c17ff770c4"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/StepSound.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/StepSound.lean",
+      "sourceSha256": "f6f67a89028508f36e1d3127e3693936a67c5b2eb14a596bbb59cb91ef9d3df2",
+      "promotedSha256": "3bb038f5ddd6d8683cffa2e7cd31d4bc40c05248b715faedca5898df3d3936eb"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/StoreLemmas.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/StoreLemmas.lean",
+      "sourceSha256": "16b4b34c30a27ac0169502aad30d0d53b3ac22b21f8b416b906bf2654d2c7d24",
+      "promotedSha256": "1f59362d9411982bed908976184b0a9b8a07149a6b9e2033479ab74f739f8a88"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/SubstTyping.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/SubstTyping.lean",
+      "sourceSha256": "a35ad42405cde81698e9e62a3c620ce7b6306c7a8dc6dfe85cc8f12966d3aa97",
+      "promotedSha256": "ef4ea6389fd78d6ef34fdcc987e01e4625c0a5f6a1dad2930c7aec7bbd0ed91d"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/TyLemmas.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/TyLemmas.lean",
+      "sourceSha256": "45e474013ec6ad4cdaf3badcd8a2528bb2d8642a96aa6865b046e3628fd84a81",
+      "promotedSha256": "ab8d6115bef827ef40cbf31e60c7e59c38a0ee84e3aaa507ea2ea4feee9426f2"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/TySubst.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/TySubst.lean",
+      "sourceSha256": "0e27f1b5cf2832562a5b65608f7facceb24cf33f9038c020c8dbcbf15324f420",
+      "promotedSha256": "70256fba0d4f7a190807e00197b408fd38345f29da3630c0a32c7929a663f912"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Lemmas/TySubstMain.lean",
+      "destination": "formal/Benitoite/Release/Lemmas/TySubstMain.lean",
+      "sourceSha256": "43f3bd869a918dfb4be7cd678b5b644cfe02d786438f94314e65d0261f2e0738",
+      "promotedSha256": "c3edaa11a0358ccbde5b66d4d9b922f4e96532189e64ce5c37c53d9c547bc2be"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Model.lean",
+      "destination": "formal/Benitoite/Release/Model.lean",
+      "sourceSha256": "8635e447f96874ce4412fce811fcc0e694115deaf09abb4ba93a396794771e48",
+      "promotedSha256": "efcbb8d3d2cb5a81fce0aebff6c46a0f27e63a52999c23bd81e3da4b83e87d03"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Semantics.lean",
+      "destination": "formal/Benitoite/Release/Semantics.lean",
+      "sourceSha256": "de8f2196d52438eca24e50240648e19ae18426a504da6b5e84d9cf5a00915593",
+      "promotedSha256": "a4a2855b9caae7fc256839d09362d8288fd32edab06a1e38753d0100acd67006"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Subst.lean",
+      "destination": "formal/Benitoite/Release/Subst.lean",
+      "sourceSha256": "9bcd9d7dc1ee5e9075c9edcb51eeb2d29875e79cf32157ca9d7424cf09fa65b0",
+      "promotedSha256": "2b756a0b68030a70ecb289e2918551d456afee48d6e1ae4446c77ccce6a20464"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Syntax.lean",
+      "destination": "formal/Benitoite/Release/Syntax.lean",
+      "sourceSha256": "57e4392ab8ea865fe0e698ea683e50c59fee66031b87e2d2a999146cef4fc19e",
+      "promotedSha256": "71fc33844faa5cfff06d4fe1b3c008c1abdc5b7de22a9831a041a85f12389bea"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Theorems.lean",
+      "destination": "formal/Benitoite/Release/Theorems.lean",
+      "sourceSha256": "edf8c3fb0ae71eec7d28cd603d2bce6e91494a40c810b5d53a94bd48b74173fe",
+      "promotedSha256": "9d99ca03debaceb3c71dc86808b21a1278fb9a5550e66a411339378936681a12"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/Typing.lean",
+      "destination": "formal/Benitoite/Release/Typing.lean",
+      "sourceSha256": "b93f17f3df582e85c311fba6e7481ae04dc468b8c8bcbecfc2db246d79c6cbf0",
+      "promotedSha256": "36165b9673ff806ec8e3190f6617af9dead70251f003950b47bfe8b1f2b90edd"
+    },
+    {
+      "source": "formal/Benitoite/NamedRelease/WellFormed.lean",
+      "destination": "formal/Benitoite/Release/WellFormed.lean",
+      "sourceSha256": "7ed7391ca912980245a34875d1f1321ace8c474b9d062c9861d8acbfb60e0b1a",
+      "promotedSha256": "666c13320dce3965c1e44549056c797a58a530b8bd94cd76444bed0d4ef5654c"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Check.lean",
+      "destination": "formal/Benitoite/Surface/Check.lean",
+      "sourceSha256": "2f11099e631fb5da49bd94b97c12c18b8ed9e064364eb7d93f56e091083a3be4",
+      "promotedSha256": "37324fdb16959ebddf3199504b435471a25bf1f64fc23034e766c70a873bf84b"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckCounterexamples.lean",
+      "destination": "formal/Benitoite/Surface/CheckCounterexamples.lean",
+      "sourceSha256": "87cb3960827363b83281e35b47086782c11b2a5cb9bf6fc7eacd7ae82e78579e",
+      "promotedSha256": "b1e832b8adeef92f2a20159d435bc71400a2b892b109dbdb1f56b802316bcf2a"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckDictSupport.lean",
+      "destination": "formal/Benitoite/Surface/CheckDictSupport.lean",
+      "sourceSha256": "0ca92aa846c9b77874f5e284aa21b954c9668b3540dbbe8bd83143d1968268d1",
+      "promotedSha256": "1c823f1462e9848883e5e51d19dd0dfb0c1553a82c70f2a1aa47dff89cf0cfad"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckExamples.lean",
+      "destination": "formal/Benitoite/Surface/CheckExamples.lean",
+      "sourceSha256": "2704f2cd47d2fe08dc467c725c6cb430d63a67d89d11a060c0a47d999a6e74dc",
+      "promotedSha256": "0ae824c9f6c616c0a7d007c91d46fabd754cf926bbb9918b5f8de362ba862156"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckInduction.lean",
+      "destination": "formal/Benitoite/Surface/CheckInduction.lean",
+      "sourceSha256": "a9b40ec8db5a17b89557968a8bac0a3020bf674d05cb50669d6fdb677e88b903",
+      "promotedSha256": "f5762b88669b1bd34294e8e4b0a4e7e4d10e3b5546313fb8a15d6801beaeb0ef"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckLemmas.lean",
+      "destination": "formal/Benitoite/Surface/CheckLemmas.lean",
+      "sourceSha256": "ab84b9d315d3e8395ccc054e97a61dc6b6947f793bbfce00444983f9fe9b5f8a",
+      "promotedSha256": "972bb4828c015d693a9f52ea7590ddfbf5b4c434a24c95101f2d40f7cd2b64e1"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckPatterns.lean",
+      "destination": "formal/Benitoite/Surface/CheckPatterns.lean",
+      "sourceSha256": "9a8d254cfffd21f682b2df7f04cf002861f083027d716baa0d835cd4f4cf041e",
+      "promotedSha256": "c852fe1d6239e3355fb203f8dbc83970c65b7e9131292a7320725c82503be659"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckPredicates.lean",
+      "destination": "formal/Benitoite/Surface/CheckPredicates.lean",
+      "sourceSha256": "d895dff0a8ea716eb3a880e5e49956dfabf6250bd24809a10adde166a7cf6ce1",
+      "promotedSha256": "f2ede98f43b4ea6bd3e971891e7485d2b134ff8eb04f9922dd7e595cefc8a5d7"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckProgramSound.lean",
+      "destination": "formal/Benitoite/Surface/CheckProgramSound.lean",
+      "sourceSha256": "62a0b4807138a5aba5711359dbec8e01a54f0db288107573f8610b92821b47ee",
+      "promotedSha256": "e6b2cc1b810a1d3448204c896f0497e60f6eb35fdd295f9d76159c61d2ef5326"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckSound.lean",
+      "destination": "formal/Benitoite/Surface/CheckSound.lean",
+      "sourceSha256": "a2dd2d5b9e4c7e8e97148ac506eb9bfa1a1e2f6f0d57c90b933e25ffa028c51f",
+      "promotedSha256": "d8eb9704e2b8058fa35010a80c975a89d78291c3d7e32a9b96223b472097a4ef"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckSoundBasicExpr.lean",
+      "destination": "formal/Benitoite/Surface/CheckSoundBasicExpr.lean",
+      "sourceSha256": "f9f77011b9e763f60bfe474034186a46b1db8552297d31ac4a434ebed674df1f",
+      "promotedSha256": "c60e862a6ef1d607565d93fd4973a4b298bfcfdbf0c3d29b4149a741527cd207"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckSoundCalls.lean",
+      "destination": "formal/Benitoite/Surface/CheckSoundCalls.lean",
+      "sourceSha256": "57bab88270464eced34050d969217490630a849c5b24fc35c5f11bbc0b27080b",
+      "promotedSha256": "801259b5ab9432d3cf539b9a7f44046a94b3cf7ea1f83deaa78ff42864d7b2a4"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckSoundCollections.lean",
+      "destination": "formal/Benitoite/Surface/CheckSoundCollections.lean",
+      "sourceSha256": "17ff4fdfdaf4c383b061da7ae94d6688d735fa9c01361d84893d619b222e1b57",
+      "promotedSha256": "5d369b541913f4e9aac2d831a9f86974c601b0d14f3dccbc521ce5aec2ac4fb4"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckSoundControl.lean",
+      "destination": "formal/Benitoite/Surface/CheckSoundControl.lean",
+      "sourceSha256": "07904deb7e448e2b3bb064e8978e912cbc548e9f1a067a113a551e8a00974d52",
+      "promotedSha256": "a98d6ab22d3238325363706c4046c3f0dd82d8ae1a8bdc6717fc09a0673d2098"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckSoundDicts.lean",
+      "destination": "formal/Benitoite/Surface/CheckSoundDicts.lean",
+      "sourceSha256": "e0c89b1bf786af190ec7cfda58b09aacbfd3ef9547a6449a0233c392cacf41bd",
+      "promotedSha256": "f574a818400136c1a8bd33bbddb36f9eac142ecf358df885483183ed963615b0"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckSoundSequence.lean",
+      "destination": "formal/Benitoite/Surface/CheckSoundSequence.lean",
+      "sourceSha256": "cfee8ab7bf13c07c80af3c1acda5e24df046f70c938727f28cdc6bc1a3d2d40b",
+      "promotedSha256": "43c5365b93d843d8c7684c146c94651f6d487d49ca2b3706a60967585b107161"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckSupport.lean",
+      "destination": "formal/Benitoite/Surface/CheckSupport.lean",
+      "sourceSha256": "eda390a4b95e31a04962e4c7d60a314cf5cb73144088a4a837e43533bdfa9669",
+      "promotedSha256": "50416d6b206ac7235f34af412daa072e7e6a0a13dbcd6907958dcac83a426063"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckTables.lean",
+      "destination": "formal/Benitoite/Surface/CheckTables.lean",
+      "sourceSha256": "22aa42b7a70ef25c23a512cd2e5130da1648f96f4f12d7f6ae758beda0d322bb",
+      "promotedSha256": "102cb9ac91cc60aac9fb9b82f69c39875ff3d39599b6fa8fb85964f9ee06749e"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckTablesSound.lean",
+      "destination": "formal/Benitoite/Surface/CheckTablesSound.lean",
+      "sourceSha256": "858bd20177f1d24ce7c6270c12af3c7fdf6e285542d36e1421d27d059d185145",
+      "promotedSha256": "81c0873370df1462c45f2913d9a82c7f14de550df2e62842794f04a5f01ff9eb"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckTools.lean",
+      "destination": "formal/Benitoite/Surface/CheckTools.lean",
+      "sourceSha256": "359e2491e2de0310100a65bf7a636661db0566fb56d38ed93a1078e992d76aa2",
+      "promotedSha256": "5ed9e608751b6431c67c7f118602faccadca5d147ea5c869d6b5a21fcd812ded"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/CheckToolsExamples.lean",
+      "destination": "formal/Benitoite/Surface/CheckToolsExamples.lean",
+      "sourceSha256": "731d9dc17741ed61427f8b7ee4bb55b1f33c8de3e7b312d72c98f03d6289f157",
+      "promotedSha256": "eb1f621c5e5e646a912dec2ba0e2605df6d49fa3521c62cb5dab7a28241f75fc"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Desugar.lean",
+      "destination": "formal/Benitoite/Surface/Desugar.lean",
+      "sourceSha256": "e3f0afefe94f78505758b320ca64a147e1e10456c73b12cd26d3380a1f835d5f",
+      "promotedSha256": "978049a0eab1776cdaff5af6fb9793a743b058943bb98474f2551f412a262eb6"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Examples.lean",
+      "destination": "formal/Benitoite/Surface/Examples.lean",
+      "sourceSha256": "6638d44101af9e29f73bbe2979f92dfd7d1095a9db4e075bb091335f350b0848",
+      "promotedSha256": "27a3ac45e490bdf57f691af435be44fd66ee964ea2a1ca8d3cc57e7d5d9acea8"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/BlockSequence.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/BlockSequence.lean",
+      "sourceSha256": "2ced64ee8460ab8b88fa17818b2d45efde1d4531efddbecd02c6180dd66b6046",
+      "promotedSha256": "e157770e3150851ec7de26b17902d952f8f1221c3da2de6e8118d6608701b817"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/CallHead.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+      "sourceSha256": "ff8212a861a79ed85b97463f9b5beca6b5bfd3b474c94e47838d7fd563e362c3",
+      "promotedSha256": "31cfd85518b801c5e56ed8d1f7d6446d9d93d986befbf8a74f3535427dc3affd"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/Calls.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/Calls.lean",
+      "sourceSha256": "b1c4ad6ed2676b5fc12391ac6325346a221991565260eab281be6dcb2cf9239e",
+      "promotedSha256": "79092ea011269db7aba9d9c8923e6cdc4e76cd338557741f463963ad1dcf7410"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/Dict.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/Dict.lean",
+      "sourceSha256": "4b2824703d6a17667d51d0302ec163cdd3509023d049093fc4290d4133f1eb61",
+      "promotedSha256": "e4d992544a373e76db9d3b0696de02be082539b1f4667c38afb76279c249a9fc"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/DictSupport.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/DictSupport.lean",
+      "sourceSha256": "aeb0a769aba24fbcf7693fc3f5ecf5e75f217ef4ab01b7b74db79c4ea4127d5b",
+      "promotedSha256": "e296e32177e6f79bfdc58d42fa944e5a4ec6e5f4b69fb3f7b0c769834b6b62a2"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/Extensions.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/Extensions.lean",
+      "sourceSha256": "72a85a06b2518d671010adba72b76658703b8cb0f3f7db15b2dd64c4ff31719b",
+      "promotedSha256": "d2b260cb3e262a82b8cb1c453b5d793f93b53eac933013e4198916a838362f0f"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/ExtensionsScoped.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/ExtensionsScoped.lean",
+      "sourceSha256": "92576e8ff78f216caecd9dd2634786f7ede800fdde4452f28dfb12ffed799242",
+      "promotedSha256": "b2ccc50460a223f78354b9743b643c97f4a5b6fc3e3e98bc315153862a42a85b"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/Invariants.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+      "sourceSha256": "84de1ca09c5a543ac32b9debf8d0df5d09b6067aad62776b7dac9f8578936fb3",
+      "promotedSha256": "91d6cc46ad64e668d518131562ba51d7c8e219403d0ad142534f08d754e514d8"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/PatternSupport.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/PatternSupport.lean",
+      "sourceSha256": "89f730978b3df6b0d82e6921ebdbe9c5089463fb9ddb084e7b0b0ef4e2394e06",
+      "promotedSha256": "aebc30f5d0a99c129eb715a5e7d6c7a1fe63903ce337e53dd87de96ebb9d988c"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/Patterns.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/Patterns.lean",
+      "sourceSha256": "f880cc57b850e5b673d9e70e47392b8d75690265c02b9bf70f25a5ccca6c3978",
+      "promotedSha256": "56dbbdd5bc3ec3bafcf36eca1df5b5c207b0f16405c7bc36121f2016b27f964a"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/Program.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/Program.lean",
+      "sourceSha256": "1e19cdb8c0aa23efd0f0f9a6deed57f35f5675294635564d66546269b3fc2e41",
+      "promotedSha256": "abe38c06b24487055a103bacee1b3682c990d9073c7834c544b25545085b2424"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/Records.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/Records.lean",
+      "sourceSha256": "61d84319b6d387e885845bb47c53546793f3f3b4e84a5b2783e3ed0b51e39a95",
+      "promotedSha256": "70a51d6f3c9753fd5d41970b17398775bb88af69092039ce16ddd7c4290df490"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/ReturnTry.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/ReturnTry.lean",
+      "sourceSha256": "55fbabee01c092cf6d54907441da00902e5d69488abedf259650578cdf0c86f4",
+      "promotedSha256": "6463f89cb4f338daa116bc5c201bd5fb38ad5cec1216e57ebaf20da3d74cfa5d"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/Scoped.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/Scoped.lean",
+      "sourceSha256": "e48318fe2aaf01d93deda38675d4621428a64c201a1b295e522442372d665480",
+      "promotedSha256": "d64cb1b007e6c08a3b7125ae5735e06360d93adc4d463e6d0a7ff3f231242087"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/ScopedRename.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/ScopedRename.lean",
+      "sourceSha256": "3bdefe6cef0fa40d5b6a9499949dc80d62662bb2bac1ca267b6f966d01613303",
+      "promotedSha256": "d70b700d9c9b28e95bea1a40ce0d4b57398c5093c5aaa06178250a46e2f36a4e"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/ScopedSupport.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/ScopedSupport.lean",
+      "sourceSha256": "9f43160a17b7d85764cb2181f286194f060b8e5a8bb5382c154f116400ecd138",
+      "promotedSha256": "7734432e81fa339bf0c3d8d2052170cb3463987b6555b5e981b841675bdd344b"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/Sequence.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/Sequence.lean",
+      "sourceSha256": "f792b563e96180486053790b01dc3b4d31e7deaf3459302ee4d3d4b88851b69e",
+      "promotedSha256": "d7a474641884d3d7c7d7e9661fc5ac0938fc9d43e116e67e895f27a0a7459c1a"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/ShiftClean.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/ShiftClean.lean",
+      "sourceSha256": "de7b38bfa39cbed8113c2b1c151cc7e953faf379e15f90b1b4ae34d27e7cb2d5",
+      "promotedSha256": "ebdeec8227a31d3d8cf33ad994cf4e41d1e18a1e1917464088a1c21a545a6360"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/SubstClean.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/SubstClean.lean",
+      "sourceSha256": "7d9fd758cd18fd2c4ef3ca94af2ed427e0f37d25c2bc8f3623339f133950eaad",
+      "promotedSha256": "3bc03ad0fe0bc166e3c012d38932997591545abf923599eebc65a99516a741eb"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Lemmas/Typing.lean",
+      "destination": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+      "sourceSha256": "c2b18f90c36fb781441c52704bfc3570a973a79eba984ea99b1e12118c543251",
+      "promotedSha256": "8688a05d9b970149468c0013ee47587b4a7b81a6df60f5ea7f9c67d080efb2db"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Syntax.lean",
+      "destination": "formal/Benitoite/Surface/Syntax.lean",
+      "sourceSha256": "5ac82435701ac0a1fe0a37c589ced6aa72a756b35bde25616f1e257dc1838958",
+      "promotedSha256": "662688512526e83d9f62b33de57ea36bcff1c941192fbd24e15846378f88c05d"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Theorems.lean",
+      "destination": "formal/Benitoite/Surface/Theorems.lean",
+      "sourceSha256": "2d29ce617b4baa4b8ae4a0b18bcb499a46f488fbbe3c677b0404ad1ba5d880ab",
+      "promotedSha256": "70adb57e2d03432449b13f5d9f4a1f5f3a9d0c4a0f223ff49515ca7879033d9f"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/Typing.lean",
+      "destination": "formal/Benitoite/Surface/Typing.lean",
+      "sourceSha256": "4c0fc4472a3d764e6d6b5641651aa48b8b87cc44d67d94a476c8bc00c6579a8c",
+      "promotedSha256": "60f1eebc53c28ab102a617daf58850722f51cb262d3e1c3fb120793fb08d7c37"
+    },
+    {
+      "source": "formal/Benitoite/NamedSurface/WellFormed.lean",
+      "destination": "formal/Benitoite/Surface/WellFormed.lean",
+      "sourceSha256": "798f051b392717ecaefca1480ffaeca54c775bd57f2b798d2d12d0bc827df4de",
+      "promotedSha256": "f6acd0b454cf4189bf6b4aed38296564cbe32617de17af98730f21dbfad724bb"
+    },
+    {
+      "source": "formal/Benitoite/NamedExchange/Builtins.lean",
+      "destination": "formal/Benitoite/Exchange/Builtins.lean",
+      "sourceSha256": "a70d96a221bde6d2f56011df48f8d13dcf9f85e12d6ac03c62212a15512a3807",
+      "promotedSha256": "c3e900c932bd3e84c3e39473779f5f2424ef5aca13d97ea9a9d12d81ec2b6d53"
+    },
+    {
+      "source": "formal/Benitoite/NamedExchange/CheckInput.lean",
+      "destination": "formal/Benitoite/Exchange/CheckInput.lean",
+      "sourceSha256": "74ddec228bd388729710c845cbc41d4088ee456552027e320b67a1b217cfa156",
+      "promotedSha256": "3d47eb13ba886cc65104af3b6ffb8875e8e4d55a6851d475aaeb444330fc1e31"
+    },
+    {
+      "source": "formal/Benitoite/NamedExchange/Convert.lean",
+      "destination": "formal/Benitoite/Exchange/Convert.lean",
+      "sourceSha256": "534e3ecd58a3a4b9c76c552632e185c41b5c6cba1542fe4b2ac471ebd6eb8a11",
+      "promotedSha256": "4f2dd53b1a579e31c04a5fd5a347508eb6a79525f54f45a51ba6977944d443e9"
+    },
+    {
+      "source": "formal/Benitoite/NamedExchange/Syntax.lean",
+      "destination": "formal/Benitoite/Exchange/Syntax.lean",
+      "sourceSha256": "4ae69d5b6e5ae685474dc0a720a3ec1491a89247c424a0dde64d73f2ac6861b7",
+      "promotedSha256": "98ab293938c138aeb51040b6796bae0d686efd0e0b565ba82f7c098a68adb184"
+    },
+    {
+      "source": "formal/NamedDesugarDiff/Main.lean",
+      "destination": "formal/DesugarDiff/Main.lean",
+      "sourceSha256": "665b70d7f45edd1c45c81db67ec229b0a4c6eb53b8a618be54c391b519192935",
+      "promotedSha256": "bd8c40203362d304573b996281087e29a2ed6abb12da49e59434a3f77f1b7af2"
+    },
+    {
+      "source": "formal/NamedBuiltinCheck/Main.lean",
+      "destination": "formal/BuiltinCheck/Main.lean",
+      "sourceSha256": "d527f8c906cf2088d431be5360e7595a77399bdd3d1be009784a294887c3a0b7",
+      "promotedSha256": "0f92a7b4bfd9bb60f23dc08ca2e67334dd97b2eb86cc4e4242deca63c81ba7a7"
+    },
+    {
+      "source": "formal/NamedCoverageDiff/Main.lean",
+      "destination": "formal/CoverageDiff/Main.lean",
+      "sourceSha256": "f631087f16a2770581e9c412e0486a0160033292a3ebf312b1b1959fb761fc1c",
+      "promotedSha256": "3340ab56dc10d721a31787ae7983514fb61621bcefcb39b9dae82547989efb13"
+    },
+    {
+      "source": "formal/NamedCoverageProgramDiff/Main.lean",
+      "destination": "formal/CoverageProgramDiff/Main.lean",
+      "sourceSha256": "b22a1ab699cdcf4d93115c757d453f77af654e2b548bf9039d7a447bc25feb87",
+      "promotedSha256": "00f3c3fe4325e46325e159966d3cbf159126973507efd0da345e9e335fcd204a"
+    },
+    {
+      "source": "formal/NamedSurfaceCheck/All.lean",
+      "destination": "formal/SurfaceCheck/All.lean",
+      "sourceSha256": "fb868f18fa7be372539c8e18314c39b5c948d2f1de3ef2e0cb122c00d7fd5900",
+      "promotedSha256": "c9040d09339c160bfa1f673cf10735a22f34e8e1c12d2e0eb8a3f87b4b5ad286"
+    },
+    {
+      "source": "formal/NamedSurfaceCheck/Batch.lean",
+      "destination": "formal/SurfaceCheck/Batch.lean",
+      "sourceSha256": "3b69fd4e1bdf61cdbbeeca8a5ed8f5a9dfe13f1889404cdb19378533d2905fe1",
+      "promotedSha256": "ce3bff57483415e0de20d3b0972ea80f3f63d85a077496a87df7f07db4b53e4f"
+    },
+    {
+      "source": "formal/NamedSurfaceCheck/Main.lean",
+      "destination": "formal/SurfaceCheck/Main.lean",
+      "sourceSha256": "057e4f74ca8d67a5ae97ed78a8a0af7b73246adf0602c7329fd7ab41b65625d8",
+      "promotedSha256": "1c47593fb7e9a6814ad36848a22b552c6d434ceae75920e9f4364d47713bfe6e"
+    },
+    {
+      "source": "formal/NamedSurfaceCheck/Validation.lean",
+      "destination": "formal/SurfaceCheck/Validation.lean",
+      "sourceSha256": "fd51e9f18edc22005e9fdc42b0ba063e2848b01bf9351920a984afd877066532",
+      "promotedSha256": "fd592537f3e6106d5c3a8edb743c1c293c741ad03a962657e6c69bcd485424ee"
+    },
+    {
+      "source": "formal/NamedSurfaceCheck/Walk.lean",
+      "destination": "formal/SurfaceCheck/Walk.lean",
+      "sourceSha256": "4ae404119dc19bc40208afa0405f9817842153af40dda0194621203f6008118a",
+      "promotedSha256": "589890b48de53b9a35c04b3536e12f5a4b4f9677e437d8a8b45001019cb408ee"
+    }
+  ],
+  "stageACoreUnchanged": true,
+  "temporarySources": "retain files; remove registrations now; delete in N34b"
+}

@@ -1,9 +1,11 @@
 import Benitoite.Release.Lemmas.PresHelpers
+import Benitoite.Release.Lemmas.Canonical
 
 /-!
-# 保存（段階 B）
+# 保存（契約名を持つコア）
 
 型が付いた状態から遷移した先の状態も型が付き、継続の末尾で許すエフェクト Eb は変わらない。
+契約名を含む型付けから、呼び出しと操作の保存に必要な条件を導く（設計書 01-12「型付け規則」）。
 -/
 
 namespace Benitoite.Release
@@ -12,23 +14,23 @@ variable {P : Program} {B : Builtins}
 
 /-! ## 呼び出しの型付けの取り出し -/
 
-theorem Ty.Le.fn_fn' {ps r ε as b ε'} (h : Ty.Le (.fn ps r ε) (.fn as b ε')) :
-    ps = as ∧ r = b ∧ Eff.Sub ε ε' := by
+theorem Ty.Le.fn_fn' {names ps r ε names' as b ε'} (h : Ty.Le (.fn names ps r ε) (.fn names' as b ε')) :
+    names = names' ∧ ps = as ∧ r = b ∧ Eff.Sub ε ε' := by
   obtain ⟨ε'', he, hs⟩ := h.fn_left
   simp only [Ty.fn.injEq] at he
-  obtain ⟨rfl, rfl, rfl⟩ := he
-  exact ⟨rfl, rfl, hs⟩
+  obtain ⟨rfl, rfl, rfl, rfl⟩ := he
+  exact ⟨rfl, rfl, rfl, hs⟩
 
 theorem inv_prim_app {Ψ R b ts es ws a ε1}
     (h : HasTypeC P B Ψ [] [] R (.app (.prim b ts es) ws) a ε1) :
     ∃ s, B.sig b = some s ∧ ts.length = s.ntys ∧ es.length = s.neffs ∧ s.admits [] ts ∧
       HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) ∧ Ty.Le (Ty.subst ts es s.ret) a ∧
       Eff.Sub (Eff.substRho es s.eff) ε1 := by
-  obtain ⟨as, b', ε', hf, hargs, hle, hsub⟩ := h.inv_app rfl
-  obtain ⟨s, hs, hts, hes, had, hle2⟩ := hf.inv_prim rfl
+  obtain ⟨names, as, b', ε', hf, hargs, hle, hsub⟩ := h.inv_app rfl
+  obtain ⟨s, hs, hts, hes, had, hnames, hle2⟩ := hf.inv_prim rfl
   rw [fnTy_eq] at hle2
-  obtain ⟨hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2
-  subst hps hr
+  obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2
+  subst hnames' hps hr
   exact ⟨s, hs, hts, hes, had, hargs, hle, hsub2.trans hsub⟩
 
 theorem inv_op_app {Ψ R o ts ws a ε1}
@@ -36,11 +38,11 @@ theorem inv_op_app {Ψ R o ts ws a ε1}
     ∃ od, P.ops o = some od ∧ SatAll B [] ts od.tparams ∧
       HasTypeVs P B Ψ [] [] ws (od.params.map (Ty.subst ts [])) ∧ Ty.Le (Ty.subst ts [] od.ret) a ∧
       Eff.Sub (Eff.substRho [] (Eff.single od.eff)) ε1 := by
-  obtain ⟨as, b', ε', hf, hargs, hle, hsub⟩ := h.inv_app rfl
-  obtain ⟨od, hod, hsat, hle2⟩ := hf.inv_op rfl
+  obtain ⟨names, as, b', ε', hf, hargs, hle, hsub⟩ := h.inv_app rfl
+  obtain ⟨od, hod, hsat, hnames, hle2⟩ := hf.inv_op rfl
   rw [fnTy_eq] at hle2
-  obtain ⟨hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2
-  subst hps hr
+  obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2
+  subst hnames' hps hr
   exact ⟨od, hod, hsat, hargs, hle, hsub2.trans hsub⟩
 
 theorem Ty.subst_tvar0 (t : Ty) (es : List Eff) : Ty.subst [t] es (.tvar 0) = t := by
@@ -145,11 +147,11 @@ theorem pres_op_common (hwf : P.WellFormed) (hb : B.Assumptions P)
     | some x => exact absurd hκ (hσ.2.2.1 _ _ h')
   have hlen : ts.length = sg.tparams.length := hsat.1
   have hretw : Ty.WF 0 (Ty.subst ts [] sg.ret) :=
-    Ty.subst_wf0 [] hts (by rw [hlen]; exact Ty.VarsIn.wf _ hsc.2)
+    Ty.subst_wf0 [] hts (by rw [hlen]; exact Ty.VarsIn.wf _ hsc.2.2)
   have hparw : ∀ y ∈ sg.params.map (Ty.subst ts []), Ty.WF 0 y := by
     intro y hy
     obtain ⟨z, hz, rfl⟩ := List.mem_map.mp hy
-    exact Ty.subst_wf0 [] hts (by rw [hlen]; exact Ty.VarsIn.wf _ (varsInList_mem hsc.1 hz))
+    exact Ty.subst_wf0 [] hts (by rw [hlen]; exact Ty.VarsIn.wf _ (varsInList_mem hsc.2.1 hz))
   let x : LocTy := .cont (Ty.subst ts [] sg.ret) t εc Rh
   have hxwf : x.WF := ⟨hretw, htw, hRh⟩
   have hsub' : StoreTy.Sub Ψ (Ψ.set κ x) := StoreTy.set_sub (Or.inl hΨκ)

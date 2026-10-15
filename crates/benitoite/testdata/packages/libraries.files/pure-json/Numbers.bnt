@@ -5,15 +5,15 @@ import Text
 
 /// 文法を確かめ、字面で数の種類を決める。
 public(package) function read(input: Scan.Input, start: Integer) -> Result[Pair[Json.Value, Integer], Json.ParseError]
-  bind first <- if Scan.byte(input, start) = 45 then start + 1 else start end if
-  bind b <- Scan.byte(input, first)
-  if b = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
-  if not Scan.digit(b) then return Result.Error(Scan.error(input, first + 1, Text.number)) end if
-  bind stop <- if b = 48 then first + 1 else Scan.digits(input, first + 1) end if
-  if b = 48 and Scan.digit(Scan.byte(input, stop)) then return Result.Error(Scan.error(input, stop + 1, Text.number)) end if
-  bind fraction <- try decimal(input, stop)
-  bind next <- try exponent(input, fraction)
-  bind source <- Scan.slice(input, start, next)
+  bind first <- if Scan.byte(input: input, position: start) = 45 then start + 1 else start end if
+  bind b <- Scan.byte(input: input, position: first)
+  if b = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
+  if not Scan.digit(b) then return Result.Error(Scan.error(input: input, consumed: first + 1, message: Text.number)) end if
+  bind stop <- if b = 48 then first + 1 else Scan.digits(input: input, position: first + 1) end if
+  if b = 48 and Scan.digit(Scan.byte(input: input, position: stop)) then return Result.Error(Scan.error(input: input, consumed: stop + 1, message: Text.number)) end if
+  bind fraction <- try decimal(input: input, i: stop)
+  bind next <- try exponent(input: input, i: fraction)
+  bind source <- Scan.slice(input: input, start: start, stop: next)
   if fraction = stop and next = fraction then
     match Integer.parse(source) with
       case Option.Some(n) -> return Result.Ok(Pair(Json.Value.Integer(n), next))
@@ -22,26 +22,26 @@ public(package) function read(input: Scan.Input, start: Integer) -> Result[Pair[
   end if
   return match Float.parse(source) with
     case Option.Some(n) -> Result.Ok(Pair(Json.Value.Float(n), next))
-    case Option.None -> Result.Error(Scan.numberError(input, start, Text.range))
+    case Option.None -> Result.Error(Scan.numberError(input: input, start: start, message: Text.range))
   end match
 end function
 
 function decimal(input: Scan.Input, i: Integer) -> Result[Integer, Json.ParseError]
-  if Scan.byte(input, i) <> 46 then return Result.Ok(i) end if
+  if Scan.byte(input: input, position: i) <> 46 then return Result.Ok(i) end if
   bind next <- i + 1
-  if Scan.byte(input, next) = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
-  if not Scan.digit(Scan.byte(input, next)) then return Result.Error(Scan.error(input, next + 1, Text.number)) end if
-  return Result.Ok(Scan.digits(input, next + 1))
+  if Scan.byte(input: input, position: next) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
+  if not Scan.digit(Scan.byte(input: input, position: next)) then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.number)) end if
+  return Result.Ok(Scan.digits(input: input, position: next + 1))
 end function
 
 function exponent(input: Scan.Input, i: Integer) -> Result[Integer, Json.ParseError]
-  bind b <- Scan.byte(input, i)
+  bind b <- Scan.byte(input: input, position: i)
   if b <> 101 and b <> 69 then return Result.Ok(i) end if
-  bind sign <- Scan.byte(input, i + 1)
+  bind sign <- Scan.byte(input: input, position: i + 1)
   bind next <- if sign = 43 or sign = 45 then i + 2 else i + 1 end if
-  if Scan.byte(input, next) = -1 then return Result.Error(Scan.eof(input, Text.eofValue)) end if
-  if not Scan.digit(Scan.byte(input, next)) then return Result.Error(Scan.error(input, next + 1, Text.number)) end if
-  return Result.Ok(Scan.digits(input, next + 1))
+  if Scan.byte(input: input, position: next) = -1 then return Result.Error(Scan.eof(input: input, message: Text.eofValue)) end if
+  if not Scan.digit(Scan.byte(input: input, position: next)) then return Result.Error(Scan.error(input: input, consumed: next + 1, message: Text.number)) end if
+  return Result.Ok(Scan.digits(input: input, position: next + 1))
 end function
 
 // Float.toString の最短の数字を使い、zmij 1.0.23 の f64 の切替範囲 -5..=15
@@ -50,45 +50,45 @@ end function
 public(package) function written(n: Float) -> String
   bind source <- Float.toString(n)
   if source = "NaN" or source = "Infinity" or source = "-Infinity" then return "null" end if
-  bind negative <- String.startsWith(source, "-")
-  bind unsigned <- if negative then piece(source, 1, String.byteLength(source)) else source end if
-  bind exponentParts <- String.split(unsigned, "e")
-  bind mantissa <- Option.unwrapOr(List.get(exponentParts, 0), "0")
-  bind exponentText <- Option.unwrapOr(List.get(exponentParts, 1), "0")
-  bind signedExponent <- if String.startsWith(exponentText, "+") then piece(exponentText, 1, String.byteLength(exponentText)) else exponentText end if
-  bind explicitExponent <- Option.unwrapOr(Integer.parse(signedExponent), 0)
-  bind dot <- Option.unwrapOr(String.byteIndexOf(mantissa, "."), String.byteLength(mantissa))
-  bind digits <- String.replace(mantissa, ".", "")
-  bind leading <- firstNonzero(digits, 0)
+  bind negative <- String.startsWith(s: source, prefix: "-")
+  bind unsigned <- if negative then piece(s: source, start: 1, stop: String.byteLength(source)) else source end if
+  bind exponentParts <- String.split(s: unsigned, separator: "e")
+  bind mantissa <- Option.unwrapOr(o: List.get(xs: exponentParts, i: 0), fallback: "0")
+  bind exponentText <- Option.unwrapOr(o: List.get(xs: exponentParts, i: 1), fallback: "0")
+  bind signedExponent <- if String.startsWith(s: exponentText, prefix: "+") then piece(s: exponentText, start: 1, stop: String.byteLength(exponentText)) else exponentText end if
+  bind explicitExponent <- Option.unwrapOr(o: Integer.parse(signedExponent), fallback: 0)
+  bind dot <- Option.unwrapOr(o: String.byteIndexOf(s: mantissa, part: "."), fallback: String.byteLength(mantissa))
+  bind digits <- String.replace(s: mantissa, old: ".", new: "")
+  bind leading <- firstNonzero(s: digits, i: 0)
   if leading = String.byteLength(digits) then return if negative then "-0.0" else "0.0" end if end if
-  bind shortest <- trimZeros(piece(digits, leading, String.byteLength(digits)))
+  bind shortest <- trimZeros(piece(s: digits, start: leading, stop: String.byteLength(digits)))
   bind power <- explicitExponent + dot - leading - 1
-  bind significant <- canonicalDigits(Float.absolute(n), shortest, power - String.byteLength(shortest) + 1)
+  bind significant <- canonicalDigits(n: Float.absolute(n), digits: shortest, exponent: power - String.byteLength(shortest) + 1)
   bind signText <- if negative then "-" else "" end if
   if power < -5 or power > 15 then
-    bind tail <- piece(significant, 1, String.byteLength(significant))
-    return signText + piece(significant, 0, 1) + (if tail = "" then "" else "." + tail end if) + "e" + (if power >= 0 then "+" else "" end if) + Integer.toString(power)
+    bind tail <- piece(s: significant, start: 1, stop: String.byteLength(significant))
+    return signText + piece(s: significant, start: 0, stop: 1) + (if tail = "" then "" else "." + tail end if) + "e" + (if power >= 0 then "+" else "" end if) + Integer.toString(power)
   end if
-  if power < 0 then return signText + "0." + String.repeat("0", -power - 1) + significant end if
+  if power < 0 then return signText + "0." + String.repeat(s: "0", n: -power - 1) + significant end if
   bind point <- power + 1
   bind length <- String.byteLength(significant)
   return if point >= length then
-    signText + significant + String.repeat("0", point - length) + ".0"
+    signText + significant + String.repeat(s: "0", n: point - length) + ".0"
   else
-    signText + piece(significant, 0, point) + "." + piece(significant, point, length)
+    signText + piece(s: significant, start: 0, stop: point) + "." + piece(s: significant, start: point, stop: length)
   end if
 end function
 
 function piece(s: String, start: Integer, stop: Integer) -> String
-  return Option.unwrapOr(String.byteSlice(s, start, stop), "")
+  return Option.unwrapOr(o: String.byteSlice(s: s, start: start, stop: stop), fallback: "")
 end function
 
 function firstNonzero(s: String, i: Integer) -> Integer
-  return if piece(s, i, i + 1) = "0" then firstNonzero(s, i + 1) else i end if
+  return if piece(s: s, start: i, stop: i + 1) = "0" then firstNonzero(s: s, i: i + 1) else i end if
 end function
 
 function trimZeros(s: String) -> String
-  return if String.endsWith(s, "0") then trimZeros(piece(s, 0, String.byteLength(s) - 1)) else s end if
+  return if String.endsWith(s: s, suffix: "0") then trimZeros(piece(s: s, start: 0, stop: String.byteLength(s) - 1)) else s end if
 end function
 
 // Rust の最短表記が十進の中点を切り上げたときだけ、zmij の偶数丸めに直す。
@@ -96,8 +96,8 @@ end function
 // 分ける。二進の仮数が 53 bit に収まることも確かめ、近似計算で中点を判定しない。
 // 二の冪では隣の値までの間隔が左右で違うため、偶数側も元の値へ戻るときだけ選ぶ。
 function canonicalDigits(n: Float, digits: String, exponent: Integer) -> String
-  bind significand <- Option.unwrapOr(Integer.parse(digits), 0)
-  return if significand mod 2 = 1 and midpoint(n, significand * 2 - 1, exponent) and Float.parse(Integer.toString(significand - 1) + "e" + Integer.toString(exponent)) = Option.Some(n) then
+  bind significand <- Option.unwrapOr(o: Integer.parse(digits), fallback: 0)
+  return if significand mod 2 = 1 and midpoint(n: n, odd: significand * 2 - 1, exponent: exponent) and Float.parse(Integer.toString(significand - 1) + "e" + Integer.toString(exponent)) = Option.Some(n) then
     trimZeros(Integer.toString(significand - 1))
   else
     digits
@@ -105,23 +105,23 @@ function canonicalDigits(n: Float, digits: String, exponent: Integer) -> String
 end function
 
 function midpoint(n: Float, odd: Integer, exponent: Integer) -> Boolean
-  bind reduced <- factorsOfFive(odd, exponent)
+  bind reduced <- factorsOfFive(n: odd, exponent: exponent)
   return match reduced with
     case Option.None -> false
     case Option.Some(significand) ->
-      significand <= 9007199254740991 and scaleTwo(Integer.toFloat(significand), exponent - 1) = n
+      significand <= 9007199254740991 and scaleTwo(n: Integer.toFloat(significand), exponent: exponent - 1) = n
   end match
 end function
 
 function factorsOfFive(n: Integer, exponent: Integer) -> Option[Integer]
   if exponent = 0 then return Option.Some(n) end if
   if exponent < 0 then
-    return if n mod 5 = 0 then factorsOfFive(n div 5, exponent + 1) else Option.None end if
+    return if n mod 5 = 0 then factorsOfFive(n: n div 5, exponent: exponent + 1) else Option.None end if
   end if
-  return if n <= 1801439850948198 then factorsOfFive(n * 5, exponent - 1) else Option.None end if
+  return if n <= 1801439850948198 then factorsOfFive(n: n * 5, exponent: exponent - 1) else Option.None end if
 end function
 
 function scaleTwo(n: Float, exponent: Integer) -> Float
   if exponent = 0 then return n end if
-  return if exponent < 0 then scaleTwo(n / 2.0, exponent + 1) else scaleTwo(n * 2.0, exponent - 1) end if
+  return if exponent < 0 then scaleTwo(n: n / 2.0, exponent: exponent + 1) else scaleTwo(n: n * 2.0, exponent: exponent - 1) end if
 end function

@@ -1,6 +1,7 @@
 import Benitoite.Surface.CheckLemmas
 
-/-! 場合別の証明が仮定する、構文の各部分に対する検査の契約。
+/-! 対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。
+場合別の証明が仮定する、構文の各部分に対する検査の契約。
 内部の状態・環境・戻り値・経路・並びの添字を量化し、子の検査に適用できる。
 探索の型付けは要求せず、厳密な検査の型付けと原子集合の保存を同時に要求する。
 -/
@@ -103,7 +104,7 @@ def CaseHypotheses (q : Input) (parent : CheckNode) : Prop :=
 
 def CaseSound (q : Input) (node : CheckNode) : Prop := CaseHypotheses q node → NodeSound q node
 
-/-- E2b-2 の場合別の補題をこの前提にまとめる。ここでは前提そのものを証明しない。 -/
+/-- 場合別の補題をこの前提にまとめる。ここでは前提そのものを証明しない。 -/
 def CheckCasesSound (q : Input) : Prop := ∀ node, CaseSound q node
 
 theorem MutualSoundness.of_cases {q} (hc : CheckCasesSound q) : MutualSoundness q := by
@@ -115,11 +116,11 @@ theorem MutualSoundness.of_cases {q} (hc : CheckCasesSound q) : MutualSoundness 
     fun arms => all (.arms arms), fun cs => all (.clauses cs), fun body => all (.block body)⟩
 
 /-- 単純な場合も、葉では仮定を使わず、子を持つ場合は CaseHypotheses を引数に取る。
-例えばラムダの補題の結論は CaseSound q (.expr (.lam ps r ε body)) であり、
+例えばラムダの補題の結論は CaseSound q (.expr (.lam names ps r ε body)) であり、
 以下で得た BlockSound を、binds ps ++ hideConts Γ・some r・tail・任意の状態へ適用する。
 -/
-theorem lam_case_ih {q ps r ε body}
-    (ih : CaseHypotheses q (.expr (.lam ps r ε body))) : BlockSound q body := by
+theorem lam_case_ih {q names ps r ε body}
+    (ih : CaseHypotheses q (.expr (.lam names ps r ε body))) : BlockSound q body := by
   apply ih (.block body)
   simp only [CheckNode.size, Expr.lam.sizeOf_spec]
   omega
@@ -162,8 +163,8 @@ theorem pipe_case_ih {q lhs rhs} (ih : CaseHypotheses q (.expr (.pipe lhs rhs)))
   · apply ih (.expr rhs)
     simp only [CheckNode.size, Expr.pipe.sizeOf_spec]; omega
 
-theorem pipe_call_case_ih {q lhs callee args}
-    (ih : CaseHypotheses q (.expr (.pipe lhs (.call callee args)))) :
+theorem pipe_call_case_ih {q lhs callee labels positions args}
+    (ih : CaseHypotheses q (.expr (.pipe lhs (.call callee labels positions args)))) :
     ExprSound q callee ∧ ExprsSound q args := by
   constructor
   · apply ih (.expr callee)
@@ -267,67 +268,13 @@ theorem checkDicts_of_dictionary {q C Γ path ds ts} (hs : DictionarySoundness q
 theorem checkDef_of_mutual {q path d} (hs : MutualSoundness q)
     (hq : q.Sound) (hd : d.AtomsIn q.atoms) (h : checkDef q path d = .ok ()) :
     Def.WellTyped q.D q.B q.opPrim d := by
+  obtain ⟨uNames, hNames, h⟩ := bind_ok h
   obtain ⟨u, hu, h⟩ := bind_ok h
   obtain ⟨v, hv, h⟩ := bind_ok h
   obtain ⟨ε, hacc, heff⟩ := bind_ok h
   have hb := checkBlock_of_mutual hs hq hd.2 (Env.atoms_binds hd.1.1)
     (fun t ht => by cases ht; exact hd.1.2.1) hv
-  refine ⟨(lamBodyOk_spec _ _).mp (require_ok hu).1, ?_⟩
+  refine ⟨(namesWF_spec _ _).mp (require_ok hNames).1, (lamBodyOk_spec _ _).mp (require_ok hu).1, ?_⟩
   exact accept_block_eff hb.1 hb.2.1 hd.1.2.1 hb.2.2 hacc heff
-
-/-- 有限の名前一覧の成功を、一覧外の空欄の契約と合わせて全称判断へ戻す。 -/
-theorem checkImpl_of_checker {q methods supers path id} (hs : CheckerSoundness q)
-    (hq : q.Sound) (hi : id.AtomsIn q.atoms) (hn : ImplNamesComplete q id methods supers)
-    (h : checkImpl q methods supers path id = .ok ()) :
-    ImplDecl.WellTyped q.D q.B q.opPrim id := by
-  obtain ⟨cd, hc, h⟩ := bind_ok h
-  obtain ⟨u1, hm, h⟩ := bind_ok h
-  obtain ⟨u2, hf, h⟩ := bind_ok h
-  obtain ⟨u3, hall, hd⟩ := bind_ok h
-  have hcd := lookup_ok hc
-  have complete : ∀ s ∈ cd.supers, s ∈ supers := by
-    intro s hmem
-    exact List.mem_of_elem_eq_true (List.all_eq_true.mp (require_ok hall).1 s hmem)
-  have methodEntry := checkMethods_entry (by cases u1; exact hm)
-  have flags := checkSuperFlags_entry (by cases u2; exact hf)
-  refine ⟨cd, hcd, ?_, ?_, ?_, ?_⟩
-  · intro m
-    by_cases hmem : m ∈ methods
-    · exact (methodEntry m hmem).1
-    · rw [hn.1 cd hcd m hmem, hn.2.1 m hmem]; rfl
-  · intro s
-    by_cases hmem : s ∈ supers
-    · exact flags s hmem
-    · have hnot : s ∉ cd.supers := fun h => hmem (complete s h)
-      simp [hn.2.2 s hmem, hnot]
-  · intro m ms hms
-    have hmem : m ∈ methods := by
-      by_cases hmem : m ∈ methods
-      · exact hmem
-      · have he := hn.1 cd hcd m hmem
-        rw [hms] at he; contradiction
-    obtain ⟨body, hb, path', a, ε, out, hExit, hBlock, hAccept, hEff⟩ :=
-      (methodEntry m hmem).2 ms hms
-    have msAtoms := hq.declarations.2.2.2.1 id.cls cd m ms hcd hms
-    have resultAtoms := substTyAt_atoms msAtoms.2.1 (atoms := q.atoms)
-      (ts := [id.target]) (es := []) ⟨hi.1, trivial⟩ (by simp) ms.tparams.length
-    have paramsAtoms := tysAtoms_map msAtoms.1
-      (fun _ h => substTyAt_atoms h (ts := [id.target]) (es := [])
-        ⟨hi.1, trivial⟩ (by simp) ms.tparams.length)
-    have dictAtoms := tysAtoms_map hi.2.1
-      (fun _ h => shiftTy_atoms h ms.tparams.length 0)
-    have hb' := checkBlock_of_mutual hs.surface hq (hi.2.2.2 m body hb)
-      (Env.atoms_binds (tysAtoms_append dictAtoms paramsAtoms))
-      (fun t ht => by cases ht; exact resultAtoms) hBlock
-    have typed := accept_block_eff hb'.1 hb'.2.1 resultAtoms hb'.2.2 hAccept hEff
-    refine ⟨body, hb, ?_, ?_⟩
-    · simpa only [substTyAt_eq, ImplDecl.methTy] using (lamBodyOk_spec _ _).mp hExit
-    · simpa only [substTyAt_fun_eq, shiftTy_fun_eq, methTy_fun_eq] using typed
-  · intro s hmem
-    obtain ⟨d, dictPath, a, hds, ha, he⟩ := checkSuperDicts_entry hd s hmem
-    have ht := checkDict_of_dictionary hs.dictionaries hq (hi.2.2.1 s d hds)
-      (Env.atoms_binds hi.2.1) ha
-    have eqTy := tyEq_sound ht.2 (b := .dict s id.target) hi.1 he
-    exact ⟨d, hds, by rw [← eqTy]; exact ht.1⟩
 
 end Benitoite.Surface.Check

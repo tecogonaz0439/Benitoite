@@ -25,7 +25,7 @@ public function set[T](reference: Reference[T], value: T) -> Unit uses State
 Replaces the value in the cell with `value`.
 
 ```benitoite
-public function update[T](reference: Reference[T], f: function(T) -> T) -> Unit uses State
+public function update[T](reference: Reference[T], f: function(value: T) -> T) -> Unit uses State
 ```
 
 Replaces the value in the cell with `f` applied to it. No other task touches the cell in between.

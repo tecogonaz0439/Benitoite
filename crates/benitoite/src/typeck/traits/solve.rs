@@ -271,7 +271,9 @@ fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOut
                 TyHead::Param(i) => Ty::App(i, args),
             }
         }
+        ITy::Fn(_) if solver.invalid_contract(ty) => crate::typeck::decls::unit(),
         ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
+            param_names: solver.contract_names(&f.contract).unwrap_or_default(),
             params: f
                 .params
                 .iter()
@@ -323,12 +325,62 @@ pub(super) fn check_bounds(
     Solver::default().solve(&mut body, constraints);
     body.diagnostics
 }
-pub(super) fn solve_classes(ctx: &mut Body<'_, '_>) {
+// 辞書の型引数も、既定値を選ぶ前に確定を待つ。外側の構成子が既知でも、
+// 内側の変数や契約が未確定なら部分的な辞書を保存しない（設計書 02-05「型クラスの制約の解決」）。
+fn unresolved_argument(solver: &Solver, arg: &IClassArg) -> bool {
+    let ty = match arg {
+        IClassArg::Ty(t) => solver.zonk(t),
+        IClassArg::Head(h) => solver.zonk(&ITy::App(*h, vec![])),
+        IClassArg::Con(_) => return false,
+    };
+    let mut pending = vec![ty];
+    while let Some(ty) = pending.pop() {
+        match ty {
+            ITy::Var(_) | ITy::App(IHead::Var(_), _) => return true,
+            ITy::Fn(f) => {
+                if matches!(solver.resolve_contract(&f.contract), IContract::Var(_)) {
+                    return true;
+                }
+                pending.extend(f.params);
+                pending.push(f.ret);
+            }
+            ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
+            ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
+        }
+    }
+    false
+}
+
+pub(super) fn solve_classes(ctx: &mut Body<'_, '_>, final_pass: bool) {
     let table = table(ctx.decls);
-    let constraints = std::mem::take(&mut ctx.constraints);
+    let mut waiting_uses = BTreeSet::new();
+    let constraints = std::mem::take(&mut ctx.constraints)
+        .into_iter()
+        .map(|c| {
+            let unknown = if !final_pass && let Constraint::Class { arg, site, .. } = &c {
+                let unknown = unresolved_argument(&ctx.solver, arg);
+                if unknown && let DictSite::Use { node, .. } = site {
+                    waiting_uses.insert(*node);
+                }
+                unknown
+            } else {
+                false
+            };
+            (c, unknown)
+        })
+        .collect::<Vec<_>>();
     let mut uses: BTreeMap<NodeId, BTreeMap<u32, DictExpr>> = BTreeMap::new();
     let mut limited_uses = BTreeSet::new();
-    for c in constraints {
+    for (c, unknown) in constraints {
+        // 一つの使用の辞書の一部だけを確定すると番号が欠けるので、未知の
+        // 制約を持つ使用は全体を最終検査まで保留する（設計書 02-05「型クラスの制約の解決」）。
+        if !final_pass
+            && (unknown
+                || matches!(&c, Constraint::Class { site: DictSite::Use { node, .. }, .. } if waiting_uses.contains(node)))
+        {
+            ctx.add(c);
+            continue;
+        }
         let Constraint::Class {
             class,
             arg,

@@ -1,0 +1,1116 @@
+--- a/crates/benitoite/src/builtins/funcs/clock/tests.rs
++++ b/crates/benitoite/src/builtins/funcs/clock/tests.rs
+@@ -73,7 +73,7 @@
+   return if Reference.get(progressed) then Clock.monotonicMilliseconds() else -1 end if
+  end lambda,
+  lambda()
+-  Reference.set(progressed,true)
++  Reference.set(reference: progressed,value: true)
+   bind started <- Clock.monotonicMilliseconds()
+   Clock.sleep(9)
+   return if started = 0 then Clock.monotonicMilliseconds() else -1 end if
+--- a/crates/benitoite/src/builtins/funcs/file/path_tests.rs
++++ b/crates/benitoite/src/builtins/funcs/file/path_tests.rs
+@@ -742,7 +742,7 @@
+         ));
+     });
+     let program = compile(
+-        "import Benitoite.Unofficial.IO.File\nfunction main() -> Result[Unit,String] uses File.Read,File.Write\n return File.copy(\"large\",\"target\") |> Result.mapError(_, IOError.message)\nend function\n",
++        "import Benitoite.Unofficial.IO.File\nfunction main() -> Result[Unit,String] uses File.Read,File.Write\n return File.copy(from: \"large\",to: \"target\") |> Result.mapError(_, IOError.message)\nend function\n",
+     );
+     for mode in [ExecMode::Direct, ExecMode::Request] {
+         let script = ScheduleHandle::new([], false);
+@@ -782,11 +782,11 @@
+         r#"import Benitoite.Unofficial.IO.File
+ import Benitoite.Unofficial.Time
+ function main() -> Result[Unit,String] uses File.Read,File.Write
+- bind _ <- try File.copy("from", "to") |> Result.mapError(_, IOError.message)
+- bind _ <- try File.copy("from", "new-copy") |> Result.mapError(_, IOError.message)
++ bind _ <- try File.copy(from: "from", to: "to") |> Result.mapError(_, IOError.message)
++ bind _ <- try File.copy(from: "from", to: "new-copy") |> Result.mapError(_, IOError.message)
+  bind info <- try File.info("to") |> Result.mapError(_, IOError.message)
+  bind source <- try File.info("from") |> Result.mapError(_, IOError.message)
+- bind bad <- File.copy(".", "bad")
++ bind bad <- File.copy(from: ".", to: "bad")
+  bind kind <- match bad with
+   case Result.Error(e) -> IOError.kind(e)
+   case Result.Ok(_) -> IOErrorKind.Other
+--- a/crates/benitoite/src/builtins/funcs/random/tests.rs
++++ b/crates/benitoite/src/builtins/funcs/random/tests.rs
+@@ -245,7 +245,7 @@
+ import Benitoite.Unofficial.IO.Random
+ function main() -> Result[Unit, String] uses Random.Generate
+   bind values <- handle
+-    Pair(Random.integer(0, 1000000), Pair(Random.float(), Random.boolean()))
++    Pair(Random.integer(low: 0, high: 1000000), Pair(Random.float(), Random.boolean()))
+   with
+     case Random.integer(_, _) -> resume(7)
+     case Random.float() -> resume(0.5)
+@@ -272,14 +272,14 @@
+ import Benitoite.Unofficial.IO.Random
+ import Benitoite.Unofficial.IO.Console
+ function main() -> Unit uses Random.Generate, Console.Write
+-  List.forEach([1, 2, 3, 4, 5, 6, 7, 8], lambda(_unused)
+-    Console.writeLine(Integer.toString(Random.integer(0, 1000000)))
++  List.forEach(xs: [1, 2, 3, 4, 5, 6, 7, 8], f: lambda(value)
++    Console.writeLine(Integer.toString(Random.integer(low: 0, high: 1000000)))
+   end lambda)
+ end function
+ @test
+ function randomIsSeeded() -> Unit uses Random.Generate, Assert.Check
+-  bind xs <- List.map([1, 2, 3, 4, 5, 6, 7, 8], lambda(_unused) return Random.integer(0, 1000000) end lambda)
+-  Assert.isTrue(xs <> [0, 0, 0, 0, 0, 0, 0, 0], "hidden generator was not seeded")
++  bind xs <- List.map(xs: [1, 2, 3, 4, 5, 6, 7, 8], f: lambda(value) return Random.integer(low: 0, high: 1000000) end lambda)
++  Assert.isTrue(condition: xs <> [0, 0, 0, 0, 0, 0, 0, 0], message: "hidden generator was not seeded")
+ end function
+ "#,
+     );
+--- a/crates/benitoite/src/builtins/funcs/regex/tests.rs
++++ b/crates/benitoite/src/builtins/funcs/regex/tests.rs
+@@ -323,17 +323,17 @@
+ function main() -> Result[Unit, String] uses State
+   bind pattern <- try Regex.compile(r"(?P<digit>\d)")
+   bind order <- Reference.new([])
+-  bind result <- Regex.replaceAllWith(pattern, "日1é2-3!", lambda(m)
+-    Reference.set(order, List.append(Reference.get(order), Regex.matchByteStart(m)))
+-    return String.join(["[", Option.unwrapOr(Regex.group(m, 1), "?"), "]"], "")
++  bind result <- Regex.replaceAllWith(pattern: pattern, text: "日1é2-3!", f: lambda(matched)
++    Reference.set(reference: order, value: List.append(xs: Reference.get(order), x: Regex.matchByteStart(matched)))
++    return String.join(xs: ["[", Option.unwrapOr(o: Regex.group(m: matched, index: 1), fallback: "?"), "]"], separator: "")
+   end lambda)
+-  bind absent <- Regex.replaceAllWith(pattern, "abc", lambda(m)
+-    Reference.set(order, List.append(Reference.get(order), -1))
+-    return Regex.matchText(m)
++  bind absent <- Regex.replaceAllWith(pattern: pattern, text: "abc", f: lambda(matched)
++    Reference.set(reference: order, value: List.append(xs: Reference.get(order), x: -1))
++    return Regex.matchText(matched)
+   end lambda)
+   bind empty <- try Regex.compile("a*")
+-  bind emptyResult <- Regex.replaceAllWith(empty, "baaa", lambda(m)
+-    Reference.set(order, List.append(Reference.get(order), Regex.matchByteStart(m)))
++  bind emptyResult <- Regex.replaceAllWith(pattern: empty, text: "baaa", f: lambda(matched)
++    Reference.set(reference: order, value: List.append(xs: Reference.get(order), x: Regex.matchByteStart(matched)))
+     return "X"
+   end lambda)
+   return if result = "日[1]é[2]-[3]!" and absent = "abc" and emptyResult = "XbX" and Reference.get(order) = [3, 6, 8, 0, 1]
+@@ -352,7 +352,7 @@
+ import Benitoite.Unofficial.Regex
+ function extractDates(text: String) -> Result[List[String], String]
+   bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
+-  return Result.Ok(Regex.findAll(pattern, text) |> List.map(_, Regex.matchText))
++  return Result.Ok(Regex.findAll(pattern: pattern, text: text) |> List.map(_, Regex.matchText))
+ end function
+ function invalid() -> Result[Regex.Pattern, String]
+   return Regex.compile(r"[")
+@@ -365,9 +365,9 @@
+   bind dates <- try extractDates("日2026-10-07, 2027-01-02; none")
+   bind pattern <- try Regex.compile(r"(?P<name>a)")
+   return if rejected and dates = ["2026-10-07", "2027-01-02"]
+-    and Regex.replaceFirst(pattern, "aba", r"$1") = "$1ba"
+-    and Regex.replaceAll(pattern, "aba", r"${1}") = r"${1}b${1}"
+-    and Regex.replaceAll(pattern, "aba", r"${name}") = r"${name}b${name}"
++    and Regex.replaceFirst(pattern: pattern, text: "aba", replacement: r"$1") = "$1ba"
++    and Regex.replaceAll(pattern: pattern, text: "aba", replacement: r"${1}") = r"${1}b${1}"
++    and Regex.replaceAll(pattern: pattern, text: "aba", replacement: r"${name}") = r"${name}b${name}"
+     then Result.Ok(()) else Result.Error("regex script") end if
+ end function
+ "#,
+@@ -480,10 +480,10 @@
+ import Benitoite.Unofficial.Regex
+ function main() -> Result[Unit, String]
+   bind p <- try Regex.compile("a")
+-  bind input <- String.repeat("éa", 2050) + "日"
+-  bind expected <- String.repeat("éX", 2050) + "日"
+-  if Regex.replaceAll(p, input, "X") <> expected then return Result.Error("replaceAll chunks") end if
+-  if Regex.replaceAllWith(p, input, lambda(m) return "X" end lambda) <> expected then return Result.Error("replaceAllWith chunks") end if
++  bind input <- String.repeat(s: "éa", n: 2050) + "日"
++  bind expected <- String.repeat(s: "éX", n: 2050) + "日"
++  if Regex.replaceAll(pattern: p, text: input, replacement: "X") <> expected then return Result.Error("replaceAll chunks") end if
++  if Regex.replaceAllWith(pattern: p, text: input, f: lambda(matched) return "X" end lambda) <> expected then return Result.Error("replaceAllWith chunks") end if
+   return Result.Ok(())
+ end function
+ "#,
+--- a/crates/benitoite/src/bytecode/codegen/tests.rs
++++ b/crates/benitoite/src/bytecode/codegen/tests.rs
+@@ -375,7 +375,7 @@
+  return render(1)
+ end function
+ function superior[T: Trait.Monoid](x: T) -> T
+- return Trait.Semigroup.combine(x, x)
++ return Trait.Semigroup.combine(x: x, y: x)
+ end function
+ trait Describe[T]
+  function describe(x: T) -> String
+@@ -383,7 +383,7 @@
+ end trait
+ implement[T: Trait.Show] Describe[List[T]]
+  function describe(x: List[T]) -> String
+-  return String.join(List.map(x, Trait.Show.show), ",")
++  return String.join(xs: List.map(xs: x, f: Trait.Show.show), separator: ",")
+  end function
+  function extra[U: Trait.Show](x: List[T], y: U) -> String
+   bind _ <- Trait.Show.show(List.head(x))
+@@ -567,7 +567,7 @@
+  return Lazy.force(lazy x + 1 end lazy)
+ end function
+ function updated(ref: Reference[Integer]) -> Unit uses State
+- return Reference.update(ref, lambda(x) return x + 1 end lambda)
++ return Reference.update(reference: ref, f: lambda(value) return value + 1 end lambda)
+ end function
+ function write() -> Unit uses Console.Write
+  bind first <- Console.writeLine
+@@ -711,7 +711,7 @@
+                 "Report.bnt",
+                 r#"
+ public function format(xs: List[Integer]) -> List[String]
+- return List.map(xs, lambda(x) return Integer.toString(x) end lambda)
++ return List.map(xs: xs, f: lambda(value) return Integer.toString(value) end lambda)
+ end function
+ "#,
+             ),
+--- a/crates/benitoite/src/ir/desugar/tests.rs
++++ b/crates/benitoite/src/ir/desugar/tests.rs
+@@ -436,7 +436,7 @@
+ function identity(x: Integer) -> Integer
+  return x
+ end function
+-function g(y: Integer) -> function(Integer) -> Integer
++function g(y: Integer) -> function(x: Integer) -> Integer
+  return lambda(x) return x + y end lambda
+ end function
+ function clamp(lo: Integer, x: Integer, hi: Integer) -> Integer
+@@ -444,7 +444,7 @@
+ end function
+ function pipes(xs: List[Integer], x: Integer) -> List[Integer]
+  bind _ <- x |> (g(1))
+- bind _ <- clamp(0, _, 100)
++ bind _ <- clamp(lo: 0, x: _, hi: 100)
+  return xs |> List.map(_, identity)
+ end function
+ "#;
+@@ -856,7 +856,7 @@
+ end effect
+ function sumPrices(items: List[Integer]) -> Integer uses Log
+  write("items: ${List.length(items)}")
+- return List.fold(items, 0, lambda(acc, x) return acc + x end lambda)
++ return List.fold(xs: items, initial: 0, f: lambda(acc, value) return acc + value end lambda)
+ end function
+ function total(items: List[Integer]) -> Integer uses Console.Write
+  return handle sumPrices(items) with
+@@ -965,11 +965,11 @@
+  return render(1)
+ end function
+ function superior[T: Trait.Monoid](x: T) -> T
+- return Trait.Semigroup.combine(x, x)
++ return Trait.Semigroup.combine(x: x, y: x)
+ end function
+ function mapped(xs: List[Integer]) -> List[String]
+- bind _ <- List.map(xs, Trait.Show.show)
+- return List.map(xs, render)
++ bind _ <- List.map(xs: xs, f: Trait.Show.show)
++ return List.map(xs: xs, f: render)
+ end function
+ trait Describe[T]
+  function describe(x: T) -> String
+@@ -977,11 +977,11 @@
+ end trait
+ implement[T: Trait.Show] Describe[List[T]]
+  function extra[U: Trait.Show](x: List[T], y: U) -> String
+-  bind _ <- List.map(x, Trait.Show.show)
++  bind _ <- List.map(xs: x, f: Trait.Show.show)
+   return Trait.Show.show(y)
+  end function
+  function describe(x: List[T]) -> String
+-  return String.join(List.map(x, Trait.Show.show), ",")
++  return String.join(xs: List.map(xs: x, f: Trait.Show.show), separator: ",")
+  end function
+ end implement
+ trait Detailed[T: Trait.Show]
+@@ -1289,7 +1289,7 @@
+  return not x
+ end function
+ function wrap(xs: List[Integer]) -> List[Option[Integer]]
+- return List.map(xs, Option.Some)
++ return List.map(xs: xs, f: Option.Some)
+ end function
+ "#,
+     );
+--- a/crates/benitoite/src/refinterp/tests.rs
++++ b/crates/benitoite/src/refinterp/tests.rs
+@@ -676,7 +676,7 @@
+     let source = r#"@external("wasm", "add.wasm", "add")
+ function add(a: Integer, b: Integer) -> Integer
+ function count(n: Integer) -> Integer
+-  if n = 0 then return add(20, 22) end if
++  if n = 0 then return add(a: 20, b: 22) end if
+   return 1 + count(n - 1)
+ end function
+ function main() -> Result[Unit, String]
+--- a/crates/benitoite/src/resolve/tests.rs
++++ b/crates/benitoite/src/resolve/tests.rs
+@@ -1452,7 +1452,7 @@
+         }
+     }
+     for source in [
+-        "function normalize(text: String) -> String\n shadow text <- String.trim(text)\n shadow text <- String.replace(text, \"\\t\", \" \")\n bind words <- String.split(text, \" \")\n return String.join(words, \" \")\nend function",
++        "function normalize(text: String) -> String\n shadow text <- String.trim(text)\n shadow text <- String.replace(s: text, old: \"\\t\", new: \" \")\n bind words <- String.split(s: text, separator: \" \")\n return String.join(xs: words, separator: \" \")\nend function",
+         "function helper() -> Unit\nend function\nfunction f() -> Unit\n bind helper <- 1\nend function",
+         "function _helper(_x: Integer) -> Integer\n shadow _x <- _x + 1\n return _x\nend function\nfunction main() -> Unit\n bind _ <- _helper(1)\nend function",
+         "const maxRetries: Integer = 3\nfunction f(maxRetries: Integer) -> Unit\nend function\nfunction g() -> Unit\n bind maxRetries <- 2\nend function",
+--- a/crates/benitoite/src/runtime/assert/tests.rs
++++ b/crates/benitoite/src/runtime/assert/tests.rs
+@@ -331,7 +331,7 @@
+     }
+     // `Unit` は等しいので `notEqual` で失敗させる。
+     source.push_str(
+-        "@test\nfunction unitCase() -> Unit uses Assert.Check\n  Assert.notEqual((), ())\nend function\n",
++        "@test\nfunction unitCase() -> Unit uses Assert.Check\n  Assert.notEqual(actual: (), expected: ())\nend function\n",
+     );
+     let prepared = prepare(&source);
+     for (i, (ty, _, _, left, right)) in cases.iter().enumerate() {
+@@ -827,35 +827,35 @@
+ 
+ function grow(n: Integer, t: Tree) -> Tree
+   if n = 0 then return t end if
+-  return grow(n - 1, Tree.Node(t, t))
++  return grow(n: n - 1, t: Tree.Node(t, t))
+ end function
+ 
+ function check[T: equality](a: T, b: T) -> Unit uses Assert.Check
+-  Assert.equal(a, b)
++  Assert.equal(actual: a, expected: b)
+ end function
+ 
+ function checkTail[T: equality](a: T, b: T) -> Unit uses Assert.Check
+-  check(a, b)
++  check(a: a, b: b)
+ end function
+ 
+ @test
+ function sharedUnknown() -> Unit uses Assert.Check
+-  checkTail(grow(64, Tree.Leaf), Tree.Leaf)
++  checkTail(a: grow(n: 64, t: Tree.Leaf), b: Tree.Leaf)
+ end function
+ 
+ @test
+ function otherTree() -> Unit uses Assert.Check
+-  checkTail(OtherTree.Node(OtherTree.Leaf, OtherTree.Leaf), OtherTree.Leaf)
++  checkTail(a: OtherTree.Node(OtherTree.Leaf, OtherTree.Leaf), b: OtherTree.Leaf)
+ end function
+ 
+ @test
+ function shared() -> Unit uses Assert.Check
+-  Assert.equal(grow(64, Tree.Leaf), Tree.Leaf)
++  Assert.equal(actual: grow(n: 64, t: Tree.Leaf), expected: Tree.Leaf)
+ end function
+ 
+ @test
+ function sharedGeneric() -> Unit uses Assert.Check
+-  check(grow(64, Tree.Leaf), Tree.Leaf)
++  check(a: grow(n: 64, t: Tree.Leaf), b: Tree.Leaf)
+ end function
+ "#,
+     );
+@@ -885,16 +885,16 @@
+     let source = r#"
+ @test
+ function isTrueFails() -> Unit uses Assert.Check
+-  Assert.isTrue(true, "unused")
+-  Assert.isTrue(1 = 2, "one is not two")
++  Assert.isTrue(condition: true, message: "unused")
++  Assert.isTrue(condition: 1 = 2, message: "one is not two")
+ end function
+ 
+ @test
+ function failFails() -> Unit uses Assert.Check
+-  Assert.equal(1, 1)
+-  Assert.notEqual(1, 2)
++  Assert.equal(actual: 1, expected: 1)
++  Assert.notEqual(actual: 1, expected: 2)
+   bind n: Integer <- Assert.fail("stop here")
+-  Assert.equal(n, 0)
++  Assert.equal(actual: n, expected: 0)
+ end function
+ "#;
+     let prepared = prepare(source);
+@@ -926,18 +926,18 @@
+ end data
+ 
+ function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+-  Assert.equal(actual, expected)
++  Assert.equal(actual: actual, expected: expected)
+ end function
+ 
+ function viaTail[T: equality](a: T, b: T, k: function() -> Unit uses Assert.Check) -> Unit uses Assert.Check
+   k()
+-  checkSame(a, b)
++  checkSame(actual: a, expected: b)
+ end function
+ 
+ @test("tail call inside an outer instance")
+ function nested() -> Unit uses Assert.Check
+-  viaTail(Dir.Up, Dir.Up, lambda()
+-    viaTail(Color.Red, Color.Green, lambda() return () end lambda)
++  viaTail(a: Dir.Up, b: Dir.Up, k: lambda()
++    viaTail(a: Color.Red, b: Color.Green, k: lambda() return () end lambda)
+   end lambda)
+ end function
+ "#,
+@@ -969,13 +969,13 @@
+ 
+ function each[T: equality](a: T, b: T, k: function() -> Unit uses Assert.Check) -> Unit uses Assert.Check
+   k()
+-  List.forEach([a], lambda(x) Assert.equal(x, b) end lambda)
++  List.forEach(xs: [a], f: lambda(value) Assert.equal(actual: value, expected: b) end lambda)
+ end function
+ 
+ @test("lambda after a tail call inside an outer instance")
+ function nested() -> Unit uses Assert.Check
+-  each(Dir.Up, Dir.Up, lambda()
+-    each(Color.Red, Color.Green, lambda() return () end lambda)
++  each(a: Dir.Up, b: Dir.Up, k: lambda()
++    each(a: Color.Red, b: Color.Green, k: lambda() return () end lambda)
+   end lambda)
+ end function
+ 
+@@ -1006,19 +1006,19 @@
+   Down
+ end data
+ 
+-function keep[T: equality](a: T, g: function() -> Unit uses Assert.Check) -> (function(T) -> Unit uses Assert.Check) uses Assert.Check
++function keep[T: equality](a: T, g: function() -> Unit uses Assert.Check) -> (function(x: T) -> Unit uses Assert.Check) uses Assert.Check
+   g()
+-  return lambda(x) Assert.equal(a, x) end lambda
++  return lambda(x) Assert.equal(actual: a, expected: x) end lambda
+ end function
+ 
+ @test("escaped closure called inside another instance of its function")
+ function escaped() -> Unit uses Assert.Check
+-  bind f <- keep(Color.Red, lambda() return () end lambda)
+-  bind ignored <- keep(Dir.Up, lambda()
++  bind f <- keep(a: Color.Red, g: lambda() return () end lambda)
++  bind ignored <- keep(a: Dir.Up, g: lambda()
+     f(Color.Green)
+-    Assert.isTrue(true, "after")
++    Assert.isTrue(condition: true, message: "after")
+   end lambda)
+-  Assert.isTrue(true, "end")
++  Assert.isTrue(condition: true, message: "end")
+ end function
+ "#,
+     );
+@@ -1053,26 +1053,26 @@
+ 
+ implement[T: equality] Check[Option[T]]
+   function check(a: Option[T], b: Option[T]) -> Unit uses Assert.Check
+-    twoStep(a, b)
++    twoStep(actual: a, expected: b)
+   end function
+ end implement
+ 
+ function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+-  Assert.equal(actual, expected)
++  Assert.equal(actual: actual, expected: expected)
+ end function
+ 
+ function twoStep[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+-  checkSame(actual, expected)
++  checkSame(actual: actual, expected: expected)
+ end function
+ 
+ @test("passing use with Color")
+ function colors() -> Unit uses Assert.Check
+-  twoStep(Option.Some(Color.Red), Option.Some(Color.Red))
++  twoStep(actual: Option.Some(Color.Red), expected: Option.Some(Color.Red))
+ end function
+ 
+ @test("failing use through an implementation with Dir")
+ function dirs() -> Unit uses Assert.Check
+-  Check.check(Option.Some(Dir.Up), Option.Some(Dir.Down))
++  Check.check(a: Option.Some(Dir.Up), b: Option.Some(Dir.Down))
+ end function
+ "#,
+     );
+@@ -1097,22 +1097,22 @@
+ end data
+ 
+ function checkSame[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+-  Assert.equal(actual, expected)
++  Assert.equal(actual: actual, expected: expected)
+ end function
+ 
+ function twoStep[T: equality](actual: T, expected: T) -> Unit uses Assert.Check
+-  checkSame(actual, expected)
++  checkSame(actual: actual, expected: expected)
+ end function
+ 
+ @test("fails")
+ function fails() -> Unit uses Assert.Check
+-  twoStep(Color.Red, Color.Green)
++  twoStep(actual: Color.Red, expected: Color.Green)
+ end function
+ 
+ @test("passes")
+ function passes() -> Unit uses Assert.Check
+-  twoStep(Color.Red, Color.Red)
+-  Assert.isTrue(true, "x")
++  twoStep(actual: Color.Red, expected: Color.Red)
++  Assert.isTrue(condition: true, message: "x")
+ end function
+ "#
+     .replace(
+@@ -1153,25 +1153,25 @@
+ end data
+ 
+ function checkSame[T: equality](a: T, b: T) -> Unit uses Assert.Check
+-  Assert.equal(a, b)
++  Assert.equal(actual: a, expected: b)
+ end function
+ 
+ function twoStep[T: equality](a: T, b: T) -> Unit uses Assert.Check
+-  checkSame(a, b)
++  checkSame(a: a, b: b)
+ end function
+ 
+ function higher[F[_], T: equality](marker: F[Integer], a: T, b: T) -> Unit uses Assert.Check
+-  twoStep(a, b)
++  twoStep(a: a, b: b)
+ end function
+ 
+ @test
+ function colors() -> Unit uses Assert.Check
+-  twoStep(Color.Red, Color.Red)
++  twoStep(a: Color.Red, b: Color.Red)
+ end function
+ 
+ @test
+ function dirs() -> Unit uses Assert.Check
+-  higher(Option.Some(1), Dir.Up, Dir.Down)
++  higher(marker: Option.Some(1), a: Dir.Up, b: Dir.Down)
+ end function
+ "#,
+     );
+--- a/crates/benitoite/src/runtime/run/tests/interrupt.rs
++++ b/crates/benitoite/src/runtime/run/tests/interrupt.rs
+@@ -84,7 +84,7 @@
+         "function f() -> Unit\n return ()\nend function\nfunction main() -> Unit\n f()\n return ()\nend function\n",
+         "function f() -> Unit\n return ()\nend function\nfunction main() -> Unit\n return f()\nend function\n",
+         "function main() -> Unit\n bind v <- lazy () end lazy\n return Lazy.force(v)\nend function\n",
+-        "function main() -> Unit uses State\n bind c <- Reference.new(0)\n bind _ <- Reference.update(c, lambda(n) return n + 1 end lambda)\n return ()\nend function\n",
++        "function main() -> Unit uses State\n bind c <- Reference.new(0)\n bind _ <- Reference.update(reference: c, f: lambda(value) return value + 1 end lambda)\n return ()\nend function\n",
+         "effect Probe\n function ask() -> Unit\nend effect\nfunction main() -> Unit\n return handle ask() with case ask() -> resume(()) end handle\nend function\n",
+     ];
+     for source in sources {
+--- a/crates/benitoite/src/runtime/run/tests/test_entry.rs
++++ b/crates/benitoite/src/runtime/run/tests/test_entry.rs
+@@ -29,7 +29,7 @@
+ import Benitoite.Unofficial.IO.Process
+ @test
+ function unitOk() -> Unit uses Assert.Check
+-  Assert.equal(1, 1)
++  Assert.equal(actual: 1, expected: 1)
+   return ()
+ end function
+ @test
+@@ -93,7 +93,7 @@
+ function helper() -> Unit uses Console.Write, Assert.Check
+   Console.writeLine("before")
+   Console.writeErrorLine("to stderr")
+-  Assert.equal(1, 2)
++  Assert.equal(actual: 1, expected: 2)
+   Console.writeLine("after")
+ end function
+ @test
+@@ -234,12 +234,12 @@
+     let source = r#"
+ @test
+ function spawned() -> Unit uses Assert.Check
+-  bind _ <- Task.all([lambda() return () end lambda, lambda() return Assert.equal(1, 2) end lambda])
++  bind _ <- Task.all([lambda() return () end lambda, lambda() return Assert.equal(actual: 1, expected: 2) end lambda])
+   return ()
+ end function
+ @test
+ function handled() -> Unit uses Assert.Check
+-  return handle Assert.equal(1, 2) with case Assert.equal(_, _) -> resume(()) end handle
++  return handle Assert.equal(actual: 1, expected: 2) with case Assert.equal(_, _) -> resume(()) end handle
+ end function
+ "#;
+     let prepared = prepare(source);
+@@ -319,7 +319,7 @@
+ @test
+ function interrupted() -> Unit uses Assert.Check
+   step()
+-  Assert.equal(1, 1)
++  Assert.equal(actual: 1, expected: 1)
+ end function
+ "#;
+     let prepared = prepare(source);
+--- a/crates/benitoite/src/typeck/effects/tests.rs
++++ b/crates/benitoite/src/typeck/effects/tests.rs
+@@ -243,7 +243,7 @@
+ 
+ #[test]
+ fn declared_operation_bounds_are_available_in_clauses() {
+-    let same = "effect Compare\n function same[T: equality](a: T, b: T) -> Boolean\nend effect\nfunction f() -> Boolean\n return handle same(1, 2) with case same(a, b) -> resume(a = b) end handle\nend function\n";
++    let same = "effect Compare\n function same[T: equality](a: T, b: T) -> Boolean\nend effect\nfunction f() -> Boolean\n return handle same(a: 1, b: 2) with case same(a, b) -> resume(a = b) end handle\nend function\n";
+     clean(same);
+     let d = expect(&same.replace("T: equality", "T"), &[(C::E0406, "a = b", 0)]);
+     assert!(d[0].message.contains("T"));
+@@ -438,7 +438,7 @@
+         &[(C::E0443, "1 do", 0)],
+     );
+     clean(
+-        "function f() -> Unit uses State\n with g = TaskGroup.open() do\n bind t <- TaskGroup.spawn(g, lambda() return 1 end lambda)\n bind _ <- Task.await(t)\n end with\nend function\n",
++        "function f() -> Unit uses State\n with g = TaskGroup.open() do\n bind t <- TaskGroup.spawn(group: g, action: lambda() return 1 end lambda)\n bind _ <- Task.await(t)\n end with\nend function\n",
+     );
+     for expr in ["TaskGroup.open()", "TaskGroup.open", "(TaskGroup.open())"] {
+         let source = format!("function f() -> Unit uses State\n bind _ <- {expr}\nend function\n");
+--- a/crates/benitoite/src/typeck/tests.rs
++++ b/crates/benitoite/src/typeck/tests.rs
+@@ -483,7 +483,7 @@
+         &[(C::E0401, 2, 9)],
+     );
+     clean(
+-        "function f() -> Unit\n bind divide <- lambda(a, b) return a div b end lambda\n bind modulo <- lambda(a, b) return a mod b end lambda\n bind _ <- divide(5, 2) + modulo(5, 2)\nend function\n",
++        "function f() -> Unit\n bind divide <- lambda(a, b) return a div b end lambda\n bind modulo <- lambda(a, b) return a mod b end lambda\n bind _ <- divide(a: 5, b: 2) + modulo(a: 5, b: 2)\nend function\n",
+     );
+     expect(
+         "function f() -> Unit\n bind _ <- 1.5m div 2m\nend function\n",
+@@ -855,7 +855,7 @@
+ }
+ #[test]
+ fn effect_inference_names_and_stubs() {
+-    let choose = "import Benitoite.Unofficial.IO.Console\nfunction choose[effect E](unused: function() -> Unit uses Console.Write, E, act: function() -> Unit uses E) -> Unit uses E\n act()\nend function\nfunction main() -> Unit\n choose(lambda() Console.writeLine(\"unused\") end lambda, lambda() () end lambda)\nend function\n";
++    let choose = "import Benitoite.Unofficial.IO.Console\nfunction choose[effect E](unused: function() -> Unit uses Console.Write, E, act: function() -> Unit uses E) -> Unit uses E\n act()\nend function\nfunction main() -> Unit\n choose(unused: lambda() Console.writeLine(\"unused\") end lambda, act: lambda() () end lambda)\nend function\n";
+     clean(choose);
+     let effectful = choose.replace(
+         "lambda() () end lambda",
+@@ -1065,7 +1065,7 @@
+ 
+ #[test]
+ fn higher_kinded_instantiation_and_equatable_declaration_summaries() {
+-    let s = "function transform[F[_], A](x: F[A], f: function(F[A]) -> F[A]) -> F[A]\n return f(x)\nend function\nfunction main() -> Unit\n bind n <- transform(Option.Some(1), lambda(x) return x end lambda)\nend function\n";
++    let s = "function transform[F[_], A](x: F[A], f: function(x: F[A]) -> F[A]) -> F[A]\n return f(x)\nend function\nfunction main() -> Unit\n bind n <- transform(x: Option.Some(1), f: lambda(x) return x end lambda)\nend function\n";
+     let (l, r, t) = clean(s);
+     let call = s.rfind("transform(").unwrap();
+     let node = node_at(&l, call);
+@@ -1224,7 +1224,7 @@
+ #[test]
+ fn placeholder_callee_return_uses_generated_function_boundary() {
+     clean(
+-        "function add(a: Integer, b: Integer) -> Integer\n return a + b\nend function\nfunction make() -> String\n bind f <- (if true then return 5 else add end if)(_, 1)\n return Integer.toString(f(2))\nend function\n",
++        "function add(a: Integer, b: Integer) -> Integer\n return a + b\nend function\nfunction make() -> String\n bind f <- (if true then return 5 else add end if)(a: _, b: 1)\n return Integer.toString(f(2))\nend function\n",
+     );
+ }
+ 
+--- a/crates/benitoite/src/typeck/traits/tests.rs
++++ b/crates/benitoite/src/typeck/traits/tests.rs
+@@ -363,7 +363,7 @@
+         assert!(d.is_empty(), "{d:#?}");
+     }
+     clean(
+-        "function same[T: equality](a: T, b: T) -> Boolean\n return a = b\nend function\nfunction f[T: key](a: T) -> Boolean\n return same(a, a)\nend function\n",
++        "function same[T: equality](a: T, b: T) -> Boolean\n return a = b\nend function\nfunction f[T: key](a: T) -> Boolean\n return same(a: a, b: a)\nend function\n",
+     );
+     clean("function f() -> Unit\n bind _ <- List.sort([1, 2])\nend function\n");
+ }
+@@ -557,7 +557,7 @@
+ 
+ #[test]
+ fn implementation_and_method_constraints_keep_separate_indices() {
+-    let s = "trait Show[T]\n function show(x: T) -> String\n function render[U: Show](x: T, y: U) -> String\nend trait\nimplement[T: Show] Show[List[T]]\n function render[U: Show](x: List[T], y: U) -> String\n  bind _ <- List.map(x, Show.show)\n  return Show.show(y)\n end function\n function show(x: List[T]) -> String\n  return String.join(List.map(x, Show.show), \",\")\n end function\nend implement\n";
++    let s = "trait Show[T]\n function show(x: T) -> String\n function render[U: Show](x: T, y: U) -> String\nend trait\nimplement[T: Show] Show[List[T]]\n function render[U: Show](x: List[T], y: U) -> String\n  bind _ <- List.map(xs: x, f: Show.show)\n  return Show.show(y)\n end function\n function show(x: List[T]) -> String\n  return String.join(xs: List.map(xs: x, f: Show.show), separator: \",\")\n end function\nend implement\n";
+     let (l, r, t) = clean(s);
+     assert_eq!(
+         dict(&l, &t, s, "Show.show", 0),
+--- a/crates/benitoite/src/vm/dispatch/tasks/tests.rs
++++ b/crates/benitoite/src/vm/dispatch/tasks/tests.rs
+@@ -118,7 +118,7 @@
+ end function
+ function main() -> Result[Unit, String] uses State
+  bind task <- with group = TaskGroup.open() do
+-  TaskGroup.spawn(group, work)
++  TaskGroup.spawn(group: group, action: work)
+  end with
+  checkpoint()
+  bind text <- Task.await(task)
+@@ -134,7 +134,7 @@
+     let closed = r#"
+ function main() -> Unit uses State
+  bind closed <- with group = TaskGroup.open() do group end with
+- bind _ <- TaskGroup.spawn(closed, lambda() return () end lambda)
++ bind _ <- TaskGroup.spawn(group: closed, action: lambda() return () end lambda)
+  return ()
+ end function
+ "#;
+@@ -308,7 +308,7 @@
+ end function
+ function main() -> Result[Unit, String] uses State
+  bind r <- Reference.new(0)
+- bind _ <- Task.all([lambda() return Reference.update(r, lambda(n: Integer) return n + pause(5) end lambda) end lambda, lambda() return Reference.set(r, 100) end lambda])
++ bind _ <- Task.all([lambda() return Reference.update(reference: r, f: lambda(value: Integer) return value + pause(5) end lambda) end lambda, lambda() return Reference.set(reference: r, value: 100) end lambda])
+  bind n <- Reference.get(r)
+  if n = 101 then return Result.Ok(()) else return Result.Error(Integer.toString(n)) end if
+ end function
+@@ -334,20 +334,20 @@
+  bind a <- Reference.new(Option.None)
+  bind b <- Reference.new(Option.None)
+  with group = TaskGroup.open() do
+-  bind ta <- TaskGroup.spawn(group, lambda()
++  bind ta <- TaskGroup.spawn(group: group, action: lambda()
+    bind other <- Reference.get(b)
+    match other with case Option.Some(t) -> Task.await(t) 
+    case Option.None -> () end match
+    return ()
+   end lambda)
+-  bind tb <- TaskGroup.spawn(group, lambda()
++  bind tb <- TaskGroup.spawn(group: group, action: lambda()
+    bind other <- Reference.get(a)
+    match other with case Option.Some(t) -> Task.await(t) 
+    case Option.None -> () end match
+    return ()
+   end lambda)
+-  Reference.set(a, Option.Some(ta))
+-  Reference.set(b, Option.Some(tb))
++  Reference.set(reference: a, value: Option.Some(ta))
++  Reference.set(reference: b, value: Option.Some(tb))
+  end with
+  return ()
+ end function
+@@ -390,12 +390,12 @@
+ end function
+ function main() -> Result[Unit, String] uses State
+  with group = TaskGroup.open() do
+-  bind first <- TaskGroup.spawn(group, lambda()
++  bind first <- TaskGroup.spawn(group: group, action: lambda()
+    checkpoint()
+-   bind _ <- TaskGroup.spawn(group, lambda() return count(6) end lambda)
++   bind _ <- TaskGroup.spawn(group: group, action: lambda() return count(6) end lambda)
+    return count(6)
+   end lambda)
+-  bind second <- TaskGroup.spawn(group, lambda() return count(6) end lambda)
++  bind second <- TaskGroup.spawn(group: group, action: lambda() return count(6) end lambda)
+   bind _ <- Task.await(first)
+  end with
+  return Result.Ok(())
+@@ -1249,7 +1249,7 @@
+ end function
+ function main() -> Result[Unit, String] uses State
+  with group = TaskGroup.open() do
+-  bind task <- TaskGroup.spawn(group, lambda() return "await" + " result" end lambda)
++  bind task <- TaskGroup.spawn(group: group, action: lambda() return "await" + " result" end lambda)
+   bind value <- Task.await(task)
+   checkpoint()
+   if value = "await result" then return Result.Ok(()) else return Result.Error(value) end if
+--- a/crates/benitoite/src/vm/dispatch/tasks/tests/cancellation.rs
++++ b/crates/benitoite/src/vm/dispatch/tasks/tests/cancellation.rs
+@@ -353,7 +353,7 @@
+ fn timeout_discards_a_child_result_completed_at_or_after_the_deadline() {
+     let source = r#"import Benitoite.Unofficial.IO.Clock
+ function main() -> Result[Unit, String] uses Clock.Time, State
+- bind result <- Task.withTimeout(10, lambda() return 42 end lambda)
++ bind result <- Task.withTimeout(milliseconds: 10, action: lambda() return 42 end lambda)
+  if result = Option.None then return Result.Ok(()) else return Result.Error("late result") end if
+ end function"#;
+     for millis in [20, 10] {
+@@ -369,9 +369,9 @@
+     let source = r#"import Benitoite.Unofficial.IO.Clock
+ function main() -> Result[Unit, String] uses Clock.Time, State
+  bind changed <- Reference.new(false)
+- bind result <- Task.withTimeout(10, lambda()
+-  bind _ <- Task.withTimeout(100, lambda() return 1 end lambda)
+-  Reference.set(changed, true)
++ bind result <- Task.withTimeout(milliseconds: 10, action: lambda()
++  bind _ <- Task.withTimeout(milliseconds: 100, action: lambda() return 1 end lambda)
++  Reference.set(reference: changed, value: true)
+   return 2
+  end lambda)
+  if result = Option.None and not Reference.get(changed) then
+@@ -742,13 +742,13 @@
+  bind a: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
+  bind b: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)
+  with outer = TaskGroup.open() do
+-  bind other <- TaskGroup.spawn(outer,lambda() return waitSaved(b) end lambda)
+-  Reference.set(a,Option.Some(other))
+-  bind result <- Task.withTimeout(10,lambda()
++  bind other <- TaskGroup.spawn(group: outer,action: lambda() return waitSaved(b) end lambda)
++  Reference.set(reference: a,value: Option.Some(other))
++  bind result <- Task.withTimeout(milliseconds: 10,action: lambda()
+    with inner = TaskGroup.open() do
+-    bind child <- TaskGroup.spawn(inner,lambda() return waitSaved(a) end lambda)
+-    Reference.set(b,Option.Some(child))
+-    bind _ <- TaskGroup.spawn(inner,lambda() return 0 end lambda)
++    bind child <- TaskGroup.spawn(group: inner,action: lambda() return waitSaved(a) end lambda)
++    Reference.set(reference: b,value: Option.Some(child))
++    bind _ <- TaskGroup.spawn(group: inner,action: lambda() return 0 end lambda)
+     return Task.await(child)
+    end with
+   end lambda)
+@@ -1666,11 +1666,11 @@
+ import Benitoite.Unofficial.IO.Clock
+ function main() -> Result[Unit, String] uses Clock.Time, State
+   bind p <- try Regex.compile("a")
+-  bind input <- String.repeat("a", 20000)
++  bind input <- String.repeat(s: "a", n: 20000)
+   bind finished <- Reference.new(false)
+-  bind result <- Task.withTimeout(10, lambda()
+-    bind n <- List.length(Regex.findAll(p, input))
+-    Reference.set(finished, true)
++  bind result <- Task.withTimeout(milliseconds: 10, action: lambda()
++    bind n <- List.length(Regex.findAll(pattern: p, text: input))
++    Reference.set(reference: finished, value: true)
+     return n
+   end lambda)
+   if result <> Option.None then return Result.Error("regex did not time out") end if
+--- a/crates/benitoite/tests/http_descriptor_exhaustion.rs
++++ b/crates/benitoite/tests/http_descriptor_exhaustion.rs
+@@ -23,7 +23,7 @@
+ function one(listener: Http.Listener) -> Result[Boolean, String] uses Http.Listen, State
+  with exchange = try Http.accept(listener) |> Result.mapError(_, NetworkError.message) do
+   bind done <- Http.Request.path(Http.requestOf(exchange)) = "/done"
+-  bind _ <- try Http.respond(exchange, Http.Response(status: 200, headers: [], body: String.toUTF8("ok"))) |> Result.mapError(_, NetworkError.message)
++  bind _ <- try Http.respond(exchange: exchange, response: Http.Response(status: 200, headers: [], body: String.toUTF8("ok"))) |> Result.mapError(_, NetworkError.message)
+   return Result.Ok(done)
+  end with
+ end function
+@@ -33,7 +33,7 @@
+  return serve(listener)
+ end function
+ function main() -> Result[Unit, String] uses Http.Listen, Console.Write, State
+- with listener = try Http.listen("127.0.0.1", 0) |> Result.mapError(_, NetworkError.message) do
++ with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(_, NetworkError.message) do
+   Console.writeLine(Integer.toString(Http.listenerPort(listener)))
+   return serve(listener)
+  end with
+--- a/crates/benitoite/tests/l10_console_clock_process.rs
++++ b/crates/benitoite/tests/l10_console_clock_process.rs
+@@ -21,7 +21,7 @@
+ import Benitoite.Unofficial.IO.Clock
+ import Benitoite.Unofficial.Time
+ function main() -> Result[Unit,String] uses Clock.Time
+- bind cmd <- Process.command("git", ["status"])
++ bind cmd <- Process.command(program: "git", arguments: ["status"])
+  if Process.Command.program(cmd) <> "git" or Process.Command.arguments(cmd) <> ["status"]
+     or Process.Command.workingDirectory(cmd) <> Option.None
+     or Process.Command.environment(cmd) <> Map.empty()
+--- a/crates/benitoite/tests/l13_external_commands.rs
++++ b/crates/benitoite/tests/l13_external_commands.rs
+@@ -115,18 +115,18 @@
+ import Benitoite.Unofficial.IO.Process
+ import Benitoite.Unofficial.IO.Console
+ function main() -> Result[Unit,String] uses Process.Run,Console.Write
+- bind output <- try Process.run(Process.command("sh", ["-c", "printf out; printf err >&2; exit 7"])) |> Result.mapError(_, IOError.message)
++ bind output <- try Process.run(Process.command(program: "sh", arguments: ["-c", "printf out; printf err >&2; exit 7"])) |> Result.mapError(_, IOError.message)
+  if Process.Output.exitCode(output) <> 7 or Process.Output.standardOutput(output) <> "out"
+     or Process.Output.standardError(output) <> "err" then
+   return Result.Error("output fields")
+  end if
+  Console.write("before ")
+- bind empty <- try Process.runAttached(Process.command("cat", [])) |> Result.mapError(_, IOError.message)
++ bind empty <- try Process.runAttached(Process.command(program: "cat", arguments: [])) |> Result.mapError(_, IOError.message)
+  if empty <> 0 then return Result.Error("empty input") end if
+- bind cmd <- Process.Command(..Process.command("cat", []), input: Option.Some("payload "))
++ bind cmd <- Process.Command(..Process.command(program: "cat", arguments: []), input: Option.Some("payload "))
+  bind status <- try Process.runAttached(cmd) |> Result.mapError(_, IOError.message)
+  if status <> 0 then return Result.Error("command input") end if
+- bind invalid <- try Process.runAttached(Process.command("sh", ["-c", "printf '\\377'; printf 'err\\377' >&2; exit 7"])) |> Result.mapError(_, IOError.message)
++ bind invalid <- try Process.runAttached(Process.command(program: "sh", arguments: ["-c", "printf '\\377'; printf 'err\\377' >&2; exit 7"])) |> Result.mapError(_, IOError.message)
+  if invalid <> 7 then return Result.Error("attached nonzero exit") end if
+  Console.write(" after")
+  return Result.Ok(())
+@@ -150,7 +150,7 @@
+ import Benitoite.Unofficial.IO.Console
+ function main() -> Result[Unit,String] uses Process.Run,Console.Write
+  Console.write("before ")
+- bind status <- try Process.runAttached(Process.command("sh", ["-c", "i=0; while [ \"$i\" -lt 131072 ]; do printf abcdefghABCDEFGH; i=$((i+1)); done"])) |> Result.mapError(_, IOError.message)
++ bind status <- try Process.runAttached(Process.command(program: "sh", arguments: ["-c", "i=0; while [ \"$i\" -lt 131072 ]; do printf abcdefghABCDEFGH; i=$((i+1)); done"])) |> Result.mapError(_, IOError.message)
+  if status <> 0 then return Result.Error("child failed") end if
+  Console.write(" after")
+  return Result.Ok(())
+@@ -221,7 +221,7 @@
+ import Benitoite.Unofficial.IO.Process
+ import Benitoite.Unofficial.IO.Console
+ function main() -> Result[Unit,String] uses Process.Run,Console.Write
+- bind cmd <- Process.Command(..Process.command("sh", ["-c", "exit 0"]), input: Option.Some(String.repeat("x",1048576)))
++ bind cmd <- Process.Command(..Process.command(program: "sh", arguments: ["-c", "exit 0"]), input: Option.Some(String.repeat(s: "x",n: 1048576)))
+  bind output <- try Process.run(cmd) |> Result.mapError(_, IOError.message)
+  if Process.Output.exitCode(output) <> 0 then return Result.Error("child failed") end if
+  Console.write("continued")
+@@ -252,8 +252,8 @@
+ import Benitoite.Unofficial.IO.Console
+ import Benitoite.Unofficial.IO.Clock
+ function main() -> Result[Unit,String] uses Process.Run,Console.Write,Clock.Time,State
+- bind result <- Task.withTimeout(100, lambda()
+-  return Process.run(Process.command("sh", ["-c", "printf started > started; sleep 3; printf survived > finished"]))
++ bind result <- Task.withTimeout(milliseconds: 100, action: lambda()
++  return Process.run(Process.command(program: "sh", arguments: ["-c", "printf started > started; sleep 3; printf survived > finished"]))
+  end lambda)
+  match result with
+  case Option.None -> Console.write("continued")
+--- a/crates/benitoite/tests/l21_json.rs
++++ b/crates/benitoite/tests/l21_json.rs
+@@ -63,18 +63,18 @@
+ import Benitoite.Unofficial.Json
+ function main() -> Result[Unit, String]
+   bind value <- try Json.parse("{\"title\":\"é😀\",\"items\":[7,1.5,true,null]}") |> Result.mapError(_, Json.ParseError.message)
+-  if Json.get(value, "title") <> Option.Some(Json.Value.String("é😀"))
+-    or Json.get(value, "missing") <> Option.None
+-    or Json.get(Json.Value.Null, "title") <> Option.None then
++  if Json.get(value: value, k: "title") <> Option.Some(Json.Value.String("é😀"))
++    or Json.get(value: value, k: "missing") <> Option.None
++    or Json.get(value: Json.Value.Null, k: "title") <> Option.None then
+     return Result.Error("get")
+   end if
+-  bind items <- Json.get(value, "items") |> Option.unwrapOr(_, Json.Value.Null)
+-  if Json.at(items, 0) <> Option.Some(Json.Value.Integer(7))
+-    or Json.at(items, 1) <> Option.Some(Json.Value.Float(1.5))
+-    or Json.at(items, 3) <> Option.Some(Json.Value.Null)
+-    or Json.at(items, -1) <> Option.None
+-    or Json.at(items, 4) <> Option.None
+-    or Json.at(Json.Value.Null, 0) <> Option.None then
++  bind items <- Json.get(value: value, k: "items") |> Option.unwrapOr(_, Json.Value.Null)
++  if Json.at(value: items, index: 0) <> Option.Some(Json.Value.Integer(7))
++    or Json.at(value: items, index: 1) <> Option.Some(Json.Value.Float(1.5))
++    or Json.at(value: items, index: 3) <> Option.Some(Json.Value.Null)
++    or Json.at(value: items, index: -1) <> Option.None
++    or Json.at(value: items, index: 4) <> Option.None
++    or Json.at(value: Json.Value.Null, index: 0) <> Option.None then
+     return Result.Error("at")
+   end if
+   if Json.asString(Json.Value.String("é😀")) <> Option.Some("é😀")
+@@ -97,7 +97,7 @@
+     return Result.Error("wrong kinds")
+   end if
+   bind object <- Json.asObject(value) |> Option.unwrapOr(_, Map.empty())
+-  if Map.get(object, "title") <> Option.Some(Json.Value.String("é😀")) then
++  if Map.get(m: object, k: "title") <> Option.Some(Json.Value.String("é😀")) then
+     return Result.Error("asObject")
+   end if
+   bind same <- try Json.parse("{\"items\":[7,1.5,true,null],\"title\":\"é😀\"}") |> Result.mapError(_, Json.ParseError.message)
+@@ -119,8 +119,8 @@
+ function totalAmount(text: String) -> Result[Integer, String]
+   bind value <- try Json.parse(text) |> Result.mapError(_, Json.ParseError.message)
+   bind items <- Json.asArray(value) |> Option.unwrapOr(_, [])
+-  return Result.Ok(List.fold(items, 0, lambda(sum, item)
+-    return match Json.get(item, "amount") with
++  return Result.Ok(List.fold(xs: items, initial: 0, f: lambda(sum, item)
++    return match Json.get(value: item, k: "amount") with
+       case Option.Some(Json.Value.Integer(n)) -> sum + n
+       case _ -> sum
+     end match
+--- a/crates/benitoite/tests/l24_time.rs
++++ b/crates/benitoite/tests/l24_time.rs
+@@ -66,7 +66,7 @@
+   if Time.Instant.unixNanoseconds(t) <> 1_790_566_496_789_000_000 then
+     return Result.Error("Instant field")
+   end if
+-  bind dt <- Time.toDateTime(t, 540)
++  bind dt <- Time.toDateTime(t: t, offsetMinutes: 540)
+   if Time.DateTime.year(dt) <> 2026 or Time.DateTime.month(dt) <> 9
+     or Time.DateTime.day(dt) <> 28 or Time.DateTime.hour(dt) <> 12
+     or Time.DateTime.minute(dt) <> 34 or Time.DateTime.second(dt) <> 56
+@@ -76,8 +76,8 @@
+   end if
+   bind other <- Time.Instant(unixNanoseconds: 1_790_566_496_789_000_001)
+   bind instants <- Map.fromList([Pair(other, "next"), Pair(t, "instant")])
+-  if Map.size(instants) <> 2 or Map.get(instants, t) <> Option.Some("instant")
+-    or Map.get(instants, other) <> Option.Some("next") then
++  if Map.size(instants) <> 2 or Map.get(m: instants, k: t) <> Option.Some("instant")
++    or Map.get(m: instants, k: other) <> Option.Some("next") then
+     return Result.Error("Instant keys")
+   end if
+   bind same <- Time.DateTime(year: 2026, month: 9, day: 28, hour: 12,
+@@ -87,8 +87,8 @@
+   end if
+   bind changed <- Time.DateTime(..same, nanosecond: 789_000_001)
+   bind dates <- Map.fromList([Pair(changed, "next"), Pair(dt, "date")])
+-  if Map.size(dates) <> 2 or Map.get(dates, same) <> Option.Some("date")
+-    or Map.get(dates, changed) <> Option.Some("next") then
++  if Map.size(dates) <> 2 or Map.get(m: dates, k: same) <> Option.Some("date")
++    or Map.get(m: dates, k: changed) <> Option.Some("next") then
+     return Result.Error("DateTime keys")
+   end if
+   return Result.Ok(())
+--- a/crates/benitoite/tests/open_062.rs
++++ b/crates/benitoite/tests/open_062.rs
+@@ -432,7 +432,7 @@
+ fn open_062_r01_pure_all_values_agree_and_stops_are_runtime_errors() {
+     let allok = r#"function main() -> Result[Unit,String]
+  bind result <- Task.allOk([lambda() return Result.Error("first") end lambda,lambda() return Result.Ok(1 div 0) end lambda])
+- return Result.map(result,lambda(_values) return () end lambda)
++ return Result.map(r: result,f: lambda(value) return () end lambda)
+ end function"#;
+     let all = r#"function main() -> Unit
+  bind _ <- Task.all([lambda() return 1 div 0 end lambda,lambda() return 9223372036854775807 + 1 end lambda])
+@@ -440,7 +440,7 @@
+     // 値の比較が空のまま通らないよう、実行時エラーのない二つの順序でも結果を確かめる。
+     let allok_values = r#"function main() -> Result[Unit,String]
+  bind result <- Task.allOk([lambda() return Result.Error("first") end lambda,lambda() return Result.Error("second") end lambda])
+- return Result.map(result,lambda(_values) return () end lambda)
++ return Result.map(r: result,f: lambda(value) return () end lambda)
+ end function"#;
+     let all_values = r#"function main() -> Result[Unit,String]
+  bind values <- Task.all([lambda() return 11 end lambda,lambda() return 22 end lambda])
+@@ -571,7 +571,7 @@
+  bind results <- Task.all([
+  lambda()
+  bind result <- File.readText("Cargo.toml")
+- Reference.set(done,true)
++ Reference.set(reference: done,value: true)
+  return result
+  end lambda,
+  lambda()
+@@ -741,9 +741,9 @@
+ import Benitoite.Unofficial.IO.Clock
+ function main() -> Result[Unit,String] uses State,File.Read,Clock.Time,Console.Write
+  with group = TaskGroup.open() do
+- bind _ <- TaskGroup.spawn(group,lambda() Console.write("") end lambda)
++ bind _ <- TaskGroup.spawn(group: group,action: lambda() Console.write("") end lambda)
+  with reader = try File.openReader("Cargo.toml") |> Result.mapError(_,IOError.message) do
+- bind _ <- TaskGroup.spawn(group,lambda() Console.write("") end lambda)
++ bind _ <- TaskGroup.spawn(group: group,action: lambda() Console.write("") end lambda)
+  bind winner <- Task.race([
+  lambda()
+  bind _ <- File.readLine(reader)
+@@ -755,7 +755,7 @@
+  Clock.sleep(1)
+  return 2
+  end lambda])
+- bind next <- TaskGroup.spawn(group,lambda() return File.readLine(reader) end lambda)
++ bind next <- TaskGroup.spawn(group: group,action: lambda() return File.readLine(reader) end lambda)
+  bind line <- Task.await(next)
+  Console.write("reused")
+  return match line with
+@@ -995,14 +995,14 @@
+  lambda()
+  with reader = try File.openReader("Cargo.toml") do
+  bind _ <- try File.readLine(reader)
+- Console.write(String.repeat("x",1048577))
++ Console.write(String.repeat(s: "x",n: 1048577))
+  Console.write("capacity")
+  return Result.Ok(())
+  end with
+  end lambda,
+  lambda()
+  Clock.sleep(10)
+- Console.writeError(String.repeat("t",65537))
++ Console.writeError(String.repeat(s: "t",n: 65537))
+  spin()
+  return Result.Ok(())
+  end lambda,
+--- a/crates/benitoite/tests/runtime_builtins.rs
++++ b/crates/benitoite/tests/runtime_builtins.rs
+@@ -349,15 +349,15 @@
+   bind s <- Set.fromList([2, 1])
+   Console.writeLine(Trait.Show.show(m))
+   Console.writeLine(Trait.Show.show(s))
+-  Console.writeLine(Trait.Show.show(Trait.Semigroup.combine(m, Map.fromList([Pair(1, "new"), Pair(3, "c")]))))
+-  Console.writeLine(Trait.Show.show(Trait.Semigroup.combine(s, Set.fromList([3, 2]))))
++  Console.writeLine(Trait.Show.show(Trait.Semigroup.combine(x: m, y: Map.fromList([Pair(1, "new"), Pair(3, "c")]))))
++  Console.writeLine(Trait.Show.show(Trait.Semigroup.combine(x: s, y: Set.fromList([3, 2]))))
+   bind emptyMap: Map[Integer, String] <- Trait.Monoid.empty()
+   bind emptySet: Set[Integer] <- Trait.Monoid.empty()
+   Console.writeLine(Trait.Show.show(emptyMap))
+   Console.writeLine(Trait.Show.show(emptySet))
+-  bind d <- Trait.Semigroup.combine(Map.fromList([Pair(1.0m, "old")]), Map.fromList([Pair(1.00m, "new")]))
+-  bind preserved <- Decimal.toString(List.head(Map.keys(d)) |> Option.unwrapOr(_, 0m)) = "1.0" and Map.get(d, 1.00m) = Option.Some("new")
+-  return if preserved and Map.toList(Trait.Semigroup.combine(emptyMap, m)) = Map.toList(m) and Map.toList(Trait.Semigroup.combine(m, emptyMap)) = Map.toList(m) and Set.toList(Trait.Semigroup.combine(emptySet, s)) = Set.toList(s) and Set.toList(Trait.Semigroup.combine(s, emptySet)) = Set.toList(s) and Map.toList(m) = [Pair(1, "a"), Pair(2, "b")] and Set.toList(s) = [1, 2] then
++  bind d <- Trait.Semigroup.combine(x: Map.fromList([Pair(1.0m, "old")]), y: Map.fromList([Pair(1.00m, "new")]))
++  bind preserved <- Decimal.toString(List.head(Map.keys(d)) |> Option.unwrapOr(_, 0m)) = "1.0" and Map.get(m: d, k: 1.00m) = Option.Some("new")
++  return if preserved and Map.toList(Trait.Semigroup.combine(x: emptyMap, y: m)) = Map.toList(m) and Map.toList(Trait.Semigroup.combine(x: m, y: emptyMap)) = Map.toList(m) and Set.toList(Trait.Semigroup.combine(x: emptySet, y: s)) = Set.toList(s) and Set.toList(Trait.Semigroup.combine(x: s, y: emptySet)) = Set.toList(s) and Map.toList(m) = [Pair(1, "a"), Pair(2, "b")] and Set.toList(s) = [1, 2] then
+     Result.Ok(())
+   else
+     Result.Error("collection traits")
+--- a/crates/benitoite/tests/test_command.rs
++++ b/crates/benitoite/tests/test_command.rs
+@@ -125,19 +125,19 @@
+ 
+ @test("adds \"two\" numbers")
+ function adds() -> Unit uses Assert.Check
+-  Assert.equal(1 + 2, 3)
++  Assert.equal(actual: 1 + 2, expected: 3)
+ end function
+ 
+ @test
+ function sumOfEmpty() -> Unit uses Assert.Check, Console.Write
+   Console.writeLine("out line")
+   Console.writeErrorLine("err line")
+-  Assert.equal(3, 4)
++  Assert.equal(actual: 3, expected: 4)
+ end function
+ 
+ @test
+ function truth() -> Unit uses Assert.Check
+-  Assert.isTrue(false, "should hold")
++  Assert.isTrue(condition: false, message: "should hold")
+ end function
+ 
+ @test
+@@ -303,7 +303,7 @@
+     let dir = Directory::new("ok");
+     let file = dir.write(
+         "ok.bnt",
+-        "@test\nfunction one() -> Unit uses Assert.Check\n  Assert.notEqual(1, 2)\nend function\n\n@test(\"second\")\nfunction two() -> Result[Unit, String]\n  return Result.Ok(())\nend function\n",
++        "@test\nfunction one() -> Unit uses Assert.Check\n  Assert.notEqual(actual: 1, expected: 2)\nend function\n\n@test(\"second\")\nfunction two() -> Result[Unit, String]\n  return Result.Ok(())\nend function\n",
+     );
+     let out = run(&dir, &[&file]);
+     assert_eq!(out.exit, 0, "{}", out.stderr);
+@@ -430,7 +430,7 @@
+     let dir = Directory::new("stack");
+     let file = dir.write(
+         "deep.bnt",
+-        "function depth(n: Integer) -> Integer\n  if n = 0 then\n    return 0\n  end if\n  return 1 + depth(n - 1)\nend function\n\n@test\nfunction deep() -> Unit uses Assert.Check\n  Assert.equal(depth(1000), 1000)\nend function\n",
++        "function depth(n: Integer) -> Integer\n  if n = 0 then\n    return 0\n  end if\n  return 1 + depth(n - 1)\nend function\n\n@test\nfunction deep() -> Unit uses Assert.Check\n  Assert.equal(actual: depth(1000), expected: 1000)\nend function\n",
+     );
+     let roomy = run(&dir, &[&file]);
+     assert_eq!(roomy.exit, 0, "{}{}", roomy.stdout, roomy.stderr);
+@@ -535,7 +535,7 @@
+     let dir = Directory::new("deadlock");
+     let file = dir.write(
+         "deadlock.bnt",
+-        "function awaitSaved(cell: Reference[Option[Task[Integer]]]) -> Integer uses State\n  return match Reference.get(cell) with\n    case Option.None -> awaitSaved(cell)\n    case Option.Some(task) -> Task.await(task)\n  end match\nend function\n\n@test\nfunction stuck() -> Unit uses State\n  bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)\n  with group = TaskGroup.open() do\n    bind task <- TaskGroup.spawn(group, lambda() return awaitSaved(saved) end lambda)\n    Reference.set(saved, Option.Some(task))\n  end with\nend function\n",
++        "function awaitSaved(cell: Reference[Option[Task[Integer]]]) -> Integer uses State\n  return match Reference.get(cell) with\n    case Option.None -> awaitSaved(cell)\n    case Option.Some(task) -> Task.await(task)\n  end match\nend function\n\n@test\nfunction stuck() -> Unit uses State\n  bind saved: Reference[Option[Task[Integer]]] <- Reference.new(Option.None)\n  with group = TaskGroup.open() do\n    bind task <- TaskGroup.spawn(group: group, action: lambda() return awaitSaved(saved) end lambda)\n    Reference.set(reference: saved, value: Option.Some(task))\n  end with\nend function\n",
+     );
+     let out = run(&dir, &[&file]);
+     assert_eq!(out.exit, 1, "{}", out.stderr);
+--- a/crates/benitoite/tests/vm_reference_cells.rs
++++ b/crates/benitoite/tests/vm_reference_cells.rs
+@@ -21,13 +21,13 @@
+ function main() -> Unit uses State
+  bind r <- Reference.new(1)
+  with group = TaskGroup.open() do
+-  bind _ <- TaskGroup.spawn(group, lambda()
+-   Reference.set(r, 0)
++  bind _ <- TaskGroup.spawn(group: group, action: lambda()
++   Reference.set(reference: r, value: 0)
+    return ()
+   end lambda)
+-  Reference.update(r, lambda(x: Integer) -> Integer
++  Reference.update(reference: r, f: lambda(value: Integer) -> Integer
+    bind _ <- busy(100000)
+-   return 10 div x
++   return 10 div value
+   end lambda)
+  end with
+  return ()
+@@ -96,17 +96,17 @@
+         ),
+         (
+             "large allocated result",
+-            "function grow(xs: List[Integer], n: Integer) -> List[Integer]\n if n = 0 then return xs end if\n return grow(List.append(xs, n), n - 1)\nend function\n",
++            "function grow(xs: List[Integer], n: Integer) -> List[Integer]\n if n = 0 then return xs end if\n return grow(xs: List.append(xs: xs, x: n), n: n - 1)\nend function\n",
+             "bind r <- Reference.new([0])\n bind u <- Reference.update(r, lambda(xs: List[Integer]) -> List[Integer] return grow(xs, 2048) end lambda)\n return if u = () and List.length(Reference.get(r)) = 2049 then Result.Ok(()) else Result.Error(\"list\") end if",
+         ),
+         (
+             "100000 updates",
+-            "function repeat(r: Reference[Integer], n: Integer) -> Unit uses State\n if n = 0 then return () end if\n Reference.update(r, lambda(x: Integer) -> Integer return x + 1 end lambda)\n return repeat(r, n - 1)\nend function\n",
++            "function repeat(r: Reference[Integer], n: Integer) -> Unit uses State\n if n = 0 then return () end if\n Reference.update(reference: r, f: lambda(value: Integer) -> Integer return value + 1 end lambda)\n return repeat(r: r, n: n - 1)\nend function\n",
+             "bind r <- Reference.new(0)\n repeat(r, 100000)\n return if Reference.get(r) = 100000 then Result.Ok(()) else Result.Error(\"frames\") end if",
+         ),
+         (
+             "discarded cycles",
+-            "data Node\n Link(Reference[Option[Node]])\nend data\nfunction cycles(n: Integer) -> Unit uses State\n if n = 0 then return () end if\n bind r <- Reference.new(Option.None)\n bind v <- Node.Link(r)\n Reference.set(r, Option.Some(v))\n return cycles(n - 1)\nend function\n",
++            "data Node\n Link(Reference[Option[Node]])\nend data\nfunction cycles(n: Integer) -> Unit uses State\n if n = 0 then return () end if\n bind r <- Reference.new(Option.None)\n bind v <- Node.Link(r)\n Reference.set(reference: r, value: Option.Some(v))\n return cycles(n - 1)\nend function\n",
+             "cycles(10000)\n return Result.Ok(())",
+         ),
+     ];

@@ -3,5 +3,5 @@
 import Benitoite.Unofficial.IO.Console
 
 function main() -> Unit uses Console.Write
-  return Console.writeLine(Integer.toString(String.byteLength(String.repeat("ab", 1000000000))))
+  return Console.writeLine(Integer.toString(String.byteLength(String.repeat(s: "ab", n: 1000000000))))
 end function

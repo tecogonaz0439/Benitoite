@@ -1,0 +1,279 @@
+--- a/crates/benitoite/testdata/acceptance/json_summary.bnt
++++ b/crates/benitoite/testdata/acceptance/json_summary.bnt
+@@ -20,8 +20,8 @@
+ end function
+ 
+ function main() -> Result[Unit, String] uses File.Read, Console.Write
+-  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: IOError.message)
+-  bind document <- try Json.parse(text) |> Result.mapError(r: _, f: Json.ParseError.message)
++  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind document <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+   bind orders <- match Json.asArray(document) with
+     case Option.Some(items) -> items
+     case Option.None -> return Result.Error("orders.json is not an array")
+--- a/crates/benitoite/testdata/acceptance/test_replaces_effects.stdout
++++ b/crates/benitoite/testdata/acceptance/test_replaces_effects.stdout
+@@ -1,4 +1,4 @@
+-{"kind":"test","file":"testdata/acceptance/test_replaces_effects.bnt","name":"Process.run is replaced by the handler","function":"runIsReplaced","location":{"file":"testdata/acceptance/test_replaces_effects.bnt","start":{"line":22,"column":10,"offset":1272},"end":{"line":22,"column":23,"offset":1285},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
+-{"kind":"test","file":"testdata/acceptance/test_replaces_effects.bnt","name":"Process.exit is replaced by the handler","function":"exitIsReplaced","location":{"file":"testdata/acceptance/test_replaces_effects.bnt","start":{"line":35,"column":10,"offset":1781},"end":{"line":35,"column":24,"offset":1795},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
+-{"kind":"test","file":"testdata/acceptance/test_replaces_effects.bnt","name":"File.writeText is replaced by the handler","function":"writeIsReplaced","location":{"file":"testdata/acceptance/test_replaces_effects.bnt","start":{"line":45,"column":10,"offset":2035},"end":{"line":45,"column":25,"offset":2050},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
++{"kind":"test","file":"testdata/acceptance/test_replaces_effects.bnt","name":"Process.run is replaced by the handler","function":"runIsReplaced","location":{"file":"testdata/acceptance/test_replaces_effects.bnt","start":{"line":22,"column":10,"offset":1409},"end":{"line":22,"column":23,"offset":1422},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
++{"kind":"test","file":"testdata/acceptance/test_replaces_effects.bnt","name":"Process.exit is replaced by the handler","function":"exitIsReplaced","location":{"file":"testdata/acceptance/test_replaces_effects.bnt","start":{"line":35,"column":10,"offset":1972},"end":{"line":35,"column":24,"offset":1986},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
++{"kind":"test","file":"testdata/acceptance/test_replaces_effects.bnt","name":"File.writeText is replaced by the handler","function":"writeIsReplaced","location":{"file":"testdata/acceptance/test_replaces_effects.bnt","start":{"line":45,"column":10,"offset":2244},"end":{"line":45,"column":25,"offset":2259},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
+ {"kind":"testSummary","passed":3,"failed":0,"filesNotRun":0,"interrupted":false}
+--- a/crates/benitoite/testdata/eval/list_functions.bnt
++++ b/crates/benitoite/testdata/eval/list_functions.bnt
+@@ -18,7 +18,7 @@
+   Console.writeLine(show_option_int(List.head([])))
+   Console.writeLine(show_option_int(List.head([8, 9])))
+   Console.writeLine(show_ints(List.tail([8, 9]) |> Option.unwrapOr(fallback: [])))
+-  Console.writeLine(show_option_int(List.tail([]) |> Option.map(f: lambda(values) return List.length(values) end lambda)))
++  Console.writeLine(show_option_int(List.tail([]) |> Option.map(f: lambda(value) return List.length(value) end lambda)))
+   Console.writeLine(show_option_int(List.get(xs: [10, 20, 30], i: -1)))
+   Console.writeLine(show_option_int(List.get(xs: [10, 20, 30], i: 3)))
+   Console.writeLine(show_ints(List.take(xs: [1, 2, 3], n: -1)))
+--- a/crates/benitoite/testdata/io/l40-json-total.bnt
++++ b/crates/benitoite/testdata/io/l40-json-total.bnt
+@@ -5,8 +5,8 @@
+ import Benitoite.Unofficial.IO.File
+ import Benitoite.Unofficial.Json
+ function totalAmount(path: String) -> Result[Integer, String] uses File.Read
+-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: IOError.message)
+-  bind document <- try Json.parse(text) |> Result.mapError(r: _, f: Json.ParseError.message)
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind document <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+   bind items <- Json.asArray(document) |> Option.unwrapOr(o: _, fallback: [])
+   return Result.Ok(List.fold(xs: items, initial: 0, f: lambda(acc, value)
+     return match Json.get(value: value, k: "amount") with
+--- a/crates/benitoite/testdata/packages/json-wasm-same/main.bnt
++++ b/crates/benitoite/testdata/packages/json-wasm-same/main.bnt
+@@ -78,16 +78,16 @@
+ function pointers() -> Result[Unit, String] uses State, Console.Write
+   bind source <- "{\"a/b\":{\"~key\":[null,-0.0,{\"x\":2}]},\"\":[],\"tilde~1\":true}"
+   bind a <- Result.unwrapOr(r: Json.parse(source), fallback: Json.Value.Null)
+-  bind doc <- try Result.mapError(r: Codec.document(source), f: Json.ParseError.message)
++  bind doc <- try Result.mapError(r: Codec.document(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+   bind object <- Option.unwrapOr(o: Json.get(value: a, k: "a/b"), fallback: Json.Value.Null)
+   bind array <- Option.unwrapOr(o: Json.get(value: object, k: "~key"), fallback: Json.Value.Null)
+   bind cases <- [Pair("", Option.Some(a)), Pair("/", Json.get(value: a, k: "")), Pair("/a~1b", Json.get(value: a, k: "a/b")), Pair("/a~1b/~0key", Json.get(value: object, k: "~key")), Pair("/a~1b/~0key/0", Json.at(value: array, index: 0)), Pair("/a~1b/~0key/1", Json.at(value: array, index: 1)), Pair("/a~1b/~0key/2", Json.at(value: array, index: 2)), Pair("/a~1b/~0key/2/x", Json.get(value: Option.unwrapOr(o: Json.at(value: array, index: 2), fallback: Json.Value.Null), k: "x")), Pair("/tilde~01", Json.get(value: a, k: "tilde~1")), Pair("/missing", Option.None), Pair("/a~1b/~0key/01", Option.None), Pair("/a~1b/~0key/-1", Option.None), Pair("/a~1b/~0key/+1", Option.None), Pair("/a~1b/~0key/3", Option.None), Pair("/a~1b/~0key/-", Option.None), Pair("/a~1b/~0key/1/x", Option.None), Pair("/a~2b", Option.None), Pair("/a~", Option.None), Pair("a/b", Option.None)]
+-  return List.fold(xs: cases, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], pair: Pair[String, Option[Json.Value]]) -> Result[Unit, String] uses State, Console.Write
+-    bind _ <- try acc
+-    bind path <- Pair.first(pair)
+-    bind value <- Pair.second(pair)
+-    bind expected <- Option.map(o: value, f: Json.stringify)
+-    bind count <- Option.andThen(o: value, f: length)
++  return List.fold(xs: cases, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: Pair[String, Option[Json.Value]]) -> Result[Unit, String] uses State, Console.Write
++    bind _ <- try acc
++    bind path <- Pair.first(value)
++    bind item <- Pair.second(value)
++    bind expected <- Option.map(o: item, f: Json.stringify)
++    bind count <- Option.andThen(o: item, f: length)
+     bind actual <- Codec.get(document: doc, pointer: path)
+     bind size <- Codec.len(document: doc, pointer: path)
+     Console.writeLine("pointer " + Json.stringify(Json.Value.String(path)) + " A=" + Trait.Show.show(expected) + " len=" + Trait.Show.show(count) + " | get=${actual = expected} len=${size = count}")
+@@ -180,23 +180,23 @@
+     "{\"a\":}",
+     "\"\\uZZZZx\""
+   ]
+-  bind _ <- try List.fold(xs: sources, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], source: String) -> Result[Unit, String] uses State, Console.Write
+-    bind _ <- try acc
+-    return compare(source)
+-  end lambda)
+-  bind _ <- try List.fold(xs: [127, 128, 1000], initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], n: Integer) -> Result[Unit, String] uses State, Console.Write
+-    bind _ <- try acc
+-    return compare(String.repeat(s: "[", n: n) + "0" + String.repeat(s: "]", n: n))
++  bind _ <- try List.fold(xs: sources, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: String) -> Result[Unit, String] uses State, Console.Write
++    bind _ <- try acc
++    return compare(value)
++  end lambda)
++  bind _ <- try List.fold(xs: [127, 128, 1000], initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: Integer) -> Result[Unit, String] uses State, Console.Write
++    bind _ <- try acc
++    return compare(String.repeat(s: "[", n: value) + "0" + String.repeat(s: "]", n: value))
+   end lambda)
+   // gc-stress で 10 秒以内に収めるため書き出す値は 128 段にする。
+   // ゲストの変換・書き出し・解放が明示の積み重ねで辿ることはコードを読んで確かめた。
+   bind values <- [Pair("deep 128", deep(n: 128, value: Json.Value.Null)), Pair("non-finite", Json.Value.Array([Json.Value.Float(0.0 / 0.0), Json.Value.Float(1.0 / 0.0), Json.Value.Float(-1.0 / 0.0)])), Pair("nested members", Json.Value.Object(Map.fromList([Pair("z", Json.Value.Array([Json.Value.Object(Map.fromList([Pair("a", Json.Value.Array([])), Pair("b", Json.Value.Object(Map.empty()))]))])), Pair("a", Json.Value.Object(Map.fromList([Pair("x", Json.Value.Null)])))])))]
+-  bind _ <- try List.fold(xs: values, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], pair: Pair[String, Json.Value]) -> Result[Unit, String] uses Console.Write
+-    bind _ <- try acc
+-    bind value <- Pair.second(pair)
+-    bind same <- Codec.stringify(value) = Result.Ok(Json.stringify(value))
+-    bind pretty <- Codec.stringifyPretty(value) = Result.Ok(Json.stringifyPretty(value))
+-    Console.writeLine(Pair.first(pair) + " A=" + Json.stringify(value) + " | compact=${same} pretty=${pretty}")
++  bind _ <- try List.fold(xs: values, initial: Result.Ok(()), f: lambda(acc: Result[Unit, String], value: Pair[String, Json.Value]) -> Result[Unit, String] uses Console.Write
++    bind _ <- try acc
++    bind item <- Pair.second(value)
++    bind same <- Codec.stringify(item) = Result.Ok(Json.stringify(item))
++    bind pretty <- Codec.stringifyPretty(item) = Result.Ok(Json.stringifyPretty(item))
++    Console.writeLine(Pair.first(value) + " A=" + Json.stringify(item) + " | compact=${same} pretty=${pretty}")
+     return if same and pretty then Result.Ok(()) else Result.Error("JSON writing mismatch") end if
+   end lambda)
+   return pointers()
+--- a/crates/benitoite/testdata/packages/libraries.files/textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/textkit/Slug.bnt
+@@ -1,7 +1,7 @@
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+   bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
+-    |> List.filter(_, lambda(value) return value <> "" end lambda)
++    |> List.filter(xs: _, p: lambda(value) return value <> "" end lambda)
+   return String.join(xs: words, separator: "-")
+ end function
+ 
+--- a/crates/benitoite/testdata/packages/todo-handler/deps/todo/Store.bnt
++++ b/crates/benitoite/testdata/packages/todo-handler/deps/todo/Store.bnt
+@@ -26,11 +26,11 @@
+ 
+ /// title の作業を済みにした一覧を返す。
+ public function complete(items: List[Item], title: String) -> List[Item]
+-  return List.map(xs: items, f: lambda(item)
+-    if Item.title(item) = title then
+-      return Item(..item, done: true)
++  return List.map(xs: items, f: lambda(value)
++    if Item.title(value) = title then
++      return Item(..value, done: true)
+     end if
+-    return item
++    return value
+   end lambda)
+ end function
+ 
+--- a/crates/benitoite/testdata/packages/wasm-regex-same/main.bnt
++++ b/crates/benitoite/testdata/packages/wasm-regex-same/main.bnt
+@@ -10,12 +10,12 @@
+ import Benitoite.Unofficial.IO.Console
+ import WasmRegex.Pattern
+ 
+-function native(m: Regex.Match) -> Triple[String, Integer, Integer]
+-  return Triple(Regex.matchText(m), Regex.matchByteStart(m), Regex.matchByteEnd(m))
++function native(value: Regex.Match) -> Triple[String, Integer, Integer]
++  return Triple(Regex.matchText(value), Regex.matchByteStart(value), Regex.matchByteEnd(value))
+ end function
+ 
+-function guest(m: Pattern.Found) -> Triple[String, Integer, Integer]
+-  return Triple(Pattern.matchText(m), Pattern.matchByteStart(m), Pattern.matchByteEnd(m))
++function guest(value: Pattern.Found) -> Triple[String, Integer, Integer]
++  return Triple(Pattern.matchText(value), Pattern.matchByteStart(value), Pattern.matchByteEnd(value))
+ end function
+ 
+ function quoted(s: String) -> String
+@@ -32,12 +32,12 @@
+       if x = y and pure then Result.Ok(()) else Result.Error("compile mismatch") end if
+     case Pair(Result.Ok(x), Result.Ok(y)) ->
+       bind am <- Regex.isMatch(pattern: x, text: text)
+-      bind first <- Option.map(o: Regex.find(pattern: x, text: text), f: lambda(value) return native(value) end lambda)
+-      bind all <- List.map(xs: Regex.findAll(pattern: x, text: text), f: lambda(value) return native(value) end lambda)
++      bind first <- Option.map(o: Regex.find(pattern: x, text: text), f: native)
++      bind all <- List.map(xs: Regex.findAll(pattern: x, text: text), f: native)
+       bind replacement <- Regex.replaceAll(pattern: x, text: text, replacement: "$1\\literal")
+-      bind resource <- Pattern.isMatch(pattern: y, text: text) = am and Option.map(o: Pattern.find(pattern: y, text: text), f: lambda(value) return guest(value) end lambda) = first and List.map(xs: Pattern.findAll(pattern: y, text: text), f: lambda(value) return guest(value) end lambda) = all and Pattern.replaceAll(pattern: y, text: text, replacement: "$1\\literal") = replacement and Pattern.count(pattern: y, text: text) = List.length(all)
+-      bind reused <- Pattern.isMatch(pattern: y, text: text) = am and List.map(xs: Pattern.findAll(pattern: y, text: text), f: lambda(value) return guest(value) end lambda) = all
+-      bind pure <- Pattern.isMatchOnce(source: source, text: text) = Result.Ok(am) and Result.map(r: Pattern.findAllOnce(source: source, text: text), f: lambda(value: List[Pattern.Found]) -> List[Triple[String, Integer, Integer]] return List.map(xs: value, f: lambda(value) return guest(value) end lambda) end lambda) = Result.Ok(all) and Pattern.countOnce(source: source, text: text) = Result.Ok(List.length(all))
++      bind resource <- Pattern.isMatch(pattern: y, text: text) = am and Option.map(o: Pattern.find(pattern: y, text: text), f: guest) = first and List.map(xs: Pattern.findAll(pattern: y, text: text), f: guest) = all and Pattern.replaceAll(pattern: y, text: text, replacement: "$1\\literal") = replacement and Pattern.count(pattern: y, text: text) = List.length(all)
++      bind reused <- Pattern.isMatch(pattern: y, text: text) = am and List.map(xs: Pattern.findAll(pattern: y, text: text), f: guest) = all
++      bind pure <- Pattern.isMatchOnce(source: source, text: text) = Result.Ok(am) and Result.map(r: Pattern.findAllOnce(source: source, text: text), f: lambda(value: List[Pattern.Found]) -> List[Triple[String, Integer, Integer]] return List.map(xs: value, f: guest) end lambda) = Result.Ok(all) and Pattern.countOnce(source: source, text: text) = Result.Ok(List.length(all))
+       Console.writeLine(quoted(source) + " " + quoted(text) + " | A=${am} first=${Trait.Show.show(first)} all=${Trait.Show.show(all)} replace=" + quoted(replacement) + " | resource=${resource} reused=${reused} pure=${pure}")
+       if resource and reused and pure then Result.Ok(()) else Result.Error("match mismatch") end if
+     case _ -> Result.Error("compile status mismatch")
+--- a/crates/benitoite/testdata/stdlib/l40-csv.bnt
++++ b/crates/benitoite/testdata/stdlib/l40-csv.bnt
+@@ -5,15 +5,15 @@
+ import Benitoite.Unofficial.IO.Console
+ import Benitoite.Unofficial.Csv
+ function main() -> Result[Unit, String] uses Console.Write
+-  bind rows <- try Csv.parse("name,note\r\nAda,\"one,two\"\r\nBob,\"a\"\"b\"\n") |> Result.mapError(r: _, f: Csv.ParseError.message)
++  bind rows <- try Csv.parse("name,note\r\nAda,\"one,two\"\r\nBob,\"a\"\"b\"\n") |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(rows))
+   Console.write(Csv.format(rows))
+-  bind header <- try Csv.parseWithHeader("name,amount\nAda,12\nBob,3\n") |> Result.mapError(r: _, f: Csv.ParseError.message)
++  bind header <- try Csv.parseWithHeader("name,amount\nAda,12\nBob,3\n") |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(List.map(xs: header, f: lambda(value) return Map.get(m: value, k: "amount") end lambda)))
+-  bind tabbed <- try Csv.parseWith(text: "a\tb\n1\t2\n", delimiter: '\t') |> Result.mapError(r: _, f: Csv.ParseError.message)
++  bind tabbed <- try Csv.parseWith(text: "a\tb\n1\t2\n", delimiter: '\t') |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda)
+   Console.write(Csv.formatWith(rows: tabbed, delimiter: ';'))
+   Console.writeLine(Trait.Show.show(Csv.format([[""]]) = "\"\"\n"))
+-  bind single <- try Csv.parse(Csv.format([[""]])) |> Result.mapError(r: _, f: Csv.ParseError.message)
++  bind single <- try Csv.parse(Csv.format([[""]])) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(single))
+   Console.writeLine(Trait.Show.show(Csv.format([[]]) = "\n"))
+   bind errorLine <- match Csv.parse("ok\n\"open\nmore") with
+--- a/crates/benitoite/testdata/stdlib/l40-json.bnt
++++ b/crates/benitoite/testdata/stdlib/l40-json.bnt
+@@ -5,16 +5,16 @@
+ import Benitoite.Unofficial.IO.Console
+ import Benitoite.Unofficial.Json
+ function main() -> Result[Unit, String] uses Console.Write
+-  bind value <- try Json.parse(r"[-0,-0.0,1.0,1e2]") |> Result.mapError(r: _, f: Json.ParseError.message)
++  bind value <- try Json.parse(r"[-0,-0.0,1.0,1e2]") |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+   Console.writeLine(Json.stringify(value))
+   Console.writeLine(Trait.Show.show(Option.andThen(o: Json.at(value: value, index: 0), f: Json.asInteger)))
+   Console.writeLine(Trait.Show.show(Option.andThen(o: Json.at(value: value, index: 2), f: Json.asInteger)))
+   Console.writeLine(Trait.Show.show(Option.andThen(o: Json.at(value: value, index: 3), f: Json.asFloat)))
+-  bind object <- try Json.parse("{\"z\":1,\"a\":true,\"z\":2}") |> Result.mapError(r: _, f: Json.ParseError.message)
++  bind object <- try Json.parse("{\"z\":1,\"a\":true,\"z\":2}") |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+   Console.writeLine(Json.stringifyPretty(object))
+   Console.writeLine(Trait.Show.show(Option.andThen(o: Json.get(value: object, k: "a"), f: Json.asBoolean)))
+   Console.writeLine(Trait.Show.show(Json.get(value: object, k: "missing") = Option.None and Json.at(value: value, index: 4) = Option.None))
+-  bind again <- try Json.parse(Json.stringify(value)) |> Result.mapError(r: _, f: Json.ParseError.message)
++  bind again <- try Json.parse(Json.stringify(value)) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+   Console.writeLine(Trait.Show.show(value = again))
+   return Result.Ok(())
+ end function
+--- a/crates/benitoite/testdata/syntax/f03_constants_aliases.bnt
++++ b/crates/benitoite/testdata/syntax/f03_constants_aliases.bnt
+@@ -20,7 +20,7 @@
+ end function
+ 
+ function main() -> Unit
+-  bind _ <- validate(v: lambda(id) return Result.Ok(id) end lambda, id: defaultPort)
++  bind _ <- validate(v: lambda(x) return Result.Ok(x) end lambda, id: defaultPort)
+   bind _ <- maxRetries
+   bind _ <- greeting
+   bind _ <- primaryColors
+--- a/crates/benitoite/testdata/test/handler_replacement.stdout
++++ b/crates/benitoite/testdata/test/handler_replacement.stdout
+@@ -1,2 +1,2 @@
+-{"kind":"test","file":"testdata/test/handler_replacement.bnt","name":"readPort reads the number in the file","function":"readPortReadsNumber","location":{"file":"testdata/test/handler_replacement.bnt","start":{"line":11,"column":10,"offset":600},"end":{"line":11,"column":29,"offset":619},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
++{"kind":"test","file":"testdata/test/handler_replacement.bnt","name":"readPort reads the number in the file","function":"readPortReadsNumber","location":{"file":"testdata/test/handler_replacement.bnt","start":{"line":11,"column":10,"offset":655},"end":{"line":11,"column":29,"offset":674},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
+ {"kind":"testSummary","passed":1,"failed":0,"filesNotRun":0,"interrupted":false}
+--- a/crates/benitoite/testdata/test/passing.stdout
++++ b/crates/benitoite/testdata/test/passing.stdout
+@@ -1,4 +1,4 @@
+ {"kind":"test","file":"testdata/test/passing.bnt","name":"add sums two numbers","function":"addSums","location":{"file":"testdata/test/passing.bnt","start":{"line":9,"column":10,"offset":311},"end":{"line":9,"column":17,"offset":318},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
+-{"kind":"test","file":"testdata/test/passing.bnt","name":"addIsCommutative","function":"addIsCommutative","location":{"file":"testdata/test/passing.bnt","start":{"line":14,"column":10,"offset":405},"end":{"line":14,"column":26,"offset":421},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
+-{"kind":"test","file":"testdata/test/passing.bnt","name":"returnsOk","function":"returnsOk","location":{"file":"testdata/test/passing.bnt","start":{"line":20,"column":10,"offset":572},"end":{"line":20,"column":19,"offset":581},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
++{"kind":"test","file":"testdata/test/passing.bnt","name":"addIsCommutative","function":"addIsCommutative","location":{"file":"testdata/test/passing.bnt","start":{"line":14,"column":10,"offset":436},"end":{"line":14,"column":26,"offset":452},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
++{"kind":"test","file":"testdata/test/passing.bnt","name":"returnsOk","function":"returnsOk","location":{"file":"testdata/test/passing.bnt","start":{"line":20,"column":10,"offset":680},"end":{"line":20,"column":19,"offset":689},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
+ {"kind":"testSummary","passed":3,"failed":0,"filesNotRun":0,"interrupted":false}
+--- a/crates/benitoite/testdata/test/user_assert_handler.stdout
++++ b/crates/benitoite/testdata/test/user_assert_handler.stdout
+@@ -1,2 +1,2 @@
+-{"kind":"test","file":"testdata/test/user_assert_handler.bnt","name":"helperReportsFailure","function":"helperReportsFailure","location":{"file":"testdata/test/user_assert_handler.bnt","start":{"line":9,"column":10,"offset":375},"end":{"line":9,"column":30,"offset":395},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
++{"kind":"test","file":"testdata/test/user_assert_handler.bnt","name":"helperReportsFailure","function":"helperReportsFailure","location":{"file":"testdata/test/user_assert_handler.bnt","start":{"line":9,"column":10,"offset":395},"end":{"line":9,"column":30,"offset":415},"label":""},"outcome":"passed","failure":null,"stdout":"","stderr":""}
+ {"kind":"testSummary","passed":1,"failed":0,"filesNotRun":0,"interrupted":false}
+--- a/crates/benitoite/testdata/traits/standard-traits.bnt
++++ b/crates/benitoite/testdata/traits/standard-traits.bnt
+@@ -1,8 +1,11 @@
+ // spec: 01-06 標準の型クラス（初回リリース版）
+ import Benitoite.Trait
++function pairWith[A, B](first: A) -> function(value: B) -> Pair[A, B]
++  return lambda(value) return Pair(first, value) end lambda
++end function
+ function pairUp[F[_]: Trait.Monad, A, B](xs: F[A], ys: F[B]) -> F[Pair[A, B]]
+-  return Trait.Monad.flatMap(x: xs, f: lambda(x)
+-    return Trait.Functor.map(x: ys, f: lambda(y) return Pair(x, y) end lambda)
++  return Trait.Monad.flatMap(x: xs, f: lambda(value)
++    return Trait.Functor.map(x: ys, f: pairWith(value))
+   end lambda)
+ end function
+ function main() -> Unit
+--- a/crates/benitoite/testdata/types/c11-collection-constants.bnt
++++ b/crates/benitoite/testdata/types/c11-collection-constants.bnt
+@@ -8,7 +8,7 @@
+ const members: Set[Integer] = Set.fromList([3, 1, 2])
+ const empty: Map[Integer, String] = Map.empty()
+ function main() -> Unit uses Console.Write
+-  Console.writeLine(String.join(xs: List.map(xs: Map.toList(mapping), f: lambda(p) return "${Pair.first(p)}=${Pair.second(p)}" end lambda), separator: ","))
++  Console.writeLine(String.join(xs: List.map(xs: Map.toList(mapping), f: lambda(value) return "${Pair.first(value)}=${Pair.second(value)}" end lambda), separator: ","))
+   Console.writeLine(String.join(xs: List.map(xs: Set.toList(members), f: lambda(value) return Integer.toString(value) end lambda), separator: ","))
+   Console.writeLine("${List.length(Map.toList(empty))}")
+ end function

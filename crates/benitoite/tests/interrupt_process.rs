@@ -254,7 +254,8 @@ fn sigterm_interrupts_timers_in_parent_and_child_tasks() {
         r#"
 function main() -> Unit uses State,Console.Write,Clock.Time
  with group = TaskGroup.open() do
-  bind _ <- TaskGroup.spawn(group,lambda() Clock.sleep(3600000)
+  bind _ <- TaskGroup.spawn(group: group,action: lambda()
+ Clock.sleep(3600000)
                             return () end lambda)
   Console.writeLine("ready")
   Clock.sleep(3600000)
@@ -308,7 +309,7 @@ fn interrupt_after_sort(return_type: &str, return_value: &str) {
     let source = format!(
         r#"
 function main() -> {return_type} uses Console.Write
- bind xs <- List.map(List.range(0, {count}), lambda(i) return (i * 7919) mod 1000003 end lambda)
+ bind xs <- List.map(xs: List.range(start: 0, stop: {count}), f: lambda(value) return (value * 7919) mod 1000003 end lambda)
  Console.write("ready\n{body}")
  bind _ <- List.sort(xs)
  return {return_value}
@@ -333,8 +334,8 @@ fn sigint_interrupts_with_an_open_reader() {
     interrupted(
         r#"
 function main() -> Result[Unit,String] uses File.Read,State,Console.Write,Console.Read
- with reader = try File.openReader("input.txt") |> Result.mapError(_,IOError.message) do
-  bind _ <- try File.readLine(reader) |> Result.mapError(_,IOError.message)
+ with reader = try File.openReader("input.txt") |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda) do
+  bind _ <- try File.readLine(reader) |> Result.mapError(r: _,f: lambda(error) return IOError.message(error) end lambda)
   Console.writeLine("ready")
   bind _ <- Console.readLine()
   return Result.Ok(())
@@ -392,9 +393,9 @@ fn sigint_interrupts_regex_find_all_between_matches() {
 import Benitoite.Unofficial.Regex
 function main() -> Result[Unit, String] uses Console.Write
   bind pattern <- try Regex.compile(".*[^A-Z]|[A-Z]")
-  bind input <- String.repeat("A", 1048576)
+  bind input <- String.repeat(s: "A", n: 1048576)
   Console.write("ready\n{body}")
-  bind _ <- Regex.findAll(pattern, input)
+  bind _ <- Regex.findAll(pattern: pattern, text: input)
   return Result.Ok(())
 end function
 "#
