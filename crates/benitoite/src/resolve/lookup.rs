@@ -233,7 +233,7 @@ impl Resolver<'_> {
             };
             let mut names = table.cloned().unwrap_or_default();
             if !public_only
-                && self.same_package(ctx.module, module)
+                && super::same_package(self.modules, ctx.module, module)
                 && let Some(package) = self.package_exports.get(&module)
             {
                 names.extend(package.iter().map(|(name, id)| (name.clone(), *id)));

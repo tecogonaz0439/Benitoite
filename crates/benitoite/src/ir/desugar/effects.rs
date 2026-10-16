@@ -3,6 +3,10 @@ use super::*;
 use crate::typeck::TryKind;
 use crate::types::EffectName;
 
+mod text {
+    pub(super) const OPTION_NONE: &str = "expected a value, got Option.None";
+}
+
 impl State<'_> {
     /// 01-12「関数の境界と `escape`：途中の `return` と `try`」の `Result` と `Option` の `try` の二つの行。
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
@@ -17,9 +21,6 @@ impl State<'_> {
         let Ty::Con(_, input_args) = self.ty(e.value.id())? else {
             return Err(error("try operand has no type arguments"));
         };
-        if !matches!(&info.ret, Ty::Con(_, _)) {
-            return Err(error("try return has no type arguments"));
-        }
         let mut pending = vec![];
         let scrutinee = self.eval(&e.value, &mut pending)?;
         self.finish_try(e, info, input_args, pending, scrutinee)
@@ -35,9 +36,6 @@ impl State<'_> {
         pending: Vec<(Var, Comp)>,
         scrutinee: CoreVal,
     ) -> Result<Comp, InternalError> {
-        let Ty::Con(_, ret_args) = &info.ret else {
-            return Err(error("try return has no type arguments"));
-        };
         let (success, failure) = match info.kind {
             TryKind::Result => ("Benitoite.Result.Ok", "Benitoite.Result.Error"),
             TryKind::Option => ("Benitoite.Option.Some", "Benitoite.Option.None"),
@@ -71,19 +69,39 @@ impl State<'_> {
             }
             TryKind::Option => (vec![], vec![], vec![]),
         };
-        let escaped = value(
-            ValKind::Ctor {
-                adt,
-                tag: fail_tag,
-                tys: ret_args.clone(),
-                args: fail_values,
-            },
-            info.ret,
-            e.span,
-        );
+        let failed = match (&e.action, info.action) {
+            (
+                ast::TryAction::ImplicitReturn | ast::TryAction::Return { .. },
+                crate::typeck::TryActionInfo::Return { ret },
+            ) => {
+                let Ty::Con(_, ret_args) = &ret else {
+                    return Err(error("try return has no type arguments"));
+                };
+                Comp {
+                    kind: CompKind::Escape(value(
+                        ValKind::Ctor {
+                            adt,
+                            tag: fail_tag,
+                            tys: ret_args.clone(),
+                            args: fail_values,
+                        },
+                        ret,
+                        e.span,
+                    )),
+                    ty: self.ty(e.id)?,
+                    eff: EffectSet::empty(),
+                    origin: e.span,
+                }
+            }
+            (
+                ast::TryAction::Die { message, .. },
+                crate::typeck::TryActionInfo::Die { show, exit },
+            ) => self.die_failure(e, message.as_deref(), show.as_ref(), exit, &fail_values)?,
+            _ => return Err(error("try action does not match typechecked action")),
+        };
         let body = Comp {
             ty: self.ty(e.id)?,
-            eff: EffectSet::empty(),
+            eff: failed.eff.clone(),
             origin: e.span,
             kind: CompKind::Match {
                 scrutinee,
@@ -114,17 +132,90 @@ impl State<'_> {
                     MatchArm {
                         vars: fail_vars,
                         guard: None,
-                        body: Comp {
-                            kind: CompKind::Escape(escaped),
-                            ty: self.ty(e.id)?,
-                            eff: EffectSet::empty(),
-                            origin: e.span,
-                        },
+                        body: failed,
                     },
                 ],
             },
         };
         Ok(finish(pending, body, e.span))
+    }
+
+    // 説明と表示を失敗側にだけ束縛し、純粋な計算でも停止の順序と一回性を保つ
+    // （設計書 02-06「内部の終了報告」）。辞書と exit の選択は型検査済みの表に従う。
+    #[inline(never)]
+    fn die_failure(
+        &mut self,
+        e: &ast::TryExpr,
+        message: Option<&ast::Expr>,
+        show: Option<&crate::types::DictExpr>,
+        exit: BindingId,
+        failures: &[CoreVal],
+    ) -> Result<Comp, InternalError> {
+        let mut pending = vec![];
+        let message = message
+            .map(|m| self.eval(m, &mut pending).map(Box::new))
+            .transpose()?;
+        let cause = match (failures, show) {
+            ([failure], Some(show)) => {
+                let method = self
+                    .resolved
+                    .stdlib("Benitoite.Trait.Show.show")
+                    .ok_or_else(|| error("missing standard Show.show"))?;
+                let BindingKind::Method { index, .. } = self.binding(method)?.kind else {
+                    return Err(error("standard Show.show is not a method"));
+                };
+                Comp {
+                    kind: CompKind::Method(Box::new(MethodCall {
+                        dict: self.dict(show, e.span)?,
+                        method: index,
+                        targs: TypeArgs::default(),
+                        dicts: vec![],
+                        args: vec![failure.clone()],
+                    })),
+                    ty: basic(BuiltinTypeId::STRING),
+                    eff: EffectSet::empty(),
+                    origin: e.span,
+                }
+            }
+            ([], None) => returned(value(
+                ValKind::Const(Const::Str(text::OPTION_NONE.into())),
+                basic(BuiltinTypeId::STRING),
+                e.span,
+            )),
+            _ => return Err(error("try failure does not match Show dictionary")),
+        };
+        let cause = Box::new(bind(self, cause, &mut pending)?);
+        let id = self
+            .resolved
+            .builtin_ops
+            .get(exit)
+            .copied()
+            .ok_or_else(|| error("die exit is not a builtin operation"))?;
+        let func = self.builtin(
+            id,
+            Some(exit),
+            Some(exit),
+            TypeArgs {
+                tys: vec![TypeArg::Ty(self.ty(e.id)?)],
+                effects: vec![],
+            },
+            e.span,
+        )?;
+        let mut call = app(
+            func,
+            vec![],
+            vec![value(
+                ValKind::Const(Const::Int(1)),
+                basic(BuiltinTypeId::INTEGER),
+                e.span,
+            )],
+            e.span,
+        )?;
+        let CompKind::App { exit_report, .. } = &mut call.kind else {
+            return Err(error("die exit did not produce an application"));
+        };
+        *exit_report = Some(ExitReportArgs { cause, message });
+        Ok(finish(pending, call, e.span))
     }
 
     fn std_ctor(&self, name: &str) -> Result<(BindingId, u32), InternalError> {

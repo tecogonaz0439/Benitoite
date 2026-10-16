@@ -662,7 +662,11 @@ pub(super) fn check(
 ) -> (TypeckOutput, Vec<Diagnostic>) {
     let mut d = Decls::new(modules, asts, sources, resolved);
     check_declarations(&mut d, require_main);
-    if d.type_limit {
+    if d.type_limit
+        || d.diagnostics
+            .iter()
+            .any(|diag| diag.kind == crate::diag::ReportKind::Internal)
+    {
         return (d.out, d.diagnostics);
     }
     super::consts::check(&mut d);
@@ -718,9 +722,28 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                 | Item::ExternalType(_)
                 | Item::Error(_) => continue,
             };
+            let extensible = top.attrs.iter().any(|attr| attr.name.text == "extensible");
+            if extensible
+                && ["Benitoite.Result.Result", "Benitoite.Option.Option"]
+                    .iter()
+                    .any(|name| d.resolved.stdlib(name) == Some(binding))
+            {
+                d.diagnostics
+                    .push(crate::runtime::report::internal_diagnostic(
+                        "check",
+                        &format!(
+                            "the standard `{}` type must not be `@extensible`",
+                            name.text
+                        ),
+                        None,
+                        crate::runtime::report::FaultThread::Stage,
+                    ));
+                return;
+            }
             d.out.adts.adts.insert(
                 binding,
                 AdtDef {
+                    extensible,
                     binding,
                     name: name.text.clone(),
                     module: ModuleId(u32::try_from(module).unwrap_or(u32::MAX)),

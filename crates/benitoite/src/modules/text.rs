@@ -1,6 +1,12 @@
 //! 読み込みの診断に埋め込む理由（設計書 02-02「ソースの大きさの上限」、AGENTS.md「実装の規約」の「文言」）。
 
 pub(super) const NAMED_ARGUMENTS_CHANGE: &str = "calls with two or more parameters require named arguments; function types and higher-order contracts require parameter names, and function values must match those names in order";
+pub(super) const NAMED_ARGUMENTS_MIGRATION: &str =
+    "see the 0.0.5 section of CHANGELOG.md for named arguments and named function types";
+pub(super) const LANGUAGE_CHANGE: &str = "{version}: {summary}";
+
+pub(super) const KEYWORDS_OPEN_TYPES_TRY_CHANGE: &str = "`die` is reserved; IOErrorKind, NetworkErrorKind, Json.ParseError, and Csv.ParseError are @extensible; return values must start on the same physical line as `return`";
+pub(super) const KEYWORDS_OPEN_TYPES_TRY_MIGRATION: &str = "rename user-defined names spelled `die`; outside the defining package, add an unguarded `case other` or `case _` to cover future @extensible values in matches, and use a variable or `_` instead of destructuring them in bindings; record `..` covers only declared fields, while construction, updates, and getters keep their declared field contracts; start each return value on the same physical line as `return` (the value may continue across lines after it starts); use `try value or return`, `try value or die`, or `try value or die(message)` to make the failure action explicit; bare `try value` still returns failure from the innermost function or lambda; see CHANGELOG.md for migration details";
 
 pub(super) const SOURCE_TOO_LARGE: &str = "the source file exceeds the size limit of 256 MiB";
 pub(super) const TOTAL_TOO_LARGE: &str =

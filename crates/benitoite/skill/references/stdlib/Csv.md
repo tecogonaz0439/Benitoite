@@ -7,6 +7,7 @@ Refer to its declarations as `Csv.<name>`, for example `Csv.ParseError`.
 Reading and writing CSV as in RFC 4180. Every field is a `String`.
 
 ```benitoite
+@extensible
 public record ParseError
   line: Integer
   message: String

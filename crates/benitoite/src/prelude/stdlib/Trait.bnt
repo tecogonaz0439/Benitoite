@@ -71,6 +71,18 @@ function showCharacter(c: Character) -> String
 
 // Show
 
+implement Show[IOError]
+  function show(x: IOError) -> String
+    return IOError.message(x)
+  end function
+end implement
+
+implement Show[NetworkError]
+  function show(x: NetworkError) -> String
+    return NetworkError.message(x)
+  end function
+end implement
+
 implement Show[Integer]
   function show(x: Integer) -> String
     return Integer.toString(x)

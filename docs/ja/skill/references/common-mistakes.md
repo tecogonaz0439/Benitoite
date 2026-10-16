@@ -1,6 +1,6 @@
 # Benitoite でよくある誤り
 
-> この文書は、`crates/benitoite/skill/references/common-mistakes.md` の日本語の訳である。翻訳元は Benitoite 0.0.5 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/common-mistakes.md` の日本語の訳である。翻訳元は Benitoite 0.0.6 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -345,6 +345,10 @@ Hello, Ada!
 
 値が `Unit` でない文は誤りである。失敗しうる IO の関数は `Result` を返す。`try` か `match` で扱い、誤りを本当に無視したいときに限って `_` に束縛する。
 
+再利用するコードでは `try operation or return` と書き、対応する Result/Option の戻り値の型を保つ。終了する入口では、`uses Process.Exit` と `import Benitoite.Unofficial.IO.Process` を付けて `try operation or die` と書く。ホストの die の報告だけのために Console.Write を加えない。Result のエラーには Show を要する。IOError、NetworkError、Json.ParseError、Csv.ParseError は既に実装を持つので、表示だけのために String へ変換しない。裸の try は main の中でも常に失敗を返し、die を推測しない。完全な明示形の例は[プログラムの形と誤りの扱い](idioms.md#プログラムの形と誤りの扱い)を参照する。
+
+明示した処置は try の式を終える。`try r or return + 1` ではなく `(try r or return) + 1` と書く。`or return` は値を取らず、`die()` と `die(a, b)` は無効である。説明は失敗時にだけ評価する純粋な String であり、直接の return・try・外側の resume を含められない。開き括弧は die と同じ物理行で始める。短いラムダは、処置と説明の全体を一行に収める必要がある。
+
 ```benitoite error
 import Benitoite.Unofficial.IO.File
 
@@ -361,11 +365,12 @@ error[E0416]: the value of this expression is not used
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
 
-function main() -> Result[Unit, String] uses File.Write, Console.Write
-  bind _ <- try File.writeText(path: "out.txt", text: "data") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+function main() -> Unit uses File.Write, Console.Write, Process.Exit
+  bind _ <- try File.writeText(path: "out.txt", text: "data") or die
   Console.writeLine("written")
-  return Result.Ok(())
+  return ()
 end function
 ```
 
@@ -375,7 +380,7 @@ written
 
 ## `return` のない最後の式
 
-関数の本体は、`return` で値を返す。ラムダの本体も、値が `Unit` でない限り `return` を要する。
+関数の本体は、`return` で値を返す。ラムダの本体も、値が `Unit` でない限り `return` を要する。値は `return` と同じ物理行で書き始める。直後の改行は、括弧の中でも、次の行の先頭が演算子でも E0201 になる。コメントや空行を挟んでも、値を後の行から書き始めることはできない。書き始めた後は、通常の継続の規則で複数行にできる。`return x +` の後に次のオペランド、`return (` の後に括弧で囲む値、`return f(` の後に引数、`return if condition then` の後に分岐を続けられる。短いラムダは、全体を一つの物理行に収める必要がある。`benitoite fmt` は誤りを報告し、ファイルを変えない。行を結合することはない。
 
 ```benitoite error
 function next(n: Integer) -> Integer
@@ -446,7 +451,11 @@ end function
 
 ## キーワードを名前に使う
 
-次の 34 語はキーワードであり、名前にできない。`and`、`bind`、`case`、`const`、`data`、`div`、`do`、`effect`、`else`、`end`、`false`、`function`、`handle`、`if`、`implement`、`import`、`lambda`、`lazy`、`match`、`mod`、`not`、`or`、`public`、`record`、`resume`、`return`、`shadow`、`then`、`trait`、`true`、`try`、`type`、`uses`、`with`。別の名前を選ぶ。
+次の 35 語はキーワードであり、名前にできない。`and`、`bind`、`case`、`const`、`data`、`die`、`div`、`do`、`effect`、`else`、`end`、`false`、`function`、`handle`、`if`、`implement`、`import`、`lambda`、`lazy`、`match`、`mod`、`not`、`or`、`public`、`record`、`resume`、`return`、`shadow`、`then`、`trait`、`true`、`try`、`type`、`uses`、`with`。別の名前を選ぶ。この制限は、引数のラベル、フィールド、取り込みの別名、ドットの後の名前にも適用する。`die` は失敗時の処置 `try value or die` と `try value or die(message)` としてだけ受理する。単独の `die` の式は拒否する。`Die`、`died`、`dieLater` は通常の識別子である。
+
+`fn`、`pub`、`impl`、`mut` は通常の名前であり、構文の略記ではない。宣言には `function`、`public`、`implement`、無名関数には `lambda` を使う。`for`、`while`、`loop`、`break`、`continue`、`switch`、`where`、`async`、`await`、`spawn`、`select` も予約語ではない。繰り返しには `List.map`、`List.fold`、`List.forEach` などのコレクションの関数、並行処理には `Task.await`、`TaskGroup.spawn`、`Task.race` などの API を使う。
+
+`as` は取り込みの宣言の中でだけ特別な意味を持つ。`language`、`dependency`、`package` とヘッダのフィールド名は、ファイルのヘッダで特別に読む。`equality` と `key` は組み込みの制約名であり、`ordered` は標準ライブラリのソースでだけ使える制約である。属性名（`external`、`test`、`deprecated`、`extensible`、標準ライブラリ専用の `builtin`）は、属性の外では通常の識別子である。`@extensible` は、データ型かレコードの宣言に引数なしで書く。定義したパッケージの外では、ガードのない変数か `_` で将来の形を覆う。`Other` を含む全既知構成子の列挙だけでは足りない。四つの標準の失敗型とレコードの分解の制限は、[レコードとデータ型](idioms.md#レコードとデータ型)を参照する。レコードパターンの `..` は将来の形を覆わない。取り出す関数を使うか、拒否された束縛を、ガードのない `case _ ->` の分岐を持つ `match` に書き直す。
 
 ```benitoite error
 function handle(request: String) -> String

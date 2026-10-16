@@ -4,18 +4,20 @@ import Benitoite.Surface.Lemmas.PatternSupport
 namespace Benitoite.Surface
 open Benitoite.Release
 
+variable {view : CoverageView}
+
 variable {p : Program} {B : Builtins} {op : OpPrim}
 
 /-- 式の帰納法の結論を受け、全ての文の形と束縛の作用先を保つ。 -/
 theorem HasBlock.desugar_of_expr
     (preserve : ∀ {C Γ R pos e a ε pe},
-      HasType p.declarations B op C Γ R pos e a ε →
+      HasType (p.declarationsFor view) B op C Γ R pos e a ε →
       e.Scoped C.length pe Γ.length → EnvClean C.length Γ →
       (∀ r, R = some r → TyOK C.length r) →
       HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R (desugarExpr op pos e) a ε)
     (hwf : p.WellFormed)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R pos body a ε pe}
-    (h : HasBlock p.declarations B op C Γ R pos body a ε)
+    (h : HasBlock (p.declarationsFor view) B op C Γ R pos body a ε)
     (sc : body.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) :
     HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R (desugarBlock op pos body) a ε := by
@@ -27,7 +29,7 @@ theorem HasBlock.desugar_of_expr
       · exact HasTypeArms.mkArm_cons (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp)
           (HasTypeC.weakenEff (.C_Return .V_Const) (Eff.empty_sub _)) (.nil trivial)
       · simpa only [unguardedPats_mkArm_cons, unguardedPats] using
-          Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex
+          Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
   | .B_BindPat (δ := δ) (rest := rest) _ _ hp hex he hb =>
       have ha := scoped_clean sc.1
       have hδ := PatTy.clean hwf.2.2.1 hp ha
@@ -40,7 +42,7 @@ theorem HasBlock.desugar_of_expr
       · exact HasTypeArms.mkArm_cons (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp)
           (HasTypeC.shiftPattern (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp) hb') (.nil (Ty.VarsIn.wf _ hc))
       · simpa only [unguardedPats_mkArm_cons, unguardedPats] using
-          Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex
+          Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
   | .B_Empty =>
       exact .C_Return .V_Const
   | .B_Last h =>

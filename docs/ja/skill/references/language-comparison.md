@@ -1,6 +1,6 @@
 # Benitoite とほかの言語の比較
 
-> この文書は、`crates/benitoite/skill/references/language-comparison.md` の日本語の訳である。翻訳元は Benitoite 0.0.5 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/language-comparison.md` の日本語の訳である。翻訳元は Benitoite 0.0.6 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の仕方（tests/skill_examples.rs）:
@@ -18,6 +18,8 @@
 Python、JavaScript、Rust のよく使う構文を、Benitoite でどう書くかを示す。prelude の外のモジュール（`Console`、`File`、`Process`、`Json`、`Csv`、`Http` など）は取り込まなければならない。取り込みの名前は `stdlib/index.md`（[英語の原文](../../../../crates/benitoite/skill/references/stdlib/index.md)）を参照する。
 
 ## 構文
+
+失敗の伝播については、Rust の `?` は `try result or return` に対応する。裸の `try result` も、同じ失敗を返す意味を保つ。原因を報告して実行を終えるには、Process.Exit とともに `try result or die` を使う。囲む関数の戻り値の型は任意であり、Result のエラーには Show を要する。例外ハンドラではない。[プログラムの形と誤りの扱い](idioms.md#プログラムの形と誤りの扱い)を参照する。
 
 | Python | JavaScript | Rust | Benitoite |
 |---|---|---|---|
@@ -48,7 +50,7 @@ Python、JavaScript、Rust のよく使う構文を、Benitoite でどう書く�
 | `# comment` | `// comment` | `// comment` | `// comment` |
 | `None` | `null`, `undefined` | `None` | `Option.None` |
 | `Some` に相当する値 | 値そのもの | `Some(x)` | `Option.Some(x)` |
-| `raise E(...)` / `try:` | `throw` / `try {}` | `Err(e)` / `?` | `return Result.Error(e)` / `try expr` |
+| `raise E(...)` / `try:` | `throw` / `try {}` | `Err(e)` / `?` | `return Result.Error(e)` / `try expr or return` |
 | フィールドを持つ `class P:` | `{ name, age }` | `struct P { name: String }` | `record P` ... `end record` |
 | `P(name="a")` | `{ name: "a" }` | `P { name: "a".into() }` | `P(name: "a")` |
 | `p.name` | `p.name` | `p.name` | `P.name(p)` |
@@ -169,14 +171,15 @@ jumps over the lazy dog
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
 
 // counts = {}
 // for word in open("words.txt").read().split():
 //     counts[word] = counts.get(word, 0) + 1
 // for word in sorted(counts):
 //     if counts[word] > 1: print(f"{word} {counts[word]}")
-function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind text <- try File.readText("words.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try File.readText("words.txt") or die
   bind words <- List.filter(xs: String.split(s: String.replace(s: text, old: "\n", new: " "), separator: " "), p: lambda(value) return value <> "")
   bind counts <- List.fold(xs: words, initial: Map.empty(), f: lambda(acc, value)
     return Map.set(m: acc, k: value, value: Option.unwrapOr(o: Map.get(m: acc, k: value), fallback: 0) + 1)
@@ -185,7 +188,7 @@ function main() -> Result[Unit, String] uses File.Read, Console.Write
     Console.writeLine("${key} ${value}")
   end lambda)
   Console.writeLine("${List.length(words)} words, ${Map.size(counts)} distinct")
-  return Result.Ok(())
+  return ()
 end function
 ```
 

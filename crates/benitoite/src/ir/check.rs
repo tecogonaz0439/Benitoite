@@ -550,7 +550,17 @@ impl Checker<'_> {
         match &comp.kind {
             CompKind::Return(v) => self.return_comp(v, comp, env),
             CompKind::Let { var, bound, body } => self.let_comp(var, bound, body, comp, env),
-            CompKind::App { func, dicts, args } => self.app_comp(func, dicts, args, comp, env),
+            CompKind::App {
+                func,
+                dicts,
+                args,
+                exit_report,
+            } => {
+                self.app_comp(func, dicts, args, comp, env);
+                if let Some(report) = exit_report {
+                    self.exit_report(comp, report, env);
+                }
+            }
             CompKind::Method(call) => self.method_comp(call, comp, env),
             CompKind::If {
                 cond,
@@ -615,6 +625,39 @@ impl Checker<'_> {
         if let Some((ty, eff)) = self.application(func, dicts, args, env, comp.origin) {
             self.equal(comp.origin, &comp.ty, &ty);
             self.effects(comp.origin, &eff, &comp.eff);
+        }
+    }
+
+    fn exit_report(&mut self, comp: &Comp, report: &ExitReportArgs<Comp>, env: &Env) {
+        let CompKind::App {
+            func, dicts, args, ..
+        } = &comp.kind
+        else {
+            return;
+        };
+        let origin = comp.origin;
+        if !matches!(&func.kind, ValKind::Builtin { id, info, .. }
+            if Some(*id) == crate::builtins::lookup_builtin("Benitoite.IO.Process.exit")
+                && info.class == crate::builtins::iface::Capability::Io
+                && info.intrinsic.is_none())
+            || !dicts.is_empty()
+            || !matches!(
+                args.as_slice(),
+                [Val {
+                    kind: ValKind::Const(Const::Int(1)),
+                    ..
+                }]
+            )
+        {
+            self.error(origin, "exit report requires canonical Process.exit(1)");
+        }
+        for value in std::iter::once(&report.cause).chain(report.message.iter()) {
+            self.value(value, env);
+            self.equal(
+                value.origin,
+                &value.ty,
+                &builtin(BuiltinTypeId::STRING, vec![]),
+            );
         }
     }
 
@@ -1471,6 +1514,7 @@ mod tests {
         p.adts.adts.insert(
             OPTION,
             AdtDef {
+                extensible: false,
                 binding: OPTION,
                 name: "Option".into(),
                 module: ModuleId(0),
@@ -1503,6 +1547,7 @@ mod tests {
         p.adts.adts.insert(
             RECORD,
             AdtDef {
+                extensible: false,
                 binding: RECORD,
                 name: "Record".into(),
                 module: ModuleId(0),
@@ -1586,7 +1631,17 @@ mod tests {
             panic!("fixture function required")
         };
         let (ty, eff) = (f.ret.clone(), f.effects.clone());
-        comp(CompKind::App { func, dicts, args }, ty, eff, pos)
+        comp(
+            CompKind::App {
+                func,
+                dicts,
+                args,
+                exit_report: None,
+            },
+            ty,
+            eff,
+            pos,
+        )
     }
     fn lambda(body: Comp, params: Vec<Var>, pos: u32) -> CoreVal {
         let ty = fn_ty(
@@ -3319,6 +3374,120 @@ mod tests {
             } else {
                 one(&program, 11, "Key")
             }
+        }
+    }
+}
+
+#[cfg(test)]
+#[allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::indexing_slicing,
+    clippy::arithmetic_side_effects
+)]
+mod exit_report_tests {
+    // テストの失敗は panic で表す（AGENTS.md「`#[allow]` を書いてよい箇所」）。
+    use super::*;
+    use crate::ir::desugar::test_support::desugar_files;
+
+    fn terminal(c: &mut Comp) -> &mut Comp {
+        match c {
+            Comp {
+                kind: CompKind::Let { body, .. },
+                ..
+            } => terminal(body),
+            _ => c,
+        }
+    }
+
+    #[test]
+    fn reports_require_canonical_exit_one_and_checked_strings() {
+        let (_, _, _, mut core) = desugar_files(
+            &[(
+                "main.bnt",
+                "import Benitoite.Unofficial.IO.Process\nfunction fail(cause: String, message: String) -> Unit uses Process.Exit\n Process.exit(1)\nend function\n",
+            )],
+            false,
+        );
+        let index = core
+            .defs
+            .iter()
+            .position(|d| d.name == "fail")
+            .expect("fail definition");
+        let def = &mut core.defs[index];
+        let body = terminal(&mut def.body);
+        let CompKind::App {
+            args, exit_report, ..
+        } = &mut body.kind
+        else {
+            panic!("exit application");
+        };
+        args[0].kind = ValKind::Const(Const::Int(1));
+        let value = |p: &Var| {
+            Box::new(Val {
+                kind: ValKind::Var(p.id),
+                ty: p.ty.clone(),
+                origin: body.origin,
+            })
+        };
+        *exit_report = Some(ExitReportArgs {
+            cause: value(&def.params[0]),
+            message: Some(value(&def.params[1])),
+        });
+        assert!(
+            check_program(&core).is_empty(),
+            "{:?}\n{:#?}",
+            check_program(&core),
+            core.defs[index]
+        );
+        for change in 0..5 {
+            let mut broken = core.clone();
+            let def = &mut broken.defs[index];
+            let body = terminal(&mut def.body);
+            let CompKind::App {
+                func,
+                args,
+                exit_report,
+                ..
+            } = &mut body.kind
+            else {
+                panic!("exit application");
+            };
+            let report = exit_report.as_mut().expect("report");
+            let expected = match change {
+                0 => {
+                    args[0].kind = ValKind::Const(Const::Int(2));
+                    "exit report requires canonical"
+                }
+                1 => {
+                    *func = Val {
+                        kind: ValKind::Var(VarId(900)),
+                        ..func.clone()
+                    };
+                    "exit report requires canonical"
+                }
+                2 => {
+                    report.cause.kind = ValKind::Const(Const::Int(4));
+                    report.cause.ty = Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]);
+                    "expected"
+                }
+                3 => {
+                    let message = report.message.as_mut().expect("message");
+                    message.kind = ValKind::Const(Const::Int(4));
+                    message.ty = Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]);
+                    "expected"
+                }
+                _ => {
+                    report.cause.kind = ValKind::Var(VarId(900));
+                    "unbound"
+                }
+            };
+            let errors = check_program(&broken);
+            assert!(
+                errors.iter().any(|e| e.message.contains(expected)),
+                "case {change}: {errors:?}"
+            );
         }
     }
 }

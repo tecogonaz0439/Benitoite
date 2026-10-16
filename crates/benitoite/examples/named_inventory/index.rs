@@ -211,7 +211,16 @@ fn expr(e: &Expr, contracts: &mut BTreeMap<NodeId, Value>, refs: &mut BTreeMap<N
             block(&l.body, contracts, refs);
         }
         Expr::Return(r) => expr(&r.value, contracts, refs),
-        Expr::Try(t) => expr(&t.value, contracts, refs),
+        Expr::Try(t) => {
+            expr(&t.value, contracts, refs);
+            if let benitoite::syntax::ast::TryAction::Die {
+                message: Some(message),
+                ..
+            } = &t.action
+            {
+                expr(message, contracts, refs);
+            }
+        }
         Expr::Lazy(l) => block(&l.body, contracts, refs),
         Expr::With(w) => {
             for b in &w.binds {

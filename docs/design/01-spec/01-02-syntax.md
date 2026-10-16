@@ -36,6 +36,8 @@
 
 それらの節で `...` を含まずに書いた規則は、同じ名前の規則を置き換える。文法の全体は、後述の「初回リリース版の文法の全体」にまとめる。
 
+`LowerIdent` と `UpperIdent` は、[字句構造](01-01-lexical.md)の 35 のキーワードを含まない。`die` はキーワードであり、`try` の失敗時の処置にだけ使える。名前や単独の式には使えない。`fn`・`pub`・`impl`・`mut` は通常の識別子であり、宣言やラムダのキーワードの省略形としては使えない。
+
 リスト状の構文には、次の二つの補助規則を使う。丸括弧・角括弧の中の要素はコンマで区切り、末尾のコンマを許す。ブロックの中の要素（文、型の宣言の構成子、レコードのフィールドなど）は改行で区切る。
 
 ```text
@@ -186,7 +188,7 @@ end data
 
 ### ブロックと文
 
-【決定】ブロックは、改行で区切った文の並びである。関数の宣言とラムダの本体、`if` と `match` の分岐、`with` と `lazy` と `handle` の本体、`handle` の節がブロックである。ブロックを波括弧で囲まない。ブロックを持つ構文は、キーワードで始まり、`end` とその構文の名前（`end function`・`end lambda`・`end if`・`end match` など）で閉じる。文は `bind` か `shadow` による束縛（束縛の文）か、式である。
+【決定】ブロックは、改行で区切った文の並びである。関数の宣言とラムダの本体、`if` と `match` の分岐、`with` と `lazy` と `handle` の本体、`handle` の節がブロックである。ブロックを波括弧で囲まない。ブロックを持つ構文は、キーワードで始まり、`end` とその構文の名前（`end function`・`end lambda`・`end if`・`end match` など）で閉じる。文は `bind` か `shadow` による束縛（束縛の文）か、式である。`return` 直後の改行は、括弧や次行の字句によらず文の区切りになる（[字句構造](01-01-lexical.md)の「改行による区切り」）。
 
 閉じる語が、閉じる構文と一致しないとき（`if` を `end match` で閉じたなど）は、構文エラーとし、診断は、どの構文を閉じるべきかを示す。LLM が波括弧でブロックを書いたとき（`{`・`}` は字句として受け付けない記号。[字句構造](01-01-lexical.md)の「演算子と区切り記号」）は、`end` と構文の名前で閉じる書き方を修正案として示す。
 
@@ -205,7 +207,7 @@ end data
 【決定】関数の宣言とラムダの本体は、`return 式` で値を返す。
 
 - `return e` は、`e` を評価し、`return` を含む最も内側の関数の宣言かラムダの呼び出しを終えて、`e` の値を返す。本体の途中にも書ける。
-- `return` の後には、必ず式を書く。`return` の直後の改行は空白として扱う（[字句構造](01-01-lexical.md)の「改行による区切り」の規則 2）ので、`return` だけの行の次の行は、`return` の式として読む。戻り値の型が Unit の関数から途中で抜けるときは `return ()` と書く。
+- `return` の後には、必ず式を書き、`return` と同じ物理行で値を書き始めなければならない。直後の改行は括弧内でも文末になり、値の欠落を E0201 で報告する。主位置は改行、補足の位置は `return` とし、値を同じ物理行で書き始めるよう案内する。行末のコメント・空行・コメントだけの行を挟んでも同じである。値を書き始めた後は、通常の改行の規則で複数行に続けられる（`return x +` の次行の値、`return (` の括弧内、`return f(` の引数、`return if condition then` の次行の分岐など）。短いラムダの全体を一物理行に収める条件は変わらない。戻り値の型が Unit の関数から途中で抜けるときは `return ()` と書く。
 - `return e` は式であり、どの型の式が書ける位置にも書ける（`match` の分岐の本体など）。`return` は右の式全体にかかる。`return x |> f` は `return f(x)` である。
 - 本体の終わりに達したときは、`()` を返す。戻り値の型が Unit でない関数とラムダは、本体のどの道筋でも `return` で抜けなければならない。抜けない道筋があれば誤りとし、診断は `return` を書き足す箇所を示す。
 - 必ず抜ける文（`return e`、両方の分岐が必ず抜ける `if`、すべての分岐が必ず抜ける `match` など。[型システム](01-06-type-system.md)で定める）の後に、同じブロックの文を続けると誤りとする。その文は実行されないからである。
@@ -345,7 +347,7 @@ lambda(line: String) -> Unit uses IO Console.writeLine(line) end lambda
 | 7 | 単項の `-` `not` | 前置 |
 | 8 | 関数の呼び出し `f(...)` | 後置 |
 
-`return` と `try`（後述の「`Result.Error` と `Option.None` を呼び出し元へ返す構文（初回リリース版）」）は、式の先頭に書き、右の式全体（パイプを含む）にかかる。どの演算子よりも弱く結び付く。
+`return` と `try`（後述の「`Result.Error` と `Option.None` を呼び出し元へ返す構文（初回リリース版）」）は、式の先頭に書き、右の式全体（パイプを含む）にかかる。`try` の入力は同じ深さの `or return` / `or die` の手前で終わる。どの演算子よりも弱く結び付く。ただし、`return` の値は同じ物理行で書き始めなければならず、直後の改行を越えて右の式を読まない。値を書き始めた後の改行には通常の継続の規則を使う。
 
 比較演算子は結合しない。`a < b < c` は構文エラーであり、`a < b and b < c` と書くよう診断で示す。
 
@@ -384,7 +386,7 @@ x |> lambda(v) return v * 2 end lambda              // (lambda(v) return v * 2 e
 x |> (makeHandler(config))        // (makeHandler(config))(x)
 ```
 
-`try` は右の式全体にかかるので、パイプの結果にかけるときは、パイプの先頭に書く（`try x |> f(next: a)` は、`x` を位置 0 に補う呼び出し全体に `try` を適用する）。
+`try` は右の式全体にかかるので、パイプの結果にかけるときは、パイプの先頭に書く（`try x |> f(next: a) or return` は、`x` を位置 0 に補う呼び出し全体に `try` を適用する）。
 
 `x` と `e` をどの順に評価するかは[評価意味論](01-08-evaluation.md)で定める。
 
@@ -449,7 +451,7 @@ end function
 【決定】ファイルの先頭の `//!` の後、最初の import か宣言の前に、言語の版、依存の記述、パッケージの名前を書ける。項目の順序は問わない。`language`・`dependency`・`package` と欄の名前は、予約語ではなく、この位置で意味を持つ語である。理由: 通常の識別子としての用途を保ち、同じ設定を入口と設定ファイルで同じ構文で書くためである。
 
 ```text
-language "0.0.5"
+language "0.0.6"
 
 dependency Textkit
   path "../packages/textkit"
@@ -593,15 +595,24 @@ TypeParamDecl = UpperIdent [ "[" "_" { "," "_" } "]" ] .
 
 ### `Result.Error` と `Option.None` を呼び出し元へ返す構文（初回リリース版）
 
-【決定】前置の `try` を設ける。意味は[エラー処理](01-09-errors.md)で定める。文法の規則は次のように改める。
+【決定】失敗を呼び出し元へ返すか、終了する処置を選ぶ前置の `try` を設ける。意味は[エラー処理](01-09-errors.md)で定める。文法の規則は次のように改める。
 
 ```text
 Expr        = "return" Expr
-            | "try" Expr
+            | "try" TryOperand [ "or" TryAction ]
             | PipeExpr .
+TryOperand  = Expr . (* 同じ深さの or return / or die の手前で終える。詳細は try の節。 *)
+TryAction   = "return" | "die" [ "(" Expr ")" ] .
 ```
 
-- `try` は右の式全体（パイプを含む）にかかる。`try e |> f(_)` は `try f(e)` である。
+- `try` は右の式全体（パイプを含む）にかかる。`try e |> f(_) or return` は `try f(e) or return` である。同じ深さの `or return` / `or die` は入力の終わりとし、失敗時の処置として読む。`or return` は値を取らない。`try r or return` と裸の `try r` は、型と評価の意味が同じである。
+- `or` の後が `return` / `die` でなければ通常の Boolean の演算子として読む。`try r or flag or return` は `try (r or flag) or return` である。括弧・引数・ラムダ・ブロックの内側では、その範囲の式を読む。内側の `try` が処置を先に取り、`try try r or return or return` は内外それぞれの処置になる。
+- 処置の解析は、外側の閉じ括弧・コンマ・`then`・`do`・`with case`・`case`・`else`・`end` を消費しない。内側の `match` のガードは、その内側の式として読む。ガードに直接書いた `try` は裸と明示形のどちらも E0218 とし、ガード内のラムダの本体には書ける。
+- 明示形の後に演算子・呼び出し・型適用を続けるときは、`(try r or return) + 1` のように明示形を括弧で囲む。囲まず続ければ E0259、`try r or return extra` のように処置へ値を付ければ E0258 とする。外側の `try` が待つ処置は E0259 にしない。
+- `or` の前後の改行は式の継続となる。`return` 直後の改行は、普通の `return` と同じく、括弧内でも次の字句によらず文を終える。この処置は値を取らないため、普通の `return` の値の欠落とは区別する。引数では `or return,`、括弧の式では `or return)` のように区切りを同じ行に書く。短いラムダは処置を含めて一物理行に収める。
+- `or die` は失敗時に終了操作を行い、`or die(message)` は純粋な String の説明を付ける。型と評価は[エラー処理](01-09-errors.md#失敗時に終了する処置)に従う。`die()` と `die(a, b)` は E0258 とする。単独の `die` は E0201 とし、`try` の処置を案内する。
+- `die` の説明の開き括弧は、`die` と同じ物理行で始める。括弧の外では、処置の `die` と説明の閉じ括弧の後の改行で文を終え、次行の括弧や演算子を取り込まない。説明の括弧内は通常の継続規則に従う。短いラムダは説明の閉じ括弧まで一物理行に収める。説明から直接の `return`・`try` は E0218 とし、内側のラムダには通常の関数境界を作る。
+- フォーマッタは裸・明示 return・die と説明の選択を保ち、裸の形へ `or return` を足さない。
 - LLM が例外を捕らえる構文のつもりで `try { … } catch` と書いたとき（`{` は字句として受け付けない記号）は、例外を捕らえる構文がないこと（[エラー処理](01-09-errors.md)の「例外」）と、`Result` か `Option` を返す式に `try` を付けることを示す。
 
 ### 明示遅延（初回リリース版）
@@ -717,7 +728,7 @@ end function
 
 ### 属性（初回リリース版）
 
-【決定】トップレベルの宣言の前に、属性を書ける。評価の意味を変える属性は `@builtin` と `@external` だけであり、`@builtin` は本体のない関数、`@external` は本体のない関数と右辺のない型の宣言に付ける。ほかの属性は、型付けと評価の意味を変えず、処理系や道具が宣言をどう扱うかを表す。理由: 本体を別の実装から与える宣言を属性で表し、予約語を増やさないためである。
+【決定】トップレベルの宣言の前に、属性を書ける。評価の意味を変える属性は `@builtin` と `@external` だけであり、`@builtin` は本体のない関数、`@external` は本体のない関数と右辺のない型の宣言に付ける。`@extensible` は型検査での使用条件を変える。ほかの属性は、型付けと評価の意味を変えず、処理系や道具が宣言をどう扱うかを表す。理由: 本体を別の実装から与える宣言を属性で表し、予約語を増やさないためである。
 
 文法の `TopItem` を次のように改める。それまでの節で定めた `TopItem` の選択肢のうち、import の宣言以外を `Decl` にまとめ、その前に属性を書けるようにする。後の節は、`Decl` に選択肢を加える。
 
@@ -736,14 +747,18 @@ Decl        = [ Visibility ] FnDecl
 
 - 属性は、宣言の前の行か、同じ行の宣言の前に書く。一つの宣言に複数の属性を書ける。
 - 属性の引数は、文字列補間を含まない文字列リテラルに限る。
-- 利用者のソースに書ける属性は次の三つに限る。ほかの名前の属性は誤りとし、診断は書ける属性の一覧を示す。一つの宣言に同じ属性を二度書くと誤りとする。
+- 属性の名前は小文字識別子であり、`external`・`test`・`deprecated`・`builtin`・`extensible` 自体は予約しない。
+- 利用者のソースに書ける属性は次の四つに限る。ほかの名前の属性は誤りとし、診断は書ける属性の一覧を示す。一つの宣言に同じ属性を二度書くと誤りとする。
 - 標準ライブラリのソースでは、組み込みの関数を宣言する属性 `@builtin("名前")` も書ける。`@builtin` を付けた関数の宣言は、`Body "end" "function"` を書かず、シグネチャ（`Uses` まで）で終える（[標準ライブラリ](../03-interop/03-06-stdlib.md)の「標準ライブラリのソースの書き方」）。利用者のソースに書くと誤りとする。
 
 | 属性 | 付けられる宣言 | 意味 |
 |---|---|---|
 | `@external("wasm", "パス", "名前")` | 型パラメータを持たないトップレベルの関数（外部の型を含む場合だけ `uses State`）と、右辺のない `type` | コンポーネントが関数の本体か型の実体を与える。`public` または `public(package)` と `@deprecated` を併用でき、`@test`・`@builtin` は併用できない |
+| `@extensible` | `data`・レコード | 定義したパッケージの外から照合するとき、将来の形を覆うガードのない変数か `_` を必要とする（[代数的データ型とパターンマッチ](01-05-data-types.md#拡張可能な型)） |
 | `@test`、`@test("説明")` | 関数 | テストの関数である（[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)） |
 | `@deprecated("理由と移行先")` | 関数・定数・型・型の別名・レコード・型クラス・エフェクト | 非推奨である。文字列は一つだけ書き、省略できない。空の文字列（`@deprecated("")`）は誤りとする |
+
+【決定】`@extensible` は引数を取らない。`@extensible()` も引数 0 個として受理し、フォーマッタは括弧を維持する。文字列引数を付けると E0817、文字列以外の引数は E0220、重複は E0803、`data`・レコード以外の宣言への指定は E0802 とする。同じ属性に引数と適用先の誤りがあれば、先に検出する引数の誤りだけを報告する。構成子の前の属性は認めず、E0201 とする。`@deprecated` と併用できる。
 
 【方針】`@deprecated` を付けた宣言を、その宣言の外から名前で参照すると、処理系は警告を出し、属性の文字列を示す。警告は検査と実行を止めない。標準ライブラリの宣言も `@deprecated` を使う。警告の診断コードは[診断エンジン](../02-impl/02-10-diagnostics.md)で定める。
 
@@ -819,7 +834,7 @@ import Benitoite.Unofficial.IO.File
 ///
 /// Returns `Result.Error` when the file does not contain a number.
 public function readPort(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
 end function
 
@@ -917,8 +932,10 @@ BindStmt    = ( "bind" | "shadow" ) Pattern [ ":" Type ] "<-" Expr .
 
 (* 式 *)
 Expr        = "return" Expr
-            | "try" Expr
+            | "try" TryOperand [ "or" TryAction ]
             | PipeExpr .
+TryOperand  = Expr . (* 同じ深さの or return / or die の手前で終える。詳細は try の節。 *)
+TryAction   = "return" | "die" [ "(" Expr ")" ] .
 PipeExpr    = OrExpr { "|>" OrExpr } .
 OrExpr      = AndExpr { "or" AndExpr } .
 AndExpr     = CmpExpr { "and" CmpExpr } .

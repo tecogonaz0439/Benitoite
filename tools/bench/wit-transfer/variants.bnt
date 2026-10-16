@@ -39,7 +39,7 @@ end data
 @external("wasm", "guests/mixed-variant.wasm", "run")
 function joined(v: Joined) -> Joined
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
-  bind Pair(n, rounds) <- try Runner.settings()
+  bind Pair(n, rounds) <- try Runner.settings() or return
 
   return Runner.verify(rounds: rounds, work: lambda() -> Boolean
     bind c0 <- one(One.Value(Pair(n, n + 4))) = One.Value(Pair(n + 11, n + 26))

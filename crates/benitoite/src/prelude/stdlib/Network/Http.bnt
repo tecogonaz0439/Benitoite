@@ -70,14 +70,14 @@ public function pathSegments(path: String) -> List[String]
 /// Listens on `port` of `host` and runs `handler` in a new task for each request.
 /// Returns `Result.Error` when listening cannot start or accepting fails.
 public function serve[effect E](host: String, port: Integer, handler: function(request: Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
-  with listener = try listen(host: host, port: port),
+  with listener = try listen(host: host, port: port) or return,
     group = TaskGroup.open() do
     return serveLoop(listener: listener, group: group, handler: handler)
   end with
 end function
 
 function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: function(request: Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
-  bind exchange <- try accept(listener)
+  bind exchange <- try accept(listener) or return
   bind _ <- TaskGroup.spawn(group: group, action: lambda()
     with current = exchange do
       return respond(exchange: current, response: handler(requestOf(current)))

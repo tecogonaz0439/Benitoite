@@ -194,16 +194,36 @@ theorem RuntimeSelected.alternativeSelected {arms : List Arm} {i j : Nat} {v : V
     intro prior hp
     exact hs arm (List.mem_of_getElem? hi) prior (List.mem_of_mem_take hp)
 
+/-- 任意の view の非選択判定を、現在の値に対する実行時の選択条件へ結ぶ。 -/
+theorem checkMatchWithView_unreachable_runtime (P : Program) (ctors : DataName → List ConName)
+    (view : CoverageView) (a : Ty) (arms : List Arm) (i j : Nat)
+    (hc : CtorsComplete P ctors) (hs : SlotsOk arms)
+    (h : (i, j) ∈ (checkMatchWithView P ctors view a arms).unreachable) :
+    ∀ v, Inhabits P a v → ¬ RuntimeSelected arms i j v := by
+  intro v hv hsel
+  exact checkMatchWithView_unreachable_sound P ctors view a arms i j hc h v hv
+    (hsel.alternativeSelected hs)
+
+/-- 閉じた互換入口についての実行時の系。 -/
 theorem checkMatch_unreachable_runtime (P : Program) (ctors : DataName → List ConName)
     (a : Ty) (arms : List Arm) (i j : Nat) (hc : CtorsComplete P ctors) (hs : SlotsOk arms)
     (h : (i, j) ∈ (checkMatch P ctors a arms).unreachable) :
-    ∀ v, Inhabits P a v → ¬ RuntimeSelected arms i j v := by
-  intro v hv hsel
-  exact checkMatch_unreachable_sound P ctors a arms i j hc h v hv
-    (hsel.alternativeSelected hs)
+    ∀ v, Inhabits P a v → ¬ RuntimeSelected arms i j v :=
+  checkMatchWithView_unreachable_runtime P ctors closedView a arms i j hc hs h
 
 /-- C_Match の前提で照合の型 a を固定した系。
 値の型付けと網羅性は C_Match に対応する。slots の整合は分岐の型付けから導く。 -/
+theorem checkMatchWithView_unreachable_runtime_of_C_Match
+    {P : Program} {B : Builtins} {Ψ C Γ R v arms a b ε}
+    (ctors : DataName → List ConName) (view : CoverageView) (i j : Nat)
+    (_hv : HasTypeV P B Ψ C Γ v a)
+    (ha : HasTypeArms P B Ψ C Γ R arms a b ε)
+    (_hex : Exhaustive P a (unguardedPats arms)) (hc : CtorsComplete P ctors)
+    (h : (i, j) ∈ (checkMatchWithView P ctors view a arms).unreachable) :
+    ∀ w, Inhabits P a w → ¬ RuntimeSelected arms i j w :=
+  checkMatchWithView_unreachable_runtime P ctors view a arms i j hc ha.slotsOk h
+
+/-- C_Match の閉じた互換入口についての系。 -/
 theorem checkMatch_unreachable_runtime_of_C_Match
     {P : Program} {B : Builtins} {Ψ C Γ R v arms a b ε}
     (ctors : DataName → List ConName) (i j : Nat)
@@ -212,6 +232,6 @@ theorem checkMatch_unreachable_runtime_of_C_Match
     (_hex : Exhaustive P a (unguardedPats arms)) (hc : CtorsComplete P ctors)
     (h : (i, j) ∈ (checkMatch P ctors a arms).unreachable) :
     ∀ w, Inhabits P a w → ¬ RuntimeSelected arms i j w :=
-  checkMatch_unreachable_runtime P ctors a arms i j hc ha.slotsOk h
+  checkMatchWithView_unreachable_runtime_of_C_Match ctors closedView i j _hv ha _hex hc h
 
 end Benitoite.Release

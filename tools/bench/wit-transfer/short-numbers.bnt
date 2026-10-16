@@ -9,10 +9,10 @@ function typed(v: Integer) -> Integer
 function adapter(v: UnsignedInteger64) -> UnsignedInteger64
 
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
-  bind Pair(n, rounds) <- try Runner.settings()
-  bind wide <- try Option.okOr(o: UnsignedInteger64.fromInteger(n), error: "number out of range")
+  bind Pair(n, rounds) <- try Runner.settings() or return
+  bind wide <- try Option.okOr(o: UnsignedInteger64.fromInteger(n), error: "number out of range") or return
   bind expected <- if n mod 2 = 0 then n + 1 else n - 1 end if
-  bind expectedWide <- try Option.okOr(o: UnsignedInteger64.fromInteger(expected), error: "number out of range")
+  bind expectedWide <- try Option.okOr(o: UnsignedInteger64.fromInteger(expected), error: "number out of range") or return
   return Runner.verify(rounds: rounds, work: lambda() -> Boolean
     bind a <- typed(n)
     bind b <- adapter(wide)

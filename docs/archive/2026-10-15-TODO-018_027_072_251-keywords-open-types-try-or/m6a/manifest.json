@@ -1,0 +1,451 @@
+{
+  "base_head": "584955aa6bd709f958481f9bf1f453e0c3e2fcb2",
+  "stages": [
+    {
+      "order": 1,
+      "path": "01-release.patch",
+      "sha256": "79d6b0a4c16186a826a72ac620b11cea84f972f3ed2a301e00f002b54efada68",
+      "files": [
+        {
+          "path": "CHANGELOG.md",
+          "before_sha256": "9d9f0401d106dd5083a610e2b6682bf23faaf9c5f8486079b3b67a9ed41be64d",
+          "after_sha256": "8d8eef7c37624c667740a10d3bafed2420e03fd774ab97f0c16e523341ce5f2d"
+        },
+        {
+          "path": "Cargo.lock",
+          "before_sha256": "7e3cfe1dd2e8fc27f777ab50002146edeca7e9df2356194135c79d65f12ab576",
+          "after_sha256": "5bfee5ed31b006d71b4e3b34bbcbc33930124a1b1526dc0e9a859ab3adbcbafa"
+        },
+        {
+          "path": "crates/benitoite/Cargo.toml",
+          "before_sha256": "70b56cf4e5882f485469d6ba8f203f39b5979ad6dac4c6a8a5f3afcbf0464825",
+          "after_sha256": "63f10abb37debad14eb5d83eceb5feefbe4d88d929a1c11812b50792fe08198f"
+        },
+        {
+          "path": "crates/benitoite/src/modules/package.rs",
+          "before_sha256": "502998942f7efd2c8b7b23e9ad786ff124dc84ae7bb09eba6a67c23f14547b15",
+          "after_sha256": "5a68d278af77baa543232122d0ecc3243348b7052cea95e49d03e3acef37703a"
+        },
+        {
+          "path": "crates/benitoite/src/modules/text.rs",
+          "before_sha256": "68c682a1b0caf49a3c6174227cc5bac65210aec87d645c9e560a3aa1993620d7",
+          "after_sha256": "bef0f840a7e6c9c057a3c03a5d508038ab8c2bc7b1363da33a59c39764430587"
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "path": "02-current-inputs.patch",
+      "sha256": "d3278a6522f13374519388a9e3ef61b7d80469748b6c00cd1f82482d9bb38e23",
+      "files": [
+        {
+          "path": "crates/benitoite/src/cli/tools/package/tests.rs",
+          "before_sha256": "329049bbda2ed90f22721f2412d8c5f45d2e999dc3a9f4d70e127bcd3e92aa08",
+          "after_sha256": "d1e837897bf2ef23425489a06bc35030c702c2cb4b17824579bcc390492e1acd"
+        },
+        {
+          "path": "crates/benitoite/src/external/tests.rs",
+          "before_sha256": "7cf2c856e9504e3971f7684632e0bccf7ceb2addc64aebec765276c419b36532",
+          "after_sha256": "49b66aa9ef16c15f87bd0c25a451893950ac776938dd2d7618f8b505173cd701"
+        },
+        {
+          "path": "crates/benitoite/src/modules/hash.rs",
+          "before_sha256": "b074f3df60383a72391d76f450f1d42a2e64bdad1f04901ce4d7ec66bf5707be",
+          "after_sha256": "f05bf6fe3b6935350e1ad763b535a122c6d192e262d3c78f5eb404e179065f18"
+        },
+        {
+          "path": "crates/benitoite/src/modules/tests.rs",
+          "before_sha256": "80bd19489257bd2ac005588a95a17e5ab40bbc4ae762b7ba2d6b5d902abcb38c",
+          "after_sha256": "a00cc733dd198be73aea9b59de02da8bc6f858b6d7735c9b0429550d38dea82f"
+        },
+        {
+          "path": "crates/benitoite/src/typeck/pattern_ext.rs",
+          "before_sha256": "3c1109892701f3c43b6c15937d0e2a36c81aee57e233e1158cc4d84d276e8508",
+          "after_sha256": "933fe5b70e7692bef696783c5a028b31c8365cb579e34f6a664a6c762473c913"
+        },
+        {
+          "path": "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+          "before_sha256": "d4b0968241124717f67325d50515996c0d09940e67f42f3ffd2bd11d6b74cfca",
+          "after_sha256": "fafe4377cd3eec4cf8982639c031ffcb724473075c755007924d6cfbeed64849"
+        },
+        {
+          "path": "crates/benitoite/testdata/external/self-package/package.bnt",
+          "before_sha256": "d4b0968241124717f67325d50515996c0d09940e67f42f3ffd2bd11d6b74cfca",
+          "after_sha256": "fafe4377cd3eec4cf8982639c031ffcb724473075c755007924d6cfbeed64849"
+        },
+        {
+          "path": "crates/benitoite/testdata/fmt/header.bnt",
+          "before_sha256": "861b40146cc2a4f6aecbe20513a8955209ab0954b78f2ebee95278b9e57008cc",
+          "after_sha256": "9cd7b31ac2f2c6452c3071b5138bfbb4c05f53bf921d53d34b17727579d20bf9"
+        },
+        {
+          "path": "crates/benitoite/testdata/fmt/header.formatted",
+          "before_sha256": "d274d8b7c506c048058b95dad068d89fa50fe36350e7e01ddce6efa897b5f60b",
+          "after_sha256": "db6f482340d84c1aaa31f6c124523213f00cdf3cbed71f838b5ef24799d8cbea"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/config-declaration/package.bnt",
+          "before_sha256": "80bbd8b0063a67ad4c1aac211002971a2db8104277b36080d07a87845756cd20",
+          "after_sha256": "527575eacf8e48bf48d3e3215510fe23f7db947cd18e2120120664b7af2803ea"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/d6c-extensible-external/package.bnt",
+          "before_sha256": "d554385e3005277226475284f2dfe4b00f8ef7ac22686cf08cb9b1ae83e94397",
+          "after_sha256": "7713925c5196290c4aac437ee4d8f9dba49a9f13c624163d4f257c433d11d9a2"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/d6c-extensible-missing/package.bnt",
+          "before_sha256": "d554385e3005277226475284f2dfe4b00f8ef7ac22686cf08cb9b1ae83e94397",
+          "after_sha256": "7713925c5196290c4aac437ee4d8f9dba49a9f13c624163d4f257c433d11d9a2"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/d8-extensible-run/package.bnt",
+          "before_sha256": "1f6b34a73cc4107b9a9aa5679efc9952f0e7238cf522a22a6bade6370992d668",
+          "after_sha256": "14757e23effe03e7775750ace070345b0bf4f391605174c55776b2144e6ad04a"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/d8-extensible.files/dep/package.bnt",
+          "before_sha256": "c112f72c4cd72cf61cc830c143c6bbef0a75f652348c0aec6d163885a2169a56",
+          "after_sha256": "fce0acfff973692b0bafa4fb0af86a2ee133a1366eece2f6f6b1a92f9b5918b8"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt",
+          "before_sha256": "7e24ed4a8a6b496d84b0fe9f9534dc3fefe8829cb6ebd6a2966a4780451472e3",
+          "after_sha256": "1080b378e7243367089d7c38e30b9204fba148a079bc41bd3a97c63a4abff64b"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt",
+          "before_sha256": "88b35d99d026f01c7fe10d6e1a0d57a6d3ff98b6c96299f4248e1d3a7ae28900",
+          "after_sha256": "bac93844b85932c8926cb6f98aa0ce552911e85bfdfd985e4ba18ae1bebaee4e"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt",
+          "before_sha256": "f2f0a8590188331e121a0326c860fd61a292ebc373b4e0e38f5bea1f25057ac6",
+          "after_sha256": "7eed749afc8f92deedfc50706299ec01cbb5cea28b8ac759a03526672514065f"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt",
+          "before_sha256": "93a066206454fd5e6ae7d503b68f27344f9999fc5ae15a4e889a4e93a576977c",
+          "after_sha256": "14ac00c45327d124140c6b586741ed8025804b14af8720e90cc11640e6b1c7a3"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/extensible.files/dep/package.bnt",
+          "before_sha256": "c112f72c4cd72cf61cc830c143c6bbef0a75f652348c0aec6d163885a2169a56",
+          "after_sha256": "fce0acfff973692b0bafa4fb0af86a2ee133a1366eece2f6f6b1a92f9b5918b8"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt",
+          "before_sha256": "d8a9d5275c20e4dec45e6be62ba8fe92909b2d96c564ff26cdb9a5dac3cd341b",
+          "after_sha256": "2dd2e5e74287ea92be973d3dcdbf1e44f63a5455ac64b552453f88095a420bb2"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt",
+          "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+          "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/header-overlap/main.bnt",
+          "before_sha256": "40f923142f9ad3a90bfdf668c2585d6dcfa4ef83ad8eae25fe1079101657acc6",
+          "after_sha256": "408e04e5b88ecbe54ba1e7ad3b46e1bc0f45227df77251b2a00325dc66023ebd"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/header-overlap/package.bnt",
+          "before_sha256": "602f2bdc5329ed2033ad395b1bf168cd77eecb9ac0cbabcb57c9f2ed12b1ce4c",
+          "after_sha256": "9ae8acc4ddb9bb9832c6d480c0d8464f87e9be933955f08ddd810073530b16b0"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/header/deps/textkit/package.bnt",
+          "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+          "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/header/main.bnt",
+          "before_sha256": "40f923142f9ad3a90bfdf668c2585d6dcfa4ef83ad8eae25fe1079101657acc6",
+          "after_sha256": "408e04e5b88ecbe54ba1e7ad3b46e1bc0f45227df77251b2a00325dc66023ebd"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/imported-header/Helper.bnt",
+          "before_sha256": "5017727ba3cdc10fcedd25e850c9d5109e5cd863c874782de02d882fa93632a9",
+          "after_sha256": "4055a344308a9e88a8d790651c4c4f2571b86d842648eb897338d5c656268c5e"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt",
+          "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+          "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt",
+          "before_sha256": "a1af455307bcdeb35a765fb9e79e8267f1983d7dc16b4cb6e6a57a9a52e2792f",
+          "after_sha256": "184ba467cd3cf7b3e824787aa47e23eabb149da6d45d41a878f4736d9385d06a"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt",
+          "before_sha256": "b763652c355c790447d4bd8f44e1f05d577131b41c255299f6a1cc80297e6958",
+          "after_sha256": "479191a351897a20c1e51f451e022584033f6996cbc97b59aa9232a1f1a21762"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt",
+          "before_sha256": "47cef55d9a3a2ced7dc733d4b1fa5a54225a6ecdd34ac0956b900b5fab64ad56",
+          "after_sha256": "f733e315969f381d1e059eee85999420465b8d47b1c4fcebab9ed4000f340991"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt",
+          "before_sha256": "ffde1e46bedc87661a288b811a1407ac59d3b0486211f0a75787a78cb1c6cabb",
+          "after_sha256": "152e57ba957a4cb1691e5d14a15117a093cd008245f185edd93e3f896fe40f13"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt",
+          "before_sha256": "a76f8b2117f035ca97f94d6613e7e071edf018d21fc7486e95f48ff2dd2fe4cd",
+          "after_sha256": "0fc9efea9de5c62fa0fb355f4013789b8b3a6af82b27f74f8ddc0825630bcb6a"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt",
+          "before_sha256": "8d1b26fa88480ce33199cf2cb376472652f621e51843b2328d4b38de680dc2d3",
+          "after_sha256": "75eb05aca5f355d137f430f3b8ab7b10c51e4ec3e798817275a903b8f1fa183c"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-as-root/package.bnt",
+          "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+          "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt",
+          "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+          "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-dependencies/package.bnt",
+          "before_sha256": "b7f6ff45fc2a4be32bb457e4c7cbf94a5c372b796508615fd46f9e66a1c718e3",
+          "after_sha256": "cd5c093e26aff2e67e1f69c6fd7e030dfad3342389f57c148bbe12ca35477be2"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+          "before_sha256": "d5b4e8442199b5b9532700c423865208581a42f700ced7165cadd3246c7bdf18",
+          "after_sha256": "c7cf68e066dbee1f3f38cf784972b6384af7fafd6dafe564fb426e175e21ddae"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt",
+          "before_sha256": "2d2bb8a211a8c69af3870d0d25abd216073c7b8605ba6d0138dde87755d1dbdc",
+          "after_sha256": "62cd39aa7702831e6d99373842449ff4b89ada7ba99808710829e3241c19aec0"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt",
+          "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+          "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/root-config/package.bnt",
+          "before_sha256": "6cfaac05218eaf6d460afb98e6a63736b3b283a1d7b0e945178ea5d9c2655c74",
+          "after_sha256": "0664ec5822bc3eed53c26d06508e27ac83589d37d99c93d680f7d072996b6e04"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt",
+          "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+          "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt",
+          "before_sha256": "ef381f28c96d1deddb9e44c101c6d62e074257cabf90dd5a148c4e2c07b6c531",
+          "after_sha256": "c080341fb17f19df2547833a8fa645aee8f8983cd4025cefe03b98d28f0bea85"
+        },
+        {
+          "path": "crates/benitoite/tests/desugar_export/named.rs",
+          "before_sha256": "104d87a82b65d11b74341b326acccdc6bfb4178127289c4bb0a93b579b278008",
+          "after_sha256": "f55b70899232e7d70c76c4b5123583b4e35a88a96ea70577abbce74a65698f39"
+        },
+        {
+          "path": "crates/benitoite/tests/fmt_command.rs",
+          "before_sha256": "493c1894c1422dd682e27348b147ec65be9d86fd01876b05be57ae2c48ec93a2",
+          "after_sha256": "3a4ded897a83c4664ae513c4f8e614e7407f1ca2a3d27ad0b71adc6539181621"
+        },
+        {
+          "path": "crates/benitoite/tests/package_command.rs",
+          "before_sha256": "58f6e2ca44d6f24228ccf3edd9eae12c3cd28c9d158cb2ba3d958fbbc8800710",
+          "after_sha256": "ceeaac5ecd903814b465190753dadbae63247fbf543587f86e1651179a4fece8"
+        },
+        {
+          "path": "crates/benitoite/tests/spec_examples.rs",
+          "before_sha256": "41391bf19518dfdce59e899166d29c42002f072c24786199abe57500d5062112",
+          "after_sha256": "cb17dbf294b13f6a2945774dc03774dac8539c4fc1ca79e842f7ff1e2ae72293"
+        },
+        {
+          "path": "crates/benitoite/tests/test_command.rs",
+          "before_sha256": "1d7ac2fbd9e92d50a18897d4846b4f21e86174e6fc1c6384a041da1ff4cd5328",
+          "after_sha256": "bc0d282d7e0c26267ab69907202d2f04cdd48f31527786a73683a2088f030eb8"
+        },
+        {
+          "path": "docs/design/01-spec/01-02-syntax.md",
+          "before_sha256": "15e055789e7c972ac32f24aa8a898b70352ebfefd7e1ca4846061777a3a10341",
+          "after_sha256": "1e91e40345a9478f1c472af7f79e9e1ab365accabf93e0a2f8af9760bd29ada9"
+        },
+        {
+          "path": "docs/design/01-spec/01-03-names-modules.md",
+          "before_sha256": "fff7123bdffab9aa82b4781383bb48cbce6e9311ad8c80832322b05033f18d8e",
+          "after_sha256": "6a3dc33a807d04b08b2fbf51a24b7473cd1356b7bcd4f91392d1f0870ebfb509"
+        },
+        {
+          "path": "docs/design/06-tooling/06-09-packages.md",
+          "before_sha256": "6b09bd2329b56aa9779ecbcd317dcb11d83da2d310cd4a8b2f99f9712cdefe31",
+          "after_sha256": "6ab92d7ed74612af0a6f18769e27f60ba71ee2b316f2ee260569986388d36f97"
+        },
+        {
+          "path": "docs/ja/reference/benitoite.md",
+          "before_sha256": "620a4b73f62ae73198f6ae4bf63c45b39a944ffb87348b733ae8f9321d20d44b",
+          "after_sha256": "a3e9884a0672f28e69a1ac5df35241beeb6c50dfed9064ac9483b8e3f4bf1d88"
+        },
+        {
+          "path": "docs/ja/reference/install.md",
+          "before_sha256": "da78174314d2d72a96f749daf84305f0e5fbfca546351c92994e2c057f330797",
+          "after_sha256": "da9f4687df2daa6c2cec2731a750ab9406ea3e12b80085cf44d3053b8b0b5fc0"
+        },
+        {
+          "path": "docs/reference/benitoite.md",
+          "before_sha256": "72d18a3bdf70f7e3266e4cee3eec30f16b778d0aacf6adbec601c317d2b21d36",
+          "after_sha256": "d17a0871b3fe6e96fdcc52982a5ccf02e60f311dd776cc6b4988e59d19129458"
+        },
+        {
+          "path": "docs/reference/install.md",
+          "before_sha256": "462652997dbc69beae3a44b35abbd7843b51823a6af57a6d854cedd7c66f955c",
+          "after_sha256": "8b011973944da0203e04850cf2e44f3cc3de773198b88c95618969f209f268a6"
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "path": "03-boundaries-and-hashes.patch",
+      "sha256": "4d3bb91a136791a4e96cf57cc62366d04343955993fdacb38170cfbdaa3d5429",
+      "files": [
+        {
+          "path": "crates/benitoite/src/modules/hash.rs",
+          "before_sha256": "f05bf6fe3b6935350e1ad763b535a122c6d192e262d3c78f5eb404e179065f18",
+          "after_sha256": "3f4d87639c825966ac711141405122c5cfc303e12c3337de505e5cd02ca2d157"
+        },
+        {
+          "path": "crates/benitoite/src/modules/tests.rs",
+          "before_sha256": "a00cc733dd198be73aea9b59de02da8bc6f858b6d7735c9b0429550d38dea82f",
+          "after_sha256": "8887b9d20b82d3135b5b74b3f7779c233b71f8de48a486969a8796bec4d7c86e"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/dependency-settings.diag.json",
+          "before_sha256": "ff987358c0c3fb9ae0261441cd00a0ebd46d16c43409f6657934aa9778293bac",
+          "after_sha256": "fa20e490dda30ccbfc23d2e010febf959080ec519d56079cea42551942b5cd7c"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/hash-match/package.bnt",
+          "before_sha256": "9b5fec67d1697194b17a03182ac630a5fa5c2e8cf7675b7d1a72ca8d10999aea",
+          "after_sha256": "b7f12a363d9a5e2c50eff5e867859d858fe7ca29bacc4e17e50d8d981dd28aec"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/hash-mismatch.diag.json",
+          "before_sha256": "292daec81c97c3484696e09215d06069ec1fbe2b3ed650f69de41e0cd0821150",
+          "after_sha256": "e2fcfc1d3ff889ba83de972eb08061879a406708a8a0cbd900d12c9e84cfc45e"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/newer-config.diag.json",
+          "before_sha256": "af09bd57fe3f486566d48531bd6a3168aa3e6be97bd54f2b34dba01f176f7a0e",
+          "after_sha256": "1029e51c18f6b3f4dc0ae34c5e25f69c455f8db8cff7c1b15a0ccd7bbf4db190"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/newer-language.diag.json",
+          "before_sha256": "fd37951cce5bdafb3d06d2154fa82d1d042f4518d6a0b2e7b3903a175d318641",
+          "after_sha256": "cdfbe2666220f6b8db566797bcb5aa85522f8305b48280681e0e27a64a902d0e"
+        },
+        {
+          "path": "crates/benitoite/testdata/packages/older-language.diag.json",
+          "before_sha256": "bbbae3ecfe1babcc0928d605493149c7dff9282f6bbd819f5a2ca88d58371e16",
+          "after_sha256": "08dece2b1fe9c8d5517bd64e724d385effb5f4f4c44e121f912c1b087e7fcd81"
+        },
+        {
+          "path": "crates/benitoite/tests/package_command.rs",
+          "before_sha256": "ceeaac5ecd903814b465190753dadbae63247fbf543587f86e1651179a4fece8",
+          "after_sha256": "6a7a6b23797143ec6a674d418e4eaf77ea28f2c2b2e6c1c6401d632367fa5b8e"
+        }
+      ]
+    }
+  ],
+  "artifacts": {
+    "inventory.json": "6df38e3eacd22c31679f537a0bbdd05da84d8e057b1737b0e40f65c2828eb37c",
+    "hashes.json": "dc6061d04bf6c80609a659f5562cdbfa03c3cc35548f3db61875bdaca13385aa",
+    "packages.json": "a3ba07447c184509a8e87871f177e7a4d8bcac38c62fb5a2e4859142a2ea82d1",
+    "verify.py": "3e83dec80f67c9ae306fc7ca3bf35934b55709490b7f5ebe15443e9674c21129"
+  },
+  "generated_skill": {
+    "command": "cargo run -p benitoite --example gen_skill",
+    "changed_files": []
+  }
+}

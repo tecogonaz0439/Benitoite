@@ -84,6 +84,7 @@ impl ProtoBuilder {
     fn emit(&mut self, instr: Instr, trait_: Option<TraitIdx>) {
         self.proto.code.push(instr);
         self.proto.positions.push(None);
+        self.proto.exit_reports.push(None);
         self.proto.method_traits.push(trait_);
     }
 
@@ -260,6 +261,7 @@ impl ProgramBuilder {
                 captures: Vec::new(),
                 positions: Vec::new(),
                 method_traits: Vec::new(),
+                exit_reports: Vec::new(),
                 live: LiveInfo::default(),
             },
             index,

@@ -1,4 +1,5 @@
 import Benitoite.Release.BuiltinTable
+import Benitoite.Release.Coverage
 
 /-!
 # 型の情報を付けた表層の構文（C1・C2・C4・C5a-1・C6a-1・C6a-2・C6a-3・C7b-2）
@@ -344,6 +345,15 @@ mutual
     | tryResult (retArgs : List Ty) (ok err : ConName) (e : Expr)
     /-- `try e`（Option）。retArgs は戻り値の型引数 [U]。 -/
     | tryOption (retArgs : List Ty) (someCon noneCon : ConName) (e : Expr)
+    /-- die の先行構文。成功型と標準の参照を持ち、囲む関数の戻り値を持たない。
+    辞書と説明は入力と同じ字句スコープにある。型付けは E_TryResultDie・E_TryOptionDie、
+    検査は checkExprR の die の場合で行う。処理系には未接続である
+    （設計書 01-12「die の先行モデル」、07-04「道具と置き場所」）。 -/
+    | tryResultDie (successTy : Ty) (ok err : ConName) (dict : DictEv) (showMethod : MethName)
+        (exit : PrimName) (e : Expr) (message : Option Expr)
+    /-- Option の失敗原因は固定の String であり、Show の辞書を必要としない。 -/
+    | tryOptionDie (successTy : Ty) (someCon noneCon : ConName) (exit : PrimName)
+        (e : Expr) (message : Option Expr)
     /-- 一つのリソースの束縛。複数の束縛は body の最後に withE を入れ子にする。
     o はリソースの型名。本体に一つ束縛を加え、その変数を番号 0 にする。
     空の束縛列と `_` の束縛は、この構文では表せない。 -/
@@ -490,6 +500,8 @@ def ImplSig.dictTys (id : ImplSig) : List Ty :=
   id.dictParams.map fun p => .dict p.1 (.tvar p.2)
 
 structure Declarations where
+  /-- この本体のソース照合で将来の形を加える型（設計書 01-12「型の情報を付けた表層の構文と型付け」）。 -/
+  view : CoverageView := closedView
   funs : FunName → Option FunDecl
   cons : ConName → Option ConDecl
   /-- レコード構成子だけが持つ宣言順のフィールド名。 -/
@@ -503,6 +515,48 @@ structure Declarations where
 def Declarations.patternProgram (D : Declarations) : Release.Program :=
   { defs := fun _ => none, cons := D.cons, ops := D.ops,
     effects := D.effects, classes := D.classes, impls := fun _ => none }
+
+/-- view だけを替えてもコアに渡す宣言を変えない。 -/
+def Declarations.withView (D : Declarations) (view : CoverageView) : Declarations :=
+  { D with view }
+
+@[simp] theorem Declarations.withView_patternProgram (D : Declarations) (view : CoverageView) :
+    (D.withView view).patternProgram = D.patternProgram := rfl
+
+@[simp] theorem Declarations.withView_funs (D : Declarations) (view : CoverageView) :
+    (D.withView view).funs = D.funs := rfl
+
+@[simp] theorem Declarations.withView_cons (D : Declarations) (view : CoverageView) :
+    (D.withView view).cons = D.cons := rfl
+
+@[simp] theorem Declarations.withView_conFields (D : Declarations) (view : CoverageView) :
+    (D.withView view).conFields = D.conFields := rfl
+
+@[simp] theorem Declarations.withView_ops (D : Declarations) (view : CoverageView) :
+    (D.withView view).ops = D.ops := rfl
+
+@[simp] theorem Declarations.withView_effects (D : Declarations) (view : CoverageView) :
+    (D.withView view).effects = D.effects := rfl
+
+@[simp] theorem Declarations.withView_classes (D : Declarations) (view : CoverageView) :
+    (D.withView view).classes = D.classes := rfl
+
+@[simp] theorem Declarations.withView_impls (D : Declarations) (view : CoverageView) :
+    (D.withView view).impls = D.impls := rfl
+
+/-- ソース照合の追加条件。完全な宣言表で view 付き有用性がないことを要求する。
+将来の形を現在の値とせず、現在のコアの網羅性を導く（設計書 01-12「型の情報を付けた表層の構文と型付け」）。 -/
+def ViewExhaustive (D : Declarations) (view : CoverageView) (a : Ty)
+    (ps : List Release.Pat) : Prop :=
+  ∃ ctors, CtorsComplete D.patternProgram ctors ∧
+    usefulWithView D.patternProgram ctors view [a] (ps.map fun p => [p]) [.wild] = none
+
+/-- ソースの追加条件から従来の現在の値についての網羅性へ接続する。 -/
+theorem ViewExhaustive.exhaustive {D view a ps} (h : ViewExhaustive D view a ps) :
+    Exhaustive D.patternProgram a ps := by
+  obtain ⟨ctors, hc, hu⟩ := h
+  intro v hv
+  exact usefulWithView_singleton_none_sound D.patternProgram ctors view a ps .wild hc hu v hv rfl
 
 def Declarations.constructorNames (D : Declarations) (c : ConName) (cd : ConDecl) : List String :=
   (D.conFields c).getD (positionalNames cd.args.length)
@@ -525,6 +579,10 @@ def accessorDecl (cd : ConDecl) (k : Nat) : FunDecl :=
     ret := (cd.args[k]?).getD (.base .unit), eff := Eff.empty }
 
 structure Program where
+  /-- 関数の本体ごとの有効な指定。旧い入力は閉じたまま読む。 -/
+  functionViews : FunName → CoverageView := fun _ => closedView
+  /-- 同じ実装のメソッドも、それぞれの本体の指定を選ぶ。 -/
+  methodViews : ImplName → MethName → CoverageView := fun _ _ => closedView
   defs : FunName → Option Def
   cons : ConName → Option ConDecl
   /-- レコード構成子だけが持つ宣言順のフィールド名。 -/
@@ -552,5 +610,43 @@ def Program.declarations (p : Program) : Declarations :=
   { funs := p.lookupFun Def.toFunDecl (fun _ cd k => accessorDecl cd k), cons := p.cons, conFields := p.conFields,
     ops := p.ops, effects := p.effects, classes := p.classes,
     impls := fun i => (p.impls i).map ImplDecl.toImplSig }
+
+/-- 共有する宣言を保ち、本体のソース照合にだけ指定を渡す。 -/
+def Program.declarationsFor (p : Program) (view : CoverageView) : Declarations :=
+  p.declarations.withView view
+
+@[simp] theorem Program.declarationsFor_patternProgram (p : Program) (view : CoverageView) :
+    (p.declarationsFor view).patternProgram = p.declarations.patternProgram := rfl
+
+@[simp] theorem Program.declarationsFor_funs (p : Program) (view : CoverageView) :
+    (p.declarationsFor view).funs = p.declarations.funs :=
+  Declarations.withView_funs p.declarations view
+
+@[simp] theorem Program.declarationsFor_cons (p : Program) (view : CoverageView) :
+    (p.declarationsFor view).cons = p.declarations.cons :=
+  Declarations.withView_cons p.declarations view
+
+@[simp] theorem Program.declarationsFor_conFields (p : Program) (view : CoverageView) :
+    (p.declarationsFor view).conFields = p.declarations.conFields :=
+  Declarations.withView_conFields p.declarations view
+
+@[simp] theorem Program.declarationsFor_ops (p : Program) (view : CoverageView) :
+    (p.declarationsFor view).ops = p.declarations.ops :=
+  Declarations.withView_ops p.declarations view
+
+@[simp] theorem Program.declarationsFor_effects (p : Program) (view : CoverageView) :
+    (p.declarationsFor view).effects = p.declarations.effects :=
+  Declarations.withView_effects p.declarations view
+
+@[simp] theorem Program.declarationsFor_classes (p : Program) (view : CoverageView) :
+    (p.declarationsFor view).classes = p.declarations.classes :=
+  Declarations.withView_classes p.declarations view
+
+@[simp] theorem Program.declarationsFor_impls (p : Program) (view : CoverageView) :
+    (p.declarationsFor view).impls = p.declarations.impls :=
+  Declarations.withView_impls p.declarations view
+
+@[simp] theorem Program.declarationsFor_closed (p : Program) :
+    p.declarationsFor closedView = p.declarations := rfl
 
 end Benitoite.Surface

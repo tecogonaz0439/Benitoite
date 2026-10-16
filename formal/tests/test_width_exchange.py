@@ -33,7 +33,7 @@ def primitive(name, params, ret):
 def definition(index, name, ret, expr, core, params=()):
     h = header(ret, params)
     return {"name": f"{name} (fn:{index})", "scope": {"inScope": {
-        "surface": {"header": h, "body": {"last": {"expr": {"returnE": {"ret": ret, "inner": expr}}}},
+        "surface": {"package": "author", "coverageView": [], "header": h, "body": {"last": {"expr": {"returnE": {"ret": ret, "inner": expr}}}},
                     "dictParams": [], "implementation": None, "method": None, "supers": []},
         "core": {"header": h, "body": core, "lambdaEffects": [], "supers": []}}}}
 
@@ -69,13 +69,13 @@ def inputs():
         defs.append(definition(len(defs), name, base("String"), expr, core, [base(ty)]))
         prims.append(primitive(name, [base(ty)], base("String")))
     identity = {"group": "golden", "name": "width-exchange"}
-    corpus = {"version": 8, "operators": fixture["operators"], "annotations": {"tailMatch": [0, 0]},
-              "inputs": [{**identity, "excluded": [], "definitions": defs, "constants": [],
+    corpus = {"version": fixture["exchangeVersions"]["corpus"], "operators": fixture["operators"], "annotations": {"tailMatch": [0, 0]},
+              "inputs": [{**identity, "dataTypes": [], "excluded": [], "definitions": defs, "constants": [],
                           "ops": [], "effects": [], "primOps": [], "classes": [], "impls": []}]}
-    builtins = {"version": 2, "inputs": [{**identity, "prims": prims,
+    builtins = {"version": fixture["exchangeVersions"]["types"], "inputs": [{**identity, "prims": prims,
                 "effects": [{"name": "State", "ops": []}], "resources": [], "dataDecls": [],
                 "summaries": [], "statePure": [], "supplementalData": [], "supplementalPrims": []}]}
-    stdlib = {"version": 2, "inputs": [{**identity, "functions": [], "impls": []}]}
+    stdlib = {"version": fixture["exchangeVersions"]["types"], "inputs": [{**identity, "functions": [], "impls": []}]}
     return corpus, builtins, stdlib
 
 

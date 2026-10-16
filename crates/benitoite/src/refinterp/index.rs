@@ -229,7 +229,18 @@ fn walk<'p>(comp: &'p Comp, comps: &mut Vec<&'p Comp>, vals: &mut Vec<&'p CoreVa
             walk(bound, comps, vals);
             walk(body, comps, vals);
         }
-        CompKind::App { func, args, .. } => {
+        CompKind::App {
+            func,
+            args,
+            exit_report,
+            ..
+        } => {
+            if let Some(report) = exit_report {
+                walk_val(&report.cause, comps, vals);
+                if let Some(message) = &report.message {
+                    walk_val(message, comps, vals);
+                }
+            }
             walk_val(func, comps, vals);
             for v in args {
                 walk_val(v, comps, vals);

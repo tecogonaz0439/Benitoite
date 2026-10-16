@@ -12,6 +12,8 @@
 
 ## 仕様
 
+【決定】ネットワークの失敗値 `NetworkError` は、`Benitoite.Trait` の `Show` 実装で `NetworkError.message` の文字列をそのまま表示する。`try Http.get(url) or die` の原因にもこの実装を使い、失敗値を String へ変換するだけの `Result.mapError` は必要としない。終了には Process.Exit が加わる（[標準ライブラリ](03-06-stdlib.md#標準の型クラス初回リリース版)、[エラー処理](../01-spec/01-09-errors.md#失敗時に終了する処置)）。
+
 関数一覧の表の `f(a, b)` は、関数とパラメータを示す記法である。実際のコードでは、複数の引数を取る通常の関数は宣言のパラメータ名を付けて名前付きで呼ぶ。
 
 ### モジュールとエフェクト
@@ -101,14 +103,14 @@ end record
 
 ```text
 public function serve[effect E](host: String, port: Integer, handler: function(request: Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
-  with listener = try listen(host: host, port: port),
+  with listener = try listen(host: host, port: port) or return,
     group = TaskGroup.open() do
     return serveLoop(listener: listener, group: group, handler: handler)
   end with
 end function
 
 function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: function(request: Request) -> Response uses E) -> Result[Unit, NetworkError] uses Listen, State, E
-  bind exchange <- try accept(listener)
+  bind exchange <- try accept(listener) or return
   bind _ <- TaskGroup.spawn(group: group, action: lambda()
     with current = exchange do
       return respond(exchange: current, response: handler(requestOf(current)))
@@ -207,6 +209,8 @@ end function
 - スクリプトが組み立てたヘッダを送れるので、Basic や Bearer の認証のトークンは `headers` に書いて送れる。初回リリース版は、認証のための仕組み（秘密を渡す受け取り口、OAuth の手順、パスキーなど）を持たない。
 
 ### 失敗の種類
+
+`NetworkErrorKind` は `@extensible` を持ち、標準ライブラリの外の照合には[拡張可能な型](../01-spec/01-05-data-types.md#拡張可能な型)の規則を適用する。
 
 【決定】失敗しうる関数は `Result[T, NetworkError]` を返す（[エラー処理](../01-spec/01-09-errors.md)の「ネットワークの失敗の種類（初回リリース版）」）。各関数が返しうる `NetworkErrorKind` は、主に次のとおりである。`NetworkErrorKind.Other` は、どの関数も返しうる。
 

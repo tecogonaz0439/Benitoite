@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.IO.Process
+
+data Failure
+  Empty
+end data
+
+function value(r: Result[Integer, Failure]) -> Integer uses Process.Exit
+  return try r or die
+end function
+
+function main() -> Unit
+  ()
+end function

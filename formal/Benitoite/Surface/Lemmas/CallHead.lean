@@ -6,6 +6,8 @@ import Benitoite.Release.Lemmas.Preservation
 namespace Benitoite.Surface
 open Benitoite.Release
 
+variable {view : CoverageView}
+
 variable {p : Program} {B : Builtins} {op : OpPrim}
 
 theorem funDecl_desugared {f d} (hd : p.declarations.funs f = some d) :
@@ -48,7 +50,7 @@ theorem implSig_desugared {i id} (hd : p.declarations.impls i = some id) :
   | cons d ds ih => simpa only [DictEv.toValList, List.length_cons] using congrArg Nat.succ ih
 
 mutual
-  theorem DictEv.HasType.toVal (op : OpPrim) {C Γ d a} (h : DictEv.HasType p.declarations B C Γ d a) :
+  theorem DictEv.HasType.toVal (op : OpPrim) {C Γ d a} (h : DictEv.HasType (p.declarationsFor view) B C Γ d a) :
       HasTypeV (desugarProgram op p) B StoreTy.empty C Γ d.toVal a := by
     match h with
     | .impl hd ht hs =>
@@ -60,7 +62,7 @@ mutual
     | .local hi => exact .V_Var hi (by intro _ _ _ he; cases he)
     | .super hd hc hs => exact .V_Super (DictEv.HasType.toVal op hd) (classDecl_desugared hc) hs
 
-  theorem DictEv.HasTypes.toVal (op : OpPrim) {C Γ ds as} (h : DictEv.HasTypes p.declarations B C Γ ds as) :
+  theorem DictEv.HasTypes.toVal (op : OpPrim) {C Γ ds as} (h : DictEv.HasTypes (p.declarationsFor view) B C Γ ds as) :
       HasTypeVs (desugarProgram op p) B StoreTy.empty C Γ (DictEv.toValList ds) as := by
     match h with
     | .nil => exact .nil
@@ -143,7 +145,7 @@ theorem HasType.inv_methName {D B op C Γ R pos d m ss es us names ps T ε}
 計算側の許容エフェクトは、sequence が広げた後でもよい。頭の呼び出しの型は変わらない。 -/
 theorem directCallee_typed {C Γ R pos e h names as a ε εcall εdesugar}
     (hd : directCallee e = some h)
-    (hs : HasType p.declarations B op C Γ R pos e (.fn names as a εcall) ε)
+    (hs : HasType (p.declarationsFor view) B op C Γ R pos e (.fn names as a εcall) ε)
     (hc : HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R
       (desugarExpr op pos e) (.fn names as a εcall) εdesugar) :
     CallHead.HasType (desugarProgram op p) B C Γ h names as a εcall := by

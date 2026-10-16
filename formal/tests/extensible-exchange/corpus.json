@@ -1,0 +1,1132 @@
+{
+  "version": 9,
+  "operators": [],
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-extensible",
+      "dataTypes": [
+        {
+          "name": "Kind",
+          "typeName": "ErrorKind",
+          "isRecord": false,
+          "extensible": true,
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Rec",
+          "typeName": "ParseError",
+          "isRecord": true,
+          "extensible": true,
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Unused",
+          "typeName": "UnusedError",
+          "isRecord": false,
+          "extensible": true,
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Wrap",
+          "typeName": "Wrap",
+          "isRecord": false,
+          "extensible": false,
+          "package": "author",
+          "builtin": "ordinary"
+        }
+      ],
+      "excluded": [],
+      "definitions": [
+        {
+          "name": "author (fn:0)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Kind",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "matchE": {
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        },
+                        "scrutinee": {
+                          "local": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Only",
+                                      "args": []
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "last": {
+                                  "expr": "unit"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Kind",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Only",
+                                      "args": []
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "const": {
+                                      "value": "unit"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "external (fn:1)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Kind",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "matchE": {
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        },
+                        "scrutinee": {
+                          "local": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Only",
+                                      "args": []
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "last": {
+                                  "expr": "unit"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": "wild",
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "last": {
+                                  "expr": "unit"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [
+                  "Kind",
+                  "Rec",
+                  "Unused"
+                ],
+                "package": "external"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Kind",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Only",
+                                      "args": []
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "const": {
+                                      "value": "unit"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": "wild",
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "const": {
+                                      "value": "unit"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "recordAuthor (fn:2)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Rec",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "matchE": {
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        },
+                        "scrutinee": {
+                          "local": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Rec",
+                                      "args": [
+                                        "wild"
+                                      ]
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "last": {
+                                  "expr": "unit"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Rec",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Rec",
+                                      "args": [
+                                        "wild"
+                                      ]
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "const": {
+                                      "value": "unit"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "recordExternal (fn:3)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Rec",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "matchE": {
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        },
+                        "scrutinee": {
+                          "local": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Rec",
+                                      "args": [
+                                        "wild"
+                                      ]
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "last": {
+                                  "expr": "unit"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": "wild",
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "last": {
+                                  "expr": "unit"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [
+                  "Kind",
+                  "Rec",
+                  "Unused"
+                ],
+                "package": "external"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Rec",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Rec",
+                                      "args": [
+                                        "wild"
+                                      ]
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "const": {
+                                      "value": "unit"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": "wild",
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "const": {
+                                      "value": "unit"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "externalBind (fn:4)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Wrap",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bindPat": {
+                    "shadow": false,
+                    "pattern": {
+                      "con": {
+                        "name": "Wrap",
+                        "args": [
+                          "var"
+                        ]
+                      }
+                    },
+                    "ty": {
+                      "data": {
+                        "name": "Wrap",
+                        "args": []
+                      }
+                    },
+                    "expr": {
+                      "local": {
+                        "index": 0
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [
+                  "Kind",
+                  "Rec",
+                  "Unused"
+                ],
+                "package": "external"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Wrap",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Wrap",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "const": {
+                                      "value": "unit"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "method (fn:5)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Kind",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "matchE": {
+                        "ret": {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        },
+                        "scrutinee": {
+                          "local": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Only",
+                                      "args": []
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "last": {
+                                  "expr": "unit"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": "wild",
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "last": {
+                                  "expr": "unit"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": "I",
+                "method": "inspect",
+                "supers": [],
+                "coverageView": [
+                  "Kind",
+                  "Rec",
+                  "Unused"
+                ],
+                "package": "external"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "value"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Kind",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "Only",
+                                      "args": []
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "const": {
+                                      "value": "unit"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": "wild",
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "const": {
+                                      "value": "unit"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "constants": [],
+      "ops": [],
+      "effects": [],
+      "primOps": [],
+      "classes": [
+        {
+          "name": "Inspect",
+          "supers": [],
+          "methods": [
+            {
+              "name": "inspect",
+              "header": {
+                "tparams": [],
+                "neffs": 0,
+                "names": [
+                  "value"
+                ],
+                "params": [
+                  {
+                    "data": {
+                      "name": "Kind",
+                      "args": []
+                    }
+                  }
+                ],
+                "ret": {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                "eff": []
+              }
+            }
+          ]
+        }
+      ],
+      "impls": [
+        {
+          "name": "I",
+          "tparams": [],
+          "dictParams": [],
+          "cls": "Inspect",
+          "target": {
+            "base": {
+              "name": "Unit"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "annotations": {
+    "tailMatch": [
+      5,
+      0
+    ]
+  }
+}

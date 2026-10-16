@@ -144,6 +144,14 @@ pub struct HandlerDesc {
     pub clauses: Vec<ClauseDesc>,
 }
 
+/// 終了呼び出しの内部の報告値と元の try の位置（設計書 02-07「内部の終了報告」）。
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct ExitReportSite {
+    pub cause_reg: u16,
+    pub message_reg: Option<u16>,
+    pub span: Span,
+}
+
 /// 関数の原型。
 #[derive(Clone, PartialEq, Debug)]
 pub struct Proto {
@@ -169,6 +177,8 @@ pub struct Proto {
     /// `Some(型クラスの表の番号)`、ほかの位置に `None`（02-07「辞書とメソッドの呼び出し」）。引数の並びの長さを
     /// `TraitInfo::methods[C].arity` から決めるために使う
     pub method_traits: Vec<Option<TraitIdx>>,
+    /// 命令ごとの内部の終了報告。`code` と同じ長さ。標準 exit の IO だけに付く。
+    pub exit_reports: Vec<Option<ExitReportSite>>,
     /// 生存の情報
     pub live: LiveInfo,
 }

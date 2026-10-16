@@ -1,0 +1,13 @@
+import Dep.Types
+function main() -> Unit
+  bind _ <- match Types.Kind.Known with
+    case Types.Kind.Known -> 1
+    case Types.Kind.Other -> 0
+  end match
+  bind detail <- Types.Detail(value: 3)
+  bind _ <- match detail with
+    case Types.Detail(value: n, ..) -> n
+  end match
+  bind Types.Detail(value: _) <- detail
+  ()
+end function

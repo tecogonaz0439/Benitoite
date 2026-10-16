@@ -1910,3 +1910,6 @@ fn overlapping_tail_arguments_preserve_many_heap_values_in_order() {
         );
     }
 }
+
+#[path = "exit_report_tests.rs"]
+mod exit_report_tests;

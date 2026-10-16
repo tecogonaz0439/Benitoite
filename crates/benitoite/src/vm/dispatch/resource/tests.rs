@@ -113,7 +113,8 @@ fn stopped(step: VmStep) -> StopEnd {
 fn stop_error(end: &StopEnd) -> &StopInfo {
     match &end.reason {
         StopReason::Error(info) => info,
-        other @ (StopReason::Exit(_) | StopReason::Interrupted | StopReason::CheckFailed(_)) => {
+        other
+        @ (StopReason::Exit { .. } | StopReason::Interrupted | StopReason::CheckFailed(_)) => {
             panic!("expected error: {other:?}")
         }
     }

@@ -1,0 +1,20 @@
+// spec: 01-02 `Result.Error` と `Option.None` を呼び出し元へ返す構文（初回リリース版）
+// 06-03「整形後の検証」
+function f() -> Unit
+  bind bare <- try r or flag
+  bind explicit <- try r |> convert // operand
+    or // action
+    return // done
+  bind nested <- try try r or return or return
+  bind grouped <- (try r or return) + 1
+  bind callback <- lambda() try r or return // short
+  bind text <- "${try r or return}"
+  f(value: try r or return,
+    next: try s or return)
+  if try r or return then try s or return else () end if
+  with resource = try r or return do try s or return end with
+  match x with
+    case n if (lambda() try r or return)() -> try s or return
+    case _ -> ()
+  end match
+end function

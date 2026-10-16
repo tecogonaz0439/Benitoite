@@ -1,0 +1,75 @@
+--- a/crates/benitoite/skill/SKILL.md
++++ b/crates/benitoite/skill/SKILL.md
+@@ -146 +146 @@
+-A test is a function with `@test("description")`, no parameters, and the return type `Unit` or `Result[Unit, String]` (use the latter when the test uses `try`). Check with `Assert.equal(actual: actual, expected: expected)`. Replace an operation such as `File.readText` or `Process.run` with a handler so that the test does not touch the outside world; more examples are in `references/idioms.md`. Checks in generic helpers recover constructor names when the caller's types can be determined; otherwise, a type may remain unknown. If a report shows `<constructor #n of an unknown type>` (the zero-based constructor position), compare values with a concrete type in the check to show their names.
++A test is a function with `@test("description")`, no parameters, and the return type `Unit` or `Result[Unit, String]` (use the latter when the test uses `try e or return`). Check with `Assert.equal(actual: actual, expected: expected)`. Replace an operation such as `File.readText` or `Process.run` with a handler so that the test does not touch the outside world; more examples are in `references/idioms.md`. Checks in generic helpers recover constructor names when the caller's types can be determined; otherwise, a type may remain unknown. If a report shows `<constructor #n of an unknown type>` (the zero-based constructor position), compare values with a concrete type in the check to show their names.
+@@ -152 +152 @@
+-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+--- a/crates/benitoite/skill/references/idioms.md
++++ b/crates/benitoite/skill/references/idioms.md
+@@ -629 +629 @@
+-A test is a function with `@test("description")` that takes no arguments and returns `Unit` or `Result[Unit, String]`. A test that uses `try` returns `Result[Unit, String]`; returning `Result.Error(message)` fails the test. Check results with `Assert.equal(actual: actual, expected: expected)` and `Assert.isTrue(condition: condition, message: message)` (effect `Assert.Check`). Run the file with `benitoite test file.bnt`; do not run `benitoite check` on a test file without `main`.
++A test is a function with `@test("description")` that takes no arguments and returns `Unit` or `Result[Unit, String]`. A test that uses `try e or return` returns `Result[Unit, String]`; returning `Result.Error(message)` fails the test. Check results with `Assert.equal(actual: actual, expected: expected)` and `Assert.isTrue(condition: condition, message: message)` (effect `Assert.Check`). Run the file with `benitoite test file.bnt`; do not run `benitoite check` on a test file without `main`.
+@@ -650 +650 @@
+-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+@@ -655 +655 @@
+-  bind output <- try Process.run(Process.command(program: "git", arguments: ["branch", "--show-current"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind output <- try Process.run(Process.command(program: "git", arguments: ["branch", "--show-current"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+--- a/crates/benitoite/skill/references/language-comparison.md
++++ b/crates/benitoite/skill/references/language-comparison.md
+@@ -50 +50 @@
+-| `raise E(...)` / `try:` | `throw` / `try {}` | `Err(e)` / `?` | `return Result.Error(e)` / `try expr` |
++| `raise E(...)` / `try:` | `throw` / `try {}` | `Err(e)` / `?` | `return Result.Error(e)` / `try expr or return` |
+--- a/crates/benitoite/src/diag/codes.rs
++++ b/crates/benitoite/src/diag/codes.rs
+@@ -226 +226 @@
+-         question: "write `try` before the expression, such as `try parse(text)`",
++         question: "write `try` before the expression, such as `try parse(text) or return`",
+--- a/crates/benitoite/testdata/lexical/unknown_symbol.diag.json
++++ b/crates/benitoite/testdata/lexical/unknown_symbol.diag.json
+@@ -3 +3 @@
+-{"kind":"check","severity":"error","code":"E0211","message":"`?` is not an operator in Benitoite","primary":{"file":"testdata/lexical/unknown_symbol.bnt","start":{"line":5,"column":3,"offset":77},"end":{"line":5,"column":4,"offset":78},"label":"not a Benitoite operator"},"secondary":[],"notes":[],"helps":[{"message":"write `try` before the expression, such as `try parse(text)`","edits":[]}]}
++{"kind":"check","severity":"error","code":"E0211","message":"`?` is not an operator in Benitoite","primary":{"file":"testdata/lexical/unknown_symbol.bnt","start":{"line":5,"column":3,"offset":77},"end":{"line":5,"column":4,"offset":78},"label":"not a Benitoite operator"},"secondary":[],"notes":[],"helps":[{"message":"write `try` before the expression, such as `try parse(text) or return`","edits":[]}]}
+--- a/docs/design/01-spec/01-09-errors.md
++++ b/docs/design/01-spec/01-09-errors.md
+@@ -54,2 +54,2 @@
+-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+-  bind config <- try parseConfig(text)
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
++  bind config <- try parseConfig(text) or return
+@@ -65 +65 @@
+-- 後置の `?` は設けない。`e?` と書いたときは、`try e` と書くよう診断で示す。
++- 後置の `?` は設けない。`e?` と書いたときは、`try e or return` と書くよう診断で示す。
+--- a/docs/design/01-spec/01-11-concurrency.md
++++ b/docs/design/01-spec/01-11-concurrency.md
+@@ -141 +141 @@
+-  bind exchange <- try Http.accept(listener)
++  bind exchange <- try Http.accept(listener) or return
+@@ -151 +151 @@
+-  with listener = try Http.listen(host: "127.0.0.1", port: 8080) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)),
++  with listener = try Http.listen(host: "127.0.0.1", port: 8080) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return,
+--- a/docs/design/03-interop/03-09-network.md
++++ b/docs/design/03-interop/03-09-network.md
+@@ -106 +106 @@
+-  with listener = try listen(host: host, port: port),
++  with listener = try listen(host: host, port: port) or return,
+@@ -113 +113 @@
+-  bind exchange <- try accept(listener)
++  bind exchange <- try accept(listener) or return
+--- a/docs/design/08-appendix/08-04-fp-syntax-comparison.md
++++ b/docs/design/08-appendix/08-04-fp-syntax-comparison.md
+@@ -1009 +1009 @@
+-- Benitoite の `try` は、式の先頭に書き、右の式全体（パイプを含む）にかかる。後置の `?` は設けず、`e?` と書いたときは `try e` を修正案として示す（[エラー処理](../01-spec/01-09-errors.md)）。
++- Benitoite の `try` は、式の先頭に書き、右の式全体（パイプを含む）にかかる。後置の `?` は設けず、`e?` と書いたときは `try e or return` を修正案として示す（[エラー処理](../01-spec/01-09-errors.md)）。
+@@ -1105,2 +1105,2 @@
+-  bind x <- try parse(a)
+-  bind y <- try parse(b)
++  bind x <- try parse(a) or return
++  bind y <- try parse(b) or return
+--- a/docs/reference/benitoite.md
++++ b/docs/reference/benitoite.md
+@@ -948 +948 @@
+-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return

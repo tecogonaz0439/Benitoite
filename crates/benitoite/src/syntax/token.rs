@@ -25,6 +25,7 @@ pub enum TokenKind {
     KwCase,
     KwConst,
     KwData,
+    KwDie,
     KwDiv,
     KwDo,
     KwEffect,

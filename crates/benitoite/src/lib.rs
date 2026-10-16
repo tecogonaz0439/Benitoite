@@ -18,3 +18,10 @@ pub mod syntax;
 pub mod typeck;
 pub mod types;
 pub mod vm;
+
+// 統合検査と同じ交換器を、未公開構文のクレート内部の入口からも検査する。
+#[cfg(test)]
+extern crate self as benitoite;
+#[cfg(test)]
+#[path = "../tests/desugar_export/lib.rs"]
+mod exchange_tests;

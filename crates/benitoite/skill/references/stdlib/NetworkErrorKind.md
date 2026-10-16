@@ -7,6 +7,7 @@ Refer to its declarations as `NetworkErrorKind.<name>`, for example `NetworkErro
 Kinds of network failures.
 
 ```benitoite
+@extensible
 public data NetworkErrorKind
   /// The name cannot be resolved.
   HostNotFound

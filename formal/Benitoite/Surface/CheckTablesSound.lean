@@ -44,6 +44,12 @@ theorem constructors_sound {m : Materials} (h : constructorsOk m = true) :
   have hm : (c,cd) ∈ m.data.flatMap (·.ctors) := lookup_mem hc
   exact List.mem_of_elem_eq_true ((List.all_eq_true.mp hall) (c,cd) hm)
 
+/-- 有限の宣言材料で検査した完全性は、本体の view の選択によらない。 -/
+theorem constructors_withView_sound {m : Materials} (view : CoverageView)
+    (h : constructorsOk m = true) :
+    CtorsComplete (m.declarations.withView view).patternProgram (dataConstructors m.data) := by
+  simpa only [Declarations.withView_patternProgram] using constructors_sound h
+
 theorem record_sound {atoms ds name cd actual}
     (ha : Tys.AtomsIn atoms actual.args) (hc : Tys.AtomsIn atoms cd.args)
     (hget : constructorDecl ds name = some actual)
@@ -99,5 +105,5 @@ theorem input_sound {m : Materials} {S raw b select atoms}
     (m.input (builtins S (primEntries S raw) b) (satB S)
       (admitsDec S (primEntries S raw))
       (makeOpPrim select) atoms).Sound :=
-  ⟨hd, hb, sat_sound _ _ _, admits_sound _ _ _, opPrim_sound _, constructors_sound hc⟩
+  ⟨hd, hb, sat_sound _ _ _, admits_sound _ _ _, opPrim_sound _, constructors_withView_sound m.declarations.view hc⟩
 end Benitoite.Surface.CheckTables

@@ -14,6 +14,16 @@ structure Input.Sound (q : Input) : Prop where
   operators : OpPrimTypeArgs q.opPrim
   constructors : CtorsComplete q.D.patternProgram q.ctors
 
+/-- view の選択は宣言の原子集合や構成子の完全性を変えない。
+本体の指定を替えた入力にも同じ健全性の契約を渡す。 -/
+theorem Input.Sound.withView {q : Input} (h : q.Sound) (view : CoverageView) :
+    ({ q with D := q.D.withView view } : Input).Sound := by
+  refine ⟨?_, h.builtins, h.sat, h.admits, h.operators, ?_⟩
+  · simpa only [Declarations.AtomsIn, Declarations.withView_funs, Declarations.withView_cons,
+      Declarations.withView_ops, Declarations.withView_classes, Declarations.withView_impls]
+      using h.declarations
+  · simpa only [Declarations.withView_patternProgram] using h.constructors
+
 abbrev ReturnAtoms (atoms : List Atom) (R : Option Ty) : Prop :=
   ∀ t, R = some t → t.AtomsIn atoms
 

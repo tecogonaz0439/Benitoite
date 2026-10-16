@@ -77,6 +77,12 @@ mutual
     | .returnE a e => Ty.VarsIn nt pe a ∧ e.Scoped nt pe nv
     | .tryResult ts _ _ e | .tryOption ts _ _ e =>
         Ty.VarsInList nt pe ts ∧ e.Scoped nt pe nv
+    | .tryResultDie t _ _ d _ _ e message =>
+        Ty.VarsIn nt pe t ∧ d.Scoped nt pe nv ∧ e.Scoped nt pe nv ∧
+          (match message with | none => True | some m => m.Scoped nt pe nv)
+    | .tryOptionDie t _ _ _ e message =>
+        Ty.VarsIn nt pe t ∧ e.Scoped nt pe nv ∧
+          (match message with | none => True | some m => m.Scoped nt pe nv)
     | .withE _ e body => e.Scoped nt pe nv ∧ body.Scoped nt pe (nv + 1)
     | .lazyE body => body.Scoped nt pe nv
     | .handleE body cs => body.Scoped nt pe nv ∧ cs.Scoped nt pe nv

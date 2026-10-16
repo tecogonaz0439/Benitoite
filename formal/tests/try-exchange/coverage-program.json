@@ -1,0 +1,67 @@
+{
+  "version": 3,
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-try",
+      "matches": [
+        {
+          "node": 0,
+          "scrutineeTy": {
+            "data": {
+              "name": "Result",
+              "args": [
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ]
+            }
+          },
+          "arms": [
+            {
+              "alts": [
+                "wild"
+              ],
+              "guarded": false
+            }
+          ],
+          "coverageView": [],
+          "package": "author"
+        },
+        {
+          "node": 1,
+          "scrutineeTy": {
+            "data": {
+              "name": "Option",
+              "args": [
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ]
+            }
+          },
+          "arms": [
+            {
+              "alts": [
+                "wild"
+              ],
+              "guarded": false
+            }
+          ],
+          "coverageView": [],
+          "package": "author"
+        }
+      ],
+      "bindings": []
+    }
+  ]
+}

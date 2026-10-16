@@ -1,0 +1,96 @@
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -2,12 +2,27 @@
+
+ All notable changes to Benitoite are recorded in this file. Versions follow the policy in [Compatibility](docs/reference/benitoite.md#20-compatibility): while the major version is 0, a minor version may contain incompatible changes, and a patch version contains only bug fixes. Until `0.1.0`, any release may contain incompatible changes. Every incompatible change is listed with how to migrate.
+
+-## Unreleased
+-
+-- `E0908` now lists every incompatible change after the declared language version and up to the interpreter's version. Notes include each version and summary; helps provide the corresponding migration guidance in the same order, without source edits. The main message still identifies the first applicable version.
+-- Add `@extensible` on `data` and record declarations. Matches and bindings outside the defining package must cover future shapes with an unguarded variable or `_`. Record construction, updates, and getters retain their declared field contracts.
+-- Mark the standard library's `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, and `Csv.ParseError` as `@extensible`; existing matches and bindings outside the standard library may now be rejected and need an unguarded variable or `_` branch in `match ... with`.
+-- Add `E0817` (`@extensible` takes no arguments) with help to remove attribute arguments. `E0801` now lists `@extensible`. `E0601` and `E0607` can include a future-shape witness, a secondary location at the type declaration, and help to cover future values. These remain static errors with exit status 2.
++## 0.0.6 (San Benito)
++
++A source-only release; no executables are provided. `benitoite --version` prints `benitoite 0.0.6`. Migrate scripts and dependencies before updating their `language` declarations and recorded package hashes.
++
++### Incompatible changes and migration
++
++| Previous form or behavior | `0.0.6` | How to migrate |
++|---|---|---|
++| `die` could be an identifier, including an argument label or a member name. | `die` is a reserved keyword (`E0216` when used as a name). The keyword set has 35 words. | Rename user-defined names spelled `die` and their references. `fn`, `pub`, `impl`, `async`, `await`, `spawn`, `select`, and `extensible` remain usable as names. |
++| Matches could enumerate all known cases of the standard failure types; bindings could destructure their known fields. | `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, and `Csv.ParseError` are `@extensible`. Outside the defining package, matches and bindings must also cover future shapes (`E0601` / `E0607`). | Add an unguarded `case other` or `case _` to a match, including nested matches. Bind the whole value or `_` instead of destructuring it in a binding. A record's `..` covers only declared fields. Construction, updates, and getters retain their declared field contracts. `Result` and `Option` remain closed. |
++| A return value could start on the line after a standalone `return`. | The newline immediately after `return` ends the statement; a missing value reports `E0201` with help to start on the same physical line. This also applies after `or return`. | Start the value on the same physical line, for example `return if condition then`. After the value starts, it may continue over multiple lines, including parenthesized expressions, calls, operators, and branches. |
++| Declaring `language "0.0.5"` passed the release boundary. | Declarations before `0.0.6` report `E0908`; versions before `0.0.5` receive both releases' migration notes and helps, in version order. Future declarations report `E0907`. | First migrate the code, then set `language "0.0.6"` in the entry script or root settings and in each dependency's `package.bnt`. Recompute recorded hashes with `benitoite package update` after changing dependency contents. Omitting `language` uses the current rules. Changing the declaration alone does not migrate the code. |
++
++### Explicit failure actions and diagnostics
++
++- Use `try value or return` in reusable functions to return `Result.Error` or `Option.None` from the innermost function or lambda. Bare `try value` keeps that same meaning permanently; it is accepted and has no deprecation warning.
++- Use `try value or die` or `try value or die(message)` at script entry points when failure should terminate execution. `die` requires a `Result` or `Option` operand and `Process.Exit`; a `Result` error requires `Show`. The message is a pure `String` expression evaluated only on failure, before formatting the error value. Import `Benitoite.Unofficial.IO.Process` when naming the effect. The operation writes the failure report to standard error and exits with status 1; successful `Option.Some` and `Result.Ok` continue with their contained value.
++- `or` in an explicit try action is separate from Boolean `or`. The `or return` action takes no value, and `or die` accepts at most one parenthesized message; invalid actions report `E0258`. Parenthesize an explicit try expression before continuing with another operator or call (`E0259`). A die explanation cannot directly escape with `return` or `try` (`E0218`); an unavailable outer continuation reports `E0509`. An effectful message reports `E0511`; missing `Process.Exit` and unsatisfied `Show` constraints use the existing effect and type-class diagnostics.
++- Add `@extensible` on `data` and record declarations. It takes no arguments (`E0817`); `E0801` now lists it. `E0601` and `E0607` may show a future-shape witness, a secondary location at the type declaration, and help to cover future values. These are static errors with exit status 2.
++- `E0908` lists every applicable incompatible change. Notes include each version and summary; helps provide corresponding migration guidance in the same order, without source edits. The main message identifies the first applicable version.
++- The unknown `?` operator's `E0211` help now suggests `try parse(text) or return`. Invalid try-action positions retain `E0218`; existing bare-try type checks and their diagnostics remain in place.
+
+ ## 0.0.5 (San Benito)
+
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -57,7 +57,7 @@
+
+ [[package]]
+ name = "benitoite"
+-version = "0.0.5"
++version = "0.0.6"
+ dependencies = [
+  "base64",
+  "csv-core",
+--- a/crates/benitoite/Cargo.toml
++++ b/crates/benitoite/Cargo.toml
+@@ -1,6 +1,6 @@
+ [package]
+ name = "benitoite"
+-version = "0.0.5"
++version = "0.0.6"
+ edition.workspace = true
+ license.workspace = true
+ rust-version.workspace = true
+--- a/crates/benitoite/src/modules/package.rs
++++ b/crates/benitoite/src/modules/package.rs
+@@ -160,11 +160,18 @@
+ }
+
+ // 今まで誤りだった書き方を加える変更は、既存のコードの互換性を壊さない。
+-const BREAKING_CHANGES: &[BreakingChange] = &[BreakingChange {
+-    version: Version(0, 0, 5),
+-    summary: text::NAMED_ARGUMENTS_CHANGE,
+-    help: text::NAMED_ARGUMENTS_MIGRATION,
+-}];
++const BREAKING_CHANGES: &[BreakingChange] = &[
++    BreakingChange {
++        version: Version(0, 0, 5),
++        summary: text::NAMED_ARGUMENTS_CHANGE,
++        help: text::NAMED_ARGUMENTS_MIGRATION,
++    },
++    BreakingChange {
++        version: Version(0, 0, 6),
++        summary: text::KEYWORDS_OPEN_TYPES_TRY_CHANGE,
++        help: text::KEYWORDS_OPEN_TYPES_TRY_MIGRATION,
++    },
++];
+
+ pub(crate) use crate::syntax::header::keyword;
+
+--- a/crates/benitoite/src/modules/text.rs
++++ b/crates/benitoite/src/modules/text.rs
+@@ -5,10 +5,7 @@
+     "see docs/reference/benitoite.md for named arguments and named function types";
+ pub(super) const LANGUAGE_CHANGE: &str = "{version}: {summary}";
+
+-// 次の版の登録前に、版を注入する検査で移行の全文を確認する。
+-#[cfg(test)]
+ pub(super) const KEYWORDS_OPEN_TYPES_TRY_CHANGE: &str = "`die` is reserved; IOErrorKind, NetworkErrorKind, Json.ParseError, and Csv.ParseError are @extensible; return values must start on the same physical line as `return`";
+-#[cfg(test)]
+ pub(super) const KEYWORDS_OPEN_TYPES_TRY_MIGRATION: &str = "rename user-defined names spelled `die`; outside the defining package, add an unguarded `case other` or `case _` to cover future @extensible values in matches, and use a variable or `_` instead of destructuring them in bindings; record `..` covers only declared fields, while construction, updates, and getters keep their declared field contracts; start each return value on the same physical line as `return` (the value may continue across lines after it starts); use `try value or return`, `try value or die`, or `try value or die(message)` to make the failure action explicit; bare `try value` still returns failure from the innermost function or lambda; see CHANGELOG.md for migration details";
+
+ pub(super) const SOURCE_TOO_LARGE: &str = "the source file exceeds the size limit of 256 MiB";

@@ -4,7 +4,7 @@ use super::infer::*;
 use super::limits::{TypeBudget, TypeLimit};
 use super::traits::Bound;
 use crate::base::{NodeId, Span};
-use crate::diag::{DiagBuilder, DiagCode, Edit};
+use crate::diag::{DiagBuilder, DiagCode, Diagnostic, Edit};
 use crate::resolve::ResolveOutput;
 use crate::syntax::ast::BinOp;
 use crate::types::builtin::{BuiltinTypeClass, BuiltinTypeId as B};
@@ -935,6 +935,7 @@ impl Solver {
                 | ReasonKind::Try
                 | ReasonKind::WithResource
                 | ReasonKind::WithState
+                | ReasonKind::DieMessage
                 | ReasonKind::LazyBody
                 | ReasonKind::HandleBody
                 | ReasonKind::HandleClause
@@ -1686,6 +1687,16 @@ impl Solver {
                 let name = shown.split_once(" uses ").map_or("_", |(_, s)| s);
                 let d = match r.kind {
                     ReasonKind::LazyBody => super::effects::effect_failure(ctx, &r, name, origin),
+                    ReasonKind::DieMessage => {
+                        let mut d = DiagBuilder::new(DiagCode::E0511)
+                            .arg("effect", name)
+                            .primary(origin)
+                            .help("pure");
+                        if let Some(span) = r.related {
+                            d = d.secondary(span, "message");
+                        }
+                        d.build()
+                    }
                     ReasonKind::MatchGuard => {
                         super::pattern_ext::effect_failure(ctx, &r, name, origin)
                     }
@@ -1734,11 +1745,47 @@ impl Solver {
                         origin,
                     ),
                 };
+                let mut d = d;
+                // 同じ Exit でも通常の呼び出しの案内は保ち、処置の発生位置だけを補う
+                // （設計書 01-09「失敗時に終了する処置」）。
+                if d.code == Some(DiagCode::E0501)
+                    && ctx.try_kinds.iter().any(|(_, (_, action))| {
+                        matches!(action, TryConstraintAction::Die { span, .. } if *span == origin)
+                    })
+                {
+                    add_die_effect_help(ctx, origin.file, &mut d);
+                }
                 ctx.diagnostic(d);
             }
         }
     }
 }
+
+#[cold]
+fn add_die_effect_help(ctx: &Body<'_, '_>, file: crate::base::FileId, diagnostic: &mut Diagnostic) {
+    let imported = ctx
+        .decls
+        .asts
+        .iter()
+        .find(|ast| ast.file == file)
+        .and_then(|ast| {
+            ast.imports.iter().find(|import| {
+                import.path.iter().map(|n| n.text.as_str()).eq([
+                    "Benitoite",
+                    "Unofficial",
+                    "IO",
+                    "Process",
+                ])
+            })
+        });
+    let help = if imported.is_some() {
+        DiagBuilder::new(DiagCode::E0501).help("die_uses")
+    } else {
+        DiagBuilder::new(DiagCode::E0501).help("die_import")
+    };
+    diagnostic.helps = help.build().helps;
+}
+
 pub(super) fn has_error(t: &ITy) -> bool {
     match t {
         ITy::Error => true,
@@ -1805,6 +1852,7 @@ fn op_text(r: &ReasonKind) -> String {
         | ReasonKind::Try
         | ReasonKind::WithResource
         | ReasonKind::WithState
+        | ReasonKind::DieMessage
         | ReasonKind::LazyBody
         | ReasonKind::HandleBody
         | ReasonKind::HandleClause

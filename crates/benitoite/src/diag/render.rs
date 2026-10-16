@@ -533,7 +533,11 @@ fn append_header(output: &mut String, diag: &Diagnostic, opts: TextOptions) {
     let prefix = match diag.kind {
         ReportKind::Internal => "internal error".to_owned(),
         ReportKind::Runtime | ReportKind::Resource => code_prefix("runtime error", diag),
-        ReportKind::Check | ReportKind::Limit | ReportKind::Args | ReportKind::Release => {
+        ReportKind::Check
+        | ReportKind::Limit
+        | ReportKind::Args
+        | ReportKind::Release
+        | ReportKind::Die => {
             let severity = match diag.severity {
                 Severity::Error => "error",
                 Severity::Warning => "warning",
@@ -985,6 +989,7 @@ fn kind_name(kind: ReportKind) -> &'static str {
         ReportKind::Runtime => "runtime",
         ReportKind::Resource => "resource",
         ReportKind::Release => "release",
+        ReportKind::Die => "die",
         ReportKind::Args => "args",
         ReportKind::Internal => "internal",
     }

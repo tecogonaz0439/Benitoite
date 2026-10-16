@@ -44,6 +44,39 @@ class MigrationTests(unittest.TestCase):
         path=self.output/'reviewed.json'
         path.write_text(json.dumps(manifest))
         return path,hashlib.sha256(path.read_bytes()).hexdigest()
+    def test_reviewed_manifest_cli_without_inventory(self):
+        # 共通部分への接続と、旧 CLI に残す承認・依存の検証を独立に確かめる。
+        p=self.dir/'manual.bnt'; before=b'call(1)\n'; p.write_bytes(before)
+        relative=str(p.relative_to(ROOT))
+        unit={'path':relative,'source_sha256':hashlib.sha256(before).hexdigest()}
+        manifest={'version':1,'inputs':[unit],'candidates':[
+            {**unit,'id':'replace','review':'approved','hold_reasons':[],
+             'depends_on':['insert'],'edits':[{'start':5,'end':6,'before':'1','after':'2'}]},
+            {**unit,'id':'insert','review':'pending','hold_reasons':[],
+             'edits':[{'start':5,'end':5,'before':'','after':'value: '}]}]}
+        self.output.mkdir()
+        reviewed=self.output/'reviewed.json'
+        def save():
+            reviewed.write_text(json.dumps(manifest))
+            return hashlib.sha256(reviewed.read_bytes()).hexdigest()
+        digest=save()
+        self.assertIn('approve dependent component',self.run_tool('apply',reviewed,'--manifest-sha256',digest,ok=False).stderr)
+        self.assertEqual(p.read_bytes(),before)
+        manifest['candidates'][1]['review']='approved'
+        manifest['candidates'][1]['hold_reasons']=['manual_hold']
+        digest=save()
+        self.assertIn('held candidates cannot be approved',self.run_tool('apply',reviewed,'--manifest-sha256',digest,ok=False).stderr)
+        self.assertEqual(p.read_bytes(),before)
+        manifest['candidates'][1]['hold_reasons']=[]
+        digest=save()
+        diff=self.output/'review.diff'
+        self.run_tool('diff',reviewed,'--output',diff)
+        self.assertIn('-call(1)\n+call(value: 2)\n',diff.read_text())
+        self.assertEqual(p.read_bytes(),before)
+        self.run_tool('apply',reviewed,'--manifest-sha256',digest)
+        self.assertEqual(p.read_bytes(),b'call(value: 2)\n')
+        self.assertIn('already applied; no diff',self.run_tool('apply',reviewed,'--manifest-sha256',digest).stdout)
+        self.assertEqual(p.read_bytes(),b'call(value: 2)\n')
     def test_host_positions_and_atomic_reviewed_application(self):
         # All three hosts contain the same program, but escape decoding changes byte positions.
         inputs={

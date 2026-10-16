@@ -67,6 +67,19 @@ pub fn disassemble(program: &CompiledProgram) -> String {
         for (k, global) in proto.handlers.iter().enumerate() {
             writeln!(out, "  {} {k} -> {}", text::HANDLER, global.0).unwrap_or(());
         }
+        for (pc, report) in proto.exit_reports.iter().enumerate() {
+            if let Some(report) = report {
+                writeln!(
+                    out,
+                    "  {} {pc} -> {} {:?} {:?}",
+                    text::EXIT_REPORT,
+                    report.cause_reg,
+                    report.message_reg,
+                    report.span
+                )
+                .unwrap_or(());
+            }
+        }
         for (pc, class) in proto.method_traits.iter().enumerate() {
             if let Some(class) = class {
                 writeln!(out, "  {} {pc} -> {}", text::METHOD_TRAIT, class.0).unwrap_or(());
@@ -163,5 +176,6 @@ mod text {
     pub const HANDLER: &str = "handler";
     pub const EXTERNAL: &str = "external";
     pub const BUILTIN: &str = "builtin";
+    pub const EXIT_REPORT: &str = "exit report";
     pub const METHOD_TRAIT: &str = "method trait";
 }

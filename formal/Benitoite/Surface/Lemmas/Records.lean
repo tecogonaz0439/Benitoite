@@ -78,6 +78,8 @@ theorem recordUpdatePattern_exhaustive {P : Release.Program} {c cd ts positions}
   obtain ⟨i, _, rfl⟩ := List.mem_map.mp hp
   split <;> simp
 
+-- getter はソースのパターンでなく、現在の構成子だけを扱う合成照合である。
+-- view 付き条件を要求せず、閉じたコアの Exhaustive を示す（設計書 01-12「型の情報を付けた表層の構文と型付け」）。
 theorem accessorPattern_exhaustive {P : Release.Program} {c cd ts k}
     (hc : P.cons c = some cd)
     (unique : ∀ c' cd', P.cons c' = some cd' → cd'.data = cd.data → c' = c) :

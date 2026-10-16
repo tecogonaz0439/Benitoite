@@ -132,6 +132,17 @@ def recordUpdateValues (c : ConName) (n : Nat) (positions : List Nat) (vs : List
 def mkArm (pat : Release.Pat) (body : Comp) : Arm :=
   .mk [⟨pat, List.range pat.binders⟩] none body
 
+/-- 原因は失敗側の環境、説明は元の環境で脱糖済みである。説明の束縛の下へ原因を
+移すことで、説明・表示・既存の exit の順を保つ。報告の情報はコアの外で扱うが、
+説明と原因の計算は省かない（設計書 01-12「die の先行モデル」）。 -/
+def dieFailure (t : Ty) (exit : PrimName) (depth : Nat) (cause : Comp)
+    (message : Option Comp) : Comp :=
+  let finish := Comp.app (.prim exit [t] []) [.const (.integer 1)]
+  match message with
+  | none => .letIn cause finish
+  | some msg => .letIn (msg.rename (· + depth))
+      (.letIn (cause.rename (· + 1)) finish)
+
 mutual
   def desugarExpr (opPrim : OpPrim) (p : Position) : Expr → Comp
     -- 01-12「名前とリテラル」: 局所の束縛の名前 x | return x
@@ -302,6 +313,25 @@ mutual
     | .tryOption ts someCon noneCon e => .letIn (desugarExpr opPrim .other e)
         (.match (.var 0) [mkArm (.con someCon [.var]) (.ret (.var 0)),
           mkArm (.con noneCon []) (.escape (.con noneCon ts []))])
+    -- 01-12「die の先行モデル」: 入力は一度だけ。失敗側には入力の let と失敗値の
+    -- パターンの二つの束縛があり、説明と辞書はその外側のスコープから移す。
+    | .tryResultDie t ok err dict showMethod exit e message =>
+        let cause := Comp.meth (dict.toVal.rename (· + 2)) showMethod [] [] [.var 0]
+        let msg := match message with
+          | none => none
+          | some m => some (desugarExpr opPrim .other m)
+        .letIn (desugarExpr opPrim .other e)
+          (.match (.var 0) [mkArm (.con ok [.var]) (.ret (.var 0)),
+            mkArm (.con err [.var]) (dieFailure t exit 2 cause msg)])
+    -- None は変数を束縛しないため、説明の自由変数は一つだけ移す。
+    | .tryOptionDie t someCon noneCon exit e message =>
+        let cause := Comp.ret (.const (.string "expected a value, got Option.None"))
+        let msg := match message with
+          | none => none
+          | some m => some (desugarExpr opPrim .other m)
+        .letIn (desugarExpr opPrim .other e)
+          (.match (.var 0) [mkArm (.con someCon [.var]) (.ret (.var 0)),
+            mkArm (.con noneCon []) (dieFailure t exit 1 cause msg)])
     -- 01-12「解放の枠と実行時エラーの継続：`with`」:
     -- with x1 = e1, …, xn = en do B end with
     -- | let x1 ⇐ ⟦e1⟧ in use x1 in (let x2 ⇐ ⟦e2⟧ in use x2 in …

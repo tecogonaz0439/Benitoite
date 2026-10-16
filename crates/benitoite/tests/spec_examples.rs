@@ -27,7 +27,7 @@ use benitoite::syntax::parser::parse;
 const EXPECTED_FAILURES: &[(&str, &str)] = &[
     (
         "01-01-lexical.md",
-        "and  bind  case  data  div  effect  else  end  false  function  if  lambda  match",
+        "and  bind  case  data  die  div  effect  else  end  false  function  if  lambda  match",
     ),
     ("01-01-lexical.md", "+   -   *   /"),
     ("01-01-lexical.md", "..  &"),
@@ -451,7 +451,7 @@ fn check_local_bindings(
             // 外部のファイルだけを補い、依存の解決も本物の読み込みと名前解決を通す。
             (
                 format!("{path}/package.bnt"),
-                format!("language \"0.0.5\"\npackage {alias}\nend package\n").into_bytes(),
+                format!("language \"0.0.6\"\npackage {alias}\nend package\n").into_bytes(),
             )
         })
         .collect();

@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.IO.Process
+
+function value(o: Option[Integer]) -> Integer uses Process.Exit
+  return try o or die
+end function
+
+function main() -> Unit uses Process.Exit
+  bind _ <- value(Option.None)
+  ()
+end function

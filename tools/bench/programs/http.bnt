@@ -20,11 +20,11 @@ end function
 function serve(listener: Http.Listener, group: TaskGroup, count: Integer, tasks: List[Task[Result[Unit, String]]]) -> Result[Unit, String] uses Http.Listen, State
   return if count = 0 then
     List.fold(xs: tasks, initial: Result.Ok(()), f: lambda(acc, value)
-      bind _ <- try acc
+      bind _ <- try acc or return
       return Task.await(value)
     end lambda)
   else
-    bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+    bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) or return
     bind task <- TaskGroup.spawn(group: group, action: lambda()
       with current = exchange do
         return Http.respond(exchange: current, response: Http.text(status: 200, s: "ok")) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
@@ -35,9 +35,9 @@ function serve(listener: Http.Listener, group: TaskGroup, count: Integer, tasks:
 end function
 
 function main() -> Result[Unit, String] uses Http.Listen, Console.Write, Process.Environment, State
-  bind count <- try readInteger(0)
-  bind busy <- try readInteger(1)
-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
+  bind count <- try readInteger(0) or return
+  bind busy <- try readInteger(1) or return
+  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) or return, group = TaskGroup.open() do
     bind done <- Reference.new(false)
     bind worker <- TaskGroup.spawn(group: group, action: lambda()
       return if busy = 0 then () else compute(done: done, value: 1) end if

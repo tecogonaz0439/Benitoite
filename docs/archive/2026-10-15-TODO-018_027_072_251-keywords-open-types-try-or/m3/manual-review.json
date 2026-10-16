@@ -1,0 +1,179 @@
+{
+  "edits": [
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "before": "try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))",
+      "after": "try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return",
+      "count": 1,
+      "reason": "省略された型・関数またはモジュール内の説明例。元の Result と uses を維持し、手で or return を挿入して既存の仕様例検査で確認する。"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "before": "try parseConfig(text)",
+      "after": "try parseConfig(text) or return",
+      "count": 1,
+      "reason": "省略された型・関数またはモジュール内の説明例。元の Result と uses を維持し、手で or return を挿入して既存の仕様例検査で確認する。"
+    },
+    {
+      "path": "docs/design/01-spec/01-11-concurrency.md",
+      "before": "try Http.accept(listener)",
+      "after": "try Http.accept(listener) or return",
+      "count": 1,
+      "reason": "省略された型・関数またはモジュール内の説明例。元の Result と uses を維持し、手で or return を挿入して既存の仕様例検査で確認する。"
+    },
+    {
+      "path": "docs/design/01-spec/01-11-concurrency.md",
+      "before": "try Http.listen(host: \"127.0.0.1\", port: 8080) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))",
+      "after": "try Http.listen(host: \"127.0.0.1\", port: 8080) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return",
+      "count": 1,
+      "reason": "省略された型・関数またはモジュール内の説明例。元の Result と uses を維持し、手で or return を挿入して既存の仕様例検査で確認する。"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "before": "try listen(host: host, port: port)",
+      "after": "try listen(host: host, port: port) or return",
+      "count": 1,
+      "reason": "省略された型・関数またはモジュール内の説明例。元の Result と uses を維持し、手で or return を挿入して既存の仕様例検査で確認する。"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "before": "try accept(listener)",
+      "after": "try accept(listener) or return",
+      "count": 1,
+      "reason": "省略された型・関数またはモジュール内の説明例。元の Result と uses を維持し、手で or return を挿入して既存の仕様例検査で確認する。"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "before": "try parse(a)",
+      "after": "try parse(a) or return",
+      "count": 1,
+      "reason": "省略された型・関数またはモジュール内の説明例。元の Result と uses を維持し、手で or return を挿入して既存の仕様例検査で確認する。"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "before": "try parse(b)",
+      "after": "try parse(b) or return",
+      "count": 1,
+      "reason": "省略された型・関数またはモジュール内の説明例。元の Result と uses を維持し、手で or return を挿入して既存の仕様例検査で確認する。"
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "before": "  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))",
+      "after": "  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return",
+      "count": 1,
+      "reason": "文書の実行するテスト内の再利用関数。元の戻り値・uses・ハンドラ・assert を保つ。"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "before": "  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))",
+      "after": "  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return",
+      "count": 1,
+      "reason": "文書の実行するテスト内の再利用関数。元の戻り値・uses・ハンドラ・assert を保つ。"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "before": "  bind output <- try Process.run(Process.command(program: \"git\", arguments: [\"branch\", \"--show-current\"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))",
+      "after": "  bind output <- try Process.run(Process.command(program: \"git\", arguments: [\"branch\", \"--show-current\"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return",
+      "count": 1,
+      "reason": "文書の実行するテスト内の再利用関数。元の戻り値・uses・ハンドラ・assert を保つ。"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "before": "  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))",
+      "after": "  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return",
+      "count": 1,
+      "reason": "文書の実行するテスト内の再利用関数。元の戻り値・uses・ハンドラ・assert を保つ。"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "before": "`return Result.Error(e)` / `try expr`",
+      "after": "`return Result.Error(e)` / `try expr or return`",
+      "count": 1,
+      "reason": "他言語との比較表の Benitoite の推奨形を明示する。裸の意味の説明は別の段落に残す。"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "before": "`e?` と書いたときは、`try e` と書くよう診断で示す。",
+      "after": "`e?` と書いたときは、`try e or return` と書くよう診断で示す。",
+      "count": 1,
+      "reason": "question の修正案の生成元に説明を揃える。"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "before": "`e?` と書いたときは `try e` を修正案として示す",
+      "after": "`e?` と書いたときは `try e or return` を修正案として示す",
+      "count": 1,
+      "reason": "question の修正案の説明を明示形にする。"
+    },
+    {
+      "path": "crates/benitoite/src/diag/codes.rs",
+      "before": "question: \"write `try` before the expression, such as `try parse(text)`\"",
+      "after": "question: \"write `try` before the expression, such as `try parse(text) or return`\"",
+      "count": 1,
+      "reason": "E0211 のコード・主文・位置・終了状態を保ち、修正例だけを変更する。"
+    },
+    {
+      "path": "crates/benitoite/testdata/lexical/unknown_symbol.diag.json",
+      "before": "\"write `try` before the expression, such as `try parse(text)`\"",
+      "after": "\"write `try` before the expression, such as `try parse(text) or return`\"",
+      "count": 1,
+      "reason": "既存 golden の E0211 の help だけを厳密な新しい全文へ変更する。"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "before": "A test that uses `try` returns `Result[Unit, String]`; returning",
+      "after": "A test that uses `try e or return` returns `Result[Unit, String]`; returning",
+      "count": 1,
+      "reason": "die は Unit のテストにも使えるため、戻り値の制約を返す処置に限定する。"
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "before": "(use the latter when the test uses `try`)",
+      "after": "(use the latter when the test uses `try e or return`)",
+      "count": 1,
+      "reason": "テストの戻り値の制約を返す処置に限定する。"
+    }
+  ],
+  "files": {
+    "docs/design/01-spec/01-09-errors.md": {
+      "before_sha256": "cd044ff9ce41a77c36fe7cbd01dae1ac48537c5a17b0a7befeb55dd62364008d",
+      "after_sha256": "6bdb9d65fdf5f297e75ff808a8827ba6c8ec793a70007efc1e875dc0f0e4b484"
+    },
+    "docs/design/01-spec/01-11-concurrency.md": {
+      "before_sha256": "0c9e2847dcaf61b1a057583433c91aca638defe86b845bbaa22a534c82129f46",
+      "after_sha256": "0560e48646e157178d8885a67094110400489c0bd89036b84771d9c2dacf6efa"
+    },
+    "docs/design/03-interop/03-09-network.md": {
+      "before_sha256": "424c8f2408e467b6ca633dc3564c890b957659161bd327f1f49d1436e4131669",
+      "after_sha256": "5ab6a6bf105c22777d9cb27a7a9fed91616ba9a0e5d5e1997a4fda978ca43997"
+    },
+    "docs/design/08-appendix/08-04-fp-syntax-comparison.md": {
+      "before_sha256": "d9dfc0d80ce00d6e006276e96c07fe688c1e32a6b61ca2d2016772ba6eb900a3",
+      "after_sha256": "baaab0126437cc5c38d69aef0960ef8f64e5c1a6e7c949b25a0521f9be3e1483"
+    },
+    "crates/benitoite/skill/SKILL.md": {
+      "before_sha256": "5a9e2d524ee220f6f83dd1909789ecf45f5f28b816f53ef402ac1c19188f2b57",
+      "after_sha256": "7d25481291351f503ea9f3fc98aaf7cabd9f4e0105ec2d258b8d7a36356f56a8"
+    },
+    "crates/benitoite/skill/references/idioms.md": {
+      "before_sha256": "a6b798d19883cbf1ef124986b33eaf157504197245b1a54b14df8addf0d01ef7",
+      "after_sha256": "91121430b6561bfb64b87d31edbd6da2bf6307eb4f9b66c52fc97bf6a71b492d"
+    },
+    "docs/reference/benitoite.md": {
+      "before_sha256": "38f9736e98ca694b56343a79a862bec8f256b4931e2c5abbfd9b3a90654e908d",
+      "after_sha256": "3ecaa9aa577225cb661466d3592e53edabd858e20c8ca94969f10be54c567185"
+    },
+    "crates/benitoite/skill/references/language-comparison.md": {
+      "before_sha256": "9e9e3bfac1777a8afe7704706d19be358a45ce0487e6c9ee50c39c0b701769b5",
+      "after_sha256": "0b2dc8b268d019d923dc65c9a64377833c9e7078b1eeba64c594f3899e1013b2"
+    },
+    "crates/benitoite/src/diag/codes.rs": {
+      "before_sha256": "da34bbc6f78c7517951a95397a28d8755a14320d22ec4bbfb0bb87f0eccfead4",
+      "after_sha256": "9dffd62b0b25294e3ed4a9ba4051c7b6ec886b1337d17afa23b756556874b77c"
+    },
+    "crates/benitoite/testdata/lexical/unknown_symbol.diag.json": {
+      "before_sha256": "d9e5619a8b9b3046fb0dfe82bd9ee9cb3e18fb88f1cee6e69d6eae2f39139296",
+      "after_sha256": "15b7ace1179dada68569f0b06a352d24b81ada7624f16f656265800d2c2ef5df"
+    }
+  }
+}

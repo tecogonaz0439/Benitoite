@@ -21,6 +21,8 @@ use super::core_ir::*;
 
 mod decls;
 mod dicts;
+#[cfg(test)]
+mod die_tests;
 mod effects;
 mod exprs;
 mod patterns;
@@ -108,7 +110,12 @@ fn app(
         ty: f.ret.clone(),
         eff: f.effects.clone(),
         origin,
-        kind: CompKind::App { func, dicts, args },
+        kind: CompKind::App {
+            func,
+            dicts,
+            args,
+            exit_report: None,
+        },
     })
 }
 
@@ -356,13 +363,32 @@ pub(crate) mod test_support {
     use super::*;
     use crate::modules::LoadOutput;
 
+    /// 処置を公開の parser から型検査・脱糖・コア検査へ通す。
+    pub(crate) fn desugar_die_source(
+        source: &str,
+    ) -> (LoadOutput, ResolveOutput, TypeckOutput, CoreProgram) {
+        checked_core(crate::typeck::test_support::check_die_source(source))
+    }
+
     /// ソースから脱糖し、独立したコア IR の検査器にも通す。
     pub(crate) fn desugar_files(
         files: &[(&str, &str)],
         require_main: bool,
     ) -> (LoadOutput, ResolveOutput, TypeckOutput, CoreProgram) {
-        let (load, resolved, types, diagnostics) =
-            crate::typeck::test_support::check_files(files, require_main);
+        checked_core(crate::typeck::test_support::check_files(
+            files,
+            require_main,
+        ))
+    }
+
+    fn checked_core(
+        (load, resolved, types, diagnostics): (
+            LoadOutput,
+            ResolveOutput,
+            TypeckOutput,
+            Vec<crate::diag::Diagnostic>,
+        ),
+    ) -> (LoadOutput, ResolveOutput, TypeckOutput, CoreProgram) {
         assert!(
             !diagnostics.iter().any(crate::diag::Diagnostic::is_error),
             "{diagnostics:#?}"

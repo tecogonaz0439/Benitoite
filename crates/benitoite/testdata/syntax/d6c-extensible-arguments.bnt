@@ -1,0 +1,16 @@
+@extensible("reason")
+data D
+  C
+end data
+@extensible(1)
+record R
+  x: Integer
+end record
+@extensible @extensible
+data E
+  C
+end data
+@extensible
+function f() -> Unit
+  ()
+end function

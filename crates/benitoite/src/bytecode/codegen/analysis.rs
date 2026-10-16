@@ -105,7 +105,14 @@ fn expand<'a>(node: Node<'a>, work: &mut Vec<Work<'a>>) {
                 func,
                 dicts: ds,
                 args,
+                exit_report,
             } => {
+                if let Some(report) = exit_report {
+                    if let Some(message) = &report.message {
+                        work.push(Work::Node(Node::Val(message)));
+                    }
+                    work.push(Work::Node(Node::Val(&report.cause)));
+                }
                 vals(work, args);
                 dicts(work, ds);
                 work.push(Work::Node(Node::Val(func)));

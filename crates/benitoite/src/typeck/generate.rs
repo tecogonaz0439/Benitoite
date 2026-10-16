@@ -104,8 +104,11 @@ pub(super) fn check_function(d: &mut Decls<'_>, f: &FnDecl) {
         return;
     };
     let scope = d.scopes.get(&f.id).cloned().unwrap_or_default();
+    let Some(module) = d.resolved.bindings.get(id).map(|binding| binding.module) else {
+        return;
+    };
     let before = d.diagnostics.len();
-    let mut ctx = Body::new(d, scope, s);
+    let mut ctx = Body::new(d, module, scope, s);
     ctx.owner = Some(f.id);
     ctx.return_annotation = Some(f.ret.span());
     for (p, t) in f.params.iter().zip(ctx.scheme.params.clone()) {
@@ -1091,7 +1094,16 @@ fn reach_expr(ctx: &mut Body<'_, '_>, e: &Expr) {
             }
             reachability(ctx, &w.body, None);
         }
-        Expr::Try(t) => reach_expr(ctx, &t.value),
+        Expr::Try(t) => {
+            reach_expr(ctx, &t.value);
+            if let crate::syntax::ast::TryAction::Die {
+                message: Some(message),
+                ..
+            } = &t.action
+            {
+                reach_expr(ctx, message);
+            }
+        }
         Expr::Lazy(l) => reachability(ctx, &l.body, None),
         Expr::Handle(h) => {
             reachability(ctx, &h.body, None);

@@ -4,6 +4,8 @@ import Benitoite.Surface.Lemmas.CallHead
 namespace Benitoite.Surface
 open Benitoite.Release
 
+variable {view : CoverageView}
+
 variable {P : Release.Program} {B : Builtins} {C : List TParam} {Γ : List (Option Ty)}
 
 theorem CompTypes.append {R ε ms ns as bs} (h : CompTypes P B C Γ R ε ms as)
@@ -74,7 +76,7 @@ theorem StrHeadsTyped.rename {hs ts Δ ξ} (h : StrHeadsTyped P B C Γ hs ts)
   | cons hh _ ih => exact .cons (hh.rename hr) ih
 
 theorem directHeads_typed {p : Program} {op C Γ R fs ts ε δ}
-    (h : HasTypes p.declarations B op C Γ R fs ts ε)
+    (h : HasTypes (p.declarationsFor view) B op C Γ R fs ts ε)
     (hm : CompTypes (desugarProgram op p) B C Γ R δ (desugarExprs op fs) ts)
     (hd : fs.AllDirect)
     (ht : ∀ t ∈ ts, ∃ a, t = .fn [InterpPart.converterName a] [a] (.base .string) Eff.empty) :

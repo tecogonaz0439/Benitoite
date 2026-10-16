@@ -1,0 +1,14 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function result(r: Result[Integer, String]) -> Integer uses Process.Exit
+  return try r or die("unused")
+end function
+
+function option(o: Option[Integer]) -> Integer uses Process.Exit
+  return try o or die
+end function
+
+function main() -> Unit uses Console.Write, Process.Exit
+  Console.writeLine(Integer.toString(result(Result.Ok(17)) + option(Option.Some(25))))
+end function

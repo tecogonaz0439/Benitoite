@@ -8,6 +8,8 @@ import Benitoite.Surface.Lemmas.ShiftClean
 namespace Benitoite.Surface
 open Benitoite.Release
 
+variable {view : CoverageView}
+
 /-- 通常の要素は TyOK、継続の要素は引数型と結果型が TyOK である。 -/
 def EnvClean (n : Nat) (Γ : List (Option Ty)) : Prop :=
   ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → TyOK n a ∨
@@ -243,7 +245,7 @@ theorem implSig_scoped (hwf : p.WellFormed) {i id} (hd : p.declarations.impls i 
 
 /-- V-Dict・V-Super の結果も継続型を含まない。高カインド型は subst_clean に従う。 -/
 theorem DictEv.HasType.clean (hwf : p.WellFormed) {C Γ d a pe}
-    (h : DictEv.HasType p.declarations B C Γ d a)
+    (h : DictEv.HasType (p.declarationsFor view) B C Γ d a)
     (sc : d.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ) : TyOK C.length a := by
   match h with
   | .impl hd ht _ =>
@@ -281,7 +283,7 @@ mutual
   /-- 型の付いた式の結果は継続型を含まない。エフェクトの包含は型のこの条件を保つ。 -/
   theorem HasType.clean (hwf : p.WellFormed)
       (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R pos e a ε pe}
-      (h : HasType p.declarations B op C Γ R pos e a ε)
+      (h : HasType (p.declarationsFor view) B op C Γ R pos e a ε)
       (sc : e.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) : TyOK C.length a := by
     match h with
@@ -365,6 +367,10 @@ mutual
         exact (HasType.clean hwf hsig he sc.2 hΓ hR).1
     | .E_TryOption _ _ _ _ _ _ _ _ he _ =>
         exact (HasType.clean hwf hsig he sc.2 hΓ hR).1
+    | .E_TryResultDie (message := message) _ _ _ _ _ _ _ _ _ _ _ _ =>
+        cases message <;> exact scoped_clean sc.1
+    | .E_TryOptionDie (message := message) _ _ _ _ _ _ _ _ _ _ _ =>
+        cases message <;> exact scoped_clean sc.1
     | .E_With _ _ hb =>
         exact HasBlock.clean hwf hsig hb sc.2 (hΓ.cons trivial) hR
     | .E_Lazy (a := t) hb =>
@@ -377,7 +383,7 @@ mutual
   /-- 束縛の続きでも、入力の型注釈から環境の不変条件を得る。 -/
   theorem HasBlock.clean (hwf : p.WellFormed)
       (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R pos body a ε pe}
-      (h : HasBlock p.declarations B op C Γ R pos body a ε)
+      (h : HasBlock (p.declarationsFor view) B op C Γ R pos body a ε)
       (sc : body.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) : TyOK C.length a := by
     match h with

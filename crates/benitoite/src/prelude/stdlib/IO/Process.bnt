@@ -12,7 +12,7 @@ public effect Environment
   function workingDirectory() -> Result[String, IOError]
 end effect
 
-/// Ending the process.
+/// Ends the run; `or die` also reports its cause and optional message to standard error without Console.Write. A language handler may replace the exit operation.
 public effect Exit
   /// Ends the run with the exit status `code`. It does not return.
   function exit[T](code: Integer) -> T

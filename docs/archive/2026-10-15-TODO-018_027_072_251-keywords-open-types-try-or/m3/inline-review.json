@@ -1,0 +1,44 @@
+{
+  "edits": [
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "before": "`try x |> f(next: a)` は",
+      "after": "`try x |> f(next: a) or return` は",
+      "reason": "インラインの利用例も返す処置を明示する。裸の優先順位そのものを定める一般形は役割を明記して残す。"
+    },
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "before": "`try e |> f(_)` は `try f(e)` である。",
+      "after": "`try e |> f(_) or return` は `try f(e) or return` である。",
+      "reason": "インラインの利用例も返す処置を明示する。裸の優先順位そのものを定める一般形は役割を明記して残す。"
+    },
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "before": "`try r or flag` は `try (r or flag)` である。",
+      "after": "`try r or flag or return` は `try (r or flag) or return` である。",
+      "reason": "インラインの利用例も返す処置を明示する。裸の優先順位そのものを定める一般形は役割を明記して残す。"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "before": "`try x |> f(b: a)` は `try f(a: x, b: a)` である。`try f(x) + 1` は `try (f(x) + 1)` なので、`f(x)` の結果に 1 を足すときは `(try f(x)) + 1` と書くか、`bind` で束縛してから足す。",
+      "after": "`try x |> f(b: a) or return` は `try f(a: x, b: a) or return` である。裸の形の優先順位では、`try f(x) + 1` は `try (f(x) + 1)` である。`f(x)` の結果に 1 を足すときは、処置を明示して `(try f(x) or return) + 1` と書くか、`bind` で束縛してから足す。",
+      "reason": "インラインの利用例も返す処置を明示する。裸の優先順位そのものを定める一般形は役割を明記して残す。"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "before": "（`g(try f(x))`）。",
+      "after": "（`g(try f(x) or return)`）。",
+      "reason": "インラインの利用例も返す処置を明示する。裸の優先順位そのものを定める一般形は役割を明記して残す。"
+    }
+  ],
+  "files": {
+    "docs/design/01-spec/01-02-syntax.md": {
+      "before_sha256": "8d0ea6eb98141d00e8990f13c3a9cb6b018605a31d79df7e2032704d8bbd1fd3",
+      "after_sha256": "15e055789e7c972ac32f24aa8a898b70352ebfefd7e1ca4846061777a3a10341"
+    },
+    "docs/design/01-spec/01-09-errors.md": {
+      "before_sha256": "6bdb9d65fdf5f297e75ff808a8827ba6c8ec793a70007efc1e875dc0f0e4b484",
+      "after_sha256": "cb2f950cbf27cf3d640e2b35023b97c75f1137a684a44a025f6ced45600fe06f"
+    }
+  }
+}

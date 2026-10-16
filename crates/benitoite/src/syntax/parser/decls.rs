@@ -115,6 +115,7 @@ fn parse_item(p: &mut Parser, attrs: &[Attribute], depth: u32) -> PResult<Item> 
         | TokenKind::KwAnd
         | TokenKind::KwBind
         | TokenKind::KwCase
+        | TokenKind::KwDie
         | TokenKind::KwDiv
         | TokenKind::KwDo
         | TokenKind::KwElse

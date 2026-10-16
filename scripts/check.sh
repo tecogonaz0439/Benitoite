@@ -199,7 +199,7 @@ check_python_tools() {
     python3 -c 'import ast, sys
 for path in sys.argv[1:]:
     with open(path, encoding="utf-8") as source:
-        ast.parse(source.read(), path)' tools/bench/*.py tools/skill-eval/*.py tools/spec-coverage/*.py tools/syntax-measure/*.py tools/syntax-measure/bntmeasure/*.py
+        ast.parse(source.read(), path)' tools/bench/*.py tools/skill-eval/*.py tools/spec-coverage/*.py tools/syntax-measure/*.py tools/syntax-measure/bntmeasure/*.py tools/named-arguments-migrate/*.py tools/source-migrate/*.py tools/try-actions-migrate/*.py
 }
 
 check_formal() {
@@ -272,6 +272,8 @@ classify() {
             select_check python "$file" ;;
         tools/skill-eval/*)
             select_check skill_eval "$file"
+            select_check python "$file" ;;
+        tools/source-migrate/*|tools/named-arguments-migrate/*|tools/try-actions-migrate/*)
             select_check python "$file" ;;
         tools/*)
             select_check python "$file" ;;
@@ -367,7 +369,7 @@ describe reference_examples "reference examples"
 describe skill "generated Skill files"
 describe spec_coverage "spec coverage (self-test and tally)"
 describe skill_eval "skill-eval self-test"
-describe python "Python tools compile"
+describe python "Python tools compile, source-migrate and try-actions-migrate self-tests"
 describe formal "lake build in formal/"
 # どの種類にも当たらないファイルがあるときは、始めずに止まり、続け方を設計者に決めてもらう。
 if [ -n "$needs_decision" ]; then
@@ -428,6 +430,9 @@ if has skill_eval; then
 fi
 if has python; then
     run_check "Python tools compile" check_python_tools
+    run_check "source-migrate self-test" python3 -B tools/source-migrate/test_source_migrate.py
+    run_check "try-actions inventory helper" cargo build -p benitoite --example try_actions_inventory
+    run_check "try-actions-migrate self-test" python3 -B tools/try-actions-migrate/test_migrate.py
 fi
 if has licenses; then
     run_check "licenses" check_licenses

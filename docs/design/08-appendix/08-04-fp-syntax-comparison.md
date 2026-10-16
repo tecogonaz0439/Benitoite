@@ -1004,9 +1004,11 @@ bind b: Result[Integer, String] <- Result.Error("bad")
 | Flix | `forM (…) yield …` | 言語の構文 |
 | Scala 3 | `for … yield …` | 言語の構文（`flatMap` と `map` に展開する） |
 | Roc | 後置の `?` | 言語の構文 |
-| Benitoite | 前置の `try` | 言語の構文。誤りの型を自動では変換しない |
+| Benitoite | 前置の `try` と `or return` | 言語の構文。裸も失敗を返す意味に固定し、誤りの型を自動では変換しない |
 
-- Benitoite の `try` は、式の先頭に書き、右の式全体（パイプを含む）にかかる。後置の `?` は設けず、`e?` と書いたときは `try e` を修正案として示す（[エラー処理](../01-spec/01-09-errors.md)）。
+- Benitoite の `try` は、式の先頭に書き、右の式全体（パイプを含む）にかかる。後置の `?` は設けず、`e?` と書いたときは `try e or return` を修正案として示す（[エラー処理](../01-spec/01-09-errors.md)）。
+
+- 同じ深さの `or return` / `or die` は入力の終わりとする。`or return` は失敗を返し、入口で使う `or die` は原因を表示して終了する Process.Exit の処置である。後者は囲む戻り値を制約せず、Result の失敗型に Show を要求する。
 
 **OCaml**
 
@@ -1100,8 +1102,8 @@ add_parsed = |a, b| {
 
 ```text
 function addParsed(a: String, b: String) -> Result[Integer, String]
-  bind x <- try parse(a)
-  bind y <- try parse(b)
+  bind x <- try parse(a) or return
+  bind y <- try parse(b) or return
   return Result.Ok(x + y)
 end function
 ```

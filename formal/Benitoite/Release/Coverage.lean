@@ -16,12 +16,21 @@ namespace Benitoite.Release
 def CtorsComplete (P : Program) (ctors : DataName → List ConName) : Prop :=
   ∀ c cd, P.cons c = some cd → c ∈ ctors cd.data
 
+/-- 一つの本体から見て、将来の形を考慮するデータ型の指定。
+宣言そのものの属性とは分ける（設計書 02-05「本体の後の検査」）。 -/
+abbrev CoverageView := DataName → Bool
+
+/-- 既存の閉じた宣言についての判定を保つ view。 -/
+def closedView : CoverageView := fun _ => false
+
 /-- 反例の形。区間の端は符号位置を含めて `Int` のまま保持する。
 `other` は列のどのリテラル・範囲にも照合しない残りの値、`wild` は任意の値を表す。
+`future d` は指定された型の将来の形であり、現在の値の存在を主張しない。
 `long min before after` は長さ `min` 以上のリストである。 -/
 inductive CoverageWitness where
   | wild
   | other
+  | future (d : DataName)
   | con (c : ConName) (args : List CoverageWitness)
   | invalidCon (c : ConName)
   | boolean (b : Bool)
@@ -166,6 +175,7 @@ def segments (bounds : List Int) : List (Int × Int) :=
 inductive Shape where
   | con (c : ConName) (fields : List Ty)
   | invalidCon (c : ConName)
+  | future (d : DataName)
   | boolean (b : Bool)
   | unit
   | interval (character : Bool) (lo hi : Int)
@@ -217,6 +227,26 @@ def shapes (P : Program) (ctors : DataName → List ConName) (ty : Ty)
       (List.range min).map (fun n => .exact n a) ++ [.long min front back a]
   | _ => [.other]
 
+/-- view 付き判定の列挙。既知の形の順序を保ち、指定された data にだけ将来の形を足す。
+view 付き判定の全再帰で同じ指定を使う（設計書 02-05「本体の後の検査」）。 -/
+def shapesWithView (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    (ty : Ty) (column : List Pat) : List Shape :=
+  shapes P ctors ty column ++ match ty with
+    | .data d _ => if view d then [.future d] else []
+    | _ => []
+
+/-- 閉じた入力では、形の順序と件数も含めて既存の列挙と一致する。 -/
+theorem shapesWithView_closed (P : Program) (ctors : DataName → List ConName)
+    (ty : Ty) (column : List Pat) :
+    shapesWithView P ctors closedView ty column = shapes P ctors ty column := by
+  cases ty <;> simp [shapesWithView, closedView]
+
+/-- 将来の形を加えても、既知の構成子を含む元の形は一つも失わない。 -/
+theorem mem_shapesWithView {P : Program} {ctors : DataName → List ConName}
+    {ty : Ty} {column : List Pat} {s : Shape} (view : CoverageView)
+    (h : s ∈ shapes P ctors ty column) : s ∈ shapesWithView P ctors view ty column := by
+  exact List.mem_append_left _ h
+
 /-- 型と合う定数しか特殊化しない。リストの残りなしは before ++ after の固定長。 -/
 def specialize (p : Pat) (s : Shape) : Option (List Pat) :=
   if isWild p then some (List.replicate s.fields.length .wild) else
@@ -241,6 +271,15 @@ def specialize (p : Pat) (s : Shape) : Option (List Pat) :=
       else none
   | _, _ => none
 
+/-- 将来の形の欄はなく、変数と `_` だけで覆う。既知の構成子では覆わない。 -/
+theorem specialize_future (p : Pat) (d : DataName) :
+    specialize p (.future d) = if isWild p then some [] else none := by
+  cases p <;> simp [specialize, isWild, Shape.fields]
+
+theorem specialize_future_iff (p : Pat) (d : DataName) :
+    (specialize p (.future d)).isSome = true ↔ p = .wild ∨ p = .var := by
+  cases p <;> simp [specialize_future, isWild]
+
 def specializeRows (s : Shape) (rows : List (List Pat)) : List (List Pat) :=
   rows.filterMap fun row => do
     let p ← row.head?
@@ -251,6 +290,7 @@ def Shape.witness (s : Shape) (args : List CoverageWitness) : CoverageWitness :=
   match s with
   | .con c _ => .con c args
   | .invalidCon c => .invalidCon c
+  | .future d => .future d
   | .boolean b => .boolean b
   | .unit => .unit
   | .interval chars lo hi => .interval chars lo hi
@@ -296,7 +336,7 @@ def firstUseful (f : Shape → UsefulnessResult) : List Shape → UsefulnessResu
 
 /-- 燃料だけを一つずつ減らす構造的な再帰。各段で長さの違う行を落とす。
 燃料切れ、不整合、どの構成子にも特殊化できない非ワイルドカードの問いは有用とする。 -/
-def usefulFuel (P : Program) (ctors : DataName → List ConName) :
+def usefulFuelWithView (P : Program) (ctors : DataName → List ConName) (view : CoverageView) :
     Nat → List Ty → List (List Pat) → List Pat → UsefulnessResult
   | 0, _, _, q => fallback q true
   | fuel + 1, tys, matrix, query =>
@@ -311,17 +351,17 @@ def usefulFuel (P : Program) (ctors : DataName → List ConName) :
           if rows.isEmpty then fallback query else
           let column := rows.filterMap List.head? ++ [q]
           if column.all isWild then
-            let r := usefulFuel P ctors fuel typesTail (rows.map List.tail) tail
+            let r := usefulFuelWithView P ctors view fuel typesTail (rows.map List.tail) tail
             { r with witness := r.witness.map (CoverageWitness.wild :: ·) }
           else
-            let ss := shapes P ctors ty column
+            let ss := shapesWithView P ctors view ty column
             if !isWild q && !(ss.any fun s => (specialize q s).isSome) then fallback query else
             firstUseful (fun s =>
               match specialize q s with
               | none => ⟨none, false⟩
               | some args =>
                   let fields := s.fields
-                  let r := usefulFuel P ctors fuel (fields ++ typesTail)
+                  let r := usefulFuelWithView P ctors view fuel (fields ++ typesTail)
                     (specializeRows s rows) (args ++ tail)
                   match r.witness with
                   | none => r
@@ -330,6 +370,11 @@ def usefulFuel (P : Program) (ctors : DataName → List ConName) :
                         { r with witness := some (s.witness (ws.take fields.length) :: ws.drop fields.length) }
                       else fallback query r.fuelExhausted) ss
       | _, _ => fallback query
+
+/-- 既存の入力は閉じた view で判定する。 -/
+def usefulFuel (P : Program) (ctors : DataName → List ConName) :
+    Nat → List Ty → List (List Pat) → List Pat → UsefulnessResult :=
+  usefulFuelWithView P ctors closedView
 
 mutual
   /-- ワイルドカードでない節の数 N。 -/
@@ -368,17 +413,22 @@ def fuelFor (P : Program) (ctors : DataName → List ConName)
 
 /-- 処理系の overlaps の特殊化を燃料について構造的に再帰する。
 非ワイルドカードの再帰では入力の子だけを比較し、増えたワイルドカードでは直ちに止まる。 -/
-def overlapsFuel (P : Program) (ctors : DataName → List ConName) :
+def overlapsFuelWithView (P : Program) (ctors : DataName → List ConName) (view : CoverageView) :
     Nat → Ty → Pat → Pat → Bool
   | 0, _, _, _ => false
   | fuel + 1, ty, a, b =>
       if isWild a || isWild b then true else
-      (shapes P ctors ty [a, b]).any fun s =>
+      (shapesWithView P ctors view ty [a, b]).any fun s =>
         match specialize a s, specialize b s with
         | some xs, some ys =>
             xs.length == ys.length &&
-              (s.fields.zip (xs.zip ys)).all (fun (t, x, y) => overlapsFuel P ctors fuel t x y)
+              (s.fields.zip (xs.zip ys)).all (fun (t, x, y) => overlapsFuelWithView P ctors view fuel t x y)
         | _, _ => false
+
+/-- 閉じた view の重なり判定との互換入口。 -/
+def overlapsFuel (P : Program) (ctors : DataName → List ConName) :
+    Nat → Ty → Pat → Pat → Bool :=
+  overlapsFuelWithView P ctors closedView
 
 /-! ## 照合と値の並びの補題 -/
 
@@ -727,6 +777,7 @@ theorem listBounds_spec (column : List Pat) : ListBoundsSpec column (listBounds 
 
 inductive Represents : Shape → Val → List Val → Prop
   | other (v) : Represents .other v []
+  | future (d v) : Represents (.future d) v []
   | con (c fields ts xs) (hl : fields.length = xs.length) :
       Represents (.con c fields) (.con c ts xs) xs
   | boolean (b) : Represents (.boolean b) (.const (.boolean b)) []
@@ -777,6 +828,7 @@ theorem Represents.restore {s : Shape} {v : Val} {xs : List Val}
   have hw' : isWild p = false := by cases he : isWild p <;> simp_all
   cases hr with
   | other v => cases p <;> simp_all [specialize, isWild]
+  | future d v => cases p <;> simp_all [specialize, isWild]
   | con c fields ts xs hl =>
       cases p <;> simp [specialize, isWild] at hs hw'
       obtain ⟨⟨rfl, _⟩, rfl⟩ := hs
@@ -1135,6 +1187,18 @@ theorem shapes_cover {P : Program} {ctors : DataName → List ConName}
       apply shapeStep_other (by simp [shapes])
       cases q <;> simp_all [compatible, isWild]
 
+/-- 現在の値の特殊化の証拠は、任意の view で列挙した形にも残る。
+将来の形に現在の値を割り当てる前提は加えない。 -/
+theorem shapesWithView_cover {P : Program} {ctors : DataName → List ConName}
+    {ty : Ty} {column : List Pat} {q : Pat} {v : Val} (view : CoverageView)
+    (hctors : CtorsComplete P ctors) (hq : q ∈ column) (hv : Inhabits P ty v)
+    (hc : compatible P ty q = true) (hm : (Pat.matchVal q v).isSome = true) :
+    ∃ s xs ps, s ∈ shapesWithView P ctors view ty column ∧ Represents s v xs ∧
+      InhabitsAll P s.fields xs ∧ specialize q s = some ps ∧
+      (Pat.matchList ps xs).isSome = true := by
+  obtain ⟨s, xs, ps, hs, hr, hi, hp, hm⟩ := shapes_cover hctors hq hv hc hm
+  exact ⟨s, xs, ps, mem_shapesWithView view hs, hr, hi, hp, hm⟩
+
 /-! ## 行列の特殊化と燃料についての帰納法 -/
 
 theorem firstUseful_none {f : Shape → UsefulnessResult} {ss : List Shape}
@@ -1179,16 +1243,16 @@ theorem specializeRows_restore {s : Shape} {v : Val} {xs vs : List Val}
           exact ⟨p :: ps, hmem, by simp [hr.restore hs hm.1, hm.2]⟩
 
 /-- 燃料切れは有用と答えるので、任意の燃料について健全である。 -/
-theorem usefulFuel_none_sound (P : Program) (ctors : DataName → List ConName)
-    (hc : CtorsComplete P ctors) (fuel : Nat) :
-    ∀ tys rows q vs, (usefulFuel P ctors fuel tys rows q).witness = none →
+theorem usefulFuelWithView_none_sound (P : Program) (ctors : DataName → List ConName)
+    (view : CoverageView) (hc : CtorsComplete P ctors) (fuel : Nat) :
+    ∀ tys rows q vs, (usefulFuelWithView P ctors view fuel tys rows q).witness = none →
       InhabitsAll P tys vs → (Pat.matchList q vs).isSome = true →
       ∃ row ∈ rows, (Pat.matchList row vs).isSome = true := by
   induction fuel with
-  | zero => intro tys rows q vs h; simp [usefulFuel, fallback] at h
+  | zero => intro tys rows q vs h; simp [usefulFuelWithView, fallback] at h
   | succ fuel ih =>
       intro tys matrix query vs h hv hq
-      simp only [usefulFuel] at h
+      simp only [usefulFuelWithView] at h
       split at h
       · simp [fallback] at h
       · rename_i hlen
@@ -1242,8 +1306,8 @@ theorem usefulFuel_none_sound (P : Program) (ctors : DataName → List ConName)
                         change UsefulnessResult.witness (if column.all isWild then _ else _) = none at h
                         split at h
                         · rename_i hw
-                          have hn : (usefulFuel P ctors fuel tys (rows.map List.tail) qs).witness = none := by
-                            change ((usefulFuel P ctors fuel tys (rows.map List.tail) qs).witness.map
+                          have hn : (usefulFuelWithView P ctors view fuel tys (rows.map List.tail) qs).witness = none := by
+                            change ((usefulFuelWithView P ctors view fuel tys (rows.map List.tail) qs).witness.map
                               (CoverageWitness.wild :: ·)) = none at h
                             exact Option.map_eq_none_iff.mp h
                           obtain ⟨tail, ht, hm⟩ := ih tys (rows.map List.tail) qs _ hn hvs hq.2
@@ -1255,18 +1319,18 @@ theorem usefulFuel_none_sound (P : Program) (ctors : DataName → List ConName)
                               have hpw := List.all_eq_true.mp hw p hp
                               have hmt : (Pat.matchList ps vs).isSome = true := by simpa only [List.tail_cons] using hm
                               exact ⟨p :: ps, hsub _ hr, by simp [matchVal_wild hpw, hmt]⟩
-                        · let ss := shapes P ctors ty column
+                        · let ss := shapesWithView P ctors view ty column
                           change (if !isWild q && !(ss.any fun s => (specialize q s).isSome) then fallback (q :: qs) else _).witness = none at h
                           split at h
                           · simp [fallback] at h
                           · obtain ⟨s, xs, args, hs, hr, hxs, hspec, hargs⟩ :=
-                              shapes_cover (column := column) hc (by simp [column]) hv hcompat' hq.1
+                              shapesWithView_cover (column := column) view hc (by simp [column]) hv hcompat' hq.1
                             have hn := firstUseful_none h s hs
                             change (match specialize q s with
                               | none => (⟨none, false⟩ : UsefulnessResult)
                               | some args => _).witness = none at hn
                             rw [hspec] at hn
-                            let r := usefulFuel P ctors fuel (s.fields ++ tys) (specializeRows s rows) (args ++ qs)
+                            let r := usefulFuelWithView P ctors view fuel (s.fields ++ tys) (specializeRows s rows) (args ++ qs)
                             change (match r.witness with
                               | none => r
                               | some ws => if ws.length = s.fields.length + qs.length then
@@ -1288,17 +1352,35 @@ theorem usefulFuel_none_sound (P : Program) (ctors : DataName → List ConName)
                               (by intro r hr; have hl := hlength r hr; simpa using hl) hrr hmatch
                             exact ⟨r, hsub r hrr, hmatch⟩
 
+/-- 閉じた入口も同じ前提・結論で健全である。 -/
+theorem usefulFuel_none_sound (P : Program) (ctors : DataName → List ConName)
+    (hc : CtorsComplete P ctors) (fuel : Nat) :
+    ∀ tys rows q vs, (usefulFuel P ctors fuel tys rows q).witness = none →
+      InhabitsAll P tys vs → (Pat.matchList q vs).isSome = true →
+      ∃ row ∈ rows, (Pat.matchList row vs).isSome = true :=
+  usefulFuelWithView_none_sound P ctors closedView hc fuel
+
 end Coverage
 
 /-- 入力の大きさから燃料を決めた有用性の判定と燃料切れの記録。 -/
+def usefulReportWithView (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    (tys : List Ty) (rows : List (List Pat)) (q : List Pat) : UsefulnessResult :=
+  Coverage.usefulFuelWithView P ctors view (Coverage.fuelFor P ctors tys rows q) tys rows q
+
+/-- 従来の入力の燃料と反例を保つ閉じた入口。 -/
 def usefulReport (P : Program) (ctors : DataName → List ConName) (tys : List Ty)
     (rows : List (List Pat)) (q : List Pat) : UsefulnessResult :=
-  Coverage.usefulFuel P ctors (Coverage.fuelFor P ctors tys rows q) tys rows q
+  usefulReportWithView P ctors closedView tys rows q
 
 /-- `some` が有用、`none` が有用でないことを表す。 -/
+def usefulWithView (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    (tys : List Ty) (rows : List (List Pat)) (q : List Pat) : Option (List CoverageWitness) :=
+  (usefulReportWithView P ctors view tys rows q).witness
+
+/-- 閉じた型についての有用性。 -/
 def useful (P : Program) (ctors : DataName → List ConName) (tys : List Ty)
     (rows : List (List Pat)) (q : List Pat) : Option (List CoverageWitness) :=
-  (usefulReport P ctors tys rows q).witness
+  usefulWithView P ctors closedView tys rows q
 
 /-- 設計書 02-05「本体の後の検査」の行列を位置付きで集める。前の分岐はガードなし、同じ分岐はガードを問わない。 -/
 def precedingAlternatives (arms : List Arm) (i j : Nat) : List ((Nat × Nat) × Pat) :=
@@ -1313,26 +1395,36 @@ def precedingPats (arms : List Arm) (i j : Nat) : List Pat :=
 
 /-- 二つのパターンの重なり。ワイルドカード・変数はどのパターンとも重なる。
 再帰の深さは入力の非ワイルドカードの節の総数以下なので、それに 1 を足して渡す。 -/
+def overlapsWithView (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    (ty : Ty) (a b : Pat) : Bool :=
+  Coverage.overlapsFuelWithView P ctors view (Coverage.nodes a + Coverage.nodes b + 1) ty a b
+
+/-- 閉じた型についての重なり。 -/
 def overlaps (P : Program) (ctors : DataName → List ConName) (ty : Ty) (a b : Pat) : Bool :=
-  Coverage.overlapsFuel P ctors (Coverage.nodes a + Coverage.nodes b + 1) ty a b
+  overlapsWithView P ctors closedView ty a b
 
 /-- 単独で覆う最初の選択肢を優先する。なければ覆う最小の接頭辞の中で重なるものを選ぶ。
 位置と順は処理系の covering_alternatives と同じ。前の行はガードなしの分岐と同じ分岐の前の選択肢から集める。 -/
-def coveringAlternatives (P : Program) (ctors : DataName → List ConName) (ty : Ty)
-    (arms : List Arm) (i j : Nat) : List (Nat × Nat) :=
+def coveringAlternativesWithView (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    (ty : Ty) (arms : List Arm) (i j : Nat) : List (Nat × Nat) :=
   match (arms[i]?).bind (fun arm => (arm.alts[j]?).map Alt.pat) with
   | none => []
   | some target =>
       let previous := precedingAlternatives arms i j
-      match previous.find? (fun (_, p) => (useful P ctors [ty] [[p]] [target]).isNone) with
+      match previous.find? (fun (_, p) => (usefulWithView P ctors view [ty] [[p]] [target]).isNone) with
       | some (pos, _) => [pos]
       | none =>
           match previous.zipIdx.find? (fun (_, k) =>
-            (useful P ctors [ty]
+            (usefulWithView P ctors view [ty]
               ((previous.take (k + 1)).map (fun (_, p) => [p])) [target]).isNone) with
           | none => []
           | some (_, k) =>
-              ((previous.take (k + 1)).filter (fun (_, p) => overlaps P ctors ty p target)).map Prod.fst
+              ((previous.take (k + 1)).filter (fun (_, p) => overlapsWithView P ctors view ty p target)).map Prod.fst
+
+/-- 既存の覆っている選択肢の説明は閉じた view を使う。 -/
+def coveringAlternatives (P : Program) (ctors : DataName → List ConName) (ty : Ty)
+    (arms : List Arm) (i j : Nat) : List (Nat × Nat) :=
+  coveringAlternativesWithView P ctors closedView ty arms i j
 
 structure MatchCoverage where
   uncovered : Option CoverageWitness
@@ -1345,22 +1437,66 @@ structure MatchCoverage where
 def MatchCoverage.exhaustive (r : MatchCoverage) : Bool := r.uncovered.isNone
 
 /-- 選ばれない位置は分岐・選択肢の順。網羅性の行列は unguardedPats の順。 -/
-def checkMatch (P : Program) (ctors : DataName → List ConName) (a : Ty)
-    (arms : List Arm) : MatchCoverage :=
+def checkMatchWithView (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    (a : Ty) (arms : List Arm) : MatchCoverage :=
   let checked := arms.zipIdx.flatMap fun (arm, i) =>
     arm.alts.zipIdx.map fun (alt, j) =>
-      ((i, j), usefulReport P ctors [a] ((precedingPats arms i j).map (fun p => [p])) [alt.pat])
-  let all := usefulReport P ctors [a] ((unguardedPats arms).map (fun p => [p])) [.wild]
+      ((i, j), usefulReportWithView P ctors view [a] ((precedingPats arms i j).map (fun p => [p])) [alt.pat])
+  let all := usefulReportWithView P ctors view [a] ((unguardedPats arms).map (fun p => [p])) [.wild]
   let unreachable := checked.filterMap (fun (pos, r) => if r.witness.isNone then some pos else none)
   { uncovered := all.witness.map (fun ws => ws.headD .wild)
     unreachable := unreachable
     coveredBy := unreachable.map (fun (i, j) =>
       -- 選択肢の位置は昇順で得られるため、分岐番号の除外と重複除去だけで昇順を保つ。
-      ((i, j), (((coveringAlternatives P ctors a arms i j).map Prod.fst).filter (· != i)).eraseDups))
+      ((i, j), (((coveringAlternativesWithView P ctors view a arms i j).map Prod.fst).filter (· != i)).eraseDups))
     fuelExhausted := all.fuelExhausted || checked.any (fun (_, r) => r.fuelExhausted) }
 
+/-- Surface と交換形式の既存入口は閉じた view で判定する。 -/
+def checkMatch (P : Program) (ctors : DataName → List ConName) (a : Ty)
+    (arms : List Arm) : MatchCoverage :=
+  checkMatchWithView P ctors closedView a arms
+
+/-- 束縛の左辺の網羅性にも、ソースの照合と同じ view を使う。 -/
+def irrefutableWithView (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    (a : Ty) (p : Pat) : Bool :=
+  (usefulWithView P ctors view [a] [[p]] [.wild]).isNone
+
+/-- 閉じた型の束縛の左辺についての互換入口。 -/
 def irrefutable (P : Program) (ctors : DataName → List ConName) (a : Ty) (p : Pat) : Bool :=
-  (useful P ctors [a] [[p]] [.wild]).isNone
+  irrefutableWithView P ctors closedView a p
+
+/-! 閉じた入口との一致は、反例・位置・覆う分岐・燃料切れの記録を含む結果全体について成り立つ。
+形の列挙そのものの従来の手順との一致は `shapesWithView_closed` による。 -/
+
+theorem Coverage.usefulFuelWithView_closed (P : Program) (ctors : DataName → List ConName)
+    (fuel : Nat) (tys : List Ty) (rows : List (List Pat)) (q : List Pat) :
+    Coverage.usefulFuelWithView P ctors closedView fuel tys rows q =
+      Coverage.usefulFuel P ctors fuel tys rows q := rfl
+
+theorem usefulReportWithView_closed (P : Program) (ctors : DataName → List ConName)
+    (tys : List Ty) (rows : List (List Pat)) (q : List Pat) :
+    usefulReportWithView P ctors closedView tys rows q = usefulReport P ctors tys rows q := rfl
+
+theorem usefulWithView_closed (P : Program) (ctors : DataName → List ConName)
+    (tys : List Ty) (rows : List (List Pat)) (q : List Pat) :
+    usefulWithView P ctors closedView tys rows q = useful P ctors tys rows q := rfl
+
+theorem overlapsWithView_closed (P : Program) (ctors : DataName → List ConName)
+    (ty : Ty) (a b : Pat) :
+    overlapsWithView P ctors closedView ty a b = overlaps P ctors ty a b := rfl
+
+theorem coveringAlternativesWithView_closed (P : Program) (ctors : DataName → List ConName)
+    (ty : Ty) (arms : List Arm) (i j : Nat) :
+    coveringAlternativesWithView P ctors closedView ty arms i j =
+      coveringAlternatives P ctors ty arms i j := rfl
+
+theorem checkMatchWithView_closed (P : Program) (ctors : DataName → List ConName)
+    (a : Ty) (arms : List Arm) :
+    checkMatchWithView P ctors closedView a arms = checkMatch P ctors a arms := rfl
+
+theorem irrefutableWithView_closed (P : Program) (ctors : DataName → List ConName)
+    (a : Ty) (p : Pat) :
+    irrefutableWithView P ctors closedView a p = irrefutable P ctors a p := rfl
 
 /-- slots の整合を仮定しない、パターンの照合だけによる選択。
 前のガード付き分岐は、ガードが偽になる可能性があるので条件から外す。
@@ -1372,48 +1508,81 @@ def AlternativeSelected (arms : List Arm) (i j : Nat) (v : Val) : Prop :=
     (Pat.matchVal alt.pat v).isSome
 
 /-- 補題 U。パターンの型付け・行の長さの整合を前提にしない。 -/
+theorem usefulWithView_none_sound (P : Program) (ctors : DataName → List ConName)
+    (view : CoverageView)
+    (tys : List Ty) (rows : List (List Pat)) (q : List Pat)
+    (hc : CtorsComplete P ctors) (h : usefulWithView P ctors view tys rows q = none) :
+    ∀ vs, InhabitsAll P tys vs → (Pat.matchList q vs).isSome →
+      ∃ row ∈ rows, (Pat.matchList row vs).isSome := by
+  intro vs hv hm
+  exact Coverage.usefulFuelWithView_none_sound P ctors view hc _ tys rows q vs h hv hm
+
+/-- 閉じた互換入口の健全性。 -/
 theorem useful_none_sound (P : Program) (ctors : DataName → List ConName)
     (tys : List Ty) (rows : List (List Pat)) (q : List Pat)
     (hc : CtorsComplete P ctors) (h : useful P ctors tys rows q = none) :
     ∀ vs, InhabitsAll P tys vs → (Pat.matchList q vs).isSome →
-      ∃ row ∈ rows, (Pat.matchList row vs).isSome := by
-  intro vs hv hm
-  exact Coverage.usefulFuel_none_sound P ctors hc _ tys rows q vs h hv hm
+      ∃ row ∈ rows, (Pat.matchList row vs).isSome :=
+  usefulWithView_none_sound P ctors closedView tys rows q hc h
 
 /-- 一列の行列から、元のパターンの照合を取り出す。 -/
-theorem useful_singleton_none_sound (P : Program) (ctors : DataName → List ConName)
+theorem usefulWithView_singleton_none_sound (P : Program) (ctors : DataName → List ConName)
+    (view : CoverageView)
     (a : Ty) (ps : List Pat) (q : Pat) (hc : CtorsComplete P ctors)
-    (h : useful P ctors [a] (ps.map (fun p => [p])) [q] = none)
+    (h : usefulWithView P ctors view [a] (ps.map (fun p => [p])) [q] = none)
     (v : Val) (hv : Inhabits P a v) (hq : (Pat.matchVal q v).isSome = true) :
     ∃ p ∈ ps, (Pat.matchVal p v).isSome = true := by
   have hm : (Pat.matchList [q] [v]).isSome = true := by simp [Pat.matchList, hq]
-  obtain ⟨row, hr, hm⟩ := useful_none_sound P ctors [a] (ps.map (fun p => [p])) [q] hc h
+  obtain ⟨row, hr, hm⟩ := usefulWithView_none_sound P ctors view [a] (ps.map (fun p => [p])) [q] hc h
     [v] (.cons hv .nil) hm
   obtain ⟨p, hp, rfl⟩ := List.mem_map.mp hr
   exact ⟨p, hp, by simpa [Coverage.matchList_cons, Pat.matchList] using hm⟩
 
+/-- 閉じた互換入口の健全性。 -/
+theorem useful_singleton_none_sound (P : Program) (ctors : DataName → List ConName)
+    (a : Ty) (ps : List Pat) (q : Pat) (hc : CtorsComplete P ctors)
+    (h : useful P ctors [a] (ps.map (fun p => [p])) [q] = none)
+    (v : Val) (hv : Inhabits P a v) (hq : (Pat.matchVal q v).isSome = true) :
+    ∃ p ∈ ps, (Pat.matchVal p v).isSome = true :=
+  usefulWithView_singleton_none_sound P ctors closedView a ps q hc h v hv hq
+
 
 /-- 系 1: ガードのない選択肢による網羅性。 -/
+theorem checkMatchWithView_exhaustive_sound (P : Program) (ctors : DataName → List ConName)
+    (view : CoverageView)
+    (a : Ty) (arms : List Arm) (hc : CtorsComplete P ctors)
+    (h : (checkMatchWithView P ctors view a arms).exhaustive = true) :
+    Exhaustive P a (unguardedPats arms) := by
+  have hu : usefulWithView P ctors view [a] ((unguardedPats arms).map (fun p => [p])) [.wild] = none := by
+    change ((usefulReportWithView P ctors view [a] ((unguardedPats arms).map (fun p => [p])) [.wild]).witness.map
+      (fun ws => ws.headD .wild)).isNone = true at h
+    simpa [usefulWithView] using h
+  intro v hv
+  exact usefulWithView_singleton_none_sound P ctors view a (unguardedPats arms) .wild hc hu v hv rfl
+
+/-- 閉じた互換入口の健全性。 -/
 theorem checkMatch_exhaustive_sound (P : Program) (ctors : DataName → List ConName)
     (a : Ty) (arms : List Arm) (hc : CtorsComplete P ctors)
     (h : (checkMatch P ctors a arms).exhaustive = true) :
-    Exhaustive P a (unguardedPats arms) := by
-  have hu : useful P ctors [a] ((unguardedPats arms).map (fun p => [p])) [.wild] = none := by
-    change ((usefulReport P ctors [a] ((unguardedPats arms).map (fun p => [p])) [.wild]).witness.map
-      (fun ws => ws.headD .wild)).isNone = true at h
-    simpa [useful] using h
-  intro v hv
-  exact useful_singleton_none_sound P ctors a (unguardedPats arms) .wild hc hu v hv rfl
+    Exhaustive P a (unguardedPats arms) :=
+  checkMatchWithView_exhaustive_sound P ctors closedView a arms hc h
 
 
 /-- 系 1: 束縛の左辺の網羅性。 -/
+theorem irrefutableWithView_sound (P : Program) (ctors : DataName → List ConName)
+    (view : CoverageView)
+    (a : Ty) (p : Pat) (hc : CtorsComplete P ctors)
+    (h : irrefutableWithView P ctors view a p = true) : Exhaustive P a [p] := by
+  have hu : usefulWithView P ctors view [a] [[p]] [.wild] = none := by
+    simpa [irrefutableWithView] using h
+  intro v hv
+  exact usefulWithView_singleton_none_sound P ctors view a [p] .wild hc hu v hv rfl
+
+/-- 閉じた互換入口の健全性。 -/
 theorem irrefutable_sound (P : Program) (ctors : DataName → List ConName)
     (a : Ty) (p : Pat) (hc : CtorsComplete P ctors)
-    (h : irrefutable P ctors a p = true) : Exhaustive P a [p] := by
-  have hu : useful P ctors [a] [[p]] [.wild] = none := by
-    simpa [irrefutable] using h
-  intro v hv
-  exact useful_singleton_none_sound P ctors a [p] .wild hc hu v hv rfl
+    (h : irrefutable P ctors a p = true) : Exhaustive P a [p] :=
+  irrefutableWithView_sound P ctors closedView a p hc h
 
 
 /-- ガードのない分岐の一覧を、分岐と選択肢の所属で特徴付ける。 -/
@@ -1454,11 +1623,11 @@ theorem precedingPats_mem {arms : List Arm} {i j : Nat} {arm : Arm} {p : Pat}
     exact ⟨alt, List.mem_of_getElem? (List.mem_zipIdx_iff_getElem?.mp halt), congrArg (fun pair => pair.2) he⟩
 
 /-- 報告された位置には選択肢があり、その前の行に対して有用でない。 -/
-theorem checkMatch_unreachable_lookup {P : Program} {ctors : DataName → List ConName}
-    {a : Ty} {arms : List Arm} {i j : Nat}
-    (h : (i, j) ∈ (checkMatch P ctors a arms).unreachable) :
+theorem checkMatchWithView_unreachable_lookup {P : Program} {ctors : DataName → List ConName}
+    {view : CoverageView} {a : Ty} {arms : List Arm} {i j : Nat}
+    (h : (i, j) ∈ (checkMatchWithView P ctors view a arms).unreachable) :
     ∃ arm alt, arms[i]? = some arm ∧ arm.alts[j]? = some alt ∧
-      useful P ctors [a] ((precedingPats arms i j).map (fun p => [p])) [alt.pat] = none := by
+      usefulWithView P ctors view [a] ((precedingPats arms i j).map (fun p => [p])) [alt.pat] = none := by
   change (i,j) ∈ List.filterMap _ (arms.zipIdx.flatMap _) at h
   obtain ⟨⟨pos,r⟩, hm, he⟩ := List.mem_filterMap.mp h
   change (if r.witness.isNone then some pos else none) = some (i,j) at he
@@ -1475,26 +1644,42 @@ theorem checkMatch_unreachable_lookup {P : Program} {ctors : DataName → List C
     dsimp only at hreport
     subst r
     exact ⟨arm, alt, List.mem_zipIdx_iff_getElem?.mp harm,
-      List.mem_zipIdx_iff_getElem?.mp halt, by simpa [useful] using hn⟩
+      List.mem_zipIdx_iff_getElem?.mp halt, by simpa [usefulWithView] using hn⟩
   · simp at he
 
-/-- 系 2: パターンの照合の上で選ばれないこと。実行の規則についてはまだ主張しない。 -/
-theorem checkMatch_unreachable_sound (P : Program) (ctors : DataName → List ConName)
-    (a : Ty) (arms : List Arm) (i j : Nat) (hc : CtorsComplete P ctors)
+/-- 閉じた互換入口の健全性。 -/
+theorem checkMatch_unreachable_lookup {P : Program} {ctors : DataName → List ConName}
+    {a : Ty} {arms : List Arm} {i j : Nat}
     (h : (i, j) ∈ (checkMatch P ctors a arms).unreachable) :
+    ∃ arm alt, arms[i]? = some arm ∧ arm.alts[j]? = some alt ∧
+      useful P ctors [a] ((precedingPats arms i j).map (fun p => [p])) [alt.pat] = none :=
+  checkMatchWithView_unreachable_lookup (view := closedView) h
+
+/-- 系 2: パターンの照合の上で選ばれないこと。実行の規則についてはまだ主張しない。 -/
+theorem checkMatchWithView_unreachable_sound (P : Program) (ctors : DataName → List ConName)
+    (view : CoverageView)
+    (a : Ty) (arms : List Arm) (i j : Nat) (hc : CtorsComplete P ctors)
+    (h : (i, j) ∈ (checkMatchWithView P ctors view a arms).unreachable) :
     ∀ v, Inhabits P a v → ¬ AlternativeSelected arms i j v := by
-  obtain ⟨arm, alt, ha, hal, hu⟩ := checkMatch_unreachable_lookup h
+  obtain ⟨arm, alt, ha, hal, hu⟩ := checkMatchWithView_unreachable_lookup h
   intro v hv hsel
   obtain ⟨arm', alt', ha', hal', hprev, hprior, hm⟩ := hsel
   have hearm : arm' = arm := Option.some.inj (ha'.symm.trans ha)
   subst arm'
   have healt : alt' = alt := Option.some.inj (hal'.symm.trans hal)
   subst alt'
-  obtain ⟨p, hp, hpm⟩ := useful_singleton_none_sound P ctors a (precedingPats arms i j) alt.pat hc hu v hv hm
+  obtain ⟨p, hp, hpm⟩ := usefulWithView_singleton_none_sound P ctors view a (precedingPats arms i j) alt.pat hc hu v hv hm
   rcases precedingPats_mem ha hp with hprevp | ⟨prior, hpri, hpat⟩
   · exact hprev p hprevp hpm
   · apply hprior prior hpri
     simpa only [hpat] using hpm
+
+/-- 閉じた互換入口の健全性。 -/
+theorem checkMatch_unreachable_sound (P : Program) (ctors : DataName → List ConName)
+    (a : Ty) (arms : List Arm) (i j : Nat) (hc : CtorsComplete P ctors)
+    (h : (i, j) ∈ (checkMatch P ctors a arms).unreachable) :
+    ∀ v, Inhabits P a v → ¬ AlternativeSelected arms i j v :=
+  checkMatchWithView_unreachable_sound P ctors closedView a arms i j hc h
 
 /-! ## 評価できる例
 
@@ -1563,6 +1748,7 @@ example : let r := checkMatch wideProgram wideCtors (.data "P" []) wideArms
 /-- 入れ子の反例を、DecidableEq を持つ平たい印の並びに移して比較する。 -/
 inductive Tag where
   | wild | other
+  | future (d : DataName)
   | con (c : ConName) (arity : Nat)
   | invalidCon (c : ConName)
   | boolean (b : Bool)
@@ -1577,6 +1763,7 @@ mutual
   def summarize : CoverageWitness → List Tag
     | .wild => [.wild]
     | .other => [.other]
+    | .future d => [.future d]
     | .con c args => .con c args.length :: summarizeList args
     | .invalidCon c => [.invalidCon c]
     | .boolean b => [.boolean b]
@@ -1594,6 +1781,77 @@ end
 def inspect (a : Ty) (arms : List Arm) : Option (List Tag) × List (Nat × Nat) × Bool :=
   let r := checkMatch program ctors a arms
   (r.uncovered.map summarize, r.unreachable, r.fuelExhausted)
+
+/-- 外部で有効な指定は型ごとであり、型引数や列に現れるパターンからは決めない。 -/
+def externalChoice : CoverageView := fun d => d == "Choice"
+
+/-- 診断で観測する反例・位置・覆う分岐・燃料切れをまとめて比較する。 -/
+def inspectWithView (view : CoverageView) (a : Ty) (arms : List Arm) :
+    Option (List Tag) × List (Nat × Nat) × List ((Nat × Nat) × List Nat) × Bool :=
+  let r := checkMatchWithView program ctors view a arms
+  (r.uncovered.map summarize, r.unreachable, r.coveredBy, r.fuelExhausted)
+
+/-- 全既知構成子の後の包括的な分岐は外部では必要であり、本物の重複は残る。
+ガード付きの包括的な分岐は将来の形を網羅しない。 -/
+example : ([closedView, externalChoice] : List CoverageView).map (fun view =>
+    ([ [plain [.con "L" [.wild]], plain [.con "R" [.wild]]],
+       [plain [.con "L" [.wild]], plain [.con "R" [.wild]], plain [.wild]],
+       [plain [.con "L" [.wild]], plain [.con "R" [.wild]], plain [.wild],
+         guarded [.con "L" [.wild]]],
+       [plain [.con "L" [.wild]], plain [.con "R" [.wild]], guarded [.var]],
+       [guarded [.con "L" [.wild], .con "L" [.wild]], plain [.var]] ] : List (List Arm)).map
+      (inspectWithView view (.data "Choice" [boolTy]))) =
+    [[(none, [], [], false),
+      (none, [(2, 0)], [((2, 0), [0, 1])], false),
+      (none, [(2, 0), (3, 0)], [((2, 0), [0, 1]), ((3, 0), [0])], false),
+      (none, [(2, 0)], [((2, 0), [0, 1])], false),
+      (none, [(0, 1)], [((0, 1), [])], false)],
+     [(some [.future "Choice"], [], [], false),
+      (none, [], [], false),
+      (none, [(3, 0)], [((3, 0), [0])], false),
+      (some [.future "Choice"], [], [], false),
+      (none, [(0, 1)], [((0, 1), [])], false)]] := by rfl
+
+/-- 単一構成子の record と同じ形でも、外部の束縛には変数か `_` が要る。 -/
+example :
+    let p := { program with cons := fun c =>
+        if c = "Wrap" then some { data := "Record", ntys := 0, args := [boolTy] }
+        else none }
+    let cs := fun d => if d == "Record" then ["Wrap"] else []
+    ([closedView, fun d => d == "Record"] : List CoverageView).map (fun view =>
+      ([.con "Wrap" [.var], .var, .wild] : List Pat).map
+        (irrefutableWithView p cs view (.data "Record" []))) =
+      [[true, true, true], [false, true, true]] := by decide
+
+/-- 指定の有無にかかわらず燃料切れは反例を返し、網羅とは答えない。 -/
+example : ([closedView, externalChoice] : List CoverageView).map (fun view =>
+    let r := Coverage.usefulFuelWithView program ctors view 0
+      [.data "Choice" [boolTy]] [[.wild]] [.wild]
+    (r.witness.map (List.flatMap summarize), r.fuelExhausted)) =
+    [(some [.wild], true), (some [.wild], true)] := by decide
+
+/-- 全ワイルドカードの先頭列を落とす再帰でも、残りの列へ指定を渡す。 -/
+example : ([closedView, externalChoice] : List CoverageView).map (fun view =>
+    let r := usefulReportWithView program ctors view [boolTy, .data "Choice" [boolTy]]
+      [[.wild, .con "L" [.wild]], [.wild, .con "R" [.wild]]] [.wild, .wild]
+    (r.witness.map (List.flatMap summarize), r.fuelExhausted)) =
+    [(none, false), (some [.wild, .future "Choice"], false)] := by decide
+
+example : ([externalChoice, closedView] : List CoverageView).map
+    (fun view => (Coverage.shapesWithView program ctors view (.data "Choice" [boolTy]) []).map
+      (fun s => summarize (s.witness (List.replicate s.fields.length .wild)))) =
+    [[[.con "L" 1, .wild], [.con "R" 1, .wild], [.future "Choice"]],
+     [[.con "L" 1, .wild], [.con "R" 1, .wild]]] := by decide
+
+/-- 全既知構成子の行を特殊化しても将来の形の行は残らず、変数と `_` で覆える。 -/
+example : ([ [[.con "L" [.wild]], [.con "R" [.wild]]], [[.var]], [[.wild]] ] :
+    List (List (List Pat))).map (Coverage.specializeRows (.future "Choice")) =
+    [[], [[]], [[]]] := by rfl
+
+/-- 他の型には指定を広げず、整数の other も既存のまま保持する。 -/
+example : ([.data "Empty" [], intTy] : List Ty).map
+    (fun ty => (Coverage.shapesWithView program ctors externalChoice ty []).map
+      (fun s => summarize (s.witness []))) = [[], [[.other]]] := by decide
 
 /-- case _ の後の case 0 は選ばれない。 -/
 example : inspect intTy [plain [.wild], plain [int 0]] = (none, [(1, 0)], false) := by decide
@@ -1704,6 +1962,18 @@ def nestedRows : List Arm :=
    plain [.con "L" [.con "R" [.wild]]], plain [.con "R" [.wild]]]
 
 example : inspect nestedTy nestedRows = (none, [], false) := by decide
+
+/-- 型引数とリストの要素の中でも同じ view で将来の形を調べる。
+外側の型やリストだけで閉じた判定へ戻すと、この反例を失う。 -/
+example : ([closedView, externalChoice] : List CoverageView).map (fun view =>
+    [inspectWithView view nestedTy nestedRows,
+     inspectWithView view (.list (.data "Choice" [boolTy]))
+       [plain [.list [] none []],
+        plain [.list [.con "L" [.wild]] (some .skip) []],
+        plain [.list [.con "R" [.wild]] (some .skip) []]]]) =
+    [[(none, [], [], false), (none, [], [], false)],
+     [(some [.con "L" 1, .future "Choice"], [], [], false),
+      (some [.long 1 1 0, .future "Choice"], [], [], false)]] := by rfl
 
 example : inspect nestedTy
     [plain [.con "L" [.con "L" [.wild]]],

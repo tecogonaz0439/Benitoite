@@ -598,3 +598,283 @@ fn unreadable_path_controls_are_escaped_in_the_header() {
     );
     assert!(!stderr.contains('\u{1B}'), "{stderr}");
 }
+
+// 作成時の関門: CLI の本物の入力から終了報告までを守る。構造化した結果を直接
+// 描画する lib の検査では、受理と実行の接続漏れを捕まえられない。差し込み口は不要。
+#[test]
+fn die_source_reports_cause_message_and_location_once() {
+    let directory = TestDirectory::new();
+    for (name, source, cause, message) in [
+        (
+            "result",
+            include_str!("../testdata/eval/todo250-die-result.bnt"),
+            "\"bad input\"",
+            Some("loading input"),
+        ),
+        (
+            "option",
+            include_str!("../testdata/eval/todo250-die-option.bnt"),
+            "expected a value, got Option.None",
+            None,
+        ),
+    ] {
+        let script = directory.write(&format!("{name}.bnt"), source);
+        for json in [false, true] {
+            let mut cmd = command();
+            cmd.arg("run");
+            if json {
+                cmd.arg("--diagnostics=json");
+            }
+            let output = cmd.arg(&script).output().unwrap();
+            assert_eq!(exit_code(&output), 1, "{output:?}");
+            assert!(output.stdout.is_empty(), "{output:?}");
+            let stderr = String::from_utf8(output.stderr).unwrap();
+            if json {
+                let lines: Vec<serde_json::Value> = stderr
+                    .lines()
+                    .map(|s| serde_json::from_str(s).unwrap())
+                    .collect();
+                assert_eq!(lines.len(), 1, "{stderr}");
+                let d = &lines[0];
+                assert_eq!(d["kind"], "die");
+                assert!(d["code"].is_null());
+                assert_eq!(d["message"], "explicit failure exit");
+                let mut notes = Vec::new();
+                if let Some(message) = message {
+                    notes.push(format!("message: {message}"));
+                }
+                notes.push(format!("cause: {cause}"));
+                assert_eq!(d["notes"], serde_json::json!(notes));
+                assert_eq!(d["primary"]["start"]["line"], 4);
+                assert_eq!(d["primary"]["file"], script.display().to_string());
+            } else {
+                assert_eq!(
+                    stderr.matches("error: explicit failure exit").count(),
+                    1,
+                    "{stderr}"
+                );
+                assert!(stderr.contains(&format!("cause: {cause}")), "{stderr}");
+                assert_eq!(stderr.contains("message: "), message.is_some(), "{stderr}");
+                if let Some(message) = message {
+                    assert!(stderr.contains(&format!("message: {message}")), "{stderr}");
+                }
+                assert!(
+                    stderr.contains(&format!("{}:4:", script.display())),
+                    "{stderr}"
+                );
+            }
+        }
+    }
+}
+
+// 関門: 本物の die の後に、内側からの解放と最後の出力の転送の失敗を報告する。
+// 子プロセスだけのファイルサイズ制限と閉じたソケットを使い、本番に差し込み口を増やさない。
+// 構造化した RunEnd の描画検査だけでは、停止・解放・転送の接続の欠落を捕まえない。
+#[cfg(unix)]
+#[test]
+fn die_reports_precede_real_release_and_flush_failures() {
+    use std::os::fd::OwnedFd;
+    use std::os::unix::net::UnixStream;
+    let directory = TestDirectory::new();
+    let script = directory.write(
+        "die-cleanup.bnt",
+        r#"import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Console
+@test
+function dies() -> Unit uses File.Write, State, Console.Write, Process.Exit
+ Console.write("captured before die")
+ Console.writeError("captured stderr before die\n")
+ with first = try File.openWriter(path: "first", mode: File.WriteMode.Replace) or die,
+      second = try File.openWriter(path: "second", mode: File.WriteMode.Replace) or die do
+  bind _ <- try File.write(writer: first, text: "first buffered") or die
+  bind _ <- try File.write(writer: second, text: "second buffered") or die
+  bind missing: Option[Unit] <- Option.None
+  try missing or die("during work")
+ end with
+end function
+@test
+function after() -> Unit uses Console.Write
+ Console.write("after succeeded")
+end function
+function main() -> Unit uses File.Write, State, Console.Write, Process.Exit
+ dies()
+end function
+"#,
+    );
+    for mode in ["direct", "request"] {
+        for json in [false, true] {
+            for tool in ["run", "test"] {
+                let mut cmd = Command::new("/bin/sh");
+                // 制限の設定に失敗したまま処理系を起動しない。SIGXFSZ は IO の失敗として返させる。
+                cmd.args([
+                    "-c",
+                    "ulimit -f 0 || exit 125; trap '' XFSZ; exec \"$@\"",
+                    "b12",
+                ])
+                .arg(env!("CARGO_BIN_EXE_benitoite"))
+                .arg(tool)
+                .current_dir(directory.path())
+                .env_remove("BENITOITE_DEV_PANIC")
+                .env("BENITOITE_DEV_IO_MODE", mode)
+                .env("NO_COLOR", "1");
+                if json {
+                    cmd.arg("--diagnostics=json");
+                }
+                cmd.arg(&script);
+                if tool == "run" {
+                    let (writer, reader) = UnixStream::pair().unwrap();
+                    drop(reader);
+                    cmd.stdout(Stdio::from(OwnedFd::from(writer)));
+                }
+                let output = cmd.output().unwrap();
+                assert_eq!(exit_code(&output), 1, "{mode}/{json}/{tool}: {output:?}");
+                // 二つの書き込みは with の解放までバッファに残っていた。
+                assert_eq!(fs::read(directory.path().join("first")).unwrap(), b"");
+                assert_eq!(fs::read(directory.path().join("second")).unwrap(), b"");
+                let stdout = String::from_utf8(output.stdout).unwrap();
+                let stderr = String::from_utf8(output.stderr).unwrap();
+                if tool == "run" {
+                    assert!(stdout.is_empty());
+                    assert!(
+                        stderr.starts_with("captured stderr before die\n"),
+                        "{stderr}"
+                    );
+                    let reports = stderr.strip_prefix("captured stderr before die\n").unwrap();
+                    if json {
+                        let lines: Vec<serde_json::Value> = reports
+                            .lines()
+                            .map(|line| serde_json::from_str(line).unwrap())
+                            .collect();
+                        assert_eq!(lines.len(), 4, "{reports}");
+                        assert_eq!(lines[0]["kind"], "die");
+                        assert_eq!(
+                            lines[0]["notes"],
+                            serde_json::json!([
+                                "message: during work",
+                                "cause: expected a value, got Option.None"
+                            ])
+                        );
+                        assert_eq!(lines[0]["primary"]["start"]["line"], 13);
+                        for (line, opened_line) in [(&lines[1], 9), (&lines[2], 8)] {
+                            assert_eq!(line["kind"], "release");
+                            assert_eq!(line["code"], "R0401");
+                            assert!(
+                                line["message"]
+                                    .as_str()
+                                    .unwrap()
+                                    .contains(&format!("{}:{opened_line}:", script.display())),
+                                "{line}"
+                            );
+                        }
+                        assert_eq!(lines[3]["kind"], "runtime");
+                        assert_eq!(lines[3]["code"], "R0201");
+                    } else {
+                        assert_eq!(
+                            reports.matches("error: explicit failure exit").count(),
+                            1,
+                            "{reports}"
+                        );
+                        assert_eq!(reports.matches("error[R0401]").count(), 2, "{reports}");
+                        assert!(
+                            reports
+                                .find("cause: expected a value, got Option.None")
+                                .unwrap()
+                                < reports.find("R0401").unwrap()
+                        );
+                        assert!(reports.rfind("R0401").unwrap() < reports.find("R0201").unwrap());
+                        let second = reports.find(&format!("{}:9:", script.display())).unwrap();
+                        let first = reports.find(&format!("{}:8:", script.display())).unwrap();
+                        assert!(second < first, "{reports}");
+                    }
+                } else {
+                    assert!(stderr.is_empty(), "{stderr}");
+                    if json {
+                        let lines: Vec<serde_json::Value> = stdout
+                            .lines()
+                            .map(|line| serde_json::from_str(line).unwrap())
+                            .collect();
+                        assert_eq!(lines.len(), 3, "{stdout}");
+                        let failed = &lines[0];
+                        assert_eq!(failed["failure"]["reason"], "exit");
+                        assert_eq!(
+                            failed["failure"]["message"],
+                            "called `Process.exit` with status 1"
+                        );
+                        assert_eq!(failed["failure"]["exitCode"], 1);
+                        assert_eq!(failed["failure"]["die"]["kind"], "die");
+                        assert_eq!(
+                            failed["failure"]["die"]["notes"],
+                            serde_json::json!([
+                                "message: during work",
+                                "cause: expected a value, got Option.None"
+                            ])
+                        );
+                        let notes = failed["failure"]["notes"].as_array().unwrap();
+                        assert_eq!(notes.len(), 2);
+                        assert!(
+                            notes[0]
+                                .as_str()
+                                .unwrap()
+                                .contains(&format!("{}:9:", script.display())),
+                            "{notes:?}"
+                        );
+                        assert!(
+                            notes[1]
+                                .as_str()
+                                .unwrap()
+                                .contains(&format!("{}:8:", script.display())),
+                            "{notes:?}"
+                        );
+                        assert_eq!(failed["stdout"], "captured before die");
+                        assert_eq!(failed["stderr"], "captured stderr before die\n");
+                        assert_eq!(lines[1]["function"], "after");
+                        assert_eq!(lines[1]["outcome"], "passed");
+                        assert_eq!(lines[1]["stdout"], "after succeeded");
+                        assert_eq!(lines[2]["kind"], "testSummary");
+                        assert_eq!(lines[2]["passed"], 1);
+                        assert_eq!(lines[2]["failed"], 1);
+                        assert_eq!(lines[2]["interrupted"], false);
+                    } else {
+                        assert_eq!(
+                            stdout.matches("error: explicit failure exit").count(),
+                            1,
+                            "{stdout}"
+                        );
+                        assert!(!stdout.contains("called `Process.exit`"), "{stdout}");
+                        assert_eq!(stdout.matches("error[R0401]").count(), 2, "{stdout}");
+                        assert!(
+                            stdout.find(&format!("{}:9:", script.display())).unwrap()
+                                < stdout.find(&format!("{}:8:", script.display())).unwrap()
+                        );
+                        assert!(
+                            stdout
+                                .find("cause: expected a value, got Option.None")
+                                .unwrap()
+                                < stdout.find("R0401").unwrap()
+                        );
+                        assert!(
+                            stdout.rfind("R0401").unwrap()
+                                < stdout.find("---- captured stdout ----").unwrap()
+                        );
+                        assert!(
+                            stdout.contains("---- captured stdout ----\ncaptured before die\n"),
+                            "{stdout}"
+                        );
+                        assert!(
+                            stdout.contains(
+                                "---- captured stderr ----\ncaptured stderr before die\n"
+                            ),
+                            "{stdout}"
+                        );
+                        assert!(stdout.contains("after ... ok"), "{stdout}");
+                        assert!(
+                            stdout.contains("test result: FAILED. 1 passed; 1 failed"),
+                            "{stdout}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+}

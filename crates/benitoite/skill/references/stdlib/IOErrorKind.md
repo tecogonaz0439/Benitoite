@@ -7,6 +7,7 @@ Refer to its declarations as `IOErrorKind.<name>`, for example `IOErrorKind.IOEr
 Kinds of IO failures.
 
 ```benitoite
+@extensible
 public data IOErrorKind
   /// The path or the command does not exist.
   NotFound

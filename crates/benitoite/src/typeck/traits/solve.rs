@@ -1,6 +1,6 @@
 //! 型の確定後に辞書を解く。実装の上位の辞書も同じ手順を使う（設計書 02-05「型クラスの制約の解決」）。
 use super::{class_name, collect::show, constraint_name, parameter_edit};
-use crate::base::{BindingId, NodeId};
+use crate::base::{BindingId, ModuleId, NodeId};
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
 use crate::typeck::{
     context::Body,
@@ -292,6 +292,7 @@ fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOut
 
 pub(super) fn check_bounds(
     d: &mut Decls<'_>,
+    module: ModuleId,
     scope: &Scope,
     scheme: &Scheme,
     resolution: &Resolution,
@@ -321,7 +322,7 @@ pub(super) fn check_bounds(
             },
         })
         .collect();
-    let mut body = Body::new(d, scope.clone(), scheme.clone());
+    let mut body = Body::new(d, module, scope.clone(), scheme.clone());
     Solver::default().solve(&mut body, constraints);
     body.diagnostics
 }
@@ -407,8 +408,14 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>, final_pass: bool) {
             &mut parts,
         ) {
             Ok(resolution) => {
-                let diagnostics =
-                    check_bounds(ctx.decls, &ctx.scope, &ctx.scheme, &resolution, &reason);
+                let diagnostics = check_bounds(
+                    ctx.decls,
+                    ctx.module,
+                    &ctx.scope,
+                    &ctx.scheme,
+                    &resolution,
+                    &reason,
+                );
                 if !diagnostics.is_empty() {
                     ctx.diagnostics.extend(diagnostics);
                     // 子の制約が型を決められない場合も、同じ型変数の失敗を重ねない（02-05「誤りの報告と検査の継続」）。
@@ -430,6 +437,9 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>, final_pass: bool) {
             }
         };
         match site {
+            DictSite::DieShow { node } => {
+                ctx.die_shows.insert(node, dict);
+            }
             DictSite::Use { node, constraint } => {
                 uses.entry(node).or_default().insert(constraint, dict);
             }
@@ -525,5 +535,12 @@ fn report(ctx: &mut Body<'_, '_>, failure: Failure, class: BindingId, arg: &ICla
             .build(),
         Failure::Suppressed => return,
     };
+    let mut diag = diag;
+    if r.kind == ReasonKind::Try && matches!(diag.code, Some(DiagCode::E0705 | DiagCode::E0706)) {
+        let help = DiagBuilder::new(diag.code.unwrap_or(DiagCode::E0705))
+            .help("die_show")
+            .build();
+        diag.helps.extend(help.helps);
+    }
     ctx.diagnostic(diag);
 }

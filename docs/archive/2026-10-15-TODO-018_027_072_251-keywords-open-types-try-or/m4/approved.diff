@@ -1,0 +1,515 @@
+diff --git a/crates/benitoite/src/prelude/stdlib/IO/File.bnt b/crates/benitoite/src/prelude/stdlib/IO/File.bnt
+index ff69cb3a..df0410b2 100644
+--- a/crates/benitoite/src/prelude/stdlib/IO/File.bnt
++++ b/crates/benitoite/src/prelude/stdlib/IO/File.bnt
+@@ -68 +68 @@ public function copy(from: String, to: String) -> Result[Unit, IOError] uses Rea
+-  bind content <- try readBytes(from)
++  bind content <- try readBytes(from) or return
+diff --git a/crates/benitoite/src/prelude/stdlib/Network/Http.bnt b/crates/benitoite/src/prelude/stdlib/Network/Http.bnt
+index 1bdedc00..1cf91ade 100644
+--- a/crates/benitoite/src/prelude/stdlib/Network/Http.bnt
++++ b/crates/benitoite/src/prelude/stdlib/Network/Http.bnt
+@@ -73 +73 @@ public function serve[effect E](host: String, port: Integer, handler: function(r
+-  with listener = try listen(host: host, port: port),
++  with listener = try listen(host: host, port: port) or return,
+@@ -80 +80 @@ function serveLoop[effect E](listener: Listener, group: TaskGroup, handler: func
+-  bind exchange <- try accept(listener)
++  bind exchange <- try accept(listener) or return
+diff --git a/tools/bench/programs/http.bnt b/tools/bench/programs/http.bnt
+index 554e5cf7..0eecea8d 100644
+--- a/tools/bench/programs/http.bnt
++++ b/tools/bench/programs/http.bnt
+@@ -23 +23 @@ function serve(listener: Http.Listener, group: TaskGroup, count: Integer, tasks:
+-      bind _ <- try acc
++      bind _ <- try acc or return
+@@ -27 +27 @@ function serve(listener: Http.Listener, group: TaskGroup, count: Integer, tasks:
+-    bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
++    bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) or return
+@@ -38,3 +38,3 @@ function main() -> Result[Unit, String] uses Http.Listen, Console.Write, Process
+-  bind count <- try readInteger(0)
+-  bind busy <- try readInteger(1)
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda), group = TaskGroup.open() do
++  bind count <- try readInteger(0) or return
++  bind busy <- try readInteger(1) or return
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) or return, group = TaskGroup.open() do
+diff --git a/tools/bench/wasm/Runner.bnt b/tools/bench/wasm/Runner.bnt
+index b27822c7..4bb12667 100644
+--- a/tools/bench/wasm/Runner.bnt
++++ b/tools/bench/wasm/Runner.bnt
+@@ -14,2 +14,2 @@ public function rounds(index: Integer) -> Result[Integer, String] uses Process.E
+-  bind text <- try argument(index)
+-  bind count <- try Option.okOr(o: Integer.parse(text), error: "invalid repeat count")
++  bind text <- try argument(index) or return
++  bind count <- try Option.okOr(o: Integer.parse(text), error: "invalid repeat count") or return
+@@ -21 +21 @@ function repeat[A](remaining: Integer, last: A, work: function() -> Result[A, St
+-    bind next <- try work()
++    bind next <- try work() or return
+@@ -29 +29 @@ public function measure[A](count: Integer, work: function() -> Result[A, String]
+-  bind first <- try work()
++  bind first <- try work() or return
+@@ -31 +31 @@ public function measure[A](count: Integer, work: function() -> Result[A, String]
+-  bind last <- try repeat(remaining: count - 1, last: first, work: work)
++  bind last <- try repeat(remaining: count - 1, last: first, work: work) or return
+diff --git a/tools/bench/wasm/hash-a.bnt b/tools/bench/wasm/hash-a.bnt
+index 48201f3e..0bb1e1ec 100644
+--- a/tools/bench/wasm/hash-a.bnt
++++ b/tools/bench/wasm/hash-a.bnt
+@@ -10,3 +10,3 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind path <- try Runner.argument(0)
+-  bind count <- try Runner.rounds(1)
+-  bind bytes <- try Result.mapError(r: File.readBytes(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
++  bind path <- try Runner.argument(0) or return
++  bind count <- try Runner.rounds(1) or return
++  bind bytes <- try Result.mapError(r: File.readBytes(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
+diff --git a/tools/bench/wasm/hash-c-fast.bnt b/tools/bench/wasm/hash-c-fast.bnt
+index a03d5985..6ab3fc8f 100644
+--- a/tools/bench/wasm/hash-c-fast.bnt
++++ b/tools/bench/wasm/hash-c-fast.bnt
+@@ -15,3 +15,3 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind path <- try Runner.argument(0)
+-  bind count <- try Runner.rounds(1)
+-  bind bytes <- try Result.mapError(r: File.readBytes(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
++  bind path <- try Runner.argument(0) or return
++  bind count <- try Runner.rounds(1) or return
++  bind bytes <- try Result.mapError(r: File.readBytes(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
+diff --git a/tools/bench/wasm/hash-c-list.bnt b/tools/bench/wasm/hash-c-list.bnt
+index 433bfae9..066428bd 100644
+--- a/tools/bench/wasm/hash-c-list.bnt
++++ b/tools/bench/wasm/hash-c-list.bnt
+@@ -15,3 +15,3 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind path <- try Runner.argument(0)
+-  bind count <- try Runner.rounds(1)
+-  bind bytes <- try Result.mapError(r: File.readBytes(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
++  bind path <- try Runner.argument(0) or return
++  bind count <- try Runner.rounds(1) or return
++  bind bytes <- try Result.mapError(r: File.readBytes(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
+diff --git a/tools/bench/wasm/json-a.bnt b/tools/bench/wasm/json-a.bnt
+index 07760149..37116464 100644
+--- a/tools/bench/wasm/json-a.bnt
++++ b/tools/bench/wasm/json-a.bnt
+@@ -17,4 +17,4 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind task <- try Runner.argument(0)
+-  bind path <- try Runner.argument(1)
+-  bind count <- try Runner.rounds(2)
+-  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
++  bind task <- try Runner.argument(0) or return
++  bind path <- try Runner.argument(1) or return
++  bind count <- try Runner.rounds(2) or return
++  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
+@@ -29 +29 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -34 +34 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-      bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++      bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -40 +40 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-      bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++      bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -48 +48 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -53 +53 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+diff --git a/tools/bench/wasm/json-b.bnt b/tools/bench/wasm/json-b.bnt
+index 704d9784..008ff4ca 100644
+--- a/tools/bench/wasm/json-b.bnt
++++ b/tools/bench/wasm/json-b.bnt
+@@ -22,4 +22,4 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind task <- try Runner.argument(0)
+-  bind path <- try Runner.argument(1)
+-  bind count <- try Runner.rounds(2)
+-  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
++  bind task <- try Runner.argument(0) or return
++  bind path <- try Runner.argument(1) or return
++  bind count <- try Runner.rounds(2) or return
++  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
+@@ -34 +34 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -39 +39 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-      bind parsed <- try Result.mapError(r: Parser.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++      bind parsed <- try Result.mapError(r: Parser.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -45 +45 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-      bind parsed <- try Result.mapError(r: Parser.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++      bind parsed <- try Result.mapError(r: Parser.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -53 +53 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-    bind parsed <- try Result.mapError(r: Parser.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++    bind parsed <- try Result.mapError(r: Parser.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -58 +58 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-    bind parsed <- try Result.mapError(r: Parser.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++    bind parsed <- try Result.mapError(r: Parser.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+diff --git a/tools/bench/wasm/json-c.bnt b/tools/bench/wasm/json-c.bnt
+index 9c0c5dc0..c54a3894 100644
+--- a/tools/bench/wasm/json-c.bnt
++++ b/tools/bench/wasm/json-c.bnt
+@@ -15,4 +15,4 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind task <- try Runner.argument(0)
+-  bind path <- try Runner.argument(1)
+-  bind count <- try Runner.rounds(2)
+-  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
++  bind task <- try Runner.argument(0) or return
++  bind path <- try Runner.argument(1) or return
++  bind count <- try Runner.rounds(2) or return
++  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
+@@ -23 +23 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -28 +28 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-      bind doc <- try Result.mapError(r: Codec.document(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
++      bind doc <- try Result.mapError(r: Codec.document(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -41,2 +41,2 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-    bind parsed <- try Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+-    Console.writeLine(try Codec.stringify(parsed))
++    bind parsed <- try Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
++    Console.writeLine(try Codec.stringify(parsed) or return)
+@@ -46,2 +46,2 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-    bind parsed <- try Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+-    bind output <- try Codec.stringify(parsed)
++    bind parsed <- try Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
++    bind output <- try Codec.stringify(parsed) or return
+diff --git a/tools/bench/wasm/regex-a.bnt b/tools/bench/wasm/regex-a.bnt
+index 20c053a6..c84eb841 100644
+--- a/tools/bench/wasm/regex-a.bnt
++++ b/tools/bench/wasm/regex-a.bnt
+@@ -10,3 +10,3 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind task <- try Runner.argument(0)
+-  bind path <- try Runner.argument(1)
+-  bind count <- try Runner.rounds(2)
++  bind task <- try Runner.argument(0) or return
++  bind path <- try Runner.argument(1) or return
++  bind count <- try Runner.rounds(2) or return
+@@ -14,2 +14,2 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind input <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
+-  bind pattern <- try Regex.compile(source)
++  bind input <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
++  bind pattern <- try Regex.compile(source) or return
+diff --git a/tools/bench/wasm/regex-c-once.bnt b/tools/bench/wasm/regex-c-once.bnt
+index 542cf64d..1789fa8f 100644
+--- a/tools/bench/wasm/regex-c-once.bnt
++++ b/tools/bench/wasm/regex-c-once.bnt
+@@ -15,3 +15,3 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind task <- try Runner.argument(0)
+-  bind path <- try Runner.argument(1)
+-  bind count <- try Runner.rounds(2)
++  bind task <- try Runner.argument(0) or return
++  bind path <- try Runner.argument(1) or return
++  bind count <- try Runner.rounds(2) or return
+@@ -19 +19 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind input <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
++  bind input <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
+diff --git a/tools/bench/wasm/regex-c-resource.bnt b/tools/bench/wasm/regex-c-resource.bnt
+index e70bad61..63c1104b 100644
+--- a/tools/bench/wasm/regex-c-resource.bnt
++++ b/tools/bench/wasm/regex-c-resource.bnt
+@@ -15,3 +15,3 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind task <- try Runner.argument(0)
+-  bind path <- try Runner.argument(1)
+-  bind count <- try Runner.rounds(2)
++  bind task <- try Runner.argument(0) or return
++  bind path <- try Runner.argument(1) or return
++  bind count <- try Runner.rounds(2) or return
+@@ -19,2 +19,2 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
+-  bind input <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
+-  bind pattern <- try Pattern.compile(source)
++  bind input <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
++  bind pattern <- try Pattern.compile(source) or return
+diff --git a/tools/bench/wit-transfer/Runner.bnt b/tools/bench/wit-transfer/Runner.bnt
+index 7f4194b3..f258b516 100644
+--- a/tools/bench/wit-transfer/Runner.bnt
++++ b/tools/bench/wit-transfer/Runner.bnt
+@@ -8,4 +8,4 @@ public function settings() -> Result[Pair[Integer, Integer], String] uses Proces
+-  bind text <- try Option.okOr(o: List.get(xs: arguments, i: 0), error: "missing input size")
+-  bind count <- try Option.okOr(o: Integer.parse(text), error: "invalid input size")
+-  bind roundsText <- try Option.okOr(o: List.get(xs: arguments, i: 1), error: "missing repeat count")
+-  bind rounds <- try Option.okOr(o: Integer.parse(roundsText), error: "invalid repeat count")
++  bind text <- try Option.okOr(o: List.get(xs: arguments, i: 0), error: "missing input size") or return
++  bind count <- try Option.okOr(o: Integer.parse(text), error: "invalid input size") or return
++  bind roundsText <- try Option.okOr(o: List.get(xs: arguments, i: 1), error: "missing repeat count") or return
++  bind rounds <- try Option.okOr(o: Integer.parse(roundsText), error: "invalid repeat count") or return
+diff --git a/tools/bench/wit-transfer/flags.bnt b/tools/bench/wit-transfer/flags.bnt
+index 443b12c7..d78c4eea 100644
+--- a/tools/bench/wit-transfer/flags.bnt
++++ b/tools/bench/wit-transfer/flags.bnt
+@@ -122 +122 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/large-bytes-adapter.bnt b/tools/bench/wit-transfer/large-bytes-adapter.bnt
+index 0744cc08..201e0d8c 100644
+--- a/tools/bench/wit-transfer/large-bytes-adapter.bnt
++++ b/tools/bench/wit-transfer/large-bytes-adapter.bnt
+@@ -10 +10 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/large-bytes-typed.bnt b/tools/bench/wit-transfer/large-bytes-typed.bnt
+index c949b9f9..9e0858dd 100644
+--- a/tools/bench/wit-transfer/large-bytes-typed.bnt
++++ b/tools/bench/wit-transfer/large-bytes-typed.bnt
+@@ -10,5 +10,5 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
+-  bind low <- try Option.okOr(o: Byte.fromInteger(0), error: "byte out of range")
+-  bind middle <- try Option.okOr(o: Byte.fromInteger(128), error: "byte out of range")
+-  bind high <- try Option.okOr(o: Byte.fromInteger(255), error: "byte out of range")
+-  bind flippedMiddle <- try Option.okOr(o: Byte.fromInteger(127), error: "byte out of range")
++  bind Pair(n, rounds) <- try Runner.settings() or return
++  bind low <- try Option.okOr(o: Byte.fromInteger(0), error: "byte out of range") or return
++  bind middle <- try Option.okOr(o: Byte.fromInteger(128), error: "byte out of range") or return
++  bind high <- try Option.okOr(o: Byte.fromInteger(255), error: "byte out of range") or return
++  bind flippedMiddle <- try Option.okOr(o: Byte.fromInteger(127), error: "byte out of range") or return
+diff --git a/tools/bench/wit-transfer/large-bytes.bnt b/tools/bench/wit-transfer/large-bytes.bnt
+index b8f6e9e4..1bb07bba 100644
+--- a/tools/bench/wit-transfer/large-bytes.bnt
++++ b/tools/bench/wit-transfer/large-bytes.bnt
+@@ -12 +12 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/maps.bnt b/tools/bench/wit-transfer/maps.bnt
+index a70b0e3d..8d89a18e 100644
+--- a/tools/bench/wit-transfer/maps.bnt
++++ b/tools/bench/wit-transfer/maps.bnt
+@@ -13 +13 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/nested.bnt b/tools/bench/wit-transfer/nested.bnt
+index 27547a05..ae5d3163 100644
+--- a/tools/bench/wit-transfer/nested.bnt
++++ b/tools/bench/wit-transfer/nested.bnt
+@@ -10 +10 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/numbers.bnt b/tools/bench/wit-transfer/numbers.bnt
+index c4249d18..a89cb158 100644
+--- a/tools/bench/wit-transfer/numbers.bnt
++++ b/tools/bench/wit-transfer/numbers.bnt
+@@ -43 +43 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/primitives.bnt b/tools/bench/wit-transfer/primitives.bnt
+index d032b73e..d8d210b2 100644
+--- a/tools/bench/wit-transfer/primitives.bnt
++++ b/tools/bench/wit-transfer/primitives.bnt
+@@ -18 +18 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/records.bnt b/tools/bench/wit-transfer/records.bnt
+index 9c2ac5d6..ad14baf7 100644
+--- a/tools/bench/wit-transfer/records.bnt
++++ b/tools/bench/wit-transfer/records.bnt
+@@ -30 +30 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/short-numbers-adapter.bnt b/tools/bench/wit-transfer/short-numbers-adapter.bnt
+index 489528da..3f3c6c7f 100644
+--- a/tools/bench/wit-transfer/short-numbers-adapter.bnt
++++ b/tools/bench/wit-transfer/short-numbers-adapter.bnt
+@@ -10,2 +10,2 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
+-  bind wide <- try Option.okOr(o: UnsignedInteger64.fromInteger(n), error: "number out of range")
++  bind Pair(n, rounds) <- try Runner.settings() or return
++  bind wide <- try Option.okOr(o: UnsignedInteger64.fromInteger(n), error: "number out of range") or return
+@@ -13 +13 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind expectedWide <- try Option.okOr(o: UnsignedInteger64.fromInteger(expected), error: "number out of range")
++  bind expectedWide <- try Option.okOr(o: UnsignedInteger64.fromInteger(expected), error: "number out of range") or return
+diff --git a/tools/bench/wit-transfer/short-numbers-typed.bnt b/tools/bench/wit-transfer/short-numbers-typed.bnt
+index fed213ee..6f5a107e 100644
+--- a/tools/bench/wit-transfer/short-numbers-typed.bnt
++++ b/tools/bench/wit-transfer/short-numbers-typed.bnt
+@@ -10 +10 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/short-numbers.bnt b/tools/bench/wit-transfer/short-numbers.bnt
+index 4958c507..04bf2766 100644
+--- a/tools/bench/wit-transfer/short-numbers.bnt
++++ b/tools/bench/wit-transfer/short-numbers.bnt
+@@ -12,2 +12,2 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
+-  bind wide <- try Option.okOr(o: UnsignedInteger64.fromInteger(n), error: "number out of range")
++  bind Pair(n, rounds) <- try Runner.settings() or return
++  bind wide <- try Option.okOr(o: UnsignedInteger64.fromInteger(n), error: "number out of range") or return
+@@ -15 +15 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind expectedWide <- try Option.okOr(o: UnsignedInteger64.fromInteger(expected), error: "number out of range")
++  bind expectedWide <- try Option.okOr(o: UnsignedInteger64.fromInteger(expected), error: "number out of range") or return
+diff --git a/tools/bench/wit-transfer/tuples.bnt b/tools/bench/wit-transfer/tuples.bnt
+index abb34f6d..7c56a4db 100644
+--- a/tools/bench/wit-transfer/tuples.bnt
++++ b/tools/bench/wit-transfer/tuples.bnt
+@@ -29 +29 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/utf16.bnt b/tools/bench/wit-transfer/utf16.bnt
+index 921ef999..02e4dca5 100644
+--- a/tools/bench/wit-transfer/utf16.bnt
++++ b/tools/bench/wit-transfer/utf16.bnt
+@@ -12 +12 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/bench/wit-transfer/variants.bnt b/tools/bench/wit-transfer/variants.bnt
+index 59e23dff..0fffde71 100644
+--- a/tools/bench/wit-transfer/variants.bnt
++++ b/tools/bench/wit-transfer/variants.bnt
+@@ -42 +42 @@ function main() -> Result[Unit, String] uses Console.Write, Process.Environment
+-  bind Pair(n, rounds) <- try Runner.settings()
++  bind Pair(n, rounds) <- try Runner.settings() or return
+diff --git a/tools/skill-eval/tasks/csv_report/reference.bnt b/tools/skill-eval/tasks/csv_report/reference.bnt
+index 82005203..14bddb23 100644
+--- a/tools/skill-eval/tasks/csv_report/reference.bnt
++++ b/tools/skill-eval/tasks/csv_report/reference.bnt
+@@ -13,3 +13,3 @@ function addRow(totals: Map[String, Pair[Integer, Integer]], row: Map[String, St
+-  bind region <- try Option.okOr(o: Map.get(m: row, k: "region"), error: "a row has no region")
+-  bind quantity <- try field(row: row, name: "quantity")
+-  bind price <- try field(row: row, name: "unit_price")
++  bind region <- try Option.okOr(o: Map.get(m: row, k: "region"), error: "a row has no region") or return
++  bind quantity <- try field(row: row, name: "quantity") or return
++  bind price <- try field(row: row, name: "unit_price") or return
+@@ -21,2 +21,2 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
+-  bind text <- try File.readText("sales.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+-  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda)
++  bind text <- try File.readText("sales.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
++  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda) or return
+@@ -24 +24 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
+-    bind current <- try acc
++    bind current <- try acc or return
+@@ -26 +26 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
+-  end lambda)
++  end lambda) or return
+@@ -31 +31 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
+-  bind _ <- try File.writeText(path: "summary.csv", text: Csv.format(List.prepend(xs: table, x: ["region", "orders", "revenue"]))) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind _ <- try File.writeText(path: "summary.csv", text: Csv.format(List.prepend(xs: table, x: ["region", "orders", "revenue"]))) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+diff --git a/tools/skill-eval/tasks/dir_walk/reference.bnt b/tools/skill-eval/tasks/dir_walk/reference.bnt
+index 23057188..9a2cb946 100644
+--- a/tools/skill-eval/tasks/dir_walk/reference.bnt
++++ b/tools/skill-eval/tasks/dir_walk/reference.bnt
+@@ -5 +5 @@ function countLines(path: String) -> Result[Integer, String] uses File.Read
+-  bind lines <- try File.readLines("docs/" + path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind lines <- try File.readLines("docs/" + path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+@@ -11 +11 @@ function isMarkdownFile(path: String) -> Result[Boolean, String] uses File.Read
+-  bind info <- try File.info("docs/" + path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind info <- try File.info("docs/" + path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+@@ -21 +21 @@ function report(paths: List[String], files: Integer, total: Integer) -> Result[U
+-      bind markdown <- try isMarkdownFile(path)
++      bind markdown <- try isMarkdownFile(path) or return
+@@ -23 +23 @@ function report(paths: List[String], files: Integer, total: Integer) -> Result[U
+-      bind count <- try countLines(path)
++      bind count <- try countLines(path) or return
+@@ -30 +30 @@ function main() -> Result[Unit, String] uses File.Read, Console.Write
+-  bind paths <- try File.walk("docs") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind paths <- try File.walk("docs") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+diff --git a/tools/skill-eval/tasks/error_handling/reference.bnt b/tools/skill-eval/tasks/error_handling/reference.bnt
+index 497eb666..e4eb1c8c 100644
+--- a/tools/skill-eval/tasks/error_handling/reference.bnt
++++ b/tools/skill-eval/tasks/error_handling/reference.bnt
+@@ -16 +16 @@ function main() -> Result[Unit, String] uses File.Read, Console.Write
+-  bind paths <- try File.readLines("files.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind paths <- try File.readLines("files.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+diff --git a/tools/skill-eval/tasks/file_process/reference.bnt b/tools/skill-eval/tasks/file_process/reference.bnt
+index 3e9a634b..b7dfffa9 100644
+--- a/tools/skill-eval/tasks/file_process/reference.bnt
++++ b/tools/skill-eval/tasks/file_process/reference.bnt
+@@ -12 +12 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
+-  bind lines <- try File.readLines("todo.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind lines <- try File.readLines("todo.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+@@ -15 +15 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
+-  bind _ <- try File.writeText(path: "todo-numbered.txt", text: output) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind _ <- try File.writeText(path: "todo-numbered.txt", text: output) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+diff --git a/tools/skill-eval/tasks/http_client/reference.bnt b/tools/skill-eval/tasks/http_client/reference.bnt
+index 98fa6930..043701a6 100644
+--- a/tools/skill-eval/tasks/http_client/reference.bnt
++++ b/tools/skill-eval/tasks/http_client/reference.bnt
+@@ -13,3 +13,3 @@ function itemOf(value: Json.Value) -> Result[Item, String]
+-  bind name <- try Option.okOr(o: Option.andThen(o: Json.get(value: value, k: "name"), f: Json.asString), error: "an item has no name")
+-  bind stock <- try Option.okOr(o: Option.andThen(o: Json.get(value: value, k: "stock"), f: Json.asInteger), error: "an item has no stock")
+-  bind price <- try Option.okOr(o: Option.andThen(o: Json.get(value: value, k: "price"), f: Json.asInteger), error: "an item has no price")
++  bind name <- try Option.okOr(o: Option.andThen(o: Json.get(value: value, k: "name"), f: Json.asString), error: "an item has no name") or return
++  bind stock <- try Option.okOr(o: Option.andThen(o: Json.get(value: value, k: "stock"), f: Json.asInteger), error: "an item has no stock") or return
++  bind price <- try Option.okOr(o: Option.andThen(o: Json.get(value: value, k: "price"), f: Json.asInteger), error: "an item has no price") or return
+@@ -24,2 +24,2 @@ function main() -> Result[Unit, String] uses Process.Environment, Http.Connect,
+-  bind base <- try Option.okOr(o: try Process.environmentVariable("SKILL_EVAL_HTTP_BASE") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda), error: "SKILL_EVAL_HTTP_BASE is not set")
+-  bind status <- try Http.get(base + "/status") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
++  bind base <- try Option.okOr(o: try Process.environmentVariable("SKILL_EVAL_HTTP_BASE") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return, error: "SKILL_EVAL_HTTP_BASE is not set") or return
++  bind status <- try Http.get(base + "/status") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) or return
+@@ -27,3 +27,3 @@ function main() -> Result[Unit, String] uses Process.Environment, Http.Connect,
+-  bind inventory <- try Http.get(base + "/inventory") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
+-  bind parsed <- try Json.parse(bodyText(inventory)) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+-  bind array <- try Option.okOr(o: Json.asArray(parsed), error: "the inventory is not an array")
++  bind inventory <- try Http.get(base + "/inventory") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) or return
++  bind parsed <- try Json.parse(bodyText(inventory)) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda) or return
++  bind array <- try Option.okOr(o: Json.asArray(parsed), error: "the inventory is not an array") or return
+@@ -31,2 +31,2 @@ function main() -> Result[Unit, String] uses Process.Environment, Http.Connect,
+-    bind collected <- try acc
+-    bind item <- try itemOf(value)
++    bind collected <- try acc or return
++    bind item <- try itemOf(value) or return
+@@ -34 +34 @@ function main() -> Result[Unit, String] uses Process.Environment, Http.Connect,
+-  end lambda) |> Result.map(r: _, f: lambda(value) return List.reverse(value) end lambda)
++  end lambda) |> Result.map(r: _, f: lambda(value) return List.reverse(value) end lambda) or return
+@@ -40 +40 @@ function main() -> Result[Unit, String] uses Process.Environment, Http.Connect,
+-  bind reply <- try Http.send(request) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda)
++  bind reply <- try Http.send(request) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) or return
+diff --git a/tools/skill-eval/tasks/json_convert/reference.bnt b/tools/skill-eval/tasks/json_convert/reference.bnt
+index 35101ae6..f284d78c 100644
+--- a/tools/skill-eval/tasks/json_convert/reference.bnt
++++ b/tools/skill-eval/tasks/json_convert/reference.bnt
+@@ -19,2 +19,2 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
+-  bind text <- try File.readText("members.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+-  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda)
++  bind text <- try File.readText("members.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
++  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda) or return
+@@ -28 +28 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
+-  bind _ <- try File.writeText(path: "teams.json", text: Json.stringify(json) + "\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind _ <- try File.writeText(path: "teams.json", text: Json.stringify(json) + "\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+@@ -30 +30 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
+-  bind first <- try Option.okOr(o: List.head(rows), error: "members.csv has no rows")
++  bind first <- try Option.okOr(o: List.head(rows), error: "members.csv has no rows") or return
+diff --git a/tools/skill-eval/tasks/json_summary/reference.bnt b/tools/skill-eval/tasks/json_summary/reference.bnt
+index 451ce94f..3cc99117 100644
+--- a/tools/skill-eval/tasks/json_summary/reference.bnt
++++ b/tools/skill-eval/tasks/json_summary/reference.bnt
+@@ -21,2 +21,2 @@ function main() -> Result[Unit, String] uses File.Read, Console.Write
+-  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+-  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
++  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
++  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+@@ -28 +28 @@ function main() -> Result[Unit, String] uses File.Read, Console.Write
+-    bind current <- try acc
++    bind current <- try acc or return
+@@ -30 +30 @@ function main() -> Result[Unit, String] uses File.Read, Console.Write
+-  end lambda)
++  end lambda) or return
+diff --git a/tools/skill-eval/tasks/process_run/reference.bnt b/tools/skill-eval/tasks/process_run/reference.bnt
+index 72251d03..f46855e1 100644
+--- a/tools/skill-eval/tasks/process_run/reference.bnt
++++ b/tools/skill-eval/tasks/process_run/reference.bnt
+@@ -6 +6 @@ function main() -> Result[Unit, String] uses File.Read, Process.Run, Console.Wri
+-  bind text <- try File.readText("fruits.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind text <- try File.readText("fruits.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+@@ -8 +8 @@ function main() -> Result[Unit, String] uses File.Read, Process.Run, Console.Wri
+-  bind output <- try Process.run(command) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind output <- try Process.run(command) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+diff --git a/tools/skill-eval/tasks/process_shell/reference.bnt b/tools/skill-eval/tasks/process_shell/reference.bnt
+index b1a7ede2..7c575b0f 100644
+--- a/tools/skill-eval/tasks/process_shell/reference.bnt
++++ b/tools/skill-eval/tasks/process_shell/reference.bnt
+@@ -5 +5 @@ function main() -> Result[Unit, String] uses Process.Run, Console.Write
+-  bind errors <- try Process.shell("grep ' ERROR ' app.log | cut -d ' ' -f 3 | LC_ALL=C sort -u") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind errors <- try Process.shell("grep ' ERROR ' app.log | cut -d ' ' -f 3 | LC_ALL=C sort -u") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+@@ -9 +9 @@ function main() -> Result[Unit, String] uses Process.Run, Console.Write
+-  bind fatal <- try Process.shell("grep -q ' FATAL ' app.log") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind fatal <- try Process.shell("grep -q ' FATAL ' app.log") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+diff --git a/tools/skill-eval/tasks/regex_text/reference.bnt b/tools/skill-eval/tasks/regex_text/reference.bnt
+index 78375459..6cc18565 100644
+--- a/tools/skill-eval/tasks/regex_text/reference.bnt
++++ b/tools/skill-eval/tasks/regex_text/reference.bnt
+@@ -6,3 +6,3 @@ function main() -> Result[Unit, String] uses File.Read, Console.Write
+-  bind text <- try File.readText("messages.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+-  bind email <- try Regex.compile(r"[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.[A-Za-z]+)")
+-  bind date <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
++  bind text <- try File.readText("messages.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
++  bind email <- try Regex.compile(r"[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.[A-Za-z]+)") or return
++  bind date <- try Regex.compile(r"\d{4}-\d{2}-\d{2}") or return
+diff --git a/tools/skill-eval/tasks/write_tests/reference.bnt b/tools/skill-eval/tasks/write_tests/reference.bnt
+index 051b35b1..203dc28f 100644
+--- a/tools/skill-eval/tasks/write_tests/reference.bnt
++++ b/tools/skill-eval/tasks/write_tests/reference.bnt
+@@ -13 +13 @@ function loadSettings(path: String) -> Result[Map[String, String], String] uses
+-  bind lines <- try File.readLines(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
++  bind lines <- try File.readLines(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return

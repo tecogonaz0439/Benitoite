@@ -70,6 +70,39 @@ use crate::runtime::{
 };
 use crate::vm::{DeadlockWaitKind, FrameRecord, InstrRef, SpawnRecord, StopInfo};
 
+/// 所有した失敗終了の情報を、文章と JSON に共通の報告へ写す
+/// （設計書 06-01「終了状態」）。説明が空でも、指定があれば注記を残す。
+pub fn die_diagnostic(failure: &crate::vm::DieFailure) -> Diagnostic {
+    let mut notes = Vec::new();
+    if let Some(message) = &failure.message {
+        notes.push(fill_template(
+            codes::text::DIE_MESSAGE_NOTE,
+            &[("message", message.clone())],
+        ));
+    }
+    notes.push(fill_template(
+        codes::text::DIE_CAUSE_NOTE,
+        &[("cause", failure.cause.clone())],
+    ));
+    Diagnostic {
+        kind: ReportKind::Die,
+        severity: Severity::Error,
+        code: None,
+        message: codes::text::DIE_MESSAGE.to_owned(),
+        primary: Some(crate::diag::Label {
+            span: failure.at,
+            text: String::new(),
+        }),
+        secondary: Vec::new(),
+        notes,
+        helps: Vec::new(),
+        trace: None,
+        task_origins: Vec::new(),
+        waiting: Vec::new(),
+        backtrace: None,
+    }
+}
+
 /// 実行時エラー・資源の不足の報告を作る。`Stop` の値ごとのコードは診断の規則に従う
 /// （設計書 02-10「実行時エラーと資源の不足の報告」）。
 /// 主な位置、呼び出しの履歴、タスクの起動の履歴は 02-08「実行時エラーの情報の記録」の 1〜4 で作る。
@@ -687,6 +720,66 @@ mod tests {
 
     const USER: FileId = FileId(0);
     const STDLIB: FileId = FileId(1);
+
+    // 関門: 報告の入口で説明の省略と空文字列を区別し、原因・位置・引用符を文章と JSON に残す。
+    // 既存の Stop の報告にはこの構造化した終了理由がない（設計書 06-01「終了状態」）。
+    #[test]
+    fn die_reports_preserve_optional_messages_causes_and_locations() {
+        use crate::diag::render::{TextOptions, render_json_line, render_one_text};
+        let mut sources = SourceTable::new();
+        let file = sources.add(Source::new(
+            "failure.bnt".into(),
+            SourceKind::User,
+            b"try r or die\n".to_vec(),
+        ));
+        for (message, message_note) in [
+            (None, None),
+            (Some(""), Some("message: ")),
+            (
+                Some("could not read {cause}"),
+                Some("message: could not read {cause}"),
+            ),
+        ] {
+            let failure = crate::vm::DieFailure {
+                cause: "\"missing\\nfile\"".into(),
+                message: message.map(str::to_owned),
+                at: Span {
+                    file,
+                    start: BytePos(0),
+                    end: BytePos(12),
+                },
+            };
+            let diagnostic = die_diagnostic(&failure);
+            let mut notes = Vec::new();
+            if let Some(note) = message_note {
+                notes.push(note);
+            }
+            notes.push("cause: \"missing\\nfile\"");
+            let mut text = "error: explicit failure exit\n  --> failure.bnt:1:1\n   |\n 1 | try r or die\n   | ^^^^^^^^^^^^\n   |\n".to_owned();
+            for note in &notes {
+                text.push_str(&format!("   = note: {note}\n"));
+            }
+            assert_eq!(
+                render_one_text(&diagnostic, &sources, TextOptions { color: false }),
+                text
+            );
+            let json: serde_json::Value =
+                serde_json::from_str(&render_json_line(&diagnostic, &sources)).unwrap();
+            assert_eq!(
+                json,
+                serde_json::json!({
+                    "kind": "die", "severity": "error", "code": null,
+                    "message": "explicit failure exit",
+                    "primary": {"file": "failure.bnt", "start": {"line": 1, "column": 1, "offset": 0}, "end": {"line": 1, "column": 13, "offset": 12}, "label": ""},
+                    "secondary": [], "notes": notes, "helps": []
+                })
+            );
+            assert_eq!(diagnostic.trace, None);
+            assert!(diagnostic.task_origins.is_empty());
+            assert!(diagnostic.waiting.is_empty());
+            assert_eq!(diagnostic.backtrace, None);
+        }
+    }
 
     fn span(file: FileId, pos: u32) -> Span {
         Span {

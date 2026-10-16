@@ -259,9 +259,10 @@ pub(in crate::vm) fn serve(
     if !waiting(state, req.task, WaitReason::Response) {
         return Err(missing("request task is not waiting for response"));
     }
+    let (task, site) = (req.task, req.site);
     let result = serve_inner(program, state, ctx, rt, req);
     if let Err(stop) = result {
-        fail_task(state, ctx, req.task, req.site, stop)?;
+        fail_task(state, ctx, task, site, stop)?;
     }
     if state.stopping.is_some() {
         begin_stop_all(state, ctx)?;
@@ -276,9 +277,15 @@ fn serve_inner(
     state: &mut RunState,
     ctx: &mut NoGcCtx<'_>,
     rt: &mut IoRuntime,
-    req: Request,
+    mut req: Request,
 ) -> Result<(), Stop> {
     let args = args(program, state, ctx, req.task, req.site)?;
+    // Request は外側へ渡す前に所有した情報を使い、Direct はこの呼び出しで所有する。
+    // 応答を待つ間のヒープの値を読み直さない（設計書 02-08「IO の命令」）。
+    let die_failure = match req.die_failure.take() {
+        Some(report) => Some(report),
+        None => own_exit_report(program, state, ctx, &req)?,
+    };
     rt.output_task = req.task;
     let reply = {
         let mut view = IoView {
@@ -374,7 +381,10 @@ fn serve_inner(
         }
         Reply::Exit(status) => {
             if state.stopping.is_none() {
-                state.stopping = Some(StopReason::Exit(status.0));
+                state.stopping = Some(StopReason::Exit {
+                    code: status.0,
+                    die_failure: if status.0 == 1 { die_failure } else { None },
+                });
             }
         }
         Reply::Wait(_) | Reply::SpawnTasks(_) => {
@@ -382,6 +392,64 @@ fn serve_inner(
         }
     }
     Ok(())
+}
+
+// 値を区間の外へ出さず、所有した文字列だけを返す。
+fn own_exit_report(
+    program: &CompiledProgram,
+    state: &RunState,
+    ctx: &NoGcCtx<'_>,
+    req: &Request,
+) -> Result<Option<crate::vm::DieFailure>, Stop> {
+    let report = program
+        .proto(req.site.proto)
+        .ok_or_else(|| missing("exit report prototype missing"))?
+        .exit_reports
+        .get(index(req.site.pc)?)
+        .copied()
+        .ok_or_else(|| missing("exit report table entry missing"))?;
+    let Some(report) = report else {
+        return Ok(None);
+    };
+    let reference = program
+        .builtin(operands(program, req.site)?.builtin)
+        .ok_or_else(|| missing("exit report builtin missing"))?;
+    let args = args(program, state, ctx, req.task, req.site)?;
+    if Some(reference.id) != crate::builtins::lookup_builtin("Benitoite.IO.Process.exit")
+        || !matches!(args.as_ref(), [Value::Int(1)])
+    {
+        return Err(missing("exit report requires canonical Process.exit(1)"));
+    }
+    let task = object(state, ctx, req.task)?;
+    let segment = ctx
+        .host::<TaskObj>(task)
+        .and_then(|task| task.stack.segments.last())
+        .ok_or_else(|| missing("exit report task stack missing"))?;
+    let frame = segment
+        .calls
+        .last()
+        .ok_or_else(|| missing("exit report frame missing"))?;
+    let string = |reg: u16| -> Result<String, Stop> {
+        if u32::from(reg) >= frame.size {
+            return Err(missing("exit report register outside window"));
+        }
+        let absolute = frame
+            .base
+            .checked_add(u32::from(reg))
+            .ok_or_else(|| missing("exit report register overflow"))?;
+        let slot = segment
+            .regs
+            .get(index(absolute)?)
+            .ok_or_else(|| missing("exit report register missing"))?;
+        ctx.str(ctx.load(slot))
+            .map(str::to_owned)
+            .ok_or_else(|| missing("exit report requires String"))
+    };
+    Ok(Some(crate::vm::DieFailure {
+        cause: string(report.cause_reg)?,
+        message: report.message_reg.map(string).transpose()?,
+        at: report.span,
+    }))
 }
 
 #[cold]
@@ -420,11 +488,12 @@ fn submit(
             {
                 port.flush_target(req.task);
                 rt.queue.check_park_request(&req)?;
+                let task = req.task;
                 rt.queue.park_request(req, RequestPhase::AwaitFlush(work));
                 return repark(
                     state,
                     ctx,
-                    req.task,
+                    task,
                     from,
                     WaitReason::Output(stream, OutputWaitKind::Flush),
                 );
@@ -483,9 +552,10 @@ fn await_lend(
     resource: crate::runtime::heap::ResourceId,
 ) -> Result<(), Stop> {
     rt.queue.check_park_request(&req)?;
+    let task = req.task;
     rt.queue
         .park_request(req, RequestPhase::AwaitLend(resource, work));
-    repark(state, ctx, req.task, from, WaitReason::Lend(resource))
+    repark(state, ctx, task, from, WaitReason::Lend(resource))
 }
 fn resume_lender(
     state: &mut RunState,
@@ -508,8 +578,9 @@ fn resume_lender(
     if id != resource {
         return Err(missing("lender resource mismatch"));
     }
+    let site = request.req.site;
     if let Err(stop) = submit(state, ctx, rt, request.req, work, reason) {
-        fail_task(state, ctx, task, request.req.site, stop)?;
+        fail_task(state, ctx, task, site, stop)?;
         begin_stop_all(state, ctx)?;
         reflect_cancellation(state, rt)?;
     }
@@ -578,11 +649,12 @@ fn poll_outputs(
                 let RequestPhase::AwaitFlush(work) = request.phase else {
                     return Err(missing("output flush phase mismatch"));
                 };
+                let site = request.req.site;
                 let result = match &failure {
                     Some(failure) => Err(output_failure(stream, failure.clone())),
                     None => submit(state, ctx, rt, request.req, work, reason),
                 };
-                (request.req.site, result)
+                (site, result)
             };
             if let Err(stop) = result {
                 fail_task(state, ctx, task, site, stop)?;
@@ -729,6 +801,17 @@ fn dispatch_pending(
             }
         }
         DispatchAction::ReturnToExecutor(ids) => {
+            // 所有した文字列を要求の番号に結び付け、完了・取り消しとともに手放す
+            // （設計書 02-08「IO の命令」）。
+            for id in &ids {
+                let req = &mut rt
+                    .queue
+                    .live
+                    .get_mut(id)
+                    .ok_or_else(|| missing("outstanding request missing"))?
+                    .req;
+                req.die_failure = own_exit_report(program, state, ctx, req)?;
+            }
             if !ids.is_empty() || at == WaitPoint::SlowPath || state.scheduler.ready.is_empty() {
                 if let Some(VmStep::Requests(existing)) = &mut state.step {
                     existing.extend(ids);

@@ -16,8 +16,8 @@ function jsonString(value: String) -> Json.Value
 end function
 
 function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
-  bind text <- try File.readText("members.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
-  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda)
+  bind text <- try File.readText("members.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error) end lambda) or return
   bind teams <- List.fold(xs: rows, initial: Map.empty(), f: lambda(acc, value)
     bind team <- column(row: value, name: "team")
     return Map.set(m: acc, k: team, value: List.append(xs: Option.unwrapOr(o: Map.get(m: acc, k: team), fallback: []), x: column(row: value, name: "name")))
@@ -25,9 +25,9 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
   bind json <- Json.Value.Object(Map.map(m: teams, f: lambda(key, value)
     return Json.Value.Array(List.map(xs: List.sort(value), f: jsonString))
   end lambda))
-  bind _ <- try File.writeText(path: "teams.json", text: Json.stringify(json) + "\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  bind _ <- try File.writeText(path: "teams.json", text: Json.stringify(json) + "\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
   Console.writeLine("teams: ${Map.size(teams)}, members: ${List.length(rows)}")
-  bind first <- try Option.okOr(o: List.head(rows), error: "members.csv has no rows")
+  bind first <- try Option.okOr(o: List.head(rows), error: "members.csv has no rows") or return
   bind oldest <- List.fold(xs: rows, initial: first, f: lambda(acc, value) return if yearOf(value) < yearOf(acc) then value else acc end if end lambda)
   Console.writeLine("oldest member: ${column(row: oldest, name: "name")} (${yearOf(oldest)})")
   return Result.Ok(())

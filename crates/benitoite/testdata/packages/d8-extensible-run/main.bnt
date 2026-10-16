@@ -1,0 +1,69 @@
+// spec: 01-05 拡張可能な型
+import Dep.Types
+import Benitoite.Unofficial.IO.Console
+type Alias = Types.Kind
+record Envelope
+  kind: Alias
+end record
+function inspect(kind: Alias, offset: Integer) -> Integer
+  return match kind with
+    case Types.Kind.Known -> offset + 1
+    case Types.Kind.Other -> offset + 2
+    case other -> Types.inspect(other) + 1000
+  end match
+end function
+function guarded(kind: Alias, enabled: Boolean, offset: Integer) -> Integer
+  return match kind with
+    case Types.Kind.Known, Types.Kind.Other if enabled -> offset
+    case other -> Types.inspect(other) + offset
+  end match
+end function
+function nested(value: Result[Option[Alias], String]) -> Integer
+  return match value with
+    case Result.Ok(Option.Some(Types.Kind.Known)) -> 1
+    case Result.Ok(Option.Some(Types.Kind.Other)) -> 2
+    case Result.Ok(Option.Some(other)) -> Types.inspect(other) + 1000
+    case Result.Ok(Option.None) -> 3
+    case Result.Error(_) -> 4
+  end match
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(inspect(kind: Types.Kind.Known, offset: 10)))
+  Console.writeLine(Integer.toString(inspect(kind: Types.Kind.Other, offset: 10)))
+  Console.writeLine(Integer.toString(Types.unpack(Types.Single.Only(3))))
+  Console.writeLine(Integer.toString(guarded(kind: Types.Kind.Known, enabled: false, offset: 20)))
+  Console.writeLine(Integer.toString(guarded(kind: Types.Kind.Other, enabled: true, offset: 30)))
+  bind offset <- 40
+  bind action <- lambda(kind: Alias) -> Integer
+    return match kind with
+      case Types.Kind.Known -> offset + 1
+      case Types.Kind.Other -> offset + 2
+      case other -> offset + Types.inspect(other) + 1000
+    end match
+  end lambda
+  Console.writeLine(Integer.toString(action(Types.Kind.Known)))
+  Console.writeLine(Integer.toString(nested(Result.Error("failure"))))
+  bind values: List[Alias] <- [Types.Kind.Other]
+  bind fromList <- match values with
+    case [] -> 0
+    case [Types.Kind.Known, ..] -> 4
+    case [Types.Kind.Other, ..] -> 5
+    case [_, ..] -> 1000
+  end match
+  Console.writeLine(Integer.toString(fromList))
+  bind envelope <- Envelope(kind: Types.Kind.Other)
+  bind fromRecord <- match envelope with
+    case Envelope(kind: Types.Kind.Known) -> 5
+    case Envelope(kind: Types.Kind.Other) -> 6
+    case Envelope(kind: _) -> 1000
+  end match
+  Console.writeLine(Integer.toString(fromRecord))
+  bind detail <- Types.Detail(value: 6)
+  bind updated <- Types.Detail(..detail, value: 7)
+  Console.writeLine(Integer.toString(Types.Detail.value(updated)))
+  bind fromDetail <- match updated with
+    case Types.Detail(value: value, ..) -> value
+    case _ -> 1000
+  end match
+  Console.writeLine(Integer.toString(fromDetail))
+end function

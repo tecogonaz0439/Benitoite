@@ -13,7 +13,7 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.5`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.6`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md).
 
@@ -94,7 +94,7 @@ benitoite --licenses
 | `skill` | Writes the bundled Agent Skill to the places where coding agents read skills, or removes it. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.5`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.6`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
 `<script>` is a file, or a directory that contains `main.bnt`. The file name and its extension are not checked, except that `package.bnt` is a settings file and cannot be the starting file. The directory of the script is the *root directory*: the script can import modules from the root directory and below it, from the standard library ([Modules](#12-modules)), and from declared local dependencies (see [section 21](#21-experimental-packages-and-external-functions)). `benitoite` reads `package.bnt` in the root directory itself as a settings file; it does not search parent directories or the working directory.
@@ -144,18 +144,20 @@ A program starts at the function `main` in the script file. `main` takes no para
 
 The top level of a file contains, in this order, `import` declarations and then declarations: functions, constants, data types, type aliases, records, type classes, implementations, and effects. Code that runs is written only inside functions.
 
-Except for a short lambda (see [Functions and lambdas](#6-functions-and-lambdas)), blocks are closed with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end trait`, `end implement`, `end effect`, `end handle`, `end with`, `end lazy`. There are no braces, and indentation has no meaning. Statements are separated by line breaks; there are no semicolons.
+Except for a short lambda (see [Functions and lambdas](#6-functions-and-lambdas)), blocks are closed with `end` and the keyword that opened them: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end trait`, `end implement`, `end effect`, `end handle`, `end with`, `end lazy`. There are no braces, and indentation has no meaning. Statements are separated by line breaks; there are no semicolons. A physical line break immediately after `return` always ends the statement, even inside parentheses or before a continuation operator on the next line. Comments and blank lines do not change this rule.
 
 Inside a block:
 
 - `bind name <- expression` gives a name to a value. Names cannot be reassigned.
 - `shadow name <- expression` binds a name that hides a local name already visible. `bind` with a name that is already visible as a local name is an error, so hiding is always explicit. `shadow` is valid but discouraged; prefer a new name that describes the new value, even when hiding the old name is intentional. This is documentation advice and does not add a warning.
-- `return expression` ends the function and returns the value.
+- `return expression` ends the function and returns the value. Start the value on the same physical line as `return`; a missing value is an error (E0201). Once the value has started, ordinary continuation rules allow multiple lines, such as after an operator in `return x +`, inside `return (` or the arguments of `return f(`, or after `then` in `return if condition then`. A short lambda must still fit entirely on one physical line.
 - An expression on its own line is a statement. When it is not the last statement of its block, or when it is the last statement of a function or lambda body, its value must be `Unit`; write `bind _ <- expression` to discard any other value.
 
 A function whose return type is not `Unit` must end with `return` (or with an `if` or `match` whose every branch returns). The value of an `if`, of a `match` branch, of a handler clause, and of the bodies of `with`, `handle`, and `lazy` is its last expression. A `return` inside an `if`, a `match` branch, a handler clause, or the body of `with` or `handle` returns from the function that contains it. A `lazy` body and a `match` guard cannot contain `return` or `try`, except inside a `lambda ... end lambda` written there; the arguments of a call with `_` placeholders are not such an exception.
 
 `//` starts a comment that runs to the end of the line. `///` before a declaration documents it, and `//!` at the start of a file documents the module. Identifiers use ASCII letters, digits, and `_`. Names of functions, values, and parameters start with a lowercase letter; names of types, constructors, modules, and effects start with an uppercase letter.
+
+`die` is reserved and cannot be used as a name, including an argument label, field, import alias, or name after a dot; it is accepted only in `try e or die` and `try e or die(message)`, never as a standalone expression.
 
 ```benitoite
 //! Prints a short report.
@@ -541,6 +543,49 @@ A B almost nothing C
 
 Data types and records can have type parameters: `data Tree[T]` with constructors `Leaf` and `Node(Tree[T], T, Tree[T])`.
 
+### Extensible types
+
+Put the argument-free attribute `@extensible` before a `data` or `record` declaration, before `public` or `public(package)` if present. It can also be used on private declarations and alongside `@deprecated`. `@extensible()` is accepted as the same attribute; the formatter keeps the parentheses. Arguments report `E0817` (or `E0220` for non-string arguments), duplicates report `E0803`, and use on another kind of declaration reports `E0802`. Attributes before individual constructors are not allowed (`E0201`).
+
+Inside the defining package, patterns covering every declared constructor can be exhaustive. Outside it, a source `match` must also cover future shapes with an unguarded variable or `_` pattern. A constructor named `Other` is a known constructor and does not cover future shapes. Guards do not count toward exhaustiveness. This rule also applies inside `Result`, `Option`, lists, and record fields, and through type aliases. After all known constructors, a branch for future shapes remains valid; a branch after an unguarded `_` is still unreachable.
+
+The package boundary is the same as for `public(package)`: the starting script and its root modules form one package, the standard library and prelude form another, and each dependency's internal modules belong to that dependency. Importing a type into another module of the same package does not make the use external.
+
+The standard library marks four failure types as extensible: `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, and `Csv.ParseError`. `Result` and `Option` themselves remain closed: `Result.Ok(value)` and `Result.Error(error)` cover both cases when their contents are bound as variables. `String` error values keep the ordinary string-pattern rules; the opaque `IOError` and `NetworkError` have no constructors to match.
+
+For an extensible record, `ParseError(message: text, ..)` covers only the known record shape; `..` omits current fields. Outside its package, add a variable or `_` branch to `match`. A destructuring `bind` or `shadow` must always match, so using just that record pattern reports `E0607`; use a getter or a `match` with a branch for future shapes. Construction, updates, and getters keep their declared field contracts. The attribute does not guarantee compatibility when record fields are added or changed.
+
+This example handles a known JSON error shape and keeps a branch for future shapes. It also constructs and updates the record using its existing API:
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Json
+
+function describe(result: Result[Json.Value, Json.ParseError]) -> String
+  return match result with
+    case Result.Ok(_) -> "parsed"
+    case Result.Error(Json.ParseError(message: text, ..)) -> text
+    case Result.Error(otherError) -> "another JSON error"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  bind original <- Json.ParseError(line: 1, column: 2, message: "expected a value")
+  bind revised <- Json.ParseError(..original, message: "invalid input")
+  Console.writeLine(describe(Result.Error(original)))
+  Console.writeLine(Json.ParseError.message(revised))
+end function
+```
+
+```output
+expected a value
+invalid input
+```
+
+Missing future shapes report `E0601` for `match`, or `E0607` for a binding pattern, with the type declaration as a secondary location. The counterexample is shown as `<future constructor of TypeName>` or `<future shape of TypeName>` for a record. These are diagnostic descriptions, not constructor names you can write in source. `E0601` suggests an unguarded variable or `_`; `E0607` suggests rewriting the binding as a `match` with an unguarded `case _ ->` branch.
+
+Adding `@extensible` to a closed type can reject external matches and destructuring bindings that were previously accepted. Adding constructors to an extensible data type preserves the exhaustiveness of external source patterns; it does not guarantee the same results, including when values formerly classified as `Other` receive a new constructor. Removing or renaming constructors, or changing their fields, is outside that guarantee. Removing the attribute commits to a closed constructor set and can make a branch for future shapes unreachable. The attribute does not let callers add constructors. Runtime constructor tags, ABI, equality, and key constraints keep their existing rules. [WIT structural matching](#external-functions-and-types-through-wasm) is a separate contract and still requires an exact match.
+
 ## 8. Constants and type aliases
 
 `const` declares a constant at the top level. The type is required, and the value must be computable before the program runs: literals, other constants, constructors, records, lists, operators, interpolation of constants, and `Map.fromList`, `Set.fromList`, `Map.empty()`, `Set.empty()`. Refer to a constant by its name, without parentheses.
@@ -575,9 +620,11 @@ Not Found
 
 An operation that may have no value returns `Option[T]` (`Option.Some(x)` or `Option.None`). An operation that may fail returns `Result[T, E]` (`Result.Ok(x)` or `Result.Error(e)`). IO operations return `Result[T, IOError]`; a missing file is a value, not a crash.
 
-`try e` evaluates `e`. If it is `Result.Error` (or `Option.None`), the function returns it at once; otherwise `try` gives the value inside. `try` applies to the whole expression on its right, including pipes, and can only be used in a function that returns `Result` (or `Option`). When the error types differ, convert first with `Result.mapError(r: result, f: lambda(error) return IOError.message(error))`, for example when a function returns `Result[T, String]` and `result` contains an `IOError`. The callback parameter is named `error`.
+`try e` and `try e or return` evaluate `e` once. If it is `Result.Error` (or `Option.None`), the innermost function or lambda returns that failure at once; otherwise the expression gives the value inside. These returning forms require the enclosing return type to be `Result` with the same error type, or `Option`, respectively. Bare `try e` is permanently fixed to this returning meaning; it never switches to an exit based on the return type or its position. It adds no Show constraint or exit effect. `try` applies to the whole expression on its right, including pipes, up to an action at the same depth. When the error types differ, convert first with `Result.mapError(r: result, f: lambda(error) return IOError.message(error))`, for example when a function returns `Result[T, String]` and `result` contains an `IOError`. The callback parameter is named `error`.
 
-For a pipeline, write `try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))`. Here `try` unwraps the result of the whole pipeline. Inside a lambda, `try` returns from that lambda. Inside the callee or fixed arguments of a call with `_` holes, it returns from the generated function, so it does not return from the surrounding function. See [Holes and pipes](#holes-and-pipes).
+For a returning pipeline, write `try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return`. Here `try` unwraps the result of the whole pipeline. A returning try inside a lambda returns from that lambda. Inside the callee or fixed arguments of a call with `_` holes, it returns from the generated function, so it does not return from the surrounding function. See [Holes and pipes](#holes-and-pipes).
+
+Use an explicit action in new code: `or return` for reusable functions, libraries, and callbacks; `or die` for an entry point that should report a failure and end the run. An entry point whose contract returns a `Result.Error`, or which cannot use `Process.Exit`, can also use `or return`. The following example illustrates returning a failure from `main`.
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -590,9 +637,9 @@ function parsePort(text: String) -> Result[Integer, String]
 end function
 
 function main() -> Result[Unit, String] uses Console.Write
-  bind port <- try parsePort("8080")
+  bind port <- try parsePort("8080") or return
   Console.writeLine("port ${port}")
-  bind other <- try parsePort("http")
+  bind other <- try parsePort("http") or return
   Console.writeLine("never printed ${other}")
   return Result.Ok(())
 end function
@@ -609,6 +656,49 @@ not a port: http
 
 Some failures are not values: integer overflow, division by zero, a value too large to build, and running out of the call stack *stop* the program with a runtime error and exit status 1. A `match` cannot catch them. The report shows the place and the calls that led to it.
 
+`try e or die` and `try e or die(message)` accept a standard `Result[T, E]` or `Option[T]` and produce `T` on success, without restricting the enclosing function's return type. They add `Process.Exit`; import `Benitoite.Unofficial.IO.Process` to name it in `uses`. The module cannot be renamed with `as` (E0339), so write `uses Process.Exit`. The compiler connects the standard Show and exit references internally, but does not import names into your scope. No `Console.Write` effect is required for the host's failure report.
+
+| Action | Enclosing return type | Display requirement | Additional effect |
+|---|---|---|---|
+| Bare try or `or return` | `Result[U, E]` or `Option[U]`, matching the input | None | None |
+| `or die` or `or die(message)` | Any | `Trait.Show` for Result's error type; none for Option | `Process.Exit` |
+
+The input is evaluated once. Success evaluates neither the message nor Show. Failure evaluates the optional pure `String` message once, then the error's Show once, then calls the standard exit operation with status 1. A message does not implicitly bind the error to a name. Direct `return`, `try`, and outer `resume` are forbidden in the message; a lambda written there has its own return boundary. `IOError`, `NetworkError`, `Json.ParseError`, and `Csv.ParseError` already implement Show by returning their `message` string unchanged. Implement Show for another error type, or use `Result.mapError` to convert it to a type with Show. The returning forms need no Show.
+
+A String cause retains Show's quotes and escapes. Option.None has the fixed cause `expected a value, got Option.None`. The message is displayed as plain text, and an empty message is distinct from no message; neither removes the cause. If the message or Show stops with a runtime error or resource failure, that stop is used instead of a die report. Purity and static checking do not guarantee termination, the intended result, or success of external operations.
+
+The default exit ends the whole run, including when called by a child task: remaining tasks are cancelled, resources are released, and buffered output is transferred. The CLI then reports `error: explicit failure exit`, the source location, an optional `message: ...`, and a `cause: ...` once to standard error. Release and final output failures follow as supplementary reports and keep status 1. With `--diagnostics=json`, the die report has `kind: "die"`, `code: null`, and the same location and notes. Cancellation does not undo external work already started. Competing exits, interruption, and internal errors follow the ordinary stop rules; only the adopted die carries this report.
+
+A language handler can replace the existing `Process.Exit` operation; it receives only the usual exit code, and the handled call's report is discarded rather than attached to a later exit. In `benitoite test`, die fails that test and the runner continues with the next one. Text and JSON preserve its cause, message, and location without adding a second copy to captured output. Use `Process.exit(code)` for an arbitrary exit status.
+
+The input includes pipes up to `or return` or `or die` at the same depth; ordinary Boolean `or` stays an operator. Parenthesize an explicit try before adding an operator or call, as in `(try parsePort(text) or die) + 1`. `or return` takes no value. A physical newline immediately after its `return` ends the statement. Start a message's `(` on the same physical line as `die`; outside parentheses, a newline after `die` or its message ends the statement. A short lambda must include its whole action and message on one physical line. The formatter preserves bare and explicit forms.
+
+```files
+name: input.txt
+ready
+```
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function load(path: String) -> Result[String, IOError] uses File.Read
+  return Result.Ok(try File.readText(path) or return)
+end function
+
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try load("input.txt") or die("could not read input.txt")
+  Console.write(text)
+end function
+```
+
+```output
+ready
+```
+
+`load` preserves the original IOError for its caller. `main` uses the standard Show implementation if loading fails, so it needs no conversion solely for display. Adding Process.Exit changes the function's contract; review the action, return type, and effects together.
+
 ## 10. Effects
 
 An *effect* names a kind of operation that a function may perform outside pure computation. A function lists, after `uses`, every effect it performs directly or through the functions it calls. A function without `uses` is pure. Lambdas infer their effects from their bodies.
@@ -622,7 +712,7 @@ The built-in effects are:
 | `File.Read` | reading files and directories |
 | `File.Write` | creating, changing, moving, and deleting files and directories |
 | `Process.Run` | starting external commands |
-| `Process.Exit` | ending the program with a chosen exit code |
+| `Process.Exit` | ends the run with a chosen exit code; `or die` reports its cause and optional message to standard error and exits with status 1 |
 | `Process.Environment` | reading command-line arguments, environment variables, the working directory, and the script directory |
 | `Clock.Time` | reading the clock and waiting |
 | `Random.Generate` | generating random numbers |
@@ -779,6 +869,8 @@ the number 3
 
 An implementation applies to the whole program. An implementation must be in the module of the class or of the type, and two implementations cannot overlap. The standard classes, such as `Show`, `Order`, `Monoid`, `Functor`, and `Monad`, are in the module `Benitoite.Trait`.
 
+`IOError`, `NetworkError`, `Json.ParseError`, and `Csv.ParseError` have standard `Trait.Show` implementations. Each returns exactly its type's `message` string, without adding quotes, line or column numbers, or other location information. The implementations for IOError and NetworkError live in `Benitoite.Trait`; the ParseError implementations live in Json and Csv. Explicit calls to `Trait.Show.show` require `import Benitoite.Trait`. In contrast, `or die` connects its Show reference internally. Ordinary `Show[String]` still adds quotes and escapes.
+
 ## 14. Explicit laziness
 
 `lazy ... end lazy` makes a value of type `Lazy[T]` without evaluating its body. `Lazy.force(value)` evaluates the body the first time and returns the saved result after that. The body must be pure.
@@ -853,7 +945,7 @@ A test is a function with the attribute `@test("description")`, no parameters, a
 import Benitoite.Unofficial.IO.File
 
 function countWords(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return Result.Ok(List.length(List.filter(xs: String.split(s: text, separator: " "), p: lambda(value) return value <> "")))
 end function
 
@@ -1036,18 +1128,19 @@ name: orders.json
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.Json
 
 function amountOf(order: Json.Value) -> Option[Pair[String, Integer]]
-  bind category <- try Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString)
-  bind amount <- try Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger)
+  bind category <- try Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString) or return
+  bind amount <- try Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger) or return
   return Option.Some(Pair(category, amount))
 end function
 
-function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
-  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
-  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array")
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try File.readText("orders.json") or die
+  bind parsed <- try Json.parse(text) or die
+  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array") or die
   bind totals <- List.fold(xs: orders, initial: Map.empty(), f: lambda(acc, value)
     return match amountOf(value) with
       case Option.Some(Pair(category, amount)) ->
@@ -1058,7 +1151,7 @@ function main() -> Result[Unit, String] uses File.Read, Console.Write
   Map.forEach(m: totals, f: lambda(key, value)
     Console.writeLine("${key}: ${value}")
   end lambda)
-  return Result.Ok(())
+  return ()
 end function
 ```
 
@@ -1078,7 +1171,7 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: Releases `0.0.1` through `0.0.5` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: Releases `0.0.1` through `0.0.6` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
 
 ## 21. Experimental: packages and external functions
 
@@ -1090,7 +1183,7 @@ A package is a directory with a `package.bnt` settings file and modules that oth
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.5"
+language "0.0.6"
 
 package Textkit
   license "MIT"
@@ -1108,7 +1201,7 @@ Declare the dependency before imports and declarations in the starting script:
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.5"
+language "0.0.6"
 
 dependency Textkit
   path "packages/textkit"
@@ -1140,7 +1233,7 @@ For example, a root settings file can record the language version while the star
 
 ```files
 name: package.bnt
-language "0.0.5"
+language "0.0.6"
 ```
 
 ```benitoite check
@@ -1151,7 +1244,7 @@ end function
 
 Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
 
-`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.5`, a declaration of `0.0.5` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
+`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.6`, a declaration of `0.0.6` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
 
 `package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
 
@@ -1256,6 +1349,8 @@ The component path is relative to the root that owns the declaration, including 
 | `Unit` as the function result | No result |
 
 Type aliases are expanded. `Option`, `Result`, `Pair`, and `Triple` must be the standard library types. For a `Unit` side of `Result`, omit that side in WIT: `Result[Unit, String]` corresponds to `result<_, string>`, and `Result[Unit, Unit]` to `result`. Other nested or parameter uses of `Unit`, including zero-element tuples, are unsupported. Records and `data` types from user modules and the standard library use the same structural rules. Their type names need not match WIT type names. Field and case counts, declaration order, names, types, and payload presence must match. Names are compared after removing `-` and lowercasing ASCII letters: `byte-start` matches `byteStart`, and `not-found` matches `NotFound`. Underscores are preserved and cannot match WIT names. Duplicate normalized names on either side of a record, variant, enum, or flags type are rejected.
+
+`@extensible` does not relax these checks for `enum`, `variant`, or `record`, and does not allow unknown external tags. Adding a constructor or field still requires the WIT declaration to match the current Benitoite declaration exactly.
 
 Concrete type arguments are substituted into fields and constructor arguments, so `Box[Box[Integer]]` is accepted when `Box[T]` contains a field of type T. External functions themselves remain monomorphic. Unresolved type/effect variables and recursive declaration dependencies, including recursion through `List` or `Option`, report `E1010`. Type expansion is limited to depth 100, 100,000 nodes per root type, and 1,000,000 nodes per check. Sharing one type between sibling fields is allowed. Structural mismatches report `E1008` or `E1009`, showing the WIT shape and the first mismatch in a `reason` note. A suggested declaration is omitted when its signature requires a user-defined record, variant, enum, flags element type, or resource handle, since Benitoite type names cannot be inferred.
 

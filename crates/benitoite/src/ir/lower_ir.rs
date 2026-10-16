@@ -3,7 +3,9 @@
 use crate::base::{BindingId, Span};
 use crate::types::{EffectSet, Ty};
 
-use super::core_ir::{BodyId, Const, Def, DictVal, Handle, MethodCall, Program, Val, Var, VarId};
+use super::core_ir::{
+    BodyId, Const, Def, DictVal, ExitReportArgs, Handle, MethodCall, Program, Val, Var, VarId,
+};
 
 /// `join` の印の番号。定義ごとに 0 から振る。
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -29,6 +31,7 @@ pub enum LCompKind {
         func: Val<LComp>,
         dicts: Vec<DictVal>,
         args: Vec<Val<LComp>>,
+        exit_report: Option<ExitReportArgs<LComp>>,
     },
     Method(Box<MethodCall<LComp>>),
     If {

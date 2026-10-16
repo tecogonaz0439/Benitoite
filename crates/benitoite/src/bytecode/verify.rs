@@ -230,6 +230,10 @@ fn verify_proto(p: &CompiledProgram, id: ProtoIdx, proto: &Proto) -> Result<(), 
         proto.method_traits.len() == proto.code.len(),
         "method trait table length mismatch",
     )?;
+    check(
+        proto.exit_reports.len() == proto.code.len(),
+        "exit report table length mismatch",
+    )?;
     for constant in &proto.consts {
         check(
             p.constant(*constant).is_some(),
@@ -575,6 +579,7 @@ mod tests {
             boundary: true,
             positions: vec![None; code.len()],
             method_traits: vec![None; code.len()],
+            exit_reports: vec![None; code.len()],
             code,
             consts: vec![ConstIdx(0)],
             switch_tables: vec![SwitchTable {
@@ -973,5 +978,93 @@ mod tests {
         let err = verify(&p).unwrap_err();
         assert_eq!((err.proto, err.pc), (ProtoIdx(0), Some(0)));
         assert!(err.message.contains("unordered"));
+    }
+    #[test]
+    fn exit_report_tables_keep_reads_and_reject_malformed_sites() {
+        fn reported() -> CompiledProgram {
+            let mut p = fixture(Instr::abc(Opcode::Io, 3, 0, 0));
+            let id = lookup_builtin("Benitoite.IO.Process.exit").unwrap();
+            p.builtins[0].id = id;
+            p.builtins[0].arity = 1;
+            p.builtins[0].capability = crate::builtins::iface::Capability::Io;
+            p.builtins[0].op = None;
+            let at = crate::base::Span {
+                file: crate::base::FileId(0),
+                start: crate::base::BytePos(0),
+                end: crate::base::BytePos(1),
+            };
+            p.protos[0].exit_reports[0] = Some(ExitReportSite {
+                cause_reg: 1,
+                message_reg: Some(1),
+                span: at,
+            });
+            refresh(&mut p);
+            p
+        }
+        let mut p = reported();
+        let at = p.protos[0].exit_reports[0].unwrap().span;
+        for message in [None, Some(2), Some(1)] {
+            p.protos[0].exit_reports[0] = Some(ExitReportSite {
+                cause_reg: 1,
+                message_reg: message,
+                span: at,
+            });
+            refresh(&mut p);
+            verify(&p).unwrap();
+            let mut expected = vec![0, 1];
+            expected.extend(message);
+            assert_eq!(reg_use(&p, ProtoIdx(0), 0).unwrap().reads, expected);
+            let live = p.protos[0].live.live_in_at(0).unwrap();
+            assert!(live.contains(&1));
+            if let Some(reg) = message {
+                assert!(live.contains(&reg));
+            }
+            for reg in std::iter::once(1).chain(message) {
+                assert!(!p.protos[0].live.at(0).iter().any(|item| match item {
+                    LiveItem::LastUse { reg: r, .. } | LiveItem::Dead { reg: r } => *r == reg,
+                }));
+            }
+        }
+        for change in 0..7 {
+            let mut broken = reported();
+            let expected = match change {
+                0 => {
+                    broken.protos[0].exit_reports.pop();
+                    assert!(reg_use(&broken, ProtoIdx(0), 0).is_err());
+                    assert!(compute_liveness(&broken, ProtoIdx(0)).is_err());
+                    "exit report table length"
+                }
+                1 => {
+                    broken.protos[0].exit_reports[0].as_mut().unwrap().cause_reg = 16;
+                    "register is outside"
+                }
+                2 => {
+                    broken.protos[0].exit_reports[0]
+                        .as_mut()
+                        .unwrap()
+                        .message_reg = Some(16);
+                    "register is outside"
+                }
+                3 => {
+                    broken.protos[0].code[0] = Instr::abc(Opcode::Prim, 3, 0, 0);
+                    "exit report requires canonical"
+                }
+                4 => {
+                    broken.builtins[0].id =
+                        lookup_builtin("Benitoite.IO.Console.writeLine").unwrap();
+                    "exit report requires canonical"
+                }
+                5 => {
+                    broken.protos[0].exit_reports[1] = broken.protos[0].exit_reports[0];
+                    "exit report requires canonical"
+                }
+                _ => {
+                    broken.protos[0].exit_reports[0] = None;
+                    "liveness does not match"
+                }
+            };
+            let error = verify(&broken).unwrap_err();
+            assert!(error.message.contains(expected), "case {change}: {error:?}");
+        }
     }
 }

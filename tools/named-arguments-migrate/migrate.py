@@ -2,19 +2,17 @@
 """Repository-only migration inventory, review diff, and checked application."""
 import argparse
 from collections import Counter
-import difflib
-import hashlib
 import json
 import pathlib
 import subprocess
 from extract import snippets
+import source_migrate as shared
+from source_migrate import dump, sha, write_diff
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 BASE = pathlib.Path('docs/archive/2026-10-14-TODO-247-lambda-and-named-arguments')
 HANDWRITTEN = {'idioms.md','common-mistakes.md','language-comparison.md','testing.md'}
 
-def sha(data): return hashlib.sha256(data).hexdigest()
-def dump(value): return json.dumps(value,ensure_ascii=False,indent=2) + '\n'
 def catalog_dump(value):
     """Keep one complete record per line; the review table carries the prose."""
     compact=lambda row:json.dumps(row,ensure_ascii=False,separators=(',',':'))
@@ -282,8 +280,7 @@ def candidates(unit, inv):
 def safe_path(name):
     path = pathlib.PurePosixPath(name)
     if path.is_absolute() or '..' in path.parts or excluded(str(path)): raise ValueError('excluded or unsafe path: '+name)
-    p=ROOT/path
-    if p.is_symlink() or not p.resolve().is_relative_to(ROOT): raise ValueError('unsafe path: '+name)
+    p=shared.safe_path(ROOT, name)
     golden_expectation=False
     if str(path).startswith('crates/benitoite/testdata/') and path.suffix in ('.formatted','.stdout'):
         stem=p.with_suffix('')
@@ -296,37 +293,9 @@ def safe_path(name):
 
 
 def proposed(manifest, approved_only=False):
-    grouped={}
-    for row in manifest['candidates']:
-        if approved_only and row['review']!='approved': continue
-        if row['hold_reasons'] or not row['edits']: continue
-        grouped.setdefault(row['path'],[]).append(row)
-    results={}
-    for path,rows in grouped.items():
-        p=safe_path(path); original=p.read_bytes()
-        hashes={r['source_sha256'] for r in rows}
-        if hashes!={sha(original)}: raise ValueError('source hash mismatch: '+path)
-        edits={ (e['start'],e['end'],e['before'],e['after']) for row in rows for e in row['edits'] }
-        ordered=sorted(edits)
-        prev_end=-1; prev_start=-1
-        for start,end,before,after in ordered:
-            if not 0<=start<=end<=len(original): raise ValueError('invalid range: '+path)
-            # A label insertion can share the start of a renamed reference.
-            # Different insertions at the same boundary remain an error.
-            if start<prev_end or (start==prev_start and end==start): raise ValueError('overlapping edits: '+path)
-            if original[start:end]!=before.encode(): raise ValueError('range content mismatch: '+path)
-            prev_end=end; prev_start=start
-        updated=original
-        for start,end,before,after in reversed(ordered): updated=updated[:start]+after.encode()+updated[end:]
-        results[path]=(original,updated)
-    return results
-
-
-def write_diff(results, output):
-    chunks=[]
-    for path,(before,after) in sorted(results.items()):
-        chunks.extend(difflib.unified_diff(before.decode().splitlines(keepends=True),after.decode().splitlines(keepends=True),fromfile='a/'+path,tofile='b/'+path))
-    pathlib.Path(output).write_text(''.join(chunks))
+    rows=[row for row in manifest['candidates']
+          if (not approved_only or row['review']=='approved') and not row['hold_reasons']]
+    return shared.proposed(rows, safe_path)
 
 
 def review_table(manifest):
@@ -397,9 +366,7 @@ def inventory(args):
 
 
 def apply(args):
-    raw=pathlib.Path(args.manifest).read_bytes()
-    if sha(raw)!=args.manifest_sha256: raise ValueError('reviewed manifest hash mismatch')
-    manifest=json.loads(raw)
+    manifest=shared.reviewed_manifest(args.manifest,args.manifest_sha256)
     if manifest.get('version')!=1: raise ValueError('unknown manifest version')
     approved=[r for r in manifest['candidates'] if r['review']=='approved']
     if any(r['hold_reasons'] for r in approved): raise ValueError('held candidates cannot be approved; resolve and re-inventory them')
@@ -408,20 +375,12 @@ def apply(args):
     for row in approved:
         if any(dependency not in approved_ids for dependency in row.get('depends_on',[])):
             raise ValueError('approve dependent component before its calls')
-    # An exact post-image receipt makes a second identical apply a verified no-op.
-    receipt=pathlib.Path(args.manifest+'.applied.json')
-    if receipt.exists():
-        record=json.loads(receipt.read_text())
-        if record['manifest_sha256']!=sha(raw) or any(sha(safe_path(p).read_bytes())!=h for p,h in record['files'].items()): raise ValueError('applied receipt mismatch')
-        print('already applied; no diff')
-        return
-    source_hashes={u['path']:u['source_sha256'] for u in manifest['inputs']}
-    for path,digest in source_hashes.items():
-        if sha(safe_path(path).read_bytes())!=digest: raise ValueError('input hash mismatch: '+path)
-    results=proposed(manifest,approved_only=True)
-    for path,(before,after) in results.items(): safe_path(path).write_bytes(after)
-    receipt.write_text(dump({'manifest_sha256':sha(raw),'files':{**source_hashes,**{p:sha(after) for p,(_,after) in results.items()}}}))
-    print(f'applied {len(results)} files')
+    count=shared.apply(manifest['inputs'],approved,
+                       manifest_sha256=args.manifest_sha256,
+                       receipt=args.manifest+'.applied.json',path_for=safe_path)
+    if count is None: print('already applied; no diff')
+    else: print(f'applied {count} files')
+
 
 
 def main():

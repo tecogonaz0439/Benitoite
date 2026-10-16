@@ -136,6 +136,8 @@ mutual
     | .ifOnly _ _ => by simp [exprExits, Expr.Exits]
     | .tryResult _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .tryOption _ _ _ _ => by simp [exprExits, Expr.Exits]
+    | .tryResultDie _ _ _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
+    | .tryOptionDie _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .lazyE _ => by simp [exprExits, Expr.Exits]
     | .handleE _ _ => by simp [exprExits, Expr.Exits]
     | .resume _ _ => by simp [exprExits, Expr.Exits]
@@ -245,6 +247,8 @@ theorem isIf_spec : (e : Expr) → (isIf e = true ↔ IsIf e)
   | .returnE _ _ => by constructor <;> intro h <;> cases h
   | .tryResult _ _ _ _ => by constructor <;> intro h <;> cases h
   | .tryOption _ _ _ _ => by constructor <;> intro h <;> cases h
+  | .tryResultDie _ _ _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
+  | .tryOptionDie _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
   | .withE _ _ _ => by constructor <;> intro h <;> cases h
   | .lazyE _ => by constructor <;> intro h <;> cases h
   | .handleE _ _ => by constructor <;> intro h <;> cases h

@@ -744,12 +744,7 @@ fn execute_script(
         },
         externals,
     );
-    if let Some(message) = end.main_error {
-        let _result = env.stderr.write_bytes(format!("{message}\n").as_bytes());
-    }
-    for diagnostic in end.reports {
-        write_report(&env, options.diagnostics, &checked.sources, &diagnostic);
-    }
+    write_run_reports(&env, options.diagnostics, &checked.sources, &end);
     if env.dev_alloc_stats {
         let message = text::ALLOC_STATS
             .replace("{allocations}", &end.heap.allocations.to_string())
@@ -759,6 +754,27 @@ fn execute_script(
         let _result = env.stderr.write_bytes(format!("{message}\n").as_bytes());
     }
     end.exit_code
+}
+
+// 最後の転送を終えた RunEnd だけを受け取り、終了理由の後に補足を描画する
+// （設計書 06-01「終了状態」）。テストの実行器は捕捉した出力へこの報告を書かない。
+fn write_run_reports(env: &CliEnv, format: DiagFormat, sources: &SourceTable, end: &run::RunEnd) {
+    if let Some(message) = &end.main_error {
+        let _result = env.stderr.write_bytes(format!("{message}\n").as_bytes());
+    }
+    if end.end == run::EndKind::Exited(run::EXIT_FAILURE)
+        && let Some(failure) = &end.die_failure
+    {
+        write_report(
+            env,
+            format,
+            sources,
+            &crate::runtime::report::die_diagnostic(failure),
+        );
+    }
+    for diagnostic in &end.reports {
+        write_report(env, format, sources, diagnostic);
+    }
 }
 
 // 処理系の不具合の報告を確認する開発用の panic に限る（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
@@ -825,6 +841,80 @@ mod tests {
     use std::sync::atomic::{AtomicUsize, Ordering};
 
     const HELLO: &str = include_str!("../../testdata/modules/f18_hello.bnt");
+
+    // 関門: 構造化した終了結果から、die を補足より先に一度だけ出す。ソースの die の受理は検査しない。
+    #[test]
+    fn run_reports_put_the_adopted_die_before_supplementary_failures() {
+        use crate::base::{BytePos, Source, SourceKind, Span};
+        let mut sources = SourceTable::new();
+        let file = sources.add(Source::new(
+            "exit.bnt".into(),
+            SourceKind::User,
+            b"try r or die\n".to_vec(),
+        ));
+        let die = crate::vm::DieFailure {
+            cause: "missing".into(),
+            message: Some("read input".into()),
+            at: Span {
+                file,
+                start: BytePos(0),
+                end: BytePos(12),
+            },
+        };
+        for format in [DiagFormat::Text, DiagFormat::Json] {
+            let (env, out, err) = captured();
+            let end = run::RunEnd {
+                exit_code: 1,
+                end: run::EndKind::Exited(1),
+                main_error: None,
+                die_failure: Some(die.clone()),
+                reports: vec![crate::runtime::report::write_failed(
+                    crate::runtime::Stream::Stdout,
+                    "broken pipe",
+                )],
+                heap: Default::default(),
+            };
+            write_run_reports(&env, format, &sources, &end);
+            let output = String::from_utf8(std::mem::take(&mut *err.lock().unwrap())).unwrap();
+            match format {
+                DiagFormat::Text => {
+                    assert_eq!(output.matches("error: explicit failure exit").count(), 1);
+                    assert!(
+                        output.find("cause: missing").unwrap()
+                            < output.find("runtime error[R0201]").unwrap()
+                    );
+                }
+                DiagFormat::Json => {
+                    let lines: Vec<serde_json::Value> = output
+                        .lines()
+                        .map(|line| serde_json::from_str(line).unwrap())
+                        .collect();
+                    assert_eq!(lines.len(), 2);
+                    assert_eq!(lines[0]["kind"], "die");
+                    assert_eq!(lines[1]["kind"], "runtime");
+                    assert_eq!(lines[1]["code"], "R0201");
+                }
+            }
+            assert_eq!(end.exit_code, 1);
+            assert!(out.lock().unwrap().is_empty());
+            for end_kind in [
+                run::EndKind::Exited(0),
+                run::EndKind::Interrupted,
+                run::EndKind::Internal,
+            ] {
+                let other = run::RunEnd {
+                    exit_code: 1,
+                    end: end_kind,
+                    main_error: None,
+                    die_failure: Some(die.clone()),
+                    reports: Vec::new(),
+                    heap: Default::default(),
+                };
+                write_run_reports(&env, format, &sources, &other);
+                assert!(err.lock().unwrap().is_empty());
+            }
+        }
+    }
     struct Directory(PathBuf);
     impl Directory {
         fn new() -> Self {

@@ -379,7 +379,10 @@ fn with_releases_the_opened_reader_once_on_return_error_and_exit() {
                 3 => assert!(matches!(
                     end,
                     VmStep::Stopped(StopEnd {
-                        reason: StopReason::Exit(3),
+                        reason: StopReason::Exit {
+                            code: 3,
+                            die_failure: None
+                        },
                         ..
                     })
                 )),

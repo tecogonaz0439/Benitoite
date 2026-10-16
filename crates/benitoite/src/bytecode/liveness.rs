@@ -245,6 +245,28 @@ pub fn reg_use(
             result.write = Some(a);
         }
     }
+    if let Some(report) = site
+        .p
+        .exit_reports
+        .get(usize::try_from(pc).map_err(|_| site.error("invalid pc"))?)
+        .copied()
+        .flatten()
+    {
+        let canonical = opcode == Opcode::Io
+            && program
+                .builtin(BuiltinRefIdx(u32::from(b)))
+                .is_some_and(|reference| {
+                    Some(reference.id)
+                        == crate::builtins::lookup_builtin("Benitoite.IO.Process.exit")
+                        && reference.capability == Capability::Io
+                        && reference.arity == 1
+                });
+        if !canonical {
+            return Err(site.error("exit report requires canonical exit IO"));
+        }
+        result.reads.push(report.cause_reg);
+        result.reads.extend(report.message_reg);
+    }
     if result
         .reads
         .iter()
@@ -264,7 +286,10 @@ pub fn compute_liveness(
     let p = program
         .proto(proto)
         .ok_or_else(|| error(proto, 0, "prototype is missing"))?;
-    if p.method_traits.len() != p.code.len() || p.num_params > p.num_regs {
+    if p.method_traits.len() != p.code.len()
+        || p.exit_reports.len() != p.code.len()
+        || p.num_params > p.num_regs
+    {
         return Err(error(proto, 0, "invalid prototype metadata"));
     }
     let mut nodes = Vec::with_capacity(p.code.len());
@@ -423,6 +448,9 @@ impl<'a> Site<'a> {
         if p.method_traits.len() != p.code.len() {
             return Err(error(proto, pc, "method trait table has the wrong length"));
         }
+        if p.exit_reports.len() != p.code.len() {
+            return Err(error(proto, pc, "exit report table has the wrong length"));
+        }
         let index = usize::try_from(pc).map_err(|_| error(proto, pc, "pc does not fit usize"))?;
         Ok(Self {
             p,
@@ -568,6 +596,7 @@ mod tests {
         let mut program = builder.finish(main).unwrap();
         let p = &mut program.protos[0];
         p.method_traits = vec![None; code.len()];
+        p.exit_reports = vec![None; code.len()];
         p.positions = vec![None; code.len()];
         p.code = code;
         program
@@ -731,6 +760,7 @@ mod tests {
                 Instr::abc(op, 1, 2, 4)
             }];
             p.protos[0].method_traits = vec![Some(TraitIdx(0))];
+            p.protos[0].exit_reports = vec![None; p.protos[0].code.len()];
             assert_eq!(
                 reg_use(&p, ProtoIdx(0), 0).unwrap(),
                 RegUse {
@@ -765,6 +795,7 @@ mod tests {
         // 同じ辞書のレジスタ・同じメソッドの位置でも、型クラスの記録で数が変わる。
         p.protos[0].code = vec![Instr::abc(Method, 1, 2, 4)];
         p.protos[0].method_traits = vec![Some(TraitIdx(1))];
+        p.protos[0].exit_reports = vec![None; p.protos[0].code.len()];
         assert_eq!(reg_use(&p, ProtoIdx(0), 0).unwrap().reads, vec![2, 3]);
         for op in [
             Call, TailCall, List, Prim, Io, Dict, Con, ConR, Method, TailMethod, Handle, Perform,
@@ -772,6 +803,7 @@ mod tests {
             let mut p = metadata_program();
             p.protos[0].code = vec![Instr::abc(op, 1, 2, 0)];
             p.protos[0].method_traits = vec![Some(TraitIdx(0))];
+            p.protos[0].exit_reports = vec![None; p.protos[0].code.len()];
             p.builtins[2].arity = 0;
             p.impls[2].dict_arity = 0;
             p.ctors[2].arity = 0;
@@ -817,6 +849,7 @@ mod tests {
             let mut p = metadata_program();
             p.protos[0].code = vec![instr];
             p.protos[0].method_traits = vec![Some(TraitIdx(0))];
+            p.protos[0].exit_reports = vec![None; p.protos[0].code.len()];
             let err = reg_use(&p, ProtoIdx(0), 0).unwrap_err();
             assert_eq!((err.proto, err.pc), (ProtoIdx(0), 0), "{instr:?}");
         }
@@ -824,6 +857,7 @@ mod tests {
             let mut p = metadata_program();
             p.protos[0].code = vec![Instr::abc(Method, 1, 2, 0)];
             p.protos[0].method_traits = vec![trait_];
+            p.protos[0].exit_reports = vec![None; p.protos[0].code.len()];
             assert!(reg_use(&p, ProtoIdx(0), 0).is_err());
         }
         let mut p = metadata_program();
@@ -919,6 +953,7 @@ mod tests {
             let mut p = metadata_program();
             p.protos[0].code = vec![Instr::abc(terminal, 0, 0, 0), Instr::abc(Release, 0, 0, 0)];
             p.protos[0].method_traits = vec![Some(TraitIdx(0)), None];
+            p.protos[0].exit_reports = vec![None; p.protos[0].code.len()];
             let found = items(&p);
             assert!(found[1].is_empty(), "window cleared after {terminal:?}");
         }
@@ -1037,6 +1072,7 @@ mod tests {
             Instr::abc(Return, 1, 0, 0),
         ];
         p.protos[0].method_traits = vec![None; 3];
+        p.protos[0].exit_reports = vec![None; 3];
         let found = items(&p);
         assert!(
             !found[0]
@@ -1257,6 +1293,7 @@ mod tests {
                 };
                 p.protos[0].code.push(instr);
                 p.protos[0].method_traits.push(None);
+                p.protos[0].exit_reports.push(None);
             }
             let uses: Vec<_> = (0..len)
                 .map(|pc| reg_use(&p, ProtoIdx(0), u32::try_from(pc).unwrap()).unwrap())

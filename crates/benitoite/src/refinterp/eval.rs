@@ -97,6 +97,25 @@ struct Halt {
     origin: Option<Span>,
     release_failures: Vec<ReleaseFailure>,
 }
+struct ExitReportValues {
+    cause: Value,
+    message: Option<Value>,
+}
+impl ExitReportValues {
+    fn own(self, at: Span) -> Result<crate::vm::DieFailure, Stop> {
+        let string = |value: Value| {
+            let Value::Str(s) = value else {
+                return Err(fault("exit report requires String"));
+            };
+            Ok(s.to_string())
+        };
+        Ok(crate::vm::DieFailure {
+            cause: string(self.cause)?,
+            message: self.message.map(string).transpose()?,
+            at,
+        })
+    }
+}
 enum State<'p> {
     Eval(&'p Comp, Env),
     Apply {
@@ -104,6 +123,7 @@ enum State<'p> {
         dicts: Vec<Value>,
         args: Vec<Value>,
         origin: Span,
+        exit_report: Option<ExitReportValues>,
     },
     Method {
         dict: Value,
@@ -116,7 +136,7 @@ enum State<'p> {
     Return(Value),
     Escape(Value),
     Error(Halt),
-    Exit(u8, Vec<ReleaseFailure>),
+    Exit(u8, Option<crate::vm::DieFailure>, Vec<ReleaseFailure>),
     End(RefOutcome),
 }
 impl State<'_> {
@@ -441,7 +461,28 @@ impl<'p> Machine<'p> {
                     });
                     Ok(State::Eval(bound, env))
                 }
-                CompKind::App { func, dicts, args } => {
+                CompKind::App {
+                    func,
+                    dicts,
+                    args,
+                    exit_report,
+                } => {
+                    if exit_report.is_some()
+                        && (!matches!(&func.kind, ValKind::Builtin { id, info, .. }
+                            if Some(*id) == crate::builtins::lookup_builtin("Benitoite.IO.Process.exit")
+                                && info.class == Capability::Io
+                                && info.intrinsic.is_none())
+                            || !dicts.is_empty()
+                            || !matches!(
+                                args.as_slice(),
+                                [Val {
+                                    kind: ValKind::Const(Const::Int(1)),
+                                    ..
+                                }]
+                            ))
+                    {
+                        return Err(fault("exit report requires canonical Process.exit(1)"));
+                    }
                     if let ValKind::External { spec, .. } = &func.kind {
                         if spec.route == crate::external::ExternalRoute::Stateful {
                             return Ok(State::End(RefOutcome::Unsupported(spec.function.clone())));
@@ -458,6 +499,19 @@ impl<'p> Machine<'p> {
                             dicts: self.dicts(dicts, &env)?,
                             args: self.values(args, &env)?,
                             origin: comp.origin,
+                            exit_report: exit_report
+                                .as_ref()
+                                .map(|report| {
+                                    Ok(ExitReportValues {
+                                        cause: self.value(&report.cause, &env)?,
+                                        message: report
+                                            .message
+                                            .as_ref()
+                                            .map(|v| self.value(v, &env))
+                                            .transpose()?,
+                                    })
+                                })
+                                .transpose()?,
                         })
                     }
                 }
@@ -578,6 +632,7 @@ impl<'p> Machine<'p> {
                 dicts,
                 args,
                 origin,
+                exit_report,
             } => {
                 let Value::Func(closure) = func else {
                     return Err(fault("application of non-function"));
@@ -615,7 +670,9 @@ impl<'p> Machine<'p> {
                     FunctionCode::Op(op) => self
                         .operation(op, args)?
                         .ok_or_else(|| fault("unhandled user operation")),
-                    FunctionCode::Builtin(id, info) => self.builtin(id, info, args, origin, io),
+                    FunctionCode::Builtin(id, info) => {
+                        self.builtin(id, info, args, origin, exit_report, io)
+                    }
                 }
             }
             State::Method {
@@ -799,15 +856,16 @@ impl<'p> Machine<'p> {
                 self.unwind(frame, &mut h.release_failures)?;
                 Ok(State::Error(h))
             }
-            State::Exit(status, mut failures) => {
+            State::Exit(status, die_failure, mut failures) => {
                 let Some(frame) = self.stack.pop() else {
                     return Ok(State::End(RefOutcome::Exited {
                         status,
+                        die_failure,
                         release_failures: failures,
                     }));
                 };
                 self.unwind(frame, &mut failures)?;
-                Ok(State::Exit(status, failures))
+                Ok(State::Exit(status, die_failure, failures))
             }
             State::End(outcome) => Ok(State::End(outcome)),
         }
@@ -818,6 +876,7 @@ impl<'p> Machine<'p> {
         info: BuiltinInfo,
         args: Vec<Value>,
         origin: Span,
+        exit_report: Option<ExitReportValues>,
         io: &mut dyn IoServices,
     ) -> Result<State<'p>, Stop> {
         let decl = self
@@ -836,6 +895,8 @@ impl<'p> Machine<'p> {
         {
             return Ok(state);
         }
+        // ハンドラが処理した呼び出しの情報は上で捨て、既定の実装へ進む時点だけで所有する。
+        let die_failure = exit_report.map(|report| report.own(origin)).transpose()?;
         match info.intrinsic {
             Some(Intrinsic::Force) => {
                 let n = self.location(
@@ -880,6 +941,7 @@ impl<'p> Machine<'p> {
                     dicts: vec![],
                     args: vec![value],
                     origin,
+                    exit_report: None,
                 })
             }
             None | Some(Intrinsic::Operator { .. } | Intrinsic::Eq | Intrinsic::Ne) => match decl
@@ -914,7 +976,9 @@ impl<'p> Machine<'p> {
                     Ok(match self.bridge.call(id, &args, io, Some(&mut state)) {
                         BuiltinOutcome::Done(v) => State::Return(v),
                         BuiltinOutcome::Stopped(s) => error(s, Some(origin)),
-                        BuiltinOutcome::Exited(n) => State::Exit(n, vec![]),
+                        BuiltinOutcome::Exited(n) => {
+                            State::Exit(n, if n == 1 { die_failure } else { None }, vec![])
+                        }
                         BuiltinOutcome::Unsupported(name) => {
                             State::End(RefOutcome::Unsupported(name))
                         }

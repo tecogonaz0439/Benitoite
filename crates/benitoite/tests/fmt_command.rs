@@ -121,19 +121,36 @@ fn rewrites_changed_files_and_leaves_canonical_files_untouched() {
 #[test]
 fn saves_short_lambdas_on_their_original_line() {
     let dir = TestDirectory::new("saves_short_lambdas_on_their_original_line");
-    dir.write("short.bnt", "function main() -> Unit\r\n bind f<-lambda (x) return x+1 // keep\r\n bind g<-lambda(x) return x end lambda\r\n ()\r\nend function");
-    let output = fmt(&dir, &["short.bnt"]);
-    assert_eq!(code(&output), 0, "{}", stderr(&output));
-    assert!(output.stdout.is_empty());
-    assert!(output.stderr.is_empty(), "{}", stderr(&output));
-    assert_eq!(
-        dir.read("short.bnt"),
-        "function main() -> Unit\n  bind f <- lambda(x) return x + 1 // keep\n  bind g <- lambda(x) return x end lambda\n  ()\nend function\n"
-    );
-    let output = fmt(&dir, &["--check", "short.bnt"]);
-    assert_eq!(code(&output), 0, "{}", stderr(&output));
-    assert!(output.stdout.is_empty());
-    assert!(output.stderr.is_empty(), "{}", stderr(&output));
+    for (input, expected) in [
+        (
+            "function f()->Unit\r\n bind x<-try r // operand\r\n or // action\r\n return // done\r\n bind y<-try r\r\n bind z<-lambda() try r or return\r\n ()\r\nend function",
+            "function f() -> Unit\n  bind x <- try r // operand\n    or // action\n    return // done\n  bind y <- try r\n  bind z <- lambda() try r or return\n  ()\nend function\n",
+        ),
+        (
+            "function sum()->Integer\n return 1+\n 2\nend function\nfunction grouped()->Integer\n return (\n 1+2\n )\nend function\nfunction called()->Integer\n return f(\n 1\n )\nend function\nfunction branch()->Integer\n return if true then\n 1\n else\n 2\n end if\nend function\n",
+            "function sum() -> Integer\n  return 1 +\n    2\nend function\n\nfunction grouped() -> Integer\n  return (\n    1 + 2\n  )\nend function\n\nfunction called() -> Integer\n  return f(\n    1\n  )\nend function\n\nfunction branch() -> Integer\n  return if true then\n    1\n  else\n    2\n  end if\nend function\n",
+        ),
+        (
+            "function main() -> Unit\r\n bind f<-lambda (x) return x+1 // keep\r\n bind g<-lambda(x) return x end lambda\r\n ()\r\nend function",
+            "function main() -> Unit\n  bind f <- lambda(x) return x + 1 // keep\n  bind g <- lambda(x) return x end lambda\n  ()\nend function\n",
+        ),
+        (
+            "function fn[T](value:T)->T\nreturn value\nend function\nfunction main()->Unit\n bind f<-fn(lambda (x) return x or false end lambda) // keep\n bind result<-fn (true) or false\n ()\nend function",
+            "function fn[T](value: T) -> T\n  return value\nend function\n\nfunction main() -> Unit\n  bind f <- fn(lambda(x) return x or false end lambda) // keep\n  bind result <- fn(true) or false\n  ()\nend function\n",
+        ),
+    ] {
+        dir.write("short.bnt", input);
+        let output = fmt(&dir, &["short.bnt"]);
+        assert_eq!(code(&output), 0, "{}", stderr(&output));
+        assert!(output.stdout.is_empty());
+        assert!(output.stderr.is_empty(), "{}", stderr(&output));
+        assert_eq!(dir.read("short.bnt"), expected);
+        let output = fmt(&dir, &["--check", "short.bnt"]);
+        assert_eq!(code(&output), 0, "{}", stderr(&output));
+        assert!(output.stdout.is_empty());
+        assert!(output.stderr.is_empty(), "{}", stderr(&output));
+        assert_eq!(dir.read("short.bnt"), expected);
+    }
 }
 
 #[test]
@@ -194,16 +211,50 @@ fn syntax_errors_and_unreadable_files_do_not_stop_other_files() {
 #[test]
 fn json_diagnostics_are_one_object_per_line() {
     let dir = TestDirectory::new("json_diagnostics_are_one_object_per_line");
-    dir.write("bad.bnt", BROKEN);
-    let output = fmt(&dir, &["--diagnostics=json", "bad.bnt"]);
-    assert_eq!(code(&output), 2);
-    let err = stderr(&output);
-    assert!(!err.is_empty());
-    for line in err.lines() {
-        assert!(line.starts_with("{\"kind\":"), "{line}");
-        assert!(line.contains("\"severity\":\"error\""), "{line}");
-        assert!(line.contains("\"file\":\"bad.bnt\""), "{line}");
-        assert!(line.ends_with('}'), "{line}");
+    for (input, expected_code) in [
+        (BROKEN, None),
+        (
+            "function main() -> Unit\n return\n ()\nend function\n",
+            Some("E0201"),
+        ),
+        (
+            "function main() -> Unit\n bind die<-1\n ()\nend function\n",
+            Some("E0216"),
+        ),
+        (
+            "function main() -> Unit\n target(die: 1)\nend function\n",
+            Some("E0216"),
+        ),
+        (
+            "function main() -> Unit\n Module.die()\nend function\n",
+            Some("E0216"),
+        ),
+        (
+            "function main() -> Unit\n value.die()\nend function\n",
+            Some("E0216"),
+        ),
+        (
+            "function main() -> Unit\n bind match<-1\n ()\nend function\n",
+            Some("E0216"),
+        ),
+    ] {
+        dir.write("bad.bnt", input);
+        let output = fmt(&dir, &["--diagnostics=json", "bad.bnt"]);
+        assert_eq!(code(&output), 2);
+        assert!(output.stdout.is_empty());
+        assert_eq!(dir.read("bad.bnt"), input);
+        let err = stderr(&output);
+        assert!(!err.is_empty());
+        for line in err.lines() {
+            assert!(line.starts_with("{\"kind\":"), "{line}");
+            assert!(line.contains("\"severity\":\"error\""), "{line}");
+            assert!(line.contains("\"file\":\"bad.bnt\""), "{line}");
+            assert!(line.ends_with('}'), "{line}");
+        }
+        if let Some(expected_code) = expected_code {
+            let diag: serde_json::Value = serde_json::from_str(err.trim_end()).unwrap();
+            assert_eq!(diag["code"], expected_code, "{input}: {diag}");
+        }
     }
 }
 
@@ -425,13 +476,13 @@ fn directory_walk_formats_package_settings() {
     let dir = TestDirectory::new("package-settings");
     dir.write(
         "package.bnt",
-        "language    \"0.0.5\"\npackage Textkit\n       license   \"MIT\"\nend package\n",
+        "language    \"0.0.6\"\npackage Textkit\n       license   \"MIT\"\nend package\n",
     );
     let output = fmt(&dir, &["."]);
     assert_eq!(code(&output), 0, "{}", stderr(&output));
     assert_eq!(
         dir.read("package.bnt"),
-        "language \"0.0.5\"\n\npackage Textkit\n  license \"MIT\"\nend package\n"
+        "language \"0.0.6\"\n\npackage Textkit\n  license \"MIT\"\nend package\n"
     );
     let output = fmt(&dir, &["--check", "."]);
     assert_eq!(code(&output), 0, "{}", stderr(&output));

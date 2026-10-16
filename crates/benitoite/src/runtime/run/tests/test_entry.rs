@@ -70,6 +70,7 @@ end function
             assert_eq!(end.run.end, end_kind, "{name}: {:?}", end.run.reports);
             assert_eq!(end.run.exit_code, code, "{name}");
             assert_eq!(end.run.main_error.as_deref(), main_error, "{name}");
+            assert_eq!(end.run.die_failure, None, "{name}");
             assert_eq!(end.run.reports.len(), reports, "{name}");
             assert!(end.check_failure.is_none(), "{name}");
             assert!(end.release_failures.is_empty(), "{name}");
@@ -304,6 +305,7 @@ end function
             assert_eq!(end.run.end, EndKind::Interrupted, "{mode:?}: {name}");
             assert_eq!(end.run.exit_code, EXIT_INTERRUPTED);
             assert!(end.run.main_error.is_none());
+            assert!(end.run.die_failure.is_none());
             assert!(end.run.reports.is_empty(), "{:?}", end.run.reports);
             assert!(end.check_failure.is_none());
             assert!(end.release_failures.is_empty());

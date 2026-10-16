@@ -60,14 +60,26 @@ fn run_script(source: &str) {
 fn parse_error_accessors_read_the_constructed_record() {
     run_script(
         r#"
+import Benitoite.Trait
 import Benitoite.Unofficial.Csv
 function main() -> Result[Unit, String]
   bind valid <- match Csv.parse("first\r\n\r\n\"unfinished\nfield") with
-    case Result.Error(e) -> Csv.ParseError.line(e) = 3 and Csv.ParseError.message(e) = "unclosed quoted field"
+    case Result.Error(e) -> Csv.ParseError.line(e) = 3 and Csv.ParseError.message(e) = "unclosed quoted field" and Trait.Show.show(e) = Csv.ParseError.message(e)
     case Result.Ok(_) -> false
   end match
   if not valid then
     return Result.Error("Csv.ParseError fields")
+  end if
+  bind original <- Csv.ParseError(line: 4, message: "original")
+  bind updated <- Csv.ParseError(..original, message: "updated")
+  if Csv.ParseError.line(updated) <> 4 or Csv.ParseError.message(updated) <> "updated"
+    or Csv.ParseError.message(original) <> "original" then
+    return Result.Error("Csv.ParseError construction and update")
+  end if
+  if Trait.Show.show(original) <> "original" or Trait.Show.show(updated) <> "updated"
+    or Trait.Show.show(Csv.ParseError(line: 9, message: "")) <> ""
+    or Trait.Show.show(Csv.ParseError(line: 9, message: "failure \"é😀\"\nnext")) <> "failure \"é😀\"\nnext" then
+    return Result.Error("ParseError Show")
   end if
   return Result.Ok(())
 end function

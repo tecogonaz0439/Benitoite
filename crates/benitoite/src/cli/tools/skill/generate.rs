@@ -31,6 +31,46 @@ mod text {
 `{ ... }` means zero or more repetitions, `[ ... ]` means optional, and `|` separates alternatives. \
 `NL` is a line break that separates items. `CommaList(X)` is a comma-separated list of `X` that may be \
 empty and may end with a comma; `LineList(X)` is a list of `X` separated by line breaks.\n\n\
+Identifiers exclude the 35 keywords listed in [Keywords as names](common-mistakes.md#keywords-as-names). \
+`die` cannot be a name, including in labels, fields, import aliases, and names after a dot. \
+It is accepted only as a failure action of `try`, not as a standalone expression. \
+`fn`, `pub`, `impl`, `mut`, `async`, `await`, `spawn`, and `select` remain ordinary identifiers. \
+`as`, file-header words, built-in constraint names, and attribute names are read specially only \
+in their own contexts. `extensible` is an ordinary identifier. The argument-free `@extensible` attribute \
+applies to data and record declarations. Outside their defining package, patterns must cover future \
+shapes with an unguarded variable or `_`.\n\n\
+A physical line break immediately after `return` always ends the statement, even inside parentheses \
+or before an operator on the next line. Comments and blank lines do not change this rule. \
+For an ordinary `return`, start the required value on the same physical line (otherwise E0201). Once the value \
+has started, ordinary multiline continuation is allowed after operators, inside parentheses or \
+call arguments, and after `then`. A short lambda must still fit on one physical line.\n\n\
+`try e or return` explicitly returns a failure to the caller, with the same types and evaluation \
+as bare `try e`. Bare try is permanently fixed to returning failure; it never infers an exit. \
+Prefer explicit return in reusable functions, libraries, and callbacks, and die in entry points \
+that should end the run. Neither returning form requires Show. The return action takes no value. \
+`TryOperand` includes the whole expression, including \
+pipes, but stops before `or return` or `or die` at the same depth. A nested `try` takes its own action first; \
+parentheses, arguments, lambdas, and blocks have their own expression boundaries. Other `or` \
+expressions stay Boolean operators. Line breaks before and after `or` continue the expression; \
+a line break immediately after the action's `return` ends it, even inside parentheses. Put \
+a comma or closing delimiter on that same line. Parenthesize an explicit try before continuing \
+it with an operator, call, or type application: `(try r or return) + 1`. The formatter preserves \
+bare and explicit forms.\n\n\
+`try e or die` and `try e or die(message)` keep the enclosing return type unrestricted and add \
+`Process.Exit`. Import `Benitoite.Unofficial.IO.Process` to write `uses Process.Exit`; the internal \
+dependency does not import that name. Result errors require `Trait.Show`; Option does not. The optional \
+message must be a pure String. Success evaluates neither message nor Show. Failure evaluates the \
+message, then Show (or a fixed cause for None), then `Process.exit(1)`. Start the message's opening \
+parenthesis on the same physical line as `die`. Outside parentheses, a line break after `die` or its \
+message ends the statement. Direct `return`, `try`, and outer `resume` are forbidden in the message; \
+a lambda written there has its own return boundary. A short lambda must include the entire message \
+on its physical line. The default exit cancels remaining tasks, releases resources, transfers \
+output, then reports the source location, optional message, and cause once, with status 1. \
+No Console.Write is required for this host report. Release and flush failures follow as supplements \
+without changing status 1. A Process.Exit handler receives the ordinary exit code; the handled \
+call's report is discarded and never attached to a later exit. A test using die fails and the runner \
+continues with the next test. Purity does not guarantee termination of message or Show, and \
+static checking does not guarantee intended results or success of external operations.\n\n\
 A short lambda contains exactly one statement, and the entire lambda (including its header and \
 any nested syntax) must fit on one physical line. Its expression uses the ordinary precedence; \
 outer commas, closing delimiters, branch/block boundaries, and the end of the line or file end it. \
@@ -85,6 +125,12 @@ and [Idioms](idioms.md#calls-callback-contracts-holes-and-pipes) for examples.";
     pub const INDEX_TITLE: &str = "# Benitoite standard library";
     pub const INDEX_INTRO: &str = "The modules of the standard library. Each module has its own file \
 in this directory. Unofficial modules may change; their import name changes when they become standard.\n\n\
+IOError, NetworkError, Json.ParseError, and Csv.ParseError implement Trait.Show by returning their \
+message string unchanged, without added quotes or locations. The first two implementations live \
+in Trait; the ParseError implementations live in Json and Csv. A Result error used with `or die` \
+requires Show; `or return` and bare try do not. Option's die cause is fixed and needs no Show. \
+Explicit Trait.Show.show calls require `import Benitoite.Trait`; die connects its standard \
+references internally without adding names to the user's scope.\n\n\
 Parameter names in these declarations are part of the function contract. Label every argument of an \
 ordinary call with two or more parameters, including calls through function values. Callback names \
 and their order must match the nested function type, even for one parameter. For example, List.map \
@@ -118,6 +164,7 @@ function with different names needs an explicit lambda wrapper. See \
     pub const KIND_RUNTIME: &str = "runtime";
     pub const KIND_RESOURCE: &str = "resource";
     pub const KIND_RELEASE: &str = "release";
+    pub const KIND_DIE: &str = "die";
     pub const KIND_ARGS: &str = "args";
     pub const KIND_INTERNAL: &str = "internal";
     pub const SEVERITY_ERROR: &str = "error";
@@ -259,6 +306,7 @@ fn diagnostics() -> String {
             ReportKind::Runtime => text::KIND_RUNTIME,
             ReportKind::Resource => text::KIND_RESOURCE,
             ReportKind::Release => text::KIND_RELEASE,
+            ReportKind::Die => text::KIND_DIE,
             ReportKind::Args => text::KIND_ARGS,
             ReportKind::Internal => text::KIND_INTERNAL,
         };
@@ -388,7 +436,8 @@ fn module_reference(module: &StdlibModuleSource, name: &str) -> Result<(String, 
     Ok((doc, out))
 }
 
-/// 宣言の頭をソースのとおりに切り出す。`public` から始めるので、その前の `@builtin` などの属性の行は含まない。
+/// 宣言の頭をソースのとおりに切り出す。型の使用条件を示す `@extensible` だけを `public` の前に残し、
+/// `@builtin` などの実装用の属性は含めない。
 /// 関数は戻りの型（`uses` があればその終わり）までとし、本体を除く。定数は型までとし、右辺を除く。
 /// 型・エフェクト・型クラスは、構成子・操作・メソッドの宣言を含む宣言の全体とする（設計書 06-06「同梱の Agent Skill の構成」）。
 fn decl_head(source: &str, public: Span, decl: &TopDecl) -> Option<String> {
@@ -408,7 +457,17 @@ fn decl_head(source: &str, public: Span, decl: &TopDecl) -> Option<String> {
     };
     let start = usize::try_from(public.start.0).ok()?;
     let end = usize::try_from(end.0).ok()?;
-    Some(source.get(start..end)?.trim_end().to_string())
+    let head = source.get(start..end)?.trim_end();
+    let Some(attr) = decl
+        .attrs
+        .iter()
+        .find(|attr| attr.name.text == "extensible")
+    else {
+        return Some(head.to_string());
+    };
+    let attr_start = usize::try_from(attr.span.start.0).ok()?;
+    let attr_end = usize::try_from(attr.span.end.0).ok()?;
+    Some(format!("{}\n{head}", source.get(attr_start..attr_end)?))
 }
 
 /// 宣言の名前（修飾の例に使う）。

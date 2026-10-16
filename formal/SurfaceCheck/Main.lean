@@ -31,7 +31,7 @@ def selectInput (j : Json) (group name : String) : Except String Json := do
     | none => pure (checkProgram q m names)
     | some name =>
       let some d := m.program.defs name | throw (IO.userError s!"not an ordinary definition: {name}")
-      pure (Benitoite.Surface.Check.checkDef q [] d)
+      pure (Benitoite.Surface.Check.checkDef { q with D := q.D.withView (m.functionViews name) } [] d)
   -- 結果のタグを評価してから時計を読む。
   let encoded := (resultJson outcome).compress
   if encoded.isEmpty then throw (IO.userError "empty result")
@@ -49,19 +49,25 @@ def run (args : List String) : IO UInt32 := do
       | none => throw (IO.userError "invalid repetition count")
     | _ => throw (IO.userError "unexpected arguments")
   let start ← IO.monoNanosNow
-  let corpus ← readJson corpusFile
+  let rawCorpus ← readJson corpusFile
+  let _ ← IO.ofExcept (readCorpus rawCorpus)
+  let corpus ← IO.ofExcept (exchangeJson "corpus" rawCorpus)
   let version ← IO.ofExcept (corpus.getObjValAs? Nat "version")
-  if version != 8 then throw (IO.userError "unsupported corpus version")
   let inputJson ← IO.ofExcept (selectInput corpus group name)
   let input ← IO.ofExcept (fromJson? inputJson : Except String Input)
   let operators ← IO.ofExcept (corpus.getObjValAs? (List OperatorEntry) "operators")
-  let bj ← readJson builtinFile
-  let sj ← readJson stdlibFile
-  if (← IO.ofExcept (bj.getObjValAs? Nat "version")) != 2 ||
-      (← IO.ofExcept (sj.getObjValAs? Nat "version")) != 2 then
-    throw (IO.userError "unsupported sidecar version")
+  let rawB ← readJson builtinFile
+  let _ ← IO.ofExcept (readBuiltins rawB)
+  let bj ← IO.ofExcept (exchangeJson "builtins" rawB)
+  let sj ← IO.ofExcept (exchangeJson "stdlib" (← readJson stdlibFile))
+  let expected := if version >= 9 then 3 else 2
+  if (← IO.ofExcept (bj.getObjValAs? Nat "version")) != expected ||
+      (← IO.ofExcept (sj.getObjValAs? Nat "version")) != expected then
+    throw (IO.userError "exchange version pair mismatch")
   let b ← IO.ofExcept ((selectInput bj group name).bind (fromJson? · : Json → Except String BuiltinInput))
   let s ← IO.ofExcept ((selectInput sj group name).bind (fromJson? · : Json → Except String StdlibInput))
+  if version >= 9 && input.dataTypes != b.dataDecls.map DataEntry.info then
+    throw (IO.userError "corpus/builtin data type metadata mismatch")
   if !input.excluded.isEmpty then throw (IO.userError s!"Rust check excluded input: {input.excluded}")
   let prepared ← IO.ofExcept (prepare input b s operators)
   if !prepared.outside.isEmpty then throw (IO.userError s!"out of scope definitions: {prepared.outside}")

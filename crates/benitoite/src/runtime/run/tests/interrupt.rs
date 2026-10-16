@@ -116,6 +116,7 @@ fn interrupt_request_overrides_a_main_value_without_calls() {
             assert_eq!(end.end, EndKind::Interrupted, "{mode:?}: {source}");
             assert_eq!(end.exit_code, EXIT_INTERRUPTED);
             assert!(end.main_error.is_none());
+            assert!(end.die_failure.is_none());
             assert!(end.reports.is_empty(), "{:?}", end.reports);
         }
     }
@@ -134,9 +135,35 @@ fn no_interrupt_does_not_attach_to_an_event_loop() {
 #[test]
 fn release_reports_keep_interrupt_and_exit_statuses() {
     let program = compiled("function main() -> Unit\n return ()\nend function\n");
-    for (reason, kind, code) in [
-        (StopReason::Interrupted, EndKind::Interrupted, 130),
-        (StopReason::Exit(3), EndKind::Exited(3), 3),
+    let die = crate::vm::DieFailure {
+        cause: "missing".into(),
+        message: Some(String::new()),
+        at: crate::base::Span {
+            file: crate::base::FileId(0),
+            start: crate::base::BytePos(0),
+            end: crate::base::BytePos(1),
+        },
+    };
+    for (reason, kind, code, expected_die) in [
+        (StopReason::Interrupted, EndKind::Interrupted, 130, None),
+        (
+            StopReason::Exit {
+                code: 3,
+                die_failure: None,
+            },
+            EndKind::Exited(3),
+            3,
+            None,
+        ),
+        (
+            StopReason::Exit {
+                code: 1,
+                die_failure: Some(die.clone()),
+            },
+            EndKind::Exited(1),
+            1,
+            Some(die),
+        ),
     ] {
         let failures =
             ["inner failed", "outer failed"].map(|reason| crate::runtime::ReleaseFailure {
@@ -153,6 +180,7 @@ fn release_reports_keep_interrupt_and_exit_statuses() {
         );
         assert_eq!(end.end, kind);
         assert_eq!(end.exit_code, code);
+        assert_eq!(end.die_failure, expected_die);
         assert_eq!(end.reports.len(), 2);
         for (report, failure) in end.reports.iter().zip(failures) {
             assert_eq!(report.kind, crate::diag::ReportKind::Release);

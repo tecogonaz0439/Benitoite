@@ -1,5 +1,5 @@
 //! Exchange/Syntax.lean の構成子名・欄名に合わせた JSON。serde はテスト内だけで使う。
-use benitoite::base::{BindingId, NodeId};
+use benitoite::base::{BindingId, ModuleId, NodeId};
 use benitoite::builtins::{self, table};
 use benitoite::ir::core_ir as c;
 use benitoite::pipeline::CheckedProgram;
@@ -19,8 +19,7 @@ mod builtin_export;
 pub use builtin_export::{complete_stdlib, named_builtin_tables};
 
 #[path = "named_calls.rs"]
-mod named_calls;
-pub use named_calls::call_fields;
+pub(super) mod named_calls;
 
 // arbitrary_precision なしの Value は Decimal の 96 ビットの仮数を保持できない。
 // 材料では文字列に保持し、交換形式の書き出し時だけ i128 の整数として書く。
@@ -171,7 +170,11 @@ fn eff(e: &EffectSet) -> Value {
                 EffectName::User(id) => format!("effect:{}", id.0),
                 EffectName::Builtin(id) => {
                     let d = id.def().unwrap();
-                    if d.module.is_empty() {
+                    // die の型規則が指定する標準の原子名へ揃える。型・効果・
+                    // 組み込みの表を同じ名前で交換する（07-04「01-12 との対応」）。
+                    if d.module == ["IO", "Process"] && d.name == "Exit" {
+                        "Process.Exit".to_owned()
+                    } else if d.module.is_empty() {
                         d.name.to_owned()
                     } else {
                         format!("{}.{}", d.module.join("."), d.name)
@@ -250,7 +253,69 @@ enum CoreSlot {
     ImplDictionary(usize),
 }
 
+// resolve::same_package と同じ範囲を、交換内の不透明な所属識別子にする。
+fn package(p: &CheckedProgram, module: ModuleId) -> String {
+    use benitoite::modules::ModuleKind;
+    let m = p.modules.get(module).unwrap();
+    match m.kind {
+        ModuleKind::Prelude | ModuleKind::Stdlib => "stdlib".into(),
+        ModuleKind::Entry | ModuleKind::User => "root".into(),
+        ModuleKind::Package => format!("package:{}", m.name.0.first().unwrap()),
+        ModuleKind::Config | ModuleKind::PackageConfig => panic!("configuration has no body"),
+    }
+}
+fn binding_package(p: &CheckedProgram, binding: BindingId) -> String {
+    package(p, p.resolved.bindings.get(binding).unwrap().module)
+}
+
+/// 補充した標準型も含め、型表と同じ宣言順で corpus と各本体の view を完成させる。
+/// package は本体の宣言側から既に付いている。定数の使用側から推測しない。
+pub fn attach_metadata(input: &mut Value, table: &Value, coverage: &mut Value) {
+    let ds: Vec<_> = table["dataDecls"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|d| {
+            let mut info = serde_json::Map::new();
+            for key in [
+                "name",
+                "typeName",
+                "isRecord",
+                "extensible",
+                "package",
+                "builtin",
+            ] {
+                info.insert(key.into(), d[key].clone());
+            }
+            Value::Object(info)
+        })
+        .collect();
+    fn view(body: &mut Value, ds: &[Value]) {
+        let package = body["package"].as_str().expect("missing body package");
+        body["coverageView"] = json!(
+            ds.iter()
+                .filter(|d| d["extensible"] == true && d["package"] != package)
+                .map(|d| d["name"].clone())
+                .collect::<Vec<_>>()
+        );
+    }
+    for d in input["definitions"].as_array_mut().unwrap() {
+        if let Some(s) = d["scope"].get_mut("inScope") {
+            view(&mut s["surface"], &ds);
+        }
+    }
+    for key in ["matches", "bindings"] {
+        if let Some(items) = coverage[key].as_array_mut() {
+            for item in items {
+                view(item, &ds);
+            }
+        }
+    }
+    input["dataTypes"] = json!(ds);
+}
+
 struct ConstantEntry {
+    package: String,
     ty: Value,
     body: Value,
     references: BTreeSet<BindingId>,
@@ -282,7 +347,7 @@ impl ConstantTable {
             self.0
                 .iter()
                 .filter(|(_, e)| e.outside.is_empty())
-                .map(|(id, e)| json!({"name":format!("const:{}",id.0),"ty":e.ty,"body":e.body}))
+                .map(|(id, e)| json!({"name":format!("const:{}",id.0),"package":e.package,"ty":e.ty,"body":e.body}))
                 .collect::<Vec<_>>()
         )
     }
@@ -1205,20 +1270,72 @@ impl Surface<'_> {
             }
             a::Expr::Try(v) => {
                 let info = self.p.types.try_kinds.get(v.id).unwrap();
-                let Ty::Con(_, ret_args) = &info.ret else {
-                    panic!("try return type")
-                };
-                let ret_args: Vec<_> = ret_args.iter().map(|t| self.ty(t)).collect();
                 let inner = self.expr(&v.value, env);
-                match info.kind {
-                    TryKind::Result => tagged(
-                        "tryResult",
-                        json!({"retArgs":ret_args,"ok":self.std_ctor("Benitoite.Result.Ok"),"err":self.std_ctor("Benitoite.Result.Error"),"inner":inner}),
-                    ),
-                    TryKind::Option => tagged(
-                        "tryOption",
-                        json!({"retArgs":ret_args,"someCon":self.std_ctor("Benitoite.Option.Some"),"noneCon":self.std_ctor("Benitoite.Option.None"),"inner":inner}),
-                    ),
+                match (&v.action, &info.action) {
+                    (
+                        a::TryAction::ImplicitReturn | a::TryAction::Return { .. },
+                        benitoite::typeck::TryActionInfo::Return { ret },
+                    ) => {
+                        let Ty::Con(_, ret_args) = ret else {
+                            panic!("try return type")
+                        };
+                        let ret_args: Vec<_> = ret_args.iter().map(|t| self.ty(t)).collect();
+                        let explicit = matches!(v.action, a::TryAction::Return { .. });
+                        match info.kind {
+                            TryKind::Result => tagged(
+                                if explicit {
+                                    "tryResultReturn"
+                                } else {
+                                    "tryResult"
+                                },
+                                json!({"retArgs":ret_args,"ok":self.std_ctor("Benitoite.Result.Ok"),"err":self.std_ctor("Benitoite.Result.Error"),"inner":inner}),
+                            ),
+                            TryKind::Option => tagged(
+                                if explicit {
+                                    "tryOptionReturn"
+                                } else {
+                                    "tryOption"
+                                },
+                                json!({"retArgs":ret_args,"someCon":self.std_ctor("Benitoite.Option.Some"),"noneCon":self.std_ctor("Benitoite.Option.None"),"inner":inner}),
+                            ),
+                        }
+                    }
+                    (
+                        a::TryAction::Die { message, .. },
+                        benitoite::typeck::TryActionInfo::Die { show, exit },
+                    ) => {
+                        let ty = self.node_ty(v.id);
+                        // 入力の後に説明を辿り、lambdaEffects のソース順も保持する。
+                        let message = message.as_ref().map(|m| self.expr(m, env));
+                        let exit = self.p.resolved.builtin_ops.get(*exit).unwrap();
+                        let exit = builtins::builtin_decl(*exit).unwrap().name;
+                        match info.kind {
+                            TryKind::Result => {
+                                let dict = self.dictionary(show.as_ref().unwrap(), env);
+                                let method =
+                                    self.p.resolved.stdlib("Benitoite.Trait.Show.show").unwrap();
+                                tagged(
+                                    "tryResultDie",
+                                    json!({"ty":ty,
+                                    "ok":self.std_ctor("Benitoite.Result.Ok"),
+                                    "err":self.std_ctor("Benitoite.Result.Error"),
+                                    "dict":dict,"showMethod":method_name(method),
+                                    "exit":exit,"inner":inner,"message":message}),
+                                )
+                            }
+                            TryKind::Option => {
+                                assert!(show.is_none());
+                                tagged(
+                                    "tryOptionDie",
+                                    json!({"ty":ty,
+                                    "someCon":self.std_ctor("Benitoite.Option.Some"),
+                                    "noneCon":self.std_ctor("Benitoite.Option.None"),
+                                    "exit":exit,"inner":inner,"message":message}),
+                                )
+                            }
+                        }
+                    }
+                    _ => panic!("try action disagrees with checked information"),
                 }
             }
             a::Expr::Lazy(v) => {
@@ -1688,7 +1805,15 @@ impl Core<'_> {
                 let body = self.comp(body, &local);
                 tagged("letIn", json!({"bound":bound,"body":body}))
             }
-            c::CompKind::App { func, dicts, args } => {
+            c::CompKind::App {
+                func,
+                dicts,
+                args,
+                exit_report: _,
+            } => {
+                // ホストへの報告は形式化の対象外。説明・Show の let と exit は
+                // そのまま写し、公開の引数（終了状態一つ）だけを App に保持する。
+                // 付加情報の型・参照は Rust の IR check が検査する（07-04）。
                 // 表層の範囲判定の漏れは unsupported の不一致として残す。
                 // funDicts は Fn の頭だけを表し、prim・op・field の辞書は表さない。
                 if !dicts.is_empty() {
@@ -1884,6 +2009,14 @@ fn definition(
             .map(|p| SurfaceSlot::Local(s.declaration(p.id))),
     );
     let body = s.block(decl.body.as_ref().unwrap(), &env, Position::Tail);
+    for item in s
+        .coverage
+        .matches
+        .iter_mut()
+        .chain(&mut s.coverage.bindings)
+    {
+        item["package"] = json!(binding_package(p, d.binding));
+    }
     coverage.matches.append(&mut s.coverage.matches);
     coverage.bindings.append(&mut s.coverage.bindings);
     let name = format!("{} ({})", d.name, fun_name(d.binding));
@@ -1891,7 +2024,7 @@ fn definition(
         return json!({"name":name,"annotations":s.annotations,"scope":tagged("outOfScope",json!({"elements":s.outside}))});
     }
     let annotations = json!(s.annotations);
-    let surface = json!({"header":header,"dictParams":dict_params,"body":body,
+    let surface = json!({"package":binding_package(p, d.binding),"header":header,"dictParams":dict_params,"body":body,
         "implementation":implementation.map(|(i,_)| impl_name(i.impl_decl)),
         "method":implementation.map(|(_,m)| method_name(m)),"supers":[]});
     let (core, core_outside) = core_definition(s, core, d, impl_count);
@@ -2019,6 +2152,14 @@ fn constant_table(
         s.closed_constant = true;
         let ty = s.ty(&d.ty);
         let body = s.expr(&decl.value, &[]);
+        for item in s
+            .coverage
+            .matches
+            .iter_mut()
+            .chain(&mut s.coverage.bindings)
+        {
+            item["package"] = json!(binding_package(p, d.binding));
+        }
         coverage.matches.append(&mut s.coverage.matches);
         coverage.bindings.append(&mut s.coverage.bindings);
         assert!(
@@ -2026,6 +2167,7 @@ fn constant_table(
                 .insert(
                     d.binding,
                     ConstantEntry {
+                        package: binding_package(p, d.binding),
                         ty,
                         body,
                         references: s.constant_references,
@@ -2157,7 +2299,7 @@ pub fn definitions(
             result.push(json!({"name":name,"annotations":{},"scope":tagged("outOfScope",json!({"elements":s.outside}))}));
             continue;
         }
-        let surface = json!({"header":header,"dictParams":[],"body":"empty","implementation":impl_name(i.impl_decl),"method":null,"supers":supers});
+        let surface = json!({"package":package(p, info.module),"header":header,"dictParams":[],"body":"empty","implementation":impl_name(i.impl_decl),"method":null,"supers":supers});
         let mut c = Core {
             surface: s,
             lambda_effects: Vec::new(),

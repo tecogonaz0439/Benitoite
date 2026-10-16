@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "inputs": [
     {
       "group": "golden",
@@ -162,7 +162,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "typeName": "PosPair",
+          "isRecord": false,
+          "extensible": false,
+          "package": "author",
+          "builtin": "ordinary"
         },
         {
           "name": "Pair",
@@ -187,7 +192,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "typeName": "Pair",
+          "isRecord": true,
+          "extensible": false,
+          "package": "author",
+          "builtin": "ordinary"
         }
       ],
       "summaries": [

@@ -49,6 +49,16 @@ theorem directHeads_scoped {fs nt pe nv} (hd : fs.AllDirect) (sc : fs.Scoped nt 
       · exact directCallee_scoped hh sc.1
       · exact directHeads_scoped hd.2 sc.2 h hm
 
+/-- 説明の有無によらず、失敗側の挿入は型・エフェクト変数の範囲を保つ。 -/
+theorem dieFailure_scoped {nt pe t exit depth cause message}
+    (ht : Ty.VarsIn nt pe t) (hc : Comp.VarsIn nt pe cause)
+    (hm : ∀ m, message = some m → Comp.VarsIn nt pe m) :
+    Comp.VarsIn nt pe (dieFailure t exit depth cause message) := by
+  cases message with
+  | none => exact ⟨hc, ⟨⟨ht, trivial⟩, trivial⟩, trivial, trivial⟩
+  | some m => exact ⟨Comp.VarsIn.renameScoped _ _ (hm m rfl),
+      Comp.VarsIn.renameScoped _ _ hc, ⟨⟨ht, trivial⟩, trivial⟩, trivial, trivial⟩
+
 mutual
   theorem HasType.desugar_scoped {C Γ R pos e a ε nt pe nv}
       (h : HasType D B op C Γ R pos e a ε) (sc : e.Scoped nt pe nv) :
@@ -179,6 +189,23 @@ mutual
         exact ⟨HasType.desugar_scoped he sc.2, trivial, trivial, ⟨sc.1, trivial, trivial⟩, trivial⟩
     | .E_TryOption _ _ _ _ _ _ _ _ he _ =>
         exact ⟨HasType.desugar_scoped he sc.2, trivial, trivial, ⟨sc.1, trivial⟩, trivial⟩
+    | .E_TryResultDie (dict := d) (message := message) _ _ _ _ _ _ _ he _ _ _ hm =>
+        have hinput := HasType.desugar_scoped he (by cases message <;> exact sc.2.2.1)
+        have hmsg : ∀ m, message = some m → Comp.VarsIn nt pe (desugarExpr op .other m) := by
+          intro m hm'
+          exact HasType.desugar_scoped (hm m hm') (by cases hm'; exact sc.2.2.2)
+        cases message <;>
+          exact ⟨hinput, trivial, trivial, dieFailure_scoped sc.1
+            ⟨Val.VarsIn.renameScoped _ _ (DictEv.toVal_scoped d sc.2.1), trivial, trivial, trivial, trivial⟩
+            (by intro m h; cases h <;> exact hmsg _ rfl), trivial⟩
+    | .E_TryOptionDie (message := message) _ _ _ _ _ _ _ he _ _ hm =>
+        have hinput := HasType.desugar_scoped he (by cases message <;> exact sc.2.1)
+        have hmsg : ∀ m, message = some m → Comp.VarsIn nt pe (desugarExpr op .other m) := by
+          intro m hm'
+          exact HasType.desugar_scoped (hm m hm') (by cases hm'; exact sc.2.2)
+        cases message <;>
+          exact ⟨hinput, trivial, trivial, dieFailure_scoped sc.1 trivial
+            (by intro m h; cases h <;> exact hmsg _ rfl), trivial⟩
     | .E_With _ he hb =>
         exact ⟨HasType.desugar_scoped he sc.1, trivial, HasBlock.desugar_scoped hb sc.2⟩
     | .E_Lazy hb => exact HasBlock.desugar_scoped hb sc

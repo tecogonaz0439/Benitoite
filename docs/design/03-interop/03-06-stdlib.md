@@ -458,7 +458,7 @@ end function
 | 型クラス | 実装する型 |
 |---|---|
 | `Show`・`Order` | 基本型（各幅の数、`Decimal`・`Character`・`String`・`Boolean`・`Unit`）、`List[T]`・`Option[T]`・`Pair[A, B]`・`Triple[A, B, C]`（要素の型が同じ型クラスを実装するとき） |
-| `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき） |
+| `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき）、`IOError`・`NetworkError`・`Json.ParseError`・`Csv.ParseError` |
 | `Semigroup`・`Monoid` | `String`・`List[T]`・`Map[K, V]`・`Set[T]` |
 | `Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable` | `Option`・`List` |
 
@@ -467,12 +467,16 @@ end function
 - メソッドの既定の実装はない。型クラスから派生する関数も置かない。
 - 演算子と文字列補間は、型クラスを使わない。`Order` を実装した型に `<` は使えず、`Show` を実装した型の値を文字列補間に埋め込むことはできない。
 
-【方針】`Show.show` は、値を式の書き方に近い文字列で表す。
+【方針】`Show.show` は、次に定める失敗型を除き、値を式の書き方に近い文字列で表す。
 
 - 各幅の数と `Decimal` は、それぞれの `toString` と同じ文字列である。`Boolean` は `true` か `false`、`Unit` は `()` である。
 - `String` と `Character` は、リテラルの形で表す（`"a\"b"`、`'x'`）。引用符と、字句構造でエスケープが要る文字（[字句構造](../01-spec/01-01-lexical.md)）は、エスケープシーケンスで書く。`String` の `$` は `\$` で書く。
 - `Option` は `Option.Some(1)`・`Option.None`、`Pair` と `Triple` は `Pair(1, "a")`・`Triple(1, "a", true)` の形で表す。
 - `List` は `[1, 2, 3]` の形で表す。`Set` は `Set.fromList([1, 2])`、`Map` は `Map.fromList([Pair(1, "a")])` の形で、要素を鍵の順序で並べて表す。
+
+【決定】`IOError`・`NetworkError`・`Json.ParseError`・`Csv.ParseError` の `Show.show` は、各型の `message` が返す文字列をそのまま返す。引用符や位置などの情報は加えない。理由: 失敗値から人間が読める原因を取得し、既存の型クラスの仕組みで表示できるようにするためである。
+
+`IOError` と `NetworkError` の実装は `Benitoite.Trait` に置き、prelude の `IOError.message`・`NetworkError.message` を呼ぶ。二型のモジュールから Trait への import は置かない。理由: Trait を使わないプログラムで、標準の型クラスの読み込みと型検査を避けるためである。`Json.ParseError` と `Csv.ParseError` の実装はそれぞれ Json・Csv のモジュールに置き、そこから Trait を import する。利用者が `Trait.Show.show` を名前で使う場合は、`import Benitoite.Trait` を必要とする。
 
 【方針】`Order.compare` は、次の順序で比べる。
 

@@ -12,12 +12,12 @@ import Benitoite.Unofficial.IO.Process
 import Runner
 
 function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write, Process.Environment
-  bind task <- try Runner.argument(0)
-  bind path <- try Runner.argument(1)
-  bind count <- try Runner.rounds(2)
+  bind task <- try Runner.argument(0) or return
+  bind path <- try Runner.argument(1) or return
+  bind count <- try Runner.rounds(2) or return
   bind source <- "[a-z]+[0-9]+"
-  bind input <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
-  bind pattern <- try Pattern.compile(source)
+  bind input <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
+  bind pattern <- try Pattern.compile(source) or return
   if task = "match" then
     return Runner.measure(count: count, work: lambda() -> Result[Boolean, String] uses State return Result.Ok(Pattern.isMatch(pattern: pattern, text: input)) end lambda, render: lambda(value: Boolean) -> String return if value then "true" else "false" end if end lambda)
   end if

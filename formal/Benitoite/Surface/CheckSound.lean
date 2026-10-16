@@ -76,11 +76,11 @@ theorem checkDef_sound {q path d} (hq : q.Sound) (hd : d.AtomsIn q.atoms)
     (h : checkDef q path d = .ok ()) : Def.WellTyped q.D q.B q.opPrim d := by
   exact checkDef_of_mutual (mutualSoundness q) hq hd h
 
-theorem checkImpl_sound {q methods supers path id}
+theorem checkImpl_sound {q methods supers path id views}
     (hq : q.Sound) (hi : id.decl.AtomsIn q.atoms)
     (hn : ImplNamesComplete q id methods supers)
-    (h : checkImpl q methods supers path id = .ok ()) :
-    ImplDecl.WellTyped q.D q.B q.opPrim id.decl := by
-  exact checkImpl_of_checker (checkerSoundness q) hq hi hn h
+    (h : checkImpl q methods supers path id views = .ok ()) :
+    ImplDecl.WellTyped q.D q.B q.opPrim id.decl views := by
+  exact checkImpl_of_checker (fun _ => checkerSoundness _) hq hi hn h
 
 end Benitoite.Surface.Check

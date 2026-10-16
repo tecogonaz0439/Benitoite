@@ -525,6 +525,11 @@ fn text_only_repairs_and_multiple_candidates_do_not_attach_edits() {
     for (code, text, key) in [
         (DiagCode::E0212, "function f() -> Unit {\n}\n", "open"),
         (
+            DiagCode::E0211,
+            "function f() -> Unit\n parse(text)?\nend function",
+            "question",
+        ),
+        (
             DiagCode::E0203,
             "function f(xs: List[Integer]) -> Unit\n xs.map()\nend function",
             "pipe",
@@ -557,6 +562,14 @@ fn text_only_repairs_and_multiple_candidates_do_not_attach_edits() {
     ] {
         let diagnostics = syntax_diagnostics(text);
         let diag = diagnostic(&diagnostics, code);
+        if key == "question" {
+            // 例示の処置を省く退行は、型板との比較だけでは検出できない。
+            assert_eq!(diag.helps.len(), 1);
+            assert_eq!(
+                diag.helps[0].message,
+                "write `try` before the expression, such as `try parse(text) or return`"
+            );
+        }
         assert!(diag.helps.iter().any(|help| {
             has_template(
                 code.info()

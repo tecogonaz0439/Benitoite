@@ -1,4 +1,4 @@
-import Benitoite.Exchange.Syntax
+import Benitoite.Exchange.Version
 import Benitoite.Surface.CheckTables
 
 namespace Benitoite.Exchange
@@ -330,6 +330,14 @@ mutual
     | .returnE r e => return .returnE (← r.toRelease) (← e.toSurface constants)
     | .tryResult ts ok err e => return .tryResult (← ts.mapM Ty.toRelease) ok err (← e.toSurface constants)
     | .tryOption ts someCon noneCon e => return .tryOption (← ts.mapM Ty.toRelease) someCon noneCon (← e.toSurface constants)
+    | .tryResultReturn ts ok err e => return .tryResult (← ts.mapM Ty.toRelease) ok err (← e.toSurface constants)
+    | .tryOptionReturn ts someCon noneCon e => return .tryOption (← ts.mapM Ty.toRelease) someCon noneCon (← e.toSurface constants)
+    | .tryResultDie t ok err dict showMethod exit e message =>
+      return .tryResultDie (← t.toRelease) ok err (← dict.toSurface) showMethod exit
+        (← e.toSurface constants) (← message.mapM (Expr.toSurface constants))
+    | .tryOptionDie t someCon noneCon exit e message =>
+      return .tryOptionDie (← t.toRelease) someCon noneCon exit
+        (← e.toSurface constants) (← message.mapM (Expr.toSurface constants))
     | .withE o e b => return .withE o (← e.toSurface constants) (← b.toSurface constants)
     | .lazyE b => return .lazyE (← b.toSurface constants)
     | .handleE b cs => return .handleE (← b.toSurface constants) (← toClauses constants cs)
@@ -458,6 +466,9 @@ mutual
     | .binary _ _ a b | .and a b | .or a b => a.lambdaEffects constants ++ b.lambdaEffects constants
     | .paren e | .neg _ e | .not e | .returnE _ e
       | .tryResult _ _ _ e | .tryOption _ _ _ e => e.lambdaEffects constants
+    | .tryResultReturn _ _ _ e | .tryOptionReturn _ _ _ e => e.lambdaEffects constants
+    | .tryResultDie _ _ _ _ _ _ e message | .tryOptionDie _ _ _ _ e message =>
+      e.lambdaEffects constants ++ (message.map (Expr.lambdaEffects constants)).getD []
     | .withE _ e b => e.lambdaEffects constants ++ b.lambdaEffects constants
     | .lazyE b => b.lambdaEffects constants
     | .resume _ e => e.lambdaEffects constants
@@ -502,6 +513,15 @@ def OpEntry.toRelease (o : OpEntry) : Except String Benitoite.Release.OpDecl := 
     params := ← o.header.params.mapM Ty.toRelease
     ret := ← o.header.ret.toRelease }
 
+/-- 表示用の末尾の括弧にある BindingId だけを鍵に使う。 -/
+def functionKey (display : String) : Except String String := do
+  let some piece := (display.splitOn " (fn:").getLast?
+    | throw s!"invalid function display name: {display}"
+  let id := (piece.splitOn ")").headD ""
+  let some n := id.toNat? | throw s!"invalid function binding: {display}"
+  if display.endsWith s!" (fn:{n})" then return s!"fn:{n}"
+  else throw s!"invalid function suffix: {display}"
+
 /-- 表は一度だけ読み、表層のプログラムの表にする。脱糖はこの表をそのまま写す。 -/
 def Input.operationProgram (input : Input) : Except String Benitoite.Surface.Program := do
   let ops ← input.ops.mapM (fun o => do return (o.name, ← o.toRelease))
@@ -539,7 +559,20 @@ def Input.operationProgram (input : Input) : Except String Benitoite.Surface.Pro
       return (name, con, k, cd, decl.fields))
   if (accessors.map (fun (n,_,_,_,_) => n)).eraseDups.length != accessors.length then
     throw "duplicate accessor name"
+  let views ← (input.definitions.filterMap fun d => match d.scope with
+    | .inScope s _ => if s.implementation.isNone || s.method.isSome then some (d.name,s) else none
+    | _ => none).mapM fun (name,s) => do
+      let view ← coverageView input.dataTypes s.package s.coverageView
+      return (← functionKey name, s.implementation, s.method, view)
+  let functionKeys := views.filterMap fun (key,i,_,_) => if i.isNone then some key else none
+  let methodKeys := views.filterMap fun (_,i,m,_) => do return (← i, ← m)
+  if functionKeys.eraseDups.length != functionKeys.length ||
+      methodKeys.eraseDups.length != methodKeys.length then throw "duplicate body coverage view"
   return {
+    functionViews := fun n => ((views.find? fun (key,i,_,_) => key == n && i.isNone).map
+      fun (_,_,_,v) => v).getD Benitoite.Release.closedView
+    methodViews := fun i n => ((views.find? fun (_,impl,m,_) => impl == some i && m == some n).map
+      fun (_,_,_,v) => v).getD Benitoite.Release.closedView
     defs := fun _ => none
     cons := fun n => (accessors.find? (fun (_,c,_,_,_) => c == n)).map (fun (_,_,_,cd,_) => cd)
     conFields := fun n => (accessors.find? (fun (_,c,_,_,_) => c == n)).map (fun (_,_,_,_,fields) => fields)

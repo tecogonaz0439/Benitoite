@@ -136,6 +136,8 @@ def ImplMaterial.input (i : ImplMaterial) : Check.ImplInput :=
 def ImplMaterial.decl (i : ImplMaterial) : ImplDecl := i.input.decl
 
 structure Materials where
+  functionViews : FunName → CoverageView := fun _ => closedView
+  methodViews : ImplName → MethName → CoverageView := fun _ _ => closedView
   defs : List (FunName × Def)
   conFields : List (ConName × List String)
   accessors : List (FunName × (ConName × Nat))
@@ -149,7 +151,8 @@ structure Materials where
 
 /-- cons は取得関数に現れないデータ型も含む。 -/
 def Materials.program (m : Materials) : Program :=
-  { defs := lookup m.defs, cons := constructorDecl m.data
+  { functionViews := m.functionViews, methodViews := m.methodViews
+    defs := lookup m.defs, cons := constructorDecl m.data
     conFields := lookup m.conFields, accessors := lookup m.accessors, ops := lookup m.ops, effects := lookup m.effects
     classes := lookup (m.classes.map fun (n,c) => (n,c.decl))
     impls := lookup (m.impls.map fun (n,i) => (n,i.decl)) }
@@ -215,8 +218,10 @@ def checkNamed (table : String → Option α) (check : List Nat → α → Check
 /-- 元の材料に残したメソッドの実名を含めて本体を検査する。 -/
 def checkProgram (q : Check.Input) (m : Materials) (names : Names) : Check.Result Unit := do
   let p := m.program
-  checkNamed p.defs (Check.checkDef q) [0] names.defs 0
-  checkNamed (lookup (m.impls.map fun (n,i) => (n,i.input))) (Check.checkImpl q names.methods names.supers) [1] names.impls 0
+  checkNamed (fun n => (p.defs n).map (fun d => (n, d)))
+    (fun path (n, d) => Check.checkDef { q with D := q.D.withView (p.functionViews n) } path d) [0] names.defs 0
+  checkNamed (fun n => (lookup (m.impls.map fun (n,i) => (n,i.input)) n).map (fun id => (n, id)))
+    (fun path (n, id) => Check.checkImpl q names.methods names.supers path id (p.methodViews n)) [1] names.impls 0
   -- 操作の並びの値ではなく名前を使って、組み込みの表との重なりを調べる。
   checkNamed (fun n => (p.effects n).map (fun _ => n))
     (fun path n => Check.require path "effect name overlaps a builtin effect" (q.B.effects n).isNone)

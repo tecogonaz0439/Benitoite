@@ -10,7 +10,7 @@ use super::{
     context::{Body, fixed, reason},
     decls::{Decls, Scope},
     generate,
-    infer::{Constraint, ITy, Reason, ReasonKind},
+    infer::{Constraint, ITy, Reason, ReasonKind, TryConstraintAction},
 };
 use crate::base::Span;
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
@@ -72,15 +72,65 @@ fn lazy_expr(ctx: &mut Body<'_, '_>, e: &LazyExpr) -> ITy {
 #[inline(never)]
 fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
     let target = ctx.expr(&e.value);
-    let Some(ret) = ctx.ret.clone() else {
-        debug_assert!(false, "try outside a function boundary");
-        return ITy::Error;
+    let action = match &e.action {
+        TryAction::ImplicitReturn | TryAction::Return { .. } => {
+            let Some(ret) = ctx.ret.clone() else {
+                debug_assert!(false, "try outside a function boundary");
+                return ITy::Error;
+            };
+            TryConstraintAction::Return { ret }
+        }
+        TryAction::Die { span, message } => {
+            if let Some(message) = message {
+                let effect = ctx.fresh_effect();
+                let clauses = std::mem::take(&mut ctx.clauses);
+                let boundary = std::mem::replace(&mut ctx.die_message_boundary, true);
+                let ty = ctx.expr_in(message, effect.clone(), None);
+                ctx.clauses = clauses;
+                ctx.die_message_boundary = boundary;
+                ctx.add(Constraint::Flow {
+                    from: ty,
+                    to: ITy::Con(TyCon::Builtin(B::STRING), vec![]),
+                    reason: reason(message.span(), ReasonKind::DieMessage),
+                });
+                let mut r = reason(message.span(), ReasonKind::DieMessage);
+                r.related = Some(Span {
+                    start: span.end,
+                    end: e.span.end,
+                    ..*span
+                });
+                ctx.add(Constraint::EffSub {
+                    sub: effect,
+                    sup: fixed(EffectSet::empty()),
+                    reason: r,
+                });
+            }
+            let Some(exit) = ctx.decls.resolved.stdlib("Benitoite.IO.Process.exit") else {
+                missing_standard(ctx, "Process.exit");
+                return ITy::Error;
+            };
+            let Some(effect) =
+                crate::types::builtin::find_builtin_effect(&["IO", "Process"], "Exit")
+            else {
+                missing_standard(ctx, "Process.Exit");
+                return ITy::Error;
+            };
+            ctx.add(Constraint::EffSub {
+                sub: fixed(EffectSet {
+                    names: vec![EffectName::Builtin(effect)],
+                    vars: vec![],
+                }),
+                sup: ctx.effect.clone(),
+                reason: reason(*span, ReasonKind::CallEffect),
+            });
+            TryConstraintAction::Die { exit, span: *span }
+        }
     };
     let result = ctx.fresh_ty();
     ctx.try_owners.insert(e.id, ctx.return_owner);
     ctx.add(Constraint::Try {
         target,
-        ret,
+        action,
         result: result.clone(),
         node: e.id,
         reason: reason(e.span, ReasonKind::Try),
@@ -94,7 +144,9 @@ fn resume_expr(ctx: &mut Body<'_, '_>, e: &ResumeExpr) -> ITy {
     let value = ctx.expr(&e.value);
     let Some(clause) = ctx.clauses.last() else {
         let mut d = DiagBuilder::new(DiagCode::E0509).primary(e.span);
-        if ctx.placeholder_boundary {
+        if ctx.die_message_boundary {
+            d = d.help("die_message");
+        } else if ctx.placeholder_boundary {
             d = d.help("placeholder");
         }
         ctx.diagnostics.push(d.build());
@@ -188,4 +240,13 @@ pub(super) fn effect_failure(
         .primary(origin)
         .help("lambda")
         .build()
+}
+
+fn missing_standard(ctx: &mut Body<'_, '_>, name: &str) {
+    ctx.diagnostic(crate::runtime::report::internal_diagnostic(
+        "check",
+        &format!("missing standard {name} for die"),
+        None,
+        crate::runtime::report::FaultThread::Stage,
+    ));
 }

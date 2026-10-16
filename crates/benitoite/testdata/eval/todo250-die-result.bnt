@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.IO.Process
+
+function value(r: Result[Integer, String]) -> Integer uses Process.Exit
+  return try r or die(
+    "loading" + " input"
+  )
+end function
+
+function main() -> Unit uses Process.Exit
+  bind _ <- value(Result.Error("bad input"))
+  ()
+end function

@@ -8,3 +8,11 @@ function move(p: Point) -> Point
 function main() -> Unit
   ()
 end function
+// 関門: 拡張指定があっても、WIT の欄名の不一致を引数と結果で拒否する。
+@extensible
+record ExtensiblePoint
+  byteStart: Integer
+  z: Integer
+end record
+@external("wasm", "x.wasm", "move-point")
+function moveExtensible(p: ExtensiblePoint) -> ExtensiblePoint

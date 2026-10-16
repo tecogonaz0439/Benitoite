@@ -24,17 +24,19 @@ def MethodChecked (q : Input) (id : ImplInput) (ms : MethSig) (method : MethodIn
     accept q path (substTyAt ms.tparams.length [id.target] [] ms.ret) (a, ε) = .ok out ∧
     acceptEff q path ms.eff out = .ok ()
 
-theorem checkMethods_entry {q path id cd names index}
-    (h : checkMethods q path id cd names index = .ok ()) :
+theorem checkMethods_entry {q path id cd names index views}
+    (h : checkMethods q path id cd views names index = .ok ()) :
     ∀ m ∈ names, (id.methods m).isSome = (cd.methods m).isSome ∧
-      ∀ ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧ MethodChecked q id ms body := by
+      ∀ ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧
+        MethodChecked ({ q with D := q.D.withView (views m) } : Input) id ms body := by
   induction names generalizing index with
   | nil => intro m hm; cases hm
   | cons m names ih =>
       simp only [checkMethods] at h
-      have hh : checkMethods q path id cd names (index + 1) = .ok () ∧
+      have hh : checkMethods q path id cd views names (index + 1) = .ok () ∧
           (id.methods m).isSome = (cd.methods m).isSome ∧
-          (∀ ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧ MethodChecked q id ms body) := by
+          (∀ ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧
+            MethodChecked ({ q with D := q.D.withView (views m) } : Input) id ms body) := by
         cases hms : cd.methods m with
         | none =>
             cases hbody : id.methods m with
@@ -97,9 +99,9 @@ def ImplInput.ContractsMatch (D : Declarations) (id : ImplInput) : Prop :=
   ∀ cd, D.classes id.cls = some cd → ∀ m ms, cd.methods m = some ms →
     ∃ method, id.methods m = some method ∧ method.names = ms.names ∧ NamesWF ms.names ms.params
 
-theorem checkImpl_contracts {q methods supers path id}
+theorem checkImpl_contracts {q methods supers path id views}
     (hn : ImplNamesComplete q id methods supers)
-    (h : checkImpl q methods supers path id = .ok ()) : id.ContractsMatch q.D := by
+    (h : checkImpl q methods supers path id views = .ok ()) : id.ContractsMatch q.D := by
   obtain ⟨cd, hc, h⟩ := bind_ok h
   obtain ⟨u, hm, _⟩ := bind_ok h
   have hcd := lookup_ok hc
@@ -116,10 +118,11 @@ theorem checkImpl_contracts {q methods supers path id}
   exact ⟨method, hm, hnames, hwf⟩
 
 /-- 有限の名前一覧の成功を、一覧外の空欄の契約と合わせて全称判断へ戻す。 -/
-theorem checkImpl_of_checker {q methods supers path id} (hs : CheckerSoundness q)
+theorem checkImpl_of_checker {q methods supers path id views}
+    (hs : ∀ view, CheckerSoundness ({ q with D := q.D.withView view } : Input))
     (hq : q.Sound) (hi : id.decl.AtomsIn q.atoms) (hn : ImplNamesComplete q id methods supers)
-    (h : checkImpl q methods supers path id = .ok ()) :
-    ImplDecl.WellTyped q.D q.B q.opPrim id.decl := by
+    (h : checkImpl q methods supers path id views = .ok ()) :
+    ImplDecl.WellTyped q.D q.B q.opPrim id.decl views := by
   obtain ⟨cd, hc, h⟩ := bind_ok h
   obtain ⟨u1, hm, h⟩ := bind_ok h
   obtain ⟨u2, hf, h⟩ := bind_ok h
@@ -157,7 +160,8 @@ theorem checkImpl_of_checker {q methods supers path id} (hs : CheckerSoundness q
         ⟨hi.1, trivial⟩ (by simp) ms.tparams.length)
     have dictAtoms := tysAtoms_map hi.2.1
       (fun _ h => shiftTy_atoms h ms.tparams.length 0)
-    have hb' := checkBlock_of_mutual hs.surface hq (hi.2.2.2 m method.body hb)
+    have hb' := checkBlock_of_mutual (hs (views m)).surface (hq.withView (views m))
+      (hi.2.2.2 m method.body hb)
       (Env.atoms_binds (tysAtoms_append dictAtoms paramsAtoms))
       (fun t ht => by cases ht; exact resultAtoms) hBlock
     have typed := accept_block_eff hb'.1 hb'.2.1 resultAtoms hb'.2.2 hAccept hEff
@@ -166,7 +170,8 @@ theorem checkImpl_of_checker {q methods supers path id} (hs : CheckerSoundness q
     · simpa only [substTyAt_fun_eq, shiftTy_fun_eq, methTy_fun_eq, ImplInput.decl] using typed
   · intro s hmem
     obtain ⟨d, dictPath, a, hds, ha, he⟩ := checkSuperDicts_entry hd s hmem
-    have ht := checkDict_of_dictionary hs.dictionaries hq (hi.2.2.1 s d hds)
+    have ht := checkDict_of_dictionary (hs q.D.view).dictionaries (hq.withView q.D.view)
+      (hi.2.2.1 s d hds)
       (Env.atoms_binds hi.2.1) ha
     have eqTy := tyEq_sound ht.2 (b := .dict s id.target) hi.1 he
     refine ⟨d, hds, ?_⟩

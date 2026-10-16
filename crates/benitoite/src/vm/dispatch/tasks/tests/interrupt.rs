@@ -260,7 +260,12 @@ end function
                     started = true;
                     match cause {
                         0 => flag.store(true, Ordering::Relaxed),
-                        1 => state.stopping = Some(StopReason::Exit(3)),
+                        1 => {
+                            state.stopping = Some(StopReason::Exit {
+                                code: 3,
+                                die_failure: None,
+                            })
+                        }
                         2 => state.fail(Stop::Runtime(RuntimeError::DivisionByZero), None),
                         3 => state.fail(
                             Stop::Resource(crate::runtime::ResourceError::CallStackTooDeep {
@@ -292,7 +297,11 @@ end function
                 | (
                     1,
                     VmStep::Stopped(StopEnd {
-                        reason: StopReason::Exit(3),
+                        reason:
+                            StopReason::Exit {
+                                code: 3,
+                                die_failure: None,
+                            },
                         ..
                     }),
                 ) => {}

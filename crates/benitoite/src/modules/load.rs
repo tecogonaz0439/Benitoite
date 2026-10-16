@@ -49,7 +49,7 @@ impl Pending {
 
 struct Requested {
     span: Span,
-    decl: crate::base::NodeId,
+    decl: Option<crate::base::NodeId>,
     target: Result<Option<ModulePath>, Box<Diagnostic>>,
 }
 
@@ -161,6 +161,7 @@ pub(super) fn load_with_limits(
             name: pending.name,
             kind: pending.kind,
             imports: Vec::new(),
+            internal_dependencies: Vec::new(),
         });
         let mut configs = Vec::new();
         let config = if pending.kind == ModuleKind::Entry {
@@ -308,8 +309,32 @@ pub(super) fn load_with_limits(
             });
             imports.push(Requested {
                 span,
-                decl: import.id,
+                decl: Some(import.id),
                 target,
+            });
+        }
+        for (name, span) in super::internal::requested(&parsed.module) {
+            let Some(source) = stdlib
+                .iter()
+                .find(|source| Pending::stdlib(source).name == name)
+            else {
+                imports.push(Requested {
+                    span,
+                    decl: None,
+                    target: Err(Box::new(super::internal_error(format!(
+                        "missing standard module required by syntax: {}",
+                        name.dotted()
+                    )))),
+                });
+                continue;
+            };
+            if scheduled.insert(name.clone()) {
+                queue.push_back(Pending::stdlib(source));
+            }
+            imports.push(Requested {
+                span,
+                decl: None,
+                target: Ok(Some(name)),
             });
         }
         output.asts.push(parsed.module);
@@ -347,10 +372,16 @@ pub(super) fn load_with_limits(
                     loaded.get(&name).copied()
                 }
             };
-            module.imports.push(ImportLink {
-                decl: request.decl,
-                target,
-            });
+            if let Some(decl) = request.decl {
+                module.imports.push(ImportLink { decl, target });
+            } else if let Some(target) = target {
+                module
+                    .internal_dependencies
+                    .push(super::InternalDependency {
+                        target,
+                        span: request.span,
+                    });
+            }
         }
         output.diagnostics.extend(diagnostics);
     }
@@ -495,6 +526,7 @@ fn read_config(
             ModuleKind::Config
         },
         imports: Vec::new(),
+        internal_dependencies: Vec::new(),
     });
     parsed.diagnostics = diagnostics;
     Some(parsed)

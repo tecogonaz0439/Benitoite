@@ -1,0 +1,133 @@
+formal/Benitoite/Surface/CheckDictSupport.lean:26:        have hiAtoms := hq.declarations.2.2.2.2 i id hi
+formal/Benitoite/Surface/Lemmas/Invariants.lean:208:theorem funDecl_scoped (hwf : p.WellFormed) {f d} (hd : p.declarations.funs f = some d) :
+formal/Benitoite/Surface/Lemmas/Invariants.lean:213:      simp only [Program.declarations, Program.lookupFun, hs, Option.some.injEq] at hd
+formal/Benitoite/Surface/Lemmas/Invariants.lean:218:      | none => simp [Program.declarations, Program.lookupFun, hs, ha] at hd
+formal/Benitoite/Surface/Lemmas/Invariants.lean:222:          simp only [Program.declarations, Program.lookupFun, hs, ha, hc,
+formal/Benitoite/Surface/Lemmas/Invariants.lean:236:theorem implSig_scoped (hwf : p.WellFormed) {i id} (hd : p.declarations.impls i = some id) :
+formal/Benitoite/Surface/Lemmas/Invariants.lean:246:    (h : DictEv.HasType p.declarations B C Γ d a)
+formal/Benitoite/Surface/Lemmas/Invariants.lean:259:    (h : opSig p.declarations.patternProgram B o = some sg) :
+formal/Benitoite/Surface/Lemmas/Invariants.lean:284:      (h : HasType p.declarations B op C Γ R pos e a ε)
+formal/Benitoite/Surface/Lemmas/Invariants.lean:380:      (h : HasBlock p.declarations B op C Γ R pos body a ε)
+formal/Benitoite/Surface/Lemmas/BlockSequence.lean:12:      HasType p.declarations B op C Γ R pos e a ε →
+formal/Benitoite/Surface/Lemmas/BlockSequence.lean:18:    (h : HasBlock p.declarations B op C Γ R pos body a ε)
+formal/Benitoite/Surface/Lemmas/BlockSequence.lean:27:      · exact HasTypeArms.mkArm_cons (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp)
+formal/Benitoite/Surface/Lemmas/BlockSequence.lean:30:          Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
+formal/Benitoite/Surface/Lemmas/BlockSequence.lean:40:      · exact HasTypeArms.mkArm_cons (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp)
+formal/Benitoite/Surface/Lemmas/BlockSequence.lean:41:          (HasTypeC.shiftPattern (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp) hb') (.nil (Ty.VarsIn.wf _ hc))
+formal/Benitoite/Surface/Lemmas/BlockSequence.lean:43:          Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
+formal/Benitoite/Surface/Lemmas/Calls.lean:62:      handled p.declarations.patternProgram B cs.skeleton := by
+formal/Benitoite/Surface/Lemmas/Typing.lean:14:      HasType p.declarations B op C Γ R pos e a ε →
+formal/Benitoite/Surface/Lemmas/Typing.lean:20:    (h : HasTypes p.declarations B op C Γ R es as ε)
+formal/Benitoite/Surface/Lemmas/Typing.lean:34:      HasType p.declarations B op C Γ R pos e a ε →
+formal/Benitoite/Surface/Lemmas/Typing.lean:40:    (h : HasEach p.declarations B op C Γ R es a ε)
+formal/Benitoite/Surface/Lemmas/Typing.lean:55:      HasType p.declarations B op C Γ R pos e a ε →
+formal/Benitoite/Surface/Lemmas/Typing.lean:61:    (h : HasHoleArgs p.declarations B op C Γ R args as ε)
+formal/Benitoite/Surface/Lemmas/Typing.lean:88:    (hf : HasType p.declarations B op C Γ R .other f (.fn names ps a εcall) εf)
+formal/Benitoite/Surface/Lemmas/Typing.lean:106:    (hf : HasType p.declarations B op C Γ R .other f (.fn names (t :: ps) a εcall) εf)
+formal/Benitoite/Surface/Lemmas/Typing.lean:131:    (hf : HasType p.declarations B op C Γ R .other rhs (.fn [name] [t] a εcall) εf)
+formal/Benitoite/Surface/Lemmas/Typing.lean:151:    (hf : HasType p.declarations B op C (hideConts Γ) (some r) .other f (.fn names ps r0 εcall) εf)
+formal/Benitoite/Surface/Lemmas/Typing.lean:179:    (hd : p.declarations.cons c = some cd) (ht : ts.length = cd.ntys)
+formal/Benitoite/Surface/Lemmas/Typing.lean:190:    (hd : p.declarations.cons c = some cd) (ht : ts.length = cd.ntys)
+formal/Benitoite/Surface/Lemmas/Typing.lean:208:    (hd : p.declarations.cons c = some cd) (ht : ts.length = cd.ntys)
+formal/Benitoite/Surface/Lemmas/Typing.lean:231:    (hd : p.declarations.cons c = some cd) (ht : ts.length = cd.ntys)
+formal/Benitoite/Surface/Lemmas/Typing.lean:256:  have hf : HasType p.declarations B op []
+formal/Benitoite/Surface/Lemmas/Typing.lean:285:  have hf : HasType p.declarations B op []
+formal/Benitoite/Surface/Lemmas/Typing.lean:340:  have hf : HasType p.declarations B op []
+formal/Benitoite/Surface/Lemmas/Typing.lean:361:      (h : HasType p.declarations B op C Γ R pos e a ε)
+formal/Benitoite/Surface/Lemmas/Typing.lean:458:        exact Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
+formal/Benitoite/Surface/Lemmas/Typing.lean:521:            (P := p.declarations.patternProgram) rfl hex
+formal/Benitoite/Surface/Lemmas/Typing.lean:663:            (P := p.declarations.patternProgram) rfl hex
+formal/Benitoite/Surface/Lemmas/Typing.lean:688:            (P := p.declarations.patternProgram) rfl hex
+formal/Benitoite/Surface/Lemmas/Typing.lean:712:      (h : HasTypes p.declarations B op C Γ R es as ε)
+formal/Benitoite/Surface/Lemmas/Typing.lean:726:      (h : HasEach p.declarations B op C Γ R es a ε)
+formal/Benitoite/Surface/Lemmas/Typing.lean:741:      (h : HasHoleArgs p.declarations B op C Γ R args as ε)
+formal/Benitoite/Surface/Lemmas/Typing.lean:768:      (h : HasArms p.declarations B op C Γ R pos arms a b ε)
+formal/Benitoite/Surface/Lemmas/Typing.lean:779:        have hp' := AltsTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp
+formal/Benitoite/Surface/Lemmas/Typing.lean:790:        have hp' := AltsTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp
+formal/Benitoite/Surface/Lemmas/Typing.lean:798:      (h : HasClauses p.declarations B op C Γ R cs t ε)
+formal/Benitoite/Surface/Lemmas/Typing.lean:828:      (h : HasBlock p.declarations B op C Γ R pos body a ε)
+formal/Benitoite/Surface/Lemmas/Typing.lean:837:        · exact HasTypeArms.mkArm_cons (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp)
+formal/Benitoite/Surface/Lemmas/Typing.lean:840:            Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
+formal/Benitoite/Surface/Lemmas/Typing.lean:850:        · exact HasTypeArms.mkArm_cons (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp)
+formal/Benitoite/Surface/Lemmas/Typing.lean:851:            (HasTypeC.shiftPattern (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp) hb') (.nil (Ty.VarsIn.wf _ hc))
+formal/Benitoite/Surface/Lemmas/Typing.lean:853:            Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
+formal/Benitoite/Surface/Lemmas/ReturnTry.lean:33:  (hex : Exhaustive p.declarations.patternProgram (.data cdo.data [t, et])
+formal/Benitoite/Surface/Lemmas/ReturnTry.lean:62:      (P := p.declarations.patternProgram) rfl hex
+formal/Benitoite/Surface/Lemmas/ReturnTry.lean:73:  (hex : Exhaustive p.declarations.patternProgram (.data cds.data [t])
+formal/Benitoite/Surface/Lemmas/ReturnTry.lean:98:      (P := p.declarations.patternProgram) rfl hex
+formal/Benitoite/Surface/Lemmas/CallHead.lean:11:theorem funDecl_desugared {f d} (hd : p.declarations.funs f = some d) :
+formal/Benitoite/Surface/Lemmas/CallHead.lean:16:      simp only [Program.declarations, Program.lookupFun, hs, Option.some.injEq] at hd
+formal/Benitoite/Surface/Lemmas/CallHead.lean:22:      | none => simp [Program.declarations, Program.lookupFun, hs, ha] at hd
+formal/Benitoite/Surface/Lemmas/CallHead.lean:26:          | none => simp [Program.declarations, Program.lookupFun, hs, ha, hc] at hd
+formal/Benitoite/Surface/Lemmas/CallHead.lean:28:              simp only [Program.declarations, Program.lookupFun, hs, ha, hc,
+formal/Benitoite/Surface/Lemmas/CallHead.lean:34:theorem classDecl_desugared {cl cd} (hd : p.declarations.classes cl = some cd) :
+formal/Benitoite/Surface/Lemmas/CallHead.lean:37:theorem implSig_desugared {i id} (hd : p.declarations.impls i = some id) :
+formal/Benitoite/Surface/Lemmas/CallHead.lean:51:  theorem DictEv.HasType.toVal (op : OpPrim) {C Γ d a} (h : DictEv.HasType p.declarations B C Γ d a) :
+formal/Benitoite/Surface/Lemmas/CallHead.lean:63:  theorem DictEv.HasTypes.toVal (op : OpPrim) {C Γ ds as} (h : DictEv.HasTypes p.declarations B C Γ ds as) :
+formal/Benitoite/Surface/Lemmas/CallHead.lean:146:    (hs : HasType p.declarations B op C Γ R pos e (.fn names as a εcall) ε)
+formal/Benitoite/Surface/Typing.lean:478:  (∀ f d, p.defs f = some d → d.WellTyped p.declarations B opPrim) ∧
+formal/Benitoite/Surface/Typing.lean:480:    (∀ i id, p.impls i = some id → id.WellTyped p.declarations B opPrim)
+formal/Benitoite/Surface/Lemmas/Extensions.lean:77:    (h : HasTypes p.declarations B op C Γ R fs ts ε)
+formal/Benitoite/Surface/CheckSoundCollections.lean:103:  have hparams := substParams_atoms (es := []) he.1 (by simp) (hq.declarations.2.1 c cd (lookup_ok hd))
+formal/Benitoite/Surface/CheckSoundCollections.lean:129:  have hparams := substParams_atoms (es := []) he.1 (by simp) (hq.declarations.2.1 c cd (lookup_ok hd))
+formal/Benitoite/Surface/CheckSoundCollections.lean:159:      have hδ := altsTy_atoms (Declarations.atoms_con hq.declarations) ha (lookup_ok halts)
+formal/Benitoite/Surface/CheckSoundCollections.lean:162:      have halts' := altsTy_sound (Declarations.atoms_con hq.declarations) ha (lookup_ok halts)
+formal/Benitoite/Surface/CheckSoundCollections.lean:175:      have hδ := altsTy_atoms (Declarations.atoms_con hq.declarations) ha (lookup_ok halts)
+formal/Benitoite/Surface/CheckSoundCollections.lean:178:      have halts' := altsTy_sound (Declarations.atoms_con hq.declarations) ha (lookup_ok halts)
+formal/Benitoite/Surface/Syntax.lean:596:def Program.declarations (p : Program) : Declarations :=
+formal/Benitoite/Surface/CheckSoundCalls.lean:31:  have hp := substParams_atoms (es := []) he.1 (by simp) (hq.declarations.2.1 c cd (lookup_ok hd))
+formal/Benitoite/Surface/CheckSoundCalls.lean:111:  have hp := substParams_atoms (es := []) he.2.1 (by simp) (hq.declarations.2.1 c cd (lookup_ok hd))
+formal/Benitoite/Surface/CheckSoundCalls.lean:146:    (substParams_atoms (es := []) he.2.1 (by simp) (hq.declarations.2.1 c cd (lookup_ok hd)))
+formal/Benitoite/Surface/CheckSoundCalls.lean:200:    (substParams_atoms (es := []) he.1 (by simp) (hq.declarations.2.1 c cd (lookup_ok hd))) ha
+formal/Benitoite/Surface/Examples.lean:57:    HasType program.declarations builtins opPrim [] Γ R pos mainExpr intTy Eff.empty := by
+formal/Benitoite/Surface/Examples.lean:58:  have hd : DictEv.HasType program.declarations builtins [] Γ
+formal/Benitoite/Surface/Examples.lean:60:    have h := DictEv.HasType.impl (D := program.declarations) (B := builtins) (C := []) (Γ := Γ)
+formal/Benitoite/Surface/Examples.lean:64:  have hm : HasType program.declarations builtins opPrim [] Γ R .other
+formal/Benitoite/Surface/Examples.lean:73:  have hr : HasType program.declarations builtins opPrim [] Γ R .other
+formal/Benitoite/Surface/Examples.lean:75:    have hop := HasType.E_Op (D := program.declarations) (B := builtins) (opPrim := opPrim)
+formal/Benitoite/Surface/Examples.lean:80:    have hf : HasType program.declarations builtins opPrim [] Γ R .other
+formal/Benitoite/Surface/Examples.lean:150:        simpa [Program.declarations, program, chooseImpl] using hc.symm
+formal/Benitoite/Surface/Examples.lean:218:  have ht : HasType program.declarations builtins opPrim [] [] none .other
+formal/Benitoite/Surface/Examples.lean:231:example : ¬ HasType program.declarations builtins opPrim [] [] none .other
+formal/Benitoite/Surface/CheckTablesSound.lean:40:    CtorsComplete m.declarations.patternProgram (dataConstructors m.data) := by
+formal/Benitoite/Surface/CheckTablesSound.lean:50:    CtorsComplete (m.declarations.withView view).patternProgram (dataConstructors m.data) := by
+formal/Benitoite/Surface/CheckTablesSound.lean:102:    (hd : m.declarations.AtomsIn atoms)
+formal/Benitoite/Surface/CheckTablesSound.lean:108:  ⟨hd, hb, sat_sound _ _ _, admits_sound _ _ _, opPrim_sound _, constructors_withView_sound m.declarations.view hc⟩
+formal/Benitoite/Surface/CheckSoundControl.lean:185:  have sgAtoms := opSig_atoms hq.declarations hq.builtins (lookup_ok hsg)
+formal/Benitoite/Surface/CheckSoundControl.lean:271:  have hsArgs := tysEq_sound (hq.declarations.2.1 someCon cds (lookup_ok hs))
+formal/Benitoite/Surface/CheckSoundControl.lean:316:  have hoArgs := tysEq_sound (hq.declarations.2.1 ok cdo (lookup_ok ho))
+formal/Benitoite/Surface/CheckSoundControl.lean:318:  have heArgs := tysEq_sound (hq.declarations.2.1 err cde (lookup_ok hec))
+formal/Benitoite/Surface/WellFormed.lean:153:    (∀ i id, p.impls i = some id → id.Scoped p.declarations) ∧ p.RecordsOk
+formal/Benitoite/Surface/CheckSoundSequence.lean:207:  have hδ := surfacePatTy_atoms hq.declarations he.1 (lookup_ok hpat)
+formal/Benitoite/Surface/CheckTables.lean:163:def Materials.declarations (m : Materials) : Declarations :=
+formal/Benitoite/Surface/CheckTables.lean:164:  extend m.program.declarations m.trustedFuns m.trustedImpls
+formal/Benitoite/Surface/CheckTables.lean:203:  ⟨m.declarations, B, sat, admits, op, dataConstructors m.data, atoms⟩
+formal/Benitoite/Surface/CheckExamples.lean:196:    id.ContractsMatch materials.declarations := by
+formal/Benitoite/Surface/CheckSoundBasicExpr.lean:103:  have ha := (hq.declarations.1 f d hd').1
+formal/Benitoite/Surface/CheckSoundBasicExpr.lean:137:  have ha := hq.declarations.2.2.1 o od hd'
+formal/Benitoite/Surface/CheckSoundBasicExpr.lean:164:  have ha := substParams_atoms (es := []) he.1 (by simp) (hq.declarations.2.1 c cd (lookup_ok hd))
+formal/Benitoite/Surface/CheckSoundBasicExpr.lean:186:  have ha := hq.declarations.1 f d hd'
+formal/Benitoite/Surface/CheckSoundBasicExpr.lean:218:  have ha := hq.declarations.2.2.2.1 cl cd m ms (lookup_ok hc) (lookup_ok hm)
+formal/Benitoite/Surface/CheckProgramSound.lean:15:theorem declarations_extend (m : Materials) : Extends m.declarations m.program.declarations := by
+formal/Benitoite/Surface/CheckProgramSound.lean:17:  · intro n d h; change (m.program.declarations.funs n).or _ = some d; simp [h]
+formal/Benitoite/Surface/CheckProgramSound.lean:18:  · intro n d h; change (m.program.declarations.impls n).or _ = some d; simp [h]
+formal/Benitoite/Surface/CheckProgramSound.lean:84:  Extends q.D p.declarations ∧
+formal/Benitoite/Surface/CheckProgramSound.lean:93:    (hext : Extends q.D m.program.declarations)
+formal/Benitoite/Surface/CheckProgramSound.lean:119:      id.ContractsMatch m.declarations := by
+formal/Benitoite/Surface/CheckProgramSound.lean:137:    (hd : m.declarations.AtomsIn atoms) (hget : m.program.defs n = some d)
+formal/Benitoite/Surface/CheckProgramSound.lean:139:  have hbase : m.program.declarations.funs n = some d.toFunDecl := by
+formal/Benitoite/Surface/CheckProgramSound.lean:140:    simp only [Program.declarations, Program.lookupFun, hget]
+formal/Benitoite/Surface/CheckProgramSound.lean:145:    (hd : m.declarations.AtomsIn atoms) (hget : m.program.impls n = some id)
+formal/Benitoite/Surface/CheckProgramSound.lean:147:  have hbase : m.program.declarations.impls n = some id.toImplSig := by
+formal/Benitoite/Surface/CheckProgramSound.lean:148:    simp only [Program.declarations, hget, Option.map_some]
+formal/Benitoite/Surface/CheckProgramSound.lean:154:    (hd : m.declarations.AtomsIn atoms)
+formal/Benitoite/Surface/CheckProgramSound.lean:175:    (hd : m.declarations.AtomsIn atoms)
+formal/Benitoite/Surface/CheckProgramSound.lean:186:  have hD : m.declarations = m.program.declarations := by
+formal/Benitoite/Surface/CheckProgramSound.lean:189:    simp [Materials.declarations, extend, hf, hi, lookup, hor]
+formal/Benitoite/Surface/CheckProgramSound.lean:196:    (hd : m.declarations.AtomsIn atoms)
+formal/Benitoite/Surface/CheckProgramSound.lean:209:      id.ContractsMatch m.declarations) := by
+formal/Benitoite/Surface/CheckProgramSound.lean:215:    (hd : m.declarations.AtomsIn atoms)
+formal/Benitoite/Surface/CheckProgramSound.lean:227:      id.ContractsMatch m.declarations) := by
+formal/Benitoite/Surface/CheckLemmas.lean:10:  declarations : q.D.AtomsIn q.atoms
+formal/Benitoite/Surface/CheckLemmas.lean:24:      using h.declarations
+formal/Benitoite/Surface/CheckSoundDicts.lean:152:    have msAtoms := hq.declarations.2.2.2.1 id.cls cd m ms hcd hms

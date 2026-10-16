@@ -197,6 +197,7 @@ pub(super) fn check_decl_header(p: &mut Parser, decl: &TopDecl) {
         let accepted = match attr.name.text.as_str() {
             "test" | "builtin" => function,
             "external" => function || matches!(decl.item, Item::ExternalType(_)),
+            "extensible" => matches!(decl.item, Item::Data(_) | Item::Record(_)),
             "deprecated" => allowed,
             _ => true,
         };
@@ -442,6 +443,16 @@ pub(super) fn parse_attributes(p: &mut Parser) -> Vec<Attribute> {
         }
         let start = p.pos;
         p.bump();
+        if p.at(TokenKind::KwDie) {
+            drop(p.expect_name(TokenKind::LowerIdent, text::LOWER_NAME));
+            // 属性名の誤りで同じ行の宣言まで失わないよう、宣言の頭は残す
+            // （設計書 02-03「誤りからの回復」）。
+            if !super::is_decl_start(p.peek_kind()) {
+                p.recover(p.pos, Recovery::Line);
+            }
+            p.skip_newlines();
+            continue;
+        }
         let name = if matches!(p.peek_kind(), TokenKind::LowerIdent | TokenKind::UpperIdent) {
             super::name_of(&p.bump())
         } else {
@@ -560,7 +571,7 @@ fn attribute_name_error(p: &Parser, name: &Name) -> Option<Diagnostic> {
                 .help("remove")
                 .build(),
         ),
-        "test" | "deprecated" | "builtin" | "external" => None,
+        "test" | "deprecated" | "builtin" | "external" | "extensible" => None,
         _ => Some(
             DiagBuilder::new(DiagCode::E0801)
                 .arg("name", &name.text)
@@ -572,6 +583,7 @@ fn attribute_name_error(p: &Parser, name: &Name) -> Option<Diagnostic> {
 }
 fn attribute_args_error(p: &Parser, attr: &Attribute) -> Option<Diagnostic> {
     let d = match attr.name.text.as_str() {
+        "extensible" if !attr.args.is_empty() => DiagBuilder::new(DiagCode::E0817).help("remove"),
         "external" if attr.args.len() != 3 => DiagBuilder::new(DiagCode::E0809).help("form"),
         "external" if attr.args.first().is_some_and(|arg| arg.value != "wasm") => {
             let arg = attr.args.first()?;
@@ -1188,6 +1200,9 @@ mod tests {
             ("@deprecated(x)", DiagCode::E0220),
             ("@deprecated(\"a${x}\")", DiagCode::E0220),
             ("@Test(\"a${x}\")", DiagCode::E0247),
+            ("@extensible(\"reason\")", DiagCode::E0817),
+            ("@extensible(\"a${x}\")", DiagCode::E0220),
+            ("@extensible", DiagCode::E0802),
         ] {
             let src = format!("{attr}\n{FUNCTION}");
             let out = user(&src);
@@ -1236,6 +1251,54 @@ mod tests {
             let out = user(&format!("@deprecated(\"use another\")\n{decl}"));
             assert!(out.diagnostics.is_empty(), "{decl}: {:?}", out.diagnostics);
         }
+    }
+
+    // 関門: 公開の解析結果で属性の受理と適用先を守る。既存の属性では型限定の
+    // 位置規則を確かめられず、型表の直接設定では解析からの欠落を捕まえられない。
+    #[test]
+    fn extensible_attributes_accept_only_data_and_records() {
+        for visibility in ["", "public ", "public(package) "] {
+            for decl in ["data D\nC\nend data", "record R\nx: Integer\nend record"] {
+                for attr in [
+                    "@extensible",
+                    "@extensible()",
+                    "@extensible @deprecated(\"use another\")",
+                ] {
+                    let src = format!("{attr}\n{visibility}{decl}");
+                    let out = user(&src);
+                    assert!(out.diagnostics.is_empty(), "{src}: {:?}", out.diagnostics);
+                    assert_eq!(out.module.decls[0].attrs[0].name.text, "extensible");
+                    assert!(out.module.decls[0].attrs[0].args.is_empty());
+                    if attr.contains("@deprecated") {
+                        assert_eq!(out.module.decls[0].attrs.len(), 2);
+                        assert_eq!(out.module.decls[0].attrs[1].name.text, "deprecated");
+                        assert_eq!(out.module.decls[0].attrs[1].args[0].value, "use another");
+                    }
+                }
+            }
+        }
+        for decl in [
+            "type N = Integer",
+            "@external(\"wasm\", \"x.wasm\", \"t\")\ntype Opaque",
+            "const n: Integer = 1",
+        ] {
+            assert_recovers(&format!("@extensible\n{decl}"), &[DiagCode::E0802]);
+        }
+        assert_eq!(codes(&user("@extensible")), [DiagCode::E0201]);
+        let out = user("@extensible(x)\ndata D\nC\nend data");
+        assert_eq!(codes(&out), [DiagCode::E0220]);
+        assert_eq!(
+            out.diagnostics[0].primary.as_ref().unwrap().span.start,
+            BytePos(12)
+        );
+        assert_recovers("data D\n@extensible C\nend data", &[DiagCode::E0201]);
+        let out = user("@extensible @extensible\ndata D\nC\nend data");
+        assert_eq!(codes(&out), [DiagCode::E0803]);
+        assert_eq!(out.diagnostics[0].secondary[0].span.start, BytePos(0));
+        assert_eq!(
+            out.diagnostics[0].primary.as_ref().unwrap().span.start,
+            BytePos(12)
+        );
     }
 
     #[test]

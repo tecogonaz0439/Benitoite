@@ -1,0 +1,49 @@
+// spec: 01-05 拡張可能な型
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.Csv
+
+function ioKind(kind: IOErrorKind) -> Unit
+  return match kind with
+    case IOErrorKind.NotFound -> ()
+    case IOErrorKind.PermissionDenied -> ()
+    case IOErrorKind.AlreadyExists -> ()
+    case IOErrorKind.IsDirectory -> ()
+    case IOErrorKind.NotDirectory -> ()
+    case IOErrorKind.DirectoryNotEmpty -> ()
+    case IOErrorKind.InvalidUTF8 -> ()
+    case IOErrorKind.InvalidInput -> ()
+    case IOErrorKind.Other -> ()
+  end match
+end function
+
+function networkKind(kind: NetworkErrorKind) -> Unit
+  return match kind with
+    case NetworkErrorKind.HostNotFound -> ()
+    case NetworkErrorKind.ConnectionRefused -> ()
+    case NetworkErrorKind.ConnectionReset -> ()
+    case NetworkErrorKind.TimedOut -> ()
+    case NetworkErrorKind.AddressInUse -> ()
+    case NetworkErrorKind.InvalidHTTPData -> ()
+    case NetworkErrorKind.InvalidInput -> ()
+    case NetworkErrorKind.PermissionDenied -> ()
+    case NetworkErrorKind.Other -> ()
+  end match
+end function
+
+function jsonError(error: Json.ParseError) -> Unit
+  bind _ <- match error with
+    case Json.ParseError(message: _, ..) -> ()
+  end match
+  bind Json.ParseError(message: _, ..) <- error
+end function
+
+function csvError(error: Csv.ParseError) -> Unit
+  bind _ <- match error with
+    case Csv.ParseError(message: _, ..) -> ()
+  end match
+  bind Csv.ParseError(message: _, ..) <- error
+end function
+
+function main() -> Unit
+  ()
+end function

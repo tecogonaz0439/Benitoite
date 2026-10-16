@@ -11,16 +11,16 @@ python3 -I formal/tests/test_named_exchange.py
 
 ## 版と入口
 
-六つの正式入口は corpus 8・型表 2・網羅性 2 を受理する。旧版は拒否し、欠けた名前を補完しない。
+六つの正式入口は corpus 10・型表 3・網羅性 3 を受理する。新しい try の処置を持たない 9/3/3 と、属性・view・新版の型表示の欄を持たない 8/2/2 は互換入力として受理し、8/2/2 では閉じた型だけを扱う。それより前の版と、新版の欄を混ぜた旧版を拒否する。欠けた名前と新版の必須欄は補完しない。
 
 | 正式入口 | 入力と引数 |
 |---|---|
-| `desugarDiff` | corpus 8、report のパス |
-| `builtinCheck` | corpus 8、組み込み型表 2、report のパス |
-| `coverageDiff` | 網羅性 2（`coverage_export` の形）、report のパス |
-| `coverageProgramDiff` | プログラム単位の網羅性 2、組み込み型表 2、report のパス |
-| `surfaceCheck` | corpus 8、組み込み型表 2、標準ライブラリ型表 2、group、input、report のパス。任意で関数の鍵と反復回数 |
-| `surfaceCheckAll` | corpus 8、組み込み型表 2、標準ライブラリ型表 2、report のパス |
+| `desugarDiff` | corpus 10、report のパス |
+| `builtinCheck` | corpus 10、組み込み型表 3、report のパス |
+| `coverageDiff` | 網羅性 3（`coverage_export` の形）、report のパス |
+| `coverageProgramDiff` | プログラム単位の網羅性 3、組み込み型表 3、report のパス |
+| `surfaceCheck` | corpus 10、組み込み型表 3、標準ライブラリ型表 3、group、input、report のパス。任意で関数の鍵と反復回数 |
+| `surfaceCheckAll` | corpus 10、組み込み型表 3、標準ライブラリ型表 3、report のパス |
 
 実行ファイルは `formal/.lake/build/bin/` に作られる。終了状態は成功が 0、不一致・型検査による拒否が 1、形式や準備の誤りが 2 である。全件の入口は、末尾 match の補正、対象外の分類、補正の個数の照合を行う。契約名、ラベルと位置には補正を加えない。
 

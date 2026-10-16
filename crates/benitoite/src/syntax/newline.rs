@@ -21,6 +21,8 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
     let mut output: Vec<Token> = Vec::with_capacity(tokens.len());
     let mut stack: Vec<Opening> = Vec::new();
     let mut previous = None;
+    let mut die_message_depths = Vec::new();
+    let mut previous_ends_die = false;
     let mut previous_is_end_word = false;
     let mut depth = 0usize;
     let mut input = tokens.iter().peekable();
@@ -45,22 +47,36 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
             let in_parens = stack
                 .last()
                 .is_some_and(|o| matches!(o.kind, K::LParen | K::LBracket));
-            let keep = previous.is_some()
-                && !in_parens
-                && (previous_is_end_word || !previous.is_some_and(continues_after))
-                && !next.is_some_and(continues_before);
+            // return の値は同じ物理行で始める。括弧内と次行の演算子でも
+            // この区切りを消さない（設計書 01-01「改行による区切り」）。
+            let keep = previous == Some(K::KwReturn)
+                || previous_ends_die && !in_parens
+                || previous.is_some()
+                    && !in_parens
+                    && (previous_is_end_word || !previous.is_some_and(continues_after))
+                    && !next.is_some_and(continues_before);
             if keep && output.last().is_none_or(|t| t.kind != K::Newline) {
                 token.kind = K::Newline;
                 output.push(token);
             }
             continue;
         }
+        let ends_die =
+            kind == K::KwDie || kind == K::RParen && die_message_depths.last() == Some(&depth);
         let end_word = previous == Some(K::KwEnd) && is_keyword(kind);
         if end_word {
             close(&mut stack, kind, &mut depth);
         } else {
             if matches!(kind, K::LParen | K::LBracket) {
                 depth = depth.saturating_add(1);
+                if kind == K::LParen
+                    && previous == Some(K::KwDie)
+                    && output
+                        .last()
+                        .is_some_and(|t| t.end_line == token.start_line)
+                {
+                    die_message_depths.push(depth);
+                }
                 stack.push(Opening {
                     kind,
                     depth,
@@ -69,6 +85,7 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
                 });
             } else if kind == K::RParen {
                 close(&mut stack, K::LParen, &mut depth);
+                die_message_depths.retain(|d| *d <= depth);
             } else if kind == K::RBracket {
                 close(&mut stack, K::LBracket, &mut depth);
             } else if kind == K::KwCase {
@@ -117,6 +134,7 @@ pub fn resolve_newlines(tokens: Vec<Token>) -> Vec<Token> {
                 });
             }
         }
+        previous_ends_die = ends_die;
         previous = Some(kind);
         previous_is_end_word = end_word;
         output.push(token);
@@ -133,6 +151,7 @@ fn is_keyword(kind: TokenKind) -> bool {
             | K::KwCase
             | K::KwConst
             | K::KwData
+            | K::KwDie
             | K::KwDiv
             | K::KwDo
             | K::KwEffect
@@ -217,7 +236,6 @@ fn continues_after(kind: TokenKind) -> bool {
             | K::KwMatch
             | K::KwPublic
             | K::KwRecord
-            | K::KwReturn
             | K::KwShadow
             | K::KwThen
             | K::KwTrait
@@ -306,7 +324,6 @@ mod tests {
         for src in [
             "bind total <- price\n  * quantity",
             "lines\n  |> f",
-            "return\n  x",
             "a,\n b",
             "T: A &\nB",
             "f(\na,\nb\n)",
@@ -315,6 +332,16 @@ mod tests {
             assert_newlines(src, &[]);
         }
         for (src, lines) in [
+            ("return\n  x", vec![1]),
+            ("return\n+ x", vec![1]),
+            ("return\n|> f", vec![1]),
+            ("return\n(x)", vec![1]),
+            ("(return\n x)", vec![1]),
+            ("[return\n x]", vec![1]),
+            ("return // comment\r\n\r\n// next\r\n+ x", vec![1]),
+            ("return x +\n y", vec![]),
+            ("return (\n x\n)", vec![]),
+            ("return f(\n x\n)", vec![]),
             ("x\n-y", vec![1]),
             ("x\nnot y", vec![1]),
             ("x\nwith", vec![1]),
@@ -325,6 +352,8 @@ mod tests {
             ("match x\nwith", vec![1]),
             ("end if\nfoo()", vec![1]),
             ("end function\nfoo()", vec![1]),
+            ("die\nnext", vec![1]),
+            ("die // comment\r\nnext", vec![1]),
         ] {
             assert_newlines(src, &lines);
         }

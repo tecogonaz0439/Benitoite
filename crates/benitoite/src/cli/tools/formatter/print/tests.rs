@@ -427,6 +427,11 @@ const CASES: &[(&str, &str, &str)] = &[
     ),
     ("parentheses", PARENS_INPUT, PARENS_EXPECTED),
     ("operators", OPERATORS_INPUT, OPERATORS_EXPECTED),
+    (
+        "explicit and implicit try return",
+        "function f() -> Unit\nbind x<-try r|>convert or return\nbind y<-try r\nbind z<-lambda() try r or return\nf(value:try r or return,\nnext:1)\nend function\n",
+        "function f() -> Unit\n  bind x <- try r |> convert or return\n  bind y <- try r\n  bind z <- lambda() try r or return\n  f(value: try r or return,\n    next: 1)\nend function\n",
+    ),
     ("blocks", BLOCKS_INPUT, BLOCKS_EXPECTED),
     ("with bindings", WITH_INPUT, WITH_EXPECTED),
     ("continuations", CONTINUATION_INPUT, CONTINUATION_EXPECTED),

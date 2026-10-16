@@ -1,0 +1,115 @@
+--- a/crates/benitoite/src/modules/hash.rs
++++ b/crates/benitoite/src/modules/hash.rs
+@@ -218,7 +218,7 @@
+         }
+     }
+
+-    const FIXED: &str = "sha256:a1b90227fd78ffd9f1ce24c6969a96511416e6f18571e480713a16e92f7b503f";
++    const FIXED: &str = "sha256:3b02e3120f7e20f1c82b7c70dae26848f301edbb5988602795002a20d5c8b9b5";
+     const CONFIG: &str = "language \"0.0.6\"\npackage Textkit\nend package\n";
+
+     fn fixture() -> MemFs {
+--- a/crates/benitoite/src/modules/tests.rs
++++ b/crates/benitoite/src/modules/tests.rs
+@@ -28,8 +28,9 @@
+             ("0.0.0", Some(DiagCode::E0908)),
+             ("0.0.3", Some(DiagCode::E0908)),
+             ("0.0.4", Some(DiagCode::E0908)),
+-            ("0.0.5", None),
+-            ("0.0.6", Some(DiagCode::E0907)),
++            ("0.0.5", Some(DiagCode::E0908)),
++            ("0.0.6", None),
++            ("0.0.7", Some(DiagCode::E0907)),
+         ] {
+             let header = format!("language \"{version}\"\n");
+             let entry_source = format!("{header}{MAIN}");
+@@ -61,25 +62,29 @@
+                 assert_eq!(
+                     diagnostic.message,
+                     format!(
+-                        "this file was written for Benitoite {version}, and the language changed incompatibly in 0.0.5"
++                        "this file was written for Benitoite {version}, and the language changed incompatibly in {}",
++                        if version == "0.0.5" { "0.0.6" } else { "0.0.5" }
+                     )
+                 );
+-                assert_eq!(
+-                    diagnostic.notes,
+-                    [
+-                        "0.0.5: calls with two or more parameters require named arguments; function types and higher-order contracts require parameter names, and function values must match those names in order"
+-                    ]
+-                );
+-                assert_eq!(diagnostic.helps.len(), 1);
+-                assert_eq!(
+-                    diagnostic.helps[0].message,
+-                    "see docs/reference/benitoite.md for named arguments and named function types"
+-                );
+-                assert!(diagnostic.helps[0].edits.is_empty());
++                let first = usize::from(version == "0.0.5");
++                let notes = [
++                    "0.0.5: calls with two or more parameters require named arguments; function types and higher-order contracts require parameter names, and function values must match those names in order",
++                    "0.0.6: `die` is reserved; IOErrorKind, NetworkErrorKind, Json.ParseError, and Csv.ParseError are @extensible; return values must start on the same physical line as `return`",
++                ];
++                let helps = [
++                    "see docs/reference/benitoite.md for named arguments and named function types",
++                    "rename user-defined names spelled `die`; outside the defining package, add an unguarded `case other` or `case _` to cover future @extensible values in matches, and use a variable or `_` instead of destructuring them in bindings; record `..` covers only declared fields, while construction, updates, and getters keep their declared field contracts; start each return value on the same physical line as `return` (the value may continue across lines after it starts); use `try value or return`, `try value or die`, or `try value or die(message)` to make the failure action explicit; bare `try value` still returns failure from the innermost function or lambda; see CHANGELOG.md for migration details",
++                ];
++                assert_eq!(diagnostic.notes, notes[first..]);
++                assert_eq!(diagnostic.helps.len(), helps.len() - first);
++                for (help, expected) in diagnostic.helps.iter().zip(&helps[first..]) {
++                    assert_eq!(help.message, *expected);
++                    assert!(help.edits.is_empty());
++                }
+             } else {
+                 assert_eq!(
+                     diagnostic.message,
+-                    "this file needs Benitoite 0.0.6 or later, but this is Benitoite 0.0.5"
++                    "this file needs Benitoite 0.0.7 or later, but this is Benitoite 0.0.6"
+                 );
+                 assert!(diagnostic.notes.is_empty());
+                 assert!(diagnostic.helps.is_empty());
+--- a/crates/benitoite/testdata/packages/dependency-settings.diag.json
++++ b/crates/benitoite/testdata/packages/dependency-settings.diag.json
+@@ -1,3 +1,3 @@
+ {"kind":"check","severity":"error","code":"E0914","message":"the package `Old` needs a `language` line","primary":{"file":"testdata/packages/dependency-settings/deps/nolanguage/package.bnt","start":{"line":1,"column":9,"offset":8},"end":{"line":1,"column":12,"offset":11},"label":""},"secondary":[],"notes":[],"helps":[]}
+ {"kind":"check","severity":"error","code":"E0915","message":"a package cannot have dependencies in this version","primary":{"file":"testdata/packages/dependency-settings/deps/transitive/package.bnt","start":{"line":4,"column":1,"offset":44},"end":{"line":4,"column":11,"offset":54},"label":""},"secondary":[{"file":"testdata/packages/dependency-settings/deps/transitive/package.bnt","start":{"line":2,"column":9,"offset":25},"end":{"line":2,"column":15,"offset":31},"label":"this `package.bnt` declares the package `Nested`"}],"notes":[],"helps":[]}
+-{"kind":"check","severity":"error","code":"E0907","message":"this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.5","primary":{"file":"testdata/packages/dependency-settings/deps/future/package.bnt","start":{"line":1,"column":10,"offset":9},"end":{"line":1,"column":18,"offset":17},"label":""},"secondary":[],"notes":[],"helps":[]}
++{"kind":"check","severity":"error","code":"E0907","message":"this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.6","primary":{"file":"testdata/packages/dependency-settings/deps/future/package.bnt","start":{"line":1,"column":10,"offset":9},"end":{"line":1,"column":18,"offset":17},"label":""},"secondary":[],"notes":[],"helps":[]}
+--- a/crates/benitoite/testdata/packages/hash-match/package.bnt
++++ b/crates/benitoite/testdata/packages/hash-match/package.bnt
+@@ -1,4 +1,4 @@
+ dependency Hashkit
+   path "deps/hashkit"
+-  hash "sha256:ddac9d07ae2a12288b1ef3e5a4cbe36ae1d44a3991a1fc3f3b9e5d44a57da584"
++  hash "sha256:20e42f7da076ce5bd11f6f4a7b433f956e8f73e98f58cd279c8dc2aafbe09393"
+ end dependency
+--- a/crates/benitoite/testdata/packages/hash-mismatch.diag.json
++++ b/crates/benitoite/testdata/packages/hash-mismatch.diag.json
+@@ -1 +1 @@
+-{"kind":"check","severity":"error","code":"E0919","message":"the contents of the dependency `Words` do not match its `hash`","primary":{"file":"testdata/packages/hash-mismatch/main.bnt","start":{"line":4,"column":8,"offset":108},"end":{"line":4,"column":81,"offset":181},"label":""},"secondary":[],"notes":["expected: sha256:0000000000000000000000000000000000000000000000000000000000000000","computed: sha256:ddac9d07ae2a12288b1ef3e5a4cbe36ae1d44a3991a1fc3f3b9e5d44a57da584","package: `Hashkit`","if the change is intended, write the computed hash"],"helps":[]}
++{"kind":"check","severity":"error","code":"E0919","message":"the contents of the dependency `Words` do not match its `hash`","primary":{"file":"testdata/packages/hash-mismatch/main.bnt","start":{"line":4,"column":8,"offset":108},"end":{"line":4,"column":81,"offset":181},"label":""},"secondary":[],"notes":["expected: sha256:0000000000000000000000000000000000000000000000000000000000000000","computed: sha256:20e42f7da076ce5bd11f6f4a7b433f956e8f73e98f58cd279c8dc2aafbe09393","package: `Hashkit`","if the change is intended, write the computed hash"],"helps":[]}
+--- a/crates/benitoite/testdata/packages/newer-config.diag.json
++++ b/crates/benitoite/testdata/packages/newer-config.diag.json
+@@ -1 +1 @@
+-{"kind":"check","severity":"error","code":"E0907","message":"this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.5","primary":{"file":"testdata/packages/newer-config/package.bnt","start":{"line":1,"column":10,"offset":9},"end":{"line":1,"column":18,"offset":17},"label":""},"secondary":[],"notes":[],"helps":[]}
++{"kind":"check","severity":"error","code":"E0907","message":"this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.6","primary":{"file":"testdata/packages/newer-config/package.bnt","start":{"line":1,"column":10,"offset":9},"end":{"line":1,"column":18,"offset":17},"label":""},"secondary":[],"notes":[],"helps":[]}
+--- a/crates/benitoite/testdata/packages/newer-language.diag.json
++++ b/crates/benitoite/testdata/packages/newer-language.diag.json
+@@ -1 +1 @@
+-{"kind":"check","severity":"error","code":"E0907","message":"this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.5","primary":{"file":"testdata/packages/newer-language/main.bnt","start":{"line":3,"column":10,"offset":103},"end":{"line":3,"column":18,"offset":111},"label":""},"secondary":[],"notes":[],"helps":[]}
++{"kind":"check","severity":"error","code":"E0907","message":"this file needs Benitoite 99.0.0 or later, but this is Benitoite 0.0.6","primary":{"file":"testdata/packages/newer-language/main.bnt","start":{"line":3,"column":10,"offset":103},"end":{"line":3,"column":18,"offset":111},"label":""},"secondary":[],"notes":[],"helps":[]}
+--- a/crates/benitoite/testdata/packages/older-language.diag.json
++++ b/crates/benitoite/testdata/packages/older-language.diag.json
+@@ -1 +1 @@
+-{"kind":"check","severity":"error","code":"E0908","message":"this file was written for Benitoite 0.0.4, and the language changed incompatibly in 0.0.5","primary":{"file":"testdata/packages/older-language/main.bnt","start":{"line":2,"column":10,"offset":57},"end":{"line":2,"column":17,"offset":64},"label":""},"secondary":[],"notes":["0.0.5: calls with two or more parameters require named arguments; function types and higher-order contracts require parameter names, and function values must match those names in order"],"helps":[{"message":"see docs/reference/benitoite.md for named arguments and named function types","edits":[]}]}
++{"kind":"check","severity":"error","code":"E0908","message":"this file was written for Benitoite 0.0.4, and the language changed incompatibly in 0.0.5","primary":{"file":"testdata/packages/older-language/main.bnt","start":{"line":2,"column":10,"offset":57},"end":{"line":2,"column":17,"offset":64},"label":""},"secondary":[],"notes":["0.0.5: calls with two or more parameters require named arguments; function types and higher-order contracts require parameter names, and function values must match those names in order","0.0.6: `die` is reserved; IOErrorKind, NetworkErrorKind, Json.ParseError, and Csv.ParseError are @extensible; return values must start on the same physical line as `return`"],"helps":[{"message":"see docs/reference/benitoite.md for named arguments and named function types","edits":[]},{"message":"rename user-defined names spelled `die`; outside the defining package, add an unguarded `case other` or `case _` to cover future @extensible values in matches, and use a variable or `_` instead of destructuring them in bindings; record `..` covers only declared fields, while construction, updates, and getters keep their declared field contracts; start each return value on the same physical line as `return` (the value may continue across lines after it starts); use `try value or return`, `try value or die`, or `try value or die(message)` to make the failure action explicit; bare `try value` still returns failure from the innermost function or lambda; see CHANGELOG.md for migration details","edits":[]}]}
+--- a/crates/benitoite/tests/package_command.rs
++++ b/crates/benitoite/tests/package_command.rs
+@@ -111,7 +111,7 @@
+     dir.fixture();
+     let add = dir.package(&["add", "Text", "--path", "deps/words"]);
+     success(&add);
+-    let hash = "sha256:eee08f30ef130c609237874eefd93d59e3338d58438294fb47dc24ec917cef4e";
++    let hash = "sha256:0e03d3fd2ac72afce915d04f076536efd301078c8e9f416bceb6b6f80b2219c7";
+     assert!(stdout(&add).starts_with("added dependency Text (package Words) to "));
+     assert!(stdout(&add).ends_with(&format!(
+         "  hash: {hash}\n  effects: File.Read\n  components: (none)\n"

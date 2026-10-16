@@ -28,7 +28,7 @@ public effect Exit
 end effect
 ```
 
-Ending the process.
+Ends the run; `or die` also reports its cause and optional message to standard error without Console.Write. A language handler may replace the exit operation.
 
 ```benitoite
 public effect Run

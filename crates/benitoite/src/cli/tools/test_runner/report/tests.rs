@@ -111,7 +111,11 @@ fn exit_json(reports: Vec<crate::diag::Diagnostic>) -> String {
     let (table, _, name) = sources();
     let result = TestResult {
         test: test_fn(None, name),
-        failure: Some(Failure::Exit { code: 4, reports }),
+        failure: Some(Failure::Exit {
+            code: 4,
+            die_failure: None,
+            reports,
+        }),
         stdout: Vec::new(),
         stderr: Vec::new(),
     };
@@ -142,6 +146,66 @@ fn exit_json_notes_list_release_failures() {
     );
     let json = exit_json(Vec::new());
     assert!(json.contains("\"exitCode\":4,\"notes\":[]}"), "{json}");
+}
+
+// 関門: test runner 固有の exit の JSON と文章へ die を保持し、捕捉した出力へ報告を混ぜない。
+#[test]
+fn exit_details_keep_die_separate_from_captured_output_and_release_notes() {
+    let (table, call, name) = sources();
+    for message in [None, Some(""), Some("read input")] {
+        let result = TestResult {
+            test: test_fn(None, name),
+            failure: Some(Failure::Exit {
+                code: 1,
+                die_failure: Some(crate::vm::DieFailure {
+                    cause: "expected a value, got Option.None".into(),
+                    message: message.map(str::to_owned),
+                    at: call,
+                }),
+                reports: vec![{
+                    let mut report =
+                        crate::diag::DiagBuilder::new(crate::diag::DiagCode::R0401).build();
+                    report.message = "failed to release `File` opened at t.bnt:3:5".into();
+                    report.notes = vec!["disk full".into()];
+                    report
+                }],
+            }),
+            stdout: b"before\n".to_vec(),
+            stderr: b"user error\n".to_vec(),
+        };
+        let output = text_failure("t.bnt", &result, &table, TextOptions { color: false });
+        assert_eq!(output.matches("error: explicit failure exit").count(), 1);
+        assert!(output.starts_with("---- t.bnt: check ----\nerror: explicit failure exit\n"));
+        assert!(output.contains("--> t.bnt:120:3"));
+        assert!(
+            output
+                .find("cause: expected a value, got Option.None")
+                .unwrap()
+                < output.find("failed to release").unwrap()
+        );
+        assert!(output.ends_with(
+            "---- captured stdout ----\nbefore\n---- captured stderr ----\nuser error\n"
+        ));
+        let json: serde_json::Value =
+            serde_json::from_str(&json_test("t.bnt", &result, &table)).unwrap();
+        assert_eq!(json["failure"]["reason"], "exit");
+        assert_eq!(json["failure"]["exitCode"], 1);
+        assert_eq!(
+            json["failure"]["notes"],
+            serde_json::json!([
+                "while stopping, failed to release `File` opened at t.bnt:3:5: disk full"
+            ])
+        );
+        let mut notes = Vec::new();
+        if let Some(message) = message {
+            notes.push(format!("message: {message}"));
+        }
+        notes.push("cause: expected a value, got Option.None".to_owned());
+        assert_eq!(json["failure"]["die"]["kind"], "die");
+        assert_eq!(json["failure"]["die"]["notes"], serde_json::json!(notes));
+        assert_eq!(json["stdout"], "before\n");
+        assert_eq!(json["stderr"], "user error\n");
+    }
 }
 
 #[test]

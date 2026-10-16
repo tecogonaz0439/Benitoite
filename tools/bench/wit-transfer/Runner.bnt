@@ -5,10 +5,10 @@ import Benitoite.Unofficial.IO.Process
 /// 入力の大きさと、一回以上の呼び出し回数を読む。
 public function settings() -> Result[Pair[Integer, Integer], String] uses Process.Environment
   bind arguments <- Process.arguments()
-  bind text <- try Option.okOr(o: List.get(xs: arguments, i: 0), error: "missing input size")
-  bind count <- try Option.okOr(o: Integer.parse(text), error: "invalid input size")
-  bind roundsText <- try Option.okOr(o: List.get(xs: arguments, i: 1), error: "missing repeat count")
-  bind rounds <- try Option.okOr(o: Integer.parse(roundsText), error: "invalid repeat count")
+  bind text <- try Option.okOr(o: List.get(xs: arguments, i: 0), error: "missing input size") or return
+  bind count <- try Option.okOr(o: Integer.parse(text), error: "invalid input size") or return
+  bind roundsText <- try Option.okOr(o: List.get(xs: arguments, i: 1), error: "missing repeat count") or return
+  bind rounds <- try Option.okOr(o: Integer.parse(roundsText), error: "invalid repeat count") or return
   return if List.length(arguments) = 2 and count >= 0 and rounds > 0 then
     Result.Ok(Pair(count, rounds))
   else

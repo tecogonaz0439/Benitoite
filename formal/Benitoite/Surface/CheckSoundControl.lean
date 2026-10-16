@@ -1,5 +1,6 @@
 import Benitoite.Surface.CheckSoundCalls
 import Benitoite.Surface.CheckSoundCollections
+import Benitoite.Surface.CheckSoundDie
 
 /-! 制御構文とハンドラの節の検査の健全性。
 対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。 -/
@@ -400,6 +401,8 @@ theorem checkCasesSound (q : Input) : CheckCasesSound q := by
     | returnE => exact return_case
     | tryResult => exact tryResult_case
     | tryOption => exact tryOption_case
+    | tryResultDie => exact tryResultDie_case
+    | tryOptionDie => exact tryOptionDie_case
     | withE => exact with_case
     | lazyE => exact lazy_case
     | handleE => exact handle_case

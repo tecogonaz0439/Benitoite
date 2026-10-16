@@ -214,60 +214,82 @@ theorem altsTy_sound {atoms P alts a δ} (hp : ConAtomsIn atoms P)
     exact checkAlts_sound hp ha (patTy_atoms hp ha hg) hc
   · contradiction
 
-/-- useful の単列への包み。選ばれない分岐の検査を追加しない。 -/
+/-- useful の単列への包み。合成照合の view も呼び出し側で明示する。 -/
+def exhaustiveWithView (D : Declarations) (ctors : DataName → List ConName)
+    (view : CoverageView) (a : Ty) (ps : List Release.Pat) : Bool :=
+  (usefulWithView D.patternProgram ctors view [a] (ps.map fun p => [p]) [.wild]).isNone
+
+theorem exhaustiveWithView_view {D ctors view a ps} (hc : CtorsComplete D.patternProgram ctors)
+    (h : exhaustiveWithView D ctors view a ps = true) : ViewExhaustive D view a ps :=
+  ⟨ctors, hc, by simpa [exhaustiveWithView] using h⟩
+
+theorem exhaustiveWithView_sound {D ctors view a ps} (hc : CtorsComplete D.patternProgram ctors)
+    (h : exhaustiveWithView D ctors view a ps = true) : Exhaustive D.patternProgram a ps :=
+  (exhaustiveWithView_view hc h).exhaustive
+
+/-- ソース照合では本体の宣言表の指定を使う。 -/
 def exhaustive (D : Declarations) (ctors : DataName → List ConName)
     (a : Ty) (ps : List Release.Pat) : Bool :=
-  (useful D.patternProgram ctors [a] (ps.map fun p => [p]) [.wild]).isNone
+  exhaustiveWithView D ctors D.view a ps
+
+theorem exhaustive_view {D ctors a ps} (hc : CtorsComplete D.patternProgram ctors)
+    (h : exhaustive D ctors a ps = true) : ViewExhaustive D D.view a ps :=
+  exhaustiveWithView_view hc h
 
 theorem exhaustive_sound {D ctors a ps} (hc : CtorsComplete D.patternProgram ctors)
-    (h : exhaustive D ctors a ps = true) : Exhaustive D.patternProgram a ps := by
-  have hu : useful D.patternProgram ctors [a] (ps.map fun p => [p]) [.wild] = none := by
-    simpa [exhaustive] using h
-  intro v hv
-  exact useful_singleton_none_sound D.patternProgram ctors a ps .wild hc hu v hv rfl
+    (h : exhaustive D ctors a ps = true) : Exhaustive D.patternProgram a ps :=
+  (exhaustive_view hc h).exhaustive
 
 def matchExhaustive (D : Declarations) (ctors : DataName → List ConName) (a : Ty) (arms : Arms) : Bool :=
   exhaustive D ctors a arms.unguardedPatterns
 
+theorem matchExhaustive_view {D ctors a arms} (hc : CtorsComplete D.patternProgram ctors)
+    (h : matchExhaustive D ctors a arms = true) : ViewExhaustive D D.view a arms.unguardedPatterns :=
+  exhaustive_view hc h
+
 theorem matchExhaustive_sound {D ctors a arms} (hc : CtorsComplete D.patternProgram ctors)
     (h : matchExhaustive D ctors a arms = true) : Exhaustive D.patternProgram a arms.unguardedPatterns :=
-  exhaustive_sound hc h
+  (matchExhaustive_view hc h).exhaustive
 
 def tryResultExhaustive (D : Declarations) (ctors : DataName → List ConName)
     (d : DataName) (t errTy : Ty) (ok err : ConName) : Bool :=
-  exhaustive D ctors (.data d [t, errTy]) [.con ok [.var], .con err [.var]]
+  exhaustiveWithView D ctors closedView (.data d [t, errTy]) [.con ok [.var], .con err [.var]]
 
 theorem tryResultExhaustive_sound {D ctors d t errTy ok err}
     (hc : CtorsComplete D.patternProgram ctors)
     (h : tryResultExhaustive D ctors d t errTy ok err = true) :
     Exhaustive D.patternProgram (.data d [t, errTy]) [.con ok [.var], .con err [.var]] :=
-  exhaustive_sound hc h
+  exhaustiveWithView_sound hc h
 
 def tryOptionExhaustive (D : Declarations) (ctors : DataName → List ConName)
     (d : DataName) (t : Ty) (someCon noneCon : ConName) : Bool :=
-  exhaustive D ctors (.data d [t]) [.con someCon [.var], .con noneCon []]
+  exhaustiveWithView D ctors closedView (.data d [t]) [.con someCon [.var], .con noneCon []]
 
 theorem tryOptionExhaustive_sound {D ctors d t someCon noneCon}
     (hc : CtorsComplete D.patternProgram ctors)
     (h : tryOptionExhaustive D ctors d t someCon noneCon = true) :
     Exhaustive D.patternProgram (.data d [t]) [.con someCon [.var], .con noneCon []] :=
-  exhaustive_sound hc h
+  exhaustiveWithView_sound hc h
 
 def bindingExhaustive (D : Declarations) (ctors : DataName → List ConName) (a : Ty) (p : Pattern) : Bool :=
-  irrefutable D.patternProgram ctors a p.toCore
+  irrefutableWithView D.patternProgram ctors D.view a p.toCore
+
+theorem bindingExhaustive_view {D ctors a p} (hc : CtorsComplete D.patternProgram ctors)
+    (h : bindingExhaustive D ctors a p = true) : ViewExhaustive D D.view a [p.toCore] :=
+  ⟨ctors, hc, by simpa [bindingExhaustive, irrefutableWithView] using h⟩
 
 theorem bindingExhaustive_sound {D ctors a p} (hc : CtorsComplete D.patternProgram ctors)
     (h : bindingExhaustive D ctors a p = true) : Exhaustive D.patternProgram a [p.toCore] :=
-  irrefutable_sound D.patternProgram ctors a p.toCore hc h
+  (bindingExhaustive_view hc h).exhaustive
 
 def recordUpdateExhaustive (D : Declarations) (ctors : DataName → List ConName)
     (cd : ConDecl) (ts : List Ty) (c : ConName) (n : Nat) (positions : List Nat) : Bool :=
-  irrefutable D.patternProgram ctors (.data cd.data ts) (recordUpdatePattern c n positions)
+  irrefutableWithView D.patternProgram ctors closedView (.data cd.data ts) (recordUpdatePattern c n positions)
 
 theorem recordUpdateExhaustive_sound {D ctors cd ts c n positions}
     (hc : CtorsComplete D.patternProgram ctors)
     (h : recordUpdateExhaustive D ctors cd ts c n positions = true) :
     Exhaustive D.patternProgram (.data cd.data ts) [recordUpdatePattern c n positions] :=
-  irrefutable_sound D.patternProgram ctors (.data cd.data ts) (recordUpdatePattern c n positions) hc h
+  irrefutableWithView_sound D.patternProgram ctors closedView (.data cd.data ts) (recordUpdatePattern c n positions) hc h
 
 end Benitoite.Surface.CheckTools

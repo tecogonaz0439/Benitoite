@@ -2,6 +2,31 @@
 
 All notable changes to Benitoite are recorded in this file. Versions follow the policy in [Compatibility](docs/reference/benitoite.md#20-compatibility): while the major version is 0, a minor version may contain incompatible changes, and a patch version contains only bug fixes. Until `0.1.0`, any release may contain incompatible changes. Every incompatible change is listed with how to migrate.
 
+## 0.0.6 (San Benito)
+
+A source-only release; no executables are provided. `benitoite --version` prints `benitoite 0.0.6`. Migrate scripts and dependencies before updating their `language` declarations and recorded package hashes.
+
+### Incompatible changes and migration
+
+| Previous form or behavior | `0.0.6` | How to migrate |
+|---|---|---|
+| `die` could be an identifier, including an argument label or a member name. | `die` is a reserved keyword (`E0216` when used as a name). A standalone `die` reports `E0201` with help to use `try value or die`. The keyword set has 35 words. | Rename user-defined names spelled `die` and their references. `fn`, `pub`, `impl`, `async`, `await`, `spawn`, `select`, `extensible`, and `mut` remain usable as names. |
+| Matches could enumerate all known cases of the standard failure types; bindings could destructure their known fields. | `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, and `Csv.ParseError` are `@extensible`. Outside the defining package, matches and bindings must also cover future shapes (`E0601` / `E0607`). | Add an unguarded `case other` or `case _` to a match, including nested matches. Bind the whole value or `_` instead of destructuring it in a binding. A record's `..` covers only declared fields. Construction, updates, and getters retain their declared field contracts. `Result` and `Option` remain closed. |
+| A return value could start on the line after a standalone `return`. | The newline immediately after `return` ends the statement; a missing value reports `E0201` with help to start on the same physical line. This also applies after `or return`. | Start the value on the same physical line, for example `return if condition then`. After the value starts, it may continue over multiple lines, including parenthesized expressions, calls, operators, and branches. |
+| Declaring `language "0.0.5"` passed the release boundary. | Declarations before `0.0.6` report `E0908`; versions before `0.0.5` receive both releases' migration notes and helps, in version order. Future declarations report `E0907`. | First migrate the code, then set `language "0.0.6"` in the entry script or root settings and in each dependency's `package.bnt`. Recompute recorded hashes with `benitoite package update` after changing dependency contents. Omitting `language` uses the current rules. Changing the declaration alone does not migrate the code. |
+
+### Explicit failure actions and diagnostics
+
+- Use `try value or return` in reusable functions to return `Result.Error` or `Option.None` from the innermost function or lambda. Bare `try value` keeps that same meaning permanently; it is accepted and has no deprecation warning.
+- Use `try value or die` or `try value or die(message)` at script entry points when failure should terminate execution. `die` requires a `Result` or `Option` operand and `Process.Exit`; a `Result` error requires `Show`. The message is a pure `String` expression evaluated only on failure, before formatting the error value. Import `Benitoite.Unofficial.IO.Process` when naming the effect. The operation writes the failure report to standard error and exits with status 1; successful `Option.Some` and `Result.Ok` continue with their contained value.
+- `IOError`, `NetworkError`, `Json.ParseError`, and `Csv.ParseError` implement `Trait.Show`, returning their `message` string unchanged. The implementations for IOError and NetworkError live in `Benitoite.Trait`; the ParseError implementations live in Json and Csv. Explicit calls to `Trait.Show.show` require `import Benitoite.Trait`; `or die` connects its Show reference internally.
+- A die failure is reported as `error: explicit failure exit`, followed by its source location, optional `message:`, and `cause:`, in that order. With `--diagnostics=json`, the report has `kind: "die"` and `code: null`.
+- In `benitoite test`, die fails only that test, and the runner continues with the next one. A language handler can replace the existing `Process.Exit` operation; it receives only the usual exit code, and the handled call's report is discarded rather than attached to a later exit.
+- `or` in an explicit try action is separate from Boolean `or`. The `or return` action takes no value, and `or die` accepts at most one parenthesized message; invalid actions report `E0258`. Parenthesize an explicit try expression before continuing with another operator or call (`E0259`). A die message cannot directly escape with `return` or `try` (`E0218`); an unavailable outer continuation reports `E0509`. An effectful message reports `E0511`; missing `Process.Exit` and unsatisfied `Show` constraints use the existing effect and type-class diagnostics.
+- Add `@extensible` on `data` and record declarations. It takes no arguments (`E0817`); `E0801` now lists it. `E0601` and `E0607` may show a future-shape witness, a secondary location at the type declaration, and help to cover future values. These are static errors with exit status 2.
+- `E0908` lists every applicable incompatible change. Notes include each version and summary; helps provide corresponding migration guidance in the same order, without source edits. The main message identifies the first applicable version.
+- The unknown `?` operator's `E0211` help now suggests `try parse(text) or return`. Invalid try-action positions retain `E0218`; existing bare-try type checks and their diagnostics remain in place.
+
 ## 0.0.5 (San Benito)
 
 A source-only release; no executables are provided. `benitoite --version` prints `benitoite 0.0.5`. This release changes calls, function types, and callback contracts together. Scripts written for `0.0.4` or earlier need the migration below.

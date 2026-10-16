@@ -207,6 +207,6 @@ theorem match_case {q b e arms} : CaseSound q (.expr (.matchE b e arms)) := by
   cases eq
   rw [union_eq ht.2.2 har.2]
   exact ⟨.E_Match ((nonemptyArms_spec _).mp (require_ok hne).1) ht.1 har.1
-    (matchExhaustive_sound hq.constructors (require_ok hexh).1), he.1, CheckTools.union_atoms ht.2.2 har.2⟩
+    (matchExhaustive_view hq.constructors (require_ok hexh).1), he.1, CheckTools.union_atoms ht.2.2 har.2⟩
 
 end Benitoite.Surface.Check

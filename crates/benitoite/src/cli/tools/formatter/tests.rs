@@ -187,6 +187,12 @@ end function
 
 #[test]
 fn normalizes_blank_lines() {
+    // 空括弧も書き手の選択として保つ（設計書 01-02「属性（初回リリース版）」）。
+    check(
+        "extensible keeps empty parentheses",
+        "@extensible( )\nrecord R\nx:Integer\nend record\n",
+        "@extensible()\nrecord R\n  x: Integer\nend record\n",
+    );
     check(
         "between declarations",
         "\n\nfunction a() -> Unit\n()\nend function\nfunction b() -> Unit\n()\nend function\n\n\n\nfunction c() -> Unit\n()\nend function\n\n\n",

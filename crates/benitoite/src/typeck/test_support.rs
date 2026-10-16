@@ -112,3 +112,107 @@ pub(crate) fn name_call_arguments(
     }
     call.id
 }
+
+/// 通常の読み込みで標準モジュールを揃え、同じソース表と番号生成器に登録した
+/// 対象の AST を差し替える。解析には本番の公開入口を使う。fixture の import は内部依存の自動追加の検査ではない。
+pub(crate) fn check_die_source(
+    source: &str,
+) -> (LoadOutput, ResolveOutput, TypeckOutput, Vec<Diagnostic>) {
+    use crate::base::{FileId, Source, SourceKind, SourceTable};
+    use crate::syntax::{lexer, newline, parser::parse};
+    let mut fixture =
+        String::from("import Benitoite.Trait\nimport Benitoite.Unofficial.IO.Process\n");
+    for line in source
+        .lines()
+        .filter(|line| line.trim_start().starts_with("import "))
+    {
+        if line.trim() != "import Benitoite.Trait"
+            && line.trim() != "import Benitoite.Unofficial.IO.Process"
+        {
+            fixture.push_str(line);
+            fixture.push('\n');
+        }
+    }
+    let (mut load, mut ids) = crate::modules::memfs::load_files(&[("fixture.bnt", &fixture)]);
+    assert!(
+        !load.diagnostics.iter().any(Diagnostic::is_error),
+        "{:?}",
+        load.diagnostics
+    );
+    let mut sources = SourceTable::new();
+    for (file, original) in load.sources.iter() {
+        let replacement = if file == FileId(0) {
+            Source::new(
+                "die.bnt".into(),
+                SourceKind::User,
+                source.as_bytes().to_vec(),
+            )
+        } else {
+            Source::new(
+                original.name().into(),
+                original.kind(),
+                original.text().to_vec(),
+            )
+        };
+        assert_eq!(sources.add(replacement), file);
+    }
+    load.sources = sources;
+    let file = FileId(0);
+    let lexed = lexer::lex(file, source.as_bytes());
+    let parsed = parse(
+        file,
+        SourceKind::User,
+        source.as_bytes(),
+        newline::resolve_newlines(lexed.tokens),
+        lexed.comments,
+        &mut ids,
+    );
+    let mut diagnostics = lexed.diagnostics;
+    diagnostics.extend(parsed.diagnostics);
+    let imports = parsed
+        .module
+        .imports
+        .iter()
+        .map(|import| {
+            let path: Vec<_> = import
+                .path
+                .iter()
+                .map(|n| n.text.clone())
+                .filter(|n| n != "Unofficial")
+                .collect();
+            let target = load.modules.iter().find(|m| m.name.0 == path).map(|m| m.id);
+            assert!(target.is_some(), "fixture must load {path:?}");
+            crate::modules::ImportLink {
+                decl: import.id,
+                target,
+            }
+        })
+        .collect();
+    let entry = load
+        .modules
+        .modules
+        .iter_mut()
+        .find(|m| m.kind == crate::modules::ModuleKind::Entry)
+        .unwrap();
+    entry.imports = imports;
+    load.asts[0] = parsed.module;
+    load.comments[0] = parsed.comments;
+    if diagnostics.iter().any(Diagnostic::is_error) {
+        return (
+            load,
+            ResolveOutput::default(),
+            TypeckOutput::default(),
+            diagnostics,
+        );
+    }
+    let resolved = crate::resolve::resolve(&load.modules, &load.asts, &load.sources, &mut ids);
+    diagnostics.extend(resolved.diagnostics.clone());
+    let out = if diagnostics.iter().any(Diagnostic::is_error) {
+        TypeckOutput::default()
+    } else {
+        let (out, diags) = typecheck(&load.modules, &load.asts, &load.sources, &resolved, false);
+        diagnostics.extend(diags);
+        out
+    };
+    (load, resolved, out, diagnostics)
+}

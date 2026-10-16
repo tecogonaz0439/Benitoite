@@ -95,6 +95,8 @@ pub struct RunEnd {
     pub end: EndKind,
     /// `main` が返した `Result.Error` の文字列
     pub main_error: Option<String>,
+    /// 採用した既定の失敗終了の原因と説明。`main_error` とは別に保持する
+    pub die_failure: Option<crate::vm::DieFailure>,
     /// 実行時エラー・資源の不足・解放の失敗・書き込みの失敗・処理系の不具合の報告
     pub reports: Vec<Diagnostic>,
     /// 実行を終えたときのヒープの記録（CLI の `BENITOITE_DEV_ALLOC_STATS` と性能の測定が使う）
@@ -361,6 +363,7 @@ fn run_vm_entry(
                     exit_code: EXIT_FAILURE,
                     end: EndKind::CheckFailed,
                     main_error: None,
+                    die_failure: None,
                     reports: Vec::new(),
                     heap: HeapStats::default(),
                 },
@@ -403,6 +406,7 @@ fn run_vm_entry(
         end.run.end = EndKind::Interrupted;
         end.run.exit_code = EXIT_INTERRUPTED;
         end.run.main_error = None;
+        end.run.die_failure = None;
     }
     end.run.heap = vm.heap_stats();
     end
@@ -441,6 +445,7 @@ fn internal_end_fields() -> RunEnd {
         exit_code: EXIT_INTERNAL,
         end: EndKind::Internal,
         main_error: None,
+        die_failure: None,
         reports: Vec::new(),
         heap: HeapStats::default(),
     }
@@ -461,6 +466,7 @@ fn step_end(program: &CompiledProgram, step: VmStep) -> RunEnd {
         exit_code: EXIT_OK,
         end: EndKind::Returned,
         main_error: None,
+        die_failure: None,
         reports: Vec::new(),
         heap: HeapStats::default(),
     };
@@ -494,9 +500,12 @@ fn step_end(program: &CompiledProgram, step: VmStep) -> RunEnd {
                 };
                 end.reports.push(diagnostic);
             }
-            StopReason::Exit(code) => {
+            StopReason::Exit { code, die_failure } => {
                 end.end = EndKind::Exited(code);
                 end.exit_code = code;
+                if code == EXIT_FAILURE {
+                    end.die_failure = die_failure;
+                }
                 end.reports = stopped
                     .release_failures
                     .iter()
@@ -641,6 +650,7 @@ mod tests {
             env.parts = Some(parts);
             let end = run_program(&program, env);
             assert_eq!(end.end, EndKind::Internal);
+            assert!(end.die_failure.is_none());
             assert_eq!(end.exit_code, EXIT_INTERNAL);
             assert_eq!(end.reports.len(), 1);
             assert!(
@@ -677,6 +687,7 @@ mod tests {
             };
             let end = output_start_failure(&outputs).unwrap();
             assert_eq!(end.end, EndKind::Internal);
+            assert!(end.die_failure.is_none());
             assert_eq!(end.exit_code, EXIT_INTERNAL);
             assert!(
                 end.reports[0]
@@ -743,14 +754,24 @@ mod tests {
             (EndKind::Returned, "return ()"),
             (EndKind::MainError, "return Result.Error(\"bad\")"),
             (EndKind::Stopped, "bind _ <- 1 div 0\n return ()"),
+            (EndKind::Exited(7), "Process.exit(7)"),
+            (
+                EndKind::Exited(1),
+                "bind missing: Option[Unit] <- Option.None\n try missing or die(\"context\")",
+            ),
         ] {
             let ty = if kind == EndKind::MainError {
                 "Result[Unit,String]"
             } else {
                 "Unit"
             };
+            let uses = if matches!(kind, EndKind::Exited(_)) {
+                "Console.Write, Process.Exit"
+            } else {
+                "Console.Write"
+            };
             let program = compiled(&format!(
-                "import Benitoite.Unofficial.IO.Console\nfunction main() -> {ty} uses Console.Write\n Console.write(\"last\")\n {body}\nend function\n"
+                "import Benitoite.Unofficial.IO.Console\nimport Benitoite.Unofficial.IO.Process\nfunction main() -> {ty} uses {uses}\n Console.write(\"last\")\n {body}\nend function\n"
             ));
             for mode in [ExecMode::Direct, ExecMode::Request] {
                 for (panic, interrupt) in
@@ -787,17 +808,36 @@ mod tests {
                     );
                     let end = run_vm(&program, env.vm, env.heap, rt);
                     assert_eq!(flag.load(Ordering::Relaxed), interrupt);
-                    let interrupted = interrupt && kind != EndKind::Stopped && !panic;
+                    let interrupted = interrupt
+                        && matches!(kind, EndKind::Returned | EndKind::MainError)
+                        && !panic;
                     assert_eq!(
                         end.exit_code,
                         if panic {
                             EXIT_INTERNAL
                         } else if interrupted {
                             EXIT_INTERRUPTED
+                        } else if let EndKind::Exited(code) = kind {
+                            code
                         } else {
                             EXIT_FAILURE
                         }
                     );
+                    if kind == EndKind::Exited(1) && !panic {
+                        let failure = end.die_failure.as_ref().unwrap();
+                        assert_eq!(failure.cause, "expected a value, got Option.None");
+                        assert_eq!(failure.message.as_deref(), Some("context"));
+                        let source = program.sources.get(failure.at.file).unwrap();
+                        assert_eq!(
+                            source
+                                .text()
+                                .get(failure.at.start.0 as usize..failure.at.end.0 as usize)
+                                .unwrap(),
+                            b"try missing or die(\"context\")"
+                        );
+                    } else {
+                        assert_eq!(end.die_failure, None);
+                    }
                     assert_eq!(
                         end.main_error.as_deref(),
                         if kind == EndKind::MainError && !panic && !interrupted {
@@ -925,6 +965,7 @@ mod tests {
             env.mode = mode;
             let end = run_program(&program, env);
             assert_eq!(end.end, EndKind::Internal);
+            assert!(end.die_failure.is_none());
             assert_eq!(end.exit_code, EXIT_INTERNAL);
             assert_eq!(end.reports.len(), 1);
             assert_eq!(bytes.lock().unwrap().as_slice(), b"before panic");

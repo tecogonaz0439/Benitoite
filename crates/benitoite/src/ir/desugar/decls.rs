@@ -210,6 +210,7 @@ fn definition(
             .ok_or_else(|| error("missing checked external function"))?;
         Comp {
             kind: CompKind::App {
+                exit_report: None,
                 func: value(
                     ValKind::External {
                         def: binding,

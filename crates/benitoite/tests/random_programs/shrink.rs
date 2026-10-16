@@ -168,7 +168,16 @@ fn expression(expr: &Expr, spans: &mut Vec<Span>) {
         }
         Expr::Lambda(expr) => block(&expr.body, spans),
         Expr::Return(expr) => expression(&expr.value, spans),
-        Expr::Try(expr) => expression(&expr.value, spans),
+        Expr::Try(expr) => {
+            expression(&expr.value, spans);
+            if let benitoite::syntax::ast::TryAction::Die {
+                message: Some(message),
+                ..
+            } = &expr.action
+            {
+                expression(message, spans);
+            }
+        }
         Expr::Lazy(expr) => block(&expr.body, spans),
         Expr::With(expr) => {
             for bind in &expr.binds {

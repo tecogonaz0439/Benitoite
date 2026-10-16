@@ -56,6 +56,13 @@ pub struct ImportLink {
     pub target: Option<ModuleId>,
 }
 
+/// 構文が要求する標準モジュールへの依存。架空の import 宣言を作らない。
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct InternalDependency {
+    pub target: ModuleId,
+    pub span: crate::base::Span,
+}
+
 /// モジュールの表の項目一つ。
 #[derive(Clone, PartialEq, Debug)]
 pub struct ModuleInfo {
@@ -64,6 +71,8 @@ pub struct ModuleInfo {
     pub kind: ModuleKind,
     /// import の宣言を書いた順に並べた取り込み先（依存グラフの辺）
     pub imports: Vec<ImportLink>,
+    /// 利用者の名前空間を変えずに標準の処置を支える依存。
+    pub internal_dependencies: Vec<InternalDependency>,
 }
 
 /// モジュールの表。モジュールの ID の値の順に並べる。読み込みを終えた後は変更しない（02-04）。
@@ -205,6 +214,7 @@ pub fn load_program(
 mod cycle;
 mod find;
 mod hash;
+mod internal;
 mod load;
 pub(crate) mod package;
 mod text;

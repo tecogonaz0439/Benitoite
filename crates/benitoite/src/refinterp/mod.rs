@@ -30,6 +30,7 @@ pub enum RefOutcome {
     /// `Process.exit` で終わった（`exit(n, r̄, [], σ)` に達した）
     Exited {
         status: u8,
+        die_failure: Option<crate::vm::DieFailure>,
         release_failures: Vec<ReleaseFailure>,
     },
     /// 参照インタプリタが実行しない組み込みの関数（タスクの起動）に出会った。文字列はその関数の修飾した名前

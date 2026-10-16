@@ -905,6 +905,7 @@ fn first_release_keywords_and_identifiers() {
         ("case", K::KwCase),
         ("const", K::KwConst),
         ("data", K::KwData),
+        ("die", K::KwDie),
         ("div", K::KwDiv),
         ("do", K::KwDo),
         ("effect", K::KwEffect),
@@ -961,9 +962,29 @@ fn first_release_keywords_and_identifiers() {
         "continue",
         "class",
         "where",
+        "extensible",
+        "died",
+        "dieLater",
+        "pub",
+        "impl",
+        "mut",
+        "async",
+        "await",
+        "spawn",
+        "select",
+        "instance",
+        "var",
+        "mutable",
+        "module",
+        "derive",
+        "benitoite",
+        "language",
+        "dependency",
+        "package",
     ] {
         assert_clean_kinds(word, &[K::LowerIdent, K::Eof]);
     }
+    assert_clean_kinds("Die", &[K::UpperIdent, K::Eof]);
 }
 
 #[test]

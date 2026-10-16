@@ -60,7 +60,10 @@ pub(super) fn check(d: &mut Decls<'_>) {
                 continue;
             }
             let before = d.diagnostics.len();
-            let mut ctx = Body::new(d, Scope::default(), s.clone());
+            let Some(module) = d.resolved.bindings.get(id).map(|binding| binding.module) else {
+                continue;
+            };
+            let mut ctx = Body::new(d, module, Scope::default(), s.clone());
             ctx.effect = fixed(EffectSet::empty());
             ctx.ret = None;
             let ty = ctx.expr(&c.value);
@@ -1197,7 +1200,16 @@ fn visit_expr(e: &Expr, f: &mut impl FnMut(&Expr)) {
             }
         }
         Expr::Lambda(l) => visit_block(&l.body, f),
-        Expr::Try(t) => visit_expr(&t.value, f),
+        Expr::Try(t) => {
+            visit_expr(&t.value, f);
+            if let crate::syntax::ast::TryAction::Die {
+                message: Some(message),
+                ..
+            } = &t.action
+            {
+                visit_expr(message, f);
+            }
+        }
         Expr::Lazy(l) => visit_block(&l.body, f),
         Expr::With(w) => {
             for b in &w.binds {

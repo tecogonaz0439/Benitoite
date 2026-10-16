@@ -81,12 +81,17 @@ data Value
   Object(Map[String, Value])
 end data
 
+@extensible
 record ParseError
   line: Integer
   column: Integer
   message: String
 end record
 ```
+
+【決定】`Json.ParseError` は `@extensible` を付けたレコードである。標準ライブラリの外からの `match` には、将来の形を覆うガードのない変数または `_` の分岐を必要とし、レコードパターンで分解する `bind` は拒否する。構築・更新・getter の契約と、現在の欄は変えない。欄の追加を互換とする保証は含まない（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)の「拡張可能な型」）。理由: 解析の失敗を表す型にも、既知の分解形だけを前提にしない使用条件を適用するためである。
+
+【決定】`Json.ParseError` の `Trait.Show` の実装は、Json のモジュールに置く。同モジュールは `Benitoite.Trait` を import する。`Show.show` は `ParseError.message` の文字列をそのまま返し、行番号・列番号や引用符を加えない。
 
 - 小数点と指数を持たない数で、`Integer` の範囲に収まるものは `Json.Value.Integer`、それ以外の数は `Json.Value.Float` とする。`Float` の範囲も超える数は、解析の誤りとする。整数か浮動小数点かは数の元の字面で決めるので、`-0` は `Json.Value.Integer(0)`、`-0.0` は `Json.Value.Float(-0.0)` になる。絶対値が小さすぎて 0 に丸められる数は誤りにせず、符号を保った 0 の `Json.Value.Float` にする（`1e-400` は `Json.Value.Float(0.0)`、`-1e-400` は `Json.Value.Float(-0.0)`）。`Float.parse` と同じである（[基本型の意味論](../01-spec/01-04-types-basic.md)）。
 - オブジェクトは `Map` で表すので、メンバは鍵の順序で並ぶ。入力に同じ鍵が二つ以上あれば、後のメンバの値を使う（`Map.fromList` と同じ）。鍵はどの文字列でもよく、鍵の文字列によってメンバの値の読み方を変えない。
@@ -118,8 +123,8 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.Json
 
 function totalAmount(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
-  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error)) or return
   bind items <- Json.asArray(parsed) |> Option.unwrapOr(o: _, fallback: [])
   return Result.Ok(List.fold(xs: items, initial: 0, f: lambda(acc, value)
     return match Json.get(value: value, k: "amount") with
@@ -166,7 +171,7 @@ end function
 import Benitoite.Unofficial.Regex
 
 function extractDates(text: String) -> Result[List[String], String]
-  bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
+  bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}") or return
   return Result.Ok(Regex.findAll(pattern: pattern, text: text) |> List.map(xs: _, f: lambda(value) return Regex.matchText(value)))
 end function
 ```
@@ -176,11 +181,16 @@ end function
 【方針】`Benitoite.Csv` は、RFC 4180 の CSV を読み書きする。RFC 4180 との違い（受け付ける入力と、書く行の終わり）は、下の箇条に書く。値はどれも `String` として扱い、数への変換は利用者が `Integer.parse` などで行う。
 
 ```text
+@extensible
 record ParseError
   line: Integer
   message: String
 end record
 ```
+
+【決定】`Csv.ParseError` にも `@extensible` を付ける。外部からの照合・束縛の条件、構築・更新・getter の契約、欄の追加に関する保証の範囲は、`Json.ParseError` と同じである。
+
+【決定】`Csv.ParseError` の `Trait.Show` の実装は、Csv のモジュールに置く。同モジュールは `Benitoite.Trait` を import する。`Show.show` は `ParseError.message` の文字列をそのまま返し、行番号や引用符を加えない。
 
 | 関数 | 型 | 値 |
 |---|---|---|

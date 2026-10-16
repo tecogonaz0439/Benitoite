@@ -148,9 +148,9 @@ def validate (input : Input) (b : BuiltinInput) : InputReport := Id.run do
 def run (args : List String) : IO UInt32 := do
   let [corpusFile, tableFile, reportFile] := args |
     throw (IO.userError "usage: builtinCheck corpus.json builtins.json builtin-report.json")
-  let corpus ← IO.ofExcept ((Json.parse (← IO.FS.readFile corpusFile)) >>= fromJson? : Except String Corpus)
-  let tables ← IO.ofExcept ((Json.parse (← IO.FS.readFile tableFile)) >>= fromJson? : Except String BuiltinCorpus)
-  if corpus.version != 8 || tables.version != 2 then throw (IO.userError "unsupported exchange version")
+  let corpus ← IO.ofExcept ((Json.parse (← IO.FS.readFile corpusFile)) >>= readCorpus)
+  let tables ← IO.ofExcept ((Json.parse (← IO.FS.readFile tableFile)) >>= readBuiltins)
+  if (corpus.version >= 9) != (tables.version == 3) then throw (IO.userError "exchange version pair mismatch")
   if duplicateNames (tables.inputs.map (fun b => s!"{b.group}/{b.name}")) then
     throw (IO.userError "duplicate input table")
   let checked := corpus.inputs.filter (fun i => i.excluded.isEmpty)
@@ -159,6 +159,8 @@ def run (args : List String) : IO UInt32 := do
   for input in checked do
     let some b := tables.inputs.find? (fun b => b.group == input.group && b.name == input.name) |
       throw (IO.userError s!"missing input table: {input.group}/{input.name}")
+    if corpus.version >= 9 && input.dataTypes != b.dataDecls.map DataEntry.info then
+      throw (IO.userError "corpus/builtin data type metadata mismatch")
     reports := reports ++ [validate input b]
   let missing := (reports.flatMap InputReport.missingPrims).eraseDups
   let missingCons := (reports.flatMap InputReport.missingConstructors).eraseDups

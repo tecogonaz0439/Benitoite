@@ -97,8 +97,16 @@ fn check_syntax(
     if let Some(d) = parsed.diagnostics.iter().find(|d| is_syntax_error(d)) {
         return Err(format!("syntax error {side} formatting: {}", d.message));
     }
-    let tokens: Vec<_> = lexed
-        .tokens
+    lambda_layouts(&parsed.module, &lexed.tokens, side)
+}
+
+fn lambda_layouts(
+    module: &crate::syntax::ast::Module,
+    tokens: &[Token],
+    side: &str,
+) -> Result<Vec<LambdaLayout>, String> {
+    let raw_tokens = tokens;
+    let tokens: Vec<_> = tokens
         .iter()
         .filter(|t| {
             !matches!(
@@ -110,7 +118,7 @@ fn check_syntax(
     let ordinal = |pos: BytePos| tokens.partition_point(|t| t.span.start < pos);
     let range = |span: crate::base::Span| ordinal(span.start)..ordinal(span.end);
     let mut layouts = Vec::new();
-    for lambda in super::roles::lambda_spans(&parsed.module, &lexed.tokens) {
+    for lambda in super::roles::lambda_spans(module, raw_tokens) {
         let lambda_range = range(lambda.span);
         let ending = match lambda.ending {
             LambdaEnding::Explicit { end_span } => Ending::Explicit(range(end_span)),

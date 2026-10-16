@@ -300,7 +300,7 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
         .adts
         .adts
         .iter()
-        .map(|(id, adt)| (id, adt.clone()))
+        .map(|(id, adt)| (id, adt.clone(), package(p, adt.module), builtin_data(p, id)))
         .collect();
     for (id, adt) in stdlib.types.adts.adts.iter() {
         let local = names[&id];
@@ -310,11 +310,16 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
             for ctor in &mut adt.ctors {
                 ctor.fields = ctor.fields.iter().map(|t| remap_ty(t, &names)).collect();
             }
-            adts.push((local, adt));
+            adts.push((
+                local,
+                adt,
+                package(stdlib, stdlib.types.adts.get(id).unwrap().module),
+                builtin_data(stdlib, id),
+            ));
         }
     }
-    adts.sort_by_key(|(id, _)| *id);
-    for (id, adt) in adts {
+    adts.sort_by_key(|(id, _, _, _)| *id);
+    for (id, adt, package, builtin) in adts {
         assert_eq!(id, adt.binding);
         let ctors: Vec<_> = adt
             .ctors
@@ -323,7 +328,8 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
             .map(|(tag, c)| {
                 assert_eq!(u32::try_from(tag).unwrap(), c.tag);
                 let args: Vec<_> = c.fields.iter().map(|t| surface.ty(t)).collect();
-                let mut ctor = json!({"name":con_name(id, c.tag),"args":args});
+                let mut ctor =
+                    json!({"name":con_name(id, c.tag),"constructorName":c.name,"args":args});
                 ctor["fields"] = json!(
                     adt.record
                         .as_ref()
@@ -332,7 +338,7 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
                 ctor
             })
             .collect();
-        data_decls.push(json!({"name":data_name(id),"ntys":adt.type_params.len(),"ctors":ctors}));
+        data_decls.push(json!({"name":data_name(id),"typeName":adt.name,"isRecord":adt.record.is_some(),"extensible":adt.extensible,"package":package,"builtin":builtin,"ntys":adt.type_params.len(),"ctors":ctors}));
         summaries.push(json!({"name":data_name(id),"eq":summary(&adt.eq_summary),"key":summary(&adt.key_summary)}));
     }
     assert!(
@@ -343,4 +349,14 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
     json!({"group":input["group"],"name":input["name"],"prims":prims,"effects":effects,
         "resources":resources,"dataDecls":data_decls,"summaries":summaries,"statePure":state_pure,
         "supplementalData":supplemental_data,"supplementalPrims":supplemental_prims})
+}
+
+fn builtin_data(p: &CheckedProgram, id: BindingId) -> &'static str {
+    if Some(id) == p.resolved.stdlib("Benitoite.Result.Result") {
+        "result"
+    } else if Some(id) == p.resolved.stdlib("Benitoite.Option.Option") {
+        "option"
+    } else {
+        "ordinary"
+    }
 }

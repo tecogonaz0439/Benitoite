@@ -17,9 +17,7 @@ impl<'p> Gen<'p> {
         match &c.kind {
             LCompKind::Return(v) => self.return_(fg, v, target, c.origin, future),
             LCompKind::Let { .. } => self.let_(fg, c, target, future),
-            LCompKind::App { func, dicts, args } => {
-                self.app(fg, func, dicts, args, (target, c.origin), future)
-            }
+            LCompKind::App { .. } => self.app(fg, c, target, future),
             LCompKind::Method(m) => self.method(fg, m, target, c.origin, future),
             LCompKind::If { .. } => self.if_(fg, c, target, future),
             LCompKind::CaseCtor { .. } => self.case_ctor(fg, c, target, future),
@@ -208,14 +206,64 @@ impl<'p> Gen<'p> {
     fn app(
         &mut self,
         fg: &mut FnGen<'p>,
-        func: &'p LowVal,
-        dicts: &'p [DictVal],
-        args: &'p [LowVal],
-        site: (Target, Span),
+        c: &'p LComp,
+        target: Target,
         future: &HashSet<Key>,
     ) -> CgResult<()> {
-        let (target, origin) = site;
+        let LCompKind::App {
+            func,
+            dicts,
+            args,
+            exit_report,
+        } = &c.kind
+        else {
+            return Err(internal("expected application"));
+        };
+        let report = exit_report.as_ref();
+        let origin = c.origin;
         let mark = fg.next_reg;
+        // 報告値も引数の生成中に使う。捕捉した値はここでレジスタへ読み直す。
+        // （設計書 02-07「内部の終了報告」）
+        let report_site = if let Some(report) = report {
+            if !matches!(&func.kind, ValKind::Builtin { id, info, .. }
+                if Some(*id) == crate::builtins::lookup_builtin("Benitoite.IO.Process.exit")
+                    && info.class == Capability::Io && info.intrinsic.is_none())
+                || !dicts.is_empty()
+                || !matches!(
+                    args.as_slice(),
+                    [Val {
+                        kind: ValKind::Const(Const::Int(1)),
+                        ..
+                    }]
+                )
+                || std::iter::once(&report.cause)
+                    .chain(report.message.iter())
+                    .any(|v| v.ty != Ty::Con(TyCon::Builtin(BuiltinTypeId::STRING), vec![]))
+            {
+                return Err(internal("invalid exit report call"));
+            }
+            let mut reads = future.clone();
+            for value in args
+                .iter()
+                .chain(std::iter::once(report.cause.as_ref()))
+                .chain(report.message.as_deref())
+            {
+                reads.extend(free_keys(Node::Val(value), Vec::new()));
+            }
+            let cause_reg = self.operand(fg, &report.cause, &reads)?;
+            let message_reg = report
+                .message
+                .as_ref()
+                .map(|v| self.operand(fg, v, &reads))
+                .transpose()?;
+            Some(ExitReportSite {
+                cause_reg: r16(cause_reg),
+                message_reg: message_reg.map(r16),
+                span: origin,
+            })
+        } else {
+            None
+        };
         if let ValKind::Builtin { id, targs, info } = &func.kind {
             if !dicts.is_empty() {
                 return Err(internal("builtin with dictionary arguments"));
@@ -232,7 +280,7 @@ impl<'p> Gen<'p> {
                 let base = fg.alloc_block(count(args.len())?);
                 self.vals(fg, args, base, future)?;
                 let dst = fg.result(target);
-                fg.emit(
+                let pc = fg.emit(
                     Instr::abc(
                         if info.class == Capability::Io {
                             Opcode::Io
@@ -245,6 +293,9 @@ impl<'p> Gen<'p> {
                     ),
                     Some(origin),
                 );
+                *fg.exit_reports
+                    .get_mut(pc)
+                    .ok_or_else(|| internal("missing exit report slot"))? = report_site;
                 fg.returned(target, dst, Some(origin));
             }
         } else if let ValKind::External { spec, .. } = &func.kind {

@@ -151,8 +151,29 @@ pub struct ResolveOutput {
 }
 
 use crate::base::{IdGen, SourceTable};
-use crate::modules::ModuleTable;
+use crate::modules::{ModuleKind, ModuleTable};
 use crate::syntax::ast::Module;
+
+/// 二つのモジュールが同じパッケージに属するか（02-04「名前の引き方」）。
+/// 根、標準、依存の範囲を区別し、設定ファイルと存在しない ID は同じパッケージとみなさない。
+pub fn same_package(modules: &ModuleTable, a: ModuleId, b: ModuleId) -> bool {
+    let (Some(a), Some(b)) = (modules.get(a), modules.get(b)) else {
+        return false;
+    };
+    match (a.kind, b.kind) {
+        // 依存の依存を許さないため、先頭の依存別名で識別できる。
+        (ModuleKind::Package, ModuleKind::Package) => a
+            .name
+            .0
+            .first()
+            .is_some_and(|name| Some(name) == b.name.0.first()),
+        (ModuleKind::Entry | ModuleKind::User, ModuleKind::Entry | ModuleKind::User)
+        | (ModuleKind::Prelude | ModuleKind::Stdlib, ModuleKind::Prelude | ModuleKind::Stdlib) => {
+            true
+        }
+        _ => false,
+    }
+}
 
 /// プログラム全体の名前を解決する（02-04「解決の手順」の手順 1〜6）。`asts` の添字はモジュールの ID の値。
 /// 束縛の番号は `ids` から、トップレベルの宣言にはモジュールの ID の順に、各モジュールの中では宣言の順に振る。

@@ -69,6 +69,18 @@ mutual
       return .returnE t (← walkExpr q R p (child path 0) R a)
     | .tryResult ts ok err a => return .tryResult ts ok err (← walkExpr q R .other (child path 0) none a)
     | .tryOption ts yes no a => return .tryOption ts yes no (← walkExpr q R .other (child path 0) none a)
+    | .tryResultDie t ok err dict showMethod exit a message =>
+      let a' ← walkExpr q R .other (child path 0) none a
+      let message' : Option Expr ← match message with
+        | none => pure none
+        | some m => Option.some <$> walkExpr q none .other (child path 1) (some (.base .string)) m
+      return .tryResultDie t ok err dict showMethod exit a' message'
+    | .tryOptionDie t yes no exit a message =>
+      let a' ← walkExpr q R .other (child path 0) none a
+      let message' : Option Expr ← match message with
+        | none => pure none
+        | some m => Option.some <$> walkExpr q none .other (child path 1) (some (.base .string)) m
+      return .tryOptionDie t yes no exit a' message'
     | .withE o a body => return .withE o (← walkExpr q R .other (child path 0) none a) (← walkBlock q R .other (child path 1) expected body)
     | .lazyE body => return .lazyE (← walkBlock q none .other (child path 0) none body)
     | .handleE body cs => return .handleE (← walkBlock q R .other (child path 0) none body) (← walkClauses q R (child path 1) cs)
@@ -107,4 +119,19 @@ mutual
       if let .prim name := o then modify fun s => { s with prims := name :: s.prims }
       return .cons o n nt (← walkBlock q (R.map (shiftTy nt 0)) .other (child path 0) none body) (← walkClauses q R (child path 1) rest)
 end
+
+-- 分類に使う全ノードの列を独立に期待する。説明を落とす場合と、説明に外側の
+-- 戻り値を渡す場合の両方を、二つの構文に対して検出する。
+example (q : Input) :
+    let t := Ty.base .integer
+    let s := Ty.base .string
+    let input := Expr.returnE t (.local 0)
+    let message := some (Expr.returnE s (.local 1))
+    [Expr.tryResultDie t "Ok" "Error" (.local 2) "show" "Process.exit" input message,
+     Expr.tryOptionDie t "Some" "None" "Process.exit" input message].map (fun e =>
+       ((walkExpr q (some t) .tail [] none e).run {}).2.nodes.toList.map
+         (fun n => (n.path, n.expected))) =
+    [[([], none), ([0], none), ([0, 0], some t), ([1], some s), ([1, 0], none)],
+     [([], none), ([0], none), ([0, 0], some t), ([1], some s), ([1, 0], none)]] := by rfl
+
 end SurfaceCheck

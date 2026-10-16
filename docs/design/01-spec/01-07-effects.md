@@ -144,6 +144,8 @@ end function
 
 終了状態の具体的な値と、スクリプトにコマンドライン引数を渡す方法は [CLI](../06-tooling/06-01-cli.md) で定める。
 
+【決定】`try e or die` は標準の Process.Exit を持ち、失敗時に標準の終了操作を行う。`uses Process.Exit` には Process の通常の import が要る。内部依存による標準参照は利用者名を追加しない。ホストの終了報告には Console.Write を要求しない。ハンドラによる処理と uses の包含は通常の操作と同じ規則に従う（[エラー処理](01-09-errors.md#失敗時に終了する処置)）。
+
 ### IO を行う組み込み関数
 
 【方針】基本の IO を行う関数として、次のものを定める。これらの関数は `Benitoite.IO` の下のモジュールの関数であり、import しなければ使えない。各関数は、型の `uses` に書いたエフェクトの操作である。
@@ -222,7 +224,7 @@ end function
 import Benitoite.Unofficial.IO.Process
 
 function tagRelease(tag: String) -> Result[Unit, String] uses Process.Run
-  bind output <- try Process.run(Process.command(program: "git", arguments: ["tag", tag])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind output <- try Process.run(Process.command(program: "git", arguments: ["tag", tag])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return match Process.Output.exitCode(output) with
     case 0 -> Result.Ok(())
     case otherCode -> Result.Error(Process.Output.standardError(output))
@@ -298,7 +300,7 @@ end function
 import Benitoite.Unofficial.IO.File
 
 function readPort(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
 end function
 

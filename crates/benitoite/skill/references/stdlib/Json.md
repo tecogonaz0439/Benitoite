@@ -21,6 +21,7 @@ end data
 A JSON value. Object members are kept in the order of their keys.
 
 ```benitoite
+@extensible
 public record ParseError
   line: Integer
   column: Integer

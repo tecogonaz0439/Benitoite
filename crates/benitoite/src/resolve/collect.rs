@@ -73,27 +73,6 @@ impl<'a> Resolver<'a> {
         self.asts.get(usize::try_from(module.0).ok()?)
     }
 
-    // 依存の依存を許さないため、先頭の別名でパッケージを一意に識別できる
-    // （設計書 02-04「名前の引き方」）。設定ファイルはどのモジュールとも同じパッケージにしない。
-    pub(super) fn same_package(&self, a: ModuleId, b: ModuleId) -> bool {
-        let (Some(a), Some(b)) = (self.modules.get(a), self.modules.get(b)) else {
-            return false;
-        };
-        match (a.kind, b.kind) {
-            (ModuleKind::Package, ModuleKind::Package) => a
-                .name
-                .0
-                .first()
-                .is_some_and(|name| Some(name) == b.name.0.first()),
-            (ModuleKind::Entry | ModuleKind::User, ModuleKind::Entry | ModuleKind::User)
-            | (
-                ModuleKind::Prelude | ModuleKind::Stdlib,
-                ModuleKind::Prelude | ModuleKind::Stdlib,
-            ) => true,
-            _ => false,
-        }
-    }
-
     pub(super) fn internal(&mut self, message: String) {
         self.out.diagnostics.push(Diagnostic {
             kind: ReportKind::Internal,

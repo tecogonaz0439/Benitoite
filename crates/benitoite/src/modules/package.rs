@@ -1,7 +1,7 @@
 //! 先頭の部分の置き場所と、宣言した言語の版を検査する
 //! （設計書 01-03「依存の記述と `package.bnt`」、06-09「設定ファイルの検査」）。
 
-use crate::diag::{DiagBuilder, DiagCode, Diagnostic};
+use crate::diag::{DiagBuilder, DiagCode, Diagnostic, Help};
 use crate::syntax::ast::{HeaderBlock, HeaderItem, LanguageDecl, Module};
 use crate::syntax::version::{Version, parse_version};
 
@@ -156,13 +156,22 @@ pub(crate) fn dependency_roots(
 struct BreakingChange {
     version: Version,
     summary: &'static str,
+    help: &'static str,
 }
 
 // 今まで誤りだった書き方を加える変更は、既存のコードの互換性を壊さない。
-const BREAKING_CHANGES: &[BreakingChange] = &[BreakingChange {
-    version: Version(0, 0, 5),
-    summary: text::NAMED_ARGUMENTS_CHANGE,
-}];
+const BREAKING_CHANGES: &[BreakingChange] = &[
+    BreakingChange {
+        version: Version(0, 0, 5),
+        summary: text::NAMED_ARGUMENTS_CHANGE,
+        help: text::NAMED_ARGUMENTS_MIGRATION,
+    },
+    BreakingChange {
+        version: Version(0, 0, 6),
+        summary: text::KEYWORDS_OPEN_TYPES_TRY_CHANGE,
+        help: text::KEYWORDS_OPEN_TYPES_TRY_MIGRATION,
+    },
+];
 
 pub(crate) use crate::syntax::header::keyword;
 
@@ -280,20 +289,33 @@ fn check_language(
                 .build(),
         );
     }
-    let change = changes
+    let mut applicable: Vec<_> = changes
         .iter()
         .filter(|change| version < change.version && change.version <= current)
-        .min_by_key(|change| change.version)?;
-    Some(
-        DiagBuilder::new(DiagCode::E0908)
-            .arg("version", version.to_string())
-            .arg("changed", change.version.to_string())
-            .arg("summary", change.summary)
-            .primary(decl.version.span)
-            .note("change")
-            .help("migrate")
-            .build(),
-    )
+        .collect();
+    applicable.sort_by_key(|change| change.version);
+    let first = applicable.first()?;
+    let mut diagnostic = DiagBuilder::new(DiagCode::E0908)
+        .arg("version", version.to_string())
+        .arg("changed", first.version.to_string())
+        .primary(decl.version.span)
+        .build();
+    // 各変更の引数を共有すると最後の文で上書きされるため、主文の構築後に項目を加える
+    // （設計書 02-10「診断の内部の表現」、06-09「設定ファイルの検査」）。
+    for change in applicable {
+        diagnostic.notes.push(crate::diag::codes::fill_template(
+            text::LANGUAGE_CHANGE,
+            &[
+                ("version", change.version.to_string()),
+                ("summary", change.summary.to_owned()),
+            ],
+        ));
+        diagnostic.helps.push(Help {
+            message: change.help.to_owned(),
+            edits: Vec::new(),
+        });
+    }
+    Some(diagnostic)
 }
 
 #[cfg(test)]
@@ -343,7 +365,7 @@ mod tests {
     }
 
     #[test]
-    fn version_check_reports_the_earliest_applicable_change() {
+    fn version_check_reports_all_applicable_changes_in_version_order() {
         let (out, _) = parse_source("language \"0.0.3\"", SourceKind::User);
         let HeaderItem::Language(decl) = &out.module.header[0] else {
             panic!()
@@ -351,32 +373,50 @@ mod tests {
         let changes = [
             BreakingChange {
                 version: Version(0, 0, 6),
-                summary: "later change",
+                summary: text::KEYWORDS_OPEN_TYPES_TRY_CHANGE,
+                help: text::KEYWORDS_OPEN_TYPES_TRY_MIGRATION,
             },
             BreakingChange {
-                version: Version(0, 0, 4),
-                summary: "first change",
+                version: Version(0, 0, 5),
+                summary: text::NAMED_ARGUMENTS_CHANGE,
+                help: text::NAMED_ARGUMENTS_MIGRATION,
             },
             BreakingChange {
                 version: Version(0, 0, 9),
                 summary: "future change",
+                help: "future migration",
             },
             BreakingChange {
-                version: Version(0, 0, 3),
+                version: Version(0, 0, 0),
                 summary: "already included",
+                help: "already migrated",
             },
         ];
         assert!(check_language(decl, Version(0, 0, 3), &changes).is_none());
         assert!(check_language(decl, Version(0, 0, 8), &[]).is_none());
         let diag = check_language(decl, Version(0, 0, 8), &changes).unwrap();
         assert_eq!(diag.code, Some(DiagCode::E0908));
-        assert!(diag.message.contains("in 0.0.4"));
-        assert_eq!(diag.notes, vec!["first change"]);
+        assert_eq!(
+            diag.message,
+            "this file was written for Benitoite 0.0.3, and the language changed incompatibly in 0.0.5"
+        );
+        let notes = [
+            "0.0.5: calls with two or more parameters require named arguments; function types and higher-order contracts require parameter names, and function values must match those names in order",
+            "0.0.6: `die` is reserved; IOErrorKind, NetworkErrorKind, Json.ParseError, and Csv.ParseError are @extensible; return values must start on the same physical line as `return`",
+        ];
+        let helps = [
+            "see the 0.0.5 section of CHANGELOG.md for named arguments and named function types",
+            "rename user-defined names spelled `die`; outside the defining package, add an unguarded `case other` or `case _` to cover future @extensible values in matches, and use a variable or `_` instead of destructuring them in bindings; record `..` covers only declared fields, while construction, updates, and getters keep their declared field contracts; start each return value on the same physical line as `return` (the value may continue across lines after it starts); use `try value or return`, `try value or die`, or `try value or die(message)` to make the failure action explicit; bare `try value` still returns failure from the innermost function or lambda; see CHANGELOG.md for migration details",
+        ];
+        assert_eq!(diag.notes, notes);
+        assert_eq!(diag.helps.len(), 2);
         assert_eq!(
             diag.helps[0].message,
-            "see docs/reference/benitoite.md for named arguments and named function types"
+            "see the 0.0.5 section of CHANGELOG.md for named arguments and named function types"
         );
         assert!(diag.helps[0].edits.is_empty());
+        assert_eq!(diag.helps[1].message, helps[1]);
+        assert!(diag.helps[1].edits.is_empty());
         assert_eq!(diag.primary.unwrap().span, decl.version.span);
         assert_eq!(
             check_language(decl, Version(0, 0, 2), &changes)
@@ -384,5 +424,56 @@ mod tests {
                 .code,
             Some(DiagCode::E0907)
         );
+
+        for (version, current, first) in [
+            ("0.0.0", Version(0, 0, 6), 0),
+            ("0.0.3", Version(0, 0, 6), 0),
+            ("0.0.4", Version(0, 0, 6), 0),
+            ("0.0.5", Version(0, 0, 6), 1),
+            ("0.0.6", Version(0, 0, 6), 2),
+            ("0.0.7", Version(0, 0, 6), 2),
+        ] {
+            let (out, _) = parse_source(&format!("language \"{version}\""), SourceKind::User);
+            let HeaderItem::Language(decl) = &out.module.header[0] else {
+                panic!()
+            };
+            let diagnostic = check_language(decl, current, &changes);
+            if version == "0.0.6" {
+                assert!(diagnostic.is_none());
+                continue;
+            }
+            let diagnostic = diagnostic.unwrap();
+            assert_eq!(diagnostic.primary.unwrap().span, decl.version.span);
+            assert!(diagnostic.secondary.is_empty());
+            if version == "0.0.7" {
+                assert_eq!(diagnostic.code, Some(DiagCode::E0907));
+                assert_eq!(
+                    diagnostic.message,
+                    "this file needs Benitoite 0.0.7 or later, but this is Benitoite 0.0.6"
+                );
+                assert!(diagnostic.notes.is_empty());
+                assert!(diagnostic.helps.is_empty());
+                continue;
+            }
+            assert_eq!(diagnostic.code, Some(DiagCode::E0908));
+            assert_eq!(
+                diagnostic.message,
+                format!(
+                    "this file was written for Benitoite {version}, and the language changed incompatibly in {}",
+                    if first == 0 { "0.0.5" } else { "0.0.6" }
+                )
+            );
+            assert_eq!(diagnostic.notes, notes[first..]);
+            assert_eq!(
+                diagnostic.helps,
+                helps[first..]
+                    .iter()
+                    .map(|message| Help {
+                        message: (*message).to_owned(),
+                        edits: Vec::new(),
+                    })
+                    .collect::<Vec<_>>()
+            );
+        }
     }
 }

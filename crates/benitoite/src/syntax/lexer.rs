@@ -757,6 +757,7 @@ pub(crate) fn keyword(word: &str) -> Option<TokenKind> {
         "case" => TokenKind::KwCase,
         "const" => TokenKind::KwConst,
         "data" => TokenKind::KwData,
+        "die" => TokenKind::KwDie,
         "div" => TokenKind::KwDiv,
         "do" => TokenKind::KwDo,
         "effect" => TokenKind::KwEffect,

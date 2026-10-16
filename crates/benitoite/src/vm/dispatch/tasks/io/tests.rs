@@ -526,7 +526,10 @@ end function
     assert!(matches!(
         vm.run(&mut io.rt),
         VmStep::Stopped(StopEnd {
-            reason: StopReason::Exit(17),
+            reason: StopReason::Exit {
+                code: 17,
+                die_failure: None
+            },
             ..
         })
     ));
@@ -598,7 +601,10 @@ fn request_batch_preserves_first_stop_and_expires_after_serve_failure() {
             let req = &mut io.rt.queue.live.get_mut(&ids[0]).unwrap().req;
             req.task.generation = req.task.generation.wrapping_add(1);
         } else {
-            vm.state.stopping = Some(StopReason::Exit(9));
+            vm.state.stopping = Some(StopReason::Exit {
+                code: 9,
+                die_failure: None,
+            });
         }
         vm.serve_request(&mut io.rt, ids[0]);
         let reason = vm.state.stopping.clone().unwrap();
@@ -607,7 +613,13 @@ fn request_batch_preserves_first_stop_and_expires_after_serve_failure() {
                 matches!(&reason, StopReason::Error(info) if matches!(info.stop, Stop::Internal(_)))
             );
         } else {
-            assert_eq!(reason, StopReason::Exit(9));
+            assert_eq!(
+                reason,
+                StopReason::Exit {
+                    code: 9,
+                    die_failure: None
+                }
+            );
         }
         vm.serve_request(&mut io.rt, ids[1]);
         assert!(io.rt.queue.live.is_empty());

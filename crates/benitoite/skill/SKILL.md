@@ -35,7 +35,7 @@ Run `benitoite --version` and compare the version on its first line (`benitoite 
 5. Do the confirmation in [Before running](#before-running).
 6. Run `benitoite run script.bnt [arguments...]`.
 
-Exit codes of `run`: 0 when `main` finishes, 1 when `main` returns `Result.Error` or the program stops with a runtime error, 2 when the script does not pass the checks or the command line is wrong, 3 for an internal error of `benitoite`. `Process.exit(n)` ends with `n`. `run` and `test` end with 130 when interrupted (`SIGINT` or `SIGTERM`).
+Exit codes of `run`: 0 when `main` finishes, 1 when `main` returns `Result.Error`, an unhandled `or die` ends the run, or the program stops with a runtime error, 2 when the script does not pass the checks or the command line is wrong, 3 for an internal error of `benitoite`. `Process.exit(n)` ends with `n`. `run` and `test` end with 130 when interrupted (`SIGINT` or `SIGTERM`).
 
 ## Workflow for tests
 
@@ -62,7 +62,7 @@ A script that passes `check` performs no built-in operation outside the `uses` o
 | `File.Read` | reads files and directories |
 | `File.Write` | creates, changes, moves, or deletes files and directories |
 | `Process.Run` | starts external commands (name them) |
-| `Process.Exit` | ends the program with a chosen exit code |
+| `Process.Exit` | ends the run with a chosen exit code; `or die` reports its cause and optional message to standard error and exits with status 1 |
 | `Process.Environment` | reads command-line arguments, environment variables, the working directory, and the script directory |
 | `Clock.Time` | reads the clock and waits for time to pass |
 | `Random.Generate` | generates random numbers |
@@ -74,18 +74,21 @@ A script that passes `check` performs no built-in operation outside the `uses` o
 
 ## Language rules that differ from other languages
 
+- There are 35 keywords; see [Keywords as names](references/common-mistakes.md#keywords-as-names). `die` is reserved and cannot be a name, including a label, field, import alias, or name after a dot. It is accepted only in `try value or die` and `try value or die(message)`, with a pure String message, a Show constraint for Result errors, and the Process.Exit effect. A standalone `die` is rejected. `fn`, `pub`, `impl`, `mut`, `async`, `await`, `spawn`, and `select` remain ordinary names, not abbreviations for syntax. Write declarations with `function`, `public`, and `implement`, and anonymous functions with `lambda`. `as`, file-header words, and attribute names have special meanings only in their own contexts. `extensible` is an ordinary name. The argument-free `@extensible` attribute applies to data and record declarations. Outside their defining package, patterns must cover future shapes with an unguarded variable or `_`.
 - Except for a short lambda, blocks end with `end` and the keyword: `end function`, `end if`, `end match`, `end lambda`, `end data`, `end record`, `end handle`, `end with`. There are no braces and no indentation rules.
 - Bind a local name with `bind x <- e`, not `let`. `shadow x <- e` can hide a local name that is already visible, but is discouraged. Prefer a new name describing the new value, even when the hiding is intentional. Names cannot be reassigned.
-- A function is `function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2` ... `end function`. The return type follows `->`, never `:`. Return values with `return`.
+- A function is `function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2` ... `end function`. The return type follows `->`, never `:`. Return values with `return`. Start the value on the same physical line as `return`; an immediate line break ends the statement even inside parentheses and is an error (E0201). After the value has started, ordinary multiline continuation is allowed (operators, parentheses, call arguments, and `then`). Short lambdas must still fit on one physical line.
 - Prefer `match` for selecting a value or action. Use `if` without `else` for a conditional action or an early return. `else` and `else if` are valid but are discouraged; this advice adds no warning. Preserve condition evaluation count and order, evaluate only the selected branch, and keep `return` in the same function or lambda. For effectful conditions, nest matches on booleans instead of moving the conditions into guards.
 - For a final catch-all branch, prefer a fresh name such as `case other ->` or `case otherCode ->`. It is an ordinary binding, not a keyword; avoid collisions with outer local names and put no unreachable branch after it. `case _ ->` is valid. This advice does not apply to `_` inside constructors, discarded bindings, or partial applications.
 - Prefer a short lambda for one statement: `List.map(xs: xs, f: lambda(value) return value * 2)`. Its whole header and body must fit on one physical line; a non-`Unit` result still needs `return`. A body starting on the header's last line takes `end lambda` only immediately after its statement on that same physical line. A terminator on a later line closes the corresponding outer lambda; blank or comment lines do not change that correspondence. For a multiline body, start on the line after the header and add `end lambda`. Before adding a second statement, switch to the multiline form. The formatter preserves the chosen ending.
 - Parenthesize the inner lambda in a directly nested pair if either omits its terminator: `lambda(x) return (lambda(y) return x + y)`. Call arguments and binding statements provide independent boundaries. A pipe in `lambda(x) return x + 1 |> increment` belongs to the body; `(lambda(x) return x + 1)(3)` calls the lambda itself.
 - Match patterns with `match value with`, then one `case pattern -> body` per line, then `end match`. A handler is `handle body with` / `case Module.operation(arguments) -> clause` / `end handle`.
 - Declare data types with `data Name` ... `end data` and records with `record Name` ... `end record`.
+- `@extensible` marks `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, and `Csv.ParseError`; it is also available on user data and records. Outside their defining package, cover future shapes with an unguarded variable or `_`, even after every known constructor (including `Other`). A record pattern's `..` only omits current fields: use getters or a `match` with a branch for future shapes instead of a destructuring `bind`. Construction, updates, and getters keep their contracts; record field additions have no compatibility guarantee. `Result` and `Option` remain closed. See [Records and data types](references/idioms.md#records-and-data-types).
 - Constructors are written with their type name, in expressions and in patterns: `Option.Some(x)`, `Option.None`, `Result.Ok(x)`, `Result.Error(e)`, `Shape.Circle(r)`.
 - Operators: `=` and `<>` compare; `and`, `or`, `not` are logical; `div` and `mod` divide integers; `+` also joins strings. `==`, `!=`, `&&`, `||`, `!` do not exist.
-- `try e` applies to the whole expression on its right, including pipes: `try File.readText(p) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))`. Use `try` only in a function that returns `Result` (or `Option`); when the error types differ, convert with `Result.mapError` first.
+- Use `try e or return` in reusable functions, libraries, and callbacks. It returns the failure from the innermost function or lambda, whose return type must be a matching Result or Option. Convert different error types with `Result.mapError` first. Bare `try e` is permanently fixed to the same returning meaning and adds no Show requirement. The input includes pipes up to the action: `try File.readText(p) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return`.
+- Prefer `try e or die` or `try e or die(message)` in an entry point that should end on failure. It allows any enclosing return type and adds Process.Exit; import `Benitoite.Unofficial.IO.Process` for `uses Process.Exit`. Result errors require Trait.Show; Option does not. The standard Show for IOError, NetworkError, Json.ParseError, and Csv.ParseError returns their message unchanged. Success evaluates neither the pure String message nor Show; failure evaluates message, then Show, then exit. No Console.Write is needed for the host report. See [Program shape and error handling](references/idioms.md#program-shape-and-error-handling) for boundaries, handlers, and stopping rules. A main that returns Result.Error or cannot use Process.Exit can use `or return`.
 - For an ordinary call with two or more parameters, label every argument: `List.map(xs: xs, f: action)`. Do not mix named and positional arguments. A one-parameter function accepts `f(value)` or `f(name: value)`; use `f()` for zero parameters. Labels can be written in any order, but evaluation is the callee first, then argument expressions once each in source order. Labels refer to parameters, not local values. These rules also apply to built-ins, function values, methods, effect operations, and external functions. Direct data constructors and patterns, attributes, handler bindings, and `resume` keep their own syntax.
 - Function types include names: `function(value: T) -> U`. Names and their order must match every callback contract, even for a single parameter. `List.map` takes `value`, `List.fold` takes `acc, value`, `Map.map` takes `key, value`, and `Result.mapError` takes `error`. Keep expected names even for unused parameters; use a local `bind` for a descriptive alias. Wrap a function with another contract: `lambda(value) return Integer.toString(value)`. Do not invent a contract from call-label order; add a named function-type annotation when E0455 says the contract is unknown.
 - Without direct holes, `xs |> List.map(f: action)` supplies the first declared parameter. Label the remaining arguments and do not supply the first parameter twice. Evaluation is the left side once, then the right callee, then explicit arguments in source order. With direct holes, or a parenthesized right side, the pipe calls the resulting function with one argument; two holes do not trigger automatic partial application.
@@ -122,7 +125,7 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   List.forEach(xs: lines, f: lambda(value) Console.writeLine("${String.characterCount(value)} ${value}"))
   return match List.head(lines) with
     case Option.Some(first) -> Result.Ok(Console.writeLine("first: ${first}"))
@@ -140,13 +143,13 @@ first: one
 
 ## Tests
 
-A test is a function with `@test("description")`, no parameters, and the return type `Unit` or `Result[Unit, String]` (use the latter when the test uses `try`). Check with `Assert.equal(actual: actual, expected: expected)`. Replace an operation such as `File.readText` or `Process.run` with a handler so that the test does not touch the outside world; more examples are in `references/idioms.md`. Checks in generic helpers recover constructor names when the caller's types can be determined; otherwise, a type may remain unknown. If a report shows `<constructor #n of an unknown type>` (the zero-based constructor position), compare values with a concrete type in the check to show their names.
+A test is a function with `@test("description")`, no parameters, and the return type `Unit` or `Result[Unit, String]` (use the latter when the test uses `try e or return`). Check with `Assert.equal(actual: actual, expected: expected)`. Replace an operation such as `File.readText` or `Process.run` with a handler so that the test does not touch the outside world; more examples are in `references/idioms.md`. Checks in generic helpers recover constructor names when the caller's types can be determined; otherwise, a type may remain unknown. If a report shows `<constructor #n of an unknown type>` (the zero-based constructor position), compare values with a concrete type in the check to show their names.
 
 ```benitoite test
 import Benitoite.Unofficial.IO.File
 
 function firstLine(path: String) -> Result[String, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return Option.okOr(o: List.head(String.lines(text)), error: "empty file")
 end function
 

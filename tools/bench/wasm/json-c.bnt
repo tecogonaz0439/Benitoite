@@ -12,20 +12,20 @@ import Benitoite.Unofficial.IO.Process
 import Runner
 
 function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write, Process.Environment
-  bind task <- try Runner.argument(0)
-  bind path <- try Runner.argument(1)
-  bind count <- try Runner.rounds(2)
-  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
+  bind task <- try Runner.argument(0) or return
+  bind path <- try Runner.argument(1) or return
+  bind count <- try Runner.rounds(2) or return
+  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
   if task = "parse" then
     return Runner.measure(count: count, work: lambda() -> Result[Json.Value, String] uses State return Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) end lambda, render: lambda(value) -> String return Json.stringify(value) end lambda)
   end if
   if task = "stringify" then
-    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
     return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State return Codec.stringify(parsed) end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   if task = "read" then
     return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State
-      bind doc <- try Result.mapError(r: Codec.document(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+      bind doc <- try Result.mapError(r: Codec.document(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
       return Result.Ok("[" + String.join(xs: List.map(xs: ["/0/id", "/0/label", "/0/nested"], f: lambda(value: String) -> String uses State
         return Option.unwrapOr(o: Codec.get(document: doc, pointer: value), fallback: "null")
       end lambda), separator: ",") + "]")
@@ -38,13 +38,13 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
     return Runner.measure(count: count, work: lambda() -> Result[Unit, String] uses State return Result.mapError(r: Codec.validate(source), f: lambda(error) return Json.ParseError.message(error) end lambda) end lambda, render: lambda(value: Unit) -> String return "valid" end lambda)
   end if
   if task = "canonical" then
-    bind parsed <- try Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
-    Console.writeLine(try Codec.stringify(parsed))
+    bind parsed <- try Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+    Console.writeLine(try Codec.stringify(parsed) or return)
     return Result.Ok(())
   end if
   if task = "verify" then
-    bind parsed <- try Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
-    bind output <- try Codec.stringify(parsed)
+    bind parsed <- try Result.mapError(r: Codec.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
+    bind output <- try Codec.stringify(parsed) or return
     return Runner.measure(count: 1, work: lambda() -> Result[String, String] uses State return Result.Ok(output) end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   return Result.Error("unknown JSON task")

@@ -1,0 +1,1016 @@
+--- a/crates/benitoite/src/cli/tools/package/tests.rs
++++ b/crates/benitoite/src/cli/tools/package/tests.rs
+@@ -33,11 +33,11 @@
+     for prefix in [
+         "",
+         "\u{feff}",
+-        "\u{feff}language \"0.0.5\"\n\n",
++        "\u{feff}language \"0.0.6\"\n\n",
+         "//! module\n\n",
+         "//! module\n \n\n",
+         "#!/usr/bin/env benitoite\n\n",
+-        "//! module\n\n// header description\nlanguage \"0.0.5\" // trailing\n\n",
++        "//! module\n\n// header description\nlanguage \"0.0.6\" // trailing\n\n",
+     ] {
+         for nl in ["\n", "\r\n"] {
+             let source = format!("{prefix}{body}").replace('\n', nl);
+@@ -88,11 +88,11 @@
+         let edited = edit::splice(
+             source,
+             edit::range(source, &ast),
+-            "language \"0.0.5\"\n",
++            "language \"0.0.6\"\n",
+             FileId(0),
+         )
+         .unwrap();
+-        assert!(edited.ends_with("language \"0.0.5\"\n"));
++        assert!(edited.ends_with("language \"0.0.6\"\n"));
+         assert_eq!(
+             super::super::formatter::format_source(FileId(0), SourceKind::User, edited.as_bytes())
+                 .unwrap()
+--- a/crates/benitoite/src/external/tests.rs
++++ b/crates/benitoite/src/external/tests.rs
+@@ -1609,7 +1609,7 @@
+                 ),
+                 (
+                     "deps/lib/package.bnt",
+-                    "language \"0.0.5\"\npackage Library\nend package\n",
++                    "language \"0.0.6\"\npackage Library\nend package\n",
+                 ),
+                 ("deps/lib/Calc.bnt", &declaration),
+             ])
+@@ -1751,7 +1751,7 @@
+                 "Lib/Nested.bnt",
+                 nested.replace("wasm/x.wasm", "x.wasm").as_bytes(),
+             ),
+-            ("package.bnt", b"language \"0.0.5\"\n"),
++            ("package.bnt", b"language \"0.0.6\"\n"),
+             ("x.wasm", &bytes),
+         ],
+         options,
+@@ -1775,7 +1775,7 @@
+         ("x.wasm", Some(DiagCode::E1003)),
+     ] {
+         let main = "dependency Alias\npath \"deps/fuzzy\"\nend dependency\nimport Alias.Distance\nfunction main() -> Unit\n()\nend function\n";
+-        let config = "language \"0.0.5\"\npackage Fuzzy\nlicense \"MIT\"\nend package\n";
++        let config = "language \"0.0.6\"\npackage Fuzzy\nlicense \"MIT\"\nend package\n";
+         let module = nested.replace("wasm/x.wasm", path);
+         let result = pipeline::check_files(
+             &[
+--- a/crates/benitoite/src/modules/hash.rs
++++ b/crates/benitoite/src/modules/hash.rs
+@@ -219,7 +219,7 @@
+     }
+
+     const FIXED: &str = "sha256:a1b90227fd78ffd9f1ce24c6969a96511416e6f18571e480713a16e92f7b503f";
+-    const CONFIG: &str = "language \"0.0.5\"\npackage Textkit\nend package\n";
++    const CONFIG: &str = "language \"0.0.6\"\npackage Textkit\nend package\n";
+
+     fn fixture() -> MemFs {
+         let mut fs = MemFs::new(&[
+--- a/crates/benitoite/src/modules/tests.rs
++++ b/crates/benitoite/src/modules/tests.rs
+@@ -864,7 +864,7 @@
+ #[test]
+ fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
+     for config_name in ["package.bnt", "Package.bnt"] {
+-        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.5\"\n")]);
++        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.6\"\n")]);
+         assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
+         assert_aligned(&output);
+         if config_name == "package.bnt" {
+@@ -884,7 +884,7 @@
+
+ #[test]
+ fn config_cannot_be_a_starting_file() {
+-    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.5\"\n")]);
++    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.6\"\n")]);
+     let entry = EntrySpec {
+         path: "/root/package.bnt".into(),
+         display_name: "package.bnt".into(),
+@@ -908,19 +908,19 @@
+         ),
+         (
+             "/library/package.bnt",
+-            "language \"0.0.5\"\npackage Textkit\nend package\n",
++            "language \"0.0.6\"\npackage Textkit\nend package\n",
+         ),
+         ("/library/Slug.bnt", "import Internal.Helper\n"),
+         ("/library/Internal/Helper.bnt", ""),
+         (
+             "/second/package.bnt",
+-            "language \"0.0.5\"\npackage Textkit\nend package\n",
++            "language \"0.0.6\"\npackage Textkit\nend package\n",
+         ),
+         ("/second/Slug.bnt", "import Internal.Helper\n"),
+         ("/second/Internal/Helper.bnt", ""),
+         (
+             "/unused/package.bnt",
+-            "language \"0.0.5\"\npackage Unused\nend package\n",
++            "language \"0.0.6\"\npackage Unused\nend package\n",
+         ),
+         ("/unused/Unread.bnt", "this is deliberately not a module"),
+     ]);
+@@ -993,7 +993,7 @@
+             ("main.bnt", main),
+             (
+                 "deps/library/package.bnt",
+-                "language \"0.0.5\"\npackage Library\nend package\n",
++                "language \"0.0.6\"\npackage Library\nend package\n",
+             ),
+             ("/outside/Target.bnt", ""),
+         ]);
+@@ -1028,7 +1028,7 @@
+         ),
+         (
+             "/library/package.bnt",
+-            "language \"0.0.5\"\npackage Textkit\nend package\n",
++            "language \"0.0.6\"\npackage Textkit\nend package\n",
+         ),
+         ("/library/Slug.bnt", ""),
+     ]);
+@@ -1064,11 +1064,11 @@
+             ("main.bnt", &main),
+             (
+                 "/libs/package.bnt",
+-                "language \"0.0.5\"\npackage Libs\nend package\n",
++                "language \"0.0.6\"\npackage Libs\nend package\n",
+             ),
+             (
+                 "/libs/Nested/package.bnt",
+-                "language \"0.0.5\"\npackage Nested\nend package\n",
++                "language \"0.0.6\"\npackage Nested\nend package\n",
+             ),
+             ("/libs/Value.bnt", ""),
+             ("/libs/Nested/Value.bnt", ""),
+@@ -1103,7 +1103,7 @@
+             ),
+             (
+                 "/library/package.bnt",
+-                "language \"0.0.5\"\npackage Library\nend package\n",
++                "language \"0.0.6\"\npackage Library\nend package\n",
+             ),
+         ]);
+         fs.add_file(format!("/library/{tail}"), vec![]);
+@@ -1139,7 +1139,7 @@
+         ),
+         (
+             "deps/lib/package.bnt",
+-            "language \"0.0.5\"\npackage Library\nend package\n",
++            "language \"0.0.6\"\npackage Library\nend package\n",
+         ),
+         ("deps/lib/Value.bnt", ""),
+     ]);
+--- a/crates/benitoite/src/typeck/pattern_ext.rs
++++ b/crates/benitoite/src/typeck/pattern_ext.rs
+@@ -862,7 +862,7 @@
+                     files.extend([
+                         (
+                             "package.bnt",
+-                            "language \"0.0.5\"\ndependency Dep\n path \"dep\"\nend dependency\n",
++                            "language \"0.0.6\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+                         ),
+                         (
+                             "dep/package.bnt",
+--- a/crates/benitoite/testdata/external/self-package-outside/package.bnt
++++ b/crates/benitoite/testdata/external/self-package-outside/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Self
+ end package
+--- a/crates/benitoite/testdata/external/self-package/package.bnt
++++ b/crates/benitoite/testdata/external/self-package/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Self
+ end package
+--- a/crates/benitoite/testdata/fmt/header.bnt
++++ b/crates/benitoite/testdata/fmt/header.bnt
+@@ -1,5 +1,5 @@
+ // spec: 01-02 ファイルの先頭の部分
+-language    "0.0.5"
++language    "0.0.6"
+ dependency Textkit
+ // 手元のパス
+        path    "../textkit"
+--- a/crates/benitoite/testdata/fmt/header.formatted
++++ b/crates/benitoite/testdata/fmt/header.formatted
+@@ -1,5 +1,5 @@
+ // spec: 01-02 ファイルの先頭の部分
+-language "0.0.5"
++language "0.0.6"
+
+ dependency Textkit
+   // 手元のパス
+--- a/crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/config-declaration/package.bnt
++++ b/crates/benitoite/testdata/packages/config-declaration/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ import Benitoite.String
+ function main() -> Unit
+   ()
+--- a/crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/d6c-extensible-external/package.bnt
++++ b/crates/benitoite/testdata/packages/d6c-extensible-external/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ dependency Dep
+   path "../extensible.files/dep"
+ end dependency
+--- a/crates/benitoite/testdata/packages/d6c-extensible-missing/package.bnt
++++ b/crates/benitoite/testdata/packages/d6c-extensible-missing/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ dependency Dep
+   path "../extensible.files/dep"
+ end dependency
+--- a/crates/benitoite/testdata/packages/d8-extensible-run/package.bnt
++++ b/crates/benitoite/testdata/packages/d8-extensible-run/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ dependency Dep
+   path "../d8-extensible.files/dep"
+ end dependency
+--- a/crates/benitoite/testdata/packages/d8-extensible.files/dep/package.bnt
++++ b/crates/benitoite/testdata/packages/d8-extensible.files/dep/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Dep
+ end package
+--- a/crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+ import Helper
+--- a/crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt
+@@ -1 +1 @@
+-language "0.0.5"
++language "0.0.6"
+--- a/crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt
++++ b/crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Root
+ end package
+--- a/crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt
++++ b/crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ package Nested
+ end package
+ dependency Other
+--- a/crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/extensible.files/dep/package.bnt
++++ b/crates/benitoite/testdata/packages/extensible.files/dep/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Dep
+ end package
+--- a/crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt
++++ b/crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+
+ package Hashkit
+ end package
+--- a/crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+   license "MIT"
+ end package
+--- a/crates/benitoite/testdata/packages/header-overlap/main.bnt
++++ b/crates/benitoite/testdata/packages/header-overlap/main.bnt
+@@ -1,6 +1,6 @@
+ // spec: 01-02 ファイルの先頭の部分
+ // spec: 01-03 依存の記述と `package.bnt`
+-language "0.0.5"
++language "0.0.6"
+ dependency Textkit
+   path "deps/textkit"
+ end dependency
+--- a/crates/benitoite/testdata/packages/header-overlap/package.bnt
++++ b/crates/benitoite/testdata/packages/header-overlap/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ dependency Other
+   path "deps/textkit"
+ end dependency
+--- a/crates/benitoite/testdata/packages/header/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/header/deps/textkit/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+   license "MIT"
+ end package
+--- a/crates/benitoite/testdata/packages/header/main.bnt
++++ b/crates/benitoite/testdata/packages/header/main.bnt
+@@ -1,6 +1,6 @@
+ // spec: 01-02 ファイルの先頭の部分
+ // spec: 01-03 依存の記述と `package.bnt`
+-language "0.0.5"
++language "0.0.6"
+ dependency Textkit
+   path "deps/textkit"
+ end dependency
+--- a/crates/benitoite/testdata/packages/imported-header/Helper.bnt
++++ b/crates/benitoite/testdata/packages/imported-header/Helper.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ dependency Textkit
+   path "deps/textkit"
+ end dependency
+--- a/crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+   license "MIT"
+ end package
+--- a/crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ package Fuzzy
+   license "MIT"
+ end package
+--- a/crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+
+ package JsonChecks
+   license "MIT OR Apache-2.0"
+--- a/crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+
+ package PureJson
+   license "MIT OR Apache-2.0"
+--- a/crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+
+ package WasmHash
+   license "MIT OR Apache-2.0"
+--- a/crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+
+ package WasmJson
+   license "MIT OR Apache-2.0"
+--- a/crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt
++++ b/crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+
+ package WasmRegex
+   license "MIT OR Apache-2.0"
+--- a/crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/package-as-root/package.bnt
++++ b/crates/benitoite/testdata/packages/package-as-root/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+   license "MIT"
+ end package
+--- a/crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+   license "MIT"
+ end package
+--- a/crates/benitoite/testdata/packages/package-dependencies/package.bnt
++++ b/crates/benitoite/testdata/packages/package-dependencies/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ dependency Textkit
+   path "deps/textkit"
+ end dependency
+--- a/crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt
++++ b/crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ /// 前後の空白を除き、小文字にし、空白の連なりを "-" にする。"  Hello World " は "hello-world" になる。
+ public function slug(text: String) -> String
+   bind words <- String.split(s: String.toLowercase(String.trim(text)), separator: " ")
+--- a/crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt
++++ b/crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Other
+ end package
+--- a/crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+   license "MIT"
+ end package
+--- a/crates/benitoite/testdata/packages/root-config/package.bnt
++++ b/crates/benitoite/testdata/packages/root-config/package.bnt
+@@ -1,4 +1,4 @@
+-language "0.0.5"
++language "0.0.6"
+ dependency Textkit
+   path "deps/textkit"
+ end dependency
+--- a/crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt
++++ b/crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Textkit
+ end package
+--- a/crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt
++++ b/crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt
+@@ -1,3 +1,3 @@
+-language "0.0.5"
++language "0.0.6"
+ package Todo
+ end package
+--- a/crates/benitoite/tests/desugar_export/named.rs
++++ b/crates/benitoite/tests/desugar_export/named.rs
+@@ -586,12 +586,12 @@
+     fs::create_dir_all(root.join("dep")).unwrap();
+     fs::write(
+         root.join("package.bnt"),
+-        "language \"0.0.5\"\ndependency Dep\n path \"dep\"\nend dependency\n",
++        "language \"0.0.6\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+     )
+     .unwrap();
+     fs::write(
+         root.join("dep/package.bnt"),
+-        "language \"0.0.5\"\npackage Dep\nend package\n",
++        "language \"0.0.6\"\npackage Dep\nend package\n",
+     )
+     .unwrap();
+     fs::write(root.join("dep/Inspect.bnt"), "import Benitoite.IOErrorKind\npublic const answer: Integer = 42\npublic function inspect(kind: IOErrorKind) -> Integer\n return match kind with\n case IOErrorKind.NotFound -> 1\n case _ -> 0\n end match\nend function\n").unwrap();
+--- a/crates/benitoite/tests/fmt_command.rs
++++ b/crates/benitoite/tests/fmt_command.rs
+@@ -476,13 +476,13 @@
+     let dir = TestDirectory::new("package-settings");
+     dir.write(
+         "package.bnt",
+-        "language    \"0.0.5\"\npackage Textkit\n       license   \"MIT\"\nend package\n",
++        "language    \"0.0.6\"\npackage Textkit\n       license   \"MIT\"\nend package\n",
+     );
+     let output = fmt(&dir, &["."]);
+     assert_eq!(code(&output), 0, "{}", stderr(&output));
+     assert_eq!(
+         dir.read("package.bnt"),
+-        "language \"0.0.5\"\n\npackage Textkit\n  license \"MIT\"\nend package\n"
++        "language \"0.0.6\"\n\npackage Textkit\n  license \"MIT\"\nend package\n"
+     );
+     let output = fmt(&dir, &["--check", "."]);
+     assert_eq!(code(&output), 0, "{}", stderr(&output));
+--- a/crates/benitoite/tests/package_command.rs
++++ b/crates/benitoite/tests/package_command.rs
+@@ -15,7 +15,7 @@
+     process::{Command, Output},
+     time::{SystemTime, UNIX_EPOCH},
+ };
+-const CONFIG: &str = "language \"0.0.5\"\n\npackage Words\nend package\n";
++const CONFIG: &str = "language \"0.0.6\"\n\npackage Words\nend package\n";
+ const MAIN: &str = "function main() -> Unit\n  ()\nend function\n";
+ const READ: &str = "import Benitoite.Unofficial.IO.File\n\npublic function read() -> Unit uses File.Read\n  ()\nend function\n";
+ struct Directory(PathBuf);
+@@ -189,7 +189,7 @@
+     let dir = Directory::new();
+     dir.fixture();
+     let source = format!(
+-        "//! main\n\n// version\nlanguage \"0.0.5\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
++        "//! main\n\n// version\nlanguage \"0.0.6\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
+     );
+     dir.write("main.bnt", &source);
+     success(&dir.command(&["check", "main.bnt"]));
+@@ -216,7 +216,7 @@
+     assert_eq!(dir.read("main.bnt"), format!("//! main\n\n{MAIN}"));
+     assert_eq!(
+         dir.read("package.bnt"),
+-        "// version\nlanguage \"0.0.5\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n"
++        "// version\nlanguage \"0.0.6\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n"
+     );
+     success(&dir.command(&["check", "main.bnt"]));
+     for existing in [false, true] {
+@@ -271,8 +271,8 @@
+         (vec!["move", "main.bnt"], MAIN.into(), None, "E0925"),
+         (
+             vec!["move", "main.bnt"],
+-            format!("language \"0.0.5\"\n{MAIN}"),
+-            Some("language \"0.0.5\"\n"),
++            format!("language \"0.0.6\"\n{MAIN}"),
++            Some("language \"0.0.6\"\n"),
+             "E0926",
+         ),
+     ] {
+@@ -397,14 +397,14 @@
+     dir.write(
+         "main.bnt",
+         &format!(
+-            "language \"0.0.5\"\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
++            "language \"0.0.6\"\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
+         ),
+     );
+     error(&dir.package(&["move", "main.bnt"]), "E0915");
+     assert_eq!(dir.read("package.bnt"), "package Words\nend package\n");
+-    dir.write("main.bnt", &format!("language \"0.0.5\"\n\n{MAIN}"));
++    dir.write("main.bnt", &format!("language \"0.0.6\"\n\n{MAIN}"));
+     success(&dir.package(&["move", "main.bnt"]));
+-    assert!(dir.read("package.bnt").contains("language \"0.0.5\""));
++    assert!(dir.read("package.bnt").contains("language \"0.0.6\""));
+ }
+
+ // spec: 06-01 `package` のコマンドライン
+@@ -449,7 +449,7 @@
+     ] {
+         let dir = Directory::new();
+         dir.fixture();
+-        dir.write("main.bnt", &format!("language \"0.0.5\"\n\n{MAIN}"));
++        dir.write("main.bnt", &format!("language \"0.0.6\"\n\n{MAIN}"));
+         dir.write("package.bnt", comments);
+         success(&dir.package(&["move", "main.bnt"]));
+         let nl = if comments.contains("\r\n") {
+@@ -460,7 +460,7 @@
+         assert_eq!(
+             dir.read("package.bnt"),
+             format!(
+-                "{}{nl}{nl}language \"0.0.5\"{nl}",
++                "{}{nl}{nl}language \"0.0.6\"{nl}",
+                 comments.trim_end_matches(['\r', '\n'])
+             )
+         );
+--- a/crates/benitoite/tests/spec_examples.rs
++++ b/crates/benitoite/tests/spec_examples.rs
+@@ -451,7 +451,7 @@
+             // 外部のファイルだけを補い、依存の解決も本物の読み込みと名前解決を通す。
+             (
+                 format!("{path}/package.bnt"),
+-                format!("language \"0.0.5\"\npackage {alias}\nend package\n").into_bytes(),
++                format!("language \"0.0.6\"\npackage {alias}\nend package\n").into_bytes(),
+             )
+         })
+         .collect();
+--- a/crates/benitoite/tests/test_command.rs
++++ b/crates/benitoite/tests/test_command.rs
+@@ -764,7 +764,7 @@
+ #[test]
+ fn directory_walk_skips_settings_and_nested_package_roots() {
+     let dir = Directory::new("package-roots");
+-    dir.write("package.bnt", "language \"0.0.5\"\n");
++    dir.write("package.bnt", "language \"0.0.6\"\n");
+     dir.write(
+         "tests.bnt",
+         "@test\nfunction rootTest() -> Unit\n()\nend function\n",
+@@ -775,7 +775,7 @@
+     );
+     dir.write(
+         "deps/textkit/package.bnt",
+-        "language \"0.0.5\"\npackage Textkit\nend package\n",
++        "language \"0.0.6\"\npackage Textkit\nend package\n",
+     );
+     dir.write(
+         "deps/textkit/tests.bnt",
+--- a/docs/design/01-spec/01-02-syntax.md
++++ b/docs/design/01-spec/01-02-syntax.md
+@@ -451,7 +451,7 @@
+ 【決定】ファイルの先頭の `//!` の後、最初の import か宣言の前に、言語の版、依存の記述、パッケージの名前を書ける。項目の順序は問わない。`language`・`dependency`・`package` と欄の名前は、予約語ではなく、この位置で意味を持つ語である。理由: 通常の識別子としての用途を保ち、同じ設定を入口と設定ファイルで同じ構文で書くためである。
+
+ ```text
+-language "0.0.5"
++language "0.0.6"
+
+ dependency Textkit
+   path "../packages/textkit"
+--- a/docs/design/01-spec/01-03-names-modules.md
++++ b/docs/design/01-spec/01-03-names-modules.md
+@@ -275,7 +275,7 @@
+
+ 【決定】`package` のブロックは、`package.bnt` にだけ書ける。このブロックを持つ設定ファイルでは、`language` が必須であり、`dependency` は書けない。根として開発中のパッケージを検査する場合にも、同じ規則を適用する。理由: パッケージの設定の規則を、利用する側と開発する側で揃えるためである。
+
+-【決定】`language` は、そのファイルを書いた時点の Benitoite の版を一つ宣言する。宣言が処理系の版より新しければ誤りとする。古ければ、宣言より後、処理系の版以前に互換性を壊した変更があるかを照合し、あれば最も古い変更の版と内容を誤りとして示す。互換性を壊した版の表には、名前付き呼び出し・名前必須の関数型・関数値の名前と順の適合・高階の契約名への変更を `0.0.5` の一件として登録する。入口と、`package` のブロックを持たない根の設定ファイルでは宣言を省略できる。理由: 作者に将来の対応範囲の予測を求めず、互換性を壊した変更の知識を処理系で管理するためである。
++【決定】`language` は、そのファイルを書いた時点の Benitoite の版を一つ宣言する。宣言が処理系の版より新しければ誤りとする。古ければ、宣言より後、処理系の版以前に互換性を壊した変更があるかを照合し、あれば最初の変更の版を誤りの主文に示し、該当するすべての変更と移行の案内を版順に示す。互換性を壊した版の表には、名前付き呼び出し・名前必須の関数型・関数値の名前と順の適合・高階の契約名への変更を `0.0.5` の項目として登録し、die の予約・四つの標準失敗型への @extensible の指定・return 直後の改行継続の廃止を `0.0.6` の項目として登録する。入口と、`package` のブロックを持たない根の設定ファイルでは宣言を省略できる。理由: 作者に将来の対応範囲の予測を求めず、互換性を壊した変更の知識を処理系で管理するためである。
+
+ 依存の記述は、読み込みで検査し、import の解決に使う。`hash` を書いた依存は、読み込みのたびに中身を確かめる。設定ファイルの例、ツールの扱い、中身のハッシュの規則は、[パッケージ](../06-tooling/06-09-packages.md)で定める。
+
+--- a/docs/design/06-tooling/06-09-packages.md
++++ b/docs/design/06-tooling/06-09-packages.md
+@@ -17,7 +17,7 @@
+ 根の設定の例:
+
+ ```text
+-language "0.0.5"
++language "0.0.6"
+
+ dependency Textkit
+   path "../textkit"
+@@ -29,7 +29,7 @@
+ 【決定】根の `package.bnt` に `package` のブロックがあるときは、パッケージを自分の根で検査する場合も、入口と根のモジュールの `@external` のパスを根の `wasm/` の下に限る。`package` のブロックのない根の設定では、この制限を当てない。パスの照合は[外部の関数](../03-interop/03-10-external-functions.md)に従う。理由: 自分の根では通る宣言が、依存として読まれたときに初めて拒否されるのを防ぐためである。
+
+ ```text
+-language "0.0.5"
++language "0.0.6"
+
+ package Textkit
+   license "MIT"
+@@ -38,7 +38,7 @@
+
+ ### 設定ファイルの検査
+
+-【決定】入口の解析の直後、import の解決より前に、根の項目の一覧を読み、名前が `package.bnt` に完全に一致する非ディレクトリの項目があれば読み込む。入口と設定ファイルの言語の版を、それぞれ処理系の版と照合する。互換性を壊した版の表には、名前付き呼び出し・名前必須の関数型・関数値の名前と順の適合・高階の契約名への変更を `0.0.5` の一件として登録する。設定ファイルもソース表とモジュール表に加える（[ソース管理と位置情報](../02-impl/02-02-source-and-spans.md)）。
++【決定】入口の解析の直後、import の解決より前に、根の項目の一覧を読み、名前が `package.bnt` に完全に一致する非ディレクトリの項目があれば読み込む。入口と設定ファイルの言語の版を、それぞれ処理系の版と照合する。互換性を壊した版の表には、名前付き呼び出し・名前必須の関数型・関数値の名前と順の適合・高階の契約名への変更を `0.0.5` の項目として登録し、die の予約・四つの標準失敗型への @extensible の指定・return 直後の改行継続の廃止を `0.0.6` の項目として登録する。設定ファイルもソース表とモジュール表に加える（[ソース管理と位置情報](../02-impl/02-02-source-and-spans.md)）。
+
+ 【決定】宣言した版より後で、処理系の版以下の互換性を壊す変更をすべて選び、版順に E0908 の案内へ列挙する。主文は最初に該当する版を示す。注記は各変更の版と要約を `版: 要約` の形で示し、修正案は同じ順で変更ごとの移行方法を示す。修正案にソースの置き換えは付けない。宣言より後の変更が該当しなければ受理し、処理系より新しい宣言には E0907 を出す。`language` のないファイルは現在の規則で読み、古い宣言を自動で書き換えない。理由: 最初の変更だけを案内すると、後の変更に必要な移行を見落とすためである。
+
+--- a/docs/ja/reference/benitoite.md
++++ b/docs/ja/reference/benitoite.md
+@@ -16,7 +16,7 @@
+ この訳のコードの例は検査しない。検査するのは英語の版である。
+ -->
+
+-このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.5` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
++このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.6` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
+
+ `benitoite` のインストールは、[Benitoite のインストール](install.md)を参照する。
+
+@@ -97,7 +97,7 @@
+ | `skill` | 同梱の Agent Skill を、コーディングエージェントがスキルを読む場所に書き出す、または取り除く。[Benitoite のインストール](install.md#3-agent-skill-をインストールする)を参照する。 |
+ | `package` | 実験的な機能。局所の依存の宣言を追加・更新・移動する。[パッケージのコマンド](#パッケージのコマンド)を参照する。 |
+ | `--help` | 使い方を出力する。 |
+-| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.5`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
++| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.6`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
+ | `--licenses` | 実行ファイルに含まれる第三者のソフトウェアのライセンスを出力する。ソースからのビルドはこの一覧を含まず、そのことを出力する。 |
+
+ `<script>` は、ファイルか、`main.bnt` を含むディレクトリである。ファイル名と拡張子は確かめない。ただし、`package.bnt` は設定ファイルであり、起点のファイルにはできない。スクリプトのディレクトリが*根のディレクトリ*である。スクリプトは、根のディレクトリとその下、標準ライブラリ（[モジュール](#12-モジュール)）、宣言した局所の依存からモジュールを取り込める（[第 21 節](#21-実験的な機能-パッケージと外部の関数)）。`benitoite` は、根のディレクトリそのものにある `package.bnt` を設定ファイルとして読む。親のディレクトリや作業ディレクトリは探さない。
+@@ -1081,7 +1081,7 @@
+ - 非公式のモジュールを標準ライブラリへ移すと、その取り込みの名前が変わる。これはマイナー版でだけ行う。
+ - 同梱の Agent Skill は、一緒に配られた版の `benitoite` だけを説明する。更新した後は `benitoite skill install` を再び実行する。
+
+-> 注記: `0.0.1` から `0.0.5` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
++> 注記: `0.0.1` から `0.0.6` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
+
+ ## 21. 実験的な機能: パッケージと外部の関数
+
+@@ -1093,7 +1093,7 @@
+
+ ```files
+ name: packages/textkit/package.bnt
+-language "0.0.5"
++language "0.0.6"
+
+ package Textkit
+   license "MIT"
+@@ -1111,7 +1111,7 @@
+
+ ```benitoite
+ // spec: 01-03 依存のパッケージの取り込み
+-language "0.0.5"
++language "0.0.6"
+
+ dependency Textkit
+   path "packages/textkit"
+@@ -1143,7 +1143,7 @@
+
+ ```files
+ name: package.bnt
+-language "0.0.5"
++language "0.0.6"
+ ```
+
+ ```benitoite check
+@@ -1154,7 +1154,7 @@
+
+ 依存のブロックも、その根の設定ファイルへ移せる。依存は一か所にまとめる。起点のスクリプトと `package.bnt` の両方で依存を宣言すると誤りになる。両方で `language` を宣言しても誤りになる。
+
+-`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.5` では、`0.0.5` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
++`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.6` では、`0.0.6` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
+
+ `package.bnt` には、設定（`language`、`dependency`、`package` のブロック）だけを書き、取り込みや宣言は書かない。`package` ブロックはこのファイルにだけ書け、依存と組み合わせられない。その名前は大文字で始まる識別子であり、メタデータの欄は、省略可能な `license` だけである。欄の値は通常の文字列リテラルであり、文字列補間は使えない。欄の順序は自由だが、重複する欄や未知の欄は誤りになる。
+
+--- a/docs/ja/reference/install.md
++++ b/docs/ja/reference/install.md
+@@ -2,7 +2,7 @@
+
+ > この文書は、`docs/reference/install.md` の日本語の訳である。翻訳元は Benitoite 0.0.5 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+
+-この文書では、`benitoite` `0.0.5` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。
++この文書では、`benitoite` `0.0.6` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。
+
+ ## 対応するシステム
+
+@@ -30,20 +30,20 @@
+ ```sh
+ RELEASE=<download address of the release>
+ TARGET=aarch64-apple-darwin
+-curl -LO "$RELEASE/benitoite-0.0.5-$TARGET.tar.gz"
++curl -LO "$RELEASE/benitoite-0.0.6-$TARGET.tar.gz"
+ curl -LO "$RELEASE/SHA256SUMS"
+ ```
+
+ ハッシュを確かめる。macOS では次のとおりである。
+
+ ```sh
+-grep "benitoite-0.0.5-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
++grep "benitoite-0.0.6-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
+ ```
+
+ Linux では次のとおりである。
+
+ ```sh
+-grep "benitoite-0.0.5-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
++grep "benitoite-0.0.6-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
+ ```
+
+ ハッシュが一致すると、コマンドはファイル名の後に `OK` を表示する。一致しないときは、アーカイブをダウンロードし直し、そのアーカイブは使わない。
+@@ -55,16 +55,16 @@
+ アーカイブを新しいディレクトリに展開し、展開した `benitoite` を、`~/.local/bin` など `PATH` にあるディレクトリへ移す。
+
+ ```sh
+-mkdir benitoite-0.0.5
+-tar -xzf "benitoite-0.0.5-$TARGET.tar.gz" -C benitoite-0.0.5
++mkdir benitoite-0.0.6
++tar -xzf "benitoite-0.0.6-$TARGET.tar.gz" -C benitoite-0.0.6
+ mkdir -p ~/.local/bin
+-find benitoite-0.0.5 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
++find benitoite-0.0.6 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
+ benitoite --version
+ ```
+
+ `benitoite` を再配布するときは、アーカイブの `LICENSE-MIT`、`LICENSE-APACHE`、`THIRD_PARTY_LICENSES` を残しておく。`benitoite --licenses` は、同じ `THIRD_PARTY_LICENSES` を表示する。
+
+-`benitoite --version` は、最初の行に `benitoite 0.0.5` を表示する。シェルが `benitoite` を見つけられないときは、シェルの起動ファイルで、そのディレクトリを `PATH` に加える（例: `export PATH="$HOME/.local/bin:$PATH"`）。
++`benitoite --version` は、最初の行に `benitoite 0.0.6` を表示する。シェルが `benitoite` を見つけられないときは、シェルの起動ファイルで、そのディレクトリを `PATH` に加える（例: `export PATH="$HOME/.local/bin:$PATH"`）。
+
+ #### macOS が `benitoite` を止めたとき
+
+@@ -146,4 +146,4 @@
+
+ インストールのときに `--project` や `--agent` を使ったときは、`uninstall` にも同じオプションを渡す。
+
+-> 注記: `0.0.1` から `0.0.5` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配る。
++> 注記: `0.0.1` から `0.0.6` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配る。
+--- a/docs/reference/benitoite.md
++++ b/docs/reference/benitoite.md
+@@ -13,7 +13,7 @@
+ - Blocks with other info strings (such as `text` and `sh`) are not checked.
+ -->
+
+-This reference describes Benitoite `0.0.5`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
++This reference describes Benitoite `0.0.6`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+
+ To install `benitoite`, see [Installing Benitoite](install.md).
+
+@@ -94,7 +94,7 @@
+ | `skill` | Writes the bundled Agent Skill to the places where coding agents read skills, or removes it. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
+ | `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
+ | `--help` | Prints the usage. |
+-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.5`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
++| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.6`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+ | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
+
+ `<script>` is a file, or a directory that contains `main.bnt`. The file name and its extension are not checked, except that `package.bnt` is a settings file and cannot be the starting file. The directory of the script is the *root directory*: the script can import modules from the root directory and below it, from the standard library ([Modules](#12-modules)), and from declared local dependencies (see [section 21](#21-experimental-packages-and-external-functions)). `benitoite` reads `package.bnt` in the root directory itself as a settings file; it does not search parent directories or the working directory.
+@@ -1171,7 +1171,7 @@
+ - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
+ - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
+
+-> Note: Releases `0.0.1` through `0.0.5` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
++> Note: Releases `0.0.1` through `0.0.6` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+
+ ## 21. Experimental: packages and external functions
+
+@@ -1183,7 +1183,7 @@
+
+ ```files
+ name: packages/textkit/package.bnt
+-language "0.0.5"
++language "0.0.6"
+
+ package Textkit
+   license "MIT"
+@@ -1201,7 +1201,7 @@
+
+ ```benitoite
+ // spec: 01-03 依存のパッケージの取り込み
+-language "0.0.5"
++language "0.0.6"
+
+ dependency Textkit
+   path "packages/textkit"
+@@ -1233,7 +1233,7 @@
+
+ ```files
+ name: package.bnt
+-language "0.0.5"
++language "0.0.6"
+ ```
+
+ ```benitoite check
+@@ -1244,7 +1244,7 @@
+
+ Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
+
+-`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.5`, a declaration of `0.0.5` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
++`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.6`, a declaration of `0.0.6` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
+
+ `package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
+
+--- a/docs/reference/install.md
++++ b/docs/reference/install.md
+@@ -1,6 +1,6 @@
+ # Installing Benitoite
+
+-This page explains how to install `benitoite` `0.0.5`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
++This page explains how to install `benitoite` `0.0.6`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
+
+ ## Supported systems
+
+@@ -28,20 +28,20 @@
+ ```sh
+ RELEASE=<download address of the release>
+ TARGET=aarch64-apple-darwin
+-curl -LO "$RELEASE/benitoite-0.0.5-$TARGET.tar.gz"
++curl -LO "$RELEASE/benitoite-0.0.6-$TARGET.tar.gz"
+ curl -LO "$RELEASE/SHA256SUMS"
+ ```
+
+ Check the hash. On macOS:
+
+ ```sh
+-grep "benitoite-0.0.5-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
++grep "benitoite-0.0.6-$TARGET.tar.gz" SHA256SUMS | shasum -a 256 -c
+ ```
+
+ On Linux:
+
+ ```sh
+-grep "benitoite-0.0.5-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
++grep "benitoite-0.0.6-$TARGET.tar.gz" SHA256SUMS | sha256sum -c
+ ```
+
+ The command prints `OK` after the file name when the hash matches. If it does not, download the archive again and do not use it.
+@@ -53,16 +53,16 @@
+ Extract the archive into a new directory, and move the extracted `benitoite` to a directory on your `PATH`, such as `~/.local/bin`:
+
+ ```sh
+-mkdir benitoite-0.0.5
+-tar -xzf "benitoite-0.0.5-$TARGET.tar.gz" -C benitoite-0.0.5
++mkdir benitoite-0.0.6
++tar -xzf "benitoite-0.0.6-$TARGET.tar.gz" -C benitoite-0.0.6
+ mkdir -p ~/.local/bin
+-find benitoite-0.0.5 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
++find benitoite-0.0.6 -name benitoite -type f -exec mv {} ~/.local/bin/ \;
+ benitoite --version
+ ```
+
+ Keep `LICENSE-MIT`, `LICENSE-APACHE`, and `THIRD_PARTY_LICENSES` from the archive if you redistribute `benitoite`. `benitoite --licenses` prints the same `THIRD_PARTY_LICENSES`.
+
+-`benitoite --version` prints `benitoite 0.0.5` on its first line. If the shell cannot find `benitoite`, add the directory to `PATH` in the startup file of your shell (for example, `export PATH="$HOME/.local/bin:$PATH"`).
++`benitoite --version` prints `benitoite 0.0.6` on its first line. If the shell cannot find `benitoite`, add the directory to `PATH` in the startup file of your shell (for example, `export PATH="$HOME/.local/bin:$PATH"`).
+
+ #### If macOS blocks `benitoite`
+
+@@ -144,4 +144,4 @@
+
+ If you used `--project` or `--agent` when installing, pass the same options to `uninstall`.
+
+-> Note: Releases `0.0.1` through `0.0.5` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`.
++> Note: Releases `0.0.1` through `0.0.6` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`.

@@ -274,6 +274,7 @@ impl<'p> Gen<'p> {
             captures: fg.captures,
             positions: fg.positions,
             method_traits: fg.method_traits,
+            exit_reports: fg.exit_reports,
             live: LiveInfo::default(),
         })
     }

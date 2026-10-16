@@ -16,7 +16,7 @@ fn parse_type_in(p: &mut Parser, depth: u32, in_list: bool) -> PResult<Box<TypeE
     match p.peek_kind() {
         TokenKind::LParen => parse_paren(p, depth),
         TokenKind::KwFunction => parse_fn(p, depth, in_list),
-        TokenKind::UpperIdent => parse_named(p, depth),
+        TokenKind::UpperIdent | TokenKind::KwDie => parse_named(p, depth),
         TokenKind::LowerIdent
         | TokenKind::IntLit
         | TokenKind::FloatLit
@@ -187,7 +187,7 @@ fn push_fn_param(
     depth: u32,
     out: &mut Vec<(Option<Name>, TypeExpr)>,
 ) -> PResult<()> {
-    let name = if p.at(TokenKind::LowerIdent) {
+    let name = if matches!(p.peek_kind(), TokenKind::LowerIdent | TokenKind::KwDie) {
         let name = p.expect_name(TokenKind::LowerIdent, text::LOWER_NAME)?;
         p.expect(TokenKind::Colon)?;
         Some(name)

@@ -3,7 +3,7 @@ use super::decls::{Decls, Scope};
 use super::infer::*;
 use super::solve::Solver;
 use super::{HandleInfo, TryKind};
-use crate::base::{BindingId, BindingMap, NodeId, NodeMap, Span};
+use crate::base::{BindingId, BindingMap, ModuleId, NodeId, NodeMap, Span};
 use crate::diag::Diagnostic;
 use crate::syntax::ast::{Block, Expr, Pattern};
 use crate::types::*;
@@ -49,6 +49,8 @@ pub(super) struct ClauseContext {
 /// 一つの本体の推論と後検査の記録。子の走査はエフェクトと戻り値を差し替えられる。
 pub(super) struct Body<'a, 'd> {
     pub owner: Option<NodeId>,
+    /// 宣言側の所属。lambda・guard・lazy は同じ Body を使うため、この所属を保つ。
+    pub module: ModuleId,
     pub decls: &'a mut Decls<'d>,
     pub scope: Scope,
     pub scheme: Scheme,
@@ -65,7 +67,9 @@ pub(super) struct Body<'a, 'd> {
     pub operand_types: NodeMap<ITy>,
     pub interp_types: NodeMap<ITy>,
     pub lambda_effects: NodeMap<IEffect>,
-    pub try_kinds: NodeMap<(TryKind, ITy)>,
+    pub try_kinds: NodeMap<(TryKind, TryConstraintAction)>,
+    pub die_shows: NodeMap<DictExpr>,
+    pub die_message_boundary: bool,
     pub handlers: NodeMap<HandleInfo>,
     pub clauses: Vec<ClauseContext>,
     /// プレースホルダの展開が継続を隠している間の E0509 の補助。
@@ -97,12 +101,13 @@ pub(super) struct Body<'a, 'd> {
     pub lambda_body_ends: HashMap<Span, Span>,
 }
 impl<'a, 'd> Body<'a, 'd> {
-    pub fn new(decls: &'a mut Decls<'d>, scope: Scope, scheme: Scheme) -> Self {
+    pub fn new(decls: &'a mut Decls<'d>, module: ModuleId, scope: Scope, scheme: Scheme) -> Self {
         let mut solver = Solver::default();
         let effect = solver.fresh_effect();
         let ret = Some(lift(&scheme.ret));
         Self {
             owner: None,
+            module,
             decls,
             scope,
             scheme,
@@ -119,6 +124,8 @@ impl<'a, 'd> Body<'a, 'd> {
             interp_types: NodeMap::default(),
             lambda_effects: NodeMap::default(),
             try_kinds: NodeMap::default(),
+            die_shows: NodeMap::default(),
+            die_message_boundary: false,
             handlers: NodeMap::default(),
             clauses: vec![],
             placeholder_boundary: false,
@@ -328,7 +335,14 @@ impl<'a, 'd> Body<'a, 'd> {
             .iter()
             .chain(self.operand_types.iter())
             .chain(self.interp_types.iter())
-            .chain(self.try_kinds.iter().map(|(node, (_, t))| (node, t)))
+            .chain(
+                self.try_kinds
+                    .iter()
+                    .filter_map(|(node, (_, action))| match action {
+                        TryConstraintAction::Return { ret } => Some((node, ret)),
+                        TryConstraintAction::Die { .. } => None,
+                    }),
+            )
             .chain(self.type_args.iter().flat_map(|(node, (args, _))| {
                 args.iter().filter_map(move |a| match a {
                     IArg::Ty(t) => Some((node, t)),
@@ -408,12 +422,20 @@ impl<'a, 'd> Body<'a, 'd> {
                 .type_args
                 .insert(node, TypeArgs { tys, effects });
         }
-        for (node, (kind, t)) in self.try_kinds.iter() {
+        for (node, (kind, action)) in self.try_kinds.iter() {
             self.decls.out.try_kinds.insert(
                 node,
                 super::TryInfo {
                     kind: *kind,
-                    ret: self.solver.finalize(t, self.decls.resolved),
+                    action: match action {
+                        TryConstraintAction::Return { ret } => super::TryActionInfo::Return {
+                            ret: self.solver.finalize(ret, self.decls.resolved),
+                        },
+                        TryConstraintAction::Die { exit, .. } => super::TryActionInfo::Die {
+                            show: self.die_shows.get(node).cloned(),
+                            exit: *exit,
+                        },
+                    },
                 },
             );
         }

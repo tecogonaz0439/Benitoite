@@ -18,6 +18,7 @@ pub(super) fn token_name(kind: TokenKind) -> &'static str {
         TokenKind::KwCase => "`case`",
         TokenKind::KwConst => "`const`",
         TokenKind::KwData => "`data`",
+        TokenKind::KwDie => "`die`",
         TokenKind::KwDiv => "`div`",
         TokenKind::KwDo => "`do`",
         TokenKind::KwEffect => "`effect`",
@@ -96,6 +97,7 @@ pub(super) fn keyword(kind: TokenKind) -> Option<&'static str> {
         TokenKind::KwCase => Some("case"),
         TokenKind::KwConst => Some("const"),
         TokenKind::KwData => Some("data"),
+        TokenKind::KwDie => Some("die"),
         TokenKind::KwDiv => Some("div"),
         TokenKind::KwDo => Some("do"),
         TokenKind::KwEffect => Some("effect"),
@@ -207,3 +209,5 @@ pub(super) const VERSION_STRING: &str = "a version string";
 pub(super) const FIELD_STRING: &str = "a string without interpolation";
 
 pub(super) const EXTERNAL_TYPE_DECL: &str = "an external type declaration";
+
+pub(super) const DIE_MESSAGE: &str = "the message of `or die`";

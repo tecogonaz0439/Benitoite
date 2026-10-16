@@ -4,6 +4,7 @@ import SurfaceCheck.Walk
 namespace SurfaceCheck.Batch
 open Lean Benitoite.Release Benitoite.Surface Benitoite.Surface.CheckTools
 open Benitoite.Exchange.CheckInput Benitoite.Surface.CheckTables
+open Benitoite.Exchange (readCorpus exchangeJson readBuiltins DataEntry)
 
 structure Counts where
   matched : Nat := 0
@@ -115,11 +116,12 @@ def checkInput (r : Report) (input : Benitoite.Exchange.Input)
   let mut r := { r with inputs := r.inputs + 1, definitions := r.definitions + m.defs.length, implementations := r.implementations + m.impls.length }
   for (n,d) in m.defs do
     let w := (Benitoite.Surface.CheckTables.lookup ws n).getD {}
-    let result := Benitoite.Surface.Check.checkDef q [] d
-    r := record q r input.group input.name n "definition" w bad result
+    let bodyQ := { q with D := q.D.withView (m.functionViews n) }
+    let result := Benitoite.Surface.Check.checkDef bodyQ [] d
+    r := record bodyQ r input.group input.name n "definition" w bad result
     if !w.changes.isEmpty then
       let before := (Benitoite.Surface.CheckTables.lookup p.materials.defs n).map
-        (Benitoite.Surface.Check.checkDef p.input [])
+        (Benitoite.Surface.Check.checkDef { p.input with D := p.input.D.withView (m.functionViews n) } [])
       let originalError := match before with
         | some (.error e) => Json.mkObj [("path",toJson e.path),("reason",toJson e.reason)]
         | _ => Json.null
@@ -129,7 +131,7 @@ def checkInput (r : Report) (input : Benitoite.Exchange.Input)
         | _ => j }
   for (n,i) in m.impls do
     let w := (Benitoite.Surface.CheckTables.lookup ws n).getD {}
-    let result := Benitoite.Surface.Check.checkImpl q m.names.methods m.names.supers [] i.input
+    let result := Benitoite.Surface.Check.checkImpl q m.names.methods m.names.supers [] i.input (m.methodViews n)
     r := record q r input.group input.name n "implementation" w bad result
   for (n,reasons) in p.outside do
     r := { r with counts := bump r.counts "outOfScope", outcomes := r.outcomes.push (Json.mkObj [("group",toJson input.group),("input",toJson input.name),("definition",toJson n),
@@ -145,11 +147,22 @@ def run (args : List String) : IO UInt32 := do
   let corpusFile :: builtinFile :: stdlibFile :: reportFile :: [] := args
     | throw (IO.userError "usage: surfaceCheckAll corpus.json builtins.json stdlib-decls.json report.json")
   let start ← IO.monoNanosNow
-  let corpus ← readJson corpusFile
-  let bj ← readJson builtinFile
-  let sj ← readJson stdlibFile
-  for (j,v) in [(corpus,8),(bj,2),(sj,2)] do
-    if (← IO.ofExcept (j.getObjValAs? Nat "version")) != v then throw (IO.userError "unsupported version")
+  let raw ← readJson corpusFile
+  let c ← IO.ofExcept (readCorpus raw)
+  let corpus ← IO.ofExcept (exchangeJson "corpus" raw)
+  let rawB ← readJson builtinFile
+  let b ← IO.ofExcept (readBuiltins rawB)
+  let bj ← IO.ofExcept (exchangeJson "builtins" rawB)
+  let sj ← IO.ofExcept (exchangeJson "stdlib" (← readJson stdlibFile))
+  let expected := if c.version >= 9 then 3 else 2
+  if b.version != expected || (← IO.ofExcept (sj.getObjValAs? Nat "version")) != expected then
+    throw (IO.userError "exchange version pair mismatch")
+  if c.version >= 9 then
+    for i in c.inputs.filter (fun i => i.excluded.isEmpty) do
+      let some bi := b.inputs.find? (fun bi => bi.group == i.group && bi.name == i.name)
+        | throw (IO.userError "missing builtin input")
+      if i.dataTypes != bi.dataDecls.map DataEntry.info then
+        throw (IO.userError "corpus/builtin data type metadata mismatch")
   let inputs ← IO.ofExcept ((corpus.getObjVal? "inputs").bind Json.getArr?)
   let bs ← IO.ofExcept ((bj.getObjVal? "inputs").bind Json.getArr?)
   let ss ← IO.ofExcept ((sj.getObjVal? "inputs").bind Json.getArr?)

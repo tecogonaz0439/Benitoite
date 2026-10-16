@@ -30,15 +30,6 @@ structure StdlibCorpus where
   inputs : List StdlibInput
   deriving ToJson, FromJson
 
-/-- 表示用の末尾の括弧にある BindingId だけを鍵に使う。 -/
-def functionKey (display : String) : Except String String := do
-  let some piece := (display.splitOn " (fn:").getLast?
-    | throw s!"invalid function display name: {display}"
-  let id := (piece.splitOn ")").headD ""
-  let some n := id.toNat? | throw s!"invalid function binding: {display}"
-  if display.endsWith s!" (fn:{n})" then return s!"fn:{n}"
-  else throw s!"invalid function suffix: {display}"
-
 def FunEntry.convert (f : FunEntry) : Except String Benitoite.Surface.FunDecl := do
   checkNames f.header.names f.header.params.length
   return {
@@ -98,6 +89,9 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
     (operators : List OperatorEntry) : Except String Prepared := do
   if input.group != b.group || input.name != b.name || input.group != s.group || input.name != s.name then
     throw "sidecar input identity mismatch"
+  if !input.dataTypes.isEmpty && input.dataTypes != b.dataDecls.map DataEntry.info then
+    throw "corpus/builtin data type metadata mismatch"
+  -- 新版の空表を旧版と混同しない検査は JSON の入口で行う。
   let atoms := atomsFor input b s operators
   let cache ← input.constantCache
   let ordinary := input.definitions.filterMap fun d => match d.scope with
@@ -147,7 +141,20 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
     let supers ← (bodies.flatMap (·.supers)).mapM fun (name,d) => do return (name, ← d.toSurface)
     return (i.name, ({ signature := ← ImplEntry.convert i, methods := methods, supers := supers } : ImplMaterial))
   let trustedFuns ← s.functions.mapM fun f => do return (f.name, ← f.convert)
+  let views ← (input.definitions.filterMap fun d => match d.scope with
+    | .inScope s _ => if s.implementation.isNone || s.method.isSome then some (d.name,s) else none
+    | _ => none).mapM fun (name,s) => do
+      let view ← coverageView input.dataTypes s.package s.coverageView
+      return (← functionKey name, s.implementation, s.method, view)
+  let functionKeys := views.filterMap fun (key,i,_,_) => if i.isNone then some key else none
+  let methodKeys := views.filterMap fun (_,i,m,_) => do return (← i, ← m)
+  if functionKeys.eraseDups.length != functionKeys.length ||
+      methodKeys.eraseDups.length != methodKeys.length then throw "duplicate body coverage view"
   let m : Materials := {
+    functionViews := fun n => ((views.find? fun (key,i,_,_) => key == n && i.isNone).map
+      fun (_,_,_,v) => v).getD Benitoite.Release.closedView
+    methodViews := fun i n => ((views.find? fun (_,impl,m,_) => impl == some i && m == some n).map
+      fun (_,_,_,v) => v).getD Benitoite.Release.closedView
     defs, conFields := b.dataDecls.flatMap (fun d => d.ctors.filterMap (fun c => c.fields.map (fun fs => (c.name,fs)))), accessors, data, ops, effects := input.effects.map fun e => (e.name,e.ops)
     classes, impls, trustedFuns, trustedImpls }
   if !uniqueKeys m.defs || !uniqueKeys m.accessors || !uniqueKeys m.ops ||

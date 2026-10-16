@@ -13,7 +13,7 @@ use crate::runtime::heap::ResourceId;
 use crate::vm::{InstrRef, RequestId, TaskId};
 
 /// 送り出しの列の要求。
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct Request {
     pub id: RequestId,
     pub task: TaskId,
@@ -22,6 +22,8 @@ pub struct Request {
     /// 呼び出しの命令。引数と結果のレジスタは、この命令の被演算子を読む
     /// `CompiledProgram::builtin_call_operands` で決まる（設計書 02-07「命令」）。
     pub site: InstrRef,
+    /// この呼び出しだけに属する既定の失敗終了の情報
+    pub die_failure: Option<crate::vm::DieFailure>,
 }
 
 /// 外部の操作に移る前の要求の段階（設計書 02-09「IO 実行器」）。
@@ -98,7 +100,13 @@ impl DispatchQueue {
         self.live.insert(
             id,
             LiveRequest {
-                req: Request { id, task, op, site },
+                req: Request {
+                    id,
+                    task,
+                    op,
+                    site,
+                    die_failure: None,
+                },
                 phase: RequestPhase::Queued,
             },
         );
@@ -236,7 +244,7 @@ mod tests {
             matches!(DirectDispatcher.on_wait_point(&mut queue,WaitPoint::Park),DispatchAction::ServeNow(ids) if ids==[next])
         );
         let req = queue.take_for_serve(next).unwrap();
-        queue.park_request(req, RequestPhase::Outstanding);
+        queue.park_request(req.clone(), RequestPhase::Outstanding);
         assert!(queue.check_park_request(&req).is_err());
         assert!(queue.take_task_request(task).is_some());
         queue.publish(task, decl, site);

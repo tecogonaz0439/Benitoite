@@ -1,6 +1,7 @@
 //! Kinds of IO failures.
 
 /// The kind of an IO failure, returned by `IOError.kind`.
+@extensible
 public data IOErrorKind
   /// The path or the command does not exist.
   NotFound

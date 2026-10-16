@@ -115,6 +115,7 @@ end function
 fn total_amount_and_parse_error_accessors() {
     run_script(
         r#"
+import Benitoite.Trait
 import Benitoite.Unofficial.Json
 function totalAmount(text: String) -> Result[Integer, String]
   bind document <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
@@ -137,7 +138,7 @@ function main() -> Result[Unit, String]
     case Result.Ok(_) -> Option.None
   end match
   bind fields <- match error with
-    case Option.Some(e) -> Json.ParseError.line(e) = 2 and Json.ParseError.column(e) = 6 and Json.ParseError.message(e) = "trailing comma"
+    case Option.Some(e) -> Json.ParseError.line(e) = 2 and Json.ParseError.column(e) = 6 and Json.ParseError.message(e) = "trailing comma" and Trait.Show.show(e) = Json.ParseError.message(e)
     case Option.None -> false
   end match
   if not fields then
@@ -153,6 +154,17 @@ function main() -> Result[Unit, String]
   end match
   if not eof or not overflow then
     return Result.Error("ParseError positions")
+  end if
+  bind original <- Json.ParseError(line: 4, column: 7, message: "original")
+  bind updated <- Json.ParseError(..original, message: "updated")
+  if Json.ParseError.line(updated) <> 4 or Json.ParseError.column(updated) <> 7
+    or Json.ParseError.message(updated) <> "updated" or Json.ParseError.message(original) <> "original" then
+    return Result.Error("ParseError construction and update")
+  end if
+  if Trait.Show.show(original) <> "original" or Trait.Show.show(updated) <> "updated"
+    or Trait.Show.show(Json.ParseError(line: 9, column: 2, message: "")) <> ""
+    or Trait.Show.show(Json.ParseError(line: 9, column: 2, message: "failure \"é😀\"\nnext")) <> "failure \"é😀\"\nnext" then
+    return Result.Error("ParseError Show")
   end if
   return Result.Ok(())
 end function

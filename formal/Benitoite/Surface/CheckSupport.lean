@@ -177,6 +177,12 @@ mutual
     | .ifOnly c y => c.AtomsIn atoms ∧ y.AtomsIn atoms
     | .matchE t e arms => t.AtomsIn atoms ∧ e.AtomsIn atoms ∧ arms.AtomsIn atoms
     | .tryResult ts _ _ e | .tryOption ts _ _ e => Tys.AtomsIn atoms ts ∧ e.AtomsIn atoms
+    | .tryResultDie t _ _ d _ _ e message =>
+        t.AtomsIn atoms ∧ d.AtomsIn atoms ∧ e.AtomsIn atoms ∧
+          (match message with | none => True | some m => m.AtomsIn atoms)
+    | .tryOptionDie t _ _ _ e message =>
+        t.AtomsIn atoms ∧ e.AtomsIn atoms ∧
+          (match message with | none => True | some m => m.AtomsIn atoms)
     | .withE _ e b => e.AtomsIn atoms ∧ b.AtomsIn atoms
     | .lazyE b => b.AtomsIn atoms
     | .handleE b cs => b.AtomsIn atoms ∧ cs.AtomsIn atoms

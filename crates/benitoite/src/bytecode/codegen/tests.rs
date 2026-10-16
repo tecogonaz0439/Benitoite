@@ -33,6 +33,7 @@ fn compile_files(files: &[(&str, &str)], main: bool) -> CompiledProgram {
         );
         assert_eq!(proto.positions.len(), proto.code.len());
         assert_eq!(proto.method_traits.len(), proto.code.len());
+        assert_eq!(proto.exit_reports, vec![None; proto.code.len()]);
     }
     p
 }
@@ -1193,4 +1194,106 @@ fn width_constants_compile_and_verify_without_changing_their_representation() {
     for mode in [ExecMode::Direct, ExecMode::Request] {
         assert_eq!(run(&p, mode, true), "3\n3\n3\n3\n3\n3\n6\n");
     }
+}
+
+#[test]
+fn exit_report_values_survive_lowering_captures_and_liveness() {
+    let source = "import Benitoite.Unofficial.IO.Process\nfunction fail(cause: String, message: String) -> Unit uses Process.Exit\n bind finish <- lambda() -> Unit uses Process.Exit\n  Process.exit(1)\n end lambda\n finish()\nend function\n";
+    let (load, _, _, mut core) = desugar_files(&[("main.bnt", source)], false);
+    let def = core.defs.iter_mut().find(|d| d.name == "fail").unwrap();
+    let cause = def.params[0].clone();
+    let message = def.params[1].clone();
+    fn attach(c: &mut Comp, cause: &Var, message: &Var) -> usize {
+        match &mut c.kind {
+            CompKind::Let { bound, body, .. } => {
+                attach(bound, cause, message) + attach(body, cause, message)
+            }
+            CompKind::Return(Val {
+                kind: ValKind::Lambda(l),
+                ..
+            }) => attach(&mut l.body, cause, message),
+            CompKind::App {
+                func:
+                    Val {
+                        kind: ValKind::Builtin { id, .. },
+                        ..
+                    },
+                args,
+                exit_report,
+                ..
+            } if Some(*id) == crate::builtins::lookup_builtin("Benitoite.IO.Process.exit") => {
+                let value = |v: &Var| {
+                    Box::new(Val {
+                        kind: ValKind::Var(v.id),
+                        ty: v.ty.clone(),
+                        origin: c.origin,
+                    })
+                };
+                args[0].kind = ValKind::Const(Const::Int(1));
+                *exit_report = Some(ExitReportArgs {
+                    cause: value(cause),
+                    message: Some(value(message)),
+                });
+                1
+            }
+            CompKind::Return(_)
+            | CompKind::App { .. }
+            | CompKind::Method(_)
+            | CompKind::If { .. }
+            | CompKind::Match { .. }
+            | CompKind::Escape(_)
+            | CompKind::Use { .. }
+            | CompKind::Lazy { .. }
+            | CompKind::Handle(_)
+            | CompKind::Resume { .. } => 0,
+        }
+    }
+    assert_eq!(attach(&mut def.body, &cause, &message), 1);
+    assert!(crate::ir::check::check_program(&core).is_empty());
+    let lower = crate::ir::decision::lower_program(&core).unwrap();
+    let compiled = codegen(&lower, Arc::new(load.sources)).unwrap();
+    crate::bytecode::verify::verify(&compiled).unwrap();
+    let (index, proto) = compiled
+        .protos
+        .iter()
+        .enumerate()
+        .find(|(_, p)| p.exit_reports.iter().any(Option::is_some))
+        .unwrap();
+    assert_eq!(proto.captures.len(), 2);
+    let (pc, report) = proto
+        .exit_reports
+        .iter()
+        .enumerate()
+        .find_map(|(pc, r)| r.map(|r| (pc, r)))
+        .unwrap();
+    assert_eq!(proto.code[pc].opcode(), Some(Opcode::Io));
+    assert_eq!(proto.positions[pc], Some(report.span));
+    let message_reg = report.message_reg.unwrap();
+    assert_ne!(report.cause_reg, message_reg);
+    let usage = crate::bytecode::liveness::reg_use(
+        &compiled,
+        ProtoIdx(u32::try_from(index).unwrap()),
+        u32::try_from(pc).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(
+        usage.reads,
+        vec![proto.code[pc].c(), report.cause_reg, message_reg]
+    );
+    let live = proto.live.live_in_at(u32::try_from(pc).unwrap()).unwrap();
+    assert!(live.contains(&report.cause_reg) && live.contains(&message_reg));
+    let gets: Vec<_> = proto.code[..pc]
+        .iter()
+        .filter(|i| i.opcode() == Some(Opcode::GetCap))
+        .map(|i| (i.a(), i.b()))
+        .collect();
+    assert_eq!(gets.len(), 2);
+    for (reg, parent_reg) in [(report.cause_reg, 0), (message_reg, 1)] {
+        let (_, capture) = gets.iter().find(|(target, _)| *target == reg).unwrap();
+        assert_eq!(
+            proto.captures[usize::from(*capture)],
+            CaptureSource::Reg(parent_reg)
+        );
+    }
+    assert!(crate::bytecode::disasm::disassemble(&compiled).contains("exit report"));
 }

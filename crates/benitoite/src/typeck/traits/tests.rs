@@ -36,7 +36,9 @@ fn id(r: &ResolveOutput, name: &str) -> BindingId {
 }
 #[test]
 fn standard_library_sources_and_dictionary_contracts() {
-    let (l, r, t) = clean("import Benitoite.Trait\n");
+    let (l, r, t) = clean(
+        "import Benitoite.Trait\nimport Benitoite.Unofficial.Json\nimport Benitoite.Unofficial.Csv\n",
+    );
     assert_eq!(t.traits.iter().count(), 9);
     let module = l
         .modules
@@ -45,7 +47,7 @@ fn standard_library_sources_and_dictionary_contracts() {
         .find(|m| m.name.dotted() == "Benitoite.Trait")
         .unwrap();
     let ast = &l.asts[module.id.0 as usize];
-    let impls: Vec<_> = ast
+    let mut impls: Vec<_> = ast
         .decls
         .iter()
         .filter_map(|top| {
@@ -56,7 +58,18 @@ fn standard_library_sources_and_dictionary_contracts() {
             }
         })
         .collect();
-    assert_eq!(impls.len(), 58);
+    assert_eq!(impls.len(), 60);
+    // 型自身のモジュールに置いた標準実装も、同じ辞書の契約で検査する。
+    for ast in l.asts.iter().filter(|ast| ast.file != module.id.file()) {
+        impls.extend(ast.decls.iter().filter_map(|top| {
+            if let Item::Impl(i) = &top.item {
+                Some(i)
+            } else {
+                None
+            }
+        }));
+    }
+    assert_eq!(impls.len(), 62);
     assert_eq!(t.impls.iter().count(), impls.len());
     for source in impls {
         let imp = t.impls.get(source.id).unwrap();

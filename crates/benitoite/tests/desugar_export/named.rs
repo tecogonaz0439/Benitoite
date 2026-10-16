@@ -3,6 +3,7 @@ use super::*;
 use benitoite::syntax::ast::{Expr, Item, Stmt};
 use benitoite::typeck::CallPlan;
 use benitoite::types::Ty;
+use exchange::named_calls::call_fields;
 
 fn checked(source: &str) -> pipeline::CheckResult {
     let result = pipeline::check_text(
@@ -17,19 +18,19 @@ fn checked(source: &str) -> pipeline::CheckResult {
     result
 }
 
-fn input(name: &str, definitions: Vec<Value>) -> Value {
+pub(super) fn input(name: &str, definitions: Vec<Value>) -> Value {
     json!({"group":"golden","name":name,"excluded":[],"definitions":definitions,
-        "constants":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[]})
+        "dataTypes":[],"constants":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[]})
 }
 
 pub(super) fn write_tables(output: &Path, stem: &str, p: &pipeline::CheckedProgram, input: &Value) {
     let table = exchange::named_builtin_tables(p, input, &exchange::complete_stdlib());
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":2,"inputs":[table]})).unwrap(),
+        exchange::to_vec(&json!({"version":3,"inputs":[table]})).unwrap(),
     )
     .unwrap();
-    let stdlib = json!({"version":2,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
+    let stdlib = json!({"version":3,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
         exchange::to_vec(&stdlib).unwrap(),
@@ -40,19 +41,27 @@ pub(super) fn write_tables(output: &Path, stem: &str, p: &pipeline::CheckedProgr
 fn write_named(
     output: &Path,
     stem: &str,
-    inputs: Vec<Value>,
+    mut inputs: Vec<Value>,
     tables: Vec<Value>,
-    coverage: Vec<Value>,
+    mut coverage: Vec<Value>,
 ) {
+    for (input, table) in inputs.iter_mut().zip(&tables) {
+        let mut empty = Value::Null;
+        let cov = coverage
+            .iter_mut()
+            .find(|c| c["group"] == input["group"] && c["name"] == input["name"])
+            .unwrap_or(&mut empty);
+        exchange::attach_metadata(input, table, cov);
+    }
     fs::write(
         output.join(format!("{stem}-corpus.json")),
-        exchange::to_vec(&json!({"version":8,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
+        exchange::to_vec(&json!({"version":10,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
             .unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":2,"inputs":tables})).unwrap(),
+        exchange::to_vec(&json!({"version":3,"inputs":tables})).unwrap(),
     )
     .unwrap();
     let stdlib = inputs
@@ -61,12 +70,12 @@ fn write_named(
         .collect::<Vec<_>>();
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
-        exchange::to_vec(&json!({"version":2,"inputs":stdlib})).unwrap(),
+        exchange::to_vec(&json!({"version":3,"inputs":stdlib})).unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-coverage.json")),
-        exchange::to_vec(&json!({"version":2,"inputs":coverage})).unwrap(),
+        exchange::to_vec(&json!({"version":3,"inputs":coverage})).unwrap(),
     )
     .unwrap();
 }
@@ -160,7 +169,7 @@ fn export_named_calls_smoke() {
 
 fn definition(name: &str, header: Value, expr: Value, body: Value, effects: Value) -> Value {
     json!({"name":name,"annotations":{},"scope":{"inScope":{
-        "surface":{"header":header,"dictParams":[],"body":{"last":{"expr":{"returnE":{"ret":header["ret"],"inner":expr}}}},"implementation":null,"method":null,"supers":[]},
+        "surface":{"package":"root","header":header,"dictParams":[],"body":{"last":{"expr":{"returnE":{"ret":header["ret"],"inner":expr}}}},"implementation":null,"method":null,"supers":[]},
         "core":{"header":header,"body":body,"lambdaEffects":effects,"supers":[]}}}})
 }
 
@@ -190,7 +199,7 @@ fn export_named_static_calls_smoke() {
         inserted_first: false,
         hole_names: vec!["b".into(), "a".into()],
     };
-    let partial = exchange::call_fields(
+    let partial = call_fields(
         local(0),
         vec![Some("b".into()), Some("a".into())],
         vec![
@@ -225,7 +234,7 @@ fn export_named_static_calls_smoke() {
         inserted_first: true,
         hole_names: vec![],
     };
-    let rhs = exchange::call_fields(
+    let rhs = call_fields(
         local(0),
         vec![Some("b".into())],
         vec![literal(29)],
@@ -257,7 +266,7 @@ fn export_named_static_calls_smoke() {
         inserted_first: false,
         hole_names: vec!["b".into()],
     };
-    let mixed = exchange::call_fields(
+    let mixed = call_fields(
         local(0),
         vec![Some("b".into()), Some("a".into())],
         vec![
@@ -400,24 +409,23 @@ impl Export {
         for key in ["ops", "effects", "primOps"] {
             item[key] = operations[key].clone();
         }
-        self.tables
-            .push(exchange::named_builtin_tables(p, &item, stdlib));
+        let table = exchange::named_builtin_tables(p, &item, stdlib);
+        let mut cov = json!({"group":group,"name":name,"matches":coverage.matches,"bindings":coverage.bindings});
+        exchange::attach_metadata(&mut item, &table, &mut cov);
+        self.tables.push(table);
         self.declarations
             .push(exchange::named_stdlib_declarations(p, &core, &item));
-        self.coverage.push(json!({"group":group,"name":name,"matches":coverage.matches,"bindings":coverage.bindings}));
+        self.coverage.push(cov);
         self.inputs.push(item);
     }
     pub fn write(self, output: &Path) {
-        write_named(
-            output,
-            "named-programs",
-            self.inputs,
-            self.tables,
-            self.coverage,
-        );
+        self.write_to(output, "named-programs");
+    }
+    fn write_to(self, output: &Path, stem: &str) {
+        write_named(output, stem, self.inputs, self.tables, self.coverage);
         fs::write(
-            output.join("named-programs-stdlib.json"),
-            exchange::to_vec(&json!({"version":2,"inputs":self.declarations})).unwrap(),
+            output.join(format!("{stem}-stdlib.json")),
+            exchange::to_vec(&json!({"version":3,"inputs":self.declarations})).unwrap(),
         )
         .unwrap();
     }
@@ -567,4 +575,174 @@ fn export_named_annotation_without_named_calls() {
             json!({"group":"golden","name":"named-annotation-only","matches":coverage.matches,"bindings":coverage.bindings}),
         ],
     );
+}
+
+// 関門: 依存の本体から見た標準型も全出力の view に含め、定数の宣言所属を保つ。
+// 標準ライブラリに指定した型の view と、定数の宣言側の所属を同時に検査する。
+#[test]
+fn export_extensible_package() {
+    let output = export_directory("extensible-package");
+    let root = output.join("extensible-package-source");
+    fs::create_dir_all(root.join("dep")).unwrap();
+    fs::write(
+        root.join("package.bnt"),
+        "language \"0.0.6\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+    )
+    .unwrap();
+    fs::write(
+        root.join("dep/package.bnt"),
+        "language \"0.0.6\"\npackage Dep\nend package\n",
+    )
+    .unwrap();
+    fs::write(root.join("dep/Inspect.bnt"), "import Benitoite.IOErrorKind\npublic const answer: Integer = 42\npublic function inspect(kind: IOErrorKind) -> Integer\n return match kind with\n case IOErrorKind.NotFound -> 1\n case _ -> 0\n end match\nend function\n").unwrap();
+    fs::write(
+        root.join("main.bnt"),
+        "import Dep.Inspect\nfunction read() -> Integer\n return Inspect.answer\nend function\n",
+    )
+    .unwrap();
+    let checked = pipeline::check_path(
+        &root.join("main.bnt"),
+        CheckOptions {
+            require_main: false,
+            deny_warnings: false,
+        },
+    )
+    .unwrap();
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let p = checked.program.unwrap();
+    let id = p
+        .resolved
+        .stdlib("Benitoite.IOErrorKind.IOErrorKind")
+        .unwrap();
+    assert!(p.types.adts.get(id).unwrap().extensible);
+    let mut export = Export::new();
+    export.push(
+        "golden",
+        "extensible-package",
+        &p,
+        &exchange::complete_stdlib(),
+    );
+    let input = &export.inputs[0];
+    let data = input["dataTypes"].as_array().unwrap();
+    let io = data
+        .iter()
+        .find(|d| d["name"] == format!("data:{}", id.0))
+        .unwrap();
+    assert_eq!(io["typeName"], "IOErrorKind");
+    assert_eq!(io["package"], "stdlib");
+    assert_eq!(io["builtin"], "ordinary");
+    let standard: Vec<_> = data
+        .iter()
+        .filter(|d| d["package"] == "stdlib" && d["extensible"] == true)
+        .collect();
+    assert_eq!(standard.len(), 4);
+    assert_eq!(
+        standard
+            .iter()
+            .map(|d| (
+                d["typeName"].as_str().unwrap(),
+                d["isRecord"].as_bool().unwrap()
+            ))
+            .collect::<Vec<_>>(),
+        [
+            ("IOErrorKind", false),
+            ("NetworkErrorKind", false),
+            ("ParseError", true),
+            ("ParseError", true)
+        ]
+    );
+    for d in &standard {
+        assert_eq!(d["package"], "stdlib");
+        assert_eq!(d["extensible"], true);
+    }
+    let inspect = input["definitions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|d| d["name"].as_str().unwrap().contains("inspect ("))
+        .unwrap();
+    let surface = &inspect["scope"]["inScope"]["surface"];
+    assert_eq!(surface["package"], "package:Dep");
+    assert_eq!(
+        surface["coverageView"],
+        json!(standard.iter().map(|d| &d["name"]).collect::<Vec<_>>())
+    );
+    assert_eq!(export.coverage[0]["matches"][0]["package"], "package:Dep");
+    assert_eq!(
+        export.coverage[0]["matches"][0]["coverageView"],
+        surface["coverageView"]
+    );
+    assert_eq!(input["constants"][0]["package"], "package:Dep");
+    export.write_to(&output, "extensible-package");
+}
+
+// 関門: ソースで受理した属性が、未使用の型も含め全交換出力へ残ることを守る。
+// 型表を直接設定する既存入力では、属性から型表への接続漏れを捕まえられない。
+#[test]
+fn export_extensible_source() {
+    let checked = pipeline::check_path(
+        Path::new("testdata/packages/d6c-extensible-external"),
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    )
+    .unwrap();
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let mut export = Export::new();
+    export.push(
+        "golden",
+        "extensible-source",
+        &checked.program.unwrap(),
+        &exchange::complete_stdlib(),
+    );
+    let input = &export.inputs[0];
+    let decls = input["dataTypes"].as_array().unwrap();
+    let open: Vec<_> = decls.iter().filter(|d| d["extensible"] == true).collect();
+    assert_eq!(open.len(), 7);
+    for name in [
+        "Kind",
+        "Detail",
+        "Unused",
+        "IOErrorKind",
+        "NetworkErrorKind",
+    ] {
+        assert!(open.iter().any(|d| d["typeName"] == name));
+    }
+    let root = input["definitions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|d| d["name"].as_str().unwrap().contains("main ("))
+        .unwrap();
+    let surface = &root["scope"]["inScope"]["surface"];
+    assert_eq!(
+        surface["coverageView"],
+        json!(open.iter().map(|d| &d["name"]).collect::<Vec<_>>())
+    );
+    let author = input["definitions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|d| d["name"].as_str().unwrap().contains("inspect ("))
+        .unwrap();
+    let standard: Vec<_> = open.iter().filter(|d| d["package"] == "stdlib").collect();
+    assert_eq!(standard.len(), 4);
+    assert_eq!(
+        author["scope"]["inScope"]["surface"]["coverageView"],
+        json!(standard.iter().map(|d| &d["name"]).collect::<Vec<_>>())
+    );
+    // 全件の書き出しでも同じ fixture を発見し、六入口の検査へ渡す。
+    assert_eq!(
+        export.coverage[0]["matches"][0]["coverageView"],
+        surface["coverageView"]
+    );
+    let table = export.tables[0]["dataDecls"].as_array().unwrap();
+    for d in open {
+        assert!(
+            table
+                .iter()
+                .any(|entry| entry["name"] == d["name"] && entry["extensible"] == true)
+        );
+    }
 }

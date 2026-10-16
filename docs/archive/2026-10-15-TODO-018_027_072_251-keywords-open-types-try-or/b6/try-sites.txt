@@ -1,0 +1,46 @@
+crates/benitoite/examples/named_arguments_inventory.rs:125:            | Expr::Try(_)
+crates/benitoite/examples/named_arguments_inventory.rs:341:            Expr::Try(t) => match &t.action {
+crates/benitoite/examples/named_arguments_inventory.rs:494:            | Expr::Try(_)
+crates/benitoite/examples/named_inventory/index.rs:214:        Expr::Try(t) => match &t.action {
+crates/benitoite/src/cli/tools/formatter/roles/walk.rs:699:            Expr::Try(e) => match &e.action {
+crates/benitoite/src/ir/desugar/effects.rs:10:    pub(super) fn try_expr(&mut self, e: &ast::TryExpr) -> Result<Comp, InternalError> {
+crates/benitoite/src/ir/desugar/effects.rs:36:        e: &ast::TryExpr,
+crates/benitoite/src/ir/desugar/exprs.rs:59:            ast::Expr::Try(e) => self.try_expr(e),
+crates/benitoite/src/resolve/walk.rs:386:            Expr::Try(e) => match &e.action {
+crates/benitoite/src/runtime/assert.rs:611:            Expr::Try(e) => match &e.action {
+crates/benitoite/src/syntax/ast.rs:450:    Try(TryExpr),
+crates/benitoite/src/syntax/ast.rs:776:pub struct TryExpr {
+crates/benitoite/src/syntax/ast.rs:1015:            Expr::Try(e) => e.id,
+crates/benitoite/src/syntax/ast.rs:1041:            Expr::Try(e) => e.span,
+crates/benitoite/src/syntax/parser/effects.rs:454:    Ok(Box::new(Expr::Try(TryExpr {
+crates/benitoite/src/syntax/parser/effects.rs:833:            matches!(&w.binds[0].value, Expr::Try(t) if matches!(t.value.as_ref(), Expr::Pipe(_)))
+crates/benitoite/src/syntax/parser/effects.rs:873:                    assert!(matches!(&b.value, Expr::Try(_)));
+crates/benitoite/src/syntax/parser/effects.rs:912:            let Expr::Try(t) = expr(&out) else { panic!() };
+crates/benitoite/src/syntax/parser/effects.rs:1039:        assert!(matches!(expr(&out), Expr::Try(t) if matches!(t.value.as_ref(), Expr::Pipe(_))));
+crates/benitoite/src/syntax/parser/exprs.rs:102:        Expr::Try(TryExpr {
+crates/benitoite/src/syntax/parser/exprs.rs:1170:            Expr::Try(e) => match &e.action {
+crates/benitoite/src/syntax/parser/exprs.rs:1538:        Expr::Try(e) => e.span,
+crates/benitoite/src/syntax/parser/mod.rs:1447:            | Expr::Try(_)
+crates/benitoite/src/syntax/parser/mod.rs:1843:                | Expr::Try(_)
+crates/benitoite/src/syntax/parser/traits.rs:491:            |b| matches!(&b.value, Expr::Try(t) if matches!(t.value.as_ref(), Expr::Pipe(_)))
+crates/benitoite/src/typeck/consts.rs:252:        | Expr::Try(_)
+crates/benitoite/src/typeck/consts.rs:420:        | Expr::Try(_)
+crates/benitoite/src/typeck/consts.rs:903:        | Expr::Try(_)
+crates/benitoite/src/typeck/consts.rs:1003:        | Expr::Try(_)
+crates/benitoite/src/typeck/consts.rs:1062:            | Expr::Try(_)
+crates/benitoite/src/typeck/consts.rs:1203:        Expr::Try(t) => match &t.action {
+crates/benitoite/src/typeck/effects/mod.rs:33:        Expr::Try(e) => try_expr(ctx, e),
+crates/benitoite/src/typeck/effects/mod.rs:73:fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
+crates/benitoite/src/typeck/effects/tail.rs:38:        | Expr::Try(_)
+crates/benitoite/src/typeck/effects/tail.rs:64:        Expr::Try(e) => match &e.action {
+crates/benitoite/src/typeck/effects/tests.rs:98:                | Expr::Try(_)
+crates/benitoite/src/typeck/effects/tests.rs:165:                && let Expr::Try(expr) = &bind.value
+crates/benitoite/src/typeck/generate.rs:85:        | Expr::Try(_)
+crates/benitoite/src/typeck/generate.rs:177:        Expr::Try(_) | Expr::Lazy(_) | Expr::With(_) | Expr::Handle(_) | Expr::Resume(_) => {
+crates/benitoite/src/typeck/generate.rs:959:        | Expr::Try(_)
+crates/benitoite/src/typeck/generate.rs:1097:        Expr::Try(t) => match &t.action {
+crates/benitoite/src/typeck/infer.rs:220:    /// `result` が `try` の式の型。判定の結果を `node`（`TryExpr`）の「`try` の種類」に記録する
+crates/benitoite/src/typeck/tests.rs:1196:        | Expr::Try(_)
+crates/benitoite/src/typeck/traits/tests.rs:193:        | Expr::Try(_)
+crates/benitoite/tests/desugar_export/exchange.rs:1268:            a::Expr::Try(v) => {
+crates/benitoite/tests/random_programs/shrink.rs:171:        Expr::Try(expr) => match &expr.action {

@@ -18,16 +18,16 @@ function addOrder(totals: Map[String, Pair[Integer, Integer]], order: Json.Value
 end function
 
 function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
-  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda)
+  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error) end lambda) or return
   bind orders <- match Json.asArray(parsed) with
     case Option.Some(items) -> items
     case Option.None -> return Result.Error("orders.json is not an array")
   end match
   bind totals <- try List.fold(xs: orders, initial: Result.Ok(Map.empty()), f: lambda(acc, value)
-    bind current <- try acc
+    bind current <- try acc or return
     return addOrder(totals: current, order: value)
-  end lambda)
+  end lambda) or return
   Map.forEach(m: totals, f: lambda(key, value)
     Console.writeLine("${key}: ${Pair.first(value)} orders, ${Pair.second(value)}")
   end lambda)

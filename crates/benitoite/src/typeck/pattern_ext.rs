@@ -299,6 +299,7 @@ fn lower_ctor(ctx: &Body<'_, '_>, p: &crate::syntax::ast::CtorPat) -> Option<Pat
     })
 }
 pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
+    let view = patterns::coverage_view(ctx.decls.modules, &ctx.decls.out.adts, ctx.module);
     for (m, ty) in std::mem::take(&mut ctx.matches) {
         if ctx.solver.contains_error(&ty) {
             continue;
@@ -321,7 +322,7 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
             continue;
         };
         let ty = ctx.solver.finalize(&ty, ctx.decls.resolved);
-        let Ok(checked) = patterns::check_match(&ty, &arms, &ctx.decls.out.adts) else {
+        let Ok(checked) = patterns::check_match(&ty, &arms, &ctx.decls.out.adts, &view) else {
             ctx.diagnostic(coverage_stopped(
                 m.scrutinee,
                 super::text::COVERAGE_MATCH,
@@ -379,14 +380,18 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
             }
         }
         for issue in issues {
-            if let MatchIssue::NonExhaustive { witness } = issue {
-                ctx.diagnostic(
-                    DiagBuilder::new(DiagCode::E0601)
-                        .arg("witness", witness)
-                        .primary(m.scrutinee)
-                        .help("add_arm")
-                        .build(),
-                );
+            if let MatchIssue::NonExhaustive {
+                witness,
+                future_types,
+            } = issue
+            {
+                let mut diag = DiagBuilder::new(DiagCode::E0601)
+                    .arg("witness", witness)
+                    .primary(m.scrutinee);
+                if future_types.is_empty() {
+                    diag = diag.help("add_arm");
+                }
+                ctx.diagnostic(with_future_diagnostics(ctx, diag.build(), &future_types));
             }
         }
     }
@@ -400,7 +405,8 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
             continue;
         };
         let finalized = ctx.solver.finalize(&ty, ctx.decls.resolved);
-        let Ok(checked) = patterns::check_binding(&finalized, &pat, &ctx.decls.out.adts) else {
+        let Ok(checked) = patterns::check_binding(&finalized, &pat, &ctx.decls.out.adts, &view)
+        else {
             ctx.diagnostic(coverage_stopped(
                 pattern.span(),
                 super::text::COVERAGE_PATTERN,
@@ -412,16 +418,46 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
             continue;
         };
         let shown = ctx.show_type(&ty);
-        ctx.diagnostic(
-            DiagBuilder::new(DiagCode::E0607)
-                .arg("witness", witness)
-                .arg("ty", shown)
-                .primary(pattern.span())
-                .help("match")
-                .build(),
-        );
+        let mut diag = DiagBuilder::new(DiagCode::E0607)
+            .arg("witness", witness)
+            .arg("ty", shown)
+            .primary(pattern.span());
+        if checked.future_types.is_empty() {
+            diag = diag.help("match");
+        }
+        ctx.diagnostic(with_future_diagnostics(
+            ctx,
+            diag.build(),
+            &checked.future_types,
+        ));
     }
 }
+// 同名の型でも宣言の束縛で副位置を引く。複数の型の help は各型の引数で別々に作る。
+fn with_future_diagnostics(
+    ctx: &Body<'_, '_>,
+    mut diagnostic: Diagnostic,
+    future_types: &std::collections::BTreeSet<crate::base::BindingId>,
+) -> Diagnostic {
+    let Some(code) = diagnostic.code else {
+        return diagnostic;
+    };
+    for id in future_types {
+        let Some(adt) = ctx.decls.out.adts.get(*id) else {
+            continue;
+        };
+        let mut extra = DiagBuilder::new(code)
+            .arg("future_ty", &adt.name)
+            .help("future");
+        if let Some(span) = ctx.decls.resolved.bindings.get(*id).and_then(|b| b.span) {
+            extra = extra.secondary(span, "extensible_decl");
+        }
+        let extra = extra.build();
+        diagnostic.secondary.extend(extra.secondary);
+        diagnostic.helps.extend(extra.helps);
+    }
+    diagnostic
+}
+
 fn coverage_stopped(span: Span, subject: &str, help: &'static str) -> Diagnostic {
     DiagBuilder::new(DiagCode::E0609)
         .arg("subject", subject)
@@ -457,6 +493,472 @@ mod tests {
     use crate::diag::DiagCode as C;
     use crate::syntax::ast::{Item, Stmt};
     use crate::typeck::test_support::check_files;
+
+    // 宣言の公開出力を設定し、同名の型と入れ子の反例を本体の型検査で区別する。
+    // 新しい本番の差し込み口を作らず、診断の主文・位置・help と lowering の接続を確かめる。
+    #[test]
+    fn future_diagnostics_keep_declaration_identity_and_nested_witnesses() {
+        for (decl, ty, known, future) in [
+            (
+                "data Failure\n Only\nend data",
+                "Failure",
+                "Failure.Only",
+                "<future constructor of Failure>",
+            ),
+            (
+                "record Failure\n detail: Unit\nend record",
+                "Failure",
+                "Failure(detail: _, ..)",
+                "<future shape of Failure>",
+            ),
+        ] {
+            for (nested, binding) in [(false, false), (false, true), (true, false), (true, true)] {
+                let known = if nested {
+                    format!("Envelope(detail: {known})")
+                } else {
+                    known.to_owned()
+                };
+                let ty = if nested { "Envelope" } else { ty };
+                let nested_decl = if nested {
+                    "record Envelope\n detail: Failure\nend record\n"
+                } else {
+                    ""
+                };
+                let body = if binding {
+                    format!("bind {known} <- value")
+                } else {
+                    format!("match value with\ncase {known} -> ()\nend match")
+                };
+                let source = format!(
+                    "{decl}\n{nested_decl}function f(value: {ty}) -> Unit\n{body}\nend function"
+                );
+                let (load, resolved, out, diagnostics) =
+                    check_files(&[("main.bnt", &source)], false);
+                assert!(diagnostics.is_empty(), "{diagnostics:#?}");
+                let id = out
+                    .adts
+                    .adts
+                    .iter()
+                    .find(|(_, d)| d.name == "Failure")
+                    .unwrap()
+                    .0;
+                for external in [false, true] {
+                    let mut decls = super::super::decls::Decls::new(
+                        &load.modules,
+                        &load.asts,
+                        &load.sources,
+                        &resolved,
+                    );
+                    // 型表だけを使う。既存の式の結果・制約を準備データで与えない。
+                    decls.out.adts = out.adts.clone();
+                    decls.out.decl_types = out.decl_types.clone();
+                    let mut def = decls.out.adts.get(id).unwrap().clone();
+                    def.extensible = true;
+                    if external {
+                        def.module = resolved
+                            .bindings
+                            .iter()
+                            .find(|(_, b)| b.name == "Benitoite")
+                            .unwrap()
+                            .1
+                            .module;
+                    }
+                    decls.out.adts.adts.insert(id, def);
+                    for ast in &load.asts {
+                        for top in &ast.decls {
+                            if let Item::Fn(f) = &top.item
+                                && f.name.text == "f"
+                            {
+                                super::super::generate::check_function(&mut decls, f);
+                            }
+                        }
+                    }
+                    if !external {
+                        assert!(decls.diagnostics.is_empty(), "{:?}", decls.diagnostics);
+                        continue;
+                    }
+                    assert_eq!(decls.diagnostics.len(), 1, "{:?}", decls.diagnostics);
+                    let d = &decls.diagnostics[0];
+                    assert_eq!(d.code, Some(if binding { C::E0607 } else { C::E0601 }));
+                    assert_eq!(
+                        d.message,
+                        if binding {
+                            format!("this pattern does not match every value of `{ty}`")
+                        } else {
+                            "`match` does not cover every value".to_owned()
+                        }
+                    );
+                    assert_eq!(
+                        d.primary.as_ref().unwrap().text,
+                        format!(
+                            "`{}` is not matched",
+                            if nested {
+                                format!("Envelope(detail: {future})")
+                            } else {
+                                future.to_owned()
+                            }
+                        )
+                    );
+                    let needle = if binding {
+                        known.as_str()
+                    } else {
+                        "value with"
+                    };
+                    let start = source.find(needle).unwrap();
+                    let span = d.primary.as_ref().unwrap().span;
+                    assert_eq!(
+                        (span.start.0 as usize, span.end.0 as usize),
+                        (
+                            start,
+                            start + if binding { known.len() } else { "value".len() }
+                        )
+                    );
+                    assert_eq!(d.secondary.len(), 1);
+                    assert_eq!(
+                        d.secondary[0].span,
+                        resolved.bindings.get(id).unwrap().span.unwrap()
+                    );
+                    assert_eq!(
+                        d.secondary[0].text,
+                        "this type permits future shapes outside its package"
+                    );
+                    let helps = d
+                        .helps
+                        .iter()
+                        .map(|h| h.message.as_str())
+                        .collect::<Vec<_>>();
+                    let future_help = if binding {
+                        "use `match ... with` and add an unguarded `case _ ->` branch to cover future values of `Failure`"
+                    } else {
+                        "add an unguarded variable or `_` pattern to cover future values of `Failure`"
+                    };
+                    assert_eq!(helps, vec![future_help]);
+                    assert!(d.helps.iter().all(|h| h.edits.is_empty()));
+                }
+            }
+        }
+    }
+
+    // 実際の属性・import・パッケージから view を作る境界を確かめる。
+    // 判定 API の型表だけでは、別名の展開と内側の文脈への所属の受け渡しを守れない。
+    // ジェネリックな型と欄の型引数の置換後も、型の束縛番号で指定を選ぶ。
+    #[test]
+    fn extensible_source_patterns_keep_package_and_nested_context() {
+        let declarations = format!(
+            "{}\n@extensible\npublic data Box[T]\n Wrap(T)\nend data\n",
+            include_str!("../../testdata/packages/d8-extensible.files/dep/Types.bnt")
+        );
+        let cases = [
+            (
+                "known",
+                "Types.Kind",
+                "match n with\ncase Types.Kind.Known -> ()\ncase Types.Kind.Other -> ()\nend match",
+                None,
+                Some(C::E0601),
+                Some("Kind"),
+            ),
+            (
+                "alias",
+                "Alias",
+                "match n with\ncase Types.Kind.Known -> ()\ncase Types.Kind.Other -> ()\nend match",
+                None,
+                Some(C::E0601),
+                Some("Kind"),
+            ),
+            (
+                "generic",
+                "Types.Box[Alias]",
+                "match n with\ncase Types.Box.Wrap(_) -> ()\nend match",
+                None,
+                Some(C::E0601),
+                Some("Box"),
+            ),
+            (
+                "generic-argument",
+                "ContainerOf[Alias]",
+                "match n with\ncase ContainerOf(value: Types.Kind.Known) -> ()\ncase ContainerOf(value: Types.Kind.Other) -> ()\nend match",
+                None,
+                Some(C::E0601),
+                Some("Kind"),
+            ),
+            (
+                "other",
+                "Alias",
+                "match n with\ncase Types.Kind.Known -> ()\ncase Types.Kind.Other -> ()\ncase other -> ()\nend match",
+                Some(C::E0602),
+                None,
+                None,
+            ),
+            (
+                "result",
+                "Result[Unit, Alias]",
+                "match n with\ncase Result.Ok(_) -> ()\ncase Result.Error(Types.Kind.Known) -> ()\ncase Result.Error(Types.Kind.Other) -> ()\nend match",
+                None,
+                Some(C::E0601),
+                Some("Kind"),
+            ),
+            (
+                "result-variable",
+                "Result[Unit, Alias]",
+                "match n with\ncase Result.Ok(_) -> ()\ncase Result.Error(error) -> ()\nend match",
+                None,
+                None,
+                None,
+            ),
+            (
+                "option",
+                "Option[Alias]",
+                "match n with\ncase Option.None -> ()\ncase Option.Some(Types.Kind.Known) -> ()\ncase Option.Some(Types.Kind.Other) -> ()\nend match",
+                None,
+                Some(C::E0601),
+                Some("Kind"),
+            ),
+            (
+                "list",
+                "List[Alias]",
+                "match n with\ncase [] -> ()\ncase [Types.Kind.Known, ..] -> ()\ncase [Types.Kind.Other, ..] -> ()\nend match",
+                None,
+                Some(C::E0601),
+                Some("Kind"),
+            ),
+            (
+                "record-field",
+                "Envelope",
+                "match n with\ncase Envelope(kind: Types.Kind.Known) -> ()\ncase Envelope(kind: Types.Kind.Other) -> ()\nend match",
+                None,
+                Some(C::E0601),
+                Some("Kind"),
+            ),
+            (
+                "record",
+                "Types.Detail",
+                "match n with\ncase Types.Detail(value: _, ..) -> ()\nend match",
+                None,
+                Some(C::E0601),
+                Some("Detail"),
+            ),
+            (
+                "guard",
+                "Alias",
+                "match n with\ncase Types.Kind.Known -> ()\ncase Types.Kind.Other -> ()\ncase other if true -> ()\nend match",
+                Some(C::E0602),
+                Some(C::E0601),
+                Some("Kind"),
+            ),
+            (
+                "alternative",
+                "Alias",
+                "match n with\ncase Types.Kind.Known, Types.Kind.Other, _ -> ()\nend match",
+                Some(C::E0608),
+                None,
+                None,
+            ),
+            (
+                "duplicate-arm",
+                "Alias",
+                "match n with\ncase _ -> ()\ncase other -> ()\nend match",
+                Some(C::E0602),
+                Some(C::E0602),
+                None,
+            ),
+            (
+                "duplicate-alternative",
+                "Alias",
+                "match n with\ncase _, Types.Kind.Known -> ()\nend match",
+                Some(C::E0608),
+                Some(C::E0608),
+                None,
+            ),
+            (
+                "single-bind",
+                "Types.Single",
+                "bind Types.Single.Only(_) <- n",
+                None,
+                Some(C::E0607),
+                Some("Single"),
+            ),
+            (
+                "record-bind",
+                "Types.Detail",
+                "bind Types.Detail(value: _, ..) <- n",
+                None,
+                Some(C::E0607),
+                Some("Detail"),
+            ),
+            (
+                "nested-bind",
+                "Container",
+                "bind Container(value: Types.Single.Only(_)) <- n",
+                None,
+                Some(C::E0607),
+                Some("Single"),
+            ),
+            (
+                "variable-bind",
+                "Types.Single",
+                "bind value <- n",
+                None,
+                None,
+                None,
+            ),
+            ("wild-bind", "Types.Detail", "bind _ <- n", None, None, None),
+            (
+                "lambda",
+                "Alias",
+                "bind action <- lambda() -> Unit\nmatch n with\ncase Types.Kind.Known -> ()\ncase Types.Kind.Other -> ()\nend match\nend lambda",
+                None,
+                Some(C::E0601),
+                Some("Kind"),
+            ),
+            (
+                "lazy",
+                "Alias",
+                "bind delayed <- lazy\nmatch n with\ncase Types.Kind.Known -> ()\ncase Types.Kind.Other -> ()\nend match\nend lazy",
+                None,
+                Some(C::E0601),
+                Some("Kind"),
+            ),
+            (
+                "getter-update",
+                "Types.Detail",
+                "bind updated <- Types.Detail(..n, value: 1)\nbind _ <- Types.Detail.value(updated)",
+                None,
+                None,
+                None,
+            ),
+            (
+                "wrong-arity",
+                "Types.Single",
+                "bind Types.Single.Only() <- n",
+                Some(C::E0412),
+                Some(C::E0412),
+                None,
+            ),
+            (
+                "wrong-pattern-type",
+                "Alias",
+                "match n with\ncase true -> ()\nend match",
+                Some(C::E0401),
+                Some(C::E0401),
+                None,
+            ),
+        ];
+        for (name, ty, body, author, consumer, future_type) in cases {
+            for external in [false, true] {
+                let import = if external { "Dep.Types" } else { "Types" };
+                let source = format!(
+                    "import {import}\ntype Alias = Types.Kind\nrecord Envelope\n kind: Alias\nend record\nrecord Container\n value: Types.Single\nend record\nrecord ContainerOf[T]\n value: T\nend record\nfunction f(n: {ty}) -> Unit\n{body}\n()\nend function\n"
+                );
+                let declaration_path = if external {
+                    "dep/Types.bnt"
+                } else {
+                    "Types.bnt"
+                };
+                let mut files = vec![
+                    ("main.bnt", source.as_str()),
+                    (declaration_path, declarations.as_str()),
+                ];
+                if external {
+                    files.extend([
+                        (
+                            "package.bnt",
+                            "language \"0.0.6\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+                        ),
+                        (
+                            "dep/package.bnt",
+                            include_str!(
+                                "../../testdata/packages/d8-extensible.files/dep/package.bnt"
+                            ),
+                        ),
+                    ]);
+                }
+                let (_, resolved, _, diagnostics) = check_files(&files, false);
+                let expected = if external { consumer } else { author };
+                assert_eq!(
+                    diagnostics
+                        .iter()
+                        .map(|d| d.code.unwrap())
+                        .collect::<Vec<_>>(),
+                    expected.into_iter().collect::<Vec<_>>(),
+                    "{name}/{external}: {diagnostics:#?}"
+                );
+                if external && let Some(future_type) = future_type {
+                    let diagnostic = &diagnostics[0];
+                    let future = if future_type == "Detail" {
+                        format!("<future shape of {future_type}>")
+                    } else {
+                        format!("<future constructor of {future_type}>")
+                    };
+                    let witness = match name {
+                        "result" => format!("Result.Error({future})"),
+                        "option" => format!("Option.Some({future})"),
+                        "list" => format!("[{future}, ..]"),
+                        "record-field" => format!("Envelope(kind: {future})"),
+                        "nested-bind" => format!("Container(value: {future})"),
+                        "generic-argument" => format!("ContainerOf(value: {future})"),
+                        _ => future,
+                    };
+                    let primary = diagnostic.primary.as_ref().unwrap();
+                    assert_eq!(
+                        primary.text,
+                        format!("`{witness}` is not matched"),
+                        "{name}"
+                    );
+                    let (start, length) = if consumer == Some(C::E0607) {
+                        let start = source.find("bind ").unwrap() + "bind ".len();
+                        (start, source[start..].find(" <-").unwrap())
+                    } else {
+                        (source.find("match n with").unwrap() + "match ".len(), 1)
+                    };
+                    assert_eq!(
+                        (primary.span.start.0 as usize, primary.span.end.0 as usize),
+                        (start, start + length),
+                        "{name}"
+                    );
+                    let declaration = resolved
+                        .bindings
+                        .iter()
+                        .find(|(_, b)| {
+                            b.name == future_type
+                                && matches!(b.kind, BindingKind::Data | BindingKind::Record)
+                        })
+                        .unwrap()
+                        .1;
+                    assert_eq!(diagnostic.secondary.len(), 1, "{name}");
+                    assert_eq!(
+                        diagnostic.secondary[0].span,
+                        declaration.span.unwrap(),
+                        "{name}"
+                    );
+                    assert_eq!(
+                        diagnostic.secondary[0].text,
+                        "this type permits future shapes outside its package",
+                        "{name}"
+                    );
+                    let future_help = if consumer == Some(C::E0607) {
+                        format!(
+                            "use `match ... with` and add an unguarded `case _ ->` branch to cover future values of `{future_type}`"
+                        )
+                    } else {
+                        format!(
+                            "add an unguarded variable or `_` pattern to cover future values of `{future_type}`"
+                        )
+                    };
+                    let helps = vec![future_help];
+                    assert_eq!(
+                        diagnostic
+                            .helps
+                            .iter()
+                            .map(|h| h.message.clone())
+                            .collect::<Vec<_>>(),
+                        helps,
+                        "{name}"
+                    );
+                    assert!(diagnostic.helps.iter().all(|h| h.edits.is_empty()));
+                }
+            }
+        }
+    }
 
     fn check(s: &str) -> Vec<Diagnostic> {
         check_files(&[("main.bnt", s)], false).3

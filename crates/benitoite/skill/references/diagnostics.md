@@ -242,6 +242,9 @@ Integer suffixes can follow decimal, hexadecimal, octal, or binary integers. Flo
 - Message: expected {expected}, found {found}
 - Label: unexpected {found}
 - `lambda_line`: put `end lambda` on the same physical line as the body, or start the body on the line after the lambda header
+- `return_start`: return starts here
+- `return_value_line`: start the return value on the same physical line as `return`
+- `die_action`: use `try value or die` or `try value or die(message)` to exit on failure
 - `type_arguments`: call functions without type arguments, such as `Map.empty()`; write the type on the binding, such as `bind m: Map[String, Integer] <- Map.empty()`, and use `List.get` to read list elements
 
 The parser found a token that cannot appear here.
@@ -326,7 +329,7 @@ Unused lambda parameters are named with a leading `_`.
 - `or`: write `or`
 - `not`: write `not`
 - `remainder`: write `mod` for the remainder
-- `question`: write `try` before the expression, such as `try parse(text)`
+- `question`: write `try` before the expression, such as `try parse(text) or return`
 - `fat_arrow`: write the branch as `case pattern -> expression`
 
 Benitoite writes these operators as words or with other symbols.
@@ -397,9 +400,10 @@ Benitoite has no tuple syntax. `Pair` and `Triple` hold two or three values, and
 - Message: `{keyword}` cannot be used inside {context}
 - `lazy_body`: a `lazy` body produces one value; compute the value with an expression
 - `guard`: a guard is a condition; check the value in the branch body instead
+- `die_message`: use a pure String expression for the message of `or die`
 - `lambda`: `{keyword}` is allowed inside a `lambda ... end lambda` written there
 
-`return` and `try` cannot leave a `lazy` body or a `match` guard, except inside a `lambda ... end lambda` written there. The function and the arguments of a call with `_` placeholders are not exempt.
+`return` and `try` cannot leave a `lazy` body, a `match` guard, or the message of `or die`, except inside a `lambda ... end lambda` written there. The function and the arguments of a call with `_` placeholders are not exempt.
 
 ## E0219
 
@@ -718,6 +722,24 @@ A directly nested lambda needs parentheses when either lambda omits its terminat
 - `named`: write `function(name: Type) -> Result`
 
 Function-type parameter names are part of the contract. Use the names required by the surrounding contract.
+
+## E0258
+
+- Kind: check (error)
+- Message: invalid failure action after `try`
+- `return_value`: the `or return` action takes no value
+- `die_message`: write exactly one message expression inside the parentheses
+- `die_action`: use `or die` or `or die(message)` to exit on failure
+
+Write `or return` without a value to return the failure, or `or die` with an optional parenthesized message to exit.
+
+## E0259
+
+- Kind: check (error)
+- Message: parenthesize an explicit `try` expression before continuing it
+- `paren`: write `(try ... or return)` or `(try ... or die)` before applying another operator or call
+
+Enclose an explicit `try` expression in parentheses before continuing it.
 
 ## E0301
 
@@ -1581,6 +1603,8 @@ The literal rounds to infinity in binary32.
 - Label: `{effect}` happens here
 - `declared`: declared here
 - `add_uses`: add `uses {effect}` to the signature, or move this call to a function that uses `{effect}`
+- `die_uses`: add `uses Process.Exit` to the signature for `or die`
+- `die_import`: add `import Benitoite.Unofficial.IO.Process` and `uses Process.Exit`; the internal dependency of `or die` does not import the name `Process`
 
 A function body can only perform the effects listed after `uses`.
 
@@ -1650,10 +1674,11 @@ Each operation has at most one clause in a `handle`.
 - Kind: check (error)
 - Message: `resume` can only be used directly in a clause of `handle`
 - `lambda`: `resume` cannot be used in a lambda or a `lazy` body inside a clause
+- `die_message`: `resume` cannot be used in the message of `or die`; use a pure String expression
 - `guard`: `resume` cannot be used in a `match` guard; call it in the body of the branch
 - `placeholder`: `resume` cannot be used in an argument of a call with `_` placeholders; the arguments are evaluated inside the function that the call creates
 
-`resume` continues the computation that performed the operation, so it is written in the clause itself, not inside a lambda, a `lazy` body, a `match` guard, or an argument of a call with `_` placeholders.
+`resume` continues the computation that performed the operation, so it is written in the clause itself, not inside a lambda, a `lazy` body, a `match` guard, the message of `or die`, or an argument of a call with `_` placeholders.
 
 ## E0510
 
@@ -1666,12 +1691,23 @@ Each operation has at most one clause in a `handle`.
 
 Operations of an effect are declared with a name, parameters, and a result type.
 
+## E0511
+
+- Kind: check (error)
+- Message: the message of `or die` cannot perform `{effect}`
+- `pure`: use a pure String expression for the message
+- `message`: the message is written here
+
+The optional message of `or die` must be a pure String expression.
+
 ## E0601
 
 - Kind: check (error)
 - Message: `match` does not cover every value
 - Label: `{witness}` is not matched
 - `add_arm`: add a branch `case {witness} ->`, or `case _ ->`
+- `future`: add an unguarded variable or `_` pattern to cover future values of `{future_ty}`
+- `extensible_decl`: this type permits future shapes outside its package
 
 Every possible value must be matched by some branch.
 
@@ -1728,6 +1764,8 @@ Range patterns compare integers or characters.
 - Message: this pattern does not match every value of `{ty}`
 - Label: `{witness}` is not matched
 - `match`: use `match ... with` to handle the other values
+- `future`: use `match ... with` and add an unguarded `case _ ->` branch to cover future values of `{future_ty}`
+- `extensible_decl`: this type permits future shapes outside its package
 
 The pattern on the left of `bind` or `shadow` must match every value.
 
@@ -1791,6 +1829,7 @@ A type implements a trait only if it implements the supertraits under the same c
 - Message: `{ty}` does not implement `{trait_name}`
 - Label: `{trait_name}` is required here
 - `required`: required by this use
+- `die_show`: implement Trait.Show or convert the error with Result.mapError
 
 A value used with a trait method, or passed where a constraint is required, must have an implementation.
 
@@ -1799,6 +1838,7 @@ A value used with a trait method, or passed where a constraint is required, must
 - Kind: check (error)
 - Message: the type parameter `{param}` needs the constraint `{trait_name}`
 - `add`: add the constraint, such as `[{param}: {trait_name}]`
+- `die_show`: implement Trait.Show or convert the error with Result.mapError
 
 Using a trait method on a value of a type parameter requires that constraint on the parameter.
 
@@ -1878,7 +1918,7 @@ Nesting implementations that require two or more traits of the same type paramet
 
 - Kind: check (error)
 - Message: unknown attribute `@{name}`
-- `allowed`: the attributes are `@test`, `@test("...")`, `@deprecated("...")`, and `@external("wasm", "...", "...")`
+- `allowed`: the attributes are `@test`, `@test("...")`, `@deprecated("...")`, `@extensible`, and `@external("wasm", "...", "...")`
 
 Only the listed attributes can be written.
 
@@ -1887,7 +1927,7 @@ Only the listed attributes can be written.
 - Kind: check (error)
 - Message: `@{name}` cannot be written on {what}
 
-`@test` is written on functions. `@external` is written on top-level functions and on `type` declarations without a right-hand side. `@deprecated` is written on functions, constants, `data` types, type aliases, records, traits, and effects.
+`@test` is written on functions. `@external` is written on top-level functions and on `type` declarations without a right-hand side. `@deprecated` is written on functions, constants, `data` types, type aliases, records, traits, and effects. `@extensible` is written on `data` types and records.
 
 ## E0803
 
@@ -2012,6 +2052,14 @@ The third argument of `@external` selects a function directly or as `interface#f
 
 Functions that pass external types use component state.
 
+## E0817
+
+- Kind: check (error)
+- Message: `@extensible` takes no arguments
+- `remove`: remove the arguments from `@extensible`
+
+`@extensible` is written without arguments on a `data` type or record.
+
 ## E0901
 
 - Kind: check (error)
@@ -2072,10 +2120,8 @@ The declared language version is newer than the interpreter. Use an interpreter 
 
 - Kind: check (error)
 - Message: this file was written for Benitoite {version}, and the language changed incompatibly in {changed}
-- `change`: {summary}
-- `migrate`: see docs/reference/benitoite.md for named arguments and named function types
 
-The interpreter reports the earliest incompatible language change after the declared version and no later than its own version.
+The main message identifies the first incompatible language change after the declared version and no later than the interpreter's version. Notes list every applicable version and its summary in version order, and helps list the corresponding migration guidance in the same order, without source edits.
 
 ## E0909
 

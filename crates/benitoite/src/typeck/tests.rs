@@ -20,6 +20,61 @@ fn check(s: &str) -> (LoadOutput, ResolveOutput, TypeckOutput, Vec<Diagnostic>) 
     check_files(&[("main.bnt", s)], false)
 }
 
+// 関門: 公開の型検査で、標準の Result/Option だけが閉じている不変条件を守る。
+// 利用者の同名の型は受理し、解決済みの標準宣言の AST に誤った属性を付けたときだけ
+// Internal を返す。Lean の交換入力の拒否では Rust の型表の作成を検査できない。
+#[test]
+fn standard_result_and_option_reject_extensible_declarations() {
+    for name in ["Result", "Option"] {
+        let source = format!(
+            "@extensible\ndata {name}\n Value\nend data\nfunction main() -> Unit\nend function"
+        );
+        let (mut load, resolved, out, diagnostics) = check_files(&[("main.bnt", &source)], true);
+        assert!(diagnostics.is_empty(), "{name}: {diagnostics:#?}");
+        assert!(out.main.is_some());
+        let standard = resolved
+            .stdlib(&format!("Benitoite.{name}.{name}"))
+            .unwrap();
+        assert!(!out.adts.get(standard).unwrap().extensible);
+        let user = out
+            .adts
+            .adts
+            .iter()
+            .find(|(id, adt)| *id != standard && adt.name == name)
+            .unwrap()
+            .0;
+        assert!(out.adts.get(user).unwrap().extensible);
+        let attribute = load
+            .asts
+            .iter()
+            .flat_map(|ast| &ast.decls)
+            .find(|top| resolved.decls.get(top.item.id()) == Some(&user))
+            .unwrap()
+            .attrs[0]
+            .clone();
+        load.asts
+            .iter_mut()
+            .flat_map(|ast| &mut ast.decls)
+            .find(|top| resolved.decls.get(top.item.id()) == Some(&standard))
+            .unwrap()
+            .attrs
+            .push(attribute);
+        let (out, diagnostics) =
+            super::typecheck(&load.modules, &load.asts, &load.sources, &resolved, true);
+        assert_eq!(diagnostics.len(), 1, "{name}: {diagnostics:#?}");
+        let diagnostic = &diagnostics[0];
+        assert_eq!(diagnostic.kind, crate::diag::ReportKind::Internal);
+        assert!(diagnostic.is_error());
+        assert_eq!(diagnostic.code, None);
+        assert_eq!(diagnostic.message, "internal compiler error");
+        assert!(diagnostic.notes.contains(&format!(
+            "the standard `{name}` type must not be `@extensible`"
+        )));
+        assert!(out.main.is_none());
+        assert!(out.adts.get(standard).is_none());
+    }
+}
+
 #[test]
 fn prelude_type_shadowing_in_nested_types_and_type_arity() {
     // 公開の型検査で、入れ子の型と型引数の数にも注記が付くことを確かめる。

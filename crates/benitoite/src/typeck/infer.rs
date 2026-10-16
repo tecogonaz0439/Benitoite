@@ -72,6 +72,8 @@ pub enum DictSite {
     Use { node: NodeId, constraint: u32 },
     /// 実装の宣言のノードと、型クラスの上位の型クラスの番号（`TraitDef::supers` の位置）
     ImplSuper { impl_decl: NodeId, index: u32 },
+    /// die の失敗値を表示する標準 Show の辞書。
+    DieShow { node: NodeId },
 }
 
 /// 演算子の名前。診断の `{op}` に使う。
@@ -161,6 +163,8 @@ pub enum ReasonKind {
     WithState,
     /// `lazy` の本体が純粋であること
     LazyBody,
+    /// die の説明の純粋性。
+    DieMessage,
     /// `handle` の本体の型とエフェクト
     HandleBody,
     /// `handle` の節の本体
@@ -216,11 +220,11 @@ pub enum Constraint {
         site: DictSite,
         reason: Reason,
     },
-    /// 試行(A, R, τ)。`target` が `try` の対象の型、`ret` が最も内側の関数かラムダの戻り値の型、
+    /// `target` が入力の型、`action` が Return の戻り値または Die の標準 exit と表示制約の位置、
     /// `result` が `try` の式の型。判定の結果を `node`（`TryExpr`）の「`try` の種類」に記録する
     Try {
         target: ITy,
-        ret: ITy,
+        action: TryConstraintAction,
         result: ITy,
         node: NodeId,
         reason: Reason,
@@ -243,4 +247,11 @@ pub struct ContractId(pub u32);
 pub enum IContract {
     Known(Vec<String>),
     Var(ContractId),
+}
+
+/// 試行の推論で、戻り値の制約を終了の処置へ混ぜないための区別。
+#[derive(Clone, PartialEq, Debug)]
+pub enum TryConstraintAction {
+    Return { ret: ITy },
+    Die { exit: BindingId, span: Span },
 }

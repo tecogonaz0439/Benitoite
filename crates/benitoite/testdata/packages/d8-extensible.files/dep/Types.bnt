@@ -1,0 +1,23 @@
+@extensible
+public data Kind
+  Known
+  Other
+end data
+@extensible
+public data Single
+  Only(Integer)
+end data
+@extensible
+public record Detail
+  value: Integer
+end record
+public function inspect(kind: Kind) -> Integer
+  return match kind with
+    case Kind.Known -> 1
+    case Kind.Other -> 2
+  end match
+end function
+public function unpack(single: Single) -> Integer
+  bind Single.Only(value) <- single
+  return value
+end function

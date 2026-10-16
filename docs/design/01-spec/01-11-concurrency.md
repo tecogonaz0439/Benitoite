@@ -96,16 +96,18 @@
 
 `TaskGroup.spawn` で起動したタスクを、プログラムから取り消す関数は、初回リリース版にはない。
 
+【決定】子タスク内の `try e or die` が既定の終了操作へ進むと、その子だけでなく実行全体を状態 1 で終える。ほかのタスクを取り消し、貸し出し中のリソースの返却を待ち、`with` の解放と出力の転送を行う。取消し前に始めた外部操作の効果は巻き戻さない。言語のハンドラが終了操作を処理した場合は、そのハンドラの規則に従う（[エラー処理](01-09-errors.md#失敗時に終了する処置)）。
+
 ### タスクとハンドラ
 
 【決定】`handle` の本体の中で起動したタスクは、そのハンドラを引き継ぐ。タスクの中で呼んだ操作は、タスクを起動した位置で有効だったハンドラが処理し、節はその操作を呼んだタスクの中で実行する。
 
-- `handle` は、本体の中で起動したタスク（外側で開いた `TaskGroup` に加えたものを含む）がすべて終わるまで終わらない。本体が途中の `return` や `try` で `handle` を抜けるときも同じである。
+- `handle` は、本体の中で起動したタスク（外側で開いた `TaskGroup` に加えたものを含む）がすべて終わるまで終わらない。本体が途中の `return` や失敗を返す `try`（裸または `or return`）で `handle` を抜けるときも同じである。
 - `handle` を評価したタスク自身が呼んだ操作の節が `resume` を呼ばずに終わったときは、本体の中で起動した、終わっていないタスクを取り消す（前述の「取り消し」）。
 
 【決定】タスクの中で呼んだ操作を、そのタスクが引き継いだハンドラ（そのタスクの外で評価を始めた `handle`）が処理するときは、その操作の節は末尾で再開する節でなければならない。理由: 子のタスクの中で再開した続きを実行し終えて得られるのは子のタスクの結果であり、`handle` の式の値ではないので、`resume` の値を使う節や、`resume` を呼ばずに終わる節の意味が定まらない。
 
-- 末尾で再開する節とは、節の本体のどの終わり方も末尾位置の `resume(v)` であり、節の中に `return` と `try` がない節である。末尾で再開するかどうかは、節ごとに構文から決まる。
+- 末尾で再開する節とは、節の本体のどの終わり方も末尾位置の `resume(v)` であり、節の中（内側のラムダを除く）に `return` と失敗を返す `try`（裸または `or return`）がない節である。末尾で再開するかどうかは、節ごとに構文から決まる。
 - 末尾で再開する節は、操作を呼んだタスクの中で実行する。`resume(v)` に達したら、操作の呼び出しの結果を `v` とし、そのタスクの続きを実行する。節の値は使わない。
 - 操作の節が末尾で再開する節でなければ、節を実行せずに実行時エラー（引き継いだハンドラの節の誤り）とする。
 
@@ -136,7 +138,7 @@ end handle
 
 ```text
 function serve(listener: Http.Listener, group: TaskGroup) -> Result[Unit, NetworkError] uses Http.Listen, State
-  bind exchange <- try Http.accept(listener)
+  bind exchange <- try Http.accept(listener) or return
   bind _ <- TaskGroup.spawn(group: group, action: lambda()
     with current = exchange do
       return Http.respond(exchange: current, response: respondTo(Http.requestOf(current)))
@@ -146,7 +148,7 @@ function serve(listener: Http.Listener, group: TaskGroup) -> Result[Unit, Networ
 end function
 
 function main() -> Result[Unit, String] uses Http.Listen, State
-  with listener = try Http.listen(host: "127.0.0.1", port: 8080) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)),
+  with listener = try Http.listen(host: "127.0.0.1", port: 8080) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return,
     group = TaskGroup.open() do
     return serve(listener: listener, group: group) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
   end with

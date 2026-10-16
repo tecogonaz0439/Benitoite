@@ -166,7 +166,7 @@ def check_width(directory, expected):
     builtins = directory / "builtins.json"
     stdlib = directory / "stdlib-decls.json"
     corpus = read(corpus_path)
-    require(corpus["version"] == 8, "width corpus version")
+    require(corpus["version"] == 10, "width corpus version")
     require([(i["name"], len(i["definitions"])) for i in corpus["inputs"]] ==
             [tuple(entry) for entry in expected["inputs"]], "width inputs and definitions")
     for item in corpus["inputs"]:
@@ -426,6 +426,49 @@ def check_rejections(directory, ordinary, static):
     print("named export: six mutations rejected for the intended reason")
 
 
+def check_extensible_package(directory):
+    stem = 'extensible-package'
+    corpus = read(directory / f'{stem}-corpus.json')
+    item = corpus['inputs'][0]
+    info = next(d for d in item['dataTypes'] if d['typeName'] == 'IOErrorKind')
+    require(info['package'] == 'stdlib' and info['extensible'], 'external IO type metadata')
+    standard = [d for d in item['dataTypes'] if d['package'] == 'stdlib' and d['extensible']]
+    require([(d['typeName'], d['isRecord']) for d in standard] ==
+            [('IOErrorKind', False), ('NetworkErrorKind', False), ('ParseError', True), ('ParseError', True)],
+            'four extensible standard failure types')
+    body = next(d['scope']['inScope']['surface'] for d in item['definitions']
+                if 'inspect (' in d['name'])
+    require(body['package'] == 'package:Dep' and body['coverageView'] == [d['name'] for d in standard],
+            'dependency body must include external IOErrorKind')
+    require(item['constants'][0]['package'] == 'package:Dep', 'constant declaration package')
+    with tempfile.TemporaryDirectory(prefix='benitoite-export-view-') as temp:
+        temp = Path(temp)
+        for tool in ('desugarDiff', 'builtinCheck', 'surfaceCheck', 'surfaceCheckAll'):
+            broken = copy.deepcopy(corpus)
+            target = next(d['scope']['inScope']['surface'] for d in broken['inputs'][0]['definitions']
+                          if 'inspect (' in d['name'])
+            target['coverageView'].remove(info['name'])
+            path = temp / 'corpus.json'
+            path.write_text(json.dumps(broken))
+            args = [path]
+            if tool != 'desugarDiff': args.append(directory / f'{stem}-builtins.json')
+            if tool.startswith('surface'): args.append(directory / f'{stem}-stdlib.json')
+            if tool == 'surfaceCheck': args += ['golden', stem]
+            report = temp / f'{tool}.json'
+            run(tool, args, report, status=2)
+            require('coverage view/package mismatch' in report.with_suffix('.log').read_text(),
+                    f'{tool}: omitted external IOErrorKind rejection')
+        broken = read(directory / f'{stem}-coverage.json')
+        broken['inputs'][0]['matches'][0]['coverageView'].remove(info['name'])
+        path = temp / 'coverage.json'
+        path.write_text(json.dumps(broken))
+        report = temp / 'coverageProgramDiff.json'
+        run('coverageProgramDiff', [path, directory / f'{stem}-builtins.json'], report, status=2)
+        require('coverage view/package mismatch' in report.with_suffix('.log').read_text(),
+                'coverageProgramDiff: omitted external IOErrorKind rejection')
+    print('external package export: IOErrorKind view and constant declaration package agree')
+
+
 def main():
     directory, coverage_dir = map(Path, sys.argv[1:])
     manifest = read(MANIFEST)
@@ -444,8 +487,9 @@ def main():
     report = run("coverageDiff", [coverage], coverage_dir / "named-report.json")
     require(report["matched"] == manifest["namedCoverageCases"] and report["mismatched"] == 0
             and report["fuelExhausted"] == 0, "named coverage")
+    check_extensible_package(directory)
     check_rejections(directory, outputs["named-calls"], outputs["named-static-calls"])
-    print("named export: manifest agrees; corpus 8, tables 2 and coverage 2 match all six entries")
+    print("named export: manifest agrees; corpus 10, tables 3 and coverage 3 match all six entries")
 
 
 if __name__ == "__main__":

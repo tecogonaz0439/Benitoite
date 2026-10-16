@@ -764,7 +764,7 @@ fn result_lines_escape_file_names_only_in_text_output() {
 #[test]
 fn directory_walk_skips_settings_and_nested_package_roots() {
     let dir = Directory::new("package-roots");
-    dir.write("package.bnt", "language \"0.0.5\"\n");
+    dir.write("package.bnt", "language \"0.0.6\"\n");
     dir.write(
         "tests.bnt",
         "@test\nfunction rootTest() -> Unit\n()\nend function\n",
@@ -775,7 +775,7 @@ fn directory_walk_skips_settings_and_nested_package_roots() {
     );
     dir.write(
         "deps/textkit/package.bnt",
-        "language \"0.0.5\"\npackage Textkit\nend package\n",
+        "language \"0.0.6\"\npackage Textkit\nend package\n",
     );
     dir.write(
         "deps/textkit/tests.bnt",
@@ -793,4 +793,70 @@ fn directory_walk_skips_settings_and_nested_package_roots() {
     assert_eq!(out.exit, 2);
     assert!(out.stdout.contains("packageTest"));
     assert!(out.stderr.contains("Broken.bnt"));
+}
+
+// 作成時の関門: test runner がソースの die を一件の失敗とし、次のテストを実行する。
+// CLI run の検査では test の分類と捕捉出力の二重化に届かない。本物の入口だけを使う。
+#[test]
+fn die_source_fails_one_test_and_keeps_running() {
+    let dir = Directory::new("die-source");
+    let file = dir.write("die.bnt", "import Benitoite.Unofficial.IO.Process\n@test\nfunction dies() -> Unit uses Process.Exit\n bind value: Option[Unit] <- Option.None\n try value or die(\"test context\")\nend function\n@test\nfunction after() -> Unit\n ()\nend function\n");
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        for json in [false, true] {
+            let args = if json {
+                vec!["--diagnostics=json", file.as_str()]
+            } else {
+                vec![file.as_str()]
+            };
+            let out = run_with(&dir, &args, Box::new(NoInterrupt), mode);
+            assert_eq!(out.exit, 1, "{}\n{}", out.stdout, out.stderr);
+            assert!(out.stderr.is_empty(), "{}", out.stderr);
+            if json {
+                let lines: Vec<serde_json::Value> = out
+                    .stdout
+                    .lines()
+                    .map(|l| serde_json::from_str(l).unwrap())
+                    .collect();
+                assert_eq!(lines.len(), 3, "{}", out.stdout);
+                assert_eq!(lines[0]["failure"]["reason"], "exit");
+                assert_eq!(lines[0]["failure"]["exitCode"], 1);
+                assert_eq!(lines[0]["failure"]["die"]["kind"], "die");
+                assert_eq!(
+                    lines[0]["failure"]["die"]["notes"],
+                    serde_json::json!([
+                        "message: test context",
+                        "cause: expected a value, got Option.None"
+                    ])
+                );
+                assert_eq!(lines[0]["stdout"], "");
+                assert_eq!(lines[0]["stderr"], "");
+                assert_eq!(lines[1]["function"], "after");
+                assert_eq!(lines[1]["outcome"], "passed");
+            } else {
+                assert_eq!(
+                    out.stdout.matches("error: explicit failure exit").count(),
+                    1,
+                    "{}",
+                    out.stdout
+                );
+                assert!(
+                    out.stdout.contains("message: test context"),
+                    "{}",
+                    out.stdout
+                );
+                assert!(
+                    out.stdout
+                        .contains("cause: expected a value, got Option.None"),
+                    "{}",
+                    out.stdout
+                );
+                assert!(out.stdout.contains("after ... ok"), "{}", out.stdout);
+                assert!(
+                    !out.stdout.contains("called `Process.exit`"),
+                    "{}",
+                    out.stdout
+                );
+            }
+        }
+    }
 }

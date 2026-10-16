@@ -1,0 +1,247 @@
+--- a/crates/benitoite/skill/SKILL.md
++++ b/crates/benitoite/skill/SKILL.md
+@@ -128 +128 @@
+-  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+--- a/crates/benitoite/skill/references/common-mistakes.md
++++ b/crates/benitoite/skill/references/common-mistakes.md
+@@ -365,3 +365,4 @@
+-
+-function main() -> Result[Unit, String] uses File.Write, Console.Write
+-  bind _ <- try File.writeText(path: "out.txt", text: "data") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++import Benitoite.Unofficial.IO.Process
++
++function main() -> Unit uses File.Write, Console.Write, Process.Exit
++  bind _ <- try File.writeText(path: "out.txt", text: "data") or die
+@@ -369 +370 @@
+-  return Result.Ok(())
++  return ()
+--- a/crates/benitoite/skill/references/idioms.md
++++ b/crates/benitoite/skill/references/idioms.md
+@@ -95 +95 @@
+-  bind port <- try parsePort("8080")
++  bind port <- try parsePort("8080") or return
+@@ -97 +97 @@
+-  bind other <- try parsePort("http")
++  bind other <- try parsePort("http") or return
+@@ -164,3 +164,4 @@
+-
+-function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+-  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++import Benitoite.Unofficial.IO.Process
++
++function main() -> Unit uses File.Read, File.Write, Console.Write, Process.Exit
++  bind lines <- try File.readLines("input.txt") or die
+@@ -174,4 +175,4 @@
+-  bind _ <- try File.writeText(path: "report.txt", text: report) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+-  bind _ <- try File.appendText(path: "report.txt", text: "done\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+-  Console.write(try File.readText("report.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)))
+-  return Result.Ok(())
++  bind _ <- try File.writeText(path: "report.txt", text: report) or die
++  bind _ <- try File.appendText(path: "report.txt", text: "done\n") or die
++  Console.write(try File.readText("report.txt") or die)
++  return ()
+@@ -219,4 +220,5 @@
+-
+-function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+-  bind _ <- try File.createDirectory("out") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+-  bind names <- try File.listDirectory(".") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++import Benitoite.Unofficial.IO.Process
++
++function main() -> Unit uses File.Read, File.Write, Console.Write, Process.Exit
++  bind _ <- try File.createDirectory("out") or die
++  bind names <- try File.listDirectory(".") or die
+@@ -224 +226 @@
+-  bind found <- try File.exists("notes.md") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind found <- try File.exists("notes.md") or die
+@@ -229 +231 @@
+-  return Result.Ok(())
++  return ()
+@@ -256,0 +259 @@
++import Benitoite.Unofficial.IO.Process
+@@ -267,4 +270,4 @@
+-function main() -> Result[Unit, String] uses File.Read, Console.Write
+-  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+-  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
+-  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array")
++function main() -> Unit uses File.Read, Console.Write, Process.Exit
++  bind text <- try File.readText("orders.json") or die
++  bind parsed <- try Json.parse(text) or die
++  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array") or die
+@@ -272,2 +275,2 @@
+-    bind totalsMap <- try acc
+-    bind entry <- try amountOf(value)
++    bind totalsMap <- try acc or return
++    bind entry <- try amountOf(value) or return
+@@ -277 +280 @@
+-  Map.forEach(m: try totals, f: lambda(key, value)
++  Map.forEach(m: try totals or die, f: lambda(key, value)
+@@ -280 +283 @@
+-  return Result.Ok(())
++  return ()
+@@ -326,0 +330 @@
++import Benitoite.Unofficial.IO.Process
+@@ -332,3 +336,3 @@
+-function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
+-  bind text <- try File.readText("scores.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+-  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error))
++function main() -> Unit uses File.Read, File.Write, Console.Write, Process.Exit
++  bind text <- try File.readText("scores.csv") or die
++  bind rows <- try Csv.parseWithHeader(text) or die
+@@ -340 +344 @@
+-  bind _ <- try File.writeText(path: "passed.csv", text: csv) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind _ <- try File.writeText(path: "passed.csv", text: csv) or die
+@@ -343 +347 @@
+-  return Result.Ok(())
++  return ()
+@@ -362,2 +366,2 @@
+-function main() -> Result[Unit, String] uses Process.Run, Console.Write
+-  bind printed <- try Process.run(Process.command(program: "echo", arguments: ["hello", "$HOME"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++function main() -> Unit uses Process.Run, Console.Write, Process.Exit
++  bind printed <- try Process.run(Process.command(program: "echo", arguments: ["hello", "$HOME"])) or die
+@@ -366 +370 @@
+-  bind sorted <- try Process.run(sort) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind sorted <- try Process.run(sort) or die
+@@ -368 +372 @@
+-  bind failed <- try Process.run(Process.command(program: "sh", arguments: ["-c", "exit 3"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind failed <- try Process.run(Process.command(program: "sh", arguments: ["-c", "exit 3"])) or die
+@@ -370 +374 @@
+-  return Result.Ok(())
++  return ()
+@@ -387,2 +391,2 @@
+-function main() -> Result[Unit, String] uses Process.Run, Console.Write
+-  bind piped <- try Process.shell("printf 'b\\na\\nc\\n' | LC_ALL=C sort | tr 'a-z' 'A-Z'") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++function main() -> Unit uses Process.Run, Console.Write, Process.Exit
++  bind piped <- try Process.shell("printf 'b\\na\\nc\\n' | LC_ALL=C sort | tr 'a-z' 'A-Z'") or die
+@@ -390 +394 @@
+-  bind checked <- try Process.shell("if [ -d / ]; then echo root; fi; echo oops >&2; exit 2") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind checked <- try Process.shell("if [ -d / ]; then echo root; fi; echo oops >&2; exit 2") or die
+@@ -394 +398 @@
+-  return Result.Ok(())
++  return ()
+@@ -415 +419 @@
+-function main() -> Result[Unit, String] uses Process.Environment, Console.Write
++function main() -> Unit uses Process.Environment, Console.Write, Process.Exit
+@@ -423 +427 @@
+-  bind unset <- try Process.environmentVariable("BENITOITE_SKILL_EXAMPLE_UNSET") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind unset <- try Process.environmentVariable("BENITOITE_SKILL_EXAMPLE_UNSET") or die
+@@ -425 +429 @@
+-  return Result.Ok(())
++  return ()
+@@ -442,0 +447 @@
++import Benitoite.Unofficial.IO.Process
+@@ -454,3 +459,3 @@
+-  bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+-  bind _ <- try Http.respond(exchange: exchange, response: route(Http.requestOf(exchange))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+-  bind _ <- try Http.closeExchange(exchange) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
++  bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return
++  bind _ <- try Http.respond(exchange: exchange, response: route(Http.requestOf(exchange))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return
++  bind _ <- try Http.closeExchange(exchange) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return
+@@ -465,2 +470,2 @@
+-function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
+-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)),
++function main() -> Unit uses Http.Listen, Http.Connect, Console.Write, State, Process.Exit
++  with listener = try Http.listen(host: "127.0.0.1", port: 0) or die,
+@@ -470,2 +475,2 @@
+-    bind hello <- try Http.get(base + "/hello/Ada") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+-    bind items <- try Http.get(base + "/items") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
++    bind hello <- try Http.get(base + "/hello/Ada") or die
++    bind items <- try Http.get(base + "/items") or die
+@@ -473,2 +478,2 @@
+-    bind missing <- try Http.send(request) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+-    bind _ <- try Task.await(server)
++    bind missing <- try Http.send(request) or die
++    bind _ <- try Task.await(server) or die
+@@ -476 +481 @@
+-    return Result.Ok(())
++    return ()
+@@ -691 +696 @@
+-  bind value <- try Integer.parse(text)
++  bind value <- try Integer.parse(text) or return
+--- a/crates/benitoite/skill/references/language-comparison.md
++++ b/crates/benitoite/skill/references/language-comparison.md
+@@ -170,0 +171 @@
++import Benitoite.Unofficial.IO.Process
+@@ -177,2 +178,2 @@
+-function main() -> Result[Unit, String] uses File.Read, Console.Write
+-  bind text <- try File.readText("words.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++function main() -> Unit uses File.Read, Console.Write, Process.Exit
++  bind text <- try File.readText("words.txt") or die
+@@ -187 +188 @@
+-  return Result.Ok(())
++  return ()
+--- a/docs/design/01-spec/01-02-syntax.md
++++ b/docs/design/01-spec/01-02-syntax.md
+@@ -837 +837 @@
+-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+--- a/docs/design/01-spec/01-07-effects.md
++++ b/docs/design/01-spec/01-07-effects.md
+@@ -227 +227 @@
+-  bind output <- try Process.run(Process.command(program: "git", arguments: ["tag", tag])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind output <- try Process.run(Process.command(program: "git", arguments: ["tag", tag])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+@@ -303 +303 @@
+-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+--- a/docs/design/01-spec/01-10-resources.md
++++ b/docs/design/01-spec/01-10-resources.md
+@@ -35,3 +35,3 @@
+-  with input = try File.openReader(src) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)),
+-    output = try File.openWriter(path: dst, mode: File.WriteMode.Replace) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) do
+-    bind line <- try File.readLine(input) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  with input = try File.openReader(src) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return,
++    output = try File.openWriter(path: dst, mode: File.WriteMode.Replace) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return do
++    bind line <- try File.readLine(input) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+--- a/docs/design/03-interop/03-07-io-modules.md
++++ b/docs/design/03-interop/03-07-io-modules.md
+@@ -159 +159 @@
+-  with reader = try File.openReader(path) do
++  with reader = try File.openReader(path) or return do
+@@ -165 +165 @@
+-  return match try File.readLine(reader) with
++  return match try File.readLine(reader) or return with
+--- a/docs/design/03-interop/03-08-text-and-data.md
++++ b/docs/design/03-interop/03-08-text-and-data.md
+@@ -126,2 +126,2 @@
+-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+-  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
++  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error)) or return
+@@ -174 +174 @@
+-  bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}")
++  bind pattern <- try Regex.compile(r"\d{4}-\d{2}-\d{2}") or return
+--- a/docs/design/06-tooling/06-04-test-runner.md
++++ b/docs/design/06-tooling/06-04-test-runner.md
+@@ -68 +68 @@
+-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+@@ -85 +85 @@
+-  bind output <- try Process.run(Process.command(program: "git", arguments: ["tag", tag])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
++  bind output <- try Process.run(Process.command(program: "git", arguments: ["tag", tag])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+--- a/docs/reference/benitoite.md
++++ b/docs/reference/benitoite.md
+@@ -640 +640 @@
+-  bind port <- try parsePort("8080")
++  bind port <- try parsePort("8080") or return
+@@ -642 +642 @@
+-  bind other <- try parsePort("http")
++  bind other <- try parsePort("http") or return
+@@ -1131,0 +1132 @@
++import Benitoite.Unofficial.IO.Process
+@@ -1134,2 +1135,2 @@
+-  bind category <- try Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString)
+-  bind amount <- try Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger)
++  bind category <- try Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString) or return
++  bind amount <- try Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger) or return
+@@ -1139,4 +1140,4 @@
+-function main() -> Result[Unit, String] uses File.Read, Console.Write
+-  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+-  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
+-  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array")
++function main() -> Unit uses File.Read, Console.Write, Process.Exit
++  bind text <- try File.readText("orders.json") or die
++  bind parsed <- try Json.parse(text) or die
++  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array") or die
+@@ -1153 +1154 @@
+-  return Result.Ok(())
++  return ()

@@ -338,7 +338,16 @@ impl<'a> Scan<'a> {
                 self.expr(&p.rhs, owner)
             }
             Expr::Unary(u) => self.expr(&u.operand, owner),
-            Expr::Try(t) => self.expr(&t.value, owner),
+            Expr::Try(t) => {
+                self.expr(&t.value, owner);
+                if let benitoite::syntax::ast::TryAction::Die {
+                    message: Some(message),
+                    ..
+                } = &t.action
+                {
+                    self.expr(message, owner);
+                }
+            }
             Expr::Resume(r) => self.expr(&r.value, owner),
             Expr::Lazy(l) => self.block(&l.body, owner),
             Expr::With(w) => {

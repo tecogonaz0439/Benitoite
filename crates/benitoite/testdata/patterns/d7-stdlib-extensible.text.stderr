@@ -1,0 +1,79 @@
+error[E0601]: `match` does not cover every value
+  --> testdata/patterns/d7-stdlib-extensible.bnt:6:16
+   |
+ 6 |   return match kind with
+   |                ^^^^ `<future constructor of IOErrorKind>` is not matched
+   |
+  ::: <benitoite>/IOErrorKind.bnt:5:13
+   |
+ 5 | public data IOErrorKind
+   |             ----------- this type permits future shapes outside its package
+   |
+   = help: add an unguarded variable or `_` pattern to cover future values of `IOErrorKind`
+
+error[E0601]: `match` does not cover every value
+  --> testdata/patterns/d7-stdlib-extensible.bnt:20:16
+   |
+20 |   return match kind with
+   |                ^^^^ `<future constructor of NetworkErrorKind>` is not matched
+   |
+  ::: <benitoite>/NetworkErrorKind.bnt:5:13
+   |
+ 5 | public data NetworkErrorKind
+   |             ---------------- this type permits future shapes outside its package
+   |
+   = help: add an unguarded variable or `_` pattern to cover future values of `NetworkErrorKind`
+
+error[E0601]: `match` does not cover every value
+  --> testdata/patterns/d7-stdlib-extensible.bnt:34:19
+   |
+34 |   bind _ <- match error with
+   |                   ^^^^^ `<future shape of ParseError>` is not matched
+   |
+  ::: <benitoite>/Json.bnt:18:15
+   |
+18 | public record ParseError
+   |               ---------- this type permits future shapes outside its package
+   |
+   = help: add an unguarded variable or `_` pattern to cover future values of `ParseError`
+
+error[E0607]: this pattern does not match every value of `ParseError`
+  --> testdata/patterns/d7-stdlib-extensible.bnt:37:8
+   |
+37 |   bind Json.ParseError(message: _, ..) <- error
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `<future shape of ParseError>` is not matched
+   |
+  ::: <benitoite>/Json.bnt:18:15
+   |
+18 | public record ParseError
+   |               ---------- this type permits future shapes outside its package
+   |
+   = help: use `match ... with` and add an unguarded `case _ ->` branch to cover future values of `ParseError`
+
+error[E0601]: `match` does not cover every value
+  --> testdata/patterns/d7-stdlib-extensible.bnt:41:19
+   |
+41 |   bind _ <- match error with
+   |                   ^^^^^ `<future shape of ParseError>` is not matched
+   |
+  ::: <benitoite>/Csv.bnt:7:15
+   |
+ 7 | public record ParseError
+   |               ---------- this type permits future shapes outside its package
+   |
+   = help: add an unguarded variable or `_` pattern to cover future values of `ParseError`
+
+error[E0607]: this pattern does not match every value of `ParseError`
+  --> testdata/patterns/d7-stdlib-extensible.bnt:44:8
+   |
+44 |   bind Csv.ParseError(message: _, ..) <- error
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `<future shape of ParseError>` is not matched
+   |
+  ::: <benitoite>/Csv.bnt:7:15
+   |
+ 7 | public record ParseError
+   |               ---------- this type permits future shapes outside its package
+   |
+   = help: use `match ... with` and add an unguarded `case _ ->` branch to cover future values of `ParseError`
+
+error: could not check testdata/patterns/d7-stdlib-extensible.bnt due to 6 previous errors

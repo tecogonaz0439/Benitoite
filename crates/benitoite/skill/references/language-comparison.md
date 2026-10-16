@@ -16,6 +16,8 @@ How common constructs of Python, JavaScript, and Rust are written in Benitoite. 
 
 ## Syntax
 
+For failure propagation, Rust's `?` corresponds to `try result or return`: bare `try result` keeps this same returning meaning. To end a run with a cause, use `try result or die` with Process.Exit; it permits any enclosing return type and requires Show for the Result error. It is not an exception handler. See [Program shape and error handling](idioms.md#program-shape-and-error-handling).
+
 | Python | JavaScript | Rust | Benitoite |
 |---|---|---|---|
 | `int` | `number` | `i64` | `Integer` |
@@ -45,7 +47,7 @@ How common constructs of Python, JavaScript, and Rust are written in Benitoite. 
 | `# comment` | `// comment` | `// comment` | `// comment` |
 | `None` | `null`, `undefined` | `None` | `Option.None` |
 | `Some`-like value | value | `Some(x)` | `Option.Some(x)` |
-| `raise E(...)` / `try:` | `throw` / `try {}` | `Err(e)` / `?` | `return Result.Error(e)` / `try expr` |
+| `raise E(...)` / `try:` | `throw` / `try {}` | `Err(e)` / `?` | `return Result.Error(e)` / `try expr or return` |
 | `class P:` with fields | `{ name, age }` | `struct P { name: String }` | `record P` ... `end record` |
 | `P(name="a")` | `{ name: "a" }` | `P { name: "a".into() }` | `P(name: "a")` |
 | `p.name` | `p.name` | `p.name` | `P.name(p)` |
@@ -166,14 +168,15 @@ jumps over the lazy dog
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
 
 // counts = {}
 // for word in open("words.txt").read().split():
 //     counts[word] = counts.get(word, 0) + 1
 // for word in sorted(counts):
 //     if counts[word] > 1: print(f"{word} {counts[word]}")
-function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind text <- try File.readText("words.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try File.readText("words.txt") or die
   bind words <- List.filter(xs: String.split(s: String.replace(s: text, old: "\n", new: " "), separator: " "), p: lambda(value) return value <> "")
   bind counts <- List.fold(xs: words, initial: Map.empty(), f: lambda(acc, value)
     return Map.set(m: acc, k: value, value: Option.unwrapOr(o: Map.get(m: acc, k: value), fallback: 0) + 1)
@@ -182,7 +185,7 @@ function main() -> Result[Unit, String] uses File.Read, Console.Write
     Console.writeLine("${key} ${value}")
   end lambda)
   Console.writeLine("${List.length(words)} words, ${Map.size(counts)} distinct")
-  return Result.Ok(())
+  return ()
 end function
 ```
 

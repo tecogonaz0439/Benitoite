@@ -608,7 +608,16 @@ impl Collector<'_> {
             }
             Expr::Lambda(e) => self.block(&e.body),
             Expr::Return(e) => self.expr(&e.value),
-            Expr::Try(e) => self.expr(&e.value),
+            Expr::Try(e) => {
+                self.expr(&e.value);
+                if let crate::syntax::ast::TryAction::Die {
+                    message: Some(message),
+                    ..
+                } = &e.action
+                {
+                    self.expr(message);
+                }
+            }
             Expr::Lazy(e) => self.block(&e.body),
             Expr::With(e) => {
                 for bind in &e.binds {

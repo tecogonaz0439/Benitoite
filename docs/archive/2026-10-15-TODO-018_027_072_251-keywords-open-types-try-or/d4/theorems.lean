@@ -1,0 +1,44 @@
+import Benitoite
+
+/-! 定義・言明のレビュー用の公理依存の照会。通常のビルドからは参照しない。 -/
+
+#print axioms Benitoite.Core.progress
+#print axioms Benitoite.Core.preservation
+#print axioms Benitoite.Core.effect_soundness
+#print axioms Benitoite.Core.step_sound
+#print axioms Benitoite.Core.step_complete
+#print axioms Benitoite.Release.progress
+#print axioms Benitoite.Release.preservation
+#print axioms Benitoite.Release.effect_soundness
+#print axioms Benitoite.Release.step_sound
+#print axioms Benitoite.Release.CtorsComplete
+#print axioms Benitoite.Release.Coverage.shapesWithView_closed
+#print axioms Benitoite.Release.Coverage.mem_shapesWithView
+#print axioms Benitoite.Release.Coverage.specialize_future_iff
+#print axioms Benitoite.Release.Coverage.shapesWithView_cover
+#print axioms Benitoite.Release.Coverage.usefulFuelWithView_none_sound
+#print axioms Benitoite.Release.usefulWithView_none_sound
+#print axioms Benitoite.Release.checkMatchWithView_exhaustive_sound
+#print axioms Benitoite.Release.irrefutableWithView_sound
+#print axioms Benitoite.Release.checkMatchWithView_unreachable_sound
+#print axioms Benitoite.Release.checkMatchWithView_unreachable_runtime
+#print axioms Benitoite.Release.checkMatchWithView_unreachable_runtime_of_C_Match
+#print axioms Benitoite.Release.useful_none_sound
+#print axioms Benitoite.Release.checkMatch_exhaustive_sound
+#print axioms Benitoite.Release.irrefutable_sound
+#print axioms Benitoite.Release.checkMatch_unreachable_sound
+#print axioms Benitoite.Release.checkMatch_unreachable_runtime
+#print axioms Benitoite.Release.checkMatch_unreachable_runtime_of_C_Match
+#print axioms Benitoite.Surface.ViewExhaustive
+#print axioms Benitoite.Surface.ViewExhaustive.exhaustive
+#print axioms Benitoite.Surface.desugar_typed
+#print axioms Benitoite.Surface.surface_effect_soundness
+#print axioms Benitoite.Surface.Check.checkExpr_sound
+#print axioms Benitoite.Surface.Check.checkImpl_sound
+#print axioms Benitoite.Surface.CheckTables.checkProgram_sound
+#print axioms Benitoite.Surface.CheckTables.checkProgram_empty
+#print axioms Benitoite.Surface.CheckTables.checkProgram_sound_contracts
+#print axioms Benitoite.Exchange.readCorpus
+#print axioms Benitoite.Exchange.coverageView
+#print axioms Benitoite.Exchange.Input.operationProgram
+#print axioms Benitoite.Exchange.CheckInput.prepare

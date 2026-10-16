@@ -137,6 +137,13 @@ mutual
     | returnE (ret : Ty) (inner : Expr)
     | tryResult (retArgs : List Ty) (ok err : String) (inner : Expr)
     | tryOption (retArgs : List Ty) (someCon noneCon : String) (inner : Expr)
+    /-- corpus 10: 処置をタグで保持し、裸の try と区別する。 -/
+    | tryResultReturn (retArgs : List Ty) (ok err : String) (inner : Expr)
+    | tryOptionReturn (retArgs : List Ty) (someCon noneCon : String) (inner : Expr)
+    | tryResultDie (ty : Ty) (ok err : String) (dict : DictEv)
+        (showMethod exit : String) (inner : Expr) (message : Option Expr)
+    | tryOptionDie (ty : Ty) (someCon noneCon exit : String)
+        (inner : Expr) (message : Option Expr)
     | withE (o : String) (bound : Expr) (body : Block)
     | lazyE (body : Block)
     | handleE (body : Block) (clauses : List SurfaceClause)
@@ -202,6 +209,10 @@ mutual
     | .returnE ret inner => Json.mkObj [("returnE", Json.mkObj [("ret", toJson ret), ("inner", encodeExpr inner)])]
     | .tryResult retArgs ok err inner => Json.mkObj [("tryResult", Json.mkObj [("retArgs", toJson retArgs), ("ok", toJson ok), ("err", toJson err), ("inner", encodeExpr inner)])]
     | .tryOption retArgs someCon noneCon inner => Json.mkObj [("tryOption", Json.mkObj [("retArgs", toJson retArgs), ("someCon", toJson someCon), ("noneCon", toJson noneCon), ("inner", encodeExpr inner)])]
+    | .tryResultReturn retArgs ok err inner => Json.mkObj [("tryResultReturn", Json.mkObj [("retArgs", toJson retArgs), ("ok", toJson ok), ("err", toJson err), ("inner", encodeExpr inner)])]
+    | .tryOptionReturn retArgs someCon noneCon inner => Json.mkObj [("tryOptionReturn", Json.mkObj [("retArgs", toJson retArgs), ("someCon", toJson someCon), ("noneCon", toJson noneCon), ("inner", encodeExpr inner)])]
+    | .tryResultDie ty ok err dict showMethod exit inner message => Json.mkObj [("tryResultDie", Json.mkObj [("ty", toJson ty), ("ok", toJson ok), ("err", toJson err), ("dict", toJson dict), ("showMethod", toJson showMethod), ("exit", toJson exit), ("inner", encodeExpr inner), ("message", (message.map encodeExpr).getD Json.null)])]
+    | .tryOptionDie ty someCon noneCon exit inner message => Json.mkObj [("tryOptionDie", Json.mkObj [("ty", toJson ty), ("someCon", toJson someCon), ("noneCon", toJson noneCon), ("exit", toJson exit), ("inner", encodeExpr inner), ("message", (message.map encodeExpr).getD Json.null)])]
     | .withE o bound body => Json.mkObj [("withE", Json.mkObj [("o", toJson o), ("bound", encodeExpr bound), ("body", encodeBlock body)])]
     | .lazyE body => Json.mkObj [("lazyE", Json.mkObj [("body", encodeBlock body)])]
     | .opName name tys => Json.mkObj [("opName", Json.mkObj [("name", toJson name), ("tys", toJson tys)])]
@@ -225,8 +236,25 @@ mutual
     | .lastPat shadow pattern ty expr => Json.mkObj [("lastPat", Json.mkObj [("shadow", toJson shadow), ("pattern", toJson pattern), ("ty", toJson ty), ("expr", encodeExpr expr)])]
     | .bindPat shadow pattern ty expr rest => Json.mkObj [("bindPat", Json.mkObj [("shadow", toJson shadow), ("pattern", toJson pattern), ("ty", toJson ty), ("expr", encodeExpr expr), ("rest", encodeBlock rest)])]
 end
+/-- try の処置の情報を、別のタグの未知の欄として読み捨てない。 -/
+def checkTryFields (j : Json) : Except String Unit := do
+  for (tag, fields) in [
+      ("tryResult", ["retArgs", "ok", "err", "inner"]),
+      ("tryOption", ["retArgs", "someCon", "noneCon", "inner"]),
+      ("tryResultReturn", ["retArgs", "ok", "err", "inner"]),
+      ("tryOptionReturn", ["retArgs", "someCon", "noneCon", "inner"]),
+      ("tryResultDie", ["ty", "ok", "err", "dict", "showMethod", "exit", "inner", "message"]),
+      ("tryOptionDie", ["ty", "someCon", "noneCon", "exit", "inner", "message"])] do
+    if let .ok payload := j.getObjVal? tag then
+      let obj ← j.getObj?
+      if obj.toArray.size != 1 then throw "ambiguous try action"
+      let obj ← payload.getObj?
+      for (key, _) in obj.toArray do
+        if !fields.contains key then throw s!"unexpected {tag} field: {key}"
+
 mutual
   partial def decodeExpr (j : Json) : Except String Expr := do
+    checkTryFields j
     if let .ok o := j.getObjVal? "constName" then
       return .constName (← fromJson? (← o.getObjVal? "name"))
     if let .ok o := j.getObjVal? "funDicts" then
@@ -306,6 +334,16 @@ mutual
       return .tryResult (← fromJson? (← o.getObjVal? "retArgs")) (← fromJson? (← o.getObjVal? "ok")) (← fromJson? (← o.getObjVal? "err")) (← decodeExpr (← o.getObjVal? "inner"))
     if let .ok o := j.getObjVal? "tryOption" then
       return .tryOption (← fromJson? (← o.getObjVal? "retArgs")) (← fromJson? (← o.getObjVal? "someCon")) (← fromJson? (← o.getObjVal? "noneCon")) (← decodeExpr (← o.getObjVal? "inner"))
+    if let .ok o := j.getObjVal? "tryResultReturn" then
+      return .tryResultReturn (← fromJson? (← o.getObjVal? "retArgs")) (← fromJson? (← o.getObjVal? "ok")) (← fromJson? (← o.getObjVal? "err")) (← decodeExpr (← o.getObjVal? "inner"))
+    if let .ok o := j.getObjVal? "tryOptionReturn" then
+      return .tryOptionReturn (← fromJson? (← o.getObjVal? "retArgs")) (← fromJson? (← o.getObjVal? "someCon")) (← fromJson? (← o.getObjVal? "noneCon")) (← decodeExpr (← o.getObjVal? "inner"))
+    if let .ok o := j.getObjVal? "tryResultDie" then
+      let message ← o.getObjVal? "message"
+      return .tryResultDie (← fromJson? (← o.getObjVal? "ty")) (← fromJson? (← o.getObjVal? "ok")) (← fromJson? (← o.getObjVal? "err")) (← fromJson? (← o.getObjVal? "dict")) (← fromJson? (← o.getObjVal? "showMethod")) (← fromJson? (← o.getObjVal? "exit")) (← decodeExpr (← o.getObjVal? "inner")) (← if message == Json.null then pure none else some <$> decodeExpr message)
+    if let .ok o := j.getObjVal? "tryOptionDie" then
+      let message ← o.getObjVal? "message"
+      return .tryOptionDie (← fromJson? (← o.getObjVal? "ty")) (← fromJson? (← o.getObjVal? "someCon")) (← fromJson? (← o.getObjVal? "noneCon")) (← fromJson? (← o.getObjVal? "exit")) (← decodeExpr (← o.getObjVal? "inner")) (← if message == Json.null then pure none else some <$> decodeExpr message)
     if let .ok o := j.getObjVal? "withE" then
       return .withE (← fromJson? (← o.getObjVal? "o")) (← decodeExpr (← o.getObjVal? "bound")) (← decodeBlock (← o.getObjVal? "body"))
     if let .ok o := j.getObjVal? "lazyE" then
@@ -495,6 +533,8 @@ structure Header where
   deriving BEq, ToJson, FromJson
 
 structure SurfaceDef where
+  package : String
+  coverageView : List String
   header : Header
   body : Block
   dictParams : List (String × Nat)
@@ -558,11 +598,27 @@ structure ImplEntry where
   deriving ToJson, FromJson
 /-- 同じ名前の参照には、同じ注釈型と閉じた本体を使う。 -/
 structure ConstantEntry where
+  package : String
   name : String
   ty : Ty
   body : Expr
   deriving ToJson, FromJson
+/-- 表示名とは独立した、標準ライブラリの既知の型の識別。 -/
+inductive BuiltinData where
+  | ordinary | result | option
+  deriving BEq, ToJson, FromJson
+/-- 宣言の属性と、照合元で有効な view を分けて交換する。 -/
+structure DataTypeInfo where
+  builtin : BuiltinData
+  package : String
+  name : String
+  typeName : String
+  isRecord : Bool
+  extensible : Bool
+  deriving BEq, ToJson, FromJson
+
 structure Input where
+  dataTypes : List DataTypeInfo
   group : String
   name : String
   excluded : List String

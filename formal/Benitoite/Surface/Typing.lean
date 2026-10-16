@@ -56,6 +56,22 @@ def StringAddOk (B : Builtins) (op : OpPrim) (C : List TParam) : Prop :=
     B.sig b = some s ∧ ts.length = s.ntys ∧ s.neffs = 0 ∧ s.admits C ts ∧
     fnTy s.names s.params s.ret s.eff ts [] = .fn ["left", "right"] [.base .string, .base .string] (.base .string) Eff.empty
 
+/-- 解決済みの Show の辞書とメソッドを、宣言表の純粋な一引数の契約で検査する。
+識別名は交換形式と同じく抽象的に扱う（設計書 01-12「die の先行モデル」）。 -/
+def DieShowOk (D : Declarations) (B : Builtins) (C : List TParam)
+    (Γ : List (Option Ty)) (dict : DictEv) (showMethod : MethName) (errorTy : Ty) : Prop :=
+  ∃ cl cd ms, DictEv.HasType D B C Γ dict (.dict cl errorTy) ∧
+    D.classes cl = some cd ∧ cd.methods showMethod = some ms ∧
+    ms.tparams = [] ∧ ms.neffs = 0 ∧ ms.names = ["x"] ∧ ms.params = [.tvar 0] ∧
+    ms.ret = .base .string ∧ ms.eff = Eff.empty
+
+/-- 既存の終了操作の種類・所属エフェクトと、T への具体化を検査する。 -/
+def DieExitOk (B : Builtins) (C : List TParam) (exit : PrimName) (t : Ty) : Prop :=
+  ∃ s, B.sig exit = some s ∧ s.kind = .exit ∧ s.opEff = some "Process.Exit" ∧
+    s.ntys = 1 ∧ s.neffs = 0 ∧ NamesWF s.names s.params ∧ s.admits C [t] ∧
+    fnTy s.names s.params s.ret s.eff [t] [] =
+      .fn ["code"] [.base .integer] t (Eff.single "Process.Exit")
+
 mutual
   inductive HasType (D : Declarations) (B : Builtins) (opPrim : OpPrim) :
       List TParam → List (Option Ty) → Option Ty → Position → Expr → Ty → Eff → Prop
@@ -289,12 +305,12 @@ mutual
         HasBlock D B opPrim C Γ R p yes (.base .unit) εy →
         HasType D B opPrim C Γ R p (.ifOnly cond yes) (.base .unit) (Eff.union εc εy)
     -- 01-05「match の意味」「網羅性の検査」、01-06「式と文の型」。
-    -- Exhaustive は値の形についての網羅。01-05 の検査手順・選ばれない分岐は表さない。
+    -- ソースだけに view 付きの条件を課し、合成照合は現在の値の Exhaustive を保つ。
     | E_Match {C Γ R p e arms a b εe εarms} :
         arms ≠ .nil →
         HasType D B opPrim C Γ R .other e a εe →
         HasArms D B opPrim C Γ R p arms a b εarms →
-        Exhaustive D.patternProgram a arms.unguardedPatterns →
+        ViewExhaustive D D.view a arms.unguardedPatterns →
         HasType D B opPrim C Γ R p (.matchE b e arms) b (Eff.union εe εarms)
     -- 01-12「return」: 末尾位置。01-06「式と文の型」の任意の型を R に具体化し、構文の注釈は使わない。
     | E_ReturnTail {C Γ r a e ε} :
@@ -321,6 +337,30 @@ mutual
         HasType D B opPrim C Γ R .other e (.data cds.data [t]) ε →
         Exhaustive D.patternProgram (.data cds.data [t]) [.con someCon [.var], .con noneCon []] →
         HasType D B opPrim C Γ R p (.tryOption [u] someCon noneCon e) t ε
+    -- 01-12「die の先行モデル」: R を制限せず、表示と説明は純粋な String とする。
+    -- 説明の直接の脱出と外側の resume を除き、内側の lambda は自分の境界を持つ。
+    | E_TryResultDie {C Γ R p ok err cdo cde e t et ε dict showMethod exit message} :
+        D.cons ok = some cdo → D.cons err = some cde →
+        cdo.ntys = 2 → cde.ntys = 2 → cdo.args = [.tvar 0] → cde.args = [.tvar 1] →
+        cdo.data = cde.data →
+        HasType D B opPrim C Γ R .other e (.data cdo.data [t, et]) ε →
+        Exhaustive D.patternProgram (.data cdo.data [t, et]) [.con ok [.var], .con err [.var]] →
+        DieShowOk D B C Γ dict showMethod et → DieExitOk B C exit t →
+        (∀ m, message = some m →
+          HasType D B opPrim C (hideConts Γ) none .other m (.base .string) Eff.empty) →
+        HasType D B opPrim C Γ R p (.tryResultDie t ok err dict showMethod exit e message)
+          t (Eff.union ε (Eff.single "Process.Exit"))
+    | E_TryOptionDie {C Γ R p someCon noneCon cds cdn e t ε exit message} :
+        D.cons someCon = some cds → D.cons noneCon = some cdn →
+        cds.ntys = 1 → cdn.ntys = 1 → cds.args = [.tvar 0] → cdn.args = [] →
+        cds.data = cdn.data →
+        HasType D B opPrim C Γ R .other e (.data cds.data [t]) ε →
+        Exhaustive D.patternProgram (.data cds.data [t]) [.con someCon [.var], .con noneCon []] →
+        DieExitOk B C exit t →
+        (∀ m, message = some m →
+          HasType D B opPrim C (hideConts Γ) none .other m (.base .string) Eff.empty) →
+        HasType D B opPrim C Γ R p (.tryOptionDie t someCon noneCon exit e message)
+          t (Eff.union ε (Eff.single "Process.Exit"))
     -- 01-10「リソースの型」「with の構文」: 本体の型と、束縛・本体・解放のエフェクトの和。
     -- 01-12「解放の枠」: 本体は非末尾位置。束縛は後続のリソースの式にも見える。
     | E_With {C Γ R p o e body a εe εbody} :
@@ -437,13 +477,13 @@ mutual
     -- 01-12「ブロック」: 最後の bind p。変数と _ は既存の規則を使う。
     | B_LastPat {C Γ R p k pat t e ε δ} :
         pat.Nontrivial → pat.Valid → PatTy D.patternProgram pat.toCore t δ →
-        Exhaustive D.patternProgram t [pat.toCore] →
+        ViewExhaustive D D.view t [pat.toCore] →
         HasType D B opPrim C Γ R .other e t ε →
         HasBlock D B opPrim C Γ R p (.lastPat k pat t e) (.base .unit) ε
     -- 必ず照合するとは一分岐で網羅すること。束縛の並びは Release と同じ。
     | B_BindPat {C Γ R p k pat t e rest a ε εs δ} :
         pat.Nontrivial → pat.Valid → PatTy D.patternProgram pat.toCore t δ →
-        Exhaustive D.patternProgram t [pat.toCore] →
+        ViewExhaustive D D.view t [pat.toCore] →
         HasType D B opPrim C Γ R .other e t ε →
         HasBlock D B opPrim C (binds δ ++ Γ) R p rest a εs →
         HasBlock D B opPrim C Γ R p (.bindPat k pat t e rest) a (Eff.union ε εs)
@@ -461,13 +501,14 @@ def Def.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (d : Def) 
     HasBlock D B opPrim d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail d.body d.ret d.eff
 
 -- 01-12「型クラス」D-Impl: d̄, x̄j:Ājθ; Bjθ ⊢ Mj : Bjθ ! εjθ、d̄ ⊢ Ui : Dict[Si, τ]。
-def ImplDecl.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (id : ImplDecl) : Prop :=
+def ImplDecl.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (id : ImplDecl)
+    (views : MethName → CoverageView := fun _ => D.view) : Prop :=
   ∃ cd, D.classes id.cls = some cd ∧
     (∀ m, (id.methods m).isSome = (cd.methods m).isSome) ∧
     (∀ s, (id.supers s).isSome = decide (s ∈ cd.supers)) ∧
     (∀ m ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧
       (body.Exits ∨ id.methTy ms ms.ret = .base .unit) ∧
-      HasBlock D B opPrim (ms.tparams ++ id.tparams)
+      HasBlock (D.withView (views m)) B opPrim (ms.tparams ++ id.tparams)
         (binds (id.dictTys.map (Ty.shift ms.tparams.length 0) ++ ms.params.map (id.methTy ms)))
         (some (id.methTy ms ms.ret)) .tail body (id.methTy ms ms.ret) ms.eff) ∧
     (∀ s ∈ cd.supers, ∃ u, id.supers s = some u ∧
@@ -475,9 +516,9 @@ def ImplDecl.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (id :
 
 -- 01-12「トップレベルの関数」: 全定義を、あらかじめ集めた宣言のもとで検査する。
 def Program.WellTyped (p : Program) (B : Builtins) (opPrim : OpPrim) : Prop :=
-  (∀ f d, p.defs f = some d → d.WellTyped p.declarations B opPrim) ∧
+  (∀ f d, p.defs f = some d → d.WellTyped (p.declarationsFor (p.functionViews f)) B opPrim) ∧
     (∀ l os, p.effects l = some os → B.effects l = none) ∧
-    (∀ i id, p.impls i = some id → id.WellTyped p.declarations B opPrim)
+    (∀ i id, p.impls i = some id → id.WellTyped p.declarations B opPrim (p.methodViews i))
 
 /-- 01-07「プログラムの入口」の条件の写し。main の戻り値は Unit または
 Result[Unit,String] であり、この条件は健全性の証明には使わない。 -/

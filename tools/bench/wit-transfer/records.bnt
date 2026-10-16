@@ -27,7 +27,7 @@ end record
 @external("wasm", "guests/mixed-record.wasm", "run")
 function mixed(v: Mixed) -> Mixed
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
-  bind Pair(n, rounds) <- try Runner.settings()
+  bind Pair(n, rounds) <- try Runner.settings() or return
 
   return Runner.verify(rounds: rounds, work: lambda() -> Boolean
     bind c0 <- box(Box(value: n)) = Box(value: n + 7)

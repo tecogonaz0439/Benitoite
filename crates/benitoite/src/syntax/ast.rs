@@ -777,6 +777,21 @@ pub struct TryExpr {
     pub id: NodeId,
     pub span: Span,
     pub value: Box<Expr>,
+    pub action: TryAction,
+}
+
+/// 失敗時の処置。明示した語の位置を入力とは別に保つ。
+#[derive(Clone, PartialEq, Debug)]
+pub enum TryAction {
+    ImplicitReturn,
+    Return {
+        span: Span,
+    },
+    /// 既定の失敗終了。説明は入力と同じ字句スコープで解決する。
+    Die {
+        span: Span,
+        message: Option<Box<Expr>>,
+    },
 }
 
 /// `lazy … end lazy`。

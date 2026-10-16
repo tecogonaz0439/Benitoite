@@ -1,0 +1,3571 @@
+{
+  "version": 10,
+  "operators": [],
+  "annotations": {
+    "tailMatch": [
+      0,
+      0
+    ]
+  },
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-try",
+      "dataTypes": [
+        {
+          "name": "Result",
+          "typeName": "Result",
+          "isRecord": false,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "result"
+        },
+        {
+          "name": "Option",
+          "typeName": "Option",
+          "isRecord": false,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "option"
+        }
+      ],
+      "excluded": [],
+      "definitions": [
+        {
+          "name": "tryResultDie-False (fn:0)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "tvar": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "tryResultDie": {
+                            "ty": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "exit": "prim:8",
+                            "inner": {
+                              "local": {
+                                "index": 1
+                              }
+                            },
+                            "message": null,
+                            "ok": "con:ok",
+                            "err": "con:error",
+                            "dict": {
+                              "local": {
+                                "index": 2
+                              }
+                            },
+                            "showMethod": "meth:9"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [
+                  [
+                    "class:7",
+                    0
+                  ]
+                ],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "%dict1",
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "dict": {
+                        "cls": "class:7",
+                        "arg": {
+                          "tvar": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "tvar": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 1
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:ok",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:error",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "letIn": {
+                                  "bound": {
+                                    "meth": {
+                                      "dict": {
+                                        "var": {
+                                          "index": 4
+                                        }
+                                      },
+                                      "name": "meth:9",
+                                      "tys": [],
+                                      "effs": [],
+                                      "args": [
+                                        {
+                                          "var": {
+                                            "index": 0
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "body": {
+                                    "app": {
+                                      "callee": {
+                                        "prim": {
+                                          "name": "prim:8",
+                                          "tys": [
+                                            {
+                                              "base": {
+                                                "name": "Integer"
+                                              }
+                                            }
+                                          ],
+                                          "effs": []
+                                        }
+                                      },
+                                      "args": [
+                                        {
+                                          "const": {
+                                            "value": {
+                                              "integer": {
+                                                "value": 1
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "tryResultDie-True (fn:1)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "tvar": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "tryResultDie": {
+                            "ty": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "exit": "prim:8",
+                            "inner": {
+                              "local": {
+                                "index": 1
+                              }
+                            },
+                            "message": {
+                              "local": {
+                                "index": 0
+                              }
+                            },
+                            "ok": "con:ok",
+                            "err": "con:error",
+                            "dict": {
+                              "local": {
+                                "index": 2
+                              }
+                            },
+                            "showMethod": "meth:9"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [
+                  [
+                    "class:7",
+                    0
+                  ]
+                ],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "%dict1",
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "dict": {
+                        "cls": "class:7",
+                        "arg": {
+                          "tvar": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "tvar": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 1
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:ok",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:error",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "letIn": {
+                                  "bound": {
+                                    "ret": {
+                                      "value": {
+                                        "var": {
+                                          "index": 2
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "body": {
+                                    "letIn": {
+                                      "bound": {
+                                        "meth": {
+                                          "dict": {
+                                            "var": {
+                                              "index": 5
+                                            }
+                                          },
+                                          "name": "meth:9",
+                                          "tys": [],
+                                          "effs": [],
+                                          "args": [
+                                            {
+                                              "var": {
+                                                "index": 1
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "body": {
+                                        "app": {
+                                          "callee": {
+                                            "prim": {
+                                              "name": "prim:8",
+                                              "tys": [
+                                                {
+                                                  "base": {
+                                                    "name": "Integer"
+                                                  }
+                                                }
+                                              ],
+                                              "effs": []
+                                            }
+                                          },
+                                          "args": [
+                                            {
+                                              "const": {
+                                                "value": {
+                                                  "integer": {
+                                                    "value": 1
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "tryOptionDie-False (fn:2)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "tryOptionDie": {
+                            "ty": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "exit": "prim:8",
+                            "inner": {
+                              "local": {
+                                "index": 1
+                              }
+                            },
+                            "message": null,
+                            "someCon": "con:some",
+                            "noneCon": "con:none"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 1
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:some",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:none",
+                                      "args": []
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "letIn": {
+                                  "bound": {
+                                    "ret": {
+                                      "value": {
+                                        "const": {
+                                          "value": {
+                                            "string": {
+                                              "value": "expected a value, got Option.None"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "body": {
+                                    "app": {
+                                      "callee": {
+                                        "prim": {
+                                          "name": "prim:8",
+                                          "tys": [
+                                            {
+                                              "base": {
+                                                "name": "Integer"
+                                              }
+                                            }
+                                          ],
+                                          "effs": []
+                                        }
+                                      },
+                                      "args": [
+                                        {
+                                          "const": {
+                                            "value": {
+                                              "integer": {
+                                                "value": 1
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "tryOptionDie-True (fn:3)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "tryOptionDie": {
+                            "ty": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "exit": "prim:8",
+                            "inner": {
+                              "local": {
+                                "index": 1
+                              }
+                            },
+                            "message": {
+                              "local": {
+                                "index": 0
+                              }
+                            },
+                            "someCon": "con:some",
+                            "noneCon": "con:none"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 1
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:some",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:none",
+                                      "args": []
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "letIn": {
+                                  "bound": {
+                                    "ret": {
+                                      "value": {
+                                        "var": {
+                                          "index": 1
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "body": {
+                                    "letIn": {
+                                      "bound": {
+                                        "ret": {
+                                          "value": {
+                                            "const": {
+                                              "value": {
+                                                "string": {
+                                                  "value": "expected a value, got Option.None"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "body": {
+                                        "app": {
+                                          "callee": {
+                                            "prim": {
+                                              "name": "prim:8",
+                                              "tys": [
+                                                {
+                                                  "base": {
+                                                    "name": "Integer"
+                                                  }
+                                                }
+                                              ],
+                                              "effs": []
+                                            }
+                                          },
+                                          "args": [
+                                            {
+                                              "const": {
+                                                "value": {
+                                                  "integer": {
+                                                    "value": 1
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "tryResult (fn:4)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "input"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "tvar": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "data": {
+                      "name": "Result",
+                      "args": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        {
+                          "tvar": {
+                            "index": 0
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "data": {
+                            "name": "Result",
+                            "args": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              {
+                                "tvar": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "inner": {
+                          "conCall": {
+                            "name": "con:ok",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              {
+                                "tvar": {
+                                  "index": 0
+                                }
+                              }
+                            ],
+                            "args": [
+                              {
+                                "tryResult": {
+                                  "retArgs": [
+                                    {
+                                      "base": {
+                                        "name": "Integer"
+                                      }
+                                    },
+                                    {
+                                      "tvar": {
+                                        "index": 0
+                                      }
+                                    }
+                                  ],
+                                  "inner": {
+                                    "local": {
+                                      "index": 0
+                                    }
+                                  },
+                                  "ok": "con:ok",
+                                  "err": "con:error"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "input"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "tvar": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "data": {
+                      "name": "Result",
+                      "args": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        {
+                          "tvar": {
+                            "index": 0
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 0
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "matchC": {
+                            "scrutinee": {
+                              "var": {
+                                "index": 0
+                              }
+                            },
+                            "arms": [
+                              {
+                                "mk": {
+                                  "alts": [
+                                    {
+                                      "pat": {
+                                        "con": {
+                                          "name": "con:ok",
+                                          "args": [
+                                            "var"
+                                          ]
+                                        }
+                                      },
+                                      "slots": [
+                                        0
+                                      ]
+                                    }
+                                  ],
+                                  "guard": null,
+                                  "body": {
+                                    "ret": {
+                                      "value": {
+                                        "var": {
+                                          "index": 0
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "mk": {
+                                  "alts": [
+                                    {
+                                      "pat": {
+                                        "con": {
+                                          "name": "con:error",
+                                          "args": [
+                                            "var"
+                                          ]
+                                        }
+                                      },
+                                      "slots": [
+                                        0
+                                      ]
+                                    }
+                                  ],
+                                  "guard": null,
+                                  "body": {
+                                    "escape": {
+                                      "value": {
+                                        "con": {
+                                          "name": "con:error",
+                                          "tys": [
+                                            {
+                                              "base": {
+                                                "name": "Integer"
+                                              }
+                                            },
+                                            {
+                                              "tvar": {
+                                                "index": 0
+                                              }
+                                            }
+                                          ],
+                                          "args": [
+                                            {
+                                              "var": {
+                                                "index": 0
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "con": {
+                            "name": "con:ok",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              {
+                                "tvar": {
+                                  "index": 0
+                                }
+                              }
+                            ],
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "tryResultReturn (fn:5)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "input"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "tvar": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "data": {
+                      "name": "Result",
+                      "args": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        {
+                          "tvar": {
+                            "index": 0
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "data": {
+                            "name": "Result",
+                            "args": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              {
+                                "tvar": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "inner": {
+                          "conCall": {
+                            "name": "con:ok",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              {
+                                "tvar": {
+                                  "index": 0
+                                }
+                              }
+                            ],
+                            "args": [
+                              {
+                                "tryResultReturn": {
+                                  "retArgs": [
+                                    {
+                                      "base": {
+                                        "name": "Integer"
+                                      }
+                                    },
+                                    {
+                                      "tvar": {
+                                        "index": 0
+                                      }
+                                    }
+                                  ],
+                                  "inner": {
+                                    "local": {
+                                      "index": 0
+                                    }
+                                  },
+                                  "ok": "con:ok",
+                                  "err": "con:error"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [
+                    [
+                      false,
+                      false
+                    ]
+                  ],
+                  "neffs": 0,
+                  "names": [
+                    "input"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "tvar": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "data": {
+                      "name": "Result",
+                      "args": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        {
+                          "tvar": {
+                            "index": 0
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 0
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "matchC": {
+                            "scrutinee": {
+                              "var": {
+                                "index": 0
+                              }
+                            },
+                            "arms": [
+                              {
+                                "mk": {
+                                  "alts": [
+                                    {
+                                      "pat": {
+                                        "con": {
+                                          "name": "con:ok",
+                                          "args": [
+                                            "var"
+                                          ]
+                                        }
+                                      },
+                                      "slots": [
+                                        0
+                                      ]
+                                    }
+                                  ],
+                                  "guard": null,
+                                  "body": {
+                                    "ret": {
+                                      "value": {
+                                        "var": {
+                                          "index": 0
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "mk": {
+                                  "alts": [
+                                    {
+                                      "pat": {
+                                        "con": {
+                                          "name": "con:error",
+                                          "args": [
+                                            "var"
+                                          ]
+                                        }
+                                      },
+                                      "slots": [
+                                        0
+                                      ]
+                                    }
+                                  ],
+                                  "guard": null,
+                                  "body": {
+                                    "escape": {
+                                      "value": {
+                                        "con": {
+                                          "name": "con:error",
+                                          "tys": [
+                                            {
+                                              "base": {
+                                                "name": "Integer"
+                                              }
+                                            },
+                                            {
+                                              "tvar": {
+                                                "index": 0
+                                              }
+                                            }
+                                          ],
+                                          "args": [
+                                            {
+                                              "var": {
+                                                "index": 0
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "con": {
+                            "name": "con:ok",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              },
+                              {
+                                "tvar": {
+                                  "index": 0
+                                }
+                              }
+                            ],
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "tryOption (fn:6)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "input"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "data": {
+                      "name": "Option",
+                      "args": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "data": {
+                            "name": "Option",
+                            "args": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "inner": {
+                          "conCall": {
+                            "name": "con:some",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "args": [
+                              {
+                                "tryOption": {
+                                  "retArgs": [
+                                    {
+                                      "base": {
+                                        "name": "Integer"
+                                      }
+                                    }
+                                  ],
+                                  "inner": {
+                                    "local": {
+                                      "index": 0
+                                    }
+                                  },
+                                  "someCon": "con:some",
+                                  "noneCon": "con:none"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "input"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "data": {
+                      "name": "Option",
+                      "args": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 0
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "matchC": {
+                            "scrutinee": {
+                              "var": {
+                                "index": 0
+                              }
+                            },
+                            "arms": [
+                              {
+                                "mk": {
+                                  "alts": [
+                                    {
+                                      "pat": {
+                                        "con": {
+                                          "name": "con:some",
+                                          "args": [
+                                            "var"
+                                          ]
+                                        }
+                                      },
+                                      "slots": [
+                                        0
+                                      ]
+                                    }
+                                  ],
+                                  "guard": null,
+                                  "body": {
+                                    "ret": {
+                                      "value": {
+                                        "var": {
+                                          "index": 0
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "mk": {
+                                  "alts": [
+                                    {
+                                      "pat": {
+                                        "con": {
+                                          "name": "con:none",
+                                          "args": []
+                                        }
+                                      },
+                                      "slots": []
+                                    }
+                                  ],
+                                  "guard": null,
+                                  "body": {
+                                    "escape": {
+                                      "value": {
+                                        "con": {
+                                          "name": "con:none",
+                                          "tys": [
+                                            {
+                                              "base": {
+                                                "name": "Integer"
+                                              }
+                                            }
+                                          ],
+                                          "args": []
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "con": {
+                            "name": "con:some",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "tryOptionReturn (fn:7)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "input"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "data": {
+                      "name": "Option",
+                      "args": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "data": {
+                            "name": "Option",
+                            "args": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "inner": {
+                          "conCall": {
+                            "name": "con:some",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "args": [
+                              {
+                                "tryOptionReturn": {
+                                  "retArgs": [
+                                    {
+                                      "base": {
+                                        "name": "Integer"
+                                      }
+                                    }
+                                  ],
+                                  "inner": {
+                                    "local": {
+                                      "index": 0
+                                    }
+                                  },
+                                  "someCon": "con:some",
+                                  "noneCon": "con:none"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "input"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "data": {
+                      "name": "Option",
+                      "args": [
+                        {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 0
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "matchC": {
+                            "scrutinee": {
+                              "var": {
+                                "index": 0
+                              }
+                            },
+                            "arms": [
+                              {
+                                "mk": {
+                                  "alts": [
+                                    {
+                                      "pat": {
+                                        "con": {
+                                          "name": "con:some",
+                                          "args": [
+                                            "var"
+                                          ]
+                                        }
+                                      },
+                                      "slots": [
+                                        0
+                                      ]
+                                    }
+                                  ],
+                                  "guard": null,
+                                  "body": {
+                                    "ret": {
+                                      "value": {
+                                        "var": {
+                                          "index": 0
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "mk": {
+                                  "alts": [
+                                    {
+                                      "pat": {
+                                        "con": {
+                                          "name": "con:none",
+                                          "args": []
+                                        }
+                                      },
+                                      "slots": []
+                                    }
+                                  ],
+                                  "guard": null,
+                                  "body": {
+                                    "escape": {
+                                      "value": {
+                                        "con": {
+                                          "name": "con:none",
+                                          "tys": [
+                                            {
+                                              "base": {
+                                                "name": "Integer"
+                                              }
+                                            }
+                                          ],
+                                          "args": []
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "con": {
+                            "name": "con:some",
+                            "tys": [
+                              {
+                                "base": {
+                                  "name": "Integer"
+                                }
+                              }
+                            ],
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "message-lambda (fn:8)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "tryOptionDie": {
+                            "ty": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "exit": "prim:8",
+                            "inner": {
+                              "local": {
+                                "index": 1
+                              }
+                            },
+                            "message": {
+                              "ite": {
+                                "cond": {
+                                  "literal": {
+                                    "value": {
+                                      "boolean": {
+                                        "value": true
+                                      }
+                                    }
+                                  }
+                                },
+                                "yes": {
+                                  "discard": {
+                                    "expr": {
+                                      "lam": {
+                                        "names": [
+                                          "text"
+                                        ],
+                                        "params": [
+                                          {
+                                            "base": {
+                                              "name": "String"
+                                            }
+                                          }
+                                        ],
+                                        "ret": {
+                                          "base": {
+                                            "name": "String"
+                                          }
+                                        },
+                                        "eff": [
+                                          {
+                                            "name": {
+                                              "value": "A"
+                                            }
+                                          }
+                                        ],
+                                        "body": {
+                                          "last": {
+                                            "expr": {
+                                              "returnE": {
+                                                "ret": {
+                                                  "base": {
+                                                    "name": "String"
+                                                  }
+                                                },
+                                                "inner": {
+                                                  "local": {
+                                                    "index": 0
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "rest": {
+                                      "last": {
+                                        "expr": {
+                                          "local": {
+                                            "index": 0
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "no": {
+                                  "last": {
+                                    "expr": {
+                                      "local": {
+                                        "index": 0
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "someCon": "con:some",
+                            "noneCon": "con:none"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 1
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:some",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:none",
+                                      "args": []
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "letIn": {
+                                  "bound": {
+                                    "letIn": {
+                                      "bound": {
+                                        "ret": {
+                                          "value": {
+                                            "const": {
+                                              "value": {
+                                                "boolean": {
+                                                  "value": true
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "body": {
+                                        "ite": {
+                                          "cond": {
+                                            "var": {
+                                              "index": 0
+                                            }
+                                          },
+                                          "yes": {
+                                            "letIn": {
+                                              "bound": {
+                                                "ret": {
+                                                  "value": {
+                                                    "lam": {
+                                                      "names": [
+                                                        "text"
+                                                      ],
+                                                      "params": [
+                                                        {
+                                                          "base": {
+                                                            "name": "String"
+                                                          }
+                                                        }
+                                                      ],
+                                                      "body": {
+                                                        "ret": {
+                                                          "value": {
+                                                            "var": {
+                                                              "index": 0
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "body": {
+                                                "ret": {
+                                                  "value": {
+                                                    "var": {
+                                                      "index": 3
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "no": {
+                                            "ret": {
+                                              "value": {
+                                                "var": {
+                                                  "index": 2
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "body": {
+                                    "letIn": {
+                                      "bound": {
+                                        "ret": {
+                                          "value": {
+                                            "const": {
+                                              "value": {
+                                                "string": {
+                                                  "value": "expected a value, got Option.None"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "body": {
+                                        "app": {
+                                          "callee": {
+                                            "prim": {
+                                              "name": "prim:8",
+                                              "tys": [
+                                                {
+                                                  "base": {
+                                                    "name": "Integer"
+                                                  }
+                                                }
+                                              ],
+                                              "effs": []
+                                            }
+                                          },
+                                          "args": [
+                                            {
+                                              "const": {
+                                                "value": {
+                                                  "integer": {
+                                                    "value": 1
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [
+                  [
+                    {
+                      "name": {
+                        "value": "A"
+                      }
+                    }
+                  ]
+                ],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "impl-dictionary (fn:9)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "tryResultDie": {
+                            "ty": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "exit": "prim:8",
+                            "inner": {
+                              "local": {
+                                "index": 1
+                              }
+                            },
+                            "message": null,
+                            "ok": "con:ok",
+                            "err": "con:error",
+                            "dict": {
+                              "impl": {
+                                "name": "Show",
+                                "tys": [],
+                                "args": []
+                              }
+                            },
+                            "showMethod": "meth:9"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 1
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:ok",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:error",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "letIn": {
+                                  "bound": {
+                                    "meth": {
+                                      "dict": {
+                                        "dict": {
+                                          "name": "Show",
+                                          "tys": [],
+                                          "args": []
+                                        }
+                                      },
+                                      "name": "meth:9",
+                                      "tys": [],
+                                      "effs": [],
+                                      "args": [
+                                        {
+                                          "var": {
+                                            "index": 0
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "body": {
+                                    "app": {
+                                      "callee": {
+                                        "prim": {
+                                          "name": "prim:8",
+                                          "tys": [
+                                            {
+                                              "base": {
+                                                "name": "Integer"
+                                              }
+                                            }
+                                          ],
+                                          "effs": []
+                                        }
+                                      },
+                                      "args": [
+                                        {
+                                          "const": {
+                                            "value": {
+                                              "integer": {
+                                                "value": 1
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "input-lambda (fn:10)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "base": {
+                            "name": "Integer"
+                          }
+                        },
+                        "inner": {
+                          "tryOptionDie": {
+                            "ty": {
+                              "base": {
+                                "name": "Integer"
+                              }
+                            },
+                            "exit": "prim:8",
+                            "inner": {
+                              "ite": {
+                                "cond": {
+                                  "literal": {
+                                    "value": {
+                                      "boolean": {
+                                        "value": true
+                                      }
+                                    }
+                                  }
+                                },
+                                "yes": {
+                                  "discard": {
+                                    "expr": {
+                                      "lam": {
+                                        "names": [
+                                          "text"
+                                        ],
+                                        "params": [
+                                          {
+                                            "base": {
+                                              "name": "String"
+                                            }
+                                          }
+                                        ],
+                                        "ret": {
+                                          "base": {
+                                            "name": "String"
+                                          }
+                                        },
+                                        "eff": [
+                                          {
+                                            "name": {
+                                              "value": "B"
+                                            }
+                                          }
+                                        ],
+                                        "body": {
+                                          "last": {
+                                            "expr": {
+                                              "returnE": {
+                                                "ret": {
+                                                  "base": {
+                                                    "name": "String"
+                                                  }
+                                                },
+                                                "inner": {
+                                                  "local": {
+                                                    "index": 0
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "rest": {
+                                      "last": {
+                                        "expr": {
+                                          "local": {
+                                            "index": 1
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "no": {
+                                  "last": {
+                                    "expr": {
+                                      "local": {
+                                        "index": 1
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "message": {
+                              "ite": {
+                                "cond": {
+                                  "literal": {
+                                    "value": {
+                                      "boolean": {
+                                        "value": true
+                                      }
+                                    }
+                                  }
+                                },
+                                "yes": {
+                                  "discard": {
+                                    "expr": {
+                                      "lam": {
+                                        "names": [
+                                          "text"
+                                        ],
+                                        "params": [
+                                          {
+                                            "base": {
+                                              "name": "String"
+                                            }
+                                          }
+                                        ],
+                                        "ret": {
+                                          "base": {
+                                            "name": "String"
+                                          }
+                                        },
+                                        "eff": [
+                                          {
+                                            "name": {
+                                              "value": "A"
+                                            }
+                                          }
+                                        ],
+                                        "body": {
+                                          "last": {
+                                            "expr": {
+                                              "returnE": {
+                                                "ret": {
+                                                  "base": {
+                                                    "name": "String"
+                                                  }
+                                                },
+                                                "inner": {
+                                                  "local": {
+                                                    "index": 0
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "rest": {
+                                      "last": {
+                                        "expr": {
+                                          "local": {
+                                            "index": 0
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "no": {
+                                  "last": {
+                                    "expr": {
+                                      "local": {
+                                        "index": 0
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "someCon": "con:some",
+                            "noneCon": "con:none"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "names": [
+                    "show",
+                    "exit"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Option",
+                        "args": [
+                          {
+                            "base": {
+                              "name": "Integer"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Integer"
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "Process.Exit"
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "boolean": {
+                                    "value": true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "ite": {
+                            "cond": {
+                              "var": {
+                                "index": 0
+                              }
+                            },
+                            "yes": {
+                              "letIn": {
+                                "bound": {
+                                  "ret": {
+                                    "value": {
+                                      "lam": {
+                                        "names": [
+                                          "text"
+                                        ],
+                                        "params": [
+                                          {
+                                            "base": {
+                                              "name": "String"
+                                            }
+                                          }
+                                        ],
+                                        "body": {
+                                          "ret": {
+                                            "value": {
+                                              "var": {
+                                                "index": 0
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "body": {
+                                  "ret": {
+                                    "value": {
+                                      "var": {
+                                        "index": 3
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "no": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 2
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "matchC": {
+                        "scrutinee": {
+                          "var": {
+                            "index": 0
+                          }
+                        },
+                        "arms": [
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:some",
+                                      "args": [
+                                        "var"
+                                      ]
+                                    }
+                                  },
+                                  "slots": [
+                                    0
+                                  ]
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "ret": {
+                                  "value": {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "mk": {
+                              "alts": [
+                                {
+                                  "pat": {
+                                    "con": {
+                                      "name": "con:none",
+                                      "args": []
+                                    }
+                                  },
+                                  "slots": []
+                                }
+                              ],
+                              "guard": null,
+                              "body": {
+                                "letIn": {
+                                  "bound": {
+                                    "letIn": {
+                                      "bound": {
+                                        "ret": {
+                                          "value": {
+                                            "const": {
+                                              "value": {
+                                                "boolean": {
+                                                  "value": true
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "body": {
+                                        "ite": {
+                                          "cond": {
+                                            "var": {
+                                              "index": 0
+                                            }
+                                          },
+                                          "yes": {
+                                            "letIn": {
+                                              "bound": {
+                                                "ret": {
+                                                  "value": {
+                                                    "lam": {
+                                                      "names": [
+                                                        "text"
+                                                      ],
+                                                      "params": [
+                                                        {
+                                                          "base": {
+                                                            "name": "String"
+                                                          }
+                                                        }
+                                                      ],
+                                                      "body": {
+                                                        "ret": {
+                                                          "value": {
+                                                            "var": {
+                                                              "index": 0
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "body": {
+                                                "ret": {
+                                                  "value": {
+                                                    "var": {
+                                                      "index": 3
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "no": {
+                                            "ret": {
+                                              "value": {
+                                                "var": {
+                                                  "index": 2
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "body": {
+                                    "letIn": {
+                                      "bound": {
+                                        "ret": {
+                                          "value": {
+                                            "const": {
+                                              "value": {
+                                                "string": {
+                                                  "value": "expected a value, got Option.None"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "body": {
+                                        "app": {
+                                          "callee": {
+                                            "prim": {
+                                              "name": "prim:8",
+                                              "tys": [
+                                                {
+                                                  "base": {
+                                                    "name": "Integer"
+                                                  }
+                                                }
+                                              ],
+                                              "effs": []
+                                            }
+                                          },
+                                          "args": [
+                                            {
+                                              "const": {
+                                                "value": {
+                                                  "integer": {
+                                                    "value": 1
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [
+                  [
+                    {
+                      "name": {
+                        "value": "B"
+                      }
+                    }
+                  ],
+                  [
+                    {
+                      "name": {
+                        "value": "A"
+                      }
+                    }
+                  ]
+                ],
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "constants": [],
+      "ops": [],
+      "effects": [],
+      "primOps": [
+        {
+          "name": "prim:8",
+          "names": [
+            "code"
+          ],
+          "arity": 1,
+          "ntys": 1
+        }
+      ],
+      "classes": [
+        {
+          "name": "class:7",
+          "supers": [],
+          "methods": [
+            {
+              "name": "meth:9",
+              "header": {
+                "tparams": [],
+                "neffs": 0,
+                "names": [
+                  "x"
+                ],
+                "params": [
+                  {
+                    "tvar": {
+                      "index": 0
+                    }
+                  }
+                ],
+                "ret": {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                "eff": []
+              }
+            }
+          ]
+        }
+      ],
+      "impls": [
+        {
+          "name": "Show",
+          "tparams": [],
+          "dictParams": [],
+          "cls": "class:7",
+          "target": {
+            "base": {
+              "name": "String"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

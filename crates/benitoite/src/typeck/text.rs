@@ -8,6 +8,13 @@ pub(super) const FLOAT_TO_STRING: &str = "Float.toString";
 pub(super) const CHARACTER_TO_STRING: &str = "Character.toString";
 pub(super) const COVERAGE_MATCH: &str = "this `match` covers every value";
 pub(super) const COVERAGE_PATTERN: &str = "this pattern matches every value";
+pub(super) fn future_shape(name: &str, record: bool) -> String {
+    if record {
+        format!("<future shape of {name}>")
+    } else {
+        format!("<future constructor of {name}>")
+    }
+}
 pub(super) const TYPE_DEPTH: &str = " levels in a type";
 pub(super) const TYPE_NODES: &str = " nodes in a type";
 

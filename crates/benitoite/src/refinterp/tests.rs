@@ -510,6 +510,7 @@ fn process_exit_keeps_output_and_requested_status() {
         out,
         RefOutcome::Exited {
             status: 3,
+            die_failure: None,
             release_failures: vec![]
         }
     );
@@ -539,6 +540,7 @@ fn releases_run_once_inside_out_on_each_kind_of_unwinding() {
                 out,
                 RefOutcome::Exited {
                     status: 3,
+                    die_failure: None,
                     release_failures: vec![]
                 }
             ),
@@ -599,6 +601,7 @@ end function
                 out,
                 RefOutcome::Exited {
                     status: 3,
+                    die_failure: None,
                     release_failures: vec![]
                 },
                 "{kind}"
@@ -640,8 +643,10 @@ fn release_failures_preserve_primary_stop_exit_and_order() {
             }
             RefOutcome::Exited {
                 status,
+                die_failure,
                 release_failures,
             } => {
+                assert_eq!(die_failure, None);
                 assert_eq!(kind, "exit");
                 assert_eq!(status, 3);
                 release_failures
@@ -705,3 +710,6 @@ fn width_constant_collections_reach_reference_builtin_calls() {
         "3\n3\n3\n3\n3\n3\n6\n",
     );
 }
+
+#[path = "exit_report_tests.rs"]
+mod exit_report_tests;

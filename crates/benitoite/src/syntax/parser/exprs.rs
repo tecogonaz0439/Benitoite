@@ -66,15 +66,26 @@ fn take_operator(p: &mut Parser) -> Span {
     }
     p.bump().span
 }
-fn next_step(p: &Parser, min: u8) -> bool {
+pub(super) fn try_action_ahead(p: &Parser) -> bool {
+    p.at(TokenKind::KwOr) && matches!(p.peek_nth_kind(1), TokenKind::KwReturn | TokenKind::KwDie)
+}
+fn next_step(p: &Parser, min: u8, stop_action: bool) -> bool {
+    if stop_action && try_action_ahead(p) {
+        return false;
+    }
     ((p.at(TokenKind::LParen) || p.at(TokenKind::Dot) || p.symbol("?")) && min <= 80)
         || infix(p).is_some_and(|(_, power)| power >= min)
 }
 
 pub(super) fn parse_expr(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
-    parse_bp(p, depth, 0)
+    parse_bp(p, depth, 0, false)
 }
-fn parse_bp(p: &mut Parser, depth: u32, min: u8) -> PResult<Box<Expr>> {
+/// 処置の停止条件はこの Pratt の経路だけへ渡す。括弧・引数・ブロックは
+/// parse_expr から別の範囲を始め、内側の try は自分の処置を先に読む。
+pub(super) fn parse_try_operand(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
+    parse_bp(p, depth, 0, true)
+}
+fn parse_bp(p: &mut Parser, depth: u32, min: u8, stop_action: bool) -> PResult<Box<Expr>> {
     // return と try は Expr の先頭だけにあり、二項・単項のオペランドには括弧が要る
     // （設計書 01-02「初回リリース版の文法の全体」の Expr と UnaryExpr）。
     if min > 0 && matches!(p.peek_kind(), TokenKind::KwReturn | TokenKind::KwTry) {
@@ -82,16 +93,41 @@ fn parse_bp(p: &mut Parser, depth: u32, min: u8) -> PResult<Box<Expr>> {
     }
     let outer = p.deepest;
     p.deepest = 0;
-    let Ok(lhs) = parse_primary(p, depth) else {
+    let Ok(lhs) = parse_primary(p, depth, stop_action) else {
         p.deepest = outer;
         return Err(Fail);
     };
-    if !next_step(p, min) {
+    if matches!(
+        lhs.as_ref(),
+        Expr::Try(TryExpr {
+            action: TryAction::Return { .. } | TryAction::Die { .. },
+            ..
+        })
+    ) && !(stop_action && try_action_ahead(p))
+        && (next_step(p, min, false) || p.at(TokenKind::LBracket))
+    {
+        report_try_continuation(p);
+        p.deepest = p.deepest.max(outer);
+        return Err(Fail);
+    }
+    if !next_step(p, min, stop_action) {
         p.deepest = p.deepest.max(outer);
         return Ok(lhs);
     }
-    continue_bp(p, depth, min, outer, lhs)
+    continue_bp(p, depth, min, outer, lhs, stop_action)
 }
+// 診断の組み立てを正常な再帰の枠から外す（設計書 02-01）。
+#[cold]
+#[inline(never)]
+fn report_try_continuation(p: &mut Parser) {
+    p.report(
+        DiagBuilder::new(DiagCode::E0259)
+            .primary(p.peek().span)
+            .help("paren")
+            .build(),
+    );
+}
+
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
 fn continue_bp(
@@ -100,9 +136,10 @@ fn continue_bp(
     min: u8,
     outer: u32,
     mut lhs: Box<Expr>,
+    stop_action: bool,
 ) -> PResult<Box<Expr>> {
     let mut height = p.deepest.max(depth);
-    while next_step(p, min) && !p.aborted {
+    while next_step(p, min, stop_action) && !p.aborted {
         if p.at(TokenKind::Dot) {
             lhs = skip_dot(p, depth, lhs)?;
             continue;
@@ -124,7 +161,7 @@ fn continue_bp(
                 break;
             };
             let op_span = take_operator(p);
-            let Ok(rhs) = parse_bp(p, child(depth), power.saturating_add(1)) else {
+            let Ok(rhs) = parse_bp(p, child(depth), power.saturating_add(1), stop_action) else {
                 p.deepest = outer;
                 return Err(Fail);
             };
@@ -134,7 +171,7 @@ fn continue_bp(
                 report_chain(p, middle);
                 while infix(p).is_some_and(|(_, next)| next == 40) {
                     take_operator(p);
-                    drop(parse_bp(p, child(depth), 41)?);
+                    drop(parse_bp(p, child(depth), 41, stop_action)?);
                 }
             }
         }
@@ -211,17 +248,21 @@ fn skip_dot(p: &mut Parser, depth: u32, lhs: Box<Expr>) -> PResult<Box<Expr>> {
     let start = span_of(&lhs);
     p.advance();
     let field = p.at(TokenKind::LowerIdent);
-    if matches!(p.peek_kind(), TokenKind::LowerIdent | TokenKind::UpperIdent) {
-        p.advance();
+    if p.at(TokenKind::KwDie) {
+        p.expect_name(TokenKind::LowerIdent, text::LOWER_NAME)?;
+    } else {
+        if matches!(p.peek_kind(), TokenKind::LowerIdent | TokenKind::UpperIdent) {
+            p.advance();
+        }
+        let primary = p.span_from(from);
+        let mut diagnostic = DiagBuilder::new(DiagCode::E0203)
+            .primary(primary)
+            .help("pipe");
+        if field {
+            diagnostic = diagnostic.help("field");
+        }
+        p.report(diagnostic.build());
     }
-    let primary = p.span_from(from);
-    let mut diagnostic = DiagBuilder::new(DiagCode::E0203)
-        .primary(primary)
-        .help("pipe");
-    if field {
-        diagnostic = diagnostic.help("field");
-    }
-    p.report(diagnostic.build());
     if p.at(TokenKind::LParen) {
         drop(parse_args(p, depth)?);
     }
@@ -233,15 +274,15 @@ fn skip_dot(p: &mut Parser, depth: u32, lhs: Box<Expr>) -> PResult<Box<Expr>> {
 pub(super) fn record_ahead(p: &Parser) -> bool {
     p.at(TokenKind::LParen)
         && (p.peek_nth_kind(1) == TokenKind::DotDot
-            || p.peek_nth_kind(1) == TokenKind::LowerIdent
+            || matches!(p.peek_nth_kind(1), TokenKind::LowerIdent | TokenKind::KwDie)
                 && p.peek_nth_kind(2) == TokenKind::Colon)
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
-fn parse_primary(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
+fn parse_primary(p: &mut Parser, depth: u32, stop_action: bool) -> PResult<Box<Expr>> {
     p.enter(depth)?;
     if p.at(TokenKind::KwReturn) {
-        return parse_return(p, depth);
+        return parse_return(p, depth, stop_action);
     }
     if p.at(TokenKind::KwTry) {
         return effects::parse_try(p, depth);
@@ -275,6 +316,7 @@ fn parse_primary(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
         | TokenKind::KwBind
         | TokenKind::KwConst
         | TokenKind::KwData
+        | TokenKind::KwDie
         | TokenKind::KwDiv
         | TokenKind::KwDo
         | TokenKind::KwEffect
@@ -395,11 +437,23 @@ fn finish_name(p: &mut Parser, start: usize, path: Vec<Name>) -> Box<Expr> {
 }
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
-fn parse_return(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
+fn parse_return(p: &mut Parser, depth: u32, stop_action: bool) -> PResult<Box<Expr>> {
     let start = p.pos;
     let span = p.bump().span;
     effects::check_escape(p, TokenKind::KwReturn, span);
-    let Ok(value) = parse_expr(p, child(depth)) else {
+    if p.at(TokenKind::Newline) {
+        p.report(
+            DiagBuilder::new(DiagCode::E0201)
+                .arg("expected", text::EXPRESSION)
+                .arg("found", text::describe(p.peek()))
+                .primary(p.peek().span)
+                .secondary(span, "return_start")
+                .help("return_value_line")
+                .build(),
+        );
+        return Err(Fail);
+    }
+    let Ok(value) = parse_bp(p, child(depth), 0, stop_action) else {
         return Err(Fail);
     };
     Ok(Box::new(Expr::Return(ReturnExpr {
@@ -421,7 +475,7 @@ fn parse_unary(p: &mut Parser, depth: u32) -> PResult<Box<Expr>> {
         foreign::operator(p, "not", Some("not "));
     }
     let op_span = p.bump().span;
-    let Ok(operand) = parse_bp(p, child(depth), 70) else {
+    let Ok(operand) = parse_bp(p, child(depth), 70, false) else {
         return Err(Fail);
     };
     Ok(Box::new(Expr::Unary(UnaryExpr {
@@ -492,7 +546,9 @@ fn parse_args(p: &mut Parser, depth: u32) -> PResult<Vec<Arg>> {
             indexed: true,
         },
         |p, depth, out| {
-            if p.at(TokenKind::LowerIdent) && p.peek_nth_kind(1) == TokenKind::Colon {
+            if matches!(p.peek_kind(), TokenKind::LowerIdent | TokenKind::KwDie)
+                && p.peek_nth_kind(1) == TokenKind::Colon
+            {
                 out.push(Arg::Named(parse_named_arg(p, depth)?));
                 Ok(())
             } else {
@@ -1111,7 +1167,13 @@ fn check_direct_lambdas(p: &mut Parser, body: &Block, ending: LambdaEnding, edit
                 }
             }
             Expr::Return(e) => pending.push(&e.value),
-            Expr::Try(e) => pending.push(&e.value),
+            Expr::Try(e) => match &e.action {
+                TryAction::ImplicitReturn | TryAction::Return { .. } => pending.push(&e.value),
+                TryAction::Die { message, .. } => {
+                    pending.push(&e.value);
+                    pending.extend(message.as_deref());
+                }
+            },
             Expr::Unary(e) => pending.push(&e.operand),
             Expr::Binary(e) => {
                 pending.push(&e.lhs);

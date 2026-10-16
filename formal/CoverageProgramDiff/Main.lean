@@ -13,11 +13,15 @@ structure RawArm where
   guarded : Bool
   deriving FromJson, ToJson
 structure RawMatch where
+  package : String
+  coverageView : List String
   node : Nat
   scrutineeTy : Benitoite.Exchange.Ty
   arms : List RawArm
   deriving FromJson, ToJson
 structure RawBinding where
+  package : String
+  coverageView : List String
   node : Nat
   kind : String
   ty : Benitoite.Exchange.Ty
@@ -56,8 +60,11 @@ structure Result where
   coveredBy : List ((Nat × Nat) × List Nat)
   deriving ToJson, BEq
 
-def result (r : MatchCoverage) : Result :=
-  ⟨r.exhaustive, r.uncovered.map (CoverageWitness.show (fun _ => none)),
+def typeDisplay (ds : List DataEntry) (d : DataName) : Option CoverageTypeDisplay :=
+  (ds.find? (·.name == d)).map fun t => ⟨t.typeName,t.isRecord⟩
+
+def result (ds : List DataEntry) (r : MatchCoverage) : Result :=
+  ⟨r.exhaustive, r.uncovered.map (CoverageWitness.showWithTypes (fun _ => none) (typeDisplay ds)),
     r.unreachable, r.coveredBy⟩
 
 def accepted : Result := ⟨true, none, [], []⟩
@@ -76,34 +83,36 @@ structure Outcome where
   detail : Json := .null
   deriving ToJson
 
-def compareMatch (P : Program) (ctors : DataName → List ConName) (m : RawMatch) :
+def compareMatch (P : Program) (ctors : DataName → List ConName) (ds : List DataEntry) (m : RawMatch) :
     Except String Outcome := do
+  let view ← coverageView (ds.map DataEntry.info) m.package m.coverageView
   let t ← match m.scrutineeTy.toRelease with
     | .error e =>
         if e == "invalid parameter names" then throw e
         return ⟨"outOfScope", 0, toJson e⟩
     | .ok t => pure t
   let as ← arms m.arms
-  let r := checkMatch P ctors t as
-  let original := result r
+  let r := checkMatchWithView P ctors view t as
+  let original := result ds r
   let fuel := if r.fuelExhausted then 1 else 0
   if original == accepted then return ⟨"matched", fuel, toJson original⟩
   return ⟨"mismatched", fuel, toJson original⟩
 
-def compareBinding (P : Program) (ctors : DataName → List ConName) (b : RawBinding) :
+def compareBinding (P : Program) (ctors : DataName → List ConName) (ds : List DataEntry) (b : RawBinding) :
     Except String Outcome := do
+  let view ← coverageView (ds.map DataEntry.info) b.package b.coverageView
   let t ← match b.ty.toRelease with
     | .error e =>
         if e == "invalid parameter names" then throw e
         return ⟨"outOfScope", 0, toJson e⟩
     | .ok t => pure t
   let p ← pattern b.pattern
-  let r := usefulReport P ctors [t] [[p]] [.wild]
-  let ok := irrefutable P ctors t p
+  let r := usefulReportWithView P ctors view [t] [[p]] [.wild]
+  let ok := irrefutableWithView P ctors view t p
   return ⟨if ok then "matched" else "mismatched", if r.fuelExhausted then 1 else 0,
     Json.mkObj [("irrefutable",toJson ok),
       ("uncovered",toJson (r.witness.map (fun ws =>
-        CoverageWitness.show (fun _ => none) (ws.headD .wild))))]⟩
+        CoverageWitness.showWithTypes (fun _ => none) (typeDisplay ds) (ws.headD .wild))))]⟩
 
 def Counts.add (c : Counts) (o : Outcome) : Counts :=
   { cases := c.cases + 1
@@ -119,9 +128,10 @@ def read [FromJson α] (file : String) : IO α := do
 def run (args : List String) : IO UInt32 := do
   let [corpusFile, builtinFile, reportFile] := args
     | throw (IO.userError "usage: coverageProgramDiff coverage-matches.json builtins.json report.json")
-  let corpus : Corpus ← read corpusFile
-  let builtins : BuiltinCorpus ← read builtinFile
-  if corpus.version != 2 || builtins.version != 2 then throw (IO.userError "unsupported version")
+  let corpus : Corpus ← IO.ofExcept ((Json.parse (← IO.FS.readFile corpusFile)) >>=
+    exchangeJson "coverage-program" >>= fromJson?)
+  let builtins ← IO.ofExcept ((Json.parse (← IO.FS.readFile builtinFile)) >>= readBuiltins)
+  if corpus.version != builtins.version then throw (IO.userError "exchange version pair mismatch")
   if corpus.inputs.length != builtins.inputs.length then throw (IO.userError "input count mismatch")
   let mut matchCounts : Counts := {}
   let mut bindings : Counts := {}
@@ -134,8 +144,8 @@ def run (args : List String) : IO UInt32 := do
     let ds ← IO.ofExcept (builtin.dataDecls.mapM DataEntry.toMaterial)
     let P := program ds
     let ctors := dataConstructors ds
-    let tasks := (input.«matches».map fun m => ("match", m.node, toJson m, compareMatch P ctors m)) ++
-      (input.bindings.map fun b => (b.kind, b.node, toJson b, compareBinding P ctors b))
+    let tasks := (input.«matches».map fun m => ("match", m.node, toJson m, compareMatch P ctors builtin.dataDecls m)) ++
+      (input.bindings.map fun b => (b.kind, b.node, toJson b, compareBinding P ctors builtin.dataDecls b))
     for (kind, node, raw, task) in tasks do
       let o ← IO.ofExcept (task.mapError fun e => s!"{input.group}/{input.name}:{node}: {e}")
       if kind == "match" then matchCounts := matchCounts.add o else bindings := bindings.add o

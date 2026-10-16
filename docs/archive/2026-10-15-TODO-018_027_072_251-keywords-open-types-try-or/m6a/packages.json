@@ -1,0 +1,1172 @@
+[
+  {
+    "config": "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+    "source_sha256": "d4b0968241124717f67325d50515996c0d09940e67f42f3ffd2bd11d6b74cfca",
+    "after_sha256": "fafe4377cd3eec4cf8982639c031ffcb724473075c755007924d6cfbeed64849",
+    "before_package_hash": "sha256:7856682c6ec77ed9fb5d10ad8c765e01f89a1b1613520aad14602ee0cb7cd201",
+    "after_package_hash": "sha256:9dcc120f821e36772630cad069274da5b172c5a0cc7b7f1ccfe76fdcefc08147",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Calc.bnt",
+        "before_sha256": "73908b701103c3c7aa9181e4731960565ba22f3f1192037818a2a970e4b388e3",
+        "after_sha256": "73908b701103c3c7aa9181e4731960565ba22f3f1192037818a2a970e4b388e3"
+      },
+      {
+        "path": "main.bnt",
+        "before_sha256": "416db455eedb48f8bcaf0552b72005364170da44925321989810d0268536188c",
+        "after_sha256": "416db455eedb48f8bcaf0552b72005364170da44925321989810d0268536188c"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "d4b0968241124717f67325d50515996c0d09940e67f42f3ffd2bd11d6b74cfca",
+        "after_sha256": "fafe4377cd3eec4cf8982639c031ffcb724473075c755007924d6cfbeed64849"
+      },
+      {
+        "path": "x.wasm",
+        "before_sha256": "53a52611fd1e9ce663d0a84875cd1720ca2a5ee453734ea6b17a93bc69a53f89",
+        "after_sha256": "53a52611fd1e9ce663d0a84875cd1720ca2a5ee453734ea6b17a93bc69a53f89"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/external/self-package/package.bnt",
+    "source_sha256": "d4b0968241124717f67325d50515996c0d09940e67f42f3ffd2bd11d6b74cfca",
+    "after_sha256": "fafe4377cd3eec4cf8982639c031ffcb724473075c755007924d6cfbeed64849",
+    "before_package_hash": "sha256:6fc2215721c52b97d81e26a916e7ff70fc2cad48d00d91835e1f5b0f4edbdc05",
+    "after_package_hash": "sha256:b3a7f4dbd3e121f7a6182e2730964b3b4052fd9024511ea0a8a75c2e380e4e39",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Calc.bnt",
+        "before_sha256": "149d595692956f8a43cf2245f960a5a130720a3d1efeb4c4cc44a0f9578cb2bc",
+        "after_sha256": "149d595692956f8a43cf2245f960a5a130720a3d1efeb4c4cc44a0f9578cb2bc"
+      },
+      {
+        "path": "main.bnt",
+        "before_sha256": "26cbfd61161b3f0f9cfc1e47e546c72bf81d0eeca0858f59c6cc6c5ba4c5f362",
+        "after_sha256": "26cbfd61161b3f0f9cfc1e47e546c72bf81d0eeca0858f59c6cc6c5ba4c5f362"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "d4b0968241124717f67325d50515996c0d09940e67f42f3ffd2bd11d6b74cfca",
+        "after_sha256": "fafe4377cd3eec4cf8982639c031ffcb724473075c755007924d6cfbeed64849"
+      },
+      {
+        "path": "wasm/x.wasm",
+        "before_sha256": "53a52611fd1e9ce663d0a84875cd1720ca2a5ee453734ea6b17a93bc69a53f89",
+        "after_sha256": "53a52611fd1e9ce663d0a84875cd1720ca2a5ee453734ea6b17a93bc69a53f89"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:c95bec8b879ee53353e61b890d4859571170b8f59156ecab1ddb104819112b35",
+    "after_package_hash": "sha256:fe8e23e824397b0e65255472ddc4c11c29f0fee4ddee031d903790a5c76f257f",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b",
+        "after_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/config-declaration/package.bnt",
+    "source_sha256": "80bbd8b0063a67ad4c1aac211002971a2db8104277b36080d07a87845756cd20",
+    "after_sha256": "527575eacf8e48bf48d3e3215510fe23f7db947cd18e2120120664b7af2803ea",
+    "before_package_hash": "sha256:d41ceca5c504180c6d278ee103888321cb699c2a085a689d23c888f2d3bd8835",
+    "after_package_hash": "sha256:a76cade45172edd83e555b6499f9c88c9a1219d4525225b2676589f86f83cc3c",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "f1f512a73f2e8ba8d35965015427c923fb5185a3201569d51378bf8327055139",
+        "after_sha256": "f1f512a73f2e8ba8d35965015427c923fb5185a3201569d51378bf8327055139"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "80bbd8b0063a67ad4c1aac211002971a2db8104277b36080d07a87845756cd20",
+        "after_sha256": "527575eacf8e48bf48d3e3215510fe23f7db947cd18e2120120664b7af2803ea"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:c95bec8b879ee53353e61b890d4859571170b8f59156ecab1ddb104819112b35",
+    "after_package_hash": "sha256:fe8e23e824397b0e65255472ddc4c11c29f0fee4ddee031d903790a5c76f257f",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b",
+        "after_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/config-textkit/package.bnt",
+    "source_sha256": "fbff7a96ea3afbc692e95dae91fb4904a6324ef43825f5fe2eecabc0696cc813",
+    "after_sha256": "fbff7a96ea3afbc692e95dae91fb4904a6324ef43825f5fe2eecabc0696cc813",
+    "before_package_hash": "sha256:0553af0b0432cfd141a76b63703a29bd4297982dc051e4ce586705a9610e00d5",
+    "after_package_hash": "sha256:0553af0b0432cfd141a76b63703a29bd4297982dc051e4ce586705a9610e00d5",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "24a13b3f6553a1e7ffe7b505bbae6d831a9af42000165c1854282f08e11c0a09",
+        "after_sha256": "24a13b3f6553a1e7ffe7b505bbae6d831a9af42000165c1854282f08e11c0a09"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "fbff7a96ea3afbc692e95dae91fb4904a6324ef43825f5fe2eecabc0696cc813",
+        "after_sha256": "fbff7a96ea3afbc692e95dae91fb4904a6324ef43825f5fe2eecabc0696cc813"
+      }
+    ],
+    "action": "retain_test"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:c95bec8b879ee53353e61b890d4859571170b8f59156ecab1ddb104819112b35",
+    "after_package_hash": "sha256:fe8e23e824397b0e65255472ddc4c11c29f0fee4ddee031d903790a5c76f257f",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b",
+        "after_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/d6c-extensible-external/package.bnt",
+    "source_sha256": "d554385e3005277226475284f2dfe4b00f8ef7ac22686cf08cb9b1ae83e94397",
+    "after_sha256": "7713925c5196290c4aac437ee4d8f9dba49a9f13c624163d4f257c433d11d9a2",
+    "before_package_hash": "sha256:05ef70e2e9c07749bada8c84dc4204892114f15c14b39d785e7b0e13420e90ce",
+    "after_package_hash": "sha256:b5a9797a4311805c33041106c2f5257f62b32c2644412c5494b5608b61748386",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "037613525bf58d5e20bcffb2f982d115ac2cff0cfd6af215a5b91bd81e1fb92b",
+        "after_sha256": "037613525bf58d5e20bcffb2f982d115ac2cff0cfd6af215a5b91bd81e1fb92b"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "d554385e3005277226475284f2dfe4b00f8ef7ac22686cf08cb9b1ae83e94397",
+        "after_sha256": "7713925c5196290c4aac437ee4d8f9dba49a9f13c624163d4f257c433d11d9a2"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/d6c-extensible-missing/package.bnt",
+    "source_sha256": "d554385e3005277226475284f2dfe4b00f8ef7ac22686cf08cb9b1ae83e94397",
+    "after_sha256": "7713925c5196290c4aac437ee4d8f9dba49a9f13c624163d4f257c433d11d9a2",
+    "before_package_hash": "sha256:6ae199b4366696ac54bc32e63f33d99c5633cf1edb7fce36fb0026bd101e6531",
+    "after_package_hash": "sha256:a913d37db795d920f60c112d5cdac84ba2221869f51e270b59e4f9cd7ac5b18a",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "d45b8d94eefaa2a283d1ee5f6fd67f49702a6e75b5b065fcfe705b09942db805",
+        "after_sha256": "d45b8d94eefaa2a283d1ee5f6fd67f49702a6e75b5b065fcfe705b09942db805"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "d554385e3005277226475284f2dfe4b00f8ef7ac22686cf08cb9b1ae83e94397",
+        "after_sha256": "7713925c5196290c4aac437ee4d8f9dba49a9f13c624163d4f257c433d11d9a2"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/d8-extensible-run/package.bnt",
+    "source_sha256": "1f6b34a73cc4107b9a9aa5679efc9952f0e7238cf522a22a6bade6370992d668",
+    "after_sha256": "14757e23effe03e7775750ace070345b0bf4f391605174c55776b2144e6ad04a",
+    "before_package_hash": "sha256:6d3d02f35f0cc4523c4b6a77cfb35d93718dfb79859650a1622efba99fd65de8",
+    "after_package_hash": "sha256:b1a3567155382417887b13eedeb83f4ffa346107458120b65642a86cf2f59678",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "59a13e246185373fea0397820f3e1753ba96d7be1c7f09c640d1754610a543a8",
+        "after_sha256": "59a13e246185373fea0397820f3e1753ba96d7be1c7f09c640d1754610a543a8"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "1f6b34a73cc4107b9a9aa5679efc9952f0e7238cf522a22a6bade6370992d668",
+        "after_sha256": "14757e23effe03e7775750ace070345b0bf4f391605174c55776b2144e6ad04a"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/d8-extensible.files/dep/package.bnt",
+    "source_sha256": "c112f72c4cd72cf61cc830c143c6bbef0a75f652348c0aec6d163885a2169a56",
+    "after_sha256": "fce0acfff973692b0bafa4fb0af86a2ee133a1366eece2f6f6b1a92f9b5918b8",
+    "before_package_hash": "sha256:fc885fe78ef5242b4930ee9720e59f3cc6c5a6e2739ab6ecb2ee2224e5064147",
+    "after_package_hash": "sha256:c123130348728357bc9c01ae40933cf94c6fb268b7a580ecfebf779c0145dacd",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Types.bnt",
+        "before_sha256": "b1f5864d0eb196d090564a5cf399e5749a38ea10deb00fe30f7296f86b492571",
+        "after_sha256": "b1f5864d0eb196d090564a5cf399e5749a38ea10deb00fe30f7296f86b492571"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "c112f72c4cd72cf61cc830c143c6bbef0a75f652348c0aec6d163885a2169a56",
+        "after_sha256": "fce0acfff973692b0bafa4fb0af86a2ee133a1366eece2f6f6b1a92f9b5918b8"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:c95bec8b879ee53353e61b890d4859571170b8f59156ecab1ddb104819112b35",
+    "after_package_hash": "sha256:fe8e23e824397b0e65255472ddc4c11c29f0fee4ddee031d903790a5c76f257f",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b",
+        "after_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt",
+    "source_sha256": "7e24ed4a8a6b496d84b0fe9f9534dc3fefe8829cb6ebd6a2966a4780451472e3",
+    "after_sha256": "1080b378e7243367089d7c38e30b9204fba148a079bc41bd3a97c63a4abff64b",
+    "before_package_hash": "sha256:76868df834ed54b067cb0544fff50dd490f08ccaa61a3b4545e00a0c34bbd213",
+    "after_package_hash": "sha256:cfe98c599b99e111857c7d1d68fedb313e96b66b92dd33017177f50a0c5dd52d",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "7e24ed4a8a6b496d84b0fe9f9534dc3fefe8829cb6ebd6a2966a4780451472e3",
+        "after_sha256": "1080b378e7243367089d7c38e30b9204fba148a079bc41bd3a97c63a4abff64b"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt",
+    "source_sha256": "88b35d99d026f01c7fe10d6e1a0d57a6d3ff98b6c96299f4248e1d3a7ae28900",
+    "after_sha256": "bac93844b85932c8926cb6f98aa0ce552911e85bfdfd985e4ba18ae1bebaee4e",
+    "before_package_hash": "sha256:71bad5465480452c8d74764878e92d8ba544174c6d0c06191c7a3acf4289b4e5",
+    "after_package_hash": "sha256:243e1eb3b00d99f588ab489acb5b3f0813a062273534d143ae3e4a31b484f9e5",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "88b35d99d026f01c7fe10d6e1a0d57a6d3ff98b6c96299f4248e1d3a7ae28900",
+        "after_sha256": "bac93844b85932c8926cb6f98aa0ce552911e85bfdfd985e4ba18ae1bebaee4e"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:084896126bc065625ec4a4cd13beb595c86ed07da3cfef58a1c8368eb69d1c9b",
+    "after_package_hash": "sha256:05e4e0624555cd5a29d46626b1be5b388adeb9fe60db81d1a76891b5001eddd8",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Helper.bnt",
+        "before_sha256": "bdb51769214338c4c3274d72ce5aafc96f554aec04c65852069b48f75a7f91bb",
+        "after_sha256": "bdb51769214338c4c3274d72ce5aafc96f554aec04c65852069b48f75a7f91bb"
+      },
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "b8c9ad5f12684c415a53c6890b8e367dd65b28cb61c5409848486f5c94a1dbd7",
+        "after_sha256": "b8c9ad5f12684c415a53c6890b8e367dd65b28cb61c5409848486f5c94a1dbd7"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt",
+    "source_sha256": "f2f0a8590188331e121a0326c860fd61a292ebc373b4e0e38f5bea1f25057ac6",
+    "after_sha256": "7eed749afc8f92deedfc50706299ec01cbb5cea28b8ac759a03526672514065f",
+    "before_package_hash": "sha256:9ad0ce48e6c8860c10135f030862f5772167053158651d585e605fe668b3d497",
+    "after_package_hash": "sha256:af62ab4a0a0bc45e08f8dff70d330ac80627dc48f35456cfdb0d8faefce5926c",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "bdb51769214338c4c3274d72ce5aafc96f554aec04c65852069b48f75a7f91bb",
+        "after_sha256": "bdb51769214338c4c3274d72ce5aafc96f554aec04c65852069b48f75a7f91bb"
+      },
+      {
+        "path": "main.bnt",
+        "before_sha256": "9e2095b3582b63ea3f443dd82f6bc22ba920726b23542d76e0d10b2f42e1be13",
+        "after_sha256": "9e2095b3582b63ea3f443dd82f6bc22ba920726b23542d76e0d10b2f42e1be13"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "f2f0a8590188331e121a0326c860fd61a292ebc373b4e0e38f5bea1f25057ac6",
+        "after_sha256": "7eed749afc8f92deedfc50706299ec01cbb5cea28b8ac759a03526672514065f"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/dependency-settings/deps/future/package.bnt",
+    "source_sha256": "688daedc5c1b2bc6fb8c48714984bb993b407850e8f76edf88f7da23c94ecd8b",
+    "after_sha256": "688daedc5c1b2bc6fb8c48714984bb993b407850e8f76edf88f7da23c94ecd8b",
+    "before_package_hash": "sha256:7dde731d0b01161ec253dac6ddc58a9367ddf73d672ef1d654e15eeadfaba603",
+    "after_package_hash": "sha256:7dde731d0b01161ec253dac6ddc58a9367ddf73d672ef1d654e15eeadfaba603",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "688daedc5c1b2bc6fb8c48714984bb993b407850e8f76edf88f7da23c94ecd8b",
+        "after_sha256": "688daedc5c1b2bc6fb8c48714984bb993b407850e8f76edf88f7da23c94ecd8b"
+      }
+    ],
+    "action": "retain_test"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/dependency-settings/deps/nolanguage/package.bnt",
+    "source_sha256": "0af09211e1e9209377cecef086804776ee08b4c9cda38eba6f1956e77be2256f",
+    "after_sha256": "0af09211e1e9209377cecef086804776ee08b4c9cda38eba6f1956e77be2256f",
+    "before_package_hash": "sha256:2de43ef4e0e1721f0ef5ff057ac9cd069d6c6f8c7181f176d0e240a938e9c554",
+    "after_package_hash": "sha256:2de43ef4e0e1721f0ef5ff057ac9cd069d6c6f8c7181f176d0e240a938e9c554",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "0af09211e1e9209377cecef086804776ee08b4c9cda38eba6f1956e77be2256f",
+        "after_sha256": "0af09211e1e9209377cecef086804776ee08b4c9cda38eba6f1956e77be2256f"
+      }
+    ],
+    "action": "retain_test"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt",
+    "source_sha256": "93a066206454fd5e6ae7d503b68f27344f9999fc5ae15a4e889a4e93a576977c",
+    "after_sha256": "14ac00c45327d124140c6b586741ed8025804b14af8720e90cc11640e6b1c7a3",
+    "before_package_hash": "sha256:8bf893b5f02f98d51e39f9d2cd63f15c8c317533c0cd96a73494dcf85343142f",
+    "after_package_hash": "sha256:bc710b3c0ea0591ed05af6c814a24ca464acda4aff0f829863a97072faa62c58",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "93a066206454fd5e6ae7d503b68f27344f9999fc5ae15a4e889a4e93a576977c",
+        "after_sha256": "14ac00c45327d124140c6b586741ed8025804b14af8720e90cc11640e6b1c7a3"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:c95bec8b879ee53353e61b890d4859571170b8f59156ecab1ddb104819112b35",
+    "after_package_hash": "sha256:fe8e23e824397b0e65255472ddc4c11c29f0fee4ddee031d903790a5c76f257f",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b",
+        "after_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/extensible.files/dep/package.bnt",
+    "source_sha256": "c112f72c4cd72cf61cc830c143c6bbef0a75f652348c0aec6d163885a2169a56",
+    "after_sha256": "fce0acfff973692b0bafa4fb0af86a2ee133a1366eece2f6f6b1a92f9b5918b8",
+    "before_package_hash": "sha256:fedc3a1684cc59958da514d638b9257be11264899a09260fd2a4b847d0bbad84",
+    "after_package_hash": "sha256:b212ca94a1254266858f5ba9306b1f41027d79010200fe9def1e22ed7d14e21e",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Types.bnt",
+        "before_sha256": "ecb43e071029d3c2bc6004377456033c6035f0a0f6ef235f52a589b9646dfca5",
+        "after_sha256": "ecb43e071029d3c2bc6004377456033c6035f0a0f6ef235f52a589b9646dfca5"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "c112f72c4cd72cf61cc830c143c6bbef0a75f652348c0aec6d163885a2169a56",
+        "after_sha256": "fce0acfff973692b0bafa4fb0af86a2ee133a1366eece2f6f6b1a92f9b5918b8"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt",
+    "source_sha256": "d8a9d5275c20e4dec45e6be62ba8fe92909b2d96c564ff26cdb9a5dac3cd341b",
+    "after_sha256": "2dd2e5e74287ea92be973d3dcdbf1e44f63a5455ac64b552453f88095a420bb2",
+    "before_package_hash": "sha256:ddac9d07ae2a12288b1ef3e5a4cbe36ae1d44a3991a1fc3f3b9e5d44a57da584",
+    "after_package_hash": "sha256:20e42f7da076ce5bd11f6f4a7b433f956e8f73e98f58cd279c8dc2aafbe09393",
+    "hash_recorded_by": [
+      "crates/benitoite/testdata/packages/hash-match/package.bnt",
+      "crates/benitoite/testdata/packages/hash-mismatch/main.bnt"
+    ],
+    "files": [
+      {
+        "path": "Value.bnt",
+        "before_sha256": "b6eab88d0e8ae6bcd83665b5a7687dab90f7c16aa48208345fe715e29df96824",
+        "after_sha256": "b6eab88d0e8ae6bcd83665b5a7687dab90f7c16aa48208345fe715e29df96824"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "d8a9d5275c20e4dec45e6be62ba8fe92909b2d96c564ff26cdb9a5dac3cd341b",
+        "after_sha256": "2dd2e5e74287ea92be973d3dcdbf1e44f63a5455ac64b552453f88095a420bb2"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/hash-match/package.bnt",
+    "source_sha256": "9b5fec67d1697194b17a03182ac630a5fa5c2e8cf7675b7d1a72ca8d10999aea",
+    "after_sha256": "b7f12a363d9a5e2c50eff5e867859d858fe7ca29bacc4e17e50d8d981dd28aec",
+    "before_package_hash": "sha256:95c3dda1eb643f1d16509bca284a11d4b21a5d9ec75cd83a585bd8f0988eda6e",
+    "after_package_hash": "sha256:c491f9c3b0f95386d858d5f79d985e853308cabae595498dfa8afbf444b0413d",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "91e921ff846eaae937be86a36b0d8722c3ee043bc67acbeea6db7bd896a7be60",
+        "after_sha256": "91e921ff846eaae937be86a36b0d8722c3ee043bc67acbeea6db7bd896a7be60"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "9b5fec67d1697194b17a03182ac630a5fa5c2e8cf7675b7d1a72ca8d10999aea",
+        "after_sha256": "b7f12a363d9a5e2c50eff5e867859d858fe7ca29bacc4e17e50d8d981dd28aec"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt",
+    "source_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+    "before_package_hash": "sha256:cb312b5bbbf6f09c26547fcc728bbc1d6bd9515f69fcb53fb01f767802cfbf13",
+    "after_package_hash": "sha256:b1b57fa6ae18bdc788d4ecf0f51886a976b1f7267dec3d0a43889526bed791b8",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+        "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/header-overlap/package.bnt",
+    "source_sha256": "602f2bdc5329ed2033ad395b1bf168cd77eecb9ac0cbabcb57c9f2ed12b1ce4c",
+    "after_sha256": "9ae8acc4ddb9bb9832c6d480c0d8464f87e9be933955f08ddd810073530b16b0",
+    "before_package_hash": "sha256:8c93dbe45240512b82b00044c32f01e3a79a5dc3f584d48310c589a2d7b8b6c9",
+    "after_package_hash": "sha256:8c5df4bdc646152921c7ee34f0d9c4a2f5b1bab6b1abf4ec68dfa0f64359d69d",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "40f923142f9ad3a90bfdf668c2585d6dcfa4ef83ad8eae25fe1079101657acc6",
+        "after_sha256": "408e04e5b88ecbe54ba1e7ad3b46e1bc0f45227df77251b2a00325dc66023ebd"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "602f2bdc5329ed2033ad395b1bf168cd77eecb9ac0cbabcb57c9f2ed12b1ce4c",
+        "after_sha256": "9ae8acc4ddb9bb9832c6d480c0d8464f87e9be933955f08ddd810073530b16b0"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/header/deps/textkit/package.bnt",
+    "source_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+    "before_package_hash": "sha256:cb312b5bbbf6f09c26547fcc728bbc1d6bd9515f69fcb53fb01f767802cfbf13",
+    "after_package_hash": "sha256:b1b57fa6ae18bdc788d4ecf0f51886a976b1f7267dec3d0a43889526bed791b8",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+        "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt",
+    "source_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+    "before_package_hash": "sha256:cb312b5bbbf6f09c26547fcc728bbc1d6bd9515f69fcb53fb01f767802cfbf13",
+    "after_package_hash": "sha256:b1b57fa6ae18bdc788d4ecf0f51886a976b1f7267dec3d0a43889526bed791b8",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+        "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt",
+    "source_sha256": "a1af455307bcdeb35a765fb9e79e8267f1983d7dc16b4cb6e6a57a9a52e2792f",
+    "after_sha256": "184ba467cd3cf7b3e824787aa47e23eabb149da6d45d41a878f4736d9385d06a",
+    "before_package_hash": "sha256:953c8f0392df0c75bd849e6aee7dc0555955247c97db9ce8002155d655ce7e6c",
+    "after_package_hash": "sha256:ff3e30c74b66c27f1d277f2834476cefc0064cc588aa45a65bd25554603bb893",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Distance.bnt",
+        "before_sha256": "7518d070413a2bf46b504a6d2dd79c12e588924f3b12c3dfb06447a2de4fce2a",
+        "after_sha256": "7518d070413a2bf46b504a6d2dd79c12e588924f3b12c3dfb06447a2de4fce2a"
+      },
+      {
+        "path": "README.md",
+        "before_sha256": "3c24b4e739069db4191360146bb77e7ac786a759ef75b2ee79bdbcee27bc148a",
+        "after_sha256": "3c24b4e739069db4191360146bb77e7ac786a759ef75b2ee79bdbcee27bc148a"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a1af455307bcdeb35a765fb9e79e8267f1983d7dc16b4cb6e6a57a9a52e2792f",
+        "after_sha256": "184ba467cd3cf7b3e824787aa47e23eabb149da6d45d41a878f4736d9385d06a"
+      },
+      {
+        "path": "wasm/fuzzy.wasm",
+        "before_sha256": "0be481b3b16b21773d87abd54498ddb33e52eb4ec9b850fc9a244cd655f91e1c",
+        "after_sha256": "0be481b3b16b21773d87abd54498ddb33e52eb4ec9b850fc9a244cd655f91e1c"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt",
+    "source_sha256": "b763652c355c790447d4bd8f44e1f05d577131b41c255299f6a1cc80297e6958",
+    "after_sha256": "479191a351897a20c1e51f451e022584033f6996cbc97b59aa9232a1f1a21762",
+    "before_package_hash": "sha256:1ed1686a8405f998e3e57131fb1933c846643c68a2a15ee23413eedd170c1ce3",
+    "after_package_hash": "sha256:44ebf7610672eb86dcb63426910d9c1ef4d4ef8dce0aa6176cd9e634e4a56627",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Check.bnt",
+        "before_sha256": "1c8d6fba4d445612c3c6762dd9136c1dedb517379e60955fc8bc2425aa727ab3",
+        "after_sha256": "1c8d6fba4d445612c3c6762dd9136c1dedb517379e60955fc8bc2425aa727ab3"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "b763652c355c790447d4bd8f44e1f05d577131b41c255299f6a1cc80297e6958",
+        "after_sha256": "479191a351897a20c1e51f451e022584033f6996cbc97b59aa9232a1f1a21762"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt",
+    "source_sha256": "47cef55d9a3a2ced7dc733d4b1fa5a54225a6ecdd34ac0956b900b5fab64ad56",
+    "after_sha256": "f733e315969f381d1e059eee85999420465b8d47b1c4fcebab9ed4000f340991",
+    "before_package_hash": "sha256:d36c0c245c8d90d25b1466abc1bb63dbf1102bc758b5890f6d80d9355fff3918",
+    "after_package_hash": "sha256:23e74b413c3ff1cdf7aadbc50bbe975f881b00b4586ddadf3c2e2ade30a657cf",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Numbers.bnt",
+        "before_sha256": "26090dfe41dbcda7e3cfbbf16a078b32b79da0cec8fb480022f86bd693dc93ed",
+        "after_sha256": "26090dfe41dbcda7e3cfbbf16a078b32b79da0cec8fb480022f86bd693dc93ed"
+      },
+      {
+        "path": "Parser.bnt",
+        "before_sha256": "01e6a9ebf46de717b2cc5e03385b7ee132e6e599c38d50b03c27023b352a3ea9",
+        "after_sha256": "01e6a9ebf46de717b2cc5e03385b7ee132e6e599c38d50b03c27023b352a3ea9"
+      },
+      {
+        "path": "Parts.bnt",
+        "before_sha256": "ba9695f0d8f5e3f74afb1557399759b1ab15d065e7d22bf6df8db6eff503db97",
+        "after_sha256": "ba9695f0d8f5e3f74afb1557399759b1ab15d065e7d22bf6df8db6eff503db97"
+      },
+      {
+        "path": "README.md",
+        "before_sha256": "4d0775658c888f34acd2a6f5306419cce3888152fd2db1cf536105512696e483",
+        "after_sha256": "4d0775658c888f34acd2a6f5306419cce3888152fd2db1cf536105512696e483"
+      },
+      {
+        "path": "Scan.bnt",
+        "before_sha256": "133dc96f6a8c678428009e7ed3ee228f63b3a247cf221fdd5abda6a13f89f900",
+        "after_sha256": "133dc96f6a8c678428009e7ed3ee228f63b3a247cf221fdd5abda6a13f89f900"
+      },
+      {
+        "path": "Strings.bnt",
+        "before_sha256": "0777a5eb0c4dd94c9b8f18fc168525174ff7f1d280fc45c0928ca558b1b50a57",
+        "after_sha256": "0777a5eb0c4dd94c9b8f18fc168525174ff7f1d280fc45c0928ca558b1b50a57"
+      },
+      {
+        "path": "Text.bnt",
+        "before_sha256": "b59512987c9b3c23f464a751c22ecec1779399516d6bc4b20f24369ba1fd216f",
+        "after_sha256": "b59512987c9b3c23f464a751c22ecec1779399516d6bc4b20f24369ba1fd216f"
+      },
+      {
+        "path": "Writer.bnt",
+        "before_sha256": "b3756ae74311a273fbffd88b2d5b01d102cf0a3831af2bb5a032216db14ca1f7",
+        "after_sha256": "b3756ae74311a273fbffd88b2d5b01d102cf0a3831af2bb5a032216db14ca1f7"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "47cef55d9a3a2ced7dc733d4b1fa5a54225a6ecdd34ac0956b900b5fab64ad56",
+        "after_sha256": "f733e315969f381d1e059eee85999420465b8d47b1c4fcebab9ed4000f340991"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:c95bec8b879ee53353e61b890d4859571170b8f59156ecab1ddb104819112b35",
+    "after_package_hash": "sha256:fe8e23e824397b0e65255472ddc4c11c29f0fee4ddee031d903790a5c76f257f",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b",
+        "after_sha256": "ae6e06a8911fc18ab79e47261309610543ceced939c40ea8e5fb7d9c23854b3b"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt",
+    "source_sha256": "ffde1e46bedc87661a288b811a1407ac59d3b0486211f0a75787a78cb1c6cabb",
+    "after_sha256": "152e57ba957a4cb1691e5d14a15117a093cd008245f185edd93e3f896fe40f13",
+    "before_package_hash": "sha256:0d203c70efee7f8822d386da70ded84bf0a7b4f45cfdf2bb2676b9463839f6ef",
+    "after_package_hash": "sha256:307b6cdba1f4818792930e1e2566ecaca6cabfd36471d619b27bf804a2bcc3c8",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Digest.bnt",
+        "before_sha256": "186eb0cc7b96c5af8cb31be11c71def2032506b45e6a34a3090fe73c418adea6",
+        "after_sha256": "186eb0cc7b96c5af8cb31be11c71def2032506b45e6a34a3090fe73c418adea6"
+      },
+      {
+        "path": "README.md",
+        "before_sha256": "c1bc9f2b38192eea6baa3c57ae1c4e1d1580a3585fcfdc1a2700880b2669ca3b",
+        "after_sha256": "c1bc9f2b38192eea6baa3c57ae1c4e1d1580a3585fcfdc1a2700880b2669ca3b"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "ffde1e46bedc87661a288b811a1407ac59d3b0486211f0a75787a78cb1c6cabb",
+        "after_sha256": "152e57ba957a4cb1691e5d14a15117a093cd008245f185edd93e3f896fe40f13"
+      },
+      {
+        "path": "wasm/hash.wasm",
+        "before_sha256": "2c6484b64f17dc1ddfa6e11d74a2ef810f2220c4ec55e6b5e20d8e8d1c90a865",
+        "after_sha256": "2c6484b64f17dc1ddfa6e11d74a2ef810f2220c4ec55e6b5e20d8e8d1c90a865"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt",
+    "source_sha256": "a76f8b2117f035ca97f94d6613e7e071edf018d21fc7486e95f48ff2dd2fe4cd",
+    "after_sha256": "0fc9efea9de5c62fa0fb355f4013789b8b3a6af82b27f74f8ddc0825630bcb6a",
+    "before_package_hash": "sha256:00fbffa0bc53c13f64d892d3d151085c1d0d4a7d7d7246b0b8bdb9bac723503b",
+    "after_package_hash": "sha256:1676d583ed605eb0606b163bed931672bfa27dfe33a49c92d307f077da0211ea",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Codec.bnt",
+        "before_sha256": "a5ed7f3a10830c98b9bbfa23dc276c597b43c4488f4eb3cf7681df0a5ac09553",
+        "after_sha256": "a5ed7f3a10830c98b9bbfa23dc276c597b43c4488f4eb3cf7681df0a5ac09553"
+      },
+      {
+        "path": "Nodes.bnt",
+        "before_sha256": "95b33f0d7f659c0845517a464e553b359255959106c6ba0ab7dc8319435c8179",
+        "after_sha256": "95b33f0d7f659c0845517a464e553b359255959106c6ba0ab7dc8319435c8179"
+      },
+      {
+        "path": "README.md",
+        "before_sha256": "84904fd07fde21864d023f9e5cb4d2f0b6dd8680e31f03270a6ca59ca250681a",
+        "after_sha256": "84904fd07fde21864d023f9e5cb4d2f0b6dd8680e31f03270a6ca59ca250681a"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a76f8b2117f035ca97f94d6613e7e071edf018d21fc7486e95f48ff2dd2fe4cd",
+        "after_sha256": "0fc9efea9de5c62fa0fb355f4013789b8b3a6af82b27f74f8ddc0825630bcb6a"
+      },
+      {
+        "path": "wasm/json.wasm",
+        "before_sha256": "f4f5813226c3253a6325fa6ce5b75ed58c0020dce11731778304161e27e74d24",
+        "after_sha256": "f4f5813226c3253a6325fa6ce5b75ed58c0020dce11731778304161e27e74d24"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt",
+    "source_sha256": "8d1b26fa88480ce33199cf2cb376472652f621e51843b2328d4b38de680dc2d3",
+    "after_sha256": "75eb05aca5f355d137f430f3b8ab7b10c51e4ec3e798817275a903b8f1fa183c",
+    "before_package_hash": "sha256:ea0f3befe0934f82052f62ed51ccf4239c5d6df09f93e015c2ae992ac148632c",
+    "after_package_hash": "sha256:b5caad1c4e4da7cc3649b2cc0cbb1343ce9272d3e2883010c0a8c7550d568205",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Pattern.bnt",
+        "before_sha256": "b6e755b4ba67299f17527e49b20f4ebc8903dc8cdb592b3b47aafc5f276e5ca8",
+        "after_sha256": "b6e755b4ba67299f17527e49b20f4ebc8903dc8cdb592b3b47aafc5f276e5ca8"
+      },
+      {
+        "path": "README.md",
+        "before_sha256": "4dc5be3d3b5af17ba1ba4a340be99f14da8428b2a2409269df7ccaa3bef5b2de",
+        "after_sha256": "4dc5be3d3b5af17ba1ba4a340be99f14da8428b2a2409269df7ccaa3bef5b2de"
+      },
+      {
+        "path": "Raw.bnt",
+        "before_sha256": "36dc596eba57535ddd255a168ae1aa926cb6970e3e6d2ff3018456764de0574d",
+        "after_sha256": "36dc596eba57535ddd255a168ae1aa926cb6970e3e6d2ff3018456764de0574d"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "8d1b26fa88480ce33199cf2cb376472652f621e51843b2328d4b38de680dc2d3",
+        "after_sha256": "75eb05aca5f355d137f430f3b8ab7b10c51e4ec3e798817275a903b8f1fa183c"
+      },
+      {
+        "path": "wasm/regex.wasm",
+        "before_sha256": "9ea978836c933f8b05586c1732520989d9cd64094461ae6c155b21dd357c0aec",
+        "after_sha256": "9ea978836c933f8b05586c1732520989d9cd64094461ae6c155b21dd357c0aec"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:85d8f30cb16cb89c50c06ac29349baa6e90bce04a26aed3b1166ac2225b3f8b1",
+    "after_package_hash": "sha256:d78b160cced6166dd505ce630d231992d2722fc76c77b3a5a7a74f3a4135dd99",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Internal/Words.bnt",
+        "before_sha256": "91ba792006e6773542204c8e306c07bcbc0d748fdb530d8bb354ff9ef6b3b4a6",
+        "after_sha256": "91ba792006e6773542204c8e306c07bcbc0d748fdb530d8bb354ff9ef6b3b4a6"
+      },
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "60dc491c0609b22896d76d46cd4b7748420e3450fd266728589d8e36f0b69c68",
+        "after_sha256": "60dc491c0609b22896d76d46cd4b7748420e3450fd266728589d8e36f0b69c68"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/newer-config/package.bnt",
+    "source_sha256": "27909ce7b962d6befce8f0d5a34cc7bbb64e2c8955436ff43d73fd5969f216ec",
+    "after_sha256": "27909ce7b962d6befce8f0d5a34cc7bbb64e2c8955436ff43d73fd5969f216ec",
+    "before_package_hash": "sha256:b8e958e7f6550c102a15366cfa65568461d67edfa81b94ffea57cbf0c0abded9",
+    "after_package_hash": "sha256:b8e958e7f6550c102a15366cfa65568461d67edfa81b94ffea57cbf0c0abded9",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "3afaa7945840f1a3187d06c9dacbb2c92d8714b4d879ddce680ff3c3576bd98b",
+        "after_sha256": "3afaa7945840f1a3187d06c9dacbb2c92d8714b4d879ddce680ff3c3576bd98b"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "27909ce7b962d6befce8f0d5a34cc7bbb64e2c8955436ff43d73fd5969f216ec",
+        "after_sha256": "27909ce7b962d6befce8f0d5a34cc7bbb64e2c8955436ff43d73fd5969f216ec"
+      }
+    ],
+    "action": "retain_test"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-as-root/package.bnt",
+    "source_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+    "before_package_hash": "sha256:ca88aa32275efac3009a8acfa60fbf1d346d918d21ee796375521c69b1378528",
+    "after_package_hash": "sha256:01a375f244b5a638741e7643c4b302aada2c23766a994688c9021800928d747b",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "f1f512a73f2e8ba8d35965015427c923fb5185a3201569d51378bf8327055139",
+        "after_sha256": "f1f512a73f2e8ba8d35965015427c923fb5185a3201569d51378bf8327055139"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+        "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt",
+    "source_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+    "before_package_hash": "sha256:cb312b5bbbf6f09c26547fcc728bbc1d6bd9515f69fcb53fb01f767802cfbf13",
+    "after_package_hash": "sha256:b1b57fa6ae18bdc788d4ecf0f51886a976b1f7267dec3d0a43889526bed791b8",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+        "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-dependencies/package.bnt",
+    "source_sha256": "b7f6ff45fc2a4be32bb457e4c7cbf94a5c372b796508615fd46f9e66a1c718e3",
+    "after_sha256": "cd5c093e26aff2e67e1f69c6fd7e030dfad3342389f57c148bbe12ca35477be2",
+    "before_package_hash": "sha256:5084892f7843ff9f5d78a8e1b234b8d31e13d87c9d1af73aefe9173777abdec2",
+    "after_package_hash": "sha256:832271861a17d0d636fb3b18344b2b0a439f68642a8c0bbce74ae981698eb557",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "f1f512a73f2e8ba8d35965015427c923fb5185a3201569d51378bf8327055139",
+        "after_sha256": "f1f512a73f2e8ba8d35965015427c923fb5185a3201569d51378bf8327055139"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "b7f6ff45fc2a4be32bb457e4c7cbf94a5c372b796508615fd46f9e66a1c718e3",
+        "after_sha256": "cd5c093e26aff2e67e1f69c6fd7e030dfad3342389f57c148bbe12ca35477be2"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:fabc0b39ae9df60276e006c5eab9a30feed9fc2d41ce4ab3cdb5a28faf6cd28f",
+    "after_package_hash": "sha256:faaa607183f501761d70432f5f8ec7a3306185673a15ceb0917974a9dc83cc6d",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "7ac7694e903ef32726864c62e6341e204619f473f2098f330490bbb85f8561d2",
+        "after_sha256": "7ac7694e903ef32726864c62e6341e204619f473f2098f330490bbb85f8561d2"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:5384fc5e2907da678c1875c597cf27e0255855fec51d006de5422b0514364d6b",
+    "after_package_hash": "sha256:d41108f06b94b50c71eddde7d5b7faa7601dd75cfa07914cfba405970fd743f7",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "d5b4e8442199b5b9532700c423865208581a42f700ced7165cadd3246c7bdf18",
+        "after_sha256": "c7cf68e066dbee1f3f38cf784972b6384af7fafd6dafe564fb426e175e21ddae"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt",
+    "source_sha256": "2d2bb8a211a8c69af3870d0d25abd216073c7b8605ba6d0138dde87755d1dbdc",
+    "after_sha256": "62cd39aa7702831e6d99373842449ff4b89ada7ba99808710829e3241c19aec0",
+    "before_package_hash": "sha256:d7aa01dd19f9d4724fca208da4dbbee2b952c15680f1e9dba2cc14e7fda95754",
+    "after_package_hash": "sha256:69c819cffe0ae18e440702d21e7513710c89db4f49a34fcd3663f4a66e1abd13",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Module.bnt",
+        "before_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "2d2bb8a211a8c69af3870d0d25abd216073c7b8605ba6d0138dde87755d1dbdc",
+        "after_sha256": "62cd39aa7702831e6d99373842449ff4b89ada7ba99808710829e3241c19aec0"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:47ea2e337632824c6d97d28f30ef0af4202ae9cda5437cf1dd0f28e7fe0b5912",
+    "after_package_hash": "sha256:20d515ea5bd0910efc78fcb3499674479cb40c8a4aeb256504c9702beda74ce7",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Other.bnt",
+        "before_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "a52ca05224dcb15adf5ec560bd1ecfbc26262a0ee050be3090704578877e7321",
+        "after_sha256": "a52ca05224dcb15adf5ec560bd1ecfbc26262a0ee050be3090704578877e7321"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-language-required/package.bnt",
+    "source_sha256": "aca542369acea4135e226e412f54b1aad48e9e03c8142f558fd9986bca8d3301",
+    "after_sha256": "aca542369acea4135e226e412f54b1aad48e9e03c8142f558fd9986bca8d3301",
+    "before_package_hash": "sha256:10a4b656c478a0b4e952fc990d88fea03083f27a3dbde602104570f4799641bd",
+    "after_package_hash": "sha256:10a4b656c478a0b4e952fc990d88fea03083f27a3dbde602104570f4799641bd",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "f1f512a73f2e8ba8d35965015427c923fb5185a3201569d51378bf8327055139",
+        "after_sha256": "f1f512a73f2e8ba8d35965015427c923fb5185a3201569d51378bf8327055139"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "aca542369acea4135e226e412f54b1aad48e9e03c8142f558fd9986bca8d3301",
+        "after_sha256": "aca542369acea4135e226e412f54b1aad48e9e03c8142f558fd9986bca8d3301"
+      }
+    ],
+    "action": "retain_test"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:6c239dd6e6fc9f916eb5a8e662ed7d4761b9d604c86ff4e9543b0105612a83bf",
+    "after_package_hash": "sha256:cccd65bc018368d2c2e4fe290a908337dd8a10b846fc1346cf2852dc33f17970",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "cf4754891e9d7809f43aaa45bc79ec6a40644f19701202cabe5af34d11f8d726",
+        "after_sha256": "cf4754891e9d7809f43aaa45bc79ec6a40644f19701202cabe5af34d11f8d726"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:e3e801c9daef59dbc5006d83748bf74b998d0eab0ad5ce99198b5244a8bba007",
+    "after_package_hash": "sha256:32d8f355aa5a1853256fc8b7f7e71cb31ba2a7fbce4104f51a51a2b7c93e6b7a",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Internal.bnt",
+        "before_sha256": "d00f8207990bd792e4e3156d2296d810f1afdecfa3e0f0b2a68bae225a3ca25e",
+        "after_sha256": "d00f8207990bd792e4e3156d2296d810f1afdecfa3e0f0b2a68bae225a3ca25e"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:a18fefbabcd821cc1a6c5bdb601539306209d7a9e9c1fbb73d919d295df6565a",
+    "after_package_hash": "sha256:bccf9c4c28a072ac9d1352fbd25e915491b6c17b8bad0df43635e3c888646918",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Api.bnt",
+        "before_sha256": "e379bdc5c5e33b6c5b4fe9dcd2f27fe944202282cecdc8dfa54eb6522d11f2ab",
+        "after_sha256": "e379bdc5c5e33b6c5b4fe9dcd2f27fe944202282cecdc8dfa54eb6522d11f2ab"
+      },
+      {
+        "path": "Internal.bnt",
+        "before_sha256": "d00f8207990bd792e4e3156d2296d810f1afdecfa3e0f0b2a68bae225a3ca25e",
+        "after_sha256": "d00f8207990bd792e4e3156d2296d810f1afdecfa3e0f0b2a68bae225a3ca25e"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:03908d165aadfa4c81cc8d88368fde3ae2e865f8776bbc56311e7277ff55bdee",
+    "after_package_hash": "sha256:b5d41b1bdbd7d62fac6dcd0761b25f6dc4989b7e7d48f33b4a025c051b1ae8de",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Slug.bnt",
+        "before_sha256": "4936a5a73eb5ea131bd54ba25b193bc677c4e83f704b7e6b65c3fa39df42197c",
+        "after_sha256": "4936a5a73eb5ea131bd54ba25b193bc677c4e83f704b7e6b65c3fa39df42197c"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt",
+    "source_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+    "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+    "before_package_hash": "sha256:cb312b5bbbf6f09c26547fcc728bbc1d6bd9515f69fcb53fb01f767802cfbf13",
+    "after_package_hash": "sha256:b1b57fa6ae18bdc788d4ecf0f51886a976b1f7267dec3d0a43889526bed791b8",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "93b460fde05d1671060e24a7e333a10cf6796eaa5bd00c672b7c61f02ba11362",
+        "after_sha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/root-config/package.bnt",
+    "source_sha256": "6cfaac05218eaf6d460afb98e6a63736b3b283a1d7b0e945178ea5d9c2655c74",
+    "after_sha256": "0664ec5822bc3eed53c26d06508e27ac83589d37d99c93d680f7d072996b6e04",
+    "before_package_hash": "sha256:5be18a149084dfcaa7f51f2dafbd2df0339678d242fc532579eaa378c87ee3b3",
+    "after_package_hash": "sha256:10611475e7429a510bcc611d14851d8dfb4edea6402c68aab194117280d76d39",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "main.bnt",
+        "before_sha256": "f1f512a73f2e8ba8d35965015427c923fb5185a3201569d51378bf8327055139",
+        "after_sha256": "f1f512a73f2e8ba8d35965015427c923fb5185a3201569d51378bf8327055139"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "6cfaac05218eaf6d460afb98e6a63736b3b283a1d7b0e945178ea5d9c2655c74",
+        "after_sha256": "0664ec5822bc3eed53c26d06508e27ac83589d37d99c93d680f7d072996b6e04"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt",
+    "source_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+    "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+    "before_package_hash": "sha256:13fcbb3c50836e1e699085cf408d1c3ce5edfbf82309390353da022c41803c48",
+    "after_package_hash": "sha256:0cf18e2fbd345148397deb5fd8071a75c1147188079786fd24288718717c24fc",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      }
+    ],
+    "action": "patch"
+  },
+  {
+    "config": "crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt",
+    "source_sha256": "ef381f28c96d1deddb9e44c101c6d62e074257cabf90dd5a148c4e2c07b6c531",
+    "after_sha256": "c080341fb17f19df2547833a8fa645aee8f8983cd4025cefe03b98d28f0bea85",
+    "before_package_hash": "sha256:2a6b98c95cd6efe4a7349e5bfbbc1d3e5ad23b0df955f538664e6fcf5b45a28a",
+    "after_package_hash": "sha256:b067828bca73f1b99a9f27a577698fe170335ed504227e4068a94fd1c9cf155b",
+    "hash_recorded_by": [],
+    "files": [
+      {
+        "path": "Store.bnt",
+        "before_sha256": "c1b10707285b0b97f7c0ab31e87bb87d3fc401ab36f7852481854034c1abf5c5",
+        "after_sha256": "c1b10707285b0b97f7c0ab31e87bb87d3fc401ab36f7852481854034c1abf5c5"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "ef381f28c96d1deddb9e44c101c6d62e074257cabf90dd5a148c4e2c07b6c531",
+        "after_sha256": "c080341fb17f19df2547833a8fa645aee8f8983cd4025cefe03b98d28f0bea85"
+      }
+    ],
+    "action": "patch"
+  }
+]

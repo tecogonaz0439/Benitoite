@@ -7,14 +7,12 @@ import Runner
 function run(v: List[List[UnsignedInteger16]]) -> List[List[UnsignedInteger16]]
 
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
-  bind Pair(n, rounds) <- try Runner.settings()
+  bind Pair(n, rounds) <- try Runner.settings() or return
   bind source <- List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> List[UnsignedInteger16]
- return
-    if value mod 3 = 0 then [10u16, 20u16] else if value mod 3 = 1 then [] else [30u16] end if
+    return if value mod 3 = 0 then [10u16, 20u16] else if value mod 3 = 1 then [] else [30u16] end if
   end lambda)
   bind expected <- List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> List[UnsignedInteger16]
- return
-    if value mod 3 = 0 then [11u16, 21u16] else if value mod 3 = 1 then [] else [31u16] end if
+    return if value mod 3 = 0 then [11u16, 21u16] else if value mod 3 = 1 then [] else [31u16] end if
   end lambda)
 
   return Runner.verify(rounds: rounds, work: lambda() -> Boolean

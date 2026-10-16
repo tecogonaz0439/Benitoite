@@ -374,6 +374,41 @@ end function
     assert_eq!(*output.lock().unwrap(), b"Map.fromList([Pair(1, \"a\"), Pair(2, \"b\")])\nSet.fromList([1, 2])\nMap.fromList([Pair(1, \"new\"), Pair(2, \"b\"), Pair(3, \"c\")])\nSet.fromList([1, 2, 3])\nMap.fromList([])\nSet.fromList([])\n");
 }
 
+// 関門: 不透明な失敗値の Show が message をそのまま返す契約を公開の実行経路で守る。
+// 既存のコレクションの Show 検査にはこの二型の辞書選択・組み込みの呼び出しがない。
+// 不正なパスと URL は外部のファイル・通信へ進まず失敗し、本番の差し込み口を増やさない。
+#[test]
+fn opaque_failures_show_their_messages_in_both_io_modes() {
+    let program = compile(
+        r#"
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+function main() -> Result[Unit, String] uses File.Read, Http.Connect
+  bind io <- match File.readText("\u{0}") with
+    case Result.Error(e) -> Trait.Show.show(e) = IOError.message(e) and IOError.message(e) <> ""
+    case Result.Ok(_) -> false
+  end match
+  bind network <- match Http.get("ftp://invalid.example/") with
+    case Result.Error(e) -> Trait.Show.show(e) = "URL must be an absolute http or https URL"
+      and Trait.Show.show(e) = NetworkError.message(e)
+    case Result.Ok(_) -> false
+  end match
+  return if io and network then Result.Ok(()) else Result.Error("failure Show") end if
+end function
+"#,
+    );
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let output = Arc::new(Mutex::new(Vec::new()));
+        let end = run::run_program(&program, environment(mode, Arc::clone(&output)));
+        assert_eq!(end.end, EndKind::Returned, "{mode:?}: {end:?}");
+        assert_eq!(end.exit_code, 0, "{mode:?}: {end:?}");
+        assert!(end.reports.is_empty(), "{mode:?}: {end:?}");
+        assert!(end.main_error.is_none(), "{mode:?}: {end:?}");
+        assert!(output.lock().unwrap().is_empty());
+    }
+}
+
 // 作成時の関門: 狭い整数の変換の範囲と字句、拡大の正確さを公開の実行経路で守る。
 // 旧 Integer のテストには縮小や符号なしの負号の拒否がなく、登録漏れや幅の取り違えを捕まえない。
 // 本物の段をつなぎ、テスト専用の差し込み口は加えない。
@@ -561,6 +596,57 @@ fn fixed_width_integer_standard_functions_report_overflow_and_zero_divisors() {
                 Some(code),
                 "{expression}: {end:?}"
             );
+        }
+    }
+}
+
+// Return の明示は実行結果・失敗側の短絡・入力の一回評価を変えない。
+#[test]
+fn explicit_and_implicit_try_return_have_the_same_success_and_failure() {
+    for action in ["", " or return"] {
+        let source = format!(
+            r#"
+import Benitoite.Unofficial.IO.Console
+function inputResult(x: Result[Integer, String]) -> Result[Integer, String] uses Console.Write
+  Console.write("r")
+  return x
+end function
+function result(x: Result[Integer, String]) -> Result[String, String] uses Console.Write
+  bind n <- try inputResult(x){action}
+  Console.write("+")
+  return Result.Ok(Integer.toString(n))
+end function
+function inputOption(x: Option[Integer]) -> Option[Integer] uses Console.Write
+  Console.write("o")
+  return x
+end function
+function option(x: Option[Integer]) -> Option[String] uses Console.Write
+  bind n <- try inputOption(x){action}
+  Console.write("+")
+  return Option.Some(Integer.toString(n))
+end function
+function main() -> Result[Unit, String] uses Console.Write
+  bind ok <- result(Result.Ok(7))
+  bind error <- result(Result.Error("failure"))
+  bind some <- option(Option.Some(8))
+  bind none <- option(Option.None)
+  return if ok = Result.Ok("7") and error = Result.Error("failure") and some = Option.Some("8") and none = Option.None then
+    Result.Ok(())
+  else
+    Result.Error("try result changed")
+  end if
+end function
+"#
+        );
+        let program = compile(&source);
+        for mode in [ExecMode::Direct, ExecMode::Request] {
+            let output = Arc::new(Mutex::new(Vec::new()));
+            let end = run::run_program(&program, environment(mode, Arc::clone(&output)));
+            assert_eq!(end.end, EndKind::Returned, "{action}: {end:?}");
+            assert_eq!(end.exit_code, 0, "{action}: {end:?}");
+            assert!(end.reports.is_empty(), "{action}: {end:?}");
+            assert!(end.main_error.is_none(), "{action}: {end:?}");
+            assert_eq!(*output.lock().unwrap(), b"r+ro+o");
         }
     }
 }

@@ -9,7 +9,7 @@ function run(v: String) -> String
 function runAdapter(ignored: Boolean, v: String) -> String
 
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
-  bind Pair(n, rounds) <- try Runner.settings()
+  bind Pair(n, rounds) <- try Runner.settings() or return
   bind source <- String.repeat(s: "A日😀", n: n)
   bind expected <- String.repeat(s: "日😀!", n: n)
 

@@ -1,0 +1,260 @@
+{
+  "head": "af9d5820fc37846e1a89ce98ca2a9135d251b3e8",
+  "method": "HEAD tracked bnt/formatted/Markdown whole text and decoded Rust strings without HINT filter; excludes reference/archive/todo/past results/syntax-measure; lexical candidates, not proof of generated output",
+  "invalid_utf8": [
+    "crates/benitoite/testdata/lexical/invalid_utf8.bnt"
+  ],
+  "candidates": [
+    {
+      "path": "crates/benitoite/src/cli/tools/formatter/verify/tests.rs",
+      "line": 79,
+      "text": "return\n call",
+      "sha256": "1f6b0cf956c1a1751a8f1bb3d517e5570592bba2ab43651ab7e555d21e3b44c8",
+      "p1_role": "lib_test",
+      "action": "keep existing negative test unchanged"
+    },
+    {
+      "path": "crates/benitoite/src/external/adapter/collection_tests.rs",
+      "line": 153,
+      "text": "return\n            end\n            local.get $len i32.const 2 i32.ne if ",
+      "sha256": "d2004b65fb8084a8ca5b24f7a288d1b55548581e931fedb9e57d85af1b137982",
+      "p1_role": "lib_test",
+      "action": "WebAssembly text, not Benitoite; keep unchanged"
+    },
+    {
+      "path": "crates/benitoite/src/syntax/newline.rs",
+      "line": 310,
+      "text": "return\n  x",
+      "sha256": "df354e828cc5fcfdf74ba4f0466863b9850cbbdeab935cef36b9bffa9e5c71a3",
+      "p1_role": "implementation_including_inline_tests_review",
+      "action": "move existing expectation from continuation to newline"
+    },
+    {
+      "path": "docs/design/01-spec/01-08-evaluation.md",
+      "line": 144,
+      "text": "return\n  end if\n  return countDown(n: n - 1, acc: acc + 1)              ",
+      "sha256": "b813d5072dd0f2767ad905fcdcfa846026be58d7c2d84e83e43e6deb3fb511b0",
+      "p1_role": "sample_and_notation_review",
+      "action": "comment in example; keep unchanged"
+    },
+    {
+      "path": "tools/bench/wit-transfer/large-bytes-adapter.bnt",
+      "line": 12,
+      "text": "return\n    if value mod 3 = 0 then 0u8 else if value mod 3 = 1 then 128u",
+      "sha256": "a7588fd9529e68fa39b6c37995052cca1046e60e1d65b8eee66f1a0fa36ad062",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/large-bytes-adapter.bnt",
+      "line": 16,
+      "text": "return\n    if value mod 3 = 0 then 255u8 else if value mod 3 = 1 then 12",
+      "sha256": "a7588fd9529e68fa39b6c37995052cca1046e60e1d65b8eee66f1a0fa36ad062",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/large-bytes-typed.bnt",
+      "line": 16,
+      "text": "return\n    if value mod 3 = 0 then low else if value mod 3 = 1 then midd",
+      "sha256": "19d2b133abc726788ec0dc6ad65d28b3dc5b6648cd055b654622fd1fbfd3f73d",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/large-bytes-typed.bnt",
+      "line": 20,
+      "text": "return\n    if value mod 3 = 0 then high else if value mod 3 = 1 then fli",
+      "sha256": "19d2b133abc726788ec0dc6ad65d28b3dc5b6648cd055b654622fd1fbfd3f73d",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/large-bytes.bnt",
+      "line": 14,
+      "text": "return\n    if value mod 3 = 0 then 0u8 else if value mod 3 = 1 then 128u",
+      "sha256": "4156e2f059d39da01f68781566d68bae57b922abd1ce51cb07319169adfb2e26",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/large-bytes.bnt",
+      "line": 18,
+      "text": "return\n    if value mod 3 = 0 then 255u8 else if value mod 3 = 1 then 12",
+      "sha256": "4156e2f059d39da01f68781566d68bae57b922abd1ce51cb07319169adfb2e26",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/nested.bnt",
+      "line": 12,
+      "text": "return\n    if value mod 3 = 0 then [10u16, 20u16] else if value mod 3 = ",
+      "sha256": "077284f5fd142340c4ab3ead3c4f495f9e5e3dce1fb56040987b090f57face40",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/nested.bnt",
+      "line": 16,
+      "text": "return\n    if value mod 3 = 0 then [11u16, 21u16] else if value mod 3 = ",
+      "sha256": "077284f5fd142340c4ab3ead3c4f495f9e5e3dce1fb56040987b090f57face40",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 46,
+      "text": "return\n    if value mod 3 = 0 then -128s8 else if value mod 3 = 1 then 1",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 50,
+      "text": "return\n    if value mod 3 = 0 then -127s8 else if value mod 3 = 1 then 1",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 54,
+      "text": "return\n    if value mod 3 = 0 then -32768s16 else if value mod 3 = 1 the",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 58,
+      "text": "return\n    if value mod 3 = 0 then -32767s16 else if value mod 3 = 1 the",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 62,
+      "text": "return\n    if value mod 3 = 0 then -2147483648s32 else if value mod 3 = ",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 66,
+      "text": "return\n    if value mod 3 = 0 then -2147483647s32 else if value mod 3 = ",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 70,
+      "text": "return\n    if value mod 3 = 0 then 0u16 else if value mod 3 = 1 then 655",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 74,
+      "text": "return\n    if value mod 3 = 0 then 1u16 else if value mod 3 = 1 then 655",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 78,
+      "text": "return\n    if value mod 3 = 0 then 0u32 else if value mod 3 = 1 then 429",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 82,
+      "text": "return\n    if value mod 3 = 0 then 1u32 else if value mod 3 = 1 then 429",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 86,
+      "text": "return\n    if value mod 3 = 0 then 0u64 else if value mod 3 = 1 then 922",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 90,
+      "text": "return\n    if value mod 3 = 0 then 1u64 else if value mod 3 = 1 then 922",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 94,
+      "text": "return\n    if value mod 3 = 0 then 0.1f32 else if value mod 3 = 1 then 1",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/numbers.bnt",
+      "line": 98,
+      "text": "return\n    if value mod 3 = 0 then -0.1f32 else if value mod 3 = 1 then ",
+      "sha256": "c67929ef5e659c34fcc6a00ab3747fdebef9a4de65ead410038b500ead0ea9cc",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/primitives.bnt",
+      "line": 21,
+      "text": "return\n    if value mod 3 = 0 then 0u8 else if value mod 3 = 1 then 128u",
+      "sha256": "17b0275577a39f4f5a4e8d1c47594970e7567aa71d01aaea5f4757e6561747b9",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    },
+    {
+      "path": "tools/bench/wit-transfer/primitives.bnt",
+      "line": 25,
+      "text": "return\n    if value mod 3 = 0 then 255u8 else if value mod 3 = 1 then 12",
+      "sha256": "17b0275577a39f4f5a4e8d1c47594970e7567aa71d01aaea5f4757e6561747b9",
+      "p1_role": "current_tool_sample_or_generator_review",
+      "action": "join return and if; preserve non-whitespace tokens"
+    }
+  ],
+  "p1_changed_at_start": [
+    "crates/benitoite/skill/SKILL.md",
+    "crates/benitoite/skill/references/common-mistakes.md",
+    "crates/benitoite/skill/references/grammar.md",
+    "crates/benitoite/src/cli/tools/skill/generate.rs",
+    "crates/benitoite/src/syntax/lambda_bounds.rs",
+    "crates/benitoite/src/syntax/lexer.rs",
+    "crates/benitoite/src/syntax/lexer/tests.rs",
+    "crates/benitoite/src/syntax/newline.rs",
+    "crates/benitoite/src/syntax/parser/decls.rs",
+    "crates/benitoite/src/syntax/parser/effects.rs",
+    "crates/benitoite/src/syntax/parser/exprs.rs",
+    "crates/benitoite/src/syntax/parser/items.rs",
+    "crates/benitoite/src/syntax/parser/mod.rs",
+    "crates/benitoite/src/syntax/parser/patterns_ext.rs",
+    "crates/benitoite/src/syntax/parser/text.rs",
+    "crates/benitoite/src/syntax/parser/types.rs",
+    "crates/benitoite/src/syntax/token.rs",
+    "crates/benitoite/tests/fmt_command.rs",
+    "crates/benitoite/tests/spec_examples.rs",
+    "docs/design/01-spec/01-01-lexical.md",
+    "docs/design/01-spec/01-02-syntax.md",
+    "docs/design/02-impl/02-03-frontend.md",
+    "docs/design/02-impl/02-10-diagnostics.md",
+    "docs/design/06-tooling/06-06-agent-skills.md",
+    "docs/design/07-quality/07-04-formal-semantics.md"
+  ]
+}

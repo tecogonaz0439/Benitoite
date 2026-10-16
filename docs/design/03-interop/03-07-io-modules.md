@@ -34,7 +34,7 @@ IO を行う関数の振る舞いと IO の失敗は[エフェクト](../01-spec
 
 初回リリース版は実行時の権限制御を持たず、本章のどの関数も、実行のときに許可を調べない（[エフェクト](../01-spec/01-07-effects.md)の「エフェクトの型と権限制御の区別」）。スクリプトは、処理系を起動した利用者の OS の権限で行える操作をすべて行える。
 
-【方針】`IOError` と `IOErrorKind` は prelude の型であり、`IOError.message` は[エフェクト](../01-spec/01-07-effects.md)で定め、組み込みで実装する。IO の失敗は `Result.Error` で返す。`File.readText` は、ファイルの内容が正しい UTF-8 でなければ `Result.Error` を返す。
+【方針】`IOError` と `IOErrorKind` は prelude の型であり、`IOError.message` は[エフェクト](../01-spec/01-07-effects.md)で定め、組み込みで実装する。IO の失敗は `Result.Error` で返す。`IOError` と `NetworkError` の `Trait.Show` の実装は `Benitoite.Trait` に置き、`Show.show` はそれぞれの `message` の文字列をそのまま返す（[標準ライブラリ](03-06-stdlib.md)の「標準の型クラス（初回リリース版）」）。`File.readText` は、ファイルの内容が正しい UTF-8 でなければ `Result.Error` を返す。
 
 ### 各モジュールの範囲
 
@@ -156,13 +156,13 @@ end data
 import Benitoite.Unofficial.IO.File
 
 function countLines(path: String) -> Result[Integer, IOError] uses File.Read, State
-  with reader = try File.openReader(path) do
+  with reader = try File.openReader(path) or return do
     return countFrom(reader: reader, count: 0)
   end with
 end function
 
 function countFrom(reader: File.Reader, count: Integer) -> Result[Integer, IOError] uses File.Read
-  return match try File.readLine(reader) with
+  return match try File.readLine(reader) or return with
     case Option.Some(_) -> countFrom(reader: reader, count: count + 1)
     case Option.None -> Result.Ok(count)
   end match
@@ -216,6 +216,8 @@ end record
 - `Process.runAttached` で起動したコマンドの標準入出力は、スクリプトの標準入出力と同じつなぎ先につなぐ。テストの実行器では、空の入力と、その実行の出力の受け取り先である。ただし、`input` に `Option.Some` を指定した `Process.Command` では、指定した文字列を子の標準入力にする。標準出力と標準エラー出力は、`input` の指定にかかわらずスクリプトと同じつなぎ先につなぐ。
 - テストの実行器の `Process.runAttached` では、処理系が子の標準出力と標準エラー出力を集め、子が終わった後に、その実行の出力の受け取り先へ書く。集めた出力が正しい UTF-8 でなければ、壊れたバイトの並びを置換文字 U+FFFD に置き換えて書き、`IOErrorKind.InvalidUTF8` は返さない。集める出力の大きさには `Process.run`・`Process.shell` と同じ上限を当て、標準出力と標準エラー出力のどちらかが 2^30 バイトを超えたら、資源の不足として停止する（[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」）。
 
+【決定】`try e or die` は、この既存の `Process.exit` を終了状態 1 で呼び、原因・任意の説明・ソース位置を終了結果に残す。ホストは最後の出力の転送後に報告するので、追加のエフェクトは Process.Exit だけであり、Console.Write は要求しない。言語のハンドラへ渡す操作名と引数は通常の exit と同じであり、処理した呼び出しの報告は破棄する。任意の終了状態には `Process.exit(code)` を使う（[エラー処理](../01-spec/01-09-errors.md#失敗時に終了する処置)）。
+
 ### Clock
 
 【方針】`Benitoite.IO.Clock` の関数は次のとおりとする。
@@ -260,6 +262,8 @@ end record
 - `Random.Generate` の操作（`Random.integer` など）は、実行の始めに OS の乱数で種を決めた、隠れた生成器を使う。テストでは、`Random.Generate` をハンドラで処理して値を固定できる（[エフェクト](../01-spec/01-07-effects.md)の「利用者が定義するエフェクトとハンドラ（初回リリース版）」）。
 
 ### IOErrorKind と関数の対応
+
+`IOErrorKind` は `@extensible` を持ち、標準ライブラリの外の照合には[拡張可能な型](../01-spec/01-05-data-types.md#拡張可能な型)の規則を適用する。
 
 【方針】各モジュールの関数が返しうる `IOErrorKind`（[エラー処理](../01-spec/01-09-errors.md)）は、主に次のとおりである。`IOErrorKind.PermissionDenied` と `IOErrorKind.Other` は、どの関数も返しうる。
 

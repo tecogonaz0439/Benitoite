@@ -417,8 +417,7 @@ def run (args : List String) : IO UInt32 := do
   let [file, report] := args | throw (IO.userError "usage: desugarDiff corpus.json report.json")
   let raw ← IO.FS.readFile file
   let json ← IO.ofExcept (Json.parse raw)
-  let corpus ← IO.ofExcept (fromJson? json : Except String Corpus)
-  if corpus.version != 8 then throw (IO.userError "unsupported exchange version")
+  let corpus ← IO.ofExcept (readCorpus json)
   let atoms := (collectAtoms json).eraseDups
   let initial : Summary := {
     constructions := extensionNames.map (fun n => (n, 0))

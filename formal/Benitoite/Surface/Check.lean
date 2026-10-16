@@ -8,6 +8,7 @@ Exprs・HoleArgs・辞書引数は、並びの経路に平らな添字を一つ�
 個数の不一致は並びの経路、要素の型の不一致はその要素の経路で報告する。
 ブロックの式は 0、続きは 1。腕のガードは 0、本体は 1、続きは 2。
 ハンドラの節の本体は 0、続きは 1。節の型の探索も同じ経路を使う。
+die の子は入力 0・説明 1・Result の辞書 2 とする。
 実装のメソッドは [0, i]、上位の所属検査は [1, i]、辞書は [2, i] とする。
 全体の条件はその構文の経路、子の検査後の型・エフェクトの条件は子の経路で報告する。
 handle の探索中は resume の引数のエフェクトを継続ごとの要求として保持する。
@@ -112,6 +113,31 @@ end
 def checkDicts (q : Input) (C : List TParam) (Γ : List (Option Ty))
     (path : List Nat) (ds : List DictEv) (ts : List Ty) : Result Unit :=
   checkDictsAt q C Γ path 0 ds ts
+
+/-- 表示の対象型と、解決済みメソッドの純粋な String の契約を別々に検査する。 -/
+def checkDieShow (q : Input) (C : List TParam) (Γ : List (Option Ty))
+    (path : List Nat) (dict : DictEv) (method : MethName) (errorTy : Ty) : Result Unit := do
+  let (cl, t) ← dictView path (← checkDict q C Γ path dict)
+  require path "die dictionary target type mismatch" (tyEq q.atoms t errorTy)
+  let cd ← lookup path "unknown die dictionary class" (q.D.classes cl)
+  let ms ← lookup path "unknown die display method" (cd.methods method)
+  require path "invalid die display method contract"
+    (ms.tparams.isEmpty && (ms.neffs == 0) && (ms.names == ["x"]) &&
+      tysEq q.atoms ms.params [.tvar 0] && tyEq q.atoms ms.ret (.base .string) &&
+      effEq q.atoms ms.eff emptyEff)
+
+/-- 通常の exit の具体化を確認し、原子集合から終了の効果が欠落した入力も拒否する。 -/
+def checkDieExit (q : Input) (C : List TParam) (path : List Nat)
+    (exit : PrimName) (t : Ty) : Result Unit := do
+  let s ← lookup path "unknown die exit primitive" (q.B.sig exit)
+  require path "invalid die exit primitive"
+    (decide (s.kind = .exit) && (s.opEff == some "Process.Exit") &&
+      (s.ntys == 1) && (s.neffs == 0) && namesWF s.names s.params)
+  require path "die exit type arguments are not admitted" (q.admitsDec exit C [t])
+  require path "Process.Exit effect is outside atoms" (q.atoms.contains (.name "Process.Exit"))
+  require path "die exit type mismatch"
+    (tyEq q.atoms (fnTyCheck s.names s.params s.ret s.eff [t] [])
+      (.fn ["code"] [.base .integer] t (singleEff q.atoms (.name "Process.Exit"))))
 
 /-- 継続の番号は Γ の末尾から数えた束縛の位置 Γ.length - (k + 1)。
 先頭への束縛追加で変わらない。節の継続は Γ.length + n であり、
@@ -440,6 +466,39 @@ mutual
             require path "Option try is not exhaustive" (tryOptionExhaustive q.D q.ctors d t someCon noneCon)
             pure (t, ε)
         | _ => throw ⟨child path 0, "try input is not an Option"⟩
+    | .tryResultDie t ok err dict method exit e message => do
+        let cdo ← lookup path "unknown Result success constructor" (q.D.cons ok)
+        let cde ← lookup path "unknown Result error constructor" (q.D.cons err)
+        require path "invalid Result constructors"
+          ((cdo.ntys == 2) && (cde.ntys == 2) && tysEq q.atoms cdo.args [.tvar 0] &&
+            tysEq q.atoms cde.args [.tvar 1] && (cdo.data == cde.data))
+        let (a, ε) ← checkExprR q mode C Γ R .other (child path 0) e
+        match a with
+        | .data d [actual, et] =>
+            require (child path 0) "Result die input type mismatch"
+              ((d == cdo.data) && tyEq q.atoms actual t)
+            require path "Result try is not exhaustive" (tryResultExhaustive q.D q.ctors d t et ok err)
+            checkDieShow q C Γ (child path 2) dict method et
+            checkDieExit q C path exit t
+            checkDieMessageR q mode C Γ (child path 1) message
+            pure (t, union q ε (singleEff q.atoms (.name "Process.Exit")))
+        | _ => throw ⟨child path 0, "try input is not a Result"⟩
+    | .tryOptionDie t someCon noneCon exit e message => do
+        let cds ← lookup path "unknown Option success constructor" (q.D.cons someCon)
+        let cdn ← lookup path "unknown Option empty constructor" (q.D.cons noneCon)
+        require path "invalid Option constructors"
+          ((cds.ntys == 1) && (cdn.ntys == 1) && tysEq q.atoms cds.args [.tvar 0] &&
+            cdn.args.isEmpty && (cds.data == cdn.data))
+        let (a, ε) ← checkExprR q mode C Γ R .other (child path 0) e
+        match a with
+        | .data d [actual] =>
+            require (child path 0) "Option die input type mismatch"
+              ((d == cds.data) && tyEq q.atoms actual t)
+            require path "Option try is not exhaustive" (tryOptionExhaustive q.D q.ctors d t someCon noneCon)
+            checkDieExit q C path exit t
+            checkDieMessageR q mode C Γ (child path 1) message
+            pure (t, union q ε (singleEff q.atoms (.name "Process.Exit")))
+        | _ => throw ⟨child path 0, "try input is not an Option"⟩
     | .withE o e body => do
         require path "with type is not a resource" (q.B.isResource o)
         require path "State effect is outside atoms" (q.atoms.contains (.name stateEff))
@@ -521,6 +580,15 @@ mutual
         let ε ← accept q (child path 0) t (← checkExprR q mode C Γ R .other (child path 0) e)
         let (a, εs) ← checkBlockR q mode C (binds δ ++ Γ) R p (child path 1) rest
         pure (a, union q ε εs)
+
+  /-- 説明は外側の return と継続を隠す。内側の lambda は通常の境界を作る。 -/
+  def checkDieMessageR (q : Input) (mode : ResumeMode) (C : List TParam)
+      (Γ : List (Option Ty)) (path : List Nat) : Option Expr → Checking Unit
+    | none => pure ()
+    | some message => do
+        let ε ← accept q path (.base .string)
+          (← checkExprR q mode C (hideConts Γ) none .other path message)
+        acceptEff q path emptyEff ε
 
   def checkTypesR (q : Input) (mode : ResumeMode) (C : List TParam) (Γ : List (Option Ty))
       (R : Option Ty) (path : List Nat) (index : Nat) : Exprs → List Ty → Checking Eff
@@ -666,11 +734,13 @@ def ImplInput.decl (id : ImplInput) : ImplDecl :=
   { id.toImplSig with supers := id.supers, methods := fun m => (id.methods m).map MethodInput.body }
 
 /-- 添字は一覧の位置であり、名前が重複しても各位置を検査する。 -/
-def checkMethods (q : Input) (path : List Nat) (id : ImplInput) (cd : ClassDecl) :
+def checkMethods (q : Input) (path : List Nat) (id : ImplInput) (cd : ClassDecl)
+    (views : MethName → CoverageView) :
     List MethName → Nat → Result Unit
   | [], _ => pure ()
   | m :: rest, index => do
       let methodPath := child path index
+      let bodyQ : Input := { q with D := q.D.withView (views m) }
       match cd.methods m, id.methods m with
       | none, none => pure ()
       | some ms, some method =>
@@ -680,13 +750,13 @@ def checkMethods (q : Input) (path : List Nat) (id : ImplInput) (cd : ClassDecl)
           let result := substTyAt ms.tparams.length [id.target] [] ms.ret
           let params := ms.params.map (substTyAt ms.tparams.length [id.target] [])
           require methodPath "implementation method body does not exit" (lamBodyOk body result)
-          let ε ← accept q methodPath result
-            (← checkBlock q .strict (ms.tparams ++ id.tparams)
+          let ε ← accept bodyQ methodPath result
+            (← checkBlock bodyQ .strict (ms.tparams ++ id.tparams)
               (binds (id.dictTys.map (shiftTy ms.tparams.length 0) ++ params))
               (some result) .tail methodPath body)
-          acceptEff q methodPath ms.eff ε
+          acceptEff bodyQ methodPath ms.eff ε
       | _, _ => throw ⟨methodPath, "implementation method set mismatch"⟩
-      checkMethods q path id cd rest (index + 1)
+      checkMethods q path id cd views rest (index + 1)
 
 def checkSuperFlags (path : List Nat) (id : ImplInput) (cd : ClassDecl) :
     List ClassName → Nat → Result Unit
@@ -708,9 +778,10 @@ def checkSuperDicts (q : Input) (path : List Nat) (id : ImplInput) :
 
 /-- 一覧の外の表の空欄は健全性の前提で保証する。 -/
 def checkImpl (q : Input) (methodNames : List MethName) (superNames : List ClassName)
-    (path : List Nat) (id : ImplInput) : Result Unit := do
+    (path : List Nat) (id : ImplInput)
+    (views : MethName → CoverageView := fun _ => q.D.view) : Result Unit := do
   let cd ← lookup path "unknown implementation class" (q.D.classes id.cls)
-  checkMethods q (child path 0) id cd methodNames 0
+  checkMethods q (child path 0) id cd views methodNames 0
   checkSuperFlags (child path 1) id cd superNames 0
   require path "superclass list does not contain all declared superclasses"
     (cd.supers.all (superNames.contains ·))

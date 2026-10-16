@@ -189,7 +189,7 @@ theorem block_lastPat_case {q k pat t e} : CaseSound q (.block (.lastPat k pat t
   cases eq
   have hv := Bool.and_eq_true_iff.mp (require_ok hvalid).1
   exact ⟨.B_LastPat ((nontrivial_spec _).mp hv.1) ((patternValid_spec _).mp hv.2)
-    (surfacePatTy_sound (lookup_ok hpat)) (bindingExhaustive_sound hq.constructors (require_ok hexh).1)
+    (surfacePatTy_sound (lookup_ok hpat)) (bindingExhaustive_view hq.constructors (require_ok hexh).1)
     ht, trivial, hae⟩
 
 theorem block_bindPat_case {q k pat t e rest} : CaseSound q (.block (.bindPat k pat t e rest)) := by
@@ -212,7 +212,7 @@ theorem block_bindPat_case {q k pat t e rest} : CaseSound q (.block (.bindPat k 
   rw [union_eq hae htail.2.2]
   have hv := Bool.and_eq_true_iff.mp (require_ok hvalid).1
   exact ⟨.B_BindPat ((nontrivial_spec _).mp hv.1) ((patternValid_spec _).mp hv.2)
-    (surfacePatTy_sound (lookup_ok hpat)) (bindingExhaustive_sound hq.constructors (require_ok hexh).1)
+    (surfacePatTy_sound (lookup_ok hpat)) (bindingExhaustive_view hq.constructors (require_ok hexh).1)
     ht htail.1, htail.2.1, CheckTools.union_atoms hae htail.2.2⟩
 
 end Benitoite.Surface.Check

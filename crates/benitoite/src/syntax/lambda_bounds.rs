@@ -201,6 +201,7 @@ fn delimiter_pairs(ts: &[&Token]) -> BTreeMap<usize, usize> {
             | K::KwBind
             | K::KwConst
             | K::KwData
+            | K::KwDie
             | K::KwDiv
             | K::KwDo
             | K::KwEffect

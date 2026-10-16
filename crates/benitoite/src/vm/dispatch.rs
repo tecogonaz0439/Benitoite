@@ -577,6 +577,25 @@ fn execute<'p, 'e>(
             }
             Opcode::Ext => return external_call(program, state, ctx, cursor, instr),
             Opcode::Prim | Opcode::Io => {
+                if proto
+                    .exit_reports
+                    .get(index(locals.pc)?)
+                    .ok_or_else(|| missing("exit report table entry missing"))?
+                    .is_some()
+                {
+                    let reference = program
+                        .builtin(BuiltinRefIdx(u32::from(instr.b())))
+                        .ok_or_else(|| missing("exit report builtin missing"))?;
+                    if opcode != Opcode::Io
+                        || Some(reference.id)
+                            != crate::builtins::lookup_builtin("Benitoite.IO.Process.exit")
+                        || reference.capability != Capability::Io
+                        || reference.arity != 1
+                        || !matches!(read_one(ctx, window, instr.c())?, Value::Int(1))
+                    {
+                        return Err(missing("exit report requires canonical Process.exit(1)"));
+                    }
+                }
                 let reference = program
                     .builtin(BuiltinRefIdx(u32::from(instr.b())))
                     .ok_or_else(|| missing("builtin reference missing"))?;
@@ -2037,7 +2056,10 @@ mod tests {
         assert_eq!(
             vm.run(services.runtime(ExecMode::Direct)),
             VmStep::Stopped(StopEnd {
-                reason: StopReason::Exit(17),
+                reason: StopReason::Exit {
+                    code: 17,
+                    die_failure: None
+                },
                 release_failures: vec![]
             })
         );

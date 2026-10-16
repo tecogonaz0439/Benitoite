@@ -2,22 +2,25 @@ import Benitoite.Surface.Lemmas.CallHead
 import Benitoite.Surface.Lemmas.Scoped
 import Benitoite.Surface.Lemmas.Extensions
 import Benitoite.Surface.Lemmas.Records
+import Benitoite.Surface.Lemmas.ReturnTry
 
 /-! 全構文の脱糖の型保存と、呼び出し・穴・パイプの組み立て（設計書 01-12「呼び出し」「表層からの脱糖」）。 -/
 namespace Benitoite.Surface
 open Benitoite.Release
 
+variable {view : CoverageView}
+
 variable {p : Program} {B : Builtins} {op : OpPrim}
 
 theorem HasTypes.desugar_of_expr
     (preserve : ∀ {C Γ R pos e a ε pe},
-      HasType p.declarations B op C Γ R pos e a ε →
+      HasType (p.declarationsFor view) B op C Γ R pos e a ε →
       e.Scoped C.length pe Γ.length → EnvClean C.length Γ →
       (∀ r, R = some r → TyOK C.length r) →
       HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R (desugarExpr op pos e) a ε)
     (hwf : p.WellFormed)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R es as ε pe}
-    (h : HasTypes p.declarations B op C Γ R es as ε)
+    (h : HasTypes (p.declarationsFor view) B op C Γ R es as ε)
     (sc : es.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) :
     CompTypes (desugarProgram op p) B C Γ R ε (desugarExprs op es) as ∧
@@ -31,13 +34,13 @@ theorem HasTypes.desugar_of_expr
 
 theorem HasEach.desugar_of_expr
     (preserve : ∀ {C Γ R pos e a ε pe},
-      HasType p.declarations B op C Γ R pos e a ε →
+      HasType (p.declarationsFor view) B op C Γ R pos e a ε →
       e.Scoped C.length pe Γ.length → EnvClean C.length Γ →
       (∀ r, R = some r → TyOK C.length r) →
       HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R (desugarExpr op pos e) a ε)
     (hwf : p.WellFormed)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R es a ε pe}
-    (h : HasEach p.declarations B op C Γ R es a ε)
+    (h : HasEach (p.declarationsFor view) B op C Γ R es a ε)
     (sc : es.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) :
     CompTypes (desugarProgram op p) B C Γ R ε (desugarExprs op es) (List.replicate es.length a) := by
@@ -52,13 +55,13 @@ theorem HasEach.desugar_of_expr
 右に残る穴の個数が現在の穴の番号となり、非穴の式は全引数の下へ弱化する。 -/
 theorem HasHoleArgs.desugar_of_expr
     (preserve : ∀ {C Γ R pos e a ε pe},
-      HasType p.declarations B op C Γ R pos e a ε →
+      HasType (p.declarationsFor view) B op C Γ R pos e a ε →
       e.Scoped C.length pe Γ.length → EnvClean C.length Γ →
       (∀ r, R = some r → TyOK C.length r) →
       HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R (desugarExpr op pos e) a ε)
     (hwf : p.WellFormed)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R args as ε pe}
-    (h : HasHoleArgs p.declarations B op C Γ R args as ε)
+    (h : HasHoleArgs (p.declarationsFor view) B op C Γ R args as ε)
     (sc : args.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) (prior : List Ty) :
     CompTypes (desugarProgram op p) B C (binds (prior ++ args.holeTypes) ++ Γ) R ε
@@ -85,7 +88,7 @@ theorem HasHoleArgs.desugar_of_expr
 
 /-- 通常の呼び出しでは、callee の計算を先行させてソース順に引数を束縛する。 -/
 theorem HasType.desugar_call {C Γ R pos f labels positions args names ps a εf εargs εcall}
-    (hf : HasType p.declarations B op C Γ R .other f (.fn names ps a εcall) εf)
+    (hf : HasType (p.declarationsFor view) B op C Γ R .other f (.fn names ps a εcall) εf)
     (hp : CallOk names ps false labels positions)
     (hf' : HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R
       (desugarExpr op .other f) (.fn names ps a εcall) εf)
@@ -103,7 +106,7 @@ theorem HasType.desugar_call {C Γ R pos f labels positions args names ps a εf 
 
 /-- パイプでは左辺を一度束縛して位置 0 を占め、その後に callee と明示引数を置く。 -/
 theorem HasType.desugar_pipeCall {C Γ R pos lhs f labels positions args names t ps a εl εf εargs εcall}
-    (hf : HasType p.declarations B op C Γ R .other f (.fn names (t :: ps) a εcall) εf)
+    (hf : HasType (p.declarationsFor view) B op C Γ R .other f (.fn names (t :: ps) a εcall) εf)
     (hp : CallOk names (t :: ps) true labels positions)
     (hl' : HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R (desugarExpr op .other lhs) t εl)
     (hf' : HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R
@@ -128,7 +131,7 @@ theorem HasType.desugar_pipeCall {C Γ R pos lhs f labels positions args names t
 /-- 括弧・穴付きの右辺の関数値への適用は、一引数のままである。 -/
 theorem HasType.desugar_pipeApply {C Γ R pos lhs rhs name t a εl εf εcall}
     (hp : rhs.PipeValue)
-    (hf : HasType p.declarations B op C Γ R .other rhs (.fn [name] [t] a εcall) εf)
+    (hf : HasType (p.declarationsFor view) B op C Γ R .other rhs (.fn [name] [t] a εcall) εf)
     (hl' : HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R (desugarExpr op .other lhs) t εl)
     (hf' : HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R
       (desugarExpr op .other rhs) (.fn [name] [t] a εcall) εf)
@@ -148,7 +151,7 @@ theorem HasType.desugar_pipeApply {C Γ R pos lhs rhs name t a εl εf εcall}
 
 /-- 穴の契約はソース順に保持し、callee と固定引数の計算はラムダの内側に置く。 -/
 theorem HasType.desugar_partialCall {C Γ R pos f names args ps r0 r ε εf εargs εcall}
-    (hf : HasType p.declarations B op C (hideConts Γ) (some r) .other f (.fn names ps r0 εcall) εf)
+    (hf : HasType (p.declarationsFor view) B op C (hideConts Γ) (some r) .other f (.fn names ps r0 εcall) εf)
     (hp : CallOk names ps false args.labels args.positions)
     (hn : NamesWF (args.holeNames names) args.holeTypes)
     (hf' : HasTypeC (desugarProgram op p) B StoreTy.empty C (hideConts Γ) (some r)
@@ -253,7 +256,7 @@ example (p : Program) (B : Builtins) (op : OpPrim) :
       [some (.fn ["a", "b"] [.base .integer, .base .boolean] (.base .integer) Eff.empty)] none
       (desugarExpr op .other (.call (.local 0) [some "b", some "a"] [1, 0] reversedArgs))
       (.base .integer) Eff.empty := by
-  have hf : HasType p.declarations B op []
+  have hf : HasType (p.declarationsFor view) B op []
       [some (.fn ["a", "b"] [.base .integer, .base .boolean] (.base .integer) Eff.empty)] none .other
       (.local 0) (.fn ["a", "b"] [.base .integer, .base .boolean] (.base .integer) Eff.empty) Eff.empty :=
     .E_Local rfl (by intro _ _ _ h; cases h)
@@ -282,7 +285,7 @@ example (p : Program) (B : Builtins) (op : OpPrim)
       [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none
       (desugarExpr op .other (.partialCall (.local 0) ["a", "b", "c"] mixedHoles (.base .integer) (Eff.single "Fixed")))
       (.fn ["b", "a"] [.base .boolean, .base .integer] (.base .integer) (Eff.single "Fixed")) Eff.empty := by
-  have hf : HasType p.declarations B op []
+  have hf : HasType (p.declarationsFor view) B op []
       [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)]
       (some (.base .integer)) .other (.local 0)
       (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty) Eff.empty :=
@@ -337,7 +340,7 @@ example (p : Program) (B : Builtins) (op : OpPrim) :
       [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none
       (desugarExpr op .other (.pipe (.literal (.integer 5))
         (.call (.local 0) [some "c", some "b"] [2, 1] pipeArgs))) (.base .integer) Eff.empty := by
-  have hf : HasType p.declarations B op []
+  have hf : HasType (p.declarationsFor view) B op []
       [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none .other
       (.local 0) (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty) Eff.empty :=
     .E_Local rfl (by intro _ _ _ h; cases h)
@@ -358,7 +361,7 @@ end CallExamples
 mutual
   theorem HasType.desugar (hwf : p.WellFormed)
       (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R pos e a ε pe}
-      (h : HasType p.declarations B op C Γ R pos e a ε)
+      (h : HasType (p.declarationsFor view) B op C Γ R pos e a ε)
       (sc : e.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) :
       HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R (desugarExpr op pos e) a ε := by
@@ -455,7 +458,7 @@ mutual
         apply HasTypeC.C_Match (.V_Var rfl (clean_notCont ha))
           (HasArms.desugar hwf hsig hs sc.2.2 hΓ hR ha)
         rw [desugarArms_patterns]
-        exact Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex
+        exact Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
     | .E_Literal => exact .C_Return .V_Const
     | .E_NegInt => exact .C_Return .V_Const
     | .E_NegFloat => exact .C_Return .V_Const
@@ -686,6 +689,30 @@ mutual
         · simpa only [unguardedPats_mkArm_cons, unguardedPats] using
             Exhaustive.consCongr (Q := desugarProgram op p)
             (P := p.declarations.patternProgram) rfl hex
+    | .E_TryResultDie (message := message)
+        hco hce hno hne hao hae hdata he hex hd hx hm =>
+        have se := by cases message <;> exact sc.2.2.1
+        have hc := HasType.clean hwf hsig he se hΓ hR
+        have he' := HasType.desugar hwf hsig he se hΓ hR
+        have hm' : ∀ m, message = some m →
+            HasTypeC (desugarProgram op p) B StoreTy.empty C (hideConts Γ) none
+              (desugarExpr op .other m) (.base .string) Eff.empty := by
+          intro m hh
+          exact HasType.desugar hwf hsig (hm m hh)
+            (by cases hh; simpa only [hideConts_length] using sc.2.2.2) hΓ.hide (by simp)
+        exact tryResultDie_typed hco hce hno hne hao hae hdata he' hc hex hd hx hm'
+    | .E_TryOptionDie (message := message)
+        hcs hcn hns hnn has han hdata he hex hx hm =>
+        have se := by cases message <;> exact sc.2.1
+        have hc := HasType.clean hwf hsig he se hΓ hR
+        have he' := HasType.desugar hwf hsig he se hΓ hR
+        have hm' : ∀ m, message = some m →
+            HasTypeC (desugarProgram op p) B StoreTy.empty C (hideConts Γ) none
+              (desugarExpr op .other m) (.base .string) Eff.empty := by
+          intro m hh
+          exact HasType.desugar hwf hsig (hm m hh)
+            (by cases hh; simpa only [hideConts_length] using sc.2.2) hΓ.hide (by simp)
+        exact tryOptionDie_typed hcs hcn hns hnn has han hdata he' hc hex hx hm'
     | .E_With hr he hb =>
         apply HasTypeC.C_Let (HasTypeC.weakenEff
           (HasType.desugar hwf hsig he sc.1 hΓ hR) (eff_left _ _))
@@ -698,7 +725,7 @@ mutual
           (by simpa only [Expr.Scoped, hideConts_length] using sc) hΓ.hide (by simp))
     | .E_Handle hb he hc =>
         apply HasTypeC.C_Handle (HasBlock.desugar hwf hsig hb sc.1 hΓ hR)
-        · simpa only [desugarClauses_handled] using he
+        · simpa only [desugarClauses_handled, Program.declarationsFor_patternProgram] using he
         · exact HasClauses.desugar hwf hsig hc sc.2 hΓ hR
             (HasBlock.clean hwf hsig hb sc.1 hΓ hR)
     | .E_Resume hk he =>
@@ -709,7 +736,7 @@ mutual
 
   theorem HasTypes.desugar (hwf : p.WellFormed)
       (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R es as ε pe}
-      (h : HasTypes p.declarations B op C Γ R es as ε)
+      (h : HasTypes (p.declarationsFor view) B op C Γ R es as ε)
       (sc : es.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) :
       CompTypes (desugarProgram op p) B C Γ R ε (desugarExprs op es) as ∧
@@ -723,7 +750,7 @@ mutual
 
   theorem HasEach.desugar (hwf : p.WellFormed)
       (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R es a ε pe}
-      (h : HasEach p.declarations B op C Γ R es a ε)
+      (h : HasEach (p.declarationsFor view) B op C Γ R es a ε)
       (sc : es.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) :
       CompTypes (desugarProgram op p) B C Γ R ε (desugarExprs op es) (List.replicate es.length a) := by
@@ -738,7 +765,7 @@ mutual
   右に残る穴の個数が現在の穴の番号となり、非穴の式は全引数の下へ弱化する。 -/
   theorem HasHoleArgs.desugar (hwf : p.WellFormed)
       (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R args as ε pe}
-      (h : HasHoleArgs p.declarations B op C Γ R args as ε)
+      (h : HasHoleArgs (p.declarationsFor view) B op C Γ R args as ε)
       (sc : args.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) (prior : List Ty) :
       CompTypes (desugarProgram op p) B C (binds (prior ++ args.holeTypes) ++ Γ) R ε
@@ -765,7 +792,7 @@ mutual
   /-- パターンの束縛を保護し、照合対象の let だけを外側の環境に挿入する。 -/
   theorem HasArms.desugar (hwf : p.WellFormed)
       (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R pos arms a b ε pe}
-      (h : HasArms p.declarations B op C Γ R pos arms a b ε)
+      (h : HasArms (p.declarationsFor view) B op C Γ R pos arms a b ε)
       (sc : arms.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) (ha : TyOK C.length a) :
       HasTypeArms (desugarProgram op p) B StoreTy.empty C (some a :: Γ) R
@@ -795,7 +822,7 @@ mutual
   /-- 節の型パラメータの下へ Γ・R・結果型をずらし、引数と継続を加えて本体を移す。 -/
   theorem HasClauses.desugar (hwf : p.WellFormed)
       (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R cs t ε pe}
-      (h : HasClauses p.declarations B op C Γ R cs t ε)
+      (h : HasClauses (p.declarationsFor view) B op C Γ R cs t ε)
       (sc : cs.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) (ht : TyOK C.length t) :
       HasTypeClauses (desugarProgram op p) B StoreTy.empty C Γ R
@@ -825,7 +852,7 @@ mutual
 
   theorem HasBlock.desugar (hwf : p.WellFormed)
       (hsig : ∀ b s, B.sig b = some s → s.Scoped) {C Γ R pos body a ε pe}
-      (h : HasBlock p.declarations B op C Γ R pos body a ε)
+      (h : HasBlock (p.declarationsFor view) B op C Γ R pos body a ε)
       (sc : body.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
       (hR : ∀ r, R = some r → TyOK C.length r) :
       HasTypeC (desugarProgram op p) B StoreTy.empty C Γ R (desugarBlock op pos body) a ε := by
@@ -837,7 +864,7 @@ mutual
         · exact HasTypeArms.mkArm_cons (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp)
             (HasTypeC.weakenEff (.C_Return .V_Const) (Eff.empty_sub _)) (.nil trivial)
         · simpa only [unguardedPats_mkArm_cons, unguardedPats] using
-            Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex
+            Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
     | .B_BindPat (δ := δ) (rest := rest) _ _ hp hex he hb =>
         have ha := scoped_clean sc.1
         have hδ := PatTy.clean hwf.2.2.1 hp ha
@@ -850,7 +877,7 @@ mutual
         · exact HasTypeArms.mkArm_cons (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp)
             (HasTypeC.shiftPattern (PatTy.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hp) hb') (.nil (Ty.VarsIn.wf _ hc))
         · simpa only [unguardedPats_mkArm_cons, unguardedPats] using
-            Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex
+            Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex.exhaustive
     | .B_Empty =>
         exact .C_Return .V_Const
     | .B_Last h =>

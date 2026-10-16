@@ -172,7 +172,11 @@ fn specification_examples_and_output_tables() {
         .collect();
     assert_eq!(tries.len(), 3);
     let ret = &t.decl_types.get(binding(&r, "loadConfig")).unwrap().ret;
-    assert!(tries.iter().all(|info| info.ret == *ret));
+    assert!(
+        tries
+            .iter()
+            .all(|info| info.action == super::super::TryActionInfo::Return { ret: ret.clone() })
+    );
     assert!(tries.iter().all(|info| info.kind == TryKind::Result));
     let (l, _, t) = clean(WITH);
     let Stmt::Expr(Expr::With(w)) = &function(&l, "firstLine").body.as_ref().unwrap().stmts[0]
@@ -469,47 +473,73 @@ fn lazy_resources_and_taskgroup_placement() {
 #[test]
 fn try_infers_return_types_and_reports_incompatible_types() {
     let option = "function f(s: String) -> Option[Integer]\n bind n <- try Integer.parse(s)\n return Option.Some(n)\nend function\n";
-    let (_, r, t) = clean(option);
-    let info = t.try_kinds.iter().next().unwrap().1;
-    assert_eq!(info.kind, TryKind::Option);
-    assert_eq!(info.ret, t.decl_types.get(binding(&r, "f")).unwrap().ret);
-    let source = "function f() -> Unit\n bind action <- lambda(x: Result[Integer, String])\n bind n <- try x\n return Result.Ok(n)\n end lambda\n bind _ <- action(Result.Ok(1))\nend function\n";
-    let (_, r, t) = clean(source);
-    let info = t.try_kinds.iter().next().unwrap().1;
-    assert_eq!(info.kind, TryKind::Result);
-    assert_eq!(
-        info.ret,
-        Ty::Con(
-            TyCon::Adt(r.stdlib("Benitoite.Result.Result").unwrap()),
-            vec![basic(B::INTEGER), basic(B::STRING)]
-        )
-    );
-    for (source, code, help) in [
-        (
-            "function f() -> Integer\n return try 1\nend function\n",
-            C::E0440,
-            "Result",
-        ),
-        (
-            "function f(x: Result[Integer, String]) -> Integer\n return try x\nend function\n",
-            C::E0441,
-            "Option.okOr",
-        ),
-        (
-            "function f(x: Result[Integer, Integer]) -> Result[Integer, String]\n return Result.Ok(try x)\nend function\n",
-            C::E0442,
-            "Result.mapError",
-        ),
-        (
-            "function f(x: Option[Integer]) -> Result[Integer, String]\n return Result.Ok(try x)\nend function\n",
-            C::E0441,
-            "Option.okOr",
-        ),
-    ] {
-        let d = expect(source, &[(code, "try", 0)]);
-        assert!(d[0].helps[0].message.contains(help));
-        if code == C::E0441 {
-            assert!(d[0].helps[0].message.contains("`Result.ok`"));
+    for explicit in [false, true] {
+        let option = if explicit {
+            option.replace("try Integer.parse(s)", "try Integer.parse(s) or return")
+        } else {
+            option.to_owned()
+        };
+        let (_, r, t) = clean(&option);
+        let info = t.try_kinds.iter().next().unwrap().1;
+        assert_eq!(info.kind, TryKind::Option);
+        assert_eq!(
+            info.action,
+            super::super::TryActionInfo::Return {
+                ret: t.decl_types.get(binding(&r, "f")).unwrap().ret.clone()
+            }
+        );
+        let source = "function f() -> Unit\n bind action <- lambda(x: Result[Integer, String])\n bind n <- try x\n return Result.Ok(n)\n end lambda\n bind _ <- action(Result.Ok(1))\nend function\n";
+        let source = if explicit {
+            source.replace("try x", "try x or return")
+        } else {
+            source.to_owned()
+        };
+        let (_, r, t) = clean(&source);
+        let info = t.try_kinds.iter().next().unwrap().1;
+        assert_eq!(info.kind, TryKind::Result);
+        assert_eq!(
+            info.action,
+            super::super::TryActionInfo::Return {
+                ret: Ty::Con(
+                    TyCon::Adt(r.stdlib("Benitoite.Result.Result").unwrap()),
+                    vec![basic(B::INTEGER), basic(B::STRING)]
+                )
+            }
+        );
+        for (source, code, help) in [
+            (
+                "function f() -> Integer\n return try 1\nend function\n",
+                C::E0440,
+                "Result",
+            ),
+            (
+                "function f(x: Result[Integer, String]) -> Integer\n return try x\nend function\n",
+                C::E0441,
+                "Option.okOr",
+            ),
+            (
+                "function f(x: Result[Integer, Integer]) -> Result[Integer, String]\n return Result.Ok(try x)\nend function\n",
+                C::E0442,
+                "Result.mapError",
+            ),
+            (
+                "function f(x: Option[Integer]) -> Result[Integer, String]\n return Result.Ok(try x)\nend function\n",
+                C::E0441,
+                "Option.okOr",
+            ),
+        ] {
+            let source = if explicit {
+                source
+                    .replace("try 1", "try 1 or return")
+                    .replace("try x", "try x or return")
+            } else {
+                source.to_owned()
+            };
+            let d = expect(&source, &[(code, "try", 0)]);
+            assert!(d[0].helps[0].message.contains(help));
+            if code == C::E0441 {
+                assert!(d[0].helps[0].message.contains("`Result.ok`"));
+            }
         }
     }
     expect(
@@ -805,4 +835,432 @@ fn rigid_constraint_help_targets_the_operation_declaration() {
         assert!(d.helps[0].edits.is_empty());
     }
     assert!(mismatches.is_empty(), "{}", mismatches.join("\n"));
+}
+
+#[test]
+fn die_types_and_dictionaries_do_not_constrain_the_enclosing_return() {
+    use crate::typeck::{TryActionInfo, test_support::check_die_source};
+    for (params, body, ret, kind, dict) in [
+        (
+            "r: Result[Integer, String]",
+            "try r or die",
+            "Integer",
+            TryKind::Result,
+            true,
+        ),
+        (
+            "r: Option[Integer]",
+            "try r or die(\"context\")",
+            "Integer",
+            TryKind::Option,
+            false,
+        ),
+        (
+            "r: Result[Integer, String]",
+            "try r or die",
+            "Unit",
+            TryKind::Result,
+            true,
+        ),
+        (
+            "r: Option[Option[Integer]]",
+            "try try r or die or die",
+            "Integer",
+            TryKind::Option,
+            false,
+        ),
+        (
+            "r: Option[Result[Integer, String]]",
+            "try try r or die or die",
+            "Integer",
+            TryKind::Result,
+            true,
+        ),
+    ] {
+        let result = if ret == "Unit" {
+            format!("bind _ <- {body}\n ()")
+        } else {
+            format!("return {body}")
+        };
+        let source = format!(
+            "import Benitoite.Unofficial.IO.Process\nfunction f({params}) -> {ret} uses Process.Exit\n {result}\nend function\n"
+        );
+        let (l, r, t, d) = check_die_source(&source);
+        assert!(!d.iter().any(Diagnostic::is_error), "{source}\n{d:#?}");
+        assert_eq!(
+            t.try_kinds
+                .iter()
+                .filter(|(_, i)| matches!(i.action, TryActionInfo::Die { .. }))
+                .count(),
+            body.matches("or die").count()
+        );
+        let Item::Fn(f) = &l.asts[0].decls[0].item else {
+            panic!()
+        };
+        for stmt in &f.body.as_ref().unwrap().stmts {
+            let e = match stmt {
+                Stmt::Bind(b) => &b.value,
+                Stmt::Expr(e) => e,
+                _ => continue,
+            };
+            let e = if let Expr::Return(e) = e {
+                e.value.as_ref()
+            } else {
+                e
+            };
+            if let Expr::Try(e) = e {
+                let info = t.try_kinds.get(e.id).unwrap();
+                assert_eq!(info.kind, kind);
+                let TryActionInfo::Die { show, exit } = &info.action else {
+                    panic!()
+                };
+                assert_eq!(show.is_some(), dict);
+                assert_eq!(*exit, r.stdlib("Benitoite.IO.Process.exit").unwrap());
+            }
+        }
+        let core = crate::ir::desugar::desugar(&l.modules, &l.asts, &r, &t).unwrap();
+        assert!(crate::ir::check::check_program(&core).is_empty());
+    }
+    for constraint in ["", ": Trait.Show"] {
+        let source = format!(
+            "import Benitoite.Trait\nimport Benitoite.Unofficial.IO.Process\nfunction f[E{constraint}](r: Result[Integer, E]) -> Integer uses Process.Exit\n return try r or die\nend function\n"
+        );
+        let (_, _, t, d) = check_die_source(&source);
+        if constraint.is_empty() {
+            let errors: Vec<_> = d.iter().filter(|d| d.is_error()).collect();
+            assert_eq!(errors.len(), 1, "{d:#?}");
+            assert_eq!(errors[0].code, Some(C::E0706));
+            assert!(
+                errors[0]
+                    .helps
+                    .iter()
+                    .any(|h| h.message.contains("Result.mapError"))
+            );
+        } else {
+            assert!(!d.iter().any(Diagnostic::is_error), "{d:#?}");
+            assert!(t.try_kinds.iter().any(|(_, i)| matches!(
+                &i.action,
+                TryActionInfo::Die {
+                    show: Some(crate::types::DictExpr::Param { .. }),
+                    ..
+                }
+            )));
+        }
+    }
+}
+
+#[test]
+fn die_message_and_input_diagnostics_keep_their_owners() {
+    use crate::typeck::test_support::check_die_source;
+    for (imports, decls, params, body, uses, expected, help) in [
+        (
+            "",
+            "",
+            "r: Option[Integer]",
+            "try r or die(1)",
+            " uses Process.Exit",
+            C::E0401,
+            "",
+        ),
+        (
+            "",
+            "",
+            "r: Option[Integer]",
+            "try r or die",
+            "",
+            C::E0501,
+            "",
+        ),
+        (
+            "",
+            "",
+            "",
+            "try true or die",
+            " uses Process.Exit",
+            C::E0440,
+            "",
+        ),
+        (
+            "",
+            "data Nope\n Empty\nend data\n",
+            "r: Result[Integer, Nope]",
+            "try r or die",
+            " uses Process.Exit",
+            C::E0705,
+            "Result.mapError",
+        ),
+        (
+            "",
+            "",
+            "r: Option[Integer]",
+            "try r or die(missing)",
+            " uses Process.Exit",
+            C::E0301,
+            "",
+        ),
+        (
+            "",
+            "",
+            "r: Option[Integer]",
+            "try r or die(error)",
+            " uses Process.Exit",
+            C::E0301,
+            "",
+        ),
+        (
+            "import Benitoite.Unofficial.IO.Console\n",
+            "function message() -> String uses Console.Write\n Console.writeLine(\"side effect\")\n return \"text\"\nend function\n",
+            "r: Option[Integer]",
+            "try r or die(message())",
+            " uses Process.Exit",
+            C::E0511,
+            "pure String",
+        ),
+        (
+            "",
+            "",
+            "r: Option[Integer]",
+            "try r or die(return \"x\")",
+            " uses Process.Exit",
+            C::E0218,
+            "pure String",
+        ),
+        (
+            "",
+            "",
+            "r: Option[Integer]",
+            "try r or die(try Option.Some(\"x\"))",
+            " uses Process.Exit",
+            C::E0218,
+            "pure String",
+        ),
+    ] {
+        let source = format!(
+            "{imports}import Benitoite.Unofficial.IO.Process\n{decls}function f({params}) -> Integer{uses}\n return {body}\nend function\n"
+        );
+        let (_, _, _, d) = check_die_source(&source);
+        let errors: Vec<_> = d.iter().filter(|d| d.is_error()).collect();
+        assert_eq!(errors.len(), 1, "{source}\n{d:#?}");
+        assert_eq!(errors[0].code, Some(expected), "{source}\n{d:#?}");
+        if !help.is_empty() {
+            assert!(
+                errors[0].helps.iter().any(|h| h.message.contains(help)),
+                "{d:#?}"
+            );
+        }
+        if expected == C::E0511 {
+            let d = errors[0];
+            assert_eq!(
+                d.message,
+                "the message of `or die` cannot perform `Console.Write`"
+            );
+            let p = d.primary.as_ref().unwrap().span;
+            assert_eq!(&source[p.start.0 as usize..p.end.0 as usize], "message()");
+            assert_eq!(d.secondary.len(), 1);
+            let p = d.secondary[0].span;
+            assert_eq!(&source[p.start.0 as usize..p.end.0 as usize], "(message())");
+        }
+    }
+    let source = "import Benitoite.Unofficial.IO.Process\nfunction f(r: Option[Integer]) -> Integer uses Process.Exit\n bind error <- \"context\"\n return try r or die((lambda() return error end lambda)())\nend function\n";
+    let (_, _, _, d) = check_die_source(source);
+    assert!(!d.iter().any(Diagnostic::is_error), "{d:#?}");
+}
+
+#[test]
+fn die_keeps_const_rejection_and_hides_only_the_outer_continuation() {
+    use crate::typeck::test_support::check_die_source;
+    let (_, _, _, diagnostics) = check_die_source("const n: Integer = try Option.Some(1) or die\n");
+    assert!(
+        diagnostics.iter().any(|d| d.code == Some(C::E0433)),
+        "{diagnostics:#?}"
+    );
+    for (body, expected) in [
+        (
+            "bind _ <- try Option.Some(()) or die(\"context\")\n resume(())",
+            true,
+        ),
+        (
+            "bind _ <- try Option.Some(()) or return\n resume(())",
+            false,
+        ),
+        (
+            "bind _ <- try Option.Some(()) or die(\"context\")\n ()",
+            false,
+        ),
+        (
+            "bind _ <- try Option.Some(()) or die(resume(()))\n resume(())",
+            true,
+        ),
+    ] {
+        let ret = if body.contains("or return") {
+            "Option[Unit]"
+        } else {
+            "Unit"
+        };
+        let value = if ret == "Unit" {
+            "()"
+        } else {
+            "Option.Some(())"
+        };
+        let source = format!(
+            "import Benitoite.Unofficial.IO.Process\neffect Ping\n function ping() -> Unit\nend effect\nfunction f() -> {ret} uses Process.Exit\n return handle\n ping()\n {value}\n with case ping() ->\n {body}\n end handle\nend function\n"
+        );
+        let (l, _, t, d) = check_die_source(&source);
+        if body.contains("die(resume") {
+            let errors: Vec<_> = d.iter().filter(|d| d.is_error()).collect();
+            assert_eq!(errors.len(), 1, "{d:#?}");
+            assert_eq!(errors[0].code, Some(C::E0509));
+            assert!(
+                errors[0]
+                    .helps
+                    .iter()
+                    .any(|h| h.message.contains("message of `or die`"))
+            );
+        } else {
+            assert!(!d.iter().any(Diagnostic::is_error), "{source}\n{d:#?}");
+            assert_eq!(
+                t.handlers.get(handle(&l, "f").id).unwrap().clauses[0].tail_resumptive,
+                expected
+            );
+        }
+    }
+}
+
+#[test]
+fn die_uses_standard_show_and_exit_despite_local_names_and_aliases() {
+    use crate::typeck::{TryActionInfo, test_support::check_die_source};
+    for (imports, error) in [
+        ("", "IOError"),
+        ("", "NetworkError"),
+        ("import Benitoite.Unofficial.Json as J\n", "J.ParseError"),
+        ("import Benitoite.Unofficial.Csv\n", "Csv.ParseError"),
+    ] {
+        let source = format!(
+            "{imports}import Benitoite.Unofficial.IO.Process\nfunction f(r: Result[Integer, {error}]) -> Integer uses Process.Exit\n bind exit <- 2\n bind show <- 3\n bind error <- \"context\"\n bind _ <- exit + show\n return try r or die(error)\nend function\n"
+        );
+        let (_, resolved, types, diagnostics) = check_die_source(&source);
+        assert!(
+            !diagnostics.iter().any(Diagnostic::is_error),
+            "{source}\n{diagnostics:#?}"
+        );
+        let info = types.try_kinds.iter().next().unwrap().1;
+        let TryActionInfo::Die {
+            show: Some(crate::types::DictExpr::Impl { impl_decl, .. }),
+            exit,
+        } = &info.action
+        else {
+            panic!("{info:?}")
+        };
+        assert_eq!(*exit, resolved.stdlib("Benitoite.IO.Process.exit").unwrap());
+        assert_eq!(
+            types.impls.get(*impl_decl).unwrap().class,
+            resolved.stdlib("Benitoite.Trait.Show").unwrap()
+        );
+    }
+    let source = "data Hidden\n HiddenValue\nend data\nfunction f(r: Result[Integer, Hidden]) -> Result[Integer, Hidden]\n return Result.Ok(try r or return)\nend function\n";
+    let (_, _, _, diagnostics) = check_die_source(source);
+    assert!(
+        !diagnostics.iter().any(Diagnostic::is_error),
+        "{diagnostics:#?}"
+    );
+    let source = "import Benitoite.Unofficial.IO.Process\nfunction apply[effect E](f: function() -> Integer uses E) -> Integer uses E\n return f()\nend function\nfunction f(r: Option[Integer]) -> Integer uses Process.Exit\n return apply(lambda() return try r or die end lambda)\nend function\n";
+    let (_, _, types, diagnostics) = check_die_source(source);
+    assert!(
+        !diagnostics.iter().any(Diagnostic::is_error),
+        "{diagnostics:#?}"
+    );
+    let exit = crate::types::builtin::find_builtin_effect(&["IO", "Process"], "Exit").unwrap();
+    assert!(
+        types
+            .lambda_effects
+            .iter()
+            .any(|(_, effects)| effects.names.contains(&EffectName::Builtin(exit)))
+    );
+}
+
+// 作成時の関門: 本番のソース読み込みから内部依存・利用者の名前空間・不足効果の
+// 修正案を確かめる。先行する AST 差し替えの検査では import の自動追加に届かない。
+// 本物の pipeline を使い、Show/Exit の解決や本番の差し込み口を複製しない。
+#[test]
+fn die_production_loading_keeps_imports_and_effect_help_explicit() {
+    for (imports, uses, expected, help) in [
+        (
+            "",
+            "",
+            Some(C::E0501),
+            "add `import Benitoite.Unofficial.IO.Process` and `uses Process.Exit`; the internal dependency of `or die` does not import the name `Process`",
+        ),
+        (
+            "import Benitoite.Unofficial.IO.Process\n",
+            "",
+            Some(C::E0501),
+            "add `uses Process.Exit` to the signature for `or die`",
+        ),
+        ("", " uses Process.Exit", Some(C::E0332), ""),
+        (
+            "import Benitoite.Unofficial.IO.Process\n",
+            " uses Process.Exit",
+            None,
+            "",
+        ),
+        (
+            "import Benitoite.Unofficial.IO.Process as P\n",
+            " uses P.Exit",
+            Some(C::E0339),
+            "",
+        ),
+        (
+            "import Benitoite.Unofficial.IO.Process as P\n",
+            "",
+            Some(C::E0339),
+            "",
+        ),
+    ] {
+        let source = format!(
+            "{imports}function f(r: Result[Integer, String]) -> Integer{uses}\n return try r or die\nend function\n"
+        );
+        let result = crate::pipeline::check_text(
+            "die.bnt",
+            source.as_bytes(),
+            crate::pipeline::CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        let errors: Vec<_> = result.diagnostics.iter().filter(|d| d.is_error()).collect();
+        assert_eq!(
+            errors.iter().map(|d| d.code.unwrap()).collect::<Vec<_>>(),
+            expected.into_iter().collect::<Vec<_>>(),
+            "{source}: {:#?}",
+            result.diagnostics
+        );
+        if let Some(d) = errors.first() {
+            if !help.is_empty() {
+                assert_eq!(
+                    d.helps
+                        .iter()
+                        .map(|h| h.message.as_str())
+                        .collect::<Vec<_>>(),
+                    [help]
+                );
+                let span = d.primary.as_ref().unwrap().span;
+                assert_eq!(
+                    &source[span.start.0 as usize..span.end.0 as usize],
+                    "or die"
+                );
+                assert_eq!(d.secondary.len(), 1);
+            }
+        } else {
+            let p = result.program.unwrap();
+            let entry = p
+                .modules
+                .iter()
+                .find(|m| m.kind == crate::modules::ModuleKind::Entry)
+                .unwrap();
+            assert_eq!(entry.internal_dependencies.len(), 2);
+            for name in ["Benitoite.Trait.Show", "Benitoite.IO.Process.exit"] {
+                assert!(p.resolved.stdlib(name).is_some(), "{name}");
+            }
+        }
+    }
 }

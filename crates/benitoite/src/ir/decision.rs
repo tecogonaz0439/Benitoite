@@ -312,13 +312,32 @@ impl<'a> Lowerer<'a> {
     // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
     #[inline(never)]
     fn lower_app(&mut self, c: &Comp, renew: bool) -> Result<LComp, LowerError> {
-        let CompKind::App { func, dicts, args } = &c.kind else {
+        let CompKind::App {
+            func,
+            dicts,
+            args,
+            exit_report,
+        } = &c.kind
+        else {
             return Err(error("unexpected computation kind"));
         };
         let kind = LCompKind::App {
             func: self.val(func, renew)?,
             dicts: dicts.clone(),
             args: self.vals(args, renew)?,
+            exit_report: exit_report
+                .as_ref()
+                .map(|r| -> Result<_, LowerError> {
+                    Ok(ExitReportArgs {
+                        cause: Box::new(self.val(&r.cause, renew)?),
+                        message: r
+                            .message
+                            .as_ref()
+                            .map(|v| self.val(v, renew).map(Box::new))
+                            .transpose()?,
+                    })
+                })
+                .transpose()?,
         };
         Ok(made(kind, c.ty.clone(), c.eff.clone(), c.origin))
     }
@@ -1822,6 +1841,7 @@ mod tests {
             table.adts.insert(
                 binding,
                 AdtDef {
+                    extensible: false,
                     binding,
                     name: format!("D{}", binding.0),
                     module: ModuleId(0),
@@ -2465,6 +2485,7 @@ mod tests {
 
         let score_guard = Comp {
             kind: CompKind::App {
+                exit_report: None,
                 func: val(
                     ValKind::Builtin {
                         id: BuiltinId(0),
@@ -3120,6 +3141,7 @@ mod tests {
         };
         let call = Comp {
             kind: CompKind::App {
+                exit_report: None,
                 func: val(
                     ValKind::Builtin {
                         id: BuiltinId(0),
@@ -3370,6 +3392,7 @@ mod tests {
         ];
         let app = Comp {
             kind: CompKind::App {
+                exit_report: None,
                 func: values[0].clone(),
                 dicts: vec![dict.clone()],
                 args: values.clone(),
@@ -3391,7 +3414,10 @@ mod tests {
             origin: other_span(),
         };
         let out = lower(app);
-        let LCompKind::App { func, dicts, args } = out.kind else {
+        let LCompKind::App {
+            func, dicts, args, ..
+        } = out.kind
+        else {
             panic!("app");
         };
         assert_eq!(dicts.as_slice(), std::slice::from_ref(&dict));
@@ -3504,6 +3530,7 @@ mod tests {
         p.adts.adts.insert(
             chain,
             AdtDef {
+                extensible: false,
                 binding: chain,
                 name: "Chain".into(),
                 module: ModuleId(0),

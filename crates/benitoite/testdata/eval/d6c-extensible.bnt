@@ -1,0 +1,22 @@
+// spec: 01-05 拡張可能な型
+@extensible
+public data Kind
+  Known
+end data
+@extensible()
+public(package) record Detail
+  value: Integer
+end record
+@extensible
+data Unused
+  Later
+end data
+function main() -> Unit
+  bind Kind.Known <- Kind.Known
+  bind detail <- Detail(value: 3)
+  bind Detail(value: n) <- detail
+  bind _ <- match Kind.Known with
+    case Kind.Known -> n
+  end match
+  ()
+end function

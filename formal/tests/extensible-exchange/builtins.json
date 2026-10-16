@@ -1,0 +1,147 @@
+{
+  "version": 3,
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-extensible",
+      "prims": [],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        }
+      ],
+      "resources": [],
+      "dataDecls": [
+        {
+          "name": "Kind",
+          "typeName": "ErrorKind",
+          "isRecord": false,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Only",
+              "fields": null,
+              "args": []
+            }
+          ],
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Rec",
+          "typeName": "ParseError",
+          "isRecord": true,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Rec",
+              "fields": [
+                "detail"
+              ],
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                }
+              ]
+            }
+          ],
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Unused",
+          "typeName": "UnusedError",
+          "isRecord": false,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Unused",
+              "fields": null,
+              "args": []
+            }
+          ],
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Wrap",
+          "typeName": "Wrap",
+          "isRecord": false,
+          "extensible": false,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Wrap",
+              "fields": null,
+              "args": [
+                {
+                  "data": {
+                    "name": "Kind",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          ],
+          "package": "author",
+          "builtin": "ordinary"
+        }
+      ],
+      "summaries": [
+        {
+          "name": "Kind",
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          }
+        },
+        {
+          "name": "Rec",
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          }
+        },
+        {
+          "name": "Unused",
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          }
+        },
+        {
+          "name": "Wrap",
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          }
+        }
+      ],
+      "statePure": [],
+      "supplementalData": [],
+      "supplementalPrims": []
+    }
+  ]
+}

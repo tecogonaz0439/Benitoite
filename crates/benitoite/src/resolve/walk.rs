@@ -383,7 +383,16 @@ impl Resolver<'_> {
             }
             Expr::Lambda(e) => self.resolve_lambda(ctx, e),
             Expr::Return(e) => self.expr(ctx, &e.value),
-            Expr::Try(e) => self.expr(ctx, &e.value),
+            Expr::Try(e) => {
+                self.expr(ctx, &e.value);
+                if let crate::syntax::ast::TryAction::Die {
+                    message: Some(message),
+                    ..
+                } = &e.action
+                {
+                    self.expr(ctx, message);
+                }
+            }
             Expr::Lazy(e) => self.block(ctx, &e.body),
             Expr::With(e) => self.resolve_with(ctx, e),
             Expr::Handle(e) => self.resolve_handle(ctx, e),

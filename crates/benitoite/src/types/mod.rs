@@ -243,6 +243,8 @@ pub struct AdtDef {
     pub binding: BindingId,
     pub name: String,
     pub module: ModuleId,
+    /// パッケージ外のソース照合で将来の形を考慮する指定。宣言の `@extensible` を反映する。
+    pub extensible: bool,
     pub type_params: Vec<String>,
     /// タグの順（宣言の順）。レコードでは一つ
     pub ctors: Vec<CtorDef>,
@@ -865,6 +867,7 @@ mod tests {
         table.adts.insert(
             binding,
             AdtDef {
+                extensible: false,
                 binding,
                 name: "Box".into(),
                 module: ModuleId(0),

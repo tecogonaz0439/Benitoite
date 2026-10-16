@@ -870,9 +870,17 @@ fn release_workers(
 }
 
 fn cancellation_program() -> crate::bytecode::program::CompiledProgram {
+    cancellation_program_with_winner("Result.Ok(2)", "")
+}
+
+fn cancellation_program_with_winner(
+    winner: &str,
+    extra_uses: &str,
+) -> crate::bytecode::program::CompiledProgram {
     compile(&format!(
         r#"{IMPORTS}
-function main() -> Result[Unit,String] uses File.Write,State,Clock.Time,Console.Write
+import Benitoite.Unofficial.IO.Process
+function main() -> Result[Unit,String] uses File.Write,State,Clock.Time,Console.Write{extra_uses}
  bind continued <- Reference.new(false)
  bind winner <- Task.race([
   lambda()
@@ -883,7 +891,7 @@ function main() -> Result[Unit,String] uses File.Write,State,Clock.Time,Console.
     return Result.Ok(1)
    end with
   end lambda,
-  lambda() return Result.Ok(2) end lambda])
+  lambda() return {winner} end lambda])
  bind value <- match winner with
   case Option.Some(Result.Ok(n)) -> n
   case _ -> 0
@@ -922,6 +930,63 @@ fn cancelled_write_returns_writer_before_flushing_in_both_io_modes() {
         );
         assert!(output.lock().unwrap().is_empty());
         assert!(rt.ops.records.is_empty());
+        consumed(&script);
+    }
+}
+
+// 関門: 子タスクの die も、貸し出し中の Writer の返却を待って一度だけ解放する。
+// 通常の race の勝者は正常終了するため、全体の停止中に資源を捨てる退行を捕まえない。
+// 実際のファイルと既存の仕事の筋書きで、取消し後の継続と書き出しを観測する。
+#[test]
+fn child_die_waits_for_cancelled_write_and_releases_it_once() {
+    let dir = TempDir::new();
+    let program = cancellation_program_with_winner(
+        "try Result.Error(\"child failure\") or die(\"child context\")",
+        ",Process.Exit",
+    );
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let script = ScheduleHandle::new(
+            [
+                ScheduleStep::PickTask(1),
+                ScheduleStep::PickTask(1),
+                ScheduleStep::PickTask(2),
+            ],
+            false,
+        );
+        let (mut rt, output) = runtime(&dir.0, mode, &script);
+        let (jobs, count, delayed) = release_workers(&mut rt, &script, true, false);
+        let mut vm = vm(&program);
+        let VmStep::Stopped(StopEnd {
+            reason: StopReason::Exit { code, die_failure },
+            release_failures,
+        }) = finish(&mut vm, &mut rt)
+        else {
+            panic!("expected child die");
+        };
+        assert_eq!(code, 1);
+        let failure = die_failure.unwrap();
+        assert_eq!(failure.cause, "\"child failure\"");
+        assert_eq!(failure.message.as_deref(), Some("child context"));
+        let source = program.sources.get(failure.at.file).unwrap();
+        assert_eq!(
+            source
+                .text()
+                .get(failure.at.start.0 as usize..failure.at.end.0 as usize)
+                .unwrap(),
+            b"try Result.Error(\"child failure\") or die(\"child context\")"
+        );
+        assert!(release_failures.is_empty());
+        assert!(*delayed.borrow());
+        assert_eq!(jobs.borrow().len(), 1);
+        assert_eq!(*count.lock().unwrap(), 1);
+        assert_eq!(
+            std::fs::read_to_string(dir.0.join("output")).unwrap(),
+            "written after cancellation"
+        );
+        assert!(output.lock().unwrap().is_empty());
+        assert!(rt.ops.records.is_empty());
+        assert!(rt.queue.live.is_empty());
+        assert!(!rt.queue.has_outstanding());
         consumed(&script);
     }
 }

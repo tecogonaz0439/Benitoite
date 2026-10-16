@@ -37,6 +37,8 @@ pub enum ReportKind {
     Resource,
     /// `Process.exit` と中断の要求で止める途中の解放の失敗（`R04nn`。02-10「解放の失敗の報告」）
     Release,
+    /// 明示的な失敗終了（コードなし）
+    Die,
     /// 実行の開始前の誤り（`R03nn`）
     Args,
     /// 処理系の不具合（コードなし）
@@ -113,7 +115,7 @@ pub struct WaitingTask {
 pub struct Diagnostic {
     pub kind: ReportKind,
     pub severity: Severity,
-    /// 処理系の不具合では `None`
+    /// 処理系の不具合と明示的な失敗終了では `None`
     pub code: Option<DiagCode>,
     pub message: String,
     pub primary: Option<Label>,

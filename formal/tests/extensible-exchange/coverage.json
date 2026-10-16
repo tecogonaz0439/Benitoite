@@ -1,0 +1,322 @@
+{
+  "version": 3,
+  "seedXor": 0,
+  "randomCases": 0,
+  "boundaryCases": 3,
+  "kinds": {},
+  "cases": [
+    {
+      "name": "boundary/0",
+      "decls": [
+        {
+          "name": "Kind",
+          "typeName": "ErrorKind",
+          "isRecord": false,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Only",
+              "constructorName": "Only",
+              "tag": 0,
+              "args": []
+            }
+          ],
+          "fields": null,
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Rec",
+          "typeName": "ParseError",
+          "isRecord": true,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Rec",
+              "constructorName": "ParseError",
+              "tag": 0,
+              "args": [
+                {
+                  "kind": "unit",
+                  "args": []
+                }
+              ]
+            }
+          ],
+          "fields": [
+            "detail"
+          ],
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Unused",
+          "typeName": "UnusedError",
+          "isRecord": false,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Unused",
+              "constructorName": "Unused",
+              "tag": 0,
+              "args": []
+            }
+          ],
+          "fields": null,
+          "package": "author",
+          "builtin": "ordinary"
+        }
+      ],
+      "ty": {
+        "kind": "data",
+        "name": "Kind",
+        "args": []
+      },
+      "arms": [
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "con",
+              "name": "Only",
+              "args": []
+            }
+          ]
+        }
+      ],
+      "pattern": {
+        "kind": "wild"
+      },
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null,
+      "coverageView": [],
+      "package": "author"
+    },
+    {
+      "name": "boundary/1",
+      "decls": [
+        {
+          "name": "Kind",
+          "typeName": "ErrorKind",
+          "isRecord": false,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Only",
+              "constructorName": "Only",
+              "tag": 0,
+              "args": []
+            }
+          ],
+          "fields": null,
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Rec",
+          "typeName": "ParseError",
+          "isRecord": true,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Rec",
+              "constructorName": "ParseError",
+              "tag": 0,
+              "args": [
+                {
+                  "kind": "unit",
+                  "args": []
+                }
+              ]
+            }
+          ],
+          "fields": [
+            "detail"
+          ],
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Unused",
+          "typeName": "UnusedError",
+          "isRecord": false,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Unused",
+              "constructorName": "Unused",
+              "tag": 0,
+              "args": []
+            }
+          ],
+          "fields": null,
+          "package": "author",
+          "builtin": "ordinary"
+        }
+      ],
+      "ty": {
+        "kind": "data",
+        "name": "Kind",
+        "args": []
+      },
+      "arms": [
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "con",
+              "name": "Only",
+              "args": []
+            }
+          ]
+        },
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "wild"
+            }
+          ]
+        }
+      ],
+      "pattern": {
+        "kind": "wild"
+      },
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null,
+      "coverageView": [
+        "Kind",
+        "Rec",
+        "Unused"
+      ],
+      "package": "external"
+    },
+    {
+      "name": "boundary/2",
+      "decls": [
+        {
+          "name": "Kind",
+          "typeName": "ErrorKind",
+          "isRecord": false,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Only",
+              "constructorName": "Only",
+              "tag": 0,
+              "args": []
+            }
+          ],
+          "fields": null,
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Rec",
+          "typeName": "ParseError",
+          "isRecord": true,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Rec",
+              "constructorName": "ParseError",
+              "tag": 0,
+              "args": [
+                {
+                  "kind": "unit",
+                  "args": []
+                }
+              ]
+            }
+          ],
+          "fields": [
+            "detail"
+          ],
+          "package": "author",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Unused",
+          "typeName": "UnusedError",
+          "isRecord": false,
+          "extensible": true,
+          "ntys": 0,
+          "ctors": [
+            {
+              "name": "Unused",
+              "constructorName": "Unused",
+              "tag": 0,
+              "args": []
+            }
+          ],
+          "fields": null,
+          "package": "author",
+          "builtin": "ordinary"
+        }
+      ],
+      "ty": {
+        "kind": "data",
+        "name": "Rec",
+        "args": []
+      },
+      "arms": [
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "con",
+              "name": "Rec",
+              "args": [
+                {
+                  "kind": "wild"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "wild"
+            }
+          ]
+        }
+      ],
+      "pattern": {
+        "kind": "wild"
+      },
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null,
+      "coverageView": [
+        "Kind",
+        "Rec",
+        "Unused"
+      ],
+      "package": "external"
+    }
+  ]
+}

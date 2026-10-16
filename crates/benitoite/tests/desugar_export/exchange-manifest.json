@@ -57,14 +57,23 @@
         "matches": 1,
         "bindings": 0
       }
+    },
+    {
+      "stem": "extensible-package",
+      "definitions": 2,
+      "origin": "checked-package-with-direct-extensible-metadata",
+      "coverage": {
+        "matches": 1,
+        "bindings": 0
+      }
     }
   ],
   "namedVersions": {
-    "corpus": 8,
-    "table": 2,
-    "coverage": 2
+    "corpus": 10,
+    "table": 3,
+    "coverage": 3
   },
-  "namedCoverageCases": 2,
+  "namedCoverageCases": 10,
   "namedExcluded": [],
   "namedOutside": [],
   "generalNamedCallRouting": "all-programs",
@@ -578,6 +587,8 @@
       "name": "testdata/external/record-mismatch",
       "excluded": [
         "Some(E1008)",
+        "Some(E1009)",
+        "Some(E1008)",
         "Some(E1009)"
       ],
       "definitions": 0,
@@ -1028,6 +1039,34 @@
       "name": "testdata/fmt/syntax_error.bnt",
       "excluded": [
         "Some(E0201)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/fmt/try-actions.bnt",
+      "excluded": [
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)",
+        "Some(E0301)"
       ],
       "definitions": 0,
       "scopes": {},
@@ -2437,6 +2476,18 @@
       "name": "testdata/packages/newer-language",
       "excluded": [
         "Some(E0907)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/packages/older-language",
+      "excluded": [
+        "Some(E0908)"
       ],
       "definitions": 0,
       "scopes": {},
@@ -9896,6 +9947,91 @@
       },
       "implementations": 0,
       "surfaceChecks": 2
+    },
+    {
+      "group": "golden",
+      "name": "testdata/eval/d6c-extensible.bnt",
+      "excluded": [],
+      "definitions": 2,
+      "scopes": {
+        "accessor": 1,
+        "inScope": 1
+      },
+      "coverage": {
+        "matches": 1,
+        "bindings": 2
+      },
+      "implementations": 0,
+      "surfaceChecks": 1
+    },
+    {
+      "group": "golden",
+      "name": "testdata/packages/d6c-extensible-external",
+      "excluded": [],
+      "definitions": 3,
+      "scopes": {
+        "inScope": 2,
+        "accessor": 1
+      },
+      "coverage": {
+        "matches": 3,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "group": "golden",
+      "name": "testdata/packages/d6c-extensible-missing",
+      "excluded": [
+        "Some(E0601)",
+        "Some(E0601)",
+        "Some(E0607)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/syntax/d6c-extensible-arguments.bnt",
+      "excluded": [
+        "Some(E0817)",
+        "Some(E0220)",
+        "Some(E0803)",
+        "Some(E0802)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/syntax/d6c-extensible-constructor.bnt",
+      "excluded": [
+        "Some(E0201)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/syntax/d6c-extensible-orphan.bnt",
+      "excluded": [
+        "Some(E0201)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
     },
     {
       "group": "random",
@@ -24896,22 +25032,132 @@
       },
       "implementations": 10,
       "surfaceChecks": 50
+    },
+    {
+      "group": "golden",
+      "name": "testdata/patterns/d7-stdlib-extensible.bnt",
+      "excluded": [
+        "Some(E0601)",
+        "Some(E0601)",
+        "Some(E0601)",
+        "Some(E0607)",
+        "Some(E0601)",
+        "Some(E0607)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/packages/d8-extensible-run",
+      "excluded": [],
+      "definitions": 8,
+      "scopes": {
+        "inScope": 6,
+        "accessor": 2
+      },
+      "coverage": {
+        "matches": 8,
+        "bindings": 1
+      },
+      "implementations": 0,
+      "surfaceChecks": 6
+    },
+    {
+      "group": "golden",
+      "name": "testdata/eval/todo250-die-option.bnt",
+      "excluded": [],
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "group": "golden",
+      "name": "testdata/eval/todo250-die-result.bnt",
+      "excluded": [],
+      "definitions": 2,
+      "scopes": {
+        "inScope": 2
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 2
+    },
+    {
+      "group": "golden",
+      "name": "testdata/eval/todo250-die-success.bnt",
+      "excluded": [],
+      "definitions": 3,
+      "scopes": {
+        "inScope": 3
+      },
+      "coverage": {
+        "matches": 0,
+        "bindings": 0
+      },
+      "implementations": 0,
+      "surfaceChecks": 3
+    },
+    {
+      "group": "golden",
+      "name": "testdata/syntax/todo250-die-no-show.bnt",
+      "excluded": [
+        "Some(E0705)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
+    },
+    {
+      "group": "golden",
+      "name": "testdata/syntax/todo250-die-no-uses.bnt",
+      "excluded": [
+        "Some(E0501)"
+      ],
+      "definitions": 0,
+      "scopes": {},
+      "coverage": null,
+      "implementations": 0,
+      "surfaceChecks": 0
     }
   ],
   "routingManifest": "routing-manifest.json",
   "coverageExports": {
     "named-": {
-      "version": 2,
-      "boundaryCases": 2,
+      "version": 3,
+      "boundaryCases": 10,
       "randomCases": 0,
       "seedXor": 0,
       "boundaryNames": [
         "function-contract",
-        "nested-function-contract"
+        "nested-function-contract",
+        "source/Kind/author",
+        "source/Kind/consumer",
+        "source/Detail/author",
+        "source/Detail/consumer",
+        "source/IOErrorKind/author",
+        "source/IOErrorKind/consumer",
+        "source/NetworkErrorKind/author",
+        "source/NetworkErrorKind/consumer"
       ]
     },
     "named-all-": {
-      "version": 2,
+      "version": 3,
       "boundaryCases": 20,
       "randomCases": 10000,
       "seedXor": 57793,
@@ -24943,7 +25189,7 @@
     "desugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
-      "matched": 955,
+      "matched": 975,
       "excluded": 0
     },
     "surfaceCounts": {
@@ -24951,7 +25197,7 @@
       "preparationFailure": 0,
       "outOfScope": 19,
       "mismatched": 0,
-      "matched": 51636,
+      "matched": 51652,
       "lazyRestriction": 0
     },
     "surfaceOutcomes": [
@@ -26204,14 +26450,14 @@
       }
     ],
     "coverage": {
-      "matched": 22438,
+      "matched": 22453,
       "mismatched": 0,
       "outOfScope": 0,
       "fuelExhausted": 0
     },
-    "definitions": 73733,
-    "surfaceChecks": 51656,
-    "coverageEntries": 22438,
+    "definitions": 73753,
+    "surfaceChecks": 51672,
+    "coverageEntries": 22453,
     "randomDesugarDefinitions": {
       "outside": 0,
       "mismatched": 0,
@@ -26220,8 +26466,8 @@
     },
     "desugarPrograms": {
       "golden": {
-        "matched": 346,
-        "excluded": 380,
+        "matched": 352,
+        "excluded": 389,
         "outside": 0,
         "mismatched": 0
       },

@@ -1,7 +1,8 @@
 """手書きの新形式を六つの CLI で検査する。期待コアは脱糖から作らない。
 
 JSON の必須欄、契約とラベル・位置、宣言表、比較の正規化を入口で確かめる。
-六つの正式入口が旧形式を拒否することも検査する。
+契約名の導入前の版へ新版の欄を混ぜた入力の拒否も検査する。8/2/2 の閉じた互換入力は
+別の test_extensible_exchange.py で確認する。
 """
 
 import copy
@@ -108,14 +109,23 @@ class ExchangeTests(unittest.TestCase):
                     self.assertEqual(report["mismatchExamples"][0]["error"], {"path": [0, 0], "ancestors": [],
                                      "reason": "implementation method parameter names mismatch"})
 
-    def test_each_entry_rejects_old_version(self):
+    def test_pre_contract_versions_reject_new_contract_fields(self):
         for tool, files in TOOLS.items():
             with self.subTest(tool=tool):
                 data = copy.deepcopy(self.data)
                 data[files[0]]["version"] = 7 if files[0] == "corpus" else 1
                 result, _ = self.run_tool(tool, data)
                 self.assertEqual(result.returncode, 2, result.stdout)
+                field = "positions" if tool == "coverageProgramDiff" else "names"
+                self.assertEqual(result.stderr, f"{tool}: field requires new exchange version: {field}\n")
+                # 版そのものの拒否も保持し、新版の欄を混ぜた拒否と区別する。
+                kind = files[0]
+                version = data[kind]["version"]
+                data[kind] = {"version": version}
+                result, _ = self.run_tool(tool, data)
+                self.assertEqual(result.returncode, 2, result.stdout)
                 self.assertIn("unsupported", result.stderr)
+                self.assertEqual(result.stderr, f"{tool}: unsupported {kind} exchange version: {version}\n")
 
     def test_required_names_are_not_filled(self):
         for tool in ("desugarDiff", "builtinCheck", "surfaceCheck", "surfaceCheckAll"):

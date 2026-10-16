@@ -109,11 +109,24 @@ pub fn text_failure(
         Failure::Runtime { report } => {
             output.push_str(&render::render_one_text(report, sources, opts));
         }
-        Failure::Exit { code, reports } => {
-            push_line(
-                &mut output,
-                &fill_template(text::EXITED, &[("code", code.to_string())]),
-            );
+        Failure::Exit {
+            code,
+            die_failure,
+            reports,
+        } => {
+            if die_failure.is_none() {
+                push_line(
+                    &mut output,
+                    &fill_template(text::EXITED, &[("code", code.to_string())]),
+                );
+            }
+            if let Some(failure) = die_failure {
+                output.push_str(&render::render_one_text(
+                    &crate::runtime::report::die_diagnostic(failure),
+                    sources,
+                    opts,
+                ));
+            }
             for report in reports {
                 output.push_str(&render::render_one_text(report, sources, opts));
             }
@@ -262,7 +275,11 @@ fn json_failure(failure: &Failure, sources: &SourceTable) -> String {
             "{{\"reason\":\"error\",\"message\":{}}}",
             render::json_string(message)
         ),
-        Failure::Exit { code, reports } => {
+        Failure::Exit {
+            code,
+            die_failure,
+            reports,
+        } => {
             // 解放の失敗の報告ごとに、RELEASE_WHILE_STOPPING と同じ文を作る（設計書 06-04「結果の報告」）。
             let notes: Vec<String> = reports
                 .iter()
@@ -276,11 +293,20 @@ fn json_failure(failure: &Failure, sources: &SourceTable) -> String {
                     )
                 })
                 .collect();
-            format!(
-                "{{\"reason\":\"exit\",\"message\":{},\"exitCode\":{code},\"notes\":{}}}",
+            let mut output = format!(
+                "{{\"reason\":\"exit\",\"message\":{},\"exitCode\":{code},\"notes\":{}",
                 render::json_string(&fill_template(text::EXITED, &[("code", code.to_string())])),
                 json_strings(notes.iter())
-            )
+            );
+            if let Some(failure) = die_failure {
+                output.push_str(",\"die\":");
+                output.push_str(&render::render_json_line(
+                    &crate::runtime::report::die_diagnostic(failure),
+                    sources,
+                ));
+            }
+            output.push('}');
+            output
         }
         Failure::Runtime { report } => {
             let line = render::render_json_line(report, sources);

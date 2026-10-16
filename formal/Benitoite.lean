@@ -91,3 +91,5 @@ import Benitoite.Exchange.Syntax
 import Benitoite.Exchange.Convert
 import Benitoite.Exchange.Builtins
 import Benitoite.Exchange.CheckInput
+
+import Benitoite.Release.CoverageExtension

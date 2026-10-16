@@ -154,7 +154,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
                         let r = reason(source.span, ReasonKind::ImplSuper { class: sup });
                         let scope = d.scopes.get(&source.id).cloned().unwrap_or_default();
                         let dict = resolution.ok().and_then(|resolution| {
-                            solve::check_bounds(d, &scope, &s, &resolution, &r)
+                            solve::check_bounds(d, i.module, &scope, &s, &resolution, &r)
                                 .is_empty()
                                 .then_some(resolution.dict)
                         });

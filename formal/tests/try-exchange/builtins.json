@@ -1,0 +1,172 @@
+{
+  "version": 3,
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-try",
+      "prims": [
+        {
+          "name": "prim:8",
+          "tparams": [
+            {
+              "equality": false,
+              "key": false,
+              "ordered": false
+            }
+          ],
+          "neffs": 0,
+          "names": [
+            "code"
+          ],
+          "params": [
+            {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          ],
+          "ret": {
+            "tvar": {
+              "index": 0
+            }
+          },
+          "eff": [
+            {
+              "name": {
+                "value": "Process.Exit"
+              }
+            }
+          ],
+          "kind": "exit",
+          "opEff": "Process.Exit",
+          "classConstraints": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "Process.Exit",
+          "ops": [
+            "prim:8"
+          ]
+        },
+        {
+          "name": "A",
+          "ops": []
+        },
+        {
+          "name": "B",
+          "ops": []
+        }
+      ],
+      "resources": [],
+      "dataDecls": [
+        {
+          "name": "Result",
+          "typeName": "Result",
+          "isRecord": false,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "result",
+          "ntys": 2,
+          "ctors": [
+            {
+              "name": "con:ok",
+              "constructorName": "Ok",
+              "fields": null,
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ]
+            },
+            {
+              "name": "con:error",
+              "constructorName": "Error",
+              "fields": null,
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Option",
+          "typeName": "Option",
+          "isRecord": false,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "option",
+          "ntys": 1,
+          "ctors": [
+            {
+              "name": "con:some",
+              "constructorName": "Some",
+              "fields": null,
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ]
+            },
+            {
+              "name": "con:none",
+              "constructorName": "None",
+              "fields": null,
+              "args": []
+            }
+          ]
+        }
+      ],
+      "summaries": [
+        {
+          "name": "Result",
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          }
+        },
+        {
+          "name": "Option",
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0
+            ]
+          }
+        }
+      ],
+      "statePure": [],
+      "supplementalData": [],
+      "supplementalPrims": []
+    }
+  ]
+}

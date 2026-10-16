@@ -63,6 +63,15 @@ theorem checkNamed_sound {table : String → Option α} {check path names index}
         exact ⟨path ++ [index], hh.1⟩
       · exact ih hh.2 n hn x hx
 
+/-- 本体の指定を選ぶ鍵も、検査に成功した値と同じ探索結果から得る。 -/
+theorem checkNamed_key_sound {table : String → Option α}
+    {check : List Nat → String → α → Check.Result Unit} {path names index}
+    (h : checkNamed (fun n => (table n).map (fun x => (n, x)))
+      (fun path (n, x) => check path n x) path names index = .ok ()) :
+    ∀ n ∈ names, ∀ x, table n = some x → ∃ location, check location n x = .ok () := by
+  intro n hn x hx
+  exact checkNamed_sound h n hn (n, x) (by simp [hx])
+
 /-- 同じ有限の材料から作った実名付き入力と、本体の射影を対応させる。 -/
 theorem program_impl_input {m : Materials} {n id}
     (h : m.program.impls n = some id) :
@@ -80,10 +89,10 @@ theorem program_impl_input {m : Materials} {n id}
 
 /-- この結論は、信頼する標準ライブラリの本体を型付けしたとは主張しない。 -/
 def CheckedUnder (p : Program) (q : Check.Input) : Prop :=
-  (∀ n d, p.defs n = some d → d.WellTyped q.D q.B q.opPrim) ∧
+  (∀ n d, p.defs n = some d → d.WellTyped (q.D.withView (p.functionViews n)) q.B q.opPrim) ∧
   Extends q.D p.declarations ∧
   (∀ l os, p.effects l = some os → q.B.effects l = none) ∧
-  (∀ n id, p.impls n = some id → id.WellTyped q.D q.B q.opPrim)
+  (∀ n id, p.impls n = some id → id.WellTyped q.D q.B q.opPrim (p.methodViews n))
 
 theorem checkProgram_under {q : Check.Input} {m : Materials} {names : Names}
     (hq : q.Sound) (hn : NamesComplete m.program names)
@@ -96,8 +105,9 @@ theorem checkProgram_under {q : Check.Input} {m : Materials} {names : Names}
   have more := bind_ok steps.2
   refine ⟨?_, hext, ?_, ?_⟩
   · intro n d hget
-    obtain ⟨path, hp⟩ := checkNamed_sound steps.1 n (hn.1 n d hget) d hget
-    exact Check.checkDef_sound hq (hd n d hget) hp
+    obtain ⟨path, hp⟩ := checkNamed_key_sound (check := fun path n d => Check.checkDef
+      { q with D := q.D.withView (m.program.functionViews n) } path d) steps.1 n (hn.1 n d hget) d hget
+    exact Check.checkDef_sound (hq.withView _) (hd n d hget) hp
   · intro l os hget
     have hmap : (m.program.effects l).map (fun _ => l) = some l := by simp [hget]
     obtain ⟨path, hp⟩ := checkNamed_sound more.2 l (hn.2.2 l os hget) l hmap
@@ -107,7 +117,8 @@ theorem checkProgram_under {q : Check.Input} {m : Materials} {names : Names}
     · cases hp
   · intro n id hget
     obtain ⟨input, hinput, hdecl⟩ := program_impl_input hget
-    obtain ⟨path, hp⟩ := checkNamed_sound more.1 n (hn.2.1 n id hget) input hinput
+    obtain ⟨path, hp⟩ := checkNamed_key_sound (check := fun path n id =>
+      Check.checkImpl q names.methods names.supers path id (m.program.methodViews n)) more.1 n (hn.2.1 n id hget) input hinput
     rw [← hdecl]
     exact Check.checkImpl_sound hq (by rw [hdecl]; exact hi n id hget) (him n input hinput) hp
 
@@ -125,7 +136,9 @@ theorem checkProgram_contracts {m : Materials} {B sat admits op atoms}
   simp only [Prod.mk.injEq] at he
   obtain ⟨rfl, rfl⟩ := he
   have hname : name ∈ m.names.impls := List.mem_map.mpr ⟨(name,i), hi, rfl⟩
-  obtain ⟨path, hp⟩ := checkNamed_sound more.1 name hname i.input hget
+  obtain ⟨path, hp⟩ := checkNamed_key_sound (check := fun path n id =>
+    Check.checkImpl (m.input B sat admits op atoms) m.names.methods m.names.supers path id
+      (m.program.methodViews n)) more.1 name hname i.input hget
   exact Check.checkImpl_contracts (implNames_sound hn hget) hp
 
 /-- 実装の本体側の注釈。対象の型と辞書の型は宣言表から導く。 -/
@@ -188,8 +201,9 @@ theorem checkProgram_empty {m : Materials} {S raw b select atoms}
       intro α x; cases x <;> rfl
     simp [Materials.declarations, extend, hf, hi, lookup, hor]
   have checked := checkProgram_sound hd hb hdefs himpls hc hn h
-  exact ⟨by simpa only [Materials.input, hD] using checked.1,
-    checked.2.2.1, by simpa only [Materials.input, hD] using checked.2.2.2⟩
+  simp only [CheckedUnder, Materials.input] at checked
+  rw [hD] at checked
+  exact ⟨checked.1, checked.2.2.1, checked.2.2.2⟩
 
 /-- 型付けと、射影前の実装の実名一致を同じ検査成功から得る。 -/
 theorem checkProgram_sound_contracts {m : Materials} {S raw b select atoms}

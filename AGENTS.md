@@ -50,6 +50,8 @@ Rust で実装する関数型スクリプト言語のリポジトリである。
 | `tools/skill-eval/` | 同梱の Agent Skill を、約 10 の課題とハーネス（Claude Code・Codex CLI・OpenCode）で評価する道具（Python。06-06「Skill の評価」。構文の測定の第二段階にも使う）。記録は `results/`、生の記録はリポジトリの外に置く | 使い方は `tools/skill-eval/README.md`、手順はスキル `skill-eval`。LLM を呼ぶ評価は設計者の了承を得てから行う |
 | `tools/spec-coverage/` | ゴールデンテストが言語仕様のどの節を確かめているかを集計する道具（Python） | |
 | `tools/named-arguments-migrate/` | 名前付き引数・関数型・ラムダ名の移行候補を抽出し、manifest・確認表・diff を出す道具（Python と読み取り用の Rust の example） | 既定は読み取りのみ。適用には確認済み manifest のハッシュ一致が必要。使い方は同ディレクトリの `README.md` |
+| `tools/source-migrate/` | ソースの移行に共通するホスト抽出・元の UTF-8 バイト位置・ハッシュ・編集範囲・diff・再適用の検証（Python） | 候補の意味と承認は各移行器が判断する。使い方と自己検査は同ディレクトリの `README.md` |
+| `tools/try-actions-migrate/` | try の AST から処置の移行候補を抽出し、役割の分類・manifest・確認表・diff を出す道具（Python と読み取り用の Rust の example） | 既定は読み取りのみ。適用には確認済み manifest のハッシュ一致が必要。die の契約変更、生成断片、検査入力は自動承認しない。使い方と自己検査は同ディレクトリの `README.md` |
 | `tools/bench/` | ベンチマークと測定の道具、測定記録（`results/`） | 測定はスキル `benchmark` に従う |
 | `assets/brand/` | ロゴ・アイコン・ワードマークの画像（SVG と PNG）と、作り直す道具（`make_logos.py`）。キャラクターの案 A・B・C の画像は `mascots/`。将来の Web サイトや README に貼るためのもの（`reference/Benitoite-brand/` と `reference/benitoite-mascots/` からの写し。色と書体は `README.md`、キャラクターの案は `mascots/README-ja.txt`） | 画像を手で直さず、`make_logos.py` で作り直す |
 | `fuzz/` | cargo-fuzz のクレート（nightly の Rust を使うので、ワークスペースに含めない） | `scripts/fuzz-short.sh` で実行する |

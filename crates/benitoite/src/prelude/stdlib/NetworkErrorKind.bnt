@@ -1,6 +1,7 @@
 //! Kinds of network failures.
 
 /// The kind of a network failure, returned by `NetworkError.kind`.
+@extensible
 public data NetworkErrorKind
   /// The name cannot be resolved.
   HostNotFound

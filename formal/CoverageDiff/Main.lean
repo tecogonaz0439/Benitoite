@@ -14,6 +14,10 @@ structure RawCtor where
   args : List Json
   deriving FromJson, ToJson
 structure RawDecl where
+  builtin : Benitoite.Exchange.BuiltinData
+  package : String
+  extensible : Bool
+  isRecord : Bool
   name : String
   typeName : String
   ntys : Nat
@@ -35,6 +39,8 @@ structure Result where
   unreachable : List Unreachable
   deriving FromJson, ToJson, BEq
 structure Input where
+  package : String
+  coverageView : List String
   name : String
   decls : List RawDecl
   ty : Json
@@ -130,15 +136,24 @@ structure Material where
   cons : List (ConName × ConDecl)
   ctors : List (DataName × List ConName)
   displays : List (ConName × CoverageDisplay)
+  types : List Benitoite.Exchange.DataTypeInfo
 
 def duplicate (xs : List String) : Bool := xs.eraseDups.length != xs.length
 
 def material (ds : List RawDecl) : Except String Material := do
+  Benitoite.Exchange.validateDataTypes (ds.map fun d =>
+    ⟨d.builtin, d.package, d.name, d.typeName, d.isRecord, d.extensible⟩)
+  for d in ds do
+    let ctors ← d.ctors.mapM fun c => do
+      let args ← c.args.mapM (readTy ds d.ntys)
+      return (c.constructorName, args.map fun t => match t with | .tvar n => some n | _ => none)
+    Benitoite.Exchange.validateBuiltinShape d.builtin d.ntys d.isRecord ctors
   if duplicate (ds.map RawDecl.name) || duplicate (ds.flatMap fun d => d.ctors.map RawCtor.name) then
     throw "duplicate data/constructor name"
   let mut cs := []
   let mut displays := []
   for d in ds do
+    if d.isRecord != d.fields.isSome then throw "data isRecord/fields mismatch"
     if d.ctors.isEmpty then throw "empty data declaration"
     if d.fields.isSome && d.ctors.length != 1 then throw "record constructor count"
     for (c, tag) in d.ctors.zipIdx do
@@ -148,7 +163,8 @@ def material (ds : List RawDecl) : Except String Material := do
       cs := cs ++ [(c.name, ⟨d.name, d.ntys, args⟩)]
       displays := displays ++ [(c.name, ⟨d.typeName, c.constructorName,
         d.typeName == c.constructorName, d.fields⟩)]
-  return ⟨cs, ds.map (fun d => (d.name, d.ctors.map RawCtor.name)), displays⟩
+  return ⟨cs, ds.map (fun d => (d.name, d.ctors.map RawCtor.name)), displays,
+    ds.map (fun d => ⟨d.builtin, d.package,d.name,d.typeName,d.isRecord,d.extensible⟩)⟩
 
 def Material.program (m : Material) : Program :=
   { defs := fun _ => none, cons := fun c => (m.cons.find? (·.1 == c)).map Prod.snd,
@@ -157,6 +173,9 @@ def Material.constructors (m : Material) (d : DataName) : List ConName :=
   ((m.ctors.find? (·.1 == d)).map Prod.snd).getD []
 def Material.display (m : Material) (c : ConName) : Option CoverageDisplay :=
   (m.displays.find? (·.1 == c)).map Prod.snd
+
+def Material.typeDisplay (m : Material) (d : DataName) : Option CoverageTypeDisplay :=
+  (m.types.find? (·.name == d)).map fun t => ⟨t.typeName,t.isRecord⟩
 
 -- この検査は表層の型検査ではなく、生成器の前提の確認である。
 partial def typedPat (m : Material) (t : Ty) (p : Pat) : Bool :=
@@ -178,7 +197,7 @@ def readArms (m : Material) (t : Ty) (arms : List RawArm) : Except String (List 
       (if a.guarded then some (.ret (.const (.boolean true))) else none) (.ret (.const .unit))
 
 def result (m : Material) (r : MatchCoverage) : Result :=
-  ⟨r.exhaustive, r.uncovered.map (CoverageWitness.show m.display),
+  ⟨r.exhaustive, r.uncovered.map (CoverageWitness.showWithTypes m.display m.typeDisplay),
     r.unreachable.map (fun (i,j) => ⟨i,j, ((r.coveredBy.find? (·.1 == (i,j))).map Prod.snd).getD []⟩)⟩
 
 structure FuelCounts where
@@ -197,20 +216,20 @@ def FuelCounts.add (a b : FuelCounts) : FuelCounts :=
     a.coveringPrefixes + b.coveringPrefixes, a.overlaps + b.overlaps, a.irrefutable + b.irrefutable⟩
 
 -- overlapsFuel と同じ引数・短絡評価で、0 に到達した呼び出しを記録する。
-def auditOverlap (P : Program) (ctors : DataName → List ConName) :
+def auditOverlap (P : Program) (ctors : DataName → List ConName) (view : CoverageView) :
     Nat → Ty → Pat → Pat → Bool × Nat
   | 0, _, _, _ => (false, 1)
   | fuel+1, t, a, b => Id.run do
       if Coverage.isWild a || Coverage.isWild b then return (true,0)
       let mut exhausted := 0
-      for s in Coverage.shapes P ctors t [a,b] do
+      for s in Coverage.shapesWithView P ctors view t [a,b] do
         match Coverage.specialize a s, Coverage.specialize b s with
         | some xs, some ys =>
             if xs.length == ys.length then
               let mut ok := true
               for (t,x,y) in s.fields.zip (xs.zip ys) do
                 if ok then
-                  let (v,n) := auditOverlap P ctors fuel t x y
+                  let (v,n) := auditOverlap P ctors view fuel t x y
                   exhausted := exhausted + n
                   ok := v
               if ok then return (true,exhausted)
@@ -219,9 +238,9 @@ def auditOverlap (P : Program) (ctors : DataName → List ConName) :
 
 -- MatchCoverage の欄に含まれない coveringAlternatives の呼び出しも監査する。
 -- 単独の行・各接頭辞は実際の手順と同じ引数で usefulReport を呼ぶ。
-def auditMatch (m : Material) (t : Ty) (arms : List Arm) (r : MatchCoverage) : Except String FuelCounts := do
+def auditMatch (m : Material) (view : CoverageView) (t : Ty) (arms : List Arm) (r : MatchCoverage) : Except String FuelCounts := do
   let mut f : FuelCounts := {}
-  let count := fun rows q => if (usefulReport m.program m.constructors [t] rows [q]).fuelExhausted then 1 else 0
+  let count := fun rows q => if (usefulReportWithView m.program m.constructors view [t] rows [q]).fuelExhausted then 1 else 0
   f := { f with matchChecks := count ((unguardedPats arms).map (fun p => [p])) .wild }
   for (arm,i) in arms.zipIdx do
     for (alt,j) in arm.alts.zipIdx do
@@ -235,9 +254,9 @@ def auditMatch (m : Material) (t : Ty) (arms : List Arm) (r : MatchCoverage) : E
     for (_,k) in prev.zipIdx do
       f := { f with coveringPrefixes := f.coveringPrefixes + count ((prev.take (k+1)).map (fun (_,p) => [p])) target }
     for (_,p) in prev do
-      let (v,n) := auditOverlap m.program m.constructors
+      let (v,n) := auditOverlap m.program m.constructors view
         (Coverage.nodes p + Coverage.nodes target + 1) t p target
-      if v != overlaps m.program m.constructors t p target then throw "overlap audit disagrees"
+      if v != overlapsWithView m.program m.constructors view t p target then throw "overlap audit disagrees"
       f := { f with overlaps := f.overlaps + n }
   if r.fuelExhausted && f.matchChecks == 0 then f := { f with matchChecks := 1 }
   return f
@@ -258,18 +277,20 @@ structure CaseReport where
 
 def compare (input : Input) : Except String CaseReport := do
   let m ← material input.decls
+  Benitoite.Exchange.validateDataTypes m.types
+  let view ← Benitoite.Exchange.coverageView m.types input.package input.coverageView
   let t ← readTy input.decls 0 input.ty
   let arms ← readArms m t input.arms
   let p ← readPat input.pattern
   if !typedPat m t p then throw "ill-typed irrefutable pattern"
-  let r := checkMatch m.program m.constructors t arms
+  let r := checkMatchWithView m.program m.constructors view t arms
   let original := result m r
-  let ir := irrefutable m.program m.constructors t p
-  let iw := (checkMatch m.program m.constructors t [.mk [⟨p,[]⟩] none (.ret (.const .unit))]).uncovered.map (CoverageWitness.show m.display)
-  let irFuel := usefulReport m.program m.constructors [t] [[p]] [.wild]
+  let ir := irrefutableWithView m.program m.constructors view t p
+  let iw := (checkMatchWithView m.program m.constructors view t [.mk [⟨p,[]⟩] none (.ret (.const .unit))]).uncovered.map (CoverageWitness.showWithTypes m.display m.typeDisplay)
+  let irFuel := usefulReportWithView m.program m.constructors view [t] [[p]] [.wild]
   let sameIr := ir == input.irrefutable && iw == input.irrefutableWitness
   let equal := original == input.expected && sameIr
-  let fuel ← auditMatch m t arms r
+  let fuel ← auditMatch m view t arms r
   let fuel := { fuel with irrefutable := if irFuel.fuelExhausted then 1 else 0 }
   return {
     name := input.name, classification := (if equal then "matched" else "mismatched"),
@@ -285,8 +306,7 @@ def run (args : List String) : IO UInt32 := do
   for n in [-9223372036854775808, 9223372036854775807] do
     let v ← IO.ofExcept (Json.parse ((toJson (n : Int)).compress) >>= readInt)
     if v != n then throw (IO.userError "i64 JSON roundtrip")
-  let corpus ← IO.ofExcept ((Json.parse (← IO.FS.readFile corpusFile)) >>= fromJson? : Except String Corpus)
-  if corpus.version != 2 then throw (IO.userError "unsupported coverage version")
+  let corpus ← IO.ofExcept ((Json.parse (← IO.FS.readFile corpusFile)) >>= Benitoite.Exchange.exchangeJson "coverage" >>= fromJson? : Except String Corpus)
   if corpus.cases.length != corpus.randomCases + corpus.boundaryCases || duplicate (corpus.cases.map Input.name) then
     throw (IO.userError "case count/names")
   let mut matched := 0

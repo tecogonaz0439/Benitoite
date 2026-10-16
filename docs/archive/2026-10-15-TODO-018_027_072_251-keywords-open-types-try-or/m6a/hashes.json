@@ -1,0 +1,88 @@
+[
+  {
+    "label": "lib hash fixture",
+    "old": "sha256:a1b90227fd78ffd9f1ce24c6969a96511416e6f18571e480713a16e92f7b503f",
+    "new": "sha256:3b02e3120f7e20f1c82b7c70dae26848f301edbb5988602795002a20d5c8b9b5",
+    "sites": [
+      "crates/benitoite/src/modules/hash.rs"
+    ],
+    "files": [
+      {
+        "path": "A/Sub.bnt",
+        "before_sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb",
+        "after_sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb"
+      },
+      {
+        "path": "COPYING",
+        "before_sha256": "4d00967e353d87ca937a76b4b1dafe6a72fd872e4f8370534972ec111cb86c0e",
+        "after_sha256": "4d00967e353d87ca937a76b4b1dafe6a72fd872e4f8370534972ec111cb86c0e"
+      },
+      {
+        "path": "License.md",
+        "before_sha256": "adc37366f403835c1470ab2df93d3837d4719372fc1ef8593d922e06f033f8b2",
+        "after_sha256": "adc37366f403835c1470ab2df93d3837d4719372fc1ef8593d922e06f033f8b2"
+      },
+      {
+        "path": "Z.bnt",
+        "before_sha256": "552bab6864c7a7b69a502ed1854b9245c0e1a30f008aaa0b281da62585fdb025",
+        "after_sha256": "552bab6864c7a7b69a502ed1854b9245c0e1a30f008aaa0b281da62585fdb025"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "a837d82eeb6e0fcf9c99986a51135286821eaa2f1a78947671d73913e33b871b",
+        "after_sha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218"
+      },
+      {
+        "path": "readme.md",
+        "before_sha256": "13550350a8681c84c861aac2e5b440161c2b33a3e4f302ac680ca5b686de48de",
+        "after_sha256": "13550350a8681c84c861aac2e5b440161c2b33a3e4f302ac680ca5b686de48de"
+      },
+      {
+        "path": "wasm/x.wasm",
+        "before_sha256": "3cc34474f2adb05aa3e99c9dde5a2066c1bf292310ba8c6026f9027ae11d74d7",
+        "after_sha256": "3cc34474f2adb05aa3e99c9dde5a2066c1bf292310ba8c6026f9027ae11d74d7"
+      }
+    ]
+  },
+  {
+    "label": "package command fixture",
+    "old": "sha256:eee08f30ef130c609237874eefd93d59e3338d58438294fb47dc24ec917cef4e",
+    "new": "sha256:0e03d3fd2ac72afce915d04f076536efd301078c8e9f416bceb6b6f80b2219c7",
+    "sites": [
+      "crates/benitoite/tests/package_command.rs"
+    ],
+    "files": [
+      {
+        "path": "Value.bnt",
+        "before_sha256": "52573934e713a6f05acffa3bd7aae060036defb25d61a387f1acea6aab456c87",
+        "after_sha256": "52573934e713a6f05acffa3bd7aae060036defb25d61a387f1acea6aab456c87"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "c98caf67fa81a65d2a248d37edf1745691740876cf28fef5cbbff87af8bffa71",
+        "after_sha256": "22ed150fbb4233eff9963e8c92599df84716c13b26aac74cf96deedae5708c81"
+      }
+    ]
+  },
+  {
+    "label": "golden Hashkit",
+    "old": "sha256:ddac9d07ae2a12288b1ef3e5a4cbe36ae1d44a3991a1fc3f3b9e5d44a57da584",
+    "new": "sha256:20e42f7da076ce5bd11f6f4a7b433f956e8f73e98f58cd279c8dc2aafbe09393",
+    "sites": [
+      "crates/benitoite/testdata/packages/hash-match/package.bnt",
+      "crates/benitoite/testdata/packages/hash-mismatch.diag.json"
+    ],
+    "files": [
+      {
+        "path": "Value.bnt",
+        "before_sha256": "b6eab88d0e8ae6bcd83665b5a7687dab90f7c16aa48208345fe715e29df96824",
+        "after_sha256": "b6eab88d0e8ae6bcd83665b5a7687dab90f7c16aa48208345fe715e29df96824"
+      },
+      {
+        "path": "package.bnt",
+        "before_sha256": "d8a9d5275c20e4dec45e6be62ba8fe92909b2d96c564ff26cdb9a5dac3cd341b",
+        "after_sha256": "2dd2e5e74287ea92be973d3dcdbf1e44f63a5455ac64b552453f88095a420bb2"
+      }
+    ]
+  }
+]

@@ -14,10 +14,10 @@ function read(document: Json.Value) -> String
 end function
 
 function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Console.Write, Process.Environment
-  bind task <- try Runner.argument(0)
-  bind path <- try Runner.argument(1)
-  bind count <- try Runner.rounds(2)
-  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda)
+  bind task <- try Runner.argument(0) or return
+  bind path <- try Runner.argument(1) or return
+  bind count <- try Runner.rounds(2) or return
+  bind source <- try Result.mapError(r: File.readText(path), f: lambda(error: IOError) -> String return IOError.message(error) end lambda) or return
   if task = "deep" then
     bind parsed <- List.fold(xs: List.range(start: 0, stop: 1000), initial: Json.Value.Null, f: lambda(acc: Json.Value, value: Integer) -> Json.Value return Json.Value.Array([acc]) end lambda)
     return Runner.measure(count: 1, work: lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(parsed)) end lambda, render: lambda(value: String) -> String return value end lambda)
@@ -26,18 +26,18 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
     return Runner.measure(count: count, work: lambda() -> Result[Json.Value, String] uses State return Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) end lambda, render: lambda(value) -> String return Json.stringify(value) end lambda)
   end if
   if task = "stringify" then
-    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
     return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(parsed)) end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   if task = "read" then
     return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State
-      bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+      bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
       return Result.Ok(read(parsed))
     end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   if task = "pretty" then
     return Runner.measure(count: count, work: lambda() -> Result[String, String] uses State
-      bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+      bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
       return Result.Ok(Json.stringifyPretty(parsed))
     end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
@@ -45,12 +45,12 @@ function main() -> Result[Unit, String] uses State, File.Read, Clock.Time, Conso
     return Runner.measure(count: count, work: lambda() -> Result[Unit, String] uses State return Result.map(r: Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda), f: lambda(value: Json.Value) -> Unit return () end lambda) end lambda, render: lambda(value: Unit) -> String return "valid" end lambda)
   end if
   if task = "canonical" then
-    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
     Console.writeLine(Json.stringify(parsed))
     return Result.Ok(())
   end if
   if task = "verify" then
-    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda)
+    bind parsed <- try Result.mapError(r: Json.parse(source), f: lambda(error) return Json.ParseError.message(error) end lambda) or return
     return Runner.measure(count: 1, work: lambda() -> Result[String, String] uses State return Result.Ok(Json.stringify(parsed)) end lambda, render: lambda(value: String) -> String return value end lambda)
   end if
   return Result.Error("unknown JSON task")

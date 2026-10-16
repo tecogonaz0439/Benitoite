@@ -171,13 +171,34 @@ fn each_module_has_a_file_with_its_import_name() {
 }
 
 #[test]
-fn declarations_omit_attributes_bodies_and_private_functions() {
+fn declarations_keep_extensible_and_omit_implementation_details() {
     let generated = generated();
     for file in generated
         .iter()
         .filter(|f| f.path.starts_with("references/stdlib/"))
     {
         assert!(!file.text.contains("@builtin"), "{}", file.path);
+    }
+    // 型の使用条件は生成結果にも残し、実装用の属性と区別する（設計書 06-06）。
+    for (module, kind, name) in [
+        ("IOErrorKind", "data", "IOErrorKind"),
+        ("NetworkErrorKind", "data", "NetworkErrorKind"),
+        ("Json", "record", "ParseError"),
+        ("Csv", "record", "ParseError"),
+    ] {
+        let doc = find(&generated, &format!("references/stdlib/{module}.md"));
+        assert!(
+            doc.contains(&format!(
+                "```benitoite\n@extensible\npublic {kind} {name}\n"
+            )),
+            "{module}"
+        );
+        assert_eq!(doc.matches("@extensible").count(), 1, "{module}");
+    }
+    for module in ["Result", "Option"] {
+        assert!(
+            !find(&generated, &format!("references/stdlib/{module}.md")).contains("@extensible")
+        );
     }
     // Option.map は本体を持つ公開の関数。本体の `match` は写さない。
     let option = find(&generated, "references/stdlib/Option.md");

@@ -2,7 +2,7 @@
 use super::super::{
     TryKind,
     context::{Body, ReturnOwner},
-    infer::{Constraint, ITy, Reason},
+    infer::{Constraint, DictSite, IClassArg, ITy, Reason, TryConstraintAction},
 };
 use crate::base::NodeId;
 use crate::diag::{DiagBuilder, DiagCode};
@@ -42,12 +42,12 @@ pub(super) fn solve(ctx: &mut Body<'_, '_>, final_pass: bool) {
             match c {
                 Constraint::Try {
                     target,
-                    ret,
+                    action,
                     result,
                     node,
                     reason,
                 } => {
-                    solve_try(ctx, &target, &ret, &result, node, &reason);
+                    solve_try(ctx, &target, &action, &result, node, &reason);
                 }
                 Constraint::Resource { ty, reason }
                     if !ctx.solver.contains_error(&ty)
@@ -101,12 +101,14 @@ pub(super) fn solve(ctx: &mut Body<'_, '_>, final_pass: bool) {
 fn solve_try(
     ctx: &mut Body<'_, '_>,
     target: &ITy,
-    ret: &ITy,
+    action: &TryConstraintAction,
     result: &ITy,
     node: NodeId,
     r: &Reason,
 ) {
-    if ctx.solver.contains_error(target) || ctx.solver.contains_error(ret) {
+    if ctx.solver.contains_error(target)
+        || matches!(action, TryConstraintAction::Return { ret } if ctx.solver.contains_error(ret))
+    {
         poison(ctx, std::slice::from_ref(result), r);
         return;
     }
@@ -145,6 +147,26 @@ fn solve_try(
         return;
     };
     ctx.unify(result, value, r);
+    let TryConstraintAction::Return { ret } = action else {
+        let TryConstraintAction::Die { span, .. } = action else {
+            return;
+        };
+        if let Some(error) = args.get(1) {
+            let Some(class) = ctx.decls.resolved.stdlib("Benitoite.Trait.Show") else {
+                super::missing_standard(ctx, "Trait.Show");
+                poison(ctx, std::slice::from_ref(result), r);
+                return;
+            };
+            ctx.add(Constraint::Class {
+                class,
+                arg: IClassArg::Ty(error.clone()),
+                site: DictSite::DieShow { node },
+                reason: super::super::context::reason(*span, super::super::infer::ReasonKind::Try),
+            });
+        }
+        ctx.try_kinds.insert(node, (kind, action.clone()));
+        return;
+    };
     let current_ret = ctx.solver.zonk(ret);
     if !matches!(&current_ret, ITy::Var(_))
         && !matches!(&current_ret, ITy::Con(c, a) if *c == con && a.len() == args.len())
@@ -192,7 +214,7 @@ fn solve_try(
         }
     }
     if ctx.unify(ret, &ITy::Con(con, wanted), r) {
-        ctx.try_kinds.insert(node, (kind, ret.clone()));
+        ctx.try_kinds.insert(node, (kind, action.clone()));
     }
 }
 #[cold]

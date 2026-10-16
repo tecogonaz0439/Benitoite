@@ -1,0 +1,19 @@
+@extensible
+public data Kind
+  Known
+  Other
+end data
+@extensible()
+public record Detail
+  value: Integer
+end record
+@extensible
+public data Unused
+  Later
+end data
+public function inspect(kind: Kind) -> Integer
+  return match kind with
+    case Kind.Known -> 1
+    case Kind.Other -> 0
+  end match
+end function

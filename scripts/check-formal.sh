@@ -77,6 +77,9 @@ printf '%s\n' '== formal: coverageDiff'
 coverage_status=0
 formal/.lake/build/bin/coverageDiff "$coverage_dir/named-all-corpus.json" "$coverage_dir/report.json" || coverage_status=$?
 printf 'coverageDiff: %ss; report: %s/report.json\n' "$((SECONDS - coverage_diff_start))" "$coverage_dir"
+# 閉じた通常入力に加え、view を持つ独立入力も毎回比較する。
+printf '%s\n' '== formal: coverageDiff with views'
+formal/.lake/build/bin/coverageDiff "$coverage_dir/future-corpus.json" "$coverage_dir/future-report.json" || coverage_status=$?
 printf 'coverage stages: %ss\n' "$((SECONDS - coverage_build_start))"
 
 program_coverage_build_start=$SECONDS
@@ -100,6 +103,16 @@ named_exchange_start=$SECONDS
 printf '%s\n' '== formal: named exchange'
 python3 -I formal/tests/test_named_exchange.py
 printf 'named exchange: %ss\n' "$((SECONDS - named_exchange_start))"
+
+extensible_exchange_start=$SECONDS
+printf '%s\n' '== formal: extensible exchange'
+python3 -I formal/tests/test_extensible_exchange.py
+printf 'extensible exchange: %ss\n' "$((SECONDS - extensible_exchange_start))"
+
+try_exchange_start=$SECONDS
+printf '%s\n' '== formal: try exchange'
+python3 -I formal/tests/test_try_exchange.py
+printf 'try exchange: %ss\n' "$((SECONDS - try_exchange_start))"
 
 export_start=$SECONDS
 printf '%s\n' '== formal: Rust export'

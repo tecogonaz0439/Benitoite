@@ -342,6 +342,10 @@ Hello, Ada!
 
 A statement whose value is not `Unit` is an error. IO functions that can fail return `Result`; handle it with `try`, `match`, or bind it to `_` only when you really want to ignore the error.
 
+For reusable code, write `try operation or return` and keep a matching Result/Option return type. For an entry point that should exit, write `try operation or die` with `uses Process.Exit` and `import Benitoite.Unofficial.IO.Process`. Do not add Console.Write just for the host's die report. Result errors need Show; IOError, NetworkError, Json.ParseError, and Csv.ParseError already have it. Do not convert these errors to String solely for display. Bare try always returns a failure, including in main; it never infers die. See [Program shape and error handling](idioms.md#program-shape-and-error-handling) for a complete explicit example.
+
+An explicit action ends the try expression: use `(try r or return) + 1`, not `try r or return + 1`. `or return` takes no value; `die()` and `die(a, b)` are invalid. A message is a pure String evaluated only on failure, with no direct return/try/outer resume. Start its opening parenthesis on the same physical line as die. A short lambda must keep the entire action and message on one line.
+
 ```benitoite error
 import Benitoite.Unofficial.IO.File
 
@@ -358,11 +362,12 @@ error[E0416]: the value of this expression is not used
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
 
-function main() -> Result[Unit, String] uses File.Write, Console.Write
-  bind _ <- try File.writeText(path: "out.txt", text: "data") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+function main() -> Unit uses File.Write, Console.Write, Process.Exit
+  bind _ <- try File.writeText(path: "out.txt", text: "data") or die
   Console.writeLine("written")
-  return Result.Ok(())
+  return ()
 end function
 ```
 
@@ -372,7 +377,7 @@ written
 
 ## A last expression without `return`
 
-A function body returns its value with `return`. A lambda body also needs `return` unless its value is `Unit`.
+A function body returns its value with `return`. A lambda body also needs `return` unless its value is `Unit`. Start the value on the same physical line as `return`. A line break immediately after `return` is E0201, even inside parentheses or before an operator on the next line; comments and blank lines do not allow the value to start later. Once the value has started, ordinary continuation rules allow multiple lines: `return x +` followed by the next operand, `return (` followed by a parenthesized value, `return f(` followed by arguments, or `return if condition then` followed by the branches. A short lambda must still fit entirely on one physical line. `benitoite fmt` reports the error and leaves the file unchanged; it does not join the lines.
 
 ```benitoite error
 function next(n: Integer) -> Integer
@@ -443,7 +448,11 @@ end function
 
 ## Keywords as names
 
-These 34 words are keywords and cannot be names: `and`, `bind`, `case`, `const`, `data`, `div`, `do`, `effect`, `else`, `end`, `false`, `function`, `handle`, `if`, `implement`, `import`, `lambda`, `lazy`, `match`, `mod`, `not`, `or`, `public`, `record`, `resume`, `return`, `shadow`, `then`, `trait`, `true`, `try`, `type`, `uses`, `with`. Choose another name.
+These 35 words are keywords and cannot be names: `and`, `bind`, `case`, `const`, `data`, `die`, `div`, `do`, `effect`, `else`, `end`, `false`, `function`, `handle`, `if`, `implement`, `import`, `lambda`, `lazy`, `match`, `mod`, `not`, `or`, `public`, `record`, `resume`, `return`, `shadow`, `then`, `trait`, `true`, `try`, `type`, `uses`, `with`. Choose another name. This restriction also applies to argument labels, fields, import aliases, and names after a dot. `die` is accepted only as a failure action: `try value or die` or `try value or die(message)`. A standalone `die` expression is rejected. `Die`, `died`, and `dieLater` are ordinary identifiers.
+
+`fn`, `pub`, `impl`, and `mut` are ordinary names, not abbreviations for syntax. Write declarations with `function`, `public`, and `implement`, and anonymous functions with `lambda`. `for`, `while`, `loop`, `break`, `continue`, `switch`, `where`, `async`, `await`, `spawn`, and `select` are not reserved either. Use collection functions such as `List.map`, `List.fold`, and `List.forEach` for iteration, and APIs such as `Task.await`, `TaskGroup.spawn`, and `Task.race` for concurrency.
+
+`as` is special only in an import declaration. `language`, `dependency`, `package`, and header field names are read specially in file headers. `equality` and `key` name built-in constraints; `ordered` is a constraint available only in standard-library source. Attribute names (`external`, `test`, `deprecated`, `extensible`, and the standard-library-only `builtin`) are ordinary identifiers outside attributes. Write `@extensible` without arguments on data or record declarations. Outside the defining package, cover future shapes with an unguarded variable or `_`; listing every known constructor, including `Other`, is insufficient. See [Records and data types](idioms.md#records-and-data-types) for the four standard failure types and the limits on record destructuring. A record pattern's `..` does not cover future shapes: use a getter or rewrite a rejected binding as a `match` with an unguarded `case _ ->` branch.
 
 ```benitoite error
 function handle(request: String) -> String

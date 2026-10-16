@@ -61,9 +61,19 @@ pub enum TryKind {
 #[derive(Clone, PartialEq, Debug)]
 pub struct TryInfo {
     pub kind: TryKind,
-    /// 最も内側の関数かラムダの戻り値の型（`Result[U, E]` か `Option[U]`）。
-    /// 脱糖は、`escape` に渡す構成子の型引数をここから読む
-    pub ret: Ty,
+    pub action: TryActionInfo,
+}
+
+/// 失敗時の処置に必要な、確定済みの戻り値または標準の辞書と操作。
+#[derive(Clone, PartialEq, Debug)]
+pub enum TryActionInfo {
+    Return {
+        ret: Ty,
+    },
+    Die {
+        show: Option<crate::types::DictExpr>,
+        exit: BindingId,
+    },
 }
 
 /// `handle` の節一つの型検査の結果。

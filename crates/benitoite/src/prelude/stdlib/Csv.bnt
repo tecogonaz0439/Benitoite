@@ -1,6 +1,9 @@
 //! Reading and writing CSV as in RFC 4180. Every field is a `String`.
 
+import Benitoite.Trait
+
 /// Why parsing failed. `line` is the line where the record with the error starts, counting from 1.
+@extensible
 public record ParseError
   line: Integer
   message: String
@@ -25,3 +28,9 @@ public function format(rows: List[List[String]]) -> String
 /// Writes the rows as CSV with `delimiter` between fields. `delimiter` must be an ASCII character other than `"`, CR, and LF.
 @builtin("Csv.formatWith")
 public function formatWith(rows: List[List[String]], delimiter: Character) -> String
+
+implement Trait.Show[ParseError]
+  function show(x: ParseError) -> String
+    return ParseError.message(x)
+  end function
+end implement

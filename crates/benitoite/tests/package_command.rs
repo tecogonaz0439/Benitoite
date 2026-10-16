@@ -15,7 +15,7 @@ use std::{
     process::{Command, Output},
     time::{SystemTime, UNIX_EPOCH},
 };
-const CONFIG: &str = "language \"0.0.5\"\n\npackage Words\nend package\n";
+const CONFIG: &str = "language \"0.0.6\"\n\npackage Words\nend package\n";
 const MAIN: &str = "function main() -> Unit\n  ()\nend function\n";
 const READ: &str = "import Benitoite.Unofficial.IO.File\n\npublic function read() -> Unit uses File.Read\n  ()\nend function\n";
 struct Directory(PathBuf);
@@ -111,7 +111,7 @@ fn add_and_update_record_hashes_effect_deltas_and_unchanged_state() {
     dir.fixture();
     let add = dir.package(&["add", "Text", "--path", "deps/words"]);
     success(&add);
-    let hash = "sha256:eee08f30ef130c609237874eefd93d59e3338d58438294fb47dc24ec917cef4e";
+    let hash = "sha256:0e03d3fd2ac72afce915d04f076536efd301078c8e9f416bceb6b6f80b2219c7";
     assert!(stdout(&add).starts_with("added dependency Text (package Words) to "));
     assert!(stdout(&add).ends_with(&format!(
         "  hash: {hash}\n  effects: File.Read\n  components: (none)\n"
@@ -189,7 +189,7 @@ fn move_preserves_check_results_and_rolls_back_when_entry_is_read_only() {
     let dir = Directory::new();
     dir.fixture();
     let source = format!(
-        "//! main\n\n// version\nlanguage \"0.0.5\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
+        "//! main\n\n// version\nlanguage \"0.0.6\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
     );
     dir.write("main.bnt", &source);
     success(&dir.command(&["check", "main.bnt"]));
@@ -216,7 +216,7 @@ fn move_preserves_check_results_and_rolls_back_when_entry_is_read_only() {
     assert_eq!(dir.read("main.bnt"), format!("//! main\n\n{MAIN}"));
     assert_eq!(
         dir.read("package.bnt"),
-        "// version\nlanguage \"0.0.5\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n"
+        "// version\nlanguage \"0.0.6\" // keep\n\ndependency Text\n  path \"deps/words\"\nend dependency\n"
     );
     success(&dir.command(&["check", "main.bnt"]));
     for existing in [false, true] {
@@ -271,8 +271,8 @@ fn rejected_commands_do_not_write_files_and_support_json_diagnostics() {
         (vec!["move", "main.bnt"], MAIN.into(), None, "E0925"),
         (
             vec!["move", "main.bnt"],
-            format!("language \"0.0.5\"\n{MAIN}"),
-            Some("language \"0.0.5\"\n"),
+            format!("language \"0.0.6\"\n{MAIN}"),
+            Some("language \"0.0.6\"\n"),
             "E0926",
         ),
     ] {
@@ -397,14 +397,14 @@ fn command_preconditions_reject_unwritable_or_missing_destinations_and_package_d
     dir.write(
         "main.bnt",
         &format!(
-            "language \"0.0.5\"\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
+            "language \"0.0.6\"\n\ndependency Text\n  path \"deps/words\"\nend dependency\n\n{MAIN}"
         ),
     );
     error(&dir.package(&["move", "main.bnt"]), "E0915");
     assert_eq!(dir.read("package.bnt"), "package Words\nend package\n");
-    dir.write("main.bnt", &format!("language \"0.0.5\"\n\n{MAIN}"));
+    dir.write("main.bnt", &format!("language \"0.0.6\"\n\n{MAIN}"));
     success(&dir.package(&["move", "main.bnt"]));
-    assert!(dir.read("package.bnt").contains("language \"0.0.5\""));
+    assert!(dir.read("package.bnt").contains("language \"0.0.6\""));
 }
 
 // spec: 06-01 `package` のコマンドライン
@@ -449,7 +449,7 @@ fn move_appends_to_comment_only_config_without_reformatting_comments() {
     ] {
         let dir = Directory::new();
         dir.fixture();
-        dir.write("main.bnt", &format!("language \"0.0.5\"\n\n{MAIN}"));
+        dir.write("main.bnt", &format!("language \"0.0.6\"\n\n{MAIN}"));
         dir.write("package.bnt", comments);
         success(&dir.package(&["move", "main.bnt"]));
         let nl = if comments.contains("\r\n") {
@@ -460,7 +460,7 @@ fn move_appends_to_comment_only_config_without_reformatting_comments() {
         assert_eq!(
             dir.read("package.bnt"),
             format!(
-                "{}{nl}{nl}language \"0.0.5\"{nl}",
+                "{}{nl}{nl}language \"0.0.6\"{nl}",
                 comments.trim_end_matches(['\r', '\n'])
             )
         );

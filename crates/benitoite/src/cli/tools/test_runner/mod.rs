@@ -45,7 +45,11 @@ pub enum Failure {
     /// 実行時エラーか資源の不足（解放の失敗の注記を加えた報告）
     Runtime { report: Box<Diagnostic> },
     /// `Process.exit` で止まった。`reports` は止める途中の解放の失敗の報告
-    Exit { code: u8, reports: Vec<Diagnostic> },
+    Exit {
+        code: u8,
+        die_failure: Option<crate::vm::DieFailure>,
+        reports: Vec<Diagnostic>,
+    },
 }
 
 /// テスト一つの結果。
@@ -653,6 +657,7 @@ fn failure_of(
         }
         EndKind::Exited(code) => Failure::Exit {
             code,
+            die_failure: run.die_failure,
             reports: run.reports,
         },
         EndKind::Stopped => {

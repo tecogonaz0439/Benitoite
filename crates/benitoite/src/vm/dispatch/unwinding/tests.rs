@@ -226,7 +226,14 @@ fn stopping_inside_nested_drop_keeps_progress_and_uses_stop_cause() {
     });
     heap.collect(&state);
     heap.epoch(|ctx| {
-        begin_stop(&mut state, ctx, StopReason::Exit(7));
+        begin_stop(
+            &mut state,
+            ctx,
+            StopReason::Exit {
+                code: 7,
+                die_failure: None,
+            },
+        );
         assert!(state.returning.is_none());
         let w = state.unwinding.as_ref().unwrap();
         assert_eq!(w.segments.len(), 3);
@@ -251,7 +258,10 @@ fn stopping_inside_nested_drop_keeps_progress_and_uses_stop_cause() {
     assert_eq!(
         state.step,
         Some(VmStep::Stopped(StopEnd {
-            reason: StopReason::Exit(7),
+            reason: StopReason::Exit {
+                code: 7,
+                die_failure: None
+            },
             release_failures: vec![failure()]
         }))
     );

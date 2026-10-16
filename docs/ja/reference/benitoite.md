@@ -1,6 +1,6 @@
 # Benitoite 言語リファレンス
 
-> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.5 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.6 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（crates/benitoite/tests/reference_examples.rs）:
@@ -16,7 +16,7 @@
 この訳のコードの例は検査しない。検査するのは英語の版である。
 -->
 
-このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.5` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
+このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.6` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
 
 `benitoite` のインストールは、[Benitoite のインストール](install.md)を参照する。
 
@@ -97,7 +97,7 @@ benitoite --licenses
 | `skill` | 同梱の Agent Skill を、コーディングエージェントがスキルを読む場所に書き出す、または取り除く。[Benitoite のインストール](install.md#3-agent-skill-をインストールする)を参照する。 |
 | `package` | 実験的な機能。局所の依存の宣言を追加・更新・移動する。[パッケージのコマンド](#パッケージのコマンド)を参照する。 |
 | `--help` | 使い方を出力する。 |
-| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.5`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
+| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.6`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
 | `--licenses` | 実行ファイルに含まれる第三者のソフトウェアのライセンスを出力する。ソースからのビルドはこの一覧を含まず、そのことを出力する。 |
 
 `<script>` は、ファイルか、`main.bnt` を含むディレクトリである。ファイル名と拡張子は確かめない。ただし、`package.bnt` は設定ファイルであり、起点のファイルにはできない。スクリプトのディレクトリが*根のディレクトリ*である。スクリプトは、根のディレクトリとその下、標準ライブラリ（[モジュール](#12-モジュール)）、宣言した局所の依存からモジュールを取り込める（[第 21 節](#21-実験的な機能-パッケージと外部の関数)）。`benitoite` は、根のディレクトリそのものにある `package.bnt` を設定ファイルとして読む。親のディレクトリや作業ディレクトリは探さない。
@@ -147,18 +147,20 @@ Linux では `#!/usr/bin/env benitoite run` と書かない。Linux はインタ
 
 ファイルのトップレベルには、`import` の宣言、その後に宣言（関数、定数、データ型、型の別名、レコード、型クラス、実装、エフェクト）をこの順に置く。実行するコードは関数の中にだけ書く。
 
-短いラムダ（[関数とラムダ](#6-関数とラムダ)を参照する）を除き、ブロックは、`end` とブロックを開いたキーワードで閉じる。`end function`、`end if`、`end match`、`end lambda`、`end data`、`end record`、`end trait`、`end implement`、`end effect`、`end handle`、`end with`、`end lazy` である。波括弧はなく、字下げに意味はない。文は改行で区切る。セミコロンはない。
+短いラムダ（[関数とラムダ](#6-関数とラムダ)を参照する）を除き、ブロックは、`end` とブロックを開いたキーワードで閉じる。`end function`、`end if`、`end match`、`end lambda`、`end data`、`end record`、`end trait`、`end implement`、`end effect`、`end handle`、`end with`、`end lazy` である。波括弧はなく、字下げに意味はない。文は改行で区切る。セミコロンはない。`return` の直後の物理改行は、括弧の中でも、次の行の先頭が継続用の演算子でも、常に文を終える。コメントや空行を挟んでも、この規則は変わらない。
 
 ブロックの中では次のように書く。
 
 - `bind name <- expression` は値に名前を付ける。名前に再び代入することはできない。
 - `shadow name <- expression` は、既に見えている局所の名前を隠す名前を束縛する。既に局所の名前として見えている名前での `bind` は誤りなので、隠すことは常に明示する。`shadow` は有効な構文だが、推奨しない。意図して古い名前を隠す場合も、新しい値の意味を表す別の名前を使う。これは文書上の助言であり、警告は加えない。
-- `return expression` は関数を終え、値を返す。
+- `return expression` は関数を終え、値を返す。値は `return` と同じ物理行で書き始める。値がなければ誤り（E0201）である。書き始めた後は、通常の継続の規則で複数行にできる。例えば、`return x +` の演算子の後、`return (` の括弧の中、`return f(` の引数の中、`return if condition then` の `then` の後で継続できる。短いラムダは、全体を一つの物理行に収める必要がある。
 - 1 行に単独で書いた式は文である。その文がブロックの最後の文でないとき、または関数かラムダの本体の最後の文であるときは、その値は `Unit` でなければならない。ほかの値を捨てるには `bind _ <- expression` と書く。
 
 戻り値の型が `Unit` でない関数は、`return` で終わらなければならない（またはすべての分岐が値を返す `if` か `match` で終わる）。`if` の値、`match` の分岐の値、ハンドラの節の値、`with`・`handle`・`lazy` の本体の値は、その最後の式である。`if`、`match` の分岐、ハンドラの節、`with` か `handle` の本体の中の `return` は、それを含む関数から抜ける。`lazy` の本体と `match` のガードは、`return` も `try` も含められない。ただし、そこに書いた `lambda ... end lambda` の中は除く。プレースホルダ `_` を持つ呼び出しの引数は、この除外に当たらない。
 
 `//` は行末までのコメントを始める。宣言の前の `///` はその宣言の説明であり、ファイルの先頭の `//!` はモジュールの説明である。識別子には ASCII の英字、数字、`_` を使う。関数、値、引数の名前は小文字で始め、型、構成子、モジュール、エフェクトの名前は大文字で始める。
+
+`die` は予約語であり、引数のラベル、フィールド、取り込みの別名、ドットの後の名前を含め、名前に使えない。`try e or die` と `try e or die(message)` の中でだけ受理し、単独の式にはできない。
 
 ```benitoite
 //! Prints a short report.
@@ -544,6 +546,49 @@ A B almost nothing C
 
 データ型とレコードは型パラメータを持てる。たとえば、構成子 `Leaf` と `Node(Tree[T], T, Tree[T])` を持つ `data Tree[T]` である。
 
+### 拡張可能な型
+
+引数のない属性 `@extensible` を `data` か `record` の宣言の前に置く。`public` または `public(package)` があれば、その前に置く。非公開の宣言にも使え、`@deprecated` と併用できる。`@extensible()` も同じ属性として受理し、フォーマッタは括弧を保つ。引数があれば `E0817`（文字列でない引数は `E0220`）、重複は `E0803`、ほかの種類の宣言への指定は `E0802` を報告する。個々の構成子の前には属性を置けない（`E0201`）。
+
+定義したパッケージの中では、宣言済みの構成子をすべて覆うパターンを網羅的と判定できる。外では、ソースに書く `match` に、ガードのない変数か `_` のパターンで将来の形も覆う分岐を要する。`Other` という名前の構成子も既知の構成子であり、将来の形を覆わない。ガード付きの分岐は網羅性に数えない。この規則は、`Result`、`Option`、リスト、レコードのフィールドの中や、型の別名を通した位置にも適用する。全既知構成子の後でも将来の形の分岐は有効である。ガードのない `_` の後の分岐は、引き続き到達不能である。
+
+パッケージの境界は `public(package)` と同じである。起点のスクリプトと根のモジュールは一つのパッケージ、標準ライブラリと prelude は別の一つのパッケージを成し、各依存の内部モジュールはその依存に属する。同じパッケージの別のモジュールへ型を取り込んでも、外部からの使用にはならない。
+
+標準ライブラリは、四つの失敗型 `IOErrorKind`、`NetworkErrorKind`、`Json.ParseError`、`Csv.ParseError` を拡張可能と指定する。`Result` と `Option` 自体は閉じた型のままである。中身を変数で束縛する `Result.Ok(value)` と `Result.Error(error)` で、両方の場合を覆える。`String` の失敗値には通常の文字列パターンの規則を保つ。不透明な `IOError` と `NetworkError` には、照合できる構成子がない。
+
+拡張可能なレコードでは、`ParseError(message: text, ..)` は既知のレコードの形だけを覆う。`..` は現在のフィールドの省略である。パッケージの外では、`match` に変数か `_` の分岐を加える。分解する `bind` や `shadow` は常に一致しなければならないので、そのレコードパターンだけを使うと `E0607` を報告する。取り出す関数か、将来の形の分岐を持つ `match` を使う。構築・更新・フィールドの取り出しは、宣言したフィールドの契約を保つ。この属性は、レコードのフィールドを追加・変更したときの互換性を保証しない。
+
+次の例は、既知の JSON の失敗の形を処理し、将来の形の分岐を残す。既存の API でレコードを構築・更新する例も含む。
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Json
+
+function describe(result: Result[Json.Value, Json.ParseError]) -> String
+  return match result with
+    case Result.Ok(_) -> "parsed"
+    case Result.Error(Json.ParseError(message: text, ..)) -> text
+    case Result.Error(otherError) -> "another JSON error"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  bind original <- Json.ParseError(line: 1, column: 2, message: "expected a value")
+  bind revised <- Json.ParseError(..original, message: "invalid input")
+  Console.writeLine(describe(Result.Error(original)))
+  Console.writeLine(Json.ParseError.message(revised))
+end function
+```
+
+```output
+expected a value
+invalid input
+```
+
+将来の形が残ると、`match` では `E0601`、束縛のパターンでは `E0607` を報告し、型の宣言を副位置に示す。反例は `<future constructor of TypeName>`、レコードなら `<future shape of TypeName>` と表示する。これらは診断の説明であり、ソースに書ける構成子名ではない。`E0601` はガードのない変数か `_` を提案する。`E0607` は、束縛をガードのない `case _ ->` の分岐を持つ `match` に書き直すよう提案する。
+
+閉じた型に `@extensible` を加えると、以前は受理した外部の照合や分解の束縛を拒否することがある。拡張可能なデータ型への構成子の追加は、外部のソースのパターンの網羅性を保つ。ただし、以前 `Other` と分類した値に新しい構成子を割り当てる場合など、同じ結果を保証するものではない。構成子の削除・改名・フィールドの変更は、この保証の範囲外である。属性を取り除くと、構成子の集合を閉じたものとする契約になり、将来の形の分岐が到達不能になることがある。この属性によって、呼び出し側が構成子を追加できるようにはならない。実行時の構成子のタグ、ABI、等価性、キーの制約は従来の規則を保つ。[WIT の構造の照合](#wasm-を通じた外部の関数と型)は別の契約であり、引き続き厳密な一致を要する。
+
 ## 8. 定数と型の別名
 
 `const` は、トップレベルで定数を宣言する。型は必須であり、値はプログラムの実行の前に計算できなければならない。使えるのは、リテラル、ほかの定数、構成子、レコード、リスト、演算子、定数の文字列補間、`Map.fromList`、`Set.fromList`、`Map.empty()`、`Set.empty()` である。定数は、括弧を付けずに名前で参照する。
@@ -578,9 +623,11 @@ Not Found
 
 値がないことがある操作は `Option[T]`（`Option.Some(x)` か `Option.None`）を返す。失敗することがある操作は `Result[T, E]`（`Result.Ok(x)` か `Result.Error(e)`）を返す。IO の操作は `Result[T, IOError]` を返す。ファイルがないことは値であり、異常終了ではない。
 
-`try e` は `e` を評価する。`Result.Error`（または `Option.None`）なら、関数はその値をすぐに返す。それ以外なら、`try` は中身の値を取り出す。`try` はパイプを含めた右側の式全体に作用し、`Result`（または `Option`）を返す関数の中でだけ使える。エラーの型が異なるときは、先に `Result.mapError` で変換する。例えば、関数が `Result[T, String]` を返し、`result` が `IOError` を含む場合は、`Result.mapError(r: result, f: lambda(error) return IOError.message(error))` と書く。コールバックのパラメータ名は `error` である。
+`try e` と `try e or return` は `e` を一度評価する。`Result.Error`（または `Option.None`）なら、最も内側の関数かラムダはその失敗をすぐに返す。それ以外なら、式は中身の値を取り出す。これらの失敗を返す形では、囲む関数の戻り値の型を、同じエラー型の `Result`、または対応する `Option` にする必要がある。裸の `try e` は、この失敗を返す意味に固定する。戻り値の型や書く位置によって終了へ切り替わることはなく、Show の制約や終了のエフェクトを加えない。`try` はパイプを含めた右側の式全体に、同じ深さの処置まで作用する。エラーの型が異なるときは、先に `Result.mapError` で変換する。例えば、関数が `Result[T, String]` を返し、`result` が `IOError` を含む場合は、`Result.mapError(r: result, f: lambda(error) return IOError.message(error))` と書く。コールバックのパラメータ名は `error` である。
 
-パイプでは、`try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))` と書く。この `try` は、パイプ全体の結果を取り出す。ラムダ内の `try` はそのラムダから戻る。`_` の穴を持つ呼び出しの、呼ぶ関数の式や固定した引数の中では、`try` は生成した関数から戻り、周囲の関数からは戻らない。[穴とパイプ](#穴とパイプ)を参照する。
+失敗を返すパイプでは、`try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return` と書く。この `try` は、パイプ全体の結果を取り出す。ラムダ内で失敗を返す `try` は、そのラムダから戻る。`_` の穴を持つ呼び出しの、呼ぶ関数の式や固定した引数の中では、生成した関数から戻り、周囲の関数からは戻らない。[穴とパイプ](#穴とパイプ)を参照する。
+
+新しいコードでは処置を明示する。再利用する関数・ライブラリ・コールバックには `or return`、失敗を報告して実行を終える入口には `or die` を使う。`Result.Error` を返す契約の入口や、`Process.Exit` を使えない入口でも `or return` を使える。次の例は、`main` から失敗を返す場合である。
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -593,9 +640,9 @@ function parsePort(text: String) -> Result[Integer, String]
 end function
 
 function main() -> Result[Unit, String] uses Console.Write
-  bind port <- try parsePort("8080")
+  bind port <- try parsePort("8080") or return
   Console.writeLine("port ${port}")
-  bind other <- try parsePort("http")
+  bind other <- try parsePort("http") or return
   Console.writeLine("never printed ${other}")
   return Result.Ok(())
 end function
@@ -612,6 +659,49 @@ not a port: http
 
 値にならない失敗もある。整数の桁あふれ、0 による除算、大きすぎて作れない値、呼び出しのスタックの使い果たしは、実行時エラーでプログラムを*止め*、終了状態は 1 になる。`match` はこれらを捕えられない。報告は、その場所と、そこに至った呼び出しを示す。
 
+`try e or die` と `try e or die(message)` は、標準の `Result[T, E]` か `Option[T]` を受け取り、成功時は `T` を取り出す。囲む関数の戻り値の型は制限しない。`Process.Exit` を加えるので、`uses` に名前を書くために `Benitoite.Unofficial.IO.Process` を取り込む。このモジュールは `as` で改名できない（E0339）ため、`uses Process.Exit` と書く。コンパイラは標準の Show と終了の参照を内部で接続するが、名前を利用者のスコープに取り込むことはない。ホストによる失敗の報告に `Console.Write` のエフェクトは不要である。
+
+| 処置 | 囲む関数の戻り値の型 | 表示の要件 | 追加のエフェクト |
+|---|---|---|---|
+| 裸の try または `or return` | 入力に対応する `Result[U, E]` か `Option[U]` | なし | なし |
+| `or die` または `or die(message)` | 任意 | Result のエラー型には `Trait.Show`。Option には不要 | `Process.Exit` |
+
+入力は一度だけ評価する。成功時は説明も Show も評価しない。失敗時は、任意の純粋な `String` の説明を一度、エラーの Show を一度、この順に評価し、標準の終了操作を状態 1 で呼ぶ。説明の中でエラーに名前を暗黙に束縛することはない。説明には直接の `return`、`try`、外側の `resume` を書けない。そこに書くラムダは、独自の return の境界を持つ。`IOError`、`NetworkError`、`Json.ParseError`、`Csv.ParseError` は、`message` の文字列をそのまま返す Show を既に実装している。ほかのエラー型では Show を実装するか、`Result.mapError` で Show のある型へ変換する。失敗を返す形には Show は不要である。
+
+String の原因には、Show が付ける引用符とエスケープを保つ。Option.None の原因は、固定の `expected a value, got Option.None` である。説明は通常のテキストとして表示し、空の説明と説明なしを区別する。どちらも原因を消さない。説明か Show が実行時エラーや資源の不足で止まると、die の報告の代わりにその停止を採る。純粋性と静的検査は、停止性、意図した結果、外部操作の成功を保証しない。
+
+既定の終了は、子タスクから呼んだ場合も、実行全体を終える。残るタスクを取り消し、リソースを解放し、バッファにある出力を転送する。その後、CLI は `error: explicit failure exit`、ソースの位置、任意の `message: ...`、`cause: ...` を標準エラー出力へ一度報告する。解放と最後の出力の失敗は補足の報告として後に続き、状態 1 を保つ。`--diagnostics=json` では、die の報告は `kind: "die"`、`code: null` と、同じ位置と notes を持つ。タスクを取り消しても、既に始めた外部の作業を元に戻すことはできない。競合する終了、中断、処理系の不具合は通常の停止規則に従い、採用した die の情報だけを報告する。
+
+言語のハンドラは、既存の `Process.Exit` の操作を置き換えられる。受け取るのは通常の終了コードだけであり、処理した呼び出しの報告は破棄し、後の終了には付けない。`benitoite test` では、die はそのテストを失敗にし、実行器は次のテストへ続く。テキストと JSON の両方で原因・説明・位置を保ち、捕えた出力へ同じ報告を重ねない。任意の終了状態には `Process.exit(code)` を使う。
+
+入力は、同じ深さの `or return` または `or die` までのパイプを含む。通常の真偽値の `or` は演算子のままである。明示形の try に演算子や呼び出しを続けるときは、`(try parsePort(text) or die) + 1` のように括弧で囲む。`or return` は値を取らない。その `return` の直後の物理改行は文を終える。説明の `(` は `die` と同じ物理行で始める。括弧の外では、`die` またはその説明の後の改行は文を終える。短いラムダは、処置と説明の全体を一つの物理行に含める必要がある。フォーマッタは裸の形と明示形を保つ。
+
+```files
+name: input.txt
+ready
+```
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function load(path: String) -> Result[String, IOError] uses File.Read
+  return Result.Ok(try File.readText(path) or return)
+end function
+
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try load("input.txt") or die("could not read input.txt")
+  Console.write(text)
+end function
+```
+
+```output
+ready
+```
+
+`load` は元の IOError を呼び出し元へそのまま返す。読み込みに失敗すると、`main` は標準の Show の実装を使うので、表示だけのための変換は不要である。Process.Exit の追加は関数の契約を変えるため、処置・戻り値の型・エフェクトを一緒に確認する。
+
 ## 10. エフェクト
 
 *エフェクト*は、関数が純粋な計算の外で行ってよい操作の種類を名指す。関数は、直接に、または呼ぶ関数を通じて行うすべてのエフェクトを、`uses` の後に挙げる。`uses` のない関数は純粋である。ラムダは、そのエフェクトを本体から推論する。
@@ -625,7 +715,7 @@ not a port: http
 | `File.Read` | ファイルとディレクトリの読み込み |
 | `File.Write` | ファイルとディレクトリの作成、変更、移動、削除 |
 | `Process.Run` | 外部のコマンドの起動 |
-| `Process.Exit` | 選んだ終了コードでのプログラムの終了 |
+| `Process.Exit` | 選んだ終了コードで実行を終える。`or die` は原因と任意の説明を標準エラー出力に報告し、終了状態 1 で終える |
 | `Process.Environment` | コマンドラインの引数、環境変数、作業ディレクトリ、スクリプトのディレクトリの読み込み |
 | `Clock.Time` | 時計の読み込みと待つこと |
 | `Random.Generate` | 乱数の生成 |
@@ -782,6 +872,8 @@ the number 3
 
 実装はプログラムの全体に適用される。実装は、クラスのモジュールか型のモジュールに置かなければならず、二つの実装が重なってはならない。`Show`、`Order`、`Monoid`、`Functor`、`Monad` などの標準のクラスは、モジュール `Benitoite.Trait` にある。
 
+`IOError`、`NetworkError`、`Json.ParseError`、`Csv.ParseError` は、標準の `Trait.Show` の実装を持つ。それぞれの型の `message` の文字列をそのまま返し、引用符、行番号、列番号、ほかの位置の情報を加えない。IOError と NetworkError の実装は `Benitoite.Trait`、ParseError の実装は Json と Csv にある。明示的に `Trait.Show.show` を呼ぶには、`import Benitoite.Trait` を要する。`or die` は Show の参照を内部で接続する。通常の `Show[String]` は、引き続き引用符とエスケープを加える。
+
 ## 14. 明示遅延
 
 `lazy ... end lazy` は、本体を評価せずに `Lazy[T]` の型の値を作る。`Lazy.force(value)` は、最初に本体を評価し、その後は保存した結果を返す。本体は純粋でなければならない。
@@ -856,7 +948,7 @@ ab
 import Benitoite.Unofficial.IO.File
 
 function countWords(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return Result.Ok(List.length(List.filter(xs: String.split(s: text, separator: " "), p: lambda(value) return value <> "")))
 end function
 
@@ -1039,18 +1131,19 @@ name: orders.json
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.Json
 
 function amountOf(order: Json.Value) -> Option[Pair[String, Integer]]
-  bind category <- try Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString)
-  bind amount <- try Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger)
+  bind category <- try Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString) or return
+  bind amount <- try Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger) or return
   return Option.Some(Pair(category, amount))
 end function
 
-function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
-  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
-  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array")
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try File.readText("orders.json") or die
+  bind parsed <- try Json.parse(text) or die
+  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array") or die
   bind totals <- List.fold(xs: orders, initial: Map.empty(), f: lambda(acc, value)
     return match amountOf(value) with
       case Option.Some(Pair(category, amount)) ->
@@ -1061,7 +1154,7 @@ function main() -> Result[Unit, String] uses File.Read, Console.Write
   Map.forEach(m: totals, f: lambda(key, value)
     Console.writeLine("${key}: ${value}")
   end lambda)
-  return Result.Ok(())
+  return ()
 end function
 ```
 
@@ -1081,7 +1174,7 @@ food: 300
 - 非公式のモジュールを標準ライブラリへ移すと、その取り込みの名前が変わる。これはマイナー版でだけ行う。
 - 同梱の Agent Skill は、一緒に配られた版の `benitoite` だけを説明する。更新した後は `benitoite skill install` を再び実行する。
 
-> 注記: `0.0.1` から `0.0.5` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
+> 注記: `0.0.1` から `0.0.6` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
 
 ## 21. 実験的な機能: パッケージと外部の関数
 
@@ -1093,7 +1186,7 @@ food: 300
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.5"
+language "0.0.6"
 
 package Textkit
   license "MIT"
@@ -1111,7 +1204,7 @@ end function
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.5"
+language "0.0.6"
 
 dependency Textkit
   path "packages/textkit"
@@ -1143,7 +1236,7 @@ hello-packages
 
 ```files
 name: package.bnt
-language "0.0.5"
+language "0.0.6"
 ```
 
 ```benitoite check
@@ -1154,7 +1247,7 @@ end function
 
 依存のブロックも、その根の設定ファイルへ移せる。依存は一か所にまとめる。起点のスクリプトと `package.bnt` の両方で依存を宣言すると誤りになる。両方で `language` を宣言しても誤りになる。
 
-`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.5` では、`0.0.5` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
+`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.6` では、`0.0.6` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
 
 `package.bnt` には、設定（`language`、`dependency`、`package` のブロック）だけを書き、取り込みや宣言は書かない。`package` ブロックはこのファイルにだけ書け、依存と組み合わせられない。その名前は大文字で始まる識別子であり、メタデータの欄は、省略可能な `license` だけである。欄の値は通常の文字列リテラルであり、文字列補間は使えない。欄の順序は自由だが、重複する欄や未知の欄は誤りになる。
 
@@ -1259,6 +1352,8 @@ world fuzzy {
 | 関数の戻り値としての `Unit` | 結果なし |
 
 型の別名は展開する。`Option`、`Result`、`Pair`、`Triple` は標準ライブラリの型でなければならない。`Result` の片側が `Unit` なら、WIT ではその側を省く。`Result[Unit, String]` は `result<_, string>`、`Result[Unit, Unit]` は `result` に対応する。要素が 0 個のタプルを含め、ほかの入れ子や引数での `Unit` の使用には対応しない。利用者のモジュールと標準ライブラリのレコードと `data` の型には、同じ構造の規則を使う。型名は WIT の型名と一致しなくてよい。フィールドとケースの数、宣言の順序、名前、型、ペイロードの有無は一致しなければならない。名前は `-` を除き、ASCII の英字を小文字にして比べる。`byte-start` は `byteStart`、`not-found` は `NotFound` と一致する。アンダースコアは保ち、WIT の名前とは一致しない。レコード、variant、enum、flags の型のどちら側でも、この正規化後の名前の重複は拒む。
+
+`@extensible` は、`enum`、`variant`、`record` のこれらの検査を緩めず、未知の外部のタグを許さない。構成子やフィールドを追加したときも、WIT の宣言は現在の Benitoite の宣言と厳密に一致しなければならない。
 
 具体的な型引数はフィールドと構成子の引数に代入するので、`Box[T]` が型 T のフィールドを持つ場合は `Box[Box[Integer]]` を受け付ける。外部の関数自身は単相のままである。未解決の型変数とエフェクト変数、宣言の依存の再帰（`List` や `Option` を通じた再帰も含む）は、`E1010` を報告する。型の展開の上限は、深さ 100、根の型ごとに 100,000 ノード、検査ごとに 1,000,000 ノードである。同じ階層のフィールドで一つの型を共有してよい。構造の不一致は `E1008` か `E1009` を報告し、WIT の形と、最初の不一致を `reason` の注記に示す。シグネチャに利用者が定義したレコード、variant、enum、flags の要素型、リソースのハンドルが必要な場合は、Benitoite の型名を推測できないため、宣言の提案は省く。
 

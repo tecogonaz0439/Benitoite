@@ -696,7 +696,22 @@ impl<'a> Walker<'a> {
             Expr::Match(e) => self.match_expr(e),
             Expr::Lambda(e) => self.lambda(e),
             Expr::Return(e) => self.expr(&e.value),
-            Expr::Try(e) => self.expr(&e.value),
+            Expr::Try(e) => {
+                self.expr(&e.value);
+                if let crate::syntax::ast::TryAction::Die {
+                    span,
+                    message: Some(message),
+                } = &e.action
+                {
+                    if let Some(keyword) = self.last(*span)
+                        && let Some(open) = self.next_is(keyword, TokenKind::LParen)
+                        && self.open_bracket(open, true).is_some()
+                    {
+                        self.element(message.span(), Place::Deeper(open));
+                    }
+                    self.expr(message);
+                }
+            }
             Expr::Lazy(e) => {
                 if let Some(open) = self.first(e.span) {
                     self.open_end(open, e.span);

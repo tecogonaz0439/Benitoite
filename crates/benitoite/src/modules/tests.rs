@@ -28,8 +28,9 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
             ("0.0.0", Some(DiagCode::E0908)),
             ("0.0.3", Some(DiagCode::E0908)),
             ("0.0.4", Some(DiagCode::E0908)),
-            ("0.0.5", None),
-            ("0.0.6", Some(DiagCode::E0907)),
+            ("0.0.5", Some(DiagCode::E0908)),
+            ("0.0.6", None),
+            ("0.0.7", Some(DiagCode::E0907)),
         ] {
             let header = format!("language \"{version}\"\n");
             let entry_source = format!("{header}{MAIN}");
@@ -61,25 +62,29 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                 assert_eq!(
                     diagnostic.message,
                     format!(
-                        "this file was written for Benitoite {version}, and the language changed incompatibly in 0.0.5"
+                        "this file was written for Benitoite {version}, and the language changed incompatibly in {}",
+                        if version == "0.0.5" { "0.0.6" } else { "0.0.5" }
                     )
                 );
-                assert_eq!(
-                    diagnostic.notes,
-                    [
-                        "calls with two or more parameters require named arguments; function types and higher-order contracts require parameter names, and function values must match those names in order"
-                    ]
-                );
-                assert_eq!(diagnostic.helps.len(), 1);
-                assert_eq!(
-                    diagnostic.helps[0].message,
-                    "see docs/reference/benitoite.md for named arguments and named function types"
-                );
-                assert!(diagnostic.helps[0].edits.is_empty());
+                let first = usize::from(version == "0.0.5");
+                let notes = [
+                    "0.0.5: calls with two or more parameters require named arguments; function types and higher-order contracts require parameter names, and function values must match those names in order",
+                    "0.0.6: `die` is reserved; IOErrorKind, NetworkErrorKind, Json.ParseError, and Csv.ParseError are @extensible; return values must start on the same physical line as `return`",
+                ];
+                let helps = [
+                    "see the 0.0.5 section of CHANGELOG.md for named arguments and named function types",
+                    "rename user-defined names spelled `die`; outside the defining package, add an unguarded `case other` or `case _` to cover future @extensible values in matches, and use a variable or `_` instead of destructuring them in bindings; record `..` covers only declared fields, while construction, updates, and getters keep their declared field contracts; start each return value on the same physical line as `return` (the value may continue across lines after it starts); use `try value or return`, `try value or die`, or `try value or die(message)` to make the failure action explicit; bare `try value` still returns failure from the innermost function or lambda; see CHANGELOG.md for migration details",
+                ];
+                assert_eq!(diagnostic.notes, notes[first..]);
+                assert_eq!(diagnostic.helps.len(), helps.len() - first);
+                for (help, expected) in diagnostic.helps.iter().zip(&helps[first..]) {
+                    assert_eq!(help.message, *expected);
+                    assert!(help.edits.is_empty());
+                }
             } else {
                 assert_eq!(
                     diagnostic.message,
-                    "this file needs Benitoite 0.0.6 or later, but this is Benitoite 0.0.5"
+                    "this file needs Benitoite 0.0.7 or later, but this is Benitoite 0.0.6"
                 );
                 assert!(diagnostic.notes.is_empty());
                 assert!(diagnostic.helps.is_empty());
@@ -192,6 +197,20 @@ fn prelude_order_kinds_and_clock_dependency() {
         let module = &output.modules.modules[index + 1];
         assert_eq!(module.name.dotted(), format!("Benitoite.{name}"));
         assert_eq!(module.kind, ModuleKind::Prelude);
+    }
+    assert!(
+        output
+            .modules
+            .find(&module_path("Benitoite.Trait"))
+            .is_none()
+    );
+    for name in ["IOError", "NetworkError"] {
+        let module = output
+            .modules
+            .find(&module_path(&format!("Benitoite.{name}")))
+            .unwrap();
+        assert!(module.imports.is_empty());
+        assert!(module.internal_dependencies.is_empty());
     }
     let clock = &output.modules.modules[expected.len() + 1];
     assert_eq!(clock.name.dotted(), "Benitoite.IO.Clock");
@@ -850,7 +869,7 @@ fn root_settings_do_not_come_from_parent_directories() {
 #[test]
 fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
     for config_name in ["package.bnt", "Package.bnt"] {
-        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.5\"\n")]);
+        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.6\"\n")]);
         assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
         assert_aligned(&output);
         if config_name == "package.bnt" {
@@ -870,7 +889,7 @@ fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
 
 #[test]
 fn config_cannot_be_a_starting_file() {
-    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.5\"\n")]);
+    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.6\"\n")]);
     let entry = EntrySpec {
         path: "/root/package.bnt".into(),
         display_name: "package.bnt".into(),
@@ -894,19 +913,19 @@ fn dependency_configs_precede_prelude_and_imported_modules() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.5\"\npackage Textkit\nend package\n",
+            "language \"0.0.6\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", "import Internal.Helper\n"),
         ("/library/Internal/Helper.bnt", ""),
         (
             "/second/package.bnt",
-            "language \"0.0.5\"\npackage Textkit\nend package\n",
+            "language \"0.0.6\"\npackage Textkit\nend package\n",
         ),
         ("/second/Slug.bnt", "import Internal.Helper\n"),
         ("/second/Internal/Helper.bnt", ""),
         (
             "/unused/package.bnt",
-            "language \"0.0.5\"\npackage Unused\nend package\n",
+            "language \"0.0.6\"\npackage Unused\nend package\n",
         ),
         ("/unused/Unread.bnt", "this is deliberately not a module"),
     ]);
@@ -979,7 +998,7 @@ fn package_imports_keep_their_canonical_root_and_reject_the_entry() {
             ("main.bnt", main),
             (
                 "deps/library/package.bnt",
-                "language \"0.0.5\"\npackage Library\nend package\n",
+                "language \"0.0.6\"\npackage Library\nend package\n",
             ),
             ("/outside/Target.bnt", ""),
         ]);
@@ -1014,7 +1033,7 @@ fn root_link_to_the_dependency_imports_the_package() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.5\"\npackage Textkit\nend package\n",
+            "language \"0.0.6\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", ""),
     ]);
@@ -1050,11 +1069,11 @@ fn overlapping_dependency_roots_are_rejected_before_imports() {
             ("main.bnt", &main),
             (
                 "/libs/package.bnt",
-                "language \"0.0.5\"\npackage Libs\nend package\n",
+                "language \"0.0.6\"\npackage Libs\nend package\n",
             ),
             (
                 "/libs/Nested/package.bnt",
-                "language \"0.0.5\"\npackage Nested\nend package\n",
+                "language \"0.0.6\"\npackage Nested\nend package\n",
             ),
             ("/libs/Value.bnt", ""),
             ("/libs/Nested/Value.bnt", ""),
@@ -1089,7 +1108,7 @@ fn dependency_import_edits_only_use_valid_module_names() {
             ),
             (
                 "/library/package.bnt",
-                "language \"0.0.5\"\npackage Library\nend package\n",
+                "language \"0.0.6\"\npackage Library\nend package\n",
             ),
         ]);
         fs.add_file(format!("/library/{tail}"), vec![]);
@@ -1125,7 +1144,7 @@ fn duplicate_dependency_locations_do_not_also_report_root_overlap() {
         ),
         (
             "deps/lib/package.bnt",
-            "language \"0.0.5\"\npackage Library\nend package\n",
+            "language \"0.0.6\"\npackage Library\nend package\n",
         ),
         ("deps/lib/Value.bnt", ""),
     ]);
@@ -1133,4 +1152,68 @@ fn duplicate_dependency_locations_do_not_also_report_root_overlap() {
     assert_eq!(codes(&output), [DiagCode::E0911]);
     assert!(output.modules.find(&module_path("One.Value")).is_some());
     assert_aligned(&output);
+}
+
+#[test]
+fn die_internal_dependencies_keep_source_spans_and_participate_in_cycles() {
+    use crate::syntax::{lexer, newline, parser::parse};
+    // prelude から Trait への辺はないため、明示 import で検査対象を読む。
+    // Trait の AST から抽出した内部依存の自己循環も落とさない。
+    let source = format!("import Benitoite.Trait\n{MAIN}");
+    let (mut load, mut ids) = load_files(&[("main.bnt", &source)]);
+    let trait_module = load
+        .modules
+        .iter()
+        .find(|m| m.name.dotted() == "Benitoite.Trait")
+        .unwrap()
+        .id;
+    let source =
+        "function hidden() -> Integer\n try Option.Some(1) or die(\"context\")\nend function\n";
+    let file = FileId(trait_module.0);
+    let lexed = lexer::lex(file, source.as_bytes());
+    let parsed = parse(
+        file,
+        SourceKind::User,
+        source.as_bytes(),
+        newline::resolve_newlines(lexed.tokens),
+        lexed.comments,
+        &mut ids,
+    );
+    assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
+    let requests = super::internal::requested(&parsed.module);
+    assert_eq!(
+        requests
+            .iter()
+            .map(|(path, _)| path.dotted())
+            .collect::<Vec<_>>(),
+        ["Benitoite.Trait", "Benitoite.IO.Process"]
+    );
+    let try_start = u32::try_from(source.find("try").unwrap()).unwrap();
+    assert!(
+        requests
+            .iter()
+            .all(|(_, span)| span.file == file && span.start == BytePos(try_start))
+    );
+    let span = requests[0].1;
+    load.modules.modules[trait_module.0 as usize]
+        .internal_dependencies
+        .push(InternalDependency {
+            target: trait_module,
+            span,
+        });
+    let diags = super::cycle::detect(&load.modules, &load.asts);
+    assert_eq!(diags.len(), 1, "{diags:?}");
+    assert_eq!(diags[0].code, Some(DiagCode::E0322));
+    assert_eq!(diags[0].primary.as_ref().unwrap().span, span);
+    assert!(
+        diags[0]
+            .notes
+            .iter()
+            .any(|n| n.contains("Benitoite.Trait -> Benitoite.Trait"))
+    );
+    assert!(
+        load.asts
+            .iter()
+            .all(|ast| ast.imports.iter().all(|i| i.span != span))
+    );
 }

@@ -132,7 +132,11 @@ pub enum StopReason {
     /// 実行時エラーか資源の不足
     Error(StopInfo),
     /// `Process.exit`
-    Exit(u8),
+    Exit {
+        code: u8,
+        /// 採用した既定の失敗終了の情報。通常の exit は `None`
+        die_failure: Option<DieFailure>,
+    },
     /// 中断の要求（終了状態 130）
     Interrupted,
     /// テストの確認の失敗（`Assert.Check`。設計書 02-11「テストの実行」）
@@ -145,6 +149,15 @@ pub struct StopEnd {
     pub reason: StopReason,
     /// 止める途中の解放の失敗（止める理由は置き換えない）
     pub release_failures: Vec<ReleaseFailure>,
+}
+
+/// 既定の失敗終了の原因・任意の説明・ソース位置。ヒープの寿命を越えるため文字列を所有する
+/// （設計書 06-01「終了状態」）。
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct DieFailure {
+    pub cause: String,
+    pub message: Option<String>,
+    pub at: crate::base::Span,
 }
 
 /// VM の実行関数の結果（02-08「IO の命令」の最後の段落）。

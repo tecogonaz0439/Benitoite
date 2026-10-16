@@ -1,0 +1,100 @@
+crates/benitoite/tests/random_programs/shrink.rs:171:        Expr::Try(expr) => {
+crates/benitoite/tests/random_programs/shrink.rs:173:            if let benitoite::syntax::ast::TryAction::Die {
+crates/benitoite/tests/desugar_export/exchange.rs:1268:            a::Expr::Try(v) => {
+crates/benitoite/tests/desugar_export/exchange.rs:1270:                let benitoite::typeck::TryActionInfo::Return { ret } = &info.action else {
+crates/benitoite/tests/desugar_export/exchange.rs:1278:                    a::TryAction::Die { .. } => panic!("die exchange output is not connected"),
+crates/benitoite/tests/desugar_export/exchange.rs:1279:                    a::TryAction::ImplicitReturn | a::TryAction::Return { .. } => {
+crates/benitoite/examples/named_inventory/index.rs:214:        Expr::Try(t) => {
+crates/benitoite/examples/named_inventory/index.rs:216:            if let benitoite::syntax::ast::TryAction::Die {
+crates/benitoite/src/typeck/context.rs:428:                super::TryInfo {
+crates/benitoite/src/typeck/context.rs:431:                        TryConstraintAction::Return { ret } => super::TryActionInfo::Return {
+crates/benitoite/src/typeck/context.rs:434:                        TryConstraintAction::Die { exit, .. } => super::TryActionInfo::Die {
+crates/benitoite/examples/named_arguments_inventory.rs:125:            | Expr::Try(_)
+crates/benitoite/examples/named_arguments_inventory.rs:341:            Expr::Try(t) => {
+crates/benitoite/examples/named_arguments_inventory.rs:343:                if let benitoite::syntax::ast::TryAction::Die {
+crates/benitoite/examples/named_arguments_inventory.rs:501:            | Expr::Try(_)
+crates/benitoite/src/typeck/mod.rs:62:pub struct TryInfo {
+crates/benitoite/src/typeck/mod.rs:64:    pub action: TryActionInfo,
+crates/benitoite/src/typeck/mod.rs:69:pub enum TryActionInfo {
+crates/benitoite/src/typeck/mod.rs:120:    pub try_kinds: NodeMap<TryInfo>,
+crates/benitoite/src/typeck/consts.rs:252:        | Expr::Try(_)
+crates/benitoite/src/typeck/consts.rs:420:        | Expr::Try(_)
+crates/benitoite/src/typeck/consts.rs:903:        | Expr::Try(_)
+crates/benitoite/src/typeck/consts.rs:1003:        | Expr::Try(_)
+crates/benitoite/src/typeck/consts.rs:1062:            | Expr::Try(_)
+crates/benitoite/src/typeck/consts.rs:1203:        Expr::Try(t) => {
+crates/benitoite/src/typeck/consts.rs:1205:            if let crate::syntax::ast::TryAction::Die {
+crates/benitoite/src/typeck/effects/tests.rs:98:                | Expr::Try(_)
+crates/benitoite/src/typeck/effects/tests.rs:165:                && let Expr::Try(expr) = &bind.value
+crates/benitoite/src/typeck/effects/tests.rs:178:            .all(|info| info.action == super::super::TryActionInfo::Return { ret: ret.clone() })
+crates/benitoite/src/typeck/effects/tests.rs:487:            super::super::TryActionInfo::Return {
+crates/benitoite/src/typeck/effects/tests.rs:502:            super::super::TryActionInfo::Return {
+crates/benitoite/src/typeck/effects/tests.rs:842:    use crate::typeck::{TryActionInfo, test_support::check_die_source};
+crates/benitoite/src/typeck/effects/tests.rs:893:                .filter(|(_, i)| matches!(i.action, TryActionInfo::Die { .. }))
+crates/benitoite/src/typeck/effects/tests.rs:911:            if let Expr::Try(e) = e {
+crates/benitoite/src/typeck/effects/tests.rs:914:                let TryActionInfo::Die { show, exit } = &info.action else {
+crates/benitoite/src/typeck/effects/tests.rs:942:                TryActionInfo::Die {
+crates/benitoite/src/typeck/effects/tests.rs:1130:    use crate::typeck::{TryActionInfo, test_support::check_die_source};
+crates/benitoite/src/typeck/effects/tests.rs:1146:        let TryActionInfo::Die {
+crates/benitoite/src/typeck/generate.rs:85:        | Expr::Try(_)
+crates/benitoite/src/typeck/generate.rs:177:        Expr::Try(_) | Expr::Lazy(_) | Expr::With(_) | Expr::Handle(_) | Expr::Resume(_) => {
+crates/benitoite/src/typeck/generate.rs:959:        | Expr::Try(_)
+crates/benitoite/src/typeck/generate.rs:1097:        Expr::Try(t) => {
+crates/benitoite/src/typeck/generate.rs:1099:            if let crate::syntax::ast::TryAction::Die {
+crates/benitoite/src/typeck/effects/mod.rs:33:        Expr::Try(e) => try_expr(ctx, e),
+crates/benitoite/src/typeck/effects/mod.rs:76:        TryAction::ImplicitReturn | TryAction::Return { .. } => {
+crates/benitoite/src/typeck/effects/mod.rs:83:        TryAction::Die { span, message } => {
+crates/benitoite/src/modules/internal.rs:9:        if let Expr::Try(t) = e
+crates/benitoite/src/modules/internal.rs:10:            && matches!(t.action, TryAction::Die { .. })
+crates/benitoite/src/modules/internal.rs:125:        Expr::Try(t) => {
+crates/benitoite/src/modules/internal.rs:127:            if let crate::syntax::ast::TryAction::Die {
+crates/benitoite/src/typeck/traits/tests.rs:206:        | Expr::Try(_)
+crates/benitoite/src/typeck/effects/tail.rs:38:        | Expr::Try(_)
+crates/benitoite/src/typeck/effects/tail.rs:64:        Expr::Try(e) => match &e.action {
+crates/benitoite/src/typeck/effects/tail.rs:65:            TryAction::ImplicitReturn | TryAction::Return { .. } => true,
+crates/benitoite/src/typeck/effects/tail.rs:66:            TryAction::Die { message, .. } => {
+crates/benitoite/src/typeck/tests.rs:1196:        | Expr::Try(_)
+crates/benitoite/src/syntax/ast.rs:780:    pub action: TryAction,
+crates/benitoite/src/syntax/ast.rs:785:pub enum TryAction {
+crates/benitoite/src/syntax/ast.rs:1022:            Expr::Try(e) => e.id,
+crates/benitoite/src/syntax/ast.rs:1048:            Expr::Try(e) => e.span,
+crates/benitoite/src/syntax/parser/traits.rs:491:            |b| matches!(&b.value, Expr::Try(t) if matches!(t.value.as_ref(), Expr::Pipe(_)))
+crates/benitoite/src/syntax/parser/exprs.rs:104:        Expr::Try(TryExpr {
+crates/benitoite/src/syntax/parser/exprs.rs:105:            action: TryAction::Return { .. } | TryAction::Die { .. },
+crates/benitoite/src/syntax/parser/exprs.rs:1172:            Expr::Try(e) => match &e.action {
+crates/benitoite/src/syntax/parser/exprs.rs:1173:                TryAction::ImplicitReturn | TryAction::Return { .. } => pending.push(&e.value),
+crates/benitoite/src/syntax/parser/exprs.rs:1174:                TryAction::Die { message, .. } => {
+crates/benitoite/src/syntax/parser/exprs.rs:1544:        Expr::Try(e) => e.span,
+crates/benitoite/src/syntax/parser/effects.rs:454:    Ok(Box::new(Expr::Try(TryExpr {
+crates/benitoite/src/syntax/parser/effects.rs:463:fn parse_try_action(p: &mut Parser, depth: u32) -> PResult<TryAction> {
+crates/benitoite/src/syntax/parser/effects.rs:499:            return Ok(TryAction::Die { span, message });
+crates/benitoite/src/syntax/parser/effects.rs:532:        Ok(TryAction::Return { span })
+crates/benitoite/src/syntax/parser/effects.rs:534:        Ok(TryAction::ImplicitReturn)
+crates/benitoite/src/syntax/parser/effects.rs:869:            matches!(&w.binds[0].value, Expr::Try(t) if matches!(t.value.as_ref(), Expr::Pipe(_)))
+crates/benitoite/src/syntax/parser/effects.rs:909:                    assert!(matches!(&b.value, Expr::Try(_)));
+crates/benitoite/src/syntax/parser/effects.rs:970:                let Expr::Try(t) = expr(&out) else {
+crates/benitoite/src/syntax/parser/effects.rs:978:                let TryAction::Return { span } = t.action else {
+crates/benitoite/src/syntax/parser/effects.rs:987:                    let Expr::Try(inner) = t.value.as_ref() else {
+crates/benitoite/src/syntax/parser/effects.rs:990:                    assert!(matches!(inner.action, TryAction::Return { .. }));
+crates/benitoite/src/syntax/parser/effects.rs:1013:            let Expr::Try(t) = expr(&out) else { panic!() };
+crates/benitoite/src/syntax/parser/effects.rs:1016:                TryAction::Die { .. } => panic!("unexpected die"),
+crates/benitoite/src/syntax/parser/effects.rs:1017:                TryAction::ImplicitReturn => assert!(implicit),
+crates/benitoite/src/syntax/parser/effects.rs:1018:                TryAction::Return { span } => {
+crates/benitoite/src/syntax/parser/effects.rs:1159:        assert!(matches!(expr(&out), Expr::Try(t) if matches!(t.value.as_ref(), Expr::Pipe(_))));
+crates/benitoite/src/syntax/parser/effects.rs:1280:            let Expr::Try(t) = expr(&out) else {
+crates/benitoite/src/syntax/parser/effects.rs:1283:            let TryAction::Die { span, message: msg } = &t.action else {
+crates/benitoite/src/syntax/parser/effects.rs:1327:                    matches!(&b.value, Expr::Try(t) if matches!(&t.action, TryAction::Die { message, .. } if message.is_some() == action.contains('(')))
+crates/benitoite/src/syntax/parser/mod.rs:1483:            | Expr::Try(_)
+crates/benitoite/src/syntax/parser/mod.rs:1879:                | Expr::Try(_)
+crates/benitoite/src/resolve/walk.rs:386:            Expr::Try(e) => {
+crates/benitoite/src/resolve/walk.rs:388:                if let crate::syntax::ast::TryAction::Die {
+crates/benitoite/src/cli/tools/formatter/roles/walk.rs:699:            Expr::Try(e) => {
+crates/benitoite/src/cli/tools/formatter/roles/walk.rs:701:                if let crate::syntax::ast::TryAction::Die {
+crates/benitoite/src/runtime/assert.rs:611:            Expr::Try(e) => {
+crates/benitoite/src/runtime/assert.rs:613:                if let crate::syntax::ast::TryAction::Die {
+crates/benitoite/src/ir/desugar/exprs.rs:59:            ast::Expr::Try(e) => self.try_expr(e),
+crates/benitoite/src/ir/desugar/effects.rs:20:        let crate::typeck::TryActionInfo::Return { ret } = &info.action else {
+crates/benitoite/src/ir/desugar/effects.rs:28:            ast::TryAction::Die { .. } => return Err(error("die desugaring is not connected")),
+crates/benitoite/src/ir/desugar/effects.rs:29:            ast::TryAction::ImplicitReturn | ast::TryAction::Return { .. } => {
+crates/benitoite/src/ir/desugar/effects.rs:41:        info: crate::typeck::TryInfo,
+crates/benitoite/src/ir/desugar/effects.rs:46:        let crate::typeck::TryActionInfo::Return { ret } = info.action else {

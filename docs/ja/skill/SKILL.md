@@ -1,6 +1,6 @@
 # Benitoite
 
-> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.5 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.6 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 原文の前付け:
 
@@ -42,7 +42,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 5. [実行の前に](#実行の前に)の確認を行う。
 6. `benitoite run script.bnt [arguments...]` を実行する。
 
-`run` の終了コード: `main` が終わったときは 0、`main` が `Result.Error` を返したときとプログラムが実行時エラーで止まったときは 1、スクリプトが検査を通らないときとコマンドラインが誤っているときは 2、`benitoite` の処理系の不具合のときは 3 である。`Process.exit(n)` は `n` で終わる。`run` と `test` は、中断されたとき（`SIGINT` か `SIGTERM`）に 130 で終わる。
+`run` の終了コード: `main` が終わったときは 0、`main` が `Result.Error` を返したとき、処理されない `or die` が実行を終えたとき、プログラムが実行時エラーで止まったときは 1、スクリプトが検査を通らないときとコマンドラインが誤っているときは 2、`benitoite` の処理系の不具合のときは 3 である。`Process.exit(n)` は `n` で終わる。`run` と `test` は、中断されたとき（`SIGINT` か `SIGTERM`）に 130 で終わる。
 
 ## テストの手順
 
@@ -69,7 +69,7 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 | `File.Read` | ファイルとディレクトリを読む |
 | `File.Write` | ファイルとディレクトリを作る・変える・移す・消す |
 | `Process.Run` | 外部のコマンドを起動する（その名前を挙げる） |
-| `Process.Exit` | 選んだ終了コードでプログラムを終える |
+| `Process.Exit` | 選んだ終了コードで実行を終える。`or die` は原因と任意の説明を標準エラー出力に報告し、終了状態 1 で終える |
 | `Process.Environment` | コマンドラインの引数、環境変数、作業ディレクトリ、スクリプトのディレクトリを読む |
 | `Clock.Time` | 時計を読み、時間が経つのを待つ |
 | `Random.Generate` | 乱数を作る |
@@ -81,18 +81,21 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 
 ## ほかの言語と異なる言語の規則
 
+- キーワードは 35 語ある。[キーワードを名前に使う](references/common-mistakes.md#キーワードを名前に使う)を参照する。`die` は予約語であり、ラベル、フィールド、取り込みの別名、ドットの後の名前を含め、名前に使えない。`try value or die` と `try value or die(message)` の中でだけ受理し、説明は純粋な String、Result のエラーには Show の制約、エフェクトには Process.Exit を要する。単独の `die` は拒否する。`fn`、`pub`、`impl`、`mut`、`async`、`await`、`spawn`、`select` は通常の名前のままであり、構文の略記ではない。宣言には `function`、`public`、`implement`、無名関数には `lambda` を使う。`as`、ファイルのヘッダの語、属性名は、それぞれの文脈でだけ特別な意味を持つ。`extensible` は通常の名前である。引数のない属性 `@extensible` は、データ型とレコードの宣言に使える。定義したパッケージの外では、ガードのない変数か `_` のパターンで将来の形も覆う必要がある。
 - 短いラムダを除き、ブロックは `end` とキーワードで終わる: `end function`、`end if`、`end match`、`end lambda`、`end data`、`end record`、`end handle`、`end with`。波括弧も字下げの規則もない。
 - 局所の名前は、`let` ではなく `bind x <- e` で束縛する。`shadow x <- e` は既に見えている局所名を隠せるが、推奨しない。意図的な隠蔽でも、新しい値の意味を表す別の名前を使う。名前に再代入はできない。
-- 関数は `function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2` ... `end function` と書く。戻り値の型は `:` ではなく必ず `->` の後に書く。値は `return` で返す。
+- 関数は `function name(a: Type, b: Type) -> ReturnType uses Effect1, Effect2` ... `end function` と書く。戻り値の型は `:` ではなく必ず `->` の後に書く。値は `return` で返す。値は `return` と同じ物理行で書き始める。直後の改行は、括弧の中でも文を終え、誤り（E0201）になる。値を書き始めた後は、通常の複数行の継続（演算子、括弧、呼び出しの引数、`then`）を使える。短いラムダは、一つの物理行に収める必要がある。
 - 値や処理の選択には `match` を推奨する。条件成立時だけの処理や早期リターンには、`else` のない `if` を使う。`else` と `else if` は有効な構文だが、推奨しない。この助言による警告は加えない。条件の評価回数と順序を保ち、選ばれた分岐だけを評価し、`return` の作用先を同じ関数かラムダに保つ。エフェクトを含む条件をガードへ移さず、真偽値に対する match を入れ子にする。
 - 包括的な最後の分岐には、`case other ->` や `case otherCode ->` のような、衝突しない名前を推奨する。予約語ではなく通常の束縛である。外側の局所名との衝突を避け、後ろに到達しない分岐を置かない。`case _ ->` も有効である。この助言は、構成子内、捨てる束縛、部分適用の `_` には適用しない。
 - 一文には短いラムダを推奨する: `List.map(xs: xs, f: lambda(value) return value * 2)`。見出しと本体の全体が同じ物理行に収まる必要があり、`Unit` 以外の結果には `return` を要する。本体を見出しの最後の行に始める場合は、その一文の直後の同じ物理行にある `end lambda` だけを取る。後の行の終端は対応する外側のラムダを閉じる。空行やコメント行を挟んでも対応は変わらない。複数行の本体は見出しの次の行に始め、`end lambda` を加える。二文目を加える前に複数行形式に変える。フォーマッタは選んだ終端を保つ。
 - 直接に入れ子になった二つのラムダのどちらかで終端を省く場合は、内側を括弧で囲む: `lambda(x) return (lambda(y) return x + y)`。呼び出しの引数と束縛文は、それぞれ独立した区切りとなる。`lambda(x) return x + 1 |> increment` のパイプは本体に属し、`(lambda(x) return x + 1)(3)` はラムダ自体を呼ぶ。
 - パターンの照合は、`match value with` の後に、1 行に一つずつ `case pattern -> body` を書き、`end match` で終える。ハンドラは `handle body with` / `case Module.operation(arguments) -> clause` / `end handle` と書く。
 - データ型は `data Name` ... `end data` で、レコードは `record Name` ... `end record` で宣言する。
+- `IOErrorKind`、`NetworkErrorKind`、`Json.ParseError`、`Csv.ParseError` には `@extensible` が付く。利用者のデータ型とレコードにも使える。定義したパッケージの外では、全既知構成子（`Other` を含む）を列挙した後でも、ガードのない変数か `_` で将来の形を覆う。レコードパターンの `..` は現在のフィールドの省略にすぎない。分解する `bind` の代わりに、取り出す関数か、将来の形の分岐を持つ `match` を使う。構築・更新・フィールドの取り出しは契約を保つ。レコードのフィールドの追加に互換性の保証はない。`Result` と `Option` は閉じた型のままである。[レコードとデータ型](references/idioms.md#レコードとデータ型)を参照する。
 - 構成子は、式でもパターンでも型の名前を付けて書く: `Option.Some(x)`、`Option.None`、`Result.Ok(x)`、`Result.Error(e)`、`Shape.Circle(r)`。
 - 演算子: `=` と `<>` は比較、`and`・`or`・`not` は論理演算、`div` と `mod` は整数の除算である。`+` は文字列の連結にも使う。`==`、`!=`、`&&`、`||`、`!` は存在しない。
-- `try e` は、パイプを含めて、右側の式全体に適用される: `try File.readText(p) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))`。`try` は `Result`（または `Option`）を返す関数の中でだけ使う。エラーの型が異なるときは、先に `Result.mapError` で変換する。
+- 再利用する関数・ライブラリ・コールバックには `try e or return` を使う。最も内側の関数かラムダから失敗を返し、その戻り値の型は、対応する Result か Option でなければならない。エラーの型が異なるときは、先に `Result.mapError` で変換する。裸の `try e` も同じ失敗を返す意味に固定し、Show の要件を加えない。入力は処置までのパイプを含む: `try File.readText(p) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return`。
+- 失敗時に終える入口では、`try e or die` または `try e or die(message)` を推奨する。囲む関数の戻り値の型は任意であり、Process.Exit を加える。`uses Process.Exit` のために `Benitoite.Unofficial.IO.Process` を取り込む。Result のエラーには Trait.Show を要し、Option には要しない。IOError、NetworkError、Json.ParseError、Csv.ParseError の標準の Show は、message をそのまま返す。成功時は純粋な String の説明も Show も評価せず、失敗時は説明、Show、終了の順に評価する。ホストの報告に Console.Write は不要である。境界・ハンドラ・停止の規則は[プログラムの形と誤りの扱い](references/idioms.md#プログラムの形と誤りの扱い)を参照する。Result.Error を返す main や Process.Exit を使えない main には `or return` を使える。
 - 二つ以上のパラメータを持つ通常の呼び出しでは、引数すべてにラベルを付ける: `List.map(xs: xs, f: action)`。名前付き引数と位置引数を混在させない。一引数の関数は `f(value)` または `f(name: value)`、引数がゼロなら `f()` と書く。ラベルは任意の順に書けるが、呼ぶ関数の式を最初に評価し、次に引数の式をソースの記述順に一度ずつ評価する。ラベルは局所の値ではなくパラメータを指す。組み込みの関数、関数値、メソッド、エフェクトの操作、外部の関数にもこの規則を適用する。直接のデータ構成子とパターン、属性、ハンドラの束縛、`resume` は専用の構文を保つ。
 - 関数型には名前を含める: `function(value: T) -> U`。一引数でも、名前と順序はコールバックの契約と一致しなければならない。`List.map` は `value`、`List.fold` は `acc, value`、`Map.map` は `key, value`、`Result.mapError` は `error` を取る。未使用でも期待する名前を保ち、意味を表す別名には局所の `bind` を使う。契約が異なる関数は `lambda(value) return Integer.toString(value)` で包む。呼び出しのラベル順から契約を作らない。E0455 が契約の未確定を報告したら、名前を持つ関数型の注釈を加える。
 - 直接の穴がなければ、`xs |> List.map(f: action)` は宣言上の最初のパラメータを満たす。残りの引数にラベルを付け、最初のパラメータを二度指定しない。評価順は、左辺を一度、次に右辺の呼ぶ関数の式、次に明示引数をソースの記述順である。直接の穴がある場合や右辺を括弧で囲んだ場合は、その結果の関数を一引数で呼ぶ。二つの穴を自動で部分適用することはない。
@@ -129,7 +132,7 @@ import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
 
 function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   List.forEach(xs: lines, f: lambda(value) Console.writeLine("${String.characterCount(value)} ${value}"))
   return match List.head(lines) with
     case Option.Some(first) -> Result.Ok(Console.writeLine("first: ${first}"))
@@ -147,13 +150,13 @@ first: one
 
 ## テスト
 
-テストは、`@test("description")` を付け、引数を持たず、戻り値の型が `Unit` か `Result[Unit, String]` の関数である（テストが `try` を使うときは後者にする）。`Assert.equal(actual: actual, expected: expected)` で確かめる。テストが外の世界に触れないように、`File.readText` や `Process.run` などの操作をハンドラで置き換える。ほかの例は `references/idioms.md` にある。型パラメータを持つ補助の関数の中の確かめは、呼び出し元の型を決められるときは、構成子の名前を復元する。決められないときは、型が不明のまま残ることがある。報告が `<constructor #n of an unknown type>`（n は 0 から数えた構成子の位置）を示すときは、確かめの中で具体的な型の値を比べると、構成子の名前が表示される。
+テストは、`@test("description")` を付け、引数を持たず、戻り値の型が `Unit` か `Result[Unit, String]` の関数である（テストが `try e or return` を使うときは後者にする）。`Assert.equal(actual: actual, expected: expected)` で確かめる。テストが外の世界に触れないように、`File.readText` や `Process.run` などの操作をハンドラで置き換える。ほかの例は `references/idioms.md` にある。型パラメータを持つ補助の関数の中の確かめは、呼び出し元の型を決められるときは、構成子の名前を復元する。決められないときは、型が不明のまま残ることがある。報告が `<constructor #n of an unknown type>`（n は 0 から数えた構成子の位置）を示すときは、確かめの中で具体的な型の値を比べると、構成子の名前が表示される。
 
 ```benitoite test
 import Benitoite.Unofficial.IO.File
 
 function firstLine(path: String) -> Result[String, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return Option.okOr(o: List.head(String.lines(text)), error: "empty file")
 end function
 

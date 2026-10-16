@@ -60,7 +60,13 @@ fn escape_if(e: &IfExpr) -> bool {
 }
 fn escape(e: &Expr) -> bool {
     match e {
-        Expr::Return(_) | Expr::Try(_) => true,
+        Expr::Return(_) => true,
+        Expr::Try(e) => match &e.action {
+            TryAction::ImplicitReturn | TryAction::Return { .. } => true,
+            TryAction::Die { message, .. } => {
+                escape(&e.value) || message.as_deref().is_some_and(escape)
+            }
+        },
         // 内側のラムダの return と try は別の関数の呼び出しを終える（設計書 01-09）。
         Expr::Lambda(_) => false,
         Expr::Paren(e) => escape(&e.inner),

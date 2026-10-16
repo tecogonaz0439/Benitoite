@@ -15,15 +15,13 @@ function bytes(v: Bytes) -> Bytes
 function bytesAdapter(ignored: Boolean, v: Bytes) -> Bytes
 
 function main() -> Result[Unit, String] uses Console.Write, Process.Environment
-  bind Pair(n, rounds) <- try Runner.settings()
+  bind Pair(n, rounds) <- try Runner.settings() or return
   bind text <- String.repeat(s: "A日😀", n: Integer.minimum(a: n, b: 4096))
   bind source <- Bytes.fromList(List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> Byte
- return
-    if value mod 3 = 0 then 0u8 else if value mod 3 = 1 then 128u8 else 255u8 end if
+    return if value mod 3 = 0 then 0u8 else if value mod 3 = 1 then 128u8 else 255u8 end if
   end lambda))
   bind expected <- Bytes.fromList(List.map(xs: List.range(start: 0, stop: n), f: lambda(value: Integer) -> Byte
- return
-    if value mod 3 = 0 then 255u8 else if value mod 3 = 1 then 127u8 else 0u8 end if
+    return if value mod 3 = 0 then 255u8 else if value mod 3 = 1 then 127u8 else 0u8 end if
   end lambda))
 
   return Runner.verify(rounds: rounds, work: lambda() -> Boolean

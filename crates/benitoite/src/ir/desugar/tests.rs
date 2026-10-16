@@ -773,28 +773,31 @@ function option(x: Option[Integer]) -> Option[String]
  return Option.Some(Integer.toString(n))
 end function
 "#;
-    let p = compile(source);
-    for name in ["result", "option"] {
-        let d = def(&p, name);
-        let comps = nodes(&d.body).0;
-        let m = comps
-            .iter()
-            .find(|c| matches!(&c.kind, CompKind::Match { .. }))
-            .unwrap();
-        let CompKind::Match { rows, arms, .. } = &m.kind else {
-            panic!()
-        };
-        assert_eq!((rows.len(), arms.len()), (2, 2));
-        let CompKind::Escape(v) = &arms[1].body.kind else {
-            panic!()
-        };
-        assert_eq!(v.ty, d.ret);
-        assert!(
-            matches!(&v.kind, ValKind::Ctor { tys, .. } if tys[0] == basic(BuiltinTypeId::STRING))
-        );
-        assert_eq!(source_span(source, m.origin), "try x");
-        assert_eq!(m.origin, arms[1].body.origin);
-        assert_eq!(arms[0].vars[0].ty, basic(BuiltinTypeId::INTEGER));
+    for suffix in ["", " or return"] {
+        let source = source.replace("try x", &format!("try x{suffix}"));
+        let p = compile(&source);
+        for name in ["result", "option"] {
+            let d = def(&p, name);
+            let comps = nodes(&d.body).0;
+            let m = comps
+                .iter()
+                .find(|c| matches!(&c.kind, CompKind::Match { .. }))
+                .unwrap();
+            let CompKind::Match { rows, arms, .. } = &m.kind else {
+                panic!()
+            };
+            assert_eq!((rows.len(), arms.len()), (2, 2));
+            let CompKind::Escape(v) = &arms[1].body.kind else {
+                panic!()
+            };
+            assert_eq!(v.ty, d.ret);
+            assert!(
+                matches!(&v.kind, ValKind::Ctor { tys, .. } if tys[0] == basic(BuiltinTypeId::STRING))
+            );
+            assert_eq!(source_span(&source, m.origin), format!("try x{suffix}"));
+            assert_eq!(m.origin, arms[1].body.origin);
+            assert_eq!(arms[0].vars[0].ty, basic(BuiltinTypeId::INTEGER));
+        }
     }
 }
 

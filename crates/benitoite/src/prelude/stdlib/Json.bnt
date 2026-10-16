@@ -1,5 +1,7 @@
 //! JSON values, parsing, and writing.
 
+import Benitoite.Trait
+
 /// A JSON value. Object members are kept in the order of their keys.
 public data Value
   Null
@@ -12,6 +14,7 @@ public data Value
 end data
 
 /// Where and why parsing failed. `line` and `column` count from 1; `column` counts characters.
+@extensible
 public record ParseError
   line: Integer
   column: Integer
@@ -94,3 +97,9 @@ public function asObject(value: Value) -> Option[Map[String, Value]]
     case _ -> Option.None
   end match
 end function
+
+implement Trait.Show[ParseError]
+  function show(x: ParseError) -> String
+    return ParseError.message(x)
+  end function
+end implement

@@ -143,7 +143,7 @@ fn export_width_smoke() {
     write_exchange(&output, inputs, builtin_inputs, stdlib_inputs, annotations);
     fs::write(
         output.join("coverage.json"),
-        exchange::to_vec(&json!({"version":2,"inputs":coverage_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":3,"inputs":coverage_inputs})).unwrap(),
     )
     .unwrap();
     // メモリ上の表だけでなく、Lean が読むファイルにも境界値とビットが残ることを確かめる。
@@ -243,10 +243,10 @@ fn export(
             .filter(|d| d.is_error())
             .map(|d| format!("{:?}", d.code))
             .collect();
-        return json!({"group":group,"name":name,"excluded":errors,"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
+        return json!({"group":group,"name":name,"excluded":errors,"dataTypes":[],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
     };
     if program.resolved.externals.iter().next().is_some() {
-        return json!({"group":group,"name":name,"excluded":["external function"],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
+        return json!({"group":group,"name":name,"excluded":["external function"],"dataTypes":[],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
     }
     let core = pipeline::desugar_checked(&program).unwrap_or_else(|e| panic!("{name}: {e:?}"));
     let tables = exchange::named_operation_tables(&program, &core);
@@ -254,13 +254,18 @@ fn export(
     let (definitions, constants, coverage) = exchange::named_program_parts(&program, &core);
     coverage_inputs.push(json!({"group":group,"name":name,
         "matches":coverage.matches,"bindings":coverage.bindings}));
-    let input = json!({"group":group,"name":name,"excluded":[],
+    let mut input = json!({"group":group,"name":name,"excluded":[],
         "ops":tables["ops"],"effects":tables["effects"],"primOps":tables["primOps"],
         "classes":classes["classes"],"impls":classes["impls"],
         "definitions":definitions,"constants":constants});
     if let Some((inputs, declarations, stdlib)) = builtin_inputs {
         declarations.push(exchange::named_stdlib_declarations(&program, &core, &input));
-        inputs.push(exchange::named_builtin_tables(&program, &input, stdlib));
+        let table = exchange::named_builtin_tables(&program, &input, stdlib);
+        exchange::attach_metadata(&mut input, &table, coverage_inputs.last_mut().unwrap());
+        inputs.push(table);
+    } else {
+        let table = exchange::named_builtin_tables(&program, &input, &exchange::complete_stdlib());
+        exchange::attach_metadata(&mut input, &table, coverage_inputs.last_mut().unwrap());
     }
     input
 }
@@ -321,7 +326,7 @@ fn write_exchange(
     stdlib_inputs: Vec<Value>,
     annotations: std::collections::BTreeMap<String, [usize; 2]>,
 ) -> Value {
-    let corpus = json!({"version":8,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
+    let corpus = json!({"version":10,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
     fs::write(
         output.join("corpus.json"),
         exchange::to_vec(&corpus).unwrap(),
@@ -330,12 +335,12 @@ fn write_exchange(
     // 新しい契約名を型表にも保持する。
     fs::write(
         output.join("builtins.json"),
-        exchange::to_vec(&json!({"version":2,"inputs":builtin_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":3,"inputs":builtin_inputs})).unwrap(),
     )
     .unwrap();
     fs::write(
         output.join("stdlib-decls.json"),
-        exchange::to_vec(&json!({"version":2,"inputs":stdlib_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":3,"inputs":stdlib_inputs})).unwrap(),
     )
     .unwrap();
     corpus
@@ -421,19 +426,19 @@ impl CorpusStream {
     fn finish(self, output: &Path, stem: &str) {
         self.inputs.finish(
             &output.join(format!("{stem}-corpus.json")),
-            json!({"version":8,"operators":exchange::operators(),"annotations":self.annotations}),
+            json!({"version":10,"operators":exchange::operators(),"annotations":self.annotations}),
         );
         self.builtins.finish(
             &output.join(format!("{stem}-builtins.json")),
-            json!({"version":2}),
+            json!({"version":3}),
         );
         self.declarations.finish(
             &output.join(format!("{stem}-stdlib.json")),
-            json!({"version":2}),
+            json!({"version":3}),
         );
         self.coverage.finish(
             &output.join(format!("{stem}-coverage.json")),
-            json!({"version":2}),
+            json!({"version":3}),
         );
     }
 }
@@ -473,7 +478,7 @@ fn export_desugar_corpus() {
             Ok(checked) => named_stream.export("golden", &relative.display().to_string(), checked, &stdlib),
             Err(error) => named_stream.push(
                 json!({"group":"golden","name":relative.display().to_string(),
-                "excluded":[format!("entry: {error:?}")],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]}), vec![], vec![], vec![],
+                "excluded":[format!("entry: {error:?}")],"dataTypes":[],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]}), vec![], vec![], vec![],
             ),
         }
     }
@@ -746,20 +751,19 @@ fn export_named_types_smoke() {
     assert_eq!(ty, expected);
     assert_eq!(exchange::named_type(&p, &scheme.ret), expected);
     let header = |ty: Value| json!({"tparams":[],"neffs":0,"names":["callback"],"params":[ty],"ret":ty,"eff":[]});
-    let surface = json!({"header":header(ty.clone()),"dictParams":[],"body":{"last":{"expr":{"returnE":{"ret":ty,"inner":{"local":{"index":0}}}}}},"implementation":null,"method":null,"supers":[]});
+    let surface = json!({"package":"root","header":header(ty.clone()),"dictParams":[],"body":{"last":{"expr":{"returnE":{"ret":ty,"inner":{"local":{"index":0}}}}}},"implementation":null,"method":null,"supers":[]});
     // この期待コアは脱糖の出力を使わず、独立した型と変数の規則から書く。
     let core = json!({"header":header(expected),"body":{"ret":{"value":{"var":{"index":0}}}},"lambdaEffects":[],"supers":[]});
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../formal/tests/named-exchange");
-    let mut corpus: Value =
-        serde_json::from_slice(&fs::read(root.join("corpus.json")).unwrap()).unwrap();
-    let mut input = corpus["inputs"][0].clone();
-    input["name"] = json!("named-types");
-    input["definitions"] =
-        json!([{"name":"identity (fn:1)","scope":{"inScope":{"surface":surface,"core":core}}}]);
-    for key in ["constants", "ops", "effects", "primOps", "classes", "impls"] {
-        input[key] = json!([]);
-    }
-    corpus["inputs"] = json!([input]);
+    // 固定した Lean 入力の版と、Rust の現在の書き出しの版を独立に保つ
+    // （設計書 07-04「01-12 との対応」）。
+    let mut input = named::input(
+        "named-types",
+        vec![json!({"name":"identity (fn:1)","scope":{"inScope":{"surface":surface,"core":core}}})],
+    );
+    let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
+    exchange::attach_metadata(&mut input, &table, &mut Value::Null);
+    let corpus = json!({"version":10,"operators":exchange::operators(),
+        "inputs":[input],"annotations":{"tailMatch":[0,0]}});
     fs::write(
         output.join("named-types-corpus.json"),
         serde_json::to_vec_pretty(&corpus).unwrap(),
@@ -802,16 +806,11 @@ fn export_named_declarations_smoke() {
         make["core"]["body"],
         json!({"ret":{"value":{"lam":{"names":["value"],"params":[integer],"body":{"ret":{"value":{"var":{"index":1}}}}}}}})
     );
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../formal/tests/named-exchange");
-    let mut corpus: Value =
-        serde_json::from_slice(&fs::read(root.join("corpus.json")).unwrap()).unwrap();
-    let mut input = corpus["inputs"][0].clone();
-    input["name"] = json!("named-declarations");
-    input["definitions"] = json!(definitions);
-    for key in ["constants", "ops", "effects", "primOps", "classes", "impls"] {
-        input[key] = json!([]);
-    }
-    corpus["inputs"] = json!([input]);
+    let mut input = named::input("named-declarations", definitions);
+    let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
+    exchange::attach_metadata(&mut input, &table, &mut Value::Null);
+    let corpus = json!({"version":10,"operators":exchange::operators(),
+        "inputs":[input],"annotations":{"tailMatch":[0,0]}});
     fs::write(
         output.join("named-declarations-corpus.json"),
         serde_json::to_vec_pretty(&corpus).unwrap(),

@@ -27,12 +27,18 @@ structure BuiltinEntry where
   deriving ToJson, FromJson
 
 structure DataCtorEntry where
+  constructorName : Option String := none
   fields : Option (List String)
   name : String
   args : List Ty
   deriving ToJson, FromJson
 
 structure DataEntry where
+  builtin : Benitoite.Exchange.BuiltinData
+  package : String
+  typeName : String
+  isRecord : Bool
+  extensible : Bool
   name : String
   ntys : Nat
   ctors : List DataCtorEntry
@@ -127,6 +133,20 @@ def BuiltinEntry.toMaterial (b : BuiltinEntry) : Except String PrimMaterial := d
     eff := b.eff.toRelease
     kind := ← primKind b.kind
     opEff := b.opEff }
+
+def DataEntry.info (d : DataEntry) : DataTypeInfo :=
+  ⟨d.builtin, d.package, d.name, d.typeName, d.isRecord, d.extensible⟩
+
+def readBuiltins (j : Json) : Except String BuiltinCorpus := do
+  let c : BuiltinCorpus ← fromJson? (← exchangeJson "builtins" j)
+  for i in c.inputs do
+    validateDataTypes (i.dataDecls.map DataEntry.info)
+    for d in i.dataDecls do
+      validateBuiltinShape d.builtin d.ntys d.isRecord (d.ctors.map fun c =>
+        (c.constructorName.getD "", c.args.map fun t => match t with | .tvar n => some n | _ => none))
+      if d.isRecord != d.ctors.any (fun c => c.fields.isSome) ||
+          (d.isRecord && d.ctors.length != 1) then throw "data isRecord/fields mismatch"
+  return c
 
 def DataEntry.toMaterial (d : DataEntry) : Except String DataMaterial := do
   return { name := d.name, ntys := d.ntys, ctors := ← d.ctors.mapM (fun c => do

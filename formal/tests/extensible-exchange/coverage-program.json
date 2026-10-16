@@ -1,0 +1,124 @@
+{
+  "version": 3,
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "independent-extensible",
+      "matches": [
+        {
+          "node": 0,
+          "scrutineeTy": {
+            "data": {
+              "name": "Kind",
+              "args": []
+            }
+          },
+          "arms": [
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "con": {
+                    "name": "Only",
+                    "args": []
+                  }
+                }
+              ]
+            }
+          ],
+          "coverageView": [],
+          "package": "author"
+        },
+        {
+          "node": 1,
+          "scrutineeTy": {
+            "data": {
+              "name": "Kind",
+              "args": []
+            }
+          },
+          "arms": [
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "con": {
+                    "name": "Only",
+                    "args": []
+                  }
+                }
+              ]
+            },
+            {
+              "guarded": false,
+              "alts": [
+                "wild"
+              ]
+            }
+          ],
+          "coverageView": [
+            "Kind",
+            "Rec",
+            "Unused"
+          ],
+          "package": "external"
+        },
+        {
+          "node": 2,
+          "scrutineeTy": {
+            "data": {
+              "name": "Rec",
+              "args": []
+            }
+          },
+          "arms": [
+            {
+              "guarded": false,
+              "alts": [
+                {
+                  "con": {
+                    "name": "Rec",
+                    "args": [
+                      "wild"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "guarded": false,
+              "alts": [
+                "wild"
+              ]
+            }
+          ],
+          "coverageView": [
+            "Kind",
+            "Rec",
+            "Unused"
+          ],
+          "package": "external"
+        }
+      ],
+      "bindings": [
+        {
+          "node": 3,
+          "kind": "bind",
+          "ty": {
+            "data": {
+              "name": "Kind",
+              "args": []
+            }
+          },
+          "pattern": "wild",
+          "coverageView": [
+            "Kind",
+            "Rec",
+            "Unused"
+          ],
+          "package": "external"
+        }
+      ]
+    }
+  ]
+}

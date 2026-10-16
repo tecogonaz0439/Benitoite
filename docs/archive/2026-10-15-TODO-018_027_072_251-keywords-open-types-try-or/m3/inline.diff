@@ -1,0 +1,17 @@
+--- a/docs/design/01-spec/01-02-syntax.md
++++ b/docs/design/01-spec/01-02-syntax.md
+@@ -389 +389 @@
+-`try` は右の式全体にかかるので、パイプの結果にかけるときは、パイプの先頭に書く（`try x |> f(next: a)` は、`x` を位置 0 に補う呼び出し全体に `try` を適用する）。
++`try` は右の式全体にかかるので、パイプの結果にかけるときは、パイプの先頭に書く（`try x |> f(next: a) or return` は、`x` を位置 0 に補う呼び出し全体に `try` を適用する）。
+@@ -608,2 +608,2 @@
+-- `try` は右の式全体（パイプを含む）にかかる。`try e |> f(_)` は `try f(e)` である。同じ深さの `or return` / `or die` は入力の終わりとし、失敗時の処置として読む。`or return` は値を取らない。`try r or return` と裸の `try r` は、型と評価の意味が同じである。
+-- `or` の後が `return` / `die` でなければ通常の Boolean の演算子として読む。`try r or flag` は `try (r or flag)` である。括弧・引数・ラムダ・ブロックの内側では、その範囲の式を読む。内側の `try` が処置を先に取り、`try try r or return or return` は内外それぞれの処置になる。
++- `try` は右の式全体（パイプを含む）にかかる。`try e |> f(_) or return` は `try f(e) or return` である。同じ深さの `or return` / `or die` は入力の終わりとし、失敗時の処置として読む。`or return` は値を取らない。`try r or return` と裸の `try r` は、型と評価の意味が同じである。
++- `or` の後が `return` / `die` でなければ通常の Boolean の演算子として読む。`try r or flag or return` は `try (r or flag) or return` である。括弧・引数・ラムダ・ブロックの内側では、その範囲の式を読む。内側の `try` が処置を先に取り、`try try r or return or return` は内外それぞれの処置になる。
+--- a/docs/design/01-spec/01-09-errors.md
++++ b/docs/design/01-spec/01-09-errors.md
+@@ -62,2 +62,2 @@
+-- `try` は式の先頭に書き、右の式全体（パイプを含む）にかかる。どの演算子よりも弱く結び付く。`try x |> f(b: a)` は `try f(a: x, b: a)` である。`try f(x) + 1` は `try (f(x) + 1)` なので、`f(x)` の結果に 1 を足すときは `(try f(x)) + 1` と書くか、`bind` で束縛してから足す。
+-- 関数の引数の中に書いた `try` は、その引数の式にかかる（`g(try f(x))`）。明示形の入力は同じ深さの `or return` の手前で終わり、処置の後に外側の演算子を続けるときは `(try f(x) or return) + 1` と括弧で囲む。改行と処置の境界は[構文](01-02-syntax.md)の try の節に従う。
++- `try` は式の先頭に書き、右の式全体（パイプを含む）にかかる。どの演算子よりも弱く結び付く。`try x |> f(b: a) or return` は `try f(a: x, b: a) or return` である。裸の形の優先順位では、`try f(x) + 1` は `try (f(x) + 1)` である。`f(x)` の結果に 1 を足すときは、処置を明示して `(try f(x) or return) + 1` と書くか、`bind` で束縛してから足す。
++- 関数の引数の中に書いた `try` は、その引数の式にかかる（`g(try f(x) or return)`）。明示形の入力は同じ深さの `or return` の手前で終わり、処置の後に外側の演算子を続けるときは `(try f(x) or return) + 1` と括弧で囲む。改行と処置の境界は[構文](01-02-syntax.md)の try の節に従う。

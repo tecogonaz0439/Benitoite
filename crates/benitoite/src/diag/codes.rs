@@ -181,6 +181,9 @@ diag_codes! {
     // ---- E02: 構文 ----
     E0201 Check "expected {expected}, found {found}" "unexpected {found}"
         [lambda_line: "put `end lambda` on the same physical line as the body, or start the body on the line after the lambda header",
+         return_start: "return starts here",
+         return_value_line: "start the return value on the same physical line as `return`",
+         die_action: "use `try value or die` or `try value or die(message)` to exit on failure",
          type_arguments: "call functions without type arguments, such as `Map.empty()`; write the type on the binding, such as `bind m: Map[String, Integer] <- Map.empty()`, and use `List.get` to read list elements"]
         fix [type_arguments]
         "The parser found a token that cannot appear here.";
@@ -220,7 +223,7 @@ diag_codes! {
          or: "write `or`",
          not: "write `not`",
          remainder: "write `mod` for the remainder",
-         question: "write `try` before the expression, such as `try parse(text)`",
+         question: "write `try` before the expression, such as `try parse(text) or return`",
          fat_arrow: "write the branch as `case pattern -> expression`"]
         fix [equal, not_equal, and, or, not, remainder]
         "Benitoite writes these operators as words or with other symbols.";
@@ -255,8 +258,9 @@ diag_codes! {
     E0218 Check "`{keyword}` cannot be used inside {context}" ""
         [lazy_body: "a `lazy` body produces one value; compute the value with an expression",
          guard: "a guard is a condition; check the value in the branch body instead",
+         die_message: "use a pure String expression for the message of `or die`",
          lambda: "`{keyword}` is allowed inside a `lambda ... end lambda` written there"]
-        "`return` and `try` cannot leave a `lazy` body or a `match` guard, except inside a `lambda ... end lambda` written there. The function and the arguments of a call with `_` placeholders are not exempt.";
+        "`return` and `try` cannot leave a `lazy` body, a `match` guard, or the message of `or die`, except inside a `lambda ... end lambda` written there. The function and the arguments of a call with `_` placeholders are not exempt.";
     E0219 Check "`import` must come before other declarations" "import after a declaration"
         [first: "the first declaration is here"]
         "All `import` declarations are written at the start of the file.";
@@ -401,6 +405,16 @@ diag_codes! {
     E0257 Check "each function-type parameter must have a name" ""
         [named: "write `function(name: Type) -> Result`"]
         "Function-type parameter names are part of the contract. Use the names required by the surrounding contract.";
+
+    E0258 Check "invalid failure action after `try`" ""
+        [return_value: "the `or return` action takes no value",
+         die_message: "write exactly one message expression inside the parentheses",
+         die_action: "use `or die` or `or die(message)` to exit on failure"]
+        "Write `or return` without a value to return the failure, or `or die` with an optional parenthesized message to exit.";
+
+    E0259 Check "parenthesize an explicit `try` expression before continuing it" ""
+        [paren: "write `(try ... or return)` or `(try ... or die)` before applying another operator or call"]
+        "Enclose an explicit `try` expression in parentheses before continuing it.";
 
     // ---- E03: 名前、import、公開 ----
     E0301 Check "cannot find `{name}` in this scope" "not found"
@@ -809,7 +823,9 @@ diag_codes! {
     // ---- E05: エフェクト、ハンドラ ----
     E0501 Check "this function performs `{effect}` but does not declare it" "`{effect}` happens here"
         [declared: "declared here",
-         add_uses: "add `uses {effect}` to the signature, or move this call to a function that uses `{effect}`"]
+         add_uses: "add `uses {effect}` to the signature, or move this call to a function that uses `{effect}`",
+         die_uses: "add `uses Process.Exit` to the signature for `or die`",
+         die_import: "add `import Benitoite.Unofficial.IO.Process` and `uses Process.Exit`; the internal dependency of `or die` does not import the name `Process`"]
         "A function body can only perform the effects listed after `uses`.";
     E0502 Check "this lambda performs `{effect}` but its `uses` does not include it" "`{effect}` happens here"
         [declared: "declared here"]
@@ -834,9 +850,10 @@ diag_codes! {
         "Each operation has at most one clause in a `handle`.";
     E0509 Check "`resume` can only be used directly in a clause of `handle`" ""
         [lambda: "`resume` cannot be used in a lambda or a `lazy` body inside a clause",
+         die_message: "`resume` cannot be used in the message of `or die`; use a pure String expression",
          guard: "`resume` cannot be used in a `match` guard; call it in the body of the branch",
          placeholder: "`resume` cannot be used in an argument of a call with `_` placeholders; the arguments are evaluated inside the function that the call creates"]
-        "`resume` continues the computation that performed the operation, so it is written in the clause itself, not inside a lambda, a `lazy` body, a `match` guard, or an argument of a call with `_` placeholders.";
+        "`resume` continues the computation that performed the operation, so it is written in the clause itself, not inside a lambda, a `lazy` body, a `match` guard, the message of `or die`, or an argument of a call with `_` placeholders.";
     E0510 Check "invalid effect operation declaration" ""
         [uses: "an operation declaration cannot have `uses`; the handler decides the effects",
          effect_var: "an operation cannot have effect variables",
@@ -844,9 +861,16 @@ diag_codes! {
          trait_constraint: "a type parameter of an operation can have only `equality` or `key`, not a trait"]
         "Operations of an effect are declared with a name, parameters, and a result type.";
 
+    E0511 Check "the message of `or die` cannot perform `{effect}`" ""
+        [pure: "use a pure String expression for the message",
+         message: "the message is written here"]
+        "The optional message of `or die` must be a pure String expression.";
+
     // ---- E06: パターン ----
     E0601 Check "`match` does not cover every value" "`{witness}` is not matched"
-        [add_arm: "add a branch `case {witness} ->`, or `case _ ->`"]
+        [add_arm: "add a branch `case {witness} ->`, or `case _ ->`",
+         future: "add an unguarded variable or `_` pattern to cover future values of `{future_ty}`",
+         extensible_decl: "this type permits future shapes outside its package"]
         "Every possible value must be matched by some branch.";
     E0602 Check "this branch can never be selected" "unreachable branch"
         [covering: "this earlier branch already matches the values"]
@@ -871,7 +895,9 @@ diag_codes! {
     E0606 Check "a range pattern needs two `Integer` or two `Character` literals" "" []
         "Range patterns compare integers or characters.";
     E0607 Check "this pattern does not match every value of `{ty}`" "`{witness}` is not matched"
-        [match: "use `match ... with` to handle the other values"]
+        [match: "use `match ... with` to handle the other values",
+         future: "use `match ... with` and add an unguarded `case _ ->` branch to cover future values of `{future_ty}`",
+         extensible_decl: "this type permits future shapes outside its package"]
         "The pattern on the left of `bind` or `shadow` must match every value.";
     E0608 Check "this alternative can never be selected" "unreachable alternative"
         [covering: "already matched here"]
@@ -898,10 +924,12 @@ diag_codes! {
         [constraint: "add the constraint `{constraint}` to the type parameter of the implementation"]
         "A type implements a trait only if it implements the supertraits under the same constraints.";
     E0705 Check "`{ty}` does not implement `{trait_name}`" "`{trait_name}` is required here"
-        [required: "required by this use"]
+        [required: "required by this use",
+         die_show: "implement Trait.Show or convert the error with Result.mapError"]
         "A value used with a trait method, or passed where a constraint is required, must have an implementation.";
     E0706 Check "the type parameter `{param}` needs the constraint `{trait_name}`" ""
-        [add: "add the constraint, such as `[{param}: {trait_name}]`"]
+        [add: "add the constraint, such as `[{param}: {trait_name}]`",
+         die_show: "implement Trait.Show or convert the error with Result.mapError"]
         fix [add]
         "Using a trait method on a value of a type parameter requires that constraint on the parameter.";
     E0707 Check "the implementation of `{trait_name}` is missing methods: {methods}" ""
@@ -934,10 +962,10 @@ diag_codes! {
 
     // ---- E08: 属性 ----
     E0801 Check "unknown attribute `@{name}`" ""
-        [allowed: "the attributes are `@test`, `@test(\"...\")`, `@deprecated(\"...\")`, and `@external(\"wasm\", \"...\", \"...\")`"]
+        [allowed: "the attributes are `@test`, `@test(\"...\")`, `@deprecated(\"...\")`, `@extensible`, and `@external(\"wasm\", \"...\", \"...\")`"]
         "Only the listed attributes can be written.";
     E0802 Check "`@{name}` cannot be written on {what}" "" []
-        "`@test` is written on functions. `@external` is written on top-level functions and on `type` declarations without a right-hand side. `@deprecated` is written on functions, constants, `data` types, type aliases, records, traits, and effects.";
+        "`@test` is written on functions. `@external` is written on top-level functions and on `type` declarations without a right-hand side. `@deprecated` is written on functions, constants, `data` types, type aliases, records, traits, and effects. `@extensible` is written on `data` types and records.";
     E0803 Check "`@{name}` is written more than once" "written again here"
         [first: "first written here",
          remove: "remove this attribute"]
@@ -988,6 +1016,10 @@ diag_codes! {
         [state: "add `uses State` after the result type"] fix [state]
         "Functions that pass external types use component state.";
 
+    E0817 Check "`@extensible` takes no arguments" ""
+        [remove: "remove the arguments from `@extensible`"]
+        "`@extensible` is written without arguments on a `data` type or record.";
+
     // ---- E09: パッケージと依存 ----
     E0901 Check "unknown field `{field}` in `{block}`" ""
         [fields: "the fields of `{block}` are {fields}"]
@@ -1010,9 +1042,8 @@ diag_codes! {
     E0907 Check "this file needs Benitoite {version} or later, but this is Benitoite {current}" "" []
         "The declared language version is newer than the interpreter. Use an interpreter at least as new as the declaration.";
     E0908 Check "this file was written for Benitoite {version}, and the language changed incompatibly in {changed}" ""
-        [change: "{summary}",
-         migrate: "see docs/reference/benitoite.md for named arguments and named function types"]
-        "The interpreter reports the earliest incompatible language change after the declared version and no later than its own version.";
+        []
+        "The main message identifies the first incompatible language change after the declared version and no later than the interpreter's version. Notes list every applicable version and its summary in version order, and helps list the corresponding migration guidance in the same order, without source edits.";
     E0909 Check "`{item}` can be written only at the start of the starting file or in `package.bnt`" "" []
         "Imported modules cannot have `language` or `dependency` headers. A `package` block can be written only in `package.bnt`.";
     E0910 Check "a `package` block can be written only in `package.bnt`" "" []
@@ -1328,6 +1359,10 @@ pub fn fill_template(template: &str, args: &[(&'static str, String)]) -> String 
 
 /// 診断コードの表に属さない、報告の定型の文（設計書 02-10「文言の言語」）。
 pub mod text {
+    /// 明示的な失敗終了の主文と注記。原因と説明は別々の注記に保持する。
+    pub const DIE_MESSAGE: &str = "explicit failure exit";
+    pub const DIE_MESSAGE_NOTE: &str = "message: {message}";
+    pub const DIE_CAUSE_NOTE: &str = "cause: {cause}";
     /// 実行時エラーの履歴の見出し（02-10）
     pub const TRACE_HEADER: &str = "call trace (innermost first):";
     /// タスクの起動の履歴の見出し

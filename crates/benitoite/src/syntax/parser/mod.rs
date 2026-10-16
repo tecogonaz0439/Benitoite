@@ -138,6 +138,7 @@ pub(super) enum EscapeContext {
     Allowed,
     InLazy,
     InGuard,
+    InDieMessage,
 }
 #[derive(Clone, Copy, Debug)]
 pub(super) struct Context {
@@ -430,6 +431,9 @@ impl<'a> Parser<'a> {
             .arg("expected", expected)
             .arg("found", text::describe(token))
             .primary(token.span);
+        if token.kind == TokenKind::KwDie {
+            diagnostic = diagnostic.help("die_action");
+        }
         if self.same_line_lambda_before_end() {
             diagnostic = diagnostic.help("lambda_line");
         }
@@ -443,41 +447,52 @@ impl<'a> Parser<'a> {
     #[cold]
     #[inline(never)]
     fn same_line_lambda_before_end(&self) -> bool {
-        self.at(TokenKind::KwEnd)
-            && self.peek_nth_kind(1) == TokenKind::KwLambda
-            && self
-                .lambda_bounds
-                .short_body_ends_at(self.peek().span.start)
-            && self
-                .tokens
-                .get(..self.pos)
-                .unwrap_or_default()
-                .iter()
-                .rev()
-                .find(|t| t.kind != TokenKind::Newline)
-                .is_some_and(|t| {
-                    matches!(
-                        t.kind,
-                        TokenKind::LowerIdent
-                            | TokenKind::UpperIdent
-                            | TokenKind::IntLit
-                            | TokenKind::FloatLit
-                            | TokenKind::DecimalLit
-                            | TokenKind::StringLit
-                            | TokenKind::CharLit
-                            | TokenKind::KwTrue
-                            | TokenKind::KwFalse
-                            | TokenKind::RParen
-                            | TokenKind::RBracket
-                            | TokenKind::StrEnd
-                            | TokenKind::KwLambda
-                            | TokenKind::KwIf
-                            | TokenKind::KwMatch
-                            | TokenKind::KwHandle
-                            | TokenKind::KwWith
-                            | TokenKind::KwLazy
-                    )
-                })
+        let mut previous = self
+            .tokens
+            .get(..self.pos)
+            .unwrap_or_default()
+            .iter()
+            .rev()
+            .filter(|t| t.kind != TokenKind::Newline);
+        // return 直後の改行は括弧内にも残る。その先の旧終端についても
+        // 同じ移行を案内するが、値の欠落や未完の演算子は下の判定で除く。
+        let mut following = self
+            .tokens
+            .get(self.pos..)
+            .unwrap_or_default()
+            .iter()
+            .filter(|t| t.kind != TokenKind::Newline);
+        following.next().is_some_and(|t| {
+            t.kind == TokenKind::KwEnd && self.lambda_bounds.short_body_ends_at(t.span.start)
+        }) && following
+            .next()
+            .is_some_and(|t| t.kind == TokenKind::KwLambda)
+            && previous.next().is_some_and(|t| {
+                // 値を取らない処置の return だけは本体の末尾になれる。
+                // 普通の return の値欠落や、未完の演算子への案内には使わない。
+                matches!(
+                    t.kind,
+                    TokenKind::LowerIdent
+                        | TokenKind::UpperIdent
+                        | TokenKind::IntLit
+                        | TokenKind::FloatLit
+                        | TokenKind::DecimalLit
+                        | TokenKind::StringLit
+                        | TokenKind::CharLit
+                        | TokenKind::KwTrue
+                        | TokenKind::KwFalse
+                        | TokenKind::RParen
+                        | TokenKind::RBracket
+                        | TokenKind::StrEnd
+                        | TokenKind::KwLambda
+                        | TokenKind::KwIf
+                        | TokenKind::KwMatch
+                        | TokenKind::KwHandle
+                        | TokenKind::KwWith
+                        | TokenKind::KwLazy
+                ) || t.kind == TokenKind::KwReturn
+                    && previous.next().is_some_and(|t| t.kind == TokenKind::KwOr)
+            })
     }
 
     // ---------------- 入れ子の深さ ----------------
@@ -1226,10 +1241,16 @@ mod tests {
             ("lambda(x) return x // tail\r\nend lambda", DiagCode::E0213),
             ("lambda(x) return x\n\nend lambda", DiagCode::E0213),
             ("accept(lambda(x) return x\nend lambda)", DiagCode::E0201),
+            ("lambda() try r or return\nend lambda", DiagCode::E0213),
+            (
+                "accept(lambda() try r or return // tail\r\nend lambda)",
+                DiagCode::E0201,
+            ),
         ] {
             let out = user(&body(source));
             let d = &out.diagnostics[0];
             assert_eq!(d.code, Some(code), "{source}: {:?}", out.diagnostics);
+            assert!(!d.helps.is_empty(), "{source}: {d:?}");
             let help = d.helps.last().unwrap();
             assert_eq!(
                 help.message,
@@ -1255,6 +1276,10 @@ mod tests {
             ("not", DiagCode::E0201),
             ("g.", DiagCode::E0203),
             ("g(", DiagCode::E0201),
+            ("try r or", DiagCode::E0201),
+            ("try r or return +", DiagCode::E0259),
+            ("try r or flag +", DiagCode::E0201),
+            ("try r |>", DiagCode::E0201),
         ] {
             let source = body(&format!(
                 "lambda()\n bind f <- lambda(x) return {tail}\nend lambda"
@@ -1453,6 +1478,71 @@ mod tests {
     }
 
     #[test]
+    fn return_value_must_start_on_the_same_physical_line() {
+        for newline in ["\n", "\r\n"] {
+            for gap in ["", " // tail", "\n\n// comment"] {
+                for value in ["1", "+ 1", "|> f", "(1)"] {
+                    for (open, close) in [("", ""), ("(", ")"), ("f(", ")"), ("[", "]")] {
+                        let source = body(&format!("{open}return{gap}\n{value}{close}"))
+                            .replace('\n', newline);
+                        let out = user(&source);
+                        // 次行の式自体が正しい場合は、括弧内の回復でも診断を重ねない。
+                        if value == "1" || value == "(1)" {
+                            assert_eq!(
+                                codes(&out),
+                                [DiagCode::E0201],
+                                "{source}: {:?}",
+                                out.diagnostics
+                            );
+                        }
+                        let d = out.diagnostics.first().unwrap();
+                        assert_eq!(d.code, Some(DiagCode::E0201), "{source}: {d:?}");
+                        assert_eq!(d.message, "expected an expression, found a newline");
+                        let return_at = source.find("return").unwrap();
+                        let break_at = return_at + source[return_at..].find(newline).unwrap();
+                        let primary = d.primary.as_ref().unwrap();
+                        assert_eq!(primary.span.start.0 as usize, break_at);
+                        assert_eq!(primary.span.end.0 as usize, break_at + newline.len());
+                        assert_eq!(primary.text, "unexpected a newline");
+                        assert_eq!(d.secondary.len(), 1);
+                        assert_eq!(d.secondary[0].span.start.0 as usize, return_at);
+                        assert_eq!(d.secondary[0].span.end.0 as usize, return_at + 6);
+                        assert_eq!(d.secondary[0].text, "return starts here");
+                        assert_eq!(d.helps.len(), 1);
+                        assert_eq!(
+                            d.helps[0].message,
+                            "start the return value on the same physical line as `return`"
+                        );
+                        assert!(d.helps[0].edits.is_empty());
+                    }
+                }
+            }
+        }
+        for source in ["return x +", "return f(,)", "lambda(x) return x +\n 1"] {
+            let out = user(&body(source));
+            assert!(!out.diagnostics.is_empty(), "{source}");
+            assert!(
+                out.diagnostics.iter().all(|d| d
+                    .helps
+                    .iter()
+                    .all(|h| h.message
+                        != "start the return value on the same physical line as `return`")),
+                "{source}: {:?}",
+                out.diagnostics
+            );
+        }
+        let out = user(&body("return\n1"));
+        assert_eq!(codes(&out), [DiagCode::E0201]);
+        let stmts = &function(&out).body.as_ref().unwrap().stmts;
+        assert_eq!(stmts.len(), 2);
+        assert!(matches!(&stmts[0], Stmt::Error(_)));
+        let Stmt::Expr(value) = &stmts[1] else {
+            panic!("{stmts:?}");
+        };
+        assert_eq!(shape(value), "1");
+    }
+
+    #[test]
     fn precedence_calls_and_written_forms() {
         for (source, expected) in [
             (
@@ -1464,8 +1554,14 @@ mod tests {
             ("x |> f |> g", "(pipe (pipe x f) g)"),
             ("a div b mod c", "(Mod (IntDiv a b) c)"),
             ("return x |> f", "(return (pipe x f))"),
+            ("return x +\n y", "(return (Add x y))"),
+            ("return (\n x\n)", "(return (paren x))"),
+            ("return f(\n x\n)", "(return (call f x))"),
             ("f(_, 1)", "(call f _ 1)"),
             ("f(g(_))", "(call f (call g _))"),
+            ("fn(1)", "(call fn 1)"),
+            ("Die", "Die"),
+            ("died or dieLater", "(Or died dieLater)"),
             ("List.map", "List.map"),
             ("A.B.c", "A.B.c"),
             ("Shape.Circle(1.0)", "(call Shape.Circle 1.0)"),
@@ -1852,6 +1948,44 @@ mod tests {
 
     #[test]
     fn bindings_data_and_type_parameters() {
+        for name in [
+            "extensible",
+            "died",
+            "dieLater",
+            "fn",
+            "pub",
+            "impl",
+            "mut",
+            "for",
+            "while",
+            "loop",
+            "break",
+            "continue",
+            "switch",
+            "where",
+            "async",
+            "await",
+            "spawn",
+            "select",
+            "class",
+            "instance",
+            "var",
+            "mutable",
+            "module",
+            "derive",
+            "as",
+            "benitoite",
+            "language",
+            "dependency",
+            "package",
+        ] {
+            let source = format!(
+                "function {name}({name}: Integer) -> Integer\nbind {name} <- 1\nreturn {name}({name}: {name})\nend function"
+            );
+            let out = user(&source);
+            assert_eq!(out.diagnostics, [], "{name}: {:?}", out.diagnostics);
+            assert_eq!(function(&out).name.text, name);
+        }
         let source = "data Tree[T]\nLeaf\nNode(Tree[T], T, Tree[T])\nend data\nfunction f[T: Show & equality, F[_], effect E](x: T) -> Unit\nbind x: Integer <- 1\nshadow x <- 2\nbind _ <- f()\nbind Pair(a, b) <- p\nend function";
         let out = user(source);
         assert!(out.diagnostics.is_empty(), "{:?}", out.diagnostics);
@@ -2128,11 +2262,167 @@ mod tests {
                 "match",
                 vec!["another name"],
             ),
+            (
+                body("bind die <- 1"),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                body("bind [..die] <- xs"),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                body("target(die: 1)"),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                body("Module.die()"),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                body("value.die()"),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                body("Person(die: 1)"),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                body("Person(..base, die: 1)"),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                body("bind Person(die: x) <- p"),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                body("lambda(die) return 1 end lambda"),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                body("with die = acquire() do\n()\nend with"),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                "function f(callback: function(die: Integer) -> Unit) -> Unit\n()\nend function"
+                    .to_owned(),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                "function die() -> Unit\n()\nend function".to_owned(),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                "function f(die: Integer) -> Unit\n()\nend function".to_owned(),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                "record Person\ndie: Integer\nend record".to_owned(),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                "import A as die".to_owned(),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                "import A.die".to_owned(),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                "function f() -> die\n()\nend function".to_owned(),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                "@die\nfunction f() -> Unit\n()\nend function".to_owned(),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (
+                "@die function f() -> Unit\n()\nend function".to_owned(),
+                DiagCode::E0216,
+                "die",
+                vec!["another name"],
+            ),
+            (body("die"), DiagCode::E0201, "die", vec!["or die"]),
+            (
+                body("die(\"reason\")"),
+                DiagCode::E0201,
+                "die",
+                vec!["or die"],
+            ),
+            (
+                body("try result or return die"),
+                DiagCode::E0258,
+                "die",
+                vec!["takes no value", "or die"],
+            ),
+            (
+                body("try result or return die(\"reason\")"),
+                DiagCode::E0258,
+                "die",
+                vec!["takes no value", "or die"],
+            ),
         ] {
             let out = user(&source);
             assert_eq!(codes(&out), [code], "{source}: {:?}", out.diagnostics);
+            if source.starts_with("@die") {
+                assert_eq!(function(&out).name.text, "f");
+                assert_eq!(function(&out).body.as_ref().unwrap().stmts.len(), 1);
+                assert!(out.module.decls[0].attrs.is_empty());
+            }
             let d = &out.diagnostics[0];
             let start = position(&source, primary).unwrap();
+            if primary == "die" {
+                let (message, label) = if code == DiagCode::E0216 {
+                    assert_eq!(d.helps[0].message, "choose another name");
+                    (
+                        "`die` is a keyword and cannot be used as a name",
+                        "keyword used as a name",
+                    )
+                } else if code == DiagCode::E0258 {
+                    ("invalid failure action after `try`", "")
+                } else {
+                    ("expected an expression, found `die`", "unexpected `die`")
+                };
+                assert_eq!(d.message, message);
+                assert_eq!(d.primary.as_ref().unwrap().text, label);
+                assert!(d.secondary.is_empty());
+                assert!(d.notes.is_empty());
+            }
             assert_eq!(
                 d.primary.as_ref().unwrap().span,
                 Span {
@@ -2188,7 +2478,13 @@ mod tests {
                 out.diagnostics
             );
         }
-        for name in ["default", "when", "when(1)", "switch(1)"] {
+        for name in [
+            "default",
+            "when",
+            "when(1)",
+            "switch(1)",
+            "fn(lambda(x) return x end lambda)",
+        ] {
             let out = user(&body(&format!("match x with\ncase _ -> {name}\nend match")));
             assert!(out.diagnostics.is_empty(), "{name}: {:?}", out.diagnostics);
         }

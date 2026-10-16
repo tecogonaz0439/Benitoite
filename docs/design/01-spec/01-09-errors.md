@@ -2,7 +2,7 @@
 
 ## 目的と範囲
 
-失敗の表し方（`Result`・`Option`）、例外と実行時エラーの扱い、`Result.Error` と `Option.None` を呼び出し元へ返す構文 `try`、IO とネットワークの失敗の種類、標準ライブラリが包むライブラリの誤りとの対応を定める。初回リリース版の後に実験的として加えた外部の関数の失敗も定める。
+失敗の表し方（`Result`・`Option`）、例外と実行時エラーの扱い、`Result.Error` と `Option.None` を呼び出し元へ返す構文 `try`、失敗時に終了する処置、IO とネットワークの失敗の種類、標準ライブラリが包むライブラリの誤りとの対応を定める。初回リリース版の後に実験的として加えた外部の関数の失敗も定める。
 
 ## 前提
 
@@ -32,9 +32,11 @@
 
 ### `Result.Error` と `Option.None` を呼び出し元へ返す構文 `try`
 
-【決定】前置の `try` を、`Result.Error` や `Option.None` をそのまま呼び出し元へ返す構文として設ける。
+【決定】前置の `try` を、`Result.Error` や `Option.None` をそのまま呼び出し元へ返す構文として設ける。`try e or return` は、同じ処置を明示する形であり、裸の `try e` と同じ型の規則・脱出先・評価を持つ。`or return` は値を取らない。
 
-`try` の規則は次のとおりとする。
+裸の `try e` の意味は今後も失敗を呼び出し元へ返す処置に固定し、囲む関数の戻り値や位置から終了する処置へ切り替えない。新たな手本では、再利用する関数・ライブラリ・コールバックには `or return`、実行を終える入口には `or die` を基本とする。`main` が Result.Error を返す契約を示す場合や Process.Exit を許さない場合は、入口でも `or return` を使う。
+
+`try e` と `try e or return` の規則は次のとおりとする。
 
 - `try e` の `e` の型は、`Result[T, E]` か `Option[T]` でなければならない。`e` の型は、`try e` を含む関数の本体の検査を終えた時点で、`Result` か `Option` のどちらかに決まっていなければならない。決まっていなければ誤りとし、診断は型注釈を書くよう示す。
 - 戻り値の型注釈のないラムダの中の `try e` は、ラムダの戻り値の型を、`e` が `Result[T, E]` なら `Result[U, E]` と、`Option[T]` なら `Option[U]` と等しくする（`U` は新しい型変数）。
@@ -49,20 +51,32 @@
 import Benitoite.Unofficial.IO.File
 
 function loadConfig(path: String) -> Result[Config, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
-  bind config <- try parseConfig(text)
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+  bind config <- try parseConfig(text) or return
   return Result.Ok(config)
 end function
 ```
 
 構文と優先順位は次のとおりとする。
 
-- `try` は式の先頭に書き、右の式全体（パイプを含む）にかかる。どの演算子よりも弱く結び付く。`try x |> f(b: a)` は `try f(a: x, b: a)` である。`try f(x) + 1` は `try (f(x) + 1)` なので、`f(x)` の結果に 1 を足すときは `(try f(x)) + 1` と書くか、`bind` で束縛してから足す。
-- 関数の引数の中に書いた `try` は、その引数の式にかかる（`g(try f(x))`）。
+- `try` は式の先頭に書き、右の式全体（パイプを含む）にかかる。どの演算子よりも弱く結び付く。`try x |> f(b: a) or return` は `try f(a: x, b: a) or return` である。処置の有無によらず、`try f(x) + 1 or return` は `try (f(x) + 1) or return` である。`f(x)` の結果に 1 を足すときは、処置を明示して `(try f(x) or return) + 1` と書くか、`bind` で束縛してから足す。
+- 関数の引数の中に書いた `try` は、その引数の式にかかる（`g(try f(x) or return)`）。明示形の入力は同じ深さの `or return` の手前で終わり、処置の後に外側の演算子を続けるときは `(try f(x) or return) + 1` と括弧で囲む。改行と処置の境界は[構文](01-02-syntax.md)の try の節に従う。
 - `try` の直後に `{` を書くことは誤りとする（[構文](01-02-syntax.md)の「`Result.Error` と `Option.None` を呼び出し元へ返す構文（初回リリース版）」）。LLM が例外を捕らえる構文のつもりで `try { ... } catch` と書いたときに、例外がないことを示す診断を出すためである。
-- 後置の `?` は設けない。`e?` と書いたときは、`try e` と書くよう診断で示す。
+- 後置の `?` は設けない。`e?` と書いたときは、`try e or return` と書くよう診断で示す。
 
 `try` は、[字句構造](01-01-lexical.md)と[構文](01-02-syntax.md)に加える。意味は、脱糖の規則として[コア計算と脱糖](01-12-core-calculus.md)で定める。
+
+### 失敗時に終了する処置
+
+【決定】`try e or die` と `try e or die(message)` は、入力を一度評価し、`Result.Ok(v)`・`Option.Some(v)` なら v を値とする。失敗側では任意の説明、原因の表示、`Process.exit[T](1)` の順に計算する。囲む関数やラムダの戻り値は任意であり、Result/Option に制約しない。T は成功時の型である。
+
+- 入力は標準の Result/Option でなければならない（E0440）。Result の失敗型 E には標準の `Trait.Show` を要求し、実装不足は E0705、型パラメータの制約不足は E0706 とする。診断は Show の実装か `Result.mapError` による変換を案内する。Option に Show は要求しない。裸と `or return` は従来どおり Show を要求しない。
+- 処置は `Process.Exit` を持つ。`uses IO.All` もこのエフェクトを含む。`uses Process.Exit` と書くには `import Benitoite.Unofficial.IO.Process` が要る。内部の標準参照は利用者の名前空間へ Process や Trait を追加せず、局所の exit・show で置き換わらない。die による E0501 は uses と必要な import を案内する。
+- 説明は純粋な String 式でなければならない。型の不一致は E0401、エフェクトは E0511、直接の return/try は E0218、外側の継続を再開する resume は E0509 とする。内側のラムダの return は通常の規則に従う。成功時は説明と Show を評価しない。
+- Result の原因は Show の結果とする。String の引用符とエスケープは保つ。Option.None の原因は `expected a value, got Option.None` とする。説明なしと空文字列は区別し、空の説明でも原因を残す。説明や Show が実行時エラーなどで停止すれば、その停止を採用し、die の報告を付けない。純粋性は停止性を保証しない。
+- 既定の終了操作は状態1で実行を終える。ホストは説明・原因・ソース位置を一度報告し、Console.Write は要求しない。全タスクの取消・リソースの解放・出力の転送は通常の終了経路に従い、解放・転送の失敗は終了状態を変えず補足する。言語のハンドラは通常の Process.Exit として処理でき、処理された呼び出しの報告を後の独立した exit に持ち越さない。
+
+理由: 再利用する関数の失敗の伝播と、入口で原因を示す終了を、戻り値とエフェクトの契約で区別するためである。
 
 ### IO の失敗の種類
 
@@ -105,7 +119,7 @@ end function
 
 `IOError` 自体は中身を見せない型であり、等値の型ではない。
 
-【決定】どの構成子にも当たらない失敗は `IOErrorKind.Other` で表し、分類していない失敗を入れる構成子を別に設けない。`IOErrorKind` の `match` に `_` の分岐を必須にする仕組みは設けず、構成子を加えることは互換性を壊す変更として扱う。メジャーバージョンが 0 の間は、この変更をしてよい。
+【決定】どの構成子にも当たらない失敗は `IOErrorKind.Other` で表し、分類していない失敗を入れる構成子を別に設けない。`IOErrorKind` には `@extensible` を付ける。標準ライブラリの外からの照合には、将来の形を覆うガードのない変数または `_` のパターンを必要とする。`Other` は既知の構成子であり、将来の形を覆わない（[代数的データ型とパターンマッチ](01-05-data-types.md)の「拡張可能な型」）。理由: 失敗の種類を追加するときに、利用者のコードが既知の種類だけを前提にしないよう、型の使用条件として検査するためである。
 
 ### ネットワークの失敗の種類（初回リリース版）
 
@@ -116,7 +130,7 @@ end function
 | `NetworkError.kind(e)` | `function(e: NetworkError) -> NetworkErrorKind` | 失敗の種類 |
 | `NetworkError.message(e)` | `function(e: NetworkError) -> String` | 失敗の理由を、人間が読める形で表す文字列。文面は定めない |
 
-【決定】`NetworkErrorKind` は、構成子を公開する prelude の代数的データ型であり、等値の型である。構成子は次の 9 個とする。構成子を加えることと `Other` の扱いは、`IOErrorKind` と同じである。
+【決定】`NetworkErrorKind` は、構成子を公開する prelude の代数的データ型であり、等値の型である。構成子は次の 9 個とする。`@extensible` による外部からの照合の条件と `Other` の扱いは、`IOErrorKind` と同じである。
 
 | 構成子 | 失敗 |
 |---|---|

@@ -62,6 +62,7 @@ pub(super) struct FnGen<'p> {
     pub code: Vec<Instr>,
     pub positions: Vec<Option<Span>>,
     pub method_traits: Vec<Option<TraitIdx>>,
+    pub exit_reports: Vec<Option<ExitReportSite>>,
     pub consts: Vec<ConstIdx>,
     pub const_index: HashMap<ConstIdx, u32>,
     pub switch_tables: Vec<SwitchTable>,
@@ -90,6 +91,7 @@ pub(super) fn empty_proto() -> Proto {
         captures: Vec::new(),
         positions: Vec::new(),
         method_traits: Vec::new(),
+        exit_reports: Vec::new(),
         live: LiveInfo::default(),
     }
 }
@@ -103,6 +105,7 @@ impl<'p> FnGen<'p> {
             code: Vec::new(),
             positions: Vec::new(),
             method_traits: Vec::new(),
+            exit_reports: Vec::new(),
             consts: Vec::new(),
             const_index: HashMap::new(),
             switch_tables: Vec::new(),
@@ -155,6 +158,7 @@ impl<'p> FnGen<'p> {
         self.code.push(instr);
         self.positions.push(origin);
         self.method_traits.push(None);
+        self.exit_reports.push(None);
         pc
     }
     pub fn jump(&mut self, op: Opcode, a: u32, origin: Span) -> usize {

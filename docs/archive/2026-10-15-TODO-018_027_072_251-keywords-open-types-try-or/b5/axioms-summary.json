@@ -1,0 +1,979 @@
+{
+  "base": "cdd0cdc27914a55b0bfd72c8dd07b7ed7b776cbf",
+  "scopeEnd": "d91a7e3f789829c7b54716a8d113f865ccb3ccc1",
+  "head": "d91a7e3f789829c7b54716a8d113f865ccb3ccc1",
+  "modules": {
+    "Benitoite": {
+      "changedInB1B4": false,
+      "declarations": 0,
+      "axioms": []
+    },
+    "Benitoite.Core.Assumptions": {
+      "changedInB1B4": false,
+      "declarations": 14,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Examples": {
+      "changedInB1B4": false,
+      "declarations": 72,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Lemmas.Basic": {
+      "changedInB1B4": false,
+      "declarations": 37,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Lemmas.Canonical": {
+      "changedInB1B4": false,
+      "declarations": 63,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Lemmas.Compose": {
+      "changedInB1B4": false,
+      "declarations": 53,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Lemmas.Inversion": {
+      "changedInB1B4": false,
+      "declarations": 38,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Lemmas.Preservation": {
+      "changedInB1B4": false,
+      "declarations": 29,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Lemmas.Rename": {
+      "changedInB1B4": false,
+      "declarations": 84,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Lemmas.SubstTyping": {
+      "changedInB1B4": false,
+      "declarations": 68,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Lemmas.TySubst": {
+      "changedInB1B4": false,
+      "declarations": 91,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Semantics": {
+      "changedInB1B4": false,
+      "declarations": 114,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Subst": {
+      "changedInB1B4": false,
+      "declarations": 104,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Syntax": {
+      "changedInB1B4": false,
+      "declarations": 432,
+      "axioms": [
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Theorems": {
+      "changedInB1B4": false,
+      "declarations": 52,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.Typing": {
+      "changedInB1B4": false,
+      "declarations": 219,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Core.WellFormed": {
+      "changedInB1B4": false,
+      "declarations": 41,
+      "axioms": []
+    },
+    "Benitoite.Exchange.Builtins": {
+      "changedInB1B4": false,
+      "declarations": 238,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Exchange.CheckInput": {
+      "changedInB1B4": false,
+      "declarations": 137,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Exchange.Convert": {
+      "changedInB1B4": true,
+      "declarations": 183,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Exchange.Syntax": {
+      "changedInB1B4": true,
+      "declarations": 1848,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Exchange.Version": {
+      "changedInB1B4": true,
+      "declarations": 30,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Assumptions": {
+      "changedInB1B4": false,
+      "declarations": 31,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.BuiltinTable": {
+      "changedInB1B4": false,
+      "declarations": 160,
+      "axioms": [
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Coverage": {
+      "changedInB1B4": false,
+      "declarations": 964,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.CoverageExtension": {
+      "changedInB1B4": false,
+      "declarations": 58,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.CoverageShow": {
+      "changedInB1B4": false,
+      "declarations": 56,
+      "axioms": [
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Examples": {
+      "changedInB1B4": false,
+      "declarations": 136,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.Basic": {
+      "changedInB1B4": false,
+      "declarations": 72,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.Canonical": {
+      "changedInB1B4": false,
+      "declarations": 116,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.Closed": {
+      "changedInB1B4": false,
+      "declarations": 290,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.ContLemmas": {
+      "changedInB1B4": false,
+      "declarations": 55,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.CoverageRuntime": {
+      "changedInB1B4": false,
+      "declarations": 21,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.Dict": {
+      "changedInB1B4": false,
+      "declarations": 56,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.EffectSound": {
+      "changedInB1B4": false,
+      "declarations": 13,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.Inversion": {
+      "changedInB1B4": false,
+      "declarations": 80,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.Names": {
+      "changedInB1B4": false,
+      "declarations": 245,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.OuterC": {
+      "changedInB1B4": false,
+      "declarations": 25,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.PresBase": {
+      "changedInB1B4": false,
+      "declarations": 28,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.PresHelpers": {
+      "changedInB1B4": false,
+      "declarations": 52,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.PresMain": {
+      "changedInB1B4": false,
+      "declarations": 15,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.Preservation": {
+      "changedInB1B4": false,
+      "declarations": 18,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.Progress": {
+      "changedInB1B4": false,
+      "declarations": 32,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.Regularity": {
+      "changedInB1B4": false,
+      "declarations": 105,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.Rename": {
+      "changedInB1B4": false,
+      "declarations": 162,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.StepSound": {
+      "changedInB1B4": false,
+      "declarations": 215,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.StoreLemmas": {
+      "changedInB1B4": false,
+      "declarations": 14,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.SubstTyping": {
+      "changedInB1B4": false,
+      "declarations": 91,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.TyLemmas": {
+      "changedInB1B4": false,
+      "declarations": 208,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.TySubst": {
+      "changedInB1B4": false,
+      "declarations": 49,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Lemmas.TySubstMain": {
+      "changedInB1B4": false,
+      "declarations": 110,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Model": {
+      "changedInB1B4": false,
+      "declarations": 44,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Semantics": {
+      "changedInB1B4": false,
+      "declarations": 351,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Subst": {
+      "changedInB1B4": false,
+      "declarations": 192,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Syntax": {
+      "changedInB1B4": false,
+      "declarations": 915,
+      "axioms": [
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Theorems": {
+      "changedInB1B4": false,
+      "declarations": 5,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.Typing": {
+      "changedInB1B4": false,
+      "declarations": 428,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Release.WellFormed": {
+      "changedInB1B4": false,
+      "declarations": 50,
+      "axioms": []
+    },
+    "Benitoite.Surface.Check": {
+      "changedInB1B4": true,
+      "declarations": 259,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckCounterexamples": {
+      "changedInB1B4": false,
+      "declarations": 13,
+      "axioms": []
+    },
+    "Benitoite.Surface.CheckDictSupport": {
+      "changedInB1B4": false,
+      "declarations": 4,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckExamples": {
+      "changedInB1B4": true,
+      "declarations": 63,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckInduction": {
+      "changedInB1B4": false,
+      "declarations": 139,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckLemmas": {
+      "changedInB1B4": false,
+      "declarations": 103,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckPatterns": {
+      "changedInB1B4": false,
+      "declarations": 129,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckPredicates": {
+      "changedInB1B4": true,
+      "declarations": 463,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckProgramSound": {
+      "changedInB1B4": false,
+      "declarations": 35,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckSound": {
+      "changedInB1B4": false,
+      "declarations": 11,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckSoundBasicExpr": {
+      "changedInB1B4": false,
+      "declarations": 118,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckSoundCalls": {
+      "changedInB1B4": false,
+      "declarations": 70,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckSoundCollections": {
+      "changedInB1B4": false,
+      "declarations": 37,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckSoundControl": {
+      "changedInB1B4": true,
+      "declarations": 39,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckSoundDicts": {
+      "changedInB1B4": false,
+      "declarations": 26,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckSoundDie": {
+      "changedInB1B4": true,
+      "declarations": 60,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckSoundSequence": {
+      "changedInB1B4": false,
+      "declarations": 60,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckSupport": {
+      "changedInB1B4": true,
+      "declarations": 232,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckTables": {
+      "changedInB1B4": false,
+      "declarations": 203,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckTablesSound": {
+      "changedInB1B4": false,
+      "declarations": 14,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckTools": {
+      "changedInB1B4": false,
+      "declarations": 341,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.CheckToolsExamples": {
+      "changedInB1B4": false,
+      "declarations": 39,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Desugar": {
+      "changedInB1B4": true,
+      "declarations": 110,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Examples": {
+      "changedInB1B4": true,
+      "declarations": 121,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.BlockSequence": {
+      "changedInB1B4": false,
+      "declarations": 3,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.CallHead": {
+      "changedInB1B4": false,
+      "declarations": 37,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.Calls": {
+      "changedInB1B4": false,
+      "declarations": 60,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.Dict": {
+      "changedInB1B4": false,
+      "declarations": 0,
+      "axioms": []
+    },
+    "Benitoite.Surface.Lemmas.DictSupport": {
+      "changedInB1B4": false,
+      "declarations": 7,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.Extensions": {
+      "changedInB1B4": false,
+      "declarations": 69,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.ExtensionsScoped": {
+      "changedInB1B4": false,
+      "declarations": 52,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.Invariants": {
+      "changedInB1B4": true,
+      "declarations": 175,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.PatternSupport": {
+      "changedInB1B4": false,
+      "declarations": 17,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.Patterns": {
+      "changedInB1B4": false,
+      "declarations": 25,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.Program": {
+      "changedInB1B4": false,
+      "declarations": 8,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.Records": {
+      "changedInB1B4": false,
+      "declarations": 48,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.ReturnTry": {
+      "changedInB1B4": true,
+      "declarations": 22,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.Scoped": {
+      "changedInB1B4": true,
+      "declarations": 192,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.ScopedRename": {
+      "changedInB1B4": false,
+      "declarations": 15,
+      "axioms": []
+    },
+    "Benitoite.Surface.Lemmas.ScopedSupport": {
+      "changedInB1B4": false,
+      "declarations": 22,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.Sequence": {
+      "changedInB1B4": false,
+      "declarations": 50,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.ShiftClean": {
+      "changedInB1B4": false,
+      "declarations": 9,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.SubstClean": {
+      "changedInB1B4": false,
+      "declarations": 10,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Lemmas.Typing": {
+      "changedInB1B4": true,
+      "declarations": 56,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Syntax": {
+      "changedInB1B4": true,
+      "declarations": 1175,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Theorems": {
+      "changedInB1B4": false,
+      "declarations": 2,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.Typing": {
+      "changedInB1B4": true,
+      "declarations": 262,
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "Benitoite.Surface.WellFormed": {
+      "changedInB1B4": true,
+      "declarations": 45,
+      "axioms": [
+        "propext"
+      ]
+    },
+    "BuiltinCheck.Main": {
+      "changedInB1B4": true,
+      "declarations": 81,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "CoverageDiff.Main": {
+      "changedInB1B4": false,
+      "declarations": 307,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "CoverageProgramDiff.Main": {
+      "changedInB1B4": false,
+      "declarations": 204,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "DesugarDiff.Main": {
+      "changedInB1B4": false,
+      "declarations": 150,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "SurfaceCheck.All": {
+      "changedInB1B4": false,
+      "declarations": 3,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "SurfaceCheck.Batch": {
+      "changedInB1B4": true,
+      "declarations": 108,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "SurfaceCheck.Main": {
+      "changedInB1B4": true,
+      "declarations": 19,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    "SurfaceCheck.Validation": {
+      "changedInB1B4": false,
+      "declarations": 14,
+      "axioms": [
+        "propext"
+      ]
+    },
+    "SurfaceCheck.Walk": {
+      "changedInB1B4": true,
+      "declarations": 82,
+      "axioms": [
+        "propext"
+      ]
+    }
+  },
+  "declarations": 15427,
+  "axiomSets": {
+    "none": 8639,
+    "Quot.sound, propext": 2217,
+    "propext": 3343,
+    "Classical.choice, Quot.sound, propext": 1227,
+    "Quot.sound": 1
+  },
+  "unexpected": []
+}

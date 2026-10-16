@@ -192,6 +192,17 @@ pub fn compare_results(
             differences.push(format!("{name}: VM {vm_bytes:?}, reference {ref_bytes:?}"));
         }
     }
+    let ref_die = if let RefOutcome::Exited { die_failure, .. } = &reference {
+        die_failure.as_ref()
+    } else {
+        None
+    };
+    if vm.die_failure.as_ref() != ref_die {
+        differences.push(format!(
+            "exit report: VM {:?}, reference {ref_die:?}",
+            vm.die_failure
+        ));
+    }
     let (ref_end, ref_error, ref_origin) = match reference {
         RefOutcome::Finished(MainOutcome::Ok) => (EndKind::Returned, None, None),
         RefOutcome::Finished(MainOutcome::Error(message)) => {

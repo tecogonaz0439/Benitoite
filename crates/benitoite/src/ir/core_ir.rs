@@ -271,6 +271,14 @@ pub struct Comp {
     pub origin: Span,
 }
 
+/// 終了呼び出しにだけ付ける内部の報告値（設計書 02-06「内部の終了報告」）。
+/// 言語の引数には含めず、原因と任意の説明は String の値として保持する。
+#[derive(Clone, PartialEq, Debug)]
+pub struct ExitReportArgs<C> {
+    pub cause: Box<Val<C>>,
+    pub message: Option<Box<Val<C>>>,
+}
+
 #[derive(Clone, PartialEq, Debug)]
 pub enum CompKind {
     Return(Val<Comp>),
@@ -284,6 +292,7 @@ pub enum CompKind {
         func: Val<Comp>,
         dicts: Vec<DictVal>,
         args: Vec<Val<Comp>>,
+        exit_report: Option<ExitReportArgs<Comp>>,
     },
     Method(Box<MethodCall<Comp>>),
     If {

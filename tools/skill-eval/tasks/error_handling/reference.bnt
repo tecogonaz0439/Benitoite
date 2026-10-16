@@ -13,7 +13,7 @@ function check(path: String, done: Pair[Integer, Integer]) -> Pair[Integer, Inte
 end function
 
 function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind paths <- try File.readLines("files.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  bind paths <- try File.readLines("files.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
   bind done <- List.fold(xs: paths, initial: Pair(0, 0), f: lambda(acc, value) return check(path: value, done: acc) end lambda)
   Console.writeLine("read ${Pair.first(done)} of ${List.length(paths)} files, ${Pair.second(done)} lines")
   return Result.Ok(())

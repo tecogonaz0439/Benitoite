@@ -34,7 +34,52 @@ All examples import the IO modules under `Benitoite.Unofficial`, because those m
 
 ## Program shape and error handling
 
-`main` returns `Result[Unit, String]`. When it returns `Result.Error(message)`, the message is reported and the exit code is 1. `try` returns early with the error of a `Result`; `Result.mapError` turns an `IOError` into a `String` first.
+Use `or return` in a reusable function, library, or callback, and `or die` in an entry point that should report a failure and end the run. This example preserves the error in `load` and uses it as the cause of an exit in `main`.
+
+```files
+name: input.txt
+ready
+```
+
+```benitoite
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function load(path: String) -> Result[String, IOError] uses File.Read
+  return Result.Ok(try File.readText(path) or return)
+end function
+
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try load("input.txt") or die("could not read input.txt")
+  Console.write(text)
+end function
+```
+
+```output
+ready
+```
+
+`load` preserves the original IOError for its caller. `main` uses the standard Show implementation if loading fails, so it needs no conversion solely for display. Adding Process.Exit changes the function's contract; review the action, return type, and effects together.
+
+`try e or die` and `try e or die(message)` accept a standard `Result[T, E]` or `Option[T]` and produce `T` on success, without restricting the enclosing function's return type. They add `Process.Exit`; import `Benitoite.Unofficial.IO.Process` to name it in `uses`. The module cannot be renamed with `as` (E0339), so write `uses Process.Exit`. The compiler connects the standard Show and exit references internally, but does not import names into your scope. No `Console.Write` effect is required for the host's failure report.
+
+| Action | Enclosing return type | Display requirement | Additional effect |
+|---|---|---|---|
+| Bare try or `or return` | `Result[U, E]` or `Option[U]`, matching the input | None | None |
+| `or die` or `or die(message)` | Any | `Trait.Show` for Result's error type; none for Option | `Process.Exit` |
+
+The input is evaluated once. Success evaluates neither the message nor Show. Failure evaluates the optional pure `String` message once, then the error's Show once, then calls the standard exit operation with status 1. A message does not implicitly bind the error to a name. Direct `return`, `try`, and outer `resume` are forbidden in the message; a lambda written there has its own return boundary. `IOError`, `NetworkError`, `Json.ParseError`, and `Csv.ParseError` already implement Show by returning their `message` string unchanged. Implement Show for another error type, or use `Result.mapError` to convert it to a type with Show. The returning forms need no Show.
+
+A String cause retains Show's quotes and escapes. Option.None has the fixed cause `expected a value, got Option.None`. The message is displayed as plain text, and an empty message is distinct from no message; neither removes the cause. If the message or Show stops with a runtime error or resource failure, that stop is used instead of a die report. Purity and static checking do not guarantee termination, the intended result, or success of external operations.
+
+The default exit ends the whole run, including when called by a child task: remaining tasks are cancelled, resources are released, and buffered output is transferred. The CLI then reports `error: explicit failure exit`, the source location, an optional `message: ...`, and a `cause: ...` once to standard error. Release and final output failures follow as supplementary reports and keep status 1. With `--diagnostics=json`, the die report has `kind: "die"`, `code: null`, and the same location and notes. Cancellation does not undo external work already started. Competing exits, interruption, and internal errors follow the ordinary stop rules; only the adopted die carries this report.
+
+A language handler can replace the existing `Process.Exit` operation; it receives only the usual exit code, and the handled call's report is discarded rather than attached to a later exit. In `benitoite test`, die fails that test and the runner continues with the next one. Text and JSON preserve its cause, message, and location without adding a second copy to captured output. Use `Process.exit(code)` for an arbitrary exit status.
+
+The input includes pipes up to `or return` or `or die` at the same depth; ordinary Boolean `or` stays an operator. Parenthesize an explicit try before adding an operator or call, as in `(try parsePort(text) or die) + 1`. `or return` takes no value. A physical newline immediately after its `return` ends the statement. Start a message's `(` on the same physical line as `die`; outside parentheses, a newline after `die` or its message ends the statement. A short lambda must include its whole action and message on one physical line. The formatter preserves bare and explicit forms.
+
+The following example instead makes returning `Result[Unit, String]` the contract of `main`. When it returns `Result.Error(message)`, the message is reported and the exit code is 1. `or return` (with the same meaning as bare try) returns early with the error.
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
@@ -47,9 +92,9 @@ function parsePort(text: String) -> Result[Integer, String]
 end function
 
 function main() -> Result[Unit, String] uses Console.Write
-  bind port <- try parsePort("8080")
+  bind port <- try parsePort("8080") or return
   Console.writeLine("port ${port}")
-  bind other <- try parsePort("http")
+  bind other <- try parsePort("http") or return
   Console.writeLine("never printed ${other}")
   return Result.Ok(())
 end function
@@ -116,9 +161,10 @@ cherry 7
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
 
-function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
-  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+function main() -> Unit uses File.Read, File.Write, Console.Write, Process.Exit
+  bind lines <- try File.readLines("input.txt") or die
   bind total <- List.fold(xs: lines, initial: 0, f: lambda(acc, value)
     return match String.split(s: value, separator: " ") with
       case [_, count] -> acc + Option.unwrapOr(o: Integer.parse(count), fallback: 0)
@@ -126,10 +172,10 @@ function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Writ
     end match
   end lambda)
   bind report <- "lines: ${List.length(lines)}\ntotal: ${total}\n"
-  bind _ <- try File.writeText(path: "report.txt", text: report) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
-  bind _ <- try File.appendText(path: "report.txt", text: "done\n") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
-  Console.write(try File.readText("report.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)))
-  return Result.Ok(())
+  bind _ <- try File.writeText(path: "report.txt", text: report) or die
+  bind _ <- try File.appendText(path: "report.txt", text: "done\n") or die
+  Console.write(try File.readText("report.txt") or die)
+  return ()
 end function
 ```
 
@@ -171,17 +217,18 @@ name: notes.md
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
 
-function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
-  bind _ <- try File.createDirectory("out") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
-  bind names <- try File.listDirectory(".") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+function main() -> Unit uses File.Read, File.Write, Console.Write, Process.Exit
+  bind _ <- try File.createDirectory("out") or die
+  bind names <- try File.listDirectory(".") or die
   List.forEach(xs: List.sort(names), f: lambda(value) Console.writeLine(value))
-  bind found <- try File.exists("notes.md") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind found <- try File.exists("notes.md") or die
   Console.writeLine(match found with
     case true -> "notes.md exists"
     case false -> "no notes.md"
   end match)
-  return Result.Ok(())
+  return ()
 end function
 ```
 
@@ -208,6 +255,7 @@ name: orders.json
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.Json
 
 function amountOf(order: Json.Value) -> Result[Pair[String, Integer], String]
@@ -219,20 +267,20 @@ function amountOf(order: Json.Value) -> Result[Pair[String, Integer], String]
   end match
 end function
 
-function main() -> Result[Unit, String] uses File.Read, Console.Write
-  bind text <- try File.readText("orders.json") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
-  bind parsed <- try Json.parse(text) |> Result.mapError(r: _, f: lambda(error) return Json.ParseError.message(error))
-  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array")
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try File.readText("orders.json") or die
+  bind parsed <- try Json.parse(text) or die
+  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array") or die
   bind totals <- List.fold(xs: orders, initial: Result.Ok(Map.empty()), f: lambda(acc, value)
-    bind totalsMap <- try acc
-    bind entry <- try amountOf(value)
+    bind totalsMap <- try acc or return
+    bind entry <- try amountOf(value) or return
     bind current <- Map.get(m: totalsMap, k: Pair.first(entry)) |> Option.unwrapOr(fallback: 0)
     return Result.Ok(Map.set(m: totalsMap, k: Pair.first(entry), value: current + Pair.second(entry)))
   end lambda)
-  Map.forEach(m: try totals, f: lambda(key, value)
+  Map.forEach(m: try totals or die, f: lambda(key, value)
     Console.writeLine("${key}: ${value}")
   end lambda)
-  return Result.Ok(())
+  return ()
 end function
 ```
 
@@ -279,23 +327,24 @@ Carol,82
 import Benitoite.Unofficial.Csv
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
 
 function scoreOf(row: Map[String, String]) -> Integer
   return Option.andThen(o: Map.get(m: row, k: "score"), f: lambda(value) return Integer.parse(value)) |> Option.unwrapOr(fallback: 0)
 end function
 
-function main() -> Result[Unit, String] uses File.Read, File.Write, Console.Write
-  bind text <- try File.readText("scores.csv") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
-  bind rows <- try Csv.parseWithHeader(text) |> Result.mapError(r: _, f: lambda(error) return Csv.ParseError.message(error))
+function main() -> Unit uses File.Read, File.Write, Console.Write, Process.Exit
+  bind text <- try File.readText("scores.csv") or die
+  bind rows <- try Csv.parseWithHeader(text) or die
   bind passed <- List.filter(xs: rows, p: lambda(value) return scoreOf(value) >= 80)
   bind output <- List.map(xs: passed, f: lambda(value)
     return [Option.unwrapOr(o: Map.get(m: value, k: "name"), fallback: ""), Integer.toString(scoreOf(value))]
   end lambda)
   bind csv <- Csv.format(List.prepend(xs: output, x: ["name", "score"]))
-  bind _ <- try File.writeText(path: "passed.csv", text: csv) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind _ <- try File.writeText(path: "passed.csv", text: csv) or die
   Console.write(csv)
   Console.write(Csv.format([["Bob, Jr.", "75"]]))
-  return Result.Ok(())
+  return ()
 end function
 ```
 
@@ -314,15 +363,15 @@ Carol,82
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 
-function main() -> Result[Unit, String] uses Process.Run, Console.Write
-  bind printed <- try Process.run(Process.command(program: "echo", arguments: ["hello", "$HOME"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+function main() -> Unit uses Process.Run, Console.Write, Process.Exit
+  bind printed <- try Process.run(Process.command(program: "echo", arguments: ["hello", "$HOME"])) or die
   Console.write(Process.Output.standardOutput(printed))
   bind sort <- Process.Command(..Process.command(program: "sort", arguments: []), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some("pear\napple\n"))
-  bind sorted <- try Process.run(sort) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind sorted <- try Process.run(sort) or die
   Console.write(Process.Output.standardOutput(sorted))
-  bind failed <- try Process.run(Process.command(program: "sh", arguments: ["-c", "exit 3"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind failed <- try Process.run(Process.command(program: "sh", arguments: ["-c", "exit 3"])) or die
   Console.writeLine("exit code: ${Process.Output.exitCode(failed)}")
-  return Result.Ok(())
+  return ()
 end function
 ```
 
@@ -339,14 +388,14 @@ exit code: 3
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 
-function main() -> Result[Unit, String] uses Process.Run, Console.Write
-  bind piped <- try Process.shell("printf 'b\\na\\nc\\n' | LC_ALL=C sort | tr 'a-z' 'A-Z'") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+function main() -> Unit uses Process.Run, Console.Write, Process.Exit
+  bind piped <- try Process.shell("printf 'b\\na\\nc\\n' | LC_ALL=C sort | tr 'a-z' 'A-Z'") or die
   Console.write(Process.Output.standardOutput(piped))
-  bind checked <- try Process.shell("if [ -d / ]; then echo root; fi; echo oops >&2; exit 2") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind checked <- try Process.shell("if [ -d / ]; then echo root; fi; echo oops >&2; exit 2") or die
   Console.write(Process.Output.standardOutput(checked))
   Console.write("stderr: ${Process.Output.standardError(checked)}")
   Console.writeLine("exit code: ${Process.Output.exitCode(checked)}")
-  return Result.Ok(())
+  return ()
 end function
 ```
 
@@ -367,7 +416,7 @@ exit code: 2
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
 
-function main() -> Result[Unit, String] uses Process.Environment, Console.Write
+function main() -> Unit uses Process.Environment, Console.Write, Process.Exit
   bind arguments <- Process.arguments()
   Console.writeLine("arguments: ${List.length(arguments)}")
   bind name <- match arguments with
@@ -375,9 +424,9 @@ function main() -> Result[Unit, String] uses Process.Environment, Console.Write
     case [] -> "world"
   end match
   Console.writeLine("Hello, ${name}!")
-  bind unset <- try Process.environmentVariable("BENITOITE_SKILL_EXAMPLE_UNSET") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind unset <- try Process.environmentVariable("BENITOITE_SKILL_EXAMPLE_UNSET") or die
   Console.writeLine(Option.unwrapOr(o: unset, fallback: "(not set)"))
-  return Result.Ok(())
+  return ()
 end function
 ```
 
@@ -393,6 +442,7 @@ A client and a server in one program. The server listens on port 0 (the system p
 
 ```benitoite
 import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
 import Benitoite.Unofficial.Json
 import Benitoite.Unofficial.Network.Http
 
@@ -406,9 +456,9 @@ end function
 
 function serveLoop(listener: Http.Listener, remaining: Integer) -> Result[Unit, String] uses Http.Listen, State
   if remaining = 0 then return Result.Ok(()) end if
-  bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
-  bind _ <- try Http.respond(exchange: exchange, response: route(Http.requestOf(exchange))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
-  bind _ <- try Http.closeExchange(exchange) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+  bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return
+  bind _ <- try Http.respond(exchange: exchange, response: route(Http.requestOf(exchange))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return
+  bind _ <- try Http.closeExchange(exchange) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return
   return serveLoop(listener: listener, remaining: remaining - 1)
 end function
 
@@ -417,18 +467,18 @@ function show(response: Http.Response) -> Unit uses Console.Write
   return Console.writeLine("${Http.Response.status(response)} ${body}")
 end function
 
-function main() -> Result[Unit, String] uses Http.Listen, Http.Connect, Console.Write, State
-  with listener = try Http.listen(host: "127.0.0.1", port: 0) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)),
+function main() -> Unit uses Http.Listen, Http.Connect, Console.Write, State, Process.Exit
+  with listener = try Http.listen(host: "127.0.0.1", port: 0) or die,
     group = TaskGroup.open() do
     bind base <- "http://127.0.0.1:${Http.listenerPort(listener)}"
     bind server <- TaskGroup.spawn(group: group, action: lambda() return serveLoop(listener: listener, remaining: 3))
-    bind hello <- try Http.get(base + "/hello/Ada") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
-    bind items <- try Http.get(base + "/items") |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+    bind hello <- try Http.get(base + "/hello/Ada") or die
+    bind items <- try Http.get(base + "/items") or die
     bind request <- Http.ClientRequest(..Http.clientRequest(method: "POST", url: base + "/upload"), body: String.toUTF8("data"))
-    bind missing <- try Http.send(request) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
-    bind _ <- try Task.await(server)
+    bind missing <- try Http.send(request) or die
+    bind _ <- try Task.await(server) or die
     List.forEach(xs: [hello, items, missing], f: lambda(value) show(value))
-    return Result.Ok(())
+    return ()
   end with
 end function
 ```
@@ -531,6 +581,12 @@ total 12
 
 A record has named fields. Read a field with `Type.field(value)`; make a changed copy with `Type(..value, field: new)`. A data type lists its constructors, which are always written with the type name.
 
+Use the argument-free `@extensible` attribute on a data or record declaration when external patterns must also cover future shapes. Put it before `public` or `public(package)` if present. Inside its defining package, listing the current constructors can be exhaustive. Outside it, include an unguarded `case other ->` or `case _ ->`; a known constructor named `Other` does not cover future shapes. Guards do not count toward exhaustiveness. The rule applies through aliases and inside `Result`, `Option`, lists, and record fields. The package boundary is the same as for `public(package)`; a different module in the same package is still internal.
+
+The four standard failure types `IOErrorKind`, `NetworkErrorKind`, `Json.ParseError`, and `Csv.ParseError` have this attribute. `Result` and `Option` remain closed; `Result.Error(error)` binds the whole error without decomposing it. For the two ParseError records, prefer `Json.ParseError.message(error)` or `Csv.ParseError.message(error)` to destructuring. A record pattern with `..` covers only the current shape, so an external `match` needs another variable or `_` branch (`E0601`), and a destructuring `bind` or `shadow` is rejected (`E0607`). Construction, updates, and getters still use the declared fields. The attribute does not promise compatibility for adding record fields.
+
+Adding constructors to extensible data preserves external pattern exhaustiveness, but can change results, including by reclassifying a value formerly represented by `Other`. Removing or renaming constructors, or changing their fields, is outside this guarantee. Adding the attribute to a closed type can reject existing external patterns; removing it commits to a closed set and can make a branch unreachable. It does not let callers add constructors or change runtime tags, ABI, equality, or key constraints. WIT matching remains exact; the attribute does not allow unknown external tags.
+
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 
@@ -570,7 +626,7 @@ pen: 1200
 
 ## Writing tests
 
-A test is a function with `@test("description")` that takes no arguments and returns `Unit` or `Result[Unit, String]`. A test that uses `try` returns `Result[Unit, String]`; returning `Result.Error(message)` fails the test. Check results with `Assert.equal(actual: actual, expected: expected)` and `Assert.isTrue(condition: condition, message: message)` (effect `Assert.Check`). Run the file with `benitoite test file.bnt`; do not run `benitoite check` on a test file without `main`.
+A test is a function with `@test("description")` that takes no arguments and returns `Unit` or `Result[Unit, String]`. A test that uses `try e or return` returns `Result[Unit, String]`; returning `Result.Error(message)` fails the test. Check results with `Assert.equal(actual: actual, expected: expected)` and `Assert.isTrue(condition: condition, message: message)` (effect `Assert.Check`). Run the file with `benitoite test file.bnt`; do not run `benitoite check` on a test file without `main`.
 
 ```benitoite test
 function slugify(title: String) -> String
@@ -591,12 +647,12 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.IO.Process
 
 function countWords(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return Result.Ok(List.length(List.filter(xs: String.split(s: text, separator: " "), p: lambda(value) return value <> "")))
 end function
 
 function gitBranch() -> Result[String, String] uses Process.Run
-  bind output <- try Process.run(Process.command(program: "git", arguments: ["branch", "--show-current"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind output <- try Process.run(Process.command(program: "git", arguments: ["branch", "--show-current"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return Result.Ok(String.trim(Process.Output.standardOutput(output)))
 end function
 
@@ -637,7 +693,7 @@ Range-checked conversions return `Option`; integer arithmetic overflow and divis
 import Benitoite.Unofficial.IO.Console
 
 function smallInteger(text: String) -> Option[Integer16]
-  bind value <- try Integer.parse(text)
+  bind value <- try Integer.parse(text) or return
   return Integer16.fromInteger(value)
 end function
 

@@ -1,0 +1,609 @@
+{
+  "inputs": [
+    {
+      "path": "crates/benitoite/examples/gen_skill.rs",
+      "source_sha256": "1dfaede330b34cd5712bd010c0d4c5d69d3c0d88ba28e18c833c8599396fa297"
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "source_sha256": "7d25481291351f503ea9f3fc98aaf7cabd9f4e0105ec2d258b8d7a36356f56a8"
+    },
+    {
+      "path": "crates/benitoite/skill/references/common-mistakes.md",
+      "source_sha256": "efe6eb12d31412b7652469d16a038ca8f34a76c0472265f72978f871947b96fa"
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "source_sha256": "122878caff209ac227e57eab18aabd06763c6724aa7b0cdeb4b949c159f132c9"
+    },
+    {
+      "path": "crates/benitoite/skill/references/grammar.md",
+      "source_sha256": "62a0f6e45bc352a7d632e1c890e48a04ea5e29359181c99f16b5c6f313f7589c"
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "source_sha256": "91121430b6561bfb64b87d31edbd6da2bf6307eb4f9b66c52fc97bf6a71b492d"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "source_sha256": "0b2dc8b268d019d923dc65c9a64377833c9e7078b1eeba64c594f3899e1013b2"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Assert.md",
+      "source_sha256": "5468c14307aef4ca5019fae92f39b1aa45b9d5cd6b16a4b0bd8207ca79e0fef1"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Boolean.md",
+      "source_sha256": "10c1cafca2b48135dd58961eda57b9416cc2410191f47a98e2001658caf31aff"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Byte.md",
+      "source_sha256": "3446f2d7c8e8ccecb48ea35e46fddf81caf8b9647bdf6721ae088a58a75cb8ac"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/ByteOrder.md",
+      "source_sha256": "7bc07d964cec806702a816a063f7381f60e2fc805e796093327b47005eeb4b35"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Bytes.md",
+      "source_sha256": "3bd793933531a0706ff6ae64a9bc6e8c87cfddb524d789c53ce54140f28c889b"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Character.md",
+      "source_sha256": "faeef16299566864ad70cc29ce90c0a18ef50a8cda06bc2b58bf33f22f17e5aa"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Csv.md",
+      "source_sha256": "693ca628e557c630a7922a02f53fb4fcc4f4ecb963db05f261a1140a1d0abbad"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Decimal.md",
+      "source_sha256": "2217dfd0f9b49179e9f43c4f64363ba7fe7c3e9a590417dfebfbabe1144ff9e2"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Encoding.md",
+      "source_sha256": "9d078b0762b5e98f94e2d1d6c044044e047b6f2ef54df84b2e681d9b5118c8b1"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Float.md",
+      "source_sha256": "0ef9de5c9270c233fcd8384efc8216bb33cd079171b635680aedee50919cf6ea"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Float32.md",
+      "source_sha256": "4f369c46ba97fd471931ba9af1bbfe446da18f7c22aa27d4c5055e47b57d9e16"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Float64.md",
+      "source_sha256": "a16ee47274a2768a91fe9a1df8a72a4cb6057f86942fabfae3409daecee04ecd"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Hash.md",
+      "source_sha256": "5bbe080f3444a5149f4c31eb79d668b06a47be334c67f8495b3b119c9991a370"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.Clock.md",
+      "source_sha256": "1b3c0a57aec24265d7fcd9d121a1d2ccf46f0a39e90ab147becd6cb2d04e6ae4"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.Console.md",
+      "source_sha256": "f722003034ffbce26210f15078bb021c5247dc70987694ec8b317fb6ff436790"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.File.md",
+      "source_sha256": "77d03cb131b783bbae2d4d959327e09b449e8e2e48f0c4e5896f23f063613353"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.Process.md",
+      "source_sha256": "a141bca399a8709eab0e003424eeda381ecd5dfcd9c5e35b560bd37b0de6a624"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.Random.md",
+      "source_sha256": "f39ae350df497047e86ca8bfdbcc566c1ed983a890290b421a608dd187b7af84"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.md",
+      "source_sha256": "6e13ad09ac2b01341a5d7dfcdf91d79f82563d28bd53120c90be28643a833428"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IOError.md",
+      "source_sha256": "b5a7ffc14835a88ad6afcf926eca46f9c9ae7511f4965c8d524411f0cc5ccb04"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IOErrorKind.md",
+      "source_sha256": "1a2dbfc47078aa2ecd1a8ea2d2d18f2ff9cf38c854af10e680e3db0e1d9a55b8"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer.md",
+      "source_sha256": "8cfbb32f0f0af43f760a9a3095d4bd62bb5f4cc05444ee100d4935e4f4208ee7"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer16.md",
+      "source_sha256": "b42079686df37e09f7d1d5053bfb3e279472cd1715334f48f5c5007ab28d9a4e"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer32.md",
+      "source_sha256": "26f33f348e55850b8ac269abc385c1eaf308d242b458dedd5ff48f3fcc1382dd"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer64.md",
+      "source_sha256": "7014a704f84f5db745bef376a38a8c3c9403cbfc8ee3edfeef5c7411e7282e3f"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer8.md",
+      "source_sha256": "13a7ed10d046726e3bf4bd654819adddc1a7d4f14b341e9573e5ec406895254a"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Json.md",
+      "source_sha256": "cc61489a3205afc7503bca7e5671ffb114cb89534e16ffe59d00845560e08e71"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Lazy.md",
+      "source_sha256": "38e10aa8f36e84e566ff439400579ea40291997da1b6393f2ead872eae99340e"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/List.md",
+      "source_sha256": "389f01733e5026bd58ea10e13124e6d29e78939befb0e9ebd9c6224a72f9f65c"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Map.md",
+      "source_sha256": "64d92790aee9a7f65a33cb73b97398b9407efeb56bad1f6eccbf6b36211649f6"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Network.Http.md",
+      "source_sha256": "83f51ebe6fa7b064c39bc8c5c73480a7a28b8c607ced1b103268416a5b9f8b3e"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/NetworkError.md",
+      "source_sha256": "208e5424859f0a707f5595a2f4834b41a44b07a5922b29a84de27f7e27b5ace4"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/NetworkErrorKind.md",
+      "source_sha256": "ce2b2897aa363b5e6b1d2443dc165ae1a695b63aa6cf6e39904fd2e9356b33b4"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Option.md",
+      "source_sha256": "388f463cd3778345536456c34d511269122182ebc287bcb86925958a33cd6339"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Pair.md",
+      "source_sha256": "f6762f8d30455603492cc296884ca8487fca035593ab629bc12d76fc9c49c7c6"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Path.md",
+      "source_sha256": "b20aa94be640b31fda2ae38a783723562634f4ed2e6b4829fed7f9b8409d1c8f"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Reference.md",
+      "source_sha256": "3e734933b9e8780792d61c05b89a8efa0dc711ca8553d5c5461ec7a7c7aed10a"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Regex.md",
+      "source_sha256": "04023a2a07622399210bb237e7c10b149a650d124dabc8d4788d148f08f53d4b"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Result.md",
+      "source_sha256": "98d1dc3768f9c4b12efbc223334d7242a34744e6315994cd7440ea467a562f0f"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/RoundingMode.md",
+      "source_sha256": "feb898c94697b81ae9b146320909638c27def892020f7ac3ae988e186913f67b"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Set.md",
+      "source_sha256": "3e1257d005a678db0b8d8bac41c6eff0975eb343119d26fefd16c7b4c85c213f"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/String.md",
+      "source_sha256": "2d887afe8f31c03fc622686dd103cb949cbc18f7f142a1e57b5392570195333f"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Task.md",
+      "source_sha256": "b3cfd40c332bcb57c6efae3a8ecacffac10a3d12471d73cb1f454c7f3c84507b"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/TaskGroup.md",
+      "source_sha256": "87a6be5ce7d0ece4c6f57ab2be4892f4938fdbeb2e1dff530f49307ca2cd6c0c"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Time.md",
+      "source_sha256": "d03c48332fbd330bbad6e5bd32642782bc7e1b5d89023d66e2c83838097dd6bc"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Trait.md",
+      "source_sha256": "6007ebb704bbebc6933e4f9c6584ad9e076910ae1df37228a002b4fc4456f3e7"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Triple.md",
+      "source_sha256": "562a3bc79b0314ab98f4ed3911494478134d180938e067fba84b4b6ffe6b94d4"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger.md",
+      "source_sha256": "f9dea60fed00e56155cf4986bcdd99d1e3c60a6e0dc4e53832ac95168881f5ff"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger16.md",
+      "source_sha256": "483dfffd4afcbaf61950845a43dffbf843c975cb87ec45f20f10078a7d473019"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger32.md",
+      "source_sha256": "e1f0f97f8576a7678777afbc0abe035c6204b025c9b92a24855b31915e1fb9f2"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger64.md",
+      "source_sha256": "af1b9a1401fe20589dc2deacf912c5cdd7e48472c32e28cc885bd049d69e31d7"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger8.md",
+      "source_sha256": "aaac3799475c126dcf5578389c5f4e0f27c48069bae63cdef578720901866a5d"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/index.md",
+      "source_sha256": "9a980294cf478f7e996976a8c25ca12ad480a2ff4cc344b65f1ef719b5b71d35"
+    },
+    {
+      "path": "crates/benitoite/src/cli/tools/skill/generate.rs",
+      "source_sha256": "a663ba9be09d8627236594304609dffada6c49e8cb20c9dc384c7a9aec3e88b4"
+    },
+    {
+      "path": "crates/benitoite/src/diag/codes.rs",
+      "source_sha256": "9dffd62b0b25294e3ed4a9ba4051c7b6ec886b1337d17afa23b756556874b77c"
+    },
+    {
+      "path": "docs/design/00-overview/00-01-goals.md",
+      "source_sha256": "2241213070d75ddabda4731a9978158c64f17df618671688d0a8b7a92dde7e84"
+    },
+    {
+      "path": "docs/design/00-overview/00-02-architecture.md",
+      "source_sha256": "13401ef6e6233d575c5e1baabfd17226c0dcdd107a3d03cbcb4b80bc65dcb9d0"
+    },
+    {
+      "path": "docs/design/00-overview/00-03-roadmap.md",
+      "source_sha256": "22dc7ab1b9cf6dda007d49c355d82d06648715c14e7df221981d2e865127e09f"
+    },
+    {
+      "path": "docs/design/00-overview/00-04-glossary.md",
+      "source_sha256": "db44320f9b3c12cc0c5bfd6b71ba95c44d8245d3d720dd1db8d7a8447a36cfc3"
+    },
+    {
+      "path": "docs/design/01-spec/01-01-lexical.md",
+      "source_sha256": "827b13a4655bf9fdc6ffe0c06d359322d94ad2d491c380f0bd851017fa515e76"
+    },
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "source_sha256": "15e055789e7c972ac32f24aa8a898b70352ebfefd7e1ca4846061777a3a10341"
+    },
+    {
+      "path": "docs/design/01-spec/01-03-names-modules.md",
+      "source_sha256": "fff7123bdffab9aa82b4781383bb48cbce6e9311ad8c80832322b05033f18d8e"
+    },
+    {
+      "path": "docs/design/01-spec/01-04-types-basic.md",
+      "source_sha256": "fcd1d7ec6d0080ae61dfbb131c219ecbbebcb36f5cede25cd5ff95cadf1b1785"
+    },
+    {
+      "path": "docs/design/01-spec/01-05-data-types.md",
+      "source_sha256": "0fa41e673997221ba305a80ac4b0b55d313e1229545f9e0300be4ef63d21aa8f"
+    },
+    {
+      "path": "docs/design/01-spec/01-06-type-system.md",
+      "source_sha256": "1d904755624197d9cda5a95e14e63ed1e657814a007de1d45b9eaf4137aa4ff9"
+    },
+    {
+      "path": "docs/design/01-spec/01-07-effects.md",
+      "source_sha256": "c8829da72b167d8dcebb0ce2f854a13e0ff892d679d1b00cb56f55503b0b6abb"
+    },
+    {
+      "path": "docs/design/01-spec/01-08-evaluation.md",
+      "source_sha256": "e0b96752aa94a5ee8a26817efb29e7680e24cb22d9f67c44802c922ae680050b"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "source_sha256": "cb2f950cbf27cf3d640e2b35023b97c75f1137a684a44a025f6ced45600fe06f"
+    },
+    {
+      "path": "docs/design/01-spec/01-10-resources.md",
+      "source_sha256": "503e46d3833707d9071b1c253ab288373110cda0c22fd5c29920047e3ac10db0"
+    },
+    {
+      "path": "docs/design/01-spec/01-11-concurrency.md",
+      "source_sha256": "0560e48646e157178d8885a67094110400489c0bd89036b84771d9c2dacf6efa"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "source_sha256": "4c4181f3ab10b269158fc7e0d1d63e9e5c67a36bbb415f55167aa007937feab2"
+    },
+    {
+      "path": "docs/design/02-impl/02-01-pipeline.md",
+      "source_sha256": "49b65a61d3c5bcf55537573dcbf11355dcc2b94d36436203d78625a45723ab28"
+    },
+    {
+      "path": "docs/design/02-impl/02-02-source-and-spans.md",
+      "source_sha256": "3de94ef0e2122f0f64a2bc9227f817cab1c3fd3a44f83474f2fb9570409fad56"
+    },
+    {
+      "path": "docs/design/02-impl/02-03-frontend.md",
+      "source_sha256": "ec5097b5b920593a3b5af1dd63f03907f0b698fa390d835ba05257aba8485a56"
+    },
+    {
+      "path": "docs/design/02-impl/02-04-resolver.md",
+      "source_sha256": "8bb4589182e8164c4aeb8a692ac4774566d6b78c9072818e66a63fe8e249fbbb"
+    },
+    {
+      "path": "docs/design/02-impl/02-05-typechecker.md",
+      "source_sha256": "6b3768d1ca34c2f07179e161b1bd97f9320aa9a174047f30bd4a8c9920329144"
+    },
+    {
+      "path": "docs/design/02-impl/02-06-ir-and-lowering.md",
+      "source_sha256": "cce4a93e6dda0dbdf590fe95b16a47023ab24438fa94c38d8f4a00f6506f0042"
+    },
+    {
+      "path": "docs/design/02-impl/02-07-bytecode.md",
+      "source_sha256": "c7a27e4f5d2b8b276eadc891c8c0cdc15e1d7a82993cd8d92a64f08767d0f9d2"
+    },
+    {
+      "path": "docs/design/02-impl/02-08-vm.md",
+      "source_sha256": "3151e40f77356d4dc8721f50a8e069b65f01cf482b6a697293a21f5cf58a5b7d"
+    },
+    {
+      "path": "docs/design/02-impl/02-09-runtime.md",
+      "source_sha256": "078eec22ca85465e3d0c0c619c629598aa53f990acad43cb61cb0e8ffbcd5754"
+    },
+    {
+      "path": "docs/design/02-impl/02-10-diagnostics.md",
+      "source_sha256": "8283a560838d846031fc39fc453e9796c89cdd2242fb489dc6da8bced679c35f"
+    },
+    {
+      "path": "docs/design/02-impl/02-11-embedding.md",
+      "source_sha256": "0fda7e632f017d6d9b34f77eafd73a9cf1275f6ccf096e43530c2908045a5995"
+    },
+    {
+      "path": "docs/design/03-interop/03-01-library-structure.md",
+      "source_sha256": "9347fd441102545b7cc95da8e340fd222374a1104028ed41c58b0f1f3e881a26"
+    },
+    {
+      "path": "docs/design/03-interop/03-06-stdlib.md",
+      "source_sha256": "16ed0317dc65dc9a357aca87574c85191bccd25637309ec9b3fc59184c6454e9"
+    },
+    {
+      "path": "docs/design/03-interop/03-07-io-modules.md",
+      "source_sha256": "7f0b8a2f7c532cbf28fdfbd9739160f011034e8d51b8308348ea1f79d439f7b5"
+    },
+    {
+      "path": "docs/design/03-interop/03-08-text-and-data.md",
+      "source_sha256": "53262e87ea02d928a25bb8146d4551fa0eac0ad9d6fd7acc027a59dc01b4f421"
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "source_sha256": "5ab6a6bf105c22777d9cb27a7a9fed91616ba9a0e5d5e1997a4fda978ca43997"
+    },
+    {
+      "path": "docs/design/03-interop/03-10-external-functions.md",
+      "source_sha256": "ce85e6feef8d3727d7ab929bd1833efd8edc8e87b7ba0bcf66b01e50f22dda4a"
+    },
+    {
+      "path": "docs/design/05-platform/05-01-distribution.md",
+      "source_sha256": "03d3a6d6a2a030cf4e380ddd08982f4fdfc72e4cbd2aadb139ba6eff26083797"
+    },
+    {
+      "path": "docs/design/06-tooling/06-01-cli.md",
+      "source_sha256": "8edceec19deb8751d50561101ab32fc14304500c4c9d4b159b12f38a72f441e7"
+    },
+    {
+      "path": "docs/design/06-tooling/06-03-formatter.md",
+      "source_sha256": "fd6cd1d1b8bad228850ad86bb8f74ca2cf858d1a295a6cc57520e9b29811cfb2"
+    },
+    {
+      "path": "docs/design/06-tooling/06-04-test-runner.md",
+      "source_sha256": "751f52162ef743425806b7f7c0202b01982eab3db8fdecbd76c86d8f60e20aba"
+    },
+    {
+      "path": "docs/design/06-tooling/06-06-agent-skills.md",
+      "source_sha256": "faf8ce3b258997b9498abfd7057d8daab9b4c2c21e24daa66145d9c7635141c8"
+    },
+    {
+      "path": "docs/design/06-tooling/06-09-packages.md",
+      "source_sha256": "5872703a27e92704532a33562f329ad27de7e1c055dfff1bd4852f52639d7a8d"
+    },
+    {
+      "path": "docs/design/07-quality/07-01-security-model.md",
+      "source_sha256": "1252aee4655573424d4c74771b3a31700a959e8f66a824ae7ea25b8625604045"
+    },
+    {
+      "path": "docs/design/07-quality/07-02-performance.md",
+      "source_sha256": "9cd66f7016983cf7250e078940fce5c1b6689918947eaecf55f24fc68305fc71"
+    },
+    {
+      "path": "docs/design/07-quality/07-03-compiler-testing.md",
+      "source_sha256": "f9d66413ba18b3e98bd5bd2e6d0519a1ded5b0f8532d1495b7d7894aa5454597"
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "source_sha256": "c171ffa589ab216a8d867a95e0c384a40251cd59198c3ebb574511033a462a02"
+    },
+    {
+      "path": "docs/design/08-appendix/08-01-implementation-language-comparison.md",
+      "source_sha256": "e08b18bbb68e8ec441107d608dc217fd438202c11c44dc2b15ad3b941bdd9443"
+    },
+    {
+      "path": "docs/design/08-appendix/08-02-prior-art.md",
+      "source_sha256": "d6f2f8a8a1d04c34d126dd176cfefa0b0ed1a60a9a2283f90cf464c79514168a"
+    },
+    {
+      "path": "docs/design/08-appendix/08-03-language-surveys.md",
+      "source_sha256": "029b6f0ef2ac488b9d253ea692432dc185176a88cb372a87e9f8760dd8d63ad4"
+    },
+    {
+      "path": "docs/design/08-appendix/08-04-fp-syntax-comparison.md",
+      "source_sha256": "baaab0126437cc5c38d69aef0960ef8f64e5c1a6e7c949b25a0521f9be3e1483"
+    },
+    {
+      "path": "docs/design/README.md",
+      "source_sha256": "73a270be8e0d714ecce7545a204f471a12145b2c2084e19a1445c89609581968"
+    },
+    {
+      "path": "docs/reference/benitoite-minimal.md",
+      "source_sha256": "ce59e15fc3a9d0de50eb151f4ad3b30b6ee10781dff94e3de8068f0f3a20abb0"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "source_sha256": "3ecaa9aa577225cb661466d3592e53edabd858e20c8ca94969f10be54c567185"
+    },
+    {
+      "path": "docs/reference/install.md",
+      "source_sha256": "462652997dbc69beae3a44b35abbd7843b51823a6af57a6d854cedd7c66f955c"
+    }
+  ],
+  "machine_counts": {
+    "already_explicit": 134,
+    "hold": 83,
+    "notation": 207
+  },
+  "total": 424,
+  "initial_review_counts": {
+    "already_explicit": 49,
+    "die": 30,
+    "inline_return": 10,
+    "keep_bare_rule": 25,
+    "keep_foreign": 6,
+    "keep_notation": 211,
+    "manual_return": 8,
+    "repair_return": 4,
+    "return": 26,
+    "return_contract": 2,
+    "test_return": 4
+  },
+  "unreviewed": 0,
+  "note": "自動分類の hold は生成元の説明・文法や診断の語を含む。AST の裸はすべて規範の一般形。実行する全 fence を別途 block-audit.json で確認し、実際の TryExpr に implicit_return はない。",
+  "bare_general_forms": [
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "line": 90,
+      "before": "try e"
+    },
+    {
+      "path": "crates/benitoite/skill/references/grammar.md",
+      "line": 9,
+      "before": "try e"
+    },
+    {
+      "path": "crates/benitoite/skill/references/language-comparison.md",
+      "line": 19,
+      "before": "try result"
+    },
+    {
+      "path": "docs/design/00-overview/00-03-roadmap.md",
+      "line": 65,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "line": 608,
+      "before": "try r"
+    },
+    {
+      "path": "docs/design/01-spec/01-06-type-system.md",
+      "line": 227,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-08-evaluation.md",
+      "line": 65,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "line": 35,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "line": 37,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "line": 39,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "line": 41,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "line": 41,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "line": 42,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "line": 43,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "line": 44,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "line": 62,
+      "before": "try f(x) + 1"
+    },
+    {
+      "path": "docs/design/01-spec/01-09-errors.md",
+      "line": 62,
+      "before": "try (f(x) + 1)"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 435,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 464,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 741,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "line": 742,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/02-impl/02-02-source-and-spans.md",
+      "line": 111,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/02-impl/02-02-source-and-spans.md",
+      "line": 111,
+      "before": "try e"
+    },
+    {
+      "path": "docs/design/02-impl/02-05-typechecker.md",
+      "line": 238,
+      "before": "try e"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 623,
+      "before": "try e"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 623,
+      "before": "try e"
+    }
+  ]
+}

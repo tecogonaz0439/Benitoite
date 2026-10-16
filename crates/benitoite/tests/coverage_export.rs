@@ -8,7 +8,9 @@
     clippy::arithmetic_side_effects
 )]
 use benitoite::base::{BindingId, ModuleId};
-use benitoite::typeck::patterns::{ArmPats, MatchIssue, Pat, check_binding, check_match};
+use benitoite::typeck::patterns::{
+    ArmPats, CoverageView, MatchIssue, Pat, check_binding, check_match, coverage_view,
+};
 use benitoite::types::builtin::BuiltinTypeId as B;
 use benitoite::types::{AdtDef, AdtTable, CtorDef, FieldInfo, Ty, TyCon, TypeArg, TypeSummary};
 use serde_json::{Value, json};
@@ -155,6 +157,7 @@ fn declarations(r: &mut Random) -> AdtTable {
         table.adts.insert(
             binding,
             AdtDef {
+                extensible: false,
                 binding,
                 name: name.into(),
                 module: ModuleId(0),
@@ -306,17 +309,23 @@ struct BudgetStats {
     stopped: usize,
     max_work: usize,
 }
-fn result(ty: &Ty, arms: &[ArmPats], table: &AdtTable, budget: &mut BudgetStats) -> Value {
+fn result(
+    ty: &Ty,
+    arms: &[ArmPats],
+    table: &AdtTable,
+    budget: &mut BudgetStats,
+    view: &CoverageView,
+) -> Value {
     let mut uncovered = None;
     let mut unreachable = vec![];
-    let Ok(checked) = check_match(ty, arms, table) else {
+    let Ok(checked) = check_match(ty, arms, table, view) else {
         budget.stopped += 1;
         return Value::Null;
     };
     budget.max_work = budget.max_work.max(checked.work);
     for issue in checked.issues {
         match issue {
-            MatchIssue::NonExhaustive { witness } => uncovered = Some(witness),
+            MatchIssue::NonExhaustive { witness, .. } => uncovered = Some(witness),
             MatchIssue::Unreachable {
                 arm,
                 alt,
@@ -333,32 +342,223 @@ fn export_case(
     p: Pat,
     table: &AdtTable,
     budget: &mut BudgetStats,
+    view: &CoverageView,
 ) -> Value {
     let ds: Vec<_> = (0..6).map(|n| {
         let d = table.get(BindingId(n)).unwrap();
-        json!({"name":format!("d{n}"),"typeName":d.name,"ntys":d.type_params.len(),
+        json!({"name":format!("d{n}"),"typeName":d.name,"extensible":d.extensible,"isRecord":d.record.is_some(),"package":if n == 0 {"stdlib"} else {"author"},"builtin":if n == 0 {"option"} else {"ordinary"},"ntys":d.type_params.len(),
             "fields":d.record.as_ref().map(|fs| fs.iter().map(|f| f.name.clone()).collect::<Vec<_>>()),
             "ctors":d.ctors.iter().map(|c| json!({"name":format!("d{n}c{}",c.tag),"constructorName":c.name,"tag":c.tag,"args":c.fields.iter().map(ty_json).collect::<Vec<_>>()})).collect::<Vec<_>>()})
     }).collect();
-    let Ok(binding) = check_binding(&ty, &p, table) else {
+    let Ok(binding) = check_binding(&ty, &p, table, view) else {
         budget.stopped += 1;
         return Value::Null;
     };
     budget.max_work = budget.max_work.max(binding.work);
     let ir = binding.witness.is_none();
-    let single = result(&ty, &[arm(p.clone())], table, budget);
+    let single = result(&ty, &[arm(p.clone())], table, budget, view);
     if single.is_null() {
         return Value::Null;
     }
     assert_eq!(ir, single["exhaustive"].as_bool().unwrap());
     assert_eq!(json!(binding.witness), single["uncovered"]);
-    json!({"name":name,"decls":ds,"ty":ty_json(&ty),"arms":arms.iter().map(|a| json!({"guarded":a.guarded,"alts":a.alts.iter().map(pat_json).collect::<Vec<_>>()})).collect::<Vec<_>>(),
-        "pattern":pat_json(&p),"expected":result(&ty,&arms,table,budget),"irrefutable":ir,"irrefutableWitness":single["uncovered"]})
+    json!({"name":name,"package":"author","coverageView":view.iter().map(|id| format!("d{}",id.0)).collect::<Vec<_>>(),"decls":ds,"ty":ty_json(&ty),"arms":arms.iter().map(|a| json!({"guarded":a.guarded,"alts":a.alts.iter().map(pat_json).collect::<Vec<_>>()})).collect::<Vec<_>>(),
+        "pattern":pat_json(&p),"expected":result(&ty,&arms,table,budget,view),"irrefutable":ir,"irrefutableWitness":single["uncovered"]})
 }
+// 閉じた入力と、同じ型・パターンに view を付けた入力を別々に比較する。
+fn export_future_case(
+    name: String,
+    ty: Ty,
+    arms: Vec<ArmPats>,
+    p: Pat,
+    table: &AdtTable,
+    budget: &mut BudgetStats,
+    external: bool,
+) -> Value {
+    let view: CoverageView = if external {
+        table
+            .adts
+            .iter()
+            .filter_map(|(id, d)| d.extensible.then_some(id))
+            .collect()
+    } else {
+        CoverageView::new()
+    };
+    let mut case = export_case(name, ty, arms, p, table, budget, &view);
+    if case.is_null() {
+        return case;
+    }
+    for (n, decl) in case["decls"].as_array_mut().unwrap().iter_mut().enumerate() {
+        let d = table.get(BindingId(u32::try_from(n).unwrap())).unwrap();
+        decl["extensible"] = json!(d.extensible);
+        decl["isRecord"] = json!(d.record.is_some());
+        decl["package"] = json!(if n == 0 { "stdlib" } else { "author" });
+        decl["builtin"] = json!(if n == 0 { "option" } else { "ordinary" });
+    }
+    case["coverageView"] = json!(
+        view.iter()
+            .map(|id| format!("d{}", id.0))
+            .collect::<Vec<_>>()
+    );
+    case["package"] = json!(if external { "consumer" } else { "author" });
+    case
+}
+fn future_boundaries(budget: &mut BudgetStats) -> Vec<Value> {
+    let mut table = declarations(&mut Random(0));
+    for id in [2, 3, 5] {
+        let mut d = table.get(BindingId(id)).unwrap().clone();
+        d.extensible = true;
+        table.adts.insert(BindingId(id), d);
+    }
+    let toggle = data(2, vec![]);
+    let known = vec![arm(con(2, 0, vec![])), arm(con(2, 1, vec![]))];
+    let pair = con(3, 0, vec![Pat::Wild, Pat::Wild]);
+    let mut cases = vec![];
+    for external in [false, true] {
+        for (name, ty, arms, pattern) in [
+            ("all-known", toggle.clone(), known.clone(), Pat::Wild),
+            (
+                "catchall",
+                toggle.clone(),
+                [known.clone(), vec![arm(Pat::Wild)]].concat(),
+                Pat::Wild,
+            ),
+            (
+                "alternative",
+                toggle.clone(),
+                vec![ArmPats {
+                    alts: vec![con(2, 0, vec![]), con(2, 1, vec![]), Pat::Wild],
+                    guarded: false,
+                }],
+                Pat::Wild,
+            ),
+            (
+                "covered",
+                toggle.clone(),
+                vec![arm(Pat::Wild), arm(Pat::Wild)],
+                Pat::Wild,
+            ),
+            (
+                "guard",
+                toggle.clone(),
+                vec![ArmPats {
+                    alts: vec![Pat::Wild],
+                    guarded: true,
+                }],
+                Pat::Wild,
+            ),
+            (
+                "record",
+                data(3, vec![base(B::UNIT), base(B::UNIT)]),
+                vec![arm(pair.clone())],
+                pair.clone(),
+            ),
+            (
+                "nested",
+                data(0, vec![toggle.clone()]),
+                vec![
+                    arm(con(0, 0, vec![])),
+                    arm(con(0, 1, vec![con(2, 0, vec![])])),
+                    arm(con(0, 1, vec![con(2, 1, vec![])])),
+                ],
+                Pat::Wild,
+            ),
+            (
+                "list",
+                list(toggle.clone()),
+                vec![
+                    arm(lp(vec![], false, vec![])),
+                    arm(lp(vec![con(2, 0, vec![])], true, vec![])),
+                    arm(lp(vec![con(2, 1, vec![])], true, vec![])),
+                ],
+                Pat::Wild,
+            ),
+            (
+                "single-constructor-binding",
+                data(5, vec![base(B::UNIT)]),
+                vec![arm(con(5, 0, vec![Pat::Wild]))],
+                con(5, 0, vec![Pat::Wild]),
+            ),
+            (
+                "nested-record-field",
+                data(3, vec![toggle.clone(), base(B::UNIT)]),
+                vec![
+                    arm(con(3, 0, vec![con(2, 0, vec![]), Pat::Wild])),
+                    arm(con(3, 0, vec![con(2, 1, vec![]), Pat::Wild])),
+                ],
+                con(3, 0, vec![con(2, 0, vec![]), Pat::Wild]),
+            ),
+            (
+                "guarded-catchall-after-known",
+                toggle.clone(),
+                [
+                    known.clone(),
+                    vec![ArmPats {
+                        alts: vec![Pat::Wild],
+                        guarded: true,
+                    }],
+                ]
+                .concat(),
+                Pat::Wild,
+            ),
+            (
+                "duplicate-alternative",
+                toggle.clone(),
+                vec![ArmPats {
+                    alts: vec![Pat::Wild, con(2, 0, vec![])],
+                    guarded: false,
+                }],
+                Pat::Wild,
+            ),
+            (
+                "nested-catchall",
+                data(0, vec![toggle.clone()]),
+                vec![
+                    arm(con(0, 0, vec![])),
+                    arm(con(0, 1, vec![con(2, 0, vec![])])),
+                    arm(con(0, 1, vec![con(2, 1, vec![])])),
+                    arm(con(0, 1, vec![Pat::Wild])),
+                ],
+                Pat::Wild,
+            ),
+            (
+                "list-catchall",
+                list(toggle.clone()),
+                vec![
+                    arm(lp(vec![], false, vec![])),
+                    arm(lp(vec![con(2, 0, vec![])], true, vec![])),
+                    arm(lp(vec![con(2, 1, vec![])], true, vec![])),
+                    arm(lp(vec![Pat::Wild], true, vec![])),
+                ],
+                Pat::Wild,
+            ),
+        ] {
+            cases.push(export_future_case(
+                format!("future/{name}/{external}"),
+                ty,
+                arms,
+                pattern,
+                &table,
+                budget,
+                external,
+            ));
+        }
+    }
+    cases
+}
+
 fn boundaries(table: &AdtTable, budget: &mut BudgetStats) -> Vec<Value> {
     let mut cases = vec![];
     let mut add = |name: &str, ty: Ty, arms: Vec<ArmPats>, p: Pat| {
-        cases.push(export_case(name.into(), ty, arms, p, table, budget))
+        cases.push(export_case(
+            name.into(),
+            ty,
+            arms,
+            p,
+            table,
+            budget,
+            &CoverageView::new(),
+        ))
     };
     // E0601/2/7/8 を持つ七つのファイルの九つの照合と同じ形。
     for (name, ty, p, q) in [
@@ -585,8 +785,8 @@ fn export_named_coverage() {
         ("nested-function-contract", list(callback)),
     ] {
         let arms = vec![arm(Pat::Wild), arm(Pat::Wild)];
-        let binding = check_binding(&ty, &Pat::Wild, &table).unwrap();
-        cases.push(json!({"name":name,"decls":[],"ty":named_ty_json(&ty),"arms":arms.iter().map(|a| json!({"guarded":a.guarded,"alts":a.alts.iter().map(pat_json).collect::<Vec<_>>()})).collect::<Vec<_>>(),"pattern":pat_json(&Pat::Wild),"expected":result(&ty,&arms,&table,&mut budget),"irrefutable":binding.witness.is_none(),"irrefutableWitness":binding.witness}));
+        let binding = check_binding(&ty, &Pat::Wild, &table, &Default::default()).unwrap();
+        cases.push(json!({"name":name,"package":"root","coverageView":[],"decls":[],"ty":named_ty_json(&ty),"arms":arms.iter().map(|a| json!({"guarded":a.guarded,"alts":a.alts.iter().map(pat_json).collect::<Vec<_>>()})).collect::<Vec<_>>(),"pattern":pat_json(&Pat::Wild),"expected":result(&ty,&arms,&table,&mut budget,&CoverageView::new()),"irrefutable":binding.witness.is_none(),"irrefutableWitness":binding.witness}));
     }
     assert_eq!(budget.stopped, 0);
     assert_eq!(cases[0]["ty"]["names"], json!(["value"]));
@@ -595,6 +795,7 @@ fn export_named_coverage() {
         cases[0]["expected"],
         json!({"exhaustive":true,"uncovered":null,"unreachable":[{"arm":1,"alt":0,"coveredBy":[0]}]})
     );
+    cases.extend(source_attribute_cases(&mut budget));
     let repo = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../..")
         .canonicalize()
@@ -607,7 +808,89 @@ fn export_named_coverage() {
         dir.starts_with(&repo) && dir != repo,
         "output directory must be inside the repository"
     );
-    fs::write(dir.join("named-corpus.json"), serde_json::to_vec_pretty(&json!({"version":2,"seedXor":0,"randomCases":0,"boundaryCases":cases.len(),"kinds":{},"cases":cases})).unwrap()).unwrap();
+    fs::write(dir.join("named-corpus.json"), serde_json::to_vec_pretty(&json!({"version":3,"seedXor":0,"randomCases":0,"boundaryCases":cases.len(),"kinds":{},"cases":cases})).unwrap()).unwrap();
+}
+
+// 関門: 六入口の独立した網羅性入力にもソース由来の属性と未使用の宣言を残す。
+// 型表を直接組む乱択入力だけでは、属性の指定が書き出しまで届くかを確かめられない。
+fn source_attribute_cases(budget: &mut BudgetStats) -> Vec<Value> {
+    let checked = benitoite::pipeline::check_path(
+        std::path::Path::new("testdata/packages/d6c-extensible-external"),
+        benitoite::pipeline::CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    )
+    .unwrap();
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let p = checked.program.unwrap();
+    let table = &p.types.adts;
+    let open: Vec<_> = table.adts.iter().filter(|(_, d)| d.extensible).collect();
+    assert_eq!(open.len(), 5);
+    for name in [
+        "Kind",
+        "Detail",
+        "Unused",
+        "IOErrorKind",
+        "NetworkErrorKind",
+    ] {
+        assert!(open.iter().any(|(_, d)| d.name == name));
+    }
+    let package = |module| match p.modules.get(module).unwrap().kind {
+        benitoite::modules::ModuleKind::Prelude | benitoite::modules::ModuleKind::Stdlib => {
+            "stdlib"
+        }
+        benitoite::modules::ModuleKind::Package => "author",
+        benitoite::modules::ModuleKind::Entry | benitoite::modules::ModuleKind::User => "consumer",
+        benitoite::modules::ModuleKind::Config | benitoite::modules::ModuleKind::PackageConfig => {
+            panic!("configuration has no coverage view")
+        }
+    };
+    let decls: Vec<_> = open.iter().map(|(id, d)| {
+        json!({"name":format!("d{}",id.0),"typeName":d.name,"extensible":d.extensible,
+            "isRecord":d.record.is_some(),"package":package(d.module),"builtin":"ordinary","ntys":d.type_params.len(),
+            "fields":d.record.as_ref().map(|fs| fs.iter().map(|f| &f.name).collect::<Vec<_>>()),
+            "ctors":d.ctors.iter().map(|c| json!({"name":format!("d{}c{}",id.0,c.tag),"constructorName":c.name,"tag":c.tag,"args":c.fields.iter().map(ty_json).collect::<Vec<_>>()})).collect::<Vec<_>>()})
+    }).collect();
+    assert!(decls.iter().any(|d| d["typeName"] == "Unused"));
+    let root = p
+        .resolved
+        .bindings
+        .iter()
+        .find(|(_, b)| b.name == "main")
+        .unwrap()
+        .1
+        .module;
+    let mut cases = vec![];
+    for (id, d) in open.iter().filter(|(_, d)| d.name != "Unused") {
+        let ty = data(id.0, vec![]);
+        let known: Vec<_> = d
+            .ctors
+            .iter()
+            .map(|c| con(id.0, c.tag, vec![Pat::Wild; c.fields.len()]))
+            .collect();
+        // 標準型の九構成子は六分岐の上限に収める。依存の型は従来の独立分岐を保つ。
+        let chunk_size = if package(d.module) == "stdlib" { 3 } else { 1 };
+        let known: Vec<_> = known
+            .chunks(chunk_size)
+            .map(|alts| ArmPats {
+                alts: alts.to_vec(),
+                guarded: false,
+            })
+            .collect();
+        let pattern = known[0].alts[0].clone();
+        for (role, module) in [("author", d.module), ("consumer", root)] {
+            let view = coverage_view(&p.modules, table, module);
+            let expected = result(&ty, &known, table, budget, &view);
+            assert_eq!(expected["exhaustive"], json!(role == "author"));
+            let binding = check_binding(&ty, &pattern, table, &view).unwrap();
+            cases.push(json!({"name":format!("source/{}/{role}",d.name),"package":package(module),
+                "coverageView":view.iter().map(|id| format!("d{}",id.0)).collect::<Vec<_>>(),
+                "decls":decls,"ty":ty_json(&ty),"arms":known.iter().map(|a| json!({"guarded":a.guarded,"alts":a.alts.iter().map(pat_json).collect::<Vec<_>>()})).collect::<Vec<_>>(),
+                "pattern":pat_json(&pattern),"expected":expected,"irrefutable":binding.witness.is_none(),"irrefutableWitness":binding.witness}));
+        }
+    }
+    cases
 }
 
 #[test]
@@ -629,6 +912,8 @@ fn export_coverage() {
     let mut budget = BudgetStats::default();
     let mut cases = boundaries(&declarations(&mut Random(0)), &mut budget);
     let boundary_count = cases.len();
+    let mut future_budget = BudgetStats::default();
+    let mut future_cases = future_boundaries(&mut future_budget);
     for seed in 0..RANDOM_CASES {
         let mut r = Random(u64::try_from(seed).unwrap() ^ 0xe1c1);
         let table = declarations(&mut r);
@@ -650,6 +935,22 @@ fn export_coverage() {
             });
         }
         let p = gen_pat(&mut r, &ty, &table, MAX_DEPTH, &mut 0);
+        let mut future_table = table.clone();
+        let mut flags = Random(u64::try_from(seed).unwrap() ^ 0xd6a);
+        for id in 1..6 {
+            let mut d = future_table.get(BindingId(id)).unwrap().clone();
+            d.extensible = flags.index(2) == 0;
+            future_table.adts.insert(BindingId(id), d);
+        }
+        future_cases.push(export_future_case(
+            format!("future/random/{seed}"),
+            ty.clone(),
+            arms.clone(),
+            p.clone(),
+            &future_table,
+            &mut future_budget,
+            flags.index(2) == 0,
+        ));
         cases.push(export_case(
             format!("random/{seed}"),
             ty,
@@ -657,6 +958,7 @@ fn export_coverage() {
             p,
             &table,
             &mut budget,
+            &CoverageView::new(),
         ));
     }
     let mut stats = BTreeMap::new();
@@ -670,11 +972,17 @@ fn export_coverage() {
         budget.stopped, 0,
         "coverage export must stay within the work budget"
     );
-    let corpus = json!({"budget":{"stopped":budget.stopped,"maxWork":budget.max_work},"version":2,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":boundary_count,"kinds":stats,"cases":cases});
+    let corpus = json!({"budget":{"stopped":budget.stopped,"maxWork":budget.max_work},"version":3,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":boundary_count,"kinds":stats,"cases":cases});
     let bytes = serde_json::to_vec(&corpus).unwrap();
     let roundtrip: Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(roundtrip, corpus, "JSON must preserve i64 boundaries");
     fs::write(dir.join("named-all-corpus.json"), bytes).unwrap();
+    assert_eq!(
+        future_budget.stopped, 0,
+        "view coverage must stay within the work budget"
+    );
+    let future_boundary_count = future_cases.len() - RANDOM_CASES;
+    fs::write(dir.join("future-corpus.json"), serde_json::to_vec(&json!({"version":3,"seedXor":0xe1c1,"randomCases":RANDOM_CASES,"boundaryCases":future_boundary_count,"kinds":{},"cases":future_cases,"budget":{"stopped":future_budget.stopped,"maxWork":future_budget.max_work}})).unwrap()).unwrap();
     println!(
         "coverage export: {} cases ({} boundary, {} random), {:.3}s, budget stopped: {}, max work per check: {}",
         cases.len(),

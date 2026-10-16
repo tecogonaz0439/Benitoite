@@ -10,7 +10,7 @@ function parseSetting(line: String) -> Option[Pair[String, String]]
 end function
 
 function loadSettings(path: String) -> Result[Map[String, String], String] uses File.Read
-  bind lines <- try File.readLines(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+  bind lines <- try File.readLines(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
   return Result.Ok(List.fold(xs: lines, initial: Map.empty(), f: lambda(acc, value)
     return match parseSetting(value) with
       case Option.Some(entry) -> Map.set(m: acc, k: Pair.first(entry), value: Pair.second(entry))

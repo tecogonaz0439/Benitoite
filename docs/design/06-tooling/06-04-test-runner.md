@@ -65,7 +65,7 @@ import Benitoite.Unofficial.IO.File
 import Benitoite.Unofficial.IO.Process
 
 function readPort(path: String) -> Result[Integer, String] uses File.Read
-  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return Integer.parse(String.trim(text)) |> Option.okOr(o: _, error: "not a number")
 end function
 
@@ -82,7 +82,7 @@ function readPortReadsNumber() -> Unit uses Assert.Check, File.Read
 end function
 
 function tagRelease(tag: String) -> Result[Unit, String] uses Process.Run
-  bind output <- try Process.run(Process.command(program: "git", arguments: ["tag", tag])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error))
+  bind output <- try Process.run(Process.command(program: "git", arguments: ["tag", tag])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
   return if Process.Output.exitCode(output) = 0 then Result.Ok(()) else Result.Error(Process.Output.standardError(output)) end if
 end function
 
@@ -186,6 +186,7 @@ test result: FAILED. 12 passed; 1 failed
 - JSON Lines の形では、テストごとに `kind` が `"test"` の一行を書く。項目は、`file`、`name`（説明か関数の名前）、`function`（関数の名前）、`location`（関数の宣言の位置。診断の位置の形）、`outcome`（`"passed"` か `"failed"`）、`failure`（成功では `null`）、`stdout`・`stderr`（捕らえた内容の文字列）である。
 - `failure` は、`reason`（`"assert"`・`"error"`・`"runtime"`・`"exit"`）と `message` のほかに、理由に応じた項目を持つ。`"assert"` は失敗した確認の位置 `primary` と `trace`、`Assert.equal`・`Assert.notEqual` では値を書き出した文字列 `left`・`right` を持つ。`left`・`right` は文章の形と同じ文字列で、上記の 4 KiB の上限と省略の規則に従う。`"error"` は `Result.Error` の文字列を `message` に持つ。`"runtime"` は、実行時エラーの報告の JSON の形式の項目（`code`・`primary`・`trace`・`traceOmitted`・`taskOrigins` など）を持つ。`"exit"` は `Process.exit` の終了状態 `exitCode` を持つ。
 - `"assert"` と `"exit"` は、`"runtime"` と同じく注記の文字列の配列 `notes` も持つ。`"assert"` の `notes` は、実行時エラーの報告の `notes` と同じ並びで、止める途中の解放の失敗ごとの注記（[診断エンジン](../02-impl/02-10-diagnostics.md)の「解放の失敗の報告」の、実行時エラーで止める途中の解放の注記と同じ文）を並べ、最後に末尾呼び出しの注記を置く。`"exit"` の `notes` は、止める途中の解放の失敗ごとに同じ文を一つずつ並べ、失敗がなければ空の配列とする。
+- 内部の `Failure::Exit` は明示的な失敗終了の原因・任意の説明・位置も保持できる。die の文章では通常の「called `Process.exit` with status 1」の行を省き、補足の報告の前に [CLI](06-01-cli.md) の「終了状態」と同じ失敗終了の報告を一度だけ描画する。JSON は `reason: "exit"` と `exitCode`・`notes` を保ち、情報がある場合だけ `die` に `kind: "die"` の診断オブジェクトを加える。捕らえた `stdout`・`stderr` へこの報告を書き足さない。通常の exit は従来の形式を保ち、終了状態 0 でもテストの失敗である。ソースの `or die` も一件の失敗として記録し、次のテストを実行する。
 - 最後に `kind` が `"testSummary"` の一行を書く。項目は、`passed`、`failed`、`filesNotRun`（検査の誤りで実行しなかったファイルの数）、`interrupted`（中断の要求で終えたか）である。
 
 ### プロパティベーステスト

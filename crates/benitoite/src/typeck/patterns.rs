@@ -1,9 +1,25 @@
 //! パターンの検査: 網羅性、選ばれない分岐、必ず照合するパターン（設計書 02-05「本体の後の検査」、01-05）。
 
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 
 use super::limits::MAX_COVERAGE_WORK;
-use crate::base::BindingId;
+use crate::base::{BindingId, ModuleId};
+use crate::modules::ModuleTable;
+
+/// 本体からパッケージ外にある、将来の形を考慮する ADT の集合。
+/// 型表を複製せず、一つのソース照合の間は同じ集合を参照する。
+pub type CoverageView = BTreeSet<BindingId>;
+
+/// 型の指定と本体の所属から view を作る。公開範囲と同じパッケージ比較を使う。
+pub fn coverage_view(modules: &ModuleTable, adts: &AdtTable, module: ModuleId) -> CoverageView {
+    adts.adts
+        .iter()
+        .filter_map(|(id, adt)| {
+            (adt.extensible && !crate::resolve::same_package(modules, module, adt.module))
+                .then_some(id)
+        })
+        .collect()
+}
 
 /// 検査に使うパターン。
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
@@ -45,7 +61,10 @@ pub struct ArmPats {
 #[derive(Clone, PartialEq, Debug)]
 pub enum MatchIssue {
     /// 網羅していない。`witness` はどの分岐にも照合しない値の形（`Tree.Node(Tree.Leaf, _, _)` など）
-    NonExhaustive { witness: String },
+    NonExhaustive {
+        witness: String,
+        future_types: BTreeSet<BindingId>,
+    },
     /// `arm` 番目の分岐の `alt` 番目の選択肢（どちらも 0 から数える）は選ばれない。
     /// `covered_by` は覆っている前の分岐の番号（昇順。02-05「本体の後の検査」の選び方）
     Unreachable {
@@ -80,8 +99,30 @@ pub struct MatchCheck {
 pub struct BindingCheck {
     /// 必ず照合するなら `None`、そうでなければ照合しない値の形。
     pub witness: Option<String>,
+    /// 反例に含まれる将来の形の宣言。表示文字列から推測しない。
+    pub future_types: BTreeSet<BindingId>,
     /// 判定に使った仕事量。
     pub work: usize,
+}
+
+// 各列の表示と型の出どころを一緒に記憶し、入れ子の反例を組み立てる。
+#[derive(Clone, PartialEq, Debug)]
+struct Witness {
+    text: String,
+    future_types: BTreeSet<BindingId>,
+}
+impl From<String> for Witness {
+    fn from(text: String) -> Self {
+        Self {
+            text,
+            future_types: BTreeSet::new(),
+        }
+    }
+}
+impl From<&str> for Witness {
+    fn from(text: &str) -> Self {
+        text.to_owned().into()
+    }
 }
 
 #[derive(PartialEq, Eq, Hash)]
@@ -92,14 +133,16 @@ struct SearchKey {
 }
 
 // 表と予算は一つの match または束縛の文の間だけ共有する。表を引く順序は探索の順序に影響しない。
-struct Search {
+struct Search<'a> {
+    view: &'a CoverageView,
     limit: usize,
     used: usize,
-    memo: Option<HashMap<SearchKey, Option<Vec<String>>>>,
+    memo: Option<HashMap<SearchKey, Option<Vec<Witness>>>>,
 }
-impl Search {
-    fn new(limit: usize) -> Self {
+impl<'a> Search<'a> {
+    fn new(limit: usize, view: &'a CoverageView) -> Self {
         Self {
+            view,
             limit,
             used: 0,
             memo: Some(HashMap::new()),
@@ -122,8 +165,8 @@ impl Search {
     fn finish(
         &mut self,
         key: Option<Box<SearchKey>>,
-        result: Option<Vec<String>>,
-    ) -> Option<Vec<String>> {
+        result: Option<Vec<Witness>>,
+    ) -> Option<Vec<Witness>> {
         if let (Some(memo), Some(key)) = (&mut self.memo, key) {
             memo.insert(*key, result.clone());
         }
@@ -136,8 +179,14 @@ pub fn check_match(
     scrutinee: &Ty,
     arms: &[ArmPats],
     adts: &AdtTable,
+    view: &CoverageView,
 ) -> Result<MatchCheck, Undecided> {
-    check_match_with(scrutinee, arms, adts, &mut Search::new(MAX_COVERAGE_WORK))
+    check_match_with(
+        scrutinee,
+        arms,
+        adts,
+        &mut Search::new(MAX_COVERAGE_WORK, view),
+    )
 }
 fn check_match_with(
     scrutinee: &Ty,
@@ -175,7 +224,10 @@ fn check_match_with(
         }
     }
     if let Some(witness) = useful(scrutinee, &rows, &Pat::Wild, adts, search)? {
-        issues.push(MatchIssue::NonExhaustive { witness });
+        issues.push(MatchIssue::NonExhaustive {
+            witness: witness.text,
+            future_types: witness.future_types,
+        });
     }
     Ok(MatchCheck {
         issues,
@@ -185,11 +237,21 @@ fn check_match_with(
 }
 
 /// 束縛の文の反例まで、一つの予算で一度だけ求める。
-pub fn check_binding(ty: &Ty, pat: &Pat, adts: &AdtTable) -> Result<BindingCheck, Undecided> {
-    let mut search = Search::new(MAX_COVERAGE_WORK);
+pub fn check_binding(
+    ty: &Ty,
+    pat: &Pat,
+    adts: &AdtTable,
+    view: &CoverageView,
+) -> Result<BindingCheck, Undecided> {
+    let mut search = Search::new(MAX_COVERAGE_WORK, view);
     let witness = useful(ty, std::slice::from_ref(pat), &Pat::Wild, adts, &mut search)?;
+    let future_types = witness
+        .as_ref()
+        .map(|w| w.future_types.clone())
+        .unwrap_or_default();
     Ok(BindingCheck {
-        witness,
+        witness: witness.map(|w| w.text),
+        future_types,
         work: search.used,
     })
 }
@@ -216,6 +278,7 @@ enum Shape {
         back: usize,
         elem: Ty,
     },
+    Future(BindingId),
     Other,
 }
 impl Shape {
@@ -226,7 +289,12 @@ impl Shape {
             Self::Long {
                 front, back, elem, ..
             } => vec![elem.clone(); front.saturating_add(*back)],
-            Self::Boolean(_) | Self::Unit | Self::Interval(..) | Self::String(_) | Self::Other => {
+            Self::Boolean(_)
+            | Self::Unit
+            | Self::Interval(..)
+            | Self::String(_)
+            | Self::Future(_)
+            | Self::Other => {
                 vec![]
             }
         }
@@ -257,6 +325,12 @@ impl Shape {
                 } else {
                     format!("{name}({})", args.join(", "))
                 }
+            }
+            Self::Future(id) => {
+                let Some(def) = adts.get(*id) else {
+                    return "_".into();
+                };
+                super::text::future_shape(&def.name, def.record.is_some())
             }
             Self::Boolean(v) => v.to_string(),
             Self::Unit => "()".into(),
@@ -291,7 +365,7 @@ fn interval(p: &Pat) -> Option<(i128, i128)> {
         | Pat::List { .. } => None,
     }
 }
-fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable) -> Option<Vec<Shape>> {
+fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable, view: &CoverageView) -> Option<Vec<Shape>> {
     Some(match ty {
         Ty::Con(TyCon::Adt(id), args) => {
             let Some(d) = adts.get(*id) else {
@@ -304,6 +378,9 @@ fn shapes(ty: &Ty, column: &[&Pat], adts: &AdtTable) -> Option<Vec<Shape>> {
                     tag: c.tag,
                     fields: adts.field_types(*id, c.tag, args)?,
                 });
+            }
+            if view.contains(id) {
+                result.push(Shape::Future(*id));
             }
             result
         }
@@ -446,7 +523,7 @@ fn useful(
     pat: &Pat,
     adts: &AdtTable,
     search: &mut Search,
-) -> Result<Option<String>, Undecided> {
+) -> Result<Option<Witness>, Undecided> {
     search.charge(rows.len())?;
     let input = SearchInput {
         types: vec![ty.clone()],
@@ -462,8 +539,13 @@ struct SearchInput {
     query: Vec<Pat>,
 }
 impl SearchInput {
-    fn fallback(&self, adts: &AdtTable) -> Option<Vec<String>> {
-        Some(self.query.iter().map(|p| show_pattern(p, adts)).collect())
+    fn fallback(&self, adts: &AdtTable) -> Option<Vec<Witness>> {
+        Some(
+            self.query
+                .iter()
+                .map(|p| show_pattern(p, adts).into())
+                .collect(),
+        )
     }
 }
 struct Branches {
@@ -481,7 +563,7 @@ enum Continue {
     },
 }
 enum Step {
-    Done(Option<Vec<String>>),
+    Done(Option<Vec<Witness>>),
     Descend(SearchInput, Continue),
 }
 
@@ -489,7 +571,7 @@ fn usefulness(
     input: SearchInput,
     adts: &AdtTable,
     search: &mut Search,
-) -> Result<Option<Vec<String>>, Undecided> {
+) -> Result<Option<Vec<Witness>>, Undecided> {
     // 再帰の戻り先を明示したスタックに置く。深い構成子やリストでも、鍵の複製と
     // ハッシュの再帰を探索の再帰と重ねない（07-03「テストの設計の原則」の深い入力）。
     let mut pending = Vec::new();
@@ -522,7 +604,18 @@ fn usefulness(
                             let tail_len = branches.input.query.len().saturating_sub(1);
                             let witness = if result.len() == arity.saturating_add(tail_len) {
                                 if let Some((fields, rest)) = result.split_at_checked(arity) {
-                                    let mut witness = vec![shape.show(fields, adts)];
+                                    let text = shape.show(
+                                        &fields.iter().map(|w| w.text.clone()).collect::<Vec<_>>(),
+                                        adts,
+                                    );
+                                    let mut future_types = fields
+                                        .iter()
+                                        .flat_map(|w| w.future_types.iter().copied())
+                                        .collect::<BTreeSet<_>>();
+                                    if let Shape::Future(id) = shape {
+                                        future_types.insert(id);
+                                    }
+                                    let mut witness = vec![Witness { text, future_types }];
                                     witness.extend_from_slice(rest);
                                     Some(witness)
                                 } else {
@@ -600,7 +693,7 @@ fn enter(mut input: SearchInput, adts: &AdtTable, search: &mut Search) -> Result
         .filter_map(|row| row.first())
         .chain(std::iter::once(q))
         .collect::<Vec<_>>();
-    let Some(shapes) = shapes(ty, &column, adts) else {
+    let Some(shapes) = shapes(ty, &column, adts, search.view) else {
         return Ok(Step::Done(input.fallback(adts)));
     };
     // 記憶は構成子で分ける段の入力だけに持つ。検索のための複製も、表で再利用
@@ -738,7 +831,7 @@ fn overlaps(
     if matches!(a, Pat::Wild) || matches!(b, Pat::Wild) {
         return Ok(true);
     }
-    if let Some(shapes) = shapes(ty, &[a, b], adts) {
+    if let Some(shapes) = shapes(ty, &[a, b], adts, search.view) {
         for shape in shapes {
             let (Some(xs), Some(ys)) = (specialize(a, &shape), specialize(b, &shape)) else {
                 continue;
@@ -819,6 +912,80 @@ mod tests {
     use super::*;
     use crate::base::ModuleId;
     use crate::types::{AdtDef, CtorDef, TypeSummary};
+
+    #[test]
+    fn coverage_views_follow_package_identity_and_type_flags() {
+        use crate::modules::{ModuleInfo, ModuleKind, ModulePath};
+
+        // 型表の指定から作者/外部を区別する判定 API の契約を確かめる。
+        // 表示名は全型で同じにして、名前から所属や record を推測する退行を防ぐ。
+        let modules = ModuleTable {
+            modules: [
+                (ModuleKind::Entry, "Main"),
+                (ModuleKind::User, "Words.Use"),
+                (ModuleKind::Prelude, "Benitoite.Integer"),
+                (ModuleKind::Stdlib, "Benitoite.Json"),
+                (ModuleKind::Package, "Words.Kinds"),
+                (ModuleKind::Package, "Words.Use"),
+                (ModuleKind::Package, "Other.Kinds"),
+                (ModuleKind::Config, "Main"),
+                (ModuleKind::PackageConfig, "Words"),
+            ]
+            .into_iter()
+            .enumerate()
+            .map(|(i, (kind, name))| ModuleInfo {
+                id: ModuleId(u32::try_from(i).unwrap()),
+                name: ModulePath(name.split('.').map(str::to_owned).collect()),
+                kind,
+                imports: vec![],
+                internal_dependencies: vec![],
+            })
+            .collect(),
+        };
+        let mut adts = AdtTable::default();
+        for i in 0..8 {
+            let binding = BindingId(i);
+            adts.adts.insert(
+                binding,
+                AdtDef {
+                    binding,
+                    name: "Kind".into(),
+                    module: ModuleId(if i == 7 { 0 } else { i }),
+                    extensible: false,
+                    type_params: vec![],
+                    ctors: vec![],
+                    record: (i == 3).then(Vec::new),
+                    eq_summary: TypeSummary::default(),
+                    key_summary: TypeSummary::default(),
+                },
+            );
+        }
+        assert!(coverage_view(&modules, &adts, ModuleId(0)).is_empty());
+        for i in 0..7 {
+            let mut adt = adts.adts.get(BindingId(i)).unwrap().clone();
+            adt.extensible = true;
+            adts.adts.insert(BindingId(i), adt);
+        }
+        for (module, expected) in [
+            (0, vec![2, 3, 4, 5, 6]),
+            (1, vec![2, 3, 4, 5, 6]),
+            (2, vec![0, 1, 4, 5, 6]),
+            (3, vec![0, 1, 4, 5, 6]),
+            (4, vec![0, 1, 2, 3, 6]),
+            (5, vec![0, 1, 2, 3, 6]),
+            (6, vec![0, 1, 2, 3, 4, 5]),
+            (7, vec![0, 1, 2, 3, 4, 5, 6]),
+            (8, vec![0, 1, 2, 3, 4, 5, 6]),
+            (u32::MAX, vec![0, 1, 2, 3, 4, 5, 6]),
+        ] {
+            assert_eq!(
+                coverage_view(&modules, &adts, ModuleId(module)),
+                expected.into_iter().map(BindingId).collect(),
+                "module {module}"
+            );
+        }
+    }
+
     fn builtin(b: B) -> Ty {
         Ty::Con(TyCon::Builtin(b), vec![])
     }
@@ -837,6 +1004,7 @@ mod tests {
     }
     fn missing(witness: &str) -> MatchIssue {
         MatchIssue::NonExhaustive {
+            future_types: BTreeSet::new(),
             witness: witness.into(),
         }
     }
@@ -887,16 +1055,21 @@ mod tests {
             assert_eq!(checked_issues(&ty, &arms, &table), expected);
         }
         assert!(
-            check_binding(&builtin(B::UNIT), &Pat::Unit, &table)
+            check_binding(&builtin(B::UNIT), &Pat::Unit, &table, &CoverageView::new())
                 .unwrap()
                 .witness
                 .is_none()
         );
         assert!(
-            check_binding(&builtin(B::BOOLEAN), &Pat::Boolean(true), &table)
-                .unwrap()
-                .witness
-                .is_some()
+            check_binding(
+                &builtin(B::BOOLEAN),
+                &Pat::Boolean(true),
+                &table,
+                &CoverageView::new()
+            )
+            .unwrap()
+            .witness
+            .is_some()
         );
     }
     #[test]
@@ -1159,13 +1332,18 @@ mod tests {
             );
         }
         assert!(
-            check_binding(&ty, &list(vec![], true, vec![]), &table)
-                .unwrap()
-                .witness
-                .is_none()
+            check_binding(
+                &ty,
+                &list(vec![], true, vec![]),
+                &table,
+                &CoverageView::new()
+            )
+            .unwrap()
+            .witness
+            .is_none()
         );
         assert!(
-            check_binding(&ty, &exact_one, &table)
+            check_binding(&ty, &exact_one, &table, &CoverageView::new())
                 .unwrap()
                 .witness
                 .is_some()
@@ -1187,6 +1365,7 @@ mod tests {
         table.adts.insert(
             id,
             AdtDef {
+                extensible: false,
                 binding: id,
                 name: "Option".into(),
                 module: ModuleId(0),
@@ -1261,11 +1440,169 @@ mod tests {
             vec![unreachable(3, 0, &[0, 2])]
         );
         assert!(
-            check_binding(&ty, &some(Pat::Wild), &table)
+            check_binding(&ty, &some(Pat::Wild), &table, &CoverageView::new())
                 .unwrap()
                 .witness
                 .is_some()
         );
+    }
+
+    // 将来の形の追加、包括的な選択肢、覆っている位置と反例の出どころを公開 API で確認する。
+    #[test]
+    fn extensible_shapes_require_catchalls_in_nested_source_patterns() {
+        for record in [false, true] {
+            let (ty, mut table) = boolean_record(1);
+            let mut def = table.get(BindingId(0)).unwrap().clone();
+            def.extensible = true;
+            def.name = "Failure".into();
+            def.ctors[0].name = "Failure".into();
+            if !record {
+                def.record = None;
+            }
+            table.adts.insert(BindingId(0), def);
+            let known = Pat::Ctor {
+                adt: BindingId(0),
+                tag: 0,
+                args: vec![Pat::Wild],
+            };
+            let view = BTreeSet::from([BindingId(0)]);
+            let future = if record {
+                "<future shape of Failure>"
+            } else {
+                "<future constructor of Failure>"
+            };
+            assert!(
+                check_match(&ty, &[arm(known.clone())], &table, &CoverageView::new())
+                    .unwrap()
+                    .issues
+                    .is_empty()
+            );
+            assert_eq!(
+                check_match(&ty, &[arm(known.clone())], &table, &view)
+                    .unwrap()
+                    .issues,
+                vec![MatchIssue::NonExhaustive {
+                    witness: future.into(),
+                    future_types: view.clone()
+                }]
+            );
+            let binding = check_binding(&ty, &known, &table, &view).unwrap();
+            assert_eq!(binding.witness.as_deref(), Some(future));
+            assert_eq!(binding.future_types, view);
+            assert!(
+                check_binding(&ty, &Pat::Wild, &table, &view)
+                    .unwrap()
+                    .witness
+                    .is_none()
+            );
+            for arms in [
+                vec![arm(known.clone()), arm(Pat::Wild)],
+                vec![ArmPats {
+                    alts: vec![known.clone(), Pat::Wild],
+                    guarded: false,
+                }],
+            ] {
+                assert!(
+                    check_match(&ty, &arms, &table, &view)
+                        .unwrap()
+                        .issues
+                        .is_empty()
+                );
+            }
+            let guarded = check_match(
+                &ty,
+                &[ArmPats {
+                    alts: vec![Pat::Wild],
+                    guarded: true,
+                }],
+                &table,
+                &view,
+            )
+            .unwrap();
+            assert_eq!(guarded.issues, vec![missing("_")]);
+            let checked = check_match(
+                &ty,
+                &[arm(known.clone()), arm(Pat::Wild), arm(Pat::Wild)],
+                &table,
+                &view,
+            )
+            .unwrap();
+            assert_eq!(checked.issues, vec![unreachable(2, 0, &[1])]);
+            assert_eq!(checked.covering, vec![((2, 0), vec![(1, 0)])]);
+            let checked = check_match(
+                &ty,
+                &[ArmPats {
+                    alts: vec![known.clone(), Pat::Wild, Pat::Wild],
+                    guarded: false,
+                }],
+                &table,
+                &view,
+            )
+            .unwrap();
+            assert_eq!(checked.issues, vec![unreachable(0, 2, &[])]);
+            assert_eq!(checked.covering, vec![((0, 2), vec![(0, 1)])]);
+            let list_ty = Ty::Con(TyCon::Builtin(B::LIST), vec![ty.clone()]);
+            let arms = [
+                arm(list(vec![], false, vec![])),
+                arm(list(vec![known.clone()], true, vec![])),
+            ];
+            let checked = check_match(&list_ty, &arms, &table, &view).unwrap();
+            assert_eq!(
+                checked.issues,
+                vec![MatchIssue::NonExhaustive {
+                    witness: format!("[{future}, ..]"),
+                    future_types: view.clone()
+                }]
+            );
+            // 閉じた外側の Option の内側だけを外部扱いにする。
+            let (_, mut outer) = option();
+            let mut inner = table.get(BindingId(0)).unwrap().clone();
+            inner.binding = BindingId(10);
+            inner.ctors[0].binding = BindingId(11);
+            if let Some(fields) = &mut inner.record {
+                fields[0].binding = BindingId(12);
+            }
+            outer.adts.insert(BindingId(10), inner);
+            let nested_ty = Ty::Con(
+                TyCon::Adt(BindingId(0)),
+                vec![Ty::Con(TyCon::Adt(BindingId(10)), vec![])],
+            );
+            let nested_known = Pat::Ctor {
+                adt: BindingId(10),
+                tag: 0,
+                args: vec![Pat::Wild],
+            };
+            let nested_view = BTreeSet::from([BindingId(10)]);
+            let arms = [
+                arm(Pat::Ctor {
+                    adt: BindingId(0),
+                    tag: 0,
+                    args: vec![],
+                }),
+                arm(some(nested_known)),
+            ];
+            assert_eq!(
+                check_match(&nested_ty, &arms, &outer, &nested_view)
+                    .unwrap()
+                    .issues,
+                vec![MatchIssue::NonExhaustive {
+                    witness: format!("Option.Some({future})"),
+                    future_types: nested_view
+                }]
+            );
+            let expected = check_match(&ty, &[arm(known.clone())], &table, &view).unwrap();
+            for limit in [0, expected.work - 1] {
+                assert_eq!(
+                    check_match_with(
+                        &ty,
+                        &[arm(known.clone())],
+                        &table,
+                        &mut Search::new(limit, &view)
+                    ),
+                    Err(Undecided)
+                );
+            }
+        }
     }
 
     // 省略した先頭の欄が多くても、後ろの少数の欄を調べるだけで予算を使い切らない。
@@ -1286,13 +1623,14 @@ mod tests {
             })
             .collect::<Vec<_>>();
         arms.push(arm(Pat::Wild));
-        let checked = check_match(&ty, &arms, &table).unwrap();
+        let checked = check_match(&ty, &arms, &table, &CoverageView::new()).unwrap();
         assert!(checked.issues.is_empty());
         assert!(checked.covering.is_empty());
     }
     fn checked_issues(ty: &Ty, arms: &[ArmPats], table: &AdtTable) -> Vec<MatchIssue> {
-        let checked = check_match(ty, arms, table).unwrap();
-        let mut search = Search::new(MAX_COVERAGE_WORK);
+        let view = CoverageView::new();
+        let checked = check_match(ty, arms, table, &CoverageView::new()).unwrap();
+        let mut search = Search::new(MAX_COVERAGE_WORK, &view);
         search.memo = None;
         let plain = check_match_with(ty, arms, table, &mut search).unwrap();
         assert_eq!(checked.issues, plain.issues);
@@ -1303,6 +1641,7 @@ mod tests {
     // 非公開の探索を同じモジュールから使い、テスト用の公開の差し込み口は設けない。
     #[test]
     fn budget_stops_instead_of_returning_partial_coverage() {
+        let view = CoverageView::new();
         let table = AdtTable::default();
         let ty = builtin(B::INTEGER);
         let arms = [
@@ -1310,7 +1649,7 @@ mod tests {
             arm(Pat::IntegerRange(6, 10)),
             arm(Pat::IntegerRange(1, 10)),
         ];
-        let expected = check_match(&ty, &arms, &table).unwrap();
+        let expected = check_match(&ty, &arms, &table, &CoverageView::new()).unwrap();
         assert_eq!(
             expected.issues,
             vec![unreachable(2, 0, &[0, 1]), missing("_")]
@@ -1318,12 +1657,12 @@ mod tests {
         assert_eq!(expected.covering, vec![((2, 0), vec![(0, 0), (1, 0)])]);
         for limit in [0, expected.work - 1] {
             assert_eq!(
-                check_match_with(&ty, &arms, &table, &mut Search::new(limit)),
+                check_match_with(&ty, &arms, &table, &mut Search::new(limit, &view)),
                 Err(Undecided)
             );
         }
         assert_eq!(
-            check_match_with(&ty, &arms, &table, &mut Search::new(expected.work)),
+            check_match_with(&ty, &arms, &table, &mut Search::new(expected.work, &view)),
             Ok(expected)
         );
         let pat = Pat::Boolean(true);
@@ -1333,12 +1672,12 @@ mod tests {
                 std::slice::from_ref(&pat),
                 &Pat::Wild,
                 &table,
-                &mut Search::new(0)
+                &mut Search::new(0, &view)
             ),
             Err(Undecided)
         );
         assert_eq!(
-            check_binding(&builtin(B::BOOLEAN), &pat, &table)
+            check_binding(&builtin(B::BOOLEAN), &pat, &table, &CoverageView::new())
                 .unwrap()
                 .witness,
             Some("false".into())
@@ -1351,6 +1690,7 @@ mod tests {
         table.adts.insert(
             id,
             AdtDef {
+                extensible: false,
                 binding: id,
                 name: "Flags".into(),
                 module: ModuleId(0),
@@ -1402,12 +1742,13 @@ mod tests {
     // FE-03 の重複した探索を再現する。時間の閾値には依存しない。
     #[test]
     fn repeated_boolean_groups_fit_with_memo_and_stop_without_it() {
+        let view = CoverageView::new();
         let (ty, table) = boolean_record(49);
         let arms = review_arms(12);
-        let checked = check_match(&ty, &arms, &table).unwrap();
+        let checked = check_match(&ty, &arms, &table, &CoverageView::new()).unwrap();
         assert!(checked.issues.is_empty());
         assert!(checked.work <= MAX_COVERAGE_WORK);
-        let mut plain = Search::new(MAX_COVERAGE_WORK);
+        let mut plain = Search::new(MAX_COVERAGE_WORK, &view);
         plain.memo = None;
         assert_eq!(
             check_match_with(&ty, &arms, &table, &mut plain),
