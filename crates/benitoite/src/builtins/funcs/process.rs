@@ -125,6 +125,7 @@ mod text {
     pub const INVALID_NAME: &str = "environment variable name is empty or contains NUL or '='";
     pub const INVALID_UTF8: &str = "environment value or directory is not valid UTF-8";
     pub const INVALID_COMMAND: &str = "program, arguments, or environment contain invalid input";
+    pub const LOADER_ENVIRONMENT: &str = "environment variable `{name}` cannot be set in Command.environment: names starting with DYLD_ or LD_ are not accepted";
     pub const INVALID_OUTPUT: &str = "command output is not valid UTF-8";
 }
 
@@ -281,6 +282,26 @@ fn execute(
         })
     {
         return Err(io::Error::new(io::ErrorKind::InvalidInput, text::INVALID_COMMAND).into());
+    }
+    // 明示した名前だけを調べ、値と親の環境を報告に混ぜない。
+    // 既存の不正入力を優先し、絶対化と起動の前に拒否する（設計書 03-07「Process」）。
+    if let Some(name) = command
+        .environment
+        .iter()
+        .map(|(name, _)| name)
+        .filter(|name| {
+            ["DYLD_", "LD_"].iter().any(|prefix| {
+                name.get(..prefix.len())
+                    .is_some_and(|start| start.eq_ignore_ascii_case(prefix))
+            })
+        })
+        .min()
+    {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            text::LOADER_ENVIRONMENT.replace("{name}", name),
+        )
+        .into());
     }
     let program = Path::new(&command.program);
     // 基準のディレクトリも相対の場合を含めて絶対化し、current_dir との組み合わせに

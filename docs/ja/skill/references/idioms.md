@@ -1,6 +1,6 @@
 # Benitoite の定番の書き方
 
-> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.6 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.7 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -362,6 +362,10 @@ Carol,82
 
 `Process.run` は、シェルを介さずに、引数のリストを渡してプログラムを起動する。引数はそのまま渡すので、下の `$HOME` は展開されない。0 でない終了コードは誤りではない。`Process.Output.exitCode` で読む。
 
+`Process.run` と `Process.runAttached` は、`Command.environment` に明示した名前が `DYLD_` または `LD_` で始まる場合、ASCII の大文字小文字を区別せず、子の起動やパイプの準備より前に拒否する。ビルドの道具が使う `LD_RUN_PATH`、小文字の名前、空値、継承した値と同じ値への設定も含む。`IOErrorKind.InvalidInput` を持つ `Result.Error` を返し、メッセージには元の名前の辞書順で最初の禁止変数名だけを入れ、値は入れない。NUL、空の名前、名前内の `=` に対する既存の検査が優先する。これは IO の失敗の値であり、新しい静的診断ではない。明示設定を見直して取り除くか、規則に適合する操作を選んで処理する。親の環境へ変数を移したり、シェルでコマンドを包んだりして回避しない。
+
+この規則はすべての OS で常に適用するが、継承する変数は取り除かず、`Process.shell` も継承する。`Process.Run` を了承すれば、`env` やシェル自身による変数の設定も許す。この規則は、起動時の環境、`PATH`、コマンド固有の設定、孫プロセス、Windows の DLL 探索全体を制御しない。隔離はハーネスか OS で強制する。
+
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
@@ -629,7 +633,7 @@ pen: 1200
 
 ## テストの書き方
 
-テストは、`@test("description")` を付けた関数であり、引数を取らず、`Unit` か `Result[Unit, String]` を返す。`try e or return` を使うテストは `Result[Unit, String]` を返し、`Result.Error(message)` を返すとテストは失敗する。結果は `Assert.equal(actual: actual, expected: expected)` と `Assert.isTrue(condition: condition, message: message)`（エフェクト `Assert.Check`）で確かめる。ファイルは `benitoite test file.bnt` で実行する。`main` のないテストのファイルに `benitoite check` を実行しない。
+テストは、`@test("description")` を付けた関数であり、引数を取らず、`Unit` か `Result[Unit, String]` を返す。`try e or return` を使うテストは `Result[Unit, String]` を返し、`Result.Error(message)` を返すとテストは失敗する。結果は `Assert.equal(actual: actual, expected: expected)` と `Assert.isTrue(condition: condition, message: message)`（エフェクト `Assert.Check`）で確かめる。修正中は `benitoite test --check file.bnt` で実行せずに検査する。確認の直前に `benitoite test --check --report=json file.bnt` で報告を一度取得し、`Assert.Check` を含めてエフェクトを見直してから、`benitoite test --allow-effects=<accepted names> file.bnt` で実行する。`main` のないテストのファイルに `benitoite check` を実行しない。報告と実行全体の拒否の規則は、[実行前の検査](inspection.md)を参照する。
 
 ```benitoite test
 function slugify(title: String) -> String

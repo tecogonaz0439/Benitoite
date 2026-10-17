@@ -359,6 +359,10 @@ Carol,82
 
 `Process.run` starts a program with a list of arguments, without a shell. Arguments are passed as they are: `$HOME` below is not expanded. A non-zero exit code is not an error; read it with `Process.Output.exitCode`.
 
+`Process.run` and `Process.runAttached` reject explicitly supplied `Command.environment` names starting with `DYLD_` or `LD_`, ignoring ASCII case, before starting a child or arranging its pipes. This includes `LD_RUN_PATH` used by build tools, lowercase names, empty values, and resetting a variable to its inherited value. They return `Result.Error` with `IOErrorKind.InvalidInput`; the message names the first forbidden variable in lexical order of the original names, without its value. Existing checks for NUL, empty names, and `=` in names take precedence. This is an IO failure value, not a new static diagnostic. Handle it by reviewing and removing the explicit setting or choosing an operation compatible with the rule; do not bypass it by moving the variable to the parent's environment or wrapping the command in a shell.
+
+The rule always applies on every OS, but does not remove inherited variables; `Process.shell` inherits them too. Accepting `Process.Run` permits `env` or a shell to set variables itself. The rule does not control the initial environment, `PATH`, command-specific settings, grandchildren, or every Windows DLL search. Use the harness or OS to enforce isolation.
+
 ```benitoite
 import Benitoite.Unofficial.IO.Console
 import Benitoite.Unofficial.IO.Process
@@ -626,7 +630,7 @@ pen: 1200
 
 ## Writing tests
 
-A test is a function with `@test("description")` that takes no arguments and returns `Unit` or `Result[Unit, String]`. A test that uses `try e or return` returns `Result[Unit, String]`; returning `Result.Error(message)` fails the test. Check results with `Assert.equal(actual: actual, expected: expected)` and `Assert.isTrue(condition: condition, message: message)` (effect `Assert.Check`). Run the file with `benitoite test file.bnt`; do not run `benitoite check` on a test file without `main`.
+A test is a function with `@test("description")` that takes no arguments and returns `Unit` or `Result[Unit, String]`. A test that uses `try e or return` returns `Result[Unit, String]`; returning `Result.Error(message)` fails the test. Check results with `Assert.equal(actual: actual, expected: expected)` and `Assert.isTrue(condition: condition, message: message)` (effect `Assert.Check`). While editing, check without execution using `benitoite test --check file.bnt`. Immediately before confirmation, obtain one report with `benitoite test --check --report=json file.bnt`, review its effects including `Assert.Check`, then run with `benitoite test --allow-effects=<accepted names> file.bnt`; do not run `benitoite check` on a test file without `main`. See [Inspecting before execution](inspection.md) for the report and whole-run rejection rules.
 
 ```benitoite test
 function slugify(title: String) -> String

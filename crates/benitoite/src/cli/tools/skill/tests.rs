@@ -274,6 +274,40 @@ fn user_scope_without_home_reports_no_home() {
     assert_eq!(fs::read_dir(temp.work()).unwrap().count(), 0);
 }
 
+// 作成時の関門: 公開の入口でも、取得は渡された home の有無・妥当性に依存しない。
+// CLI のプロセステストでは、公開 run_skill だけに残る HOME 検査の退行を捕まえない。
+#[test]
+fn document_retrieval_ignores_the_supplied_home() {
+    let temp = Temp::new("documents");
+    for home in [None, Some(temp.0.join("missing-home"))] {
+        for args in [&["list"][..], &["show", "LICENSE-MIT"][..]] {
+            let result = run(&temp, args, home.clone());
+            assert_eq!(result.exit, 0, "{}", result.err);
+            assert!(result.err.is_empty());
+            assert!(!result.out.is_empty());
+        }
+    }
+    assert_eq!(fs::read_dir(temp.home()).unwrap().count(), 0);
+    assert_eq!(fs::read_dir(temp.work()).unwrap().count(), 0);
+}
+
+// 作成時の関門: 一覧全体の不正名・重複を拒む不変条件は埋め込み一覧を受け取る境界で守る。
+// 実際の一覧は整合しているため CLI の成功例では退行を捕まえない。本番の注入フラグは加えない。
+#[test]
+fn inconsistent_document_lists_are_rejected_before_returning_partial_results() {
+    let valid = SkillFile {
+        path: "SKILL.md",
+        text: "skill",
+    };
+    for path in ["", "/root", "a//b", "a/./b", "a/../b", "a\\b", "C:root"] {
+        assert!(
+            document_list(&[valid, SkillFile { path, text: "bad" }]).is_err(),
+            "{path}"
+        );
+    }
+    assert!(document_list(&[valid, valid]).is_err());
+}
+
 #[test]
 fn user_scope_rejects_home_that_is_not_an_absolute_existing_directory() {
     for action in ["install", "uninstall"] {

@@ -50,6 +50,25 @@
 - 【方針】手順は、リポジトリを取得して、処理系のクレートのディレクトリを `cargo install --locked --path` に指定する形とする。crates.io への公開は初回リリース版では行わない。
 - ソースからのビルドは、機能 `bundled-licenses` を付けないので、第三者のライセンスの一覧を埋め込まない（後述の「ライセンスの表示」）。
 
+【決定】`crates/benitoite/build.rs` は、次の明示入力を検証し、commit・dirty・Cargo の `TARGET` と各値の由来を実行ファイルに埋め込む。[CLI](../06-tooling/06-01-cli.md) の `--version=json` はこの埋め込み値を返し、実行時の環境や Git は読まない。Git は commit の自動採取を行うビルド時だけに使い、実行時の依存にしない。
+
+| 入力 | 受け付ける値 | 未指定時 |
+|---|---|---|
+| `BENITOITE_BUILD_COMMIT` | ASCII の十六進 40 桁または 64 桁（小文字へ正規化）、`unknown` | Git から採取。失敗なら null・由来 `unknown` |
+| `BENITOITE_BUILD_DIRTY` | `true`・`false`・`unknown` | 自動採取せず null・由来 `notCollected` |
+
+明示値の由来は欄ごとに `environment` とする。明示した `unknown` もこの由来で値を null とし、未指定と区別する。commit を明示した場合は Git を起動も監視もしない。空、前後の空白、短縮 ID、非 UTF-8、不正値は、入力名と許す構文をビルドの標準エラー出力に書いて終了状態 1 でビルドを止める。Git の値で補わない。`TARGET` は空や改行を含まない UTF-8 文字列として検証し、ホストの情報から推測しない。
+
+Git の採取元は `CARGO_MANIFEST_DIR` の二つ上のワークスペースに限る。直下に `.git`（ディレクトリまたは worktree のファイル）と `Cargo.toml` があり、その `crates/benitoite` の実パスがクレートと一致し、Git の示す根の実パスもワークスペースと一致することを確認する。別のリポジトリの下に展開したアーカイブから、親の commit を採取しない。Git の不在・失敗、HEAD の不在、根の不一致、出力の不正では commit を null・由来 `unknown` としてビルドを続け、dirty の明示値は保つ。
+
+Git はシェルを介さず引数配列で起動する。子の環境から `GIT_DIR`・`GIT_WORK_TREE`・`GIT_COMMON_DIR`・`GIT_INDEX_FILE`・`GIT_OBJECT_DIRECTORY`・`GIT_ALTERNATE_OBJECT_DIRECTORIES` を除き、`--no-optional-locks` と `-c core.fsmonitor=false` を付ける。commit は `rev-parse --verify HEAD^{commit}` で得る。dirty の自動採取のために status や index は読まない。
+
+【決定】ビルド情報の再採取は、build.rs 自体、二つの明示入力、commit を自動採取する場合の HEAD・参照中のブランチの ref・packed-refs・HEAD の reflog（`logs/HEAD`）の変更で行う。Git の管理場所は `rev-parse --git-dir`・`--git-common-dir`、symbolic HEAD の参照は `symbolic-ref -q HEAD`、ref の実際のパスは `rev-parse --git-path` で解決する。HEAD と `logs/HEAD` は `--git-dir` の側、packed-refs は共通の管理場所を使い、存在するファイルだけを監視する。detached HEAD ならブランチの ref は監視しない。index、作業ツリー、リポジトリ全体のディレクトリは監視しない。理由: 通常ファイルの編集や変更のないビルドで、毎回クレートを作り直すことを避けるためである。
+
+HEAD の監視を登録できなければ commit は null・由来 `unknown` とする。symbolic HEAD では、ref のパスを解決できない場合、または ref と packed-refs のどちらの監視も登録できない場合も同じ扱いとする。管理場所を解決できない場合と、共通の管理場所に `reftable` がある場合も commit を採取しない。
+
+この監視は、登録済みのファイルが変わらない Git 状態の変化を検知できない。HEAD の reflog がない状態で packed ref から loose ref が新設される場合、commit のないブランチに最初のコミットを作る場合、Git を導入した場合、アーカイブへ Git 管理を追加した場合などは、明示入力を変更するか、パッケージを clean build してから採取し直す。Rust ソースだけの変更による通常の再コンパイルでは、ビルド情報を再採取しない。commit はそのビルドで採取した自己申告であり、実行時の Git 状態やソース全体の同一性、実行ファイルの信頼の証明ではない。dirty の null を「変更なし」と読み替えない。
+
 ### ライセンスの表示
 
 【決定】第三者のライセンスの表示 `THIRD_PARTY_LICENSES` は、次のように作り、示す。
@@ -81,5 +100,6 @@
 - 互換性を壊す変更は、`CHANGELOG` に、移行の手順とともに記録する。
 - 非公式のモジュール（[標準ライブラリ](../03-interop/03-06-stdlib.md)の「標準のモジュールと非公式のモジュール（初回リリース版）」）を標準に移すと、取り込みの名前が変わる。これは互換性を壊す変更であり、マイナーの版で行う。非公式のモジュールも、パッチの版では変えない。
 - 廃止した診断コードの番号は、別の意味で使い回さない。
+- 【決定】処理系のリリース版と機械向けの形式の版は区別する。`--version=json` の `formats` は、その実行ファイルが提供する形式名と対応する整数を返す。ハーネスは必要なキーと理解する整数の両方を確認し、処理系の版の大小だけで能力を推測しない。形式の変更条件と提供する形式の一覧は [CLI](../06-tooling/06-01-cli.md#版と対応する形式の問い合わせ)で定める。
 - 処理系はコンパイル済みプログラム（バイトコード）を保存も配布もしない（[パイプライン](../02-impl/02-01-pipeline.md)）ので、バイトコードは 0.x の間の互換性の対象にしない。
 - 同梱の Agent Skill は、同じ版の処理系だけを対象にする。処理系を更新したときは、`benitoite skill install` を実行し直す。

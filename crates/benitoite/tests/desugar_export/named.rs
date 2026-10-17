@@ -586,12 +586,12 @@ fn export_extensible_package() {
     fs::create_dir_all(root.join("dep")).unwrap();
     fs::write(
         root.join("package.bnt"),
-        "language \"0.0.6\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+        "language \"0.0.7\"\ndependency Dep\n path \"dep\"\nend dependency\n",
     )
     .unwrap();
     fs::write(
         root.join("dep/package.bnt"),
-        "language \"0.0.6\"\npackage Dep\nend package\n",
+        "language \"0.0.7\"\npackage Dep\nend package\n",
     )
     .unwrap();
     fs::write(root.join("dep/Inspect.bnt"), "import Benitoite.IOErrorKind\npublic const answer: Integer = 42\npublic function inspect(kind: IOErrorKind) -> Integer\n return match kind with\n case IOErrorKind.NotFound -> 1\n case _ -> 0\n end match\nend function\n").unwrap();

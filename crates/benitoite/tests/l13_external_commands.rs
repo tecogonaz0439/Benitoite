@@ -241,6 +241,239 @@ end function
     }
 }
 
+// 関門: 明示したローダ変数の失敗を値として扱え、子が始まらないことを CLI から守る。
+// 既存の不正入力の表は二接頭辞・失敗の文言・親と同じ値の再設定を検査しない。
+// 親の環境は子の CLI にだけ渡し、テストプロセスの環境と本番 API は変えない。
+#[test]
+fn cli_rejects_explicit_loader_environment_before_starting_child() {
+    let directory = TestDirectory::new();
+    let path = directory.0.join("loader-environment.bnt");
+    let invalid = "program, arguments, or environment contain invalid input";
+    let cases = [
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("DYLD_BENITOITE_TEST", "dummy-value")]"#,
+            "DYLD_BENITOITE_TEST",
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("LD_BENITOITE_TEST", "inherited-loader")]"#,
+            "LD_BENITOITE_TEST",
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("LD_BENITOITE_TEST", "different-value")]"#,
+            "LD_BENITOITE_TEST",
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("LD_BENITOITE_TEST", "")]"#,
+            "LD_BENITOITE_TEST",
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("ld_benitoite_test", "dummy-value")]"#,
+            "ld_benitoite_test",
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("dYlD_benitoite_test", "dummy-value")]"#,
+            "dYlD_benitoite_test",
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("LD_RUN_PATH", "dummy-value")]"#,
+            "LD_RUN_PATH",
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("LD_", ""), Pair("DYLD_", "")]"#,
+            "DYLD_",
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("ld_A", "dummy-value"), Pair("LD_A", "dummy-value"), Pair("DYLD_Z", "dummy-value"), Pair("DYLD_A", "dummy-value")]"#,
+            "DYLD_A",
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("dyld_A", "dummy-value"), Pair("LD_Z", "dummy-value")]"#,
+            "LD_Z",
+        ),
+        (
+            r#""sh\u{0}""#,
+            "[]",
+            r#"[Pair("LD_TEST", "dummy-value")]"#,
+            invalid,
+        ),
+        (
+            "\"sh\"",
+            r#"["\u{0}"]"#,
+            r#"[Pair("LD_TEST", "dummy-value")]"#,
+            invalid,
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("LD_TEST", "dummy\u{0}value")]"#,
+            invalid,
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("LD_TEST=", "dummy-value")]"#,
+            invalid,
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("", "dummy-value"), Pair("LD_TEST", "dummy-value")]"#,
+            invalid,
+        ),
+        (
+            "\"sh\"",
+            "[]",
+            r#"[Pair("LD_TEST\u{0}", "dummy-value")]"#,
+            invalid,
+        ),
+        // 存在しない作業ディレクトリとプログラムよりも、禁止名の検査が先に完了する。
+        (
+            "\"./missing-command\"",
+            "[]",
+            r#"[Pair("LD_TEST", "dummy-value")]"#,
+            "LD_TEST",
+        ),
+    ];
+    for operation in ["run", "runAttached"] {
+        let mut source = String::from(
+            "import Benitoite.Unofficial.IO.Process\nimport Benitoite.Unofficial.IO.Console\n",
+        );
+        let mut calls = String::new();
+        let mut expected = String::new();
+        for (index, (program, arguments, environment, name)) in cases.iter().enumerate() {
+            let working_directory = if *program == "\"./missing-command\"" {
+                "Option.Some(\"missing-directory\")"
+            } else {
+                "Option.None"
+            };
+            source.push_str(&format!(
+                r#"
+function check{index}() -> Unit uses Process.Run,Console.Write
+ bind cmd <- Process.Command(..Process.command(program: {program}, arguments: List.concatenate(xs: ["-c", "printf started > marker"], ys: {arguments})), environment: Map.fromList({environment}), workingDirectory: {working_directory})
+ match Process.{operation}(cmd) with
+ case Result.Ok(_) -> Console.writeLine("unexpected success")
+ case Result.Error(error) ->
+  if IOError.kind(error) = IOErrorKind.InvalidInput then
+   Console.writeLine(IOError.message(error))
+  else
+   Console.writeLine("unexpected error kind")
+  end if
+ end match
+end function
+"#
+            ));
+            calls.push_str(&format!(" check{index}()\n"));
+            if *name == invalid {
+                expected.push_str(invalid);
+            } else {
+                expected.push_str(&format!("environment variable `{name}` cannot be set in Command.environment: names starting with DYLD_ or LD_ are not accepted"));
+            }
+            expected.push('\n');
+        }
+        source.push_str(&format!(
+            "function main() -> Unit uses Process.Run,Console.Write\n{calls}end function\n"
+        ));
+        std::fs::write(&path, source).unwrap();
+        for mode in ["direct", "request"] {
+            let output = Command::new(env!("CARGO_BIN_EXE_benitoite"))
+                .current_dir(&directory.0)
+                .env("BENITOITE_DEV_IO_MODE", mode)
+                .env("LD_BENITOITE_TEST", "inherited-loader")
+                .args(["run"])
+                .arg(&path)
+                .output()
+                .unwrap();
+            assert_eq!(
+                output.status.code(),
+                Some(0),
+                "{operation}/{mode}: {output:?}"
+            );
+            assert_eq!(
+                String::from_utf8_lossy(&output.stdout),
+                expected,
+                "{operation}/{mode}"
+            );
+            assert!(output.stderr.is_empty(), "{operation}/{mode}: {output:?}");
+            assert!(!directory.0.join("marker").exists(), "{operation}/{mode}");
+        }
+    }
+}
+
+// 関門: 拒否と対照に、通常変数の追加・上書きとローダ変数の継承を実際の子で確認する。
+// shell にも明示設定のない環境を継がせる。実際のローダ設定や秘密は使わない。
+#[test]
+fn cli_preserves_inherited_loader_environment_and_allows_other_names() {
+    let directory = TestDirectory::new();
+    let path = directory.0.join("inherited-environment.bnt");
+    for operation in ["run", "runAttached", "shell"] {
+        let expression = if operation == "shell" {
+            r#"Process.shell("printf '%s/%s' \"$LD_BENITOITE_TEST\" \"$BENITOITE_L13_VALUE\"")"#
+                .to_owned()
+        } else {
+            format!(
+                r#"Process.{operation}(Process.Command(..Process.command(program: "sh", arguments: ["-c", "printf '%s/%s/%s/%s/%s/%s' \"$LD_BENITOITE_TEST\" \"$BENITOITE_L13_VALUE\" \"$BENITOITE_L13_ADDED\" \"$LD\" \"$DYLD\" \"$XLD_TEST\""]), environment: Map.fromList([Pair("BENITOITE_L13_VALUE", "overwritten"), Pair("BENITOITE_L13_ADDED", "added"), Pair("LD", "short"), Pair("DYLD", "shorter"), Pair("XLD_TEST", "unanchored"), Pair("ＬＤ_TEST", "non-ascii")])))"#
+            )
+        };
+        let display = if operation == "runAttached" {
+            "Console.writeLine(Integer.toString(result))"
+        } else {
+            "Console.writeLine(Process.Output.standardOutput(result))"
+        };
+        std::fs::write(&path, format!(r#"
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.IO.Console
+function main() -> Result[Unit,String] uses Process.Run,Console.Write
+ bind result <- try {expression} |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda)
+ {display}
+ return Result.Ok(())
+end function
+"#)).unwrap();
+        let expected = match operation {
+            "shell" => "inherited-loader/parent-value\n",
+            "runAttached" => "inherited-loader/overwritten/added/short/shorter/unanchored0\n",
+            _ => "inherited-loader/overwritten/added/short/shorter/unanchored\n",
+        };
+        for mode in ["direct", "request"] {
+            let output = Command::new(env!("CARGO_BIN_EXE_benitoite"))
+                .env("BENITOITE_DEV_IO_MODE", mode)
+                .env("LD_BENITOITE_TEST", "inherited-loader")
+                .env("BENITOITE_L13_VALUE", "parent-value")
+                .env_remove("BENITOITE_L13_ADDED")
+                .args(["run"])
+                .arg(&path)
+                .output()
+                .unwrap();
+            assert_eq!(
+                output.status.code(),
+                Some(0),
+                "{operation}/{mode}: {output:?}"
+            );
+            assert_eq!(output.stdout, expected.as_bytes(), "{operation}/{mode}");
+            assert!(output.stderr.is_empty(), "{operation}/{mode}: {output:?}");
+        }
+    }
+}
+
 // 関門: 本物の仕事が起動してから時間切れになり、実行が子より先に終わることを守る。
 // 仮想の時間は子を待つ実際の仕事を進められない。このテストだけ、実時間の待ちに頼らない方針の例外として実時間の待ちを使う。
 // 子が後で完了の印を書くことも確かめ、取り消しで子を終わらせる退行を捕まえる。

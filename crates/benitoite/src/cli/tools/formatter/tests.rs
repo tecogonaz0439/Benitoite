@@ -501,6 +501,8 @@ mod command {
 
     fn args(paths: &[&str], check: bool) -> PathArgs {
         PathArgs {
+            report: None,
+            allow_effects: None,
             diagnostics: DiagFormat::Text,
             max_call_stack: None,
             deny_warnings: false,

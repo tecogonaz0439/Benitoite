@@ -8,6 +8,9 @@ pub(super) const LANGUAGE_CHANGE: &str = "{version}: {summary}";
 pub(super) const KEYWORDS_OPEN_TYPES_TRY_CHANGE: &str = "`die` is reserved; IOErrorKind, NetworkErrorKind, Json.ParseError, and Csv.ParseError are @extensible; return values must start on the same physical line as `return`";
 pub(super) const KEYWORDS_OPEN_TYPES_TRY_MIGRATION: &str = "rename user-defined names spelled `die`; outside the defining package, add an unguarded `case other` or `case _` to cover future @extensible values in matches, and use a variable or `_` instead of destructuring them in bindings; record `..` covers only declared fields, while construction, updates, and getters keep their declared field contracts; start each return value on the same physical line as `return` (the value may continue across lines after it starts); use `try value or return`, `try value or die`, or `try value or die(message)` to make the failure action explicit; bare `try value` still returns failure from the innermost function or lambda; see CHANGELOG.md for migration details";
 
+pub(super) const LOADER_ENVIRONMENT_CHANGE: &str = "Command.environment rejects names starting with DYLD_ or LD_ (ASCII case-insensitive), including build-tool variables such as LD_RUN_PATH";
+pub(super) const LOADER_ENVIRONMENT_MIGRATION: &str = "review explicit settings of DYLD_ and LD_ variables, including LD_RUN_PATH used by build tools; run and runAttached return IOErrorKind.InvalidInput before starting a child; inherited variables are unchanged; update the language declaration to the current version after reviewing the script, update dependency hashes, and see CHANGELOG.md for migration details";
+
 pub(super) const SOURCE_TOO_LARGE: &str = "the source file exceeds the size limit of 256 MiB";
 pub(super) const TOTAL_TOO_LARGE: &str =
     "the total size of all sources exceeds the size limit of 512 MiB";

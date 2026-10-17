@@ -1609,7 +1609,7 @@ fn directories_lost_after_loading_are_component_read_errors() {
                 ),
                 (
                     "deps/lib/package.bnt",
-                    "language \"0.0.6\"\npackage Library\nend package\n",
+                    "language \"0.0.7\"\npackage Library\nend package\n",
                 ),
                 ("deps/lib/Calc.bnt", &declaration),
             ])
@@ -1751,7 +1751,7 @@ fn module_roots_and_package_wasm_boundaries() {
                 "Lib/Nested.bnt",
                 nested.replace("wasm/x.wasm", "x.wasm").as_bytes(),
             ),
-            ("package.bnt", b"language \"0.0.6\"\n"),
+            ("package.bnt", b"language \"0.0.7\"\n"),
             ("x.wasm", &bytes),
         ],
         options,
@@ -1775,7 +1775,7 @@ fn module_roots_and_package_wasm_boundaries() {
         ("x.wasm", Some(DiagCode::E1003)),
     ] {
         let main = "dependency Alias\npath \"deps/fuzzy\"\nend dependency\nimport Alias.Distance\nfunction main() -> Unit\n()\nend function\n";
-        let config = "language \"0.0.6\"\npackage Fuzzy\nlicense \"MIT\"\nend package\n";
+        let config = "language \"0.0.7\"\npackage Fuzzy\nlicense \"MIT\"\nend package\n";
         let module = nested.replace("wasm/x.wasm", path);
         let result = pipeline::check_files(
             &[

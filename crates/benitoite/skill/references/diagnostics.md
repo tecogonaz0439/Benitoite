@@ -1700,6 +1700,17 @@ Operations of an effect are declared with a name, parameters, and a result type.
 
 The optional message of `or die` must be a pure String expression.
 
+## E0512
+
+- Kind: check (error)
+- Message: effects of `{function}` exceed `--allow-effects`
+- Label: effect limit checked for this function
+- `missing`: effects not allowed: {missing}
+- `allowed`: allowed effects: {allowed}
+- `review`: review the required effects before changing --allow-effects
+
+The declared atomic effects of the checked function (main or a test) exceed the set passed to --allow-effects. Nothing is started. Review the required effects before changing the allowed set. This is a static check, not runtime permission control or an OS sandbox.
+
 ## E0601
 
 - Kind: check (error)

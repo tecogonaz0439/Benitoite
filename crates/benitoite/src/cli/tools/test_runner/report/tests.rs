@@ -252,7 +252,7 @@ fn summary_is_ok_only_when_the_exit_status_is_zero() {
                 files_not_run: 2,
                 ..Summary::default()
             },
-            "test result: FAILED. 0 passed; 0 failed; 2 files not run due to errors\n",
+            "test result: FAILED. 0 passed; 0 failed; 2 files not run\n",
         ),
         (
             Summary {

@@ -1,8 +1,8 @@
 # Benitoite
 
-> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.6 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.7 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
-原文の前付け:
+原文の前付けを次に示す。この訳では説明用の `text` ブロックであり、実際の YAML frontmatter ではない。`{{benitoite-version}}` は英語の Skill を取得・インストールするときに置換するための印であり、この説明の写しには残す。
 
 ```text
 ---
@@ -33,34 +33,45 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 
 `benitoite --version` を実行し、その最初の行の版（`benitoite X.Y.Z`）を、このファイルの先頭の `metadata.benitoite-version` と比べる。異なるときは、この Skill は別の版の言語を説明しているので、`benitoite skill install` をもう一度実行するよう利用者に伝える。
 
+機械可読な対応機能の情報には、最初の引数だけに `--version=json` を指定して `benitoite --version=json` を実行する。既知の `schemaVersion` と、`formats` 内の必要な整数の版を要求し、リリース番号から対応を推測しない。未知の形式・状態・エフェクト名は未対応であり、成功や空集合として扱わない。ビルド情報はビルド時の自己申告である。`build.dirty: null` は変更なしではなく不明を表し、dirty の入力を省略した場合の由来は `notCollected` となる。
+
+この実行ファイルの Skill をインストールせずに読むには、`benitoite skill list` と `benitoite skill show references/idioms.md` を使う。名前は一覧にある大文字小文字を区別する論理名であり、OS のパスではない。`--format=json` は一つの `skillList` または `skillDocument` オブジェクトを返す。長さと SHA-256 のハッシュは、このファイルの版の置換も含め、`install` が書くものと同じ置換後の UTF-8 本文を表す。これらの問い合わせは `HOME` やインストール済みの写しを調べない。ハーネスを連携させるときや検査の JSON を解釈するときは、[実行前の検査](references/inspection.md)を読む。
+
 ## スクリプトを作る手順
 
 1. 書く前に、`references/idioms.md` と、スクリプトが使うモジュールごとにそのファイル `references/stdlib/<Module>.md` を読む（`references/` のディレクトリは、このファイルと同じ場所にある）。関数の名前、欄の名前、取り込みの名前を推測せず、そこで調べる。それからスクリプトを書く。合う例があれば、`references/idioms.md` の例から始める。
-2. `benitoite check script.bnt` を実行する。
-3. すべての診断を読み、スクリプトを直す。報告は `E0230` のようなコードを示す。その意味がわからないときは、`references/diagnostics.md` でコードを引く。`--diagnostics=json` を加えると、診断ごとに一つの JSON のオブジェクトが得られる。
-4. `check` が誤りを報告しなくなるまで、2 と 3 を繰り返す。警告も直す。警告はたいてい実際の誤りを指している。
-5. [実行の前に](#実行の前に)の確認を行う。
-6. `benitoite run script.bnt [arguments...]` を実行する。
+2. `benitoite check script.bnt` を実行し、利用者の関数を実行せずに検査する。
+3. 標準エラー出力の診断を読み、スクリプトを直す。診断は `E0230` のようなコードを示す。その意味がわからないときは、`references/diagnostics.md` でコードを引く。
+4. 検査が終了状態 0 で成功するまで、2 と 3 を繰り返す。警告も直す。警告はたいてい実際の誤りを指している。
+5. [実行の前に](#実行の前に)の確認の直前に、`benitoite check --report=json script.bnt` を一度実行し、`main` の宣言したエフェクトを得る。完全な単一の JSON オブジェクト、既知の `schemaVersion` と `kind: "checkReport"`、`status: "ok"`、`complete: true`、終了状態 0 を要求する。欠けた報告、部分的な報告、失敗した報告を空のエフェクト集合として扱わない。失敗した場合は通常の検査に戻ってスクリプトを直し、確認の前に新しい報告を得る。
+6. [実行の前に](#実行の前に)の確認を行い、`aggregateEffects.expanded` の了承済みの原子的な名前を使って、`benitoite run --allow-effects=<accepted names> script.bnt [arguments...]` を実行する。純粋なスクリプトには `--allow-effects=` と書く。`E0512` が追加のエフェクトを報告したら、許す集合を変える前に、もう一度検査して見直す。
 
-`run` の終了コード: `main` が終わったときは 0、`main` が `Result.Error` を返したとき、処理されない `or die` が実行を終えたとき、プログラムが実行時エラーで止まったときは 1、スクリプトが検査を通らないときとコマンドラインが誤っているときは 2、`benitoite` の処理系の不具合のときは 3 である。`Process.exit(n)` は `n` で終わる。`run` と `test` は、中断されたとき（`SIGINT` か `SIGTERM`）に 130 で終わる。
+`run` の終了コード: `main` が終わったときは 0、`main` が `Result.Error` を返したとき、処理されない `or die` が実行を終えたとき、プログラムが実行時エラーで止まったときは 1、スクリプトが検査を通らないとき、許すエフェクトを超えたとき、コンパイラの制限に達したとき、コマンドラインが誤っているときは 2、`benitoite` の処理系の不具合のときは 3 である。`Process.exit(n)` は `n` で終わる。`run` と実行する `test` は、中断されたとき（`SIGINT` か `SIGTERM`）に 130 で終わる。出力の失敗は 1 で終わる。
 
 ## テストの手順
 
 `benitoite check` は `main` のないファイルに誤りを報告するので、テストのファイルには `check` を使わない。
 
 1. テストの関数を書く（[テスト](#テスト)を参照する）。
-2. [実行の前に](#実行の前に)の確認を、`main` の代わりにテストの関数のエフェクトを使って行う。
-3. `benitoite test file.bnt`（またはディレクトリ）を実行する。ファイルに検査の誤りがあるとき、`test` はテストを一つも実行せず、`check` と同じように誤りを報告する。誤りを直して、もう一度 `test` を実行する。直したことでテストの関数にエフェクトが加わったときは、そのエフェクトを利用者にもう一度示す。
+2. `benitoite test --check file.bnt`（またはディレクトリ）を実行する。診断を直し、検査が終了状態 0 で成功するまで繰り返す。警告も直す。実行時と同じ選択済みテストを実行せずに検査し、`main` は要求しない。診断は標準エラー出力へ書き、標準出力には何も書かない。
+3. 確認の直前に、`benitoite test --check --report=json file.bnt` を一度実行する。`kind: "testCheckReport"` とし、スクリプトと同じ報告の受理条件を適用する。失敗した場合は通常の `test --check` に戻ってファイルを直し、確認の前に新しい報告を得る。`aggregateEffects.expanded` にあるテストの関数の宣言したエフェクトの和を使い、[実行の前に](#実行の前に)の確認を行う。`Assert.Check` はテストの契約の一部なので、許す集合に残す。
+4. `benitoite test --allow-effects=<accepted names> file.bnt` を実行する。このオプションを指定すると、すべての入口が準備とエフェクトの比較を通るまで、どのテストも開始しない。失敗すれば実行全体を拒否する。修正してもう一度検査し、許す集合を変える前に、追加されたエフェクトを利用者に示す。このオプションがなければ、検査の誤りがあるファイルを飛ばしてほかのファイルを実行できる。
+
+`test --check` は `--allow-effects`、`--max-call-stack`、すべての `--wasm-*` オプションを拒否する。`--check` のない `test --report=json` は使い方の誤りである。非実行の検査は `test` や `testSummary` の行を書かない。部分結果、終了状態、実行するテストの集計を扱うときは、[実行前の検査](references/inspection.md)を読む。
 
 ## 実行の前に
 
 スクリプトを初めて実行する前と、`main` のエフェクトが前回利用者に示したものより増えたときには、次のことを行う。
 
-1. `main` のシグネチャの `uses` の並び（テストでは、実行するテストの関数のすべてのエフェクト）を読み、後掲の表の言葉で、プログラムに許されている操作を利用者に伝える。
+1. 成功した検査報告の宣言上限（`main.effects` または選択された各テストの `effects`、および `aggregateEffects`）を読み、後掲の表の言葉で、プログラムが宣言する操作の種類を利用者に伝える。コードを説明するときは `uses` のシグネチャと照合する。宣言して使わないエフェクトも数える。
 2. 並びに `File.Write`、`Process.Run`、`Http.Connect`、`Http.Listen` のどれかがあるときは、実行する前に利用者に確認を求める。`Process.Run` については、スクリプトが起動するコマンドの名前も挙げる。それらのコマンドが何をするかは、`benitoite` の検査の範囲の外にある。
 3. `IO.All` は `File.Write` と `Process.Run` を含むものとして扱う。`uses` には、`IO.All` の代わりに個別のエフェクトを書く。
 
-`check` を通ったスクリプトは、`main` の `uses` の外の組み込みの操作を行わない。エフェクトが表すのは許される操作の種類だけであり、どのファイル・コマンド・ホストかは表さない。この版の `benitoite` は、実行中の操作を制限しない。スクリプトはエージェントのサンドボックスの中で実行する。
+`check` を通ったスクリプトは、`main` の `uses` の外の組み込みの操作を行わない。`--allow-effects` は、改めて検査した宣言上限が了承済みの集合に含まれることを確かめ、その同じ検査済みのプログラムを実行する。原子的な正規名を受け付け、取り込みの別名、`IO.All`、`*` は受け付けない。エフェクトが表すのは許される操作の種類だけであり、どのファイル・コマンド・ホストかは表さない。書き込み先や内容、`Process.Run` 内のコマンドの変更が、同じ集合に収まることもある。検査報告のハッシュは後の実行の入力を固定しない。静的検査は、意図した結果、停止性、外部操作の成功を保証しない。この版の `benitoite` は、実行中の操作を制限しない。スクリプトはエージェントのサンドボックスの中で実行する。
+
+`processShellReference` は、使わない関数や依存も含め、検査したプログラム全体にある標準の shell 関数の式の参照を表す。到達性の解析ではない。`present` はシェルが実行される証明にはならず、`absent` も外部コマンドの安全性を示さない。`Process.Run` を了承するときは実際のコマンドを見直す。
+
+`Process.run` と `Process.runAttached` は、`Command.environment` に明示した名前が `DYLD_` または `LD_` で始まる場合、ASCII の大文字小文字を区別せず、子を起動する前に `IOErrorKind.InvalidInput` で拒否する。`LD_RUN_PATH`、空値、同じ値の上書きも含む。`Process.shell` も含め、継承する変数は変えない。`Process.Run` を許せば、`env` やシェル自身がこれらの変数を設定することは依然として可能である。この入力の規則は OS の隔離の代わりにはならない。[外部のコマンドの実行](references/idioms.md#外部のコマンドの実行)を参照する。
 
 | エフェクト | 利用者に伝える内容 |
 |---|---|
@@ -178,6 +189,7 @@ end function
 | 文書 | 読むとき |
 |---|---|
 | `references/idioms.md` | よくある作業（ファイル、JSON、CSV、外部のコマンド、引数、HTTP、コレクション、レコード、テスト、数値の変換、WASM/WIT の宣言）を書くとき。 |
+| `references/inspection.md` | ハーネスを連携させるとき、または検査報告、ビルド情報、エフェクト上限、テストの集計、同梱 Skill の問い合わせを解釈するとき。 |
 | `references/common-mistakes.md` | ほかの言語の習慣（`let`、波括弧、`==`、取り込みの漏れ）から診断が出たとき。 |
 | `references/language-comparison.md` | Python、JavaScript、Rust での書き方は知っていて、Benitoite の形が必要なとき。 |
 | `references/diagnostics.md` | 診断のコード（`E0201`、`W0501` など）の意味がわからないとき。 |
@@ -186,4 +198,4 @@ end function
 
 各モジュールには、`references/stdlib/List.md` や `references/stdlib/IO.Console.md` のように、`references/stdlib/<Module>.md` という名前のファイルがある。`references/stdlib/index.md` からのリンクを辿る。
 
-（訳注）この訳のある参照の文書: [idioms.md](references/idioms.md)、[common-mistakes.md](references/common-mistakes.md)、[language-comparison.md](references/language-comparison.md)。生成の文書（[grammar.md](../../../crates/benitoite/skill/references/grammar.md)、[diagnostics.md](../../../crates/benitoite/skill/references/diagnostics.md)、[stdlib/index.md](../../../crates/benitoite/skill/references/stdlib/index.md)）は訳さないので、英語の原文を参照する。
+（訳注）この訳のある参照の文書: [idioms.md](references/idioms.md)、[inspection.md](references/inspection.md)、[common-mistakes.md](references/common-mistakes.md)、[language-comparison.md](references/language-comparison.md)。生成の文書（[grammar.md](../../../crates/benitoite/skill/references/grammar.md)、[diagnostics.md](../../../crates/benitoite/skill/references/diagnostics.md)、[stdlib/index.md](../../../crates/benitoite/skill/references/stdlib/index.md)）は訳さないので、英語の原文を参照する。

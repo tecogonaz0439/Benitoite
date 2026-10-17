@@ -1,12 +1,18 @@
 //! `benitoite test`（設計書 06-04「テストの実行」「結果の報告」、06-01「`test` のコマンドライン（初回リリース版）」、
 //! 02-11「テストの実行」）。テストは一つずつ別の実行として順に動かす。
 
+mod check_report;
 pub mod report;
+pub(super) use check_report::usage_error as check_usage_error;
+
+#[cfg(test)]
+mod tests;
 
 use crate::base::{BindingId, Span};
 use crate::bytecode::program::MainKind;
 use crate::diag::render;
 use crate::diag::{CallTrace, Diagnostic, TraceFrame};
+use crate::ir::InternalError;
 use crate::runtime::assert::AssertOp;
 use crate::runtime::report::FaultThread;
 
@@ -68,7 +74,7 @@ pub struct TestResult {
 pub struct Summary {
     pub passed: u32,
     pub failed: u32,
-    /// 検査の誤りか処理系の制限で実行しなかったファイルの数
+    /// 検査の拒否や中断などで実行しなかった入口の数
     pub files_not_run: u32,
     /// 中断の要求で終えたか
     pub interrupted: bool,
@@ -92,7 +98,7 @@ pub mod text {
     pub const CAPTURED_STDERR: &str = "---- captured stderr ----";
     /// `{outcome}` は `OUTCOME_OK` か `OUTCOME_FAILED`
     pub const RESULT: &str = "test result: {outcome}. {passed} passed; {failed} failed";
-    pub const FILES_NOT_RUN: &str = "; {count} files not run due to errors";
+    pub const FILES_NOT_RUN: &str = "; {count} files not run";
     pub const INTERRUPTED: &str = "; interrupted";
     /// 処理系の不具合の報告（`internal_diagnostic`）の段の名前
     pub const STAGE_TEST: &str = "test";
@@ -102,7 +108,7 @@ pub mod text {
     pub(super) const RELEASE_STOPPING_REASON_SEPARATOR: &str = ": ";
 }
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use super::args::PathArgs;
 use crate::base::FileId;
@@ -119,11 +125,15 @@ pub(super) fn run_test_with_externals(
     env: CliEnv,
     externals: crate::external::stats::ExecutionOptions,
 ) -> u8 {
+    if args.report.is_some() {
+        return check_report::run(args, env);
+    }
     let mut env = env;
     let format = args.diagnostics;
-    let entries = match test_entries(&args.paths) {
-        Ok(entries) => entries,
-        Err((path, error)) => {
+    let selection = select_test_entries(&args.paths);
+    let entries = match selection.completion {
+        Ok(()) => selection.entries,
+        Err(SelectionFailure { path, error, .. }) => {
             // 読めないディレクトリはテストを一つも実行せずに終える。
             let diag = DiagBuilder::new(DiagCode::E0101)
                 .arg("path", path.display().to_string())
@@ -157,18 +167,33 @@ pub(super) fn run_test_with_externals(
         format,
         max_call_stack: args.max_call_stack.unwrap_or(DEFAULT_MAX_CALL_STACK),
         deny_warnings: args.deny_warnings,
+        mode: if args.check {
+            PrepareMode::Inspect
+        } else if let Some(allowed) = &args.allow_effects {
+            PrepareMode::ExecuteLimited(allowed)
+        } else {
+            PrepareMode::Execute
+        },
         interrupt: SharedInterrupt(Rc::new(interrupt)),
         summary: Summary::default(),
         failures: Vec::new(),
         wrote_test_line: false,
         externals,
     };
-    for entry in &entries {
+    if args.allow_effects.is_some() {
+        return runner.run_limited(entries);
+    }
+    for selected in &entries {
+        let entry = &selected.entry;
         if runner.interrupt.requested() {
             runner.summary.interrupted = true;
             break;
         }
-        match runner.run_file(entry) {
+        let prepared = match runner.prepare(entry) {
+            Ok(prepared) => prepared,
+            Err(code) => return code,
+        };
+        match runner.run_prepared(entry, prepared) {
             Flow::Continue => {}
             Flow::Interrupted => {
                 runner.summary.interrupted = true;
@@ -183,29 +208,88 @@ pub(super) fn run_test_with_externals(
 /// 与えたパスから、テストするファイルの並びを作る（本章「ファイルごとの手順」の 1）。
 /// 読めないディレクトリがあれば、そのパスと理由を返す。
 pub fn test_entries(paths: &[PathBuf]) -> Result<Vec<EntrySpec>, (PathBuf, std::io::Error)> {
+    let selection = select_test_entries(paths);
+    selection
+        .completion
+        .map_err(|failure| (failure.path, failure.error))?;
+    Ok(selection
+        .entries
+        .into_iter()
+        .map(|selected| selected.entry)
+        .collect())
+}
+
+// 完了と失敗を一つの結果で表し、失敗前に選び終えた入口を呼び出し元へ渡す。
+// 探索失敗時の部分結果を使って検査や実行を始めてはならない（設計書 06-04「テストの実行」）。
+struct EntrySelection {
+    entries: Vec<SelectedEntry>,
+    completion: Result<(), SelectionFailure>,
+}
+
+struct SelectedEntry {
+    request_index: usize,
+    entry: EntrySpec,
+}
+
+struct SelectionFailure {
+    request_index: usize,
+    path: PathBuf,
+    error: std::io::Error,
+}
+
+fn select_test_entries(paths: &[PathBuf]) -> EntrySelection {
     let mut entries = Vec::new();
-    for path in paths {
+    for (request_index, path) in paths.iter().enumerate() {
         if path.is_dir() {
+            let files = match test_files(path) {
+                Ok(files) => files,
+                Err(failure) => {
+                    return EntrySelection {
+                        entries,
+                        completion: Err(SelectionFailure {
+                            request_index,
+                            path: failure.0,
+                            error: failure.1,
+                        }),
+                    };
+                }
+            };
             // 根のディレクトリを指定したディレクトリにし、表示名はディレクトリのパスに相対パスを続ける（06-04「テストの実行」）。
-            for file in test_files(path)? {
+            for file in files {
                 let relative = file.strip_prefix(path).unwrap_or(&file);
-                entries.push(EntrySpec {
-                    display_name: path.join(relative).display().to_string(),
-                    path: file.clone(),
-                    root: path.clone(),
+                entries.push(SelectedEntry {
+                    request_index,
+                    entry: EntrySpec {
+                        display_name: path.join(relative).display().to_string(),
+                        path: file.clone(),
+                        root: path.clone(),
+                    },
                 });
             }
         } else {
             match pipeline::entry_spec(path) {
-                Ok(entry) => entries.push(entry),
+                Ok(entry) => entries.push(SelectedEntry {
+                    request_index,
+                    entry,
+                }),
                 // ディレクトリでないパスでは起きない。起きたら読めないパスとして扱う。
                 Err(EntryError::NoMainFile { dir }) => {
-                    return Err((dir, std::io::Error::from(std::io::ErrorKind::NotFound)));
+                    return EntrySelection {
+                        entries,
+                        completion: Err(SelectionFailure {
+                            request_index,
+                            path: dir,
+                            error: std::io::Error::from(std::io::ErrorKind::NotFound),
+                        }),
+                    };
                 }
             }
         }
     }
-    Ok(entries)
+    EntrySelection {
+        entries,
+        completion: Ok(()),
+    }
 }
 
 // パッケージの中のソースは、そのパッケージを根として検査する。走査の段で枝を除き、
@@ -216,11 +300,20 @@ fn test_files(root: &std::path::Path) -> Result<Vec<PathBuf>, (PathBuf, std::io:
 
 /// 実行を始めるファイル `entry` のトップレベルの `@test` の関数を、宣言の順に集める（06-04「テストの実行」の
 /// 「取り込むモジュールのテストの関数は実行しない」）。
-pub fn collect_tests(checked: &CheckedProgram, entry: FileId) -> Vec<TestFn> {
+/// 入口の AST、テストの束縛か型が欠けていれば、処理系の不具合を返す。
+pub fn collect_tests(
+    checked: &CheckedProgram,
+    entry: FileId,
+) -> Result<Vec<TestFn>, InternalError> {
     let mut tests = Vec::new();
-    let Some(module) = checked.asts.iter().find(|module| module.file == entry) else {
-        return tests;
-    };
+    let module = checked
+        .asts
+        .iter()
+        .find(|module| module.file == entry)
+        .ok_or_else(|| InternalError {
+            stage: text::STAGE_TEST,
+            message: "test entry module missing from checked program".into(),
+        })?;
     for top in &module.decls {
         let Item::Fn(function) = &top.item else {
             continue;
@@ -228,16 +321,28 @@ pub fn collect_tests(checked: &CheckedProgram, entry: FileId) -> Vec<TestFn> {
         let Some(attr) = top.attrs.iter().find(|attr| attr.name.text == "test") else {
             continue;
         };
-        // 束縛か型がないのは検査を通ったプログラムでは起きない。呼び出し側が原型を引けずに処理系の不具合にする。
-        let Some(&binding) = checked.resolved.decls.get(function.id) else {
-            continue;
-        };
-        let kind = match checked.types.decl_types.get(binding) {
-            Some(scheme) if scheme.ret == Ty::Con(TyCon::Builtin(BuiltinTy::UNIT), vec![]) => {
-                MainKind::Unit
-            }
+        // 検査成功後の欠落でテストを除外すると、未実行のまま成功として報告してしまう（設計書 06-04「テストの実行」）。
+        let &binding = checked
+            .resolved
+            .decls
+            .get(function.id)
+            .ok_or_else(|| InternalError {
+                stage: text::STAGE_TEST,
+                message: "test function binding missing from checked program".into(),
+            })?;
+        let scheme = checked
+            .types
+            .decl_types
+            .get(binding)
+            .ok_or_else(|| InternalError {
+                stage: text::STAGE_TEST,
+                message: "test function scheme missing from checked program".into(),
+            })?;
+        let kind = if scheme.ret == Ty::Con(TyCon::Builtin(BuiltinTy::UNIT), vec![]) {
+            MainKind::Unit
+        } else {
             // 型検査（E0806）を通ったテストの関数の戻り値は `Unit` か `Result[Unit, String]` である。
-            _ => MainKind::Result,
+            MainKind::Result
         };
         tests.push(TestFn {
             function: function.name.text.clone(),
@@ -247,7 +352,7 @@ pub fn collect_tests(checked: &CheckedProgram, entry: FileId) -> Vec<TestFn> {
             kind,
         });
     }
-    tests
+    Ok(tests)
 }
 
 use std::rc::Rc;
@@ -261,7 +366,7 @@ use crate::diag::{DiagBuilder, DiagCode, FrameName};
 use crate::pipeline::{self, CheckOptions, CheckResult, CompileError, EntryError};
 use crate::runtime::assert::AssertTable;
 use crate::runtime::io::event::{InterruptGuard, Wakeup};
-use crate::runtime::io::services::InterruptSource;
+use crate::runtime::io::services::{InterruptSource, RunInput};
 use crate::runtime::run::{
     self as run, EXIT_CHECK, EXIT_FAILURE, EXIT_INTERNAL, EXIT_INTERRUPTED, EXIT_OK, EndKind,
     OutputTarget, RunEnv, StdinSource, TestEnd, TestTarget,
@@ -302,12 +407,34 @@ enum Flow {
 struct Prepared {
     result: CheckResult,
     compiled: Option<Result<Compiled, PrepareError>>,
+    inspection: Option<Result<TestInspection, InternalError>>,
+}
+
+struct TestInspection {
+    program: crate::cli::inspection::ProgramInspection,
+    tests: Vec<TestFn>,
+}
+
+// 非実行の検査は実行用の成果物を作らない（設計書 06-04「テストの非実行の検査」）。
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum PrepareMode<'a> {
+    Inspect,
+    Execute,
+    ExecuteLimited(&'a crate::cli::EffectLimit),
 }
 
 struct Compiled {
     program: CompiledProgram,
-    tests: Vec<TestFn>,
+    tests: Vec<PreparedTest>,
     assert: Arc<AssertTable>,
+    input: RunInput,
+}
+
+// 原型を全件確認した一覧だけを実行へ渡し、先のテストの後で欠落に気付くことを防ぐ
+// （設計書 02-11「テストの実行」）。
+struct PreparedTest {
+    test: TestFn,
+    proto: crate::bytecode::program::ProtoIdx,
 }
 
 enum PrepareError {
@@ -318,11 +445,12 @@ enum PrepareError {
     },
 }
 
-struct Runner {
+struct Runner<'a> {
     env: CliEnv,
     format: DiagFormat,
     max_call_stack: u64,
     deny_warnings: bool,
+    mode: PrepareMode<'a>,
     interrupt: SharedInterrupt,
     summary: Summary,
     /// 文章の形の失敗の詳細。ソースの表が使えるうちに文字列にして溜める。
@@ -331,7 +459,69 @@ struct Runner {
     externals: crate::external::stats::ExecutionOptions,
 }
 
-impl Runner {
+impl Runner<'_> {
+    fn run_limited(mut self, entries: Vec<SelectedEntry>) -> u8 {
+        let count = match u32::try_from(entries.len()) {
+            Ok(count) => count,
+            Err(_) => {
+                return write_internal(
+                    &self.env,
+                    self.format,
+                    &SourceTable::new(),
+                    text::STAGE_TEST,
+                    "test entry count exceeds u32",
+                    None,
+                    FaultThread::Stage,
+                );
+            }
+        };
+        let mut ready = Vec::new();
+        let mut rejected = false;
+        for selected in entries {
+            if self.interrupt.requested() {
+                return self.reject_all(count, EXIT_INTERRUPTED);
+            }
+            let entry = selected.entry;
+            let prepared = match self.prepare(&entry) {
+                Ok(prepared) => prepared,
+                Err(code) => return self.reject_all(count, code),
+            };
+            match self.validate_prepared(&entry, &prepared) {
+                Ok(true) => ready.push((entry, prepared)),
+                Ok(false) => rejected = true,
+                Err(code) => return self.reject_all(count, code),
+            }
+        }
+        // 全入口の準備から最初のファイルの実行へ進む前にも確認する
+        // （設計書 02-11「テストの実行」）。拒否の報告直前には読み直さない。
+        if self.interrupt.requested() {
+            return self.reject_all(count, EXIT_INTERRUPTED);
+        }
+        if rejected {
+            return self.reject_all(count, EXIT_CHECK);
+        }
+        // 検査した成果物だけを消費する。再探索・再検査・再コンパイルを挟まない
+        // （設計書 02-11「テストの実行」）。
+        for (entry, prepared) in ready {
+            match self.execute_prepared(&entry, prepared) {
+                Flow::Continue => {}
+                Flow::Interrupted => {
+                    self.summary.interrupted = true;
+                    break;
+                }
+                Flow::Exit(code) => return code,
+            }
+        }
+        self.finish()
+    }
+
+    fn reject_all(mut self, count: u32, code: u8) -> u8 {
+        self.summary.files_not_run = count;
+        self.summary.interrupted = code == EXIT_INTERRUPTED;
+        self.write_summary();
+        code
+    }
+
     fn internal(&self, sources: &SourceTable, stage: &str, message: &str) -> Flow {
         Flow::Exit(write_internal(
             &self.env,
@@ -344,40 +534,23 @@ impl Runner {
         ))
     }
 
-    fn run_file(&mut self, entry: &EntrySpec) -> Flow {
-        let deny_warnings = self.deny_warnings;
-        let prepared = panic_boundary::catch(|| {
-            pipeline::on_large_stack(|| panic_boundary::catch(|| prepare(entry, deny_warnings)))
-        });
-        let prepared = match prepared {
-            Ok(Ok(Ok(prepared))) => prepared,
-            Ok(Ok(Err(panic))) => {
-                return Flow::Exit(write_internal(
-                    &self.env,
-                    self.format,
-                    &SourceTable::new(),
-                    "check",
-                    &panic.message,
-                    Some(&panic),
-                    FaultThread::Stage,
-                ));
-            }
-            Err(panic) => {
-                return Flow::Exit(write_internal(
-                    &self.env,
-                    self.format,
-                    &SourceTable::new(),
-                    "check",
-                    &panic.message,
-                    Some(&panic),
-                    FaultThread::Main,
-                ));
-            }
-            Ok(Err(error)) => {
-                return self.internal(&SourceTable::new(), "check", &error.to_string());
-            }
-        };
-        let sources = Arc::clone(&prepared.result.sources);
+    fn prepare(&self, entry: &EntrySpec) -> Result<Prepared, u8> {
+        prepare_entry(
+            entry,
+            self.deny_warnings,
+            self.mode,
+            &self.env.working_directory,
+        )
+        .map_err(|diagnostic| {
+            write_report(&self.env, self.format, &SourceTable::new(), &diagnostic);
+            EXIT_INTERNAL
+        })
+    }
+
+    // 診断は準備時に一度だけ出し、上限付きでは全入口の開始条件として使う
+    // （設計書 06-04「テストの実行」）。
+    fn validate_prepared(&mut self, entry: &EntrySpec, prepared: &Prepared) -> Result<bool, u8> {
+        let sources = &prepared.result.sources;
         match report_check(
             &prepared.result,
             &self.env,
@@ -386,20 +559,43 @@ impl Runner {
             &entry.display_name,
         ) {
             Some(EXIT_CHECK) => {
-                self.summary.files_not_run = self.summary.files_not_run.saturating_add(1);
-                return Flow::Continue;
+                self.record_not_run(sources)?;
+                return Ok(false);
             }
-            Some(code) => return Flow::Exit(code),
+            Some(code) => return Err(code),
             None => {}
         }
-        let compiled = match prepared.compiled {
-            Some(Ok(compiled)) => compiled,
+        if self.mode == PrepareMode::Inspect {
+            return match &prepared.inspection {
+                Some(Ok(_)) => Ok(true),
+                Some(Err(error)) => Err(write_internal(
+                    &self.env,
+                    self.format,
+                    sources,
+                    error.stage,
+                    &error.message,
+                    None,
+                    FaultThread::Stage,
+                )),
+                None => Err(write_internal(
+                    &self.env,
+                    self.format,
+                    sources,
+                    "check",
+                    "missing inspection result",
+                    None,
+                    FaultThread::Stage,
+                )),
+            };
+        }
+        match &prepared.compiled {
+            Some(Ok(_)) => {}
             Some(Err(PrepareError::Limit(diags))) => {
                 match self.format {
                     DiagFormat::Text => {
                         let text = render::render_check_text(
-                            &diags,
-                            &sources,
+                            diags,
+                            sources,
                             Verb::Test,
                             &entry.display_name,
                             TextOptions {
@@ -409,39 +605,74 @@ impl Runner {
                         let _result = self.env.stderr.write_bytes(text.as_bytes());
                     }
                     DiagFormat::Json => {
-                        for diag in &diags {
-                            write_report(&self.env, self.format, &sources, diag);
+                        for diag in diags {
+                            write_report(&self.env, self.format, sources, diag);
                         }
                     }
                 }
-                self.summary.files_not_run = self.summary.files_not_run.saturating_add(1);
-                return Flow::Continue;
+                self.record_not_run(sources)?;
+                return Ok(false);
             }
             Some(Err(PrepareError::Internal { stage, message })) => {
-                return self.internal(&sources, stage, &message);
+                return Err(write_internal(
+                    &self.env,
+                    self.format,
+                    sources,
+                    stage,
+                    message,
+                    None,
+                    FaultThread::Stage,
+                ));
             }
-            None => return self.internal(&sources, "check", "missing compilation result"),
+            None => {
+                return Err(write_internal(
+                    &self.env,
+                    self.format,
+                    sources,
+                    "check",
+                    "missing compilation result",
+                    None,
+                    FaultThread::Stage,
+                ));
+            }
         };
-        let input = match run::run_input(entry, Vec::new(), self.env.working_directory.clone()) {
-            Ok(input) => input,
-            Err(error) => return self.internal(&sources, text::STAGE_TEST, &error.to_string()),
+        Ok(true)
+    }
+
+    fn record_not_run(&mut self, sources: &SourceTable) -> Result<(), u8> {
+        let count = self.summary.files_not_run.checked_add(1).ok_or_else(|| {
+            write_internal(
+                &self.env,
+                self.format,
+                sources,
+                text::STAGE_TEST,
+                "test entry count exceeds u32",
+                None,
+                FaultThread::Stage,
+            )
+        })?;
+        self.summary.files_not_run = count;
+        Ok(())
+    }
+
+    // 準備した成果物を消費し、検査したソースを開き直さず実行する（設計書 02-11「テストの実行」）。
+    fn run_prepared(&mut self, entry: &EntrySpec, prepared: Prepared) -> Flow {
+        match self.validate_prepared(entry, &prepared) {
+            Ok(true) if self.mode != PrepareMode::Inspect => self.execute_prepared(entry, prepared),
+            Ok(_) => Flow::Continue,
+            Err(code) => Flow::Exit(code),
+        }
+    }
+
+    fn execute_prepared(&mut self, entry: &EntrySpec, prepared: Prepared) -> Flow {
+        let sources = prepared.result.sources;
+        let Some(Ok(compiled)) = prepared.compiled else {
+            return self.internal(&sources, "check", "validated compilation result missing");
         };
-        for test in compiled.tests {
+        for PreparedTest { test, proto } in compiled.tests {
             if self.interrupt.requested() {
                 return Flow::Interrupted;
             }
-            let Some(&(_, proto)) = compiled
-                .program
-                .top_fns
-                .iter()
-                .find(|(binding, _)| *binding == test.binding)
-            else {
-                return self.internal(
-                    &sources,
-                    text::STAGE_TEST,
-                    "test function prototype missing",
-                );
-            };
             let stdout = Arc::new(Mutex::new(Vec::new()));
             let stderr = Arc::new(Mutex::new(Vec::new()));
             let end = run::run_test_with_externals(
@@ -452,7 +683,7 @@ impl Runner {
                     assert: Arc::clone(&compiled.assert),
                 },
                 RunEnv {
-                    input: input.clone(),
+                    input: compiled.input.clone(),
                     stdin: StdinSource::Empty,
                     stdout: OutputTarget::Capture(Arc::clone(&stdout)),
                     stderr: OutputTarget::Capture(Arc::clone(&stderr)),
@@ -499,11 +730,17 @@ impl Runner {
                 stdout: take_bytes(&stdout),
                 stderr: take_bytes(&stderr),
             };
-            if result.failure.is_some() {
-                self.summary.failed = self.summary.failed.saturating_add(1);
+            let count = if result.failure.is_some() {
+                &mut self.summary.failed
             } else {
-                self.summary.passed = self.summary.passed.saturating_add(1);
-            }
+                &mut self.summary.passed
+            };
+            // 形式1の整数へ収まらない実数を、飽和した件数の成功として報告しない
+            // （設計書 06-04「結果の報告」）。
+            let Some(next) = count.checked_add(1) else {
+                return self.internal(&sources, text::STAGE_TEST, "test count exceeds u32");
+            };
+            *count = next;
             self.write_result(&entry.display_name, &result, &sources);
         }
         Flow::Continue
@@ -536,6 +773,22 @@ impl Runner {
     }
 
     fn finish(self) -> u8 {
+        if self.mode != PrepareMode::Inspect {
+            self.write_summary();
+        }
+        // 06-01「`test` のコマンドライン（初回リリース版）」の終了状態の表の、当たる行のうち最も上の行。
+        if self.summary.interrupted {
+            EXIT_INTERRUPTED
+        } else if self.summary.files_not_run > 0 {
+            EXIT_CHECK
+        } else if self.summary.failed > 0 {
+            EXIT_FAILURE
+        } else {
+            EXIT_OK
+        }
+    }
+
+    fn write_summary(&self) {
         let mut output = String::new();
         match self.format {
             DiagFormat::Text => {
@@ -558,21 +811,52 @@ impl Runner {
             }
         }
         let _result = self.env.stdout.write_bytes(output.as_bytes());
-        // 06-01「`test` のコマンドライン（初回リリース版）」の終了状態の表の、当たる行のうち最も上の行。
-        if self.summary.interrupted {
-            EXIT_INTERRUPTED
-        } else if self.summary.files_not_run > 0 {
-            EXIT_CHECK
-        } else if self.summary.failed > 0 {
-            EXIT_FAILURE
-        } else {
-            EXIT_OK
-        }
     }
 }
 
+// 報告の形式によらず、同じ段の境界と破棄の位置を使う（設計書 02-11「テストの実行」）。
+fn prepare_entry(
+    entry: &EntrySpec,
+    deny_warnings: bool,
+    mode: PrepareMode<'_>,
+    working_directory: &Path,
+) -> Result<Prepared, Box<Diagnostic>> {
+    let prepared = panic_boundary::catch(|| {
+        pipeline::on_large_stack(|| {
+            panic_boundary::catch(|| prepare(entry, deny_warnings, mode, working_directory))
+        })
+    });
+    let diagnostic = match prepared {
+        Ok(Ok(Ok(prepared))) => return Ok(prepared),
+        Ok(Ok(Err(panic))) => runtime_report::internal_diagnostic(
+            "check",
+            &panic.message,
+            Some(&panic),
+            FaultThread::Stage,
+        ),
+        Err(panic) => runtime_report::internal_diagnostic(
+            "check",
+            &panic.message,
+            Some(&panic),
+            FaultThread::Main,
+        ),
+        Ok(Err(error)) => runtime_report::internal_diagnostic(
+            "check",
+            &error.to_string(),
+            None,
+            FaultThread::Stage,
+        ),
+    };
+    Err(Box::new(diagnostic))
+}
+
 // 検査からコンパイルまで（設計書 06-04「テストの実行」）。大きなスタックのスレッドで行う。
-fn prepare(entry: &EntrySpec, deny_warnings: bool) -> Prepared {
+fn prepare(
+    entry: &EntrySpec,
+    deny_warnings: bool,
+    mode: PrepareMode<'_>,
+    working_directory: &Path,
+) -> Prepared {
     let checked = pipeline::check(
         entry,
         &crate::modules::RealFs,
@@ -581,13 +865,41 @@ fn prepare(entry: &EntrySpec, deny_warnings: bool) -> Prepared {
             deny_warnings,
         },
     );
+    let inspection = if mode == PrepareMode::Inspect {
+        if let (Some(program), Some(file), None) = (
+            checked.program.as_ref(),
+            checked.entry,
+            prelude_error(&checked),
+        ) {
+            Some(collect_tests(program, file).and_then(|tests| {
+                crate::cli::inspection::inspect_tests(program, &tests)
+                    .map(|program| TestInspection { program, tests })
+            }))
+        } else {
+            None
+        }
+    } else {
+        None
+    };
     let mut compiled = None;
-    if let (Some(program), Some(file), None) = (
-        checked.program.as_ref(),
-        checked.entry,
-        prelude_error(&checked),
-    ) {
-        compiled = Some(compile_tests(program, file, &checked.sources));
+    if mode != PrepareMode::Inspect
+        && let (Some(program), Some(file), None) = (
+            checked.program.as_ref(),
+            checked.entry,
+            prelude_error(&checked),
+        )
+    {
+        compiled = Some(compile_tests(
+            program,
+            file,
+            &checked.sources,
+            entry,
+            working_directory,
+            match mode {
+                PrepareMode::ExecuteLimited(allowed) => Some(allowed),
+                PrepareMode::Inspect | PrepareMode::Execute => None,
+            },
+        ));
     }
     Prepared {
         result: CheckResult {
@@ -597,6 +909,7 @@ fn prepare(entry: &EntrySpec, deny_warnings: bool) -> Prepared {
             program: None,
         },
         compiled,
+        inspection,
     }
 }
 
@@ -604,8 +917,38 @@ fn compile_tests(
     program: &CheckedProgram,
     file: FileId,
     sources: &Arc<SourceTable>,
+    entry: &EntrySpec,
+    working_directory: &Path,
+    allowed: Option<&crate::cli::EffectLimit>,
 ) -> Result<Compiled, PrepareError> {
-    let tests = collect_tests(program, file);
+    let tests = collect_tests(program, file).map_err(|error| PrepareError::Internal {
+        stage: error.stage,
+        message: error.message,
+    })?;
+    if let Some(allowed) = allowed {
+        let diagnostics = tests
+            .iter()
+            .map(|test| {
+                crate::cli::inspection::function_contract(
+                    program,
+                    test.binding,
+                    &test.function,
+                    test.location,
+                )
+                .map(|contract| crate::cli::effect_limit::check(&contract, allowed))
+                .map_err(|error| PrepareError::Internal {
+                    stage: error.stage,
+                    message: error.message,
+                })
+            })
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .flatten()
+            .collect::<Vec<_>>();
+        if !diagnostics.is_empty() {
+            return Err(PrepareError::Limit(diagnostics));
+        }
+    }
     let assert = AssertTable::build(program).map_err(|message| PrepareError::Internal {
         stage: text::STAGE_TEST,
         message,
@@ -621,10 +964,33 @@ fn compile_tests(
             message: error.message,
         },
     })?;
+    let input =
+        run::run_input(entry, Vec::new(), working_directory.to_path_buf()).map_err(|error| {
+            PrepareError::Internal {
+                stage: text::STAGE_TEST,
+                message: error.to_string(),
+            }
+        })?;
+    let tests = tests
+        .into_iter()
+        .map(|test| {
+            let proto = program
+                .top_fns
+                .iter()
+                .find(|(binding, _)| *binding == test.binding)
+                .map(|(_, proto)| *proto)
+                .ok_or_else(|| PrepareError::Internal {
+                    stage: text::STAGE_TEST,
+                    message: "test function prototype missing".into(),
+                })?;
+            Ok(PreparedTest { test, proto })
+        })
+        .collect::<Result<Vec<_>, PrepareError>>()?;
     Ok(Compiled {
         program,
         tests,
         assert: Arc::new(assert),
+        input,
     })
 }
 

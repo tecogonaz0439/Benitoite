@@ -26,6 +26,10 @@ pub const FILES: &[SkillFile] = &[
         text: include_str!("../../../../skill/references/idioms.md"),
     },
     SkillFile {
+        path: "references/inspection.md",
+        text: include_str!("../../../../skill/references/inspection.md"),
+    },
+    SkillFile {
         path: "references/language-comparison.md",
         text: include_str!("../../../../skill/references/language-comparison.md"),
     },

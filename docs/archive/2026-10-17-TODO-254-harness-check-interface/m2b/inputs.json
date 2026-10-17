@@ -1,0 +1,1801 @@
+{
+  "recordVersion": 1,
+  "basis": {
+    "head": "1107a8f66b58b17352a344a60f0788c01e3cba30",
+    "branch": "mod254/M2b",
+    "manifest": "../m2a/inputs.json"
+  },
+  "changes": [
+    {
+      "path": "CHANGELOG.md",
+      "action": "Unreleasedを0.0.7 (San Benito)へ改題。予定表現を提供時点へ直しソースのみの版と明示。0.0.6以前の履歴を保持。",
+      "beforeSha256": "af0be9ed26e4ca0504fdb8b2a315c818cc4506b23d0f624b310760aa5c86ffb5",
+      "afterSha256": "7cfd97678516db6d82fe659e19c819116f407d553cb8f0ed1596793f9d305dc4"
+    },
+    {
+      "path": "Cargo.lock",
+      "action": "name=benitoiteの自身の版だけ更新。依存のchecksumと解決結果を保持。",
+      "beforeSha256": "5bfee5ed31b006d71b4e3b34bbcbc33930124a1b1526dc0e9a859ab3adbcbafa",
+      "afterSha256": "ed1b1ad40e9aff7ed6850f775c11dbdf698ba5945149d03050b1c9dfced9a0b8"
+    },
+    {
+      "path": "crates/benitoite/Cargo.toml",
+      "action": "自身の公開版を一度だけ更新。",
+      "beforeSha256": "63f10abb37debad14eb5d83eceb5feefbe4d88d929a1c11812b50792fe08198f",
+      "afterSha256": "4ed62ed331f7272e36cf46f8f21a420fe2615b3ccb698d3d09acc0410e97cd2e"
+    },
+    {
+      "path": "crates/benitoite/src/cli/tools/package/tests.rs",
+      "action": "通常入力とその厳密な期待値の0.0.6を0.0.7へ。動的な版と他の契約は保持。",
+      "beforeSha256": "d1e837897bf2ef23425489a06bc35030c702c2cb4b17824579bcc390492e1acd",
+      "afterSha256": "04e4293032023404426c18ff57df0369558923f6de53d7c4b431e9e3225c4af0"
+    },
+    {
+      "path": "crates/benitoite/src/external/tests.rs",
+      "action": "通常入力とその厳密な期待値の0.0.6を0.0.7へ。動的な版と他の契約は保持。",
+      "beforeSha256": "49b66aa9ef16c15f87bd0c25a451893950ac776938dd2d7618f8b505173cd701",
+      "afterSha256": "cf66d8121bf5ee2816b9fe753b674991e2de6e4ca03be6db8f05d7fd7788cfe5"
+    },
+    {
+      "path": "crates/benitoite/src/modules/hash.rs",
+      "action": "通常入力とその厳密な期待値の0.0.6を0.0.7へ。正の固定ハッシュもhashPairsに従い更新。",
+      "beforeSha256": "3f4d87639c825966ac711141405122c5cfc303e12c3337de505e5cd02ca2d157",
+      "afterSha256": "395114a21e9213edda181d2b4bbfd108a0ef68c8729278ea60c1710560a14e3c"
+    },
+    {
+      "path": "crates/benitoite/src/modules/tests.rs",
+      "action": "実版の境界表・主文・全notes/helpsを入力別に更新。872行以降の通常宣言11件は0.0.7へ。ゼロの負のhashは保持。詳細はinputs.md。",
+      "beforeSha256": "16d30c78be1affcc24f87fea3f61e984e65b99a42421da04b95148be34d8dad9",
+      "afterSha256": "e1e21cd4a94e83ada43471c8cd591615f0925cbeb4014a435de8181166d31c53"
+    },
+    {
+      "path": "crates/benitoite/src/typeck/pattern_ext.rs",
+      "action": "通常入力とその厳密な期待値の0.0.6を0.0.7へ。動的な版と他の契約は保持。",
+      "beforeSha256": "933fe5b70e7692bef696783c5a028b31c8365cb579e34f6a664a6c762473c913",
+      "afterSha256": "ed8bba89692d2d672829d4394cabb534117e2cc29f6f88b23b18f9441eab6c8b"
+    },
+    {
+      "path": "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "fafe4377cd3eec4cf8982639c031ffcb724473075c755007924d6cfbeed64849",
+      "afterSha256": "1fe24604fa4e01378977d9270e307da5a81193d10ada2fca68a7928550d2930c"
+    },
+    {
+      "path": "crates/benitoite/testdata/external/self-package/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "fafe4377cd3eec4cf8982639c031ffcb724473075c755007924d6cfbeed64849",
+      "afterSha256": "1fe24604fa4e01378977d9270e307da5a81193d10ada2fca68a7928550d2930c"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/config-declaration/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "527575eacf8e48bf48d3e3215510fe23f7db947cd18e2120120664b7af2803ea",
+      "afterSha256": "3aeb91b4dcd6ffc659777a6871fde87e69f1694edfd22d3c71d9c696f2fb3c71"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d6c-extensible-external/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "7713925c5196290c4aac437ee4d8f9dba49a9f13c624163d4f257c433d11d9a2",
+      "afterSha256": "5e964a101d3f3d30564fe674981bb3af55d2c7c34fdb734031adbb84e47eef36"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d6c-extensible-missing/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "7713925c5196290c4aac437ee4d8f9dba49a9f13c624163d4f257c433d11d9a2",
+      "afterSha256": "5e964a101d3f3d30564fe674981bb3af55d2c7c34fdb734031adbb84e47eef36"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d8-extensible-run/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "14757e23effe03e7775750ace070345b0bf4f391605174c55776b2144e6ad04a",
+      "afterSha256": "d45a95571b99277f6c436ab1a0c065d99d86a82f918b2a0dc718de4f9fae598c"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d8-extensible.files/dep/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "fce0acfff973692b0bafa4fb0af86a2ee133a1366eece2f6f6b1a92f9b5918b8",
+      "afterSha256": "e29a7255fb5ab86ecfcf6baa56612cf76a5c46b5a8be89b65a9b7a9625f6f04a"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "1080b378e7243367089d7c38e30b9204fba148a079bc41bd3a97c63a4abff64b",
+      "afterSha256": "fb70faeed8da3aae65f6410c8b2e35277906aa533b28dcffa0137252ef4c255d"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "bac93844b85932c8926cb6f98aa0ce552911e85bfdfd985e4ba18ae1bebaee4e",
+      "afterSha256": "57aa4094258f6808ff8b6ea0556d53dcdc829944f41452644b648204604f106b"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "7eed749afc8f92deedfc50706299ec01cbb5cea28b8ac759a03526672514065f",
+      "afterSha256": "966c9bc92c55b2e370dd46c55141d3a1806d250b970a2efaf93f43da08571cf5"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-settings.diag.json",
+      "action": "未来99.0.0の入力・診断コード・位置を保持し、主文の実際の処理系の版だけ更新。",
+      "beforeSha256": "fa20e490dda30ccbfc23d2e010febf959080ec519d56079cea42551942b5cd7c",
+      "afterSha256": "f0ea308c3d6427fa5df1cf3d8cd44ff50c2278922f6974be21df7c6d5f3c681f"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "14ac00c45327d124140c6b586741ed8025804b14af8720e90cc11640e6b1c7a3",
+      "afterSha256": "0b100cbe208c9a84248a4022dc0245fe9efbf5f77862151c88ebc78fbf1caa05"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/extensible.files/dep/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "fce0acfff973692b0bafa4fb0af86a2ee133a1366eece2f6f6b1a92f9b5918b8",
+      "afterSha256": "e29a7255fb5ab86ecfcf6baa56612cf76a5c46b5a8be89b65a9b7a9625f6f04a"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "2dd2e5e74287ea92be973d3dcdbf1e44f63a5455ac64b552453f88095a420bb2",
+      "afterSha256": "856296734d99f66b73d9e9f8fa2ac68201ccfc9c6229ef5864bea71139448c9d"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/hash-match/package.bnt",
+      "action": "hashPairsのhashkitの新しい正の固定値へ。入口にはlanguageを追加しない。",
+      "beforeSha256": "b7f12a363d9a5e2c50eff5e867859d858fe7ca29bacc4e17e50d8d981dd28aec",
+      "afterSha256": "e6f5de37c9e5d90d35b2714694968436d660a9c7c4d9322e13db99fadb073e78"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+      "afterSha256": "9cd5127d71c8680caaf247786f7384e06e9a637c9bc447f0562eb8485658c9f7"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header-overlap/main.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "408e04e5b88ecbe54ba1e7ad3b46e1bc0f45227df77251b2a00325dc66023ebd",
+      "afterSha256": "997b7eac5618a82554293d38641049d48b4c3b520ad27a4a1e47846dd3d3cf3f"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header-overlap/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "9ae8acc4ddb9bb9832c6d480c0d8464f87e9be933955f08ddd810073530b16b0",
+      "afterSha256": "3551c65f926198516666885d5eb7c7a6a5769b31239bb7662e2d83ee8a2c7e8c"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+      "afterSha256": "9cd5127d71c8680caaf247786f7384e06e9a637c9bc447f0562eb8485658c9f7"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header/main.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "408e04e5b88ecbe54ba1e7ad3b46e1bc0f45227df77251b2a00325dc66023ebd",
+      "afterSha256": "997b7eac5618a82554293d38641049d48b4c3b520ad27a4a1e47846dd3d3cf3f"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/imported-header/Helper.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "4055a344308a9e88a8d790651c4c4f2571b86d842648eb897338d5c656268c5e",
+      "afterSha256": "1d37cd02da4534b22dc0b1aabc962d04ca1419dfe673a2a3f90db6e9c1616f04"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+      "afterSha256": "9cd5127d71c8680caaf247786f7384e06e9a637c9bc447f0562eb8485658c9f7"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "184ba467cd3cf7b3e824787aa47e23eabb149da6d45d41a878f4736d9385d06a",
+      "afterSha256": "aa8a86054b9420b64612b6dccaee643ba060dd25813660cd45d55df329c9a848"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "479191a351897a20c1e51f451e022584033f6996cbc97b59aa9232a1f1a21762",
+      "afterSha256": "feb7daa46e01979645d4c9b5e59db2df688ac3983b45eb1db1a7cc4148ad8fec"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "f733e315969f381d1e059eee85999420465b8d47b1c4fcebab9ed4000f340991",
+      "afterSha256": "ebb79f28b58ad4407d94cc826c10d9e4a5a0e99db1fd6b25d1886bdb1328b84c"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "152e57ba957a4cb1691e5d14a15117a093cd008245f185edd93e3f896fe40f13",
+      "afterSha256": "3effbaa748bb80475f44315f3310d7925865feb424927f86dfb5c987dbf56353"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "0fc9efea9de5c62fa0fb355f4013789b8b3a6af82b27f74f8ddc0825630bcb6a",
+      "afterSha256": "ebddec09d23c6f503d683079512708773fba9cac819b1707ed535fcd26ae07f0"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "75eb05aca5f355d137f430f3b8ab7b10c51e4ec3e798817275a903b8f1fa183c",
+      "afterSha256": "f47d6489f5c31ace768d582279c81006e3b17a37ee17ccecf8dcb8538db1735f"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/newer-config.diag.json",
+      "action": "未来99.0.0の入力・診断コード・位置を保持し、主文の実際の処理系の版だけ更新。",
+      "beforeSha256": "1029e51c18f6b3f4dc0ae34c5e25f69c455f8db8cff7c1b15a0ccd7bbf4db190",
+      "afterSha256": "fccbd2cc5e6f25014a881a52f5429fa229e7ae9d97aeed2dd6c7a1ab60941db4"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/newer-language.diag.json",
+      "action": "未来99.0.0の入力・診断コード・位置を保持し、主文の実際の処理系の版だけ更新。",
+      "beforeSha256": "cdfbe2666220f6b8db566797bcb5aa85522f8305b48280681e0e27a64a902d0e",
+      "afterSha256": "fb1dc72c7d5d7f0402f40ab9301e999fd0c79a81d02c0ec61354970381305247"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/older-language.diag.json",
+      "action": "0.0.4の入力と既存0.0.5/6の全文を保持。0.0.7のnote/helpを各配列の末尾へ一件ずつ追加。主文・位置・edits:[]を保持。",
+      "beforeSha256": "881afcb5fed2f1858776c77eff7a91db24dce4a13c152de19f8db83f5c1cbdce",
+      "afterSha256": "8c688805472bf7132e494b87d86b493bf6d093408873cd818c7491873976d4c2"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-as-root/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+      "afterSha256": "9cd5127d71c8680caaf247786f7384e06e9a637c9bc447f0562eb8485658c9f7"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+      "afterSha256": "9cd5127d71c8680caaf247786f7384e06e9a637c9bc447f0562eb8485658c9f7"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-dependencies/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "cd5c093e26aff2e67e1f69c6fd7e030dfad3342389f57c148bbe12ca35477be2",
+      "afterSha256": "ee2281b8ef9d855993090ab410873efdcf373979b3ca311bb718b909dd8a46b1"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "c7cf68e066dbee1f3f38cf784972b6384af7fafd6dafe564fb426e175e21ddae",
+      "afterSha256": "e81e0c00b1391f919e161fc801ae4203489be264b42aaa4185839560c6291ffd"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "62cd39aa7702831e6d99373842449ff4b89ada7ba99808710829e3241c19aec0",
+      "afterSha256": "b150fe01c7c7836d9a79f063513308e981b34040ee7d832400acbbc421832bf0"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "290e5250a2ee38e2aaba07da6f502c40ba24195879fb9cf029de4982269ceac1",
+      "afterSha256": "9cd5127d71c8680caaf247786f7384e06e9a637c9bc447f0562eb8485658c9f7"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-config/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "0664ec5822bc3eed53c26d06508e27ac83589d37d99c93d680f7d072996b6e04",
+      "afterSha256": "29b87bc997d214e37559285532231637a052af6d4c786f4eebfefe1b29a6fff7"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "8612de2408c65b801b4b6b8772d1faa0c9bfcd77d435f7b601493e3930701218",
+      "afterSha256": "406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt",
+      "action": "通常の宣言を0.0.7へ。別の誤りを調べる入力でも元の診断まで到達させる。",
+      "beforeSha256": "c080341fb17f19df2547833a8fa645aee8f8983cd4025cefe03b98d28f0bea85",
+      "afterSha256": "277258366773004c682a75be8f773eea17d975b808f6fef6c8af4561c4d7484b"
+    },
+    {
+      "path": "crates/benitoite/tests/cli_process.rs",
+      "action": "通常入力とその厳密な期待値の0.0.6を0.0.7へ。動的な版と他の契約は保持。",
+      "beforeSha256": "c92f6277cf72c488455e532c6e41a8950daa9036adee31281758194752823161",
+      "afterSha256": "01c5833240d3accfbed8f343efee20b0605c585b47f940477163a728196a2d24"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/named.rs",
+      "action": "通常入力とその厳密な期待値の0.0.6を0.0.7へ。動的な版と他の契約は保持。",
+      "beforeSha256": "f55b70899232e7d70c76c4b5123583b4e35a88a96ea70577abbce74a65698f39",
+      "afterSha256": "64923d68f6dfac54cc989ebb5581d6b870d690a3c4385fda32c88e1ebe9c65b9"
+    },
+    {
+      "path": "crates/benitoite/tests/package_command.rs",
+      "action": "通常入力とその厳密な期待値の0.0.6を0.0.7へ。正の固定ハッシュもhashPairsに従い更新。",
+      "beforeSha256": "6a7a6b23797143ec6a674d418e4eaf77ea28f2c2b2e6c1c6401d632367fa5b8e",
+      "afterSha256": "fe942564a52d0b3251b113bd839df9a4741e009321e164fe284bd939a23e5fff"
+    },
+    {
+      "path": "crates/benitoite/tests/spec_examples.rs",
+      "action": "通常入力とその厳密な期待値の0.0.6を0.0.7へ。動的な版と他の契約は保持。",
+      "beforeSha256": "cb17dbf294b13f6a2945774dc03774dac8539c4fc1ca79e842f7ff1e2ae72293",
+      "afterSha256": "652d7dbac648c27c6ace55f300514f5ed7781c050d50afd8a6f797b200bd1429"
+    },
+    {
+      "path": "crates/benitoite/tests/test_command.rs",
+      "action": "通常入力とその厳密な期待値の0.0.6を0.0.7へ。動的な版と他の契約は保持。",
+      "beforeSha256": "ae3a8283086538d929371f0de087e5dc8f16eddbe8ae93d282b86b79960e0104",
+      "afterSha256": "40f7b791a6e2e9dfb0586320dd72888ff197da62c2d10dd2ca8dfe128743cc64"
+    },
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "action": "通常のヘッダ例の宣言を0.0.7へ。構文とfenceの種類を保持。",
+      "beforeSha256": "1e91e40345a9478f1c472af7f79e9e1ab365accabf93e0a2f8af9760bd29ada9",
+      "afterSha256": "e11750825ffd76f080c58fbec2ffc5bafd112d456a9157e1f05922656d270ebe"
+    },
+    {
+      "path": "docs/design/01-spec/01-03-names-modules.md",
+      "action": "既存0.0.5/6の変更の後に0.0.7の互換性の変更を追記。CLIやJSONの実装事情は書かない。",
+      "beforeSha256": "6a3dc33a807d04b08b2fbf51a24b7473cd1356b7bcd4f91392d1f0870ebfb509",
+      "afterSha256": "4f719d7f388ae1dce39cd86522913e3fdf49622c8e10c4853731def117528204"
+    },
+    {
+      "path": "docs/design/06-tooling/06-09-packages.md",
+      "action": "二つの通常宣言を0.0.7へ。既存の互換性表へ0.0.7を追加。",
+      "beforeSha256": "6ab92d7ed74612af0a6f18769e27f60ba71ee2b316f2ee260569986388d36f97",
+      "afterSha256": "802f915b364123f98604b93f3fcb5f535ade6d1eb841fe92b0d862d31ad35c86"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "action": "現行版、version JSON例、三つの通常宣言、版境界、ソースのみの提供範囲を0.0.7へ。公開タグの実在は主張しない。",
+      "beforeSha256": "7aca9486416b96e73c2796e3201499baf92f0d3e4fb092d4a14c24a0386d2bc3",
+      "afterSha256": "d878c2a3730a4a118e2cbb7586e98c303c92d166853898c1d35d7b9d771c976b"
+    },
+    {
+      "path": "docs/reference/install.md",
+      "action": "現行版、配布名・展開名の例、version表示、ソースのみの提供範囲を0.0.7へ。バイナリ提供済みとは書かない。",
+      "beforeSha256": "bd973b033dd067b640f34a64081aab1b6f555015c2e7c85affeaf23bfb361cb6",
+      "afterSha256": "be51037ee898fdf90bf6e5a021a3c22be851ceeed3274bac62a72b32722e7c44"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/hash-mismatch.diag.json",
+      "action": "R30: ゼロの不一致入力を保ち、共有する依存の更新後のcomputedハッシュだけを更新。",
+      "beforeSha256": "e2fcfc1d3ff889ba83de972eb08061879a406708a8a0cbd900d12c9e84cfc45e",
+      "afterSha256": "6ebb8a6b56e44c19bf729c6c30255bc076f3a347df4116a4730298189aa1e070"
+    }
+  ],
+  "hashPairs": [
+    {
+      "name": "hashkit",
+      "expectationFile": "crates/benitoite/testdata/packages/hash-match/package.bnt",
+      "value": "sha256:5d12e17f6e1522ec49837e741d7b5a28145b94f6aa6ab95c6b72b683c534dd65",
+      "summary": "b6eab88d0e8ae6bcd83665b5a7687dab90f7c16aa48208345fe715e29df96824  Value.bnt\n856296734d99f66b73d9e9f8fa2ac68201ccfc9c6229ef5864bea71139448c9d  package.bnt\n"
+    },
+    {
+      "name": "modules-hash-fixture",
+      "expectationFile": "crates/benitoite/src/modules/hash.rs",
+      "value": "sha256:dfa96801c59264be45ff137fedbfd84bf176c3941b66c751cadbca0692c82fec",
+      "summary": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb  A/Sub.bnt\n4d00967e353d87ca937a76b4b1dafe6a72fd872e4f8370534972ec111cb86c0e  COPYING\nadc37366f403835c1470ab2df93d3837d4719372fc1ef8593d922e06f033f8b2  License.md\n552bab6864c7a7b69a502ed1854b9245c0e1a30f008aaa0b281da62585fdb025  Z.bnt\n406b10dc3fcc99486749f766d68d23f349b059cba744396d18c2807f3ee46e81  package.bnt\n13550350a8681c84c861aac2e5b440161c2b33a3e4f302ac680ca5b686de48de  readme.md\n3cc34474f2adb05aa3e99c9dde5a2066c1bf292310ba8c6026f9027ae11d74d7  wasm/x.wasm\n"
+    },
+    {
+      "name": "package-command-words",
+      "expectationFile": "crates/benitoite/tests/package_command.rs",
+      "value": "sha256:ec9bf643e50197c98e9aa736bb08ef612cf253cb682ef4936f800cf57dacbbed",
+      "summary": "52573934e713a6f05acffa3bd7aae060036defb25d61a387f1acea6aab456c87  Value.bnt\n2093ed41be6ecb6b38129b473f2717989e8355f4eb08996d6fa7b63afa72dcfc  package.bnt\n"
+    }
+  ],
+  "negativeHashDiagnostic": {
+    "path": "crates/benitoite/testdata/packages/hash-mismatch.diag.json",
+    "expectedHashUnchanged": true,
+    "computedHash": "sha256:5d12e17f6e1522ec49837e741d7b5a28145b94f6aa6ab95c6b72b683c534dd65",
+    "decision": "R30"
+  },
+  "unchangedSingleSourceHash": {
+    "expectationFile": "crates/benitoite/tests/test_command.rs",
+    "function": "check_report_preserves_contracts_descriptions_locations_and_source_identity",
+    "bytesHex": "40746573740a66756e6374696f6e206f6d69747465642829202d3e20556e69742075736573204173736572742e436865636b0a20204173736572742e6661696c28226d757374206e6f742072756e22290a656e642066756e6374696f6e0a4074657374282222290a66756e6374696f6e20656d7074792829202d3e20556e69740a656e642066756e6374696f6e0a407465737428226465736372697074696f6e22290a66756e6374696f6e206465736372696265642829202d3e20556e6974207573657320494f2e416c6c0a656e642066756e6374696f6e0a",
+    "sha256": "14c52fc2838594adb45ee1ec151457617d8e5ed2347dbb1ba70d6570ced86307"
+  },
+  "generated": [
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "sha256": "1ace7a99e51d11efb8417447b1596b2ed5818ba92c20874adfc8df3af3cc7752",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/grammar.md",
+      "sha256": "62a0f6e45bc352a7d632e1c890e48a04ea5e29359181c99f16b5c6f313f7589c",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Assert.md",
+      "sha256": "5468c14307aef4ca5019fae92f39b1aa45b9d5cd6b16a4b0bd8207ca79e0fef1",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Boolean.md",
+      "sha256": "10c1cafca2b48135dd58961eda57b9416cc2410191f47a98e2001658caf31aff",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Byte.md",
+      "sha256": "3446f2d7c8e8ccecb48ea35e46fddf81caf8b9647bdf6721ae088a58a75cb8ac",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/ByteOrder.md",
+      "sha256": "7bc07d964cec806702a816a063f7381f60e2fc805e796093327b47005eeb4b35",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Bytes.md",
+      "sha256": "3bd793933531a0706ff6ae64a9bc6e8c87cfddb524d789c53ce54140f28c889b",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Character.md",
+      "sha256": "faeef16299566864ad70cc29ce90c0a18ef50a8cda06bc2b58bf33f22f17e5aa",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Csv.md",
+      "sha256": "693ca628e557c630a7922a02f53fb4fcc4f4ecb963db05f261a1140a1d0abbad",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Decimal.md",
+      "sha256": "2217dfd0f9b49179e9f43c4f64363ba7fe7c3e9a590417dfebfbabe1144ff9e2",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Encoding.md",
+      "sha256": "9d078b0762b5e98f94e2d1d6c044044e047b6f2ef54df84b2e681d9b5118c8b1",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Float.md",
+      "sha256": "0ef9de5c9270c233fcd8384efc8216bb33cd079171b635680aedee50919cf6ea",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Float32.md",
+      "sha256": "4f369c46ba97fd471931ba9af1bbfe446da18f7c22aa27d4c5055e47b57d9e16",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Float64.md",
+      "sha256": "a16ee47274a2768a91fe9a1df8a72a4cb6057f86942fabfae3409daecee04ecd",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Hash.md",
+      "sha256": "5bbe080f3444a5149f4c31eb79d668b06a47be334c67f8495b3b119c9991a370",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.Clock.md",
+      "sha256": "1b3c0a57aec24265d7fcd9d121a1d2ccf46f0a39e90ab147becd6cb2d04e6ae4",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.Console.md",
+      "sha256": "f722003034ffbce26210f15078bb021c5247dc70987694ec8b317fb6ff436790",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.File.md",
+      "sha256": "77d03cb131b783bbae2d4d959327e09b449e8e2e48f0c4e5896f23f063613353",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.Process.md",
+      "sha256": "4488e6411ebbdb18964862a6ff552c399e302e85eef0172c1313d76070e23372",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.Random.md",
+      "sha256": "f39ae350df497047e86ca8bfdbcc566c1ed983a890290b421a608dd187b7af84",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IO.md",
+      "sha256": "6e13ad09ac2b01341a5d7dfcdf91d79f82563d28bd53120c90be28643a833428",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IOError.md",
+      "sha256": "b5a7ffc14835a88ad6afcf926eca46f9c9ae7511f4965c8d524411f0cc5ccb04",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/IOErrorKind.md",
+      "sha256": "1a2dbfc47078aa2ecd1a8ea2d2d18f2ff9cf38c854af10e680e3db0e1d9a55b8",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer.md",
+      "sha256": "8cfbb32f0f0af43f760a9a3095d4bd62bb5f4cc05444ee100d4935e4f4208ee7",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer16.md",
+      "sha256": "b42079686df37e09f7d1d5053bfb3e279472cd1715334f48f5c5007ab28d9a4e",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer32.md",
+      "sha256": "26f33f348e55850b8ac269abc385c1eaf308d242b458dedd5ff48f3fcc1382dd",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer64.md",
+      "sha256": "7014a704f84f5db745bef376a38a8c3c9403cbfc8ee3edfeef5c7411e7282e3f",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Integer8.md",
+      "sha256": "13a7ed10d046726e3bf4bd654819adddc1a7d4f14b341e9573e5ec406895254a",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Json.md",
+      "sha256": "cc61489a3205afc7503bca7e5671ffb114cb89534e16ffe59d00845560e08e71",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Lazy.md",
+      "sha256": "38e10aa8f36e84e566ff439400579ea40291997da1b6393f2ead872eae99340e",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/List.md",
+      "sha256": "389f01733e5026bd58ea10e13124e6d29e78939befb0e9ebd9c6224a72f9f65c",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Map.md",
+      "sha256": "64d92790aee9a7f65a33cb73b97398b9407efeb56bad1f6eccbf6b36211649f6",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Network.Http.md",
+      "sha256": "83f51ebe6fa7b064c39bc8c5c73480a7a28b8c607ced1b103268416a5b9f8b3e",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/NetworkError.md",
+      "sha256": "208e5424859f0a707f5595a2f4834b41a44b07a5922b29a84de27f7e27b5ace4",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/NetworkErrorKind.md",
+      "sha256": "ce2b2897aa363b5e6b1d2443dc165ae1a695b63aa6cf6e39904fd2e9356b33b4",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Option.md",
+      "sha256": "388f463cd3778345536456c34d511269122182ebc287bcb86925958a33cd6339",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Pair.md",
+      "sha256": "f6762f8d30455603492cc296884ca8487fca035593ab629bc12d76fc9c49c7c6",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Path.md",
+      "sha256": "b20aa94be640b31fda2ae38a783723562634f4ed2e6b4829fed7f9b8409d1c8f",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Reference.md",
+      "sha256": "3e734933b9e8780792d61c05b89a8efa0dc711ca8553d5c5461ec7a7c7aed10a",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Regex.md",
+      "sha256": "04023a2a07622399210bb237e7c10b149a650d124dabc8d4788d148f08f53d4b",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Result.md",
+      "sha256": "98d1dc3768f9c4b12efbc223334d7242a34744e6315994cd7440ea467a562f0f",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/RoundingMode.md",
+      "sha256": "feb898c94697b81ae9b146320909638c27def892020f7ac3ae988e186913f67b",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Set.md",
+      "sha256": "3e1257d005a678db0b8d8bac41c6eff0975eb343119d26fefd16c7b4c85c213f",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/String.md",
+      "sha256": "2d887afe8f31c03fc622686dd103cb949cbc18f7f142a1e57b5392570195333f",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Task.md",
+      "sha256": "b3cfd40c332bcb57c6efae3a8ecacffac10a3d12471d73cb1f454c7f3c84507b",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/TaskGroup.md",
+      "sha256": "87a6be5ce7d0ece4c6f57ab2be4892f4938fdbeb2e1dff530f49307ca2cd6c0c",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Time.md",
+      "sha256": "d03c48332fbd330bbad6e5bd32642782bc7e1b5d89023d66e2c83838097dd6bc",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Trait.md",
+      "sha256": "6007ebb704bbebc6933e4f9c6584ad9e076910ae1df37228a002b4fc4456f3e7",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Triple.md",
+      "sha256": "562a3bc79b0314ab98f4ed3911494478134d180938e067fba84b4b6ffe6b94d4",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger.md",
+      "sha256": "f9dea60fed00e56155cf4986bcdd99d1e3c60a6e0dc4e53832ac95168881f5ff",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger16.md",
+      "sha256": "483dfffd4afcbaf61950845a43dffbf843c975cb87ec45f20f10078a7d473019",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger32.md",
+      "sha256": "e1f0f97f8576a7678777afbc0abe035c6204b025c9b92a24855b31915e1fb9f2",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger64.md",
+      "sha256": "af1b9a1401fe20589dc2deacf912c5cdd7e48472c32e28cc885bd049d69e31d7",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/UnsignedInteger8.md",
+      "sha256": "aaac3799475c126dcf5578389c5f4e0f27c48069bae63cdef578720901866a5d",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/index.md",
+      "sha256": "9a980294cf478f7e996976a8c25ca12ad480a2ff4cc344b65f1ef719b5b71d35",
+      "changed": false
+    },
+    {
+      "path": "crates/benitoite/src/cli/tools/skill/bundle.rs",
+      "sha256": "d1a2c64d4a3edab7a758c5d34e3f67fc0a89bb5a1d8b54525a2705de1d548259",
+      "changed": false
+    }
+  ],
+  "oldVersionSearch": {
+    "command": "git grep -n '0\\.0\\.6'",
+    "scope": "実施時にGitが追跡するファイル。新規m2b記録は集計外。取り込み後のm2b記録はwork-records。",
+    "unclassifiedFiles": 0,
+    "unintendedOrdinaryInputs": 0,
+    "counts": {
+      "archive": {
+        "files": 26,
+        "matchingLines": 227
+      },
+      "changelog": {
+        "files": 1,
+        "matchingLines": 5
+      },
+      "deferred-m3a": {
+        "files": 2,
+        "matchingLines": 18
+      },
+      "deferred-m3b": {
+        "files": 4,
+        "matchingLines": 4
+      },
+      "deferred-response": {
+        "files": 1,
+        "matchingLines": 9
+      },
+      "formatter-tests": {
+        "files": 3,
+        "matchingLines": 4
+      },
+      "past-changes": {
+        "files": 3,
+        "matchingLines": 4
+      },
+      "version-tests": {
+        "files": 3,
+        "matchingLines": 14
+      },
+      "work-records": {
+        "files": 29,
+        "matchingLines": 192
+      }
+    },
+    "files": [
+      {
+        "path": "CHANGELOG.md",
+        "matchingLines": [
+          14,
+          27,
+          29,
+          33,
+          38
+        ],
+        "category": "changelog",
+        "reason": "旧版の節4行と、新版の移行前の宣言の説明1行。"
+      },
+      {
+        "path": "crates/benitoite/src/modules/package.rs",
+        "matchingLines": [
+          410,
+          438,
+          446,
+          457,
+          468,
+          496,
+          498,
+          506
+        ],
+        "category": "version-tests",
+        "reason": "currentを0.0.6/7等に固定した合成の版境界と、過去の変更の全文期待値。"
+      },
+      {
+        "path": "crates/benitoite/src/modules/tests.rs",
+        "matchingLines": [
+          32,
+          68,
+          69,
+          75,
+          81
+        ],
+        "category": "version-tests",
+        "reason": "実版での旧0.0.6のE0908と、最初の変更版・過去の変更の全文期待値。"
+      },
+      {
+        "path": "crates/benitoite/testdata/fmt/header.bnt",
+        "matchingLines": [
+          2
+        ],
+        "category": "formatter-tests",
+        "reason": "整形だけの旧版の綴りを維持する入力。"
+      },
+      {
+        "path": "crates/benitoite/testdata/fmt/header.formatted",
+        "matchingLines": [
+          2
+        ],
+        "category": "formatter-tests",
+        "reason": "整形だけの旧版の綴りを維持する厳密な出力。"
+      },
+      {
+        "path": "crates/benitoite/testdata/packages/older-language.diag.json",
+        "matchingLines": [
+          1
+        ],
+        "category": "version-tests",
+        "reason": "旧0.0.4からの移行時にも列挙する0.0.6の変更。0.0.7も末尾に追加済み。"
+      },
+      {
+        "path": "crates/benitoite/tests/fmt_command.rs",
+        "matchingLines": [
+          479,
+          485
+        ],
+        "category": "formatter-tests",
+        "reason": "旧版の設定ファイルを整形できる契約の入力と出力。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/README.md",
+        "matchingLines": [
+          9,
+          19
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/answers.md",
+        "matchingLines": [
+          37,
+          48
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/c3/results.md",
+        "matchingLines": [
+          62
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/d1/results.md",
+        "matchingLines": [
+          36
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/d2a/results.md",
+        "matchingLines": [
+          13
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/d3/cli-observations.json",
+        "matchingLines": [
+          19,
+          29,
+          39,
+          49,
+          59,
+          68,
+          78,
+          89,
+          109,
+          121,
+          132,
+          195,
+          206
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/d3/contracts.md",
+        "matchingLines": [
+          26,
+          45
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/d3/results.md",
+        "matchingLines": [
+          9
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/decisions.md",
+        "matchingLines": [
+          211,
+          283,
+          287,
+          440,
+          453,
+          655,
+          657
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/design.md",
+        "matchingLines": [
+          54,
+          462
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/harness-response.md",
+        "matchingLines": [
+          5,
+          22,
+          34,
+          111,
+          149,
+          191,
+          315,
+          328,
+          350
+        ],
+        "category": "deferred-response",
+        "reason": "R28の旧版から採取した実出力例。M3b/F2で最終ビルドから再採取する。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/m1/inputs.md",
+        "matchingLines": [
+          26,
+          27,
+          50,
+          73,
+          74,
+          84,
+          92
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/m1/results.md",
+        "matchingLines": [
+          9,
+          15,
+          21,
+          22,
+          43,
+          52,
+          53
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/m2a/inputs.json",
+        "matchingLines": [
+          4,
+          12,
+          13,
+          15,
+          96,
+          102,
+          103,
+          127,
+          129,
+          130,
+          149,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          160,
+          161,
+          162,
+          163,
+          164,
+          166,
+          167,
+          168,
+          169,
+          175,
+          176,
+          177,
+          178,
+          179,
+          181,
+          182,
+          183,
+          186,
+          188,
+          189,
+          193,
+          200,
+          204,
+          206,
+          207,
+          209,
+          213,
+          214,
+          215,
+          216,
+          218,
+          219,
+          220,
+          221,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          237,
+          241,
+          256,
+          260,
+          261
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/m2a/inputs.md",
+        "matchingLines": [
+          17,
+          29,
+          32,
+          33,
+          34,
+          36,
+          42,
+          43,
+          44,
+          45,
+          46,
+          53,
+          57,
+          61,
+          62,
+          63,
+          67,
+          85,
+          144,
+          163,
+          166,
+          193,
+          203,
+          214
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/m2a/results.md",
+        "matchingLines": [
+          13,
+          21
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/p1/contracts.md",
+        "matchingLines": [
+          13,
+          26
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/p1/inputs.md",
+        "matchingLines": [
+          35,
+          36,
+          38,
+          40,
+          41,
+          44,
+          47,
+          54,
+          59,
+          87,
+          137
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/p1/results.md",
+        "matchingLines": [
+          16,
+          57
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/p2/acceptance.md",
+        "matchingLines": [
+          21
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/plan.md",
+        "matchingLines": [
+          92,
+          299,
+          300,
+          315,
+          316
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/questions-summary.md",
+        "matchingLines": [
+          75,
+          111
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/request.md",
+        "matchingLines": [
+          9,
+          12,
+          27,
+          50,
+          64,
+          78,
+          80
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/reviews/G5.md",
+        "matchingLines": [
+          13,
+          44
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/reviews/G6.md",
+        "matchingLines": [
+          3,
+          56
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/study/build-skill-formal.md",
+        "matchingLines": [
+          5
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/study/cli.md",
+        "matchingLines": [
+          14,
+          34
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/study/harness.md",
+        "matchingLines": [
+          11,
+          17
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/v2/results.md",
+        "matchingLines": [
+          22,
+          48
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/2026-10-17-TODO-254-harness-check-interface/z6/cli-observations.json",
+        "matchingLines": [
+          27,
+          37,
+          47,
+          57,
+          67,
+          76,
+          86,
+          97,
+          117,
+          129,
+          140,
+          204,
+          215
+        ],
+        "category": "work-records",
+        "reason": "依頼・判断・計画・調査・検査や実出力の過去の記録、移行前の基準値。通常実行の入力ではない。"
+      },
+      {
+        "path": "docs/archive/2026-10-14-TODO-247-lambda-and-named-arguments/n1-implementation.md",
+        "matchingLines": [
+          143
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-14-TODO-247-lambda-and-named-arguments/n35/implementation.md",
+        "matchingLines": [
+          28
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-14-TODO-247-lambda-and-named-arguments/n35/version-smoke.json",
+        "matchingLines": [
+          24
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-14-TODO-247-lambda-and-named-arguments/reviews/G8b-report.md",
+        "matchingLines": [
+          10
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/README.md",
+        "matchingLines": [
+          5
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/a4/results.md",
+        "matchingLines": [
+          88
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/b13/results.md",
+        "matchingLines": [
+          28
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/decisions.md",
+        "matchingLines": [
+          228,
+          277,
+          279,
+          283,
+          287,
+          289,
+          1125,
+          1133
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/design.md",
+        "matchingLines": [
+          363,
+          375,
+          381,
+          383,
+          389,
+          391
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m5/diagnostics.md",
+        "matchingLines": [
+          30
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m6/results.md",
+        "matchingLines": [
+          8,
+          13,
+          24,
+          26,
+          34,
+          35,
+          59
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m6a/01-release.patch",
+        "matchingLines": [
+          13,
+          15,
+          19,
+          24,
+          44,
+          54
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m6a/02-current-inputs.patch",
+        "matchingLines": [
+          8,
+          13,
+          22,
+          27,
+          38,
+          47,
+          56,
+          67,
+          78,
+          87,
+          96,
+          103,
+          110,
+          119,
+          128,
+          137,
+          142,
+          151,
+          160,
+          171,
+          179,
+          186,
+          194,
+          203,
+          211,
+          218,
+          226,
+          233,
+          240,
+          248,
+          256,
+          264,
+          271,
+          278,
+          286,
+          291,
+          298,
+          305,
+          313,
+          320,
+          327,
+          335,
+          345,
+          353,
+          361,
+          371,
+          379,
+          387,
+          395,
+          403,
+          411,
+          419,
+          426,
+          434,
+          442,
+          450,
+          457,
+          465,
+          473,
+          481,
+          488,
+          496,
+          503,
+          510,
+          517,
+          524,
+          531,
+          538,
+          545,
+          553,
+          561,
+          568,
+          578,
+          584,
+          595,
+          602,
+          613,
+          622,
+          631,
+          641,
+          642,
+          651,
+          657,
+          660,
+          669,
+          678,
+          689,
+          700,
+          709,
+          720,
+          731,
+          742,
+          751,
+          760,
+          771,
+          780,
+          789,
+          798,
+          807,
+          816,
+          825,
+          836,
+          845,
+          853,
+          860,
+          870,
+          871,
+          874,
+          881,
+          890,
+          898,
+          907,
+          916,
+          925,
+          934,
+          943,
+          952,
+          962,
+          971,
+          979,
+          986,
+          996,
+          997,
+          1000,
+          1007,
+          1016
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m6a/03-boundaries-and-hashes.patch",
+        "matchingLines": [
+          9,
+          19,
+          21,
+          32,
+          50,
+          65,
+          66,
+          76,
+          94,
+          99,
+          104
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m6a/results.md",
+        "matchingLines": [
+          27,
+          28,
+          29,
+          30,
+          31,
+          48
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m6a/review.md",
+        "matchingLines": [
+          5,
+          17,
+          21,
+          61,
+          62,
+          63,
+          65,
+          66,
+          70
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m7/results.md",
+        "matchingLines": [
+          1,
+          3,
+          9,
+          10,
+          13,
+          14,
+          45,
+          49
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m8/audit.py",
+        "matchingLines": [
+          50
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m8/results.md",
+        "matchingLines": [
+          9
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/m8/review.md",
+        "matchingLines": [
+          10
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/plan.md",
+        "matchingLines": [
+          41,
+          472,
+          484,
+          488,
+          489,
+          502,
+          510
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/results.md",
+        "matchingLines": [
+          3,
+          18,
+          33,
+          79,
+          98
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/reviews/G8-report.md",
+        "matchingLines": [
+          1,
+          7,
+          13,
+          14,
+          15,
+          19,
+          20,
+          27,
+          36,
+          41,
+          45,
+          66,
+          85
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/reviews/preflight-plan.md",
+        "matchingLines": [
+          87
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/study/migration-and-size.md",
+        "matchingLines": [
+          56,
+          58
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/archive/2026-10-15-TODO-018_027_072_251-keywords-open-types-try-or/study/open-types.md",
+        "matchingLines": [
+          79
+        ],
+        "category": "archive",
+        "reason": "読み取り専用の過去資料。原文を保持する。"
+      },
+      {
+        "path": "docs/design/01-spec/01-03-names-modules.md",
+        "matchingLines": [
+          278
+        ],
+        "category": "past-changes",
+        "reason": "0.0.6で登録した互換性の変更の説明。"
+      },
+      {
+        "path": "docs/design/06-tooling/06-01-cli.md",
+        "matchingLines": [
+          72,
+          73
+        ],
+        "category": "past-changes",
+        "reason": "診断とtestResultsの形式1に含まれる0.0.6の追加内容。"
+      },
+      {
+        "path": "docs/design/06-tooling/06-09-packages.md",
+        "matchingLines": [
+          41
+        ],
+        "category": "past-changes",
+        "reason": "0.0.6で登録した互換性の変更の説明。"
+      },
+      {
+        "path": "docs/ja/reference/benitoite.md",
+        "matchingLines": [
+          3,
+          19,
+          100,
+          1177,
+          1189,
+          1207,
+          1239,
+          1250
+        ],
+        "category": "deferred-m3a",
+        "reason": "日本語訳は版の数字も含めM3aで英語正へ合わせる。M2bでは変更しない。"
+      },
+      {
+        "path": "docs/ja/reference/install.md",
+        "matchingLines": [
+          3,
+          5,
+          33,
+          40,
+          46,
+          58,
+          59,
+          61,
+          67,
+          149
+        ],
+        "category": "deferred-m3a",
+        "reason": "日本語訳は版の数字も含めM3aで英語正へ合わせる。M2bでは変更しない。"
+      },
+      {
+        "path": "docs/ja/skill/SKILL.md",
+        "matchingLines": [
+          3
+        ],
+        "category": "deferred-m3b",
+        "reason": "日本語訳は版の数字も含めM3bで英語正へ合わせる。M2bでは変更しない。"
+      },
+      {
+        "path": "docs/ja/skill/references/common-mistakes.md",
+        "matchingLines": [
+          3
+        ],
+        "category": "deferred-m3b",
+        "reason": "日本語訳は版の数字も含めM3bで英語正へ合わせる。M2bでは変更しない。"
+      },
+      {
+        "path": "docs/ja/skill/references/idioms.md",
+        "matchingLines": [
+          3
+        ],
+        "category": "deferred-m3b",
+        "reason": "日本語訳は版の数字も含めM3bで英語正へ合わせる。M2bでは変更しない。"
+      },
+      {
+        "path": "docs/ja/skill/references/language-comparison.md",
+        "matchingLines": [
+          3
+        ],
+        "category": "deferred-m3b",
+        "reason": "日本語訳は版の数字も含めM3bで英語正へ合わせる。M2bでは変更しない。"
+      }
+    ]
+  },
+  "deferred": [
+    "M3a: docs/ja/referenceの版・本文・例",
+    "M3b: docs/ja/skillの版・本文とinspectionの新訳",
+    "M3b/F2: harness-responseの最終ビルドからの再採取",
+    "オーケストレータ: check.shとgc-stress、取り込みとコミット"
+  ]
+}

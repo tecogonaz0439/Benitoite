@@ -392,6 +392,25 @@ impl BuiltinEffectId {
     }
 }
 
+/// 組み込みのエフェクトを報告・上限の解析・型表示に共通の正規名へ写す。
+/// `IO.All` は型表示のために保ち、原子的な契約への混入は呼び出し側が拒否する
+/// （設計書 06-01「main の非実行の検査報告」、02-05「出力」）。
+pub(crate) fn effect_name(id: BuiltinEffectId) -> Option<String> {
+    let definition = id.def()?;
+    let module = match definition.module {
+        ["IO" | "Network", rest @ ..] if !rest.is_empty() => rest,
+        module => module,
+    };
+    Some(
+        module
+            .iter()
+            .copied()
+            .chain(std::iter::once(definition.name))
+            .collect::<Vec<_>>()
+            .join("."),
+    )
+}
+
 /// 組み込みのエフェクトの表。位置が番号である。
 pub const BUILTIN_EFFECTS: &[BuiltinEffectDef] = &[
     BuiltinEffectDef {

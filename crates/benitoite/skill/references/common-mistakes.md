@@ -14,6 +14,22 @@ How the code examples in this file are checked (tests/skill_examples.rs):
 
 Habits from other languages that `benitoite check` rejects, with the first line of the report and the correct way to write it. When a report has a code you do not know, look it up in `diagnostics.md`.
 
+## Confusing inspection, diagnostics, and execution
+
+- `benitoite check` requires `main`. For a test file, use `benitoite test --check` to inspect without running, or add `--report=json` for its contracts. `test --report=json` alone is a usage error; it does not run tests with a different result format.
+- `--diagnostics=json` alone selects diagnostic JSON Lines. `check --report=json` and `test --check --report=json` instead write one object on standard output with diagnostics inside it. Explicit `--diagnostics=text` conflicts with reports. Require a complete object with a known version and kind, `status: "ok"`, `complete: true`, and exit status 0 before accepting an aggregate. A null or missing contract is unknown, not pure.
+- E0512 means a freshly checked declared bound exceeds `--allow-effects`. Inspect and review the added effects before changing the allowed set; do not automatically copy the rejected set into an approval. Use canonical atomic names without whitespace or duplicates. `IO.All`, aliases, and `*` are not allowed. Tests need `Assert.Check` in that set even when no external operation is declared; `IO.All` excludes it and HTTP effects. A pure set is `--allow-effects=`.
+- With an effect limit, a preparation failure in any test entry prevents all tests from starting. Zero passed and zero failed is not enough to establish success: check exit status, summary presence, `filesNotRun`, and `interrupted`. Non-executing inspection has no test-summary line.
+- A source hash does not freeze the next execution, and an accepted effect set does not fix files, commands, or their contents. A shell reference is not proof of invocation or reachability; an absent reference does not mean external commands cannot start a shell. Keep isolation in the harness or OS.
+
+See [Inspecting before execution](inspection.md) for the complete workflow and partial-result rules.
+
+## Setting a forbidden command environment variable
+
+`Process.run` and `Process.runAttached` return `Result.Error` with `IOErrorKind.InvalidInput` before starting a child when `Command.environment` explicitly sets a name beginning with `DYLD_` or `LD_` (ASCII case-insensitive). This includes `LD_RUN_PATH` used by build tools, empty values, and resetting the same inherited value. Static checking may still succeed: the failure is a Result value, not a new E diagnostic. Using `or die` turns it into the existing die report and status 1.
+
+Review and remove the explicit setting or choose a supported operation. Do not recommend moving it to the parent's environment or using a shell to bypass the rule. Inherited variables are unchanged, and allowing `Process.Run` also permits a command such as `env` or a shell to set variables itself. This rule does not provide process isolation. See [Running external commands](idioms.md#running-external-commands).
+
 ## Contents
 
 - [`let` instead of `bind`](#let-instead-of-bind)

@@ -16,11 +16,15 @@ pub enum PathTool {
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct PathArgs {
     pub diagnostics: DiagFormat,
+    /// 非実行の検査を単一 JSON で報告する（`test` だけ）
+    pub report: Option<crate::cli::ReportFormat>,
+    /// 実行前に照合する原子的なエフェクトの上限（`test` だけ）
+    pub allow_effects: Option<crate::cli::EffectLimit>,
     /// `--max-call-stack` の値（バイト。`test` だけ）。指定がなければ `None`
     pub max_call_stack: Option<u64>,
     /// `--deny-warnings`（`test` だけ）
     pub deny_warnings: bool,
-    /// `--check`（`fmt` だけ）
+    /// `--check`（`test` は非実行の検査、`fmt` は変更の有無の確認）
     pub check: bool,
     /// 与えた順のパス（一つ以上）
     pub paths: Vec<PathBuf>,
@@ -28,10 +32,14 @@ pub struct PathArgs {
 
 /// 使い方の誤りの文（設計書 02-10「文言の言語」）。ほかの誤りの文は `cli::text` を使う。
 pub mod text {
+    /// 報告は非実行の検査でだけ受ける
+    pub const REPORT_REQUIRES_CHECK: &str = "`--report=json` requires `test --check`";
     /// パスが一つもない
     pub const MISSING_PATH: &str = "missing path";
     /// そのサブコマンドが受け付けないオプション。`{name}` はオプション、`{command}` はサブコマンドの名前
     pub const OPTION_NOT_FOR_COMMAND: &str = "option `{name}` is not accepted by `{command}`";
+    /// テストを実行するときだけ意味を持つオプション
+    pub const OPTION_NOT_FOR_CHECK: &str = "option `{name}` is not accepted with `test --check`";
 }
 
 use std::ffi::OsString;
@@ -43,12 +51,16 @@ use crate::cli::text as cli_text;
 /// `benitoite test|fmt` の後の引数を解釈する。
 /// 使い方の誤りは、`cli::text::USAGE_ERROR` の `{detail}` に埋める 1 行を返す。
 pub fn parse_path_args(tool: PathTool, args: Vec<OsString>) -> Result<PathArgs, String> {
-    let command = match tool {
-        PathTool::Test => "test",
-        PathTool::Fmt => "fmt",
-    };
+    if tool == PathTool::Test {
+        // WasmOptions を返さない入口では、指定を受け付けて捨てない。
+        return parse_test_options(args, false)
+            .map(|(parsed, _)| parsed)
+            .map_err(|error| error.detail);
+    }
     let mut parsed = PathArgs {
         diagnostics: DiagFormat::Text,
+        report: None,
+        allow_effects: None,
         max_call_stack: None,
         deny_warnings: false,
         check: false,
@@ -65,19 +77,21 @@ pub fn parse_path_args(tool: PathTool, args: Vec<OsString>) -> Result<PathArgs, 
         let (name, setting) = value
             .split_once('=')
             .map_or((value.as_str(), None), |(n, v)| (n, Some(v)));
-        let accepted: &[&str] = match tool {
-            PathTool::Fmt => &["--diagnostics", "--check"],
-            PathTool::Test => &["--diagnostics", "--max-call-stack", "--deny-warnings"],
-        };
+        let accepted = ["--diagnostics", "--check"];
         if !accepted.contains(&name) {
             return Err(
                 if matches!(
                     name,
-                    "--diagnostics" | "--max-call-stack" | "--deny-warnings" | "--check"
+                    "--diagnostics"
+                        | "--max-call-stack"
+                        | "--deny-warnings"
+                        | "--check"
+                        | "--report"
+                        | "--allow-effects"
                 ) {
                     text::OPTION_NOT_FOR_COMMAND
                         .replace("{name}", name)
-                        .replace("{command}", command)
+                        .replace("{command}", "fmt")
                 } else {
                     cli_text::UNKNOWN_OPTION.replace("{name}", &value)
                 },
@@ -90,10 +104,6 @@ pub fn parse_path_args(tool: PathTool, args: Vec<OsString>) -> Result<PathArgs, 
         match (name, setting) {
             ("--diagnostics", Some("text")) => parsed.diagnostics = DiagFormat::Text,
             ("--diagnostics", Some("json")) => parsed.diagnostics = DiagFormat::Json,
-            ("--max-call-stack", Some(size)) if parse_size(size).is_some() => {
-                parsed.max_call_stack = parse_size(size);
-            }
-            ("--deny-warnings", None) => parsed.deny_warnings = true,
             ("--check", None) => parsed.check = true,
             _ => {
                 return Err(cli_text::BAD_VALUE
@@ -160,26 +170,138 @@ pub(super) fn collect_bnt_files(
 #[cfg(test)]
 mod tests;
 
-// PathArgs の契約を保ち、外部呼び出しの設定だけを別に返す。
-pub(in crate::cli) fn parse_test_args(
+/// 誤りの後も走査して認識した報告モードと指定パス。
+pub(in crate::cli) struct TestParseError {
+    pub detail: String,
+    pub report: Option<crate::cli::ReportFormat>,
+    pub paths: Vec<PathBuf>,
+}
+
+/// 全オプションの範囲を走査してから報告の形式を確定する。
+pub(in crate::cli) fn parse_test_invocation(
     args: Vec<OsString>,
-) -> Result<(PathArgs, crate::cli::WasmOptions), String> {
-    let mut remaining = Vec::new();
+) -> Result<(PathArgs, crate::cli::WasmOptions), TestParseError> {
+    parse_test_options(args, true)
+}
+
+fn parse_test_options(
+    args: Vec<OsString>,
+    accept_wasm: bool,
+) -> Result<(PathArgs, crate::cli::WasmOptions), TestParseError> {
+    let mut parsed = PathArgs {
+        diagnostics: DiagFormat::Text,
+        report: None,
+        allow_effects: None,
+        max_call_stack: None,
+        deny_warnings: false,
+        check: false,
+        paths: Vec::new(),
+    };
     let mut wasm = crate::cli::WasmOptions::default();
     let mut seen = std::collections::BTreeSet::new();
-    for arg in args {
+    let mut detail = None;
+    let mut report = None;
+    let mut remaining = args.into_iter();
+    while let Some(arg) = remaining.next() {
         let value = arg.to_string_lossy();
+        if !value.starts_with('-') {
+            parsed.paths.push(PathBuf::from(arg));
+            continue;
+        }
         let (name, setting) = value
             .split_once('=')
             .map_or((value.as_ref(), None), |(n, v)| (n, Some(v)));
-        if crate::cli::WasmOptions::accepts(name) {
+        let separate = if setting.is_none() && crate::cli::takes_option_value(name) {
+            remaining.next()
+        } else {
+            None
+        };
+        if name == "--report" && setting == Some("json") {
+            report = Some(crate::cli::ReportFormat::Json);
+        }
+        let result = (|| {
+            if !matches!(
+                name,
+                "--diagnostics"
+                    | "--report"
+                    | "--max-call-stack"
+                    | "--deny-warnings"
+                    | "--check"
+                    | "--allow-effects"
+            ) && !(accept_wasm && crate::cli::WasmOptions::accepts(name))
+            {
+                return Err(cli_text::UNKNOWN_OPTION.replace("{name}", &value));
+            }
             if !seen.insert(name.to_owned()) {
                 return Err(cli_text::DUPLICATE_OPTION.replace("{name}", name));
             }
-            wasm.parse(name, setting)?;
-        } else {
-            remaining.push(arg);
+            if crate::cli::WasmOptions::accepts(name) {
+                return wasm.parse(name, setting);
+            }
+            match (name, setting) {
+                ("--diagnostics", Some("text")) => parsed.diagnostics = DiagFormat::Text,
+                ("--diagnostics", Some("json")) => parsed.diagnostics = DiagFormat::Json,
+                ("--report", Some("json")) => parsed.report = Some(crate::cli::ReportFormat::Json),
+                ("--max-call-stack", Some(size)) if parse_size(size).is_some() => {
+                    parsed.max_call_stack = parse_size(size)
+                }
+                ("--deny-warnings", None) => parsed.deny_warnings = true,
+                ("--check", None) => parsed.check = true,
+                ("--allow-effects", setting) => {
+                    let separate = separate.as_ref().map(|value| value.to_string_lossy());
+                    let setting = setting
+                        .or(separate.as_deref())
+                        .ok_or_else(|| cli_text::MISSING_OPTION_VALUE.replace("{name}", name))?;
+                    parsed.allow_effects = Some(crate::cli::effect_limit::parse(setting)?);
+                }
+                _ => {
+                    return Err(cli_text::BAD_VALUE
+                        .replace("{name}", name)
+                        .replace("{value}", setting.unwrap_or("")));
+                }
+            }
+            Ok(())
+        })();
+        if let Err(error) = result {
+            detail.get_or_insert(error);
         }
     }
-    Ok((parse_path_args(PathTool::Test, remaining)?, wasm))
+    if parsed.report.is_some() && !parsed.check {
+        detail.get_or_insert_with(|| text::REPORT_REQUIRES_CHECK.into());
+    }
+    if parsed.report.is_some()
+        && seen.contains("--diagnostics")
+        && parsed.diagnostics == DiagFormat::Text
+    {
+        detail.get_or_insert_with(|| cli_text::REPORT_TEXT_DIAGNOSTICS.into());
+    }
+    if parsed.check {
+        let execution = if parsed.max_call_stack.is_some() {
+            Some("--max-call-stack")
+        } else {
+            seen.iter()
+                .find(|name| crate::cli::WasmOptions::accepts(name))
+                .map(String::as_str)
+        };
+        if let Some(name) = execution {
+            detail.get_or_insert_with(|| text::OPTION_NOT_FOR_CHECK.replace("{name}", name));
+        }
+        if seen.contains("--allow-effects") {
+            detail.get_or_insert_with(|| {
+                text::OPTION_NOT_FOR_CHECK.replace("{name}", "--allow-effects")
+            });
+        }
+    }
+    if parsed.paths.is_empty() {
+        detail.get_or_insert_with(|| text::MISSING_PATH.into());
+    }
+    if let Some(detail) = detail {
+        Err(TestParseError {
+            detail,
+            report,
+            paths: parsed.paths,
+        })
+    } else {
+        Ok((parsed, wasm))
+    }
 }

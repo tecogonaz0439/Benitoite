@@ -13,7 +13,7 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.6`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.7`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md).
 
@@ -68,7 +68,7 @@ benitoite run hello.bnt
 
 `check` prints nothing when the script has no errors and no warnings. `run` checks the script again and then calls `main`.
 
-The first line imports the module `Console`. The signature of `main` says, after `uses`, that it writes to the console (`Console.Write`). A function that does something outside the program must list it this way, and so must every function that calls it. Reading the `uses` of `main` tells you everything a script may do.
+The first line imports the module `Console`. The signature of `main` says, after `uses`, that it writes to the console (`Console.Write`). A function that does something outside the program must list it this way, and so must every function that calls it. Reading the `uses` of `main` tells you the kinds of operations a script may perform; it does not tell you their targets or results.
 
 ## 2. The command line
 
@@ -79,9 +79,12 @@ benitoite check [options] <script>
 benitoite test  [options] <path>...
 benitoite fmt   [options] <path>...
 benitoite skill install|uninstall [--user | --project] [--agent <name>]...
+benitoite skill list [--format=text|json]
+benitoite skill show [--format=text|json] <logical-name>
 benitoite package add|update|move ...
 benitoite --help
 benitoite --version
+benitoite --version=json
 benitoite --licenses
 ```
 
@@ -91,10 +94,11 @@ benitoite --licenses
 | `check` | Checks the script without running it. |
 | `test` | Runs the test functions in the given files, or in all `.bnt` files under the given directories, except `package.bnt` and nested packages. See [Tests](#16-tests). |
 | `fmt` | Rewrites the given files, or all `.bnt` files under the given directories, in the standard layout. See [Formatting](#17-formatting). |
-| `skill` | Writes the bundled Agent Skill to the places where coding agents read skills, or removes it. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
+| `skill` | Installs or removes the bundled Agent Skill, or lists and retrieves its embedded documents without installing them. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.6`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.7`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version=json` | Prints version, build, and supported-format information as one JSON object. It must be the first argument and accepts no following arguments. |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
 `<script>` is a file, or a directory that contains `main.bnt`. The file name and its extension are not checked, except that `package.bnt` is a settings file and cannot be the starting file. The directory of the script is the *root directory*: the script can import modules from the root directory and below it, from the standard library ([Modules](#12-modules)), and from declared local dependencies (see [section 21](#21-experimental-packages-and-external-functions)). `benitoite` reads `package.bnt` in the root directory itself as a settings file; it does not search parent directories or the working directory.
@@ -113,14 +117,18 @@ On Linux, do not write `#!/usr/bin/env benitoite run`: Linux passes everything a
 
 ### Options
 
-Options come after the command and before the script path.
+For `run` and `check`, options come after the command and before the script path (or before the script when `run` is omitted). For `test` and `fmt`, options may also follow paths. Unknown options, repeated options, missing or invalid values, and options that the command does not accept are usage errors with exit status 2. Value options in this table require `=`, except that `--allow-effects` also accepts a separate value.
 
 | Option | Meaning | Default |
 |---|---|---|
 | `--diagnostics=text` or `--diagnostics=json` | Format of diagnostics and error reports. For `test`, also the format of the test results. | `text` |
 | `--max-call-stack=<size>` | Limit for nested calls in `run` and `test` (for `test`, per test), written as an integer with `KiB`, `MiB`, or `GiB`, such as `512MiB`. | `1GiB` |
 | `--deny-warnings` | Treat warnings as errors in `check`, `run`, and `test`. | off |
-| `--check` | `fmt` only: report the files that would change, without rewriting them. | off |
+| `--report=json` | For `check` and `test --check`, write a single JSON inspection report to standard output. See [Inspection reports](#inspection-reports). | off |
+| `--allow-effects=<names>` or `--allow-effects <names>` | For `run` and executing `test`, compare each entry function's declared effects against an allowed set before execution. See [Effect limits before execution](#effect-limits-before-execution). | no limit |
+| `--check` | For `test`, check without running tests. For `fmt`, report the files that would change, without rewriting them. | off |
+
+The four `--wasm-*` options for `run` and executing `test` are described under [Execution limits and statistics](#execution-limits-and-statistics).
 
 ### Exit status of `run` and `check`
 
@@ -128,15 +136,138 @@ Options come after the command and before the script path.
 |---:|---|
 | 0 | `check` found no errors, or `main` returned `()` or `Result.Ok(())`. |
 | 1 | `main` returned `Result.Error`, the program stopped with a runtime error or ran out of a resource, or a command-line argument is not valid UTF-8. |
-| 2 | The script has check errors (or warnings with `--deny-warnings`), cannot run because of a limit of `benitoite`, or cannot be read; or the command line is wrong. |
+| 2 | The script has check errors (or warnings with `--deny-warnings`), exceeds `--allow-effects` (`E0512`), cannot run because of a limit of `benitoite`, or cannot be read; or the command line is wrong. |
 | 3 | An internal error of `benitoite`. Please report it. |
 | 130 | `run` received `SIGINT` or `SIGTERM`. It cancelled all tasks, released resources, and flushed output before ending. |
 
 A script that calls `Process.exit(n)` ends with `n` (0 to 255). Because 1, 2, and 3 can come from `Process.exit` too, a tool that runs scripts can tell them apart by whether standard error contains a report in the format of `benitoite`.
 
-Diagnostics, runtime errors, the message of `Result.Error` returned by `main`, and usage errors go to standard error. Standard output contains only what the script writes. If the reader of standard output or standard error goes away (a closed pipe), the program stops with a runtime error and exit status 1.
+For `run` and `check` without `--report=json`, diagnostics, runtime errors, the message of `Result.Error` returned by `main`, and usage errors go to standard error. Standard output contains only what the script writes. If the reader of standard output or standard error goes away (a closed pipe), the program stops with a runtime error and exit status 1. Inspection reports instead contain their diagnostics in the single JSON object on standard output.
 
 `benitoite` sets no limit on memory. To limit it, use the tool that starts `benitoite` (`ulimit`, a container, or the agent harness).
+
+### Version and supported formats
+
+Use `benitoite --version=json` to discover the formats that an executable supports. Check both the required key in `formats` and an integer version that your tool understands; do not infer capabilities from the release version alone. For example, a build with unknown commit and dirty state can return:
+
+```json
+{
+  "schemaVersion": 1,
+  "kind": "version",
+  "name": "benitoite",
+  "version": "0.0.7",
+  "unicodeVersion": "17.0.0",
+  "build": {
+    "commit": null,
+    "dirty": null,
+    "target": "aarch64-apple-darwin",
+    "provenance": {"commit": "unknown", "dirty": "notCollected"}
+  },
+  "formats": {
+    "version": [1],
+    "diagnostics": [1],
+    "testResults": [1],
+    "checkReport": [1],
+    "testCheckReport": [1],
+    "effectLimit": [1],
+    "loaderEnvironment": [1],
+    "skillList": [1],
+    "skillDocument": [1]
+  },
+  "loaderEnvironment": {
+    "schemaVersion": 1,
+    "mode": "always",
+    "deniedPrefixes": ["DYLD_", "LD_"],
+    "nameComparison": "asciiCaseInsensitive",
+    "inherited": "unchanged",
+    "errorKind": "InvalidInput"
+  }
+}
+```
+
+`build.commit` is a full lowercase hexadecimal Git object ID or `null`. `build.dirty` is a boolean or `null`; `null` means unknown, not a clean tree. Dirty state is not collected automatically: an unspecified build input gives `provenance.dirty: "notCollected"`. An explicit build input, including an explicit unknown value, gives `"environment"`. Commit provenance is `"environment"`, `"git"`, or `"unknown"`. These are values embedded at build time, not observations of the runtime environment. See [Build information](install.md#build-information) for inputs, monitoring limits, and when to rebuild.
+
+`diagnostics: [1]` and `testResults: [1]` refer to the existing JSON Lines formats, including `kind: "die"`, `code: null`, and test `failure.die`. Those lines have no added `schemaVersion` or initial version record. `checkReport` and `testCheckReport` describe the single-object reports below. `effectLimit` versions the option syntax, set comparison, and `E0512` contract; it is not an output object. `loaderEnvironment` describes the [explicit environment restriction](#io-and-network-behavior). `skillList` and `skillDocument` describe [embedded Skill queries](install.md#read-the-skill-without-installing-it).
+
+Removing fields or changing their types, required presence, or meaning changes the corresponding format version, as does adding a classification that requires a new interpretation of success. An optional field that can be ignored without changing the meaning may be added within the same format version. Treat unknown formats, statuses, and effect names as unsupported, not as success or an empty effect set.
+
+### Inspection reports
+
+These commands check scripts without executing user functions:
+
+```sh
+benitoite check --report=json main.bnt
+benitoite test --check --report=json tests/
+```
+
+`check` requires `main`; `test --check` uses the same file and test selection as executing `test` and requires no `main`. Neither mode generates Benitoite bytecode or runs a VM. Existing compile-time constant evaluation and static checking of external declarations still take place. An external WASM component may be compiled for that static check, without being instantiated or called. A successful inspection does not guarantee that later code generation will fit the compiler's limits.
+
+`--report=json` accepts only this spelling, without a separate value. It can be combined with `--diagnostics=json`; diagnostics then appear only inside the report. Explicit `--diagnostics=text` is a usage error, while leaving diagnostics unspecified is allowed. `test --report=json` without `--check` is a usage error and runs no tests. `test --check` rejects `--max-call-stack`, every `--wasm-*` option, and `--allow-effects`, even when the given value equals the default. `run` and `fmt` do not accept reports.
+
+After a valid report option has been recognized within the command's option range, recognizable usage errors are also returned in a report, regardless of whether the error precedes the option. For `check`, that range ends at the script path; for `test`, it includes options before and after paths. A known option's separate value is consumed while scanning, even when that spelling is invalid, so a value that happens to be `--report=json` does not enable reports. Without a recognized report option, usage errors remain text on standard error.
+
+Each report is one UTF-8 JSON object followed by LF on standard output. It includes warnings, check errors, usage errors, and caught internal errors, without repeating them on standard error. It writes no test result or summary lines. Object key order and JSON whitespace are not part of the contract.
+
+| Common field | Meaning |
+|---|---|
+| `schemaVersion`, `kind` | Integer `1`; `"checkReport"` or `"testCheckReport"`. |
+| `producer` | `{name, version, build}`, with the same version and build information as the version query. |
+| `status` | `"ok"`, `"checkError"`, `"usageError"`, or `"internalError"`; test inspection can also return `"interrupted"`. |
+| `complete` | True only when selection, every target's check, and contract extraction have succeeded. |
+| `targetsComplete` | Whether entry selection or directory discovery finished; independent of type-checking success. |
+| `executed` | Always `false`. |
+| `requestedTargets` | `[{requestIndex, path}]`, in argument order, with zero-based indices and the supplied paths, including invalid ones. |
+| `targets` | Entries in discovery order: explicit argument order, and lexical file order within each directory. |
+| `sources` | `[{sourceId, displayPath, kind, contentHash}]`, in target order and then source-file ID order. `kind` is `"user"` or `"prelude"`; the latter includes all embedded standard-library sources. |
+| `sourceSets` | `[{targetId, sourceIds}]`, one row per target, including an empty source-ID array for an uninspected target. |
+| `aggregateEffects` | An Effects object for `main`, or the union of all selected tests' effects, only when the whole report is complete; otherwise `null`. |
+| `diagnostics` | An array of the diagnostic objects described in [Diagnostics](#18-diagnostics). |
+| `diagnosticTargets` | One `{diagnosticIndex, targetId}` per diagnostic. Discovery-wide and usage errors have `targetId: null`. |
+
+Every target has `targetId`, `requestIndex`, `entry`, `root`, `sourceId`, `kind`, `status`, and `complete`. `entry` and `root` are display paths; `sourceId` is `null` if the entry's bytes were not retained. Main targets have `kind: "main"` and a `main` field. Test targets have `kind: "tests"` and a `tests` field, without `main`.
+
+A successful `main` is `{symbol: "main", location, effects, processShellReference, shellReferenceScope}`. Each item in `tests` is `{function, description, location, effects}` in declaration order. An omitted test description is `null`; an explicitly empty description is `""`. `location` identifies the function name, using `{file, start, end, label: ""}`; start and end contain one-based `line` and `column` and a zero-based byte `offset` in the original source.
+
+An Effects object is `{basis: "declaredUpperBound", expanded: [...]}`. Its array contains unique atomic built-in names in lexical order. It reports the declared upper bound, including effects that the body does not use. `IO.All` expands to `Clock.Time`, `Console.Read`, `Console.Write`, `File.Read`, `File.Write`, `Process.Environment`, `Process.Exit`, `Process.Run`, `Random.Generate`, and `State`; it includes neither HTTP effect nor `Assert.Check`. Tests retain `Assert.Check` in each contract, the aggregate, and later effect-limit comparisons. Declaring `Assert.Check` on `main` is a check error (`E0415`). An unhandled `or die` needs `Process.Exit`; fully handling it and removing it from the declared bound removes it from the report. A bare `try` or `or return` adds no exit effect.
+
+Pure success has `expanded: []`. Unknown effects are represented by a `null` Effects value, never an empty array. If a target's check fails, its `main` or `tests` is `null`. A checked file with no tests has `tests: []`. An empty directory is a complete success with `targets: []` and an empty aggregate effect set. A failure in one file leaves successful targets' contracts available, but makes the overall `complete` false and `aggregateEffects` null. Discovery failure stops before checking any entries; previously discovered targets remain incomplete reference information with `status: "checkError"` and `tests: null`. Internal errors and observed interruptions can leave later entries uninspected.
+
+`processShellReference` is `"present"` or `"absent"` for a successful check, and `"unknown"` for an unconfirmed test target. It is inside `main` for a main target and directly on a test target, alongside `shellReferenceScope: "checkedProgram"`. A `null` main also leaves shell references unconfirmed. The check covers expression references to the standard `IO.Process.shell` throughout the checked program, including dependencies, standard sources, function values, and functions that are never called. It does not analyze reachability from `main` or a test. An import alone, a handler operation name alone, comments, strings, and user functions of the same name do not count. `"present"` does not mean a shell will run; `"absent"` does not mean arbitrary commands cannot start one.
+
+`contentHash` is `{algorithm: "sha256", value: "<64 lowercase hexadecimal digits>"}` over the same complete source bytes used by the check, with no normalization of BOM, line endings, or invalid UTF-8. It covers sources read into the source table, including settings, dependencies, and prelude sources. It excludes WASM binaries, files read only to verify dependency hashes, missing settings files, and directory observations. Sources whose complete bytes were not retained have no `sources` item. Display paths are neither reversible OS-path encodings nor instructions to open files.
+
+IDs such as `t0` and `t0:s0` are local to a report. Repeated explicit paths create separate targets and source sets; equal display names or hashes are not merged. A report does not fix the source bytes for a later run, and its hashes are not an attestation of executable trust.
+
+Usage errors have `complete: false`, `targetsComplete: false`, empty `targets`, `sources`, and `sourceSets`, and `aggregateEffects: null`. Their diagnostic uses `kind: "check"`, `severity: "error"`, `code: null`, `primary: null`, and empty `secondary`, `notes`, and `helps`. This combination of `kind: "check"` and `code: null` exists only inside a report with `status: "usageError"`; it is not added to ordinary diagnostic JSON Lines. For example, `benitoite check --report=json` returns status 2 with `requestedTargets: []` and the message `"missing script path"`.
+
+| Report status | Exit status |
+|---|---:|
+| `ok` | 0 |
+| `checkError` or `usageError` | 2 |
+| `internalError` | 3 |
+| `interrupted` (test inspection only) | 130 |
+
+Check for a complete single JSON object, an understood `schemaVersion` and `kind`, `status: "ok"`, `complete: true`, and exit status 0 before using the aggregate as a confirmed set. A warning promoted by `--deny-warnings` makes the report a `checkError`. For multiple test-inspection failures, precedence is interrupted, internal error, usage error, then check error.
+
+Report assembly and serialization finish before output starts. A write or flush failure takes precedence and exits with 1, without appending or resending another report. OS writes are not guaranteed to be indivisible. Initialization failures, failures outside the report boundary, a failure while building the failure report itself, aborts, forced termination, and broken output do not guarantee a complete report. Test inspection observes interruption before starting each file, not continuously during checking; a request during the last file may go unreported. Main inspection leaves signals to the OS default behavior.
+
+### Effect limits before execution
+
+After inspecting and reviewing a script, an agent or harness can pass the accepted atomic names to an executing command:
+
+```sh
+benitoite run --allow-effects=Console.Write,Process.Exit main.bnt
+benitoite test --allow-effects=Assert.Check,File.Read tests/
+benitoite --allow-effects= pure.bnt
+```
+
+The last command allows the empty set. The option accepts one comma-separated set in any order, using the 13 atomic names in [Effects](#10-effects), with `State` and `Assert.Check` included. It rejects duplicate names, empty elements, whitespace anywhere, unknown or user-defined names, import aliases, `IO.All`, and `*`; it does not trim the value. The option may occur once. It is not accepted by `check`, `test --check`, or `fmt`. After a `run` script path it is a script argument.
+
+The newly checked declared upper bound must be a subset of the supplied set; extra allowed names are accepted. A missing effect produces one `E0512` per offending function, with its location, the missing effects, and the allowed set, and exits with 2 before execution. With `--diagnostics=json`, these are ordinary diagnostic lines on standard error, without an approval object on standard output. Earlier type or effect errors take precedence over comparing an unknown contract.
+
+`run` compiles the same checked program whose contract was compared. With an effect limit, `test` prepares every entry, compares every selected test's contract (including `Assert.Check`), and finishes compilation and execution preparation for all entries before any test starts. If any entry fails preparation, none run. See [Tests](#16-tests) for the resulting summary. Without the option, executing tests retain their usual per-file preparation and execution.
+
+This is a static contract comparison. It neither fixes the source after inspection nor restricts operations at runtime. Changes that keep `File.Write` but alter its path or contents, or keep `Process.Run` but change the command, still fit the same set. Different test entries may also observe different dependency contents if files change between preparations; there is no single snapshot of all inputs. Use the harness or OS sandbox to restrict actual operations and resources.
 
 ## 3. Program structure
 
@@ -941,6 +1072,8 @@ When a task stops with a runtime error, the program stops. When the program is i
 
 A test is a function with the attribute `@test("description")`, no parameters, and the return type `Unit` or `Result[Unit, String]`. Check values with `Assert.equal(actual: actual, expected: expected)` and `Assert.isTrue(condition: condition, message: message)`, which need the effect `Assert.Check`. A failed check stops that test; returning `Result.Error(message)` also fails it. Each test runs on its own, so a failure or a runtime error in one test does not stop the others.
 
+Only tests declared in a selected entry file are run; tests in its imported modules are not added. A directly named file uses its parent directory as the import root. Files discovered under a named directory use that directory as their shared root, with nested package roots excluded. Repeated explicit paths remain separate entries. Inspection with `test --check` uses the same rules.
+
 ```benitoite test
 import Benitoite.Unofficial.IO.File
 
@@ -996,11 +1129,19 @@ When a generic helper calls another helper through a tail call, the caller's typ
 
 At positions where the type remains unknown, constructors appear as `<constructor #n of an unknown type>`, where `n` is their zero-based position in the type declaration. A check with a concrete compared type renders constructors by name; known parts of a type, such as `Option` in `Option[T]`, retain their names even when `T` cannot be recovered.
 
-A file with check errors is not run: its diagnostics go to standard error, and the tests of the other files still run. `benitoite check` reports an error for a file without `main`, so use `test`, not `check`, on test files.
+A file with check errors is not run: its diagnostics go to standard error, and, without `--allow-effects`, the tests of the other files still run. `benitoite check` reports an error for a file without `main`. To inspect test files without executing them, use `benitoite test --check <path>...`; success writes nothing to standard output, and diagnostics use the selected format on standard error. Add `--report=json` for an [inspection report](#inspection-reports), which includes the selected test contracts and does not produce test result or summary lines.
 
-With `--diagnostics=json`, `test` writes one JSON object per line to standard output: one with `"kind": "test"` per test, with the fields `file`, `name`, `function`, `location`, `outcome` (`"passed"` or `"failed"`), `failure`, `stdout`, and `stderr`, and a last one with `"kind": "testSummary"` and the counts `passed`, `failed`, and `filesNotRun`, and `interrupted`. A `failure` has a `reason` and a `message`. The reason is `"assert"` (a failed check, with `primary`, `trace`, and for `Assert.equal` and `Assert.notEqual` the values `left` and `right`), `"error"` (the test returned `Result.Error`), `"runtime"` (a runtime error, with the fields of a runtime error report), or `"exit"` (the test called `Process.exit`, with `exitCode`). Failures with the reasons `"assert"`, `"runtime"`, and `"exit"` also have `notes`, an array of strings that includes failures to release resources while stopping.
+With `--diagnostics=json`, executing `test` writes one JSON object per line to standard output: one with `"kind": "test"` per test, with the fields `file`, `name`, `function`, `location`, `outcome` (`"passed"` or `"failed"`), `failure`, `stdout`, and `stderr`, and a last one with `"kind": "testSummary"` and the counts `passed`, `failed`, and `filesNotRun`, and `interrupted`. A `failure` has a `reason` and a `message`. The reason is `"assert"` (a failed check, with `primary`, `trace`, and for `Assert.equal` and `Assert.notEqual` the values `left` and `right`), `"error"` (the test returned `Result.Error`), `"runtime"` (a runtime error, with the fields of a runtime error report), or `"exit"` (the test called `Process.exit` or stopped with `or die`, with `exitCode`; `or die` also includes its diagnostic object in `die`). Failures with the reasons `"assert"`, `"runtime"`, and `"exit"` also have `notes`, an array of strings that includes failures to release resources while stopping. Check diagnostics go to standard error.
 
-The exit status of `test` is 0 when all tests pass, 1 when a test fails, 2 for check errors, unreadable files, and usage errors, 3 for an internal error, and 130 when interrupted. When several apply, the first in the order 130, 3, 2, 1 is used.
+With `--allow-effects`, all entries must finish preparation before any test starts. A check error, an insufficient effect set, or a compilation limit rejects the entire run with status 2. When discovery has finished, the JSON output contains no `kind: "test"` lines and only a summary such as:
+
+```json
+{"kind":"testSummary","passed":0,"failed":0,"filesNotRun":2,"interrupted":false}
+```
+
+Here two entries were selected and neither started. `filesNotRun` counts all entries skipped by the rejection, including entries with no tests and repeated explicit paths, rather than only entries with errors. Text summaries use `; 2 files not run` and report `FAILED`. If preparation ends with an observed interruption or internal error and the selected entries are known, the summary uses the same skipped count, with status 130 and `interrupted: true` for interruption, or status 3 for an internal error. Discovery failures, usage errors, and outer failures that cannot establish the targets produce no summary. A successful empty selection can return 0 passed, 0 failed, and `filesNotRun: 0`. A reader must check the exit status, summary presence, `filesNotRun`, and `interrupted`, not just `passed` and `failed`.
+
+The exit status of executing `test` is 0 when all tests pass, 1 when a test fails, 2 for check errors, effect-limit rejection, compilation limits, unreadable files, and usage errors, 3 for an internal error, and 130 when interrupted. When several apply, the first in the order 130, 3, 2, 1 is used. Output failures exit with 1. Non-executing `test --check` uses the [inspection statuses](#inspection-reports), with or without a JSON report.
 
 ## 17. Formatting
 
@@ -1030,6 +1171,8 @@ error[E0230]: `let` is not used to bind names
 Warnings are reported by `check`, `run`, and `test` without failing them, unless `--deny-warnings` is given.
 
 With `--diagnostics=json`, each diagnostic is one JSON object on its own line of standard error, with the fields `kind`, `severity`, `code`, `message`, `primary`, `secondary`, `notes`, and `helps`. `primary` is the main place (`null` when there is none), with `file`, `start`, `end` (each with `line`, `column`, and `offset`), and `label`. Each element of `helps` is an object with a `message` and an array `edits` of replacements; each replacement has `file`, `start`, `end`, and the `replacement` text. A help without a mechanical fix has an empty `edits`.
+
+An `or die` report has `kind: "die"`, `severity: "error"`, and `code: null`, with the source location and notes containing the rendered cause and optional user message; it ends a run with status 1. It is distinct from a runtime error. Usage errors normally remain text, even with `--diagnostics=json`. The [inspection report](#inspection-reports) modes put diagnostics in their `diagnostics` array instead of standard error; only their `usageError` diagnostics use the combination `kind: "check"`, `code: null`.
 
 Tell diagnostics apart by `code` and the JSON fields, not by the message: messages and the contents of helps may change even in patch versions. A code that has been removed is never reused with another meaning.
 
@@ -1109,6 +1252,8 @@ A few behaviors worth knowing:
 - Relative file paths are resolved against the working directory. Use `Process.scriptDirectory()` for files next to the script.
 - `Process.run` starts a program with a list of arguments, without a shell. A non-zero exit code is not an error; read it from the result. When the command does not read all of the `input` you gave it (as `head` does), that is not an error either.
 - `Process.shell` runs a command line with `/bin/sh -c`. Write only POSIX sh.
+- `Process.run` and `Process.runAttached` reject explicitly supplied `Command.environment` names starting with `DYLD_` or `LD_`, comparing ASCII letters without regard to case. This includes `LD_RUN_PATH` used by build tools, lowercase spellings, empty values, and resetting a variable to its inherited value. They return `Result.Error` with `IOErrorKind.InvalidInput` before starting a child or arranging its pipes. Existing invalid-input checks (including NUL, empty names, and `=` in names) take precedence. The message names the first forbidden variable in lexical order of the original names and does not expose its value.
+- This environment rule always applies, on every OS, but leaves inherited variables unchanged; `Process.shell` continues to inherit them too. Allowing `Process.Run` permits commands such as `env` or a shell to set variables themselves. The rule does not control the initial environment, `PATH`, command-specific settings, grandchildren, or all Windows DLL search behavior. It is not a sandbox; the harness and OS must enforce isolation.
 - `Http.respond` accepts statuses from 200 to 599; any other status, including the `1xx` statuses, is a runtime error. `benitoite` sets `content-length` and `connection: close` and drops your `content-length`, `connection`, `transfer-encoding`, `trailer`, `keep-alive`, `proxy-connection`, `te`, and `upgrade` headers, as well as any headers named in any of your `connection` values. Names are compared without regard to case; `connection` values are split at commas, surrounding spaces and tabs are removed, and empty elements are skipped. It sends no body for responses to `HEAD` requests, for the statuses 204, 205, and 304, and for `2xx` responses to `CONNECT` requests; a body given in these cases is dropped.
 - The HTTP server accepts targets beginning with `/` (including `//a`), absolute targets beginning with `http://` or `https://` (case-insensitive), `*` for uppercase `OPTIONS` only, and authority targets for uppercase `CONNECT` only. A `CONNECT` target must consist of a non-empty host made of ASCII letters, digits, and `-._~!$&'()*+,;=:[]%`, followed by `:` and one or more ASCII digits with a value from 0 to 65535; other forms, including `/path` and absolute targets, are rejected for `CONNECT`. Other target forms, and any target containing a literal `"`, `<`, `>`, or a non-ASCII character, receive 400 without calling the handler. Percent-encode these characters. Literal `[`, `]`, `\`, `^`, `` ` ``, `{`, `|`, and `}` are accepted in paths and queries. A `%` that is not followed by two hexadecimal digits is accepted and kept as is.
 - The HTTP server answers 400 to a request target containing `#` and does not pass it to the handler. Omit the fragment or encode a literal `#` as `%23`; the `path` keeps percent encoding. For an uppercase `OPTIONS` request, an absolute target with neither a path nor a query component (`OPTIONS http://host`) gives `path` `*` and an empty `query`; `OPTIONS http://host/`, `OPTIONS http://host?x=1`, and `OPTIONS http://host?` give `path` `/`. Other methods, such as `GET http://host` or `options http://host`, give `path` `/` for an empty absolute path.
@@ -1171,7 +1316,7 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: Releases `0.0.1` through `0.0.6` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: Releases `0.0.1` through `0.0.7` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
 
 ## 21. Experimental: packages and external functions
 
@@ -1183,7 +1328,7 @@ A package is a directory with a `package.bnt` settings file and modules that oth
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.6"
+language "0.0.7"
 
 package Textkit
   license "MIT"
@@ -1201,7 +1346,7 @@ Declare the dependency before imports and declarations in the starting script:
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.6"
+language "0.0.7"
 
 dependency Textkit
   path "packages/textkit"
@@ -1233,7 +1378,7 @@ For example, a root settings file can record the language version while the star
 
 ```files
 name: package.bnt
-language "0.0.6"
+language "0.0.7"
 ```
 
 ```benitoite check
@@ -1244,7 +1389,7 @@ end function
 
 Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
 
-`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.6`, a declaration of `0.0.6` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
+`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.7`, a declaration of `0.0.7` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
 
 `package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
 

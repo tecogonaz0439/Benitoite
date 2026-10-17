@@ -1,6 +1,12 @@
 //! CLI（設計書 06-01）。サブコマンドは `run`・`check`・`test`・`fmt`・`skill`・`package`。
 //! `test`・`fmt`・`skill`・`package` と `--licenses` は `tools` で処理する。
 
+mod build_info;
+mod check_report;
+mod content_hash;
+mod effect_limit;
+mod inspection;
+pub use effect_limit::EffectLimit;
 pub mod tools;
 mod wasm;
 pub use wasm::WasmOptions;
@@ -21,6 +27,12 @@ pub enum DiagFormat {
     Json,
 }
 
+/// 非実行の検査報告の形式（06-01「main の非実行の検査報告」）。
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum ReportFormat {
+    Json,
+}
+
 /// `run` と `check` の選択肢（06-01「オプション」）。
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Options {
@@ -29,6 +41,10 @@ pub struct Options {
     pub max_call_stack: u64,
     /// `--deny-warnings`
     pub deny_warnings: bool,
+    /// `check --report=json`
+    pub report: Option<ReportFormat>,
+    /// `run --allow-effects` の許す集合。
+    pub allow_effects: Option<EffectLimit>,
 }
 
 impl Default for Options {
@@ -37,6 +53,8 @@ impl Default for Options {
             diagnostics: DiagFormat::Text,
             max_call_stack: DEFAULT_MAX_CALL_STACK,
             deny_warnings: false,
+            report: None,
+            allow_effects: None,
         }
     }
 }
@@ -71,6 +89,8 @@ pub enum Command {
     },
     Help,
     Version,
+    /// ビルド情報と提供済みの形式を単一の JSON で問い合わせる。
+    VersionJson,
     Licenses,
 }
 
@@ -93,7 +113,7 @@ pub enum DevPanic {
 /// メモリに捕らえる出力先で作る。
 #[derive(Debug)]
 pub struct CliEnv {
-    /// `--help`・`--version`・`--licenses` の出力と、スクリプトの標準出力
+    /// `--help`・`--version`・`--licenses`・check の検査報告の出力と、スクリプトの標準出力
     pub stdout: OutputTarget,
     /// 診断と報告と、スクリプトの標準エラー出力
     pub stderr: OutputTarget,
@@ -124,11 +144,14 @@ Usage:
   benitoite test  [options] <path>...
   benitoite fmt   [options] <path>...
   benitoite skill install|uninstall [--user | --project] [--agent <name>]...
+  benitoite skill list [--format=text|json]
+  benitoite skill show [--format=text|json] <logical-name>
   benitoite package add [options] <alias> --path <directory> [<root or entry>]
   benitoite package update [options] [<alias>] [<root or entry>]
   benitoite package move [options] <entry>
   benitoite --help
   benitoite --version
+  benitoite --version=json
   benitoite --licenses
 
 <script> is a .bnt file, or a directory that contains main.bnt.
@@ -141,7 +164,9 @@ Options:
   --wasm-transfer=<size>    (run, test) transfer budget, 1MiB-4GiB (default: 256MiB)
   --wasm-stats              (run, test) write aggregate WASM statistics as JSON to stderr
   --deny-warnings           treat warnings as errors
-  --check                   (fmt) report files that would change without rewriting them
+  --report=json             (check, test --check) write a single JSON inspection report to stdout
+  --allow-effects=<names>   (run, test) allowed atomic effects, comma-separated; empty means none
+  --check                   (test) type-check without running tests; (fmt) report files that would change
 ";
     /// `--version` の出力。`{version}` は処理系の版、`{unicode}` は文字の分類と変換が従う Unicode の版
     /// （Rust の `char::UNICODE_VERSION`。03-06「Character」）
@@ -154,13 +179,20 @@ Options:
         "`{name}` is reserved for a later version; to run a file with this name, write `./{name}`";
     pub const UNKNOWN_OPTION: &str = "unknown option `{name}`";
     pub const MISSING_OPTION_VALUE: &str = "missing value for `{name}`";
+    pub const INVALID_EFFECT_NAME: &str =
+        "invalid effect name `{name}` in `--allow-effects`; use atomic names from `expanded`";
+    pub const DUPLICATE_EFFECT_NAME: &str = "duplicate effect name `{name}` in `--allow-effects`";
+    pub const EMPTY_EFFECT_NAME: &str = "empty effect name in `--allow-effects`";
     pub const OPTION_TAKES_NO_VALUE: &str = "`{name}` does not take a value";
     pub const WASM_SIZE_RANGE: &str = "expected a size in 1MiB-4GiB";
     pub const WASM_FUEL_RANGE: &str = "expected an integer in 1-18446744073709551615";
     pub const BAD_VALUE: &str = "invalid value `{value}` for `{name}`";
     pub const DUPLICATE_OPTION: &str = "option `{name}` may only be specified once";
+    pub const OPTION_NOT_FOR_COMMAND: &str = "option `{name}` is not accepted by `{command}`";
     pub const MISSING_SCRIPT: &str = "missing script path";
     pub const EXTRA_ARGUMENT: &str = "unexpected argument `{value}`";
+    pub const REPORT_TEXT_DIAGNOSTICS: &str =
+        "`--report=json` cannot be combined with `--diagnostics=text`";
     pub const NO_MAIN_FILE: &str = "directory `{dir}` has no `main.bnt`";
     /// `BENITOITE_DEV_ALLOC_STATS` の行
     pub const ALLOC_STATS: &str = "alloc-stats: allocations={allocations} allocated_bytes={allocated_bytes} peak_heap_bytes={peak_heap_bytes} collections={collections}";
@@ -171,17 +203,82 @@ use std::process::ExitCode;
 /// `benitoite` の後のコマンドライン引数を解釈する（本章「コマンドライン」）。
 /// 使い方の誤りは、`text` の型板から作った 1 行の説明（`USAGE_ERROR` の `{detail}` の部分）を返す。
 pub fn parse_args(args: Vec<OsString>) -> Result<Command, String> {
+    parse_invocation(args).map_err(|error| error.detail)
+}
+
+// 診断の kind と区別し、入口で確定した報告の形式だけを保持する。
+#[derive(Debug)]
+enum ReportKind {
+    Check,
+}
+
+#[derive(Debug)]
+struct CliParseError {
+    detail: String,
+    report: Option<ReportKind>,
+    script: Option<PathBuf>,
+}
+
+impl From<String> for CliParseError {
+    fn from(detail: String) -> Self {
+        Self {
+            detail,
+            report: None,
+            script: None,
+        }
+    }
+}
+
+// サブコマンドの選択と誤りの後の走査でも、値をオプションと取り違えないために使う。
+// 分離した値を受理するのは allow-effects だけである（設計書 06-01「オプション」）。
+fn takes_option_value(name: &str) -> bool {
+    matches!(
+        name,
+        "--diagnostics"
+            | "--max-call-stack"
+            | "--report"
+            | "--allow-effects"
+            | "--wasm-memory"
+            | "--wasm-fuel"
+            | "--wasm-transfer"
+    )
+}
+
+fn parse_invocation(args: Vec<OsString>) -> Result<Command, CliParseError> {
     if let Some(first) = args.first().and_then(|a| a.to_str()) {
         match first {
             "--help" => return Ok(Command::Help),
             "--version" => return Ok(Command::Version),
+            "--version=json" => {
+                if let Some(extra) = args.get(1) {
+                    return Err(text::EXTRA_ARGUMENT
+                        .replace("{value}", &extra.to_string_lossy())
+                        .into());
+                }
+                return Ok(Command::VersionJson);
+            }
+            value if value.starts_with("--version=") => {
+                return Err(text::BAD_VALUE
+                    .replace("{name}", "--version")
+                    .replace("{value}", value.strip_prefix("--version=").unwrap_or(""))
+                    .into());
+            }
             "--licenses" => return Ok(Command::Licenses),
             _ => {}
         }
     }
-    let command_index = args
-        .iter()
-        .position(|a| !a.to_string_lossy().starts_with('-'));
+    let mut command_index = None;
+    let mut command_args = args.iter().enumerate();
+    while let Some((index, arg)) = command_args.next() {
+        let value = arg.to_string_lossy();
+        if !value.starts_with('-') {
+            command_index = Some(index);
+            break;
+        }
+        if takes_option_value(&value) {
+            let _value = command_args.next();
+        }
+    }
     if let Some(index) = command_index {
         let name = args.get(index).and_then(|a| a.to_str()).unwrap_or("");
         let tool = match name {
@@ -202,7 +299,7 @@ pub fn parse_args(args: Vec<OsString>) -> Result<Command, String> {
             });
         }
         if RESERVED_COMMANDS.contains(&name) {
-            return Err(text::RESERVED_COMMAND.replace("{name}", name));
+            return Err(text::RESERVED_COMMAND.replace("{name}", name).into());
         }
     }
     let explicit =
@@ -217,58 +314,114 @@ pub fn parse_args(args: Vec<OsString>) -> Result<Command, String> {
     let mut seen = std::collections::BTreeSet::new();
     let mut script = None;
     let mut script_args = Vec::new();
-    for (index, arg) in args.into_iter().enumerate() {
+    let mut detail = None;
+    let mut report = None;
+    let mut remaining = args.into_iter().enumerate();
+    while let Some((index, arg)) = remaining.next() {
         if Some(index) == skip {
             continue;
         }
         if script.is_some() {
             if checking {
-                return Err(text::EXTRA_ARGUMENT.replace("{value}", &arg.to_string_lossy()));
+                detail.get_or_insert_with(|| {
+                    text::EXTRA_ARGUMENT.replace("{value}", &arg.to_string_lossy())
+                });
+            } else {
+                script_args.push(arg);
             }
-            script_args.push(arg);
         } else if arg.to_string_lossy().starts_with('-') {
             let value = arg.to_string_lossy();
             let (name, setting) = value
                 .split_once('=')
                 .map_or((&*value, None), |(n, v)| (n, Some(v)));
-            if !matches!(
-                name,
-                "--diagnostics" | "--max-call-stack" | "--deny-warnings"
-            ) && !(WasmOptions::accepts(name) && !checking)
-            {
-                return Err(text::UNKNOWN_OPTION.replace("{name}", &value));
+            let separate_value = (setting.is_none() && takes_option_value(name))
+                .then(|| remaining.next())
+                .flatten();
+            // 重複や先行する誤りがあっても、有効な指定の存在を記録する。
+            // スクリプト引数と分離値はここへ来ない（設計書 06-01「オプション」）。
+            if checking && name == "--report" && setting == Some("json") {
+                report = Some(ReportKind::Check);
             }
-            if !seen.insert(name.to_owned()) {
-                return Err(text::DUPLICATE_OPTION.replace("{name}", name));
-            }
-            if WasmOptions::accepts(name) {
-                wasm.parse(name, setting)?;
-                continue;
-            }
-            match (name, setting) {
-                ("--diagnostics", Some("text")) => options.diagnostics = DiagFormat::Text,
-                ("--diagnostics", Some("json")) => options.diagnostics = DiagFormat::Json,
-                ("--max-call-stack", Some(size)) if parse_size(size).is_some() => {
-                    options.max_call_stack = parse_size(size).unwrap_or(DEFAULT_MAX_CALL_STACK);
-                }
-                ("--deny-warnings", None) => options.deny_warnings = true,
-                _ => {
-                    return Err(text::BAD_VALUE
+            let parsed = (|| {
+                if name == "--report" && !checking {
+                    return Err(text::OPTION_NOT_FOR_COMMAND
                         .replace("{name}", name)
-                        .replace("{value}", setting.unwrap_or("")));
+                        .replace("{command}", "run"));
                 }
+                if name == "--allow-effects" && checking {
+                    return Err(text::OPTION_NOT_FOR_COMMAND
+                        .replace("{name}", name)
+                        .replace("{command}", "check"));
+                }
+                if !matches!(
+                    name,
+                    "--diagnostics" | "--max-call-stack" | "--deny-warnings" | "--allow-effects"
+                ) && !(WasmOptions::accepts(name) && !checking || name == "--report" && checking)
+                {
+                    return Err(text::UNKNOWN_OPTION.replace("{name}", &value));
+                }
+                if !seen.insert(name.to_owned()) {
+                    return Err(text::DUPLICATE_OPTION.replace("{name}", name));
+                }
+                if WasmOptions::accepts(name) {
+                    return wasm.parse(name, setting);
+                }
+                if name == "--allow-effects" {
+                    let separate_value = separate_value
+                        .as_ref()
+                        .map(|(_, value)| value.to_string_lossy());
+                    let value = setting
+                        .or(separate_value.as_deref())
+                        .ok_or_else(|| text::MISSING_OPTION_VALUE.replace("{name}", name))?;
+                    options.allow_effects = Some(effect_limit::parse(value)?);
+                    return Ok(());
+                }
+                match (name, setting) {
+                    ("--diagnostics", Some("text")) => options.diagnostics = DiagFormat::Text,
+                    ("--diagnostics", Some("json")) => options.diagnostics = DiagFormat::Json,
+                    ("--report", Some("json")) => options.report = Some(ReportFormat::Json),
+                    ("--max-call-stack", Some(size)) if parse_size(size).is_some() => {
+                        options.max_call_stack = parse_size(size).unwrap_or(DEFAULT_MAX_CALL_STACK);
+                    }
+                    ("--deny-warnings", None) => options.deny_warnings = true,
+                    _ => {
+                        return Err(text::BAD_VALUE
+                            .replace("{name}", name)
+                            .replace("{value}", setting.unwrap_or("")));
+                    }
+                }
+                Ok(())
+            })();
+            if let Err(error) = parsed {
+                detail.get_or_insert(error);
             }
         } else {
             script = Some(PathBuf::from(arg));
         }
     }
-    let script = script.ok_or_else(|| {
-        if skip.is_some() || !seen.is_empty() {
-            text::MISSING_SCRIPT.to_owned()
-        } else {
-            text::MISSING_COMMAND.to_owned()
-        }
-    })?;
+    if options.report.is_some()
+        && seen.contains("--diagnostics")
+        && options.diagnostics == DiagFormat::Text
+    {
+        detail.get_or_insert_with(|| text::REPORT_TEXT_DIAGNOSTICS.into());
+    }
+    if script.is_none() {
+        detail.get_or_insert_with(|| {
+            if skip.is_some() || !seen.is_empty() {
+                text::MISSING_SCRIPT.to_owned()
+            } else {
+                text::MISSING_COMMAND.to_owned()
+            }
+        });
+    }
+    if let Some(detail) = detail {
+        return Err(CliParseError {
+            detail,
+            report,
+            script,
+        });
+    }
+    let script = script.ok_or_else(|| CliParseError::from(text::MISSING_SCRIPT.to_owned()))?;
     Ok(if checking {
         Command::Check { options, script }
     } else {
@@ -314,6 +467,37 @@ pub fn execute(command: Command, env: CliEnv) -> u8 {
                     .replace("{unicode}", &format!("{major}.{minor}.{update}")),
             )
         }
+        Command::VersionJson => {
+            let (major, minor, update) = char::UNICODE_VERSION;
+            let value = serde_json::json!({
+                "schemaVersion": 1,
+                "kind": "version",
+                "name": "benitoite",
+                "version": env!("CARGO_PKG_VERSION"),
+                "unicodeVersion": format!("{major}.{minor}.{update}"),
+                "build": build_info::value(),
+                "formats": {
+                    "version": [1],
+                    "diagnostics": [1],
+                    "testResults": [1],
+                    "checkReport": [1],
+                    "testCheckReport": [1],
+                    "effectLimit": [1],
+                    "loaderEnvironment": [1],
+                    "skillList": [1],
+                    "skillDocument": [1]
+                },
+                "loaderEnvironment": {
+                    "schemaVersion": 1,
+                    "mode": "always",
+                    "deniedPrefixes": ["DYLD_", "LD_"],
+                    "nameComparison": "asciiCaseInsensitive",
+                    "inherited": "unchanged",
+                    "errorKind": "InvalidInput"
+                }
+            });
+            write_plain(&env.stdout, &format!("{value}\n"))
+        }
         Command::Licenses => tools::print_licenses(&env),
         Command::Tool { tool, args } => tools::run_tool(tool, args, env),
         Command::Run {
@@ -329,7 +513,11 @@ pub fn execute(command: Command, env: CliEnv) -> u8 {
             code
         }
         Command::Check { options, script } => {
-            execute_script(options, script, None, env, Default::default())
+            if options.report.is_some() {
+                check_report::run_check(options, script, env)
+            } else {
+                execute_script(options, script, None, env, Default::default())
+            }
         }
     }
 }
@@ -337,7 +525,8 @@ pub fn execute(command: Command, env: CliEnv) -> u8 {
 /// CLI の入口。panic hook を設定し（`runtime::panic::install_hook`）、コマンドラインを解釈し、
 /// 環境変数（`BENITOITE_DEV_IO_MODE`、デバッグのビルドの `BENITOITE_DEV_PANIC`、機能 `alloc-stats` のビルドの
 /// `BENITOITE_DEV_ALLOC_STATS`、`NO_COLOR`）を読んでプロセスの標準入出力の `CliEnv` を作り、`execute` を呼ぶ。
-/// 使い方の誤りは、`USAGE_ERROR` と `SEE_HELP` の 2 行を標準エラー出力に書き、終了状態 2 で終える。
+/// 使い方の誤りは、認識済みの check の報告に収めるか、`USAGE_ERROR` と `SEE_HELP` の
+/// 2 行を標準エラー出力に書き、終了状態 2 で終える。
 pub fn main() -> ExitCode {
     crate::runtime::panic::install_hook();
     let mut env = CliEnv {
@@ -375,17 +564,24 @@ pub fn main() -> ExitCode {
 }
 
 use crate::base::{SourceKind, SourceTable};
+use crate::bytecode::program::CompiledProgram;
 use crate::diag::render::{self, TextOptions, Verb};
-use crate::diag::{Diagnostic, ReportKind};
+use crate::diag::{Diagnostic, ReportKind as DiagnosticKind};
+use crate::modules::EntrySpec;
 use crate::pipeline::{self, CheckOptions, CheckResult, CompileError, EntryError};
 use crate::runtime::report::FaultThread;
 use crate::runtime::run::{EXIT_CHECK, EXIT_FAILURE, EXIT_INTERNAL, EXIT_OK};
 use crate::runtime::{panic as panic_boundary, report, run};
 
 fn invoke(args: Vec<OsString>, env: CliEnv) -> u8 {
-    match parse_args(args) {
+    match parse_invocation(args) {
         Ok(command) => execute(command, env),
-        Err(detail) => usage_error(&env, &detail),
+        Err(error) => match error.report {
+            Some(ReportKind::Check) => {
+                check_report::usage_error(&env, error.script.as_deref(), &error.detail)
+            }
+            None => usage_error(&env, &error.detail),
+        },
     }
 }
 fn write_plain(target: &OutputTarget, message: &str) -> u8 {
@@ -486,7 +682,7 @@ fn report_check(
     if let Some(diag) = result
         .diagnostics
         .iter()
-        .find(|diag| diag.kind == ReportKind::Internal)
+        .find(|diag| diag.kind == DiagnosticKind::Internal)
     {
         write_report(env, format, &result.sources, diag);
         return Some(EXIT_INTERNAL);
@@ -509,6 +705,122 @@ fn report_check(
         }
     }
     (result.error_count() > 0).then_some(EXIT_CHECK)
+}
+
+// CliEnv の IO 部品は Send とは限らないため、段からは所有する結果だけを返す
+// （設計書 02-01「検査と実行の経路」「関数の呼び出しと処理系のスタック」）。
+struct PreparedScript {
+    checked: CheckResult,
+    compilation: Option<Result<Result<CompiledProgram, CompileError>, panic_boundary::PanicReport>>,
+    verb: Verb,
+    inspection: Option<Result<inspection::ProgramInspection, crate::ir::InternalError>>,
+}
+
+fn prepare_script(
+    entry: &EntrySpec,
+    deny_warnings: bool,
+    running: bool,
+    inspecting: bool,
+    allow_effects: Option<&EffectLimit>,
+    dev_panic: DevPanic,
+) -> Result<PreparedScript, Box<Diagnostic>> {
+    // 検査の状態と IR の破棄も段のスレッドで行い、深い構造の drop によるスタック超過を防ぐ
+    // （設計書 02-01「関数の呼び出しと処理系のスタック」）。
+    let prepared = panic_boundary::catch(|| {
+        pipeline::on_large_stack(|| {
+            panic_boundary::catch(|| {
+                let mut checked = pipeline::check(
+                    entry,
+                    &crate::modules::RealFs,
+                    CheckOptions {
+                        require_main: true,
+                        deny_warnings,
+                    },
+                );
+                if dev_panic == DevPanic::Check && checked.program.is_some() {
+                    development_check_panic();
+                }
+                let verb = if running { Verb::Run } else { Verb::Check };
+                let sources = Arc::clone(&checked.sources);
+                let inspection = if inspecting {
+                    checked.program.as_ref().map(inspection::inspect_main)
+                } else {
+                    None
+                };
+                if running
+                    && checked.error_count() == 0
+                    && prelude_error(&checked).is_none()
+                    && let (Some(allowed), Some(program)) =
+                        (allow_effects, checked.program.as_ref())
+                {
+                    let contract = inspection::main_contract(program);
+                    match contract {
+                        Ok(contract) => {
+                            if let Some(diagnostic) = effect_limit::check(&contract, allowed) {
+                                checked.diagnostics.push(diagnostic);
+                            }
+                        }
+                        Err(error) => checked.diagnostics.push(report::internal_diagnostic(
+                            error.stage,
+                            &error.message,
+                            None,
+                            FaultThread::Stage,
+                        )),
+                    }
+                }
+                let mut compilation = None;
+                if running
+                    && checked.error_count() == 0
+                    && checked.program.is_some()
+                    && prelude_error(&checked).is_none()
+                {
+                    compilation = Some(panic_boundary::catch(|| match checked.program.as_ref() {
+                        Some(program) => pipeline::desugar_checked(program)
+                            .map_err(CompileError::Internal)
+                            .and_then(|core| pipeline::compile(&core, Arc::clone(&sources))),
+                        None => Err(CompileError::Internal(crate::ir::InternalError {
+                            stage: "desugar",
+                            message: "checked program missing".into(),
+                        })),
+                    }));
+                }
+                // 深い AST を呼び出し側へ返さず、診断とソースだけを残す。
+                let result = CheckResult {
+                    sources,
+                    entry: checked.entry,
+                    diagnostics: checked.diagnostics,
+                    program: None,
+                };
+                PreparedScript {
+                    checked: result,
+                    compilation,
+                    verb,
+                    inspection,
+                }
+            })
+        })
+    });
+    match prepared {
+        Ok(Ok(Ok(prepared))) => Ok(prepared),
+        Ok(Ok(Err(panic))) => Err(Box::new(report::internal_diagnostic(
+            "check",
+            &panic.message,
+            Some(&panic),
+            FaultThread::Stage,
+        ))),
+        Ok(Err(error)) => Err(Box::new(report::internal_diagnostic(
+            "check",
+            &error.to_string(),
+            None,
+            FaultThread::Stage,
+        ))),
+        Err(panic) => Err(Box::new(report::internal_diagnostic(
+            "check",
+            &panic.message,
+            Some(&panic),
+            FaultThread::Main,
+        ))),
+    }
 }
 
 fn execute_script(
@@ -544,82 +856,23 @@ fn execute_script(
             }
         }
     }
-    // 検査の状態と IR の破棄も段のスレッドで行い、深い構造の drop によるスタック超過を防ぐ。
-    let dev_panic = env.dev_panic;
-    let prepared = panic_boundary::catch(|| {
-        pipeline::on_large_stack(|| {
-            panic_boundary::catch(|| {
-                let checked = pipeline::check(
-                    &entry,
-                    &crate::modules::RealFs,
-                    CheckOptions {
-                        require_main: true,
-                        deny_warnings: options.deny_warnings,
-                    },
-                );
-                if dev_panic == DevPanic::Check && checked.program.is_some() {
-                    development_check_panic();
-                }
-                let verb = if running { Verb::Run } else { Verb::Check };
-                // CliEnv の IO 部品は Send とは限らないため、ここでは検査の診断とコンパイルの結果だけを返す。
-                let sources = Arc::clone(&checked.sources);
-                let mut compilation = None;
-                if running && checked.program.is_some() && prelude_error(&checked).is_none() {
-                    compilation = Some(panic_boundary::catch(|| match checked.program.as_ref() {
-                        Some(program) => pipeline::desugar_checked(program)
-                            .map_err(CompileError::Internal)
-                            .and_then(|core| pipeline::compile(&core, Arc::clone(&sources))),
-                        None => Err(CompileError::Internal(crate::ir::InternalError {
-                            stage: "desugar",
-                            message: "checked program missing".into(),
-                        })),
-                    }));
-                }
-                // 深い AST を呼び出し側へ返さず、診断とソースだけを残す。
-                let result = CheckResult {
-                    sources,
-                    entry: checked.entry,
-                    diagnostics: checked.diagnostics,
-                    program: None,
-                };
-                (result, compilation, verb)
-            })
-        })
-    });
-    let (checked, compiled, verb) = match prepared {
-        Ok(Ok(Ok(prepared))) => prepared,
-        Ok(Ok(Err(panic))) => {
-            return write_internal(
-                &env,
-                options.diagnostics,
-                &SourceTable::new(),
-                "check",
-                &panic.message,
-                Some(&panic),
-                FaultThread::Stage,
-            );
-        }
-        Ok(Err(error)) => {
-            return write_internal(
-                &env,
-                options.diagnostics,
-                &SourceTable::new(),
-                "check",
-                &error.to_string(),
-                None,
-                FaultThread::Stage,
-            );
-        }
-        Err(panic) => {
-            return write_internal(
-                &env,
-                options.diagnostics,
-                &SourceTable::new(),
-                "check",
-                &panic.message,
-                Some(&panic),
-                FaultThread::Main,
-            );
+    let PreparedScript {
+        checked,
+        compilation: compiled,
+        verb,
+        inspection: _,
+    } = match prepare_script(
+        &entry,
+        options.deny_warnings,
+        running,
+        false,
+        options.allow_effects.as_ref(),
+        env.dev_panic,
+    ) {
+        Ok(prepared) => prepared,
+        Err(diagnostic) => {
+            write_report(&env, options.diagnostics, &SourceTable::new(), &diagnostic);
+            return EXIT_INTERNAL;
         }
     };
     if let Some(code) = report_check(
@@ -1013,7 +1266,8 @@ mod tests {
                     };
                     wasm
                 } else {
-                    tools::args::parse_test_args(args.into_iter().skip(1).collect())
+                    tools::args::parse_test_invocation(args.into_iter().skip(1).collect())
+                        .map_err(|error| error.detail)
                         .unwrap()
                         .1
                 };
@@ -1056,15 +1310,20 @@ mod tests {
             } else if option.starts_with("--wasm-stats=") {
                 assert_eq!(error, "`--wasm-stats` does not take a value");
             }
-            let test_error = tools::args::parse_test_args(strings(&[option, "a.bnt"]))
+            let test_error = tools::args::parse_test_invocation(strings(&[option, "a.bnt"]))
+                .map_err(|error| error.detail)
                 .err()
                 .unwrap();
             assert_eq!(test_error, error, "{option}");
         }
         assert!(parse_args(strings(&["run", "--wasm-stats", "--wasm-stats", "a.bnt"])).is_err());
         assert!(
-            tools::args::parse_test_args(strings(&["--wasm-fuel=1", "a.bnt", "--wasm-fuel=2"]))
-                .is_err()
+            tools::args::parse_test_invocation(strings(&[
+                "--wasm-fuel=1",
+                "a.bnt",
+                "--wasm-fuel=2"
+            ]))
+            .is_err()
         );
         assert!(parse_args(strings(&["check", "--wasm-stats", "a.bnt"])).is_err());
         assert!(
@@ -1382,6 +1641,21 @@ mod tests {
                 script: "a.bnt".into(),
                 args: strings(&["--x", "y"]),
                 wasm: WasmOptions::default()
+            }
+        );
+        assert_eq!(
+            parse_args(strings(&[
+                "a.bnt",
+                "--allow-effects",
+                "State",
+                "--allow-effects="
+            ]))
+            .unwrap(),
+            Command::Run {
+                options: Options::default(),
+                script: "a.bnt".into(),
+                args: strings(&["--allow-effects", "State", "--allow-effects="]),
+                wasm: WasmOptions::default(),
             }
         );
         for prefix in [

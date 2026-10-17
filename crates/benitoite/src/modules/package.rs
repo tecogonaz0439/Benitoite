@@ -171,6 +171,11 @@ const BREAKING_CHANGES: &[BreakingChange] = &[
         summary: text::KEYWORDS_OPEN_TYPES_TRY_CHANGE,
         help: text::KEYWORDS_OPEN_TYPES_TRY_MIGRATION,
     },
+    BreakingChange {
+        version: Version(0, 0, 7),
+        summary: text::LOADER_ENVIRONMENT_CHANGE,
+        help: text::LOADER_ENVIRONMENT_MIGRATION,
+    },
 ];
 
 pub(crate) use crate::syntax::header::keyword;
@@ -474,6 +479,78 @@ mod tests {
                     })
                     .collect::<Vec<_>>()
             );
+        }
+
+        // 本番の変更表を使い、提供版の変更前後で案内の適用境界を確かめる。
+        // 現在版より後の変更は出さない（設計書 06-09「設定ファイルの検査」）。
+        let notes = [
+            notes[0],
+            notes[1],
+            "0.0.7: Command.environment rejects names starting with DYLD_ or LD_ (ASCII case-insensitive), including build-tool variables such as LD_RUN_PATH",
+        ];
+        let helps = [
+            helps[0],
+            helps[1],
+            "review explicit settings of DYLD_ and LD_ variables, including LD_RUN_PATH used by build tools; run and runAttached return IOErrorKind.InvalidInput before starting a child; inherited variables are unchanged; update the language declaration to the current version after reviewing the script, update dependency hashes, and see CHANGELOG.md for migration details",
+        ];
+        let change_versions = ["0.0.5", "0.0.6", "0.0.7"];
+        for (current_text, current, end) in [
+            ("0.0.6", Version(0, 0, 6), 2),
+            ("0.0.7", Version(0, 0, 7), 3),
+        ] {
+            for (version, first) in [
+                ("0.0.0", 0),
+                ("0.0.3", 0),
+                ("0.0.4", 0),
+                ("0.0.5", 1),
+                ("0.0.6", 2),
+                ("0.0.7", 3),
+                ("0.0.8", 3),
+            ] {
+                let (out, _) = parse_source(&format!("language \"{version}\""), SourceKind::User);
+                let HeaderItem::Language(decl) = &out.module.header[0] else {
+                    panic!()
+                };
+                let diagnostic = check_language(decl, current, BREAKING_CHANGES);
+                if version == current_text {
+                    assert!(diagnostic.is_none());
+                    continue;
+                }
+                let diagnostic = diagnostic.unwrap();
+                assert_eq!(diagnostic.primary.unwrap().span, decl.version.span);
+                assert!(diagnostic.secondary.is_empty());
+                if version > current_text {
+                    assert_eq!(diagnostic.code, Some(DiagCode::E0907));
+                    assert_eq!(
+                        diagnostic.message,
+                        format!(
+                            "this file needs Benitoite {version} or later, but this is Benitoite {current_text}"
+                        )
+                    );
+                    assert!(diagnostic.notes.is_empty());
+                    assert!(diagnostic.helps.is_empty());
+                    continue;
+                }
+                assert_eq!(diagnostic.code, Some(DiagCode::E0908));
+                assert_eq!(
+                    diagnostic.message,
+                    format!(
+                        "this file was written for Benitoite {version}, and the language changed incompatibly in {}",
+                        change_versions[first]
+                    )
+                );
+                assert_eq!(diagnostic.notes, notes[first..end]);
+                assert_eq!(
+                    diagnostic.helps,
+                    helps[first..end]
+                        .iter()
+                        .map(|message| Help {
+                            message: (*message).to_owned(),
+                            edits: Vec::new(),
+                        })
+                        .collect::<Vec<_>>()
+                );
+            }
         }
     }
 }

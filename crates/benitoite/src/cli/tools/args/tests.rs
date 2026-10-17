@@ -48,44 +48,77 @@ fn reads_options_before_and_after_the_name_alike() {
 }
 
 #[test]
-fn usage_errors() {
-    let cases: [(PathTool, &[&str], String); 7] = [
-        (PathTool::Fmt, &[], text::MISSING_PATH.to_owned()),
-        (PathTool::Fmt, &["--check"], text::MISSING_PATH.to_owned()),
+fn path_arguments_accept_check_and_reject_usage_errors() {
+    let cases: [(PathTool, &[&str], Result<PathArgs, String>); 9] = [
+        (PathTool::Fmt, &[], Err(text::MISSING_PATH.to_owned())),
+        (
+            PathTool::Fmt,
+            &["--check"],
+            Err(text::MISSING_PATH.to_owned()),
+        ),
         (
             PathTool::Fmt,
             &["--deny-warnings", "a.bnt"],
-            text::OPTION_NOT_FOR_COMMAND
+            Err(text::OPTION_NOT_FOR_COMMAND
                 .replace("{name}", "--deny-warnings")
-                .replace("{command}", "fmt"),
+                .replace("{command}", "fmt")),
         ),
         (
             PathTool::Test,
             &["--check", "a.bnt"],
-            text::OPTION_NOT_FOR_COMMAND
-                .replace("{name}", "--check")
-                .replace("{command}", "test"),
+            Ok(PathArgs {
+                report: None,
+                allow_effects: None,
+                diagnostics: DiagFormat::Text,
+                max_call_stack: None,
+                deny_warnings: false,
+                check: true,
+                paths: vec![PathBuf::from("a.bnt")],
+            }),
+        ),
+        (
+            PathTool::Fmt,
+            &["--report=json", "a.bnt"],
+            Err("option `--report` is not accepted by `fmt`".into()),
+        ),
+        (
+            PathTool::Fmt,
+            &["--allow-effects=", "a.bnt"],
+            Err("option `--allow-effects` is not accepted by `fmt`".into()),
         ),
         (
             PathTool::Fmt,
             &["--frobnicate", "a.bnt"],
-            cli_text::UNKNOWN_OPTION.replace("{name}", "--frobnicate"),
+            Err(cli_text::UNKNOWN_OPTION.replace("{name}", "--frobnicate")),
         ),
         (
             PathTool::Fmt,
             &["--diagnostics=xml", "a.bnt"],
-            cli_text::BAD_VALUE
+            Err(cli_text::BAD_VALUE
                 .replace("{name}", "--diagnostics")
-                .replace("{value}", "xml"),
+                .replace("{value}", "xml")),
         ),
         (
             PathTool::Fmt,
             &["--check", "--check", "a.bnt"],
-            cli_text::DUPLICATE_OPTION.replace("{name}", "--check"),
+            Err(cli_text::DUPLICATE_OPTION.replace("{name}", "--check")),
         ),
     ];
     for (tool, args, expected) in cases {
-        assert_eq!(parse_path_args(tool, os(args)), Err(expected), "{args:?}");
+        assert_eq!(parse_path_args(tool, os(args)), expected, "{args:?}");
+    }
+    // WasmOptions を返さない公開入口では、指定を黙って失わず未知のオプションとして返す。
+    for option in [
+        "--wasm-memory=64MiB",
+        "--wasm-fuel=1",
+        "--wasm-transfer=256MiB",
+        "--wasm-stats",
+    ] {
+        assert_eq!(
+            parse_path_args(PathTool::Test, os(&[option, "a.bnt"])),
+            Err(cli_text::UNKNOWN_OPTION.replace("{name}", option)),
+            "{option}"
+        );
     }
 }
 

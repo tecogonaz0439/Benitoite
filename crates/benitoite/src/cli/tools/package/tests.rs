@@ -33,11 +33,11 @@ fn header_edit_keeps_body_comments_and_line_endings() {
     for prefix in [
         "",
         "\u{feff}",
-        "\u{feff}language \"0.0.6\"\n\n",
+        "\u{feff}language \"0.0.7\"\n\n",
         "//! module\n\n",
         "//! module\n \n\n",
         "#!/usr/bin/env benitoite\n\n",
-        "//! module\n\n// header description\nlanguage \"0.0.6\" // trailing\n\n",
+        "//! module\n\n// header description\nlanguage \"0.0.7\" // trailing\n\n",
     ] {
         for nl in ["\n", "\r\n"] {
             let source = format!("{prefix}{body}").replace('\n', nl);
@@ -88,11 +88,11 @@ fn header_edit_keeps_body_comments_and_line_endings() {
         let edited = edit::splice(
             source,
             edit::range(source, &ast),
-            "language \"0.0.6\"\n",
+            "language \"0.0.7\"\n",
             FileId(0),
         )
         .unwrap();
-        assert!(edited.ends_with("language \"0.0.6\"\n"));
+        assert!(edited.ends_with("language \"0.0.7\"\n"));
         assert_eq!(
             super::super::formatter::format_source(FileId(0), SourceKind::User, edited.as_bytes())
                 .unwrap()

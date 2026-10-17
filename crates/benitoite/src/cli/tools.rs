@@ -10,7 +10,16 @@ use super::{CliEnv, DiagFormat, ToolCommand};
 /// 「`fmt` のコマンドライン」「`skill` のコマンドライン」「`package` のコマンドライン」の終了状態）。
 pub fn run_tool(tool: ToolCommand, args: Vec<OsString>, env: CliEnv) -> u8 {
     match tool {
-        ToolCommand::Test => match args::parse_test_args(args) {
+        ToolCommand::Test => match args::parse_test_invocation(args) {
+            Ok((parsed, _)) if parsed.report.is_some() => {
+                test_runner::run_test_command(parsed, env)
+            }
+            Ok((parsed, _)) if parsed.check => run_body(
+                test_runner::text::STAGE_TEST,
+                parsed.diagnostics,
+                env,
+                |env| test_runner::run_test_command(parsed, env),
+            ),
             Ok((parsed, wasm)) => {
                 let execution = wasm.execution();
                 let stderr = env.stderr.clone();
@@ -23,7 +32,10 @@ pub fn run_tool(tool: ToolCommand, args: Vec<OsString>, env: CliEnv) -> u8 {
                 wasm.report(&execution, &stderr);
                 code
             }
-            Err(detail) => super::usage_error(&env, &detail),
+            Err(error) if error.report.is_some() => {
+                test_runner::check_usage_error(&env, &error.paths, &error.detail)
+            }
+            Err(error) => super::usage_error(&env, &error.detail),
         },
         ToolCommand::Fmt => match args::parse_path_args(args::PathTool::Fmt, args) {
             Ok(parsed) => run_body(formatter::text::STAGE_FMT, parsed.diagnostics, env, |env| {
@@ -41,11 +53,7 @@ pub fn run_tool(tool: ToolCommand, args: Vec<OsString>, env: CliEnv) -> u8 {
             Err(detail) => super::usage_error(&env, &detail),
         },
         ToolCommand::Skill => run_body(skill::text::STAGE_SKILL, DiagFormat::Text, env, |env| {
-            // ホームは環境変数 `HOME` から求めて渡す。
-            let home = std::env::var_os("HOME")
-                .filter(|home| !home.is_empty())
-                .map(std::path::PathBuf::from);
-            skill::run_skill(args, env, home)
+            skill::run_skill_cli(args, env)
         }),
     }
 }

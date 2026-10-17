@@ -11,6 +11,7 @@ pub const HAND_WRITTEN: &[&str] = &[
     "SKILL.md",
     "references/common-mistakes.md",
     "references/idioms.md",
+    "references/inspection.md",
     "references/language-comparison.md",
 ];
 /// ライセンス文（リポジトリの根）。両方があるときだけ一覧に加える。

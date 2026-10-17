@@ -1,5 +1,5 @@
-//! 同梱の Agent Skill の埋め込みと、`benitoite skill install`・`uninstall`（設計書 06-06「同梱の Agent Skill の構成」
-//! 「Skill の導入（初回リリース版）」、06-01「`skill` のコマンドライン（初回リリース版）」）。
+//! 同梱の Agent Skill の埋め込み・導入・取得（設計書 06-06「同梱の Agent Skill の構成」
+//! 「Skill の導入（初回リリース版）」「同梱文書の取得」、06-01「`skill` のコマンドライン（初回リリース版）」）。
 
 pub mod bundle;
 pub mod generate;
@@ -47,7 +47,11 @@ pub mod text {
         "error: cannot find the home directory; set `HOME` or use `--project`";
     pub const HOME_NOT_DIRECTORY: &str = "error: the home directory `{path}` is not an absolute path to an existing directory; set `HOME` or use `--project`";
     /// 使い方の誤りの `{detail}` に埋める文
-    pub const MISSING_ACTION: &str = "missing `install` or `uninstall`";
+    pub const MISSING_ACTION: &str = "missing `install`, `uninstall`, `list`, or `show`";
+    pub const MISSING_DOCUMENT: &str = "missing Skill document name";
+    pub const INVALID_DOCUMENT: &str = "invalid Skill document name `{name}`";
+    pub const UNKNOWN_DOCUMENT: &str =
+        "unknown Skill document `{name}`; use `benitoite skill list`";
     pub const UNKNOWN_AGENT: &str =
         "unknown agent `{name}`; expected `claude-code`, `codex`, or `opencode`";
     pub const USER_AND_PROJECT: &str = "`--user` and `--project` cannot be used together";
@@ -57,8 +61,10 @@ use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
 use crate::cli::CliEnv;
+use crate::cli::{build_info, content_hash};
 use crate::diag::codes::fill_template;
 use crate::diag::render::escape_terminal_controls;
+use serde_json::{Value, json};
 
 // 埋め込んだ SKILL.md と、利用者が残した追記に十分な余裕を持たせる。
 const MAX_SKILL_BYTES: usize = 1024 * 1024;
@@ -150,14 +156,47 @@ fn write_files(temp: &Path, version: &str) -> Result<(), String> {
         if let Some(sub) = path.parent() {
             std::fs::create_dir_all(sub).map_err(|error| error.to_string())?;
         }
-        let written = if file.path == "SKILL.md" {
-            std::fs::write(&path, file.text.replace(VERSION_PLACEHOLDER, version))
-        } else {
-            std::fs::write(&path, file.text)
-        };
-        written.map_err(|error| error.to_string())?;
+        std::fs::write(&path, render_document(file, version)).map_err(|error| error.to_string())?;
     }
     Ok(())
+}
+
+// 導入と取得で、版を置き換える文書と本文を揃える（設計書 06-06「同梱文書の取得」）。
+fn render_document(file: &SkillFile, version: &str) -> String {
+    if file.path == "SKILL.md" {
+        file.text.replace(VERSION_PLACEHOLDER, version)
+    } else {
+        file.text.to_owned()
+    }
+}
+
+fn valid_document_name(name: &str) -> bool {
+    !name.contains(['\\', ':'])
+        && name
+            .split('/')
+            .all(|component| !matches!(component, "" | "." | ".."))
+}
+
+// 一件でも不整合があれば、一覧の一部を成功として返さない（設計書 06-06「同梱文書の取得」）。
+fn document_list(files: &[SkillFile]) -> Result<Vec<&SkillFile>, String> {
+    let mut names = std::collections::BTreeSet::new();
+    for file in files {
+        if !valid_document_name(file.path) {
+            return Err(format!(
+                "invalid embedded Skill document name: {:?}",
+                file.path
+            ));
+        }
+        if !names.insert(file.path) {
+            return Err(format!(
+                "duplicate embedded Skill document name: {:?}",
+                file.path
+            ));
+        }
+    }
+    let mut documents: Vec<_> = files.iter().collect();
+    documents.sort_by_key(|file| file.path);
+    Ok(documents)
 }
 
 /// `dir` が `install` の書き出したものか。`SKILL.md` の前付けの `metadata:` の下に `benitoite-version:` の行があるかで
@@ -265,22 +304,60 @@ fn remove_failed(path: &Path, reason: &str) -> String {
 
 /// `skill` の後の引数を解釈した結果。
 #[derive(Debug, PartialEq, Eq)]
-struct SkillArgs {
-    install: bool,
-    scope: Scope,
-    agents: Vec<Agent>,
+enum SkillArgs {
+    Manage {
+        install: bool,
+        scope: Scope,
+        agents: Vec<Agent>,
+    },
+    List(DocumentFormat),
+    Show {
+        name: String,
+        format: DocumentFormat,
+    },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum DocumentFormat {
+    Text,
+    Json,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum SkillAction {
+    Install,
+    Uninstall,
+    List,
+    Show,
 }
 
 /// `skill` の後の引数を解釈する。使い方の誤りは、`cli::text::USAGE_ERROR` の `{detail}` に埋める 1 行を返す。
 fn parse_skill_args(args: Vec<OsString>) -> Result<SkillArgs, String> {
     use crate::cli::text as cli_text;
-    let mut action: Option<bool> = None;
+    let mut action = None;
+    let mut document = None;
+    let mut format = None;
     let mut user = false;
     let mut project = false;
     let mut agents: Vec<Agent> = Vec::new();
     let mut iter = args.into_iter();
     while let Some(arg) = iter.next() {
         let arg = arg.to_string_lossy().into_owned();
+        if let Some(value) = arg.strip_prefix("--format=") {
+            if format.is_some() {
+                return Err(cli_text::DUPLICATE_OPTION.replace("{name}", "--format"));
+            }
+            format = Some(match value {
+                "text" => DocumentFormat::Text,
+                "json" => DocumentFormat::Json,
+                _ => {
+                    return Err(cli_text::BAD_VALUE
+                        .replace("{value}", value)
+                        .replace("{name}", "--format"));
+                }
+            });
+            continue;
+        }
         let agent_name = if arg == "--agent" {
             match iter.next() {
                 Some(value) => Some(value.to_string_lossy().into_owned()),
@@ -318,9 +395,19 @@ fn parse_skill_args(args: Vec<OsString>) -> Result<SkillArgs, String> {
                 }
                 *flag = true;
             }
-            "install" | "uninstall" if action.is_none() => action = Some(arg == "install"),
+            "install" | "uninstall" | "list" | "show" if action.is_none() => {
+                action = Some(match arg.as_str() {
+                    "install" => SkillAction::Install,
+                    "uninstall" => SkillAction::Uninstall,
+                    "list" => SkillAction::List,
+                    _ => SkillAction::Show,
+                });
+            }
             _ if arg.starts_with('-') => {
                 return Err(cli_text::UNKNOWN_OPTION.replace("{name}", &arg));
+            }
+            _ if action == Some(SkillAction::Show) && document.is_none() => {
+                document = Some(arg);
             }
             _ => return Err(cli_text::EXTRA_ARGUMENT.replace("{value}", &arg)),
         }
@@ -328,24 +415,164 @@ fn parse_skill_args(args: Vec<OsString>) -> Result<SkillArgs, String> {
     if user && project {
         return Err(text::USER_AND_PROJECT.to_owned());
     }
-    let install = action.ok_or_else(|| text::MISSING_ACTION.to_owned())?;
+    let action = action.ok_or_else(|| text::MISSING_ACTION.to_owned())?;
+    if matches!(action, SkillAction::List | SkillAction::Show) {
+        let invalid_option = if user {
+            Some("--user")
+        } else if project {
+            Some("--project")
+        } else if !agents.is_empty() {
+            Some("--agent")
+        } else {
+            None
+        };
+        if let Some(name) = invalid_option {
+            return Err(cli_text::UNKNOWN_OPTION.replace("{name}", name));
+        }
+        return if action == SkillAction::List {
+            Ok(SkillArgs::List(format.unwrap_or(DocumentFormat::Text)))
+        } else {
+            let name = document.ok_or_else(|| text::MISSING_DOCUMENT.to_owned())?;
+            if !valid_document_name(&name) {
+                return Err(
+                    text::INVALID_DOCUMENT.replace("{name}", &escape_terminal_controls(&name))
+                );
+            }
+            Ok(SkillArgs::Show {
+                name,
+                format: format.unwrap_or(DocumentFormat::Text),
+            })
+        };
+    }
+    if let Some(format) = format {
+        let name = match format {
+            DocumentFormat::Text => "--format=text",
+            DocumentFormat::Json => "--format=json",
+        };
+        return Err(cli_text::UNKNOWN_OPTION.replace("{name}", name));
+    }
     let scope = if project { Scope::Project } else { Scope::User };
-    Ok(SkillArgs {
-        install,
+    Ok(SkillArgs::Manage {
+        install: action == SkillAction::Install,
         scope,
         agents,
     })
 }
 
 /// `benitoite skill` の後の引数を解釈して実行し、終了状態を返す（06-01「`skill` のコマンドライン（初回リリース版）」）。
-/// `home` は利用者のホームのディレクトリ（`run_tool` が環境変数 `HOME` から求める）。
+/// `home` は利用者のホームのディレクトリ。`list`・`show` は使わず、環境変数からの補完もしない。
 pub fn run_skill(args: Vec<OsString>, env: CliEnv, home: Option<PathBuf>) -> u8 {
-    use crate::runtime::run::{EXIT_FAILURE, EXIT_OK};
+    run_skill_with_home(args, env, || home)
+}
+
+/// CLI の入口。ホームは導入・除去の分岐でだけ取得する（設計書 06-06「同梱文書の取得」）。
+pub(super) fn run_skill_cli(args: Vec<OsString>, env: CliEnv) -> u8 {
+    run_skill_with_home(args, env, || {
+        std::env::var_os("HOME")
+            .filter(|home| !home.is_empty())
+            .map(PathBuf::from)
+    })
+}
+
+fn run_skill_with_home(
+    args: Vec<OsString>,
+    env: CliEnv,
+    home: impl FnOnce() -> Option<PathBuf>,
+) -> u8 {
     let parsed = match parse_skill_args(args) {
         Ok(parsed) => parsed,
         Err(detail) => return crate::cli::usage_error(&env, &detail),
     };
-    let base = match parsed.scope {
+    let documents = match document_list(files()) {
+        Ok(documents) => documents,
+        Err(message) => {
+            return crate::cli::write_internal(
+                &env,
+                crate::cli::DiagFormat::Text,
+                &crate::base::SourceTable::new(),
+                text::STAGE_SKILL,
+                &message,
+                None,
+                crate::runtime::report::FaultThread::Main,
+            );
+        }
+    };
+    match parsed {
+        SkillArgs::List(format) => {
+            let output = match format {
+                DocumentFormat::Text => {
+                    let mut output = String::new();
+                    for file in documents {
+                        output.push_str(file.path);
+                        output.push('\n');
+                    }
+                    output
+                }
+                DocumentFormat::Json => {
+                    let documents = documents
+                        .iter()
+                        .map(|file| {
+                            let text = render_document(file, env!("CARGO_PKG_VERSION"));
+                            document_metadata(file.path, &text)
+                        })
+                        .collect::<Vec<_>>();
+                    let value = json!({
+                        "schemaVersion": 1, "kind": "skillList",
+                        "producer": build_info::producer(), "documents": documents
+                    });
+                    format!("{value}\n")
+                }
+            };
+            crate::cli::write_plain(&env.stdout, &output)
+        }
+        SkillArgs::Show { name, format } => {
+            let Some(file) = documents.iter().find(|file| file.path == name) else {
+                return crate::cli::usage_error(
+                    &env,
+                    &text::UNKNOWN_DOCUMENT.replace("{name}", &escape_terminal_controls(&name)),
+                );
+            };
+            let text = render_document(file, env!("CARGO_PKG_VERSION"));
+            let output = match format {
+                DocumentFormat::Text => text,
+                DocumentFormat::Json => {
+                    // 同じ本文から長さ・ハッシュ・text を確定してから一度だけ書く
+                    // （設計書 06-06「同梱文書の取得」）。
+                    let value = json!({
+                        "schemaVersion": 1, "kind": "skillDocument",
+                        "producer": build_info::producer(), "name": file.path,
+                        "byteLength": text.len(), "contentHash": content_hash::value(text.as_bytes()),
+                        "text": text
+                    });
+                    format!("{value}\n")
+                }
+            };
+            crate::cli::write_plain(&env.stdout, &output)
+        }
+        SkillArgs::Manage {
+            install,
+            scope,
+            agents,
+        } => run_manage(install, scope, &agents, env, home()),
+    }
+}
+
+fn document_metadata(name: &str, text: &str) -> Value {
+    json!({
+        "name": name, "byteLength": text.len(),
+        "contentHash": content_hash::value(text.as_bytes())
+    })
+}
+
+fn run_manage(
+    install: bool,
+    scope: Scope,
+    agents: &[Agent],
+    env: CliEnv,
+    home: Option<PathBuf>,
+) -> u8 {
+    use crate::runtime::run::{EXIT_FAILURE, EXIT_OK};
+    let base = match scope {
         Scope::Project => env.working_directory.clone(),
         Scope::User => match home.filter(|home| !home.as_os_str().is_empty()) {
             Some(home) => {
@@ -373,9 +600,9 @@ pub fn run_skill(args: Vec<OsString>, env: CliEnv, home: Option<PathBuf>) -> u8 
         },
     };
     let mut exit = EXIT_OK;
-    for dir in target_dirs(parsed.scope, &parsed.agents, &base) {
+    for dir in target_dirs(scope, agents, &base) {
         let path = escape_terminal_controls(&dir.display().to_string());
-        let result = if parsed.install {
+        let result = if install {
             install_dir(&dir, env!("CARGO_PKG_VERSION"))
                 .map(|()| Some(text::INSTALLED.replace("{path}", &path)))
         } else {

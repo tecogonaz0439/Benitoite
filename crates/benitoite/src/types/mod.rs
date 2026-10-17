@@ -612,17 +612,9 @@ fn show_ty(ty: &Ty, names: &TyNames<'_>, out: &mut String) {
                         continue;
                     }
                     let text = match name {
-                        EffectName::Builtin(id) => id
-                            .def()
-                            .map(|d| {
-                                let mut parts = Vec::new();
-                                if let Some(last) = d.module.last() {
-                                    parts.push(*last);
-                                }
-                                parts.push(d.name);
-                                parts.join(".")
-                            })
-                            .unwrap_or_else(|| "_".into()),
+                        EffectName::Builtin(id) => {
+                            builtin::effect_name(*id).unwrap_or_else(|| "_".into())
+                        }
                         EffectName::User(id) => names
                             .effects
                             .get(*id)

@@ -2,6 +2,28 @@
 
 All notable changes to Benitoite are recorded in this file. Versions follow the policy in [Compatibility](docs/reference/benitoite.md#20-compatibility): while the major version is 0, a minor version may contain incompatible changes, and a patch version contains only bug fixes. Until `0.1.0`, any release may contain incompatible changes. Every incompatible change is listed with how to migrate.
 
+## 0.0.7 (San Benito)
+
+A source-only release; no executables are provided. `benitoite --version` prints `benitoite 0.0.7`. Review scripts and dependencies before updating their `language` declarations and recorded package hashes.
+
+### Incompatible changes and migration
+
+| Previous form or behavior | `0.0.7` behavior | How to migrate |
+|---|---|---|
+| `Command.environment` could explicitly set names starting with `DYLD_` or `LD_`. | `IO.Process.run` and `runAttached` return `Result.Error` with `IOErrorKind.InvalidInput` before starting a child. Matching ignores ASCII case and covers both entire prefixes, including build-tool variables such as `LD_RUN_PATH`. Empty values and explicit overrides with the same value as the parent are also rejected, on every supported OS. The error message identifies the name and does not disclose its value. | Review explicit environment settings and remove or redesign operations that require these variables. This covers build-tool settings as well as shared-library settings. Handle `InvalidInput` as an ordinary error result. Parent environment inheritance is unchanged, including for `shell`; this rule does not sanitize the inherited environment or provide a sandbox. Moving rejected settings into the parent environment is not a migration recommendation. |
+| Declaring `language "0.0.6"` passed the release boundary. | Every older declaration reports `E0908`, even in a pure script. Notes and helps enumerate all applicable incompatible releases in version order. `language "0.0.7"` is accepted and `language "0.0.8"` reports `E0907`. | Review scripts and dependencies first, then update declarations in entry scripts, root settings, and each dependency's `package.bnt` to the current interpreter version (`language "0.0.7"` for this release). Recompute recorded dependency hashes with `benitoite package update` after all dependency contents are final. Omitting `language` continues to use the current rules; an old declaration does not restore the previous environment behavior. Changing the declaration alone does not migrate the code. |
+
+### Harness interfaces
+
+1. `benitoite check --report=json <file>` returns a single, versioned report containing the checked main contract, canonical atomic effects, source identities and SHA-256 hashes, diagnostics, and references to `IO.Process.shell`. It checks through external-function linking without executing the program. Reports describe declared contracts, not which operations will actually run.
+2. `benitoite test --check [--report=json] <paths...>` checks the same targets selected by normal test discovery without running any test. The JSON report includes each target and test contract, preserves partial results on failure, and includes `Assert.Check` in declared effect sets.
+3. `--allow-effects=<comma-separated-effects>` on `run` and `test` compares declared atomic effects with an explicit upper bound before execution. An empty value permits only an empty set. `E0512` reports an exceeded bound with exit status 2. With the option, test execution prepares and checks all selected entries before starting any test; a failure prevents the entire selected set from running. Without it, files are still prepared and run one at a time. This is a static contract check, not runtime permission enforcement or OS isolation.
+4. `benitoite --version=json` returns the producer version, build commit and dirty information with provenance, target, supported format versions, and loader-environment policy. Unknown build information is `null`; dirty state is not automatically collected. The existing two-line `--version` output and diagnostic/test-result JSON Lines retain their formats.
+5. `Command.environment` rejects explicit `DYLD_` and `LD_` settings as described above. The shared validation covers `run` and `runAttached` and leaves inherited variables unchanged.
+6. `benitoite skill list [--format=text|json]` lists embedded logical document names, and `skill show [--format=text|json] <logical-name>` retrieves one document without installation or a HOME lookup. JSON includes byte lengths and SHA-256 hashes of the same version-substituted UTF-8 bodies used by installation. Logical names are case-sensitive and must match the embedded list.
+
+See the [CLI reference](docs/reference/benitoite.md#2-the-command-line) and the embedded Skill's [inspection guide](crates/benitoite/skill/references/inspection.md) for invocation and report contracts. Static checks do not guarantee intended results, successful external operations, termination, or access restrictions.
+
 ## 0.0.6 (San Benito)
 
 A source-only release; no executables are provided. `benitoite --version` prints `benitoite 0.0.6`. Migrate scripts and dependencies before updating their `language` declarations and recorded package hashes.

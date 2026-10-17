@@ -204,7 +204,9 @@ end record
 - `Process.command(program: program, arguments: arguments)` は、`workingDirectory` を `Option.None`（基準のディレクトリを使う）、`environment` を空のマップ（スクリプトの環境変数をそのまま渡す）、`input` を `Option.None`（標準入力に何も渡さない）にする。ほかの値にするときは、レコードの更新（`Process.Command(..cmd, workingDirectory: Option.Some("./sub"))`）で変える。
 - 基準のディレクトリは、前述の「共通の規則」のとおりである。`workingDirectory` に相対パスを指定したときは、基準のディレクトリから辿る。
 - `program` が `/` を含む相対パス（`./tool` など）のときは、子の作業ディレクトリ（`workingDirectory` を解決したもの。`Option.None` なら基準のディレクトリ）から辿って絶対パスにしてから起動する。シェルで `cd dir && ./tool` と書いたときと同じ場所のファイルを起動する。`/` を含まない名前は、環境変数 `PATH` から探す。
-- `environment` の組は、スクリプトの環境変数に加えるか、同じ名前の変数を置き換える。起動したコマンドは、スクリプトの環境変数をすべて受け取る。初回リリース版は、子に渡す環境変数をスクリプトのものから切り離す方法と、API キーやパスワードなどの秘密の情報を区別して扱う型を持たない。
+- `environment` の組は、スクリプトの環境変数に加えるか、同じ名前の変数を置き換える。ただし、`Process.run`・`Process.runAttached` は、明示した名前が `DYLD_` または `LD_` で始まれば、ASCII の大文字小文字を区別せず、子を起動する前に `Result.Error(IOError)` を返す。`IOError.kind` は `InvalidInput` とし、メッセージには元の名前の辞書順で最初の禁止名だけを含め、値を含めない。空値・同じ値の上書き・小文字の名前・ビルドの道具が読む `LD_RUN_PATH` も拒否する。Unicode の正規化は行わない。理由: 呼び出し元や OS ごとに、明示したローダ変数の受理を変えないためである。
+- 【決定】NUL・空の変数名・名前中の `=` など、従来の不正入力の検査を禁止名の検査より先に行う。禁止名は、パスの絶対化と子の起動の前に拒否する。新しい診断コードや専用の終了状態は設けず、呼び出し側が値として失敗を処理できる。
+- 【決定】親から継承する環境変数は、禁止名でも変更・除去しない。`Process.shell` も継承を続ける。子に渡す環境変数をスクリプトのものから切り離す方法と、API キーやパスワードなどの秘密の情報を区別して扱う型は持たない。この入力規則は Windows でも同じとするが、Windows の DLL 探索全体を制御する保証ではない。`env` やシェルを介した設定、起動前の環境の構築、PATH、プログラムの設定、孫プロセスの操作を制限しない（[セキュリティモデル](../07-quality/07-01-security-model.md#ハーネスとの分担)）。
 - 起動するコマンドが見つからなければ `IOErrorKind.NotFound` を返す。コマンドが 0 以外の終了状態で終わっても、`Result.Ok` を返す。終了状態は `exitCode` で調べる。
 - `Process.run`・`Process.shell` で、集めた出力が正しい UTF-8 でなければ、`IOErrorKind.InvalidUTF8` を返す。
 - 【決定】`Process.run`・`Process.shell` は、標準出力と標準エラー出力の終わりまで読む。子が終わっても、子から起動した孫のプロセスがこれらを開いたままだと、呼び出しは返らない。出力を集めるテストの実行器の `Process.runAttached` も同じである。出力を集めない CLI の `run` の `Process.runAttached` には当たらない。`Task.withTimeout` で待つ時間の上限を付けられるが、時間切れになっても起動したプロセスは止めない。理由: 子の出力を読み落とさないために出力の終わりまで読み、[`Command::output`](https://doc.rust-lang.org/std/process/struct.Command.html#method.output) と同じく子の終了と出力の収集を待つためである。
@@ -275,7 +277,7 @@ end record
 | `NotDirectory` | `File.listDirectory`・`File.walk`・`File.removeTree`、途中の構成要素がファイルであるパス |
 | `DirectoryNotEmpty` | `File.remove` |
 | `InvalidUTF8` | テキストを読む関数、`Process.environmentVariable`、`Process.workingDirectory`、`Process.run`・`Process.shell`、名前やパスを返す `File` の関数（`File.listDirectory`・`File.walk`・`File.canonicalize`。返す名前やパスが正しい UTF-8 でない） |
-| `InvalidInput` | パスに NUL が含まれるなど、OS に渡せない引数 |
+| `InvalidInput` | パスに NUL が含まれるなどの不正な引数、`Process.run`・`Process.runAttached` の `Command.environment` に明示した `DYLD_`・`LD_` で始まる名前（ASCII の大小を区別しない） |
 
 ### 外部コマンドの起動とシェル
 

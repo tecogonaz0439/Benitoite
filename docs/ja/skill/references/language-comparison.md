@@ -1,6 +1,6 @@
 # Benitoite とほかの言語の比較
 
-> この文書は、`crates/benitoite/skill/references/language-comparison.md` の日本語の訳である。翻訳元は Benitoite 0.0.6 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/language-comparison.md` の日本語の訳である。翻訳元は Benitoite 0.0.7 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の仕方（tests/skill_examples.rs）:
@@ -159,6 +159,10 @@ working age
 | `random.random()` | `Math.random()` | `rng.gen::<f64>()` | `Random.float()` |
 | `requests.get(url)` | `fetch(url)` | `reqwest::get(url)` | `Http.get(url)` （エフェクト `Http.Connect`） |
 | `assert a == b` | `assert.equal(a, b)` | `assert_eq!(a, b)` | `Assert.equal(actual: a, expected: b)` （`@test` の関数の中で） |
+
+任意の環境のマップを子プロセスの API へ渡す場合と異なり、`Process.Command.environment` の明示設定には、`DYLD_` または `LD_` で始まる名前を使えない（ASCII の大文字小文字を区別しない）。`LD_RUN_PATH`、空値、同じ値の上書きも含む。`Process.run` と `Process.runAttached` はどちらも、子を起動する前に `IOErrorKind.InvalidInput` を返す。`Process.shell` も含め、継承する変数は変えない。`Process.Run` を了承すると、コマンド自身が変数を設定することは依然として可能である。これは入力の規則であり、プロセスを隔離しない。[外部のコマンドの実行](idioms.md#外部のコマンドの実行)を参照する。
+
+Benitoite の宣言したエフェクトは、実行前に検査報告で確認できる。`benitoite check --report=json main.bnt` または `benitoite test --check --report=json tests/` を使い、見直した原子的な集合を、`--allow-effects=<names>` で `run` または実行する `test` へ渡す。テストでは `Assert.Check` を残す。これらは静的な上限であり、サンドボックスや意図した結果の保証ではない。同じ集合で異なるファイルやコマンドを許すこともある。テストの検査報告はテストを実行しない。対応機能の問い合わせと完全な結果の確認は、[実行前の検査](inspection.md)を参照する。
 
 同じ作業を Benitoite で書いたもの（コメントに Python の同等のコードを示す）:
 

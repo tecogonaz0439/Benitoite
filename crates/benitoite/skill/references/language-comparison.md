@@ -157,6 +157,10 @@ For ordinary calls with two or more parameters, label every argument with its de
 | `requests.get(url)` | `fetch(url)` | `reqwest::get(url)` | `Http.get(url)` (effect `Http.Connect`) |
 | `assert a == b` | `assert.equal(a, b)` | `assert_eq!(a, b)` | `Assert.equal(actual: a, expected: b)` (in `@test` functions) |
 
+Unlike passing an arbitrary environment map to a subprocess API, explicit `Process.Command.environment` settings cannot have names starting with `DYLD_` or `LD_` (ASCII case-insensitive), including `LD_RUN_PATH`, empty values, or same-value overwrites. Both `Process.run` and `Process.runAttached` return `IOErrorKind.InvalidInput` before starting a child. Inherited variables remain unchanged, including for `Process.shell`; accepting `Process.Run` still permits commands to set variables themselves. This is an input rule, not process isolation. See [Running external commands](idioms.md#running-external-commands).
+
+Benitoite's declared effects can be inspected before execution: use `benitoite check --report=json main.bnt` or `benitoite test --check --report=json tests/`, then pass the reviewed atomic set to `run` or executing `test` with `--allow-effects=<names>`. Keep `Assert.Check` for tests. These are static upper bounds, not a sandbox or a promise of the intended result; the same set can permit different files or commands. A test-inspection report does not run tests. See [Inspecting before execution](inspection.md) for capability discovery and complete-result checks.
+
 The same task in Benitoite, with the Python equivalent in comments:
 
 ```files

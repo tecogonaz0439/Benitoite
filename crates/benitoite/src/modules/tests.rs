@@ -29,8 +29,9 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
             ("0.0.3", Some(DiagCode::E0908)),
             ("0.0.4", Some(DiagCode::E0908)),
             ("0.0.5", Some(DiagCode::E0908)),
-            ("0.0.6", None),
-            ("0.0.7", Some(DiagCode::E0907)),
+            ("0.0.6", Some(DiagCode::E0908)),
+            ("0.0.7", None),
+            ("0.0.8", Some(DiagCode::E0907)),
         ] {
             let header = format!("language \"{version}\"\n");
             let entry_source = format!("{header}{MAIN}");
@@ -63,17 +64,27 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     diagnostic.message,
                     format!(
                         "this file was written for Benitoite {version}, and the language changed incompatibly in {}",
-                        if version == "0.0.5" { "0.0.6" } else { "0.0.5" }
+                        match version {
+                            "0.0.6" => "0.0.7",
+                            "0.0.5" => "0.0.6",
+                            _ => "0.0.5",
+                        }
                     )
                 );
-                let first = usize::from(version == "0.0.5");
+                let first = match version {
+                    "0.0.6" => 2,
+                    "0.0.5" => 1,
+                    _ => 0,
+                };
                 let notes = [
                     "0.0.5: calls with two or more parameters require named arguments; function types and higher-order contracts require parameter names, and function values must match those names in order",
                     "0.0.6: `die` is reserved; IOErrorKind, NetworkErrorKind, Json.ParseError, and Csv.ParseError are @extensible; return values must start on the same physical line as `return`",
+                    "0.0.7: Command.environment rejects names starting with DYLD_ or LD_ (ASCII case-insensitive), including build-tool variables such as LD_RUN_PATH",
                 ];
                 let helps = [
                     "see the 0.0.5 section of CHANGELOG.md for named arguments and named function types",
                     "rename user-defined names spelled `die`; outside the defining package, add an unguarded `case other` or `case _` to cover future @extensible values in matches, and use a variable or `_` instead of destructuring them in bindings; record `..` covers only declared fields, while construction, updates, and getters keep their declared field contracts; start each return value on the same physical line as `return` (the value may continue across lines after it starts); use `try value or return`, `try value or die`, or `try value or die(message)` to make the failure action explicit; bare `try value` still returns failure from the innermost function or lambda; see CHANGELOG.md for migration details",
+                    "review explicit settings of DYLD_ and LD_ variables, including LD_RUN_PATH used by build tools; run and runAttached return IOErrorKind.InvalidInput before starting a child; inherited variables are unchanged; update the language declaration to the current version after reviewing the script, update dependency hashes, and see CHANGELOG.md for migration details",
                 ];
                 assert_eq!(diagnostic.notes, notes[first..]);
                 assert_eq!(diagnostic.helps.len(), helps.len() - first);
@@ -84,7 +95,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
             } else {
                 assert_eq!(
                     diagnostic.message,
-                    "this file needs Benitoite 0.0.7 or later, but this is Benitoite 0.0.6"
+                    "this file needs Benitoite 0.0.8 or later, but this is Benitoite 0.0.7"
                 );
                 assert!(diagnostic.notes.is_empty());
                 assert!(diagnostic.helps.is_empty());
@@ -869,7 +880,7 @@ fn root_settings_do_not_come_from_parent_directories() {
 #[test]
 fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
     for config_name in ["package.bnt", "Package.bnt"] {
-        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.6\"\n")]);
+        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.7\"\n")]);
         assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
         assert_aligned(&output);
         if config_name == "package.bnt" {
@@ -889,7 +900,7 @@ fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
 
 #[test]
 fn config_cannot_be_a_starting_file() {
-    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.6\"\n")]);
+    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.7\"\n")]);
     let entry = EntrySpec {
         path: "/root/package.bnt".into(),
         display_name: "package.bnt".into(),
@@ -913,19 +924,19 @@ fn dependency_configs_precede_prelude_and_imported_modules() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.6\"\npackage Textkit\nend package\n",
+            "language \"0.0.7\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", "import Internal.Helper\n"),
         ("/library/Internal/Helper.bnt", ""),
         (
             "/second/package.bnt",
-            "language \"0.0.6\"\npackage Textkit\nend package\n",
+            "language \"0.0.7\"\npackage Textkit\nend package\n",
         ),
         ("/second/Slug.bnt", "import Internal.Helper\n"),
         ("/second/Internal/Helper.bnt", ""),
         (
             "/unused/package.bnt",
-            "language \"0.0.6\"\npackage Unused\nend package\n",
+            "language \"0.0.7\"\npackage Unused\nend package\n",
         ),
         ("/unused/Unread.bnt", "this is deliberately not a module"),
     ]);
@@ -998,7 +1009,7 @@ fn package_imports_keep_their_canonical_root_and_reject_the_entry() {
             ("main.bnt", main),
             (
                 "deps/library/package.bnt",
-                "language \"0.0.6\"\npackage Library\nend package\n",
+                "language \"0.0.7\"\npackage Library\nend package\n",
             ),
             ("/outside/Target.bnt", ""),
         ]);
@@ -1033,7 +1044,7 @@ fn root_link_to_the_dependency_imports_the_package() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.6\"\npackage Textkit\nend package\n",
+            "language \"0.0.7\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", ""),
     ]);
@@ -1069,11 +1080,11 @@ fn overlapping_dependency_roots_are_rejected_before_imports() {
             ("main.bnt", &main),
             (
                 "/libs/package.bnt",
-                "language \"0.0.6\"\npackage Libs\nend package\n",
+                "language \"0.0.7\"\npackage Libs\nend package\n",
             ),
             (
                 "/libs/Nested/package.bnt",
-                "language \"0.0.6\"\npackage Nested\nend package\n",
+                "language \"0.0.7\"\npackage Nested\nend package\n",
             ),
             ("/libs/Value.bnt", ""),
             ("/libs/Nested/Value.bnt", ""),
@@ -1108,7 +1119,7 @@ fn dependency_import_edits_only_use_valid_module_names() {
             ),
             (
                 "/library/package.bnt",
-                "language \"0.0.6\"\npackage Library\nend package\n",
+                "language \"0.0.7\"\npackage Library\nend package\n",
             ),
         ]);
         fs.add_file(format!("/library/{tail}"), vec![]);
@@ -1144,7 +1155,7 @@ fn duplicate_dependency_locations_do_not_also_report_root_overlap() {
         ),
         (
             "deps/lib/package.bnt",
-            "language \"0.0.6\"\npackage Library\nend package\n",
+            "language \"0.0.7\"\npackage Library\nend package\n",
         ),
         ("deps/lib/Value.bnt", ""),
     ]);

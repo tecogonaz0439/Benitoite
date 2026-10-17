@@ -3,6 +3,9 @@
 
 use super::{ReportKind, Severity};
 
+/// E0512 の集合表示で使う空集合の文言。
+pub(crate) const EMPTY_EFFECT_SET: &str = "(none)";
+
 /// 一つの診断コードの表の項目。
 #[derive(Clone, Copy, Debug)]
 pub struct CodeInfo {
@@ -865,6 +868,12 @@ diag_codes! {
         [pure: "use a pure String expression for the message",
          message: "the message is written here"]
         "The optional message of `or die` must be a pure String expression.";
+
+    E0512 Check "effects of `{function}` exceed `--allow-effects`" "effect limit checked for this function"
+        [missing: "effects not allowed: {missing}",
+         allowed: "allowed effects: {allowed}",
+         review: "review the required effects before changing --allow-effects"]
+        "The declared atomic effects of the checked function (main or a test) exceed the set passed to --allow-effects. Nothing is started. Review the required effects before changing the allowed set. This is a static check, not runtime permission control or an OS sandbox.";
 
     // ---- E06: パターン ----
     E0601 Check "`match` does not cover every value" "`{witness}` is not matched"

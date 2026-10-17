@@ -1,6 +1,6 @@
 # Benitoite 言語リファレンス
 
-> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.6 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.7 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（crates/benitoite/tests/reference_examples.rs）:
@@ -16,7 +16,7 @@
 この訳のコードの例は検査しない。検査するのは英語の版である。
 -->
 
-このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.6` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
+このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.7` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
 
 `benitoite` のインストールは、[Benitoite のインストール](install.md)を参照する。
 
@@ -71,7 +71,7 @@ benitoite run hello.bnt
 
 `check` は、スクリプトに誤りも警告もなければ何も出力しない。`run` はスクリプトをもう一度検査してから `main` を呼ぶ。
 
-最初の行は、モジュール `Console` を取り込む。`main` のシグネチャは、`uses` の後で、`main` がコンソールに書くこと（`Console.Write`）を示す。プログラムの外で何かを行う関数は、このようにそれを挙げなければならず、その関数を呼ぶすべての関数も同じである。`main` の `uses` を読めば、スクリプトが行いうることがすべてわかる。
+最初の行は、モジュール `Console` を取り込む。`main` のシグネチャは、`uses` の後で、`main` がコンソールに書くこと（`Console.Write`）を示す。プログラムの外で何かを行う関数は、このようにそれを挙げなければならず、その関数を呼ぶすべての関数も同じである。`main` の `uses` を読めば、スクリプトが行いうる操作の種類がわかる。ただし、その対象や結果はわからない。
 
 ## 2. コマンドライン
 
@@ -82,9 +82,12 @@ benitoite check [options] <script>
 benitoite test  [options] <path>...
 benitoite fmt   [options] <path>...
 benitoite skill install|uninstall [--user | --project] [--agent <name>]...
+benitoite skill list [--format=text|json]
+benitoite skill show [--format=text|json] <logical-name>
 benitoite package add|update|move ...
 benitoite --help
 benitoite --version
+benitoite --version=json
 benitoite --licenses
 ```
 
@@ -94,10 +97,11 @@ benitoite --licenses
 | `check` | スクリプトを実行せずに検査する。 |
 | `test` | 指定したファイルの中、または指定したディレクトリの下のすべての `.bnt` ファイルの中のテストの関数を実行する。ただし、`package.bnt` と入れ子のパッケージは除く。[16. テスト](#16-テスト)を参照する。 |
 | `fmt` | 指定したファイル、または指定したディレクトリの下のすべての `.bnt` ファイルを、標準の配置に書き換える。[17. 整形](#17-整形)を参照する。 |
-| `skill` | 同梱の Agent Skill を、コーディングエージェントがスキルを読む場所に書き出す、または取り除く。[Benitoite のインストール](install.md#3-agent-skill-をインストールする)を参照する。 |
+| `skill` | 同梱の Agent Skill をインストール・削除する。または、インストールせずに埋め込み文書の一覧を取得し、本文を取り出す。[Benitoite のインストール](install.md#3-agent-skill-をインストールする)を参照する。 |
 | `package` | 実験的な機能。局所の依存の宣言を追加・更新・移動する。[パッケージのコマンド](#パッケージのコマンド)を参照する。 |
 | `--help` | 使い方を出力する。 |
-| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.6`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
+| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.7`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
+| `--version=json` | 版・ビルド・対応する形式の情報を一つの JSON オブジェクトとして出力する。最初の引数でなければならず、後続の引数は受け付けない。 |
 | `--licenses` | 実行ファイルに含まれる第三者のソフトウェアのライセンスを出力する。ソースからのビルドはこの一覧を含まず、そのことを出力する。 |
 
 `<script>` は、ファイルか、`main.bnt` を含むディレクトリである。ファイル名と拡張子は確かめない。ただし、`package.bnt` は設定ファイルであり、起点のファイルにはできない。スクリプトのディレクトリが*根のディレクトリ*である。スクリプトは、根のディレクトリとその下、標準ライブラリ（[モジュール](#12-モジュール)）、宣言した局所の依存からモジュールを取り込める（[第 21 節](#21-実験的な機能-パッケージと外部の関数)）。`benitoite` は、根のディレクトリそのものにある `package.bnt` を設定ファイルとして読む。親のディレクトリや作業ディレクトリは探さない。
@@ -116,14 +120,18 @@ Linux では `#!/usr/bin/env benitoite run` と書かない。Linux はインタ
 
 ### オプション
 
-オプションは、コマンドの後、スクリプトのパスの前に置く。
+`run` と `check` のオプションは、コマンドの後、スクリプトのパスの前に置く（`run` を省くときはスクリプトの前に置く）。`test` と `fmt` では、パスの後にも置ける。未知のオプション、重複したオプション、値の欠落や不正、そのコマンドが受け付けないオプションは、終了状態 2 の使い方の誤りになる。次の表の値を取るオプションには `=` が必要である。ただし、`--allow-effects` は分離した値も受け付ける。
 
 | オプション | 意味 | 既定 |
 |---|---|---|
 | `--diagnostics=text` または `--diagnostics=json` | 診断と、実行時エラーなどの報告の形式。`test` では、テストの結果の形式でもある。 | `text` |
 | `--max-call-stack=<size>` | `run` と `test`（`test` ではテストごと）での入れ子の呼び出しの上限。`512MiB` のように、整数に `KiB`、`MiB`、`GiB` を付けて書く。 | `1GiB` |
 | `--deny-warnings` | `check`、`run`、`test` で警告を誤りとして扱う。 | オフ |
-| `--check` | `fmt` だけ。ファイルを書き換えずに、変わるはずのファイルを報告する。 | オフ |
+| `--report=json` | `check` と `test --check` で、一つの JSON の検査報告を標準出力に書く。[検査報告](#検査報告)を参照する。 | オフ |
+| `--allow-effects=<names>` または `--allow-effects <names>` | `run` とテストを実行する `test` で、実行前に各入口の関数が宣言するエフェクトを許可集合と比べる。[実行前のエフェクトの上限](#実行前のエフェクトの上限)を参照する。 | 上限なし |
+| `--check` | `test` ではテストを実行せずに検査する。`fmt` ではファイルを書き換えずに、変わるはずのファイルを報告する。 | オフ |
+
+`run` とテストを実行する `test` の四つの `--wasm-*` オプションは、[実行の上限と統計](#実行の上限と統計)で説明する。
 
 ### `run` と `check` の終了状態
 
@@ -131,15 +139,138 @@ Linux では `#!/usr/bin/env benitoite run` と書かない。Linux はインタ
 |---:|---|
 | 0 | `check` が誤りを見つけなかった。または `main` が `()` か `Result.Ok(())` を返した。 |
 | 1 | `main` が `Result.Error` を返した。プログラムが実行時エラーで止まった、または資源の不足で止まった。またはコマンドラインの引数が正しい UTF-8 でない。 |
-| 2 | スクリプトに検査の誤りがある（`--deny-warnings` のときは警告も）、`benitoite` の制限のために実行できない、または読めない。またはコマンドラインが誤っている。 |
+| 2 | スクリプトに検査の誤りがある（`--deny-warnings` のときは警告も）、`--allow-effects` を超える（`E0512`）、`benitoite` の制限のために実行できない、または読めない。またはコマンドラインが誤っている。 |
 | 3 | `benitoite` の処理系の不具合。報告してほしい。 |
 | 130 | `run` が `SIGINT` か `SIGTERM` を受けた。終わる前に、すべてのタスクを取り消し、リソースを解放し、出力を書き出した。 |
 
 `Process.exit(n)` を呼んだスクリプトは `n`（0〜255）で終わる。1、2、3 は `Process.exit` からも生じうるので、スクリプトを実行する道具は、標準エラー出力に `benitoite` の形式の報告があるかどうかでこれらを区別できる。
 
-診断、実行時エラー、`main` が返した `Result.Error` のメッセージ、使い方の誤りは、標準エラー出力に出る。標準出力には、スクリプトが書いたものだけが出る。標準出力か標準エラー出力の読み手がいなくなると（閉じたパイプ）、プログラムは実行時エラーで止まり、終了状態は 1 になる。
+`--report=json` を指定しない `run` と `check` では、診断、実行時エラー、`main` が返した `Result.Error` のメッセージ、使い方の誤りは、標準エラー出力に出る。標準出力には、スクリプトが書いたものだけが出る。標準出力か標準エラー出力の読み手がいなくなると（閉じたパイプ）、プログラムは実行時エラーで止まり、終了状態は 1 になる。検査報告では、標準出力の単一 JSON オブジェクトの中に診断を含める。
 
 `benitoite` はメモリに上限を設けない。上限を設けるには、`benitoite` を起動する道具（`ulimit`、コンテナ、エージェントのハーネス）を使う。
+
+### 版と対応する形式
+
+実行ファイルが対応する形式は、`benitoite --version=json` で調べる。必要な `formats` のキーと、使う道具が解釈できる整数の版の両方を確かめる。リリースの版だけから機能を推測しない。例えば、コミットと dirty の状態が不明なビルドは、次のように返すことがある。
+
+```json
+{
+  "schemaVersion": 1,
+  "kind": "version",
+  "name": "benitoite",
+  "version": "0.0.7",
+  "unicodeVersion": "17.0.0",
+  "build": {
+    "commit": null,
+    "dirty": null,
+    "target": "aarch64-apple-darwin",
+    "provenance": {"commit": "unknown", "dirty": "notCollected"}
+  },
+  "formats": {
+    "version": [1],
+    "diagnostics": [1],
+    "testResults": [1],
+    "checkReport": [1],
+    "testCheckReport": [1],
+    "effectLimit": [1],
+    "loaderEnvironment": [1],
+    "skillList": [1],
+    "skillDocument": [1]
+  },
+  "loaderEnvironment": {
+    "schemaVersion": 1,
+    "mode": "always",
+    "deniedPrefixes": ["DYLD_", "LD_"],
+    "nameComparison": "asciiCaseInsensitive",
+    "inherited": "unchanged",
+    "errorKind": "InvalidInput"
+  }
+}
+```
+
+`build.commit` は、Git オブジェクト ID の小文字の十六進文字列（省略しないもの）か `null` である。`build.dirty` は真偽値か `null` であり、`null` は不明を意味する。作業ツリーに変更がないという意味ではない。dirty の状態は自動では採取しない。ビルドの入力を省くと `provenance.dirty: "notCollected"` になる。不明を明示した場合を含め、入力を明示すると `"environment"` になる。コミットの由来は `"environment"`、`"git"`、`"unknown"` のいずれかである。これらはビルド時に埋め込んだ値であり、実行時の環境を観測した値ではない。入力・監視の限界・再ビルドの条件は、[ビルド情報](install.md#ビルド情報)を参照する。
+
+`diagnostics: [1]` と `testResults: [1]` は、`kind: "die"`、`code: null`、テストの `failure.die` を含む既存の JSON Lines 形式を指す。これらの行に `schemaVersion` や最初の版の行は追加しない。`checkReport` と `testCheckReport` は、後述する単一オブジェクトの報告を表す。`effectLimit` は、オプションの構文・集合の比較・`E0512` の契約の版であり、出力オブジェクトではない。`loaderEnvironment` は[明示した環境変数の制約](#io-とネットワークの振る舞い)を表す。`skillList` と `skillDocument` は、[埋め込み Skill の問い合わせ](install.md#インストールせずに-skill-を読む)を表す。
+
+欄の削除、型・必須性・意味の変更、成功を判断するために新たな解釈を要する分類の追加では、該当する形式の版が変わる。無視しても意味が変わらない任意の欄は、同じ形式の版の中で追加されることがある。未知の形式・状態・エフェクト名は未対応として扱い、成功や空のエフェクト集合とは扱わない。
+
+### 検査報告
+
+次のコマンドは、利用者の関数を実行せずにスクリプトを検査する。
+
+```sh
+benitoite check --report=json main.bnt
+benitoite test --check --report=json tests/
+```
+
+`check` には `main` が必要である。`test --check` は、テストを実行する `test` と同じ規則でファイルとテストを選び、`main` を必要としない。どちらも Benitoite のバイトコードを生成せず、VM を動かさない。既存のコンパイル時の定数評価と、外部宣言の静的な検査は行う。その静的な検査のために外部の WASM コンポーネントをコンパイルすることはあるが、インスタンス化も呼び出しも行わない。検査の成功は、後のコード生成でコンパイラの上限に収まることを保証しない。
+
+`--report=json` はこの綴りだけを受け付け、分離した値は受け付けない。`--diagnostics=json` と併用でき、その場合も診断は報告の中にだけ現れる。`--diagnostics=text` の明示は使い方の誤りだが、診断の形式を省くことはできる。`--check` のない `test --report=json` は使い方の誤りであり、テストを実行しない。`test --check` は、指定値が既定値と同じでも、`--max-call-stack`、すべての `--wasm-*` オプション、`--allow-effects` を拒否する。`run` と `fmt` は報告を受け付けない。
+
+コマンドのオプションの範囲内で有効な報告オプションを認識すると、それより前の誤りを含め、認識できる使い方の誤りも報告で返す。`check` の範囲はスクリプトのパスまでであり、`test` の範囲はパスの前後のオプションを含む。既知のオプションの分離した値は、その指定方法が不正な場合も走査中に消費する。このため、値がたまたま `--report=json` でも報告は有効にならない。報告オプションを認識しなければ、使い方の誤りは従来どおり標準エラー出力の文章になる。
+
+各報告は UTF-8 の単一 JSON オブジェクトであり、末尾に LF を付けて標準出力に書く。警告、検査の誤り、使い方の誤り、捕捉した処理系の不具合を含め、標準エラー出力には重ねて書かない。テストの結果や集計の行も書かない。オブジェクトのキーの順序と JSON の空白は契約に含まれない。
+
+| 共通の欄 | 意味 |
+|---|---|
+| `schemaVersion`, `kind` | 整数 `1` と、`"checkReport"` または `"testCheckReport"`。 |
+| `producer` | `{name, version, build}`。版の問い合わせと同じ版・ビルド情報を持つ。 |
+| `status` | `"ok"`、`"checkError"`、`"usageError"`、`"internalError"` のいずれか。テストの非実行の検査では `"interrupted"` も返すことがある。 |
+| `complete` | 選択、すべての対象の検査、契約の抽出が成功したときだけ真。 |
+| `targetsComplete` | 入口の選択やディレクトリの探索が完了したか。型検査の成否とは独立である。 |
+| `executed` | 常に `false`。 |
+| `requestedTargets` | `[{requestIndex, path}]`。引数の順に、0 から始まる番号と渡されたパスを、不正なものも含めて並べる。 |
+| `targets` | 発見順の入口。明示した引数の順と、各ディレクトリ内のファイルの辞書順で並ぶ。 |
+| `sources` | `[{sourceId, displayPath, kind, contentHash}]`。対象の順、その中ではソースファイル ID の順に並ぶ。`kind` は `"user"` か `"prelude"`。後者は埋め込まれた標準ライブラリのソースをすべて含む。 |
+| `sourceSets` | `[{targetId, sourceIds}]`。対象ごとに一行あり、未検査の対象にも空のソース ID の配列を置く。 |
+| `aggregateEffects` | 報告全体が完全なときだけ、`main` の Effects オブジェクト、または選んだすべてのテストのエフェクトの和集合を返す。それ以外は `null`。 |
+| `diagnostics` | [診断](#18-診断)で説明する診断オブジェクトの配列。 |
+| `diagnosticTargets` | 診断ごとに一つの `{diagnosticIndex, targetId}`。探索全体の誤りと使い方の誤りでは `targetId: null`。 |
+
+すべての対象は、`targetId`、`requestIndex`、`entry`、`root`、`sourceId`、`kind`、`status`、`complete` を持つ。`entry` と `root` は表示用のパスである。入口のバイト列を保持していなければ、`sourceId` は `null` になる。main の対象は `kind: "main"` と `main` 欄を持つ。テストの対象は `kind: "tests"` と `tests` 欄を持ち、`main` 欄は持たない。
+
+成功した `main` は `{symbol: "main", location, effects, processShellReference, shellReferenceScope}` である。`tests` の各要素は `{function, description, location, effects}` であり、宣言順に並ぶ。テストの説明を省いた場合は `null`、空の説明を明示した場合は `""` になる。`location` は `{file, start, end, label: ""}` で関数名の位置を示す。start と end は、1 から数える `line` と `column`、元のソースでの 0 から数えるバイト位置 `offset` を含む。
+
+Effects オブジェクトは `{basis: "declaredUpperBound", expanded: [...]}` である。配列には組み込みの原子的なエフェクトの名前が、重複なく辞書順に並ぶ。本体で使わないものも含め、宣言した上限を報告する。`IO.All` は `Clock.Time`、`Console.Read`、`Console.Write`、`File.Read`、`File.Write`、`Process.Environment`、`Process.Exit`、`Process.Run`、`Random.Generate`、`State` へ展開し、HTTP のどちらのエフェクトも `Assert.Check` も含まない。テストの各契約、集計、後のエフェクトの上限の比較では `Assert.Check` を保持する。`main` での `Assert.Check` の宣言は検査の誤り（`E0415`）になる。処理していない `or die` は `Process.Exit` を要する。これをすべて処理し、宣言した上限から取り除けば、報告からも取り除かれる。単独の `try` や `or return` は終了のエフェクトを加えない。
+
+純粋な契約の検査が成功すれば `expanded: []` になる。不明なエフェクトは Effects の値全体を `null` として表し、空配列にはしない。対象の検査が失敗すれば、その `main` か `tests` は `null` になる。検査済みのファイルにテストがなければ `tests: []` になる。空のディレクトリは、`targets: []` と空の集計エフェクト集合を持つ完全な成功である。一つのファイルが失敗しても、成功した対象の契約は残るが、全体の `complete` は false、`aggregateEffects` は null になる。探索の失敗では、どの入口も検査せずに止まる。それまでに発見した対象は、`status: "checkError"`、`tests: null` の不完全な参考情報として残る。処理系の不具合や観測した中断では、後の入口が未検査のまま残ることがある。
+
+`processShellReference` は、検査が成功したときは `"present"` か `"absent"`、未確認のテストの対象では `"unknown"` になる。main の対象では `main` の中に、テストの対象では対象そのものに、`shellReferenceScope: "checkedProgram"` とともに置く。main が `null` のときも shell の参照は未確認である。調べるのは、依存、標準ソース、関数の値、呼ばれない関数も含む検査済みプログラム全体での、標準の `IO.Process.shell` への式の参照である。`main` やテストからの到達性は調べない。取り込みだけ、ハンドラの操作名だけ、コメント、文字列、同名の利用者の関数は数えない。`"present"` はシェルが実行されることを意味せず、`"absent"` は任意のコマンドがシェルを起動できないことを意味しない。
+
+`contentHash` は `{algorithm: "sha256", value: "<64 lowercase hexadecimal digits>"}` であり、検査が使ったものと同じソースの全バイト列を対象とする。BOM、改行、不正な UTF-8 を正規化しない。設定、依存、prelude のソースを含め、ソース表に読み込んだソースを対象にする。WASM のバイナリ、依存のハッシュの確認のためだけに読んだファイル、存在しない設定ファイル、ディレクトリの観測は含めない。全バイト列を保持していないソースには `sources` の要素を作らない。表示用のパスは、OS のパスに逆変換できる符号化ではなく、ファイルを開く指示でもない。
+
+`t0` や `t0:s0` のような ID は、その報告の中だけで有効である。明示したパスの重複は別々の対象とソース集合になり、表示名やハッシュが同じでも統合しない。報告は後の実行のソースのバイト列を固定せず、そのハッシュも実行ファイルの信頼性の証明にはならない。
+
+使い方の誤りでは、`complete: false`、`targetsComplete: false` とし、`targets`、`sources`、`sourceSets` は空、`aggregateEffects: null` とする。その診断は `kind: "check"`、`severity: "error"`、`code: null`、`primary: null` と、空の `secondary`、`notes`、`helps` を持つ。`kind: "check"` と `code: null` のこの組み合わせは、`status: "usageError"` の報告の中にだけ現れ、通常の診断の JSON Lines には加えない。例えば、`benitoite check --report=json` は、`requestedTargets: []` とメッセージ `"missing script path"` を返し、終了状態は 2 になる。
+
+| 報告の状態 | 終了状態 |
+|---|---:|
+| `ok` | 0 |
+| `checkError` または `usageError` | 2 |
+| `internalError` | 3 |
+| `interrupted`（テストの非実行の検査だけ） | 130 |
+
+集計を確認済みの集合として使う前に、単一 JSON オブジェクトが完全に出力されていること、解釈できる `schemaVersion` と `kind` であること、`status: "ok"`、`complete: true`、終了状態 0 を確かめる。`--deny-warnings` で誤りにした警告があれば、報告は `checkError` になる。テストの非実行の検査で複数の失敗があれば、中断、処理系の不具合、使い方の誤り、検査の誤りの順に優先する。
+
+出力を始める前に、報告の組み立てと直列化を終える。書き込みや flush の失敗を優先し、終了状態 1 で終える。別の報告を追記・再送しない。OS の書き込みが分割されない保証はない。初期化の失敗、報告の境界の外の失敗、失敗報告そのものの組み立て中の失敗、abort、強制終了、出力の切断では、完全な報告を保証しない。テストの非実行の検査は、各ファイルを始める前に中断を確認し、検査中は継続的に確認しない。最後のファイルの検査中の要求は、報告されないことがある。main の非実行の検査では、シグナルを OS の既定の動作に委ねる。
+
+### 実行前のエフェクトの上限
+
+スクリプトを検査して確認した後、エージェントやハーネスは、許可した原子的なエフェクトの名前を実行コマンドへ渡せる。
+
+```sh
+benitoite run --allow-effects=Console.Write,Process.Exit main.bnt
+benitoite test --allow-effects=Assert.Check,File.Read tests/
+benitoite --allow-effects= pure.bnt
+```
+
+最後のコマンドは空集合を許す。オプションは、[エフェクト](#10-エフェクト)にある 13 個の原子的な名前（`State` と `Assert.Check` を含む）を、任意の順にコンマで区切った一つの集合を受け付ける。名前の重複、空の要素、どの位置にある空白、未知の名前、利用者定義の名前、取り込みの別名、`IO.All`、`*` は拒否し、値の前後の空白を取り除かない。オプションは一度だけ指定できる。`check`、`test --check`、`fmt` は受け付けない。`run` のスクリプトのパスの後では、スクリプトの引数になる。
+
+新たに検査した宣言上限は、渡した集合の部分集合でなければならない。余分な名前の許可は受け付ける。不足するエフェクトがあると、該当する関数ごとに一つの `E0512` を、その位置、不足するエフェクト、許可集合とともに出し、実行前に終了状態 2 で終える。`--diagnostics=json` では、標準エラー出力の通常の診断行になり、標準出力に承認のオブジェクトは出さない。不明な契約を比較する前に、それ以前の型やエフェクトの誤りを優先する。
+
+`run` は、契約を比較したものと同じ検査済みプログラムをコンパイルする。エフェクトの上限を指定した `test` は、すべての入口を準備し、選んだすべてのテストの契約（`Assert.Check` を含む）を比較し、すべての入口のコンパイルと実行準備を終えてから、テストを開始する。一つでも準備に失敗すれば、どのテストも実行しない。その場合の集計は[テスト](#16-テスト)を参照する。このオプションがなければ、従来どおりファイルごとに準備して実行する。
+
+これは静的な契約の比較である。検査後のソースを固定せず、実行時の操作も制限しない。`File.Write` を保ってパスや内容を変える変更や、`Process.Run` を保ってコマンドを変える変更は、同じ集合に収まる。入口を準備する間にファイルが変われば、テストの入口ごとに異なる依存の内容を読むこともある。すべての入力を一つのスナップショットにするわけではない。実際の操作と資源の制限には、ハーネスか OS のサンドボックスを使う。
 
 ## 3. プログラムの構造
 
@@ -944,6 +1075,8 @@ ab
 
 テストは、属性 `@test("description")` を付け、引数がなく、戻り値の型が `Unit` か `Result[Unit, String]` の関数である。値は `Assert.equal(actual: actual, expected: expected)` と `Assert.isTrue(condition: condition, message: message)` で確かめる。これらはエフェクト `Assert.Check` を要する。確かめが失敗すると、そのテストは止まる。`Result.Error(message)` を返しても失敗する。各テストは単独で動くので、一つのテストの失敗や実行時エラーはほかのテストを止めない。
 
+実行するのは、選んだ入口のファイルで宣言したテストだけである。取り込んだモジュールのテストは加えない。ファイルを直接指定すると、その親ディレクトリを取り込みの根にする。ディレクトリを指定して発見したファイルは、指定したディレクトリを共通の根とし、下位のパッケージの根は除く。重複して明示したパスは別々の入口のままにする。`test --check` の非実行の検査も同じ規則を使う。
+
 ```benitoite test
 import Benitoite.Unofficial.IO.File
 
@@ -999,11 +1132,19 @@ test result: FAILED. 1 passed; 1 failed
 
 型が不明のまま残る位置では、構成子は `<constructor #n of an unknown type>` と表示する。`n` は、型の宣言の中での構成子の位置（0 から数える）である。比べる型が具体的な確かめは、構成子を名前で表示する。型のうち分かっている部分（`Option[T]` の `Option` など）は、`T` を復元できないときも名前を保つ。
 
-検査の誤りがあるファイルは実行しない。その診断は標準エラー出力に出て、ほかのファイルのテストは実行する。`benitoite check` は `main` のないファイルに誤りを報告するので、テストのファイルには `check` ではなく `test` を使う。
+検査の誤りがあるファイルは実行しない。その診断は標準エラー出力に出る。`--allow-effects` がなければ、ほかのファイルのテストは実行する。`benitoite check` は `main` のないファイルに誤りを報告する。テストのファイルを実行せずに調べるには、`benitoite test --check <path>...` を使う。成功時は標準出力に何も書かず、診断は選んだ形式で標準エラー出力に出す。`--report=json` を加えると、選んだテストの契約を含む[検査報告](#検査報告)になり、テストの結果や集計の行は出さない。
 
-`--diagnostics=json` のとき、`test` は標準出力に 1 行に一つずつ JSON のオブジェクトを書く。テストごとに `"kind": "test"` のオブジェクトを一つ書き、その欄は `file`、`name`、`function`、`location`、`outcome`（`"passed"` か `"failed"`）、`failure`、`stdout`、`stderr` である。最後に、`"kind": "testSummary"` と、数 `passed`、`failed`、`filesNotRun`、および `interrupted` を持つオブジェクトを一つ書く。`failure` は `reason` と `message` を持つ。理由は、`"assert"`（確かめの失敗。`primary`、`trace`、および `Assert.equal` と `Assert.notEqual` では値 `left` と `right` を持つ）、`"error"`（テストが `Result.Error` を返した）、`"runtime"`（実行時エラー。実行時エラーの報告の欄を持つ）、`"exit"`（テストが `Process.exit` を呼んだ。`exitCode` を持つ）のどれかである。理由が `"assert"`、`"runtime"`、`"exit"` の失敗は、`notes` も持つ。`notes` は文字列の配列であり、止まる途中のリソースの解放の失敗を含む。
+`--diagnostics=json` のとき、テストを実行する `test` は標準出力に 1 行に一つずつ JSON のオブジェクトを書く。テストごとに `"kind": "test"` のオブジェクトを一つ書き、その欄は `file`、`name`、`function`、`location`、`outcome`（`"passed"` か `"failed"`）、`failure`、`stdout`、`stderr` である。最後に、`"kind": "testSummary"` と、数 `passed`、`failed`、`filesNotRun`、および `interrupted` を持つオブジェクトを一つ書く。`failure` は `reason` と `message` を持つ。理由は、`"assert"`（確かめの失敗。`primary`、`trace`、および `Assert.equal` と `Assert.notEqual` では値 `left` と `right` を持つ）、`"error"`（テストが `Result.Error` を返した）、`"runtime"`（実行時エラー。実行時エラーの報告の欄を持つ）、`"exit"`（テストが `Process.exit` を呼んだ、または `or die` で止まった。`exitCode` を持ち、`or die` では診断オブジェクトを `die` にも含む）のどれかである。理由が `"assert"`、`"runtime"`、`"exit"` の失敗は、`notes` も持つ。`notes` は文字列の配列であり、止まる途中のリソースの解放の失敗を含む。検査の診断は標準エラー出力に出る。
 
-`test` の終了状態は、すべてのテストが通れば 0、テストが失敗すれば 1、検査の誤り、読めないファイル、使い方の誤りでは 2、処理系の不具合では 3、中断されたときは 130 である。複数が当てはまるときは、130、3、2、1 の順で最初のものを使う。
+`--allow-effects` があれば、すべての入口の準備を終えてからテストを開始する。検査の誤り、エフェクト集合の不足、コンパイルの上限に当たると、実行全体を終了状態 2 で拒否する。探索が完了していれば、JSON の出力には `kind: "test"` の行がなく、次のような集計だけになる。
+
+```json
+{"kind":"testSummary","passed":0,"failed":0,"filesNotRun":2,"interrupted":false}
+```
+
+この例では二つの入口を選び、どちらも開始しなかった。`filesNotRun` は、誤りのある入口だけでなく、拒否により実行しなかったすべての入口を数える。テストのない入口や、重複して明示したパスも含む。テキストの集計では `; 2 files not run` と書き、`FAILED` とする。準備が観測した中断か処理系の不具合で終わり、選んだ入口が分かっている場合も、集計は同じ非実行数を使う。中断なら終了状態 130 と `interrupted: true`、処理系の不具合なら終了状態 3 になる。探索の失敗、使い方の誤り、対象を確定できない外側の失敗では、集計を出さない。空の選択の成功では、0 passed、0 failed、`filesNotRun: 0` を返すことがある。読み手は `passed` と `failed` だけでなく、終了状態、集計の有無、`filesNotRun`、`interrupted` を確かめる必要がある。
+
+テストを実行する `test` の終了状態は、すべてのテストが通れば 0、テストが失敗すれば 1、検査の誤り、エフェクト上限による拒否、コンパイルの上限、読めないファイル、使い方の誤りでは 2、処理系の不具合では 3、中断されたときは 130 である。複数が当てはまるときは、130、3、2、1 の順で最初のものを使う。出力の失敗では 1 になる。実行しない `test --check` は、JSON の報告の有無にかかわらず、[非実行の検査の状態](#検査報告)を使う。
 
 ## 17. 整形
 
@@ -1033,6 +1174,8 @@ error[E0230]: `let` is not used to bind names
 警告は、`check`、`run`、`test` が報告するが、`--deny-warnings` を与えない限り、それらを失敗させない。
 
 `--diagnostics=json` のとき、各診断は標準エラー出力の 1 行ずつに一つの JSON のオブジェクトとして出る。その欄は `kind`、`severity`、`code`、`message`、`primary`、`secondary`、`notes`、`helps` である。`primary` は主な場所（ないときは `null`）であり、`file`、`start`、`end`（それぞれ `line`、`column`、`offset` を持つ）、`label` を持つ。`helps` の各要素は、`message` と、置き換えの配列 `edits` を持つオブジェクトである。各置き換えは `file`、`start`、`end`、および `replacement` のテキストを持つ。機械的な修正のない修正案の `edits` は空である。
+
+`or die` の報告は `kind: "die"`、`severity: "error"`、`code: null` を持つ。ソースの位置と、表示した原因および任意の利用者のメッセージを含む notes を持ち、実行は終了状態 1 で終わる。実行時エラーとは別の報告である。使い方の誤りは通常、`--diagnostics=json` でも文章のままである。[検査報告](#検査報告)のモードでは、標準エラー出力ではなく `diagnostics` 配列に診断を置く。`kind: "check"` と `code: null` の組み合わせを使うのは、その `usageError` の診断だけである。
 
 診断は、メッセージではなく `code` と JSON の欄で区別する。メッセージと修正案の中身は、パッチ版でも変わることがある。取り除いたコードを、別の意味で再び使うことはない。
 
@@ -1112,6 +1255,8 @@ prelude のモジュールは取り込みが要らない。ほかのモジュー
 - 相対のファイルのパスは、作業ディレクトリを基準に解決する。スクリプトの隣のファイルには `Process.scriptDirectory()` を使う。
 - `Process.run` は、シェルを介さず、引数のリストでプログラムを起動する。0 でない終了コードは誤りではなく、結果から読む。コマンドが与えた `input` をすべては読まないとき（`head` のように）も、誤りではない。
 - `Process.shell` は、コマンドラインを `/bin/sh -c` で実行する。POSIX sh だけを書く。
+- `Process.run` と `Process.runAttached` は、明示した `Command.environment` の名前が `DYLD_` か `LD_` で始まる場合、ASCII の大文字と小文字を区別せずに拒否する。ビルドの道具が使う `LD_RUN_PATH`、小文字の綴り、空の値、継承する値と同じ値の再設定も含む。子の起動やパイプの準備の前に、`IOErrorKind.InvalidInput` の `Result.Error` を返す。既存の不正入力の検査（NUL、空の名前、名前の中の `=` など）を優先する。メッセージは元の名前の辞書順で最初の禁止変数の名前を示し、その値は出さない。
+- この環境変数の規則は、すべての OS で常に適用するが、継承する変数は変えない。`Process.shell` も継承を続ける。`Process.Run` を許可すれば、`env` のようなコマンドやシェル自身が変数を設定することも許す。この規則は、初期の環境、`PATH`、コマンド固有の設定、孫プロセス、Windows のすべての DLL 探索の振る舞いを制御しない。サンドボックスではなく、隔離はハーネスと OS で行う必要がある。
 - `Http.respond` は 200 から 599 までの状態を受け付ける。ほかの状態は、`1xx` の状態も含め、実行時エラーである。`benitoite` は `content-length` と `connection: close` を設定し、利用者が与えた `content-length`、`connection`、`transfer-encoding`、`trailer`、`keep-alive`、`proxy-connection`、`te`、`upgrade` のヘッダと、利用者が与えた `connection` の値のどれかで名指されたヘッダを捨てる。名前は大文字と小文字を区別せずに比べる。`connection` の値はコンマで分け、前後の空白とタブを取り除き、空の要素を飛ばす。`HEAD` の要求への応答、状態 204・205・304、`CONNECT` の要求への `2xx` の応答には本文を送らない。これらの場合に与えた本文は捨てる。
 - HTTP のサーバは、`/` で始まる対象（`//a` を含む）、`http://` か `https://` で始まる絶対形式の対象（大文字と小文字を区別しない）、大文字の `OPTIONS` のときだけ `*`、大文字の `CONNECT` のときだけ authority 形式の対象を受け付ける。`CONNECT` の対象は、ASCII の英字、数字、`-._~!$&'()*+,;=:[]%` からなる空でないホストの後に、`:` と、値が 0 から 65535 までの一つ以上の ASCII の数字を続けたものでなければならない。`/path` や絶対形式の対象を含め、ほかの形は `CONNECT` では拒む。ほかの形の対象と、`"`、`<`、`>`、ASCII でない文字をそのまま含む対象には、ハンドラを呼ばずに 400 を返す。これらの文字はパーセント符号化する。`[`、`]`、`\`、`^`、`` ` ``、`{`、`|`、`}` は、パスとクエリにそのまま書いても受け付ける。後に 2 桁の十六進数が続かない `%` は、受け付けてそのまま残す。
 - HTTP のサーバは、`#` を含む要求の対象には 400 を返し、ハンドラに渡さない。フラグメントを省くか、`#` そのものは `%23` と符号化する。`path` はパーセント符号化を保つ。大文字の `OPTIONS` の要求では、パスもクエリも持たない絶対形式の対象（`OPTIONS http://host`）は、`path` が `*`、`query` が空になる。`OPTIONS http://host/`、`OPTIONS http://host?x=1`、`OPTIONS http://host?` は、`path` が `/` になる。`GET http://host` や `options http://host` などのほかのメソッドでは、絶対形式の空のパスは `path` が `/` になる。
@@ -1174,7 +1319,7 @@ food: 300
 - 非公式のモジュールを標準ライブラリへ移すと、その取り込みの名前が変わる。これはマイナー版でだけ行う。
 - 同梱の Agent Skill は、一緒に配られた版の `benitoite` だけを説明する。更新した後は `benitoite skill install` を再び実行する。
 
-> 注記: `0.0.1` から `0.0.6` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
+> 注記: `0.0.1` から `0.0.7` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
 
 ## 21. 実験的な機能: パッケージと外部の関数
 
@@ -1186,7 +1331,7 @@ food: 300
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.6"
+language "0.0.7"
 
 package Textkit
   license "MIT"
@@ -1204,7 +1349,7 @@ end function
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.6"
+language "0.0.7"
 
 dependency Textkit
   path "packages/textkit"
@@ -1236,7 +1381,7 @@ hello-packages
 
 ```files
 name: package.bnt
-language "0.0.6"
+language "0.0.7"
 ```
 
 ```benitoite check
@@ -1247,7 +1392,7 @@ end function
 
 依存のブロックも、その根の設定ファイルへ移せる。依存は一か所にまとめる。起点のスクリプトと `package.bnt` の両方で依存を宣言すると誤りになる。両方で `language` を宣言しても誤りになる。
 
-`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.6` では、`0.0.6` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
+`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.7` では、`0.0.7` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。ローダ環境変数の変更の移行案内は、スクリプトを見直した後に宣言を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。宣言の更新先を、その変更が入った版に固定しない。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
 
 `package.bnt` には、設定（`language`、`dependency`、`package` のブロック）だけを書き、取り込みや宣言は書かない。`package` ブロックはこのファイルにだけ書け、依存と組み合わせられない。その名前は大文字で始まる識別子であり、メタデータの欄は、省略可能な `license` だけである。欄の値は通常の文字列リテラルであり、文字列補間は使えない。欄の順序は自由だが、重複する欄や未知の欄は誤りになる。
 
